@@ -25,14 +25,14 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 
-public class SmarterModelAdapter extends ModelAdapter {
+public class SmarterJmolAdapter extends JmolAdapter {
 
-  public SmarterModelAdapter(Logger logger) {
-    super("SmarterModelAdapter", logger);
+  public SmarterJmolAdapter(Logger logger) {
+    super("SmarterJmolAdapter", logger);
   }
 
   /****************************************************************
@@ -52,12 +52,13 @@ public class SmarterModelAdapter extends ModelAdapter {
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
     try {
-      Object modelOrErrorMessage =
-        ModelResolver.resolveModel(name, bufferedReader, logger);
-      if (modelOrErrorMessage instanceof String)
-        return modelOrErrorMessage;
-      if (modelOrErrorMessage instanceof AtomSetCollection) {
-        AtomSetCollection atomSetCollection = (AtomSetCollection)modelOrErrorMessage;
+      Object atomSetCollectionOrErrorMessage =
+        Resolver.resolve(name, bufferedReader, logger);
+      if (atomSetCollectionOrErrorMessage instanceof String)
+        return atomSetCollectionOrErrorMessage;
+      if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
+        AtomSetCollection atomSetCollection =
+          (AtomSetCollection)atomSetCollectionOrErrorMessage;
         if (atomSetCollection.errorMessage != null)
           return atomSetCollection.errorMessage;
         return atomSetCollection;
@@ -70,17 +71,24 @@ public class SmarterModelAdapter extends ModelAdapter {
   }
 
   public String getFileTypeName(Object clientFile) {
-    return ((AtomSetCollection)clientFile).modelTypeName;
+    return ((AtomSetCollection)clientFile).fileTypeName;
   }
 
-  public String getModelSetName(Object clientFile) {
-    return ((AtomSetCollection)clientFile).modelName;
+  public String getAtomSetCollectionName(Object clientFile) {
+    return ((AtomSetCollection)clientFile).collectionName;
   }
 
-  public String getModelFileHeader(Object clientFile) {
+  public String getFileHeader(Object clientFile) {
     return ((AtomSetCollection)clientFile).fileHeader;
   }
   
+  public int getAtomSetCount(Object clientFile) {
+    // we need to implement this
+    // the current AtomSetCollection does not have support for this
+    // but now we need it
+    return -1;
+  }
+
   public String getAtomSetName(Object clientFile, int atomSetIndex) {
     return ((AtomSetCollection)clientFile).getAtomSetName(atomSetIndex);
   }
@@ -109,17 +117,17 @@ public class SmarterModelAdapter extends ModelAdapter {
     return ((AtomSetCollection)clientFile).pdbScaleTranslate;
   }
 
-  public ModelAdapter.AtomIterator
+  public JmolAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator((AtomSetCollection)clientFile);
   }
 
-  public ModelAdapter.BondIterator
+  public JmolAdapter.BondIterator
     getBondIterator(Object clientFile) {
     return new BondIterator((AtomSetCollection)clientFile);
   }
 
-  public ModelAdapter.StructureIterator
+  public JmolAdapter.StructureIterator
     getStructureIterator(Object clientFile) {
     AtomSetCollection atomSetCollection = (AtomSetCollection)clientFile;
     return atomSetCollection.structureCount == 0 ? null : new StructureIterator(atomSetCollection);
@@ -128,7 +136,7 @@ public class SmarterModelAdapter extends ModelAdapter {
   /****************************************************************
    * the frame iterators
    ****************************************************************/
-  class AtomIterator extends ModelAdapter.AtomIterator {
+  class AtomIterator extends JmolAdapter.AtomIterator {
     AtomSetCollection atomSetCollection;
     int iatom;
     Atom atom;
@@ -143,7 +151,7 @@ public class SmarterModelAdapter extends ModelAdapter {
       atom = atomSetCollection.atoms[iatom++];
       return true;
     }
-    public int getModelNumber() { return atom.modelNumber; }
+    public int getAtomSetNumber() { return atom.modelNumber; }
     public Object getUniqueID() { return atom; }
     public String getElementSymbol() {
       if (atom.elementSymbol != null)
@@ -172,7 +180,7 @@ public class SmarterModelAdapter extends ModelAdapter {
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
-  class BondIterator extends ModelAdapter.BondIterator {
+  class BondIterator extends JmolAdapter.BondIterator {
     AtomSetCollection atomSetCollection;
     Atom[] atoms;
     Bond[] bonds;
@@ -202,7 +210,7 @@ public class SmarterModelAdapter extends ModelAdapter {
     }
   }
 
-  public class StructureIterator extends ModelAdapter.StructureIterator {
+  public class StructureIterator extends JmolAdapter.StructureIterator {
     int structureCount;
     Structure[] structures;
     Structure structure;

@@ -25,7 +25,7 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.FrameBuilder;
 import org.openscience.jmol.viewer.datamodel.Atom;
@@ -40,12 +40,12 @@ import java.awt.Color;
 public class ModelManager {
 
   final JmolViewer viewer;
-  final ModelAdapter modelAdapter;
+  final JmolAdapter modelAdapter;
 
   final Frame nullFrame;
   final FrameBuilder frameBuilder;
 
-  public ModelManager(JmolViewer viewer, ModelAdapter modelAdapter) {
+  public ModelManager(JmolViewer viewer, JmolAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
     nullFrame = new Frame(viewer, "null");
@@ -71,13 +71,13 @@ public class ModelManager {
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
-      modelSetName = modelAdapter.getModelSetName(clientFile);
+      modelSetName = modelAdapter.getAtomSetCollectionName(clientFile);
       if (modelSetName != null) {
         modelSetName = modelSetName.trim();
         if (modelSetName.length() == 0)
           modelSetName = null;
       }
-      modelFileHeader = modelAdapter.getModelFileHeader(clientFile);
+      modelFileHeader = modelAdapter.getFileHeader(clientFile);
       frame = frameBuilder.buildFrame(clientFile);
       haveFile = true;
     }
@@ -92,8 +92,8 @@ public class ModelManager {
     return (frame == null) ? nullFrame : frame;
   }
 
-  public ModelAdapter getExportModelAdapter() {
-    return (frame == null) ? null : frame.getExportModelAdapter();
+  public JmolAdapter getExportJmolAdapter() {
+    return (frame == null) ? null : frame.getExportJmolAdapter();
   }
 
   public String getModelSetName() {

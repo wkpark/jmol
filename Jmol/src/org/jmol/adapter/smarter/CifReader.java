@@ -24,7 +24,7 @@
  */
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 
@@ -103,9 +103,9 @@ class CifReader extends AtomSetCollectionReader {
   
 
   void processDataParameter() {
-    String modelName = line.substring(5).trim();
-    if (modelName.length() > 0)
-      atomSetCollection.modelName = modelName;
+    String collectionName = line.substring(5).trim();
+    if (collectionName.length() > 0)
+      atomSetCollection.collectionName = collectionName;
   }
   
   void processSymmetrySpaceGroupNameHM() {

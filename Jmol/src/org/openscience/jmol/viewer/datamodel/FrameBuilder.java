@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 import org.openscience.jmol.viewer.*;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
@@ -32,9 +32,9 @@ import javax.vecmath.Point3f;
 final public class FrameBuilder {
 
   final JmolViewer viewer;
-  final ModelAdapter adapter;
+  final JmolAdapter adapter;
 
-  public FrameBuilder(JmolViewer viewer, ModelAdapter adapter) {
+  public FrameBuilder(JmolViewer viewer, JmolAdapter adapter) {
     this.viewer = viewer;
     this.adapter = adapter;
   }
@@ -58,7 +58,7 @@ final public class FrameBuilder {
     frame.setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile));
     frame.setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
 
-    for (ModelAdapter.AtomIterator iterAtom =
+    for (JmolAdapter.AtomIterator iterAtom =
            adapter.getAtomIterator(clientFile);
          iterAtom.hasNext(); ) {
       byte elementNumber = (byte)iterAtom.getElementNumber();
@@ -66,7 +66,9 @@ final public class FrameBuilder {
         elementNumber = JmolConstants.
           elementNumberFromSymbol(iterAtom.getElementSymbol());
       addAtom(frame,
-              iterAtom.getModelTag().intern(),
+              // FIXME miguel 2004 10 21
+              // this should not be done using the atomSetName
+              iterAtom.getAtomSetName().intern(),
               iterAtom.getUniqueID(),
               elementNumber,
               iterAtom.getAtomName(),
@@ -86,7 +88,7 @@ final public class FrameBuilder {
 
     fileHasHbonds = false;
     {
-      ModelAdapter.BondIterator iterBond =
+      JmolAdapter.BondIterator iterBond =
         adapter.getBondIterator(clientFile);
       if (iterBond != null)
         while (iterBond.hasNext())
@@ -95,7 +97,7 @@ final public class FrameBuilder {
                     iterBond.getEncodedOrder());
     }
 
-    ModelAdapter.StructureIterator iterStructure =
+    JmolAdapter.StructureIterator iterStructure =
       adapter.getStructureIterator(clientFile);
     if (iterStructure != null) 
       while (iterStructure.hasNext())

@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
@@ -35,18 +35,18 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
-final public class FrameExportModelAdapter extends ModelAdapter {
+final public class FrameExportJmolAdapter extends JmolAdapter {
 
   JmolViewer viewer;
   Frame frame;
 
-  FrameExportModelAdapter(JmolViewer viewer, Frame frame) {
-    super("FrameExportModelAdapter", null);
+  FrameExportJmolAdapter(JmolViewer viewer, Frame frame) {
+    super("FrameExportJmolAdapter", null);
     this.viewer = viewer;
     this.frame = frame;
   }
 
-  public String getModelSetName(Object clientFile) {
+  public String getAtomSetCollectionName(Object clientFile) {
     return viewer.getModelSetName();
   }
 
@@ -58,17 +58,17 @@ final public class FrameExportModelAdapter extends ModelAdapter {
     return frame.notionalUnitcell;
   }
 
-  public ModelAdapter.AtomIterator
+  public JmolAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator();
   }
 
-  public ModelAdapter.BondIterator
+  public JmolAdapter.BondIterator
     getBondIterator(Object clientFile) {
     return new BondIterator();
   }
 
-  class AtomIterator extends ModelAdapter.AtomIterator {
+  class AtomIterator extends JmolAdapter.AtomIterator {
     int iatom;
     Atom atom;
 
@@ -88,7 +88,7 @@ final public class FrameExportModelAdapter extends ModelAdapter {
     public float getZ() { return atom.getAtomZ(); }
   }
 
-  class BondIterator extends ModelAdapter.BondIterator {
+  class BondIterator extends JmolAdapter.BondIterator {
     int ibond;
     Bond bond;
 

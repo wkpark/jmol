@@ -32,7 +32,7 @@ import java.io.*;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 /**
  * A CML2 Reader, it does not support the old CML1 architecture.
@@ -129,13 +129,13 @@ class CmlReader extends AtomSetCollectionReader {
         case 'T':
           return 3;
         case 'A':
-          return ModelAdapter.ORDER_AROMATIC;
+          return JmolAdapter.ORDER_AROMATIC;
         }
         return parseInt(str);
       }
       float floatOrder = parseFloat(str);
       if (floatOrder == 1.5)
-        return ModelAdapter.ORDER_AROMATIC;
+        return JmolAdapter.ORDER_AROMATIC;
       if (floatOrder == 2)
         return 2;
       if (floatOrder == 3)

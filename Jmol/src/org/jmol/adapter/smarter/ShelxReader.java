@@ -28,7 +28,7 @@
  */
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 
@@ -93,7 +93,7 @@ class ShelxReader extends AtomSetCollectionReader {
     throws Exception {
     switch(recordIndex) {
     case 0: // TITL
-      atomSetCollection.modelName = parseTrimmed(line, 4);
+      atomSetCollection.collectionName = parseTrimmed(line, 4);
       break;
     case 1: // CELL
       cell(line);

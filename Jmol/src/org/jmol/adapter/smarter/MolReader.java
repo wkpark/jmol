@@ -25,7 +25,7 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 
@@ -41,7 +41,7 @@ class MolReader extends AtomSetCollectionReader {
     
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
     atomSetCollection = new AtomSetCollection("mol");
-    atomSetCollection.setModelName(reader.readLine());
+    atomSetCollection.setCollectionName(reader.readLine());
     reader.readLine();
     reader.readLine();
     String countLine = reader.readLine();
@@ -87,7 +87,7 @@ class MolReader extends AtomSetCollectionReader {
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);
       if (order == 4)
-        order = ModelAdapter.ORDER_AROMATIC;
+        order = JmolAdapter.ORDER_AROMATIC;
       atomSetCollection.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }
   }

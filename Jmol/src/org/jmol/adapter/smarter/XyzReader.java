@@ -43,7 +43,7 @@ class XyzReader extends AtomSetCollectionReader {
       int modelAtomCount;
       while ((modelAtomCount = readAtomCount(reader)) > 0) {
         if (modelNumber == 1)
-          atomSetCollection.setModelName(reader.readLine());
+          atomSetCollection.setCollectionName(reader.readLine());
         else
           reader.readLine();
         readAtoms(reader, modelNumber, modelAtomCount);

@@ -25,7 +25,7 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 import java.io.BufferedReader;
 
 /**
@@ -86,7 +86,7 @@ class HinReader extends AtomSetCollectionReader {
   }
 
   void processMol(String line) {
-    atomSetCollection.setModelName(getMolName(line));
+    atomSetCollection.setCollectionName(getMolName(line));
     atomIndex = 0;
     baseAtomIndex = atomSetCollection.atomCount;
     ++modelNumber;
@@ -136,7 +136,7 @@ class HinReader extends AtomSetCollectionReader {
         bondOrder = 3;
         break;      
       case 'a':
-        bondOrder = ModelAdapter.ORDER_AROMATIC;
+        bondOrder = JmolAdapter.ORDER_AROMATIC;
         break;
       default:
         errorMessage = "unrecognized bond type:" + bondTypeToken +

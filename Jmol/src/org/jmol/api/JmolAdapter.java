@@ -28,7 +28,7 @@ package org.jmol.api;
 import java.io.BufferedReader;
 
 /****************************************************************
- * The ModelAdapter interface defines the API used by the JmolViewer to
+ * The JmolAdapter interface defines the API used by the JmolViewer to
  * read external files and fetch atom properties necessary for rendering.
  *
  * A client of the JmolViewer implements this interface on top of their
@@ -45,7 +45,7 @@ import java.io.BufferedReader;
  * covalent bonding radius. 
  * @see org.opensource.jmol.viewer.JmolViewer
  ****************************************************************/
-public abstract class ModelAdapter {
+public abstract class JmolAdapter {
   
   public final static byte ORDER_AROMATIC    = (byte)(1 << 2);
   public final static byte ORDER_HBOND       = (byte)(1 << 6);
@@ -70,11 +70,11 @@ public abstract class ModelAdapter {
    * message. 
    */
 
-  String modelAdapterName;
+  String adapterName;
   public Logger logger;
 
-  public ModelAdapter(String modelAdapterName, Logger logger) {
-    this.modelAdapterName = modelAdapterName;
+  public JmolAdapter(String adapterName, Logger logger) {
+    this.adapterName = adapterName;
     this.logger = (logger == null ? new Logger() : logger);
   }
 
@@ -92,7 +92,7 @@ public abstract class ModelAdapter {
   public void finish(Object clientFile) {}
 
   /**
-   * returns the type of this model
+   * returns the type of this file or molecular model, if known
    */
   public String getFileTypeName(Object clientFile) { return "unknown"; }
 
@@ -101,20 +101,30 @@ public abstract class ModelAdapter {
    * If this method returns <code>null</code> then the JmolViewer will
    * automatically supply the file/URL name as a default.
    */
-  public String getModelSetName(Object clientFile) { return null; }
+  public String getAtomSetCollectionName(Object clientFile) { return null; }
 
   /**
    * We may need the file header.
    * This is currently only used for the script command 'show pdbheader'
    * Other than for pdb files, the client can return <code>null</code>
    */
-  public String getModelFileHeader(Object clientFile) { return null; }
+  public String getFileHeader(Object clientFile) { return null; }
 
   /**
-   * The number of molecular models in the file
+   * The number of atomSets in the file
+   *
+   * NOTE WARNING
+   * this is currently broken ... but is not used
+   * This is associated with the work for getAtomSetName
    */
+  public int getAtomSetCount(Object clientFile) { return 1; }
 
-  public int getModelCount(Object clientFile) { return 1; }
+  /**
+   * The name of each atomSet
+   */
+  public String getAtomSetName(Object clientFile, int atomSetIndex) {
+    return "" + atomSetIndex + 1;
+  }
 
   /**
    * The model tag for each model.
@@ -193,8 +203,8 @@ public abstract class ModelAdapter {
    ****************************************************************/
   public abstract class AtomIterator {
     public abstract boolean hasNext();
-    public String getModelTag(){ return "" + getModelNumber(); }
-    public int getModelNumber() { return 1; }
+    public String getAtomSetName(){ return "" + getAtomSetNumber(); }
+    public int getAtomSetNumber() { return 1; }
     abstract public Object getUniqueID();
     public int getElementNumber() { return -1; }
     public String getElementSymbol() { return null; }
@@ -252,13 +262,13 @@ public abstract class ModelAdapter {
   public class Logger { // default logger will log to stdout
     public boolean isLogging() { return true; }
     public void log(String str1) {
-      System.out.println(modelAdapterName + ":" + str1);
+      System.out.println(adapterName + ":" + str1);
     }
     public void log(String str1, Object obj1) {
-      System.out.println(modelAdapterName + ":" + str1 + ":" + obj1);
+      System.out.println(adapterName + ":" + str1 + ":" + obj1);
     }
     public void log(String str1, Object obj1, Object obj2) {
-      System.out.println(modelAdapterName + ":" + str1 + ":"
+      System.out.println(adapterName + ":" + str1 + ":"
                          + obj1 + ":" + obj2);
     }
   }

@@ -25,7 +25,7 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
@@ -44,7 +44,7 @@ class JmeReader extends AtomSetCollectionReader {
       int atomCount = parseInt(tokenizer.nextToken());
       System.out.println("atomCount=" + atomCount);
       int bondCount = parseInt(tokenizer.nextToken());
-      atomSetCollection.setModelName("JME");
+      atomSetCollection.setCollectionName("JME");
       readAtoms(atomCount);
       readBonds(bondCount);
     } catch (Exception ex) {
@@ -80,8 +80,8 @@ class JmeReader extends AtomSetCollectionReader {
       if (order < 1) {
         //        System.out.println("Stereo found:" + order);
         order = ((order == -1)
-                 ? ModelAdapter.ORDER_STEREO_NEAR
-                 : ModelAdapter.ORDER_STEREO_FAR);
+                 ? JmolAdapter.ORDER_STEREO_NEAR
+                 : JmolAdapter.ORDER_STEREO_FAR);
       }
       atomSetCollection.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }

@@ -24,12 +24,12 @@
  */
 
 package org.jmol.adapter.smarter;
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 import java.util.Hashtable;
 
 class AtomSetCollection {
-  String modelTypeName;
-  String modelName;
+  String fileTypeName;
+  String collectionName;
 
   final static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
@@ -57,8 +57,8 @@ class AtomSetCollection {
 
   String[] pdbStructureRecords;
 
-  AtomSetCollection(String modelTypeName) {
-    this.modelTypeName = modelTypeName;
+  AtomSetCollection(String fileTypeName) {
+    this.fileTypeName = fileTypeName;
   }
 
   protected void finalize() {
@@ -149,11 +149,11 @@ class AtomSetCollection {
     structures[structureCount++] = structure;
   }
 
-  void setModelName(String modelName) {
-    if (modelName != null) {
-      modelName = modelName.trim();
-      if (modelName.length() > 0)
-        this.modelName = modelName;
+  void setCollectionName(String collectionName) {
+    if (collectionName != null) {
+      collectionName = collectionName.trim();
+      if (collectionName.length() > 0)
+        this.collectionName = collectionName;
     }
   }
 

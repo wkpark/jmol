@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
 import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
@@ -92,12 +92,12 @@ final public class Frame {
 
   }
 
-  FrameExportModelAdapter exportModelAdapter;
+  FrameExportJmolAdapter exportJmolAdapter;
 
-  public ModelAdapter getExportModelAdapter() {
-    if (exportModelAdapter == null)
-      exportModelAdapter = new FrameExportModelAdapter(viewer, this);
-    return exportModelAdapter;
+  public JmolAdapter getExportJmolAdapter() {
+    if (exportJmolAdapter == null)
+      exportJmolAdapter = new FrameExportJmolAdapter(viewer, this);
+    return exportJmolAdapter;
   }
 
   void freeze() {

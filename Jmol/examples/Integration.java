@@ -22,8 +22,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-import org.jmol.api.ModelAdapter;
-import org.jmol.adapter.smarter.SmarterModelAdapter;
+import org.jmol.api.JmolAdapter;
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolStatusListener;
 
@@ -82,9 +82,9 @@ class ApplicationCloser extends WindowAdapter {
 
 class JmolPanel extends JPanel {
   JmolViewer viewer;
-  ModelAdapter adapter;
+  JmolAdapter adapter;
   JmolPanel() {
-    adapter = new SmarterModelAdapter(null);
+    adapter = new SmarterJmolAdapter(null);
     viewer = new JmolViewer(this, adapter);
   }
 

@@ -25,15 +25,15 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 import java.io.BufferedReader;
 import java.lang.reflect.Array;
 
 abstract class AtomSetCollectionReader {
   AtomSetCollection atomSetCollection;
-  ModelAdapter.Logger logger;
+  JmolAdapter.Logger logger;
 
-  void setLogger(ModelAdapter.Logger logger) { this.logger = logger; }
+  void setLogger(JmolAdapter.Logger logger) { this.logger = logger; }
 
   void initialize() { }
 

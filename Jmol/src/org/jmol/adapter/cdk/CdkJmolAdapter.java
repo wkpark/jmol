@@ -26,7 +26,7 @@
 package org.jmol.adapter.cdk;
 
 // these are standard and should be needed by all adapters
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.awt.Color;
 import javax.vecmath.Point3d;
@@ -57,10 +57,10 @@ import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;
 import java.util.Vector;
 
-public class CdkModelAdapter extends ModelAdapter {
+public class CdkJmolAdapter extends JmolAdapter {
 
-  public CdkModelAdapter(Logger logger) {
-    super("CdkModelAdapter", logger);
+  public CdkJmolAdapter(Logger logger) {
+    super("CdkJmolAdapter", logger);
   }
 
   /****************************************************************
@@ -117,7 +117,7 @@ public class CdkModelAdapter extends ModelAdapter {
     return "other";
   }
 
-  public String getModelSetName(Object clientFile) {
+  public String getAtomSetCollectionName(Object clientFile) {
     if (clientFile instanceof ChemFile) {
       Object title = ((ChemFile)clientFile).getProperty(CDKConstants.TITLE);
       if (title != null) {
@@ -208,12 +208,12 @@ public class CdkModelAdapter extends ModelAdapter {
     return value == null ? null : "" + value;
   }
 
-  public ModelAdapter.AtomIterator
+  public JmolAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator(getAtomContainer(clientFile));
   }
 
-  public ModelAdapter.BondIterator
+  public JmolAdapter.BondIterator
     getBondIterator(Object clientFile) {
     return new BondIterator(getAtomContainer(clientFile));
   }
@@ -221,7 +221,7 @@ public class CdkModelAdapter extends ModelAdapter {
   /****************************************************************
    * the frame iterators
    ****************************************************************/
-  class AtomIterator extends ModelAdapter.AtomIterator {
+  class AtomIterator extends JmolAdapter.AtomIterator {
     AtomContainer atomContainer;
     int atomCount, iatom;
     Atom atom;
@@ -246,13 +246,12 @@ public class CdkModelAdapter extends ModelAdapter {
     public String getPdbAtomRecord() {
       return (String)atom.getProperty("pdb.record");
     }
-    public int getPdbModelNumber() { return 0; }
     public Object getClientAtomReference() {
       return atom;
     }
   }
 
-  class BondIterator extends ModelAdapter.BondIterator {
+  class BondIterator extends JmolAdapter.BondIterator {
     
     AtomContainer atomContainer;
     Bond[] bonds;

@@ -25,7 +25,7 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -64,7 +64,7 @@ import org.openscience.dadml.tools.DBDEFInfo;
 public class FileManager {
 
   JmolViewer viewer;
-  ModelAdapter modelAdapter;
+  JmolAdapter modelAdapter;
   private String openErrorMessage;
 
   // for applet proxy
@@ -82,7 +82,7 @@ public class FileManager {
   private FileOpenThread fileOpenThread;
 
 
-  public FileManager(JmolViewer viewer, ModelAdapter modelAdapter) {
+  public FileManager(JmolViewer viewer, JmolAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
   }

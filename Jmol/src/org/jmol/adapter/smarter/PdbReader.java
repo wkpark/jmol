@@ -25,7 +25,7 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
@@ -107,7 +107,7 @@ class PdbReader extends AtomSetCollectionReader {
         continue;
       }
       if (line.startsWith("HEADER") && lineLength >= 66) {
-        atomSetCollection.setModelName(line.substring(62, 66));
+        atomSetCollection.setCollectionName(line.substring(62, 66));
         continue;
       }
       if (accumulatingHeader) {
@@ -216,7 +216,7 @@ class PdbReader extends AtomSetCollectionReader {
       atom.atomSerial = serial;
       atom.group3 = currentGroup3;
       atom.sequenceNumber = sequenceNumber;
-      atom.insertionCode = ModelAdapter.canonizeInsertionCode(insertionCode);
+      atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
 
       // note that values are +1 in this serial map
       serialMap[serial] = atomSetCollection.atomCount;
@@ -281,7 +281,7 @@ class PdbReader extends AtomSetCollectionReader {
         //          logger.log("hbond:" + sourceIndex + "->" + targetIndex);
         atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
                                i < 4
-                               ? 1 : ModelAdapter.ORDER_HBOND));
+                               ? 1 : JmolAdapter.ORDER_HBOND));
       }
     } catch (Exception e) {
     }

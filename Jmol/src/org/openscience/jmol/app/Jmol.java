@@ -26,9 +26,9 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.JmolStatusListener;
 
-import org.jmol.api.ModelAdapter;
-import org.jmol.adapter.cdk.CdkModelAdapter;
-import org.jmol.adapter.smarter.SmarterModelAdapter;
+import org.jmol.api.JmolAdapter;
+import org.jmol.adapter.cdk.CdkJmolAdapter;
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import org.openscience.jmol.ui.JmolPopup;
@@ -155,20 +155,20 @@ public class Jmol extends JPanel {
     say("Initializing 3D display...");
     //
     display = new DisplayPanel(status, guimap);
-    ModelAdapter modelAdapter;
+    JmolAdapter modelAdapter;
     String adapter= System.getProperty("model");
     if (adapter == null || adapter.length() == 0)
       adapter = "smarter";
     if (adapter.equals("smarter")) {
       System.out.println("using Smarter Model Adapter");
-      modelAdapter = new SmarterModelAdapter(null);
+      modelAdapter = new SmarterJmolAdapter(null);
     } else if (adapter.equals("cdk")) {
       System.out.println("using CDK Model Adapter");
-      modelAdapter = new CdkModelAdapter(null);
+      modelAdapter = new CdkJmolAdapter(null);
     } else {
       System.out.println("unrecognized model adapter:" + adapter +
                          " -- using Smarter");
-      modelAdapter = new SmarterModelAdapter(null);
+      modelAdapter = new SmarterJmolAdapter(null);
     }
 
     viewer = new JmolViewer(display, modelAdapter);

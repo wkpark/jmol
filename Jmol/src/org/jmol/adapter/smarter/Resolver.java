@@ -25,17 +25,17 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 
-class ModelResolver {
+class Resolver {
 
-  static Object resolveModel(String name, BufferedReader bufferedReader,
-                             ModelAdapter.Logger logger) throws Exception {
+  static Object resolve(String name, BufferedReader bufferedReader,
+                        JmolAdapter.Logger logger) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
     String atomSetCollectionReaderName = determineAtomSetCollectionReader(bufferedReader, logger);
-    logger.log("The model resolver thinks", atomSetCollectionReaderName);
+    logger.log("The Resolver thinks", atomSetCollectionReaderName);
     String className =
       "org.jmol.adapter.smarter." + atomSetCollectionReaderName + "Reader";
 
@@ -63,7 +63,7 @@ class ModelResolver {
   }
 
   static String determineAtomSetCollectionReader(BufferedReader bufferedReader,
-                                     ModelAdapter.Logger logger) throws Exception {
+                                     JmolAdapter.Logger logger) throws Exception {
     String[] lines = new String[4];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     for (int i = 0; i < lines.length; ++i)
@@ -230,7 +230,7 @@ class LimitedLineReader {
       return "" + sb;
     }
     if (true) {
-      System.out.println("input buffer is too small for ModelResolver");
+      System.out.println("input buffer is too small for resolver");
       throw new NullPointerException();
     }
     return "";

@@ -93,16 +93,6 @@ public class SmarterModelAdapter extends ModelAdapter {
     return ((Model)clientFile).modelType == MODEL_TYPE_PDB;
   }
 
-  public String[] getPdbStructureRecords(Object clientFile) {
-    Model model = (Model)clientFile;
-    if (model.pdbStructureRecordCount == 0)
-      return null;
-    String[] t = new String[model.pdbStructureRecordCount];
-    System.arraycopy(model.pdbStructureRecords, 0, t, 0,
-                     model.pdbStructureRecordCount);
-    return t;
-  }
-
   public boolean coordinatesAreFractional(Object clientFile) {
     return ((Model)clientFile).coordinatesAreFractional;
   }
@@ -127,6 +117,12 @@ public class SmarterModelAdapter extends ModelAdapter {
   public ModelAdapter.BondIterator
     getBondIterator(Object clientFile) {
     return new BondIterator((Model)clientFile);
+  }
+
+  public ModelAdapter.StructureIterator
+    getStructureIterator(Object clientFile) {
+    Model model = (Model)clientFile;
+    return model.structureCount == 0 ? null : new StructureIterator(model);
   }
 
   /****************************************************************
@@ -200,6 +196,50 @@ public class SmarterModelAdapter extends ModelAdapter {
     }
     public int getOrder() {
       return bond.order;
+    }
+  }
+
+  public class StructureIterator extends ModelAdapter.StructureIterator {
+    int structureCount;
+    Structure[] structures;
+    Structure structure;
+    int istructure;
+    
+    StructureIterator(Model model) {
+      structureCount = model.structureCount;
+      structures = model.structures;
+      istructure = 0;
+    }
+
+    public boolean hasNext() {
+      if (istructure == structureCount)
+        return false;
+      structure = structures[istructure++];
+      return true;
+    }
+
+    public String getStructureType() {
+      return structure.structureType;
+    }
+
+    public char getChainID() {
+      return structure.chainID;
+    }
+    
+    public int getStartSequenceNumber() {
+      return structure.startSequenceNumber;
+    }
+    
+    public char getStartInsertionCode() {
+      return structure.startInsertionCode;
+    }
+    
+    public int getEndSequenceNumber() {
+      return structure.endSequenceNumber;
+    }
+      
+    public char getEndInsertionCode() {
+      return structure.endInsertionCode;
     }
   }
 }

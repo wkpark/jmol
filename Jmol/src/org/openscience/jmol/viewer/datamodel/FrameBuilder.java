@@ -94,18 +94,15 @@ final public class FrameBuilder {
     if (hasPdbRecords) { // this test should go away
       ModelAdapter.StructureIterator iterStructure =
         adapter.getStructureIterator(clientFile);
-      if (iterStructure != null)
+      System.out.println("iterStructure=" + iterStructure);
+      if (iterStructure != null) 
         while (iterStructure.hasNext())
           frame.pdbFile.defineStructure(iterStructure.getStructureType(),
+                                        iterStructure.getChainID(),
                                         iterStructure.getStartSequenceNumber(),
                                         iterStructure.getStartInsertionCode(),
                                         iterStructure.getEndSequenceNumber(),
                                         iterStructure.getEndInsertionCode());
-
-      String[] structures =
-        adapter.getPdbStructureRecords(clientFile);
-      if (structures != null && structures.length > 0)
-        frame.pdbFile.setStructureRecords(structures);
     }
       
     frame.freeze();

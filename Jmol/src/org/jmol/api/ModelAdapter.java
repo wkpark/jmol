@@ -127,15 +127,6 @@ public abstract class ModelAdapter {
   public boolean hasPdbRecords(Object clientFile) { return false; }
 
   /**
-   * If hasPdbRecords(clientFile, frameNumber) returns true then structural
-   * PDB records are returned here as an array of strings. 
-   * The individual strings are exact HELIX, SHEET, and TURN records from the
-   * .pdb file.
-   * @see #hasPdbRecords(Object clientFile)
-   */
-  public String[] getPdbStructureRecords(Object clientFile) { return null; }
-
-  /**
    * This method returns the parameters that define a crystal unitcell
    * the parameters are returned in a float[] in the following order
    * a, b, c, alpha, beta, gamma
@@ -143,13 +134,13 @@ public abstract class ModelAdapter {
    * alpha, beta, gamma : degrees
    * if there is no unit cell data then return null
    */
-
+  
   public boolean coordinatesAreFractional(Object clientFile) { return false; }
 
   public float[] getNotionalUnitcell(Object clientFile) { return null; }
-
+  
   public float[] getPdbScaleMatrix(Object clientFile) { return null; }
-
+  
   public float[] getPdbScaleTranslate(Object clientFile) { return null; }
 
   public String getClientAtomStringProperty(Object clientAtom,
@@ -226,13 +217,10 @@ public abstract class ModelAdapter {
    * Helix, Sheet, Turn
    ****************************************************************/
 
-  public final static int STRUCTURE_HELIX = 0;
-  public final static int STRUCTURE_TURN  = 1;
-  public final static int STRUCTURE_SHEET = 2;
-
   public abstract class StructureIterator {
     public abstract boolean hasNext();
     public abstract String getStructureType();
+    public abstract char getChainID();
     public abstract int getStartSequenceNumber();
     public abstract char getStartInsertionCode();
     public abstract int getEndSequenceNumber();

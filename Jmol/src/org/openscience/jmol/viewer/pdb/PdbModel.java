@@ -59,7 +59,7 @@ final public class PdbModel {
       chains[i].freeze();
   }
 
-  public void addSecondaryStructure(char chainID, byte type,
+  public void addSecondaryStructure(byte type, char chainID,
                                     int startSeqcode, int endSeqcode) {
     PdbChain chain = getChain(chainID);
     if (chain != null)

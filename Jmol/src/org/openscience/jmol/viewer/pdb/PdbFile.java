@@ -34,7 +34,6 @@ import java.util.Vector;
 final public class PdbFile {
   Frame frame;
 
-  private String[] structureRecords;
   private int modelCount = 0;
   private PdbModel[] pdbmodels = new PdbModel[1];
   private int[] modelNumbers = new int[1];
@@ -46,18 +45,20 @@ final public class PdbFile {
     this.frame = frame;
   }
 
-  public void setStructureRecords(String[] structureRecords) {
-    this.structureRecords = structureRecords;
-  }
-
-  public void defineStructure(String structureType,
+  public void defineStructure(String structureType, char chainID,
                               int startSequenceNumber, char startInsertionCode,
                               int endSequenceNumber, char endInsertionCode) {
+    /*
+    System.out.println("PdbFile.defineStructure(" + structureType + "," +
+                       chainID + "," +
+                       startSequenceNumber + "," + startInsertionCode + "," +
+                       endSequenceNumber + "," + endInsertionCode + ")" );
+    */
     if (structureCount == structures.length)
       structures =
         (Structure[])JmolViewer.setLength(structures, structureCount + 10);
     structures[structureCount++] =
-      new Structure(structureType,
+      new Structure(structureType, chainID,
                     PdbGroup.getSeqcode(startSequenceNumber,
                                         startInsertionCode),
                     PdbGroup.getSeqcode(endSequenceNumber,
@@ -89,56 +90,14 @@ final public class PdbFile {
   }
 
   private void propogateSecondaryStructure() {
-    if (structureRecords == null)
-      return;
-    for (int i = structureRecords.length; --i >= 0; ) {
-      String structureRecord = structureRecords[i];
-      byte type = JmolConstants.SECONDARY_STRUCTURE_NONE;
-      int chainIDIndex = 19;
-      int startIndex = 0;
-      int endIndex = 0;
-      if (structureRecord.startsWith("HELIX ")) {
-        type = JmolConstants.SECONDARY_STRUCTURE_HELIX;
-        startIndex = 21;
-        endIndex = 33;
-      } else if (structureRecord.startsWith("SHEET ")) {
-        type = JmolConstants.SECONDARY_STRUCTURE_SHEET;
-        chainIDIndex = 21;
-        startIndex = 22;
-        endIndex = 33;
-      } else if (structureRecord.startsWith("TURN  ")) {
-        type = JmolConstants.SECONDARY_STRUCTURE_TURN;
-        startIndex = 20;
-        endIndex = 31;
-      } else
-        continue;
 
-      int startSeqcode = 0;
-      int endSeqcode = 0;
-      try {
-        int startSequenceNumber = 
-          Integer.parseInt(structureRecord.substring(startIndex,
-                                                     startIndex + 4).trim());
-        char startInsertionCode = structureRecord.charAt(startIndex + 4);
-        int endSequenceNumber =
-          Integer.parseInt(structureRecord.substring(endIndex,
-                                                     endIndex + 4).trim());
-        char endInsertionCode = structureRecord.charAt(endIndex + 4);
-
-        startSeqcode = PdbGroup.getSeqcode(startSequenceNumber,
-                                             startInsertionCode);
-        endSeqcode = PdbGroup.getSeqcode(endSequenceNumber,
-                                           endInsertionCode);
-      } catch (NumberFormatException e) {
-        System.out.println("secondary structure record error");
-        continue;
-      }
-
-      char chainID = structureRecord.charAt(chainIDIndex);
-
+    for (int i = structureCount; --i >= 0; ) {
+      Structure structure = structures[i];
       for (int j = modelCount; --j >= 0; )
-        pdbmodels[j].addSecondaryStructure(chainID, type,
-                                        startSeqcode, endSeqcode);
+        pdbmodels[j].addSecondaryStructure(structure.type,
+                                           structure.chainID,
+                                           structure.startSeqcode,
+                                           structure.endSeqcode);
     }
   }
 
@@ -235,14 +194,26 @@ final public class PdbFile {
   }
 
   class Structure {
-    String structureType;
+    String typeName;
+    byte type;
+    char chainID;
     int startSeqcode;
     int endSeqcode;
-
-    Structure(String structureType, int startSeqcode, int endSeqcode) {
-      this.structureType = structureType;
+    
+    Structure(String typeName, char chainID,
+              int startSeqcode, int endSeqcode) {
+      this.typeName = typeName;
+      this.chainID = chainID;
       this.startSeqcode = startSeqcode;
       this.endSeqcode = endSeqcode;
+      if ("helix".equals(typeName))
+        type = JmolConstants.SECONDARY_STRUCTURE_HELIX;
+      else if ("sheet".equals(typeName))
+        type = JmolConstants.SECONDARY_STRUCTURE_SHEET;
+      else if ("turn".equals(typeName))
+        type = JmolConstants.SECONDARY_STRUCTURE_TURN;
+      else
+        type = JmolConstants.SECONDARY_STRUCTURE_NONE;
     }
   }
 }

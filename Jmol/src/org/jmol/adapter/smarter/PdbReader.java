@@ -267,15 +267,37 @@ class PdbReader extends ModelReader {
   }
 
   void structure() {
-    if (model.pdbStructureRecordCount == model.pdbStructureRecords.length) {
-      String[] t = new String[2 * model.pdbStructureRecordCount];
-      System.arraycopy(model.pdbStructureRecords, 0, t, 0,
-                       model.pdbStructureRecordCount);
-      model.pdbStructureRecords = t;
-    }
-    model.pdbStructureRecords[model.pdbStructureRecordCount++] = line;
-  }
+    String structureType = "none";
+    int chainIDIndex = 19;
+    int startIndex = 0;
+    int endIndex = 0;
+    if (line.startsWith("HELIX ")) {
+      structureType = "helix";
+      startIndex = 21;
+      endIndex = 33;
+    } else if (line.startsWith("SHEET ")) {
+      structureType = "sheet";
+      chainIDIndex = 21;
+      startIndex = 22;
+      endIndex = 33;
+    } else if (line.startsWith("TURN  ")) {
+      structureType = "turn";
+      startIndex = 20;
+      endIndex = 31;
+    } else
+      return;
 
+    char chainID = line.charAt(chainIDIndex);
+    int startSequenceNumber = parseInt(line, startIndex, startIndex + 4);
+    char startInsertionCode = line.charAt(startIndex + 4);
+    int endSequenceNumber = parseInt(line, endIndex, endIndex + 4);
+    char endInsertionCode = line.charAt(endIndex + 4);
+
+    model.addStructure(new Structure(structureType, chainID,
+                                     startSequenceNumber, startInsertionCode,
+                                     endSequenceNumber, endInsertionCode));
+  }
+  
   void model() {
     /****************************************************************
      * mth 2004 02 28

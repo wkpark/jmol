@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<!--
+  French translation 
+  Translated from default version : index.xml (v 1.11)
+-->
+<document>
+  <body>
+    <title>T&#x00E9;l&#x00E9;charger Jmol</title>
+    
+    <section title="Pr&#x00E9;-requis">
+      <p>
+        L'applet pour navigateur web Jmol fonctionne avec la plupart des
+        Machines Virtuelles Java, y compris les impl&#x00E9;mentations de
+        Microsoft et de Netscape 4.7* de la JVM 1.1.
+      </p>
+
+      <p>
+        Si vous utilisez Microsoft Internet Explorer sur un syst&#x00E8;me
+        d'exploitation Windows, nous vous recommandons de mettre
+        &#x00E0; jour avec la Machine Virtuelle Java de Sun en allant sur
+        <a href="http://www.java.com/">www.java.com</a>.
+      </p>
+
+      <p>
+        L'application ind&#x00E9;pendante Jmol n&#x00E9;cessite Java
+        1.4 ou sup&#x00E9;rieur. La derni&#x00E8;re
+        <a href="http://java.sun.com/j2se/">
+          Java 2 Platform Standard Edition
+        </a>
+        est recommand&#x00E9;e.
+      </p>
+      
+    </section>
+
+    <section title="Programme de beta test Jmol v10">
+      <p>
+        Si vous &#x00EA;tes int&#x00E9;ress&#x00E9;s par participer au
+        beta test de Jmol v10 vous pouvez le t&#x00E9;l&#x00E9;charger
+        depuis
+        <a href="../betatest/">ici</a>.
+      </p>
+    </section>
+
+    <section title="T&#x00E9;l&#x00E9;chargement de Jmol version 9">
+      <p>La version officielle actuelle est la version $VERSION$.</p>
+      <p>
+        Elle peut &#x00EA;tre t&#x00E9;l&#x00E9;charg&#x00E9;e en
+        utilisant les liens suivants:
+        <ul>
+          <li>
+            <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">
+              jmol v$VERSION$
+            </a>
+          </li>
+        </ul>
+        Avec un certain d&#x00E9;lai, les packages binaires et sources
+        sont disponibles, aussi bien sur Debian GNU/Linux (voir ci-dessous)
+        que sur Suse/redHat Linux.
+      </p>
+      <h4>Debian Apt-get</h4>
+      <p>
+        Les utilisateurs de Debian peuvent aussi r&#x00E9;cup&#x00E9;rer
+        le package avec apt-get depuis
+        <a href="http://debian.wgdd.de/">debian.wgdd.de/</a>
+        en ajoutant:
+        <pre><tt>
+deb <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
+deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
+        </tt></pre>
+        &#x00E0; /etc/apt/sources.list, et en faisant 'apt-get update &amp;&amp; apt-get install jmol/unstable'. 
+        Le repository a &#x00E9;t&#x00E9; modifi&#x00E9;, parce que
+        <a href="http://mentors.debian.net/">mentors.debian.net</a>
+        ne fournit plus les packages binaires.
+      </p>
+    </section>
+
+    <section title="T&#x00E9;l&#x00E9;chargement de l'applet">
+      <p>La version actuelle est la version $VERSION$.</p>
+      <p>
+        Pour utiliser l'applet, vous devez d'abord
+        t&#x00E9;l&#x00E9;charger la distribution applet et extraire les
+        fichiers. Elle peut &#x00EA;tre t&#x00E9;l&#x00E9;charg&#x00E9;e
+        depuis
+        <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">
+          SourceForge
+        </a>.
+      </p>
+
+      <p>
+        JmolApplet.jar contient toutes les classes n&#x00E9;cessaires au
+        support de l'applet Jmol. Aucun autre fichier jar n'est
+        n&#x00E9;cessaire.
+      </p>
+    </section>
+
+    <section title="Acc&#x00E8;s CVS">
+      <p>
+        Vous pouvez parcourir la derni&#x00E8;re version du code source
+        en ligne ou extraire anonymement le projet contenu dans le
+        repository <a href="http://www.cvshome.org/">CVS</a>.
+      </p>
+      <p>
+        <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/jmol/">
+          Parcourir le repository CVS
+        </a>
+      </p>
+
+      <p>
+        Pour extraire anonymement le code source, utiliser les commandes
+        suivantes. Quand un mot de passe vous est demand&#x00E9; pour
+        anonymous, appuyer juste la touche Entr&#x00E9;e.
+      </p>
+      <p><tt>
+        cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol co Jmol
+      </tt></p>
+      <p>
+        Ceci extraiera le sous-r&#x00E9;pertoire <code>Jmol</code>
+        dans votre syst&#x00E8;me.
+      </p>
+      <p>
+        Vous pouvez mettre &#x00E0; jour le code source depuis votre
+        <i>bac &#x00E0; sable</i> Jmol en disant:
+        <tt>
+          cvs up -dP
+        </tt>
+      </p>
+    </section>
+
+  </body>
+</document>

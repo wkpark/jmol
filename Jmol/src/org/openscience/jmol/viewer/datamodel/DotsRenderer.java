@@ -78,7 +78,7 @@ class DotsRenderer extends ShapeRenderer {
     Dots.Torus[] tori = dots.tori;
     System.out.println("DotsRenderer.render torusCount=" + dots.torusCount);
     for (int i = dots.torusCount; --i >= 0; )
-      renderTorus(tori[i]);
+      renderTorus(tori[i], dotsConvexMaps);
     Dots.Cavity[] cavities = dots.cavities;
     if (false) {
       System.out.println("concave surface rendering currently disabled");
@@ -109,13 +109,22 @@ class DotsRenderer extends ShapeRenderer {
 
   static final float torusStepAngle = 2 * (float)Math.PI / 64;
 
-  void renderTorus(Dots.Torus torus) {
-    g3d.setColix(colixSaddle);
+  void renderTorus(Dots.Torus torus, int[][] dotsConvexMaps) {
+    if (dotsConvexMaps[torus.indexI] != null)
+      renderTorusHalf(torus, colixSaddle, false);
+    if (dotsConvexMaps[torus.indexJ] != null)
+      renderTorusHalf(torus, colixSaddle, true);
+  }
+
+  void renderTorusHalf(Dots.Torus torus, short colix, boolean renderJHalf) {
+    g3d.setColix(colix);
     long probeMap = torus.probeMap;
 
     int torusDotCount1 =
       (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
     float stepAngle1 = torus.outerAngle / torusDotCount1;
+    if (renderJHalf)
+      stepAngle1 = -stepAngle1;
     aaT1.set(torus.tangentVector, 0);
 
     aaT.set(torus.axisVector, 0);

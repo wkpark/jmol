@@ -314,6 +314,8 @@ public class Dots extends Shape {
       htTori = new Hashtable();
     }
     for (int iJ = neighborCount; --iJ >= 0; ) {
+      if (indexI >= neighborIndices[iJ])
+        continue;
       setNeighborJ(iJ);
       torusIJ = getTorus(atomI, atomJ);
       if (torusIJ == null)
@@ -329,12 +331,10 @@ public class Dots extends Shape {
 
   void turnOffTori() {
     boolean torusDeleted = false;
-    System.out.println("begin turnOffTori torusCount=" + torusCount);
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = tori[i];
-      if (torus == null)
-        continue;
-      if (dotsConvexMaps[torus.indexI] == null) {
+      if (dotsConvexMaps[torus.indexI] == null &&
+          dotsConvexMaps[torus.indexJ] == null) {
         torusDeleted = true;
         tori[i] = null;
       }
@@ -349,7 +349,6 @@ public class Dots extends Shape {
         tori[i] = null;
       torusCount = iDestination;
     }
-    System.out.println("end turnOffTori torusCount=" + torusCount);
   }
 
   final Matrix3f matrixT = new Matrix3f();
@@ -473,6 +472,9 @@ public class Dots extends Shape {
   Torus getTorus(Atom atomI, Atom atomJ) {
     int indexI = atomI.atomIndex;
     int indexJ = atomJ.atomIndex;
+    // indexI < indexJ is tested previously in calcTorus
+    if (indexI >= indexJ)
+      throw new NullPointerException();
     Long key = new Long(((long)indexI << 32) + indexJ);
     Object value = htTori.get(key);
     if (value != null) {

@@ -28,7 +28,7 @@ import javax.vecmath.Point3d;
 import org.openscience.jmol.ProteinProp;
 import java.awt.Color;
 
-public interface ClientAtomAdapter {
+public interface JmolClientAdapter {
 
   public final static int COLORSCHEME_CPK = 0;
   public final static int COLORSCHEME_CHARGE = 1;

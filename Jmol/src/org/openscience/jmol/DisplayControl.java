@@ -85,7 +85,7 @@ final public class DisplayControl {
   public Java12 java12;
   public Graphics25D g25d;
 
-  public ClientAtomAdapter clientAtomAdapter;
+  public JmolClientAdapter clientAdapter;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -111,7 +111,7 @@ final public class DisplayControl {
     measurementManager = new MeasurementManager(this);
     distributor = new Distributor(this);
 
-    clientAtomAdapter = new DeprecatedAtomAdapter();
+    clientAdapter = new DeprecatedAdapter();
 
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
@@ -1655,44 +1655,44 @@ final public class DisplayControl {
   }
 
   /****************************************************************
-   * ClientAtomAdapter routines
+   * JmolClientAdapter routines
    ****************************************************************/
 
   public int getAtomicNumber(Object clientAtom) {
-    return clientAtomAdapter.getAtomicNumber(clientAtom);
+    return clientAdapter.getAtomicNumber(clientAtom);
   }
 
   public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
-    return clientAtomAdapter.getAtomicSymbol(atomicNumber, clientAtom);
+    return clientAdapter.getAtomicSymbol(atomicNumber, clientAtom);
   }
 
   public String getAtomTypeName(int atomicNumber, Object clientAtom) {
-    return clientAtomAdapter.getAtomTypeName(atomicNumber, clientAtom);
+    return clientAdapter.getAtomTypeName(atomicNumber, clientAtom);
   }
 
   public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
-    return clientAtomAdapter.getVanderwaalsRadius(atomicNumber, clientAtom);
+    return clientAdapter.getVanderwaalsRadius(atomicNumber, clientAtom);
   }
 
   public double getCovalentRadius(int atomicNumber, Object clientAtom) {
-    return clientAtomAdapter.getCovalentRadius(atomicNumber, clientAtom);
+    return clientAdapter.getCovalentRadius(atomicNumber, clientAtom);
   }
 
   public Point3d getPoint3d(Object clientAtom) {
-    return clientAtomAdapter.getPoint3d(clientAtom);
+    return clientAdapter.getPoint3d(clientAtom);
   }
 
   public ProteinProp getProteinProp(Object clientAtom) {
-    return clientAtomAdapter.getProteinProp(clientAtom);
+    return clientAdapter.getProteinProp(clientAtom);
   }
 
   public short getColixAtom(int atomicNumber, Object clientAtom) {
-    return Colix.getColix(clientAtomAdapter.getColor(
+    return Colix.getColix(clientAdapter.getColor(
      atomicNumber, clientAtom, colorManager.modeAtomColorProfile));
   }
 
   public short getColixAtom(int atomicNumber, Object clientAtom, byte scheme) {
-    return Colix.getColix(clientAtomAdapter.getColor(atomicNumber, 
+    return Colix.getColix(clientAdapter.getColor(atomicNumber, 
                                                      clientAtom, 
                                                      scheme));
   }

@@ -30,14 +30,14 @@ import java.awt.Color;
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
 
-public class DeprecatedAtomAdapter implements ClientAtomAdapter {
+public class DeprecatedAdapter implements JmolClientAdapter {
   AtomColorer[] colorSchemes;
 
-  public DeprecatedAtomAdapter() {
-    colorSchemes = new AtomColorer[ClientAtomAdapter.COLORSCHEME_MAX];
-    colorSchemes[ClientAtomAdapter.COLORSCHEME_CPK] =
+  public DeprecatedAdapter() {
+    colorSchemes = new AtomColorer[JmolClientAdapter.COLORSCHEME_MAX];
+    colorSchemes[JmolClientAdapter.COLORSCHEME_CPK] =
       new DefaultCdkAtomColors();
-    colorSchemes[ClientAtomAdapter.COLORSCHEME_CHARGE] =
+    colorSchemes[JmolClientAdapter.COLORSCHEME_CHARGE] =
       new PartialAtomicChargeColors();
   }
 

@@ -80,7 +80,7 @@ class GamessReader extends ModelReader {
     float[] zComponents = new float[5];
 
     String line = discardLinesUntilContains(reader, "FREQUENCY:");
-    do {
+    while (line != null && line.indexOf("FREQUENCY:") >= 0) {
       int lineBaseFreqCount = totalFrequencyCount;
       ichNextParse = 17;
       int lineFreqCount;
@@ -109,7 +109,7 @@ class GamessReader extends ModelReader {
       }
       discardLines(reader, 12);
       line = reader.readLine();
-    } while (line.indexOf("FREQUENCY:") > 0);
+    }
   }
 
   void readComponents(String line, int count, float[] components) {

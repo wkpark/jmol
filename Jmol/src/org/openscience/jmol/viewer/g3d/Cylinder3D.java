@@ -50,9 +50,11 @@ public class Cylinder3D {
   private int dx, dy, dz;
   private boolean tEvenDiameter;
   private int diameter;
+  private byte endcaps;
 
   private float radius2, cosTheta, cosPhi, sinPhi;
-  
+
+  int sampleCount;
   private float[] samples = new float[32];
 
   public void render(short colix1, short colix2, byte endcaps, int diameter,
@@ -69,6 +71,7 @@ public class Cylinder3D {
     this.dx = dx; this.dy = dy; this.dz = dz;
     this.shades1 = Colix.getShades(this.colix1 = colix1);
     this.shades2 = Colix.getShades(this.colix2 = colix2);
+    this.endcaps = endcaps;
     this.tEvenDiameter = (diameter & 1) == 0;
     
     float radius = diameter / 2.0f;
@@ -80,45 +83,25 @@ public class Cylinder3D {
     this.cosPhi = dx / mag2d;
     this.sinPhi = dy / mag2d;
 
-    int n;
     float x, y, z, h, xR, yR;
-    float yMax = radius * 0.7f;
+    float yMax = radius * (float)Math.sin(Math.PI/4);
 
-    for (n = 0, y = 1/6f; y < yMax ; y += 1/3f) {
-      if (n == samples.length) {
+    for (sampleCount = 0, y = 1/6f; y < yMax ; y += 1/3f) {
+      if (sampleCount == samples.length) {
         float[] t = new float[samples.length * 2];
         System.arraycopy(samples, 0, t, 0, samples.length);
         samples = t;
       }
       h = (float)Math.sqrt(radius2 - y*y);
-      samples[n++] = h;
-      samples[n++] = y;
+      samples[sampleCount++] = h;
+      samples[sampleCount++] = y;
     }
 
     initRotatedPoints();
 
-    int i = 0;
-    while (i < n) {
-      y = -samples[i++];
-      x = samples[i++] * cosTheta;
-      rotateAndPlot(x, y);
-    }
-    while (i > 0) {
-      y = -samples[--i];
-      x = samples[--i] * cosTheta;
-      rotateAndPlot(x, y);
-    }
-    while (i < n) {
-      x = samples[i++] * cosTheta;
-      y = samples[i++];
-      rotateAndPlot(x, y);
-    }
-    while (i > 0) {
-      x = samples[--i] * cosTheta;
-      y = samples[--i];
-      rotateAndPlot(x, y);
-    }
-
+    plotSamples(true);
+    if (endcaps == Graphics3D.ENDCAPS_NONE)
+      plotSamples(false);
     /*
     for (float y = -radius + 1/4f; y < radius; y += 1/2f) {
       float y2 = y * y;
@@ -136,11 +119,40 @@ public class Cylinder3D {
       renderSphericalEndcaps();
   }
 
-  void rotateAndPlot(float x, float y) {
+  void plotSamples(boolean tUp) {
+    int i = 0;
+    float x, y;
+    while (i < sampleCount) {
+      y = -samples[i++];
+      x = samples[i++] * cosTheta;
+      rotateAndPlot(x, y, tUp);
+    }
+    while (i > 0) {
+      y = -samples[--i];
+      x = samples[--i] * cosTheta;
+      rotateAndPlot(x, y, tUp);
+    }
+    while (i < sampleCount) {
+      x = samples[i++] * cosTheta;
+      y = samples[i++];
+      rotateAndPlot(x, y, tUp);
+    }
+    while (i > 0) {
+      x = samples[--i] * cosTheta;
+      y = samples[--i];
+      rotateAndPlot(x, y, tUp);
+    }
+
+  }
+
+  void rotateAndPlot(float x, float y, boolean tUp) {
     float z = (float)Math.sqrt(radius2 - x*x - y*y);
     float xR = x * cosPhi - y * sinPhi;
     float yR = x * sinPhi + y * cosPhi;
-    plotRotatedPoint(xR, yR, z);
+    if (tUp)
+      plotRotatedPoint(xR, yR, z);
+    else
+      plotRotatedPoint(-xR, -yR, -z);
   }
 
   private int xLast, yLast, zLast, intensityLast, countLast;

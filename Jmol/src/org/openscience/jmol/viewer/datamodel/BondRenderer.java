@@ -42,19 +42,20 @@ class BondRenderer extends Renderer {
   boolean showMultipleBonds;
   byte modeMultipleBond;
   boolean showHydrogens;
+  byte endcaps;
 
-  int x1, y1, z1;
-  int x2, y2, z2;
+  int xA, yA, zA;
+  int xB, yB, zB;
   int dx, dy;
   int mag2d, mag2d2;
-  short colix1, colix2;
+  short colixA, colixB;
   int width;
   int bondOrder;
   byte styleBond;
   short marBond;
   
   private void renderHalo() {
-    int x = (x1 + x2) / 2, y = (y1 + y2) / 2, z = (z1 + z2) / 2;
+    int x = (xA + xB) / 2, y = (yA + yB) / 2, z = (zA + zB) / 2;
     int halowidth = width / 4;
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
@@ -66,6 +67,8 @@ class BondRenderer extends Renderer {
     this.g3d = g3d;
     this.rectClip = rectClip;
     this.frame = frame;
+    endcaps = viewer.getTestFlag1()
+      ? Graphics3D.ENDCAPS_NONE : Graphics3D.ENDCAPS_SPHERICAL;
 
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
@@ -82,21 +85,26 @@ class BondRenderer extends Renderer {
     styleBond = bond.style;
     if (styleBond == JmolConstants.STYLE_NONE)
       return;
-    Atom atom1 = bond.atom1;
-    Atom atom2 = bond.atom2;
-    if (!showHydrogens && (atom1.atomicNumber == 1 ||
-                           atom2.atomicNumber == 1))
+    Atom atomA = bond.atom1;
+    Atom atomB = bond.atom2;
+    if (!showHydrogens && (atomA.atomicNumber == 1 ||
+                           atomB.atomicNumber == 1))
       return;
-    x1 = atom1.x; y1 = atom1.y; z1 = atom1.z;
-    x2 = atom2.x; y2 = atom2.y; z2 = atom2.z;
-    dx = x2 - x1;
-    dy = y2 - y1;
-    width = viewer.scaleToScreen((z1 + z2)/2, bond.mar * 2);
+    // make sure atomA is closer to the front
+    if (atomA.z > atomB.z) {
+      atomB = atomA;
+      atomA = bond.atom2;
+    }
+    xA = atomA.x; yA = atomA.y; zA = atomA.z;
+    xB = atomB.x; yB = atomB.y; zB = atomB.z;
+    dx = xB - xA;
+    dy = yB - yA;
+    width = viewer.scaleToScreen((zA + zB)/2, bond.mar * 2);
     marBond = bond.mar;
-    colix1 = colix2 = bond.colix;
-    if (colix1 == 0) {
-      colix1 = atom1.colixAtom;
-      colix2 = atom2.colixAtom;
+    colixA = colixB = bond.colix;
+    if (colixA == 0) {
+      colixA = atomA.colixAtom;
+      colixB = atomB.colixAtom;
     }
     bondOrder = getRenderBondOrder(bond.order);
     switch(bondOrder) {
@@ -134,15 +142,16 @@ class BondRenderer extends Renderer {
                         wireframeRotating ||
                         width <= 1);
     if (dx == 0 && dy == 0) {
+      // end-on view
       if (! lineBond) {
         int space = width / 8 + 3;
         int step = width + space;
-        int y = y1 - ((bondOrder == 1)
+        int y = yA - ((bondOrder == 1)
                       ? 0
                       : (bondOrder == 2) ? step / 2 : step);
         do {
-          g3d.fillCylinder(colix1, colix1, Graphics3D.ENDCAPS_SPHERICAL,
-                           width, x1, y, z1, x1, y, z1);
+          g3d.fillCylinder(colixA, colixA, endcaps,
+                           width, xA, y, zA, xA, y, zA);
           y += step;
         } while (--bondOrder > 0);
       }
@@ -150,37 +159,28 @@ class BondRenderer extends Renderer {
     }
     if (bondOrder == 1) {
       if (lineBond)
-        g3d.drawLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
+        g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       else
-        g3d.fillCylinder(colix1, colix2, Graphics3D.ENDCAPS_SPHERICAL,
-                         width, x1, y1, z1, x2, y2, z2);
+        g3d.fillCylinder(colixA, colixB, endcaps,
+                         width, xA, yA, zA, xB, yB, zB);
       return;
     }
-    int dx2 = dx * dx;
-    int dy2 = dy * dy;
-    int mag2d2 = dx2 + dy2;
+    int dxB = dx * dx;
+    int dyB = dy * dy;
+    int mag2d2 = dxB + dyB;
     mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
     resetAxisCoordinates(lineBond);
     while (true) {
       if (lineBond)
-        lineBond();
+        g3d.drawLine(colixA, colixB, xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
       else
-        cylinderBond();
+        g3d.fillCylinder(colixA, colixB, endcaps, width,
+                         xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
       if (--bondOrder == 0)
         break;
       stepAxisCoordinates();
     }
   }
-
-  void lineBond() {
-    g3d.drawLine(colix1, colix2, xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
-  }
-
-  void cylinderBond() {
-    g3d.fillCylinder(colix1, colix2, Graphics3D.ENDCAPS_SPHERICAL, width,
-                      xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
-  }
-
 
   int xAxis1, yAxis1, zAxis1, xAxis2, yAxis2, zAxis2, dxStep, dyStep;
 
@@ -189,8 +189,8 @@ class BondRenderer extends Renderer {
     int step = width + space;
     dxStep = step * dy / mag2d; dyStep = step * -dx / mag2d;
 
-    xAxis1 = x1; yAxis1 = y1; zAxis1 = z1;
-    xAxis2 = x2; yAxis2 = y2; zAxis2 = z2;
+    xAxis1 = xA; yAxis1 = yA; zAxis1 = zA;
+    xAxis2 = xB; yAxis2 = yB; zAxis2 = zB;
 
     if (bondOrder == 2) {
       xAxis1 -= dxStep / 2; yAxis1 -= dyStep / 2;
@@ -208,27 +208,27 @@ class BondRenderer extends Renderer {
   }
 
   Rectangle rectTemp = new Rectangle();
-  private boolean isClipVisible(int x1, int y1, int x2, int y2) {
+  private boolean isClipVisible(int xA, int yA, int xB, int yB) {
     // this is not actually correct, but quick & dirty
     int xMin, width, yMin, height;
-    if (x1 < x2) {
-      xMin = x1;
-      width = x2 - x1;
-    } else if (x2 < x1) {
-      xMin = x2;
-      width = x1 - x2;
+    if (xA < xB) {
+      xMin = xA;
+      width = xB - xA;
+    } else if (xB < xA) {
+      xMin = xB;
+      width = xA - xB;
     } else {
-      xMin = x1;
+      xMin = xA;
       width = 1;
     }
-    if (y1 < y2) {
-      yMin = y1;
-      height = y2 - y1;
-    } else if (y2 < y1) {
-      yMin = y2;
-      height = y1 - y2;
+    if (yA < yB) {
+      yMin = yA;
+      height = yB - yA;
+    } else if (yB < yA) {
+      yMin = yB;
+      height = yA - yB;
     } else {
-      yMin = y1;
+      yMin = yA;
       height = 1;
     }
     // there are some problems with this quick&dirty implementation
@@ -243,7 +243,7 @@ class BondRenderer extends Renderer {
     rectTemp.height = height;
     boolean visible = rectClip.intersects(rectTemp);
     /*
-    System.out.println("bond " + x + "," + y + "->" + x2 + "," + y2 +
+    System.out.println("bond " + x + "," + y + "->" + xB + "," + yB +
                        " & " + rectClip.x + "," + rectClip.y +
                        " W " + rectClip.width + " H " + rectClip.height +
                        "->" + visible);
@@ -255,7 +255,7 @@ class BondRenderer extends Renderer {
   private void renderDotted() {
     if (dx == 0 && dy == 0)
       return;
-    g3d.drawDottedLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
+    g3d.drawDottedLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
   }
 
   private static float wideWidthAngstroms = 0.4f;
@@ -263,7 +263,7 @@ class BondRenderer extends Renderer {
   private void renderTriangle(Bond bond) {
     // for now, always solid
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
-    int wideWidthPixels = (int)viewer.scaleToScreen(z2, wideWidthAngstroms);
+    int wideWidthPixels = (int)viewer.scaleToScreen(zB, wideWidthAngstroms);
     int dxWide, dyWide;
     if (mag2d == 0) {
       dxWide = 0;
@@ -273,35 +273,35 @@ class BondRenderer extends Renderer {
       dyWide = wideWidthPixels * dx / mag2d;
     }
     /*
-    System.out.println("rendering a triangle of color:" + colix1);
-    System.out.println("" + x1 + "," + y1 + "," + z1 + " -> " +
-                       x2 + "," + y2 + "," + z2 + " -> ");
+    System.out.println("rendering a triangle of color:" + colixA);
+    System.out.println("" + xA + "," + yA + "," + zA + " -> " +
+                       xB + "," + yB + "," + zB + " -> ");
     System.out.println("wideWidthPixesl=" + wideWidthPixels +
                        " dxWide=" + dxWide + " dyWide=" + dyWide);
     */
-    int xWideUp = x2 + dxWide/2;
+    int xWideUp = xB + dxWide/2;
     int xWideDn = xWideUp - dxWide;
-    int yWideUp = y2 + dyWide/2;
+    int yWideUp = yB + dyWide/2;
     int yWideDn = yWideUp - dyWide;
     /*
     System.out.println("up=" + xWideUp + "," + yWideUp +
                        " dn=" + xWideDn + "," + yWideDn);
     */
-    if (colix1 == colix2) {
-      g3d.drawfillTriangle(colix1, x1, y1, z1,
-                           xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
+    if (colixA == colixB) {
+      g3d.drawfillTriangle(colixA, xA, yA, zA,
+                           xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
     } else {
-      int xMidUp = (x1 + xWideUp) / 2;
-      int yMidUp = (y1 + yWideUp) / 2;
-      int zMid = (z1 + z2) / 2;
-      int xMidDn = (x1 + xWideDn) / 2;
-      int yMidDn = (y1 + yWideDn) / 2;
-      g3d.drawfillTriangle(colix1, x1, y1, z1,
+      int xMidUp = (xA + xWideUp) / 2;
+      int yMidUp = (yA + yWideUp) / 2;
+      int zMid = (zA + zB) / 2;
+      int xMidDn = (xA + xWideDn) / 2;
+      int yMidDn = (yA + yWideDn) / 2;
+      g3d.drawfillTriangle(colixA, xA, yA, zA,
                            xMidUp, yMidUp, zMid, xMidDn, yMidDn, zMid);
-      g3d.drawfillTriangle(colix2, xMidUp, yMidUp, zMid,
-                           xMidDn, yMidDn, zMid, xWideDn, yWideDn, z2);
-      g3d.drawfillTriangle(colix2, xMidUp, yMidUp, zMid,
-                           xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
+      g3d.drawfillTriangle(colixB, xMidUp, yMidUp, zMid,
+                           xMidDn, yMidDn, zMid, xWideDn, yWideDn, zB);
+      g3d.drawfillTriangle(colixB, xMidUp, yMidUp, zMid,
+                           xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
     }
   }
 }

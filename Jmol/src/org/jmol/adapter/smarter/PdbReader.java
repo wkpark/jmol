@@ -421,7 +421,6 @@ class PdbReader extends ModelReader {
   }
 
   void formul() {
-    System.out.println("I see:" + line);
     String groupName = parseToken(line, 12, 15);
     // does not currently deal with continuations
     String formula = parseTrimmed(line, 19, 70);
@@ -430,10 +429,7 @@ class PdbReader extends ModelReader {
       int ichRightParen = formula.indexOf(')');
       if (ichRightParen < 0 || ichLeftParen >= ichRightParen)
         return; // invalid formula;
-      System.out.println("I see a left paren @ :" + ichLeftParen +
-                          " and a right paren @ :" + ichRightParen);
       formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
-      System.out.println("the trimmed formula:" + formula);
     }
     Hashtable htElementsInGroup = new Hashtable();
     // now, look for atom names in the formula

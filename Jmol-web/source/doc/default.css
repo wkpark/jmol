@@ -24,3 +24,14 @@ tt, pre, code {
   font-family: monospace;
 }
 
+td.btfah {
+  text-align: center;
+  line-height: 1.5em;
+  padding-left: 0;
+  padding-right: 0;
+}
+td.btfah input {
+  margin-left: 0;
+  margin-right: 0;
+  width: 3em;
+}

@@ -36,6 +36,8 @@
       <fileset dir="${doc.dir}"
                excludes="**/*.xml,**/*.xsl,**/*~" />
     </copy>
+  	<copy todir="${build.html}/fah" overwrite="yes"
+  		  file="${doc.dir}/fah/fah-projects.xml" />
 
     <!-- Copy files from Jmol docs -->
   	<copy todir="${build.html}/docs" overwrite="yes">

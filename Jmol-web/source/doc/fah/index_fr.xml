@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE somethingOrAnything [
+<!ENTITY projects SYSTEM "fah-projects.xml" >
+]>
+<document>
+  <body>
+    <title>Applet Jmol pour Folding@home</title>
+    <section>
+
+    <form name="fahForm">
+      <table border="1">
+      <tr>
+        <table border="0"><tr>
+          <td>
+            <script>
+              jmolApplet(350, "", "Fah");
+            </script>
+          </td>
+          <td valign="top">
+            <h2>Projets Folding@home</h2>
+            <a href="http://folding.stanford.edu">
+              <img src="FAHlogoButton.jpg" alt="fah-logo" border="0"/>
+            </a>
+            <br />
+            <table border="0">
+              <tr>
+                <td><label>Projet : </label></td>
+                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='true' /></td>
+              </tr>
+              <tr>
+                <td><label>Nom du Projet : </label></td>
+                <td><input type='text' name='infoName' id='infoName' size='50' readonly='true' /></td>
+              </tr>
+              <tr>
+                <td><label>Cr&#x00E9;dit : </label></td>
+                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='true' /></td>
+              </tr>
+            </table>
+            <a id="infoProject" href="http://vspx27.stanford.edu/cgi-bin/allprojects">Description du projet</a>
+          </td>
+        </tr></table>
+      </tr>
+
+      <tr>
+        <td class="btfah">
+          <script>
+            &projects;
+          </script>
+        </td>
+      </tr>
+      </table>
+    </form></section>
+  </body>
+</document>

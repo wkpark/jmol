@@ -246,6 +246,104 @@
     </ul>
   </xsl:template>
 
+  <xsl:template match="fah_projects">
+    <![CDATA[
+      var doc = document;
+            
+      function displayStatus(projectname) {
+        window.status = "Project " + projectname;
+      }
+            
+      function clearStatus() {
+        window.status = " ";
+      }
+            
+      function viewProject(project, filename, projectname,credit) {
+        jmolScript("load ../fah/projects/" + filename + ".xyz.gz", "Fah");
+        document.fahForm.infoNumber.value = project;
+        document.fahForm.infoName.value = projectname;
+        document.fahForm.infoCredit.value = credit;
+        document.getElementById('infoProject').href = "http://vspx27.stanford.edu/cgi-bin/allprojects#" + project;
+      }
+            
+      function addProject(project, filename, projectname, credit) {
+        var varDisabled = "";
+        var varOnClick = "";
+        var varOnMouseOver = "";
+        var varOnMouseOut = "";
+        if (filename == undefined || filename == null) {
+          varDisabled = "disabled='true'";
+        } else {
+          varOnClick =
+          "onclick='viewProject(" +
+          "\"" + project + "\", " +
+          "\"" + filename + "\", " +
+          "\"" + projectname + "\", " +
+          "\"" + credit + "\")'";
+        }
+        if (projectname == undefined || projectname == null) {
+        } else {
+          varOnMouseOver = "onMouseOver='displayStatus(\"" + projectname + "\");return true'";
+          varOnMouseOut = "onMouseout='clearStatus();return true'";
+        }
+        doc.open();
+        if (projectname == undefined || projectname == null) {
+        } else {
+          varInput = "<input" +
+            " type='button'" +
+            " value='" + project + "'" +
+            " " + varDisabled +
+            " " + varOnClick +
+            " " + varOnMouseOver +
+            " " + varOnMouseOut +
+            " />";
+          doc.writeln(varInput);
+        }
+        doc.close();
+      }
+
+      doc.writeln("<table width=100% border=0 cellpadding=0><tr>");
+    ]]>
+    <xsl:for-each select="fah_proj" >
+      <xsl:value-of select="." />
+      <xsl:if test="@number">
+        <xsl:if test="@name">
+          <xsl:text>
+</xsl:text>
+          <xsl:text>addProject('</xsl:text>
+          <xsl:value-of select="@number" />
+          <xsl:text>',</xsl:text>
+          <xsl:choose>
+            <xsl:when test="@file = 'y'">
+              <xsl:text>'p</xsl:text>
+              <xsl:value-of select="@number" />
+              <xsl:text>'</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>null</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:text>,'</xsl:text>
+          <xsl:value-of select="@name" />
+          <xsl:text>',</xsl:text>
+          <xsl:choose>
+            <xsl:when test="@credit">
+              <xsl:text>'</xsl:text>
+              <xsl:value-of select="@credit" />
+              <xsl:text>'</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>null</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:text>);</xsl:text>
+        </xsl:if>
+      </xsl:if>
+    </xsl:for-each>
+    <![CDATA[
+      doc.writeln("</tr></table>")
+      doc.writeln("<br />");
+    ]]>
+  </xsl:template>
+  
 </xsl:stylesheet>
-
-

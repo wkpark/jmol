@@ -30,10 +30,10 @@ import java.lang.reflect.Array;
 
 
 /**
- * A class to store the the primitive and base vectors.
+ * A class to store the the primitive and base vectors of the unit
+ * cell of a crystal structure.
  *
- * @author Fabian Dortu (Fabian.Dortu@wanadoo.be)
- * @version 1.1
+ * @author Fabian Dortu <Fabian.Dortu@wanadoo.be>
  */
 public class UnitCellBox {
 

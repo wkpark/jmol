@@ -26,10 +26,10 @@ package org.openscience.jmol;
 
 
 /**
- * Describe class <code>CrystalBox</code> here.
+ * Describes the crystal box that is to be displayed. By default this
+ * box is 1,1,1, thus showing only one unit cell.
  *
- * @author <a href="mailto:Fabian.Dortu@wanadoo.be">Fabian Dortu</a>
- * @version 1.0
+ * @author Fabian Dortu <Fabian.Dortu@wanadoo.be>
  */
 public class CrystalBox {
 

@@ -569,27 +569,33 @@ class PdbModel extends Model {
       System.arraycopy(bonds, 0, t, 0, bondCount);
       bonds = t;
     }
+    int sourceSerial = -1;
+    int sourceIndex = -1;
     try {
-      int sourceSerial = Integer.parseInt(line.substring(6, 11).trim());
-      int sourceIndex = serialMap[sourceSerial] - 1;
+      sourceSerial = Integer.parseInt(line.substring(6, 11).trim());
+      sourceIndex = serialMap[sourceSerial] - 1;
       if (sourceIndex < 0)
         return;
-      for (int i = 0; i < 4; ++i) {
+      // use this for HBONDS
+      //      for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
+      for (int i = 0; i < 4; i += (i == 5 ? 2 : 1)) {
         int targetSerial = getTargetSerial(i);
         if (targetSerial == -1)
-          return;
+          continue;
         int targetIndex = serialMap[targetSerial] - 1;
         if (targetIndex < 0)
-          return;
+          continue;
         if (bondCount > 0) {
           Bond bond = bonds[bondCount - 1];
-          if (bond.atomIndex1 == sourceIndex &&
+          if (i < 4 &&
+              bond.atomIndex1 == sourceIndex &&
               bond.atomIndex2 == targetIndex) {
             ++bond.order;
             continue;
           }
         }
-        bonds[bondCount++] = new Bond(sourceIndex, targetIndex, 1);
+        bonds[bondCount++] = new Bond(sourceIndex, targetIndex,
+                                      i < 4 ? 1 : 5);
       }
     } catch (Exception e) {
     }

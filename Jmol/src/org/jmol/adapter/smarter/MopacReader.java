@@ -28,7 +28,8 @@ import java.io.BufferedReader;
 
 /**
  * Reads Mopac 93, 97 or 2002 output files, but was tested only
- * for Mopac 93 files yet.
+ * for Mopac 93 files yet. (Miguel tweaked it to handle 2002 files,
+ * but did not test extensively.)
  *
  * @author Egon Willighagen <egonw@jmol.org>
  */
@@ -115,12 +116,22 @@ void processAtomicCharges(BufferedReader input) throws Exception {
    *      2         C        1.3952    0.0000    0.0000
    *      3         C        2.0927    1.2078    0.0000
    * </pre>
+   * In a MOPAC2002 file the columns are different:
+   * <pre>
+   *          CARTESIAN COORDINATES
+   *
+   * NO.       ATOM           X             Y             Z
+   *
+   *  1         H        0.00000000    0.00000000    0.00000000
+   *  2         O        0.95094500    0.00000000    0.00000000
+   *  3         H        1.23995160    0.90598439    0.00000000
+   * </pre>
    * 
    * @param input
    * @throws Exception
    */
   void processCoordinates(BufferedReader input) throws Exception {
-    //    System.out.println("Reading coordinates");
+    //    System.out.println("processCoordinates()");
     discardLines(input, 3);
     int expectedAtomNumber = 0;
     String line;
@@ -131,11 +142,12 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       ++expectedAtomNumber;
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in coordinates");
-      
+      String elementSymbol = parseToken(line, ichNextParse);
+
       Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
-      atom.x = parseFloat(line, 30);
-      atom.y = parseFloat(line, 40);
-      atom.z = parseFloat(line, 50);
+      atom.x = parseFloat(line, ichNextParse);
+      atom.y = parseFloat(line, ichNextParse);
+      atom.z = parseFloat(line, ichNextParse);
     }
   }
   

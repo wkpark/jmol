@@ -27,6 +27,8 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
+import org.openscience.jmol.render.ChemFrameRenderer;
+import org.openscience.jmol.render.MeasureRenderer;
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
 import org.openscience.jmol.script.Eval;
@@ -64,6 +66,8 @@ final public class DisplayControl {
   public StyleManager styleManager;
   public LabelManager labelManager;
   public AxesManager axesManager;
+  public ChemFrameRenderer frameRenderer;
+  public MeasureRenderer measureRenderer;
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
   public LabelRenderer labelRenderer;
@@ -95,6 +99,8 @@ final public class DisplayControl {
     axesManager = new AxesManager(this);
     distributor = new Distributor(this);
 
+    frameRenderer = new ChemFrameRenderer();
+    measureRenderer = new MeasureRenderer();
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
     labelRenderer = new LabelRenderer(this);
@@ -978,6 +984,10 @@ final public class DisplayControl {
 
   public void notifyRepainted() {
     repaintManager.notifyRepainted();
+  }
+
+  public void render(Graphics g, Rectangle rectClip) {
+    repaintManager.render(g, rectClip);
   }
 
   /****************************************************************

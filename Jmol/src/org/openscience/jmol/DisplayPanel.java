@@ -43,10 +43,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 
-/**
- *  @author  Bradley A. Smith (bradley@baysmith.com)
- *  @author  J. Daniel Gezelter
- */
 public class DisplayPanel extends JPanel
   implements MeasurementListListener, PropertyChangeListener,
              ComponentListener {
@@ -137,29 +133,10 @@ public class DisplayPanel extends JPanel
     if (showPaintTime)
       startPaintClock();
     g.getClipBounds(rectClip);
-    g.setColor(control.getColorBackground());
-    g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
-    if (control.getFrame() != null) {
-      control.setGraphicsContext(g, rectClip);
-      frameRenderer.paint(g, control);
-      // FIXME -- measurements rendered incorrectly
-      // this is in the wrong spot because the display of measurements
-      // needs to take z-order into account
-      if (control.getShowMeasurements())
-        measureRenderer.paint(g, rectClip, control);
-      Rectangle rect = control.getRubberBandSelection();
-      if (rect != null) {
-        g.setColor(control.getColorRubberband());
-        g.drawRect(rect.x, rect.y, rect.width, rect.height);
-      }
-      if (showPaintTime)
-        stopPaintClock();
-    }
-    control.notifyRepainted();
+    control.render(g, rectClip);
+    if (showPaintTime)
+      stopPaintClock();
   }
-
-  ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
-  MeasureRenderer measureRenderer = new MeasureRenderer();
 
   public Image takeSnapshot() {
 
@@ -317,9 +294,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleAtom(DisplayControl.NONE);
-      // FIXME -- these repaints are not necessary
-      // confirm later when not working on something else
-      repaint();
     }
   }
 
@@ -332,9 +306,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleAtom(DisplayControl.INVISIBLE);
-      // FIXME -- mth -- these repaints are not necessary
-      // confirm later when not working on something else
-      repaint();
     }
   }
 
@@ -347,7 +318,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleAtom(DisplayControl.QUICKDRAW);
-      repaint();
     }
   }
 
@@ -372,7 +342,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleAtom(DisplayControl.WIREFRAME);
-      repaint();
     }
   }
 
@@ -385,7 +354,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setModeAtomColorProfile(DisplayControl.ATOMCHARGE);
-      repaint();
     }
   }
 
@@ -398,7 +366,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setModeAtomColorProfile(DisplayControl.ATOMTYPE);
-      repaint();
     }
   }
 
@@ -411,9 +378,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleBond(DisplayControl.NONE);
-      // FIXME -- these repaints are not necessary
-      // confirm later when not working on something else
-      repaint();
     }
   }
 
@@ -426,7 +390,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleBond(DisplayControl.QUICKDRAW);
-      repaint();
     }
   }
 
@@ -439,7 +402,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleBond(DisplayControl.SHADING);
-      repaint();
     }
   }
 
@@ -452,7 +414,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleBond(DisplayControl.BOX);
-      repaint();
     }
   }
 
@@ -465,7 +426,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleBond(DisplayControl.WIREFRAME);
-      repaint();
     }
   }
 
@@ -626,7 +586,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleLabel(DisplayControl.NOLABELS);
-      repaint();
     }
   }
 
@@ -639,7 +598,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleLabel(DisplayControl.SYMBOLS);
-      repaint();
     }
   }
 
@@ -652,7 +610,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleLabel(DisplayControl.TYPES);
-      repaint();
     }
   }
 
@@ -665,7 +622,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setStyleLabel(DisplayControl.NUMBERS);
-      repaint();
     }
   }
 

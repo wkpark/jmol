@@ -27,6 +27,7 @@ package org.openscience.jmol;
 import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Component;
+import java.awt.Rectangle;
 
 public class RepaintManager {
 
@@ -119,4 +120,26 @@ public class RepaintManager {
     repaintPending = false;
     notify();
   }
+
+  public void render(Graphics g, Rectangle rectClip) {
+    g.setColor(control.getColorBackground());
+    g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
+    if (control.getFrame() != null) {
+      control.setGraphicsContext(g, rectClip);
+      control.frameRenderer.paint(g, control);
+      // FIXME -- measurements rendered incorrectly
+      // this is in the wrong spot because the display of measurements
+      // needs to take z-order into account
+      if (control.getShowMeasurements())
+        control.measureRenderer.paint(g, rectClip, control);
+      Rectangle band = control.getRubberBandSelection();
+      if (band != null) {
+        g.setColor(control.getColorRubberband());
+        g.drawRect(band.x, band.y, band.width, band.height);
+      }
+    }
+    notifyRepainted();
+  }
+
+
 }

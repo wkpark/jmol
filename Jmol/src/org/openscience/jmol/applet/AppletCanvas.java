@@ -40,7 +40,6 @@ class AppletCanvas extends Canvas {
   private Graphics graphicsOffscreen;
 
   private Dimension dimCurrent;
-  private Rectangle rectClip = new Rectangle();
 
   public void setDisplayControl(DisplayControl control) {
     this.control = control;
@@ -54,6 +53,8 @@ class AppletCanvas extends Canvas {
     dimCurrent = dimT;
     if ((dimCurrent.width > 0) && (dimCurrent.height > 0)) {
       bufferOffscreen = allocateBuffer();
+      if (graphicsOffscreen != null)
+        graphicsOffscreen.dispose();
       graphicsOffscreen = bufferOffscreen.getGraphics();
     } else {
       dimCurrent = null;
@@ -68,7 +69,6 @@ class AppletCanvas extends Canvas {
   }
 
   private Image allocateBuffer() {
-    System.out.println("allocateBuffer");
     return createImage(dimCurrent.width, dimCurrent.height);
   }
 
@@ -78,38 +78,18 @@ class AppletCanvas extends Canvas {
 
   public void paint(Graphics g) {
     if (bufferOffscreen == null) {
-      System.out.println("bufferOffscreen==null");
+      System.out.println("Que? bufferOffscreen==null");
       return;
     }
-    // transfer the clipping rectangle to our offscreen buffer
-    // also, we will use rectClip later in the rendering process
-    rectClip = g.getClipBounds();
+    Rectangle rectClip = g.getClipBounds();
     if (rectClip.width == 0 || rectClip.height == 0) {
       System.out.println("?Que?");
       rectClip.setBounds(0, 0, dimCurrent.width, dimCurrent.height);
     }
+    // transfer the clipping rectangle to our offscreen buffer
     graphicsOffscreen.setClip(rectClip);
-    renderBuffer(graphicsOffscreen);
+    control.render(graphicsOffscreen, rectClip);
     g.drawImage(bufferOffscreen, 0, 0, null);
-  }
-
-  ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
-  MeasureRenderer measureRenderer = new MeasureRenderer();
-
-  void renderBuffer(Graphics g) {
-    g.setColor(control.getColorBackground());
-    g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
-    if (control.getFrame() != null) {
-      control.setGraphicsContext(g, rectClip);
-      frameRenderer.paint(g, control);
-      measureRenderer.paint(g, rectClip, control);
-      Rectangle rect = control.getRubberBandSelection();
-      if (rect != null) {
-        g.setColor(control.getColorRubberband());
-        g.drawRect(rect.x, rect.y, rect.width, rect.height);
-      }
-    }
-    control.notifyRepainted();
   }
 
   // Make sure AWT knows we are using a buffered image.

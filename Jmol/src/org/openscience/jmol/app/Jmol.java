@@ -167,16 +167,20 @@ public class Jmol extends JPanel {
     JmolModelAdapter modelAdapter;
     String adapter= System.getProperty("model");
     if (adapter == null || adapter.length() == 0)
-      adapter = "cdk";
+      adapter = "simple";
     if (adapter.equals("simple")) {
       System.out.println("using Simple Model Adapter");
       modelAdapter = new SimpleModelAdapter();
     } else if (adapter.equals("jmol")) {
       System.out.println("using jmol Deprecated Model Adapter");
       modelAdapter = new DeprecatedJmolModelAdapter();
-    } else {
+    } else if (adapter.equals("cdk")) {
       System.out.println("using CDK Model Adapter");
       modelAdapter = new CdkJmolModelAdapter();
+    } else {
+      System.out.println("unrecognized model adapter:" + adapter +
+                         " -- using Simple");
+      modelAdapter = new SimpleModelAdapter();
     }
 
     viewer = new JmolViewer(display, modelAdapter);

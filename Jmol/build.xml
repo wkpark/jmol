@@ -33,7 +33,7 @@
   <property name="manifest-applet" value="${source.dir}/manifest"/>
   <property name="docbook-xsl" value="docbook-xsl-1.61.2" />
   <property name="docbook.dir"
-            value="${user.dir}/${build.dir}/${docbook-xsl}" />
+	    value="${user.dir}/${build.dir}/${docbook-xsl}" />
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
 
@@ -67,47 +67,47 @@
 
   <target name="setup" id="setup">
     <uptodate property="docbook-xsl.uptodate"
-      targetfile="${build.dir}/${docbook-xsl}"
-      srcfile="${doc.dir}/${docbook-xsl}.tar.gz" />
+	      targetfile="${build.dir}/${docbook-xsl}"
+	      srcfile="${doc.dir}/${docbook-xsl}.tar.gz" />
     <uptodate property="jmolGuide.uptodate" 
-      targetfile="${build.dir}/${doc.dir}/JmolUserGuide/index.html">
+	      targetfile="${build.dir}/${doc.dir}/JmolUserGuide/index.html">
       <srcfiles dir="${doc.dir}/source"
-                includes="JmolGuide.docbook.xml, guide/*.docbook.xml" />
+		includes="JmolGuide.docbook.xml, guide/*.docbook.xml" />
     </uptodate>
     <uptodate property="jmolHistory.uptodate"
-      targetfile="${build.dir}/${doc.dir}/JmolHistory/ChangeLog.html">
+	      targetfile="${build.dir}/${doc.dir}/JmolHistory/ChangeLog.html">
       <srcfiles dir="${doc.dir}/source"
-        includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
+		includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
     </uptodate>
     <uptodate property="jmolDevelopersGuide.uptodate"
-        targetfile="${build.dir}/${doc.dir}/JmolDevelopersGuide.html">
+	      targetfile="${build.dir}/${doc.dir}/JmolDevelopersGuide.html">
       <srcfiles dir="${doc.dir}/source"
-        includes="JmolDevelopersGuide.docbook.xml" />
+		includes="JmolDevelopersGuide.docbook.xml" />
     </uptodate>
     <uptodate property="jmolAppletGuide.uptodate"
-        targetfile="${build.dir}/${doc.dir}/JmolAppletGuide.html">
+	      targetfile="${build.dir}/${doc.dir}/JmolAppletGuide.html">
       <srcfiles dir="${doc.dir}/source"
-        includes="JmolAppletGuide.docbook.xml, applet/*.docbook.xml" />
+		includes="JmolAppletGuide.docbook.xml, applet/*.docbook.xml" />
     </uptodate>
 
     <available classname="com.icl.saxon.StyleSheet"
-      classpath="${lib.dir}/saxon.jar"
-      property="xsl.available"/>
+	       classpath="${lib.dir}/saxon.jar"
+	       property="xsl.available"/>
     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
       <srcfiles dir="${source.dir}" includes="**/*.java" />
     </uptodate>
     <available file="${keystore.name}" property="keystore.present" />
     <!-- Optional proxy settings (if defined) -->
     <condition property="proxyHost"
-        value="-Dhttp.proxyHost=${http.proxyHost}" >
+	       value="-Dhttp.proxyHost=${http.proxyHost}" >
       <not>
-        <equals arg1="http.proxyHost" arg2="" />
+	<equals arg1="http.proxyHost" arg2="" />
       </not>
     </condition>
     <condition property="proxyPort"
-        value="-Dhttp.proxyPort=${http.proxyPort}" >
+	       value="-Dhttp.proxyPort=${http.proxyPort}" >
       <not>
-        <equals arg1="http.proxyPort" arg2="" />
+	<equals arg1="http.proxyPort" arg2="" />
       </not>
     </condition>
   </target>
@@ -115,7 +115,7 @@
   <target id="classes" name="classes" depends="init">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
-           debug="${debug}" deprecation="${deprecation}"
+	   debug="${debug}" deprecation="${deprecation}"
 	   optimize="${optimization}" source="1.4">
       <classpath refid="project.class.path" />
       <!-- removed until all base classes are CDK based -->
@@ -123,14 +123,14 @@
     </javac>
     <copy todir="${classes.dir}" >
       <fileset dir="${source.dir}">
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.html" />
-        <include name="**/*.dtd" />
+	<include name="**/*.jpg" />
+	<include name="**/*.gif" />
+	<include name="**/*.html" />
+	<include name="**/*.dtd" />
 	<include name="**/*.properties" />
-        <include name="**/Properties/*" />
-        <include name="**/Data/*" />
-        <include name="**/*.txt" />
+	<include name="**/Properties/*" />
+	<include name="**/Data/*" />
+	<include name="**/*.txt" />
       </fileset>
     </copy>
   </target>
@@ -139,20 +139,20 @@
     <mkdir dir="${applet.classes.dir}"/>
     <property name="build.compiler" value="javac1.1" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
-           debug="${debug}" deprecation="${deprecation}"
+	   debug="${debug}" deprecation="${deprecation}"
 	   optimize="${optimization}" target="1.1"
 	   includesfile="applet.classes"
 	   classpathref="applet-project.class.path" />
     <!-- mth tried to use exclude and excludefiles, but it did not work -->
     <delete includeEmptyDirs="true">
       <fileset dir="${applet.classes.dir}/org/openscience/jmol">
-        <include name="*.class" />
-        <include name="io/" />
-        <include name="util/" />
-        <exclude name="adapters/SimpleModelAdapter.class" />
+	<include name="*.class" />
+	<include name="io/" />
+	<include name="util/" />
+	<exclude name="adapters/SimpleModelAdapter.class" />
       </fileset>
     </delete>
-	
+    
     <!-- delete stuff we do not want to ship with the applet -->
     <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cmlCore.xsd"/>
     <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cml1_0_1.xsd"/>
@@ -161,17 +161,17 @@
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
-      <!-- DEPRECATED I think
-        <include name="**/*.dtd" />
-        <include name="**/*.txt" />
+	<!-- DEPRECATED I think
+	     <include name="**/*.dtd" />
+	     <include name="**/*.txt" />
 	-->
 	<include name="**/ui/*.properties" />
       </fileset>
       <!-- DEPRECATED I think
-      <fileset dir="${source.dir}/org/openscience/jmol/applet">
-        <include name="Data/AtomTypes.txt" />
-        <include name="Data/cml1_0.dtd.txt" />
-      </fileset>
+	   <fileset dir="${source.dir}/org/openscience/jmol/applet">
+	   <include name="Data/AtomTypes.txt" />
+	   <include name="Data/cml1_0.dtd.txt" />
+	   </fileset>
       -->
     </copy>
   </target>
@@ -213,22 +213,22 @@
   <target name="jar" id="jar" depends="init,classes,jmolGuide,jmolHistory,appjars">
     <copy todir="${classes.dir}/org/openscience/jmol/Data/guide" >
       <fileset dir="${build.dir}/${doc.dir}/JmolUserGuide">
-        <include name="**/*.html" />
+	<include name="**/*.html" />
       </fileset>
     </copy>
     <copy todir="${classes.dir}/org/openscience/jmol/Data" >
       <fileset dir="${build.dir}/${doc.dir}/JmolHistory">
-        <include name="**/*.html" />
+	<include name="**/*.html" />
       </fileset>
     </copy>
     <jar jarfile="jmol.jar" manifest="${manifest}" >
       <fileset dir="${classes.dir}" >
-        <exclude name="**/.*" />
-        <exclude name="**/Test*.class" />
-        <exclude name="**/jmol/applet/*" />
-        <include name="**/jmol/**" />
-        <include name="com/**" />
-        <include name="freeware/**" />
+	<exclude name="**/.*" />
+	<exclude name="**/Test*.class" />
+	<exclude name="**/jmol/applet/*" />
+	<include name="**/jmol/**" />
+	<include name="com/**" />
+	<include name="freeware/**" />
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
     </jar>
@@ -236,45 +236,45 @@
 
   <target name="check.appletjars" id="check.appletjars">
     <uptodate property="appletjars.uptodate"
-      targetfile="${appletjars.dir}">
+	      targetfile="${appletjars.dir}">
       <srcfiles dir="${lib.dir}"
-           includes="jmolappletcdk.jar,gnujaxp-saxonly.jar,vecmath1.2-1.14.jar"/>
+		includes="jmolappletcdk.jar,gnujaxp-saxonly.jar,vecmath1.2-1.14.jar"/>
     </uptodate>
   </target>
   
   <target name="appletjars" id="appletjars" depends="check.appletjars"
-         unless="appletjars.uptodate">
+	  unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
-<!--
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolappletcdk.jar"/>
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-saxonly.jar"/>
--->    
+    <!--
+      <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolappletcdk.jar"/>
+      <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-saxonly.jar"/>
+    -->    
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
-        <include name="**/Point3f.class"/>
-        <include name="**/Vector3f.class"/>
-        <include name="**/Matrix3f.class"/>
-        <include name="**/Matrix4f.class"/>
-        <include name="**/AxisAngle4f.class"/>
-        <include name="**/Quat4f.class"/>
+	<include name="**/Point3f.class"/>
+	<include name="**/Vector3f.class"/>
+	<include name="**/Matrix3f.class"/>
+	<include name="**/Matrix4f.class"/>
+	<include name="**/AxisAngle4f.class"/>
+	<include name="**/Quat4f.class"/>
 	<include name="**/Point3i.class"/>
 	<!-- the following are dependencies of the classes above -->
 	<include name="**/Tuple3i.class"/>
-        <include name="**/Tuple3f.class"/>
-        <include name="**/Tuple4f.class"/>
-        <include name="**/Vector4f.class"/>
-        <include name="**/Tuple3d.class"/>
-        <include name="**/Tuple4d.class"/>
-        <include name="**/Vector3d.class"/>
-        <include name="**/Quat4d.class"/>
-        <include name="**/Point4f.class"/>
-        <include name="**/Point3d.class"/>
-        <include name="**/Point4d.class"/>
-        <include name="**/Tuple2d.class"/>
-        <include name="**/Point2d.class"/>
-        <include name="**/Matrix3d.class"/>
-        <include name="**/SingularMatrixException.class"/>
+	<include name="**/Tuple3f.class"/>
+	<include name="**/Tuple4f.class"/>
+	<include name="**/Vector4f.class"/>
+	<include name="**/Tuple3d.class"/>
+	<include name="**/Tuple4d.class"/>
+	<include name="**/Vector3d.class"/>
+	<include name="**/Quat4d.class"/>
+	<include name="**/Point4f.class"/>
+	<include name="**/Point3d.class"/>
+	<include name="**/Point4d.class"/>
+	<include name="**/Tuple2d.class"/>
+	<include name="**/Point2d.class"/>
+	<include name="**/Matrix3d.class"/>
+	<include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>
     <!-- delete stuff we do not want to ship with the applet -->
@@ -282,12 +282,12 @@
     <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cml1_0_1.xsd"/>
     <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/tools/jmol_atomtypes.txt"/>
     <delete file="${appletjars.dir}/org/openscience/cdk/config/log4j.properties"/>
- </target>
+  </target>
 
   <target name="applet-jar" id="applet-jar" depends="applet-classes,appletjars">
     <jar jarfile="JmolApplet.jar" >
       <fileset dir="${applet.classes.dir}" >
-        <include name="**/*" />
+	<include name="**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
@@ -297,55 +297,55 @@
     <mkdir dir="${dist.dir}/jmol-${version}"/>
     <copy todir="${dist.dir}/jmol-${version}" >
       <fileset dir=".">
-        <include name="jmol.jar" />
-        <include name="JmolApplet.jar" />
-        <include name="jmol" />
-        <include name="jmol.sh" />
-        <include name="jmol.mac" />
-        <include name="jmol.bat" />
-        <include name="*.txt" />
+	<include name="jmol.jar" />
+	<include name="JmolApplet.jar" />
+	<include name="jmol" />
+	<include name="jmol.sh" />
+	<include name="jmol.mac" />
+	<include name="jmol.bat" />
+	<include name="*.txt" />
       </fileset>
     </copy>
     <chmod perm="+x">
       <fileset dir="${dist.dir}/jmol-${version}">
-        <include name="jmol"/>
-        <include name="jmol.sh"/>
-        <include name="jmol.bat"/>
+	<include name="jmol"/>
+	<include name="jmol.sh"/>
+	<include name="jmol.bat"/>
       </fileset>
     </chmod>
     <copy todir="${dist.dir}/jmol-${version}/samples" >
       <fileset dir="samples" />
     </copy>
     <copy   file="${build.dir}/${doc.dir}/JmolDevelopersGuide.html"
-          tofile="${dist.dir}/jmol-${version}/${doc.dir}/JmolDevelopersGuide.html" />
+	    tofile="${dist.dir}/jmol-${version}/${doc.dir}/JmolDevelopersGuide.html" />
     <copy   file="${build.dir}/${doc.dir}/JmolHistory/ChangeLog.html"
-          tofile="${dist.dir}/jmol-${version}/ChangeLog.html" />
+	    tofile="${dist.dir}/jmol-${version}/ChangeLog.html" />
     <copy todir="${dist.dir}/jmol-${version}/${doc.dir}/JmolUserGuide">
       <fileset dir="${build.dir}/${doc.dir}/JmolUserGuide">
-        <include name="**/*.html" />
+	<include name="**/*.html" />
       </fileset>
     </copy>
     <copy   file="${build.dir}/${doc.dir}/JmolAppletGuide.html"
-          tofile="${dist.dir}/jmol-${version}/${doc.dir}/JmolAppletGuide.html" />
+	    tofile="${dist.dir}/jmol-${version}/${doc.dir}/JmolAppletGuide.html" />
 
     <mkdir dir="${dist.dir}/jmol-applet-${version}"/>
     <copy todir="${dist.dir}/jmol-applet-${version}" >
       <fileset dir=".">
-        <include name="JmolApplet.jar" />
-        <include name="*.txt" />
+	<include name="JmolApplet.jar" />
+	<include name="*.txt" />
       </fileset>
     </copy>
     <copy todir="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolUserGuide">
       <fileset dir="${build.dir}/${doc.dir}/JmolUserGuide">
-        <include name="**/*.html" />
+	<include name="**/*.html" />
       </fileset>
     </copy>
     <copy   file="${build.dir}/${doc.dir}/JmolDevelopersGuide.html"
-          tofile="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolDevelopersGuide.html" />
+	    tofile="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolDevelopersGuide.html" />
     <copy   file="${build.dir}/${doc.dir}/JmolAppletGuide.html"
-          tofile="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolAppletGuide.html" />
+	    tofile="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolAppletGuide.html" />
     <copy   file="${build.dir}/${doc.dir}/JmolHistory/ChangeLog.html"
-          tofile="${dist.dir}/jmol-applet-${version}/ChangeLog.html" />
+	    tofile="${dist.dir}/jmol-applet-${version}/ChangeLog.html" />
   </target>
 
   <target name="check.jws" id="check.jws" depends="setup" unless="keystore.present" >
@@ -357,26 +357,26 @@
   <target name="dist-jws" id="dist-jws" depends="check.jws,dist" >
     <copy todir="${dist.dir}/jmol-jws-${version}" >
       <fileset dir="${source.dir}">
-        <include name="jmol.jnlp" />
+	<include name="jmol.jnlp" />
       </fileset>
     </copy>
     <mkdir dir="${dist.dir}/jmol-jws-${version}/${lib.dir}" />
     <copy todir="${dist.dir}/jmol-jws-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-        <include name="*.jar" />
-        <exclude name="gnujaxp-saxonly.jar" />
-        <exclude name="junit.jar" />
-        <exclude name="saxon.jar" />
+	<include name="*.jar" />
+	<exclude name="gnujaxp-saxonly.jar" />
+	<exclude name="junit.jar" />
+	<exclude name="saxon.jar" />
       </fileset>
     </copy>
     <mkdir dir="${dist.dir}/jmol-jws-${version}/images" />
     <copy todir="${dist.dir}/jmol-jws-${version}/images" flatten="yes" >
       <fileset dir="${source.dir}">
-        <include name="**/icon.jpg" />
+	<include name="**/icon.jpg" />
       </fileset>
     </copy>
     <ant antfile="../../../build.xml" dir="${dist.dir}/jmol-jws-${version}"
-        target="internal-dist-jws-sign" />
+	 target="internal-dist-jws-sign" />
   </target>
   
   <!--
@@ -386,11 +386,11 @@
   -->
   <target name="internal-dist-jws-sign" id="internal-dist-jws-sign">
     <signjar alias="${keystore.alias}" 
-        storepass="${keystore.password}" 
-        keystore="${keystore.name}" >
+	     storepass="${keystore.password}" 
+	     keystore="${keystore.name}" >
       <fileset dir="../jmol-jws-${version}">
-        <include name="**/*.jar" />
-        <exclude name="**/.AppleDouble/**" />
+	<include name="**/*.jar" />
+	<exclude name="**/.AppleDouble/**" />
       </fileset>
     </signjar>
   </target>
@@ -398,39 +398,39 @@
 
   <target name="dist.zip" id="dist.zip" depends="dist">
     <zip zipfile="${build.dir}/jmol-${version}.zip" basedir="${dist.dir}"
-      includes="jmol-${version}/**" />
+	 includes="jmol-${version}/**" />
   </target>
 
   <target name="applet.dist.zip" id="applet.dist.zip" depends="dist">
     <zip zipfile="${build.dir}/jmol-applet-${version}.zip" basedir="${dist.dir}"
-      includes="jmol-applet-${version}/**" />
+	 includes="jmol-applet-${version}/**" />
   </target>
 
   <target name="dist.tar.gz" id="dist.tar.gz" depends="dist">
     <tar tarfile="${build.dir}/jmol-${version}.tar" basedir="${dist.dir}"
-        excludes="**">
+	 excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
-           for a problem in Ant 1.3 -->
+	   for a problem in Ant 1.3 -->
       <tarfileset dir="${dist.dir}" mode="755">
-        <include name="jmol-${version}/jmol"/>
-        <include name="jmol-${version}/jmol.bat"/>
+	<include name="jmol-${version}/jmol"/>
+	<include name="jmol-${version}/jmol.bat"/>
       </tarfileset>
       <tarfileset dir="${dist.dir}">
-        <include name="jmol-${version}/**"/>
-        <exclude name="jmol-${version}/jmol"/>
-        <exclude name="jmol-${version}/jmol.bat"/>
+	<include name="jmol-${version}/**"/>
+	<exclude name="jmol-${version}/jmol"/>
+	<exclude name="jmol-${version}/jmol.bat"/>
       </tarfileset>
     </tar>
     <gzip zipfile="${build.dir}/jmol-${version}.tar.gz"
-        src="${build.dir}/jmol-${version}.tar"/>
+	  src="${build.dir}/jmol-${version}.tar"/>
     <delete file="${build.dir}/jmol-${version}.tar" />
   </target>
 
   <target name="applet.dist.tar.gz" id="applet.dist.tar.gz" depends="dist">
     <tar tarfile="${build.dir}/jmol-applet-${version}.tar" basedir="${dist.dir}"
-      includes="jmol-applet-${version}/**"/>
+	 includes="jmol-applet-${version}/**"/>
     <gzip zipfile="${build.dir}/jmol-applet-${version}.tar.gz"
-        src="${build.dir}/jmol-applet-${version}.tar"/>
+	  src="${build.dir}/jmol-applet-${version}.tar"/>
     <delete file="${build.dir}/jmol-applet-${version}.tar" />
   </target>
 
@@ -438,72 +438,72 @@
     <mkdir dir="${sourcedist.dir}/jmol-${version}"/>
     <copy todir="${sourcedist.dir}/jmol-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-        <include name="*.jar" />
+	<include name="*.jar" />
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}" >
       <fileset dir=".">
-        <include name="*.txt" />
-        <include name="applet.classes" />
-        <include name="build.xml" />
-        <include name="jmol" />
-        <include name="jmol.bat" />
-        <include name="jmol.sh" />
+	<include name="*.txt" />
+	<include name="applet.classes" />
+	<include name="build.xml" />
+	<include name="jmol" />
+	<include name="jmol.bat" />
+	<include name="jmol.sh" />
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${source.dir}" >
       <fileset dir="${source.dir}">
-        <exclude name="**/CVS"/>
+	<exclude name="**/CVS"/>
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${doc.dir}" >
       <fileset dir="${doc.dir}">
-        <exclude name="**/CVS"/>
+	<exclude name="**/CVS"/>
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/samples" >
       <fileset dir="samples">
-        <exclude name="**/CVS"/>
+	<exclude name="**/CVS"/>
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/packaging" >
       <fileset dir="packaging">
-        <exclude name="**/CVS"/>
-        <exclude name="rpm/dist"/>
+	<exclude name="**/CVS"/>
+	<exclude name="rpm/dist"/>
       </fileset>
     </copy>
   </target>
 
   <target name="sourcedist.zip" id="sourcedist.zip" depends="sourcedist">
     <zip zipfile="${build.dir}/jmol-${version}.source.zip"
-        basedir="${sourcedist.dir}" includes="**" />
+	 basedir="${sourcedist.dir}" includes="**" />
   </target>
 
   <target name="sourcedist.tar.gz" id="sourcedist.tar.gz" depends="sourcedist">
     <tar tarfile="${build.dir}/jmol-${version}.source.tar"
-        basedir="${sourcedist.dir}" excludes="**">
+	 basedir="${sourcedist.dir}" excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
-           for a problem in Ant 1.3 -->
+	   for a problem in Ant 1.3 -->
       <tarfileset dir="${sourcedist.dir}" mode="755">
-        <include name="jmol-${version}/jmol"/>
-        <include name="jmol-${version}/jmol.bat"/>
+	<include name="jmol-${version}/jmol"/>
+	<include name="jmol-${version}/jmol.bat"/>
       </tarfileset>
       <tarfileset dir="${sourcedist.dir}">
-        <include name="jmol-${version}/**"/>
-        <exclude name="jmol-${version}/jmol"/>
-        <exclude name="jmol-${version}/jmol.bat"/>
+	<include name="jmol-${version}/**"/>
+	<exclude name="jmol-${version}/jmol"/>
+	<exclude name="jmol-${version}/jmol.bat"/>
       </tarfileset>
     </tar>
     <gzip zipfile="${build.dir}/jmol-${version}.source.tar.gz"
-        src="${build.dir}/jmol-${version}.source.tar"/>
+	  src="${build.dir}/jmol-${version}.source.tar"/>
     <delete file="${build.dir}/jmol-${version}.source.tar" />
   </target>
 
   <target id="main-dists" name="main-dists" description="Builds primary distributions."
-      depends="dist.zip,dist.tar.gz,sourcedist.zip,sourcedist.tar.gz"/>
+	  depends="dist.zip,dist.tar.gz,sourcedist.zip,sourcedist.tar.gz"/>
 
   <target id="applet-dists" name="applet-dists" description="Builds applet distributions."
-      depends="applet.dist.zip,applet.dist.tar.gz"/>
+	  depends="applet.dist.zip,applet.dist.tar.gz"/>
 
   <target name="clean" id="clean">
     <delete dir="${classes.dir}"/>
@@ -513,8 +513,8 @@
     <delete dir="${appletjars.dir}"/>
     <delete>
       <fileset dir=".">
-        <include name="jmol.jar" />
-        <include name="JmolApplet.jar" />
+	<include name="jmol.jar" />
+	<include name="JmolApplet.jar" />
       </fileset>
     </delete>
   </target>
@@ -533,7 +533,7 @@
        Documentation Targets
        ******************************** -->
   <target name="doc" id="doc"
-  depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
+	  depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
   
   <target name="initdoc" depends="init,check.docbook,check.xsl" />
   
@@ -541,7 +541,7 @@
     <delete dir="${build.dir}/${docbook-xsl}" />
     <mkdir dir="${build.dir}/${docbook-xsl}" />
     <untar src="${doc.dir}/${docbook-xsl}.tar.gz" dest="${build.dir}"
-      compression="gzip" />
+	   compression="gzip" />
   </target>
 
   <target name="check.xsl" depends="setup" unless="xsl.available" >
@@ -552,18 +552,18 @@
   <target name="javadoc" depends="initdoc" unless="javadoc.uptodate">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc destdir="${javadoc.dir}" sourcepath="src"
-        private="true" packagenames="org.openscience.*">
+	     private="true" packagenames="org.openscience.*">
       <classpath refid="project.class.path" />
     </javadoc>
   </target>
 
   <target name="jmolGuide" id="jmolGuide" depends="initdoc"
-          unless="jmolGuide.uptodate" >
+	  unless="jmolGuide.uptodate" >
     <echo message="Generating user's guide" />
     <mkdir dir="${build.dir}/${doc.dir}/JmolUserGuide" />
     <java fork="true" dir="${build.dir}/${doc.dir}/JmolUserGuide"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
+	  classname="com.icl.saxon.StyleSheet"
+	  classpath="${lib.dir}/saxon.jar" >
       <jvmarg value="${proxyHost}" />
       <jvmarg value="${proxyPort}" />
       <arg value="${user.dir}/${doc.dir}/source/JmolGuide.docbook.xml" />
@@ -575,8 +575,8 @@
     <echo message="Generating history of changes" />
     <mkdir dir="${build.dir}/${doc.dir}/JmolHistory" />
     <java fork="true" dir="${build.dir}/${doc.dir}/JmolHistory"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
+	  classname="com.icl.saxon.StyleSheet"
+	  classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="ChangeLog.html" />
       <arg value="${user.dir}/${doc.dir}/source/JmolHistory.xml" />
@@ -585,11 +585,11 @@
   </target>
 
   <target name="jmolDevelopersGuide" id="jmolDevelopersGuide" depends="initdoc"
-          unless="jmolDevelopersGuide.uptodate" >
+	  unless="jmolDevelopersGuide.uptodate" >
     <echo message="Generating developer's guide" />
     <java fork="true" dir="${build.dir}/${doc.dir}"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
+	  classname="com.icl.saxon.StyleSheet"
+	  classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide.html" />
       <arg value="${user.dir}/${doc.dir}/source/JmolDevelopersGuide.docbook.xml" />
@@ -598,11 +598,11 @@
   </target>
 
   <target name="jmolAppletGuide" id="jmolAppletGuide" depends="initdoc"
-          unless="jmolAppletGuide.uptodate" >
+	  unless="jmolAppletGuide.uptodate" >
     <echo message="Generating applet guide" />
     <java fork="true" dir="${build.dir}/${doc.dir}"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
+	  classname="com.icl.saxon.StyleSheet"
+	  classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolAppletGuide.html" />
       <arg value="${user.dir}/${doc.dir}/source/JmolAppletGuide.docbook.xml" />
@@ -610,5 +610,17 @@
     </java>
   </target>
 
+  <target name="betarelease" depends="main">
+    <echo message="Generating beta test release"/>
+    <zip destfile="Jmol${version}.zip" >
+      <zipfileset dir="." prefix="Jmol${version}/">
+	<include name="jmol.jar"/>
+	<include name="JmolApplet.jar"/>
+      </zipfileset>
+      <zipfileset dir="appletweb" prefix="Jmol${version}/">
+	<include name="JmolApplet.properties"/>
+	<include name="chime2jmol.pl"/>
+      </zipfileset>
+    </zip>
+  </target>
 </project>
-

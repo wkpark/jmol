@@ -26,6 +26,11 @@ package org.openscience.jmol.viewer;
 
 final public class JmolConstants {
 
+  // for now, just update this by hand
+  // perhaps use ant filter later ... but mth doesn't like it :-(
+  public static String version="10pre1";
+  public final static String copyright="(C) 2003 The Jmol Development Team";
+
   public final static byte LABEL_NONE     = 0;
   public final static byte LABEL_SYMBOL   = 1;
   public final static byte LABEL_TYPENAME = 2;

@@ -111,6 +111,10 @@ final public class JmolViewer {
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
 
+    System.out.println("Jmol Version " + JmolConstants.version +
+                       "\nJava " + strJavaVendor + " " + strJavaVersion +
+                       " " + strOSName);
+
     colorManager = new ColorManager(this, modelAdapter);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);

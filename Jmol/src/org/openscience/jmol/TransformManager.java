@@ -167,13 +167,16 @@ public class TransformManager {
     return zoomPercentSetting;
   }
 
-  public void zoomToPercent(int percent) {
-    zoomPercentSetting = percent;
+  public void zoomToPercent(int percentZoom) {
+    zoomPercentSetting = percentZoom;
     calcZoom();
   }
 
-  public void zoomByPercent(int percent) {
-    zoomPercentSetting += percent;
+  public void zoomByPercent(int percentZoom) {
+    int delta = percentZoom * zoomPercentSetting / 100;
+    if (delta == 0)
+      delta = (percentZoom < 0) ? -1 : 1;
+    zoomPercentSetting += delta;
     calcZoom();
   }
 
@@ -242,6 +245,14 @@ public class TransformManager {
 
   public void slabToPercent(int percentSlab) {
     slabPercentSetting = percentSlab;
+    calcSlab();
+  }
+
+  public void slabByPercent(int percentSlab) {
+    int delta = percentSlab * slabPercentSetting / 100;
+    if (delta == 0)
+      delta = (percentSlab < 0) ? -1 : 1;
+    slabPercentSetting += delta;
     calcSlab();
   }
 

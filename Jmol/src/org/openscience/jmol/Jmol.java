@@ -239,7 +239,8 @@ public class Jmol extends JPanel {
         .translate("Initializing 3D display..."));
     //
     display = new DisplayPanel(status, guimap);
-    control = new DisplayControl(display);
+    String strJvmVersion = System.getProperty("java.version");
+    control = new DisplayControl(strJvmVersion, display);
     display.setDisplayControl(control);
 
     model.addPropertyChangeListener(display);

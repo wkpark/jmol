@@ -64,9 +64,18 @@ final public class DisplayControl {
   ModelManager modelManager;
   RepaintManager repaintManager;
 
-  public DisplayControl(Component awtComponent) {
-    control = this;
+  public String strJvmVersion;
+  public boolean jvm12orGreater = false;
+  public boolean jvm14orGreater = false;
+
+  public DisplayControl(String strJvmVersion, Component awtComponent) {
+
     this.awtComponent = awtComponent;
+    this.strJvmVersion = strJvmVersion;
+    jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
+    jvm14orGreater = (strJvmVersion.compareTo("1.4") >= 0);
+
+    control = this;
     colorManager = new ColorManager(this);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager();
@@ -307,13 +316,6 @@ final public class DisplayControl {
 
   public void setInMotion(boolean inMotion) {
     repaintManager.setInMotion(inMotion);
-  }
-
-  public boolean jvm12orGreater = false;
-
-  public void setJvm12orGreater(boolean jvm12orGreater) {
-    this.jvm12orGreater = jvm12orGreater;
-    repaintManager.calcUseGraphics2D();
   }
 
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
@@ -633,6 +635,11 @@ final public class DisplayControl {
 
   public void slabToPercent(int percentSlab) {
     transformManager.slabToPercent(percentSlab);
+    refresh();
+  }
+
+  public void slabByPercent(int percentSlab) {
+    transformManager.slabByPercent(percentSlab);
     refresh();
   }
 

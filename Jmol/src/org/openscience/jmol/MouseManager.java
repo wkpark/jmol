@@ -31,6 +31,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+/*
+    REMOVE COMMENT TO ENABLE WHEELMOUSE
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+*/
 
 public class MouseManager {
 
@@ -49,6 +54,11 @@ public class MouseManager {
     this.control = control;
     component.addMouseListener(new MyMouseListener());
     component.addMouseMotionListener(new MyMouseMotionListener());
+    /*
+    REMOVE COMMENT TO ENABLE WHEELMOUSE
+    if (control.jvm14orGreater)
+      component.addMouseWheelListener(new MyMouseWheelListener());
+    */
   }
 
   public static final int ROTATE =     DisplayControl.ROTATE;
@@ -108,24 +118,19 @@ public class MouseManager {
   final static int LEFT = InputEvent.BUTTON1_MASK;
   final static int MIDDLE = InputEvent.BUTTON2_MASK;
   final static int RIGHT = InputEvent.BUTTON3_MASK;
-  final static int SHIFT_RIGHT =
-    InputEvent.SHIFT_MASK | InputEvent.BUTTON3_MASK;
-  final static int CTRL_RIGHT =
-    InputEvent.CTRL_MASK | InputEvent.BUTTON3_MASK;
-  final static int SHIFT_LEFT =
-    InputEvent.SHIFT_MASK | InputEvent.BUTTON1_MASK;
-  final static int CTRL_LEFT =
-    InputEvent.CTRL_MASK | InputEvent.BUTTON1_MASK;
-  final static int CTRL_SHIFT_LEFT =
-    InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK | InputEvent.BUTTON1_MASK;
+  final static int SHIFT = InputEvent.SHIFT_MASK;
+  final static int CTRL = InputEvent.CTRL_MASK;
+  final static int CTRL_LEFT = CTRL | LEFT;
+  final static int SHIFT_LEFT = SHIFT | LEFT;
+  final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
+  final static int CTRL_RIGHT = CTRL | RIGHT;
+  final static int SHIFT_RIGHT = SHIFT | RIGHT;
+  final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
 
   class MyMouseListener extends MouseAdapter {
-
     public void mousePressed(MouseEvent e) {
-
       xCurrent = xPrevious = e.getX();
       yCurrent = yPrevious = e.getY();
-
       if (modeMouse == PICK) {
         rubberbandSelectionMode = true;
         xAnchor = xCurrent;
@@ -135,7 +140,6 @@ public class MouseManager {
     }
 
     public void mouseClicked(MouseEvent e) {
-
       if (control.haveFile()) {
         if ((e.getModifiers() & MIDDLE) == MIDDLE) {
           control.homePosition();
@@ -205,6 +209,8 @@ public class MouseManager {
         return XLATE;
       if ((modifiers & LEFT) == LEFT)
         return ROTATE;
+      if ((modifiers & CTRL_SHIFT_RIGHT) == CTRL_SHIFT_RIGHT)
+        return SLAB_PLANE;
       return modeMouse;
     }
 
@@ -253,4 +259,20 @@ public class MouseManager {
       yPrevious = yCurrent;
     }
   }
+
+  /*
+    REMOVE COMMENT TO ENABLE WHEELMOUSE
+  final static int wheelClickPercentage = 10;
+
+  class MyMouseWheelListener implements MouseWheelListener {
+    public void mouseWheelMoved(MouseWheelEvent e) {
+      int rotation = e.getWheelRotation();
+      int modifiers = e.getModifiers();
+      if ((modifiers & SHIFT) == SHIFT)
+        control.slabByPercent(rotation * wheelClickPercentage);
+      else
+        control.zoomByPercent(rotation * -wheelClickPercentage);
+    }
+  }
+  */
 }

@@ -25,39 +25,24 @@
 package org.openscience.jmol;
 
 import java.awt.Image;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
-import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.Component;
-import java.util.Hashtable;
-import java.util.BitSet;
-import javax.vecmath.Point3d;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.AxisAngle4d;
-
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.jmol.io.ReaderFactory;
 
 public class RepaintManager {
 
   DisplayControl control;
 
+  public boolean useGraphics2D = false;
+  public boolean wantsGraphics2D = true;
+  public boolean wantsAntialias = true;
+  public boolean wantsAntialiasAlways = false;
+
   public RepaintManager(DisplayControl control) {
     this.control = control;
+    useGraphics2D = control.jvm12orGreater && wantsGraphics2D;
   }
 
   public boolean fastRendering = false;
@@ -108,19 +93,10 @@ public class RepaintManager {
     this.inMotion = inMotion;
   }
 
-  public boolean useGraphics2D = false;
-  public boolean wantsGraphics2D = true;
-  public boolean wantsAntialias = true;
-  public boolean wantsAntialiasAlways = false;
-
-  public void calcUseGraphics2D() {
-    useGraphics2D = control.jvm12orGreater && wantsGraphics2D;
-  }
-
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
     if (this.wantsGraphics2D != wantsGraphics2D) {
       this.wantsGraphics2D = wantsGraphics2D;
-      calcUseGraphics2D();
+      useGraphics2D = control.jvm12orGreater && wantsGraphics2D;
       control.flushCachedImages();
       refresh();
     }

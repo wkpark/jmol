@@ -94,8 +94,6 @@ public class DisplayPanel extends JPanel
 
   public void start() {
     addComponentListener(this);
-    String vers = System.getProperty("java.version");
-    control.setJvm12orGreater(vers.compareTo("1.2") >= 0);
   }
 
   private void setRotateMode() {

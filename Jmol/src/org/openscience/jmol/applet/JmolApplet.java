@@ -110,12 +110,12 @@ public class JmolApplet extends Applet implements StatusDisplay {
   
   public void initWindows() {
 
+    String strJvmVersion = System.getProperty("java.version");
+
     canvas = new AppletCanvas();
-    control = new DisplayControl(canvas);
+    control = new DisplayControl(strJvmVersion, canvas);
     canvas.setDisplayControl(control);
 
-    String vers = System.getProperty("java.version");
-    control.setJvm12orGreater(vers.compareTo("1.2") >= 0);
     control.setAppletDocumentBase(getDocumentBase());
 
     canvas.addMouseListener(new MyMouseListener());

@@ -175,6 +175,8 @@ public class Sphere25D {
   */
   
   void render(short colix, int diameter, int x, int y, int z) {
+    if (diameter == 0)
+      return;
     int radius = diameter >> 1;
     x -= radius;
     y -= radius;

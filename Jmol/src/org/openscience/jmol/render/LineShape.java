@@ -43,6 +43,14 @@ public class LineShape extends Shape {
     this.pointEnd = pointEnd;
   }
 
+  public Point3d getPoint1() {
+    return pointOrigin;
+  }
+
+  public Point3d getPoint2() {
+    return pointEnd;
+  }
+
   public String toString() {
     return "Primitive line shape";
   }

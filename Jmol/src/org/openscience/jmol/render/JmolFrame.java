@@ -36,6 +36,7 @@ import java.awt.Rectangle;
 public class JmolFrame {
 
   DisplayControl control;
+  Shape[] shapes;
 
   public JmolFrame(DisplayControl control) {
     this.control = control;
@@ -101,9 +102,6 @@ public class JmolFrame {
   private Point3d centerRotation;
   private double radiusBoundingBox;
   private double radiusRotation;
-  private double minAtomVectorMagnitude;
-  private double maxAtomVectorMagnitude;
-  private double atomVectorRange;
 
   public double getGeometricRadius() {
     findBounds();
@@ -140,25 +138,9 @@ public class JmolFrame {
     }
   }
 
-  public double getMinAtomVectorMagnitude() {
-    findBounds();
-    return minAtomVectorMagnitude;
-  }
-
-  public double getMaxAtomVectorMagnitude() {
-    findBounds();
-    return maxAtomVectorMagnitude;
-  }
-
-  public double getAtomVectorRange() {
-    findBounds();
-    return maxAtomVectorMagnitude - minAtomVectorMagnitude;
-  }
-
   public void clearBounds() {
     centerBoundingBox = centerRotation = null;
-    radiusBoundingBox = radiusRotation =
-      minAtomVectorMagnitude = maxAtomVectorMagnitude = atomVectorRange = 0f;
+    radiusBoundingBox = radiusRotation = 0;
   }
 
   private void findBounds() {
@@ -166,28 +148,7 @@ public class JmolFrame {
       return;
     calcBoundingBox();
     centerRotation = centerBoundingBox;
-    calculateAtomVectorMagnitudeRange();
     radiusBoundingBox = radiusRotation = calcRadius(centerBoundingBox);
-  }
-
-  void calculateAtomVectorMagnitudeRange() {
-    /*
-    minAtomVectorMagnitude = maxAtomVectorMagnitude = -1;
-    for (int i = 0; i < atomShapeCount; ++i) {
-      AtomShape atom = atomShapes[i];
-      if (!atom.hasVector())
-        continue;
-      double magnitude=atom.getVectorMagnitude();
-      if (magnitude > maxAtomVectorMagnitude) {
-        maxAtomVectorMagnitude = magnitude;
-      }
-      if ((magnitude < minAtomVectorMagnitude) ||
-          (minAtomVectorMagnitude == -1)) {
-        minAtomVectorMagnitude = magnitude;
-      }
-    }
-    atomVectorRange = maxAtomVectorMagnitude - minAtomVectorMagnitude;
-    */
   }
 
   private void calcBoundingBox() {
@@ -198,23 +159,26 @@ public class JmolFrame {
     // as stored in the file
     // Note that this is not really the geometric center of the molecule
     // ... for this we would need to do a Minimal Enclosing Sphere calculation
-    Point3d position = atomShapes[0].getPoint3d();
-    double minX = position.x, maxX = minX;
-    double minY = position.y, maxY = minY;
-    double minZ = position.z, maxZ = minZ;
+    Point3d point = atomShapes[0].getPoint3d();
+    double minX, minY, minZ, maxX, maxY, maxZ;
+    minX = maxX = point.x;
+    minY = maxY = point.y;
+    minZ = maxZ = point.z;
 
-    for (int i = 1; i < atomShapeCount; ++i) {
-      position = atomShapes[i].getPoint3d();
-      double x = position.x;
-      if (x < minX) { minX = x; }
-      if (x > maxX) { maxX = x; }
-      double y = position.y;
-      if (y < minY) { minY = y; }
-      if (y > maxY) { maxY = y; }
-      double z = position.z;
-      if (z < minZ) { minZ = z; }
-      if (z > maxZ) { maxZ = z; }
+    for (int i = atomShapeCount; --i > 0; ) { // note that the 0 element was set above
+      point = atomShapes[i].getPoint3d();
+      double t;
+      t = point.x;
+      if (t < minX) { minX = t; }
+      else if (t > maxX) { maxX = t; }
+      t = point.y;
+      if (t < minY) { minY = t; }
+      else if (t > maxY) { maxY = t; }
+      t = point.z;
+      if (t < minZ) { minZ = t; }
+      else if (t > maxZ) { maxZ = t; }
     }
+
     centerBoundingBox = new Point3d((minX + maxX) / 2,
                                     (minY + maxY) / 2,
                                     (minZ + maxZ) / 2);
@@ -261,6 +225,16 @@ public class JmolFrame {
       }
       */
     }
+    for (int i = lineShapeCount; --i >= 0; ) {
+      LineShape ls = lineShapes[i];
+      double distLineEnd;
+      distLineEnd = center.distance(ls.getPoint1());
+      if (distLineEnd > radius)
+        radius = distLineEnd;
+      distLineEnd = center.distance(ls.getPoint2());
+      if (distLineEnd > radius)
+        radius = distLineEnd;
+    }
     return radius;
   }
 
@@ -269,7 +243,7 @@ public class JmolFrame {
       return;
     if (shapes == null || control.hasStructuralChange()) {
       AtomShape[] atomShapes = this.atomShapes;
-      Shape[] vectorShapes = this.vectorShapes;
+      LineShape[] lineShapes = this.lineShapes;
       Shape[] axisShapes = null;
       int axisShapeCount = 0;
       Shape[] bboxShapes = null;
@@ -283,16 +257,16 @@ public class JmolFrame {
         bboxShapeCount = bboxShapes.length;
       }
       int shapeCount =
-        atomShapeCount + vectorShapeCount + axisShapeCount + bboxShapeCount;
+        atomShapeCount + lineShapeCount + axisShapeCount + bboxShapeCount;
       shapes = new Shape[shapeCount];
       int i = 0;
 
       System.arraycopy(atomShapes, 0, shapes, i, atomShapeCount);
       i += atomShapeCount;
 
-      if (vectorShapes != null) {
-        System.arraycopy(vectorShapes, 0, shapes, i, vectorShapeCount);
-        i += vectorShapeCount;
+      if (lineShapes != null) {
+        System.arraycopy(lineShapes, 0, shapes, i, lineShapeCount);
+        i += lineShapeCount;
       }
       if (axisShapes != null) {
         System.arraycopy(axisShapes, 0, shapes, i, axisShapeCount);
@@ -364,21 +338,18 @@ public class JmolFrame {
       control.measureRenderer.render(g25d, control);
   }
 
-  private Shape[] shapes = null;
+  final static int lineGrowthIncrement = 16;
+  private int lineShapeCount = 0;
+  private LineShape[] lineShapes = null;
 
-
-  private final static int vectorGrowthIncrement = 16;
-  private int vectorShapeCount = 0;
-  private Shape[] vectorShapes = null;
-
-  public void addVectorShape(Shape shape) {
-    if (vectorShapes == null || vectorShapeCount == vectorShapes.length) {
-      Shape[] newShapes = new Shape[vectorShapeCount + vectorGrowthIncrement];
-      if (vectorShapes != null)
-        System.arraycopy(vectorShapes, 0, newShapes, 0, vectorShapeCount);
-      vectorShapes = newShapes;
+  public void addLineShape(LineShape shape) {
+    if (lineShapes == null || lineShapeCount == lineShapes.length) {
+      LineShape[] newShapes = new LineShape[lineShapeCount + lineGrowthIncrement];
+      if (lineShapes != null)
+        System.arraycopy(lineShapes, 0, newShapes, 0, lineShapeCount);
+      lineShapes = newShapes;
     }
-    vectorShapes[vectorShapeCount++] = shape;
+    lineShapes[lineShapeCount++] = shape;
   }
 
   /****************************************************************

@@ -27,7 +27,7 @@ package org.openscience.jmol;
 import org.openscience.jmol.Bspt;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.render.AtomShape;
-import org.openscience.jmol.render.VectorShape;
+import org.openscience.jmol.render.ArrowLineShape;
 import org.openscience.jmol.render.LineShape;
 import org.openscience.jmol.render.JmolFrame;
 import org.openscience.cdk.AtomContainer;
@@ -302,31 +302,16 @@ public class ChemFrame extends AtomContainer {
   }
 
   public double getMinAtomVectorMagnitude() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getMinAtomVectorMagnitude();
-    }
     findBounds();
     return minAtomVectorMagnitude;
   }
 
   public double getMaxAtomVectorMagnitude() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getMaxAtomVectorMagnitude();
-    }
     findBounds();
     return maxAtomVectorMagnitude;
   }
 
   public double getAtomVectorRange() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getAtomVectorRange();
-    }
     findBounds();
     return maxAtomVectorMagnitude - minAtomVectorMagnitude;
   }
@@ -736,9 +721,12 @@ public class ChemFrame extends AtomContainer {
         for (int j = bondedAtoms.length; --j >= 0; ) {
           jmframe.bondAtomShapes(atomShape, bondedAtoms[j], jmolAtom.getBondOrder(j));
         }
-      if (jmolAtom.hasVector())
-        jmframe.addVectorShape(new VectorShape(jmolAtom.getPoint3D(),
-                                               jmolAtom.getVector(), 2.0));
+      if (jmolAtom.hasVector()) {
+        Point3d atomPoint = jmolAtom.getPoint3D();
+        Point3d vectorPoint = new Point3d(jmolAtom.getVector());
+        vectorPoint.scaleAdd(2, atomPoint);
+        jmframe.addLineShape(new ArrowLineShape(atomPoint, vectorPoint));
+      }
     }
 
     if (this instanceof CrystalFrame) {
@@ -747,15 +735,15 @@ public class ChemFrame extends AtomContainer {
       
       // The three primitives vectors with arrows
       for (int i = 0; i < 3; i++)
-        jmframe.addVectorShape(new VectorShape(zeroPoint, new Point3d(rprimd[i])));
+        jmframe.addLineShape(new ArrowLineShape(zeroPoint, new Point3d(rprimd[i])));
       
       // The full primitive cell
       if (true) {
         // Depends on the settings...TODO
         Vector boxEdges = crystalFrame.getBoxEdges();
         for (int i = 0; i < boxEdges.size(); i = i + 2)
-          jmframe.addVectorShape(new LineShape((Point3d) boxEdges.elementAt(i),
-                                               (Point3d) boxEdges.elementAt(i + 1)));
+          jmframe.addLineShape(new LineShape((Point3d) boxEdges.elementAt(i),
+                                             (Point3d) boxEdges.elementAt(i + 1)));
       }
     }
   }

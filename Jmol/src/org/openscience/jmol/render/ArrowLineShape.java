@@ -1,0 +1,80 @@
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
+ */
+package org.openscience.jmol.render;
+
+import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.DisplayControl;
+
+import java.awt.Rectangle;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
+
+public class ArrowLineShape extends LineShape {
+
+  double headWidthAngstroms;
+  int[] ax = new int[4];
+  int[] ay = new int[4];
+  int[] az = new int[4];
+
+  final static int widthDivisor = 8;
+  final static int shaftDivisor = 5;
+  final static int finDivisor = 6;
+
+  public ArrowLineShape(Point3d pointOrigin, Point3d pointVector) {
+    super(pointOrigin, pointVector);
+    headWidthAngstroms = pointOrigin.distance(this.pointEnd) / widthDivisor;
+  }
+
+  public void render(Graphics25D g25d, DisplayControl control) {
+    short colixVector = control.getColixVector();
+    g25d.drawLine(colixVector, x, y, z, xEnd, yEnd, zEnd);
+
+    int dx = xEnd - x, xHead = xEnd - (dx / shaftDivisor);
+    int dy = yEnd - y, yHead = yEnd - (dy / shaftDivisor);
+    int mag2d = (int)(Math.sqrt(dx*dx + dy*dy) + 0.5);
+    int dz = zEnd - z, zHead = zEnd - (dz / shaftDivisor);
+    int headWidthPixels =
+      (int)(control.scaleToScreen(zHead, headWidthAngstroms) + 0.5);
+
+    ax[0] = xEnd; ax[2] = xEnd - dx/finDivisor;
+    ay[0] = yEnd; ay[2] = yEnd - dy/finDivisor;
+    az[0] = zEnd; az[2] = zEnd - dz/finDivisor;
+    int dxHead, dyHead;
+    if (mag2d == 0) {
+      dxHead = 0;
+      dyHead = headWidthPixels;
+    } else {
+      dxHead = headWidthPixels * -dy / mag2d;
+      dyHead = headWidthPixels * dx / mag2d;
+    }
+
+    ax[1] = xHead - dxHead/2; ax[3] = ax[1] + dxHead;
+    ay[1] = yHead - dyHead/2; ay[3] = ay[1] + dyHead;
+    az[1] = zHead;            az[3] = zHead;
+    g25d.fillPolygon4(colixVector, ax, ay, az);
+  }
+}
+
+

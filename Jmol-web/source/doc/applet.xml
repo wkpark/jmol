@@ -176,7 +176,7 @@
         
         <param name="customViews">
           Specifies custom actions to be performed by custom buttons. An
-          example: Button1 { HOME; FRAME=n; ROTATE=y,x,y; ZOOM=n; TRANSLATE=x,y
+          example: Button1 { HOME; FRAME=n; ROTATE=y,x,z; ZOOM=n; TRANSLATE=x,y
           }  Button2 { HOME; ZOOM=n; ... } ...
         </param>
       </appletParameterList>

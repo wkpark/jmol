@@ -11,19 +11,22 @@
 
     <section title="The Jmol Guide">
       <p>
-        The <a href="doc/guide/">Jmol Guide</a> describes the Jmol application.
+        The <a href="documentation/JmolUserGuide/">Jmol Guide</a>
+	describes the Jmol application.
       </p>
     </section>
 
     <section title="The Jmol Applet Guide">
       <p>
-        The <a href="doc/appletguide/">Jmol Applet Guide</a> describes the Jmol applet.
+        The <a href="documentation/JmolAppletGuide.html">Jmol Applet Guide</a>
+	describes the Jmol applet.
       </p>
     </section>
 
     <section title="The Jmol Developers Guide">
       <p>
-        The <a href="doc/devel/">Jmol Developers Guide</a> describes how Jmol is developed and/or
+        The <a href="documentation/JmolDevelopersGuide.html">Jmol Developers Guide</a>
+	describes how Jmol is developed and/or
         how certain things are done in the Jmol development.
       </p>
     </section>

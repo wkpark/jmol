@@ -59,7 +59,7 @@ class StrandsRenderer extends MpsRenderer {
   float strandSeparation;
   float baseOffset;
 
-  boolean isNucleotidePolymer;
+  boolean isNucleicPolymer;
 
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     Strands.Schain schain = (Strands.Schain)mpspolymer;
@@ -70,7 +70,7 @@ class StrandsRenderer extends MpsRenderer {
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
     
     if (schain.wingVectors != null) {
-      isNucleotidePolymer = schain.polymer instanceof NucleotidePolymer;
+      isNucleicPolymer = schain.polymer instanceof NucleicPolymer;
       render1Chain(schain.monomerCount,
                    schain.monomers,
                    schain.leadMidpoints,
@@ -120,7 +120,7 @@ class StrandsRenderer extends MpsRenderer {
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
       colix = monomer.getLeadAtom().colixAtom;
-    g3d.drawHermite(colix, isNucleotidePolymer ? 4 : 7,
+    g3d.drawHermite(colix, isNucleicPolymer ? 4 : 7,
                     screens[iPrev], screens[i],
                     screens[iNext], screens[iNext2]);
   }

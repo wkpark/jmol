@@ -75,7 +75,7 @@ class CartoonRenderer extends MpsRenderer {
     return screens;
   }
 
-  boolean isNucleotidePolymer;
+  boolean isNucleicPolymer;
   int monomerCount;
   Monomer[] monomers;
   Point3f[] leadMidpoints;
@@ -93,7 +93,7 @@ class CartoonRenderer extends MpsRenderer {
     if (strandsChain.wingVectors != null) {
       monomerCount = strandsChain.monomerCount;
       monomers = strandsChain.monomers;
-      isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
+      isNucleicPolymer = strandsChain.polymer instanceof NucleicPolymer;
       leadMidpoints = strandsChain.leadMidpoints;
       wingVectors = strandsChain.wingVectors;
       mads = strandsChain.mads;
@@ -108,9 +108,9 @@ class CartoonRenderer extends MpsRenderer {
     isSpecials = calcIsSpecials(monomerCount, monomers);
     leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
     ribbonTopScreens = calcScreens(leadMidpoints, wingVectors, mads,
-                             isNucleotidePolymer ? 1f / 1000 : 0.5f / 1000);
+                             isNucleicPolymer ? 1f / 1000 : 0.5f / 1000);
     ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
-                                isNucleotidePolymer ? 0f : -0.5f / 1000);
+                                isNucleicPolymer ? 0f : -0.5f / 1000);
     boolean lastWasSpecial = false;
     for (int i = monomerCount; --i >= 0; )
       if (mads[i] > 0) {
@@ -147,7 +147,7 @@ class CartoonRenderer extends MpsRenderer {
       colix = group.getLeadAtom().colixAtom;
     
     //change false -> true to fill in mesh
-    g3d.drawHermite(true, colix, isNucleotidePolymer ? 4 : 7,
+    g3d.drawHermite(true, colix, isNucleicPolymer ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],
                     ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
                     ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
@@ -179,7 +179,7 @@ class CartoonRenderer extends MpsRenderer {
     g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
                      screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
                      screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
-    g3d.drawHermite(true, colix, isNucleotidePolymer ? 4 : 7,
+    g3d.drawHermite(true, colix, isNucleicPolymer ? 4 : 7,
                     screenArrowTopPrev, screenArrowTop,
                     leadMidpointScreens[iNext], leadMidpointScreens[iNext2],
                     screenArrowBotPrev, screenArrowBot,

@@ -85,6 +85,13 @@ public class NucleicMonomer extends Monomer {
     this.isPyrimidine = offsets[9] != -1;
     this.isPurine =
       offsets[10] != -1 && offsets[11] != -1 && offsets[12] != -1;
+    /*
+    System.out.println("NucleicMonomer(" + this + ")" +
+                       " hasRnaO2Prime=" + hasRnaO2Prime +
+                       " isPyrimidine=" + isPyrimidine +
+                       " isPurine=" + isPurine +
+                       " offsets[3]=" + offsets[3]);
+    */
   }
 
   boolean hasRnaO2Prime;
@@ -114,7 +121,7 @@ public class NucleicMonomer extends Monomer {
   Atom getPurineN1() {
     if (! isPurine())
       return null;
-    return getAtomFromOffsetIndex(9);
+    return getAtomFromOffsetIndex(3);
   }
 
   Atom getPyrimidineN3() {

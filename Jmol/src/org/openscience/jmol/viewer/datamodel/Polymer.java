@@ -70,8 +70,8 @@ abstract class Polymer {
     }
     monomers = getNucleotideMonomers(chain);
     if (monomers != null) {
-      //      System.out.println("a NucleotidePolymer");
-      return new NucleotidePolymer(model, monomers);
+      //      System.out.println("a NucleicPolymer");
+      return new NucleicPolymer(model, monomers);
     }
     //    System.out.println("no polymer");
     return null;
@@ -164,7 +164,7 @@ abstract class Polymer {
         continue;
       monomers[j++] = monomer;
     }
-    //    System.out.println("is a NucleotidePolymer");
+    //    System.out.println("is a NucleicPolymer");
     return monomers;
   }
   

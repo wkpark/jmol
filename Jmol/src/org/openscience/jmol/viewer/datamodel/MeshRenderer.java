@@ -61,7 +61,7 @@ class MeshRenderer extends MpsRenderer { // not current for Mcp class
   float strandSeparation;
   float baseOffset;
 
-  boolean isNucleotidePolymer;
+  boolean isNucleicPolymer;
 
   void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     Mesh.Schain strandsChain = (Mesh.Schain)mpspolymer;
@@ -72,7 +72,7 @@ class MeshRenderer extends MpsRenderer { // not current for Mcp class
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
 
     if (strandsChain.wingVectors != null) {
-      isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
+      isNucleicPolymer = strandsChain.polymer instanceof NucleicPolymer;
       render1Chain(strandsChain.monomerCount,
                    strandsChain.monomers,
                    strandsChain.leadMidpoints,
@@ -160,7 +160,7 @@ class MeshRenderer extends MpsRenderer { // not current for Mcp class
     
     //change false -> true to fill in mesh
       
-    g3d.drawHermite(false, colix, isNucleotidePolymer ? 4 : 7,
+    g3d.drawHermite(false, colix, isNucleicPolymer ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],
                     ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
                     ribbonBottomScreens[iPrev], ribbonBottomScreens[i],

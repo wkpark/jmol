@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -25,46 +25,19 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.datamodel.Frame;
-import java.util.Hashtable;
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import java.util.BitSet;
 
-public class NucleotidePolymer extends Polymer {
+public class NucleicPolymer extends Polymer {
 
-  NucleotidePolymer(Model model, Monomer[] monomers) {
+  NucleicPolymer(Model model, Monomer[] monomers) {
     super(model, monomers);
   }
 
-  public Atom getNucleotidePhosphorusAtom(int monomerIndex) {
+  public Atom getNucleicPhosphorusAtom(int monomerIndex) {
     return monomers[monomerIndex].getLeadAtom();
   }
 
   boolean hasWingPoints() { return true; }
-
-  /*
-  public void getStructureMidPoint(int monomerIndex, Point3f midPoint) {
-    if (monomerIndex < count &&
-        monomers[monomerIndex].isHelixOrSheet()) {
-      midPoint.set(monomers[monomerIndex].proteinstructure.
-                   getStructureMidPoint(monomerIndex));
-      //    System.out.println("" + monomerIndex} + "isHelixOrSheet" +
-      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
-    } else if (monomerIndex > 0 &&
-               monomers[monomerIndex - 1].isHelixOrSheet()) {
-      midPoint.set(monomers[monomerIndex - 1].proteinstructure.
-                   getStructureMidPoint(monomerIndex));
-      //    System.out.println("" + monomerIndex + "previous isHelixOrSheet" +
-      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
-    } else {
-      getLeadMidPoint(monomerIndex, midPoint);
-      //   System.out.println("" + monomerIndex + "the alpha carbon midpoint" +
-      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
-    }
-  }
-  */
 
   void addSecondaryStructure(byte type,
                              int startSeqcode, int endSeqcode) {
@@ -79,13 +52,14 @@ public class NucleotidePolymer extends Polymer {
       Polymer otherPolymer = model.getPolymer(i);
       if (otherPolymer == this) // don't look at self
         continue;
-      if (otherPolymer == null || !(otherPolymer instanceof NucleotidePolymer))
+      if (otherPolymer == null || !(otherPolymer instanceof NucleicPolymer))
         continue;
-      lookForHbonds((NucleotidePolymer)otherPolymer);
+      lookForHbonds((NucleicPolymer)otherPolymer);
     }
   }
 
-  void lookForHbonds(NucleotidePolymer other) {
+  void lookForHbonds(NucleicPolymer other) {
+    System.out.println("NucleicPolymer.lookForHbonds()");
     for (int i = count; --i >= 0; ) {
       NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
       Atom myN1 = myNucleotide.getPurineN1();

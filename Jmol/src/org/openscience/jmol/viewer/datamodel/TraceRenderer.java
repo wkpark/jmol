@@ -33,11 +33,11 @@ import javax.vecmath.Point3i;
 
 class TraceRenderer extends MpsRenderer {
 
-  boolean isNucleotidePolymer;
+  boolean isNucleicPolymer;
 
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     Trace.Tchain tchain = (Trace.Tchain)mpspolymer;
-    isNucleotidePolymer = tchain.polymer instanceof NucleotidePolymer;
+    isNucleicPolymer = tchain.polymer instanceof NucleicPolymer;
     monomerCount = tchain.monomerCount;
     if (monomerCount == 0)
       return;

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -25,10 +25,8 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-import java.util.BitSet;
 
 public class AminoPolymer extends AlphaPolymer {
 

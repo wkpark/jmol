@@ -1,7 +1,7 @@
   <xsl:template match="fah_projects">
     <![CDATA[
       var doc = document;
-      doc.writeln("<table width=100% border=0 cellpadding=0><tr>");
+      doc.writeln("<table width='100%' border=0 cellpadding=0><tr>");
     ]]>
     <xsl:for-each select="fah_proj" >
       <xsl:value-of select="." />

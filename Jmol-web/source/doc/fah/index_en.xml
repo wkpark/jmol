@@ -7,78 +7,33 @@
     <title>Jmol Applet for Folding@home</title>
     <section>
 
-    <form name="fahForm">
-      <script src="./fah.js"></script>
+    <form name="fahForm" action="">
+      <script src="./fah.js" type="text/javascript"></script>
       <table border="1">
       <tr>
         <table border="0"><tr>
           <td>
-            <script>jmolApplet(350, "", "Fah");</script>
+            <script type="text/javascript">jmolApplet(350, "", "Fah");</script>
           </td>
           <td valign="top">
             <table border="0" cellpadding="0" cellspacing="0">
-              <tr>
-                <td align="center" colspan="2">
-                  <a href="http://folding.stanford.edu">
-                    <img src="FAHlogoButton.jpg" alt="fah-logo" border="0"/>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td><label>Project:</label></td>
-                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Project Name:</label></td>
-                <td><input type='text' name='infoName' id='infoName' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Credit:</label></td>
-                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Number of atoms:</label></td>
-                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Preferred:</label></td>
-                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Final deadline:</label></td>
-                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Frames:</label></td>
-                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Code:</label></td>
-                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <br/>
-                  <input type='button' value='Project description'
-                    onclick='showProjectDescription()'
-                    onMouseOver='window.status="http://vspx27.stanford.edu/cgi-bin/allprojects"'
-                    onMouseout='window.status=" "'/>
-                  <input type='button' value='Hide solvent'
-                    onclick='hideSolvent()'/>
-                  <input type='button' value='XML'
-                    onclick='showXMLFile()'/>
-                  <small>
-                    <fah_count_files/> files / <fah_count_projects/> projects.
-                  </small>
-                </td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <small><i>
-                    If you have <b>current.xyz</b> files for the missing projects, please send them at nicove@users.sourceforge.net
-                  </i></small>
-                </td>
-              </tr>
+              <script type="text/javascript">
+                addRowStanfordLogo();
+                addRowProjectNumber("Project");
+                addRowProjectName("Project Name");
+                addRowProjectCredit("Credit");
+                addRowProjectAtoms("Number of atoms");
+                addRowProjectPreferred("Preferred");
+                addRowProjectDeadline("Final deadline");
+                addRowProjectFrames("Frames");
+                addRowProjectCode("Code");
+                addRowButtons(
+                  "Project description",
+                  "Hide solvent",
+                  "files", "projects");
+                addRowCurrentXyz(
+                  "If you have &lt;b&gt;current.xyz&lt;/b&gt; files for the missing projects, please send them at nicove@users.sourceforge.net");
+              </script>
             </table>
           </td>
         </tr></table>
@@ -86,7 +41,7 @@
 
       <tr>
         <td class="btfah">
-          <script>
+          <script type="text/javascript">
             &projects;
           </script>
         </td>

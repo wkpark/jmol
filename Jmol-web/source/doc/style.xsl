@@ -90,6 +90,9 @@
 
   <xsl:template match="/">
     <xsl:variable name="project" select="document($project_xml)/project"/>
+    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html PUBLIC</xsl:text>
+    <xsl:text disable-output-escaping="yes">"-//W3C//DTD XHTML 1.0 Transitional//EN"</xsl:text>
+    <xsl:text disable-output-escaping="yes">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;</xsl:text>
     <xsl:text disable-output-escaping="yes">&lt;html lang="</xsl:text>
     <xsl:value-of select="$lang" disable-output-escaping="yes"/>
     <xsl:text disable-output-escaping="yes">"&gt;</xsl:text>
@@ -100,11 +103,11 @@
         <xsl:otherwise><title><xsl:value-of select="$project/title"/></title></xsl:otherwise>
       </xsl:choose>
       <link rel="stylesheet" type="text/css" href="[root]/default.css"/>
-      <script src="[root]/jmol/Jmol.js"></script>
+      <script src="[root]/jmol/Jmol.js" type="text/javascript"></script>
     </head>
 
     <body>
-      <script>jmolInitialize("[root]/jmol");</script>
+      <script type="text/javascript">jmolInitialize("[root]/jmol");</script>
       <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
           <td valign="top">

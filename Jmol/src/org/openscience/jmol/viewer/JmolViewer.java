@@ -1283,12 +1283,12 @@ final public class JmolViewer {
       jmolStatusListener.scriptEcho(strEcho);
   }
 
-  boolean scriptDebug = true;
-  public boolean getScriptDebug() {
-    return scriptDebug;
+  boolean debugScript = false;
+  public boolean getDebugScript() {
+    return debugScript;
   }
-  public void setScriptDebug(boolean scriptDebug) {
-    this.scriptDebug = scriptDebug;
+  public void setDebugScript(boolean debugScript) {
+    this.debugScript = debugScript;
   }
 
   public void scriptStatus(String strStatus) {

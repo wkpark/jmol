@@ -176,28 +176,29 @@ public class Token {
   // monitor
   final static int mouse        = setparam | 13;
   final static int picking      = setparam | 14;
-  final static int radius       = setparam | 15 | atomproperty;
-  final static int shadow       = setparam | 16;
-  final static int slabmode     = setparam | 17;
+  //  final static int radius       = setparam | 15 | atomproperty;
+  final static int shadow       = setparam | 15;
+  final static int slabmode     = setparam | 16;
   // solvent
-  final static int specular     = setparam | 18;
-  final static int specpower    = setparam | 19;
+  final static int specular     = setparam | 17;
+  final static int specpower    = setparam | 18;
   // ssbonds
   // stereo
   // strands
-  final static int transparent  = setparam | 20;
-  final static int unitcell     = setparam | 21;
-  final static int vectps       = setparam | 22;
+  final static int transparent  = setparam | 19;
+  final static int unitcell     = setparam | 20;
+  final static int vectps       = setparam | 21;
   // write
 
   // chime set parameters
-  final static int charge       = setparam | 23;
-  final static int clear        = setparam | 24;
-  final static int gaussian     = setparam | 25;
+  final static int charge       = setparam | 22;
+  final static int clear        = setparam | 23;
+  final static int gaussian     = setparam | 24;
   // load
-  final static int mep          = setparam | 26;
-  final static int mlp          = setparam | 27 | showparam;
-  final static int molsurface   = setparam | 28;
+  final static int mep          = setparam | 25;
+  final static int mlp          = setparam | 26 | showparam;
+  final static int molsurface   = setparam | 27;
+  final static int debugscript  = setparam | 28;
   //
   // jmol extensions
   final static int property     = setparam | 29;
@@ -217,7 +218,7 @@ public class Token {
   // zoom
   // chime show parameters
   final static int residue      = showparam | 10;
-  final static int model        = showparam | 11;
+  //  final static int model        = showparam | 11 | expression;
   // mlp
   // list
   // spin
@@ -242,12 +243,13 @@ public class Token {
   final static int atomno       = atomproperty | 0;
   final static int elemno       = atomproperty | 1;
   final static int resno        = atomproperty | 2;
-  // radius;
-  final static int temperature  = atomproperty | 3;
-  final static int _bondedcount = atomproperty | 4;
-  final static int _resid       = atomproperty | 5;
-  final static int _atomid      = atomproperty | 6;
-  final static int _structure   = atomproperty | 7;
+  final static int radius       = atomproperty | 3 | setparam;
+  final static int temperature  = atomproperty | 4;
+  final static int model        = atomproperty | 5 | showparam;
+  final static int _bondedcount = atomproperty | 6;
+  final static int _resid       = atomproperty | 7;
+  final static int _atomid      = atomproperty | 8;
+  final static int _structure   = atomproperty | 9;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -297,6 +299,11 @@ public class Token {
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenAnd = new Token(opAnd, "and");
   final static Token tokenElemno = new Token(elemno, "elemno");
+
+  final static String[] comparatorNames = {">", ">=", "<=", "<", "=", "!="};
+  final static String[] atomPropertyNames = {
+    "atomno", "elemno", "resno", "radius", "temperature", "model",
+    "_bondedcount", "_resid", "_atomid", "_structure"};
 
   final static Object[] arrayPairs  = {
     // commands
@@ -399,6 +406,7 @@ public class Token {
     "mep",          new Token(mep,             "mep"),
     "mlp",          new Token(mlp,             "mlp"),
     "molsurface",   new Token(molsurface,      "molsurface"),
+    "debugscript",  new Token(debugscript,     "debugscript"),
 
     // jmol extensions
     "property",     new Token(property,        "property"),

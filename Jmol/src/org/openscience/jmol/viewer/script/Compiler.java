@@ -986,6 +986,8 @@ class Compiler {
       tokenNext();
       return true;
     }
+    if (tokPeek() == Token.colon) // null chain followed by model spec
+      return true;
     Token tokenChain = tokenNext();
     char chain;
     if (tokenChain.tok == Token.integer) {
@@ -1002,7 +1004,8 @@ class Compiler {
     } else
       return invalidChainSpecification();
 
-    return generateResidueSpecCode(new Token(Token.spec_chain, chain, "spec_chain"));
+    return generateResidueSpecCode(new Token(Token.spec_chain,
+                                             chain, "spec_chain"));
   }
 
   boolean clauseModelSpec() {

@@ -209,9 +209,11 @@ public class JmolApplet extends Applet implements JmolStatusListener {
         setLabelStyle(getValue("label", "none"));
         viewer.setColorBackground(getValue("bgcolor", "white"));
         viewer.setWireframeRotation(getBooleanValue("wireframeRotation",
-                                                    true));
+                                                    false));
         viewer.setPerspectiveDepth(getBooleanValue("perspectiveDepth", true));
       }
+
+      viewer.setDebugScript(getBooleanValue("debugscript", false));
       
       load(getValue("load", null));
       loadInline(getValue("loadInline", null));
@@ -257,6 +259,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void scriptStatus(String strStatus) {
+    if (strStatus != null && messageCallback != null && jsoWindow != null)
+      jsoWindow.call(messageCallback, new Object[] {htmlName, strStatus});
   }
 
   boolean buttonCallbackNotificationPending;
@@ -448,7 +452,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void script(String script) {
     System.out.println(htmlName + " will try to run:\n-----" +
                        script + "\n-----\n");
-    setStatusMessage("Jmol script executing...");
     String strError = viewer.evalString(script);
     setStatusMessage(strError);
   }

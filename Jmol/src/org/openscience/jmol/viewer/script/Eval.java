@@ -25,15 +25,9 @@
 package org.openscience.jmol.viewer.script;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.datamodel.Frame;
-import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.datamodel.AtomIterator;
-import org.openscience.jmol.viewer.datamodel.Bond;
-import org.openscience.jmol.viewer.protein.PdbAtom;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.IOException;
+import org.openscience.jmol.viewer.datamodel.*;
+import org.openscience.jmol.viewer.protein.*;
+import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -277,8 +271,8 @@ public class Eval implements Runnable {
     }
     while (!interruptExecution && pc < aatoken.length) {
       statement = aatoken[pc++];
-      if (viewer.getScriptDebug())
-        logScriptDebug();
+      if (viewer.getDebugScript())
+        logDebugScript();
       Token token = statement[0];
       switch (token.tok) {
       case Token.backbone:
@@ -335,7 +329,6 @@ public class Eval implements Runnable {
       case Token.zoom:
         zoom();
         break;
-        // chime extended commands
       case Token.delay:
         delay();
         break;
@@ -425,12 +418,55 @@ public class Eval implements Runnable {
   }
 
   final StringBuffer strbufLog = new StringBuffer(80);
-  void logScriptDebug() {
+  void logDebugScript() {
     strbufLog.setLength(0);
     strbufLog.append(statement[0].value.toString());
     for (int i = 1; i < statement.length; ++i) {
       strbufLog.append(' ');
-      strbufLog.append("" + statement[i].value);
+      Token token = statement[i];
+      switch (token.tok) {
+      case Token.spec_model:
+        strbufLog.append("::");
+        // fall into
+      case Token.spec_number:
+      case Token.integer:
+        strbufLog.append(token.intValue);
+        continue;
+      case Token.spec_chain:
+        strbufLog.append(':');
+        strbufLog.append((char)token.intValue);
+        continue;
+      case Token.spec_resid:
+        strbufLog.append('[');
+        strbufLog.append(PdbResidue.getResidue3((short)token.intValue));
+        strbufLog.append(']');
+        continue;
+      case Token.spec_name_pattern:
+        strbufLog.append('[');
+        strbufLog.append(token.value);
+        strbufLog.append(']');
+        continue;
+      case Token.spec_atom:
+        strbufLog.append('.');
+        break;
+      case Token.spec_number_range:
+        strbufLog.append(token.intValue);
+        strbufLog.append('-');
+        break;
+      case Token.within:
+        strbufLog.append("within ");
+        break;
+      case Token.opEQ:
+      case Token.opNE:
+      case Token.opGT:
+      case Token.opGE:
+      case Token.opLT:
+      case Token.opLE:
+        strbufLog.append(Token.atomPropertyNames[token.intValue & 0x0F]);
+        strbufLog.append(Token.comparatorNames[token.tok & 0x0F]);
+        break;
+      }
+      strbufLog.append("" + token.value);
     }
     viewer.scriptStatus(strbufLog.toString());
   }
@@ -441,6 +477,10 @@ public class Eval implements Runnable {
 
   void unrecognizedCommand(Token token) throws ScriptException {
     evalError("unrecognized command:" + token.value);
+  }
+
+  void unrecognizedAtomProperty(int propnum) throws ScriptException {
+    evalError("unrecognized atom property:" + propnum);
   }
 
   void filenameExpected() throws ScriptException {
@@ -569,7 +609,7 @@ public class Eval implements Runnable {
       switch (instruction.tok) {
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
-        for (int i = 0; i < numberOfAtoms; ++i)
+        for (int i = numberOfAtoms; --i >= 0; )
           bs.set(i);
         break;
       case Token.none:
@@ -620,6 +660,9 @@ public class Eval implements Runnable {
         break;
       case Token.spec_atom:
         stack[sp++] = getSpecAtom((String)instruction.value);
+        break;
+      case Token.spec_model:
+        stack[sp++] = getSpecModel(instruction.intValue);
         break;
       case Token.y:
       case Token.amino:
@@ -819,6 +862,15 @@ public class Eval implements Runnable {
     return lookupValue(variable, true);
   }
 
+  BitSet getSpecModel(int modelNum) {
+    System.out.println("warning! model specification not implemented");
+    int n = viewer.getAtomCount();
+    BitSet bsModel = new BitSet(n);
+    while (--n >= 0)
+      bsModel.set(n);      
+    return bsModel;
+  }
+
   void comparatorInstruction(Token instruction, BitSet bs)
     throws ScriptException {
     int comparator = instruction.tok;
@@ -867,6 +919,11 @@ public class Eval implements Runnable {
       case Token._bondedcount:
         propertyValue = atom.getCovalentBondCount();
         break;
+      case Token.model:
+        propertyValue = 1; // for now everything is model 1
+        break;
+      default:
+        unrecognizedAtomProperty(property);
       }
       boolean match = false;
       switch (comparator) {
@@ -1465,6 +1522,9 @@ public class Eval implements Runnable {
     case Token.monitor:
       setMonitor();
       break;
+    case Token.debugscript:
+      setDebugScript();
+      break;
     case Token.property:
       setProperty();
       break;
@@ -1877,6 +1937,10 @@ public class Eval implements Runnable {
 
   void setMonitor() throws ScriptException {
     viewer.setShowMeasurementLabels(getSetBoolean());
+  }
+
+  void setDebugScript() throws ScriptException {
+    viewer.setDebugScript(getSetBoolean());
   }
 
   void setProperty() throws ScriptException {

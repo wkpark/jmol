@@ -10,7 +10,7 @@ package org.openscience.jmol;
 import org.openscience.cdopi.*;
 import java.util.Vector;
 
-public final class JMolCDO implements CDOInterface {
+public final class JMolCDO extends ANIMATIONCDO {
     
     private Vector allFrames;
     private ChemFrame currentFrame;
@@ -30,6 +30,47 @@ public final class JMolCDO implements CDOInterface {
     public void startDocument() {}
     public void endDocument() {}
     
+  public void startObject(String type) {
+    if (type.equals("Atom")) {
+      this.startAtom();
+    } else if (type.equals("Molecule")) {
+      this.startMolecule();
+    } else if (type.equals("Fragment")) {
+      this.startFragment();
+    } else if (type.equals("Bond")) {
+      this.startBond();
+    } else if (type.equals("Animation")) {
+      this.startAnimation();
+    }
+  }
+ 
+  public void endObject(String type) {
+    if (type.equals("Atom")) {
+      this.endAtom();
+    } else if (type.equals("Molecule")) {
+      this.endMolecule();
+    } else if (type.equals("Fragment")) {
+      this.endFragment();
+    } else if (type.equals("Bond")) {
+      this.endBond();
+    } else if (type.equals("Animation")) {
+      this.endAnimation();
+    }
+  }
+ 
+  public void setObjectProperty(String type, String proptype, String propvalue) {
+    if (type.equals("Atom")) {
+      this.setAtomProperty(proptype, propvalue);
+    } else if (type.equals("Molecule")) {
+      this.setMoleculeProperty(proptype, propvalue);
+    } else if (type.equals("Fragment")) {
+      this.setFragmentProperty(proptype, propvalue);
+    } else if (type.equals("Bond")) {
+      this.setBondProperty(proptype, propvalue);
+    } else if (type.equals("Animation")) {
+      this.setAnimationProperty(proptype, propvalue);
+    }
+  }                                                                                                                  
     public void startAnimation() {
         System.out.println("startAnimation");
     }
@@ -52,8 +93,12 @@ public final class JMolCDO implements CDOInterface {
         if (type.equals("title")) currentFrame.setInfo(value);
     }
 
-    public void startMolecule() {}
-    public void endMolecule() {}
+    public void startMolecule() {
+      startFrame();
+    }
+    public void endMolecule() {
+      endFrame();
+    }
 
     public void startFragment() {}
     public void endFragment() {}
@@ -96,6 +141,11 @@ public final class JMolCDO implements CDOInterface {
     public void setMoleculeProperty(String type, String value) {
     }
     public void setFragmentProperty(String type, String value) {
+      if (type.equals("energy")) {
+        double energy = (new Double(value)).doubleValue();
+        Energy prop = new Energy(energy);
+        currentFrame.addFrameProperty((PhysicalProperty)prop);
+      }
     }
     public void setAnimationProperty(String type, String value) {
     }

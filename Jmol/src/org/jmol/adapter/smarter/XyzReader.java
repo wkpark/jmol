@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -25,7 +25,6 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.ModelAdapter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 

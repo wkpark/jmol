@@ -3,28 +3,24 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Chemistry Development Kit (CDK) project
+ * Copyright (C) 2004  The Jmol Development Team
  *
- * Contact: cdk-devel@lists.sourceforge.net
+ * Contact: jmol-developers@lists.sf.net
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1
- * of the License, or (at your option) any later version.
- * All we ask is that proper credit is given for our work, which includes
- * - but is not limited to - adding the above copyright notice to the
- * beginning of your source code files, and to any copyright notice
- * that you may distribute with programs based on this work.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
  */
 package org.jmol.adapter.smarter;
 
@@ -32,15 +28,7 @@ import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
 
-
-/**
- * This is not a reader for the CIF and mmCIF crystallographic formats.
- * It is able, however, to extract some content from it.
- * It's very ad hoc, not written
- * using any dictionary. So please complain if something is not working.
- * In addition, the things it does read are considered experimental.
- */
-public class CifReader extends ModelReader {
+class CifReader extends ModelReader {
 
   float[] notionalUnitcell;
 
@@ -76,7 +64,6 @@ public class CifReader extends ModelReader {
         continue;
       }
         
-      /* determine CIF command */
       int spaceIndex = line.indexOf(' ');
       if (spaceIndex == -1)
         spaceIndex = line.length();

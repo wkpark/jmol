@@ -42,9 +42,6 @@ class ModelResolver {
     if (modelReaderName == null)
       return "unrecognized file format";
 
-    if (modelReaderName == "Cml")
-      return "CML not yet supported";
-
     try {
       Class modelReaderClass = Class.forName(className);
       modelReader = (ModelReader)modelReaderClass.newInstance();
@@ -103,20 +100,26 @@ class ModelResolver {
         }
       }
     }
-    for (int i = cmlRecords.length; --i >= 0; ) {
-      String cmlTag = cmlRecords[i];
-      for (int j = lines.length; --j >= 0; )
-        if (lines[j].indexOf(cmlTag) != -1)
-          return "Cml";
+    for (int i = 0; i < containsRecords.length; ++i) {
+      String[] recordTags = containsRecords[i];
+      for (int j = 0; j < recordTags.length; ++j) {
+        String recordTag = recordTags[j];
+        for (int k = 0; k < lines.length; ++k) {
+          if (lines[k].indexOf(recordTag) != -1)
+            return containsFormats[i];
+        }
+      }
     }
+
     if (lines[1] == null || lines[1].trim().length() == 0)
       return "Jme"; // this is really quite broken :-)
     return null;
   }
 
-  /****************************************************************
-   * these test lines that startWith one of these strings
-   ****************************************************************/
+  ////////////////////////////////////////////////////////////////
+  // these test lines that startWith one of these strings
+  ////////////////////////////////////////////////////////////////
+
   final static String[] pdbRecords = {
     "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
@@ -136,16 +139,25 @@ class ModelResolver {
   final static String[] cifRecords =
   { "data_" };
 
+  final static String[] gaussianRecords =
+  { " Entering Gaussian System, " };
+
   final static String[][] startsWithRecords =
-  { pdbRecords, shelxRecords, cifRecords, };
+  { pdbRecords, shelxRecords, cifRecords, gaussianRecords};
 
   final static String[] startsWithFormats =
-  { "Pdb", "Shelx", "Cif" };
+  { "Pdb", "Shelx", "Cif", "Gaussian" };
 
-  /****************************************************************
-   * end of startsWith tables
-   ****************************************************************/
-
+  ////////////////////////////////////////////////////////////////
+  // contains formats
+  ////////////////////////////////////////////////////////////////
+  
   final static String[] cmlRecords =
   { "<atom", "<molecule", "<reaction", "<cml", "<bond", "\"cml.dtd\""};
+
+  final static String[][] containsRecords =
+  {cmlRecords};
+
+  final static String[] containsFormats =
+  { "Cml" };
 }

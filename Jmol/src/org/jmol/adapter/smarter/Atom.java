@@ -28,6 +28,7 @@ package org.jmol.adapter.smarter;
 class Atom {
   int modelNumber = 1;
   String elementSymbol;
+  byte elementNumber = -1;
   String atomName;
   int charge;
   int scatterFactor = Integer.MIN_VALUE;

@@ -40,7 +40,7 @@ class AppletCanvas extends Canvas {
   private Graphics graphicsOffscreen;
 
   private Dimension dimCurrent;
-  private final Rectangle rectClip = new Rectangle();
+  private Rectangle rectClip = new Rectangle();
 
   public void setDisplayControl(DisplayControl control) {
     this.control = control;
@@ -83,7 +83,10 @@ class AppletCanvas extends Canvas {
     }
     // transfer the clipping rectangle to our offscreen buffer
     // also, we will use rectClip later in the rendering process
-    g.getClipBounds(rectClip);
+    if (control.jvm12orGreater)
+      g.getClipBounds(rectClip);
+    else
+      rectClip = g.getClipBounds();
     if (rectClip.width == 0 || rectClip.height == 0) {
       System.out.println("?Que?");
       rectClip.setBounds(0, 0, dimCurrent.width, dimCurrent.height);

@@ -45,6 +45,8 @@ class BboxRenderer {
 
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     Bbox bbox = frame.bbox;
+    if (! bbox.showBoundingBox)
+      return;
     for (int i = 8; --i >= 0; )
       viewer.transformPoint(bbox.bboxPoints[i], bboxScreen[i]);
     short colix = viewer.getColixAxes();

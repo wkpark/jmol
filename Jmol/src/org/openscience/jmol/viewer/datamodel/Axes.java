@@ -45,7 +45,7 @@ public class Axes {
     new Point3f( 0, 0,-1)
   };
 
-  byte modeAxes;
+  byte mode;
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
 
@@ -55,18 +55,18 @@ public class Axes {
       axisPoints[i] = new Point3f();
   }
 
-  public void setMode(byte modeAxes) {
-    this.modeAxes = modeAxes;
-    if (modeAxes == JmolViewer.AXES_NONE)
+  public void setMode(byte mode) {
+    this.mode = mode;
+    if (mode == JmolViewer.AXES_NONE)
       return;
     originPoint.set(viewer.getBoundingBoxCenter());
     Point3f corner = viewer.getBoundingBoxCorner();
     for (int i = 6; --i >= 0; ) {
       Point3f axisPoint = axisPoints[i];
       axisPoint.set(unitAxisPoints[i]);
-      if (modeAxes == JmolViewer.AXES_BBOX) {
+      if (mode == JmolViewer.AXES_BBOX) {
         // we have just set the axisPoint to be a unit on a single axis
-        // therefor only one of these values (x, y, or z) will be nonzero
+        // therefore only one of these values (x, y, or z) will be nonzero
         // it will have value 1 or -1
         axisPoint.x *= corner.x;
         axisPoint.y *= corner.y;

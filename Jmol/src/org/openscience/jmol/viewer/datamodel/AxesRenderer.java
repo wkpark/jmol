@@ -52,6 +52,8 @@ class AxesRenderer extends Renderer {
   
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     Axes axes = frame.axes;
+    if (axes.mode == JmolViewer.AXES_NONE)
+      return;
     viewer.transformPoint(axes.originPoint, originScreen);
     for (int i = 6; --i >= 0; )
       viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);

@@ -314,6 +314,20 @@ public class ColorManager {
     return g3d.getColix(argb);
   }
 
+  int quantize(float lo, float hi, float val, int segmentCount) {
+    float range = hi - lo;
+    if (range <= 0)
+      return (segmentCount + 1) / 2;
+    float t = val - lo;
+    if (t <= 0)
+      return 0;
+    float quanta = range / segmentCount;
+    int q = (int)(t / quanta + 0.5f);
+    if (q >= segmentCount)
+      q = segmentCount - 1;
+    return q;
+  }
+
   public short getColixHbondType(short order) {
     int argbIndex = ((order & JmolConstants.BOND_HYDROGEN_MASK)
                      >> JmolConstants.BOND_HBOND_SHIFT);

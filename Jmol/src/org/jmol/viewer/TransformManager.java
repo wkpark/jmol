@@ -61,31 +61,10 @@ class TransformManager {
   void rotateXYBy(int xDelta, int yDelta) {
     rotateXRadians(yDelta * radiansPerDegree);
     rotateYRadians(xDelta * radiansPerDegree);
-    /*
-    // what fraction of PI radians do you want to rotate?
-    // the full screen width corresponds to a PI (180 degree) rotation
-    // if you grab an atom near the outside edge of the molecule,
-    // you can essentially "pull it" across the screen and it will
-    // track with the mouse cursor
-
-    // the accelerator is just a slop factor ... it felt a litte slow to me
-    float rotateAccelerator = 1.1f;
-
-    // a change in the x coordinate generates a rotation about the y axis
-    float ytheta = (float)Math.PI * xDelta / minScreenDimension;
-    rotateYRadians(ytheta * rotateAccelerator);
-    float xtheta = (float)Math.PI * yDelta / minScreenDimension;
-    rotateXRadians(xtheta * rotateAccelerator);
-    */
   }
 
   void rotateZBy(int zDelta) {
     rotateZRadians((float)Math.PI * zDelta / 180);
-    /*
-    float rotateAccelerator = 1.1f;
-    float ztheta = (float)Math.PI * zDelta / minScreenDimension;
-    rotateByZ(ztheta * rotateAccelerator);
-    */
   }
 
   void rotateFront() {
@@ -475,7 +454,7 @@ class TransformManager {
   }
 
   void slabBy(int pixels) {
-    int percent = pixels * slabPercentSetting / minScreenDimension;
+    int percent = pixels * slabPercentSetting / screenPixelCount;
     if (percent == 0)
       percent = (pixels < 0) ? -1 : 1;
     slabPercentSetting += percent;
@@ -564,7 +543,7 @@ class TransformManager {
   boolean tOversample;
   int width,height;
   int width1, height1, width4, height4;
-  int minScreenDimension;
+  int screenPixelCount;
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
 
@@ -595,23 +574,25 @@ class TransformManager {
     // translate to the middle of the screen
     xTranslation = width / 2;
     yTranslation = height / 2;
+    // 2005 02 22
+    // switch to finding larger screen dimension
     // find smaller screen dimension
-    minScreenDimension = width;
-    if (height < minScreenDimension)
-      minScreenDimension = height;
+    screenPixelCount = width;
+    if (height > screenPixelCount)
+      screenPixelCount = height;
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom
     // given the current VDW radius setting. it is currently *not*
     // recalculated when the vdw radius settings are changed
     // leave a very small margin - only 1 on top and 1 on bottom
-    if (minScreenDimension > 2)
-      minScreenDimension -= 2;
+    if (screenPixelCount > 2)
+      screenPixelCount -= 2;
     scaleDefaultPixelsPerAngstrom =
-      minScreenDimension / 2 / viewer.getRotationRadius();
+      screenPixelCount / 2 / viewer.getRotationRadius();
     if (perspectiveDepth) {
-      cameraDistance = (int)(cameraDepth * minScreenDimension);
+      cameraDistance = (int)(cameraDepth * screenPixelCount);
       cameraDistanceFloat = cameraDistance;
-      float scaleFactor = (cameraDistance + minScreenDimension/2) /
+      float scaleFactor = (cameraDistance + screenPixelCount/2) /
         cameraDistanceFloat;
       // mth - for some reason, I can make the scaleFactor bigger in this
       // case. I do not know why, but there is extra space around the edges.

@@ -105,7 +105,7 @@ class ModelResolver {
       String shelxTag = shelxRecords[i];
       for (int j = lines.length; --j >= 0; )
         if (lines[j].startsWith(shelxTag))
-          return "ShelX";
+          return "Shelx";
     }
     if (lines[1] == null || lines[1].trim().length() == 0)
       return "Jme"; // this is really quite broken :-)

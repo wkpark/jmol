@@ -34,28 +34,27 @@ import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
 /**
- * A reader for ShelX output (RES) files. It does not read all information.
+ * A reader for SHELX output (RES) files. It does not read all information.
  * The list of fields that is read: TITL, REM, END, CELL, SPGR.
  * In addition atoms are read.
  *
- * <p>A reader for ShelX files. It currently supports ShelXL.
+ * <p>A reader for SHELX files. It currently supports SHELXL.
  *
- * <p>The ShelXL format is described on the net:
+ * <p>The SHELXL format is described on the net:
  * <a href="http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html"
  * http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html</a>.
  *
- * @cdk.module io
- *
- * @cdk.keyword file format, ShelXL
- * @author E.L. Willighagen
  */
 
-class ShelXReader extends ModelReader {
+class ShelxReader extends ModelReader {
 
   Model model;
+  boolean endReached;
+  ModelAdapter.Logger logger;
   
   Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
     throws Exception {
+    this.logger = logger;
     model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
     model.coordinatesAreFractional = true;
 
@@ -64,6 +63,11 @@ class ShelXReader extends ModelReader {
     readLine_loop:
     while ((line = reader.readLine()) != null) {
       lineLength = line.length();
+      if (lineLength > 0 && line.charAt(lineLength - 1) == '=') {
+        // this cannot be correct ... the '=' is still in the line
+        // but this is what the cdk reader had in place
+        line += reader.readLine();
+      }
       if (lineLength < 4) {
         if (lineLength == 3 && "END".equalsIgnoreCase(line))
           break;
@@ -78,6 +82,8 @@ class ShelXReader extends ModelReader {
       for (int i = supportedRecordTypes.length; --i >= 0; )
         if (command.equals(supportedRecordTypes[i])) {
           processSupportedRecord(i, line.substring(4).trim());
+          if (endReached)
+            break;
           continue readLine_loop;
         }
       assumeAtomRecord(line);
@@ -86,7 +92,7 @@ class ShelXReader extends ModelReader {
   }
 
   final static String[] supportedRecordTypes =
-  {"TITL", "CELL", "SPGR", /* "END" */ };
+  {"TITL", "CELL", "SPGR", "END "};
 
   void processSupportedRecord(int recordIndex, String restOfLine)
     throws Exception {
@@ -99,6 +105,9 @@ class ShelXReader extends ModelReader {
       break;
     case 2: // SPGR
       model.spaceGroup = restOfLine;
+      break;
+    case 3: // END
+      endReached = true;
       break;
     }
   }
@@ -130,32 +139,36 @@ class ShelXReader extends ModelReader {
 
 
   void assumeAtomRecord(String line) {
-    //System.out.println("Assumed to contain an atom: " + line);
-    /* this line gives an atom, because all lines not starting with
-       a ShelX command is an atom (that sucks!) */
-    StringTokenizer st = new StringTokenizer(line);
-    String atomName = st.nextToken();
-    int scatterFactor = intFromString(st.nextToken());
-    float a = floatFromString(st.nextToken());
-    float b = floatFromString(st.nextToken());
-    float c = floatFromString(st.nextToken());
-    // skip the rest
-    
-    String elementSymbol;
-    if (atomName.length() > 1 &&
-        Character.isDigit(atomName.charAt(1))) {
-      // one letter code elementSymbol
-      char symbol = atomName.charAt(0);
-      if (symbol == 'Q' || symbol == 'q')
-        return;     // ignore atoms named Q
-      elementSymbol = "" + symbol;
-    } else {
-      elementSymbol = atomName.substring(0, 2);
+    try {
+      //    System.out.println("Assumed to contain an atom: " + line);
+      // this line gives an atom, because all lines not starting with
+      // a SHELX command is an atom
+      StringTokenizer st = new StringTokenizer(line);
+      String atomName = st.nextToken();
+      int scatterFactor = intFromString(st.nextToken());
+      float a = floatFromString(st.nextToken());
+      float b = floatFromString(st.nextToken());
+      float c = floatFromString(st.nextToken());
+      // skip the rest
+      
+      String elementSymbol;
+      if (atomName.length() > 1 &&
+          Character.isDigit(atomName.charAt(1))) {
+        // one letter code elementSymbol
+        char symbol = atomName.charAt(0);
+        if (symbol == 'Q' || symbol == 'q')
+          return;     // ignore atoms named Q
+        elementSymbol = "" + symbol;
+      } else {
+        elementSymbol = atomName.substring(0, 2);
+      }
+      
+      Atom atom = new FractionalAtom(elementSymbol, atomName,
+                                     scatterFactor, a, b, c);
+      model.addAtom(atom);
+    } catch (Exception ex) {
+      logger.log("Exception", ex, line);
     }
-
-    Atom atom = new FractionalAtom(elementSymbol, atomName,
-                                   scatterFactor, a, b, c);
-    model.addAtom(atom);
   }
 
   final static String[] unsupportedRecordTypes = {

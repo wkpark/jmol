@@ -30,16 +30,7 @@
     <section title="Downloading the applet">
       <p>To use the applet, you must first download the applet distribution and
       extract the files. It can be downloaded from <a
-      href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>
-      or using one of the following links:
-      <ul>
-          <li>
-            <a href="http://prdownloads.sourceforge.net/jmol/jmol-applet-$APPLET-VERSION$.zip">jmol-applet-$APPLET-VERSION$.zip</a>
-          </li>
-          <li>
-            <a href="http://prdownloads.sourceforge.net/jmol/jmol-applet-$APPLET-VERSION$.tar.gz">jmol-applet-$APPLET-VERSION$.tar.gz</a>
-          </li>
-      </ul>
+      href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>.
       </p>
 
       <p>JmolApplet.jar contains all the classes needed to support the
@@ -325,6 +316,21 @@
 
     </section>
 
+    <section title="Websites using Jmol">
+      <p>A few websites use Jmol to display molecules. Below is a partial list.
+      If your website uses the Jmol applet too, and want to have it listed, please
+      email us.
+      </p>
+      <p>
+        The list:
+        <ul>
+          <li><a href="http://www-woc.sci.kun.nl">Dutch Dictionary on Organic Chemistry</a></li>
+          <li><a href="http://www.ebi.ac.uk/msd-srv/chempdb/">MSD ligand chemistry</a></li>
+        </ul>
+      </p>
+    </section>
+      
+    
   </body>
 </document>
 

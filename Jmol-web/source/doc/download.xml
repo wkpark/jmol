@@ -13,39 +13,13 @@
 
     <section title="Downloading the current release">
       <p>The current release is version $VERSION$.</p>
-      <p>It can be downloaded using one of the following links:
+      <p>It can be downloaded using the following links:
       <ul>
           <li>
-            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.zip">jmol-$VERSION$.zip</a>
-          </li>
-          <li>
-            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.tar.gz">jmol-$VERSION$.tar.gz</a>
+            <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">jmol v$VERSION$</a>
           </li>
       </ul>
-      </p>
-
-      <p>
-      Binary package for Debian GNU/Linux, and Suse/RedHat Linux can be downloaded from
-      <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>.
-      Previous versions can also be found there.
-      </p>
-    </section>
-
-    <section title="Obtaining the source code">
-      <p>The source code can accessed via CVS,
-        or downloaded using one of the following links:
-      <ul>
-          <li>
-            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.source.zip">jmol-$VERSION$.source.zip</a>
-          </li>
-          <li>
-            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.source.tar.gz">jmol-$VERSION$.source.tar.gz</a>
-          </li>
-      </ul>
-      </p>
-
-      <p>
-      To access previous source code archives, please go to <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>.
+      Binary and source packages are available, as well as Debian GNU/Linux, and Suse/RedHat Linux packages.
       </p>
     </section>
 

@@ -35,6 +35,10 @@ import java.util.StringTokenizer;
 
 public class SimpleModelAdapter extends ModelAdapter {
 
+  public SimpleModelAdapter(Logger logger) {
+    super("SimpleModelAdapter", logger);
+  }
+
   /****************************************************************
    * the file related methods
    ****************************************************************/

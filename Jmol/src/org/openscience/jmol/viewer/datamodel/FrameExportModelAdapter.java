@@ -43,6 +43,7 @@ final public class FrameExportModelAdapter extends ModelAdapter {
   public Frame frame;
 
   public FrameExportModelAdapter(JmolViewer viewer, Frame frame) {
+    super("FrameExportModelAdapter", null);
     this.viewer = viewer;
     this.frame = frame;
   }

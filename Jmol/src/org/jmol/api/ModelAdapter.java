@@ -74,8 +74,23 @@ public abstract class ModelAdapter {
    * considered an error condition and the returned String is the error
    * message. 
    */
+
+  String modelAdapterName;
+  Logger logger;
+
+  public ModelAdapter(String modelAdapterName, Logger logger) {
+    this.modelAdapterName = modelAdapterName;
+    this.logger = (logger == null ? new Logger() : logger);
+  }
+
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
+    return openBufferedReader(name, bufferedReader, null);
+  }
+
+  public Object openBufferedReader(String name,
+                                   BufferedReader bufferedReader,
+                                   Logger logger) {
     return null;
   }
 
@@ -202,5 +217,23 @@ public abstract class ModelAdapter {
     public abstract Object getAtomUid1();
     public abstract Object getAtomUid2();
     public abstract int getOrder();
+  }
+
+  /****************************************************************
+   * Logger class
+   ****************************************************************/
+
+  public class Logger { // default logger will log to stdout
+    public boolean isLogging() { return true; }
+    public void log(String str1) {
+      System.out.println(modelAdapterName + ":" + str1);
+    }
+    public void log(String str1, Object obj1) {
+      System.out.println(modelAdapterName + ":" + str1 + ":" + obj1);
+    }
+    public void log(String str1, Object obj1, Object obj2) {
+      System.out.println(modelAdapterName + ":" + str1 + ":"
+                         + obj1 + ":" + obj2);
+    }
   }
 }

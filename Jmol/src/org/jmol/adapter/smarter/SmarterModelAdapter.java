@@ -31,6 +31,10 @@ import java.io.BufferedReader;
 
 public class SmarterModelAdapter extends ModelAdapter {
 
+  public SmarterModelAdapter(Logger logger) {
+    super("SmarterModelAdapter", logger);
+  }
+
   /****************************************************************
    * the file related methods
    ****************************************************************/

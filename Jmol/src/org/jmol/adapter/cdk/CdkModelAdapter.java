@@ -59,6 +59,10 @@ import java.util.Vector;
 
 public class CdkModelAdapter extends ModelAdapter {
 
+  public CdkModelAdapter(Logger logger) {
+    super("CdkModelAdapter", logger);
+  }
+
   /****************************************************************
    * the file related methods
    ****************************************************************/

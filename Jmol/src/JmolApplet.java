@@ -80,8 +80,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initWindows() {
 
     // to enable CDK
-    //    viewer = new JmolViewer(this, new CdkModelAdapter());
-    viewer = new JmolViewer(this, new SimpleModelAdapter());
+    //    viewer = new JmolViewer(this, new CdkModelAdapter(null));
+    viewer = new JmolViewer(this, new SimpleModelAdapter(null));
     viewer.setJmolStatusListener(this);
 
     viewer.setAppletContext(getDocumentBase(), getCodeBase(),

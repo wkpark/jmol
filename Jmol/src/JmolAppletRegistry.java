@@ -47,7 +47,8 @@ public class JmolAppletRegistry {
     strJavaVendor = System.getProperty("java.vendor");
     strJavaVersion = System.getProperty("java.version");
     strOSName = System.getProperty("os.name");
-    jsoWindow = JSObject.getWindow(applet);
+    if (mayScript)
+      jsoWindow = JSObject.getWindow(applet);
     ns4 = (strJavaVendor.startsWith("Netscape") &
            strJavaVersion.startsWith("1.1"));
     if (! ns4)
@@ -124,7 +125,7 @@ public class JmolAppletRegistry {
     "}";
 
   void checkInJavascript(String name, Applet applet) {
-    if (name != null) {
+    if (name != null && jsoWindow != null) {
       jsoTop = (JSObject)jsoWindow.getMember("top");
       Object t;
       t = jsoTop.eval("top.runJmolAppletScript == undefined");

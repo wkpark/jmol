@@ -40,6 +40,7 @@ class SurfaceRenderer extends ShapeRenderer {
   short[] geodesicFaceVertexes;
   short[] geodesicFaceNormixes;
   Point3i[] screens;
+  Point3i[] screensTorusStripLast;
   Point3i[] screensTorusStrip;
 
   final static int[] mapNull = Surface.mapNull;
@@ -59,6 +60,8 @@ class SurfaceRenderer extends ShapeRenderer {
     geodesicVertexCount = surface.geodesicVertexCount;
     screens = viewer.allocTempScreens(geodesicVertexCount);
     screensTorusStrip = viewer.allocTempScreens(Surface.segmentsPerFullCircle);
+    screensTorusStripLast =
+      viewer.allocTempScreens(Surface.segmentsPerFullCircle);
     geodesicFaceCount =
       g3d.getGeodesicFaceCount(surface.geodesicRenderingLevel);
     geodesicFaceVertexes =
@@ -94,6 +97,7 @@ class SurfaceRenderer extends ShapeRenderer {
     }
     viewer.freeTempScreens(screens);
     viewer.freeTempScreens(screensTorusStrip);
+    viewer.freeTempScreens(screensTorusStripLast);
     screens = null;
   }
 
@@ -167,14 +171,29 @@ class SurfaceRenderer extends ShapeRenderer {
     
     short colix = getColix(torus.colixI, colixes, atoms, torus.ixI);
     g3d.setColix(colix);
-    for (int i = torus.stripPointArrays.length; --i >= 0; ) {
+    int stripCount = torus.stripPointArrays.length;
+    short[] normixesLast = null;
+    for (int i = 0; i < stripCount; ++i) {
       Point3f[] strip = torus.stripPointArrays[i];
       short[] normixes = torus.stripNormixesArrays[i];
-      for (int j = strip.length; --j >= 0; )
+      for (int j = 0; j < strip.length; ++j) {
         viewer.transformPoint(strip[j], screensTorusStrip[j]);
-      for (int j = strip.length; --j >= 0; ) {
-        g3d.drawPixel(screensTorusStrip[j]);
+        if (i > 0 && j > 0) {
+          g3d.fillQuadrilateral(colix, false,
+                                screensTorusStripLast[j - 1],
+                                normixesLast[j - 1],
+                                screensTorusStripLast[j],
+                                normixesLast[j],
+                                screensTorusStrip[j],
+                                normixes[j],
+                                screensTorusStrip[j - 1],
+                                normixes[j - 1]);
+        }
       }
+      normixesLast = normixes;
+      Point3i[] t = screensTorusStripLast;
+      screensTorusStripLast = screensTorusStrip;
+      screensTorusStrip = t;
     }
   }
 
@@ -265,10 +284,10 @@ class SurfaceRenderer extends ShapeRenderer {
     for (int i = points.length; --i >= 0; )
       viewer.transformPoint(points[i], screens[i]);
 
-    //short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
-    //short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
-    //short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
-    //short colixCenter = Graphics3D.YELLOW;
+    short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
+    short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
+    short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
+    short colixCenter = Graphics3D.RED;
                         
     Point3i screenCenter = screens[0];
     short normixCenter = normixes[0];
@@ -277,27 +296,7 @@ class SurfaceRenderer extends ShapeRenderer {
       int j = i + 1;
       if (j == points.length)
         j = 1;
-      short colix = Graphics3D.YELLOW;
-      switch(i) {
-      case 1:
-        colix = Graphics3D.GREEN;
-        break;
-      case 2:
-        colix = Graphics3D.PINK;
-        break;
-      case 3:
-        colix = Graphics3D.ORANGE;
-        break;
-      case 4:
-        colix = Graphics3D.CYAN;
-        break;
-      case 5:
-        colix = Graphics3D.MAGENTA;
-        break;
-        
-      default:
-        colix = Graphics3D.WHITE;
-      }
+      short colix = colix1;
       g3d.fillTriangle(false,
                        screenCenter, Graphics3D.RED, normixCenter,
                        screens[i], colix, normixes[i],

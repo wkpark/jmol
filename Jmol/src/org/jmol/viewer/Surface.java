@@ -103,7 +103,7 @@ class Surface extends Shape {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
-  final static int segmentsPerFullCircle = 60;
+  final static int segmentsPerFullCircle = 20;
   private final static float radiansPerSegment =
     2*(float)Math.PI/segmentsPerFullCircle;
 
@@ -525,7 +525,6 @@ class Surface extends Shape {
       outerVector.scale(radiusP);
 
       outerRadians = outerVector.angle(vectorPJ);
-      System.out.println("outerRadians=" + outerRadians);
     }
 
     void addCavity(Cavity cavity) {
@@ -576,6 +575,7 @@ class Surface extends Shape {
         ++segments;
       int pointStripCount = segments + 1;
       float actualOuterRadiansPerSegment = outerRadians / segments;
+      //FIXME, flip the tangent vector around
       vectorT.sub(vectorNull, tangentVector);
       aaOuterTangent.set(vectorT, 0);
       aaAxis.set(axisVector, 0);

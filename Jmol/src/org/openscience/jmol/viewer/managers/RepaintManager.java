@@ -75,6 +75,7 @@ public class RepaintManager {
                          "viewer.getModelCount()=" + viewer.getModelCount() +
                          "frame.modelCount=" + frame.modelCount);
     }
+    viewer.notifyFrameChanged(modelIndex);
   }
 
   public int animationDirection = 1;
@@ -256,7 +257,6 @@ public class RepaintManager {
     if (band != null)
       g3d.drawRect(viewer.getColixRubberband(),
                    band.x, band.y, 0, band.width, band.height);
-    viewer.notifyFrameChanged(displayModelID);
   }
 
   /****************************************************************

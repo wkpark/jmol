@@ -58,17 +58,17 @@
       </section>
     </section>
       
-    <section title="Jmol10pre2">
+    <section title="Jmol10pre3">
       <p>
-	Jmol version 10 pre-release 2 is now released. This release includes
+	Jmol version 10 pre-release 3 is now released. This release includes
 	the following enhancements:
 	<ul>
 	  <li>has updated/improved/correct nucleotide set definitions</li>
 	  <li>properly supports PickCallBack</li>
 	  <li>respects CONECT records in .pdb files</li>
-	  <li>offers preliminary/rudimentary cartoon support</li>
 	  <li>chooses conformation A when alternate locations are present</li>
 	  <li>renders 'ribbons' as strands</li>
+	  <li>offers preliminary/rudimentary 'cartoons'</li>
 	  <li>supports 'color monitors'</li>
 	  <li><i>Note application name change</i> jmol.jar -> Jmol.jar</li>
 	</ul>
@@ -83,11 +83,12 @@
 	  </li>
 	  <li>Will not render isosurfaces</li>
 	  <li>Does not handle nucleotide shapes</li>
+	  <li>Does not handle .pdb insertion codes</li>
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre2.zip"
-	   ><font size="+1"><i>Give me the code!</i> Jmol10pre2.zip</font></a>
+	<a href="Jmol10pre3.zip"
+	   ><font size="+1"><i>Give me the code!</i> Jmol10pre3.zip</font></a>
       </p>
       <p>
 	Unzip the code using the tool of your choice. It will unzip into

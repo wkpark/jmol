@@ -53,15 +53,10 @@ import java.net.MalformedURLException;
 
 public class AboutDialog extends JDialog implements HyperlinkListener {
     private static JmolResourceHandler jrh;
-    private static String jhome;
-    private static String theFile;
     JEditorPane html;
 
     static {
         jrh = new JmolResourceHandler("About");
-        Properties props = System.getProperties();
-        jhome = props.getProperty("jmol.home");
-        theFile = jhome + File.separator + "doc" + File.separator + "About.html";
     }
     
     public AboutDialog(JFrame fr) {
@@ -69,11 +64,12 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
         super(fr, "About Jmol", true);
 
         try {
-            File f = new File(theFile);
-            String s = f.getAbsolutePath();
-            s = "file:" + s;
-            URL url = new URL(s);
-            html = new JEditorPane(s);
+			URL aboutURL = ClassLoader.getSystemResource(jrh.getString("aboutURL"));
+			if (aboutURL != null) {
+				html = new JEditorPane(aboutURL);
+			} else {
+				html = new JEditorPane("text/plain", "Unable to find url '" + jrh.getString("aboutURL") + "'.");
+			}
             html.setEditable(false);
             html.addHyperlinkListener(this);
         } catch (MalformedURLException e) {

@@ -54,15 +54,10 @@ import java.net.MalformedURLException;
 public class WhatsNewDialog extends JDialog implements HyperlinkListener
 {
     private static JmolResourceHandler jrh;
-    private static String jhome;
-    private static String theFile;
     JEditorPane html;
 
     static {
         jrh = new JmolResourceHandler("WhatsNew");
-        Properties props = System.getProperties();
-        jhome = props.getProperty("jmol.home");
-        theFile = jhome + File.separator + "doc" + File.separator + "ChangeLog.html";
     }
     
     public WhatsNewDialog(JFrame fr) {
@@ -70,11 +65,12 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener
         super(fr, "What's New in Jmol", true);
 
         try {
-            File f = new File(theFile);
-            String s = f.getAbsolutePath();
-            s = "file:" + s;
-            URL url = new URL(s);
-            html = new JEditorPane(s);
+			URL changeLogURL = ClassLoader.getSystemResource(jrh.getString("changeLogURL"));
+			if (changeLogURL != null) {
+				html = new JEditorPane(changeLogURL);
+			} else {
+				html = new JEditorPane("text/plain", "Unable to find url '" + jrh.getString("changeLogURL") + "'.");
+			}
             html.setEditable(false);
             html.addHyperlinkListener(this);
         } catch (MalformedURLException e) {

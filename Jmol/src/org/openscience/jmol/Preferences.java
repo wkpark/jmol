@@ -99,7 +99,6 @@ public class Preferences extends JDialog {
     
     private PrefsAction prefsAction = new PrefsAction();
     private Hashtable commands;
-    private static String jhome;
 
     static {
         jrh = new JmolResourceHandler("Prefs");

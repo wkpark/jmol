@@ -78,18 +78,14 @@ class Jmol extends JPanel {
     public static File UserPropsFile;
     public static File UserAtypeFile;
     
-    public static File jhome;
-    public static File uhome;
-    public static File ujmoldir;
-    public static File curdir;
     private static JFrame consoleframe;
     
     static {
-        String sep = File.separator;                
-        jhome = new File(System.getProperty("jmol.home"));
-        uhome = new File(System.getProperty("user.home"));        
-        curdir = new File(System.getProperty("user.dir"));
-        ujmoldir = new File(uhome, ".jmol");
+		if (System.getProperty("user.home") == null) {
+			System.err.println("Error starting Jmol: the property 'user.home' is not defined.");
+			System.exit(1);
+		}
+        File ujmoldir = new File(new File(System.getProperty("user.home")), ".jmol");
         ujmoldir.mkdirs();
         JmolResourceHandler.initialize("org.openscience.jmol.Properties.Jmol");        
         UserPropsFile = new File(ujmoldir, "properties");
@@ -170,10 +166,11 @@ class Jmol extends JPanel {
         
         
         ft = new FileTyper(openChooser);
-        openChooser.setAccessory(ft);        
-        openChooser.setCurrentDirectory(curdir);
-        saveChooser.setCurrentDirectory(curdir);
-        exportChooser.setCurrentDirectory(curdir);        
+        openChooser.setAccessory(ft);
+		File currentDir = getUserDirectory();
+        openChooser.setCurrentDirectory(currentDir);
+        saveChooser.setCurrentDirectory(currentDir);
+        exportChooser.setCurrentDirectory(currentDir);        
     }
 
 
@@ -1072,11 +1069,16 @@ class Jmol extends JPanel {
         }                        
     }
 
+	/**
+	 * Returns a new File referenced by the property 'user.dir', or null
+	 * if the property is not defined.
+	 *
+	 * @returns  a File to the user directory 
+	 */
+	static File getUserDirectory() {
+		if (System.getProperty("user.dir") == null) {
+			return null;
+		}
+		return new File(System.getProperty("user.dir"));
+	}
 }
-
-
-
-
-
-
-

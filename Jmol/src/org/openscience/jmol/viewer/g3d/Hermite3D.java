@@ -30,10 +30,9 @@ import org.openscience.jmol.viewer.*;
 import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
+import javax.vecmath.Point3i;
 
 public class Hermite3D {
-
-  static int foo = 0;
 
   JmolViewer viewer;
   Graphics3D g3d;
@@ -43,30 +42,33 @@ public class Hermite3D {
     this.g3d = g3d;
   }
 
-  final int[] xA = new int[16];
-  final int[] yA = new int[16];
-  final int[] zA = new int[16];
+  final Point3i[] pA = new Point3i[16];
+  final Point3i[] pB = new Point3i[16];
   final float[] sA = new float[16];
-  final int[] xB = new int[16];
-  final int[] yB = new int[16];
-  final int[] zB = new int[16];
   final float[] sB = new float[16];
   int sp;
+  {
+    for (int i = 16; --i >= 0; ) {
+      pA[i] = new Point3i();
+      pB[i] = new Point3i();
+    }
+  }
 
   public void render(boolean tFill, short colix,
                      int diameterBeg, int diameterMid, int diameterEnd,
-                     int x0, int y0, int z0, int x1, int y1, int z1,
-                     int x2, int y2, int z2, int x3, int y3, int z3) {
-    int xT1 = (x2 - x0) * 7 / 8;
-    int yT1 = (y2 - y0) * 7 / 8;
-    int zT1 = (z2 - z0) * 7 / 8;
-    int xT2 = (x3 - x1) * 7 / 8;
-    int yT2 = (y3 - y1) * 7 / 8;
-    int zT2 = (z3 - z1) * 7 / 8;
+                     Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
+    int x1 = p1.x, y1 = p1.y, z1 = p1.z;
+    int x2 = p2.x, y2 = p2.y, z2 = p2.z;
+    int xT1 = (x2 - p0.x) * 7 / 8;
+    int yT1 = (y2 - p0.y) * 7 / 8;
+    int zT1 = (z2 - p0.z) * 7 / 8;
+    int xT2 = (p3.x - x1) * 7 / 8;
+    int yT2 = (p3.y - y1) * 7 / 8;
+    int zT2 = (p3.z - z1) * 7 / 8;
     sA[0] = 0;
-    xA[0] = x1; yA[0] = y1; zA[0] = z1;
+    pA[0].set(p1);
     sB[0] = 1;
-    xB[0] = x2; yB[0] = y2; zB[0] = z2;
+    pB[0].set(p2);
     sp = 0;
     int dDiameterFirstHalf = 0;
     int dDiameterSecondHalf = 0;
@@ -77,8 +79,10 @@ public class Hermite3D {
       g3d.setColix(colix);
     }
     do {
-      int dx = xB[sp] - xA[sp];
-      int dy = yB[sp] - yA[sp];
+      Point3i a = pA[sp];
+      Point3i b = pB[sp];
+      int dx = b.x - a.x;
+      int dy = b.y - a.y;
       int dist2 = dx*dx + dy*dy;
       if (dist2 <= 2) {
         // mth 2003 10 13
@@ -86,12 +90,12 @@ public class Hermite3D {
         // but drawing spheres was faster
         float s = sA[sp];
         if (tFill) {
-          int d =(s < 0.5
+          int d =(s < 0.5f
                   ? diameterBeg + (int)(dDiameterFirstHalf * s)
-                  : diameterMid + (int)(dDiameterSecondHalf * (s - 0.5)));
-          g3d.fillSphereCentered(colix, d, xA[sp], yA[sp], zA[sp]);
+                  : diameterMid + (int)(dDiameterSecondHalf * (s - 0.5f)));
+          g3d.fillSphereCentered(colix, d, a);
         } else {
-          g3d.plotPixelClipped(xA[sp], yA[sp], zA[sp]);
+          g3d.plotPixelClipped(a);
         }
         --sp;
       } else {
@@ -102,21 +106,16 @@ public class Hermite3D {
         double h2 = -2*s3 + 3*s2;
         double h3 = s3 - 2*s2 + s;
         double h4 = s3 - s2;
-        int x = (int) (h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
-        int y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
-        int z = (int) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
-        xB[sp+1] = xB[sp];
-        yB[sp+1] = yB[sp];
-        zB[sp+1] = zB[sp];
+        Point3i pMid = pB[sp+1];
+        pMid.x = (int) (h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
+        pMid.y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
+        pMid.z = (int) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
+        pB[sp+1] = pB[sp];
         sB[sp+1] = sB[sp];
-        xB[sp] = x;
-        yB[sp] = y;
-        zB[sp] = z;
+        pB[sp] = pMid;
         sB[sp] = (float)s;
         ++sp;
-        xA[sp] = x;
-        yA[sp] = y;
-        zA[sp] = z;
+        pA[sp].set(pMid);
         sA[sp] = (float)s;
       }
     } while (sp >= 0);

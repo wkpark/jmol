@@ -24,6 +24,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3f;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  *  Drawing methods for ChemFrame.
@@ -45,10 +47,24 @@ public class ChemFrameRenderer {
     if (frame.getNumberOfAtoms() <= 0) {
       return;
     }
+
+    // mth 2002 oct 27
+    // if logTimes==true then show recalc/repaint times to the console
+    long timePaint = 0;
+    long time = 0;
+    boolean logTimes = false;
+
+    if (logTimes) {
+      timePaint = System.currentTimeMillis();
+    }
+
     boolean drawHydrogen = settings.getShowHydrogens();
 
     if (shapes == null || frame.hashCode() != frameHashCode
         || settings.hashCode() != previousSettingsHashCode) {
+      if (logTimes) {
+        time = System.currentTimeMillis();
+      }
       frameHashCode = frame.hashCode();
       previousSettingsHashCode = settings.hashCode();
       transformables.clear();
@@ -130,19 +146,56 @@ public class ChemFrameRenderer {
       for (int i = 0; i < shapes.length && shapeIter.hasMoreElements(); ++i) {
         shapes[i] = (Shape) shapeIter.nextElement();
       }
+      if (logTimes) {
+        time = System.currentTimeMillis() - time;
+        System.out.println("redo shapes time:" + time);
+      }
     }
     
+    if (logTimes) {
+      time = System.currentTimeMillis();
+    }
     Enumeration iter = transformables.elements();
     while (iter.hasMoreElements()) {
       Transformable t1 = (Transformable) iter.nextElement();
       t1.transform(matrix);
     }
-    shapeSorter.sort(shapes);
-    
+    if (logTimes) {
+      time = System.currentTimeMillis() - time;
+      System.out.println("transform time:" + time);
+    }
+
+    if (logTimes) {
+      time = System.currentTimeMillis();
+    }
+    Arrays.sort(shapes,
+                new Comparator() {
+                  public int compare(Object shape1, Object shape2) {
+                    int z1 = ((Shape) shape1).getZ();
+                    int z2 = ((Shape) shape2).getZ();
+                    if (z1 < z2)
+                      return -1;
+                    if (z1 == z2)
+                      return 0;
+                    return 1;
+                  }
+                }
+                );
+    if (logTimes) {
+      time = System.currentTimeMillis() - time;
+      System.out.println("sort time:" + time);
+      time = System.currentTimeMillis();
+    }
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g);
     }
-    
+    if (logTimes) {
+      time = System.currentTimeMillis() - time;
+      System.out.println("render time:" + time);
+
+      timePaint = System.currentTimeMillis() - timePaint;
+      System.out.println("ChemFrameRenderer.paint() : " + timePaint);
+    }
   }
 
   int frameHashCode;
@@ -152,21 +205,6 @@ public class ChemFrameRenderer {
   
   Vector transformables = new Vector();
   
-  HeapSorter shapeSorter = new HeapSorter(new HeapSorter.Comparator() {
-
-    public int compare(Object atom1, Object atom2) {
-
-      Shape a1 = (Shape) atom1;
-      Shape a2 = (Shape) atom2;
-      if (a1.getZ() < a2.getZ()) {
-        return -1;
-      } else if (a1.getZ() > a2.getZ()) {
-        return 1;
-      }
-      return 0;
-    }
-  });
-
   /**
    * Point for calculating lengths of vectors.
    */

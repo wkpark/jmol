@@ -48,12 +48,12 @@ public class MeasureRenderer {
         int j = al[1];
         try {
           d.paint(g, settings,
-              (int) frame.getAtomAt(l).getScreenPosition().x,
-                (int) frame.getAtomAt(l).getScreenPosition().y,
-                  (int) frame.getAtomAt(l).getScreenPosition().z,
-                    (int) frame.getAtomAt(j).getScreenPosition().x,
-                      (int) frame.getAtomAt(j).getScreenPosition().y,
-                        (int) frame.getAtomAt(j).getScreenPosition().z);
+                  frame.getAtomAt(l).screenX,
+                  frame.getAtomAt(l).screenY,
+                  frame.getAtomAt(l).screenZ,
+                  frame.getAtomAt(j).screenX,
+                  frame.getAtomAt(j).screenY,
+                  frame.getAtomAt(j).screenZ);
         } catch (Exception ex) {
         }
       }
@@ -68,15 +68,15 @@ public class MeasureRenderer {
         int k = al[2];
         try {
           an.paint(g, settings,
-              (int) frame.getAtomAt(l).getScreenPosition().x,
-                (int) frame.getAtomAt(l).getScreenPosition().y,
-                  (int) frame.getAtomAt(l).getScreenPosition().z,
-                    (int) frame.getAtomAt(j).getScreenPosition().x,
-                      (int) frame.getAtomAt(j).getScreenPosition().y,
-                        (int) frame.getAtomAt(j).getScreenPosition().z,
-                          (int) frame.getAtomAt(k).getScreenPosition().x,
-                            (int) frame.getAtomAt(k).getScreenPosition().y,
-                              (int) frame.getAtomAt(k).getScreenPosition().z);
+                   frame.getAtomAt(l).screenX,
+                   frame.getAtomAt(l).screenY,
+                   frame.getAtomAt(l).screenZ,
+                   frame.getAtomAt(j).screenX,
+                   frame.getAtomAt(j).screenY,
+                   frame.getAtomAt(j).screenZ,
+                   frame.getAtomAt(k).screenX,
+                   frame.getAtomAt(k).screenY,
+                   frame.getAtomAt(k).screenZ);
         } catch (Exception ex) {
         }
       }
@@ -91,20 +91,19 @@ public class MeasureRenderer {
         int k = dhl[2];
         int m = dhl[3];
         try {
-          dh.paint(g, settings, (int) frame.getAtomAt(l).getScreenPosition()
-              .x, (int) frame.getAtomAt(l).getScreenPosition()
-                .y, (int) frame.getAtomAt(l).getScreenPosition()
-                  .z, (int) frame.getAtomAt(j).getScreenPosition()
-                    .x, (int) frame.getAtomAt(j).getScreenPosition()
-                      .y, (int) frame.getAtomAt(j).getScreenPosition()
-                        .z, (int) frame.getAtomAt(k).getScreenPosition()
-                          .x, (int) frame.getAtomAt(k).getScreenPosition()
-                            .y, (int) frame.getAtomAt(k).getScreenPosition()
-                              .z, (int) frame.getAtomAt(m).getScreenPosition()
-                                .x, (int) frame.getAtomAt(m)
-                                  .getScreenPosition()
-                                    .y, (int) frame.getAtomAt(m)
-                                      .getScreenPosition().z);
+          dh.paint(g, settings,
+                   frame.getAtomAt(l).screenX,
+                   frame.getAtomAt(l).screenY,
+                   frame.getAtomAt(l).screenZ,
+                   frame.getAtomAt(j).screenX,
+                   frame.getAtomAt(j).screenY,
+                   frame.getAtomAt(j).screenZ,
+                   frame.getAtomAt(k).screenX,
+                   frame.getAtomAt(k).screenY,
+                   frame.getAtomAt(k).screenZ,
+                   frame.getAtomAt(m).screenX,
+                   frame.getAtomAt(m).screenY,
+                   frame.getAtomAt(m).screenZ);
         } catch (Exception ex) {
         }
       }

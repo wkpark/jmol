@@ -35,8 +35,11 @@ class BondShape implements Shape {
     bondRenderer.paint(g, atom1, atom2, settings);
   }
   
-  public double getZ() {
-    return 0.75*atom1.getScreenPosition().z + 0.25*atom2.getScreenPosition().z;
+  public int getZ() {
+    // mth 2002 oct 27
+    // I don't understand why this is 3/4 of the distance instead of 1/2
+    // but I'm not going to change it today
+    return (3*atom1.screenZ + atom2.screenZ)/4;
   }
   
   

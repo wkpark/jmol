@@ -60,8 +60,7 @@ public class Atom {
    * @param the type of this atom.
    */
   public Atom(BaseAtomType atomType, int atomNumber) {
-    this.atomType = new AtomType(atomType);
-    this.atomNumber = atomNumber;
+    this(atomType, new Point3f(), atomNumber);
   }
 
   /**
@@ -178,16 +177,16 @@ public class Atom {
   /**
    * Sets the atom's position.
    */
-  public void setPosition(Point3f position) {
-    this.position.set(position);
-  }
+    public void setPosition(Point3f position) {
+      this.position.set(position);
+    }
 
   /**
    * Returns the atom's on-screen position. Note: the atom must
    * first be transformed. Otherwise, a point at the origin is returned.
    */
   public Point3f getScreenPosition() {
-    return new Point3f(screenPosition);
+    return screenPosition;
   }
 
   /**
@@ -230,6 +229,10 @@ public class Atom {
   public void transform(Matrix4d transformationMatrix) {
 
     transformationMatrix.transform(position, screenPosition);
+    screenX = (int) screenPosition.x;
+    screenY = (int) screenPosition.y;
+    screenZ = (int) screenPosition.z;
+    
     if (vector != null) {
       screenVector.scaleAdd(2.0f, vector, position);
       transformationMatrix.transform(screenVector);
@@ -313,12 +316,20 @@ public class Atom {
   /**
    * Position in world space.
    */
-  private Point3f position = new Point3f();
+  private final Point3f position; // = new Point3f();
 
   /**
    * Position in screen space.
+   * now only used as argument to transform
    */
-  private Point3f screenPosition = new Point3f();
+  private final Point3f screenPosition = new Point3f();
+
+  /**
+   * Public variables to be used to access screen coordinates of the atom
+   */
+  public int screenX;
+  public int screenY;
+  public int screenZ;
 
   /**
    * A list of atoms to which this atom is bonded. Lazily initialized.

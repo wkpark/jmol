@@ -48,9 +48,9 @@ public class WireframeAtomRenderer implements AtomRenderer {
     }
     Color atomColor = colorProfile.getColor(atom);
 
-    int x = (int) atom.getScreenPosition().x;
-    int y = (int) atom.getScreenPosition().y;
-    int z = (int) atom.getScreenPosition().z;
+    int x = (int) atom.screenX;
+    int y = (int) atom.screenY;
+    int z = (int) atom.screenZ;
     int diameter =
       (int) (2.0f
         * settings.getCircleRadius(z, atom.getType().getVdwRadius()));

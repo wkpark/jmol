@@ -34,16 +34,18 @@ class AtomVectorShape implements Shape {
         double magnitude = atom.getVector().distance(zeroPoint);
         double scaling = (magnitude - minMagnitude) / magnitudeRange
                            + 0.5;
-        ArrowLine al = new ArrowLine(g, atom.getScreenPosition().x,
-                         atom.getScreenPosition().y,
-                         atom.getScreenVector().x,
-                         atom.getScreenVector().y, false, true, scaling);
+        ArrowLine al = new ArrowLine(g,
+                                     atom.screenX,
+                                     atom.screenY,
+                                     atom.screenZ,
+                                     atom.getScreenVector().y,
+                                     false, true, scaling);
       }
     }
   }
   
-  public double getZ() {
-    return atom.getScreenPosition().z + 1;
+  public int getZ() {
+    return atom.screenZ + 1;
   }
   
   /**

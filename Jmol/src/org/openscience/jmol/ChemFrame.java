@@ -398,9 +398,9 @@ public class ChemFrame implements Transformable {
 
   private boolean isAtomInRegion(int n, int x1, int y1, int x2, int y2) {
 
-    int x = (int) atoms[n].getScreenPosition().x;
-    int y = (int) atoms[n].getScreenPosition().y;
+    int x = atoms[n].screenX;
     if ((x > x1) && (x < x2)) {
+      int y = atoms[n].screenY;
       if ((y > y1) && (y < y2)) {
         return true;
       }
@@ -426,8 +426,8 @@ public class ChemFrame implements Transformable {
     int smallr2 = Integer.MAX_VALUE;
     for (int i = 0; i < numberAtoms; i++) {
       Atom atom = atoms[i];
-      dx = (int) atom.getScreenPosition().x - x;
-      dy = (int) atom.getScreenPosition().y - y;
+      dx = atom.screenX - x;
+      dy = atom.screenY - y;
       dr2 = dx * dx + dy * dy;
       if (dr2 < smallr2) {
         smallest = atom;

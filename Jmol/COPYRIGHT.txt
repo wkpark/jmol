@@ -50,7 +50,8 @@ JPEG Encoder
 
 Java Analysis Studio
   Used for graphs. Distributed by the GNU Lesser General Public License
-  (see doc/lgpl.license). See http://jas.freehep.org/.
+  (see doc/lgpl.license), and requires providing the source code (see
+  http://jas.freehep.org/source.htm). See http://jas.freehep.org/.
 
 Unofficial Java3D vecmath package
   Used for linear algebra. Distributed free and without warranty.

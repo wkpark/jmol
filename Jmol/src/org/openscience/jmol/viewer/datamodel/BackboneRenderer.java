@@ -43,14 +43,13 @@ class BackboneRenderer extends McgRenderer {
   }
   
   void renderTraceChain(Backbone.Chain backboneChain) {
-    render1Chain(backboneChain.atomIndices,
+    render1Chain(backboneChain.mainchainLength, backboneChain.atomIndices,
                  backboneChain.mads, backboneChain.colixes);
   }
 
-  void render1Chain(int[] atomIndices, short[] mads, short[] colixes) {
-    if (mads == null)
-      return;
-    for (int i = mads.length; --i >= 0; ) {
+  void render1Chain(int mainchainLength, int[] atomIndices,
+                    short[] mads, short[] colixes) {
+    for (int i = mainchainLength - 1; --i >= 0; ) {
       if (mads[i] == 0)
         continue;
       Atom atomA = frame.getAtomAt(atomIndices[i]);

@@ -72,6 +72,7 @@ class StrandsRenderer extends McgRenderer {
     return screens;
   }
 
+  int mainchainLength;
   int strandCount;
   float halfStrandCount;
   float strandSeparation;
@@ -79,67 +80,50 @@ class StrandsRenderer extends McgRenderer {
 
   void renderMcgChain(Mcg.Chain mcgChain) {
     Strands.Chain strandsChain = (Strands.Chain)mcgChain;
-    if (strandsChain.mainchainLength < 2)
-      return;
+    mainchainLength = strandsChain.mainchainLength;
 
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
     
-    render1Chain(strandsChain.mainchain,
+    render1Chain(strandsChain.mainchainLength,
+                 strandsChain.mainchain,
                  strandsChain.centers,
                  strandsChain.vectors,
                  strandsChain.mads,
                  strandsChain.colixes);
   }
 
-  /*
-  void render() {
-    this.strands = frame.strands;
 
-    if (strands == null || !strands.initialized)
-      return;
-    PdbFile pdbFile = strands.pdbFile;
-    short[][] madsChains = strands.madsChains;
-    short[][] colixesChains = strands.colixesChains;
-    Point3f[][] centersChains = strands.centersChains;
-    Vector3f[][] vectorsChains = strands.vectorsChains;
-    for (int i = strands.chainCount; --i >= 0; ) {
-      Point3f[] centers = centersChains[i];
-      if (centers != null)
-        render1Chain(pdbFile.getMainchain(i), centers,
-                     vectorsChains[i], madsChains[i], colixesChains[i]);
-    }
-  }
-  */
-
-  void render1Chain(PdbGroup[] mainchain, Point3f[] centers,
+  void render1Chain(int mainchainLength,
+                    PdbGroup[] mainchain, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
     Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0; ) {
       float f = (i * strandSeparation) + baseOffset;
       screens = calcScreens(centers, vectors, mads, f);
-      render1Strand(mainchain, mads, colixes, screens);
+      render1Strand(mainchainLength, mainchain, mads, colixes, screens);
       screens = calcScreens(centers, vectors, mads, -f);
-      render1Strand(mainchain, mads, colixes, screens);
+      render1Strand(mainchainLength, mainchain, mads, colixes, screens);
     }
     if ((strandCount & 1) != 0) {
       screens = calcScreens(centers, vectors, mads, 0f);
-      render1Strand(mainchain, mads, colixes, screens);
+      render1Strand(mainchainLength, mainchain, mads, colixes, screens);
     }
   }
 
-  void render1Strand(PdbGroup[] mainchain, short[] mads,
+  void render1Strand(int mainchainLength, PdbGroup[] mainchain, short[] mads,
                      short[] colixes, Point3i[] screens) {
-    for (int i = colixes.length; --i >= 0; )
+    for (int i = mainchainLength; --i >= 0; )
       if (mads[i] > 0)
-        render1StrandSegment(mainchain[i], colixes[i], mads, screens, i);
+        render1StrandSegment(mainchainLength,
+                             mainchain[i], colixes[i], mads, screens, i);
   }
 
-  void render1StrandSegment(PdbGroup group, short colix,
+  void render1StrandSegment(int mainchainLength, PdbGroup group, short colix,
                             short[] mads, Point3i[] screens, int i) {
-    int iLast = mads.length - 1;
+    int iLast = mainchainLength;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;

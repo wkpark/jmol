@@ -91,13 +91,19 @@ abstract public class Mcg implements Graphic {
     }
     
     public void setMad(short mad, BitSet bsSelected) {
-      for (int i = chains.length; --i >= 0; )
-        chains[i].setMad(mad, bsSelected);
+      for (int i = chains.length; --i >= 0; ) {
+        Chain chain = chains[i];
+        if (chain.mainchainLength > 0)
+          chain.setMad(mad, bsSelected);
+      }
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = chains.length; --i >= 0; )
-        chains[i].setColix(palette, colix, bsSelected);
+      for (int i = chains.length; --i >= 0; ) {
+        Chain chain = chains[i];
+        if (chain.mainchainLength > 0)
+          chain.setColix(palette, colix, bsSelected);
+      }
     }
 
     int getChainCount() {
@@ -111,11 +117,24 @@ abstract public class Mcg implements Graphic {
 
   abstract class Chain {
     PdbChain pdbChain;
+    int mainchainLength;
+    PdbGroup[] mainchain;
     short[] colixes;
     short[] mads;
     
     Chain(PdbChain pdbChain) {
       this.pdbChain = pdbChain;
+      mainchain = pdbChain.getMainchain();
+      mainchainLength = mainchain.length;
+      if (mainchainLength < 2) {
+        mainchainLength = 0;
+        mainchain = null;
+        System.out.println("mainchain too short");
+      } else {
+        colixes = new short[mainchainLength];
+        mads = new short[mainchainLength + 1];
+        System.out.println("mainchain is of length:" + mainchainLength);
+      }
     }
     
     abstract public void setMad(short mad, BitSet bsSelected);

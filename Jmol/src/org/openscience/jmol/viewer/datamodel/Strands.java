@@ -50,25 +50,16 @@ public class Strands extends Mcg {
   }
 
   class Chain extends Mcg.Chain {
-    int mainchainLength;
-    PdbGroup[] mainchain;
     Point3f[] centers;
     Vector3f[] vectors;
 
     Chain(PdbChain pdbChain) {
       super(pdbChain);
-      frame = pdbChain.model.file.frame;
-      mainchain = pdbChain.getMainchain();
-      mainchainLength = mainchain.length;
-      if (mainchainLength < 2) {
-        mainchainLength = 0;
-        return;
+      if (mainchainLength >= 2) {
+        centers = new Point3f[mainchainLength + 1];
+        vectors = new Vector3f[mainchainLength + 1];
+        calcCentersAndVectors(mainchain, centers, vectors);
       }
-      colixes = new short[mainchainLength];
-      mads = new short[mainchainLength + 1];
-      centers = new Point3f[mainchainLength + 1];
-      vectors = new Vector3f[mainchainLength + 1];
-      calcCentersAndVectors(mainchain, centers, vectors);
     }
 
     public void setMad(short mad, BitSet bsSelected) {
@@ -80,7 +71,7 @@ public class Strands extends Mcg {
             mads[i] = mad;
           }
       }
-      if (mainchainLength > 0)
+      if (mainchainLength > 1)
         mads[mainchainLength] = mads[mainchainLength - 1];
     }
 

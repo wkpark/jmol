@@ -172,8 +172,15 @@ public class PdbGroup {
 
   public Atom getMainchainAtom(int i) {
     int j;
-    if (mainchainIndices == null || (j = mainchainIndices[i]) == -1)
+    if (mainchainIndices == null || (j = mainchainIndices[i]) == -1) {
+      System.out.println("I am a mainchain atom returning null because " +
+                         " mainchainIndices==null? " +
+                         (mainchainIndices == null));
+      System.out.println("chain '" + chain.chainID + "'");
+      System.out.println("group3=" + getGroup3());
+      System.out.println("groupSequence=" + groupSequence);
       return null;
+    }
     return chain.model.file.frame.getAtomAt(j);
   }
 

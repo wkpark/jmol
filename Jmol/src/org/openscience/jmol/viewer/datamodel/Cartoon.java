@@ -43,21 +43,9 @@ public class Cartoon extends Mcg {
   }
 
   class Chain extends Mcg.Chain {
-    int mainchainLength;
-    PdbGroup[] mainchain;
-    Frame frame;
-    short[] colixes;
-    short[] mads;
 
     Chain(PdbChain pdbChain) {
       super(pdbChain);
-      frame = pdbChain.model.file.frame;
-      mainchain = pdbChain.getMainchain();
-      mainchainLength = mainchain.length;
-      if (mainchainLength > 0) {
-        colixes = new short[mainchainLength];
-        mads = new short[mainchainLength + 1];
-      }
     }
 
     public void setMad(short mad, BitSet bsSelected) {
@@ -73,7 +61,7 @@ public class Cartoon extends Mcg {
             mads[i] = mad;
           }
       }
-      if (mainchainLength > 0)
+      if (mainchainLength > 1)
         mads[mainchainLength] = mads[mainchainLength - 1];
     }
 

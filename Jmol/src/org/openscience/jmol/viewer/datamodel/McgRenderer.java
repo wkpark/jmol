@@ -45,7 +45,9 @@ abstract class McgRenderer extends Renderer {
     for (int m = mcg.getModelCount(); --m >= 0; ) {
       Mcg.Model model = mcg.getMcgModel(m);
       for (int c = model.getChainCount(); --c >= 0; ) {
-        renderMcgChain(model.getMcgChain(c));
+        Mcg.Chain mcgChain = model.getMcgChain(c);
+        if (mcgChain.mainchainLength >= 2)
+          renderMcgChain(mcgChain);
       }
     }
   }

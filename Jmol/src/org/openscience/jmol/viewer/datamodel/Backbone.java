@@ -41,28 +41,15 @@ public class Backbone extends Mcg {
   }
 
   class Chain extends Mcg.Chain {
-    int mainchainLength;
-    PdbGroup[] mainchain;
-    Frame frame;
-    short[] colixes;
-    short[] mads;
     int[] atomIndices;
 
     Chain(PdbChain pdbChain) {
       super(pdbChain);
-      PdbGroup[] mainchain = pdbChain.getMainchain();
-      mainchainLength = mainchain.length;
-      if (mainchainLength < 2) {
-        // this is somewhat important ... 
-        // don't accept a chain of length 1
-        mainchainLength = 0;
-        return;
+      if (mainchainLength >= 2) {
+        atomIndices = new int[mainchainLength];
+        for (int i = mainchainLength; --i >= 0; )
+          atomIndices[i] = mainchain[i].getAlphaCarbonIndex();
       }
-      atomIndices = new int[mainchainLength];
-      for (int i = mainchainLength; --i >= 0; )
-        atomIndices[i] = mainchain[i].getAlphaCarbonIndex();
-      colixes = new short[mainchainLength];
-      mads = new short[mainchainLength - 1];
     }
 
     public void setMad(short mad, BitSet bsSelected) {
@@ -79,7 +66,6 @@ public class Backbone extends Mcg {
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
-      Frame frame = pdbChain.model.file.frame;
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       for (int i = mainchainLength; --i >= 0; ) {
         int atomIndex = atomIndices[i];

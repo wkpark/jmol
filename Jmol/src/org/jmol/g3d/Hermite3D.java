@@ -198,7 +198,7 @@ class Hermite3D {
          sp = 0;
        }
 
-       points.add(endPoints[whichPoint++]);
+       points.addElement(endPoints[whichPoint++]);
        currentInt = interval;
        do {
          Point3i a = pLeft[sp];
@@ -218,7 +218,7 @@ class Hermite3D {
            if (s < 1.0f - currentInt) { //if first point over the interval
              Point3i temp = new Point3i();
              temp.set(a);
-             points.add(temp); //store it
+             points.addElement(temp); //store it
              currentInt += interval; // increase to next interval
              if (strands == 2) {
                numTopStrandPoints++;
@@ -247,7 +247,7 @@ class Hermite3D {
            sLeft[sp] = (float) s;
          }
        } while (sp >= 0);
-       points.add(endPoints[whichPoint++]);
+       points.addElement(endPoints[whichPoint++]);
      } //end of for loop - processed top and bottom strands
      int size = points.size();
      if (fill) {//RIBBONS

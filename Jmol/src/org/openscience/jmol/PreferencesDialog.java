@@ -249,13 +249,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     g2dPanel.setLayout(new GridLayout(0, 4));
     g2dPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.graphics2DPanelLabel")));
-    graphics2D = control.wantsGraphics2D;
+    graphics2D = control.getWantsGraphics2D();
     cbGraphics2D = guimap.newJCheckBox("Prefs.graphics2D", graphics2D);
     cbGraphics2D.addItemListener(checkBoxListener);
-    antialias = control.wantsAntialias;
+    antialias = control.getWantsAntialias();
     cbAntialias = guimap.newJCheckBox("Prefs.antialias", antialias);
     cbAntialias.addItemListener(checkBoxListener);
-    antialiasAlways = control.wantsAntialiasAlways;
+    antialiasAlways = control.getWantsAntialiasAlways();
     cbAntialiasAlways = guimap.newJCheckBox("Prefs.antialiasAlways",
                                             antialiasAlways);
     cbAntialiasAlways.addItemListener(checkBoxListener);
@@ -1136,9 +1136,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private void updateComponents() {
     // Display panel
-    cbGraphics2D.setSelected(control.wantsGraphics2D);
-    cbAntialias.setSelected(control.wantsAntialias);
-    cbAntialiasAlways.setSelected(control.wantsAntialiasAlways);
+    cbGraphics2D.setSelected(control.getWantsGraphics2D());
+    cbAntialias.setSelected(control.getWantsAntialias());
+    cbAntialiasAlways.setSelected(control.getWantsAntialiasAlways());
 
     cB.setSelected(control.getShowBonds());
     cA.setSelected(control.getShowAtoms());

@@ -93,12 +93,12 @@ public class BondRenderer {
     color1 = control.getColorAtom(atomShape1.atom);
     color2 = control.getColorAtom(atomShape2.atom);
     sameColor = color1.equals(color2);
-    if (mag2d2 <= 2 || control.fastRendering && mag2d2 <= 49)
+    if (mag2d2 <= 2 || mag2d2 <= 49 && control.getFastRendering())
       return; // also avoids divide by zero when magnitude == 0
     if (control.showAtoms && (mag2d2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
     if (!control.showAtoms && bondOrder == 1 &&
-        (control.fastRendering || control.modeBondDraw==control.LINE)) {
+        (control.getFastRendering() || control.modeBondDraw==control.LINE)) {
       if (sameColor) {
         drawLineInside(g, color1, x1, y1, x2, y2);
       } else {
@@ -139,7 +139,7 @@ public class BondRenderer {
     this.bondOrder = bondOrder;
 
     boolean lineBond =
-      control.modeBondDraw == control.LINE || control.fastRendering;
+      control.modeBondDraw == control.LINE || control.getFastRendering();
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline

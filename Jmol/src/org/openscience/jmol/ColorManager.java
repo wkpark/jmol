@@ -74,7 +74,7 @@ public class ColorManager {
   public Color getColorSelection() {
     if (colorSelectionTransparent == null) {
       colorSelectionTransparent = 
-        control.useGraphics2D ?
+        control.getUseGraphics2D() ?
         getColorTransparent(colorSelection) :
         colorSelection;
     }

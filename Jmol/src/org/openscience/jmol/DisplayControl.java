@@ -62,6 +62,7 @@ final public class DisplayControl {
   MouseManager mouseManager;
   FileManager fileManager;
   ModelManager modelManager;
+  RepaintManager repaintManager;
 
   public DisplayControl(Component awtComponent) {
     control = this;
@@ -72,6 +73,7 @@ final public class DisplayControl {
     mouseManager = new MouseManager(awtComponent, this);
     fileManager = new FileManager(this);
     modelManager = new ModelManager(this);
+    repaintManager = new RepaintManager(this);
   }
 
   public Component getAwtComponent() {
@@ -100,7 +102,7 @@ final public class DisplayControl {
   public void setModeLabel(int mode) {
     if (modeLabel != mode) {
       modeLabel = mode;
-      recalc();
+      refresh();
     }
   }
 
@@ -108,7 +110,7 @@ final public class DisplayControl {
   public void setModeAtomDraw(int mode) {
     if (modeAtomDraw != mode) {
       modeAtomDraw = mode;
-      recalc();
+      refresh();
     }
   }
 
@@ -116,14 +118,17 @@ final public class DisplayControl {
   public void setModeBondDraw(int mode) {
     if (modeBondDraw != mode) {
       modeBondDraw = mode;
-      recalc();
+      refresh();
     }
+  }
+  public int getModeBondDraw() {
+    return modeBondDraw;
   }
 
   public int percentAngstromBond = 10;
   public void setPercentAngstromBond(int percentAngstromBond) {
     this.percentAngstromBond = percentAngstromBond;
-    recalc();
+    refresh();
   }
   public int getPercentAngstromBond() {
     return percentAngstromBond;
@@ -133,7 +138,7 @@ final public class DisplayControl {
   public void setShowAtoms(boolean showAtoms) {
     if (this.showAtoms != showAtoms) {
       this.showAtoms = showAtoms;
-      recalc();
+      refresh();
     }
   }
   public boolean getShowAtoms() {
@@ -144,7 +149,7 @@ final public class DisplayControl {
   public void setShowBonds(boolean showBonds) {
     if (this.showBonds != showBonds) {
       this.showBonds = showBonds;
-      recalc();
+      refresh();
     }
   }
   public boolean getShowBonds() {
@@ -155,7 +160,7 @@ final public class DisplayControl {
   public void setShowHydrogens(boolean showHydrogens) {
     if (this.showHydrogens != showHydrogens) {
       this.showHydrogens = showHydrogens;
-      recalc();
+      refresh();
     }
   }
   public boolean getShowHydrogens() {
@@ -167,7 +172,7 @@ final public class DisplayControl {
     if (this.showVectors != showVectors) {
       this.showVectors = showVectors;
       structuralChange = true;
-      recalc();
+      refresh();
     }
   }
   public boolean getShowVectors() {
@@ -179,7 +184,7 @@ final public class DisplayControl {
     if (this.showMeasurements != showMeasurements) {
       this.showMeasurements = showMeasurements;
       structuralChange = true;
-      recalc();
+      refresh();
     }
   }
   public boolean getShowMeasurements() {
@@ -194,7 +199,7 @@ final public class DisplayControl {
   public void setShowDarkerOutline(boolean showDarkerOutline) {
     if (this.showDarkerOutline != showDarkerOutline) {
       this.showDarkerOutline = showDarkerOutline;
-      recalc();
+      refresh();
     }
   }
   public boolean getShowDarkerOutline() {
@@ -204,28 +209,25 @@ final public class DisplayControl {
   public int percentVdwAtom = 20;
   public void setPercentVdwAtom(int percentVdwAtom) {
     this.percentVdwAtom = percentVdwAtom;
-    recalc();
+    refresh();
   }
 
   public int getPercentVdwAtom() {
     return percentVdwAtom;
   }
 
-  public boolean fastRendering = false;
   public void setFastRendering(boolean fastRendering) {
-    if (this.fastRendering != fastRendering) {
-      this.fastRendering = fastRendering;
-      recalc();
-    }
+    repaintManager.setFastRendering(fastRendering);
   }
+
   public boolean getFastRendering() {
-    return fastRendering;
+    return repaintManager.fastRendering;
   }
 
   public String propertyMode = "";
   public void setPropertyMode(String s) {
     propertyMode = s;
-    recalc();
+    refresh();
   }
   public String getPropertyMode() {
     return propertyMode;
@@ -237,44 +239,22 @@ final public class DisplayControl {
     setCenter(null);
     clearSelection();
     transformManager.homePosition();
-    recalc();
+    refresh();
   }
 
   public void maybeEnableAntialiasing(Graphics g) {
-    if (useGraphics2D && wantsAntialias) {
-      Graphics2D g2d = (Graphics2D) g;
-      if (wantsAntialiasAlways || !inMotion) {
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                             RenderingHints.VALUE_RENDER_QUALITY);
-      } else {
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_OFF);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                             RenderingHints.VALUE_RENDER_SPEED);
-      }
-    }
+    repaintManager.maybeEnableAntialiasing(g);
   }
 
-  private BasicStroke dottedStroke = null;
   public void maybeDottedStroke(Graphics g) {
-    if (useGraphics2D) {
-      if (dottedStroke == null) {
-        dottedStroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
-                                       BasicStroke.JOIN_ROUND, 0,
-                                       new float[] {3, 3}, 0);
-      }
-      Graphics2D g2 = (Graphics2D) g;
-      g2.setStroke(dottedStroke);
-    }
+    repaintManager.maybeDottedStroke(g);
   }
 
   public void setChemFile(ChemFile chemfile) {
     modelManager.setChemFile(chemfile);
     homePosition();
-    // don't know if I need this firm recalc here or not
-    recalcFirmly();
+    // don't know if I need this firm refresh here or not
+    refreshFirmly();
   }
 
   public boolean haveFile() {
@@ -297,14 +277,14 @@ final public class DisplayControl {
     modelManager.setFrame(fr);
     structuralChange = true;
     clearSelection();
-    recalc();
+    refresh();
   }
 
   public void setFrame(ChemFrame frame) {
     modelManager.setFrame(frame);
     structuralChange = true;
     clearSelection();
-    recalc();
+    refresh();
   }
 
   public int numberOfAtoms() {
@@ -318,7 +298,7 @@ final public class DisplayControl {
   public boolean wireframeRotation = false;
   public void setWireframeRotation(boolean wireframeRotation) {
     this.wireframeRotation = wireframeRotation;
-    recalc();
+    refresh();
   }
 
   public boolean getWireframeRotation() {
@@ -326,107 +306,77 @@ final public class DisplayControl {
   }
 
   public void setInMotion(boolean inMotion) {
-    if (wireframeRotation && this.inMotion != inMotion)
-      setFastRendering(inMotion);
-    if (this.inMotion && !inMotion) {
-      if ((useGraphics2D && wantsAntialias && !wantsAntialiasAlways) ||
-          (modeBondDraw == SHADING))
-        recalc();
-    }
-    this.inMotion = inMotion;
+    repaintManager.setInMotion(inMotion);
   }
 
   public boolean jvm12orGreater = false;
-  public boolean useGraphics2D = false;
-  public boolean wantsGraphics2D = true;
-  public boolean wantsAntialias = true;
-  public boolean wantsAntialiasAlways = false;
+
   public void setJvm12orGreater(boolean jvm12orGreater) {
     this.jvm12orGreater = jvm12orGreater;
-    useGraphics2D = jvm12orGreater && wantsGraphics2D;
+    repaintManager.calcUseGraphics2D();
   }
 
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
-    if (this.wantsGraphics2D != wantsGraphics2D) {
-      this.wantsGraphics2D = wantsGraphics2D;
-      useGraphics2D = jvm12orGreater && wantsGraphics2D;
-      flushCachedImages();
-      recalc();
-    }
+    repaintManager.setWantsGraphics2D(wantsGraphics2D);
+  }
+
+  public boolean getWantsGraphics2D() {
+    return repaintManager.wantsGraphics2D;
+  }
+
+  public boolean getUseGraphics2D() {
+    return repaintManager.useGraphics2D;
   }
 
   public void setWantsAntialias(boolean wantsAntialias) {
-    if (this.wantsAntialias != wantsAntialias) {
-      this.wantsAntialias = wantsAntialias;
-      recalc();
-    }
+    repaintManager.setWantsAntialias(wantsAntialias);
+  }
+
+  public boolean getWantsAntialias() {
+    return repaintManager.wantsAntialias;
   }
 
   public void setWantsAntialiasAlways(boolean wantsAntialiasAlways) {
-    this.wantsAntialiasAlways = wantsAntialiasAlways;
-    // no need to recalc in this state since we aren't doing anything
+    repaintManager.setWantsAntialiasAlways(wantsAntialiasAlways);
+  }
+
+  public boolean getWantsAntialiasAlways() {
+    return repaintManager.wantsAntialiasAlways;
   }
 
   public Image takeSnapshot() {
-    return null;
-    //return awtComponent.takeSnapshot();
+    return repaintManager.takeSnapshot();
   }
 
   public void setCenter(Point3d center) {
     modelManager.setRotationCenter(center);
   }
 
-  private boolean holdRepaint;
-  private boolean repaintPending;
-
   public void setHoldRepaint(boolean holdRepaint) {
-    if (this.holdRepaint != holdRepaint) {
-      this.holdRepaint = holdRepaint;
-      if (!holdRepaint && repaintPending)
-        awtComponent.repaint();
-    }
+    repaintManager.setHoldRepaint(holdRepaint);
   }
 
-  Object monitorRepaint = new Object();
-
-  private void recalcFirmly() {
-    awtComponent.repaint();
-  }
-
-  private void recalc() {
-    if (repaintPending)
-      return;
-    repaintPending = true;
-    if (! holdRepaint)
-      awtComponent.repaint();
+  private void refreshFirmly() {
+    repaintManager.refreshFirmly();
   }
 
   public void refresh() {
-    recalc();
+    repaintManager.refresh();
   }
 
   public void requestRepaintAndWait() {
-    synchronized(monitorRepaint) {
-      awtComponent.repaint();
-      try {
-        monitorRepaint.wait();
-      } catch (InterruptedException e) {
-      }
-    }
+    repaintManager.requestRepaintAndWait();
   }
 
   public void notifyRepainted() {
-    synchronized(monitorRepaint) {
-      repaintPending = false;
-      monitorRepaint.notify();
-    }
+    repaintManager.notifyRepainted();
   }
-  
+
   public void setCenterAsSelected() {
     modelManager.setCenterAsSelected();
     clearSelection();
     scaleFitToScreen();
-    recalc();
+    refresh();
   }
 
   public boolean hasStructuralChange() {
@@ -435,17 +385,17 @@ final public class DisplayControl {
 
   public void defineMeasure(int atom1, int atom2) {
     modelManager.defineMeasure(atom1, atom2);
-    recalc();
+    refresh();
   }
 
   public void defineMeasure(int atom1, int atom2, int atom3) {
     modelManager.defineMeasure(atom1, atom2, atom3);
-    recalc();
+    refresh();
   }
 
   public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
     modelManager.defineMeasure(atom1, atom2, atom3, atom4);
-    recalc();
+    refresh();
   }
 
   public void resetStructuralChange() {
@@ -453,19 +403,19 @@ final public class DisplayControl {
   }
 
   public final Hashtable imageCache = new Hashtable();
-  private void flushCachedImages() {
+  public void flushCachedImages() {
     imageCache.clear();
     colorManager.flushCachedColors();
   }
 
   public void rebond() {
     modelManager.rebond();
-    recalc();
+    refresh();
   }
 
   public void setBondFudge(double bf) {
     modelManager.setBondFudge(bf);
-    recalc();
+    refresh();
   }
 
   public double getBondFudge() {
@@ -474,7 +424,7 @@ final public class DisplayControl {
 
   public void setAutoBond(boolean ab) {
     modelManager.setAutoBond(ab);
-    recalc();
+    refresh();
   }
 
   public boolean getAutoBond() {
@@ -488,7 +438,7 @@ final public class DisplayControl {
 
   public void setArrowHeadSize(double ls) {
     arrowHeadSize = 10.0f * ls;
-    recalc();
+    refresh();
   }
 
   public double getArrowHeadSize() {
@@ -505,7 +455,7 @@ final public class DisplayControl {
 
   public void setArrowLengthScale(double ls) {
     arrowLengthScale = ls;
-    recalc();
+    refresh();
   }
 
   public double getArrowLengthScale() {
@@ -514,7 +464,7 @@ final public class DisplayControl {
 
   public void setArrowHeadRadius(double rs) {
     arrowHeadRadius = rs;
-    recalc();
+    refresh();
   }
 
   public double getArrowHeadRadius() {
@@ -533,30 +483,30 @@ final public class DisplayControl {
 
   public void rotateXYBy(int xDelta, int yDelta) {
     transformManager.rotateXYBy(xDelta, yDelta);
-    recalc();
+    refresh();
   }
 
   public void rotateZBy(int zDelta) {
     transformManager.rotateZBy(zDelta);
-    recalc();
+    refresh();
   }
 
   public void rotateFront() {
     transformManager.rotateFront();
-    recalc();
+    refresh();
   }
 
   public void rotateToX(double angleRadians) {
     transformManager.rotateToX(angleRadians);
-    recalc();
+    refresh();
   }
   public void rotateToY(double angleRadians) {
     transformManager.rotateToY(angleRadians);
-    recalc();
+    refresh();
   }
   public void rotateToZ(double angleRadians) {
     transformManager.rotateToZ(angleRadians);
-    recalc();
+    refresh();
   }
 
   public void rotateToX(int angleDegrees) {
@@ -571,15 +521,15 @@ final public class DisplayControl {
 
   public void rotateByX(double angleRadians) {
     transformManager.rotateByX(angleRadians);
-    recalc();
+    refresh();
   }
   public void rotateByY(double angleRadians) {
     transformManager.rotateByY(angleRadians);
-    recalc();
+    refresh();
   }
   public void rotateByZ(double angleRadians) {
     transformManager.rotateByZ(angleRadians);
-    recalc();
+    refresh();
   }
   public void rotateByX(int angleDegrees) {
     rotateByX(Math.toRadians(angleDegrees));
@@ -593,27 +543,27 @@ final public class DisplayControl {
 
   public void rotate(AxisAngle4d axisAngle) {
     transformManager.rotate(axisAngle);
-    recalc();
+    refresh();
   }
 
   public void translateXYBy(int xDelta, int yDelta) {
     transformManager.translateXYBy(xDelta, yDelta);
-    recalc();
+    refresh();
   }
 
   public void translateToXPercent(int percent) {
     transformManager.translateToXPercent(percent);
-    recalc();
+    refresh();
   }
 
   public void translateToYPercent(int percent) {
     transformManager.translateToYPercent(percent);
-    recalc();
+    refresh();
   }
 
   public void translateToZPercent(int percent) {
     transformManager.translateToZPercent(percent);
-    recalc();
+    refresh();
   }
 
   public int getTranslationXPercent() {
@@ -642,7 +592,7 @@ final public class DisplayControl {
 
   public void zoomBy(int pixels) {
     transformManager.zoomBy(pixels);
-    recalc();
+    refresh();
   }
 
   public int getZoomPercent() {
@@ -655,17 +605,17 @@ final public class DisplayControl {
 
   public void zoomToPercent(int percent) {
     transformManager.zoomToPercent(percent);
-    recalc();
+    refresh();
   }
 
   public void zoomByPercent(int percent) {
     transformManager.zoomByPercent(percent);
-    recalc();
+    refresh();
   }
 
   public void setZoomEnabled(boolean zoomEnabled) {
     transformManager.setZoomEnabled(zoomEnabled);
-    recalc();
+    refresh();
   }
 
   public boolean getSlabEnabled() {
@@ -678,22 +628,22 @@ final public class DisplayControl {
 
   public void slabBy(int pixels) {
     transformManager.slabBy(pixels);
-    recalc();
+    refresh();
   }
 
   public void slabToPercent(int percentSlab) {
     transformManager.slabToPercent(percentSlab);
-    recalc();
+    refresh();
   }
 
   public void setSlabEnabled(boolean slabEnabled) {
     transformManager.setSlabEnabled(slabEnabled);
-    recalc();
+    refresh();
   }
 
   public void setModeSlab(int modeSlab) {
     transformManager.setModeSlab(modeSlab);
-    recalc();
+    refresh();
   }
 
   public int getModeSlab() {
@@ -750,6 +700,7 @@ final public class DisplayControl {
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
     transformManager.setPerspectiveDepth(perspectiveDepth);
+    refresh();
   }
 
   public boolean getPerspectiveDepth() {
@@ -774,7 +725,7 @@ final public class DisplayControl {
 
   public void setModeAtomColorProfile(int mode) {
     colorManager.setModeAtomColorProfile(mode);
-    recalc();
+    refresh();
   }
 
   public int getModeAtomColorProfile() {
@@ -783,7 +734,7 @@ final public class DisplayControl {
 
   public void setColorOutline(Color c) {
     colorManager.setColorOutline(c);
-    recalc();
+    refresh();
   }
 
   public Color getColorOutline() {
@@ -792,7 +743,7 @@ final public class DisplayControl {
 
   public void setColorSelection(Color c) {
     colorManager.setColorSelection(c);
-    recalc();
+    refresh();
   }
 
   public Color getColorSelection() {
@@ -805,7 +756,7 @@ final public class DisplayControl {
 
   public void setColorText(Color c) {
     colorManager.setColorText(c);
-    recalc();
+    refresh();
   }
   public Color getColorText() {
     return colorManager.colorText;
@@ -813,7 +764,7 @@ final public class DisplayControl {
 
   public void setColorDistance(Color c) {
     colorManager.setColorDistance(c);
-    recalc();
+    refresh();
   }
 
   public Color getColorDistance() {
@@ -822,7 +773,7 @@ final public class DisplayControl {
 
   public void setColorAngle(Color c) {
     colorManager.setColorAngle(c);
-    recalc();
+    refresh();
   }
 
   public Color getColorAngle() {
@@ -831,7 +782,7 @@ final public class DisplayControl {
 
   public void setColorDihedral(Color c) {
     colorManager.setColorDihedral(c);
-    recalc();
+    refresh();
   }
   public Color getColorDihedral() {
     return colorManager.colorDihedral;
@@ -839,7 +790,7 @@ final public class DisplayControl {
 
   public void setColorVector(Color c) {
     colorManager.setColorVector(c);
-    recalc();
+    refresh();
   }
 
   public Color getColorVector() {
@@ -848,7 +799,7 @@ final public class DisplayControl {
 
   public void setColorBackground(Color bg) {
     colorManager.setColorBackground(bg);
-    recalc();
+    refresh();
   }
 
   public Color getColorBackground() {
@@ -892,32 +843,32 @@ final public class DisplayControl {
 
   public void addSelection(Atom atom) {
     selectionManager.addSelection(atom);
-    recalc();
+    refresh();
   }
 
   public void removeSelection(Atom atom) {
     selectionManager.removeSelection(atom);
-    recalc();
+    refresh();
   }
 
   public void toggleSelection(Atom atom) {
     selectionManager.toggleSelection(atom);
-    recalc();
+    refresh();
   }
 
   public void addSelection(Atom[] atoms) {
     selectionManager.addSelection(atoms);
-    recalc();
+    refresh();
   }
 
   public void removeSelection(Atom[] atoms) {
     selectionManager.removeSelection(atoms);
-    recalc();
+    refresh();
   }
 
   public void clearSelection() {
     selectionManager.clearSelection();
-    recalc();
+    refresh();
   }
 
   public int countSelection() {
@@ -930,7 +881,7 @@ final public class DisplayControl {
 
   public void setSelectionSet(BitSet set) {
     selectionManager.setSelectionSet(set);
-    recalc();
+    refresh();
   }
 
   public BitSet getSelectionSet() {

@@ -101,7 +101,7 @@ public class AtomRenderer {
   }
 
   private void renderAtom() {
-    if (!control.fastRendering && control.isSelected(atom)) {
+    if (!control.getFastRendering() && control.isSelected(atom)) {
       int halowidth = diameter / 3;
       if (halowidth < 2)
         halowidth = 2;
@@ -121,7 +121,7 @@ public class AtomRenderer {
     }
     if (control.modeAtomDraw == control.SHADING &&
         diameter >= minCachedSize &&
-        !control.fastRendering) {
+        !control.getFastRendering()) {
       renderShadedAtom();
       return;
     }
@@ -129,7 +129,8 @@ public class AtomRenderer {
     // *filled* by an oval because of the stroke offset
     int diamT = diameter-1;
     g.setColor(color);
-    if (!control.fastRendering && control.modeAtomDraw != control.WIREFRAME) {
+    if (!control.getFastRendering() &&
+        control.modeAtomDraw != control.WIREFRAME) {
       // diamT should work here, but if background dots are appearing
       // just inside the circles then change the parameter to *diameter*
       g.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
@@ -166,7 +167,7 @@ public class AtomRenderer {
   }
 
   private void renderLargeShadedAtom(Image imgSphere) {
-    if (! control.useGraphics2D) {
+    if (! control.getUseGraphics2D()) {
       g.drawImage(imgSphere, xUpperLeft, yUpperLeft,
                    diameter, diameter, null);
       return;
@@ -190,7 +191,7 @@ public class AtomRenderer {
     Image shadedImages[] = new Image[maxCachedSize];
     Component component = control.getAwtComponent();
     control.imageCache.put(color, shadedImages);
-    if (! control.useGraphics2D) {
+    if (! control.getUseGraphics2D()) {
       for (int d = minCachedSize; d < maxCachedSize; ++d) {
         shadedImages[d] = sphereSetup(component, color, d+2, lightSource);
       }

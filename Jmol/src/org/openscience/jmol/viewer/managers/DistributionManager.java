@@ -105,16 +105,9 @@ public class DistributionManager {
     }
   }
 
-  public void setColixMarDots(short colixDots, short marDots,
-                              AtomShapeIterator iter) {
-    short colixT = colixDots;
-    while (iter.hasNext()) {
-      AtomShape atomShape = iter.next();
-      if (colixDots == 0)
-        colixT = viewer.getColixAtom(atomShape.getAtomicNumber(),
-                                     atomShape.getClientAtom());
-      atomShape.setColixMarDots(colixT, marDots);
-    }
+  public void setDotsOn(boolean dotsOn, AtomShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setDotsOn(dotsOn);
   }
 }
 

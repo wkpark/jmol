@@ -79,8 +79,6 @@ public class AtomRenderer {
         y - radius >= maxY)
       return;
     colix = atomShape.colixAtom;
-    if (atomShape.marDots > 0)
-      renderDots(atomShape.colixDots, atomShape.diameterDots);
     renderAtom();
     //    if (atomShape.strLabel != null)
     //      viewer.labelRenderer.render(atomShape);

@@ -1602,31 +1602,25 @@ public class Eval implements Runnable {
   }
 
   void dots() throws ScriptException {
-    short marDots = 0;
+    boolean dotsOn = true;
     switch (statement[1].tok) {
     case Token.on:
-      marDots = -100;
       break;
     case Token.off:
+      dotsOn = false;
       break;
     case Token.integer:
-      int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500 || radiusRasMol < -100)
+      int dotsParam = statement[1].intValue;
+      if (dotsParam < 0 || dotsParam > 1000)
         numberOutOfRange();
-      marDots = (short)radiusRasMol;
-      if (radiusRasMol > 0)
-        marDots *= 4;
-      break;
-    case Token.decimal:
-      double angstroms = ((Double)statement[1].value).doubleValue();
-      if (angstroms >= 2)
-        numberOutOfRange();
-      marDots = (short)(angstroms * 1000);
+      // I don't know what to do with this thing yet
+      if (dotsParam == 0)
+        dotsOn = false;
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setMarDots(marDots);
+    viewer.setDotsOn(dotsOn);
   }
 
   /****************************************************************

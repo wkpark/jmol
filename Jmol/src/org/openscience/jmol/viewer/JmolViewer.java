@@ -478,6 +478,10 @@ final public class JmolViewer {
     colorManager.setColorDots(color);
   }
 
+  public short getColixDots() {
+    return colorManager.colixDots;
+  }
+
   public Color getColorLabel() {
     return colorManager.colorLabel;
   }
@@ -1101,9 +1105,8 @@ final public class JmolViewer {
     distributionManager.setLabel(strLabel, atomIteratorSelected());
   }
 
-  public void setMarDots(short marDots) {
-    distributionManager.setColixMarDots(colorManager.colixDots, marDots,
-                                        atomIteratorSelected());
+  public void setDotsOn(boolean dotsOn) {
+    distributionManager.setDotsOn(dotsOn, atomIteratorSelected());
   }
 
   boolean rasmolHydrogenSetting = true;

@@ -47,9 +47,7 @@ public class AtomShape implements Bspt.Tuple {
   short marAtom;
   short colixAtom;
   short diameter;
-  short marDots = 0;
-  short colixDots;
-  short diameterDots = 0;
+  Dots dots;
   BondShape[] bonds;
 
   String strLabel;
@@ -67,8 +65,6 @@ public class AtomShape implements Bspt.Tuple {
       if (pdbRecord != null)
         pprop = new ProteinProp(pdbRecord);
     }
-    this.colixDots = 0;
-    this.marDots = 0;
     setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
     this.point3d = viewer.getPoint3d(clientAtom);
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
@@ -220,13 +216,11 @@ public class AtomShape implements Bspt.Tuple {
     this.marAtom = marAtom;
   }
         
-  public void setColixMarDots(short colixDots, short marDots) {
-    if (this.styleAtom == JmolViewer.DELETED) return;
-    this.colixDots = colixDots;
-    if (marDots < 0)
-      marDots = (short)((-10 * marDots) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom));
-    this.marDots = marDots;
+  public void setDotsOn(boolean dotsOn) {
+    if (! dotsOn)
+      dots = null;
+    else if (dots == null)
+      dots = new Dots(this);
   }
 
   public int getRasMolRadius() {
@@ -264,8 +258,6 @@ public class AtomShape implements Bspt.Tuple {
     y = screen.y;
     z = screen.z;
     diameter = viewer.scaleToScreen(z, marAtom * 2);
-    if (marDots > 0)
-      diameterDots = viewer.scaleToScreen(z, marDots * 2);
   }
 
   public int getAtomicNumber() {

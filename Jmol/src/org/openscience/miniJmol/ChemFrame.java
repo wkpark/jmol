@@ -21,11 +21,11 @@ package org.openscience.miniJmol;
 
 import org.openscience.jmol.DisplaySettings;
 import org.openscience.jmol.PhysicalProperty;
-import org.openscience.jmol.Matrix3D;
 import java.awt.Graphics;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3f;
+import javax.vecmath.Matrix4d;
 
 public class ChemFrame {
 
@@ -75,7 +75,7 @@ public class ChemFrame {
 		return autoBond;
 	}
 
-	public void setMat(Matrix3D newmat) {
+	public void setMat(Matrix4d newmat) {
 		mat = newmat;
 	}
 
@@ -86,9 +86,8 @@ public class ChemFrame {
 	 */
 	public ChemFrame(int na, boolean bondsEnabled) {
 
-		mat = new Matrix3D();
-		mat.xrot(0);
-		mat.yrot(0);
+		mat = new Matrix4d();
+		mat.setIdentity();
 		frameProps = new Vector();
 		atoms = new Atom[na];
 		pickedAtoms = new boolean[atoms.length];
@@ -508,7 +507,7 @@ public class ChemFrame {
 	private float bondFudge = 1.12f;
 	private boolean autoBond = true;
 	private boolean showHydrogens = true;
-	private Matrix3D mat;
+	private Matrix4d mat;
 	private boolean[] pickedAtoms;
 	private int napicked;
 

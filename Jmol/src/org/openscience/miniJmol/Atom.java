@@ -19,8 +19,8 @@
  */
 package org.openscience.miniJmol;
 
-import org.openscience.jmol.Matrix3D;
 import javax.vecmath.Point3f;
+import javax.vecmath.Matrix4d;
 import java.util.Vector;
 import java.util.Enumeration;
 
@@ -104,7 +104,7 @@ class Atom {
 	 * Sets the atom's screen position by transforming the atom's position by
 * the given matrix.
 	 */
-	public void transform(Matrix3D transformationMatrix) {
+	public void transform(Matrix4d transformationMatrix) {
 		transformationMatrix.transform(position, screenPosition);
 	}
 

@@ -21,7 +21,6 @@ package org.openscience.miniJmol;
 
 import org.openscience.jmol.DisplaySettings;
 import org.openscience.jmol.FortranFormat;
-import org.openscience.jmol.Matrix3D;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -31,6 +30,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import javax.vecmath.Point3f;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
 
 public class DisplayPanel extends Canvas
 		implements java.awt.event.ComponentListener,
@@ -57,14 +58,11 @@ public class DisplayPanel extends Canvas
 	private int prevy;
 	private int outx;
 	private int outy;
-	private float xtheta;
-	private float ytheta;
-	private float ztheta;
 	private Point3f useMinBound = new Point3f();
 	private Point3f useMaxBound = new Point3f();
-	private Matrix3D amat = new Matrix3D();		// Matrix to do mouse angular rotations.
-	private Matrix3D tmat = new Matrix3D();		// Matrix to do translations.
-	private Matrix3D mat = new Matrix3D();		// Final matrix for assembly on screen.
+	private Matrix4d amat = new Matrix4d();		// Matrix to do mouse angular rotations.
+	private Matrix4d tmat = new Matrix4d();		// Matrix to do translations.
+	private Matrix4d mat = new Matrix4d();		// Final matrix for assembly on screen.
 	private boolean matIsValid = false;			// is mat valid ???
 	private float zoomFactor = 0.7f;
 	private java.awt.Label frameLabel = null;
@@ -147,8 +145,8 @@ public class DisplayPanel extends Canvas
 
 	public void resetView() {
 
-		amat.unit();
-		tmat.unit();
+		amat.setIdentity();
+		tmat.setIdentity();
 		xfac = 1;
 		xfac2 = 1;
 		if (settings != null) {
@@ -180,11 +178,15 @@ public class DisplayPanel extends Canvas
 
 		try {
 			rotTheta = (float) FortranFormat.atof(st.nextToken());
-			amat.yrot(rotTheta);
+			Matrix4d matrix = new Matrix4d();
+			matrix.rotY(Math.toRadians(rotTheta));
+			amat.mul(matrix, amat);
 			rotTheta = (float) FortranFormat.atof(st.nextToken());
-			amat.xrot(rotTheta);
+			matrix.rotX(Math.toRadians(rotTheta));
+			amat.mul(matrix, amat);
 			rotTheta = (float) FortranFormat.atof(st.nextToken());
-			amat.yrot(rotTheta);
+			matrix.rotZ(Math.toRadians(rotTheta));
+			amat.mul(matrix, amat);
 		} catch (NoSuchElementException E) {
 		}
 		matIsValid = false;
@@ -217,7 +219,9 @@ public class DisplayPanel extends Canvas
 			deltay = (float) FortranFormat.atof(st.nextToken());
 		} catch (java.util.NoSuchElementException E) {
 		}
-		tmat.translate(deltax, deltay, 0);
+		Matrix4d matrix = new Matrix4d();
+		matrix.setTranslation(new Vector3d(deltax, deltay, 0.0));
+		tmat.add(matrix);
 		matIsValid = false;
 		painted = false;
 		if (db != null) {
@@ -517,11 +521,14 @@ public class DisplayPanel extends Canvas
 				tb.build_rotmatrix(amat, quat);
 
 				*/
-				xtheta = (prevy - y) * (360.0f / drawWidth);
-				ytheta = (x - prevx) * (360.0f / drawHeight);
+				double xtheta = (y - prevy) * (2.0 * Math.PI / drawWidth);
+				double ytheta = (x - prevx) * (2.0 * Math.PI / drawHeight);
 
-				amat.xrot(xtheta);
-				amat.yrot(ytheta);
+				Matrix4d matrix = new Matrix4d();
+				matrix.rotX(xtheta);
+				amat.mul(matrix, amat);
+				matrix.rotY(ytheta);
+				amat.mul(matrix, amat);
 				matIsValid = false;
 				painted = false;
 				repaint();
@@ -530,7 +537,9 @@ public class DisplayPanel extends Canvas
 			if (mode == XLATE) {
 				float dx = (x - prevx);
 				float dy = (y - prevy);
-				tmat.translate(dx, dy, 0);
+				Matrix4d matrix = new Matrix4d();
+				matrix.setTranslation(new Vector3d(dx, dy, 0.0));
+				tmat.add(matrix);
 				matIsValid = false;
 				painted = false;
 				repaint();
@@ -668,15 +677,24 @@ public class DisplayPanel extends Canvas
 				// Only rebuild the master matrix if component matrices have changed.
 				float xft = xfac2 * xfac0;
 				painted = false;
-				mat.unit();
-				mat.translate(-(useMinBound.x + useMaxBound.x) / 2,
-						-(useMinBound.y + useMaxBound.y) / 2,
-							-(useMinBound.z + useMaxBound.z) / 2);
-				mat.mult(amat);
-				mat.scale(xft, -xft, xft);
-				mat.mult(tmat);
-				mat.scale(xfac, xfac, xfac);
-				mat.translate(drawWidth / 2, drawHeight / 2, drawWidth / 2);
+				mat.setIdentity();
+				Matrix4d matrix = new Matrix4d();
+				matrix.setTranslation(new Vector3d(-(useMinBound.x + useMaxBound.x) / 2,
+					-(useMinBound.y + useMaxBound.y) / 2,
+					-(useMinBound.z + useMaxBound.z) / 2));
+				mat.add(matrix);
+				mat.mul(amat, mat);
+				matrix.setIdentity();
+				matrix.setElement(0, 0, xft);
+				matrix.setElement(1, 1, -xft);
+				matrix.setElement(2, 2, xft);
+				mat.mul(matrix, mat);
+				mat.mul(tmat, mat);
+				matrix.setZero();
+				matrix.setTranslation(new Vector3d(drawWidth / 2,
+					drawHeight / 2,
+					drawWidth / 2));
+				mat.add(matrix);
 				matIsValid = true;
 			}
 			if (!painted) {

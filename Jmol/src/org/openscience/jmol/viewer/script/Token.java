@@ -247,6 +247,7 @@ public class Token {
   final static int all          = showparam | 11 | expression;
   final static int pdbheader    = showparam | 12 | expression;
   final static int axisangle    = showparam | 13;
+  final static int transform    = showparam | 14;
 
   // atom expression operators
   final static int leftparen    = expression |  0;
@@ -504,6 +505,7 @@ public class Token {
     "model",        new Token(model,           "model"),
     "pdbheader",    new Token(pdbheader,       "pdbheader"),
     "axisangle",    new Token(axisangle,       "axisangle"),
+    "transform",    new Token(transform,       "transform"),
 
     // atom expressions
     "(",            new Token(leftparen, "("),

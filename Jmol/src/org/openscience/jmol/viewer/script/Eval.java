@@ -2832,6 +2832,9 @@ public class Eval implements Runnable {
     case Token.axisangle:
       showAxisAngle();
       break;
+    case Token.transform:
+      showTransform();
+      break;
     case Token.center:
       showCenter();
       break;
@@ -2882,6 +2885,10 @@ public class Eval implements Runnable {
 
   void showAxisAngle() {
     showString("moveTo " + viewer.getAxisAngleText());
+  }
+
+  void showTransform() {
+    showString("Transform:\n" + viewer.getTransformText());
   }
 
   void showCenter() {

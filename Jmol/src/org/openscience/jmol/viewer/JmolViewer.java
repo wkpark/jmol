@@ -235,6 +235,7 @@ final public class JmolViewer {
   }
 
   final static float radiansPerDegree = (float)(2 * Math.PI / 360);
+  final static float degreesPerRadian = (float)(360 / (2 * Math.PI));
 
   public void rotate(AxisAngle4f axisAngle) {
     transformManager.rotate(axisAngle);
@@ -564,6 +565,10 @@ final public class JmolViewer {
 
   public void getAxisAngle(AxisAngle4f axisAngle) {
     transformManager.getAxisAngle(axisAngle);
+  }
+
+  public String getTransformText() {
+    return transformManager.getTransformText();
   }
 
   public void setRotation(Matrix3f matrixRotation) {

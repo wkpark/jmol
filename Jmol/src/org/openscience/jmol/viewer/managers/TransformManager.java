@@ -61,8 +61,8 @@ public class TransformManager {
   private final Matrix3f matrixTemp3 = new Matrix3f();
 
   public void rotateXYBy(int xDelta, int yDelta) {
-    rotateXRadians((float)Math.PI * yDelta / 180);
-    rotateYRadians((float)Math.PI * xDelta / 180);
+    rotateXRadians(yDelta * radiansPerDegree);
+    rotateYRadians(xDelta * radiansPerDegree);
     /*
     // what fraction of PI radians do you want to rotate?
     // the full screen width corresponds to a PI (180 degree) rotation
@@ -122,6 +122,9 @@ public class TransformManager {
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
+  final static float radiansPerDegree = (float)(2 * Math.PI / 360);
+  final static float degreesPerRadian = (float)(360 / (2 * Math.PI));
+
   public void rotateZRadiansScript(float angleRadians) {
     matrixTemp3.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp3, matrixRotate);
@@ -134,7 +137,7 @@ public class TransformManager {
   }
 
   public void rotateAxisAngle(float x, float y, float z, float degrees) {
-    axisangleT.set(x, y, z, degrees * (float)Math.PI / 180);
+    axisangleT.set(x, y, z, degrees * radiansPerDegree);
     rotate(axisangleT);
   }
 
@@ -142,7 +145,7 @@ public class TransformManager {
     if (degrees < .01 && degrees > -.01) {
       matrixRotate.setIdentity();
     } else {
-      axisangleT.set(x, y, z, degrees * (float)Math.PI / 180);
+      axisangleT.set(x, y, z, degrees * radiansPerDegree);
       matrixRotate.set(axisangleT);
     }
   }
@@ -195,7 +198,7 @@ public class TransformManager {
 
   public String getAxisAngleText() {
     axisangleT.set(matrixRotate);
-    float degrees = axisangleT.angle * 180 / (float)Math.PI;
+    float degrees = axisangleT.angle * degreesPerRadian;
     if (degrees < 0.01f)
       return "0 0 0 0";
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
@@ -203,11 +206,34 @@ public class TransformManager {
     return (""  + Math.round(vectorT.x * 1000) / 1000f +
             " " + Math.round(vectorT.y * 1000) / 1000f +
             " " + Math.round(vectorT.z * 1000) / 1000f +
-            " " + Math.round(degrees * 10) / 10f);
+            " " + Math.round(degrees * 10) / 10f +
+            " " + getRotateXyzText());
+            
+  }
+
+  String getRotateXyzText() {
+    float m20 = matrixRotate.m20;
+    float rY = -(float)Math.asin(m20) * degreesPerRadian;
+    float rX, rZ;
+    if (m20 > .99f || m20 < -.99f) {
+      rX = -(float)Math.atan2(matrixRotate.m12, matrixRotate.m11) *
+        degreesPerRadian;
+      rZ = 0;
+    } else {
+      rX = (float)Math.atan2(matrixRotate.m21, matrixRotate.m22) *
+        degreesPerRadian;
+      rZ = (float)Math.atan2(matrixRotate.m10, matrixRotate.m00) *
+        degreesPerRadian;
+    }
+    return "rX=" + rX + " rY=" + rY + " rZ=" + rZ;
   }
 
   public void getAxisAngle(AxisAngle4f axisAngle) {
     axisAngle.set(matrixRotate);
+  }
+
+  public String getTransformText() {
+    return "matrixRotate=\n" + matrixRotate;
   }
 
   public void setRotation(Matrix3f matrixRotation) {
@@ -747,7 +773,6 @@ public class TransformManager {
   public int spinX, spinY = 30, spinZ, spinFps = 30;
 
   final static float twoPI = (float)(2 * Math.PI);
-  final static float radiansPerDegree = (float)(twoPI / 360);
 
   public void setSpinX(int value) {
     spinX = value;

@@ -87,14 +87,14 @@ public class NucleotidePolymer extends Polymer {
 
   void lookForHbonds(NucleotidePolymer other) {
     for (int i = count; --i >= 0; ) {
-      Monomer myNucleotide = monomers[i];
+      NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
       Atom myN1 = myNucleotide.getPurineN1();
       if (myN1 != null) {
         Atom bestN3 = null;
         float minDist2 = 5*5;
-        Monomer bestNucleotide = null;
+        NucleicMonomer bestNucleotide = null;
         for (int j = other.count; --j >= 0; ) {
-          Monomer otherNucleotide = other.monomers[j];
+          NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
           Atom otherN3 = otherNucleotide.getPyrimidineN3();
           if (otherN3 != null) {
             float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);
@@ -108,22 +108,13 @@ public class NucleotidePolymer extends Polymer {
         if (bestN3 != null) {
           createHydrogenBond(myN1, bestN3);
           if (myNucleotide.isGuanine()) {
-            Atom myN2 =
-              myNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_N2);
-            Atom otherO2 =
-              bestNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_O2);
-            createHydrogenBond(myN2, otherO2);
-            Atom myO6 =
-              myNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_O6);
-            Atom otherN4 =
-              bestNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_N4);
-            createHydrogenBond(myO6, otherN4);
+            createHydrogenBond(myNucleotide.getN2(),
+                               bestNucleotide.getO2());
+            createHydrogenBond(myNucleotide.getO6(),
+                               bestNucleotide.getN4());
           } else {
-            Atom myN6 =
-              myNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_N6);
-            Atom otherO4 =
-              bestNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_O4);
-            createHydrogenBond(myN6, otherO4);
+            createHydrogenBond(myNucleotide.getN6(),
+                               bestNucleotide.getO4());
           }
         }
       }

@@ -1657,13 +1657,22 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_TERMINATING_OXT = 32;
   public final static byte ATOMID_RNA_O2PRIME = 50;
   public final static byte ATOMID_N1 = 64;
+  public final static byte ATOMID_C2 = 65;
   public final static byte ATOMID_N3 = 66;
+  public final static byte ATOMID_C4 = 67;
+  public final static byte ATOMID_C5 = 68;
+  public final static byte ATOMID_C6 = 69;
   public final static byte ATOMID_O2 = 70;
+  public final static byte ATOMID_N7 = 71;
+  public final static byte ATOMID_C8 = 72;
+  public final static byte ATOMID_N9 = 73;
   public final static byte ATOMID_O4 = 74;
   public final static byte ATOMID_O6 = 75;
   public final static byte ATOMID_N4 = 76;
+  public final static byte ATOMID_C5M= 77;
   public final static byte ATOMID_N6 = 78;
   public final static byte ATOMID_N2 = 79;
+  public final static byte ATOMID_S4 = 80;
   // this is currently defined as C6
   public final static byte ATOMID_NUCLEIC_WING = 69;
 

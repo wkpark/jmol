@@ -122,8 +122,8 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   public int getModelType(Object clientFile) {
-    // this need to return MODEL_TYPE_PDB
-    // or MODEL_TYPE_XYZ, as appropriate
+    if (hasPdbRecords(clientFile, 0))
+      return JmolConstants.MODEL_TYPE_PDB;
     return JmolConstants.MODEL_TYPE_OTHER;
   }
 
@@ -294,7 +294,9 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   public String getPdbAtomRecord(Object clientAtom){
-    return null;
+    String pdbRecord = (String)((Atom)clientAtom).getProperty("pdb.record");
+    System.out.println("getPdbAtomRecord:" + pdbRecord);
+    return pdbRecord;
   }
 
   public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {

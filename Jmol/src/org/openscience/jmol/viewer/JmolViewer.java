@@ -30,9 +30,6 @@ import org.openscience.jmol.viewer.datamodel.*;
 
 import org.openscience.jmol.viewer.script.Eval;
 
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Font;
@@ -800,11 +797,6 @@ final public class JmolViewer {
   public void popupMenu(int x, int y) {
     if (jmolStatusListener != null)
       jmolStatusListener.handlePopupMenu(x, y);
-  }
-
-  private MenuItem makeMenuItem(String id) {
-    MenuItem mi = new MenuItem(id);
-    return mi;
   }
 
   /****************************************************************

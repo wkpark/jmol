@@ -97,6 +97,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
         System.out.println("" + e);
       }
     }
+    loadPopupMenuAsBackgroundTask();
   }
     
   PropertyResourceBundle appletProperties = null;
@@ -253,11 +254,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void handlePopupMenu(int x, int y) {
-    if (jmolpopup == null) {
-      if (! (viewer.strOSName.equals("Mac OS") &&
-             viewer.strJavaVersion.equals("1.1.5")))
-        jmolpopup = new JmolPopup(viewer, this);
-    }
     if (jmolpopup != null)
       jmolpopup.show(x, y);
   }
@@ -485,6 +481,36 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     if (strModel != null) {
       viewer.openStringInline(strModel);
       setStatusMessage(viewer.getOpenFileError());
+    }
+  }
+
+  private void loadPopupMenuAsBackgroundTask() {
+    if (viewer.strOSName.equals("Mac OS") && // no popup on MacOS 9 NetScape
+        viewer.strJavaVersion.equals("1.1.5"))
+      return;
+    new LoadPopupThread(this).run();
+  }
+
+  private class LoadPopupThread implements Runnable {
+
+    JmolApplet jmolApplet;
+    
+    LoadPopupThread(JmolApplet jmolApplet) {
+      this.jmolApplet = jmolApplet;
+    }
+    
+    public void run() {
+      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+      // long beginTime = System.currentTimeMillis();
+      // System.out.println("LoadPopupThread starting ");
+      // this is a background task
+      try {
+        jmolpopup = new JmolPopup(viewer, jmolApplet);
+      } catch (Exception e) {
+        System.out.println("JmolPopup not loaded");
+      }
+      // long runTime = System.currentTimeMillis() - beginTime;
+      // System.out.println("LoadPopupThread finished " + runTime + " ms");
     }
   }
 }

@@ -38,6 +38,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
@@ -142,13 +143,24 @@ public class JmolPopupAwt extends PopupMenu {
   }
 
   private String getValue(String key) {
-    //    System.out.println("getValue(" + key + ")");
-    return rbStructure.getString(key);
+    String value = null;
+    try {
+      //    System.out.println("getValue(" + key + ")");
+      value = rbStructure.getString(key);
+    } catch (MissingResourceException mre) {
+    }
+    return value;
   }
 
   private String getWord(String key) {
-    //    System.out.println("getWord(" + key + ")");
-    return rbWords.getString(key);
+    String word = key;
+    try {
+      //      System.out.println("getWord(" + key + ")");
+      word = rbWords.getString(key);
+    } catch (MissingResourceException mre) {
+      //      System.out.println(" :-( could not find word " + key);
+    }
+    return word;
   }
 
   Hashtable htCheckbox = new Hashtable();

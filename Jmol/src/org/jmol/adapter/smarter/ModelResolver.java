@@ -170,14 +170,17 @@ class ModelResolver {
   final static String[] mopacRecords =
   { "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu" };
 
-	final static String[] qchemRecords = 
-	{ "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
+  final static String[] qchemRecords = 
+  { "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
+
+  final static String[] gamessRecords =
+  { "GAMESS" };
 
   final static String[][] containsRecords =
-  { cmlRecords, gaussianRecords, mopacRecords, qchemRecords };
+  { cmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords };
 
   final static String[] containsFormats =
-  { "Cml", "Gaussian", "Mopac", "Qchem" };
+  { "Cml", "Gaussian", "Mopac", "Qchem", "Gamess" };
 }
 
 class LimitedLineReader {

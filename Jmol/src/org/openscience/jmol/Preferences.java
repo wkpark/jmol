@@ -1074,8 +1074,8 @@ public class Preferences extends JDialog {
         Bond.setBondWidth(BondWidth);
         display.getSettings().setBondDrawMode(BondRenderMode);
         ArrowLine.setVectorColor(vectorColor);
-        ArrowLine.setRadiusScale(ArrowHeadLengthScale);
-        ArrowLine.setLengthScale(ArrowHeadRadiusScale);
+        ArrowLine.setRadiusScale(ArrowHeadRadiusScale);
+        ArrowLine.setLengthScale(ArrowHeadLengthScale);
         displayPanel.setBackgroundColor(backgroundColor);
         displayPanel.setFieldOfView(FieldOfView);
         displayPanel.setPerspective(Perspective);

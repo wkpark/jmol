@@ -25,14 +25,14 @@
 	      doc.writeln("<br />");
 	      }
 	      
-	      writeScriptControl('select *; cpk off; wireframe');
-	      writeScriptControl(
-	      'select *; cpk off; wireframe; select backbone; wireframe 0.3');
 	      writeScriptControl('select *; cpk off; wireframe; select backbone; cpk 100%');
 	      writeScriptControl('select *; cpk off; wireframe 0.3');
 	      writeScriptControl('select *; restrict backbone; cpk off; wireframe 0.3');
 	      writeScriptControl('select *; restrict backbone; cpk 100%');
 	      writeScriptControl('select *; wireframe 0.3; select backbone; cpk 100%');
+	      writeScriptControl(
+	      'select *; cpk off; wireframe; select backbone; wireframe 0.3');
+	      writeScriptControl('select *; cpk off; wireframe');
 	      doc.writeln('<hr />');
 	      writeScriptControl('trace 0.5; color trace orange');
 	      writeScriptControl('trace off');

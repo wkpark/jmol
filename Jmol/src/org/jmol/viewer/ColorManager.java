@@ -43,7 +43,7 @@ class ColorManager {
     argbsCpk = JmolConstants.argbsCpk;
   }
 
-  void setColorScheme(String colorScheme) {
+  void setDefaultColors(String colorScheme) {
     System.out.println("setting color scheme to:" + colorScheme);
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;

@@ -325,6 +325,7 @@ class Token {
   final static int fixedtemp    = misc | 36;
   final static int rubberband   = misc | 37;
   final static int monomer      = misc | 38;
+  final static int defaultColors = misc | 39 | setparam;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -617,6 +618,7 @@ class Token {
     "fixedtemperature", new Token(fixedtemp,   "fixedtemperature"),
     "rubberband",   new Token(rubberband,      "rubberband"),
     "monomer",      new Token(monomer,         "monomer"),
+    "defaultcolors", new Token(defaultColors,  "defaultColors"),
   };
 
   static Hashtable map = new Hashtable();

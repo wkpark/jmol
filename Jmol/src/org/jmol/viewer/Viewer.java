@@ -590,8 +590,8 @@ final public class Viewer extends JmolViewer {
     return colorManager.paletteDefault;
   }
 
-  void setColorScheme(String colorScheme) {
-    colorManager.setColorScheme(colorScheme);
+  void setDefaultColors(String colorScheme) {
+    colorManager.setDefaultColors(colorScheme);
   }
 
   public void setColorSelection(Color c) {

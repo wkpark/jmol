@@ -122,14 +122,14 @@ class StyleManager {
 
   void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setColorScheme("jmol");
+    viewer.setDefaultColors("jmol");
     viewer.setAxesOrientationRasmol(false);
     setZeroBasedXyzRasmol(false);
   }
 
   void setRasmolDefaults() {
     setCommonDefaults();
-    viewer.setColorScheme("rasmol");
+    viewer.setDefaultColors("rasmol");
     viewer.setAxesOrientationRasmol(true);
     setZeroBasedXyzRasmol(true);
     viewer.setPercentVdwAtom(0);

@@ -2463,7 +2463,10 @@ class Eval implements Runnable {
       setBoundbox();
       break;
     case Token.color:
-      setColor();
+      System.out.println("WARNING! use 'set defaultColors' not 'set color'");
+      // fall into
+    case Token.defaultColors:
+      setDefaultColors();
       break;
     case Token.debugscript:
       setDebugScript();
@@ -2580,14 +2583,12 @@ class Eval implements Runnable {
                         getSetAxesTypeMad());
   }
 
-  void setColor() throws ScriptException {
+  void setDefaultColors() throws ScriptException {
     checkLength3();
     switch(statement[2].tok) {
     case Token.rasmol:
     case Token.jmol:
-    case Token.string:
-    case Token.identifier:
-      viewer.setColorScheme((String)statement[2].value);
+      viewer.setDefaultColors((String)statement[2].value);
       break;
     default:
       invalidArgument();

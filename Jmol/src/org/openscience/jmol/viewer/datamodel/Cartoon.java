@@ -48,23 +48,14 @@ public class Cartoon extends Mcpg {
       super(polymer);
     }
 
-    public void setMad(short mad, BitSet bsSelected) {
-      int[] atomIndices = polymer.getAtomIndices();
-      for (int i = polymerCount; --i >= 0; ) {
-        if (bsSelected.get(atomIndices[i]))
-          if (mad < 0) {
-            // -2.0 angstrom diameter -> -4000 milliangstroms diameter
-            if (mad == -4000)
-              mads[i] = 1000; // cartoon temperature goes here
-            else
-              mads[i] =
-                (short)(polymerGroups[i].isHelixOrSheet() ? 3000 : 500);
-          } else {
-            mads[i] = mad;
-          }
+    short getMadDefault(short mad, byte structureType) {
+      switch(structureType) {
+      case JmolConstants.SECONDARY_STRUCTURE_SHEET:
+      case JmolConstants.SECONDARY_STRUCTURE_HELIX:
+        return (short)3000;
+      default:
+        return (short)500;
       }
-      if (polymerCount > 1)
-        mads[polymerCount] = mads[polymerCount - 1];
     }
   }
 }

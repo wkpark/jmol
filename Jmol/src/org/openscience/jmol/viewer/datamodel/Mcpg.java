@@ -131,16 +131,24 @@ abstract public class Mcpg implements Graphic {
         polymerGroups = polymer.getGroups();
       }
     }
-    
+
+    short getMadDefault(short mad, byte structureType) {
+      switch(structureType) {
+      case JmolConstants.SECONDARY_STRUCTURE_SHEET:
+      case JmolConstants.SECONDARY_STRUCTURE_HELIX:
+        return (short)1500;
+      default:
+        return (short)500;
+      }
+    }
+
     public void setMad(short mad, BitSet bsSelected) {
       int[] atomIndices = polymer.getAtomIndices();
       for (int i = polymerCount; --i >= 0; ) {
         if (bsSelected.get(atomIndices[i])) {
-          if (mad < 0) {
-            mads[i] = (short)(polymerGroups[i].isHelixOrSheet() ? 1500 : 500);
-          } else {
-            mads[i] = mad;
-          }
+          mads[i] = mad >= 0
+            ? mad
+            : getMadDefault(mad, polymerGroups[i].getStructureType());
         }
       }
       if (polymerCount > 1)

@@ -275,7 +275,7 @@ public class Eval implements Runnable {
       Token token = statement[0];
       switch (token.tok) {
       case Token.backbone:
-        backbone();
+        proteinGraphic(JmolConstants.GRAPHIC_BACKBONE);
         break;
       case Token.background:
         background();
@@ -363,13 +363,13 @@ public class Eval implements Runnable {
         // for now, just let ribbons and strands do the same thing
         System.out.println("sorry - ribbons not implemented, using strands");
       case Token.strands:
-        strands();
+        proteinGraphic(JmolConstants.GRAPHIC_STRANDS);
         break;
       case Token.trace:
-        trace();
+        proteinGraphic(JmolConstants.GRAPHIC_TRACE);
         break;
       case Token.cartoon:
-        cartoon();
+        proteinGraphic(JmolConstants.GRAPHIC_CARTOON);
         break;
       case Token.spin:
         spin();
@@ -1018,33 +1018,6 @@ public class Eval implements Runnable {
     return null;
   }
 
-  void backbone() throws ScriptException {
-    int tok = statement[1].tok;
-    short mad = -1;
-    switch (tok) {
-    case Token.on:
-      break;
-    case Token.off:
-      mad = 0;
-      break;
-    case Token.integer:
-      int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500)
-        numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * 2);
-      break;
-    case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms >= 2)
-        numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
-      break;
-    default:
-      booleanOrNumberExpected();
-    }
-    viewer.setGraphicMad(JmolConstants.GRAPHIC_BACKBONE, mad);
-  }
-  
   void background() throws ScriptException {
     viewer.setColorBackground(getColorParam(1));
   }
@@ -1854,67 +1827,7 @@ public class Eval implements Runnable {
     viewer.setDotsOn(dotsOn);
   }
 
-  void trace() throws ScriptException {
-    short mad = 0;
-    int tok = statement[1].tok;
-    switch (tok) {
-    case Token.on:
-      mad = -1; // means thick-n-thin
-      break;
-    case Token.off:
-      break;
-    case Token.integer:
-      int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500)
-        numberOutOfRange();
-      mad = (short)(2 * radiusRasMol * 4);
-      break;
-    case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms > 4)
-        numberOutOfRange();
-      mad = (short)(2 * 1000 * angstroms);
-      break;
-    case Token.identifier:
-      String id = (String)statement[1].value;
-      if (id.equalsIgnoreCase("temperature")) {
-        mad = -2; // means trace temperature
-        return;
-      }
-    default:
-      booleanOrNumberExpected();
-    }
-    viewer.setGraphicMad(JmolConstants.GRAPHIC_TRACE, mad);
-  }
-
-  void strands() throws ScriptException {
-    short mad = 0;
-    int tok = statement[1].tok;
-    switch (tok) {
-    case Token.on:
-      mad = -1; // means take default
-      break;
-    case Token.off:
-      break;
-    case Token.integer:
-      int widthRasMol = statement[1].intValue;
-      if (widthRasMol >= 500)
-        numberOutOfRange();
-      mad = (short)(widthRasMol * 4);
-      break;
-    case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms > 4)
-        numberOutOfRange();
-      mad = (short)(angstroms * 1000);
-      break;
-    default:
-      booleanOrNumberExpected();
-    }
-    viewer.setGraphicMad(JmolConstants.GRAPHIC_STRANDS, mad);
-  }
-
-  void cartoon() throws ScriptException {
+  void proteinGraphic(int graphicType) throws ScriptException {
     short mad = 0;
     int tok = statement[1].tok;
     switch (tok) {
@@ -1938,7 +1851,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setGraphicMad(JmolConstants.GRAPHIC_CARTOON, mad);
+    viewer.setGraphicMad(graphicType, mad);
   }
 
   void spin() throws ScriptException {

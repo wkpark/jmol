@@ -240,7 +240,7 @@ public class PdbPolymer {
     int indexMin2 = -1;
     for (int i = count; --i >= 0; ) {
       if ((i == indexSource || (i+1) == indexSource) || (i-1) == indexSource) {
-        System.out.println(" i=" +i + " indexSource=" + indexSource);
+        //        System.out.println(" i=" +i + " indexSource=" + indexSource);
         continue;
       }
       PdbGroup target = groups[i];
@@ -249,7 +249,7 @@ public class PdbPolymer {
       if (dist2 > maxHbondAlphaDistance2)
         continue;
       int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
-      System.out.println("HbondEnergy=" + energy);
+      //      System.out.println("HbondEnergy=" + energy);
       if (energy < energyMin1) {
         energyMin1 = energy;
         indexMin1 = i;
@@ -309,8 +309,8 @@ public class PdbPolymer {
 
   void createResidueHydrogenBond(int indexAmino,
                                  int indexCarbonyl) {
-    System.out.println("createResidueHydrogenBond(" + indexAmino +
-                       "," + indexCarbonyl);
+    //    System.out.println("createResidueHydrogenBond(" + indexAmino +
+    //                       "," + indexCarbonyl);
     Atom nitrogen = groups[indexAmino].getNitrogenAtom();
     Atom oxygen = groups[indexCarbonyl].getCarbonylOxygenAtom();
     Frame frame = chain.model.file.frame;

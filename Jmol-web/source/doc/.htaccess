@@ -1,0 +1,4 @@
+DirectoryIndex index index.en.html index.html
+Options MultiViews
+AddLanguage en .en
+AddLanguage fr .fr

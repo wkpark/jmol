@@ -34,6 +34,150 @@ import javax.vecmath.Vector3f;
 
 class CartoonRenderer extends McpsRenderer {
 
+  Point3i[] getTempScreens(int minLen) {
+    Point3i[] screens = new Point3i[minLen];
+    for (int i = minLen; --i >= 0; )
+      screens[i] = new Point3i();
+    return screens;
+  }
+
+  final Point3f pointT = new Point3f();
+
+  Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
+                        short[] mads, float offsetFraction) {
+    int count = centers.length;
+    Point3i[] screens = getTempScreens(count);
+    if (offsetFraction == 0) {
+      for (int i = count; --i >= 0; )
+        viewer.transformPoint(centers[i], screens[i]);
+    } else {
+      offsetFraction /= 1000;
+      for (int i = count; --i >= 0; ) {
+        pointT.set(vectors[i]);
+        short mad = isSpecials[i] || i == 0 ? mads[i] : mads[i - 1];
+        float scale = mad * offsetFraction;
+        pointT.scaleAdd(scale, centers[i]);
+        viewer.transformPoint(pointT, screens[i]);
+      }
+    }
+    return screens;
+  }
+
+  void calcScreenLeadMidpoints(Point3f[] leadMidpoints) {
+    int count = polymerCount + 1;
+    leadMidpointScreens = frameRenderer.getTempScreens(count);
+    for (int i = count; --i >= 0; ) {
+      viewer.transformPoint(leadMidpoints[i], leadMidpointScreens[i]);
+      //g3d.fillSphereCentered(Graphics3D.CYAN, 15, leadMidpointScreens[i]);
+    }
+  }
+
+  boolean isNucleotidePolymer;
+  int polymerCount;
+  Group[] polymerGroups;
+  Point3i[] leadMidpointScreens;
+
+  void renderMcpschain( Mcps.Mcpschain mcpsChain) {
+    Cartoon.Cchain strandsChain = (Cartoon.Cchain)mcpsChain;
+    if (strandsChain.wingVectors != null) {
+      polymerCount = strandsChain.polymerCount;
+      polymerGroups = strandsChain.polymerGroups;
+      isSpecials = calcIsSpecials(polymerGroups, polymerCount);
+      isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
+      calcScreenLeadMidpoints(strandsChain.leadMidpoints);
+      render1Chain(polymerCount,
+                   polymerGroups,
+                   strandsChain.leadMidpoints,
+                   strandsChain.wingVectors,
+                   strandsChain.mads,
+                   strandsChain.colixes);
+    }
+  }
+
+
+  boolean[] isSpecials;
+
+  boolean[]  calcIsSpecials(Group[] polymerGroups, int polymerCount) {
+    boolean[] isSpecials = frameRenderer.getTempBooleans(polymerCount);
+    for (int i = polymerCount; --i >= 0; )
+      isSpecials[i] = polymerGroups[i].isHelixOrSheet();
+    return isSpecials;
+  }
+
+
+  void render1Chain(int polymerCount,
+                    Group[] groups, Point3f[] centers,
+                    Vector3f[] vectors, short[] mads, short[] colixes) {
+    Point3i[] screensTop;
+    Point3i[] screensBottom;
+
+    screensTop = calcScreens(centers, vectors, mads,
+                             isNucleotidePolymer ? 1f : 0.5f);
+    screensBottom = calcScreens(centers, vectors, mads,
+                                isNucleotidePolymer ? 0f : -0.5f);
+    for (int i = polymerCount; --i >= 0; )
+      if (mads[i] > 0) {
+        Group group = groups[i];
+        short colix = colixes[i];
+        if (colix == 0)
+          colix = group.getLeadAtom().colixAtom;
+        if (isSpecials[i])
+          render2StrandSegment(polymerCount,
+                               group, colix, mads,
+                               screensTop, screensBottom, i);
+        else
+          renderRopeSegment(colix, mads, i);
+      }
+  }
+  
+  void render2StrandSegment(int polymerCount, Group group, short colix,
+                            short[] mads, Point3i[] screensTop,
+                            Point3i[] screensBottom, int i) {
+    int iLast = polymerCount;
+    int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
+    int iNext = i + 1; if (iNext > iLast) iNext = iLast;
+    int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
+    if (colix == 0)
+      colix = group.getLeadAtom().colixAtom;
+    
+    //change false -> true to fill in mesh
+    g3d.drawHermite(true, colix, isNucleotidePolymer ? 4 : 7,
+                    screensTop[iPrev], screensTop[i],
+                    screensTop[iNext], screensTop[iNext2],
+                    screensBottom[iPrev], screensBottom[i],
+                    screensBottom[iNext], screensBottom[iNext2]
+                    );
+  }
+
+  void renderRopeSegment(short colix, short[] mads, int i) {
+    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
+    int iNext1 = i + 1; if (iNext1 > polymerCount) iNext1 = polymerCount;
+    int iNext2 = i + 2; if (iNext2 > polymerCount) iNext2 = polymerCount;
+    
+    int madThis, madBeg, madEnd;
+    madThis = madBeg = madEnd = mads[i];
+    if (! isSpecials[iPrev1])
+      madBeg = (mads[iPrev1] + madThis) / 2;
+    if (! isSpecials[iNext1])
+      madEnd = (mads[iNext1] + madThis) / 2;
+    int diameterBeg = viewer.scaleToScreen(leadMidpointScreens[i].z, madBeg);
+    int diameterEnd = viewer.scaleToScreen(leadMidpointScreens[iNext1].z, madEnd);
+    int diameterMid =
+      viewer.scaleToScreen(polymerGroups[i].getAlphaCarbonAtom().getScreenZ(),
+                           madThis);
+    g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
+                    leadMidpointScreens[iPrev1], leadMidpointScreens[i],
+                    leadMidpointScreens[iNext1], leadMidpointScreens[iNext2]);
+//    System.out.println("render1Segment: iPrev1=" + iPrev1 +
+//                       " i=" + i + " iNext1=" + iNext1 + " iNext2=" + iNext2 +
+//                       " leadMidpointScreens[i]=" + leadMidpointScreens[i] + " colix=" + colix +
+//                       " mads[i]=" + mads[i]);
+  }
+
+
+
+  /*
+
   Point3i s0 = new Point3i();
   Point3i s1 = new Point3i();
   Point3i s2 = new Point3i();
@@ -74,7 +218,6 @@ class CartoonRenderer extends McpsRenderer {
   Group[] polymerGroups;
   Point3i[] leadMidpointScreens;
   Atom[] alphas;
-  boolean[] isSpecials;
 
   void initializeChain(AminoPolymer aminopolymer) {
     polymerGroups = aminopolymer.getGroups();
@@ -82,12 +225,6 @@ class CartoonRenderer extends McpsRenderer {
     calcIsSpecials();
     calcScreenLeadMidpoints(aminopolymer.leadMidpoints);
     alphas = getAlphas();
-  }
-
-  void calcIsSpecials() {
-    isSpecials = frameRenderer.getTempBooleans(polymerCount);
-    for (int i = polymerCount; --i >= 0; )
-      isSpecials[i] = polymerGroups[i].isHelixOrSheet();
   }
 
   void calcScreenLeadMidpoints(Point3f[] leadMidpoints) {
@@ -123,12 +260,10 @@ class CartoonRenderer extends McpsRenderer {
     g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
                     leadMidpointScreens[iPrev1], leadMidpointScreens[i],
                     leadMidpointScreens[iNext1], leadMidpointScreens[iNext2]);
-    /*
-    System.out.println("render1Segment: iPrev1=" + iPrev1 +
-                       " i=" + i + " iNext1=" + iNext1 + " iNext2=" + iNext2 +
-                       " leadMidpointScreens[i]=" + leadMidpointScreens[i] + " colix=" + colix +
-                       " mads[i]=" + mads[i]);
-    */
+//    System.out.println("render1Segment: iPrev1=" + iPrev1 +
+//                       " i=" + i + " iNext1=" + iNext1 + " iNext2=" + iNext2 +
+//                       " leadMidpointScreens[i]=" + leadMidpointScreens[i] + " colix=" + colix +
+//                       " mads[i]=" + mads[i]);
   }
 
   final Point3i screenA = new Point3i();
@@ -172,14 +307,13 @@ class CartoonRenderer extends McpsRenderer {
       boolean tEnd =
         (endIndexPending == aminostructurePending.getPolymerCount() - 1);
 
-      /*
-      System.out.println("structurePending.getPolymerCount()=" +
-                         structurePending.getPolymerCount());
-      System.out.println("segments.length=" + segments.length);
-      System.out.println(" startIndexPending=" + startIndexPending +
-                         " endIndexPending=" + endIndexPending);
-      System.out.println("tEnd=" + tEnd);
-      */
+//
+//      System.out.println("structurePending.getPolymerCount()=" +
+//                         structurePending.getPolymerCount());
+//      System.out.println("segments.length=" + segments.length);
+//      System.out.println(" startIndexPending=" + startIndexPending +
+//                         " endIndexPending=" + endIndexPending);
+//      System.out.println("tEnd=" + tEnd);
       if (aminostructurePending instanceof Helix)
         renderPendingHelix(segments[startIndexPending],
                            segments[endIndexPending],
@@ -273,27 +407,25 @@ class CartoonRenderer extends McpsRenderer {
                             screenCorners[i2],
                             screenCorners[i3]);
     }
-    /*
-    Sheet sheet = (Sheet)structurePending;
-    Vector3f widthUnitVector = sheet.getWidthUnitVector();
-    Vector3f heightUnitVector = sheet.getHeightUnitVector();
-    float widthScale = (madPending + madPending >> 2) / 2 / 1000f;
+//    Sheet sheet = (Sheet)structurePending;
+//    Vector3f widthUnitVector = sheet.getWidthUnitVector();
+//    Vector3f heightUnitVector = sheet.getHeightUnitVector();
+//    float widthScale = (madPending + madPending >> 2) / 2 / 1000f;
 
-    pointArrow1.set(widthUnitVector);
-    pointArrow1.scaleAdd(-widthScale, base);
-    viewer.transformPoint(pointArrow1, screenA);
+//    pointArrow1.set(widthUnitVector);
+//    pointArrow1.scaleAdd(-widthScale, base);
+//    viewer.transformPoint(pointArrow1, screenA);
 
-    pointArrow2.set(widthUnitVector);
-    pointArrow2.scaleAdd(widthScale, base);
-    viewer.transformPoint(pointArrow2, screenB);
+//    pointArrow2.set(widthUnitVector);
+//    pointArrow2.scaleAdd(widthScale, base);
+//    viewer.transformPoint(pointArrow2, screenB);
 
-    viewer.transformPoint(tip, screenC);
+//    viewer.transformPoint(tip, screenC);
 
-    viewer.transformVector(heightUnitVector, vectorNormal);
+//    viewer.transformVector(heightUnitVector, vectorNormal);
 
-    g3d.drawfillTriangle(colixPending, vectorNormal,
-                         screenA, screenB, screenC);
-    */
+//    g3d.drawfillTriangle(colixPending, vectorNormal,
+//                         screenA, screenB, screenC);
   }
 
   final Vector3f lengthVector = new Vector3f();
@@ -380,4 +512,5 @@ class CartoonRenderer extends McpsRenderer {
     corners[5].add(pointTip, scaledHeightVector);
     viewer.transformPoint(corners[5], screenCorners[5]);
   }
+  */
 }

@@ -13,8 +13,14 @@
   <contributor id="NV">
     <name>Nicolas Vervelle</name><email>nvervell@club-internet.fr</email>
   </contributor>
+  <contributor id="OS">
+    <name>Oliver Stuker</name><email>revilo@oc38.uni-paderborn.de</email>
+  </contributor>
   <contributor id="RK">
     <name>Rene Kanters</name><email>rkanters@richmond.edu</email>
+  </contributor>
+  <contributor id="RH">
+    <name>Bob Hanson</name><email>hansonr@stolaf.edu</email>
   </contributor>
   <contributor id="JR">
     <name>Jan Reichert</name><email>jr@imb-jena.de</email>
@@ -111,7 +117,8 @@
     and Mac OS 9
   </change>
   <change contributor="EW">
-    CmlReader, CdkModelAdapter, general project administration
+    CmlReader, CdkModelAdapter, cdk integeration, wiki,
+    general project administration
   </change>
   <change contributor="TD">
     Provided significant support and testing in the areas of polymer
@@ -122,11 +129,18 @@
     French translation, code cleanup, JavaDoc, readers
   </change>
   <change contributor="RK">
-    AtomSetChooser mechanism, improved Gaussian reader, implemented NWChem reader
+    AtomSetChooser mechanism, improved Gaussian reader,
+    implemented NWChem reader
   </change>
   <change contributor="JR">
     Assistance in areas of multiple models, insertion codes,
     polymer definitions, applet testing
+  </change>
+  <change contributor="OS">
+    wiki.jmol.org
+  </change>
+  <change contributor="RH">
+    Interactive scripting tutorial, applet testing
   </change>
 </changes>
 

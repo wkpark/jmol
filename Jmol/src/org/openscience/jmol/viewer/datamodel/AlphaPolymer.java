@@ -78,4 +78,104 @@ public class AlphaPolymer extends Polymer {
 
   void calcHydrogenBonds() {
   }
+
+  /**
+   * Uses Levitt & Greer algorithm to calculate protien secondary
+   * structures using only alpha-carbon atoms.
+   *<p>
+   * Levitt and Greer <br />
+   * Automatic Identification of Secondary Structure in Globular Proteins <br />
+   * J.Mol.Biol.(1977) 114, 181-293 <br />
+   *<p>
+   * <a
+   * href='http://csb.stanford.edu/levitt/Levitt_JMB77_Secondary_structure.pdf'>
+   * http://csb.stanford.edu/levitt/Levitt_JMB77_Secondary_structure.pdf
+   * </a>
+   */
+  void calculateStructures() {
+    float[] angles = calculateAnglesInDegrees();
+    byte[] codes = calculateCodes(angles);
+    checkBetaSheetAlphaHelixOverlap(codes, angles);
+    byte[] tags = calculateRunsFourOrMore(codes);
+    extendRuns(tags);
+  }
+
+  final static byte CODE_NADA        = 0;
+  final static byte CODE_RIGHT_HELIX = 1;
+  final static byte CODE_BETA_SHEET  = 2;
+  final static byte CODE_LEFT_HELIX  = 3;
+  
+  float[] calculateAnglesInDegrees() {
+    float[] angles = new float[count];
+    for (int i = count - 1; --i >= 2; )
+      angles[i] = 
+        Measurement.computeTorsion(monomers[i - 2].getLeadAtomPoint(),
+                                   monomers[i - 1].getLeadAtomPoint(),
+                                   monomers[i    ].getLeadAtomPoint(),
+                                   monomers[i + 1].getLeadAtomPoint());
+    return angles;
+  }
+
+  byte[] calculateCodes(float[] angles) {
+    byte[] codes = new byte[count];
+    for (int i = count - 1; --i >= 2; ) {
+      float degrees = angles[i];
+      codes[i] = ((degrees >= 10 && degrees < 120)
+                  ? CODE_RIGHT_HELIX
+                  : ((degrees >= 120 && degrees < 270)
+                     ? CODE_BETA_SHEET
+                     : ((degrees >= 270 && degrees < 360)
+                        ? CODE_LEFT_HELIX
+                        : CODE_NADA)));
+    }
+    return codes;
+  }
+
+  void checkBetaSheetAlphaHelixOverlap(byte[] codes, float[] angles) {
+    for (int i = count - 2; --i >= 2; )
+      if (codes[i] == CODE_BETA_SHEET &&
+          angles[i] <= 140 &&
+          codes[i - 2] == CODE_RIGHT_HELIX &&
+          codes[i - 1] == CODE_RIGHT_HELIX &&
+          codes[i + 1] == CODE_RIGHT_HELIX &&
+          codes[i + 2] == CODE_RIGHT_HELIX)
+        codes[i] = CODE_RIGHT_HELIX;
+  }
+
+  final static byte TAG_NADA  = 0;
+  final static byte TAG_HELIX = 1;
+  final static byte TAG_SHEET = 2;
+  final static byte TAG_TURN  = 3;
+
+  byte[] calculateRunsFourOrMore(byte[] codes) {
+    byte[] tags = new byte[count];
+    byte tag = TAG_NADA;
+    byte code = CODE_NADA;
+    int runLength = 0;
+    for (int i = 0; i < count; ++i) {
+      if (codes[i] == code && code != CODE_NADA) {
+        ++runLength;
+        if (runLength == 4) {
+          tag = (code == CODE_BETA_SHEET ? TAG_SHEET : TAG_HELIX);
+          for (int j = 4; --j >= 0; )
+            tags[i - j] = tag;
+        } else if (runLength > 4)
+          tags[i] = tag;
+      } else {
+        runLength = 1;
+        code = codes[i];
+      }
+    }
+    return tags;
+  }
+
+  void extendRuns(byte[] tags) {
+    for (int i = 1; i < count - 4; ++i)
+      if (tags[i] == TAG_NADA && tags[i + 1] != TAG_NADA)
+        tags[i] = tags[i + 1];
+    
+    tags[0] = tags[1];
+    tags[count - 1] = tags[count - 2];
+  }
 }
+

@@ -143,8 +143,8 @@ public class Measurement {
              atomCountPlusIndices[4] == this.countPlusIndices[1]));
   }
 
-  float computeTorsion(Point3f p1, Point3f p2,
-                       Point3f p3, Point3f p4) {
+  static float computeTorsion(Point3f p1, Point3f p2,
+                              Point3f p3, Point3f p4) {
 
     float ijx = p1.x - p2.x;
     float ijy = p1.y - p2.y;

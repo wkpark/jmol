@@ -19,6 +19,7 @@
 package org.openscience.jmol;
 
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.tools.AtomTypeFactory;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
@@ -44,7 +45,7 @@ public class ChemFrame extends AtomContainer {
   private Vector properties = new Vector();
   private int numberOfAtoms = 0;
 
-  private org.openscience.cdk.tools.AtomTypeFactory atf = null;
+  private AtomTypeFactory atomTypeFactory = null;
   
   Point3d centerBoundingBox;
   Point3d cornerBoundingBox;
@@ -68,13 +69,17 @@ public class ChemFrame extends AtomContainer {
 
     atoms = new Atom[na];
     this.bondsEnabled = bondsEnabled;
+    try {
+      System.out.println("Here we go!");
+        atomTypeFactory = new AtomTypeFactory(
+                  "org/openscience/cdk/config/jmol_atomtypes.txt");
+    } catch (Exception exc) {
+      System.out.println("failure opening AtomTypeFactory:" + exc);
+    }
   }
 
   public ChemFrame(boolean bondsEnabled) {
     this(100, bondsEnabled);
-    try {
-        this.atf = new org.openscience.cdk.tools.AtomTypeFactory("org/openscience/cdk/config/jmol_atomtypes.txt");
-    } catch (Exception exc) {}
   }
 
   /**
@@ -201,8 +206,8 @@ public class ChemFrame extends AtomContainer {
     }
 
     atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
-    if (atf != null) atf.configure(atoms[i]);
-
+    if (atomTypeFactory != null)
+      atomTypeFactory.configure(atoms[i]);
     if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {
         if (Atom.closeEnoughToBond(atoms[i], atoms[j],

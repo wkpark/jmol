@@ -30,7 +30,6 @@ import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
-import org.openscience.cdk.tools.IsotopeFactory;
 
 /**
  * Stores and manipulations information and properties of

@@ -69,7 +69,7 @@ public class DisplaySettings {
 	/**
 	 * Sets the display style for labels.
 	 */
-	public static void setLabelMode(int i) {
+	public void setLabelMode(int i) {
 		if (i > NUMBERS) {
 			return;
 		} 
@@ -79,14 +79,14 @@ public class DisplaySettings {
 	/**
 	 * Gets the display style for labels.
 	 */
-	public static int getLabelMode() {
+	public int getLabelMode() {
 		return labelMode;
 	} 
 
 	/**
 	 * Sets the display style for drawing atoms.
 	 */
-	public static void setAtomDrawMode(int i) {
+	public void setAtomDrawMode(int i) {
 		if (i >= LINE) {
 			return;
 		} 
@@ -96,14 +96,14 @@ public class DisplaySettings {
 	/**
 	 * Gets the display style for drawing atoms.
 	 */
-	public static int getAtomDrawMode() {
+	public int getAtomDrawMode() {
 		return atomDrawMode;
 	} 
 
 	/**
 	 * Sets the display style for drawing bonds.
 	 */
-	public static void setBondDrawMode(int i) {
+	public void setBondDrawMode(int i) {
 		if (i > LINE) {
 			return;
 		} 
@@ -113,7 +113,7 @@ public class DisplaySettings {
 	/**
 	 * Gets the display style for drawing bonds.
 	 */
-	public static int getBondDrawMode() {
+	public int getBondDrawMode() {
 		return bondDrawMode;
 	} 
 
@@ -121,7 +121,7 @@ public class DisplaySettings {
 	 * Sets the color used for outlining atoms and bonds in QUICKDRAW
 	 * and WIREFRAME drawing modes.
 	 */
-	public static void setOutlineColor(Color c) {
+	public void setOutlineColor(Color c) {
 		outlineColor = c;
 	} 
 
@@ -129,35 +129,35 @@ public class DisplaySettings {
 	 * Gets the color used for outlining atoms and bonds in QUICKDRAW
 	 * and WIREFRAME drawing modes.
 	 */
-	public static Color getOutlineColor() {
+	public Color getOutlineColor() {
 		return outlineColor;
 	} 
 
 	/**
 	 * Sets the color used for highlighting selected atoms.
 	 */
-	public static void setPickedColor(Color c) {
+	public void setPickedColor(Color c) {
 		pickedColor = c;
 	} 
 
 	/**
 	 * Gets the color used for highlighting selected atoms.
 	 */
-	public static Color getPickedColor() {
+	public Color getPickedColor() {
 		return pickedColor;
 	} 
 
 	/**
 	 * Sets the color used for drawing text.
 	 */
-	public static void setTextColor(Color c) {
+	public void setTextColor(Color c) {
 		textColor = c;
 	} 
 
 	/**
 	 * Gets the color used for drawing text.
 	 */
-	public static Color getTextColor() {
+	public Color getTextColor() {
 		return textColor;
 	} 
 
@@ -166,14 +166,14 @@ public class DisplaySettings {
 	 * 
 	 * @param s The string descriptor of the physical property.
 	 */
-	public static void setPropertyMode(String s) {
+	public void setPropertyMode(String s) {
 		propertyMode = s;
 	} 
 
 	/*
 	 * Returns the descriptor of the physical property currently displayed.
 	 */
-	public static String getPropertyMode() {
+	public String getPropertyMode() {
 		return propertyMode;
 	} 
 
@@ -181,14 +181,14 @@ public class DisplaySettings {
 	 * Sets the color of the line drawn for distance measurements.
 	 * @param c the color
 	 */
-	public static void setDistanceColor(Color c) {
+	public void setDistanceColor(Color c) {
 		distanceColor = c;
 	} 
 
 	/**
 	 * Gets the color of the line drawn for distance measurements.
 	 */
-	public static Color getDistanceColor() {
+	public Color getDistanceColor() {
 		return distanceColor;
 	} 
 
@@ -196,14 +196,14 @@ public class DisplaySettings {
 	 * Sets the color of the line drawn for angle measurements.
 	 * @param c the color
 	 */
-	public static void setAngleColor(Color c) {
+	public void setAngleColor(Color c) {
 		angleColor = c;
 	} 
 
 	/**
 	 * Gets the color of the line drawn for angle measurements.
 	 */
-	public static Color getAngleColor() {
+	public Color getAngleColor() {
 		return angleColor;
 	} 
 
@@ -211,65 +211,155 @@ public class DisplaySettings {
 	 * Sets the color of the line drawn for dihedral measurements.
 	 * @param c the color
 	 */
-	public static void setDihedralColor(Color c) {
+	public void setDihedralColor(Color c) {
 		dihedralColor = c;
 	} 
 
 	/**
 	 * Gets the color of the line drawn for dihedral measurements.
 	 */
-	public static Color getDihedralColor() {
+	public Color getDihedralColor() {
 		return dihedralColor;
 	} 
 
 	/**
 	 * Display style for labels.
 	 */
-	private static int labelMode = NOLABELS;
+	private int labelMode = NOLABELS;
 
 	/**
 	 * Display style for drawing atoms.
 	 */
-	private static int atomDrawMode = QUICKDRAW;
+	private int atomDrawMode = QUICKDRAW;
 
 	/**
 	 * Display style for drawing bonds.
 	 */
-	private static int bondDrawMode = QUICKDRAW;
+	private int bondDrawMode = QUICKDRAW;
 
 	/**
 	 * Color used for outlining atoms and bonds in QUICKDRAW and
 	 * WIREFRAME drawing modes.
 	 */
-	private static Color outlineColor = Color.black;
+	private Color outlineColor = Color.black;
 
 	/**
 	 * Descriptor of the physical property to be displayed.
 	 */
-	private static String propertyMode = "";
+	private String propertyMode = "";
 
 	/**
 	 * Color used for highlighting selected atoms.
 	 */
-	private static Color pickedColor = Color.orange;
+	private Color pickedColor = Color.orange;
 
 	/**
 	 * Color used for drawing text.
 	 */
-	private static Color textColor = Color.black;
+	private Color textColor = Color.black;
 
 	/**
 	 * Color of the line drawn for distance measurements.
 	 */
-	private static Color distanceColor = Color.black;
+	private Color distanceColor = Color.black;
 
 	/**
 	 * Color of the line drawn for angle measurements.
 	 */
-	private static Color angleColor = Color.black;
+	private Color angleColor = Color.black;
 
 	/**
 	 * Color of the line drawn for dihedral measurements.
 	 */
-	private static Color dihedralColor = Color.black;
+	private Color dihedralColor = Color.black;
+
+    private static boolean ShowAtoms     = true;
+    private static boolean ShowBonds     = true;
+    private static boolean ShowVectors   = false;
+    private static boolean ShowHydrogens = true;
+
+    /**
+     * Toggles on/off the flag that decides whether atoms are shown
+     * when displaying a ChemFrame
+     */
+    public static void toggleAtoms() {
+        ShowAtoms = !ShowAtoms;
+    }    
+
+    /**
+     * Toggles on/off the flag that decides whether bonds are shown
+     * when displaying a ChemFrame
+     */
+    public void toggleBonds() {
+        ShowBonds = !ShowBonds;
+    }
+
+    /**
+     * Toggles on/off the flag that decides whether vectors are shown
+     * when displaying a ChemFrame
+     */
+    public void toggleVectors() {
+        ShowVectors = !ShowVectors;
+    }
+
+    /**
+     * Toggles on/off the flag that decides whether Hydrogen atoms are
+     * shown when displaying a ChemFrame 
+     */
+    public void toggleHydrogens() {
+        ShowHydrogens = !ShowHydrogens;
+    }
+
+    /**
+     * Set the flag that decides whether atoms are shown
+     * when displaying a ChemFrame
+     *
+     * @param sa the value of the flag
+     */
+    public void setShowAtoms(boolean sa) {
+        ShowAtoms = sa;
+    }
+
+    /**
+     * Set the flag that decides whether bonds are shown
+     * when displaying a ChemFrame
+     *
+     * @param sb the value of the flag
+     */
+    public void setShowBonds(boolean sb) {
+        ShowBonds = sb;
+    }
+
+    /**
+     * Set the flag that decides whether vectors are shown
+     * when displaying a ChemFrame
+     *
+     * @param sv the value of the flag
+     */
+    public void setShowVectors(boolean sv) {
+        ShowVectors = sv;
+    }
+
+    /**
+     * Set the flag that decides whether Hydrogen atoms are shown
+     * when displaying a ChemFrame.  Currently non-functional.
+     *
+     * @param sh the value of the flag
+     */
+    public void setShowHydrogens(boolean sh) {
+        ShowHydrogens = sh;
+    }
+
+    public boolean getShowAtoms() {
+        return ShowAtoms;
+    }
+    public boolean getShowBonds() {
+        return ShowBonds;
+    }
+    public boolean getShowVectors() {
+        return ShowVectors;
+    }
+	public boolean getShowHydrogens() {
+        return ShowHydrogens;
+    }
 }

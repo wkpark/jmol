@@ -55,14 +55,14 @@ class Distance extends Measurement implements MeasurementInterface {
         compute();
     }
     
-    public void paint(Graphics g,  int x1, int y1, int z1, 
+    public void paint(Graphics g, DisplaySettings settings, int x1, int y1, int z1, 
                       int x2, int y2, int z2) throws Exception {
-        paintDistLine(g, x1, y1, x2, y2);
-        paintDistString(g, x1, y1, z1, x2, y2, z2);       
+        paintDistLine(g, settings, x1, y1, x2, y2);
+        paintDistString(g, settings, x1, y1, z1, x2, y2, z2);       
     }
 
-    private void paintDistLine(Graphics g, int x1, int y1, int x2, int y2) {
-        g.setColor(DisplaySettings.getDistanceColor());
+    private void paintDistLine(Graphics g, DisplaySettings settings, int x1, int y1, int x2, int y2) {
+        g.setColor(settings.getDistanceColor());
         String vers = System.getProperty("java.version");
         if (vers.compareTo("1.2") >= 0) {
             Graphics2D g2 = (Graphics2D) g;
@@ -76,7 +76,7 @@ class Distance extends Measurement implements MeasurementInterface {
         }
     }
 
-    private void paintDistString(Graphics g, 
+    private void paintDistString(Graphics g, DisplaySettings settings,
                                  int x1, int y1, int z1, 
                                  int x2, int y2, int z2) {
         
@@ -87,7 +87,7 @@ class Distance extends Measurement implements MeasurementInterface {
                              (int)(getAvgRadius(z1,z2)));
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics(font);
-        g.setColor(DisplaySettings.getTextColor());
+        g.setColor(settings.getTextColor());
         String s = (new Double(getDistance())).toString();
         if (s.length() > 5) 
             s = s.substring(0,5);

@@ -56,15 +56,15 @@ class Angle extends Measurement implements MeasurementInterface {
         compute();
     }
     
-    public void paint(Graphics g, 
+    public void paint(Graphics g, DisplaySettings settings,
                       int x1, int y1, int z1, 
                       int x2, int y2, int z2, 
                       int x3, int y3, int z3) throws Exception {
-        paintAngleLine(g, x1, y1, x2, y2, x3, y3);
-        paintAngleString(g, x1, y1, z1, x2, y2, z2, x3, y3, z3);        
+        paintAngleLine(g, settings, x1, y1, x2, y2, x3, y3);
+        paintAngleString(g, settings, x1, y1, z1, x2, y2, z2, x3, y3, z3);        
     }
 
-    private void paintAngleLine(Graphics g, 
+    private void paintAngleLine(Graphics g, DisplaySettings settings,
                                 int x1, int y1, 
                                 int x2, int y2, 
                                 int x3, int y3) {        
@@ -73,7 +73,7 @@ class Angle extends Measurement implements MeasurementInterface {
         int xb = (x3+x2)/2;
         int yb = (y3+y2)/2;
 
-        g.setColor(DisplaySettings.getAngleColor());
+        g.setColor(settings.getAngleColor());
         String vers = System.getProperty("java.version");
         if (vers.compareTo("1.2") >= 0) {
             Graphics2D g2 = (Graphics2D) g;
@@ -89,7 +89,7 @@ class Angle extends Measurement implements MeasurementInterface {
 
 
 
-    private void paintAngleString(Graphics g, 
+    private void paintAngleString(Graphics g, DisplaySettings settings,
                                   int x1, int y1, int z1, 
                                   int x2, int y2, int z2,
                                   int x3, int y3, int z3) {
@@ -98,7 +98,7 @@ class Angle extends Measurement implements MeasurementInterface {
                              (int)(getAvgRadius(z1,z2,z3)));
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics(font);
-        g.setColor(DisplaySettings.getTextColor());
+        g.setColor(settings.getTextColor());
         String s = (new Double(getAngle())).toString();
         if (s.length() > 5) 
             s = s.substring(0,5);

@@ -79,7 +79,9 @@ class Jmol extends JPanel {
     public static File UserAtypeFile;
     
     private static JFrame consoleframe;
-    
+
+    private DisplaySettings settings = new DisplaySettings();
+
     static {
 		if (System.getProperty("user.home") == null) {
 			System.err.println("Error starting Jmol: the property 'user.home' is not defined.");
@@ -117,7 +119,7 @@ class Jmol extends JPanel {
 	}
 
         status = (StatusBar)createStatusBar();
-        display = new displayPanel(status);
+        display = new displayPanel(status, settings);
         prefs = new Preferences(frame, display);
         anim = new Animate(frame, display);
         vib = new Vibrate(frame, display);
@@ -589,7 +591,7 @@ class Jmol extends JPanel {
                     if (popup != null) {
                         if (popup.equals("prop")) {                            
                             apm = new AtomPropsMenu(jrh.getString(itemKeys[i] 
-                                                                  + "Label"));
+                                                                  + "Label"), settings);
                             menu.add(apm);
                         } else {
                             JMenu pm;
@@ -1028,7 +1030,7 @@ class Jmol extends JPanel {
 
             ImageTyper it = new ImageTyper(exportChooser);
             // GIF doesn't support more than 8 bits:
-            if (DisplaySettings.getAtomDrawMode() == DisplaySettings.SHADING){
+            if (settings.getAtomDrawMode() == DisplaySettings.SHADING){
                 it.disableGIF();
             }
             exportChooser.setAccessory(it);

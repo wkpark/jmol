@@ -85,9 +85,11 @@ public class displayPanel extends JPanel
     private boolean WireFrameRotation = false;
     private Measure m = null;
     private MeasurementList mlist = null;
+	private DisplaySettings settings;
 
-    public displayPanel(StatusBar status) {
+    public displayPanel(StatusBar status, DisplaySettings settings) {
         this.status = status;
+		this.settings = settings;
     }
 
     public boolean getAntiAliased() {
@@ -417,7 +419,7 @@ public class displayPanel extends JPanel
             g.fillRect(0,0,getSize().width,getSize().height); 
             g.setColor(fg);
 
-            md.paint(g);
+            md.paint(g, settings);
             if (rubberband) {
                 g.setColor(fg);
                 g.drawRect(rleft, rtop, rright-rleft, rbottom-rtop);
@@ -478,7 +480,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            ChemFrame.toggleBonds();
+            settings.toggleBonds();
             repaint();
         }
     }
@@ -490,7 +492,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            ChemFrame.toggleAtoms();
+            settings.toggleAtoms();
             Bond.toggleBondsToAtomCenters();
             repaint();
         }
@@ -503,7 +505,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            ChemFrame.toggleVectors();
+            settings.toggleVectors();
             repaint();
         }
     }   
@@ -515,7 +517,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            ChemFrame.toggleHydrogens();
+            settings.toggleHydrogens();
             repaint();
         }
     }
@@ -559,7 +561,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
+            settings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
             repaint();
         }
     }
@@ -571,7 +573,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setAtomDrawMode(DisplaySettings.SHADING);
+            settings.setAtomDrawMode(DisplaySettings.SHADING);
             repaint();
         }
     }
@@ -583,7 +585,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setAtomDrawMode(DisplaySettings.WIREFRAME);
+            settings.setAtomDrawMode(DisplaySettings.WIREFRAME);
             repaint();
         }
     }
@@ -595,7 +597,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setBondDrawMode(DisplaySettings.QUICKDRAW);
+            settings.setBondDrawMode(DisplaySettings.QUICKDRAW);
             repaint();
         }
     }
@@ -607,7 +609,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setBondDrawMode(DisplaySettings.SHADING);
+            settings.setBondDrawMode(DisplaySettings.SHADING);
             repaint();
         }
     }
@@ -619,7 +621,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setBondDrawMode(DisplaySettings.LINE);
+            settings.setBondDrawMode(DisplaySettings.LINE);
             repaint();
         }
     }
@@ -631,7 +633,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setBondDrawMode(DisplaySettings.WIREFRAME);
+            settings.setBondDrawMode(DisplaySettings.WIREFRAME);
             repaint();
         }
     }
@@ -770,7 +772,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setLabelMode(DisplaySettings.NOLABELS);
+            settings.setLabelMode(DisplaySettings.NOLABELS);
             repaint();
         }
     }
@@ -782,7 +784,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setLabelMode(DisplaySettings.SYMBOLS);
+            settings.setLabelMode(DisplaySettings.SYMBOLS);
             repaint();
         }
     }
@@ -794,7 +796,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setLabelMode(DisplaySettings.TYPES);
+            settings.setLabelMode(DisplaySettings.TYPES);
             repaint();
         }
     }
@@ -806,7 +808,7 @@ public class displayPanel extends JPanel
         }
         
         public void actionPerformed(ActionEvent e) {            
-            DisplaySettings.setLabelMode(DisplaySettings.NUMBERS);
+            settings.setLabelMode(DisplaySettings.NUMBERS);
             repaint();
         }
     }
@@ -892,5 +894,7 @@ public class displayPanel extends JPanel
         return defaultActions;
     }
     
-    
+    DisplaySettings getSettings() {
+		return settings;
+	}
 }

@@ -93,13 +93,13 @@ public class Bond {
         col2 = at2.getBaseAtomType().getColor();
     }        
 
-    public void paint(Graphics gc, int x1, int y1, int z1, 
+    public void paint(Graphics gc, DisplaySettings settings, int x1, int y1, int z1, 
                       int x2, int y2, int z2) {
-        paint(gc, x1, y1, z1, x2, y2, z2, false);
+        paint(gc, settings, x1, y1, z1, x2, y2, z2, false);
     }
 
     //useLine added by T.GREY- enforces line mode!
-    public void paint(Graphics gc, int x1, int y1, int z1, 
+    public void paint(Graphics gc, DisplaySettings settings, int x1, int y1, int z1, 
                       int x2, int y2, int z2, boolean useLine) {
         
         int xmp = (x1+x2)/2;        
@@ -165,7 +165,7 @@ public class Bond {
         }
 
         // Duck out quickly if just line mode:
-	if (DisplaySettings.getBondDrawMode() == DisplaySettings.LINE || useLine){
+	if (settings.getBondDrawMode() == DisplaySettings.LINE || useLine){
             gc.setColor(col1);
             gc.drawLine(x1+dx1, y1+dy1, xmp, ymp);
             gc.setColor(col2);
@@ -211,7 +211,7 @@ public class Bond {
 	    
 	    Polygon poly2 = new Polygon(xpoints, ypoints, 4);
 
-            switch( DisplaySettings.getBondDrawMode() ) {
+            switch( settings.getBondDrawMode() ) {
             case DisplaySettings.WIREFRAME:
                 gc.setColor(col1);
                 gc.drawPolygon(poly1);
@@ -292,11 +292,11 @@ public class Bond {
             default:
                 gc.setColor(col1);
                 gc.fillPolygon(poly1);
-                gc.setColor(DisplaySettings.getOutlineColor());
+                gc.setColor(settings.getOutlineColor());
                 gc.drawPolygon(poly1);
                 gc.setColor(col2);
                 gc.fillPolygon(poly2);
-                gc.setColor(DisplaySettings.getOutlineColor());
+                gc.setColor(settings.getOutlineColor());
                 gc.drawPolygon(poly2);
                 break;
             }

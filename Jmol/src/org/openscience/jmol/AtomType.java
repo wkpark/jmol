@@ -231,7 +231,7 @@ public class AtomType {
      * @param picked whether or not the atom has been selected and gets a "halo"
      *
      */
-    public void paint(Graphics gc, int x, int y, int z, int n, 
+    public void paint(Graphics gc, DisplaySettings settings, int x, int y, int z, int n, 
                       Vector props, boolean picked) {
         int diameter = (int) (2.0f*getCircleRadius(z));
         int radius = diameter >> 1;
@@ -239,10 +239,10 @@ public class AtomType {
         if (picked) {
             int halo = radius + 5;
             int halo2 = 2 * halo;
-            gc.setColor(DisplaySettings.getPickedColor());
+            gc.setColor(settings.getPickedColor());
             gc.fillOval(x - halo, y - halo, halo2, halo2);
         }
-        switch( DisplaySettings.getAtomDrawMode() ) {
+        switch( settings.getAtomDrawMode() ) {
         case DisplaySettings.WIREFRAME:
             gc.setColor(baseType.getColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
@@ -261,21 +261,21 @@ public class AtomType {
         default:
             gc.setColor(baseType.getColor());
             gc.fillOval(x - radius, y - radius, diameter, diameter);
-            gc.setColor(DisplaySettings.getOutlineColor());
+            gc.setColor(settings.getOutlineColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
             break;
         }
 
-        if (DisplaySettings.getLabelMode() != DisplaySettings.NOLABELS) {
+        if (settings.getLabelMode() != DisplaySettings.NOLABELS) {
             int j = 0;
             String s;
             Font font = new Font("Helvetica", Font.PLAIN, radius);
             gc.setFont(font);
             FontMetrics fontMetrics = gc.getFontMetrics(font);
             int k = fontMetrics.getAscent();
-            gc.setColor(DisplaySettings.getTextColor());
+            gc.setColor(settings.getTextColor());
                 
-            switch( DisplaySettings.getLabelMode() ) {
+            switch( settings.getLabelMode() ) {
             case DisplaySettings.SYMBOLS:
                 j = fontMetrics.stringWidth(baseType.getRoot());
                 gc.drawString(baseType.getRoot(), x-j/2, y+k/2); 
@@ -294,16 +294,16 @@ public class AtomType {
             }
         }
 
-        if (!DisplaySettings.getPropertyMode().equals("")) {
+        if (!settings.getPropertyMode().equals("")) {
             // check to make sure this atom has this property:
             for (int i = 0; i < props.size(); i++) {
                 PhysicalProperty p = (PhysicalProperty)props.elementAt(i);
-                if (p.getDescriptor().equals(DisplaySettings.getPropertyMode())) {
+                if (p.getDescriptor().equals(settings.getPropertyMode())) {
                     // OK, we had this property.  Let's draw the value on 
                     // screen:
                     Font font = new Font("Helvetica", Font.PLAIN, radius/2);
                     gc.setFont(font);
-                    gc.setColor(DisplaySettings.getTextColor());
+                    gc.setColor(settings.getTextColor());
                     String s = p.stringValue();
                     if (s.length() > 5) 
                         s = s.substring(0,5);

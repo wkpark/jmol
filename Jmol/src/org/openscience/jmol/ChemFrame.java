@@ -46,10 +46,6 @@ public class ChemFrame {
     private static float bondFudge       = 1.12f;
     private static float ScreenScale;
     private static boolean AutoBond      = true;
-    private static boolean ShowBonds     = true;
-    private static boolean ShowAtoms     = true;
-    private static boolean ShowVectors   = false;
-    private static boolean ShowHydrogens = true;
     private static Matrix3D mat;
     /* 
        pickedAtoms and napicked are static because
@@ -103,38 +99,6 @@ public class ChemFrame {
         return napicked;
     }    
 
-    /**
-     * Toggles on/off the flag that decides whether atoms are shown
-     * when displaying a ChemFrame
-     */
-    public static void toggleAtoms() {
-        ShowAtoms = !ShowAtoms;
-    }    
-
-    /**
-     * Toggles on/off the flag that decides whether bonds are shown
-     * when displaying a ChemFrame
-     */
-    public static void toggleBonds() {
-        ShowBonds = !ShowBonds;
-    }
-
-    /**
-     * Toggles on/off the flag that decides whether vectors are shown
-     * when displaying a ChemFrame
-     */
-    public static void toggleVectors() {
-        ShowVectors = !ShowVectors;
-    }
-
-    /**
-     * Toggles on/off the flag that decides whether Hydrogen atoms are
-     * shown when displaying a ChemFrame 
-     */
-    public static void toggleHydrogens() {
-        ShowHydrogens = !ShowHydrogens;
-    }
-
     // Added by T.GREY for quick drawing on atom movement
     /**
      * Sets whether we are in ultra-hasty on the move drawing mode
@@ -161,58 +125,6 @@ public class ChemFrame {
         ScreenScale = ss;
     }
 
-    /**
-     * Set the flag that decides whether atoms are shown
-     * when displaying a ChemFrame
-     *
-     * @param sa the value of the flag
-     */
-    public static void setShowAtoms(boolean sa) {
-        ShowAtoms = sa;
-    }
-
-    /**
-     * Set the flag that decides whether bonds are shown
-     * when displaying a ChemFrame
-     *
-     * @param sb the value of the flag
-     */
-    public static void setShowBonds(boolean sb) {
-        ShowBonds = sb;
-    }
-
-    /**
-     * Set the flag that decides whether vectors are shown
-     * when displaying a ChemFrame
-     *
-     * @param sv the value of the flag
-     */
-    public static void setShowVectors(boolean sv) {
-        ShowVectors = sv;
-    }
-
-    /**
-     * Set the flag that decides whether Hydrogen atoms are shown
-     * when displaying a ChemFrame.  Currently non-functional.
-     *
-     * @param sh the value of the flag
-     */
-    public static void setShowHydrogens(boolean sh) {
-        ShowHydrogens = sh;
-    }
-
-    static boolean getShowAtoms() {
-        return ShowAtoms;
-    }
-    static boolean getShowBonds() {
-        return ShowBonds;
-    }
-    static boolean getShowVectors() {
-        return ShowVectors;
-    }
-    static boolean getShowHydrogens() {
-        return ShowHydrogens;
-    }
     static void setBondFudge(float bf) {
         bondFudge = bf;
     }
@@ -589,7 +501,7 @@ public class ChemFrame {
      *
      * @param g the Graphics context to paint to
      */
-    public synchronized void paint(Graphics g) {
+    public synchronized void paint(Graphics g, DisplaySettings settings) {
         if (vert == null || nvert <= 0)
             return;
         transform();
@@ -638,7 +550,7 @@ public class ChemFrame {
 
         for (int i = 0; i < lim; i++) {
             int j = zs[i];
-            if (ShowBonds) {
+            if (settings.getShowBonds()) {
                 int na = nBpA[j/3];
                 for (int k = 0; k < na; k++) {
                     int which = inBonds[j/3][k];
@@ -646,13 +558,13 @@ public class ChemFrame {
                         int l;
                         if (bondEnd1[which] == j/3) {
                             l = 3 * bondEnd2[which];
-                            bonds[which].paint(g,
+                            bonds[which].paint(g, settings,
                                                v[j], v[j+1], v[j+2],
                                                v[l], v[l+1], v[l+2],
                                                doingMoveDraw);
                         } else {
                             l = 3 * bondEnd1[which];
-                            bonds[which].paint(g,
+                            bonds[which].paint(g, settings,
                                                v[l], v[l+1], v[l+2],
                                                v[j], v[j+1], v[j+2],
                                                doingMoveDraw);
@@ -662,11 +574,11 @@ public class ChemFrame {
                 }
             }
             //Added by T.GREY for quick-draw on move support
-            if (ShowAtoms && !doingMoveDraw)
-                atoms[j/3].paint(g, v[j], v[j + 1], v[j + 2], j/3 + 1, 
+            if (settings.getShowAtoms() && !doingMoveDraw)
+                atoms[j/3].paint(g, settings, v[j], v[j + 1], v[j + 2], j/3 + 1, 
                                  aProps[j/3], pickedAtoms[j/3]);
             
-            if (ShowVectors && hasVectors) {
+            if (settings.getShowVectors() && hasVectors) {
                 ArrowLine al = new ArrowLine(g, v[j], v[j+1], 
                                              tvect[j], tvect[j+1], 
                                              false, true,
@@ -683,7 +595,7 @@ public class ChemFrame {
                 int l = 3*al[0];
                 int j = 3*al[1];
                 try {
-                    d.paint(g, v[l], v[l+1], v[l+2], v[j], v[j+1], v[j+2]);
+                    d.paint(g, settings, v[l], v[l+1], v[l+2], v[j], v[j+1], v[j+2]);
                 } catch (Exception ex) {}
             }
         }
@@ -695,7 +607,7 @@ public class ChemFrame {
                 int j = 3*al[1];
                 int k = 3*al[2];
                 try {
-                    an.paint(g, v[l], v[l+1], v[l+2], v[j], v[j+1], v[j+2],
+                    an.paint(g, settings, v[l], v[l+1], v[l+2], v[j], v[j+1], v[j+2],
                              v[k], v[k+1], v[k+2]);
                 } catch (Exception ex) {}
             }                        
@@ -709,7 +621,7 @@ public class ChemFrame {
                 int k = 3*dhl[2];
                 int m = 3*dhl[3];
                 try {
-                    dh.paint(g, v[l], v[l+1], v[l+2], v[j], v[j+1], v[j+2],
+                    dh.paint(g, settings, v[l], v[l+1], v[l+2], v[j], v[j+1], v[j+2],
                              v[k], v[k+1], v[k+2], v[m], v[m+1], v[m+2]);
                 } catch (Exception ex) {}
             }                        

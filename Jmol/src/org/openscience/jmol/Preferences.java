@@ -344,15 +344,15 @@ public class Preferences extends JDialog {
         JPanel choicesPanel = new JPanel();
         choicesPanel.setLayout(new GridLayout(0,4));
         choicesPanel.setBorder( new TitledBorder(jrh.getString("cLabel")));
-        cB = new JCheckBox(jrh.getString("cBLabel"), ChemFrame.getShowBonds());
+        cB = new JCheckBox(jrh.getString("cBLabel"), display.getSettings().getShowBonds());
         cB.addItemListener(checkBoxListener);                       
-        cA = new JCheckBox(jrh.getString("cALabel"), ChemFrame.getShowAtoms());
+        cA = new JCheckBox(jrh.getString("cALabel"), display.getSettings().getShowAtoms());
         cA.addItemListener(checkBoxListener);                       
         cV = new JCheckBox(jrh.getString("cVLabel"), 
-                           ChemFrame.getShowVectors());
+                           display.getSettings().getShowVectors());
         cV.addItemListener(checkBoxListener);                       
         cH = new JCheckBox(jrh.getString("cHLabel"), 
-                           ChemFrame.getShowHydrogens());
+                           display.getSettings().getShowHydrogens());
         cH.addItemListener(checkBoxListener);                       
         cD = new JCheckBox(jrh.getString("cDLabel"),false);
         cD.addItemListener(checkBoxListener);                       
@@ -419,12 +419,12 @@ public class Preferences extends JDialog {
         aRender.addItem(jrh.getString("aSChoice"));
         aRender.addItem(jrh.getString("aWFChoice"));
         renderPanel.add(aRender);
-        aRender.setSelectedIndex(DisplaySettings.getAtomDrawMode());
+        aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
         aRender.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 AtomRenderMode = source.getSelectedIndex();
-                DisplaySettings.setAtomDrawMode(AtomRenderMode);
+                display.getSettings().setAtomDrawMode(AtomRenderMode);
                 props.put("AtomRenderMode", Integer.toString(AtomRenderMode));
                 display.repaint();
             }
@@ -441,12 +441,12 @@ public class Preferences extends JDialog {
         aLabel.addItem(jrh.getString("aTLChoice"));
         aLabel.addItem(jrh.getString("aNLChoice"));
         labelPanel.add(aLabel);
-        aLabel.setSelectedIndex(DisplaySettings.getLabelMode());
+        aLabel.setSelectedIndex(display.getSettings().getLabelMode());
         aLabel.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 AtomLabelMode = source.getSelectedIndex();
-                DisplaySettings.setLabelMode(AtomLabelMode);
+                display.getSettings().setLabelMode(AtomLabelMode);
                 props.put("AtomLabelMode", Integer.toString(AtomLabelMode));
                 display.repaint();
             }
@@ -464,12 +464,12 @@ public class Preferences extends JDialog {
         aProps.addItem(jrh.getString("apNChoice"));
         aProps.addItem(jrh.getString("apUChoice"));
         propsPanel.add(aProps);
-        aProps.setSelectedItem(DisplaySettings.getPropertyMode());
+        aProps.setSelectedItem(display.getSettings().getPropertyMode());
         aProps.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 AtomPropsMode = (String)source.getSelectedItem();
-                DisplaySettings.setPropertyMode(AtomPropsMode);
+                display.getSettings().setPropertyMode(AtomPropsMode);
                 props.put("AtomPropsMode", AtomPropsMode);
                 display.repaint();
             }
@@ -526,12 +526,12 @@ public class Preferences extends JDialog {
         bRender.addItem(jrh.getString("bSChoice"));
         bRender.addItem(jrh.getString("bWFChoice"));
         bRender.addItem(jrh.getString("bLChoice"));
-        bRender.setSelectedIndex(DisplaySettings.getBondDrawMode());
+        bRender.setSelectedIndex(display.getSettings().getBondDrawMode());
         bRender.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 BondRenderMode = source.getSelectedIndex();
-                DisplaySettings.setBondDrawMode(BondRenderMode);
+                display.getSettings().setBondDrawMode(BondRenderMode);
                 props.put("BondRenderMode", Integer.toString(BondRenderMode));
                 display.repaint();
             }
@@ -793,7 +793,7 @@ public class Preferences extends JDialog {
                                                        outlineColor);
                 outlineColor = color;
                 oButton.setBackground(outlineColor);
-                DisplaySettings.setOutlineColor(outlineColor); 
+                display.getSettings().setOutlineColor(outlineColor); 
                 props.put("outlineColor", Integer.toString(outlineColor.getRGB()));
                 display.repaint();
                 
@@ -816,7 +816,7 @@ public class Preferences extends JDialog {
                                                        pickedColor);
                 pickedColor = color;
                 pButton.setBackground(pickedColor);
-                DisplaySettings.setPickedColor(pickedColor); 
+                display.getSettings().setPickedColor(pickedColor); 
                 props.put("pickedColor", Integer.toString(pickedColor.getRGB()));
                 display.repaint();
                 
@@ -839,7 +839,7 @@ public class Preferences extends JDialog {
                                                        textColor);
                 textColor = color;
                 tButton.setBackground(textColor);
-                DisplaySettings.setTextColor(textColor); 
+                display.getSettings().setTextColor(textColor); 
                 props.put("textColor", Integer.toString(textColor.getRGB()));
                 display.repaint();
                 
@@ -970,7 +970,7 @@ public class Preferences extends JDialog {
         
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(Jmol.UserPropsFile);
-            props.save(fileOutputStream, "Jmol");
+            props.store(fileOutputStream, "Jmol");
             fileOutputStream.close();
         } catch (Exception e) {
             System.out.println("Error saving Preferences" + e.toString());
@@ -999,16 +999,16 @@ public class Preferences extends JDialog {
         }
         pYes.setSelected(displayPanel.getPerspective());
         fovSlider.setValue((int) displayPanel.getFieldOfView());
-        cB.setSelected(ChemFrame.getShowBonds());
-        cA.setSelected(ChemFrame.getShowAtoms());
-        cV.setSelected(ChemFrame.getShowVectors());
-        cH.setSelected(ChemFrame.getShowHydrogens());
+        cB.setSelected(display.getSettings().getShowBonds());
+        cA.setSelected(display.getSettings().getShowAtoms());
+        cV.setSelected(display.getSettings().getShowVectors());
+        cH.setSelected(display.getSettings().getShowHydrogens());
         // Atom panel controls:
-        aRender.setSelectedIndex(DisplaySettings.getAtomDrawMode());
-        aLabel.setSelectedIndex(DisplaySettings.getLabelMode());
+        aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
+        aLabel.setSelectedIndex(display.getSettings().getLabelMode());
         sfSlider.setValue((int) (100.0 * AtomType.getSphereFactor()));
         // Bond panel controls:
-        bRender.setSelectedIndex(DisplaySettings.getBondDrawMode());        
+        bRender.setSelectedIndex(display.getSettings().getBondDrawMode());        
         abYes.setSelected(ChemFrame.getAutoBond());
         bwSlider.setValue((int) (100.0 * Bond.getBondWidth()));
         bfSlider.setValue((int) (50.0 * ChemFrame.getBondFudge()));
@@ -1063,15 +1063,15 @@ public class Preferences extends JDialog {
         SphereFactor = new Double(props.getProperty("SphereFactor")).doubleValue();
         VibrationScale = new Double(props.getProperty("VibrationScale")).doubleValue();
 
-        DisplaySettings.setOutlineColor(outlineColor);            
-        DisplaySettings.setPickedColor(pickedColor);
-        DisplaySettings.setTextColor(textColor);
+        display.getSettings().setOutlineColor(outlineColor);            
+        display.getSettings().setPickedColor(pickedColor);
+        display.getSettings().setTextColor(textColor);
         AtomType.setSphereFactor(SphereFactor);
-        DisplaySettings.setAtomDrawMode(AtomRenderMode);
-        DisplaySettings.setLabelMode(AtomLabelMode);
-        DisplaySettings.setPropertyMode(AtomPropsMode);
+        display.getSettings().setAtomDrawMode(AtomRenderMode);
+        display.getSettings().setLabelMode(AtomLabelMode);
+        display.getSettings().setPropertyMode(AtomPropsMode);
         Bond.setBondWidth(BondWidth);
-        DisplaySettings.setBondDrawMode(BondRenderMode);
+        display.getSettings().setBondDrawMode(BondRenderMode);
         ArrowLine.setVectorColor(vectorColor);
         ArrowLine.setRadiusScale(ArrowHeadLengthScale);
         ArrowLine.setLengthScale(ArrowHeadRadiusScale);
@@ -1082,11 +1082,11 @@ public class Preferences extends JDialog {
         FileTyper.setUseFileExtensions(UseFileExtensions);
         ChemFrame.setBondFudge(BondFudge);
         ChemFrame.setAutoBond(AutoBond);
-        ChemFrame.setShowAtoms(ShowAtoms);
+        display.getSettings().setShowAtoms(ShowAtoms);
         Bond.setBondsToAtomCenters(!ShowAtoms);
-        ChemFrame.setShowBonds(ShowBonds);
-        ChemFrame.setShowHydrogens(ShowHydrogens);
-        ChemFrame.setShowVectors(ShowVectors);
+        display.getSettings().setShowBonds(ShowBonds);
+        display.getSettings().setShowHydrogens(ShowHydrogens);
+        display.getSettings().setShowVectors(ShowVectors);
         Vibrate.setScale(VibrationScale);
         Vibrate.setNumberFrames(VibrationFrames);        
     }
@@ -1132,20 +1132,20 @@ public class Preferences extends JDialog {
             JCheckBox cb = (JCheckBox) e.getSource();
             if(cb.getText().equals(jrh.getString("cBLabel"))) {
                 ShowBonds = cb.isSelected();
-                ChemFrame.setShowBonds(ShowBonds);
+                display.getSettings().setShowBonds(ShowBonds);
                 props.put("ShowBonds", new Boolean(ShowBonds).toString());
             } else if(cb.getText().equals(jrh.getString("cALabel"))) {
                 ShowAtoms = cb.isSelected();
-                ChemFrame.setShowAtoms(ShowAtoms);
+                display.getSettings().setShowAtoms(ShowAtoms);
                 Bond.setBondsToAtomCenters(!ShowAtoms);
                 props.put("ShowAtoms", new Boolean(ShowAtoms).toString());
             } else if(cb.getText().equals(jrh.getString("cVLabel"))) {
                 ShowVectors = cb.isSelected();
-                ChemFrame.setShowVectors(ShowVectors);
+                display.getSettings().setShowVectors(ShowVectors);
                 props.put("ShowVectors", new Boolean(ShowVectors).toString());
             } else if(cb.getText().equals(jrh.getString("cHLabel"))) {
                 ShowHydrogens = cb.isSelected();
-                ChemFrame.setShowHydrogens(ShowHydrogens);
+                display.getSettings().setShowHydrogens(ShowHydrogens);
                 props.put("ShowHydrogens", 
                           new Boolean(ShowHydrogens).toString());
             } else if(cb.getText().equals(jrh.getString("cDLabel"))) {

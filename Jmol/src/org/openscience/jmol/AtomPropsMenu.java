@@ -54,9 +54,11 @@ public class AtomPropsMenu extends JMenu {
 
     ButtonGroup bg;
     Vector list = new Vector();
-    
-    public AtomPropsMenu(String name) {        
+    DisplaySettings settings;
+
+    public AtomPropsMenu(String name, DisplaySettings settings) {
         super(name);
+		this.settings = settings;
         bg = new ButtonGroup();
         JRadioButtonMenuItem mi = new JRadioButtonMenuItem("None");
         list.addElement(mi);
@@ -95,12 +97,12 @@ public class AtomPropsMenu extends JMenu {
             JRadioButtonMenuItem rbmi = (JRadioButtonMenuItem) e.getSource();
             String mode = rbmi.getText();
             if(mode.equals("None")) 
-                DisplaySettings.setPropertyMode("");
+                settings.setPropertyMode("");
             else if (mode.equals("Vector")) {
-                DisplaySettings.setPropertyMode(""); 
-                ChemFrame.setShowVectors(true);
+                settings.setPropertyMode(""); 
+                settings.setShowVectors(true);
             } else
-                DisplaySettings.setPropertyMode(rbmi.getText());            
+                settings.setPropertyMode(rbmi.getText());            
             Jmol.display.repaint();
         }
     };

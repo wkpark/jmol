@@ -57,16 +57,16 @@ class Dihedral extends Measurement implements MeasurementInterface {
         compute();
     }
     
-    public void paint(Graphics g, 
+    public void paint(Graphics g, DisplaySettings settings, 
                       int x1, int y1, int z1, 
                       int x2, int y2, int z2, 
                       int x3, int y3, int z3,
                       int x4, int y4, int z4) throws Exception {
-        paintDihedralLine(g, x1, y1, x2, y2, x3, y3, x4, y4);
-        paintDihedralString(g, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+        paintDihedralLine(g, settings, x1, y1, x2, y2, x3, y3, x4, y4);
+        paintDihedralString(g, settings, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
     }
 
-    private void paintDihedralLine(Graphics g, 
+    private void paintDihedralLine(Graphics g, DisplaySettings settings, 
                                 int x1, int y1, 
                                 int x2, int y2, 
                                 int x3, int y3,
@@ -76,7 +76,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
         int xb = (x3+x4)/2;
         int yb = (y3+y4)/2;
 
-        g.setColor(DisplaySettings.getDihedralColor());
+        g.setColor(settings.getDihedralColor());
         String vers = System.getProperty("java.version");
         if (vers.compareTo("1.2") >= 0) {
             Graphics2D g2 = (Graphics2D) g;
@@ -90,7 +90,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
         }       
     }
     
-    private void paintDihedralString(Graphics g, 
+    private void paintDihedralString(Graphics g, DisplaySettings settings, 
                                   int x1, int y1, int z1, 
                                   int x2, int y2, int z2,
                                   int x3, int y3, int z3,
@@ -100,7 +100,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
                              (int)(getAvgRadius(z1,z2,z3,z4)));
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics(font);
-        g.setColor(DisplaySettings.getTextColor());
+        g.setColor(settings.getTextColor());
         String s = (new Double(getDihedral())).toString();
         if (s.length() > 5) 
             s = s.substring(0,5);

@@ -104,7 +104,7 @@ public class Animate extends JDialog implements ActionListener,
       nframes = inFile.getNumberOfFrames();
       progressSlider.setMaximum(nframes);
       haveFile = true;
-      control.setChemFile(cf);
+      control.setClientFile("Animate", cf);
       setFrame(currentFrame, true);
     } else {
       setVisible(false);
@@ -239,7 +239,7 @@ public class Animate extends JDialog implements ActionListener,
     cf = newFile;
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
-    control.setChemFile(cf);
+    control.setClientFile("Animate", cf);
   }
 
   /**

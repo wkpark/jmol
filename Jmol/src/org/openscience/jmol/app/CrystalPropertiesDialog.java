@@ -1803,7 +1803,7 @@ public class CrystalPropertiesDialog extends JDialog
       this.chemFile = (ChemFile) crystalFile;
       
       // Say to everybody that we have a new chemfile!
-      control.setChemFile(this.chemFile);
+      control.setClientFile("Crystal", this.chemFile);
       hasCrystalInfo = true;
       primitiveVectors_ApplyToWhichFrameCBO.setEnabled(true);
       crystalBox_ApplyToWhichFrameCBO.setEnabled(true);
@@ -1811,7 +1811,7 @@ public class CrystalPropertiesDialog extends JDialog
       
       
       
-      int frameCount = control.getChemFile().getNumberOfFrames();
+      int frameCount = control.getFrameCount();
       for (int i = 0; i < frameCount; i++) {
 	
 	//set Primitive Vectors
@@ -1963,7 +1963,7 @@ public class CrystalPropertiesDialog extends JDialog
     this.chemFile = (ChemFile) crystalFile;
     hasFile = true;
 
-    control.setChemFile(this.chemFile);
+    control.setClientFile("CrystalProp", this.chemFile);
     control.setFrame(currentFrameIndex);
 
     //The chemfile is updated globally.

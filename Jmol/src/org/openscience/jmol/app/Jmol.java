@@ -557,8 +557,7 @@ public class Jmol extends JPanel {
 
   void setChemFile(ChemFile chemFile) {
 
-    ChemFile oldChemFile = control.getChemFile();
-    control.setChemFile(chemFile);
+    control.setClientFile("CommandLine", chemFile);
     //    apm.replaceList(chemFile.getAtomPropertyList());
     mlist.clear();
   }
@@ -1253,13 +1252,16 @@ public class Jmol extends JPanel {
             FileOutputStream os = new FileOutputStream(file);
 
             if (fileTyper.getType().equals("XYZ (xmol)")) {
-              XYZSaver xyzs = new XYZSaver(control.getChemFile(), os);
+              XYZSaver xyzs = new XYZSaver((ChemFile)control.getClientFile(),
+                                           os);
               xyzs.writeFile();
             } else if (fileTyper.getType().equals("PDB")) {
-              PdbSaver ps = new PdbSaver(control.getChemFile(), os);
+              PdbSaver ps = new PdbSaver((ChemFile)control.getClientFile(),
+                                         os);
               ps.writeFile();
             } else if (fileTyper.getType().equals("CML")) {
-              CMLSaver cs = new CMLSaver(control.getChemFile(), os);
+              CMLSaver cs = new CMLSaver((ChemFile)control.getClientFile(),
+                                         os);
               cs.writeFile();
             } else {
             }
@@ -1387,7 +1389,8 @@ public class Jmol extends JPanel {
             currentFile.getName().lastIndexOf("."));
       }
       PovrayDialog pvsd = new PovrayDialog(frame, control,
-                            control.getChemFile(), baseName);
+                                           (ChemFile)control.getClientFile(),
+                                           baseName);
     }
 
   }

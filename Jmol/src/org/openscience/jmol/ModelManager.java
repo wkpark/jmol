@@ -45,6 +45,9 @@ public class ModelManager {
     this.nullJmolFrame = new JmolFrame(control);
   }
 
+  public Object clientFile;
+  public String clientFileName;
+
   public boolean haveFile = false;
   public ChemFile chemfile;
   public ChemFrame chemframe;
@@ -52,7 +55,10 @@ public class ModelManager {
   public int currentFrameNumber;
   public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-  public void setChemFile(ChemFile chemfile) {
+  public void setClientFile(String name, Object clientFile) {
+    this.clientFile = clientFile;
+    this.clientFileName = name;
+    ChemFile chemfile = (ChemFile)clientFile;
     ChemFile chemfilePrevious = this.chemfile;
     this.chemfile = chemfile;
     if (chemfile != null) {
@@ -68,8 +74,8 @@ public class ModelManager {
                            chemfilePrevious, chemfile);
   }
 
-  public boolean hasFrame() {
-    return (chemframe != null);
+  public Object getClientFile() {
+    return chemfile;
   }
 
   public JmolFrame getJmolFrame() {
@@ -80,13 +86,14 @@ public class ModelManager {
     return chemfile;
   }
 
-  public boolean haveFile() {
-    return haveFile;
-  }
-
   public String getModelName() {
-    // FIXME mth -- model name goes here
-    return "jmol";
+    String name = control.getModelName(clientFile);
+    if (name == null) {
+      name = clientFileName;
+      if (name == null)
+        name = "Jmol";
+    }
+    return name;
   }
 
   public double getRotationRadius() {
@@ -106,7 +113,7 @@ public class ModelManager {
   }
   
 
-  public int getNumberOfFrames() {
+  public int getFrameCount() {
     return nframes;
   }
 
@@ -135,18 +142,6 @@ public class ModelManager {
   public int getAtomCount() {
     return getJmolFrame().getAtomCount();
   }
-
-  /*
-  public Atom[] getCurrentFrameAtoms() {
-    return chemframe.getJmolAtoms();
-  }
-  */
-
-  /*
-  public ChemFrame[] getFrames() {
-    return chemfile.getFrames();
-  }
-  */
 
   public void setCenterAsSelected() {
     int numberOfAtoms = numberOfAtoms();

@@ -738,12 +738,8 @@ final public class DisplayControl {
   public static final String PROP_CHEM_FRAME = "chemFrame";
 
   public void setClientFile(String name, Object clientFile) {
-    setChemFile((ChemFile)clientFile);
-  }
-
-  public void setChemFile(ChemFile chemfile) {
     pushHoldRepaint();
-    modelManager.setChemFile(chemfile);
+    modelManager.setClientFile(name, clientFile);
     homePosition();
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
@@ -754,14 +750,18 @@ final public class DisplayControl {
     popHoldRepaint();
   }
 
+  public Object getClientFile() {
+    return modelManager.getClientFile();
+  }
+
   public void clear() {
-    modelManager.setChemFile(null);
+    modelManager.setClientFile(null, null);
     clearMeasurements();
     refresh();
   }
 
-  public ChemFile getChemFile() {
-    return modelManager.getChemFile();
+  public int getFrameCount() {
+    return modelManager.getFrameCount();
   }
 
   public String getModelName() {
@@ -769,15 +769,11 @@ final public class DisplayControl {
   }
 
   public boolean haveFile() {
-    return modelManager.haveFile();
+    return modelManager.haveFile;
   }
 
   public JmolFrame getJmolFrame() {
     return modelManager.getJmolFrame();
-  }
-
-  public boolean hasFrame() {
-    return modelManager.hasFrame();
   }
 
   public ChemFrame getFrame() {
@@ -814,7 +810,7 @@ final public class DisplayControl {
   // FIXME mth -- consolidate these two calls to setFrame
 
   public int getNumberOfFrames() {
-    return modelManager.getNumberOfFrames();
+    return modelManager.getFrameCount();
   }
 
   public void setFrame(int fr) {
@@ -1669,6 +1665,10 @@ final public class DisplayControl {
 
   public int getFrameCount(Object clientFile) {
     return clientAdapter.getFrameCount(clientFile);
+  }
+
+  public String getModelName(Object clientFile) {
+    return clientAdapter.getModelName(clientFile);
   }
 
   public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {

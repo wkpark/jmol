@@ -34,6 +34,7 @@ public interface JmolClientAdapter {
 
   public Object openReader(DisplayControl control, String name, Reader reader);
   public int getFrameCount(Object clientFile);
+  public String getModelName(Object clientFile);
 
   public JmolFrame getJmolFrame(Object clientFile, int frameNumber);
 

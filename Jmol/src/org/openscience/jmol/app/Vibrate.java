@@ -452,14 +452,14 @@ public class Vibrate extends JDialog implements ActionListener,
 
     if (b) {
       vibrateAction.setEnabled(false);
-      control.setChemFile(vibFile);
+      control.setClientFile("Vibrate", vibFile);
       currentFrame = 0;
       setFrame(currentFrame, true);
       disableConflictingActions();
     } else {
       stop();
       if (inputFile != null) {
-        control.setChemFile(inputFile);
+        control.setClientFile("Vibrate", inputFile);
       }
       vibrateAction.setEnabled(true);
       restoreConflictingActions();
@@ -806,7 +806,7 @@ public class Vibrate extends JDialog implements ActionListener,
       vibrationNumber = source.getSelectedIndex();
       if (isVisible()) {
         createVibration();
-        control.setChemFile(vibFile);
+        control.setClientFile("Vibrate", vibFile);
         currentFrame = 0;
         setFrame(currentFrame, true);
       }

@@ -96,18 +96,25 @@ public class PdbAtom {
   public boolean isAtomNameMatch(String strPattern) {
     int cchPattern = strPattern.length();
     if (cchPattern > 4) {
-      System.err.println("atom wildcard length != 4");
+      System.err.println("atom wildcard length > 4 : " + strPattern);
       return false;
     }
     String strAtomName = atomNames[atomID];
     int cchAtomName = strAtomName.length();
-    for (int i = 0; i < cchPattern; ++i) {
+    int ichAtomName = 0;
+    while (strAtomName.charAt(ichAtomName) == ' ')
+      ++ichAtomName;
+    for (int i = 0; i < cchPattern; ++i, ++ichAtomName) {
       char charWild = strPattern.charAt(i);
       if (charWild == '?')
         continue;
-      if (i >= cchAtomName || charWild != strAtomName.charAt(i))
+      if (ichAtomName >= cchAtomName ||
+          charWild != Character.toUpperCase(strAtomName.charAt(ichAtomName)))
         return false;
     }
+    while (ichAtomName < cchAtomName)
+      if (strAtomName.charAt(ichAtomName++) != ' ')
+        return false;
     return true;
   }
 

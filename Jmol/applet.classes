@@ -64,4 +64,5 @@ org/openscience/jmol/DefaultChemFileReader.java
 org/openscience/jmol/ChargeColorProfile.java
 org/openscience/jmol/ColorProfile.java
 org/openscience/jmol/DefaultColorProfile.java
+org/openscience/jmol/IntSet.java
 

@@ -360,7 +360,7 @@ public class DisplayPanel extends Canvas
     this.cf = cf;
     painted = false;
     haveFile = true;
-    nframes = cf.getNumberFrames();
+    nframes = cf.getNumberOfFrames();
     this.md = cf.getFrame(0);
     init();
     setFrame(0);

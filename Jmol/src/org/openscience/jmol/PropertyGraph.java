@@ -114,7 +114,7 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
     if (hasGraphableProperties) {
 
       int nGraphs = GPs.size();
-      int nPoints = inputFile.getNumberFrames();
+      int nPoints = inputFile.getNumberOfFrames();
 
       gl.setRows(nGraphs);
 

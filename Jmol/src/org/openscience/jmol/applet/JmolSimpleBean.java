@@ -88,7 +88,7 @@ public class JmolSimpleBean extends java.awt.Panel
    */
   public void setModel(ChemFile cf) {
 
-    if (cf.getNumberFrames() > 1) {
+    if (cf.getNumberOfFrames() > 1) {
       animPanel =
           new java.awt
             .Panel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));

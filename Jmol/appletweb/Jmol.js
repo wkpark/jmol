@@ -40,31 +40,38 @@ function jmolInitialize(codebaseDirectory) {
     alert("codebaseDirectory is a required parameter to jmolInitialize");
     codebaseDirectory = ".";
   }
+  if (codebaseDirectory.indexOf("http://") == 0 ||
+      codebaseDirectory.indexOf("https://") == 0)
+    alert("codebaseDirectory should be directory relative,\n" +
+	  "not be an absolute URL : " + codebaseDirectory);
+  else if (codebaseDirectory.charAt(0) == '/')
+    alert("codebaseDirectory should be directory relative,\n" +
+	  "not relative to the root of the web server : " + codebaseDirectory);
   _jmolSetCodebase(codebaseDirectory);
   _jmolOnloadResetForms();
   _jmol.initialized = true;
 }
 
-function jmolSetAppletColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
+function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
   _jmolInitCheck();
-  _jmol.bgcolor = bgcolor;
-  _jmol.boxbgcolor = boxbgcolor ? boxbgcolor : bgcolor;
+  _jmol.boxbgcolor = boxbgcolor;
   if (boxfgcolor)
     _jmol.boxfgcolor = boxfgcolor
-  else if (_jmol.boxbgcolor == "white" || _jmol.boxbgcolor == "#FFFFFF")
+  else if (boxbgcolor == "white" || boxbgcolor == "#FFFFFF")
     _jmol.boxfgcolor = "black";
   else
     _jmol.boxfgcolor = "white";
+  if (progresscolor)
+    _jmol.progresscolor = progresscolor;
   if (_jmol.debugAlert)
-    alert(" bgcolor=" + _jmol.bgcolor +
-          " boxbgcolor=" + _jmol.boxbgcolor +
+    alert(" boxbgcolor=" + _jmol.boxbgcolor +
           " boxfgcolor=" + _jmol.boxfgcolor +
           " progresscolor=" + _jmol.progresscolor);
 }
 
-function jmolApplet(size, modelFilename, script, nameSuffix) {
+function jmolApplet(size, script, nameSuffix) {
   _jmolInitCheck();
-  _jmolApplet(size, modelFilename, null, script, nameSuffix);
+  _jmolApplet(size, null, script, nameSuffix);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -222,7 +229,7 @@ function jmolDebugAlert(enableAlerts) {
 }
 
 function jmolAppletInline(size, inlineModel, script, nameSuffix) {
-  _jmolApplet(size, null, _jmolConvertInline(inlineModel), script, nameSuffix);
+  _jmolApplet(size, _jmolConvertInline(inlineModel), script, nameSuffix);
 }
 
 function jmolSetTarget(targetSuffix) {
@@ -472,7 +479,7 @@ with (_jmol) {
   isFullyCompliant = isBrowserCompliant && isJavaCompliant;
 }
 
-function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
+function _jmolApplet(size, inlineModel, script, nameSuffix) {
   with (_jmol) {
     if (! nameSuffix)
       nameSuffix = appletCount;
@@ -496,13 +503,9 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
         boxbgcolor + "' />\n" +
         "  <param name='boxfgcolor' value='" +
         boxfgcolor + "' />\n" +
-        "  <param name='bgcolor' value='" + bgcolor + "' />\n" +
         "  <param name='ReadyCallback' value='_jmolReadyCallback' />\n";
 
-    if (modelFilename)
-      t += "  <param name='load' value='" +
-           modelbase + "/" + modelFilename + "' />\n";
-    else if (inlineModel)
+    if (inlineModel)
       t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)
       t += "  <param name='script' value='" + script + "' />\n";

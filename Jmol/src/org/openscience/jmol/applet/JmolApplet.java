@@ -24,12 +24,12 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.io.InputStream;
-import org.openscience.jmol.ReaderProgress;
-import org.openscience.jmol.ReaderFactory;
+import org.openscience.jmol.io.ReaderProgress;
+import org.openscience.jmol.io.ReaderFactory;
 import org.openscience.jmol.StatusDisplay;
 import org.openscience.jmol.FortranFormat;
-import org.openscience.jmol.ChemFileReader;
-import org.openscience.jmol.CMLReader;
+import org.openscience.jmol.io.ChemFileReader;
+import org.openscience.jmol.io.CMLReader;
 
 /**
  *  @author Bradley A. Smith (bradley@baysmith.com)

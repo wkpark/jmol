@@ -16,6 +16,15 @@
 <contributor id="MH"><name>Miguel Howard</name></contributor>
 </contributors>
 
+<changes version="jmol-6">
+  <change contributor="MH">
+    Performance improvements for display.
+  </change>
+  <change contributor="EW">
+    Move IO classes into separte package.
+  </change>
+</changes>
+
 <changes version="jmol-5">
   <change contributor="EW">
     Internationalized Jmol and added Dutch translation.

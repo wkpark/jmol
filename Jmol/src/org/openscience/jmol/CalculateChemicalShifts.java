@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.io.SharcReader;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

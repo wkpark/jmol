@@ -84,19 +84,19 @@ public class ChemFrame implements Transformable {
   private Point3f centerPoint;
   private float radius;
 
-  static void setBondFudge(float bf) {
+  public static void setBondFudge(float bf) {
     bondFudge = bf;
   }
 
-  static float getBondFudge() {
+  public static float getBondFudge() {
     return bondFudge;
   }
 
-  static void setAutoBond(boolean ab) {
+  public static void setAutoBond(boolean ab) {
     AutoBond = ab;
   }
 
-  static boolean getAutoBond() {
+  public static boolean getAutoBond() {
     return AutoBond;
   }
 

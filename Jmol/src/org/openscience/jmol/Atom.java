@@ -164,9 +164,9 @@ public class Atom {
    * Returns the atom's on-screen position. Note: the atom must
    * first be transformed. Otherwise, a point at the origin is returned.
    */
-  //  public Point3f getScreenPosition() {
-  //    return new Point3f(screenPosition);
-  //  }
+  public Point3f getScreenPosition() {
+    return screenPosition;
+  }
 
   /**
    * Returns the atom's vector, or null if not set.

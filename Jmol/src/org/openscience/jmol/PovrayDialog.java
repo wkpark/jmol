@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -19,6 +18,8 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.io.PovraySaver;
+import org.openscience.jmol.io.PovrayStyleWriter;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

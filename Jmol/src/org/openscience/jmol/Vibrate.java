@@ -19,6 +19,8 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.io.CMLSaver;
+import org.openscience.jmol.io.XYZSaver;
 import java.io.File;
 import javax.vecmath.Point3f;
 import java.awt.Container;

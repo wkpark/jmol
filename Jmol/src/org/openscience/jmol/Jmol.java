@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -19,6 +18,11 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.io.ReaderFactory;
+import org.openscience.jmol.io.ChemFileReader;
+import org.openscience.jmol.io.CMLSaver;
+import org.openscience.jmol.io.PdbSaver;
+import org.openscience.jmol.io.XYZSaver;
 import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 import Acme.JPM.Encoders.PpmEncoder;

@@ -151,7 +151,7 @@ public class AtomicSymbol {
     atomicSymbolMap.put("Uuo", new Integer(118));
   }
 
-  static int elementToAtomicNumber(String label) {
+  public static int elementToAtomicNumber(String label) {
 
     int number = 0;
 
@@ -161,7 +161,7 @@ public class AtomicSymbol {
     return number;
   }
 
-  static String atomicNumberToSymbol(int atomicNumber) {
+  public static String atomicNumberToSymbol(int atomicNumber) {
 
     String result = null;
     if ((atomicNumber >= 0) && (atomicNumber < atomicSymbols.length)) {

@@ -17,27 +17,25 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.io;
+
+import java.util.EventListener;
 
 /**
- * A class to store the NMRShielding property for an atom
+ * Allows monitoring of progress of file reader activities.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class NMRShielding extends PhysicalProperty {
+interface ReaderListener extends EventListener {
 
   /**
-   * Constructor for NMR Shielding
-   * @param s The isotropic shielding of the atom
+   * Indicates that a new frame has been read.
+   *
+   * @param event information about the event.
    */
-  public NMRShielding(double s) {
-    super("Isotropic Shielding", new Double(s));
-  }
-
-  /**
-   * Constructor for NMR Shielding
-   * @param s The isotropic shielding of the atom
-   */
-  public NMRShielding(String descriptor, double s) {
-    super(descriptor, new Double(s));
-  }
+  public void frameRead(ReaderEvent event);
 
 }
+
+
+

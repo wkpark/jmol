@@ -17,27 +17,27 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.io;
+
+import java.util.EventObject;
 
 /**
- * A class to store the NMRShielding property for an atom
+ * Signals that something has happened in a file reader. This class is
+ * primarily in place for future development when additional information
+ * may be passed to <code>ReaderListener</code>s.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class NMRShielding extends PhysicalProperty {
+class ReaderEvent extends EventObject {
 
   /**
-   * Constructor for NMR Shielding
-   * @param s The isotropic shielding of the atom
+   * Creates a reader event.
+   *
+   * @param source the object on which the event initially occurred.
    */
-  public NMRShielding(double s) {
-    super("Isotropic Shielding", new Double(s));
-  }
-
-  /**
-   * Constructor for NMR Shielding
-   * @param s The isotropic shielding of the atom
-   */
-  public NMRShielding(String descriptor, double s) {
-    super(descriptor, new Double(s));
+  ReaderEvent(Object source) {
+    super(source);
   }
 
 }
+

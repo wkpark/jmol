@@ -193,13 +193,13 @@ abstract class ModelReader {
     while (ich < ichMax && str.charAt(ich) == ' ')
       ++ich;
     int ichLast = ichMax - 1;
-    while (ichLast >= ich && str.charAt(ich) == ' ')
+    while (ichLast >= ich && str.charAt(ichLast) == ' ')
       --ichLast;
     if (ichLast < ich)
       return null;
+    ichNextParse = ichLast + 1;
     if (ich == ichStart && (ichLast + 1) == ichMax)
       return str;
-    ichNextParse = ichLast + 1;
     return str.substring(ich, ichLast + 1);
   }
 

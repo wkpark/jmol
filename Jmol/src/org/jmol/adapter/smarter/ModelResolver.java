@@ -138,11 +138,14 @@ class ModelResolver {
   final static String[] ghemicalMMRecords =
   { "!Header mm1gp", "!Header gpr" };
 
+  final static String[] jaguarRecords =
+  { "  |  Jaguar version", };
+
   final static String[][] startsWithRecords =
-  { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords };
+  { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords, jaguarRecords };
 
   final static String[] startsWithFormats =
-  { "Pdb", "Shelx", "Cif", "GhemicalMM" };
+  { "Pdb", "Shelx", "Cif", "GhemicalMM", "Jaguar" };
 
   ////////////////////////////////////////////////////////////////
   // contains formats
@@ -156,7 +159,7 @@ class ModelResolver {
   { "Entering Gaussian System", "1998 Gaussian, Inc." };
 
   final static String[][] containsRecords =
-  {cmlRecords, gaussianRecords};
+  { cmlRecords, gaussianRecords };
 
   final static String[] containsFormats =
   { "Cml", "Gaussian" };

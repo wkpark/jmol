@@ -50,12 +50,21 @@ public abstract class ReaderFactory {
     if (buffer.markSupported()) {
 
       /* The mark and reset on the buffer, is so that we can read
-       * the first line line to test for XYZ files without screwing
+       * the first few lines for XYZ, CML, or MDL files without screwing
        * up the other tests below
        */
-      buffer.mark(255);
-      line = getLine(buffer);
+      buffer.mark(1024);
+      line = buffer.readLine();
+      buffer.readLine();
+      buffer.readLine();
+      String line4 = buffer.readLine();
       buffer.reset();
+
+      // If the fourth line contains the MDL Ctab version tag,
+      // the file is identified as an MDL file.
+      if (line4 != null && line4.trim().endsWith("V2000")) {
+        return new MdlReader(buffer);
+      }
 
       // An integer on the first line is a special test for XYZ files
       try {
@@ -65,9 +74,6 @@ public abstract class ReaderFactory {
 
         // Integer not found on first line; therefore not a XYZ file
       }
-
-      /* This line wasn't an integer, so move on to the rest of
-         our filters */
 
       // If XML, assume CML.
       if (line.startsWith("<?xml")) {

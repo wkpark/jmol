@@ -43,3 +43,4 @@ org/openscience/jmol/MopacReader.java
 org/openscience/jmol/PDBReader.java
 org/openscience/jmol/CACheReader.java
 org/openscience/jmol/ReaderFactory.java
+org/openscience/jmol/MdlReader.java

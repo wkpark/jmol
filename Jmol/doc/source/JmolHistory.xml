@@ -10,6 +10,7 @@
 <contributor id="MB"><name>Mike Beachy</name><email>beachy@alum.mit.edu</email></contributor>
 <contributor id="HG"><name>Hugo Garcia</name><email>elhugo@objectchemistry.org</email></contributor>
 <contributor id="MM"><name>Matthew Meinek</name><email>mmeineke@nd.edu</email></contributor>
+<contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
 </contributors>
 
 
@@ -26,6 +27,9 @@
   </change>
   <change contributor="BS">
     Fixed vector rendering.
+  </change>
+  <change contributor="JJ">
+    MDL file reader.
   </change>
 </changes>
 

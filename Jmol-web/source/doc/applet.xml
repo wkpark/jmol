@@ -201,6 +201,18 @@
 </appletExample>
 </param>
 
+        <param name="script">
+	  Allows you to specify a script which is to be run when
+	  the applet is loaded.
+        <appletExample>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        width="200" height="200">
+  <param name="load" value="methanol1.cml"/>
+  <param name="script" value="rotate y 10; loop 1"/>
+</applet>]]>
+</appletExample>
+</param>
+
       </appletParameterList>
     </section>
     

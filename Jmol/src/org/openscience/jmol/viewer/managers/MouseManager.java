@@ -130,7 +130,6 @@ public abstract class MouseManager {
 
   void mousePressed(int x, int y, int modifiers, boolean isPopupTrigger,
                     long pressedTime) {
-    checkSelectionHalo(modifiers);
     if (previousPressedX == x && previousPressedY == y &&
         previousPressedModifiers == modifiers && 
         (pressedTime - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
@@ -184,7 +183,6 @@ public abstract class MouseManager {
   }
 
   void mouseReleased(int x, int y, int modifiers) {
-    checkSelectionHalo(modifiers);
     xCurrent = x; yCurrent = y;
     if (logMouseEvents)
       System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
@@ -268,7 +266,6 @@ public abstract class MouseManager {
   void mouseDragged(int x, int y, int modifiers) {
     if (logMouseEvents)
       System.out.println("mouseDragged("+x+","+y+","+modifiers + ")");
-    checkSelectionHalo(modifiers);
     int deltaX = x - previousDragX;
     int deltaY = y - previousDragY;
     xCurrent = previousDragX = x; yCurrent = previousDragY = y;
@@ -283,20 +280,19 @@ public abstract class MouseManager {
   void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
-    case SHIFT_LEFT:
       viewer.rotateXYBy(deltaX, deltaY);
       break;
+    case SHIFT_LEFT:
+      viewer.zoomBy(deltaY);
+      break;
+
     case ALT_LEFT:
-    case ALT_SHIFT_LEFT:
     case MIDDLE:
-    case SHIFT_MIDDLE:
       viewer.zoomBy(deltaY);
       viewer.rotateZBy(-deltaX);
       break;
-    case CTRL_ALT_LEFT:
-    case CTRL_ALT_SHIFT_LEFT:
-    case CTRL_MIDDLE:
-    case CTRL_SHIFT_MIDDLE:
+    case ALT_SHIFT_LEFT:
+    case SHIFT_MIDDLE:
       viewer.translateXYBy(deltaX, deltaY);
       break;
     }
@@ -321,7 +317,7 @@ public abstract class MouseManager {
     if ((modifiers & RIGHT) == RIGHT)
     return XLATE;
     if ((modifiers & LEFT) == LEFT)
-    return ROTATE;
+mol is a collaboratively developed visualization an    return ROTATE;
     /
     if ((modifiers & SHIFT_RIGHT) == SHIFT_RIGHT)
       return JmolConstants.MOUSE_ROTATE_Z;
@@ -392,7 +388,6 @@ public abstract class MouseManager {
     if (logMouseEvents)
       System.out.println("mouseMoved("+x+","+y+","+modifiers"+)");
     */
-    checkSelectionHalo(modifiers);
     xCurrent = x; yCurrent = y;
     if (measurementMode | hoverActive) {
       int atomIndex = viewer.findNearestAtomIndex(x, y);
@@ -404,7 +399,7 @@ public abstract class MouseManager {
   final static int wheelClickPercentage = 25;
 
   void mouseWheel(int rotation, int modifiers) {
-    if ((modifiers & (BUTTON_MODIFIER_MASK & ~SHIFT)) == 0)
+    if ((modifiers & BUTTON_MODIFIER_MASK) == 0)
       viewer.zoomByPercent(rotation * wheelClickPercentage);
   }
   
@@ -479,15 +474,5 @@ public abstract class MouseManager {
       viewer.toggleMeasurement(measurementCountPlusIndices);
     }
     exitMeasurementMode();
-  }
-
-  boolean inSelectionMode = false;
-
-  void checkSelectionHalo(int modifiers) {
-    boolean inSelectionMode = (modifiers & SHIFT) != 0;
-    if (this.inSelectionMode != inSelectionMode) {
-      this.inSelectionMode = inSelectionMode;
-      viewer.setSelectionHaloEnabled(inSelectionMode);
-    }
   }
 }

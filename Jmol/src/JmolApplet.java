@@ -271,6 +271,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void notifyAtomPicked(int atomIndex, String strInfo) {
     System.out.println("notifyAtomPicked(" + atomIndex + "," + strInfo +")");
+    showStatus(strInfo);
     if (pickCallback != null && jsoWindow != null)
       jsoWindow.call(pickCallback,
                      new Object[] {htmlName, strInfo, new Integer(atomIndex)});

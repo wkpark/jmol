@@ -12,23 +12,10 @@
           </li>
       </ul>
       Some prerelease tests versions are also available from time-to-time at the same place.
-<!--      
-      With some delay, binary and source packages are available, 
-      as well as Debian GNU/Linux (see below), and Suse/RedHat Linux packages.
       </p>
-      <h4>Debian Apt-get</h4>
       <p>
-        Debian users can also apt-get the package from 
-        <a href="http://debian.wgdd.de/">debian.wgdd.de/</a> by adding:
-        <pre><tt>
-deb <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
-deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
-        </tt></pre>
-        to /etc/apt/sources.list, and doing 'apt-get update &amp;&amp; apt-get install jmol/unstable'. 
-        The repository has changed, because <a href="http://mentors.debian.net/">mentors.debian.net</a> 
-        will no longer provide binary-packages.
-      -->
-      </p>
+        Information about binary packages for Linux can be found in
+        <a href="http://wiki.jmol.org/JmolSupport/Linux">Jmol's Wiki</a>.
     </section>
 
     <section title="CVS Access">

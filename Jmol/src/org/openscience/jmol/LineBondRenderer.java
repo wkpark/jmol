@@ -46,6 +46,13 @@ public class LineBondRenderer implements BondRenderer {
   public void paint(Graphics gc, Atom atom1, Atom atom2,
       DisplaySettings settings) {
 
+    ColorProfile colorProfile;
+    if (settings.getAtomColorProfile() == DisplaySettings.ATOMCHARGE) {
+        colorProfile = new ChargeColorProfile();
+    } else {
+        colorProfile = new DefaultColorProfile();
+    }
+
     int x1 = (int) atom1.getScreenPosition().x;
     int y1 = (int) atom1.getScreenPosition().y;
     int z1 = (int) atom1.getScreenPosition().z;
@@ -97,6 +104,9 @@ public class LineBondRenderer implements BondRenderer {
     if (bondOrder == 3) {
       bondSeparation *= 2.0;
     }
+
+    gc.setColor(colorProfile.getColor(atom1));
+
     int[] points;
     if (!settings.getFastRendering()
         && ((bondOrder == 2) || (bondOrder == 3))) {

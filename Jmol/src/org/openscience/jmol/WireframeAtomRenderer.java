@@ -19,14 +19,15 @@
  */
 package org.openscience.jmol;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 /**
- * Drawing methods for atoms.
+ * Draws atoms as open circles colored by the type of atom.
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public interface AtomRenderer {
+public class WireframeAtomRenderer implements AtomRenderer {
 
   /**
    * Draws an atom on a particular graphics context.
@@ -37,7 +38,40 @@ public interface AtomRenderer {
    * @param settings the display settings
    */
   public void paint(Graphics gc, Atom atom, boolean picked,
-      DisplaySettings settings);
+      DisplaySettings settings) {
+    
+    ColorProfile colorProfile;
+    if (settings.getAtomColorProfile() == DisplaySettings.ATOMCHARGE) {
+        colorProfile = new ChargeColorProfile();
+    } else {
+        colorProfile = new DefaultColorProfile();
+    }
+    Color atomColor = colorProfile.getColor(atom);
+
+    int x = (int) atom.getScreenPosition().x;
+    int y = (int) atom.getScreenPosition().y;
+    int z = (int) atom.getScreenPosition().z;
+    int diameter =
+      (int) (2.0f
+        * settings.getCircleRadius(z, atom.getType().getVdwRadius()));
+    int radius = diameter >> 1;
+
+    if (settings.getFastRendering()) {
+      gc.setColor(atomColor);
+      gc.drawOval(x - radius, y - radius, diameter, diameter);
+      return;
+    }
+
+    if (picked) {
+      int halo = radius + 5;
+      int halo2 = 2 * halo;
+      gc.setColor(settings.getPickedColor());
+      gc.fillOval(x - halo, y - halo, halo2, halo2);
+    }
+
+    gc.setColor(atomColor);
+    gc.drawOval(x - radius, y - radius, diameter, diameter);
+  }
 
 }
 

@@ -94,7 +94,7 @@ public class DisplayPanel extends JPanel
   public DisplayPanel(StatusBar status, DisplaySettings settings) {
     this.status = status;
     this.settings = settings;
-    AtomRenderer.setImageComponent(this);
+    ShadingAtomRenderer.setImageComponent(this);
   }
 
   public boolean getAntiAliased() {

@@ -33,7 +33,7 @@ import javax.vecmath.Vector3d;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.DisplaySettings;
-import org.openscience.jmol.AtomRenderer;
+import org.openscience.jmol.ShadingAtomRenderer;
 import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.ChemFrameRenderer;
 
@@ -121,7 +121,7 @@ public class DisplayPanel extends Canvas
     //      setBackground(java.awt.Color.black);
     //      backgroundColor = (java.awt.Color.black);
     setForeground(java.awt.Color.white);
-    AtomRenderer.setImageComponent(this);
+    ShadingAtomRenderer.setImageComponent(this);
     this.addMouseListener(new MyAdapter());
     this.addComponentListener(this);
     this.addMouseMotionListener(new MyMotionAdapter());

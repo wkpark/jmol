@@ -21,6 +21,7 @@ package org.openscience.jmol;
 
 import java.awt.Graphics;
 import java.util.Enumeration;
+import java.util.Vector;
 import javax.vecmath.Point3f;
 
 /**
@@ -45,139 +46,67 @@ public class ChemFrameRenderer {
     }
     boolean drawHydrogen = settings.getShowHydrogens();
     frame.transform();
-    if (!settings.getFastRendering() || (atomReferences == null)) {
-      if ((atomReferences == null)
-          || (atomReferences.length != frame.getNumberOfAtoms())) {
-        atomReferences = new AtomReference[frame.getNumberOfAtoms()];
-        for (int i = 0; i < atomReferences.length; ++i) {
-          atomReferences[i] = new AtomReference();
-        }
-      }
+    
+    if (shapes == null || frame.hashCode() != frameId) {
+      frameId = frame.hashCode();
+      double maxMagnitude = -1.0;
+      double minMagnitude = Double.MAX_VALUE;
+      Vector shapesList = new Vector();
       for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
-        atomReferences[i].index = i;
-        atomReferences[i].z = frame.getAtomAt(i).getScreenPosition().z;
-      }
-
-      if (frame.getNumberOfAtoms() > 1) {
-        sorter.sort(atomReferences);
-      }
-    }
-
-    double maxMagnitude = -1.0;
-    double minMagnitude = Double.MAX_VALUE;
-    for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
-      Atom atom = frame.getAtomAt(i);
-      Point3f vector = atom.getVector();
-      if (vector != null) {
-        double magnitude = vector.distance(zeroPoint);
-        if (magnitude > maxMagnitude) {
-          maxMagnitude = magnitude;
+        Atom atom = frame.getAtomAt(i);
+        shapesList.addElement(new AtomShape(atom, settings, frame.isAtomPicked(i)));
+        shapesList.addElement(new AtomLabelShape(atom, settings));
+        Enumeration bondIter = atom.getBondedAtoms();
+        while (bondIter.hasMoreElements()) {
+          Atom otherAtom = (Atom) bondIter.nextElement();
+          shapesList.addElement(new BondShape(atom, otherAtom, settings));
         }
-        if (magnitude < minMagnitude) {
-          minMagnitude = magnitude;
-        }
-      }
-    }
-    double magnitudeRange = maxMagnitude - minMagnitude;
 
-    BondRenderer bondRenderer = getBondRenderer(settings);
-    for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
-      int j = atomReferences[i].index;
-      Atom atom = frame.getAtomAt(j);
-      if (drawHydrogen || (atom.getType().getAtomicNumber() != 1)) {
-        if (settings.getShowBonds()) {
-          Enumeration bondIter = atom.getBondedAtoms();
-          while (bondIter.hasMoreElements()) {
-            Atom otherAtom = (Atom) bondIter.nextElement();
-            if (drawHydrogen
-                || (otherAtom.getType().getAtomicNumber() != 1)) {
-              if (otherAtom.getScreenPosition().z
-                  < atom.getScreenPosition().z) {
-                bondRenderer.paint(g, atom, otherAtom, settings);
-              }
-            }
+        Point3f vector = atom.getVector();
+        if (vector != null) {
+          double magnitude = vector.distance(zeroPoint);
+          if (magnitude > maxMagnitude) {
+            maxMagnitude = magnitude;
+          }
+          if (magnitude < minMagnitude) {
+            minMagnitude = magnitude;
           }
         }
-
-        if (settings.getShowAtoms()) {
-          atomRenderer.paint(g, atom, frame.isAtomPicked(j), settings);
-        }
-
-        if (settings.getShowBonds()) {
-          Enumeration bondIter = atom.getBondedAtoms();
-          while (bondIter.hasMoreElements()) {
-            Atom otherAtom = (Atom) bondIter.nextElement();
-            if (drawHydrogen
-                || (otherAtom.getType().getAtomicNumber() != 1)) {
-              if (otherAtom.getScreenPosition().z
-                  >= atom.getScreenPosition().z) {
-                bondRenderer.paint(g, atom, otherAtom, settings);
-              }
-            }
-          }
-        }
-
-        if (settings.getShowVectors()) {
-          if (atom.getVector() != null) {
-            double magnitude = atom.getVector().distance(zeroPoint);
-            double scaling = (magnitude - minMagnitude) / magnitudeRange
-                               + 0.5;
-            ArrowLine al = new ArrowLine(g, atom.getScreenPosition().x,
-                             atom.getScreenPosition().y,
-                             atom.getScreenVector().x,
-                             atom.getScreenVector().y, false, true, scaling);
-          }
-        }
-
+      }
+      
+      double magnitudeRange = maxMagnitude - minMagnitude;
+      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+        Atom atom = frame.getAtomAt(i);
+        shapesList.addElement(new AtomVectorShape(atom, settings, minMagnitude, magnitudeRange));
+      }
+      
+      shapes = new Shape[shapesList.size()];
+      Enumeration shapeIter = shapesList.elements();
+      for (int i = 0; i < shapes.length && shapeIter.hasMoreElements(); ++i) {
+        shapes[i] = (Shape) shapeIter.nextElement();
       }
     }
-  }
-
-  private BondRenderer getBondRenderer(DisplaySettings settings) {
-
-    BondRenderer renderer;
-    if (settings.getFastRendering()
-        || (settings.getBondDrawMode() == DisplaySettings.LINE)) {
-      renderer = lineBondRenderer;
-    } else if (settings.getBondDrawMode() == DisplaySettings.SHADING) {
-      renderer = shadingBondRenderer;
-    } else if (settings.getBondDrawMode() == DisplaySettings.WIREFRAME) {
-      renderer = wireframeBondRenderer;
-    } else {
-      renderer = quickdrawBondRenderer;
+    shapeSorter.sort(shapes);
+    
+    for (int i = 0; i < shapes.length; ++i) {
+      shapes[i].render(g);
     }
-    return renderer;
+    
   }
 
-  /**
-   * Renderer for atoms.
-   */
-  private AtomRenderer atomRenderer = new AtomRenderer();
-
-  /**
-   * Renderer for bonds.
-   */
-  private BondRenderer quickdrawBondRenderer = new QuickdrawBondRenderer();
-  private BondRenderer lineBondRenderer = new LineBondRenderer();
-  private BondRenderer shadingBondRenderer = new ShadingBondRenderer();
-  private BondRenderer wireframeBondRenderer = new WireframeBondRenderer();
-
-  class AtomReference {
-    int index = 0;
-    float z = 0.0f;
-  }
-
-  AtomReference[] atomReferences;
-
-  HeapSorter sorter = new HeapSorter(new HeapSorter.Comparator() {
+  int frameId;
+  
+  Shape[] shapes;
+  
+  HeapSorter shapeSorter = new HeapSorter(new HeapSorter.Comparator() {
 
     public int compare(Object atom1, Object atom2) {
 
-      AtomReference a1 = (AtomReference) atom1;
-      AtomReference a2 = (AtomReference) atom2;
-      if (a1.z < a2.z) {
+      Shape a1 = (Shape) atom1;
+      Shape a2 = (Shape) atom2;
+      if (a1.getZ() < a2.getZ()) {
         return -1;
-      } else if (a1.z > a2.z) {
+      } else if (a1.getZ() > a2.getZ()) {
         return 1;
       }
       return 0;

@@ -196,6 +196,7 @@ public class Jmol extends JPanel {
         + ".jmol", new JmolEditBus(viewer)
     );
     pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
+    pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DadmlBrowserPlugin");
     pluginManager.loadPlugins(
         System.getProperty("user.home") + System.getProperty("file.separator")
         + ".jmol/plugins"

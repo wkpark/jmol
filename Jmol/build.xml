@@ -263,6 +263,7 @@ support for assertions (which were introduced in 1.4).
       <and>
         <uptodate targetfile="${appjars.dir}/org/openscience/cdkplugin">
           <srcfiles dir="${plugin.dir}" includes="dirbrowser.jar"/>
+          <srcfiles dir="${plugin.dir}" includes="dadmlbrowser.jar"/>
         </uptodate>
         <uptodate targetfile="build/pluginjars.timestamp"
                   srcfile="${appjars.dir}/org/openscience/cdkplugin"/>
@@ -308,6 +309,7 @@ support for assertions (which were introduced in 1.4).
     <delete file="build/pluginjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${plugin.dir}/dirbrowser.jar"/>
+    <unjar dest="${appjars.dir}" src="${plugin.dir}/dadmlbrowser.jar"/>
     <touch file="build/pluginjars.timestamp"/>
   </target>
 

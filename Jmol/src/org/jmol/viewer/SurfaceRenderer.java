@@ -129,7 +129,7 @@ class SurfaceRenderer extends ShapeRenderer {
         // use the normix for the face. Something is wrong somewhere
         // but I give up.
         // just use gouraud shading, in spite of performance penalty
-        short normix = geodesicFaceNormixes[i];
+        //short normix = geodesicFaceNormixes[i];
         g3d.fillTriangle(colix, false,
                          screens[vA], vA,
                          screens[vB], vB,
@@ -271,10 +271,10 @@ class SurfaceRenderer extends ShapeRenderer {
     for (int i = points.length; --i >= 0; )
       viewer.transformPoint(points[i], screens[i]);
 
-    short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
-    short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
-    short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
-    short colixCenter = Graphics3D.YELLOW;
+    //short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
+    //short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
+    //short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
+    //short colixCenter = Graphics3D.YELLOW;
                         
     Point3i screenCenter = screens[0];
     short normixCenter = normixes[0];

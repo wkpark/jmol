@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class Strands extends Mcg {
+public class Strands extends Mcpg {
 
   /****************************************************************
    * M. Carson and C.E. Bugg (1986)
@@ -45,43 +45,46 @@ public class Strands extends Mcg {
     super(viewer, frame);
   }
 
-  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
-    return new Chain(pdbChain);
+  Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
+    return new Chain(polymer);
   }
 
-  class Chain extends Mcg.Chain {
+  class Chain extends Mcpg.Chain {
     Point3f[] centers;
     Vector3f[] vectors;
 
-    Chain(PdbChain pdbChain) {
-      super(pdbChain);
-      if (mainchainLength >= 2) {
-        centers = new Point3f[mainchainLength + 1];
-        vectors = new Vector3f[mainchainLength + 1];
-        calcCentersAndVectors(mainchain, centers, vectors);
+    Chain(PdbPolymer polymer) {
+      super(polymer);
+      if (polymerCount > 0) {
+        centers = new Point3f[polymerCount + 1];
+        vectors = new Vector3f[polymerCount + 1];
+        calcCentersAndVectors(polymerCount, polymerGroups, centers, vectors);
       }
     }
 
     public void setMad(short mad, BitSet bsSelected) {
-      for (int i = mainchainLength; --i >= 0; ) {
-        if (bsSelected.get(mainchain[i].getAlphaCarbonIndex()))
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount; --i >= 0; ) {
+        if (bsSelected.get(atomIndices[i])) {
           if (mad < 0) {
-            mads[i] = (short)(mainchain[i].isHelixOrSheet() ? 1500 : 500);
+            mads[i] = (short)(polymerGroups[i].isHelixOrSheet() ? 1500 : 500);
           } else {
             mads[i] = mad;
           }
+        }
       }
-      if (mainchainLength > 1)
-        mads[mainchainLength] = mads[mainchainLength - 1];
+      if (polymerCount > 1)
+        mads[polymerCount] = mads[polymerCount - 1];
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = mainchainLength; --i >= 0; ) {
-        int atomIndex = mainchain[i].getAlphaCarbonIndex();
-        if (bsSelected.get(atomIndex))
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount; --i >= 0; ) {
+        if (bsSelected.get(atomIndices[i]))
           colixes[i] =
             palette > JmolConstants.PALETTE_CPK
-            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
+            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndices[i]),
+                                         palette)
             : colix;
       }
     }
@@ -93,22 +96,22 @@ public class Strands extends Mcg {
   Vector3f vectorC = new Vector3f();
   Vector3f vectorD = new Vector3f();
   
-  void calcCentersAndVectors(PdbGroup[] mainchain,
+  void calcCentersAndVectors(int count, PdbGroup[] groups,
                              Point3f[] centers, Vector3f[] vectors) {
     Point3f alphaPointPrev, alphaPoint;
     centers[0] = alphaPointPrev = alphaPoint =
-      mainchain[0].getAlphaCarbonAtom().point3f;
-    int lastIndex = mainchain.length - 1;
+      groups[0].getAlphaCarbonAtom().point3f;
+    int lastIndex = count - 1;
     Vector3f previousVectorD = null;
     for (int i = 1; i <= lastIndex; ++i) {
       alphaPointPrev = alphaPoint;
-      alphaPoint = mainchain[i].getAlphaCarbonAtom().point3f;
+      alphaPoint = groups[i].getAlphaCarbonAtom().point3f;
       Point3f center = new Point3f(alphaPoint);
       center.add(alphaPointPrev);
       center.scale(0.5f);
       centers[i] = center;
       vectorA.sub(alphaPoint, alphaPointPrev);
-      vectorB.sub(mainchain[i-1].getCarbonylOxygenAtom().point3f,
+      vectorB.sub(groups[i-1].getCarbonylOxygenAtom().point3f,
                   alphaPointPrev);
       vectorC.cross(vectorA, vectorB);
       vectorD.cross(vectorC, vectorA);
@@ -118,8 +121,8 @@ public class Strands extends Mcg {
         vectorD.scale(-1);
       previousVectorD = vectors[i] = new Vector3f(vectorD);
     }
-    centers[mainchain.length] = alphaPointPrev;
+    centers[count] = alphaPointPrev;
     vectors[0] = vectors[1];
-    vectors[mainchain.length] = vectors[lastIndex];
+    vectors[count] = vectors[lastIndex];
   }
 }

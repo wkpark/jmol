@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-class StrandsRenderer extends McgRenderer {
+class StrandsRenderer extends McpgRenderer {
 
   StrandsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     super(viewer, frameRenderer);
@@ -72,23 +72,23 @@ class StrandsRenderer extends McgRenderer {
     return screens;
   }
 
-  int mainchainLength;
+  int polymerCount;
   int strandCount;
   float halfStrandCount;
   float strandSeparation;
   float baseOffset;
 
-  void renderMcgChain(Mcg.Chain mcgChain) {
-    Strands.Chain strandsChain = (Strands.Chain)mcgChain;
-    mainchainLength = strandsChain.mainchainLength;
+  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+    Strands.Chain strandsChain = (Strands.Chain)mcpgChain;
+    polymerCount = strandsChain.polymerCount;
 
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
     
-    render1Chain(strandsChain.mainchainLength,
-                 strandsChain.mainchain,
+    render1Chain(strandsChain.polymerCount,
+                 strandsChain.polymerGroups,
                  strandsChain.centers,
                  strandsChain.vectors,
                  strandsChain.mads,
@@ -96,34 +96,35 @@ class StrandsRenderer extends McgRenderer {
   }
 
 
-  void render1Chain(int mainchainLength,
-                    PdbGroup[] mainchain, Point3f[] centers,
+  void render1Chain(int polymerCount,
+                    PdbGroup[] groups, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
     Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0; ) {
       float f = (i * strandSeparation) + baseOffset;
       screens = calcScreens(centers, vectors, mads, f);
-      render1Strand(mainchainLength, mainchain, mads, colixes, screens);
+      render1Strand(polymerCount, groups, mads, colixes, screens);
       screens = calcScreens(centers, vectors, mads, -f);
-      render1Strand(mainchainLength, mainchain, mads, colixes, screens);
+      render1Strand(polymerCount, groups, mads, colixes, screens);
     }
     if ((strandCount & 1) != 0) {
       screens = calcScreens(centers, vectors, mads, 0f);
-      render1Strand(mainchainLength, mainchain, mads, colixes, screens);
+      render1Strand(polymerCount, groups, mads, colixes, screens);
     }
   }
 
-  void render1Strand(int mainchainLength, PdbGroup[] mainchain, short[] mads,
+  void render1Strand(int polymerCount, PdbGroup[] groups, short[] mads,
                      short[] colixes, Point3i[] screens) {
-    for (int i = mainchainLength; --i >= 0; )
+    for (int i = polymerCount; --i >= 0; )
       if (mads[i] > 0)
-        render1StrandSegment(mainchainLength,
-                             mainchain[i], colixes[i], mads, screens, i);
+        render1StrandSegment(polymerCount,
+                             groups[i], colixes[i], mads, screens, i);
   }
 
-  void render1StrandSegment(int mainchainLength, PdbGroup group, short colix,
+
+  void render1StrandSegment(int polymerCount, PdbGroup group, short colix,
                             short[] mads, Point3i[] screens, int i) {
-    int iLast = mainchainLength;
+    int iLast = polymerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;

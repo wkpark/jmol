@@ -1,0 +1,142 @@
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
+ */
+
+package org.openscience.jmol.viewer.datamodel;
+
+import org.openscience.jmol.viewer.*;
+import org.openscience.jmol.viewer.g3d.*;
+import org.openscience.jmol.viewer.pdb.*;
+import java.util.BitSet;
+
+/****************************************************************
+ * Mcpg stands for Model-Chain-Polymer-Graphic
+ ****************************************************************/
+abstract public class Mcpg implements Graphic {
+
+  JmolViewer viewer;
+  Frame frame;
+  PdbFile pdbFile;
+
+  Model[] models;
+
+  Mcpg(JmolViewer viewer, Frame frame) {
+    this.viewer = viewer;
+    this.frame = frame;
+    pdbFile = frame.pdbFile;
+  }
+  
+  public void setShow(boolean show) {
+  }
+
+  public void setMad(short mad, BitSet bsSelected) {
+    initialize();
+    for (int m = models.length; --m >= 0; )
+      models[m].setMad(mad, bsSelected);
+  }
+  
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
+    initialize();
+    for (int m = models.length; --m >= 0; )
+      models[m].setColix(palette, colix, bsSelected);
+  }
+
+  abstract Chain allocateMcpgChain(PdbPolymer polymer);
+
+  void initialize() {
+    if (models == null) {
+      int modelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
+      models = new Model[modelCount];
+      for (int i = modelCount; --i >= 0; )
+        models[i] = new Model(pdbFile.getModel(i));
+    }
+  }
+
+  int getModelCount() {
+    return models.length;
+  }
+
+  Model getMcpgModel(int i) {
+    return models[i];
+  }
+
+  class Model {
+    Chain[] chains;
+    
+    Model(PdbModel model) {
+      chains = new Chain[model.getChainCount()];
+      for (int i = chains.length; --i >= 0; )
+        chains[i] = allocateMcpgChain(model.getChain(i).getPolymer());
+    }
+    
+    public void setMad(short mad, BitSet bsSelected) {
+      for (int i = chains.length; --i >= 0; ) {
+        Chain chain = chains[i];
+        if (chain.polymerCount > 0)
+          chain.setMad(mad, bsSelected);
+      }
+    }
+
+    public void setColix(byte palette, short colix, BitSet bsSelected) {
+      for (int i = chains.length; --i >= 0; ) {
+        Chain chain = chains[i];
+        if (chain.polymerCount > 0)
+          chain.setColix(palette, colix, bsSelected);
+      }
+    }
+
+    int getChainCount() {
+      return chains.length;
+    }
+
+    Chain getMcpgChain(int i) {
+      return chains[i];
+    }
+  }
+
+  abstract class Chain {
+    PdbPolymer polymer;
+    int polymerCount;
+    PdbGroup[] polymerGroups;
+    short[] colixes;
+    short[] mads;
+    
+    Chain(PdbPolymer polymer) {
+      this.polymer = polymer;
+      polymerCount = polymer.getCount();
+      if (polymerCount > 0) {
+        colixes = new short[polymerCount];
+        mads = new short[polymerCount + 1];
+        polymerGroups = polymer.getGroups();
+      }
+    }
+    
+    abstract public void setMad(short mad, BitSet bsSelected);
+    
+    abstract public void setColix(byte palette, short colix,
+                                  BitSet bsSelected);
+  }
+
+}
+

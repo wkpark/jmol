@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-class CartoonRenderer extends McgRenderer {
+class CartoonRenderer extends McpgRenderer {
 
   CartoonRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     super(viewer, frameRenderer);
@@ -47,57 +47,53 @@ class CartoonRenderer extends McgRenderer {
 
   Cartoon cartoon;
 
-  void renderMcgChain(Mcg.Chain mcgChain) {
-    Cartoon.Chain cartoonChain = (Cartoon.Chain)mcgChain;
-    render1Chain(cartoonChain.mainchainLength,
-                 cartoonChain.mainchain,
-                 cartoonChain.mads, cartoonChain.colixes,
-                 cartoonChain.pdbChain);
+  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+    Cartoon.Chain cartoonChain = (Cartoon.Chain)mcpgChain;
+    render1Chain(cartoonChain.polymer,
+                 cartoonChain.mads, cartoonChain.colixes);
   }
 
-  void render1Chain(int mainchainLength, PdbGroup[] mainchain,
-                    short[] mads, short[] colixes, PdbChain pdbchain) {
-    initializeChain(mainchainLength, mainchain, pdbchain);
+  void render1Chain(PdbPolymer polymer, short[] mads, short[] colixes) {
+    initializeChain(polymer);
     clearPending();
-    for (int i = 0; i < mainchainLength; ++i) {
+    for (int i = 0; i < polymerCount; ++i) {
       short colix = colixes[i];
       if (colix == 0)
         colix = alphas[i].colixAtom;
-      PdbGroup residue = mainchain[i];
-      if (residue.isHelixOrSheet())
-        renderSpecialSegment(residue, i, colix, mads[i]);
+      PdbGroup group = polymerGroups[i];
+      if (group.isHelixOrSheet())
+        renderSpecialSegment(group, colix, mads[i]);
       else
-        renderCordSegment(colix, mads, i);
+        renderRopeSegment(colix, mads, i);
     }
     renderPending();
   }
 
-  int mainchainLength;
-  PdbGroup[] mainchain;
+  int polymerCount;
+  PdbGroup[] polymerGroups;
   Point3i[] screens;
   Atom[] alphas;
   boolean[] isSpecials;
   Point3f[] cordMidPoints;
 
-  void initializeChain(int mainchainLength, PdbGroup[] mainchain,
-                       PdbChain pdbchain) {
-    this.mainchain = mainchain;
-    this.mainchainLength = mainchainLength;
-    isSpecials = frameRenderer.getTempBooleans(mainchainLength);
-    cordMidPoints = calcCordMidPoints(pdbchain);
-    screens = getScreens(pdbchain);
-    alphas = getAlphas(pdbchain);
+  void initializeChain(PdbPolymer polymer) {
+    polymerGroups = polymer.getGroups();
+    polymerCount = polymer.getCount();
+    isSpecials = frameRenderer.getTempBooleans(polymerCount);
+    cordMidPoints = calcRopeMidPoints(polymer);
+    screens = getScreens();
+    alphas = getAlphas();
   }
 
-  Point3f[] calcCordMidPoints(PdbChain pdbchain) {
-    int count = mainchainLength + 1;
-    Point3f[] cordMidPoints = frameRenderer.getTempPoints(count);
+  Point3f[] calcRopeMidPoints(PdbPolymer polymer) {
+    int midPointCount = polymerCount + 1;
+    Point3f[] cordMidPoints = frameRenderer.getTempPoints(midPointCount);
     PdbGroup residuePrev = null;
     PdbStructure structurePrev = null;
     Point3f point;
-    for (int i = 0; i < mainchainLength; ++i) {
+    for (int i = 0; i < polymerCount; ++i) {
       point = cordMidPoints[i];
-      PdbGroup residue = mainchain[i];
+      PdbGroup residue = polymerGroups[i];
       if (isSpecials[i] = residue.isHelixOrSheet()) {
         PdbStructure structure = residue.structure;
         point.set(i - 1 != structure.getStartResidueIndex()
@@ -114,21 +110,21 @@ class CartoonRenderer extends McgRenderer {
         if (structurePrev != null)
           point.set(structurePrev.getAxisEndPoint());
         else
-          pdbchain.getAlphaCarbonMidPoint(i, point);
+          polymer.getAlphaCarbonMidPoint(i, point);
         residuePrev = null;
         structurePrev = null;
       }
     }
-    point = cordMidPoints[mainchainLength];
+    point = cordMidPoints[polymerCount];
     if (structurePrev != null)
       point.set(structurePrev.getAxisEndPoint());
     else
-      pdbchain.getAlphaCarbonMidPoint(mainchainLength, point);
+      polymer.getAlphaCarbonMidPoint(polymerCount, point);
     return cordMidPoints;
   }
 
-  Point3i[] getScreens(PdbChain pdbchain) {
-    int count = mainchainLength + 1;
+  Point3i[] getScreens() {
+    int count = polymerCount + 1;
     Point3i[] screens = frameRenderer.getTempScreens(count);
     for (int i = count; --i >= 0; ) {
       viewer.transformPoint(cordMidPoints[i], screens[i]);
@@ -137,17 +133,17 @@ class CartoonRenderer extends McgRenderer {
     return screens;
   }
 
-  Atom[] getAlphas(PdbChain pdbchain) {
-    Atom[] alphas = frameRenderer.getTempAtoms(mainchainLength);
-    for (int i = mainchainLength; --i >= 0; )
-      alphas[i] = mainchain[i].getAlphaCarbonAtom();
+  Atom[] getAlphas() {
+    Atom[] alphas = frameRenderer.getTempAtoms(polymerCount);
+    for (int i = polymerCount; --i >= 0; )
+      alphas[i] = polymerGroups[i].getAlphaCarbonAtom();
     return alphas;
   }
 
-  void renderCordSegment(short colix, short[] mads, int i) {
+  void renderRopeSegment(short colix, short[] mads, int i) {
     int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
-    int iNext1 = i + 1; if (iNext1 > mainchainLength) iNext1 = mainchainLength;
-    int iNext2 = i + 2; if (iNext2 > mainchainLength) iNext2 = mainchainLength;
+    int iNext1 = i + 1; if (iNext1 > polymerCount) iNext1 = polymerCount;
+    int iNext2 = i + 2; if (iNext2 > polymerCount) iNext2 = polymerCount;
     
     int madThis, madBeg, madEnd;
     madThis = madBeg = madEnd = mads[i];
@@ -169,112 +165,24 @@ class CartoonRenderer extends McgRenderer {
     */
   }
 
-  int mainchainLast;
-
-  void render1ChainX(PdbGroup[] mainchain, short[] mads, short[] colixes) {
-    mainchainLast = mainchain.length - 1;
-    for (int i = 0; i < mainchain.length; ++i) {
-      PdbGroup residue = mainchain[i];
-      short colix = colixes[i];
-      if (colix == 0)
-        colix = residue.getAlphaCarbonAtom().colixAtom;
-      if (residue.isHelixOrSheet()) {
-        renderSpecialSegment(residue, i, colix, mads[i]);
-      } else {
-        calcSegmentPoints(mainchain, i, mads);
-        render1Segment(colix);
-      }
-    }
-    renderPending();
-  }
-
-  void calcSegmentPoints(PdbGroup[] mainchain, int i, short[] mads) {
-    int iPrev1 = i - 1, iPrev2 = i - 2, iNext1 = i + 1, iNext2 = i + 2;
-    if (iPrev1 < 0)
-      iPrev1 = 0;
-    if (iPrev2 < 0)
-      iPrev2 = 0;
-    if (iNext1 > mainchainLast)
-      iNext1 = mainchainLast;
-    if (iNext2 > mainchainLast)
-      iNext2 = mainchainLast;
-
-    if (mainchain[iPrev2].isHelixOrSheet()) {
-      viewer.transformPoint(mainchain[iPrev2].structure.getAxisEndPoint(), s0);
-      System.out.println("iPrev2 isHelixOrSheet");
-    }
-    else
-      calcAverage(mainchain, iPrev2, iPrev1, s0);
-
-    if (mainchain[iPrev1].isHelixOrSheet()) {
-      viewer.transformPoint(mainchain[iPrev1].structure.getAxisEndPoint(), s1);
-      System.out.println("iPrev1 isHelixOrSheet");
-    }
-    else
-      calcAverage(mainchain, iPrev1, i, s1);
-
-    if (mainchain[iNext1].isHelixOrSheet()) {
-      viewer.transformPoint(mainchain[iNext1].structure.getAxisStartPoint(),
-                            s2);
-      System.out.println("iNext1 isHelixOrSheet");
-    }
-    else
-      calcAverage(mainchain, i, iNext1, s2);
-
-    if (mainchain[iNext2].isHelixOrSheet()) {
-      System.out.println("iNext2 isHelixOrSheet");
-      Point3f point = mainchain[iNext2].structure.getAxisStartPoint();
-      System.out.println("point=" + point);
-      viewer.transformPoint(point,
-                            s3);
-    }
-    else
-      calcAverage(mainchain, iNext1, iNext2, s3);
-
-    int madBeg, madMid, madEnd;
-    madBeg = madMid = madEnd = mads[i];
-    if (! mainchain[iPrev1].isHelixOrSheet())
-      madBeg = (mads[iPrev1] + madBeg) / 2;
-    if (! mainchain[iNext1].isHelixOrSheet())
-      madEnd = (mads[iNext1] + madEnd) / 2;
-    diameterBeg = viewer.scaleToScreen(s1.z, madBeg);
-    diameterMid = viewer.scaleToScreen(mainchain[i].getAlphaCarbonAtom().z,
-                                       madMid);
-    diameterEnd = viewer.scaleToScreen(s2.z, madEnd);
-  }
-
-  void calcAverage(PdbGroup[] mainchain, int iA, int iB, Point3i dest) {
-    Atom atomA = mainchain[iA].getAlphaCarbonAtom();
-    Atom atomB = mainchain[iB].getAlphaCarbonAtom();
-    dest.x = (atomA.x + atomB.x) / 2;
-    dest.y = (atomA.y + atomB.y) / 2;
-    dest.z = (atomA.z + atomB.z) / 2;
-  }
-
-  void render1Segment(short colix) {
-    g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
-                    s0, s1, s2, s3);
-  }
-
   final Point3i screenA = new Point3i();
   Point3i screenB = new Point3i();
   Point3i screenC = new Point3i();
 
-  void renderSpecialSegment(PdbGroup residue, int residueIndex,
-                            short colix, short mad) {
-    PdbStructure structure = residue.structure;
+  void renderSpecialSegment(PdbGroup group, short colix, short mad) {
+    PdbStructure structure = group.structure;
     if (tPending) {
       if (structure == structurePending &&
           mad == madPending &&
           colix == colixPending &&
-          residueIndex == endIndexPending + 1) {
+          structure.getIndex(group) == endIndexPending + 1) {
         ++endIndexPending;
         return;
       }
       renderPending();
     }
     structurePending = structure;
-    startIndexPending = endIndexPending = residueIndex;
+    startIndexPending = endIndexPending = structure.getIndex(group);
     colixPending = colix;
     madPending = mad;
     tPending = true;
@@ -295,25 +203,24 @@ class CartoonRenderer extends McgRenderer {
   void renderPending() {
     if (tPending) {
       Point3f[] segments = structurePending.getSegments();
-      int indexStructureStart = structurePending.getStartResidueIndex();
-      int indexStart = startIndexPending - indexStructureStart;
-      int indexEnd = endIndexPending - indexStructureStart;
-      boolean tEnd = (indexEnd == structurePending.getResidueCount() - 1);
-      /*
-      System.out.println("indexStructureStart=" + indexStructureStart +
-                         " indexStart=" + indexStart + " indexEnd=" + indexEnd +
-                         " startIndexPending=" + startIndexPending +
+      boolean tEnd =
+        (endIndexPending == structurePending.getResidueCount() - 1);
+
+      System.out.println("structurePending.getResidueCount()=" +
+                         structurePending.getResidueCount());
+      System.out.println("segments.length=" + segments.length);
+      System.out.println(" startIndexPending=" + startIndexPending +
                          " endIndexPending=" + endIndexPending);
-      */
+
       if (structurePending instanceof Helix)
-        renderPendingHelix(segments[indexStart],
-                           segments[indexEnd],
-                           segments[indexEnd + 1],
+        renderPendingHelix(segments[startIndexPending],
+                           segments[endIndexPending],
+                           segments[endIndexPending + 1],
                            tEnd);
       else
-        renderPendingSheet(segments[indexStart],
-                           segments[indexEnd],
-                           segments[indexEnd + 1],
+        renderPendingSheet(segments[startIndexPending],
+                           segments[endIndexPending],
+                           segments[endIndexPending + 1],
                            tEnd);
       tPending = false;
     }

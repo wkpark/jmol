@@ -31,8 +31,7 @@ public abstract class PdbStructure {
 
   PdbChain chain;
   byte type;
-  int startResidueIndex;
-  int endResidueIndex;
+  short startResidueID;
   int residueCount;
   Point3f center;
   Point3f axisA, axisB;
@@ -40,12 +39,11 @@ public abstract class PdbStructure {
   Point3f[] segments;
 
   PdbStructure(PdbChain chain, byte type,
-               int startResidueIndex, int residueCount) {
+               short startResidueID, int residueCount) {
     this.chain = chain;
     this.type = type;
-    this.startResidueIndex = startResidueIndex;
+    this.startResidueID = startResidueID;
     this.residueCount = residueCount;
-    this.endResidueIndex = startResidueIndex + residueCount - 1;
   }
 
   void calcAxis() {
@@ -62,7 +60,7 @@ public abstract class PdbStructure {
     segments[0] = axisA;
     for (int i = residueCount; --i > 0; ) {
       Point3f point = segments[i] = new Point3f();
-      chain.getAlphaCarbonMidPoint(startResidueIndex + i, point);
+      chain.getAlphaCarbonMidPoint(chain.getIndex(startResidueID) + i, point);
       projectOntoAxis(point);
     }
     for (int i = 0; i < segments.length; ++i) {
@@ -87,13 +85,17 @@ public abstract class PdbStructure {
   }
 
   public int getStartResidueIndex() {
-    return startResidueIndex;
+    return chain.getIndex(startResidueID);
   }
 
   public Point3f[] getSegments() {
     if (segments == null)
       calcSegments();
     return segments;
+  }
+
+  public int getIndex(PdbGroup group) {
+    return group.getSequence() - startResidueID;
   }
 
   public Point3f getAxisStartPoint() {
@@ -117,4 +119,10 @@ public abstract class PdbStructure {
     */
     return segments[residueIndex - startResidueIndex];
   }
+  /****************************************************************
+   * For goodness sake FIXME -- I am completely broken
+   * mth 2003 12 10
+   ****************************************************************/
+  int startResidueIndex;
+  int endResidueIndex;
 }

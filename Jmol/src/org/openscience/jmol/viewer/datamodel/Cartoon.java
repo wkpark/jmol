@@ -32,46 +32,49 @@ import org.openscience.jmol.viewer.pdb.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class Cartoon extends Mcg {
+public class Cartoon extends Mcpg {
 
   Cartoon(JmolViewer viewer, Frame frame) {
     super(viewer, frame);
   }
   
-  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
-    return new Chain(pdbChain);
+  Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
+    return new Chain(polymer);
   }
 
-  class Chain extends Mcg.Chain {
+  class Chain extends Mcpg.Chain {
 
-    Chain(PdbChain pdbChain) {
-      super(pdbChain);
+    Chain(PdbPolymer polymer) {
+      super(polymer);
     }
 
     public void setMad(short mad, BitSet bsSelected) {
-      for (int i = mainchainLength; --i >= 0; ) {
-        if (bsSelected.get(mainchain[i].getAlphaCarbonIndex()))
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount; --i >= 0; ) {
+        if (bsSelected.get(atomIndices[i]))
           if (mad < 0) {
             // -2.0 angstrom diameter -> -4000 milliangstroms diameter
             if (mad == -4000)
               mads[i] = 1000; // cartoon temperature goes here
             else
-              mads[i] = (short)(mainchain[i].isHelixOrSheet() ? 3000 : 500);
+              mads[i] =
+                (short)(polymerGroups[i].isHelixOrSheet() ? 3000 : 500);
           } else {
             mads[i] = mad;
           }
       }
-      if (mainchainLength > 1)
-        mads[mainchainLength] = mads[mainchainLength - 1];
+      if (polymerCount > 1)
+        mads[polymerCount] = mads[polymerCount - 1];
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = mainchainLength; --i >= 0; ) {
-        int atomIndex = mainchain[i].getAlphaCarbonIndex();
-        if (bsSelected.get(atomIndex))
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount; --i >= 0; ) {
+        if (bsSelected.get(atomIndices[i]))
           colixes[i] =
             palette > JmolConstants.PALETTE_CPK
-            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
+            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndices[i]),
+                                         palette)
             : colix;
       }
     }

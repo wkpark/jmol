@@ -30,31 +30,26 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Backbone extends Mcg {
+public class Backbone extends Mcpg {
 
   Backbone(JmolViewer viewer, Frame frame) {
     super(viewer, frame);
   }
 
-  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
-    return new Chain(pdbChain);
+  Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
+    return new Chain(polymer);
   }
 
-  class Chain extends Mcg.Chain {
-    int[] atomIndices;
+  class Chain extends Mcpg.Chain {
 
-    Chain(PdbChain pdbChain) {
-      super(pdbChain);
-      if (mainchainLength >= 2) {
-        atomIndices = new int[mainchainLength];
-        for (int i = mainchainLength; --i >= 0; )
-          atomIndices[i] = mainchain[i].getAlphaCarbonIndex();
-      }
+    Chain(PdbPolymer polymer) {
+      super(polymer);
     }
 
     public void setMad(short mad, BitSet bsSelected) {
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
-      for (int i = mainchainLength - 1; --i >= 0; ) {
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount - 1; --i >= 0; ) {
         if ((bsSelected.get(atomIndices[i]) &&
              bsSelected.get(atomIndices[i + 1]))
             ||
@@ -67,7 +62,8 @@ public class Backbone extends Mcg {
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
-      for (int i = mainchainLength; --i >= 0; ) {
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex))
           colixes[i] =

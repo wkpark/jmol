@@ -29,9 +29,9 @@ import javax.vecmath.Vector3f;
 
 public class Sheet extends PdbStructure {
 
-  Sheet(PdbChain chain, int startResidueIndex, int residueCount) {
+  Sheet(PdbChain chain, short startResidueID, int residueCount) {
     super(chain, JmolConstants.SECONDARY_STRUCTURE_SHEET,
-          startResidueIndex, residueCount);
+          startResidueID, residueCount);
   }
 
   void calcAxis() {

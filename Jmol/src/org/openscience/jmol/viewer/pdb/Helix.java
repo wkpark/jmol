@@ -30,9 +30,9 @@ import javax.vecmath.Vector3f;
 
 public class Helix extends PdbStructure {
 
-  Helix(PdbChain chain, int startResidueIndex, int residueCount) {
+  Helix(PdbChain chain, short startResidueID, int residueCount) {
     super(chain, JmolConstants.SECONDARY_STRUCTURE_HELIX,
-          startResidueIndex, residueCount);
+          startResidueID, residueCount);
   }
 
   // copied from sheet -- not correct

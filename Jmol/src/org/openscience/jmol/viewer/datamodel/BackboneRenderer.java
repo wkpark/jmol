@@ -32,24 +32,24 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class BackboneRenderer extends McgRenderer {
+class BackboneRenderer extends McpgRenderer {
 
   BackboneRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     super(viewer, frameRenderer);
   }
 
-  void renderMcgChain(Mcg.Chain mcgChain) {
-    renderTraceChain((Backbone.Chain)mcgChain);
+  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+    renderTraceChain((Backbone.Chain)mcpgChain);
   }
   
   void renderTraceChain(Backbone.Chain backboneChain) {
-    render1Chain(backboneChain.mainchainLength, backboneChain.atomIndices,
+    render1Chain(backboneChain.polymerCount, backboneChain.polymer.getAtomIndices(),
                  backboneChain.mads, backboneChain.colixes);
   }
 
-  void render1Chain(int mainchainLength, int[] atomIndices,
+  void render1Chain(int polymerCount, int[] atomIndices,
                     short[] mads, short[] colixes) {
-    for (int i = mainchainLength - 1; --i >= 0; ) {
+    for (int i = polymerCount - 1; --i >= 0; ) {
       if (mads[i] == 0)
         continue;
       Atom atomA = frame.getAtomAt(atomIndices[i]);

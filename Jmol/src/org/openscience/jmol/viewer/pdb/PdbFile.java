@@ -25,7 +25,7 @@
 package org.openscience.jmol.viewer.pdb;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.JmolConstants;
+import org.openscience.jmol.viewer.*;
 
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
@@ -39,12 +39,29 @@ final public class PdbFile {
   private PdbModel[] pdbmodels = new PdbModel[1];
   private int[] modelNumbers = new int[1];
 
+  private int structureCount = 0;
+  private Structure[] structures = new Structure[10];
+
   public PdbFile(Frame frame) {
     this.frame = frame;
   }
 
   public void setStructureRecords(String[] structureRecords) {
     this.structureRecords = structureRecords;
+  }
+
+  public void defineStructure(String structureType,
+                              int startSequenceNumber, char startInsertionCode,
+                              int endSequenceNumber, char endInsertionCode) {
+    if (structureCount == structures.length)
+      structures =
+        (Structure[])JmolViewer.setLength(structures, structureCount + 10);
+    structures[structureCount++] =
+      new Structure(structureType,
+                    PdbGroup.getSeqcode(startSequenceNumber,
+                                        startInsertionCode),
+                    PdbGroup.getSeqcode(endSequenceNumber,
+                                        endInsertionCode));
   }
 
   public void freeze() {
@@ -215,5 +232,17 @@ final public class PdbFile {
   public void calcHydrogenBonds() {
     for (int i = modelCount; --i >= 0; )
       pdbmodels[i].calcHydrogenBonds();
+  }
+
+  class Structure {
+    String structureType;
+    int startSeqcode;
+    int endSeqcode;
+
+    Structure(String structureType, int startSeqcode, int endSeqcode) {
+      this.structureType = structureType;
+      this.startSeqcode = startSeqcode;
+      this.endSeqcode = endSeqcode;
+    }
   }
 }

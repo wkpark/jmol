@@ -56,7 +56,6 @@ public abstract class ModelAdapter {
   public final static byte ORDER_STEREO_NEAR = (byte)((1 << 3) | 1);
   public final static byte ORDER_STEREO_FAR  = (byte)((2 << 3) | 2);
 
-
   /*****************************************************************
    * file related
    ****************************************************************/
@@ -172,6 +171,14 @@ public abstract class ModelAdapter {
    */
   public BondIterator getBondIterator(Object clientFile) { return null; }
 
+  /**
+   * Returns a StructureIterator or <code>null</code>
+   */
+
+  public StructureIterator getStructureIterator(Object clientFile) {
+    return null;
+  }
+
   /****************************************************************
    * AtomIterator is used to enumerate all the <code>clientAtom</code>
    * objects in a specified frame. 
@@ -212,6 +219,24 @@ public abstract class ModelAdapter {
     public abstract Object getAtomUid1();
     public abstract Object getAtomUid2();
     public abstract int getOrder();
+  }
+
+  /****************************************************************
+   * StructureIterator is used to enumerate Structures
+   * Helix, Sheet, Turn
+   ****************************************************************/
+
+  public final static int STRUCTURE_HELIX = 0;
+  public final static int STRUCTURE_TURN  = 1;
+  public final static int STRUCTURE_SHEET = 2;
+
+  public abstract class StructureIterator {
+    public abstract boolean hasNext();
+    public abstract String getStructureType();
+    public abstract int getStartSequenceNumber();
+    public abstract char getStartInsertionCode();
+    public abstract int getEndSequenceNumber();
+    public abstract char getEndInsertionCode();
   }
 
   /****************************************************************

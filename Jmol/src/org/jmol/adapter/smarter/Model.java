@@ -28,11 +28,15 @@ import org.jmol.api.ModelAdapter;
 
 class Model {
   int modelType = ModelAdapter.MODEL_TYPE_OTHER;
-  int atomCount;
-  int bondCount;
   String modelName;
-  Atom[] atoms = new Atom[512];
-  Bond[] bonds = new Bond[0];
+
+  int atomCount;
+  Atom[] atoms = new Atom[256];
+  int bondCount;
+  Bond[] bonds = new Bond[256];
+  int structureCount;
+  Structure[] structures = new Structure[16];
+
   String errorMessage;
   String fileHeader;
 
@@ -87,6 +91,15 @@ class Model {
     bonds[bondCount++] = bond;
   }
 
+  void addStructure(Structure structure) {
+    if (structureCount == structures.length) {
+      Structure[] t = new Structure[structureCount + 32];
+      System.arraycopy(structures, 0, t, 0, structureCount);
+      structures = t;
+    }
+    structures[structureCount++] = structure;
+  }
+
   void setModelName(String modelName) {
     if (modelName != null) {
       modelName.trim();
@@ -94,5 +107,4 @@ class Model {
         this.modelName = modelName;
     }
   }
-
 }

@@ -31,6 +31,7 @@ import org.openscience.jmol.viewer.datamodel.*;
 
 import org.openscience.jmol.viewer.script.Eval;
 
+import java.lang.reflect.Array;
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -1984,4 +1985,32 @@ final public class JmolViewer {
     return g3d.getColor(modelManager.getBondColix2(i));
   }
 
+  ////////////////////////////////////////////////////////////////
+  // Perhaps these should be moved to JmolUtils...
+  ////////////////////////////////////////////////////////////////
+
+  public static Object setLength(Object array, int newLength) {
+    Object t =
+      Array.newInstance(array.getClass().getComponentType(), newLength);
+    int oldLength = Array.getLength(array);
+    System.arraycopy(array, 0, t, 0,
+                     oldLength < newLength ? oldLength : newLength);
+    return t;
+  }
+
+  public static int[] setLength(int[] array, int newLength) {
+    int oldLength = array.length;
+    int[] t = (int[])Array.newInstance(Integer.TYPE, newLength);
+    System.arraycopy(array, 0, t, 0, 
+                     oldLength < newLength ? oldLength : newLength);
+    return t;
+  }
+  
+  public static short[] setLength(short[] array, int newLength) {
+    int oldLength = array.length;
+    short[] t = (short[])Array.newInstance(Short.TYPE, newLength);
+    System.arraycopy(array, 0, t, 0, 
+                     oldLength < newLength ? oldLength : newLength);
+    return t;
+  }
 }

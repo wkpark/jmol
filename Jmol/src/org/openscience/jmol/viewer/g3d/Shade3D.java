@@ -34,12 +34,12 @@ public final class Shade3D {
   // 63 = brightest ... white
   public static final int shadeMax = 64;
 
-  private static byte shadeNormal = 48;
+  private static byte shadeNormal = 52;
 
   // the light source vector
   static final float xLightsource = -1;
   static final float yLightsource = -1;
-  static float zLightsource = 1.5f;
+  static float zLightsource = 2.5f;
   static float magnitudeLight =
     (float)Math.sqrt(xLightsource * xLightsource +
                      yLightsource * yLightsource +
@@ -52,11 +52,11 @@ public final class Shade3D {
   // the viewer vector is always 0,0,1
 
   static boolean specularOn = true;
-  static int specularExponent = 6;
-  static float intenseFraction = 0.4f;
-  static float intensitySpecular = 0.4f;
-  static float intensityDiffuse = 0.6f;
-  static float ambientFraction = 0.4f;
+  static int specularExponent = 7;
+  static float intenseFraction = 0.25f;
+  static float intensitySpecular = 1.0f;
+  static float intensityDiffuse = 0.8f;
+  static float ambientFraction = 0.6f;
 
   public static int[] getShades(int rgb) {
     int[] shades = new int[shadeMax];
@@ -111,7 +111,7 @@ public final class Shade3D {
   }
   */
 
-  public final static int intensitySpecularSurfaceLimit = 48;
+  public final static int intensitySpecularSurfaceLimit = shadeNormal + 4;
 
   public static int calcIntensityNormalized(float x, float y, float z) {
     float cosTheta = x*xLight + y*yLight + z*zLight;
@@ -126,7 +126,8 @@ public final class Shade3D {
         if (dotProduct > 0) {
           for (int n = specularExponent; --n >= 0; )
             dotProduct *= dotProduct;
-          intensity += dotProduct * intensitySpecular; // specular
+          // specular component ... intensitySpecular == 1.0
+          intensity += dotProduct ; // * intensitySpecular
         }
       }
     }

@@ -51,7 +51,8 @@ public class Atom extends org.openscience.cdk.Atom {
         IsotopeFactory.getInstance().configure(this);
     } catch (Exception e) {
         // failed to configure atom
-        System.err.println("Error configuration of atom: " + atomType.getSymbol());
+        System.err.println("Error configuration of atom: " +
+                           atomType.getSymbol());
     }
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
@@ -164,9 +165,10 @@ public class Atom extends org.openscience.cdk.Atom {
 
   private static final Point3d zeroPoint = new Point3d();
   public double getVectorMagnitude() {
+    // FIXME mth dec 2003 -- get these out of here and into AtomVectorShape
     // mth 2002 nov
     // I don't know why they were scaling by two,
-    // but that is the way it was workingn
+    // but that is the way it was working
     if (vector == null)
       return 0f;
     return vector.distance(zeroPoint) * 2.0f;
@@ -197,53 +199,56 @@ public class Atom extends org.openscience.cdk.Atom {
     }
   }
 
+
   /**
      * Adds an atom to this atom's bonded list.
      */
   public void addBondedAtom(Atom toAtom, int bondOrder) {
-
+    int i = 0;
     if (bondedAtoms == null) {
-      bondedAtoms = new Vector();
+      bondedAtoms = new Atom[1];
+    } else {
+      i = bondedAtoms.length;
+      Atom[] bondedAtomsNew = new Atom[i + 1];
+      System.arraycopy(bondedAtoms, 0, bondedAtomsNew, 0, i);
+      bondedAtoms = bondedAtomsNew;
     }
-    if (bondOrders == null) {
-      bondOrders = new Vector();
+    bondedAtoms[i] = toAtom;
+    if (bondOrder > 1) {
+      int[] bondOrdersNew = new int[i + 1];
+      if (bondOrders != null)
+        System.arraycopy(bondOrders, 0, bondOrdersNew, 0, bondOrders.length);
+      bondOrders = bondOrdersNew;
+      // bond orders are stored one less so that when we allocate a new
+      // array the default values will be 0 -- a bond order of 1
+      bondOrders[i] = bondOrder-1;
     }
-    bondedAtoms.addElement(toAtom);
-    bondOrders.addElement(new Integer(bondOrder));
   }
 
   /**
    * Returns the list of atoms to which this atom is bonded.
    */
-  public Enumeration getBondedAtoms() {
-
-    if (bondedAtoms == null) {
-      return new NoBondsEnumeration();
-    } else {
-      return bondedAtoms.elements();
-    }
-  }
-
-  /**
-   * Returns the list of bond orders.
-   */
-  public Enumeration getBondOrders() {
-
-    if (bondOrders == null) {
-      return new NoBondsEnumeration();
-    } else {
-      return bondOrders.elements();
-    }
+  public Atom[] getBondedAtoms() {
+    return bondedAtoms;
   }
 
   /**
    * Clears the bonded atoms list.
    */
   public void clearBondedAtoms() {
+    bondedAtoms = null;
+    bondOrders = null;
+  }
+
+  public int getBondOrder(Atom atom2) {
     if (bondedAtoms != null) {
-      bondedAtoms.removeAllElements();
-      bondOrders.removeAllElements();
+      for (int i = 0; i < bondedAtoms.length; ++i) {
+        if (bondedAtoms[i] == atom2)
+          return
+            (bondOrders==null || bondOrders.length<=i) ? 1 : bondOrders[i] + 1;
+      }
     }
+    return -1;
   }
 
   /**
@@ -300,14 +305,19 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
-   * A list of atoms to which this atom is bonded. Lazily initialized.
+   * An array of atoms to which this atom is bonded;
    */
-  private Vector bondedAtoms = null;
+  private Atom[] bondedAtoms = null;
 
   /**
    * A list of bond orders. Lazily initialized.
+   * Don't get flustered here, it is pretty simple. Most bond orders are 1.
+   * So I don't store bondOrders unless their value is >1.
+   * Bond orders stored here are one less -- so bond order 1 is stored as 0
+   * Look at the implementation of getBondOrder first and I think it is
+   * pretty clear. Then look at addBondedAtom.
    */
-  private Vector bondOrders = null;
+  private int[] bondOrders = null;
 
   /**
    * Vibrational vector in world space.
@@ -329,17 +339,6 @@ public class Atom extends org.openscience.cdk.Atom {
     return "Atom{" + type + " #" + getAtomNumber() + " @" +
       getPosition() + " @" + getScreenX() + ","
 	+ getScreenY() + "," + getScreenZ() + "}";
-  }
-
-  static class NoBondsEnumeration implements Enumeration {
-
-    public boolean hasMoreElements() {
-      return false;
-    }
-
-    public Object nextElement() throws java.util.NoSuchElementException {
-      throw new java.util.NoSuchElementException();
-    }
   }
 }
 

@@ -203,9 +203,11 @@ public class PovraySaver extends FileSaver {
 
         for (int i = 0; i < cf.getNumberOfAtoms(); ++i) {
           Atom atom1 = cf.getAtomAt(i);
-          Enumeration bondIter = atom1.getBondedAtoms();
-          while (bondIter.hasMoreElements()) {
-            Atom atom2 = (Atom) bondIter.nextElement();
+          Atom[] bondedAtoms = atom1.getBondedAtoms();
+          if (bondedAtoms == null)
+            continue;
+          for (int j = 0; j < bondedAtoms.length; ++j) {
+            Atom atom2 = (Atom) bondedAtoms[j];
             if ((bondsDrawn.get(atom2) == null)
                 || !bondsDrawn.get(atom2).equals(atom1)) {
               style.writeBond(w, atom1, atom2, cf);

@@ -83,9 +83,11 @@ public class AtomShape extends Shape {
   public void renderBonds(Graphics g, Rectangle clip, DisplayControl control) {
     if (!control.showBonds || (!control.showHydrogens && atom.isHydrogen()))
       return;
-    Enumeration bondIter = atom.getBondedAtoms();
-    while (bondIter.hasMoreElements()) {
-      Atom otherAtom = (Atom) bondIter.nextElement();
+    Atom[] bondedAtoms = atom.getBondedAtoms();
+    if (bondedAtoms == null)
+      return;
+    for (int i = 0; i < bondedAtoms.length; ++i) {
+      Atom otherAtom = bondedAtoms[i];
       int zOther = otherAtom.getScreenZ();
       if ((control.showHydrogens || !otherAtom.isHydrogen()) &&
           (z > zOther) ||
@@ -209,7 +211,7 @@ public class AtomShape extends Shape {
     int dz = z2 - z1;
     int dz2 = dz * dz;
     int magnitude = (int) Math.sqrt(magnitude2);
-    int bondOrder = Bond.getBondOrder(atom1, atom2);
+    int bondOrder = atom1.getBondOrder(atom2);
     double cosine = magnitude / Math.sqrt(magnitude2 + dz2);
     int radius1Bond = (int)(radius1 * cosine);
     int radius2Bond = (int)(radius2 * cosine);

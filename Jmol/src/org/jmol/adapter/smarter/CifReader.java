@@ -173,12 +173,14 @@ class CifReader extends ModelReader {
 
   private void skipLoopData() throws Exception {
     // skip everything until empty line, or comment line
+    // or start of a new loop_ or data_
     char ch;
     while (line != null &&
            (line = line.trim()).length() > 0 &&
            (ch = line.charAt(0)) != '_' &&
            ch != '#' &&
-           ! line.startsWith("loop_")) {
+           ! line.startsWith("loop_") &&
+           ! line.startsWith("data_")) {
       //      logger.log("skipLoopData just discarded:" + line);
       line = reader.readLine();
     }
@@ -265,7 +267,8 @@ class CifReader extends ModelReader {
       char chFirst = line.charAt(0);
       if (chFirst == '#' ||
           chFirst == '_' ||
-          line.startsWith("loop_"))
+          line.startsWith("loop_") ||
+          line.startsWith("data_"))
         break;
       if (chFirst == ' ') {
         int i;

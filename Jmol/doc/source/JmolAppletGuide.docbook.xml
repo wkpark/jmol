@@ -4,6 +4,7 @@
 [
 <!ENTITY appletIntro        SYSTEM "applet/intro.docbook.xml">
 <!ENTITY appletBrowsers     SYSTEM "applet/browsers.docbook.xml">
+<!ENTITY appletBrowsers     SYSTEM "applet/hardware.docbook.xml">
 <!ENTITY appletServerConfig SYSTEM "applet/serverconfig.docbook.xml">
 <!ENTITY appletUsage        SYSTEM "applet/usage.docbook.xml">
 <!ENTITY appletJavaScript   SYSTEM "applet/javascript.docbook.xml">

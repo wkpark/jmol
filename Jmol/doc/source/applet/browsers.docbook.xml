@@ -1,223 +1,57 @@
 <chapter>
-<title>Supported Browsers</title>
-<para>
-  The applet is tested and working with Internet Explorer, Netscape,
-  Opera, Mozilla (and derivatives) and Konqueror on various platforms.
-  Below are given the testing results.
-</para>
-<para>
-  If you find problems with the browser/operating system/jvm combination
-  of your choice, please send an email to jmol-users@lists.sf.net, stating
-  the exact error (most browsers have a Java Console), and the versions
-  of the browser, the operating system, and the java virtual machine
-  that is used.
-</para>
-<section>
-  <title>Testing results</title>
+  <title>Supported Browsers</title>
   <para>
-    The applet Jmol v6 is tested successfully with these browsers:
-    <informaltable>
-      <tgroup cols="4">
-	<thead>
-	  <row>
-	    <entry>Browser Brand/Version</entry>
-	    <entry>Operation System/Version</entry>
-	    <entry>Architecture</entry>
-	    <entry>JVM Brand/Version</entry>
-	  </row>
-	</thead>
-	<tbody>
-	  <row>
-	    <entry>Mozilla 1.2.1</entry>
-	    <entry>RedHat Linux 9.0</entry>
-	    <entry>Intel Celeron</entry>
-	    <entry>Sun 1.4.1_02-b06</entry>
-	  </row>
-	  <row>
-	    <entry>Netscape 4.79</entry>
-	    <entry>RedHat Linux 9.0</entry>
-	    <entry>Intel Celeron</entry>
-	    <entry>Sun 1.4.1_01-b03</entry>
-	  </row>
-	  <row>
-	    <entry>Konqueror 3.1-12 Red Hat</entry>
-	    <entry>RedHat Linux 9.0</entry>
-	    <entry>Intel Celeron</entry>
-	    <entry>Sun 1.4.2</entry>
-	  </row>
-	  <row>
-	    <entry>Galeon 1.2.7</entry>
-	    <entry>RedHat Linux 9.0</entry>
-	    <entry>Intel Celeron</entry>
-	    <entry>Sun 1.4.1_02-b06</entry>
-	  </row>
-	  <row>
-	    <entry>IE 5.50.4134.0600</entry>
-	    <entry>WinME</entry>
-	    <entry>Inten Pentium</entry>
-	    <entry>MS JVM 5.00.3309</entry>
-	  </row>
-	  <row>
-	    <entry>IE 5.50.4134.0600</entry>
-	    <entry>WinME</entry>
-	    <entry>Intel Pentium</entry>
-	    <entry>Sun 1.3.1_06</entry>
-	  </row>
-	  <row>
-	    <entry>Netscape 4.61</entry>
-	    <entry>WinME</entry>
-	    <entry>Intel Pentium</entry>
-	    <entry>1.1.5</entry>
-	  </row>
-	  <row>
-	    <entry>Mozilla 1.3</entry>
-	    <entry>WinME</entry>
-	    <entry>Intel Pentium</entry>
-	    <entry>Sun 1.4.1_01</entry>
-	  </row>
-	  <row>
-	    <entry>above this line</entry>
-	    <entry>tested </entry>
-	    <entry>for</entry>
-	    <entry>jmol 6</entry>
-	  </row>
-	  <row>
-	    <entry>IE 6.0</entry>
-	    <entry>WinME</entry>
-	    <entry>Intel Pentium</entry>
-	    <entry>Sun 1.4.1_01</entry>
-	  </row>
-	  <row>
-	    <entry>IE 6.0</entry>
-	    <entry>WinME</entry>
-	    <entry>Intel Pentium</entry>
-	    <entry>Sun 1.4.1_01</entry>
-	  </row>
-	  <row>
-	    <entry>IE 5.50.4134.0100</entry>
-	    <entry>Win98</entry>
-	    <entry>Pentium</entry>
-	    <entry>MS JVM 5.0.0.3809</entry>
-	  </row>
-	  <row>
-	    <entry>IE 5.0.0</entry>
-	    <entry>Win98</entry>
-	    <entry>i386</entry>
-	    <entry>MS JVM 5.00.3805</entry>
-	  </row>
-	  <row>
-	    <entry>Netscape 7.0 rv 1.0.1</entry>
-	    <entry>SunOS 5.8</entry>
-	    <entry>Sparc v9</entry>
-	    <entry>1.4.1</entry>
-	  </row>
-	  <row>
-	    <entry>Netscape 4.79</entry>
-	    <entry>SunOS 5.8</entry>
-	    <entry>Sparc v9</entry>
-	    <entry>1.1.5</entry>
-	  </row>
-	  <row>
-	    <entry>Netscape 4.79</entry>
-	    <entry>RedHat Linux 8.0</entry>
-	    <entry>Intel Celeron</entry>
-	    <entry>Netscape Java 1.1.5</entry>
-	  </row>
-	  <row>
-	    <entry>Opera 7.0 (b2345)</entry>
-	    <entry>Win98</entry>
-	    <entry>i386</entry>
-	    <entry>Sun 1.4</entry>
-	  </row>
-	  <row>
-	    <entry>Mozilla 1.0.1</entry>
-	    <entry>RedHat Linux 8.0</entry>
-	    <entry>Intel Celeron</entry>
-	    <entry>? 1.4.0_01-b03</entry>
-	  </row>
-	  <row>
-	    <entry>Galeon 1.2.5</entry>
-	    <entry>Debian GNU/Linux Testing</entry>
-	    <entry>Intel Pentium II</entry>
-	    <entry>Blackdown 1.3</entry>
-	  </row>
-	  <row>
-	    <entry>Galeon 1.2.6</entry>
-	    <entry>Debian GNU/Linux Unstable</entry>
-	    <entry>Intel Pentium4</entry>
-	    <entry>Sun 1.4.1</entry>
-	  </row>
-	  <row>
-	    <entry>Konqueror 3.0.1</entry>
-	    <entry>SunOS 5.8</entry>
-	    <entry>Sparc v9</entry>
-	    <entry>Sun 1.4.0</entry>
-	  </row>
-	  <row>
-	    <entry>Konqueror 3.0.1</entry>
-	    <entry>SunOS 5.8</entry>
-	    <entry>Sparc v9</entry>
-	    <entry>Sun 1.2.2</entry>
-	  </row>
-	</tbody>
-      </tgroup>
-    </informaltable>
+    The applet is tested and working with Internet Explorer, Netscape,
+    Opera, Mozilla (and derivatives) and Konqueror on various platforms.
+    Test results are given below.
   </para>
   <para>
-    Errors were encountered with these browsers:
-    <informaltable>
-      <tgroup cols="5">
-	<thead>
-	  <row>
-	    <entry>Browser Brand/Version</entry>
-	    <entry>Operation System/Version</entry>
-	    <entry>Architecture</entry>
-	    <entry>JVM Brand/Version</entry>
-	    <entry>Problem</entry>
-	  </row>
-	</thead>
-	<tbody>
-	  <row>
-	    <entry>Netscape 4.79</entry>
-	    <entry>RedHat Linux 8.0</entry>
-	    <entry>Intel Celeron</entry>
-	    <entry>Netscape Java 1.1.5</entry>
-	    <entry>1.</entry>
-	  </row>
-	  <row>
-	    <entry>IE 6.0</entry>
-	    <entry>WinME</entry>
-	    <entry>Intel Pentium</entry>
-	    <entry>Microsoft VM 5.0.0.3805</entry>
-	    <entry>2.</entry>
-	  </row>
-	  <row>
-	    <entry>Galeon 1.2.5</entry>
-	    <entry>Debian GNU/Linux Stable</entry>
-	    <entry>Intel Pentium3</entry>
-	    <entry>Sun 1.4.1</entry>
-	    <entry>3.</entry>
-	  </row>
-	</tbody>
-      </tgroup>
-    </informaltable>
-    <orderedlist>
-      <listitem>
-	<para>Verified Error on jmol-applet.jar. Applet was not compiled with a
-	  <emphasis>classic</emphasis> compiler. This is an compilation problem.
-	</para>
-      </listitem>
-      <listitem>
-	<para>Verified Error on cdk-cml.jar. CML lib was not compiled with a
-	  <emphasis>classic</emphasis> compiler. This is an compilation problem.
-	</para>
-      </listitem>
-      <listitem>
-	<para>The environment variable was not recognized by the JVM, which
-	  in return did not start. This is a OS problem.
-	</para>
-      </listitem>
-    </orderedlist>
+    If you find problems with the browser/operating system/jvm combination
+    of your choice, please send an email to jmol-users@lists.sf.net, stating
+    the exact error (most browsers have a Java Console), and the versions
+    of the browser, the operating system, and the java virtual machine
+    that is used.
   </para>
-</section>
+  <section>
+    <title>Testing results</title>
+    <para>
+      The JmolApplet has been tested successfully with the following system
+      configurations:
+      <itemizedlist>
+	<listitem>
+	  Win32 (98/ME/2K/XP)
+	  <itemizedlist>
+	    <listitem>Microsoft Internet Explorer with Microsoft JVM </listitem>
+	    <listitem>Microsoft Internet Explorer with Sun Java Plugin >= 1.4 </listitem>
+	    <listitem>Netscape 4.* <emphasis>(slow performance)</emphasis></listitem>
+	    <listitem>Netscape 7 with Sun Java Plugin >= 1.4 </listitem>
+	    <listitem>Mozilla with Sun Java Plugin >= 1.4 </listitem>
+	  </itemizedlist>
+	</listitem>
+	<listitem>
+	  Mac OS X 10.3 Panther
+	  <itemizedlist>
+	    <listitem>Safari 1.2</listitem>
+	  </itemizedlist>
+	  <para>Previous versions of OSX &amp; Safari have significant problems</para>
+	</listitem>
+	<listitem>
+	  Linux/Unix
+	  <itemizedlist>
+	    <listitem> Mozilla >= 1.2.1 + Sun Java >= 1.4</listitem>
+	    <listitem> Konqueror >= 3.1 + Sun Java >= 1.4</listitem>
+	  </itemizedlist>
+	</listitem>
+	<listitem>
+	  Mac OS 9
+	  <itemizedlist>
+	    <listitem>
+	      Netscape 4.7*
+	      <emphasis>marginal performance with limited functionality</emphasis>
+	    </listitem>
+	  </itemizedlist>
+	</listitem>
+      </itemizedlist>
+    </para>
+  </section>
 </chapter>

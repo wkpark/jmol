@@ -2,7 +2,7 @@
 <title>JavaScript integration</title>
 <para>
   Using JavaScript commands embedded in web pages, you can control
-  the behavior of the Jmol applet. This flexibility enables you to
+  the behavior of the JmolApplet. This flexibility enables you to
   create complex user interactions that are controlled using standard
   web page elements.
 </para>
@@ -14,17 +14,9 @@
     between the JavaScript world and the Java world.
   </para>
   <para>
-    Netscape and Internet Explorer have both supported LiveConnect for
-    some time.
-  </para>
-  <para>
-    The Konqueror browser does not yet support LiveConnect.
-  </para>
-  <para>
-    Unfortunately, the news is not good for Macintosh OS X. Internet
-    Explorer does not support LiveConnect.
-    Neither does Safari (which is based upon Konqueror).
-    (I have not yet checked Netscape on OS X.)
+    Netscape/Mozilla and Internet Explorer have both supported LiveConnect for
+    some time. Under Mac OS X, LiveConnect became available with 10.3 Panther
+    / Safari 1.2
   </para>
 </section>
 <section>
@@ -32,27 +24,37 @@
   <para>
     In order to reference an applet on an HTML page the applet must
     be given a name. We recommend that you use the name 'jmol' as in:
-    <programlisting><![CDATA[
+    <programlisting>
+      <![CDATA[
       <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-	width="350" height="350">
-	<param name="load" value="caffeine.xyz">
-	</applet>
-	]]>
+              width="350" height="350">
+	<param name="progressbar"   value="true" />
+	<param name="progresscolor" value="blue" />
+	<param name="boxmessage"    value="Loading Jmol ..." />
+	<param name="boxbgcolor"    value="black" />
+	<param name="boxfgcolor"    value="white" />  
+	
+	<param name="load"          value="caffeine.xyz" />
+      </applet>
+      ]]>
     </programlisting>
+  </para>
+  <para>
+    Jmol v10 <emphasis>requires</emphasis> the
+    set of <command>progressbar</command> parameters.
+    They provide visual feedback to the end-user while
+    the applet is downloading.
   </para>
   <para>
     If you would like to have multiple instances of the applet on a
     single page then you should give them unique names.
   </para>
   <para>
-    With some browser versions you can sneak by without starting object
-    references with 'document'. However, this does not work with many
-    browsers. Therefore, we strongly recommend that you start all
-    your references with 'document'.
-  </para>
-  <para>
-    Therefore, assuming you have named your applet 'jmol', all your
-    references to the applet will start with 'document.jmol'. JavaScript
+    To ensure portability across browsers, all JavaScript references
+    to the JmolApplet should start with <command>document</command>.
+    Therefore, assuming you have named your applet
+    <command>jmol</command>, all your references to the applet will
+    start with <command>document.jmol</command>. All JavaScript
     method references in this documentation will use this notation. 
   </para>
   <para>
@@ -93,59 +95,17 @@
   </para>
 </section>
 <section>
-  <title>Jmol JavaScript API</title>
+  <title>JmolApplet JavaScript API</title>
   <section>
-    <title>document.jmol.load(String url)</title>
+    <title>document.jmol.script(String)</title>
     <para>
-      The 'load' method allows you to load a different molecular
-      model into the applet.
+      The string parameter passed to the JmolApplet is a
+      RasMol/Chime/Jmol script command to control the rendering
+      of the JmolApplet.
     </para>
-  </section>
-  <section>
-    <title>document.jmol.loadInline(String model)</title>
-    <para>
-      At times it may be more convenient to store the contents
-      of the molecular model as a string in the HTML file itself.
-      The 'loadInline' method allows you to load a molecular model
-      of this type.
-    </para>
-  </section>
-  <section>
-    <title>document.jmol.setStyle(String style)</title>
-    <para>
-      Set the atom/bond rendering style to 'SHADED' or 'WIREFRAME'
-    </para>
-  </section>
-  <section>
-    <title>document.jmol.setLabelStyle(String labelStyle)</title>
-    <para>
-      Set the atom label to be one of 'NONE', 'SYMBOL' or 'NUMBER'
-    </para>
-  </section>
-  <section>
-    <title>document.jmol.setWireframeRotation(boolean wfrMode)</title>
-    <para>
-      Controls whether or not rotations should be performed with
-      wireframe rendering. This should not be needed except on
-      very large molecules (or very old computers).
-    </para>
-  </section>
-  <section>
-    <title>document.jmol.setPerspectiveDepth(boolean pdMode)</title>
-    <para>
-      By default, atoms are rendered with perspective depth. That is,
-      objects further away are smaller. When perspective depth is set
-      to false you get a flat projection which is orthogonal to the
-      screen. 
-    </para>
-    <para>
-      The different projection modes are easily visible with
-      crystaline structures or when the enclosing boundbox is
-      turned on, as in:
-      <programlisting>
-	document.jmol.script('set boundbox on');
-      </programlisting>
-    </para>
+    <programlisting>
+      document.jmol.script('load caffeine.xyz; spacefill off; wireframe');
+    </programlisting>
   </section>
 </section>
 </chapter>

@@ -1,34 +1,39 @@
 <chapter>
-<title>Scripting</title>
+<title>Scripting Commands</title>
 <para>
-  Scripting commands are the same under the applet as under the Jmol
+  Scripting commands are the same under the JmolApplet as under the Jmol
   application. However, with the applet you do not have the feedback of
   the script command window.
 </para>
 <section>
   <title>Scripting References</title>
   <para>
-    Jmol implements most of the scripting language found in the RasMol
-    molecular visualization tool. For more detailed documentation on RasMol
-    scripting see http://www.openrasmol.org
+    Jmol implements almost all scripting commands found in the
+    RasMol mole molecular visualization tool. At this time, the
+    primary reference for the scripting language is the
+    RasMol documentation. It can be found on the web at
+    <ulink url="http://www.openrasmol.org/doc/">
+      http://www.openrasmol.org/doc/
+    </ulink>
   </para>
   <para>
-    MDL extended the RasMol scripting language for use in their Chime plug-in.
-    Jmol implements some of these script language extensions.
-    For more detailed information on Chime and Chime/RasMol extensions
-    see http://www.mdlchime.com/chime
+    <emphasis> If you are not familiar with the RasMol scripting
+    language, we </emphasis>strongly<emphasis> recommend that you
+    become familiar with this document.</emphasis>
   </para>
   <para>
-    For a complete listing of the RasMol/Chime scripting commands which
-    are implemented in Jmol see the Jmol Guide. This listing gives brief
-    descriptions of the commands. 
+    MDL extended the RasMol scripting language for use in their
+    Chime plug-in. Jmol implements some of these script language
+    extensions. For more detailed information on Chime and Chime/RasMol
+    extensions see
+    <ulink url="http://www.mdlchime.com/chime/">
+      http://www.mdlchime.com/chime/
+    </ulink>
   </para>
   <para>
-    The RasMol commands which are currently not implemented in Jmol are
-    generally those associated with protein visualization: ribbons, strands,
-    etc. In addition, the Jmol rendering engine does not currently handle
-    intersecting spheres. So if you make the atom sizes large you will get
-    disappointing results.
+    In some areas, Jmol has extended these RasMol/Chime commands
+    to offer additional functionality. Detailed documentation
+    has not been written yet :-(
   </para>
 </section>
 <section>
@@ -47,24 +52,26 @@
     <para>In either of these cases you can</para>
     <itemizedlist>
       <listitem>
-	<para>include the entire script in the html page</para>
+	include the entire script in the html page
       </listitem>
       <listitem>
-	<para>use the 'script [scriptname]' command to load a script from the
-	webserver</para>
+	use the <command>script [scriptname]</command>
+	command to load a script from the webserver
       </listitem>
     </itemizedlist>
-  <para>
-    In general, the first of these methods is only acceptable for short
-    scripts.
-    For longer scripts it is probably better to store the script files
-    on the server and run them indirectly through the 'script' command. 
-  </para>
+    <para>
+      In general, the first of these methods is only acceptable for short
+      scripts.
+      For longer scripts it is probably better to store the script files
+      on the server and run them indirectly through the 'script' command. 
+    </para>
 </section>
 <section>
   <title>Examples</title>
   <para>
-    All of the following examples load the molecule caffeine.xyz. 
+    All of the following examples load the molecule caffeine.xyz.
+    The examples also assume that the JmolApplet.jar file is
+    located in the same directory as the .html page.
     Various ways of invoking scripts are demonstrated
   </para>
   <para>
@@ -72,13 +79,19 @@
     as soon as the applet is loaded.
     <programlisting><![CDATA[
       <html>
-	<title>Example 1</title>
+        <head><title>Example 1</title></head>
 	<body>
-	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-	    width="350" height="350">
-	    <param name="load"   value="caffeine.xyz">
-	    <param name="script" value="rotate x 90 ; background yellow">
-	  </applet>
+          <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+                  width="350" height="350">
+     	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Loading Jmol ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />  
+	
+	    <param name="load"          value="caffeine.xyz" />
+	    <param name="script"        value="rotate x 90 ; background yellow">
+          </applet>
 	</body>
       </html>
       ]]>
@@ -90,13 +103,19 @@
     subdirectory on the web server.
     <programlisting><![CDATA[
       <html>
-	<title>Example 2</title>
+        <head><title>Example 2</title></head>
 	<body>
-	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-	    width="350" height="350">
-	    <param name="load"   value="caffeine.xyz">
-	    <param name="script" value="script scripts/myLongScript.txt">
-	  </applet>
+          <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+                  width="350" height="350">
+     	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Loading Jmol ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />  
+	
+	    <param name="load"          value="caffeine.xyz" />
+	    <param name="script"        value="script scripts/myLongScript.txt">
+          </applet>
 	</body>
       </html>
       ]]>
@@ -107,11 +126,17 @@
     in turn, drives the applet. 
     <programlisting><![CDATA[
       <html>
-	<title>Example 3</title>
+	<head><title>Example 3</title></head>
         <body onLoad="document.jmol.script('select carbon; color green')">
 	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
 	    width="350" height="350">
-	    <param name="load"   value="caffeine.xyz">
+     	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Loading Jmol ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />  
+	
+	    <param name="load"          value="caffeine.xyz">
 	  </applet>
 	</body>
       </html>
@@ -126,7 +151,13 @@
 	<body onLoad="document.jmol.script('script scripts/myLongScript.txt')">
 	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
 	    width="350" height="350">
-	    <param name="load"   value="caffeine.xyz">
+     	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Loading Jmol ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />  
+	
+	    <param name="load"          value="caffeine.xyz">
 	  </applet>
 	</body>
       </html>
@@ -146,7 +177,13 @@
 	<body onLoad="runMyScript()">
 	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
 	    width="350" height="350">
-	    <param name="load"   value="caffeine.xyz">
+     	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Loading Jmol ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />  
+	
+	    <param name="load"          value="caffeine.xyz">
 	  </applet>
 	</body>
       </html>
@@ -173,7 +210,13 @@
 	<body>
 	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
 	    width="350" height="350">
-	    <param name="load"   value="caffeine.xyz">
+     	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Loading Jmol ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />  
+
+	    <param name="load"          value="caffeine.xyz">
 	  </applet>
 	  <form>
 	    <input type="button" value="rotate x" onClick="rotateX()"/>
@@ -199,7 +242,13 @@
 	<body>
 	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
                   width="350" height="350">
-            <param name="load"   value="models/SN1_reaction.xyz">
+     	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Loading Jmol ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />  
+
+            <param name="load"          value="models/SN1_reaction.xyz">
           </applet>
           <form>
             <input type="button" value="next"

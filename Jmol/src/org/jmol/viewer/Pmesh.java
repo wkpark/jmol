@@ -28,7 +28,6 @@ import org.jmol.g3d.*;
 
 import java.util.BitSet;
 import java.io.BufferedReader;
-import java.io.IOException;
 import javax.vecmath.Point3f;
 
 class Pmesh extends SelectionIndependentShape {

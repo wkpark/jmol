@@ -141,6 +141,19 @@ public class PdbChain {
     }
     
   }
+
+  void getResidueMidPoint(int residueNumber, Point3f midPoint) {
+    int residueIndex = residueNumber - firstResidueNumber;
+    if (residueIndex >= residueCount) {
+      residueIndex = residueCount - 1;
+    } else if (residueIndex > 0) {
+      midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
+      midPoint.add(residues[residueIndex-1].getAlphaCarbonPoint());
+      midPoint.scale(0.5f);
+      return;
+    }
+    midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
+  }
     
   /*
   void propogateSecondaryStructure(byte type, int startResidueNumber,

@@ -24,12 +24,52 @@
  */
 package org.openscience.jmol.viewer.protein;
 import org.openscience.jmol.viewer.JmolConstants;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 public class Sheet extends PdbStructure {
 
-  Sheet(PdbChain chain, int residueFirst, int residueLast) {
+  Sheet(PdbChain chain, int residueStart, int residueEnd) {
     super(chain, JmolConstants.SECONDARY_STRUCTURE_SHEET,
-          residueFirst, residueLast);
+          residueStart, residueEnd);
   }
-}
 
+  void calcAxis() {
+    if (axisA != null)
+      return;
+    chain.getResidueMidPoint(residueStart + 1, axisA = new Point3f());
+    chain.getResidueMidPoint(residueEnd, axisB = new Point3f());
+
+    axisUnitVector = new Vector3f();
+    axisUnitVector.sub(axisB, axisA);
+    axisUnitVector.normalize();
+
+    Point3f tempA, tempB;
+    chain.getResidueMidPoint(residueStart, tempA = new Point3f());
+    projectOntoAxis(tempA);
+    chain.getResidueMidPoint(residueEnd + 1, tempB = new Point3f());
+    projectOntoAxis(tempB);
+    axisA = tempA;
+    axisB = tempB;
+  }
+  /*
+
+    Vector3f vectorT = new Vector3f();
+    float projectedLength;
+
+    axisB = new Point3f();
+    chain.getResidueMidPoint(residueEnd + 1, axisB);
+    vectorT.sub(axisB, tempA);
+    projectedLength = vectorT.dot(axisUnitVector);
+    axisB.set(axisUnitVector);
+    axisB.scaleAdd(projectedLength, tempA);
+
+    axisA = new Point3f();
+    chain.getResidueMidPoint(residueStart, axisA);
+    vectorT.sub(axisA, tempB);
+    projectedLength = vectorT.dot(axisUnitVector);
+    axisA.set(axisUnitVector);
+    axisA.scaleAdd(projectedLength, tempB);
+
+  */
+}

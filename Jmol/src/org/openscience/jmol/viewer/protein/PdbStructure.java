@@ -36,6 +36,7 @@ public abstract class PdbStructure {
   int count;
   Point3f center;
   Point3f axisA, axisB;
+  Vector3f axisUnitVector;
   Point3f[] segments;
 
   PdbStructure(PdbChain chain, byte type, int residueStart, int residueEnd) {
@@ -46,37 +47,7 @@ public abstract class PdbStructure {
     this.count = residueEnd - residueStart + 1;
   }
 
-  
-
-  void calcCenter() {
-    if (center == null) {
-      center = new Point3f(chain.getResiduePoint(residueEnd));
-      for (int i = residueStart; i < residueEnd; ++i)
-        center.add(chain.getResiduePoint(i));
-      center.scale(1f/count);
-      System.out.println("structure center is at :" + center);
-    }
-  }
-
-  static float length(Point3f point) {
-    return
-      (float)Math.sqrt(point.x*point.x + point.y*point.y + point.z*point.z);
-  }
-
   void calcAxis() {
-    if (axisA != null)
-      return;
-    calcCenter();
-    Point3f[] points = new Point3f[count];
-    float[] lengths = new float[count];
-    for (int i = count; --i >= 0; ) {
-      Point3f point = new Point3f(chain.getResiduePoint(i + residueStart));
-      point.sub(center);
-      points[i] = point;
-      lengths[i] = length(point);
-    }
-    axisA = new Point3f(chain.getResiduePoint(residueStart));
-    axisB = new Point3f(chain.getResiduePoint(residueEnd));
   }
 
   void calcSegments() {
@@ -86,10 +57,21 @@ public abstract class PdbStructure {
     segments = new Point3f[count + 1];
     segments[count] = axisB;
     segments[0] = axisA;
-    Vector3f delta = new Vector3f();
-    delta.sub(axisB, axisA);
-    for (int i = 1; i < count; ++i)
-      (segments[i] = new Point3f(delta)).scaleAdd((float)i / count, axisA);
+    for (int i = 1; i < count; ++i) {
+      Point3f point = segments[i] = new Point3f();
+      chain.getResidueMidPoint(residueStart + i, point);
+      projectOntoAxis(point);
+    }
+  }
+
+  final Vector3f vectorProjection = new Vector3f();
+
+  void projectOntoAxis(Point3f point) {
+    // assumes axisA, axisB, and axisUnitVector are set;
+    vectorProjection.sub(point, axisA);
+    float projectedLength = vectorProjection.dot(axisUnitVector);
+    point.set(axisUnitVector);
+    point.scaleAdd(projectedLength, axisA);
   }
 
   public int getResidueCount() {

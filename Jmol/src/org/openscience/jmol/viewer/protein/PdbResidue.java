@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.protein;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import java.util.Hashtable;
+import javax.vecmath.Point3f;
 
 public class PdbResidue {
 
@@ -177,4 +178,7 @@ public class PdbResidue {
     return getMainchainAtom(3);
   }
 
+  public Point3f getAlphaCarbonPoint() {
+    return getMainchainAtom(1).point3f;
+  }
 }

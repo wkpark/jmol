@@ -28,9 +28,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.ChemFile;
@@ -48,7 +48,7 @@ public class DisplayPanel extends Canvas
   private DisplaySettings settings;
   private ChemFrameRenderer chemFrameRenderer = new ChemFrameRenderer();
   private boolean perspective = false;
-  private float fieldOfView;
+  private double fieldOfView;
   private boolean painted = false;
   private boolean haveFile = false;
   private boolean rubberband = false;
@@ -64,23 +64,23 @@ public class DisplayPanel extends Canvas
   private int prevy;
   private int outx;
   private int outy;
-  private Point3f useMinBound = new Point3f();
-  private Point3f useMaxBound = new Point3f();
-  private Matrix4f amat = new Matrix4f();    // Matrix to do mouse angular rotations.
-  private Matrix4f tmat = new Matrix4f();    // Matrix to do translations.
-  private Matrix4f mat = new Matrix4f();    // Final matrix for assembly on screen.
+  private Point3d useMinBound = new Point3d();
+  private Point3d useMaxBound = new Point3d();
+  private Matrix4d amat = new Matrix4d();    // Matrix to do mouse angular rotations.
+  private Matrix4d tmat = new Matrix4d();    // Matrix to do translations.
+  private Matrix4d mat = new Matrix4d();    // Final matrix for assembly on screen.
   private boolean matIsValid = false;        // is mat valid ???
-  private float zoomFactor = 0.7f;
+  private double zoomFactor = 0.7f;
   private java.awt.Label frameLabel = null;
-  float[] quat = new float[4];
+  double[] quat = new double[4];
   double[] mtmp;
   String[] names;
   Color[] colors;
   ChemFile cf;
   ChemFrame chemframe = null;
-  private float xfac0 = 1;    // Zoom factor determined by screen size/initial settings.
-  private float xfac = 1;                    // Zoom as performed by the user
-  private float xfac2 = 1;                   // Square of zoom performed by the user
+  private double xfac0 = 1;    // Zoom factor determined by screen size/initial settings.
+  private double xfac = 1;                    // Zoom as performed by the user
+  private double xfac2 = 1;                   // Square of zoom performed by the user
   public static final int ROTATE = 0;
   public static final int ZOOM = 1;
   public static final int XLATE = 2;
@@ -180,18 +180,18 @@ public class DisplayPanel extends Canvas
   public void doRotationString(String rotationString) {
 
     StringTokenizer st = new StringTokenizer(rotationString, ",", false);
-    float rotTheta = 0;
+    double rotTheta = 0;
 
     try {
-      rotTheta = (float) FortranFormat.atof(st.nextToken());
-      Matrix4f matrix = new Matrix4f();
-      matrix.rotY((float)(rotTheta * Math.PI / 180.0));
+      rotTheta = FortranFormat.atof(st.nextToken());
+      Matrix4d matrix = new Matrix4d();
+      matrix.rotY(rotTheta * Math.PI / 180.0);
       amat.mul(matrix, amat);
-      rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotX((float)(rotTheta * Math.PI / 180.0));
+      rotTheta = FortranFormat.atof(st.nextToken());
+      matrix.rotX(rotTheta * Math.PI / 180.0);
       amat.mul(matrix, amat);
-      rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotZ((float)(rotTheta * Math.PI / 180.0));
+      rotTheta = FortranFormat.atof(st.nextToken());
+      matrix.rotZ(rotTheta * Math.PI / 180.0);
       amat.mul(matrix, amat);
     } catch (NoSuchElementException E) {
     }
@@ -203,7 +203,7 @@ public class DisplayPanel extends Canvas
   }
 
   public void doZoomString(String zoomString) {
-    float zf = (float) FortranFormat.atof(zoomString);
+    double zf = FortranFormat.atof(zoomString);
     doZoom(zf);
   }
 
@@ -217,16 +217,16 @@ public class DisplayPanel extends Canvas
   public void doTranslateString(String translateString) {
 
     StringTokenizer st = new StringTokenizer(translateString, ",", false);
-    float deltax = 0;
-    float deltay = 0;
+    double deltax = 0;
+    double deltay = 0;
 
     try {
-      deltax = (float) FortranFormat.atof(st.nextToken());
-      deltay = (float) FortranFormat.atof(st.nextToken());
+      deltax = FortranFormat.atof(st.nextToken());
+      deltay = FortranFormat.atof(st.nextToken());
     } catch (java.util.NoSuchElementException E) {
     }
-    Matrix4f matrix = new Matrix4f();
-    matrix.setTranslation(new Vector3f(deltax, deltay, 0.0f));
+    Matrix4d matrix = new Matrix4d();
+    matrix.setTranslation(new Vector3d(deltax, deltay, 0.0f));
     tmat.add(matrix);
     matIsValid = false;
     painted = false;
@@ -277,7 +277,7 @@ public class DisplayPanel extends Canvas
     // Ignore unknown tokens.
   }
 
-  public void doZoom(float zoom) {
+  public void doZoom(double zoom) {
 
     xfac *= zoom;
     xfac2 *= zoom * zoom;
@@ -295,7 +295,7 @@ public class DisplayPanel extends Canvas
   /*
     This routine sets the initial zoom factor.
   */
-  public void setZoomFactor(float factor) {
+  public void setZoomFactor(double factor) {
     zoomFactor = factor * 0.7f;
     if (db != null) {
       init();
@@ -365,17 +365,17 @@ public class DisplayPanel extends Canvas
     // useMinBound = chemframe.getMinimumBounds();
     // useMaxBound = chemframe.getMaximumBounds();
     updateSizes();
-    Point3f size = new Point3f();
+    Point3d size = new Point3d();
     size.sub(useMaxBound, useMinBound);
-    float width = size.x;
+    double width = size.x;
     if (size.y > width) {
       width = size.y;
     }
     if (size.z > width) {
       width = size.z;
     }
-    float f1 = drawWidth / width;
-    float f2 = drawHeight / width;
+    double f1 = drawWidth / width;
+    double f2 = drawHeight / width;
     xfac0 = zoomFactor;
     if (f1 < f2) {
       xfac0 *= f1;
@@ -509,7 +509,7 @@ public class DisplayPanel extends Canvas
       if (mode == ROTATE) {
 
         /*
-        float[] spin_quat = new float[4]; Trackball tb = new
+        double[] spin_quat = new double[4]; Trackball tb = new
         Trackball(spin_quat, (2.0f*x - drawWidth) / drawWidth,
         (drawHeight-2.0f*y) / drawHeight, (2.0f*prevx - drawWidth) /
         drawWidth, (drawHeight-2.0f*prevy) / drawHeight);
@@ -518,10 +518,10 @@ public class DisplayPanel extends Canvas
         tb.build_rotmatrix(amat, quat);
 
         */
-        float xtheta = (float)((y - prevy) * (2.0 * Math.PI / drawWidth));
-        float ytheta = (float)((x - prevx) * (2.0 * Math.PI / drawHeight));
+        double xtheta = (y - prevy) * (2.0 * Math.PI / drawWidth);
+        double ytheta = (x - prevx) * (2.0 * Math.PI / drawHeight);
 
-        Matrix4f matrix = new Matrix4f();
+        Matrix4d matrix = new Matrix4d();
         matrix.rotX(xtheta);
         amat.mul(matrix, amat);
         matrix.rotY(ytheta);
@@ -532,10 +532,10 @@ public class DisplayPanel extends Canvas
       }
 
       if (mode == XLATE) {
-        float dx = (x - prevx);
-        float dy = (y - prevy);
-        Matrix4f matrix = new Matrix4f();
-        matrix.setTranslation(new Vector3f(dx, dy, 0.0f));
+        double dx = (x - prevx);
+        double dy = (y - prevy);
+        Matrix4d matrix = new Matrix4d();
+        matrix.setTranslation(new Vector3d(dx, dy, 0.0f));
         tmat.add(matrix);
         matIsValid = false;
         painted = false;
@@ -543,9 +543,9 @@ public class DisplayPanel extends Canvas
       }
 
       if (mode == ZOOM) {
-        float xs = 1.0f + (float) (x - prevx) / drawWidth;
-        float ys = 1.0f + (float) (prevy - y) / drawHeight;
-        float scale = (xs + ys) / 2.0f;
+        double xs = 1.0 + (x - prevx) / drawWidth;
+        double ys = 1.0 + (prevy - y) / drawHeight;
+        double scale = (xs + ys) / 2.0f;
         doZoom(scale);
       }
 
@@ -631,12 +631,12 @@ public class DisplayPanel extends Canvas
     return perspective;
   }
 
-  public void setFieldOfView(float fov) {
+  public void setFieldOfView(double fov) {
     fieldOfView = fov;
     painted = false;
   }
 
-  public float getFieldOfView() {
+  public double getFieldOfView() {
     return fieldOfView;
   }
 
@@ -675,11 +675,11 @@ public class DisplayPanel extends Canvas
       if (!matIsValid) {
 
         // Only rebuild the master matrix if component matrices have changed.
-        float xft = xfac2 * xfac0;
+        double xft = xfac2 * xfac0;
         painted = false;
         mat.setIdentity();
-        Matrix4f matrix = new Matrix4f();
-        matrix.setTranslation(new Vector3f(-(useMinBound.x + useMaxBound.x)
+        Matrix4d matrix = new Matrix4d();
+        matrix.setTranslation(new Vector3d(-(useMinBound.x + useMaxBound.x)
             / 2, -(useMinBound.y + useMaxBound.y) / 2,
               -(useMinBound.z + useMaxBound.z) / 2));
         mat.add(matrix);
@@ -691,7 +691,7 @@ public class DisplayPanel extends Canvas
         mat.mul(matrix, mat);
         mat.mul(tmat, mat);
         matrix.setZero();
-        matrix.setTranslation(new Vector3f(drawWidth / 2, drawHeight / 2,
+        matrix.setTranslation(new Vector3d(drawWidth / 2, drawHeight / 2,
             drawWidth / 2));
         mat.add(matrix);
         matIsValid = true;

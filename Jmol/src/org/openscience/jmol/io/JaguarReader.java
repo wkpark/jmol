@@ -116,7 +116,7 @@ class JaguarReader extends DefaultChemFileReader {
       } else {
         throw new IOException("Error reading coordinates");
       }
-      mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
+      mol.addAtom(atomicNumber, x, y, z);
     }
   }
 

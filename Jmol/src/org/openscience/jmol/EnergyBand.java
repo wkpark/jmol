@@ -19,7 +19,7 @@
  */
 package org.openscience.jmol;
 import java.util.Vector;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 
 /**
  * A class to store the "Energy Band" property for a frame <br><br>
@@ -60,27 +60,27 @@ public class EnergyBand extends PhysicalProperty {
     System.out.println("New ENERGY Band set!!!!!!!!!!!!!!!!!!!!!!");
   }
   
-  public void addKLine(Point3f orig, String origName, Point3f end,
+  public void addKLine(Point3d orig, String origName, Point3d end,
 		       String endName, int nkpt, int nband) {
     kLines.addElement(new KLine(orig, origName, end, endName, nkpt, nband));
     kLineIndex++;
     kPosIndex=-1;
   }
   
-  public void addKPoint(float redpos) {
+  public void addKPoint(double redpos) {
     kPosIndex++;
     ((KLine)kLines.elementAt(kLineIndex)).pos[kPosIndex] = redpos;
     bandIndex=-1;
   }
 
-  public void addKPoint(Point3f pos3d) {
+  public void addKPoint(Point3d pos3d) {
     KLine kLine = (KLine)kLines.elementAt(kLineIndex);
-    float redpos = 
-      (float) Math.sqrt( (double)
+    double redpos = 
+      Math.sqrt( 
       ((pos3d.x-kLine.orig.x)*(pos3d.x-kLine.orig.x) +
        (pos3d.y-kLine.orig.y)*(pos3d.y-kLine.orig.y) +
        (pos3d.z-kLine.orig.z)*(pos3d.z-kLine.orig.z) )) /
-      (float) Math.sqrt( (double)
+      Math.sqrt( 
       ((kLine.end.x-kLine.orig.x)*(kLine.end.x-kLine.orig.x) +
        (kLine.end.y-kLine.orig.y)*(kLine.end.y-kLine.orig.y) +
        (kLine.end.z-kLine.orig.z)*(kLine.end.z-kLine.orig.z) ));
@@ -89,7 +89,7 @@ public class EnergyBand extends PhysicalProperty {
     bandIndex=-1;
   }
 
-  public void addEPoint(float energy) {
+  public void addEPoint(double energy) {
     bandIndex++;    
     ((KLine)kLines.elementAt(kLineIndex))
       .energy[kPosIndex][bandIndex] = energy;
@@ -106,19 +106,19 @@ public class EnergyBand extends PhysicalProperty {
 
   public class KLine {
     
-    private Point3f orig; // for example (0, 0, 0)
+    private Point3d orig; // for example (0, 0, 0)
     private String origName; // "Gamma"
-    private Point3f end;  // for example (0, 0, pi/a)
+    private Point3d end;  // for example (0, 0, pi/a)
     private String endName;  // "X"
     private int nkpt;
     private int nband;
 
     //enrergy[k][n] is the enregy value at wave vector pos[k] and band n
     //pos[k] is the reduce coordinate along this KLine.
-    private float[][] energy;
-    private float[] pos;   // pos belongs to [O,1]
+    private double[][] energy;
+    private double[] pos;   // pos belongs to [O,1]
       
-    public KLine(Point3f orig, String origName, Point3f end, String endName,
+    public KLine(Point3d orig, String origName, Point3d end, String endName,
 		 int nkpt, int nband) {
       this.orig = orig;
       this.origName = origName;
@@ -126,15 +126,15 @@ public class EnergyBand extends PhysicalProperty {
       this.endName = endName;
       this.nkpt = nkpt;
       this.nband = nband;
-      pos = new float[nkpt];
-      energy = new float[nkpt][nband];
+      pos = new double[nkpt];
+      energy = new double[nkpt][nband];
     }
 
-    public Point3f getOrigin() {
+    public Point3d getOrigin() {
       return orig;
     }
 
-    public Point3f getEnd() {
+    public Point3d getEnd() {
       return end;
     }
     
@@ -146,15 +146,15 @@ public class EnergyBand extends PhysicalProperty {
       return nband;
     }
 
-    public float[] getkPoints(){
+    public double[] getkPoints(){
       return pos;
     }
     
-    public float getkPoint(int index) {
+    public double getkPoint(int index) {
       return pos[index];
     }
     
-    public float[] getEnergies(int index) {
+    public double[] getEnergies(int index) {
       return energy[index];
     }
   }   //end KLine

@@ -149,7 +149,7 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
 
               PhysicalProperty pf = (PhysicalProperty) ef.nextElement();
               if (pf.getDescriptor().equals(desc)) {
-                data[j][i] = ((Double) pf.getProperty()).doubleValue();
+                data[j][i] = ((Double)pf.getProperty()).doubleValue();
               }
             }
           }

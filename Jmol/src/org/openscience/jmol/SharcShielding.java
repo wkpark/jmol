@@ -192,7 +192,7 @@ public class SharcShielding {
 
     double result = 0.0;
     if (shieldings.containsKey(element)) {
-      result = ((Double) shieldings.get(element)).doubleValue();
+      result = ((Double)(shieldings.get(element))).doubleValue();
     }
     return result;
   }

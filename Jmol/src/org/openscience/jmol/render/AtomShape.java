@@ -37,7 +37,7 @@ import java.awt.AlphaComposite;
 import java.awt.Polygon;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Float;
+import java.awt.geom.Ellipse2D.Double;
 import java.awt.RenderingHints;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -103,8 +103,8 @@ public class AtomShape implements Shape {
   private static int labelMode;
   private static boolean mouseDragged;
   private static DisplayControl control;
-  private static float bondWidthAngstroms;
-  private static float bondSeparationAngstroms;
+  private static double bondWidthAngstroms;
+  private static double bondSeparationAngstroms;
   private static boolean showDarkerOutline;
   private static Color outlineColor;
   private static Color pickedColor;
@@ -282,7 +282,7 @@ public class AtomShape implements Shape {
     // technically, this bond width is not correct, but ...
     // just take the average of the two z's and don't worry about it
     int avgZ = (z1 + z2) / 2;
-    float halfBondWidth
+    double halfBondWidth
       = control.scaleToScreen(avgZ, bondWidthAngstroms/2);
     if ((atomDrawMode == DisplayControl.WIREFRAME) && showCoveredBonds) {
       x1Edge = x1Bond;
@@ -336,10 +336,10 @@ public class AtomShape implements Shape {
     int atom2B = darker2.getBlue(),  range2B = bright2.getBlue() - atom2B;
 
     int numPasses = (int)halfBondWidth;
-    float widthT = halfBondWidth;
+    double widthT = halfBondWidth;
     for (int i = 0; i < numPasses; ++i, widthT -= 1.0) {
       // numPasses must be > 1 because of test above
-      float pct = (float) i / (numPasses - 1);
+      double pct = (double) i / (numPasses - 1);
       int r1 = atom1R + (int)(pct * range1R);
       int g1 = atom1G + (int)(pct * range1G);
       int b1 = atom1B + (int)(pct * range1B);
@@ -378,7 +378,7 @@ public class AtomShape implements Shape {
                             int xEdge, int yEdge,
                             int x2, int y2, final Color color2,
                             final int dx, final int dy, final int magnitude,
-                            int bondOrder, final float halfBondWidth) {
+                            int bondOrder, final double halfBondWidth) {
     if (! isVisible(x1, y1, xEdge, yEdge, x2, y2))
       return;
     int sepUp = (int) (separationIncrement * halfBondWidth);
@@ -430,8 +430,8 @@ public class AtomShape implements Shape {
                             final Color color2, final Color color2Outline,
                             final boolean boolFill,
                             final int dx, final int dy, final int magnitude,
-                            int bondOrder, final float halfBondWidth,
-                            final float separationWidth) {
+                            int bondOrder, final double halfBondWidth,
+                            final double separationWidth) {
     if (! isVisible(x1, y1, xEdge, yEdge, x2, y2))
       return;
     // offsets for the width of the bond rectangle
@@ -643,8 +643,7 @@ public class AtomShape implements Shape {
       // too big ... just forget the smoothing
       // but we *can* clip it to eliminate fat pixels
       Ellipse2D circle =
-        new Ellipse2D.Float((float)(x-radius), (float)(y-radius),
-                            (float)diameter, (float)diameter);
+        new Ellipse2D.Double(x-radius, y-radius, diameter, diameter);
       g.setClip(circle);
       g.drawImage(imgSphere, x - radius, y - radius,
                    diameter, diameter, null);
@@ -652,7 +651,7 @@ public class AtomShape implements Shape {
     }
   }
   
-  private static final float[] lightSource = { -1.0f, -1.0f, 2.0f };
+  private static final double[] lightSource = { -1.0f, -1.0f, 2.0f };
   private void loadShadedSphereCache(Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
     control.imageCache.put(color, shadedImages);
@@ -758,10 +757,10 @@ public class AtomShape implements Shape {
    * Creates a shaded atom image.
    */
   private static Image sphereSetup(Color ballColor, int diameter,
-      float[] lightSource, boolean doNotClip) {
+      double[] lightSource, boolean doNotClip) {
 
-    float v1[] = new float[3];
-    float v2[] = new float[3];
+    double v1[] = new double[3];
+    double v2[] = new double[3];
     int radius = (diameter + 1) / 2; // round it up
     int j = -1;
 
@@ -769,7 +768,7 @@ public class AtomShape implements Shape {
     int model[] = new int[diameter*diameter];
 
     // Normalize the lightsource vector:
-    float[] lightsource = new float[3];
+    double[] lightsource = new double[3];
     for (int i = 0; i < 3; ++ i)
       lightsource[i] = lightSource[i];
     normalize(lightsource);
@@ -778,14 +777,14 @@ public class AtomShape implements Shape {
         j++;
         v1[0] = k2;
         v1[1] = k1;
-        float len1 = (float) Math.sqrt(k2 * k2 + k1 * k1);
+        double len1 = Math.sqrt(k2 * k2 + k1 * k1);
         if (doNotClip || len1 <= radius) {
           int red2 = 0;
           int green2 = 0;
           int blue2 = 0;
-          v1[2] = radius * (float) Math.cos(Math.asin(len1 / radius));
+          v1[2] = radius * Math.cos(Math.asin(len1 / radius));
           normalize(v1);
-          float len2 = (float) Math.abs((double) (v1[0] * lightsource[0]
+          double len2 = Math.abs((v1[0] * lightsource[0]
                          + v1[1] * lightsource[1] + v1[2] * lightsource[2]));
           if (len2 < 0.995f) {
             red2 = (int) (ballColor.getRed() * len2);
@@ -796,9 +795,9 @@ public class AtomShape implements Shape {
             v2[1] = lightsource[1] + 0.0f;
             v2[2] = lightsource[2] + 1.0f;
             normalize(v2);
-            float len3 = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-            float len4 = 8.0f * len3 * len3 - 7.0f;
-            float len5 = 100.0f * len4;
+            double len3 = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+            double len4 = 8.0f * len3 * len3 - 7.0f;
+            double len5 = 100.0f * len4;
             len5 = Math.max(len5, 0.0f);
             red2 = (int) (ballColor.getRed() * 155 * len2 + 100.0 + len5);
             green2 = (int) (ballColor.getGreen() * 155 * len2 + 100.0 + len5);
@@ -822,15 +821,15 @@ public class AtomShape implements Shape {
   }
 
   /**
-   * normalizes the float[3] vector in place
+   * normalizes the double[3] vector in place
    */
-  private static void normalize(float v[]) {
+  private static void normalize(double v[]) {
 
-    float len = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if (Math.abs(len - 0.0) < Double.MIN_VALUE) {
-      v[0] = 0.0f;
-      v[1] = 0.0f;
-      v[2] = 0.0f;
+    double len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    if (Math.abs(len - 0.0) < java.lang.Double.MIN_VALUE) {
+      v[0] = 0.0;
+      v[1] = 0.0;
+      v[2] = 0.0;
     } else {
       v[0] = v[0] / len;
       v[1] = v[1] / len;

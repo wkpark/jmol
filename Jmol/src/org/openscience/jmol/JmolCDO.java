@@ -35,7 +35,7 @@ public final class JmolCDO extends ANIMATIONCDO {
   private String partialCharge;
 
   //Crystal
-  private float[][] rprimd; //the dimensional primitive vectors
+  private double[][] rprimd; //the dimensional primitive vectors
 
   public JmolCDO() {
     currentFrame = new ChemFrame();
@@ -142,7 +142,7 @@ public final class JmolCDO extends ANIMATIONCDO {
   
   public void endFrame() {
     if (file instanceof CrystalFile) {
-      float[] acell = {1.0f ,1.0f ,1.0f};
+      double[] acell = {1.0f ,1.0f ,1.0f};
       UnitCellBox unitCellBox = new UnitCellBox(rprimd, acell, currentFrame);
       ((CrystalFile)file).setUnitCellBox(unitCellBox);
       ((CrystalFile)file).generateCrystalFrame();
@@ -201,8 +201,8 @@ public final class JmolCDO extends ANIMATIONCDO {
     double z = FortranFormat.atof(atomZ.trim());
     
     try {
-      int index = currentFrame.addAtom(atomType.trim(), (float) x, (float) y,
-				       (float) z);
+      int index = currentFrame.addAtom(atomType.trim(), x, y,
+				       z);
       if (partialCharge.length() > 0) {
 	System.out.println("Adding charge for atom " + index);
 	double c = FortranFormat.atof(partialCharge);
@@ -236,7 +236,7 @@ public final class JmolCDO extends ANIMATIONCDO {
   }
 
   public void startCrystal() {
-    rprimd = new float[3][3];
+    rprimd = new double[3][3];
   }
   
   public void endCrystal() {
@@ -246,29 +246,29 @@ public final class JmolCDO extends ANIMATIONCDO {
     
     if (type.equals("a-axis")) {
       if (proptype.equals("x")) {
-	rprimd[0][0] = (float) FortranFormat.atof(value);
+	rprimd[0][0] = FortranFormat.atof(value);
       } else if (proptype.equals("y")) {
-	rprimd[0][1] = (float) FortranFormat.atof(value);
+	rprimd[0][1] = FortranFormat.atof(value);
       } else if (proptype.equals("z")) {
-	rprimd[0][2] = (float) FortranFormat.atof(value);
+	rprimd[0][2] = FortranFormat.atof(value);
       }
     }
     if (type.equals("b-axis")) {
       if (proptype.equals("x")) {
-	rprimd[1][0] = (float) FortranFormat.atof(value);
+	rprimd[1][0] = FortranFormat.atof(value);
       } else if (proptype.equals("y")) {
-	rprimd[1][1] = (float) FortranFormat.atof(value);
+	rprimd[1][1] = FortranFormat.atof(value);
       } else if (proptype.equals("z")) {
-	rprimd[1][2] = (float) FortranFormat.atof(value);
+	rprimd[1][2] = FortranFormat.atof(value);
       }
     }
     if (type.equals("c-axis")) {
       if (proptype.equals("x")) {
-	rprimd[2][0] = (float) FortranFormat.atof(value);
+	rprimd[2][0] = FortranFormat.atof(value);
       } else if (proptype.equals("y")) {
-	rprimd[2][1] = (float) FortranFormat.atof(value);
+	rprimd[2][1] = FortranFormat.atof(value);
       } else if (proptype.equals("z")) {
-	rprimd[2][2] = (float) FortranFormat.atof(value);
+	rprimd[2][2] = FortranFormat.atof(value);
       }
     }
   }

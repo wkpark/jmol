@@ -29,10 +29,10 @@ import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.Dimension;
 import java.util.Hashtable;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.AxisAngle4d;
 
 final public class DisplayControl {
 
@@ -55,20 +55,20 @@ final public class DisplayControl {
   public int xTranslation;
   public int yTranslation;
   public int cameraZ = 750;
-  public final Matrix4f matrixTransform = new Matrix4f();
+  public final Matrix4d matrixTransform = new Matrix4d();
 
   private DisplayPanel panel;
   private DisplaySettings settings;
 
   private int minScreenDimension;
   private Dimension dimCurrent;
-  private float scalePixelsPerAngstrom;
-  private float scaleDefaultPixelsPerAngstrom;
-  private float zoomScale;
-  private float cameraDepth = 3;
-  private final Matrix4f matrixRotate = new Matrix4f();
-  private final Matrix4f matrixTemp = new Matrix4f();
-  private final Vector3f vectorTemp = new Vector3f();
+  private double scalePixelsPerAngstrom;
+  private double scaleDefaultPixelsPerAngstrom;
+  private double zoomScale;
+  private double cameraDepth = 3;
+  private final Matrix4d matrixRotate = new Matrix4d();
+  private final Matrix4d matrixTemp = new Matrix4d();
+  private final Vector3d vectorTemp = new Vector3d();
   private boolean perspectiveDepth = true;
   private boolean structuralChange = false;
 
@@ -124,12 +124,12 @@ final public class DisplayControl {
     return settings.getBondDrawMode();
   }
 
-  public void setBondWidth(float width) {
+  public void setBondWidth(double width) {
     settings.setBondWidth(width);
     recalc();
   }
 
-  public float getBondWidth() {
+  public double getBondWidth() {
     return settings.getBondWidth();
   }
 
@@ -261,13 +261,13 @@ final public class DisplayControl {
     return settings.getDrawBondsToAtomCenters();
   }
 
-  public void setAtomSphereFactor(float f) {
+  public void setAtomSphereFactor(double f) {
     settings.setAtomSphereFactor(f);
     recalc();
   }
 
-  public float getAtomSphereFactor() {
-    return (float)settings.getAtomSphereFactor();
+  public double getAtomSphereFactor() {
+    return settings.getAtomSphereFactor();
   }
 
   public void setAntiAliased(boolean antiAlias) {
@@ -334,7 +334,7 @@ final public class DisplayControl {
     return setPicked.isSelected(atom.getAtomNumber());
   }
 
-  public float getScalePixelsPerAngstrom() {
+  public double getScalePixelsPerAngstrom() {
     return scalePixelsPerAngstrom;
   }
 
@@ -351,32 +351,32 @@ final public class DisplayControl {
     // track with the mouse cursor
 
     // the accelerator is just a slop factor ... it felt a litte slow to me
-    float rotateAccelerator = 1.1f;
+    double rotateAccelerator = 1.1f;
 
     // a change in the x coordinate generates a rotation about the y axis
-    float ytheta = (float)Math.PI * xDelta / minScreenDimension / zoomScale;
+    double ytheta = Math.PI * xDelta / minScreenDimension / zoomScale;
     rotateByY(ytheta * rotateAccelerator);
-    float xtheta = (float)Math.PI * yDelta / minScreenDimension / zoomScale;
+    double xtheta = Math.PI * yDelta / minScreenDimension / zoomScale;
     rotateByX(xtheta * rotateAccelerator);
     recalc();
   }
 
-  public void multiplyZoomScale(float scale) {
+  public void multiplyZoomScale(double scale) {
     zoomScale *= scale;
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomScale;
     recalc();
   }
 
-  public float getZoomScale() {
+  public double getZoomScale() {
     return zoomScale;
   }
 
-  public Matrix4f getPovRotateMatrix() {
-    return new Matrix4f(matrixRotate);
+  public Matrix4d getPovRotateMatrix() {
+    return new Matrix4d(matrixRotate);
   }
 
-  public Matrix4f getPovTranslateMatrix() {
-    Matrix4f matrixPovTranslate = new Matrix4f();
+  public Matrix4d getPovTranslateMatrix() {
+    Matrix4d matrixPovTranslate = new Matrix4d();
     matrixPovTranslate.setIdentity();
     matrixPovTranslate.get(vectorTemp);
     vectorTemp.x = (xTranslation - dimCurrent.width/2) / scalePixelsPerAngstrom;
@@ -414,7 +414,7 @@ final public class DisplayControl {
     // and all z coordinates are <= 0
   }
 
-  public void transformPoint(Point3f pointAngstroms, Point3f pointScreen) {
+  public void transformPoint(Point3d pointAngstroms, Point3d pointScreen) {
     matrixTransform.transform(pointAngstroms, pointScreen);
     if (perspectiveDepth) {
       int depth = cameraZ - (int)pointScreen.z;
@@ -436,11 +436,11 @@ final public class DisplayControl {
     return perspectiveDepth;
   }
 
-  public void setCameraDepth(float depth) {
+  public void setCameraDepth(double depth) {
     cameraDepth = depth;
   }
 
-  public float getCameraDepth() {
+  public double getCameraDepth() {
     return cameraDepth;
   }
 
@@ -485,13 +485,13 @@ final public class DisplayControl {
     scalePixelsPerAngstrom =
       minScreenDimension / 2 / getFrame().getRotationRadius();
     if (perspectiveDepth) {
-      float scaleFactor = (cameraZ + minScreenDimension / 2) / (float)cameraZ;
+      double scaleFactor = (cameraZ + minScreenDimension / 2) / (double)cameraZ;
       scaleFactor += .02f; // don't know why I need this, but seems I do -- mth
       scalePixelsPerAngstrom *= scaleFactor;
     }
     // these are important!
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
-    zoomScale = 1f;
+    zoomScale = 1;
     cameraZ = (int)cameraDepth * minScreenDimension;
   }
 
@@ -632,60 +632,60 @@ final public class DisplayControl {
     recalc();
   }
 
-  public void rotateToX(float angleRadians) {
+  public void rotateToX(double angleRadians) {
     matrixRotate.rotX(angleRadians);
     recalc();
   }
-  public void rotateToY(float angleRadians) {
+  public void rotateToY(double angleRadians) {
     matrixRotate.rotY(angleRadians);
     recalc();
   }
-  public void rotateToZ(float angleRadians) {
+  public void rotateToZ(double angleRadians) {
     matrixRotate.rotZ(angleRadians);
     recalc();
   }
 
   public void rotateToX(int angleDegrees) {
-    rotateToX((float)Math.toRadians(angleDegrees));
+    rotateToX(Math.toRadians(angleDegrees));
   }
   public void rotateToY(int angleDegrees) {
-    rotateToY((float)Math.toRadians(angleDegrees));
+    rotateToY(Math.toRadians(angleDegrees));
   }
   public void rotateToZ(int angleDegrees) {
-    rotateToZ((float)Math.toRadians(angleDegrees));
+    rotateToZ(Math.toRadians(angleDegrees));
   }
 
-  public void rotateByX(float angleRadians) {
+  public void rotateByX(double angleRadians) {
     matrixTemp.rotX(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
     recalc();
   }
-  public void rotateByY(float angleRadians) {
+  public void rotateByY(double angleRadians) {
     matrixTemp.rotY(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
     recalc();
   }
-  public void rotateByZ(float angleRadians) {
+  public void rotateByZ(double angleRadians) {
     matrixTemp.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
     recalc();
   }
   public void rotateByX(int angleDegrees) {
-    rotateByX((float)Math.toRadians(angleDegrees));
+    rotateByX(Math.toRadians(angleDegrees));
   }
   public void rotateByY(int angleDegrees) {
-    rotateByY((float)Math.toRadians(angleDegrees));
+    rotateByY(Math.toRadians(angleDegrees));
   }
   public void rotateByZ(int angleDegrees) {
-    rotateByZ((float)Math.toRadians(angleDegrees));
+    rotateByZ(Math.toRadians(angleDegrees));
   }
-  public void rotate(AxisAngle4f axisAngle) {
+  public void rotate(AxisAngle4d axisAngle) {
     matrixTemp.setIdentity();
     matrixTemp.setRotation(axisAngle);
     matrixRotate.mul(matrixTemp, matrixRotate);
     recalc();
   }
-  public void setCenter(Point3f center) {
+  public void setCenter(Point3d center) {
     getFrame().setRotationCenter(center);
   }
 
@@ -697,12 +697,12 @@ final public class DisplayControl {
 
   public void setCenterAsSelected() {
     int[] picked = setPicked.getSelection();
-    Point3f center = null;
+    Point3d center = null;
     if (picked.length > 0) {
       // just take the average of all the points
-      center = new Point3f(); // defaults to 0,0,0
+      center = new Point3d(); // defaults to 0,0,0
       for (int i = 0; i < picked.length; ++i)
-        center.add(getFrame().getAtomAt(picked[i]).getPosition());
+        center.add(new Point3d(getFrame().getAtomAt(picked[i]).getPosition()));
       center.scale(1.0f / picked.length); // just divide by the quantity
     }
     getFrame().setRotationCenter(center);
@@ -711,7 +711,7 @@ final public class DisplayControl {
     recalc();
   }
 
-  public int getScreenDiameter(int z, float vdwRadius) {
+  public int getScreenDiameter(int z, double vdwRadius) {
     if (z > 0)
       System.out.println("--?QUE? no way that z > 0--");
     int d = (int)(2 * vdwRadius *
@@ -721,10 +721,10 @@ final public class DisplayControl {
     return d;
   }
 
-  public float scaleToScreen(int z, float sizeAngstroms) {
+  public double scaleToScreen(int z, double sizeAngstroms) {
     // all z's are <= 0
     // so the more negative z is, the smaller the screen scale
-    float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
+    double pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
     if (perspectiveDepth)
       pixelSize = (pixelSize * cameraZ) / (cameraZ - z);
     return pixelSize;
@@ -749,7 +749,7 @@ final public class DisplayControl {
   }
 
   // FIXME NEEDSWORK -- bond binding stuff
-  private float bondFudge = 1.12f;
+  private double bondFudge = 1.12f;
   private boolean autoBond = true;
 
   public void rebond() {
@@ -761,12 +761,12 @@ final public class DisplayControl {
     }
   }
 
-  public void setBondFudge(float bf) {
+  public void setBondFudge(double bf) {
     bondFudge = bf;
     recalc();
   }
 
-  public float getBondFudge() {
+  public double getBondFudge() {
     return bondFudge;
   }
 
@@ -781,9 +781,9 @@ final public class DisplayControl {
 
   // FIXME NEEDSWORK -- arrow vector stuff
   private Color vectorColor = Color.black;
-  private float arrowHeadSize = 10.0f;
-  private float arrowHeadRadius = 1.0f;
-  private float arrowLengthScale = 1.0f;
+  private double arrowHeadSize = 10.0f;
+  private double arrowHeadRadius = 1.0f;
+  private double arrowLengthScale = 1.0f;
 
   public void setVectorColor(Color c) {
     vectorColor = c;
@@ -793,11 +793,11 @@ final public class DisplayControl {
     return vectorColor;
   }
 
-  public void setArrowHeadSize(float ls) {
+  public void setArrowHeadSize(double ls) {
     arrowHeadSize = 10.0f * ls;
   }
 
-  public float getArrowHeadSize() {
+  public double getArrowHeadSize() {
     return arrowHeadSize / 10.0f;
   }
 
@@ -805,23 +805,23 @@ final public class DisplayControl {
   // for some reason, internal to ArrowLine the raw arrowHeadSize was
   // used, but externally it is multiplied/divided by 10
   // will figure it out and fix it later
-  public float getArrowHeadSize10() {
+  public double getArrowHeadSize10() {
     return arrowHeadSize;
   }
 
-  public void setArrowLengthScale(float ls) {
+  public void setArrowLengthScale(double ls) {
     arrowLengthScale = ls;
   }
 
-  public float getArrowLengthScale() {
+  public double getArrowLengthScale() {
     return arrowLengthScale;
   }
 
-  public void setArrowHeadRadius(float rs) {
+  public void setArrowHeadRadius(double rs) {
     arrowHeadRadius = rs;
   }
 
-  public float getArrowHeadRadius() {
+  public double getArrowHeadRadius() {
     return arrowHeadRadius;
   }
 

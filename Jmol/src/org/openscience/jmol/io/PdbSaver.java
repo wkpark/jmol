@@ -23,7 +23,7 @@ import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Atom;
 import freeware.PrintfFormat;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -92,7 +92,7 @@ public class PdbSaver extends FileSaver {
       Atom atom = cf.getAtomAt(i);
       buffer.append(atomNameFormat.sprintf(atom.getType().getName()));
       buffer.append(" MOL          ");
-      Point3f position = atom.getPosition();
+      Point3d position = atom.getPosition();
       buffer.append(positionFormat.sprintf(position.x));
       buffer.append(positionFormat.sprintf(position.y));
       buffer.append(positionFormat.sprintf(position.z));

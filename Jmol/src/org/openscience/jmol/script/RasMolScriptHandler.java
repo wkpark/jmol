@@ -202,7 +202,7 @@ public class RasMolScriptHandler {
           if (axis.equals("x") || axis.equals("y") || axis.equals("z")) {
             if (st.hasMoreElements()) {
               String angle = (String) st.nextElement();
-              int degrees = (int)Float.parseFloat(angle);
+              int degrees = (int)Double.parseDouble(angle);
               if (axis.equals("x")) {
                 control.rotateByX(degrees);
               } else if (axis.equals("y")) {

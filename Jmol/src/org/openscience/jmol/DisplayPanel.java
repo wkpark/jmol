@@ -197,9 +197,9 @@ public class DisplayPanel extends JPanel
         control.translateBy(x - prevMouseX, y - prevMouseY);
         break;
       case ZOOM:
-        float xs = 1.0f + (float) (x - prevMouseX) / dimCurrent.width;
-        float ys = 1.0f + (float) (prevMouseY - y) / dimCurrent.height;
-        float s = (xs + ys) / 2;
+        double xs = 1.0 + (double)(x - prevMouseX) / dimCurrent.width;
+        double ys = 1.0 + (double)(prevMouseY - y) / dimCurrent.height;
+        double s = (xs + ys) / 2;
         control.multiplyZoomScale(s);
         break;
       case PICK:
@@ -759,7 +759,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      //      rotate(new AxisAngle4f(1, 1, 1, (float)Math.PI/4));
+      //      rotate(new AxisAngle4f(1, 1, 1, Math.PI/4));
       repaint();
     }
   }
@@ -863,6 +863,7 @@ public class DisplayPanel extends JPanel
   public void propertyChange(PropertyChangeEvent event) {
     if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
       control.setChemFile((ChemFile) event.getNewValue());
+      setRotateMode();
     } else if (event.getPropertyName().equals(JmolModel.chemFrameProperty)) {
       control.setFrame((ChemFrame) event.getNewValue());
     }
@@ -930,13 +931,13 @@ public class DisplayPanel extends JPanel
   public final static int Y_AXIS = 2;
   public final static int Z_AXIS = 3;
 
-  public void rotate(int axis, float angle) {
+  public void rotate(int axis, double angle) {
     if (axis == X_AXIS) {
-      control.rotateToX((float)Math.toRadians(angle));
+      control.rotateToX(Math.toRadians(angle));
     } else if (axis == Y_AXIS) {
-      control.rotateToY((float)Math.toRadians(angle));
+      control.rotateToY(Math.toRadians(angle));
     } else if (axis == Z_AXIS) {
-      control.rotateToZ((float)Math.toRadians(angle));
+      control.rotateToZ(Math.toRadians(angle));
     }
   }
 }

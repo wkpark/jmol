@@ -88,12 +88,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static int AtomLabelMode;
   private static String AtomPropsMode;
   private static int BondRenderMode;
-  private static float ArrowHeadSize;
-  private static float ArrowHeadRadius;
-  private static float ArrowLengthScale;
-  private static float BondFudge;
+  private static double ArrowHeadSize;
+  private static double ArrowHeadRadius;
+  private static double ArrowLengthScale;
+  private static double BondFudge;
   private static double BondWidth;
-  private static float FieldOfView;
+  private static double FieldOfView;
   private static double SphereFactor;
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
@@ -429,7 +429,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         SphereFactor = source.getValue() / 100.0;
-        control.setAtomSphereFactor((float)SphereFactor);
+        control.setAtomSphereFactor(SphereFactor);
         props.put("SphereFactor", Double.toString(SphereFactor));
       }
     });
@@ -566,7 +566,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         BondWidth = source.getValue() / 100.0;
-        control.setBondWidth((float) BondWidth);
+        control.setBondWidth(BondWidth);
         props.put("BondWidth", Double.toString(BondWidth));
       }
     });
@@ -618,7 +618,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         // reference to ChemFrame here.  We only want to rebond
         // the current frame. (I think).
         control.setBondFudge(BondFudge);
-        props.put("BondFudge", Float.toString(BondFudge));
+        props.put("BondFudge", Double.toString(BondFudge));
         control.rebond();
       }
     });
@@ -679,7 +679,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         ArrowHeadSize = source.getValue() / 100.0f;
         control.setArrowHeadSize(ArrowHeadSize);
-        props.put("ArrowHeadSize", Float.toString(ArrowHeadSize));
+        props.put("ArrowHeadSize", Double.toString(ArrowHeadSize));
         // FIXME -- arrow settings should be like all other settings
         control.refresh();
       }
@@ -722,7 +722,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         ArrowHeadRadius = source.getValue() / 100.0f;
         control.setArrowHeadRadius(ArrowHeadRadius);
-        props.put("ArrowHeadRadius", Float.toString(ArrowHeadRadius));
+        props.put("ArrowHeadRadius", Double.toString(ArrowHeadRadius));
         control.refresh();
       }
     });
@@ -774,7 +774,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         ArrowLengthScale = source.getValue() / 100.0f;
         control.setArrowLengthScale(ArrowLengthScale);
-        props.put("ArrowLengthScale", Float.toString(ArrowLengthScale));
+        props.put("ArrowLengthScale", Double.toString(ArrowLengthScale));
         control.refresh();
       }
     });
@@ -1182,16 +1182,16 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     BondRenderMode = Integer.getInteger("BondRenderMode").intValue();
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
-    // Doubles and Floats are special:
+    // Doubles and Doubles are special:
     ArrowHeadSize =
-        new Float(props.getProperty("ArrowHeadSize")).floatValue();
+        new Double(props.getProperty("ArrowHeadSize")).doubleValue();
     ArrowHeadRadius =
-        new Float(props.getProperty("ArrowHeadRadius")).floatValue();
+        new Double(props.getProperty("ArrowHeadRadius")).doubleValue();
     ArrowLengthScale =
-        new Float(props.getProperty("ArrowLengthScale")).floatValue();
-    BondFudge = new Float(props.getProperty("BondFudge")).floatValue();
+        new Double(props.getProperty("ArrowLengthScale")).doubleValue();
+    BondFudge = new Double(props.getProperty("BondFudge")).doubleValue();
     BondWidth = new Double(props.getProperty("BondWidth")).doubleValue();
-    FieldOfView = new Float(props.getProperty("FieldOfView")).floatValue();
+    FieldOfView = new Double(props.getProperty("FieldOfView")).doubleValue();
     SphereFactor =
         new Double(props.getProperty("SphereFactor")).doubleValue();
     VibrateAmplitudeScale =
@@ -1202,11 +1202,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setOutlineColor(outlineColor);
     control.setPickedColor(pickedColor);
     control.setTextColor(textColor);
-    control.setAtomSphereFactor((float)SphereFactor);
+    control.setAtomSphereFactor(SphereFactor);
     control.setAtomDrawMode(AtomRenderMode);
     control.setLabelMode(AtomLabelMode);
     control.setPropertyMode(AtomPropsMode);
-    control.setBondWidth((float) BondWidth);
+    control.setBondWidth(BondWidth);
     control.setBondDrawMode(BondRenderMode);
     control.setVectorColor(vectorColor);
     control.setArrowHeadRadius(ArrowHeadRadius);

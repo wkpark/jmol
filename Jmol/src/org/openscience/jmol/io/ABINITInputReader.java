@@ -29,7 +29,7 @@ import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 
 /**
  * Abinit summary (www.abinit.org):
@@ -46,7 +46,7 @@ import javax.vecmath.Point3f;
  * <p> An abinit input file is composed of many keywords arranged
  * in a non-specific
  * order. Each keyword is followed by one or more numbers (integers or
- * floats depending of the keyword).
+ * doubles depending of the keyword).
  * Characters following a '#' are ignored.
  * The fisrt line of the file can be considered as a title.
  * This implementaton supports only 1 dataset!!!
@@ -67,9 +67,9 @@ public class ABINITInputReader extends ABINITReader {
   // ABINIT VARIABLES
   int natom = 1;
   int ntype = 1;
-  float acell[] = null;
-  float[][] rprim = null;
-  float[] angdeg = null;
+  double acell[] = null;
+  double[][] rprim = null;
+  double[] angdeg = null;
   String info = "";
   String line;
   
@@ -111,25 +111,25 @@ public class ABINITInputReader extends ABINITReader {
     nextAbinitInputToken(true);
     while (fieldVal != null) {
       if (fieldVal.equals("acell")) {
-        acell = new float[3];
+        acell = new double[3];
         for (int i = 0; i < 3; i++) {
           nextAbinitInputToken(false);
-          acell[i] = (float) FortranFormat.atof(fieldVal)
+          acell[i] = FortranFormat.atof(fieldVal)
 	    * ANGSTROMPERBOHR;    //in angstrom
         }
       } else if (fieldVal.equals("rprim")) {
-        rprim = new float[3][3];
+        rprim = new double[3][3];
         for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitInputToken(false);
-            rprim[i][j] = (float) FortranFormat.atof(fieldVal);
+            rprim[i][j] = FortranFormat.atof(fieldVal);
           }
         }
       } else if (fieldVal.equals("angdeg")) {
-        angdeg = new float[3];
+        angdeg = new double[3];
         for (int i = 0; i < 3; i++) {
           nextAbinitInputToken(false);
-          angdeg[i] = (float) FortranFormat.atof(fieldVal);
+          angdeg[i] = FortranFormat.atof(fieldVal);
         }
       } else if (fieldVal.equals("ntype")) {
         nextAbinitInputToken(false);
@@ -150,8 +150,8 @@ public class ABINITInputReader extends ABINITReader {
     int[] dims = {
       natom, 3
     };
-    float[][] xangst = null;
-    float[][] xred = null;
+    double[][] xangst = null;
+    double[][] xred = null;
 
     //Second pass through the file
     inputBuffer.reset();
@@ -168,28 +168,28 @@ public class ABINITInputReader extends ABINITReader {
           type[i] = Integer.parseInt(fieldVal);
         }
       } else if (fieldVal.equals("xangst")) {
-        xangst = (float[][]) Array.newInstance(float.class, dims);
+        xangst = (double[][]) Array.newInstance(double.class, dims);
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitInputToken(false);
-            xangst[i][j] = (float) FortranFormat.atof(fieldVal);
+            xangst[i][j] = FortranFormat.atof(fieldVal);
           }
         }
       } else if (fieldVal.equals("xcart")) {
-        xangst = (float[][]) Array.newInstance(float.class, dims);
+        xangst = (double[][]) Array.newInstance(double.class, dims);
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitInputToken(false);
-            xangst[i][j] = (float) FortranFormat.atof(fieldVal)
+            xangst[i][j] = FortranFormat.atof(fieldVal)
 	      * ANGSTROMPERBOHR;
           }
         }
       } else if (fieldVal.equals("xred")) {
-        xred = (float[][]) Array.newInstance(float.class, dims);
+        xred = (double[][]) Array.newInstance(double.class, dims);
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitInputToken(false);
-            xred[i][j] = (float) FortranFormat.atof(fieldVal);
+            xred[i][j] = FortranFormat.atof(fieldVal);
           }
         }
       }
@@ -202,7 +202,7 @@ public class ABINITInputReader extends ABINITReader {
 
     //Set default value if needed
     if (acell == null) {                 //set acell to 1 bohr
-      acell = new float[3];
+      acell = new double[3];
       acell[0] = 1 * ANGSTROMPERBOHR;    //in angstrom    
       acell[1] = 1 * ANGSTROMPERBOHR;
       acell[2] = 1 * ANGSTROMPERBOHR;
@@ -233,7 +233,7 @@ public class ABINITInputReader extends ABINITReader {
 
 
     } else if ((rprim == null) && (angdeg == null)) {
-      rprim = new float[3][3];
+      rprim = new double[3][3];
       rprim[0][0] = 1;
       rprim[0][1] = 0;
       rprim[0][2] = 0;
@@ -292,7 +292,7 @@ public class ABINITInputReader extends ABINITReader {
         int index = fieldVal.indexOf("*");
         if (index >= 0) {
 
-          //We have a format integer*float
+          //We have a format integer*double
           repVal = Integer.parseInt(fieldVal.substring(0, index));
           fieldVal = fieldVal.substring(index + 1);
           repVal--;

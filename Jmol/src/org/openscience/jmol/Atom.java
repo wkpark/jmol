@@ -21,9 +21,8 @@ package org.openscience.jmol;
 import java.awt.Color;
 import java.util.Vector;
 import java.util.Enumeration;
-import javax.vecmath.Point3f;
 import javax.vecmath.Point3d;
-import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix4d;
 import org.openscience.cdk.tools.IsotopeFactory;
 
 /**
@@ -49,7 +48,7 @@ public class Atom extends org.openscience.cdk.Atom {
    * @param the type of this atom.
    */
   public Atom(BaseAtomType atomType, int atomNumber,
-              float x, float y, float z) {
+              double x, double y, double z) {
     super(atomType.getName(), new Point3d(x, y, z));
     try {
         IsotopeFactory.getInstance().configure(this);
@@ -168,15 +167,15 @@ public class Atom extends org.openscience.cdk.Atom {
   /**
    * Returns the atom's position.
    */
-  public Point3f getPosition() {
-    return new Point3f((float)getX3D(), (float)getY3D(), (float)getZ3D());
+  public Point3d getPosition() {
+    return point3D;
   }
 
   /**
    * Returns the atom's on-screen position. Note: the atom must
    * first be transformed. Otherwise, a point at the origin is returned.
    */
-  public Point3f getScreenPosition() {
+  public Point3d getScreenPosition() {
     return screenPosition;
   }
 
@@ -187,14 +186,14 @@ public class Atom extends org.openscience.cdk.Atom {
     return vector != null;
   }
 
-  public Point3f getVector() {
+  public Point3d getVector() {
     if (vector == null)
       return null;
-    return new Point3f(vector);
+    return new Point3d(vector);
   }
 
-  private static final Point3f zeroPoint = new Point3f();
-  public float getVectorMagnitude() {
+  private static final Point3d zeroPoint = new Point3d();
+  public double getVectorMagnitude() {
     // mth 2002 nov
     // I don't know why they were scaling by two,
     // but that is the way it was working
@@ -203,22 +202,22 @@ public class Atom extends org.openscience.cdk.Atom {
     return vector.distance(zeroPoint) * 2.0f;
   }
 
-  public Point3f getScaledVector() {
-    Point3f vectorScaled = new Point3f();
-    vectorScaled.scaleAdd(2.0f, vector, getPosition());
+  public Point3d getScaledVector() {
+    Point3d vectorScaled = new Point3d();
+    vectorScaled.scaleAdd(2.0, vector, getPosition());
     return vectorScaled;
   }
 
   /**
    * Sets the atom's vector.
    */
-  public void setVector(Point3f vector) {
+  public void setVector(Point3d vector) {
 
     if (vector == null) {
       this.vector = null;
     } else {
       if (this.vector == null) {
-        this.vector = new Point3f();
+        this.vector = new Point3d();
       }
       this.vector.set(vector);
     }
@@ -228,7 +227,7 @@ public class Atom extends org.openscience.cdk.Atom {
    * Returns the atom's on-screen vibrational vector. Note: the atom must
    * first be transformed. Otherwise, a point at the origin is returned.
    */
-  public Point3f getScreenVector() {
+  public Point3d getScreenVector() {
     return screenVector;
   }
 
@@ -243,7 +242,7 @@ public class Atom extends org.openscience.cdk.Atom {
     screenZ = (int)screenPosition.z;
     screenDiameter =
       control.getScreenDiameter(screenZ,
-                           (float) atomType.getBaseAtomType().getVdwRadius());
+                           atomType.getBaseAtomType().getVdwRadius());
     if (control.isPerspectiveDepth()) {
       int cameraZ = control.cameraZ;
       screenX = (screenX * cameraZ) / (cameraZ - screenZ);
@@ -310,15 +309,15 @@ public class Atom extends org.openscience.cdk.Atom {
    * factor of each other.
    */
   public static boolean closeEnoughToBond(Atom atom1, Atom atom2,
-      float distanceFudgeFactor) {
+      double distanceFudgeFactor) {
 
     if (atom1 != atom2) {
-      float squaredDistanceBetweenAtoms =
+      double squaredDistanceBetweenAtoms =
         atom1.getPosition().distanceSquared(atom2.getPosition());
-      float bondingDistance =
+      double bondingDistance =
         distanceFudgeFactor
-          * ((float) atom1.atomType.getBaseAtomType().getCovalentRadius()
-             + (float) atom2.atomType.getBaseAtomType().getCovalentRadius());
+          * (atom1.atomType.getBaseAtomType().getCovalentRadius()
+             + atom2.atomType.getBaseAtomType().getCovalentRadius());
 
       if (squaredDistanceBetweenAtoms <= bondingDistance * bondingDistance) {
         return true;
@@ -332,7 +331,7 @@ public class Atom extends org.openscience.cdk.Atom {
   /**
    * Position in screen space.
    */
-  private Point3f screenPosition = new Point3f();
+  private Point3d screenPosition = new Point3d();
 
   public int screenX;
   public int screenY;
@@ -352,7 +351,7 @@ public class Atom extends org.openscience.cdk.Atom {
   /**
    * Vibrational vector in world space.
    */
-  private Point3f vector = null;
+  private Point3d vector = null;
   
   /**
    * Atom number in set of all atoms. Not the atomic number!
@@ -362,7 +361,7 @@ public class Atom extends org.openscience.cdk.Atom {
   /**
    * Vibrational vector in screen space.
    */
-  private Point3f screenVector = new Point3f();
+  private Point3d screenVector = new Point3d();
 
   /**
    * A list of properties

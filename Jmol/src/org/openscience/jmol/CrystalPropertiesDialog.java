@@ -55,7 +55,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 
 /**
  * Cystal -> Properties dialog.
@@ -307,24 +307,24 @@ public class CrystalPropertiesDialog extends JDialog
 	
 	
 	if (index == 0) {    //Cartesian coord.
-        float[][] cartPos = unitCellBox.getCartesianPos();
+        double[][] cartPos = unitCellBox.getCartesianPos();
         for (int i = 0; i < natom; i++) {
           basisVectorData[i][0] = new String(String.valueOf(i));
           basisVectorData[i][1] = new String(unitCellBox.getAtomType(i).getName());
-          basisVectorData[i][2] = new Float(cartPos[i][0]);
-          basisVectorData[i][3] = new Float(cartPos[i][1]);
-          basisVectorData[i][4] = new Float(cartPos[i][2]);
+          basisVectorData[i][2] = new Double(cartPos[i][0]);
+          basisVectorData[i][3] = new Double(cartPos[i][1]);
+          basisVectorData[i][4] = new Double(cartPos[i][2]);
         }
         basisVectorTableModel.setData(basisVectorData);
         basisVectorTableModel.fireTableDataChanged();
       } else {             //Reduced coord.
-        float[][] redPos = unitCellBox.getReducedPos();
+        double[][] redPos = unitCellBox.getReducedPos();
         for (int i = 0; i < natom; i++) {
           basisVectorData[i][0] = new String(String.valueOf(i));
           basisVectorData[i][1] = new String(unitCellBox.getAtomType(i).getName());
-          basisVectorData[i][2] = new Float(redPos[i][0]);
-          basisVectorData[i][3] = new Float(redPos[i][1]);
-          basisVectorData[i][4] = new Float(redPos[i][2]);
+          basisVectorData[i][2] = new Double(redPos[i][0]);
+          basisVectorData[i][3] = new Double(redPos[i][1]);
+          basisVectorData[i][4] = new Double(redPos[i][2]);
         }
         basisVectorTableModel.setData(basisVectorData);
         basisVectorTableModel.fireTableDataChanged();
@@ -346,9 +346,9 @@ public class CrystalPropertiesDialog extends JDialog
         atom = chemFile.getFrame(currentFrameIndex).getAtomAt(i);
         basisVectorData[i][0] = new String(String.valueOf(i));
         basisVectorData[i][1] = new String(atom.getType().getName());
-        basisVectorData[i][2] = new Float(atom.getPosition().x);
-        basisVectorData[i][3] = new Float(atom.getPosition().y);
-        basisVectorData[i][4] = new Float(atom.getPosition().z);
+        basisVectorData[i][2] = new Double(atom.getPosition().x);
+        basisVectorData[i][3] = new Double(atom.getPosition().y);
+        basisVectorData[i][4] = new Double(atom.getPosition().z);
       }
       basisVectorTableModel.setData(basisVectorData);
       basisVectorTableModel.fireTableDataChanged();
@@ -677,8 +677,8 @@ public class CrystalPropertiesDialog extends JDialog
       setPrimVectorsState();
     }
 
-    float[][] rprim = unitCellBox.getRprim();
-    float[] acell = unitCellBox.getAcell();
+    double[][] rprim = unitCellBox.getRprim();
+    double[] acell = unitCellBox.getAcell();
     ((JTextField) (jRprim.elementAt(0)))
       .setText(rprim[0][0] + ", " + rprim[0][1] + ", " + rprim[0][2]);
     ((JTextField) (jRprim.elementAt(1)))
@@ -689,8 +689,8 @@ public class CrystalPropertiesDialog extends JDialog
     ((JTextField) (jAcell.elementAt(1))).setText(acell[1] + "");
     ((JTextField) (jAcell.elementAt(2))).setText(acell[2] + "");
     
-    float[] edges = unitCellBox.getEdges();
-    float[] angles = unitCellBox.getAngles();
+    double[] edges = unitCellBox.getEdges();
+    double[] angles = unitCellBox.getAngles();
     ((JTextField) (jEdges.elementAt(0))).setText(edges[0] + "");
     ((JTextField) (jEdges.elementAt(1))).setText(edges[1] + "");
     ((JTextField) (jEdges.elementAt(2))).setText(edges[2] + "");
@@ -872,9 +872,9 @@ public class CrystalPropertiesDialog extends JDialog
 
   protected void updateCrystalBoxPanel() {
 
-    float[][] atomBox = crystalBox.getAtomBox();
-    float[][] bondBox = crystalBox.getBondBox();
-    float[][] unitBox = crystalBox.getUnitBox();
+    double[][] atomBox = crystalBox.getAtomBox();
+    double[][] bondBox = crystalBox.getBondBox();
+    double[][] unitBox = crystalBox.getUnitBox();
     
     origAtomsOnly.setSelected(crystalBox.getOrigAtomsOnly());
 
@@ -1057,8 +1057,8 @@ public class CrystalPropertiesDialog extends JDialog
       Object data[][]=new Object[energyBand.getNumberOfKLines()][4];
       for (int i=0; i< energyBand.getNumberOfKLines();i++) {
 	data[i][0] = new String(String.valueOf(i));
-	data[i][1] = new Point3f(energyBand.getKLine(i).getOrigin());
-	data[i][2] = new Point3f(energyBand.getKLine(i).getEnd());
+	data[i][1] = new Point3d(energyBand.getKLine(i).getOrigin());
+	data[i][2] = new Point3d(energyBand.getKLine(i).getEnd());
 	data[i][3] = new String
 	  (String.valueOf(energyBand.getKLine(i).getNumberOfkPoints()));
       }
@@ -1283,13 +1283,13 @@ public class CrystalPropertiesDialog extends JDialog
   private void commitChange() {
 
     boolean isPrimVectorsCart;
-    float[][] rprim;
-    float[] acell;
-    float[] edges;
-    float[] angles;
-    float[][] atomBox;
-    float[][] bondBox;
-    float[][] unitBox;
+    double[][] rprim;
+    double[] acell;
+    double[] edges;
+    double[] angles;
+    double[][] atomBox;
+    double[][] bondBox;
+    double[][] unitBox;
     UnitCellBox unitCellBox;
     CrystalBox crystalBox;
 
@@ -1447,13 +1447,13 @@ public class CrystalPropertiesDialog extends JDialog
 
 
   /**
-   * Read a vector of text fields of the form "float, float, float".
+   * Read a vector of text fields of the form "double, double, double".
    */
-  private float[][] readField3(Vector jTextField) {
+  private double[][] readField3(Vector jTextField) {
 
     StringTokenizer st;
     String sn;
-    float matrix[][] = new float[jTextField.size()][3] ;
+    double matrix[][] = new double[jTextField.size()][3] ;
 
     for (int i = 0; i < jTextField.size(); i++) {
       st = new StringTokenizer(((JTextField) jTextField.elementAt(i))
@@ -1462,7 +1462,7 @@ public class CrystalPropertiesDialog extends JDialog
         if (st.hasMoreTokens()) {
           sn = st.nextToken();
           try {
-            matrix[i][j] = Float.parseFloat(sn);
+            matrix[i][j] = Double.parseDouble(sn);
           } catch (NumberFormatException e) {
             String message =
               JmolResourceHandler.getInstance().translate(
@@ -1482,14 +1482,14 @@ public class CrystalPropertiesDialog extends JDialog
 
 
   /**
-   * Read a vector of text fields of the form "float".
+   * Read a vector of text fields of the form "double".
    */
-  private float[] readField1(Vector jTextField) {
+  private double[] readField1(Vector jTextField) {
 
     StringTokenizer st;
     String sn;
     int dim = jTextField.size();
-    float vect[] = (float[]) Array.newInstance(float.class, dim);
+    double vect[] = (double[]) Array.newInstance(double.class, dim);
 
     for (int i = 0; i < jTextField.size(); i++) {
       st = new StringTokenizer(((JTextField) jTextField.elementAt(i))
@@ -1498,7 +1498,7 @@ public class CrystalPropertiesDialog extends JDialog
       if (st.hasMoreTokens()) {
         sn = st.nextToken();
         try {
-          vect[i] = Float.parseFloat(sn);
+          vect[i] = Double.parseDouble(sn);
         } catch (NumberFormatException e) {
           String message =
             JmolResourceHandler.getInstance().translate(

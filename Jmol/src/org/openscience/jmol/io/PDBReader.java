@@ -111,7 +111,7 @@ public class PDBReader extends DefaultChemFileReader {
         double x = FortranFormat.atof(sx);
         double y = FortranFormat.atof(sy);
         double z = FortranFormat.atof(sz);
-        frame.addAtom(atype, (float) x, (float) y, (float) z);
+        frame.addAtom(atype, x, y, z);
 /*
  * The following code for processing CONECT records has several defects.
  * 1. It uses a StringTokenizer to parse the CONECT record. This is

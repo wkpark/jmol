@@ -28,7 +28,7 @@ import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -56,7 +56,7 @@ import java.awt.event.ActionListener;
  * <p> An abinit input file is composed of many keywords arranged
  * in a non-specific
  * order. Each keyword is followed by one or more numbers (integers or
- * floats depending of the keyword).
+ * doubles depending of the keyword).
  * Characters following a '#' are ignored.
  * The fisrt line of the file can be considered as a title.
  * This implementaton supports only 1 dataset!!!
@@ -75,7 +75,7 @@ import java.awt.event.ActionListener;
 public class ABINITReader extends DefaultChemFileReader {
 
   // Factor conversion bohr to angstrom
-  protected static final float ANGSTROMPERBOHR = 0.529177249f;
+  protected static final double ANGSTROMPERBOHR = 0.529177249f;
 
   // This variable is used to parse the input file
   protected StringTokenizer st;

@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Vector;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import org.openscience.jmol.applet.NonJavaSort;
 
 /**
@@ -69,8 +69,8 @@ public class ChemFrameRenderer {
         shapesList.add(new AtomShape(atom));
       }
       if (control.getShowVectors()) {
-        float minAtomVectorMagnitude = frame.getMinAtomVectorMagnitude();
-        float atomVectorRange = frame.getAtomVectorRange();
+        double minAtomVectorMagnitude = frame.getMinAtomVectorMagnitude();
+        double atomVectorRange = frame.getAtomVectorRange();
         boolean showHydrogens = control.getShowHydrogens();
         for (int i = 0; i < numAtoms; ++i) {
           Atom atom = frame.getAtomAt(i);
@@ -84,12 +84,12 @@ public class ChemFrameRenderer {
       
       if (frame instanceof CrystalFrame) {
         CrystalFrame crystalFrame = (CrystalFrame) frame;
-        float[][] rprimd = crystalFrame.getRprimd();
+        double[][] rprimd = crystalFrame.getRprimd();
         
         // The three primitives vectors with arrows
         for (int i = 0; i < 3; i++) {
           VectorShape vector = new VectorShape(zeroPoint,
-              new Point3f(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
+              new Point3d(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
                 true);
           shapesList.add(vector);
           transformables.add(vector);
@@ -101,8 +101,8 @@ public class ChemFrameRenderer {
           Vector boxEdges = crystalFrame.getBoxEdges();
           for (int i = 0; i < boxEdges.size(); i = i + 2) {
             LineShape line =
-              new LineShape((Point3f) boxEdges.elementAt(i),
-                            (Point3f) boxEdges.elementAt(i + 1));
+              new LineShape((Point3d) boxEdges.elementAt(i),
+                            (Point3d) boxEdges.elementAt(i + 1));
             shapesList.add(line);
             transformables.add(line);
           }
@@ -140,7 +140,7 @@ public class ChemFrameRenderer {
   /**
    * Point for calculating lengths of vectors.
    */
-  private static final Point3f zeroPoint = new Point3f();
+  private static final Point3d zeroPoint = new Point3d();
 
 }
 

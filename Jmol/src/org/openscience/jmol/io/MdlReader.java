@@ -97,9 +97,9 @@ public class MdlReader extends DefaultChemFileReader {
         break;
       }
 
-      float x = Float.valueOf(line.substring(0, 10).trim()).floatValue();
-      float y = Float.valueOf(line.substring(10, 20).trim()).floatValue();
-      float z = Float.valueOf(line.substring(20, 30).trim()).floatValue();
+      double x = Double.valueOf(line.substring(0, 10).trim()).doubleValue();
+      double y = Double.valueOf(line.substring(10, 20).trim()).doubleValue();
+      double z = Double.valueOf(line.substring(20, 30).trim()).doubleValue();
       String atomSymbol = line.substring(31, 34).trim();
 
       frame.addAtom(atomSymbol, x, y, z);

@@ -142,9 +142,9 @@ class Mopac97Reader extends DefaultChemFileReader {
         throw new IOException("Error reading coordinates");
       }
       if (atomName != null) {
-        mol.addAtom(atomName, (float) x, (float) y, (float) z);
+        mol.addAtom(atomName, x, y, z);
       } else {
-        mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
+        mol.addAtom(atomicNumber, x, y, z);
       }
     }
   }

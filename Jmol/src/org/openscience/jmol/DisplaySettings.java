@@ -144,8 +144,8 @@ public class DisplaySettings implements Cloneable {
     result = 37*result + atomDrawMode;
     result = 37*result + atomColorProfile;
     result = 37*result + bondDrawMode;
-    result = 37*result + Float.floatToIntBits(bondWidth);
-    result = 37*result + Float.floatToIntBits(bondScreenScale);
+    result = 37*result + Float.floatToIntBits((float)bondWidth);
+    result = 37*result + Float.floatToIntBits((float)bondScreenScale);
     result = 37*result + (outlineColor == null ? 0 : outlineColor.hashCode());
     result = 37*result + (propertyMode == null ? 0 : propertyMode.hashCode());
     result = 37*result + (pickedColor == null ? 0 : pickedColor.hashCode());
@@ -158,10 +158,10 @@ public class DisplaySettings implements Cloneable {
     result = 37*result + (showVectors ? 0 : 1);
     result = 37*result + (showHydrogens ? 0 : 1);
     result = 37*result + (showDarkerOutline ? 0 : 1);
-    result = 37*result + Float.floatToIntBits(vectorScreenScale);
-    result = 37*result + Float.floatToIntBits(atomScreenScale);
+    result = 37*result + Float.floatToIntBits((float)vectorScreenScale);
+    result = 37*result + Float.floatToIntBits((float)atomScreenScale);
     result = 37*result + atomZOffset;
-    result = 37*result + Float.floatToIntBits(atomDepthFactor);
+    result = 37*result + Float.floatToIntBits((float)atomDepthFactor);
     long longValue = Double.doubleToLongBits(atomSphereFactor);
     result = 37*result + (int)(longValue ^ (longValue >>>32));
     result = 37*result + (doFastRendering ? 0 : 1);
@@ -237,19 +237,19 @@ public class DisplaySettings implements Cloneable {
     return bondDrawMode;
   }
 
-  public float getBondWidth() {
+  public double getBondWidth() {
     return bondWidth;
   }
 
-  public void setBondWidth(float width) {
+  public void setBondWidth(double width) {
     bondWidth = width;
   }
 
-  public float getBondScreenScale() {
+  public double getBondScreenScale() {
     return bondScreenScale;
   }
 
-  public void setBondScreenScale(float scale) {
+  public void setBondScreenScale(double scale) {
     bondScreenScale = scale;
   }
 
@@ -378,9 +378,9 @@ public class DisplaySettings implements Cloneable {
    */
   private int bondDrawMode = QUICKDRAW;
 
-  private float bondWidth = 0.1f;
+  private double bondWidth = 0.1f;
 
-  private float bondScreenScale;
+  private double bondScreenScale;
 
   /**
    * Color used for outlining atoms and bonds in QUICKDRAW and
@@ -522,7 +522,7 @@ public class DisplaySettings implements Cloneable {
   /**
    * Gets the light source vector.
    */
-  public float[] getLightSourceVector() {
+  public double[] getLightSourceVector() {
     return lightSource;
   }
 
@@ -530,7 +530,7 @@ public class DisplaySettings implements Cloneable {
    * Place the light source for shaded atoms to the upper right of
    * the atoms and out of the plane.
    */
-  private float[] lightSource = {
+  private double[] lightSource = {
     -1.0f, -1.0f, 2.0f
   };
 
@@ -563,7 +563,7 @@ public class DisplaySettings implements Cloneable {
   /**
    * Gets the vector screen scale.
    */
-  public float getVectorScreenScale() {
+  public double getVectorScreenScale() {
     return vectorScreenScale;
   }
 
@@ -571,19 +571,19 @@ public class DisplaySettings implements Cloneable {
    * Sets the vector screen scale.
    * @param scale  the screen scale
    */
-  public void setVectorScreenScale(float scale) {
+  public void setVectorScreenScale(double scale) {
     vectorScreenScale = scale;
   }
 
   /**
    * Vector screen scale.
    */
-  private float vectorScreenScale;
+  private double vectorScreenScale;
 
   /**
    * Gets the atom screen scale.
    */
-  public float getAtomScreenScale() {
+  public double getAtomScreenScale() {
     return atomScreenScale;
   }
 
@@ -591,14 +591,14 @@ public class DisplaySettings implements Cloneable {
    * Sets the atom screen scale.
    * @param scale  the screen scale
    */
-  public void setAtomScreenScale(float scale) {
+  public void setAtomScreenScale(double scale) {
     atomScreenScale = scale;
   }
 
   /**
    * Atom screen scale.
    */
-  private float atomScreenScale;
+  private double atomScreenScale;
 
   /**
    * Sets the atom z offset.
@@ -624,21 +624,21 @@ public class DisplaySettings implements Cloneable {
    * Sets the atom depth factor.
    * @param z  the z offset
    */
-  public void setAtomDepthFactor(float f) {
+  public void setAtomDepthFactor(double f) {
     atomDepthFactor = f;
   }
 
   /**
    * Gets the atom depth factor.
    */
-  public float getAtomDepthFactor() {
+  public double getAtomDepthFactor() {
     return atomDepthFactor;
   }
 
   /**
    * Atom depth factor.
    */
-  private float atomDepthFactor = 0.33f;
+  private double atomDepthFactor = 0.33f;
 
   /**
    * Sets the atom sphere factor.

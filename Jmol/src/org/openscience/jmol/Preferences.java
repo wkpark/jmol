@@ -156,24 +156,6 @@ public class Preferences {
   }
   
   /**
-   * Returns the float value associated with the specified key.
-   *
-   * @param key the key whose value is returned.
-   * @param def value returned if the key is not found.
-   */
-  public float getFloat(String key, float def) {
-    if (properties.containsKey(key)) {
-      try {
-        String value = properties.getProperty(key);
-        return Float.parseFloat(value);
-      } catch (NumberFormatException ex) {
-        // Ignore and return default value.
-      }
-    }
-    return def;
-  }
-  
-  /**
    * Returns the int value associated with the specified key.
    *
    * @param key the key whose value is returned.
@@ -237,16 +219,6 @@ public class Preferences {
    */
   public void putDouble(String key, double value) {
     storeValue(key, Double.toString(value));
-  }
-  
-  /**
-   * Stores the float value associated with the specified key.
-   *
-   * @param key the key whose value is stored.
-   * @param value the value to be assigned to the given key.
-   */
-  public void putFloat(String key, float value) {
-    storeValue(key, Float.toString(value));
   }
   
   /**

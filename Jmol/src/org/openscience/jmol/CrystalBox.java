@@ -28,9 +28,9 @@ package org.openscience.jmol;
  */
 public class CrystalBox {
 
-  private float[][] atomBox;
-  private float[][] bondBox;
-  private float[][] unitBox;
+  private double[][] atomBox;
+  private double[][] bondBox;
+  private double[][] unitBox;
 
   // if true, consider only the atoms as there are given
   // in unitCellBox. Do not effectue any translation.
@@ -54,11 +54,11 @@ public class CrystalBox {
    *
    * The *unitBox* defines how many unit cell box will be drawn.
    *
-   * @param atomBox a <code>float[2][3]</code> value
-   * @param bondBox a <code>float[2][3]</code> value
-   * @param unitBox a <code>float[2][3]</code> value
+   * @param atomBox a <code>double[2][3]</code> value
+   * @param bondBox a <code>double[2][3]</code> value
+   * @param unitBox a <code>double[2][3]</code> value
    */
-  public CrystalBox(float[][] atomBox, float[][] bondBox, float unitBox[][]) {
+  public CrystalBox(double[][] atomBox, double[][] bondBox, double unitBox[][]) {
     this.atomBox = atomBox;
     this.bondBox = bondBox;
     this.unitBox = unitBox;
@@ -70,7 +70,7 @@ public class CrystalBox {
    */
   public CrystalBox() {
 
-    atomBox = new float[2][3];
+    atomBox = new double[2][3];
     atomBox[0][0] = 0;
     atomBox[0][1] = 0;
     atomBox[0][2] = 0;
@@ -78,7 +78,7 @@ public class CrystalBox {
     atomBox[1][1] = 1;
     atomBox[1][2] = 1;
 
-    bondBox = new float[2][3];
+    bondBox = new double[2][3];
     bondBox[0][0] = 0;
     bondBox[0][1] = 0;
     bondBox[0][2] = 0;
@@ -86,7 +86,7 @@ public class CrystalBox {
     bondBox[1][1] = 1;
     bondBox[1][2] = 1;
 
-    unitBox = new float[2][3];
+    unitBox = new double[2][3];
     unitBox[0][0] = 0;
     unitBox[0][1] = 0;
     unitBox[0][2] = 0;
@@ -99,27 +99,27 @@ public class CrystalBox {
   /**
    * Describe <code>setAtomBox</code> method here.
    *
-   * @param atomBox a <code>float[][]</code> value
+   * @param atomBox a <code>double[][]</code> value
    */
-  public void setAtomBox(float[][] atomBox) {
+  public void setAtomBox(double[][] atomBox) {
     this.atomBox = atomBox;
   }
 
   /**
    * Describe <code>setBondBox</code> method here.
    *
-   * @param bondBox a <code>float[][]</code> value
+   * @param bondBox a <code>double[][]</code> value
    */
-  public void setBondBox(float[][] bondBox) {
+  public void setBondBox(double[][] bondBox) {
     this.bondBox = bondBox;
   }
 
   /**
    * Describe <code>setUnitBox</code> method here.
    *
-   * @param bondBox a <code>float[][]</code> value
+   * @param bondBox a <code>double[][]</code> value
    */
-  public void setUnitBox(float[][] unitBox) {
+  public void setUnitBox(double[][] unitBox) {
     this.unitBox = unitBox;
   }
 
@@ -132,27 +132,27 @@ public class CrystalBox {
   /**
    * Describe <code>getAtomBox</code> method here.
    *
-   * @return a <code>float[][]</code> value
+   * @return a <code>double[][]</code> value
    */
-  public float[][] getAtomBox() {
+  public double[][] getAtomBox() {
     return atomBox;
   }
 
   /**
    * Describe <code>getBondBox</code> method here.
    *
-   * @return a <code>float[][]</code> value
+   * @return a <code>double[][]</code> value
    */
-  public float[][] getBondBox() {
+  public double[][] getBondBox() {
     return bondBox;
   }
 
   /**
    * Describe <code>getUnitBox</code> method here.
    *
-   * @return a <code>float[][]</code> value
+   * @return a <code>double[][]</code> value
    */
-  public float[][] getUnitBox() {
+  public double[][] getUnitBox() {
     return unitBox;
   }
 

@@ -59,7 +59,7 @@ public class JmolSimpleBean extends java.awt.Panel
     display.toggleBonds();
   }
 
-  public void setZoomFactor(float factor) {
+  public void setZoomFactor(double factor) {
 
     if (factor < 0.1f) {
       display.setZoomFactor(0.1f);
@@ -68,7 +68,7 @@ public class JmolSimpleBean extends java.awt.Panel
     }
   }
 
-  public void setAtomSphereFactor(float factor) {
+  public void setAtomSphereFactor(double factor) {
 
     if (factor < 0.1f) {
       settings.setAtomSphereFactor(0.2 * 0.1);

@@ -22,7 +22,7 @@ package org.openscience.jmol;
 import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.XYZSaver;
 import java.io.File;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import java.awt.Container;
 import java.awt.Window;
 import java.awt.Dimension;
@@ -420,11 +420,11 @@ public class Vibrate extends JDialog implements ActionListener,
         coord[1] += force[1] * scaling;
         coord[2] += force[2] * scaling;
         try {
-          int atomIndex = newFrame.addAtom(atom.getType(), (float) coord[0],
-                            (float) coord[1], (float) coord[2]);
+          int atomIndex = newFrame.addAtom(atom.getType(), coord[0],
+                                           coord[1], coord[2]);
           newFrame.getAtomAt(atomIndex)
-              .setVector(new Point3f((float) forceVector[0],
-                (float) forceVector[1], (float) forceVector[2]));
+              .setVector(new Point3d(forceVector[0],
+                                     forceVector[1], forceVector[2]));
         } catch (Exception ex) {
           System.out.println(ex);
           ex.printStackTrace();

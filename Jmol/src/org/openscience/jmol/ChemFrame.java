@@ -22,8 +22,8 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
 import java.util.Enumeration;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Point3d;
 import java.io.PrintStream;
 
 /**
@@ -77,13 +77,13 @@ public class ChemFrame implements Transformable {
    */
   private Vector dhlist;
 
-  private Point3f centerGeometric;
-  private Point3f centerRotation;
-  private float radiusGeometric;
-  private float radiusRotation;
-  private float minAtomVectorMagnitude;
-  private float maxAtomVectorMagnitude;
-  private float atomVectorRange;
+  private Point3d centerGeometric;
+  private Point3d centerRotation;
+  private double radiusGeometric;
+  private double radiusRotation;
+  private double minAtomVectorMagnitude;
+  private double maxAtomVectorMagnitude;
+  private double atomVectorRange;
 
   /**
    * Constructor for a ChemFrame with a known number of atoms.
@@ -189,11 +189,11 @@ public class ChemFrame implements Transformable {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(String name, float x, float y, float z) {
+  public int addAtom(String name, double x, double y, double z) {
     return addAtom(name, name, x, y, z);
   }
 
-  public int addAtom(String name, String root, float x, float y, float z) {
+  public int addAtom(String name, String root, double x, double y, double z) {
     return addAtom(BaseAtomType.get(name, root), x, y, z);
   }
 
@@ -206,7 +206,7 @@ public class ChemFrame implements Transformable {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(BaseAtomType type, float x, float y, float z) {
+  public int addAtom(BaseAtomType type, double x, double y, double z) {
 
     clearBounds();
     int i = numberAtoms;
@@ -236,7 +236,7 @@ public class ChemFrame implements Transformable {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(int atomicNumber, float x, float y, float z) {
+  public int addAtom(int atomicNumber, double x, double y, double z) {
 
     BaseAtomType baseType = BaseAtomType.get(atomicNumber);
     if (baseType == null) {
@@ -275,27 +275,27 @@ public class ChemFrame implements Transformable {
     return numberAtoms;
   }
 
-  public float getGeometricRadius() {
+  public double getGeometricRadius() {
     findBounds();
     return radiusGeometric;
   }
 
-  public Point3f getGeometricCenter() {
+  public Point3d getGeometricCenter() {
     findBounds();
     return centerGeometric;
   }
 
-  public Point3f getRotationCenter() {
+  public Point3d getRotationCenter() {
     findBounds();
     return centerRotation;
   }
 
-  public float getRotationRadius() {
+  public double getRotationRadius() {
     findBounds();
     return radiusRotation;
   }
 
-  public void setRotationCenter(Point3f newCenterOfRotation) {
+  public void setRotationCenter(Point3d newCenterOfRotation) {
     if (newCenterOfRotation != null) {
       centerRotation = newCenterOfRotation;
       radiusRotation = calculateRadius(centerRotation);
@@ -305,17 +305,17 @@ public class ChemFrame implements Transformable {
     }
   }
 
-  public float getMinAtomVectorMagnitude() {
+  public double getMinAtomVectorMagnitude() {
     findBounds();
     return minAtomVectorMagnitude;
   }
 
-  public float getMaxAtomVectorMagnitude() {
+  public double getMaxAtomVectorMagnitude() {
     findBounds();
     return maxAtomVectorMagnitude;
   }
 
-  public float getAtomVectorRange() {
+  public double getAtomVectorRange() {
     findBounds();
     return maxAtomVectorMagnitude - minAtomVectorMagnitude;
   }
@@ -343,7 +343,7 @@ public class ChemFrame implements Transformable {
    */
   public double[] getAtomCoords(int i) {
 
-    Point3f position = atoms[i].getPosition();
+    Point3d position = atoms[i].getPosition();
     double[] coords = {
       position.x, position.y, position.z
     };
@@ -464,7 +464,7 @@ public class ChemFrame implements Transformable {
   void calculateAtomVectorMagnitudeRange() {
     minAtomVectorMagnitude = maxAtomVectorMagnitude = 0;
     for (int i = 0; i < numberAtoms; ++i) {
-      float magnitude=atoms[i].getVectorMagnitude();
+      double magnitude=atoms[i].getVectorMagnitude();
       if (magnitude > maxAtomVectorMagnitude) {
         maxAtomVectorMagnitude = magnitude;
       } else if ((magnitude < minAtomVectorMagnitude) ||
@@ -475,7 +475,7 @@ public class ChemFrame implements Transformable {
     atomVectorRange = maxAtomVectorMagnitude - minAtomVectorMagnitude;
   }
 
-  Point3f calculateGeometricCenter() {
+  Point3d calculateGeometricCenter() {
     /**
      * Note that this method is overridden by CrystalFrame
      */
@@ -483,29 +483,29 @@ public class ChemFrame implements Transformable {
     // of the cartesian coordinates as stored in the file. Note that this is
     // not really the center because an atom could be stuck way up in one of
     // the corners of the box
-    Point3f position = atoms[0].getPosition();
-    float minX = position.x, maxX = minX;
-    float minY = position.y, maxY = minY;
-    float minZ = position.z, maxZ = minZ;
+    Point3d position = atoms[0].getPosition();
+    double minX = position.x, maxX = minX;
+    double minY = position.y, maxY = minY;
+    double minZ = position.z, maxZ = minZ;
 
     for (int i = 1; i < numberAtoms; ++i) {
       position = atoms[i].getPosition();
-      float x = position.x;
+      double x = position.x;
       if (x < minX) { minX = x; }
       if (x > maxX) { maxX = x; }
-      float y = position.y;
+      double y = position.y;
       if (y < minY) { minY = y; }
       if (y > maxY) { maxY = y; }
-      float z = position.z;
+      double z = position.z;
       if (z < minZ) { minZ = z; }
       if (z > maxZ) { maxZ = z; }
     }
-    return new Point3f((minX + maxX) / 2,
+    return new Point3d((minX + maxX) / 2,
                        (minY + maxY) / 2,
                        (minZ + maxZ) / 2);
   }
 
-  float calculateRadius(Point3f center) {
+  double calculateRadius(Point3d center) {
     /**
      * Note that this method is overridden by CrystalFrame
      */
@@ -519,23 +519,23 @@ public class ChemFrame implements Transformable {
     // them yet ... so they are not included. samples/cs2.xyz has atom vectors
     //
     // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
-    float radius = 0.0f;
-    float atomSphereFactor = (float) Jmol.control.getAtomSphereFactor();
+    double radius = 0.0f;
+    double atomSphereFactor = Jmol.control.getAtomSphereFactor();
     for (int i = 0; i < numberAtoms; ++i) {
       Atom atom = atoms[i];
-      Point3f posAtom = atom.getPosition();
-      float distAtom = center.distance(posAtom);
-      float distVdw =
-        distAtom + (float)(atom.getType().getVdwRadius() * atomSphereFactor);
+      Point3d posAtom = atom.getPosition();
+      double distAtom = center.distance(posAtom);
+      double distVdw =
+        distAtom + (atom.getType().getVdwRadius() * atomSphereFactor);
       if (distVdw > radius)
         radius = distVdw;
       if (atom.hasVector()) {
         // mth 2002 nov
         // this calculation isn't right, but I can't get it to work with
         // samples/cs2.syz when I try to use
-        // float distVector = center.distance(atom.getScaledVector());
+        // double distVector = center.distance(atom.getScaledVector());
         // So I am over-estimating and giving up for the day. 
-        float distVector = distAtom + atom.getVectorMagnitude();
+        double distVector = distAtom + atom.getVectorMagnitude();
         if (distVector > radius)
           radius = distVector;
       }

@@ -58,10 +58,10 @@ public class GhemicalMMReader extends DefaultChemFileReader {
   public ChemFrame readFrame() throws IOException {
 
     int[] atoms = new int[1];
-    float[] atomxs = new float[1];
-    float[] atomys = new float[1];
-    float[] atomzs = new float[1];
-    float[] atomcharges = new float[1];
+    double[] atomxs = new double[1];
+    double[] atomys = new double[1];
+    double[] atomzs = new double[1];
+    double[] atomcharges = new double[1];
 
     int[] bondatomid1 = new int[1];
     int[] bondatomid2 = new int[1];
@@ -83,9 +83,9 @@ public class GhemicalMMReader extends DefaultChemFileReader {
         // determine number of atoms to read
         numberOfAtoms = Integer.parseInt(st.nextToken());
         atoms = new int[numberOfAtoms];
-        atomxs = new float[numberOfAtoms];
-        atomys = new float[numberOfAtoms];
-        atomzs = new float[numberOfAtoms];
+        atomxs = new double[numberOfAtoms];
+        atomys = new double[numberOfAtoms];
+        atomzs = new double[numberOfAtoms];
 
         for (int i = 0; i < numberOfAtoms; i++) {
           line = input.readLine();
@@ -124,12 +124,12 @@ public class GhemicalMMReader extends DefaultChemFileReader {
           line = input.readLine();
           StringTokenizer atomInfoFields = new StringTokenizer(line);
           int atomID = Integer.parseInt(atomInfoFields.nextToken());
-          float x = Float.valueOf(atomInfoFields.nextToken()).floatValue();
-          float y = Float.valueOf(atomInfoFields.nextToken()).floatValue();
-          float z = Float.valueOf(atomInfoFields.nextToken()).floatValue();
-          atomxs[atomID] = x * (float) 10;    // convert to Angstrom
-          atomys[atomID] = y * (float) 10;
-          atomzs[atomID] = z * (float) 10;
+          double x = Double.valueOf(atomInfoFields.nextToken()).doubleValue();
+          double y = Double.valueOf(atomInfoFields.nextToken()).doubleValue();
+          double z = Double.valueOf(atomInfoFields.nextToken()).doubleValue();
+          atomxs[atomID] = x * 10;    // convert to Angstrom
+          atomys[atomID] = y * 10;
+          atomzs[atomID] = z * 10;
         }
       } else if ("!Charges".equals(command)) {
       } else if ("!End".equals(command)) {

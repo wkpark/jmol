@@ -19,7 +19,7 @@
  */
 package org.openscience.jmol;
 
-import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix4d;
 
 /**
  * Provides an interface for objects which are transformed

@@ -24,7 +24,7 @@ import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Charge;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.FortranFormat;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -97,7 +97,7 @@ public class XYZSaver extends FileSaver {
         }
 
         if (a.getVector() != null) {
-          Point3f vector = a.getVector();
+          Point3d vector = a.getVector();
           st = st + "\t" + vector.x + "\t" + vector.y + "\t" + vector.z;
         }
         st = st;

@@ -33,24 +33,24 @@ public class ArrowLine {
   private double ctheta = 0.0;
   private double stheta = 0.0;
 
-  private float x1;
-  private float y1;
-  private float x2;
-  private float y2;
+  private double x1;
+  private double y1;
+  private double x2;
+  private double y2;
   private double magnitude;
 
   static int[] xpoints = new int[4];
   static int[] ypoints = new int[4];
 
   /*
-  public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
+  public ArrowLine(Graphics gc, double x1, double y1, double x2, double y2,
       boolean arrowStart, boolean arrowEnd) {
     this(gc, x1, y1, x2, y2, arrowStart, arrowEnd, 1.0);
   }
   */
 
   public ArrowLine(Graphics gc, DisplayControl control,
-                   float x1, float y1, float x2, float y2,
+                   double x1, double y1, double x2, double y2,
                    boolean arrowStart, boolean arrowEnd, double scaling) {
 
     this.scaling = scaling;

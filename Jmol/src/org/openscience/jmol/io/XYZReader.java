@@ -23,7 +23,7 @@ import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Charge;
 import org.openscience.jmol.FortranFormat;
 import java.util.StringTokenizer;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import java.io.Reader;
 import java.io.PrintStream;
 import java.io.BufferedReader;
@@ -150,8 +150,7 @@ public class XYZReader extends DefaultChemFileReader {
           y = convertToDouble(sy, readingBohr);
           z = convertToDouble(sz, readingBohr);
 
-          int atomIndex = frame.addAtom(aname, (float) x, (float) y,
-                            (float) z);
+          int atomIndex = frame.addAtom(aname, x, y, z);
 
           if ((numberTokens == 5) || (numberTokens > 7)) {
             double c = FortranFormat.atof(st.nextToken());
@@ -159,11 +158,11 @@ public class XYZReader extends DefaultChemFileReader {
           }
 
           if (numberTokens >= 7) {
-            float vect[] = new float[3];
-            vect[0] = (float) FortranFormat.atof(st.nextToken());
-            vect[1] = (float) FortranFormat.atof(st.nextToken());
-            vect[2] = (float) FortranFormat.atof(st.nextToken());
-            frame.getAtomAt(atomIndex).setVector(new Point3f(vect));
+            double vect[] = new double[3];
+            vect[0] = FortranFormat.atof(st.nextToken());
+            vect[1] = FortranFormat.atof(st.nextToken());
+            vect[2] =  FortranFormat.atof(st.nextToken());
+            frame.getAtomAt(atomIndex).setVector(new Point3d(vect));
           }
 
         }

@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Enumeration;
-import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix4d;
 import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
 import java.io.PrintStream;
@@ -51,7 +51,7 @@ public class PovraySaver extends FileSaver {
   private PovrayStyleWriter style;
   private int framenumber = 0;
   
-  private float edge;
+  private double edge;
   protected ChemFile cf;
 
   /**

@@ -2,8 +2,8 @@
 package org.openscience.jmol;
 
 import java.util.Vector;
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Matrix3d;
 import java.lang.Math;
 import java.lang.reflect.Array;    //fa
 
@@ -69,7 +69,7 @@ public class CrystalFile extends ChemFile {
   private Vector crystalAtomRedPos = new Vector(1);    //one element per frame
 
   // each element is itself a Vector containing the 
-  // atomic position (float[3]) of each atom
+  // atomic position (double[3]) of each atom
 
 
   /**
@@ -93,7 +93,7 @@ public class CrystalFile extends ChemFile {
    *
    * @param cf a <code>ChemFile</code> value.
    */
-  public CrystalFile(ChemFile cf, float[][] rprim, float[] acell) {
+  public CrystalFile(ChemFile cf, double[][] rprim, double[] acell) {
 
     crystalBoxS = new CrystalBox();
 
@@ -103,7 +103,7 @@ public class CrystalFile extends ChemFile {
     for (int i = 0; i < nframes; i++) {
       ChemFrame frame = cf.getFrame(i);
       int natom = frame.getNumberOfAtoms();
-      float[][] cartPos = new float[natom][3];
+      double[][] cartPos = new double[natom][3];
       int[] atomType = new int[natom];
       String info = frame.getInfo();
 
@@ -288,18 +288,18 @@ public class CrystalFile extends ChemFile {
   private void generateAtoms(Vector crystalFAtomRedPos,
       CrystalFrame crystalFrame, Vector frameEquivAtoms[]) {
 
-    float[][] unitCellAtomRedPos = unitCellBoxS.getReducedPos();
-    float[][] atomBox = crystalBoxS.getAtomBox();
+    double[][] unitCellAtomRedPos = unitCellBoxS.getReducedPos();
+    double[][] atomBox = crystalBoxS.getAtomBox();
     int natom = unitCellBoxS.getNumberOfAtoms();
     int mina, minb, minc, maxa, maxb, maxc;
-    Matrix3f op = new Matrix3f();
+    Matrix3d op = new Matrix3d();
 
 
     //Operator "op" needed to transform atomic crystal 
     //coordinate (atomCrystCoord) in cartesian atomic 
     //position (atomPos) 
 
-    op.transpose(arrayToMatrix3f(unitCellBoxS.getRprimd()));
+    op.transpose(arrayToMatrix3d(unitCellBoxS.getRprimd()));
 
 
     int atomCrystalIndex = 0;
@@ -329,14 +329,14 @@ public class CrystalFile extends ChemFile {
         for (int j = minb; j <= maxb; j++) {
           for (int k = minc; k <= maxc; k++) {
 
-            float[] newAtomRedPos = new float[3];
-            newAtomRedPos[0] = unitCellAtomRedPos[at][0] + (float) i;
-            newAtomRedPos[1] = unitCellAtomRedPos[at][1] + (float) j;
-            newAtomRedPos[2] = unitCellAtomRedPos[at][2] + (float) k;
+            double[] newAtomRedPos = new double[3];
+            newAtomRedPos[0] = unitCellAtomRedPos[at][0] + i;
+            newAtomRedPos[1] = unitCellAtomRedPos[at][1] + j;
+            newAtomRedPos[2] = unitCellAtomRedPos[at][2] + k;
 
             crystalFAtomRedPos.addElement(newAtomRedPos);
 
-            float[] newAtomCartPos = new float[3];
+            double[] newAtomCartPos = new double[3];
             newAtomCartPos = mulVec(op, newAtomRedPos);
 
             crystalFrame.addAtom(unitCellBoxS.getAtomType(at),
@@ -357,60 +357,60 @@ public class CrystalFile extends ChemFile {
 
   private Vector generateUnitBoxFrame() {
 
-    float[][] unitBox = crystalBoxS.getUnitBox();
+    double[][] unitBox = crystalBoxS.getUnitBox();
     int mina, minb, minc, maxa, maxb, maxc;
-    Matrix3f op = new Matrix3f();
+    Matrix3d op = new Matrix3d();
     Vector boxEdgesTemplate = new Vector(24);
     Vector boxEdges = new Vector(1);
-    Point3f vec;
-    float[][] rprimd = unitCellBoxS.getRprimd();
+    Point3d vec;
+    double[][] rprimd = unitCellBoxS.getRprimd();
 
     //Compute the Unit Cell Box edges
-    boxEdgesTemplate.add(new Point3f());           //O
-    boxEdgesTemplate.add(new Point3f(1, 0, 0));    //E
+    boxEdgesTemplate.add(new Point3d());           //O
+    boxEdgesTemplate.add(new Point3d(1, 0, 0));    //E
 
-    boxEdgesTemplate.add(new Point3f());           //O
-    boxEdgesTemplate.add(new Point3f(0, 1, 0));    //E
+    boxEdgesTemplate.add(new Point3d());           //O
+    boxEdgesTemplate.add(new Point3d(0, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3f());           //O
-    boxEdgesTemplate.add(new Point3f(0, 0, 1));    //E
+    boxEdgesTemplate.add(new Point3d());           //O
+    boxEdgesTemplate.add(new Point3d(0, 0, 1));    //E
 
 
-    boxEdgesTemplate.add(new Point3f(1, 0, 0));    //O
-    boxEdgesTemplate.add(new Point3f(1, 1, 0));    //E
+    boxEdgesTemplate.add(new Point3d(1, 0, 0));    //O
+    boxEdgesTemplate.add(new Point3d(1, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3f(1, 1, 0));    //O
-    boxEdgesTemplate.add(new Point3f(0, 1, 0));    //E
+    boxEdgesTemplate.add(new Point3d(1, 1, 0));    //O
+    boxEdgesTemplate.add(new Point3d(0, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3f(0, 1, 0));    //O
-    boxEdgesTemplate.add(new Point3f(0, 1, 1));    //E
+    boxEdgesTemplate.add(new Point3d(0, 1, 0));    //O
+    boxEdgesTemplate.add(new Point3d(0, 1, 1));    //E
 
-    boxEdgesTemplate.add(new Point3f(0, 1, 1));    //O
-    boxEdgesTemplate.add(new Point3f(0, 0, 1));    //E
+    boxEdgesTemplate.add(new Point3d(0, 1, 1));    //O
+    boxEdgesTemplate.add(new Point3d(0, 0, 1));    //E
 
-    boxEdgesTemplate.add(new Point3f(0, 0, 1));    //O
-    boxEdgesTemplate.add(new Point3f(1, 0, 1));    //E
+    boxEdgesTemplate.add(new Point3d(0, 0, 1));    //O
+    boxEdgesTemplate.add(new Point3d(1, 0, 1));    //E
 
-    boxEdgesTemplate.add(new Point3f(1, 0, 1));    //O
-    boxEdgesTemplate.add(new Point3f(1, 0, 0));    //E
+    boxEdgesTemplate.add(new Point3d(1, 0, 1));    //O
+    boxEdgesTemplate.add(new Point3d(1, 0, 0));    //E
 
-    boxEdgesTemplate.add(new Point3f(1, 0, 1));    //O
-    boxEdgesTemplate.add(new Point3f(1, 1, 1));    //E
+    boxEdgesTemplate.add(new Point3d(1, 0, 1));    //O
+    boxEdgesTemplate.add(new Point3d(1, 1, 1));    //E
 
-    boxEdgesTemplate.add(new Point3f(1, 1, 1));    //O
-    boxEdgesTemplate.add(new Point3f(1, 1, 0));    //E
+    boxEdgesTemplate.add(new Point3d(1, 1, 1));    //O
+    boxEdgesTemplate.add(new Point3d(1, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3f(0, 1, 1));    //O
-    boxEdgesTemplate.add(new Point3f(1, 1, 1));    //E
+    boxEdgesTemplate.add(new Point3d(0, 1, 1));    //O
+    boxEdgesTemplate.add(new Point3d(1, 1, 1));    //E
 
     //Operator "op" needed to transform atomic crystal 
     //coordinate (atomCrystCoord) in cartesian atomic 
     //position (atomPos) 
 
-    op.transpose(arrayToMatrix3f(unitCellBoxS.getRprimd()));
+    op.transpose(arrayToMatrix3d(unitCellBoxS.getRprimd()));
 
-    float[] redEdge = new float[3];
-    float[] cartEdge;
+    double[] redEdge = new double[3];
+    double[] cartEdge;
 
     for (int i = intSup(unitBox[0][0]); i <= intInf(unitBox[1][0]) - 1; i++) {
       for (int j = intSup(unitBox[0][1]); j <= intInf(unitBox[1][1]) - 1;
@@ -419,13 +419,13 @@ public class CrystalFile extends ChemFile {
             k++) {
 
           for (int l = 0; l < boxEdgesTemplate.size(); l++) {
-            redEdge[0] = ((Point3f) boxEdgesTemplate.elementAt(l)).x + i;
-            redEdge[1] = ((Point3f) boxEdgesTemplate.elementAt(l)).y + j;
-            redEdge[2] = ((Point3f) boxEdgesTemplate.elementAt(l)).z + k;
+            redEdge[0] = ((Point3d) boxEdgesTemplate.elementAt(l)).x + i;
+            redEdge[1] = ((Point3d) boxEdgesTemplate.elementAt(l)).y + j;
+            redEdge[2] = ((Point3d) boxEdgesTemplate.elementAt(l)).z + k;
 
             cartEdge = mulVec(op, redEdge);
 
-            boxEdges.addElement(new Point3f(cartEdge[0], cartEdge[1],
+            boxEdges.addElement(new Point3d(cartEdge[0], cartEdge[1],
                 cartEdge[2]));
 
           }    //end l;
@@ -448,13 +448,13 @@ public class CrystalFile extends ChemFile {
    */
   public int rebond(int whichframe) {
 
-    float[] redPos;
+    double[] redPos;
     int numberBondedAtoms = 0;
     Vector crystalRedPos =
       (Vector) (this.crystalAtomRedPos.elementAt(whichframe));
     ChemFrame crystalFrame = super.getFrame(whichframe);
     int numberAtoms = crystalFrame.getNumberOfAtoms();
-    float[][] bondBox =
+    double[][] bondBox =
       ((CrystalBox) crystalBox.elementAt(whichframe)).getBondBox();
 
     // Clear the currently existing bonds.
@@ -463,7 +463,7 @@ public class CrystalFile extends ChemFile {
     // Do a n*(n-1) scan to get new bonds.
 
     for (int i = 0; i < numberAtoms; i++) {
-      redPos = ((float[]) crystalRedPos.elementAt(i));
+      redPos = ((double[]) crystalRedPos.elementAt(i));
 
       if ((redPos[0] >= bondBox[0][0]) && (redPos[0] <= bondBox[1][0])
           && (redPos[1] >= bondBox[0][1]) && (redPos[1] <= bondBox[1][1])
@@ -474,7 +474,7 @@ public class CrystalFile extends ChemFile {
           if (Atom.closeEnoughToBond(crystalFrame.getAtomAt(i),
               crystalFrame.getAtomAt(j), Jmol.control.getBondFudge())) {
 
-            redPos = ((float[]) crystalRedPos.elementAt(j));
+            redPos = ((double[]) crystalRedPos.elementAt(j));
             if ((redPos[0] >= bondBox[0][0]) && (redPos[0] <= bondBox[1][0])
                 && (redPos[1] >= bondBox[0][1])
                   && (redPos[1] <= bondBox[1][1])
@@ -499,9 +499,9 @@ public class CrystalFile extends ChemFile {
    * Multiply the matrix "mat" by the vector "vec".
    * The result is vector.
    */
-  private float[] mulVec(Matrix3f mat, float[] vec) {
+  private double[] mulVec(Matrix3d mat, double[] vec) {
 
-    float[] result = new float[3];
+    double[] result = new double[3];
     result[0] = mat.m00 * vec[0] + mat.m01 * vec[1] + mat.m02 * vec[2];
     result[1] = mat.m10 * vec[0] + mat.m11 * vec[1] + mat.m12 * vec[2];
     result[2] = mat.m20 * vec[0] + mat.m21 * vec[1] + mat.m22 * vec[2];
@@ -510,10 +510,10 @@ public class CrystalFile extends ChemFile {
 
 
   /**
-   * Given a <code>float</code> f, return the closest superior integer
+   * Given a <code>double</code> f, return the closest superior integer
    *
    */
-  private int intSup(float f) {
+  private int intSup(double f) {
 
     if (f <= 0) {
       return (int) f;
@@ -523,7 +523,7 @@ public class CrystalFile extends ChemFile {
 
   }
 
-  int intInf(float f) {
+  int intInf(double f) {
 
     if (f < 0) {
       return (int) f - 1;
@@ -533,12 +533,12 @@ public class CrystalFile extends ChemFile {
   }
 
   /**
-   * Convert a <code>Matrix3f</code> to a <code>float[3][3]</code>.
+   * Convert a <code>Matrix3d</code> to a <code>double[3][3]</code>.
    *
    */
-  private float[][] matrix3fToArray(Matrix3f matrix3f) {
+  private double[][] matrix3fToArray(Matrix3d matrix3f) {
 
-    float[][] array = new float[3][3];
+    double[][] array = new double[3][3];
 
     array[0][0] = matrix3f.m00;
     array[0][1] = matrix3f.m01;
@@ -556,12 +556,12 @@ public class CrystalFile extends ChemFile {
   }
 
   /**
-   * Convert a <code>float[3][3]</code> to a <code>Matrix3f</code>.
+   * Convert a <code>double[3][3]</code> to a <code>Matrix3d</code>.
    *
    */
-  private Matrix3f arrayToMatrix3f(float[][] array) {
+  private Matrix3d arrayToMatrix3d(double[][] array) {
 
-    Matrix3f matrix3f = new Matrix3f();
+    Matrix3d matrix3f = new Matrix3d();
 
     matrix3f.m00 = array[0][0];
     matrix3f.m01 = array[0][1];

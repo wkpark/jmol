@@ -4,15 +4,15 @@ import org.openscience.jmol.*;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Matrix4d;
 
 class LineShape implements Shape, Transformable {
 
-  Point3f origPoint;
-  Point3f endPoint;
+  Point3d origPoint;
+  Point3d endPoint;
 
-  LineShape(Point3f origPoint, Point3f endPoint) {
+  LineShape(Point3d origPoint, Point3d endPoint) {
 
     this.origPoint = origPoint;
     this.endPoint = endPoint;
@@ -44,8 +44,8 @@ class LineShape implements Shape, Transformable {
   /**
    * Point for calculating lengths of vectors.
    */
-  private static final Point3f zeroPoint = new Point3f();
-  private Point3f screenPositionEnd = new Point3f();
-  private Point3f screenPositionOrig = new Point3f();
+  private static final Point3d zeroPoint = new Point3d();
+  private Point3d screenPositionEnd = new Point3d();
+  private Point3d screenPositionOrig = new Point3d();
 }
 

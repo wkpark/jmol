@@ -31,7 +31,7 @@ import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -61,7 +61,7 @@ import javax.swing.JOptionPane;
  * <p> An abinit input file is composed of many keywords arranged
  * in a non-specific
  * order. Each keyword is followed by one or more numbers (integers or
- * floats depending of the keyword).
+ * doubles depending of the keyword).
  * Characters following a '#' are ignored.
  * The fisrt line of the file can be considered as a title.
  * This implementaton supports only 1 dataset!!!
@@ -84,18 +84,18 @@ public class ABINITOutputReader extends ABINITReader {
   int ionmov= 0;
   int natom = 1;
   int ntype = 1;
-  float[] acell = new float[3];
-  float[][] rprim = new float[3][3];
+  double[] acell = new double[3];
+  double[][] rprim = new double[3][3];
   String info = "";
   String line;
   int count = 0;
-  float energy = 0.0f;
+  double energy = 0.0f;
   Vector dataset = new Vector(0);  //Store the dataset numbers as a string
   int selectedDataset = 0;
   int enunit;
   int[] zatnum;
   int[] type;
-  float[][] xangst;
+  double[][] xangst;
   int nkpt=0;
   int nband=0;
   
@@ -121,7 +121,7 @@ public class ABINITOutputReader extends ABINITReader {
      * The reading of the output file is essentially the same as the
      * reading of an output file except that the output file can
      * contain several frames and there is no need to consider
-     * to parse things such as "integer*float".
+     * to parse things such as "integer*double".
      */
 
     inputBuffer.mark(1024 * 1024);
@@ -152,10 +152,10 @@ public class ABINITOutputReader extends ABINITReader {
     while (fieldVal != null) {
       if (fieldVal.equals("acell") ||
 	  fieldVal.equals("acell" + dataset.elementAt(selectedDataset))) {
-        acell = new float[3];
+        acell = new double[3];
         for (int i = 0; i < 3; i++) {
           nextAbinitToken(false);
-          acell[i] = (float) FortranFormat.atof(fieldVal)
+          acell[i] = FortranFormat.atof(fieldVal)
 	    * ANGSTROMPERBOHR;    //in angstrom
         }
       } else if (fieldVal.equals("enunit") ||
@@ -191,11 +191,11 @@ public class ABINITOutputReader extends ABINITReader {
       } else if (fieldVal.equals("rprim") ||
 		 fieldVal.equals("rprim" +
 				 dataset.elementAt(selectedDataset))) {
-        rprim = new float[3][3];
+        rprim = new double[3][3];
         for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitToken(false);
-            rprim[i][j] = (float) FortranFormat.atof(fieldVal);
+            rprim[i][j] = FortranFormat.atof(fieldVal);
           }
         }
 	break;   //rprim is the last in the list. No need to continue.
@@ -209,7 +209,7 @@ public class ABINITOutputReader extends ABINITReader {
     //Initialize dynamic variables
     zatnum = new int[ntype];
     type =new int[natom]; 
-    xangst =new float[natom][3];
+    xangst =new double[natom][3];
 
     //Second pass through the file (continue to read 
     // echo values of preprocessed input variables)
@@ -239,7 +239,7 @@ public class ABINITOutputReader extends ABINITReader {
 	for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitToken(false);
-            xangst[i][j] = (float) FortranFormat.atof(fieldVal);
+            xangst[i][j] = FortranFormat.atof(fieldVal);
 	  }
 	} 
 	
@@ -362,18 +362,18 @@ public class ABINITOutputReader extends ABINITReader {
         info = info + " " + fieldVal;
         System.out.println(info);
       } else if (fieldVal.equals("acell=")) {
-        acell = new float[3];
+        acell = new double[3];
         for (int i = 0; i < 3; i++) {
           nextAbinitToken(false);
-          acell[i] = (float) FortranFormat.atof(fieldVal) 
+          acell[i] = FortranFormat.atof(fieldVal) 
 	    *ANGSTROMPERBOHR ;    //in angstrom
         }
       } else if (fieldVal.equals("rprim=")) {
-        rprim = new float[3][3];
+        rprim = new double[3][3];
         for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitToken(false);
-            rprim[i][j] = (float) FortranFormat.atof(fieldVal);
+            rprim[i][j] = FortranFormat.atof(fieldVal);
           }
         }
       } else if (fieldVal.equals("Cartesian")
@@ -382,7 +382,7 @@ public class ABINITOutputReader extends ABINITReader {
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             nextAbinitToken(false);
-            xangst[i][j] = (float) FortranFormat.atof(fieldVal)
+            xangst[i][j] = FortranFormat.atof(fieldVal)
 	      * ANGSTROMPERBOHR;
           }
         }
@@ -394,7 +394,7 @@ public class ABINITOutputReader extends ABINITReader {
           nextAbinitToken(false);
         }
         nextAbinitToken(false);
-        energy = (float) FortranFormat.atof(fieldVal);
+        energy = FortranFormat.atof(fieldVal);
 
         //Energy is the last thing to be read --> store data
 
@@ -415,11 +415,11 @@ public class ABINITOutputReader extends ABINITReader {
   private void readEnergyBand() throws IOException {
     EnergyBand energyBand = new EnergyBand();
     
-    Point3f a = new Point3f();
-    Point3f b;
-    Point3f c;
-    Point3f orig = new Point3f();
-    Point3f end = new Point3f();
+    Point3d a = new Point3d();
+    Point3d b;
+    Point3d c;
+    Point3d orig = new Point3d();
+    Point3d end = new Point3d();
     
 
     //Go to "Eigenvalues"
@@ -438,16 +438,16 @@ public class ABINITOutputReader extends ABINITReader {
       nkptRead = nkptRead - nkptReadSinceLastMark;
       nkptReadSinceLastMark=0;
 
-      a.x = (float) FortranFormat.atof(nextAbinitTokenFollowing(" kpt="));
-      a.y = (float) FortranFormat.atof(nextAbinitToken(false));
-      a.z = (float) FortranFormat.atof(nextAbinitToken(false));
+      a.x = FortranFormat.atof(nextAbinitTokenFollowing(" kpt="));
+      a.y = FortranFormat.atof(nextAbinitToken(false));
+      a.z = FortranFormat.atof(nextAbinitToken(false));
       nkptRead++;
       nkptReadSinceLastMark++;
 
-      b = new Point3f(a);
-      c = new Point3f(a);
+      b = new Point3d(a);
+      c = new Point3d(a);
       lkpt =0;
-      orig = new Point3f(a);
+      orig = new Point3d(a);
       
       while (aligned(a,b,c) || lkpt <=2) {
 	if(!aligned(a,b,c) && lkpt <= 2) { //Only 2 aligned points
@@ -455,13 +455,13 @@ public class ABINITOutputReader extends ABINITReader {
 	  lkpt--;
 	}
 	lkpt++;
-	end = new Point3f(a);
-	c= new Point3f(b);
-	b= new Point3f(a);
+	end = new Point3d(a);
+	c= new Point3d(b);
+	b= new Point3d(a);
 	if (nkptRead < nkpt) {
-	  a.x = (float) FortranFormat.atof(nextAbinitTokenFollowing(" kpt="));
-	  a.y = (float) FortranFormat.atof(nextAbinitToken(false));
-	  a.z = (float) FortranFormat.atof(nextAbinitToken(false));
+	  a.x = FortranFormat.atof(nextAbinitTokenFollowing(" kpt="));
+	  a.y = FortranFormat.atof(nextAbinitToken(false));
+	  a.z = FortranFormat.atof(nextAbinitToken(false));
 	  nkptRead++;
 	  nkptReadSinceLastMark++;
 	} else {
@@ -481,9 +481,9 @@ public class ABINITOutputReader extends ABINITReader {
 	  inputBuffer.mark(1024*1024);
 	  nkptReadSinceLastMark=0;
 	}
-	a.x = (float) FortranFormat.atof(nextAbinitTokenFollowing(" kpt="));
-	a.y = (float) FortranFormat.atof(nextAbinitToken(false));
-	a.z = (float) FortranFormat.atof(nextAbinitToken(false));
+	a.x = FortranFormat.atof(nextAbinitTokenFollowing(" kpt="));
+	a.y = FortranFormat.atof(nextAbinitToken(false));
+	a.z = FortranFormat.atof(nextAbinitToken(false));
 	nkptRead++;
 	nkptReadSinceLastMark++;
 
@@ -495,7 +495,7 @@ public class ABINITOutputReader extends ABINITReader {
 	  } else {
 	    nextAbinitToken(false);
 	  }
-	  energyBand.addEPoint((float) FortranFormat.atof(fieldVal));
+	  energyBand.addEPoint(FortranFormat.atof(fieldVal));
 	}
       }//end for
 
@@ -506,7 +506,7 @@ public class ABINITOutputReader extends ABINITReader {
 
   } //end readEnergyBand()
 
-  protected boolean aligned(Point3f a, Point3f b, Point3f c) {
+  protected boolean aligned(Point3d a, Point3d b, Point3d c) {
     if (a.equals(b) || a.equals(c) || b.equals(c)) { //trivial
       return true;
     }

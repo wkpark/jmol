@@ -174,7 +174,7 @@ public class Gaussian94Reader extends DefaultChemFileReader {
       } else {
         throw new IOException("Error reading coordinates");
       }
-      frame.addAtom(atomicNumber, (float) x, (float) y, (float) z);
+      frame.addAtom(atomicNumber, x, y, z);
     }
   }
 

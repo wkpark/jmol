@@ -24,7 +24,7 @@ import org.openscience.jmol.BaseAtomType;
 import org.openscience.jmol.Atom;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import java.io.BufferedWriter;
 import java.io.Writer;
@@ -163,8 +163,8 @@ public class PovrayStyleWriter {
    *
    * @param matrixRotate The rotation matrix.
    */
-  public void setRotate(Matrix4f matrixRotate) {
-    this.amat = new Matrix4d(matrixRotate);
+  public void setRotate(Matrix4d matrixRotate) {
+    this.amat = matrixRotate;
   }
 
   /**
@@ -172,8 +172,8 @@ public class PovrayStyleWriter {
    *
    * @param tmat The translation matrix.
    */
-  public void setTranslate(Matrix4f matrixTranslate) {
-    this.tmat = new Matrix4d(matrixTranslate);
+  public void setTranslate(Matrix4d matrixTranslate) {
+    this.tmat = matrixTranslate;
   }
 
   /**
@@ -194,7 +194,7 @@ public class PovrayStyleWriter {
    * @throws IOException
    */
   public void writeAtomsAndBondsMacros(
-      BufferedWriter w, ChemFrame cf, double atomSphereFactor, float bond_width)
+      BufferedWriter w, ChemFrame cf, double atomSphereFactor, double bond_width)
         throws IOException {
 
     findAtomTypes(cf);
@@ -299,9 +299,9 @@ public class PovrayStyleWriter {
     BaseAtomType a = cf.getAtomAt(atomIndex).getType();
     double[] pos = cf.getAtomCoords(atomIndex);
 
-    float c_x = cf.getRotationCenter().x;
-    float c_y = cf.getRotationCenter().y;
-    float c_z = cf.getRotationCenter().z;
+    double c_x = cf.getRotationCenter().x;
+    double c_y = cf.getRotationCenter().y;
+    double c_z = cf.getRotationCenter().z;
 
     Matrix4d cmat = new Matrix4d();
 
@@ -335,9 +335,9 @@ public class PovrayStyleWriter {
       BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
         throws IOException {
 
-    float c_x = cf.getRotationCenter().x;
-    float c_y = cf.getRotationCenter().y;
-    float c_z = cf.getRotationCenter().z;
+    double c_x = cf.getRotationCenter().x;
+    double c_y = cf.getRotationCenter().y;
+    double c_z = cf.getRotationCenter().z;
 
     Matrix4d cmat = new Matrix4d();
 
@@ -396,10 +396,10 @@ public class PovrayStyleWriter {
 
     BaseAtomType at = cf.getAtomAt(indexOfExampleAtom).getType();
     java.awt.Color col = at.getColor();
-    float tff = (float) 255.0;
-    return "rgb < " + ((float) col.getRed() / tff) + ", "
-        + ((float) col.getGreen() / tff) + ", "
-          + ((float) col.getBlue() / tff) + ">";
+    double tff = 255.0;
+    return "rgb < " + (col.getRed() / tff) + ", "
+        + (col.getGreen() / tff) + ", "
+          + (col.getBlue() / tff) + ">";
   }
 
   /**

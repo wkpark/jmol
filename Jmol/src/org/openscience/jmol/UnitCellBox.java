@@ -19,8 +19,8 @@
  */
 package org.openscience.jmol;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Matrix3d;
 import java.lang.reflect.Array;
 
 
@@ -41,13 +41,13 @@ public class UnitCellBox {
   // to the other one.
 
   //Cartesian representation
-  private float[][] rprim;    // adimentionnal
-  private float[] acell;      // in angstrom
+  private double[][] rprim;    // adimentionnal
+  private double[] acell;      // in angstrom
 
 
   //Crystallographic representation
-  private float[] edges;      //in angstrom
-  private float[] angles;     //in degrees
+  private double[] edges;      //in angstrom
+  private double[] angles;     //in degrees
 
 
   //Space Group
@@ -59,13 +59,13 @@ public class UnitCellBox {
   //Atomic positions are stored in reduced coordinates
   // in angstrom
   private int[] atomType;
-  private float[][] atomPos;
+  private double[][] atomPos;
 
 
   /**
    * Set the primitive vectors of the crystal.
    *
-   * @param rprim a <code>float[3][3]</code> value.<br>
+   * @param rprim a <code>double[3][3]</code> value.<br>
    * The three dimensionless primitive translations in real space.
    * first vector : rprim[0][0], rprim[0][1], rprim[0][1] <br>
    * second vector : rprim[1][0], rprim[1][1], rprim[1][1] <br>
@@ -73,29 +73,29 @@ public class UnitCellBox {
    * Each vector will be multiplied
    * by the corresponding <code>acell</code> value to give the dimensional
    * primitive vectors in angstrom.
-   * @param acell a <code>float[3]</code> value. See above.
+   * @param acell a <code>double[3]</code> value. See above.
    * @param isAtomicPositionsCart a <code>boolean</code> value.<br>
    * Determines if the atomic positions (see <code>atomPos</code>)
    * are given in reduced or
    * cartesian coordinates.
    * @param atomType an <code>int[]</code> value. <br>
    * The atom types represented by their atomic number.
-   * @param atomPos a <code>float[][]</code> value.<br>
+   * @param atomPos a <code>double[][]</code> value.<br>
    * The atomic positions.
    */
-  public UnitCellBox(float[][] rprim, float[] acell,
-      boolean isAtomicPositionsCart, int[] atomType, float[][] atomPos) {
+  public UnitCellBox(double[][] rprim, double[] acell,
+      boolean isAtomicPositionsCart, int[] atomType, double[][] atomPos) {
 
     this.isPrimVectorsCart = true;
     this.edges = null;
     this.angles = null;
-    this.rprim = new float[3][3];
+    this.rprim = new double[3][3];
     this.rprim = rprim;
-    this.acell = new float[3];
+    this.acell = new double[3];
     this.acell = acell;
     this.atomType = new int[Array.getLength(atomType)];
     this.atomType = atomType;
-    this.atomPos = new float[Array.getLength(atomPos)][3];
+    this.atomPos = new double[Array.getLength(atomPos)][3];
     if (isAtomicPositionsCart) {
       this.atomPos = cartToRed(atomPos, getRprimd());
     } else {
@@ -107,24 +107,24 @@ public class UnitCellBox {
   /**
    * Set the primitive vectors of the crystal.
    *
-   * @param edges a <code>float[3]</code> value.<br>. In angstrom.
-   * @param angles a <code>float[3]</code> value. <br> In degree.
+   * @param edges a <code>double[3]</code> value.<br>. In angstrom.
+   * @param angles a <code>double[3]</code> value. <br> In degree.
    * @param isAtomicPositionCart a <code>boolean</code> value
    * @param atomType an <code>int[]</code> value
-   * @param atomPos a <code>float[][]</code> value
+   * @param atomPos a <code>double[][]</code> value
    */
-  public UnitCellBox(float[] edges, float[] angles,
-      boolean isAtomicPositionCart, int[] atomType, float[][] atomPos) {
+  public UnitCellBox(double[] edges, double[] angles,
+      boolean isAtomicPositionCart, int[] atomType, double[][] atomPos) {
 
     this.isPrimVectorsCart = false;
     this.rprim = null;
     this.acell = null;
-    this.edges = new float[3];
+    this.edges = new double[3];
     this.edges = edges;
-    this.angles = new float[3];
+    this.angles = new double[3];
     this.angles = angles;
     this.atomType = new int[Array.getLength(atomType)];
-    this.atomPos = new float[Array.getLength(atomPos)][3];
+    this.atomPos = new double[Array.getLength(atomPos)][3];
     this.atomType = atomType;
     if (isAtomicPositionCart) {
       this.atomPos = cartToRed(atomPos, getRprimd());
@@ -137,14 +137,14 @@ public class UnitCellBox {
    * ChemFrame's atoms become the base atoms.
    *
    */
-  public UnitCellBox(float[][] rprim, float[] acell, ChemFrame chemFrame) {
+  public UnitCellBox(double[][] rprim, double[] acell, ChemFrame chemFrame) {
     this.isPrimVectorsCart = true;
     this.edges = null;
     this.angles = null;
     this.rprim = rprim;
     this.acell = acell;
     this.atomType = new int[chemFrame.getNumberOfAtoms()];
-    atomPos = new float[chemFrame.getNumberOfAtoms()][3];
+    atomPos = new double[chemFrame.getNumberOfAtoms()][3];
     Atom atom;
     for (int i=0; i < chemFrame.getNumberOfAtoms(); i++) {
       atom = chemFrame.getAtomAt(i);
@@ -165,7 +165,7 @@ public class UnitCellBox {
   public UnitCellBox() {
 
     isPrimVectorsCart = true;
-    rprim = new float[3][3];
+    rprim = new double[3][3];
     rprim[0][0] = 1;
     rprim[0][1] = 0;
     rprim[0][2] = 0;
@@ -179,7 +179,7 @@ public class UnitCellBox {
     rprim[2][1] = 0;
     rprim[2][2] = 1;
 
-    acell = new float[3];
+    acell = new double[3];
     acell[0] = 10;
     acell[1] = 10;
     acell[2] = 10;
@@ -199,10 +199,10 @@ public class UnitCellBox {
   /**
    * Set the primitive vectors using the cartesian representation.
    *
-   * @param rprim a <code>float[][]</code> value
-   * @param acell a <code>float[]</code> value
+   * @param rprim a <code>double[][]</code> value
+   * @param acell a <code>double[]</code> value
    */
-  public void setPrimVectorsCartesian(float[][] rprim, float[] acell) {
+  public void setPrimVectorsCartesian(double[][] rprim, double[] acell) {
     isPrimVectorsCart = true;
     this.rprim = rprim;
     this.acell = acell;
@@ -211,10 +211,10 @@ public class UnitCellBox {
   /**
    * Set the primitive vectors using the crystallographic representation.
    *
-   * @param edges a <code>float[]</code> value
-   * @param angles a <code>float[]</code> value
+   * @param edges a <code>double[]</code> value
+   * @param angles a <code>double[]</code> value
    */
-  public void setPrimVectorsCrystallo(float[] edges, float[] angles) {
+  public void setPrimVectorsCrystallo(double[] edges, double[] angles) {
     isPrimVectorsCart = false;
     this.edges = edges;
     this.angles = angles;
@@ -224,18 +224,18 @@ public class UnitCellBox {
   /**
    * Set the atomic positions in the unit cell in cartesian coordinates.
    *
-   * @param atomPos a <code>float[][]</code> value
+   * @param atomPos a <code>double[][]</code> value
    */
-  public void setCartesianPos(float[][] atomPos) {
+  public void setCartesianPos(double[][] atomPos) {
     this.atomPos = cartToRed(atomPos, getRprimd());
   }
 
   /**
    * Set the atomic positions in the unit cell in reduced coordinates.
    *
-   * @param atomPos a <code>float[][]</code> value
+   * @param atomPos a <code>double[][]</code> value
    */
-  public void setReducedPos(float[][] atomPos) {
+  public void setReducedPos(double[][] atomPos) {
     this.atomPos = atomPos;
   }
 
@@ -268,18 +268,18 @@ public class UnitCellBox {
 
   /**
    * Get the atomic positions in cartesian coordinates.
-   * @return a <code>float[][]</code> value
+   * @return a <code>double[][]</code> value
    */
-  public float[][] getCartesianPos() {
+  public double[][] getCartesianPos() {
     return redToCart(atomPos, getRprimd());
   }
 
   /**
    * Get the atomic positions in reduced coordinates.
    *
-   * @return a <code>float[][]</code> value
+   * @return a <code>double[][]</code> value
    */
-  public float[][] getReducedPos() {
+  public double[][] getReducedPos() {
     return atomPos;
   }
 
@@ -308,35 +308,35 @@ public class UnitCellBox {
    * first vector : rprim[0][0], rprim[0][1], rprim[0][1] <br>
    * second vector : rprim[1][0], rprim[1][1], rprim[1][1] <br>
    * third vector : rprim[2][0], rprim.[2][1], rprim[2][1] <br>
-   * @return a <code>float[3][3]</code> value.<br>
+   * @return a <code>double[3][3]</code> value.<br>
    * Dimensionless primitive vectors.
    */
-  public float[][] getRprim() {
+  public double[][] getRprim() {
 
     if (isPrimVectorsCart == true) {
       return this.rprim;
     } else {
-      float[][] rprim = new float[3][3];
-      float[] module = new float[3];
+      double[][] rprim = new double[3][3];
+      double[] module = new double[3];
       rprim[0][0] = edges[0];
       rprim[0][1] = 0f;
       rprim[0][2] = 0f;
 
 
       rprim[1][0] = edges[1]
-          * (float) Math.cos(Math.toRadians((double) angles[0]));
+          * Math.cos(Math.toRadians(angles[0]));
       rprim[1][1] = edges[1]
-          * (float) Math.sqrt(1
-            - Math.cos(Math.toRadians((double) angles[0]))
-              * Math.cos(Math.toRadians((double) angles[0])));
+          * Math.sqrt(1
+            - Math.cos(Math.toRadians(angles[0]))
+              * Math.cos(Math.toRadians(angles[0])));
       rprim[1][2] = 0f;
 
       rprim[2][0] = edges[2]
-          * (float) Math.cos(Math.toRadians((double) angles[2]));
+          * Math.cos(Math.toRadians(angles[2]));
       rprim[2][1] =
-          (edges[1] * edges[2] * (float) Math.cos(Math.toRadians((double) angles[1])) - rprim[1][0] * rprim[2][0])
+          (edges[1] * edges[2] * Math.cos(Math.toRadians(angles[1])) - rprim[1][0] * rprim[2][0])
             / (rprim[1][1]);
-      rprim[2][2] = (float) Math.sqrt((double) (edges[2] * edges[2]
+      rprim[2][2] = Math.sqrt((edges[2] * edges[2]
           - rprim[2][0] * rprim[2][0] - rprim[2][1] * rprim[2][1]));
 
       // make rprim unitary
@@ -356,13 +356,13 @@ public class UnitCellBox {
    * first vector : rprim[0][0], rprim[0][1], rprim[0][1] <br>
    * second vector : rprim[1][0], rprim[1][1], rprim[1][1] <br>
    * third vector : rprim[2][0], rprim.[2][1], rprim[2][1] <br>
-   * @return a <code>float[3][3]</code> value.<br>
+   * @return a <code>double[3][3]</code> value.<br>
    * Dimensionless primitive vectors.
    */
-  public float[][] getRprimd() {
+  public double[][] getRprimd() {
 
     if (isPrimVectorsCart == true) {
-      float[][] rprimd = new float[3][3];
+      double[][] rprimd = new double[3][3];
       rprimd[0][0] = rprim[0][0] * acell[0];
       rprimd[0][1] = rprim[0][1] * acell[0];
       rprimd[0][2] = rprim[0][2] * acell[0];
@@ -378,9 +378,9 @@ public class UnitCellBox {
       return rprimd;
 
     } else {
-      float[][] rprimd = new float[3][3];
-      float[][] rprim = getRprim();
-      float[] acell = getAcell();
+      double[][] rprimd = new double[3][3];
+      double[][] rprim = getRprim();
+      double[] acell = getAcell();
       rprimd[0][0] = rprim[0][0] * acell[0];
       rprimd[0][1] = rprim[0][1] * acell[0];
       rprimd[0][2] = rprim[0][2] * acell[0];
@@ -401,9 +401,9 @@ public class UnitCellBox {
   /**
    * Describe <code>getAcell</code> method here.
    *
-   * @return a <code>float[]</code> value
+   * @return a <code>double[]</code> value
    */
-  public float[] getAcell() {
+  public double[] getAcell() {
 
     if (isPrimVectorsCart == true) {
       return this.acell;
@@ -416,22 +416,22 @@ public class UnitCellBox {
   /**
    * Describe <code>getEdges</code> method here.
    *
-   * @return a <code>float[]</code> value
+   * @return a <code>double[]</code> value
    */
-  public float[] getEdges() {
+  public double[] getEdges() {
 
     if (isPrimVectorsCart == false) {
       return this.edges;
     } else {
-      float[] edges = new float[3];
+      double[] edges = new double[3];
       edges[0] = acell[0]
-          * (float) Math.sqrt((double) (rprim[0][0] * rprim[0][0]
+          * Math.sqrt((rprim[0][0] * rprim[0][0]
             + rprim[0][1] * rprim[0][1] + rprim[0][2] * rprim[0][2]));
       edges[1] = acell[1]
-          * (float) Math.sqrt((double) (rprim[1][0] * rprim[1][0]
+          * Math.sqrt((rprim[1][0] * rprim[1][0]
             + rprim[1][1] * rprim[1][1] + rprim[1][2] * rprim[1][2]));
       edges[2] = acell[2]
-          * (float) Math.sqrt((double) (rprim[2][0] * rprim[2][0]
+          * Math.sqrt((rprim[2][0] * rprim[2][0]
             + rprim[2][1] * rprim[2][1] + rprim[2][2] * rprim[2][2]));
       return edges;
     }
@@ -440,29 +440,29 @@ public class UnitCellBox {
   /**
    * Describe <code>getAngles</code> method here.
    *
-   * @return a <code>float[]</code> value
+   * @return a <code>double[]</code> value
    */
-  public float[] getAngles() {
+  public double[] getAngles() {
 
     if (isPrimVectorsCart == false) {
       return this.angles;
     } else {
-      float[] angles = new float[3];
-      float[] edges = new float[3];
+      double[] angles = new double[3];
+      double[] edges = new double[3];
       edges = getEdges();
-      angles[0] = (float) Math.toDegrees(
+      angles[0] = Math.toDegrees(
           Math.acos(
-            (double) (getRprimd()[0][0] * getRprimd()[1][0] + getRprimd()[0][1] * getRprimd()[1][1] + getRprimd()[0][2] * getRprimd()[1][2])
+            (getRprimd()[0][0] * getRprimd()[1][0] + getRprimd()[0][1] * getRprimd()[1][1] + getRprimd()[0][2] * getRprimd()[1][2])
               / (edges[0] * edges[1])));
 
-      angles[1] = (float) Math.toDegrees(
+      angles[1] = Math.toDegrees(
           Math.acos(
-            (double) (getRprimd()[1][0] * getRprimd()[2][0] + getRprimd()[1][1] * getRprimd()[2][1] + getRprimd()[1][2] * getRprimd()[2][2])
+            (getRprimd()[1][0] * getRprimd()[2][0] + getRprimd()[1][1] * getRprimd()[2][1] + getRprimd()[1][2] * getRprimd()[2][2])
               / (edges[1] * edges[2])));
 
-      angles[2] = (float) Math.toDegrees(
+      angles[2] = Math.toDegrees(
           Math.acos(
-            (double) (getRprimd()[2][0] * getRprimd()[0][0] + getRprimd()[2][1] * getRprimd()[0][1] + getRprimd()[2][2] * getRprimd()[0][2])
+            (getRprimd()[2][0] * getRprimd()[0][0] + getRprimd()[2][1] * getRprimd()[0][1] + getRprimd()[2][2] * getRprimd()[0][2])
               / (edges[2] * edges[0])));
       return angles;
     }
@@ -472,21 +472,21 @@ public class UnitCellBox {
   /**
    * Transform an array of cartesian coordinates into reduced coordinates.
    *
-   * @param cartPos a <code>float[][]</code> value. <br>
+   * @param cartPos a <code>double[][]</code> value. <br>
    * (<code>cartPos[i][0]</code> is the cartesian position
    * of atom i in direction x.)
-   * @param rprimd a <code>float[][]</code> value
-   * @return a <code>float[][]</code> value
+   * @param rprimd a <code>double[][]</code> value
+   * @return a <code>double[][]</code> value
    */
-  public static float[][] cartToRed(float[][] cartPos, float[][] rprimd) {
+  public static double[][] cartToRed(double[][] cartPos, double[][] rprimd) {
 
     int natom = Array.getLength(cartPos);
-    float[][] redPos = new float[natom][3];
+    double[][] redPos = new double[natom][3];
 
-    Matrix3f rprimdTInv = new Matrix3f();
+    Matrix3d rprimdTInv = new Matrix3d();
 
     //the transpose of rprimd
-    rprimdTInv.transpose(arrayToMatrix3f(rprimd));
+    rprimdTInv.transpose(arrayToMatrix3d(rprimd));
 
     //the inverse of rprimd transposed
     try {
@@ -498,14 +498,14 @@ public class UnitCellBox {
 
     //cartesian, angstrom
 
-    float[] xcart = new float[3];
-    float[] xred = new float[3];
+    double[] xcart = new double[3];
+    double[] xred = new double[3];
 
     for (int i = 0; i < natom; i++) {
       for (int j = 0; j < 3; j++) {
         xcart[j] = cartPos[i][j];
       }
-      xred = mulVec(matrix3fToArray(rprimdTInv), xcart);
+      xred = mulVec(matrix3dToArray(rprimdTInv), xcart);
       redPos[i][0] = xred[0];
       redPos[i][1] = xred[1];
       redPos[i][2] = xred[2];
@@ -517,29 +517,29 @@ public class UnitCellBox {
   /**
    *  Transform an array of reduced coordinates into cartesian coordinates.
    *
-   * @param redPos a <code>float[][]</code> value
+   * @param redPos a <code>double[][]</code> value
    * (<code>redPos[i][0]</code> is the reduced position
    * of atom i in direction 0.)
-   * @param rprimd a <code>float[][]</code> value
-   * @return a <code>float[][]</code> value
+   * @param rprimd a <code>double[][]</code> value
+   * @return a <code>double[][]</code> value
    */
-  public static float[][] redToCart(float[][] redPos, float[][] rprimd) {
+  public static double[][] redToCart(double[][] redPos, double[][] rprimd) {
 
     int natom = Array.getLength(redPos);
-    float[][] cartPos = new float[natom][3];
+    double[][] cartPos = new double[natom][3];
 
-    Matrix3f rprimdT = new Matrix3f();
-    rprimdT.transpose(arrayToMatrix3f(rprimd));
+    Matrix3d rprimdT = new Matrix3d();
+    rprimdT.transpose(arrayToMatrix3d(rprimd));
 
     //cartesian, angstrom
-    float[] xcart = new float[3];
-    float[] xred = new float[3];
+    double[] xcart = new double[3];
+    double[] xred = new double[3];
 
     for (int i = 0; i < natom; i++) {
       for (int j = 0; j < 3; j++) {
         xred[j] = redPos[i][j];
       }
-      xcart = mulVec(matrix3fToArray(rprimdT), xred);
+      xcart = mulVec(matrix3dToArray(rprimdT), xred);
       cartPos[i][0] = xcart[0];
       cartPos[i][1] = xcart[1];
       cartPos[i][2] = xcart[2];
@@ -552,13 +552,13 @@ public class UnitCellBox {
   /**
    * Multiply the matrix "mat" by the vector "vec".
    * The result is vector.
-   * @param mat a <code>Matrix3f</code> value
-   * @param vec a <code>Point3f</code> value
-   * @return a <code>Point3f</code> value
+   * @param mat a <code>Matrix3d</code> value
+   * @param vec a <code>Point3d</code> value
+   * @return a <code>Point3d</code> value
    */
-  public static Point3f mulVec(Matrix3f mat, Point3f vec) {
+  public static Point3d mulVec(Matrix3d mat, Point3d vec) {
 
-    Point3f result = new Point3f();
+    Point3d result = new Point3d();
     result.x = mat.m00 * vec.x + mat.m01 * vec.y + mat.m02 * vec.z;
     result.y = mat.m10 * vec.x + mat.m11 * vec.y + mat.m12 * vec.z;
     result.z = mat.m20 * vec.x + mat.m21 * vec.y + mat.m22 * vec.z;
@@ -568,13 +568,13 @@ public class UnitCellBox {
   /**
    * Describe <code>mulVec</code> method here.
    *
-   * @param mat a <code>float[][]</code> value
-   * @param vec a <code>float[]</code> value
-   * @return a <code>float[]</code> value
+   * @param mat a <code>double[][]</code> value
+   * @param vec a <code>double[]</code> value
+   * @return a <code>double[]</code> value
    */
-  public static float[] mulVec(float[][] mat, float[] vec) {
+  public static double[] mulVec(double[][] mat, double[] vec) {
 
-    float[] result = new float[3];
+    double[] result = new double[3];
     result[0] = mat[0][0] * vec[0] + mat[0][1] * vec[1] + mat[0][2] * vec[2];
     result[1] = mat[1][0] * vec[0] + mat[1][1] * vec[1] + mat[1][2] * vec[2];
     result[2] = mat[2][0] * vec[0] + mat[2][1] * vec[1] + mat[2][2] * vec[2];
@@ -585,53 +585,53 @@ public class UnitCellBox {
 
 
   /**
-   * Describe <code>matrix3fToArray</code> method here.
+   * Describe <code>matrix3dToArray</code> method here.
    *
-   * @param matrix3f a <code>Matrix3f</code> value
-   * @return a <code>float[][]</code> value
+   * @param matrix3d a <code>Matrix3d</code> value
+   * @return a <code>double[][]</code> value
    */
-  public static float[][] matrix3fToArray(Matrix3f matrix3f) {
+  public static double[][] matrix3dToArray(Matrix3d matrix3d) {
 
-    float[][] array = new float[3][3];
+    double[][] array = new double[3][3];
 
-    array[0][0] = matrix3f.m00;
-    array[0][1] = matrix3f.m01;
-    array[0][2] = matrix3f.m02;
+    array[0][0] = matrix3d.m00;
+    array[0][1] = matrix3d.m01;
+    array[0][2] = matrix3d.m02;
 
-    array[1][0] = matrix3f.m10;
-    array[1][1] = matrix3f.m11;
-    array[1][2] = matrix3f.m12;
+    array[1][0] = matrix3d.m10;
+    array[1][1] = matrix3d.m11;
+    array[1][2] = matrix3d.m12;
 
-    array[2][0] = matrix3f.m20;
-    array[2][1] = matrix3f.m21;
-    array[2][2] = matrix3f.m22;
+    array[2][0] = matrix3d.m20;
+    array[2][1] = matrix3d.m21;
+    array[2][2] = matrix3d.m22;
 
     return array;
   }
 
   /**
-   * Describe <code>arrayToMatrix3f</code> method here.
+   * Describe <code>arrayToMatrix3d</code> method here.
    *
-   * @param array a <code>float[][]</code> value
-   * @return a <code>Matrix3f</code> value
+   * @param array a <code>double[][]</code> value
+   * @return a <code>Matrix3d</code> value
    */
-  public static Matrix3f arrayToMatrix3f(float[][] array) {
+  public static Matrix3d arrayToMatrix3d(double[][] array) {
 
-    Matrix3f matrix3f = new Matrix3f();
+    Matrix3d matrix3d = new Matrix3d();
 
-    matrix3f.m00 = array[0][0];
-    matrix3f.m01 = array[0][1];
-    matrix3f.m02 = array[0][2];
+    matrix3d.m00 = array[0][0];
+    matrix3d.m01 = array[0][1];
+    matrix3d.m02 = array[0][2];
 
-    matrix3f.m10 = array[1][0];
-    matrix3f.m11 = array[1][1];
-    matrix3f.m12 = array[1][2];
+    matrix3d.m10 = array[1][0];
+    matrix3d.m11 = array[1][1];
+    matrix3d.m12 = array[1][2];
 
-    matrix3f.m20 = array[2][0];
-    matrix3f.m21 = array[2][1];
-    matrix3f.m22 = array[2][2];
+    matrix3d.m20 = array[2][0];
+    matrix3d.m21 = array[2][1];
+    matrix3d.m22 = array[2][2];
 
-    return matrix3f;
+    return matrix3d;
   }
 
 

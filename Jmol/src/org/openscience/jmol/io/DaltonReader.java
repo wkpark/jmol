@@ -153,7 +153,7 @@ class DaltonReader extends DefaultChemFileReader {
       z = (new Double(tokenizer.nextToken())).doubleValue() * angstromPerBohr;
 
       System.out.println(x + " " + y + " " + z);
-      mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
+      mol.addAtom(atomicNumber, x, y, z);
     }
   }
 

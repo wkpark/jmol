@@ -92,7 +92,7 @@ public class JmolApplet extends java.applet.Applet
 
   public void init() {
 
-    float zoomFactor = 1;
+    double zoomFactor = 1;
     myBean = new JmolSimpleBean();
 
     myBean.setBondsShown(true);
@@ -108,13 +108,13 @@ public class JmolApplet extends java.applet.Applet
     }
     String zoom = getParameter("ZOOM");
     if (zoom != null) {
-      zoomFactor = (float) FortranFormat.atof(zoom);
+      zoomFactor = FortranFormat.atof(zoom);
     }
     myBean.setZoomFactor(zoomFactor);
     zoomFactor = 1;
     zoom = getParameter("ATOMSIZE");
     if (zoom != null) {
-      zoomFactor = (float) FortranFormat.atof(zoom);
+      zoomFactor = FortranFormat.atof(zoom);
     }
     myBean.setAtomSphereFactor(zoomFactor);
     String customViews = getParameter("CUSTOMVIEWS");

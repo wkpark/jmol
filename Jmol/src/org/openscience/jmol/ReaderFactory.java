@@ -1,7 +1,5 @@
 /*
- * ReaderFactory.java
- *
- * Copyright (C) 1999  Bradley A. Smith
+ * Copyright (C) 2001  The Jmol Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,8 +23,7 @@ import java.io.*;
  * A factory for creating ChemFileReaders.
  * The type of reader created is determined from the input.
  *
- * @author  Bradley A. Smith (yeldar@home.com);
- * @version 1.0
+ * @author  Bradley A. Smith (bradley@baysmith.com)
  */
 public abstract class ReaderFactory  {
     /**
@@ -77,16 +74,26 @@ public abstract class ReaderFactory  {
 		while (buffer.ready() && line != null) {
 			if (line.indexOf("Gaussian 98:") >= 0) {
 				return new Gaussian98Reader(buffer);
+			} else if (line.indexOf("Gaussian 95:") >= 0) {
+				return new Gaussian94Reader(buffer);
 			} else if (line.indexOf("Gaussian 94:") >= 0) {
 				return new Gaussian94Reader(buffer);
 			} else if (line.indexOf("Gaussian 92:") >= 0) {
 				return new Gaussian92Reader(buffer);
+			} else if (line.indexOf("Gaussian G90") >= 0) {
+				return new Gaussian90Reader(buffer);
 			} else if (line.indexOf("GAMESS") >= 0) {
 				return new GamessReader(buffer);
 			} else if (line.indexOf("ACES2") >= 0) {
 				return new Aces2Reader(buffer);
 			} else if (line.indexOf("Amsterdam Density Functional") >= 0) {
-				return new ADFReader(buffer);                
+				return new ADFReader(buffer);
+			} else if (line.indexOf("DALTON") >= 0) {
+				return new DaltonReader(buffer);
+			} else if (line.indexOf("Jaguar") >= 0) {
+				return new JaguarReader(buffer);
+			} else if (line.indexOf("MOPAC") >= 0) {
+				return new MopacReader(buffer);
 			} else if (line.startsWith("HEADER")) {
 				return new PDBReader(buffer);
 			} else if (line.startsWith("molstruct")) {
@@ -94,6 +101,6 @@ public abstract class ReaderFactory  {
 			}
 			line = buffer.readLine();
 		}
-        return null;        
-    }
+		return null;
+	}
 }

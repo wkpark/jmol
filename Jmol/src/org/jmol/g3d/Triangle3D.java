@@ -42,11 +42,23 @@ class Triangle3D {
   }
 
   /****************************************************************
-   * FIXME mth 2003 08 01
-   * this needs to be reworked
-   * lots of problems with errors caused by integer arithmetic
-   * for now, all shapes will be drawn with lines as well as being
-   * filled. that will get the edges right. 
+   * 2004 05 12 - mth
+   * I have been working hard to get the triangles to render
+   * correctly when lines are drawn only once.
+   * the rules were :
+   * a pixel gets drawn when
+   * 1. it is to the left of a line
+   * 2. it is under a horizontal line
+   *
+   * this generally worked OK, but failed on small skinny triangles
+   * careful reading of Michael Abrash's book
+   * Graphics Programming Black Book
+   * Chapter 38, The Polygon Primeval, page 714
+   * it says:
+   *   Narrow wedges and one-pixel-wide polygons will show up spottily
+   * I do not understand why this is the case
+   * so, the triangle drawing now paints overlapping edges by one pixel
+   *
    ****************************************************************/
   
 
@@ -69,18 +81,14 @@ class Triangle3D {
     int yMin = ay[iMinY];
     int yMid = ay[iMidY];
     int yMax = ay[iMaxY];
-    int nLines = yMax - yMin;
-    if (nLines == 0)
-      return;
+    int nLines = yMax - yMin + 1;
     if (nLines > axW.length)
       reallocRasterArrays(nLines);
-    boolean paintTopLine = false;
     int dyMidMin = yMid - yMin;
     if (dyMidMin == 0) {
       // flat top
       if (ax[iMidY] < ax[iMinY])
         { int t = iMidY; iMidY = iMinY; iMinY = t; }
-      paintTopLine = true;
       generateRaster(nLines, iMinY, iMaxY, axW, azW, 0);
       generateRaster(nLines, iMidY, iMaxY, axE, azE, 0);
     } else if (yMid == yMax) {
@@ -106,7 +114,7 @@ class Triangle3D {
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0);
       }
     }
-    fillRaster(yMin, nLines, paintTopLine);
+    fillRaster(yMin, nLines);
   }
 
   int[] axW = new int[32], azW = new int[32];
@@ -172,24 +180,20 @@ class Triangle3D {
     }
   }
 
-  void fillRaster(int y, int numLines, boolean paintFirstLine) {
+  void fillRaster(int y, int numLines) {
     //    System.out.println("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     if (y < 0) {
       numLines += y;
       i -= y;
       y = 0;
-    } else if (! paintFirstLine) {
-      --numLines;
-      ++y;
-      ++i;
     }
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
     for ( ; --numLines >= 0; ++y, ++i) {
       int xW = axW[i];
       g3d.plotPixelsClipped(g3d.argbCurrent,
-                            axE[i] - xW, xW, y, azW[i], azE[i]);
+                            axE[i] - xW + 1, xW, y, azW[i], azE[i]);
     }
   }
 }

@@ -52,7 +52,7 @@ public class ChemFrameRenderer {
     }
     int hcFrame = frame.hashCode();
     int hcSettings = settings.hashCode();
-    if (shapes == null || // did not shapes yet
+    if (shapes == null || // did not do shapes yet
         hcFrame != previousFrameHashCode || // frame itself is changed
         hcSettings != previousSettingsHashCode || // settings have changed
         numAtoms != previousNumberAtoms // #atoms changed (e.g. a delete)
@@ -128,7 +128,7 @@ public class ChemFrameRenderer {
     Iterator iter = transformables.listIterator();
     while (iter.hasNext()) {
       Transformable t1 = (Transformable) iter.next();
-      t1.transform(matrix);
+      t1.transform(matrix, settings);
     }
     Arrays.sort(shapes,
                 new Comparator() {

@@ -143,9 +143,7 @@ public class AtomShape implements Shape {
     int x = atom.screenX;
     int y = atom.screenY;
     int z = atom.screenZ;
-    int diameter =
-      (int) (2.0f
-        * settings.getCircleRadius(z, atom.getType().getVdwRadius()));
+    int diameter = atom.screenDiameter;
     int radius = diameter >> 1;
 
     int j = 0;
@@ -256,13 +254,9 @@ public class AtomShape implements Shape {
     if (drawBondsToAtomCenters) {
       diameter1 = radius1 = diameter2 = radius2 = 0;
     } else {
-      diameter1 =
-        (int) (2.0f
-               * settings.getCircleRadius(z1, atom1.getType().getVdwRadius()));
+      diameter1 = atom1.screenDiameter;
       radius1 = diameter1 >> 1;
-      diameter2 =
-        (int) (2.0f
-               * settings.getCircleRadius(z2, atom2.getType().getVdwRadius()));
+      diameter2 = atom2.screenDiameter;
       radius2 = diameter2 >> 1;
     }
 
@@ -497,9 +491,7 @@ public class AtomShape implements Shape {
     int x = atom.screenX;
     int y = atom.screenY;
     int z = atom.screenZ;
-    int diameter =
-      (int) (2.0f
-        * settings.getCircleRadius(z, atom.getType().getVdwRadius()));
+    int diameter = atom.screenDiameter;
     int radius = diameter >> 1;
 
     if (!fastRendering && settings.isAtomPicked(atom)) {

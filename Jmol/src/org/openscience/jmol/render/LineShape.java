@@ -26,7 +26,7 @@ class LineShape implements Shape, Transformable {
     return buffer.toString();
   }
 
-  public void transform(Matrix4f matrix) {
+  public void transform(Matrix4f matrix, DisplaySettings settings) {
     matrix.transform(origPoint, screenPositionOrig);
     matrix.transform(endPoint, screenPositionEnd);
   }

@@ -43,6 +43,7 @@ import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
+import java.io.File;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
 
@@ -125,6 +126,7 @@ public class DisplayPanel extends JPanel
     RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);
     String vers = System.getProperty("java.version");
     antialiasCapable = vers.compareTo("1.2") >= 0;
+    (new File("jmolbug.log")).delete();
   }
 
   public void setChemFile(ChemFile cf) {
@@ -271,8 +273,7 @@ public class DisplayPanel extends JPanel
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
-        Atom atom = chemframe.getNearestAtom(e.getX(), e.getY(),
-            getViewTransformMatrix());
+        Atom atom = chemframe.getNearestAtom(e.getX(), e.getY());
         if (atom != null) {
           if (modeMouse == PICK) {
             if (e.isShiftDown()) {
@@ -368,8 +369,7 @@ public class DisplayPanel extends JPanel
         }
         if (haveFile) {
           Atom[] selectedAtoms =
-            chemframe.findAtomsInRegion(rleft, rtop, rright, rbottom,
-                                        getViewTransformMatrix());
+            chemframe.findAtomsInRegion(rleft, rtop, rright, rbottom);
           if (e.isShiftDown()) {
             settings.addPickedAtoms(selectedAtoms);
           } else {

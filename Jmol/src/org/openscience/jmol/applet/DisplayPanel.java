@@ -456,7 +456,7 @@ public class DisplayPanel extends Canvas
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
-        Atom atom = chemframe.getNearestAtom(e.getX(), e.getY(), mat);
+        Atom atom = chemframe.getNearestAtom(e.getX(), e.getY());
         if (pickingMode == MULTIPLEPICK) {
           settings.addPickedAtom(atom);
         } else {
@@ -562,8 +562,8 @@ public class DisplayPanel extends Canvas
           rbottom = y;
         }
         if (haveFile) {
-          Atom[] selectedAtoms = chemframe.findAtomsInRegion(rleft, rtop, rright,
-              rbottom, mat);
+          Atom[] selectedAtoms =
+            chemframe.findAtomsInRegion(rleft, rtop, rright, rbottom);
           if (e.isShiftDown()) {
             settings.addPickedAtoms(selectedAtoms);
           } else {

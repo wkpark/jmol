@@ -205,12 +205,17 @@ public class Atom {
    * Sets the atom's screen position by transforming the atom's position by
    * the given matrix.
    */
-  public void transform(Matrix4f transformationMatrix) {
+  public void transform(Matrix4f transformationMatrix,
+                        DisplaySettings settings ) {
 
     transformationMatrix.transform(position, screenPosition);
     screenX = (int) screenPosition.x;
     screenY = (int) screenPosition.y;
     screenZ = (int) screenPosition.z;
+    screenDiameter = 
+      (int) (2.0f
+        * settings.getCircleRadius(screenZ,
+                                   atomType.getBaseAtomType().getVdwRadius()));
     if (vector != null) {
       screenVector.scaleAdd(2.0f, vector, position);
       transformationMatrix.transform(screenVector);
@@ -304,6 +309,7 @@ public class Atom {
   public int screenX;
   public int screenY;
   public int screenZ;
+  public int screenDiameter;
 
   /**
    * A list of atoms to which this atom is bonded. Lazily initialized.

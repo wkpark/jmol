@@ -327,13 +327,13 @@ public class ChemFrame implements Transformable {
   /**
    * Transform all the points in this model
    */
-  public void transform(Matrix4f matrix) {
+  public void transform(Matrix4f matrix, DisplaySettings settings) {
 
     if (numberAtoms <= 0) {
       return;
     }
     for (int i = 0; i < numberAtoms; ++i) {
-      atoms[i].transform(matrix);
+      atoms[i].transform(matrix, settings);
     }
   }
 
@@ -346,13 +346,11 @@ public class ChemFrame implements Transformable {
    * @param y2 the y coordinate of point 2 of the region's bounding rectangle
    * @return the atoms in the region
    */
-  public Atom[] findAtomsInRegion(int x1, int y1,
-                                  int x2, int y2, Matrix4f matrix) {
+  public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2) {
 
     if (numberAtoms <= 0) {
       return new Atom[0];
     }
-    transform(matrix);
     Vector atomsInRegion = new Vector();
     for (int i = 0; i < numberAtoms; i++) {
       if (isAtomInRegion(i, x1, y1, x2, y2)) {
@@ -386,12 +384,10 @@ public class ChemFrame implements Transformable {
    * @param y the y screen coordinate
    * @return the atom drawn closest to the coordinates.
    */
-  public Atom getNearestAtom(int x, int y, Matrix4f matrix) {
-
+  public Atom getNearestAtom(int x, int y) {
     if (numberAtoms <= 0) {
       return null;
     }
-    transform(matrix);
     int dx, dy, dr2;
     Atom smallest = null;
     int smallr2 = Integer.MAX_VALUE;

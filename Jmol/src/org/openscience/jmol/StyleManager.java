@@ -53,7 +53,7 @@ public class StyleManager {
     this.styleBond = styleBond;
   }
 
-  public short marBond = 50;
+  public short marBond = 100;
   public void setMarBond(short marBond) {
     this.marBond =marBond;
   }

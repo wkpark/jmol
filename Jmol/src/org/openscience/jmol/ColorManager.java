@@ -84,7 +84,7 @@ public class ColorManager {
     this.isBondAtomColor = isBondAtomColor;
   }
 
-  public Color colorBond = Color.black;
+  public Color colorBond = null;
   public void setColorBond(Color c) {
     colorBond = c;
   }
@@ -128,7 +128,7 @@ public class ColorManager {
     return colorVector;
   }
 
-  public boolean showDarkerOutline = false;
+  public boolean showDarkerOutline = true;
   public void setShowDarkerOutline(boolean showDarkerOutline) {
     this.showDarkerOutline = showDarkerOutline;
   }

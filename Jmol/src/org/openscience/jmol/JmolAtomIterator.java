@@ -24,16 +24,10 @@
  */
 package org.openscience.jmol;
 
-import java.util.Iterator;
-
-public class JmolAtomIterator implements Iterator {
+public class JmolAtomIterator {
 
   public boolean hasNext() {
     return false;
-  }
-
-  public Object next() {
-    return nextAtom();
   }
 
   public Atom nextAtom() {

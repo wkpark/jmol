@@ -11,7 +11,11 @@ org/openscience/jmol/SelectionManager.java
 org/openscience/jmol/MouseManager.java
 org/openscience/jmol/FileManager.java
 org/openscience/jmol/ModelManager.java
+org/openscience/jmol/StyleManager.java
 org/openscience/jmol/RepaintManager.java
+org/openscience/jmol/LabelManager.java
+org/openscience/jmol/AxesManager.java
+org/openscience/jmol/Distributor.java
 org/openscience/jmol/PhysicalProperty.java
 org/openscience/jmol/AtomType.java
 org/openscience/jmol/Atom.java
@@ -34,6 +38,8 @@ org/openscience/jmol/Measurement.java
 org/openscience/jmol/MeasurementList.java
 org/openscience/jmol/MeasurementListEvent.java
 org/openscience/jmol/UseJavaSort.java
+org/openscience/jmol/JmolAtomIterator.java
+org/openscience/jmol/ProteinProp.java
 org/openscience/jmol/JmolCDO.java
 org/openscience/jmol/io/ReaderEvent.java
 org/openscience/jmol/io/ReaderListener.java
@@ -73,6 +79,10 @@ org/openscience/jmol/render/AtomVectorShape.java
 org/openscience/jmol/render/VectorShape.java
 org/openscience/jmol/render/LineShape.java
 org/openscience/jmol/render/AtomColors.java
+org/openscience/jmol/render/Axes.java
+org/openscience/jmol/render/BoundingBox.java
+org/openscience/jmol/render/LabelRenderer.java
+org/openscience/jmol/render/ShadedSphereRenderer.java
 org/openscience/jmol/script/Eval.java
 org/openscience/jmol/script/Token.java
 org/openscience/jmol/script/Compiler.java

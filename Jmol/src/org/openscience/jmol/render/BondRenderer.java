@@ -536,7 +536,7 @@ public class BondRenderer {
       width1 = 1;
     if (width2 == 0)
       width2 = 1;
-    space1 = width1 / 4 + 2; space2 = width2 / 4 + 2;
+    space1 = width1 / 8 + 3; space2 = width2 / 8 + 3;
     step1 = width1 + space1;      step2 = width2 + space2;
     dxStep1 = step1 * dy / mag2d; dyStep1 = step1 * -dx / mag2d;
     dxStep2 = step2 * dy / mag2d; dyStep2 = step2 * -dx / mag2d;

@@ -27,6 +27,9 @@
 
     <!-- Generate index html files for each language -->
   	<antcall target="html_lang">
+  	  <param name="lang_value" value="de"/>
+  	</antcall>
+  	<antcall target="html_lang">
   	  <param name="lang_value" value="en"/>
   	</antcall>
   	<antcall target="html_lang">

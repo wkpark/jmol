@@ -1,7 +1,8 @@
 # Edited for Debian GNU/Linux.
 DESTDIR =
-BIN     = $(DESTDIR)/usr/X11R6/bin
+BIN     = $(DESTDIR)/usr/bin
 LIBS    = ${DESTDIR}/usr/share/java
+EXTRA   = ${DESTDIR}/usr/share/jmol/lib
 
 VERSION="20010504"
 
@@ -16,13 +17,14 @@ clean:
 	ant clean
 
 install: application
-	install -d ${BIN} ${LIBS}
+	install -d ${BIN} ${LIBS} ${EXTRA}
 	install ./jmol ${BIN}
-	install ./jars/*jar ${LIBS}
+        install ./jars/jmol.jar ${LIB}
+	install ./jars/*jar ${EXTRA}
 
 deb:	
 	ant sourcedist.tar.gz	
-	cp jmol-${VERSION}.source.tar.gz /tmp/jmol_${VERSION}.tar.gz
+	cp jmol-${VERSION}.source.tar.gz /tmp/jmol-${VERSION}.tar.gz
 	cd /tmp; tar zxvf jmol-${VERSION}.tar.gz
 	cp Makefile.Debian /tmp/jmol-${VERSION}/.
 	cp -R debian /tmp/jmol-${VERSION}/.

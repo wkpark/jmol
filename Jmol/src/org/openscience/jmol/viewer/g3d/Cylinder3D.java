@@ -130,11 +130,13 @@ class Cylinder3D {
       calcRotatedPoint(tMid, iMid);
       if ((xRaster[iMid] == xRaster[iLower]) &&
           (yRaster[iMid] == yRaster[iLower])) {
-        intensityUp[iLower] = (intensityUp[iLower] + intensityUp[iMid]) / 2;
+        fp8IntensityUp[iLower] =
+          (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) / 2;
         tLower = tMid;
       } else if ((xRaster[iMid] == xRaster[iUpper]) &&
                (yRaster[iMid] == yRaster[iUpper])) {
-        intensityUp[iUpper] = (intensityUp[iUpper] + intensityUp[iMid]) / 2;
+        fp8IntensityUp[iUpper] =
+          (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) / 2;
         tUpper = tMid;
       } else {
         interpolate(iLower, iMid);
@@ -147,7 +149,8 @@ class Cylinder3D {
   }
 
   void plotRaster(int i) {
-    int iUp = intensityUp[i];
+    int fp8Up = fp8IntensityUp[i];
+    int iUp = fp8Up >> 8;
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
                        yRaster[i] + "," + zRaster[i] + ")" +
@@ -190,7 +193,7 @@ class Cylinder3D {
       yRaster = realloc(yRaster);
       zRaster = realloc(zRaster);
       tRaster = realloc(tRaster);
-      intensityUp = realloc(intensityUp);
+      fp8IntensityUp = realloc(fp8IntensityUp);
     }
     return rasterCount++;
   }
@@ -201,7 +204,7 @@ class Cylinder3D {
   int[] xRaster = new int[32];
   int[] yRaster = new int[32];
   int[] zRaster = new int[32];
-  int[] intensityUp = new int[32];
+  int[] fp8IntensityUp = new int[32];
 
   void calcRotatedPoint(float t, int i) {
     tRaster[i] = t;
@@ -222,7 +225,8 @@ class Cylinder3D {
     }
     zRaster[i] = (int)(zR + 0.5);
 
-    intensityUp[i] = viewer.calcIntensity((float)xR, (float)yR, (float)zR);
+    fp8IntensityUp[i] =
+      Shade3D.calcFp8Intensity((float)xR, (float)yR, (float)zR);
 
     /*
     System.out.println("calcRotatedPoint(" + t + "," + i + ")" + " -> " +
@@ -348,7 +352,8 @@ class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, xUp, yUp, zUp);
       g3d.plotPixelClipped(argbEndcap, xDn, yDn, zDn);
     }
-    int iUp = intensityUp[i];
+    int fp8Up = fp8IntensityUp[i];
+    int iUp = fp8Up >> 8;
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
                        yRaster[i] + "," + zRaster[i] + ")" +

@@ -47,8 +47,9 @@ public class Atom extends org.openscience.cdk.Atom {
     super.setID(atom.getAtomTypeName());
     this.baseAtomType = atom.baseAtomType;
     //    this.atomNumber = atomNumber;
-    this.pdbRecord = pdbRecord;
     this.control = control;
+    if (pdbRecord != null)
+      setPdbRecord(pdbRecord);
   }
 
   public Atom(DisplayControl control, org.openscience.cdk.Atom atom) {
@@ -71,19 +72,12 @@ public class Atom extends org.openscience.cdk.Atom {
     this.control = control;
   }
 
-  /**
-   * Returns whether this atom is a hydrogen atom.
-   *
-   * @return true if this atom is a hydrogen atom.
-   */
-  
-  String pdbRecord = null;
   public String getPdbRecord() {
-    return pdbRecord;
+    return (String)super.getProperty("pdbRecord");
   }
 
   public void setPdbRecord(String pdbRecord) {
-    this.pdbRecord = pdbRecord;
+    super.setProperty("pdbRecord", pdbRecord);
   }
 
   /**

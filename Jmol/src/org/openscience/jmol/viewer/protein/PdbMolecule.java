@@ -159,6 +159,10 @@ public class PdbMolecule {
     return null;
   }
 
+  public PdbChain getPdbChain(int chainIndex) {
+    return chains[chainIndex];
+  }
+
   PdbChain getOrAllocPdbChain(char chainID) {
     PdbChain chain = getPdbChain(chainID);
     if (chain != null)

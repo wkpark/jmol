@@ -28,6 +28,7 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3i;
+import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
@@ -188,7 +189,6 @@ public class FrameRenderer {
     for (int i = tempScreens.length; --i >= 0; )
       tempScreens[i] = new Point3i();
   }
-
   public Point3i[] getTempScreens(int n) {
     if (tempScreens.length < n) {
       int tSize = n + (n >> 1);
@@ -201,10 +201,28 @@ public class FrameRenderer {
     return tempScreens;
   }
 
+  private Point3f[] tempPoints = new Point3f[32];
+  {
+    for (int i = tempPoints.length; --i >= 0; )
+      tempPoints[i] = new Point3f();
+  }
+  public Point3f[] getTempPoints(int n) {
+    if (tempPoints.length < n) {
+      int tSize = n + (n >> 1);
+      Point3f[] t = new Point3f[tSize];
+      System.arraycopy(tempPoints, 0, t, 0, tempPoints.length);
+      for (int i = tempPoints.length; i < tSize; ++i)
+        t[i] = new Point3f();
+      tempPoints = t;
+    }
+    return tempPoints;
+  }
+
   private Atom[] tempAtoms = new Atom[32];
   public Atom[] getTempAtoms(int n) {
     if (tempAtoms.length < n)
       tempAtoms = new Atom[n + (n >> 1)];
     return tempAtoms;
   }
+
 }

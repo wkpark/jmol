@@ -35,7 +35,8 @@ public class Labels extends Shape {
 
   String[] strings;
   short[] colixes;
-  byte[] fontSizes;
+  byte[] sizes;
+  short[] offsets;
 
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
@@ -71,17 +72,34 @@ public class Labels extends Shape {
     }
     
     if ("fontsize".equals(propertyName)) {
-      System.out.println("label fontsize being set");
       int fontsize = ((Integer)value).intValue();
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          if (fontSizes == null || i >= fontSizes.length) {
+          if (sizes == null || i >= sizes.length) {
             if (fontsize == JmolConstants.LABEL_DEFAULT_FONTSIZE)
               continue;
-            fontSizes = ensureMinimumLengthArray(fontSizes, i + 1);
+            sizes = ensureMinimumLengthArray(sizes, i + 1);
           }
-          fontSizes[i] = (byte)fontsize;
-          System.out.println("set 1");
+          sizes[i] = (byte)fontsize;
+        }
+      return;
+    }
+
+    if ("offset".equals(propertyName)) {
+      int offset = ((Integer)value).intValue();
+      if (offset == 0)
+        offset = Short.MIN_VALUE;
+      else if (offset == ((JmolConstants.LABEL_DEFAULT_X_OFFSET << 8) |
+                          JmolConstants.LABEL_DEFAULT_Y_OFFSET))
+        offset = 0;
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i)) {
+          if (offsets == null || i >= offsets.length) {
+            if (offset == 0)
+              continue;
+            offsets = ensureMinimumLengthArray(offsets, i + 1);
+          }
+          offsets[i] = (short)offset;
         }
       return;
     }

@@ -35,24 +35,18 @@ import java.awt.FontMetrics;
 class LabelsRenderer extends ShapeRenderer {
 
   // offsets are from the font baseline
-  int labelOffsetX;
-  int labelOffsetY;
   int fontSizePrevious = -1;
   Font labelFont;
   FontMetrics labelFontMetrics;
-  int defaultFontSize;
 
   void render() {
-    labelOffsetX = viewer.getLabelOffsetX();
-    labelOffsetY = viewer.getLabelOffsetY();
-    defaultFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
-
     fontSizePrevious = -1;
 
     Labels labels = (Labels)shape;
     String[] labelStrings = labels.strings;
     short[] colixes = labels.colixes;
-    byte[] fontSizes = labels.fontSizes;
+    byte[] sizes = labels.sizes;
+    short[] offsets = labels.offsets;
     if (labelStrings == null)
       return;
     Atom[] atoms = frame.atoms;
@@ -66,21 +60,32 @@ class LabelsRenderer extends ShapeRenderer {
         continue;
       short colix = colixes == null || i >= colixes.length ? 0 : colixes[i];
       int fontSize =
-        ((fontSizes == null || i >= fontSizes.length || fontSizes[i] == 0)
-         ? defaultFontSize
-         : fontSizes[i]);
+        ((sizes == null || i >= sizes.length || sizes[i] == 0)
+         ? JmolConstants.LABEL_DEFAULT_FONTSIZE
+         : sizes[i]);
       if (fontSize != fontSizePrevious) {
-        System.out.println("setting font to be of size " + fontSize);
         Font font = labelFont = viewer.getFontOfSize(fontSize);
         g3d.setFont(font);
         labelFontMetrics = g3d.getFontMetrics();
         fontSizePrevious = fontSize;
       }
-      renderLabel(atom, label, colix);
+      short offset = offsets == null || i >= offsets.length ? 0 : offsets[i];
+      int xOffset, yOffset;
+      if (offset == 0) {
+        xOffset = JmolConstants.LABEL_DEFAULT_X_OFFSET;
+        yOffset = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+      } else if (offset == Short.MIN_VALUE) {
+        xOffset = yOffset = 0;
+      } else {
+        xOffset = offset >> 8;
+        yOffset = (byte)(offset & 0xFF);
+      }
+      renderLabel(atom, label, colix, xOffset, yOffset);
     }
   }
   
-  void renderLabel(Atom atom, String strLabel, short colix) {
+  void renderLabel(Atom atom, String strLabel, short colix,
+                   int labelOffsetX, int labelOffsetY) {
     /*
       left over from when font sizes changed;
       Font font = viewer.getLabelFont(atom.diameter);

@@ -2296,7 +2296,10 @@ public class Eval implements Runnable {
 
   void setLabelOffset() throws ScriptException {
     checkLength4();
-    viewer.setLabelOffset(intParameter(2), intParameter(3));
+    int xOffset = intParameter(2);
+    int yOffset = intParameter(3);
+    int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
+    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset", new Integer(offset));
   }
 
   void setHetero() throws ScriptException {

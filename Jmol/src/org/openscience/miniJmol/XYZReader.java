@@ -26,6 +26,7 @@ import java.util.Vector;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import org.openscience.jmol.FortranFormat;
+import javax.swing.event.EventListenerList;
 
 /**
  * XYZ files may contain multiple ChemFrame objects, and may have charges
@@ -45,17 +46,30 @@ public class XYZReader implements ChemFileReader {
   }
 
   /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  /**
    * Read the XYZ file.
    */
-  public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
-          throws IOException {
+  public ChemFile read() throws IOException {
 
     int fr = 0;
     ChemFile file = new ChemFile(bondsEnabled);
 
     while (true) {
       fr++;
-      ChemFrame cf = readFrame(putStatus, fr, bondsEnabled);
+      ChemFrame cf = readFrame(fr);
       if (cf == null) {
         break;
       }
@@ -71,9 +85,7 @@ public class XYZReader implements ChemFileReader {
   /**
    * Parses the next section of the XYZ file into a ChemFrame.
    */
-  public ChemFrame readFrame(
-          StatusDisplay putStatus, int frameNum, boolean bondsEnabled)
-            throws IOException {
+  public ChemFrame readFrame(int frameNum) throws IOException {
 
     int na = 0;
     String info = "";
@@ -88,14 +100,6 @@ public class XYZReader implements ChemFileReader {
     String sn = st.nextToken();
     na = Integer.parseInt(sn);
     info = input.readLine();
-    if (putStatus != null) {
-      stat.append("Reading Frame ");
-      stat.append(frameNum);
-      stat.append(": ");
-      statBase = stat.toString();
-      stat.append("0 %");
-      putStatus.setStatusMessage(stat.toString());
-    }
 
     // OK, we got enough to start building a ChemFrame:
     ChemFrame cf = new ChemFrame(na, bondsEnabled);
@@ -169,20 +173,53 @@ public class XYZReader implements ChemFileReader {
           cf.addAtom(aname, (float) x, (float) y, (float) z);
         }
       }
-      if (putStatus != null) {
-        stat.setLength(0);
-        stat.append(statBase);
-        if (na > 1) {
-          stat.append((int) (100 * i / (na - 1)));
-        } else {
-          stat.append(100);
-        }
-        stat.append(" %");
-        putStatus.setStatusMessage(stat.toString());
-      }
+ 
     }
+    fireFrameRead();
     return cf;
   }
 
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener.
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
+    }
+  }
+ 
   private BufferedReader input;
 }

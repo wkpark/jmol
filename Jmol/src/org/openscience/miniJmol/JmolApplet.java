@@ -138,15 +138,23 @@ public class JmolApplet extends java.applet.Applet
     if (model != null) {
       try {
         ChemFileReader cfr = null;
+        ReaderProgress readerProgress = new ReaderProgress(this);
         if ((getParameter("FORMAT") != null)
                 && getParameter("FORMAT").toUpperCase().equals("CMLSTRING")) {
           String cmlString = convertEscapeChars(model);
           cfr = ReaderFactory
                   .createReader(new java.io.StringReader(cmlString));
+          readerProgress.setFileName("CML string");
         } else {
           java.net.URL modelURL = null;
           try {
             modelURL = new java.net.URL(getDocumentBase(), model);
+            String fileName = modelURL.getFile();
+            int fileNameIndex = fileName.lastIndexOf('/');
+            if (fileNameIndex >= 0) {
+              fileName = fileName.substring(fileNameIndex+1);
+            }
+            readerProgress.setFileName(fileName);
           } catch (java.net.MalformedURLException e) {
             throw new RuntimeException(("Got MalformedURL for model: "
                     + e.toString()));
@@ -156,7 +164,9 @@ public class JmolApplet extends java.applet.Applet
                     .InputStreamReader(modelURL.openStream()));
         }
         if (cfr != null) {
-          myBean.setModel(cfr.read(this, bondsEnabled));
+          cfr.addReaderListener(readerProgress);
+          cfr.setBondsEnabled(bondsEnabled);
+          myBean.setModel(cfr.read());
         } else {
           setErrorMessage("Error: Unable to read input format");
         }
@@ -496,7 +506,8 @@ public class JmolApplet extends java.applet.Applet
     try {
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeXYZString));
-      myBean.setModel(cfr.read(this, bondsEnabled));
+          cfr.setBondsEnabled(bondsEnabled);
+      myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
     }
@@ -512,7 +523,8 @@ public class JmolApplet extends java.applet.Applet
     try {
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeCMLString));
-      myBean.setModel(cfr.read(this, bondsEnabled));
+          cfr.setBondsEnabled(bondsEnabled);
+      myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
     }
@@ -535,7 +547,8 @@ public class JmolApplet extends java.applet.Applet
       ChemFileReader cfr =
         ReaderFactory
           .createReader(new java.io.InputStreamReader(modelURL.openStream()));
-      myBean.setModel(cfr.read(this, bondsEnabled));
+          cfr.setBondsEnabled(bondsEnabled);
+      myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
     }

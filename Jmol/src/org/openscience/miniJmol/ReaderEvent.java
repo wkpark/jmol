@@ -19,41 +19,25 @@
  */
 package org.openscience.miniJmol;
 
-import java.io.IOException;
+import java.util.EventObject;
 
 /**
- * An interface for reading output from chemistry programs.
+ * Signals that something has happened in a file reader. This class is
+ * primarily in place for future development when additional information
+ * may be passed to <code>ReaderListener</code>s.
  *
- * @author Bradley A. Smith (yeldar@home.com)
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public interface ChemFileReader {
-
-  /**
-   * Read the data.
-   *
-   * @return a ChemFile with the data.
-   * @exception IOException if an I/O error occurs
-   */
-  public ChemFile read() throws IOException;
+class ReaderEvent extends EventObject {
   
   /**
-   * Sets whether bonds are enabled in the files and frames which are read.
+   * Creates a reader event.
    *
-   * @param bondsEnabled if true, enables bonds.
+   * @param source the object on which the event initially occurred.
    */
-  public void setBondsEnabled(boolean bondsEnabled);
+  ReaderEvent(Object source) {
+    super(source);
+  }
   
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l);
-
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l);
 }
+

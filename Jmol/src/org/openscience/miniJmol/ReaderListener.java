@@ -19,41 +19,21 @@
  */
 package org.openscience.miniJmol;
 
-import java.io.IOException;
+import java.util.EventListener;
 
 /**
- * An interface for reading output from chemistry programs.
+ * Allows monitoring of progress of file reader activities.
  *
- * @author Bradley A. Smith (yeldar@home.com)
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public interface ChemFileReader {
-
-  /**
-   * Read the data.
-   *
-   * @return a ChemFile with the data.
-   * @exception IOException if an I/O error occurs
-   */
-  public ChemFile read() throws IOException;
+interface ReaderListener extends EventListener {
   
   /**
-   * Sets whether bonds are enabled in the files and frames which are read.
+   * Indicates that a new frame has been read.
    *
-   * @param bondsEnabled if true, enables bonds.
+   * @param event information about the event.
    */
-  public void setBondsEnabled(boolean bondsEnabled);
+  public void frameRead(ReaderEvent event);
   
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l);
-
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l);
 }
+

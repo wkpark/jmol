@@ -44,12 +44,12 @@ public class JmolBeanTest {
       java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");
       ChemFileReader cfr1 = ReaderFactory.createReader(r1);
       myXMLThing1.setAtomPropertiesFromFile("AtomTypes");
-      myXMLThing1.setModel(cfr1.read(new NoStatus(), true));
+      myXMLThing1.setModel(cfr1.read());
 
       java.io.Reader r2 = new java.io.FileReader("methanol1.cml");
       ChemFileReader cfr2 = ReaderFactory.createReader(r2);
       myXMLThing2.setAtomPropertiesFromFile("AtomTypes");
-      myXMLThing2.setModel(cfr2.read(new NoStatus(), true));
+      myXMLThing2.setModel(cfr2.read());
     } catch (java.io.FileNotFoundException e) {
       System.out.println("File not found: " + e);
     } catch (java.io.IOException e) {
@@ -90,7 +90,3 @@ public class JmolBeanTest {
   }
 }
 
-class NoStatus implements StatusDisplay {
-  public void setStatusMessage(String statusMessage) {
-  }
-}

@@ -39,8 +39,6 @@ import java.awt.FontMetrics;
 public class FrameRenderer {
 
   JmolViewer viewer;
-  MeasurementRenderer measurementRenderer;
-  LineRenderer lineRenderer;
 
   ShapeRenderer[] renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
 
@@ -56,23 +54,11 @@ public class FrameRenderer {
 
     viewer.calcTransformMatrices();
 
-    if (frame.measurementCount > 0) {
-      if (measurementRenderer == null)
-        measurementRenderer = new MeasurementRenderer(viewer, this);
-      measurementRenderer.render(g3d, rectClip, frame, displayModel, null);
-    }
-
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape == null)
         continue;
       getRenderer(i).render(g3d, rectClip, frame, displayModel, shape);
-    }
-
-    if (frame.lineCount > 0) {
-      if (lineRenderer == null)
-        lineRenderer = new LineRenderer(viewer, this);
-      lineRenderer.render(g3d, rectClip, frame, displayModel, null);
     }
   }
 

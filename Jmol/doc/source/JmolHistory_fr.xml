@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : JmolHistory.docbook.xml (v 1.45)
+  Translated from default version : JmolHistory.docbook.xml (v 1.46)
 -->
 <history>
 <contributors>
@@ -16,6 +16,9 @@
   </contributor>
   <contributor id="NV">
     <name>Nicolas Vervelle</name><email>nvervell@club-internet.fr</email>
+  </contributor>
+  <contributor id="ST">
+    <name>Simon Tyrrell</name><email>smt40@cam.ac.uk</email>
   </contributor>
   <contributor id="OS">
     <name>Oliver Stuker</name><email>revilo@oc38.uni-paderborn.de</email>
@@ -82,7 +85,7 @@
 <changes version="jmol-11pre?">
   <change contributor="EW">
     Am&#x00E9;lioration du CdkJmolAdpater: les propri&#x00E9;t&#x00E9;s
-    PDB sont maintenant support&#x00E9;es, ChemSequence/ChemModel is
+    PDB sont maintenant support&#x00E9;es, ChemSequence/ChemModel est
     mapp&#x00E9; sur AtomSetCollection/AtomSet.
   </change>
   <change contributor="EW">
@@ -95,6 +98,15 @@
   </change>
   <change contributor="MTH">
     Support d'Unicode dans les scripts.
+  </change>
+  <change contrubutor="MTH">
+    Ajout du rendu des surfaces maill&#x00E9;es.
+  </change>
+  <change contributor="MTH">
+    Ajout du rendu des polyh&#00E8;dres.
+  </change>
+  <change contributor="ST">
+    Ajout du Drag-and-Drop &#00E0; l'application.
   </change>
 </changes>
 

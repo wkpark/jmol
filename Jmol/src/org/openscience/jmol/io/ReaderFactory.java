@@ -159,7 +159,9 @@ public abstract class ReaderFactory {
           || (line.indexOf("MOPAC2002") >= 0)) {
         System.out.println("ReaderFactory: Mopac97Reader");
         return new Mopac97Reader(viewer, buffer);
-      } else if (line.startsWith("HEADER") || line.startsWith("ATOM  ")) {
+      } else if (line.startsWith("HEADER") ||
+                 line.startsWith("HETATOM ") ||
+                 line.startsWith("ATOM  ")) {
         System.out.println("ReaderFactory: PDBReader");
         return new PDBReader(viewer, buffer);
       } else if (line.startsWith("molstruct")) {

@@ -33,6 +33,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
@@ -44,6 +45,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.JCheckBox;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -61,7 +63,7 @@ import javax.vecmath.Point3f;
  * Cystal -> Properties dialog.
  *
  * @author  Fabian Dortu (Fabian Dortu@wanadoo.be)
- * @version 1.2
+ * @version 1.3
  */
 public class CrystalPropertiesDialog extends JDialog
     implements ActionListener, PropertyChangeListener {
@@ -88,7 +90,7 @@ public class CrystalPropertiesDialog extends JDialog
 
   private int currentFrameIndex; //the current frame index(modified by Animate.java)
 
-  //The Main Penel
+  //The Main Panel
   JTabbedPane tabbedPane;
 
   //Primitive Vectors fields
@@ -105,6 +107,7 @@ public class CrystalPropertiesDialog extends JDialog
   String[] applyToList = new String[2];
 
   //Crystal Box fields
+  JCheckBox origAtomsOnly;
   Vector jAtomBox = new Vector(2);
   Vector jAtomBoxLabel = new Vector(2);
   Vector jBondBox = new Vector(2);
@@ -360,12 +363,11 @@ public class CrystalPropertiesDialog extends JDialog
   /**
    * This method set which of the cartesian or crystallographic
    * primitive vectors is editable.
-   * index==0 --> Cartesian
-   * index==1 --> Crystallographic
+   * Depends of primVTypeList state
    *
    * @param index an <code>int</code> value
    */
-  protected void setPrimVType() {
+  protected void setPrimVectorsState() {
 
     //Set what is editable depending on the combo box value
     int index = primVTypeList.getSelectedIndex();
@@ -384,8 +386,32 @@ public class CrystalPropertiesDialog extends JDialog
         ((JTextField) (jAngles.elementAt(i))).setEditable(true);
       }
     }
-  }    //end setPrimVType
+  }    //end setPrimVectorsState
 
+
+  /**
+   * Make usage or not of atomBox, bondBox, unitBox 
+   * Depends of origAtomsOnly state
+   */
+  protected void setCrystalBoxState() {
+
+    //Set what is editable depending on the checkbox value
+    if (origAtomsOnly.isSelected()) {
+      for (int i = 0; i < 2; i++) {
+        ((JTextField) (jAtomBox.elementAt(i))).setEditable(false);
+        ((JTextField) (jBondBox.elementAt(i))).setEditable(false);
+        ((JTextField) (jUnitBox.elementAt(i))).setEditable(false);
+      }
+    } else {
+      for (int i = 0; i < 2; i++) {
+        ((JTextField) (jAtomBox.elementAt(i))).setEditable(true);
+        ((JTextField) (jBondBox.elementAt(i))).setEditable(true);
+        ((JTextField) (jUnitBox.elementAt(i))).setEditable(true);
+      }
+    }
+  }    //end setCrystalBoxState
+  
+  
   /**
    * Describe <code>makePrimVectorsPanel</code> method here.
    *
@@ -421,7 +447,7 @@ public class CrystalPropertiesDialog extends JDialog
       public void actionPerformed(ActionEvent e) {
 	//        JComboBox cb = (JComboBox) e.getSource();
         //int primVTypeIndex = cb.getSelectedIndex();
-        setPrimVType();//FIX
+        setPrimVectorsState();//FIX
       }
     });
 
@@ -647,10 +673,10 @@ public class CrystalPropertiesDialog extends JDialog
     
     if (isPrimVectorsCart) {
       primVTypeList.setSelectedIndex(0);
-      setPrimVType();
+      setPrimVectorsState();
     } else {
       primVTypeList.setSelectedIndex(1);
-      setPrimVType();
+      setPrimVectorsState();
     }
 
     float[][] rprim = unitCellBox.getRprim();
@@ -693,22 +719,31 @@ public class CrystalPropertiesDialog extends JDialog
     JPanel jCrystBoxPanel = new JPanel();
     jCrystBoxPanel.setLayout(gridbag);
 
+    origAtomsOnly = new JCheckBox
+      (resources.getString("Crystprop.origatomCheckBox"));
+    origAtomsOnly.addItemListener(new ItemListener() {
+	
+	public void itemStateChanged(ItemEvent e) {
+	  setCrystalBoxState();
+	}
+      });
+    
     JPanel jAtomBoxPanel = new JPanel();
     jAtomBoxPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Crystprop.atomboxLabel")));
+      .setBorder(new TitledBorder
+		 (resources.getString("Crystprop.atomboxLabel")));
     jAtomBoxPanel.setLayout(gridbag);
-
+    
     JPanel jBondBoxPanel = new JPanel();
     jBondBoxPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Crystprop.bondboxLabel")));
+        .setBorder(new TitledBorder
+		   (resources.getString("Crystprop.bondboxLabel")));
     jBondBoxPanel.setLayout(gridbag);
 
     JPanel jUnitBoxPanel = new JPanel();
     jUnitBoxPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Crystprop.unitboxLabel")));
+        .setBorder(new TitledBorder
+		   (resources.getString("Crystprop.unitboxLabel")));
     jUnitBoxPanel.setLayout(gridbag);
 
     jAtomBox.addElement(new JTextField(15));
@@ -810,11 +845,13 @@ public class CrystalPropertiesDialog extends JDialog
     boxApplyTo = new JComboBox(applyToList);
     boxApplyTo.setSelectedIndex(0);
 
-    c.gridheight = 4;
+    c.gridheight = 5;
     c.weighty = 10000;
     c.anchor = GridBagConstraints.NORTHWEST;
     c.fill = GridBagConstraints.BOTH;
     c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(origAtomsOnly, c);
+    jCrystBoxPanel.add(origAtomsOnly);
     gridbag.setConstraints(jAtomBoxPanel, c);
     jCrystBoxPanel.add(jAtomBoxPanel);
     gridbag.setConstraints(jBondBoxPanel, c);
@@ -838,6 +875,8 @@ public class CrystalPropertiesDialog extends JDialog
     float[][] bondBox = crystalBox.getBondBox();
     float[][] unitBox = crystalBox.getUnitBox();
     
+    origAtomsOnly.setSelected(crystalBox.getOrigAtomsOnly());
+
     ((JTextField) (jAtomBox.elementAt(0)))
       .setText(atomBox[0][0] + ", " + atomBox[0][1] + ", " + atomBox[0][2]);
     ((JTextField) (jAtomBox.elementAt(1)))
@@ -1042,7 +1081,10 @@ public class CrystalPropertiesDialog extends JDialog
 
   }    //end makeSpaceGroupPanel
 
-
+  /**
+   * Update panel with dummy information.
+   * Used when no crystal info is available.
+   */
   protected void updateBarePanels() {
 
     primVTypeList.setSelectedIndex(0);
@@ -1305,10 +1347,13 @@ public class CrystalPropertiesDialog extends JDialog
       //set Primitive Vectors
       unitCellBox = crystalFile.getUnitCellBox(i);
       if (primApplyTo.getSelectedIndex() == 0
-          | ((primApplyTo.getSelectedIndex() == 1) && (i == currentFrameIndex))) {
-        if (primVTypeList.getSelectedIndex() == 0) {    //Cartesian repres.
+          | ((primApplyTo.getSelectedIndex() == 1) 
+	     && (i == currentFrameIndex))) {
+        if (primVTypeList.getSelectedIndex() == 0) {   
+	  //Cartesian repres.
           unitCellBox.setPrimVectorsCartesian(rprim, acell);
-        } else {                                        //Crystallographic representation
+        } else {    
+	  //Crystallographic representation
           unitCellBox.setPrimVectorsCrystallo(edges, angles);
         }
       }
@@ -1316,8 +1361,10 @@ public class CrystalPropertiesDialog extends JDialog
 
       //set Crystal Box
       crystalBox = crystalFile.getCrystalBox(i);
+      crystalBox.setOrigAtomsOnly(origAtomsOnly.isSelected());
       if (boxApplyTo.getSelectedIndex() == 0
-          | ((boxApplyTo.getSelectedIndex() == 1) && (i == currentFrameIndex))) {
+          | ((boxApplyTo.getSelectedIndex() == 1) 
+	     && (i == currentFrameIndex))) {
         crystalBox.setAtomBox(atomBox);
         crystalBox.setBondBox(bondBox);
         crystalBox.setUnitBox(unitBox);
@@ -1325,29 +1372,31 @@ public class CrystalPropertiesDialog extends JDialog
       }
       crystalFile.setCrystalBox(crystalBox);
 
-      if (((primApplyTo.getSelectedIndex() == 1) && (boxApplyTo.getSelectedIndex() == 1) && (i == currentFrameIndex))
+      if (((primApplyTo.getSelectedIndex() == 1) 
+	   && (boxApplyTo.getSelectedIndex() == 1) 
+	   && (i == currentFrameIndex))
           | !((primApplyTo.getSelectedIndex() == 1)
-            && (boxApplyTo.getSelectedIndex() == 1))) {
-
-
+	      && (boxApplyTo.getSelectedIndex() == 1))) {
+	
+	
         crystalFile.generateCrystalFrame(i);
       }
     }
 
     //Display the updated ChemFile
     restoreInFile();
-
+    
   }    //end commitChange()
 
   private void updateDialog() {
-
+    
     
     // Reput(or put it for the first time)
     // the text in the box so that the user
     // can see if his input has been interpreted correctly.
 
     if (hasCrystalInfo) {
-
+      
       unitCellBox= crystalFile.getUnitCellBox(currentFrameIndex);
       crystalBox= crystalFile.getCrystalBox(currentFrameIndex);
       currentFrame = crystalFile.getFrame(currentFrameIndex);

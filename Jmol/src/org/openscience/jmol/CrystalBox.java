@@ -32,6 +32,10 @@ public class CrystalBox {
   private float[][] bondBox;
   private float[][] unitBox;
 
+  // if true, consider only the atoms as there are given
+  // in unitCellBox. Do not effectue any translation.
+  private boolean origAtomsOnly = false;
+
   /**
    * Two different parallepipedic clipping boxes can be combined.
    * The *atom box* determines how many atoms are included in the frame.
@@ -119,6 +123,11 @@ public class CrystalBox {
     this.unitBox = unitBox;
   }
 
+  
+  public void setOrigAtomsOnly(boolean origAtomsOnly) {
+    this.origAtomsOnly = origAtomsOnly;
+  }
+
 
   /**
    * Describe <code>getAtomBox</code> method here.
@@ -145,6 +154,10 @@ public class CrystalBox {
    */
   public float[][] getUnitBox() {
     return unitBox;
+  }
+
+  public boolean getOrigAtomsOnly() {
+    return origAtomsOnly;
   }
 
 }

@@ -1,3 +1,4 @@
+
 package org.openscience.jmol;
 
 import java.util.Vector;
@@ -283,7 +284,7 @@ public class CrystalFile extends ChemFile {
   }    //end generateCrystal
 
 
-
+  
   private void generateAtoms(Vector crystalFAtomRedPos,
       CrystalFrame crystalFrame, Vector frameEquivAtoms[]) {
 
@@ -308,13 +309,22 @@ public class CrystalFile extends ChemFile {
 
       //Check for atomBox
       // Determines the base vector multiplicators
-      mina = intSup(atomBox[0][0] - unitCellAtomRedPos[at][0]);
-      maxa = intInf(atomBox[1][0] - unitCellAtomRedPos[at][0]);
-      minb = intSup(atomBox[0][1] - unitCellAtomRedPos[at][1]);
-      maxb = intInf(atomBox[1][1] - unitCellAtomRedPos[at][1]);
-      minc = intSup(atomBox[0][2] - unitCellAtomRedPos[at][2]);
-      maxc = intInf(atomBox[1][2] - unitCellAtomRedPos[at][2]);
-
+      if (crystalBoxS.getOrigAtomsOnly()) {
+	mina = 0;
+	maxa = 0;
+	minb = 0;
+	maxb = 0;
+	minc = 0;
+	maxc = 0;
+      } else {
+	mina = intSup(atomBox[0][0] - unitCellAtomRedPos[at][0]);
+	maxa = intInf(atomBox[1][0] - unitCellAtomRedPos[at][0]);
+	minb = intSup(atomBox[0][1] - unitCellAtomRedPos[at][1]);
+	maxb = intInf(atomBox[1][1] - unitCellAtomRedPos[at][1]);
+	minc = intSup(atomBox[0][2] - unitCellAtomRedPos[at][2]);
+	maxc = intInf(atomBox[1][2] - unitCellAtomRedPos[at][2]);
+      }
+      
       for (int i = mina; i <= maxa; i++) {
         for (int j = minb; j <= maxb; j++) {
           for (int k = minc; k <= maxc; k++) {

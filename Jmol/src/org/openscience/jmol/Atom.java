@@ -171,11 +171,30 @@ public class Atom {
   /**
    * Returns the atom's vector, or null if not set.
    */
+  public boolean hasVector() {
+    return vector != null;
+  }
+
   public Point3f getVector() {
-    if (vector == null) {
+    if (vector == null)
       return null;
-    }
     return new Point3f(vector);
+  }
+
+  private static final Point3f zeroPoint = new Point3f();
+  public float getVectorMagnitude() {
+    // mth 2002 nov
+    // I don't know why they were scaling by two,
+    // but that is the way it was working
+    if (vector == null)
+      return 0f;
+    return vector.distance(zeroPoint) * 2.0f;
+  }
+
+  public Point3f getScaledVector() {
+    Point3f vectorScaled = new Point3f();
+    vectorScaled.scaleAdd(2.0f, vector, position);
+    return vectorScaled;
   }
 
   /**
@@ -198,7 +217,7 @@ public class Atom {
    * first be transformed. Otherwise, a point at the origin is returned.
    */
   public Point3f getScreenVector() {
-    return new Point3f(screenVector);
+    return screenVector;
   }
 
   /**
@@ -217,7 +236,7 @@ public class Atom {
         * settings.getCircleRadius(screenZ,
                                    atomType.getBaseAtomType().getVdwRadius()));
     if (vector != null) {
-      screenVector.scaleAdd(2.0f, vector, position);
+      screenVector.set(getScaledVector());
       transformationMatrix.transform(screenVector);
     }
   }

@@ -86,6 +86,7 @@ public class ChemFrame implements Transformable {
   private float radiusRotation;
   private float minAtomVectorMagnitude;
   private float maxAtomVectorMagnitude;
+  private float atomVectorRange;
 
   public static void setBondFudge(float bf) {
     bondFudge = bf;
@@ -460,7 +461,7 @@ public class ChemFrame implements Transformable {
   private void clearBounds() {
     centerGeometric = centerRotation = null;
     radiusGeometric = radiusRotation =
-      minAtomVectorMagnitude = maxAtomVectorMagnitude = 0f;
+      minAtomVectorMagnitude = maxAtomVectorMagnitude = atomVectorRange = 0f;
   }
 
   /**
@@ -474,21 +475,18 @@ public class ChemFrame implements Transformable {
     radiusGeometric = radiusRotation = calculateRadius(centerGeometric);
   }
 
-  private static final Point3f zeroPoint = new Point3f();
   void calculateAtomVectorMagnitudeRange() {
     minAtomVectorMagnitude = maxAtomVectorMagnitude = 0;
     for (int i = 0; i < numberAtoms; ++i) {
-      Point3f vector = atoms[i].getVector();
-      if (vector != null) {
-        float magnitude = vector.distance(zeroPoint);
-        if (magnitude > maxAtomVectorMagnitude) {
-          maxAtomVectorMagnitude = magnitude;
-        } else if ((magnitude < minAtomVectorMagnitude) ||
-                   (minAtomVectorMagnitude == 0f)) {
-          minAtomVectorMagnitude = magnitude;
-        }
+      float magnitude=atoms[i].getVectorMagnitude();
+      if (magnitude > maxAtomVectorMagnitude) {
+        maxAtomVectorMagnitude = magnitude;
+      } else if ((magnitude < minAtomVectorMagnitude) ||
+                 (minAtomVectorMagnitude == 0f)) {
+        minAtomVectorMagnitude = magnitude;
       }
     }
+    atomVectorRange = maxAtomVectorMagnitude - minAtomVectorMagnitude;
   }
 
   Point3f calculateGeometricCenter() {
@@ -541,9 +539,20 @@ public class ChemFrame implements Transformable {
       Atom atom = atoms[i];
       Point3f posAtom = atom.getPosition();
       float distAtom = center.distance(posAtom);
-      distAtom += (atom.getType().getVdwRadius() * atomSphereFactor);
-      if (distAtom > radius)
-        radius = distAtom;
+      float distVdw =
+        distAtom + (float)(atom.getType().getVdwRadius() * atomSphereFactor);
+      if (distVdw > radius)
+        radius = distVdw;
+      if (atom.hasVector()) {
+        // mth 2002 nov
+        // this calculation isn't right, but I can't get it to work with
+        // samples/cs2.syz when I try to use
+        // float distVector = center.distance(atom.getScaledVector());
+        // So I am over-estimating and giving up for the day. 
+        float distVector = distAtom + atom.getVectorMagnitude();
+        if (distVector > radius)
+          radius = distVector;
+      }
     }
     return radius;
   }

@@ -122,6 +122,8 @@ public class StyleManager {
     setCommonDefaults();
     viewer.setColorBackground(Color.black);
     viewer.setColorMeasurement(Color.white);
+    viewer.setPercentVdwAtom(0);
+    viewer.setMarBondDefault((short)1);
     viewer.setColorLabel(null);
   }
 

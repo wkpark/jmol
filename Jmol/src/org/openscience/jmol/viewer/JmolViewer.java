@@ -1581,7 +1581,7 @@ final public class JmolViewer {
     return styleManager.percentVdwAtom;
   }
 
-  public void setMarBondPreferences(short milliAngstromsRadius) {
+  public void setMarBondDefault(short milliAngstromsRadius) {
     styleManager.setMarBond(milliAngstromsRadius);
     setMarBond(milliAngstromsRadius);
     refresh();

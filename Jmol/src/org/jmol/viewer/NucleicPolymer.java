@@ -49,7 +49,7 @@ class NucleicPolymer extends Polymer {
   }
 
   void lookForHbonds(NucleicPolymer other) {
-    System.out.println("NucleicPolymer.lookForHbonds()");
+    //System.out.println("NucleicPolymer.lookForHbonds()");
     for (int i = monomerCount; --i >= 0; ) {
       NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
       if (! myNucleotide.isPurine())

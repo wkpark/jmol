@@ -31,7 +31,7 @@ import java.util.BitSet;
 class Hsticks extends Sticks {
 
   void setSize(int size, BitSet bsSelected) {
-    System.out.println("Hsticks.setSize()");
+    //System.out.println("Hsticks.setSize()");
     frame.calcHbonds();
     short mad = (short)size;
     setMadBond(mad, JmolConstants.BOND_HYDROGEN_MASK, bsSelected);

@@ -82,7 +82,7 @@ class RepaintManager {
   void setAnimationReplayMode(int animationReplayMode,
                                      float firstFrameDelay,
                                      float lastFrameDelay) {
-    System.out.println("animationReplayMode=" + animationReplayMode);
+    //System.out.println("animationReplayMode=" + animationReplayMode);
     this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;
     firstFrameDelayMs = (int)(this.firstFrameDelay * 1000);
     this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;

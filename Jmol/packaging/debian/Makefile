@@ -16,8 +16,8 @@ application:
 archive: application
 
 clean:
-	rm -f jmol-*
-	rm -f jmol_*
+	rm -f -r jmol-*
+	rm -f -r jmol_*
 
 install:
 	install -d ${BIN} ${LIBS} ${EXTRA} ${HTMLDOC}

@@ -427,82 +427,10 @@ public class ChemFrame extends AtomContainer {
   public BitSet findAtomsInRectangle(Rectangle rect) {
     bsFoundRectangle.clear();
     for (int i = 0; i < numberOfAtoms; ++i) {
-      if (rect.contains(atoms[i].getScreenX(), atoms[i].getScreenY()))
+      if (rect.contains(atoms[i].atomShape.x, atoms[i].atomShape.y))
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;
-  }
-
-  /**
-   * Find all atoms within designated region.
-   *
-   * @param x1 the x coordinate of point 1 of the region's bounding rectangle
-   * @param y1 the y coordinate of point 1 of the region's bounding rectangle
-   * @param x2 the x coordinate of point 2 of the region's bounding rectangle
-   * @param y2 the y coordinate of point 2 of the region's bounding rectangle
-   * @return the atoms in the region
-   */
-  /*
-  public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2) {
-
-    if (numberOfAtoms <= 0) {
-      return new Atom[0];
-    }
-    Vector atomsInRegion = new Vector();
-    for (int i = 0; i < numberOfAtoms; i++) {
-      if (isAtomInRegion(i, x1, y1, x2, y2)) {
-        atomsInRegion.addElement(atoms[i]);
-      }
-    }
-    
-    Atom[] result = new Atom[atomsInRegion.size()];
-    for (int i = 0; i < result.length; ++i) {
-      result[i] = (Atom) atomsInRegion.elementAt(i);
-    }
-    return result;
-  }
-
-    private boolean isAtomInRegion(int n, int x1, int y1, int x2, int y2) {
-	int x = atoms[n].getScreenX();
-	if ((x > x1) && (x < x2)) {
-	    int y = atoms[n].getScreenY();
-	    if ((y > y1) && (y < y2)) {
-		return true;
-	    }
-	}
-	return false;
-    }
-  */
-  /**
-   * Finds the atom nearest the given screen coordinates.
-   *
-   * @param x the x screen coordinate
-   * @param y the y screen coordinate
-   * @return the atom drawn closest to the coordinates.
-   * note that this will return null if the atom is more than 5 pixels
-   * outside the radius of the atom
-   */
-  public Atom getNearestAtom(int x, int y) {
-    if (numberOfAtoms <= 0) {
-      return null;
-    }
-    int dx, dy, dr2;
-    Atom atomClosest = null;
-    int r2Closest = Integer.MAX_VALUE;
-    for (int i = 0; i < numberOfAtoms; i++) {
-      Atom atom = atoms[i];
-      dx = atom.getScreenX() - x;
-      dy = atom.getScreenY() - y;
-      dr2 = dx * dx + dy * dy;
-      if (dr2 < r2Closest) {
-        atomClosest = atom;
-        r2Closest = dr2;
-      }
-    }
-    int rClosest = (int)Math.sqrt(r2Closest);
-    return (rClosest > atomClosest.getScreenRadius() + 5)
-      ? null
-      : atomClosest;
   }
 
   /**

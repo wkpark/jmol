@@ -45,7 +45,7 @@ public class StyleManager {
                                       styleAtom, -percentVdwAtom,
                                       styleBond, percentAngstromBond * 10,
                                       control.getColorAtom(atom),
-                                      styleLabel));
+                                      control.getLabelAtom(atom)));
     }
   }
 
@@ -94,16 +94,6 @@ public class StyleManager {
         iter.nextAtom().atomShape.setMadBond(mad, iter.indexBond());
     }
   }
-
-  public byte styleLabel = DisplayControl.NOLABELS;
-  public void setStyleLabel(byte styleLabel, boolean setDefault,
-                            JmolAtomIterator iter) {
-    if (setDefault)
-      this.styleLabel = styleLabel;
-    while (iter.hasNext())
-      iter.nextAtom().atomShape.setStyleLabel(styleLabel);
-  }
-
 
   public boolean showAtoms = true;
   public void setShowAtoms(boolean showAtoms) {

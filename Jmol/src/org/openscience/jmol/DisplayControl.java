@@ -57,6 +57,7 @@ final public class DisplayControl {
   public ModelManager modelManager;
   public RepaintManager repaintManager;
   public StyleManager styleManager;
+  public LabelManager labelManager;
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
 
@@ -80,6 +81,7 @@ final public class DisplayControl {
     modelManager = new ModelManager(this);
     repaintManager = new RepaintManager(this);
     styleManager = new StyleManager(this);
+    labelManager = new LabelManager(this);
 
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
@@ -833,19 +835,6 @@ final public class DisplayControl {
    * delegated to StyleManager
    ****************************************************************/
 
-  public void setStyleLabel(byte style) {
-    if (!modelManager.haveFile)
-      return;
-    boolean empty = selectionManager.isEmpty();
-    styleManager.setStyleLabel(style, empty,
-                               empty ? iterAll() : iterSelection());
-    refresh();
-  }
-
-  public byte getStyleLabel() {
-    return styleManager.styleLabel;
-  }
-
   private JmolAtomIterator iterAll() {
     return modelManager.getChemFileIterator();
   }
@@ -1007,6 +996,27 @@ final public class DisplayControl {
 
   public double getArrowHeadRadius() {
     return styleManager.arrowHeadRadius;
+  }
+
+  /****************************************************************
+   * delegated to LabelManager
+   ****************************************************************/
+
+  public void setStyleLabel(byte style) {
+    if (!modelManager.haveFile)
+      return;
+    boolean empty = selectionManager.isEmpty();
+    labelManager.setStyleLabel(style, empty,
+                               empty ? iterAll() : iterSelection());
+    refresh();
+  }
+
+  public byte getStyleLabel() {
+    return labelManager.styleLabel;
+  }
+
+  public String getLabelAtom(Atom atom) {
+    return labelManager.getLabelAtom(atom);
   }
 
 }

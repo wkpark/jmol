@@ -99,8 +99,8 @@ public class AtomRenderer {
     colorOutline = control.getColorAtomOutline(styleAtom, color);
 
     renderAtom();
-    if (atomShape.styleLabel != DisplayControl.NOLABELS)
-      renderLabel(atomShape.styleLabel);
+    if (atomShape.strLabel != null)
+      renderLabel(atomShape.strLabel);
   }
 
   private void renderAtom() {
@@ -367,35 +367,20 @@ public class AtomRenderer {
     }
   }
 
-  public void renderLabel(byte styleLabel) {
+  public void renderLabel(String strLabel) {
     int j = 0;
     String s = null;
+    // FIXME -- mth -- too much font stuff being allocated here
     Font font = new Font("Helvetica", Font.PLAIN, radius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     int k = fontMetrics.getAscent();
     g.setColor(colorText);
     
-    String label = null;
-    switch (styleLabel) {
-    case DisplayControl.SYMBOLS:
-      label = atom.getSymbol();
-      break;
+    j = fontMetrics.stringWidth(strLabel);
+    g.drawString(strLabel, x - j / 2, y + k / 2);
 
-    case DisplayControl.TYPES:
-      label = atom.getID();
-       break;
-
-    case DisplayControl.NUMBERS:
-      // Note that this is incremented by one for display purposes
-      label = Integer.toString(atom.getAtomNumber() + 1);
-      break;
-
-    }
-    if (label != null) {
-      j = fontMetrics.stringWidth(label);
-      g.drawString(label, x - j / 2, y + k / 2);
-    }
+    // FIXME -- mth -- understand this property stuff
     if (!control.getPropertyStyleString().equals("")) {
 
       // check to make sure this atom has this property:

@@ -225,7 +225,8 @@ public class AtomShape implements Shape {
       return; // the pixels from the atoms will nearly cover the bond
     // technically, we should draw a bond (actually little more than a dot)
     // when:
-    //  atomDrawMode == DisplaySettings.WIREFRAME
+    //  atomDrawMode == DisplayControl.WIREFRAME
+    //  && showCoveredBonds == true
     //  && and the centers of the bonds are very close
     //  && the diameter of the atom1 is >= 3
     // ... but I'm not going to do it right now

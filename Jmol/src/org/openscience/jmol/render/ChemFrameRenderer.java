@@ -76,7 +76,7 @@ public class ChemFrameRenderer {
         for (int i = 0; i < numAtoms; ++i) {
           Atom atom = frame.getAtomAt(i);
           if (showHydrogens || !atom.isHydrogen()) {
-            shapesList.add(new AtomVectorShape(atom, settings,
+            shapesList.add(new AtomVectorShape(atom, control,
                                                minAtomVectorMagnitude,
                                                atomVectorRange));
           }
@@ -89,7 +89,7 @@ public class ChemFrameRenderer {
         
         // The three primitives vectors with arrows
         for (int i = 0; i < 3; i++) {
-          VectorShape vector = new VectorShape(settings, zeroPoint,
+          VectorShape vector = new VectorShape(zeroPoint,
               new Point3f(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
                 true);
           shapesList.add(vector);
@@ -101,9 +101,9 @@ public class ChemFrameRenderer {
           // Depends on the settings...TODO
           Vector boxEdges = crystalFrame.getBoxEdges();
           for (int i = 0; i < boxEdges.size(); i = i + 2) {
-            LineShape line = new LineShape(settings,
-                (Point3f) boxEdges.elementAt(i),
-                  (Point3f) boxEdges.elementAt(i + 1));
+            LineShape line =
+              new LineShape((Point3f) boxEdges.elementAt(i),
+                            (Point3f) boxEdges.elementAt(i + 1));
             shapesList.add(line);
             transformables.add(line);
           }

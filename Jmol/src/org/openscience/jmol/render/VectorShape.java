@@ -8,17 +8,14 @@ import javax.vecmath.Matrix4f;
 
 public class VectorShape implements Shape, Transformable {
 
-  DisplaySettings settings;
   Point3f origPoint;
   Point3f endPoint;
   boolean arrowStart;
   boolean arrowEnd;
 
 
-  VectorShape(DisplaySettings settings, Point3f origPoint,
-      Point3f endPoint, boolean arrowStart, boolean arrowEnd) {
-
-    this.settings = settings;
+  VectorShape(Point3f origPoint, Point3f endPoint,
+              boolean arrowStart, boolean arrowEnd) {
     this.origPoint = origPoint;
     this.endPoint = endPoint;
     this.arrowStart = arrowStart;

@@ -7,15 +7,15 @@ import javax.vecmath.Point3f;
 public class AtomVectorShape implements Shape {
 
   Atom atom;
-  DisplaySettings settings;
+  DisplayControl control;
   float minMagnitude;
   float magnitudeRange;
   
-  AtomVectorShape(Atom atom, DisplaySettings settings,
+  AtomVectorShape(Atom atom, DisplayControl control,
                   float minMagnitude, float magnitudeRange) {
     
     this.atom = atom;
-    this.settings = settings;
+    this.control = control;
     this.minMagnitude = minMagnitude;
     this.magnitudeRange = magnitudeRange;
   }
@@ -30,7 +30,7 @@ public class AtomVectorShape implements Shape {
   }
 
   public void render(Graphics g) {
-    if (settings.getShowVectors()) {
+    if (control.getShowVectors()) {
       if (atom.getVector() != null) {
         float magnitude = atom.getVector().distance(zeroPoint);
         float scaling = (magnitude - minMagnitude) / magnitudeRange  + 0.5f;

@@ -8,14 +8,11 @@ import javax.vecmath.Matrix4f;
 
 class LineShape implements Shape, Transformable {
 
-  DisplaySettings settings;
   Point3f origPoint;
   Point3f endPoint;
 
-  LineShape(DisplaySettings settings, Point3f origPoint,
-      Point3f endPoint) {
+  LineShape(Point3f origPoint, Point3f endPoint) {
 
-    this.settings = settings;
     this.origPoint = origPoint;
     this.endPoint = endPoint;
   }

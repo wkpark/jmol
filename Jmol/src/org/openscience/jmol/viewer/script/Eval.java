@@ -688,6 +688,7 @@ public class Eval implements Runnable {
   }
 
   short getSetAxesTypeMad() throws ScriptException {
+    checkLength3();
     int tok = statement[2].tok;
     short mad = 0;
     switch (tok) {

@@ -79,7 +79,7 @@ public class AtomShape extends Shape {
     x = (int)screen.x;
     y = (int)screen.y;
     z = (int)screen.z;
-    diameter = control.getScreenDiameter(z, atom.getType().getVdwRadius());
+    diameter = control.screenAtomDiameter(z, atom.getType().getVdwRadius());
   }
 
   public void render(Graphics g, Rectangle clip, DisplayControl control) {

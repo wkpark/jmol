@@ -509,7 +509,7 @@ public class ChemFrame {
     //
     // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
     double radius = 0.0f;
-    double atomSphereFactor = Jmol.control.getAtomSphereFactor();
+    double atomSphereFactor = Jmol.control.percentVdwAtom / 100.0;
     for (int i = 0; i < numberAtoms; ++i) {
       Atom atom = atoms[i];
       Point3d posAtom = atom.getPosition();

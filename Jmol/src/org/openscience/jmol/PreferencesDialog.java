@@ -81,23 +81,23 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean showHydrogens;
   private static boolean showVectors;
   private static boolean showDarkerOutline;
-  private static Color backgroundColor;
-  private static Color outlineColor;
-  private static Color pickedColor;
-  private static Color textColor;
-  private static Color vectorColor;
-  private static int AtomRenderMode;
+  private static Color colorBackground;
+  private static Color colorOutline;
+  private static Color colorSelection;
+  private static Color colorText;
+  private static Color colorVector;
+  private static int modeAtomDraw;
   private static int AtomColorProfile;
-  private static int AtomLabelMode;
+  private static int modeLabel;
   private static String AtomPropsMode;
-  private static int BondRenderMode;
+  private static int modeBondDraw;
   private static double ArrowHeadSize;
   private static double ArrowHeadRadius;
   private static double ArrowLengthScale;
   private static double BondFudge;
-  private static double BondWidth;
+  private static int percentAngBond;
   private static double FieldOfView;
-  private static double SphereFactor;
+  private static int percentVdwAtom;
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
   private static int VibrationFrames;
@@ -143,22 +143,22 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("antialiasAlways", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
-    props.put("AtomRenderMode", "0");
-    props.put("AtomLabelMode", "0");
+    props.put("modeAtomDraw", "0");
+    props.put("modeLabel", "0");
     props.put("AtomPropsMode", "");
-    props.put("SphereFactor", "0.2");
-    props.put("BondRenderMode", "0");
+    props.put("percentVdwAtom", "20");
+    props.put("modeBondDraw", "0");
     props.put("AutoBond", "true");
-    props.put("BondWidth", "0.1");
+    props.put("percentAngBond", "10");
     props.put("BondFudge", "1.12");
     props.put("ArrowHeadSize", "1.0");
     props.put("ArrowHeadRadius", "1.0");
     props.put("ArrowLengthScale", "1.0");
-    props.put("backgroundColor", "16777215");
-    props.put("outlineColor", "0");
-    props.put("pickedColor", "16762880");
-    props.put("textColor", "0");
-    props.put("vectorColor", "0");
+    props.put("colorBackground", "16777215");
+    props.put("colorOutline", "0");
+    props.put("colorSelection", "16762880");
+    props.put("colorText", "0");
+    props.put("colorVector", "0");
     props.put("VibrateAmplitudeScale", "0.7");
     props.put("VibrateVectorScale", "1.0");
     props.put("VibrationFrames", "20");
@@ -324,15 +324,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aSChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aWFChoice"));
-    aRender.setSelectedIndex(control.getAtomDrawMode());
+    aRender.setSelectedIndex(control.modeAtomDraw);
     aRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
-        AtomRenderMode = source.getSelectedIndex();
-        control.setAtomDrawMode(AtomRenderMode);
-        props.put("AtomRenderMode", Integer.toString(AtomRenderMode));
+        modeAtomDraw = source.getSelectedIndex();
+        control.setModeAtomDraw(modeAtomDraw);
+        props.put("modeAtomDraw", Integer.toString(modeAtomDraw));
       }
     });
 
@@ -379,15 +379,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aTLChoice"));
     aLabel.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aNLChoice"));
-    aLabel.setSelectedIndex(control.getLabelMode());
+    aLabel.setSelectedIndex(control.modeLabel);
     aLabel.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
-        AtomLabelMode = source.getSelectedIndex();
-        control.setLabelMode(AtomLabelMode);
-        props.put("AtomLabelMode", Integer.toString(AtomLabelMode));
+        modeLabel = source.getSelectedIndex();
+        control.setModeLabel(modeLabel);
+        props.put("modeLabel", Integer.toString(modeLabel));
       }
     });
     constraints = new GridBagConstraints();
@@ -432,8 +432,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance()
         .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
-    sfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (100.0 * control.getAtomSphereFactor()));
+    sfSlider =
+      new JSlider(JSlider.HORIZONTAL, 0, 100, control.percentVdwAtom);
     sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     sfSlider.setPaintTicks(true);
     sfSlider.setMajorTickSpacing(20);
@@ -444,9 +444,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        SphereFactor = source.getValue() / 100.0;
-        control.setAtomSphereFactor(SphereFactor);
-        props.put("SphereFactor", Double.toString(SphereFactor));
+        percentVdwAtom = source.getValue();
+        control.setPercentVdwAtom(percentVdwAtom);
+        props.put("percentVdwAtom", "" + percentVdwAtom);
       }
     });
     sfPanel.add(sfSlider, BorderLayout.CENTER);
@@ -492,15 +492,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.bWFChoice"));
     bRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.bLChoice"));
-    bRender.setSelectedIndex(control.getBondDrawMode());
+    bRender.setSelectedIndex(control.modeBondDraw);
     bRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
-        BondRenderMode = source.getSelectedIndex();
-        control.setBondDrawMode(BondRenderMode);
-        props.put("BondRenderMode", Integer.toString(BondRenderMode));
+        modeBondDraw = source.getSelectedIndex();
+        control.setModeBondDraw(modeBondDraw);
+        props.put("modeBondDraw", Integer.toString(modeBondDraw));
       }
     });
     renderPanel.add(bRender);
@@ -550,8 +550,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       new JLabel(JmolResourceHandler.getInstance()
         .getString("Prefs.bondWidthExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
-    bwSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (100.0 * control.getBondWidth()));
+    bwSlider =
+      new JSlider(JSlider.HORIZONTAL, 0, 100, control.percentAngBond);
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
     bwSlider.setMajorTickSpacing(20);
@@ -581,9 +581,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        BondWidth = source.getValue() / 100.0;
-        control.setBondWidth(BondWidth);
-        props.put("BondWidth", Double.toString(BondWidth));
+        percentAngBond = source.getValue();
+        control.setPercentAngBond(percentAngBond);
+        props.put("percentAngBond", "" + percentAngBond);
       }
     });
 
@@ -809,7 +809,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.bgLabel")));
     bButton = new JButton();
-    bButton.setBackground(backgroundColor);
+    bButton.setBackground(colorBackground);
     bButton.setToolTipText(JmolResourceHandler.getInstance()
         .getString("Prefs.bgToolTip"));
     ActionListener startBackgroundChooser = new ActionListener() {
@@ -819,12 +819,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         Color color =
           JColorChooser
             .showDialog(bButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.bgChooserTitle"), backgroundColor);
-        backgroundColor = color;
-        bButton.setBackground(backgroundColor);
-        control.setBackgroundColor(backgroundColor);
-        props.put("backgroundColor",
-            Integer.toString(backgroundColor.getRGB()));
+              .getString("Prefs.bgChooserTitle"), colorBackground);
+        colorBackground = color;
+        bButton.setBackground(colorBackground);
+        control.setBackgroundColor(colorBackground);
+        props.put("colorBackground",
+            Integer.toString(colorBackground.getRGB()));
       }
     };
     bButton.addActionListener(startBackgroundChooser);
@@ -844,7 +844,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     outlinePanel.add(cbDarkerOutline, BorderLayout.NORTH);
 
     oButton = new JButton();
-    oButton.setBackground(outlineColor);
+    oButton.setBackground(colorOutline);
     oButton.setToolTipText(JmolResourceHandler.getInstance()
         .getString("Prefs.outlineToolTip"));
     ActionListener startOutlineChooser = new ActionListener() {
@@ -854,11 +854,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         Color color =
           JColorChooser
             .showDialog(oButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.outlineChooserTitle"), outlineColor);
-        outlineColor = color;
-        oButton.setBackground(outlineColor);
-        control.setOutlineColor(outlineColor);
-        props.put("outlineColor", Integer.toString(outlineColor.getRGB()));
+              .getString("Prefs.outlineChooserTitle"), colorOutline);
+        colorOutline = color;
+        oButton.setBackground(colorOutline);
+        control.setOutlineColor(colorOutline);
+        props.put("colorOutline", Integer.toString(colorOutline.getRGB()));
       }
     };
     oButton.addActionListener(startOutlineChooser);
@@ -871,7 +871,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.pickedLabel")));
     pButton = new JButton();
-    pButton.setBackground(pickedColor);
+    pButton.setBackground(colorSelection);
     pButton.setToolTipText(JmolResourceHandler.getInstance()
         .getString("Prefs.pickedToolTip"));
     ActionListener startPickedChooser = new ActionListener() {
@@ -881,11 +881,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         Color color =
           JColorChooser
             .showDialog(pButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.pickedChooserTitle"), pickedColor);
-        pickedColor = color;
-        pButton.setBackground(pickedColor);
-        control.setPickedColor(pickedColor);
-        props.put("pickedColor", Integer.toString(pickedColor.getRGB()));
+              .getString("Prefs.pickedChooserTitle"), colorSelection);
+        colorSelection = color;
+        pButton.setBackground(colorSelection);
+        control.setPickedColor(colorSelection);
+        props.put("colorSelection", Integer.toString(colorSelection.getRGB()));
       }
     };
     pButton.addActionListener(startPickedChooser);
@@ -898,7 +898,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.textLabel")));
     tButton = new JButton();
-    tButton.setBackground(textColor);
+    tButton.setBackground(colorText);
     tButton.setToolTipText(JmolResourceHandler.getInstance()
         .getString("Prefs.textToolTip"));
     ActionListener startTextChooser = new ActionListener() {
@@ -908,11 +908,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         Color color =
           JColorChooser
             .showDialog(tButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.textChooserTitle"), textColor);
-        textColor = color;
-        tButton.setBackground(textColor);
-        control.setTextColor(textColor);
-        props.put("textColor", Integer.toString(textColor.getRGB()));
+              .getString("Prefs.textChooserTitle"), colorText);
+        colorText = color;
+        tButton.setBackground(colorText);
+        control.setTextColor(colorText);
+        props.put("colorText", Integer.toString(colorText.getRGB()));
       }
     };
     tButton.addActionListener(startTextChooser);
@@ -925,7 +925,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.vectorLabel")));
     vButton = new JButton();
-    vButton.setBackground(vectorColor);
+    vButton.setBackground(colorVector);
     vButton.setToolTipText(JmolResourceHandler.getInstance()
         .getString("Prefs.vectorToolTip"));
     ActionListener startVectorChooser = new ActionListener() {
@@ -935,11 +935,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         Color color =
           JColorChooser
             .showDialog(vButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.vectorChooserTitle"), vectorColor);
-        vectorColor = color;
-        vButton.setBackground(vectorColor);
-        control.setVectorColor(vectorColor);
-        props.put("vectorColor", Integer.toString(vectorColor.getRGB()));
+              .getString("Prefs.vectorChooserTitle"), colorVector);
+        colorVector = color;
+        vButton.setBackground(colorVector);
+        control.setVectorColor(colorVector);
+        props.put("colorVector", Integer.toString(colorVector.getRGB()));
         control.refresh();
       }
     };
@@ -1112,15 +1112,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cH.setSelected(control.getShowHydrogens());
 
     // Atom panel controls:
-    aRender.setSelectedIndex(control.getAtomDrawMode());
-    aLabel.setSelectedIndex(control.getLabelMode());
-    sfSlider.setValue((int) (100.0
-        * control.getAtomSphereFactor()));
+    aRender.setSelectedIndex(control.modeAtomDraw);
+    aLabel.setSelectedIndex(control.modeLabel);
+    sfSlider.setValue(control.percentVdwAtom);
 
     // Bond panel controls:
-    bRender.setSelectedIndex(control.getBondDrawMode());
+    bRender.setSelectedIndex(control.modeBondDraw);
     abYes.setSelected(control.getAutoBond());
-    bwSlider.setValue((int) (100.0 * control.getBondWidth()));
+    bwSlider.setValue(control.percentAngBond);
     bfSlider.setValue((int) (50.0 * control.getBondFudge()));
 
     // Vector panel controls:
@@ -1129,12 +1128,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     alSlider.setValue((int) (100.0f * control.getArrowLengthScale()));
 
     // Color panel controls:
-    bButton.setBackground(backgroundColor);
+    bButton.setBackground(colorBackground);
     cbDarkerOutline.setSelected(control.getShowDarkerOutline());
-    oButton.setBackground(outlineColor);
-    pButton.setBackground(pickedColor);
-    tButton.setBackground(textColor);
-    vButton.setBackground(vectorColor);
+    oButton.setBackground(colorOutline);
+    pButton.setBackground(colorSelection);
+    tButton.setBackground(colorText);
+    vButton.setBackground(colorVector);
 
     // Vibrate panel controls
     vasSlider.setValue((int) (100.0 * Vibrate.getAmplitudeScale()));
@@ -1179,15 +1178,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showHydrogens = Boolean.getBoolean("showHydrogens");
     showVectors = Boolean.getBoolean("showVectors");
     showDarkerOutline = Boolean.getBoolean("showDarkerOutline");
-    backgroundColor = Color.getColor("backgroundColor");
-    outlineColor = Color.getColor("outlineColor");
-    pickedColor = Color.getColor("pickedColor");
-    textColor = Color.getColor("textColor");
-    vectorColor = Color.getColor("vectorColor");
-    AtomRenderMode = Integer.getInteger("AtomRenderMode").intValue();
-    AtomLabelMode = Integer.getInteger("AtomLabelMode").intValue();
+    colorBackground = Color.getColor("colorBackground");
+    colorOutline = Color.getColor("colorOutline");
+    colorSelection = Color.getColor("colorSelection");
+    colorText = Color.getColor("colorText");
+    colorVector = Color.getColor("colorVector");
+    modeAtomDraw = Integer.getInteger("modeAtomDraw").intValue();
+    modeLabel = Integer.getInteger("modeLabel").intValue();
     AtomPropsMode = props.getProperty("AtomPropsMode");
-    BondRenderMode = Integer.getInteger("BondRenderMode").intValue();
+    modeBondDraw = Integer.getInteger("modeBondDraw").intValue();
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
     // Doubles and Doubles are special:
@@ -1198,29 +1197,30 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     ArrowLengthScale =
         new Double(props.getProperty("ArrowLengthScale")).doubleValue();
     BondFudge = new Double(props.getProperty("BondFudge")).doubleValue();
-    BondWidth = new Double(props.getProperty("BondWidth")).doubleValue();
+    percentAngBond =
+      Integer.parseInt(props.getProperty("percentAngBond"));
     FieldOfView = new Double(props.getProperty("FieldOfView")).doubleValue();
-    SphereFactor =
-        new Double(props.getProperty("SphereFactor")).doubleValue();
+    percentVdwAtom =
+      Integer.parseInt(props.getProperty("percentVdwAtom"));
     VibrateAmplitudeScale =
         new Double(props.getProperty("VibrateAmplitudeScale")).doubleValue();
     VibrateVectorScale =
         new Double(props.getProperty("VibrateVectorScale")).doubleValue();
 
-    control.setOutlineColor(outlineColor);
-    control.setPickedColor(pickedColor);
-    control.setTextColor(textColor);
-    control.setAtomSphereFactor(SphereFactor);
-    control.setAtomDrawMode(AtomRenderMode);
-    control.setLabelMode(AtomLabelMode);
+    control.setOutlineColor(colorOutline);
+    control.setPickedColor(colorSelection);
+    control.setTextColor(colorText);
+    control.setPercentVdwAtom(percentVdwAtom);
+    control.setModeAtomDraw(modeAtomDraw);
+    control.setModeLabel(modeLabel);
     control.setPropertyMode(AtomPropsMode);
-    control.setBondWidth(BondWidth);
-    control.setBondDrawMode(BondRenderMode);
-    control.setVectorColor(vectorColor);
+    control.setPercentAngBond(percentAngBond);
+    control.setModeBondDraw(modeBondDraw);
+    control.setVectorColor(colorVector);
     control.setArrowHeadRadius(ArrowHeadRadius);
     control.setArrowHeadSize(ArrowHeadSize);
     control.setArrowLengthScale(ArrowLengthScale);
-    control.setBackgroundColor(backgroundColor);
+    control.setBackgroundColor(colorBackground);
     control.setWantsGraphics2D(graphics2D);
     control.setWantsAntialias(antialias);
     control.setWantsAntialiasAlways(antialiasAlways);

@@ -96,7 +96,7 @@ public class AtomRenderer {
     colorOutline = control.getAtomOutlineColor(color);
 
     renderAtom();
-    if (control.labelMode != control.NOLABELS)
+    if (control.modeLabel != control.NOLABELS)
       renderLabel();
   }
 
@@ -113,13 +113,13 @@ public class AtomRenderer {
 
     if (diameter <= 2) {
       if (diameter > 0) {
-        g.setColor(control.atomDrawMode==control.WIREFRAME
+        g.setColor(control.modeAtomDraw == control.WIREFRAME
                    ? color : colorOutline);
           g.fillRect(xUpperLeft, yUpperLeft, diameter, diameter);
       }
       return;
     }
-    if (control.atomDrawMode == control.SHADING &&
+    if (control.modeAtomDraw == control.SHADING &&
         diameter >= minCachedSize &&
         !control.fastRendering) {
       renderShadedAtom();
@@ -129,7 +129,7 @@ public class AtomRenderer {
     // *filled* by an oval because of the stroke offset
     int diamT = diameter-1;
     g.setColor(color);
-    if (!control.fastRendering && control.atomDrawMode!=control.WIREFRAME) {
+    if (!control.fastRendering && control.modeAtomDraw != control.WIREFRAME) {
       // diamT should work here, but if background dots are appearing
       // just inside the circles then change the parameter to *diameter*
       g.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
@@ -375,7 +375,7 @@ public class AtomRenderer {
     g.setColor(control.getTextColor());
     
     String label = null;
-    switch (control.labelMode) {
+    switch (control.modeLabel) {
     case DisplayControl.SYMBOLS:
       label = atom.getSymbol();
       break;

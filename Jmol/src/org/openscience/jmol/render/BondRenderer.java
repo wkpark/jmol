@@ -98,7 +98,7 @@ public class BondRenderer {
     if (control.showAtoms && (mag2d2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
     if (!control.showAtoms &&
-        (control.fastRendering || control.bondDrawMode==control.LINE)) {
+        (control.fastRendering || control.modeBondDraw==control.LINE)) {
       // the trivial case of no atoms and only single lines
       // in this case double & triple bonds are not drawn
       if (sameColor) {
@@ -131,8 +131,8 @@ public class BondRenderer {
     outline1 = control.getAtomOutlineColor(color1);
     outline2 = control.getAtomOutlineColor(color2);
 
-    width1 = (int)control.scaleToScreen(z1, control.bondWidth);
-    width2 = (int)control.scaleToScreen(z2, control.bondWidth);
+    width1 = control.screenBondWidth(z1);
+    width2 = control.screenBondWidth(z2);
 
     if (width1 < 4 && width2 < 4) {
       // to smooth out narrow bonds
@@ -141,7 +141,7 @@ public class BondRenderer {
     this.bondOrder = bondOrder;
 
     boolean lineBond =
-      control.bondDrawMode == control.LINE || control.fastRendering;
+      control.modeBondDraw == control.LINE || control.fastRendering;
     if (!lineBond && width1 < 2 && width2 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline
@@ -232,7 +232,7 @@ public class BondRenderer {
 
   void polyBond1(Color color, Color outline) {
     g.setColor(color);
-    switch(control.bondDrawMode) {
+    switch(control.modeBondDraw) {
     case DisplayControl.WIREFRAME:
       g.drawPolygon(axPoly, ayPoly, 4);
       break;

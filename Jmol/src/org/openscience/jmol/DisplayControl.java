@@ -89,26 +89,20 @@ final public class DisplayControl {
     return panel;
   }
 
-  public int labelMode = NOLABELS;
-  public void setLabelMode(int mode) {
-    if (labelMode != mode) {
-      labelMode = mode;
+  public int modeLabel = NOLABELS;
+  public void setModeLabel(int mode) {
+    if (modeLabel != mode) {
+      modeLabel = mode;
       recalc();
     }
-  }
-  public int getLabelMode() {
-    return labelMode;
   }
 
-  public int atomDrawMode = QUICKDRAW;
-  public void setAtomDrawMode(int mode) {
-    if (atomDrawMode != mode) {
-      atomDrawMode = mode;
+  public int modeAtomDraw = QUICKDRAW;
+  public void setModeAtomDraw(int mode) {
+    if (modeAtomDraw != mode) {
+      modeAtomDraw = mode;
       recalc();
     }
-  }
-  public int getAtomDrawMode() {
-    return atomDrawMode;
   }
 
   AtomColorer colorProfile = AtomColors.getInstance();
@@ -128,24 +122,18 @@ final public class DisplayControl {
     return atomColorProfile;
   }
 
-  public int bondDrawMode = QUICKDRAW;
-  public void setBondDrawMode(int mode) {
-    if (bondDrawMode != mode) {
-      bondDrawMode = mode;
+  public int modeBondDraw = QUICKDRAW;
+  public void setModeBondDraw(int mode) {
+    if (modeBondDraw != mode) {
+      modeBondDraw = mode;
       recalc();
     }
   }
-  public int getBondDrawMode() {
-    return bondDrawMode;
-  }
 
-  public double bondWidth = .1;
-  public void setBondWidth(double width) {
-    bondWidth = width;
+  public int percentAngBond = 10;
+  public void setPercentAngBond(int percentAngBond) {
+    this.percentAngBond = percentAngBond;
     recalc();
-  }
-  public double getBondWidth() {
-    return bondWidth;
   }
 
   public Color outlineColor = Color.black;
@@ -269,14 +257,10 @@ final public class DisplayControl {
     return showDarkerOutline;
   }
 
-  // FIXME -- change me to be a percentage
-  public double atomSphereFactor = 0.2;
-  public void setAtomSphereFactor(double d) {
-    atomSphereFactor = d;
+  public int percentVdwAtom = 20;
+  public void setPercentVdwAtom(int percentVdwAtom) {
+    this.percentVdwAtom = percentVdwAtom;
     recalc();
-  }
-  public double getAtomSphereFactor() {
-    return atomSphereFactor;
   }
 
   public boolean fastRendering = false;;
@@ -354,10 +338,6 @@ final public class DisplayControl {
     bsSelection.and(bsNull);
     bsSelection.or(set);
     recalc();
-  }
-
-  public double getScalePixelsPerAngstrom() {
-    return scalePixelsPerAngstrom;
   }
 
   public void translateBy(int xDelta, int yDelta) {
@@ -638,7 +618,7 @@ final public class DisplayControl {
       setFastRendering(mouseDragged);
     if (this.mouseDragged && !mouseDragged) {
       if ((useGraphics2D && wantsAntialias && !wantsAntialiasAlways) ||
-          (bondDrawMode == SHADING))
+          (modeBondDraw == SHADING))
         recalc();
     }
     this.mouseDragged = mouseDragged;
@@ -771,14 +751,21 @@ final public class DisplayControl {
     recalc();
   }
 
-  public int getScreenDiameter(int z, double vdwRadius) {
+  public int screenAtomDiameter(int z, double vdwRadius) {
     if (z > 0)
       System.out.println("--?QUE? no way that z > 0--");
     int d = (int)(2 * vdwRadius *
-                  scalePixelsPerAngstrom * getAtomSphereFactor());
+                  scalePixelsPerAngstrom * percentVdwAtom / 100);
     if (perspectiveDepth)
       d = (d * cameraZ) / (cameraZ - z);
     return d;
+  }
+
+  public int screenBondWidth(int z) {
+    int w = (int)(scalePixelsPerAngstrom * percentAngBond / 100);
+    if (perspectiveDepth)
+      w = (w * cameraZ) / (cameraZ - z);
+    return w;
   }
 
   public double scaleToScreen(int z, double sizeAngstroms) {
@@ -900,7 +887,7 @@ final public class DisplayControl {
   }
 
   public Color getAtomOutlineColor(Color color) {
-    Color outline = (showDarkerOutline || atomDrawMode == SHADING)
+    Color outline = (showDarkerOutline || modeAtomDraw == SHADING)
       ? getDarker(color) : outlineColor;
     if (modeTransparentColors)
       outline = getTransparent(outline);

@@ -1789,19 +1789,23 @@ final public class JmolConstants {
     
   };
 
-  public final static int SHAPE_BACKBONE = 0;
-  public final static int SHAPE_TRACE    = 1;
-  public final static int SHAPE_CARTOON  = 2;
-  public final static int SHAPE_STRANDS  = 3;
-  public final static int SHAPE_DOTS     = 4;
-  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 5;
-  public final static int SHAPE_AXES     = 5;
-  public final static int SHAPE_BBCAGE     = 6;
-  public final static int SHAPE_UCCAGE = 7;
-  public final static int SHAPE_FRANK    = 8;
-  public final static int SHAPE_MAX      = 9;
+  public final static int SHAPE_BALLS    = 0;
+  public final static int SHAPE_STICKS   = 1;
+  public final static int SHAPE_MEASURES = 2;
+  public final static int SHAPE_BACKBONE = 3;
+  public final static int SHAPE_TRACE    = 4;
+  public final static int SHAPE_CARTOON  = 5;
+  public final static int SHAPE_STRANDS  = 6;
+  public final static int SHAPE_DOTS     = 7;
+  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 8;
+  public final static int SHAPE_AXES     = 8;
+  public final static int SHAPE_BBCAGE   = 9;
+  public final static int SHAPE_UCCAGE   = 10;
+  public final static int SHAPE_FRANK    = 11;
+  public final static int SHAPE_MAX      = 12;
 
   public final static String[] shapeClassBases = {
+    "Balls", "Sticks", "Measures",
     "Backbone", "Trace", "Cartoon", "Strands", "Dots",
     "Axes", "Bbcage", "Uccage", "Frank",
   };

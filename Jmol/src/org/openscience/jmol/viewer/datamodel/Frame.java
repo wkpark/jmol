@@ -75,6 +75,9 @@ final public class Frame {
     atoms = new Atom[atomCount];
     bonds = new Bond[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
+    
+    checkShape(JmolConstants.SHAPE_BALLS);
+    checkShape(JmolConstants.SHAPE_STICKS);
   }
 
   public Frame(JmolViewer viewer, int modelType, boolean hasPdbRecords) {

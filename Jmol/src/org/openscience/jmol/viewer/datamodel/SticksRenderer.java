@@ -30,11 +30,7 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 import java.awt.Rectangle;
 
-class BondRenderer extends ShapeRenderer {
-
-  BondRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    setViewerFrameRenderer(viewer, frameRenderer);
-  }
+class SticksRenderer extends ShapeRenderer {
 
   boolean wireframeRotating;
   short colixSelection;

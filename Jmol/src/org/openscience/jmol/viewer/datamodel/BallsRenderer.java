@@ -32,11 +32,7 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-class AtomRenderer extends ShapeRenderer {
-
-  AtomRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    setViewerFrameRenderer(viewer, frameRenderer);
-  }
+class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY;
   boolean wireframeRotating;

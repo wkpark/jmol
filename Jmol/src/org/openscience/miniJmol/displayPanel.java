@@ -41,8 +41,7 @@ package org.openscience.miniJmol;
 
 import java.awt.*;
 import java.awt.event.*;
-//import javax.swing.*;
-//import javax.swing.text.*;
+import javax.vecmath.Point3f;
 
 public class displayPanel extends Canvas implements java.awt.event.ComponentListener{
 	private DisplaySettings settings;
@@ -69,7 +68,7 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
     private double angle, prevangle;
     ChemFile cf;
     ChemFrame md;
-    private float xfac, xmin, xmax, ymin, ymax, zmin, zmax;
+    private float xfac;
     private float scalefudge = 1;
     public static final int ROTATE = 0;
     public static final int ZOOM = 1;
@@ -140,35 +139,26 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
     public void setChemFile(ChemFile cf) {
         this.cf = cf;
         haveFile = true;
-        nframes = cf.nFrames();
+        nframes = cf.getNumberFrames();
         this.md = cf.getFrame(0);
         init();
     }
 
     public void init() {
-        md.findBB();
-        xmin = md.xmin;
-        xmax = md.xmax;
-        ymin = md.ymin;
-        ymax = md.ymax;
-        zmin = md.zmin;
-        zmax = md.zmax;
-        float xw = md.xmax - md.xmin;
-        float yw = md.ymax - md.ymin;
-        float zw = md.zmax - md.zmin;
-        if (yw > xw)
-            xw = yw;
-        if (zw > xw)
-            xw = zw;
-        float f1 = getSize().width / xw;
-        float f2 = getSize().height / xw; 
+        md.findBounds();
+		Point3f size = new Point3f();
+		size.sub(md.getMaximumBounds(), md.getMinimumBounds());
+		float width = size.x;
+        if (size.y > width)  width = size.y;
+        if (size.z > width)  width = size.z;
+        float f1 = getSize().width / width;
+		float f2 = getSize().height / width;
         xfac = 0.7f * (f1 < f2 ? f1 : f2) * scalefudge;
 		settings.setBondScreenScale(xfac);
 		settings.setAtomScreenScale(xfac);
         for (int i=0;i<nframes;i++){
           cf.getFrame(i).setScreenScale(xfac);
         }
-//
         repaint();
     }
 
@@ -234,7 +224,7 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
 
             //NEW LINE T.GREY
             if(mouseDragged && WireFrameRotation){
-                md.setMovingDrawMode(false);
+				settings.setFastRendering(false);
                 if (painted) {
                     painted = false;
                     repaint();
@@ -259,7 +249,7 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
             int y = e.getY();
             //NEW LINE T.GREY
             if (WireFrameRotation) {
-                md.setMovingDrawMode(true);
+				settings.setFastRendering(true);
                 mouseDragged = true;            
             }
             if (mode == ROTATE) {
@@ -427,9 +417,9 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
            for (int i=0;i<nframes;i++){
             cf.getFrame(i).setScreenScale(xfac);
             cf.getFrame(i).matunit();      
-            cf.getFrame(i).mattranslate(-(xmin + xmax) / 2,
-                             -(ymin + ymax) / 2,
-                             -(zmin + zmax) / 2);
+            cf.getFrame(i).mattranslate(-(md.getMinimumBounds().x + md.getMaximumBounds().x) / 2,
+                             -(md.getMinimumBounds().y + md.getMaximumBounds().y) / 2,
+                             -(md.getMinimumBounds().z + md.getMaximumBounds().z) / 2);
             cf.getFrame(i).matmult(amat);
             cf.getFrame(i).matscale(xfac, -xfac, xfac);
             cf.getFrame(i).matmult(tmat);
@@ -622,25 +612,7 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
             amat.unit();
             tmat.unit();
             zmat.unit();
-            md.findBB();
-            xmin = md.xmin;
-            xmax = md.xmax;
-            ymin = md.ymin;
-            ymax = md.ymax;
-            zmin = md.zmin;
-            zmax = md.zmax;
-            float xw = md.xmax - md.xmin;
-            float yw = md.ymax - md.ymin;
-            float zw = md.zmax - md.zmin;
-            if (yw > xw)
-                xw = yw;
-            if (zw > xw)
-                xw = zw;
-            float f1 = getSize().width / xw;
-            float f2 = getSize().height / xw; 
-            xfac = 0.7f * (f1 < f2 ? f1 : f2) * scalefudge;        
-			settings.setBondScreenScale(xfac); 
-			settings.setAtomScreenScale(xfac);
+			init();
       }else if (command.equals(labelsNoneCommand)){
 	  settings.setLabelMode(DisplaySettings.NOLABELS);
       }else if (command.equals(labelsSymbolsCommand)){

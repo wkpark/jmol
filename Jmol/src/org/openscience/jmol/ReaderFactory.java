@@ -89,6 +89,8 @@ public abstract class ReaderFactory  {
 				return new ADFReader(buffer);                
 			} else if (line.startsWith("HEADER")) {
 				return new PDBReader(buffer);
+			} else if (line.startsWith("molstruct")) {
+				return new CACheReader(buffer);
 			}
 			line = buffer.readLine();
 		}

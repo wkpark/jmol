@@ -26,6 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 
+import javax.vecmath.Point3f;
 import java.util.BitSet;
 
 abstract public class Graphic {
@@ -53,4 +54,7 @@ abstract public class Graphic {
 
   abstract public void setMad(short mad, BitSet bsSelected);
   abstract public void setColix(byte palette, short colix, BitSet bsSelected);
+
+  public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
+  }
 }

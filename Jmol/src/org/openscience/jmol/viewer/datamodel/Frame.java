@@ -334,12 +334,20 @@ public class Frame {
       if (t < minZ) { minZ = t; }
       else if (t > maxZ) { maxZ = t; }
     }
+    Point3f pointMax = new Point3f(maxX, maxY, maxZ);
+    Point3f pointMin = new Point3f(minX, minY, minZ);
+    for (int i = JmolConstants.GRAPHIC_MAX; --i >= 0; ) {
+      Graphic g = graphics[i];
+      if (g != null)
+        g.checkBoundsMinMax(pointMin, pointMax);
+    }
 
-    centerBoundingBox = new Point3f((minX + maxX) / 2,
-                                    (minY + maxY) / 2,
-                                    (minZ + maxZ) / 2);
-    cornerBoundingBox = new Point3f(maxX, maxY, maxZ);
-    cornerBoundingBox.sub(centerBoundingBox);
+    pointMin.add(pointMax);
+    pointMin.scale(0.5f);
+
+    centerBoundingBox = pointMin;
+    pointMax.sub(centerBoundingBox);
+    cornerBoundingBox = pointMax;
   }
 
   private float calcRadius(Point3f center) {

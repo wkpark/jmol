@@ -215,10 +215,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       
       load(getValue("load", null));
       loadInline(getValue("loadInline", null));
-      script(getValue("script", null));
-
-      viewer.setShapeShow(JmolConstants.SHAPE_FRANK, 
-                            getBooleanValue("frank", true));
+      if (getBooleanValue("frank", true)) {
+        System.out.println("frank is ON");
+        viewer.setShapeMad(JmolConstants.SHAPE_FRANK, (short)-1);
+      }
 
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
@@ -232,6 +232,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
            pauseCallback != null ||
            pickCallback != null))
         System.out.println("WARNING!! MAYSCRIPT not found");
+      
+      script(getValue("script", null));
     }
     viewer.popHoldRepaint();
   }

@@ -327,7 +327,7 @@ class Compiler {
            (ch = script.charAt(ichEnd)) != ';' && ch != '\r' && ch != '\n') {
       if (ch == '#' && ichFirstSharp == -1) {
         ichFirstSharp = ichEnd;
-        System.out.println("I see a first sharp @ " + ichFirstSharp);
+        //System.out.println("I see a first sharp @ " + ichFirstSharp);
       }
       ++ichEnd;
     }
@@ -342,10 +342,12 @@ class Compiler {
      * comments in Jmol
      ****************************************************************/
 
+    /*
     System.out.println("looking for #jc comment");
     System.out.println("count left=" + (cchScript - ichFirstSharp) + '\n' +
                        script.charAt(ichFirstSharp + 1) +
                        script.charAt(ichFirstSharp + 2));
+    */
     
 
     if (cchScript - ichFirstSharp >= 3 &&

@@ -1405,6 +1405,7 @@ final public class JmolViewer {
                              JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
                              ? selectionManager.bsSelection
                              : null);
+    refresh();
   }
 
   public void setShapeColor(int shapeType, byte palette, Color color) {

@@ -127,7 +127,7 @@ public class PropertyGraph extends JDialog {
     }
             
     /**
-     * Returns the preferred size of the Vibrate dialog.
+     * Returns the preferred size of the Graph dialog.
      *
      * @return the Dimension preferred by the dialog
      */

@@ -69,7 +69,8 @@ public class BaseAtomType {
         while (iter.hasMoreElements()) {
             BaseAtomType at = (BaseAtomType) iter.nextElement();
             if (atomicNumber == at.getAtomicNumber()) {
-                return at;
+                BaseAtomType atr = get(at.getRoot());
+                return atr;
             }
         }
         return null;

@@ -45,13 +45,13 @@ class CmlReader extends ModelReader {
     model = new Model("cml");
 
     XMLReader xmlr = saxp.getXMLReader();
-    System.out.println("opening InputSource");
+    //    System.out.println("opening InputSource");
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");
-    System.out.println("creating CmlHandler");
+    //    System.out.println("creating CmlHandler");
     CmlHandler cmlh = new CmlHandler();
 
-    System.out.println("setting features");
+    //    System.out.println("setting features");
     xmlr.setFeature("http://xml.org/sax/features/validation", false);
     xmlr.setFeature("http://xml.org/sax/features/namespaces", true);
     xmlr.setEntityResolver(cmlh);
@@ -66,100 +66,114 @@ class CmlReader extends ModelReader {
     return model;
   }
 
-  int charactersState;
-
-  final static int DISCARD = 0;
-  final static int ELEMENT_TYPE = 1;
-  final static int COORDINATE3 = 2;
-  final static int ARRAY_ID = 3;
-  final static int X3 = 4;
-  final static int Y3 = 5;
-  final static int Z3 = 6;
-
-  boolean inAtomArrayContext = false;
-
-  int moleculeCount = 0;
-  Atom atom;
-  Atom[] atomArray;
-
-  String chars;
-
   class CmlHandler extends DefaultHandler implements ErrorHandler {
+    
+    ////////////////////////////////////////////////////////////////
+
+    int moleculeCount = 0;
+    Atom atom;
+    
+    // the same atom array gets reused
+    // it will grow to the maximum length;
+    // atomCount holds the current number of atoms
+    int atomCount;
+    Atom[] atomArray = new Atom[16];
+    
+    // the same string array gets reused
+    // tokenCount holds the current number of tokens
+    // see breakOutTokens
+    int tokenCount;
+    String[] tokens = new String[16];
+
+    // this routine breaks out all the tokens in a string
+    // results are placed into the tokens array
+    void breakOutTokens(String str) {
+      StringTokenizer st = new StringTokenizer(str);
+      tokenCount = st.countTokens();
+      if (tokenCount > tokens.length)
+        tokens = new String[tokenCount];
+      for (int i = 0; i < tokenCount; ++i) {
+        try {
+          tokens[i] = st.nextToken();
+        } catch (NoSuchElementException nsee) {
+          tokens[i] = null;
+        }
+      }
+      checkAtomArrayLength(tokenCount);
+    }
+    
+    void checkAtomArrayLength(int newAtomCount) {
+      if (newAtomCount > atomCount) {
+        if (newAtomCount > atomArray.length)
+          atomArray = (Atom[])setLength(atomArray, newAtomCount);
+        while (atomCount < newAtomCount)
+          atomArray[atomCount++] = new Atom();
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////
+
 
     public void startDocument() {
-        System.out.println("model: " + model);
+      //      System.out.println("model: " + model);
     }
 
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts)
       throws SAXException
     {
+      /*
       System.out.println("startElement(" + namespaceURI + "," + localName +
                          "," + qName + "," + atts +  ")");
-      chars = null;
+      */
       if ("molecule".equals(qName)) {
         ++moleculeCount;
         return;
       }
-      System.out.println("OK 104");
       if ("atom".equals(qName)) {
         atom = new Atom();
         for (int i=0; i<atts.getLength(); i++) {
-            if ("id".equals(atts.getLocalName(i))) {
-                atom.atomName = atts.getValue(i);
-            } else if ("x3".equals(atts.getLocalName(i))) {
-                atom.x = parseFloat(atts.getValue(i));
-            } else if ("y3".equals(atts.getLocalName(i))) {
-                atom.y = parseFloat(atts.getValue(i));
-            } else if ("z3".equals(atts.getLocalName(i))) {
-                atom.z = parseFloat(atts.getValue(i));
-            } else if ("elementType".equals(atts.getLocalName(i))) {
-                atom.elementSymbol = atts.getValue(i);
-            }
+          if ("id".equals(atts.getLocalName(i))) {
+            atom.atomName = atts.getValue(i);
+          } else if ("x3".equals(atts.getLocalName(i))) {
+            atom.x = parseFloat(atts.getValue(i));
+          } else if ("y3".equals(atts.getLocalName(i))) {
+            atom.y = parseFloat(atts.getValue(i));
+          } else if ("z3".equals(atts.getLocalName(i))) {
+            atom.z = parseFloat(atts.getValue(i));
+          } else if ("elementType".equals(atts.getLocalName(i))) {
+            atom.elementSymbol = atts.getValue(i);
+          }
         }
         atom.modelNumber = moleculeCount;
         return;
       }
-      System.out.println("OK 123");
       if ("atomArray".equals(qName)) {
-        atomArray = new Atom[0];
+        atomCount = 0;
         for (int i=0; i<atts.getLength(); i++) {
-            System.out.println("OK 127: " + atts.getValue(i));
-            if ("atomID".equals(atts.getLocalName(i))) {
-                String[] strings = breakOutStrings(atts.getValue(i));
-                System.out.println("OK 132: " + strings.length);
-                if (strings.length > atomArray.length)
-                    initLargerAromArray(strings.length);
-                System.out.println("OK 132: " + atomArray.length);
-                for (int j = 0; j < strings.length; ++j)
-                    atomArray[j].atomName = strings[j];
-            } else if ("x3".equals(atts.getLocalName(i))) {
-                String[] strings = breakOutStrings(atts.getValue(i));
-                if (strings.length > atomArray.length)
-                    initLargerAromArray(strings.length);
-                for (int j = 0; j < strings.length; ++j)
-                    atomArray[j].x = parseFloat(strings[j]);
-            } else if ("y3".equals(atts.getLocalName(i))) {
-                String[] strings = breakOutStrings(atts.getValue(i));
-                if (strings.length > atomArray.length)
-                    initLargerAromArray(strings.length);
-                for (int j = 0; j < strings.length; ++j)
-                    atomArray[j].y = parseFloat(strings[j]);
-            } else if ("z3".equals(atts.getLocalName(i))) {
-                String[] strings = breakOutStrings(atts.getValue(i));
-                if (strings.length > atomArray.length)
-                    initLargerAromArray(strings.length);
-                for (int j = 0; j < strings.length; ++j)
-                    atomArray[j].z = parseFloat(strings[j]);
-            } else if ("elementType".equals(atts.getLocalName(i))) {
-                String[] strings = breakOutStrings(atts.getValue(i));
-                if (strings.length > atomArray.length)
-                    initLargerAromArray(strings.length);
-                for (int j = 0; j < strings.length; ++j)
-                    atomArray[j].elementSymbol = strings[j];
-            }
+          if ("atomID".equals(atts.getLocalName(i))) {
+            breakOutTokens(atts.getValue(i));
+            for (int j = 0; j < tokenCount; ++j)
+              atomArray[j].atomName = tokens[j];
+          } else if ("x3".equals(atts.getLocalName(i))) {
+            breakOutTokens(atts.getValue(i));
+            for (int j = 0; j < tokenCount; ++j)
+              atomArray[j].x = parseFloat(tokens[j]);
+          } else if ("y3".equals(atts.getLocalName(i))) {
+            breakOutTokens(atts.getValue(i));
+            for (int j = 0; j < tokenCount; ++j)
+              atomArray[j].y = parseFloat(tokens[j]);
+          } else if ("z3".equals(atts.getLocalName(i))) {
+            breakOutTokens(atts.getValue(i));
+            for (int j = 0; j < tokenCount; ++j)
+              atomArray[j].z = parseFloat(tokens[j]);
+          } else if ("elementType".equals(atts.getLocalName(i))) {
+            breakOutTokens(atts.getValue(i));
+            for (int j = 0; j < tokenCount; ++j)
+              atomArray[j].elementSymbol = tokens[j];
+          }
         }
-        for (int j = 0; j < atomArray.length; ++j)
+        for (int j = 0; j < atomCount; ++j)
           atomArray[j].modelNumber = moleculeCount;
         return;
       }
@@ -167,41 +181,35 @@ class CmlReader extends ModelReader {
 
     public void endElement(String uri, String localName,
                            String qName) throws SAXException {
+      /*
       System.out.println("endElement(" + uri + "," + localName +
                          "," + qName + ")");
-      try {
-        if ("atom".equals(qName)) {
+      */
+      if ("atom".equals(qName)) {
+        if (atom.elementSymbol != null &&
+            ! Float.isNaN(atom.z)) {
+          model.addAtom(atom);
+        }
+        atom = null;
+        return;
+      }
+      if ("atomArray".equals(qName)) {
+        for (int i = 0; i < atomCount; ++i) {
+          Atom atom = atomArray[i];
           if (atom.elementSymbol != null &&
-              ! Float.isNaN(atom.z)) {
+              ! Float.isNaN(atom.z))
             model.addAtom(atom);
-          }
-          atom = null;
-          return;
         }
-        if ("atomArray".equals(qName) &&
-          atomArray != null) {
-          for (int i = 0; i < atomArray.length; ++i)
-            model.addAtom(atomArray[i]);
-          return;
-        }
-      } finally {
-        charactersState = DISCARD;
-        chars = null;
+        return;
       }
     }
 
     public void characters(char[] ch, int start, int length) {
-      if (charactersState == DISCARD)
-        return;
-      String str = new String(ch, start, length);
-      if (chars == null)
-        chars = str;
-      else
-        chars += str;
-      System.out.println("End chars");
+      // characters are not used at this time
+      // System.out.println("End chars");
     }
     
-    // Methods for entity resolving, e.g. getting an DTD resolved
+    // Methods for entity resolving, e.g. getting a DTD resolved
     
     public InputSource resolveEntity(String name, String publicId,
                                      String baseURI, String systemId) {
@@ -220,52 +228,16 @@ class CmlReader extends ModelReader {
       return null;
     }
 
-    String[] breakOutStrings(String chars) {
-      System.out.println("OK 222");
-      StringTokenizer st = new StringTokenizer(chars);
-      int stringCount = st.countTokens();
-      String[] strings = new String[stringCount];
-      System.out.println("OK 226, stringCount: " + stringCount);
-      for (int i = 0; i < stringCount; ++i) {
-        try {
-          strings[i] = st.nextToken();
-        } catch (NoSuchElementException nsee) {
-          strings[i] = null;
-        }
-      }
-      System.out.println("OK 234");
-      return strings;
-    }
-    
-    void initLargerAromArray(int atomArrayLength) {
-      int currentLength = atomArray.length;
-      if (currentLength > 0) {
-        System.out.println("Enlarging atomArray to " + atomArrayLength);
-        Atom[] newatoms = new Atom[atomArrayLength];
-        System.arraycopy(atomArray, 0, newatoms, 0, currentLength);
-        atomArray = newatoms;
-        for (int i=currentLength; i<atomArrayLength; i++) {
-          atomArray[i] = new Atom();
-        }
-      } else {
-        System.out.println("Creating new atomArray of size " + atomArrayLength);
-        atomArray = new Atom[atomArrayLength];
-        for (int i=0; i<atomArrayLength; i++) {
-          atomArray[i] = new Atom();
-        }
-      }
-    }
-
     public void error (SAXParseException exception) throws SAXException {
-        System.out.println("SAX ERROR:" + exception.getMessage());
+      System.out.println("SAX ERROR:" + exception.getMessage());
     }
 
     public void fatalError (SAXParseException exception) throws SAXException {
-        System.out.println("SAX FATAL:" + exception.getMessage());
+      System.out.println("SAX FATAL:" + exception.getMessage());
     }
 
     public void warning (SAXParseException exception) throws SAXException {
-        System.out.println("SAX WARNING:" + exception.getMessage());
+      System.out.println("SAX WARNING:" + exception.getMessage());
     }
 
   }

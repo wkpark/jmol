@@ -27,10 +27,12 @@ package org.openscience.jmol.app;
 import org.openscience.cdk.applications.plugin.CDKEditBus;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemModel;
+import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.CrystalGeometryTools;
 import org.openscience.cdk.tools.AtomTypeFactory;
 import org.openscience.cdk.tools.ChemFileManipulator;
 
@@ -57,10 +59,12 @@ public class JmolEditBus implements CDKEditBus {
         Atom[] atoms = atomContainer.getAtoms();
         // check if there is any content
         if (atoms.length == 0) {
+            System.err.println("ChemFile does not contain atoms.");
             return;
         }
         // check wether there are 3D coordinates
-        if (!GeometryTools.has3DCoordinates(atomContainer)) {
+        if (!GeometryTools.has3DCoordinates(atomContainer) &&
+            !CrystalGeometryTools.hasCrystalCoordinates(atomContainer)) {
             System.err.println("Cannot display chemistry without 3D coordinates");
             return;
         }
@@ -86,7 +90,11 @@ public class JmolEditBus implements CDKEditBus {
     }
     
     public void showChemModel(ChemModel model) {
-        throw new NoSuchMethodError();
+        ChemFile file = new ChemFile();
+        ChemSequence sequence = new ChemSequence();
+        sequence.addChemModel(model);
+        file.addChemSequence(sequence);
+        showChemFile(file);
     }
 
     public ChemModel getChemModel() {

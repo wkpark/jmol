@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.datamodel.AtomShape;
 
+import java.awt.Color;
 import java.awt.Font;
 
 public class StyleManager {
@@ -109,5 +110,38 @@ public class StyleManager {
   public boolean wireframeRotation = false;
   public void setWireframeRotation(boolean wireframeRotation) {
     this.wireframeRotation = wireframeRotation;
+  }
+
+  void setCommonDefaults() {
+    viewer.zoomToPercent(100);
+    viewer.setPercentVdwAtom(20);
+    viewer.setWireframeRotation(false);
+    viewer.setPerspectiveDepth(true);
+    viewer.setBondTolerance(0.45f);
+    viewer.setMinBondDistance(0.40f);
+    viewer.setMarBond((short)100);
+  }
+
+  void setTextColors(Color color) {
+    viewer.setColorLabel(color);
+    viewer.setColorDistance(color);
+    viewer.setColorAngle(color);
+    viewer.setColorDihedral(color);
+  }
+
+  public void setJmolDefaults() {
+    setCommonDefaults();
+    viewer.setStyleBond(JmolViewer.SHADED);
+    viewer.setStyleAtom(JmolViewer.SHADED);
+    viewer.setColorBackground(Color.white);
+    setTextColors(Color.black);
+  }
+
+  public void setRasmolDefaults() {
+    setCommonDefaults();
+    viewer.setStyleBond(JmolViewer.WIREFRAME);
+    viewer.setStyleAtom(JmolViewer.NONE);
+    viewer.setColorBackground(Color.black);
+    setTextColors(Color.white);
   }
 }

@@ -1247,8 +1247,8 @@ final public class JmolViewer {
   /****************************************************************
    * mth 2003 05 31 - needs more work
    * this should be implemented using properties
-   * or as a hashtable using boxed primitive types so that the
-   * boxed values could be shared
+   * or as a hashtable using boxed/wrapped values so that the
+   * values could be shared
    ****************************************************************/
 
   public boolean getBooleanProperty(String key) {
@@ -1534,6 +1534,14 @@ final public class JmolViewer {
 
   public boolean getWireframeRotation() {
     return styleManager.wireframeRotation;
+  }
+
+  public void setJmolDefaults() {
+    styleManager.setJmolDefaults();
+  }
+
+  public void setRasmolDefaults() {
+    styleManager.setRasmolDefaults();
   }
 
   /****************************************************************

@@ -178,6 +178,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
+      /*
       viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
       viewer.zoomToPercent(100);
       //      viewer.zoomToPercent(getValue("zoom", 100));
@@ -193,6 +194,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       String pd = getValue("perspectiveDepth", "true");
       setPerspectiveDepth(pd.equalsIgnoreCase("on") ||
                           pd.equalsIgnoreCase("true"));
+      */
+      viewer.setRasmolDefaults();
       
       load(getValue("load", null));
       loadInline(getValue("loadInline", null));

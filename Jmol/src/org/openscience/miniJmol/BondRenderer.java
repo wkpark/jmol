@@ -40,9 +40,9 @@ public class BondRenderer {
 	 * Draws a bond on a particular graphics context.
 	 *
 	 * @param gc the Graphics context
-			 * @param atom1 the atom from which the bond is to be drawn
-			 * @param atom2 the atom to which the bond is to be drawn
-			 * @param settings the display settings
+	 * @param atom1 the atom from which the bond is to be drawn
+	 * @param atom2 the atom to which the bond is to be drawn
+	 * @param settings the display settings
 	 */
 	public void paint(Graphics gc, Atom atom1, Atom atom2,
 			DisplaySettings settings) {
@@ -128,8 +128,6 @@ public class BondRenderer {
 				|| settings.getFastRendering()) {
 			gc.setColor(atom1.getType().getColor());
 			gc.drawLine(x1 + dx1, y1 + dy1, xmp, ymp);
-			gc.setColor(atom2.getType().getColor());
-			gc.drawLine(x2 + dx2, y2 + dy2, xmp, ymp);
 			return;
 		}
 
@@ -168,20 +166,10 @@ public class BondRenderer {
 
 			Polygon poly1 = new Polygon(xpoints, ypoints, 4);
 
-			xpoints[0] = (x2 + dx2) + deltaX;
-			ypoints[0] = (y2 + dy2) + deltaY;
-
-			xpoints[1] = (x2 + dx2) - deltaX;
-			ypoints[1] = (y2 + dy2) - deltaY;
-
-			Polygon poly2 = new Polygon(xpoints, ypoints, 4);
-
 			switch (settings.getBondDrawMode()) {
 			case DisplaySettings.WIREFRAME :
 				gc.setColor(atom1.getType().getColor());
 				gc.drawPolygon(poly1);
-				gc.setColor(atom2.getType().getColor());
-				gc.drawPolygon(poly2);
 				break;
 
 			case DisplaySettings.SHADING :
@@ -241,18 +229,6 @@ public class BondRenderer {
 
 					gc.fillPolygon(polya);
 
-					gc.setColor(new Color(model2));
-
-					xpoints[0] = (x2 + dx2) + dXi;
-					ypoints[0] = (y2 + dy2) + dYi;
-
-					xpoints[1] = (x2 + dx2) - dXi;
-					ypoints[1] = (y2 + dy2) - dYi;
-
-					Polygon polyb = new Polygon(xpoints, ypoints, 4);
-
-					gc.fillPolygon(polyb);
-
 				}
 				break;
 
@@ -265,10 +241,6 @@ public class BondRenderer {
 				gc.fillPolygon(poly1);
 				gc.setColor(settings.getOutlineColor());
 				gc.drawPolygon(poly1);
-				gc.setColor(atom2.getType().getColor());
-				gc.fillPolygon(poly2);
-				gc.setColor(settings.getOutlineColor());
-				gc.drawPolygon(poly2);
 				break;
 			}
 
@@ -276,8 +248,6 @@ public class BondRenderer {
 
 			gc.setColor(atom1.getType().getColor());
 			gc.drawLine(x1 + dx1, y1 + dy1, xmp, ymp);
-			gc.setColor(atom2.getType().getColor());
-			gc.drawLine(x2 + dx2, y2 + dy2, xmp, ymp);
 		}
 	}
 

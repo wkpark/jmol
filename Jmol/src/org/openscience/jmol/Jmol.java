@@ -38,8 +38,8 @@ class Jmol extends JPanel {
 
   private JScrollPane scroller;
   private JViewport port;
-  public static DisplayPanel display;
-  public StatusBar status;
+  static DisplayPanel display;
+  StatusBar status;
   private AtomPropsMenu apm;
   static AtomTypeTable atomTypeTable;
   private Preferences prefs;
@@ -57,8 +57,8 @@ class Jmol extends JPanel {
   private FileTyper fileTyper;
   private JFileChooser exportChooser;
 
-  public static File UserPropsFile;
-  public static File UserAtypeFile;
+  static File UserPropsFile;
+  static File UserAtypeFile;
   private static HistoryFile historyFile;
   
   public static HistoryFile getHistoryFile() {
@@ -191,6 +191,11 @@ class Jmol extends JPanel {
     saveChooser.setCurrentDirectory(currentDir);
     exportChooser = new JFileChooser();
     exportChooser.setCurrentDirectory(currentDir);
+
+    addPropertyChangeListener(moleculeProperty, saveAction);
+    addPropertyChangeListener(moleculeProperty, exportAction);
+    addPropertyChangeListener(moleculeProperty, povrayAction);
+    addPropertyChangeListener(moleculeProperty, printAction);
   }
 
   public static void main(String[] args) {
@@ -337,16 +342,16 @@ class Jmol extends JPanel {
 
         if (typeHint.equals("PDB")) {
           ChemFileReader reader = new PDBReader(new InputStreamReader(is));
-          chemFile = reader.read();
+          newChemFile = reader.read();
         } else if (typeHint.equals("CML")) {
           ChemFileReader reader = new CMLReader(theFile.toURL());
-          chemFile = ((CMLReader)reader).readValidated();
+          newChemFile = ((CMLReader)reader).readValidated();
         } else if (typeHint.equals("XYZ (xmol)")) {
           ChemFileReader reader = new XYZReader(new InputStreamReader(is));
-          chemFile = reader.read();
+          newChemFile = reader.read();
         } else if (typeHint.equals("Ghemical Molecular Dynamics")) {
           ChemFileReader reader = new GhemicalMMReader(new InputStreamReader(is));
-          chemFile = reader.read();
+          newChemFile = reader.read();
         } else {
 
           // Try to automagically determine file type:
@@ -355,12 +360,12 @@ class Jmol extends JPanel {
           if (reader == null) {
             throw new JmolException("openFile", "Unknown file type");
           }
-          chemFile = reader.read();
+          newChemFile = reader.read();
         }
 
-        if (chemFile != null) {
-          if (chemFile.getNumberFrames() > 0) {
-            setChemFile(chemFile);
+        if (newChemFile != null) {
+          if (newChemFile.getNumberFrames() > 0) {
+            setChemFile(newChemFile);
             
             frame.setTitle(theFile.getName());
             currentFileName = theFile.getName();
@@ -411,6 +416,7 @@ class Jmol extends JPanel {
   }
 
   void setChemFile(ChemFile chemFile) {
+    ChemFile oldChemFile = this.chemFile;
     this.chemFile = chemFile;
     display.setChemFile(chemFile);
     anim.setChemFile(chemFile);
@@ -420,8 +426,17 @@ class Jmol extends JPanel {
     mlist.clear();
 
     chemicalShifts.setChemFile(chemFile, apm);
+    
+    firePropertyChange(moleculeProperty, oldChemFile, chemFile);
   }
 
+  /**
+   * Returns whether the application has a molecule loaded.
+   */
+  public boolean hasMolecule() {
+    return chemFile != null;
+  }
+  
   /**
    * returns a list of Actions that is understood by the upper level
    * application
@@ -554,7 +569,7 @@ class Jmol extends JPanel {
     Action a = getAction(astr);
     if (a != null) {
       mi.addActionListener(a);
-      a.addPropertyChangeListener(createActionChangeListener(mi));
+      a.addPropertyChangeListener(new ActionChangedListener(mi));
       mi.setEnabled(a.isEnabled());
     } else {
       mi.setEnabled(false);
@@ -640,8 +655,11 @@ class Jmol extends JPanel {
     }
     Action a = getAction(astr);
     if (a != null) {
+      // b = new JButton(a);
       b.setActionCommand(astr);
       b.addActionListener(a);
+      a.addPropertyChangeListener(new ActionChangedListener(b));
+      b.setEnabled(a.isEnabled());
     } else {
       b.setEnabled(false);
     }
@@ -782,19 +800,13 @@ class Jmol extends JPanel {
   }
 
 
-  // Yarked from JMenu, ideally this would be public.
-  protected PropertyChangeListener createActionChangeListener(JMenuItem b) {
-    return new ActionChangedListener(b);
-  }
-
-  // Yarked from JMenu, ideally this would be public.
   private class ActionChangedListener implements PropertyChangeListener {
 
-    JMenuItem menuItem;
+    AbstractButton button;
 
-    ActionChangedListener(JMenuItem mi) {
+    ActionChangedListener(AbstractButton button) {
       super();
-      this.menuItem = mi;
+      this.button = button;
     }
 
     public void propertyChange(PropertyChangeEvent e) {
@@ -802,10 +814,12 @@ class Jmol extends JPanel {
       String propertyName = e.getPropertyName();
       if (e.getPropertyName().equals(Action.NAME)) {
         String text = (String) e.getNewValue();
-        menuItem.setText(text);
+        if (button.getText() != null) {
+          button.setText(text);
+        }
       } else if (propertyName.equals("enabled")) {
         Boolean enabledState = (Boolean) e.getNewValue();
-        menuItem.setEnabled(enabledState.booleanValue());
+        button.setEnabled(enabledState.booleanValue());
       }
     }
   }
@@ -820,80 +834,80 @@ class Jmol extends JPanel {
    * Suffix applied to the key used in resource file
    * lookups for an image.
    */
-  public static final String imageSuffix = "Image";
+  private static final String imageSuffix = "Image";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for a label.
    */
-  public static final String labelSuffix = "Label";
+  private static final String labelSuffix = "Label";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for a checkbox menu item.
    */
-  public static final String checkSuffix = "Check";
+  private static final String checkSuffix = "Check";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for a radio group.
    */
-  public static final String radioSuffix = "Radio";
+  private static final String radioSuffix = "Radio";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for a selected member of a radio group.
    */
-  public static final String selectedSuffix = "Selected";
+  private static final String selectedSuffix = "Selected";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for a popup menu.
    */
-  public static final String popupSuffix = "Popup";
+  private static final String popupSuffix = "Popup";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for an action.
    */
-  public static final String actionSuffix = "Action";
+  private static final String actionSuffix = "Action";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for tooltip text.
    */
-  public static final String tipSuffix = "Tooltip";
+  private static final String tipSuffix = "Tooltip";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for Mnemonics.
    */
-  public static final String mnemonicSuffix = "Mnemonic";
+  private static final String mnemonicSuffix = "Mnemonic";
 
   /**
    * Suffix applied to the key used in resource file
    * lookups for Mnemonics.
    */
-  public static final String acceleratorSuffix = "Accelerator";
+  private static final String acceleratorSuffix = "Accelerator";
 
-  public static final String openAction = "open";
-  public static final String newAction = "new";
-  public static final String closeAction = "close";
-  public static final String saveasAction = "saveas";
-  public static final String exportAction = "export";
-  public static final String exitAction = "exit";
-  public static final String aboutAction = "about";
-  public static final String prefsAction = "prefs";
-  public static final String animAction = "animate";
-  public static final String vibAction = "vibrate";
-  public static final String graphAction = "graph";
-  public static final String whatsnewAction = "whatsnew";
-  public static final String uguideAction = "uguide";
-  public static final String atompropsAction = "atomprops";
-  public static final String printAction = "print";
-  public static final String recentFilesAction = "recentFiles";
-  public static final String povrayAction = "povray";
-  public static final String scriptAction = "script";
+  private static final String openAction = "open";
+  private static final String newAction = "new";
+  private static final String closeAction = "close";
+  private static final String saveasAction = "saveas";
+  private static final String exportActionProperty = "export";
+  private static final String exitAction = "exit";
+  private static final String aboutAction = "about";
+  private static final String prefsAction = "prefs";
+  private static final String animAction = "animate";
+  private static final String vibAction = "vibrate";
+  private static final String graphAction = "graph";
+  private static final String whatsnewAction = "whatsnew";
+  private static final String uguideAction = "uguide";
+  private static final String atompropsAction = "atomprops";
+  private static final String printActionProperty = "print";
+  private static final String recentFilesAction = "recentFiles";
+  private static final String povrayActionProperty = "povray";
+  private static final String scriptAction = "script";
 
 
   // --- action implementations -----------------------------------
@@ -901,15 +915,20 @@ class Jmol extends JPanel {
   private CalculateChemicalShifts chemicalShifts =
     new CalculateChemicalShifts();
 
+  private SaveAction saveAction = new SaveAction();
+  private ExportAction exportAction = new ExportAction();
+  private PovrayAction povrayAction = new PovrayAction();
+  private PrintAction printAction = new PrintAction();
+  
   /**
    * Actions defined by the Jmol class
    */
   private Action[] defaultActions = {
-    new NewAction(), new OpenAction(), new SaveAction(),
-    new PrintAction(), new ExportAction(), new ExitAction(),
+    new NewAction(), new OpenAction(), saveAction,
+    printAction, exportAction, new ExitAction(),
     new AboutAction(), new WhatsNewAction(), new UguideAction(),
     new AtompropsAction(), new ConsoleAction(),
-    chemicalShifts, new RecentFilesAction(), new PovrayAction(),
+    chemicalShifts, new RecentFilesAction(), povrayAction,
     new ScriptAction()
   };
 
@@ -974,15 +993,17 @@ class Jmol extends JPanel {
     }
   }
 
-  class PrintAction extends AbstractAction {
+  class PrintAction extends MoleculeDependentAction {
 
     public PrintAction() {
-      super(printAction);
+      super(printActionProperty);
+      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
       print();
     }
+
   }
 
   /**
@@ -1046,12 +1067,13 @@ class Jmol extends JPanel {
     }
   }
 
-  class SaveAction extends AbstractAction {
+  class SaveAction extends MoleculeDependentAction {
 
     SaveAction() {
       super(saveasAction);
+      setEnabled(false);
     }
-
+    
     public void actionPerformed(ActionEvent e) {
 
       Frame frame = getFrame();
@@ -1086,12 +1108,14 @@ class Jmol extends JPanel {
         }
       }
     }
+    
   }
 
-  class ExportAction extends AbstractAction {
+  class ExportAction extends MoleculeDependentAction {
 
     ExportAction() {
-      super(exportAction);
+      super(exportActionProperty);
+      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1150,6 +1174,7 @@ class Jmol extends JPanel {
         }
       }
     }
+    
   }
 
   class RecentFilesAction extends AbstractAction {
@@ -1181,10 +1206,11 @@ class Jmol extends JPanel {
     }
   }
 
-  class PovrayAction extends AbstractAction {
+  class PovrayAction extends MoleculeDependentAction {
 
     public PovrayAction() {
-      super(povrayAction);
+      super(povrayActionProperty);
+      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1193,6 +1219,7 @@ class Jmol extends JPanel {
       PovrayDialog pvsd = new PovrayDialog(frame, display, getCurrentFile(),
                             basename);
     }
+
   }
 
   /**
@@ -1207,4 +1234,29 @@ class Jmol extends JPanel {
     }
     return new File(System.getProperty("user.dir"));
   }
+  
+  public static final String moleculeProperty = "molecule";
+  
+  private abstract class MoleculeDependentAction extends AbstractAction
+      implements PropertyChangeListener {
+
+    public MoleculeDependentAction(String name) {
+      super(name);
+      setEnabled(false);
+    }
+
+    public void propertyChange(PropertyChangeEvent event) {
+      
+      if (event.getSource() instanceof Jmol) {
+        Jmol jmol = (Jmol) event.getSource();
+        if (jmol.hasMolecule()) {
+          setEnabled(true);
+        } else {
+          setEnabled(false);
+        }
+      }
+    }
+    
+  }
+
 }

@@ -51,6 +51,22 @@ function jmolSetAppletColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
           " progresscolor=" + _jmol.progresscolor);
 }
 
+function jmolIsNetscape47() {
+  return navigator.appName == "Netscape" && parseFloat(navigator.appVersion) >= 4.7;
+}
+
+function jmolBrowserCheck(level, nonCompliantUrl) {
+  alert("insidejmolBrowserCheck");
+  if (document.getElementById)
+    return;
+  if (jmolIsNetscape47())
+    return;
+  if (nonCompliantUrl)
+    document.location = nonCompliantUrl;
+  else
+    alert("your browser is not compliant");
+}
+
 function jmolApplet(size, modelFilename, script, nameSuffix) {
   _jmolApplet(size, modelFilename, null, script, nameSuffix);
 }
@@ -235,42 +251,42 @@ function jmolRadio(script, labelHtml, isChecked, separatorHtml) {
 // Cascading Style Sheet Class support
 ////////////////////////////////////////////////////////////////
 function jmolSetAppletCssClass(appletCssClass) {
-  if (_jmol.modernBrowser) {
+  if (_jmol.isDOM) {
     _jmol.appletCssClass = appletCssClass;
     _jmol.appletCssText = appletCssClass ? "class='" + appletCssClass + "' " : "";
   }
 }
 
 function jmolSetButtonCssClass(buttonCssClass) {
-  if (_jmol.modernBrowser) {
+  if (_jmol.isDOM) {
     _jmol.buttonCssClass = buttonCssClass;
     _jmol.buttonCssText = buttonCssClass ? "class='" + buttonCssClass + "' " : "";
   }
 }
 
 function jmolSetCheckboxCssClass(checkboxCssClass) {
-  if (_jmol.modernBrowser) {
+  if (_jmol.isDOM) {
     _jmol.checkboxCssClass = checkboxCssClass;
     _jmol.checkboxCssText = checkboxCssClass ? "class='" + checkboxCssClass + "' " : "";
   }
 }
 
 function jmolSetRadioCssClass(radioCssClass) {
-  if (_jmol.modernBrowser) {
+  if (_jmol.isDOM) {
     _jmol.radioCssClass = radioCssClass;
     _jmol.radioCssText = radioCssClass ? "class='" + radioCssClass + "' " : "";
   }
 }
 
 function jmolSetLinkCssClass(linkCssClass) {
-  if (_jmol.modernBrowser) {
+  if (_jmol.isDOM) {
     _jmol.linkCssClass = linkCssClass;
     _jmol.linkCssText = linkCssClass ? "class='" + linkCssClass + "' " : "";
   }
 }
 
 function jmolSetMenuCssClass(menuCssClass) {
-  if (_jmol.modernBrowser) {
+  if (_jmol.isDOM) {
     _jmol.menuCssClass = menuCssClass;
     _jmol.menuCssText = menuCssClass ? "class='" + menuCssClass + "' " : "";
   }
@@ -282,7 +298,6 @@ function jmolSetMenuCssClass(menuCssClass) {
 ////////////////////////////////////////////////////////////////
 
 var _jmol = {
-modernBrowser: !!document.getElementById,
 
 debugAlert: false,
 bgcolor: "black",
@@ -314,7 +329,55 @@ menuCssText: "",
 
 targetSuffix: 0,
 targetText: "",
-scripts: [""]
+scripts: [""],
+
+ua: navigator.userAgent.toLowerCase(),
+uaVersion: parseFloat(navigator.appVersion),
+
+isWin: false,
+isMac: false,
+isLinux: false,
+isUnix: false,
+
+isNS47: false,
+safariIndex: false,
+isSafari12up: false,
+isDOM: !!document.getElementById,
+
+validJvm: false
+
+}
+
+with (_jmol) {
+// system information
+  isWin = ua.indexOf("win") != -1;
+  isMac = ua.indexOf("mac") != -1;
+  isLinux = ua.indexOf("linux") != -1;
+  isUnix = ua.indexOf("unix") != -1 ||
+           ua.indexOf("sunos") != -1 ||
+           ua.indexOf("bsd") != -1 ||
+           ua.indexOf("x11") != -1;
+
+  isNS47 = navigator.appName == "Netscape" && uaVersion >= 4.7;
+  var safariIndex = ua.indexOf("safari/");
+  isSafari12up = safariIndex != -1 && parseFloat(ua.substring(safariIndex + 7)) >= 1.2;
+
+  if (navigator.javaEnabled()) {
+    var plugins = navigator.plugins;
+    if (plugins) {
+      if (plugins.length == 0) {
+        // must be IE
+//        alert("you are IE");
+      } else {
+//        alert("plugins.length=" + plugins.length);
+        for (var i = 0; i < plugins.length; ++i) {
+          var plugin = plugins[i];
+//          alert(" name=" + plugin.name +
+//                " desc=" + plugin.description);
+        }
+      }
+    }
+  }
 };
 
 function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
@@ -475,3 +538,45 @@ function _jmolMouseOut() {
 function _jmolOldBrowser() {
   alert("Your outdated web browser does not support this operation");
 }
+
+function _testBrowserCheck() {
+  document.writeln("<pre>");
+  document.writeln("navigator.appName=" + navigator.appName);
+  document.writeln("navigator.userAgent=" + navigator.userAgent);
+  document.writeln("navigator.appVersion=" + navigator.appVersion);
+  var version = parseFloat(navigator.appVersion);
+  if (navigator.javaEnabled()) {
+    var plugins = navigator.plugins;
+    if (plugins) {
+      if (plugins.length == 0) {
+        document.writeln("you are IE");
+      } else if (navigator.appName == "Netscape" &&
+                 version >= 4.7 && version < 5.0) {
+        document.writeln("you are NS 4.7");
+      } else {
+        document.writeln("plugins.length=" + plugins.length);
+        for (var i = 0; i < plugins.length; ++i) {
+          var plugin = plugins[i];
+          var desc = plugin.description.toLowerCase();
+          document.writeln(" name=" + plugin.name +
+                " desc=" + desc);
+          var indexJava = desc.indexOf("java");
+          var indexPlugin = desc.indexOf("plug-in");
+          document.writeln(" indexJava=" + indexJava +
+                           " indexPlugin=" + indexPlugin);
+          if (indexJava >= 0 && indexPlugin >= 0) {
+            var versionString = desc.substring(indexPlugin + 8);
+            var indexSpace = versionString.indexOf(' ');
+            if (indexSpace > 0)
+              versionString = versionString.substring(0, indexSpace);
+            document.writeln(" FOUND JAVA " + versionString);
+          }
+        }
+      }
+    }
+  } else {
+    document.writeln("java not enabled");
+  }
+  document.writeln("</pre>");
+}
+                                                                                

@@ -935,8 +935,24 @@ final public class DisplayControl {
     return new Font("Helvetica", Font.PLAIN, size);
   }
 
+  public boolean showMeasures = true;
+  public void setShowMeasures(boolean showMeasures) {
+    if (this.showMeasures != showMeasures) {
+      this.showMeasures = showMeasures;
+      recalc();
+    }
+  }
+  public boolean getShowMeasures() {
+    return showMeasures;
+  }
+
   public boolean hasStructuralChange() {
     return structuralChange;
+  }
+
+  public void defineDistanceMeasure(int atom1, int atom2) {
+    System.out.println("define distance measure not implemented " +
+                       atom1 + "<->" + atom2);
   }
 
   public void resetStructuralChange() {

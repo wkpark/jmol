@@ -372,7 +372,7 @@ class Compiler {
           tokenCommand = token;
           tokCommand = token.tok;
           if ((tokCommand & Token.command) == 0)
-            return CommandExpected();
+            return commandExpected();
           break;
         case Token.set:
           if (ltoken.size() == 1) {
@@ -383,32 +383,40 @@ class Compiler {
               break;
             }
             if ((token.tok & Token.setparam) == 0)
-              return CannotSet(ident);
+              return cannotSet(ident);
           }
           break;
         case Token.show:
           if ((token.tok & Token.showparam) == 0)
-            return CannotShow(ident);
+            return cannotShow(ident);
           break;
         case Token.define:
-          if ((ltoken.size() >= 2) && ((token.tok & Token.expression) == 0))
-            return InvalidExpressionToken(ident);
+          if (ltoken.size() == 1) {
+            // we are looking at the variable name
+            if (token.tok != Token.identifier &&
+                (token.tok & Token.predefinedset) != Token.predefinedset)
+              return invalidExpressionToken(ident);
+          } else {
+            // we are looking at the expression
+            if (token.tok != Token.identifier &&
+                (token.tok & Token.expression) == 0)
+              return invalidExpressionToken(ident);
+          }
           break;
         case Token.center:
         case Token.restrict:
         case Token.select:
           if ((token.tok != Token.identifier) &&
-              (token.tok & Token.predefinedset) == 0 &&
               (token.tok & Token.expression) == 0)
-            return InvalidExpressionToken(ident);
+            return invalidExpressionToken(ident);
           break;
         }
         ltoken.add(token);
         continue;
       }
       if (ltoken.size() == 0)
-        return CommandExpected();
-      return UnrecognizedToken();
+        return commandExpected();
+      return unrecognizedToken();
     }
     eval.aatoken = new Token[lltoken.size()][];
     lltoken.copyInto(eval.aatoken);
@@ -417,47 +425,48 @@ class Compiler {
     return true;
   }
 
-  private boolean CommandExpected() {
-    return CompileError("command expected");
+  private boolean commandExpected() {
+    return compileError("command expected");
   }
-  private boolean CannotSet(String ident) {
-    return CompileError("cannot SET:" + ident);
+  private boolean cannotSet(String ident) {
+    return compileError("cannot SET:" + ident);
   }
-  private boolean CannotShow(String ident) {
-    return CompileError("cannot SHOW:" + ident);
+  private boolean cannotShow(String ident) {
+    return compileError("cannot SHOW:" + ident);
   }
-  private boolean InvalidExpressionToken(String ident) {
-    return CompileError("invalid expression token:" + ident);
+  private boolean invalidExpressionToken(String ident) {
+    return compileError("invalid expression token:" + ident);
   }
-  private boolean UnrecognizedToken() {
-    return CompileError("unrecognized token");
+  private boolean unrecognizedToken() {
+    return compileError("unrecognized token");
   }
-  private boolean BadArgumentCount() {
-    return CompileError("bad argument count");
+  private boolean badArgumentCount() {
+    return compileError("bad argument count");
   }
-  private boolean EndOfExpressionExpected() {
-    return CompileError("end of expression expected");
+  private boolean endOfExpressionExpected() {
+    return compileError("end of expression expected");
   }
-  private boolean RightParenthesisExpected() {
-    return CompileError("right parenthesis expected");
+  private boolean rightParenthesisExpected() {
+    return compileError("right parenthesis expected");
   }
-  private boolean UnrecognizedExpressionToken() {
-    return CompileError("unrecognized expression token");
+  private boolean unrecognizedExpressionToken() {
+    return compileError("unrecognized expression token");
   }
-  private boolean IntegerExpectedAfterHyphen() {
-    return CompileError("integer expected after hyphen");
+  private boolean integerExpectedAfterHyphen() {
+    return compileError("integer expected after hyphen");
   }
-  private boolean ComparisonOperatorExpected() {
-    return CompileError("comparison operator expected");
+  private boolean comparisonOperatorExpected() {
+    return compileError("comparison operator expected");
   }
-  private boolean IntegerExpected() {
-    return CompileError("integer expected");
+  private boolean integerExpected() {
+    return compileError("integer expected");
   }
-  private boolean BadRGBColor() {
-    return CompileError("bad [R,G,B] color");
+  private boolean badRGBColor() {
+    return compileError("bad [R,G,B] color");
   }
 
-  private boolean CompileError(String errorMessage) {
+  private boolean compileError(String errorMessage) {
+    System.out.println("compileError(" + errorMessage + ")");
     error = true;
     this.errorMessage = errorMessage;
     return false;
@@ -471,7 +480,7 @@ class Compiler {
     if (tokCommand == Token.set) {
       int size = ltoken.size();
       if (size < 2)
-        return BadArgumentCount();
+        return badArgumentCount();
       if (size == 2 && (((Token)ltoken.get(1)).tok & Token.setDefaultOn) != 0)
         ltoken.add(Token.tokenOn);
     }
@@ -483,7 +492,7 @@ class Compiler {
       return false;
     if ((tokenCommand.intValue & Token.varArgCount) == 0 &&
         (tokenCommand.intValue & 7) + 1 != atokenCommand.length)
-      return BadArgumentCount();
+      return badArgumentCount();
     return true;
   }
 
@@ -529,7 +538,7 @@ class Compiler {
     if (! clauseOr())
       return false;
     if (itokenInfix != atokenInfix.length)
-      return EndOfExpressionExpected();
+      return endOfExpressionExpected();
     atokenCommand = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenCommand);
     return true;
@@ -591,9 +600,12 @@ class Compiler {
     case Token.resno:
     case Token.radius:
     case Token.temperature:
+    case Token.bondedcount:
       return clauseComparator();
     default:
-      if ((tokPeek() & Token.predefinedset) == 0)
+      int tok = tokPeek();
+      if (((tok & Token.predefinedset) != Token.predefinedset) &&
+          ((tok & Token.aminoacidset) != Token.aminoacidset))
         break;
     case Token.all:
     case Token.none:
@@ -605,11 +617,12 @@ class Compiler {
       if (! clauseOr())
           return false;
       if (tokPeek() != Token.rightparen)
-        return RightParenthesisExpected();
+        return rightParenthesisExpected();
       tokenNext();
       return true;
     }
-    return UnrecognizedExpressionToken();
+    System.out.println("I am here");
+    return unrecognizedExpressionToken();
   }
 
   boolean clauseInteger() {
@@ -620,7 +633,7 @@ class Compiler {
     }
     tokenNext();
     if (tokPeek() != Token.integer)
-      return IntegerExpectedAfterHyphen();
+      return integerExpectedAfterHyphen();
     Token tokenInt2 = tokenNext();
     int min = tokenInt1.intValue;
     int max = tokenInt2.intValue;
@@ -634,10 +647,10 @@ class Compiler {
   boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
     if ((tokPeek() & Token.comparator) == 0)
-      return ComparisonOperatorExpected();
+      return comparisonOperatorExpected();
     Token tokenComparator = tokenNext();
     if (tokPeek() != Token.integer)
-      return IntegerExpected();
+      return integerExpected();
     Token tokenValue = tokenNext();
     int val = tokenValue.intValue;
     // note that a comparator instruction is a complicated instruction
@@ -673,7 +686,7 @@ class Compiler {
         atoken[i+4].tok != Token.opOr       ||
         atoken[i+5].tok != Token.integer    ||
         atoken[i+6].tok != Token.rightsquare)
-      return BadRGBColor();
+      return badRGBColor();
     int rgb = atoken[i+1].intValue << 16 | atoken[i+3].intValue << 8 |
       atoken[i+5].intValue;
     atokenNew[i] = new Token(Token.colorparam, rgb, "[R,G,B]");

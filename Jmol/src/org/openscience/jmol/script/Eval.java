@@ -53,7 +53,7 @@ public class Eval implements Runnable {
   Thread myThread;
   boolean haltExecution;
 
-  final static boolean logMessages = true;
+  final static boolean logMessages = false;
 
   public Eval(DisplayControl control) {
     compiler = new Compiler(this);
@@ -173,19 +173,24 @@ public class Eval implements Runnable {
     int cPredef = Token.predefinitions.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++) {
       script = Token.predefinitions[iPredef];
-      System.out.println("script:" + script);
       if (compiler.compile1()) {
         Token[] statement = aatoken[0];
         if (statement.length > 2) {
           int tok = statement[1].tok;
-          if (tok == Token.identifier || (tok & Token.predefinedset) != 0) {
+          if (tok == Token.identifier ||
+              (tok & Token.predefinedset) == Token.predefinedset) {
             String variable = (String)statement[1].value;
             variables.put(variable, statement);
-            continue;
+          } else {
+            System.out.println("invalid variable name:" + script);
           }
+        } else {
+          System.out.println("bad statement length:" + script);
         }
+      } else {
+        System.out.println("predefined set compile error:" + script +
+                           "\ncompile error:" + compiler.errorMessage);
       }
-      System.out.println("predefined set error:" + script);
     }
   }
 
@@ -238,6 +243,9 @@ public class Eval implements Runnable {
       case Token.load:
         load();
         break;
+      case Token.monitor:
+        monitor();
+        break;
       case Token.refresh:
         refresh();
         break;
@@ -285,7 +293,6 @@ public class Eval implements Runnable {
       case Token.help:
       case Token.label:
       case Token.molecule:
-      case Token.monitor:
       case Token.pause:
       case Token.print:
       case Token.renumber:
@@ -399,10 +406,12 @@ public class Eval implements Runnable {
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
-    System.out.println("start to evaluate expression");
+    if (logMessages)
+      System.out.println("start to evaluate expression");
     for (int pc = pcStart; pc < code.length; ++pc) {
       Token instruction = code[pc];
-      System.out.println("instruction=" + instruction);
+      if (logMessages)
+        System.out.println("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
@@ -450,7 +459,7 @@ public class Eval implements Runnable {
         stack[sp++] = copyBitSet(control.getSelectionSet());
         break;
       case Token.hydrogen:
-      case Token.solvent:
+        System.out.println("hydrogen is here"); 
       case Token.identifier:
         String variable = (String)instruction.value;
         BitSet value = lookupValue(variable, false);
@@ -467,13 +476,42 @@ public class Eval implements Runnable {
         bs = stack[sp++] = new BitSet();
         comparatorInstruction(instruction, bs);
         break;
+      case Token.backbone:
+      case Token.alpha:
+      case Token.amino:
+      case Token.cystine:
+      case Token.helix:
+      case Token.hetero:
+      case Token.ions:
+      case Token.ligand:
+      case Token.protein:
+      case Token.sheet:
+      case Token.sidechain:
+      case Token.solvent:
+      case Token.turn:
+      case Token.water:
+        System.out.println("expression instruction not implemented:" +
+                           instruction.value);
+        stack[sp++] = new BitSet();
+        break;
       default:
+        if ((instruction.tok & Token.aminoacidset) == Token.aminoacidset) {
+          stack[sp++] = getAminoSet(instruction);
+          break;
+        }
         unrecognizedExpression();
       }
     }
     if (sp != 1)
       evalError("atom expression compiler error - stack over/underflow");
     return stack[0];
+  }
+
+  BitSet getAminoSet(Token tokenAmino) {
+    BitSet bs = new BitSet();
+    System.out.println("amino sets not implemented:" + tokenAmino.value);
+    bs.set(tokenAmino.tok & 0x1F);
+    return bs;
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
@@ -601,6 +639,29 @@ public class Eval implements Runnable {
       evalError(errMsg);
   }
 
+  void monitor() throws ScriptException {
+    if (statement.length == 1) {
+      control.setShowMeasures(true);
+      return;
+    }
+    if (statement.length == 2) {
+      if (statement[1].tok == Token.on)
+        control.setShowMeasures(true);
+      else if (statement[1].tok == Token.off)
+        control.setShowMeasures(true);
+      else
+        booleanExpected();
+      return;
+    }
+    if (statement.length != 3)
+      badArgumentCount();
+    if (statement[1].tok != Token.integer ||
+        statement[2].tok != Token.integer)
+      integerExpected();
+    control.defineDistanceMeasure(statement[1].intValue,
+                                  statement[2].intValue);
+  }
+
   void refresh() throws ScriptException {
     control.requestRepaintAndWait();
   }
@@ -644,7 +705,6 @@ public class Eval implements Runnable {
       // FIXME -- what is behavior when there are no arguments to select
       // doc says behavior is dependent upon hetero and hydrogen parameters
     } else {
-      System.out.println("inside select");
       control.setSelectionSet(expression(statement, 1));
     }
   }

@@ -228,6 +228,17 @@
     </jar>
   </target>
 
+  <target name="apis-jar" id="apis-jar" depends="init,classes">
+    <jar jarfile="jmolApis.jar">
+      <fileset dir="${classes.dir}" >
+        <include name="org/jmol/api/**" />
+      </fileset>
+      <fileset dir="." >
+        <include name="LICENSE.txt"/>
+      </fileset>
+    </jar>
+  </target>
+
   <target name="check.appletjars" id="check.appletjars">
     <uptodate property="appletjars.uptodate"
 	      targetfile="${appletjars.dir}">

@@ -178,8 +178,6 @@ final class Shade3D {
     The Art of Computer Programming,
     Volume 2: Seminumerical Algorithms, section 3.2.1.
 
-  // this doesn't really need to be synchronized
-  // no serious harm done if two threads write seed at the same time
   static long seed = 1;
   static int nextRandom8Bit() {
     seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
@@ -188,11 +186,14 @@ final class Shade3D {
   }
   */
 
+  // this doesn't really need to be synchronized
+  // no serious harm done if two threads write seed at the same time
+  private static int seed = 0x12345679; // turn lo bit on
   /* uses RANDU algorithm ... bad randomness but cheap */
-  static int seed = 0x12345679; // turn lo bit on
   static int nextRandom8Bit() {
-    seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
-    return seed >> 23;
+    int t = seed;
+    seed = t = ((t << 16) + (t << 1) + t) & 0x7FFFFFFF;
+    return t >> 23;
   }
 
 

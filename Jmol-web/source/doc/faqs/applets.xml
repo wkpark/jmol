@@ -1,0 +1,75 @@
+<section title="JmolApplet deployment">
+  <section
+   title="For the applet, what must be installed on web client machines?">
+    <p>
+      No special Jmol-specific software needs to be installed
+      on the client machines.
+    </p>
+    <p>
+      Client machines do not need anything other than a web browser
+      that supports Java. 
+      When a client visits a web page containing the JmolApplet, the
+      applet gets automatically downloaded from the web server and
+      executed.
+    </p>
+    <p>
+      The JmolApplet runs as an <b>untrusted</b> applet. The applet
+      does not any confirmation from the user to load and begin
+      execution. 
+    </p>
+  </section>
+  
+  <section
+   title="Can the JmolApplet be permanently installed locally,
+   like a plug-in?">
+    <p>No</p>
+    <p>
+      Applets get cached in the local browser cache. Subsequent uses of
+      the the	applet will pull the applet from the cache
+      (after confirming that the date/time/size have not changed
+      on the web server). At least, that's the theory ...
+      and it works correctly on the browsers I have seen :-)
+    </p>
+  </section>
+
+  <section title="Use SQUARE applets">
+    <p>
+      Applets should generally be <i>square</i> ... width == height.
+    </p>
+    <p>
+      This is because the molecule will be automatically scaled so
+      that it fits within the smaller of the two dimensions.
+      The the other pixels will never be used (unless zoom is used).
+      Nevertheless, those pixels must be cleared to the background
+      color each time the window is repainted. This clearing is
+      a relatively expensive operation.
+    </p>
+  </section>
+
+  <section title="Use FIXED pixel width &amp; height, not percentages">
+    <p>
+      <code>&lt;applet ... width='{n}' height='{n}' ... &gt;</code>
+      where {n} = 300, 400, 600 ... you get the idea. 
+    </p>
+    <p>
+      While most browsers allow you to specify applet width and
+      height in percentages, in practice this causes many problems.
+      It tends to generate lots of bugs during window resize
+      operations.
+    </p>
+  </section>
+  
+  <section title="what MIME types must be installed on the server?">
+    <p>
+      None.
+    </p>
+    <p>
+      Applets do not get associated with MIME types in the same way that
+      plugins do. While the Chime <i>plugin</i> requires configuration
+      of the web server, the Jmol<i>Applet</i> does not.
+    </p>
+  </section>
+
+
+</section>    
+

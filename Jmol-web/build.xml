@@ -21,8 +21,7 @@
     <style basedir="${doc.dir}"
       destdir="${build.html}"
       style="${doc.dir}/style.xsl"
-      includes="**/*.xml"
-      excludes="project.xml"
+      includes="**/index.xml"
     />
     <copy todir="${build.html}" overwrite="yes"> 
       <fileset dir="${doc.dir}" includes="license.txt,document.dtd"/>

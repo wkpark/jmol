@@ -1,238 +1,34 @@
 <?xml version="1.0"?>
+<!DOCTYPE somethingOrAnything [
+<!ENTITY platforms    SYSTEM "platforms.xml" >
+<!ENTITY requirements SYSTEM "requirements.xml" >
+<!ENTITY graphics     SYSTEM "graphics.xml" >
+<!ENTITY applets      SYSTEM "applets.xml" >
+]>
 <document>
   <body>
     <title>Jmol FAQs</title>
 
-    <!-- $ID: $ -->
+    &platforms;
     
-    <section title="Platform Support">
-      <section title="What platforms does the Jmol application run on?">
-	<p>
-	  The Jmol application should run on any system that supports
-	  Java 1.4
-	</p>
-      </section>
-      
-      <section title="What browsers does the JmolApplet run on?">
-	<p>
-	  The JmolApplet runs on most popular browsers, including
-	  <ul>
-	    <li>Win32
-	    <ul>
-	      <li>Microsoft IE 5.5+
-	      (built-in Microsoft JVM <b>or</b> Sun Java Plug-in)
-	      </li>
-	      <li>Netscape 4.76+</li>
-	      <li>Mozilla 1.3+ with Sun Java Plug-in</li>
-	    </ul>
-	    </li>
-	    <li>MacOS 9
-	    <ul>
-	      <li>Netscape 4.78</li>
-	    </ul>
-	    </li>
-	    <li>MacOS X <i>(no JavaScript support)</i>
-	    <ul>
-	      <li>Safari</li>
-	      <li>IE</li>
-	      <li>Netscape 7+</li>
-	    </ul>
-	    </li>
-	    <li>Linux/Unix
-	    <ul>
-	      <li>Netscape 4.76+</li>
-	      <li>Mozilla 1.2.1+</li>
-	      <li>
-		Konqueror 3.1+
-		<i>has some problems with multiple applets on the same page</i>
-	      </li>
-	    </ul>
-	    </li>
-	  </ul>
-	</p>
-      </section>
-      
-      <section title="What is the deal with MacOS X?">
-	<p>
-	  There are no browsers on MacOS X that support LiveConnect
-	  communication between JavaScript and Java. Therefore,
-	  anything involving JavaScript buttons or JavaScript callback
-	  functions will not work on OSX. 
-	</p>
-	<p>
-	  Sorry ... encourage Apple to get to work on Safari. 
-	</p>
-      </section>
+    &requirements;
 
-      <section title="But your Sneak Preview demos work on MacOS X?">
-	<p>
-	  True. But the demos in <a href="../preview">Sneak Preview</a>
-	  do not use JavaScript. Rather, they are using JmolAppletControl
-	  buttons. Using these types of controls you can develop web
-	  applications that will run on MacOS X. 
-	</p>
-      </section>
-    </section>
+    &graphics;
 
-    <section title="JmolApplet">
-      <section
-       title="For the applet, what must be installed on web client machines?">
-	<p>
-	  Client machines do not need anything other than a web browser
-	  that supports Java. 
-	  When a client visits a web page containing the JmolApplet, the
-	  applet gets automatically downloaded from the web server and
-	  executed.
-	</p>
-	<p>
-	  The JmolApplet runs as an <b>untrusted</b> applet. The applet
-	  does not any confirmation from the user to load and begin
-	  execution. 
-	</p>
-      </section>
-      
-      <section
-       title="Can the JmolApplet be permanently installed locally,
-       like a plug-in?">
-	<p>
-	  Applets get cached in the local browser cache. Subsequent uses of
-	  the the	applet will pull the applet from the cache
-	  (after confirming that the date/time/size have not changed
-	  on the web server). At least, that's the theory ...
-	  and it works correctly on the browsers I have seen :-)
-	</p>
-      </section>
-
-      <section
-       title="What is the difference between the application and the applet?">
-	<p>
-	  The application is a standalone program that you run on your
-	  system. The JmolApplet is an applet that you embed in web
-	  pages.
-	</p>
-	<p>
-	  The application is like RasMol and the applet is like Chime.
-	</p>
-      </section>
-    </section>    
-
-    <section title="Hardware and runtime performance">
-      <section title="What are the minimum hardware requirements?">
-	<p>
-	  300 Mhz CPU + 64 Mb RAM<br />
-	  There is no absolute minimum. Performance is a function of
-	  molecule size, window size, and image complexity. <br />
-	  (On MacOS 9 you need more horsepower to make up for poor
-	  Java performance.) 
-	</p>
-      </section>
-      
-      <section title="What are the recommended hardware requirements?">
-	<p>
-	  600 Mhz CPU + 256 Mb RAM -- Of course, more is better. 
-	</p>
-      </section>
-
-      <section
-       title="Why does it get so much slower when I make the screen bigger?">
-	<p>
-	  Twice as many pixels means twice as much work ...
-	</p>
-      </section>
-
-      <section title=
-	       "Is OpenGL or 3D hardware required to run the JmolApplet?">
-	<p>
-	  No special hardware is required to run the JmolApplet.
-	  The graphics engine is a z-buffer implemented in Java,
-	  and designed for rendering molecules. <i>(In fact, designed
-	  just for Jmol.)</i>
-	</p>
-      </section>
-
-      <section title="Performance is great! Why is it so fast?">
-	<p>
-	  It does not use any Java graphics calls. The entire
-	  image is built and sent to the screen with one
-	  java.awt.Graphics.drawImage operation.
-	</p>
-      </section>
-
-      <section title="Rendering speed is really slow. What can I do?">
-	<ul>
-	  <li>Get a faster machine</li>
-	  <li>Convince Sun to fix graphics performance problems</li>
-	  <li>Get the source code and speed it up</li>
-	</ul>
-      </section>
-
-      <section title="Why is the applet slow on Netscape/MacOS 9?">
-	<p>
-	  It is an old Java Virtual Machine that is an interpreter. More
-	  modern JVMs compile the java bytecodes.
-	</p>
-      </section>
-    </section>
+    &applets;
 
     <section title="Jmol v10">
       <section title="When will Jmol v10 be released?">
 	<p>
 	  Jmol v10 is currently in public test release.
 	  We hoped to have an official Jmol v10 release in December 2003.
-      We now aim at later this year.
+	  We now aim at later this year.
 	</p>
 	<p>
 	  To participate in the test program go to
 	  <a href="../betatest">Beta Test</a>.
 	</p>
       </section>
-      
-      <section title="How are the graphics different in Jmol v10?">
-	<p>
-	  A new 3D graphics engine has been developed for Jmol v10 to
-	  properly support intersecting shapes. This is important
-	  when viewing spacefilled molecular models.
-	</p>
-	<p>
-	  The 3D engine also has much higher performance when dealing
-	  with larger molecules. 
-	</p>
-      </section>
     </section>
-
-    <section title="Graphics and rendering">
-      
-      <section title="I see jaggies. Why aren't the graphics anti-aliased?">
-	<p>
-	  No java graphics calls are used in the construction of the image.
-	  The entire scene is constructed in memory and transferred to the
-	  screen with one drawImage operation. <br />
-	  Hey ... aren't you the person who was complaining about speed?
-	  <i>(A future release will include Full-Scene-Anti-Aliasing.)</i>
-	</p>
-      </section>
-      
-      <section title="But I need some higher-quality images ...">
-	<p>
-	  Use the Jmol application and export to PovRay. 
-	</p>
-      </section>
-      
-      <section title="Does Jmol support isosurfaces?">
-	<p>
-	  Not yet. It is relatively high on our priority list. 
-	</p>
-      </section>
-      
-      <section
-       title="What shapes does Jmol support for protein secondary structure?">
-	<p>
-	  Using RasMol/Chime terminology, Jmol current supports
-	  <b>backbone</b>, <b>trace</b>, and <b>strands</b>.
-	  Jmol does not yet support <b>ribbons</b> or <b>cartoons</b>.
-	</p>
-      </section>
-    </section>
-
   </body>
 </document>

@@ -31,7 +31,7 @@
       <h4>Debian Apt-get</h4>
       <p>
         Debian users can also apt-get the package from 
-        <a href="http://www.wgdd.de/debs/">www.wgdd.de/debs/</a> by adding:
+        <a href="http://www.wgdd.de/debian/">www.wgdd.de/debian/</a> by adding:
         <pre><tt>
 deb http://www.wgdd.de/debian unstable main contrib non-free
 deb-src http://www.wgdd.de/debian unstable main contrib non-free

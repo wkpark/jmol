@@ -86,6 +86,10 @@ public class Jmol extends JPanel {
 
   PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+  // Window names for the history file
+  private final static String JMOL_WINDOW_NAME = "Jmol";
+  private final static String CONSOLE_WINDOW_NAME = "Console";
+  private final static String SCRIPT_WINDOW_NAME = "Script";
 
   /**
    * The current file.
@@ -272,6 +276,10 @@ public class Jmol extends JPanel {
       JmolResourceHandler.getIconX("icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
+
+    // Repositionning windows
+    historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow);
+    
     // splash.showStatus(jrh.translate("Launching main frame..."));
     say("Launching main frame...");
   }
@@ -366,6 +374,11 @@ public class Jmol extends JPanel {
       }
 
       int startupWidth = 0, startupHeight = 0;
+      Dimension size = historyFile.getWindowSize(JMOL_WINDOW_NAME);
+      if (size != null) {
+        startupWidth = size.width;
+        startupHeight = size.height;
+      }
       if (line.hasOption("g")) {
         String geometry = line.getOptionValue("g");
         int indexX = geometry.indexOf('x');
@@ -380,6 +393,10 @@ public class Jmol extends JPanel {
       }
 
       JFrame jmolFrame = new JFrame();
+      Point jmolPosition = historyFile.getWindowPosition(JMOL_WINDOW_NAME);
+      if (jmolPosition != null) {
+        jmolFrame.setLocation(jmolPosition);
+      }
       jmol = getJmol(jmolFrame, startupWidth, startupHeight);
 
       // Process command line arguments
@@ -415,6 +432,7 @@ public class Jmol extends JPanel {
 
     // Adding console frame to grab System.out & System.err
     consoleframe = new JFrame("Jmol Console");
+    consoleframe.setIconImage(jmol.frame.getIconImage());
     try {
       ConsoleTextArea consoleTextArea = new ConsoleTextArea();
       consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
@@ -428,13 +446,22 @@ public class Jmol extends JPanel {
       errorTextArea.append("Could not create ConsoleTextArea: " + e);
     }
     
-    consoleframe.setBounds(location.x, location.y + size.height, size.width,
-        200);
+    Dimension consoleSize = historyFile.getWindowSize(CONSOLE_WINDOW_NAME);
+    Point consolePosition = historyFile.getWindowPosition(CONSOLE_WINDOW_NAME);
+    if ((consoleSize != null) && (consolePosition != null)) {
+      consoleframe.setBounds(
+              consolePosition.x, consolePosition.y,
+              consoleSize.width, consoleSize.height);
+    } else {
+      consoleframe.setBounds(
+              location.x, location.y + size.height,
+              size.width, 200);
+    }
 
-    // I'd prefer that the console stay out of the way until requested,
-    // so I'm commenting this line out for now...
-    // consoleframe.show();
-
+    Boolean consoleVisible = historyFile.getWindowVisibility(CONSOLE_WINDOW_NAME);
+    if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
+      consoleframe.show();
+    }
   }
 
   static int parseInt(String str) {
@@ -480,6 +507,14 @@ public class Jmol extends JPanel {
   }
 
   void doClose() {
+      // Save window positions and status in the history
+      if (historyFile != null) {
+        historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame);
+        historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
+        historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow);
+      }
+      
+      // Close Jmol
       numWindows--;
       if (numWindows <= 1) {
           System.out.println("Closing Jmol...");

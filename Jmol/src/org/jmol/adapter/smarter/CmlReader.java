@@ -221,14 +221,17 @@ class CmlReader extends AtomSetCollectionReader {
       //      System.out.println("model: " + model);
     }
 
+    int moleculeNesting = 0;
+
     public void startElement(String namespaceURI, String localName,
-                             String qName, Attributes atts)
-    {
+                             String qName, Attributes atts) {
       /*
         System.out.println("startElement(" + namespaceURI + "," + localName +
         "," + qName + "," + atts +  ")");
       /* */
       if ("molecule".equals(localName)) {
+        if (++moleculeNesting > 1)
+          return;
         atomSetCollection.newAtomSet();
         String collectionName = null;
         for (int i = atts.getLength(); --i >= 0; ) {
@@ -237,7 +240,7 @@ class CmlReader extends AtomSetCollectionReader {
           if ("title".equals(attLocalName)) {
             collectionName = attValue;
           } else if ("id".equals(attLocalName)) {
-            if (collectionName != null) {
+            if (collectionName == null) {
               collectionName = attValue;
             } // else: don't overwrite title!
           }
@@ -367,6 +370,8 @@ class CmlReader extends AtomSetCollectionReader {
       if ("crystal".equals(localName)) {
         elementContext = CRYSTAL;
         notionalUnitcell = new float[6];
+        for (int i = 6; --i >= 0; )
+          notionalUnitcell[i] = Float.NaN;
         return;
       }
       if ("scalar".equals(localName)) {
@@ -384,12 +389,23 @@ class CmlReader extends AtomSetCollectionReader {
       }
     }
     
-    public void endElement(String uri, String localName,
-                           String qName)  {
+    public void endElement(String uri, String localName, String qName)  {
       /*
         System.out.println("endElement(" + uri + "," + localName +
         "," + qName + ")");
       /* */
+      processEndElement(uri, localName, qName);
+      keepChars = false;
+      title = null;
+      dictRef = null;
+      chars = null;
+    }
+
+    void processEndElement(String uri, String localName, String qName)  {
+      if ("molecule".equals(localName)) {
+        --moleculeNesting;
+        return;
+      }
       if ("atom".equals(localName)) {
         if (atom.elementSymbol != null &&
             ! Float.isNaN(atom.z)) {
@@ -406,37 +422,42 @@ class CmlReader extends AtomSetCollectionReader {
       }
       if ("crystal".equals(localName)) {
         elementContext = UNSET;
+        for (int i = 6; --i >= 0; )
+          if (Float.isNaN(notionalUnitcell[i])) {
+            System.out.println("incomplete/unrecognized unitcell");
+            return;
+          }
         atomSetCollection.notionalUnitcell = notionalUnitcell;
         return;
       }
       if ("scalar".equals(localName)) {
         if (elementContext == CRYSTAL) {
-          System.out.println("CRYSTAL atts.title: " + title);
+          //          System.out.println("CRYSTAL atts.title: " + title);
           if (title != null) {
               int i = 6;
-              while (--i >= 0 && ! title.equals(AtomSetCollection.notionalUnitcellTags[i])) {
-              }
+              while (--i >= 0 && !
+                     title.equals(AtomSetCollection.notionalUnitcellTags[i]))
+                { }
               if (i >= 0)
-                  notionalUnitcell[i] = parseFloat(chars);
+                notionalUnitcell[i] = parseFloat(chars);
           }
-          System.out.println("CRYSTAL atts.dictRef: " + dictRef);
+          //          System.out.println("CRYSTAL atts.dictRef: " + dictRef);
           if (dictRef != null) {
               int i = 6;
-              while (--i >= 0 && ! dictRef.equals("cml:" + AtomSetCollection.notionalUnitcellTags[i])) {
-              }
+              while (--i >= 0 &&
+                     ! dictRef.equals("cif:" + CifReader.cellParamNames[i]))
+                { }
               if (i >= 0)
-                  notionalUnitcell[i] = parseFloat(chars);
+                notionalUnitcell[i] = parseFloat(chars);
           }
-        } else if (elementContext == ATOM) {
+          return;
+        }
+        if (elementContext == ATOM) {
           if ("jmol:charge".equals(dictRef)) {
             atom.partialCharge = parseFloat(chars);
             //System.out.println("jmol.partialCharge=" + atom.partialCharge);
           }
         }
-        keepChars = false;
-        title = null;
-        dictRef = null;
-        chars = null;
         return;
       }
       if ("atomArray".equals(localName)) {
@@ -458,8 +479,7 @@ class CmlReader extends AtomSetCollectionReader {
     }
     
     public void characters(char[] ch, int start, int length) {
-      // 
-      System.out.println("End chars: " + new String(ch, start, length));
+      //System.out.println("End chars: " + new String(ch, start, length));
       if (keepChars) {
         if (chars == null) {
           chars = new String(ch, start, length);

@@ -39,10 +39,7 @@ class GaussianReader extends ModelReader {
   private int firstCoordinateOffset = 3;
   
   private int atomCount  = 0;  // the number of atoms in the last read model
-  private int modelCount = 0;  // the number of models I have
-  private int lastModelEnd = 0; // last atom index of last model
-                                // need this (since I can not use model.atoms.length)
-  
+  private int modelCount = 0;  // the number of models I have  
   // it looks like model numbers really need to start with 1 and not 0 otherwise
   // a single frequency calculation can not go to the first frequency
 
@@ -57,21 +54,21 @@ class GaussianReader extends ModelReader {
       while ((line = reader.readLine()) != null) {
         if (line.indexOf("Standard orientation:") >= 0) {
           readAtoms(reader);
-          System.out.println("Interpret Standard orientation: " + modelCount);
+//          System.out.println("Interpret Standard orientation: " + modelCount);
         } else if (line.indexOf("Z-Matrix orientation:") >= 0) {
           readAtoms(reader);
-          System.out.println("Interpret Z-Matrix orientation: " + modelCount);
+//          System.out.println("Interpret Z-Matrix orientation: " + modelCount);
         } else if (line.startsWith(" Harmonic frequencies")) {
           // NB this only works for the standard orientation of the molecule
           // since it does not list the values for the dummy atoms in the z-matrix
           readFrequencies(reader);
-          System.out.println("Interpreting Harmonic frequencies");
+//          System.out.println("Interpreting Harmonic frequencies");
         } else if (line.startsWith(" Total atomic charges:") ||
                    line.startsWith(" Mulliken atomic charges:")) {
           // NB this only works for the standard orientation of the molecule
           // since it does not list the values for the dummy atoms in the z-matrix
           readPartialCharges(reader);
-          System.out.println("Interpret  Mulliken atomic charges:");
+//          System.out.println("Interpret  Mulliken atomic charges:");
         } else if (lineNum < 20) {
           if (line.indexOf("This is part of the Gaussian 94(TM) system") >= 0)
             firstCoordinateOffset = 2;
@@ -89,32 +86,32 @@ class GaussianReader extends ModelReader {
     return model;
   }
 
-  /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
+/* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
      NB I currently use the firstCoordinateOffset value to determine where X starts,
      I could use the number of tokens - 3, and read the last 3...
-  */
+*/
 
-  // GAUSSIAN 04 format
-  /*                 Standard orientation:
-                     ----------------------------------------------------------
-                     Center     Atomic              Coordinates (Angstroms)
-                     Number     Number             X           Y           Z
-                     ----------------------------------------------------------
-                     1          6           0.000000    0.000000    1.043880
-                     ##SNIP##    
-                     ---------------------------------------------------------------------
-  */
+// GAUSSIAN 04 format
+/*                 Standard orientation:
+ ----------------------------------------------------------
+ Center     Atomic              Coordinates (Angstroms)
+ Number     Number             X           Y           Z
+ ----------------------------------------------------------
+ 1          6           0.000000    0.000000    1.043880
+ ##SNIP##    
+ ---------------------------------------------------------------------
+*/
 
-  // GAUSSIAN 98 and 03 format
-  /*                    Standard orientation:                         
-                        ---------------------------------------------------------------------
-                        Center     Atomic     Atomic              Coordinates (Angstroms)
-                        Number     Number      Type              X           Y           Z
-                        ---------------------------------------------------------------------
-                        1          6             0        0.852764   -0.020119    0.050711
-                        ##SNIP##
-                        ---------------------------------------------------------------------
-  */
+// GAUSSIAN 98 and 03 format
+/*                    Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic     Atomic              Coordinates (Angstroms)
+ Number     Number      Type              X           Y           Z
+ ---------------------------------------------------------------------
+ 1          6             0        0.852764   -0.020119    0.050711
+ ##SNIP##
+ ---------------------------------------------------------------------
+*/
 
   private void readAtoms(BufferedReader reader) throws Exception {
     discardLines(reader, 4);
@@ -136,47 +133,46 @@ class GaussianReader extends ModelReader {
       atom.z = parseFloat(tokens[++offset]);
       ++atomCount;
     }
-    lastModelEnd += atomCount;
   }
 
-  /* SAMPLE FREQUENCY OUTPUT */
-  /*
-    Harmonic frequencies (cm**-1), IR intensities (KM/Mole), Raman scattering
-    activities (A**4/AMU), depolarization ratios for plane and unpolarized
-    incident light, reduced masses (AMU), force constants (mDyne/A),
-    and normal coordinates:
-    1                      2                      3
-    A1                     B2                     B1
-    Frequencies --    64.6809                64.9485               203.8241
-    Red. masses --     8.0904                 2.2567                 1.0164
-    Frc consts  --     0.0199                 0.0056                 0.0249
-    IR Inten    --     1.4343                 1.4384                15.8823
-    Atom AN      X      Y      Z        X      Y      Z        X      Y      Z
-    1   6     0.00   0.00   0.48     0.00  -0.05   0.23     0.01   0.00   0.00
-    2   6     0.00   0.00   0.48     0.00  -0.05  -0.23     0.01   0.00   0.00
-    3   1     0.00   0.00   0.49     0.00  -0.05   0.63     0.03   0.00   0.00
-    4   1     0.00   0.00   0.49     0.00  -0.05  -0.63     0.03   0.00   0.00
-    5   1     0.00   0.00  -0.16     0.00  -0.31   0.00    -1.00   0.00   0.00
-    6  35     0.00   0.00  -0.16     0.00   0.02   0.00     0.01   0.00   0.00
-    ##SNIP##
-    10                     11                     12
-    A1                     B2                     A1
-    Frequencies --  2521.0940              3410.1755              3512.0957
-    Red. masses --     1.0211                 1.0848                 1.2333
-    Frc consts  --     3.8238                 7.4328                 8.9632
-    IR Inten    --   264.5877               109.0525                 0.0637
-    Atom AN      X      Y      Z        X      Y      Z        X      Y      Z
-    1   6     0.00   0.00   0.00     0.00   0.06   0.00     0.00  -0.10   0.00
-    2   6     0.00   0.00   0.00     0.00   0.06   0.00     0.00   0.10   0.00
-    3   1     0.00   0.01   0.00     0.00  -0.70   0.01     0.00   0.70  -0.01
-    4   1     0.00  -0.01   0.00     0.00  -0.70  -0.01     0.00  -0.70  -0.01
-    5   1     0.00   0.00   1.00     0.00   0.00   0.00     0.00   0.00   0.00
-    6  35     0.00   0.00  -0.01     0.00   0.00   0.00     0.00   0.00   0.00
-
-    -------------------
-    - Thermochemistry -
-    -------------------
-  */
+/* SAMPLE FREQUENCY OUTPUT */
+/*
+ Harmonic frequencies (cm**-1), IR intensities (KM/Mole), Raman scattering
+ activities (A**4/AMU), depolarization ratios for plane and unpolarized
+ incident light, reduced masses (AMU), force constants (mDyne/A),
+ and normal coordinates:
+                     1                      2                      3
+                    A1                     B2                     B1
+ Frequencies --    64.6809                64.9485               203.8241
+ Red. masses --     8.0904                 2.2567                 1.0164
+ Frc consts  --     0.0199                 0.0056                 0.0249
+ IR Inten    --     1.4343                 1.4384                15.8823
+ Atom AN      X      Y      Z        X      Y      Z        X      Y      Z
+ 1   6     0.00   0.00   0.48     0.00  -0.05   0.23     0.01   0.00   0.00
+ 2   6     0.00   0.00   0.48     0.00  -0.05  -0.23     0.01   0.00   0.00
+ 3   1     0.00   0.00   0.49     0.00  -0.05   0.63     0.03   0.00   0.00
+ 4   1     0.00   0.00   0.49     0.00  -0.05  -0.63     0.03   0.00   0.00
+ 5   1     0.00   0.00  -0.16     0.00  -0.31   0.00    -1.00   0.00   0.00
+ 6  35     0.00   0.00  -0.16     0.00   0.02   0.00     0.01   0.00   0.00
+ ##SNIP##
+ 10                     11                     12
+ A1                     B2                     A1
+ Frequencies --  2521.0940              3410.1755              3512.0957
+ Red. masses --     1.0211                 1.0848                 1.2333
+ Frc consts  --     3.8238                 7.4328                 8.9632
+ IR Inten    --   264.5877               109.0525                 0.0637
+ Atom AN      X      Y      Z        X      Y      Z        X      Y      Z
+ 1   6     0.00   0.00   0.00     0.00   0.06   0.00     0.00  -0.10   0.00
+ 2   6     0.00   0.00   0.00     0.00   0.06   0.00     0.00   0.10   0.00
+ 3   1     0.00   0.01   0.00     0.00  -0.70   0.01     0.00   0.70  -0.01
+ 4   1     0.00  -0.01   0.00     0.00  -0.70  -0.01     0.00  -0.70  -0.01
+ 5   1     0.00   0.00   1.00     0.00   0.00   0.00     0.00   0.00   0.00
+ 6  35     0.00   0.00  -0.01     0.00   0.00   0.00     0.00   0.00   0.00
+ 
+ -------------------
+ - Thermochemistry -
+ -------------------
+*/
 
   // NB RPFK now we can also have multiple geometries read before we encounter
   // the frequencies, so we can't set the modelNumber to 1 
@@ -219,7 +215,7 @@ class GaussianReader extends ModelReader {
       }
       for (int i = nNewModels; --i >= 0; )
         duplicateLastModel();
-      int firstModelAtom = lastModelEnd - nFreq * atomCount;
+      int firstModelAtom = model.atomCount - nFreq * atomCount;
       
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith(reader, " Atom AN");
@@ -243,36 +239,31 @@ class GaussianReader extends ModelReader {
     // RPFK: why check for the " Frequencies --"? empty line denotes end of frequencies..
   }
 
-  /* SAMPLE Mulliken Charges OUTPUT from G98 */
-  /*
-    Mulliken atomic charges:
-    1
-    1  C   -0.238024
-    2  C   -0.238024
-    ###SNIP###
-    6  Br  -0.080946
-    Sum of Mulliken charges=   0.00000
-  */
+/* SAMPLE Mulliken Charges OUTPUT from G98 */
+/*
+ Mulliken atomic charges:
+              1
+     1  C   -0.238024
+     2  C   -0.238024
+ ###SNIP###
+     6  Br  -0.080946
+ Sum of Mulliken charges=   0.00000
+*/
   void readPartialCharges(BufferedReader reader) throws Exception {
     discardLines(reader, 1);
-    for (int i = atomCount, atomOffset = lastModelEnd - atomCount; --i >= 0; ++atomOffset)
+    for (int i = atomCount, atomOffset = model.atomCount - atomCount; --i >= 0; ++atomOffset)
       model.atoms[atomOffset].partialCharge =
         parseFloat(getTokens(reader.readLine())[2]);
   }
 
   // duplicate the last model
-  /* NB with the possibility of having z-matrix orientations in the list
-     I can not rely on a fixed length for each of the models, so I need to walk
-     back
-  */
-
   private void duplicateLastModel() {
     Atom[] atoms = model.atoms;
     modelCount++;  // new count of models is increased
-    for (int i = atomCount, atomOffset = lastModelEnd - atomCount; --i >= 0; ++atomOffset) {
-      Atom atomNew = model.newCloneAtom(atoms[atomOffset]);
+    int atomOffset = model.atomCount - atomCount; // first atom to be duplicated
+    for (int i = atomCount; --i >= 0;) {
+      Atom atomNew = model.newCloneAtom(atoms[atomOffset++]);
       atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
     }
-    lastModelEnd += atomCount;
   }
 }

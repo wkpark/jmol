@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol GUIDE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 21:31+0100\n"
+"POT-Creation-Date: 2005-02-11 01:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgid "Introduction"
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:3 
-msgid "Jmol is a Java based application and applet for displaying 3D chemical information."
+msgid "Jmol is a Java based application and an applet for displaying 3D chemical information."
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:7 
@@ -32,271 +32,367 @@ msgstr ""
 msgid "Command Line Options"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:3 
-msgid "The Jmol program has a command line option to run scripts: <cmdsynopsis><arg>--script</arg></cmdsynopsis>. The current syntax is: <cmdsynopsis><command>jmol</command><arg> --script <arg choice=\"req\"><replaceable>rasmol.script </replaceable></arg></arg></cmdsynopsis> This makes it possible to start jmol with a Rasmol script. The syntax of these scripts is explained in <link linkend=\"rasmol\" endterm=\"rasmol.title\"/>."
+#: ../JmolGuide.docbook.xml:4 
+msgid "The following sections contain information about the command line options of Jmol. The general syntax is:"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:20 
-msgid "Alternatively, Jmol can be started with one argument, being a file name: <cmdsynopsis><command>jmol</command><arg choice=\"req\"><replaceable>file</replaceable></arg></cmdsynopsis>"
+#: ../JmolGuide.docbook.xml:9 ../JmolGuide.docbook.xml:17 
+msgid "jmol"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:29 
-msgid "--geometry"
+#: ../JmolGuide.docbook.xml:10 
+msgid "OPTIONS"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:30 
-msgid "This option allows setting of the window size. By default the size is 500x500."
+#: ../JmolGuide.docbook.xml:11 ../JmolGuide.docbook.xml:18 
+msgid "FILE"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:36 
-msgid "-Duser.language"
+#: ../JmolGuide.docbook.xml:13 
+msgid "Jmol can be started with one argument, being a file name:"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:37 
-msgid "In addition to the above command line options there is also one important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>. With this option the GUI language can be set. At this moment these languages are supported: <literal>de</literal>, <literal>en</literal>, <literal>es</literal>, <literal>fr</literal>, <literal>nl</literal>, and <literal>pl</literal>."
+#: ../JmolGuide.docbook.xml:22 
+msgid "-h,--help"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:24 ../JmolGuide.docbook.xml:42 ../JmolGuide.docbook.xml:63 ../JmolGuide.docbook.xml:83 ../JmolGuide.docbook.xml:129 ../JmolGuide.docbook.xml:149 ../JmolGuide.docbook.xml:171 ../JmolGuide.docbook.xml:8 ../JmolGuide.docbook.xml:32 ../JmolGuide.docbook.xml:38 ../JmolGuide.docbook.xml:47 ../JmolGuide.docbook.xml:53 ../JmolGuide.docbook.xml:58 ../JmolGuide.docbook.xml:84 ../JmolGuide.docbook.xml:96 ../JmolGuide.docbook.xml:101 ../JmolGuide.docbook.xml:107 ../JmolGuide.docbook.xml:112 ../JmolGuide.docbook.xml:117 ../JmolGuide.docbook.xml:126 ../JmolGuide.docbook.xml:131 ../JmolGuide.docbook.xml:136 ../JmolGuide.docbook.xml:144 ../JmolGuide.docbook.xml:149 ../JmolGuide.docbook.xml:154 ../JmolGuide.docbook.xml:160 ../JmolGuide.docbook.xml:166 ../JmolGuide.docbook.xml:172 ../JmolGuide.docbook.xml:183 ../JmolGuide.docbook.xml:188 ../JmolGuide.docbook.xml:205 ../JmolGuide.docbook.xml:210 ../JmolGuide.docbook.xml:217 ../JmolGuide.docbook.xml:223 ../JmolGuide.docbook.xml:228 ../JmolGuide.docbook.xml:233 ../JmolGuide.docbook.xml:238 ../JmolGuide.docbook.xml:256 ../JmolGuide.docbook.xml:262 ../JmolGuide.docbook.xml:282 ../JmolGuide.docbook.xml:302 ../JmolGuide.docbook.xml:324 ../JmolGuide.docbook.xml:349 ../JmolGuide.docbook.xml:371 ../JmolGuide.docbook.xml:381 ../JmolGuide.docbook.xml:388 ../JmolGuide.docbook.xml:395 ../JmolGuide.docbook.xml:401 ../JmolGuide.docbook.xml:406 ../JmolGuide.docbook.xml:415 ../JmolGuide.docbook.xml:423 ../JmolGuide.docbook.xml:434 
+msgid "Syntax"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:26 
+msgid "<option>-h</option>, <option>--help</option>"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:31 
+msgid "This option will give you a short usage overview."
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:40 
+msgid "-s,--script"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:44 
+msgid "<option>-s</option>, <option>--script</option><replaceable>RASMOL.script</replaceable>"
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:50 
+msgid "This option makes it possible to start jmol with a Rasmol script. The syntax of these scripts is explained in <link linkend=\"rasmol\" endterm=\"rasmol.title\"/>."
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:61 
+msgid "-g,--geometry"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:65 
+msgid "<option>-g</option>, <option>--geometry</option><replaceable>WIDTHxHEIGHT</replaceable>"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:71 
+msgid "This option allows setting of the window size. By default the size is 500x500."
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:81 
+msgid "-Duser.language"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:85 
+msgid "<option>-Duser.language=<replaceable>de|en|es|fr|nl|pl</replaceable></option>"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:89 
+msgid "Set the GUI language with this option. If Jmol can't determine the user language and you don't use the above option, Jmol will use English by default."
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:95 
+msgid "At this moment these languages are supported:"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:97 
+msgid "English (<emphasis>en</emphasis>)"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:100 
+msgid "German (<emphasis>de</emphasis>)"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:103 
+msgid "Spanish (<emphasis>es</emphasis>)"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:106 
+msgid "French (<emphasis>fr</emphasis>)"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:109 
+msgid "Dutch (<emphasis>nl</emphasis>)"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:112 
+msgid "Polish (<emphasis>pl</emphasis>)"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:115 
 msgid "Alternatively, you can also use the <envar>LANG</envar> environment variable for setting the prefered language. This is common in many UNIX systems, like Linux. However, it is known not to work on Solaris and the above command line option must be used."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:58 
+#: ../JmolGuide.docbook.xml:127 
 msgid "-Ddisplay.speed"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:59 
-msgid "The <cmdsynopsis><arg>-Ddisplay.speed=fps</arg></cmdsynopsis> option can be used to reporting the display speed in <emphasis>frames per second</emphasis> instead of milliseconds per frame."
+#: ../JmolGuide.docbook.xml:131 
+msgid "<option>-Ddisplay.speed=<replaceable>fps|ms</replaceable></option>"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:68 
+#: ../JmolGuide.docbook.xml:135 
+msgid "This option can be used to report the display speed in <emphasis>frames per second</emphasis> or <emphasis>milliseconds per frame</emphasis>. The default is milliseconds per frame."
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:147 
+msgid "-Dplugin.dir"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:151 
+msgid "<option>-Dplugin.dir=<replaceable>/path/to/plugins</replaceable></option>"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:155 
+msgid "This options sets a path, where to find plugins for Jmol. Please note, that this option has no effect on the user (directory) plugin path <filename>~/.jmol/plugins</filename>. Jmol will still search for plugins in this directory, which also means, that this directory does not need to be defined as plugin directory."
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:169 
 msgid "-Xmx"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:69 
-msgid "With this option you can change the maximum heap size the Java virtual machine can address on Java 1.4 systems. By default this is 64 MB. For large files this might not be enough. Using <cmdsynopsis><arg>-Xmx512m</arg></cmdsynopsis> the heap size is enlarge to half a gigabyte. On older Java systems the syntax of this option is different (see <command>java --help</command>)."
+#: ../JmolGuide.docbook.xml:173 
+msgid "<option>-Xmx<replaceable>SIZE</replaceable></option>"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:177 
+msgid "With this option you can change the maximum heap size the Java virtual machine can address on Java 1.4 systems. By default this is 64 MB. For large files this might not be enough. Use this option to encrease the heap size, e.g. <option>-Xmx512m</option>, which would encrase the heap size to 512 MB. On older Java systems the syntax of this option is different (see <command>java --help</command>)."
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:2 
 msgid "Menu description"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:4 
+#: ../JmolGuide.docbook.xml:5 
 msgid "The File menu"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:6 
+#: ../JmolGuide.docbook.xml:8 
 msgid "Open"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:12 
-msgid "<ulink url=\"http://www.abinit.org/\">ABINIT</ulink>"
-msgstr ""
-
-#: ../JmolGuide.docbook.xml:14 
-msgid "ACES II"
+#: ../JmolGuide.docbook.xml:9 
+msgid "Open files in Jmol. Jmol can read a large number of file types, including:"
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:15 
-msgid "ADF - Amsterdam Density Functional"
+msgid "<ulink url=\"http://www.abinit.org/\">ABINIT</ulink>"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:17 
-msgid "<ulink url=\"http://www.xml-cml.org/\">CML v2.0</ulink>"
-msgstr ""
-
-#: ../JmolGuide.docbook.xml:19 
-msgid "GAMESS"
-msgstr ""
-
-#: ../JmolGuide.docbook.xml:20 
-msgid "Gaussian 92/94/98"
+#: ../JmolGuide.docbook.xml:18 
+msgid "ACES II"
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:21 
+msgid "ADF - Amsterdam Density Functional"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:24 
+msgid "<ulink url=\"http://www.xml-cml.org/\">CML v2.0</ulink>"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:29 
+msgid "GAMESS"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:32 
+msgid "Gaussian 92/94/98"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:35 
 msgid "Ghemical MM"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:22 
+#: ../JmolGuide.docbook.xml:38 
 msgid "Jaguar"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:23 
+#: ../JmolGuide.docbook.xml:41 
 msgid "MDL molfile"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:25 
+#: ../JmolGuide.docbook.xml:44 
 msgid "<ulink url=\"http://www.pdb.org\">PDB</ulink>"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:27 
+#: ../JmolGuide.docbook.xml:47 
 msgid "CIF/mmCIF"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:28 
+#: ../JmolGuide.docbook.xml:50 
 msgid "XYZ (single and multiple frame)"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:7 
-msgid "Open files in Jmol. Jmol can read a large number of file types, including: <placeholder-1/>"
-msgstr ""
-
-#: ../JmolGuide.docbook.xml:33 
+#: ../JmolGuide.docbook.xml:56 
 msgid "Recent Files..."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:34 
+#: ../JmolGuide.docbook.xml:57 
 msgid "Brings up a dialog with a list of the files the program has been asked to open recently. The file can be opened again by selecting it and clicking the Open button."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:43 
+#: ../JmolGuide.docbook.xml:67 
 msgid "Script..."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:44 
+#: ../JmolGuide.docbook.xml:68 
 msgid "Opens a window where Jmol/RasMol/Chime scripting commands can be executed. <xref linkend=\"rasmol\"/> contains information about RasMol/Chime Scripts."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:53 
+#: ../JmolGuide.docbook.xml:76 
 msgid "Export"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:55 
+#: ../JmolGuide.docbook.xml:79 
 msgid "Export -&gt; Export Image..."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:59 
+#: ../JmolGuide.docbook.xml:80 
+msgid "Jmol can export 24 bit color images of the following types:"
+msgstr ""
+
+#: ../JmolGuide.docbook.xml:85 
 msgid "JPG"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:60 
+#: ../JmolGuide.docbook.xml:88 
 msgid "PNG"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:61 
+#: ../JmolGuide.docbook.xml:91 
 msgid "PPM"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:56 
-msgid "Jmol can export 24 bit color images of the following types: <placeholder-1/>"
-msgstr ""
-
-#: ../JmolGuide.docbook.xml:67 
+#: ../JmolGuide.docbook.xml:97 
 msgid "Export -&gt; Render in pov-ray..."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:68 
-msgid "For high quality images, Jmol interfaces with the POV-Ray ray tracer. To use this feature, you must have the <command>povray</command> command line utility installed. You can download it from <ulink url=\"http://www.povray.org/\">www.povray.org</ulink>."
+#: ../JmolGuide.docbook.xml:98 
+msgid "For high quality images, Jmol interfaces with the POV-Ray ray tracer. To use this feature, you must have the <command>povray</command> command line utility installed. You can download it from <ulink url=\"http://www.povray.org/\"/>."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:77 
+#: ../JmolGuide.docbook.xml:108 
 msgid "Print"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:78 
+#: ../JmolGuide.docbook.xml:109 
 msgid "Postscript files can be exported directly to printer and to file."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:83 
+#: ../JmolGuide.docbook.xml:115 
 msgid "Exit"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:84 
+#: ../JmolGuide.docbook.xml:116 
 msgid "Quits this Jmol session."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:88 
+#: ../JmolGuide.docbook.xml:123 
 msgid "The Edit menu"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:90 
+#: ../JmolGuide.docbook.xml:125 
 msgid "Select All"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:91 
+#: ../JmolGuide.docbook.xml:126 
 msgid "Selects all atoms in the view screen."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:96 
+#: ../JmolGuide.docbook.xml:132 
 msgid "Deselect All"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:97 
+#: ../JmolGuide.docbook.xml:133 
 msgid "Deselects all atoms in the view screen."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:103 
+#: ../JmolGuide.docbook.xml:139 
 msgid "Preferences..."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:104 
+#: ../JmolGuide.docbook.xml:140 
 msgid "This menu opens a dialog to change settings and make user customized preferences. These settings are saved from one session to the next"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:111 
+#: ../JmolGuide.docbook.xml:148 
 msgid "The Display menu"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:112 
+#: ../JmolGuide.docbook.xml:149 
 msgid "In this menu display settings/styles can be changed."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:115 
+#: ../JmolGuide.docbook.xml:152 
 msgid "In general, display styles are applied to the currently selected set of atoms and bonds."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:119 
+#: ../JmolGuide.docbook.xml:156 
 msgid "By default, all atoms and bonds in a molecule are selected."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:122 
+#: ../JmolGuide.docbook.xml:159 
 msgid "You may select individual atoms/bonds by using the selection cursor or by using script commands."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:128 
+#: ../JmolGuide.docbook.xml:166 
 msgid "The View menu"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:130 
+#: ../JmolGuide.docbook.xml:169 
 msgid "Front/Top/Bottom/Right/Left"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:131 
+#: ../JmolGuide.docbook.xml:170 
 msgid "Self explanatory. Useful with crystal structures."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:137 
+#: ../JmolGuide.docbook.xml:177 
 msgid "The Help menu"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:139 
+#: ../JmolGuide.docbook.xml:180 
 msgid "About Jmol"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:140 
+#: ../JmolGuide.docbook.xml:181 
 msgid "Popups a window with copyright notice for this software."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:143 
+#: ../JmolGuide.docbook.xml:187 
 msgid "User Guide"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:144 
+#: ../JmolGuide.docbook.xml:188 
 msgid "Shows this documentation."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:147 
+#: ../JmolGuide.docbook.xml:194 
 msgid "What's New"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:148 
+#: ../JmolGuide.docbook.xml:195 
 msgid "Shows the changes from version to version."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:151 
+#: ../JmolGuide.docbook.xml:201 
 msgid "Jmol Console"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:152 
+#: ../JmolGuide.docbook.xml:202 
 msgid "Shows the output to the System.out and System.err output streams."
 msgstr ""
 
@@ -304,40 +400,36 @@ msgstr ""
 msgid "RasMol/Chime Scripts"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:5 
+#: ../JmolGuide.docbook.xml:4 
 msgid "New Scripting Engine"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:6 
-msgid "The scripting engine has been completely rewritten for Jmol Release 6. As of this writing it should be considered *alpha test* code. Please supply feedback in case of bugs and/or unexpected behavior and/or with feature requests. You can do this through the jmol home page <ulink url=\"http://jmol.sourceforge.net\">jmol.sourceforge.net</ulink>"
+#: ../JmolGuide.docbook.xml:5 
+msgid "The scripting engine has been completely rewritten for Jmol Release 6. As of this writing it should be considered *alpha test* code. Please supply feedback in case of bugs and/or unexpected behavior and/or with feature requests. You can do this through the jmol home page <ulink url=\"http://jmol.sourceforge.net\"/>"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:3 
-msgid "<note><placeholder-1/><placeholder-2/></note>"
+#: ../JmolGuide.docbook.xml:13 
+msgid "Jmol supports the RasMol scripting language defined by RasMol. Information about RasMol can be found at <ulink url=\"http://www.openrasmol.org/\"/>. The current URL for full RasMol documentation is: <ulink url=\"http://www.openrasmol.org/doc/rasmol.htm\"/>."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:15 
-msgid "Jmol supports the RasMol scripting language defined by RasMol. Information about RasMol can be found at <ulink url=\"http://www.openrasmol.org/\">www.openrasmol.org</ulink> The current URL for full RasMol documentation is: <ulink url=\"http://www.openrasmol.org/doc/rasmol.htm\"> www.openrasmol.org/doc/rasmol.htm</ulink>."
+#: ../JmolGuide.docbook.xml:20 
+msgid "The Chime web browser plug-in was based upon the RasMol source code. Various extensions were added, including additional scripting commands. Information about Chime can be found at <ulink url=\"http://www.mdlchime.com/\"/> The current URL for extended chime scripting commands is: <ulink url=\"http://www.mdlchime.com/chime/chimerasmol.html\"/>."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:23 
-msgid "The Chime web browser plug-in was based upon the RasMol source code. Various extensions were added, including additional scripting commands. Information about Chime can be found at <ulink url=\"http://www.mdlchime.com/\">www.mdlchime.com</ulink> The current URL for extended chime scripting commands is: <ulink url=\"http://www.mdlchime.com/chime/chimerasmol.html\"> www.mdlchime.com/chime/chimerasmol.html</ulink>."
-msgstr ""
-
-#: ../JmolGuide.docbook.xml:32 
+#: ../JmolGuide.docbook.xml:28 
 msgid "Jmol currently supports many of the RasMol/Chime scripting commands. Our goal is to eventually provide full script support. This will provide a migration path for those who wish to move to an open source solution that supports a larger number of file formats on a wider variety of hardware platforms."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:39 
+#: ../JmolGuide.docbook.xml:35 
 msgid "Please give us feedback on what features you use and that are currently no implemented. This will help us prioritize future development."
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:44 
+#: ../JmolGuide.docbook.xml:41 
 msgid "RasMol/Chime commands"
 msgstr ""
 
-#: ../JmolGuide.docbook.xml:45 
-msgid "This documentation is autogenerated form the content on this website: <ulink url=\"http://www.stolaf.edu/people/hansonr/jmol/docs/\">www.stolaf.edu/people/hansonr/jmol/docs/</ulink>."
+#: ../JmolGuide.docbook.xml:42 
+msgid "This documentation is autogenerated from the content on this website: <ulink url=\"http://www.stolaf.edu/people/hansonr/jmol/docs/\"/>."
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:6 
@@ -346,10 +438,6 @@ msgstr ""
 
 #: ../JmolGuide.docbook.xml:7 
 msgid "Sets selected animation parameters or turns animation on or off. Note that there are four distinct animation types that can be employed using Jmol: (1) files may contain multiple stuctures that are \"played\" sequencially, (2) Gaussian output files may contain vibrational modes that can be animated, (3) scripts may be run through with delays and loops, and (4) the model may spin or move in a predefined way. The \"animation\" command only refers to method (1)."
-msgstr ""
-
-#: ../JmolGuide.docbook.xml:8 ../JmolGuide.docbook.xml:32 ../JmolGuide.docbook.xml:38 ../JmolGuide.docbook.xml:47 ../JmolGuide.docbook.xml:53 ../JmolGuide.docbook.xml:58 ../JmolGuide.docbook.xml:84 ../JmolGuide.docbook.xml:96 ../JmolGuide.docbook.xml:101 ../JmolGuide.docbook.xml:107 ../JmolGuide.docbook.xml:112 ../JmolGuide.docbook.xml:117 ../JmolGuide.docbook.xml:126 ../JmolGuide.docbook.xml:131 ../JmolGuide.docbook.xml:136 ../JmolGuide.docbook.xml:144 ../JmolGuide.docbook.xml:149 ../JmolGuide.docbook.xml:154 ../JmolGuide.docbook.xml:160 ../JmolGuide.docbook.xml:166 ../JmolGuide.docbook.xml:172 ../JmolGuide.docbook.xml:183 ../JmolGuide.docbook.xml:188 ../JmolGuide.docbook.xml:205 ../JmolGuide.docbook.xml:210 ../JmolGuide.docbook.xml:217 ../JmolGuide.docbook.xml:223 ../JmolGuide.docbook.xml:228 ../JmolGuide.docbook.xml:233 ../JmolGuide.docbook.xml:238 ../JmolGuide.docbook.xml:256 ../JmolGuide.docbook.xml:262 ../JmolGuide.docbook.xml:282 ../JmolGuide.docbook.xml:302 ../JmolGuide.docbook.xml:324 ../JmolGuide.docbook.xml:349 ../JmolGuide.docbook.xml:371 ../JmolGuide.docbook.xml:381 ../JmolGuide.docbook.xml:388 ../JmolGuide.docbook.xml:395 ../JmolGuide.docbook.xml:401 ../JmolGuide.docbook.xml:406 ../JmolGuide.docbook.xml:415 ../JmolGuide.docbook.xml:423 ../JmolGuide.docbook.xml:434 
-msgid "Syntax"
 msgstr ""
 
 #: ../JmolGuide.docbook.xml:8 

@@ -68,7 +68,7 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
   public boolean suppliesAtomTypeName() { return true; }
   public boolean suppliesVanderwaalsRadius() { return true; }
   public boolean suppliesCovalentRadius() { return true; }
-  public boolean suppliesAtomColor() { return true; }
+  public boolean suppliesAtomArgb() { return true; }
   
   /****************************************************************
    * the file related methods
@@ -338,11 +338,16 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getPdbRecord();
   }
 
-  public Color getAtomColor(Object clientAtom, int colorScheme) {
+  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
+    return null;
+  }
+
+  public int getAtomArgb(Object clientAtom, int colorScheme) {
     if (colorScheme >= colorSchemes.length ||
         colorSchemes[colorScheme] == null)
       colorScheme = 0;
-    return colorSchemes[colorScheme].getAtomColor((Atom)clientAtom);
+    Color color = colorSchemes[colorScheme].getAtomColor((Atom)clientAtom);
+    return color == null ? 0 : color.getRGB();
   }
 
   class DefaultCdkAtomColors implements AtomColorer {

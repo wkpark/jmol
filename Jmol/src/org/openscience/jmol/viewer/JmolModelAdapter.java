@@ -26,8 +26,6 @@
 package org.openscience.jmol.viewer;
 
 import java.io.BufferedReader;
-import java.awt.Color;
-import java.util.Iterator;
 
 /****************************************************************
  * The JmolModelAdapter interface defines the API used by the JmolViewer to
@@ -105,13 +103,13 @@ public interface JmolModelAdapter {
   public boolean suppliesCovalentRadius();
 
   /**
-   * Whether or not this client implements getAtomColor(clientAtom, colorScheme)
+   * Whether or not this client implements getAtomArgb(clientAtom, colorScheme)
    * If not, then the atomic number is used to look up colors in a
    * default table.
    * The default atom colors table is included in this file for reference.
-   * @see #getAtomColor(Object clientAtom, int colorScheme)
+   * @see #getAtomArgb(Object clientAtom, int colorScheme)
    */
-  public boolean suppliesAtomColor();
+  public boolean suppliesAtomArgb();
 
 
   /*****************************************************************
@@ -269,9 +267,26 @@ public interface JmolModelAdapter {
    */
   public final static int COLORSCHEME_CHARGE = 1;
   /**
+   * coloring based upon pdb structure (none, helix, sheet, turn)
+   */
+  public final static int COLORSCHEME_PDB_STRUCTURE = 2;
+  /**
+   * coloring based upon pdb amino type
+   */
+  public final static int COLORSCHEME_PDB_AMINO = 3;
+  /**
+   * coloring based upon shapely colors
+   */
+  public final static int COLORSCHEME_PDB_SHAPELY = 4;
+  /**
+   * each chain gets a different color
+   */
+  public final static int COLORSCHEME_PDB_CHAIN = 5;
+
+  /**
    * The number of color schemes, zero based
    */
-  public final static int COLORSCHEME_MAX = 2;
+  public final static int COLORSCHEME_MAX = 6;
 
   /**
    * Returns the atomicNumber of the clientAtom previously returned by
@@ -353,19 +368,27 @@ public interface JmolModelAdapter {
    */
   public String getPdbAtomRecord(Object clientAtom);
   /**
-   * If suppliesAtomColors() returns false or if
-   * getAtomColor(clientAtom, colorScheme) returns null then the atom color
+   * If suppliesAtomArgb() returns false or if
+   * getAtomArgb(clientAtom, colorScheme) returns 0 then the atom color
    * is looked up in internal tables maintained by JmolViewer
-   * @see #suppliesAtomColor()
+   * @see #suppliesAtomArgb()
    * @see #atomColors
    */
-  public Color getAtomColor(Object clientAtom, int colorScheme);
+  public int getAtomArgb(Object clientAtom, int colorScheme);
 
   /**
    * This method gets called when the user deletes an atom.
    * In some cases, the client may want to update its own data structures.
    */
   public void notifyAtomDeleted(Object clientAtom);
+
+  /**
+   * If hasPdbRecords(clientFile, frameNumber) returns true then structural
+   * PDB records are returned here as an array of strings. 
+   * The individual strings are exact HELIX, SHEET, and TURN recordsfrom the .pdb file.
+   * @see #hasPdbRecords(Object clientFile, int frameNumber)
+   */
+  public String[] getPdbStructureRecords(Object clientFile, int frameNumber);
 
   /*
    ****************************************************************
@@ -743,125 +766,215 @@ public interface JmolModelAdapter {
     1.6f,    // 109  Mt
   };
 
-  public final static Color color190_190_190 = new Color(190, 190, 190);
-  public final static Color color165_42_42 = new Color(165, 42, 42);
-  public final static Color color255_165_0 = new Color(255, 165, 0);
-
   /**
    * Default table of CPK atom colors.
    * Used when the client does not implement getAtomColor(clientAtom, colorScheme)
    * I didn't know what color to define for many of the atoms, so I made them pink.
    */
-  public Color[] atomColors = {
-    Color.pink,             // new Color(255,20,147),  // Xx	0
-    new Color(250,235,215), // H	1
-    new Color(255,192,203), // He	2
-    new Color(178,34,34),   // Li	3
-    new Color(34,139,34),   // Be	4
-    Color.green,            // B	5
-    new Color(180,180,180), //    new Color(112,128,144), // C	6
-    new Color(0,191,255),   // N	7
-    Color.red,              // O	8
-    new Color(218,165,32),  // F	9
-    new Color(255,105,180), // Ne	10
-    Color.blue,             // Na	11
-    new Color(34,139,34),   // Mg	12
-    color190_190_190,       // Al	13
-    new Color(218,165,32),  // Si	14
-    color255_165_0,         // P	15
-    Color.yellow,           // S	16
-    Color.green,            // Cl	17
-    new Color(255,192,203), // Ar	18
-    new Color(255,20,147),  // K	19
-    new Color(128,128,128), // Ca	20
-    color190_190_190,       // Sc	21
-    color190_190_190,       // Ti	22
-    color190_190_190,       // V	23
-    color190_190_190,       // Cr	24
-    color190_190_190,       // Mn	25
-    color255_165_0,         // Fe	26
-    color165_42_42,         // Co	27
-    color165_42_42,         // Ni	28
-    color165_42_42,         // Cu	29
-    color165_42_42,         // Zn	30
-    color165_42_42,         // Ga	31
-    new Color(85,107,47),   // Ge	32
-    new Color(253,245,230), // As	33
-    new Color(152,251,152), // Se	34
-    color165_42_42,         // Br	35
-    new Color(50,205,50),   // Kr	36
-    color165_42_42,         // Rb	37
-    color190_190_190,       // Sr	38
-    color190_190_190,       // Y	39
-    color190_190_190,       // Zr	40
-    color190_190_190,       // Nb	41
-    new Color(255,127,80),  // Mo	42
-    color190_190_190,       // Tc	43
-    color190_190_190,       // Ru	44
-    color190_190_190,       // Rh	45
-    color190_190_190,       // Pd	46
-    color190_190_190,       // Ag	47
-    new Color(255,140,0),   // Cd	48
-    color190_190_190,       // In	49
-    color190_190_190,       // Sn	50
-    color190_190_190,       // Sb	51
-    color190_190_190,       // Te	52
-    new Color(160,32,240),  // I	53
-    new Color(255,105,180), // Xe	54
-    color165_42_42,         // Cs	55
-    color190_190_190,       // Ba	56
-    color190_190_190,       // La	57
-    Color.pink,             //  58  Ce
-    Color.pink,             //  59  Pr
-    Color.pink,             //  60  Nd
-    Color.pink,             //  61  Pm
-    Color.pink,             //  62  Sm
-    Color.pink,             //  63  Eu
-    Color.pink,             //  64  Gd
-    Color.pink,             //  65  Tb
-    Color.pink,             //  66  Dy
-    Color.pink,             //  67  Ho
-    Color.pink,             //  68  Er
-    Color.pink,             //  69  Tm
-    Color.pink,             //  70  Yb
-    color190_190_190,       // Lu	71
-    color190_190_190,       // Hf	72
-    color190_190_190,       // Ta	73
-    new Color(64,224,208),  // W	74
-    color190_190_190,       // Re	75
-    color190_190_190,       // Os	76
-    color190_190_190,       // Ir	77
-    color190_190_190,       // Pt	78
-    new Color(255,215,0),   // Au	79
-    color190_190_190,       // Hg	80
-    color190_190_190,       // Tl	81
-    color190_190_190,       // Pb	82
-    new Color(255,181,197), // Bi	83
-    Color.pink,             //  84  Po
-    Color.pink,             //  85  At
-    Color.pink,             //  86  Rn
-    Color.pink,             //  87  Fr
-    Color.pink,             //  88  Ra
-    Color.pink,             //  89  Ac
-    Color.pink,             //  90  Th
-    Color.pink,             //  91  Pa
-    Color.pink,             //  92  U
-    Color.pink,             //  93  Np
-    Color.pink,             //  94  Pu
-    Color.pink,             //  95  Am
-    Color.pink,             //  96  Cm
-    Color.pink,             //  97  Bk
-    Color.pink,             //  98  Cf
-    Color.pink,             //  99  Es
-    Color.pink,             // 100  Fm
-    Color.pink,             // 101  Md
-    Color.pink,             // 102  No
-    Color.pink,             // 103  Lr
-    Color.pink,             // 104  Rf
-    Color.pink,             // 105  Db
-    Color.pink,             // 106  Sg
-    Color.pink,             // 107  Bh
-    Color.pink,             // 108  Hs
-    Color.pink,             // 109  Mt
+  public final static int[] argbsCpk = {
+    0xFFFF6575, // pink       Xx   0
+    0xFFFAEBD7, // offwhite    H   1
+    0xFFFFC0CB, //            He   2
+    0xFFB22222, //            Li   3
+    0xFF228B22, //            Be   4
+    0xFF00FF00, // green       B   5
+    0xFFC0C0C0, // grey        C   6
+    0xFF00C0FF, //             N   7
+    0xFFFF0000, // red         O   8
+    0xFFDAA520, //             F   9
+    0xFFFF69B4, //            Ne  10
+    0xFF0000FF, // blue       Na  11
+    0xFF228B22, //            Mg  12
+    0xFFBEBEBE, // grey       Al  13
+    0xFFDAA520, //            Si  14
+    0xFFFFA500, //             P  15
+    0xFFFFFF00, // yellow      S  16
+    0xFF00FF00, // green      Cl  17
+    0xFFFFC0CB, //            Ar  18
+    0xFFFF1493, //             K  19
+    0xFF808080, // mid grey   Ca  20
+    0xFFBEBEBE, // grey       Sc  21
+    0xFFBEBEBE, // grey       Ti  22
+    0xFFBEBEBE, // grey        V  23
+    0xFFBEBEBE, // grey       Cr  24
+    0xFFBEBEBE, // grey       Mn  25
+    0xFFFFA500, //            Fe  26
+    0xFFA52A2A, //            Co  27
+    0xFFA52A2A, //            Ni  28
+    0xFFA52A2A, //            Cu  29
+    0xFFA52A2A, //            Zn  30
+    0xFFA52A2A, //            Ga  31
+    0xFF556B2F, //            Ge  32
+    0xFFFDF5E6, //            As  33
+    0xFF98FB98, //            Se  34
+    0xFFA52A2A, //            Br  35
+    0xFF32CD32, //            Kr  36
+    0xFFA52A2A, //            Rb  37
+    0xFFBEBEBE, //            Sr  38
+    0xFFBEBEBE, //            Y	  9
+    0xFFBEBEBE, //            Zr  40
+    0xFFBEBEBE, //            Nb  41
+    0xFFFF7F50, //            Mo  42
+    0xFFBEBEBE, //            Tc  43
+    0xFFBEBEBE, //            Ru  44
+    0xFFBEBEBE, //            Rh  45
+    0xFFBEBEBE, //            Pd  46
+    0xFFBEBEBE, //            Ag  47
+    0xFFFF8C00, //            Cd  48
+    0xFFBEBEBE, //            In  49
+    0xFFBEBEBE, //            Sn  50
+    0xFFBEBEBE, //            Sb  51
+    0xFFBEBEBE, //            Te  52
+    0xFFA020F0, //             I  53
+    0xFFFF69B4, //            Xe  54
+    0xFFA52A2A, //            Cs  55
+    0xFFBEBEBE, //            Ba  56
+    0xFFBEBEBE, //            La  57
+    0xFFFF6575, //            Ce  58
+    0xFFFF6575, //            Pr  59
+    0xFFFF6575, //            Nd  60
+    0xFFFF6575, //            Pm  61
+    0xFFFF6575, //            Sm  62
+    0xFFFF6575, //            Eu  63
+    0xFFFF6575, //            Gd  64
+    0xFFFF6575, //            Tb  65
+    0xFFFF6575, //            Dy  66
+    0xFFFF6575, //            Ho  67
+    0xFFFF6575, //            Er  68
+    0xFFFF6575, //            Tm  69
+    0xFFFF6575, //            Yb  70
+    0xFFBEBEBE, //            Lu  71
+    0xFFBEBEBE, //            Hf  72
+    0xFFBEBEBE, //            Ta  73
+    0xFF40E0D0, //             W  74
+    0xFFBEBEBE, //            Re  75
+    0xFFBEBEBE, //            Os  76
+    0xFFBEBEBE, //            Ir  77
+    0xFFBEBEBE, //            Pt  78
+    0xFFFFD700, //            Au  79
+    0xFFBEBEBE, //            Hg  80
+    0xFFBEBEBE, //            Tl  81
+    0xFFBEBEBE, //            Pb  82
+    0xFFFFB5C5, //            Bi  83
+    0xFFFF6575, //            Po  84
+    0xFFFF6575, //            At  85
+    0xFFFF6575, //            Rn  86
+    0xFFFF6575, //            Fr  87
+    0xFFFF6575, //            Ra  88
+    0xFFFF6575, //            Ac  89
+    0xFFFF6575, //            Th  90
+    0xFFFF6575, //            Pa  91
+    0xFFFF6575, //             U  92
+    0xFFFF6575, //            Np  93
+    0xFFFF6575, //            Pu  94
+    0xFFFF6575, //            Am  95
+    0xFFFF6575, //            Cm  96
+    0xFFFF6575, //            Bk  97
+    0xFFFF6575, //            Cf  98
+    0xFFFF6575, //            Es  99
+    0xFFFF6575, //            Fm 100
+    0xFFFF6575, //            Md 101
+    0xFFFF6575, //            No 102
+    0xFFFF6575, //            Lr 103
+    0xFFFF6575, //            Rf 104
+    0xFFFF6575, //            Db 105
+    0xFFFF6575, //            Sg 106
+    0xFFFF6575, //            Bh 107
+    0xFFFF6575, //            Hs 108
+    0xFFFF6575, //            Mt 109
+  };
+
+  /**
+   * Default table of PdbStructure colors
+   * Used when the client does not implement
+   *    getAtomColor(clientAtom, colorScheme)
+   * I didn't know what color to define for many of the atoms,
+   * so I made them pink.
+   */
+  public final static int[] argbsPdbStructure = {
+    0xFFFFFFFF, // white      STRUCTURE_NONE
+    0xFFF00080, // magenta    STRUCTURE_HELIX
+    0xFFFFFF00, // yellow     STRUCTURE_SHEET
+    0xFF6080FF, // light blue STRUCTURE_TURN
+  };
+
+  public final static int[] argbsPdbAmino = {
+    0xFFC8C8C8, // darkGrey   "ALA", /* 8.4% */
+    0xFFEBEBEB, // lightGrey  "GLY", /* 8.3% */
+    0xFF0F820F, // green      "LEU", /* 8.0% */
+    0xFFFA9600, // orange     "SER", /* 7.5% */
+    0xFF0F820F, // green      "VAL", /* 7.1% */
+    0xFFFA9600, // orange     "THR", /* 6.4% */
+    0xFF145AFF, // blue       "LYS", /* 5.8% */
+    0xFFE60A0A, // brightRed  "ASP", /* 5.5% */
+    0xFF0F820F, // green      "ILE", /* 5.2% */
+    0xFF00DCDC, // cyan       "ASN", /* 4.9% */
+    0xFFE60A0A, // brightRed  "GLU", /* 4.9% */
+    0xFFDC9682, // mauve      "PRO", /* 4.4% */
+    0xFF145AFF, // blue       "ARG", /* 3.8% */
+    0xFF3232AA, // midBlue    "PHE", /* 3.7% */
+    0xFF00DCDC, // cyan       "GLN", /* 3.5% */
+    0xFF3232AA, // midBlue    "TYR", /* 3.5% */
+    0xFF8282D2, // paleBlue   "HIS", /* 2.3% */
+    0xFFE6E600, // yellow     "CYS", /* 2.0% */
+    0xFFE6E600, // yellow     "MET", /* 1.8% */
+    0xFFB45AB4, // purple     "TRP", /* 1.4% */
+
+    0xFFBEA06E, // tan "ASX"
+    0xFFBEA06E, // tan "GLX"
+    0xFFBEA06E, // tan "PCA"
+    0xFFBEA06E, // tan "HYP",
+  };
+
+  public final static int argbPdbShapelyBackbone = 0xFFB8B8B8;
+  public final static int argbPdbShapelySpecial =  0xFF5E005E;
+  public final static int argbPdbShapelyDefault =  0xFFFF00FF;
+  public final static int[] argbsPdbShapely = {
+    0xFF8CFF8C, // "ALA", /* 8.4% */
+    0xFFFFFFFF, // "GLY", /* 8.3% */
+    0xFF455E45, // "LEU", /* 8.0% */
+    0xFFFF7042, // "SER", /* 7.5% */
+    0xFFFF8CFF, // "VAL", /* 7.1% */
+    0xFFB84C00, // "THR", /* 6.4% */
+    0xFF4747B8, // "LYS", /* 5.8% */
+    0xFFA00042, // "ASP", /* 5.5% */
+    0xFF004C00, // "ILE", /* 5.2% */
+    0xFFFF7C70, // "ASN", /* 4.9% */
+    0xFF660000, // "GLU", /* 4.9% */
+    0xFF525252, // "PRO", /* 4.4% */
+    0xFF00007C, // "ARG", /* 3.8% */
+    0xFF534C52, // "PHE", /* 3.7% */
+    0xFFFF4C4C, // "GLN", /* 3.5% */
+    0xFF8C704C, // "TYR", /* 3.5% */
+    0xFF7070FF, // "HIS", /* 2.3% */
+    0xFFFFFF70, // "CYS", /* 2.0% */
+    0xFFB8A042, // "MET", /* 1.8% */
+    0xFF4F4600, // "TRP", /* 1.4% */
+
+    0xFFFF00FF, // "ASX"
+    0xFFFF00FF, // "GLX"
+    0xFFFF00FF, // "PCA"
+    0xFFFF00FF, // "HYP",
+
+    0xFFA0A0FF, // A
+    0xFFFF8C4B, // C
+    0xFFFF7070, // G
+    0xFFA0FFA0, // T
+  };
+
+  public final static int[] argbsPdbChain = {
+    0xFFFF0000, // red
+    0xFF00FF00, // lime
+    0xFF0000FF, // blue
+    0xFFFFFF00, // yellow
+    0xFFFF00FF, // magenta or cyan?
+    0xFF00FFFF, // cyan or magenta?
+    0xFF800000, // maroon
+    0xFF008000, // green
+    0xFF000080, // navy
+    0xFF808000, // olive
+    0xFF800080, // purple
+    0xFF008080, // teal
+    0xFF808080, // silver or lightGrey
   };
 }

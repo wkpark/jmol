@@ -26,7 +26,6 @@
 package org.openscience.jmol.viewer.g3d;
 
 import java.awt.Color;
-import java.util.Hashtable;
 
 public class Colix {
 
@@ -59,7 +58,7 @@ public class Colix {
   public final static short FUCHSIA = 17;
   public final static short YELLOW = 18;
 
-  static Color[] acolorPredefined = {
+  static Color[] colorsPredefined = {
     Color.black, Color.orange, Color.pink, Color.blue,
     Color.white, Color.cyan, Color.red, new Color(0, 128, 0),
     Color.gray, Color.lightGray, Color.green, new Color(128, 0, 0),
@@ -68,68 +67,67 @@ public class Colix {
   };
 
   static short colixMax = 1;
-  public static Color[] acolor = new Color[128];
-  public static short[] acolixDarker = new short[128];
+  public static int[] argbs = new int[128];
+  public static Color[] colors = new Color[128];
   static int[][] ashades = new int[128][];
-  private static Hashtable htColix = new Hashtable();
 
   static {
-    for (int i = 0; i < acolorPredefined.length; ++i)
-      getColix(acolorPredefined[i]);
+    for (int i = 0; i < colorsPredefined.length; ++i)
+      getColix(colorsPredefined[i]);
   }
 
   public static short getColix(int argb) {
+    if (argb == 0)
+      return 0;
     argb |= 0xFF000000;
-    return getColix(new Color(argb));
+    for (int i = colixMax; --i >= 0; )
+      if (argb == argbs[i])
+        return (short)i;
+    if (colixMax == argbs.length) {
+      int oldSize = argbs.length;
+      int[] t0 = new int[oldSize * 2];
+      System.arraycopy(argbs, 0, t0, 0, oldSize);
+      argbs = t0;
+
+      Color[] t1 = new Color[oldSize * 2];
+      System.arraycopy(colors, 0, t1, 0, oldSize);
+      colors = t1;
+
+      int[][] t2 = new int[oldSize * 2][];
+      System.arraycopy(ashades, 0, t2, 0, oldSize);
+      ashades = t2;
+    }
+    argbs[colixMax] = argb;
+    return colixMax++;
   }
 
   public static short getColix(Color color) {
     if (color == null)
       return 0;
-    if ((color.getRGB() & 0xFF000000) != 0xFF000000)
-      color = new Color(color.getRGB() | 0xFF000000);
-    Short colixBoxed = (Short) htColix.get(color);
-    if (colixBoxed != null)
-      return colixBoxed.shortValue();
-    if (colixMax == acolor.length) {
-      int oldSize = acolor.length;
-      Color[] t1 = new Color[oldSize * 2];
-      System.arraycopy(acolor, 0, t1, 0, oldSize);
-      acolor = t1;
-
-      int[][] t2 = new int[oldSize * 2][];
-      System.arraycopy(ashades, 0, t2, 0, oldSize);
-      ashades = t2;
-
-      short[] t3 = new short[oldSize * 2];
-      System.arraycopy(acolixDarker, 0, t3, 0, oldSize);
-      acolixDarker = t3;
-    }
-    acolor[colixMax] = color;
-    htColix.put(color, new Short(colixMax));
-    return colixMax++;
+    int argb = color.getRGB();
+    short colix = getColix(argb);
+    if (colors[colix] == null && (argb & 0xFF000000) == 0xFF000000)
+      colors[colix] = color;
+    return colix;
   }
 
   public static Color getColor(short colix) {
-    return acolor[colix];
+    if (colix == 0)
+      return null;
+    Color color = colors[colix];
+    if (color == null)
+      color = colors[colix] = new Color(argbs[colix]);
+    return colors[colix];
   }
 
   public static int getArgb(short colix) {
-    return acolor[colix].getRGB();
+    return argbs[colix];
   }
 
   public static int[] getShades(short colix) {
     int[] shades = ashades[colix];
     if (shades == null)
-      shades = ashades[colix] = Shade3D.getShades(acolor[colix]);
+      shades = ashades[colix] = Shade3D.getShades(argbs[colix]);
     return shades;
-  }
-
-  public static short getColixDarker(short colix) {
-    short darker = acolixDarker[colix];
-    if (darker == 0)
-      darker = acolixDarker[colix] =
-        getColix(getShades(colix)[Shade3D.shadeDarker]);
-    return darker;
   }
 }

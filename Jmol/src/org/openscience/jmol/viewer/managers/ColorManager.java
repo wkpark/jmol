@@ -1,4 +1,3 @@
-
 /* $RCSfile$
  * $Author$
  * $Date$
@@ -26,8 +25,10 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolModelAdapter;
 import org.openscience.jmol.viewer.datamodel.AtomShape;
 import org.openscience.jmol.viewer.g3d.Colix;
+import org.openscience.jmol.viewer.script.Token;
 
 import java.awt.Color;
 import java.util.Hashtable;
@@ -35,17 +36,28 @@ import java.util.Hashtable;
 public class ColorManager {
 
   JmolViewer viewer;
+  JmolModelAdapter modelAdapter;
+  boolean suppliesAtomArgb;
+  public byte schemeDefault = JmolViewer.ATOMTYPE;
 
-  public ColorManager(JmolViewer viewer) {
+  public ColorManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
+    this.modelAdapter = modelAdapter;
+    suppliesAtomArgb = modelAdapter.suppliesAtomArgb();
+    if (JmolModelAdapter.argbsCpk.length != JmolModelAdapter.atomicNumberMax)
+      System.out.println("WARNING! argbsCpk.length not consistent");
+    if (JmolModelAdapter.argbsPdbAmino.length != Token.RESID_AMINO_MAX)
+      System.out.println("WARNING! argbsPdbAmino.length not consistent");
+    if (JmolModelAdapter.argbsPdbShapely.length != Token.RESID_DNA_MAX)
+      System.out.println("WARNING! argbsPdbShapely.length not consistent");
   }
 
-  public byte modeAtomColorProfile = JmolViewer.ATOMTYPE;
-  public void setModeAtomColorProfile(byte mode) {
+  public void setSchemeDefault(byte scheme) {
+    schemeDefault = scheme;
   }
 
-  public int getModeAtomColorProfile() {
-    return modeAtomColorProfile;
+  public byte getSchemeDefault() {
+    return schemeDefault;
   }
 
   public Color colorSelection = Color.orange;
@@ -205,6 +217,50 @@ public class ColorManager {
     }
     System.out.println("error converting string to color:" + strColor);
     return Color.pink;
+  }
+
+  public short getColixAtom(AtomShape atom) {
+    return getColixAtomScheme(atom, schemeDefault);
+  }
+
+  public short getColixAtomScheme(AtomShape atom, byte scheme) {
+    int argb = 0;
+    if (suppliesAtomArgb) {
+      argb = modelAdapter.getAtomArgb(atom.clientAtom, scheme);
+      if (argb != 0)
+        return Colix.getColix(argb);
+      System.out.println("JmolModelAdapter.getColorAtom returned null");
+    }
+    switch (scheme) {
+    case JmolModelAdapter.COLORSCHEME_CPK:
+      argb = JmolModelAdapter.argbsCpk[atom.atomicNumber];
+      break;
+    case JmolModelAdapter.COLORSCHEME_PDB_STRUCTURE:
+      if (atom.pdbatom != null)
+        argb = JmolModelAdapter.argbsPdbStructure[atom.pdbatom.structureType];
+      break;
+    case JmolModelAdapter.COLORSCHEME_PDB_AMINO:
+      if (atom.pdbatom != null) {
+        byte resid = atom.pdbatom.getResID();
+        if (resid >= 0 && resid < Token.RESID_AMINO_MAX)
+          argb = JmolModelAdapter.argbsPdbAmino[resid];
+      }
+      break;
+    case JmolModelAdapter.COLORSCHEME_PDB_SHAPELY:
+      if (atom.pdbatom != null) {
+        byte resid = atom.pdbatom.getResID();
+        if (resid >= 0 && resid < Token.RESID_DNA_MAX)
+          argb = JmolModelAdapter.argbsPdbShapely[resid];
+        else
+          argb = JmolModelAdapter.argbPdbShapelyDefault;
+      }
+      break;
+    case JmolModelAdapter.COLORSCHEME_CHARGE:
+      break;
+    }
+    if (argb == 0)
+      return Colix.PINK;
+    return Colix.getColix(argb);
   }
 
   public void flushCachedColors() {

@@ -26,7 +26,7 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.datamodel.AtomShape;
-import org.openscience.jmol.viewer.protein.ProteinProp;
+import org.openscience.jmol.viewer.protein.PdbAtom;
 
 import java.awt.Font;
 import java.util.BitSet;
@@ -101,7 +101,7 @@ public class LabelManager {
                              int atomIndex) {
     if (strFormat == null || strFormat.equals(""))
       return null;
-    ProteinProp pprop = atomShape.getProteinProp();
+    PdbAtom pdbatom = atomShape.getPdbAtom();
     String strLabel = "";
     String strExpansion = "";
     int ich = 0;
@@ -128,24 +128,24 @@ public class LabelManager {
         break;
       case 'b': // these two are the same
       case 't':
-        if (pprop != null)
-          strExpansion = "" + pprop.getTemperature();
+        if (pdbatom != null)
+          strExpansion = "" + pdbatom.getTemperature();
         break;
       case 'c': // these two are the same
       case 's':
-        if (pprop != null)
-          strExpansion = "" + pprop.getChain();
+        if (pdbatom != null)
+          strExpansion = "" + pdbatom.getChain();
         break;
       case 'm':
         strExpansion = "<X>";
         break;
       case 'n':
-        if (pprop != null)
-          strExpansion = "" + pprop.getResidue();
+        if (pdbatom != null)
+          strExpansion = "" + pdbatom.getResidue();
         break;
       case 'r':
-        if (pprop != null)
-          strExpansion = "" + pprop.getResno();
+        if (pdbatom != null)
+          strExpansion = "" + pdbatom.getResno();
         break;
       default:
         strExpansion = "" + ch;

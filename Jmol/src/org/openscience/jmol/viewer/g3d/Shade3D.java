@@ -25,9 +25,6 @@
 
 package org.openscience.jmol.viewer.g3d;
 
-import java.awt.Color;
-import java.util.Hashtable;
-
 public class Shade3D {
 
   public final static byte shadeAmbient = 0;
@@ -55,43 +52,9 @@ public class Shade3D {
   public final static float ambientRange = 1 - ambientFraction;
   public final static float intenseFraction = 0.95f;
 
-  Color color;
-  int[] shades = new int[shadeMax];
-
-  private Shade3D(Color color) {
-    this.color = color;
-    calcShades(color.getRGB());
-  }
-
-  private static Hashtable htCache = new Hashtable();
-
-  public static Shade3D getShade(Color color) {
-    Shade3D shade = (Shade3D) htCache.get(color);
-    if (shade == null) {
-      shade = new Shade3D(color);
-      htCache.put(color, shade);
-    }
-    return shade;
-  }
-
-  public Shade3D getShade(int rgb) {
-    return getShade(new Color(rgb));
-  }
-
-  public static int[] getShades(Color color) {
-    Shade3D sp = (Shade3D) htCache.get(color);
-    if (sp == null) {
-      sp = new Shade3D(color);
-      htCache.put(color, sp);
-    }
-    return sp.shades;
-  }
-
   public static int[] getShades(int rgb) {
-    return getShades(new Color(rgb));
-  }
+    int[] shades = new int[shadeMax];
 
-  private void calcShades(int rgb) {
     int red = (rgb >> 16) & 0xFF;
     int grn = (rgb >>  8) & 0xFF;
     int blu = rgb         & 0xFF;
@@ -114,6 +77,7 @@ public class Shade3D {
                                     grn + (int)(grnRange * i / nSteps + 0.5f),
                                     blu + (int)(bluRange * i / nSteps + 0.5f));
     }
+    return shades;
   }
 
   private final static int rgb(int red, int grn, int blu) {
@@ -126,14 +90,6 @@ public class Shade3D {
     int blu = rgb         & 0xFF;
 
     return "[" + red + "," + grn + "," + blu + "]";
-  }
-
-  public String toString() {
-    String str = "Shades for:" + StringFromRgb(shades[shadeNormal]) + "\n";
-    for (int shade = 0; shade < shadeMax; ++shade)
-      str += StringFromRgb(shades[shade]) + "\n";
-    str += "\n";
-    return str;
   }
 
   public static byte calcIntensity(float x, float y, float z) {

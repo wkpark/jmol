@@ -77,13 +77,12 @@ public class DistributionManager {
       iter.next().setColix(colixBond);
   }
 
-  public void setColixAtom(byte mode, short colix, AtomShapeIterator iter) {
+  public void setColixAtom(byte scheme, short colix, AtomShapeIterator iter) {
     boolean useColorProfile = colix == 0;
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
-      short colixT = useColorProfile 
-        ? viewer.getColixAtom(atomShape.getAtomicNumber(),
-                              atomShape.getClientAtom(), mode) : colix;
+      short colixT = (useColorProfile
+                      ? viewer.getColixAtomScheme(atomShape, scheme) : colix);
       atomShape.setColixAtom(colixT);
     }
   }

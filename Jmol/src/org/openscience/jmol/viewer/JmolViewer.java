@@ -89,7 +89,7 @@ final public class JmolViewer {
   public Eval eval;
   public Graphics3D g3d;
 
-  public JmolModelAdapter jmolModelAdapter;
+  public JmolModelAdapter modelAdapter;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -98,22 +98,22 @@ final public class JmolViewer {
   JmolStatusListener jmolStatusListener;
 
   public JmolViewer(Component awtComponent,
-                    JmolModelAdapter jmolModelAdapter) {
+                    JmolModelAdapter modelAdapter) {
 
     this.awtComponent = awtComponent;
-    this.jmolModelAdapter = jmolModelAdapter;
+    this.modelAdapter = modelAdapter;
 
     strJvmVersion = System.getProperty("java.version");
     jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJvmVersion.compareTo("1.4") >= 0);
 
-    colorManager = new ColorManager(this);
+    colorManager = new ColorManager(this, modelAdapter);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
     mouseManager = new MouseManager(awtComponent, this);
     fileManager = new FileManager(this);
     repaintManager = new RepaintManager(this);
-    modelManager = new ModelManager(this, jmolModelAdapter);
+    modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
     axesManager = new AxesManager(this);
@@ -132,19 +132,22 @@ final public class JmolViewer {
   private boolean structuralChange = false;
 
 
-  public final static byte NOLABELS =  0;
-  public final static byte SYMBOLS =   1;
-  public final static byte TYPES =     2;
-  public final static byte NUMBERS =   3;
+  public final static byte NOLABELS  = 0;
+  public final static byte SYMBOLS   = 1;
+  public final static byte TYPES     = 2;
+  public final static byte NUMBERS   = 3;
 
-  public final static byte DELETED   = -1;
+  public final static byte DELETED   =-1;
   public final static byte NONE      = 0;
   public final static byte WIREFRAME = 1;
   public final static byte SHADED    = 2;
     
-  public final static byte COLOR =     -1;
-  public final static byte ATOMTYPE =   0;
+  public final static byte COLOR      =-1;
+  public final static byte ATOMTYPE   = 0;
   public final static byte ATOMCHARGE = 1;
+  public final static byte STRUCTURE  = 2;
+  public final static byte AMINO      = 3;
+  public final static byte SHAPELY    = 4;
 
   public void homePosition() {
     // FIXME -- need to hold repaint during this process, but first 
@@ -444,14 +447,15 @@ final public class JmolViewer {
    * delegated to ColorManager
    ****************************************************************/
 
-  public void setModeAtomColorProfile(byte mode) {
-    colorManager.setModeAtomColorProfile(mode);
-    distributionManager.setColixAtom(mode, Colix.NULL, atomIteratorSelected());
+  public void setModeAtomColorProfile(byte scheme) {
+    colorManager.setSchemeDefault(scheme);
+    distributionManager.setColixAtom(scheme, Colix.NULL,
+                                     atomIteratorSelected());
     refresh();
   }
 
-  public int getModeAtomColorProfile() {
-    return colorManager.modeAtomColorProfile;
+  public byte getModeAtomColorProfile() {
+    return colorManager.schemeDefault;
   }
 
   public void setColorSelection(Color c) {
@@ -855,13 +859,13 @@ final public class JmolViewer {
     }
 
   public float getAtomX(Object clientAtom) {
-      return jmolModelAdapter.getAtomX(clientAtom);
+      return modelAdapter.getAtomX(clientAtom);
   }
   public float getAtomY(Object clientAtom) {
-      return jmolModelAdapter.getAtomY(clientAtom);
+      return modelAdapter.getAtomY(clientAtom);
   }
   public float getAtomZ(Object clientAtom) {
-      return jmolModelAdapter.getAtomZ(clientAtom);
+      return modelAdapter.getAtomZ(clientAtom);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -1582,7 +1586,7 @@ final public class JmolViewer {
    ****************************************************************/
 
   public JmolModelAdapter getJmolModelAdapter() {
-    return jmolModelAdapter;
+    return modelAdapter;
   }
 
   public int getFrameCount(Object clientFile) {
@@ -1617,14 +1621,12 @@ final public class JmolViewer {
     return modelManager.getPdbAtomRecord(clientAtom);
   }
 
-  public short getColixAtom(int atomicNumber, Object clientAtom) {
-    return Colix.getColix(modelManager.getColorAtom(atomicNumber, clientAtom,
-                                                 colorManager.modeAtomColorProfile));
+  public short getColixAtom(AtomShape atom) {
+    return colorManager.getColixAtom(atom);
   }
 
-  public short getColixAtom(int atomicNumber, Object clientAtom, byte scheme) {
-    return Colix.getColix(modelManager.getColorAtom(atomicNumber,
-                                                    clientAtom, scheme));
+  public short getColixAtomScheme(AtomShape atom, byte scheme) {
+    return colorManager.getColixAtomScheme(atom, scheme);
   }
 
   ////////////////////////////////////////////////////////////////

@@ -28,15 +28,21 @@ import org.openscience.jmol.viewer.script.Token;
 
 import java.util.Hashtable;
 
-public class ProteinProp {
+public class PdbAtom {
+
+  public final static byte STRUCTURE_NONE = 0;
+  public final static byte STRUCTURE_HELIX = 1;
+  public final static byte STRUCTURE_SHEET = 2;
+  public final static byte STRUCTURE_TURN = 3;
 
   // FIXME mth -- a very quick/dirty/ugly implementation
   // just to get some complex queries running
   public String recordPdb;
   byte resid;
   byte atomid;
+  public byte structureType = STRUCTURE_NONE;
 
-  public ProteinProp(String recordPdb) {
+  public PdbAtom(String recordPdb) {
     this.recordPdb = recordPdb;
 
     resid = Token.getResid(recordPdb.substring(17, 20));
@@ -57,6 +63,15 @@ public class ProteinProp {
 
   public String getResidue() {
     return Token.getResidue3(resid);
+  }
+
+  public int getResidueNumber() {
+    int num = -1;
+    try {
+      num = Integer.parseInt(recordPdb.substring(22, 26).trim());
+    } catch (NumberFormatException e)
+      {}
+    return num;
   }
 
   public byte getResID() {
@@ -131,4 +146,16 @@ public class ProteinProp {
     return recordPdb.charAt(21);
   }
 
+  public void setStructureType(byte structureType) {
+    this.structureType = structureType;
+  }
+
+  public int getAtomNumber() {
+    int num = -999999;
+    try {
+      num = Integer.parseInt(recordPdb.substring(6, 11).trim());
+    } catch (NumberFormatException e)
+      {}
+    return num;
+  }
 }

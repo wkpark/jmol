@@ -26,7 +26,8 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.protein.ProteinProp;
+import org.openscience.jmol.viewer.protein.PdbMolecule;
+import org.openscience.jmol.viewer.protein.PdbAtom;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
@@ -43,6 +44,7 @@ public class JmolFrame {
   float maxVanderwaalsRadius = 0;
   // whether or not this frame has any protein properties
   boolean hasPdbRecords;
+  PdbMolecule pdbmolecule;
 
   final static int growthIncrement = 128;
   int atomShapeCount = 0;
@@ -54,13 +56,15 @@ public class JmolFrame {
                    boolean hasPdbRecords) {
     this.viewer = viewer;
     this.hasPdbRecords = hasPdbRecords;
+    if (hasPdbRecords)
+      pdbmolecule = new PdbMolecule(this);
     atomShapes = new AtomShape[atomCount];
     bondShapes = new BondShape[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
   }
 
   public JmolFrame(JmolViewer viewer, boolean hasPdbRecords) {
-    this(viewer, growthIncrement, false);
+    this(viewer, growthIncrement, hasPdbRecords);
   }
 
   public JmolFrame(JmolViewer viewer) {
@@ -71,6 +75,8 @@ public class JmolFrame {
     htAtomMap = null;
     if (bondShapeCount == 0 && viewer.getAutoBond())
       rebond();
+    if (hasPdbRecords)
+      pdbmolecule.finalize(atomShapeCount);
   }
 
   public AtomShape addAtom(Object clientAtom) {
@@ -101,6 +107,10 @@ public class JmolFrame {
 
   public AtomShape getAtomAt(int atomIndex) {
     return atomShapes[atomIndex];
+  }
+
+  public PdbAtom getPdbAtom(int atomIndex) {
+    return atomShapes[atomIndex].pdbatom;
   }
 
   public int getBondCount() {
@@ -646,11 +656,11 @@ public class JmolFrame {
 
       // Protein backbone bonds
       if (hasPdbRecords) {
-        ProteinProp pprop = atom.getProteinProp();
-        if (pprop != null) {
-          char chainThis = pprop.getChain();
+        PdbAtom pdbatom = atom.getPdbAtom();
+        if (pdbatom != null) {
+          char chainThis = pdbatom.getChain();
           if (chainThis == chainLast) {
-            if (pprop.getName().equals("CA")) {
+            if (pdbatom.getName().equals("CA")) {
               if (atomLastCA != null) {
 		  bondAtomShapes(atom, atomLastCA,
 				 BondShape.BACKBONE);

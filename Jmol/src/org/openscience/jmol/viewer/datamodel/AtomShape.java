@@ -28,7 +28,7 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.protein.ProteinProp;
+import org.openscience.jmol.viewer.protein.PdbAtom;
 
 import java.awt.Rectangle;
 
@@ -41,7 +41,7 @@ public class AtomShape implements Bspt.Tuple {
   JmolFrame frame;
   Point3f point3f;
   int x, y, z;
-  byte atomicNumber;
+  public byte atomicNumber;
   byte styleAtom;
   private short atomIndex = -1;
   short marAtom;
@@ -50,20 +50,20 @@ public class AtomShape implements Bspt.Tuple {
   BondShape[] bonds;
 
   String strLabel;
-  ProteinProp pprop;
-  
+  public PdbAtom pdbatom;
+
   public AtomShape(JmolFrame frame, int atomIndex, Object clientAtom) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = (short)atomIndex;
     this.clientAtom = clientAtom;
     this.atomicNumber = (byte) viewer.getAtomicNumber(clientAtom);
-    this.colixAtom = viewer.getColixAtom(atomicNumber, clientAtom);
     if (frame.hasPdbRecords()) {
       String pdbRecord = viewer.getPdbAtomRecord(clientAtom);
       if (pdbRecord != null)
-        pprop = new ProteinProp(pdbRecord);
+        pdbatom = new PdbAtom(pdbRecord);
     }
+    this.colixAtom = viewer.getColixAtom(this);
     setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
     this.point3f = new Point3f(viewer.getAtomX(clientAtom),
 			       viewer.getAtomY(clientAtom),
@@ -306,8 +306,8 @@ public class AtomShape implements Bspt.Tuple {
     return radius;
   }
 
-  public ProteinProp getProteinProp() {
-    return pprop;
+  public PdbAtom getPdbAtom() {
+    return pdbatom;
   }
 
   public Object markDeleted() {

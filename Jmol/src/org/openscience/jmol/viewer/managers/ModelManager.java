@@ -38,34 +38,30 @@ import java.awt.Color;
 public class ModelManager {
 
   JmolViewer viewer;
-  JmolModelAdapter jmolModelAdapter;
+  JmolModelAdapter modelAdapter;
   boolean suppliesAtomicNumber;
   boolean suppliesAtomicSymbol;
   boolean suppliesAtomTypeName;
   boolean suppliesVanderwaalsRadius;
   boolean suppliesCovalentRadius;
-  boolean suppliesAtomColor;
   final JmolFrame nullJmolFrame;
 
 
-  public ModelManager(JmolViewer viewer, JmolModelAdapter jmolModelAdapter) {
+  public ModelManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
-    this.jmolModelAdapter = jmolModelAdapter;
+    this.modelAdapter = modelAdapter;
     this.nullJmolFrame = new JmolFrame(viewer);
 
-    suppliesAtomicNumber = jmolModelAdapter.suppliesAtomicNumber();
-    suppliesAtomicSymbol = jmolModelAdapter.suppliesAtomicSymbol();
-    suppliesAtomTypeName = jmolModelAdapter.suppliesAtomTypeName();
-    suppliesVanderwaalsRadius = jmolModelAdapter.suppliesVanderwaalsRadius();
-    suppliesCovalentRadius = jmolModelAdapter.suppliesCovalentRadius();
-    suppliesAtomColor = jmolModelAdapter.suppliesAtomColor();
+    suppliesAtomicNumber = modelAdapter.suppliesAtomicNumber();
+    suppliesAtomicSymbol = modelAdapter.suppliesAtomicSymbol();
+    suppliesAtomTypeName = modelAdapter.suppliesAtomTypeName();
+    suppliesVanderwaalsRadius = modelAdapter.suppliesVanderwaalsRadius();
+    suppliesCovalentRadius = modelAdapter.suppliesCovalentRadius();
 
     if (JmolModelAdapter.vanderwaalsRadii.length != JmolModelAdapter.atomicNumberMax)
       System.out.println("WARNING! vanderwaalsRadii.length not consistent");
     if (JmolModelAdapter.covalentRadii.length != JmolModelAdapter.atomicNumberMax)
       System.out.println("WARNING! covalentRadii.length not consistent");
-    if (JmolModelAdapter.atomColors.length != JmolModelAdapter.atomicNumberMax)
-      System.out.println("WARNING! atomColors.length not consistent");
   }
 
   public Object clientFile;
@@ -214,7 +210,7 @@ public class ModelManager {
 
   public void deleteAtom(int atomIndex) {
     Object clientAtom = frame.deleteAtom(atomIndex);
-    jmolModelAdapter.notifyAtomDeleted(clientAtom);
+    modelAdapter.notifyAtomDeleted(clientAtom);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -230,21 +226,22 @@ public class ModelManager {
    ****************************************************************/
 
   public JmolModelAdapter getJmolModelAdapter() {
-    return jmolModelAdapter;
+    return modelAdapter;
   }
 
   public int getFrameCount(Object clientFile) {
-    return jmolModelAdapter.getFrameCount(clientFile);
+    return modelAdapter.getFrameCount(clientFile);
   }
 
   public String getModelName(Object clientFile) {
-    return jmolModelAdapter.getModelName(clientFile);
+    return modelAdapter.getModelName(clientFile);
   }
 
   public int getAtomicNumber(Object clientAtom) {
     if (suppliesAtomicNumber) {
-      int atomicNumber = jmolModelAdapter.getAtomicNumber(clientAtom);
-      if (atomicNumber < -1 || atomicNumber >= JmolModelAdapter.atomicNumberMax) {
+      int atomicNumber = modelAdapter.getAtomicNumber(clientAtom);
+      if (atomicNumber < -1 ||
+          atomicNumber >= JmolModelAdapter.atomicNumberMax) {
         System.out.println("JmolModelAdapter.getAtomicNumber() returned " +
                            atomicNumber);
         return 0;
@@ -257,7 +254,7 @@ public class ModelManager {
 
   public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
     if (suppliesAtomicSymbol) {
-      String atomicSymbol = jmolModelAdapter.getAtomicSymbol(clientAtom);
+      String atomicSymbol = modelAdapter.getAtomicSymbol(clientAtom);
       if (atomicSymbol != null)
         return atomicSymbol;
       System.out.println("JmolModelAdapter.getAtomicSymbol returned null");
@@ -267,7 +264,7 @@ public class ModelManager {
 
   public String getAtomTypeName(int atomicNumber, Object clientAtom) {
     if (suppliesAtomTypeName) {
-      String atomTypeName = jmolModelAdapter.getAtomTypeName(clientAtom);
+      String atomTypeName = modelAdapter.getAtomTypeName(clientAtom);
       if (atomTypeName != null)
         return atomTypeName;
     }
@@ -276,7 +273,7 @@ public class ModelManager {
 
   public float getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
     if (suppliesVanderwaalsRadius) {
-      float vanderwaalsRadius = jmolModelAdapter.getVanderwaalsRadius(clientAtom);
+      float vanderwaalsRadius = modelAdapter.getVanderwaalsRadius(clientAtom);
       if (vanderwaalsRadius > 0)
         return vanderwaalsRadius;
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
@@ -287,7 +284,7 @@ public class ModelManager {
 
   public float getCovalentRadius(int atomicNumber, Object clientAtom) {
     if (suppliesCovalentRadius) {
-      float covalentRadius = jmolModelAdapter.getCovalentRadius(clientAtom);
+      float covalentRadius = modelAdapter.getCovalentRadius(clientAtom);
       if (covalentRadius > 0)
         return covalentRadius;
       System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
@@ -297,17 +294,7 @@ public class ModelManager {
   }
 
   public String getPdbAtomRecord(Object clientAtom) {
-    return jmolModelAdapter.getPdbAtomRecord(clientAtom);
-  }
-
-  public Color getColorAtom(int atomicNumber, Object clientAtom, byte scheme) {
-    if (suppliesAtomColor) {
-      Color color = jmolModelAdapter.getAtomColor(clientAtom, scheme);
-      if (color != null)
-        return color;
-      System.out.println("JmolModelAdapter.getColorAtom returned null");
-    }
-    return JmolModelAdapter.atomColors[atomicNumber];
+    return modelAdapter.getPdbAtomRecord(clientAtom);
   }
 
   public float solventProbeRadius = 0;
@@ -330,7 +317,7 @@ public class ModelManager {
                 new Integer(atomicNumber));
       htAtomicMap = map;
     }
-    String atomicSymbol = jmolModelAdapter.getAtomicSymbol(clientAtom);
+    String atomicSymbol = modelAdapter.getAtomicSymbol(clientAtom);
     if (atomicSymbol == null) {
       System.out.println("JmolModelAdapter does not supply getAtomicNumber() and " +
                          "JmolModelAdapter.getAtomicSymbol() returned null");

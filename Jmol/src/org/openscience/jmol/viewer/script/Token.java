@@ -670,13 +670,15 @@ public class Token {
 
   // FIXME mth -- in the rasmol source they have are using PCA as the
   // last amino acid. What is the scoop on HYP?
-  public final static byte RESID_AMINO_LAST = 22;
+  public final static byte RESID_AMINO_MAX = 24;
 
   // DNA Nucleotides
   public final static byte RESID_A   = 24;
   public final static byte RESID_C   = 25;
   public final static byte RESID_G   = 26;
   public final static byte RESID_T   = 27;
+
+  public final static byte RESID_DNA_MAX = 28;
 
   // RNA Nucleotides
   public final static byte RESID_U   = 28;

@@ -26,7 +26,6 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.protein.ProteinProp;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -77,6 +76,8 @@ public class FrameRenderer {
       AtomShape atomShape = atomShapes[i];
       atomShape.transform(viewer);
       atomRenderer.render(atomShape);
+      if (atomShape.strLabel != null)
+        labelRenderer.render(atomShape);
     }
 
     dotsRenderer.render();

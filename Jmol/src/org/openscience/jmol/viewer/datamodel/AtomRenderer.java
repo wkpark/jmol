@@ -80,8 +80,6 @@ public class AtomRenderer {
       return;
     colix = atomShape.colixAtom;
     renderAtom();
-    //    if (atomShape.strLabel != null)
-    //      viewer.labelRenderer.render(atomShape);
     if (viewer.hasSelectionHalo(atomShape))
       renderHalo();
   }

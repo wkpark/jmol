@@ -24,13 +24,9 @@
  */
 package org.jmol.g3d;
 
-import org.jmol.viewer.*;
-
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.awt.FontMetrics;
 import java.awt.Dimension;

@@ -25,10 +25,6 @@
 
 package org.jmol.g3d;
 
-import java.awt.Component;
-import java.awt.image.MemoryImageSource;
-import java.util.Hashtable;
-
 class Triangle3D {
 
   Graphics3D g3d;

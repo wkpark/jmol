@@ -26,12 +26,10 @@
 package org.jmol.g3d;
 
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.ImageProducer;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ColorModel;
-import java.awt.Rectangle;
 
 /**
  *<p>

@@ -27,7 +27,6 @@ package org.jmol.g3d;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Rectangle;
 
 /**
  *<p>

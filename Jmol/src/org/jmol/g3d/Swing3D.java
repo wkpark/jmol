@@ -26,7 +26,6 @@
 package org.jmol.g3d;
 
 import java.awt.Image;
-import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.BufferedImage;
@@ -34,8 +33,6 @@ import java.awt.image.WritableRaster;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.SinglePixelPackedSampleModel;
-import java.awt.Rectangle;
-import java.util.Arrays;
 
 final class Swing3D extends Platform3D {
 

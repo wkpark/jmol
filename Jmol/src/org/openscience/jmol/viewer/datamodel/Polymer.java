@@ -133,7 +133,7 @@ abstract public class Polymer {
     System.out.println("is a NucleotidePolymer");
     return groups;
   }
-
+  
   Polymer(Chain chain, Group[] groups) {
     this.chain = chain;
     this.groups = groups;
@@ -141,15 +141,15 @@ abstract public class Polymer {
     for (int i = count; --i >= 0; )
       groups[i].setPolymer(this);
   }
-
+  
   public int getCount() {
     return count;
   }
-
+  
   public Group[] getGroups() {
     return groups;
   }
-
+  
   public int[] getLeadAtomIndices() {
     if (atomIndices == null) {
       atomIndices = new int[count];
@@ -158,7 +158,7 @@ abstract public class Polymer {
     }
     return atomIndices;
   }
-
+  
   public int getIndex(int seqcode) {
     int i;
     for (i = count; --i >= 0; )
@@ -182,7 +182,7 @@ abstract public class Polymer {
     }
     midPoint.set(getLeadPoint(groupIndex));
   }
-
+  
   boolean hasWingPoints() { return false; }
 
   Point3f getWingPoint(int polymerIndex) { return null; }
@@ -263,6 +263,5 @@ abstract public class Polymer {
     }
     wingVectors[0] = wingVectors[1];
     wingVectors[count] = wingVectors[count - 1];
-    }
   }
 }

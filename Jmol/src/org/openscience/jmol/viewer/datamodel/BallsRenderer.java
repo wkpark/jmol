@@ -57,8 +57,10 @@ class BallsRenderer extends ShapeRenderer {
     } else {
       for (int i = frame.atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
-        if (atom.modelNumber != displayModel)
+        if (atom.modelNumber != displayModel) {
+          atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
           continue;
+        }
         atom.transform(viewer);
         render(atom);
       }

@@ -51,7 +51,7 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
-  private static final boolean logMouseEvents = true;
+  private static final boolean logMouseEvents = false;
 
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
@@ -326,6 +326,7 @@ public abstract class MouseManager {
     }
     for (int i = measurementCount; i > 0; --i)
       if (measurementCountPlusIndices[i] == atomIndex) {
+        viewer.refresh();
         return;
       }
     int attractiveCount = measurementCount + 1;

@@ -40,8 +40,6 @@ public interface JmolStatusListener {
 
   public void handlePopupMenu(int x, int y);
 
-  public void measureSelection(int iatom);
-
   public void notifyMeasurementsChanged();
 
   public void notifyAtomPicked(int atomIndex, String strInfo);

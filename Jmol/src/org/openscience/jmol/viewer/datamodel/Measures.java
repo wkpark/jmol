@@ -72,16 +72,30 @@ public class Measures extends Shape {
     measurements[measurementCount++] = measureNew;
   }
   
+  boolean delete(Object value) {
+    if (value instanceof int[])
+      return delete((int[])value);
+    if (value instanceof Integer)
+      return delete(((Integer)value).intValue());
+    return false;
+  }
+
   boolean delete(int[] atomCountPlusIndices) {
     for (int i = measurementCount; --i >= 0; ) {
-      if (measurements[i].sameAs(atomCountPlusIndices)) {
-        System.arraycopy(measurements, i+1,
-                         measurements, i,
-                         measurementCount - i - 1);
-        --measurementCount;
-        measurements[measurementCount] = null;
-        return true;
-      }
+      if (measurements[i].sameAs(atomCountPlusIndices))
+        return delete(i);
+    }
+    return false;
+  }
+
+  boolean delete(int i) {
+    if (i < measurementCount) {
+      System.arraycopy(measurements, i+1,
+                       measurements, i,
+                       measurementCount - i - 1);
+      --measurementCount;
+      measurements[measurementCount] = null;
+      return true;
     }
     return false;
   }
@@ -101,17 +115,36 @@ public class Measures extends Shape {
                           BitSet bsSelected) {
     if ("color".equals(propertyName))
       { colix = viewer.getColix((Color)value); return; }
-    if ("fontsize".equals(propertyName))
+    else if ("fontsize".equals(propertyName))
       { fontsize = ((Integer)value).intValue(); return; }
-    if ("define".equals(propertyName))
-      { define((int[])value); return; }
-    if ("delete".equals(propertyName))
-      { delete((int[])value); return; }
-    if ("toggle".equals(propertyName))
-      { toggle((int[])value); return; }
-    if ("pending".equals(propertyName))
-      { pending((int[])value); return; }
-    if ("clear".equals(propertyName))
-      { clear(); return; }
+    else if ("define".equals(propertyName))
+      { define((int[])value); }
+    else if ("delete".equals(propertyName))
+      { delete(value); }
+    else if ("toggle".equals(propertyName))
+      { toggle((int[])value); }
+    else if ("pending".equals(propertyName))
+      { pending((int[])value); }
+    else if ("clear".equals(propertyName))
+      { clear(); }
+    else
+      return;
+    viewer.notifyMeasurementsChanged();
+  }
+
+  public Object getProperty(String property, int index) {
+    //    System.out.println("Measures.getProperty(" +property + "," + index +")");
+    String propertyString = (String)property;
+    if ("count".equals(property))
+      { return new Integer(measurementCount); }
+    if ("countPlusIndices".equals(property)) {
+      return index < measurementCount
+        ? measurements[index].countPlusIndices : null;
+    }
+    if ("stringValue".equals(property)) {
+      return index < measurementCount
+        ? measurements[index].strMeasurement : null;
+    }
+    return null;
   }
 }

@@ -292,6 +292,12 @@ final public class Frame {
       shapes[shapeType].setProperty(propertyName, value, bsSelected);
   }
 
+  public Object getShapeProperty(int shapeType,
+                                 String propertyName, int index) {
+    return (shapes[shapeType] == null
+            ? null : shapes[shapeType].getProperty(propertyName, index));
+  }
+
   Point3f averageAtomPoint;
 
   Point3f centerBoundingBox;
@@ -463,6 +469,7 @@ final public class Frame {
   int measurementCount = 0;
   Measurement[] measurements = null;
 
+  /*
   public void addMeasurement(int count, int[] atomIndices) {
     // turn on the display of measures
     setShapeSize(JmolConstants.SHAPE_MEASURES, 1, null);
@@ -502,6 +509,7 @@ final public class Frame {
   public Measurement[] getMeasurements() {
     return measurements;
   }
+  */
 
   /****************************************************************
    * selection handling

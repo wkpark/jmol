@@ -54,6 +54,10 @@ abstract public class Shape {
     System.out.println("unassigned property:" + propertyName + ":" + value);
   }
 
+  Object getProperty(String property, int index) {
+    return null;
+  }
+
   boolean wasClicked(int x, int y) {
     return false;
   }

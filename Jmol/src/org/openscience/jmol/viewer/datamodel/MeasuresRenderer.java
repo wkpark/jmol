@@ -101,10 +101,9 @@ class MeasuresRenderer extends ShapeRenderer {
   }
 
   void renderDistance(short colix) {
-    renderDistance(frame.getAtomAt(measurement.atomIndices[0]),
-                   frame.getAtomAt(measurement.atomIndices[1]), colix);
+    renderDistance(frame.getAtomAt(measurement.countPlusIndices[1]),
+                   frame.getAtomAt(measurement.countPlusIndices[2]), colix);
   }
-                           
 
   void renderDistance(Atom atomA, Atom atomB, short colix) {
     int zA = atomA.z - atomA.diameter - 10;
@@ -122,9 +121,9 @@ class MeasuresRenderer extends ShapeRenderer {
   Point3f pointT = new Point3f();
 
   void renderAngle(short colix, boolean renderArcs) {
-    renderAngle(frame.getAtomAt(measurement.atomIndices[0]),
-                frame.getAtomAt(measurement.atomIndices[1]),
-                frame.getAtomAt(measurement.atomIndices[2]),
+    renderAngle(frame.getAtomAt(measurement.countPlusIndices[1]),
+                frame.getAtomAt(measurement.countPlusIndices[2]),
+                frame.getAtomAt(measurement.countPlusIndices[3]),
                 colix, renderArcs);
   }
 
@@ -176,10 +175,11 @@ class MeasuresRenderer extends ShapeRenderer {
   }
 
   void renderTorsion(short colix, boolean renderArcs) {
-    renderTorsion(frame.getAtomAt(measurement.atomIndices[0]),
-                  frame.getAtomAt(measurement.atomIndices[1]),
-                  frame.getAtomAt(measurement.atomIndices[2]),
-                  frame.getAtomAt(measurement.atomIndices[3]),
+    int[] countPlusIndices = measurement.countPlusIndices;
+    renderTorsion(frame.getAtomAt(countPlusIndices[1]),
+                  frame.getAtomAt(countPlusIndices[2]),
+                  frame.getAtomAt(countPlusIndices[3]),
+                  frame.getAtomAt(countPlusIndices[4]),
                   colix, renderArcs);
   }
 
@@ -215,10 +215,10 @@ class MeasuresRenderer extends ShapeRenderer {
 
   void renderPendingMeasurement(PendingMeasurement pendingMeasurement) {
     int count = pendingMeasurement.count;
-    int[] indices = pendingMeasurement.atomIndices;
+    int[] countPlusIndices = pendingMeasurement.countPlusIndices;
     if (! pendingMeasurement.isActive || count < 2)
       return;
-    if (indices[count - 1] == -1)
+    if (countPlusIndices[count] == -1)
       renderPendingWithCursor(pendingMeasurement);
     else
       renderMeasurement(pendingMeasurement, Graphics3D.PINK);
@@ -230,7 +230,8 @@ class MeasuresRenderer extends ShapeRenderer {
       return;
     if (count > 2)
       renderMeasurement(count - 1, pendingMeasurement, Graphics3D.PINK, false);
-    Atom atomLast = frame.getAtomAt(pendingMeasurement.atomIndices[count - 2]);
+    Atom atomLast = frame.getAtomAt(pendingMeasurement.
+                                    countPlusIndices[count - 1]);
     int lastZ = atomLast.z - atomLast.diameter - 10;
     drawSegment(atomLast.x, atomLast.y, lastZ,
                 viewer.getCursorX(), viewer.getCursorY(), 0, Graphics3D.PINK);

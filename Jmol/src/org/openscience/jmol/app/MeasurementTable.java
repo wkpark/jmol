@@ -58,14 +58,6 @@ public class MeasurementTable extends JDialog {
   private JButton deleteButton;
   private JButton deleteAllButton;
 
-  private JTable pickingTable;
-  private PickingTableModel pickingTableModel;
-  private ListSelectionModel pickingSelection;
-  private int selectedPickingRow = -1;
-  private JButton addButton;
-  private JButton clearButton;
-  private JButton measureButton;
-
   /**
    * Constructor
    *
@@ -81,8 +73,6 @@ public class MeasurementTable extends JDialog {
     JPanel container = new JPanel();
     container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
-    container.add(constructPickingTable());
-    container.add(constructPickingButtonPanel());
     container.add(constructMeasurementTable());
 
     JPanel foo = new JPanel();
@@ -97,66 +87,6 @@ public class MeasurementTable extends JDialog {
     getContentPane().add(container);
     pack();
     centerDialog();
-  }
-
-  JComponent constructPickingTable() {
-    pickingTableModel = new PickingTableModel();
-    pickingTable = new JTable(pickingTableModel);
-
-    pickingTable
-      .setPreferredScrollableViewportSize(new Dimension(300, 75));
-
-    for (int i = 5; --i >= 0; )
-      pickingTable.getColumnModel().getColumn(i)
-        .setPreferredWidth(i <= 1 ? 20 : 25);
-
-    pickingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    pickingTable.setRowSelectionAllowed(true);
-    pickingTable.setColumnSelectionAllowed(false);
-    pickingSelection = pickingTable.getSelectionModel();
-    pickingSelection.addListSelectionListener(new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-          if (e.getValueIsAdjusting()) return;
-          ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-          if (! lsm.isSelectionEmpty()) {
-            int row = lsm.getMinSelectionIndex();
-            // I tried to adjust the row here, but it didn't work
-            // presumably because we are in the midst of setting the row
-            if (! inPickingMode)
-              startPickingMode();
-            measurementSelection.clearSelection();
-          }
-        }
-      });
-
-    return new JScrollPane(pickingTable);
-  }
-
-  JComponent constructPickingButtonPanel() {
-    JPanel pickingButtonPanel = new JPanel();
-    pickingButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-    measureButton = new JButton("Measure");
-    measureButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          viewer.defineMeasurement(pickedAtomCount, pickedAtoms);
-          updateTables();
-        }
-      });
-    measureButton.setVisible(false);
-    
-    clearButton = new JButton(JmolResourceHandler
-                              .getInstance().translate("Clear"));
-    clearButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          startPickingMode();
-        }
-      });
-    clearButton.setEnabled(false);
-    
-    pickingButtonPanel.add(measureButton);
-    pickingButtonPanel.add(clearButton);
-    return pickingButtonPanel;
   }
 
   JComponent constructMeasurementTable() {
@@ -184,8 +114,6 @@ public class MeasurementTable extends JDialog {
           } else {
             selectedMeasurementRow = lsm.getMinSelectionIndex();
             deleteButton.setEnabled(true);
-            pickingSelection.clearSelection();
-            clearPickingMode();
           }
         }
       });
@@ -203,7 +131,6 @@ public class MeasurementTable extends JDialog {
         public void actionPerformed(ActionEvent e) {
           viewer.deleteMeasurement(selectedMeasurementRow);
           updateMeasurementTableData();
-          startPickingMode();
         }
       });
     deleteButton.setEnabled(false);
@@ -214,7 +141,6 @@ public class MeasurementTable extends JDialog {
         public void actionPerformed(ActionEvent e) {
           viewer.clearMeasurements();
           updateMeasurementTableData();
-          startPickingMode();
         }
       });
     deleteAllButton.setEnabled(false);
@@ -232,7 +158,6 @@ public class MeasurementTable extends JDialog {
                                         .translate("Dismiss"));
     dismissButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          clearPickingMode();
           close();
         }
       });
@@ -260,7 +185,6 @@ public class MeasurementTable extends JDialog {
 
   public void activate() {
     updateMeasurementTableData();
-    startPickingMode();
     show();
   }
 
@@ -269,34 +193,14 @@ public class MeasurementTable extends JDialog {
     measurementTableModel.fireTableDataChanged();
   }
 
-  void updatePickingTableData() {
-    clearButton.setEnabled(pickedAtomCount > 0);
-    String measureButtonLabel = "Distance";
-    if (pickedAtomCount == 3)
-      measureButtonLabel = "Angle";
-    else if (pickedAtomCount == 4)
-      measureButtonLabel = "Torsion Angle";
-    measureButton.setLabel(measureButtonLabel);
-    measureButton.setVisible(pickedAtomCount >= 2);
-    pickingTableModel.fireTableDataChanged();
-
-    int row = (pickedAtomCount < 4 ? pickedAtomCount : 3);
-    pickingTable.setRowSelectionInterval(row, row);
-    pickingTable.requestFocus();
-    requestFocus();
-  }
-
   class MeasurementListWindowListener extends WindowAdapter {
 
     public void windowClosing(WindowEvent e) {
-      clearPickingMode();
       close();
     }
   }
 
   final Class stringClass = "".getClass();
-  final Class integerClass = new Integer(0).getClass();
-  final Class floatClass = new Float(0).getClass();
 
   class MeasurementTableModel extends AbstractTableModel {
 
@@ -306,107 +210,28 @@ public class MeasurementTable extends JDialog {
 
     public String getColumnName(int col) { 
       return measurementHeaders[col];
-    }
-    public int getRowCount() { return viewer.getMeasurementCount(); }
+    } 
+   public int getRowCount() { return viewer.getMeasurementCount(); }
     public int getColumnCount() { return 5; };
 
     public Class getColumnClass(int col) {
-      return integerClass;
+      return stringClass;
     }
     public Object getValueAt(int row, int col) {
       if (col == 0)
-        return viewer.getMeasurementString(row);
-      int[] indices = viewer.getMeasurementIndices(row);
-      int i = col-1;
-      if (i >= indices.length)
+        return viewer.getMeasurementStringValue(row);
+      int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(row);
+      if (col >= countPlusIndices.length)
         return null;
-      int atomIndex = indices[i];
-      return "" + viewer.getAtomNumber(atomIndex) + " " + viewer.getAtomName(atomIndex);
+      int atomIndex = countPlusIndices[col];
+      return ("" + viewer.getAtomNumber(atomIndex) +
+              " " + viewer.getAtomName(atomIndex));
     }
 
     public boolean isCellEditable(int row, int col) { return false; }
-  }
-
-  int pickedAtomCount;
-  final int[] pickedAtoms = new int[4];
-
-  class PickingTableModel extends AbstractTableModel {
-    final String[] pickingHeaders = {
-            JmolResourceHandler.getInstance().translate("Number"),
-            JmolResourceHandler.getInstance().translate("Name"),
-            "x", "y", "z"};
-
-    public String getColumnName(int col) { 
-      return pickingHeaders[col];
-    }
-    public int getRowCount() { return 4; };
-    public int getColumnCount() { return 5; };
-
-    public Class getColumnClass(int col) {
-      if (col == 0)
-        return integerClass;
-      if (col == 1)
-        return stringClass;
-      return floatClass;
-    }
-    public Object getValueAt(int row, int col) {
-      if (row < pickedAtomCount)
-        switch(col) {
-        case 0:
-          return new Integer(viewer.getAtomNumber(pickedAtoms[row]));
-        case 1:
-          return viewer.getAtomName(pickedAtoms[row]);
-        case 2:
-          return new Float(viewer.getAtomX(pickedAtoms[row]));
-        case 3:
-          return new Float(viewer.getAtomY(pickedAtoms[row]));
-        case 4:
-          return new Float(viewer.getAtomZ(pickedAtoms[row]));
-        }
-      return null;
-    }
-    public boolean isCellEditable(int row, int col) { return false; }
-  }
-
-  boolean inPickingMode = false;
-  int previousMouseMode;
-
-  void startPickingMode() {
-    if (! inPickingMode) {
-      inPickingMode = true;
-      previousMouseMode = viewer.getModeMouse();
-      viewer.setModeMouse(JmolConstants.MOUSE_MEASURE);
-    }
-    pickedAtomCount = 0;
-    updatePickingTableData();
-  }
-
-  void clearPickingMode() {
-    if (inPickingMode) {
-      inPickingMode = false;
-      pickedAtomCount = 0;
-      pickingTableModel.fireTableDataChanged();
-      viewer.setModeMouse(previousMouseMode);
-    }
-  }
-
-  public void firePicked(int atomIndex) {
-    if (! inPickingMode)
-      return;
-    if (pickedAtomCount < 4) {
-      for (int i = pickedAtomCount; --i >= 0; )
-        if (pickedAtoms[i] == atomIndex) {
-          System.out.println("double picked");
-          return;
-        }
-      pickedAtoms[pickedAtomCount++] = atomIndex;
-      updatePickingTableData();
-    }
   }
 
   public void updateTables() {
     updateMeasurementTableData();
-    pickedAtomCount = 0;
-    updatePickingTableData();
   }
 }

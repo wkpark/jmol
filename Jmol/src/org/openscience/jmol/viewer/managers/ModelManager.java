@@ -247,14 +247,20 @@ public class ModelManager {
       frame.setShapeProperty(shapeType, propertyName, value, bsSelected);
   }
 
-  public Object getShapeProperty(int shapeType, String propertyName) {
-    Hashtable props = shapeProperties[shapeType];
-    if (props != null) {
-      Object value = props.get(propertyName);
-      if (value != NULL_SURROGATE)
-        return value;
+  public Object getShapeProperty(int shapeType, String propertyName,
+                                 int index) {
+    Object value = null;
+    if (frame != null)
+      value = frame.getShapeProperty(shapeType, propertyName, index);
+    if (value == null) {
+      Hashtable props = shapeProperties[shapeType];
+      if (props != null) {
+        value = props.get(propertyName);
+        if (value == NULL_SURROGATE)
+          return value = null;
+      }
     }
-    return null;
+    return value;
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {

@@ -79,7 +79,6 @@ final public class JmolViewer {
   public ModelManager modelManager;
   public RepaintManager repaintManager;
   public StyleManager styleManager;
-  public MeasurementManager measurementManager;
   public Eval eval;
   public Graphics3D g3d;
 
@@ -131,7 +130,6 @@ final public class JmolViewer {
     repaintManager = new RepaintManager(this);
     modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
-    measurementManager = new MeasurementManager(this);
   }
 
   public Component getAwtComponent() {
@@ -1081,16 +1079,6 @@ final public class JmolViewer {
     return modelManager.solventProbeRadius;
   }
 
-  public void deleteAtom(int atomIndex) {
-    if (measurementManager.deleteMeasurementsReferencing(atomIndex))
-      notifyMeasurementsChanged();
-    modelManager.deleteAtom(atomIndex);
-    //            status.setStatus(2, "Atom deleted"); 
-    selectAll();
-    structuralChange = true;
-    refresh();
-  }
-
   public int getAtomIndexFromAtomNumber(int atomNumber) {
     return modelManager.getAtomIndexFromAtomNumber(atomNumber);
   }
@@ -1099,64 +1087,24 @@ final public class JmolViewer {
    * delegated to MeasurementManager
    ****************************************************************/
 
-  public Object[] getMeasurements(int count) {
-    return measurementManager.getMeasurements(count);
-  }
-
   public void clearMeasurements() {
-    measurementManager.clearMeasurements();
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "clear", null);
     refresh();
   }
 
   public int getMeasurementCount() {
-    return measurementManager.getMeasurementCount();
+    int count = getShapePropertyAsInt(JmolConstants.SHAPE_MEASURES, "count");
+    return count <= 0 ? 0 : count;
   }
 
-  public int[] getMeasurementIndices(int measurementIndex) {
-    return measurementManager.getMeasurementIndices(measurementIndex);
+  public String getMeasurementStringValue(int i) {
+    return
+      "" + getShapeProperty(JmolConstants.SHAPE_MEASURES, "stringValue", i);
   }
 
-  public String getMeasurementString(int measurementIndex) {
-    return measurementManager.getMeasurementString(measurementIndex);
-  }
-
-  public void deleteMeasurements(int count) {
-    measurementManager.deleteMeasurements(count);
-  }
-
-  public void defineMeasurement(int count, int[] atomIndices) {
-    measurementManager.defineMeasurement(count, atomIndices);
-    refresh();
-  }
-
-  public boolean isMeasurementDefined(int count, int[] atomIndices) {
-    return measurementManager.isMeasurementDefined(count, atomIndices);
-  }
-
-  public boolean deleteMeasurement(int measurementIndex) {
-    boolean deleted = measurementManager.deleteMeasurement(measurementIndex);
-    if (deleted)
-      refresh();
-    return deleted;
-  }
-
-  public boolean deleteMeasurement(Object measurement) {
-    boolean deleted =
-      measurementManager.deleteMeasurement((Measurement)measurement);
-    if (deleted)
-      refresh();
-    return deleted;
-  }
-
-  public boolean deleteMeasurement(int count, int[] atomIndices) {
-    boolean deleted =
-      measurementManager.deleteMeasurement(count, atomIndices);
-    if (deleted)
-      refresh();
-    return deleted;
-  }
-
-  public void setMeasurementCursor(boolean measurementCursor) {
+  public int[] getMeasurementCountPlusIndices(int i) {
+    return (int[])
+      getShapeProperty(JmolConstants.SHAPE_MEASURES, "countPlusIndices", i);
   }
 
   public void setPendingMeasurement(int[] atomCountPlusIndices) {
@@ -1171,8 +1119,13 @@ final public class JmolViewer {
                      atomCountPlusIndices);
   }
 
+  public void deleteMeasurement(int i) {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
+  }
+
   public void deleteMeasurement(int[] atomCountPlusIndices) {
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", atomCountPlusIndices);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete",
+                     atomCountPlusIndices);
   }
 
   public void toggleMeasurement(int[] atomCountPlusIndices) {
@@ -1488,20 +1441,27 @@ final public class JmolViewer {
   }
 
   public Object getShapeProperty(int shapeType, String propertyName) {
-    return modelManager.getShapeProperty(shapeType, propertyName);
+    return modelManager.getShapeProperty(shapeType, propertyName,
+                                         Integer.MIN_VALUE);
+  }
+
+  public Object getShapeProperty(int shapeType,
+                                 String propertyName, int index) {
+    return modelManager.getShapeProperty(shapeType, propertyName, index);
   }
 
   public Color getShapePropertyAsColor(int shapeID, String propertyName) {
-    return (Color)modelManager.getShapeProperty(shapeID, propertyName);
+    return (Color)getShapeProperty(shapeID, propertyName);
   }
 
   public int getShapePropertyAsInt(int shapeID, String propertyName) {
-    return ((Integer)modelManager.getShapeProperty(shapeID, propertyName))
-      .intValue();
+    Object value = getShapeProperty(shapeID, propertyName);
+    return value == null || !(value instanceof Integer)
+      ? Integer.MIN_VALUE : ((Integer)value).intValue();
   }
 
   public Color getColorShape(int shapeID) {
-    return (Color)modelManager.getShapeProperty(shapeID, "color");
+    return (Color)getShapeProperty(shapeID, "color");
   }
 
   public short getColixShape(int shapeID) {
@@ -1598,10 +1558,12 @@ final public class JmolViewer {
       jmolStatusListener.scriptStatus(strStatus);
   }
 
+  /*
   public void measureSelection(int iatom) {
     if (jmolStatusListener != null)
       jmolStatusListener.measureSelection(iatom);
   }
+  */
 
   public void notifyMeasurementsChanged() {
     if (jmolStatusListener != null)

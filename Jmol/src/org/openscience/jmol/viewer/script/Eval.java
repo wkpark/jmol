@@ -1480,6 +1480,8 @@ public class Eval implements Runnable {
       viewer.scriptStatus("Successfully loaded:" + filename);
   }
 
+  int[] monitorArgs = new int[5];
+
   void monitor() throws ScriptException {
     if (statementLength == 1) {
       viewer.setShowMeasurements(true);
@@ -1500,9 +1502,8 @@ public class Eval implements Runnable {
       if (statement[i].tok != Token.integer)
         integerExpected();
     }
-    int argCount = statementLength - 1;
+    int argCount = monitorArgs[0] = statementLength - 1;
     int numAtoms = viewer.getAtomCount();
-    int[] args = new int[argCount];
     for (int i = 0; i < argCount; ++i) {
       Token token = statement[i + 1];
       if (token.tok != Token.integer)
@@ -1511,12 +1512,9 @@ public class Eval implements Runnable {
       int atomIndex = viewer.getAtomIndexFromAtomNumber(atomNumber);
       if (atomIndex == -1)
         badAtomNumber();
-      args[i] = atomIndex;
+      monitorArgs[i + 1] = atomIndex;
     }
-    if (viewer.isMeasurementDefined(argCount, args))
-      viewer.deleteMeasurement(argCount, args);
-    else
-      viewer.defineMeasurement(argCount, args);
+    viewer.toggleMeasurement(monitorArgs);
   }
 
   void refresh() {

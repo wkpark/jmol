@@ -1,5 +1,6 @@
 JmolApplet.java
 JmolAppletControl.java
+AppletRegistry.java
 org/openscience/jmol/applet/*.java
 org/openscience/jmol/viewer/*.java
 org/openscience/jmol/viewer/**/*.java

@@ -58,6 +58,7 @@ public class JmolAppletControl extends Applet {
   {"chimepush", "chimetoggle", "chimeradio", "button", "checkbox"};
 
   String myName;
+  JmolAppletRegistry appletRegistry;
   AppletContext context;
   String targetName;
   String typeName;
@@ -102,8 +103,8 @@ public class JmolAppletControl extends Applet {
   public void init() {
     context = getAppletContext();
     myName = getParam("name");
-    JmolAppletRegistry.checkIn(myName, this);
-
+    appletRegistry = new JmolAppletRegistry(myName, this);
+    
     targetName = getParam("target");
     typeName = getParamLowerCase("type");
     for (type = typeNames.length;
@@ -218,7 +219,7 @@ public class JmolAppletControl extends Applet {
   }
 
   private void notifyRadioPeers() {
-    for (Enumeration enum = JmolAppletRegistry.applets();
+    for (Enumeration enum = appletRegistry.applets();
          enum.hasMoreElements(); ) {
       Object peer = enum.nextElement();
       if (! (peer instanceof JmolAppletControl))
@@ -236,17 +237,7 @@ public class JmolAppletControl extends Applet {
       System.out.println(typeName + " with name" + myName + " has no target?");
       return;
     }
-    Applet targetApplet = JmolAppletRegistry.lookup(targetName);
-    if (targetApplet == null) {
-      System.out.println("target " + targetName + " not found");
-      return;
-    }
-    if (! (targetApplet instanceof JmolApplet)) {
-      System.out.println("target " + targetName + " is not a JmolApplet");
-      return;
-    }
-    JmolApplet targetJmolApplet = (JmolApplet)targetApplet;
-    targetJmolApplet.scriptButton(scriptToRun, jsoWindow, buttonCallback, myName);
+    appletRegistry.scriptButton(targetName, scriptToRun);
   }
 }
 

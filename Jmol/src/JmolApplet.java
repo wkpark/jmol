@@ -23,7 +23,6 @@
  *  02111-1307  USA.
  */
 
-import org.openscience.jmol.applet.JmolAppletRegistry;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolStatusListener;
 import org.openscience.jmol.adapters.SimpleModelAdapter;
@@ -47,6 +46,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   Jvm12 jvm12;
   JmolPopup jmolpopup;
   String htmlName;
+  JmolAppletRegistry appletRegistry;
 
   JSObject jsoWindow;
 
@@ -92,7 +92,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void init() {
     htmlName = getParameter("name");
-    JmolAppletRegistry.checkIn(htmlName, this);
+    appletRegistry = new JmolAppletRegistry(htmlName, this);
 
     loadProperties();
     initWindows();

@@ -139,14 +139,11 @@ class ModelResolver {
   final static String[] cifRecords =
   { "data_" };
 
-  final static String[] gaussianRecords =
-  { " Entering Gaussian System, " };
-
   final static String[][] startsWithRecords =
-  { pdbRecords, shelxRecords, cifRecords, gaussianRecords};
+  { pdbRecords, shelxRecords, cifRecords };
 
   final static String[] startsWithFormats =
-  { "Pdb", "Shelx", "Cif", "Gaussian" };
+  { "Pdb", "Shelx", "Cif" };
 
   ////////////////////////////////////////////////////////////////
   // contains formats
@@ -155,9 +152,13 @@ class ModelResolver {
   final static String[] cmlRecords =
   { "<atom", "<molecule", "<reaction", "<cml", "<bond", "\"cml.dtd\""};
 
+  final static String[] gaussianRecords =
+  { "Entering Gaussian System", "1998 Gaussian, Inc." };
+
+
   final static String[][] containsRecords =
-  {cmlRecords};
+  {cmlRecords, gaussianRecords};
 
   final static String[] containsFormats =
-  { "Cml" };
+  { "Cml", "Gaussian" };
 }

@@ -101,7 +101,6 @@ public class AlphaPolymer extends Polymer {
     searchForTurns(codes, angles, tags);
 
     addStructuresFromTags(tags);
-    
   }
 
   final static byte CODE_NADA        = 0;
@@ -109,8 +108,8 @@ public class AlphaPolymer extends Polymer {
   final static byte CODE_BETA_SHEET  = 2;
   final static byte CODE_LEFT_HELIX  = 3;
 
-  final static byte CODE_LEFT_TURN  = 1;
-  final static byte CODE_RIGHT_TURN = 2;
+  final static byte CODE_LEFT_TURN  = 4;
+  final static byte CODE_RIGHT_TURN = 5;
   
   float[] calculateAnglesInDegrees() {
     float[] angles = new float[count];
@@ -127,7 +126,6 @@ public class AlphaPolymer extends Polymer {
     byte[] codes = new byte[count];
     for (int i = count - 1; --i >= 2; ) {
       float degrees = angles[i];
-      System.out.println("degrees=" + degrees);
       codes[i] = ((degrees >= 10 && degrees < 120)
                   ? CODE_RIGHT_HELIX
                   : ((degrees >= 120 || degrees < -90)
@@ -151,9 +149,9 @@ public class AlphaPolymer extends Polymer {
   }
 
   final static byte TAG_NADA  = JmolConstants.PROTEIN_STRUCTURE_NONE;
-  final static byte TAG_HELIX = JmolConstants.PROTEIN_STRUCTURE_HELIX;
-  final static byte TAG_SHEET = JmolConstants.PROTEIN_STRUCTURE_SHEET;
   final static byte TAG_TURN  = JmolConstants.PROTEIN_STRUCTURE_TURN;
+  final static byte TAG_SHEET = JmolConstants.PROTEIN_STRUCTURE_SHEET;
+  final static byte TAG_HELIX = JmolConstants.PROTEIN_STRUCTURE_HELIX;
 
   byte[] calculateRunsFourOrMore(byte[] codes) {
     byte[] tags = new byte[count];

@@ -156,12 +156,10 @@ final public class Frame {
                               int startSequenceNumber, char startInsertionCode,
                               char endChainID,
                               int endSequenceNumber, char endInsertionCode) {
-    /*
     structuresDefined = true;
     mmset.defineStructure(structureType, startChainID,
                           startSequenceNumber, startInsertionCode,
                           endChainID, endSequenceNumber, endInsertionCode);
-    */
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {

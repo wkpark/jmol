@@ -38,28 +38,27 @@ public class AtomRenderer {
 
   Graphics3D g3d;
   Rectangle clip;
+  int minX, maxX, minY, maxY;
+  boolean fastRendering;
+  short colixSelection;
+
 
   public void setGraphicsContext(Graphics3D g3d, Rectangle clip) {
     this.g3d = g3d;
     this.clip = clip;
 
+    minX = clip.x;
+    maxX = minX + clip.width;
+    minY = clip.y;
+    maxY = minY + clip.height;
+
     fastRendering = viewer.getFastRendering();
     colixSelection = viewer.getColixSelection();
   }
 
-  boolean fastRendering;
-  short colixSelection;
-
-  int x;
-  int y;
-  int z;
-  int diameter;
   byte styleAtom;
+  int x, y, z, diameter;
   short colix;
-
-  int radius;
-  int xUpperLeft;
-  int yUpperLeft;
 
   public void render(AtomShape atomShape) {
     styleAtom = atomShape.styleAtom;
@@ -67,9 +66,13 @@ public class AtomRenderer {
     y = atomShape.y;
     z = atomShape.z;
     diameter = atomShape.diameter;
-    radius = (diameter + 1) / 2;
-    xUpperLeft = x - radius;
-    yUpperLeft = y - radius;
+    int radius = (diameter + 1) / 2;
+    if (x + radius < minX ||
+        x - radius >= maxX ||
+        y + radius < minY ||
+        y - radius >= maxY)
+      return;
+
     colix = atomShape.colixAtom;
     if (atomShape.marDots > 0)
       renderDots(atomShape.colixDots, atomShape.diameterDots);

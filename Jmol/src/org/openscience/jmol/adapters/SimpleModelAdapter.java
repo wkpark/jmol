@@ -82,6 +82,7 @@ public class SimpleModelAdapter implements JmolModelAdapter {
         return model.errorMessage;
       return model;
     } catch (Exception e) {
+      e.printStackTrace();
       return "" + e;
     }
   }
@@ -478,7 +479,8 @@ class PdbModel extends Model {
     while ((line = reader.readLine()) != null) {
       if (line.startsWith("ATOM  ") ||
           line.startsWith("HETATM")) {
-        String atomicSymbol = line.substring(76, 78).trim();
+        int len = line.length();
+        String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
         if (atomicSymbol.length() == 0 ||
             Character.isDigit(atomicSymbol.charAt(0))) {
           atomicSymbol = line.substring(12, 14).trim();

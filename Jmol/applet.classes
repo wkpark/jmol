@@ -26,6 +26,7 @@ org/openscience/jmol/MeasurementList.java
 org/openscience/jmol/MeasurementListEvent.java
 org/openscience/jmol/MouseManager.java
 org/openscience/jmol/UseJavaSort.java
+org/openscience/jmol/JmolCDO.java
 org/openscience/jmol/io/ReaderEvent.java
 org/openscience/jmol/io/ReaderListener.java
 org/openscience/jmol/io/ReaderProgress.java

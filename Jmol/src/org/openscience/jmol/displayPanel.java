@@ -46,6 +46,11 @@ import javax.swing.text.*;
 
 public class displayPanel extends JPanel 
     implements Runnable,MeasurementListListener {
+
+    public static int X_AXIS = 1;
+    public static int Y_AXIS = 2;
+    public static int Z_AXIS = 3;
+
     private static boolean Perspective;
     private static float FieldOfView;
     private boolean painted = false;
@@ -86,7 +91,7 @@ public class displayPanel extends JPanel
     private boolean movingDrawMode = false;
     private Measure m = null;
     private MeasurementList mlist = null;
-    private DisplaySettings settings;
+    protected DisplaySettings settings;
 
     public displayPanel(StatusBar status, DisplaySettings settings) {
         this.status = status;
@@ -917,4 +922,16 @@ public class displayPanel extends JPanel
     DisplaySettings getSettings() {
 		return settings;
 	}
+
+    /** Added for compatability with RasmolScript
+     */
+    public void rotate(int axis, float angle) {
+	if (axis == X_AXIS) {
+	    amat.xrot(angle);
+	} else if (axis == Y_AXIS) {
+	    amat.yrot(angle);
+	} else if (axis == Z_AXIS) {
+	    amat.zrot(angle);
+	}
+    }
 }

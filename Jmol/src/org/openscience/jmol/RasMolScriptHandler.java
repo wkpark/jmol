@@ -166,6 +166,37 @@ class RasMolScriptHandler {
 		} else {
 		    // script is run from command line
 		}
+	    } else if (word.equals("label")) {
+                if (st.hasMoreElements()) {
+		    label((String)st.nextElement());
+   	        } else {
+		    throw new RasMolScriptException("Error: omitted object type.");
+		}
+	    } else if (word.equals("rotate")) {
+                if (st.hasMoreElements()) {
+                    String axis = (String)st.nextElement();
+		    if (axis.equals("x") || axis.equals("y") || axis.equals("z")) {
+			if (st.hasMoreElements()) {
+			    String angle = (String)st.nextElement();
+			    float f = Float.parseFloat(angle);
+                            int axisCode = displayPanel.X_AXIS;
+			    if (axis.equals("y")) {
+				axisCode = displayPanel.Y_AXIS;
+			    } else if (axis.equals("z")) {
+				axisCode = displayPanel.Z_AXIS;
+			    }
+			    program.display.rotate(axisCode, f);
+			} else {
+			    throw new RasMolScriptException("Error: angle and axis omitted.");
+			}
+		    } else {
+			throw new RasMolScriptException("Error: invalid axis (" + axis + ")");
+		    }
+   	        } else {
+		    throw new RasMolScriptException("Error: angle and axis omitted.");
+		}
+	    } else if (word.equals("print")) {
+		program.print();
 	    } else {
 		throw new RasMolScriptException("Unrecognized command: " + command);
 	    }
@@ -193,6 +224,24 @@ class RasMolScriptHandler {
 	} else {
 	    throw new RasMolScriptException("Unrecognized parameter: " + param);
 	}
+    }
+
+    private void label(String type) throws RasMolScriptException {
+        try {
+	    boolean b = checkBoolean(type);
+            if (!b) {
+		program.display.settings.setLabelMode(DisplaySettings.NOLABELS);
+	    } else {
+		// "label true" does not yet work
+	    }
+	} catch (RasMolScriptException e) {
+            // this is a checkBoolean exception
+            if (type.equals("%a")) {
+		program.display.settings.setLabelMode(DisplaySettings.SYMBOLS);
+	    } else if (type.equals("%i")) {
+		program.display.settings.setLabelMode(DisplaySettings.NUMBERS);
+	    }
+        }
     }
 
     private void list(String objectType) throws RasMolScriptException {

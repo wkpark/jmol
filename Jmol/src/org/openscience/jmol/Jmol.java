@@ -383,6 +383,12 @@ class Jmol extends JPanel {
         }
     } 
 
+    /** closes the current molecule
+     */
+    public void zap() {
+        // this is not possible at this moment
+    } 
+
     /**
      * returns the ChemFile that we are currently working with
      *
@@ -864,6 +870,7 @@ class Jmol extends JPanel {
     
     public static final String openAction = "open";
     public static final String newAction  = "new";
+    public static final String closeAction = "close";
     public static final String saveAction = "save";
     public static final String exportAction = "export";
     public static final String exitAction = "exit";
@@ -906,6 +913,7 @@ class Jmol extends JPanel {
     private Action[] defaultActions = {
 	new NewAction(),
 	new OpenAction(),
+        new CloseAction(),
         new SaveAction(),
         new PrintAction(),
         new ExportAction(),
@@ -985,15 +993,22 @@ class Jmol extends JPanel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            Toolkit tk = Toolkit.getDefaultToolkit();
-            PrintJob pJob = tk.getPrintJob(frame, "Jmol Print Job", null);
-            Graphics pg = pJob.getGraphics();
-            
-            if (pg != null) {
-                display.print(pg);
-                pg.dispose();    // Flushes the print job
-            }
+	    print();
         }
+    }
+
+    /**
+     * added print command, so that it can be used by RasmolScriptHandler
+     **/
+    protected void print() {
+	Toolkit tk = Toolkit.getDefaultToolkit();
+	PrintJob pJob = tk.getPrintJob(frame, "Jmol Print Job", null);
+	Graphics pg = pJob.getGraphics();
+	
+	if (pg != null) {
+	    display.print(pg);
+	    pg.dispose();    // Flushes the print job
+	}
     }
 
     class UndoAction extends AbstractAction {
@@ -1071,6 +1086,18 @@ class Jmol extends JPanel {
                 return;
             } 
             JOptionPane.showMessageDialog(Jmol.this, "No file chosen");
+        }                        
+    }
+
+    class CloseAction extends AbstractAction {
+
+	CloseAction() {
+	    super(closeAction);
+	}
+        
+        public void actionPerformed(ActionEvent e) {
+            System.out.print("About to zap... ");
+	    zap();
         }                        
     }
     

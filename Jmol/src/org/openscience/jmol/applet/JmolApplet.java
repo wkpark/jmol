@@ -93,8 +93,8 @@ public class JmolApplet extends Applet implements StatusDisplay {
 
   Eval eval;
   
-  int mode;
-  int labelMode;
+  byte mode;
+  byte labelMode;
   private String helpMessage =
     "Keys: S- change style; L- Show labels; B-Toggle Bonds";
   private String errorMessage;
@@ -311,13 +311,13 @@ public class JmolApplet extends Applet implements StatusDisplay {
 
   // FIXME -- modes should be the same so that map is not necessary
   // map from applet modes to DisplayControl modes
-  static int[] mapModeAtomDraw = {
+  static byte[] mapModeAtomDraw = {
     DisplayControl.WIREFRAME,
     DisplayControl.QUICKDRAW,
     DisplayControl.SHADING,
     DisplayControl.SHADING};
     
-  static int[] mapModeBondDraw = {
+  static byte[] mapModeBondDraw = {
     DisplayControl.LINE,
     DisplayControl.QUICKDRAW,
     DisplayControl.QUICKDRAW,
@@ -477,7 +477,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
       case 'b':
       case 'B':
         if (bondsEnabled)
-          control.setShowBonds(!control.showBonds);
+          control.setShowBonds(!control.getShowBonds());
         break;
       case 'p':
       case 'P':
@@ -614,12 +614,12 @@ public class JmolApplet extends Applet implements StatusDisplay {
    * <b>For Javascript:<\b> Sets the rendering mode for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
    */
   private final String[] atomStyles = {"QUICKDRAW", "SHADED", "WIREFRAME"};
-  private final int[] atomModes = {DisplayControl.QUICKDRAW,
-                                   DisplayControl.SHADING,
-                                   DisplayControl.WIREFRAME};
-  private final int[] bondModes = {DisplayControl.QUICKDRAW,
-                                   DisplayControl.SHADING,
-                                   DisplayControl.LINE};
+  private final byte[] atomModes = {DisplayControl.QUICKDRAW,
+                                    DisplayControl.SHADING,
+                                    DisplayControl.WIREFRAME};
+  private final byte[] bondModes = {DisplayControl.QUICKDRAW,
+                                    DisplayControl.SHADING,
+                                    DisplayControl.LINE};
   public void setRenderingStyle(String style) {
     for (int i = 0; i < atomStyles.length; ++i) {
       if (atomStyles[i].equalsIgnoreCase(style)) {
@@ -634,10 +634,10 @@ public class JmolApplet extends Applet implements StatusDisplay {
    * <b>For Javascript:<\b> Sets the rendering mode for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
    */
   private final String[] labelStyles = {"NONE","SYMBOLS","TYPES","NUMBERS"};
-  private final int[] labelModes = {DisplayControl.NOLABELS,
-                                    DisplayControl.SYMBOLS,
-                                    DisplayControl.TYPES,
-                                    DisplayControl.NUMBERS};
+  private final byte[] labelModes = {DisplayControl.NOLABELS,
+                                     DisplayControl.SYMBOLS,
+                                     DisplayControl.TYPES,
+                                     DisplayControl.NUMBERS};
   public void setLabelRenderingStyle(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {
       if (labelStyles[i].equalsIgnoreCase(style)) {

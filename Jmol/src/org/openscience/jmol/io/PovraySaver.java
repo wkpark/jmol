@@ -146,8 +146,8 @@ public class PovraySaver extends FileSaver {
     w.write("\n");
     w.write("\n");
 
-    style.writeAtomsAndBondsMacros(w, cf, control.percentVdwAtom / 100.0,
-                                   control.percentAngstromBond / 100.0);
+    style.writeAtomsAndBondsMacros(w, cf, control.getPercentVdwAtom() / 100.0,
+                                   control.getPercentAngstromBond() / 100.0);
 
     boolean drawHydrogen = control.getShowHydrogens();
 

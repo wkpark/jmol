@@ -67,6 +67,7 @@ final public class DisplayControl {
   public FileManager fileManager;
   public ModelManager modelManager;
   public RepaintManager repaintManager;
+  public StyleManager styleManager;
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
 
@@ -89,6 +90,8 @@ final public class DisplayControl {
     fileManager = new FileManager(this);
     modelManager = new ModelManager(this);
     repaintManager = new RepaintManager(this);
+    styleManager = new StyleManager(this);
+
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
   }
@@ -97,150 +100,21 @@ final public class DisplayControl {
     return awtComponent;
   }
 
-  public final static int NOLABELS =  0;
-  public final static int SYMBOLS =   1;
-  public final static int TYPES =     2;
-  public final static int NUMBERS =   3;
-  public final static int QUICKDRAW = 0;
-  public final static int SHADING =   1;
-  public final static int WIREFRAME = 2;
-  public final static int LINE =      3;
-  public final static int ATOMTYPE =   0;
-  public final static int ATOMCHARGE = 1;
-
-  // while these variables are public, they should be considered *read-only*
-  // to write these variables you *must* use the appropriate set function
-  // they are currently used by Atom and AtomShape for transforms & rendering
   public boolean inMotion = false;
 
   private boolean structuralChange = false;
 
-  public int modeLabel = NOLABELS;
-  public void setModeLabel(int mode) {
-    if (modeLabel != mode) {
-      modeLabel = mode;
-      refresh();
-    }
-  }
 
-  public int modeAtomDraw = QUICKDRAW;
-  public void setModeAtomDraw(int mode) {
-    if (modeAtomDraw != mode) {
-      modeAtomDraw = mode;
-      refresh();
-    }
-  }
-
-  public int modeBondDraw = QUICKDRAW;
-  public void setModeBondDraw(int mode) {
-    if (modeBondDraw != mode) {
-      modeBondDraw = mode;
-      refresh();
-    }
-  }
-  public int getModeBondDraw() {
-    return modeBondDraw;
-  }
-
-  public int percentAngstromBond = 10;
-  public void setPercentAngstromBond(int percentAngstromBond) {
-    this.percentAngstromBond = percentAngstromBond;
-    refresh();
-  }
-  public int getPercentAngstromBond() {
-    return percentAngstromBond;
-  }
-
-  public boolean showAtoms = true;
-  public void setShowAtoms(boolean showAtoms) {
-    if (this.showAtoms != showAtoms) {
-      this.showAtoms = showAtoms;
-      refresh();
-    }
-  }
-  public boolean getShowAtoms() {
-    return showAtoms;
-  }
-
-  public boolean showBonds = true;
-  public void setShowBonds(boolean showBonds) {
-    if (this.showBonds != showBonds) {
-      this.showBonds = showBonds;
-      refresh();
-    }
-  }
-  public boolean getShowBonds() {
-    return showBonds;
-  }
-
-  public boolean showHydrogens = true;
-  public void setShowHydrogens(boolean showHydrogens) {
-    if (this.showHydrogens != showHydrogens) {
-      this.showHydrogens = showHydrogens;
-      refresh();
-    }
-  }
-  public boolean getShowHydrogens() {
-    return showHydrogens;
-  }
-
-  public boolean showVectors = false;
-  public void setShowVectors(boolean showVectors) {
-    if (this.showVectors != showVectors) {
-      this.showVectors = showVectors;
-      structuralChange = true;
-      refresh();
-    }
-  }
-  public boolean getShowVectors() {
-    return showVectors;
-  }
-
-  public boolean showMeasurements = false;
-  public void setShowMeasurements(boolean showMeasurements) {
-    if (this.showMeasurements != showMeasurements) {
-      this.showMeasurements = showMeasurements;
-      structuralChange = true;
-      refresh();
-    }
-  }
-  public boolean getShowMeasurements() {
-    return showMeasurements;
-  }
-
-  public Font getMeasureFont(int size) {
-    return new Font("Helvetica", Font.PLAIN, size);
-  }
-
-  public boolean showDarkerOutline = false;
-  public void setShowDarkerOutline(boolean showDarkerOutline) {
-    if (this.showDarkerOutline != showDarkerOutline) {
-      this.showDarkerOutline = showDarkerOutline;
-      refresh();
-    }
-  }
-  public boolean getShowDarkerOutline() {
-    return showDarkerOutline;
-  }
-
-  public int percentVdwAtom = 20;
-  public void setPercentVdwAtom(int percentVdwAtom) {
-    this.percentVdwAtom = percentVdwAtom;
-    refresh();
-  }
-
-  public int getPercentVdwAtom() {
-    return percentVdwAtom;
-  }
-
-  public String propertyMode = "";
-  public void setPropertyMode(String s) {
-    propertyMode = s;
-    refresh();
-  }
-  public String getPropertyMode() {
-    return propertyMode;
-  }
+  public final static byte NOLABELS =  0;
+  public final static byte SYMBOLS =   1;
+  public final static byte TYPES =     2;
+  public final static byte NUMBERS =   3;
+  public final static byte QUICKDRAW = 0;
+  public final static byte SHADING =   1;
+  public final static byte WIREFRAME = 2;
+  public final static byte LINE =      3;
+  public final static byte ATOMTYPE =   0;
+  public final static byte ATOMCHARGE = 1;
 
   public void homePosition() {
     // FIXME -- need to hold repaint during this process, but first 
@@ -257,16 +131,6 @@ final public class DisplayControl {
     maybeEnableAntialiasing(g);
   }
 
-  public boolean wireframeRotation = false;
-  public void setWireframeRotation(boolean wireframeRotation) {
-    this.wireframeRotation = wireframeRotation;
-    refresh();
-  }
-
-  public boolean getWireframeRotation() {
-    return wireframeRotation;
-  }
-
   public boolean hasStructuralChange() {
     return structuralChange;
   }
@@ -279,46 +143,6 @@ final public class DisplayControl {
   public void flushCachedImages() {
     imageCache.clear();
     colorManager.flushCachedColors();
-  }
-
-  // FIXME NEEDSWORK -- arrow vector stuff
-  private double arrowHeadSize = 10.0f;
-  private double arrowHeadRadius = 1.0f;
-  private double arrowLengthScale = 1.0f;
-
-  public void setArrowHeadSize(double ls) {
-    arrowHeadSize = 10.0f * ls;
-    refresh();
-  }
-
-  public double getArrowHeadSize() {
-    return arrowHeadSize / 10.0f;
-  }
-
-  // mth dec 2003
-  // for some reason, internal to ArrowLine the raw arrowHeadSize was
-  // used, but externally it is multiplied/divided by 10
-  // will figure it out and fix it later
-  public double getArrowHeadSize10() {
-    return arrowHeadSize;
-  }
-
-  public void setArrowLengthScale(double ls) {
-    arrowLengthScale = ls;
-    refresh();
-  }
-
-  public double getArrowLengthScale() {
-    return arrowLengthScale;
-  }
-
-  public void setArrowHeadRadius(double rs) {
-    arrowHeadRadius = rs;
-    refresh();
-  }
-
-  public double getArrowHeadRadius() {
-    return arrowHeadRadius;
   }
 
   public void scriptEcho(String str) {
@@ -530,11 +354,13 @@ final public class DisplayControl {
   }
 
   public int screenAtomDiameter(int z, Atom atom) {
-    return transformManager.screenAtomDiameter(z, atom, percentVdwAtom);
+    return transformManager.screenAtomDiameter(z, atom,
+                                               styleManager.percentVdwAtom);
   }
 
   public int screenBondWidth(int z) {
-    return transformManager.screenBondWidth(z, percentAngstromBond);
+    return transformManager.screenBondWidth(z,
+                                            styleManager.percentAngstromBond);
   }
 
   public double scaleToScreen(int z, double sizeAngstroms) {
@@ -978,6 +804,162 @@ final public class DisplayControl {
 
   public void notifyRepainted() {
     repaintManager.notifyRepainted();
+  }
+
+  /****************************************************************
+   * delegated to StyleManager
+   ****************************************************************/
+
+  public void setModeLabel(byte mode) {
+    styleManager.setModeLabel(mode);
+    refresh();
+  }
+
+  public byte getModeLabel() {
+    return styleManager.modeLabel;
+  }
+
+  public void setModeAtomDraw(byte mode) {
+    styleManager.setModeAtomDraw(mode);
+    refresh();
+  }
+
+  public byte getModeAtomDraw() {
+    return styleManager.modeAtomDraw;
+  }
+
+  public void setModeBondDraw(byte mode) {
+    styleManager.setModeBondDraw(mode);
+    refresh();
+  }
+
+  public byte getModeBondDraw() {
+    return styleManager.modeBondDraw;
+  }
+
+  public void setPercentAngstromBond(int percentAngstromBond) {
+    styleManager.setPercentAngstromBond(percentAngstromBond);
+    refresh();
+  }
+
+  public int getPercentAngstromBond() {
+    return styleManager.percentAngstromBond;
+  }
+
+  public void setShowAtoms(boolean showAtoms) {
+    styleManager.setShowAtoms(showAtoms);
+    refresh();
+  }
+
+  public boolean getShowAtoms() {
+    return styleManager.showAtoms;
+  }
+
+  public void setShowBonds(boolean showBonds) {
+    styleManager.setShowBonds(showBonds);
+    refresh();
+  }
+
+  public boolean getShowBonds() {
+    return styleManager.showBonds;
+  }
+
+  public void setShowHydrogens(boolean showHydrogens) {
+    styleManager.setShowHydrogens(showHydrogens);
+    refresh();
+  }
+
+  public boolean getShowHydrogens() {
+    return styleManager.showHydrogens;
+  }
+
+  public void setShowVectors(boolean showVectors) {
+    styleManager.setShowVectors(showVectors);
+    refresh();
+  }
+
+  public boolean getShowVectors() {
+    return styleManager.showVectors;
+  }
+
+  public void setShowMeasurements(boolean showMeasurements) {
+    styleManager.setShowMeasurements(showMeasurements);
+    refresh();
+  }
+
+  public boolean getShowMeasurements() {
+    return styleManager.showMeasurements;
+  }
+
+  public Font getMeasureFont(int size) {
+    return styleManager.getMeasureFont(size);
+  }
+
+  public void setShowDarkerOutline(boolean showDarkerOutline) {
+    styleManager.setShowDarkerOutline(showDarkerOutline);
+    refresh();
+  }
+
+  public boolean getShowDarkerOutline() {
+    return styleManager.showDarkerOutline;
+  }
+
+  public void setPercentVdwAtom(int percentVdwAtom) {
+    styleManager.setPercentVdwAtom(percentVdwAtom);
+    refresh();
+  }
+
+  public int getPercentVdwAtom() {
+    return styleManager.percentVdwAtom;
+  }
+
+  public void setPropertyMode(String s) {
+    styleManager.setPropertyModeString(s);
+    refresh();
+  }
+
+  public String getPropertyMode() {
+    return styleManager.propertyModeString;
+  }
+
+  public void setWireframeRotation(boolean wireframeRotation) {
+    styleManager.setWireframeRotation(wireframeRotation);
+    // no need to refresh
+  }
+
+  public boolean getWireframeRotation() {
+    return styleManager.wireframeRotation;
+  }
+
+  public void setArrowHeadSize(double ls) {
+    styleManager.setArrowHeadSize(ls);
+    refresh();
+  }
+
+  public double getArrowHeadSize() {
+    return styleManager.getArrowHeadSize();
+  }
+
+  public double getArrowHeadSize10() {
+    return styleManager.getArrowHeadSize10();
+  }
+
+  public void setArrowLengthScale(double ls) {
+    styleManager.setArrowLengthScale(ls);
+    refresh();
+  }
+
+  public double getArrowLengthScale() {
+    return styleManager.arrowLengthScale;
+  }
+
+  public void setArrowHeadRadius(double rs) {
+    styleManager.setArrowHeadRadius(rs);
+    refresh();
+  }
+
+  public double getArrowHeadRadius() {
+    return styleManager.arrowHeadRadius;
   }
 
 }

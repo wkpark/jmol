@@ -99,10 +99,11 @@ public class BondRenderer {
     sameColor = color1.equals(color2);
     if (mag2d2 <= 2 || mag2d2 <= 49 && control.getFastRendering())
       return; // also avoids divide by zero when magnitude == 0
-    if (control.showAtoms && (mag2d2 <= 16))
+    if (control.getShowAtoms() && (mag2d2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
-    if (!control.showAtoms && bondOrder == 1 &&
-        (control.getFastRendering() || control.modeBondDraw==control.LINE)) {
+    if (!control.getShowAtoms() && bondOrder == 1 &&
+        (control.getFastRendering() ||
+         control.getModeBondDraw() == control.LINE)) {
       if (sameColor) {
         drawLineInside(g, color1, x1, y1, x2, y2);
       } else {
@@ -113,7 +114,7 @@ public class BondRenderer {
       }
       return;
     }
-    if (!control.showAtoms) {
+    if (!control.getShowAtoms()) {
       diameter1 = radius1 = diameter2 = radius2 = 0;
     } else {
       diameter1 = atomShape1.diameter;
@@ -143,7 +144,7 @@ public class BondRenderer {
     this.bondOrder = bondOrder;
 
     boolean lineBond =
-      control.modeBondDraw == control.LINE || control.getFastRendering();
+      control.getModeBondDraw() == control.LINE || control.getFastRendering();
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline
@@ -234,7 +235,7 @@ public class BondRenderer {
 
   void polyBond1(Color color, Color outline) {
     g.setColor(color);
-    switch(control.modeBondDraw) {
+    switch(control.getModeBondDraw()) {
     case DisplayControl.WIREFRAME:
       g.drawPolygon(axPoly, ayPoly, 4);
       break;

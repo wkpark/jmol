@@ -149,8 +149,8 @@ public class ColorManager {
 
   public Color getColorAtomOutline(Color color) {
     Color outline =
-      (control.showDarkerOutline ||
-       control.modeAtomDraw == DisplayControl.SHADING)
+      (control.getShowDarkerOutline() ||
+       control.getModeAtomDraw() == DisplayControl.SHADING)
       ? getDarker(color) : colorOutline;
     if (modeTransparentColors)
       outline = getColorTransparent(outline);

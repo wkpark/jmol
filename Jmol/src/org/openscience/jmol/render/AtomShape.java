@@ -85,13 +85,13 @@ public class AtomShape extends Shape {
   }
 
   public void render(Graphics g, DisplayControl control) {
-    if (!control.showHydrogens && atom.isHydrogen()) {
+    if (!control.getShowHydrogens() && atom.isHydrogen()) {
       return;
     }
-    if (control.showBonds) {
+    if (control.getShowBonds()) {
       renderBonds(g, control);
     }
-    if (control.showAtoms && isClipVisible(control.atomRenderer.clip)) {
+    if (control.getShowAtoms() && isClipVisible(control.atomRenderer.clip)) {
       control.atomRenderer.render(this);
     }
   }
@@ -105,7 +105,7 @@ public class AtomShape extends Shape {
       Atom atomOther = bondedAtoms[i];
       AtomShape atomShapeOther = atomOther.getAtomShape();
       int zOther = atomShapeOther.z;
-      if ((control.showHydrogens || !atomOther.isHydrogen()) &&
+      if ((control.getShowHydrogens() || !atomOther.isHydrogen()) &&
           ((z > zOther) ||
            (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
           isBondClipVisible(control.bondRenderer.clip,

@@ -679,13 +679,13 @@ public class DisplayPanel extends JPanel
     guimap.setSelected("Jmol.measurements", control.getShowMeasurements());
     final String[] modeLabel =
       {"Jmol.plain", "Jmol.symbols", "Jmol.types", "Jmol.numbers"};
-    guimap.setSelected(modeLabel[control.modeLabel], true);
+    guimap.setSelected(modeLabel[control.getModeLabel()], true);
     final String[] modeAtom
       = {"Jmol.aquickdraw", "Jmol.ashading", "Jmol.awireframe"};
-    guimap.setSelected(modeAtom[control.modeAtomDraw], true);
+    guimap.setSelected(modeAtom[control.getModeAtomDraw()], true);
     final String[] modeBond =
       {"Jmol.bquickdraw", "Jmol.bshading", "Jmol.bwireframe","Jmol.bline"};
-    guimap.setSelected(modeBond[control.modeBondDraw], true);
+    guimap.setSelected(modeBond[control.getModeBondDraw()], true);
     final String[] modeColor =
       {"Jmol.actype", "Jmol.accharge"};
     guimap.setSelected(modeColor[control.getModeAtomColorProfile()], true);

@@ -14,17 +14,17 @@
 	<li>
 	  <a href="http://www.woc.sci.kun.nl">
 	    Dutch Dictionary on Organic Chemistry
-	  </a>
+	  </a> - University of Nijmegen, Netherlands
 	</li>
 	<li>
 	  <a href="http://www.ebi.ac.uk/msd-srv/chempdb/">
 	    MSD ligand chemistry
-	  </a>
+	  </a> - European Bioinformatics Institute, UK
 	</li>
 	<li>
 	  <a href="http://www.weizmann.ac.il">
 	    Weizmann Institute of Science
-	  </a>
+	  </a> - Israel
 	  <ul>
 	    <li>
 	      <a href="http://bip.weizmann.ac.il/oca/">
@@ -41,7 +41,12 @@
 	<li>
 	  <a href="http://www.imb-jena.de/IMAGE_PDB_SEARCH.html">
 	    IMB Jena Image Library of Biological Macromolecules
-	  </a>
+	  </a> - Germany
+	</li>
+	<li>
+	  <a href="http://surya.bic.nus.edu.sg/xdom/">
+	    XdomView
+	  </a> - National University of Singapore
 	</li>
       </ul>
     </section>

@@ -13,7 +13,10 @@ use vars qw/$opt_v $opt_a $opt_s $opt_c $opt_d/;
 getopts('va:s:cd:') or usage();
 
 my $archive = "JmolApplet.jar";
-$archive = "$opt_a/$archive" if $opt_a;
+if ($opt_a) {
+    $opt_a =~ s|/$||; # remove trailing slash
+    $archive = "$opt_a/$archive";
+}
 print "archive is $archive\n" if $opt_v;
 
 ($opt_s && $opt_d) or usage();

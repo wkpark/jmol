@@ -950,33 +950,35 @@ public class DisplayPanel extends JPanel
       amat.setIdentity();
       tmat.setIdentity();
       zmat.setIdentity();
-      md.findBB();
-      xmin = md.getXMin();
-      xmax = md.getXMax();
-      ymin = md.getYMin();
-      ymax = md.getYMax();
-      zmin = md.getZMin();
-      zmax = md.getZMax();
-      float xw = xmax - xmin;
-      float yw = ymax - ymin;
-      float zw = zmax - zmin;
-      if (yw > xw) {
-        xw = yw;
+      if (md != null) {
+        md.findBB();
+        xmin = md.getXMin();
+        xmax = md.getXMax();
+        ymin = md.getYMin();
+        ymax = md.getYMax();
+        zmin = md.getZMin();
+        zmax = md.getZMax();
+        float xw = xmax - xmin;
+        float yw = ymax - ymin;
+        float zw = zmax - zmin;
+        if (yw > xw) {
+          xw = yw;
+        }
+        if (zw > xw) {
+          xw = zw;
+        }
+        float f1 = getSize().width / xw;
+        float f2 = getSize().height / xw;
+        if (f1 < f2) {
+          xfac = f1;
+        } else {
+          xfac = f2;
+        }
+        xfac *= 0.7f * scalefudge;
+        settings.setAtomScreenScale(xfac);
+        settings.setBondScreenScale(xfac);
+        settings.setVectorScreenScale(xfac);
       }
-      if (zw > xw) {
-        xw = zw;
-      }
-      float f1 = getSize().width / xw;
-      float f2 = getSize().height / xw;
-      if (f1 < f2) {
-        xfac = f1;
-      } else {
-        xfac = f2;
-      }
-      xfac *= 0.7f * scalefudge;
-      settings.setAtomScreenScale(xfac);
-      settings.setBondScreenScale(xfac);
-      settings.setVectorScreenScale(xfac);
       repaint();
     }
   }

@@ -734,8 +734,10 @@ final public class JmolViewer {
 
   public boolean selectionHaloEnabled = false;
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
-    this.selectionHaloEnabled = selectionHaloEnabled;
-    refresh();
+    if (this.selectionHaloEnabled != selectionHaloEnabled) {
+      this.selectionHaloEnabled = selectionHaloEnabled;
+      refresh();
+    }
   }
   
   public boolean getSelectionHaloEnabled() {

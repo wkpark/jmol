@@ -110,9 +110,12 @@ public abstract class MouseManager {
   final static int CTRL_MIDDLE = CTRL | MIDDLE;
   final static int CTRL_ALT_LEFT = CTRL | ALT | LEFT;
   final static int ALT_LEFT = ALT | LEFT;
+  final static int ALT_SHIFT_LEFT = ALT | SHIFT | LEFT;
   final static int SHIFT_LEFT = SHIFT | LEFT;
   final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
+  final static int CTRL_ALT_SHIFT_LEFT = CTRL | ALT | SHIFT | LEFT;
   final static int SHIFT_MIDDLE = SHIFT | MIDDLE;
+  final static int CTRL_SHIFT_MIDDLE = CTRL | SHIFT | MIDDLE;
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
   final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
@@ -126,6 +129,7 @@ public abstract class MouseManager {
 
   void mousePressed(int x, int y, int modifiers, boolean isPopupTrigger,
                     long pressedTime) {
+    checkSelectionHalo(modifiers);
     if (previousPressedX == x && previousPressedY == y &&
         previousPressedModifiers == modifiers && 
         (pressedTime - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
@@ -175,6 +179,7 @@ public abstract class MouseManager {
   }
 
   void mouseReleased(int x, int y, int modifiers) {
+    checkSelectionHalo(modifiers);
     xCurrent = x; yCurrent = y;
     if (logMouseEvents)
       System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
@@ -216,6 +221,7 @@ public abstract class MouseManager {
 
   void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
+    case SHIFT_LEFT:
     case LEFT:
       if (viewer.frankClicked(x, y)) {
         viewer.popupMenu(x, y);
@@ -227,7 +233,9 @@ public abstract class MouseManager {
         viewer.notifyPicked(nearestAtomIndex);
       }
       break;
+    case ALT_SHIFT_LEFT:
     case ALT_LEFT:
+    case SHIFT_MIDDLE:
     case MIDDLE:
       viewer.zoomToPercent(100);
       break;
@@ -253,6 +261,7 @@ public abstract class MouseManager {
   }
 
   void mouseDragged(int x, int y, int modifiers) {
+    checkSelectionHalo(modifiers);
     int deltaX = x - previousDragX;
     int deltaY = y - previousDragY;
     xCurrent = previousDragX = x; yCurrent = previousDragY = y;
@@ -267,15 +276,20 @@ public abstract class MouseManager {
   void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
+    case SHIFT_LEFT:
       viewer.rotateXYBy(deltaX, deltaY);
       break;
     case ALT_LEFT:
+    case ALT_SHIFT_LEFT:
     case MIDDLE:
+    case SHIFT_MIDDLE:
       viewer.zoomBy(deltaY);
       viewer.rotateZBy(-deltaX);
       break;
     case CTRL_ALT_LEFT:
+    case CTRL_ALT_SHIFT_LEFT:
     case CTRL_MIDDLE:
+    case CTRL_SHIFT_MIDDLE:
       viewer.translateXYBy(deltaX, deltaY);
       break;
     }
@@ -367,6 +381,7 @@ public abstract class MouseManager {
 */
 
   void mouseMoved(int x, int y, int modifiers) {
+    checkSelectionHalo(modifiers);
     xCurrent = x; yCurrent = y;
     if (measurementMode | hoverActive) {
       int atomIndex = viewer.findNearestAtomIndex(x, y);
@@ -374,6 +389,14 @@ public abstract class MouseManager {
         setAttractiveMeasurementTarget(atomIndex);
     }
   }
+
+  final static int wheelClickPercentage = 25;
+
+  void mouseWheel(int rotation, int modifiers) {
+    if ((modifiers & (BUTTON_MODIFIER_MASK & ~SHIFT)) == 0)
+      viewer.zoomByPercent(rotation * wheelClickPercentage);
+  }
+  
 
   public abstract boolean handleEvent(Event e);
 
@@ -445,5 +468,15 @@ public abstract class MouseManager {
       viewer.toggleMeasurement(measurementCountPlusIndices);
     }
     exitMeasurementMode();
+  }
+
+  boolean inSelectionMode = false;
+
+  void checkSelectionHalo(int modifiers) {
+    boolean inSelectionMode = (modifiers & SHIFT) != 0;
+    if (this.inSelectionMode != inSelectionMode) {
+      this.inSelectionMode = inSelectionMode;
+      viewer.setSelectionHaloEnabled(inSelectionMode);
+    }
   }
 }

@@ -1507,7 +1507,7 @@ public class Eval implements Runnable {
       if (statement[1].tok == Token.on)
         viewer.setShowMeasurements(true);
       else if (statement[1].tok == Token.off)
-        viewer.setShowMeasurements(false);
+        viewer.clearMeasurements();
       else
         booleanExpected();
       return;
@@ -2536,7 +2536,7 @@ public class Eval implements Runnable {
       viewer.setShowMeasurementLabels(true);
       break;
     case Token.off:
-      viewer.clearMeasurements();
+      viewer.setShowMeasurementLabels(false);
       break;
     default:
       viewer.setMeasurementMad(getSetAxesTypeMad());

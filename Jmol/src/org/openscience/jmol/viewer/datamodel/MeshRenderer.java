@@ -138,7 +138,7 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
-      colix = group.getAlphaCarbonAtom().colixAtom;
+      colix = group.getLeadAtom().colixAtom;
     g3d.drawHermite(colix, 7, screens[iPrev], screens[i],
                     screens[iNext], screens[iNext2]);
   }
@@ -161,7 +161,7 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
-      colix = group.getAlphaCarbonAtom().colixAtom;
+      colix = group.getLeadAtom().colixAtom;
     
     //change false -> true to fill in mesh
     g3d.drawHermite(false, colix, 7, screensTop[iPrev], screensTop[i],

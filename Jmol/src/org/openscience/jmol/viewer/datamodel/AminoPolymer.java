@@ -39,7 +39,7 @@ public class AminoPolymer extends AlphaCarbonPolymer {
   boolean hasWingPoints() { return true; }
 
   Point3f getWingPoint(int polymerIndex) {
-    return groups[polymerIndex].getCarbonylOxygenAtom().point3f;
+    return groups[polymerIndex].getWingAtom().point3f;
   }
 
   // to get something other than the alpha carbon atom

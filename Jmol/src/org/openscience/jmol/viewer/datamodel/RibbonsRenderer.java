@@ -126,7 +126,7 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
-      colix = group.getAlphaCarbonAtom().colixAtom;
+      colix = group.getLeadAtom().colixAtom;
     
     //change false -> true to fill in mesh
     g3d.drawHermite(true, colix, 7, screensTop[iPrev], screensTop[i],

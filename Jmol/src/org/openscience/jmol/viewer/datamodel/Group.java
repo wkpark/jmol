@@ -185,7 +185,7 @@ final public class Group {
         atom.demoteSpecialAtomImposter();
       return;
     }
-    if (specialAtomID < JmolConstants.SPECIALATOMID_NUCLEIC_MAX) {
+    if (specialAtomID < JmolConstants.SPECIALATOMID_NUCLEOTIDE_MAX) {
       registerNucleicAtomIndex(specialAtomID, atom.atomIndex);
       return;
     }
@@ -219,10 +219,28 @@ final public class Group {
     return getAlphaCarbonIndex();
   }
 
+  public Atom getWingAtom() {
+    if (hasNucleotidePhosphorus())
+      return getNucleotideWingAtom();
+    return getCarbonylOxygenAtom();
+  }
+
+  public int getWingAtomIndex() {
+    if (hasNucleotidePhosphorus())
+      return atomIndexNucleotideWing;
+    return getAlphaCarbonIndex();
+  }
+
   public int getAlphaCarbonIndex() {
     if (mainchainIndices == null)
       return -1;
     return mainchainIndices[1];
+  }
+
+  public int getCarbonylOxygenIndex() {
+    if (mainchainIndices == null)
+      return -1;
+    return mainchainIndices[3];
   }
 
   public Atom getMainchainAtom(int i) {
@@ -300,6 +318,7 @@ final public class Group {
   }
 
   int atomIndexNucleotidePhosphorus = -1;
+  int atomIndexNucleotideWing = -1;
   int nucleicCount = 0;
   
   void registerNucleicAtomIndex(short atomid, int atomIndex) {
@@ -310,8 +329,16 @@ final public class Group {
       }
       return;
     }
+    if (atomid == JmolConstants.SPECIALATOMID_NUCLEOTIDE_WING) {
+      if (atomIndexNucleotideWing < 0) {
+        ++nucleicCount;
+        atomIndexNucleotideWing = atomIndex;
+      }
+      return;
+    }
     ++nucleicCount;
   }
+
 
   Atom getNucleotidePhosphorusAtom() {
     if (atomIndexNucleotidePhosphorus < 0)
@@ -320,8 +347,17 @@ final public class Group {
       chain.pdbmodel.pdbfile.frame.getAtomAt(atomIndexNucleotidePhosphorus);
   }
 
+  Atom getNucleotideWingAtom() {
+    if (atomIndexNucleotidePhosphorus < 0)
+      return null;
+    return
+      chain.pdbmodel.pdbfile.frame.getAtomAt(atomIndexNucleotideWing);
+  }
+
   boolean hasNucleotidePhosphorus() {
-    return atomIndexNucleotidePhosphorus >= 0 && nucleicCount > 5;
+    return (atomIndexNucleotidePhosphorus >= 0 &&
+            atomIndexNucleotideWing >= 0 &&
+            nucleicCount > 5);
   }
 
 }

@@ -1524,6 +1524,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "H5T",
     "H3T",
     "2HO*", // 30
+
+    "C6",   // 31
   };
 
   public final static int SPECIALATOMID_MAINCHAIN_MAX = 4;
@@ -1533,7 +1535,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // others will get their atomid changed
   public final static int SPECIALATOMID_MAINCHAIN_IMPOSTERS = 4;
 
-  public final static int SPECIALATOMID_NUCLEIC_MAX = 31;
+  public final static int SPECIALATOMID_NUCLEOTIDE_WING = 31;
+  public final static int SPECIALATOMID_NUCLEOTIDE_MAX = 32;
 
   public final static short RESID_AMINO_MAX = 22;
 

@@ -50,6 +50,12 @@ public class NucleotidePolymer extends Polymer {
     return getLeadAtom(groupIndex).point3f;
   }
 
+  boolean hasWingPoints() { return true; }
+
+  Point3f getWingPoint(int polymerIndex) {
+    return groups[polymerIndex].getWingAtom().point3f;
+  }
+  
   public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex < count &&
         groups[groupIndex].isHelixOrSheet()) {

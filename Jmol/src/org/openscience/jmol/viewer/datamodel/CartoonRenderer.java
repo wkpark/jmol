@@ -163,9 +163,10 @@ class CartoonRenderer extends McpsRenderer {
     int diameterBeg = viewer.scaleToScreen(leadMidpointScreens[i].z, madBeg);
     int diameterEnd = viewer.scaleToScreen(leadMidpointScreens[iNext1].z, madEnd);
     int diameterMid =
-      viewer.scaleToScreen(polymerGroups[i].getAlphaCarbonAtom().getScreenZ(),
+      viewer.scaleToScreen(polymerGroups[i].getLeadAtom().getScreenZ(),
                            madThis);
-    g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
+    g3d.fillHermite(colix, 4,
+                    diameterBeg, diameterMid, diameterEnd,
                     leadMidpointScreens[iPrev1], leadMidpointScreens[i],
                     leadMidpointScreens[iNext1], leadMidpointScreens[iNext2]);
 //    System.out.println("render1Segment: iPrev1=" + iPrev1 +

@@ -91,5 +91,32 @@ public class NucleotidePolymer extends Polymer {
   }
 
   public void calcHydrogenBonds() {
+    System.out.println("NucleotidePolymer.calcHydrogenBonds()");
+    PdbModel model = chain.pdbmodel;
+    for (int i = model.getChainCount(); --i >= 0; ) {
+      Chain otherChain = model.getChain(i);
+      if (otherChain == chain) // don't look at self
+        continue;
+      Polymer otherPolymer = otherChain.getPolymer();
+      if (otherPolymer == null || !(otherPolymer instanceof NucleotidePolymer))
+        continue;
+      System.out.println("I see another nucleotide polymer:" + i);
+      lookForHbonds((NucleotidePolymer)otherPolymer);
+    }
+  }
+
+  void lookForHbonds(NucleotidePolymer other) {
+    for (int i = count; --i >= 0; ) {
+      Group myNucleotide = groups[i];
+      Atom myN1 = myNucleotide.getPurineN1();
+      if (myN1 == null)
+        continue;
+      for (int j = other.count; --j >= 0; ) {
+        Atom otherN3 = other.groups[j].getPyramidineN3();
+        if (otherN3 == null)
+          continue;
+        System.out.println("found a candidate hbond match");
+      }
+    }
   }
 }

@@ -1530,6 +1530,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "2HO*", // 30
 
     "C6",   // 31
+    "N1",   // 32
   };
 
   public final static int SPECIALATOMID_MAINCHAIN_MAX = 4;

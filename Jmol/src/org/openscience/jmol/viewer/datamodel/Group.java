@@ -370,4 +370,18 @@ final public class Group {
             nucleicCount > 5);
   }
 
+  Atom getPurineN1() {
+    if (groupID >= 23 && groupID <= 28) {
+      System.out.println("need to return purine N1");
+      return null;
+    }
+    return null;
+  }
+
+  Atom getPyramidineN3() {
+    if (groupID >= 29 && groupID <= 34)
+      System.out.println("need to return pyramidine N3");
+    return null;
+  }
+
 }

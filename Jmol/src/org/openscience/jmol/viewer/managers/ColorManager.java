@@ -25,9 +25,9 @@
  */
 package org.openscience.jmol.viewer.managers;
 
+import org.jmol.g3d.*;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.script.Token;
 
 import java.awt.Color;
@@ -232,59 +232,7 @@ public class ColorManager {
 
   public void setColorBackground(String colorName) {
     if (colorName != null && colorName.length() > 0)
-      setColorBackground(getColorFromString(colorName));
-  }
-
-  private static final Hashtable mapJavaScriptColors = new Hashtable();
-  static {
-    for (int i = JmolConstants.colorNames.length; --i >= 0; )
-      mapJavaScriptColors.put(JmolConstants.colorNames[i],
-                              new Color(JmolConstants.colorArgbs[i]));
-  }
-
-  public static int getArgbFromString(String strColor) {
-    /*
-    System.out.println("ColorManager.getArgbFromString(" + strColor + ")");
-    */
-    if (strColor != null) {
-      if (strColor.length() == 7 && strColor.charAt(0) == '#') {
-        try {
-          int red = Integer.parseInt(strColor.substring(1, 3), 16);
-          int grn = Integer.parseInt(strColor.substring(3, 5), 16);
-          int blu = Integer.parseInt(strColor.substring(5, 7), 16);
-          return (0xFF000000 |
-                  (red & 0xFF) << 16 |
-                  (grn & 0xFF) << 8  |
-                  (blu & 0xFF));
-        } catch (NumberFormatException e) {
-        }
-      } else {
-        Color color = (Color)mapJavaScriptColors.get(strColor.toLowerCase());
-        if (color != null)
-          return color.getRGB();
-      }
-    }
-    return 0;
-  }
-
-  public static Color getColorFromString(String strColor) {
-    if (strColor != null) {
-      if (strColor.length() == 7 && strColor.charAt(0) == '#') {
-        try {
-          int red = Integer.parseInt(strColor.substring(1, 3), 16);
-          int grn = Integer.parseInt(strColor.substring(3, 5), 16);
-          int blu = Integer.parseInt(strColor.substring(5, 7), 16);
-          return new Color(red, grn, blu);
-        } catch (NumberFormatException e) {
-        }
-      } else {
-        Color color = (Color)mapJavaScriptColors.get(strColor.toLowerCase());
-        if (color != null)
-          return color;
-      }
-    }
-    System.out.println("error converting string to color:" + strColor);
-    return Color.pink;
+      setColorBackground(viewer.getColorFromString(colorName));
   }
 
   public short getColixAtom(Atom atom) {

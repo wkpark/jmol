@@ -415,7 +415,8 @@ public class TransformManager {
 
   public float scaleToPerspective(int z, float sizeAngstroms) {
     return (perspectiveDepth
-            ? (sizeAngstroms * cameraDistance) / + z
+            // mth 2004 04 02 ... what the hell is this ... must be a bug
+            ? (sizeAngstroms * cameraDistance) / + z // <-- ??
             : sizeAngstroms);
   }
 
@@ -435,7 +436,8 @@ public class TransformManager {
   ****************************************************************/
 
   public final Matrix4f matrixTransform = new Matrix4f();
-  private final Point3f point3dScreenTemp = new Point3f();
+  private final Point3f point3fVibrationTemp = new Point3f();
+  private final Point3f point3fScreenTemp = new Point3f();
   private final Point3i point3iScreenTemp = new Point3i();
   private final Matrix4f matrixTemp = new Matrix4f();
   private final Vector3f vectorTemp = new Vector3f();
@@ -527,9 +529,9 @@ public class TransformManager {
   }
 
   public Point3i transformPoint(Point3f pointAngstroms) {
-    matrixTransform.transform(pointAngstroms, point3dScreenTemp);
+    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
 
-    int z = (int)point3dScreenTemp.z;
+    int z = (int)point3fScreenTemp.z;
     if (z < cameraDistance) {
       System.out.println("need to back up the camera");
       increaseRotationRadius = true;
@@ -543,12 +545,49 @@ public class TransformManager {
     point3iScreenTemp.z = z;
     if (perspectiveDepth) {
       float perspectiveFactor = cameraDistanceFloat / z;
-      point3dScreenTemp.x *= perspectiveFactor;
-      point3dScreenTemp.y *= perspectiveFactor;
+      point3fScreenTemp.x *= perspectiveFactor;
+      point3fScreenTemp.y *= perspectiveFactor;
     }
-    point3iScreenTemp.x = (int)(point3dScreenTemp.x + xTranslation);
-    point3iScreenTemp.y = (int)(point3dScreenTemp.y + yTranslation);
+    point3iScreenTemp.x = (int)(point3fScreenTemp.x + xTranslation);
+    point3iScreenTemp.y = (int)(point3fScreenTemp.y + yTranslation);
     return point3iScreenTemp;
+  }
+
+  public Point3i transformPoint(Point3f pointAngstroms,
+                                Vector3f vibrationVector) {
+    if (! vibrationOn || vibrationVector == null)
+      matrixTransform.transform(pointAngstroms, point3fScreenTemp);
+    else {
+      point3fVibrationTemp.scaleAdd(vibrationScale, vibrationVector,
+                                    pointAngstroms);
+      matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
+    }
+    
+    int z = (int)point3fScreenTemp.z;
+    if (z < cameraDistance) {
+      System.out.println("need to back up the camera");
+      increaseRotationRadius = true;
+      if (z < minimumZ)
+        minimumZ = z;
+      if (z <= 0) {
+        System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
+        z = 1;
+      }
+    }
+    point3iScreenTemp.z = z;
+    if (perspectiveDepth) {
+      float perspectiveFactor = cameraDistanceFloat / z;
+      point3fScreenTemp.x *= perspectiveFactor;
+      point3fScreenTemp.y *= perspectiveFactor;
+    }
+    point3iScreenTemp.x = (int)(point3fScreenTemp.x + xTranslation);
+    point3iScreenTemp.y = (int)(point3fScreenTemp.y + yTranslation);
+    return point3iScreenTemp;
+  }
+
+  public void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
+                             Point3i pointScreen) {
+    pointScreen.set(transformPoint(pointAngstroms, vibrationVector));
   }
 
   public void transformVector(Vector3f vectorAngstroms,
@@ -556,9 +595,34 @@ public class TransformManager {
     matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
+  ////////////////////////////////////////////////////////////////
+
+  public boolean vibrationOn;
+  public float vibrationPeriod;
+  int vibrationPeriodMs;
+  public float vibrationAmplitude;
+  float vibrationScale;
+  public float vibrationRadians;
+  
+
+  public void setVibrationPeriod(float period) {
+    this.vibrationPeriod = period;
+    this.vibrationPeriodMs = (int)(period * 1000);
+  }
+
+  public void setVibrationAmplitude(float amplitude) {
+    this.vibrationAmplitude = amplitude;
+  }
+
+  public void setVibrationT(float t) {
+    vibrationRadians = t * twoPI;
+    vibrationScale = (float)Math.cos(vibrationRadians) * vibrationAmplitude;
+  }
+
   public int spinX, spinY = 30, spinZ, spinFps = 30;
 
-  final static float radiansPerDegree = (float)(2 * Math.PI / 360);
+  final static float twoPI = (float)(2 * Math.PI);
+  final static float radiansPerDegree = (float)(twoPI / 360);
 
   public void setSpinX(int value) {
     spinX = value;
@@ -636,6 +700,59 @@ public class TransformManager {
             break;
           }
         }
+      }
+    }
+  }
+
+  /****************************************************************
+   * Vibration support
+   ****************************************************************/
+                                                                 
+  public void clearVibration() {
+    setVibrationOn(false);
+  }
+
+  VibrationThread vibrationThread;
+  public void setVibrationOn(boolean vibrationOn) {
+    if (! vibrationOn || ! viewer.haveFrame()) {
+      if (vibrationThread != null) {
+        vibrationThread.interrupt();
+        vibrationThread = null;
+      }
+      this.vibrationOn = false;
+      return;
+    }
+    if (viewer.getModelCount() < 1) {
+      this.vibrationOn = false;
+      return;
+    }
+    if (vibrationThread == null) {
+      vibrationThread = new VibrationThread();
+      vibrationThread.start();
+    }
+    this.vibrationOn = true;
+  }
+
+  class VibrationThread extends Thread implements Runnable {
+
+    public void run() {
+      long startTime = System.currentTimeMillis();
+      long lastRepaintTime = startTime;
+      try {
+        do {
+          long currentTime = System.currentTimeMillis();
+          int elapsed = (int)(currentTime - lastRepaintTime);
+          int sleepTime = 33 - elapsed;
+          if (sleepTime > 0)
+            Thread.sleep(sleepTime);
+          //
+          lastRepaintTime = currentTime = System.currentTimeMillis();
+          elapsed = (int)(currentTime - startTime);
+          float t = (float)(elapsed % vibrationPeriodMs) / vibrationPeriodMs;
+          setVibrationT(t);
+          viewer.refresh();
+        } while (! isInterrupted());
+      } catch (InterruptedException ie) {
       }
     }
   }

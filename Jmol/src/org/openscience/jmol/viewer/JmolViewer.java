@@ -25,8 +25,8 @@
 package org.openscience.jmol.viewer;
 
 import org.jmol.api.ModelAdapter;
+import org.jmol.g3d.*;
 import org.openscience.jmol.viewer.managers.*;
-import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.datamodel.*;
 
 import org.openscience.jmol.viewer.script.Eval;
@@ -119,7 +119,7 @@ final public class JmolViewer {
                        "\njava.version:" + strJavaVersion +
                        "\nos.name:" + strOSName);
 
-    g3d = new Graphics3D(this);
+    g3d = new Graphics3D(awtComponent);
     colorManager = new ColorManager(this, g3d);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
@@ -372,6 +372,17 @@ final public class JmolViewer {
     return transformManager.transformPoint(pointAngstroms);
   }
 
+  public Point3i transformPoint(Point3f pointAngstroms,
+                                Vector3f vibrationVector) {
+    return transformManager.transformPoint(pointAngstroms, vibrationVector);
+  }
+
+  public void transformPoint(Point3f pointAngstroms,
+                             Vector3f vibrationVector, Point3i pointScreen) {
+    transformManager.transformPoint(pointAngstroms, vibrationVector,
+                                    pointScreen);
+  }
+
   public void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
     transformManager.transformPoint(pointAngstroms, pointScreen);
   }
@@ -458,6 +469,33 @@ final public class JmolViewer {
     g3d.setSlabValue(slabValue);
   }
   
+  public void setVibrationPeriod(float period) {
+    transformManager.setVibrationPeriod(period);
+  }
+
+  public float getVibrationPeriod() {
+    return transformManager.vibrationPeriod;
+  }
+
+  public void setVibrationAmplitude(float amplitude) {
+    transformManager.setVibrationAmplitude(amplitude);
+  }
+  public float getVibrationAmplitude() {
+    return transformManager.vibrationAmplitude;
+  }
+
+  public void setVibrationT(float t) {
+    transformManager.setVibrationT(t);
+  }
+
+  public float getVibrationRadians() {
+    return transformManager.vibrationRadians;
+  }
+
+  public void setVibrationOn(boolean vibrationOn) {
+    transformManager.setVibrationOn(vibrationOn);
+  }
+
   public void setSpinX(int value) {
     transformManager.setSpinX(value);
   }
@@ -644,7 +682,7 @@ final public class JmolViewer {
   }
 
   public Color getColorFromString(String colorName) {
-    return colorManager.getColorFromString(colorName);
+    return Graphics3D.getColorFromString(colorName);
   }
 
   public void setSpecular(boolean specular) {
@@ -2000,32 +2038,4 @@ final public class JmolViewer {
     return g3d.getColor(modelManager.getBondColix2(i));
   }
 
-  ////////////////////////////////////////////////////////////////
-  // Perhaps these should be moved to JmolUtils...
-  ////////////////////////////////////////////////////////////////
-
-  public static Object setLength(Object array, int newLength) {
-    Object t =
-      Array.newInstance(array.getClass().getComponentType(), newLength);
-    int oldLength = Array.getLength(array);
-    System.arraycopy(array, 0, t, 0,
-                     oldLength < newLength ? oldLength : newLength);
-    return t;
-  }
-
-  public static int[] setLength(int[] array, int newLength) {
-    int oldLength = array.length;
-    int[] t = (int[])Array.newInstance(Integer.TYPE, newLength);
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
-    return t;
-  }
-  
-  public static short[] setLength(short[] array, int newLength) {
-    int oldLength = array.length;
-    short[] t = (short[])Array.newInstance(Short.TYPE, newLength);
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
-    return t;
-  }
 }

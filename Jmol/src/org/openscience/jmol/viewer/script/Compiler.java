@@ -24,7 +24,7 @@
  */
 
 package org.openscience.jmol.viewer.script;
-import org.openscience.jmol.viewer.managers.ColorManager;
+import org.jmol.g3d.Graphics3D;
 import org.openscience.jmol.viewer.datamodel.PdbGroup;
 
 import java.util.Hashtable;
@@ -1204,7 +1204,7 @@ class Compiler {
         break;
       } else if (token.tok == Token.identifier) {
         String id = (String)token.value;
-        int argb = ColorManager.getArgbFromString(id);
+        int argb = Graphics3D.getArgbFromString(id);
         if (argb != 0) {
           token.tok = Token.colorRGB;
           token.intValue = argb;

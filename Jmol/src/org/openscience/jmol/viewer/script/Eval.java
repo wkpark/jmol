@@ -24,9 +24,9 @@
  */
 package org.openscience.jmol.viewer.script;
 
+import org.jmol.g3d.Font3D;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.*;
-import org.openscience.jmol.viewer.g3d.Font3D;
 import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
@@ -387,8 +387,14 @@ public class Eval implements Runnable {
       case Token.wireframe:
         wireframe();
         break;
+      case Token.vectors:
+        vectors();
+        break;
       case Token.animation:
         animation();
+        break;
+      case Token.vibration:
+        vibration();
         break;
       case Token.dots:
         dots();
@@ -1304,6 +1310,7 @@ public class Eval implements Runnable {
     case Token.echo:
     case Token.monitor:
     case Token.hover:
+    case Token.vectors:
       colorObject(tok, 2);
       break;
     case Token.identifier:
@@ -1880,6 +1887,34 @@ public class Eval implements Runnable {
                             new Integer(mad));
   }
 
+  void vectors() throws ScriptException {
+    int tok = statement[1].tok;
+    short mad = 1;
+    switch (tok) {
+    case Token.on:
+      break;
+    case Token.off:
+      mad = 0;
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol > 750)
+        numberOutOfRange();
+      mad = (short)(radiusRasMol * 4 * 2);
+      break;
+    case Token.decimal:
+      float angstroms = ((Float)statement[1].value).floatValue();
+      if (angstroms > 3)
+        numberOutOfRange();
+      mad = (short)(angstroms * 1000 * 2);
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    System.out.println("setShapeSize(vecors)");
+    viewer.setShapeSize(JmolConstants.SHAPE_VECTORS, mad);
+  }
+
   void animation() throws ScriptException {
     if (statementLength < 2)
       subcommandExpected();
@@ -1931,6 +1966,32 @@ public class Eval implements Runnable {
     }
     viewer.setAnimationReplayMode(animationMode,
                                   getFloat(3), getFloat(4), getFloat(5));
+  }
+
+  void vibration() throws ScriptException {
+    if (statementLength < 2)
+      subcommandExpected();
+    int tok = statement[1].tok;
+    switch(tok) {
+    case Token.on:
+      float period = 2;
+      float amplitude = 1;
+      if (statementLength >= 3) {
+        period = getFloat(2);
+        if (statementLength == 4)
+          amplitude = getFloat(3);
+      }
+      viewer.setVibrationPeriod(period);
+      viewer.setVibrationAmplitude(amplitude);
+      viewer.setVibrationT(0f);
+      viewer.setVibrationOn(true);
+      break;
+    case Token.off:
+      viewer.setVibrationOn(false);
+      break;
+    default:
+      unrecognizedSubcommand();
+    }
   }
 
   float getFloat(int index) throws ScriptException {
@@ -2199,6 +2260,9 @@ public class Eval implements Runnable {
       break;
     case Token.hover:
       shapeType = JmolConstants.SHAPE_HOVER;
+      break;
+    case Token.vectors:
+      shapeType = JmolConstants.SHAPE_VECTORS;
       break;
     default:
       unrecognizedColorObject();

@@ -162,6 +162,8 @@ public class Token {
   // jmol commands
   final static int font         = command | 58;
   final static int hover        = command | 59 | specialstring;
+  final static int vibration    = command | 60;
+  final static int vectors      = command | 61;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -398,6 +400,8 @@ public class Token {
     // jmol commands
     "font",              new Token(font,       "font"),
     "hover",             new Token(hover,      "hover"),
+    "vibration",         new Token(vibration,  "vibration"),
+    "vectors",           new Token(vectors,   onDefault1, "vectors"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

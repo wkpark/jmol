@@ -75,6 +75,13 @@
   </contributor>
 </contributors>
 
+<changes version="jmol-11pre?">
+  <change contributor="EW">
+    Completed much of the CdkJmolAdapter: PDB properties are now supported, and 
+    ChemSequence/ChemModel is mapped to AtomSetCollection/AtomSet.
+  </change>
+</changes>
+
 <changes version="jmol-10">
   <change contributor="MTH">
     Rearchitected and reimplemented Jmol core

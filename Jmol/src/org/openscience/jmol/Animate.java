@@ -58,6 +58,8 @@ public class Animate extends JDialog implements ActionListener,Runnable {
     private int speed = 10;
     private displayPanel display;
 
+    private boolean repeat = true;
+
     public static int currentFrame;
     private JSlider progressSlider = new JSlider(JSlider.HORIZONTAL, 1, 1, 1);
     private JSlider iSlider;
@@ -83,7 +85,7 @@ public class Animate extends JDialog implements ActionListener,Runnable {
         currentFrame = 0;
         haveFile = true;
         display.setChemFile(cf);
-		setFrame(currentFrame, true);
+	setFrame(currentFrame, true);
     }
 
     private void createExtraFrames() {
@@ -198,7 +200,10 @@ public class Animate extends JDialog implements ActionListener,Runnable {
                 if (currentFrame < nframes-1) {
                     currentFrame++;
                 } else {
-                    currentFrame = 0;
+		    currentFrame = 0;
+		    if (!repeat) {
+			animThread = null;
+		    }
                 }
                 setFrame(currentFrame, true);     
                 /* 
@@ -277,7 +282,15 @@ public class Animate extends JDialog implements ActionListener,Runnable {
         JPanel rcPanel = new JPanel();
         rcPanel.setLayout( new BoxLayout(rcPanel, BoxLayout.X_AXIS) );
         rcPanel.setBorder(new TitledBorder(jrh.getString("controlsLabel")));
-        
+
+        JCheckBox rC = new JCheckBox(jrh.getString("repeatCBLabel"), false);
+	rC.setSelected(repeat);
+        rC.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+		    repeat = !repeat;
+                }
+            });
+	
         JButton rwb = new JButton(jrh.getIcon("rewindImage"));
         rwb.setMargin(new Insets(1,1,1,1));
         rwb.setToolTipText(jrh.getString("rewindTooltip"));    
@@ -314,6 +327,7 @@ public class Animate extends JDialog implements ActionListener,Runnable {
         ffb.setActionCommand("ff");
         ffb.addActionListener(this);
         
+	rcPanel.add(rC);
         rcPanel.add(rwb);
         rcPanel.add(Box.createHorizontalGlue()); 
         rcPanel.add(prb);
@@ -358,6 +372,7 @@ public class Animate extends JDialog implements ActionListener,Runnable {
         iSlider.addChangeListener(new NondragChangeListener());
 		
         JCheckBox iC = new JCheckBox(jrh.getString("interpCBLabel"), false);
+	iC.setSelected(false);
         iC.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     stop();
@@ -371,7 +386,6 @@ public class Animate extends JDialog implements ActionListener,Runnable {
                     }
                 }
             });
-                  
 
         JLabel iL = new JLabel(jrh.getString("interpSLabel"), 
                                SwingConstants.CENTER);

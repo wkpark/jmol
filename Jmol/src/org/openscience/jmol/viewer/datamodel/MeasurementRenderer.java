@@ -45,6 +45,7 @@ class MeasurementRenderer extends ShapeRenderer {
 
   short colixDistance;
   boolean showMeasurementLabels;
+  short measurementMad;
 
   Measurement measurement;
 
@@ -52,6 +53,8 @@ class MeasurementRenderer extends ShapeRenderer {
 
     colixDistance = viewer.getColixDistance();
     showMeasurementLabels = viewer.getShowMeasurementLabels();
+    measurementMad = viewer.getMeasurementMad();
+    System.out.println("render measurementMad=" + measurementMad);
 
     Measurement[] measurements = frame.measurements;
     for (int i = frame.measurementCount; --i >= 0; )
@@ -75,6 +78,22 @@ class MeasurementRenderer extends ShapeRenderer {
     }
   }
 
+  int drawSegment(int x1, int y1, int z1, int x2, int y2, int z2) {
+    if (measurementMad < 0) {
+      g3d.drawDashedLine(colixDistance, 2, 1, x1, y1, z1, x2, y2, z2);
+      return 1;
+    } else {
+      System.out.println("drawSegment cylinder");
+      int widthPixels = measurementMad;
+      if (measurementMad >= 20)
+        widthPixels = viewer.scaleToScreen((z1 + z2) / 2, measurementMad);
+      g3d.fillCylinder(colixDistance, Graphics3D.ENDCAPS_FLAT,
+                       widthPixels, x1, y1, z1, x2, y2, z2);
+
+      return (widthPixels + 1) / 2;
+    }
+  }
+
   void renderDistance() {
     Atom atomA = frame.getAtomAt(measurement.atomIndices[0]);
     Atom atomB = frame.getAtomAt(measurement.atomIndices[1]);
@@ -86,11 +105,10 @@ class MeasurementRenderer extends ShapeRenderer {
     if (zA < 0) zA = 0;
     int zB = atomB.z - zOffset;
     if (zB < 0) zB = 0;
-    g3d.drawDashedLine(colixDistance, 2, 1,
-                       atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
+    int radius = drawSegment(atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
     paintMeasurementString((atomA.x + atomB.x) / 2,
                            (atomA.y + atomB.y) / 2,
-                           (zA + zB) / 2);
+                           ((zA + zB) / 2), radius);
   }
                            
 
@@ -115,15 +133,13 @@ class MeasurementRenderer extends ShapeRenderer {
     if (zC < 0) zC = 0;
     int zD = atomD.z - zOffset;
     if (zD < 0) zD = 0;
-    g3d.drawDottedLine(colixDistance,
-                       atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
-    g3d.drawDottedLine(colixDistance,
-                       atomB.x, atomB.y, zB, atomC.x, atomC.y, zC);
-    g3d.drawDottedLine(colixDistance,
-                       atomC.x, atomC.y, zC, atomD.x, atomD.y, zD);
+    int radius = drawSegment(atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
+    radius += drawSegment(atomB.x, atomB.y, zB, atomC.x, atomC.y, zC);
+    radius += drawSegment(atomC.x, atomC.y, zC, atomD.x, atomD.y, zD);
+    radius /= 3;
     paintMeasurementString((atomA.x + atomB.x + atomC.x + atomD.x) / 4,
                            (atomA.y + atomB.y + atomC.y + atomD.y) / 4,
-                           (zA + zB + zC + zD) / 4);
+                           (zA + zB + zC + zD) / 4, radius);
   }
 
   AxisAngle4f aaT = new AxisAngle4f();
@@ -147,10 +163,9 @@ class MeasurementRenderer extends ShapeRenderer {
     if (zB < 0) zB = 0;
     int zC = atomC.z - zOffset;
     if (zC < 0) zC = 0;
-    g3d.drawDottedLine(colixDistance,
-                       atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
-    g3d.drawDottedLine(colixDistance,
-                       atomB.x, atomB.y, zB, atomC.x, atomC.y, zC);
+    int radius = drawSegment(atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
+    radius += drawSegment(atomB.x, atomB.y, zB, atomC.x, atomC.y, zC);
+    radius = (radius + 1) / 2;
 
     AxisAngle4f aa = measurement.aa;
     // FIXME mth -- this really should be a function of pixelsPerAngstrom
@@ -176,19 +191,20 @@ class MeasurementRenderer extends ShapeRenderer {
         Point3i screenLabel = viewer.transformPoint(pointT);
         int zLabel = screenLabel.z - zOffset;
         if (zLabel < 0) zLabel = 0;
-        paintMeasurementString(screenLabel.x, screenLabel.y, zLabel);
+        paintMeasurementString(screenLabel.x, screenLabel.y, zLabel, radius);
       }
     }
   }
 
-  void paintMeasurementString(int x, int y, int z) {
+  void paintMeasurementString(int x, int y, int z, int radius) {
     if (! showMeasurementLabels)
       return;
     String strMeasurement = measurement.strMeasurement;
-    Font font = viewer.getMeasureFont(10);
+    Font font = viewer.getMeasureFont(12);
     g3d.setFont(font);
     FontMetrics fontMetrics = g3d.getFontMetrics(font);
     int j = fontMetrics.stringWidth(strMeasurement);
-    g3d.drawString(strMeasurement, colixDistance, x+2, y, z);
+    g3d.drawString(strMeasurement, colixDistance,
+                   x+radius/2+2, y-radius/2, z - radius - 2);
   }
 }

@@ -1706,6 +1706,14 @@ final public class JmolViewer {
     return styleManager.showMeasurementLabels;
   }
 
+  public void setMeasurementMad(short mad) {
+    styleManager.setMeasurementMad(mad);
+    refresh();
+  }
+
+  public short getMeasurementMad() {
+    return styleManager.measurementMad;
+  }
 
   public Font getMeasureFont(int size) {
     return styleManager.getMeasureFont(size);

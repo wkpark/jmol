@@ -552,6 +552,13 @@ final public class Graphics3D {
                       xA, yA, zA, xB - xA, yB - yA, zB - zA);
   }
 
+  public void fillCylinder(short colix, byte endcaps,
+                           int diameter,
+                           int xA, int yA, int zA, int xB, int yB, int zB) {
+    cylinder3d.render(colix, colix, endcaps, diameter,
+                      xA, yA, zA, xB - xA, yB - yA, zB - zA);
+  }
+
   public void fillCylinder(short colix, byte endcaps, int diameter,
                            Point3i screenA, Point3i screenB) {
     cylinder3d.render(colix, colix, endcaps, diameter,

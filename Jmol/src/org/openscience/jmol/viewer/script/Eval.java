@@ -2147,7 +2147,18 @@ public class Eval implements Runnable {
   }
 
   void setMonitor() throws ScriptException {
-    viewer.setShowMeasurementLabels(getSetBoolean());
+    boolean showMeasurementLabels = false;
+    checkLength3();
+    switch (statement[2].tok) {
+    case Token.on:
+      viewer.setShowMeasurementLabels(true);
+      break;
+    case Token.off:
+      viewer.clearMeasurements();
+      break;
+    default:
+      viewer.setMeasurementMad(getSetAxesTypeMad());
+    }
   }
 
   void setDebugScript() throws ScriptException {

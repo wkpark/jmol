@@ -87,6 +87,12 @@ public class StyleManager {
     this.showMeasurementLabels = showMeasurementLabels;
   }
 
+  public short measurementMad = -1;
+  public void setMeasurementMad(short measurementMad) {
+    System.out.println("measurementMad=" + measurementMad);
+    this.measurementMad = measurementMad;
+  }
+
   public Font getMeasureFont(int size) {
     return new Font("Helvetica", Font.PLAIN, size);
   }

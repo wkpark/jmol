@@ -99,7 +99,7 @@
     Added rendering of polyhedrals.
   </change>
   <change contributor="ST">
-    Added Drag-and-Drop to the application.
+    Added Drag-and-Drop to the application for JVM 1.5 and better.
   </change>
 </changes>
 

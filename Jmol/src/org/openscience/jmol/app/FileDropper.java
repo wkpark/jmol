@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2000-2005  The Jmol Development Team
+ * Copyright (C) 2004-2005  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -128,7 +128,7 @@ public class FileDropper implements DropTargetListener {
                         System.out.println ("  class: " + flavor.getRepresentationClass().getName());
                         System.out.println ("  mime : " + flavor.getMimeType());
 
-                        if (flavor.getMimeType().equals("text/uri-list") &&
+                        if (flavor.getMimeType().startsWith("text/uri-list") &&
                             flavor.getRepresentationClass().getName().equals("java.lang.String")) {
 
                             /* This is one of the (many) flavors that KDE provides:
@@ -136,52 +136,72 @@ public class FileDropper implements DropTargetListener {
                                df 2 flavour java.awt.datatransfer.DataFlavor[mimetype=text/uri-list;representationclass=java.lang.String]
                                  java.lang.String
                                  String: file:/home/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/samples/cml/methanol2.cml
+                                 
+                               A later KDE version gave me the following. Note the mime!! hence the startsWith above
+                               
+                               df 3 flavor java.awt.datatransfer.DataFlavor[mimetype=text/uri-list;representationclass=java.lang.String]
+                                 class: java.lang.String
+                                 mime : text/uri-list; class=java.lang.String; charset=Unicode
                             */
 
-                            dtde.acceptDrop (DnDConstants.ACTION_COPY_OR_MOVE);
+                            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                             Object o = null;
 
                             try {
                                 o = t.getTransferData(flavor);
                             } catch (UnsupportedFlavorException ufe) {
-                                ufe.printStackTrace ();
+                                ufe.printStackTrace();
                             } catch (IOException ioe) {
-                                ioe.printStackTrace ();
+                                ioe.printStackTrace();
                             }
 
                             if ((o != null) && (o instanceof String)) {
-                                System.out.println ("  String: " + o.toString());
+                                System.out.println("  String: " + o.toString());
 
-                                PropertyChangeEvent pce = new PropertyChangeEvent (this, FD_PROPERTY_FILENAME, fd_oldFileName, o.toString());
-                                fd_propSupport.firePropertyChange (pce);
-                                dtde.getDropTargetContext ().dropComplete (true);
+                                PropertyChangeEvent pce = new PropertyChangeEvent(this, FD_PROPERTY_FILENAME, fd_oldFileName, o.toString());
+                                fd_propSupport.firePropertyChange(pce);
+                                dtde.getDropTargetContext().dropComplete(true);
                             }
                             return;
                         } else if (flavor.getMimeType().equals("application/x-java-serialized-object; class=java.lang.String")) {
 
                             /* This is one of the flavors that jEdit provides:
-
-                               df 2 flavour java.awt.datatransfer.DataFlavor[mimetype=text/uri-list;representationclass=java.lang.String]
-                                 java.lang.String
-                                 String: file:/home/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/samples/cml/methanol2.cml
+                            
+                               df 0 flavor java.awt.datatransfer.DataFlavor[mimetype=application/x-java-serialized-object;representationclass=java.lang.String]
+                                 class: java.lang.String
+                                 mime : application/x-java-serialized-object; class=java.lang.String
+                                 String: <molecule title="benzene.mol" xmlns="http://www.xml-cml.org/schema/cml2/core"
+                                 
+                               But KDE also provides:
+                               
+                               df 24 flavor java.awt.datatransfer.DataFlavor[mimetype=application/x-java-serialized-object;representationclass=java.lang.String]
+                                 class: java.lang.String
+                                 mime : application/x-java-serialized-object; class=java.lang.String
+                                 String: file:/home/egonw/Desktop/1PN8.pdb
                             */
 
-                            dtde.acceptDrop (DnDConstants.ACTION_COPY_OR_MOVE);
+                            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                             Object o = null;
 
                             try {
                                 o = t.getTransferData(df[i]);
                             } catch (UnsupportedFlavorException ufe) {
-                                ufe.printStackTrace ();
+                                ufe.printStackTrace();
                             } catch (IOException ioe) {
-                                ioe.printStackTrace ();
+                                ioe.printStackTrace();
                             }
 
                             if ((o != null) && (o instanceof String)) {
-                                System.out.println ("  String: " + o.toString());
-                                PropertyChangeEvent pce = new PropertyChangeEvent (this, FD_PROPERTY_INLINE, fd_oldFileName, o.toString());
-                                fd_propSupport.firePropertyChange (pce);
-                                dtde.getDropTargetContext ().dropComplete (true);
+                                String content = (String)o;
+                                System.out.println("  String: " + content);
+                                if (content.startsWith("file:/")) {
+                                    PropertyChangeEvent pce = new PropertyChangeEvent(this, FD_PROPERTY_FILENAME, fd_oldFileName, content);
+                                    fd_propSupport.firePropertyChange(pce);
+                                } else {
+                                    PropertyChangeEvent pce = new PropertyChangeEvent(this, FD_PROPERTY_INLINE, fd_oldFileName, content);
+                                    fd_propSupport.firePropertyChange(pce);
+                                }
+                                dtde.getDropTargetContext().dropComplete(true);
                             }
                             return;
                         }

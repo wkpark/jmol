@@ -304,7 +304,8 @@ public class Jmol extends JPanel {
         }
     });
     
-    /*DropTarget target = */new DropTarget (this, dropper);
+    this.setDropTarget(new DropTarget (this, dropper));
+    this.setEnabled(true);
 
     // splash.showStatus(jrh.translate("Launching main frame..."));
     say("Launching main frame...");

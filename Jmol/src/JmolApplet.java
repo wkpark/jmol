@@ -58,14 +58,14 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   String pauseCallback;
   String pickCallback;
 
-  private String defaultAtomTypesFileName = "Data/AtomTypes.txt";
-
   public String getAppletInfo() {
     return appletInfo;
   }
   private static String appletInfo =
     "Jmol Applet.  Part of the OpenScience project. " +
     "See jmol.sourceforge.net for more information";
+
+  /*
 
   private static String[][] paramInfo = {
     { "bgcolor", "color",
@@ -90,10 +90,12 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     return paramInfo;
   }
 
+  */
 
   public void init() {
     htmlName = getParameter("name");
-    mayScript = getParameter("mayscript") != null;
+    String ms = getParameter("mayscript");
+    mayScript = (ms != null) && (! ms.equalsIgnoreCase("false"));
     appletRegistry = new JmolAppletRegistry(htmlName, mayScript, this);
 
     loadProperties();
@@ -107,10 +109,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     //viewer = new JmolViewer(this, new CdkJmolModelAdapter());
     viewer = new JmolViewer(this, new SimpleModelAdapter());
     viewer.setJmolStatusListener(this);
-
-    if (! (viewer.strOSName.equals("Mac OS") &&
-           viewer.strJavaVersion.equals("1.1.5")))
-      jmolpopup = new JmolPopup(viewer, this);
 
     viewer.setAppletContext(getDocumentBase(), getCodeBase(),
                             getValue("JmolAppletProxy", null));
@@ -134,7 +132,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     URL codeBase = getCodeBase();
     try {
       URL urlProperties = new URL(codeBase, "JmolApplet.properties");
-      appletProperties = new PropertyResourceBundle(urlProperties.openStream());
+      appletProperties =
+        new PropertyResourceBundle(urlProperties.openStream());
     } catch (Exception ex) {
       System.out.println("JmolApplet.loadProperties() -> " + ex);
     }
@@ -160,7 +159,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       try {
         return Integer.parseInt(stringValue);
       } catch (NumberFormatException ex) {
-        System.out.println(propertyName + ":" + stringValue + " is not an integer");
+        System.out.println(propertyName + ":" +
+                           stringValue + " is not an integer");
       }
     return defaultValue;
   }
@@ -171,7 +171,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       try {
         return (new Double(stringValue)).doubleValue();
       } catch (NumberFormatException ex) {
-        System.out.println(propertyName + ":" + stringValue + " is not an integer");
+        System.out.println(propertyName + ":" +
+                           stringValue + " is not a double");
       }
     return defaultValue;
   }
@@ -222,9 +223,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
            messageCallback != null ||
            pauseCallback != null ||
            pickCallback != null))
-        System.out.println("WARNING!! to use callback function you *must* " +
-                           "declare the MAYSCRIPT attribute in your APPLET " +
-                           "tag in your html code");
+        System.out.println("WARNING!! MAYSCRIPT not found");
 
     }
     viewer.popHoldRepaint();
@@ -270,6 +269,11 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void handlePopupMenu(int x, int y) {
+    if (jmolpopup == null) {
+      if (! (viewer.strOSName.equals("Mac OS") &&
+             viewer.strJavaVersion.equals("1.1.5")))
+        jmolpopup = new JmolPopup(viewer, this);
+    }
     if (jmolpopup != null)
       jmolpopup.show(x, y);
   }
@@ -435,7 +439,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void script(String script) {
-    System.out.println(htmlName + " will try to run:\n-----" + script + "\n-----\n");
+    System.out.println(htmlName + " will try to run:\n-----" +
+                       script + "\n-----\n");
     setStatusMessage("Jmol script executing...");
     String strError = viewer.evalString(script);
     setStatusMessage(strError);

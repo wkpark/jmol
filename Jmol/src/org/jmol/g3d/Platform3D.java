@@ -29,6 +29,12 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 
+/**
+ *<p>
+ * Specifies the API to an underlying int[] buffer of ARGB values that
+ * can be converted into an Image object and a short[] for z-buffer depth.
+ *</p>
+ */ 
 abstract class Platform3D {
 
   int width, height;

@@ -32,11 +32,22 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import java.util.Vector;
 
-/****************************************************************
+/**
+ *<p>
+ * Implementation of hermite curves for drawing smoothed curves
+ * that pass through specified points.
+ *</p>
+ *<p>
+ * Examples of usage in Jmol include the commands: <code>trace,
+ * ribbons and cartoons</code>.
+ *</p>
+ *<p>
  * for some useful background info about hermite curves check out
+ * <a href='http://www.cubic.org/~submissive/sourcerer/hermite.htm'>
  * http://www.cubic.org/~submissive/sourcerer/hermite.htm
- ****************************************************************/
-
+ * </a>
+ *</p>
+ */
 class Hermite3D {
 
   Graphics3D g3d;

@@ -28,6 +28,15 @@ import java.awt.Graphics;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
+/**
+ *<p>
+ * Provides font support using a byte fid
+ * (<strong>F</strong>ont <strong>ID</strong>) as an index into font table.
+ *</p>
+ *<p>
+ * Supports standard font faces, font styles, and font sizes.
+ *</p>
+ */
 final public class Font3D {
 
   public final byte fid;

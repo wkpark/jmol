@@ -24,6 +24,16 @@
  */
 package org.jmol.g3d;
 
+/**
+ *<p>
+ * Implements 3D line drawing routines.
+ *</p>
+ *<p>
+ * A number of line drawing routines, most of which are used to
+ * implement higher-level shapes. Triangles and cylinders are drawn
+ * as a series of lines
+ *</p>
+ */
 final class Line3D {
 
   Graphics3D g3d;
@@ -64,6 +74,16 @@ final class Line3D {
   private final static int VISIBILITY_CLIPPED = 1;
   private final static int VISIBILITY_OFFSCREEN = 2;
 
+  /**
+   *<p>
+   * Cohen-Sutherland line clipping used to check visibility.
+   *</p>
+   *<p>
+   * Note that this routine is only used for visibility checking. To avoid
+   * integer rounding errors which cause cracking to occur in 'solid'
+   * surfaces, the lines are actually drawn from their original end-points.
+   *</p>
+   */
   int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     int cc1 = clipCode(x1, y1, z1);
     int cc2 = clipCode(x2, y2, z2);

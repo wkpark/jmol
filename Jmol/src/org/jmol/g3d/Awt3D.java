@@ -33,6 +33,20 @@ import java.awt.image.ImageConsumer;
 import java.awt.image.ColorModel;
 import java.awt.Rectangle;
 
+/**
+ *<p>
+ * Uses AWT classes to implement Platform3D when running on 1.1 JVMs.
+ *</p>
+ *<p>
+ * Uses the AWT imaging routines to convert an int[] of ARGB values
+ * into an Image by implementing the ImageProducer interface.
+ *</p>
+ *<p>
+ * This is used by MSFT Internet Explorer with the MSFT JVM,
+ * and Netscape 4.* on both Win32 and MacOS 9.
+ *</p>
+ */
+  
 final class Awt3D extends Platform3D implements ImageProducer {
 
   Component component;

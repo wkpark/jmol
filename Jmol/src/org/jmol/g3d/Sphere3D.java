@@ -29,6 +29,24 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
+/**
+ *<p>
+ * Implements high performance rendering of shaded spheres.
+ *</p>
+ *<p>
+ * Drawing spheres quickly is critically important to Jmol.
+ * These routines implement high performance rendering of
+ * spheres in 3D.
+ *</p>
+ *<p>
+ * If you can think of a faster way to implement this, please
+ * let us know.
+ *</p>
+ *<p>
+ * There is a lot of bit-twiddling going on here, which may
+ * make the code difficult to understand for non-systems programmers.
+ *</p>
+ */
 class Sphere3D {
 
   Graphics3D g3d;

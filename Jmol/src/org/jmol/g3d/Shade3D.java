@@ -25,6 +25,16 @@
 
 package org.jmol.g3d;
 
+/**
+ *<p>
+ * Implements the shading of RGB values to support shadow and lighting
+ * highlights.
+ *</p>
+ *<p>
+ * Each RGB value has 64 shades. shade[0] represents ambient lighting.
+ * shade[63] is white ... a full specular highlight.
+ *</p>
+ */
 final class Shade3D {
 
   // there are 64 shades of a given color
@@ -187,7 +197,15 @@ final class Shade3D {
   // this doesn't really need to be synchronized
   // no serious harm done if two threads write seed at the same time
   private static int seed = 0x12345679; // turn lo bit on
-  /* uses RANDU algorithm ... bad randomness but cheap */
+  /**
+   *<p>
+   * Implements RANDU algorithm for random noise in lighting/shading.
+   *</p>
+   *<p>
+   * RANDU is the classic example of a poor random number generator.
+   * But it is very cheap to calculate and is good enough for our purposes.
+   *</p>
+   */
   static int nextRandom8Bit() {
     int t = seed;
     seed = t = ((t << 16) + (t << 1) + t) & 0x7FFFFFFF;

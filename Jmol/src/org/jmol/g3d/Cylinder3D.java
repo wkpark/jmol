@@ -29,6 +29,14 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
+/**
+ *<p>
+ * Draws shaded cylinders in 3D.
+ *</p>
+ *<p>
+ * Cylinders are used to draw bonds.
+ *</p>
+ */
 class Cylinder3D {
 
   Graphics3D g3d;

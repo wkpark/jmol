@@ -24,6 +24,11 @@
  */
 package org.jmol.g3d;
 
+/**
+ *<p>
+ * Implements flat circle drawing/filling routines.
+ *</p>
+ */
 final class Circle3D {
 
   Graphics3D g3d;

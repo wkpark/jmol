@@ -27,13 +27,21 @@ package org.jmol.g3d;
 
 import java.awt.Color;
 
+/**
+ *<p>
+ * Implements a color index model using a colix as a
+ * <strong>COLor IndeX</strong>.
+ *</p>
+ *<p>
+ * A colix is a color index represented as a short int.
+ *</p>
+ *<p>
+ * The value 0 is considered a null value ... for no color. In Jmol this
+ * generally means that the value is inherited from some other object.
+ *</p>
+ */
 class Colix {
 
-  /****************************************************************
-   * colix support
-   *
-   * a colix is a color index stored as a short
-   ****************************************************************/
 
   private static short colixMax = 1;
   private static int[] argbs = new int[128];

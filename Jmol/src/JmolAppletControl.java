@@ -58,6 +58,7 @@ public class JmolAppletControl extends Applet {
   {"chimepush", "chimetoggle", "chimeradio", "button", "checkbox"};
 
   String myName;
+  boolean mayScript;
   JmolAppletRegistry appletRegistry;
   AppletContext context;
   String targetName;
@@ -103,7 +104,8 @@ public class JmolAppletControl extends Applet {
   public void init() {
     context = getAppletContext();
     myName = getParam("name");
-    appletRegistry = new JmolAppletRegistry(myName, this);
+    mayScript = getParam("mayscript") != null;
+    appletRegistry = new JmolAppletRegistry(myName, mayScript, this);
     
     targetName = getParam("target");
     typeName = getParamLowerCase("type");

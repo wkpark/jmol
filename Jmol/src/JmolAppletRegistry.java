@@ -31,26 +31,31 @@ import netscape.javascript.JSObject;
 public class JmolAppletRegistry {
 
   String name;
+  boolean mayScript;
   Applet applet;
   String strJavaVendor, strJavaVersion, strOSName;
   boolean ns4;
   JSObject jsoWindow;
   JSObject jsoTop;
 
-  public JmolAppletRegistry(String name, Applet applet) {
+  public JmolAppletRegistry(String name, boolean mayScript, Applet applet) {
     if (name == null || name.length() == 0)
       name = null;
     this.name = name;
+    this.mayScript = mayScript;
     this.applet = applet;
     strJavaVendor = System.getProperty("java.vendor");
     strJavaVersion = System.getProperty("java.version");
     strOSName = System.getProperty("os.name");
     jsoWindow = JSObject.getWindow(applet);
-    ns4 = strJavaVendor.startsWith("Netscape") & strJavaVersion.startsWith("1.1");
-    if (ns4)
-      checkInJavascript(name,applet);
-    else 
+    ns4 = (strJavaVendor.startsWith("Netscape") &
+           strJavaVersion.startsWith("1.1"));
+    if (! ns4)
       checkIn(name, applet);
+    else if (mayScript)
+      checkInJavascript(name, applet);
+    else
+      System.out.println("WARNING!! mayscript not specified");
   }
 
   public void scriptButton(String targetName, String script, String buttonCallback) {
@@ -71,8 +76,12 @@ public class JmolAppletRegistry {
       JmolApplet targetJmolApplet = (JmolApplet)target;
       targetJmolApplet.scriptButton(jsoWindow, name, script, buttonCallback);
     } else {
-      jsoTop.call("runJmolAppletScript",
-                  new Object[] { targetName, jsoWindow, name, script, buttonCallback });
+      if (mayScript) 
+        jsoTop.call("runJmolAppletScript",
+                    new Object[] { targetName, jsoWindow, name,
+                                   script, buttonCallback });
+      else
+        System.out.println("WARNING!! mayscript not specified");
     }
   }
 

@@ -43,6 +43,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   JmolViewer viewer;
   boolean jvm12orGreater;
+  String emulate;
   Jvm12 jvm12;
   JmolPopup jmolpopup;
   String htmlName;
@@ -50,7 +51,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   JSObject jsoWindow;
 
-  String mayscript;
+  boolean mayScript;
   String animFrameCallback;
   String loadStructCallback;
   String messageCallback;
@@ -92,7 +93,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void init() {
     htmlName = getParameter("name");
-    appletRegistry = new JmolAppletRegistry(htmlName, this);
+    mayScript = getParameter("mayscript") != null;
+    appletRegistry = new JmolAppletRegistry(htmlName, mayScript, this);
 
     loadProperties();
     initWindows();
@@ -117,8 +119,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     if (jvm12orGreater)
       jvm12 = new Jvm12(this);
 
-    mayscript = getParameter("mayscript");
-    if (mayscript != null) {
+    if (mayScript) {
       try {
         jsoWindow = JSObject.getWindow(this);
       } catch (Exception e) {
@@ -175,27 +176,36 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     return defaultValue;
   }
 
+  private String getValueLowerCase(String paramName, String defaultValue) {
+    String value = getValue(paramName, defaultValue);
+    if (value != null) {
+      value = value.trim().toLowerCase();
+      if (value.length() == 0)
+        value = null;
+    }
+    return value;
+  }
+  
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
-      /*
-      viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
-      viewer.zoomToPercent(100);
-      //      viewer.zoomToPercent(getValue("zoom", 100));
-      viewer.setStyleBond(JmolViewer.SHADED);
-      viewer.setStyleAtom(JmolViewer.SHADED);
-      setStyle(getValue("style", "shaded"));
-      setLabelStyle(getValue("label", "none"));
-      viewer.setColorBackground(getValue("bgcolor", "white"));
-      String wfr = getValue("wireframeRotation", "false");
-      setWireframeRotation(wfr.equalsIgnoreCase("on") ||
-                           wfr.equalsIgnoreCase("true"));
-
-      String pd = getValue("perspectiveDepth", "true");
-      setPerspectiveDepth(pd.equalsIgnoreCase("on") ||
-                          pd.equalsIgnoreCase("true"));
-      */
-      viewer.setRasmolDefaults();
+      emulate = getValueLowerCase("emulate", "jmol");
+      if (emulate.equals("chime")) {
+        viewer.setRasmolDefaults();
+      } else {
+        viewer.setJmolDefaults();
+        viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
+        setStyle(getValue("style", "shaded"));
+        setLabelStyle(getValue("label", "none"));
+        viewer.setColorBackground(getValue("bgcolor", "white"));
+        String wfr = getValue("wireframeRotation", "false");
+        setWireframeRotation(wfr.equalsIgnoreCase("on") ||
+                             wfr.equalsIgnoreCase("true"));
+        
+        String pd = getValue("perspectiveDepth", "true");
+        setPerspectiveDepth(pd.equalsIgnoreCase("on") ||
+                            pd.equalsIgnoreCase("true"));
+      }
       
       load(getValue("load", null));
       loadInline(getValue("loadInline", null));
@@ -206,7 +216,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       messageCallback = getValue("MessageCallback", null);
       pauseCallback = getValue("PauseCallback", null);
       pickCallback = getValue("PickCallback", null);
-      if (mayscript == null &&
+      if (! mayScript &&
           (animFrameCallback != null ||
            loadStructCallback != null ||
            messageCallback != null ||
@@ -260,7 +270,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void handlePopupMenu(int x, int y) {
-    jmolpopup.show(x, y);
+    if (jmolpopup != null)
+      jmolpopup.show(x, y);
   }
 
   public void measureSelection(int atomIndex) {

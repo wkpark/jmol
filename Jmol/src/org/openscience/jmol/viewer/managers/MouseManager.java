@@ -44,6 +44,8 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
+  private static final boolean logMouseEvents = false;
+
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
     this.viewer = viewer;
@@ -66,7 +68,8 @@ public abstract class MouseManager {
 
   public int modeMouse = ROTATE;
   public void setMode(int mode) {
-    //    System.out.println("MouseManager.setMode(" + modeNames[mode] + ")");
+    if (logMouseEvents)
+      System.out.println("MouseManager.setMode(" + modeNames[mode] + ")");
     modeMouse = mode;
   }
 
@@ -98,7 +101,8 @@ public abstract class MouseManager {
   }
 
   void mousePressed(int x, int y, int modifiers) {
-    System.out.println("mousePressed(" + x + "," + y + "," + modifiers + ")");
+    if (logMouseEvents)
+      System.out.println("mousePressed("+x+","+y+","+modifiers+")");
     if (! viewer.haveFile())
       return;
     xCurrent = xPrevious = x;
@@ -154,7 +158,8 @@ public abstract class MouseManager {
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
 
   void mouseClicked(int x, int y, int modifiers) {
-    System.out.println("mouseClicked(" + x + "," + y + "," + modifiers + ")");
+    if (logMouseEvents)
+      System.out.println("mouseClicked("+x+","+y+","+modifiers+")");
   }
 
   void mouseEntered(int x, int y, int modifiers) {
@@ -164,7 +169,8 @@ public abstract class MouseManager {
   }
 
   void mouseReleased(int x, int y, int modifiers) {
-    System.out.println("mouseReleased(" + x + "," + y + "," + modifiers + ")");
+    if (logMouseEvents)
+      System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
     viewer.setInMotion(false);
     if ((modifiers & CTRL_SHIFT_RIGHT) == RIGHT &&
         (modifiersWhenPressed & CTRL_SHIFT_RIGHT) == RIGHT) {

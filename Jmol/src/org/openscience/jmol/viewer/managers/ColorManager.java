@@ -106,23 +106,26 @@ public class ColorManager {
     colixLabel = Colix.getColix(color);
   }
 
-    public short colixDotsConvex = 0;
-    public short colixDotsConcave = Colix.GREEN;
-    public short colixDotsSaddle = Colix.RED;
+  private final static short colixDotsConcaveDefault = Colix.GREEN;
+  private final static short colixDotsSaddleDefault = Colix.BLUE;
 
-    public void setColorDotsConvex(Color color) {
-	colixDotsConvex = Colix.getColix(color);
-    }
-    public void setColorDotsConcave(Color color) {
-	colixDotsConcave = Colix.getColix(color);
-	if (colixDotsConcave == 0)
-	    colixDotsConcave = Colix.GREEN;
-    }
-    public void setColorDotsSaddle(Color color) {
-	colixDotsSaddle = Colix.getColix(color);
-	if (colixDotsSaddle == 0)
-	    colixDotsSaddle = Colix.RED;
-    }
+  public short colixDotsConvex = 0;
+  public short colixDotsConcave = colixDotsConcaveDefault;
+  public short colixDotsSaddle = colixDotsSaddleDefault;
+
+  public void setColorDotsConvex(Color color) {
+    colixDotsConvex = Colix.getColix(color);
+  }
+  public void setColorDotsConcave(Color color) {
+    colixDotsConcave = Colix.getColix(color);
+    if (colixDotsConcave == 0)
+      colixDotsConcave = colixDotsConcaveDefault;
+  }
+  public void setColorDotsSaddle(Color color) {
+    colixDotsSaddle = Colix.getColix(color);
+    if (colixDotsSaddle == 0)
+      colixDotsSaddle = colixDotsSaddleDefault;
+  }
 
   public Color colorDistance = Color.black;
   public short colixDistance = Colix.BLACK;

@@ -791,6 +791,7 @@ public interface JmolModelAdapter {
    */
   public final static int[] argbsCpk = {
     0xFFFF69B4, // HotPink        Xx   0
+    //    0xFFFFFAF0, // floralwhite 0xFFFFFAF0
     0xFFE0E0E0, // grey88          H   1
     //    0xFFF0FFFF, // azure           H   1
     //    0xFFF0F8FF, // AliceBlue    H   1
@@ -798,9 +799,8 @@ public interface JmolModelAdapter {
     0xFFB22222, // firebrick      Li   3
     0xFF228B22, // ForestGreen    Be   4
     0xFF00FF00, // green           B   5
-    //    0xFF708090, // SlateGray       C   6
-    //0xFF404040, // grey25          C   6
-    0xFF545454, // grey33          C   6
+    0xFF708090, // SlateGray       C   6
+    //0xFF545454, // grey33          C   6
     0xFF00BFFF, // DeepSkyBlue     N   7
     0xFFEE0000, // red2            O   8
     0xFFDAA520, // goldenrod       F   9 change me

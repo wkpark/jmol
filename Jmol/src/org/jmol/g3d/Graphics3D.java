@@ -47,11 +47,13 @@ final public class Graphics3D {
   Cylinder3D cylinder3d;
   Hermite3D hermite3d;
 
-  boolean tFullSceneAntialiasing;
+  boolean isFullSceneAntialiasingEnabled;
+  boolean antialiasThisFrame;
+
   boolean tPaintingInProgress;
 
   int windowWidth, windowHeight;
-  int width,height;
+  int width, height;
   int slab, depth;
   int xLast, yLast;
   int[] pbuf;
@@ -59,7 +61,7 @@ final public class Graphics3D {
 
   short colixBackground;
   int argbBackground;
-  final Rectangle rectClip = new Rectangle();
+  private final Rectangle rectClip = new Rectangle();
 
   int argbCurrent;
   int argbNoisyUp, argbNoisyDn;
@@ -80,11 +82,13 @@ final public class Graphics3D {
     //    setFontOfSize(13);
   }
   
-  public void setSize(Dimension dim) {
-    if (dim.width == windowWidth && dim.height == windowHeight)
+  public void setSize(Dimension dim, boolean enableFullSceneAntialiasing) {
+    if (dim.width == windowWidth && dim.height == windowHeight &&
+        enableFullSceneAntialiasing == isFullSceneAntialiasingEnabled)
       return;
     windowWidth = dim.width;
     windowHeight = dim.height;
+    isFullSceneAntialiasingEnabled = enableFullSceneAntialiasing;
     width = -1; height = -1;
     pbuf = null;
     zbuf = null;
@@ -117,26 +121,6 @@ final public class Graphics3D {
     platform.setBackground(argbBackground);
   }
   
-  public void setRectClip(Rectangle clip) {
-    if (clip == null) {
-      rectClip.x = rectClip.y = 0;
-      rectClip.width = width;
-      rectClip.height = height;
-    } else {
-      rectClip.setBounds(clip);
-      // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
-      // that is wider than the current window during window resize
-      if (rectClip.x < 0)
-        rectClip.x = 0;
-      if (rectClip.y < 0)
-        rectClip.y = 0;
-      if (rectClip.x + rectClip.width > width)
-        rectClip.width = width - rectClip.x;
-      if (rectClip.y + rectClip.height > height)
-        rectClip.height = height - rectClip.y;
-    }
-  }
-
   public void setSlabAndDepthValues(int slabValue, int depthValue) {
     slab =
       slabValue < 0 ? 0
@@ -146,15 +130,14 @@ final public class Graphics3D {
       : depthValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : depthValue;
   }
 
-  /*
-  private void downSample() {
-    int[] pbuf1 = this.pbuf1;
-    int[] pbuf4 = this.pbuf4;
-    int width4 = this.width4;
+  private void downSampleFullSceneAntialiasing() {
+    int[] pbuf1 = pbuf;
+    int[] pbuf4 = pbuf;
+    int width4 = width;
     int offset1 = 0;
     int offset4 = 0;
-    for (int i = this.height1; --i >= 0; ) {
-      for (int j = this.width1; --j >= 0; ) {
+    for (int i = windowHeight; --i >= 0; ) {
+      for (int j = windowWidth; --j >= 0; ) {
         int argb;
         argb  = (pbuf4[offset4         ] >> 2) & 0x3F3F3F3F;
         argb += (pbuf4[offset4 + width4] >> 2) & 0x3F3F3F3F;
@@ -170,7 +153,6 @@ final public class Graphics3D {
       offset4 += width4;
     }
   }
-  */
 
   public boolean hasContent() {
     return platform.hasContent();
@@ -377,13 +359,44 @@ final public class Graphics3D {
 
   boolean currentlyRendering;
 
+  private void setRectClip(Rectangle clip) {
+    if (clip == null) {
+      rectClip.x = rectClip.y = 0;
+      rectClip.width = width;
+      rectClip.height = height;
+    } else {
+      rectClip.setBounds(clip);
+      // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
+      // that is wider than the current window during window resize
+      if (rectClip.x < 0)
+        rectClip.x = 0;
+      if (rectClip.y < 0)
+        rectClip.y = 0;
+      if (rectClip.x + rectClip.width > windowWidth)
+        rectClip.width = windowWidth - rectClip.x;
+      if (rectClip.y + rectClip.height > windowHeight)
+        rectClip.height = windowHeight - rectClip.y;
+
+      if (antialiasThisFrame) {
+        rectClip.x *= 2;
+        rectClip.y *= 2;
+        rectClip.width *= 2;
+        rectClip.height *= 2;
+      }
+    }
+  }
+
+
   // 3D specific routines
-  public void beginRendering(boolean tFullSceneAntialiasing) {
+  public void beginRendering(Rectangle rectClip, boolean antialiasThisFrame) {
     if (currentlyRendering)
       endRendering();
+    antialiasThisFrame &= isFullSceneAntialiasingEnabled;
+    this.antialiasThisFrame = antialiasThisFrame;
     currentlyRendering = true;
     if (pbuf == null) {
-      platform.allocateBuffers(windowWidth, windowHeight, false);
+      platform.allocateBuffers(windowWidth, windowHeight,
+                               isFullSceneAntialiasingEnabled);
       pbuf = platform.pBuffer;
       zbuf = platform.zBuffer;
       width = windowWidth;
@@ -391,31 +404,22 @@ final public class Graphics3D {
       height = windowHeight;
       yLast = height - 1;
     }
-    /*
-    if (tFullSceneAntialiasing && zbuf4 != null) {
-      width = width4;
-      xLast = width - 1;
-      height = height4;
-      yLast = height - 1;
-      pbuf = pbuf4;
-      zbuf = zbuf4;
-    } else {
-      width = width1;
-      xLast = width - 1;
-      height = height1;
-      yLast = height - 1;
-      pbuf = pbuf1;
-      zbuf = zbuf1;
+    width = windowWidth;
+    height = windowHeight;
+    if (antialiasThisFrame) {
+      width *= 2;
+      height *= 2;
     }
-    */
-    this.tFullSceneAntialiasing = tFullSceneAntialiasing;
+    xLast = width - 1;
+    yLast = height - 1;
+    setRectClip(rectClip);
     platform.obtainScreenBuffer();
   }
 
   public void endRendering() {
     if (currentlyRendering) {
-      //      if (tFullSceneAntialiasing)
-      //        downSample();
+      if (antialiasThisFrame)
+        downSampleFullSceneAntialiasing();
       platform.notifyEndOfRendering();
       currentlyRendering = false;
     }

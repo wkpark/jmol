@@ -456,8 +456,10 @@ final public class JmolViewer {
   final Dimension dimScreen = new Dimension();
   final Rectangle rectClip = new Rectangle();
 
+  boolean enableFullSceneAntialiasing = false;
+
   public void setScreenDimension(Dimension dim) {
-    // note that there is a bug in MacOS when comparing dimension objects
+    // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
     // so don't try dim1.equals(dim2)
     if (dim.width == dimScreen.width && dim.height == dimScreen.height)
       return;
@@ -465,7 +467,7 @@ final public class JmolViewer {
     dimScreen.height = dim.height;
     transformManager.setScreenDimension(dim.width, dim.height);
     transformManager.scaleFitToScreen();
-    g3d.setSize(dim);
+    g3d.setSize(dim, enableFullSceneAntialiasing);
   }
 
   public int getScreenWidth() {
@@ -476,7 +478,7 @@ final public class JmolViewer {
     return dimScreen.height;
   }
 
-  public void setRectClip(Rectangle clip) {
+  public void setRectClip(Rectangle clip, boolean antialiasThisFrame) {
     if (clip == null) {
       rectClip.x = rectClip.y = 0;
       rectClip.setSize(dimScreen);
@@ -1439,9 +1441,9 @@ final public class JmolViewer {
     manageScriptTermination();
     if (size != null)
       setScreenDimension(size);
-    setRectClip(clip);
-    g3d.setRectClip(rectClip);
-    g3d.beginRendering(false);
+    boolean antialiasThisFrame = true;
+    setRectClip(clip, antialiasThisFrame);
+    g3d.beginRendering(rectClip, antialiasThisFrame);
     /*
     System.out.println("renderScreenImage() thread:" + Thread.currentThread() +
                        " priority:" + Thread.currentThread().getPriority());
@@ -1463,9 +1465,10 @@ final public class JmolViewer {
   }
 
   public Image getScreenImage() {
-    setRectClip(null);
-    g3d.setRectClip(rectClip);
-    g3d.beginRendering(false);
+    boolean antialiasThisFrame = true;
+    setRectClip(null, antialiasThisFrame);
+    // FIXME ... rectClip is messed up for FSAA
+    g3d.beginRendering(rectClip, antialiasThisFrame);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                           repaintManager.displayModelIndex);
     g3d.endRendering();

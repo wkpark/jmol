@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -60,12 +59,10 @@ public class JmolApplet extends Applet implements StatusDisplay {
       "ATOMTYPES", "url",
       "URL of custom Atomtypes file, or leave blank to use the default atom definitions"
     }, {
-      "BCOLOUR", "color", "Background color"
+      "BGCOLOR", "color", "Background color"
     }, {
-      "FCOLOUR", "color", "Text color"
-    }, {
-      "STYLE", "SHADED, HALFSHADED, QUICKDRAW or WIREFRAME",
-      "One of the four possible rendering styles"
+      "STYLE", "SHADED, QUICKDRAW or WIREFRAME",
+      "One of the three possible rendering styles"
     }, {
       "WIREFRAMEROTATION", "ON or OFF",
       "Select change to wireframe mode during rotation"
@@ -87,6 +84,22 @@ public class JmolApplet extends Applet implements StatusDisplay {
       "Sets the picking mode to single or multiple atoms. (Default is single picking)."
     }
   };
+
+  private final String[] styleStrings
+    = {"QUICKDRAW", "SHADED", "WIREFRAME"};
+  private final byte[] atomStyles = {DisplayControl.QUICKDRAW,
+                                     DisplayControl.SHADING,
+                                     DisplayControl.WIREFRAME};
+  private final byte[] bondStyles = {DisplayControl.QUICKDRAW,
+                                     DisplayControl.SHADING,
+                                     DisplayControl.WIREFRAME};
+
+  private final String[] labelStyleStrings
+    = {"NONE","SYMBOLS","TYPES","NUMBERS"};
+  private final byte[] labelStyles = {DisplayControl.NOLABELS,
+                                      DisplayControl.SYMBOLS,
+                                      DisplayControl.TYPES,
+                                      DisplayControl.NUMBERS};
 
   AppletCanvas canvas;
   DisplayControl control;
@@ -119,7 +132,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
     control.setAppletDocumentBase(getDocumentBase());
 
     canvas.addMouseListener(new MyMouseListener());
-    canvas.addKeyListener(new MyKeyListener());
 
     setLayout(new java.awt.BorderLayout());
     add(canvas, "Center");
@@ -170,10 +182,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
         (wfr.equalsIgnoreCase("on") || wfr.equalsIgnoreCase("true")))
       control.setWireframeRotation(true);
 
-    setBackgroundColor(getParameter("BCOLOR"));
-    setBackgroundColor(getParameter("BCOLOUR"));
-    setForegroundColor(getParameter("FCOLOR"));
-    setForegroundColor(getParameter("FCOLOUR"));
+    setBackgroundColor(getParameter("BGCOLOR"));
 
     setAtomPropertiesFromFile(getParameter("ATOMTYPES"));
 
@@ -323,6 +332,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
     DisplayControl.QUICKDRAW,
     DisplayControl.SHADING};
 
+  /*
   void setRenderingStyle() {
     control.setStyleAtom(mapStyleAtom[style]);
     control.setStyleBond(mapStyleBond[style]);
@@ -332,6 +342,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
     // no mapping is necessary in this case
     control.setStyleLabel(labelStyle);
   }
+  */
 
   /**
    * Converts the html escape chars in the input and replaces them
@@ -455,92 +466,18 @@ public class JmolApplet extends Applet implements StatusDisplay {
     }
   }
 
-  class MyKeyListener extends KeyAdapter {
-
-    public void keyTyped(KeyEvent e) {
-
-      switch(e.getKeyChar()) {
-      case 's':
-      case 'S':
-        style++;
-        style %= drawStyleNames.length;
-        setStatusMessage("JmolApplet: Changing rendering style to "
-                         + drawStyleNames[style]);
-        setRenderingStyle();
-        break;
-      case 'l':
-      case 'L':
-        labelStyle++;
-        labelStyle %= 4;
-        setLabelStyle();
-        break;
-      case 'b':
-      case 'B':
-        if (bondsEnabled)
-          control.setShowBonds(!control.getShowBonds());
-        break;
-      case 'p':
-      case 'P':
-        control.setModeMouse(DisplayControl.PICK);
-        break;
-      case 't':
-      case 'T':
-        control.setModeMouse(DisplayControl.XLATE);
-        break;
-      case 'r':
-      case 'R':
-        control.setModeMouse(DisplayControl.ROTATE);
-        break;
-      case 'z':
-      case 'Z':
-        control.setModeMouse(DisplayControl.ZOOM);
-        break;
-      }
-    }
-  }
-
   //METHODS FOR JAVASCRIPT
+  /****************************************************************
+   * These methods are intended for use from JavaScript via LiveConnect
+   *
+   * Note that there are some bug in LiveConnect implementations that
+   * place some restrictions on the names of the functions in this file.
+   * For example, LiveConnect on Netscape 4.7 will get confused if you
+   * overload a method name with different parameter signatures ...
+   * ... even if one of the methods is private
+   * mth 2003 02
+   ****************************************************************/
 
-  /**
-   * <b>For Javascript:<\b> Takes the argument, pharses it as an XYZ file and sets it as the current model.
-   * For robustness EOL chars can be ignored and should then be replaced with % symbols.
-   * @param xyzString The whole of the molecule XYZ file as a single string.
-   * @param aliasedEndOfLine If 'T' then EOL chars should be replaced by % symbols otherwise 'F'.
-   */
-  public void setModelToRenderFromXYZString(String xyzString,
-      String aliasedEndOfLine) {
-
-    String aliasedEOL = aliasedEndOfLine.toUpperCase();
-    String hugeXYZString = xyzString;
-    if (aliasedEOL.equals("T")) {
-      hugeXYZString = recoverEOLSymbols(hugeXYZString);
-    }
-    try {
-      ChemFileReader cfr =
-        ReaderFactory.createReader(new java.io.StringReader(hugeXYZString));
-      cfr.setBondsEnabled(bondsEnabled);
-      control.setChemFile(cfr.read());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * <b>For Javascript:<\b> Takes the argument, pharses it as CML and sets it as the current model.
-   * Note that the CML should be straight- it is not necessary to use HTML escape codes.
-   * @param hugeCMLString The whole of the molecule CML as a single string.
-   */
-  public void setModelToRenderFromCMLString(String hugeCMLString) {
-
-    try {
-      ChemFileReader cfr =
-        ReaderFactory.createReader(new java.io.StringReader(hugeCMLString));
-      cfr.setBondsEnabled(bondsEnabled);
-      control.setChemFile(cfr.read());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
 
   /**
    * <b>For Javascript:<\b> Takes the argument, reads it as a file and allocates this as the current atom types- eg radius etc.
@@ -581,47 +518,15 @@ public class JmolApplet extends Applet implements StatusDisplay {
    * @param colourInHex The colour in the format #FF0000 for red etc
    */
   public void setBackgroundColor(String colorInHex) {
-    if (colorInHex != null)
+    if (colorInHex != null && colorInHex.length() > 0)
       control.setColorBackground(colorInHex);
-  }
-
-  /**
-   * <b>For Javascript:<\b> Set the foreground colour.
-   * @param colourInHex The colour in the format #FF0000 for red etc
-   */
-  public void setForegroundColor(String colorInHex) {
-    if (colorInHex != null)
-      control.setColorForeground(colorInHex);
-  }
-
-  /**
-   * <b>For Javascript:<\b> Causes Atoms to be shown or hidden.
-   * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
-   */
-  public void setAtomsShown(String value) {
-    //    myBean.setAtomsShown(value);
-  }
-
-  /**
-   * <b>For Javascript:<\b> Causes bonds to be shown or hidden.
-   * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
-   */
-  public void setBondsShown(String value) {
-    //    myBean.setBondsShown(value);
   }
 
   /**
    * <b>For Javascript:<\b> Sets the rendering style for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
    */
-  private final String[] styleStrings
-    = {"QUICKDRAW", "SHADED", "WIREFRAME"};
-  private final byte[] atomStyles = {DisplayControl.QUICKDRAW,
-                                     DisplayControl.SHADING,
-                                     DisplayControl.WIREFRAME};
-  private final byte[] bondStyles = {DisplayControl.QUICKDRAW,
-                                     DisplayControl.SHADING,
-                                     DisplayControl.WIREFRAME};
   public void setRenderingStyle(String style) {
+    System.out.println("setRenderingStyle(" + style + ")");
     for (int i = 0; i < styleStrings.length; ++i) {
       if (styleStrings[i].equalsIgnoreCase(style)) {
         control.setStyleAtom(atomStyles[i]);
@@ -634,12 +539,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
   /**
    * <b>For Javascript:<\b> Sets the rendering style for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
    */
-  private final String[] labelStyleStrings
-    = {"NONE","SYMBOLS","TYPES","NUMBERS"};
-  private final byte[] labelStyles = {DisplayControl.NOLABELS,
-                                      DisplayControl.SYMBOLS,
-                                      DisplayControl.TYPES,
-                                      DisplayControl.NUMBERS};
   public void setLabelRenderingStyle(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {
       if (labelStyleStrings[i].equalsIgnoreCase(style)) {
@@ -684,6 +583,10 @@ public class JmolApplet extends Applet implements StatusDisplay {
   public void rasmolScriptInline(String script) {
     if (eval.loadString(script))
       eval.run();
+  }
+
+  public void test(String str) {
+    System.out.println("test(" + str + ")");
   }
 
   public void load(String modelName) {

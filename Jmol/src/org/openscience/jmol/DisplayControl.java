@@ -501,14 +501,17 @@ final public class DisplayControl {
   
   public void setColorBackground(String colorName) {
     colorManager.setColorBackground(colorName);
+    refresh();
   }
 
+  /*
   public void setColorForeground(String colorName) {
     colorManager.setColorForeground(colorName);
   }
+  */
 
-  public Color getColorFromHexString(String colorName) {
-    return colorManager.getColorFromHexString(colorName);
+  public Color getColorFromString(String colorName) {
+    return colorManager.getColorFromString(colorName);
   }
 
   public Color getColorAtom(Atom atom) {

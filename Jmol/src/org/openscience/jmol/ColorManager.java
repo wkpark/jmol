@@ -189,7 +189,7 @@ public class ColorManager {
   }
 
   public void setColorBackground(String colorName) {
-    setColorBackground(getColorFromHexString(colorName));
+    setColorBackground(getColorFromString(colorName));
   }
 
   public void setColorForeground(String colorName) {
@@ -197,21 +197,55 @@ public class ColorManager {
     // setColorForeground(getColorFromHexString(colorName));
   }
 
-  public Color getColorFromHexString(String hexColor) {
-    if ((hexColor != null) &&
-        (hexColor.length() == 7) ||
-        (hexColor.charAt(0) == '#')) {
-      try {
-        int red = Integer.parseInt(hexColor.substring(1, 3), 16);
-        int grn = Integer.parseInt(hexColor.substring(3, 5), 16);
-        int blu = Integer.parseInt(hexColor.substring(5, 7), 16);
-        return new Color(red, grn, blu);
-      } catch (NumberFormatException e) {
+  // official HTML 4.0 color names & values
+  private static final Object[] aHtmlColors = {
+    "aqua",    Color.cyan,
+    "black",   Color.black,
+    "blue",    Color.blue,
+    "fuchsia", Color.magenta,
+    "gray",    Color.gray,
+    "green",   new Color(128, 128, 128),
+    "lime",    Color.green,
+    "maroon",  new Color(128,   0,   0),
+    "navy",    new Color(  0,   0, 128),
+    "olive",   new Color(128, 128,   0),
+    "purple",  new Color(128,   0, 128),
+    "red",     Color.red,
+    "silver",  Color.lightGray,
+    "teal",    new Color(  0, 128, 128),
+    "yellow",  Color.yellow,
+    "white",   Color.white
+  };
+
+  private static final Hashtable mapHtmlColors = new Hashtable();
+  static {
+    for (int i = aHtmlColors.length; --i >= 0; ) {
+      Color co = (Color)aHtmlColors[i];
+      String str = (String)aHtmlColors[--i];
+      mapHtmlColors.put(str, co);
+    }
+  }
+
+  public Color getColorFromString(String strColor) {
+    if (strColor != null) {
+      if (strColor.length() == 7 && strColor.charAt(0) == '#') {
+        try {
+          int red = Integer.parseInt(strColor.substring(1, 3), 16);
+          int grn = Integer.parseInt(strColor.substring(3, 5), 16);
+          int blu = Integer.parseInt(strColor.substring(5, 7), 16);
+          return new Color(red, grn, blu);
+        } catch (NumberFormatException e) {
+        }
+      } else {
+        Color color = (Color)mapHtmlColors.get(strColor.toLowerCase());
+        if (color != null)
+          return color;
       }
     }
-    System.out.println("error converting hex string to color:" + hexColor);
-    return Color.white;
+    System.out.println("error converting tsring to color:" + strColor);
+    return Color.pink;
   }
+
 
   public void flushCachedColors() {
     colorSelectionTransparent = null;

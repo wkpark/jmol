@@ -269,6 +269,7 @@
         <include name="**/Matrix3d.class"/>
         <include name="**/Quat4f.class"/>
         <include name="**/Quat4d.class"/>
+        <include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>
   </target>

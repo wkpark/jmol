@@ -551,9 +551,9 @@ public class CrystalPropertiesDialog extends JDialog
     jAngles_VEC_TXF.addElement(new JTextField(7));
     jAngles_VEC_TXF.addElement(new JTextField(7));
     jAngles_VEC_TXF.addElement(new JTextField(7));
-    jAngles_VEC_LBL.addElement(new JLabel("Alpha:", SwingConstants.RIGHT));
-    jAngles_VEC_LBL.addElement(new JLabel("Beta:", SwingConstants.RIGHT));
-    jAngles_VEC_LBL.addElement(new JLabel("Gamma:", SwingConstants.RIGHT));
+    jAngles_VEC_LBL.addElement(new JLabel("\u03B1:", SwingConstants.RIGHT)); //alpha
+    jAngles_VEC_LBL.addElement(new JLabel("\u03B2:", SwingConstants.RIGHT)); //beta
+    jAngles_VEC_LBL.addElement(new JLabel("\u03B3:", SwingConstants.RIGHT)); //gamma
     ((JTextField) (jAngles_VEC_TXF.elementAt(0)))
       .setToolTipText(JmolResourceHandler.getInstance()
 		      .getString("Crystprop.angleaTooltip"));

@@ -58,11 +58,13 @@ public class ChemFrameRenderer {
 			if (settings.getShowBonds()) {
 				Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
 				while (bondIter.hasMoreElements()) {
-					bondRenderer.paint(g, frame.getAtoms()[j],
-							(Atom) bondIter.nextElement(), settings);
+                    Atom otherAtom = (Atom)bondIter.nextElement();
+                    if (otherAtom.getScreenPosition().z < frame.getAtoms()[j].getScreenPosition().z) {
+						bondRenderer.paint(g, frame.getAtoms()[j],
+								otherAtom, settings);
+                    }
 				}
 			}
-
 			if (settings.getShowAtoms() && !settings.getFastRendering()) {
 				atomRenderer.paint(g, frame.getAtoms()[j], frame.getPickedAtoms()[j], settings,
 						false);
@@ -70,6 +72,17 @@ public class ChemFrameRenderer {
 				atomRenderer.paint(g, frame.getAtoms()[j], frame.getPickedAtoms()[j], settings,
 						true);
 			}
+			if (settings.getShowBonds()) {
+				Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
+				while (bondIter.hasMoreElements()) {
+                    Atom otherAtom = (Atom)bondIter.nextElement();
+                    if (otherAtom.getScreenPosition().z >= frame.getAtoms()[j].getScreenPosition().z) {
+						bondRenderer.paint(g, frame.getAtoms()[j],
+								otherAtom, settings);
+                    }
+				}
+			}
+
 		}
 	}
 

@@ -102,38 +102,41 @@ public class ModelManager {
   }
 
   public float getRotationRadius() {
-    return frame.getRotationRadius();
+    return (frame == null) ? 1 : frame.getRotationRadius();
   }
 
   public void increaseRotationRadius(float increaseInAngstroms) {
-    frame.increaseRotationRadius(increaseInAngstroms);
+    if (frame != null)
+      frame.increaseRotationRadius(increaseInAngstroms);
   }
 
   public Point3f getRotationCenter() {
-    return frame.getRotationCenter();
+    return (frame == null) ? null : frame.getRotationCenter();
   }
 
   public Point3f getBoundingBoxCenter() {
-    return frame.getBoundingBoxCenter();
+    return (frame == null) ? null : frame.getBoundingBoxCenter();
   }
 
   public Vector3f getBoundingBoxCornerVector() {
-    return frame.getBoundingBoxCornerVector();
+    return (frame == null) ? null : frame.getBoundingBoxCornerVector();
   }
 
   public int getModelCount() {
-    return frame.getModelCount();
+    return (frame == null) ? 0 : frame.getModelCount();
   }
 
   public int getAtomCount() {
-    return frame.getAtomCount();
+    return (frame == null) ? 0 : frame.getAtomCount();
   }
 
   public int getBondCount() {
-    return frame.getBondCount();
+    return (frame == null) ? 0 : frame.getBondCount();
   }
 
   public void setCenterAsSelected() {
+    if (frame == null)
+      return;
     int countSelected = 0;
     Point3f  center = new Point3f(); // defaults to 0,00,
     BitSet bsSelection = viewer.getSelectionSet();
@@ -152,13 +155,15 @@ public class ModelManager {
   }
 
   public void setRotationCenter(Point3f center) {
-    frame.setRotationCenter(center);
+    if (frame != null)
+      frame.setRotationCenter(center);
   }
 
   public boolean autoBond = true;
 
   public void rebond() {
-    frame.rebond();
+    if (frame != null)
+      frame.rebond();
   }
 
   public void setAutoBond(boolean ab) {

@@ -33,12 +33,10 @@ final public class FrameBuilder {
 
   final JmolViewer viewer;
   final ModelAdapter adapter;
-  final GroupBuilder groupBuilder;
 
   public FrameBuilder(JmolViewer viewer, ModelAdapter adapter) {
     this.viewer = viewer;
     this.adapter = adapter;
-    this.groupBuilder = new GroupBuilder(viewer, this);
   }
 
   protected void finalize() {
@@ -88,7 +86,7 @@ final public class FrameBuilder {
               iterAtom.getClientAtomReference());
     }
 
-    groupBuilder.finishBuildingGroup();
+    finishBuildingGroup();
     
     {
       ModelAdapter.BondIterator iterBond =
@@ -162,10 +160,11 @@ final public class FrameBuilder {
     this.bondCount = 0;
     bonds = new Bond[2 * atomCountEstimate];
     htAtomMap.clear();
-    groupBuilder.initializeBuild();
+    initializeGroupBuild();
   }
 
   void finalizeBuild() {
+    finalizeGroupBuild();
     currentModel = null;
     currentChain = null;
     atoms = null;
@@ -203,9 +202,9 @@ final public class FrameBuilder {
         groupInsertionCode != currentGroupInsertionCode) {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
-      groupBuilder.finishBuildingGroup();
-      groupBuilder.startBuildingGroup(currentChain, group3,
-                                      groupSequenceNumber, groupInsertionCode);
+      finishBuildingGroup();
+      startBuildingGroup(currentChain, group3,
+                         groupSequenceNumber, groupInsertionCode);
     }
     Atom atom = new Atom(viewer,
                          currentModelIndex,
@@ -219,7 +218,7 @@ final public class FrameBuilder {
                          isHetero, atomSerial, chainID,
                          vectorX, vectorY, vectorZ);
 
-    groupBuilder.registerAtom(atom);
+    registerAtomWithGroup(atom);
 
     if (atomCount == atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount + ATOM_GROWTH_INCREMENT);
@@ -256,5 +255,103 @@ final public class FrameBuilder {
     Bond bond = atom1.bondMutually(atom2, order);
     if (bond != null)
       bonds[bondCount++] = bond;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // special handling for groups
+  ////////////////////////////////////////////////////////////////
+
+  boolean hasPendingGroup;
+
+  void initializeGroupBuild() {
+    hasPendingGroup = false;
+  }
+
+  void finalizeGroupBuild() {
+    hasPendingGroup = false;
+    chain = null;
+  }
+
+  Chain chain;
+  String group3;
+  int seqcode;
+  int firstAtomIndex, lastAtomIndex;
+
+  int distinguishingBits;
+  final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
+
+  void startBuildingGroup(Chain chain, String group3,
+                          int groupSequenceNumber, char groupInsertionCode) {
+    if (hasPendingGroup)
+      throw new NullPointerException();
+    hasPendingGroup = true;
+    this.chain = chain;
+    this.group3 = group3;
+    this.seqcode = Group.getSeqcode(groupSequenceNumber, groupInsertionCode);
+    firstAtomIndex = -1;
+    distinguishingBits = 0;
+    for (int i = JmolConstants.ATOMID_MAX; --i >= 0; )
+      specialAtomIndexes[i] = Integer.MIN_VALUE;
+  }
+
+
+  void registerAtomWithGroup(Atom atom) {
+    if (! hasPendingGroup)
+      throw new NullPointerException();
+    int atomIndex = atom.atomIndex;
+    if (firstAtomIndex < 0)
+      firstAtomIndex = lastAtomIndex = atomIndex;
+    else if (++lastAtomIndex != atomIndex) {
+      System.out.println("unexpected atom index while building group\n" +
+                         " expected:" + lastAtomIndex +
+                         " received:" + atomIndex);
+      throw new NullPointerException();
+    }
+    int specialAtomID = atom.specialAtomID;
+    if (specialAtomID > 0) {
+      if (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
+        distinguishingBits |= 1 << specialAtomID;
+      if (specialAtomIndexes[specialAtomID] < 0)
+        specialAtomIndexes[specialAtomID] = atomIndex;
+    }
+  }
+
+
+  void finishBuildingGroup() {
+    if (! hasPendingGroup)
+      return;
+    Group group = distinguishAndAllocateGroup();
+    propogateGroup(group, firstAtomIndex, lastAtomIndex);
+    chain.addGroup(group);
+    hasPendingGroup = false;
+    chain = null;
+  }
+  
+  Group distinguishAndAllocateGroup() {
+    Group group = null;
+    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
+        JmolConstants.ATOMID_PROTEIN_MASK) {
+      group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
+                                               firstAtomIndex, lastAtomIndex,
+                                               specialAtomIndexes);
+    } else if ((distinguishingBits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
+               JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
+      group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
+                                               firstAtomIndex, lastAtomIndex,
+                                               specialAtomIndexes);
+    } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
+                JmolConstants.ATOMID_NUCLEIC_MASK)) {
+      group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
+                                                 firstAtomIndex, lastAtomIndex,
+                                                 specialAtomIndexes);
+    }
+    if (group == null)
+      group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+    return group;
+  }
+
+  void propogateGroup(Group group, int firstAtomIndex, int lastAtomIndex) {
+    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
+      atoms[i].setGroup(group);
   }
 }

@@ -2639,20 +2639,12 @@ public class Eval implements Runnable {
   void setMonitor() throws ScriptException {
     boolean showMeasurementLabels = false;
     checkLength3();
-    switch (statement[2].tok) {
-    case Token.on:
-      viewer.setShowMeasurementLabels(true);
-      break;
-    case Token.off:
-      viewer.setShowMeasurementLabels(false);
-      break;
-    case Token.identifier:
+    if (statement[2].tok == Token.identifier) {
       if (! viewer.setMeasureDistanceUnits((String)statement[2].value))
         unrecognizedSetParameter();
-      break;
-    default:
-      viewer.setMeasurementMad(getSetAxesTypeMad());
+      return;
     }
+    viewer.setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad());
   }
 
   void setDebugScript() throws ScriptException {

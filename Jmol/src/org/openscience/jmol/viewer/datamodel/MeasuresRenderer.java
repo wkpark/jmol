@@ -50,7 +50,7 @@ class MeasuresRenderer extends ShapeRenderer {
     Measures measures = (Measures)shape;
 
     colixDistance = measures.colix;
-    measurementMad = (short)-1;
+    measurementMad = measures.mad;
     font3d = measures.font3d;
     showMeasurementLabels = viewer.getShowMeasurementLabels();
     

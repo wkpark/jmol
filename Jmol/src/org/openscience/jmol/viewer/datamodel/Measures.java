@@ -37,6 +37,7 @@ public class Measures extends Shape {
   Measurement[] measurements = new Measurement[measurementGrowthIncrement];
   PendingMeasurement pendingMeasurement;
 
+  short mad = (short)-1;
   short colix = Graphics3D.WHITE;
   Font3D font3d;
 
@@ -108,6 +109,10 @@ public class Measures extends Shape {
 
   void pending(int[] countPlusIndices) {
     pendingMeasurement.setCountPlusIndices(countPlusIndices);
+  }
+
+  void setSize(int size, BitSet bsSelected) {
+    mad = (short)size;
   }
 
   public void setProperty(String propertyName, Object value,

@@ -1979,14 +1979,11 @@ final public class JmolViewer {
     return styleManager.showMeasurementLabels;
   }
 
-  public void setMeasurementMad(short mad) {
-    styleManager.setMeasurementMad(mad);
-    refresh();
-  }
-
+  /*
   public short getMeasurementMad() {
     return styleManager.measurementMad;
   }
+  */
 
   public boolean setMeasureDistanceUnits(String units) {
     return styleManager.setMeasureDistanceUnits(units);

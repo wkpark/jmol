@@ -558,7 +558,7 @@ function _jmolCheckBrowser() {
       var msg = checkBrowserUrlOrMessage;
       if (msg == null)
         msg = "Your web browser is not fully compatible with Jmol\n\n" +
-              "brower: " + browser +
+              "browser: " + browser +
               "   version: " + browserVersion +
               "   os: " + os +
               "\n\n" + ua;

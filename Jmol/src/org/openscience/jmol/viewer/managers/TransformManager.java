@@ -210,6 +210,7 @@ public class TransformManager {
     } else {
       vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
       vectorT.normalize();
+      vectorT.scale(1000);
       truncate0(sb, vectorT.x);
       truncate0(sb, vectorT.y);
       truncate0(sb, vectorT.z);

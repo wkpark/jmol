@@ -131,7 +131,7 @@ class MopacReader implements ChemFileReader {
       } else {
         throw new Exception("Error reading coordinates");
       }
-      mol.addVert(atomicNumber, (float) x, (float) y, (float) z);
+      mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
     }
   }
 
@@ -161,7 +161,7 @@ class MopacReader implements ChemFileReader {
       Object[] currentVectors = new Object[currentFreqs.length];
 
       line = readLine();
-      for (int i = 0; i < mol.getNvert(); ++i) {
+      for (int i = 0; i < mol.getNumberOfAtoms(); ++i) {
         line = readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);

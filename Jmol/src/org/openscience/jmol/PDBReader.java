@@ -97,7 +97,7 @@ public class PDBReader implements ChemFileReader {
         double x = FortranFormat.atof(sx);
         double y = FortranFormat.atof(sy);
         double z = FortranFormat.atof(sz);
-        frame.addVert(atype, (float) x, (float) y, (float) z);
+        frame.addAtom(atype, (float) x, (float) y, (float) z);
       }
 
       if (command.equalsIgnoreCase("END")) {

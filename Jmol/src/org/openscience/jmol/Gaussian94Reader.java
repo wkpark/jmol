@@ -176,7 +176,7 @@ public class Gaussian94Reader implements ChemFileReader {
       } else {
         throw new IOException("Error reading coordinates");
       }
-      frame.addVert(atomicNumber, (float) x, (float) y, (float) z);
+      frame.addAtom(atomicNumber, (float) x, (float) y, (float) z);
     }
   }
 
@@ -209,7 +209,7 @@ public class Gaussian94Reader implements ChemFileReader {
       line = input.readLine();
       line = input.readLine();
       line = input.readLine();
-      for (int i = 0; i < frame.getNvert(); ++i) {
+      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
@@ -254,7 +254,7 @@ public class Gaussian94Reader implements ChemFileReader {
   private void readNMRData(ChemFrame frame) throws IOException {
 
     int atomIndex = 0;
-    for (int i = 0; i < frame.getNvert(); ++i) {
+    for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
       String line = input.readLine().trim();
       while (line.indexOf("Isotropic") < 0) {
         if (line == null) {

@@ -168,7 +168,7 @@ public class CACheReader implements ChemFileReader {
 
       // have to add atomic number because ChemFrame does the atomtyping 
       // maybe that is where to check on fixing Zr atoms...
-      frame.addVert(anum, (float) x, (float) y, (float) z);
+      frame.addAtom(anum, (float) x, (float) y, (float) z);
     }
   }
 }

@@ -19,24 +19,25 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.cdopi.*;
+import org.openscience.cdopi.ANIMATIONCDO;
+import org.openscience.cdopi.CDOAcceptedObjects;
 import java.util.Vector;
 
 public final class JMolCDO extends ANIMATIONCDO {
 
   private Vector allFrames;
   private ChemFrame currentFrame;
-  private int frameNo;
+  private int frameNumber;
 
-  private String atom_type;
-  private String atom_x;
-  private String atom_y;
-  private String atom_z;
+  private String atomType;
+  private String atomX;
+  private String atomY;
+  private String atomZ;
 
   public JMolCDO() {
     allFrames = new Vector();
     currentFrame = new ChemFrame();
-    frameNo = 0;
+    frameNumber = 0;
   }
 
   public void startDocument() {
@@ -60,7 +61,6 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("Frame")) {
       this.startFrame();
     } else if (type.equals("Crystal")) {
-
       // assume frame has been started       
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at StartObject -> "
@@ -118,26 +118,22 @@ public final class JMolCDO extends ANIMATIONCDO {
   }
 
   public void startAnimation() {
-    System.out.println("startAnimation");
   }
 
   public void endAnimation() {
   }
 
   public void startFrame() {
-    System.out.println("startFrame");
-    frameNo++;
+    ++frameNumber;
     currentFrame = new ChemFrame();
   }
 
   public void endFrame() {
-    System.out.println("endFrame");
     allFrames.addElement(currentFrame);
   }
 
   public void setFrameProperty(String type, String value) {
 
-    System.out.println("setFrameProperty: " + type + "=" + value);
     if (type.equals("title")) {
       currentFrame.setInfo(value);
     } else if (type.equals("energy")) {
@@ -161,22 +157,19 @@ public final class JMolCDO extends ANIMATIONCDO {
 
   public void startAtom() {
 
-    System.out.println("startAtom");
-    atom_type = "";
-    atom_x = "";
-    atom_y = "";
-    atom_z = "";
+    atomType = "";
+    atomX = "";
+    atomY = "";
+    atomZ = "";
   }
 
   public void endAtom() {
 
-    System.out.println("endAtom: " + atom_type + " " + atom_x + " " + atom_y
-            + " " + atom_z);
-    double x = FortranFormat.atof(atom_x.trim());
-    double y = FortranFormat.atof(atom_y.trim());
-    double z = FortranFormat.atof(atom_z.trim());
+    double x = FortranFormat.atof(atomX.trim());
+    double y = FortranFormat.atof(atomY.trim());
+    double z = FortranFormat.atof(atomZ.trim());
     try {
-      currentFrame.addVert(atom_type.trim(), (float) x, (float) y, (float) z);
+      currentFrame.addAtom(atomType.trim(), (float) x, (float) y, (float) z);
     } catch (Exception e) {
       System.out.println("JMolCDO error while adding atom: " + e);
     }
@@ -184,18 +177,17 @@ public final class JMolCDO extends ANIMATIONCDO {
 
   public void setAtomProperty(String type, String value) {
 
-    System.out.println("setAtomProp: " + type + "=" + value);
     if (type.equals("type")) {
-      atom_type = value;
+      atomType = value;
     }
     if (type.equals("x3")) {
-      atom_x = value;
+      atomX = value;
     }
     if (type.equals("y3")) {
-      atom_y = value;
+      atomY = value;
     }
     if (type.equals("z3")) {
-      atom_z = value;
+      atomZ = value;
     }
   }
 

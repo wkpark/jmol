@@ -323,9 +323,9 @@ public class ChemFrame {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addVert(String name, float x, float y, float z)
+  public int addAtom(String name, float x, float y, float z)
           throws Exception {
-    return addVert(new AtomType(BaseAtomType.get(name)), x, y, z);
+    return addAtom(new AtomType(BaseAtomType.get(name)), x, y, z);
   }
 
   /**
@@ -337,7 +337,7 @@ public class ChemFrame {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addVert(AtomType type, float x, float y, float z)
+  public int addAtom(AtomType type, float x, float y, float z)
           throws Exception {
 
     int i = nvert;
@@ -461,14 +461,14 @@ public class ChemFrame {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addVert(int atomicNumber, float x, float y, float z)
+  public int addAtom(int atomicNumber, float x, float y, float z)
           throws Exception {
 
     BaseAtomType baseType = BaseAtomType.get(atomicNumber);
     if (baseType == null) {
       return -1;
     }
-    return addVert(new AtomType(baseType), x, y, z);
+    return addAtom(new AtomType(baseType), x, y, z);
   }
 
   /**
@@ -481,12 +481,12 @@ public class ChemFrame {
    * @param z the z coordinate of the new atom
    * @param props a Vector containing the properties of this atom
    */
-  public int addPropertiedVert(
+  public int addPropertiedAtom(
           String name, float x, float y, float z, Vector props)
             throws Exception {
 
     hasAtomProperties = true;
-    int i = addVert(name, x, y, z);
+    int i = addAtom(name, x, y, z);
     aProps[i] = props;
 
     for (int j = 0; j < props.size(); j++) {
@@ -542,7 +542,7 @@ public class ChemFrame {
   /**
    * returns the number of atoms in the ChemFrame
    */
-  public int getNvert() {
+  public int getNumberOfAtoms() {
     return nvert;
   }
 
@@ -655,7 +655,7 @@ public class ChemFrame {
    *
    * @param i the index of the atom
    */
-  public double[] getVertCoords(int i) {
+  public double[] getAtomCoords(int i) {
 
     int k = i * 3;
     double[] coords = {
@@ -669,7 +669,7 @@ public class ChemFrame {
    *
    * @param i the index of the atom
    */
-  public Vector getVertProps(int i) {
+  public Vector getAtomProps(int i) {
     Vector prps = aProps[i];
     return prps;
   }

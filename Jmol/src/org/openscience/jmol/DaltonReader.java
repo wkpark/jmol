@@ -140,7 +140,7 @@ class DaltonReader implements ChemFileReader {
       y = (new Double(tokenizer.nextToken())).doubleValue() * angstromPerBohr;
       z = (new Double(tokenizer.nextToken())).doubleValue() * angstromPerBohr;
 
-      mol.addVert(atomicNumber, (float) x, (float) y, (float) z);
+      mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
     }
   }
 
@@ -177,7 +177,7 @@ class DaltonReader implements ChemFileReader {
 
       line = input.readLine();
 
-      for (int i = 0; i < mol.getNvert(); ++i) {
+      for (int i = 0; i < mol.getNumberOfAtoms(); ++i) {
         line = input.readLine();
         tokenizer = new StringTokenizer(line);
         tokenizer.nextToken();    // ignore first token

@@ -155,7 +155,7 @@ public class Gaussian90Reader implements ChemFileReader {
       } else {
         throw new IOException("Error reading coordinates");
       }
-      frame.addVert(atomicNumber, (float) x, (float) y, (float) z);
+      frame.addAtom(atomicNumber, (float) x, (float) y, (float) z);
     }
   }
 
@@ -194,7 +194,7 @@ public class Gaussian90Reader implements ChemFileReader {
       line = input.readLine();
       line = input.readLine();
       line = input.readLine();
-      for (int i = 0; i < frame.getNvert(); ++i) {
+      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);

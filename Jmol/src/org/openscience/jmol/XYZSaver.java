@@ -64,7 +64,7 @@ public class XYZSaver extends FileSaver {
 
     try {
 
-      String s1 = new Integer(cf.getNvert()).toString() + "\n";
+      String s1 = new Integer(cf.getNumberOfAtoms()).toString() + "\n";
       w.write(s1, 0, s1.length());
 
       String s2 = cf.getInfo();
@@ -97,17 +97,17 @@ public class XYZSaver extends FileSaver {
 
       // Loop through the atoms and write them out:
 
-      for (int i = 0; i < cf.getNvert(); i++) {
+      for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
         AtomType a = cf.getAtomAt(i);
         st = a.getBaseAtomType().getName();
 
-        double[] pos = cf.getVertCoords(i);
+        double[] pos = cf.getAtomCoords(i);
         st = st + tab + new Double(pos[0]).toString() + tab
                 + new Double(pos[1]).toString() + tab
                   + new Double(pos[2]).toString();
 
-        Vector props = cf.getVertProps(i);
+        Vector props = cf.getAtomProps(i);
 
         if (writecharge) {
           for (int j = 0; j < props.size(); j++) {

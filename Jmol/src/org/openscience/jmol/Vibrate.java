@@ -324,13 +324,13 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     Vibration vib = inputFrame.getVibration(vibrationNumber);
     vibFile = new ChemFile();
     for (int n = 0; n < numberFrames; ++n) {
-      int numberVerticies = inputFrame.getNvert();
+      int numberVerticies = inputFrame.getNumberOfAtoms();
       ChemFrame newFrame = new ChemFrame(numberVerticies);
       for (int i = 0; i < numberVerticies; ++i) {
         double scaling = amplitudeScale
                            * Math.sin(2.0 * Math.PI * n / numberFrames);
         AtomType atomType = inputFrame.getAtomAt(i);
-        double[] coord = inputFrame.getVertCoords(i);
+        double[] coord = inputFrame.getAtomCoords(i);
         double[] force = vib.getAtomVector(i);
         double[] forceVector = new double[3];
         forceVector[0] = vectorScale * force[0];
@@ -342,7 +342,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
         coord[1] += force[1] * scaling;
         coord[2] += force[2] * scaling;
         try {
-          newFrame.addPropertiedVert(atomType.getBaseAtomType().getName(),
+          newFrame.addPropertiedAtom(atomType.getBaseAtomType().getName(),
                   (float) coord[0], (float) coord[1], (float) coord[2],
                     newProps);
         } catch (Exception ex) {

@@ -151,10 +151,10 @@ class Dihedral extends Measurement implements MeasurementInterface {
       return;
     }
 
-    double[] c0 = cf.getVertCoords(Atoms[0]);
-    double[] c1 = cf.getVertCoords(Atoms[1]);
-    double[] c2 = cf.getVertCoords(Atoms[2]);
-    double[] c3 = cf.getVertCoords(Atoms[3]);
+    double[] c0 = cf.getAtomCoords(Atoms[0]);
+    double[] c1 = cf.getAtomCoords(Atoms[1]);
+    double[] c2 = cf.getAtomCoords(Atoms[2]);
+    double[] c3 = cf.getAtomCoords(Atoms[3]);
 
 
     double ijx = c0[0] - c1[0];

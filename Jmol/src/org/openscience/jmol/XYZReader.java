@@ -175,10 +175,10 @@ public class XYZReader implements ChemFileReader {
           }
 
           if (readcharge || readvect) {
-            frame.addPropertiedVert(aname, (float) x, (float) y, (float) z,
+            frame.addPropertiedAtom(aname, (float) x, (float) y, (float) z,
                     props);
           } else {
-            frame.addVert(aname, (float) x, (float) y, (float) z);
+            frame.addAtom(aname, (float) x, (float) y, (float) z);
           }
         }
       }

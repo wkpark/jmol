@@ -293,7 +293,7 @@ public class Measure extends JDialog {
     }
     ChemFrame cf = display.getFrame();
     AtomType a = cf.getAtomAt(measured);
-    double[] c = cf.getVertCoords(measured);
+    double[] c = cf.getAtomCoords(measured);
     selection[currentAtom] = measured;
 
     mtm.updateRow(currentAtom, measured, a.getBaseAtomType().getName(), c);

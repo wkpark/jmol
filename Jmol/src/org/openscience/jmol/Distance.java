@@ -137,8 +137,8 @@ class Distance extends Measurement implements MeasurementInterface {
       return;
     }
 
-    double[] c0 = cf.getVertCoords(Atoms[0]);
-    double[] c1 = cf.getVertCoords(Atoms[1]);
+    double[] c0 = cf.getAtomCoords(Atoms[0]);
+    double[] c1 = cf.getAtomCoords(Atoms[1]);
 
     double ax = c0[0] - c1[0];
     double ay = c0[1] - c1[1];

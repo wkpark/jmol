@@ -294,7 +294,7 @@ public class PovraySaver extends FileSaver {
         boolean write_out = true;
 
 
-        for (int i = 0; i < cf.getNvert(); i++) {
+        for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
           // don't write out if atom is a hydrogen and !showhydrogens
 
@@ -315,7 +315,7 @@ public class PovraySaver extends FileSaver {
 
 
           /*
-            Vector props = cf.getVertProps(i);
+            Vector props = cf.getAtomProps(i);
 
             if (writevect) {
             for (int j = 0; j < props.size(); j++) {
@@ -356,7 +356,7 @@ public class PovraySaver extends FileSaver {
         w.write("//***********************************************\n");
         w.write("\n");
 
-        for (int i = 0; i < cf.getNvert(); i++) {
+        for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
           int na = cf.getNumberOfBondsForAtom(i);
           for (int k = 0; k < na; k++) {

@@ -77,8 +77,8 @@ import java.io.*;
  * for chlorine '#declare Cl_RADIUS = 1.9;'<p>
  * 5) Final in the writeAtom() call for the ith atom:<p>
  *    w.write("sphere{<p>
- *       &lt"+getVertCoords(i)[0]+","+getVertCoords(i)[1]+","+
- *       getVertCoords(i)[0]+"&gt, "+getAtomName(i)+"_RADIUS<p>
+ *       &lt"+getAtomCoords(i)[0]+","+getAtomCoords(i)[1]+","+
+ *       getAtomCoords(i)[0]+"&gt, "+getAtomName(i)+"_RADIUS<p>
  *       texture{<p>
  *          pigment{<p>
  *            color "+getColourFromCharge(charge)+"}"<p>
@@ -243,7 +243,7 @@ public class PovrayStyleWriter {
    */
   protected void findAtomTypes(ChemFrame cf) {
 
-    int nAtoms = cf.getNvert();
+    int nAtoms = cf.getNumberOfAtoms();
     numTypes = 0;
     int maxTypes = 5;
     typeName = new String[maxTypes];
@@ -300,7 +300,7 @@ public class PovrayStyleWriter {
           throws IOException {
 
     BaseAtomType a = cf.getAtomAt(atomIndex).getBaseAtomType();
-    double[] pos = cf.getVertCoords(atomIndex);
+    double[] pos = cf.getAtomCoords(atomIndex);
 
     cf.findBB();
     double c_x = (cf.getXMax() + cf.getXMin()) / 2.0;
@@ -341,8 +341,8 @@ public class PovrayStyleWriter {
     int atom_index_1 = cf.getBondEnd1(which_bond);
     int atom_index_2 = cf.getBondEnd2(which_bond);
 
-    double[] pos_1 = cf.getVertCoords(atom_index_1);
-    double[] pos_2 = cf.getVertCoords(atom_index_2);
+    double[] pos_1 = cf.getAtomCoords(atom_index_1);
+    double[] pos_2 = cf.getAtomCoords(atom_index_2);
 
     cf.findBB();
     float c_x = (cf.getXMax() + cf.getXMin()) / 2.0f;

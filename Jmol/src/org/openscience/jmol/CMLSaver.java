@@ -123,7 +123,7 @@ public class CMLSaver extends FileSaver {
 
     int count = 0;
 
-    for (int i = 0; i < cf.getNvert(); i++) {
+    for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
       if (ids.length() > 0) {
         ids += " ";
@@ -136,7 +136,7 @@ public class CMLSaver extends FileSaver {
       }
       elementTypes += a.getBaseAtomType().getName();
 
-      double[] pos = cf.getVertCoords(i);
+      double[] pos = cf.getAtomCoords(i);
       if (x3s.length() > 0) {
         x3s += " ";
       }
@@ -150,7 +150,7 @@ public class CMLSaver extends FileSaver {
       y3s += new Double(pos[1]).toString();
       z3s += new Double(pos[2]).toString();
 
-      if ((++count == 5) && (i + 1 < cf.getNvert())) {
+      if ((++count == 5) && (i + 1 < cf.getNumberOfAtoms())) {
         count = 0;
         x3s += "\n     ";
         y3s += "\n     ";
@@ -158,7 +158,7 @@ public class CMLSaver extends FileSaver {
       }
 
       if (writecharge) {
-        Vector props = cf.getVertProps(i);
+        Vector props = cf.getAtomProps(i);
         if (formalCharges.length() > 0) {
           formalCharges += " ";
         }

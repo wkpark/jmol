@@ -109,9 +109,9 @@ class CalculateChemicalShifts extends AbstractAction {
     }
     for (int f = 0; f < chemFile.nFrames(); ++f) {
       ChemFrame frame = chemFile.getFrame(f);
-      for (int i = 0; i < frame.getNvert(); ++i) {
+      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         String element = frame.getAtomAt(i).getBaseAtomType().getName();
-        Vector properties = frame.getVertProps(i);
+        Vector properties = frame.getAtomProps(i);
         Enumeration propIter = properties.elements();
         while (propIter.hasMoreElements()) {
           Object prop = propIter.nextElement();

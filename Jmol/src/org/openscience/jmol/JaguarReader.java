@@ -102,7 +102,7 @@ class JaguarReader implements ChemFileReader {
       } else {
         throw new Exception("Error reading coordinates");
       }
-      mol.addVert(atomicNumber, (float) x, (float) y, (float) z);
+      mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
     }
   }
 
@@ -139,7 +139,7 @@ class JaguarReader implements ChemFileReader {
 
       line = input.readLine();
       line = input.readLine();
-      for (int i = 0; i < mol.getNvert(); ++i) {
+      for (int i = 0; i < mol.getNumberOfAtoms(); ++i) {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);

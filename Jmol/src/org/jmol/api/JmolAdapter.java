@@ -53,11 +53,23 @@ public abstract class JmolAdapter {
   public final static byte ORDER_STEREO_NEAR = (byte)((1 << 3) | 1);
   public final static byte ORDER_STEREO_FAR  = (byte)((2 << 3) | 2);
 
-  /*****************************************************************
-   * file related
-   ****************************************************************/
+  //////////////////////////////////////////////////////////////////
+  // file related
+  //////////////////////////////////////////////////////////////////
+
+
+  String adapterName;
+  public Logger logger;
+
+  public JmolAdapter(String adapterName, Logger logger) {
+    this.adapterName = adapterName;
+    this.logger = (logger == null ? new Logger() : logger);
+  }
+
   /**
-   * Given the BufferedReader, return an object which represents the file
+   * Associate a clientFile object with a bufferedReader.
+   * 
+   * <p>Given the BufferedReader, return an object which represents the file
    * contents. The parameter <code>name</code> is assumed to be the
    * file name or URL which is the source of reader. Note that this 'file'
    * may have been automatically decompressed. Also note that the name
@@ -69,21 +81,23 @@ public abstract class JmolAdapter {
    * If the return value is <code>instanceof String</code> then it is
    * considered an error condition and the returned String is the error
    * message. 
+   *
+   * @param name File name, String or URL acting as the source of the reader
+   * @param bufferedReader The BufferedReader
+   * @return The clientFile or String with an error message
    */
-
-  String adapterName;
-  public Logger logger;
-
-  public JmolAdapter(String adapterName, Logger logger) {
-    this.adapterName = adapterName;
-    this.logger = (logger == null ? new Logger() : logger);
-  }
-
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
     return openBufferedReader(name, bufferedReader, null);
   }
 
+  /**
+   * @param name File name, String or URL acting as the source of the reader
+   * @param bufferedReader The BufferedReader
+   * @param logger The logger
+   * @return The clientFile or String with an error message
+   * @see #openBufferedReader(String, BufferedReader)
+   */
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader,
                                    Logger logger) {
@@ -93,139 +107,181 @@ public abstract class JmolAdapter {
   public void finish(Object clientFile) {}
 
   /**
-   * @param clientFile
-   * @return The type of this file or molecular model, if known
+   * Get the type of this file or molecular model, if known.
+   * @param clientFile  The client file
+   * @return The type of this file or molecular model, default
+   *         <code>"unknown"</code>
    */
   public String getFileTypeName(Object clientFile) { return "unknown"; }
 
   /**
-   * Some file formats contain a formal name of the molecule in the file.
+   * Get the name of the atom set collection, if known.
+   * 
+   * <p>Some file formats contain a formal name of the molecule in the file.
    * If this method returns <code>null</code> then the JmolViewer will
    * automatically supply the file/URL name as a default.
    * @param clientFile
-   * @return Formal name of the molecule
+   * @return The atom set collection name or <code>null</code>
    */
   public String getAtomSetCollectionName(Object clientFile) { return null; }
 
   /**
-   * Get the properties for this atomSetCollection
+   * Get the properties for this atomSetCollection.
    *
-   * Not yet implemented everywhere, it is in the smarterJmolAdapter
-   * @param clientFile
-   * @return Properties
+   * <p>Not yet implemented everywhere, it is in the smarterJmolAdapter
+   * @param clientFile The client file
+   * @return The properties for this atomSetCollection or <code>null</code>
    */
   public Properties getAtomSetCollectionProperties(Object clientFile) {
     return null;
   }
 
   /**
-   * We may need the file header.
+   * Get the file header.
    *
    * <p>This is currently only used for the script command 'show pdbheader'
    * Other than for pdb files, the client can return <code>null</code>
-   * @param clientFile
-   * @return File header
+   * @param clientFile The client file
+   * @return The file header or <code>null</code>
    */
   public String getFileHeader(Object clientFile) { return null; }
 
   /**
-   * The number of atomSets in the file.
+   * Get number of atomSets in the file.
    *
    * <p>NOTE WARNING:
    * <br>Not yet implemented everywhere, it is in the smarterJmolAdapter
-   * @param clientFile
-   * @return Number of atomSets
+   * @param clientFile The client file
+   * @return The number of atomSets in the file, default 1
    */
   public int getAtomSetCount(Object clientFile) { return 1; }
 
   /**
-   * The a number identifying each atomSet.
-   *<p>
-   * For a PDB file, this is is the model number. For others it is
+   * Get the number identifying each atomSet.
+   *
+   * <p>For a PDB file, this is is the model number. For others it is
    * a 1-based atomSet number.
-   *<p>
+   * <p>
    * <i>Note that this is not currently implemented in PdbReader</i>
-   * @param clientFile
-   * @param atomSetIndex
-   * @return Number identifying the atomSet
+   * @param clientFile The client file
+   * @param atomSetIndex The atom set's index for which to get
+   *                     the atom set number
+   * @return The number identifying each atom set, default atomSetIndex+1.
    */
   public int getAtomSetNumber(Object clientFile, int atomSetIndex) {
     return atomSetIndex + 1;
   }
 
   /**
-   * The name of each atomSet
-   * @param clientFile
-   * @param atomSetIndex
-   * @return Name of the atomSet
+   * Get the name of an atomSet.
+   * 
+   * @param clientFile The client file
+   * @param atomSetIndex The atom set index
+   * @return The name of the atom set, default the string representation
+   *         of atomSetIndex
    */
   public String getAtomSetName(Object clientFile, int atomSetIndex) {
     return "" + getAtomSetNumber(clientFile, atomSetIndex);
   }
 
   /**
-   * The properties for each atomSet
-   * @param clientFile
-   * @param atomSetIndex
-   * @return Properties of the atomSet
+   * Get the properties for an atomSet.
+   * 
+   * @param clientFile The client file
+   * @param atomSetIndex The atom set index
+   * @return The properties for an atom set or <code>null</code>
    */
   public Properties getAtomSetProperties(Object clientFile, int atomSetIndex) {
     return null;
   }
   
   /**
-   * The estimated number of atoms contained in the file.
-   * Just return -1 if you don't know (or don't want to figure it out)
-   * @param clientFile
-   * @return Estimated number of atoms
+   * Get the estimated number of atoms contained in the file.
+   *
+   * <p>Just return -1 if you don't know (or don't want to figure it out)
+   * @param clientFile The client file
+   * @return The estimated number of atoms in the file
    */
   abstract public int getEstimatedAtomCount(Object clientFile);
 
-  /*
-   * This method returns the parameters that define a crystal unitcell
-   * the parameters are returned in a float[] in the following order
-   * a, b, c, alpha, beta, gamma
-   * a, b, c : angstroms
-   * alpha, beta, gamma : degrees
-   * if there is no unit cell data then return null
-   */
   
+  /**
+   * Get the boolean whether coordinates are fractional.
+   * @param clientFile The client file
+   * @return true if the coordinates are fractional, default <code>false</code>
+   */
   public boolean coordinatesAreFractional(Object clientFile) { return false; }
 
+  /**
+   * Get the notional unit cell.
+   * 
+   * <p>This method returns the parameters that define a crystal unitcell
+   * the parameters are returned in a float[] in the following order
+   * <code>a, b, c, alpha, beta, gamma</code>
+   * <br><code>a, b, c</code> : angstroms
+   * <br><code>alpha, beta, gamma</code> : degrees
+   * <br>if there is no unit cell data then return null
+   * @param clientFile The client file
+   * @return The array of the values or <code>null</code>
+   */
   public float[] getNotionalUnitcell(Object clientFile) { return null; }
   
+  /**
+   * Get the PDB scale matrix.
+   * 
+   * <p>Does not seem to be overriden by any descendent
+   * @param clientFile The client file
+   * @return The array of 9 floats for the matrix or <code>null</code>
+   */
   public float[] getPdbScaleMatrix(Object clientFile) { return null; }
   
+  /**
+   * Get the PDB scale translation vector.
+   * <p>Does not seem to be overriden by any descendent
+   * @param clientFile The client file
+   * @return The x, y and z translation values or <code>null</code>
+   */
   public float[] getPdbScaleTranslate(Object clientFile) { return null; }
 
+  /**
+   * Get a property from a clientAtom.
+   * 
+   * @param clientAtom The clientAtom
+   * @param propertyName the key of the property
+   * @return The value of the property
+   */
   public String getClientAtomStringProperty(Object clientAtom,
                                             String propertyName) {
     return null;
   }
 
   /**
-   * Returns an AtomIterator used to retrieve all the atoms in the file.
-   * This method may not return <code>null</code>.
-   * @param clientFile
-   * @return AtomIterator
+   * Get an AtomIterator for retrieval of all atoms in the file.
+   * 
+   * <p>This method may not return <code>null</code>.
+   * @param clientFile The client file
+   * @return An AtomIterator
    * @see AtomIterator
    */
   abstract public AtomIterator getAtomIterator(Object clientFile);
   /**
-   * Returns a BondIterator. If this method returns <code>null</code> and no
+   * Get a BondIterator for retrieval of all bonds in the file.
+   * 
+   * <p>If this method returns <code>null</code> and no
    * bonds are defined then the JmolViewer will automatically apply its
    * rebonding code to build bonds between atoms.
-   * @param clientFile
-   * @return BondIterator
+   * @param clientFile The client file
+   * @return A BondIterator or <code>null</code>
    * @see BondIterator
    */
   public BondIterator getBondIterator(Object clientFile) { return null; }
 
   /**
-   * Returns a StructureIterator or <code>null</code>
-   * @param clientFile
-   * @return StructureIterator
+   * Get a StructureIterator.
+   * @param clientFile The client file
+   * @return A StructureIterator or <code>null</code>
    */
+
   public StructureIterator getStructureIterator(Object clientFile) {
     return null;
   }
@@ -289,10 +345,9 @@ public abstract class JmolAdapter {
     public abstract char getEndInsertionCode();
   }
   
-  /****************************************************************
-   * Logger class
-   ****************************************************************/
-
+  /**
+   * Logger that writes to stdout
+   */
   public class Logger { // default logger will log to stdout
     public boolean isLogging() { return true; }
     public void log(String str1) {
@@ -307,9 +362,9 @@ public abstract class JmolAdapter {
     }
   }
 
-  /* ***************************************************************
-   * range-checking routines
-   * ***************************************************************/
+  //////////////////////////////////////////////////////////////////
+  // range-checking routines
+  /////////////////////////////////////////////////////////////////
 
   public static char canonizeChainID(char chainID) {
     if ((chainID >= 'A' && chainID <= 'Z') ||

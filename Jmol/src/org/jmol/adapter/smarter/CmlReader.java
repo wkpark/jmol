@@ -185,7 +185,6 @@ class CmlReader extends AtomSetCollectionReader {
 
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts)
-      throws SAXException
     {
       /* */
         System.out.println("startElement(" + namespaceURI + "," + localName +
@@ -334,7 +333,7 @@ class CmlReader extends AtomSetCollectionReader {
     }
     
     public void endElement(String uri, String localName,
-                           String qName) throws SAXException {
+                           String qName)  {
       /* */
         System.out.println("endElement(" + uri + "," + localName +
         "," + qName + ")");
@@ -437,15 +436,15 @@ class CmlReader extends AtomSetCollectionReader {
       return null;
     }
     
-    public void error (SAXParseException exception) throws SAXException {
+    public void error (SAXParseException exception)  {
       System.out.println("SAX ERROR:" + exception.getMessage());
     }
     
-    public void fatalError (SAXParseException exception) throws SAXException {
+    public void fatalError (SAXParseException exception)  {
       System.out.println("SAX FATAL:" + exception.getMessage());
     }
     
-    public void warning (SAXParseException exception) throws SAXException {
+    public void warning (SAXParseException exception)  {
       System.out.println("SAX WARNING:" + exception.getMessage());
     }
   }

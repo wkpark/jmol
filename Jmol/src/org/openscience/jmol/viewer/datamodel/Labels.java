@@ -210,6 +210,9 @@ public class Labels extends Shape {
       case 't':
         strLabel += (atom.getBfactor100() / 100.0);
         break;
+      case 'q':
+        strLabel += atom.getOccupancy();
+        break;
       case 'c': // these two are the same
       case 's':
         if (pdbatom != null)

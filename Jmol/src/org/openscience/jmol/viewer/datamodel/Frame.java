@@ -112,7 +112,10 @@ final public class Frame {
   }
 
   public Atom addAtom(int modelNumber, Object atomUid,
-                      byte atomicNumber, int atomicCharge, float bfactor,
+                      byte atomicNumber,
+                      int atomicCharge,
+                      float occupancy,
+                      float bfactor,
                       String atomTypeName, float x, float y, float z,
                       String pdbAtomRecord) {
     if (modelNumber != lastModelNumber) {
@@ -131,7 +134,10 @@ final public class Frame {
     }
     Atom atom = new Atom(this, atomCount,
                          modelNumber, 
-                         atomicNumber, atomicCharge, bfactor, 
+                         atomicNumber,
+                         atomicCharge,
+                         occupancy,
+                         bfactor,
                          atomTypeName, x, y, z,
                          pdbFile, pdbAtomRecord);
     atoms[atomCount++] = atom;

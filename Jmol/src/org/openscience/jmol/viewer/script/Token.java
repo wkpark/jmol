@@ -263,6 +263,7 @@ public class Token {
   final static int _groupID     = atomproperty | 7;
   final static int _atomID      = atomproperty | 8;
   final static int _structure   = atomproperty | 9;
+  final static int occupancy    = atomproperty | 10;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -500,6 +501,7 @@ public class Token {
     "_atomID",      new Token(_atomID, "_atomID"),
     "_a",           null,
     "_structure",   new Token(_structure, "_structure"),
+    "occupancy",    new Token(occupancy, "occupancy"),
 
     "off",          new Token(off, 0, "off"),
     "false",        null,

@@ -1090,6 +1090,9 @@ public class Eval implements Runnable {
         if (propertyValue < 0)
           continue;
         break;
+      case Token.occupancy:
+        propertyValue = atom.getOccupancy();
+        break;
       case Token.resno:
         propertyValue = getResno(atom);
         if (propertyValue == -1)

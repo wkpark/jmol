@@ -111,7 +111,8 @@ public abstract class JmolModelAdapter {
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then structural
    * PDB records are returned here as an array of strings. 
-   * The individual strings are exact HELIX, SHEET, and TURN recordsfrom the .pdb file.
+   * The individual strings are exact HELIX, SHEET, and TURN records from the
+   * .pdb file.
    * @see #hasPdbRecords(Object clientFile)
    */
   public String[] getPdbStructureRecords(Object clientFile) {
@@ -176,6 +177,7 @@ public abstract class JmolModelAdapter {
     public float getVectorY() { return Float.NaN; }
     public float getVectorZ() { return Float.NaN; }
     public float getBfactor() { return Float.NaN; }
+    public float getOccupancy() { return Float.NaN; }
     public String getPdbAtomRecord() { return null; }
   }
 

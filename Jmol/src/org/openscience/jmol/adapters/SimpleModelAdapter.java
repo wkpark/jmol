@@ -226,6 +226,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     public float getVectorY() { return atom.vectorY; }
     public float getVectorZ() { return atom.vectorZ; }
     public float getBfactor() { return atom.bfactor; }
+    public float getOccupancy() { return atom.occupancy; }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
@@ -267,6 +268,7 @@ class Atom {
   float x, y, z;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
+  float occupancy = Float.NaN;
   String pdbAtomRecord;
 
   Atom(int modelNumber, String symbol, int charge,
@@ -291,10 +293,12 @@ class Atom {
     this.z = z;
   }
 
-  Atom(int modelNumber, String symbol, int charge, float bfactor,
+  Atom(int modelNumber, String symbol, int charge, float occupancy,
+       float bfactor,
        float x, float y, float z, String pdb) {
     this.elementSymbol = symbol;
     this.atomicCharge = charge;
+    this.occupancy = occupancy;
     this.bfactor = bfactor;
     this.x = x;
     this.y = y;
@@ -650,13 +654,23 @@ class PdbModel extends Model {
 
       /****************************************************************
        * read the bfactor from cols 61-66 (1-based)
-       * 2+, 3-, etc
        ****************************************************************/
       float bfactor = Float.NaN;
       if (len >= 66) {
         String bfField = line.substring(60,66).trim();
         if (bfField.length() > 0)
           bfactor = Float.valueOf(bfField).floatValue();
+      }
+
+      /****************************************************************
+       * read the occupancy from cols 55-60 (1-based)
+       * should be in the range 0.00 - 1.00
+       ****************************************************************/
+      float occupancy = Float.NaN;
+      if (len >= 60) {
+        String occupancyField = line.substring(54, 60).trim();
+        if (occupancyField.length() > 0)
+          occupancy = Float.valueOf(occupancyField).floatValue();
       }
       
       /****************************************************************/
@@ -677,7 +691,7 @@ class PdbModel extends Model {
         serialMap = t;
       }
       addAtom(new Atom(currentModelNumber, elementSymbol,
-                       charge, bfactor, x, y, z, line));
+                       charge, occupancy, bfactor, x, y, z, line));
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

@@ -47,6 +47,8 @@ public class Atom implements Bspt.Tuple {
   short diameter;
   public byte elementNumber;
   byte chargeAndFlags;
+  // maybe move this out of here ... the value is almost always 100
+  byte occupancy;
   short bfactor100;
   short madAtom;
   short colixAtom;
@@ -57,7 +59,10 @@ public class Atom implements Bspt.Tuple {
 
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
-              byte elementNumber, int atomicCharge, float bfactor,
+              byte elementNumber,
+              int atomicCharge,
+              float occupancy,
+              float bfactor,
               String atomName,
               float x, float y, float z,
               PdbFile pdbFile, String pdbAtomRecord) {
@@ -67,6 +72,9 @@ public class Atom implements Bspt.Tuple {
     this.modelNumber = (short)modelNumber;
     this.elementNumber = elementNumber;
     this.chargeAndFlags = (byte)(atomicCharge << 4);
+    this.occupancy = (occupancy == Float.NaN || occupancy >= 1.0f
+                      ? (byte) 100
+                      : (occupancy <= 0 ? (byte)0 : (byte)(occupancy * 100)));
     this.bfactor100 =
       (bfactor == Float.NaN ? Short.MIN_VALUE : (short)(bfactor*100));
     this.atomName = atomName;
@@ -348,6 +356,11 @@ public class Atom implements Bspt.Tuple {
     if (pdbAtom == null)
       return (char)0;
     return pdbAtom.getChainID();
+  }
+
+  // a percentage value in the range 0-100
+  public int getOccupancy() {
+    return occupancy;
   }
 
   // This is called bfactor100 because it is stored as an integer

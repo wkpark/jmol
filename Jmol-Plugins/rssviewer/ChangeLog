@@ -1,0 +1,11 @@
+$Id$
+$Author$
+$Revision$:
+
+version 0.2
+-----------------------------
+- now uses CDKPluginInterface/CDKEditBus architecture
+
+version 0.1
+-----------------------------
+- first implementation

@@ -40,18 +40,20 @@ abstract class ModelReader {
 
   abstract Model readModel(BufferedReader reader) throws Exception;
 
-  static float parseFloat(String str) {
+  int ichNextParse;
+
+  float parseFloat(String str) {
     return parseFloatChecked(str, 0, str.length());
   }
 
-  static float parseFloat(String str, int ich) {
+  float parseFloat(String str, int ich) {
     int cch = str.length();
     if (ich >= cch)
       return Integer.MIN_VALUE;
     return parseFloatChecked(str, ich, cch);
   }
 
-  static float parseFloat(String str, int ichStart, int ichMax) {
+  float parseFloat(String str, int ichStart, int ichMax) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
@@ -65,7 +67,7 @@ abstract class ModelReader {
   static float[] tensScale =
   {10, 100, 1000, 10000, 100000, 1000000};
 
-  static float parseFloatChecked(String str, int ichStart, int ichMax) {
+  float parseFloatChecked(String str, int ichStart, int ichMax) {
     boolean digitSeen = false;
     float value = 0;
     int ich = ichStart;
@@ -115,21 +117,22 @@ abstract class ModelReader {
     }
     //    System.out.println("parseFloat(" + str + "," + ichStart + "," +
     //                       ichMax + ") -> " + value);
+    ichNextParse = ich;
     return value;
   }
   
-  static int parseInt(String str) {
+  int parseInt(String str) {
     return parseIntChecked(str, 0, str.length());
   }
 
-  static int parseInt(String str, int ich) {
+  int parseInt(String str, int ich) {
     int cch = str.length();
     if (ich >= cch)
       return Integer.MIN_VALUE;
     return parseIntChecked(str, ich, cch);
   }
 
-  static int parseInt(String str, int ichStart, int ichMax) {
+  int parseInt(String str, int ichStart, int ichMax) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
@@ -138,7 +141,7 @@ abstract class ModelReader {
     return parseIntChecked(str, ichStart, ichMax);
   }
 
-  static int parseIntChecked(String str, int ichStart, int ichMax) {
+  int parseIntChecked(String str, int ichStart, int ichMax) {
     boolean digitSeen = false;
     int value = 0;
     int ich = ichStart;
@@ -161,21 +164,22 @@ abstract class ModelReader {
       value = -value;
     //    System.out.println("parseInt(" + str + "," + ichStart + "," +
     //                       ichMax + ") -> " + value);
+    ichNextParse = ich;
     return value;
   }
 
-  static String parseToken(String str) {
+  String parseToken(String str) {
     return parseTokenChecked(str, 0, str.length());
   }
 
-  static String parseToken(String str, int ich) {
+  String parseToken(String str, int ich) {
     int cch = str.length();
     if (ich >= cch)
       return null;
     return parseTokenChecked(str, ich, cch);
   }
 
-  static String parseToken(String str, int ichStart, int ichMax) {
+  String parseToken(String str, int ichStart, int ichMax) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
@@ -184,7 +188,7 @@ abstract class ModelReader {
     return parseTokenChecked(str, ichStart, ichMax);
   }
 
-  static String parseTokenChecked(String str, int ichStart, int ichMax) {
+  String parseTokenChecked(String str, int ichStart, int ichMax) {
     int ich = ichStart;
     while (ich < ichMax && str.charAt(ich) == ' ')
       ++ich;
@@ -195,6 +199,7 @@ abstract class ModelReader {
       return null;
     if (ich == ichStart && (ichLast + 1) == ichMax)
       return str;
+    ichNextParse = ichLast + 1;
     return str.substring(ich, ichLast + 1);
   }
 
@@ -207,7 +212,7 @@ abstract class ModelReader {
     return t;
   }
 
-  static int[] setLength(int[] array, int newLength) {
+  int[] setLength(int[] array, int newLength) {
     int oldLength = array.length;
     int[] t = new int[newLength];
     System.arraycopy(array, 0, t, 0, 

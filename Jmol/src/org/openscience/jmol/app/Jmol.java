@@ -181,6 +181,8 @@ public class Jmol extends JPanel {
 
   Splash splash;
 
+  boolean useCdkModel;
+
   public static HistoryFile getHistoryFile() {
     return historyFile;
   }
@@ -232,13 +234,15 @@ public class Jmol extends JPanel {
     //
     display = new DisplayPanel(status, guimap);
     JmolModelAdapter modelAdapter;
-    if (System.getProperty("cdkmodel") != null) {
+    useCdkModel = (System.getProperty("cdkmodel") != null);
+    if (useCdkModel) {
       System.out.println("using CDK Model Adapter");
       modelAdapter = new CdkJmolModelAdapter();
     } else {
       modelAdapter = new DeprecatedJmolModelAdapter();
     }
-    viewer = new JmolViewer(display, modelAdapter);
+    boolean firePropertyChanges = !useCdkModel;
+    viewer = new JmolViewer(display, modelAdapter, firePropertyChanges);
     display.setViewer(viewer);
 
     //    viewer.addPropertyChangeListener(display);

@@ -87,7 +87,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initWindows() {
 
     canvas = new AppletCanvas();
-    viewer = new JmolViewer(canvas, new DeprecatedJmolModelAdapter());
+    viewer = new JmolViewer(canvas, new DeprecatedJmolModelAdapter(), false);
     canvas.setJmolViewer(viewer);
     viewer.setJmolStatusListener(this);
 

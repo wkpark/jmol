@@ -189,8 +189,7 @@ public class AtomShape implements Bspt.Tuple {
   public void setMarAtom(short marAtom) {
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber, 
-                                                           clientAtom));
+                        frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom));
     this.marAtom = marAtom;
   }
 
@@ -198,8 +197,7 @@ public class AtomShape implements Bspt.Tuple {
     this.styleAtom = styleAtom;
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber,
-                                                           clientAtom));
+                        frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom));
     this.marAtom = marAtom;
   }
         
@@ -207,8 +205,7 @@ public class AtomShape implements Bspt.Tuple {
     this.colixDots = colixDots;
     if (marDots < 0)
       marDots = (short)((-10 * marDots) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber,
-                                                           clientAtom));
+                        frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom));
     this.marDots = marDots;
   }
 
@@ -259,6 +256,10 @@ public class AtomShape implements Bspt.Tuple {
     return frame.viewer.getAtomicSymbol(atomicNumber, clientAtom);
   }
 
+  public String getAtomTypeName() {
+    return frame.viewer.getAtomTypeName(atomicNumber, clientAtom);
+  }
+
   public Point3d getPoint3d() {
     return point3d;
   }
@@ -292,4 +293,5 @@ public class AtomShape implements Bspt.Tuple {
   public ProteinProp getProteinProp() {
     return pprop;
   }
+
 }

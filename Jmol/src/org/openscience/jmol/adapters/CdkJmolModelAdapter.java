@@ -34,20 +34,22 @@ import javax.vecmath.Point3d;
 import java.io.Reader;
 
 // client-specific imports
+import org.openscience.cdk.ChemFile;
+import org.openscience.cdk.ChemSequence;
+import org.openscience.cdk.ChemModel;
+import org.openscience.cdk.SetOfMolecules;
+import org.openscience.cdk.Molecule;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.Bond;
+import org.openscience.cdk.exception.CDKException;
 
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
 
-import org.openscience.jmol.ChemFile;
-
-import org.openscience.jmol.io.ReaderFactory;
-import org.openscience.jmol.io.ChemFileReader;
+import org.openscience.cdk.io.ReaderFactory;
+import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;
-
-import java.util.Vector;
 
 public class CdkJmolModelAdapter implements JmolModelAdapter {
   AtomColorer[] colorSchemes;
@@ -61,6 +63,16 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   /****************************************************************
+   * the capabilities
+   ****************************************************************/
+  public boolean suppliesAtomicNumber() { return true; }
+  public boolean suppliesAtomicSymbol() { return true; }
+  public boolean suppliesAtomTypeName() { return true; }
+  public boolean suppliesVanderwaalsRadius() { return true; }
+  public boolean suppliesCovalentRadius() { return true; }
+  public boolean suppliesAtomColor() { return true; }
+  
+  /****************************************************************
    * the file related methods
    ****************************************************************/
 
@@ -68,21 +80,17 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
                            String name, Reader reader) {
     ChemFile chemFile = null;
     try {
-      ChemFileReader chemFileReader = null;
+      ChemObjectReader chemObjectReader = null;
       try {
-        chemFileReader = ReaderFactory.createReader(viewer, reader);
-        /*
-          FIXME -- need to notify the awt component of file change
-          firePropertyChange(openFileProperty, oldFile, currentFile);
-        */
+        chemObjectReader = new ReaderFactory().createReader(reader);
       } catch (IOException ex) {
         return "Error determining input format: " + ex;
       }
-      if (chemFileReader == null) {
+      if (chemObjectReader == null) {
         return "unrecognized input format";
       }
-      chemFile = chemFileReader.read();
-    } catch (IOException ex) {
+      chemFile = (ChemFile)chemObjectReader.read(new ChemFile());
+    } catch (CDKException ex) {
       return "Error reading input:" + ex;
     }
     if (chemFile == null)
@@ -95,7 +103,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   public int getFrameCount(Object clientFile) {
-    return ((ChemFile)clientFile).getNumberOfFrames();
+    return ((ChemFile)clientFile).getChemSequenceCount();
   }
 
 
@@ -104,7 +112,13 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
    ****************************************************************/
 
   private AtomContainer getAtomContainer(Object clientFile, int frameNumber) {
-    return ((ChemFile)clientFile).getFrame(frameNumber);
+    ChemFile chemFile = (ChemFile)clientFile;
+    ChemSequence chemSequence = chemFile.getChemSequence(frameNumber);
+    ChemModel[] chemModels = chemSequence.getChemModels();
+    ChemModel chemModel = chemModels[0];
+    SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
+    Molecule molecule = setOfMolecules.getMolecule(0);
+    return molecule;
   }
 
   public int getAtomCount(Object clientFile, int frameNumber) {
@@ -201,19 +215,19 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getAtomicNumber();
   }
   
-  public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
+  public String getAtomicSymbol(Object clientAtom) {
     return ((Atom)clientAtom).getSymbol();
   }
 
-  public String getAtomTypeName(int atomicNumber, Object clientAtom) {
+  public String getAtomTypeName(Object clientAtom) {
     return ((Atom)clientAtom).getAtomTypeName();
   }
 
-  public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
+  public double getVanderwaalsRadius(Object clientAtom) {
     return ((Atom)clientAtom).getVanderwaalsRadius();
   }
 
-  public double getCovalentRadius(int atomicNumber, Object clientAtom) {
+  public double getCovalentRadius(Object clientAtom) {
     return ((Atom)clientAtom).getCovalentRadius();
   }
 
@@ -226,7 +240,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     //    return ((Atom)clientAtom).getPdbRecord();
   }
 
-  public Color getColor(int atomicNumber, Object clientAtom, int colorScheme) {
+  public Color getAtomColor(Object clientAtom, int colorScheme) {
     if (colorScheme >= colorSchemes.length ||
         colorSchemes[colorScheme] == null)
       colorScheme = 0;
@@ -238,14 +252,8 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     /**
      * Returns the color for a certain atom type
      */
-    public Color getAtomColor(org.openscience.cdk.Atom a) {
-        Object o = a.getProperty("org.openscience.jmol.color");
-        if (o instanceof Color) {
-            return (Color)o;
-        } else {
-          // no color set. return pink - easy to see
-          return Color.pink;
-        }
+    public Color getAtomColor(org.openscience.cdk.Atom atom) {
+      return (Color)atom.getProperty("org.openscience.jmol.color");
     }
   }
 }

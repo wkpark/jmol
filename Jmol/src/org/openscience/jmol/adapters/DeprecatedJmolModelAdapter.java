@@ -61,6 +61,16 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
   }
 
   /****************************************************************
+   * the capabilities
+   ****************************************************************/
+  public boolean suppliesAtomicNumber() { return true; }
+  public boolean suppliesAtomicSymbol() { return true; }
+  public boolean suppliesAtomTypeName() { return true; }
+  public boolean suppliesVanderwaalsRadius() { return true; }
+  public boolean suppliesCovalentRadius() { return true; }
+  public boolean suppliesAtomColor() { return true; }
+  
+  /****************************************************************
    * the file related methods
    ****************************************************************/
 
@@ -71,10 +81,6 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
       ChemFileReader chemFileReader = null;
       try {
         chemFileReader = ReaderFactory.createReader(viewer, reader);
-        /*
-          FIXME -- need to notify the awt component of file change
-          firePropertyChange(openFileProperty, oldFile, currentFile);
-        */
       } catch (IOException ex) {
         return "Error determining input format: " + ex;
       }
@@ -277,19 +283,19 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getAtomicNumber();
   }
   
-  public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
+  public String getAtomicSymbol(Object clientAtom) {
     return ((Atom)clientAtom).getSymbol();
   }
 
-  public String getAtomTypeName(int atomicNumber, Object clientAtom) {
+  public String getAtomTypeName(Object clientAtom) {
     return ((Atom)clientAtom).getAtomTypeName();
   }
 
-  public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
+  public double getVanderwaalsRadius(Object clientAtom) {
     return ((Atom)clientAtom).getVanderwaalsRadius();
   }
 
-  public double getCovalentRadius(int atomicNumber, Object clientAtom) {
+  public double getCovalentRadius(Object clientAtom) {
     return ((Atom)clientAtom).getCovalentRadius();
   }
 
@@ -301,7 +307,7 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getPdbRecord();
   }
 
-  public Color getColor(int atomicNumber, Object clientAtom, int colorScheme) {
+  public Color getAtomColor(Object clientAtom, int colorScheme) {
     if (colorScheme >= colorSchemes.length ||
         colorSchemes[colorScheme] == null)
       colorScheme = 0;

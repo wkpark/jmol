@@ -86,13 +86,15 @@ final public class JmolViewer {
   JmolMeasureWatcher jmolMeasureWatcher;
   JmolStatusListener jmolStatusListener;
 
-
+  boolean firePropertyChanges;
 
   public JmolViewer(Component awtComponent,
-                    JmolModelAdapter jmolModelAdapter) {
+                    JmolModelAdapter jmolModelAdapter,
+                    boolean firePropertyChanges) {
 
     this.awtComponent = awtComponent;
     this.jmolModelAdapter = jmolModelAdapter;
+    this.firePropertyChanges = firePropertyChanges;
 
     strJvmVersion = System.getProperty("java.version");
     jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
@@ -103,7 +105,7 @@ final public class JmolViewer {
     selectionManager = new SelectionManager(this);
     mouseManager = new MouseManager(awtComponent, this);
     fileManager = new FileManager(this);
-    modelManager = new ModelManager(this);
+    modelManager = new ModelManager(this, jmolModelAdapter);
     repaintManager = new RepaintManager(this);
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
@@ -895,21 +897,25 @@ final public class JmolViewer {
   }
 
   public void addPropertyChangeListener(PropertyChangeListener pcl) {
-    modelManager.addPropertyChangeListener(pcl);
+    if (firePropertyChanges)
+      modelManager.addPropertyChangeListener(pcl);
   }
 
   public void addPropertyChangeListener(String prop,
                                         PropertyChangeListener pcl) {
-    modelManager.addPropertyChangeListener(prop, pcl);
+    if (firePropertyChanges)
+      modelManager.addPropertyChangeListener(prop, pcl);
   }
 
   public void removePropertyChangeListener(PropertyChangeListener pcl) {
-    modelManager.removePropertyChangeListener(pcl);
+    if (firePropertyChanges)
+      modelManager.removePropertyChangeListener(pcl);
   }
 
   public void removePropertyChangeListener(String prop,
                                            PropertyChangeListener pcl) {
-    modelManager.removePropertyChangeListener(prop, pcl);
+    if (firePropertyChanges)
+      modelManager.removePropertyChangeListener(prop, pcl);
   }
 
   /****************************************************************
@@ -1639,54 +1645,49 @@ final public class JmolViewer {
     return jmolModelAdapter;
   }
 
-  public Object openReader(String name, Reader reader) {
-    return jmolModelAdapter.openReader(this, name, reader);
-  }
-
   public int getFrameCount(Object clientFile) {
-    return jmolModelAdapter.getFrameCount(clientFile);
+    return modelManager.getFrameCount(clientFile);
   }
 
   public String getModelName(Object clientFile) {
-    return jmolModelAdapter.getModelName(clientFile);
+    return modelManager.getModelName(clientFile);
   }
 
   public int getAtomicNumber(Object clientAtom) {
-    return jmolModelAdapter.getAtomicNumber(clientAtom);
+    return modelManager.getAtomicNumber(clientAtom);
   }
 
   public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
-    return jmolModelAdapter.getAtomicSymbol(atomicNumber, clientAtom);
+    return modelManager.getAtomicSymbol(atomicNumber, clientAtom);
   }
 
   public String getAtomTypeName(int atomicNumber, Object clientAtom) {
-    return jmolModelAdapter.getAtomTypeName(atomicNumber, clientAtom);
+    return modelManager.getAtomTypeName(atomicNumber, clientAtom);
   }
 
   public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
-    return jmolModelAdapter.getVanderwaalsRadius(atomicNumber, clientAtom);
+    return modelManager.getVanderwaalsRadius(atomicNumber, clientAtom);
   }
 
   public double getCovalentRadius(int atomicNumber, Object clientAtom) {
-    return jmolModelAdapter.getCovalentRadius(atomicNumber, clientAtom);
+    return modelManager.getCovalentRadius(atomicNumber, clientAtom);
   }
 
   public Point3d getPoint3d(Object clientAtom) {
-    return jmolModelAdapter.getPoint3d(clientAtom);
+    return modelManager.getPoint3d(clientAtom);
   }
 
   public String getPdbAtomRecord(Object clientAtom) {
-    return jmolModelAdapter.getPdbAtomRecord(clientAtom);
+    return modelManager.getPdbAtomRecord(clientAtom);
   }
 
   public short getColixAtom(int atomicNumber, Object clientAtom) {
-    return Colix.getColix(jmolModelAdapter.getColor(
-             atomicNumber, clientAtom, colorManager.modeAtomColorProfile));
+    return Colix.getColix(modelManager.getColorAtom(atomicNumber, clientAtom,
+                                                 colorManager.modeAtomColorProfile));
   }
 
   public short getColixAtom(int atomicNumber, Object clientAtom, byte scheme) {
-    return Colix.getColix(jmolModelAdapter.getColor(atomicNumber, 
-                                                      clientAtom, 
-                                                      scheme));
+    return Colix.getColix(modelManager.getColorAtom(atomicNumber,
+                                                    clientAtom, scheme));
   }
 }

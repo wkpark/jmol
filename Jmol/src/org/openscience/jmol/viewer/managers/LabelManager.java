@@ -85,12 +85,10 @@ public class LabelManager {
     String label = null;
     switch (styleLabel) {
     case JmolViewer.SYMBOLS:
-      label = viewer.getAtomicSymbol(atomShape.getAtomicNumber(),
-                                      atomShape.getClientAtom());
+      label = atomShape.getAtomicSymbol();
       break;
     case JmolViewer.TYPES:
-      label = viewer.getAtomTypeName(atomShape.getAtomicNumber(),
-                                      atomShape.getClientAtom());
+      label = atomShape.getAtomTypeName();
        break;
     case JmolViewer.NUMBERS:
       label = "" + atomIndex;
@@ -126,8 +124,7 @@ public class LabelManager {
         break;
       case 'a': // FIXME -- mth -- a is not the same as e
       case 'e':
-        strExpansion = viewer.getAtomicSymbol(atomShape.getAtomicNumber(),
-                                               atomShape.getClientAtom());
+        strExpansion = atomShape.getAtomicSymbol();
         break;
       case 'b': // these two are the same
       case 't':

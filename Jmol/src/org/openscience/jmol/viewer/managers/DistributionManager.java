@@ -82,7 +82,8 @@ public class DistributionManager {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       short colixT = useColorProfile 
-       ? viewer.getColixAtom(mode, atomShape.getClientAtom()) : colix;
+        ? viewer.getColixAtom(atomShape.getAtomicNumber(),
+                              atomShape.getClientAtom(), mode) : colix;
       atomShape.setColixAtom(colixT);
     }
   }

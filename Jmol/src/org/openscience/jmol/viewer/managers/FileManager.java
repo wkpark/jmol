@@ -128,7 +128,7 @@ public class FileManager {
   }
 
   private String openReader(String name, Reader reader) {
-    Object clientFile = viewer.openReader(name, reader);
+    Object clientFile = viewer.getJmolModelAdapter().openReader(viewer, name, reader);
     if (clientFile instanceof String)
       return (String)clientFile;
     viewer.setClientFile(name, clientFile);

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2000-2003  The Jmol Development Team
+ * Copyright (C) 2000-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -223,6 +223,7 @@ public class Jmol extends JPanel {
     pluginManager = new CDKPluginManager(
         ".jmol/plugins", "./jmol", new JmolEditBus(viewer)
     );
+    pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
 
     // install the command table
     say("Building Command Hooks...");

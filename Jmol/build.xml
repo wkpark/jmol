@@ -19,6 +19,7 @@
   <property name="tests.source.dir" value="source-tests" />
   <property name="build.dir" value="build" />
   <property name="lib.dir" value="jars" />
+  <property name="plugin.dir" value="plugin-jars" />
   <property name="appjars.dir" value="${build.dir}/appjars" />
   <property name="classes.dir" value="${build.dir}/classes" />
   <property name="tests.classes.dir" value="${build.dir}/classes-tests" />
@@ -182,6 +183,12 @@
     </uptodate>
   </target>
   
+  <target name="check.pluginjars" id="check.pluginjars">
+    <uptodate property="pluginjars.uptodate" targetfile="${appjars.dir}/org/openscience/cdkplugin">
+      <srcfiles dir="${plugin.dir}" includes="dirbrowser.jar"/>
+    </uptodate>
+  </target>
+  
   <target name="check.libjars" id="check.libjars">
     <uptodate property="libjars.uptodate" targetfile="${appjars.dir}">
       <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
@@ -193,11 +200,16 @@
     </uptodate>
   </target>
   
-  <target name="appjars" id="appjars" depends="libjars, cdkjars"/>
+  <target name="appjars" id="appjars" depends="libjars, cdkjars, pluginjars"/>
   
   <target name="cdkjars" id="cdkjars" depends="check.cdkjars" unless="cdkjars.uptodate">
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
+  </target>
+
+  <target name="pluginjars" id="pluginjars" depends="check.pluginjars" unless="pluginjars.uptodate">
+    <mkdir dir="${appjars.dir}"/>
+    <unjar dest="${appjars.dir}" src="${plugin.dir}/dirbrowser.jar"/>
   </target>
 
   <target name="libjars" id="libjars" depends="check.libjars" unless="libjars.uptodate">

@@ -166,8 +166,10 @@ public class CifReader extends ModelReader {
   
   private void skipUntilEmptyOrCommentLine() throws Exception {
     // skip everything until empty line, or comment line
-    while (line != null && line.length() > 0 && line.charAt(0) != '#') {
-      line = reader.readLine().trim();
+    while (line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) != '#') {
+      line = reader.readLine();
     }
   }
   
@@ -240,9 +242,10 @@ public class CifReader extends ModelReader {
       return;
     }
 
-    for (;
-         line != null && line.length() > 0 && line.charAt(0) != '#';
-         line = reader.readLine().trim()) {
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) != '#';
+         line = reader.readLine()) {
       tokenizer.setString(line);
       Atom atom = model.newAtom();
       for (int i = 0; i < fieldCount; ++i) {
@@ -314,9 +317,10 @@ public class CifReader extends ModelReader {
                           boolean[] propertyReferenced) throws Exception {
     int fieldCount = 0;
     outer_loop:
-    for (;
-         line != null && line.length() > 0 && line.charAt(0) == '_';
-         ++fieldCount, line = reader.readLine().trim()) {
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) == '_';
+         ++fieldCount, line = reader.readLine()) {
       for (int i = fields.length; --i >= 0; )
         if (isMatch(line, fields[i])) {
           int iproperty = fieldMap[i];
@@ -369,9 +373,10 @@ public class CifReader extends ModelReader {
         return;
       }
 
-    for (;
-         line != null && line.length() > 0 && line.charAt(0) != '#';
-         line = reader.readLine().trim()) {
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) != '#';
+         line = reader.readLine()) {
       tokenizer.setString(line);
       Structure structure = new Structure();
       
@@ -448,9 +453,10 @@ public class CifReader extends ModelReader {
         return;
       }
 
-    for (;
-         line != null && line.length() > 0 && line.charAt(0) != '#';
-         line = reader.readLine().trim()) {
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) != '#';
+         line = reader.readLine()) {
       tokenizer.setString(line);
       Structure structure = new Structure();
       structure.structureType = "sheet";

@@ -51,9 +51,9 @@ public class PdbChain {
     }
   }
   
-  PdbGroup allocateGroup(short groupSequence, String group3) {
+  PdbGroup allocateGroup(int sequence, String group3) {
 
-    PdbGroup group = new PdbGroup(this, groupSequence, group3);
+    PdbGroup group = new PdbGroup(this, sequence, group3);
 
     if (groupCount == groups.length) {
       PdbGroup[] t = new PdbGroup[groupCount * 2];
@@ -121,10 +121,10 @@ public class PdbChain {
   }
 
   void addSecondaryStructure(byte type,
-                             short startResidueID, short endResidueID) {
+                             int startSequence, int endSequence) {
     if (polymer == null)
       polymer = new PdbPolymer(this);
-    polymer.addSecondaryStructure(type, startResidueID, endResidueID);
+    polymer.addSecondaryStructure(type, startSequence, endSequence);
   }
 
   public void getAlphaCarbonMidPoint(int groupIndex, Point3f midPoint) {

@@ -129,21 +129,19 @@ public class PdbPolymer {
     }
   }
 
-  public int getIndex(short groupSequence) {
-    for (int i = count; --i >= 0; )
-      if (groups[i].groupSequence == groupSequence)
-        return i;
-    return -1;
+  public int getIndex(int sequence) {
+    int i;
+    for (i = count; --i >= 0; )
+      if (groups[i].sequence == sequence)
+        break;
+    return i;
   }
 
   void addSecondaryStructure(byte type,
-                             short startResidueID, short endResidueID) {
-    //    System.out.println("PdbPolymer.addSecondaryStructure(" +
-    //                       type + "," + startResidueID + "," +
-    // endResidueID +")");
+                             int startSequence, int endSequence) {
     int polymerIndexStart, polymerIndexEnd;
-    if ((polymerIndexStart = getIndex(startResidueID)) == -1 ||
-        (polymerIndexEnd = getIndex(endResidueID)) == -1)
+    if ((polymerIndexStart = getIndex(startSequence)) == -1 ||
+        (polymerIndexEnd = getIndex(endSequence)) == -1)
       return;
     int structureCount = polymerIndexEnd - polymerIndexStart + 1;
     if (structureCount < 1) {

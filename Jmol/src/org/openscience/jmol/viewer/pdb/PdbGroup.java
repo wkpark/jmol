@@ -33,13 +33,13 @@ public class PdbGroup {
 
   public PdbStructure structure;
   public PdbChain chain;
-  public short groupSequence;
+  public int sequence;
   public short groupID;
   int[] mainchainIndices;
 
-  public PdbGroup(PdbChain chain, short groupSequence, String group3) {
+  public PdbGroup(PdbChain chain, int sequence, String group3) {
     this.chain = chain;
-    this.groupSequence = groupSequence;
+    this.sequence = sequence;
     this.groupID = getGroupID(group3);
   }
 
@@ -63,8 +63,12 @@ public class PdbGroup {
     return group3Names[groupID];
   }
 
-  public short getSequence() {
-    return groupSequence;
+  public int getSequence() {
+    return sequence;
+  }
+
+  public String getSequenceString() {
+    return getSequenceString(sequence);
   }
 
   public short getGroupID() {
@@ -178,7 +182,7 @@ public class PdbGroup {
                          (mainchainIndices == null));
       System.out.println("chain '" + chain.chainID + "'");
       System.out.println("group3=" + getGroup3());
-      System.out.println("groupSequence=" + groupSequence);
+      System.out.println("sequence=" + getSequenceString());
       return null;
     }
     return chain.model.file.frame.getAtomAt(j);
@@ -213,4 +217,13 @@ public class PdbGroup {
     return true;
   }
 
+  public static int getSequence(int sequenceNumber, char insertionCode) {
+    return (sequenceNumber << 8) + ((insertionCode - ' ') & 0xFF);
+  }
+
+  public static String getSequenceString(int sequence) {
+    return (sequence & 0xFF) == 0
+      ? "" + (sequence >> 8)
+      : "" + (sequence >> 8) + (char)(' ' + (sequence & 0xFF));
+  }
 }

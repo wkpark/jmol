@@ -96,8 +96,8 @@ public class PdbFile {
       } else
         continue;
 
-      short startSequence = 0;
-      short endSequence = 0;
+      int startSequence = 0;
+      int endSequence = 0;
       try {
         int startSequenceNumber = 
           Integer.parseInt(structureRecord.substring(startIndex,
@@ -107,15 +107,11 @@ public class PdbFile {
           Integer.parseInt(structureRecord.substring(endIndex,
                                                      endIndex + 4).trim());
         char endInsertionCode = structureRecord.charAt(endIndex + 4);
-        /*
+
         startSequence = PdbGroup.getSequence(startSequenceNumber,
                                              startInsertionCode);
         endSequence = PdbGroup.getSequence(endSequenceNumber,
                                            endInsertionCode);
-        */
-        startSequence = (short)startSequenceNumber;
-        endSequence = (short)endSequenceNumber;
-        
       } catch (NumberFormatException e) {
         System.out.println("secondary structure record error");
         continue;
@@ -131,33 +127,35 @@ public class PdbFile {
 
   int modelIDCurrent = -1;
   char chainIDCurrent = '\uFFFF';
-  short groupSequenceCurrent;
+  int sequenceCurrent;
   PdbGroup groupCurrent;
 
   void setCurrentResidue(short modelID, char chainID,
-                         short groupSequence, String group3) {
+                         int sequence, String group3) {
     modelIDCurrent = modelID;
     chainIDCurrent = chainID;
-    groupSequenceCurrent = groupSequence;
+    sequenceCurrent = sequence;
     PdbModel model = getOrAllocateModel(modelID);
     PdbChain chain = model.getOrAllocateChain(chainID);
-    groupCurrent = chain.allocateGroup(groupSequence, group3);
+    groupCurrent = chain.allocateGroup(sequence, group3);
   }
   
   public PdbAtom allocatePdbAtom(int atomIndex, short modelID,
                                  String pdbRecord) {
     char chainID = pdbRecord.charAt(21);
-    short groupSequence = Short.MIN_VALUE;
+    int sequence = Integer.MIN_VALUE;
     try {
-      groupSequence = Short.parseShort(pdbRecord.substring(22, 26).trim());
+      int sequenceNum = Integer.parseInt(pdbRecord.substring(22, 26).trim());
+      char insertionCode = pdbRecord.charAt(26);
+      sequence = PdbGroup.getSequence(sequenceNum, insertionCode);
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }
     if (modelID != modelIDCurrent ||
         chainID != chainIDCurrent ||
-        groupSequence != groupSequenceCurrent)
+        sequence != sequenceCurrent)
       setCurrentResidue(modelID, chainID,
-                        groupSequence, pdbRecord.substring(17, 20));
+                        sequence, pdbRecord.substring(17, 20));
     return groupCurrent.allocatePdbAtom(atomIndex, pdbRecord);
   }
 

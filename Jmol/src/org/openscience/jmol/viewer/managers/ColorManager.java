@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.managers;
 import org.jmol.g3d.*;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
+import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.script.Token;
 
 import java.awt.Color;
@@ -263,6 +264,17 @@ public class ColorManager {
           partialCharge = 1;
         int byteVal = 0xFF - ((int)(255 * partialCharge) & 0xFF);
         argb = 0xFF0000FF | (byteVal << 16) | (byteVal << 8);
+      }
+      break;
+    case JmolConstants.PALETTE_TEMPERATURE:
+      Frame frame = viewer.getFrame();
+      int bfactor100Lo = frame.getBfactor100Lo();
+      int bfactor100Hi = frame.getBfactor100Hi();
+      int bfactorRange = bfactor100Hi - bfactor100Lo;
+      if (bfactorRange == 0)
+        argb = 0xFFFFFFFF;
+      else {
+        argb = 0xFF800080;
       }
       break;
     case JmolConstants.PALETTE_FORMALCHARGE:

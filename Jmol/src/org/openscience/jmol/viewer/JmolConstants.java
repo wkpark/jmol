@@ -58,11 +58,12 @@ final public class JmolConstants {
   public final static byte PALETTE_CHAIN         = 5;
   public final static byte PALETTE_PARTIALCHARGE = 6;
   public final static byte PALETTE_TYPE          = 7;
-  public final static byte PALETTE_MAX           = 8;
+  public final static byte PALETTE_TEMPERATURE   = 8;
+  public final static byte PALETTE_MAX           = 9;
 
   public final static String[] colorSchemes =
     { "cpk", "charge", "structure", "amino",
-      "shapely", "chain", "partialCharge", "type"};
+      "shapely", "chain", "partialCharge", "temperature", "type"};
 
   public final static byte AXES_NONE = 0;
   public final static byte AXES_UNIT = 1;

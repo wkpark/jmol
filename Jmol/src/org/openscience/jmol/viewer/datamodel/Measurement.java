@@ -108,9 +108,12 @@ public class Measurement {
 
   String formatDistance(float dist) {
     dist = (int)(dist * 1000 + 0.5f);
-    return frame.viewer.getMeasureDistanceInAngstroms()
-      ? "" + (dist / 1000) + '\u00C5'
-      : "" + (dist / 100) + " nm";
+    String units = frame.viewer.getMeasureDistanceUnits();
+    if (units == "nanometers")
+      return "" + (dist / 10000) + " nm";
+    if (units == "picometers")
+      return "" + (dist / 10) + " pm";
+    return "" + (dist / 1000) + '\u00C5'; // angstroms
   }
 
   String formatAngle(float angle) {

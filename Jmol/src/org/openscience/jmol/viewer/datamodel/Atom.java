@@ -88,7 +88,7 @@ public final class Atom implements Bspt.Tuple {
                          ? (byte)100
                          : (byte)occupancy));
     this.bfactor100 =
-      (bfactor == Float.NaN ? Short.MIN_VALUE : (short)(bfactor*100));
+      (Float.isNaN(bfactor) ? Short.MIN_VALUE : (short)(bfactor*100));
     this.atomSerial = atomSerial;
     this.atomName = (atomName == null ? null : atomName.intern());
     specialAtomID = lookupSpecialAtomID(atomName);

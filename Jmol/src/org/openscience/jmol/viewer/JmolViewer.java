@@ -1968,12 +1968,12 @@ final public class JmolViewer {
     return styleManager.measurementMad;
   }
 
-  public void setMeasureDistanceInAngstroms(boolean inAngstroms) {
-    styleManager.setMeasureDistanceInAngstroms(inAngstroms);
+  public boolean setMeasureDistanceUnits(String units) {
+    return styleManager.setMeasureDistanceUnits(units);
   }
 
-  public boolean getMeasureDistanceInAngstroms() {
-    return styleManager.measureDistanceInAngstroms;
+  public String getMeasureDistanceUnits() {
+    return styleManager.measureDistanceUnits;
   }
 
   public void setWireframeRotation(boolean wireframeRotation) {

@@ -1469,7 +1469,6 @@ public class Eval implements Runnable {
       badArgumentCount();
     switch (statement[itoken].tok) {
     case Token.none:
-      System.out.println(" color none");
     case Token.cpk:
       break;
     case Token.formalCharge:
@@ -1493,9 +1492,11 @@ public class Eval implements Runnable {
     case Token.type:
       palette = JmolConstants.PALETTE_TYPE;
       break;
+    case Token.temperature:
+      palette = JmolConstants.PALETTE_TEMPERATURE;
+      break;
 
     case Token.group:
-    case Token.temperature:
     case Token.user:
       notImplemented(itoken);
       return;
@@ -2617,12 +2618,7 @@ public class Eval implements Runnable {
       viewer.setShowMeasurementLabels(false);
       break;
     case Token.identifier:
-      String id = (String)statement[2].value;
-      if (id.equalsIgnoreCase("angstroms"))
-        viewer.setMeasureDistanceInAngstroms(true);
-      else if (id.equalsIgnoreCase("nanometers"))
-        viewer.setMeasureDistanceInAngstroms(false);
-      else
+      if (! viewer.setMeasureDistanceUnits((String)statement[2].value))
         unrecognizedSetParameter();
       break;
     default:

@@ -75,6 +75,10 @@ final public class Frame {
 
   BitSet groupsPresent;
 
+  boolean hasBfactorRange;
+  int bfactor100Lo;
+  int bfactor100Hi;
+
   public Frame(JmolViewer viewer, String modelTypeName) {
     this.viewer = viewer;
     // NOTE: these strings are interned and are lower case
@@ -982,5 +986,31 @@ final public class Frame {
 
   public BitSet getGroupsPresentBitSet() {
     return groupsPresent;
+  }
+
+  void calcBfactorRange() {
+    if (! hasBfactorRange) {
+      bfactor100Lo = bfactor100Hi = atoms[0].getBfactor100();
+      for (int i = atomCount; --i > 0; ) {
+        int bf = atoms[i].getBfactor100();
+        if (bf < bfactor100Lo)
+          bfactor100Lo = bf;
+        else if (bf > bfactor100Hi)
+          bfactor100Hi = bf;
+      }
+      hasBfactorRange = true;
+    }
+  }
+
+  public int getBfactor100Lo() {
+    if (! hasBfactorRange)
+      calcBfactorRange();
+    return bfactor100Lo;
+  }
+
+  public int getBfactor100Hi() {
+    if (! hasBfactorRange)
+      calcBfactorRange();
+    return bfactor100Hi;
   }
 }

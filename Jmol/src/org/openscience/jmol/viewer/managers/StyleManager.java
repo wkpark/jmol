@@ -92,9 +92,17 @@ public class StyleManager {
     this.measurementMad = measurementMad;
   }
 
-  public boolean measureDistanceInAngstroms = false;
-  public void setMeasureDistanceInAngstroms(boolean inAngstroms) {
-    this.measureDistanceInAngstroms = inAngstroms;
+  public String measureDistanceUnits = "nanometers";
+  public boolean setMeasureDistanceUnits(String units) {
+    if (units.equalsIgnoreCase("angstroms"))
+      measureDistanceUnits = "angstroms";
+    else if (units.equalsIgnoreCase("nanometers"))
+      measureDistanceUnits = "nanometers";
+    else if (units.equalsIgnoreCase("picometers"))
+      measureDistanceUnits = "picometers";
+    else
+      return false;
+    return true;
   }
 
   public String propertyStyleString = "";

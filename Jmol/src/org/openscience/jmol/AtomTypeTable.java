@@ -97,7 +97,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
             ReadAtypes(new FileInputStream(UAF));
         } catch (Exception e1) {            
             try { 
-				URL url = ClassLoader.getSystemResource(SAU);
+                URL url = ClassLoader.getSystemResource(SAU);
                 ReadAtypes(url.openStream());
             } catch(Exception e2) {
                 System.err.println("Cannot read System AtomTypes: " + 
@@ -105,7 +105,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
             }
         }
     }
-
+    
     public AtomTypeTable(JFrame fr) {
         super(fr, jrh.getString("Title"), true);
         // Create a model of the data.

@@ -369,10 +369,10 @@ public class ChemFrame {
      * @param z the z coordinate of the new atom
      */                
     public int addVert(int atomicNumber, float x, float y, float z) throws Exception {
-		BaseAtomType baseType = BaseAtomType.get(atomicNumber);
-		if (baseType == null) {
-			return -1;
-		}
+        BaseAtomType baseType = BaseAtomType.get(atomicNumber);
+        if (baseType == null) {
+            return -1;
+        }
         return addVert(new AtomType(baseType), x, y, z);
     }
 	

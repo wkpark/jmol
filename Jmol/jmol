@@ -3,7 +3,7 @@
 # Set JMOL_HOME and JAVA_HOME to match the appropriate installation 
 # directories on your system:
 #
-JMOL_HOME=${JMOL_HOME:-/usr/local/jmol-0.6.1}
+JMOL_HOME=${JMOL_HOME:-/home/maul/gezelter/gezelter/Jmol}
 #
 # Solaris:
 JAVA_HOME=/usr/local/jdk1.2.2

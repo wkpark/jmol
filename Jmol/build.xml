@@ -229,7 +229,7 @@
   </target>
 
   <target name="jar" depends="init,classes,appjars">
-    <jar jarfile="${lib.dir}/jmol.jar" manifest="${manifest}" >
+    <jar jarfile="jmol.jar" manifest="${manifest}" >
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
         <exclude name="**/Test*.class" />
@@ -279,7 +279,7 @@
   </target>
 
   <target name="applet-jar" depends="applet-classes,appletjars">
-    <jar jarfile="${lib.dir}/JmolApplet.jar" >
+    <jar jarfile="JmolApplet.jar" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
       </fileset>
@@ -289,19 +289,11 @@
 
   <target name="dist" depends="jar,applet-jar">
     <mkdir dir="${dist.dir}/jmol-${version}"/>
-    <copy todir="${dist.dir}/jmol-${version}/${lib.dir}" >
-      <fileset dir="${lib.dir}">
-        <exclude name="JmolApplet.jar" />
-        <exclude name="swing.jar" />
-        <exclude name="junit.jar" />
-        <exclude name="saxon.jar" />
-        <exclude name="gnujaxp-saxonly.jar" />
-        <exclude name="baysmith-io.jar" />
-      </fileset>
-    </copy>
     <copy todir="${dist.dir}/jmol-${version}" >
       <fileset dir=".">
+        <include name="jmol.jar" />
         <include name="jmol" />
+        <include name="jmol.sh" />
         <include name="jmol.mac" />
         <include name="jmol.bat" />
         <include name="*.txt" />
@@ -310,6 +302,7 @@
     <chmod perm="+x">
       <fileset dir="${dist.dir}/jmol-${version}">
         <include name="jmol"/>
+        <include name="jmol.sh"/>
         <include name="jmol.bat"/>
       </fileset>
     </chmod>
@@ -325,25 +318,9 @@
     </copy>
 
     <mkdir dir="${dist.dir}/jmol-applet-${version}"/>
-    <copy todir="${dist.dir}/jmol-applet-${version}/${lib.dir}" >
-      <fileset dir="${lib.dir}">
-        <exclude name="jmol.jar" />
-        <exclude name="jas.jar" />
-        <exclude name="Acme.jar" />
-        <exclude name="swing.jar" />
-        <exclude name="junit.jar" />
-        <exclude name="multi.jar" />
-        <exclude name="saxon.jar" />
-        <exclude name="gnujaxp.jar" />
-        <exclude name="baysmith-io.jar" />
-        <exclude name="itext-0.94.jar" />
-        <exclude name="cdk-core.jar" />
-        <exclude name="cdk-extra.jar" />
-        <exclude name="cdk-libio.jar" />
-      </fileset>
-    </copy>
     <copy todir="${dist.dir}/jmol-applet-${version}" >
       <fileset dir=".">
+        <include name="JmolApplet.jar" />
         <include name="*.txt" />
       </fileset>
     </copy>
@@ -510,7 +487,7 @@
     <delete dir="${appjars.dir}"/>
     <delete dir="${appletjars.dir}"/>
     <delete>
-      <fileset dir="${lib.dir}">
+      <fileset dir=".">
         <include name="jmol.jar" />
         <include name="JmolApplet.jar" />
       </fileset>

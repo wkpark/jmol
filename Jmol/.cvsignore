@@ -5,3 +5,5 @@ dist
 javadoc
 appjars
 appletjars
+jmol.jar
+JmolApplet.jar

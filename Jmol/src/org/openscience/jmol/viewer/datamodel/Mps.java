@@ -39,7 +39,7 @@ abstract class Mps extends Shape {
 
   Mmset mmset;
 
-  Mpsmodel[] mcpsmodels;
+  Mpsmodel[] mpsmodels;
 
   final void initShape() {
     mmset = frame.mmset;
@@ -48,8 +48,8 @@ abstract class Mps extends Shape {
   void setSize(int size, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
-    for (int m = mcpsmodels.length; --m >= 0; )
-      mcpsmodels[m].setMad(mad, bsSelected);
+    for (int m = mpsmodels.length; --m >= 0; )
+      mpsmodels[m].setMad(mad, bsSelected);
   }
   
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -66,28 +66,33 @@ abstract class Mps extends Shape {
     } else {
       return;
     }
-    for (int m = mcpsmodels.length; --m >= 0; )
-      mcpsmodels[m].setColix(palette, colix, bs);
+    for (int m = mpsmodels.length; --m >= 0; )
+      mpsmodels[m].setColix(palette, colix, bs);
   }
 
   abstract Mpspolymer allocateMpspolymer(Polymer polymer);
 
   void initialize() {
-    if (mcpsmodels == null) {
+    if (mpsmodels == null) {
       int modelCount = mmset == null ? 0 : mmset.getModelCount();
       Model[] models = mmset.getModels();
-      mcpsmodels = new Mpsmodel[modelCount];
+      mpsmodels = new Mpsmodel[modelCount];
       for (int i = modelCount; --i >= 0; )
-        mcpsmodels[i] = new Mpsmodel(models[i]);
+        mpsmodels[i] = new Mpsmodel(models[i]);
     }
   }
 
   int getMpsmodelCount() {
-    return mcpsmodels.length;
+    return mpsmodels.length;
   }
 
   Mpsmodel getMpsmodel(int i) {
-    return mcpsmodels[i];
+    return mpsmodels[i];
+  }
+
+  void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
+    for (int i = mpsmodels.length; --i >= 0; )
+      mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
   }
 
   class Mpsmodel {
@@ -124,6 +129,12 @@ abstract class Mps extends Shape {
     Mpspolymer getMpspolymer(int i) {
       return mpspolymers[i];
     }
+
+    void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
+      for (int i = mpspolymers.length; --i >= 0; )
+        mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
+    }
+    
   }
 
   abstract class Mpspolymer {
@@ -251,94 +262,76 @@ abstract class Mps extends Shape {
       }
     }
 
-    /****************************************************************
-     * the distance that we are returning is the
-     * mean positional displacement in milliAngstroms
-     * see below
-     ****************************************************************/
     private final static double eightPiSquared100 = 8 * Math.PI * Math.PI * 100;
+    /**
+     * Calculates the mean positional displacement in milliAngstroms.
+     * <p>
+     * <a href='http://www.rcsb.org/pdb/lists/pdb-l/200303/000609.html'>
+     * http://www.rcsb.org/pdb/lists/pdb-l/200303/000609.html
+     * </a>
+     * <code>
+     * > -----Original Message-----
+     * > From: pdb-l-admin@sdsc.edu [mailto:pdb-l-admin@sdsc.edu] On 
+     * > Behalf Of Philipp Heuser
+     * > Sent: Thursday, March 27, 2003 6:05 AM
+     * > To: pdb-l@sdsc.edu
+     * > Subject: pdb-l: temperature factor; occupancy
+     * > 
+     * > 
+     * > Hi all!
+     * > 
+     * > Does anyone know where to find proper definitions for the 
+     * > temperature factors 
+     * > and the values for occupancy?
+     * > 
+     * > Alright I do know, that the atoms with high temperature 
+     * > factors are more 
+     * > disordered than others, but what does a temperature factor of 
+     * > a specific 
+     * > value mean exactly.
+     * > 
+     * > 
+     * > Thanks in advance!
+     * > 
+     * > Philipp
+     * > 
+     * pdb-l: temperature factor; occupancy
+     * Bernhard Rupp br@llnl.gov
+     * Thu, 27 Mar 2003 08:01:29 -0800
+     * 
+     * * Previous message: pdb-l: temperature factor; occupancy
+     * * Next message: pdb-l: Structural alignment?
+     * * Messages sorted by: [ date ] [ thread ] [ subject ] [ author ]
+     * 
+     * Isotropic B is defined as 8*pi**2<u**2>.
+     * 
+     * Meaning: eight pi squared =79
+     * 
+     * so B=79*mean square displacement (from rest position) of the atom.
+     * 
+     * as u is in Angstrom, B must be in Angstrom squared.
+     * 
+     * example: B=79A**2
+     * 
+     * thus, u=sqrt([79/79]) = 1 A mean positional displacement for atom.
+     * 
+     * 
+     * See also 
+     * 
+     * http://www-structure.llnl.gov/Xray/comp/comp_scat_fac.htm#Atomic
+     * 
+     * for more examples.
+     * 
+     * BR
+     *</code>
+     */
     short calcMeanPositionalDisplacement(int bFactor100) {
       return (short)(Math.sqrt(bFactor100/eightPiSquared100) * 1000);
     }
+
+    void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
+      polymer.findNearestAtomIndex(xMouse, yMouse, closest);
+    }
   }
-/****************************************************************
-http://www.rcsb.org/pdb/lists/pdb-l/200303/000609.html
-
-pdb-l: temperature factor; occupancy
-Bernhard Rupp br@llnl.gov
-Thu, 27 Mar 2003 08:01:29 -0800
-
-* Previous message: pdb-l: temperature factor; occupancy
-* Next message: pdb-l: Structural alignment?
-* Messages sorted by: [ date ] [ thread ] [ subject ] [ author ]
-
-Isotropic B is defined as 8*pi**2<u**2>.
-
-Meaning: eight pi squared =79
-
-so B=79*mean square displacement (from rest position) of the atom.
-
-as u is in Angstrom, B must be in Angstrom squared.
-
-example: B=79A**2
-
-thus, u=sqrt([79/79]) = 1 A mean positional displacement for atom.
-
-
-See also 
-
-http://www-structure.llnl.gov/Xray/comp/comp_scat_fac.htm#Atomic
-
-for more examples.
-
-BR
-
-
-> -----Original Message-----
-> From: pdb-l-admin@sdsc.edu [mailto:pdb-l-admin@sdsc.edu] On 
-> Behalf Of Philipp Heuser
-> Sent: Thursday, March 27, 2003 6:05 AM
-> To: pdb-l@sdsc.edu
-> Subject: pdb-l: temperature factor; occupancy
-> 
-> 
-> Hi all!
-> 
-> Does anyone know where to find proper definitions for the 
-> temperature factors 
-> and the values for occupancy?
-> 
-> Alright I do know, that the atoms with high temperature 
-> factors are more 
-> disordered than others, but what does a temperature factor of 
-> a specific 
-> value mean exactly.
-> 
-> 
-> Thanks in advance!
-> 
-> Philipp
-> 
-> 
-> -- 
-> *************************************
-> Philipp Heuser
-> 
-> CUBIC - Cologne University Bioinformatics Center
-> Institute of Biochemistry       
-> University of Cologne                    
-> 
-> Zuelpicher Str. 47                       
-> D-50674 Cologne, GERMANY       
-> 
-> Phone :  Office +49-221/470-7427 
-> Fax:     Office +49-221/470-5092
-> *************************************
-> 
-> TO UNSUBSCRIBE OR CHANGE YOUR SUBSCRIPTION OPTIONS, please 
-> see https://lists.sdsc.edu/mailman/listinfo.cgi/pdb-l . 
-> 
-****************************************************************/
-
 }
 

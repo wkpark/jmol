@@ -184,4 +184,10 @@ abstract class Monomer extends Group {
   final Point3f getWingAtomPoint() {
     return getAtomPointFromOffsetIndex(1);
   }
+
+  /**
+   * Selects LeadAtom when this Monomer is clicked ... iff it is
+   * closer to the user.
+   */
+  abstract void findNearestAtomIndex(int x, int y, Closest closest);
 }

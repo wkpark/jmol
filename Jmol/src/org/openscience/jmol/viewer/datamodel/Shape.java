@@ -62,8 +62,7 @@ abstract public class Shape {
     return false;
   }
 
-  int findNearestAtomIndex(int x, int y) {
-    return -1;
+  void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
   }
 
   void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {

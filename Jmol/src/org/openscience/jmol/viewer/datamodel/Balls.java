@@ -62,20 +62,20 @@ public class Balls extends Shape {
 
   final static int minimumPixelSelectionRadius = 4;
 
-  int findNearestAtomIndex(int x, int y) {
-    /*
-     * This algorithm assumes that atoms are circles at the z-depth
-     * of their center point. Therefore, it probably has some flaws
-     * around the edges when dealing with intersecting spheres that
-     * are at approximately the same z-depth.
-     * But it is much easier to deal with than trying to actually
-     * calculate which atom was clicked
-     *
-     * A more general algorithm of recording which object drew
-     * which pixel would be very expensive and not worth the trouble
-     ****************************************************************/
+  /**
+   * This algorithm assumes that atoms are circles at the z-depth
+   * of their center point. Therefore, it probably has some flaws
+   * around the edges when dealing with intersecting spheres that
+   * are at approximately the same z-depth.
+   * But it is much easier to deal with than trying to actually
+   * calculate which atom was clicked
+   *
+   * A more general algorithm of recording which object drew
+   * which pixel would be very expensive and not worth the trouble
+   */
+  void findNearestAtomIndex(int x, int y, Closest closest) {
     if (frame.atomCount == 0)
-      return -1;
+      return;
     Atom champion = null;
     int championIndex = -1;
     for (int i = frame.atomCount; --i >= 0; ) {
@@ -87,6 +87,8 @@ public class Balls extends Shape {
         championIndex = i;
       }
     }
-    return championIndex;
+    closest.atomIndex = championIndex;
+    if (championIndex >= 0)
+      closest.z = frame.atoms[championIndex].getScreenZ();
   }
 }

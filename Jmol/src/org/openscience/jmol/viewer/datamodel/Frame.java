@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2003-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -400,16 +400,19 @@ final public class Frame {
 
   final static int minimumPixelSelectionRadius = 4;
 
+  final Closest closest = new Closest();
+
   public int findNearestAtomIndex(int x, int y) {
+    closest.atomIndex = -1;
     for (int i = 0; i < shapes.length; ++i) {
       Shape shape = shapes[i];
       if (shape != null) {
-        int nearestIndex = shapes[i].findNearestAtomIndex(x, y);
-        if (nearestIndex >= 0)
-          return nearestIndex;
+        shapes[i].findNearestAtomIndex(x, y, closest);
+        if (closest.atomIndex >= 0)
+          break;
       }
     }
-    return -1;
+    return closest.atomIndex;
   }
 
   // jvm < 1.4 does not have a BitSet.clear();

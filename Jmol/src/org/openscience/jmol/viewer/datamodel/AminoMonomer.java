@@ -93,4 +93,11 @@ public class AminoMonomer extends AlphaMonomer {
   Point3f getAtomPoint(byte specialAtomID) {
     return getSpecialAtomPoint(interestingAminoAtomIDs, specialAtomID);
   }
+
+  ////////////////////////////////////////////////////////////////
+
+  void findNearestAtomIndex(int x, int y, Closest closest) {
+    System.out.println("Amino.findNearestAtomIndex(...)");
+  }
+
 }

@@ -167,10 +167,15 @@ abstract class Polymer {
     //    System.out.println("is a NucleicPolymer");
     return monomers;
   }
+
+  void findNearestAtomIndex(int x, int y, Closest closest) {
+    for (int i = count; --i >= 0; )
+      monomers[i].findNearestAtomIndex(x, y, closest);
+  }
   
-  ////////////////////////////////////////////////////////////////
-  // for now, a polymer only comes from a single chain
-  ////////////////////////////////////////////////////////////////
+  /**
+   * for now, a polymer only comes from a single chain.
+   */
   char getChainID() {
     return monomers[0].getChainID();
   }

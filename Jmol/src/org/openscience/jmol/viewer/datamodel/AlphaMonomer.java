@@ -85,4 +85,7 @@ public class AlphaMonomer extends Monomer {
             ? getLeadAtomPoint()
             : null);
   }
+
+  void findNearestAtomIndex(int x, int y, Closest closest) {
+  }
 }

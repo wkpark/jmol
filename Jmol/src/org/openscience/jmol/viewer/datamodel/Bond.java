@@ -76,10 +76,8 @@ public class Bond {
       throw new NullPointerException();
     this.atom1 = atom1;
     this.atom2 = atom2;
-    if (atom1.atomicNumber == 16 && atom2.atomicNumber == 16) {
-      System.out.println("An SS bond!");
+    if (atom1.atomicNumber == 16 && atom2.atomicNumber == 16)
       order |= SULFUR;
-    }
     this.order = (byte)order;
     this.style = style;
     this.mar = mar;

@@ -165,7 +165,7 @@ applet: $(APPLET_CLASSES) $(APPLET_JMOL_CLASSES)
 tests: $(TEST_CLASSES)
 
 applet_archive: applet
-	$(JAR) cvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES) org/openscience/jmol/Data/AtomTypes
+	$(JAR) cvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES) org/openscience/miniJmol/Data/AtomTypes.txt org/openscience/miniJmol/Data/cml.dtd
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar

@@ -65,7 +65,7 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
     int labelMode;
     private String helpMessage = "Keys: S- change style; L- Show labels; B-Toggle Bonds";
     
-    private String AT_loc = "../jmol/Data/AtomTypes";
+    private String AT_loc = "Data/AtomTypes.txt";
     
     private boolean bondsEnabled=true;
     

@@ -59,7 +59,7 @@ public class Atom implements Bspt.Tuple {
 
   /* move these out of here */
   int atomSerial;
-  String atomName;
+  public String atomName;
   public short atomID = -1;
 
   public Atom(Frame frame, int atomIndex,
@@ -73,6 +73,26 @@ public class Atom implements Bspt.Tuple {
               boolean isHetero, int atomSerial, char chainID,
               String group3, int sequenceNumber, char insertionCode,
               PdbFile pdbFile) {
+    /*
+    System.out.println("new Atom(" + modelNumber + "," +
+                       elementNumber + "," +
+                       atomName + "," +
+                       atomicCharge + "," +
+                       occupancy + "," +
+                       bfactor + "," +
+                       x + "," + y + "," + z + "," +
+                       isHetero + "," + atomSerial + "," + chainID + "," +
+                       group3 + "," + sequenceNumber + ","
+                       + insertionCode + "," + pdbFile);
+    */
+    if (group3 == null)
+      group3 = "";
+    if (sequenceNumber < 0)
+      sequenceNumber = -1;
+    if (chainID == '\0')
+      chainID = ' ';
+    if (insertionCode == '\0')
+      insertionCode = ' ';
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
@@ -521,6 +541,8 @@ public class Atom implements Bspt.Tuple {
   // this requires a 4 letter name, in PDB format
   // only here for transition purposes
   static String calcPrettyName(String name) {
+    if (name.length() < 4)
+      return name;
     char chBranch = name.charAt(3);
     char chRemote = name.charAt(2);
     switch (chRemote) {
@@ -575,6 +597,8 @@ public class Atom implements Bspt.Tuple {
   }
 
   short lookupAtomID(String strAtom) {
+    if (strAtom == null)
+      strAtom = "";
     Short boxedAtomID = (Short)htAtom.get(strAtom);
     if (boxedAtomID != null)
       return boxedAtomID.shortValue();

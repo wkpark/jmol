@@ -46,6 +46,7 @@ public class CifReader extends ModelReader {
   float[] notionalUnitcell;
 
   BufferedReader reader;
+  String line;
 
   void initialize() {
     notionalUnitcell = new float[6];
@@ -57,7 +58,6 @@ public class CifReader extends ModelReader {
     this.reader = reader;
     model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
     
-    String line;
     while ((line = reader.readLine()) != null) {
       if (line.length() == 0)
         continue;
@@ -66,7 +66,7 @@ public class CifReader extends ModelReader {
         continue;
       if (firstChar != '_') {
         if (line.startsWith("data_")) {
-          processDataParameter(line);
+          processDataParameter();
           continue;
         }
         if (line.startsWith("loop_")) {
@@ -82,7 +82,7 @@ public class CifReader extends ModelReader {
         spaceIndex = line.length();
       String command = line.substring(0, spaceIndex);
       if (command.startsWith("_cell")) {
-        processCellParameter(command, line, spaceIndex);
+        processCellParameter(command, spaceIndex);
         continue;
       }
       if ("_symmetry_space_group_name_H-M".equals(command)) {
@@ -119,24 +119,24 @@ public class CifReader extends ModelReader {
   }
   
 
-  void processDataParameter(String line) {
+  void processDataParameter() {
     String modelName = line.substring(5).trim();
     if (modelName.length() > 0)
       model.modelName = modelName;
   }
-
+  
   final static String[] cellParamNames =
   {"_cell_length_a", "_cell_length_b", "_cell_length_c",
    "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"};
-
-  void processCellParameter(String command, String line, int spaceIndex) {
+  
+  void processCellParameter(String command, int spaceIndex) {
     for (int i = cellParamNames.length; --i >= 0; )
       if (isMatch(command, cellParamNames[i])) {
         notionalUnitcell[i] = parseFloat(line, spaceIndex);
         return;
       }
   }
-
+  
   void checkUnitcell() {
     for (int i = 6; --i >= 0; ) {
       if (Float.isNaN(notionalUnitcell[i]))
@@ -146,33 +146,42 @@ public class CifReader extends ModelReader {
   }
   
   private void processLoopBlock() throws Exception {
-    String line = reader.readLine().trim();
+    line = reader.readLine().trim();
     if (line.startsWith("_atom_site")) {
-      processAtomSiteLoopBlock(line);
+      processAtomSiteLoopBlock();
       return;
     }
-    //    logger.log("Skipping loop block");
-    skipUntilEmptyOrCommentLine(line);
+    if (line.startsWith("_struct_conf") &&
+        !line.startsWith("_struct_conf_type")) {
+      processStructConfLoopBlock();
+      return;
+    }
+    //    logger.log("Skipping loop block:" + line);
+    skipUntilEmptyOrCommentLine();
   }
-
-  private void skipUntilEmptyOrCommentLine(String line) throws Exception {
+  
+  private void skipUntilEmptyOrCommentLine() throws Exception {
     // skip everything until empty line, or comment line
     while (line != null && line.length() > 0 && line.charAt(0) != '#') {
       line = reader.readLine().trim();
     }
   }
-
-  final static byte NONE = 0;
-  final static byte SYMBOL = 1;
-  final static byte LABEL = 2;
-  final static byte FRACT_X = 3;
-  final static byte FRACT_Y = 4;
-  final static byte FRACT_Z = 5;
-  final static byte CARTN_X = 6;
-  final static byte CARTN_Y = 7;
-  final static byte CARTN_Z = 8;
+  
+  final static byte NONE      = 0;
+  final static byte SYMBOL    = 1;
+  final static byte LABEL     = 2;
+  final static byte FRACT_X   = 3;
+  final static byte FRACT_Y   = 4;
+  final static byte FRACT_Z   = 5;
+  final static byte CARTN_X   = 6;
+  final static byte CARTN_Y   = 7;
+  final static byte CARTN_Z   = 8;
   final static byte OCCUPANCY = 9;
-  final static byte ATOM_PROPERTY_MAX = 10;
+  final static byte COMP_ID   = 10;
+  final static byte ASYM_ID   = 11;
+  final static byte SEQ_ID    = 12;
+  final static byte INS_CODE  = 13;
+  final static byte ATOM_PROPERTY_MAX = 14;
   
 
   final static String[] atomFields = {
@@ -181,7 +190,12 @@ public class CifReader extends ModelReader {
     "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
     "_atom_site.Cartn_x", "_atom_site.Cartn_y", "_atom_site.Cartn_z",
     "_atom_site_occupancy",
+    "_atom_site.label_comp_id", "_atom_site.label_asym_id",
+    "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
   };
+
+  // don't forget to deal with alternate conformations!
+  // or, even better, move that code out of the ModelReader
 
   final static byte[] atomFieldMap = {
     SYMBOL,
@@ -189,6 +203,7 @@ public class CifReader extends ModelReader {
     FRACT_X, FRACT_Y, FRACT_Z,
     CARTN_X, CARTN_Y, CARTN_Z,
     OCCUPANCY,
+    COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
   };
 
   static {
@@ -196,25 +211,13 @@ public class CifReader extends ModelReader {
       atomFields[100] = "explode";
   }
 
-  void processAtomSiteLoopBlock(String firstLine) throws Exception {
-    String line = firstLine;
-    int fieldCount = 0;
+  void processAtomSiteLoopBlock() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
-    outer_loop:
-    for (;
-         line != null && line.length() > 0 && line.charAt(0) == '_';
-         ++fieldCount, line = reader.readLine().trim()) {
-      for (int i = atomFields.length; --i >= 0; )
-        if (isMatch(line, atomFields[i])) {
-          int atomProperty = atomFieldMap[i];
-          atomPropertyReferenced[atomProperty] = true;
-          fieldTypes[fieldCount] = atomProperty;
-          continue outer_loop;
-        }
-      //      logger.log("unrecognized atom field", line);
-    }
-
+    int fieldCount = parseLoopParameters(atomFields,
+                                         atomFieldMap,
+                                         fieldTypes,
+                                         atomPropertyReferenced);
     // now that headers are parsed, check to see if we want
     // cartesian or fractional coordinates;
     if (atomPropertyReferenced[CARTN_X]) {
@@ -227,7 +230,7 @@ public class CifReader extends ModelReader {
     } else {
       // it is a different kind of _atom_site loop block
       //      logger.log("?que? no atom coordinates found");
-      skipUntilEmptyOrCommentLine(line);
+      skipUntilEmptyOrCommentLine();
       return;
     }
 
@@ -266,6 +269,25 @@ public class CifReader extends ModelReader {
           if (! Float.isNaN(floatOccupancy))
             atom.occupancy = (int)(floatOccupancy * 100);
           break;
+        case COMP_ID:
+          atom.group3 = field;
+          break;
+        case ASYM_ID:
+          if (field.length() > 1)
+            logger.log("Don't know how to deal with chains more than 1 char",
+                       field);
+          char firstChar = field.charAt(0);
+          if (firstChar != '?' && firstChar != '.')
+            atom.chainID = firstChar;
+          break;
+        case SEQ_ID:
+          atom.sequenceNumber = parseInt(field);
+          break;
+        case INS_CODE:
+          char insCode = field.charAt(0);
+          if (insCode != '?' && insCode != '.')
+            atom.chainID = insCode;
+          break;
         }
       }
     }
@@ -276,4 +298,116 @@ public class CifReader extends ModelReader {
       if (fieldTypes[i] == fieldIndex)
         fieldTypes[i] = 0;
   }
+
+  int parseLoopParameters(String[] fields,
+                          byte[] fieldMap,
+                          int[] fieldTypes,
+                          boolean[] propertyReferenced) throws Exception {
+    int fieldCount = 0;
+    outer_loop:
+    for (;
+         line != null && line.length() > 0 && line.charAt(0) == '_';
+         ++fieldCount, line = reader.readLine().trim()) {
+      for (int i = fields.length; --i >= 0; )
+        if (isMatch(line, fields[i])) {
+          int iproperty = fieldMap[i];
+          propertyReferenced[iproperty] = true;
+          fieldTypes[fieldCount] = iproperty;
+          continue outer_loop;
+        }
+    }
+    return fieldCount;
+  }
+
+  final static byte CONF_TYPE_ID     = 1;
+  final static byte BEG_ASYM_ID      = 2;
+  final static byte BEG_SEQ_ID       = 3;
+  final static byte BEG_INS_CODE     = 4;
+  final static byte END_ASYM_ID      = 5;
+  final static byte END_SEQ_ID       = 6;
+  final static byte END_INS_CODE     = 7;
+  final static byte STRUCT_CONF_PROPERTY_MAX = 8;
+
+  final static String[] structConfFields = {
+    "_struct_conf.conf_type_id",
+
+    "_struct_conf.beg_label_asym_id",
+    "_struct_conf.beg_label_seq_id",
+    "_struct_conf.pdbx_beg_PDB_ins_code",
+    
+    "_struct_conf.end_label_asym_id",
+    "_struct_conf.end_label_seq_id",
+    "_struct_conf.pdbx_end_PDB_ins_code",
+  };
+
+  final static byte[] structConfFieldMap = {
+    CONF_TYPE_ID,
+    BEG_ASYM_ID, BEG_SEQ_ID, BEG_INS_CODE,
+    END_ASYM_ID, END_SEQ_ID, END_INS_CODE,
+  };
+
+  void processStructConfLoopBlock() throws Exception {
+    int[] fieldTypes = new int[100]; // should be enough
+    boolean[] propertyReferenced = new boolean[STRUCT_CONF_PROPERTY_MAX];
+    int fieldCount = parseLoopParameters(structConfFields,
+                                         structConfFieldMap,
+                                         fieldTypes,
+                                         propertyReferenced);
+    for (int i = STRUCT_CONF_PROPERTY_MAX; --i > 0; ) // only > 0, not >= 0
+      if (! propertyReferenced[i]) {
+        logger.log("?que? missing _struct_conf property:" + i);
+        skipUntilEmptyOrCommentLine();
+        return;
+      }
+
+    logger.log("still here!");
+
+    for (;
+         line != null && line.length() > 0 && line.charAt(0) != '#';
+         line = reader.readLine().trim()) {
+      StringTokenizer tokenizer = new StringTokenizer(line);
+      Structure structure = new Structure();
+      
+      for (int i = 0; i < fieldCount; ++i) {
+        if (! tokenizer.hasMoreTokens())
+          tokenizer = new StringTokenizer(reader.readLine());
+        String field = tokenizer.nextToken();
+        char firstChar = field.charAt(0);
+        switch (fieldTypes[i]) {
+        case NONE:
+          break;
+        case CONF_TYPE_ID:
+          if (field.startsWith("HELX"))
+            structure.structureType = "helix";
+          else if (field.startsWith("TURN"))
+            structure.structureType = "turn";
+          else
+            structure.structureType = "none";
+          break;
+        case BEG_ASYM_ID:
+          structure.chainID =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        case BEG_SEQ_ID:
+          structure.startSequenceNumber = parseInt(field);
+          break;
+        case BEG_INS_CODE:
+          structure.startInsertionCode =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        case END_SEQ_ID:
+          structure.endSequenceNumber = parseInt(field);
+          break;
+        case END_INS_CODE:
+          structure.endInsertionCode =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        }
+      }
+      model.addStructure(structure);
+    }
+  }
 }
+
+
+

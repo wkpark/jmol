@@ -1830,6 +1830,39 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static short ATOMID_MAINCHAIN_IMPOSTERS = 4;
 
   public final static String[] predefinedAtomNames4 = {
+    "N",  // 0
+    "CA",
+    "C",
+    "O", // 3
+    "N", // imposter N
+    "C", // imposter CA
+    "C", // imposter C
+    "O", // imposter O
+    
+    "P",
+    "O1P",
+    "O2P", // 10
+    "O3P",
+    "O5*",
+    "O4*",
+    "O3*",
+    "O2*", // 15
+    "C5*",
+    "C4*",
+    "C3*",
+    "C2*",
+    "C1*", // 20
+    "1H5*",
+    "2H5*",
+    "H4*",
+    "H3*",
+    "1H2*", // 25
+    "2H2*",
+    "H1*",
+    "H5T",
+    "H3T",
+    "2HO*", // 30
+    /*
     " N  ",  // 0
     " CA ",
     " C  ",
@@ -1862,6 +1895,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     " H5T",
     " H3T",
     "2HO*", // 30
+    */
   };
   
   public final static short RESID_AMINO_MAX = 22;

@@ -32,6 +32,8 @@ class Structure {
   int endSequenceNumber;
   char endInsertionCode;
 
+  Structure() { }
+
   Structure(String structureType, char chainID,
             int startSequenceNumber, char startInsertionCode,
             int endSequenceNumber, char endInsertionCode) {

@@ -90,7 +90,8 @@ public class SmarterModelAdapter extends ModelAdapter {
   }
 
   public boolean hasPdbRecords(Object clientFile) {
-    return ((Model)clientFile).modelType == MODEL_TYPE_PDB;
+    return true;
+    //    return ((Model)clientFile).modelType == MODEL_TYPE_PDB;
   }
 
   public boolean coordinatesAreFractional(Object clientFile) {

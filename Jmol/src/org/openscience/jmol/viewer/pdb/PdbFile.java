@@ -144,6 +144,12 @@ final public class PdbFile {
   public PdbGroup registerAtom(Atom atom, int modelNumber, char chainID,
                                int sequenceNumber, char insertionCode,
                                String group3) {
+    /*
+    System.out.println("PdbFile.registerAtom(...," + modelNumber + "," +
+                       chainID + "," + sequenceNumber + "," + insertionCode +
+                       "," + group3 + ")");
+    */
+                       
     if (sequenceNumber != sequenceNumberCurrent ||
         insertionCode != insertionCodeCurrent ||
         chainID != chainIDCurrent ||

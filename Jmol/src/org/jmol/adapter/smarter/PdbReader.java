@@ -147,7 +147,10 @@ class PdbReader extends ModelReader {
        * atomName
        ****************************************************************/
       String rawAtomName = line.substring(12, 16);
-      String atomName = rawAtomName;
+      // confusion|concern about the effect this will have on
+      // atom expressions
+      // but we have to do it to support mmCIF
+      String atomName = rawAtomName.trim();
       /****************************************************************
        * calculate the charge from cols 79 & 80 (1-based)
        * 2+, 3-, etc

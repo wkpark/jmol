@@ -157,9 +157,11 @@ final public class PdbGroup {
   }
 
   public static short lookupGroupID(String group3) {
-    Short boxedGroupID = (Short)htGroup.get(group3);
-    if (boxedGroupID != null)
-      return boxedGroupID.shortValue();
+    if (group3 != null) {
+      Short boxedGroupID = (Short)htGroup.get(group3);
+      if (boxedGroupID != null)
+        return boxedGroupID.shortValue();
+    }
     return -1;
   }
 
@@ -175,6 +177,10 @@ final public class PdbGroup {
   */
 
   void registerAtom(Atom atom) {
+    /*
+    System.out.println("PdbGroup.registerAtom(atom) atom.atomID="+atom.atomID+
+                       " atom.atomName=" + atom.atomName);
+    */
     if (atom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
       if (! registerMainchainAtomIndex(atom.atomID, atom.atomIndex))
         atom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;

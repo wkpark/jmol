@@ -60,16 +60,16 @@ function jmolApplet(size, modelFilename, script, nameSuffix) {
 
 function jmolButton(script, label) {
   var scriptIndex = _jmolAddScript(script);
-  if (! label)
+  if (label == undefined || label == null)
     label = script.substring(0, 32);
   var t = "<input type='button' value='" + label +
           "' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
           _jmol.buttonCssText + "/>";
-  document.open();
+//  document.open();
   document.write(t);
-  document.close();
+//  document.close();
 }
 
 function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
@@ -86,15 +86,15 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
   var indexChecked = _jmolAddScript(scriptWhenChecked);
   var indexUnchecked = _jmolAddScript(scriptWhenUnchecked);
   var t = "<input type='checkbox' onClick='_jmolCbClick(this," +
-          indexChecked + "," + indexUnchecked + "," + _jmol.targetSuffix +
+          indexChecked + "," + indexUnchecked + _jmol.targetText +
           ")' onMouseover='_jmolCbOver(this," + indexChecked + "," +
           indexUnchecked +
           ");return true' onMouseout='_jmolMouseOut()' " +
 	  (isChecked ? "checked " : "") + _jmol.checkboxCssText + "/>" +
           labelHtml;
-  document.open();
+//  document.open();
   document.write(t);
-  document.close();
+//  document.close();
 }
 
 function jmolRadioGroup(arrayOfRadioButtons, separatorHtml) {
@@ -123,9 +123,9 @@ function jmolLink(script, text) {
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
           _jmol.linkCssText + ">" + text + "</a>";
-  document.open();
+//  document.open();
   document.write(t);
-  document.close();
+//  document.close();
 }
 
 function jmolMenu(arrayOfMenuItems, size) {
@@ -138,7 +138,8 @@ function jmolMenu(arrayOfMenuItems, size) {
       size = length;
     var sizeText = size ? " size='" + size + "' " : "";
     var t = "<select name='" + _jmol.menuGroupCount++ +
-            "' onChange='_jmolClick(this.value)' " +
+            "' onChange='_jmolMenuSelected(this" +
+            _jmol.targetText + ")'" +
             sizeText + _jmol.menuCssText + ">";
     for (var i = 0; i < length; ++i) {
       var menuItem = arrayOfMenuItems[i];
@@ -159,23 +160,22 @@ function jmolMenu(arrayOfMenuItems, size) {
       t += "<option value='" + scriptIndex + selectedText + text + "</option>";
     }
     t += "</select>";
-    alert("t=" + t);
-    document.open();
+//    document.open();
     document.write(t);
-    document.close();
+//    document.close();
   }
 }
 
 function jmolHtml(html) {
-  document.open();
+//  document.open();
   document.write(html);
-  document.close();
+//  document.close();
 }
 
 function jmolBr() {
-  document.open();
+//  document.open();
   document.write("<br />");
-  document.close();
+//  document.close();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -197,21 +197,23 @@ function jmolSetTarget(targetSuffix) {
 
 function jmolScript(script, targetSuffix) {
   if (script) {
-    var applet = _jmolFindApplet(targetSuffix);
+    var target = "jmol-" + (targetSuffix ? targetSuffix : "0");
+    var applet = _jmolFindApplet(target);
     if (applet)
       return applet.script(script);
     else
-      alert("could not find applet " + targetSuffix);
+      alert("could not find applet " + target);
   }
 }
 
 function jmolLoadInline(model, targetSuffix) {
   if (model) {
-    var applet = _jmolFindApplet(targetSuffix);
+    var target = "jmol-" + (targetSuffix ? targetSuffix : "0");
+    var applet = _jmolFindApplet(target);
     if (applet)
       return applet.loadInline(model);
     else
-      alert("could not find applet " + targetSuffix);
+      alert("could not find applet " + target);
   }
 }
 
@@ -234,46 +236,54 @@ function jmolRadio(script, labelHtml, isChecked, separatorHtml) {
           ");return true' onMouseout='_jmolMouseOut()' " +
 	  (isChecked ? "checked " : "") + _jmol.radioCssText + "/>" +
           labelHtml + separatorHtml;
-  document.open();
+//  document.open();
   document.write(t);
-  document.close();
+//  document.close();
 }
 
 ////////////////////////////////////////////////////////////////
 // Cascading Style Sheet Class support
 ////////////////////////////////////////////////////////////////
 function jmolSetAppletCssClass(appletCssClass) {
-  _jmol.appletCssClass = appletCssClass;
-  _jmol.appletCssText =
-    appletCssClass ? "class='" + appletCssClass + "' " : "";
+  if (_jmol.modernBrowser) {
+    _jmol.appletCssClass = appletCssClass;
+    _jmol.appletCssText = appletCssClass ? "class='" + appletCssClass + "' " : "";
+  }
 }
 
 function jmolSetButtonCssClass(buttonCssClass) {
-  _jmol.buttonCssClass = buttonCssClass;
-  _jmol.buttonCssText =
-    buttonCssClass ? "class='" + buttonCssClass + "' " : "";
+  if (_jmol.modernBrowser) {
+    _jmol.buttonCssClass = buttonCssClass;
+    _jmol.buttonCssText = buttonCssClass ? "class='" + buttonCssClass + "' " : "";
+  }
 }
 
 function jmolSetCheckboxCssClass(checkboxCssClass) {
-  _jmol.checkboxCssClass = checkboxCssClass;
-  _jmol.checkboxCssText =
-    checkboxCssClass ? "class='" + checkboxCssClass + "' " : "";
+  if (_jmol.modernBrowser) {
+    _jmol.checkboxCssClass = checkboxCssClass;
+    _jmol.checkboxCssText = checkboxCssClass ? "class='" + checkboxCssClass + "' " : "";
+  }
 }
 
 function jmolSetRadioCssClass(radioCssClass) {
-  _jmol.radioCssClass = radioCssClass;
-  _jmol.radioCssText = radioCssClass ? "class='" + radioCssClass + "' " : "";
+  if (_jmol.modernBrowser) {
+    _jmol.radioCssClass = radioCssClass;
+    _jmol.radioCssText = radioCssClass ? "class='" + radioCssClass + "' " : "";
+  }
 }
 
 function jmolSetLinkCssClass(linkCssClass) {
-  _jmol.linkCssClass = linkCssClass;
-  _jmol.linkCssText = linkCssClass ? "class='" + linkCssClass + "' " : "";
+  if (_jmol.modernBrowser) {
+    _jmol.linkCssClass = linkCssClass;
+    _jmol.linkCssText = linkCssClass ? "class='" + linkCssClass + "' " : "";
+  }
 }
 
 function jmolSetMenuCssClass(menuCssClass) {
-  _jmol.menuCssClass = menuCssClass;
-  _jmol.menuCssText =
-    menuCssClass ? "class='" + menuCssClass + "' " : "";
+  if (_jmol.modernBrowser) {
+    _jmol.menuCssClass = menuCssClass;
+    _jmol.menuCssText = menuCssClass ? "class='" + menuCssClass + "' " : "";
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -282,6 +292,8 @@ function jmolSetMenuCssClass(menuCssClass) {
 ////////////////////////////////////////////////////////////////
 
 var _jmol = {
+modernBrowser: !!document.getElementById,
+
 debugAlert: false,
 bgcolor: "black",
 progresscolor: "blue",
@@ -353,9 +365,9 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
     if (debugAlert)
       alert("jmolApplet(" + size + "," + modelFilename + "," +
             script + "," + name + " ->\n" + t);
-    document.open(); // NS4 compatibility
+//    document.open(); // NS4 compatibility
     document.write(t);
-    document.close(); // NS4 compatibility
+//    document.close(); // NS4 compatibility
   }
 }
 
@@ -381,8 +393,7 @@ function _jmolGetAppletSize(size) {
   return [width, height];
 }
 
-function _jmolFindApplet(targetSuffix) {
-  var target = "jmol-" + (targetSuffix ? targetSuffix : "0");
+function _jmolFindApplet(target) {
   var applet = _jmolFindAppletWindow(window, target);
   if (applet == undefined) // search the frames from the top
     applet = _jmolFindAppletWindow(top, target);
@@ -422,9 +433,26 @@ function _jmolClick(scriptIndex, targetSuffix) {
   jmolScript(_jmol.scripts[scriptIndex], targetSuffix);
 }
 
+function _jmolMenuSelected(menuObject, targetSuffix) {
+  var scriptIndex = menuObject.value;
+  if (scriptIndex != undefined) {
+    jmolScript(_jmol.scripts[scriptIndex], targetSuffix);
+    return;
+  }
+  var length = menuObject.length;
+  if (typeof length == "number") {
+    for (var i = 0; i < length; ++i) {
+      if (menuObject[i].selected) {
+        _jmolClick(menuObject[i].value, targetSuffix);
+	return;
+      }
+    }
+  }
+  _jmolOldBrowser();
+}
+
 function _jmolCbClick(ckbox, whenChecked, whenUnchecked, targetSuffix) {
-  jmolScript(_jmol.scripts[ckbox.checked ? whenChecked : whenUnchecked],
-             targetSuffix);
+  _jmolClick(ckbox.checked ? whenChecked : whenUnchecked, targetSuffix);
 }
 
 function _jmolCbOver(ckbox, whenChecked, whenUnchecked) {
@@ -438,4 +466,8 @@ function _jmolMouseOver(scriptIndex) {
 function _jmolMouseOut() {
   window.status = " ";
   return true;
+}
+
+function _jmolOldBrowser() {
+  alert("Your outdated web browser does not support this operation");
 }

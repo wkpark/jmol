@@ -31,7 +31,6 @@ import org.jmol.adapter.cdk.CdkModelAdapter;
 import org.jmol.adapter.simple.SimpleModelAdapter;
 import org.jmol.adapter.smarter.SmarterModelAdapter;
 
-import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.XYZWriter;
@@ -1001,11 +1000,8 @@ public class Jmol extends JPanel {
 
       Frame frame = getFrame();
 
-
       ImageTyper it = new ImageTyper(exportChooser);
 
-      // GIF doesn't support more than 8 bits:
-      //      if (viewer.getStyleAtom() == JmolConstants.STYLE_SHADED) {
       exportChooser.setAccessory(it);
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
@@ -1016,7 +1012,7 @@ public class Jmol extends JPanel {
           try {
             Image eImage = display.takeSnapshot();
             FileOutputStream os = new FileOutputStream(file);
-
+            
             if (it.getType().equals("JPEG")) {
               int qual = 10 * it.getQuality();
               JpegEncoder jc = new JpegEncoder(eImage, qual, os);
@@ -1028,9 +1024,6 @@ public class Jmol extends JPanel {
               PngEncoder png = new PngEncoder(eImage);
               byte[] pngbytes = png.pngEncode();
               os.write(pngbytes);
-            } else if (it.getType().equals("BMP")) {
-              BMPFile bmp = new BMPFile();
-              bmp.saveBitmap(os, eImage);
             } else {
 
               // Do nothing

@@ -1,7 +1,7 @@
-/* $RCSfile: Atom.java,v $
- * $Author: egonw $
- * $Date: 2003/05/03 18:27:05 $
- * $Revision: 1.56.2.2 $
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
  *
  * Copyright (C) 2002-2003  The Jmol Development Team
  *
@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.app;
 
 import java.awt.Image;
 import java.awt.image.PixelGrabber;

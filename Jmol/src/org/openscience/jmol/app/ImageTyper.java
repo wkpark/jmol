@@ -43,7 +43,7 @@ import java.awt.FlowLayout;
 public class ImageTyper extends JPanel {
 
   private String[] Choices = {
-    "BMP", "JPEG", "PNG", "PPM"
+    "JPEG", "PNG", "PPM"
   };
   private int def = 0;
   private String result = Choices[def];

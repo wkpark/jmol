@@ -236,6 +236,9 @@ public class Jmol extends JPanel {
     say("Setting up File Choosers...");
     openChooser = new JFileChooser();
     openChooser.setCurrentDirectory(currentDir);
+    if (Boolean.getBoolean("openFilePreview")) {
+    	new FilePreview(openChooser, modelAdapter);
+    }
     saveChooser = new JFileChooser();
     fileTyper = new FileTyper();
     saveChooser.addPropertyChangeListener(fileTyper);

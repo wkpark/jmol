@@ -2182,7 +2182,7 @@
   <fah_proj number="1319" name="p1319_1fnt_a10_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90068" preferred="25" deadline="37"
     credit="343" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1320" name="p1320_1fnt_a12_9.1ps-1_uf"
+  <fah_proj number="1320" name="p1320_1fnt_a12_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90080" preferred="25" deadline="37"
     credit="343" frames="100" code="G" contact="sungjoo"/>
   <fah_proj number="1321" name="p1321_1fnt_a16_9.1ps-1_uf" file="y"
@@ -2420,7 +2420,7 @@
   <fah_proj number="1800" name="p1800_Collagen_PPG10_restrained_unfolding" file="y"
     server="171.65.103.158" atoms="1086" preferred="16" deadline="23"
     credit="77" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1801" name="p1801_Collagen_PPG10_refolding"
+  <fah_proj number="1801" name="p1801_Collagen_PPG10_refolding" file="y"
     server="171.65.103.158" atoms="1086" preferred="14" deadline="20"
     credit="66" frames="100" code="A" contact="spark7"/>
 

@@ -274,27 +274,27 @@ public class ModelManager {
     return getAtomicSymbol(atom);
   }
 
-  public float getVanderwaalsRadius(Atom atom) {
+  public short getVanderwaalsMar(Atom atom) {
     if (suppliesVanderwaalsRadius) {
       float vanderwaalsRadius =
         modelAdapter.getVanderwaalsRadius(atom.clientAtom);
       if (vanderwaalsRadius > 0)
-        return vanderwaalsRadius;
+        return (short)(vanderwaalsRadius * 1000);
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
                          vanderwaalsRadius);
     }
-    return JmolConstants.vanderwaalsMars[atom.atomicNumber] / 1000f;
+    return JmolConstants.vanderwaalsMars[atom.atomicNumber];
   }
 
-  public float getCovalentRadius(Atom atom) {
+  public short getCovalentMar(Atom atom) {
     if (suppliesCovalentRadius) {
       float covalentRadius = modelAdapter.getCovalentRadius(atom.clientAtom);
       if (covalentRadius > 0)
-        return covalentRadius;
+        return (short)(covalentRadius * 1000);
       System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
                          covalentRadius);
     }
-    return JmolConstants.covalentMars[atom.atomicNumber] / 1000f;
+    return JmolConstants.covalentMars[atom.atomicNumber];
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

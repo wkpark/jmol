@@ -127,7 +127,7 @@ class DotsRenderer extends Renderer {
 
   void renderConvex(Atom atom, int[] visibilityMap) {
     geodesic.calcScreenPoints(visibilityMap,
-                              atom.getVanderwaalsRadius(),
+                              atom.getVanderwaalsRadiusFloat(),
                               atom.x, atom.y, atom.z);
     if (geodesic.screenCoordinateCount > 0)
       g3d.plotPoints(colixConvex == 0 ? atom.colixAtom : colixConvex,

@@ -197,7 +197,7 @@ public class Atom implements Bspt.Tuple {
       marAtom = getPdbTemperatureMar();
     else if (marAtom < 0)
       marAtom =
-        (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
+        (short)(-marAtom * frame.viewer.getVanderwaalsMar(this) / 100);
     this.marAtom = marAtom;
   }
 
@@ -208,7 +208,7 @@ public class Atom implements Bspt.Tuple {
       marAtom = getPdbTemperatureMar();
     else if (marAtom < 0)
       marAtom =
-        (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
+        (short)(-marAtom * frame.viewer.getVanderwaalsMar(this) / 100);
     this.marAtom = marAtom;
   }
         
@@ -310,12 +310,23 @@ public class Atom implements Bspt.Tuple {
 		   : (dimension == 1 ? point3f.y : point3f.z));
   }
 
-  public float getVanderwaalsRadius() {
-    return frame.viewer.getVanderwaalsRadius(this);
+  // FIXME mth 2003-01-10
+  // store the vdw & covalent mars in the atom when the atom is created
+  // then you can eliminate all the calls involving the model manager
+  public short getVanderwaalsMar() {
+    return frame.viewer.getVanderwaalsMar(this);
   }
 
-  public float getCovalentRadius() {
-    return frame.viewer.getCovalentRadius(this);
+  public float getVanderwaalsRadiusFloat() {
+    return frame.viewer.getVanderwaalsMar(this) / 1000f;
+  }
+
+  public short getCovalentMar() {
+    return frame.viewer.getCovalentMar(this);
+  }
+
+  public float getCovalentRadiusFloat() {
+    return frame.viewer.getCovalentMar(this) / 1000f;
   }
 
   public short getColix() {

@@ -96,10 +96,10 @@ public class Frame {
       htAtomMap.put(clientAtom, atom);
     if (bspf != null)
       bspf.addTuple(atom.getModelID(), atom);
-    float covalentRadius = atom.getCovalentRadius();
+    float covalentRadius = atom.getCovalentRadiusFloat();
     if (covalentRadius > maxCovalentRadius)
       maxCovalentRadius = covalentRadius;
-    float vdwRadius = atom.getVanderwaalsRadius();
+    float vdwRadius = atom.getVanderwaalsRadiusFloat();
     if (vdwRadius > maxVanderwaalsRadius)
       maxVanderwaalsRadius = vdwRadius;
     return atom;
@@ -365,7 +365,7 @@ public class Frame {
       Atom atom = atoms[i];
       Point3f posAtom = atom.getPoint3f();
       float distAtom = center.distance(posAtom);
-      float radiusVdw = atom.getVanderwaalsRadius();
+      float radiusVdw = atom.getVanderwaalsRadiusFloat();
       float distVdw = distAtom + radiusVdw;
       
       if (distVdw > radius)
@@ -722,7 +722,7 @@ public class Frame {
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       // Covalent bonds
-      float myCovalentRadius = atom.getCovalentRadius();
+      float myCovalentRadius = atom.getCovalentRadiusFloat();
       float searchRadius =
         myCovalentRadius + maxCovalentRadius + bondTolerance;
       Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelID());
@@ -731,7 +731,7 @@ public class Frame {
         Atom atomNear = (Atom)iter.nextElement();
         if (atomNear != atom) {
           int order = getBondOrder(atom, myCovalentRadius,
-                                   atomNear, atomNear.getCovalentRadius(),
+                                   atomNear, atomNear.getCovalentRadiusFloat(),
                                    iter.foundDistance2());
           if (order > 0)
             addBond(atom.bondMutually(atomNear, order));

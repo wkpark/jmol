@@ -182,7 +182,7 @@ public class Dots {
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
-    radiusI = atomI.getVanderwaalsRadius();
+    radiusI = atomI.getVanderwaalsRadiusFloat();
     radiiIP2 = radiusI + radiusP;
     radiiIP2 *= radiiIP2;
   }
@@ -190,7 +190,7 @@ public class Dots {
   void setNeighborJ(int indexNeighbor) {
     indexJ = neighborIndices[indexNeighbor];
     atomJ = neighbors[indexNeighbor];
-    radiusJ = atomJ.getVanderwaalsRadius();
+    radiusJ = atomJ.getVanderwaalsRadiusFloat();
     radiiJP2 = neighborPlusProbeRadii2[indexNeighbor];
     centerJ = neighborCenters[indexNeighbor];
     distanceIJ2 = centerI.distanceSquared(centerJ);
@@ -200,7 +200,7 @@ public class Dots {
     indexK = neighborIndices[indexNeighbor];
     centerK = neighborCenters[indexNeighbor];
     atomK = neighbors[indexNeighbor];
-    radiusK = atomK.getVanderwaalsRadius();
+    radiusK = atomK.getVanderwaalsRadiusFloat();
     radiiKP2 = neighborPlusProbeRadii2[indexNeighbor];
   }
 
@@ -256,7 +256,7 @@ public class Dots {
       Atom neighbor = iter.next();
       if (neighbor == atomI)
         continue;
-      float neighborRadius = neighbor.getVanderwaalsRadius();
+      float neighborRadius = neighbor.getVanderwaalsRadiusFloat();
       float neighborRadii2 = neighborRadius + radiusP;
       neighborRadii2 *= neighborRadii2;
       if (radiiIP2 + neighborRadii2 <=

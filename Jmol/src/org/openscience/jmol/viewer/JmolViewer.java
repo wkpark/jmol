@@ -1791,12 +1791,12 @@ final public class JmolViewer {
     return modelManager.getAtomTypeName(atom);
   }
 
-  public float getVanderwaalsRadius(Atom atom) {
-    return modelManager.getVanderwaalsRadius(atom);
+  public short getVanderwaalsMar(Atom atom) {
+    return modelManager.getVanderwaalsMar(atom);
   }
 
-  public float getCovalentRadius(Atom atom) {
-    return modelManager.getCovalentRadius(atom);
+  public short getCovalentMar(Atom atom) {
+    return modelManager.getCovalentMar(atom);
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

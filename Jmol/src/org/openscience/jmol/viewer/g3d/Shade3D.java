@@ -33,6 +33,7 @@ final class Shade3D {
   // 0 = ambient
   // 63 = brightest ... white
   static final int shadeMax = 64;
+  static final int shadeLast = shadeMax - 1;
 
   static byte shadeNormal = 52;
 
@@ -106,20 +107,23 @@ final class Shade3D {
     return "[" + red + "," + grn + "," + blu + "]";
   }
 
-  /*
-  public static byte calcIntensity(float x, float y, float z) {
-    float magnitude = (float)Math.sqrt(x*x + y*y + z*z);
-    return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
-  }
-
-  public static byte calcIntensity(float x, float y, float z, float magnitude) {
-    return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
-  }
-  */
-
   final static byte intensitySpecularSurfaceLimit = (byte)(shadeNormal + 4);
 
-  static int calcIntensityNormalized(float x, float y, float z) {
+  static byte calcIntensity(float x, float y, float z) {
+    double magnitude = Math.sqrt(x*x + y*y + z*z);
+    return calcIntensityNormalized((float)(x/magnitude),
+                                   (float)(y/magnitude),
+                                   (float)(z/magnitude));
+  }
+  
+  static float calcFloatIntensity(float x, float y, float z) {
+    double magnitude = Math.sqrt(x*x + y*y + z*z);
+    return calcFloatIntensityNormalized((float)(x/magnitude),
+                                        (float)(y/magnitude),
+                                        (float)(z/magnitude));
+  }
+
+  static float calcFloatIntensityNormalized(float x, float y, float z) {
     float cosTheta = x*xLight + y*yLight + z*zLight;
     float intensity = 0; // ambient component
     if (cosTheta > 0) {
@@ -137,9 +141,17 @@ final class Shade3D {
         }
       }
     }
-    int shade = (int)(shadeMax * intensity + 0.5f);
-    if (shade >= shadeMax) shade = shadeMax-1;
-    return (byte)shade;
+    if (intensity > 1)
+      return 1;
+    return intensity;
+  }
+
+  static byte calcIntensityNormalized(float x, float y, float z) {
+    byte intensity =
+      (byte)(shadeMax * calcFloatIntensityNormalized(x, y, z) + 0.5f);
+    if (intensity >= shadeMax)
+      return shadeMax - 1;
+    return intensity;
   }
 
   static void setSpecular(boolean specular) {

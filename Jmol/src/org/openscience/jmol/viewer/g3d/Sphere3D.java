@@ -64,6 +64,7 @@ class Sphere3D {
     */
   }
 
+  /*
   void render3(short colix, int diameter, int xC, int yC, int zC) {
     if (diameter >= maxSphereCache)
       diameter = maxSphereCache;
@@ -84,15 +85,15 @@ class Sphere3D {
         float z2 = radius2 - y2 - xF*xF;
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
-          int intensity = viewer.calcIntensity(xF, yF, zF);
+          int intensity = calcIntensity(xF, yF, zF);
           int x = xUL + j;
           int z = zC - (int)(zF + 0.5f);
-          g3d.plotPixelClipped(shades[intensity],
-                                x, y, z);
+          g3d.plotPixelClipped(shades[intensity], x, y, z);
         }
       }
     }
   }
+  */
 
   void renderBigUnclipped(int[] shades, int diameter, int x, int y, int z) {
     int radius = diameter / 2;
@@ -150,10 +151,9 @@ class Sphere3D {
         float z2 = r2 - y2 - xF*xF;
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
-          int intensity = viewer.calcIntensity(xF, yF, zF);
+          int intensity = calcIntensity(xF, yF, zF);
           int z0 = z - (int)(zF + 0.5f);
-          g3d.plotPixelClipped(shades[intensity],
-                                x0, y0, z0);
+          g3d.plotPixelClipped(shades[intensity], x0, y0, z0);
         }
       }
     }
@@ -338,29 +338,20 @@ class Sphere3D {
     sphereShapeCache = new int[maxSphereCache][];
   }
 
-  int calcIntensity1(float x, float y, float radius2) {
-    float z2 = radius2 - x*x - y*y;
-    if (z2 < 0)
-      return -1;
-    return viewer.calcIntensity(x, y, (float)Math.sqrt(z2));
-  }
-
-  byte calcIntensity(float x, float y, float radius2) {
-    int count = 0;
-    int intensitySum = 0;
-    for (float i = -1/6f; i < .17f; i += 1/3f)
-      for (float j = -1/6f; j < .17f; j += 1/3f) {
-        int intensity = calcIntensity1(x + i, y + j, radius2);
-        if (intensity >= 0) {
-          intensitySum += intensity;
-          ++count;
-        }
-      }
-    if (count == 0) {
-      System.out.println("count is 0 ... why am I here?");
-      return -1;
-    }
-    return (byte)((intensitySum + count/2) / count);
+  byte calcIntensity(float x, float y, float z) {
+    // add some randomness to prevent banding
+    double floatIntensity =
+      Shade3D.calcFloatIntensity(x, y, z) * Shade3D.shadeLast;
+    int intensity = (int)floatIntensity;
+    double remainder = floatIntensity - intensity;
+    if (intensity < Shade3D.shadeLast && remainder > Math.random())
+      ++intensity;
+    double random = Math.random();
+    if (random < 0.333 && intensity > 0)
+      --intensity;
+    else if (random > 0.667 && intensity < Shade3D.shadeLast)
+      ++intensity;
+    return (byte)intensity;
   }
 
   int[] createSphereShape(int diameter) {
@@ -380,7 +371,7 @@ class Sphere3D {
         float z2 = radiusF2 - y2 - x*x;
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
-          intensities[offset] = calcIntensity(x, y, radiusF2);
+          intensities[offset] = calcIntensity(x, y, z);
           heights[offset] = (byte)(z + 0.5f);
           if (j >= radius && i >= radius)
             ++countSE;

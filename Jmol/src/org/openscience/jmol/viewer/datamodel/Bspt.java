@@ -284,34 +284,18 @@ public final class Bspt {
       float dist2;
       float distT;
       distT = t.getDimensionValue(0) - centerValues[0];
+      if  (tHemisphere && distT < 0)
+        return false;
       dist2 = distT * distT;
       if (dist2 > radius2)
         return false;
       int dim = dimMax - 1;
-      if (tHemisphere) {
-        if (distT < 0)
+      do {
+        distT = t.getDimensionValue(dim) - centerValues[dim];
+        dist2 += distT*distT;
+        if (dist2 > radius2)
           return false;
-        boolean tHemispherePending = (distT == 0);
-        do {
-          distT = t.getDimensionValue(dim) - centerValues[dim];
-          dist2 += distT*distT;
-          if (dist2 > radius2)
-            return false;
-          if (tHemispherePending) {
-            if (distT < 0)
-              return false;
-            if (distT != 0)
-              tHemispherePending = false;
-          }
-        } while (--dim >= 0);
-      } else {
-        do {
-          distT = t.getDimensionValue(dim) - centerValues[dim];
-          dist2 += distT*distT;
-          if (dist2 > radius2)
-            return false;
-        } while (--dim > 0);
-      }
+      } while (--dim > 0);
       this.foundDistance2 = dist2;
       return true;
     }

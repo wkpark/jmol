@@ -94,8 +94,8 @@ public class Frame {
     atoms[atomCount++] = atom;
     if (htAtomMap != null)
       htAtomMap.put(clientAtom, atom);
-    if (bspt != null)
-      bspt.addTuple(atom);
+    if (bspf != null)
+      bspf.addTuple(atom.getModelNumber(), atom);
     float covalentRadius = atom.getCovalentRadius();
     if (covalentRadius > maxCovalentRadius)
       maxCovalentRadius = covalentRadius;
@@ -506,6 +506,7 @@ public class Frame {
     /*
      * FIXME
      * mth - this code has problems
+     * 0. can select atoms which are not displayed!
      * 1. doesn't take radius of atom into account until too late
      * 2. doesn't take Z dimension into account, so it could select an atom
      *    which is behind the one the user wanted
@@ -619,29 +620,21 @@ public class Frame {
     }
   }
 
-  private Bspt bspt;
-  private Bspt.SphereIterator sphereIter;
+  private Bspf bspf;
 
-  private Bspt getBspt() {
-    if (bspt == null) {
-      bspt = new Bspt(3);
+  void initializeBspf() {
+    if (bspf == null) {
+      bspf = new Bspf(3);
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         if (atom.styleAtom >= JmolConstants.STYLE_NONE) // not deleted atoms
-          bspt.addTuple(atom);
+          bspf.addTuple(atom.getModelNumber(), atom);
       }
-      sphereIter = bspt.allocateSphereIterator();
     }
-    return bspt;
   }
 
-  private Bspt.SphereIterator getSphereIterator() {
-    getBspt();
-    return sphereIter;
-  }
-
-  private void clearBspt() {
-    bspt = null;
+  private void clearBspf() {
+    bspf = null;
   }
 
   private WithinIterator withinAtomIterator = new WithinIterator();
@@ -662,23 +655,42 @@ public class Frame {
 
   class WithinIterator implements AtomIterator {
 
-    Bspt.SphereIterator iter;
+    Bspt.SphereIterator iterCurrent;
+    Bspt.Tuple center;
+    float radius;
+    int bsptIndexLast;
+    
 
     void initialize(Bspt.Tuple center, float radius) {
-      iter = getSphereIterator();
-      iter.initialize(center, radius);
+      this.center = center;
+      this.radius = radius;
+      iterCurrent = null;
+      int bsptIndexLast = bspf.getBsptCount();
     }
 
     public boolean hasNext() {
-      return iter.hasMoreElements();
+      while (true) {
+        if (iterCurrent != null && iterCurrent.hasMoreElements())
+          return true;
+        if (bsptIndexLast == 0)
+          return false;
+        iterCurrent = bspf.getSphereIterator(--bsptIndexLast);
+        if (iterCurrent != null)
+          iterCurrent.initialize(center, radius);
+      }
     }
 
     public Atom next() {
-      return (Atom)iter.nextElement();
+      return (Atom)iterCurrent.nextElement();
     }
 
     public void release() {
-      iter.release();
+      iterCurrent = null;
+      for (int i = bspf.getBsptCount(); --i >= 0; ) {
+        Bspt.SphereIterator iter = bspf.getSphereIterator(i);
+        if (iter != null)
+          iter.release();
+      }
     }
   }
 
@@ -717,7 +729,8 @@ public class Frame {
     int indexLastCA = -1;
     Atom atomLastCA = null;
 
-    Bspt.SphereIterator iter = getSphereIterator();
+    initializeBspf();
+
     long timeBegin, timeEnd;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();
@@ -727,7 +740,8 @@ public class Frame {
       float myCovalentRadius = atom.getCovalentRadius();
       float searchRadius =
         myCovalentRadius + maxCovalentRadius + bondTolerance;
-      iter.initialize(atom, searchRadius);
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
+      iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
         if (atomNear != atom) {
@@ -739,6 +753,10 @@ public class Frame {
         }
       }
       iter.release();
+
+      // FIXME mth 2003 11 30
+      // get this out of here and implement it more like like trace
+      // alpha carbon mechanims is not consistent
 
       // Protein backbone bonds
       if (hasPdbRecords) {
@@ -798,7 +816,7 @@ public class Frame {
   public void calcHbonds() {
     if (hbondsCalculated)
       return;
-    Bspt.SphereIterator iter = getSphereIterator();
+    initializeBspf();
     long timeBegin, timeEnd;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();
@@ -808,7 +826,8 @@ public class Frame {
       if (atomicNumber != 7 && atomicNumber != 8)
         continue;
       float searchRadius = hbondMax;
-      iter.initialize(atom, hbondMax);
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
+      iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
         int atomicNumberNear = atomNear.atomicNumber;
@@ -874,7 +893,7 @@ public class Frame {
   }
 
   public Object deleteAtom(int atomIndex) { // returns the clientAtom
-    clearBspt();
+    clearBspf();
     return atoms[atomIndex].markDeleted();
   }
 

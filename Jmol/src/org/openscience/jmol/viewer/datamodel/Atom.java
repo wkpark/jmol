@@ -309,6 +309,12 @@ public class Atom implements Bspt.Tuple {
     return pdbAtom;
   }
 
+  public int getModelNumber() {
+    if (pdbAtom == null)
+      return 0;
+    return pdbAtom.getModelNumber();
+  }
+
   public Object markDeleted() {
     deleteAllBonds();
     styleAtom = JmolConstants.STYLE_DELETED;

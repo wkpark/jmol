@@ -931,7 +931,7 @@ public class Eval implements Runnable {
         propertyValue = atom.getCovalentBondCount();
         break;
       case Token.model:
-        propertyValue = 1; // for now everything is model 1
+        propertyValue = atom.getModelNumber();
         break;
       default:
         unrecognizedAtomProperty(property);

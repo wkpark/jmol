@@ -103,6 +103,8 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
                     fg = getParameter("FCOLOR");
                     if (fg != null) myBean.setForegroundColour(fg);
                 }
+		myBean.setAtomRenderingStyle("QUICKDRAW");
+		myBean.setBondRenderingStyle("QUICKDRAW");
 		String style = getParameter("STYLE");
 		if (style != null){
                     myBean.setAtomRenderingStyle(style);
@@ -110,8 +112,6 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 		}
 		setLayout(new java.awt.BorderLayout());
 		add(myBean,"Center");
-		myBean.setAtomRenderingStyle("QUICKDRAW");
-		myBean.setBondRenderingStyle("QUICKDRAW");
 	}
 
 	/**

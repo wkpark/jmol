@@ -28,6 +28,10 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
+/**
+ * Reader for Gaussian 94/98/03 file formats.
+ *
+ **/
 class GaussianReader extends AtomSetCollectionReader {
   // offset of atomic number in coordinate line
   private final static int STD_ORIENTATION_ATOMIC_NUMBER_OFFSET = 1;
@@ -38,6 +42,33 @@ class GaussianReader extends AtomSetCollectionReader {
   // if it turns out to be a G94 file, this will be reset.
   private int firstCoordinateOffset = 3;
   
+  private String scfEnergy = ""; // SCF energy of current atomSet
+  
+  /**
+   * Reads a Collection of AtomSets from a BufferedReader.
+   *
+   * <p>New AtomSets are generated when an <code>Input</code>,
+   * <code>Standard</code> or <code>Z-Matrix</code> orientation is read.
+   * The occurence of these orientations seems to depend on (in pseudo-code):
+   * <code>
+   *  <br>&nbsp;if (opt=z-matrix) Z-Matrix; else Input;
+   *  <br>&nbsp;if (!NoSymmetry) Standard;
+   * </code>
+   * <br>Which means that if <code>NoSymmetry</code> is used with a z-matrix
+   * optimization, no other orientation besides <code>Z-Matrix</code> will be
+   * present.
+   * This is important because <code>Z-Matrix</code> may have dummy atoms while
+   * the analysis of the calculation results will not, i.e., the
+   * <code>Center Numbers</code> in the z-matrix orientation may be different
+   * from those in the population analysis!
+   *
+   * <p>Single point or frequency calculations always have an <code>Input</code> 
+   * orientation. If symmetry is used a <code>Standard</code> will be present too.
+   * The frequency vectors are calculated for the last reported orientation.
+   *
+   * @param reader BufferedReader associated with the Gaussian output text.
+   * @return The AtomSetCollection representing the interpreted Gaussian text.
+   **/
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
     atomSetCollection = new AtomSetCollection("gaussian");
@@ -45,25 +76,33 @@ class GaussianReader extends AtomSetCollectionReader {
     try {
       String line;
       int lineNum = 0;
+      // I need to keep track of the number of orientations read for a particular
+      // calculation (step) since they have the same energy.
+      // Do not reset the energy when a new orientation is read since a new
+      // energy will be calculated and reported if necessary (this is needed for
+      // the special case when convergence in the optimization is reached: the
+      // orientations are reported but no new energy is/needs to be calculated.
+      // The energy still does not end up in the title because the nOrientations
+      // is reset....
+      
+      int nOrientations = 0;
       while ((line = reader.readLine()) != null) {
         if (line.indexOf("Input orientation:") >= 0 ||
-            line.indexOf("Standard orientation:") >= 0) {
+            line.indexOf("Z-Matrix orientation:") >= 0) {
+          nOrientations = 1; // is always the first orientation
           readAtoms(reader, line);
-//          System.out.println("Interpret Standard orientation: " + modelCount);
-        } else if (line.indexOf("Z-Matrix orientation:") >= 0) {
+        } else if (line.indexOf("Standard orientation:") >= 0) {
+          nOrientations = 2; // is always the second orientation
           readAtoms(reader, line);
-//          System.out.println("Interpret Z-Matrix orientation: " + modelCount);
+        } else if (line.startsWith(" SCF Done:")) {
+          readSCFDone(line,nOrientations);
         } else if (line.startsWith(" Harmonic frequencies")) {
-          // NB this only works for the standard orientation of the molecule
-          // since it does not list the values for the dummy atoms in the z-matrix
           readFrequencies(reader);
-//          System.out.println("Interpreting Harmonic frequencies");
         } else if (line.startsWith(" Total atomic charges:") ||
                    line.startsWith(" Mulliken atomic charges:")) {
-          // NB this only works for the standard orientation of the molecule
+          // NB this only works for the Standard or Input orientation of the molecule
           // since it does not list the values for the dummy atoms in the z-matrix
           readPartialCharges(reader);
-//          System.out.println("Interpret  Mulliken atomic charges:");
         } else if (lineNum < 20) {
           if (line.indexOf("This is part of the Gaussian 94(TM) system") >= 0)
             firstCoordinateOffset = 2;
@@ -80,7 +119,25 @@ class GaussianReader extends AtomSetCollectionReader {
     }
     return atomSetCollection;
   }
-
+ 
+  /**
+   * Interprets the SCF Done: section.
+   *
+   * @param line The input line.
+   * @param nOrientations The number of orientations read that need to have
+   *           these results associated with them.
+   **/
+  private void readSCFDone(String line, int nOrientations) {
+    String tokens[] = getTokens(line,11);
+    scfEnergy = tokens[0]+" = "+tokens[2]+" "+tokens[3];
+    // now set the names for the last nOrientations
+    for (int asci=atomSetCollection.currentAtomSetIndex; --nOrientations >= 0; --asci) {
+      atomSetCollection.setAtomSetName(
+        scfEnergy + " " + atomSetCollection.getAtomSetName(asci), asci
+      );
+    }
+  }
+  
 /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
      NB I currently use the firstCoordinateOffset value to determine where X starts,
      I could use the number of tokens - 3, and read the last 3...
@@ -167,39 +224,53 @@ class GaussianReader extends AtomSetCollectionReader {
  -------------------
 */
 
-  // NB RPFK now we can also have multiple geometries read before we encounter
-  // the frequencies, so we can't set the modelNumber to 1 
-
   // If I were to put the frequency on the last model read I need to be
   // smarter about when I need to duplicate the last model (now I really do it always)
   // Maybe also should read the symmetry, frequencies and intensities of each....
 
+  /**
+   * Interprets the Harmonic frequencies section.
+   *
+   * The vectors are added to a clones of the last read AtomSet.
+   * The AtomSetName for each clone is the frequency and the SCF energy.
+   *
+   * @param reader BufferedReader associated with the Gaussian output text.
+   **/
   private void readFrequencies(BufferedReader reader) throws Exception {
-    String line, tokens[];
+    String line, tokens[], symmetries[], intensities[];
     boolean firstTime = true;     // flag for first time through
-    // tracks the first model the frequencies are for
-    int modelNumber = atomSetCollection.atomSetCount;
 
-    // get to the first set of frequencies
     while ((line = reader.readLine()) != null &&
-           ! line.startsWith(" Frequencies --"))
+            line.indexOf(":")<0)
       ;
     if (line == null)
       throw (new Exception("No frequencies encountered"));
-      
-    do {
-      tokens = getTokens(line, 15);
-      
-      int frequencyCount = tokens.length;
+    
+    while ((line= reader.readLine()) != null &&
+           line.length() > 0)
+    {
+      // we now have the line with the vibration numbers in them, but don't need it
+      symmetries = getTokens(reader.readLine()); // read symmetry labels
+      tokens = getTokens(reader.readLine(), 15); // read frequencies
+      int frequencyCount = tokens.length;        // 
+      intensities = getTokens(discardLinesUntilStartsWith(reader," IR Inten"), 15);
+
       int numNewModels = frequencyCount;
+      // temporarily do not put the vectors on the last orientation, but clone it
+      // this was getting to tricky/ugly if one needs to make sure that the first
+      // time through the atomSetName and frequencies are properly set
+/*
       if (firstTime) {
         // so I need to create 1 model less than the # of freqs
         --numNewModels;
         firstTime = false;      // really do this only the first time
+        atomSetCollection.setAtomSetName(scfEnergy+" "+tokens[0]);
       }
+*/
       for (int i = 0; i < numNewModels; ++i) {
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(tokens[i]);
+        atomSetCollection.setAtomSetName(symmetries[i]+" "+
+           tokens[i]+" cm-1, Inten = " + intensities[i] + " KM/Mole " + scfEnergy);
       }
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       int firstModelAtom =
@@ -213,6 +284,7 @@ class GaussianReader extends AtomSetCollectionReader {
       discardLinesUntilStartsWith(reader, " Atom AN");
       
       // read the displacement vectors for every atom and frequency
+      // if a NoSymmetry 
       for (int i = 0; i < atomCount; ++i) {
         tokens = getTokens(reader.readLine());
         int atomCenterNumber = parseInt(tokens[0]);
@@ -225,12 +297,7 @@ class GaussianReader extends AtomSetCollectionReader {
           atom.vectorZ = parseFloat(tokens[offset++]);
         }
       }
-      discardLines(reader, 2);
-      // RPFK: why check for the " Frequencies --"? empty
-      //      line denotes end of frequencies..
-      // miguel: because it seemed more specific to me
-    } while ((line = reader.readLine()) != null &&
-             (line.startsWith(" Frequencies --"))); // more to be read
+    }
   }
 
 /* SAMPLE Mulliken Charges OUTPUT from G98 */
@@ -248,8 +315,13 @@ class GaussianReader extends AtomSetCollectionReader {
     for (int i = atomSetCollection.getLastAtomSetAtomIndex();
          i < atomSetCollection.atomCount;
          ++i) {
+      // first skip over the dummy atoms
+      while (atomSetCollection.atoms[i].elementNumber == 0)
+        ++i;
+      // assign the partial charge
       atomSetCollection.atoms[i].partialCharge =
         parseFloat(getTokens(reader.readLine())[2]);
     }
   }
+  
 }

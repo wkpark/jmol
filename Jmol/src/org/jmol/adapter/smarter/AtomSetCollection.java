@@ -253,9 +253,11 @@ class AtomSetCollection {
   }
 
   void setAtomSetName(String atomSetName) {
-    System.out.println("setAtomSetName(\"" + atomSetName +
-                       "\") for atomSet " + (currentAtomSetIndex));
     atomSetNames[currentAtomSetIndex] = atomSetName;
+  }
+  
+  void setAtomSetName(String atomSetName, int atomSetIndex) {
+    atomSetNames[atomSetIndex] = atomSetName;
   }
 
   void setAtomSetNumber(int atomSetNumber) {

@@ -17,8 +17,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.app;
-import org.openscience.jmol.*;
+package org.openscience.jmol;
 
 /**
  * A class to store the NMRShielding property for an atom

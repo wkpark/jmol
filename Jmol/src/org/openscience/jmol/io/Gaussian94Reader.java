@@ -21,7 +21,7 @@ package org.openscience.jmol.io;
 
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
-import org.openscience.jmol.app.NMRShielding;
+import org.openscience.jmol.NMRShielding;
 import org.openscience.jmol.Vibration;
 import java.util.Vector;
 import java.util.StringTokenizer;

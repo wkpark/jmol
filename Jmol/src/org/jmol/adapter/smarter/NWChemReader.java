@@ -299,10 +299,10 @@ class NWChemReader extends ModelReader {
 // duplicate the last model 
   private void duplicateLastModel() {
     Atom[] atoms = model.atoms;
-    int offset = model.atomCount - atomCount;
+    int atomOffset = model.atomCount - atomCount; // first atom to be duplicated
     modelCount++;  // new count of models is increased
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atomNew = model.newCloneAtom(atoms[offset+i]);
+    for (int i = atomCount; --i >= 0 ;) {
+      Atom atomNew = model.newCloneAtom(atoms[atomOffset++]);
       atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
     }
   }

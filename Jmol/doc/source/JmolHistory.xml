@@ -1,14 +1,23 @@
 <?xml version="1.0"?>
 <history>
 <contributors>
+  <contributor id="MTH">
+    <name>Miguel Howard</name><email>miguel@jmol.org</email>
+  </contributor>
   <contributor id="EW">
     <name>Egon Willighagen</name><email>egonw@sci.kun.nl</email>
   </contributor>
-  <contributor id="MTH">
-    <name>Miguel Howard</name><email>mth@mth.com</email>
-  </contributor>
   <contributor id="TD">
     <name>Tim Driscoll</name><email>driscoll@molvisions.com</email>
+  </contributor>
+  <contributor id="NV">
+    <name>Nicolas Vervelle</name><email>nvervell@club-internet.fr</email>
+  </contributor>
+  <contributor id="RK">
+    <name>Rene Kanters</name><email>rkanters@richmond.edu</email>
+  </contributor>
+  <contributor id="JR">
+    <name>Jan Reichert</name><email>jr@imb-jena.de</email>
   </contributor>
   <contributor id="FD">
     <name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email>
@@ -61,12 +70,64 @@
 </contributors>
 
 <changes version="jmol-10">
-  <changes contributor="MTH">
-    Rewritten and improved renderer engine.
-  </changes>
-  <changes contributor="MTH">
-    Rewritten scripting engine with full Chime support.
-  </changes>
+  <change contributor="MTH">
+    Rearchitected and reimplemented Jmol core
+  </change>
+  <change contributor="MTH">
+    Architected and implemented org.jmol.g3d graphics rendering engine for
+    high-performance 3D rendering of molecules without hardware support
+  </change>
+  <change contributor="MTH">
+    Architected and implemented org.jmol.viewer core data structures
+  </change>
+  <change contributor="MTH">
+    Architected and implemented support for protein secondary structures
+  </change>
+  <change contributor="MTH">
+    Rearchitected and reimplemented file io system
+  </change>
+  <change contributor="MTH">
+	Architected org.jmol.api.JmolAdapter api to separate
+	file IO from graphics rendering
+  </change>
+  <change contributor="MTH">
+    Wrote org.jmol.adapter.smarter.Resolver to provide automatic
+    identification of file types
+  </change>
+  <change contributor="MTH">
+    Implemented most file types within org.jmol.adapter.smarter, including
+    xyz, mol, pdb, cif/mmCif, gaussian, jaguar, shelx, etc.
+  </change>
+  <change contributor="MTH">
+    Wrote Jmol.js JavaScript library to facilitate development of web
+    applications.
+  </change>
+  <change contributor="MTH">
+    Wrote JmolAppletControl mechanism to support browsers without JavaScript
+  </change>
+  <change contributor="MTH">
+    Extended and ensured portability of core JmolApplet to web browsers with
+    Java 1.1, including Netscape 4.7 and Internet Explorer on both Win32
+    and Mac OS 9
+  </change>
+  <change contributor="EW">
+    CmlReader, CdkModelAdapter, general project administration
+  </change>
+  <change contributor="TD">
+    Provided significant support and testing in the areas of polymer
+    definitions, web application development, JavaScript, and
+    Mac OS X portability.
+  </change>
+  <change contributor="NV">
+    French translation, code cleanup, JavaDoc, readers
+  </change>
+  <change contributor="RK">
+    AtomSetChooser mechanism, improved Gaussian reader, implemented NWChem reader
+  </change>
+  <change contributor="JR">
+    Assistance in areas of multiple models, insertion codes,
+    polymer definitions, applet testing
+  </change>
 </changes>
 
 <changes version="jmol-9">

@@ -5,9 +5,6 @@
   displaying 3D chemical information.
 </para>
 <para>
-  Core chemistry classes for jmol are from Chemistry Development Kit,
-  an open source project based at
-  <ulink url="http://cdk.sourceforge.net">cdk.sourceforge.net</ulink>
+  This document describes the Jmol application. 
 </para>
 </chapter>
-

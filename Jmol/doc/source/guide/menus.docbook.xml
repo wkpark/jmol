@@ -1,76 +1,75 @@
 <chapter id="menudesc">
-<title>Menu description</title>
-<section>
-  <title>The File menu</title>
+  <title>Menu description</title>
   <section>
-    <title>Open</title>
-    <para>
-      Open files in Jmol. Jmol can read files of the following types:
-      <itemizedlist>
-	<listitem><para><ulink url="http://www.abinit.org/">ABINIT</ulink></para></listitem>
-	<listitem><para>ACES II</para></listitem>
-	<listitem><para>ADF - Amsterdam Density Functional</para></listitem>
-	<listitem><para><ulink url="http://www.xml-cml.org/">CML v1.0 and 1.0.1</ulink></para></listitem>
-	<listitem><para>GAMESS</para></listitem>
-	<listitem><para>Gaussian 92/94/98</para></listitem>
-	<listitem><para>Ghemical MM</para></listitem>
-	<listitem><para>Jaguar</para></listitem>
-	<listitem><para>MDL molfile</para></listitem>
-	<listitem><para>PDB (ATOM and HETATM entries only)</para></listitem>
-	<listitem><para>XYZ (single and multiple frame)</para></listitem>
-      </itemizedlist>
-    </para>
-  </section>
-  <section>
-    <title>Recent Files...</title>
-    <para>
-      Brings up a dialog with a list of the
-      files the program has been asked to
-      open recently. The file can be opened
-      again by selecting it and clicking the
-      Open button.
-    </para>
-  </section>
-  <section>
-    <title>Script...</title>
-    <para>
-      Opens a window where Rasmol scripting commands can be executed.
-      <xref linkend="rasmol" />
-      contains information about RasMol/Chime Scripts.
-    </para>
-  </section>
-  <section>
-    <title>Save As...</title>
-    <para> </para>
-  </section>
-  <section>
-    <title>Export</title>
-    
+    <title>The File menu</title>
     <section>
-      <title>Export -&gt; Export Image...</title>
+      <title>Open</title>
       <para>
-	Jmol can export images of the following types:
+	Open files in Jmol. Jmol can read a large number of file types,
+	including:
 	<itemizedlist>
-	  <listitem><para>BMP</para></listitem>
-	  <listitem><para>GIF</para></listitem>
-	  <listitem><para>JPG</para></listitem>
-	  <listitem><para>PNG</para></listitem>
-	  <listitem><para>PPM</para></listitem>
+	  <listitem>
+	    <para><ulink url="http://www.abinit.org/">ABINIT</ulink></para>
+	  </listitem>
+	  <listitem><para>ACES II</para></listitem>
+	  <listitem><para>ADF - Amsterdam Density Functional</para></listitem>
+	  <listitem>
+	    <para><ulink url="http://www.xml-cml.org/">CML v2.0</ulink></para>
+	  </listitem>
+	  <listitem><para>GAMESS</para></listitem>
+	  <listitem><para>Gaussian 92/94/98</para></listitem>
+	  <listitem><para>Ghemical MM</para></listitem>
+	  <listitem><para>Jaguar</para></listitem>
+	  <listitem><para>MDL molfile</para></listitem>
+	  <listitem>
+	    <para><ulink url="http://www.pdb.org">PDB</ulink></para>
+	  </listitem>
+	  <listitem><para>CIF/mmCIF</para></listitem>
+	  <listitem><para>XYZ (single and multiple frame)</para></listitem>
 	</itemizedlist>
       </para>
+    </section>
+    <section>
+      <title>Recent Files...</title>
       <para>
-	Note that GIF pictures can only be exported if the
-	displayed image is 8 bit.
+	Brings up a dialog with a list of the
+	files the program has been asked to
+	open recently. The file can be opened
+	again by selecting it and clicking the
+	Open button.
       </para>
     </section>
-    
     <section>
-      <title>Export -&gt; Render in pov-ray...</title>
+      <title>Script...</title>
       <para>
-	For high quality images, Jmol interfaces with the POV-Ray ray tracer.
-	To use this feature, you must have the <command>povray</command> command
-	line utility installed. You can download it from
-	<ulink url="http://www.povray.org/">www.povray.org</ulink>.
+	Opens a window where Jmol/RasMol/Chime scripting commands
+	can be executed.
+	<xref linkend="rasmol" />
+	contains information about RasMol/Chime Scripts.
+      </para>
+    </section>
+
+    <section>
+      <title>Export</title>
+      <section>
+	<title>Export -&gt; Export Image...</title>
+	<para>
+	  Jmol can export 24 bit color images of the following types:
+	  <itemizedlist>
+	    <listitem><para>JPG</para></listitem>
+	    <listitem><para>PNG</para></listitem>
+	    <listitem><para>PPM</para></listitem>
+	  </itemizedlist>
+	</para>
+      </section>
+      
+      <section>
+	<title>Export -&gt; Render in pov-ray...</title>
+	<para>
+	  For high quality images, Jmol interfaces with the POV-Ray ray tracer.
+	  To use this feature, you must have the <command>povray</command>
+	  command	line utility installed. You can download it from
+	  <ulink url="http://www.povray.org/">www.povray.org</ulink>.
 	</para>
       </section>
     </section>
@@ -99,69 +98,13 @@
 	Deselects all atoms in the view screen.
       </para>
     </section>
-    <section>
-      <title>Make Crystal...</title>
-      <para>
-        Opens a dialog that permits to build a new crystal starting 
-        from the present file.
-      </para>
-      <para> 
-        This dialog is
-        only active if the file does not contain information about 
-        the crystal structure. 
-        Once the crystal has been created, the Make Crystal item is disabled
-        but the crystal structure information can be accessed through
-        the Crystal Properties dialog in the Extra menu.
-      </para>
-      <para>
-        The Make Crystal dialog in the Edit menu and the Crystal Properties 
-        dialog in the Extra menu are actually the same but their behavior
-        is slightly different depending from where there are called. 
-        Their description is given 
-        in <xref linkend="crystal" /> 
-        later on in this manual.
-      </para>
-    </section>
-    <section>
-      <title>Atom Properties...</title>
-      <para> 
-	This menu opens a dialog in which atomic properties can be added to
-	a large number of atom types. These properties include
-	the colors used to depict atoms.
-      </para>
-    </section>
+
     <section>
       <title>Preferences...</title>
       <para>
 	This menu opens a dialog to change settings and make user customized
 	preferences. These settings are saved from one session to the next
       </para>
-      <section>
-	<title>Display Tab</title>
-	<para>
-	  In these frame a few display settings can be changed. By default
-	  anti-aliasing is turned off. Turning it on improves the images
-	  considerably but will also reduce performance.
-	</para>
-	<para>
-	  Note: The 1.3.1 JVM which ships with Macintosh OS X and OS X 10.2
-	  (Jaguar) has crash bugs with some pixel interpolation and
-	  anti-aliasing operations. Therefore, you may need to disable the
-	  use of Java Graphics2D on this platform. 
-	</para>
-	<para>
-	  Note: The 1.4.1 JVM which has been released by Apple seems to
-	  have fixed a few problems for jmol ... but created a *lot* more :(
-	</para>
-      </section>
-      <section>
-	<title>Colors Tab</title>
-	<para>
-	  In these frame some general display colors can be changed.
-	  Like the background color, and the color used to highlight
-	  selected atoms.
-	</para>
-      </section>
     </section>
   </section>
   <section>
@@ -180,193 +123,6 @@
       You may select individual atoms/bonds by using the selection cursor
       or by using script commands.
     </para>
-    <section>
-      <title>Atom Style</title>
-      <section>
-	<title>Quick Draw</title>
-	<para>
-	  Renders atoms as filled circles.
-	</para>
-      </section>
-      <section>
-	<title>Shaded</title>
-	<para>
-	  Renders atoms as shaded spheres.
-	</para>
-      </section>
-      <section>
-	<title>Wire Frame</title>	  
-	<para>
-	  Renders atoms as circle outlines.
-	</para>
-      </section>
-      <section>
-	<title>Invisible</title>
-	<para>
-	  Atoms are not drawn, but are assumed to have the same radius that
-	  they would occupy. So bonds are drawn to the outer circumference
-	  of where the atom would be. Compare with *None*
-	</para>
-	<para>
-	  This option can be useful when used in conjunction with 
-	  atom labels to display atom type.
-	</para>
-      </section>
-      <section>
-	<title>None</title>
-	<para>
-	  Atoms are not drawn and are assumed to have a radius of zero.
-	  Bonds are drawn to atom centers. 
-	</para>
-	<para>
-	  This option can be very useful when use in conjunction with 
-	  atom labels to display atom type.
-	</para>
-      </section>
-    </section>
-    <section>
-      <title>Bond Style</title>
-      <section>
-	<title>Quick Draw</title>	  
-	<para>
-	  Renders bonds as filled rectangles.
-	</para>
-      </section>
-      <section>
-	<title>Shaded</title>	  
-	<para>
-	  Renders bonds as shaded cylinders.
-	</para>
-      </section>
-      <section>
-	<title>Wire Frame</title>
-	<para>
-	  Renders bonds as lines.
-	</para>
-      </section>
-      <section>
-	<title>Boxes</title>
-	<para>
-	  Renders bonds as rectangle outlines. (deprecated)
-	</para>
-      </section>
-      <section>
-	<title>None</title>
-	<para>
-	  Bonds are not drawn. 
-	</para>
-      </section>
-    </section>
-    <section>
-      <title>Atom Labels</title>
-      <section>
-	<title>None</title>	  
-	<para>
-	  No atom labels is shown.
-	</para>
-      </section>
-      <section>
-	<title>Atomic Symbols</title>	  
-	<para>
-	  Atoms are labeled with their atomic symbol.
-	</para>
-      </section>
-      <section>
-	<title>Atom Types</title>
-	<para>
-	  Atoms are labeled with their atom type.
-	  (What is the difference between Atom Type and Atom Symbol?)
-	</para>
-      </section>
-      <section>
-	<title>Atom Numbers</title>
-	<para>
-	  Atoms are labeled with index numbers.
-	</para>
-      </section>
-    </section>
-    <section>
-      <title>Atom Coloring</title>
-      <section>
-	<title>Atom Type</title>
-	<para>
-	  Atoms are colored based upon their type. Default colors are
-	  generally CPK colors
-	</para>
-      </section>
-      <section>
-	<title>Atomic Charge</title>
-	<para>
-	  Atoms are colored based upon atomic charge. (Need more
-	  explanation here!)
-	</para>
-      </section>
-    </section>
-    <section>
-      <title>Wireframe Rotation</title>
-      <para>
-	This option may be checked if performance is unacceptable when
-	manipulating large molecules. 
-	When this option is checked, wireframe rendering is used for
-	displayed atoms and bonds during rotations, translations, and
-	zoom operations. The molecule is rendered according to the current
-	settings when the mouse is released.
-      </para>
-    </section>
-    <section>
-      <title>Perspective Depth</title>
-      <para>
-	This option controls rendering with perspective depth. When this
-	option is unchecked molecules are rendered as an orthogonal
-	flat projection	onto the screen. When this option is checked,
-	sizes and distances are adjusted for a camara perspective.
-      </para>
-      <para>
-	For a good example of this take a look at some of the crystal
-	structures, such as <filename>samples/CdSe_nanocrystal.xyz</filename>
-	or <filename>samples/HfO2_on_Si_relax.in</filename>
-      </para>
-      <para>
-	Alternatively, you can turn on the bounding box to see the
-	effect of this setting (see below).
-      </para>
-    </section>
-    <section>
-      <title>Axes</title>
-      <para>
-	Displays cartesian axes with the origin at the center of the
-	bounding box defined by the extreme coordinates of the molecule.
-      </para>
-      <para>
-	Note that the positive Y axis is at the top, unlike RasMol.
-      </para>
-    </section>
-    <section>
-      <title>Bounding Box</title>
-      <para>
-	Displays the bounding box, defined by the extreme coordinates
-	of the centers of the atoms in each of the three dimensions.
-      </para>
-    </section>
-    <section>
-      <title>Hydrogens</title>
-      <para> 
-	Turns on/off the display of hydrogen atoms.
-      </para>
-    </section>
-    <section>
-      <title>Vectors</title>
-      <para>
-	Controls the display of vibrational vectors as dipole moments.
-      </para>
-    </section>
-    <section>
-      <title>Measurements</title>
-      <para>
-	Controls the display of distance, angle, and dihedral torsion
-	measurements. 
-      </para>
-    </section>
   </section>
   <section>
     <title>The View menu</title>
@@ -376,351 +132,28 @@
 	Self explanatory. Useful with crystal structures. 
       </para>
     </section>
+  </section>
+  <section>
+    <title>The Help menu</title>
     <section>
-      <title>Transform</title>
-      <para>
-	Applies an AxisAngle rotation about user-specified coordinates.
-      </para>
+      <title>About Jmol</title>
+      <para>Popups a window with copyright notice for this software.</para>
     </section>
     <section>
-      <title>Define center</title>
+      <title>User Guide</title>
+      <para>Shows this documentation.</para>
+    </section>
+    <section>
+      <title>What's New</title>
+      <para>Shows the changes from version to version.</para>
+    </section>
+    <section>
+      <title>Jmol Console</title>
       <para>
-	Defines the center of rotation for the molecule to be the
-	geometric center of the selected molecules.
-      </para>
-      <para>
-	If no atoms are selected the the center is reset to the center
-	of the bounding box defined by the extreme atom centerpoints
-	in each of the x, y, and z dimensions. This is the default.
-      </para>
-      <para>
-	If one atom is selected then it becomes the center of rotation.
-      </para>
-      <para>
-	If two or more atoms are selected then the center becomes the point
-	defined by the mean of the x, y, and z coordinates.
-      </para>
-      <para>
-	{If you think there is a better definition for this
-	(center of gravity?)
-	then let us know and we can either change this or add a
-	new definition.}
+	Shows the output to the System.out and System.err output streams.
       </para>
     </section>
   </section>
-  <section>
-    <title>The Measure menu</title>
-    <section>
-      <title>Distance...</title>
-      <para>
-	Allows you to choose two atoms and display the distance between them.
-      </para>
-    </section>
-    <section>
-      <title>Angle...</title>
-      <para>
-	Allows you to choose three atoms and display the angle formed about
-	the center atom.
-      </para>
-    </section>
-    <section>
-      <title>Dihedral...</title>
-      <para>
-	Allows you to choose four atoms and display the Dihedral/Torsion
-	angle between the two planes defined by atoms 1,2,3 and atoms 2,3,4.
-      </para>
-    </section>
-    <section>
-      <title>Delete Distance/Angle/Dihedral</title>
-      <para>
-	Allows you to delete one or more distance/angle/dihedral
-	measurements.
-      </para>
-    </section>
-    <section>
-      <title>Clear all Distances/Angles/Dihedrals</title>
-      <para>
-	Self explanatory.
-      </para>
-    </section>
-    <section>
-      <title>Clear all Measurements...</title>
-      <para>
-	Self explanatory.
-      </para>
-    </section>
-    <section>
-      <title>View Measurement List...</title>
-      <para>
-	Displays a hierarchical list of all defined measurements.
-      </para>
-    </section>
-  </section>
-  <section>
-    <title>The Extras menu</title>
-    <section>
-      <title>Animate...</title>
-      <para>
-	Some file formats support multiple frames. A file containing more
-	than one frame is considered an animation. This menu item brings
-	up the animation dialog box which allows you to control the
-	animation playback. 
-      </para>
-    </section>
-    <section>
-      <title>Vibrate...</title>
-      <para>
-	If the molecular model contains frequency information, the
-	vibrational modes can be animated and controlled with the
-	vibrate dialog box. 
-      </para>
-      <para>
-	Note that Display->Vectors should be checked in order to render
-	vibrational vectors. 
-      </para>
-      <para>
-	Good examples are <filename>samples/phenylnitrene.g92.out</filename>
-	and <filename>samples/ammonia.adf.out</filename>
-      </para>
-    </section>
-    <section>
-      <title>Graph...</title>
-      <para>This opens a window in which a energy versus frames plot
-	is viewed. This option currently only works when reading a
-	CML animation with energies given for each frame.</para>
-	<para>An example file is supplied: conformeren.cml.</para>
-      </section>
-    <section>
-      <title id="crystal">Crystal Properties...</title>
-      <para>Opens the crystal properties dialog box.</para>
-         <section>
-	    <title>The Primitive Vectors Panel.</title>
-	    <para>
-	      The three primitive vectors of the crystal can be defined in two different
-	      ways: by using either a "cartesian" or a "crystallographic" representation. 
-	      The choice of the representation is only a question of convenience and one
-	      can always switch from one representation to the other by using the
-	      "Representation" combo box. However, the "cartesian" representation allows
-              to orient the crystal freely in space whereas the crystallographic representation
-              restricts the "a" edge to be parallel to the x axis and the "b" edge to be in
-              the xy-plane.
-             </para>
-             <section>
-  	       <title>Cartesian representation.</title>	     
-	       <para> 
-	       There is three lines containing two fields each. Each line corresponds
-	       to a primitive vector. The first field contains the x, y, and z components
-	       of the vector separated with a coma. The second field is a multiplication factor
-	       for the first field and is barely a matter of convenience. The unit of
-	       the resulting vector is the Angstrom. When the values are settled, clicking
-	       on the Apply button  will update the data in the crystallographic 
-	       representation and will update the Display Panel.
-	       </para>
-             </section>
-             <section>
-	       <title>Crystallographic representation</title>
-	       <para>
-	       The a, b and c fields contain the three edge lengths (in angstrom) 
-	       of the crystal.
-	       As soon as the apply button is clicked, the a edge will be set parallel to x 
-	       and the b edge will lie in plane (x,y).
-	       The alpha, beta and gamma fields contain the angles (in degrees) 
-	       between the a and b, b and c, and b and a edges, respectively.
-	       </para>
-	       <para>
-	       Note that the atomic positions are always assumed in reduced coordinates of the
-	       primitive vectors. So, for instance, when the primitive vectors are scaled, the
-	       atoms remains in the same relative position.
-	       However, when a file containing no crystal information (and therefore no
-	       primitive vector) is loaded into jmol, reduced coordinates doesn't exist yet.
-	       In this case the Crystal dialog is only available via the Make Crystal 
-	       item in the Edit menu. The primitive vectors must be entered in a way to correspond to the atomic
-	       position defined in the input file. 
-               </para>
-               <para>
-               For example, the file bulk_Si.xyz in the
-	       samples directory contains the atomic positions of the crystalline silicon, i.e.
-	       one atom at (0, 0, 0) and another one at (1.347, 1.347, 1.347). A valid set of
-	       primitive vector is (0.0 0.5 0.5), (0.5 0.0 0.5) and  (0.5 0.5 0.0) with
-	       a multiplication factor of 5.387. In this
-	       case, the crystallographic representation cannot be used to create
-	       the crystal because a set of 3 primitive vectors whose one is parallel to x
-	       cannot lead to the Silicon crystal with the given particular atomic positions. 
-	       </para>
-            </section>
-	  </section>
-	  <section>
-	    <title>The Crystal Box Panel.</title>
-	    <para>
-	     This is the place to define the visualization range of the crystal.
-	     Three subpanels are present: the Atom Box, the Bond Box and the Unit
-	     Cell Box. In each subpanel, two fields are present: the minimum and the
-	     maximum coordinates in term of the unit vectors. They define a
-             parallelepipede where the visualization take place. 
-            </para>
-            <para>
-             For instance, 
-	     minimum = (0,0,0) and maximum = (1,1,2) leads to 2 unit cells aligned in
-	     the direction of the third primitive vector.  Non integer values are
-	     also accepted.
-            </para>
-            <para>
-            One can define a visualization range for three different aspects, the atoms, 
-            the bonds and the unit cell frame:
-            </para>
-            <section>
-	      <title>The Atom Box</title>	     
-	      <para> 	    
-	      Only the atoms of the crystal lying in the Atom Box will be displayed.
-	      If an atom exactly lie on a face, edge or corner of the unit cell, it will
-	      be displayed respectively 2, 4 or 8 times in the unit cell, 
-	      one for each equivalent
-	      face, edge or corner. This is due to a limitation of Jmol that cannot
-	      display a partial atom. It results that the total number of displayed atoms
-	      can be larger than the expected (in a crystallographic point of view) 
-	      number of atoms. Another nasty effect can be shown with the sample file 
-	      slab_7Si_3Vac_2x_relax_2x1.out. If you create an animation with frame
-	      interpolation, the interpolation results in erroneous frames due to the
-	      different number of atoms in two successive frames. 
-              </para>
-              <para>
-	      If the "Original atoms only" check box is checked, only the original atoms,
-	      i.e. the atoms as specified in the input file, will be displayed.
-	      </para>
-            </section>
-            <section>
-	      <title>The Bond Box</title>
-	      <para>
-	      A bond between two atoms will be drawn if these are lying in 
-	      the Bond Box. Of course, if the distance is bigger than the bond fudge,
-	      no bond will be drawn. 
-	      </para>
-             <section>
-	      <title>The Unit Cell Box</title>	     
-	      <para>
-	      Unit cell frames fully inside the specified range will be displayed. Non
-	      integer value can be specified but are useless. 
-	      </para>
-             </section>
-            </section>
-	  </section>
-	  <section>
-	    <title>The Base Vectors Panel.</title>
-            <para>
-	     In this panel, you will find the atomic position and the type
-	     of the base atoms in either
-	     cartesian (angstrom) or lattice (=reduced) coordinates depending on what is 
-	     selected in the combo box.
-            </para>
-	  </section>
-	  <section>
-	    <title>The Band Plot Panel.</title>
-            <para>
-	    This panel allows you to generate band plots used to represent the electronic 
-	    band structure or the phonon dispersion curves of crystals. So far,
-	    data can only be loaded from ABINIT output files and only electronic bands
-	    are supported. An example, Si_eband.out, can be found in the samples directory.
-            This file contains 2 datasets. Only dataset 2 contains information for a band plot.   
-            </para>
-            <para>
-            A band plot or band diagram, represents the electronic energy
-	    (the phonon frequency) of a state (mode) versus its wave vector along particular
-	    lines.
-	    Each line of the table on the top of the panel represents such particular line. The first
-	    field is an index that is used to refer to the line (it will be referred below as 
-            the "line index"). The second ("Origin") and forth ("End") fields are
-	    the position of the first end last point of the line given in reduced coordinates
-	    of the primitive reciprocal vectors. 
-            The third ("Origin Label") and fith ("End Label") are the labels of the origin and end
-            point of the line respectively. These two fields are editable. Typically it will consist
-            of a single letter ("X" for instance). Greek letters are also supported by putting a
-            "\S" in front of the letter (for instance "\S G" gives the Greekletter Gamma). A complete
-            description of the syntax is given below in <xref linkend="formatting" />. 
-            The last field is the total number of points n in
-	    that line. The first point of the line has index 0 and the last point has index n-1.
-	    Below the table, are a number of fields used to tune the aspect of the plot:
-	    </para>
-
-           <itemizedlist>
-	    <listitem><para>Resolution: the horizontal resolution of the plot in pixels.</para></listitem>
-	    <listitem><para>Ratio: the y/x ratio of the plot.</para></listitem>
-	    <listitem><para>Fontsize 1: fontsize of the abscisse values.</para></listitem>
-	    <listitem><para>Fontsize 2: fontsize of the ordinate values.</para></listitem>
-	    <listitem><para>Fontsize 3: fontsize of the ordinate label.</para></listitem>
-	    <listitem><para>Energy Units: the units of the ordinate axis. As you may have noticed,
-	    the dimensions are either an energy or an inverse wavelength (corresponding to
-	    the wavelength that would have light of that energy).</para></listitem>
-	    <listitem><para>Minimum Energy: the minimum energy of the ordinate axis.</para></listitem>
-	    <listitem><para>Maximum Energy: the maximum energy of the ordinate axis.</para></listitem>
-	    <listitem><para>Fermi Level: an horizontal line will be ploted at that position.</para></listitem>
-	    <listitem><para>The Fix Fraction Digits/Exp Fraction Digits combo box: indicates the number format
-	    of the ordinate values - fixed or exponential. The number on the right of the 
-	    combo box is the number of decimal figures.</para></listitem>
-	    <listitem><para>Vertical Tics: the number of tics on the ordinate axis.</para></listitem>
-	    <listitem><para>Horizontal Tics: the number of tics on the abscisse axis.</para></listitem>
-	    <listitem><para>Separator size: the size of the separation between two subplot (see below ";").</para></listitem>
-	    <listitem><para>The Y label: The label of the ordinate axis.</para></listitem>
-	    <listitem><para>Define Plot: defines  the structure of the plot.</para>
-                      <para>The structure is basically defined by a string which is a coma separated list
-                            of the line numbers in the table in the top of the panel. For example "0,1,2" with
-                            the sample file Si_eband.out/dataset2 will draw a continuous band plot along the path
-                            (0.5, 0.0, 0.0) - (0.0, 0.0, 0.0) - (0.0, 0.5, 0.5) - (1.0, 1.0, 1.0) or 
-                            X - G - M - G.
-                      </para>
-                      <para>A coma in the list can be replaced by a ";". In that case,
-                            the plot is no more continuous but a separation is drawn (see "Separator Size" hier above).
-                            For example "0,1;2" will draw the band diagram along the path X - G | M - G with a
-                            separation between the first G and M.
-                      </para>
-                      <para>A partial line can also be drawn by specifying the range in square brackets. For
-                            example "0,1[0-7];2" will only draw line 1 between points 0 and 7. The user has to know
-                            the position of the points as there are defined in the input file. Notice that the
-                            maximum range is [0,Number Of Points - 1] and is assumed by default.
-                      </para>
-                      <para>A line can also be drawn in the reverse direction. For this, a minus has to be prepended
-                            in front of the line number. For example "0,1;-2" will draw band diagram along the path
-                            X - G | G - M. 
-                      </para>
-                      </listitem>
-           </itemizedlist>
-
-           <section>
-            <title id="formatting">Text Formatting</title>
-            <para>
-            A very basic text formatting alows to combine greek and latin characters. Greek 
-            characters are obtained by preceding the text with \S, latin characters by \N.
-            If nothing is specified, latin characters are assumed. Superscript characters are obtained
-            with a ^. All characters following this symbol are formated in superscript. To come back to the
-            normal mode use _. Multiple combinations of ^ or _ are possible.
-            </para>
-            <para>
-            For example : \S l \N \ ( \S m \N m^-1_ ).
-            </para>
-           </section>
-	 </section>
-      </section>
-    </section>
-    <section>
-      <title>The Help menu</title>
-      <section>
-	<title>About Jmol</title>
-	<para>Popups a window with copyright notice for this software.</para>
-      </section>
-      <section>
-	<title>User Guide</title>
-	<para>Shows this documentation.</para>
-      </section>
-      <section>
-	<title>What's New</title>
-	<para>Shows the changes from version to version.</para>
-      </section>
-      <section>
-	<title>Jmol Console</title>
-	<para>
-	  Shows the output to the System.out and System.err output streams.
-	</para>
-      </section>
-    </section>
-  </chapter>
+</chapter>
   
   

@@ -3,7 +3,8 @@
   <para>
     The applet is tested and working with Internet Explorer, Netscape,
     Opera, Mozilla (and derivatives) and Konqueror on various platforms.
-    Test results are given below.
+    Test results are given below. But be advised that this table
+    (like most documentation) is often out of date. 
   </para>
   <para>
     If you find problems with the browser/operating system/jvm combination
@@ -23,23 +24,57 @@
 	  <itemizedlist>
 	    <listitem>Microsoft Internet Explorer with Microsoft JVM </listitem>
 	    <listitem>Microsoft Internet Explorer with Sun Java Plugin >= 1.4 </listitem>
-	    <listitem>Netscape 4.* <emphasis>(slow performance)</emphasis></listitem>
+	    <listitem>Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis></listitem>
 	    <listitem>Netscape 7 with Sun Java Plugin >= 1.4 </listitem>
 	    <listitem>Mozilla with Sun Java Plugin >= 1.4 </listitem>
+	    <listitem>Firefox 1.0 with Sun Java Plugin >= 1.4 </listitem>
+	    <listitem>Opera 7.5.4 with Sun Java Plugin >= 1.4 </listitem>
 	  </itemizedlist>
 	</listitem>
 	<listitem>
-	  Mac OS X 10.3 Panther
+	  Mac OS X 10.3.3 or greater
+	  <para>
+	    Mac OS X prior to 10.3.3 did not support LiveConnect
+	    communications between JavaScript and Java
+	  </para>
 	  <itemizedlist>
-	    <listitem>Safari 1.2</listitem>
+	    <listitem>
+	      Safari 1.2 (v125)
+	      <para>
+		Previous versions of OSX &amp; Safari have significant problems.
+		Even subsequent versions have problems. Lets hope that
+		Apple can keep things stable.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      Netscape 7.2 with javaplugin.sourceforge.net installed
+	    </listitem>
+	    <listitem>
+	      Mozilla 1.7.3 with javaplugin.sourceforge.net installed
+	    </listitem>
+	    <listitem>
+	      Firefox 1.0 with javaplugin.sourceforge.net installed
+	    </listitem>
+	    <listitem>
+	      Opera 7.5.4
+	      <para>
+		all versions of Opera OSX up through 7.5.4 are
+		completely broken
+	      </para>
+	    </listitem>
 	  </itemizedlist>
-	  <para>Previous versions of OSX &amp; Safari have significant problems</para>
 	</listitem>
 	<listitem>
 	  Linux/Unix
 	  <itemizedlist>
-	    <listitem> Mozilla >= 1.2.1 + Sun Java >= 1.4</listitem>
-	    <listitem> Konqueror >= 3.1 + Sun Java >= 1.4</listitem>
+	    <listitem> Mozilla 1.6 + Sun Java >= 1.4</listitem>
+	    <listitem> Firefox 1.0 + Sun Java >= 1.4</listitem>
+	    <listitem>
+	      Konqueror 3.3
+	      <para>
+		all versions of Konqueror up through 3.3 are broken
+	      </para>
+	    </listitem>
 	  </itemizedlist>
 	</listitem>
 	<listitem>

@@ -1,23 +1,15 @@
 <chapter>
-<title>Web Server configuration for the JmolApplet</title>
-<para>
-  The JmolApplet is configured on the web server just like any other
-  Java applet.
-</para>
-<para>
-  The JmolApplet.properties file can be used to configure default
-  values for the applet.
-</para>
-<para>
-  The JmolAppletProxy.cgi can be configured to allow the JmolApplet to
-  fetch molecular models running on remote web servers.
-</para>
-<section>
-  <title>JmolApplet.jar</title>
+  <title>Web Server configuration for the JmolApplet</title>
   <para>
-    The JmolApplet.jar file is placed in a directory on your web server.
-    It is usually placed in the same directory as your .html pages,
-    although it can be put in other locations
+    The JmolApplet is configured on the web server just like any other
+    Java applet.
+  </para>
+  <para>
+    The JmolApplet.jar and Jmol.js files are placed in a directory
+    on your web server.
+    We advise placing them in a in a sibling directory or subdirectory of
+    your .html pages ... something like <command>../jmol</command>
+    or <command>./jmol</command>
   </para>
   <para>
     All the java classes needed by the applet are contained in the single
@@ -27,84 +19,4 @@
     The applet runs as an unsigned/untrusted applet. Therefore, no additional
     steps are needed for end-user verification of applet authenticity.
   </para>
-</section>
-<section>
-  <title>JmolApplet.properties</title>
-  <para>
-    You may optionally place a file called JmolApplet.properties in the
-    same directory as the JmolApplet.jar file. This file can contain
-    default properties which will override the defaults built into
-    the JmolApplet. These defaults can, in turn, be overridden by values
-    specified in particular <command>APPLET</command> instances in .html pages.
-  </para>
-  <para>
-    The format of this file is dictated by the java properties
-    classes. Values in the file are <command>name=value</command> pairs. The
-    names in the file are case-sensitive (unlike the parameters to
-    the <command>APPLET</command> html tag. For a list of parameters see the
-    JmolApplet.properties file which shipped with the distribution. 
-  </para>
-  <para>
-    Note: If you choose to use the JmolAppletProxy then the location of
-    the JmolAppletProxy.cgi is defined as a property in the
-    JmolApplet.properties file:
-    <programlisting><![CDATA[
-      # in the same directory as the applet
-      JmolAppletProxy=JmolAppletProxy.cgi
-      
-      #in the /cgi-bin/directory of the server
-      JmolAppletProxy=/cgi-bin/JmolAppletProxy.cgi
-      
-      #I prefer to use my own proxy written as a .jsp, thank you
-      JmolAppletProxy=/myDirectory/MyOwnProxy.jsp
-      ]]>
-    </programlisting>
-  </para>
-</section>
-<section>
-  <title>JmolAppletProxy.cgi</title>
-  <para>
-    An untrusted applet must run within the constraints imposed by the
-    web browser Security Manager. This means that the applet may not access
-    files on the local hard drive. In addition, it means that the applet
-    may only access files on the same web server from which the applet
-    was loaded. 
-  </para>
-  <para>
-    Unfortunately, this means that the JmolApplet cannot directly load
-    molecular models from other web servers, such as the Protein Data Bank
-    <ulink url="http://www.rcsb.org/pdb">www.rcsb.org/pdb</ulink>,
-    or the cactus database maintiained by the National Cancer Institute
-    <ulink url="http://cactus.nci.nih.gov">cactus.nci.nih.gov</ulink>.
-  </para>
-  <para>
-    The JmolAppletProxy.cgi provides a mechanism to enable remote access
-    to molecular models stored on remote web servers. The JmolAppletProxy
-    runs as a cgi on the web server which hosts the JmolApplet. 
-  </para>
-  <para>
-    The mechanism works as follows: Requests
-    to load molecular models from remote web servers are routed through
-    the JmolAppletProxy. The JmolAppletProxy receives these requests,
-    fetches the molecular model, and returns the contents to the JmolApplet.
-  </para>
-  <para>
-    The JmolAppletProxy.cgi is written in Perl. It uses the CGI module to
-    manage requests from clients and the LWP module to fetch molecular
-    models from remote web servers
-  </para>
-  <para>
-    Your web server may be configured so that cgi programs can only be
-    run from specific directories. The location of the JmolAppletProxy.cgi
-    on your web server can be specified in the JmolApplet.properties file.
-  </para>
-  <para>
-    You may choose to write your own proxy. The JmolApplet does a GET request
-    with a single parameter named <command>url</command> The value passed is
-    URL-encoded:
-    <programlisting>
-      http://myJmolServer/cgi-bin/JmolAppletProxy.cgi?url=[encodedURL]
-    </programlisting>
-  </para>
-</section>
 </chapter>

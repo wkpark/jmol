@@ -159,6 +159,7 @@ public class Token {
   final static int list         = command | 54 | showparam;
   final static int display3d    = command | 55;
   final static int animation    = command | 56;
+  final static int frame        = command | 57;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -303,7 +304,6 @@ public class Token {
   final static int mode         = misc | 30;
   final static int direction    = misc | 31;
   final static int fps          = misc | 32;
-  final static int frame        = misc | 33;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;
@@ -389,6 +389,7 @@ public class Token {
     "display3d",         new Token(display3d,  "display3d"),
     "animation",         new Token(animation,  "animation"),
     "anim",              null,
+    "frame",             new Token(frame,      "frame"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

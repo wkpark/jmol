@@ -412,6 +412,10 @@ public class Eval implements Runnable {
       case Token.show:
         show();
         break;
+      case Token.frame:
+        frame();
+        break;
+        
 
         // not implemented
       case Token.bond:
@@ -623,6 +627,10 @@ public class Eval implements Runnable {
   void checkStatementLength(int length) throws ScriptException {
     if (statement.length != length)
       badArgumentCount();
+  }
+
+  void checkLength2() throws ScriptException {
+    checkStatementLength(2);
   }
 
   void checkLength3() throws ScriptException {
@@ -1967,6 +1975,24 @@ public class Eval implements Runnable {
     viewer.setSpinOn(spinOn);
   }
       
+  void frame() throws ScriptException {
+    checkLength2();
+    int model = 0;
+    switch(statement[1].tok) {
+    case Token.all:
+    case Token.asterisk:
+      model = -1;
+    case Token.none:
+      break;
+    case Token.integer:
+      model = statement[1].intValue;
+      break;
+    default:
+      integerExpected();
+    }
+    viewer.setDisplayModel(model);
+  }
+
   /****************************************************************
    * SET implementations
    ****************************************************************/

@@ -1012,6 +1012,10 @@ final public class JmolViewer {
     return modelManager.getCurrentFrameNumber();
   }
 
+  public void setDisplayModel(int model) {
+    modelManager.setDisplayModel(model);
+  }
+
   public int getAtomCount() {
     return modelManager.getAtomCount();
   }

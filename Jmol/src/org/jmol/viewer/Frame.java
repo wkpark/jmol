@@ -27,6 +27,8 @@ package org.jmol.viewer;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.bspt.Bspf;
+import org.jmol.bspt.Bspt;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
@@ -996,21 +998,41 @@ final class Frame {
 
   Bspf bspf;
 
+  private final static boolean MIX_BSPT_ORDER = false;
+
   void initializeBspf() {
     if (bspf == null) {
       long timeBegin, timeEnd;
       if (showRebondTimes)
         timeBegin = System.currentTimeMillis();
       bspf = new Bspf(3);
-      for (int i = atomCount; --i >= 0; ) {
-        Atom atom = atoms[i];
-        if (! atom.isDeleted())
-          bspf.addTuple(atom.modelIndex, atom);
+      if (MIX_BSPT_ORDER) {
+        System.out.println("mixing bspt order");
+        int stride = 3;
+        int step = (atomCount + stride - 1) / stride;
+        for (int i = 0; i < step; ++i)
+          for (int j = 0; j < stride; ++j) {
+            int k = i * stride + j;
+            if (k >= atomCount)
+              continue;
+            Atom atom = atoms[k];
+            if (! atom.isDeleted())
+              bspf.addTuple(atom.modelIndex, atom);
+          }
+      } else {
+        System.out.println("sequential bspt order");
+        for (int i = atomCount; --i >= 0; ) {
+          Atom atom = atoms[i];
+          if (! atom.isDeleted())
+            bspf.addTuple(atom.modelIndex, atom);
+        }
       }
       if (showRebondTimes) {
         timeEnd = System.currentTimeMillis();
         System.out.println("time to build bspf=" + (timeEnd - timeBegin) +
                            " ms");
+        bspf.stats();
+        //        bspf.dump();
       }
     }
   }

@@ -2,9 +2,9 @@
  * $Author$
  * $Date$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -21,30 +21,30 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer;
+package org.jmol.bspt;
 
 /*
   A Binary Space Partitioning Forest
   trees + an iterator
 */
 
-final class Bspf {
+public final class Bspf {
 
   int dimMax;
   Bspt bspts[];
   Bspt.SphereIterator[] sphereIterators;
   
-  Bspf(int dimMax) {
+  public Bspf(int dimMax) {
     this.dimMax = dimMax;
     bspts = new Bspt[0];
     sphereIterators = new Bspt.SphereIterator[0];
   }
 
-  int getBsptCount() {
+  public int getBsptCount() {
     return bspts.length;
   }
   
-  void addTuple(int bsptIndex, Bspt.Tuple tuple) {
+  public void addTuple(int bsptIndex, Bspt.Tuple tuple) {
     if (bsptIndex >= bspts.length) {
       Bspt[] t = new Bspt[bsptIndex + 1];
       System.arraycopy(bspts, 0, t, 0, bspts.length);
@@ -56,7 +56,22 @@ final class Bspf {
     bspt.addTuple(tuple);
   }
 
-  Bspt.SphereIterator getSphereIterator(int bsptIndex) {
+  public void stats() {
+    for (int i = 0; i < bspts.length; ++i)
+      bspts[i].stats();
+  }
+
+  /*
+  public void dump() {
+    for (int i = 0; i < bspts.length; ++i) {
+      System.out.println(">>>>\nDumping bspt #" + i + "\n>>>>");
+      bspts[i].dump();
+    }
+    System.out.println("<<<<");
+  }
+  */
+
+  public Bspt.SphereIterator getSphereIterator(int bsptIndex) {
     if (bsptIndex >= sphereIterators.length) {
       Bspt.SphereIterator[] t = new Bspt.SphereIterator[bsptIndex + 1];
       System.arraycopy(sphereIterators, 0, t, 0, sphereIterators.length);

@@ -26,6 +26,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Xyzd;
+import org.jmol.bspt.Bspt;
 
 import java.util.Hashtable;
 

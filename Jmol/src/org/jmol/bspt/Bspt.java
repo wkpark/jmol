@@ -2,9 +2,9 @@
  * $Author$
  * $Date$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer;
+package org.jmol.bspt;
 
 /*
   mth 2003 05
@@ -62,14 +62,14 @@ package org.jmol.viewer;
       x dimension
 */
 
-final class Bspt {
+public final class Bspt {
 
-  private final static int leafCountMax = 8;
+  private final static int leafCountMax = 16;
   // this corresponds to the max height of the tree
   private final static int MAX_TREE_DEPTH = 100;
-  int treeDepth = 0;
-  int dimMax;
-  Element eleRoot;
+  private int treeDepth;
+  private int dimMax;
+  private Element eleRoot;
 
   /*
   static float distance(int dim, Tuple t1, Tuple t2) {
@@ -86,22 +86,28 @@ final class Bspt {
   }
   */
 
-  Bspt(int dimMax) {
+  public Bspt(int dimMax) {
     this.dimMax = dimMax;
     this.eleRoot = new Leaf();
+    treeDepth = 1;
   }
 
-  void addTuple(Tuple tuple) {
+  public void addTuple(Tuple tuple) {
     eleRoot = eleRoot.addTuple(0, tuple);
   }
 
-  /*
-  String toString() {
-    return eleRoot.toString();
+  public void stats() {
+    System.out.println("bspt treeDepth=" + treeDepth +
+                       " count=" + eleRoot.count);
   }
 
-  void dump() {
+  /*
+  public void dump() {
     eleRoot.dump(0);
+  }
+
+  public String toString() {
+    return eleRoot.toString();
   }
   */
 
@@ -217,11 +223,11 @@ final class Bspt {
   }
   */
 
-  SphereIterator allocateSphereIterator() {
+  public SphereIterator allocateSphereIterator() {
     return new SphereIterator();
   }
 
-  class SphereIterator {
+  public class SphereIterator {
     Node[] stack;
     int sp;
     int leafIndex;
@@ -230,7 +236,7 @@ final class Bspt {
     Tuple center;
     float radius;
 
-    float centerValues[];
+    float[] centerValues;
     float radius2;
     float foundDistance2; // the dist squared of a found Element;
 
@@ -243,7 +249,7 @@ final class Bspt {
       stack = new Node[treeDepth];
     }
 
-    void initialize(Tuple center, float radius) {
+    public void initialize(Tuple center, float radius) {
       this.center = center;
       this.radius = radius;
       this.radius2 = radius*radius;
@@ -267,12 +273,12 @@ final class Bspt {
       leafIndex = 0;
     }
 
-    void initializeHemisphere(Tuple center, float radius) {
+    public void initializeHemisphere(Tuple center, float radius) {
       initialize(center, radius);
       tHemisphere = true;
     }
 
-    void release() {
+    public void release() {
       for (int i = treeDepth; --i >= 0; )
         stack[i] = null;
     }
@@ -297,7 +303,7 @@ final class Bspt {
       return true;
     }
     
-    boolean hasMoreElements() {
+    public boolean hasMoreElements() {
       while (true) {
         for ( ; leafIndex < leaf.count; ++leafIndex)
           if (isWithin(leaf.tuples[leafIndex]))
@@ -307,7 +313,7 @@ final class Bspt {
         Element ele = stack[--sp];
         while (ele instanceof Node) {
           Node node = (Node) ele;
-          if (centerValues[node.dim]+radius < node.splitValue) {
+          if (centerValues[node.dim] + radius < node.splitValue) {
             if (sp == 0)
               return false;
             ele = stack[--sp];
@@ -325,43 +331,47 @@ final class Bspt {
       }
     }
 
-    Object nextElement() {
+    public Object nextElement() {
       return leaf.tuples[leafIndex++];
     }
 
-    float foundDistance2() {
+    public float foundDistance2() {
       return foundDistance2;
     }
   }
 
-  interface Tuple {
-    float getDimensionValue(int dim);
+  public interface Tuple {
+    public float getDimensionValue(int dim);
   }
 
-  abstract class Element {
+  private abstract class Element {
     int count;
     abstract Element addTuple(int level, Tuple tuple);
+    /*
+    abstract void dump(int level);
+    */
   }
 
-  class Node extends Element {
+  private class Node extends Element {
     Element eleLE;
     int dim;
     float splitValue;
     Element eleGE;
     
     Node(int level, Leaf leafLE) {
-      if (level >= treeDepth) {
-        if (level >= MAX_TREE_DEPTH) {
-          System.out.println("BSPT tree depth too great");
-          throw new NullPointerException();
-        }
-        treeDepth = level;
+      if (level == treeDepth) {
+        treeDepth = level + 1;
+        if (treeDepth >= MAX_TREE_DEPTH)
+          System.out.println("BSPT tree depth too great:" + treeDepth);
       }
+      if (leafLE.count != leafCountMax)
+        throw new NullPointerException();
       eleLE = leafLE;
       dim = level % dimMax;
       leafLE.sort(dim);
       splitValue = leafLE.tuples[leafCountMax/2 - 1].getDimensionValue(dim);
       eleGE = new Leaf(leafLE, leafCountMax/2);
+      count = leafCountMax;
     }
 
     Element addTuple(int level, Tuple tuple) {
@@ -375,23 +385,24 @@ final class Bspt {
       return this;
     }
 
-      /*
-        String toString() {
-        return eleLE.toString() + dim + ":" + splitValue + "\n" + eleGE.toString();
-        }
-
-        void dump(int level) {
-        System.out.println("");
-        eleLE.dump(level + 1);
-        for (int i = 0; i < level; ++i)
+    /*
+    void dump(int level) {
+      System.out.println("");
+      eleLE.dump(level + 1);
+      for (int i = 0; i < level; ++i)
         System.out.print("-");
-        System.out.println(">" + splitValue);
-        eleGE.dump(level + 1);
-        }
-      */
+      System.out.println(">" + splitValue);
+      eleGE.dump(level + 1);
+    }
+
+    public String toString() {
+      return eleLE.toString() + dim + ":" +
+        splitValue + "\n" + eleGE.toString();
+    }
+    */
   }
 
-  class Leaf extends Element {
+  private class Leaf extends Element {
     Tuple[] tuples;
     
     Leaf() {
@@ -425,12 +436,6 @@ final class Bspt {
       }
     }
 
-    /*
-    String toString() {
-      return "leaf:" + count + "\n";
-    }
-    */
-
     Element addTuple(int level, Tuple tuple) {
       if (count < leafCountMax) {
         tuples[count++] = tuple;
@@ -451,9 +456,14 @@ final class Bspt {
         System.out.println("" + t.getDimensionValue(dimMax - 1));
       }
     }
+
+    public String toString() {
+      return "leaf:" + count + "\n";
+    }
     */
+
   }
-  }
+}
 
 /*
 class Point implements Bspt.Tuple {

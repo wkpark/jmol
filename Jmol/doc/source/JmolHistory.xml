@@ -29,6 +29,9 @@
   <change contributor="EW">
     Jmol is now based on CDK.
   </change>
+  <change contributor="EW">
+    Display speed can be displayed in milliseconds and in frames per second.
+  </change>
 </changes>
 
 <changes version="jmol-5">

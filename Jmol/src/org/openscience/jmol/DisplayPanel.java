@@ -958,7 +958,11 @@ public class DisplayPanel extends JPanel
       (timeCount == 0)
       ? -1
       : (timeTotal + timeCount/2) / timeCount; // round, don't truncate
-    status.setStatus(3, fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms");
+    if (System.getProperty("display.speed").equalsIgnoreCase("fps")) {
+        status.setStatus(3, fmt(1000/timeLast) + "FPS : " + fmt(1000/timeAverage) + "FPS");
+    } else {
+        status.setStatus(3, fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms");
+    }
   }
 
   public final static int X_AXIS = 1;

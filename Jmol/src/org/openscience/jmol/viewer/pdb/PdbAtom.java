@@ -25,6 +25,7 @@
 package org.openscience.jmol.viewer.pdb;
 
 import org.openscience.jmol.viewer.*;
+import org.openscience.jmol.viewer.datamodel.Atom;
 
 import java.util.Hashtable;
 
@@ -33,10 +34,9 @@ public class PdbAtom {
   public PdbGroup group;
   public short atomID;
 
-  public PdbAtom(PdbGroup group, int atomIndex, String recordPdb) {
+  public PdbAtom(PdbGroup group, Atom atom) {
     this.group = group;
-
-    String t = recordPdb.substring(12, 16);
+    String t = atom.getPdbAtomName4();
     atomID = lookupAtomID(t);
   }
   

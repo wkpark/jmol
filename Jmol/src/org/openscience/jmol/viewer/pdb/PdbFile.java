@@ -139,9 +139,9 @@ final public class PdbFile {
     PdbChain chain = model.getOrAllocateChain(chainID);
     groupCurrent = chain.allocateGroup(seqcode, group3);
   }
-  
-  public PdbAtom allocatePdbAtom(int atomIndex, int modelNumber,
-                                 String pdbRecord) {
+
+  /*
+  public PdbGroup assignPdbGroup(Atom atom, String pdbRecord) {
     char chainID = pdbRecord.charAt(21);
     int seqcode = Integer.MIN_VALUE;
     try {
@@ -151,16 +151,32 @@ final public class PdbFile {
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }
+    int modelNumber = atom.getModelNumber();
     if (modelNumber != modelNumberCurrent ||
         chainID != chainIDCurrent ||
         seqcode != seqcodeCurrent)
       setCurrentResidue(modelNumber, chainID,
                         seqcode, pdbRecord.substring(17, 20).trim());
-    return groupCurrent.allocatePdbAtom(atomIndex, pdbRecord);
+    groupCurrent.assignAtom(atom, pdbRecord);
+    return groupCurrent;
+  }
+  */
+
+  public PdbAtom allocatePdbAtom(Atom atom) {
+    int modelNumber = atom.getModelNumber();
+    char chainID = atom.getChainID();
+    int sequenceNum = atom.getSequenceNumber();
+    char insertionCode = atom.getInsertionCode();
+    int seqcode = PdbGroup.getSeqcode(sequenceNum, insertionCode);
+    if (modelNumber != modelNumberCurrent ||
+        chainID != chainIDCurrent ||
+        seqcode != seqcodeCurrent)
+      setCurrentResidue(modelNumber, chainID,
+                        seqcode, atom.getGroup3());
+    return groupCurrent.allocatePdbAtom(atom);
   }
 
   public int getModelCount() {
-
     return modelCount;
   }
 

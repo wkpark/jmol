@@ -230,7 +230,12 @@ public class SimpleModelAdapter extends ModelAdapter {
     public float getVectorZ() { return atom.vectorZ; }
     public float getBfactor() { return atom.bfactor; }
     public int getOccupancy() { return atom.occupancy; }
-    public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
+    public boolean getIsHetero() { return atom.isHetero; }
+    public int getAtomSerial() { return atom.atomSerial; }
+    public char getChainID() { return atom.chainID; }
+    public String getGroup3() { return atom.group3; }
+    public int getSequenceNumber() { return atom.sequenceNumber; }
+    public char getInsertionCode() { return atom.insertionCode; }
   }
 
   class BondIterator extends ModelAdapter.BondIterator {
@@ -274,7 +279,10 @@ class Atom {
   int occupancy = 100;
   boolean isHetero;
   int atomSerial = Integer.MIN_VALUE;
-  String pdbAtomRecord;
+  char chainID = (char)0;
+  String group3;
+  int sequenceNumber = Integer.MIN_VALUE;
+  char insertionCode = (char)0;
 
   Atom(int modelNumber, String symbol, int charge,
        float x, float y, float z,
@@ -301,8 +309,8 @@ class Atom {
   Atom(int modelNumber, String symbol, int charge, int occupancy,
        float bfactor,
        float x, float y, float z,
-       boolean isHetero, int atomSerial,
-       String pdb) {
+       boolean isHetero, int atomSerial, char chainID,
+       String group3, int sequenceNumber, char insertionCode) {
     this.elementSymbol = symbol;
     this.atomicCharge = charge;
     this.occupancy = occupancy;
@@ -312,8 +320,11 @@ class Atom {
     this.z = z;
     this.isHetero = isHetero;
     this.atomSerial = atomSerial;
+    this.chainID = chainID;
+    this.group3 = group3;
+    this.sequenceNumber = sequenceNumber;
+    this.insertionCode = insertionCode;
     this.modelNumber = modelNumber;
-    this.pdbAtomRecord = pdb;
   }
 }
 
@@ -687,6 +698,11 @@ class PdbModel extends Model {
       
       /****************************************************************/
       int serial = Integer.parseInt(line.substring(6, 11).trim());
+      char chainID = line.charAt(21);
+      String group3 = line.substring(17, 20).trim();
+      int sequenceNumber = Integer.parseInt(line.substring(22, 26).trim());
+      char insertionCode = line.charAt(26);
+      
       /****************************************************************
        * coordinates
        ****************************************************************/
@@ -704,8 +720,8 @@ class PdbModel extends Model {
       }
       addAtom(new Atom(currentModelNumber, elementSymbol,
                        charge, occupancy, bfactor, x, y, z,
-                       isHetero, serial,
-                       line));
+                       isHetero, serial, chainID,
+                       group3, sequenceNumber, insertionCode));
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

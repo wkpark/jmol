@@ -75,7 +75,9 @@ final public class FrameBuilder {
                     iterAtom.getBfactor(),
                     iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
                     iterAtom.getIsHetero(), iterAtom.getAtomSerial(),
-                    iterAtom.getPdbAtomRecord(),
+                    iterAtom.getChainID(),
+                    iterAtom.getGroup3(),
+                    iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(),
                     iterAtom.getClientAtomReference());
     }
 

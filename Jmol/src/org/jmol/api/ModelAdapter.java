@@ -196,7 +196,10 @@ public abstract class ModelAdapter {
     public int getOccupancy() { return 100; }
     public boolean getIsHetero() { return false; }
     public int getAtomSerial() { return Integer.MIN_VALUE; }
-    public String getPdbAtomRecord() { return null; }
+    public char getChainID() { return (char)0; }
+    public String getGroup3() { return null; }
+    public int getSequenceNumber() { return Integer.MIN_VALUE; }
+    public char getInsertionCode() { return (char)0; }
     public Object getClientAtomReference() { return null; }
   }
 

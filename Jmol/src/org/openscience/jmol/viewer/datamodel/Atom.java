@@ -41,6 +41,7 @@ public class Atom implements Bspt.Tuple {
   public int atomIndex;
   public PdbAtom pdbAtom;
   short modelNumber;
+  char chainID;
   Frame frame;
   public Point3f point3f;
   short x, y, z;
@@ -56,6 +57,10 @@ public class Atom implements Bspt.Tuple {
 
   boolean isHetero; // pack this bit someplace
   int atomSerial;
+  String group3;
+  int sequenceNumber;
+  char insertionCode;
+
   /* move these out of here */
   String atomName;
 
@@ -67,8 +72,9 @@ public class Atom implements Bspt.Tuple {
               int occupancy,
               float bfactor,
               float x, float y, float z,
-              boolean isHetero, int atomSerial,
-              PdbFile pdbFile, String pdbAtomRecord) {
+              boolean isHetero, int atomSerial, char chainID,
+              String group3, int sequenceNumber, char insertionCode,
+              PdbFile pdbFile) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
@@ -88,12 +94,15 @@ public class Atom implements Bspt.Tuple {
     this.point3f = new Point3f(x, y, z);
     this.isHetero = isHetero;
     this.atomSerial = atomSerial;
+    this.chainID = chainID;
+    this.group3 = group3;
+    this.sequenceNumber = sequenceNumber;
+    this.insertionCode = insertionCode;
     if (pdbFile != null)
-      pdbAtom =
-        pdbFile.allocatePdbAtom(atomIndex, modelNumber, pdbAtomRecord);
+      pdbAtom = pdbFile.allocatePdbAtom(this);
     //    this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
-
+  
   public boolean isBonded(Atom atomOther) {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
@@ -291,6 +300,24 @@ public class Atom implements Bspt.Tuple {
     return JmolConstants.elementSymbols[elementNumber];
   }
 
+  public String getPdbAtomName4() {
+    return atomName;
+  }
+
+  public String getGroup3() {
+    return group3;
+  }
+
+  // this needs a name change
+  // it is the group sequence number
+  public int getSequenceNumber() {
+    return sequenceNumber;
+  }
+
+  public char getInsertionCode() {
+    return insertionCode;
+  }
+
   public int getAtomNumber() {
     if (atomSerial != Integer.MIN_VALUE)
       return atomSerial;
@@ -364,9 +391,12 @@ public class Atom implements Bspt.Tuple {
   }
 
   public char getChainID() {
+    return chainID;
+    /*
     if (pdbAtom == null)
       return (char)0;
     return pdbAtom.getChainID();
+    */
   }
 
   // a percentage value in the range 0-100

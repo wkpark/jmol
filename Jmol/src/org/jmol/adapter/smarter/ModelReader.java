@@ -142,4 +142,38 @@ abstract class ModelReader {
     //                       ichMax + ") -> " + value);
     return value;
   }
+
+  static String parseToken(String str) {
+    return parseTokenChecked(str, 0, str.length());
+  }
+
+  static String parseToken(String str, int ich) {
+    int cch = str.length();
+    if (ich >= cch)
+      return null;
+    return parseTokenChecked(str, ich, cch);
+  }
+
+  static String parseToken(String str, int ichStart, int ichMax) {
+    int cch = str.length();
+    if (ichMax > cch)
+      ichMax = cch;
+    if (ichStart >= ichMax)
+      return null;
+    return parseTokenChecked(str, ichStart, ichMax);
+  }
+
+  static String parseTokenChecked(String str, int ichStart, int ichMax) {
+    int ich = ichStart;
+    while (ich < ichMax && str.charAt(ich) == ' ')
+      ++ich;
+    int ichLast = ichMax - 1;
+    while (ichLast >= ich && str.charAt(ich) == ' ')
+      --ichLast;
+    if (ichLast < ich)
+      return null;
+    if (ich == ichStart && (ichLast + 1) == ichMax)
+      return str;
+    return str.substring(ich, ichLast + 1);
+  }
 }

@@ -147,7 +147,7 @@ class PdbReader extends ModelReader {
        * atomName
        ****************************************************************/
       String rawAtomName = line.substring(12, 16);
-      String atomName = rawAtomName.trim();
+      String atomName = rawAtomName;
       /****************************************************************
        * calculate the charge from cols 79 & 80 (1-based)
        * 2+, 3-, etc
@@ -179,7 +179,15 @@ class PdbReader extends ModelReader {
         occupancy = (int)(floatOccupancy * 100);
       
       /****************************************************************/
+
       int serial = parseInt(line, 6, 11);
+      char chainID = line.charAt(21);
+      // should use parseToken(line, 17, 20)
+      // but I don't have time to test parseToken right now
+      String group3 = line.substring(17, 20).trim();
+      int sequenceNumber = parseInt(line, 22, 26);
+      char insertionCode = line.charAt(26);
+
       /****************************************************************
        * coordinates
        ****************************************************************/
@@ -201,8 +209,11 @@ class PdbReader extends ModelReader {
       atom.bfactor = bfactor;
       atom.x = x; atom.y = y; atom.z = z;
       atom.isHetero = isHetero;
+      atom.chainID = chainID;
       atom.atomSerial = serial;
-      atom.pdbAtomRecord = line;
+      atom.group3 = group3;
+      atom.sequenceNumber = sequenceNumber;
+      atom.insertionCode = insertionCode;
 
       // note that values are +1 in this serial map
       serialMap[serial] = model.atomCount;

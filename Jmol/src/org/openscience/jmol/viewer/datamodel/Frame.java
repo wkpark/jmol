@@ -121,8 +121,8 @@ final public class Frame {
                       int occupancy,
                       float bfactor,
                       float x, float y, float z,
-                      boolean isHetero, int atomSerial,
-                      String pdbAtomRecord,
+                      boolean isHetero, int atomSerial, char chainID,
+                      String group3, int sequenceNumber, char insertionCode,
                       Object clientAtomReference) {
     if (modelNumber != lastModelNumber) {
       if (modelCount == modelIDs.length) {
@@ -146,8 +146,9 @@ final public class Frame {
                          occupancy,
                          bfactor,
                          x, y, z,
-                         isHetero, atomSerial,
-                         pdbFile, pdbAtomRecord);
+                         isHetero, atomSerial, chainID,
+                         group3, sequenceNumber, insertionCode,
+                         pdbFile);
     atoms[atomCount] = atom;
     if (clientAtomReference != null) {
       if (clientAtomReferences == null)

@@ -162,10 +162,21 @@ final public class PdbGroup {
     return -1;
   }
 
-  public PdbAtom allocatePdbAtom(int atomIndex, String pdbRecord) {
-    PdbAtom pdbAtom = new PdbAtom(this, atomIndex, pdbRecord);
+  /*
+  void assignAtom(Atom atom) {
+    PdbAtom pdbAtom = new PdbAtom(this, atom.atomIndex, pdbRecord);
     if (pdbAtom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
-      if (! registerMainchainAtomIndex(pdbAtom.atomID, atomIndex))
+      if (! registerMainchainAtomIndex(pdbAtom.atomID, atom.atomIndex))
+        pdbAtom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
+    }
+    return pdbAtom;
+  }
+  */
+
+  PdbAtom allocatePdbAtom(Atom atom) {
+    PdbAtom pdbAtom = new PdbAtom(this, atom);
+    if (pdbAtom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
+      if (! registerMainchainAtomIndex(pdbAtom.atomID, atom.atomIndex))
         pdbAtom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
     }
     return pdbAtom;

@@ -166,6 +166,10 @@ public class SmarterModelAdapter extends ModelAdapter {
     public int getOccupancy() { return atom.occupancy; }
     public boolean getIsHetero() { return atom.isHetero; }
     public int getAtomSerial() { return atom.atomSerial; }
+    public char getChainID() { return atom.chainID; }
+    public String getGroup3() { return atom.group3; }
+    public int getSequenceNumber() { return atom.sequenceNumber; }
+    public char getInsertionCode() { return atom.insertionCode; }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 

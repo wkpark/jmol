@@ -69,7 +69,7 @@ class MolReader extends ModelReader {
       int charge = 0;
       if (line.length() >= 39) {
         int chargeCode = parseInt(line, 36, 39);
-        if (chargeCode != 0)
+        if (chargeCode >= 1 && chargeCode <= 7)
           charge = 4 - chargeCode;
       }
       Atom atom = model.addNewAtom();

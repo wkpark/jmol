@@ -428,8 +428,6 @@ class Compiler {
   }
 
   String getUnescapedStringLiteral() {
-    System.out.println("getUnescapedStringLiteral:" +
-                       script.substring(ichToken, ichToken + cchToken));
     StringBuffer sb = new StringBuffer(cchToken - 2);
     int ichMax = ichToken + cchToken - 1;
     int ich = ichToken + 1;
@@ -451,14 +449,15 @@ class Compiler {
           ch = '\r';
           // fall into
         case '"':
-          System.out.println("dbl quote seen");
         case '\\':
         case '\'':
           break;
+        case 'x':
         case 'u':
+          int digitCount = ch == 'x' ? 2 : 4;
           if (ich < ichMax) {
             int unicode = 0;
-            for (int k = 4; --k >= 0 && ich < ichMax; ) {
+            for (int k = digitCount; --k >= 0 && ich < ichMax; ) {
               char chT = script.charAt(ich);
               int hexit = getHexitValue(chT);
               if (hexit < 0)

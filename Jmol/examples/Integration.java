@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2000-2003  The Jmol Development Team
+ * Copyright (C) 2000-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -22,23 +22,23 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+import org.jmol.api.ModelAdapter;
+import org.jmol.adapter.smarter.SmarterModelAdapter;
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.ModelAdapter;
 import org.openscience.jmol.viewer.JmolStatusListener;
-
-import org.openscience.jmol.adapters.SimpleModelAdapter;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * A example of integrating the Jmol viewer into a java application <p>
+ * A example of integrating the Jmol viewer into a java application.
  *
- * I compiled/ran this code directly in the examples directory by doing: <br>
- *
- * javac -classpath ../jmol.jar Integration.java                         <br>
- * java -cp .:../jmol.jar Integration                                    <br>
+ * <p>I compiled/ran this code directly in the examples directory by doing:
+ * <pre>
+ * javac -classpath ../Jmol.jar Integration.java
+ * java -cp .:../Jmol.jar Integration
+ * </pre>
  *
  * @author Miguel <mth@mth.com>
  */
@@ -71,7 +71,7 @@ public class Integration {
     "H  0.76923955 -0.59357141 0.0\n" +
     "H -0.76923955 -0.59357141 0.0\n";
 
-  final static String strScript = "delay; move 360 0 0 0 0 0 0 0 4;"
+  final static String strScript = "delay; move 360 0 0 0 0 0 0 0 4;";
 }
 
 class ApplicationCloser extends WindowAdapter {
@@ -84,7 +84,7 @@ class JmolPanel extends JPanel {
   JmolViewer viewer;
   ModelAdapter adapter;
   JmolPanel() {
-    adapter = new SimpleModelAdapter();
+    adapter = new SmarterModelAdapter(null);
     viewer = new JmolViewer(this, adapter);
   }
 
@@ -94,6 +94,8 @@ class JmolPanel extends JPanel {
 
   public void paint(Graphics g) {
     viewer.setScreenDimension(getSize());
-    g.drawImage(viewer.renderScreenImage(g.getClipBounds()), 0, 0, null);
+    Rectangle rectClip = new Rectangle();
+    g.getClipBounds(rectClip);
+    viewer.renderScreenImage(g, getSize(), rectClip);
   }
 }

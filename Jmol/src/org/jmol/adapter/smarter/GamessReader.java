@@ -59,9 +59,9 @@ class GamessReader extends ModelReader {
     String atomName;
     while ((line = reader.readLine()) != null &&
            (atomName = parseToken(line, 1, 6)) != null) {
-      float x = parseFloat(line, 17, 37) * angstromsPerBohr;
-      float y = parseFloat(line, 37, 57) * angstromsPerBohr;
-      float z = parseFloat(line, 57, 77) * angstromsPerBohr;
+      float x = parseFloat(line, 17, 37);
+      float y = parseFloat(line, 37, 57);
+      float z = parseFloat(line, 57, 77);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = model.addNewAtom();

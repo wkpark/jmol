@@ -56,7 +56,13 @@ class MolReader extends ModelReader {
     throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String line = reader.readLine();
-      String elementSymbol = line.substring(31,34).trim().intern();
+      String elementSymbol = "";
+      if (line.length() > 34) {
+          elementSymbol = line.substring(31,34).trim().intern();
+      } else {
+           // deal with older Mol format where nothing after the symbol is used
+          elementSymbol = line.substring(31).trim().intern();
+      }
       float x = parseFloat(line,  0, 10);
       float y = parseFloat(line, 10, 20);
       float z = parseFloat(line, 20, 30);

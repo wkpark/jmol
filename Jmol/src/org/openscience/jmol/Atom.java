@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -23,15 +22,17 @@ import java.awt.Color;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4f;
 
 /**
  * Stores and manipulations information and properties of
  * atoms.
  */
-public class Atom {
+public class Atom extends org.openscience.cdk.Atom {
 
   public Atom(BaseAtomType at) {
+    super(at.getName());
     this.atomType = new AtomType(at);
   }
 
@@ -42,18 +43,15 @@ public class Atom {
    */
   public Atom(BaseAtomType atomType, int atomNumber,
               float x, float y, float z) {
+    super(atomType.getName(), new Point3d(x, y, z));
     this.atomType = new AtomType(atomType);
-    this.atomNumber = atomNumber;
-    this.position.x = x;
-    this.position.y = y;
-    this.position.z = z;
   }
 
   /**
    * Returns the atom's number.
    */
   public int getAtomNumber() {
-    return atomNumber;
+    return getAtomicNumber();
   }
 
   /**
@@ -71,7 +69,7 @@ public class Atom {
    * @return true if this atom is a hydrogen atom.
    */
   public boolean isHydrogen() {
-    return getType().getAtomicNumber() == 1;
+    return getAtomicNumber() == 1;
   }
   
   /**
@@ -157,7 +155,7 @@ public class Atom {
    * Returns the atom's position.
    */
   public Point3f getPosition() {
-    return new Point3f(position);
+    return new Point3f((float)getX3D(), (float)getY3D(), (float)getZ3D());
   }
 
   /**
@@ -193,7 +191,7 @@ public class Atom {
 
   public Point3f getScaledVector() {
     Point3f vectorScaled = new Point3f();
-    vectorScaled.scaleAdd(2.0f, vector, position);
+    vectorScaled.scaleAdd(2.0f, vector, getPosition());
     return vectorScaled;
   }
 
@@ -227,11 +225,11 @@ public class Atom {
   public void transform(Matrix4f transformationMatrix,
                         DisplaySettings settings ) {
 
-    transformationMatrix.transform(position, screenPosition);
+    transformationMatrix.transform(getPosition(), screenPosition);
     screenX = (int) screenPosition.x;
     screenY = (int) screenPosition.y;
     screenZ = (int) screenPosition.z;
-    screenDiameter = 
+    screenDiameter =
       (int) (2.0f
         * settings.getCircleRadius(screenZ,
                                    atomType.getBaseAtomType().getVdwRadius()));
@@ -299,7 +297,7 @@ public class Atom {
 
     if (atom1 != atom2) {
       float squaredDistanceBetweenAtoms =
-        atom1.position.distanceSquared(atom2.position);
+        atom1.getPosition().distanceSquared(atom2.getPosition());
       float bondingDistance =
         distanceFudgeFactor
           * ((float) atom1.atomType.getBaseAtomType().getCovalentRadius()
@@ -313,12 +311,6 @@ public class Atom {
   }
 
   private AtomType atomType;
-  private int atomNumber;
-
-  /**
-   * Position in world space.
-   */
-  private Point3f position = new Point3f();
 
   /**
    * Position in screen space.
@@ -357,8 +349,8 @@ public class Atom {
 
   public String toString() {
     String type = getType().getRoot();
-    return "Atom{" + type + " #" + atomNumber + " @" +
-      position + " @" + screenX + "," + screenY + "," + screenZ + "}";
+    return "Atom{" + type + " #" + getAtomNumber() + " @" +
+      getPosition() + " @" + screenX + "," + screenY + "," + screenZ + "}";
   }
 
   static class NoBondsEnumeration implements Enumeration {

@@ -45,8 +45,7 @@ class Strands extends Mcps {
   class Schain extends Mcps.Mcpschain {
 
     Schain(Polymer polymer) {
-      super(polymer, -2, 1500, 500);
+      super(polymer, -2, 1500, 500, 2000);
     }
   }
-
 }

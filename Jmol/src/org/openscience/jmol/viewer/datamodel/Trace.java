@@ -36,7 +36,7 @@ class Trace extends Mcps {
 
   class Tchain extends Mcps.Mcpschain {
     Tchain(Polymer polymer) {
-      super(polymer, 600, 1500, 500);
+      super(polymer, 600, 1500, 500, 1500);
     }
   }
 }

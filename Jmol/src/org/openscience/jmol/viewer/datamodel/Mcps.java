@@ -130,17 +130,20 @@ abstract class Mcps extends Shape {
     short madOn;
     short madHelixSheet;
     short madTurnRandom;
+    short madDnaRna;
 
     int polymerCount;
     Group[] polymerGroups;
     short[] colixes;
     short[] mads;
     
-    Mcpschain(Polymer polymer, int madOn, int madHelixSheet, int madTurnRandom) {
+    Mcpschain(Polymer polymer, int madOn,
+              int madHelixSheet, int madTurnRandom, int madDnaRna) {
       this.polymer = polymer;
       this.madOn = (short)madOn;
       this.madHelixSheet = (short)madHelixSheet;
       this.madTurnRandom = (short)madTurnRandom;
+      this.madDnaRna = (short)madDnaRna;
 
       polymerCount = polymer == null ? 0 : polymer.getCount();
       if (polymerCount > 0) {
@@ -210,11 +213,16 @@ abstract class Mcps extends Shape {
         }
         // fall into;
       case -2: // trace structure
-        int structureType = polymerGroups[groupIndex].getStructureType();
-        if (structureType == JmolConstants.SECONDARY_STRUCTURE_SHEET ||
-            structureType == JmolConstants.SECONDARY_STRUCTURE_HELIX)
+        switch (polymerGroups[groupIndex].getStructureType()) {
+        case JmolConstants.SECONDARY_STRUCTURE_SHEET:
+        case JmolConstants.SECONDARY_STRUCTURE_HELIX:
           return madHelixSheet;
-        return madTurnRandom;
+        case JmolConstants.SECONDARY_STRUCTURE_DNA:
+        case JmolConstants.SECONDARY_STRUCTURE_RNA:
+          return madDnaRna;
+        default:
+          return madTurnRandom;
+        }
       case -3: // trace temperature
         {
           if (! hasTemperatureRange)

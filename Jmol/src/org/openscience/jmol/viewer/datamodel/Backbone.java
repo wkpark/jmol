@@ -37,7 +37,7 @@ class Backbone extends Mcps {
   class Bbchain extends Mcps.Mcpschain {
 
     Bbchain(Polymer polymer) {
-      super(polymer, 1, 1500, 500);
+      super(polymer, 1, 1500, 500, 2000);
     }
 
     void setSize(int size, BitSet bsSelected) {

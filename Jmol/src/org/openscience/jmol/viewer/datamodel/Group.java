@@ -56,7 +56,14 @@ final public class Group {
   }
 
   public byte getStructureType() {
-    return aminostructure == null ? 0 : aminostructure.type;
+    if (aminostructure != null)
+      return aminostructure.type;
+    if (hasNucleotidePhosphorus()) {
+      if (atomIndexRnaO2Prime != -1)
+        return JmolConstants.SECONDARY_STRUCTURE_RNA;
+      return JmolConstants.SECONDARY_STRUCTURE_DNA;
+    }
+    return 0;
   }
   
   public boolean isGroup3(String group3) {
@@ -319,8 +326,9 @@ final public class Group {
 
   int atomIndexNucleotidePhosphorus = -1;
   int atomIndexNucleotideWing = -1;
+  int atomIndexRnaO2Prime = -1;
   int nucleicCount = 0;
-  
+
   void registerNucleicAtomIndex(short atomid, int atomIndex) {
     if (atomid == 8) {
       if (atomIndexNucleotidePhosphorus < 0) {
@@ -336,9 +344,11 @@ final public class Group {
       }
       return;
     }
+    if (atomid == 15) {
+      atomIndexRnaO2Prime = atomIndex;
+    }
     ++nucleicCount;
   }
-
 
   Atom getNucleotidePhosphorusAtom() {
     if (atomIndexNucleotidePhosphorus < 0)

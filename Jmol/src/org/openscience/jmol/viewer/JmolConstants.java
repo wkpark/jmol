@@ -1220,6 +1220,8 @@ final public class JmolConstants {
   public final static byte SECONDARY_STRUCTURE_TURN = 1;
   public final static byte SECONDARY_STRUCTURE_SHEET = 2;
   public final static byte SECONDARY_STRUCTURE_HELIX = 3;
+  public final static byte SECONDARY_STRUCTURE_DNA = 4;
+  public final static byte SECONDARY_STRUCTURE_RNA = 5;
 
   /****************************************************************
    * In DRuMS, RasMol, and Chime, quoting from
@@ -1240,10 +1242,12 @@ final public class JmolConstants {
    *This correction was made above on Dec 5, 1998.
    ****************************************************************/
   public final static int[] argbsPdbStructure = {
-    0xFFFFFFFF, // STRUCTURE_NONE
-    0xFF6080FF, // STRUCTURE_TURN
-    0xFFFFC800, // STRUCTURE_SHEET
-    0xFFFF0080, // STRUCTURE_HELIX
+    0xFFFFFFFF, // SECONDARY_STRUCTURE_NONE
+    0xFF6080FF, // SECONDARY_STRUCTURE_TURN
+    0xFFFFC800, // SECONDARY_STRUCTURE_SHEET
+    0xFFFF0080, // SECONDARY_STRUCTURE_HELIX
+    0xFFAE00FE, // SECONDARY_STRUCTURE_DNA
+    0xFFFD0162, // SECONDARY_STRUCTURE_RNA
   };
 
   public final static int argbPdbAminoDefault =  0xFFBEA06E; // tan
@@ -1630,8 +1634,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "UMP",
     "UDP",
     "UTP", // 68
-   
-    
+
     // water && solvent
     "HOH", // 69
     "DOD", // 70

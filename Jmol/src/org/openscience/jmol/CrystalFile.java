@@ -366,7 +366,7 @@ public class CrystalFile extends ChemFile {
             double[] newAtomCartPos = new double[3];
             newAtomCartPos = MathUtil.mulVec(op, newAtomRedPos);
 
-	    crystalFrame.addAtom(unitCellBoxS.getAtomType(at),
+	    crystalFrame.addAtom(unitCellBoxS.getBaseAtomType(at),
 				 newAtomCartPos[0], newAtomCartPos[1], newAtomCartPos[2]);
 	    
 	    

@@ -42,11 +42,11 @@ public class Atom extends org.openscience.cdk.Atom {
    *
    * @param the type of this atom.
    */
-  public Atom(BaseAtomType atomType, int atomNumber,
+  public Atom(BaseAtomType baseAtomType, int atomNumber,
               double x, double y, double z, ProteinProp pprop) {
-    super(atomType.getSymbol(), new Point3d(x, y, z));
-    super.setID(atomType.getID());
-    this.atomType = new AtomType(atomType);
+    super(baseAtomType.getSymbol(), new Point3d(x, y, z));
+    super.setID(baseAtomType.getID());
+    this.baseAtomType = baseAtomType;
     this.atomNumber = atomNumber;
     this.pprop = pprop;
   }
@@ -60,7 +60,7 @@ public class Atom extends org.openscience.cdk.Atom {
               double x, double y, double z, ProteinProp pprop) {
     super(atom.getSymbol(), new Point3d(x, y, z));
     super.setID(atom.getID());
-    this.atomType = new AtomType(atom);
+    this.baseAtomType = atom.baseAtomType;
     this.atomNumber = atomNumber;
     this.pprop = pprop;
   }
@@ -69,8 +69,11 @@ public class Atom extends org.openscience.cdk.Atom {
     super(atom.getSymbol(), atom.getPoint3D());
     super.setID(atom.getID());
     this.atomNumber = atomNumber;
-    this.pprop = pprop;
-    this.atomType = new AtomType(this);
+    this.baseAtomType = BaseAtomType.get(atom.getID(), atom.getSymbol(), 
+                                         atom.getAtomicNumber(),
+                                         atom.getExactMass(),
+                                         atom.getVanderwaalsRadius(),
+                                         atom.getCovalentRadius());
   }
 
   /**
@@ -86,19 +89,11 @@ public class Atom extends org.openscience.cdk.Atom {
    * @return the base type of this atom.
    */
   public BaseAtomType getType() {
-    return atomType.getBaseAtomType();
+    return baseAtomType;
   }
 
   public double getVdwRadius() {
     return getVanderwaalsRadius();
-    /*
-    double radius = atomType.getBaseAtomType().getVdwRadius();
-    if (radius == 0) {
-      System.out.println("Radius not defined -- defaulting to 1");
-      radius = 1;
-    }
-    return radius;
-    */
   }
 
   /**
@@ -357,7 +352,7 @@ public class Atom extends org.openscience.cdk.Atom {
     bondOrders = bondOrdersNew;
   }
 
-  private AtomType atomType;
+  private BaseAtomType baseAtomType;
 
   /**
    * Position in screen space.

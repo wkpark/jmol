@@ -304,7 +304,7 @@ public class UnitCellBox {
    * @param atindex an <code>int</code> value
    * @return a <code>BaseAtomType</code> value
    */
-  public BaseAtomType getAtomType(int atindex) {
+  public BaseAtomType getBaseAtomType(int atindex) {
     return AtomTypeList.getInstance().get(atomType[atindex]);
   }
 

@@ -338,7 +338,8 @@ public class CrystalPropertiesDialog extends JDialog
         double[][] cartPos = unitCellBox.getCartesianPos();
 	for (int i = 0; i < natom; i++) {
           basisVectorData[i][0] = new String(String.valueOf(i));
-          basisVectorData[i][1] = new String(unitCellBox.getAtomType(i).getID());
+          basisVectorData[i][1] = new String(unitCellBox.getBaseAtomType(i).
+                                             getID());
           basisVectorData[i][2] = new Double(cartPos[i][0]);
           basisVectorData[i][3] = new Double(cartPos[i][1]);
           basisVectorData[i][4] = new Double(cartPos[i][2]);
@@ -349,7 +350,8 @@ public class CrystalPropertiesDialog extends JDialog
         double[][] redPos = unitCellBox.getReducedPos();
         for (int i = 0; i < natom; i++) {
           basisVectorData[i][0] = new String(String.valueOf(i));
-          basisVectorData[i][1] = new String(unitCellBox.getAtomType(i).getID());
+          basisVectorData[i][1] = new String(unitCellBox.getBaseAtomType(i).
+                                             getID());
           basisVectorData[i][2] = new Double(redPos[i][0]);
           basisVectorData[i][3] = new Double(redPos[i][1]);
           basisVectorData[i][4] = new Double(redPos[i][2]);

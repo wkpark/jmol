@@ -31,10 +31,6 @@ import java.util.Hashtable;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.renderer.color.AtomColorer;
 
-import org.openscience.jmol.AtomType;
-import org.openscience.jmol.BaseAtomType;
-
-
 /**
  * <p>Singleton class defing the colors of the different atom types.
  * When initialized for the first time, all atoms have the color
@@ -64,8 +60,8 @@ public class AtomColors implements AtomColorer {
         if (o instanceof Color) {
             return (Color)o;
         } else {
-            // no color set. return white
-            return Color.white;
+            // no color set. return pink - easy to see
+            return Color.pink;
         }
     }
 }

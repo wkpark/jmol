@@ -1,6 +1,7 @@
 package org.openscience.jmol;
 
 import java.util.Vector;
+import java.util.Enumeration;
 import javax.vecmath.Point3f;
 
 class CrystalFrame extends ChemFrame {

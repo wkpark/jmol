@@ -93,7 +93,7 @@ public class CrystalFile extends ChemFile {
    *
    * @param cf a <code>ChemFile</code> value.
    */
-  public CrystalFile(ChemFile cf) {
+  public CrystalFile(ChemFile cf, float[][] rprim, float[] acell) {
 
     crystalBoxS = new CrystalBox();
 
@@ -101,7 +101,6 @@ public class CrystalFile extends ChemFile {
     int nframes = cf.getNumberOfFrames();
 
     for (int i = 0; i < nframes; i++) {
-      UnitCellBox unitCellBoxS = new UnitCellBox();
       ChemFrame frame = cf.getFrame(i);
       int natom = frame.getNumberOfAtoms();
       float[][] cartPos = new float[natom][3];
@@ -114,8 +113,10 @@ public class CrystalFile extends ChemFile {
         cartPos[at][2] = frame.getAtomAt(at).getPosition().z;
         atomType[at] = frame.getAtomAt(at).getType().getAtomicNumber();
       }
-      unitCellBoxS.setCartesianPos(cartPos);
-      unitCellBoxS.setAtomType(atomType);
+      
+      UnitCellBox unitCellBoxS = new UnitCellBox(rprim, acell, true,
+                                                 atomType, cartPos);
+
       unitCellBoxS.setInfo(info);
 
       this.unitCellBoxS = unitCellBoxS;

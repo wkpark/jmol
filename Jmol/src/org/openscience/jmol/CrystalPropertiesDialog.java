@@ -946,11 +946,22 @@ public class CrystalPropertiesDialog extends JDialog
     UnitCellBox unitCellBox;
     CrystalBox crystalBox;
 
+    // Read text from the various text fields
+    // and set it in the CrystalFile object.
+    
+    rprim = readField3(jRprim);
+    acell = readField1(jAcell);
+    edges = readField1(jEdges);
+    angles = readField1(jAngles);
+    atomBox = readField3(jAtomBox);
+    bondBox = readField3(jBondBox);
+    unitBox = readField3(jUnitBox);
+    
 
     // In case of a classical ChemFile has been loaded,
     // a CrystalFile is created with defaults parameters
     if (hasCrystalInfo == false) {
-      this.crystalFile = new CrystalFile(chemFile);
+      this.crystalFile = new CrystalFile(chemFile, rprim, acell);
       this.chemFile = (ChemFile) crystalFile;
 
       // Say to everybody that we have a new chemfile!
@@ -960,16 +971,7 @@ public class CrystalPropertiesDialog extends JDialog
       boxApplyTo.setEnabled(true);
     }
 
-    // Read text from the various text fields
-    // and set it in the CrystalFile object.
-
-    rprim = readField3(jRprim);
-    acell = readField1(jAcell);
-    edges = readField1(jEdges);
-    angles = readField1(jAngles);
-    atomBox = readField3(jAtomBox);
-    bondBox = readField3(jBondBox);
-    unitBox = readField3(jUnitBox);
+   
 
     for (int i = 0; i < model.getNumberOfFrames(); i++) {
 

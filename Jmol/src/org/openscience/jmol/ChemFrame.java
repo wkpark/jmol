@@ -541,6 +541,9 @@ public class ChemFrame implements Transformable {
   }
 
   private boolean bondsEnabled;
+  public boolean getBondsEnabled() {
+    return bondsEnabled;
+  }
 
   /**
    * Adds a single bond between the two atoms given.

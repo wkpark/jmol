@@ -184,6 +184,9 @@ public abstract class ReaderFactory {
         return new PDBReader(buffer);
       } else if (line.startsWith("molstruct")) {
         return new CACheReader(buffer);
+      } else if (line.startsWith("ZERR ")) {
+        buffer.reset();
+        return new ShelXReader(buffer);
       }
       line = buffer.readLine();
     }

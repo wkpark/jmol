@@ -32,6 +32,8 @@ import java.io.*;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 
+import org.jmol.api.ModelAdapter;
+
 /**
  * A CML2 Reader, it does not support the old CML1 architecture.
  */
@@ -119,6 +121,19 @@ class CmlReader extends ModelReader {
       }
     }
     
+    int parseBondToken(String str) {
+      if (str.equals("S")) {
+        return 1;
+      } else if (str.equals("D")) {
+        return 2;
+      } else if (str.equals("T")) {
+        return 3;
+      } else if (str.equals("A")) {
+        return ModelAdapter.ORDER_AROMATIC;
+      } else {
+        return parseInt(str);
+      } 
+    }
 
     void breakOutAtomTokens(String str) {
       breakOutTokens(str);
@@ -235,7 +250,7 @@ class CmlReader extends ModelReader {
           if ("atomRefs2".equals(attLocalName)) {
             breakOutTokens(attValue);
           } else if ("order".equals(attLocalName)) {
-            order = parseInt(attValue);
+            order = parseBondToken(attValue);
           }
         }
         if (tokenCount == 2 && order > 0)
@@ -250,7 +265,7 @@ class CmlReader extends ModelReader {
           if ("order".equals(attLocalName)) {
             breakOutBondTokens(attValue);
             for (int j = tokenCount; --j >= 0; )
-              bondArray[j].order = parseInt(tokens[j]);
+              bondArray[j].order = parseBondToken(tokens[j]);
           } else if ("atomRef1".equals(attLocalName)) {
             breakOutBondTokens(attValue);
             for (int j = tokenCount; --j >= 0; )

@@ -69,12 +69,23 @@
   </target>
 
   <target name="setup" id="setup">
-    <uptodate property="docbook-xsl.uptodate"
-              targetfile="build/${docbook-xsl}"
-              srcfile="doc/${docbook-xsl}.tar.gz" />
-    <uptodate property="docbook-xml.uptodate"
-              targetfile="build/docbook-xml"
-              srcfile="doc/${docbook-xml}.zip" />
+    <condition property="docbook-xsl.uptodate">
+      <and>
+        <uptodate targetfile="build/${docbook-xsl}"
+                  srcfile="doc/${docbook-xsl}.tar.gz" />
+        <uptodate targetfile="build/${docbook-xsl}.timestamp"
+                  srcfile="build/${docbook-xsl}" />
+      </and>
+    </condition>
+
+    <condition property="docbook-xml.uptodate">
+      <and>
+        <uptodate targetfile="build/docbook-xml"
+                  srcfile="doc/${docbook-xml}.zip" />
+        <uptodate targetfile="build/docbook-xml.timestamp"
+                  srcfile="build/docbook-xml" />
+      </and>
+    </condition>
 
     <condition property="jmolGuide.uptodate">
       <and>
@@ -235,19 +246,45 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="check.cdkjars" id="check.cdkjars">
-    <uptodate property="cdkjars.uptodate" targetfile="${appjars.dir}/org/openscience/cdk">
-      <srcfiles dir="${lib.dir}" includes="jmol2cdk.jar"/>
-      <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
-    </uptodate>
+    <condition property="cdkjars.uptodate">
+      <and>
+        <uptodate targetfile="${appjars.dir}/org/openscience/cdk">
+          <srcfiles dir="${lib.dir}" includes="jmol2cdk.jar"/>
+          <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
+        </uptodate>
+        <uptodate targetfile="build/cdkjars.timestamp"
+                  srcfile="${appjars.dir}/org/openscience/cdk"/>
+      </and>
+    </condition>
   </target>
   
   <target name="check.pluginjars" id="check.pluginjars">
-    <uptodate property="pluginjars.uptodate" targetfile="${appjars.dir}/org/openscience/cdkplugin">
-      <srcfiles dir="${plugin.dir}" includes="dirbrowser.jar"/>
-    </uptodate>
+    <condition property="pluginjars.uptodate">
+      <and>
+        <uptodate targetfile="${appjars.dir}/org/openscience/cdkplugin">
+          <srcfiles dir="${plugin.dir}" includes="dirbrowser.jar"/>
+        </uptodate>
+        <uptodate targetfile="build/pluginjars.tmestamp"
+                  srcfile="${appjars.dir}/org/openscience/cdkplugin"/>
+      </and>
+    </condition>
   </target>
   
   <target name="check.libjars" id="check.libjars">
+    <condition property="libjars.uptodate">
+      <and>
+        <uptodate targetfile="${appjars.dir}">
+          <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
+          <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
+          <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
+          <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
+          <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
+        </uptodate>
+        <uptodate targetfile="build/libjars.timestamp"
+                  srcfile="${appjars.dir}"/>
+      </and>
+    </condition>
+  	
     <uptodate property="libjars.uptodate" targetfile="${appjars.dir}">
       <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
       <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
@@ -260,23 +297,29 @@ support for assertions (which were introduced in 1.4).
   <target name="appjars" id="appjars" depends="libjars, cdkjars, pluginjars"/>
   
   <target name="cdkjars" id="cdkjars" depends="check.cdkjars" unless="cdkjars.uptodate">
+    <delete file="build/cdkjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/jmol2cdk.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>
+    <touch file="build/cdkjars.timestamp"/>
   </target>
 
   <target name="pluginjars" id="pluginjars" depends="check.pluginjars" unless="pluginjars.uptodate">
+    <delete file="build/pluginjars.tmestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${plugin.dir}/dirbrowser.jar"/>
+    <touch file="build/pluginjars.tmestamp"/>
   </target>
 
   <target name="libjars" id="libjars" depends="check.libjars" unless="libjars.uptodate">
+    <delete file="build/libjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/commons-cli-1.0.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>
+    <touch file="build/libjars.timestamp"/>
   </target>
 
   <target name="jar" id="jar" depends="init,classes,jmolGuide,jmolHistory,jmolDevelopersGuide,appjars">
@@ -331,15 +374,21 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="check.appletjars" id="check.appletjars">
-    <uptodate property="appletjars.uptodate"
-              targetfile="${appletjars.dir}">
-      <srcfiles dir="${lib.dir}"
-                includes="jmolappletcdk.jar,vecmath1.2-1.14.jar"/>
-    </uptodate>
+    <condition property="appletjars.uptodate">
+      <and>
+        <uptodate targetfile="${appletjars.dir}">
+          <srcfiles dir="${lib.dir}"
+                    includes="jmolappletcdk.jar,vecmath1.2-1.14.jar"/>
+        </uptodate>
+        <uptodate targetfile="build/appletjars.timestamp"
+                  srcfile="${appletjars.dir}"/>
+      </and>
+    </condition>
   </target>
   
   <target name="appletjars" id="appletjars" depends="check.appletjars"
           unless="appletjars.uptodate">
+    <delete file="build/appletjars.timestamp"/>
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
@@ -369,7 +418,7 @@ support for assertions (which were introduced in 1.4).
         <include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>
-
+    <touch file="build/appletjars.timestamp"/>
   </target>
 
   <target name="applet-jar" id="applet-jar"
@@ -641,21 +690,25 @@ support for assertions (which were introduced in 1.4).
   <target name="initdoc" depends="init,check.docbook-xml,check.docbook-xsl,check.xsl" />
   
   <target name="check.docbook-xsl" depends="setup" unless="docbook-xsl.uptodate" >
+    <delete file="build/${docbook-xsl}.timestamp" />
     <delete dir="build/${docbook-xsl}" />
     <mkdir dir="build/${docbook-xsl}" />
     <untar src="doc/${docbook-xsl}.tar.gz" dest="build"
            compression="gzip" />
+    <touch file="build/${docbook-xsl}.timestamp" />
   </target>
 
   <target name="check.docbook-xml" depends="setup" unless="docbook-xml.uptodate" >
+    <delete file="build/docbook-xml.timestamp" />
     <delete dir="build/docbook-xml" />
     <mkdir dir="build/docbook-xml" />
     <unzip src="doc/${docbook-xml}.zip" dest="build/docbook-xml" />
+    <touch file="build/docbook-xml.timestamp" />
   </target>
 
   <target name="check.xsl" depends="setup" unless="xsl.available" >
     <echo message="XSLT class 'com.icl.saxon.StyleSheet' not found." />
-    <echo message="Note that the documentation is CANNOT generated now." />
+    <echo message="Note that the documentation is NOT generated now." />
   </target>
 
   <target name="javadoc" depends="initdoc" unless="javadoc.uptodate">

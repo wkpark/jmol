@@ -1,12 +1,37 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index.xml (v 1.29)
+  Translated from default version : index.xml (v 1.34)
 -->
 <document>
   <body>
     <title>Jmol</title>
     <header>
+      <table border="1" width="600" bgcolor="#FFFAF0">
+        <tr>
+          <td><script>
+            jmolApplet(300, "script script/promotion1.txt");
+          </script></td>
+          <td>
+            <p>
+              Il s'agit d'une applet Jmol en action.
+            </p>
+            <p>
+              Elle ex&#x00E9;cute un script &#x00E9;crit dans le langage
+              de script Jmol/Rasmol/Chime.
+            </p>
+            <p>
+              Ce n'est <i>pas</i> un film, un diaporama ou une animation ...
+              Jmol est une applet interactive pour navigateur web.
+            </p>
+          </td>
+        </tr>
+      </table>
+      <br />
+      <hr />
+    </header>
+    
+    <section title="Vue d'ensemble">
       <p>
         Jmol est un outil de visualisation de mol&#x00E9;cules gratuit, open source
         pour les &#x00E9;tudiants, les &#x00E9;ducateurs et les chercheurs en chimie
@@ -27,45 +52,67 @@
           </li>
         </ul>
       </p>
-    </header>
-
-    <section title="Informations sur Jmol v9">
-      <p>
-        Pour des informations sur Jmol v9 cliquer <a href="v9/">ici</a>.
-      </p>
     </section>
 
-    <section title="La version 10 de Jmol sera bient&#x00F4;t livr&#x00E9;e">
+    <section title="Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9;">
       <p>
-        La version 10 de Jmol sera livr&#x00E9;e en D&#x00E9;cembre 2004.
+        Jmol Version 10 a &#x00E9;t&#x00E9; le Vendredi 17 D&#x00E9;cembre 2004.
       </p>
       <p>
-        Jmol v10 est une r&#x00E9;architecture et une r&#x00E9;&#x00E9;criture
-        compl&#x00E8;tes de Jmol, mises en oeuvre sp&#x00E9;cifiquement pour
-        d&#x00E9;velopper Jmol en tant que remplacement du Plug-in Chime.
+        Jmol v10 est une refonte et une r&#x00E9;&#x00E9;criture
+        compl&#x00E8;te de Jmol, entreprise au Printemps 2003, avec le
+        but pr&#x00E9; de d&#x00E9;velopper Jmol en un remplacement
+        pour le Plug-in Chime.
       </p>
       <p>
-        Jmol v10 conserve la plupart des caract&#x00E9;ristiques et des fonctions
-        de l'architecture pr&#x00E9;c&#x00E9;dente de Jmol tout en offrant des
-        am&#x00E9;liorations significatives dans les domaines suivants:
+        Jmol v10 conserve la plupart des caract&#x00E9;ristiques et des
+        fonctions des version pr&#x00E9;c&#x00E9;dentes tout en offrant
+        des am&#x00E9;liorations significatives dans les domaines suivants:
         <ul>
           <li>
-            v&#x00E9;ritable moteur graphique 3D ne n&#x00E9;cessitant aucun
-            mat&#x00E9;riel particulier
-          </li>
-          <li>performances de dessin nettement sup&#x00E9;rieures</li>
-          <li>
-            g&#x00E8;re les grosses mol&#x00E9;cules avec d'excellentes
-            performances
+            v&#x00E9;ritable moteur graphique 3D qui ne n&#x00E9;cessite
+            pas de mat&#x00E9;riel particulier
           </li>
           <li>
-            dessin des structures secondaires des prot&#x00E9;ines / acides
-            nucl&#x00E9;iques
+            couleur 24 bits avec &#x00E9;clairage et ombres exactes
+          </li>
+          <li>
+            performances de dessins nettement sup&#x00E9;rieures
+          </li>
+          <li>
+            g&#x00E8;re de grandes macroml&#x00E9;cules avec
+            d'excellentes performances
+          </li>
+          <li>
+            dessin des structures secondaires des
+            prot&#x00E9;ines/acides nucl&#x00E9;iques
+          </li>
+          <li>
+            Compatibilit&#x00E9; des scripts RasMol/Chime
           </li>
         </ul>
       </p>
     </section>
 
+    <section title="Ce que disent les critiques">
+      <i>
+        Jmol v10: Je ne peux pas croire que c'est du Java!<br />
+        Mais c'est aussi open-source, il n'y a donc pas de question
+        &#x00E0; ce propos.<br />
+        Obtenez votre copie maintenant, avant qu'ils ne soit
+        &#x00E0; court des ces trucs machine virtuelle Java.<br />
+        C'est juste &#x00E0; temps (JIT) pour Noel, d'apr&#x00E8;s
+        ce que j'enteds!
+      </i>
+      <blockquote>
+        Warren L. DeLano, shell-shocked C/Python developer<br />
+        Principal Scientist, <a href="http://www.delanoscientific.com">
+        DeLano Scientific</a>,
+        Auteur de <a href="http://pymol.sourceforge.net">PyMOL</a><br />
+        D&#x00E9;cembre 2004.
+      </blockquote>
+    </section>
+    
     <section title="Caract&#x00E9;ristiques de Jmol v10">
       <ul>
         <li>
@@ -107,10 +154,9 @@
           Supporte tous les navigateurs web majeurs
           <ul>
             <li>Internet Explorer (Win32)</li>
-            <li>Netscape 4.7* (Win32, Mac OS 9)</li>
             <li>Mozilla/Firefox (Win32, OSX, *nix)</li>
             <li>Safari (Mac OS X)</li>
-            <li>Konqueror (*nix)</li>
+            <li>Opera 7.5.4 (Win32 seulement)</li>
           </ul>
         </li>
         <li>
@@ -173,6 +219,15 @@
             <li>
               <a href="http://www.wavefun.com">Spartan</a>
               - Wavefunction, Inc.
+            </li>
+            <li>
+              <a href="http://www.uku.fi/~thassine/ghemical/">Ghemical</a>
+            </li>
+            <li>
+              <a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWChem</a>
+            </li>
+            <li>
+              <a href="http://www.q-chem.com">Q-Chem</a>
             </li>
             <li>XYZ</li>
           </ul>

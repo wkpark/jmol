@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   French translation 
-  Translated from default version : project.xml (v 1.16)
+  Translated from default version : project.xml (v 1.19)
 -->
 <project name="Jmol">
 
@@ -19,32 +19,32 @@
         <td align="right" valign="center">
           <font size="2">
             <a href="[root]/index.html">Home</a> |
-            <!-- <a href="[root]/screenshots/">Screenshots</a> |-->
             <a href="[root]/websites/">Sites web</a> |
             <a href="[root]/history/">Historique</a> |
-            <a href="[root]/changes/">Modifications</a>
+            <a href="[root]/changes/">Modifications</a> |
+            <a href="[root]/technotes/">Notes Techniques</a> |
+            <a href="[root]/faqs/">FAQs</a>
             <br/>
-            <a href="[root]/v9/">Version 9</a> |
+            <a href="http://wiki.jmol.org">Wiki</a> |
             <a href="[root]/docs/">Documentation</a> |
-            <!-- <a href="[root]/applet/">Applet</a> |-->
-            <!-- <a href="[root]/scripting/">Scripting</a> |-->
-            <a href="[root]/plugins/">Plugins</a> |
-            <a href="[root]/jscolors/">Couleurs</a> |
-            <a href="[root]/download/">T&#x00E9;l&#x00E9;chargement</a>
+            <a href="http://www.stolaf.edu/people/hansonr/jmol/docs">
+              Doc Interactif du Langage de Script
+            </a> |
+            <a href="[root]/browsercheck/">V&eacute;rification Navigateur</a>
             <br/>
-            <a href="[root]/preview/">Aper&#x00E7;u de la v10</a> |
-            <a href="[root]/betatest/">Beta Test</a> |
+            <a href="[root]/demo/">Pages de d&eacute;monstration</a> |
             <a href="[root]/jslibrary/">Librairie JavaScript</a> |
-            <a href="[root]/faqs/">FAQs</a> |
-            <a href="[root]/technotes/">Notes Techniques</a>
+            <a href="[root]/plugins/">Plugins</a> |
+            <a href="[root]/jscolors/">Couleurs</a>
             <br/>
+            <a href="[root]/download/">T&#x00E9;l&#x00E9;chargement</a> |
+            <a href="[root]/lists/">Listes de diffusion</a> |
             <a href="http://sourceforge.net/projects/jmol">
               Page Sourceforge du Projet
             </a> |
             <a href="http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133">
               Base des anomalies
-            </a> |
-            <a href="[root]/lists/">Listes de diffusion</a>
+            </a>
           </font>
         </td>
       </tr>

@@ -214,15 +214,33 @@ class CartoonRenderer extends MpsRenderer {
     if (hasRing5) {
       viewer.transformPoints(ring5Points, ring5Screens);
       renderRing5();
-      stepScreen = ring5Screens[3];
+      stepScreen = ring5Screens[2];
     } else {
-      stepScreen = ring6Screens[5];
+      stepScreen = ring6Screens[1];
     }
     //    g3d.fillSphereCentered(Graphics3D.YELLOW, 15, pScreen);
     g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL,
                      viewer.scaleToScreen(backboneScreen.z,
                                           mad > 1 ? mad / 2 : mad),
                      backboneScreen, stepScreen);
+    ////////////////////////////////////////////////////////////////
+    --ring6Screens[5].z;
+    for (int i = 5; --i > 0; ) {
+      --ring6Screens[i].z;
+      if (hasRing5)
+        --ring5Screens[i].z;
+    }
+    for (int i = 6; --i > 0; )
+      g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+                       ring6Screens[i], ring6Screens[i - 1]);
+    if (hasRing5) {
+      for (int i = 5; --i > 0; )
+        g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+                         ring5Screens[i], ring5Screens[i - 1]);
+    } else {
+      g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+                       ring6Screens[5], ring6Screens[0]);
+    }
   }
 
   void renderRing6(short colix) {

@@ -100,6 +100,7 @@ public class AminoMonomer extends AlphaMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  /*
   void findNearestAtomIndex(int x, int y, Closest closest) {
     Atom competitor = closest.atom;
     Atom alpha = getLeadAtom();
@@ -108,4 +109,5 @@ public class AminoMonomer extends AlphaMonomer {
         getCarbonylCarbonAtom().isCursorOnTop(x, y, 8, competitor))
       closest.atom = alpha;
   }
+  */
 }

@@ -38,7 +38,7 @@ class Cartoon extends Mps {
   class Cchain extends Mps.Mpspolymer {
 
     Cchain(Polymer polymer) {
-      super(polymer, -2, 3000, 500, 500);
+      super(polymer, -2, 3000, 500, 1000);
     }
   }
 }

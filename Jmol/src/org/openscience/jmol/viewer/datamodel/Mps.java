@@ -330,7 +330,7 @@ abstract class Mps extends Shape {
     }
 
     void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
-      polymer.findNearestAtomIndex(xMouse, yMouse, closest);
+      //      polymer.findNearestAtomIndex(xMouse, yMouse, closest);
     }
   }
 }

@@ -36,12 +36,12 @@ public class NucleicMonomer extends Monomer {
 
     -JmolConstants.ATOMID_RNA_O2PRIME, // 2  O2' for RNA
 
-    JmolConstants.ATOMID_N1,   //  3 N1
-    JmolConstants.ATOMID_C2,   //  4 C2
-    JmolConstants.ATOMID_N3,   //  5 N3
-    JmolConstants.ATOMID_C4,   //  6 C4
-    JmolConstants.ATOMID_C5,   //  7 C5
-    JmolConstants.ATOMID_C6,   //  8 C6
+    JmolConstants.ATOMID_C5,   //  3 C5
+    JmolConstants.ATOMID_C6,   //  4 C6
+    JmolConstants.ATOMID_N1,   //  5 N1
+    JmolConstants.ATOMID_C2,   //  6 C2
+    JmolConstants.ATOMID_N3,   //  7 N3
+    JmolConstants.ATOMID_C4,   //  8 C4
 
     -JmolConstants.ATOMID_O2,  //  9 O2
 
@@ -132,11 +132,11 @@ public class NucleicMonomer extends Monomer {
   ////////////////////////////////////////////////////////////////
 
   Atom getN1() {
-    return getAtomFromOffsetIndex(3);
+    return getAtomFromOffsetIndex(5);
   }
 
   Atom getN3() {
-    return getAtomFromOffsetIndex(5);
+    return getAtomFromOffsetIndex(7);
   }
 
   Atom getN2() {
@@ -176,7 +176,7 @@ public class NucleicMonomer extends Monomer {
       ring6Points[i] = getAtomPointFromOffsetIndex(i + 3);
   }
 
-  final static byte[] ring5OffsetIndexes = {6, 7, 10, 11, 12};
+  final static byte[] ring5OffsetIndexes = {3, 10, 11, 12, 8};
 
   boolean maybeGetBaseRing5Points(Point3f[] ring5Points) {
     if (isPurine)
@@ -184,11 +184,4 @@ public class NucleicMonomer extends Monomer {
         ring5Points[i] = getAtomPointFromOffsetIndex(ring5OffsetIndexes[i]);
     return isPurine;
   }
-
-  ////////////////////////////////////////////////////////////////
-  
-  void findNearestAtomIndex(int x, int y, Closest closest) {
-    System.out.println("Nucleic.findNearestAtomIndex(...)");
-  }
-
 }

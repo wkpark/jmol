@@ -1,0 +1,243 @@
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2004  The Chemistry Development Kit (CDK) project
+ *
+ * Contact: cdk-devel@lists.sourceforge.net
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * All we ask is that proper credit is given for our work, which includes
+ * - but is not limited to - adding the above copyright notice to the beginning
+ * of your source code files, and to any copyright notice that you may
+ * distribute with programs based on this work.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ */
+package org.jmol.adapter.smarter;
+
+import org.jmol.api.ModelAdapter;
+
+import java.io.BufferedReader;
+import java.util.StringTokenizer;
+
+/**
+ * A reader for ShelX output (RES) files. It does not read all information.
+ * The list of fields that is read: TITL, REM, END, CELL, SPGR.
+ * In addition atoms are read.
+ *
+ * <p>A reader for ShelX files. It currently supports ShelXL.
+ *
+ * <p>The ShelXL format is described on the net:
+ * <a href="http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html"
+ * http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html</a>.
+ *
+ * @cdk.module io
+ *
+ * @cdk.keyword file format, ShelXL
+ * @author E.L. Willighagen
+ */
+
+class ShelXReader extends ModelReader {
+
+  Model model;
+  
+  Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
+    throws Exception {
+    model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
+    model.coordinatesAreFractional = true;
+
+    String line;
+    int lineLength;
+    readLine_loop:
+    while ((line = reader.readLine()) != null) {
+      lineLength = line.length();
+      if (lineLength < 4) {
+        if (lineLength == 3 && "END".equalsIgnoreCase(line))
+          break;
+        continue;
+      }
+      // FIXME -- should we call toUpperCase(Locale.US)
+      // although I really don't think it is necessary
+      String command = line.substring(0, 4).toUpperCase();
+      for (int i = unsupportedRecordTypes.length; --i >= 0; )
+        if (command.equals(unsupportedRecordTypes[i]))
+          continue readLine_loop;
+      for (int i = supportedRecordTypes.length; --i >= 0; )
+        if (command.equals(supportedRecordTypes[i])) {
+          processSupportedRecord(i, line.substring(4).trim());
+          continue readLine_loop;
+        }
+      assumeAtomRecord(line);
+    }
+    return model;
+  }
+
+  final static String[] supportedRecordTypes =
+  {"TITL", "CELL", "SPGR", /* "END" */ };
+
+  void processSupportedRecord(int recordIndex, String restOfLine)
+    throws Exception {
+    switch(recordIndex) {
+    case 0: // TITL
+      model.modelName = restOfLine;
+      break;
+    case 1: // CELL
+      cell(restOfLine);
+      break;
+    case 2: // SPGR
+      model.spaceGroup = restOfLine;
+      break;
+    }
+  }
+  
+  void cell(String restOfLine) throws Exception {
+    /* example:
+     * CELL  1.54184   23.56421  7.13203 18.68928  90.0000 109.3799  90.0000
+     * CELL   1.54184   7.11174  21.71704  30.95857  90.000  90.000  90.000
+     */
+    StringTokenizer st = new StringTokenizer(restOfLine);
+
+    float wavelength = floatFromString(st.nextToken());
+    float[] notionalUnitcell = new float[6];
+    for (int i = 0; i < 6; ++i)
+      notionalUnitcell[i] = floatFromString(st.nextToken());
+    model.wavelength = wavelength;
+    model.notionalUnitcell = notionalUnitcell;
+  }
+
+  /*
+  void spgr(String restOfLine) throws Exception {
+    // Line added by PLATON stating the spacegroup
+    // Q: Is a tokenizer actually needed here?
+    // the line is already trimmed ... perhaps we can use it as is
+    StringTokenizer st = new StringTokenizer(restOfLine);
+    this.spaceGroup = st.nextToken();
+  }
+  */
+
+
+  void assumeAtomRecord(String line) {
+    //System.out.println("Assumed to contain an atom: " + line);
+    /* this line gives an atom, because all lines not starting with
+       a ShelX command is an atom (that sucks!) */
+    StringTokenizer st = new StringTokenizer(line);
+    String atomName = st.nextToken();
+    int scatterFactor = intFromString(st.nextToken());
+    float a = floatFromString(st.nextToken());
+    float b = floatFromString(st.nextToken());
+    float c = floatFromString(st.nextToken());
+    // skip the rest
+    
+    String elementSymbol;
+    if (atomName.length() > 1 &&
+        Character.isDigit(atomName.charAt(1))) {
+      // one letter code elementSymbol
+      char symbol = atomName.charAt(0);
+      if (symbol == 'Q' || symbol == 'q')
+        return;     // ignore atoms named Q
+      elementSymbol = "" + symbol;
+    } else {
+      elementSymbol = atomName.substring(0, 2);
+    }
+
+    Atom atom = new FractionalAtom(elementSymbol, atomName,
+                                   scatterFactor, a, b, c);
+    model.addAtom(atom);
+  }
+
+  final static String[] unsupportedRecordTypes = {
+    /* 7.1 Crystal data and general instructions */
+    "ZERR",
+    "LATT",
+    "SYMM",
+    "SFAC",
+    "DISP",
+    "UNIT",
+    "LAUE",
+    "REM ",
+    "MORE",
+    "TIME",
+    /* 7.2 Reflection data input */
+    "HKLF",
+    "OMIT",
+    "SHEL",
+    "BASF",
+    "TWIN",
+    "EXTI",
+    "SWAT",
+    "HOPE",
+    "MERG",
+    /* 7.3 Atom list and least-squares constraints */
+    "SPEC",
+    "RESI",
+    "MOVE",
+    "ANIS",
+    "AFIX",
+    "HFIX",
+    "FRAG",
+    "FEND",
+    "EXYZ",
+    "EXTI",
+    "EADP",
+    "EQIV",
+    /* 7.4 The connectivity list */
+    "CONN",
+    "PART",
+    "BIND",
+    "FREE",
+    /* 7.5 Least-squares restraints */
+    "DFIX",
+    "DANG",
+    "BUMP",
+    "SAME",
+    "SADI",
+    "CHIV",
+    "FLAT",
+    "DELU",
+    "SIMU",
+    "DEFS",
+    "ISOR",
+    "NCSY",
+    "SUMP",
+    /* 7.6 Least-squares organization */
+    "L.S.",
+    "CGLS",
+    "BLOC",
+    "DAMP",
+    "STIR",
+    "WGHT",
+    "FVAR",
+    /* 7.7 Lists and tables */
+    "BOND",
+    "CONF",
+    "MPLA",
+    "RTAB",
+    "HTAB",
+    "LIST",
+    "ACTA",
+    "SIZE",
+    "TEMP",
+    "WPDB",
+    /* 7.8 Fouriers, peak search and lineprinter plots */
+    "FMAP",
+    "GRID",
+    "PLAN",
+    "MOLE",
+
+    // "Disrgarding line assumed to be added by PLATON: " + line);
+    "    "
+  };
+}

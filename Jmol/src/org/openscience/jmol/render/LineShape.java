@@ -23,9 +23,9 @@ class LineShape implements Shape, Transformable {
     return buffer.toString();
   }
 
-  public void transform(Matrix4f matrix, DisplayControl control) {
-    matrix.transform(origPoint, screenPositionOrig);
-    matrix.transform(endPoint, screenPositionEnd);
+  public void transform(DisplayControl control) {
+    control.transformPoint(origPoint, screenPositionOrig);
+    control.transformPoint(endPoint, screenPositionEnd);
   }
   
   public void render(Graphics g) {

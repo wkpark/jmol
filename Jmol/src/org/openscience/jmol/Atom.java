@@ -236,19 +236,25 @@ public class Atom extends org.openscience.cdk.Atom {
    * Sets the atom's screen position by transforming the atom's position by
    * the given matrix.
    */
-  public void transform(Matrix4f transformationMatrix,
-                        DisplayControl control) {
+  private final static int cameraZ = DisplayControl.cameraZ;
+  public void transform(DisplayControl control) {
 
+    Matrix4f transformationMatrix = control.getTransformMatrix();
     transformationMatrix.transform(getPosition(), screenPosition);
-    screenX = (int) screenPosition.x;
-    screenY = (int) screenPosition.y;
-    screenZ = (int) screenPosition.z;
+    screenX = (int)screenPosition.x;
+    screenY = (int)screenPosition.y;
+    screenZ = (int)screenPosition.z;
     screenDiameter =
       control.getScreenDiameter(screenZ,
-                         (float) atomType.getBaseAtomType().getVdwRadius());
+                           (float) atomType.getBaseAtomType().getVdwRadius());
+    if (control.isPerspectiveDepth()) {
+      screenX = (screenX * cameraZ) / (cameraZ - screenZ);
+      screenY = (screenY * cameraZ) / (cameraZ - screenZ);
+    }
+    screenX += control.xTranslation();
+    screenY += control.yTranslation();
     if (vector != null) {
-      screenVector.set(getScaledVector());
-      transformationMatrix.transform(screenVector);
+      control.transformPoint(getScaledVector(), screenVector);
     }
   }
 

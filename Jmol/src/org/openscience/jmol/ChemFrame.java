@@ -371,13 +371,13 @@ public class ChemFrame implements Transformable {
   /**
    * Transform all the points in this model
    */
-  public void transform(Matrix4f matrix, DisplayControl control) {
+  public void transform(DisplayControl control) {
 
     if (numberAtoms <= 0) {
       return;
     }
     for (int i = 0; i < numberAtoms; ++i) {
-      atoms[i].transform(matrix, control);
+      atoms[i].transform(control);
     }
   }
 

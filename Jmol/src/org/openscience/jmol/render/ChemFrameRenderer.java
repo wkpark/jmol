@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Vector;
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -113,10 +112,10 @@ public class ChemFrameRenderer {
     }
     
     Iterator iter = transformables.listIterator();
-    Matrix4f matrix = control.getViewTransformMatrix();
+    control.calcViewTransformMatrix();
     while (iter.hasNext()) {
       Transformable t1 = (Transformable) iter.next();
-      t1.transform(matrix, control);
+      t1.transform(control);
     }
     Arrays.sort(shapes,
                 new Comparator() {

@@ -59,6 +59,8 @@ final public class DisplayControl {
   private final Matrix4f matrixTemp = new Matrix4f();
   private final Vector3f vectorTemp = new Vector3f();
 
+  private boolean perspectiveDepth = true;
+
   DisplayControl(DisplayPanel panel, DisplaySettings settings) {
     this.panel = panel;
     this.settings = settings;
@@ -350,7 +352,7 @@ final public class DisplayControl {
     return matrixPovTranslate;
   }
 
-  public Matrix4f getViewTransformMatrix() {
+  public void calcViewTransformMatrix() {
     // you absolutely *must* watch the order of these operations
     matrixViewTransform.setIdentity();
     // first, translate the coordinates back to the center
@@ -373,15 +375,46 @@ final public class DisplayControl {
     matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
     matrixViewTransform.mul(matrixTemp, matrixViewTransform);
     // now translate to the translate coordinates
+    /*
     matrixTemp.setZero();
-    // This z dimension is here because of the approximations used
-    // to calculate atom sizes
     vectorTemp.x = xTranslate;
     vectorTemp.y = yTranslate;
-    vectorTemp.z = minScreenDimension/2;
+    vectorTemp.z = 0;
     matrixTemp.setTranslation(vectorTemp);
     matrixViewTransform.add(matrixTemp);
+    */
+  }
+
+  public void transformPoint(Point3f pointAngstroms, Point3f pointScreen) {
+    matrixViewTransform.transform(pointAngstroms, pointScreen);
+    if (perspectiveDepth) {
+      int depth = cameraZ - (int)pointScreen.z;
+      pointScreen.x = (((int)pointScreen.x * cameraZ) / depth) + xTranslate;
+      pointScreen.y = (((int)pointScreen.y * cameraZ) / depth) + yTranslate;
+    } else {
+      pointScreen.x += xTranslate;
+      pointScreen.y += yTranslate;
+    }
+  }
+
+  public void setPerspectiveDepth(boolean perspectiveDepth) {
+    this.perspectiveDepth = perspectiveDepth;
+  }
+
+  public boolean isPerspectiveDepth() {
+    return perspectiveDepth;
+  }
+
+  public Matrix4f getTransformMatrix() {
     return matrixViewTransform;
+  }
+
+  public int xTranslation() {
+    return xTranslate;
+  }
+
+  public int yTranslation() {
+    return yTranslate;
   }
 
   public void homePosition() {
@@ -420,6 +453,11 @@ final public class DisplayControl {
       minScreenDimension -= 2;
     scalePixelsPerAngstrom =
       minScreenDimension / 2 / getFrame().getRotationRadius();
+    if (perspectiveDepth) {
+      float scaleFactor = (cameraZ + minScreenDimension / 2) / (float)cameraZ;
+      scaleFactor += .03f; // don't know why I need this, but I do -- mth
+      scalePixelsPerAngstrom *= scaleFactor;
+    }
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
   }
 
@@ -627,17 +665,22 @@ final public class DisplayControl {
 
   public final static int cameraZ = 750;
   public int getScreenDiameter(int z, float vdwRadius) {
-    // all z's are <= 0
-    // so the more negative z is, the smaller the radius
-    float d = 2 * vdwRadius * scalePixelsPerAngstrom * getAtomSphereFactor();
-    return (int)((d * cameraZ) / (cameraZ - z));
+    if (z > 0)
+      System.out.println("?QUE?--------");
+    int d = (int)(2 * vdwRadius *
+                  scalePixelsPerAngstrom * getAtomSphereFactor());
+    if (perspectiveDepth)
+      d = (d * cameraZ) / (cameraZ - z);
+    return d;
   }
 
   public float scaleToScreen(int z, float sizeAngstroms) {
     // all z's are <= 0
     // so the more negative z is, the smaller the screen scale
     float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
-    return ((pixelSize * cameraZ) / (cameraZ - z));
+    if (perspectiveDepth)
+      pixelSize = (pixelSize * cameraZ) / (cameraZ - z);
+    return pixelSize;
   }
 
   public float[] getLightSource() {

@@ -43,8 +43,8 @@ public class TransformManager {
 
   public void homePosition() {
     matrixRotate.setIdentity();         // no rotations
-    setSlabEnabled(false);              // no slabbing
-    slabToPercent(100);
+    //    setSlabEnabled(false);              // no slabbing
+    //    slabToPercent(100);
     setZoomEnabled(true);
     zoomToPercent(100);
     scaleFitToScreen();
@@ -309,6 +309,10 @@ public class TransformManager {
   public boolean slabEnabled = false;
   public int modeSlab;
   public int slabPercentSetting = 100;
+  public int depthPercentSetting = 0;
+
+  private int slabValue;
+  private int depthValue;
 
   public boolean getSlabEnabled() {
     return slabEnabled;
@@ -326,7 +330,8 @@ public class TransformManager {
   }
 
   public void slabToPercent(int percentSlab) {
-    slabPercentSetting = percentSlab;
+    slabPercentSetting =
+      percentSlab < 0 ? 0 : percentSlab > 100 ? 100 : percentSlab;
   }
 
   public void slabByPercent(int percentSlab) {
@@ -340,6 +345,14 @@ public class TransformManager {
     this.slabEnabled = slabEnabled;
   }
 
+  // depth is an extension added by OpenRasMol
+  // it represents the 'back' of the slab plane
+  public void depthToPercent(int percentDepth) {
+    depthPercentSetting =
+      percentDepth < 0 ? 0 : percentDepth > 100 ? 100 : percentDepth;
+  }
+  
+  // miguel 24 sep 2004 - as I recall, this slab mode stuff is not implemented
   public void setModeSlab(int modeSlab) {
     this.modeSlab = modeSlab;
   }
@@ -348,22 +361,24 @@ public class TransformManager {
     return modeSlab;
   }
 
-  private int calcSlabValue() {
-    int slab = 0;
+  void calcSlabAndDepthValues() {
+    slabValue = 0;
+    depthValue = Integer.MAX_VALUE;
     if (slabEnabled) {
-      if (slabPercentSetting < 0)
-        slabPercentSetting = 0;
-      else if (slabPercentSetting > 100)
-        slabPercentSetting = 100;
+      // miguel 24 sep 2004 -- the comment below does not seem right to me
+      // I don't think that all transformed z coordinates are negative
+      // any more
+      //
       // all transformed z coordinates are negative
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
       int radius =
         (int)(viewer.getRotationRadius() * scalePixelsPerAngstrom);
-      slab = (int)((100-slabPercentSetting) * 2 * radius / 100);
-      slab += cameraDistance;
+      slabValue =
+        (int)((100-slabPercentSetting) * 2 * radius / 100) + cameraDistance;
+      depthValue =
+        (int)((100-depthPercentSetting) * 2 * radius / 100) + cameraDistance;
     }
-    return slab;
   }
 
   /****************************************************************
@@ -511,7 +526,8 @@ public class TransformManager {
 
   public void calcTransformMatrices() {
     calcTransformMatrix();
-    viewer.setSlabValue(calcSlabValue());
+    calcSlabAndDepthValues();
+    viewer.setSlabAndDepthValues(slabValue, depthValue);
     increaseRotationRadius = false;
     minimumZ = Integer.MAX_VALUE;
   }

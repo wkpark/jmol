@@ -157,9 +157,8 @@ class Sphere3D {
     
     float yF = -r + 0.5f;
     int zMin = z - ((diameter + 1) >> 1);
-    int width = g3d.width;
-    int height = g3d.height;
-    int slab = g3d.slab;
+    int width = g3d.width, height = g3d.height;
+    int slab = g3d.slab, depth = g3d.depth;
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int y0 = y;
@@ -182,7 +181,7 @@ class Sphere3D {
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
           int z0 = z - (int)(zF + 0.5f);
-          if (z0 >= slab && z0 < zbuf[offsetPbuf]) {
+          if (z0 >= slab && z0 <= depth && z0 < zbuf[offsetPbuf]) {
             int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
             pbuf[offsetPbuf] = shades[intensity];
             zbuf[offsetPbuf] = (short) z0;
@@ -225,14 +224,14 @@ class Sphere3D {
     int radius = (diameter + 1) >> 1;
     int minX = x - radius, maxX = x + radius;
     int minY = y - radius, maxY = y + radius;
+    int minZ = z - radius;
     if (maxX < 0 || minX >= g3d.width ||
         maxY < 0 || minY >= g3d.height ||
-        z < g3d.slab)
+        z < g3d.slab || minZ > g3d.depth)
       return;
-    int minZ = z - radius;
     boolean clipped = (minX < 0 || maxX >= g3d.width ||
                        minY < 0 || maxY >= g3d.height ||
-                       minZ < g3d.slab);
+                       minZ < g3d.slab || z > g3d.depth);
     if (diameter >= maxSphereCache) {
       if (clipped)
         renderBigClipped(shades, diameter, x, y, z);
@@ -314,9 +313,8 @@ class Sphere3D {
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int offsetSphere = 0;
-    int width = g3d.width;
-    int height = g3d.height;
-    int slab = g3d.slab;
+    int width = g3d.width, height = g3d.height;
+    int slab = g3d.slab, depth = g3d.depth;
     int evenSizeCorrection = 1 - (diameter & 1);
     int offsetSouthCenter = width * y + x;
     int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
@@ -338,7 +336,7 @@ class Sphere3D {
         boolean tEastVisible = xEast >= 0 && xEast < width;
         packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
-        if (zPixel >= slab) {
+        if (zPixel >= slab && zPixel <= depth) {
           if (tSouthVisible) {
             if (tEastVisible && zPixel <= zbuf[offsetSE]) {
               if (zPixel < zbuf[offsetSE]) {

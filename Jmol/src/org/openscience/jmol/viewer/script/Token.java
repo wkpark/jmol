@@ -149,26 +149,28 @@ public class Token {
   final static int write        = command | 45 | setparam;
   final static int zap          = command | 46;
   final static int zoom         = command | 47 | showparam | bool;
+  // openrasmol commands
+  final static int depth        = command | 50;
   // chime commands
-  final static int delay        = command | 48;
-  final static int loop         = command | 49;
-  final static int move         = command | 50 | negativenums;
-  final static int view         = command | 51;
-  final static int spin         = command | 53 | setparam | showparam | bool;
-  final static int list         = command | 54 | showparam;
-  final static int display3d    = command | 55;
-  final static int animation    = command | 56;
-  final static int frame        = command | 57;
+  final static int delay        = command | 60;
+  final static int loop         = command | 61;
+  final static int move         = command | 62 | negativenums;
+  final static int view         = command | 63;
+  final static int spin         = command | 64 | setparam | showparam | bool;
+  final static int list         = command | 65 | showparam;
+  final static int display3d    = command | 66;
+  final static int animation    = command | 67;
+  final static int frame        = command | 68;
   // jmol commands
-  final static int font         = command | 58;
-  final static int hover        = command | 59 | specialstring;
-  final static int vibration    = command | 60;
-  final static int vector       = command | 61;
-  final static int mesh         = command | 62;
-  final static int prueba       = command | 63;
-  final static int rocket       = command | 64;
-  final static int surface      = command | predefinedset | 65;
-  final static int moveto       = command | 66 | negativenums;
+  final static int font         = command | 80;
+  final static int hover        = command | 81 | specialstring;
+  final static int vibration    = command | 82;
+  final static int vector       = command | 83;
+  final static int mesh         = command | 84;
+  final static int prueba       = command | 85;
+  final static int rocket       = command | 86;
+  final static int surface      = command | predefinedset | 87;
+  final static int moveto       = command | 88 | negativenums;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -411,7 +413,9 @@ public class Token {
     "write",             new Token(write,    varArgCount, "write"),
     "zap",               new Token(zap,                0, "zap"),
     "zoom",              new Token(zoom,      onDefault1, "zoom"),
-  // chime commands
+    // openrasmol commands
+    "depth",             new Token(depth,              1, "depth"),
+    // chime commands
     "delay",             new Token(delay,     onDefault1, "delay"),
     "loop",              new Token(loop,      onDefault1, "loop"),
     "move",              new Token(move,     varArgCount, "move"),

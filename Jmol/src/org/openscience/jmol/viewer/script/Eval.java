@@ -393,6 +393,9 @@ public class Eval implements Runnable {
       case Token.slab:
         slab();
         break;
+      case Token.depth:
+        depth();
+        break;
       case Token.cpk:
         cpk();
         break;
@@ -1906,6 +1909,10 @@ public class Eval implements Runnable {
     default:
       booleanOrPercentExpected();
     }
+  }
+
+  void depth() throws ScriptException {
+    viewer.depthToPercent(intParameter(1));
   }
 
   void cpk() throws ScriptException {

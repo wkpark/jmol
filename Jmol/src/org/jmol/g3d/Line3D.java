@@ -93,6 +93,7 @@ final class Line3D {
     int xLast = g3d.xLast;
     int yLast = g3d.yLast;
     int slab = g3d.slab;
+    int depth = g3d.depth;
     do {
       if ((cc1 & cc2) != 0)
         return VISIBILITY_OFFSCREEN;
@@ -109,8 +110,11 @@ final class Line3D {
           { x1 +=      (-y1 * dx)/dy; z1 +=      (-y1 * dz)/dy; y1 = 0; }
         else if ((cc1 & yGT) != 0)
           { x1 += ((yLast-y1)*dx)/dy; z1 += ((yLast-y1)*dz)/dy; y1 = yLast; }
-        else
+        else if ((cc1 & zLT) != 0)
           { x1 +=  ((slab-z1)*dx)/dz; y1 +=  ((slab-z1)*dy)/dz; z1 = slab; }
+        else // must be zGT
+          { x1 += ((depth-z1)*dx)/dz; y1 += ((depth-z1)*dy)/dz; z1 = depth; }
+
         cc1 = clipCode(x1, y1, z1);
       } else {
         if      ((cc2 & xLT) != 0)
@@ -121,15 +125,18 @@ final class Line3D {
           { x2 +=      (-y2 * dx)/dy; z2 +=      (-y2 * dz)/dy; y2 = 0; }
         else if ((cc2 & yGT) != 0)
           { x2 += ((yLast-y2)*dx)/dy; z2 += ((yLast-y2)*dz)/dy; y2 = yLast; }
-        else
+        else if ((cc2 & zLT) != 0)
           { x2 +=  ((slab-z2)*dx)/dz; y2 +=  ((slab-z2)*dy)/dz; z2 = slab; }
+        else // must be zGT
+          { x2 += ((depth-z2)*dx)/dz; y2 +=  ((depth-2)*dy)/dz; z2 = depth; }
         cc2 = clipCode(x2, y2, z2);
       }
     } while ((cc1 | cc2) != 0);
     return VISIBILITY_CLIPPED;
   }
 
-  final static int zLT = 16;
+  final static int zLT = 32;
+  final static int zGT = 16;
   final static int xLT = 8;
   final static int xGT = 4;
   final static int yLT = 2;
@@ -149,6 +156,8 @@ final class Line3D {
 
     if (z < g3d.slab)
       code |= zLT;
+    else if (z > g3d.depth) // note that this is .GT., not .GE.
+      code |= zGT;
 
     return code;
   }
@@ -253,13 +262,15 @@ final class Line3D {
     int runIndex = 0;
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
-    int width = g3d.width, height = g3d.height, slab = g3d.slab;
+    int width = g3d.width, height = g3d.height;
+    int slab = g3d.slab, depth = g3d.depth;
     int offset = y * width + x;
-    if (x >= 0 && x < width && y >= 0 && y < height) {
-      if (z >= slab && z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
-        pbuf[offset] = argb1;
-      }
+    if (x >= 0 && x < width &&
+        y >= 0 && y < height &&
+        z >= slab && z <= depth &&
+        z < zbuf[offset]) {
+      zbuf[offset] = (short)z;
+      pbuf[offset] = argb1;
     }
     if (dx == 0 && dy == 0)
       return;
@@ -303,7 +314,9 @@ final class Line3D {
             xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+          if (zCurrent >= slab &&
+              zCurrent <= depth &&
+              zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
@@ -331,7 +344,9 @@ final class Line3D {
             xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+          if (zCurrent >= slab &&
+              zCurrent <= depth &&
+              zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
@@ -657,14 +672,15 @@ final class Line3D {
                             int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
-    int width = g3d.width, height = g3d.height, slab = g3d.slab;
+    int width = g3d.width, height = g3d.height;
+    int slab = g3d.slab, depth = g3d.depth;
     int offset = y1 * width + x1;
     if (x1 >= 0 && x1 < width &&
-        y1 >= 0 && y1 < height) {
-      if (z1 >= slab && z1 < zbuf[offset]) {
-        zbuf[offset] = (short)z1;
-        pbuf[offset] = argb1;
-      }
+        y1 >= 0 && y1 < height &&
+        z1 >= slab && z1 <= depth &&
+        z1 < zbuf[offset]) {
+      zbuf[offset] = (short)z1;
+      pbuf[offset] = argb1;
     }
     if (dx == 0 && dy == 0)
       return;
@@ -707,7 +723,9 @@ final class Line3D {
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+          if (zCurrent >= slab &&
+              zCurrent <= depth &&
+              zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
@@ -731,7 +749,9 @@ final class Line3D {
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+          if (zCurrent >= slab &&
+              zCurrent <= depth &&
+              zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
@@ -747,14 +767,15 @@ final class Line3D {
     int argb2 = shades2[intensity];
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
-    int width = g3d.width, height = g3d.height, slab = g3d.slab;
+    int width = g3d.width, height = g3d.height;
+    int slab = g3d.slab, depth = g3d.depth;
     int offset = y1 * width + x1;
     if (x1 >= 0 && x1 < width &&
-        y1 >= 0 && y1 < height) {
-      if (z1 >= slab && z1 < zbuf[offset]) {
-        zbuf[offset] = (short)z1;
-        pbuf[offset] = argb1;
-      }
+        y1 >= 0 && y1 < height &&
+        z1 >= slab && z1 <= depth &&
+        z1 < zbuf[offset]) {
+      zbuf[offset] = (short)z1;
+      pbuf[offset] = argb1;
     }
     if (dx == 0 && dy == 0)
       return;
@@ -797,7 +818,9 @@ final class Line3D {
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+          if (zCurrent >= slab &&
+              zCurrent <= depth &&
+              zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
@@ -821,7 +844,9 @@ final class Line3D {
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+          if (zCurrent >= slab &&
+              zCurrent <= depth &&
+              zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }

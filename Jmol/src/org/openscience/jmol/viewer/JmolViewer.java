@@ -343,6 +343,11 @@ final public class JmolViewer {
     refresh();
   }
 
+  public void depthToPercent(int percentDepth) {
+    transformManager.depthToPercent(percentDepth);
+    refresh();
+  }
+
   public void slabByPercent(int percentSlab) {
     transformManager.slabByPercent(percentSlab);
     refresh();
@@ -500,8 +505,8 @@ final public class JmolViewer {
     transformManager.setScaleAngstromsPerInch(angstromsPerInch);
   }
 
-  public void setSlabValue(int slabValue) {
-    g3d.setSlabValue(slabValue);
+  public void setSlabAndDepthValues(int slabValue, int depthValue) {
+    g3d.setSlabAndDepthValues(slabValue, depthValue);
   }
   
   public void setVibrationPeriod(float period) {

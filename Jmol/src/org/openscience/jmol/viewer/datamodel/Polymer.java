@@ -202,15 +202,16 @@ abstract public class Polymer {
   Vector3f[] getWingVectors() {
     if (leadMidpoints == null) // this is correct ... test on leadMidpoints
       calcLeadMidpointsAndWingVectors();
-    return wingVectors; // wingVectors might be null
+    return wingVectors; // wingVectors might be null ... before autocalc
   }
 
   void calcLeadMidpointsAndWingVectors() {
     int count = this.count;
     leadMidpoints = new Point3f[count + 1];
-    if (hasWingPoints())
-      wingVectors = new Vector3f[count + 1];
-
+    wingVectors = new Vector3f[count + 1];
+    boolean hasWingPoints = hasWingPoints();
+    hasWingPoints = false;
+    
     Vector3f vectorA = new Vector3f();
     Vector3f vectorB = new Vector3f();
     Vector3f vectorC = new Vector3f();
@@ -226,7 +227,7 @@ abstract public class Polymer {
       midpoint.add(leadPointPrev);
       midpoint.scale(0.5f);
       leadMidpoints[i] = midpoint;
-      if (wingVectors != null) {
+      if (hasWingPoints) {
         vectorA.sub(leadPoint, leadPointPrev);
         vectorB.sub(getWingPoint(i - 1), leadPointPrev);
         vectorC.cross(vectorA, vectorB);
@@ -238,10 +239,30 @@ abstract public class Polymer {
         previousVectorD = wingVectors[i] = new Vector3f(vectorD);
       }
     }
-    if (wingVectors != null) {
-      wingVectors[0] = wingVectors[1];
-      wingVectors[count] = wingVectors[count - 1];
-    }
     leadMidpoints[count] = getLeadPoint(count - 1);
+    if (! hasWingPoints) {
+      // auto-calculate wing vectors based upon lead atom positions only
+      // seems to work like a charm! :-)
+      Point3f next, current, prev;
+      prev = leadMidpoints[0];
+      current = leadMidpoints[1];
+      Vector3f previousVectorC = null;
+      for (int i = 1; i < count; ++i) {
+        next = leadMidpoints[i + 1];
+        vectorA.sub(prev, current);
+        vectorB.sub(next, current);
+        vectorC.cross(vectorA, vectorB);
+        vectorC.normalize();
+        if (previousVectorC != null &&
+            previousVectorC.angle(vectorC) > Math.PI/2)
+          vectorC.scale(-1);
+        previousVectorC = wingVectors[i] = new Vector3f(vectorC);
+        prev = current;
+        current = next;
+      }
+    }
+    wingVectors[0] = wingVectors[1];
+    wingVectors[count] = wingVectors[count - 1];
+    }
   }
 }

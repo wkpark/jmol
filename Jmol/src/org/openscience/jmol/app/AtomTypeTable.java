@@ -109,15 +109,9 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
   public AtomTypeTable(JFrame fr, File UAF) {
     this(fr);
-    try {
-        if (UAF.exists()) {
-            ReadAtypes(UAF.toString());
-        } else {
-            ReadAtypes(SAU);
-        }
-    } catch (Exception exc) {
-        System.err.println("Error while reading AtomTypes.");
-    }
+    // ensure that the AtomType's have been read
+    AtomTypeList atl = AtomTypeList.getInstance();
+    atModel.update();
   }
 
   public AtomTypeTable(JFrame fr) {
@@ -207,7 +201,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     save.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        SaveAtypes();
+        AtomTypeList.getInstance().SaveAtypes(Jmol.UserAtypeFile);
       }
     });
     buttonPanel.add(save);
@@ -508,123 +502,5 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     table.setDefaultEditor(Double.class, doubleEditor);
   }
 
-  void SaveAtypes() {
-
-    try {
-      FileOutputStream fdout = new FileOutputStream(Jmol.UserAtypeFile);
-      BufferedOutputStream bos = new BufferedOutputStream(fdout, 1024);
-      PrintWriter pw = new PrintWriter(bos);
-
-      int numRows = atModel.getRowCount();
-      int numCols = atModel.getColumnCount();
-
-      String headline = "#" + atModel.getColumnName(0);
-      for (int j = 1; j < numCols - 1; j++) {
-        headline += "\t";
-
-        String str = atModel.getColumnName(j);
-        BufferedReader br = new BufferedReader(new StringReader(str));
-        String line;
-        try {
-          line = br.readLine();
-          while (line != null) {
-            headline = headline + line + " ";
-            line = br.readLine();
-          }
-        } catch (IOException ex) {
-          ex.printStackTrace();
-        }
-      }
-      headline += "\tRed\tGreen\tBlue";
-      pw.println(headline);
-
-      for (int i = 0; i < numRows; i++) {
-        String outline = (String) atModel.getValueAt(i, 0);
-        for (int j = 1; j < numCols - 1; j++) {
-          outline = outline + "\t" + atModel.getValueAt(i, j);
-        }
-        Color c = (Color) atModel.getValueAt(i, numCols - 1);
-        outline = outline + "\t" + c.getRed();
-        outline = outline + "\t" + c.getGreen();
-        outline = outline + "\t" + c.getBlue();
-        pw.println(outline);
-      }
-      pw.flush();
-      pw.close();
-      bos.close();
-      fdout.close();
-
-    } catch (IOException e) {
-      System.err.println("Exception: " + e);
-    }
-    return;
-  }
-
-  public void setAtomTypes(AtomTypeSet ats) {
-    Enumeration iter = ats.elements();
-    while (iter.hasMoreElements()) {
-      atModel.updateAtomType((BaseAtomType) iter.nextElement());
-    }
-  }
-
-
-  void ReadAtypes(String configFile) throws Exception {
-      // System.out.print("Reading config file... ");
-      AtomTypeFactory atf = new AtomTypeFactory(configFile);
-      
-      org.openscience.cdk.AtomType[] types = atf.getAllAtomTypes();
-      System.out.println("Read atom types: " + types.length);
-      for (int i=0; i<types.length; i++) {
-          // convert all AtomType's to BaseAtomType and add then
-          // to the list
-          atModel.updateAtomType(BaseAtomType.get(types[i]));
-      }
-      // System.out.println("done.");
-  }
-
-  public BaseAtomType get(String name) {
-    return atModel.get(name);
-  }
-
-  public BaseAtomType get(int atomicNumber) {
-    return atModel.get(atomicNumber);
-  }
-
-	/**
-	 *  Configures an atom. Finds the correct element type
-	 *  by looking at the atoms atom type id (atom.getID()).
-	 *
-	 * @param  atom  The atom to be configured
-	 * @return       The configured atom
-	 */
-	public Atom configure(Atom atom) {
-        try {
-            BaseAtomType at = get(atom.getID());
-            atom.setMaxBondOrder(at.getMaxBondOrder());
-            atom.setMaxBondOrderSum(at.getMaxBondOrderSum());
-            atom.setVanderwaalsRadius(at.getVanderwaalsRadius());
-            atom.setCovalentRadius(at.getCovalentRadius());
-            atom.setProperty("org.openscience.jmol.color", at.getColor());
-            if (at.getAtomicNumber() != 0) {
-                atom.setAtomicNumber(at.getAtomicNumber());
-            } else {
-                logger.debug("Did not configure atomic number: AT.an=" + at.getAtomicNumber());
-            }
-            if (at.getExactMass() > 0.0) {
-                atom.setExactMass(at.getExactMass());
-            } else {
-                logger.debug("Did not configure mass: AT.mass=" + at.getAtomicNumber());
-            }
-        } catch (Exception exc) {
-            logger.warn("Could not configure atom with unknown ID: " + 
-                        atom.toString() + " + (id=" + atom.getID() + ")");
-        }
-        logger.debug("Configured " + atom.toString());
-		return atom;
-	}
-
-    public synchronized Enumeration elements() {
-    return atModel.elements();
-  }
 }
 

@@ -25,6 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.BaseAtomType;
+import org.openscience.jmol.AtomTypeList;
 
 import java.awt.Color;
 import javax.swing.table.AbstractTableModel;
@@ -35,7 +36,6 @@ import org.openscience.jmol.render.AtomColors;
 class AtomTypesModel extends AbstractTableModel {
 
   protected static int NUM_COLUMNS = 7;
-  protected static int START_NUM_ROWS = 5;
   protected int nextEmptyRow = 0;
   protected int numRows = 0;
 
@@ -48,11 +48,7 @@ class AtomTypesModel extends AbstractTableModel {
     Double.class, Color.class
   };
 
-  protected Vector data = null;
-
-  public AtomTypesModel() {
-    data = new Vector();
-  }
+  public AtomTypesModel() {}
 
   /**
    * Returns the name of the column at the index given. If the column is undefined,
@@ -70,12 +66,7 @@ class AtomTypesModel extends AbstractTableModel {
   }
 
   public synchronized int getRowCount() {
-
-    if (numRows < START_NUM_ROWS) {
-      return START_NUM_ROWS;
-    } else {
-      return numRows;
-    }
+      return AtomTypeList.getInstance().getSize();
   }
 
   /**
@@ -94,7 +85,9 @@ class AtomTypesModel extends AbstractTableModel {
 
   public void setValueAt(Object o, int row, int col) {
 
-    BaseAtomType at = (BaseAtomType) data.elementAt(row);
+      AtomTypeList atl = AtomTypeList.getInstance();
+      
+    BaseAtomType at = atl.getElementAt(row);
     switch (col) {
     case 1 :
       at.setSymbol((String) o);
@@ -117,19 +110,20 @@ class AtomTypesModel extends AbstractTableModel {
       break;
 
     case 6 :
-      // AtomColors.getInstance().setAtomColor(at, (Color) o);
-      // FIXME: (by Egon)
+      at.setColor((Color) o);
       break;
     }
-    updateAtomType(at);
   }
 
   public synchronized Object getValueAt(int row, int column) {
 
     try {
         // System.err.println("Getting data for atom type: " + row + ", " + column);
-        BaseAtomType at = (BaseAtomType) data.elementAt(row);
-        // System.err.println("Retrieved BAT");
+        BaseAtomType at = AtomTypeList.getInstance().getElementAt(row);
+        if (at == null) {
+            System.err.println("Retrieved BAT is null!");
+            return "";
+        }
       switch (column) {
       case 0 :
         return at.getID();
@@ -170,101 +164,26 @@ class AtomTypesModel extends AbstractTableModel {
     return String.class;
   }
 
-  public synchronized void updateAtomType(BaseAtomType atomType) {
-      
-    // System.err.println("Adding atom: " + data.size());
-
-    String name = atomType.getID();
-    BaseAtomType at = null;
-    int index = -1;
-    boolean found = false;
-    boolean addedRow = false;
-
-    int i = 0;
-    while (!found && (i < nextEmptyRow) && (i < data.size())) {
-      at = (BaseAtomType) data.elementAt(i);
-      if (name.equals(at.getID())) {
-        found = true;
-        index = i;
-      } else {
-        i++;
-      }
-    }
-
-    if (found) {    //update old AtomType
-      data.setElementAt(atomType, index);
-    } else {        //add new AtomType
-      if (numRows <= nextEmptyRow) {
-
-        //add a row
-        numRows++;
-        addedRow = true;
-      }
-      index = nextEmptyRow;
-      data.addElement(atomType);
-    }
-
-    nextEmptyRow++;
-
-    //Notify listeners that the data changed.
-    if (addedRow) {
-      fireTableRowsInserted(index, index);
-    } else {
-      fireTableRowsUpdated(index, index);
-    }
-    
-    // System.err.println("Added atom: " + data.size());
+  public synchronized void update() {
+      fireTableRowsUpdated(0, AtomTypeList.getInstance().getSize() - 1);
   }
-
-
+  
   public synchronized void clear() {
 
     int oldNumRows = numRows;
 
-    numRows = START_NUM_ROWS;
-    data.removeAllElements();
+    numRows = 5;
+    AtomTypeList.getInstance().removeAllElements();
     nextEmptyRow = 0;
 
-    if (oldNumRows > START_NUM_ROWS) {
-      fireTableRowsDeleted(START_NUM_ROWS, oldNumRows - 1);
+    if (oldNumRows > 5) {
+      fireTableRowsDeleted(5, oldNumRows - 1);
     }
-    fireTableRowsUpdated(0, START_NUM_ROWS - 1);
-  }
-
-  /**
-   * Returns the first occurence of an AtomType with the given name.
-   */
-  public BaseAtomType get(String name) {
-
-    if (name != null) {
-      Enumeration e = data.elements();
-      while (e.hasMoreElements()) {
-        BaseAtomType at = (BaseAtomType) e.nextElement();
-        if (name.equalsIgnoreCase(at.getID())) {
-          return at;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Returns the first occurence of an AtomType with the given atomic number.
-   */
-  public BaseAtomType get(int atomicNumber) {
-
-    Enumeration e = data.elements();
-    while (e.hasMoreElements()) {
-      BaseAtomType at = (BaseAtomType) e.nextElement();
-      if (atomicNumber == at.getAtomicNumber()) {
-        return at;
-      }
-    }
-    return null;
+    fireTableRowsUpdated(0, 5 - 1);
   }
 
   public synchronized Enumeration elements() {
-    return data.elements();
+    return AtomTypeList.getInstance().elements();
   }
 
   /**

@@ -318,6 +318,7 @@ public class Jmol extends JPanel {
     display.start();
 
     splash.showStatus(resourceHandler.translate("Reading AtomTypes..."));
+    AtomTypeList atl = AtomTypeList.getInstance(UserAtypeFile);
     atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
 
     splash.showStatus(resourceHandler

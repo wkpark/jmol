@@ -279,6 +279,9 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
   public Color getColor() {
     return color;
   }
+  public void setColor(Color c) {
+    this.color = c;
+  }
 
   /**
    * Static pool of atom types.

@@ -198,7 +198,7 @@ public class ChemFrame extends AtomContainer {
     }
 
     atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
-    Jmol.atomTypeTable.configure(atoms[i]);
+    AtomTypeList.getInstance().configure(atoms[i]);
     if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {
         if (Atom.closeEnoughToBond(atoms[i], atoms[j],
@@ -223,7 +223,7 @@ public class ChemFrame extends AtomContainer {
     }
 
     atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
-    Jmol.atomTypeTable.configure(atoms[i]);
+    AtomTypeList.getInstance().configure(atoms[i]);
     if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {
         if (Atom.closeEnoughToBond(atoms[i], atoms[j],

@@ -135,6 +135,7 @@ public class FrameRenderer {
   }
   */
 
+  /*
   private Point3f[] tempPoints = new Point3f[32];
   {
     for (int i = tempPoints.length; --i >= 0; )
@@ -151,6 +152,7 @@ public class FrameRenderer {
     }
     return tempPoints;
   }
+  */
 
   private Atom[] tempAtoms = new Atom[32];
   public Atom[] getTempAtoms(int n) {

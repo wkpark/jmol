@@ -69,6 +69,7 @@ class RocketsRenderer extends McpsRenderer {
     }
     renderPending();
     viewer.freeTempScreens(screens);
+    viewer.freeTempPoints(cordMidPoints);
   }
 
   int polymerCount;
@@ -89,7 +90,7 @@ class RocketsRenderer extends McpsRenderer {
 
   Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
     int midPointCount = polymerCount + 1;
-    Point3f[] cordMidPoints = frameRenderer.getTempPoints(midPointCount);
+    Point3f[] cordMidPoints = viewer.allocTempPoints(midPointCount);
     Group residuePrev = null;
     AminoStructure aminostructurePrev = null;
     Point3f point;

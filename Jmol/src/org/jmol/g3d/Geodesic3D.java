@@ -305,6 +305,22 @@ class Geodesic3D {
         if (neighbor >= vertexCount)
           throw new NullPointerException();
       }
+      for (int i = 0; i < newVertexCount; ++i) {
+        int neighborCount = 0;
+        for (int j = neighborVertexes.length; --j >= 0; )
+          if (neighborVertexes[j] == i)
+            ++neighborCount;
+        if ((i < 12 && neighborCount != 5) ||
+            (i >= 12 && neighborCount != 6))
+          throw new NullPointerException();
+        int faceCount = 0;
+        for (int j = newFacesVertexes.length; --j >= 0; )
+          if (newFacesVertexes[j] == i)
+            ++faceCount;
+        if ((i < 12 && faceCount != 5) ||
+            (i >= 12 && faceCount != 6))
+          throw new NullPointerException();
+      }
     }
     htVertex = null;
   }

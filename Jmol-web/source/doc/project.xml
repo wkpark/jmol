@@ -7,19 +7,20 @@
     <table width="100%">
       <tr>
         <td align="left" valign="center">
-          <a href="index.html"><img src="images/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
+          <a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg"
+	     border="0" alt="Jmol"/></a>
         </td>
         <td><br /></td>
         <td align="right" valign="center">
           <font size="2">
-            <a href="history.html">History</a> 
-            | <a href="download.html">Download</a> 
-            | <a href="screenshots.html">Screenshots</a> 
-            | <a href="applet.html">Applet</a> 
-            | <a href="scripting.html">Scripting</a> 
-            | <a href="docs.html">Docs</a> 
-            | <a href="changes.html">Changes</a> 
-            | <a href="preview.html">Preview</a> 
+            <a href="[root]/history/">History</a> 
+            | <a href="[root]/download/">Download</a> 
+            | <a href="[root]/screenshots/">Screenshots</a> 
+            | <a href="[root]/applet/">Applet</a> 
+            | <a href="[root]/scripting/">Scripting</a> 
+            | <a href="[root]/docs/">Docs</a> 
+            | <a href="[root]/changes/">Changes</a> 
+            | <a href="[root]/preview/">Sneak Preview</a> 
             | <a href="http://sourceforge.net/projects/jmol">Project page</a>
           </font>
         </td>

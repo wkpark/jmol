@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Sneak Preview</title>
+    
+    <section title="What the Jmol Release 10 look like?">
+
+      <p>
+	Jmol has undergone a number of changes this year. Many of these
+	changes were motivated by the goal of turning Jmol into a viable
+	alternative for the Chime Plug-in. 
+      </p>
+      <p>
+	In the spring the RasMol/Chime script compiler and interpreter
+	were written. That code was introduced in release 6 of Jmol. 
+      </p>
+      <p>
+	More recently, the graphics engine has been completely rewritten
+	to provide true 3D rendering capabilities. It is a software
+	implementation designed and optimized for rendering molecules.
+	It does not require any special hardware and will run on most
+	popular browsers with Java support (including those with
+	Java 1.1 JVMs).
+      </p>
+      <p>
+	These pages demonstrate the pre-release development version of
+	the Jmol applet, combining simple examples of RasMol/Chime
+	script commands with 3D rendering:
+	<ul>
+	  <li><a href="[root]/demo/atoms">atoms</a></li>
+	  <li><a href="[root]/demo/bonds">bonds</a></li>
+	  <li><a href="[root]/demo/trace">protein backbones</a></li>
+	  <li><a href="[root]/demo/dots">dotted surfaces</a></li>
+	</ul>
+      </p>
+      <p>
+	To facilitate conversion of existing web pages built with
+	the Chime plug-in, we have written a perl script which will
+	identify Chime &lt;embed ...&gt; tags and replace them
+	with the appropriate jmol &lt;applet ...&gt; tags. The
+	chime2jmol.pl script handles Chime buttons as well as
+	the Chime applet itself.
+      </p>
+      <p>
+	This page shows a Chime application that was converted to
+	jmol using the chime2jmol.pl perl script:
+	<ul>
+	  <li>
+	    <a href="[root]/demo/bwhite/index.html">hemoglobin lecture</a>
+	  </li>
+	</ul>
+      </p>
+
+    </section>
+
+  </body>
+</document>
+
+
+
+
+
+
+
+
+

@@ -26,7 +26,8 @@
             <a href="#{@title}"><xsl:value-of select="@title"/></a><br/>
           </xsl:when>
           <xsl:when test='$level=3'>
-            &#xA0;&#xA0;&#xA0;&#xA0;<a href="#{@title}"><xsl:value-of select="@title"/></a><br/>
+            &#xA0;&#xA0;&#xA0;&#xA0;
+            <a href="#{@title}"><xsl:value-of select="@title"/></a><br/>
           </xsl:when>
         </xsl:choose>
       </xsl:if>
@@ -86,7 +87,7 @@
         <xsl:when test="/document/body/title"><title><xsl:value-of select="/document/body/title"/></title></xsl:when>
         <xsl:otherwise><title><xsl:value-of select="$project/title"/></title></xsl:otherwise>
       </xsl:choose>
-      <link rel="stylesheet" type="text/css" href="default.css"/>
+      <link rel="stylesheet" type="text/css" href="[root]/default.css"/>
     </head>
 
     <body>

@@ -61,10 +61,11 @@
       between JavaScript and Java applets will still run this type
       of script.
 
+<table border="1"><tr><td>
 <appletExample>
 <![CDATA[
-<table border="1"><tr><td>
 <applet name="flash" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
         width="300" height="100" align="left" mayscript="true">
 	<param name="bgcolor" value="teal">
 	<param name="script" value="
@@ -89,9 +90,9 @@
 	loop 5;
 	">
 </applet>
-</td></tr></table>
 ]]>
 </appletExample>
+</td></tr></table>
       </p>
       <br/>
     </section>
@@ -100,10 +101,11 @@
       <p>
         This example shows some of the scripting available.
 <appletExample>
-<![CDATA[<APPLET NAME="jmol" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-    WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="load" VALUE="caffeine.xyz"/>
-</APPLET>
+<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="caffeine.xyz"/>
+</applet>
 <br>
 <a href="javascript:document.jmol.setStyle('WIREFRAME')">
 WIREFRAME</a>
@@ -123,11 +125,11 @@ estron.cml</a>
 <br>
 <a href="javascript:document.jmol.script('background blue ; move 90 180 -45 0 0 0 0 0 5; 
 center 1 ; move 0 0 360 100 0 0 0 0 2 ; delay 2 ; reset; background white')">move</a>
-<a href="javascript:document.jmol.script('script move.spt');">
+<a href="javascript:document.jmol.script('script move.txt');">
 move off of server</a>
 <a href="javascript:document.jmol.script('load aspirina.mol')">
 load aspirina via script</a>
-<a href="javascript:document.jmol.script('source testscript.spt')">
+<a href="javascript:document.jmol.script('source testscript.txt')">
 run test script off of server</a>
 <br>
 <a href="javascript:document.jmol.setWireframeRotation(true)">
@@ -185,6 +187,7 @@ function br() {
 <table border=1>
 <tr><td width=350 align=right>
 <applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
         width="350" height="350" align="left" mayscript="true">
     <param name="bgcolor" value="black">
 </applet>
@@ -273,6 +276,7 @@ linkScript('monitor 1 4');
   }
   </script>
   <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
+          codebase="[codebase]"
           width="350" height="350" mayscript="true">
     <param name="load"   value="SN1_reaction.xyz">
   </applet>

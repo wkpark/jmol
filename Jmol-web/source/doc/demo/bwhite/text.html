@@ -1,0 +1,472 @@
+<html>
+<head>
+<script language="javascript">
+
+function PrintHemo(hemo, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>Hemoglobin</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function Print4Chains(fourChains, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>The 4 Chains in Hemoglobin & heme</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function PrintBeta(beta, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>beta-Globin</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function PrintBetaContacts(betaContacts, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>beta-Globin contacts other subunits</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function PrintChristchurch(Christchurch, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>alteration in Hb Christchurch</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function PrintSickle(sickle, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>Sickle-cell Hemoglobin</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function PrintVal6(val6, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>Amino acid #6 is val in sickle Hb.</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function PrintPartners(partners, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>A hydrophobic patch on all Hb's.</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+
+function PrintDimer(dimer, executedYet) {
+	top.label.document.open();
+	top.label.document.writeln("<html><head></head><body>");
+	top.label.document.writeln("<font size=+4 color=red>Valine 6 links 2 betas in sickle cell Hb.</font>");
+	top.label.document.writeln("</body></html>");
+	top.label.document.close();
+}
+</script>
+
+</head>
+<body>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="hemo"
+	ButtonCallback="PrintHemo"
+	script="
+		load 1a3n.pdb
+		restrict not hetero
+		spacefill on"
+	> -->
+  <applet name="hemo" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		load 1a3n.pdb;
+		restrict not hetero;
+		spacefill on" />
+    <param name='ButtonCallback' value="PrintHemo" />
+  </applet>
+Load deoxy.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="fourChains"
+	ButtonCallback=Print4Chains
+	script="
+		restrict not hetero
+		select protein
+		spacefill true
+		color chain
+		select ligand
+		spacefill true
+		color red"
+	> -->
+  <applet name="fourChains" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		restrict not hetero;
+		select protein;
+		spacefill true;
+		color chain;
+		select ligand;
+		spacefill true;
+		color red" />
+    <param name='ButtonCallback' value=Print4Chains />
+  </applet>
+Show chains & heme.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="beta"
+	ButtonCallback=PrintBeta
+	script="
+		reset
+		select protein
+		spacefill true
+		wireframe off
+		backbone off
+		select :a or :c
+		color chain
+		select ligand
+		spacefill true
+		color red
+		move 0 45 0  0  0 0 0  0 1
+		restrict :b
+		color cpk"
+	> -->
+  <applet name="beta" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		reset;
+		select protein;
+		spacefill true;
+		wireframe off;
+		backbone off;
+		select :a or :c;
+		color chain;
+		select ligand;
+		spacefill true;
+		color red;
+		move 0 45 0  0  0 0 0  0 1;
+		restrict :b;
+		color cpk" />
+    <param name='ButtonCallback' value=PrintBeta />
+  </applet>
+Show beta.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="betaContacts"
+	ButtonCallback=PrintBetaContacts
+	script="
+		reset
+		select protein
+		spacefill true
+		wireframe off
+		backbone off
+		color chain
+		select ligand
+		spacefill true
+		color red
+		delay 5
+		restrict :b
+		center selected
+		select ligand
+		color red
+		select within(5.0, :a)
+		color blue
+		select within(5.0, :c)
+		color green
+		move 0 0 0  75  0 0 0  0 1"
+	> -->
+  <applet name="betaContacts" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		reset;
+		select protein;
+		spacefill true;
+		wireframe off;
+		backbone off;
+		color chain;
+		select ligand;
+		spacefill true;
+		color red;
+		delay 5;
+		restrict :b;
+		center selected;
+		select ligand;
+		color red;
+		select within(5.0, :a);
+		color blue;
+		select within(5.0, :c);
+		color green;
+		move 0 0 0  75  0 0 0  0 1" />
+    <param name='ButtonCallback' value=PrintBetaContacts />
+  </applet>
+Show beta contacts.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="Christchurch"
+	ButtonCallback=PrintChristchurch
+	script="
+		reset
+		select protein
+		spacefill off
+		wireframe 0
+		backbone off
+		color cpk
+		select ligand
+		spacefill 0.42
+		wireframe 0.16
+		color red
+		restrict :b
+		select 71b
+		spacefill true
+		color green
+		center selected
+		select 71b and backbone
+		spacefill 0.42
+		wireframe 0.16
+		color white
+		move 0 0 0  100  0 0 0  0  1"
+	> -->
+  <applet name="Christchurch" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		reset;
+		select protein;
+		spacefill off;
+		wireframe 0;
+		backbone off;
+		color cpk;
+		select ligand;
+		spacefill 0.42;
+		wireframe 0.16;
+		color red;
+		restrict :b;
+		select 71b;
+		spacefill true;
+		color green;
+		center selected;
+		select 71b and backbone;
+		spacefill 0.42;
+		wireframe 0.16;
+		color white;
+		move 0 0 0  100  0 0 0  0  1" />
+    <param name='ButtonCallback' value=PrintChristchurch />
+  </applet>
+Show Christchurch.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="sickle"
+	ButtonCallback="PrintSickle"
+	script="
+		load 2hbs.pdb
+		restrict not hetero
+		spacefill on
+		select :a or: e
+		color blue
+		select :b or :f
+		color cyan
+		select :c or :g
+		color green
+		select :d or :h
+		color yellow"
+	> -->
+  <applet name="sickle" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		load 2hbs.pdb;
+		restrict not hetero;
+		spacefill on;
+		select :a or: e;
+		color blue;
+		select :b or :f;
+		color cyan;
+		select :c or :g;
+		color green;
+		select :d or :h;
+		color yellow" />
+    <param name='ButtonCallback' value="PrintSickle" />
+  </applet>
+Load sickle-cell.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="val6"
+	ButtonCallback=PrintVal6
+	script="
+		reset
+		select protein
+		wireframe 0
+		spacefill off
+		select :h
+		spacefill true
+		color yellow
+		select 6h
+		color purple
+		delay 5
+		restrict :h
+		move 0 0 0  100  0 0 0  0 1"
+	> -->
+  <applet name="val6" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		reset;
+		select protein;
+		wireframe 0;
+		spacefill off;
+		select :h;
+		spacefill true;
+		color yellow;
+		select 6h;
+		color purple;
+		delay 5;
+		restrict :h;
+		move 0 0 0  100  0 0 0  0 1" />
+    <param name='ButtonCallback' value=PrintVal6 />
+  </applet>
+Show val6.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="partners"
+	ButtonCallback=PrintPartners
+	script="
+		reset
+		select protein
+		wireframe 0
+		spacefill off
+		select :b
+		spacefill true
+		color cyan
+		select 88b or 85b
+		color purple
+		delay 5
+		restrict :b
+		move 0 0 0  100  0 0 0  0 1"
+	> -->
+  <applet name="partners" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		reset;
+		select protein;
+		wireframe 0;
+		spacefill off;
+		select :b;
+		spacefill true;
+		color cyan;
+		select 88b or 85b;
+		color purple;
+		delay 5;
+		restrict :b;
+		move 0 0 0  100  0 0 0  0 1" />
+    <param name='ButtonCallback' value=PrintPartners />
+  </applet>
+Show partners.
+<br>
+
+<!-- <embed type="application/x-spt" width=10 height=10
+	button=push
+	target="chime_graphics"
+	name="dimer"
+	ButtonCallback=PrintDimer
+	script="
+		reset
+		select all
+		spacefill off
+		wireframe off
+		backbone 0.5
+		select :a or: e
+		color blue
+		select :b or :f
+		color cyan
+		select :c or :g
+		color green
+		select :d or :h
+		color yellow
+		select 6h or 88b or 85b
+		spacefill true
+		color purple
+		center selected"
+	> -->
+  <applet name="dimer" code='JmolAppletControl' archive='JmolApplet.jar'
+          codebase='../jmol'
+          width='10' height='10' mayscript='true' >
+    <param name='target' value="chime_graphics" />
+    <param name='type'   value='chimePush' />
+    <param name='script' value=";
+		reset;
+		select all;
+		spacefill off;
+		wireframe off;
+		backbone 0.5;
+		select :a or: e;
+		color blue;
+		select :b or :f;
+		color cyan;
+		select :c or :g;
+		color green;
+		select :d or :h;
+		color yellow;
+		select 6h or 88b or 85b;
+		spacefill true;
+		color purple;
+		center selected" />
+    <param name='ButtonCallback' value=PrintDimer />
+  </applet>
+Show val6 & partners.
+<br>
+
+</body>
+</html>

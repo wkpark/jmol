@@ -1,37 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<document>
-  <body>
-    <title>Preview Enzyme Rendering</title>
-    
-    <section title="New Enzyme Rendering options">
-
+<html>
+<head><title>jmol applet trace demo</title>
+</head>
+<body>
 <table border="1">
 <tr>
 <td>
 
 <h1>1crn.pdb</h1>
-<appletExample><![CDATA[
-<applet name="jmol" code="JmolApplet" archive="head/JmolApplet.jar"
+<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="../jmol"
         width="400" height="400" mayscript="true" >
 	<param name="emulate"   value="chime" />
         <param name="load"      value="1crn.pdb.gz" />
-</applet>]]>
-</appletExample>
+</applet>
 </td>
 
 <td>
 This shows the backbone of a protein macromolecule by
 creating artificial 'backbone' bonds between alpha carbons.
 Backbone radius can be specified in angstroms.<br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="backbone 0.3" />
   <param name="target" value="jmol" />
   <param name="script" value="backbone 0.3" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="backbone 0.6" />
   <param name="target" value="jmol" />
@@ -41,36 +39,41 @@ Backbone radius can be specified in angstroms.<br />
 My default, the backbone bond color is inherited from the
 atoms (as with other bonds). You can explicitly change
 the backbone color. <br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color backbone greenyellow" />
   <param name="target" value="jmol" />
   <param name="script" value="color backbone greenyellow" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color backbone firebrick" />
   <param name="target" value="jmol" />
   <param name="script" value="color backbone firebrick" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color backbone khaki" />
   <param name="target" value="jmol" />
   <param name="script" value="color backbone khaki" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color backbone none" />
   <param name="target" value="jmol" />
   <param name="script" value="color backbone none" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="backbone off" />
   <param name="target" value="jmol" />
@@ -81,15 +84,17 @@ the backbone color. <br />
 This shows a spline trace of a protein backbone.
 The hermite spline curve passes through the mid-points
 between alpha carbon atoms<br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="trace 0.4" />
   <param name="target" value="jmol" />
   <param name="script" value="trace 0.4" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="trace 0.8" />
   <param name="target" value="jmol" />
@@ -98,22 +103,25 @@ between alpha carbon atoms<br />
 With color by 'structure' you get different colors for
 HELIX, TURN, and SHEET. Color by 'amino' assigns different colors
 to different amino acids.<br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color trace structure" />
   <param name="target" value="jmol" />
   <param name="script" value="color trace structure" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color trace amino" />
   <param name="target" value="jmol" />
   <param name="script" value="color trace amino" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="trace off" />
   <param name="target" value="jmol" />
@@ -122,22 +130,25 @@ to different amino acids.<br />
 <hr />
 
 some rotations<br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="move 0 360 0 0 0 0 0 0 10" />
   <param name="target" value="jmol" />
   <param name="script" value="move 0 360 0 0 0 0 0 0 10" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="move 180 0 0 200 0 0 0 0 5" />
   <param name="target" value="jmol" />
   <param name="script" value="move 180 0 0 200 0 0 0 0 5" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="reset" />
   <param name="target" value="jmol" />
@@ -147,17 +158,5 @@ some rotations<br />
 
 </tr>
 </table>
-
-    </section>
-
-  </body>
-</document>
-
-
-
-
-
-
-
-
-
+</body>
+</html>

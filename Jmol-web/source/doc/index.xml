@@ -17,6 +17,9 @@
       <ul>
         <li>Available as both a Java application
           and as a web browser applet</li>
+
+        <li>Supports RasMol/Chime scripting</li>
+
         <li>Reads many types of files: 
           <a href="http://www.abinit.org/" TARGET="_top">ABINIT</a>,
           <a href="http://www.qtp.ufl.edu/Aces2/" TARGET="_top">ACES II</a>,
@@ -46,8 +49,6 @@
         <li>Animates the computed vibrational modes from any of the
         quantum chemistry packages mentioned above.</li>
 
-        <li>Supports RasMol/Chime scripting</li>
-        
         <li>Displays vectors (velocity, dipole, etc.),
           charges, atomic symbols, or atomic indexes during
           animation.</li>
@@ -59,6 +60,18 @@
         
         <li>Can display unit cell boxes, and energy bands.</li>
       </ul>
+    </section>
+
+    <section title="A Sneak Preview of Jmol Release 10">
+      <p>
+	The upcoming Release 10 of Jmol will include a completely new
+	high performance 3D graphics engine. This major step will
+	make Jmol an attractive upgrade for most users of the MDL
+	Chime plug-in.
+      </p>
+      <p>
+	Take a look at the <a href="preview/">sneak preview</a>
+      </p>
     </section>
 
     <section title="Mailing Lists">

@@ -43,7 +43,8 @@
       <a href="scripting.html">Scripting</a> page for more information.
 
 <appletExample>
-<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar" 
+<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
         width="200" height="200" mayscript="true">
   <param name="load" value="caffeine.xyz"/>
 </applet>]]>
@@ -54,9 +55,10 @@
       
 <appletExample>
 <![CDATA[<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
         width="200" height="200" mayscript="true">
   <param name="load" value="methanol1.cml"/>
-</APPLET>]]>
+</applet>]]>
 </appletExample>
       </p>
 
@@ -69,9 +71,10 @@
       CML source code.
       
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="loadInline" VALUE='
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="loadInline" value='
 <molecule id="methanol">
   <atomArray atomID="a1 a2 a3 a4 a5 a6"
     elementType="C O H H H H"
@@ -80,7 +83,7 @@
     z3="0.024 -0.278 -0.901  0.600  0.609 0.137"/>
 </molecule>
 '/>
-</APPLET>]]>
+</applet>]]>
 </appletExample>
       </p>
 
@@ -89,9 +92,10 @@
     all &lt;'s with &amp;lt;, as in:
 
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="loadInline" VALUE='
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="loadInline" value='
 &lt;molecule id="methanol">
   &lt;atomArray atomID="a1 a2 a3 a4 a5 a6"
     elementType="C O H H H H"
@@ -100,7 +104,7 @@
     z3="0.024 -0.278 -0.901  0.600  0.609 0.137"/>
 &lt;/molecule>
 '/>
-</APPLET>]]>
+</applet>]]>
 </appletExample>
       </p>
     </section>
@@ -130,11 +134,12 @@
 	  sRGB color names (black silver gray white maroon red purple
 	  fuchsia green lime olive yellow navy blue teal aqua).
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="bgcolor" VALUE="#00A0A0">/
-</APPLET>]]>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="methanol1.cml"/>
+  <param name="bgcolor" value="#00A0A0">/
+</applet>]]>
 </appletExample>
         </param>
         
@@ -146,18 +151,20 @@
 	    <li>quickdraw <i>deprecated</i></li>
           </ul>
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="style" VALUE="shaded"/>
-</APPLET>]]>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="methanol1.cml"/>
+  <param name="style" value="shaded"/>
+</applet>]]>
 </appletExample>
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="style" VALUE="wireframe"/>
-</APPLET>]]>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="methanol1.cml"/>
+  <param name="style" value="wireframe"/>
+</applet>]]>
 </appletExample>
         </param>
         
@@ -169,18 +176,20 @@
             <dt>number</dt> <dd>label atoms with their number.</dd>
           </dl>
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="label" VALUE="symbol"/>
-</APPLET>]]>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="methanol1.cml"/>
+  <param name="label" value="symbol"/>
+</applet>]]>
 </appletExample>
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="label" VALUE="number"/>
-</APPLET>]]>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="methanol1.cml"/>
+  <param name="label" value="number"/>
+</applet>]]>
 </appletExample>
         </param>
         
@@ -192,11 +201,12 @@
             <li>false &lt;default&gt;</li>
           </ul>
         <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript="true">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="wireframeRotation" VALUE="true"/>
-</APPLET>]]>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="methanol1.cml"/>
+  <param name="wireframeRotation" value="true"/>
+</applet>]]>
 </appletExample>
 </param>
 
@@ -209,6 +219,7 @@
 	  HTML file.
         <appletExample>
 <![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
         width="200" height="200" mayscript="true">
   <param name="load" value="methanol1.cml"/>
   <param name="script" value="rotate y 10; loop 1"/>
@@ -249,7 +260,8 @@
 
 <appletExample>
 <![CDATA[
-  <applet name="anim" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
+  <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
+          codebase="[codebase]"
           width="350" height="350" mayscript="true">
     <param name="load"   value="SN1_reaction.cml">
   </applet>
@@ -278,10 +290,11 @@
     document.anim2.script(script);
   }
   </script>
-<APPLET name="anim2" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-    WIDTH="350" HEIGHT="350" mayscript="true">
-  <PARAM NAME="load" VALUE="conformeren.cml"/>
-</APPLET>
+<applet name="anim2" code="JmolApplet" archive="JmolApplet.jar"
+    codebase="[codebase]"
+    width="350" height="350" mayscript="true">
+  <param name="load" value="conformeren.cml"/>
+</applet>
   <form>
     <input type="button" value="rewind"  onClick="play2('animate rewind')">
     <input type="button" value="prev"    onClick="play2('animate prev')">
@@ -299,6 +312,7 @@
       
 <appletExample>
 <![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar"
+    codebase="[codebase]"
     width="350" height="350" mayscript="true">
   <param name="load" value="aspirina.mol"/>
   <param name="bgcolor" value="navy"/>

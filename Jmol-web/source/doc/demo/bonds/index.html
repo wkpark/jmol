@@ -1,22 +1,17 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<document>
-  <body>
-    <title>Preview Bond Rendering</title>
-    
-    <section title="New Bond Rendering options">
-
+<html>
+<head><title>jmol applet bonds demo</title>
+</head>
+<body>
 <table border="1">
 <tr>
 <td>
 <h1>aspirin</h1>
-    <appletExample>
-    <![CDATA[
-<applet name="jmol" code="JmolApplet" archive="head/JmolApplet.jar"
+<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="../jmol"
         width="400" height="400" mayscript="true" >
-  <param name="emulate"   value="chime" />
-  <param name="load"      value="aspirina.mol.gz" />
-</applet>]]>
-    </appletExample>
+	<param name="emulate"   value="chime" />
+        <param name="load"      value="aspirina.mol.gz" />
+</applet>
 </td>
 
 <td>
@@ -24,43 +19,49 @@ If you use &lt;param name='emulate' value='chime' /&gt; then the default
 representation is wireframe bonds on a black background. For
 compatibility with the RasMol scripting language, the command to control
 bondsize is called <b>wireframe</b>. Try the following: <br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="wireframe 0.1" />
   <param name="target" value="jmol" />
   <param name="script" value="wireframe 0.1" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="wireframe 0.125" />
   <param name="target" value="jmol" />
   <param name="script" value="wireframe 0.125" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="wireframe 0.25" />
   <param name="target" value="jmol" />
   <param name="script" value="wireframe 0.25" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="wireframe 0.5" />
   <param name="target" value="jmol" />
   <param name="script" value="wireframe 0.5" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="wireframe on" />
   <param name="target" value="jmol" />
   <param name="script" value="wireframe on" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="wireframe off" />
   <param name="target" value="jmol" />
@@ -72,30 +73,34 @@ control over this behavior by introducing another script command.)</i>
 <p />
 
 By default, a bond inherits the colors of the two atoms it connects. 
-If you want to change the bond color you can assign explic colors <br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+If you want to change the bond color you can assign explicit colors <br />
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color bonds dodgerblue" />
   <param name="target" value="jmol" />
   <param name="script" value="color bonds dodgerblue" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color bonds goldenrod" />
   <param name="target" value="jmol" />
   <param name="script" value="color bonds goldenrod" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color bonds limegreen" />
   <param name="target" value="jmol" />
   <param name="script" value="color bonds limegreen" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="color bonds none" />
   <param name="target" value="jmol" />
@@ -107,43 +112,49 @@ The default bondmode is <i>and</i>. Both atoms must be selected in
 order for the script mode to affect the bond. If you switch the bondmode
 to <i>or</i> then the bond will be affected if either atom is selected.
 Try combinations of these buttons with the script commands above.<br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="set bondmode and" />
   <param name="target" value="jmol" />
   <param name="script" value="set bondmode and" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="set bondmode or" />
   <param name="target" value="jmol" />
   <param name="script" value="set bondmode or" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="select carbon" />
   <param name="target" value="jmol" />
   <param name="script" value="select carbon" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="select oxygen" />
   <param name="target" value="jmol" />
   <param name="script" value="select oxygen" />
 </applet><br />
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="select hydrogen" />
   <param name="target" value="jmol" />
   <param name="script" value="select hydrogen" />
 </applet>
-<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
-  height="20" width="200" mayscript="true" >
+<applet code="JmolAppletControl" archive="JmolApplet.jar"
+        codebase="../jmol"
+        height="20" width="200" mayscript="true" >
   <param name="type"  value="button" />
   <param name="label"  value="select all" />
   <param name="target" value="jmol" />
@@ -154,17 +165,5 @@ Try combinations of these buttons with the script commands above.<br />
 
 </tr>
 </table>
-
-    </section>
-
-  </body>
-</document>
-
-
-
-
-
-
-
-
-
+</body>
+</html>

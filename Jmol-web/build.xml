@@ -2,6 +2,7 @@
 
   <property name="version" value="8" />
   <property name="applet-version" value="8" />
+  <property name="jmol-dir" value="../Jmol-b6" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />
   <property name="build.html" value="${build.dir}/html" />
@@ -15,6 +16,7 @@
 
   <target name="html" depends="clean" >
     <mkdir    dir="${doc.dir}/images"/>
+    <mkdir    dir="${doc.dir}/jmol"/>
     <mkdir    dir="${build.html}"/>
     <style basedir="${doc.dir}"
       destdir="${build.html}"
@@ -25,28 +27,35 @@
     <copy todir="${build.html}" overwrite="yes"> 
       <fileset dir="${doc.dir}" includes="license.txt,document.dtd"/>
     </copy>
-    <copy todir="${build.html}/images" overwrite="yes">
-      <fileset dir="${doc.dir}/images"/>
-    </copy>
     <copy todir="${build.html}" overwrite="yes">
-      <fileset dir="${doc.dir}" includes="*.css,*.xyz,*.cml,*.mol,*.spt,*.in, *.gz"/>
-      <fileset dir="../Jmol" includes="JmolApplet.jar" />
-      <fileset dir="../Jmol/appletweb" includes="JmolApplet.properties" />
+      <fileset dir="${doc.dir}"
+               excludes="**/*.xml,**/*~" />
     </copy>
-    <copy todir="${build.html}/head" overwrite="yes">
-      <fileset dir="../Jmol" includes="JmolApplet.jar" />
-      <fileset dir="../Jmol/appletweb" includes="JmolApplet.properties" />
+    <copy todir="${build.html}/jmol" overwrite="yes">
+      <fileset dir="${jmol-dir}" includes="JmolApplet.jar" />
+      <fileset dir="${jmol-dir}/appletweb" includes="JmolApplet.properties" />
     </copy>
     <copy todir="${build.html}/documentation" overwrite="yes">
-      <fileset dir="../Jmol/build/doc" includes="**/*" />
+      <fileset dir="${jmol-dir}/build/doc" includes="**/*" />
     </copy>
 
-    <replace file="${build.html}/index.html"
-             token="$$VERSION$$" value="${version}"/>
-    <replace file="${build.html}/download.html"
-             token="$$VERSION$$" value="${version}"/>
-    <replace file="${build.html}/applet.html"
-             token="$$APPLET-VERSION$$" value="${applet-version}"/>
+    <replace dir="${build.html}" includes="**/*.html">
+      <replacefilter token="$$VERSION$$" value="${version}"/>
+      <replacefilter token="$$APPLET-VERSION$$" value="${applet-version}"/>
+    </replace>
+
+    <replace dir="${build.html}" includes="*.html">
+      <replacefilter token="[images]"   value="images" />
+      <replacefilter token="[root]"     value="." />
+      <replacefilter token="[codebase]" value="jmol" />
+    </replace>
+
+    <replace dir="${build.html}" includes="*/*.html">
+      <replacefilter token="[images]"   value="../images" />
+      <replacefilter token="[root]"     value=".." />
+      <replacefilter token="[codebase]" value="../jmol" />
+    </replace>
+
   </target>
 </project>
 

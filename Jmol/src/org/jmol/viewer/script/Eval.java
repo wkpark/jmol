@@ -247,7 +247,7 @@ public class Eval implements Runnable {
       }
       Token [][] aatoken = compiler.getAatokenCompiled();
       Token[] statement = aatoken[0];
-      int tok = statement[1].tok;
+      //int tok = statement[1].tok;
       String variable = (String)statement[1].value;
       variables.put(variable, statement);
     }
@@ -1573,7 +1573,7 @@ public class Eval implements Runnable {
 
   boolean echoShapeActive = false;
 
-  void echo() throws ScriptException {
+  void echo() {
     String text = "";
     if (statementLength == 2 && statement[1].tok == Token.string)
       text = (String)statement[1].value;
@@ -1582,7 +1582,7 @@ public class Eval implements Runnable {
     viewer.scriptEcho(text);
   }
 
-  void label() throws ScriptException {
+  void label() {
     String strLabel = (String)statement[1].value;
     if (strLabel.equalsIgnoreCase("on")) {
       // from the RasMol 2.6b2 manual: RasMol uses the label
@@ -1602,7 +1602,7 @@ public class Eval implements Runnable {
     viewer.setLabel(strLabel);
   }
 
-  void hover() throws ScriptException {
+  void hover() {
     String strLabel = (String)statement[1].value;
     if (strLabel.equalsIgnoreCase("on"))
       strLabel = "%U";
@@ -1620,11 +1620,11 @@ public class Eval implements Runnable {
       filenameExpected();
     if (statementLength != i + 1)
       badArgumentCount();
-    long timeBegin = System.currentTimeMillis();
+    //long timeBegin = System.currentTimeMillis();
     String filename = (String)statement[i].value;
     viewer.openFile(filename);
     String errMsg = viewer.getOpenFileError();
-    int millis = (int)(System.currentTimeMillis() - timeBegin);
+    //int millis = (int)(System.currentTimeMillis() - timeBegin);
     //    System.out.println("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null)
       evalError(errMsg);
@@ -1655,7 +1655,7 @@ public class Eval implements Runnable {
         integerExpected();
     }
     int argCount = monitorArgs[0] = statementLength - 1;
-    int numAtoms = viewer.getAtomCount();
+    //int numAtoms = viewer.getAtomCount();
     for (int i = 0; i < argCount; ++i) {
       Token token = statement[i + 1];
       if (token.tok != Token.integer)
@@ -1695,9 +1695,8 @@ public class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
-    int tok;
     if (statement.length > 3 &&
-        (tok = statement[1].tok) == Token.axisangle) {
+        statement[1].tok == Token.axisangle) {
       checkStatementLength(6);
       viewer.rotateAxisAngle(floatParameter(2),
                              floatParameter(3),
@@ -1853,11 +1852,12 @@ public class Eval implements Runnable {
     int dTransZ = intParameter(7);
     int dSlab = intParameter(8);
     float floatSecondsTotal = floatParameter(9);
-    int fps = 30, maxAccel = 5;
+    int fps = 30/*, maxAccel = 5*/;
     if (statementLength > 10) {
       fps = statement[10].intValue;
-      if (statementLength > 11)
-        maxAccel = statement[11].intValue;
+      if (statementLength > 11) {
+        //maxAccel = statement[11].intValue;
+      }
     }
 
     int zoom = viewer.getZoomPercent();
@@ -2435,9 +2435,9 @@ public class Eval implements Runnable {
     viewer.setShapeProperty(shapeType, "font", font3d);
   }
 
-  /****************************************************************
+  /*==============================================================*
    * SET implementations
-   ****************************************************************/
+   *==============================================================*/
 
   void set() throws ScriptException {
     System.out.println("setting:" + statement[1].value);
@@ -2904,9 +2904,9 @@ public class Eval implements Runnable {
     viewer.setPickingMode(pickingMode);
   }
 
-  /****************************************************************
+  /*==============================================================*
    * SHOW implementations
-   ****************************************************************/
+   *==============================================================*/
 
   void show() throws ScriptException {
     switch(statement[1].tok) {

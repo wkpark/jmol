@@ -106,7 +106,7 @@ class Compiler {
 
     Vector lltoken = new Vector();
     Vector ltoken = new Vector();
-    Token tokenCommand = null;
+    //Token tokenCommand = null;
     int tokCommand = Token.nada;
 
     for ( ; true; ichToken += cchToken) {
@@ -195,7 +195,7 @@ class Compiler {
         switch (tokCommand) {
         case Token.nada:
           ichCurrentCommand = ichToken;
-          tokenCommand = token;
+          //tokenCommand = token;
           tokCommand = tok;
           if ((tokCommand & Token.command) == 0)
             return commandExpected();
@@ -203,7 +203,7 @@ class Compiler {
         case Token.set:
           if (ltoken.size() == 1) {
             if ((tok & Token.setspecial) != 0) {
-              tokenCommand = token;
+              //tokenCommand = token;
               tokCommand = tok;
               ltoken.removeAllElements();
               break;
@@ -417,8 +417,8 @@ class Compiler {
     //      return false;
     int ichT = ichToken + 1;
     //    while (ichT < cchScript && script.charAt(ichT++) != chFirst)
-    while (ichT < cchScript && script.charAt(ichT++) != '"')
-      ;
+    while (ichT < cchScript && script.charAt(ichT++) != '"') {
+    }
     cchToken = ichT - ichToken;
     return true;
   }
@@ -604,18 +604,22 @@ class Compiler {
   private boolean unrecognizedExpressionToken() {
     return compileError("unrecognized expression token:" + valuePeek());
   }
+  /*
   private boolean integerExpectedAfterHyphen() {
     return compileError("integer expected after hyphen");
   }
+  */
   private boolean comparisonOperatorExpected() {
     return compileError("comparison operator expected");
   }
   private boolean integerExpected() {
     return compileError("integer expected");
   }
+  /*
   private boolean numberExpected() {
     return compileError("number expected");
   }
+  */
   private boolean numberOrKeywordExpected() {
     return compileError("number or keyword expected");
   }
@@ -628,12 +632,14 @@ class Compiler {
   private boolean residueSpecificationExpected() {
     return compileError("3 letter residue specification expected");
   }
+  /*
   private boolean resnumSpecificationExpected() {
     return compileError("residue number specification expected");
   }
   private boolean invalidResidueNameSpecification(String strResName) {
     return compileError("invalid residue name specification:" + strResName);
   }
+  */
   private boolean invalidChainSpecification() {
     return compileError("invalid chain specification");
   }

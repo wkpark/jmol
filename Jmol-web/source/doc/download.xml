@@ -4,7 +4,7 @@
     <title>Download Jmol</title>
     
     <section title="Requirements">
-      <p>The Jmol application requires Java 1.2 or later. The latest
+      <p>The Jmol application requires Java 1.4 or higher. The latest
       <a href="http://java.sun.com/j2se/">Java 2 Platform Standard Edition</a>
       is recommended.
       </p>

@@ -29,13 +29,13 @@
     </copy>
     <copy todir="${build.html}" overwrite="yes">
       <fileset dir="${doc.dir}"
-               excludes="**/*.xml,**/*~" />
+               excludes="**/*.xml,**/*.xsl,**/*~" />
     </copy>
     <copy todir="${build.html}/jmol" overwrite="yes">
       <fileset dir="${jmol-dir}" includes="JmolApplet.jar" />
       <fileset dir="${jmol-dir}/appletweb" includes="JmolApplet.properties" />
     </copy>
-    <copy todir="${build.html}/documentation" overwrite="yes">
+    <copy todir="${build.html}/docs" overwrite="yes">
       <fileset dir="${jmol-dir}/build/doc" includes="**/*" />
     </copy>
 

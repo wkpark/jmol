@@ -62,15 +62,17 @@
       </ul>
     </section>
 
-    <section title="A Sneak Preview of Jmol Release 10">
+    <section title="Jmol v10 - a RasMol/Chime replacement">
       <p>
-	The upcoming Release 10 of Jmol will include a completely new
-	high performance 3D graphics engine. This major step will
-	make Jmol an attractive upgrade for most users of the MDL
-	Chime plug-in.
+        Jmol v10 is still under development and has not been released.
+	It includes a completely new high performance 3D graphics
+	engine specifically designed for rendering molecules. This
+	major step will	make Jmol an attractive upgrade for most
+	users of the MDL Chime plug-in.
       </p>
       <p>
-	Take a look at the <a href="preview/">sneak preview</a>
+        To get an early look at the prerelease Jmol v10 applet in
+	action take a look at the <a href="preview/">sneak preview</a>.
       </p>
     </section>
 

@@ -64,30 +64,26 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 		myBean.setAtomPropertiesFromURL(atURL);
 		
 		String model = getParameter("MODEL");
-		if (model == null){
-            throw new RuntimeException("No model specified, use <PARAM NAME=MODEL VALUE=whatever>");
-		}
-		try {
-			ChemFileReader cfr;
-			if (getParameter("FORMAT").toUpperCase().equals("CMLSTRING")){
-				String cmlString = convertEscapeChars(model);
-				cfr = ReaderFactory.createReader(new java.io.StringReader(cmlString));
-			}else{
-				java.net.URL modelURL;
-				try{
-					modelURL= new java.net.URL(getDocumentBase(),model);
-				}catch (java.net.MalformedURLException e){
-					throw new RuntimeException(("Got MalformedURL for model: "+e.toString()));
+		if (model != null){
+			try {
+				ChemFileReader cfr;
+				if (getParameter("FORMAT") != null && getParameter("FORMAT").toUpperCase().equals("CMLSTRING")){
+					String cmlString = convertEscapeChars(model);
+					cfr = ReaderFactory.createReader(new java.io.StringReader(cmlString));
+				}else{
+					java.net.URL modelURL;
+					try{
+						modelURL= new java.net.URL(getDocumentBase(),model);
+					}catch (java.net.MalformedURLException e){
+						throw new RuntimeException(("Got MalformedURL for model: "+e.toString()));
+					}
+					cfr = ReaderFactory.createReader(new java.io.InputStreamReader(modelURL.openStream()));
 				}
-				cfr = ReaderFactory.createReader(new java.io.InputStreamReader(modelURL.openStream()));
+				myBean.setModel(cfr.read());
+			}catch(java.io.IOException e){
+				e.printStackTrace();
 			}
-
-			myBean.setModel(cfr.read());
-			
-		}catch(java.io.IOException e){
-			e.printStackTrace();
-		}
-
+                }
 		myBean.addMouseListener(this);
 		myBean.addKeyListener(this);
                 String bg;
@@ -114,7 +110,8 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 		}
 		setLayout(new java.awt.BorderLayout());
 		add(myBean,"Center");
-		myBean.setAtomRenderingStyle("SHADED");
+		myBean.setAtomRenderingStyle("QUICKDRAW");
+		myBean.setBondRenderingStyle("QUICKDRAW");
 	}
 
 	/**
@@ -134,25 +131,20 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
         char semi = sc.charAt(0);
         StringBuffer eCharBuffer = new StringBuffer(eChars);
         StringBuffer out = new StringBuffer(0);
-//        int outPosition = 0;
 //Scan the string for html escape chars and replace them with
         int state = 0;//0=scanning, 1 = reading
         StringBuffer token= new StringBuffer(0);//The escape char we are reading
-//        int tokenPosition = 0;//Where to put next char in the token
         for (int position=0;position < eCharBuffer.length();position++){
            char current = eCharBuffer.charAt(position);
            if (state==0){
              if (current==amp){
                state = 1;
-//               tokenPosition =0;
 //For some reason we have problems with setCharAt so use append
                token = new StringBuffer(0);
                token.append(current);
-//               tokenPosition++;
              }else{
 //Copy through to output
                out.append(current);
-//               outPosition++;               
              }
            }else{
              if (current==semi){
@@ -161,17 +153,13 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
                String tokenString = token.toString();
                if (tokenString.equals("&lt")){
                  out.append(lessThan);
-//                 outPosition++;                                
                }else if (tokenString.equals("&gt")){
                  out.append(moreThan);
-//                 outPosition++;                                
                }else if (tokenString.equals("&quot")){
                  out.append(quote);
-//                 outPosition++;                                
                }
              }else{
                token.append(current);
-//               tokenPosition++;
              }
            }
         }
@@ -179,6 +167,52 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
         String returnValue = out.toString();
         return returnValue;
      }
+
+/** Takes the string and replaces '%' with EOL chars.
+* Used by the javascript setModelToRenderFromXYZString- more robust
+* than whitescapes you see!
+**/
+   public String recoverEOLSymbols(String inputString){
+        String at = "%";
+        char mark = at.charAt(0);
+        String dt = ".";
+        char dot = dt.charAt(0);
+        String min = "-";
+        char minus = min.charAt(0);
+        String sp = " ";
+        char space = sp.charAt(0);
+        String nlString = "\n";
+        char nl = nlString.charAt(0);//(char)Character.LINE_SEPARATOR;
+        StringBuffer eCharBuffer = new StringBuffer(inputString);
+        StringBuffer out = new StringBuffer(0);
+//Scan the string for & and replace with /n
+        boolean lastWasSpace = false;
+        for (int position=0;position < eCharBuffer.length();position++){
+           char current = eCharBuffer.charAt(position);
+             if (current==mark){
+//For some reason we have problems with setCharAt so use append
+               out.append(nl);
+               lastWasSpace = false;
+             }else if (current==space){
+               if (!lastWasSpace){
+                out.append(current);
+                lastWasSpace = true;
+               }
+             }else if (Character.isLetterOrDigit(current)||current==dot||current==minus){
+//Copy through to output
+               out.append(current);
+               lastWasSpace = false;
+             }
+        }
+//No idea why but a space at the very end seems to be unhealthy
+        if (lastWasSpace){
+          out.setLength(out.length()-1);
+        }
+        String returnValue = out.toString();
+        return returnValue;
+
+   }
+
 
 	/**
 	 * Invoked when the mouse has been clicked on a component. 
@@ -268,5 +302,158 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
             }            
          }
      }
-	
+
+//METHODS FOR JAVASCRIPT
+/**
+ * <b>For Javascript:<\b> Takes the argument, pharses it as an XYZ file and sets it as the current model.
+ * For robustness EOL chars can be ignored and should then be replaced with % symbols.
+ * @param hugeXYZString The whole of the molecule XYZ file as a single string.
+ * @param aliasedEOL If 'T' then EOL chars should be replaced by % symbols otherwise 'F'.
+ */
+    public void setModelToRenderFromXYZString(String hugeXYZString, String aliasedEOL){
+        aliasedEOL = aliasedEOL.toUpperCase();
+        if (aliasedEOL.equals("T")){
+           hugeXYZString = recoverEOLSymbols(hugeXYZString);
+        }
+        try {
+            ChemFileReader cfr;
+            cfr = ReaderFactory.createReader(new java.io.StringReader(hugeXYZString));
+            myBean.setModel(cfr.read());
+	}catch(java.io.IOException e){
+            e.printStackTrace();
+        }
+     }
+
+/**
+ * <b>For Javascript:<\b> Takes the argument, pharses it as CML and sets it as the current model.
+ * Note that the CML should be straight- it is not necessary to use HTML escape codes.
+ * @param hugeCMLString The whole of the molecule CML as a single string.
+ */
+    public void setModelToRenderFromCMLString(String hugeCMLString){
+          try {
+	    ChemFileReader cfr;
+//            String cmlString = convertEscapeChars(hugeCMLString);
+            cfr = ReaderFactory.createReader(new java.io.StringReader(hugeCMLString));
+            myBean.setModel(cfr.read());
+	}catch(java.io.IOException e){
+            e.printStackTrace();
+        }
+    }
+
+/**
+ * <b>For Javascript:<\b> Takes the argument, reads it as a URL and sets it as the current model.
+ * @param modelURL The URL of the model we want.
+ */
+    public void setModelToRenderFromURL(String modelURLString){
+       try {
+         ChemFileReader cfr;
+         java.net.URL modelURL;
+         try{
+           modelURL= new java.net.URL(getDocumentBase(),modelURLString);
+         }catch (java.net.MalformedURLException e){
+           throw new RuntimeException(("Got MalformedURL for model: "+e.toString()));
+         }
+         cfr = ReaderFactory.createReader(new java.io.InputStreamReader(modelURL.openStream()));
+         myBean.setModel(cfr.read());
+       }catch(java.io.IOException e){
+         e.printStackTrace();
+       }
+    }
+/**
+ * <b>For Javascript:<\b> Takes the argument, reads it as a file and sets it as the current model.
+ * @param modelFile The filename of the model we want.
+ * @param type Either "XYZ", "CML" or "PDB"
+ */
+    public void setModelToRenderFromFile(String modelFile, String type){
+         setModelToRenderFromFile(modelFile,type);
+    }
+/**
+ * <b>For Javascript:<\b> Takes the argument, reads it as a file and allocates this as the current atom types- eg radius etc.
+ * @param propertiesFile The filename of the properties we want.
+ */
+    public void setAtomPropertiesFromFile(String propertiesFile){
+       myBean.setAtomPropertiesFromFile(propertiesFile);
+    }
+/**
+ * <b>For Javascript:<\b> Takes the argument, reads it as a URL and allocates this as the current atom types- eg radius etc.
+ * @param propertiesFileURL The URL of the properties we want.
+ */
+    public void setAtomPropertiesFromURL(String propertiesURL){
+       myBean.setAtomPropertiesFromURL(propertiesURL);
+    }
+/**
+ * <b>For Javascript:<\b> Set the background colour.
+ * @param colourInHex The colour in the format #FF0000 for red etc
+ */
+    public void setBackgroundColour(String colourInHex){
+        myBean.setBackgroundColour(colourInHex);
+    }
+/**
+ * <b>For Javascript:<\b> Set the foreground colour.
+ * @param colourInHex The colour in the format #FF0000 for red etc
+ */
+    public void setForegroundColour(String colourInHex){
+        myBean.setForegroundColour(colourInHex);
+    }
+/**
+ * <b>For Javascript:<\b> Causes Atoms to be shown or hidden.
+ * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+ */
+   public void setAtomsShown(String TorF){
+      myBean.setAtomsShown(TorF);
+   }
+/**
+ * <b>For Javascript:<\b> Causes bonds to be shown or hidden.
+ * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+ */
+   public void setBondsShown(String TorF){
+      myBean.setBondsShown(TorF);
+   }
+/**
+ * <b>For Javascript:<\b> Sets the rendering mode for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'. 
+ */
+   public void setAtomRenderingStyle(String style){
+       myBean.setAtomRenderingStyle(style);
+   }
+/**
+ * <b>For Javascript:<\b> Gets the rendering mode for atoms. Values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'. 
+ */
+   public String getAtomRenderingStyleDescription(){
+      return getAtomRenderingStyleDescription();
+   }
+/**
+ * <b>For Javascript:<\b> Sets the rendering mode for bonds. Valid values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'. 
+ */
+   public void setBondRenderingStyle(String style){
+      myBean.setBondRenderingStyle(style);
+   }
+/**
+ * <b>For Javascript:<\b> Gets the rendering mode for bonds. Values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'. 
+ */
+   public String getBondRenderingStyleDescription(){
+      return myBean.getBondRenderingStyleDescription();
+   }
+
+/**
+ * <b>For Javascript:<\b> Sets the rendering mode for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'. 
+ */
+   public void setLabelRenderingStyle(String style){
+       myBean.setLabelRenderingStyle(style);
+   }
+/**
+ * <b>For Javascript:<\b> Gets the rendering mode for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'. 
+ */
+   public String getLabelRenderingStyleDescription(){
+      return myBean.getLabelRenderingStyleDescription();
+   }
+
+/**
+ * <b>For Javascript:<\b> Sets whether they view automatically goes to wireframe when they model is rotated.
+ * @param doesIt String either 'T' or 'F'
+ */
+   public void setAutoWireframe(String doesIt){
+      myBean.setAutoWireframe(doesIt);
+   }
+
+
 }

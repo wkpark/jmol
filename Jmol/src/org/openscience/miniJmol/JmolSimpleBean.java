@@ -76,9 +76,10 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 	 */
     public void setModel(ChemFile cf) {
         this.cf = cf;
+        display.setChemFile(cf);
         modelReady = true;
         ready = areWeReady();
-	}
+    }
 
 	/**
 	 * Takes the argument, reads it as a file and allocates this as
@@ -246,7 +247,8 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 	public boolean getBondsShown(){
 		return display.getShowBonds();
 	}
-	
+
+
 	/**
 	 * Sets the rendering mode for atoms. Valid values are
 	 * 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
@@ -417,13 +419,6 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 
 
 //Private and unuseful methods
-// Causes the model to be displayed. If not all the fields have been set then an IllegalStateException is thrown and we return to waiting.
-    private void setDisplayReady() throws IllegalStateException{
-      if(!ready){
-         whyArentWeReady();
-      }
-      display.setChemFile(cf);
-    }
 
     /**
      * returns the ChemFile that we are currently working with
@@ -502,26 +497,10 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 		return (modelReady && typesReady);
 	}
 	
-   private void whyArentWeReady() throws IllegalStateException{
-      if (ready){
-        throw new RuntimeException("Why aren't we ready? We ARE ready!!");
-      }else if (!modelReady){
-        throw new IllegalStateException("Model has not been set with setCMLToRender or setModelToRender");
-      }else if (!typesReady){
-        throw new IllegalStateException("Atom types have not been set with setAtomPropertiesFromFile");
-      }else{
-        throw new IllegalStateException("Serious Bug-a-roo! ready=false but I think we're ready!");
-      }
-   }
+   public void componentResized(java.awt.event.ComponentEvent e) {}
+   public void componentShown(java.awt.event.ComponentEvent e) {}
    public void componentHidden(java.awt.event.ComponentEvent e) {}
    public void componentMoved(java.awt.event.ComponentEvent e){}
-   public void componentResized(java.awt.event.ComponentEvent e) {
-      setDisplayReady();   
-   }
-   public void componentShown(java.awt.event.ComponentEvent e) {
-//       System.out.println("Holy cow- calling setDisplayReady()");
-       setDisplayReady();
-   }
 /**Warning this adds the mouseListener to the canvas itself to allow following of mouse 'on the bean'.**/
    public void addMouseListener(java.awt.event.MouseListener ml){
       display.addMouseListener(ml);

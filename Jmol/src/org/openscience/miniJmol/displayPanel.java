@@ -44,6 +44,7 @@ import java.awt.event.*;
 import javax.vecmath.Point3f;
 
 public class displayPanel extends Canvas implements java.awt.event.ComponentListener{
+    private String message = "Waiting for structure...";
 	private DisplaySettings settings;
     private boolean Perspective;
     private float FieldOfView;
@@ -77,20 +78,15 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
     public static final int DEFORM = 4;
     public static final int MEASURE = 5;
     private int mode = ROTATE;
-    private static Color backgroundColor = null;
+    private Color backgroundColor = null;
     //Added T.GREY for moveDraw support- should be true while mouse is dragged
     private boolean mouseDragged = false;
-    private boolean WireFrameRotation = false;
-//
-//    private boolean showPopupMenu = true;
-//    private int popButtonSideLength =10;
-//    private javax.swing.JPopupMenu popup;
+    private boolean WireFrameRotation = true;
       private java.awt.Image db;
 
     public displayPanel() {
       super();
     //Create the popup menu.
-//      popup = createPopupFromString(null);
       setBackground(java.awt.Color.black);
       backgroundColor = (java.awt.Color.black);
       setForeground(java.awt.Color.white);
@@ -101,6 +97,12 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
         this.addKeyListener(new MyKeyListener());            
         java.awt.Dimension s = this.getSize();
 		db = createImage(s.width, s.height);
+    }
+
+/** Sets the status message to read whatever is in msg. 'Status message' here means the text in the corner of the applet.**/
+    public void setStatusMessage(String msg){
+       message = msg;
+       repaint();
     }
 
     public boolean getAntiAliased() {
@@ -123,18 +125,6 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
         this.settings = settings;
     }
 
-//   public boolean getPopupMenuActive(){
-//       return showPopupMenu;
-//   }
-
-//   public void setPopupMenuActive(boolean visible){
-//       showPopupMenu = visible;
-//       if (painted){
-//         painted = false;
-//         repaint();
-//       }
-//   }
-   
 
     public void setChemFile(ChemFile cf) {
         this.cf = cf;
@@ -198,14 +188,6 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
             
         }
         public void mouseClicked(MouseEvent e) {
-//            if (showPopupMenu){
-//               if (e.getX() < popButtonSideLength){
-//                 if (e.getY() < popButtonSideLength){
-//                    popup.show(e.getComponent(),e.getX(), e.getY());
-//                    return;
-//                 }
-//               }
-//            }
             if (mode == PICK) {
                 if (haveFile) {                    
                     if (e.isShiftDown()) {
@@ -350,13 +332,11 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
         }
     }
             
-    static void setBackgroundColor(Color bg) {
+    public void setBackgroundColor(Color bg) {
         backgroundColor = bg;
+        super.setBackground(bg);
     }
-    static void setBackgroundColor() {
-        setBackgroundColor(backgroundColor);
-    }
-    static Color getBackgroundColor() {
+    public Color getBackgroundColor() {
         return backgroundColor;
     }
     public void setForegroundColor(Color fg) {
@@ -383,18 +363,25 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
     }
 
     public void paint(Graphics g){
-		if (db == null) {
-			return;
-		}
+       if (db == null){
+         return;
+       }else if(cf == null) {
+          g.drawString(message,10,10);
+          return;
+        }
        paintBuffer(db.getGraphics());
        g.drawImage(db,0,0,this);
     }
 
 
     public void paintBuffer(Graphics g) {
-        if (backgroundColor == null) setBackgroundColor();
         
-        Color bg = backgroundColor;
+        Color bg;
+        if (backgroundColor == null){
+          bg=Color.black;
+        }else{
+          bg = backgroundColor;
+        }
         Color fg = getForeground();
         
         if (md == null) {
@@ -439,12 +426,6 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
                 g.setColor(fg);
                 g.drawRect(rleft, rtop, rright-rleft, rbottom-rtop);
             }                        
-//            if (showPopupMenu){
-//               g.setColor(fg);
-//               g.drawRect(0,0,popButtonSideLength,popButtonSideLength);
-//               g.drawLine(0,0,popButtonSideLength,popButtonSideLength);
-//               g.drawLine(0,popButtonSideLength,popButtonSideLength,0);
-//            }
             painted = true;
             
         }
@@ -467,10 +448,15 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
         requestFocus();
         java.awt.Dimension s = this.getSize();
         db = createImage(s.width, s.height);
+        init();
     }
 
     public void componentShown(java.awt.event.ComponentEvent e) {
 //     Invoked when component has been shown. 
+        requestFocus();
+        java.awt.Dimension s = this.getSize();
+        db = createImage(s.width, s.height);
+        init();
     }
 
    /**
@@ -494,144 +480,6 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
 	return cmd;
     }
 
-   /*"Sets the menu description- see JmolSimpleBean!
-    public void setMenuDescription(String menuString){
-       popup = createPopupFromString(menuString);
-    }
-
-*/
-    // The actions:
-/*    static final String showBondsCommand = "showBonds";
-    static final String showAtomsCommand = "showAtoms";
-    static final String showVectorsCommand = "showVectors";
-
-    static final String rendermodeAtomQuickDrawCommand = "atomQuickDraw";
-    static final String rendermodeAtomShadedCommand = "atomShadedDraw";
-    static final String rendermodeAtomWireframeCommand = "atomWireframeDraw";
-    static final String rendermodeBondQuickDrawCommand = "bondQuickDraw";
-    static final String rendermodeBondShadedCommand = "bondShadedDraw";
-    static final String rendermodeBondWireframeCommand = "bondWireframeDraw";
-    static final String rendermodeBondLineCommand = "bondLineDraw";
-
-    static final String frontCommand = "frontView";
-    static final String topCommand = "topView";
-    static final String bottomCommand = "bottomView";
-    static final String rightCommand = "rightView";
-    static final String leftCommand = "leftView";
-    static final String homeCommand = "homeView";
-
-    static final String labelsNoneCommand = "noLabels";
-    static final String labelsSymbolsCommand = "symbolLabels";
-    static final String labelsTypesCommand = "typesLabels";
-    static final String labelsNumbersCommand = "numbersLabels";
-
-    static final String wireframeRotationCommand = "wireframeRotation";
-*/
-//    private javax.swing.JPopupMenu createPopupFromString(String menuDesc){
-//        if (menuDesc == null){
-//           menuDesc =("View>,Front,frontView,Top,topView,Bottom,bottomView,Right,rightView,Left,leftView,Home,homeView,<"
-//                    + ",Atom Style>,Quick Draw,atomQuickDraw,Shaded,atomShadedDraw,WireFrame,atomWireframeDraw,<"
-//                    + ",Bond Style>,Quick Draw,bondQuickDraw,Shaded,bondShadedDraw,Wireframe,bondWireframeDraw,Line,bondLineDraw,<"
-//                    + ",Atom Labels>,None,noLabels,Atomic Symbols,symbolLabels,Atom Types,typesLabels,Atom Number,numbersLabels,<"
-//                    + ",Toggle Wireframe Rotation,wireframeRotation,Toggle Show Atoms,showAtoms,Toggle Show Bonds,showBonds,Toggle Show Vectors,showVectors");
-//        }
-//        String[] menuStrings = tokenize(menuDesc);
-//        javax.swing.JPopupMenu r = new javax.swing.JPopupMenu();
-//        for(int t=0; t<menuStrings.length;t++){
-//          if(menuStrings[t].endsWith(">")){
-//Sub menu
-//             javax.swing.JMenu menu = new javax.swing.JMenu(menuStrings[t].substring(0,menuStrings[t].length()-1));
-//             t++;
-//             while(!menuStrings[t].equals("<")){
-//               javax.swing.JMenuItem menusubItem = new javax.swing.JMenuItem(menuStrings[t]);
-//               t++;
-//               menusubItem.setActionCommand(menuStrings[t]);
-//               menusubItem.addActionListener(this);
-//               menu.add(menusubItem);
-//               t++;
-//             }
-//             r.add(menu);
-//          }else{
-//Ordinary item
-//             javax.swing.JMenuItem menuItem = new javax.swing.JMenuItem(menuStrings[t]);
-//             t++;
-//             menuItem.setActionCommand(menuStrings[t]);
-//             menuItem.addActionListener(this);
-//             r.add(menuItem);
-//          }
-//       }
-//       return r;
-//    }
-/*
-    public void actionPerformed(java.awt.event.ActionEvent e) {
-
-      String command = e.getActionCommand();
-      if (command.equals(showBondsCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).toggleBonds();
-        }
-      }else if (command.equals(showAtomsCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).toggleAtoms();
-        }
-		settings.toggleDrawBondsToAtomCenters();
-      }else if (command.equals(showVectorsCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).toggleVectors();
-        }
-      }else if (command.equals(rendermodeAtomQuickDrawCommand)){
-	  DisplaySettings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
-      }else if (command.equals(rendermodeAtomShadedCommand)){
-	  DisplaySettings.setAtomDrawMode(DisplaySettings.SHADING);
-      }else if (command.equals(rendermodeAtomWireframeCommand)){
-	  DisplaySettings.setAtomDrawMode(DisplaySettings.WIREFRAME);
-      }else if (command.equals(rendermodeBondQuickDrawCommand)){
-	  DisplaySettings.setBondDrawMode(DisplaySettings.QUICKDRAW);
-      }else if (command.equals(rendermodeBondShadedCommand)){
-	  DisplaySettings.setBondDrawMode(DisplaySettings.SHADING);
-      }else if (command.equals(rendermodeBondLineCommand)){
-	  DisplaySettings.setBondDrawMode(DisplaySettings.LINE);
-      }else if (command.equals(rendermodeBondWireframeCommand)){
-	  DisplaySettings.setBondDrawMode(DisplaySettings.WIREFRAME);
-      }else if (command.equals(frontCommand)){
-            amat.xrot(0.0f);
-            amat.yrot(0.0f);
-      }else if (command.equals(topCommand)){
-            amat.xrot(90.0f);
-            amat.yrot(0.0f);
-      }else if (command.equals(bottomCommand)){
-            amat.xrot(-90.0f);
-            amat.yrot(0.0f);
-      }else if (command.equals(rightCommand)){
-            amat.xrot(0.0f);
-            amat.yrot(90.0f);
-      }else if (command.equals(leftCommand)){
-            amat.xrot(0.0f);
-            amat.yrot(-90.0f);
-      }else if (command.equals(homeCommand)){
-            amat.unit();
-            tmat.unit();
-            zmat.unit();
-			init();
-      }else if (command.equals(labelsNoneCommand)){
-	  settings.setLabelMode(DisplaySettings.NOLABELS);
-      }else if (command.equals(labelsSymbolsCommand)){
-	  settings.setLabelMode(DisplaySettings.SYMBOLS);
-      }else if (command.equals(labelsTypesCommand)){
-	  settings.setLabelMode(DisplaySettings.TYPES);
-      }else if (command.equals(labelsNumbersCommand)){
-	  settings.setLabelMode(DisplaySettings.NUMBERS);
-      }else if (command.equals(wireframeRotationCommand)){
-            WireFrameRotation = !WireFrameRotation;
-      }else{
-           System.out.println("Unknown command: "+command);
-      }
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-*/
     public boolean getShowBonds(){
        return md.getShowBonds();
     }

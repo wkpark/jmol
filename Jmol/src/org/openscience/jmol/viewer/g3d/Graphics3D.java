@@ -96,6 +96,7 @@ final public class Graphics3D {
   }
 
   public void setSize(int width, int height) {
+    System.out.println("Graphics3D.setSize(" + width + "," + height + ")");
     width1 = this.width = width;
     xLast1 = xLast = width1 - 1;
     height1 = this.height = height;
@@ -109,17 +110,18 @@ final public class Graphics3D {
     size4 = width4 * height4;
 
     if (size1 == 0) {
+      System.out.println("sizes are null");
       pbuf = pbuf1 = pbuf4 = null;
       zbuf = zbuf1 = zbuf4 = null;
       return;
-    }
+    } else {
 
-    platform.allocateBuffers(width, height);
-    pbuf = pbuf1 = platform.pBuffer;
-    zbuf = zbuf1 = platform.zBuffer;
-    
-    //    pbuf4 = new int[size4];
-    //    zbuf4 = new short[size4];
+      System.out.println("getting ready to allocateBuffers");
+      platform.allocateBuffers(width, height);
+      pbuf = pbuf1 = platform.pBuffer;
+      zbuf = zbuf1 = platform.zBuffer;
+    }
+    System.out.println("returning from Graphics3D.setSize()");
   }
 
   public void validateRectClip(Rectangle rectClip) {

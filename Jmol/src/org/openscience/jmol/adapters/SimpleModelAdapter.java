@@ -88,12 +88,20 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     String line3 = bufferedReader.readLine();
     String line4 = bufferedReader.readLine();
     bufferedReader.reset();
+    if (line1 == null)
+      line1 = "";
+    if (line2 == null)
+      line2 = "";
+    if (line3 == null)
+      line3 = "";
+    if (line4 == null)
+      line4 = "";
     try {
       int atomCount = Integer.parseInt(line1.trim());
       return XYZ;
     } catch (NumberFormatException e) {
     }
-    if (line4 != null && line4.length() >= 6) {
+    if (line4.length() >= 6) {
       String line4trimmed = line4.trim();
       if (line4trimmed.endsWith("V2000") ||
           line4trimmed.endsWith("v2000") ||

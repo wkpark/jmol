@@ -32,7 +32,7 @@
 
   <target name="setup" >
     <uptodate property="jmolGuide.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
-      <srcfiles dir="${doc.dir}/source" includes="JMolGuide.docbook.xml" />
+      <srcfiles dir="${doc.dir}/source" includes="JmolGuide.docbook.xml" />
     </uptodate>
     <uptodate property="jmolHistory.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html">
       <srcfiles dir="${doc.dir}/source" includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
@@ -83,7 +83,7 @@
         classpath="${lib.dir}/saxon.jar" >
       <jvmarg value="${proxyHost}" />
       <jvmarg value="${proxyPort}" />
-      <arg value="${user.dir}/${doc.dir}/source/JMolGuide.docbook.xml" />
+      <arg value="${user.dir}/${doc.dir}/source/JmolGuide.docbook.xml" />
       <arg value="${docbook.dir}/html/chunk.xsl" />
     </java>
   </target>

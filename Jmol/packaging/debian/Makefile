@@ -45,7 +45,7 @@ setup: clean
 guide:
 	@echo "Compiling Jmol guide..."
 	mkdir -p /tmp/jmol-${VERSION}/src/org/openscience/jmol/Data/guide/
-	cd /tmp/jmol-${VERSION}/src/org/openscience/jmol/Data/guide; xsltproc --nonet --novalid /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/html/chunk.xsl ../../../../../../doc/source/JMolGuide.docbook.xml
+	cd /tmp/jmol-${VERSION}/src/org/openscience/jmol/Data/guide; xsltproc --nonet --novalid /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/html/chunk.xsl ../../../../../../doc/source/JmolGuide.docbook.xml
 
 deb: setup guide
 	@echo "Building package for version ${VERSION}"

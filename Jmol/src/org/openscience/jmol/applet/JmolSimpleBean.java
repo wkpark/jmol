@@ -28,7 +28,7 @@ import org.openscience.jmol.DisplaySettings;
 import org.openscience.jmol.AtomTypeSet;
 
 /**
- * Subset version of JMol which appears as a componant and can be controlled with strings.
+ * Subset version of Jmol which appears as a componant and can be controlled with strings.
 **/
 public class JmolSimpleBean extends java.awt.Panel
     implements java.awt.event.ComponentListener {

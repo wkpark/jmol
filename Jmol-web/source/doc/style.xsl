@@ -92,7 +92,7 @@
         <xsl:otherwise><title><xsl:value-of select="$project/title"/></title></xsl:otherwise>
       </xsl:choose>
       <link rel="stylesheet" type="text/css" href="[root]/default.css"/>
-      <script src="jmol/Jmol.js"></script>
+      <script src="[root]/jmol/Jmol.js"></script>
     </head>
 
     <body>

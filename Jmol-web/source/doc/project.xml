@@ -14,24 +14,20 @@
         <td align="right" valign="center">
           <font size="2">
 	    <a href="[root]/index.html">Home</a> 
-<!--            | <a href="[root]/screenshots/">Screenshots</a> -->
 	    | <a href="[root]/websites/">Websites</a>
 	    | <a href="[root]/history/">History</a> 
             | <a href="[root]/changes/">Changes</a>
-	    <br />
-	    <a href="[root]/v9/">Version 9</a>
 	    | <a href="[root]/docs/">Documentation</a> 
-<!--            | <a href="[root]/applet/">Applet</a>  -->
-<!--            | <a href="[root]/scripting/">Scripting</a>  -->
-            | <a href="[root]/plugins/">Plugins</a> 
+	    | <a href="[root]/technotes/">Tech Notes</a>
+	    <br />
+	    <!-- 	    <a href="[root]/v9/">Version 9</a> -->
+            <a href="[root]/demo/">Demonstration pages</a>
+	    | <a href="[root]/jslibrary/">JavaScript Library</a>
+            | <a href="[root]/betatest/">Beta Test</a>
+	    | <a href="[root]/plugins/">Plugins</a> 
             | <a href="[root]/jscolors/">Colors</a>
 	    | <a href="[root]/download/">Download</a> 
-	    <br />
-            <a href="[root]/preview/">v10 Preview</a>
-            | <a href="[root]/betatest/">Beta Test</a>
-	    | <a href="[root]/jslibrary/">JavaScript Library</a>
 	    | <a href="[root]/faqs/">FAQs</a>
-	    | <a href="[root]/technotes/">Tech Notes</a>
 	    <br />
 	    <a href="http://sourceforge.net/projects/jmol">
 	      Sourceforge Project page

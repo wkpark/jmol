@@ -34,6 +34,8 @@ package org.jmol.g3d;
  * Each RGB value has 64 shades. shade[0] represents ambient lighting.
  * shade[63] is white ... a full specular highlight.
  *</p>
+ *
+ * @author Miguel, miguel@jmol.org
  */
 final class Shade3D {
 

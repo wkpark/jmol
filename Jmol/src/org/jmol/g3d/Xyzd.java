@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,16 @@ package org.jmol.g3d;
 
 import javax.vecmath.Point3i;
 
+/**
+ * stores x,y,z plus diameter in a long
+ *<p>
+ * maybe it was a silly idea. By packing I hoped to gain some
+ * function calling effeciency. In addition, I hoped to test for
+ * clipping by testing x, y, and z all at the same time.
+ * in hindsight it probably was not worth the trouble
+ *
+ * @author Miguel, miguel@jmol.org
+ */
 public class Xyzd {
   public final static int GB = 0x8000; // guard bit
   public final static int OV = 0x4000; // overflow bit
@@ -52,6 +62,7 @@ public class Xyzd {
 
   public final static long NaN = Long.MIN_VALUE;
 
+  /*
   public final static void main(String[] argv) {
     System.out.println("Hello world!");
 
@@ -83,6 +94,7 @@ public class Xyzd {
                        isAnyGreater(xyzdZero, xyzdNeg1));
 
   }
+  */
 
   public final static long getXyzd(int x, int y, int z, int d) {
     return

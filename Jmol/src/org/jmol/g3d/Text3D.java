@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,17 @@ import java.awt.Graphics;
 import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
 
+/**
+ * implementation for text rendering
+ *<p>
+ * uses java fonts by rendering into an offscreen buffer.
+ * strings are rasterized and stored as a bitmap in an int[].
+ *<p>
+ * needs work
+ *
+ *
+ * @author Miguel, miguel@jmol.org
+ */ 
 class Text3D {
   /*
     we have a few problems here

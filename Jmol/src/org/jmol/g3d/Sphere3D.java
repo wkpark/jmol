@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -42,6 +42,8 @@ package org.jmol.g3d;
  * There is a lot of bit-twiddling going on here, which may
  * make the code difficult to understand for non-systems programmers.
  *</p>
+ *
+ * @author Miguel, miguel@jmol.org
  */
 class Sphere3D {
 

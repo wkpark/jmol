@@ -31,6 +31,8 @@ package org.jmol.bspt;
  * call initialize(...) or initializeHemizphere(...)
  *<p>
  * re-initialize in order to reuse the same SphereIterator
+ *
+ * @author Miguel, miguel@jmol.org
  */
 public class SphereIterator {
   Bspt bspt;

@@ -27,6 +27,8 @@ package org.jmol.bspt;
  * Nodes of the bspt. It is a binary tree so nodes contain two children.
  * A splitValue tells which child should be followed. Values <= splitValue
  * are stored down eleLE. Values >= splitValue are stored down eleGE.
+ *
+ * @author Miguel, miguel@jmol.org
  */
 class Node extends Element {
   Element eleLE;

@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,8 @@ package org.jmol.g3d;
  * implement higher-level shapes. Triangles and cylinders are drawn
  * as a series of lines
  *</p>
+ *
+ * @author Miguel, miguel@jmol.org
  */
 final class Line3D {
 

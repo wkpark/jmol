@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -50,6 +50,8 @@ import java.awt.image.SinglePixelPackedSampleModel;
  * MSFT Internet Explorer with the MSFT JVM,
  * and Netscape 4.* on both Win32 and MacOS 9.
  *</p>
+ *
+ * @author Miguel, miguel@jmol.org
  */
   
 final class Swing3D extends Platform3D {

@@ -25,6 +25,8 @@ package org.jmol.bspt;
 
 /**
  * A leaf of Tuple objects in the bsp tree
+ *
+ * @author Miguel, miguel@jmol.org
  */
 class Leaf extends Element {
   Tuple[] tuples;

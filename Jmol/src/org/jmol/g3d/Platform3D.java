@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,8 @@ import java.awt.Image;
  * Specifies the API to an underlying int[] buffer of ARGB values that
  * can be converted into an Image object and a short[] for z-buffer depth.
  *</p>
+ *
+ * @author Miguel, miguel@jmol.org
  */ 
 abstract class Platform3D {
 

@@ -290,8 +290,6 @@ final public class Graphics25D {
                                   diameter, colorFill, colorOutline);
     else
       sphere25d.paintSphereShape(x, y, z, diameter, colorFill);
-      //      sphere25d.plotSphere(x, y, z, diameter, colorFill);
-      //      sphere25d.render(x-r, y-r, z, diameter, colorFill);
   }
 
   public void drawRect(int x, int y, int width, int height) {
@@ -470,7 +468,7 @@ final public class Graphics25D {
       shadedBondRenderer.render(color, ax, ay, az);
       return;
     }
-    System.out.println("fillCylinder4() not implemented for pbuf");
+    drawPolygon4(color, ax, ay, az);
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {

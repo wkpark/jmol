@@ -168,6 +168,7 @@ public class Token {
   final static int prueba       = command | 63;
   final static int rocket       = command | 64;
   final static int surface      = command | predefinedset | 65;
+  final static int moveto       = command | 66;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -432,6 +433,7 @@ public class Token {
     "rocket",            new Token(rocket,    onDefault1, "rocket"),
     "rockets",           null,
     "surface",           new Token(surface,  varArgCount, "surface"),
+    "moveto",            new Token(moveto,   varArgCount, "moveto"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

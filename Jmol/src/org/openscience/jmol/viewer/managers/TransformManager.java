@@ -131,9 +131,17 @@ public class TransformManager {
   }
 
   public void rotateAxisAngle(float x, float y, float z, float degrees) {
-    matrixTemp.setIdentity();
     axisangleT.set(x, y, z, degrees * (float)Math.PI / 180);
     rotate(axisangleT);
+  }
+
+  public void rotateTo(float x, float y, float z, float degrees) {
+    if (degrees < .01 && degrees > -.01) {
+      matrixRotate.setIdentity();
+    } else {
+      axisangleT.set(x, y, z, degrees * (float)Math.PI / 180);
+      matrixRotate.set(axisangleT);
+    }
   }
 
   /****************************************************************
@@ -823,4 +831,5 @@ public class TransformManager {
       }
     }
   }
+
 }

@@ -442,6 +442,9 @@ public class Eval implements Runnable {
       case Token.font:
         font();
         break;
+      case Token.moveto:
+        moveto();
+        break;
 
         // not implemented
       case Token.bond:
@@ -2845,5 +2848,17 @@ public class Eval implements Runnable {
 
   void showAxisAngle() {
     showString("axis-angle rotation = " + viewer.getAxisAngleText());
+  }
+
+  void moveto() throws ScriptException {
+    if (statementLength < 5 || statementLength > 7)
+      badArgumentCount();
+    float axisX = floatParameter(1);
+    float axisY = floatParameter(2);
+    float axisZ = floatParameter(3);
+    float degrees = floatParameter(4);
+    float time = statementLength >= 6 ? floatParameter(5) : 0;
+    int zoom = statementLength == 7 ? intParameter(6) : 0;
+    viewer.rotateTo(axisX, axisY, axisZ, degrees);
   }
 }

@@ -244,6 +244,10 @@ final public class JmolViewer {
     transformManager.rotateAxisAngle(x, y, z, degrees);
   }
 
+  public void rotateTo(float xAxis, float yAxis, float zAxis, float degrees) {
+    transformManager.rotateTo(xAxis, yAxis, zAxis, degrees);
+  }
+
   public void translateXYBy(int xDelta, int yDelta) {
     transformManager.translateXYBy(xDelta, yDelta);
     refresh();

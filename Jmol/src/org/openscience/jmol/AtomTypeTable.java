@@ -84,7 +84,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     */
 
     AtomTypesModel atModel;
-    static AtomType defaultAtomType;
+    //static BaseAtomType defaultAtomType;
     
     static {
         jrh = new JmolResourceHandler("AtomTypeTable");
@@ -94,20 +94,18 @@ public class AtomTypeTable extends JDialog implements ActionListener {
         this(fr);
 
         try {
-            FileInputStream fis = new FileInputStream(UAF);        
-            ReadAtypes(fis);
+            ReadAtypes(new FileInputStream(UAF));
         } catch (Exception e1) {            
-            URL url = ClassLoader.getSystemResource(SAU);
             try { 
-                InputStream is = url.openStream();
-                ReadAtypes(is);
+				URL url = ClassLoader.getSystemResource(SAU);
+                ReadAtypes(url.openStream());
             } catch(Exception e2) {
                 System.err.println("Cannot read System AtomTypes: " + 
                                    e2.toString());
             }
         }
     }
-    
+
     public AtomTypeTable(JFrame fr) {
         super(fr, jrh.getString("Title"), true);
         // Create a model of the data.
@@ -450,7 +448,14 @@ public class AtomTypeTable extends JDialog implements ActionListener {
         }
         return;
     }
-    
+
+    public void setAtomTypes(AtomTypeSet ats) {
+		Enumeration iter = ats.elements();
+		while (iter.hasMoreElements()) {
+			atModel.updateAtomType((BaseAtomType)iter.nextElement());
+		}
+	}
+
     
     void ReadAtypes(InputStream is) throws Exception {        
         BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
@@ -499,7 +504,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
                         AtomType at = new AtomType(name, rootType, an, mass, 
                                                    vdw, covalent, rl, gl, bl);
 
-                        atModel.updateAtomType(at);
+                        atModel.updateAtomType(at.getBaseAtomType());
                         
                     } else {
                         throw new JmolException("AtomTypeTable.ReadAtypes", 
@@ -515,10 +520,10 @@ public class AtomTypeTable extends JDialog implements ActionListener {
         
     }
         
-    public AtomType get(String name) {
+    public BaseAtomType get(String name) {
         return atModel.get(name);
     }
-    public AtomType get(int atomicNumber) {
+    public BaseAtomType get(int atomicNumber) {
         return atModel.get(atomicNumber);
     }
     

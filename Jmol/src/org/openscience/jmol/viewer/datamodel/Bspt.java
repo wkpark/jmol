@@ -421,29 +421,40 @@ public final class Bspt {
 
     Leaf(Leaf leaf, int dim, float splitValue) {
       this();
+      // first, move over all that are greater
       for (int i = leafCountMax; --i >= 0; ) {
         Tuple tuple = leaf.tuples[i];
         float value = tuple.getDimensionValue(dim);
-        if (value > splitValue ||
-            (value == splitValue && ((i & 1) == 1))) {
+        if (value > splitValue) {
           leaf.tuples[i] = null;
           tuples[count++] = tuple;
         }
       }
+      // now, move the ones that are ==, keeping a balance
+      for (int i = leafCountMax; --i >= 0; ) {
+        Tuple tuple = leaf.tuples[i];
+        if (tuple != null &&
+            tuple.getDimensionValue(dim) == splitValue &&
+            count < (leafCountMax / 2)) {
+          leaf.tuples[i] = null;
+          tuples[count++] = tuple;
+        }
+      }
+      // slide down the null values
       int dest = 0;
       for (int src = 0; src < leafCountMax; ++src)
         if (leaf.tuples[src] != null)
           leaf.tuples[dest++] = leaf.tuples[src];
       leaf.count = dest;
-      if (count == 0)
-        tuples[leafCountMax] = null; // explode
+      if (count == 0 || leaf.count == 0)
+        throw new NullPointerException("Bspt leaf splitting error");
     }
 
     public float getSplitValue(int dim) {
       if (count != leafCountMax)
-        tuples[leafCountMax] = null;
+        throw new NullPointerException("Bspt leaf splitting too soon");
       return (tuples[0].getDimensionValue(dim) +
-              tuples[leafCountMax - 1].getDimensionValue(dim)) / 2;
+              tuples[1].getDimensionValue(dim)) / 2;
     }
 
     /*

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.app;
 
-import org.jmol.viewer.*;
+import org.jmol.api.*;
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -151,7 +151,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   JmolViewer viewer;
   GuiMap guimap;
 
-  public PreferencesDialog(JFrame f, GuiMap guimap, JmolViewer viewer) {
+  public PreferencesDialog(JFrame f, GuiMap guimap,
+                           JmolViewer viewer) {
 
     super(f, false);
     this.guimap = guimap;
@@ -261,14 +262,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     fooPanel.add(cbPerspectiveDepth);
 
     cbShowAxes =
-      guimap.newJCheckBox("Prefs.showAxes",
-                          viewer.getShapeShow(JmolConstants.SHAPE_AXES));
+      guimap.newJCheckBox("Prefs.showAxes", viewer.getShowAxes());
     cbShowAxes.addItemListener(checkBoxListener);
     fooPanel.add(cbShowAxes);
 
     cbShowBoundingBox =
-      guimap.newJCheckBox("Prefs.showBoundingBox",
-                          viewer.getShapeShow(JmolConstants.SHAPE_BBCAGE));
+      guimap.newJCheckBox("Prefs.showBoundingBox", viewer.getShowBbcage());
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
@@ -909,9 +908,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbWireframeRotation.setSelected(viewer.getWireframeRotation());
 
     cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
-    cbShowAxes.setSelected(viewer.getShapeShow(JmolConstants.SHAPE_AXES));
-    cbShowBoundingBox.setSelected(viewer.
-                                  getShapeShow(JmolConstants.SHAPE_BBCAGE));
+    cbShowAxes.setSelected(viewer.getShowAxes());
+    cbShowBoundingBox.setSelected(viewer.getShowBbcage());
 
     cbAxesOrientationRasmol.setSelected(viewer.getAxesOrientationRasmol());
 
@@ -1037,8 +1035,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setShowMeasurements(showMeasurements);
     viewer.setWireframeRotation(wireframeRotation);
     viewer.setPerspectiveDepth(perspectiveDepth);
-    viewer.setShapeShow(JmolConstants.SHAPE_AXES, showAxes);
-    viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, showBoundingBox);
+    viewer.setShowAxes(showAxes);
+    viewer.setShowBbcage(showBoundingBox);
     viewer.setAxesOrientationRasmol(axesOrientationRasmol);
     /*
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
@@ -1109,11 +1107,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put("perspectiveDepth", strSelected);
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
-        viewer.setShapeShow(JmolConstants.SHAPE_AXES, isSelected);
+        viewer.setShowAxes(isSelected);
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
-        viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, isSelected);
+        viewer.setShowBbcage(isSelected);
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.axesOrientationRasmol")) {
         axesOrientationRasmol = isSelected;

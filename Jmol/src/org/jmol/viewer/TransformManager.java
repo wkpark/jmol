@@ -33,9 +33,9 @@ import javax.vecmath.AxisAngle4f;
 
 class TransformManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
 
-  TransformManager(JmolViewer viewer) {
+  TransformManager(Viewer viewer) {
     this.viewer = viewer;
   }
 

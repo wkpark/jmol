@@ -28,9 +28,9 @@ import java.util.BitSet;
 
 class SelectionManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
 
-  SelectionManager(JmolViewer viewer) {
+  SelectionManager(Viewer viewer) {
     this.viewer = viewer;
   }
 

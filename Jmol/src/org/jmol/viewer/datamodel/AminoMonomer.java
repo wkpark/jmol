@@ -153,7 +153,7 @@ public class AminoMonomer extends AlphaMonomer {
 
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
-    JmolViewer viewer = chain.frame.viewer;
+    Viewer viewer = chain.frame.viewer;
     Atom competitor = closest.atom;
     Atom nitrogen = getNitrogenAtom();
     short marBegin = (short)(madBegin / 2);

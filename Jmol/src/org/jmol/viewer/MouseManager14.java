@@ -33,7 +33,7 @@ import java.awt.event.MouseWheelListener;
 class MouseManager14 extends MouseManager11
   implements MouseWheelListener {
 
-  MouseManager14(Component component, JmolViewer viewer) {
+  MouseManager14(Component component, Viewer viewer) {
     super(component, viewer);
     component.addMouseWheelListener(this);
   }

@@ -31,10 +31,10 @@ import java.awt.Rectangle;
 
 abstract class ShapeRenderer {
 
-  JmolViewer viewer;
+  Viewer viewer;
   FrameRenderer frameRenderer;
 
-  final void setViewerFrameRenderer(JmolViewer viewer,
+  final void setViewerFrameRenderer(Viewer viewer,
                                     FrameRenderer frameRenderer,
                                     Graphics3D g3d) {
     this.viewer = viewer;

@@ -36,10 +36,10 @@ import java.awt.Rectangle;
 
 class ModelManager {
 
-  final JmolViewer viewer;
+  final Viewer viewer;
   final JmolAdapter adapter;
 
-  ModelManager(JmolViewer viewer, JmolAdapter adapter) {
+  ModelManager(Viewer viewer, JmolAdapter adapter) {
     this.viewer = viewer;
     this.adapter = adapter;
   }

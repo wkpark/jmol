@@ -38,7 +38,7 @@ import java.awt.Rectangle;
 
 final public class Frame {
 
-  final JmolViewer viewer;
+  final Viewer viewer;
   final JmolAdapter adapter;
   final FrameRenderer frameRenderer;
   // NOTE: these strings are interned and are lower case
@@ -95,7 +95,7 @@ final public class Frame {
   int bfactor100Lo;
   int bfactor100Hi;
 
-  public Frame(JmolViewer viewer, JmolAdapter adapter, Object clientFile) {
+  public Frame(Viewer viewer, JmolAdapter adapter, Object clientFile) {
     this.viewer = viewer;
     this.adapter = adapter;
 

@@ -33,10 +33,10 @@ import java.awt.Rectangle;
 
 class RepaintManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
   FrameRenderer frameRenderer;
 
-  RepaintManager(JmolViewer viewer) {
+  RepaintManager(Viewer viewer) {
     this.viewer = viewer;
     frameRenderer = new FrameRenderer(viewer);
   }

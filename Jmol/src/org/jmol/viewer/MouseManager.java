@@ -35,7 +35,7 @@ abstract class MouseManager {
   final static int HOVER_TIME = 1000;
 
   Component component;
-  JmolViewer viewer;
+  Viewer viewer;
 
   Thread hoverWatcherThread;
 
@@ -55,7 +55,7 @@ abstract class MouseManager {
 
   private static final boolean logMouseEvents = false;
 
-  MouseManager(Component component, JmolViewer viewer) {
+  MouseManager(Component component, Viewer viewer) {
     this.component = component;
     this.viewer = viewer;
     hoverWatcherThread = new Thread(new HoverWatcher());

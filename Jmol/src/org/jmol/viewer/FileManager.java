@@ -60,7 +60,7 @@ import org.openscience.dadml.tools.DBDEFInfo;
 
 class FileManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
   JmolAdapter modelAdapter;
   private String openErrorMessage;
 
@@ -79,7 +79,7 @@ class FileManager {
   private FileOpenThread fileOpenThread;
 
 
-  FileManager(JmolViewer viewer, JmolAdapter modelAdapter) {
+  FileManager(Viewer viewer, JmolAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
   }

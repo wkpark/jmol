@@ -29,9 +29,9 @@ import javax.vecmath.*;
 
 class TempManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
 
-  TempManager(JmolViewer viewer) {
+  TempManager(Viewer viewer) {
     this.viewer = viewer;
   }
 

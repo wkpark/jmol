@@ -36,7 +36,7 @@ import org.openscience.cdk.geometry.CrystalGeometryTools;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
-import org.jmol.viewer.JmolViewer;
+import org.jmol.api.JmolViewer;
 
 import java.io.IOException;
 import java.io.Reader;

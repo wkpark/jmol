@@ -29,7 +29,7 @@ import java.util.BitSet;
 
 class PickingManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
 
   int pickingMode = JmolConstants.PICKING_IDENT;
 
@@ -40,7 +40,7 @@ class PickingManager {
 
   int[] countPlusIndexes = new int[5];
 
-  PickingManager(JmolViewer viewer) {
+  PickingManager(Viewer viewer) {
     this.viewer = viewer;
   }
 

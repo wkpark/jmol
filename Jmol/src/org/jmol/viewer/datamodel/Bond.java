@@ -51,7 +51,7 @@ public class Bond {
     this.colix = colix;
   }
 
-  Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
+  Bond(Atom atom1, Atom atom2, int order, Viewer viewer) {
     this(atom1, atom2, order,
          (order & JmolConstants.BOND_HYDROGEN_MASK) != 0 ? 0 : viewer.getMadBond(),
          viewer.getColixBond(order));

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.ui;
 
-import org.jmol.viewer.*;
+import org.jmol.api.*;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;

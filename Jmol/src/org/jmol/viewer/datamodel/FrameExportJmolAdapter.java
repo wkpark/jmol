@@ -31,10 +31,10 @@ import org.jmol.viewer.*;
 
 final public class FrameExportJmolAdapter extends JmolAdapter {
 
-  JmolViewer viewer;
+  Viewer viewer;
   Frame frame;
 
-  FrameExportJmolAdapter(JmolViewer viewer, Frame frame) {
+  FrameExportJmolAdapter(Viewer viewer, Frame frame) {
     super("FrameExportJmolAdapter", null);
     this.viewer = viewer;
     this.frame = frame;

@@ -46,7 +46,7 @@ class BbcageRenderer extends ShapeRenderer {
     render(viewer, g3d, mad, bbcage.colix, frame.bboxVertices, screens);
   }
 
-  static void render(JmolViewer viewer, Graphics3D g3d,
+  static void render(Viewer viewer, Graphics3D g3d,
                      short mad, short colix,
                      Point3f[] vertices, Point3i[] screens) {
     int zSum = 0;

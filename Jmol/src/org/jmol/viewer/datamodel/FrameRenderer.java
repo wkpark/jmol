@@ -34,11 +34,11 @@ import java.awt.FontMetrics;
 
 public class FrameRenderer {
 
-  JmolViewer viewer;
+  Viewer viewer;
 
   ShapeRenderer[] renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
 
-  public FrameRenderer(JmolViewer viewer) {
+  public FrameRenderer(Viewer viewer) {
     this.viewer = viewer;
   }
 

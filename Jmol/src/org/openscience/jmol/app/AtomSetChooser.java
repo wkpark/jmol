@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.app;
 
-import org.jmol.viewer.*;
+import org.jmol.api.*;
 
 import java.beans.*;
 import javax.swing.*;

@@ -25,7 +25,6 @@
 
 import org.openscience.jmol.applet.*;
 import org.jmol.api.*;
-import org.jmol.viewer.JmolViewer;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 //import org.openscience.jmol.adapters.CdkJmolAdapter;
@@ -138,7 +137,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
     // to enable CDK
     //    viewer = new JmolViewer(this, new CdkJmolAdapter(null));
-    viewer = new JmolViewer(this, new SmarterJmolAdapter(null));
+    viewer = org.jmol.viewer.Viewer.
+      allocateJmolViewer(this, new SmarterJmolAdapter(null));
     viewer.setJmolStatusListener(this);
 
     viewer.setAppletContext(getDocumentBase(), getCodeBase(),
@@ -156,7 +156,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       }
     }
   }
-    
+
   /*
   PropertyResourceBundle appletProperties = null;
 
@@ -243,15 +243,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       emulate = getValueLowerCase("emulate", "jmol");
       if (emulate.equals("chime")) {
         viewer.setRasmolDefaults();
-        viewer.setColorBackground(getValue("bgcolor", "black"));
-        viewer.setPerspectiveDepth(getBooleanValue("perspectiveDepth", true));
       } else {
         viewer.setJmolDefaults();
-        viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
-        viewer.setColorBackground(getValue("bgcolor", "black"));
-        viewer.setWireframeRotation(getBooleanValue("wireframeRotation",
-                                                    false));
-        viewer.setPerspectiveDepth(getBooleanValue("perspectiveDepth", true));
       }
 
       viewer.setDebugScript(getBooleanValue("debugscript", false));
@@ -259,7 +252,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       load(getValue("load", null));
       loadInline(getValue("loadInline", null));
       if (getBooleanValue("frank", true))
-        viewer.setShapeSize(JmolConstants.SHAPE_FRANK, -1);
+        viewer.setFrankOn(true);
 
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
@@ -457,7 +450,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   private void startPaintClock() {
     timeBegin = System.currentTimeMillis();
-    int motionEventNumber = viewer.motionEventNumber;
+    int motionEventNumber = viewer.getMotionEventNumber();
     if (lastMotionEventNumber != motionEventNumber) {
       lastMotionEventNumber = motionEventNumber;
       resetTimes();

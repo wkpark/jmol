@@ -26,9 +26,9 @@ package org.jmol.viewer;
 
 class StyleManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
 
-  StyleManager(JmolViewer viewer) {
+  StyleManager(Viewer viewer) {
     this.viewer = viewer;
   }
 

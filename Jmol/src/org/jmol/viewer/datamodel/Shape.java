@@ -32,11 +32,11 @@ import java.util.BitSet;
 
 abstract public class Shape {
 
-  JmolViewer viewer;
+  Viewer viewer;
   Frame frame;
   Graphics3D g3d;
 
-  final void setViewerG3dFrame(JmolViewer viewer, Graphics3D g3d, Frame frame) {
+  final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame) {
     this.viewer = viewer;
     this.g3d = g3d;
     this.frame = frame;

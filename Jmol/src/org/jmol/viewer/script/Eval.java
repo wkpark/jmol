@@ -68,7 +68,7 @@ public class Eval implements Runnable {
 
   Token[] statement;
   int statementLength;
-  JmolViewer viewer;
+  Viewer viewer;
   Thread myThread;
   boolean terminationNotification;
   boolean interruptExecution;
@@ -76,7 +76,7 @@ public class Eval implements Runnable {
 
   final static boolean logMessages = false;
 
-  public Eval(JmolViewer viewer) {
+  public Eval(Viewer viewer) {
     compiler = new Compiler();
     this.viewer = viewer;
     clearDefinitionsAndLoadPredefined();

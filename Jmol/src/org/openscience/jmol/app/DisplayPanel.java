@@ -24,8 +24,8 @@
  */
 package org.openscience.jmol.app;
 
-import org.jmol.viewer.*;
-
+import org.jmol.api.*;
+import org.jmol.viewer.JmolConstants;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.*;
@@ -377,7 +377,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setCenterBitSet(viewer.getBitSetSelection());
+      viewer.setCenterSelected();
       setRotateMode();
       viewer.setSelectionHaloEnabled(false);
     }
@@ -431,7 +431,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShapeShow(JmolConstants.SHAPE_AXES, cbmi.isSelected());
+      viewer.setShowAxes(cbmi.isSelected());
     }
   }
 
@@ -444,7 +444,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, cbmi.isSelected());
+      viewer.setShowBbcage(cbmi.isSelected());
     }
   }
 
@@ -471,10 +471,8 @@ public class DisplayPanel extends JPanel
     guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
     guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
     guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
-    guimap.setSelected("axesCheck",
-                       viewer.getShapeShow(JmolConstants.SHAPE_AXES));
-    guimap.setSelected("boundboxCheck",
-                       viewer.getShapeShow(JmolConstants.SHAPE_BBCAGE));
+    guimap.setSelected("axesCheck", viewer.getShowAxes());
+    guimap.setSelected("boundboxCheck", viewer.getShowBbcage());
   }
 
   public Action[] getActions() {
@@ -517,7 +515,7 @@ public class DisplayPanel extends JPanel
 
   private void startPaintClock() {
     timeBegin = System.currentTimeMillis();
-    int motionEventNumber = viewer.motionEventNumber;
+    int motionEventNumber = viewer.getMotionEventNumber();
     if (lastMotionEventNumber != motionEventNumber) {
       lastMotionEventNumber = motionEventNumber;
       resetTimes();

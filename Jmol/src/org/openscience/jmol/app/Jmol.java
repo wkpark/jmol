@@ -167,7 +167,7 @@ public class Jmol extends JPanel {
       modelAdapter = new SmarterJmolAdapter(null);
     }
 
-    viewer = new JmolViewer(display, modelAdapter);
+    viewer = org.jmol.viewer.Viewer.allocateJmolViewer(display, modelAdapter);
     display.setViewer(viewer);
     
     say("Initializing Preferences...");

@@ -33,13 +33,13 @@ import javax.vecmath.Point3f;
 
 class ColorManager {
 
-  JmolViewer viewer;
+  Viewer viewer;
   Graphics3D g3d;
   int[] argbsCpk;
 
   byte paletteDefault = JmolConstants.PALETTE_NONE_CPK;
 
-  ColorManager(JmolViewer viewer, Graphics3D g3d) {
+  ColorManager(Viewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
     this.g3d = g3d;
     argbsCpk = JmolConstants.argbsCpk;

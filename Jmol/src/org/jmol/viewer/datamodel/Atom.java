@@ -51,7 +51,7 @@ public final class Atom implements Bspt.Tuple {
   short colixAtom;
   Bond[] bonds;
 
-  Atom(JmolViewer viewer,
+  Atom(Viewer viewer,
        Frame frame,
        int modelIndex,
        int atomIndex,
@@ -147,7 +147,7 @@ public final class Atom implements Bspt.Tuple {
     return false;
   }
 
-  Bond bondMutually(Atom atomOther, int order, JmolViewer viewer) {
+  Bond bondMutually(Atom atomOther, int order, Viewer viewer) {
     if (isBonded(atomOther))
       return null;
     Bond bond = new Bond(this, atomOther, order, viewer);
@@ -296,7 +296,7 @@ public final class Atom implements Bspt.Tuple {
   final static int MIN_Z = 100;
   final static int MAX_Z = 14383;
 
-  void transform(JmolViewer viewer) {
+  void transform(Viewer viewer) {
     if (madAtom == JmolConstants.MAR_DELETED)
       return;
     Point3i screen;

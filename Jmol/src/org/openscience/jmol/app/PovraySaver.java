@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.app;
 
-import org.jmol.viewer.*;
+import org.jmol.api.*;
 import java.util.Date;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
@@ -52,7 +52,7 @@ public class PovraySaver {
   }
 
   public void writeFrame() throws IOException {
-    float zoom = (float)viewer.getFrame().getRotationRadius() * 2;
+    float zoom = viewer.getRotationRadius() * 2;
     zoom *= 1.1f; // for some reason I need a little more margin
     zoom /= viewer.getZoomPercent() / 100f;
 

@@ -13,7 +13,7 @@
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="7" />
+  <property name="version" value="10pre1" />
 
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />

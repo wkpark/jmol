@@ -288,7 +288,7 @@ support for assertions (which were introduced in 1.4).
     </jar>
   </target>
 
-  <target name="io-jar" id="apis-jar" depends="init,classes">
+  <target name="io-jar" id="io-jar" depends="init,classes">
     <jar jarfile="jmolIO.jar">
       <fileset dir="${classes.dir}" >
 	<include name="org/jmol/adapter/smarter/**" />

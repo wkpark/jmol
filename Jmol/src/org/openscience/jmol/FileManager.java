@@ -100,7 +100,7 @@ public class FileManager {
     }
   }
 
-  public String openString(String strModel) {
+  public String openStringInline(String strModel) {
     return openReader(new StringReader(strModel));
   }
 

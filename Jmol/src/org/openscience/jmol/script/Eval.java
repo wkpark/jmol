@@ -70,6 +70,7 @@ public class Eval implements Runnable {
     if (scriptLevel == scriptLevelMax)
       return TooManyScriptLevels(filename);
     pc = 0;
+    error = false;
     try {
       compiler.compile();
       return true;
@@ -119,6 +120,10 @@ public class Eval implements Runnable {
       System.out.println("total time time to load=" +
                          (int)(System.currentTimeMillis() - timeBegin));
     return loaded;
+  }
+
+  public String getErrorMessage() {
+    return (error) ? errorMessage : null;
   }
 
   boolean LoadError(String msg) {

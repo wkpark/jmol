@@ -40,81 +40,44 @@ import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.CMLReader;
 
-/**
- *  @author Bradley A. Smith (bradley@baysmith.com)
- */
 public class JmolApplet extends Applet implements StatusDisplay {
-
-  private static String appletInfo =
-    "Jmol Applet.  Part of the OpenScience project.  See www.openscience.org/Jmol for more information";
-
-  private static String[][] paramInfo = {
-    {
-      "FORMAT", "string",
-      "Set this to CMLSTRING for an embedded CML string in the MODEL parameter, otherwise leave blank"
-    }, {
-      "MODEL", "url/model",
-      "URL of the chemical data, or CML chemical data if FORMAT set to CMLSTRING.  REQUIRED"
-    }, {
-      "ATOMTYPES", "url",
-      "URL of custom Atomtypes file, or leave blank to use the default atom definitions"
-    }, {
-      "BGCOLOR", "color", "Background color"
-    }, {
-      "STYLE", "SHADED, QUICKDRAW or WIREFRAME",
-      "One of the three possible rendering styles"
-    }, {
-      "WIREFRAMEROTATION", "ON or OFF",
-      "Select change to wireframe mode during rotation"
-    }, {
-      "ZOOM", "number",
-      "Changes the initial zoom and perspective.  1 is the default"
-    }, {
-      "ATOMSIZE", "number",
-      "Changes the size of the atoms without zooming.  1 is the default"
-    }, {
-      "BONDS", "ON OFF or NEVER",
-      "Specifies if bonds are drawn initially, and if they can be selected by the user"
-    }, {
-      "CUSTOMVIEWS",
-      "Button1{HOME;FRAME=n;ROTATE=y,x,y;ZOOM=n;TRANSLATE=x,y}Button2{HOME;ZOOM=n;...}...",
-      "Specifies custom actions to be performed by custom buttons"
-    }, {
-      "PICKMODE", "SINGLE or MULTIPLE",
-      "Sets the picking mode to single or multiple atoms. (Default is single picking)."
-    }
-  };
-
-  private final String[] styleStrings
-    = {"QUICKDRAW", "SHADED", "WIREFRAME"};
-  private final byte[] atomStyles = {DisplayControl.QUICKDRAW,
-                                     DisplayControl.SHADING,
-                                     DisplayControl.WIREFRAME};
-  private final byte[] bondStyles = {DisplayControl.QUICKDRAW,
-                                     DisplayControl.SHADING,
-                                     DisplayControl.WIREFRAME};
-
-  private final String[] labelStyleStrings
-    = {"NONE","SYMBOLS","TYPES","NUMBERS"};
-  private final byte[] labelStyles = {DisplayControl.NOLABELS,
-                                      DisplayControl.SYMBOLS,
-                                      DisplayControl.TYPES,
-                                      DisplayControl.NUMBERS};
 
   AppletCanvas canvas;
   DisplayControl control;
 
-  Eval eval;
-  
-  byte style;
-  byte labelStyle;
-  private String helpMessage =
-    "Keys: S- change style; L- Show labels; B-Toggle Bonds";
-  private String errorMessage;
-
   private String defaultAtomTypesFileName = "Data/AtomTypes.txt";
 
-  private boolean bondsEnabled = true;
+  public String getAppletInfo() {
+    return appletInfo;
+  }
+  private static String appletInfo =
+    "Jmol Applet.  Part of the OpenScience project. " +
+    "See jmol.sourceforge.net for more information";
+
+  private static String[][] paramInfo = {
+    { "bgcolor", "color",
+      "Background color to HTML color name or #RRGGBB" },
+    { "style", "SHADED, QUICKDRAW or WIREFRAME",
+      "One of the three possible rendering styles" },
+    { "label", "NONE, SYMBOL or NUMBER",
+      "Select style for atom labels" },
+    { "atomTypes", "url", "URL of custom Atomtypes file, " +
+      "or leave blank to use the default atom definitions" },
+    { "wireframeRotation", "ON or OFF",
+      "Switch to wireframe during rotations for better performance" },
+    { "load", "url",
+      "URL of the chemical data" },
+    { "loadInline", "fileformat",
+      "Inline representation of chemical data" },
+    { "rasmolScript", "url",
+      "URL of RasMol/Chime script" },
+    { "rasmolScriptInline", "string",
+      "Inline RasMol/Chime commands separated by newlines or semicolons" }
+  };
+  public String[][] getParameterInfo() {
+    return paramInfo;
+  }
+
 
   public void init() {
     initWindows();
@@ -131,339 +94,40 @@ public class JmolApplet extends Applet implements StatusDisplay {
 
     control.setAppletDocumentBase(getDocumentBase());
 
-    canvas.addMouseListener(new MyMouseListener());
-
     setLayout(new java.awt.BorderLayout());
     add(canvas, "Center");
-
-    eval = new Eval(control);
   }
 
   public void initApplication() {
-    control.setShowBonds(true);
-    control.setShowAtoms(true);
-    control.zoomToPercent(100);
-    control.setPercentVdwAtom(20);
-    control.setStyleBond(DisplayControl.SHADING);
-    control.setStyleAtom(DisplayControl.SHADING);
-    /*
-    double zoomFactor = 1;
-
-    myBean.setBondsShown(true);
-    String bonds = getParameter("BONDS");
-    if (bonds != null) {
-      if (bonds.equalsIgnoreCase("OFF")) {
-        myBean.setBondsShown(false);
-      } else if (bonds.equalsIgnoreCase("NEVER")) {
-        myBean.setBondsShown(false);
-        bondsEnabled = false;
-        helpMessage = "Keys: S- change style; L- Show labels";
-      }
-    }
-    String zoom = getParameter("ZOOM");
-    if (zoom != null) {
-      zoomFactor = FortranFormat.atof(zoom);
-    }
-    myBean.setZoomFactor(zoomFactor);
-    zoomFactor = .2;
-    zoom = getParameter("ATOMSIZE");
-    if (zoom != null) {
-      zoomFactor = FortranFormat.atof(zoom);
-    }
-    myBean.setAtomSphereFactor(zoomFactor);
-    String customViews = getParameter("CUSTOMVIEWS");
-    if (customViews != null) {
-      myBean.setCustomViews(customViews);
-    }
-    */
-
-    String wfr = getParameter("WIREFRAMEROTATION");
-    if (wfr != null &&
-        (wfr.equalsIgnoreCase("on") || wfr.equalsIgnoreCase("true")))
-      control.setWireframeRotation(true);
-
-    setBackgroundColor(getParameter("BGCOLOR"));
-
-    setAtomPropertiesFromFile(getParameter("ATOMTYPES"));
-
-    String model = getParameter("MODEL");
-    String format = getParameter("FORMAT");
-    if (model != null) {
-      try {
-        ChemFileReader cfr = null;
-        ReaderProgress readerProgress = new ReaderProgress(this);
-        if (format != null && format.equalsIgnoreCase("CMLSTRING")) {
-          StringBuffer cmlString = new StringBuffer();
-          cmlString.append(convertEscapeChars(model));
-          cfr = new CMLReader(new java.io.StringReader(cmlString.toString()));
-          readerProgress.setFileName("CML string");
-        } else {
-          URL modelURL = null;
-          try {
-            modelURL = new URL(getDocumentBase(), model);
-            String fileName = modelURL.getFile();
-            int fileNameIndex = fileName.lastIndexOf('/');
-            if (fileNameIndex >= 0) {
-              fileName = fileName.substring(fileNameIndex + 1);
-            }
-            readerProgress.setFileName(fileName);
-          } catch (java.net.MalformedURLException e) {
-            throw new RuntimeException(("Got MalformedURL for model: "
-                + e.toString()));
-          }
-          cfr = ReaderFactory
-              .createReader(new java.io
-                .InputStreamReader(modelURL.openStream()));
-        }
-        if (cfr != null) {
-          cfr.addReaderListener(readerProgress);
-          cfr.setBondsEnabled(bondsEnabled);
-          control.setChemFile(cfr.read());
-        } else {
-          setErrorMessage("Error: Unable to read input format");
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    
-    /*
-      mode = QUICKDRAW;
-      String style = getParameter("STYLE");
-      if (style != null) {
-      mode = getDrawMode(style);
-      }
-      setRenderingStyle();
+    control.pushHoldRepaint();
+    {
+      control.setShowBonds(true);
+      control.setShowAtoms(true);
+      control.setPercentVdwAtom(20);
+      control.zoomToPercent(100);
+      control.setStyleBond(DisplayControl.SHADING);
+      control.setStyleAtom(DisplayControl.SHADING);
       
-      String pickmode = getParameter("PICKMODE");
-      if (pickmode != null) {
-      myBean.setPickingMode(pickmode);
-      }
+      setBackgroundColor(getParameter("bgcolor"));
+      setStyle(getParameter("style"));
+      setLabel(getParameter("label"));
+      setAtomPropertiesFromFile(getParameter("atomTypes"));
+
+      String wfr = getParameter("wireframeRotation");
+      setWireframeRotation(wfr != null &&
+                           (wfr.equalsIgnoreCase("on") ||
+                            wfr.equalsIgnoreCase("true")));
       
-      String atomLabels = getParameter("ATOMLABELS");
-      if (atomLabels != null) {
-      myBean.setLabelRenderingStyle(atomLabels);
-      }
-    */
-  }
-
-  public String[][] getParameterInfo() {
-    return paramInfo;
-  }
-
-  public String getAppletInfo() {
-    return appletInfo;
+      load(getParameter("load"));
+      loadInline(getParameter("loadInline"));
+      rasmolScript(getParameter("rasmolScript"));
+      rasmolScriptInline(getParameter("rasmolScriptInline"));
+    }
+    control.popHoldRepaint();
   }
 
   public void setStatusMessage(String statusMessage) {
-
-    if (errorMessage != null) {
-      showStatus(errorMessage);
-    } else {
-      showStatus(statusMessage);
-    }
-  }
-
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
-    setStatusMessage(errorMessage);
-  }
-
-  /**
-   * Draw atoms as transparent circles and bonds as transparent rectangles.
-   */
-  public static final int WIREFRAME = 0;
-
-  /**
-   * Draw atoms as filled circles and bonds as filled rectangles.
-   */
-  public static final int QUICKDRAW = 1;
-
-  /**
-   * Draw atoms as lighted spheres and bonds as filled rectangles.
-   */
-  public static final int HALFSHADED = 2;
-
-  /**
-   * Draw atoms as lighted spheres and bonds as lighted cylinders.
-   */
-  public static final int SHADED = 3;
-
-  static String[] drawStyleNames = {
-    "WIREFRAME", "QUICKDRAW", "HALFSHADED", "SHADED"
-  };
-
-  /**
-   *  Returns the string representation for the given drawing mode.
-   *  If the mode is invalid, null is returned.
-   */
-  public static String getDrawStyleName(int style) {
-    if ((style < 0) || (style > drawStyleNames.length)) {
-      return null;
-    }
-    return drawStyleNames[style];
-  }
-
-  /**
-   *  Returns the integer representation for the given drawing mode.
-   *  If the style is invalid, -1 is returned.
-   */
-  public static int getDrawStyle(String style) {
-
-    for (int i = 0; i < drawStyleNames.length; ++i) {
-      if (drawStyleNames[i].equalsIgnoreCase(style)) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  // FIXME -- modes should be the same so that map is not necessary
-  // map from applet modes to DisplayControl modes
-  static byte[] mapStyleAtom = {
-    DisplayControl.WIREFRAME,
-    DisplayControl.QUICKDRAW,
-    DisplayControl.SHADING,
-    DisplayControl.SHADING};
-    
-  static byte[] mapStyleBond = {
-    DisplayControl.WIREFRAME,
-    DisplayControl.QUICKDRAW,
-    DisplayControl.QUICKDRAW,
-    DisplayControl.SHADING};
-
-  /*
-  void setRenderingStyle() {
-    control.setStyleAtom(mapStyleAtom[style]);
-    control.setStyleBond(mapStyleBond[style]);
-  }
-
-  void setLabelStyle() {
-    // no mapping is necessary in this case
-    control.setStyleLabel(labelStyle);
-  }
-  */
-
-  /**
-   * Converts the html escape chars in the input and replaces them
-   * with the required chars. Handles &lt; &gt and &quot;
-   */
-  static String convertEscapeChars(String eChars) {
-
-    String less = "<";
-    char lessThan = less.charAt(0);
-    String more = ">";
-    char moreThan = more.charAt(0);
-    String q = "\"";
-    char quote = q.charAt(0);
-    String am = "&";
-    char amp = am.charAt(0);
-    String sc = ";";
-    char semi = sc.charAt(0);
-    StringBuffer eCharBuffer = new StringBuffer(eChars);
-    StringBuffer out = new StringBuffer(0);
-
-    //Scan the string for html escape chars and replace them with
-    int state = 0;    //0=scanning, 1 = reading
-    StringBuffer token = new StringBuffer(0);    //The escape char we are reading
-    for (int position = 0; position < eCharBuffer.length(); position++) {
-      char current = eCharBuffer.charAt(position);
-      if (state == 0) {
-        if (current == amp) {
-          state = 1;
-
-          //For some reason we have problems with setCharAt so use append
-          token = new StringBuffer(0);
-          token.append(current);
-        } else {
-
-          //Copy through to output
-          out.append(current);
-        }
-      } else {
-        if (current == semi) {
-          state = 0;
-
-          //Right replace this token
-          String tokenString = token.toString();
-          if (tokenString.equalsIgnoreCase("&lt")) {
-            out.append(lessThan);
-          } else if (tokenString.equalsIgnoreCase("&gt")) {
-            out.append(moreThan);
-          } else if (tokenString.equalsIgnoreCase("&quot")) {
-            out.append(quote);
-          }
-        } else {
-          token.append(current);
-        }
-      }
-    }
-
-    String returnValue = out.toString();
-    return returnValue;
-  }
-
-  /** Takes the string and replaces '%' with EOL chars.
-   * Used by the javascript setModelToRenderFromXYZString- more robust
-   * than whitescapes you see!
-   **/
-  public String recoverEOLSymbols(String inputString) {
-
-    String at = "%";
-    char mark = at.charAt(0);
-    String dt = ".";
-    char dot = dt.charAt(0);
-    String min = "-";
-    char minus = min.charAt(0);
-    String sp = " ";
-    char space = sp.charAt(0);
-    String nlString = "\n";
-    char nl = nlString.charAt(0);    //(char)Character.LINE_SEPARATOR;
-    StringBuffer eCharBuffer = new StringBuffer(inputString);
-    StringBuffer out = new StringBuffer(0);
-
-    //Scan the string for & and replace with /n
-    boolean lastWasSpace = false;
-    for (int position = 0; position < eCharBuffer.length(); position++) {
-      char current = eCharBuffer.charAt(position);
-      if (current == mark) {
-
-        //For some reason we have problems with setCharAt so use append
-        out.append(nl);
-        lastWasSpace = false;
-      } else if (current == space) {
-        if (!lastWasSpace) {
-          out.append(current);
-          lastWasSpace = true;
-        }
-      } else if (Character.isLetterOrDigit(current) || (current == dot)
-          || (current == minus)) {
-
-        //Copy through to output
-        out.append(current);
-        lastWasSpace = false;
-      }
-    }
-
-    //No idea why but a space at the very end seems to be unhealthy
-    if (lastWasSpace) {
-      out.setLength(out.length() - 1);
-    }
-    String returnValue = out.toString();
-    return returnValue;
-
-  }
-
-
-  class MyMouseListener extends MouseAdapter {
-
-    public void mouseClicked(MouseEvent e) {
-      setStatusMessage(helpMessage);
-    }
-
-    public void mouseEntered(MouseEvent e) {
-      setStatusMessage(helpMessage);
-    }
+    showStatus(statusMessage);
   }
 
   //METHODS FOR JAVASCRIPT
@@ -513,33 +177,33 @@ public class JmolApplet extends Applet implements StatusDisplay {
     //    myBean.setAtomPropertiesFromURL(propertiesURL);
   }
 
-  /**
-   * <b>For Javascript:<\b> Set the background colour.
-   * @param colourInHex The colour in the format #FF0000 for red etc
-   */
   public void setBackgroundColor(String colorInHex) {
     if (colorInHex != null && colorInHex.length() > 0)
       control.setColorBackground(colorInHex);
   }
 
-  /**
-   * <b>For Javascript:<\b> Sets the rendering style for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
-   */
-  public void setRenderingStyle(String style) {
-    System.out.println("setRenderingStyle(" + style + ")");
+
+  private final String[] styleStrings = {"QUICKDRAW", "SHADED", "WIREFRAME"};
+  private final byte[] styles = {DisplayControl.QUICKDRAW,
+                                 DisplayControl.SHADING,
+                                 DisplayControl.WIREFRAME};
+
+  public void setStyle(String style) {
     for (int i = 0; i < styleStrings.length; ++i) {
       if (styleStrings[i].equalsIgnoreCase(style)) {
-        control.setStyleAtom(atomStyles[i]);
-        control.setStyleBond(bondStyles[i]);
+        control.setStyleAtom(styles[i]);
+        control.setStyleBond(styles[i]);
         return;
       }
     }
   }
 
-  /**
-   * <b>For Javascript:<\b> Sets the rendering style for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
-   */
-  public void setLabelRenderingStyle(String style) {
+  private final String[] labelStyleStrings = {"NONE","SYMBOL","NUMBER"};
+  private final byte[] labelStyles = {DisplayControl.NOLABELS,
+                                      DisplayControl.SYMBOLS,
+                                      DisplayControl.NUMBERS};
+
+  public void setLabel(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {
       if (labelStyleStrings[i].equalsIgnoreCase(style)) {
         control.setStyleLabel(labelStyles[i]);
@@ -569,27 +233,26 @@ public class JmolApplet extends Applet implements StatusDisplay {
   }
 
   public void rasmolScript(String scriptName) {
-    long timeBegin = System.currentTimeMillis();
-    System.out.println("rasmolScript:" + timeBegin);
-    if (eval.loadFile(scriptName)) {
-      System.out.println("loadTime=" +
-                         (int)(System.currentTimeMillis() - timeBegin));
-      eval.run();
-    }
-    System.out.println("totalTime=" +
-                       (int)(System.currentTimeMillis() - timeBegin));
+    String strError = control.evalFile(scriptName);
+    setStatusMessage(strError);
   }
 
   public void rasmolScriptInline(String script) {
-    if (eval.loadString(script))
-      eval.run();
-  }
-
-  public void test(String str) {
-    System.out.println("test(" + str + ")");
+    String strError = control.eval(script);
+    setStatusMessage(strError);
   }
 
   public void load(String modelName) {
-    control.openFile(modelName);
+    if (modelName != null) {
+      String strError = control.openFile(modelName);
+      setStatusMessage(strError);
+    }
+  }
+
+  public void loadInline(String strModel) {
+    if (strModel != null) {
+      String strError = control.openStringInline(strModel);
+      setStatusMessage(strError);
+    }
   }
 }

@@ -718,6 +718,10 @@ final public class DisplayControl {
     return fileManager.openFile(file);
   }
 
+  public String openStringInline(String strModel) {
+    return fileManager.openStringInline(strModel);
+  }
+
   /****************************************************************
    * delegated to ModelManager
    ****************************************************************/
@@ -1000,6 +1004,24 @@ final public class DisplayControl {
 
   public Eval getEval() {
     return eval;
+  }
+
+  public String evalFile(String strFilename) {
+    if (strFilename != null) {
+      if (! eval.loadFile(strFilename))
+        return eval.getErrorMessage();
+      eval.run();
+    }
+    return null;
+  }
+
+  public String eval(String strScript) {
+    if (strScript != null) {
+      if (! eval.loadString(strScript))
+        return eval.getErrorMessage();
+      eval.run();
+    }
+    return null;
   }
 
   public void scriptEcho(String str) {

@@ -311,6 +311,7 @@ public class Token {
     "background",        new Token(background,         1, "background"),
     "bond",              new Token(bond,     varArgCount, "bond"),
     "cartoon",           new Token(cartoon,   onDefault1, "cartoon"),
+    "cartoons",          null,
     "center",            new Token(center,   varArgCount,  "center"),
     "centre",            null,
     "clipboard",         new Token(clipboard,          0, "clipboard"),

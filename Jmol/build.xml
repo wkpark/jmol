@@ -6,6 +6,9 @@
   <!-- compile options -->
   <property name="build.sysclasspath" value="ignore" />
   <property name="build.compiler" value="javac1.4" />
+  <!-- for some reason, I can't get ant to use this ${java.version}
+       property as the value of the source parameter -->
+  <property name="java.version" value="1.4" />
   <property name="debug" value="on" />
   <property name="deprecation" value="on" />
   <property name="optimization" value="off" />
@@ -112,7 +115,8 @@
   <target id="classes" name="classes" depends="init">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
-        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}">
+           debug="${debug}" deprecation="${deprecation}"
+	   optimize="${optimization}" source="1.4">
       <classpath refid="project.class.path" />
       <!-- removed until all base classes are CDK based -->
       <exclude name="org/openscience/jmol/io/ShelXReader.java"/>
@@ -134,7 +138,8 @@
   <target name="compile.tests" id="compile.tests" depends="classes">
     <mkdir dir="${tests.classes.dir}"/>
     <javac srcdir="${tests.source.dir}" destdir="${tests.classes.dir}"
-        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}">
+           debug="${debug}" deprecation="${deprecation}"
+	   optimize="${optimization}" source="1.4">
       <classpath location="${classes.dir}" />
       <classpath refid="project.class.path" />
     </javac>
@@ -149,11 +154,15 @@
     <mkdir dir="${applet.classes.dir}"/>
     <property name="build.compiler" value="javac1.1" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
-        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}" target="1.1"
-        includesfile="applet.classes" classpathref="applet-project.class.path" />
+           debug="${debug}" deprecation="${deprecation}"
+	   optimize="${optimization}"
+	   target="1.1" includesfile="applet.classes"
+	   classpathref="applet-project.class.path" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
-        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}" target="1.1"
-        includes="JmolApplet.java" classpathref="applet-project.class.path" />
+           debug="${debug}" deprecation="${deprecation}"
+	   optimize="${optimization}"
+	   target="1.1" includes="JmolApplet.java"
+	   classpathref="applet-project.class.path" />
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
         <include name="**/*.dtd" />

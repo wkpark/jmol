@@ -147,9 +147,11 @@ public class AtomSetChooser extends JDialog
    * buildFrame method.
    */
   private void createTreeModel() {
-    String key=null, separator=null;
+    String key=".PATH";
+    String separator=System.getProperty("path.separator");
     DefaultMutableTreeNode root =
       new DefaultMutableTreeNode(viewer.getModelSetName());
+      
     // first determine whether we have a PATH_KEY in the modelSetProperties
     Properties modelSetProperties = viewer.getModelSetProperties();
     if (modelSetProperties != null) {
@@ -169,17 +171,31 @@ public class AtomSetChooser extends JDialog
     // flat: add every AtomSet to the root
       for (int atomSetIndex = 0, count = viewer.getModelCount();
            atomSetIndex < count; ++atomSetIndex) {
+        DefaultMutableTreeNode current = root;
         String path = viewer.getModelProperty(atomSetIndex,key);
-        if (path == null) {
-          // no path, so add it to the root
-          root.add(new AtomSet(atomSetIndex,
-                   viewer.getModelName(atomSetIndex)));
-        } else {
-          DefaultMutableTreeNode current = root;
-          // LEFT OFF HERE for now, keep it flat
-          root.add(new AtomSet(atomSetIndex,
-                   viewer.getModelName(atomSetIndex)));
+        if (path != null) {
+          DefaultMutableTreeNode child = null;
+          String[] folders = path.split(separator);
+          for (int i=0, nFolders=folders.length; --nFolders>=0; i++) {
+            boolean found = false; // folder is initially not found
+            String lookForFolder = folders[i];
+            for (int childIndex = current.getChildCount(); --childIndex>=0;) {
+              child = (DefaultMutableTreeNode) current.getChildAt(childIndex);
+              found = lookForFolder.equals(child.toString());
+              if (found) break;
+            }
+            if (found) {
+              current = child;
+            } else {
+              DefaultMutableTreeNode newFolder = 
+                new DefaultMutableTreeNode(lookForFolder);
+              current.add(newFolder);
+              current = newFolder;
+            }
+          }
         }
+        current.add(new AtomSet(atomSetIndex,
+                    viewer.getModelName(atomSetIndex)));
       }
     }
     treeModel.setRoot(root);

@@ -229,10 +229,14 @@ public class AtomShape extends Shape {
     }
   }
 
-  private static Rectangle rectTemp = new Rectangle();
-  private boolean isClipVisible(Rectangle clip) {
+  static Rectangle rectTemp = new Rectangle();
+  boolean isClipVisible(Rectangle clip) {
     int radius = diameter / 2;
-    rectTemp.setRect(x - radius, y - radius, diameter, diameter);
+    rectTemp.x = x - radius;
+    rectTemp.y = y - radius;
+    rectTemp.width = diameter;
+    rectTemp.height = diameter;
+    //    rectTemp.setRect(x - radius, y - radius, diameter, diameter);
     // note that this is not correct if the atom is selected
     // because the halo may be visible while the atom is not
     boolean visible = clip.intersects(rectTemp);
@@ -274,7 +278,10 @@ public class AtomShape extends Shape {
     yMin -= 5;
     width += 10;
     height += 10;
-    rectTemp.setRect(xMin, yMin, width, height);
+    rectTemp.x = xMin;
+    rectTemp.y = yMin;
+    rectTemp.width = width;
+    rectTemp.height = height;
     boolean visible = clip.intersects(rectTemp);
     /*
     System.out.println("bond " + x + "," + y + "->" + x2 + "," + y2 +

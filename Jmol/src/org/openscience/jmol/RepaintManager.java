@@ -26,9 +26,6 @@ package org.openscience.jmol;
 
 import java.awt.Image;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.RenderingHints;
 import java.awt.Component;
 
 public class RepaintManager {
@@ -50,47 +47,17 @@ public class RepaintManager {
     this.fastRendering = fastRendering;
   }
 
-  public void maybeEnableAntialiasing(Graphics g) {
-    if (useGraphics2D && wantsAntialias) {
-      Graphics2D g2d = (Graphics2D) g;
-      if (wantsAntialiasAlways || !inMotion) {
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                             RenderingHints.VALUE_RENDER_QUALITY);
-      } else {
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_OFF);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                             RenderingHints.VALUE_RENDER_SPEED);
-      }
-    }
-  }
-
-  private BasicStroke dottedStroke = null;
-  public void maybeDottedStroke(Graphics g) {
-    if (useGraphics2D) {
-      if (dottedStroke == null) {
-        dottedStroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
-                                       BasicStroke.JOIN_ROUND, 0,
-                                       new float[] {3, 3}, 0);
-      }
-      Graphics2D g2 = (Graphics2D) g;
-      g2.setStroke(dottedStroke);
-    }
-  }
-
   public boolean inMotion = false;
 
   public void setInMotion(boolean inMotion) {
     if (this.inMotion != inMotion && control.getWireframeRotation())
       setFastRendering(inMotion);
-    if (this.inMotion && !inMotion) {
-      if (control.getWireframeRotation() ||
-          (useGraphics2D && wantsAntialias && !wantsAntialiasAlways))
-        refresh();
-    }
     this.inMotion = inMotion;
+    if (!inMotion &&
+        (control.getWireframeRotation() ||
+         (useGraphics2D && wantsAntialias && !wantsAntialiasAlways))) {
+      refresh();
+    }
   }
 
   public void setWantsGraphics2D(boolean wantsGraphics2D) {

@@ -69,6 +69,7 @@ final public class DisplayControl {
   public LabelRenderer labelRenderer;
   public Distributor distributor;
   public Eval eval;
+  public Java12 java12;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -99,6 +100,8 @@ final public class DisplayControl {
     labelRenderer = new LabelRenderer(this);
 
     eval = new Eval(this);
+    if (jvm12orGreater)
+      java12 = new Java12(this);
   }
 
   public Component getAwtComponent() {
@@ -911,14 +914,6 @@ final public class DisplayControl {
     return repaintManager.fastRendering;
   }
 
-  private void maybeEnableAntialiasing(Graphics g) {
-    repaintManager.maybeEnableAntialiasing(g);
-  }
-
-  public void maybeDottedStroke(Graphics g) {
-    repaintManager.maybeDottedStroke(g);
-  }
-
   public void setInMotion(boolean inMotion) {
     repaintManager.setInMotion(inMotion);
   }
@@ -977,6 +972,23 @@ final public class DisplayControl {
 
   public void notifyRepainted() {
     repaintManager.notifyRepainted();
+  }
+
+  /****************************************************************
+   * routines for java12
+   ****************************************************************/
+
+  private void maybeEnableAntialiasing(Graphics g) {
+    if (repaintManager.useGraphics2D)
+      java12.enableAntialiasing(g,
+                                repaintManager.wantsAntialias &&
+                                (!repaintManager.inMotion ||
+                                 repaintManager.wantsAntialiasAlways));
+  }
+
+  public void maybeDottedStroke(Graphics g) {
+    if (repaintManager.useGraphics2D)
+      java12.dottedStroke(g);
   }
 
   /****************************************************************

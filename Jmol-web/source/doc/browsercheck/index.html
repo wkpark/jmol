@@ -27,7 +27,7 @@
 <html>
   <head>
     <title>Jmol Browser Check</title>
-    <script src="../demo/jmol/Jmol.js"></script>
+    <script src="../jmol/Jmol.js"></script>
   </head>
   <body>
     <h1>Jmol Browser Check</h1>
@@ -101,6 +101,13 @@
       "Plug-in from <a href='javaplugin.sourceforge.net' target='_blank'>" +
       "javaplugin.sourceforge.net</a>";
 
+      var msgMacOpera754OrLess =
+      "<p>This version of Opera on Macintosh seems to have problems " +
+      "running applets. </p>" +
+      "We recommend that you consider using Safari or another " +
+      "Macintosh browser that reliably runs Java applets and has " +
+      "LiveConnect communications between JavaScript and Java applets. </p>";
+
       var msg = "";
       var mozillaVersion = "";
       var javaVersion = 0;
@@ -140,6 +147,8 @@
 	    { msg = msgMacIE + msgNoLiveConnectMac; break; }
 	  if (os == "mac" && browser == "safari" && browserVersion < 125.1)
 	    { msg = msgMacOldSafari + msgNoLiveConnectMac; break; }
+	  if (os == "mac" && browser == "opera" && browserVersion <= 7.54)
+	    { msg = msgMacOpera754OrLess; state = "red"; break; }
 	  if ((os == "win" && browser == "msie") ||
 	      ((os == "linux" || os == "unix") &&
 	       browser == "mozilla" && browserVersion >= 5))

@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import java.io.OutputStreamWriter;
@@ -53,8 +54,11 @@ public class PovraySaver extends FileSaver {
   private String background = null;
   private PovrayStyleWriter myStyle;
   private int framenumber = 0;
-  private Matrix4d amat, tmat, zmat, ttmat;
-  private float xfac, edge;
+  private float scalingFactor;
+  private Matrix4f matrixRotate;
+  private Matrix4f matrixTranslate;
+  
+  private float edge;
   private int screenWidth, screenHeight;
   protected ChemFile cf;
 
@@ -107,8 +111,8 @@ public class PovraySaver extends FileSaver {
    *
    * @param amat The rotation matrix to be set.
    */
-  public void setAmat(Matrix4d amat) {
-    this.amat = amat;
+  public void setRotateMatrix(Matrix4f matrixRotate) {
+    this.matrixRotate = new Matrix4f(matrixRotate);
 
   }
 
@@ -117,29 +121,17 @@ public class PovraySaver extends FileSaver {
    *
    * @param tmat The translation matrix to be set.
    */
-  public void setTmat(Matrix4d tmat) {
-    this.tmat = tmat;
-    ttmat = new Matrix4d(tmat);
-
+  public void setTranslateMatrix(Matrix4f matrixTranslate) {
+    this.matrixTranslate = new Matrix4f(matrixTranslate);
   }
 
   /**
-   * Sets the Zoom Matrix.
+   * Sets the scale
    *
-   * @param zmat The Zoom matrix to be set.
+   * @param scalePixeslPerAngstrom The translation scaling factor.
    */
-  public void setZmat(Matrix4d zmat) {
-    this.zmat = zmat;
-
-  }
-
-  /**
-   * Sets the xfac to scale the translation.
-   *
-   * @param xfac The translation scaling factor.
-   */
-  public void setXfac(float xfac) {
-    this.xfac = xfac;
+  public void setScale(float scalingFactor) {
+    this.scalingFactor = scalingFactor;
   }
 
   /**
@@ -184,34 +176,12 @@ public class PovraySaver extends FileSaver {
    * @param w the Writer to write it to
    */
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
-
-    Vector3d tvect = new Vector3d();
-    ttmat.get(tvect);
-    tvect.x /= xfac;
-    tvect.y /= -xfac;
-    tvect.z /= xfac;
-    ttmat.set(tvect);
-
-    // mth 2002 nov 15
-    // Instead of approximating the dimensions of the atom, I switched to
-    // using the radius. I don't understand how the variable 'edge' is being
-    // used, but this is effectively what the code was doing.
     edge = cf.getRadius() * 2;
-    // I don't understand these scaling operations. In fact, the molecules I
-    // tested look better without them. But I am afraid to remove this code
-    // without understanding it.
-    edge /= Math.pow(zmat.getScale(), 2);
-    // This one really looks like a fudge factor to me. 
-    edge /= 0.7;
-    // there is something else going on, because the povray rendering of
-    // the molecule is not in *exactly* the same position on the screen as
-    // the jmol rendering. 
-    // perhaps this is just because povray (presumably) does a better job
-    // of generating perspective so the locations of the atoms are more
-    // accurate under povray
+    edge *= 1.1; // for some reason I need a little more margin
+    edge /= scalingFactor;
 
-    myStyle.setAmat(amat);
-    myStyle.setTmat(ttmat);
+    myStyle.setRotate(matrixRotate);
+    myStyle.setTranslate(matrixTranslate);
 
     Date now = new Date();
     SimpleDateFormat sdf =
@@ -241,7 +211,7 @@ public class PovraySaver extends FileSaver {
     w.write("// the correct aspect ratio.\n" + "\n");
     w.write("#declare Width = " + screenWidth + ";\n");
     w.write("#declare Height = " + screenHeight + ";\n");
-    w.write("#declare Ratio = Width / Height\n" + ";\n");
+    w.write("#declare Ratio = Width / Height;\n");
     w.write("#declare zoom = " + edge + ";\n\n");
     w.write("camera{\n");
     w.write("  location < 0, 0, zoom>\n" + "\n");

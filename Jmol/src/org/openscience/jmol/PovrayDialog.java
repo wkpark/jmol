@@ -41,7 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 
 /**
  * A dialog for controling the creation of a povray input file from a
@@ -341,16 +341,10 @@ public class PovrayDialog extends JDialog {
 
         PovraySaver povs = new PovraySaver(currentFile, os);
         povs.setStyleController(style);
-        Matrix4d amat = display.getAmat();
-        Matrix4d tmat = display.getTmat();
-        Matrix4d zmat = display.getZmat();
-        float xfac = display.getXfac();
-        DisplaySettings settings = display.getSettings();
-        povs.setSettings(settings);
-        povs.setXfac(xfac);
-        povs.setAmat(amat);
-        povs.setTmat(tmat);
-        povs.setZmat(zmat);
+        povs.setSettings(display.getSettings());
+        povs.setScale(display.getPovScale());
+        povs.setRotateMatrix(display.getPovRotateMatrix());
+        povs.setTranslateMatrix(display.getPovTranslateMatrix());
         povs.setSize(outputWidth, outputHeight);
         povs.setBackgroundColor(DisplayPanel.getBackgroundColor());
         povs.writeFile();
@@ -446,7 +440,7 @@ public class PovrayDialog extends JDialog {
     }
 
     if (doAntiAlias) {
-      commandLine += " +A0";
+      commandLine += " +A0.1";
     }
 
     if (displayWhileRendering) {

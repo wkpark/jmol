@@ -41,7 +41,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -59,17 +60,21 @@ public class DisplayPanel extends JPanel
   private int bx, by, rtop, rbottom, rleft, rright;
   private int nframes = 0;
   private static int prevx, prevy, outx, outy;
-  private static Matrix4d amat = new Matrix4d();    // Matrix to do mouse angular rotations.
-  private static Matrix4d tmat = new Matrix4d();    // Matrix to do translations.
-  private static Matrix4d zmat = new Matrix4d();    // Matrix to do zooming.
+
+  private static float scalePixelsPerAngstrom;
+  private static float scaleDefaultPixelsPerAngstrom;
+  private static final Matrix4f matrixRotate = new Matrix4f();
+  private static final Matrix4f matrixTemp = new Matrix4f();
+  private static final Matrix4f matrixTranslate = new Matrix4f();
+  private static final Matrix4f matrixViewTransform = new Matrix4f();
 
   // current dimensions of the display screen
   private static Dimension dimCurrent = null;
+  private static int minScreenDimension;
   // previous dimensions ... used to detect resize operations
   private static Dimension dimPrevious = null;
   ChemFile cf;
   ChemFrame chemframe;
-  private float xfac;
   public static final int ROTATE = 0;
   public static final int ZOOM = 1;
   public static final int XLATE = 2;
@@ -130,85 +135,79 @@ public class DisplayPanel extends JPanel
     homePosition();
   }
 
-  /**
-   * returns the rotation matrix.  This is added for camera and
-   * light source rotation in PovRay.
-   */
-  public Matrix4d getAmat() {
-    return amat;
+  public float getScalePixelsPerAngstrom() {
+    return scalePixelsPerAngstrom;
   }
 
-  /**
-   * returns the translation matrix.  This is added for camera and
-   * light source rotation in PovRay.
-   */
-  public Matrix4d getTmat() {
-    return tmat;
+  public float getPovScale() {
+    return scalePixelsPerAngstrom / scaleDefaultPixelsPerAngstrom;
   }
 
-  /**
-   * returns the zoom matrix.  This is added for camera and
-   * light source rotation in PovRay.
-   */
-  public Matrix4d getZmat() {
-    return zmat;
+  public Matrix4f getPovRotateMatrix() {
+    return new Matrix4f(matrixRotate);
   }
 
-  public float getXfac() {
-    return xfac;
+  public Matrix4f getPovTranslateMatrix() {
+    Matrix4f matrixPovTranslate = new Matrix4f(matrixTranslate);
+    Vector3f vect = new Vector3f();
+    matrixPovTranslate.get(vect);
+    vect.x /= scalePixelsPerAngstrom;
+    vect.y /= -scalePixelsPerAngstrom; // need to invert y axis
+    vect.z /= scalePixelsPerAngstrom;
+    matrixPovTranslate.set(vect);
+    return matrixPovTranslate;
   }
 
   /**
    *  Returns transform matrix assosiated with the current viewing transform.
    */
   public Matrix4d getViewTransformMatrix() {
-    Matrix4d viewMatrix = new Matrix4d();
-    viewMatrix.setIdentity();
-    Matrix4d matrix = new Matrix4d(); // initialized to zero
+    // you absolutely *must* watch the order of these operations
+    matrixViewTransform.setIdentity();
     // first, translate the coordinates back to the center
-    matrix.setTranslation(new Vector3d(chemframe.getCenter()));
-    viewMatrix.sub(matrix);
+    matrixTemp.setZero();
+    matrixTemp.setTranslation(new Vector3f(chemframe.getCenter()));
+    matrixViewTransform.sub(matrixTemp);
     // now, multiply by angular rotations
-    viewMatrix.mul(amat, viewMatrix);
-
-    matrix.setIdentity();
-    matrix.setElement(0, 0, xfac);
-    matrix.setElement(1, 1, -xfac);
-    matrix.setElement(2, 2, xfac);
-    viewMatrix.mul(matrix, viewMatrix);
-    viewMatrix.mul(tmat, viewMatrix);
-    // I don't think this goes here
-    viewMatrix.mul(zmat, viewMatrix);
-    matrix.setZero();
-    matrix.setTranslation(new Vector3d(dimCurrent.width / 2,
-        dimCurrent.height / 2, dimCurrent.width / 2));
-    viewMatrix.add(matrix);
-    return viewMatrix;
+    // this is *not* the same as  matrixViewTransform.mul(matrixRotate);
+    matrixViewTransform.mul(matrixRotate, matrixViewTransform);
+    // now scale to screen coordinates
+    matrixTemp.set(scalePixelsPerAngstrom);
+    matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
+    matrixViewTransform.mul(matrixTemp, matrixViewTransform);
+    // translate
+    matrixViewTransform.mul(matrixTranslate, matrixViewTransform);
+    // now translate to the center of the screen
+    matrixTemp.setZero();
+    matrixTemp.setTranslation(new Vector3f(dimCurrent.width / 2,
+                           dimCurrent.height / 2, dimCurrent.width / 2));
+    matrixViewTransform.add(matrixTemp);
+    return new Matrix4d(matrixViewTransform);
   }
 
   public void homePosition() {
-    amat.setIdentity();
-    tmat.setIdentity();
-    zmat.setIdentity();
-    scaleToFitScreen();
+    matrixRotate.setIdentity();
+    matrixTranslate.setIdentity();
+    scaleFitToScreen();
   }
 
-  public void scaleToFitScreen() {
-    int minScreen = dimCurrent.width;
-    if (dimCurrent.height < minScreen)
-      minScreen = dimCurrent.height;
+  public void scaleFitToScreen() {
+    minScreenDimension = dimCurrent.width;
+    if (dimCurrent.height < minScreenDimension)
+      minScreenDimension = dimCurrent.height;
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom
     // given the current VDW radius setting. it is currently *not*
     // recalculated when the vdw radius settings are changed
     // leave a very small margin - only 1 on top and 1 on bottom
-    if (minScreen > 2)
-      minScreen -= 2;
-    xfac = minScreen / 2 / chemframe.getRadius();
+    if (minScreenDimension > 2)
+      minScreenDimension -= 2;
+    scalePixelsPerAngstrom = minScreenDimension / 2 / chemframe.getRadius();
+    scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
 
-    settings.setAtomScreenScale(xfac);
-    settings.setBondScreenScale(xfac);
-    settings.setVectorScreenScale(xfac);
+    settings.setAtomScreenScale(scalePixelsPerAngstrom);
+    settings.setBondScreenScale(scalePixelsPerAngstrom);
+    settings.setVectorScreenScale(scalePixelsPerAngstrom);
     if ((modeMouse == ZOOM) || (modeMouse == XLATE)) {
       Jmol.setRotateButton();
       modeMouse = ROTATE;
@@ -318,37 +317,35 @@ public class DisplayPanel extends JPanel
         settings.setFastRendering(true);
       }
       if (modeMouse == ROTATE) {
-        double xtheta = (y - prevy) * (2.0 * Math.PI / dimCurrent.width);
-        double ytheta = (x - prevx) * (2.0 * Math.PI / dimCurrent.height);
-        Matrix4d matrix = new Matrix4d();
-        matrix.rotX(xtheta);
-        amat.mul(matrix, amat);
-        matrix.rotY(ytheta);
-        amat.mul(matrix, amat);
+        // what fraction of PI radians do you want to rotate?
+        // the full screen width corresponds to a PI (180 degree) rotation
+        // if you grab an atom near the outside edge of the molecule,
+        // you can essentially "pull it" across the screen and it will
+        // track with the mouse cursor
+
+        // a change in the x coordinate generates a rotation about the y axis
+        float ytheta = (float)Math.PI * (x - prevx) / minScreenDimension;
+        matrixTemp.rotY(ytheta);
+        matrixRotate.mul(matrixTemp, matrixRotate);
+        // and, of course, delta y controls rotation about the x axis
+        float xtheta = (float)Math.PI * (y - prevy) / minScreenDimension;
+        matrixTemp.rotX(xtheta);
+        matrixRotate.mul(matrixTemp, matrixRotate);
       }
 
       if (modeMouse == XLATE) {
-        float dx = (x - prevx);
-        float dy = (y - prevy);
-        Matrix4d matrix = new Matrix4d();
-        matrix.setTranslation(new Vector3d(dx, dy, 0.0));
-        tmat.add(matrix);
+        matrixTranslate.m03 += (x - prevx);
+        matrixTranslate.m13 += (y - prevy);
       }
 
       if (modeMouse == ZOOM) {
         float xs = 1.0f + (float) (x - prevx) / dimCurrent.width;
         float ys = 1.0f + (float) (prevy - y) / dimCurrent.height;
-        float s = (xs + ys) / 2.0f;
-        Matrix4d matrix = new Matrix4d();
-        matrix.setElement(0, 0, s);
-        matrix.setElement(1, 1, s);
-        matrix.setElement(2, 2, s);
-        matrix.setElement(3, 3, 1.0);
-        zmat.mul(matrix, zmat);
-        xfac *= s * s;
-        settings.setAtomScreenScale(xfac);
-        settings.setBondScreenScale(xfac);
-        settings.setVectorScreenScale(xfac);
+        float s = (xs + ys) / 2;
+        scalePixelsPerAngstrom *= s;
+        settings.setAtomScreenScale(scalePixelsPerAngstrom);
+        settings.setBondScreenScale(scalePixelsPerAngstrom);
+        settings.setVectorScreenScale(scalePixelsPerAngstrom);
       }
 
       if (modeMouse == PICK) {
@@ -420,7 +417,7 @@ public class DisplayPanel extends JPanel
     g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
     if (chemframe != null) {
       if (! dimCurrent.equals(dimPrevious))
-        scaleToFitScreen();
+        scaleFitToScreen();
       if (antialiasCapable && settings.isAntiAliased() && !mouseDragged) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
@@ -771,7 +768,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      amat.setIdentity();
+      matrixRotate.setIdentity();
       repaint();
     }
   }
@@ -784,7 +781,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      amat.rotX(Math.toRadians(90.0));
+      matrixRotate.rotX((float)Math.toRadians(90.0));
       repaint();
     }
   }
@@ -797,7 +794,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      amat.rotX(Math.toRadians(-90.0));
+      matrixRotate.rotX((float)Math.toRadians(-90.0));
       repaint();
     }
   }
@@ -810,7 +807,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      amat.rotY(Math.toRadians(90.0));
+      matrixRotate.rotY((float)Math.toRadians(90.0));
       repaint();
     }
   }
@@ -823,7 +820,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      amat.rotY(Math.toRadians(-90.0));
+      matrixRotate.rotY((float)Math.toRadians(-90.0));
       repaint();
     }
   }
@@ -930,11 +927,11 @@ public class DisplayPanel extends JPanel
   public void rotate(int axis, float angle) {
 
     if (axis == X_AXIS) {
-      amat.rotX(Math.toRadians(angle));
+      matrixRotate.rotX((float)Math.toRadians(angle));
     } else if (axis == Y_AXIS) {
-      amat.rotY(Math.toRadians(angle));
+      matrixRotate.rotY((float)Math.toRadians(angle));
     } else if (axis == Z_AXIS) {
-      amat.rotZ(Math.toRadians(angle));
+      matrixRotate.rotZ((float)Math.toRadians(angle));
     }
   }
 

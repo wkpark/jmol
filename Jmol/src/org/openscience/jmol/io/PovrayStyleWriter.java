@@ -24,6 +24,7 @@ import org.openscience.jmol.BaseAtomType;
 import org.openscience.jmol.Atom;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3d;
 import java.io.BufferedWriter;
 import java.io.Writer;
@@ -155,15 +156,15 @@ public class PovrayStyleWriter {
 
   /* these are the tranformation matrixes used to rotate, translate,
    * and zoomthe camera and atoms. */
-  private Matrix4d amat, tmat, zmat;
+  private Matrix4d amat, tmat;
 
   /**
    * This method sets the rotation matrix.
    *
-   * @param amat The rotation matrix.
+   * @param matrixRotate The rotation matrix.
    */
-  public void setAmat(Matrix4d amat) {
-    this.amat = amat;
+  public void setRotate(Matrix4f matrixRotate) {
+    this.amat = new Matrix4d(matrixRotate);
   }
 
   /**
@@ -171,17 +172,8 @@ public class PovrayStyleWriter {
    *
    * @param tmat The translation matrix.
    */
-  public void setTmat(Matrix4d tmat) {
-    this.tmat = tmat;
-  }
-
-  /**
-   * This method sets the zoom matrix.
-   *
-   * @param zmat The zoom matrix.
-   */
-  public void setZmat(Matrix4d zmat) {
-    this.zmat = zmat;
+  public void setTranslate(Matrix4f matrixTranslate) {
+    this.tmat = new Matrix4d(matrixTranslate);
   }
 
   /**

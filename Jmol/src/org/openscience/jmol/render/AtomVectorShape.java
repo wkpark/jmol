@@ -8,11 +8,11 @@ public class AtomVectorShape implements Shape {
 
   Atom atom;
   DisplaySettings settings;
-  double minMagnitude;
-  double magnitudeRange;
+  float minMagnitude;
+  float magnitudeRange;
   
-  AtomVectorShape(Atom atom, DisplaySettings settings, double minMagnitude,
-      double magnitudeRange) {
+  AtomVectorShape(Atom atom, DisplaySettings settings,
+                  float minMagnitude, float magnitudeRange) {
     
     this.atom = atom;
     this.settings = settings;
@@ -32,9 +32,8 @@ public class AtomVectorShape implements Shape {
   public void render(Graphics g) {
     if (settings.getShowVectors()) {
       if (atom.getVector() != null) {
-        double magnitude = atom.getVector().distance(zeroPoint);
-        double scaling = (magnitude - minMagnitude) / magnitudeRange
-                           + 0.5;
+        float magnitude = atom.getVector().distance(zeroPoint);
+        float scaling = (magnitude - minMagnitude) / magnitudeRange  + 0.5f;
         ArrowLine al = new ArrowLine(g, atom.screenX, atom.screenY,
                          atom.getScreenVector().x,
                          atom.getScreenVector().y, false, true, scaling);

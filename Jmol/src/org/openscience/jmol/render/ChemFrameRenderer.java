@@ -63,35 +63,22 @@ public class ChemFrameRenderer {
       shapesList.clear();
       transformables.clear();
       transformables.add(frame);
-      double maxMagnitude = -1.0;
-      double minMagnitude = Double.MAX_VALUE;
       boolean showHydrogens = settings.getShowHydrogens();
       boolean showVectors = settings.getShowVectors();
     
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = frame.getAtomAt(i);
         shapesList.add(new AtomShape(atom));
-        if (showVectors) {
-          Point3f vector = atom.getVector();
-          if (vector != null) {
-            double magnitude = vector.distance(zeroPoint);
-            if (magnitude > maxMagnitude) {
-              maxMagnitude = magnitude;
-            }
-            if (magnitude < minMagnitude) {
-              minMagnitude = magnitude;
-            }
-          }
-        }
       }
-      
       if (showVectors) {
-        double magnitudeRange = maxMagnitude - minMagnitude;
+        float minAtomVectorMagnitude = frame.getMinAtomVectorMagnitude();
+        float atomVectorRange = frame.getAtomVectorRange();
         for (int i = 0; i < numAtoms; ++i) {
           Atom atom = frame.getAtomAt(i);
           if (showHydrogens || !atom.isHydrogen()) {
             shapesList.add(new AtomVectorShape(atom, settings,
-                                               minMagnitude, magnitudeRange));
+                                               minAtomVectorMagnitude,
+                                               atomVectorRange));
           }
         }
       }

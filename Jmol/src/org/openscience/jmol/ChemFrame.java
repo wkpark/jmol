@@ -84,6 +84,8 @@ public class ChemFrame implements Transformable {
   private Point3f centerRotation;
   private float radiusGeometric;
   private float radiusRotation;
+  private float minAtomVectorMagnitude;
+  private float maxAtomVectorMagnitude;
 
   public static void setBondFudge(float bf) {
     bondFudge = bf;
@@ -316,6 +318,21 @@ public class ChemFrame implements Transformable {
     }
   }
 
+  public float getMinAtomVectorMagnitude() {
+    findBounds();
+    return minAtomVectorMagnitude;
+  }
+
+  public float getMaxAtomVectorMagnitude() {
+    findBounds();
+    return maxAtomVectorMagnitude;
+  }
+
+  public float getAtomVectorRange() {
+    findBounds();
+    return maxAtomVectorMagnitude - minAtomVectorMagnitude;
+  }
+
   /**
    *  Returns the atom at the given index.
    *
@@ -442,7 +459,8 @@ public class ChemFrame implements Transformable {
    */
   private void clearBounds() {
     centerGeometric = centerRotation = null;
-    radiusGeometric = radiusRotation = 0.0f;
+    radiusGeometric = radiusRotation =
+      minAtomVectorMagnitude = maxAtomVectorMagnitude = 0f;
   }
 
   /**
@@ -452,7 +470,25 @@ public class ChemFrame implements Transformable {
     if ((centerGeometric != null) || (atoms == null) || (numberAtoms <= 0))
       return;
     centerGeometric = centerRotation = calculateGeometricCenter();
+    calculateAtomVectorMagnitudeRange();
     radiusGeometric = radiusRotation = calculateRadius(centerGeometric);
+  }
+
+  private static final Point3f zeroPoint = new Point3f();
+  void calculateAtomVectorMagnitudeRange() {
+    minAtomVectorMagnitude = maxAtomVectorMagnitude = 0;
+    for (int i = 0; i < numberAtoms; ++i) {
+      Point3f vector = atoms[i].getVector();
+      if (vector != null) {
+        float magnitude = vector.distance(zeroPoint);
+        if (magnitude > maxAtomVectorMagnitude) {
+          maxAtomVectorMagnitude = magnitude;
+        } else if ((magnitude < minAtomVectorMagnitude) ||
+                   (minAtomVectorMagnitude == 0f)) {
+          minAtomVectorMagnitude = magnitude;
+        }
+      }
+    }
   }
 
   Point3f calculateGeometricCenter() {

@@ -113,14 +113,29 @@ public class SimpleModelAdapter implements JmolModelAdapter {
       } catch (NumberFormatException nfe) {
       }
     }
-    if (line1.startsWith("HEADER") ||
-        line1.startsWith("ATOM  ") ||
-        line1.startsWith("HETATM"))
-      return PDB;
+    for (int i = pdbRecords.length; --i >= 0; ) {
+      if (line1.startsWith(pdbRecords[i]) ||
+          line2.startsWith(pdbRecords[i]) ||
+          line3.startsWith(pdbRecords[i]))
+        return PDB;
+    }
     if (line2 == null || line2.trim().length() == 0)
       return JME;
     return UNKNOWN;
   }
+
+  private final static String[] pdbRecords = {
+    "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
+    "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
+
+    "DBREF ", "SEQADV", "SEQRES", "MODRES", 
+
+    "HELIX ", "SHEET ", "TURN  ",
+
+    "CRYST1", "ORIGX1", "ORIGX2", "ORIGX3", "SCALE1", "SCALE2", "SCALE3",
+
+    "ATOM  ", "HETATM", "MODEL ",
+  };
 
   public String getModelName(Object clientFile) {
     return ((Model)clientFile).modelName;

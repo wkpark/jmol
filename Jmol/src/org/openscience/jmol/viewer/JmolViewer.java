@@ -818,7 +818,10 @@ final public class JmolViewer {
                        " priority:" + Thread.currentThread().getPriority());
     */
     clear();
-    forceRefresh();
+    // FIXME mth 20040308
+    // perhaps there is some strange thread thing going on
+    //    forceRefresh();
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>> openFile(" + name + ")");
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name);
     long ms = System.currentTimeMillis() - timeBegin;

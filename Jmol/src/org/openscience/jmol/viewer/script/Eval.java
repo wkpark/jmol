@@ -69,7 +69,7 @@ public class Eval implements Runnable {
   boolean terminationNotification;
   boolean interruptExecution;
 
-  final static boolean logMessages = false;
+  final static boolean logMessages = true;
 
   public Eval(JmolViewer viewer) {
     compiler = new Compiler();
@@ -1370,6 +1370,7 @@ public class Eval implements Runnable {
   }
 
   void load() throws ScriptException {
+    System.out.println(">>>>>>>>>>>>>>>> load script command seen");
     int i = 1;
     // ignore optional file format
     if (statement[i].tok == Token.identifier)
@@ -1378,9 +1379,12 @@ public class Eval implements Runnable {
       filenameExpected();
     if (statementLength != i + 1)
       badArgumentCount();
+    long timeBegin = System.currentTimeMillis();
     String filename = (String)statement[i].value;
     viewer.openFile(filename);
     String errMsg = viewer.getOpenFileError();
+    int millis = (int)(System.currentTimeMillis() - timeBegin);
+    System.out.println("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null)
       evalError(errMsg);
     if (logMessages)

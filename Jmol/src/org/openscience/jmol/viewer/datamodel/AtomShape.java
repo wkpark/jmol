@@ -217,10 +217,15 @@ public class AtomShape implements Bspt.Tuple {
   }
         
   public void setDotsOn(boolean dotsOn) {
-    if (! dotsOn)
-      dots = null;
-    else if (dots == null)
-      dots = new Dots(this);
+    if (dotsOn) {
+      if (dots == null)
+        dots = new Dots(this);
+      else
+        dots.setDotsOn(true);
+    } else {
+      if (dots != null)
+        dots.setDotsOn(false);
+    }
   }
 
   public int getRasMolRadius() {

@@ -62,7 +62,8 @@ public class DotsRenderer {
   }
 
   public void render(AtomShape atomShape) {
-    if (atomShape.dots == null)
+    Dots dots = atomShape.dots;
+    if (dots == null || !dots.dotsOn)
       return;
     render(colixDots == 0 ? atomShape.colixAtom : colixDots,
            atomShape.getVanderwaalsRadius(),

@@ -28,8 +28,13 @@ package org.openscience.jmol.viewer.datamodel;
 public class Dots {
 
   AtomShape atom;
-  Dots (AtomShape atom) {
+  boolean dotsOn;
+  Dots(AtomShape atom) {
     this.atom = atom;
+    dotsOn = true;
   }
 
+  void setDotsOn(boolean dotsOn) {
+    this.dotsOn = dotsOn;
+  }
 }

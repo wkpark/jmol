@@ -93,8 +93,8 @@ public class ColorManager {
     colixLabel = Colix.getColix(color);
   }
 
-  public Color colorDots = Color.blue;
-  public short colixDots = Colix.BLUE;
+  public Color colorDots = null;
+  public short colixDots = 0;
   public void setColorDots(Color color) {
     colorDots = color;
     colixDots = Colix.getColix(color);

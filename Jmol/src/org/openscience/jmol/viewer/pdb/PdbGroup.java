@@ -42,7 +42,6 @@ public class PdbGroup {
     this.chain = chain;
     this.seqcode = seqcode;
     this.groupID = getGroupID(group3);
-    System.out.println("group3:" + group3 + " groupID=" + groupID);
   }
 
   public void setPolymer(PdbPolymer polymer) {

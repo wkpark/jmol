@@ -19,6 +19,7 @@
   <property name="doc.dir" value="doc" />
   <property name="javadoc.dir" value="javadoc" />
   <property name="manifest" value="${source.dir}/manifest"/>
+  <property name="manifest-applet" value="${source.dir}/manifest"/>
   <property name="docbook.dir" value="Must be set by user." />
   <property name="keystore.name" value="Must be set by user." />
 

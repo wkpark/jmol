@@ -47,10 +47,9 @@
       this HTML was used to display the applet seen below.
 
 <appletExample>
-<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
-    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar"
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
     WIDTH="200" HEIGHT="200">
-  <PARAM NAME="model" VALUE="caffeine.xyz"/>
+  <PARAM NAME="load" VALUE="caffeine.xyz"/>
 </APPLET>]]>
 </appletExample>
 
@@ -60,11 +59,10 @@
       listed in the archive parameter.
       
 <appletExample>
-<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
-    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
       cdk-cml.jar,gnujaxp-saxonly.jar"
     WIDTH="200" HEIGHT="200">
-  <PARAM NAME="model" VALUE="methanol1.cml"/>
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
 </APPLET>]]>
 </appletExample>
 
@@ -77,8 +75,7 @@
       embedded rather than in a file.
       
 <appletExample>
-<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
-    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
       cdk-cml.jar,gnujaxp-saxonly.jar"
     WIDTH="200" HEIGHT="200">
   <PARAM NAME="format" VALUE="cmlString"/>

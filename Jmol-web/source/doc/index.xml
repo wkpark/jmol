@@ -15,22 +15,20 @@
 
     <section title="Features">
       <ul>
-      <li>Reads many types of files.</li>
-      <ul>
-        <li> <a href="http://www.abinit.org/" TARGET="_top">ABINIT</a> </li>
-        <li> <a href="http://www.qtp.ufl.edu/Aces2/" TARGET="_top">ACES II</a> </li>
-        <li> <a href="http://www.scm.com/" TARGET="_top">ADF</a> (Amsterdam Density Functional)</li>
-        <li> <a href="http://www.xml-cml.org" TARGET="_top">CML</a> (Chemical Markup Language)</li>
-        <li> <a href="http://www.kjemi.uio.no/software/dalton/dalton.html">Dalton</a> </li>
-        <li> <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html" TARGET="_top">GAMESS</a></li>
-        <li> <a href="http://www.gaussian.com/" TARGET="_top">Gaussian 90/92/94/96/98</a></li>
-        <li> <a href="http://www.bioinformatics.org/ghemical/" TARGET="_top">Ghemical</a></li>
-        <li> <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a> </li>
-        <li> <a href="http://www.mdli.com/">MDL molfiles</a> </li>
-        <li> MOPAC 7/97/2002</li>
-        <li> <a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a></li>
-        <li> XYZ (XMol) </li>
-      </ul>
+      <li>Reads many types of files: 
+        <a href="http://www.abinit.org/" TARGET="_top">ABINIT</a>,
+        <a href="http://www.qtp.ufl.edu/Aces2/" TARGET="_top">ACES II</a>,
+        <a href="http://www.scm.com/" TARGET="_top">ADF</a> (Amsterdam Density Functional),
+        <a href="http://www.xml-cml.org" TARGET="_top">CML</a> (Chemical Markup Language),
+        <a href="http://www.kjemi.uio.no/software/dalton/dalton.html">Dalton</a>,
+        <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html" TARGET="_top">GAMESS</a>,
+        <a href="http://www.gaussian.com/" TARGET="_top">Gaussian 90/92/94/96/98</a>,
+        <a href="http://www.bioinformatics.org/ghemical/" TARGET="_top">Ghemical</a>,
+        <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a>,
+        <a href="http://www.mdli.com/">MDL molfiles</a>,
+        MOPAC 7/97/2002,
+        <a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a>,
+        XYZ (XMol).</li>
 
         <li>Animates the results of simulations.</li>
         
@@ -45,17 +43,12 @@
           charges, atomic symbols, or atomic indexes during
           animation.</li>
         
-        <li>Prints images.</li>
-        <li>Exports images.
-          <ul>
-            <li>GIF (if the displayed image is 8 bit)</li>
-            <li>JPG</li>
-            <li>PPM</li>
-            <li>BMP</li>
-            <li>PNG</li>
-            <li>PDF</li>
-          </ul>
+        <li>Prints or exports images in these formats:
+          GIF (if the displayed image is 8 bit), JPG, PPM, BMP, PNG, PDF,
+          PostScript, and PovRay (including animations).
         </li>
+        
+        <li>Can display unit cell boxes, and energy bands.</li>
       </ul>
     </section>
 

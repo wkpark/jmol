@@ -3,11 +3,13 @@
   <body>
     <title>Jmol Changes</title>
 
+    <!-- $ID: $ -->
+    
     <section title="Contributors">
       Improvements to Jmol are thanks to many talented developers.
 <contributors>
 <contributor id="BS"><name>Bradley A. Smith</name><email>bradley@baysmith.com</email></contributor>
-<contributor id="EW"><name>E.L. Willighagen</name><email>egonw@sci.kun.nl</email></contributor>
+<contributor id="EW"><name>Egon Willighagen</name><email>egonw@sci.kun.nl</email></contributor>
 <contributor id="DG"><name>Dan Gezelter</name><email>gezelter@openscience.org</email></contributor>
 <contributor id="CS"><name>Christoph Steinbeck</name><email>steinbeck@ice.mpg.de</email></contributor>
 <contributor id="TG"><name>Tom Grey</name><email>t.grey@ic.ac.uk</email></contributor>
@@ -18,7 +20,7 @@
 <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
 <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
-<contributor id="MH"><name>Miguel Howard</name></contributor>
+<contributor id="MTH"><name>Miguel Howard</name><email>mth@mth.com</email></contributor>
 </contributors>
     </section>
 
@@ -26,6 +28,32 @@
       To recognize specific contributions, the developer's initials are noted
       next to the changes.
       
+<changes version="jmol-6">
+  <change contributor="MTH">
+    Reimplementation of rendering with perspective depth support
+    and performance improvements. 
+  </change>
+  <change contributor="EW">
+    Moved IO classes into separate package.
+  </change>
+  <change contributor="MTH">
+    Moved rendering classes into separate package.
+  </change>
+  <change contributor="EW">
+    Jmol is now based on CDK (Chemistry Development Kit).
+  </change>
+  <change contributor="MTH">
+    Added Spanish translation. 
+  </change>
+  <change contributor="EW">
+    Display speed can be displayed in milliseconds and in frames per second.
+  </change>
+  <change contributor="MTH">
+    Reimplementation of scripting functinality with support for most
+    RasMol/Chime scripting commands. 
+  </change>
+</changes>
+
 <changes version="jmol-5">
   <change contributor="EW">
     Internationalized Jmol and added Dutch translation.
@@ -55,8 +83,8 @@
   <change contributor="EW">
     Added reader for ShelX97 files containing a crystal structure.
   </change>
-  <change contributor="MH">
-    Translated the Jmol GUI into Spanish.
+  <change contributor="MTH">
+    Translated the Jmol GUI into Spanish. 
   </change>
   <change contributor="EW">
     Fixed the PropertyGraph. Data is no longer duplicated on reopening the dialog
@@ -440,10 +468,10 @@
       by Erich Gamma and Kent Beck.
       </li>
     
-      <li><a href="http://cdk.sf.net/">The Chemical Development Kit</a> 
-      (http://cdk.sf.net/)<br/>
-      Copyright &#169; 2000-2002 by
-      the CDK project.
+      <li><a href="http://www.openscience.org/~egonw/cml/">Java CML Filter
+      Library</a> (http://www.openscience.org/~egonw/cml/)<br/>
+      Copyright &#169; 2000,2001 by
+      <a href="mailto:egonw@sci.kun.nl">Egon Willighagen</a> (egonw@sci.kun.nl).
       </li>
     
       <li><a href="http://www.microstar.com/aelfred.html">AElfred</a>
@@ -490,4 +518,3 @@
 
   </body>
 </document>
-

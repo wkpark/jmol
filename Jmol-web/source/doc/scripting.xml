@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Jmol Scripting</title>
+    
+    <header>
+      <p>
+        Both the application and the applet support scripting. The examples below
+        use the applet, but those scripts can be used in the application too.
+      </p>
+    </header>
+
+
+  </body>
+</document>
+

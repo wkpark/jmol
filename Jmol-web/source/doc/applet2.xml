@@ -7,10 +7,9 @@
       <p>A carbon-cation rearrangement reaction
 
 <appletExample>
-<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
-    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,cdk-cml.jar,gnujaxp-saxonly.jar"
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
     WIDTH="200" HEIGHT="200">
-  <PARAM NAME="model" VALUE="SN1_reaction.cml"/>
+  <PARAM NAME="load" VALUE="SN1_reaction.cml"/>
 </APPLET>
 ]]>
 </appletExample>
@@ -19,10 +18,9 @@
       <p>Rotamers of ethane
       
 <appletExample>
-<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
-    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,cdk-cml.jar,gnujaxp-saxonly.jar"
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
     WIDTH="200" HEIGHT="200">
-  <PARAM NAME="model" VALUE="conformeren.cml"/>
+  <PARAM NAME="load" VALUE="conformeren.cml"/>
 </APPLET>
 ]]>
 </appletExample>
@@ -31,10 +29,9 @@
       <p>Caffeine in MDL mol file format
       
 <appletExample>
-<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
-    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar"
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
     WIDTH="200" HEIGHT="200">
-  <PARAM NAME="model" VALUE="caffeine.mol"/>
+  <PARAM NAME="load" VALUE="caffeine.mol"/>
 </APPLET>
 ]]>
 </appletExample>

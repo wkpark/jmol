@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -207,12 +208,15 @@ class Jmol extends JPanel {
     }
 
     status = (StatusBar) createStatusBar();
-    splash.showStatus(resourceHandler.translate("Initializing data model..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing data model..."));
     model = new JmolModel();
-    splash.showStatus(resourceHandler.translate("Initializing 3D display..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing 3D display..."));
     display = new DisplayPanel(status, settings);
     model.addPropertyChangeListener(display);
-    splash.showStatus(resourceHandler.translate("Initializing Preferences..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing Preferences..."));
     prefs = new Preferences(frame, display);
     splash.showStatus(resourceHandler.translate("Initializing Animate..."));
     anim = new Animate(model, frame);
@@ -220,14 +224,18 @@ class Jmol extends JPanel {
     splash.showStatus(resourceHandler.translate("Initializing Vibrate..."));
     vib = new Vibrate(model, frame);
     model.addPropertyChangeListener(vib);
-    splash.showStatus(resourceHandler.translate("Initializing Recent Files..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
     addPropertyChangeListener(openFileProperty, recentFiles);
-    splash.showStatus(resourceHandler.translate("Initializing Script Window..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing Script Window..."));
     scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
-    splash.showStatus(resourceHandler.translate("Initializing Property Graph..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing Property Graph..."));
     pg = new PropertyGraph(frame);
-    splash.showStatus(resourceHandler.translate("Initializing Measurements..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing Measurements..."));
     mlist = new MeasurementList(frame, display);
     meas = new Measure(frame, display);
     meas.setMeasurementList(mlist);
@@ -267,7 +275,8 @@ class Jmol extends JPanel {
     add("Center", panel);
     add("South", status);
 
-    splash.showStatus(resourceHandler.translate("Initializing Chemical Shifts..."));
+    splash.showStatus(resourceHandler
+        .translate("Initializing Chemical Shifts..."));
     chemicalShifts.initialize(apm);
     model.addPropertyChangeListener(chemicalShifts);
 
@@ -276,7 +285,8 @@ class Jmol extends JPanel {
 
     splash.showStatus(resourceHandler.translate("Reading AtomTypes..."));
     atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
-    splash.showStatus(resourceHandler.translate("Setting up File Choosers..."));
+    splash.showStatus(resourceHandler
+        .translate("Setting up File Choosers..."));
     File currentDir = getUserDirectory();
     openChooser = new JFileChooser();
     openChooser.setCurrentDirectory(currentDir);
@@ -366,7 +376,9 @@ class Jmol extends JPanel {
       if (script != null) {
         try {
           System.out.println("Executing script: " + script.toString());
-          window.splash.showStatus(JmolResourceHandler.getInstance().getString("Executing script..."));
+          window.splash
+              .showStatus(JmolResourceHandler.getInstance()
+                .getString("Executing script..."));
           RasMolScriptHandler scripthandler = new RasMolScriptHandler(window);
           BufferedReader reader = new BufferedReader(new FileReader(script));
           String command = reader.readLine();
@@ -428,17 +440,17 @@ class Jmol extends JPanel {
    * @param file the file to open.
    */
   public void openFile(File file) {
-    
+
     if (file != null) {
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
       try {
         FileInputStream is = new FileInputStream(file);
-        
+
         readMolecule(new InputStreamReader(is));
-        
+
         frame.setTitle(file.getName());
-        
+
         File oldFile = currentFile;
         currentFile = file;
 
@@ -452,7 +464,7 @@ class Jmol extends JPanel {
         JOptionPane.showMessageDialog(Jmol.this,
             "Unable to read file \"" + file + "\": " + ex.getMessage()
               + "\nIf this is in error, please contact the Jmol development team.",
-              "Unable to read file", JOptionPane.ERROR_MESSAGE);
+                "Unable to read file", JOptionPane.ERROR_MESSAGE);
       } catch (Exception ex) {
         JOptionPane.showMessageDialog(Jmol.this,
             "Unexpected exception: " + ex.getMessage()
@@ -474,37 +486,39 @@ class Jmol extends JPanel {
    *   is empty, or otherwise cannot be read.
    */
   public void readMolecule(Reader input) throws JmolException {
+
     frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     try {
       ChemFileReader reader = null;
       try {
         reader = ReaderFactory.createReader(input);
       } catch (IOException ex) {
-        throw new JmolException("readMolecule", "Error determining input format: "
-            + ex);
+        throw new JmolException("readMolecule",
+            "Error determining input format: " + ex);
       }
       if (reader == null) {
         throw new JmolException("readMolecule", "Unknown input format");
       }
       ChemFile newChemFile = reader.read();
-  
+
       if (newChemFile != null) {
         if (newChemFile.getNumberOfFrames() > 0) {
           setChemFile(newChemFile);
         } else {
-          throw new JmolException("readMolecule", "the input appears to be empty");
+          throw new JmolException("readMolecule",
+              "the input appears to be empty");
         }
       } else {
-        throw new JmolException("readMolecule", "unknown error reading input");
+        throw new JmolException("readMolecule",
+            "unknown error reading input");
       }
     } catch (IOException ex) {
-      throw new JmolException("readMolecule", "Error reading input: "
-          + ex);
+      throw new JmolException("readMolecule", "Error reading input: " + ex);
     } finally {
       frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
   }
-  
+
   /**
    * Reads a CML encoded molecule from a string.
    *
@@ -513,8 +527,10 @@ class Jmol extends JPanel {
    * @throws IllegalArgumentException if the cmlString is null or empty.
    */
   public void readCML(String cmlString) {
-    if (cmlString == null || cmlString.length() == 0) {
-      throw new IllegalArgumentException("CML string cannot be null or empty.");
+
+    if ((cmlString == null) || (cmlString.length() == 0)) {
+      throw new IllegalArgumentException(
+          "CML string cannot be null or empty.");
     }
     try {
       StringReader input = new StringReader(cmlString);
@@ -537,6 +553,7 @@ class Jmol extends JPanel {
    * @throws IllegalArgumentException if the input is null.
    */
   public void readCML(StringReader input) {
+
     if (input == null) {
       throw new IllegalArgumentException("input cannot be null.");
     }
@@ -1071,7 +1088,8 @@ class Jmol extends JPanel {
     new NewAction(), new OpenAction(), saveAction, printAction, exportAction,
     new ExitAction(), new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new AtompropsAction(), new ConsoleAction(),
-    chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction, new ScriptAction()
+    chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction,
+    new ScriptAction()
   };
 
   class ConsoleAction extends AbstractAction {
@@ -1159,10 +1177,11 @@ class Jmol extends JPanel {
 
     if (pg != null) {
       display.print(pg);
+
       // Flush the print job
       pg.dispose();
     }
-    
+
   }
 
   class OpenAction extends NewAction {
@@ -1356,13 +1375,14 @@ class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
+
       String baseName = "jmol";
       if (currentFile != null) {
         currentFile.getName().substring(0,
             currentFile.getName().lastIndexOf("."));
       }
-      PovrayDialog pvsd = new PovrayDialog(frame, display, model.getChemFile(),
-                            baseName);
+      PovrayDialog pvsd = new PovrayDialog(frame, display,
+                            model.getChemFile(), baseName);
     }
 
   }
@@ -1375,6 +1395,7 @@ class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
+
       exportChooser.setAccessory(null);
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
@@ -1383,12 +1404,13 @@ class Jmol extends JPanel {
 
         if (file != null) {
           Document document = new Document();
-      
+
           try {
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
-        
+            PdfWriter writer = PdfWriter.getInstance(document,
+                                 new FileOutputStream(file));
+
             document.open();
-        
+
             int w = display.getWidth();
             int h = display.getHeight();
             PdfContentByte cb = writer.getDirectContent();
@@ -1397,16 +1419,16 @@ class Jmol extends JPanel {
             g2.setStroke(new BasicStroke(0.1f));
             tp.setWidth(w);
             tp.setHeight(h);
-        
+
             display.print(g2);
             g2.dispose();
-            cb.addTemplate(tp, 72, 720-h);
-          } catch(DocumentException de) {
-              System.err.println(de.getMessage());
-          } catch(IOException ioe) {
-              System.err.println(ioe.getMessage());
+            cb.addTemplate(tp, 72, 720 - h);
+          } catch (DocumentException de) {
+            System.err.println(de.getMessage());
+          } catch (IOException ioe) {
+            System.err.println(ioe.getMessage());
           }
-      
+
           document.close();
         }
       }

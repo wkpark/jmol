@@ -43,7 +43,7 @@ final public class Swing25D implements Platform25D{
   int[] pbuf;
   Graphics2D g2;
 
-  public Image allocateImage(int width, int height, boolean enabled) {
+  public void allocateImage(int width, int height, boolean enabled) {
     this.width = width;
     this.height = height;
     bi = new BufferedImage(width, height,
@@ -55,6 +55,9 @@ final public class Swing25D implements Platform25D{
     dbi = (DataBufferInt) db;
     pbuf = dbi.getData();
     g2 = bi.createGraphics();
+  }
+
+  public Image getImage() {
     return bi;
   }
 

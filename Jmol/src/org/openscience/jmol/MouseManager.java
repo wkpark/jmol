@@ -228,9 +228,7 @@ public class MouseManager {
 
     public void mouseDragged(MouseEvent e) {
 
-      if (! control.inMotion) {
-        control.setInMotion(true);
-      }
+      control.setInMotion(true);
       xCurrent = e.getX();
       yCurrent = e.getY();
       switch (getMode(e)) {

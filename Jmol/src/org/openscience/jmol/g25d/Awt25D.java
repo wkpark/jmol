@@ -45,7 +45,7 @@ final public class Awt25D implements Platform25D {
     this.component = component;
   }
 
-  public Image allocateImage(int width, int height, boolean enabledPbuf) {
+  public void allocateImage(int width, int height, boolean enabledPbuf) {
     this.width = width;
     this.height = height;
     this.enabledPbuf = enabledPbuf;
@@ -65,6 +65,9 @@ final public class Awt25D implements Platform25D {
       if (g != null) g.dispose();
       g = image.getGraphics();
     }
+  }
+
+  public Image getImage() {
     return image;
   }
 

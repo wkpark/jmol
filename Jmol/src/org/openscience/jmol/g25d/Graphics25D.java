@@ -46,7 +46,6 @@ final public class Graphics25D {
   Triangle25D triangle25d;
   Cylinder25D cylinder25d;
   Dots25D dots25d;
-  Image img;
   Graphics g;
 
   boolean tOversample;
@@ -68,7 +67,7 @@ final public class Graphics25D {
   short[] zbuf4;
 
   final static int zBackground = 32767;
-  final static boolean forceAWT = true;
+  final static boolean forceAWT = false;
 
   public boolean tEnabled = false;
 
@@ -117,13 +116,12 @@ final public class Graphics25D {
     if (g != null)
       g.dispose();
     if (size1 == 0) {
-      img = null;
       g = null;
       pbuf = pbuf1 = pbuf4 = null;
       zbuf = zbuf1 = zbuf4 = null;
       return;
     }
-    img = platform.allocateImage(width, height, tEnabled);
+    platform.allocateImage(width, height, tEnabled);
     g = platform.getGraphics();
     pbuf = pbuf1 = pbuf4 = null;
     zbuf = zbuf1 = zbuf4 = null;
@@ -161,7 +159,7 @@ final public class Graphics25D {
   }
 
   public Image getScreenImage() {
-    return img;
+    return platform.getImage();
   }
 
   public void setColor(Color color) {

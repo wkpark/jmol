@@ -59,11 +59,15 @@ public class RepaintManager {
     if (this.inMotion != inMotion && control.getWireframeRotation())
       setFastRendering(inMotion);
     this.inMotion = inMotion;
+    /*
     if (!inMotion &&
         (control.getWireframeRotation() ||
          (useGraphics2D && wantsAntialias && !wantsAntialiasAlways))) {
       refresh();
     }
+    */
+    if (!inMotion)
+      refresh();
   }
 
   public void setWantsGraphics2D(boolean wantsGraphics2D) {

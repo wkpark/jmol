@@ -128,8 +128,6 @@ final public class DisplayControl {
     return awtComponent;
   }
 
-  public boolean inMotion = false;
-
   private boolean structuralChange = false;
 
 
@@ -1062,9 +1060,7 @@ final public class DisplayControl {
 
   public void setInMotion(boolean inMotion) {
     repaintManager.setInMotion(inMotion);
-    boolean tOversample = !inMotion & g25d.tEnabled;
-    repaintManager.setOversample(tOversample);
-    transformManager.setOversample(tOversample);
+    checkOversample();
   }
 
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
@@ -1128,6 +1124,13 @@ final public class DisplayControl {
 
   public Image getScreenImage() {
     return g25d.getScreenImage();
+  }
+
+  public void checkOversample() {
+    boolean tOversample = g25d.tEnabled &
+      (tOversampleAlways | (!repaintManager.inMotion & tOversampleStopped));
+    repaintManager.setOversample(tOversample);
+    transformManager.setOversample(tOversample);
   }
 
   public void setOversample(boolean tOversample) {
@@ -1296,6 +1299,10 @@ final public class DisplayControl {
       return getSelectionHaloEnabled();
     if (key.equals("useGraphics25D"))
       return getGraphics25DEnabled();
+    if (key.equals("oversampleAlways"))
+      return getOversampleAlwaysEnabled();
+    if (key.equals("oversampleStopped"))
+      return getOversampleStoppedEnabled();
     System.out.println("control.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -1322,6 +1329,10 @@ final public class DisplayControl {
       { setSelectionHaloEnabled(value); return ; }
     if (key.equals("useGraphics25D"))
       { setGraphics25DEnabled(value); return; }
+    if (key.equals("oversampleAlways"))
+      { setOversampleAlwaysEnabled(value); return; }
+    if (key.equals("oversampleStopped"))
+      { setOversampleStoppedEnabled(value); return; }
     System.out.println("control.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }
@@ -1336,6 +1347,27 @@ final public class DisplayControl {
 
   public void setGraphics25DEnabled(boolean value) {
     g25d.setEnabled(value);
+    refresh();
+  }
+
+  boolean tOversampleStopped;
+  public boolean getOversampleStoppedEnabled() {
+    return tOversampleStopped;
+  }
+  boolean tOversampleAlways;
+  public boolean getOversampleAlwaysEnabled() {
+    return tOversampleAlways;
+  }
+
+  public void setOversampleAlwaysEnabled(boolean value) {
+    tOversampleAlways = value;
+    checkOversample();
+    refresh();
+  }
+
+  public void setOversampleStoppedEnabled(boolean value) {
+    tOversampleStopped = value;
+    checkOversample();
     refresh();
   }
 

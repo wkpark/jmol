@@ -221,7 +221,7 @@ public class ChemFrame {
     public void addFrameProperty(PhysicalProperty property) {
         String desc = property.getDescriptor();
         if (frameProps.indexOf(desc) < 0) {
-            frameProps.addElement(desc);
+            frameProps.addElement(property);
         }
     }
 

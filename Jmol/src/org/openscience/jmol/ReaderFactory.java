@@ -88,10 +88,37 @@ public abstract class ReaderFactory {
       String line4 = buffer.readLine();
       buffer.reset();
 
-      // If the fourth line contains the MDL Ctab version tag,
-      // the file is identified as an MDL file.
-      if ((line4 != null) && line4.trim().endsWith("V2000")) {
-        return new MdlReader(buffer);
+      // If the fourth line contains the MDL Ctab version tag or
+      // contains two integers in the first 6 characters and the
+      // rest of the line only contains whitespace and digits,
+      // the file is identified as an MDL file
+      if (line4 != null) {
+        boolean mdlFile = false;
+        if (line4.trim().endsWith("V2000")) {
+          mdlFile = true;
+        } else if (line4.length() >= 6) {
+          try {
+            String atomCountString = line4.substring(0, 3).trim();
+            String bondCountString = line4.substring(3, 6).trim();
+            new Integer(atomCountString);
+            new Integer(bondCountString);
+            mdlFile = true;
+            if (line4.length() > 6) {
+              String remainder = line4.substring(6).trim();
+              for (int i = 0; i < remainder.length(); ++i) {
+                char c = remainder.charAt(i);
+                if (!(Character.isDigit(c) || Character.isWhitespace(c))) {
+                  mdlFile = false;
+                }
+              }
+            }
+          } catch (NumberFormatException nfe) {
+            // Integer not found on first line; therefore not a MDL file
+          }
+        }
+        if (mdlFile) {
+          return new MdlReader(buffer);
+        }
       }
 
       // An integer on the first line is a special test for XYZ files

@@ -44,7 +44,7 @@
 
 <appletExample>
 <![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar" 
-        width="200" height="200" mayscript>
+        width="200" height="200" mayscript="true">
   <param name="load" value="caffeine.xyz"/>
 </applet>]]>
 </appletExample>
@@ -54,7 +54,7 @@
       
 <appletExample>
 <![CDATA[<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar" 
-        width="200" height="200" mayscript>
+        width="200" height="200" mayscript="true">
   <param name="load" value="methanol1.cml"/>
 </APPLET>]]>
 </appletExample>
@@ -70,7 +70,7 @@
       
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="loadInline" VALUE='
 <molecule id="methanol">
   <atomArray atomID="a1 a2 a3 a4 a5 a6"
@@ -90,7 +90,7 @@
 
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="loadInline" VALUE='
 &lt;molecule id="methanol">
   &lt;atomArray atomID="a1 a2 a3 a4 a5 a6"
@@ -131,7 +131,7 @@
 	  fuchsia green lime olive yellow navy blue teal aqua).
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
   <PARAM NAME="bgcolor" VALUE="#00A0A0">/
 </APPLET>]]>
@@ -147,14 +147,14 @@
           </ul>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
   <PARAM NAME="style" VALUE="shaded"/>
 </APPLET>]]>
 </appletExample>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
   <PARAM NAME="style" VALUE="wireframe"/>
 </APPLET>]]>
@@ -170,14 +170,14 @@
           </dl>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
   <PARAM NAME="label" VALUE="symbol"/>
 </APPLET>]]>
 </appletExample>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
   <PARAM NAME="label" VALUE="number"/>
 </APPLET>]]>
@@ -193,7 +193,7 @@
           </ul>
         <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200" mayscript>
+        WIDTH="200" HEIGHT="200" mayscript="true">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
   <PARAM NAME="wireframeRotation" VALUE="true"/>
 </APPLET>]]>
@@ -209,7 +209,7 @@
 	  HTML file.
         <appletExample>
 <![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        width="200" height="200" mayscript>
+        width="200" height="200" mayscript="true">
   <param name="load" value="methanol1.cml"/>
   <param name="script" value="rotate y 10; loop 1"/>
 </applet>]]>
@@ -250,7 +250,7 @@
 <appletExample>
 <![CDATA[
   <applet name="anim" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-          width="350" height="350" mayscript>
+          width="350" height="350" mayscript="true">
     <param name="load"   value="SN1_reaction.cml">
   </applet>
   <form>
@@ -279,7 +279,7 @@
   }
   </script>
 <APPLET name="anim2" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-    WIDTH="350" HEIGHT="350" mayscript>
+    WIDTH="350" HEIGHT="350" mayscript="true">
   <PARAM NAME="load" VALUE="conformeren.cml"/>
 </APPLET>
   <form>
@@ -299,7 +299,7 @@
       
 <appletExample>
 <![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar"
-    width="350" height="350" mayscript>
+    width="350" height="350" mayscript="true">
   <param name="load" value="aspirina.mol"/>
   <param name="bgcolor" value="navy"/>
   <param name="label"   value="symbol"/>

@@ -99,10 +99,11 @@ public class BondRenderer {
     }
     bondOrder = getRenderBondOrder(bondShape.order);
     switch(bondOrder) {
+    case BondShape.BACKBONE:
+      bondOrder = 1;
     case 1:
     case 2:
     case 3:
-    case BondShape.BACKBONE:
       renderCylinder();
       break;
     case BondShape.STEREO_NEAR:

@@ -20,14 +20,10 @@
 package org.openscience.jmol;
 
 import java.awt.Graphics;
-import java.util.Iterator;
 import java.util.Enumeration;
-import java.util.ArrayList;
 import java.util.Vector;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3f;
-import java.util.Arrays;
-import java.util.Comparator;
 
 /**
  *  Drawing methods for ChemFrame.
@@ -51,57 +47,38 @@ public class ChemFrameRenderer {
     }
     boolean drawHydrogen = settings.getShowHydrogens();
 
-    int hcFrame = frame.hashCode();
-    int hcSettings = settings.hashCode();
-    int numAtoms = frame.getNumberOfAtoms();
     if (shapes == null || // did not shapes yet
-        hcFrame != previousFrameHashCode || // frame itself is changed
-        hcSettings != previousSettingsHashCode || // settings have changed
-        numAtoms != previousNumberAtoms // #atoms changed (e.g. a delete)
+        frame.hashCode() != frameHashCode || // frame itself is changed
+        settings.hashCode() != previousSettingsHashCode || // settings have changed
+        frame.getNumberOfAtoms() != numberAtoms // #atoms changed (e.g. a delete)
        ) {
-      previousFrameHashCode = hcFrame;
-      previousSettingsHashCode = hcSettings;
-      previousNumberAtoms = numAtoms;
-      shapesList.clear();
+      frameHashCode = frame.hashCode();
+      previousSettingsHashCode = settings.hashCode();
+      numberAtoms = frame.getNumberOfAtoms();
       transformables.clear();
-      transformables.add(frame);
+      transformables.addElement(frame);
       double maxMagnitude = -1.0;
       double minMagnitude = Double.MAX_VALUE;
-      boolean showAtoms = settings.getShowAtoms();
-      boolean showHydrogens = settings.getShowHydrogens();
-      boolean showLabels =
-        settings.getLabelMode() != DisplaySettings.NOLABELS;
-      boolean showBonds = settings.getShowBonds();
-      boolean showVectors = settings.getShowVectors();
-    
-      for (int i = 0; i < numAtoms; ++i) {
+      Vector shapesList = new Vector();
+      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         Atom atom = frame.getAtomAt(i);
-        if (showAtoms && (showHydrogens || !atom.isHydrogen())) {
-          // AtomShape should be associated with the Atom so that
-          // we are not always allocating new ones
-          // maybe settings shouldn't be passed here
-          // i.e. shapesList.addElement(atom.getShape({settings}));
-          shapesList.add(new AtomShape(atom, settings));
-          // the AtomLabel shape should really be integrated into the
-          if (showLabels) 
-            shapesList.add(new AtomLabelShape(atom, settings));
+        if (settings.getShowAtoms() && (settings.getShowHydrogens()
+            || !atom.isHydrogen())) {
+          shapesList.addElement(new AtomShape(atom, settings));
+          shapesList.addElement(new AtomLabelShape(atom, settings));
         }
-        if (showBonds) {
-          // bonds should also be part of the atom rendering. separating
-          // them from the atoms just increases the size of the sort and
-          // the iteration overhead
-          // plus, bonds are currently only half a bond. That means that
-          // there are 2 to 3 times as many BondShapes as AtomShapes
+        if (settings.getShowBonds()) {
           Enumeration bondIter = atom.getBondedAtoms();
           while (bondIter.hasMoreElements()) {
             Atom otherAtom = (Atom) bondIter.nextElement();
-            if (showHydrogens || !otherAtom.isHydrogen()) {
-              shapesList.add(new BondShape(atom, otherAtom, settings));
+            if (settings.getShowHydrogens()
+                || (!atom.isHydrogen() && !otherAtom.isHydrogen())) {
+              shapesList.addElement(new BondShape(atom, otherAtom, settings));
             }
           }
         }
 
-        if (showVectors) {
+        if (settings.getShowVectors()) {
           Point3f vector = atom.getVector();
           if (vector != null) {
             double magnitude = vector.distance(zeroPoint);
@@ -115,13 +92,12 @@ public class ChemFrameRenderer {
         }
       }
       
-      if (showVectors) {
+      if (settings.getShowVectors()) {
         double magnitudeRange = maxMagnitude - minMagnitude;
-        for (int i = 0; i < numAtoms; ++i) {
+        for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
           Atom atom = frame.getAtomAt(i);
-          if (showHydrogens || !atom.isHydrogen()) {
-            shapesList.add(new AtomVectorShape(atom, settings,
-                                               minMagnitude, magnitudeRange));
+          if (settings.getShowHydrogens() || !atom.isHydrogen()) {
+            shapesList.addElement(new AtomVectorShape(atom, settings, minMagnitude, magnitudeRange));
           }
         }
       }
@@ -135,8 +111,8 @@ public class ChemFrameRenderer {
           VectorShape vector = new VectorShape(settings, zeroPoint,
               new Point3f(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
                 true);
-          shapesList.add(vector);
-          transformables.add(vector);
+          shapesList.addElement(vector);
+          transformables.addElement(vector);
         }
         
         // The full primitive cell
@@ -147,48 +123,55 @@ public class ChemFrameRenderer {
             LineShape line = new LineShape(settings,
                 (Point3f) boxEdges.elementAt(i),
                   (Point3f) boxEdges.elementAt(i + 1));
-            shapesList.add(line);
-            transformables.add(line);
+            shapesList.addElement(line);
+            transformables.addElement(line);
           }
         }
       }
       
-      shapes = (Shape[]) shapesList.toArray(shapes);
+      shapes = new Shape[shapesList.size()];
+      Enumeration shapeIter = shapesList.elements();
+      for (int i = 0; i < shapes.length && shapeIter.hasMoreElements(); ++i) {
+        shapes[i] = (Shape) shapeIter.nextElement();
+      }
     }
     
-    Iterator iter = transformables.listIterator();
-    while (iter.hasNext()) {
-      Transformable t1 = (Transformable) iter.next();
+    Enumeration iter = transformables.elements();
+    while (iter.hasMoreElements()) {
+      Transformable t1 = (Transformable) iter.nextElement();
       t1.transform(matrix);
     }
-    Arrays.sort(shapes,
-                new Comparator() {
-                  public int compare(Object shape1, Object shape2) {
-                    int z1 = (int) ((Shape) shape1).getZ();
-                    int z2 = (int) ((Shape) shape2).getZ();
-                    if (z1 < z2)
-                      return -1;
-                    if (z1 == z2)
-                      return 0;
-                    return 1;
-                  }
-                }
-                );
+    shapeSorter.sort(shapes);
+
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g);
     }
 
   }
 
-  int previousFrameHashCode;
+  int frameHashCode;
   int previousSettingsHashCode;
-  int previousNumberAtoms;
+  int numberAtoms;
 
-  Shape[] shapes = new Shape[0];
-  ArrayList shapesList = new ArrayList();
+  Shape[] shapes;
   
-  ArrayList transformables = new ArrayList();
+  Vector transformables = new Vector();
   
+  HeapSorter shapeSorter = new HeapSorter(new HeapSorter.Comparator() {
+
+    public int compare(Object atom1, Object atom2) {
+
+      Shape a1 = (Shape) atom1;
+      Shape a2 = (Shape) atom2;
+      if (a1.getZ() < a2.getZ()) {
+        return -1;
+      } else if (a1.getZ() > a2.getZ()) {
+        return 1;
+      }
+      return 0;
+    }
+  });
+
   /**
    * Point for calculating lengths of vectors.
    */

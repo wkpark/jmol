@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol;
 
+import freeware.PrintfFormat;
 import java.awt.Font;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -77,6 +78,11 @@ class Dihedral extends Measurement implements MeasurementInterface {
     }
   }
 
+  /**
+   * The format used for displaying dihedral values.
+   */
+  private static PrintfFormat dihedralFormat = new PrintfFormat("%0.1f\u00b0");
+  
   private void paintDihedralString(Graphics g, DisplaySettings settings,
       int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3,
         int x4, int y4, int z4) {
@@ -86,11 +92,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     g.setColor(settings.getTextColor());
-    String s = (new Double(getDihedral())).toString();
-    if (s.length() > 5) {
-      s = s.substring(0, 5);
-    }
-    s += "\u00b0";
+    String s = dihedralFormat.sprintf(getDihedral());
     int j = fontMetrics.stringWidth(s);
 
     int xloc = (x1 + x2 + x3 + x4) / 4;

@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol;
 
+import freeware.PrintfFormat;
 import java.awt.Font;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -68,6 +69,11 @@ class Distance extends Measurement implements MeasurementInterface {
     }
   }
 
+  /**
+   * The format used for displaying distance values.
+   */
+  private static PrintfFormat distanceFormat = new PrintfFormat("%0.3f \u00c5");
+  
   private void paintDistString(Graphics g, DisplaySettings settings, int x1,
       int y1, int z1, int x2, int y2, int z2) {
 
@@ -79,11 +85,7 @@ class Distance extends Measurement implements MeasurementInterface {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     g.setColor(settings.getTextColor());
-    String s = (new Double(getDistance())).toString();
-    if (s.length() > 5) {
-      s = s.substring(0, 5);
-    }
-    s += " \u00c5";
+    String s = distanceFormat.sprintf(getDistance());
     int j = fontMetrics.stringWidth(s);
 
     if (x2 == x1) {

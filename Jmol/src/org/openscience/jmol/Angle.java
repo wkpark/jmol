@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol;
 
+import freeware.PrintfFormat;
 import java.awt.Font;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -71,8 +72,11 @@ class Angle extends Measurement implements MeasurementInterface {
     }
   }
 
-
-
+  /**
+   * The format used for displaying angle values.
+   */
+  private static PrintfFormat angleFormat = new PrintfFormat("%0.1f\u00b0");
+  
   private void paintAngleString(Graphics g, DisplaySettings settings, int x1,
       int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3) {
 
@@ -81,12 +85,7 @@ class Angle extends Measurement implements MeasurementInterface {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     g.setColor(settings.getTextColor());
-    String s = (new Double(getAngle())).toString();
-    if (s.length() > 5) {
-      s = s.substring(0, 5);
-    }
-
-    s += "\u00b0";
+    String s = angleFormat.sprintf(getAngle());
     int j = fontMetrics.stringWidth(s);
 
     int xloc = (2 * x2 + x1 + x3) / 4;

@@ -439,18 +439,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     update(g);
   }
 
-  //private final static Color frankColor = Color.gray;
-  //private final static String frankString = "Jmol";
-  //private final static String frankFontName = "Serif";
-  //private final static int frankFontStyle = Font.BOLD;
-  //private final static int frankFontSize = 14;
-  //private final static int frankMargin = 4;
-  Font frankFont;
-  int frankWidth;
-  int frankDescent;
-  
-
-
   public boolean handleEvent(Event e) {
     if (viewer == null)
       return false;

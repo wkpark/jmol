@@ -78,23 +78,35 @@ public class StyleManager {
   public byte styleBond = DisplayControl.QUICKDRAW;
   public void setStyleBond(byte style) {
     styleBond = style;
+    if (control.haveFile()) {
+      ChemFrame[] frames = control.getFrames();
+      for (int iframe = frames.length; --iframe >= 0; ) {
+        Atom[] atoms = frames[iframe].getJmolAtoms();
+        for (int iatom = atoms.length; --iatom >= 0; ) {
+          atoms[iatom].atomShape.setStyleBond(style);
+        }
+      }
+    }
   }
 
   public void setStyleBond(byte style, BitSet set, boolean bondmodeOr) {
-    /*
-      mth - work in progress
     Atom[] atoms = control.getCurrentFrameAtoms();
     for (int iatom = atoms.length; --iatom >= 0 ; ) {
-      if (! set.get(iatom))
+      boolean isSelected = set.get(iatom);
+      if (!isSelected && !bondmodeOr)
         continue;
       Atom atom = atoms[iatom];
-      Atom[] bondedAtoms = atom.bondedAtoms;
-      for (int nbonds = bondedAtoms.length; --nbonds >= 0; ) {
-        if (set.get(bondedAtoms[nbonds]))
-          atom.atomshape.setStyleBond(style, nbonds);
+      if (isSelected && bondmodeOr) {
+        atom.atomShape.setStyleBond(style);
+        continue;
+      }
+      Atom[] bondedAtoms = atom.getBondedAtoms();
+      for (int i = bondedAtoms.length; --i >= 0; ) {
+        int indexOtherAtom = bondedAtoms[i].getAtomNumber();
+        if (set.get(indexOtherAtom))
+          atom.atomShape.setStyleBond(style, i);
       }
     }
-    */
   }
 
   public int percentAngstromBond = 10;

@@ -43,12 +43,10 @@ public class AtomShape extends Shape {
   public AtomShape(Atom atom, byte styleAtom, byte styleBond) {
     this.atom = atom;
     this.styleAtom = styleAtom;
-    /*
-    int numBonds = atom.bondedAtoms.length;
+    int numBonds = atom.getBondedCount();
     stylesBond = new byte[numBonds];
     while (--numBonds >= 0)
       stylesBond[numBonds] = styleBond;
-    */
   }
 
   public String toString() {
@@ -57,6 +55,16 @@ public class AtomShape extends Shape {
 
   public void setStyleAtom(byte styleAtom) {
     this.styleAtom = styleAtom;
+  }
+
+  public void setStyleBond(byte styleBond) {
+    for (int i = stylesBond.length; --i >= 0; ) {
+      stylesBond[i] = styleBond;
+    }
+  }
+
+  public void setStyleBond(byte styleBond, int indexBond) {
+    stylesBond[indexBond] = styleBond;
   }
 
   public void transform(DisplayControl control) {
@@ -94,7 +102,7 @@ public class AtomShape extends Shape {
            (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
           isBondClipVisible(control.bondRenderer.clip,
                             x, y, atomShapeOther.x, atomShapeOther.y)) {
-        control.bondRenderer.render(this, atomShapeOther,
+        control.bondRenderer.render(this, atomShapeOther, stylesBond[i],
                                     atom.getBondOrder(atomOther));
       }
     }

@@ -833,7 +833,10 @@ final public class DisplayControl {
   }
 
   public void setStyleBond(byte style) {
-    styleManager.setStyleBond(style);
+    if (selectionManager.countSelection() == 0)
+      styleManager.setStyleBond(style);
+    else
+      styleManager.setStyleBond(style, selectionManager.bsSelection, false);
     refresh();
   }
 

@@ -86,7 +86,7 @@ public class BondRenderer {
   int bondOrder;
 
   public void render(AtomShape atomShape1, AtomShape atomShape2,
-                     int bondOrder) {
+                     byte styleBond, int bondOrder) {
     x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
     x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
     dx = x2 - x1; dx2 = dx * dx; sgndx = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
@@ -103,7 +103,7 @@ public class BondRenderer {
       return; // the pixels from the atoms will nearly cover the bond
     if (!control.getShowAtoms() && bondOrder == 1 &&
         (control.getFastRendering() ||
-         control.getStyleBond() == control.WIREFRAME)) {
+         styleBond == control.WIREFRAME)) {
       if (sameColor) {
         drawLineInside(g, color1, x1, y1, x2, y2);
       } else {
@@ -144,7 +144,7 @@ public class BondRenderer {
     this.bondOrder = bondOrder;
 
     boolean lineBond =
-      control.getStyleBond() == control.WIREFRAME ||
+      styleBond == control.WIREFRAME ||
       control.getFastRendering();
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
@@ -158,7 +158,7 @@ public class BondRenderer {
       if (lineBond)
         lineBond();
       else
-        polyBond();
+        polyBond(styleBond);
       if (--bondOrder == 0)
         return;
       stepAxisCoordinates();
@@ -183,7 +183,7 @@ public class BondRenderer {
     drawLineInside(g, color2, xMid, yMid, xSurface2, ySurface2);
   }
 
-  void polyBond() {
+  void polyBond(byte styleBond) {
     boolean bothColors = !sameColor;
 
     calcSurfaceIntersections();
@@ -215,26 +215,26 @@ public class BondRenderer {
         axPoly[1] = xSurfaceTop; ayPoly[1] = ySurfaceTop;
         axPoly[2] = xSurfaceBot; ayPoly[2] = ySurfaceBot;
         axPoly[3] = xExitBot; ayPoly[3] = yExitBot;
-        polyBond1(color2, outline2);
+        polyBond1(styleBond, color2, outline2);
       }
     } else {
       axPoly[0] = xExitTop; ayPoly[0] = yExitTop;
       axPoly[1] = xMidTop; ayPoly[1] = yMidTop;
       axPoly[2] = xMidBot; ayPoly[2] = yMidBot;
       axPoly[3] = xExitBot; ayPoly[3] = yExitBot;
-      polyBond1(color1, outline1);
+      polyBond1(styleBond, color1, outline1);
 
       axPoly[0] = xMidTop; ayPoly[0] = yMidTop;
       axPoly[1] = xSurfaceTop; ayPoly[1] = ySurfaceTop;
       axPoly[2] = xSurfaceBot; ayPoly[2] = ySurfaceBot;
       axPoly[3] = xMidBot; ayPoly[3] = yMidBot;
-      polyBond1(color2, outline2);
+      polyBond1(styleBond, color2, outline2);
     }
   }
 
-  void polyBond1(Color color, Color outline) {
+  void polyBond1(byte styleBond, Color color, Color outline) {
     g.setColor(color);
-    switch(control.getStyleBond()) {
+    switch(styleBond) {
     case DisplayControl.BOX:
       g.drawPolygon(axPoly, ayPoly, 4);
       break;

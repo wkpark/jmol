@@ -163,7 +163,7 @@ class ModelResolver {
   { "Entering Gaussian System", "1998 Gaussian, Inc." };
 
   final static String[] mopacRecords =
-  { "MOPAC 93 (c) Fujitsu" };
+  { "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu" };
 
   final static String[][] containsRecords =
   { cmlRecords, gaussianRecords, mopacRecords };

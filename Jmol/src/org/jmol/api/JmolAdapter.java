@@ -44,7 +44,7 @@ import java.util.Properties;
  * are probably returning stray values. Therefore, these atoms are getting
  * mapped to element 0 (Xx), which has color pink and a relatively large
  * covalent bonding radius. 
- * @see org.jmol.viewer.JmolViewer
+ * @see org.jmol.api.JmolViewer
  ****************************************************************/
 public abstract class JmolAdapter {
   

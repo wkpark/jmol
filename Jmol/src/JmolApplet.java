@@ -25,7 +25,6 @@
 
 import org.openscience.jmol.applet.*;
 import org.jmol.api.*;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 //import org.openscience.jmol.adapters.CdkJmolAdapter;
 import org.openscience.jmol.ui.JmolPopup;
@@ -194,7 +193,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     */
     return defaultValue;
   }
-
+  /*
   private int getValue(String propertyName, int defaultValue) {
     String stringValue = getValue(propertyName, null);
     if (stringValue != null)
@@ -206,7 +205,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       }
     return defaultValue;
   }
-  /*
+  
   private double getValue(String propertyName, double defaultValue) {
     String stringValue = getValue(propertyName, null);
     if (stringValue != null)

@@ -24,7 +24,6 @@
  */
 package org.jmol.api;
 
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Rectangle;

@@ -203,9 +203,9 @@ class CmlReader extends AtomSetCollectionReader {
               collectionName = atts.getValue(i);
             } // else: don't overwrite title!
           }
-          if (collectionName != null) {
-            atomSetCollection.setAtomSetName(collectionName);
-          }
+        }
+        if (collectionName != null) {
+          atomSetCollection.setAtomSetName(collectionName);
         }
         return;
       }

@@ -673,6 +673,24 @@ final public class Graphics25D {
     fillPolygon4(colixFill, ax, ay, az);
   }
 
+  public void fillTriangle(short colix, int x0, int y0, int z0,
+                           int x1, int y1, int z1, int x2, int y2, int z2) {
+    int[] t;
+    t = triangle25d.ax;
+    t[0] = x0; t[1] = x1; t[2] = x2;
+    t = triangle25d.ay;
+    t[0] = y0; t[1] = y1; t[2] = y2;
+    t = triangle25d.az;
+    t[0] = z0; t[1] = z1; t[2] = z2;
+
+    if (! tEnabled) {
+      g.setColor(Colix.getColor(colix));
+      g.fillPolygon(triangle25d.ax, triangle25d.ay, 3);
+      return;
+    }
+    triangle25d.fillTriangle();
+  }
+
   public void fillCylinder(short colix1, short colix2, int w,
                            int x1, int y1, int z1, int x2, int y2, int z2) {
     cylinder25d.test(colix1, colix2, w,

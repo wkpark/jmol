@@ -30,55 +30,65 @@ import org.openscience.jmol.g25d.Graphics25D;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3i;
 
-public class VectorShape extends LineShape {
+public class VectorShape extends Shape {
 
-  // mth 2003 05 08
-  // This code only renders the "arrowhead" part of a vector.
-  // That is, it no longer draws the "shaft" of the arrow.
-  // As far as I know, it has only been tested with the
-  // the end of the vector, not the beginning
+  Point3d pointOrigin;
+  Point3d pointVector;
+  double headSizeAngstroms;
+  int[] ax = new int[4];
+  int[] ay = new int[4];
+  int[] az = new int[4];
 
-  boolean arrowStart;
-  boolean arrowEnd;
-
-  public VectorShape(Point3d pointOrigin, Point3d pointEnd) {
-    super(pointOrigin, pointEnd);
-    this.arrowStart = false;
-    this.arrowEnd = true;
+  public VectorShape(Point3d pointOrigin, Point3d pointVector, double scale) {
+    this.pointOrigin = pointOrigin;
+    this.pointVector = new Point3d(pointVector);
+    this.pointVector.scaleAdd(scale, pointOrigin);
+    headSizeAngstroms = pointOrigin.distance(this.pointVector) / 4;
   }
 
-  /*
-  VectorShape(Point3d pointOrigin, Point3d pointEnd,
-              boolean arrowStart, boolean arrowEnd) {
-    super(pointOrigin, pointEnd);
-    this.arrowStart = arrowStart;
-    this.arrowEnd = arrowEnd;
-  }
-  */
-
-  public String toString() {
-    return "Primitive vector shape";
+  public VectorShape(Point3d pointOrigin, Point3d pointVector) {
+    this(pointOrigin, pointVector, 1.0);
   }
 
   public void render(Graphics25D g25d, DisplayControl control) {
-    double scaling = 1.0;
-    ArrowLine al = new ArrowLine(g25d, control, x, y, z, xEnd, yEnd, zEnd,
-                                 false, arrowStart, arrowEnd, scaling);
+    short colixVector = control.getColixVector();
+    int xEnd = ax[0], yEnd = ay[0], zEnd = az[0];
+    g25d.drawLine(colixVector, x, y, z, xEnd, yEnd, zEnd);
 
+    int dx = xEnd - x, xHead = xEnd - (dx / 4);
+    int dy = yEnd - y, yHead = yEnd - (dy / 4);
+    int mag2d = (int)(Math.sqrt(dx*dx + dy*dy) + 0.5);
+    int dz = zEnd - z, zHead = zEnd - (dz / 4);
+    int headSizePixels = (int)(control.scaleToScreen(zHead, headSizeAngstroms) + 0.5);
+
+    ax[2] = xEnd - dx/6; ay[2] = yEnd - dy/6; az[2] = zEnd - dz/6;
+
+    int dxHead, dyHead;
+    if (mag2d == 0) {
+      dxHead = 0;
+      dyHead = headSizePixels;
+    } else {
+      dxHead = headSizePixels * -dy / mag2d;
+      dyHead = headSizePixels * dx / mag2d;
+    }
+
+    ax[1] = xHead - dxHead/2; ax[3] = ax[1] + dxHead;
+    ay[1] = yHead - dyHead/2; ay[3] = ay[1] + dyHead;
+    az[1] = zHead;            az[3] = zHead;
+    g25d.fillPolygon4(colixVector, ax, ay, az);
+    g25d.drawPolygon4(colixVector, ax, ay, az);
   }
+
 
   public void transform(DisplayControl control) {
     Point3i screen = control.transformPoint(pointOrigin);
     x = screen.x;
     y = screen.y;
     z = screen.z;
-    screen = control.transformPoint(pointEnd);
-    xEnd = screen.x;
-    yEnd = screen.y;
-    zEnd = screen.z;
-
-    if (arrowEnd)
-      z = zEnd;
+    screen = control.transformPoint(pointVector);
+    ax[0] = screen.x;
+    ay[0] = screen.y;
+    az[0] = screen.z;
   }
 }
 

@@ -62,8 +62,7 @@ class LineShape extends Shape {
   }
   
   public void render(Graphics25D g25d, DisplayControl control) {
-    g25d.setColor(control.getColorVector());
-    g25d.drawLine(x, y, z, xEnd, yEnd, zEnd);
+    g25d.drawLine(control.getColixVector(), x, y, z, xEnd, yEnd, zEnd);
   }
 }
 

@@ -663,8 +663,6 @@ public class ChemFrame extends AtomContainer {
     Atom atom = getJmolAtomAt(atomIndex);
     Point3d vector3d = new Point3d(vector);
     atom.setVector(vector3d);
-
-    jmframe.addVectorShape(new VectorShape(atom.getPoint3D(), vector3d));
   }
 
   private void setAtomArraySize(int newArraySize) {
@@ -736,6 +734,9 @@ public class ChemFrame extends AtomContainer {
         for (int j = bondedAtoms.length; --j >= 0; ) {
           jmframe.bondAtomShapes(atomShape, bondedAtoms[j], jmolAtom.getBondOrder(j));
         }
+      if (jmolAtom.hasVector())
+        jmframe.addVectorShape(new VectorShape(jmolAtom.getPoint3D(),
+                                               jmolAtom.getVector(), 2.0));
     }
   }
 

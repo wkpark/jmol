@@ -251,7 +251,12 @@
   <target name="jar" id="jar" depends="init,classes,jmolGuide,jmolHistory,appjars">
     <copy todir="${classes.dir}/org/openscience/jmol/Data/guide" >
       <fileset dir="build/doc/JmolUserGuide">
-	<include name="**/*.html" />
+        <include name="**/*.html" />
+      </fileset>
+    </copy>
+    <copy todir="${classes.dir}/org/openscience/jmol/Data/guide_fr" >
+      <fileset dir="build/doc/JmolUserGuide_fr">
+        <include name="**/*.html" />
       </fileset>
     </copy>
     <copy todir="${classes.dir}/org/openscience/jmol/Data" >

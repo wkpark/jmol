@@ -65,7 +65,10 @@ public class ChemFile {
      * @param whichframe which frame to return 
      */
     public ChemFrame getFrame(int whichframe) {
-        return (ChemFrame) frames.elementAt(whichframe);
+		if (whichframe < frames.size()) {
+			return (ChemFrame) frames.elementAt(whichframe);
+		}
+		return null;
     }
 
     /**

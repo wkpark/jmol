@@ -45,7 +45,7 @@ import java.io.BufferedReader;
  * covalent bonding radius. 
  * @see JmolViewer
  ****************************************************************/
-public interface JmolModelAdapter {
+public abstract class JmolModelAdapter {
   
 
   /*****************************************************************
@@ -65,32 +65,41 @@ public interface JmolModelAdapter {
    * considered an error condition and the returned String is the error
    * message. 
    */
-  public Object openBufferedReader(JmolViewer viewer, String name,
+  abstract public Object openBufferedReader(JmolViewer viewer, String name,
                                    BufferedReader bufferedReader);
 
   /**
    * returns the type of this model
+   public final static int MODEL_TYPE_OTHER = 0;
+   public final static int MODEL_TYPE_PDB = 1;
+   public final static int MODEL_TYPE_XYZ = 2;
    */
-  public int getModelType(Object clientFile);
+  abstract public int getModelType(Object clientFile);
 
   /**
    * The number of frames in this file. Used for animations, etc.
    */
-  public int getFrameCount(Object clientFile);
+  public int getFrameCount(Object clientFile) {
+    return 1;
+  }
 
   /**
    * Some file formats contain a formal name of the molecule in the file.
    * If this method returns <code>null</code> then the JmolViewer will
    * automatically supply the file/URL name as a default.
    */
-  public String getModelName(Object clientFile);
+  public String getModelName(Object clientFile) {
+    return null;
+  }
 
   /**
    * We may need the file header.
    * This is currently only used for the script command 'show pdbheader'
    * Other than for pdb files, the client can return <code>null</code>
    */
-  public String getModelHeader(Object clientFile);
+  public String getModelHeader(Object clientFile) {
+    return null;
+  }
 
   /****************************************************************
    * frame related
@@ -98,19 +107,22 @@ public interface JmolModelAdapter {
   /**
    * The number of atoms contained in the specified frame.
    */
-  public int getAtomCount(Object clientFile, int frameNumber);
+  abstract public int getAtomCount(Object clientFile, int frameNumber);
   /**
    * Whether or not this frame has records in the .pdb format as specified
    * by the Protein Data Bank.
    * @see <a href='http://www.rcsb.org/pdb'>www.rcsb.org/pdb</a>
    */
-  public boolean hasPdbRecords(Object clientFile, int frameNumber);
+  public boolean hasPdbRecords(Object clientFile, int frameNumber) {
+    return false;
+  }
   /**
    * Returns an AtomIterator used to retrieve all the atoms in the file.
    * This method may not return <code>null</code>.
    * @see AtomIterator
    */
-  public AtomIterator getAtomIterator(Object clientFile, int frameNumber);
+  abstract public AtomIterator getAtomIterator(Object clientFile,
+                                               int frameNumber);
   /**
    * Returns a BondIterator. If this method returns <code>null</code> and no
    * bonds are defined then the JmolViewer will automatically apply its
@@ -118,7 +130,9 @@ public interface JmolModelAdapter {
    * @see BondIterator
    */
   public BondIterator getCovalentBondIterator(Object clientFile,
-                                              int frameNumber);
+                                              int frameNumber) {
+    return null;
+  }
   /**
    * This method is used to return associations between atoms. Associations are
    * non-covalent bonds between atoms.
@@ -127,13 +141,17 @@ public interface JmolModelAdapter {
    * @see BondIterator
    */
   public BondIterator getAssociationBondIterator(Object clientFile,
-                                                 int frameNumber);
+                                                 int frameNumber) {
+    return null;
+  }
   /**
    * This method returns all vectors which are part of the molecule file.
    * Vectors are directional and have an arrowhead.
    * @see LineIterator
    */
-  public LineIterator getVectorIterator(Object clientFile, int frameNumber);
+  public LineIterator getVectorIterator(Object clientFile, int frameNumber) {
+    return null;
+  }
 
   /**
    * This method returns the parameters that define a crystal unitcell
@@ -143,11 +161,17 @@ public interface JmolModelAdapter {
    * alpha, beta, gamma : degrees
    * if there is no unit cell data then return null
    */
-  public float[] getNotionalUnitcell(Object clientFile, int frameNumber);
+  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
+    return null;
+  }
 
-  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber);
+  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber) {
+    return null;
+  }
 
-  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber);
+  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber) {
+    return null;
+  }
 
   /****************************************************************
    * AtomIterator is used to enumerate all the <code>clientAtom</code>
@@ -229,7 +253,7 @@ public interface JmolModelAdapter {
    * @see #getAtomIterator(Object clientFile, int frameNumber)
    * @see #getAtomicSymbol(Object clientAtom)
    */
-  public int getAtomicNumber(Object clientAtom);
+  abstract public int getAtomicNumber(Object clientAtom);
 
   /**
    * Returns the atomic charge of the clientAtom previously returned by
@@ -237,7 +261,7 @@ public interface JmolModelAdapter {
    *
    * The client must implement this ... although it can always return 0
    */
-  public int getAtomicCharge(Object clientAtom);
+  abstract public int getAtomicCharge(Object clientAtom);
 
   /**
    * Returns the atomicSymbol of the clientAtom previously returned by
@@ -250,7 +274,7 @@ public interface JmolModelAdapter {
    * Note that for a given molecule, either getAtomicNumber(clientAtom) or
    * getAtomicSymbol(clientAtom) must return a value.
    */
-  public String getAtomicSymbol(Object clientAtom);
+  abstract public String getAtomicSymbol(Object clientAtom);
 
   /**
    * This method allows one to return an atom type name (such as alpha carbon)
@@ -259,15 +283,15 @@ public interface JmolModelAdapter {
    * If getAtomTypeName returns null then the JmolViewer will substitute the
    * atomicSymbol
    */
-  public String getAtomTypeName(Object clientAtom);
+  abstract public String getAtomTypeName(Object clientAtom);
 
   /*
    * Returns the coordinates of the atom.
    * Coordinates are absolute values in Angstroms.
    */
-  public float getAtomX(Object clientAtom);
-  public float getAtomY(Object clientAtom);
-  public float getAtomZ(Object clientAtom);
+  abstract public float getAtomX(Object clientAtom);
+  abstract public float getAtomY(Object clientAtom);
+  abstract public float getAtomZ(Object clientAtom);
 
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then individual
@@ -276,7 +300,7 @@ public interface JmolModelAdapter {
    * file.
    * @see #hasPdbRecords(Object clientFile, int frameNumber)
    */
-  public String getPdbAtomRecord(Object clientAtom);
+  abstract public String getPdbAtomRecord(Object clientAtom);
 
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then the model
@@ -284,7 +308,7 @@ public interface JmolModelAdapter {
    * This is necessary because the model number is not part of the pdbRecord.
    * @see #hasPdbRecords(Object clientFile, int frameNumber)
    */
-  public int getPdbModelNumber(Object clientAtom);
+  abstract public int getPdbModelNumber(Object clientAtom);
 
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then structural
@@ -292,6 +316,6 @@ public interface JmolModelAdapter {
    * The individual strings are exact HELIX, SHEET, and TURN recordsfrom the .pdb file.
    * @see #hasPdbRecords(Object clientFile, int frameNumber)
    */
-  public String[] getPdbStructureRecords(Object clientFile, int frameNumber);
+  abstract public String[] getPdbStructureRecords(Object clientFile, int frameNumber);
 
 }

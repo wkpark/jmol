@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 
 // client-specific imports
 
-public class SimpleModelAdapter implements JmolModelAdapter {
+public class SimpleModelAdapter extends JmolModelAdapter {
 
   /****************************************************************
    * the file related methods
@@ -139,11 +139,6 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return ((Model)clientFile).fileHeader;
   }
 
-  public int getFrameCount(Object clientFile) {
-    return 1;
-  }
-
-
   /****************************************************************
    * The frame related methods
    ****************************************************************/
@@ -164,16 +159,6 @@ public class SimpleModelAdapter implements JmolModelAdapter {
   public JmolModelAdapter.BondIterator
     getCovalentBondIterator(Object clientFile, int frameNumber) {
     return new BondIterator((Model)clientFile);
-  }
-
-  public JmolModelAdapter.BondIterator
-    getAssociationBondIterator(Object clientFile, int frameNumber) {
-    return null;
-  }
-
-  public JmolModelAdapter.LineIterator
-    getVectorIterator(Object clientFile, int frameNumber) {
-    return null;
   }
 
   public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {

@@ -57,10 +57,7 @@ import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;
 import java.util.Vector;
 
-public class CdkJmolModelAdapter implements JmolModelAdapter {
-
-  public CdkJmolModelAdapter() {
-  }
+public class CdkJmolModelAdapter extends JmolModelAdapter {
 
   /****************************************************************
    * the file related methods
@@ -134,10 +131,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return null;
   }
 
-  public String getModelHeader(Object clientFile) {
-    return null;
-  }
-
   public int getFrameCount(Object clientFile) {
     return ((ChemFile)clientFile).getChemSequenceCount();
   }
@@ -189,27 +182,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return new CovalentBondIterator(getAtomContainer(clientFile, frameNumber));
   }
 
-  public JmolModelAdapter.BondIterator
-    getAssociationBondIterator(Object clientFile, int frameNumber) {
-    return null;
-  }
-
-  public JmolModelAdapter.LineIterator
-    getVectorIterator(Object clientFile, int frameNumber) {
-    return null;
-  }
-
-  /*
-  public JmolModelAdapter.LineIterator
-    getCrystalCellIterator(Object clientFile, int frameNumber) {
-    AtomContainer container = getAtomContainer(clientFile, frameNumber);
-    if (container instanceof Crystal) {
-      return new CrystalCellIterator((Crystal)container);
-    }
-    return null;
-  }
-  */
-
   public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
     AtomContainer container = getAtomContainer(clientFile, frameNumber);
     if (container instanceof Crystal) {
@@ -225,14 +197,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     } else {
         System.err.println("Cannot return notional unit cell params: no Crystal found");
     }
-    return null;
-  }
-
-  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber) {
-    return null;
-  }
-
-  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber) {
     return null;
   }
 

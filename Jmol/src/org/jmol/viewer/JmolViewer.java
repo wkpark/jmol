@@ -43,13 +43,13 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Properties;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
-import javax.vecmath.AxisAngle4d;
 import java.net.URL;
 import java.io.InputStream;
 import java.io.Reader;
@@ -1130,12 +1130,24 @@ final public class JmolViewer {
     return modelManager.getModelCount();
   }
 
+  public Properties getModelSetProperties() {
+    return modelManager.getModelSetProperties();
+  }
+
   public int getModelNumber(int modelIndex) {
     return modelManager.getModelNumber(modelIndex);
   }
 
   public String getModelName(int modelIndex) {
     return modelManager.getModelName(modelIndex);
+  }
+
+  public Properties getModelProperties(int modelIndex) {
+    return modelManager.getModelProperties(modelIndex);
+  }
+
+  public String getModelProperty(int modelIndex, String propertyName) {
+    return modelManager.getModelProperty(modelIndex, propertyName);
   }
 
   public int getModelNumberIndex(int modelNumber) {

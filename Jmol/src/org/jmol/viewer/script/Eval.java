@@ -31,6 +31,8 @@ import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Enumeration;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix4f;
 
@@ -2965,9 +2967,28 @@ public class Eval implements Runnable {
   void showModel() {
     int modelCount = viewer.getModelCount();
     showString("model count = " + modelCount);
-    for (int i = 0; i < modelCount; ++i)
+    Properties props = viewer.getModelSetProperties();
+    printProperties(props);
+    for (int i = 0; i < modelCount; ++i) {
       showString("" + i + ":" + viewer.getModelNumber(i) +
                  ":" + viewer.getModelName(i));
+      printProperties(viewer.getModelProperties(i));
+    }
+  }
+
+  void printProperties(Properties props) {
+    if (props == null) {
+      showString("Properties: null");
+    } else {
+      Enumeration e = props.propertyNames();
+      showString("Properties:");
+      while (e.hasMoreElements()) {
+        String propertyName = (String)e.nextElement();
+        showString(" " + propertyName + "=" +
+                   props.getProperty(propertyName));
+      }
+    }
+    System.out.println("");
   }
 
   void showAnimation() {

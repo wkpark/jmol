@@ -32,7 +32,7 @@ import java.util.Enumeration;
  * BaseAtomTypes. If the pool does contain an BaseAtomType for a given
  * label, one will be created upon the first retreival.
  */
-public class BaseAtomType {
+public class BaseAtomType extends org.openscience.cdk.AtomType {
 
   /**
    * Gets the BaseAtomType corresponding to the given name and sets
@@ -50,7 +50,7 @@ public class BaseAtomType {
    */
   public static BaseAtomType get(String name, String root, int atomicNumber,
       double mass, double vdwRadius, double covalentRadius, Color color) {
-    BaseAtomType at = get(name);
+    BaseAtomType at = get(name, root);
     at.set(root, atomicNumber, mass, vdwRadius, covalentRadius, color);
     return at;
   }
@@ -69,7 +69,7 @@ public class BaseAtomType {
     while (iter.hasMoreElements()) {
       BaseAtomType at = (BaseAtomType) iter.nextElement();
       if (atomicNumber == at.getAtomicNumber()) {
-        BaseAtomType atr = get(at.getRoot());
+        BaseAtomType atr = at;
         return atr;
       }
     }
@@ -84,12 +84,12 @@ public class BaseAtomType {
    * @param name the name of this atom type (e.g. CA for alpha carbon)
    * @return the atom type corresponding to the name.
    */
-  public static BaseAtomType get(String name) {
+  public static BaseAtomType get(String name, String root) {
 
     if (exists(name)) {
       return (BaseAtomType) typePool.get(name);
     }
-    BaseAtomType at = new BaseAtomType(name);
+    BaseAtomType at = new BaseAtomType(name, root);
     typePool.put(name, at);
     return at;
   }
@@ -109,8 +109,8 @@ public class BaseAtomType {
    *
    * @param name the name of this atom type (e.g. CA for alpha carbon)
    */
-  private BaseAtomType(String name) {
-    this.name = name;
+  private BaseAtomType(String name, String root) {
+    super(name, root);
   }
 
   /**
@@ -126,9 +126,9 @@ public class BaseAtomType {
   public void set(String root, int atomicNumber, double mass,
       double vdwRadius, double covalentRadius, Color color) {
 
-    this.root = root;
-    this.atomicNumber = atomicNumber;
-    this.mass = mass;
+    super.setSymbol(root);
+    super.setAtomicNumber(atomicNumber);
+    super.setExactMass(mass);
     this.vdwRadius = vdwRadius;
     this.covalentRadius = covalentRadius;
     this.color = color;
@@ -144,10 +144,10 @@ public class BaseAtomType {
     StringTokenizer st1 = new StringTokenizer(s1, "\t ,;");
 
     String localName = st1.nextToken();
-    BaseAtomType at = get(localName);
-    at.root = st1.nextToken();
-    at.atomicNumber = Integer.parseInt(st1.nextToken());
-    at.mass = Double.valueOf(st1.nextToken()).doubleValue();
+    String root      = st1.nextToken();
+    BaseAtomType at = get(localName, root);
+    at.setAtomicNumber(Integer.parseInt(st1.nextToken()));
+    at.setExactMass(Double.valueOf(st1.nextToken()).doubleValue());
     at.vdwRadius = Double.valueOf(st1.nextToken()).doubleValue();
     at.covalentRadius = Double.valueOf(st1.nextToken()).doubleValue();
     at.color = new Color(Integer.parseInt(st1.nextToken()),
@@ -159,7 +159,7 @@ public class BaseAtomType {
    * Returns the name.
    */
   public String getName() {
-    return name;
+    return super.getID();
   }
 
   /**
@@ -168,14 +168,14 @@ public class BaseAtomType {
    * @param name the name
    */
   public void setName(String name) {
-    this.name = name;
+    super.setID(name);
   }
 
   /**
    * Returns the root.
    */
   public String getRoot() {
-    return root;
+    return super.getSymbol();
   }
 
   /**
@@ -184,30 +184,14 @@ public class BaseAtomType {
    * @param root the root
    */
   public void setRoot(String root) {
-    this.root = root;
-  }
-
-  /**
-   * Returns the atomic number.
-   */
-  public int getAtomicNumber() {
-    return atomicNumber;
-  }
-
-  /**
-   * Sets the atomic number.
-   *
-   * @param an the atomicNumber
-   */
-  public void setAtomicNumber(int an) {
-    this.atomicNumber = an;
+    super.setSymbol(root);
   }
 
   /**
    * Returns the mass.
    */
   public double getMass() {
-    return mass;
+    return getExactMass();
   }
 
   /**
@@ -216,7 +200,7 @@ public class BaseAtomType {
    * @param mass the mass
    */
   public void setMass(double mass) {
-    this.mass = mass;
+    super.setExactMass(mass);
   }
 
   /**
@@ -282,11 +266,11 @@ public class BaseAtomType {
       return false;
     }
     BaseAtomType at = (BaseAtomType) obj;
-    boolean nameEqual = name.equals(at.name);
-    boolean rootEqual = root.equals(at.root);
-    boolean atomicNumberEqual = atomicNumber == at.atomicNumber;
-    boolean massEqual = (Double.doubleToLongBits(mass)
-                          == Double.doubleToLongBits(at.mass));
+    boolean nameEqual = getName().equals(at.getName());
+    boolean rootEqual = getRoot().equals(at.getRoot());
+    boolean atomicNumberEqual = (atomicNumber == at.getAtomicNumber());
+    boolean massEqual = (Double.doubleToLongBits(at.getMass())
+                          == Double.doubleToLongBits(at.getMass()));
     boolean vdwRadiiEqual = (Double.doubleToLongBits(vdwRadius)
                               == Double.doubleToLongBits(at.vdwRadius));
     boolean covalentRadiiEqual =
@@ -306,10 +290,10 @@ public class BaseAtomType {
 
     if (hashCode == 0) {
       int result = 17;
-      result = 37 * result + name.hashCode();
-      result = 37 * result + root.hashCode();
-      result = 37 * result + atomicNumber;
-      long longHashValue = Double.doubleToLongBits(mass);
+      result = 37 * result + getName().hashCode();
+      result = 37 * result + getRoot().hashCode();
+      result = 37 * result + getAtomicNumber();
+      long longHashValue = Double.doubleToLongBits(getMass());
       result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
       longHashValue = Double.doubleToLongBits(vdwRadius);
       result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
@@ -332,13 +316,13 @@ public class BaseAtomType {
   public String toString() {
 
     StringBuffer sb1 = new StringBuffer();
-    sb1.append(name);
+    sb1.append(getName());
     sb1.append('\t');
-    sb1.append(root);
+    sb1.append(getRoot());
     sb1.append('\t');
-    sb1.append(Integer.toString(atomicNumber));
+    sb1.append(Integer.toString(getAtomicNumber()));
     sb1.append('\t');
-    sb1.append(Double.toString(mass));
+    sb1.append(Double.toString(getMass()));
     sb1.append('\t');
     sb1.append(Double.toString(vdwRadius));
     sb1.append('\t');
@@ -351,27 +335,6 @@ public class BaseAtomType {
     sb1.append(Integer.toString(color.getBlue()));
     return sb1.toString();
   }
-
-
-  /**
-   * Unique name of this atom type.
-   */
-  protected String name;
-
-  /**
-   * Name of the atom type from which this one is derived.
-   */
-  protected String root;
-
-  /**
-   * Atomic number.
-   */
-  protected int atomicNumber;
-
-  /**
-   * Atomic mass.
-   */
-  protected double mass;
 
   /**
    * Van der Waals radius.

@@ -209,7 +209,11 @@ public class ChemFrame implements Transformable {
    * @param z the z coordinate of the new atom
    */
   public int addAtom(String name, float x, float y, float z) {
-    return addAtom(BaseAtomType.get(name), x, y, z);
+    return addAtom(name, name, x, y, z);
+  }
+
+  public int addAtom(String name, String root, float x, float y, float z) {
+    return addAtom(BaseAtomType.get(name, root), x, y, z);
   }
 
   /**

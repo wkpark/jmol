@@ -148,13 +148,16 @@ class ModelResolver {
   final static String[] mdlRecords = 
   {"$MDL "};
 
+  final static String[] nwchemRecords =
+  {" argument  1"};
+
   final static String[][] startsWithRecords =
   { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
-    jaguarRecords, hinRecords , mdlRecords};
+    jaguarRecords, hinRecords , mdlRecords, nwchemRecords};
 
   final static String[] startsWithFormats =
   { "Pdb", "Shelx", "Cif", "GhemicalMM",
-    "Jaguar", "Hin", "Mol" };
+    "Jaguar", "Hin", "Mol", "NWChem" };
 
   ////////////////////////////////////////////////////////////////
   // contains formats

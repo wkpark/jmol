@@ -13,24 +13,26 @@
         <td><br /></td>
         <td align="right" valign="center">
           <font size="2">
-            <a href="[root]/index.html">Home</a> 
+	    <a href="[root]/index.html">Home</a> 
             | <a href="[root]/screenshots/">Screenshots</a> 
-            | <a href="[root]/plugins/">Plugins</a> 
+	    | <a href="[root]/websites/">Websites</a>
+	    | <a href="[root]/download/">Download</a> 
+	    | <a href="http://sourceforge.net/projects/jmol">Project page</a>
+	    <br />
+	    <a href="[root]/docs/">Documentation</a> 
             | <a href="[root]/applet/">Applet</a> 
             | <a href="[root]/scripting/">Scripting</a> 
-            | <a href="[root]/docs/">Docs</a> 
-            | <a href="[root]/history/">History</a> 
+            | <a href="[root]/plugins/">Plugins</a> 
+	    | <a href="[root]/history/">History</a> 
             | <a href="[root]/changes/">Changes</a>
-	    | <a href="[root]/faqs/">FAQs</a>
-	    <br/>
-	    <a href="[root]/websites/">Websites</a>
+	    <br />
             | <a href="[root]/preview/">Sneak Preview</a>
             | <a href="[root]/betatest/">Beta Test</a>
-	    | <a href="[root]/download/">Download</a> 
+	    | <a href="[root]/faqs/">FAQs</a>
+	    | <a href="[root]/technotes/">Tech Notes</a>
 	    | <a href=
 	    "http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133"
 	    >Bug Database</a>
-            | <a href="http://sourceforge.net/projects/jmol">Project page</a>
           </font>
         </td>
       </tr>

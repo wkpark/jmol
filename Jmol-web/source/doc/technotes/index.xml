@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE somethingOrAnything [
+<!ENTITY graphicsEngine   SYSTEM "graphicsEngine.xml" >
+<!ENTITY antiAliasing     SYSTEM "antiAliasing.xml" >
+<!ENTITY noHeapMemory     SYSTEM "noHeapMemory.xml" >
+<!ENTITY floatingPoint    SYSTEM "floatingPoint.xml" >
+<!ENTITY browserEnhancementTechnologies
+                          SYSTEM "browserEnhancementTechnologies.xml" >
+<!ENTITY floatsVsDoubles  SYSTEM "floatsVsDoubles.xml" >
+]>
+<document>
+  <body>
+    <title>Jmol Technical Notes</title>
+
+    &graphicsEngine;
+    &antiAliasing;
+    &noHeapMemory;
+    &floatingPoint;
+    &browserEnhancementTechnologies;
+    &floatsVsDoubles;
+    
+  </body>
+</document>

@@ -36,6 +36,53 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
+/****************************************************************
+ * The Dots and DotsRenderer classes implement vanderWaals and Connolly
+ * dot surfaces. <p>
+ * The vanderWaals surface is defined by the vanderWaals radius of each
+ * atom. The surface of the atom is 'peppered' with dots. Each dot is
+ * tested to see if it falls within the vanderWaals radius of any of
+ * its neighbors. If so, then the dot is not displayed. <p>
+ * See DotsRenderer.Geodesic for more discussion of the implementation. <p>
+ * The Connolly surface is defined by rolling a probe sphere over the
+ * surface of the molecule. In this way, a smooth surface is generated ...
+ * one that does not have crevices between atoms. Three types of shapes
+ * are generated: convex, saddle, and concave. <p>
+ * The 'probe' is a sphere. A sphere of 1.2 angstroms representing HOH
+ * is commonly used. <p>
+ * Convex shapes are generated on the exterior surfaces of exposed atoms.
+ * They are points on the sphere which are exposed. In these areas of
+ * the molecule they look just like the vanderWaals dot surface. <p>
+ * The saddles are generated between pairs of atoms. Imagine an O2
+ * molecule. The probe sphere is rolled around the two oxygen spheres so
+ * that it stays in contact with both spheres. The probe carves out a
+ * torus (donut). The portion of the torus between the two points of
+ * contact with the oxygen spheres is a saddle. <p>
+ * The concave shapes are defined by triples of atoms. Imagine three
+ * atom spheres in a close triangle. The probe sphere will sit (nicely)
+ * in the little cavity formed by the three spheres. In fact, there are
+ * two cavities, one on each side of the triangle. The probe sphere makes
+ * one point of contact with each of the three atoms. The shape of the
+ * cavity is the spherical triangle on the surface of the probe sphere
+ * determined by these three contact points. <p>
+ * For each of these three surface shapes, the dots are painted only
+ * when the probe sphere does not interfere with any of the neighboring
+ * atoms. <p>
+ * See the following scripting commands:<br>
+ * set solvent on/off (on defaults to 1.2 angstroms) <br>
+ * set solvent 1.5 (choose another probe size) <br>
+ * dots on/off <br>
+ * color dots [color] <br>
+ * color dotsConvex [color] <br>
+ * color dotsSaddle [color] <br>
+ * color dotsConcave [color] <br>
+ *
+ * The reference article for this implementation is: <br>
+ * Analytical Molecular Surface Calculation, Michael L. Connolly,
+ * Journal of Applied Crystalography, (1983) 15, 548-558 <p>
+ *
+ ****************************************************************/
+
 public class Dots {
 
   JmolViewer viewer;
@@ -470,6 +517,7 @@ public class Dots {
 	    float angleJIK = uIJ.angle(uIK);
 	    
 	    uIJK.cross(uIJ, uIK);
+	    uIJK.normalize();
 
 	    uTB.cross(uIJK, uIJ);
 
@@ -484,12 +532,11 @@ public class Dots {
 	void calcHeight() {
 	    float rI = atomI.getVanderwaalsRadius();
 	    float rP = viewer.getSolventProbeRadius();
-	    float rIplusrP2 = rI + rP;
-	    rIplusrP2 *= rIplusrP2;
+	    float hypotenuse = rI + rP;
+	    float hypotenuse2 = hypotenuse*hypotenuse;
 	    vectorT.sub(baseIJK, atomI.point3f);
-	    float mag2 = vectorT.length();
-	    mag2 *= mag2;
-	    float height2 = rIplusrP2 - mag2;
+	    float baseLength2 = vectorT.lengthSquared();
+	    float height2 = hypotenuse2 - baseLength2;
 	    heightIJK = height2 <= 0 ? 0 : (float)Math.sqrt(height2);
 	}
 

@@ -525,7 +525,7 @@
     <delete dir="packaging/rpm/dist"/>
   </target>
   
-  <target name="run" id="run" depends="classes">
+  <target name="run" id="run" depends="main">
     <java fork="true" classname="org.openscience.jmol.Jmol">
       <classpath location="classes" />
       <classpath refid="project.class.path" />

@@ -230,6 +230,49 @@ public class DotsRenderer {
     11, 10, 9,
   };
 
+    /****************************************************************
+     * This code constructs a geodesic sphere which is used to
+     * represent the vanderWaals and Connolly dot surfaces
+     * One geodesic sphere is constructed. It is a unit sphere
+     * with radius of 1.0 <p>
+     * Many times a sphere is constructed with lines of latitude and
+     * longitude. With this type of rendering, the atom has north and
+     * south poles. And the faces are not regularly shaped ... at the
+     * poles they are triangles but elsewhere they are quadrilaterals. <p>
+     * I think that a geodesic sphere is more appropriate for this type
+     * of application. The geodesic sphere does not have poles and 
+     * looks the same in all orientations ... as a sphere should. All
+     * faces are equilateral triangles. <p>
+     * The geodesic sphere is constructed by starting with an icosohedron, 
+     * a platonic solid with 12 vertices and 20 equilateral triangles
+     * for faces. The call to the method <code>quadruple</code> will
+     * split each triangular face into 4 faces by creating a new vertex
+     * at the midpoint of each edge. These midpoints are still in the
+     * plane, so they are then 'pushed out' to the surface of the
+     * enclosing sphere by normalizing their length back to 1.0<p>
+     * Individual atoms construct bitmaps to determine which dots are
+     * visible and which are obscured. Each bit corresponds to a single
+     * dot.<p>
+     * The sequence of vertex counts is 12, 42, 162, 642. The vertices
+     * are stored so that when atoms are small they can choose to display
+     * only the first n bits where n is one of the above vertex counts.<p>
+     * The vertices of the 'one true sphere' are rotated to the current
+     * molecular rotation at the beginning of the repaint cycle. That way,
+     * individual atoms only need to scale the unit vector to the vdw
+     * radius for that atom. <p>
+     * (If necessary, this on-the-fly scaling could be eliminated by
+     * storing multiple geodesic spheres ... one per vdw radius. But
+     * I suspect there are bigger performance problems with the saddle
+     * and convex connolly surfaces.)<p>
+     * I experimented with rendering the dots with light shading. However
+     * I found that it was much harder to look at. The dots in the front
+     * are lighter, but on a white background they are harder to see. The
+     * end result is that I tended to focus on the back side of the sphere
+     * of dots ... which made rotations very strange. So I turned off
+     * shading of dot surfaces.
+     ****************************************************************/
+
+
   class Geodesic {
 
     Vector3f[] vertices;

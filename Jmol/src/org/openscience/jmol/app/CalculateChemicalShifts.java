@@ -106,9 +106,9 @@ class CalculateChemicalShifts extends AbstractAction implements
           ++frameIndex) {
       ChemFrame frame = chemFile.getFrame(frameIndex);
       for (int atomIndex = 0;
-          !foundShielding && (atomIndex < frame.getNumberOfAtoms());
+          !foundShielding && (atomIndex < frame.getAtomCount());
             ++atomIndex) {
-        Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(atomIndex);
+        Atom atom = frame.getJmolAtomAt(atomIndex);
         Vector properties = atom.getAtomicProperties();
         for (int propertyIndex = 0;
             !foundShielding && (propertyIndex < properties.size());
@@ -133,10 +133,9 @@ class CalculateChemicalShifts extends AbstractAction implements
     }
     for (int f = 0; f < chemFile.getNumberOfFrames(); ++f) {
       ChemFrame frame = chemFile.getFrame(f);
-      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
-        String element = frame.getAtomAt(i).getID();
-        Vector properties = ((org.openscience.jmol.Atom)frame.getAtomAt(i)).
-                            getAtomicProperties();
+      for (int i = 0; i < frame.getAtomCount(); ++i) {
+        String element = frame.getAtomAt(i).getAtomTypeName();
+        Vector properties = (frame.getJmolAtomAt(i)).getAtomicProperties();
         Enumeration propIter = properties.elements();
         while (propIter.hasMoreElements()) {
           Object prop = propIter.nextElement();
@@ -148,7 +147,7 @@ class CalculateChemicalShifts extends AbstractAction implements
 
             NMRShielding newShield = new NMRShielding(value);
             newShield.descriptor = propertyLabel;
-            ((org.openscience.jmol.Atom)frame.getAtomAt(i)).addProperty(newShield);
+            (frame.getJmolAtomAt(i)).addProperty(newShield);
             break;
           }
         }

@@ -127,19 +127,19 @@ public class Animate extends JDialog implements ActionListener,
 
       // Interpolate to get extra frames
       ChemFrame[] extraFrames = new ChemFrame[numberExtraFrames];
-      int numberVertices = Math.min(fromFrame.getNumberOfAtoms(),
-          toFrame.getNumberOfAtoms());
+      int numberVertices = Math.min(fromFrame.getAtomCount(),
+          toFrame.getAtomCount());
       for (int i = 0; i < numberExtraFrames; i++) {
-	if (fromFrame instanceof CrystalFrame) {
-	  extraFrames[i] = new CrystalFrame(numberVertices);
-	} else {
-	  extraFrames[i] = new ChemFrame(numberVertices);
-	}
+          if (fromFrame instanceof CrystalFrame) {
+              extraFrames[i] = new CrystalFrame(numberVertices);
+          } else {
+              extraFrames[i] = new ChemFrame(numberVertices);
+          }
       }
 
       // Linearly interpolate new coordinates for extra frames
       for (int k = 0; k < numberVertices; ++k) {
-        Atom atom = (org.openscience.jmol.Atom)fromFrame.getAtomAt(k);
+        Atom atom = fromFrame.getJmolAtomAt(k);
         double[] fromCoord = fromFrame.getAtomCoords(k);
         double[] toCoord = toFrame.getAtomCoords(k);
         double[] step = new double[3];

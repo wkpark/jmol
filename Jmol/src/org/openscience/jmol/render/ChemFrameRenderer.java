@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -44,21 +50,25 @@ public class ChemFrameRenderer {
    */
   public void paint(Graphics g, DisplayControl control) {
     ChemFrame frame = control.getFrame();
-    int numAtoms = frame.getNumberOfAtoms();
+    int numAtoms = frame.getAtomCount();
     if (numAtoms <= 0) {
-      return;
+        System.out.println("No atoms to draw");
+        return;
     }
     if (shapes == null || control.hasStructuralChange()) {
       control.resetStructuralChange();
       shapesVector.removeAllElements();
       for (int i = 0; i < numAtoms; ++i) {
-        Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
+        Atom atom = (org.openscience.jmol.Atom)frame.getJmolAtomAt(i);
         AtomShape atomShape = atom.getAtomShape();
         if (atomShape == null) {
           // FIXME mth -- atomShapes should be allocated as part of new Atom()
           // but the Atom code does not have a control at that point
           atomShape = new AtomShape(atom, control);
           atom.setAtomShape(atomShape);
+          // FIX? elw -- overwrite the CDK/Jmol atom with a Jmol atom *with*
+          //             atomShape
+          frame.setAtomAt(i, atom);
         }
         shapesVector.addElement(atom.getAtomShape());
       }
@@ -67,7 +77,7 @@ public class ChemFrameRenderer {
         double atomVectorRange = frame.getAtomVectorRange();
         boolean showHydrogens = control.getShowHydrogens();
         for (int i = 0; i < numAtoms; ++i) {
-          Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
+          Atom atom = (org.openscience.jmol.Atom)frame.getJmolAtomAt(i);
           if (atom.hasVector() && (showHydrogens || !atom.isHydrogen())) {
             shapesVector.addElement(new AtomVectorShape(atom, control,
                                                         minAtomVectorMagnitude,

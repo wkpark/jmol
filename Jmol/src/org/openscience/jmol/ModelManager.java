@@ -108,7 +108,7 @@ public class ModelManager {
   }
 
   public int numberOfAtoms() {
-    return (chemframe == null) ? 0 : chemframe.getNumberOfAtoms();
+    return (chemframe == null) ? 0 : chemframe.getAtomCount();
   }
 
   public Atom[] getCurrentFrameAtoms() {
@@ -128,7 +128,7 @@ public class ModelManager {
       if (!bsSelection.get(i))
         continue;
       ++countSelected;
-      center.add(((Atom)chemframe.getAtomAt(i)).getPosition());
+      center.add(((Atom)chemframe.getAtomAt(i)).getPoint3D());
     }
     if (countSelected > 0) {
       center.scale(1.0f / countSelected); // just divide by the quantity

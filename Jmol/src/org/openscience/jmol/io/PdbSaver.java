@@ -89,15 +89,15 @@ public class PdbSaver extends FileSaver {
 
     // Loop through the atoms and write them out:
     StringBuffer buffer = new StringBuffer();
-    for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
+    for (int i = 0; i < cf.getAtomCount(); i++) {
       buffer.setLength(0);
       buffer.append(hetatmRecordName);
       buffer.append(serialFormat.sprintf(atomNumber));
       buffer.append(' ');
       Atom atom = (org.openscience.jmol.Atom)cf.getAtomAt(i);
-      buffer.append(atomNameFormat.sprintf(atom.getID()));
+      buffer.append(atomNameFormat.sprintf(atom.getAtomTypeName()));
       buffer.append(" MOL          ");
-      Point3d position = atom.getPosition();
+      Point3d position = atom.getPoint3D();
       buffer.append(positionFormat.sprintf(position.x));
       buffer.append(positionFormat.sprintf(position.y));
       buffer.append(positionFormat.sprintf(position.z));

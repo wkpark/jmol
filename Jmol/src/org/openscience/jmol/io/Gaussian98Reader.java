@@ -215,7 +215,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
       line = input.readLine();
       line = input.readLine();
       line = input.readLine();
-      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+      for (int i = 0; i < frame.getAtomCount(); ++i) {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
@@ -270,7 +270,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
       label = "Magnetic shielding (Isotropic)";
     }
     int atomIndex = 0;
-    for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+    for (int i = 0; i < frame.getAtomCount(); ++i) {
       String line = input.readLine().trim();
       while (line.indexOf("Isotropic") < 0) {
         if (line == null) {

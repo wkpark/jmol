@@ -149,7 +149,7 @@
     </java>
   </target>
 
-  <target name="classes" depends="init,jmolGuide,jmolHistory">
+  <target id="classes" name="classes" depends="init,jmolGuide,jmolHistory">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
         debug="on" deprecation="on">

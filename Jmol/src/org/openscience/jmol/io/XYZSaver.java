@@ -75,7 +75,7 @@ public class XYZSaver extends FileSaver {
 
     try {
 
-      String s1 = new Integer(cf.getNumberOfAtoms()).toString();
+      String s1 = new Integer(cf.getAtomCount()).toString();
       w.write(s1, 0, s1.length());
       w.newLine();
 
@@ -87,10 +87,10 @@ public class XYZSaver extends FileSaver {
 
       // Loop through the atoms and write them out:
 
-      for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
+      for (int i = 0; i < cf.getAtomCount(); i++) {
 
         Atom a = (org.openscience.jmol.Atom)cf.getAtomAt(i);
-        st = a.getID();
+        st = a.getAtomTypeName();
 
         double[] pos = cf.getAtomCoords(i);
         st = st + "\t" + new Double(pos[0]).toString() + "\t"

@@ -63,6 +63,8 @@ import java.util.Enumeration;
  */
 public class PDBReader extends DefaultChemFileReader {
 
+    org.openscience.cdk.tools.LoggingTool logger;
+    
   /**
    * Creates a PDB file reader.
    *
@@ -70,6 +72,7 @@ public class PDBReader extends DefaultChemFileReader {
    */
   public PDBReader(Reader input) {
     super(input);
+    logger = new org.openscience.cdk.tools.LoggingTool(this.getClass().getName());
   }
 
   /**
@@ -85,6 +88,7 @@ public class PDBReader extends DefaultChemFileReader {
 
     String line = input.readLine();
     while (input.ready() && (line != null)) {
+        // logger.debug("Parsing line: " + line);
       st = new StringTokenizer(line, "\t ,;");
 
       String command;
@@ -92,7 +96,8 @@ public class PDBReader extends DefaultChemFileReader {
       try {
         command = line.substring(0, 6).trim();
       } catch (StringIndexOutOfBoundsException sioobe) {
-        break;
+          logger.error("Could not parse command in line: " + line);
+          break;
       }
 
       if (command.equalsIgnoreCase("ATOM")
@@ -119,6 +124,8 @@ public class PDBReader extends DefaultChemFileReader {
         atom.setZ3D(z);
         atom.setProteinProp(new ProteinProp(line));
         frame.addAtom(atom);
+        
+        // logger.debug("Added atom: " + atom.toString());
         
 /*
  * The following code for processing CONECT records has several defects.
@@ -180,6 +187,7 @@ public class PDBReader extends DefaultChemFileReader {
       } else if (command.equalsIgnoreCase("MODEL")) {
         frame.setInfo(line.trim());
       } else if (command.equalsIgnoreCase("ENDMDL")) {
+          logger.info("Found new frame");
         DisplayControl.control.setAutoBond(true);
         frame.rebond();
         file.addFrame(frame);
@@ -190,7 +198,7 @@ public class PDBReader extends DefaultChemFileReader {
         
       } else if (command.equalsIgnoreCase("END")) {
         DisplayControl.control.setAutoBond(true);
-        if (frame.getNumberOfAtoms() > 0) {
+        if (frame.getAtomCount() > 0) {
           frame.rebond();
           file.addFrame(frame);
           fireFrameRead();
@@ -203,10 +211,12 @@ public class PDBReader extends DefaultChemFileReader {
 
     // No END marker, so just wrap things up as if we had seen one:
     DisplayControl.control.setAutoBond(true);
-    if (frame.getNumberOfAtoms() > 0) {
+    if (frame.getAtomCount() > 0) {
       frame.rebond();
       file.addFrame(frame);
       fireFrameRead();
+    } else {
+        System.out.println("No atoms read");
     }
     return file;
   }

@@ -189,7 +189,7 @@ class Mopac97Reader extends DefaultChemFileReader {
       Object[] currentVectors = new Object[currentFreqs.length];
 
       line = readLine();
-      for (int i = 0; i < mol.getNumberOfAtoms(); ++i) {
+      for (int i = 0; i < mol.getAtomCount(); ++i) {
         line = readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);

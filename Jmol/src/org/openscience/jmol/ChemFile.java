@@ -1,5 +1,11 @@
-/*
- * Copyright 2003 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -119,7 +125,7 @@ public class ChemFile {
     Vector descriptions = new Vector();
     for (int iframe = 0; iframe < frames.length; ++iframe) {
       ChemFrame frame = frames[iframe];
-      if (frame.getNumberOfAtoms() > 0) {
+      if (frame.getAtomCount() > 0) {
         Enumeration properties =
           frame.getJmolAtomAt(0).getAtomicProperties().elements();
         while (properties.hasMoreElements()) {
@@ -160,18 +166,18 @@ public class ChemFile {
 
   class ChemFileIterator extends JmolAtomIterator {
     int iframe = 0;
-    Atom[] frameAtoms;
+    org.openscience.cdk.Atom[] frameAtoms;
     int iatom = 0;
 
     public ChemFileIterator() {
       if (frames.length > 0)
-        frameAtoms = frames[0].getJmolAtoms();
+        frameAtoms = frames[0].getAtoms();
     }
 
     public boolean hasNext() {
       while (iframe < frames.length && iatom == frameAtoms.length) {
         if (++iframe < frames.length) {
-          frameAtoms = frames[iframe].getJmolAtoms();
+          frameAtoms = frames[iframe].getAtoms();
           iatom = 0;
         }
       }
@@ -179,7 +185,7 @@ public class ChemFile {
     }
 
     public Atom nextAtom() {
-      return frameAtoms[iatom++];
+      return new Atom(frameAtoms[iatom++]);
     }
   }
 }

@@ -208,7 +208,7 @@ public class ADFReader extends DefaultChemFileReader {
         currentVibs.addElement(freq);
       }
       line = input.readLine();
-      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+      for (int i = 0; i < frame.getAtomCount(); ++i) {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);

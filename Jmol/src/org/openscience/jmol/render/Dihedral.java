@@ -130,8 +130,8 @@ public class Dihedral implements MeasurementInterface {
 
   public void compute() {
 
-    Point3d p1 = atom1.getPosition(), p2 = atom2.getPosition();
-    Point3d p3 = atom3.getPosition(), p4 = atom4.getPosition();
+    Point3d p1 = atom1.getPoint3D(), p2 = atom2.getPoint3D();
+    Point3d p3 = atom3.getPoint3D(), p4 = atom4.getPoint3D();
 
     double ijx = p1.x - p2.x;
     double ijy = p1.y - p2.y;

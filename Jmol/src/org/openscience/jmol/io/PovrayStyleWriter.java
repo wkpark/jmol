@@ -247,7 +247,7 @@ public class PovrayStyleWriter {
    */
   protected void findAtomTypes(ChemFrame cf) {
 
-    int nAtoms = cf.getNumberOfAtoms();
+    int nAtoms = cf.getAtomCount();
     numTypes = 0;
     int maxTypes = 5;
     typeName = new String[maxTypes];
@@ -352,8 +352,8 @@ public class PovrayStyleWriter {
     cmat.mul(amat, cmat);
     cmat.mul(tmat, cmat);
 
-    Point3d aloc_1 = new Point3d(atom1.getPosition());
-    Point3d aloc_2 = new Point3d(atom2.getPosition());
+    Point3d aloc_1 = new Point3d(atom1.getPoint3D());
+    Point3d aloc_2 = new Point3d(atom2.getPoint3D());
 
     Point3d taloc_1 = new Point3d();
     Point3d taloc_2 = new Point3d();
@@ -433,7 +433,7 @@ public class PovrayStyleWriter {
    * @return The string representation of the atom type.
    */
   protected String getAtomName(Atom atom) {
-    return atom.getID();
+    return atom.getAtomTypeName();
   }
 
 }

@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -402,12 +407,12 @@ public class Vibrate extends JDialog implements ActionListener,
     Vibration vib = inputFrame.getVibration(vibrationNumber);
     vibFile = new ChemFile();
     for (int n = 0; n < numberFrames; ++n) {
-      int numberVerticies = inputFrame.getNumberOfAtoms();
+      int numberVerticies = inputFrame.getAtomCount();
       ChemFrame newFrame = new ChemFrame(numberVerticies);
       for (int i = 0; i < numberVerticies; ++i) {
         double scaling = amplitudeScale
                            * Math.sin(2.0 * Math.PI * n / numberFrames);
-        Atom atom = (org.openscience.jmol.Atom)inputFrame.getAtomAt(i);
+        Atom atom = inputFrame.getJmolAtomAt(i);
         double[] coord = inputFrame.getAtomCoords(i);
         double[] force = vib.getAtomVector(i);
         double[] forceVector = new double[3];
@@ -419,9 +424,9 @@ public class Vibrate extends JDialog implements ActionListener,
         coord[2] += force[2] * scaling;
         try {
           int atomIndex = newFrame.addAtom(atom, coord[0], coord[1], coord[2]);
-          ((org.openscience.jmol.Atom)newFrame.getAtomAt(atomIndex))
-              .setVector(new Point3d(forceVector[0],
-                                     forceVector[1], forceVector[2]));
+          newFrame.getJmolAtomAt(atomIndex).setVector(
+                             new Point3d(forceVector[0],
+                             forceVector[1], forceVector[2]));
         } catch (Exception ex) {
           System.out.println(ex);
           ex.printStackTrace();

@@ -84,7 +84,7 @@ public class LabelManager {
       label = atom.getSymbol();
       break;
     case DisplayControl.TYPES:
-      label = atom.getID();
+      label = atom.getAtomTypeName();
        break;
     case DisplayControl.NUMBERS:
       // Note that this is incremented by one for display purposes

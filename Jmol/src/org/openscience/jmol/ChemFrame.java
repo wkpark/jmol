@@ -20,6 +20,7 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.Atom;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.geometry.BondTools;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
@@ -41,9 +42,7 @@ public class ChemFrame extends AtomContainer {
   // This stuff can vary for each frame in the dynamics:
 
   private String info;     // The title or info string for this frame.
-  private Atom[] atoms;    // array of atom types
   private Vector properties = new Vector();
-  private int numberOfAtoms = 0;
 
   Point3d centerBoundingBox;
   Point3d cornerBoundingBox;
@@ -60,25 +59,23 @@ public class ChemFrame extends AtomContainer {
    * @param na the number of atoms in the frame
    */
   public ChemFrame(int na) {
-    this(na, true);
+      this(na, true);
   }
 
   public ChemFrame(int na, boolean bondsEnabled) {
-
-    atoms = new Atom[na];
-    this.bondsEnabled = bondsEnabled;
+      super(na, na);
+      this.bondsEnabled = bondsEnabled;
   }
 
   public ChemFrame(boolean bondsEnabled) {
-    this(100, bondsEnabled);
+      this(100, bondsEnabled);
   }
 
   /**
    * Constructor for a ChemFrame with an unknown number of atoms.
-   *
    */
   public ChemFrame() {
-    this(true);
+      this(true);
   }
 
   /**
@@ -128,7 +125,8 @@ public class ChemFrame extends AtomContainer {
   public boolean hasAtomProperty(String description) {
 
     boolean result = false;
-    for (int i = 0; i < numberOfAtoms; ++i) {
+    Atom[] atoms = getJmolAtoms();
+    for (int i = 0; i < atoms.length; ++i) {
       if (atoms[i].hasProperty(description)) {
         result = true;
       }
@@ -152,29 +150,41 @@ public class ChemFrame extends AtomContainer {
     return info;
   }
 
+    /**
+     * Method that makes sure that *all* atoms get added as Jmol atom.
+     */
+    public void addAtom(org.openscience.cdk.Atom atom) {
+        Atom jmolAtom = null;
+        if (!(atom instanceof org.openscience.jmol.Atom)) {
+            jmolAtom = new org.openscience.jmol.Atom(atom);
+        } else {
+            jmolAtom = (Atom)atom;
+        }
+        AtomTypeList.getInstance().configure(jmolAtom);
+        super.addAtom(jmolAtom);
+    }
+    
+  
   public int addAtom(Atom type, double x, double y, double z) {
       return addAtom(type, x, y, z, null);
   }
 
   public int addAtom(Atom type, double x, double y, double z,
                      ProteinProp pprop) {
-    clearBounds();
-    int i = numberOfAtoms;
-    if (i >= atoms.length) {
-      setAtomArraySize(2 * atoms.length);
-    }
-
-    atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
-    AtomTypeList.getInstance().configure(atoms[i]);
-    if (DisplayControl.control.getAutoBond()) {
-      for (int j = 0; j < i; j++) {
-        if (Atom.closeEnoughToBond(atoms[i], atoms[j],
-                                   DisplayControl.control.getBondFudge())) {
-          addBond(i, j);
-        }
+      clearBounds();
+      int i = getAtomCount();
+      
+      Atom atom = new Atom(type, i, x, y, z, pprop);
+      this.addAtom(atom);
+      if (DisplayControl.control.getAutoBond()) {
+          for (int j = 0; j < i; j++) {
+              if (BondTools.closeEnoughToBond(atom, getAtomAt(j),
+                                              DisplayControl.control.getBondFudge())) {
+                  addBond(i, j);
+              }
+          }
       }
-    }
-    return numberOfAtoms++;
+      return getAtomCount() -1;
   }
 
   /**
@@ -193,33 +203,18 @@ public class ChemFrame extends AtomContainer {
       atom.setX3D(x);
       atom.setY3D(y);
       atom.setZ3D(z);
-      addAtom(atom);
-      return getAtomCount();
+      this.addAtom(atom);
+      return getAtomCount()-1;
   }
 
   /**
    * Deletes an Atom from the frame
    */
   public void deleteAtom(int atomIndex) {
-    Atom atomDeleted = atoms[atomIndex];
-    //    System.arraycopy(atoms, i+1, atoms, i, numberOfAtoms - i - 1);
-    for (int i = atomIndex; i < numberOfAtoms -1; i++) {
-      atoms[i] = atoms[i + 1];
-    }
-    atoms[numberOfAtoms - 1] = null;
-    --numberOfAtoms;
-    atomDeleted.delete();
-    clearBounds();
-    // FIXME mth -- do I need to do this?    rebond();
-  }
-
-  /**
-   * returns the number of atoms in the ChemFrame
-   *
-   *  @return the number of atoms in this frame.
-   */
-  public int getNumberOfAtoms() {
-    return numberOfAtoms;
+      Atom atomDeleted = (org.openscience.jmol.Atom)getAtomAt(atomIndex);
+      removeAtom(atomDeleted);
+      clearBounds();
+      // FIXME mth -- do I need to do this?    rebond();
   }
 
   public double getGeometricRadius() {
@@ -273,31 +268,26 @@ public class ChemFrame extends AtomContainer {
   }
 
   /**
-   *  Returns the atom at the given index.
-   *
-   *  @param index the index of the atom.
-   *  @return the atom at the given index.
+   * Dummy method now, because this.addAtom(cdk.Atom) ensures that
+   * the stored Atom's are jmol.Atom's.
    */
-  public org.openscience.cdk.Atom getAtomAt(int index) {
-    return atoms[index];
-  }
-
-  public org.openscience.cdk.Atom[] getAtoms() {
-    Atom[] result = new Atom[numberOfAtoms];
-    System.arraycopy(atoms, 0, result, 0, result.length);
-    return result;
-  }
-
   public Atom getJmolAtomAt(int index) {
-    return atoms[index];
+      // return new Atom(getAtomAt(index));
+      return (Atom)getAtomAt(index);
   }
 
+  /**
+   * Dummy method now, because this.addAtom(cdk.Atom) ensures that
+   * the stored Atom's are jmol.Atom's.
+   */
   public Atom[] getJmolAtoms() {
-   if (numberOfAtoms != atoms.length)
-      setAtomArraySize(numberOfAtoms);
-    return atoms;
+      Atom[] atoms = new Atom[getAtomCount()];
+      for (int i=0; i<getAtomCount(); i++) {
+          atoms[i] = getJmolAtomAt(i);
+      }
+      return atoms;
   }
-  
+
   /**
    * returns the coordinates of the i'th atom
    *
@@ -305,7 +295,7 @@ public class ChemFrame extends AtomContainer {
    */
   public double[] getAtomCoords(int i) {
 
-    Point3d position = atoms[i].getPosition();
+    Point3d position = atoms[i].getPoint3D();
     double[] coords = {
       position.x, position.y, position.z
     };
@@ -324,12 +314,13 @@ public class ChemFrame extends AtomContainer {
      * 3. doesn't take into account the fact that hydrogens could be hidden
      *    you can select a region and get extra hydrogens
      */
-    if (numberOfAtoms <= 0)
+    if (getAtomCount() <= 0)
       return -1;
     Atom atomNearest = null;
     int indexNearest = -1;
     int r2Nearest = Integer.MAX_VALUE;
-    for (int i = 0; i < numberOfAtoms; ++i) {
+    Atom[] atoms = getJmolAtoms();
+    for (int i = 0; i < atoms.length; ++i) {
       Atom atom = atoms[i];
       int dx = atom.getScreenX() - x;
       int dx2 = dx * dx;
@@ -355,7 +346,8 @@ public class ChemFrame extends AtomContainer {
   private final BitSet bsFoundRectangle = new BitSet();
   public BitSet findAtomsInRectangle(Rectangle rect) {
     bsFoundRectangle.and(bsEmpty);
-    for (int i = 0; i < numberOfAtoms; ++i) {
+    Atom[] atoms = getJmolAtoms();
+    for (int i = 0; i < atoms.length; ++i) {
       if (rect.contains(atoms[i].atomShape.x, atoms[i].atomShape.y))
         bsFoundRectangle.set(i);
     }
@@ -375,7 +367,7 @@ public class ChemFrame extends AtomContainer {
    * Find the bounds of this model.
    */
   private void findBounds() {
-    if ((centerBoundingBox != null) || (atoms == null) || (numberOfAtoms <= 0))
+    if ((centerBoundingBox != null) || (atoms == null) || (getAtomCount() <= 0))
       return;
     calcBoundingBox();
     centerRotation = centerBoundingBox;
@@ -385,10 +377,10 @@ public class ChemFrame extends AtomContainer {
 
   void calculateAtomVectorMagnitudeRange() {
     minAtomVectorMagnitude = maxAtomVectorMagnitude = -1;
-    for (int i = 0; i < numberOfAtoms; ++i) {
-      if (!atoms[i].hasVector())
-        continue;
-      double magnitude=atoms[i].getVectorMagnitude();
+    for (int i = 0; i < getAtomCount(); ++i) {
+        Atom atom = getJmolAtomAt(i);
+      if (!atom.hasVector()) continue;
+      double magnitude=atom.getVectorMagnitude();
       if (magnitude > maxAtomVectorMagnitude) {
         maxAtomVectorMagnitude = magnitude;
       }
@@ -408,13 +400,13 @@ public class ChemFrame extends AtomContainer {
     // as stored in the file
     // Note that this is not really the geometric center of the molecule
     // ... for this we would need to do a Minimal Enclosing Sphere calculation
-    Point3d position = atoms[0].getPosition();
+    Point3d position = atoms[0].getPoint3D();
     double minX = position.x, maxX = minX;
     double minY = position.y, maxY = minY;
     double minZ = position.z, maxZ = minZ;
 
-    for (int i = 1; i < numberOfAtoms; ++i) {
-      position = atoms[i].getPosition();
+    for (int i = 1; i < getAtomCount(); ++i) {
+      position = atoms[i].getPoint3D();
       double x = position.x;
       if (x < minX) { minX = x; }
       if (x > maxX) { maxX = x; }
@@ -449,9 +441,10 @@ public class ChemFrame extends AtomContainer {
     double radius = 0.0f;
     double atomSphereFactor =
       DisplayControl.control.getPercentVdwAtom() / 100.0;
-    for (int i = 0; i < numberOfAtoms; ++i) {
+    Atom[] atoms = getJmolAtoms();
+    for (int i = 0; i < atoms.length; ++i) {
       Atom atom = atoms[i];
-      Point3d posAtom = atom.getPosition();
+      Point3d posAtom = atom.getPoint3D();
       double distAtom = center.distance(posAtom);
       double radiusVdw = atom.getVanderwaalsRadius();
       double distVdw = distAtom + (radiusVdw * atomSphereFactor);
@@ -476,21 +469,19 @@ public class ChemFrame extends AtomContainer {
    * Walk through this frame and find all bonds again.
    */
   public void rebond() {
-
-    // Clear the currently existing bonds.
-    clearBonds();
-
-    // Do a n*(n-1) scan to get new bonds.
-    if (DisplayControl.control.getAutoBond()) {
-      for (int i = 0; i < numberOfAtoms - 1; i++) {
-        for (int j = i; j < numberOfAtoms; j++) {
-          if (Atom.closeEnoughToBond(atoms[i], atoms[j],
-                                     DisplayControl.control.getBondFudge())) {
-            addBond(i, j);
+      // Clear the currently existing bonds.
+      clearBonds();
+      
+      // Do a n*(n-1) scan to get new bonds.
+      Atom[] atoms = getJmolAtoms();
+      for (int i = 0; i < atoms.length - 1; ++i) {
+          for (int j = i; j < atoms.length; j++) {
+              if (BondTools.closeEnoughToBond(atoms[i], atoms[j],
+              DisplayControl.control.getBondFudge())) {
+                  addBond(i, j);
+              }
           }
-        }
       }
-    }
   }
 
   private Vector vibrations = new Vector();
@@ -543,24 +534,25 @@ public class ChemFrame extends AtomContainer {
    */
   public void addBond(int i, int j, int bondOrder) {
 
-    atoms[i].addBondedAtom(atoms[j], bondOrder);
-    atoms[j].addBondedAtom(atoms[i], bondOrder);
+    ((Atom)getAtomAt(i)).addBondedAtom((Atom)getAtomAt(j), bondOrder);
+    ((Atom)getAtomAt(j)).addBondedAtom((Atom)getAtomAt(i), bondOrder);
   }
 
   /**
    * Clears all bonds from all atoms.
    */
   public void clearBonds() {
-
-    for (int i = 0; i < numberOfAtoms; i++) {
-      atoms[i].clearBondedAtoms();
-    }
+      Atom[] atoms = getJmolAtoms();
+      for (int i = 0; i < atoms.length; i++) {
+          atoms[i].clearBondedAtoms();
+      }
   }
 
   public void dumpAtoms(PrintStream out) {
-    for (int i = 0; i < numberOfAtoms; ++i) {
-      out.println(atoms[i].toString());
-    }
+      Atom[] atoms = getJmolAtoms();
+      for (int i = 0; i < atoms.length; i++) {
+          atoms[i].clearBondedAtoms();
+      }
   }
 
   public JmolAtomIterator getAtomIterator() {
@@ -571,11 +563,11 @@ public class ChemFrame extends AtomContainer {
     int iAtom = 0;
 
     public boolean hasNext() {
-      return (iAtom < numberOfAtoms);
+      return (iAtom < getAtomCount());
     }
 
     public Atom nextAtom() {
-      return atoms[iAtom++];
+      return (org.openscience.jmol.Atom)getAtomAt(iAtom++);
     }
   }
 
@@ -592,14 +584,14 @@ public class ChemFrame extends AtomContainer {
     }
 
     public boolean hasNext() {
-      for ( ; iatom < numberOfAtoms; ++iatom)
+      for ( ; iatom < getAtomCount(); ++iatom)
         if (set.get(iatom))
           return true;
       return false;
     }
 
     public Atom nextAtom() {
-      return atoms[iatom++];
+      return (org.openscience.jmol.Atom)getAtomAt(iatom++);
     }
   }
 
@@ -636,9 +628,9 @@ public class ChemFrame extends AtomContainer {
         }
         boolean isSelected;
         do {
-          if (++iatom >= numberOfAtoms)
+          if (++iatom >= getAtomCount())
             return false;
-          atom = atoms[iatom];
+          atom = (org.openscience.jmol.Atom)getAtomAt(iatom);
           isSelected = set.get(iatom);
           if (isSelected && bondmodeOr)
             return bigHit = true;

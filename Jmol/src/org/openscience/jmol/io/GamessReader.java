@@ -234,7 +234,7 @@ public class GamessReader extends DefaultChemFileReader {
       Object[] currentVectors = new Object[currentVibs.length];
       line = input.readLine();
       line = input.readLine();
-      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+      for (int i = 0; i < frame.getAtomCount(); ++i) {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);

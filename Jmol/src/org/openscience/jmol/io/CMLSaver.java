@@ -127,7 +127,7 @@ public class CMLSaver extends FileSaver {
 
     int count = 0;
 
-    for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
+    for (int i = 0; i < cf.getAtomCount(); i++) {
 
       if (ids.length() > 0) {
         ids.append(" ");
@@ -156,7 +156,7 @@ public class CMLSaver extends FileSaver {
       z3s.append(new Double(pos[2]).toString());
 
       ++count;
-      if ((count == 5) && (i + 1 < cf.getNumberOfAtoms())) {
+      if ((count == 5) && (i + 1 < cf.getAtomCount())) {
         count = 0;
         x3s.append(lineSeparator);
         x3s.append("     ");

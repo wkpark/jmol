@@ -126,7 +126,7 @@ class AtomTypesModel extends AbstractTableModel {
         }
       switch (column) {
       case 0 :
-        return at.getID();
+        return at.getAtomTypeName();
 
       case 1 :
         return at.getSymbol();

@@ -25,6 +25,7 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.util.*;
+import org.openscience.cdk.geometry.BondTools;
 import java.util.Vector;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix3d;
@@ -126,16 +127,16 @@ public class CrystalFile extends ChemFile {
 
     for (int i = 0; i < nframes; i++) {
       ChemFrame frame = cf.getFrame(i);
-      int natom = frame.getNumberOfAtoms();
+      int natom = frame.getAtomCount();
       double[][] cartPos = new double[natom][3];
       int[] atomType = new int[natom];
       String info = frame.getInfo();
 
       for (int at = 0; at < natom; at++) {
         Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(at);
-        cartPos[at][0] = atom.getPosition().x;
-        cartPos[at][1] = atom.getPosition().y;
-        cartPos[at][2] = atom.getPosition().z;
+        cartPos[at][0] = atom.getPoint3D().x;
+        cartPos[at][1] = atom.getPoint3D().y;
+        cartPos[at][2] = atom.getPoint3D().z;
         atomType[at] = atom.getAtomicNumber();
       }
       
@@ -246,7 +247,7 @@ public class CrystalFile extends ChemFile {
 
     Vector crystalFAtomRedPos = new Vector(1);
     CrystalFrame crystalFrame = new CrystalFrame();
-    int natom = unitCellBoxS.getNumberOfAtoms();
+    int natom = unitCellBoxS.getAtomCount();
     Vector frameEquivAtoms[] = (Vector[]) Array.newInstance(Vector.class,
                                  natom);
     int numberBondedAtoms;
@@ -317,7 +318,7 @@ public class CrystalFile extends ChemFile {
 
     double[][] unitCellAtomRedPos = unitCellBoxS.getReducedPos();
     double[][] atomBox = crystalBoxS.getAtomBox();
-    int natom = unitCellBoxS.getNumberOfAtoms();
+    int natom = unitCellBoxS.getAtomCount();
     int mina, minb, minc, maxa, maxb, maxc;
     Matrix3d op = new Matrix3d();
 
@@ -481,7 +482,7 @@ public class CrystalFile extends ChemFile {
     Vector crystalRedPos =
       (Vector) (this.crystalAtomRedPos.elementAt(whichframe));
     ChemFrame crystalFrame = super.getFrame(whichframe);
-    int numberAtoms = crystalFrame.getNumberOfAtoms();
+    int numberAtoms = crystalFrame.getAtomCount();
     double[][] bondBox =
       ((CrystalBox) crystalBox.elementAt(whichframe)).getBondBox();
 
@@ -499,7 +500,7 @@ public class CrystalFile extends ChemFile {
         numberBondedAtoms++;
         for (int j = i; j < numberAtoms; j++) {
 
-          if (Atom.closeEnoughToBond(
+          if (BondTools.closeEnoughToBond(
               (org.openscience.jmol.Atom)crystalFrame.getAtomAt(i),
               (org.openscience.jmol.Atom)crystalFrame.getAtomAt(j),
               DisplayControl.control.getBondFudge())) {

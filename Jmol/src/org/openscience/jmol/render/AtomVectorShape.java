@@ -37,7 +37,7 @@ public class AtomVectorShape extends Shape {
   }
 
   public void transform(DisplayControl control) {
-    Point3d screen = control.transformPoint(atom.getPosition());
+    Point3d screen = control.transformPoint(atom.getPoint3D());
     int zAtom = (int)screen.z;
     screen = control.transformPoint(atom.getScaledVector());
     x = (int)screen.x;

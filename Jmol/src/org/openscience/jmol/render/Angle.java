@@ -42,10 +42,10 @@ public class Angle implements MeasurementInterface {
     this.atom1 = atom1;
     this.atom2 = atom2;
     this.atom3 = atom3;
-    Vector3d vector12 = new Vector3d(atom1.getPosition());
-    vector12.sub(atom2.getPosition());
-    Vector3d vector32 = new Vector3d(atom3.getPosition());
-    vector32.sub(atom2.getPosition());
+    Vector3d vector12 = new Vector3d(atom1.getPoint3D());
+    vector12.sub(atom2.getPoint3D());
+    Vector3d vector32 = new Vector3d(atom3.getPoint3D());
+    vector32.sub(atom2.getPoint3D());
     angle = vector12.angle(vector32) * 180 / Math.PI;
     strAngle = angleFormat.sprintf(angle);
   }

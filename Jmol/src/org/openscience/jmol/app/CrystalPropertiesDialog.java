@@ -330,7 +330,7 @@ public class CrystalPropertiesDialog extends JDialog
     int index = basisVectorType_CBO.getSelectedIndex();
       
     if (hasCrystalInfo) {
-      int natom = unitCellBox.getNumberOfAtoms();
+      int natom = unitCellBox.getAtomCount();
       Object[][] basisVectorData = new Object[natom][5];
       Atom atom;
 	
@@ -339,7 +339,7 @@ public class CrystalPropertiesDialog extends JDialog
 	for (int i = 0; i < natom; i++) {
           basisVectorData[i][0] = new String(String.valueOf(i));
           basisVectorData[i][1] = new String(unitCellBox.getBaseAtomType(i).
-                                             getID());
+                                             getAtomTypeName());
           basisVectorData[i][2] = new Double(cartPos[i][0]);
           basisVectorData[i][3] = new Double(cartPos[i][1]);
           basisVectorData[i][4] = new Double(cartPos[i][2]);
@@ -351,7 +351,7 @@ public class CrystalPropertiesDialog extends JDialog
         for (int i = 0; i < natom; i++) {
           basisVectorData[i][0] = new String(String.valueOf(i));
           basisVectorData[i][1] = new String(unitCellBox.getBaseAtomType(i).
-                                             getID());
+                                             getAtomTypeName());
           basisVectorData[i][2] = new Double(redPos[i][0]);
           basisVectorData[i][3] = new Double(redPos[i][1]);
           basisVectorData[i][4] = new Double(redPos[i][2]);
@@ -369,16 +369,17 @@ public class CrystalPropertiesDialog extends JDialog
         System.out.println(message);
       }
 
-      int natom = chemFile.getFrame(currentFrameIndex).getNumberOfAtoms();
+      ChemFrame currentFrame = chemFile.getFrame(currentFrameIndex);
+      int natom = currentFrame.getAtomCount();
       Object[][] basisVectorData = new Object[natom][5];
       Atom atom;
       for (int i = 0; i < natom; i++) {
-        atom = (org.openscience.jmol.Atom)chemFile.getFrame(currentFrameIndex).getAtomAt(i);
+        atom = currentFrame.getJmolAtomAt(i);
         basisVectorData[i][0] = new String(String.valueOf(i));
-        basisVectorData[i][1] = new String(atom.getID());
-        basisVectorData[i][2] = new Double(atom.getPosition().x);
-        basisVectorData[i][3] = new Double(atom.getPosition().y);
-        basisVectorData[i][4] = new Double(atom.getPosition().z);
+        basisVectorData[i][1] = new String(atom.getAtomTypeName());
+        basisVectorData[i][2] = new Double(atom.getPoint3D().x);
+        basisVectorData[i][3] = new Double(atom.getPoint3D().y);
+        basisVectorData[i][4] = new Double(atom.getPoint3D().z);
       }
       basisVectorTableModel.setData(basisVectorData);
       basisVectorTableModel.fireTableDataChanged();
@@ -941,12 +942,12 @@ public class CrystalPropertiesDialog extends JDialog
 
     jNatomInCellLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NCell")
-       + " " + unitCellBox.getNumberOfAtoms());
+       + " " + unitCellBox.getAtomCount());
     
     // the number of atoms in the crystal box
     jNatomInBoxLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NatomBox")
-       + " " + crystalFile.getFrame(currentFrameIndex).getNumberOfAtoms());
+       + " " + crystalFile.getFrame(currentFrameIndex).getAtomCount());
     
     jNatomInClipLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NbondBox")
@@ -1611,16 +1612,16 @@ public class CrystalPropertiesDialog extends JDialog
     // the number of atoms in the unit cell
     jNatomInCellLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NCell")
-       + " " + chemFile.getFrame(currentFrameIndex).getNumberOfAtoms());
+       + " " + chemFile.getFrame(currentFrameIndex).getAtomCount());
     
     // the number of atoms in the crystal box
     jNatomInBoxLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NatomBox")
-       + " " + chemFile.getFrame(currentFrameIndex).getNumberOfAtoms());
+       + " " + chemFile.getFrame(currentFrameIndex).getAtomCount());
     
     jNatomInClipLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NbondBox")
-       + " " + chemFile.getFrame(currentFrameIndex).getNumberOfAtoms());
+       + " " + chemFile.getFrame(currentFrameIndex).getAtomCount());
     
   }
   

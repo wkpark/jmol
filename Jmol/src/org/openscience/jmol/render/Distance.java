@@ -45,7 +45,7 @@ public class Distance implements MeasurementInterface {
     iatoms[1] = iatom2;
     this.atom1 = atom1;
     this.atom2 = atom2;
-    distance = atom1.getPosition().distance(atom2.getPosition());
+    distance = atom1.getPoint3D().distance(atom2.getPoint3D());
     strDistance = formatDistance(distance);
   }
 

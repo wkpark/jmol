@@ -835,7 +835,7 @@ public class Eval implements Runnable {
         bsResult.set(i);
         continue;
       }
-      if (isWithin(distanceSquared, atoms[i].getPosition(), bs))
+      if (isWithin(distanceSquared, atoms[i].getPoint3D(), bs))
         bsResult.set(i);
     }
   }
@@ -845,7 +845,7 @@ public class Eval implements Runnable {
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
       if (! bs.get(i))
         continue;
-      Point3d pointB = atoms[i].getPosition();
+      Point3d pointB = atoms[i].getPoint3D();
       double d = point.x - pointB.x;
       double d2 = d*d;
       if (d2 > distanceSquared) continue;

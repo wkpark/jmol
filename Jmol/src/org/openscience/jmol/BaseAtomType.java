@@ -69,7 +69,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    *         parameter, or null if not found.
    */
   public static BaseAtomType get(int atomicNumber) {
-
+      System.out.println("Using atomic number to find base atom type: " + atomicNumber);
     Enumeration iter = typePool.elements();
     while (iter.hasMoreElements()) {
       BaseAtomType at = (BaseAtomType) iter.nextElement();
@@ -90,7 +90,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * @return the atom type corresponding to the name.
    */
   public static BaseAtomType get(String name, String root) {
-
     if (exists(name)) {
       return (BaseAtomType) typePool.get(name);
     }
@@ -139,7 +138,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
   }
 
   public static BaseAtomType get(org.openscience.cdk.AtomType at) {
-      BaseAtomType bat = new BaseAtomType(at.getID(), at.getSymbol());
+      BaseAtomType bat = new BaseAtomType(at.getAtomTypeName(), at.getSymbol());
       bat.setAtomicNumber(at.getAtomicNumber());
       bat.setExactMass(at.getExactMass());
       bat.setVanderwaalsRadius(at.getVanderwaalsRadius());
@@ -166,7 +165,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
       return false;
     }
     BaseAtomType at = (BaseAtomType) obj;
-    boolean nameEqual = getID().equals(at.getID());
+    boolean nameEqual = getAtomTypeName().equals(at.getID());
     boolean rootEqual = getSymbol().equals(at.getSymbol());
     boolean atomicNumberEqual = (atomicNumber == at.getAtomicNumber());
     boolean massEqual = (Double.doubleToLongBits(at.getExactMass())
@@ -190,7 +189,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
 
     if (hashCode == 0) {
       int result = 17;
-      result = 37 * result + getID().hashCode();
+      result = 37 * result + getAtomTypeName().hashCode();
       result = 37 * result + getSymbol().hashCode();
       result = 37 * result + getAtomicNumber();
       long longHashValue = Double.doubleToLongBits(getExactMass());
@@ -215,7 +214,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    */
   public String toString() {
     StringBuffer sb1 = new StringBuffer();
-    sb1.append(getID());
+    sb1.append(getAtomTypeName());
     sb1.append('\t');
     sb1.append(getSymbol());
     sb1.append('\t');

@@ -141,6 +141,7 @@ public class XYZReader extends DefaultChemFileReader {
           break;
         }
         if (!s.startsWith("#")) {
+            // System.out.println(s);
           double x = 0.0;
           double y = 0.0;
           double z = 0.0;
@@ -160,6 +161,7 @@ public class XYZReader extends DefaultChemFileReader {
           atom.setX3D(x);
           atom.setY3D(y);
           atom.setZ3D(z);
+          // System.out.println("Storing atom " + frame.getAtomCount() + ": " + atom.toString());
           frame.addAtom(atom);
           int atomIndex = frame.getAtomCount();
 

@@ -112,7 +112,7 @@ public class Convertor {
     public static AtomContainer convert(org.openscience.jmol.ChemFrame mol) {
         if (mol != null) {
             AtomContainer converted = new AtomContainer();
-            int NOatoms = mol.getNumberOfAtoms();
+            int NOatoms = mol.getAtomCount();
             for (int i=0; i<NOatoms; i++) {
                 converted.addAtom(convert(mol.getAtomAt(i)));
             }

@@ -149,15 +149,15 @@ public class UnitCellBox {
     this.angles = null;
     this.rprim = rprim;
     this.acell = acell;
-    this.atomType = new int[chemFrame.getNumberOfAtoms()];
-    atomPos = new double[chemFrame.getNumberOfAtoms()][3];
+    this.atomType = new int[chemFrame.getAtomCount()];
+    atomPos = new double[chemFrame.getAtomCount()][3];
     Atom atom;
-    for (int i=0; i < chemFrame.getNumberOfAtoms(); i++) {
+    for (int i=0; i < chemFrame.getAtomCount(); i++) {
       atom = (org.openscience.jmol.Atom)chemFrame.getAtomAt(i);
       atomType[i] = atom.getAtomicNumber();
-      atomPos[i][0] = atom.getPosition().x;
-      atomPos[i][1] = atom.getPosition().y;
-      atomPos[i][2] = atom.getPosition().z;
+      atomPos[i][0] = atom.getPoint3D().x;
+      atomPos[i][1] = atom.getPoint3D().y;
+      atomPos[i][2] = atom.getPoint3D().z;
     }
     this.atomPos = cartToRed(atomPos, getRprimd());
   }
@@ -294,7 +294,7 @@ public class UnitCellBox {
    *
    * @return an <code>int</code> value
    */
-  public int getNumberOfAtoms() {
+  public int getAtomCount() {
     return Array.getLength(atomPos);
   }
 

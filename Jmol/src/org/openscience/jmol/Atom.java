@@ -45,7 +45,7 @@ public class Atom extends org.openscience.cdk.Atom {
   public Atom(Atom atom, int atomNumber,
               double x, double y, double z, ProteinProp pprop) {
     super(atom.getSymbol(), new Point3d(x, y, z));
-    super.setID(atom.getID());
+    super.setID(atom.getAtomTypeName());
     this.baseAtomType = atom.baseAtomType;
     this.atomNumber = atomNumber;
     this.pprop = pprop;
@@ -53,13 +53,22 @@ public class Atom extends org.openscience.cdk.Atom {
 
   public Atom(org.openscience.cdk.Atom atom) {
     super(atom.getSymbol(), atom.getPoint3D());
-    super.setID(atom.getID());
+    super.setAtomicNumber(atom.getAtomicNumber());
+    super.setAtomTypeName(atom.getAtomTypeName());
     this.atomNumber = atomNumber;
-    this.baseAtomType = BaseAtomType.get(atom.getID(), atom.getSymbol(), 
-                                         atom.getAtomicNumber(),
-                                         atom.getExactMass(),
-                                         atom.getVanderwaalsRadius(),
-                                         atom.getCovalentRadius());
+    String atomName = atom.getAtomTypeName();
+    if (atomName == null) {
+        atomName = atom.getSymbol();
+    }
+    if (!atomName.equals("")) {
+        this.baseAtomType = BaseAtomType.get(atomName, atom.getSymbol(), 
+                                             atom.getAtomicNumber(),
+                                             atom.getExactMass(),
+                                             atom.getVanderwaalsRadius(),
+                                             atom.getCovalentRadius());
+    } else {
+        this.baseAtomType = BaseAtomType.get(atom.getAtomicNumber());
+    }
   }
 
   /**
@@ -149,13 +158,6 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
-   * Returns the atom's position.
-   */
-  public Point3d getPosition() {
-    return point3D;
-  }
-
-  /**
    * Returns the atom's vector, or null if not set.
    */
   public boolean hasVector() {
@@ -183,7 +185,7 @@ public class Atom extends org.openscience.cdk.Atom {
       return null;
     }
     Point3d vectorScaled = new Point3d();
-    vectorScaled.scaleAdd(2.0, vector, getPosition());
+    vectorScaled.scaleAdd(2.0, vector, getPoint3D());
     return vectorScaled;
   }
 
@@ -260,25 +262,6 @@ public class Atom extends org.openscience.cdk.Atom {
 
   public int getBondedCount() {
     return (bondedAtoms == null) ? 0 : bondedAtoms.length;
-  }
-
-  /**
-   * Returns true if the two atoms are within the distance fudge
-   * factor of each other.
-   */
-  public static boolean closeEnoughToBond(Atom atom1, Atom atom2,
-      double distanceFudgeFactor) {
-
-    if (atom1 != atom2) {
-      double squaredDistanceBetweenAtoms =
-        atom1.getPosition().distanceSquared(atom2.getPosition());
-      double bondingDistance = distanceFudgeFactor
-          * (atom1.getCovalentRadius() + atom2.getCovalentRadius());
-      if (squaredDistanceBetweenAtoms <= bondingDistance * bondingDistance) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public AtomShape atomShape;
@@ -385,10 +368,6 @@ public class Atom extends org.openscience.cdk.Atom {
    */
   private Vector properties = new Vector();
 
-  public String toString() {
-    String type = getSymbol();
-    return "Atom{" + type + "#" + getAtomNumber() + "@" + getPosition() + "}";
-  }
 }
 
 

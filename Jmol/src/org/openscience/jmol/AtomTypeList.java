@@ -134,7 +134,7 @@ public class AtomTypeList {
             
             for (int i = 0; i < numRows; i++) {
                 BaseAtomType bat = getElementAt(i);
-                String outline = (String) bat.getID();
+                String outline = (String) bat.getAtomTypeName();
                 outline = outline + "\t" + bat.getSymbol();
                 outline = outline + "\t" + bat.getAtomicNumber();
                 outline = outline + "\t" + bat.getExactMass();
@@ -175,12 +175,11 @@ public class AtomTypeList {
     * Returns the first occurence of an AtomType with the given name.
     */
     public BaseAtomType get(String name) {
-        
         if (name != null) {
             Enumeration e = AtomTypeList.getInstance().elements();
             while (e.hasMoreElements()) {
                 BaseAtomType at = (BaseAtomType) e.nextElement();
-                if (name.equalsIgnoreCase(at.getID())) {
+                if (name.equalsIgnoreCase(at.getAtomTypeName())) {
                     return at;
                 }
             }
@@ -243,14 +242,31 @@ public class AtomTypeList {
     
 	/**
 	 *  Configures an atom. Finds the correct element type
-	 *  by looking at the atoms atom type id (atom.getID()).
+	 *  by looking at the atoms atom type id (atom.getAtomTypeName()).
 	 *
 	 * @param  atom  The atom to be configured
 	 * @return       The configured atom
 	 */
 	public Atom configure(Atom atom) {
         try {
-            BaseAtomType at = get(atom.getID());
+            String atomTypeName = atom.getAtomTypeName();
+            if (atomTypeName == null) {
+                atomTypeName = atom.getSymbol();
+            }
+            BaseAtomType at = null;
+            if (atomTypeName.length() > 0) {
+                atom.setAtomTypeName(atomTypeName);
+                logger.debug("Looking up base with: " + atomTypeName);
+                at = get(atomTypeName);
+            } else {
+                /* if the atom does not have an symbol and an atomTypeName
+                   either, then use the atomic number */
+                logger.debug("Looking up base with: " + atom.getAtomicNumber());
+                at = get(atom.getAtomicNumber());
+                atom.setSymbol(at.getSymbol());
+                atom.setAtomTypeName(at.getAtomTypeName());
+            }
+            logger.debug("BaseAtomType: " + at.toString());
             atom.setMaxBondOrder(at.getMaxBondOrder());
             atom.setMaxBondOrderSum(at.getMaxBondOrderSum());
             atom.setVanderwaalsRadius(at.getVanderwaalsRadius());
@@ -267,10 +283,10 @@ public class AtomTypeList {
                 logger.debug("Did not configure mass: AT.mass=" + at.getAtomicNumber());
             }
         } catch (Exception exc) {
-            logger.warn("Could not configure atom with unknown ID: " + 
-                        atom.toString() + " + (id=" + atom.getID() + ")");
+            logger.warn("Could not configure atom with unknown AtomTypeName: " + 
+                        atom.toString() + " + (id=" + atom.getAtomTypeName() + ")");
         }
-        logger.debug("Configured " + atom.toString());
+        // logger.debug("Configured " + atom.toString());
 		return atom;
 	}
 

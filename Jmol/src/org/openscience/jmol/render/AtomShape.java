@@ -180,7 +180,7 @@ public class AtomShape extends Shape {
   }
 
   public void transform(DisplayControl control) {
-    Point3d screen = control.transformPoint(atom.getPosition());
+    Point3d screen = control.transformPoint(atom.getPoint3D());
     x = (int)screen.x;
     y = (int)screen.y;
     z = (int)screen.z;

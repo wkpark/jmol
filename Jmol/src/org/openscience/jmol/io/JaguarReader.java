@@ -153,7 +153,7 @@ class JaguarReader extends DefaultChemFileReader {
 
       line = input.readLine();
       line = input.readLine();
-      for (int i = 0; i < mol.getNumberOfAtoms(); ++i) {
+      for (int i = 0; i < mol.getAtomCount(); ++i) {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);

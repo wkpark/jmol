@@ -163,7 +163,7 @@ public class PovraySaver extends FileSaver {
 
         // Loop through the atoms and write them out:
 
-        for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
+        for (int i = 0; i < cf.getAtomCount(); i++) {
           // don't write out if atom is a hydrogen and !showhydrogens
           if (drawHydrogen
               || (cf.getJmolAtomAt(i).getAtomicNumber() != 1)) {
@@ -185,7 +185,7 @@ public class PovraySaver extends FileSaver {
         w.write("//***********************************************\n");
         w.write("\n");
 
-        for (int i = 0; i < cf.getNumberOfAtoms(); ++i) {
+        for (int i = 0; i < cf.getAtomCount(); ++i) {
           Atom atom1 = (org.openscience.jmol.Atom)cf.getAtomAt(i);
           Atom[] bondedAtoms = atom1.getBondedAtoms();
           if (bondedAtoms == null)

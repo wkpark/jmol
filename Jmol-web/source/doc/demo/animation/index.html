@@ -1,43 +1,29 @@
 <html>
-  <head><title>jmol applet animations demo</title>
+  <head>
+    <title>jmol applet animations demo</title>
+    <script src="../jmol/Jmol.js"></script>
+    <script>jmolSetCodebase("../jmol");</script>
   </head>
   <body>
     <table border="1">
       <tr>
 	<td>
 	  <h2>Jmol animations</h2>
-	  <applet name="jmol" code="JmolApplet"
-		  archive="../jmol/JmolApplet.jar"
-		  width="300" height="300" mayscript="true" >
-	    <param name="progressbar"   value="true" />
-	    <param name="progresscolor" value="blue" />
-	    <param name="boxmessage"    value="Downloading JmolApplet ..." />
-	    <param name="boxbgcolor"    value="black" />
-	    <param name="boxfgcolor"    value="white" />
-
-	    <param name="load"      value="movie.pdb.gz" />
-
-	    <param name="script"    value="
-		   frame 1;
-		   wireframe; cpk off; trace; color trace honeydew;
-		   anim mode palindrome 2 2; anim on;" />
-	    
-	  </applet>
+	  <script>
+	    var script="wireframe; cpk off; trace; color trace honeydew;" +
+	    "anim mode palindrome; anim on";
+	    jmolApplet(300, "movie.pdb.gz", script);
+	  </script>
 	</td>
 	
 	<td>
 
 	  A simple cyclohexane chair animation as a multi-frame .xyz file<br />
 
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="cyclohexane chair" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="
-		   anim off; spin off;
-		   load cyclohexane_movie.xyz.gz; frame 1" />
-	  </applet>
+	  <script>
+	    jmolButton("load cyclohexane_movie.xyz.gz",
+	               "cyclohexane chair");
+	  </script>
 	  <br />
 	    
 	  An animated molecule from the Molecular Movement Database at Yale
@@ -45,19 +31,11 @@
 	  <br />
 	  <i>Note that this is a multi-model .pdb file</i><br />
 
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="300" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="some animated macromolecule" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="
-		   anim off; spin off;
-		   load movie.pdb.gz;
-		   frame 1;
-		   cpk off; wireframe;
-		   trace; color trace honeydew;
-		   " />
-	  </applet>
+	  <script>
+	    var script = "load movie.pdb.gz; cpk off; wireframe;" +
+	                 "trace on; color trace honeydew";
+	    jmolButton(script, "some animated macromolecule");
+	  </script>
 	  <br />
 
 	  Play once<br />

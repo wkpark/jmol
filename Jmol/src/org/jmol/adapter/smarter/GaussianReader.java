@@ -39,12 +39,13 @@ class GaussianReader extends ModelReader {
       int lineNum = 0;
       while ((line = reader.readLine()) != null) {
         if (line.indexOf("Standard orientation:") >= 0) {
-          // we only take the last set of atoms before the frequencies
-          model.discardPreviousAtoms();
           readAtoms(reader);
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
           break;
+        } else if (line.startsWith(" Total atomic charges:") ||
+                   line.startsWith(" Mulliken atomic charges:")) {
+          readPartialCharges(reader);
         } else if (lineNum < 20) {
           if (line.indexOf("This is part of the Gaussian 94(TM) system")
               >= 0)
@@ -60,6 +61,7 @@ class GaussianReader extends ModelReader {
         ++lineNum;
       }
     } catch (Exception ex) {
+      ex.printStackTrace();
       model.errorMessage = "Could not read file:" + ex;
       return model;
     }
@@ -107,7 +109,14 @@ class GaussianReader extends ModelReader {
   }
 
 
+  int atomCount;
+  int modelCount;
+
   void readAtoms(BufferedReader reader) throws Exception {
+    // we only take the last set of atoms before the frequencies
+    model.discardPreviousAtoms();
+    atomCount = 0;
+    modelCount = 1;
     discardLines(reader, 4);
     String line;
     while ((line = reader.readLine()) != null &&
@@ -126,12 +135,11 @@ class GaussianReader extends ModelReader {
       Atom atom = model.newAtom();
       atom.elementNumber = (byte)elementNumber;
       atom.x = x; atom.y = y; atom.z = z;
+      ++atomCount;
     }
   }
 
-  int baseAtomCount;
   void readFrequencies(BufferedReader reader) throws Exception {
-    baseAtomCount = model.atomCount;
     int modelNumber = 1;
     String line;
     while ((line = reader.readLine()) != null &&
@@ -142,7 +150,7 @@ class GaussianReader extends ModelReader {
     do {
       // FIXME deal with frequency line here
       discardLines(reader, frequencyLineSkipCount);
-      for (int i = 0; i < baseAtomCount; ++i) {
+      for (int i = 0; i < atomCount; ++i) {
         line = reader.readLine();
         int atomCenterNumber = parseInt(line, 0, 4);
         for (int j = 0, col = 11; j < 3; ++j, col += 23) {
@@ -161,23 +169,33 @@ class GaussianReader extends ModelReader {
   void recordAtomVector(int modelNumber, int atomCenterNumber,
                         float x, float y, float z) {
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-      return;
-    if (atomCenterNumber <= 0 || atomCenterNumber > baseAtomCount)
+      return; // line is too short -- no data found
+    if (atomCenterNumber <= 0 || atomCenterNumber > atomCount)
       return;
     if (atomCenterNumber == 1) {
       if (modelNumber > 1)
         createNewModel(modelNumber);
     }
-    Atom atom = model.atoms[(modelNumber - 1) * baseAtomCount +
+    Atom atom = model.atoms[(modelNumber - 1) * atomCount +
                             atomCenterNumber - 1];
     atom.vectorX = x;
     atom.vectorY = y;
     atom.vectorZ = z;
   }
 
+  void readPartialCharges(BufferedReader reader) throws Exception {
+    discardLines(reader, 1);
+    String line;
+    for (int i = 0;
+         i < atomCount && (line = reader.readLine()) != null;
+         ++i)
+      model.atoms[i].partialCharge = parseFloat(line, 9, 18);
+  }
+
   void createNewModel(int modelNumber) {
+    modelCount = modelNumber - 1;
     Atom[] atoms = model.atoms;
-    for (int i = 0; i < baseAtomCount; ++i) {
+    for (int i = 0; i < atomCount; ++i) {
       Atom atomNew = model.newCloneAtom(atoms[i]);
       atomNew.modelNumber = modelNumber;
     }

@@ -183,6 +183,7 @@ public class DisplayPanel extends JPanel
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
   private aNoneAction anoneAction = new aNoneAction();
+  private aInvisibleAction ainvisibleAction = new aInvisibleAction();
   private aQuickdrawAction aquickdrawAction = new aQuickdrawAction();
   private aShadingAction ashadingAction = new aShadingAction();
   private aWireframeAction awireframeAction = new aWireframeAction();
@@ -314,6 +315,21 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
       control.setStyleAtom(DisplayControl.NONE);
       // FIXME -- these repaints are not necessary
+      // confirm later when not working on something else
+      repaint();
+    }
+  }
+
+  class aInvisibleAction extends AbstractAction {
+
+    public aInvisibleAction() {
+      super("ainvisible");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      control.setStyleAtom(DisplayControl.INVISIBLE);
+      // FIXME -- mth -- these repaints are not necessary
       // confirm later when not working on something else
       repaint();
     }
@@ -713,11 +729,12 @@ public class DisplayPanel extends JPanel
       {"Jmol.plain", "Jmol.symbols", "Jmol.types", "Jmol.numbers"};
     guimap.setSelected(modeLabel[control.getStyleLabel()], true);
     final String[] modeAtom =
-      {"Jmol.aquickdraw", "Jmol.ashading", "Jmol.awireframe",  "Jmol.anone"};
+      {"Jmol.aquickdraw", "Jmol.ashading", "Jmol.awireframe",
+       "Jmol.ainvisible", "Jmol.anone"};
     guimap.setSelected(modeAtom[control.getStyleAtom()], true);
     final String[] modeBond =
       {"Jmol.bquickdraw", "Jmol.bshading", "Jmol.bwireframe",
-       "Jmol.bnone", "Jmol.bbox"};
+       "Jmol.bbox", "Jmol.bnone"};
     guimap.setSelected(modeBond[control.getStyleBond()], true);
     final String[] modeColor =
       {"Jmol.actype", "Jmol.accharge"};
@@ -730,9 +747,10 @@ public class DisplayPanel extends JPanel
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction,
-      aquickdrawAction, ashadingAction, awireframeAction, anoneAction, 
-      bquickdrawAction, bshadingAction, bboxAction, bwireframeAction,
-      bnoneAction,
+      aquickdrawAction, ashadingAction, awireframeAction,
+      ainvisibleAction, anoneAction, 
+      bquickdrawAction, bshadingAction, bwireframeAction,
+      bboxAction, bnoneAction,
       plainAction,
       symbolsAction, typesAction, numbersAction,
       bondsAction, atomsAction, hydrogensAction,

@@ -85,22 +85,21 @@ public class AtomRenderer {
 
   public void render(AtomShape atomShape) {
     styleAtom = atomShape.styleAtom;
-    if (styleAtom == DisplayControl.NONE)
-      return;
-    atom = atomShape.atom;
-    x = atomShape.x;
-    y = atomShape.y;
-    z = atomShape.z;
-    diameter = atomShape.diameter;
-    radius = diameter / 2;
-    xUpperLeft = x - radius;
-    yUpperLeft = y - radius;
-    color = atomShape.colorAtom;
-    colorOutline = control.getColorAtomOutline(styleAtom, color);
+    if (styleAtom != DisplayControl.NONE &&
+        styleAtom != DisplayControl.INVISIBLE) {
+      atom = atomShape.atom;
+      x = atomShape.x;
+      y = atomShape.y;
+      z = atomShape.z;
+      diameter = atomShape.diameter;
+      radius = diameter / 2;
+      xUpperLeft = x - radius;
+      yUpperLeft = y - radius;
+      color = atomShape.colorAtom;
+      colorOutline = control.getColorAtomOutline(styleAtom, color);
 
-    renderAtom();
-    if (atomShape.strLabel != null)
-      renderLabel(atomShape.strLabel);
+      renderAtom();
+    }
   }
 
   private void renderAtom() {
@@ -364,44 +363,6 @@ public class AtomRenderer {
       v[0] = v[0] / len;
       v[1] = v[1] / len;
       v[2] = v[2] / len;
-    }
-  }
-
-  public void renderLabel(String strLabel) {
-    int j = 0;
-    String s = null;
-    // FIXME -- mth -- too much font stuff being allocated here
-    Font font = new Font("Helvetica", Font.PLAIN, radius);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
-    int k = fontMetrics.getAscent();
-    g.setColor(colorText);
-    
-    j = fontMetrics.stringWidth(strLabel);
-    g.drawString(strLabel, x - j / 2, y + k / 2);
-
-    // FIXME -- mth -- understand this property stuff
-    if (!control.getPropertyStyleString().equals("")) {
-
-      // check to make sure this atom has this property:
-      Enumeration propIter = atom.getProperties().elements();
-      while (propIter.hasMoreElements()) {
-        PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
-        if (p.getDescriptor().equals(control.getPropertyStyleString())) {
-        
-          // OK, we had this property.  Let's draw the value on
-          // screen:
-          font = new Font("Helvetica", Font.PLAIN, radius / 2);
-          g.setFont(font);
-          g.setColor(colorText);
-          s = p.stringValue();
-          if (s.length() > 5) {
-            s = s.substring(0, 5);
-          }
-          k = 2 + (int) (radius / 1.4142136f);
-          g.drawString(s, x + k, y - k);
-        }
-      }
     }
   }
 }

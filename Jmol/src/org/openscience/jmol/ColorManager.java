@@ -105,6 +105,11 @@ public class ColorManager {
     return colorText;
   }
 
+  public Color colorLabel = Color.black;
+  public void setColorLabel(Color c) {
+    colorLabel = c;
+  }
+
   public Color colorDistance = Color.black;
   public void setColorDistance(Color c) {
     colorDistance = c;

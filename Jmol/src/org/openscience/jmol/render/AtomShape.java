@@ -159,6 +159,8 @@ public class AtomShape extends Shape {
     if (control.getShowAtoms() && isClipVisible(control.atomRenderer.clip)) {
       control.atomRenderer.render(this);
     }
+    if (strLabel != null)
+      control.labelRenderer.render(this);
   }
 
   public void renderBonds(Graphics g, DisplayControl control) {

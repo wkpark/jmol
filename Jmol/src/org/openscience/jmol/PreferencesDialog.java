@@ -357,6 +357,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aWFChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aInvisibleChoice"));
+    aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aNoneChoice"));
     aRender.setSelectedIndex(control.getStyleAtom());
     aRender.addItemListener(new ItemListener() {
@@ -525,9 +527,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.bWFChoice"));
     bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bNoneChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.bBoxChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.bNoneChoice"));
     bRender.setSelectedIndex(control.getStyleBond());
     bRender.addItemListener(new ItemListener() {
 

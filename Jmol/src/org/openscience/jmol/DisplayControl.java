@@ -26,6 +26,7 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
+import org.openscience.jmol.render.LabelRenderer;
 
 import java.awt.Image;
 import java.awt.Color;
@@ -60,6 +61,7 @@ final public class DisplayControl {
   public LabelManager labelManager;
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
+  public LabelRenderer labelRenderer;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -85,6 +87,7 @@ final public class DisplayControl {
 
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
+    labelRenderer = new LabelRenderer(this);
   }
 
   public Component getAwtComponent() {
@@ -104,8 +107,9 @@ final public class DisplayControl {
   public final static byte QUICKDRAW = 0;
   public final static byte SHADING =   1;
   public final static byte WIREFRAME = 2;
-  public final static byte NONE =      3;
-  public final static byte BOX =       4;
+  public final static byte INVISIBLE = 3; // for atoms
+  public final static byte BOX =       3; // for bonds
+  public final static byte NONE =      4;
 
   public final static byte ATOMTYPE =   0;
   public final static byte ATOMCHARGE = 1;
@@ -122,6 +126,7 @@ final public class DisplayControl {
   public void setGraphicsContext(Graphics g, Rectangle rectClip) {
     atomRenderer.setGraphicsContext(g, rectClip);
     bondRenderer.setGraphicsContext(g, rectClip);
+    labelRenderer.setGraphicsContext(g, rectClip);
     maybeEnableAntialiasing(g);
   }
 
@@ -441,6 +446,7 @@ final public class DisplayControl {
     colorManager.setColorText(c);
     refresh();
   }
+
   public Color getColorText() {
     return colorManager.colorText;
   }
@@ -1017,6 +1023,18 @@ final public class DisplayControl {
 
   public String getLabelAtom(Atom atom) {
     return labelManager.getLabelAtom(atom);
+  }
+
+  public Font getLabelFont(int diameter) {
+    return labelManager.getFont(diameter);
+  }
+
+  public void setIsLabelAtomColor(boolean isLabelAtomColor) {
+    labelManager.setIsLabelAtomColor(isLabelAtomColor);
+  }
+
+  public boolean getIsLabelAtomColor() {
+    return labelManager.isLabelAtomColor;
   }
 
 }

@@ -303,12 +303,14 @@ class Compiler {
   }
   */
 
+  final static boolean isSpaceOrTab(char ch) {
+    return ch == ' ' || ch == '\t';
+  }
+
   boolean lookingAtLeadingWhitespace() {
     log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
-    char ch;
-    while (ichT < cchScript &&
-           ((ch = script.charAt(ichT)) == ' ' || ch == '\t'))
+    while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
     cchToken = ichT - ichToken;
     log("leadingWhitespace cchScript=" + cchScript + " cchToken=" + cchToken);
@@ -321,6 +323,19 @@ class Compiler {
       return false;
     int ichT = ichToken + 1;
     char ch;
+    /****************************************************************
+     * check for leading #jx <space> or <tab>
+     * if you see it, then only strip those 4 characters
+     * if they put in #jx <newline> then they are not going to
+     * execute anything, and the regular code will take care of it
+     ****************************************************************/
+    if (cchScript > ichT + 3 &&
+        script.charAt(ichT) == 'j' &&
+        script.charAt(ichT + 1) == 'x' &&
+        isSpaceOrTab(script.charAt(ichT + 2))) {
+      cchToken = 4; // #jx[\s\t]
+      return true;
+    }
     while (ichT < cchScript &&
            (ch = script.charAt(ichT)) != ';' && ch != '\r' && ch != '\n')
       ++ichT;

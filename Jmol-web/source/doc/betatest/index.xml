@@ -70,38 +70,45 @@
       </section>
     </section>
     
-    <section title="Jmol10pre16">
+    <section title="Jmol10pre17">
       <p>
-	Jmol version 10 pre-release 16 was released on Fri 15 Oct 2004.
+	Jmol version 10 pre-release 17 was released on Mon 15 Nov 2004.
 	This release includes the following:
 	<ul>
 	  <li>
-	    support for 'show orientation and 'moveTo' commands ...
-	    very useful
+	    Implementation of 'set picking *'
 	  </li>
 	  <li>
-	    Bug fix on pre15 with moveTo
+	    reduced memory consumption
 	  </li>
 	  <li>
-	    Bug fix so that 'slab mode' now works again
+	    Rendering of large spheres is several times faster
 	  </li>
 	  <li>
-	    more things that I have forgotton
+	    Rendering of small spheres is 10-20% faster
+	  </li>
+	  <li>
+	    Initial support for hierarchical management of
+	    molecular models in
+	    computational chemistry files
+	  </li>
+	  <li>
+	    bug fixes
 	  </li>
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre16.zip">
+	<a href="Jmol10pre17.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre16.zip
+	    Jmol10pre17.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre14.zip">
+	<a href="Jmol10pre16.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre14.zip
+	    <i>Give me the old code</i> Jmol10pre16.zip
 	  </font>
 	</a>
       </p>

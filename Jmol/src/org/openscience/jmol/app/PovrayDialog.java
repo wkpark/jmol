@@ -47,6 +47,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import javax.swing.JComponent;
+import javax.swing.InputVerifier;
 import java.io.FileNotFoundException;
 import java.io.File;
 
@@ -145,6 +147,14 @@ public class PovrayDialog extends JDialog {
         updateCommandLine();
       }
     });
+    saveField.setInputVerifier(new InputVerifier() {
+        public boolean verify(JComponent component) {
+          JTextField fld = (JTextField)component;
+          basename = fld.getText();
+          updateCommandLine();
+          return true;
+        }
+      });
     saveBox.add(saveField);
     justSavingBox.add(saveBox);
 
@@ -923,32 +933,32 @@ public class PovrayDialog extends JDialog {
 
     commandLine =
       povrayPath +
-	  " +I\"" + savePath + basename + ".pov\"";
+      " +I" + doubleQuoteIfContainsSpace(savePath + basename + ".pov");
 
     // Output format options
+    String outputExtension = ".tga";
+    String outputFileType = " +FT";
     if ((outputFormatBox != null) && (outputFormatBox.isSelected())) {
       switch (outputFormatCombo.getSelectedIndex()) {
       case 0: // Compressed TARGA
-        commandLine +=
-          " +O\"" + savePath + basename + ".tga\"" + " +FC";
+        outputFileType = " +FC";
         break;
       case 1: // PNG
-        commandLine +=
-          " +O\"" + savePath + basename + ".png\"" + " +FN";
+        outputExtension = ".png";
+        outputFileType = " +FN";
         break;
       case 2: // PPM
-        commandLine +=
-          " +0\"" + savePath + basename + ".ppm\"" + " +FP";
+        outputExtension = ".ppm";
+        outputFileType = " +FP";
         break;
       default: // Uncompressed TARGA
-        commandLine +=
-          " +O\"" + savePath + basename + ".tga\"" + " +FT";
         break;
       }
-    } else {
-      commandLine +=
-        " +O\"" + savePath + basename + ".tga\"" + " +FT";
     }
+    commandLine +=
+      " +O" +
+      doubleQuoteIfContainsSpace(savePath + basename + outputExtension) +
+      outputFileType;
     
     // Output alpha options
     if ((outputAlphaBox != null) && (outputAlphaBox.isSelected())) {
@@ -1047,4 +1057,10 @@ public class PovrayDialog extends JDialog {
     Jmol.getHistoryFile().addProperties(props);
   }
 
+  String doubleQuoteIfContainsSpace(String str) {
+    for (int i = str.length(); --i >= 0; )
+      if (str.charAt(i) == ' ')
+        return "\"" + str + "\"";
+    return str;
+  }
 }

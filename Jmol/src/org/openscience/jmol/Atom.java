@@ -47,13 +47,6 @@ public class Atom extends org.openscience.cdk.Atom {
               double x, double y, double z, ProteinProp pprop) {
     super(atomType.getSymbol(), new Point3d(x, y, z));
     super.setID(atomType.getID());
-    /** try {
-        IsotopeFactory.getInstance().configure(this);
-    } catch (Exception e) {
-        // failed to configure atom
-        System.err.println("Error configuration of atom: " +
-                           atomType.getSymbol());
-    } */
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
     this.pprop = pprop;

@@ -44,6 +44,8 @@ public class ChemFrame extends AtomContainer {
   private Vector properties = new Vector();
   private int numberOfAtoms = 0;
 
+  private org.openscience.cdk.tools.AtomTypeFactory atf = null;
+  
   /**
    * Returns the list of distance measurements.
    */
@@ -106,6 +108,9 @@ public class ChemFrame extends AtomContainer {
 
   public ChemFrame(boolean bondsEnabled) {
     this(100, bondsEnabled);
+    try {
+        this.atf = new org.openscience.cdk.tools.AtomTypeFactory("org/openscience/cdk/config/jmol_atomtypes.txt");
+    } catch (Exception exc) {}
   }
 
   /**
@@ -238,6 +243,7 @@ public class ChemFrame extends AtomContainer {
     }
 
     atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
+    if (atf != null) atf.configure(atoms[i]);
 
     if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {

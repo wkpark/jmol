@@ -5,30 +5,49 @@
 
     <section title="Contributors">
       Improvements to Jmol are thanks to many talented developers.
-      <contributors>
-      <contributor id="BS"><name>Bradley A. Smith</name><email>bradley@baysmith.com</email></contributor>
-      <contributor id="EW"><name>E.L. Willighagen</name><email>egonw@sci.kun.nl</email></contributor>
-      <contributor id="DG"><name>Dan Gezelter</name><email>gezelter@openscience.org</email></contributor>
-      <contributor id="CS"><name>Christoph Steinbeck</name><email>steinbeck@ice.mpg.de</email></contributor>
-      <contributor id="TG"><name>Tom Grey</name><email>t.grey@ic.ac.uk</email></contributor>
-      <contributor id="CF"><name>Charles Fulton</name><email>fultoncr@ucarb.com</email></contributor>
-      <contributor id="MB"><name>Mike Beachy</name><email>beachy@alum.mit.edu</email></contributor>
-      <contributor id="HG"><name>Hugo Garcia</name><email>elhugo@objectchemistry.org</email></contributor>
-      <contributor id="MM"><name>Matthew Meinek</name><email>mmeineke@nd.edu</email></contributor>
-      <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
-      <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
-      </contributors>
+<contributors>
+<contributor id="BS"><name>Bradley A. Smith</name><email>bradley@baysmith.com</email></contributor>
+<contributor id="EW"><name>E.L. Willighagen</name><email>egonw@sci.kun.nl</email></contributor>
+<contributor id="DG"><name>Dan Gezelter</name><email>gezelter@openscience.org</email></contributor>
+<contributor id="CS"><name>Christoph Steinbeck</name><email>steinbeck@ice.mpg.de</email></contributor>
+<contributor id="TG"><name>Tom Grey</name><email>t.grey@ic.ac.uk</email></contributor>
+<contributor id="CF"><name>Charles Fulton</name><email>fultoncr@ucarb.com</email></contributor>
+<contributor id="MB"><name>Mike Beachy</name><email>beachy@alum.mit.edu</email></contributor>
+<contributor id="HG"><name>Hugo Garcia</name><email>elhugo@objectchemistry.org</email></contributor>
+<contributor id="MM"><name>Matthew Meinek</name><email>mmeineke@nd.edu</email></contributor>
+<contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
+<contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
+<contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
+</contributors>
     </section>
 
     <section title="Changes">
       To recognize specific contributions, the developer's initials are noted
       next to the changes.
       
-      <changes version="jmol-4">
-        <change contributor="BS">
-          Reading of MOPAC 97 files. Formerly, only MOPAC 7 files worked.
-        </change>
-      </changes>
+<changes version="jmol-4">
+  <change contributor="BS">
+    Reading of MOPAC 97 and 2002 files. Formerly, only MOPAC 7 files worked.
+  </change>
+  <change contributor="EW">
+    Jmol can now also read files in non-CML with the command "jmol &lt;filename&gt;".
+    (feature #555462).
+  </change>
+  <change contributor="EW">
+    The PDB reader now also parses CONECT fields and implements Rasmol's perception of
+    bond orders.
+  </change>
+  <change contributor="EW">
+    Atoms can now also be colored by their partial atomic charge.
+    (feature #552476)
+  </change>
+  <change contributor="FD">
+    Addition of a ABINIT reader.
+  </change>
+  <change contributor="BS">
+    PDF export. (feature #533212)
+  </change>
+</changes>
       
       <changes version="jmol-3">
         <change contributor="CR">

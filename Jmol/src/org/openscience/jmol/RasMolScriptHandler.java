@@ -111,8 +111,8 @@ class RasMolScriptHandler {
 	    } else if (word.equals("echo")) {
                 while (st.hasMoreElements()) {
                     print((String)st.nextElement() + " ");
-		    println();
 		}
+                println();
 	    } else if (word.equals("set")) {
                 if (st.hasMoreElements()) {
 		    String param = (String)st.nextElement();
@@ -272,12 +272,11 @@ class RasMolScriptHandler {
 	    Enumeration selectedAtoms = program.display.md.getSelectedAtoms().elements();
 	    while (selectedAtoms.hasMoreElements()) {
                 int atom = ((Integer)selectedAtoms.nextElement()).intValue();
-		program.display.md.atoms[atom-1].getBaseAtomType().setColor(this.getColor(value));
+		program.display.md.atoms[atom-1].setColor(this.getColor(value));
 	    }
 
 	    // reset bond colors
 	    for (int i=0; i<program.display.md.nbonds; i++) {
-                println("bond: " + i);
 		program.display.md.bonds[i].resetColors();
 	    }
         } else {

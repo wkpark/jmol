@@ -75,6 +75,12 @@ public class AtomType {
     private BaseAtomType baseType;
     private static JPanel jpanel;
 
+    /** color is specified also at atom itself.
+     *  if color == null then it uses the color of
+     *  the base type
+     */
+    private Color color = null;
+
     /**
      * Pool of atom images for shaded renderings.
      */
@@ -198,6 +204,10 @@ public class AtomType {
     public void paint(Graphics gc, DisplaySettings settings, 
                       int x, int y, int z, int n, 
                       Vector props, boolean picked) {
+        // check wether this atom has an atom specified color
+        if (color == null) {
+	    color = baseType.getColor();
+	}
         int diameter = (int) (2.0f*settings.getCircleRadius(z, baseType.getVdwRadius()));
         int radius = diameter >> 1;
 
@@ -209,22 +219,22 @@ public class AtomType {
         }
         switch( settings.getAtomDrawMode() ) {
         case DisplaySettings.WIREFRAME:
-            gc.setColor(baseType.getColor());
+            gc.setColor(color);
             gc.drawOval(x - radius, y - radius, diameter, diameter);
             break;
         case DisplaySettings.SHADING:
             Image shadedImage;
-            if (ballImages.containsKey(baseType.getColor())) {
-                shadedImage = (Image)ballImages.get(baseType.getColor());
+            if (ballImages.containsKey(color)) {
+                shadedImage = (Image)ballImages.get(color);
             } else {
-                shadedImage = SphereSetup(settings, baseType.getColor());
-                ballImages.put(baseType.getColor(), shadedImage);
+                shadedImage = SphereSetup(settings, color);
+                ballImages.put(color, shadedImage);
             }
             gc.drawImage(shadedImage, x - radius, y - radius, diameter,
                          diameter, jpanel);
             break;
         default:
-            gc.setColor(baseType.getColor());
+            gc.setColor(color);
             gc.fillOval(x - radius, y - radius, diameter, diameter);
             gc.setColor(settings.getOutlineColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
@@ -295,7 +305,26 @@ public class AtomType {
         return v2;
     }
 
-	public BaseAtomType getBaseAtomType() {
-		return baseType;
+    public BaseAtomType getBaseAtomType() {
+	return baseType;
+    }
+
+    /** 
+     * return atom specific color. If not given, return
+     * default color
+     **/
+    public Color getColor() {
+        if (color != null) {
+	    return this.color;
+	} else {
+	    return baseType.getColor();
 	}
+    }
+
+    /** 
+     * set atom specific color
+     **/
+    public void setColor(Color c) {
+	this.color = c;
+    }
 }

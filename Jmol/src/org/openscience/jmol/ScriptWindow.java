@@ -33,7 +33,7 @@ public class ScriptWindow extends JDialog implements java.awt.event.WindowListen
     private boolean autorefresh = false;
 
     public ScriptWindow(Jmol boss){
-        super(boss.frame,"Rasmol Scripts",true);
+        super(boss.frame,"Rasmol Scripts",false);
         window = boss;
         getContentPane().setLayout(new java.awt.BorderLayout());
         output = new JTextArea(20,30);

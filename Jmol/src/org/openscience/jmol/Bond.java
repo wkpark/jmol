@@ -67,8 +67,8 @@ public class Bond {
      * is changed.
     **/
     public void resetColors() {
-        col1 = this.at1.getBaseAtomType().getColor();
-        col2 = this.at2.getBaseAtomType().getColor();           
+        col1 = this.at1.getColor();
+        col2 = this.at2.getColor();           
     }
 
     public void paint(Graphics gc, DisplaySettings settings, int x1, int y1, int z1, 

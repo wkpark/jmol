@@ -698,7 +698,7 @@ public class Frame {
       if (hasPdbRecords) {
         PdbAtom pdbatom = atom.getPdbAtom();
         if (pdbatom != null) {
-          char chainThis = pdbatom.getChain();
+          char chainThis = pdbatom.getChainID();
           if (chainThis == chainLast) {
             if (pdbatom.getName().equals("CA")) {
               if (atomLastCA != null) {

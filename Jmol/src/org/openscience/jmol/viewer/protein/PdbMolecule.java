@@ -104,17 +104,22 @@ public class PdbMolecule {
     }
   }
 
-  int alphaCount = 0;
-  Atom[] alphas;
+  char chainCurrent;
+  int alphaCountCurrent;
+  Atom[] alphasCurrent;
 
-  public Atom[] getAlphaCarbons() {
-    if (alphas == null)
-      buildAlphaCarbonList();
-    return alphas;
+  int chainCount = 0;
+  char[] chainIDs;
+  Atom[][] chains;
+
+  public Atom[][] getAlphaChains() {
+    if (chains == null)
+      buildAlphaChains();
+    return chains;
   }
 
-  void buildAlphaCarbonList() {
-    initializeAlphas();
+  void buildAlphaChains() {
+    initializeAlphaChains();
     int atomCount = frame.getAtomCount();
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = frame.getAtomAt(i);
@@ -123,27 +128,55 @@ public class PdbMolecule {
         continue;
       addAlpha(atom);
     }
-    finalizeAlphas();
+    finalizeAlphaChains();
   }
 
-  void initializeAlphas() {
-    alphas = new Atom[64];
+  void initializeAlphaChains() {
+    chainCount = 0;
+    chainIDs = new char[8];
+    chains = new Atom[8][];
+
+    alphaCountCurrent = 0;
+    alphasCurrent = new Atom[64];
+    chainCurrent = '\u0000';
   }
 
   void addAlpha(Atom atom) {
-    if (alphaCount == alphas.length) {
-      Atom[] t = new Atom[alphaCount * 2];
-      System.arraycopy(alphas, 0, t, 0, alphaCount);
-      alphas = t;
+    char chain = atom.pdbAtom.getChainID();
+    if (chain != chainCurrent) {
+      if (alphaCountCurrent > 0)
+        addCurrentChain();
+      alphaCountCurrent = 0;
+      chainCurrent = chain;
     }
-    alphas[alphaCount++] = atom;
+    if (alphaCountCurrent == alphasCurrent.length) {
+      Atom[] t = new Atom[alphaCountCurrent * 2];
+      System.arraycopy(alphasCurrent, 0, t, 0, alphaCountCurrent);
+      alphasCurrent = t;
+    }
+    alphasCurrent[alphaCountCurrent++] = atom;
   }
 
-  void finalizeAlphas() {
-    if (alphaCount != alphas.length) {
-      Atom[] t = new Atom[alphaCount];
-      System.arraycopy(alphas, 0, t, 0, alphaCount);
-      alphas = t;
+  void addCurrentChain() {
+    if (chainCount == chains.length) {
+      Atom[][] t = new Atom[chainCount * 2][];
+      System.arraycopy(chains, 0, t, 0, chainCount);
+      chains = t;
     }
+    Atom[] newChain = new Atom[alphaCountCurrent];
+    System.arraycopy(alphasCurrent, 0, newChain, 0, alphaCountCurrent);
+    chains[chainCount] = newChain;
+    chainIDs[chainCount++] = chainCurrent;
+  }
+
+  void finalizeAlphaChains() {
+    if (alphaCountCurrent != 0)
+      addCurrentChain();
+    if (chainCount != chains.length) {
+      Atom[][] t = new Atom[chainCount][];
+      System.arraycopy(chains, 0, t, 0, chainCount);
+      chains = t;
+    }
+    alphasCurrent = null;
   }
 }

@@ -132,7 +132,7 @@ public class LabelManager {
       case 'c': // these two are the same
       case 's':
         if (pdbatom != null)
-          strLabel += pdbatom.getChain();
+          strLabel += pdbatom.getChainID();
         break;
       case 'm':
         strLabel += "<X>";

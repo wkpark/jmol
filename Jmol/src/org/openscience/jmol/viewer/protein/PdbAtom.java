@@ -148,7 +148,7 @@ public class PdbAtom {
     return (int)(temp * 100);
   }
 
-  public char getChain() {
+  public char getChainID() {
     return recordPdb.charAt(21);
   }
 

@@ -735,7 +735,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (chain == pdbatom.getChain())
+      if (chain == pdbatom.getChainID())
         bsChain.set(i);
     }
     return bsChain;

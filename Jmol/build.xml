@@ -10,7 +10,7 @@
 	<property name="doc.dir" value="doc" />
 	<property name="javadoc.dir" value="javadoc" />
 	<property name="manifest" value="${source.dir}/manifest"/>
-	<property name="docbook.dir" value="${user.dir}/../docbook" />
+	<property name="docbook.dir" value="${user.dir}/../docbook-xsl" />
 
 	<path id="project.class.path">
 		<fileset dir="${lib.dir}">
@@ -27,8 +27,12 @@
 	</target>
 
 	<target name="setup" >
-		<uptodate property="jmolGuilde.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
+		<uptodate property="jmolGuide.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
 			<srcfiles dir="${doc.dir}/source" includes="JMolGuide.docbook.xml" />
+		</uptodate>
+		<uptodate property="jmolDevelopersGuide.uptodate"
+				targetfile="${doc.dir}/JmolDevelopersGuide.html">
+			<srcfiles dir="${doc.dir}/source" includes="JmolDevelopersGuide.docbook.xml" />
 		</uptodate>
 		<available file="${docbook.dir}" property="docbook.dir.present"/>
 		<available classname="com.icl.saxon.StyleSheet"
@@ -50,7 +54,7 @@
 		<antcall target="initFailure" />
 	</target>
 	
-	<target name="jmolGuide" depends="init" unless="jmolGuilde.uptodate" >
+	<target name="jmolGuide" depends="init" unless="jmolGuide.uptodate" >
 		<echo message="Generating user's guide" />
 		<mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
 		<java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide"
@@ -58,6 +62,20 @@
 				classpath="${lib.dir}/saxon.jar" >
 			<arg value="${user.dir}/${doc.dir}/source/JMolGuide.docbook.xml" />
 			<arg value="${docbook.dir}/html/chunk.xsl" />
+		</java>
+	</target>
+
+	<target name="doc" depends="jmolDevelopersGuide,javadoc" />
+	
+	<target name="jmolDevelopersGuide" depends="init" unless="jmolDevelopersGuide.uptodate" >
+		<echo message="Generating developer's guide" />
+		<java fork="true" dir="${doc.dir}"
+				classname="com.icl.saxon.StyleSheet"
+				classpath="${lib.dir}/saxon.jar" >
+			<arg value="-o" />
+			<arg value="${user.dir}/${doc.dir}/JmolDevelopersGuide.html" />
+			<arg value="${user.dir}/${doc.dir}/source/JmolDevelopersGuide.docbook.xml" />
+			<arg value="${docbook.dir}/html/docbook.xsl" />
 		</java>
 	</target>
 	

@@ -3071,7 +3071,6 @@ class Eval implements Runnable {
   Matrix3f matrixInverse;
   Matrix3f matrixStep;
   Matrix3f matrixEnd;
-  Matrix3f matrixIdentity;
 
   void moveto() throws ScriptException {
     if (statementLength < 6 || statementLength > 9)
@@ -3093,7 +3092,6 @@ class Eval implements Runnable {
       matrixEnd = new Matrix3f();
       matrixStep = new Matrix3f();
       matrixInverse = new Matrix3f();
-      matrixIdentity = new Matrix3f();
     }
     if (degrees < 0.01f && degrees > -0.01f) {
       matrixEnd.setIdentity();
@@ -3114,12 +3112,6 @@ class Eval implements Runnable {
     }
     viewer.getRotation(matrixStart);
     matrixInverse.invert(matrixStart);
-
-    /*
-    matrixIdentity.mul(matrixStart, matrixInverse);
-    System.out.println("\n--------------\nmatrixIdentity=\n" + matrixIdentity +
-                       "\n--------------\n");
-    */
 
     matrixStep.mul(matrixEnd, matrixInverse);
     aaTotal.set(matrixStep);
@@ -3152,7 +3144,10 @@ class Eval implements Runnable {
 
         aaStep.set(aaTotal);
         aaStep.angle /= (totalSteps - i + 1);
-        matrixStep.set(aaStep);
+        if (aaStep.angle == 0)
+          matrixStep.setIdentity();
+        else
+          matrixStep.set(aaStep);
         matrixStep.mul(matrixStart);
         viewer.zoomToPercent(zoomStart + (zoomDelta * i / totalSteps));
         viewer.translateToXPercent(xTransStart + (xTransDelta*i/totalSteps));

@@ -12,6 +12,7 @@
     <section>
 
     <form name="fahForm">
+      <script src="./fah.js"></script>
       <table border="1">
       <tr>
         <table border="0"><tr>
@@ -20,66 +21,23 @@
           </td>
           <td valign="top">
             <table border="0" cellpadding="0" cellspacing="0">
-              <tr>
-                <td align="center" colspan="2">
-                  <a href="http://folding.stanford.edu">
-                    <img src="FAHlogoButton.jpg" alt="fah-logo" border="0"/>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td><label>Project:</label></td>
-                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>N&#x00E9;v:</label></td>
-                <td><input type='text' name='infoName' id='infoName' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Pont&#x00E9;rt&#x00E9;k:</label></td>
-                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Atomok sz&#x00E1;ma:</label></td>
-                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>El&#x00F5;nyben r&#x00E9;szes&#x00ED;tett hat&#x00E1;rid&#x00F5;:</label></td>
-                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>V&#x00E9;gs&#x00F5; hat&#x00E1;rid&#x00F5;:</label></td>
-                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Framek:</label></td>
-                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>K&#x00F3;dol&#x00E1;s:</label></td>
-                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <br/>
-                  <input type='button' value='A project le&#x00ED;r&#x00E1;sa'
-                    onclick='showProjectDescription()'/>
-                  <input type='button' value='Old&#x00F3;szer elrejt&#x00E9;se'
-                    onclick='hideSolvent()'/>
-                  <input type='button' value='XML'
-                    onclick='showXMLFile()'/>
-                  <small>
-                    <fah_count_files/> f&#x00E1;jl / <fah_count_projects/> project.
-                  </small>
-                </td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <small><i>
-                    Ha vannak <b>current.xyz</b> f&#x00E1;jljaid a hi&#x00E1;nyz&#x00F3; projectekhez, k&#x00E9;rlek k&#x00FC;ldd el &#x00F5;ket a nicove@users.sourceforge.net c&#x00ED;mre
-                  </i></small>
-                </td>
-              </tr>
+              <script type="text/javascript">
+                addRowStanfordLogo();
+                addRowProjectNumber("Project");
+                addRowProjectName("N&#x00E9;v");
+                addRowProjectCredit("Pont&#x00E9;rt&#x00E9;k");
+                addRowProjectAtoms("Atomok sz&#x00E1;ma");
+                addRowProjectPreferred("El&#x00F5;nyben r&#x00E9;szes&#x00ED;tett hat&#x00E1;rid&#x00F5;");
+                addRowProjectDeadline("V&#x00E9;gs&#x00F5; hat&#x00E1;rid&#x00F5;");
+                addRowProjectFrames("Framek");
+                addRowProjectCode("K&#x00F3;dol&#x00E1;s");
+                addRowButtons(
+                  "A project le&#x00ED;r&#x00E1;sa",
+                  "Old&#x00F3;szer elrejt&#x00E9;se",
+                  "f&#x00E1;jl", "project");
+                addRowCurrentXyz(
+                  "Ha vannak <b>current.xyz</b> f&#x00E1;jljaid a hi&#x00E1;nyz&#x00F3; projectekhez, k&#x00E9;rlek k&#x00FC;ldd el &#x00F5;ket a nicove@users.sourceforge.net c&#x00ED;mre");
+              </script>
             </table>
           </td>
         </tr></table>

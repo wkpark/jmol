@@ -8,6 +8,7 @@
     <section>
 
     <form name="fahForm">
+      <script src="./fah.js"></script>
       <table border="1">
       <tr>
         <table border="0"><tr>
@@ -59,7 +60,9 @@
                 <td align="left" colspan="2">
                   <br/>
                   <input type='button' value='Project description'
-                    onclick='showProjectDescription()'/>
+                    onclick='showProjectDescription()'
+                    onMouseOver='window.status="http://vspx27.stanford.edu/cgi-bin/allprojects"'
+                    onMouseout='window.status=" "'/>
                   <input type='button' value='Hide solvent'
                     onclick='hideSolvent()'/>
                   <input type='button' value='XML'

@@ -2597,5 +2597,8 @@
   <fah_proj number="1911" name="p1911_ALA-depeptide_umbrel" file="y"
     server="171.64.122.113" atoms="118" preferred="29" deadline="43"
     credit="450" frames="100" code="Q" contact="NA"/>
+  <fah_proj number="1912" name="p1912_ALA-depeptide_umb2"
+    server="171.64.122.113" atoms="118" preferred="29" deadline="43"
+    credit="450" frames="100" code="Q" contact="NA"/>
     
 </fah_projects>

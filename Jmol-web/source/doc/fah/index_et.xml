@@ -12,6 +12,7 @@
     <section>
 
     <form name="fahForm">
+      <script src="./fah.js"></script>
       <table border="1">
       <tr>
         <table border="0"><tr>
@@ -20,66 +21,23 @@
           </td>
           <td valign="top">
             <table border="0" cellpadding="0" cellspacing="0">
-              <tr>
-                <td align="center" colspan="2">
-                  <a href="http://folding.stanford.edu">
-                    <img src="FAHlogoButton.jpg" alt="fah-logo" border="0"/>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td><label>Projekt:</label></td>
-                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Nimi:</label></td>
-                <td><input type='text' name='infoName' id='infoName' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Punkte:</label></td>
-                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Aatomite arv:</label></td>
-                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Eelistatud:</label></td>
-                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>L&#x00F5;ppt&#x00E4;htaeg:</label></td>
-                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Freime:</label></td>
-                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Kood:</label></td>
-                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <br/>
-                  <input type='button' value='Projekti kirjeldus'
-                    onclick='showProjectDescription()'/>
-                  <input type='button' value='Peida lahusti'
-                    onclick='hideSolvent()'/>
-                  <input type='button' value='XML'
-                    onclick='showXMLFile()'/>
-                  <small>
-                    <fah_count_files/> faili / <fah_count_projects/> projekti.
-                  </small>
-                </td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <small><i>
-                    Kui sul on puuduvate projektide <b>current.xyz</b> faile, siis, palun, saada need nicove@users.sourceforge.net
-                  </i></small>
-                </td>
-              </tr>
+              <script type="text/javascript">
+                addRowStanfordLogo();
+                addRowProjectNumber("Projekt");
+                addRowProjectName("Nimi");
+                addRowProjectCredit("Punkte");
+                addRowProjectAtoms("Aatomite arv");
+                addRowProjectPreferred("Eelistatud");
+                addRowProjectDeadline("L&#x00F5;ppt&#x00E4;htaeg");
+                addRowProjectFrames("Freime");
+                addRowProjectCode("Kood");
+                addRowButtons(
+                  "Projekti kirjeldus",
+                  "Peida lahusti",
+                  "faili", "projekti");
+                addRowCurrentXyz(
+                  "Kui sul on puuduvate projektide <b>current.xyz</b> faile, siis, palun, saada need nicove@users.sourceforge.net");
+              </script>
             </table>
           </td>
         </tr></table>

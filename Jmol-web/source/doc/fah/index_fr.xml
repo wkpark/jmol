@@ -12,6 +12,7 @@
     <section>
 
     <form name="fahForm">
+      <script src="./fah.js"></script>
       <table border="1">
       <tr>
         <table border="0"><tr>
@@ -20,66 +21,23 @@
           </td>
           <td valign="top">
             <table border="0" cellpadding="0" cellspacing="0">
-              <tr>
-                <td align="center" colspan="2">
-                  <a href="http://folding.stanford.edu">
-                    <img src="FAHlogoButton.jpg" alt="fah-logo" border="0"/>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td><label>Projet:</label></td>
-                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Nom du Projet:</label></td>
-                <td><input type='text' name='infoName' id='infoName' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Cr&#x00E9;dit:</label></td>
-                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Nombre d'atomes:</label></td>
-                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Pr&#x00E9;f&#x00E9;r&#x00E9;:</label></td>
-                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Dur&#x00E9;e limite:</label></td>
-                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Frames:</label></td>
-                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td><label>Code:</label></td>
-                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='readonly' /></td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <br/>
-                  <input type='button' value='Description du projet'
-                    onclick='showProjectDescription()'/>
-                  <input type='button' value='Masquer solvant'
-                    onclick='hideSolvent()'/>
-                  <input type='button' value='XML'
-                    onclick='showXMLFile()'/>
-                  <small>
-                    <fah_count_files/> fichiers / <fah_count_projects/> projets.
-                  </small>
-                </td>
-              </tr>
-              <tr>
-                <td align="left" colspan="2">
-                  <small><i>
-                    Si vous avez des fichiers <b>current.xyz</b> pour les projets manquants, merci de les envoyer &#x00E0; nicove@users.sourceforge.net
-                  </i></small>
-                </td>
-              </tr>
+              <script type="text/javascript">
+                addRowStanfordLogo();
+                addRowProjectNumber("Projet");
+                addRowProjectName("Nom du Projet");
+                addRowProjectCredit("Cr&#x00E9;dit");
+                addRowProjectAtoms("Nombre d'atomes");
+                addRowProjectPreferred("Pr&#x00E9;f&#x00E9;r&#x00E9;");
+                addRowProjectDeadline("Dur&#x00E9;e limite");
+                addRowProjectFrames("Frames");
+                addRowProjectCode("Code");
+                addRowButtons(
+                  "Description du projet",
+                  "Masquer solvant",
+                  "fichiers", "projets");
+                addRowCurrentXyz(
+                  "Si vous avez des fichiers <b>current.xyz</b> pour les projets manquants, merci de les envoyer &#x00E0; nicove@users.sourceforge.net");
+              </script>
             </table>
           </td>
         </tr></table>

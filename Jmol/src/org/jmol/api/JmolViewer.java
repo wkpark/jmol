@@ -85,6 +85,8 @@ public interface JmolViewer extends JmolSimpleViewer {
   public void openClientFile(String fullPathName, String fileName,
                              Object clientFile);
 
+  public void showUrl(String urlString);
+
   public void deleteMeasurement(int i);
   public void clearMeasurements();
   public int getMeasurementCount();

@@ -46,4 +46,6 @@ public interface JmolStatusListener {
 
   public void notifyAtomPicked(int atomIndex, String strInfo);
 
+  public void showUrl(String url);
+
 }

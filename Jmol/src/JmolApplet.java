@@ -33,6 +33,8 @@ import netscape.javascript.JSObject;
 
 import java.applet.*;
 import java.awt.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /*
   these are *required*
@@ -363,6 +365,17 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     if (pickCallback != null && jsoWindow != null)
       jsoWindow.call(pickCallback,
                      new Object[] {htmlName, strInfo, new Integer(atomIndex)});
+  }
+
+  public void showUrl(String urlString) {
+    if (urlString != null && urlString.length() > 0) {
+      try {
+        URL url = new URL(urlString);
+        getAppletContext().showDocument(url, "_blank");
+      } catch (MalformedURLException mue) {
+        showStatus("Malformed URL:" + urlString);
+      }
+    }
   }
 
   public void update(Graphics g) {

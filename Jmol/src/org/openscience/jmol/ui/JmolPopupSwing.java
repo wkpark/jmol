@@ -87,6 +87,7 @@ public class JmolPopupSwing extends JmolPopup {
 
   void addMenuItem(Object menu, String entry) {
     JMenuItem jmi = new JMenuItem(entry);
+    jmi.setEnabled(false);
     if (menu instanceof JPopupMenu)
       ((JPopupMenu)menu).add(jmi);
     else

@@ -97,6 +97,7 @@ abstract public class JmolPopup {
   
   private void addVersionAndDate(Object popupMenu) {
     if (aboutMenu != null) {
+      addMenuSeparator(aboutMenu);
       addMenuItem(aboutMenu, "Jmol " + JmolConstants.version);
       addMenuItem(aboutMenu, JmolConstants.date);
     }
@@ -148,7 +149,7 @@ abstract public class JmolPopup {
       String script = e.getActionCommand();
       if (script != null) {
         if (script.startsWith("http://")) {
-          //
+          viewer.showUrl(script);
         } else if (script.length() != 0) {
           viewer.evalStringQuiet(script);
         }

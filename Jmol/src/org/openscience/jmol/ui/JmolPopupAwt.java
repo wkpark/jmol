@@ -129,7 +129,9 @@ public class JmolPopupAwt extends JmolPopup {
   }
 
   void addMenuItem(Object menu, String entry) {
-    ((Menu)menu).add(new MenuItem(entry));
+    MenuItem mi = new MenuItem(entry);
+    mi.setEnabled(false);
+    ((Menu)menu).add(mi);
   }
 
   void addMenuItem(Object menu, String entry, String script) {

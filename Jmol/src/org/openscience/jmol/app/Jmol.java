@@ -1332,6 +1332,9 @@ public class Jmol extends JPanel {
         scriptWindow.scriptStatus("\n");
       }
     }
+
+    public void showUrl(String url) {
+    }
   }
 
   class ExecuteScriptAction extends AbstractAction {

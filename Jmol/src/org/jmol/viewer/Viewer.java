@@ -1862,6 +1862,11 @@ final public class Viewer implements JmolViewer {
                                           modelManager.getAtomInfo(atomIndex));
   }
 
+  public void showUrl(String urlString) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.showUrl(urlString);
+  }
+
   void setPickingMode(int pickingMode) {
     pickingManager.setPickingMode(pickingMode);
   }

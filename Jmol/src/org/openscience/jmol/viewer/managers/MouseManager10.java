@@ -45,27 +45,34 @@ public class MouseManager10 extends MouseManager {
     return ((modifiers & MIDDLE_RIGHT) == 0)  ? (modifiers | LEFT) : modifiers;
   }
 
+  int xWhenPressed, yWhenPressed, modifiersWhenPressed;
+
   public boolean handleEvent(Event e) {
     int x = e.x, y = e.y, modifiers = e.modifiers, clickCount = e.clickCount;
     modifiers = applyLeftMouse(modifiers);
     switch (e.id) {
     case Event.MOUSE_DOWN:
-      mousePressed(x, y, modifiers, clickCount, false);
+      xWhenPressed = x; yWhenPressed = y; modifiersWhenPressed = modifiers;
+      mousePressed(x, y, modifiers, false);
       break;
     case Event.MOUSE_DRAG:
-      mouseDragged(x, y, modifiers, clickCount);
+      mouseDragged(x, y, modifiers);
       break;
     case Event.MOUSE_ENTER:
-      mouseEntered(x, y, modifiers, clickCount);
+      mouseEntered(x, y);
       break;
     case Event.MOUSE_EXIT:
-      mouseExited(x, y, modifiers, clickCount);
+      mouseExited(x, y);
       break;
     case Event.MOUSE_MOVE:
-      mouseMoved(x, y, modifiers, clickCount);
+      mouseMoved(x, y, modifiers);
       break;
     case Event.MOUSE_UP:
-      mouseReleased(x, y, modifiers, clickCount);
+      mouseReleased(x, y, modifiers);
+      // simulate a mouseClicked event for us
+      if (x == xWhenPressed && y == yWhenPressed &&
+          modifiers == modifiersWhenPressed)
+        mouseClicked(x, y, modifiers, 1, e.when);
       break;
     default:
       return false;

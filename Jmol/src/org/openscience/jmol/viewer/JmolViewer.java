@@ -1581,7 +1581,7 @@ final public class JmolViewer {
   }
 
   public void notifyPicked(int atomIndex) {
-    if (jmolStatusListener != null)
+    if (atomIndex != -1 && jmolStatusListener != null)
       jmolStatusListener.notifyAtomPicked(atomIndex,
                                           modelManager.getAtomInfo(atomIndex));
   }

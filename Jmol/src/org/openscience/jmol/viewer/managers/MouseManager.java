@@ -37,8 +37,7 @@ public abstract class MouseManager {
   Component component;
   JmolViewer viewer;
 
-  int xWhenPressed, yWhenPressed;
-  int xPrevious, yPrevious;
+  int previousDragX, previousDragY;
   public int xCurrent, yCurrent;
 
   int modifiersWhenPressed;
@@ -51,7 +50,7 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
-  private static final boolean logMouseEvents = false;
+  private static final boolean logMouseEvents = true;
 
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
@@ -96,28 +95,8 @@ public abstract class MouseManager {
     }
   }
 
-  void mousePressed(int x, int y, int modifiers, int clickCount,
-                    boolean isPopupTrigger) {
-    xWhenPressed = xPrevious = xCurrent = x;
-    yWhenPressed = yPrevious = yCurrent = y;
-    if (logMouseEvents)
-      System.out.println("mousePressed("+x+","+y+","+modifiers+
-                         ",clickCount="+clickCount+
-                         "isPopupTrigger=" + isPopupTrigger+")");
-
-    modifiersWhenPressed = modifiers;
-    wasDragged = false;
-
-    switch (modifiers & BUTTON_MODIFIER_MASK) {
-    case RIGHT:
-      viewer.popupMenu(x, y);
-      return;
-    case SHIFT_MIDDLE:
-      viewer.homePosition();
-      return;
-    }
-  }
-
+  final static long MAX_DOUBLE_CLICK_MILLIS = 700;
+  
   final static int LEFT = 16;
   final static int MIDDLE = Event.ALT_MASK;  // 8
   final static int ALT = Event.ALT_MASK;     // 8
@@ -137,71 +116,138 @@ public abstract class MouseManager {
   final static int BUTTON_MODIFIER_MASK =
     CTRL | ALT | SHIFT | LEFT | MIDDLE | RIGHT;
 
-  void mouseClicked(int x, int y, int modifiers, int clickCount) {
-    xCurrent = x; yCurrent = y;
+  void mousePressed(int x, int y, int modifiers, boolean isPopupTrigger) {
+    previousDragX = xCurrent = x;
+    previousDragY = yCurrent = y;
+    if (logMouseEvents)
+      System.out.println("mousePressed("+x+","+y+","+modifiers+
+                         " isPopupTrigger=" + isPopupTrigger+")");
 
-    // this event is not reliable on older platforms
+    modifiersWhenPressed = modifiers;
+    wasDragged = false;
+
+    switch (modifiers & BUTTON_MODIFIER_MASK) {
+      /****************************************************************
+       * mth 2004 03 17
+       * this isPopupTrigger stuff just doesn't work reliably for me
+       * and I don't have a Mac to test out CTRL-CLICK behavior
+       * Therefore ... we are going to implement both gestures
+       * to bring up the popup menu
+       * The fact that we are using CTRL_LEFT may 
+       * interfere with other platforms if/when we
+       * need to support multiple selections, but we will
+       * cross that bridge when we come to it
+       ****************************************************************/
+    case CTRL_LEFT: // on MacOSX this brings up popup
+    case RIGHT: // with multi-button mice, this will too
+      viewer.popupMenu(x, y);
+      return;
+    }
+  }
+
+  int previousClickX, previousClickY;
+  int previousClickModifiers, previousClickCount;
+  long previousClickTime;
+
+  void mouseClicked(int x, int y, int modifiers, int clickCount,
+                    long clickTime) {
+    // clickCount is not reliable on some platforms
+    // so we will just deal with it ourselves
+    if (previousClickX == x && previousClickY == y &&
+        previousClickModifiers == modifiers && clickCount == 1 &&
+        (clickTime - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
+      clickCount = previousClickCount + 1;
+    }
+    xCurrent = previousClickX = x; yCurrent = previousClickY = y;
+    previousClickModifiers = modifiers;
+    previousClickCount = clickCount;
+    previousClickTime = clickTime;
+
     if (logMouseEvents)
       System.out.println("mouseClicked("+x+","+y+","+modifiers+
                          ",clickCount="+clickCount+
+                         ",time=" + (clickTime - previousClickTime) +
                          ")");
     if (! viewer.haveFrame())
       return;
 
+    int nearestAtomIndex = viewer.findNearestAtomIndex(x, y);
+    if (clickCount == 1)
+      mouseSingleClick(x, y, modifiers, nearestAtomIndex);
+    else if (clickCount == 2)
+      mouseDoubleClick(x, y, modifiers, nearestAtomIndex);
+  }
+
+  void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       if (viewer.frankClicked(x, y)) {
         viewer.popupMenu(x, y);
         return;
       }
-      int atomIndex = viewer.findNearestAtomIndex(x, y);
-      if (clickCount == 1)
-        singleLeftClick(atomIndex);
-      else if (clickCount == 2)
-        doubleLeftClick(atomIndex);
-    }
-
-    /*
-    int atomIndex = viewer.findNearestAtomIndex(x, y);
-    switch (modeMouse) {
-
-    case JmolConstants.MOUSE_PICK:
-      rubberbandSelectionMode = true;
-      xAnchor = x;
-      yAnchor = y;
-      calcRectRubberBand();
-      if ((modifiers & SHIFT) == 0) {
-        viewer.clearSelection();
-        if (atomIndex != -1)
-          viewer.addSelection(atomIndex);
+      if (measurementMode) {
+        addToMeasurement(nearestAtomIndex, false);
       } else {
-        if (atomIndex != -1) 
-          viewer.toggleSelection(atomIndex);
+        viewer.notifyPicked(nearestAtomIndex);
       }
       break;
-    case JmolConstants.MOUSE_MEASURE:
-      if (atomIndex != -1) {
-        viewer.measureSelection(atomIndex);
-      }
-    */
+    case MIDDLE:
+      viewer.zoomToPercent(100);
+      break;
+    }
   }
 
-  void mouseEntered(int x, int y, int modifiers, int clickCount) {
+  void mouseEntered(int x, int y) {
     xCurrent = x; yCurrent = y;
   }
 
-  void mouseExited(int x, int y, int modifiers, int clickCount) {
+  void mouseExited(int x, int y) {
     xCurrent = x; yCurrent = y;
     exitMeasurementMode();
   }
 
-  void mouseReleased(int x, int y, int modifiers, int clickCount) {
+  void mouseReleased(int x, int y, int modifiers) {
     xCurrent = x; yCurrent = y;
     if (logMouseEvents)
       System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
     viewer.setInMotion(false);
   }
 
+  void mouseDoubleClick(int x, int y, int modifiers, int nearestAtomIndex) {
+    switch (modifiers & BUTTON_MODIFIER_MASK) {
+    case LEFT:
+      if (measurementMode) {
+        addToMeasurement(nearestAtomIndex, true);
+        toggleMeasurement();
+      } else {
+        enterMeasurementMode();
+        addToMeasurement(nearestAtomIndex, true);
+      }
+      break;
+    case MIDDLE:
+      viewer.homePosition();
+      break;
+    }
+  }
+
+  void mouseDragged(int x, int y, int modifiers) {
+    int deltaX = x - previousDragX;
+    int deltaY = y - previousDragY;
+    xCurrent = previousDragX = x; yCurrent = previousDragY = y;
+    wasDragged = true;
+    viewer.setInMotion(true);
+    switch (modifiers & BUTTON_MODIFIER_MASK) {
+    case LEFT:
+      viewer.rotateXYBy(deltaX, deltaY);
+      break;
+    case MIDDLE:
+      viewer.translateXYBy(deltaX, deltaY);
+      break;
+    }
+  }
+
+
+  /*
   int getMode(int modifiers) {
     if (modeMouse != JmolConstants.MOUSE_ROTATE)
       return modeMouse;
@@ -217,7 +263,7 @@ public abstract class MouseManager {
     return XLATE;
     if ((modifiers & LEFT) == LEFT)
     return ROTATE;
-    */
+    /
     if ((modifiers & SHIFT_RIGHT) == SHIFT_RIGHT)
       return JmolConstants.MOUSE_ROTATE_Z;
     if ((modifiers & CTRL_RIGHT) == CTRL_RIGHT)
@@ -233,7 +279,7 @@ public abstract class MouseManager {
     return modeMouse;
   }
 
-  public void mouseDragged(int x, int y, int modifiers, int clickCount) {
+  public void mouseDragged(int x, int y, int modifiers) {
     xCurrent = x; yCurrent = y;
     wasDragged = true;
     viewer.setInMotion(true);
@@ -241,22 +287,22 @@ public abstract class MouseManager {
     case JmolConstants.MOUSE_MEASURE:
     case JmolConstants.MOUSE_ROTATE:
 		//if (logMouseEvents)
-		  //System.out.println("mouseDragged Rotate("+x+","+y+","+modifiers+","+clickCount+")");
+		  //System.out.println("mouseDragged Rotate("+x+","+y+","+modifiers+")");
       viewer.rotateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
       break;
     case JmolConstants.MOUSE_ROTATE_Z:
 		//if (logMouseEvents)
-		  //System.out.println("mouseDragged RotateZ("+x+","+y+","+modifiers+","+clickCount+")");
+		  //System.out.println("mouseDragged RotateZ("+x+","+y+","+modifiers+")");
       viewer.rotateZBy(xPrevious - xCurrent);
       break;
     case JmolConstants.MOUSE_XLATE:
 		//if (logMouseEvents)
-		  //System.out.println("mouseDragged Translate("+x+","+y+","+modifiers+","+clickCount+")");
+		  //System.out.println("mouseDragged Translate("+x+","+y+","+modifiers+")");
       viewer.translateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
       break;
     case JmolConstants.MOUSE_ZOOM:
 		//if (logMouseEvents)
-		  //System.out.println("mouseDragged Zoom("+x+","+y+","+modifiers+","+clickCount+")");
+		  //System.out.println("mouseDragged Zoom("+x+","+y+","+modifiers+")");
       viewer.zoomBy(yCurrent - yPrevious);
       break;
     case JmolConstants.MOUSE_SLAB_PLANE:
@@ -280,7 +326,9 @@ public abstract class MouseManager {
     yPrevious = yCurrent;
   }
 
-  void mouseMoved(int x, int y, int modifiers, int clickCount) {
+*/
+
+  void mouseMoved(int x, int y, int modifiers) {
     xCurrent = x; yCurrent = y;
     if (measurementMode | hoverActive) {
       int atomIndex = viewer.findNearestAtomIndex(x, y);
@@ -291,25 +339,6 @@ public abstract class MouseManager {
 
   public abstract boolean handleEvent(Event e);
 
-  void singleLeftClick(int atomIndex) {
-    if (measurementMode) {
-      addToMeasurement(atomIndex, false);
-    } else {
-      if (atomIndex != -1)
-        viewer.notifyPicked(atomIndex);
-    }
-  }
-
-  void doubleLeftClick(int atomIndex) {
-    if (measurementMode) {
-      addToMeasurement(atomIndex, true);
-      toggleMeasurement();
-    } else {
-      enterMeasurementMode();
-      addToMeasurement(atomIndex, true);
-    }
-  }
-  
   // note that these two may *not* be consistent
   // this term refers to the count of what has actually been selected
   int measurementCount = 0;

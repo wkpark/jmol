@@ -62,80 +62,42 @@
       </section>
     </section>
     
-    <section title="Jmol10pre23">
+    <section title="Jmol10pre24">
       <p>
-	Jmol version 10 pre-release 23 was released on Fri 10 Dec 2004.
+	Jmol version 10 pre-release 24 was released on Tue 14 Dec 2004.
 	<ul>
 	  <li>
-	    Browsers with Java 1.4 can now pop up a command line console!
-	    The console can also be opened from a script using
-	    <code>console [on|off]</code>
+	    'color group' was reimplemented to use selected set
 	  </li>
 	  <li>
-	    Basic molecular model data can now be seen in the popup menu
+	    'color polymer' was implemented
 	  </li>
 	  <li>
-	    Molecular model files can now be downloaded through
-	    the popup menu!
+	    'show boundbox' was implemented
 	  </li>
 	  <li>
-	    JmolAppletControl support was re-introduced
+	    'show zoom' was implemented
 	  </li>
 	  <li>
-	    Jmol.js API change - jmolApplet no longer takes a molecular
-	    model file name. Load your file as part of the script
+	    &lt;Nada&gt; was changed
 	  </li>
 	  <li>
-	    Support for <code>frank</code> and <code>debugscript</code>
-	    was dropped from applet param tags
-	  </li>
-	  <li>
-	    CML files can now be read on 1.1 JVMs
-	    (Win32 &amp;&amp; ((IE &amp;&amp; MSFT JVM) || NS47))
-	    using the Gnu Aelfred2 XML parser. <i>Note that gnujaxp.jar
-	    must be explicitly included in the <code>archive</code>
-	    attribute string value</i>
-	  </li>
-	  <li>
-	    The <code>load</code> param tag to the applet is now
-	    deprecated. Users are encouraged to load their model
-	    file as part of their <code>script</code>
-	  </li>
-	  <li>
-	    bug fixed - 'frank'/logo was sometimes not displayed
-	  </li>
-	  <li>
-	    bug fixed - measured angle text was sometimes not displayed
-	    during rotation
-	  </li>
-	  <li>
-	    bug fixed - hover text was sometimes not displayed when slab
-	    was on
-	  </li>
-	  <li>
-	    bug fixed - moveTo went berzerk when model was already
-	    in the target orientation and the rotation angle was 0 degrees
-	  </li>
-	  <li>
-	    bug fixed - when loading the JmolApplet with separate
-	    'load' and 'script' params, the default style
-	    of the molecular model (spacefill 20%; wireframe 0.1; color cpk)
-	    was sometimes visible before your script executed
+	    Fixed various small bugs
 	  </li>
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre23.zip">
+	<a href="Jmol10pre24.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre23.zip
+	    Jmol10pre24.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre22.zip">
+	<a href="Jmol10pre23.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre22.zip
+	    <i>Give me the old code</i> Jmol10pre23.zip
 	  </font>
 	</a>
       </p>
@@ -145,7 +107,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre23.zip</b>
+	format as .zip : <b>jar xf Jmol10pre24.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

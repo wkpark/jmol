@@ -63,7 +63,10 @@ public class DisplayPanel extends JPanel
   private static Matrix4d tmat = new Matrix4d();    // Matrix to do translations.
   private static Matrix4d zmat = new Matrix4d();    // Matrix to do zooming.
 
+  // current dimensions of the display screen
   private static Dimension dimCurrent = null;
+  // previous dimensions ... used to detect resize operations
+  private static Dimension dimPrevious = null;
   ChemFile cf;
   ChemFrame chemframe;
   private float xfac;
@@ -187,12 +190,17 @@ public class DisplayPanel extends JPanel
     amat.setIdentity();
     tmat.setIdentity();
     zmat.setIdentity();
+    scaleToFitScreen();
+  }
+
+  public void scaleToFitScreen() {
     int minScreen = dimCurrent.width;
     if (dimCurrent.height < minScreen)
       minScreen = dimCurrent.height;
     // ensure that rotations don't leave some atoms off the screen
-    // note that this radius is to furthest outside edge of an atom
-    // given the current VDW radius setting. 
+    // note that this radius is to the furthest outside edge of an atom
+    // given the current VDW radius setting. it is currently *not*
+    // recalculated when the vdw radius settings are changed
     // leave a very small margin - only 1 on top and 1 on bottom
     if (minScreen > 2)
       minScreen -= 2;
@@ -328,8 +336,8 @@ public class DisplayPanel extends JPanel
       }
 
       if (modeMouse == ZOOM) {
-        float xs = 1.0f + (float) (x - prevx) / (float) dimCurrent.width;
-        float ys = 1.0f + (float) (prevy - y) / (float) dimCurrent.height;
+        float xs = 1.0f + (float) (x - prevx) / dimCurrent.width;
+        float ys = 1.0f + (float) (prevy - y) / dimCurrent.height;
         float s = (xs + ys) / 2.0f;
         Matrix4d matrix = new Matrix4d();
         matrix.setElement(0, 0, s);
@@ -411,6 +419,8 @@ public class DisplayPanel extends JPanel
     g2d.setColor(bg);
     g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
     if (chemframe != null) {
+      if (! dimCurrent.equals(dimPrevious))
+        scaleToFitScreen();
       if (antialiasCapable && settings.isAntiAliased() && !mouseDragged) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
@@ -433,6 +443,7 @@ public class DisplayPanel extends JPanel
       recordTime(time);
       showTimes();
     }
+    dimPrevious = dimCurrent;
   }
 
   ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
@@ -440,8 +451,7 @@ public class DisplayPanel extends JPanel
 
   public Image takeSnapshot() {
 
-    Image snapImage = createImage(this.dimCurrent.width,
-                        this.dimCurrent.height);
+    Image snapImage = createImage(dimCurrent.width, dimCurrent.height);
     Graphics snapGraphics = snapImage.getGraphics();
     paint(snapGraphics);
     return snapImage;

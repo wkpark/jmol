@@ -424,7 +424,14 @@ public class ChemFrame implements Transformable {
   private void findBounds() {
     if ((centerPoint != null) || (atoms == null) || (numberAtoms <= 0))
       return;
+    centerPoint = calculateCenterPoint();
+    radius = calculateRadius(centerPoint);
+  }
 
+  /**
+   * Note that this method is overridden by CrystalFrame
+   */
+  Point3f calculateCenterPoint() {
     // First, find the center of the molecule. Current definition is the center
     // of the cartesian coordinates as stored in the file. Note that this is
     // not really the center because an atom could be stuck way up in one of
@@ -446,25 +453,33 @@ public class ChemFrame implements Transformable {
       if (z < minZ) { minZ = z; }
       if (z > maxZ) { maxZ = z; }
     }
-    centerPoint = new Point3f((minX + maxX) / 2,
-                              (minY + maxY) / 2,
-                              (minZ + maxZ) / 2);
+    return new Point3f((minX + maxX) / 2,
+                       (minY + maxY) / 2,
+                       (minZ + maxZ) / 2);
+  }
 
+  float calculateRadius(Point3f center) {
     // Now that we have defined the center, find the radius to the outermost
     // atom, including the radius of the atom itself. Note that this is
     // currently the vdw radius as scaled by the vdw display radius as set
     // in preferences. This is *not* recalculated if the user changes the
-    // display scale ... perhaps it should be. 
-    radius = 0.0f;
+    // display scale ... perhaps it should be.
+    // Atom Vectors should be included in this calculation so they don't get
+    // clipped off the screen during rotations ... but I don't understand
+    // them yet ... so they are not included. samples/cs2.xyz has atom vectors
+    //
+    // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
+    float radius = 0.0f;
     float atomSphereFactor = (float) Jmol.settings.getAtomSphereFactor();
     for (int i = 0; i < numberAtoms; ++i) {
       Atom atom = atoms[i];
       Point3f posAtom = atom.getPosition();
-      float distAtom = centerPoint.distance(posAtom);
+      float distAtom = center.distance(posAtom);
       distAtom += (atom.getType().getVdwRadius() * atomSphereFactor);
       if (distAtom > radius)
         radius = distAtom;
     }
+    return radius;
   }
 
   /**

@@ -41,4 +41,26 @@ class CrystalFrame extends ChemFrame {
     return this.boxEdges;
   }
 
+  Point3f calculateCenterPoint() {
+    Point3f position = (Point3f) boxEdges.elementAt(0);
+    float minX = position.x, maxX = minX;
+    float minY = position.y, maxY = minY;
+    float minZ = position.z, maxZ = minZ;
+
+    for (int i = 1, size = boxEdges.size(); i < size; ++i) {
+      position = (Point3f) boxEdges.elementAt(i);
+      float x = position.x;
+      if (x < minX) { minX = x; }
+      if (x > maxX) { maxX = x; }
+      float y = position.y;
+      if (y < minY) { minY = y; }
+      if (y > maxY) { maxY = y; }
+      float z = position.z;
+      if (z < minZ) { minZ = z; }
+      if (z > maxZ) { maxZ = z; }
+    }
+    return new Point3f((minX + maxX) / 2,
+                       (minY + maxY) / 2,
+                       (minZ + maxZ) / 2);
+  }
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE somethingOrAnything [
-<!ENTITY graphicsEngine   SYSTEM "graphicsEngine.xml" >
-<!ENTITY antiAliasing     SYSTEM "antiAliasing.xml" >
-<!ENTITY noHeapMemory     SYSTEM "noHeapMemory.xml" >
-<!ENTITY floatingPoint    SYSTEM "floatingPoint.xml" >
+<!ENTITY graphicsEngine   SYSTEM "graphicsEngine_en.xml" >
+<!ENTITY antiAliasing     SYSTEM "antiAliasing_en.xml" >
+<!ENTITY noHeapMemory     SYSTEM "noHeapMemory_en.xml" >
+<!ENTITY floatingPoint    SYSTEM "floatingPoint_en.xml" >
 <!ENTITY browserEnhancementTechnologies
-                          SYSTEM "browserEnhancementTechnologies.xml" >
-<!ENTITY floatsVsDoubles  SYSTEM "floatsVsDoubles.xml" >
+                          SYSTEM "browserEnhancementTechnologies_en.xml" >
+<!ENTITY floatsVsDoubles  SYSTEM "floatsVsDoubles_en.xml" >
 ]>
 <document>
   <body>

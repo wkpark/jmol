@@ -46,7 +46,7 @@ copy it to index_[xx].xml and translate it into the new language. Add the follow
 -->
 
 Note: some index_en.xml files (for example in the technotes subdirectory) relies on
-several other xml files (antiAliasing.xml, ...). Copy each one to the appropriate
+several other xml files (antiAliasing_en.xml, ...). Copy each one to the appropriate
 name (antiAliasing_[xx].xml) and translate. Also add the 4 lines to remember from
 which version this file was translated.
 
@@ -55,6 +55,7 @@ copy it to index.[xx].html and translate it into the new language. Also add the 
 lines to remember from which version this file was translated.
 
 8. Add a flag icon for the new language : /source/doc/images/flags/[xx].png
+(See /source/docs/images/flags/README.txt for more informations)
 
 9. Add a line in the file /source/doc/language.xml file for the new language.
 Use the other languages as an example.

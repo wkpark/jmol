@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!DOCTYPE somethingOrAnything [
-<!ENTITY appletRequirements    SYSTEM "appletRequirements.xml" >
-<!ENTITY hardwareRequirements  SYSTEM "hardwareRequirements.xml" >
-<!ENTITY appRequirements       SYSTEM "appRequirements.xml" >
-<!ENTITY performance           SYSTEM "performance.xml" >
-<!ENTITY graphics              SYSTEM "graphics.xml" >
-<!ENTITY appletDeployment      SYSTEM "appletDeployment.xml" >
+<!ENTITY appletRequirements    SYSTEM "appletRequirements_en.xml" >
+<!ENTITY hardwareRequirements  SYSTEM "hardwareRequirements_en.xml" >
+<!ENTITY appRequirements       SYSTEM "appRequirements_en.xml" >
+<!ENTITY performance           SYSTEM "performance_en.xml" >
+<!ENTITY graphics              SYSTEM "graphics_en.xml" >
+<!ENTITY appletDeployment      SYSTEM "appletDeployment_en.xml" >
 ]>
 <document>
   <body>

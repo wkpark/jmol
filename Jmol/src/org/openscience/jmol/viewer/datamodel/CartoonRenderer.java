@@ -130,7 +130,7 @@ class CartoonRenderer extends MpsRenderer {
                             leadMidpointScreens, isSpecials);
           if (isNucleicPolymer)
             renderNucleicBaseStep((NucleicMonomer)group, colix, mads[i],
-                                  leadMidpointScreens[i]);
+                                  leadMidpointScreens[i + 1]);
         }
         lastWasSpecial = isSpecial;
       }

@@ -266,6 +266,15 @@ public class CdkJmolAdapter extends JmolAdapter {
         }
         return super.getSequenceNumber();
     }
+    public char getInsertionCode() {
+        String iCode = (String)atom.getProperty("pdb.iCode");
+        System.out.println("iCode: " + iCode);
+        if (iCode != null && iCode.length() > 0) {
+            return iCode.charAt(0);
+        } else {
+            return super.getInsertionCode();
+        }
+    }
     public Object getClientAtomReference() {
       return atom;
     }

@@ -48,16 +48,24 @@ abstract public class Polymer {
   Vector3f[] wingVectors;
 
   static Polymer allocatePolymer(Chain chain) {
+    System.out.println("allocatePolymer()");
     Group[] polymerGroups;
     polymerGroups = getAminoGroups(chain);
-    if (polymerGroups != null)
+    if (polymerGroups != null) {
+      System.out.println("an AminoPolymer");
       return new AminoPolymer(chain, polymerGroups);
+    }
     polymerGroups = getAlphaCarbonGroups(chain);
-    if (polymerGroups != null)
+    if (polymerGroups != null) {
+      System.out.println("an AlphaCarbonPolymer");
       return new AlphaCarbonPolymer(chain, polymerGroups);
+    }
     polymerGroups = getNucleotideGroups(chain);
-    if (polymerGroups != null)
+    if (polymerGroups != null) {
+      System.out.println("a NucleotidePolymer");
       return new NucleotidePolymer(chain, polymerGroups);
+    }
+    System.out.println("no polymer");
     return null;
   }
 

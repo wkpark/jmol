@@ -66,8 +66,11 @@ final public class PdbFile {
   }
 
   public void freeze() {
-    for (int i = modelCount; --i >= 0; )
+    System.out.println("PdbFile.freeze() modelCount=" + modelCount);
+    for (int i = modelCount; --i >= 0; ) {
+      System.out.println(" model " + i);
       pdbmodels[i].freeze();
+    }
     propogateSecondaryStructure();
   }
 

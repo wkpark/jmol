@@ -48,9 +48,12 @@ final public class PdbModel {
   }
 
   public void freeze() {
+    System.out.println("PdbFile.freeze() chainCount=" + chainCount);
     chains = (Chain[])Util.setLength(chains, chainCount);
-    for (int i = chainCount; --i >= 0; )
+    for (int i = chainCount; --i >= 0; ) {
+      System.out.println(" chain:" + i);
       chains[i].freeze();
+    }
   }
 
   public void addSecondaryStructure(byte type, char chainID,

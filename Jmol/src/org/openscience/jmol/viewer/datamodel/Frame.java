@@ -51,6 +51,7 @@ public class Frame {
   public Atom[] atoms;
   int bondCount = 0;
   public Bond[] bonds;
+  public float[] notionalUnitcell;
 
   public Frame(JmolViewer viewer, int atomCount,
                    int modelType, boolean hasPdbRecords) {
@@ -866,4 +867,13 @@ public class Frame {
   public float getMaxVanderwaalsRadius() {
     return maxVanderwaalsRadius;
   }
+
+  public void setNotionalUnitcell(float[] notionalUnitcell) {
+    if (notionalUnitcell != null && notionalUnitcell.length != 6)
+      System.out.println("notionalUnitcell length incorrect:" +
+                         notionalUnitcell);
+    else
+      this.notionalUnitcell = notionalUnitcell;
+  }
+
 }

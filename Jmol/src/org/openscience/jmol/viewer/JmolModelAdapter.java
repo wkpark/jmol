@@ -201,15 +201,14 @@ public interface JmolModelAdapter {
   public LineIterator getVectorIterator(Object clientFile, int frameNumber);
 
   /**
-   * This method returns the list of lines which define the crystal cell.
-   * The first three lines returned are rendered as vectors.
-   * The center of the crystal cell as defined by these lines is assumed
-   * to be the default center of rotation for the rendered molecule.
-   * @see LineIterator
+   * This method returns the parameters that define a crystal unitcell
+   * the parameters are returned in a float[] in the following order
+   * a, b, c, alpha, beta, gamma
+   * a, b, c : angstroms
+   * alpha, beta, gamma : degrees
+   * if there is no unit cell data then return null
    */
-  public LineIterator getCrystalCellIterator(Object clientFile,
-                                             int frameNumber);
-
+  public float[] getNotionalUnitcell(Object clientFile, int frameNumber);
 
   /****************************************************************
    * AtomIterator is used to enumerate all the <code>clientAtom</code>

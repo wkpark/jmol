@@ -186,9 +186,8 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return null;
   }
 
-  public JmolModelAdapter.LineIterator
-    getCrystalCellIterator(Object clientFile, int frameNumber) {
-    return null;
+  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
+    return ((Model)clientFile).notionalUnitcell;
   }
 
   /****************************************************************
@@ -365,6 +364,7 @@ abstract class Model {
   Bond[] bonds;
   String errorMessage;
   String fileHeader;
+  float[] notionalUnitcell;
 
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
@@ -540,6 +540,11 @@ class PdbModel extends Model {
         accumulatingHeader = false;
         continue;
       }
+      if (line.startsWith("CRYST1")) {
+        cryst1();
+        accumulatingHeader = false;
+        continue;
+      }
       if (line.startsWith("HEADER") && line.length() >= 66) {
         setModelName(line.substring(62, 66));
         continue;
@@ -695,5 +700,28 @@ class PdbModel extends Model {
       currentModelNumber = modelNumber;
     } catch (NumberFormatException e) {
     }
+  }
+
+  void cryst1() {
+    try {
+      float a = getFloat( 6, 9);
+      float b = getFloat(15, 9);
+      float c = getFloat(24, 9);
+      float alpha = getFloat(33, 7);
+      float beta  = getFloat(40, 7);
+      float gamma = getFloat(47, 7);
+      notionalUnitcell = new float[6];
+      notionalUnitcell[0] = a;
+      notionalUnitcell[1] = b;
+      notionalUnitcell[2] = c;
+      notionalUnitcell[3] = alpha;
+      notionalUnitcell[4] = beta;
+      notionalUnitcell[5] = gamma;
+    } catch (Exception e) {
+    }
+  }
+
+  float getFloat(int ich, int cch) throws Exception {
+    return Float.valueOf(line.substring(ich, ich+cch)).floatValue();
   }
 }

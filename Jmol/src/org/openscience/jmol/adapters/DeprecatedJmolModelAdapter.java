@@ -150,9 +150,8 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return new VectorIterator(getChemFrame(clientFile, frameNumber));
   }
 
-  public JmolModelAdapter.LineIterator
-    getCrystalCellIterator(Object clientFile, int frameNumber) {
-    return new CrystalCellIterator(getChemFrame(clientFile, frameNumber));
+  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
+    return null;
   }
 
   /****************************************************************
@@ -258,50 +257,6 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
 	  return (float)point2.z;
       }
       
-  }
-
-
-  class CrystalCellIterator extends JmolModelAdapter.LineIterator {
-    boolean isCrystalFrame;
-    CrystalFrame crystalFrame;
-    Point3d point1, point2;
-    Vector boxEdges;
-    int ibox;
-      
-    CrystalCellIterator(ChemFrame chemFrame) {
-      isCrystalFrame = chemFrame instanceof CrystalFrame;
-      if (! isCrystalFrame)
-        return;
-      crystalFrame = (CrystalFrame)chemFrame;
-      boxEdges = crystalFrame.getBoxEdges();
-    }
-
-    public boolean hasNext() {
-      return (boxEdges != null && ibox < boxEdges.size());
-    }
-
-    public void moveNext() {
-      point1 = (Point3d)boxEdges.elementAt(ibox++);
-      point2 = (Point3d)boxEdges.elementAt(ibox++);
-    }
-    public float getPoint1X() {
-      return (float)point1.x;
-    }
-    public float getPoint1Y() {
-      return (float)point1.y;
-    }
-    public float getPoint1Z() {
-      return (float)point1.z;
-    }
-    public float getPoint2X() {
-      return (float)point2.x;
-    }
-    public float getPoint2Y() {
-      return (float)point2.y;
-    }
-    public float getPoint2Z() {
-      return (float)point2.z;
-    }
   }
 
 

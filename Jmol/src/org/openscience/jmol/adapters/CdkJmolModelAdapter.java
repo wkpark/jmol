@@ -213,12 +213,18 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return null;
   }
 
+  /*
   public JmolModelAdapter.LineIterator
     getCrystalCellIterator(Object clientFile, int frameNumber) {
     AtomContainer container = getAtomContainer(clientFile, frameNumber);
     if (container instanceof Crystal) {
       return new CrystalCellIterator((Crystal)container);
     }
+    return null;
+  }
+  */
+
+  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
     return null;
   }
 

@@ -366,23 +366,6 @@ public class Jmol extends JPanel {
             + "1.1.2 or higher version VM!!!");
       }
 
-      /*
-      // Adding console frame to grab System.out & System.err
-      consoleframe = new JFrame("Jmol Console");
-      try {
-          ConsoleTextArea consoleTextArea = new ConsoleTextArea();
-          consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
-          consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
-          java.awt.BorderLayout.CENTER);
-      } catch (IOException e) {
-          JTextArea errorTextArea = new JTextArea();
-          errorTextArea.setFont(java.awt.Font.decode("monospaced"));
-          consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
-          java.awt.BorderLayout.CENTER);
-          errorTextArea.append("Could not create ConsoleTextArea: " + e);
-      }
-      */
-
       // Get a Jmol frame
       JFrame jmolFrame = new JFrame();
       jmol = getJmol(jmolFrame);
@@ -409,6 +392,22 @@ public class Jmol extends JPanel {
 
     Point location = jmol.frame.getLocation();
     Dimension size = jmol.frame.getSize();
+
+    // Adding console frame to grab System.out & System.err
+    consoleframe = new JFrame("Jmol Console");
+    try {
+      ConsoleTextArea consoleTextArea = new ConsoleTextArea();
+      consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
+      consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
+                                        java.awt.BorderLayout.CENTER);
+    } catch (IOException e) {
+      JTextArea errorTextArea = new JTextArea();
+      errorTextArea.setFont(java.awt.Font.decode("monospaced"));
+      consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
+                                        java.awt.BorderLayout.CENTER);
+      errorTextArea.append("Could not create ConsoleTextArea: " + e);
+    }
+    
     consoleframe.setBounds(location.x, location.y + size.height, size.width,
         200);
 

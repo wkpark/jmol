@@ -94,26 +94,8 @@ public class FrameBuilder {
         }
     }
 
-    {
-      JmolModelAdapter.LineIterator iterCell =
-        adapter.getCrystalCellIterator(clientFile, frameNumber);
-      if (iterCell != null)
-        for (int i = 0; iterCell.hasNext(); ++i) {
-          iterCell.moveNext();
-	  Point3f point1 = new Point3f(iterCell.getPoint1X(),
-				       iterCell.getPoint1Y(),
-				       iterCell.getPoint1Z());
-	  Point3f point2 = new Point3f(iterCell.getPoint2X(),
-				       iterCell.getPoint2Y(),
-				       iterCell.getPoint2Z());
-          Line line;
-          if (i < 3)
-	      line = new Line(point1, point2, true);
-          else
-	      line = new Line(point1, point2);
-          frame.addCrystalCellLine(line);
-        }
-    }
+    frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile,
+                                                          frameNumber));
 
     if (hasPdbRecords) {
       String[] structures = adapter.getPdbStructureRecords(clientFile, frameNumber);

@@ -106,6 +106,10 @@ class Group {
     return 0;
   }
 
+  int getPolymerIndex() {
+    return -1;
+  }
+
   byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;
   }
@@ -181,6 +185,13 @@ class Group {
   final void selectAtoms(BitSet bs) {
     for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
       bs.set(i);
+  }
+
+  boolean isSelected(BitSet bs) {
+    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
+      if (bs.get(i))
+        return true;
+    return false;
   }
   
   public String toString() {

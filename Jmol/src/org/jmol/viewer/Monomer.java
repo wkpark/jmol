@@ -47,6 +47,10 @@ abstract class Monomer extends Group {
     return polymer == null ? 0 : polymer.count;
   }
 
+  int getPolymerIndex() {
+    return polymer == null ? -1 : polymer.getIndex(this);
+  }
+
   ////////////////////////////////////////////////////////////////
 
   static byte[] scanForOffsets(int firstAtomIndex,

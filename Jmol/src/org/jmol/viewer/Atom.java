@@ -506,6 +506,10 @@ final class Atom implements Bspt.Tuple {
     return group.getPolymerLength();
   }
 
+  int getPolymerIndex() {
+    return group.getPolymerIndex();
+  }
+
   int getAtomIndex() {
     return atomIndex;
   }

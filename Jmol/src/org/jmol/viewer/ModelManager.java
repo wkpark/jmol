@@ -328,12 +328,17 @@ class ModelManager {
     return (frame == null) ? null : frame.getGroupsPresentBitSet();
   }
 
+  void calcMinMaxSeqcode(BitSet bsSelected) {
+    if (frame != null)
+      frame.calcMinMaxSeqcode(bsSelected);
+  }
+
   int getMinSeqcode() {
-    return (frame == null) ? 0 : frame.getMinSeqcode();
+    return (frame == null) ? Integer.MAX_VALUE : frame.getMinSeqcode();
   }
 
   int getMaxSeqcode() {
-    return (frame == null) ? 0 : frame.getMaxSeqcode();
+    return (frame == null) ? Integer.MIN_VALUE : frame.getMaxSeqcode();
   }
 
   ////////////////////////////////////////////////////////////////

@@ -48,14 +48,6 @@ final class Chain {
   }
   
   void addGroup(Group group) {
-    int groupSeqcode = group.seqcode;
-    if (groupCount == 0)
-      minSeqcode = maxSeqcode = groupSeqcode;
-    else if (groupSeqcode < minSeqcode)
-      minSeqcode = groupSeqcode;
-    else if (groupSeqcode > maxSeqcode)
-      maxSeqcode = groupSeqcode;
-
     if (groupCount == groups.length)
       groups = (Group[])Util.doubleLength(groups);
     groups[groupCount++] = group;
@@ -76,6 +68,20 @@ final class Chain {
       Atom atom = atoms[i];
       if (atom.getChain() == this)
         bs.set(i);
+    }
+  }
+
+  void calcMinMaxSeqcode(BitSet bsSelected) {
+    minSeqcode = Integer.MAX_VALUE;
+    maxSeqcode = Integer.MIN_VALUE;
+    for (int i = groupCount; --i >= 0; ) {
+      Group group = groups[i];
+      if (bsSelected == null || group.isSelected(bsSelected)) {
+        if (group.seqcode < minSeqcode)
+          minSeqcode = group.seqcode;
+        if (group.seqcode > maxSeqcode)
+          maxSeqcode = group.seqcode;
+      }
     }
   }
 }

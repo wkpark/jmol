@@ -1438,6 +1438,8 @@ class Eval implements Runnable {
     case Token.formalCharge:
     case Token.partialCharge:
     case Token.user:
+    case Token.groupNumber:
+    case Token.polymerIndex:
       colorObject(Token.atom, 1);
       break;
     case Token.label:
@@ -1533,7 +1535,13 @@ class Eval implements Runnable {
       palette = JmolConstants.PALETTE_FIXEDTEMP;
       break;
     case Token.group:
-      palette = JmolConstants.PALETTE_GROUP_SCALE;
+      palette = JmolConstants.PALETTE_GROUP_RASMOL;
+      break;
+    case Token.groupNumber:
+      palette = JmolConstants.PALETTE_GROUP_NUMBER;
+      break;
+    case Token.polymerIndex:
+      palette = JmolConstants.PALETTE_POLYMER_INDEX;
       break;
 
     case Token.user:

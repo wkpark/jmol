@@ -1292,6 +1292,12 @@ final public class Viewer implements JmolViewer {
     return modelManager.getGroupsPresentBitSet();
   }
 
+  void calcMinMaxSeqcode(boolean selectedOnly) {
+    modelManager.calcMinMaxSeqcode(selectedOnly
+                                   ? selectionManager.bsSelection
+                                   : null);
+  }
+
   int getMinSeqcode() {
     return modelManager.getMinSeqcode();
   }

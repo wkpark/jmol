@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import java.util.Properties;
+import java.util.BitSet;
 
 // Mmset == Molecular Model set
 
@@ -84,16 +85,6 @@ final class Mmset {
     }
     propogateSecondaryStructure();
 
-    if (modelCount > 0) {
-      minSeqcode = models[0].minSeqcode;
-      maxSeqcode = models[0].maxSeqcode;
-      for (int i = modelCount; --i > 0; ) {
-        if (models[i].minSeqcode < minSeqcode)
-          minSeqcode = models[i].minSeqcode;
-        if (models[i].maxSeqcode > maxSeqcode)
-          maxSeqcode = models[i].maxSeqcode;
-      }
-    }
   }
 
   void setModelSetProperties(Properties modelSetProperties) {
@@ -190,6 +181,25 @@ final class Mmset {
     for (int i = modelCount; --i >= 0; )
       groupCount += models[i].getGroupCount();
     return groupCount;
+  }
+
+  void calcMinMaxSeqcode(BitSet bsSelected) {
+    minSeqcode = Integer.MAX_VALUE;
+    maxSeqcode = Integer.MIN_VALUE;
+    if (modelCount > 0) {
+      Model model = models[0];
+      model.calcMinMaxSeqcode(bsSelected);
+      minSeqcode = model.minSeqcode;
+      maxSeqcode = model.maxSeqcode;
+      for (int i = modelCount; --i > 0; ) {
+        model = models[i];
+        model.calcMinMaxSeqcode(bsSelected);
+        if (model.minSeqcode < minSeqcode)
+          minSeqcode = model.minSeqcode;
+        if (model.maxSeqcode > maxSeqcode)
+          maxSeqcode = model.maxSeqcode;
+      }
+    }
   }
 
   void calcHydrogenBonds() {

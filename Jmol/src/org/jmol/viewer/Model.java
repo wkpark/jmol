@@ -23,6 +23,7 @@
  *  02111-1307  USA.
  */
 package org.jmol.viewer;
+import java.util.BitSet;
 
 final class Model {
 
@@ -85,6 +86,25 @@ final class Model {
 
   int getPolymerCount() {
     return polymerCount;
+  }
+
+  void calcMinMaxSeqcode(BitSet bsSelected) {
+    minSeqcode = Integer.MAX_VALUE;
+    maxSeqcode = Integer.MIN_VALUE;
+    if (chainCount > 0) {
+      Chain chain = chains[0];
+      chain.calcMinMaxSeqcode(bsSelected);
+      minSeqcode = chain.minSeqcode;
+      maxSeqcode = chain.maxSeqcode;
+      for (int i = chainCount; --i > 0; ) {
+        chain = chains[i];
+        chain.calcMinMaxSeqcode(bsSelected);
+        if (chain.minSeqcode < minSeqcode)
+          minSeqcode = chain.minSeqcode;
+        if (chain.maxSeqcode > maxSeqcode)
+          maxSeqcode = chain.maxSeqcode;
+      }
+    }
   }
 
   int getGroupCount() {

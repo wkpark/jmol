@@ -1456,6 +1456,10 @@ final class Frame {
     }
   }
 
+  void calcMinMaxSeqcode(BitSet bsSelected) {
+    mmset.calcMinMaxSeqcode(bsSelected);
+  }
+
   int getMinSeqcode() {
     return mmset.minSeqcode;
   }

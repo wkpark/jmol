@@ -175,6 +175,14 @@ abstract class Polymer {
     return atomIndices;
   }
   
+  int getIndex(Monomer monomer) {
+    int i;
+    for (i = count; --i >= 0; )
+      if (monomers[i] == monomer)
+        break;
+    return i;
+  }
+
   int getIndex(char chainID, int seqcode) {
     int i;
     for (i = count; --i >= 0; )

@@ -323,6 +323,8 @@ class Token {
   final static int type         = misc | 35;
   final static int fixedtemp    = misc | 36;
   final static int rubberband   = misc | 37;
+  final static int polymerIndex = misc | 38;
+  final static int groupNumber = misc | 39;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -609,6 +611,8 @@ class Token {
     "type",         new Token(type,            "type"),
     "fixedtemperature", new Token(fixedtemp,   "fixedtemperature"),
     "rubberband",   new Token(rubberband,      "rubberband"),
+    "polymerindex", new Token(polymerIndex,    "polymerIndex"),
+    "groupnumber",  new Token(groupNumber,     "groupnumber"),
   };
 
   static Hashtable map = new Hashtable();

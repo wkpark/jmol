@@ -506,7 +506,7 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)
       t += "  <param name='script' value='" + script + "' />\n";
-    t += "</applet>\n";
+    t += "</applet>";
     jmolSetTarget(nameSuffix);
     ready["jmolApplet" + nameSuffix] = false;
     if (_jmol.debugAlert)

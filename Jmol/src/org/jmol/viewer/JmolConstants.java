@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre20b";
+  public final static String version = "10pre20c";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -60,13 +60,17 @@ final public class JmolConstants {
   public final static byte PALETTE_TYPE          = 7;
   public final static byte PALETTE_TEMPERATURE   = 8;
   public final static byte PALETTE_FIXEDTEMP     = 9;
-  public final static byte PALETTE_GROUP_SCALE   = 10;
-  public final static byte PALETTE_MAX           = 11;
+  public final static byte PALETTE_GROUP_RASMOL  = 10;
+  public final static byte PALETTE_GROUP_NUMBER  = 11;
+  public final static byte PALETTE_POLYMER_INDEX = 12;
+  public final static byte PALETTE_MAX           = 13;
 
   public final static String[] colorSchemes =
     { "cpk", "charge", "structure", "amino",
       "shapely", "chain", "partialCharge", "type",
-      "temperature", "fixedtemperature", "group"};
+      "temperature", "fixedTemperature", "group", "groupNumber",
+      "polymerIndex"
+    };
 
   public final static byte AXES_NONE = 0;
   public final static byte AXES_UNIT = 1;

@@ -237,6 +237,7 @@ class ColorManager {
   short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
     int index;
+    boolean selectedSetOnly = false;
     switch (palette) {
     case JmolConstants.PALETTE_NONE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -299,12 +300,24 @@ class ColorManager {
               ? JmolConstants.argbsChainHetero
               : JmolConstants.argbsChainAtom)[chain];
       break;
-    case JmolConstants.PALETTE_GROUP_SCALE:
+    case JmolConstants.PALETTE_GROUP_NUMBER:
+      selectedSetOnly = true;
+      // fall into
+    case JmolConstants.PALETTE_GROUP_RASMOL:
+      viewer.calcMinMaxSeqcode(selectedSetOnly);
       index = quantize(viewer.getMinSeqcode(),
                        viewer.getMaxSeqcode(),
                        atom.getSeqcode(),
                        JmolConstants.argbsGroupScale.length);
       argb = JmolConstants.argbsGroupScale[index];
+      break;
+    case JmolConstants.PALETTE_POLYMER_INDEX:
+      index = quantize(0,
+                       atom.getPolymerLength(),
+                       atom.getPolymerIndex(),
+                       JmolConstants.argbsRwbScale.length);
+      index = JmolConstants.argbsRwbScale.length - index - 1;
+      argb = JmolConstants.argbsRwbScale[index];
       break;
     }
     if (argb == 0)

@@ -70,26 +70,48 @@
       </section>
     </section>
       
-    <section title="Jmol10pre6">
+    <section title="Jmol10pre7">
       <p>
-	Jmol version 10 pre-release 6 was released on 7 Mar 2004.
+	Jmol version 10 pre-release 7 was released on 22 Mar 2004.
 	This release includes
 	the following enhancements:
 	<ul>
-	  <li>more fully populated popup menu</li>
-	  <li>adoption of a proposed Jmol/Ghemical cpk coloring scheme</li>
-	  <li>improved nucleotide set definitions</li>
-	  <li>preliminary support for animations</li>
-	  <li>preliminary support for unitcells</li>
-	  <li>support for aromatic bonds in .mol files</li>
-	  <li>support for color by charge</li>
-	  <li>bug fixes</li>
+	  <li>support for wheel mouse on JVM 1.4 and greater</li>
+	  <li>support for CTL-click to bring up popup menu on Mac OS.</li>
+	  <li>
+	    support for distance/angle/torsion measurements using dbl-click
+	    <br />
+	    <i>Please be on the lookout for mouse gesture bugs</i>
+	  </li>
+	  <li>support for ShelX .res files</li>
+	  <li>occupancy as an atom property</li>
+	  <li>corrected bugs in atom expressions with chains x, y, or z</li>
+	  <li>
+	    ability to redirect *echo* output to the Applet window<br />
+	    <i>
+	      set echo {top|middle|bottom|none|off} {left|center|right}<br />
+	      echo Hello World!
+	    </i>
+	  </li>
+	  <li>
+	    label colors and fonts are individually controllable, according
+	    to the selection set.
+	  </li>
+	  <li>
+	    support for 'font' as an extended command <br />
+	    <i>
+	      font {object} {points} {Serif|SansSerif|Monospaced}
+	      {Normal|Bold|Italic|BoldItalic}<br />
+	      font label 12<br />
+	      font echo 14 SansSerif Bold
+	    </i>
+	  </li>
+	  <li>browser status line is updated when an atom is picked</li>
 	</ul>
 	This release continues to have the
 	following functional limitations:
 	<ul>
-	  <li>Macintosh popup menu gesture is incorrect</li>
-	  <li>Only supports .xyz, .mol, and .pdb files</li>
+	  <li>Now only supports .xyz, .mol, .pdb, and .res files</li>
 	  <li>Does not have full animation support</li>
 	  <li>Does not handle vibrations</li>
 	  <li>Does not have full crystal cell support</li>
@@ -101,17 +123,17 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre6.zip">
+	<a href="Jmol10pre7.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre6.zip
+	    Jmol10pre7.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre5.zip">
+	<a href="Jmol10pre6.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre5.zip
+	    <i>Give me the old code</i> Jmol10pre6.zip
 	  </font>
 	</a>
       </p>
@@ -121,7 +143,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre6.zip</b>
+	format as .zip : <b>jar xf Jmol10pre7.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

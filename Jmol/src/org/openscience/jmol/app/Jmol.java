@@ -708,9 +708,17 @@ public class Jmol extends JPanel {
     b.setRequestFocusEnabled(false);
     b.setMargin(new Insets(1, 1, 1, 1));
 
-    Action a = getAction(key);
+    Action a = null;
+    String actionCommand = null; 
+    if (key.endsWith("Script")) {
+      actionCommand = JmolResourceHandler.getStringX(key);
+      a = executeScriptAction;
+    } else {
+      actionCommand = key;
+      a = getAction(key);
+    }
     if (a != null) {
-      b.setActionCommand(key);
+      b.setActionCommand(actionCommand);
       b.addActionListener(a);
       a.addPropertyChangeListener(new ActionChangedListener(b));
       b.setEnabled(a.isEnabled());

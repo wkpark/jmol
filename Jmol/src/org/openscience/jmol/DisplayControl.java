@@ -364,13 +364,13 @@ final public class DisplayControl {
     return bsSelection;
   }
 
-  public void translateBy(int xDelta, int yDelta) {
+  public void translateXYBy(int xDelta, int yDelta) {
     xTranslation += xDelta;
     yTranslation += yDelta;
     recalc();
   }
 
-  public void rotateBy(int xDelta, int yDelta) {
+  public void rotateXYBy(int xDelta, int yDelta) {
     // what fraction of PI radians do you want to rotate?
     // the full screen width corresponds to a PI (180 degree) rotation
     // if you grab an atom near the outside edge of the molecule,
@@ -385,6 +385,13 @@ final public class DisplayControl {
     rotateByY(ytheta * rotateAccelerator);
     double xtheta = Math.PI * yDelta / minScreenDimension;
     rotateByX(xtheta * rotateAccelerator);
+    recalc();
+  }
+
+  public void rotateZBy(int zDelta) {
+    double rotateAccelerator = 1.1f;
+    double ztheta = Math.PI * zDelta / minScreenDimension;
+    rotateByZ(ztheta * rotateAccelerator);
     recalc();
   }
 
@@ -450,15 +457,20 @@ final public class DisplayControl {
     return slabPercentSetting;
   }
 
-  public void slabToPercent(int percentSlab) {
-    System.out.println("slabToPercent(" + percentSlab + ")");
-    this.slabPercentSetting = percentSlab;
+  public void slabBy(int pixels) {
+    int percent = pixels * slabPercentSetting / minScreenDimension;
+    if (percent == 0)
+      percent = (pixels < 0) ? -1 : 1;
+    slabPercentSetting += percent;
     calcSlab();
-    recalc();
+  }
+
+  public void slabToPercent(int percentSlab) {
+    slabPercentSetting = percentSlab;
+    calcSlab();
   }
 
   public void setSlabEnabled(boolean slabEnabled) {
-    System.out.println("setSlabEnabled("+ slabEnabled + ")");
     if (this.slabEnabled != slabEnabled) {
       this.slabEnabled = slabEnabled;
       calcSlab();
@@ -475,13 +487,17 @@ final public class DisplayControl {
 
   private void calcSlab() {
     if (slabEnabled) {
+      if (slabPercentSetting < 0)
+        slabPercentSetting = 0;
+      else if (slabPercentSetting > 100)
+        slabPercentSetting = 100;
       // all transformed z coordinates are negative
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
       int radius =
         (int)(chemframe.getRotationRadius() * scalePixelsPerAngstrom);
       slabValue = (int)((-100+slabPercentSetting) * 2*radius / 100);
-      System.out.println("slabValue=" + slabValue);
+      recalc();
     }
   }
 

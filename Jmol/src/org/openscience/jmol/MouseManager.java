@@ -27,6 +27,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Dimension;
 import java.awt.Component;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
@@ -57,9 +58,12 @@ public class MouseManager {
   public static final int DELETE = 4;
   public static final int MEASURE = 5;
   public static final int DEFORM = 6; // mth -- what is this?
+  public static final int ROTATE_Z = 7;
+  public static final int SLAB_PLANE = 8;
 
   public static final String[] modeNames = {
-    "ROTATE", "ZOOM", "XLATE", "PICK", "DELETE", "MEASURE", "DEFORM" };
+    "ROTATE", "ZOOM", "XLATE", "PICK", "DELETE", "MEASURE", "DEFORM",
+    "ROTATE_Z", "SLAB_PLANE"};
 
   private int modeMouse = ROTATE;
   public void setMode(int mode) {
@@ -122,18 +126,14 @@ public class MouseManager {
         Atom atom = control.getFrame().getNearestAtom(e.getX(), e.getY());
         switch (modeMouse) {
         case PICK:
-          if (atom == null) {
-            control.clearSelection();
-            break;
-          }
           if (!e.isShiftDown()) {
-            int selectionCount = control.countSelection();
-            boolean wasSelected = control.isSelected(atom);
             control.clearSelection();
-            if (selectionCount == 1 && wasSelected)
-              break;
+            if (atom != null)
+              control.addSelection(atom);
+          } else {
+            if (atom != null) 
+              control.toggleSelection(atom);
           }
-          control.toggleSelection(atom);
           break;
         case DELETE:
           if (atom != null) {
@@ -163,23 +163,51 @@ public class MouseManager {
 
   class MyMouseMotionListener extends MouseMotionAdapter {
 
-    public void mouseDragged(MouseEvent e) {
+    final static int LEFT = InputEvent.BUTTON1_MASK;
+    final static int RIGHT = InputEvent.BUTTON3_MASK;
+    final static int SHIFT_RIGHT =
+      InputEvent.SHIFT_MASK | InputEvent.BUTTON3_MASK;
+    final static int SHIFT_LEFT =
+      InputEvent.SHIFT_MASK | InputEvent.BUTTON1_MASK;
+    final static int CTRL_LEFT =
+      InputEvent.CTRL_MASK | InputEvent.BUTTON1_MASK;
 
-      xCurrent = e.getX();
-      yCurrent = e.getY();
+    int getMode(int modifiers) {
+      if (modeMouse != ROTATE)
+        return modeMouse;
+      if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
+        return SLAB_PLANE;
+      if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
+        return ZOOM;
+      if ((modifiers & SHIFT_RIGHT) == SHIFT_RIGHT)
+        return ROTATE_Z;
+      if ((modifiers & RIGHT) == RIGHT)
+        return XLATE;
+      return modeMouse;
+    }
+
+    public void mouseDragged(MouseEvent e) {
 
       if (! control.inMotion) {
         control.setInMotion(true);
       }
-      switch (modeMouse) {
+      xCurrent = e.getX();
+      yCurrent = e.getY();
+      switch (getMode(e.getModifiers())) {
       case ROTATE:
-        control.rotateBy(xCurrent - xPrevious, yCurrent - yPrevious);
+        control.rotateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
+        break;
+      case ROTATE_Z:
+        control.rotateZBy((xCurrent - xPrevious) + (yPrevious - yCurrent));
         break;
       case XLATE:
-        control.translateBy(xCurrent - xPrevious, yCurrent - yPrevious);
+        control.translateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
         break;
       case ZOOM:
         control.zoomBy((xCurrent - xPrevious) + (yPrevious - yCurrent));
+        break;
+      case SLAB_PLANE:
+        control.slabBy((xCurrent - xPrevious) + (yPrevious - yCurrent));
         break;
       case PICK:
         calcRectRubberBand();

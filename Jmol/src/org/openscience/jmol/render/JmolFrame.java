@@ -26,6 +26,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.ProteinProp;
 import org.openscience.jmol.g25d.Graphics25D;
 import javax.vecmath.Point3d;
 import java.util.Hashtable;
@@ -35,6 +36,12 @@ import java.awt.Rectangle;
 public class JmolFrame {
 
   public DisplayControl control;
+  // the maximum CovalentRadius seen in this set of atoms
+  // used in autobonding
+  private double maxCovalentRadius = 0.0;
+  // whether or not this frame has any protein properties
+  public boolean hasProteinProps;
+
   Shape[] shapes;
 
   final static int growthIncrement = 128;
@@ -55,6 +62,8 @@ public class JmolFrame {
 
   public void finalize() {
     htAtomMap = null;
+    if (bondShapeCount == 0 && control.getAutoBond())
+      rebond();
   }
 
   public AtomShape addAtom(Object clientAtom) {
@@ -70,6 +79,11 @@ public class JmolFrame {
       htAtomMap.put(clientAtom, atomShape);
     if (bspt != null)
       bspt.addTuple(atomShape);
+    double covalentRadius = atomShape.getCovalentRadius();
+    if (covalentRadius > maxCovalentRadius)
+      maxCovalentRadius = covalentRadius;
+    if (!hasProteinProps)
+      hasProteinProps = (atomShape.getProteinProp() != null);
     return atomShape;
   }
 
@@ -180,7 +194,7 @@ public class JmolFrame {
   }
 
   private void findBounds() {
-    if ((centerBoundingBox != null) || (atomShapes == null) || (atomShapeCount <= 0))
+    if ((centerBoundingBox != null) || (atomShapeCount <= 0))
       return;
     calcBoundingBox();
     centerRotation = centerBoundingBox;
@@ -555,17 +569,12 @@ public class JmolFrame {
   }
 
   private Bspt bspt;
-  // the maximumCovalentRadius seen in this molecule;
-  private double maxCovalentRadius = 0.0;
 
   private Bspt getBspt() {
     if (bspt == null) {
       bspt = new Bspt(3);
       for (int i = atomShapeCount; --i >= 0; ) {
         AtomShape atom = atomShapes[i];
-        double covalentRadius = atom.getCovalentRadius();
-        if (covalentRadius > maxCovalentRadius)
-          maxCovalentRadius = covalentRadius;
         bspt.addTuple(atom);
       }
     }
@@ -605,16 +614,22 @@ public class JmolFrame {
   private double minBondDistance2;
 
   public void rebond() {
-    deleteCovalentBonds();
-    long timeBegin, timeEnd;
-    if (showRebondTimes)
-      timeBegin = System.currentTimeMillis();
+    deleteAllBonds();
     bondTolerance = control.getBondTolerance();
     minBondDistance = control.getMinBondDistance();
     minBondDistance2 = minBondDistance*minBondDistance;
+
+    char chainLast = '?';
+    int indexLastCA = -1;
+    AtomShape atomLastCA = null;
+
     Bspt bspt = getBspt();
+    long timeBegin, timeEnd;
+    if (showRebondTimes)
+      timeBegin = System.currentTimeMillis();
     for (int i = atomShapeCount; --i >= 0; ) {
       AtomShape atom = atomShapes[i];
+      // Covalent bonds
       double myCovalentRadius = atom.getCovalentRadius();
       double searchRadius =
         myCovalentRadius + maxCovalentRadius + bondTolerance;
@@ -626,34 +641,68 @@ public class JmolFrame {
                                    atomNear, atomNear.getCovalentRadius(),
                                    e.foundDistance2());
           if (order > 0)
-            atom.bondMutually(atomNear, order);
+            addBondShape(atom.bondMutually(atomNear, order));
         }
       }
-      if (showRebondTimes) {
-        timeEnd = System.currentTimeMillis();
-        System.out.println("maxCovalentRadius=" + maxCovalentRadius);
-        System.out.println("Time to autoBond=" + (timeEnd - timeBegin));
+
+      // Protein backbone bonds
+      if (hasProteinProps) {
+        ProteinProp pprop = atom.getProteinProp();
+        if (pprop != null) {
+          char chainThis = pprop.getChain();
+          if (chainThis == chainLast) {
+            if (pprop.getName().equals("CA")) {
+              if (atomLastCA != null) {
+              bondAtomShapes(atom, atomLastCA,
+                             BondShape.BACKBONE);
+              }
+              atomLastCA = atom;
+            }
+          } else {
+            chainLast = chainThis;
+            atomLastCA = null;
+          }
+        } else {
+          chainLast = '?';
+        }
       }
+    }
+
+    if (showRebondTimes) {
+      timeEnd = System.currentTimeMillis();
+      System.out.println("Time to autoBond=" + (timeEnd - timeBegin));
     }
   }
 
   private int getBondOrder(AtomShape atomA, double covalentRadiusA,
                            AtomShape atomB, double covalentRadiusB,
                            double distance2) {
-    //        System.out.println(" radiusA=" + covalentRadiusA +
-    //                           " radiusB=" + covalentRadiusB +
-    //                           " distance2=" + distance2 +
-    //                           " tolerance=" + bondTolerance);
+    //            System.out.println(" radiusA=" + covalentRadiusA +
+    //                               " radiusB=" + covalentRadiusB +
+    //                         " distance2=" + distance2 +
+    //                         " tolerance=" + bondTolerance);
     double maxAcceptable = covalentRadiusA + covalentRadiusB + bondTolerance;
     double maxAcceptable2 = maxAcceptable * maxAcceptable;
-    if (distance2 < minBondDistance2)
+    if (distance2 < minBondDistance2) {
+      //System.out.println("less than minBondDistance");
       return 0;
-    if (distance2 <= maxAcceptable2)
+    }
+    if (distance2 <= maxAcceptable2) {
+      //System.out.println("returning 1");
       return 1;
+    }
     return 0;
   }
 
-  private void deleteCovalentBonds() {
+  public void deleteAllBonds() {
+    for (int i = bondShapeCount; --i >= 0; ) {
+      bondShapes[i].delete();
+      bondShapes[i] = null;
+    }
+    bondShapeCount = 0;
+  }
+
+  public void deleteCovalentBonds() {
     int indexNoncovalent = 0;
     for (int i = 0; i < bondShapeCount; ++i) {
       BondShape bond = bondShapes[i];
@@ -667,5 +716,6 @@ public class JmolFrame {
         bondShapes[i] = null;
       }
     }
+    bondShapeCount = indexNoncovalent;
   }
 }

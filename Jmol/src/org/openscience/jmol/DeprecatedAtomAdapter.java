@@ -57,6 +57,10 @@ public class DeprecatedAtomAdapter implements ClientAtomAdapter {
     return ((Atom)clientAtom).getVanderwaalsRadius();
   }
 
+  public double getCovalentRadius(int atomicNumber, Object clientAtom) {
+    return ((Atom)clientAtom).getCovalentRadius();
+  }
+
   public Point3d getPoint3d(Object clientAtom) {
     return ((Atom)clientAtom).getPoint3D();
   }

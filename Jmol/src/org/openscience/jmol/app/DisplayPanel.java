@@ -108,10 +108,6 @@ public class DisplayPanel extends JPanel
       control.setSelectionHaloEnabled(false);
   }
     
-  public ChemFrame getFrame() {
-    return control.getFrame();
-  }
-
   public void componentHidden(java.awt.event.ComponentEvent e) {
   }
 

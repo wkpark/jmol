@@ -68,6 +68,10 @@ public class ModelManager {
                            chemfilePrevious, chemfile);
   }
 
+  public boolean hasFrame() {
+    return (chemframe != null);
+  }
+
   public JmolFrame getJmolFrame() {
     return (chemframe == null) ? nullJmolFrame : chemframe.getJmolFrame();
   }
@@ -170,12 +174,7 @@ public class ModelManager {
   public boolean autoBond = true;
 
   public void rebond() {
-    if (chemframe != null) {
-      try {
-        chemframe.rebond();
-      } catch (Exception e){
-      }
-    }
+    chemframe.getJmolFrame().rebond();
   }
 
   public void setBondFudge(double bf) {

@@ -37,6 +37,7 @@ public class Cylinder25D {
 
   DisplayControl control;
   Graphics25D g25d;
+
   public Cylinder25D(DisplayControl control, Graphics25D g25d) {
     this.control = control;
     this.g25d = g25d;

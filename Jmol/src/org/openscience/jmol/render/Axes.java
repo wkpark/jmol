@@ -104,14 +104,11 @@ public class Axes {
     }
 
     public void render(Graphics25D g25d, DisplayControl control) {
-      boolean colorSet = false;
+      short colix = control.getColixAxes();
       for (int i = 0; i < 6; ++i) {
         AxisShape axis = axisShapes[i];
-        if (axis.z <= z) {
-          if (!colorSet)
-            g25d.setColix(control.getColixAxes());
-          g25d.drawLine(x, y, z, axis.x, axis.y, axis.z);
-        }
+        if (axis.z <= z)
+          g25d.drawLine(colix, x, y, z, axis.x, axis.y, axis.z);
       }
     }
   }
@@ -137,8 +134,7 @@ public class Axes {
   
     public void render(Graphics25D g25d, DisplayControl control) {
       if (z > originShape.z) {
-        g25d.setColix(control.getColixAxes());
-        g25d.drawLine(x, y, z,
+        g25d.drawLine(control.getColixAxes(), x, y, z,
                       originShape.x, originShape.y, originShape.z);
       }
       if (label != null)

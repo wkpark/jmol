@@ -101,17 +101,12 @@ public class BoundingBox {
     public void render(Graphics25D g25d, DisplayControl control) {
       // the points I am connected with are at the indices obtained
       // by XORing each of the three bits of my index
-      boolean colorSet = false;
+      short colix = control.getColixAxes();
       for (int i = 1; i <= 4; i <<= 1) {
         int indexOther = myIndex ^ i;
         BboxShape bboxOther = bboxShapes[indexOther];
-        if (z > bboxOther.z || (z == bboxOther.z && myIndex > indexOther)) {
-          if (! colorSet) {
-            g25d.setColix(control.getColixAxes()); // use another color?
-            colorSet = true;
-          }
-          g25d.drawLine(x, y, z, bboxOther.x, bboxOther.y, bboxOther.z);
-        }
+        if (z > bboxOther.z || (z == bboxOther.z && myIndex > indexOther))
+          g25d.drawLine(colix, x, y, z, bboxOther.x, bboxOther.y, bboxOther.z);
       }
     }
   }

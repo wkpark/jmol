@@ -350,7 +350,7 @@ public class TransformManager {
   }
 
   public void scaleFitToScreen() {
-    if (width == 0 || height == 0 || control.getFrame() == null)  {
+    if (width == 0 || height == 0 || !control.hasFrame())  {
       return;
     }
     // translate to the middle of the screen

@@ -259,114 +259,8 @@ public class ChemFrame extends AtomContainer {
     return coords;
   }
 
-  /**
-   * Walk through this frame and find all bonds again.
-   */
   public void rebond() {
-    if (true)
-      return;
-    if (true) {
-      bsptBond();
-      return;
-    }
-    clearBonds();
-    long timeBegin = System.currentTimeMillis();
-    System.out.println("Rebonding atoms");
-    
-    int limit = 10000; // 1000;
-    if (getAtomCount() < limit) {
-      
-      // Clear the currently existing bonds.
-
-      // Do a n*(n-1) scan to get new bonds.
-      Atom[] atoms = getJmolAtoms();
-      for (int i = 0; i < atoms.length - 1; ++i) {
-        for (int j = i; j < atoms.length; j++) {
-          if (BondTools.closeEnoughToBond(atoms[i], atoms[j],
-                                          control.getBondFudge())) {
-            addBond(i, j);
-          }
-        }
-      }
-    } else {
-      System.err.println("Skipped rebonding, because more than " + limit + " found");
-    }
-    long timeEnd = System.currentTimeMillis();
-    System.out.println("Time to rebond=" + (timeEnd - timeBegin));
-  }
-
-  private final static boolean showRebondTimes = false;
-
-  // Binary Space Partition Tree Bond
-  // mth 2003 05 23
-  public void bsptBond() {
-    clearBonds();
-    double maxCovalentRadius = 0.0;
-    long timeBegin, timeEnd;
-    if (showRebondTimes) {
-      timeBegin = System.currentTimeMillis();
-      System.out.println("BSP Tree autobonding");
-    }
-    Bspt bspt = new Bspt(3);
-    Atom[] atoms = getJmolAtoms();
-    for (int i = atoms.length; --i >= 0; ) {
-      Atom atom = atoms[i];
-      double myCovalentRadius = atom.getCovalentRadius();
-      if (myCovalentRadius > maxCovalentRadius)
-        maxCovalentRadius = myCovalentRadius;
-      bspt.addTuple(atom);
-    }
-    this.maxCovalentRadius = maxCovalentRadius;
-    this.bondTolerance = control.getBondTolerance();
-    this.minBondDistance = control.getMinBondDistance();
-    this.minBondDistance2 = this.minBondDistance*this.minBondDistance;
-    this.bspt = bspt;
-    for (int i = atoms.length; --i >= 0; )
-      bondAtom(atoms[i]);
-    this.bspt = null;
-    if (showRebondTimes) {
-      timeEnd = System.currentTimeMillis();
-      System.out.println("maxCovalentRadius=" + maxCovalentRadius);
-      System.out.println("Time to autoBond=" + (timeEnd - timeBegin));
-    }
-  }
-
-  private Bspt bspt;
-  private double maxCovalentRadius;
-  private double bondTolerance;
-  private double minBondDistance;
-  private double minBondDistance2;
-
-  private void bondAtom(Atom atom) {
-    double myCovalentRadius = atom.getCovalentRadius();
-    double searchRadius = myCovalentRadius + maxCovalentRadius + bondTolerance;
-    for (Bspt.EnumerateSphere e = bspt.enumHemiSphere(atom, searchRadius);
-         e.hasMoreElements(); ) {
-      Atom atomNear = (Atom)e.nextElement();
-      if (atomNear != atom && !atom.isBondedAtom(atomNear)) {
-        int order = getBondOrder(atom, myCovalentRadius,
-                                 atomNear, atomNear.getCovalentRadius(),
-                                 e.foundDistance2());
-        if (order > 0)
-          atom.bondMutually(atomNear, order);
-      }
-    }
-  }
-
-  private int getBondOrder(Atom atomA, double covalentRadiusA,
-                           Atom atomB, double covalentRadiusB,
-                           double distance2) {
-    //        System.out.println(" radiusA=" + covalentRadiusA +
-    //                           " radiusB=" + covalentRadiusB +
-    //                           " distance2=" + distance2 +
-    //                           " tolerance=" + bondTolerance);
-    double maxAcceptable = covalentRadiusA + covalentRadiusB + bondTolerance;
-    double maxAcceptable2 = maxAcceptable * maxAcceptable;
-    if (distance2 < minBondDistance2)
-      return 0;
-    if (distance2 <= maxAcceptable2)
-      return 1;
-    return 0;
+    // rebonding now takes place in either CDK or in the JmolFrame code;
   }
 
   private Vector vibrations = new Vector();
@@ -436,42 +330,21 @@ public class ChemFrame extends AtomContainer {
   private void buildJmolFrame() {
     int atomCount = getAtomCount();
     jmframe = new JmolFrame(control, atomCount);
-    char chainLast = '?';
-    int indexLastCA = -1;
-    AtomShape atomShapeLastCA = null;
-    ProteinProp pprop = null;
     for (int i = 0; i < atomCount; ++i) {
       Atom jmolAtom = getJmolAtomAt(i);
       AtomShape atomShape = jmframe.addAtom(jmolAtom);
       Atom[] bondedAtoms = jmolAtom.getBondedAtoms();
-      if (bondedAtoms != null)
+      if (bondedAtoms != null) {
         for (int j = bondedAtoms.length; --j >= 0; ) {
           jmframe.bondAtomShapes(atomShape, bondedAtoms[j],
                                  jmolAtom.getBondOrder(j));
         }
+      }
       if (jmolAtom.hasVector()) {
         Point3d atomPoint = jmolAtom.getPoint3D();
         Point3d vectorPoint = new Point3d(jmolAtom.getVector());
         vectorPoint.scaleAdd(2, atomPoint);
         jmframe.addLineShape(new ArrowLineShape(atomPoint, vectorPoint));
-      }
-      pprop = jmolAtom.getProteinProp();
-      if (pprop != null) {
-        char chainThis = pprop.getChain();
-        if (chainThis == chainLast) {
-          if (pprop.getName().equals("CA")) {
-            if (atomShapeLastCA != null) {
-              jmframe.bondAtomShapes(atomShapeLastCA, atomShape,
-                                     BondShape.BACKBONE);
-            }
-            atomShapeLastCA = atomShape;
-          }
-        } else {
-          chainLast = chainThis;
-          atomShapeLastCA = null;
-        }
-      } else {
-        chainLast = '?';
       }
     }
 

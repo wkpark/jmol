@@ -771,12 +771,12 @@ final public class DisplayControl {
     return modelManager.getJmolFrame();
   }
 
-  public ChemFrame getFrame() {
-    return modelManager.chemframe;
+  public boolean hasFrame() {
+    return modelManager.hasFrame();
   }
 
-  public ChemFrame[] getFrames() {
-    return modelManager.getFrames();
+  public ChemFrame getFrame() {
+    return modelManager.chemframe;
   }
 
   public double getRotationRadius() {
@@ -1655,7 +1655,7 @@ final public class DisplayControl {
   }
 
   /****************************************************************
-   * Jmol Adapter routines - for now they are here
+   * ClientAtomAdapter routines
    ****************************************************************/
 
   public int getAtomicNumber(Object clientAtom) {
@@ -1672,6 +1672,10 @@ final public class DisplayControl {
 
   public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
     return clientAtomAdapter.getVanderwaalsRadius(atomicNumber, clientAtom);
+  }
+
+  public double getCovalentRadius(int atomicNumber, Object clientAtom) {
+    return clientAtomAdapter.getCovalentRadius(atomicNumber, clientAtom);
   }
 
   public Point3d getPoint3d(Object clientAtom) {

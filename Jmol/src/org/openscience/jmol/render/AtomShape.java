@@ -139,6 +139,7 @@ public class AtomShape extends Shape implements Bspt.Tuple {
       bondsNew[j] = bonds[j];
     for ( ; j < newLength; ++j)
       bondsNew[j] = bonds[j + 1];
+    bonds = bondsNew;
   }
 
   public void clearBonds() {
@@ -384,7 +385,7 @@ public class AtomShape extends Shape implements Bspt.Tuple {
   }
 
   public double getCovalentRadius() {
-    return getVanderwaalsRadius();
+    return frame.control.getCovalentRadius(atomicNumber, clientAtom);
   }
 
   public ProteinProp getProteinProp() {

@@ -38,6 +38,7 @@ public interface ClientAtomAdapter {
   public String getAtomicSymbol(int atomicNumber, Object clientAtom);
   public String getAtomTypeName(int atomicNumber, Object clientAtom);
   public double getVanderwaalsRadius(int atomicNumber, Object clientAtom);
+  public double getCovalentRadius(int atomicNumber, Object clientAtom);
   public Point3d getPoint3d(Object clientAtom);
   public ProteinProp getProteinProp(Object clientAtom);
   public Color getColor(int atomicNumber, Object clientAtom, int colorScheme);

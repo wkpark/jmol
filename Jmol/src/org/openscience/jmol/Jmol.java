@@ -72,6 +72,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JMenuBar;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JToggleButton;
 import javax.swing.JPanel;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -108,6 +109,11 @@ class Jmol extends JPanel {
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
   private JFileChooser exportChooser;
+
+  /**
+   * Button group for toggle buttons in the toolbar.
+   */
+  ButtonGroup toolbarButtonGroup = new ButtonGroup();
 
   static File UserPropsFile;
   static File UserAtypeFile;
@@ -672,7 +678,6 @@ class Jmol extends JPanel {
     return toolbar;
   }
 
-
   /**
    * Hook through which every toolbar item is created.
    */
@@ -689,15 +694,23 @@ class Jmol extends JPanel {
    * @param key The key in the resource file to serve as the basis
    *  of lookups.
    */
-  protected JButton createToolbarButton(String key) {
+  protected AbstractButton createToolbarButton(String key) {
 
     ImageIcon ii = JmolResourceHandler.getInstance().getIcon("Jmol." + key + imageSuffix);
-    JButton b = new JButton(ii) {
-
-      public float getAlignmentY() {
-        return 0.5f;
+    AbstractButton b = new JButton(ii);
+    String isToggleString = JmolResourceHandler.getInstance().getString("Jmol." + key + "Toggle");
+    if (isToggleString != null) {
+      boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
+      if (isToggle) {
+        b = new JToggleButton(ii);
+        toolbarButtonGroup.add(b);
+        String isSelectedString = JmolResourceHandler.getInstance().getString("Jmol." + key + "ToggleSelected");
+        if (isSelectedString != null) {
+          boolean isSelected = Boolean.valueOf(isSelectedString).booleanValue();
+          b.setSelected(isSelected);
+        }
       }
-    };
+    }
     b.setRequestFocusEnabled(false);
     b.setMargin(new Insets(1, 1, 1, 1));
 

@@ -3,3 +3,5 @@ classes
 build
 dist
 javadoc
+appjars
+appletjars

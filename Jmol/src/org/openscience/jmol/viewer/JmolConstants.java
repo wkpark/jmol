@@ -1702,6 +1702,92 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
 
+  ////////////////////////////////////////////////////////////////
+  // predefined sets
+  ////////////////////////////////////////////////////////////////
+
+  public static String[] predefinedSets = {
+    //
+    // protein related
+    //
+    "@amino _g>0 & _g<=23",
+    "@protein amino", // + common post-translational modifications ??
+    "@acidic asp,glu",
+    "@basic arg,his,lys",
+    "@charged acidic,basic",
+    "@negative acidic",
+    "@positive basic",
+    "@neutral amino&!(acidic,basic)",
+    "@polar amino&!hydrophobic",
+
+    "@cyclic his,phe,pro,trp,tyr",
+    "@acyclic amino&!cyclic",
+    "@aliphatic ala,gly,ile,leu,val",
+    "@aromatic his,phe,trp,tyr",
+    //    "@cystine",
+
+    "@buried ala,cys,ile,leu,met,phe,trp,val",
+    "@surface !buried", // this looks wrong to me -- mth
+
+    // doc on hydrophobic is inconsistent
+    // text description of hydrophobic says this
+    //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
+    // table says this
+    "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
+    "@ligand hetero & !solvent",
+    "@mainchain backbone",
+    "@small ala,gly,ser",
+    "@medium asn,asp,cys,pro,thr,val",
+    "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr",
+
+    //
+    // nucleic acid related
+    //
+    "@nucleic within(group,(_a>=8 & _a<=30))",
+    "@rna nucleic & within(group,_a=15)",
+    "@dna nucleic & !within(group,(_a=16,_a=31))",
+
+    "@c _g=30,_g=31,_g=38,_g=39,_g>=61 & _g<=63",
+    "@g _g=26,_g=27,_g>=40 & _g<=46,_g>=55 & _g<=57",
+    "@cg c,g",
+    "@a _g=24,_g=25,_g=36,_g=37,_g>=52 & _g<=54",
+    "@t _g=32,_g=33,_g>=64 & _g<=66",
+    "@at a,t",
+    "@i _g=28,_g=29,_g>=58 & _g<=60",
+    "@u _g=34,_g=35,_g>=48 & _g<=51,_g>=67 & _g<=69",
+
+    "@purine _g>=24 & _g<=29",
+    "@pyrimidine _g>=30 & _g<=35",
+
+    //
+    // solvent
+    //
+    "@solvent _g>=70 & _g<=74", // water or ions
+    "@hoh water",
+    "@water _g>=70 & _g<=72",
+    "@ions _g=70,_g=71",
+
+    //
+    // structure related
+    //
+    "@alpha _a=1", // rasmol doc says "approximately *.CA" - whatever?
+    "@backbone amino & _a<=4,nucleic & (_a>=9 & _a<=31)",
+    "@sidechain (protein,nucleic) & !backbone", // doc & code inconsistent
+    "@base nucleic & !backbone",
+
+    "@turn _structure=1",
+    "@sheet _structure=2",
+    "@helix _structure=3",
+
+    "@bonded _bondedcount>0",
+    //    "@hetero", handled specially
+
+  };
+
+  ////////////////////////////////////////////////////////////////
+  // font-related
+  ////////////////////////////////////////////////////////////////
+
   public final static String DEFAULT_FONTFACE = "SansSerif";
   public final static String DEFAULT_FONTSTYLE = "Plain";
 

@@ -210,9 +210,10 @@ public class Eval implements Runnable {
   public void clearDefinitionsAndLoadPredefined() {
     variables.clear();
 
-    int cPredef = Token.predefinitions.length;
+    int cPredef = JmolConstants.predefinedSets.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++)
-      predefine(Token.predefinitions[iPredef]);
+      predefine(JmolConstants.predefinedSets[iPredef]);
+    // Now, define all the elements as predefined sets
     // hydrogen is handled specially, so don't define it
     for (int i = JmolConstants.elementNames.length; --i > 1; ) {
       String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;

@@ -727,7 +727,9 @@ final class Frame {
 
   void setShapeProperty(int shapeID, String propertyName,
                                Object value, BitSet bsSelected) {
-    loadShape(shapeID);
+    // miguel 2004 11 23
+    // Why was I loading this?
+    // loadShape(shapeID);
     if (shapes[shapeID] != null)
       shapes[shapeID].setProperty(propertyName, value, bsSelected);
   }

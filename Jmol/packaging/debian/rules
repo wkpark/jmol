@@ -6,13 +6,13 @@ package=jmol
 
 build:
 	$(checkdir)	
-	$(MAKE) -f Makefile.Debian
+	$(MAKE) -f Makefile
 	touch build
 
 clean:
 	$(checkdir)
 	-rm -f build
-	-$(MAKE) -f Makefile.Debian clean
+	-$(MAKE) -f Makefile clean
 	-rm -f `find . -name "*~"`
 	-rm -rf debian/tmp debian/files* core debian/substvars
 
@@ -27,7 +27,7 @@ binary-arch: checkroot build
 	-rm -rf debian/tmp
 	install -d debian/tmp
 	cd debian/tmp && install -d `cat ../dirs`
-	$(MAKE) -f Makefile.Debian install DESTDIR=`pwd`/debian/tmp
+	$(MAKE) -f Makefile install DESTDIR=`pwd`/debian/tmp
 # Must have debmake installed for this to work. Otherwise please copy
 # /usr/bin/debstd into the debian directory and change debstd to debian/debstd
 	debstd 

@@ -1,3 +1,9 @@
+jmol (1) unstable; urgency=low
+
+  * New upstream version (note new version scheme)
+
+ -- Egon Willighagen <egonw@sci.kun.nl>  Sun, 20 May 2001 08:26:00 +0200
+
 jmol (20010505) unstable; urgency=low
 
   * New upstream version taken from CVS.

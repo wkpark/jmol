@@ -190,10 +190,10 @@ class CmlReader extends ModelReader {
                              String qName, Attributes atts)
       throws SAXException
     {
-      /*
+      /* */
         System.out.println("startElement(" + namespaceURI + "," + localName +
         "," + qName + "," + atts +  ")");
-      */
+      /* */
       if ("molecule".equals(localName)) {
         ++moleculeCount;
         return;
@@ -339,10 +339,10 @@ class CmlReader extends ModelReader {
     
     public void endElement(String uri, String localName,
                            String qName) throws SAXException {
-      /*
+      /* */
         System.out.println("endElement(" + uri + "," + localName +
         "," + qName + ")");
-      */
+      /* */
       if ("atom".equals(localName)) {
         if (atom.elementSymbol != null &&
             ! Float.isNaN(atom.z)) {
@@ -365,11 +365,21 @@ class CmlReader extends ModelReader {
       if ("scalar".equals(localName)) {
         if (elementContext == CRYSTAL) {
           System.out.println("CRYSTAL atts.title: " + title);
-          int i = 6;
-          while (--i >= 0 && ! title.equals(Model.notionalUnitcellTags[i]))
-            ;
-          if (i >= 0)
-            notionalUnitcell[i] = parseFloat(chars);
+          if (title != null) {
+              int i = 6;
+              while (--i >= 0 && ! title.equals(Model.notionalUnitcellTags[i]))
+                  ;
+              if (i >= 0)
+                  notionalUnitcell[i] = parseFloat(chars);
+          }
+          System.out.println("CRYSTAL atts.dictRef: " + dictRef);
+          if (dictRef != null) {
+              int i = 6;
+              while (--i >= 0 && ! dictRef.equals("cml:" + Model.notionalUnitcellTags[i]))
+                  ;
+              if (i >= 0)
+                  notionalUnitcell[i] = parseFloat(chars);
+          }
         } else if (elementContext == ATOM) {
           if ("jmol:charge".equals(dictRef)) {
             atom.partialCharge = parseFloat(chars);
@@ -401,7 +411,8 @@ class CmlReader extends ModelReader {
     }
     
     public void characters(char[] ch, int start, int length) {
-      // System.out.println("End chars");
+      // 
+      System.out.println("End chars: " + new String(ch, start, length));
       if (keepChars) {
         if (chars == null) {
           chars = new String(ch, start, length);

@@ -83,7 +83,6 @@ final public class JmolViewer {
   public RepaintManager repaintManager;
   public StyleManager styleManager;
   public LabelManager labelManager;
-  public AxesManager axesManager;
   public MeasurementManager measurementManager;
   public DistributionManager distributionManager;
   public Eval eval;
@@ -127,7 +126,6 @@ final public class JmolViewer {
     modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
-    axesManager = new AxesManager(this);
     measurementManager = new MeasurementManager(this);
     distributionManager = new DistributionManager(this);
 
@@ -1430,7 +1428,7 @@ final public class JmolViewer {
     if (key.equals("perspectiveDepth"))
       return getPerspectiveDepth();
     if (key.equals("showAxes"))
-      return getShowAxes();
+      return getShapeShow(JmolConstants.SHAPE_AXES);
     if (key.equals("showBoundingBox"))
       return getShapeShow(JmolConstants.SHAPE_BBOX);
     if (key.equals("showUnitcell"))
@@ -1467,7 +1465,7 @@ final public class JmolViewer {
     if (key.equals("perspectiveDepth"))
       { setPerspectiveDepth(value); return; }
     if (key.equals("showAxes"))
-      { setShowAxes(value); return; }
+      { setShapeShow(JmolConstants.SHAPE_AXES, value); return; }
     if (key.equals("showBoundingBox"))
       { setShapeShow(JmolConstants.SHAPE_BBOX, value); return; }
     if (key.equals("showUnitcell"))
@@ -1761,36 +1759,6 @@ final public class JmolViewer {
   }
 
   /****************************************************************
-   * delegated to AxesManager
-   ****************************************************************/
-
-  public void setShowAxes(boolean showAxes) {
-    setModeAxes(showAxes ? JmolConstants.AXES_BBOX : JmolConstants.AXES_NONE);
-  }
-
-  public boolean getShowAxes() {
-    return axesManager.modeAxes != JmolConstants.AXES_NONE;
-  }
-
-  public void setModeAxes(byte modeAxes) {
-    axesManager.setModeAxes(modeAxes);
-    structuralChange = true;
-    refresh();
-  }
-
-  public byte getModeAxes() {
-    return axesManager.modeAxes;
-  }
-
-  public short getColixAxes() {
-    return axesManager.colixAxes;
-  }
-
-  public short getColixAxesText() {
-    return axesManager.colixAxesText;
-  }
-
-  /****************************************************************
    * JmolClientAdapter routines
    ****************************************************************/
 
@@ -1846,6 +1814,14 @@ final public class JmolViewer {
 
   public short getColixAtomPalette(Atom atom, byte palette) {
     return colorManager.getColixAtomPalette(atom, palette);
+  }
+
+  public short getColixAxes() {
+    return colorManager.colixAxes;
+  }
+
+  public short getColixAxesText() {
+    return colorManager.colixAxesText;
   }
 
   ////////////////////////////////////////////////////////////////

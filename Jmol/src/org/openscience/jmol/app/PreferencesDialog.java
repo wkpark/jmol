@@ -279,7 +279,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     fooPanel.add(cbPerspectiveDepth);
 
     cbShowAxes =
-      guimap.newJCheckBox("Prefs.showAxes", viewer.getShowAxes());
+      guimap.newJCheckBox("Prefs.showAxes",
+                          viewer.getShapeShow(JmolConstants.SHAPE_AXES));
     cbShowAxes.addItemListener(checkBoxListener);
     fooPanel.add(cbShowAxes);
 
@@ -980,7 +981,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbWireframeRotation.setSelected(viewer.getWireframeRotation());
 
     cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
-    cbShowAxes.setSelected(viewer.getShowAxes());
+    cbShowAxes.setSelected(viewer.getShapeShow(JmolConstants.SHAPE_AXES));
     cbShowBoundingBox.setSelected(viewer.
                                   getShapeShow(JmolConstants.SHAPE_BBOX));
 
@@ -1107,7 +1108,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setShowMeasurements(showMeasurements);
     viewer.setWireframeRotation(wireframeRotation);
     viewer.setPerspectiveDepth(perspectiveDepth);
-    viewer.setShowAxes(showAxes);
+    viewer.setShapeShow(JmolConstants.SHAPE_AXES, showAxes);
     viewer.setShapeShow(JmolConstants.SHAPE_BBOX, showBoundingBox);
     viewer.setOrientationRasMolChime(orientationRasMolChime);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
@@ -1181,7 +1182,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put("perspectiveDepth", strSelected);
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
-        viewer.setShowAxes(showAxes);
+        viewer.setShapeShow(JmolConstants.SHAPE_AXES, isSelected);
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;

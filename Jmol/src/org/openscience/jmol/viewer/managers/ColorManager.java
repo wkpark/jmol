@@ -174,6 +174,20 @@ public class ColorManager {
     colixBackground = Colix.getColix(colorBackground);
   }
 
+  public Color colorAxes = Color.gray;
+  public short colixAxes = Colix.GRAY;
+  public void setColorAxes(Color color) {
+    colorAxes = color;
+    colixAxes = Colix.getColix(color);
+  }
+
+  public Color colorAxesText = Color.gray;
+  public short colixAxesText = Colix.GRAY;
+  public void setColorAxesText(Color color) {
+    colorAxesText = color;
+    colixAxesText = Colix.getColix(color);
+  }
+
   // FIXME NEEDSWORK -- arrow vector stuff
   public Color colorVector = Color.black;
   public short colixVector = Colix.BLACK;

@@ -1996,17 +1996,7 @@ public class Eval implements Runnable {
   }
 
   void setAxes() throws ScriptException {
-    checkLength3();
-    byte modeAxes = JmolConstants.AXES_NONE;
-    switch (statement[2].tok) {
-    case Token.on:
-      modeAxes = JmolConstants.AXES_BBOX;
-    case Token.off:
-      break;
-    default:
-      booleanExpected();
-    }
-    viewer.setModeAxes(modeAxes);
+    viewer.setShapeShow(JmolConstants.SHAPE_AXES, getSetBoolean());
   }
 
   void setBondmode() throws ScriptException {

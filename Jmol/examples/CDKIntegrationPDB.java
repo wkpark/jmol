@@ -22,31 +22,35 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-import org.jmol.adapter.cdk.CdkJmolAdapter;
 import org.jmol.api.*;
-
-import org.openscience.cdk.*;
+import org.jmol.adapter.cdk.CdkJmolAdapter;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.vecmath.*;
 
 /**
  * A example of integrating the Jmol viewer into a CDK application.
  *
  * <p>I compiled/ran this code directly in the examples directory by doing:
  * <pre>
- * javac -classpath ../Jmol.jar:../../../CDK/cdk/dist/jar/cdk-all.jar CDKIntegration2.java
- * java -cp .:../Jmol.jar:../../../CDK/cdk/dist/jar/cdk-all.jar CDKIntegration2
+ * javac -classpath ../Jmol.jar CDKIntegration.java
+ * java -cp .:../Jmol.jar:../../../CDK/cdk/dist/jar/cdk-all.jar CDKIntegration
  * </pre>
  *
  * @author Miguel <mth@mth.com>
  * @author Egon <egonw@jmol.org>
  */
-public class CDKIntegration2 {
+public class CDKIntegrationPDB {
     
     public static void main(String[] argv) {
+        
+        if (argv.length != 1) {
+            System.out.println("Syntax: CDKIntegrationPDB <filename>");
+            System.exit(-1);
+        }
+        
+        String filename = argv[0];
         
         JFrame frame = new JFrame("CDK Integration Example");
         frame.addWindowListener(new ApplicationCloser());
@@ -57,33 +61,15 @@ public class CDKIntegration2 {
         frame.setVisible(true);
         
         JmolViewer viewer = jmolPanel.getViewer();
-        
-        Molecule methane = new Molecule();
-        Atom atom = new Atom("C");
-        atom.setPoint3d(new Point3d( 0.257,-0.363, 0.000));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d( 0.257, 0.727, 0.000));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d( 0.771,-0.727, 0.890));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d( 0.771,-0.727,-0.890));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d(-0.771,-0.727, 0.000));
-        methane.addAtom(atom);
-        
-        viewer.openClientFile("", "", methane);
-        
-        viewer.evalString(strScript);
+        viewer.openFile(filename);
         String strError = viewer.getOpenFileError();
         if (strError != null)
             System.out.println(strError);
+
+        viewer.evalString(strScript);
     }
     
-    final static String strScript = "select *; spacefill on;";
+    final static String strScript = "select *; spacefill off; cartoons on; color cartoons structure;";
 }
 
 class ApplicationCloser extends WindowAdapter {

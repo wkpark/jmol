@@ -62,10 +62,11 @@ public class CDKIntegration {
         
         JmolViewer viewer = jmolPanel.getViewer();
         viewer.openFile(filename);
-        viewer.evalString(strScript);
         String strError = viewer.getOpenFileError();
         if (strError != null)
             System.out.println(strError);
+
+        viewer.evalString(strScript);
     }
     
     final static String strScript = "select *; spacefill on;";

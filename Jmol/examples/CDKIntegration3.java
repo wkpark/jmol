@@ -33,18 +33,18 @@ import javax.swing.*;
 import javax.vecmath.*;
 
 /**
- * A example of integrating the Jmol viewer into a CDK application.
+ * Another example of integrating the Jmol viewer into a CDK application.
  *
  * <p>I compiled/ran this code directly in the examples directory by doing:
  * <pre>
- * javac -classpath ../Jmol.jar:../../../CDK/cdk/dist/jar/cdk-all.jar CDKIntegration2.java
- * java -cp .:../Jmol.jar:../../../CDK/cdk/dist/jar/cdk-all.jar CDKIntegration2
+ * javac -classpath ../Jmol.jar:../../../CDK/cdk/dist/jar/cdk-all.jar CDKIntegration3.java
+ * java -cp .:../Jmol.jar:../../../CDK/cdk/dist/jar/cdk-all.jar CDKIntegration3
  * </pre>
  *
  * @author Miguel <mth@mth.com>
  * @author Egon <egonw@jmol.org>
  */
-public class CDKIntegration2 {
+public class CDKIntegration3 {
     
     public static void main(String[] argv) {
         
@@ -58,24 +58,19 @@ public class CDKIntegration2 {
         
         JmolViewer viewer = jmolPanel.getViewer();
         
-        Molecule methane = new Molecule();
-        Atom atom = new Atom("C");
-        atom.setPoint3d(new Point3d( 0.257,-0.363, 0.000));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d( 0.257, 0.727, 0.000));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d( 0.771,-0.727, 0.890));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d( 0.771,-0.727,-0.890));
-        methane.addAtom(atom);
-        atom = new Atom("H");
-        atom.setPoint3d(new Point3d(-0.771,-0.727, 0.000));
-        methane.addAtom(atom);
+        Crystal crystal = new Crystal();
+        crystal.setID("CesiumChloride");
+        crystal.setA(new Vector3d(4.11, 0, 0));
+        crystal.setB(new Vector3d(0, 4.11, 0));
+        crystal.setC(new Vector3d(0, 0, 4.11));
+        Atom cesium = new Atom("Cs");
+        cesium.setPoint3d(new Point3d(0.000, 0.000, 0.000));
+        crystal.addAtom(cesium);
+        Atom chloride = new Atom("Cl");
+        chloride.setPoint3d(new Point3d(2.055, 2.055, 2.055));
+        crystal.addAtom(chloride);
         
-        viewer.openClientFile("", "", methane);
+        viewer.openClientFile("", "", crystal);
         
         viewer.evalString(strScript);
         String strError = viewer.getOpenFileError();
@@ -83,7 +78,7 @@ public class CDKIntegration2 {
             System.out.println(strError);
     }
     
-    final static String strScript = "select *; spacefill on;";
+    final static String strScript = "set unitcell on; select *; spacefill on;";
 }
 
 class ApplicationCloser extends WindowAdapter {

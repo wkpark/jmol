@@ -34,7 +34,7 @@
                 addRowButtons(
                   "Projekti kirjeldus",
                   "Peida lahusti",
-                  "faili", "projekti");
+                  "<fah_count_files/> faili / <fah_count_projects/> projekti.");
                 addRowCurrentXyz(
                   "Kui sul on puuduvate projektide <b>current.xyz</b> faile, siis, palun, saada need nicove@users.sourceforge.net");
               </script>

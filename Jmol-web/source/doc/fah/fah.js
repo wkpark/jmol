@@ -165,7 +165,7 @@ function addRowProjectCode(label) {
   document.writeln("</tr>");
 }
 
-function addRowButtons(projectDescription, hideSolvent, files, projects) {
+function addRowButtons(projectDescription, hideSolvent, files_projects) {
   document.writeln("<tr>");
   document.writeln(  "<td align='left' colspan='2'>");
   document.writeln(    "<br/>");
@@ -178,7 +178,7 @@ function addRowButtons(projectDescription, hideSolvent, files, projects) {
   document.writeln(    "<input type='button' value='XML'");
   document.writeln(    "  onclick='showXMLFile()'/>");
   document.writeln(    "<small>");
-  document.writeln(    "  <fah_count_files/> " + files + " / <fah_count_projects/> " + projects + ".");
+  document.writeln(      files_projects);
   document.writeln(    "</small>");
   document.writeln(  "</td>");
   document.writeln("</tr>");

@@ -34,7 +34,7 @@
                 addRowButtons(
                   "Beschrijving van het project",
                   "Verberg het oplosmiddel",
-                  "bestanden", "Projecten");
+                  "<fah_count_files/> bestanden / <fah_count_projects/> Projecten.");
                 addRowCurrentXyz(
                   "Als je <b>current.xyz</b> bestanden hebt van niet aanwezige projecten, zend ze dan aub. naar nicove@users.sourceforge.net");
               </script>

@@ -34,7 +34,7 @@
                 addRowButtons(
                   "Description du projet",
                   "Masquer solvant",
-                  "fichiers", "projets");
+                  "<fah_count_files/> fichiers / <fah_count_projects/> projets.");
                 addRowCurrentXyz(
                   "Si vous avez des fichiers <b>current.xyz</b> pour les projets manquants, merci de les envoyer &#x00E0; nicove@users.sourceforge.net");
               </script>

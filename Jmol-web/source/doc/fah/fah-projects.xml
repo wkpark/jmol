@@ -1209,8 +1209,8 @@
     server="171.67.89.152" atoms="215" preferred="6" deadline="10"
     credit="24" frames="100" code="G" contact="vvishal"/>
   <fah_proj number="741" name="p741_Villin-pfold-protein-confined" file="y"
-    server="171.64.122.130"
-    credit="149" frames="100" code="G"/>
+    server="171.64.122.130" atoms="19399" preferred="29" deadline="43"
+    credit="149" frames="100" code="G" contact="vvishal"/>
   <fah_proj number="799"/>
 
   <!-- Projects 800 to 899 -->
@@ -2392,7 +2392,7 @@
   <fah_proj number="1415" name="p1415_Q88 in water" file="y"
     server="171.64.122.110" atoms="12368" preferred="50" deadline="74"
     credit="266" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="1416" name="p1416_polyQ_beta-helix"
+  <fah_proj number="1416" name="p1416_polyQ_beta-helix" file="y"
     server="171.64.122.110" atoms="12280" preferred="45" deadline="65"
     credit="234" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1475" name="p1475_tet1_03_1" file="y"
@@ -2597,7 +2597,7 @@
   <fah_proj number="1911" name="p1911_ALA-depeptide_umbrel" file="y"
     server="171.64.122.113" atoms="118" preferred="29" deadline="43"
     credit="450" frames="100" code="Q" contact="NA"/>
-  <fah_proj number="1912" name="p1912_ALA-depeptide_umb2"
+  <fah_proj number="1912" name="p1912_ALA-depeptide_umb2" file="y"
     server="171.64.122.113" atoms="118" preferred="29" deadline="43"
     credit="450" frames="100" code="Q" contact="NA"/>
     

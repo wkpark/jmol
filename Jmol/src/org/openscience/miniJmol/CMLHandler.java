@@ -54,10 +54,12 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
   private Vector x3;
   private Vector y3;
   private Vector z3;
+  private boolean bondsEnabled;
  
-  public CMLHandler () {
+  public CMLHandler (boolean ABondsEnabled) {
     cfs = new Vector();
     frameNo = 0;
+    bondsEnabled=ABondsEnabled;
   };
 
   public void startDocument () {
@@ -114,7 +116,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
         }
         break;	
       case MOLECULE :
-	cf = new ChemFrame();
+	cf = new ChemFrame(bondsEnabled);
 	elsym = new Vector();
 	elid = new Vector();
 	x3 = new Vector();

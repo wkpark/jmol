@@ -39,8 +39,8 @@
 
 package org.openscience.miniJmol;
 
-import org.openscience.jmol.PhysicalProperty;
 import org.openscience.jmol.DisplaySettings;
+import org.openscience.jmol.PhysicalProperty;
 import java.awt.Graphics;
 import java.util.*;
 import javax.vecmath.Point3f;
@@ -63,28 +63,11 @@ public class ChemFrame {
     }    
 
     /**
-     * Toggles on/off the flag that decides whether bonds are shown
-     * when displaying a ChemFrame
-     */
-    public void toggleBonds() {
-        ShowBonds = !ShowBonds;
-    }
-
-    /**
      * Toggles on/off the flag that decides whether Hydrogen atoms are
      * shown when displaying a ChemFrame 
      */
     public void toggleHydrogens() {
         ShowHydrogens = !ShowHydrogens;
-    }
-
-    /**
-     * Sets the screen scaling factor for zooming.
-     *
-     * @param ss the screenscale factor
-     */
-    public void setScreenScale(float ss) {
-        ScreenScale = ss;
     }
 
     /**
@@ -95,16 +78,6 @@ public class ChemFrame {
      */
     public void setShowAtoms(boolean sa) {
         ShowAtoms = sa;
-    }
-
-    /**
-     * Set the flag that decides whether bonds are shown
-     * when displaying a ChemFrame
-     *
-     * @param sb the value of the flag
-     */
-    public void setShowBonds(boolean sb) {
-        ShowBonds = sb;
     }
 
     /**
@@ -119,9 +92,6 @@ public class ChemFrame {
 
     public boolean getShowAtoms() {
         return ShowAtoms;
-    }
-    public boolean getShowBonds() {
-        return ShowBonds;
     }
     public boolean getShowHydrogens() {
         return ShowHydrogens;
@@ -138,17 +108,8 @@ public class ChemFrame {
     public boolean getAutoBond() {
         return AutoBond;
     }
-    public void matmult(Matrix3D m) {
-        mat.mult(m);
-    }
-    public void matscale(float xs, float ys, float zs) {
-        mat.scale(xs, ys, zs);
-    }
-    public void mattranslate(float xt, float yt, float zt) {
-        mat.translate(xt, yt, zt);
-    }
-    public void matunit() {
-        mat.unit();
+    public void setMat(Matrix3D newmat) {
+        mat=newmat;
     }
     
     /**
@@ -156,7 +117,7 @@ public class ChemFrame {
      *
      * @param na the number of atoms in the frame
      */
-    public ChemFrame(int na) {
+    public ChemFrame(int na, boolean ABondsEnabled) {
         mat = new Matrix3D();
         mat.xrot(0);
         mat.yrot(0);
@@ -167,14 +128,19 @@ public class ChemFrame {
         for (int i = 0; i < pickedAtoms.length; ++i) {
             pickedAtoms[i] = false;
         }
+		bondsEnabled=ABondsEnabled;
     }
 
     /**
      * Constructor for a ChemFrame with an unknown number of atoms.
      *
      */
+    public ChemFrame(boolean ABondsEnabled) {
+		this(100, ABondsEnabled);
+    }
+
     public ChemFrame() {
-		this(100);
+		this(true);
     }
 
     /** 
@@ -230,11 +196,13 @@ public class ChemFrame {
 		}
 
         atoms[numberAtoms] = new Atom(type, new Point3f(x, y, z), numberAtoms);
-                      
-        for (int j = 0; j < numberAtoms ; j++ ) {
-			if (Atom.closeEnoughToBond(atoms[numberAtoms], atoms[j], bondFudge)) {
-				atoms[numberAtoms].addBondedAtom(atoms[j]);
-				atoms[j].addBondedAtom(atoms[numberAtoms]);
+
+        if (bondsEnabled) {
+            for (int j = 0; j < numberAtoms ; j++ ) {
+		    	if (Atom.closeEnoughToBond(atoms[numberAtoms], atoms[j], bondFudge)) {
+		    		atoms[numberAtoms].addBondedAtom(atoms[j]);
+		    		atoms[j].addBondedAtom(atoms[numberAtoms]);
+                }
             }
         }
         
@@ -334,16 +302,22 @@ public class ChemFrame {
         }
         for (int i = 0; i < numberAtoms; i++) {
             int j = zSortedAtomIndicies[i];
-			Enumeration bondIter = atoms[j].getBondedAtoms();
-			while (bondIter.hasMoreElements()) {
-				bondRenderer.paint(g, atoms[j], (Atom)bondIter.nextElement(),
-								   settings);
+			if (settings.getShowBonds()) {
+				Enumeration bondIter = atoms[j].getBondedAtoms();
+				while (bondIter.hasMoreElements()) {
+					bondRenderer.paint(g, atoms[j], (Atom)bondIter.nextElement(),
+								   	settings);
+				}
 			}
             //Added by T.GREY for quick-draw on move support
             if (ShowAtoms && !settings.getFastRendering()) {
 				atomRenderer.paint(g, atoms[j],
 								   pickedAtoms[j],
-								   settings);
+								   settings, false);
+			} else if (settings.getFastRendering()) {
+				atomRenderer.paint(g, atoms[j],
+								   pickedAtoms[j],
+								   settings, true);
 			}
         }
     }
@@ -564,12 +538,20 @@ public class ChemFrame {
 	}
 
 	private void sortAtoms() {
+		int passes=0;
+		if (numberAtoms==0) return;
         if (zSortedAtomIndicies == null || zSortedAtomIndicies.length != numberAtoms) {
             zSortedAtomIndicies = new int[numberAtoms];
+            zSortedAtomIndicies2 = new int[numberAtoms];
+            zBubbles = new int[numberAtoms];
             for (int i = 0; i < numberAtoms; ++i) {
                 zSortedAtomIndicies[i] = i;
 			}
         }
+		if (numberAtoms==1) {
+			zSortedAtomIndicies[0]=0;
+			return;
+		}
 
 		/*
 		 * I use a bubble sort since from one iteration to the next, the sort
@@ -577,9 +559,147 @@ public class ChemFrame {
 		 * "guess" of the sorted order.  With luck, this reduces O(N log N)
 		 * to O(N)
 		 */
-		
+
+		/*
+		 * New Mods:
+		 * Do single pass of bubble sort, if this fixes order, simply return
+		 * While doing bubble sort, form lists of fully order sub-lists so
+		 * that a more efficient merge-sort can be used if order is not resolved
+		 * by the bubble sort.
+		 *
+		 */
+
+		int zBubbleCount;	// the Number of fully ordered sub-lists 
+		float oldVal;		// store array values in local variables
+		float preVal;		//    because array lookups are more expensive
+		float thisVal;		//    than local variable references.
+		int preN;
+		int thisN;
+		boolean flipped=false;		// change to true if one-pass bubble sort
+									// doesn't fix the values.
+
+		zBubbleCount=0;
+		preN=zSortedAtomIndicies[0];
+		thisN=zSortedAtomIndicies[1];
+		preVal=bufferedAtomZs[preN];
+		thisVal=bufferedAtomZs[thisN];
+		zBubbles[zBubbleCount++]=0;
+		if (preVal<=thisVal) {
+			oldVal=preVal;
+			preVal=thisVal;
+			preN=thisN;
+		} else {
+			oldVal=thisVal;
+			zSortedAtomIndicies[0]=thisN;
+			zSortedAtomIndicies[1]=preN;
+		};
+		for (int j=2; j<numberAtoms; j++) {
+			thisN=zSortedAtomIndicies[j];
+			thisVal=bufferedAtomZs[thisN];
+			if (thisVal<preVal) {
+				if (thisVal<oldVal) {
+					zBubbles[zBubbleCount++]=j-1;
+					flipped=true;
+				}
+				zSortedAtomIndicies[j-1]=thisN;
+				zSortedAtomIndicies[j]=preN;
+			} else {
+				preVal=thisVal;
+				preN=thisN;
+			}
+		}
+// Now, have done one pass of bubble sort, and have zBubbles ready for doing a
+// merge sort.  If flipped=false, then single bubble sort pass was enough to
+// correct the order, so just exit out.
+		if (!flipped) return;
+
+		boolean direct=false;		// which of zSortedAtomIndicies is from and to
+		int[] from=zSortedAtomIndicies;
+		int[] to=zSortedAtomIndicies2;
+		int bubble1At;
+		int bubble1End;
+		int bubble2At;
+		int bubble2End;
+		int fromBubblePos;
+		int toBubblePos;
+		int toPos;
+
+		while (zBubbleCount>1) {
+// Keep merging sorted sub-lists until a single list remains.
+			if (direct) {
+				from=zSortedAtomIndicies2;
+				to=zSortedAtomIndicies;
+			} else {
+				from=zSortedAtomIndicies;
+				to=zSortedAtomIndicies2;
+			}
+			fromBubblePos=0;
+			toBubblePos=0;
+			toPos=0;
+			while (fromBubblePos<(zBubbleCount-1)) {
+// While two or more lists to merge, take top two lists, and merge them
+// into a single list.
+				bubble1At=toPos;
+				bubble2At=zBubbles[++fromBubblePos];
+				zBubbles[toBubblePos++]=bubble1At;
+				bubble1End=bubble2At;
+				if (++fromBubblePos>=zBubbleCount) {
+					bubble2End=numberAtoms;
+				} else {
+					bubble2End=zBubbles[fromBubblePos];
+				}
+				preN=from[bubble1At];
+				thisN=from[bubble2At];
+				preVal=bufferedAtomZs[preN];
+				thisVal=bufferedAtomZs[thisN];
+				while (true) {
+// This is the loop for the mering process.
+					if (preVal<thisVal) {
+						to[toPos++]=preN;
+						if (++bubble1At==bubble1End) {
+							while (bubble2At<bubble2End) {
+								to[toPos++]=from[bubble2At++];
+							}
+							break;
+						} else {
+							preN=from[bubble1At];
+							preVal=bufferedAtomZs[preN];
+						}
+					} else {
+						to[toPos++]=thisN;
+						if (++bubble2At==bubble2End) {
+							while (bubble1At<bubble1End) {
+								to[toPos++]=from[bubble1At++];
+							}
+							break;
+						} else {
+							thisN=from[bubble2At];
+							thisVal=bufferedAtomZs[thisN];
+						}
+					}
+				}
+			}
+// At this point, we check for a single unmerged list, and copy it across to
+// the new array.
+			if (fromBubblePos<zBubbleCount) {
+				zBubbles[toBubblePos++]=toPos;
+				while (toPos<numberAtoms) {
+					to[toPos]=from[toPos];
+					toPos++;
+				}
+			}
+			zBubbleCount=toBubblePos;
+			direct=!direct;		// swap from and to lists.
+		}
+		zSortedAtomIndicies=to;
+		zSortedAtomIndicies2=from;
+// OK, now has been merge sorted.
+
+// The commented code below is the original bubble sort.
+/*
 		for (int i = numberAtoms - 1; --i >= 0;) {
 			boolean flipped = false;
+			passes++;
 			for (int j = 0; j <= i; j++) {
 				int a = zSortedAtomIndicies[j];
 				int b = zSortedAtomIndicies[j+1];
@@ -593,12 +713,11 @@ public class ChemFrame {
 				break;
 			}
 		}
+*/
 	}
 
     private float bondFudge       = 1.12f;
-    private float ScreenScale;
     private boolean AutoBond      = true;
-    private boolean ShowBonds     = true;
     private boolean ShowAtoms     = true;
     private boolean ShowHydrogens = true;
     private Matrix3D mat;
@@ -628,6 +747,13 @@ public class ChemFrame {
 	 */
     private int[] zSortedAtomIndicies;
 	/**
+	 * Next two are temporary arrays used in the bubble sort.
+	 * Keep them as object variables to prevent allocating and freeing
+	 * memory for each call to the sort routine.
+	 */
+    private int[] zSortedAtomIndicies2;
+	private int[] zBubbles;
+	/**
 	 * Renderer for atoms.
 	 */
 	private AtomRenderer atomRenderer = new AtomRenderer();
@@ -641,6 +767,15 @@ public class ChemFrame {
 	 */
     private Vector frameProps;
 
+	/**
+	 * Minimum co-ords of the atoms in this frame
+	 */
 	private Point3f min;
+
+	/**
+	 * Maximum co-ords of the atoms in this frame
+	 */
 	private Point3f max;
+
+	private boolean bondsEnabled;
 }

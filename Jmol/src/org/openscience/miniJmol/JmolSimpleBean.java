@@ -54,10 +54,13 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 	private DisplaySettings settings = new DisplaySettings();
     private displayPanel display;
     private ChemFile cf;
+	private java.awt.Panel animPanel=null;
+	private java.awt.Panel customViewPanel=null;
 
     private boolean ready = false;
     private boolean modelReady = false;
     private boolean typesReady = false;
+	private String customViews = null;
 
     public JmolSimpleBean(){      
        setLayout(new BorderLayout());
@@ -70,17 +73,74 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
        setForegroundColour("#000000");
     }
 
+	public void toggleBonds() {
+		display.toggleBonds();
+	}
+
+	public void setZoomFactor(float factor) {
+		if (factor<0.1f) factor=0.1f;
+		display.setZoomFactor(factor);
+	}
+
+	public void setAtomSphereFactor(float factor) {
+		if (factor<0.1f) factor=0.1f;
+		settings.setAtomSphereFactor(0.2*factor);
+	}
+
+	public void setCustomViews(String cv) {
+		customViews=cv;
+	}
+
 	/**
 	 * Sets the current model to the ChemFile given.
 	 *
 	 * @param cf  the ChemFile
 	 */
     public void setModel(ChemFile cf) {
-        this.cf = cf;
-        display.setChemFile(cf);
+		java.awt.Button btn;
+		java.awt.Label lbl;
+
+		if (cf.getNumberFrames()>1) {
+			animPanel=new java.awt.Panel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+			btn=new java.awt.Button("Prev");
+			btn.setActionCommand("PREV");
+			btn.addActionListener(display);
+			animPanel.add(btn);
+			btn=new java.awt.Button("Next");
+			btn.setActionCommand("NEXT");
+			btn.addActionListener(display);
+			animPanel.add(btn);
+			lbl=new java.awt.Label();
+			display.setFrameLabel(lbl);
+			animPanel.add(lbl);
+       		add(animPanel,"South");
+		} else {
+			animPanel=null;
+		}
+		if ((customViews!=null)&&(customViews.length()>0)) {
+			customViewPanel=new java.awt.Panel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+			java.util.StringTokenizer st=new java.util.StringTokenizer(customViews);
+			String viewName;
+			String viewData;
+			try {
+				viewName=st.nextToken("{");
+				while (true) {
+					viewData=st.nextToken("}").substring(1);
+					btn=new java.awt.Button(viewName);
+					btn.setActionCommand(display.customViewPrefix+viewData);
+					btn.addActionListener(display);
+					customViewPanel.add(btn);
+					viewName=st.nextToken("{").substring(1);
+				}
+			} catch (java.util.NoSuchElementException E) {
+			}
+       		add(customViewPanel,"North");
+		}
         modelReady = true;
+		this.cf=cf;
+        display.setChemFile(cf);
         ready = areWeReady();
-    }
+	}
 
 	/**
 	 * Takes the argument, reads it as a file and allocates this as
@@ -251,7 +311,14 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 		return display.getShowBonds();
 	}
 
+	public void setWireframeRotation(boolean active) {
+		display.setWireframeRotation(active);
+	}
 
+	public boolean getWireframeRotation() {
+		return display.getWireframeRotation();
+	}
+	
 	/**
 	 * Sets the rendering mode for atoms. Valid values are
 	 * 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
@@ -266,6 +333,7 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       }else{
         throw new IllegalArgumentException("Unknown atom rendering style: "+style);
       }
+		display.displaySettingsChanged();
 	  display.repaint();
    }
 
@@ -299,6 +367,7 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       }else{
         throw new IllegalArgumentException("Unknown bond rendering style: "+style);
       }
+		display.displaySettingsChanged();
 	  display.repaint();
    }
 
@@ -335,6 +404,7 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       }else{
         throw new IllegalArgumentException("Unknown label rendering style: "+style);
       }
+		display.displaySettingsChanged();
 	  display.repaint();
    }
 
@@ -422,7 +492,6 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 
 
 //Private and unuseful methods
-
     /**
      * returns the ChemFile that we are currently working with
      *
@@ -500,10 +569,11 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 		return (modelReady && typesReady);
 	}
 	
-   public void componentResized(java.awt.event.ComponentEvent e) {}
-   public void componentShown(java.awt.event.ComponentEvent e) {}
    public void componentHidden(java.awt.event.ComponentEvent e) {}
    public void componentMoved(java.awt.event.ComponentEvent e){}
+   public void componentResized(java.awt.event.ComponentEvent e) {}
+   public void componentShown(java.awt.event.ComponentEvent e) {}
+
 /**Warning this adds the mouseListener to the canvas itself to allow following of mouse 'on the bean'.**/
    public void addMouseListener(java.awt.event.MouseListener ml){
       display.addMouseListener(ml);

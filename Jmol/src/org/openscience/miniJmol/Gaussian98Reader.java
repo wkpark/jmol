@@ -58,18 +58,20 @@ public class Gaussian98Reader implements ChemFileReader {
 	 * @return a ChemFile with the coordinates, energies, and vibrations.
 	 * @exception IOException if an I/O error occurs
 	 */
-	public ChemFile read() throws IOException {
-		ChemFile file = new ChemFile();
+	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled) throws IOException {
+		ChemFile file = new ChemFile(bondsEnabled);
 		ChemFrame frame = null;
 		String line = input.readLine();
 		String levelOfTheory = null;
+		int frameNum=1;
 
 		// Find first set of coordinates
         while (input.ready() && line != null) {
 			if (line.indexOf("Standard orientation:") >= 0) {
 				// Found a set of coordinates
-                frame = new ChemFrame();
-				readCoordinates(frame);
+                frame = new ChemFrame(bondsEnabled);
+				readCoordinates(frame, putStatus, frameNum);
+				frameNum++;
 				break;
 			}
 			line = input.readLine();
@@ -82,8 +84,9 @@ public class Gaussian98Reader implements ChemFileReader {
 					// Found a set of coordinates
                     // Add current frame to file and create a new one.
                     file.addFrame(frame);
-					frame = new ChemFrame();
-					readCoordinates(frame);
+					frame = new ChemFrame(bondsEnabled);
+					readCoordinates(frame, putStatus, frameNum);
+					frameNum++;
 				} else  if (line.indexOf("SCF Done:") >= 0) {
 					// Found an energy
                     frame.setInfo(line.trim());
@@ -105,8 +108,18 @@ public class Gaussian98Reader implements ChemFileReader {
 	 * @param frame  the destination ChemFrame
 	 * @exception IOException  if an I/O error occurs
 	 */
-	private void readCoordinates(ChemFrame frame) throws IOException {
+	private void readCoordinates(ChemFrame frame, StatusDisplay putStatus, int frameNum) throws IOException {
 		String line;
+		StringBuffer stat=new StringBuffer();
+		String baseStat;
+		int statpos=0;
+
+		stat.append("Reading Frame ");
+		stat.append(frameNum);
+		stat.append(": ");
+		baseStat=stat.toString();
+		putStatus.setStatusMessage(stat.toString());
+
 		line = input.readLine();
 		line = input.readLine();
 		line = input.readLine();
@@ -146,6 +159,14 @@ public class Gaussian98Reader implements ChemFileReader {
 				z = token.nval;
 			} else  throw new IOException("Error reading coordinates");
 			frame.addAtom(atomicNumber, (float)x, (float)y, (float)z);
+			if (statpos>10) {
+				stat.setLength(0);
+				stat.append(baseStat);
+				statpos=0;
+			} else {
+				stat.append(".");
+			}
+			putStatus.setStatusMessage(stat.toString());
 		}
 	}
 

@@ -44,7 +44,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.WindowEvent;
 
-public class JmolBeanTest{
+public class JmolBeanTest {
 
       static public void main(String[] args){
           JFrame myFrame = new JFrame();
@@ -61,11 +61,13 @@ public class JmolBeanTest{
           try{
 			  java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");
 			  ChemFileReader cfr1 = ReaderFactory.createReader(r1);
-			  myXMLThing1.setModel(cfr1.read());
+			  myXMLThing1.setAtomPropertiesFromFile("AtomTypes");
+			  myXMLThing1.setModel(cfr1.read(new NoStatus(), true));
 
 			  java.io.Reader r2 = new java.io.FileReader("methanol1.cml");
 			  ChemFileReader cfr2 = ReaderFactory.createReader(r2);
-			  myXMLThing2.setModel(cfr2.read());
+			  myXMLThing2.setAtomPropertiesFromFile("AtomTypes");
+			  myXMLThing2.setModel(cfr2.read(new NoStatus(), true));
           }catch(java.io.FileNotFoundException e){
             System.out.println("File not found: "+e);
           }catch(java.io.IOException e){
@@ -92,4 +94,9 @@ public class JmolBeanTest{
       public java.awt.Dimension getMinimumSize(){
         return new java.awt.Dimension(200,200);
       }
+}
+
+class NoStatus implements StatusDisplay {
+	public void setStatusMessage(String statusMessage) {
+	}
 }

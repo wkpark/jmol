@@ -113,6 +113,9 @@ class Atom {
 	 * Adds an atom to this atom's bonded list.
 	 */
 	public void addBondedAtom(Atom toAtom) {
+		if (bondedAtoms==null) {
+			bondedAtoms=new Vector();
+		}
 		bondedAtoms.addElement(toAtom);
 	}
 
@@ -120,14 +123,20 @@ class Atom {
 	 * Returns the list of atoms to which this atom is bonded.
 	 */
 	public Enumeration getBondedAtoms() {
-		return bondedAtoms.elements();
+		if (bondedAtoms==null) {
+			return new NoBondsEnumeration();
+		} else {
+			return bondedAtoms.elements();
+		}
 	}
 
 	/**
 	 * Clears the bonded atoms list.
 	 */
 	public void clearBondedAtoms() {
-		bondedAtoms.removeAllElements();
+		if (bondedAtoms!=null) {
+			bondedAtoms.clear();
+		}
 	}
 
 	/**
@@ -166,10 +175,20 @@ class Atom {
 	/**
 	 * A list of atoms to which this atom is bonded.
 	 */
-	private Vector bondedAtoms = new Vector();
+	private Vector bondedAtoms = null;//new Vector();
 	/**
 	 * A list of properties
 	 */
 	private Vector properties = new Vector();
 
+}
+
+class NoBondsEnumeration implements Enumeration {
+	public boolean hasMoreElements() {
+		return false;
+	}
+
+	public Object nextElement() throws java.util.NoSuchElementException {
+		throw new java.util.NoSuchElementException();
+	}
 }

@@ -57,13 +57,18 @@ public class AtomRenderer {
      * @param picked whether or not the atom has been selected and gets a "halo"
 	 * @param settings the display settings
      */
-    public void paint(Graphics gc, Atom atom, boolean picked, DisplaySettings settings) {
+    public void paint(Graphics gc, Atom atom, boolean picked, DisplaySettings settings, boolean fastDraw) {
 		int x = (int)atom.getScreenPosition().x;
 		int y = (int)atom.getScreenPosition().y;
 		int z = (int)atom.getScreenPosition().z;
         int diameter = (int) (2.0f*settings.getCircleRadius(z, atom.getType().getVdwRadius()));
         int radius = diameter >> 1;
 
+		if (fastDraw) {
+            gc.setColor(atom.getType().getColor());
+            gc.drawOval(x - radius, y - radius, diameter, diameter);
+			return;
+		}
         if (picked) {
             int halo = radius + 5;
             int halo2 = 2 * halo;

@@ -65,11 +65,13 @@ public class XYZReader implements ChemFileReader {
 	/**
 	 * Read the XYZ file.
 	 */
-    public ChemFile read() throws IOException {
-		ChemFile file = new ChemFile();
+    public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled) throws IOException {
+		int fr=0;
+		ChemFile file = new ChemFile(bondsEnabled);
 
         while (true) {
-			ChemFrame cf = readFrame();
+			fr++;
+			ChemFrame cf = readFrame(putStatus, fr, bondsEnabled);
 			if (cf == null) {
 				break;
 			}
@@ -85,9 +87,11 @@ public class XYZReader implements ChemFileReader {
     /**
      * Parses the next section of the XYZ file into a ChemFrame.
      */
-    public ChemFrame readFrame() throws IOException {
+    public ChemFrame readFrame(StatusDisplay putStatus, int frameNum, boolean bondsEnabled) throws IOException {
         int na = 0;
         String info = "";
+		StringBuffer stat=new StringBuffer();
+		String statBase=null;
 
 		String l = input.readLine();
 		if (l == null) return null;
@@ -95,9 +99,17 @@ public class XYZReader implements ChemFileReader {
 		String sn = st.nextToken();
 		na = Integer.parseInt(sn);
 		info = input.readLine();
+		if (putStatus!=null) {
+			stat.append("Reading Frame ");
+			stat.append(frameNum);
+			stat.append(": ");
+			statBase=stat.toString();
+			stat.append("0 %");
+			putStatus.setStatusMessage(stat.toString());
+		}
 		
 		// OK, we got enough to start building a ChemFrame:
-		ChemFrame cf = new ChemFrame(na);
+		ChemFrame cf = new ChemFrame(na, bondsEnabled);
 		cf.setInfo(info);
 		
 		String s; // temporary variable used to store data as we read it
@@ -166,6 +178,17 @@ public class XYZReader implements ChemFileReader {
 							   (float) x, 
 							   (float) y, 
 							   (float) z);
+			}
+			if (putStatus!=null) {
+				stat.setLength(0);
+				stat.append(statBase);
+				if (na>1) {
+					stat.append((int) (100*i/(na-1)));
+				} else {
+					stat.append(100);
+				}
+				stat.append(" %");
+				putStatus.setStatusMessage(stat.toString());
 			}
 		}
 		return cf;

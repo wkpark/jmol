@@ -40,29 +40,63 @@
 package org.openscience.miniJmol;
 
 import java.awt.event.*;
+import org.openscience.jmol.FortranFormat;
 
-public class JmolApplet extends java.applet.Applet implements MouseListener, KeyListener{
+public class JmolApplet extends java.applet.Applet implements MouseListener, KeyListener, StatusDisplay{
 
 	JmolSimpleBean myBean;
 	int mode;
 	int labelMode;
-	private String helpMessage = "Keys: Tab- change style; L- Show labels";
+	private String helpMessage = "Keys: S- change style; L- Show labels; B-Toggle Bonds";
+	private boolean bondsEnabled=true;
 	
 	public void init(){
+		float zoomFactor=1;
 		myBean = new JmolSimpleBean();
 		
-		String atomtypes = getParameter("ATOMTYPES");
-		if (atomtypes == null){
-            atomtypes = "AtomTypes";
+		String bonds = getParameter("BONDS");
+		if (bonds!=null) {
+		    if (bonds.equals("OFF")) {
+			    myBean.toggleBonds();
+		    } else if (bonds.equals("NEVER")) {
+			    myBean.toggleBonds();
+			    bondsEnabled=false;
+			    helpMessage = "Keys: S- change style; L- Show labels";
+            }
 		}
+		String zoom = getParameter("ZOOM");
+        if (zoom!=null) {
+			zoomFactor = (float) FortranFormat.atof(zoom);
+		}
+		myBean.setZoomFactor(zoomFactor);
+		zoomFactor=1;
+		zoom = getParameter("ATOMSIZE");
+        if (zoom!=null) {
+			zoomFactor = (float) FortranFormat.atof(zoom);
+		}
+		myBean.setAtomSphereFactor(zoomFactor);
+		String customViews=getParameter("CUSTOMVIEWS");
+		if (customViews!=null) {
+			myBean.setCustomViews(customViews);
+		}
+		String WFR = getParameter("WIREFRAMEROTATION");
+		if ((WFR!=null)&&(WFR.equals("OFF"))) {
+			myBean.setWireframeRotation(false);
+		}
+		
 		java.net.URL atURL;
+		String atomtypes = getParameter("ATOMTYPES");
 		try {
-			AtomTypeSet ats1 = new AtomTypeSet();
-			ats1.load(getClass().getResourceAsStream("Data/AtomTypes.txt"));
+			if (atomtypes==null) {
+				AtomTypeSet ats1 = new AtomTypeSet();
+				ats1.load(getClass().getResourceAsStream("Data/AtomTypes.txt"));
+			} else {
+				atURL=new java.net.URL(getDocumentBase(),atomtypes);
+				myBean.setAtomPropertiesFromURL(atURL);
+			}
 		} catch (java.io.IOException ex) {
 			System.err.println("Error loading atom types: " + ex);
 		}
-		
 		String model = getParameter("MODEL");
 		if (model != null){
 			try {
@@ -79,11 +113,11 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 					}
 					cfr = ReaderFactory.createReader(new java.io.InputStreamReader(modelURL.openStream()));
 				}
-				myBean.setModel(cfr.read());
+				myBean.setModel(cfr.read(this, bondsEnabled));
 			}catch(java.io.IOException e){
 				e.printStackTrace();
 			}
-                }
+		}
 		myBean.addMouseListener(this);
 		myBean.addKeyListener(this);
                 String bg;
@@ -112,6 +146,10 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 		}
 		setLayout(new java.awt.BorderLayout());
 		add(myBean,"Center");
+	}
+
+	public void setStatusMessage(String statusMessage) {
+		showStatus(statusMessage);
 	}
 
 	/**
@@ -261,7 +299,7 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
      public void keyTyped(KeyEvent e) {
          String key = e.getKeyText(e.getKeyChar());
          String keyChar = new Character(e.getKeyChar()).toString();
-         if (key.equals("Tab")){
+         if (keyChar.equals("s")||keyChar.equals("S")){
             mode++;
             mode %= 3;
             if (mode == 0){
@@ -300,6 +338,8 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
                showStatus("JmolApplet: Changing label style to default");
                myBean.setBondRenderingStyle("NONE");
             }            
+         } else if ((bondsEnabled)&&((keyChar.equals("b")||keyChar.equals("B")))) {
+			myBean.toggleBonds();
          }
      }
 
@@ -318,7 +358,7 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
         try {
             ChemFileReader cfr;
             cfr = ReaderFactory.createReader(new java.io.StringReader(hugeXYZString));
-            myBean.setModel(cfr.read());
+            myBean.setModel(cfr.read(this, bondsEnabled));
 	}catch(java.io.IOException e){
             e.printStackTrace();
         }
@@ -334,7 +374,7 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 	    ChemFileReader cfr;
 //            String cmlString = convertEscapeChars(hugeCMLString);
             cfr = ReaderFactory.createReader(new java.io.StringReader(hugeCMLString));
-            myBean.setModel(cfr.read());
+            myBean.setModel(cfr.read(this,bondsEnabled));
 	}catch(java.io.IOException e){
             e.printStackTrace();
         }
@@ -354,7 +394,7 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
            throw new RuntimeException(("Got MalformedURL for model: "+e.toString()));
          }
          cfr = ReaderFactory.createReader(new java.io.InputStreamReader(modelURL.openStream()));
-         myBean.setModel(cfr.read());
+         myBean.setModel(cfr.read(this,bondsEnabled));
        }catch(java.io.IOException e){
          e.printStackTrace();
        }

@@ -50,15 +50,23 @@ public class ChemFile {
 	 * @shapeType AggregationLink
 	 * @associates <b>ChemFrame</b>
 	 */
-    private Vector frames;
+    private Vector frames=new Vector(1);
+	private boolean bondsEnabled=true;
     private Vector propertyList = new Vector();
     /**
      * Very simple class that should be subclassed for each different
      * kind of file that can be read by Jmol.
      */
     public ChemFile() {
-        frames = new Vector(1);
     }
+
+	public ChemFile(boolean ABondsEnabled) {
+		bondsEnabled=ABondsEnabled;
+	}
+
+	public boolean getBondsEnabled() {
+		return bondsEnabled;
+	}
 
     /**
      * returns a ChemFrame from a sequence of ChemFrames that make up

@@ -63,22 +63,29 @@ public class PDBReader implements ChemFileReader {
 	/**
 	 * Read the PDB data.
 	 */
-	public ChemFile read() throws IOException {
-		ChemFile file = new ChemFile();
-		file.addFrame(readFrame());
+	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled) throws IOException {
+		ChemFile file = new ChemFile(bondsEnabled);
+		file.addFrame(readFrame(putStatus, bondsEnabled));
 		return file;
     }
 
     /**
      * Parses the PDB file into a ChemFrame.
      */
-    public ChemFrame readFrame() throws IOException {
+    public ChemFrame readFrame(StatusDisplay putStatus, boolean bondsEnabled) throws IOException {
 
         StringTokenizer st;
         
-        ChemFrame cf = new ChemFrame();
+        ChemFrame cf = new ChemFrame(bondsEnabled);
             
         String s; // temporary variable used to store data as we read it
+		StringBuffer stat=new StringBuffer();
+		String baseStat;
+		int statpos=0;
+
+		stat.append("Reading File: ");
+		baseStat=stat.toString();
+		putStatus.setStatusMessage(stat.toString());
 
         while (true) {
             try {
@@ -111,7 +118,15 @@ public class PDBReader implements ChemFileReader {
             if (command.equalsIgnoreCase("END")) {
                 return cf;
             }
-        }
+			if (statpos>10) {
+				stat.setLength(0);
+				stat.append(baseStat);
+				statpos=0;
+			} else {
+				stat.append(".");
+			}
+			putStatus.setStatusMessage(stat.toString());
+		}
         
         return cf;        
     }       

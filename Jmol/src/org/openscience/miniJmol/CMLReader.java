@@ -32,16 +32,16 @@ public class CMLReader implements ChemFileReader {
 	/**
 	 * Read the CML data.
 	 */
-	public ChemFile read() throws IOException {
+	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled) throws IOException {
 		try {
 			InputSource source = new InputSource(input);
 			Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
 			EntityResolver resolver = new DTDResolver();
-			DocumentHandler handler = new CMLHandler();
+			DocumentHandler handler = new CMLHandler(bondsEnabled);
 			parser.setEntityResolver(resolver);
 			parser.setDocumentHandler(handler);
 			parser.parse(source);
-			ChemFile file = new ChemFile();
+			ChemFile file = new ChemFile(bondsEnabled);
 			Enumeration framesIter = ((CMLHandler)handler).returnChemFrames().elements();
 			while (framesIter.hasMoreElements()) {
 					file.addFrame((ChemFrame)framesIter.nextElement());

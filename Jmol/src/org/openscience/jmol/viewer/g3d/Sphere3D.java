@@ -125,7 +125,7 @@ class Sphere3D {
           int z0 = z - (int)(zF + 0.5f);
           if (zbuf[offsetPbuf] <= z0)
             continue;
-          int intensity = calcIntensity(xF, yF, zF);
+          int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
           pbuf[offsetPbuf] = shades[intensity];
           zbuf[offsetPbuf] = (short) z0;
         }
@@ -151,7 +151,7 @@ class Sphere3D {
         float z2 = r2 - y2 - xF*xF;
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
-          int intensity = calcIntensity(xF, yF, zF);
+          int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
           int z0 = z - (int)(zF + 0.5f);
           g3d.plotPixelClipped(shades[intensity], x0, y0, z0);
         }
@@ -338,22 +338,6 @@ class Sphere3D {
     sphereShapeCache = new int[maxSphereCache][];
   }
 
-  byte calcIntensity(float x, float y, float z) {
-    // add some randomness to prevent banding
-    double floatIntensity =
-      Shade3D.calcFloatIntensity(x, y, z) * Shade3D.shadeLast;
-    int intensity = (int)floatIntensity;
-    double remainder = floatIntensity - intensity;
-    if (intensity < Shade3D.shadeLast && remainder > Math.random())
-      ++intensity;
-    double random = Math.random();
-    if (random < 0.333 && intensity > 0)
-      --intensity;
-    else if (random > 0.667 && intensity < Shade3D.shadeLast)
-      ++intensity;
-    return (byte)intensity;
-  }
-
   int[] createSphereShape(int diameter) {
     float radiusF = diameter / 2.0f;
     float radiusF2 = radiusF * radiusF;
@@ -371,7 +355,7 @@ class Sphere3D {
         float z2 = radiusF2 - y2 - x*x;
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
-          intensities[offset] = calcIntensity(x, y, z);
+          intensities[offset] = Shade3D.calcDitheredNoisyIntensity(x, y, z);
           heights[offset] = (byte)(z + 0.5f);
           if (j >= radius && i >= radius)
             ++countSE;

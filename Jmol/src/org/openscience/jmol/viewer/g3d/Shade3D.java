@@ -154,6 +154,42 @@ final class Shade3D {
     return intensity;
   }
 
+  static byte calcDitheredNoisyIntensity(float x, float y, float z) {
+    // add some randomness to prevent banding
+    int intensityPlus4Bits =
+      (int)(calcFloatIntensity(x, y, z) * shadeLast * (1<<4));
+    
+    int intensity = intensityPlus4Bits >> 4;
+    // this cannot overflow because the if the float intensity is 1.0
+    // then intensity will be == shadeLast
+    // but there will be no fractional component, so the next test will fail
+    if ((intensityPlus4Bits & 0x0F) > nextRandom4Bit())
+      ++intensity;
+    int random16bit = (int)seed & 0xFFFF;
+    if (random16bit < 65536 / 3 && intensity > 0)
+      --intensity;
+    else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
+      ++intensity;
+    return (byte)intensity;
+  }
+
+  /*
+    This is a linear congruential pseudorandom number generator,
+    as defined by D. H. Lehmer and described by Donald E. Knuth in
+    The Art of Computer Programming,
+    Volume 2: Seminumerical Algorithms, section 3.2.1.
+  */
+
+  // this doesn't really need to be synchronized
+  // no serious harm done if two threads write seed at the same time
+  static long seed = 1;
+  static int nextRandom4Bit() {
+    seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
+    //    return (int)(seed >>> (48 - bits));
+    return (int)(seed >>> 44);
+  }
+
+
   static void setSpecular(boolean specular) {
     specularOn = specular;
     dump();

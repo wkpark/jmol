@@ -1119,6 +1119,13 @@ class Jmol extends JPanel {
             } else if (it.getType().equals("GIF")) {
               GifEncoder gc = new GifEncoder(eImage, os, true);
               gc.encode();
+            } else if (it.getType().equals("PNG")) {
+              PngEncoder png = new PngEncoder(eImage);
+              byte[] pngbytes = png.pngEncode();
+              os.write(pngbytes);
+            } else if (it.getType().equals("BMP")) {
+              BMPFile bmp = new BMPFile();
+              bmp.saveBitmap(os, eImage);
             } else {
 
               // Do nothing

@@ -4,7 +4,7 @@
 >
 <!--
   French translation 
-  Translated from default version : JmolDevelopersGuide.docbook.xml (v 1.17)
+  Translated from default version : JmolDevelopersGuide.docbook.xml (v 1.18)
 -->
 <book id="jmol-devel-guide" lang="fr">
   <bookinfo>
@@ -171,8 +171,8 @@
 	</programlisting>
       </listitem>
       <listitem>
-        Les caract&egrave;res devraient &ecirc;tre utilis&eacute;s,
-        pas les tabulations
+        Les caract&egrave;res espace devraient &ecirc;tre
+        utilis&eacute;s, pas les tabulations
       </listitem>
       <listitem>
         Les op&eacute;rateurs d'assignation et arithm&eacute;tiques
@@ -377,4 +377,193 @@
       </section>
     </section>
   </chapter>
+
+  <chapter id="Eclipse">
+    <title>Utilisation d'Eclipse</title>
+    
+    <section id="Eclipse_prerequisites">
+      <para>
+        Cette documentation a &eacute;t&eacute; test&eacute;e avec
+        Eclipse 3.01.
+      </para>
+      <para>
+        Eclipse doit &ecirc;tre install&eacute; et correctement
+        configur&eacute; avant de suivre cette proc&eacute;dure.
+      </para>
+    </section>
+    
+    <section id="Eclipse_CVSConfig">
+      <title>Configuration du CVS Repository</title>
+      <para>
+        Pour configurer l'acc&egrave;s d'Eclipse au repository CVS
+        de Jmol, effectuer les actions suivantes:
+      </para>
+      <para><itemizedlist>
+        <listitem>
+          D&eacute;marrer Eclipse.
+        </listitem>
+        <listitem>
+          Passer sur la perspective
+          <command>CVS Repository Exploring</command>.
+        </listitem>
+        <listitem>
+          Cliquer avec le bouton droit de la souris dans la f&ecirc;netre
+          <command>CVS Repositories</command> et s&eacute;lectionner
+          <command>New</command> / <command>Repository
+          Location...</command> dans le menu contextuel.
+        </listitem>
+        <listitem>
+          Dans la f&ecirc;netre <command>Add CVS Repository</command>,
+          saisir les valeurs suivantes:
+          <itemizedlist>
+            <listitem>
+              Host: <command>cvs.sourceforge.net</command>
+            </listitem>
+            <listitem>
+              Repository path: <command>/cvsroot/jmol</command>
+            </listitem>
+            <listitem>
+              Authentication: <command>anonymous</command> pour un
+              acc&egrave;s anonyme, ou votre login pour un acc&egrave;s
+              d&eacute;veloppeur.
+            </listitem>
+            <listitem>
+              Password: vide pour l'acc&egrave;s anonyme, ou votre mot
+              de passe pour l'acc&egrave;s d&eacute;veloppeur.
+            </listitem>
+            <listitem>
+              Connection type: <command>pserver</command> pour
+              l'acc&egrave;s anonyme, <command>extssh</command> pour
+              l'acc&egrave;s d&eacute;veloppeur.
+            </listitem>
+            <listitem>
+              Cocher <command>Use Default Port</command> et
+              <command>Validate Connection on Finish</command>.
+            </listitem>
+            <listitem>
+              Vous pouvez choisir de cocher ou non
+              <command>Save Password</command>.
+            </listitem>
+            <listitem>
+              Cliquer sur <command>Finish</command>.
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist></para>
+    </section>
+    
+    <section id="Eclipse_CheckingOut">
+      <title>R&eacute;cup&eacute;rer Jmol depuis CVS</title>
+      <para>
+        Pour r&eacute;cup&eacute;rer Jmol depuis CVS, effectuer les
+        actions suivantes:
+      </para>
+      <para><itemizedlist>
+        <listitem>
+          Passer sur la perspective
+          <command>CVS Repository Exploring</command>.
+        </listitem>
+        <listitem>
+          D&eacute;plier l'emplacement du repository que vous avez
+          ajout&eacute; au chapitre pr&eacute;c&eacute;dent et
+          d&eacute;plier <command>HEAD</command>.
+        </listitem>
+        <listitem>
+          Cliquer avec le bouton droit de la souris sur
+          <command>Jmol</command> et s&eacute;lectionner
+          <command>Check Out As...</command> dans le menu contextuel.
+        </listitem>
+        <listitem>
+          Dans la fen&ecirc;tre <command>Check Out As</command>, cocher
+          <command>Check out as a project in the workspace</command>
+          et saisir <command>Jmol-HEAD</command> dans le champ
+          <command>Project Name</command>. Cliquer sur
+          <command>Finish</command>.
+        </listitem>
+        <listitem>
+          Si vous le souhaitez, vous pouvez aussi
+          r&eacute;cup&eacute;rer Jmol-web: Cliquer avec le bouton droit
+          de la souris sur <command>Jmol-web</command> et
+          s&eacute;lectionner <command>Check out</command> dans le
+          menu contextuel.
+        </listitem>
+      </itemizedlist></para>
+    </section>
+    
+    <section id="Eclipse_Configuring">
+      <title>Configuration d'Eclipse pour construire Jmol</title>
+      <para>
+        Pour configurer Eclipse pour construire Jmol, vous pouvez
+        effectuer les actions suivantes:
+      </para>
+      <para><itemizedlist>
+        <listitem>
+          Passer sur la perspective <command>Java</command>.
+        </listitem>
+        <listitem>
+          Cliquer avec le bouton droit de la souris sur
+          <command>Jmol-HEAD</command> et s&eacute;lectionner
+          <command>Properties</command> dans le menu contextuel.
+        </listitem>
+        <listitem>
+          Dans la fen&ecirc;tre
+          <command>Properties for Jmol-HEAD</command>,
+          s&eacute;lectionner <command>Java Compiler</command>.
+        </listitem>
+        <listitem>
+          Cocher <command>Use project settings</command>.
+        </listitem>
+        <listitem>
+          Dans l'onglet <command>Style</command>, s&eacute;lectionner
+          <command>Warning</command> pour chaque combo-box, &agrave;
+          l'exception de
+          <command>Unqualified access to instance field</command> et
+          <command>Undocumented empty block</command> pour lesquels
+          vous pouvez s&eacute;lectionner <command>Ignore</command>.
+        </listitem>
+        <listitem>
+          Dans l'onglet <command>Advanced</command>, s&eacute;lectionner
+          <command>Warning</command> pour chaque combo-box, &agrave;
+          l'exception de <command>Local variable declaration hides
+          another field or variable</command>, <command>Usage of
+          deprecated API</command> et <command>Usage of non-externalized
+          strings</command> pour lesquels vous pouvez s&eacute;lectionner
+          <command>Ignore</command>.
+        </listitem>
+        <listitem>
+          Dans l'onglet <command>Unused code</command>,
+          s&eacute;lectionner <command>Warning</command> pour chaque
+          combo-box, &agrave; l'exception de
+          <command>Parameter is never read</command> et
+          <command>Unnecessary cast or 'instance of' operation</command>
+          pour lesquels vous pouvez s&eacute;lectionner
+          <command>Ignore</command>.
+        </listitem>
+      </itemizedlist></para>
+    </section>
+    
+    <section id="Eclipse_Running">
+      <title>Ex&eacute;cuter et D&eacute;buguer Jmol</title>
+      <para>
+        Eclipse peut &ecirc;tre utilis&eacute; pour ex&eacute;cuter et
+        d&eacute;buguer Jmol directement dans Eclipse.
+      </para>
+      <para>
+        La classe principale est
+        <command>org.openscience.jmol.app.Jmol</command>.
+      </para>
+    </section>
+    
+    <section id="Eclipse_Building">
+      <title>Construire Jmol</title>
+      <para>
+        Pour construire compl&egrave;tement Jmol sous Eclipse, effectuer
+        simplement les actions suivantes: Cliquer avec le bouton droit de
+        la souris sur <command>build.xml</command> et s&eacute;lectionner
+        <command>Run</command> / <command>Ant Build</command> dans le
+        menu contextuel.
+      </para>
+    </section>
+  </chapter>
+  
 </book>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Pages de d&#x00E9;monstration de Jmol</title>
+    
+    <section title="D&#x00E9;monstration">
+
+      <p>
+        Il s'agit de quelques pages simples qui pr&#x00E9;sentent
+        certaines des possibilit&#x00E9;s de langage de script
+        interactif de l'applet Jmol
+        <ul>
+          <li><a href="./atoms/">atoms</a></li>
+          <li><a href="./bonds/">bonds</a></li>
+          <li><a href="./trace/">protein backbones</a></li>
+          <li><a href="./dots/">dotted surfaces</a></li>
+          <li><a href="./alphahelix/">alpha helix</a></li>
+          <li><a href="./aminoacids/">amino acids</a></li>
+          <li><a href="./nanotech/">nanotechnology</a></li>
+          <li><a href="./strands/">strands</a></li>
+          <li><a href="./vibration/">vibration</a></li>
+          <li><a href="./animation/">animation</a></li>
+          <li><a href="./ribbons/">ribbons</a></li>
+          <li><a href="./cartoons/">cartoons</a></li>
+        </ul>
+      </p>
+    </section>
+
+    <section title="Pages exemples simples">
+      <p>
+        Il s'agit des pages d'exemples qui se trouvent dans la
+        discussion sur la
+        <a href="[root]/jslibrary">librairie JavaScript Jmol.js</a>:
+        <ul>
+          <li><a href="./jssample0/">Exemple tr&#x00E8;s simple</a></li>
+          <li><a href="./jssample1/">
+            Exemple contenant des contr&#x00F4;les IHM
+          </a></li>
+          <li><a href="./jssample2/">
+            Chargement de mod&#x00E8;les mol&#x00E9;culaires en ligne
+          </a></li>
+        </ul>
+      </p>
+    </section>
+
+  </body>
+</document>

@@ -146,7 +146,7 @@ public class LabelManager {
           strLabel += pdbatom.getResno();
         break;
       default:
-        strLabel += ch;
+        strLabel += "" + ch;
       }
     }
     strLabel += strFormat.substring(ich);

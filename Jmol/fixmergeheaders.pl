@@ -32,7 +32,7 @@ sub fixConflict {
 		$state = 'discardingBeforeDoubleBar';
 		next;
 	    }
-	    if ($line =~ /\s*(public|private|abstract|class)/) {
+	    if ($line =~ /\s*(final|public|private|abstract|class)/) {
 		$state = 'copyingFile';
 	    }
 	    print OUT $line;

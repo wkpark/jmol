@@ -30,12 +30,12 @@ import java.util.NoSuchElementException;
 /**
  * Unit tests for the AtomTypesModel class.
  */
-public class TestAtomTypesModel extends TestCase {
+public class AtomTypesModelTest extends TestCase {
 
   /**
    * Creates a Test for the given method.
    */
-  public TestAtomTypesModel(String name) {
+  public AtomTypesModelTest(String name) {
     super(name);
   }
 
@@ -240,7 +240,7 @@ public class TestAtomTypesModel extends TestCase {
    * Returns a Test containing all the tests.
    */
   public static Test suite() {
-    TestSuite suite = new TestSuite(TestAtomTypesModel.class);
+    TestSuite suite = new TestSuite(AtomTypesModelTest.class);
     return suite;
   }
 }

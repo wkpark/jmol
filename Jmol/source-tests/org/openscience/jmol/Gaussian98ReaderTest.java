@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,37 +19,83 @@
  */
 package org.openscience.jmol;
 
-import junit.framework.TestSuite;
-import junit.framework.Assert;
-import junit.framework.TestCase;
-import junit.framework.Test;
-import java.io.IOException;
+import com.baysmith.io.FileUtilities;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-public class TestGaussian98Reader extends TestCase {
+/**
+ * Tests for the Gaussian98Reader class.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ */
+public class Gaussian98ReaderTest extends TestCase {
 
-  public TestGaussian98Reader(String name) {
+  /**
+   * Create a test case with given name.
+   *
+   * @param name this test case's name.
+   */
+  public Gaussian98ReaderTest(String name) {
     super(name);
   }
 
+  /**
+   * Returns a suite of tests contained in this test case.
+   *
+   * @return a suite of tests contained in this test case.
+   */
+  public static Test suite() {
+    TestSuite suite = new TestSuite(Gaussian98ReaderTest.class);
+    return suite;
+  }
+
+  /**
+   * A reader with which to test.
+   */
   Gaussian98Reader reader1;
 
+  /**
+   *  Test directory for isolating testing operations.
+   */
+  File testDirectory;
+
+  /**
+   * Setup fixtures.
+   */
   public void setUp() {
+
+    testDirectory = new File(getClass().getName());
+    FileUtilities.deleteAll(testDirectory);
+    assertTrue("Unable to create test directory \"" + testDirectory.getName()
+        + "\"", testDirectory.mkdir());
 
     try {
       AtomTypeSet ats1 = new AtomTypeSet();
       ats1.load(getClass().getResourceAsStream("Data/AtomTypes"));
-      String sampleFileName = "samples/g98.out";
-      if (System.getProperty("jmol.home") != null) {
-        sampleFileName = System.getProperty("jmol.home") + "/"
-            + sampleFileName;
-      }
-      reader1 = new Gaussian98Reader(new FileReader(sampleFileName));
+
+      File g98File = new File(testDirectory, "g98.out");
+      FileUtilities.copyStreamToFile(getClass().getResourceAsStream("Test-"
+              + g98File.getName()), g98File);
+      reader1 = new Gaussian98Reader(new FileReader(g98File));
     } catch (IOException ex) {
       fail("unable to open Gaussian98 test file: " + ex.toString());
     }
   }
 
+  /**
+   * Destroy fixtures.
+   */
+  public void tearDown() {
+    testDirectory = null;
+  }
+
+  /**
+   * Test reading a file.
+   */
   public void testRead() {
 
     try {
@@ -67,9 +113,4 @@ public class TestGaussian98Reader extends TestCase {
     }
   }
 
-
-  public static Test suite() {
-    TestSuite suite = new TestSuite(TestGaussian98Reader.class);
-    return suite;
-  }
 }

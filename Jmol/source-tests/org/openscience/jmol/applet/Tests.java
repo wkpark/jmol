@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -17,34 +17,26 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.applet;
 
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * Program that runs all the tests using the text interface.
+ * Test suite of all tests in this package.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class TestAll {
+public class Tests {
 
   /**
-   * Executes the text interface to run the tests.
-   */
-  public static void main(String[] args) {
-    junit.textui.TestRunner.run(suite());
-  }
-
-  /**
-   * Returns a Test containing all the tests.
+   * Returns a suite containing all the tests in this package.
+   *
+   * @return a suite containing all the tests in this package.
    */
   public static Test suite() {
 
     TestSuite suite = new TestSuite();
-    suite.addTest(TestBaseAtomType.suite());
-    suite.addTest(TestAtomType.suite());
-    suite.addTest(TestAtomTypeSet.suite());
-    suite.addTest(TestAtomTypesModel.suite());
-    suite.addTest(TestGaussian98Reader.suite());
     return suite;
   }
 

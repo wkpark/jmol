@@ -30,12 +30,12 @@ import java.io.IOException;
 /**
  * Unit tests for the SharcReader class.
  */
-public class TestSharcReader extends TestCase {
+public class SharcReaderTest extends TestCase {
 
   /**
    * Creates a Test for the given method.
    */
-  public TestSharcReader(String name) {
+  public SharcReaderTest(String name) {
     super(name);
   }
 
@@ -95,7 +95,7 @@ public class TestSharcReader extends TestCase {
    * Returns a Test containing all the tests.
    */
   public static Test suite() {
-    TestSuite suite = new TestSuite(TestSharcReader.class);
+    TestSuite suite = new TestSuite(SharcReaderTest.class);
     return suite;
   }
 }

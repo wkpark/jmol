@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,21 +19,22 @@
  */
 package org.openscience.jmol;
 
-import junit.framework.TestSuite;
-import junit.framework.Assert;
-import junit.framework.TestCase;
-import junit.framework.Test;
 import java.awt.Color;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
- * Unit tests for the BaseAtomType class.
+ * Tests for the BaseAtomType class.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class TestBaseAtomType extends TestCase {
+public class BaseAtomTypeTest extends TestCase {
 
   /**
    * Creates a Test for the given method.
    */
-  public TestBaseAtomType(String name) {
+  public BaseAtomTypeTest(String name) {
     super(name);
   }
 
@@ -71,14 +72,14 @@ public class TestBaseAtomType extends TestCase {
     assertEquals("type2", at2.getName());
     assertEquals(null, at2.getRoot());
     assertEquals(0, at2.getAtomicNumber());
-    assertEquals(null, at2.getColor());
+    assertEquals(Color.white, at2.getColor());
   }
 
   /**
    * Returns a Test containing all the tests.
    */
   public static Test suite() {
-    TestSuite suite = new TestSuite(TestBaseAtomType.class);
+    TestSuite suite = new TestSuite(BaseAtomTypeTest.class);
     return suite;
   }
 }

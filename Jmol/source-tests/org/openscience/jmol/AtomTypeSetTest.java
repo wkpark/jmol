@@ -30,12 +30,12 @@ import java.util.Hashtable;
 /**
  * Unit tests for the AtomTypeSet class.
  */
-public class TestAtomTypeSet extends TestCase {
+public class AtomTypeSetTest extends TestCase {
 
   /**
    * Creates a Test for the given method.
    */
-  public TestAtomTypeSet(String name) {
+  public AtomTypeSetTest(String name) {
     super(name);
   }
 
@@ -105,7 +105,7 @@ public class TestAtomTypeSet extends TestCase {
    * Returns a Test containing all the tests.
    */
   public static Test suite() {
-    TestSuite suite = new TestSuite(TestAtomTypeSet.class);
+    TestSuite suite = new TestSuite(AtomTypeSetTest.class);
     return suite;
   }
 }

@@ -27,12 +27,12 @@ import junit.framework.Test;
 /**
  * Unit tests for the AtomType class.
  */
-public class TestAtomType extends TestCase {
+public class AtomTypeTest extends TestCase {
 
   /**
    * Creates a Test for the given method.
    */
-  public TestAtomType(String name) {
+  public AtomTypeTest(String name) {
     super(name);
   }
 
@@ -66,7 +66,7 @@ public class TestAtomType extends TestCase {
    * Returns a Test containing all the tests.
    */
   public static Test suite() {
-    TestSuite suite = new TestSuite(TestAtomType.class);
+    TestSuite suite = new TestSuite(AtomTypeTest.class);
     return suite;
   }
 }

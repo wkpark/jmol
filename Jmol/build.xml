@@ -2,10 +2,14 @@
 
   <property name="version" value="4" />
   <property name="source.dir" value="src" />
-  <property name="generatedSource.dir" value="generatedSource" />
+  <property name="tests.source.dir" value="source-tests" />
+  <property name="build.dir" value="build" />
+  <property name="generatedSource.dir" value="${build.dir}/generatedSource" />
   <property name="lib.dir" value="jars" />
-  <property name="classes.dir" value="classes" />
-  <property name="applet.classes.dir" value="applet-classes" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="tests.classes.dir" value="${build.dir}/classes-tests" />
+  <property name="applet.classes.dir" value="${build.dir}/applet-classes" />
+  <property name="tests.dir" value="${build.dir}/unit.tests" />
   <property name="dist.dir" value="dist" />
   <property name="sourcedist.dir" value="sourcedist" />
   <property name="doc.dir" value="doc" />
@@ -141,6 +145,20 @@
     </copy>
   </target>
   
+  <target name="compile.tests" depends="classes">
+    <mkdir dir="${tests.classes.dir}"/>
+    <javac srcdir="${tests.source.dir}" destdir="${tests.classes.dir}"
+        debug="on" deprecation="on">
+      <classpath location="${classes.dir}" />
+      <classpath refid="project.class.path" />
+    </javac>
+    <copy todir="${tests.classes.dir}" >
+      <fileset dir="${tests.source.dir}">
+        <include name="**/Test-*" />
+      </fileset>
+    </copy>
+  </target>
+
   <target name="applet-classes" >
     <mkdir dir="${applet.classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
@@ -359,6 +377,7 @@
   <target name="clean">
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
+    <delete dir="${tests.classes.dir}"/>
     <delete>
       <fileset dir="${lib.dir}">
         <include name="jmol.jar" />
@@ -368,7 +387,7 @@
   </target>
 
   <target name="spotless" depends="clean">
-    <delete dir="${generatedSource.dir}"/>
+    <delete dir="${build.dir}"/>
     <delete>
       <fileset dir=".">
         <include name="jmol-*.zip" />
@@ -387,11 +406,16 @@
     </java>
   </target>
 
-  <target name="runtests" depends="classes">
-    <java fork="true" classname="org.openscience.jmol.TestAll">
-      <classpath location="classes" />
+  <property name="testName" value="org.openscience.jmol.JmolTests" />
+  <target name="test" depends="compile.tests" description="Tests Jmol.">
+    <mkdir dir="${tests.dir}" />
+    <junit fork="yes" dir="${tests.dir}" printsummary="yes" haltonfailure="yes">
+      <formatter type="plain" useFile="no" />
+      <classpath path="${classes.dir}" />
+      <classpath path="${tests.classes.dir}" />
       <classpath refid="project.class.path" />
-    </java>
+      <test name="${testName}" />
+    </junit>
   </target>
 
   <target name="javadoc" depends="init" unless="javadoc.uptodate">

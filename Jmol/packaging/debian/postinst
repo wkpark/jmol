@@ -1,0 +1,10 @@
+#! /bin/sh
+
+# fix /usr/doc -> /usr/share/doc transition
+
+if [ "$1" = "configure" ]; then
+    if [ -d /usr/doc -a ! -e /usr/doc/ \
+             -a -d /usr/share/doc/dh-java ]; then
+        ln -sf ../share/doc/dh-java /usr/doc/dh-java
+    fi
+fi

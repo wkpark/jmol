@@ -1,0 +1,8 @@
+#! /bin/sh
+ 
+# fix /usr/doc -> /usr/share/doc transition
+
+if [ \( "$1" = "upgrade" -o "$1" = "remove" \) \
+      -a -L /usr/doc/dh-java ]; then
+    rm -f /usr/doc/dh-java
+fi

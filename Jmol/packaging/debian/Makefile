@@ -6,15 +6,16 @@ LIBS     = ${DESTDIR}/usr/share/java
 EXTRA    = ${DESTDIR}/usr/share/jmol/lib
 HTMLDOC  = ${DESTDIR}/usr/share/doc/jmol/html
 
-#VERSION=`cat VERSION`
 VERSION=1
 
-all: application
+CLASSPATH=`find /tmp/jmol-${VERSION}/jars -name "*.jar" | tr '\n' ':'`
 
-application:
+all: deb
+
+archive: jars/jmol.jar
+
+jars/jmol.jar: 
 	@ant jar -Ddocbook.dir=/usr/lib/sgml/stylesheet/xsl/docbook/nwalsh/
-
-archive: application
 
 clean:
 	@rm -f -r jmol-*
@@ -29,10 +30,10 @@ install:
 
 deb: clean
 	@echo "Building package for version ${VERSION}"
-	cd ../../; ant sourcedist.tar.gz	
-	mv ../../jmol-${VERSION}.source.tar.gz /tmp/jmol-${VERSION}.tar.gz
-	cd /tmp; tar zxvf jmol-${VERSION}.tar.gz
+	cd /tmp; tar zxvf jmol-${VERSION}.source.tar.gz
 	cp Makefile /tmp/jmol-${VERSION}/.
-	cp -R ../debian /tmp/jmol-${VERSION}/.
 	cp jmol /tmp/jmol-${VERSION}/.
+	cp -R ../debian /tmp/jmol-${VERSION}/.
+	cp -R build.xml /tmp/jmol-${VERSION}/.
 	cd /tmp/jmol-${VERSION}; dpkg-buildpackage -rfakeroot
+

@@ -1,9 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<HTML><HEAD>
-<TITLE>404 Not Found</TITLE>
-</HEAD><BODY>
-<H1>Not Found</H1>
-The requested URL /applet6/models/testscript.spt was not found on this server.<P>
-<HR>
-<ADDRESS>Apache/1.3.26 Server at jmol.sourceforge.net Port 80</ADDRESS>
-</BODY></HTML>
+background pink
+delay
+select atomno==1
+delay
+select 2,4,6,8,10
+delay
+zoom 125
+delay
+zoom 50
+delay
+move 0 0 0 200 0 0 0 0 3
+delay
+move 0 0 0 50 0 0 0 0 3
+delay
+background white
+reset
+
+

@@ -128,7 +128,7 @@
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="bgcolor" VALUE="grey"/>
+  <PARAM NAME="bgcolor" VALUE="black"/>
 </APPLET>]]>
 </appletExample>
         </param>
@@ -169,6 +169,13 @@
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
   <PARAM NAME="label" VALUE="NUMBERS"/>
+</APPLET>]]>
+</appletExample>
+<appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
+  <PARAM NAME="label" VALUE="SYMBOLS"/>
 </APPLET>]]>
 </appletExample>
         </param>

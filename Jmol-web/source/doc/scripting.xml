@@ -177,6 +177,38 @@ linkScript('monitor 1 4');
       </p>
     </section>
     
+    <section title="Showing Animations">
+      <p>
+<appletExample><![CDATA[
+  <script>
+  function play(script) {
+    document.anim.script(script);
+  }
+  </script>
+  <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
+          width="350" height="350">
+    <param name="load"   value="SN1_reaction.xyz">
+  </applet>
+  <form>
+    <input type="button" value="rewind" onClick="play('animate rewind')">
+    <input type="button" value="prev" onClick="play('animate prev')">
+    <input type="button" value="next" onClick="play('animate next')">
+    <input type="button" value="play" onClick="play('animate play')">
+    <input type="button" value="playrev" onClick="play('animate revplay')">
+    <br>
+    <input type="button" value="repeated with 2 second delay"
+           onClick="play('animate play; loop 2')">
+    <br>
+    <input type="button" value="repeated no delay"
+           onClick="play('animate play; loop 0')">
+    <br>
+    <input type="button" value="forward and reverse"
+           onClick="play('animate play; animate revplay; loop 0')">
+  </form>]]>
+</appletExample>
+      </p>
+    </section>
+    
   </body>
 </document>
 

@@ -11,21 +11,47 @@
       <p>A carbon-cation rearrangement reaction
 
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-    WIDTH="200" HEIGHT="200">
-  <PARAM NAME="load" VALUE="SN1_reaction.cml"/>
-</APPLET>
-]]>
+<![CDATA[
+  <script>
+  function play(script) {
+    document.anim.script(script);
+  }
+  </script>
+  <applet name="anim" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
+          width="350" height="350">
+    <param name="load"   value="SN1_reaction.cml">
+  </applet>
+  <form>
+    <input type="button" value="rewind" onClick="play('animate rewind')">
+    <input type="button" value="prev" onClick="play('animate prev')">
+    <input type="button" value="next" onClick="play('animate next')">
+    <input type="button" value="play" onClick="play('animate play')">
+    <input type="button" value="playrev" onClick="play('animate play')">
+  </form>
+ ]]>
 </appletExample>
       </p>
 
       <p>Rotamers of ethane
       
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-    WIDTH="200" HEIGHT="200">
+<![CDATA[
+  <script>
+  function play2(script) {
+    document.anim2.script(script);
+  }
+  </script>
+<APPLET name="anim2" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
+    WIDTH="350" HEIGHT="350">
   <PARAM NAME="load" VALUE="conformeren.cml"/>
 </APPLET>
+  <form>
+    <input type="button" value="rewind" onClick="play2('animate rewind')">
+    <input type="button" value="prev" onClick="play2('animate prev')">
+    <input type="button" value="next" onClick="play2('animate next')">
+    <input type="button" value="play" onClick="play2('animate play')">
+    <input type="button" value="playrev" onClick="play2('animate play')">
+  </form>
 ]]>
 </appletExample>
       </p>

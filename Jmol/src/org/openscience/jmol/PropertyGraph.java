@@ -43,6 +43,7 @@ public class PropertyGraph extends JDialog {
      * @param inputFile the ChemFile containing vibration data
      */
     public void setChemFile(ChemFile inputFile) {
+        System.err.println("Checking for viewable properties...");
         if (isVisible()) {
             setVisible(false);
         }
@@ -51,11 +52,22 @@ public class PropertyGraph extends JDialog {
         this.inputFile = inputFile;
         
         // Check for graphable properties
+        Vector plist = inputFile.getFramePropertyList();
+        Enumeration els = plist.elements();
+        while (els.hasMoreElements()) {
+          PhysicalProperty p = (PhysicalProperty)els.nextElement();
+          System.err.println("Prop found: " + p.toString());
+          if (p instanceof Energy) {
+            hasGraphableProperties = true;
+          }
+        }
 
         if (hasGraphableProperties) {
             graphAction.setEnabled(true);
+            System.err.println("Found! :) ");
         } else {
             graphAction.setEnabled(false);
+            System.err.println("None found :(");
         }
     }
     

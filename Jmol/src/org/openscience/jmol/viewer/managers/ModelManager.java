@@ -47,7 +47,6 @@ public class ModelManager {
   boolean suppliesCovalentRadius;
   final Frame nullFrame;
 
-
   public ModelManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
@@ -321,30 +320,27 @@ public class ModelManager {
     if (htAtomicMap == null) {
       Hashtable map = new Hashtable();
       for (int atomicNumber = JmolConstants.atomicNumberMax;
-           --atomicNumber >= 0; )
-        map.put(JmolConstants.atomicSymbols[atomicNumber],
-                new Integer(atomicNumber));
+           --atomicNumber >= 0; ) {
+        String symbol = JmolConstants.atomicSymbols[atomicNumber];
+        Integer boxed = new Integer(atomicNumber);
+        map.put(symbol, boxed);
+        if (symbol.length() == 2) {
+          symbol =
+            "" + symbol.charAt(0) + Character.toUpperCase(symbol.charAt(1));
+          map.put(symbol, boxed);
+        }
+      }
       htAtomicMap = map;
     }
     String atomicSymbol = modelAdapter.getAtomicSymbol(clientAtom);
     if (atomicSymbol == null) {
-      System.out.println("JmolModelAdapter does not supply getAtomicNumber() and " +
-                         "JmolModelAdapter.getAtomicSymbol() returned null");
+      System.out.println("JmolModelAdapter.getAtomicSymbol() returned null");
       return 0;
     }
     Integer boxedAtomicNumber = (Integer)htAtomicMap.get(atomicSymbol);
     if (boxedAtomicNumber != null)
 	return boxedAtomicNumber.intValue();
-    if (atomicSymbol.length() == 2 &&
-	Character.isUpperCase(atomicSymbol.charAt(1))) {
-	boxedAtomicNumber = (Integer)htAtomicMap.get("" +
-						     atomicSymbol.charAt(0) +
-						     Character.toLowerCase(atomicSymbol.charAt(1)));
-	if (boxedAtomicNumber != null)
-	    return boxedAtomicNumber.intValue();
-    }
-    System.out.println("JmolModelAdapter does not supply getAtomicNumber() and '" +
-		       atomicSymbol + "' is not a recognized symbol");
+    System.out.println("" + atomicSymbol + "' is not a recognized symbol");
     return 0;
   }
 

@@ -523,6 +523,10 @@ class PdbModel extends Model {
     serialMap = null;
   }
 
+  boolean isValidAtomicSymbolChar(char ch) {
+    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+  }
+
   void atom() {
     try {
       // for now, we are only taking alternate location 'A'
@@ -533,10 +537,13 @@ class PdbModel extends Model {
       String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
       if (atomicSymbol.length() == 0 ||
           Character.isDigit(atomicSymbol.charAt(0))) {
+        char ch13 = line.charAt(13);
+        boolean isValid13 = isValidAtomicSymbolChar(ch13);
         char ch12 = line.charAt(12);
-        atomicSymbol = ((ch12 == ' ' || Character.isDigit(ch12))
-                        ? line.substring(13, 14)
-                        : line.substring(12, 14));
+        if (isValidAtomicSymbolChar(ch12))
+          atomicSymbol = isValid13 ? "" + ch12 + ch13 : "" + ch12;
+        else
+          atomicSymbol = isValid13 ? "" + ch13 : "Xx";
       }
       int serial = Integer.parseInt(line.substring(6, 11).trim());
       float x =

@@ -127,7 +127,7 @@ public abstract class ReaderFactory {
         }
         if (mdlFile) {
           System.out.println("ReaderFactory: MdlReader");
-          return new MdlReader(buffer);
+          return new org.openscience.jmol.io.MdlReader(buffer);
         }
       }
 

@@ -2871,7 +2871,7 @@ public class Eval implements Runnable {
     float axisY = floatParameter(2);
     float axisZ = floatParameter(3);
     float degrees = floatParameter(4);
-    float floatSecondsTotal = statementLength >= 6 ? floatParameter(5) : 0;
+    float floatSecondsTotal = statementLength >= 6 ? floatParameter(5) : 1;
     int fps = 30;
     int zoom = statementLength == 7 ? intParameter(6) : 0;
 

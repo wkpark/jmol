@@ -95,17 +95,17 @@ public class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
-  public void rotateByX(float angleRadians) {
+  public synchronized void rotateByX(float angleRadians) {
     matrixTemp.rotX(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
-  public void rotateByY(float angleRadians) {
+  public synchronized void rotateByY(float angleRadians) {
     if (orientationRasMolChime)
       angleRadians = -angleRadians;
     matrixTemp.rotY(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
-  public void rotateByZ(float angleRadians) {
+  public synchronized void rotateByZ(float angleRadians) {
     if (orientationRasMolChime)
       angleRadians = -angleRadians;
     matrixTemp.rotZ(angleRadians);
@@ -516,4 +516,87 @@ public class TransformManager {
     matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
+  public int spinX, spinY, spinZ, spinFps = 30;
+
+  final static float radiansPerDegree = (float)(2 * Math.PI / 360);
+
+  public void setSpinX(int value) {
+    spinX = value;
+    //    System.out.println("spinX=" + spinX);
+  }
+  public void setSpinY(int value) {
+    spinY = value;
+    //    System.out.println("spinY=" + spinY);
+  }
+  public void setSpinZ(int value) {
+    spinZ = value;
+    //    System.out.println("spinZ=" + spinZ);
+  }
+  public void setSpinFps(int value) {
+    if (value <= 0)
+      value = 1;
+    else if (value > 30)
+      value = 30;
+    spinFps = value;
+    //    System.out.println("spinFps=" + spinFps);
+  }
+  public boolean spinOn;
+  SpinThread spinThread;
+  public void setSpinOn(boolean spinOn) {
+    if (spinOn) {
+      if (spinThread == null) {
+        spinThread = new SpinThread();
+        spinThread.start();
+      }
+    } else {
+      if (spinThread != null) {
+        spinThread.interrupt();
+        spinThread = null;
+      }
+    }
+    this.spinOn = spinOn;
+    //    System.out.println("spinOn=" + spinOn);
+  }
+
+  class SpinThread extends Thread implements Runnable {
+    public void run() {
+      int myFps = spinFps;
+      int i = 0;
+      long timeBegin = System.currentTimeMillis();
+      while (! isInterrupted()) {
+        if (myFps != spinFps) {
+          myFps = spinFps;
+          i = 0;
+          timeBegin = System.currentTimeMillis();
+        }
+        boolean refreshNeeded = false;
+        if (spinX != 0) {
+          rotateByX(spinX * radiansPerDegree / myFps);
+          refreshNeeded = true;
+        }
+        if (spinY != 0) {
+          rotateByY(spinY * radiansPerDegree / myFps);
+          refreshNeeded = true;
+        }
+        if (spinZ != 0) {
+          rotateByZ(spinZ * radiansPerDegree / myFps);
+          refreshNeeded = true;
+        }
+        ++i;
+        int targetTime = i * 1000 / myFps;
+        int currentTime = (int)(System.currentTimeMillis() - timeBegin);
+        int sleepTime = targetTime - currentTime;
+        if (sleepTime > 0) {
+          if (refreshNeeded)
+            viewer.refresh();
+          try {
+            Thread.sleep(sleepTime);
+          } catch (InterruptedException e) {
+            //            System.out.println("interrupt caught!");
+            break;
+          }
+        }
+      }
+    }
+  }
 }

@@ -244,7 +244,7 @@ final public class JmolViewer {
     refresh();
   }
 
-  private static float radiansPerDegree = (float)(2 * Math.PI / 360);
+  final static float radiansPerDegree = (float)(2 * Math.PI / 360);
 
   public void rotate(AxisAngle4f axisAngle) {
     transformManager.rotate(axisAngle);
@@ -452,6 +452,43 @@ final public class JmolViewer {
     g3d.setSlabValue(slabValue);
   }
   
+  public void setSpinX(int value) {
+    transformManager.setSpinX(value);
+  }
+  public int getSpinX() {
+    return transformManager.spinX;
+  }
+
+  public void setSpinY(int value) {
+    transformManager.setSpinY(value);
+  }
+  public int getSpinY() {
+    return transformManager.spinY;
+  }
+
+
+  public void setSpinZ(int value) {
+    transformManager.setSpinZ(value);
+  }
+  public int getSpinZ() {
+    return transformManager.spinZ;
+  }
+
+
+  public void setSpinFps(int value) {
+    transformManager.setSpinFps(value);
+  }
+  public int getSpinFps() {
+    return transformManager.spinFps;
+  }
+
+  public void setSpinOn(boolean spinOn) {
+    transformManager.setSpinOn(spinOn);
+  }
+  public boolean getSpinOn() {
+    return transformManager.spinOn;
+  }
+
   /****************************************************************
    * delegated to ColorManager
    ****************************************************************/
@@ -1620,43 +1657,6 @@ final public class JmolViewer {
 
   public void setRasmolDefaults() {
     styleManager.setRasmolDefaults();
-  }
-
-  public void setSpinX(int value) {
-    styleManager.setSpinX(value);
-  }
-  public int getSpinX() {
-    return styleManager.spinX;
-  }
-
-  public void setSpinY(int value) {
-    styleManager.setSpinY(value);
-  }
-  public int getSpinY() {
-    return styleManager.spinY;
-  }
-
-
-  public void setSpinZ(int value) {
-    styleManager.setSpinZ(value);
-  }
-  public int getSpinZ() {
-    return styleManager.spinZ;
-  }
-
-
-  public void setSpinFps(int value) {
-    styleManager.setSpinFps(value);
-  }
-  public int getSpinFps() {
-    return styleManager.spinFps;
-  }
-
-  public void setSpinOn(boolean spinOn) {
-    styleManager.setSpinOn(spinOn);
-  }
-  public boolean getSpinOn() {
-    return styleManager.spinOn;
   }
 
   public void setShowFrank(boolean showFrank) {

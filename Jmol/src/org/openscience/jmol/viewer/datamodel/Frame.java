@@ -696,7 +696,7 @@ public class Frame {
     }
   }
 
-  final static boolean showRebondTimes = false;
+  final static boolean showRebondTimes = true;
 
   private float bondTolerance;
   private float minBondDistance;
@@ -717,7 +717,7 @@ public class Frame {
     int indexLastCA = -1;
     Atom atomLastCA = null;
 
-    Bspt bspt = getBspt();
+    Bspt.SphereIterator iter = getSphereIterator();
     long timeBegin, timeEnd;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();
@@ -727,7 +727,6 @@ public class Frame {
       float myCovalentRadius = atom.getCovalentRadius();
       float searchRadius =
         myCovalentRadius + maxCovalentRadius + bondTolerance;
-      Bspt.SphereIterator iter = getSphereIterator();
       iter.initialize(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
@@ -789,6 +788,52 @@ public class Frame {
     }
     return 0;
   }
+
+  float hbondMax = 3.25f;
+  float hbondMin = 2.5f;
+  float hbondMin2 = hbondMin * hbondMin;
+  
+  boolean hbondsCalculated;
+
+  public void calcHbonds() {
+    if (hbondsCalculated)
+      return;
+    Bspt.SphereIterator iter = getSphereIterator();
+    long timeBegin, timeEnd;
+    if (showRebondTimes)
+      timeBegin = System.currentTimeMillis();
+    for (int i = atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      int atomicNumber = atom.atomicNumber;
+      if (atomicNumber != 7 && atomicNumber != 8)
+        continue;
+      float searchRadius = hbondMax;
+      iter.initialize(atom, hbondMax);
+      while (iter.hasMoreElements()) {
+        Atom atomNear = (Atom)iter.nextElement();
+        int atomicNumberNear = atomNear.atomicNumber;
+        if (atomicNumberNear != 7 && atomicNumberNear != 8)
+          continue;
+        if (atomNear == atom)
+          continue;
+        if (iter.foundDistance2() < hbondMin2)
+          continue;
+        if (atom.isBonded(atomNear))
+          continue;
+        addBond(atom.bondMutually(atomNear, Bond.HYDROGEN));
+        System.out.println("adding an hbond between " + atom.atomIndex +
+                           " & " + atomNear.atomIndex);
+      }
+      iter.release();
+    }
+
+    if (showRebondTimes) {
+      timeEnd = System.currentTimeMillis();
+      System.out.println("Time to hbond=" + (timeEnd - timeBegin));
+    }
+    hbondsCalculated = true;
+  }
+
 
   public void deleteAllBonds() {
     for (int i = bondCount; --i >= 0; ) {

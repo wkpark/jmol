@@ -1162,6 +1162,12 @@ final public class JmolViewer {
                                     bondIteratorSelected(Bond.SULFUR));
   }
 
+  public void setStyleMarHBondScript(byte style, short mar) {
+    getFrame().calcHbonds();
+    distributionManager.setStyleMar(style, mar,
+                                    bondIteratorSelected(Bond.HYDROGEN));
+  }
+
   public void setStyleMarBackboneScript(byte style, short mar) {
     distributionManager.setStyleMar(style, mar,
                                     bondIteratorSelected(Bond.BACKBONE));
@@ -1189,6 +1195,11 @@ final public class JmolViewer {
   public void setColorSsBondScript(Color color) {
     distributionManager.setColix(Colix.getColix(color),
                                  bondIteratorSelected(Bond.SULFUR));
+  }
+
+  public void setColorHBondScript(Color color) {
+    distributionManager.setColix(Colix.getColix(color),
+                                 bondIteratorSelected(Bond.HYDROGEN));
   }
 
   public void setColorBackboneScript(Color color) {

@@ -378,12 +378,14 @@ public class Eval implements Runnable {
       case Token.ssbonds:
         ssbonds();
         break;
+      case Token.hbonds:
+        hbonds();
+        break;
 
         // not implemented
       case Token.bond:
       case Token.clipboard:
       case Token.connect:
-      case Token.hbonds:
       case Token.help:
       case Token.molecule:
       case Token.pause:
@@ -1093,6 +1095,9 @@ public class Eval implements Runnable {
     case Token.ssbonds:
       viewer.setColorSsBondScript(getColorOrNoneParam(2));
       break;
+    case Token.hbonds:
+      viewer.setColorHBondScript(getColorOrNoneParam(2));
+      break;
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));
       break;
@@ -1108,6 +1113,7 @@ public class Eval implements Runnable {
     case Token.atom:
     case Token.trace:
     case Token.strands:
+    case Token.ribbons:
     case Token.cartoon:
       colorObject(tok, 2);
       break;
@@ -1122,10 +1128,6 @@ public class Eval implements Runnable {
 	else
 	    invalidArgument();
 	break;
-    case Token.ribbons:
-    case Token.hbonds:
-      notImplemented(1);
-      break;
     default:
       invalidArgument();
     }
@@ -1173,6 +1175,7 @@ public class Eval implements Runnable {
     case Token.trace:
       viewer.setTraceColor(palette, color);
       break;
+    case Token.ribbons:
     case Token.strands:
       viewer.setStrandsColor(palette, color);
       break;
@@ -1728,6 +1731,36 @@ public class Eval implements Runnable {
       booleanOrNumberExpected();
     }
     viewer.setStyleMarSsBondScript(style, mar);
+  }
+
+  void hbonds() throws ScriptException {
+    int tok = statement[1].tok;
+    byte style = JmolConstants.STYLE_WIREFRAME;
+    short mar = 100;
+    switch (tok) {
+    case Token.on:
+      break;
+    case Token.off:
+      style = JmolConstants.STYLE_NONE;
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500)
+        numberOutOfRange();
+      mar = (short)(radiusRasMol * 4);
+      style = JmolConstants.STYLE_SHADED;
+      break;
+    case Token.decimal:
+      float angstroms = ((Float)statement[1].value).floatValue();
+      if (angstroms >= 2)
+        numberOutOfRange();
+      mar = (short)(angstroms * 1000);
+      style = JmolConstants.STYLE_SHADED;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setStyleMarHBondScript(style, mar);
   }
 
   void animate() throws ScriptException {

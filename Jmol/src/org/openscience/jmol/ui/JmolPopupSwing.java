@@ -44,6 +44,7 @@ import java.util.Enumeration;
 public class JmolPopupSwing extends JPopupMenu {
 
   JmolViewer viewer;
+  Component component;
   MenuItemListener mil;
   CheckboxMenuItemListener cmil;
   ResourceBundle rbStructure;
@@ -59,9 +60,10 @@ public class JmolPopupSwing extends JPopupMenu {
     cmil = new CheckboxMenuItemListener();
     addMenuItems("popupMenu", this);
     rbWords = null;
+    component = viewer.getAwtComponent();
   }
 
-  public void showSwing(Component component, int x, int y) {
+  public void showSwing(int x, int y) {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       JCheckBoxMenuItem jcbmi = (JCheckBoxMenuItem)htCheckbox.get(key);
@@ -69,7 +71,6 @@ public class JmolPopupSwing extends JPopupMenu {
       boolean b = viewer.getBooleanProperty(key);
       jcbmi.setState(b);
     }
-
     show(component, x, y);
   }
 

@@ -29,6 +29,7 @@ import org.openscience.jmol.viewer.JmolViewer;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.Event;
+import java.util.BitSet;
 
 public abstract class MouseManager {
 
@@ -94,6 +95,160 @@ public abstract class MouseManager {
       rectRubber.y = yAnchor;
       rectRubber.height = yCurrent - yAnchor;
     }
+  }
+
+  void mousePressed(int x, int y, int modifiers) {
+    if (! viewer.haveFile())
+      return;
+    xCurrent = xPrevious = x;
+    yCurrent = yPrevious = y;
+    modifiersWhenPressed = modifiers;
+    if ((modifiers & MIDDLE) != 0) {
+      viewer.homePosition();
+      return;
+    }
+    if ((modifiers & RIGHT) != 0)
+      return;
+    // left button was pressed
+
+    int atomIndex = viewer.findNearestAtomIndex(x, y);
+    switch (modeMouse) {
+    case PICK:
+      rubberbandSelectionMode = true;
+      xAnchor = x;
+      yAnchor = y;
+      calcRectRubberBand();
+      if ((modifiers & SHIFT) == 0) {
+        viewer.clearSelection();
+        if (atomIndex != -1)
+          viewer.addSelection(atomIndex);
+      } else {
+        if (atomIndex != -1) 
+          viewer.toggleSelection(atomIndex);
+      }
+      break;
+    case DELETE:
+      if (atomIndex != -1)
+        viewer.deleteAtom(atomIndex);
+      break;
+    case MEASURE:
+      if (atomIndex != -1) {
+        viewer.measureSelection(atomIndex);
+      }
+    }
+  }
+
+  final static int LEFT = 16;
+  final static int MIDDLE = Event.ALT_MASK;  // 8
+  final static int RIGHT = Event.META_MASK;  // 4
+  final static int CTRL = Event.CTRL_MASK;   // 2
+  final static int SHIFT = Event.SHIFT_MASK; // 1
+  final static int MIDDLE_RIGHT = MIDDLE | RIGHT;
+  final static int CTRL_SHIFT = CTRL | SHIFT;
+  final static int CTRL_LEFT = CTRL | LEFT;
+  final static int SHIFT_LEFT = SHIFT | LEFT;
+  final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
+  final static int CTRL_RIGHT = CTRL | RIGHT;
+  final static int SHIFT_RIGHT = SHIFT | RIGHT;
+  final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
+
+  void mouseClicked(int x, int y, int modifiers) {
+  }
+
+  void mouseEntered(int x, int y, int modifiers) {
+  }
+
+  void mouseExited(int x, int y, int modifiers) {
+  }
+
+  void mouseReleased(int x, int y, int modifiers) {
+    viewer.setInMotion(false);
+    if ((modifiers & CTRL_SHIFT_RIGHT) == RIGHT &&
+        (modifiersWhenPressed & CTRL_SHIFT_RIGHT) == RIGHT) {
+      // mth 2003 05 27
+      // the reason I am checking for RIGHT is because e.isPopupTrigger()
+      // was failing on some platforms
+      // mth 2003 07 07
+      // added this modifiersWhenPressed check because of bad
+      // behavior on WinME
+      viewer.popupMenu(x, y);
+    } else if (modeMouse == PICK) {
+      rubberbandSelectionMode = false;
+      component.repaint();
+    }
+  }
+
+  int getMode(int modifiers) {
+    if (modeMouse != ROTATE)
+      return modeMouse;
+    /* RASMOL
+    // mth - I think that right click should be reserved for a popup menu
+    if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
+    return SLAB_PLANE;
+    if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
+    return ZOOM;
+    if ((modifiers & SHIFT_RIGHT) == SHIFT_RIGHT)
+    return ROTATE_Z;
+    if ((modifiers & RIGHT) == RIGHT)
+    return XLATE;
+    if ((modifiers & LEFT) == LEFT)
+    return ROTATE;
+    */
+    if ((modifiers & SHIFT_RIGHT) == SHIFT_RIGHT)
+      return ROTATE_Z;
+    if ((modifiers & CTRL_RIGHT) == CTRL_RIGHT)
+      return XLATE;
+    if ((modifiers & RIGHT) == RIGHT)
+      return POPUP_MENU;
+    if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
+      return ZOOM;
+    if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
+      return SLAB_PLANE;
+    if ((modifiers & LEFT) == LEFT)
+      return ROTATE;
+    return modeMouse;
+  }
+
+  public void mouseDragged(int x, int y, int modifiers) {
+
+    viewer.setInMotion(true);
+    xCurrent = x;
+    yCurrent = y;
+    switch (getMode(modifiers)) {
+    case ROTATE:
+      viewer.rotateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
+      break;
+    case ROTATE_Z:
+      viewer.rotateZBy(xPrevious - xCurrent);
+      break;
+    case XLATE:
+      viewer.translateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
+      break;
+    case ZOOM:
+      viewer.zoomBy(yCurrent - yPrevious);
+      break;
+    case SLAB_PLANE:
+      viewer.slabBy(yCurrent - yPrevious);
+      break;
+    case PICK:
+      if (viewer.haveFile()) {
+        calcRectRubberBand();
+        BitSet selectedAtoms = viewer.findAtomsInRectangle(rectRubber);
+        if ((modifiers & SHIFT) != 0) {
+          viewer.addSelection(selectedAtoms);
+        } else {
+          viewer.setSelectionSet(selectedAtoms);
+        }
+      }
+      break;
+    case POPUP_MENU:
+      break;
+    }
+    xPrevious = xCurrent;
+    yPrevious = yCurrent;
+  }
+
+  void mouseMoved(int x, int y, int modifiers) {
   }
 
   public abstract boolean handleEvent(Event e);

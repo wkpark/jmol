@@ -48,6 +48,7 @@ import java.util.Enumeration;
 public class JmolPopupAwt extends PopupMenu {
 
   JmolViewer viewer;
+  Component component;
   MenuItemListener mil;
   CheckboxMenuItemListener cmil;
   ResourceBundle rbStructure;
@@ -64,16 +65,16 @@ public class JmolPopupAwt extends PopupMenu {
     addMenuItems("popupMenu", this);
     parent.add(this);
     rbWords = null;
+    component = viewer.getAwtComponent();
   }
 
-  public void showAwt(Component component, int x, int y) {
+  public void showAwt(int x, int y) {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       CheckboxMenuItem cbmi = (CheckboxMenuItem)htCheckbox.get(key);
       boolean b = viewer.getBooleanProperty(key);
       cbmi.setState(b);
     }
-
     show(component, x, y);
   }
 

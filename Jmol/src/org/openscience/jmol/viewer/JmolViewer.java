@@ -731,9 +731,9 @@ final public class JmolViewer {
     return mouseManager.getRubberBand();
   }
 
-  public void popupMenu(Component component, int x, int y) {
+  public void popupMenu(int x, int y) {
     if (jmolStatusListener != null)
-      jmolStatusListener.handlePopupMenu(component, x, y);
+      jmolStatusListener.handlePopupMenu(x, y);
   }
 
   private MenuItem makeMenuItem(String id) {

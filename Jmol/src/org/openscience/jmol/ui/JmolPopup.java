@@ -47,10 +47,10 @@ public class JmolPopup {
     rbWords = null;
   }
 
-  public void show(Component component, int x, int y) {
+  public void show(int x, int y) {
     if (useSwing)
-      popupSwing.showSwing(component, x, y);
+      popupSwing.showSwing(x, y);
     else
-      popupAwt.showAwt(component, x, y);
+      popupAwt.showAwt(x, y);
   }
 }

@@ -40,8 +40,35 @@ public class MouseManager10 extends MouseManager {
     super(component, viewer);
   }
 
+  private int applyLeftMouse(int modifiers) {
+    // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
+    return ((modifiers & MIDDLE_RIGHT) == 0)  ? (modifiers | LEFT) : modifiers;
+  }
+
   public boolean handleEvent(Event e) {
-    System.out.println("MouseManager10 *does* handle events");
+    int x = e.x, y = e.y, modifiers = e.modifiers, clickCount = e.clickCount;
+    switch (e.id) {
+    case Event.MOUSE_DOWN:
+      mousePressed(x, y, applyLeftMouse(modifiers));
+      break;
+    case Event.MOUSE_DRAG:
+      mouseDragged(x, y, applyLeftMouse(modifiers));
+      break;
+    case Event.MOUSE_ENTER:
+      mouseEntered(x, y, applyLeftMouse(modifiers));
+      break;
+    case Event.MOUSE_EXIT:
+      mouseExited(x, y, applyLeftMouse(modifiers));
+      break;
+    case Event.MOUSE_MOVE:
+      mouseMoved(x, y, applyLeftMouse(modifiers));
+      break;
+    case Event.MOUSE_UP:
+      mouseReleased(x, y, applyLeftMouse(modifiers));
+      break;
+    default:
+      return false;
+    }
     return true;
   }
 }

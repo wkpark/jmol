@@ -236,8 +236,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     }
   }
 
-  public void handlePopupMenu(Component component, int x, int y) {
-    jmolpopup.show(component, x, y);
+  public void handlePopupMenu(int x, int y) {
+    jmolpopup.show(x, y);
   }
 
   public void measureSelection(int atomIndex) {

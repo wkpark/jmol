@@ -78,10 +78,6 @@ public class JmolPopupSwing extends JmolPopup {
 
   ////////////////////////////////////////////////////////////////
 
-  void addMenuSeparator() {
-    swingPopup.addSeparator();
-  }
-  
   void addMenuSeparator(Object menu) {
     if (menu instanceof JPopupMenu)
       ((JPopupMenu)menu).addSeparator();
@@ -89,8 +85,12 @@ public class JmolPopupSwing extends JmolPopup {
       ((JMenu)menu).addSeparator();
   }
 
-  void addMenuItem(String entry) {
-    swingPopup.add(new JMenuItem(entry));
+  void addMenuItem(Object menu, String entry) {
+    JMenuItem jmi = new JMenuItem(entry);
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu)menu).add(jmi);
+    else
+      ((JMenu)menu).add(jmi);
   }
 
   void addMenuItem(Object menu, String entry, String script) {

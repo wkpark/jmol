@@ -124,16 +124,12 @@ public class JmolPopupAwt extends JmolPopup {
 
   ////////////////////////////////////////////////////////////////
 
-  void addMenuSeparator() {
-    awtPopup.addSeparator();
-  }
-  
   void addMenuSeparator(Object menu) {
     ((Menu)menu).addSeparator();
   }
 
-  void addMenuItem(String entry) {
-    awtPopup.add(new MenuItem(entry));
+  void addMenuItem(Object menu, String entry) {
+    ((Menu)menu).add(new MenuItem(entry));
   }
 
   void addMenuItem(Object menu, String entry, String script) {

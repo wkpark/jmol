@@ -41,6 +41,7 @@ abstract public class JmolPopup {
 
   Object elementsComputedMenu;
   Object aaresiduesComputedMenu;
+  Object aboutMenu;
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -57,7 +58,7 @@ abstract public class JmolPopup {
 
   void build(Object popupMenu) {
     addMenuItems("popupMenu", popupMenu, new PopupResourceBundle());
-    addVersionAndDate();
+    addVersionAndDate(popupMenu);
   }
 
   public void updateComputedMenus() {
@@ -94,10 +95,11 @@ abstract public class JmolPopup {
     }
   }
   
-  private void addVersionAndDate() {
-    addMenuSeparator();
-    addMenuItem("Jmol " + JmolConstants.version);
-    addMenuItem(JmolConstants.date);
+  private void addVersionAndDate(Object popupMenu) {
+    if (aboutMenu != null) {
+      addMenuItem(aboutMenu, "Jmol " + JmolConstants.version);
+      addMenuItem(aboutMenu, JmolConstants.date);
+    }
   }
 
   private void addMenuItems(String key, Object menu,
@@ -119,6 +121,8 @@ abstract public class JmolPopup {
           aaresiduesComputedMenu = subMenu;
         else
           addMenuItems(item, subMenu, popupResourceBundle);
+        if ("aboutMenu".equals(item))
+          aboutMenu = subMenu;
         addMenuSubMenu(menu, subMenu);
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
@@ -142,8 +146,13 @@ abstract public class JmolPopup {
   class MenuItemListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       String script = e.getActionCommand();
-      if (script != null)
-        viewer.evalStringQuiet(script);
+      if (script != null) {
+        if (script.startsWith("http://")) {
+          ;
+        } else if (script.length() != 0) {
+          viewer.evalStringQuiet(script);
+        }
+      }
     }
   }
 
@@ -151,11 +160,9 @@ abstract public class JmolPopup {
 
   abstract public void show(int x, int y);
 
-  abstract void addMenuSeparator();
-
   abstract void addMenuSeparator(Object menu);
 
-  abstract void addMenuItem(String entry);
+  abstract void addMenuItem(Object menu, String entry);
 
   abstract void addMenuItem(Object menu, String entry, String script);
 

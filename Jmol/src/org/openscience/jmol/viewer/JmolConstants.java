@@ -32,7 +32,7 @@ final public class JmolConstants {
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
   public final static String version = "10pre5c";
-  public final static String date = "$DATE$";
+  public final static String date = "$Date$";
   public final static boolean officialRelease = false;
 
   public final static byte LABEL_NONE     = 0;

@@ -242,39 +242,6 @@ public class Dots {
     */
   }
 
-    void calcTori() {
-	if (probeRadius == 0)
-	    return;
-	float probeDiameter = 2 * probeRadius;
-	tori = new Torus[32];
-	torusCount = 0;
-	AtomShape[] atomShapes = frame.atomShapes;
-	for (int i = frame.atomShapeCount; --i >= 0; ) {
-	    AtomShape atomI = atomShapes[i];
-	    float vdwRadiusI = atomI.getVanderwaalsRadius();
-	    getNeighbors(atomI, vdwRadiusI);
-	    for (int iJ = neighborCount; --iJ >= 0; ) {
-		AtomShape atomJ = neighbors[iJ];
-		int j = atomJ.getAtomIndex();
-		if (i >= j) {
-		    continue;
-		}
-		Torus torusIJ = getTorus(atomI, i, atomJ, j);
-		if (torusIJ == null)
-		    continue;
-		calcTorusProbeMap(torusIJ);
-		if (torusIJ.probeMap == null)
-		    continue;
-		if (torusCount == tori.length) {
-		    Torus[] t = new Torus[torusCount * 2];
-		    System.arraycopy(tori, 0, t, 0, torusCount);
-		    tori = t;
-		}
-		tori[torusCount++] = torusIJ;
-	    }
-	}
-    }
-
     // note that this routine assumes that getNeighbors was already
     // called previously (by calcConvexMap)
     void calcTori(int indexI) {
@@ -399,8 +366,7 @@ public class Dots {
       outerRadial.normalize();
       outerRadial.scale(probeRadius);
 
-      vectorT.set(atomJ.point3f);
-      vectorT.sub(pointT);
+      vectorT.sub(atomJ.point3f, pointT);
       outerAngle = vectorT.angle(outerRadial);
     }
   }
@@ -477,54 +443,6 @@ public class Dots {
   }
 
 
-    void calcCavities() {
-	System.out.println("calcCavities()");
-	if (probeRadius == 0)
-	    return;
-	float probeDiameter = 2 * probeRadius;
-	cavities = new Cavity[32];
-	cavityCount = 0;
-	AtomShape[] atomShapes = frame.atomShapes;
-	for (int i = frame.atomShapeCount; --i >= 0; ) {
-	    AtomShape atomI = atomShapes[i];
-	    float vdwRadiusI = atomI.getVanderwaalsRadius();
-	    getNeighbors(atomI, vdwRadiusI);
-	    for (int iJ = neighborCount; --iJ >= 0; ) {
-		AtomShape atomJ = neighbors[iJ];
-		int j = atomJ.getAtomIndex();
-		if (i >= j)
-		    continue;
-		float vdwRadiusJ = atomJ.getVanderwaalsRadius();
-		float distIJ = atomI.point3f.distance(atomJ.point3f);
-		if (distIJ >= (vdwRadiusI + probeDiameter + vdwRadiusJ))
-		    continue;
-		for (int iK = iJ; --iK >= 0; ) {
-		    AtomShape atomK = neighbors[iK];
-		    int k = atomK.getAtomIndex();
-		    if (j >= k)
-			continue;
-		    float vdwRadiusK = atomK.getVanderwaalsRadius();
-		    float distIK = atomI.point3f.distance(atomK.point3f);
-		    if (distIK >= (vdwRadiusI + probeDiameter + vdwRadiusK))
-			continue;
-		    float distJK = atomJ.point3f.distance(atomK.point3f);
-		    if (distJK >= (vdwRadiusJ + probeDiameter + vdwRadiusK))
-			continue;
-		    Cavity cavity = getCavity(atomI, i, atomJ, j, atomK, k);
-		    if (cavity == null)
-			continue;
-		    if (cavityCount == cavities.length) {
-			Cavity[] t = new Cavity[2 * cavityCount];
-			System.arraycopy(cavities, 0, t, 0, cavityCount);
-			cavities = t;
-		    }
-		    cavities[cavityCount++] = cavity;
-		}
-	    }
-	}
-	System.out.println("cavityCount=" + cavityCount);
-    }
-
     // note that this routine assumes that getNeighbors was already
     // called previously (by calcConvexMap)
     void calcCavities(int indexI) {
@@ -547,7 +465,7 @@ public class Dots {
 	    float distIJ = atomI.point3f.distance(atomJ.point3f);
 	    if (distIJ >= (vdwRadiusI + probeDiameter + vdwRadiusJ))
 		continue;
-	    for (int iK = iJ; --iK >= 0; ) {
+	    for (int iK = neighborCount; --iK >= 0; ) {
 		AtomShape atomK = neighbors[iK];
 		int indexK = atomK.getAtomIndex();
 		if (indexJ >= indexK)
@@ -607,10 +525,13 @@ public class Dots {
 	return cavity;
     }
 
-    final Vector3f uIJ = new Vector3f();
-    final Vector3f uIK = new Vector3f();
     final Vector3f uIJK = new Vector3f();
-    final Vector3f uTB = new Vector3f();
+    final Vector3f n2n3 = new Vector3f();
+    final Vector3f n3n1 = new Vector3f();
+    final Vector3f n1n2 = new Vector3f();
+    final Vector3f p1 = new Vector3f();
+    final Vector3f p2 = new Vector3f();
+    final Vector3f p3 = new Vector3f();
 
     final Point3f pointProbe = new Point3f();
 
@@ -651,33 +572,70 @@ public class Dots {
 		    baseBelow = new Point3f(uIJK);
 		    baseBelow.scaleAdd(-(heightIJK - probeRadius), baseIJK);
 		}
+		/*
 		System.out.println(" centerAbove=" + centerAbove +
 				   " baseAbove=" + baseAbove + 
 				   " centerBelow=" + centerBelow +
 				   " baseBelow=" + baseBelow);
+		*/
 	    }
 	}
 
 	void calcBase() {
+	    Vector3f n1 = torusIJ.axisVector;
+	    p1.set(torusIJ.center);
+	    Vector3f n2 = torusIK.axisVector;
+	    p2.set(torusIK.center);
+	    uIJK.cross(torusIJ.axisVector, torusIK.axisVector);
+	    uIJK.normalize();
+	    Vector3f n3 = uIJK;
+	    p3.set(atomI.point3f);
+	    float d1 = n1.dot(p1);
+	    float d2 = n2.dot(p2);
+	    float d3 = n3.dot(p3);
+	    n2n3.cross(n2, n3);
+	    n3n1.cross(n3, n1);
+	    n1n2.cross(n1, n2);
+	    baseIJK = new Point3f();
+	    baseIJK.scale(d1, n2n3);
+	    baseIJK.scaleAdd(d2, n3n1, baseIJK);
+	    baseIJK.scaleAdd(d3, n1n2, baseIJK);
+	    baseIJK.scale(1 / n1.dot(n2n3));
+	    /*
+	    System.out.println(" d1=" + d1 + " d2=" + d2 + " d3=" + d3);
+	    System.out.println("denom=" + n1.dot(n2n3));
+	    System.out.println("baseIJK=" + baseIJK);
+
 	    uIJ.sub(atomJ.point3f, atomI.point3f);
 	    uIJ.normalize();
 
 	    uIK.sub(atomK.point3f, atomI.point3f);
-	    System.out.println("uIK=" + uIK);
 	    uIK.normalize();
 
 	    float angleJIK = uIJ.angle(uIK);
+	    System.out.println("angleJIK=" + angleJIK + " " +
+			       (angleJIK * 360 / (2 * Math.PI)));
 	    
-	    uIJK.cross(uIJ, uIK);
 	    uIJK.normalize();
 
 	    uTB.cross(uIJK, uIJ);
+	    System.out.println("uTB length=" + uTB.length());
+
+	    System.out.println(" uIK dot uIJK=" + uIK.dot(uIJK) +
+			       " uIJ dot uIJK=" + uIJ.dot(uIJK) +
+			       " uTB dot uIJ=" + uTB.dot(uIJ) +
+			       " uTB dot uIJK=" + uTB.dot(uIJK));
 
 	    vectorT.sub(torusIK.center, torusIJ.center);
+	    System.out.println("tIK - tIJ length=" + vectorT.length());
 	    baseIJK = new Point3f(uTB);
 	    baseIJK.scaleAdd(uIK.dot(vectorT)/(float)Math.sin(angleJIK),
-			     torusIJ.center);
+	    			     torusIJ.center);
+	    System.out.println("uIK dot vectorT =" + uIK.dot(vectorT) +
+			       " sin=" + Math.sin(angleJIK) +
+			       " div=" + (uIK.dot(vectorT)/Math.sin(angleJIK)));
 	    System.out.println("baseIJK=" + baseIJK);
+	    */
 
 	}
 

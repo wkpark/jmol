@@ -192,18 +192,27 @@ public class DotsRenderer {
     }
 
     void renderCavity(Dots.Cavity cavity) {
-	//	g3d.drawCircleCentered(colixConcave, 20,
-	//			       viewer.transformPoint(cavity.baseIJK));
+	g3d.drawCircleCentered(colixConcave, 20,
+			       viewer.transformPoint(cavity.baseIJK));
 	Point3i screen;
-	int diameter;
 	int z;
+	screen = viewer.transformPoint(cavity.atomI.point3f);
+	g3d.drawCircleCentered(colixConcave, 10, screen);
+	screen = viewer.transformPoint(cavity.atomJ.point3f);
+	g3d.drawCircleCentered(colixConcave, 10, screen);
+	screen = viewer.transformPoint(cavity.atomK.point3f);
+	g3d.drawCircleCentered(colixConcave, 10, screen);
 	if (cavity.baseAbove != null) {
-	    screen = viewer.transformPoint(cavity.baseAbove);
-	    g3d.drawCircleCentered(colixConcave, 10, screen);
+	    float diameter = 2 * viewer.getSolventProbeRadius();
+	    screen = viewer.transformPoint(cavity.centerAbove);
+	    diameter = viewer.scaleToScreen(screen.z, diameter);
+	    g3d.drawCircleCentered(colixConcave, (int)diameter, screen);
 	}
 	if (cavity.baseBelow != null) {
-	    screen = viewer.transformPoint(cavity.baseBelow);
-	    g3d.drawCircleCentered(colixConcave, 10, screen);
+	    float diameter = 2 * viewer.getSolventProbeRadius();
+	    screen = viewer.transformPoint(cavity.centerBelow);
+	    diameter = viewer.scaleToScreen(screen.z, diameter);
+	    g3d.drawCircleCentered(colixConcave, (int)diameter, screen);
 	}
     }
 

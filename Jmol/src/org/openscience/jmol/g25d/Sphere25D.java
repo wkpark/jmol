@@ -189,7 +189,7 @@ public class Sphere25D {
         renderBigUnclipped(shades, diameter, x, y, z);
       return;
     } 
-    byte[] ss = getSphereShape(diameter);
+    int[] ss = getSphereShape(diameter);
     if (x < 0 || x+diameter >= g25d.width ||
         y < 0 || y+diameter >= g25d.height)
       renderShapeClipped(shades, ss, diameter, x, y, z);
@@ -198,7 +198,7 @@ public class Sphere25D {
   }
 
 
-  void renderShapeUnclipped(int[] shades, byte[] sphereShape,
+  void renderShapeUnclipped(int[] shades, int[] sphereShape,
                             int diameter, int x, int y, int z) {
     int[] pbuf = g25d.pbuf;
     short[] zbuf = g25d.zbuf;
@@ -216,27 +216,24 @@ public class Sphere25D {
       int offsetSW = offsetSouthBeginLine + skipCount;
       int offsetSE = offsetSouthBeginLine + diameter - skipCount - 1;
       do {
-        int zPixel = (short)(z - sphereShape[offsetSphere++]);
+        int packed = sphereShape[offsetSphere++];
+        int zPixel = z - (packed & 0x7F);
         if (zPixel < zbuf[offsetNW]) {
           zbuf[offsetNW] = (short)zPixel;
-          pbuf[offsetNW] = shades[sphereShape[offsetSphere]];
+          pbuf[offsetNW] = shades[(packed >> 7) & 0x3F];
         }
-        ++offsetSphere;
         if (zPixel < zbuf[offsetNE]) {
           zbuf[offsetNE] = (short)zPixel;
-          pbuf[offsetNE] = shades[sphereShape[offsetSphere]];
+          pbuf[offsetNE] = shades[(packed >> 13) & 0x3F];
         }
-        ++offsetSphere;
         if (zPixel < zbuf[offsetSW]) {
           zbuf[offsetSW] = (short)zPixel;
-          pbuf[offsetSW] = shades[sphereShape[offsetSphere]];
+          pbuf[offsetSW] = shades[(packed >> 19) & 0x3F];
         }
-        ++offsetSphere;
         if (zPixel < zbuf[offsetSE]) {
           zbuf[offsetSE] = (short)zPixel;
-          pbuf[offsetSE] = shades[sphereShape[offsetSphere]];
+          pbuf[offsetSE] = shades[(packed >> 25) & 0x3F];
         }
-        ++offsetSphere;
         ++offsetNW;
         --offsetNE;
         ++offsetSW;
@@ -247,7 +244,7 @@ public class Sphere25D {
     } while (--i > 0);
   }
 
-  void renderShapeClipped(int[] shades, byte[] sphereShape,
+  void renderShapeClipped(int[] shades, int[] sphereShape,
                             int diameter, int x, int y, int z) {
     int[] pbuf = g25d.pbuf;
     short[] zbuf = g25d.zbuf;
@@ -275,31 +272,29 @@ public class Sphere25D {
       do {
         boolean tWestVisible = xWest >= 0 && xWest < width;
         boolean tEastVisible = xEast >= 0 && xEast < width;
-        int zPixel = (short)(z - sphereShape[offsetSphere++]);
+        int packed = sphereShape[offsetSphere++];
+        int zPixel = z - (packed & 0x7F);
         if (tNorthVisible) {
           if (tWestVisible && zPixel < zbuf[offsetNW]) {
             zbuf[offsetNW] = (short)zPixel;
-            pbuf[offsetNW] = shades[sphereShape[offsetSphere]];
+            pbuf[offsetNW] = shades[(packed >> 7) & 0x3F];
           }
           if (tEastVisible && zPixel < zbuf[offsetNE]) {
             zbuf[offsetNE] = (short)zPixel;
-            pbuf[offsetNE] = shades[sphereShape[offsetSphere+1]];
+            pbuf[offsetNE] = shades[(packed >> 13) & 0x3F];
           }
         }
-        offsetSphere += 2;
-        
         if (tSouthVisible) {
           if (tWestVisible && zPixel < zbuf[offsetSW]) {
             zbuf[offsetSW] = (short)zPixel;
-            pbuf[offsetSW] = shades[sphereShape[offsetSphere]];
+            pbuf[offsetSW] = shades[(packed >> 19) & 0x3F];
           }
           if (tEastVisible && zPixel < zbuf[offsetSE]) {
             zbuf[offsetSE] = (short)zPixel;
-            pbuf[offsetSE] = shades[sphereShape[offsetSphere+1]];
+            pbuf[offsetSE] = shades[(packed >> 25) & 0x3F];
           }
         }
-        offsetSphere += 2;
-        
+
         ++xWest;
         --xEast;
         ++offsetNW;
@@ -315,12 +310,12 @@ public class Sphere25D {
   }
 
   final static int maxSphereCache = 64;
-  static byte[][] sphereShapeCache = new byte[maxSphereCache][];
+  static int[][] sphereShapeCache = new int[maxSphereCache][];
   byte[] intensities = new byte[maxSphereCache * maxSphereCache];
   byte[] heights = new byte[maxSphereCache * maxSphereCache];
 
-  byte[] getSphereShape(int diameter) {
-    byte[] ss;
+  int[] getSphereShape(int diameter) {
+    int[] ss;
     if (diameter > maxSphereCache)
       diameter = maxSphereCache;
     ss = sphereShapeCache[diameter - 1];
@@ -330,7 +325,7 @@ public class Sphere25D {
     return ss;
   }
 
-  byte[] createSphereShape(int diameter) {
+  int[] createSphereShape(int diameter) {
     float radius = diameter / 2.0f;
     float radius2 = radius * radius;
     int offset = 0;
@@ -359,7 +354,7 @@ public class Sphere25D {
       }
     }
     
-    byte[] sphereShape = new byte[diameter + 5*countNW];
+    int[] sphereShape = new int[diameter + countNW];
     
     int offset2 = 0;
     int offsetCount;
@@ -371,13 +366,14 @@ public class Sphere25D {
       while (j < halfDiameter && heights[offsetNorth + j] == -1)
         ++j;
       int plotCount = halfDiameter - j;
-      sphereShape[offset2++] = (byte)plotCount;
+      sphereShape[offset2++] = plotCount;
       while (j < halfDiameter) {
-        sphereShape[offset2++] = heights[offsetNorth + j];
-        sphereShape[offset2++] = intensities[offsetNorth + j];
-        sphereShape[offset2++] = intensities[offsetNorth + diameter - j - 1];
-        sphereShape[offset2++] = intensities[offsetSouth + j];
-        sphereShape[offset2++] = intensities[offsetSouth + diameter - j - 1];
+        int packed = heights[offsetNorth + j];
+        packed |= (intensities[offsetNorth + j]) << 7;
+        packed |= (intensities[offsetNorth + diameter - j - 1]) << 13;
+        packed |= (intensities[offsetSouth + j]) << 19;
+        packed |= (intensities[offsetSouth + diameter - j - 1]) << 25;
+        sphereShape[offset2++] = packed;
         ++j;
       }
     }

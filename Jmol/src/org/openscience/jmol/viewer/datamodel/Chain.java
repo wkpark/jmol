@@ -47,6 +47,8 @@ final public class Chain {
 
   void freeze() {
     groups = (Group[])Util.setLength(groups, groupCount);
+    for (int i = groupCount; --i >= 0; )
+      groups[i].freeze();
   }
   
   Group allocateGroup(Frame frame, String group3,

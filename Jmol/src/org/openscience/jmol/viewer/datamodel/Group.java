@@ -35,9 +35,13 @@ final public class Group {
 
   Frame frame;
   Chain chain;
-  Polymer polymer;
   int seqcode;
   short groupID;
+  int firstAtomIndex = -1;
+  int lastAtomIndex;
+
+
+  Polymer polymer;
   ProteinStructure proteinstructure;
 
   // FIXME - mth 2004 05 17
@@ -66,6 +70,25 @@ final public class Group {
     if (group3 == null)
       group3 = "";
     this.groupID = getGroupID(group3);
+  }
+
+  void freeze() {
+    switch (distinguishingBits) {
+    case JmolConstants.ATOMID_PROTEIN_MASK:
+    case JmolConstants.ATOMID_NUCLEIC_MASK: // DNA
+    case JmolConstants.ATOMID_RNA_MASK:
+      return;
+    default:
+      demoteImposterGroup();
+      //      System.out.println("demoting imposter group:" + this);
+    }
+  }
+
+  void demoteImposterGroup() {
+    Atom[] atoms = frame.atoms;
+    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
+      atoms[i].specialAtomID = -1;
+    distinguishingBits = 0;
   }
 
   void setPolymer(Polymer polymer) {
@@ -203,10 +226,13 @@ final public class Group {
   */
 
   void registerAtom(Atom atom) {
-    /*
-    System.out.println("Group.registerAtom(atom) atom.atomID="+atom.atomID+
-                       " atom.atomName=" + atom.atomName);
-    */
+    int atomIndex = atom.atomIndex;
+    if (firstAtomIndex == -1)
+      firstAtomIndex = lastAtomIndex = atomIndex;
+    else if (++lastAtomIndex != atomIndex) {
+      System.out.println("Group atom registration out of sequence");
+      throw new NullPointerException();
+    }
     byte specialAtomID = atom.getSpecialAtomID();
     if (specialAtomID <= 0)
       return;
@@ -497,8 +523,8 @@ final public class Group {
             JmolConstants.ATOMID_PROTEIN_MASK);
   }
 
-  public boolean isNucleic() {
-    return ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
+  public boolean isNucleic() { 
+   return ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
             JmolConstants.ATOMID_NUCLEIC_MASK);
   }
 

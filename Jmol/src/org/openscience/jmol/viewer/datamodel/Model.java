@@ -53,11 +53,12 @@ final class Model {
   void freeze() {
     //    System.out.println("Mmset.freeze() chainCount=" + chainCount);
     chains = (Chain[])Util.setLength(chains, chainCount);
-    for (int i = chainCount; --i >= 0; ) {
-      //      System.out.println(" chain:" + i);
+    for (int i = chainCount; --i >= 0; )
       chains[i].freeze();
+    // keep these loops separate so that some day we can search
+    // for polymers that involve multiple chains
+    for (int i = chainCount; --i >= 0; )
       addPolymer(Polymer.allocatePolymer(this, chains[i]));
-    }
     polymers = (Polymer[])Util.setLength(polymers, polymerCount);
   }
 

@@ -112,7 +112,7 @@ public class BondShape {
     case JmolViewer.NONE:
       return 0;
     case JmolViewer.WIREFRAME:
-      return 0.015;
+      return -1;
     default:
       return mar/1000.0;
     }

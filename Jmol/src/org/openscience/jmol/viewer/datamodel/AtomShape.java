@@ -295,7 +295,10 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public double getRadius() {
-    return (styleAtom == JmolViewer.NONE) ? 0 : marAtom / 1000.0;
+    if (styleAtom == JmolViewer.NONE) return 0;
+    double radius = marAtom / 1000.0;
+    if (styleAtom == JmolViewer.WIREFRAME) return -radius;
+    return radius;
   }
 
   public ProteinProp getProteinProp() {

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
+import java.awt.Dimension;
 
 public class PovraySaver {
 
@@ -53,12 +54,16 @@ public class PovraySaver {
   }
 
   public void writeFrame() throws IOException {
-    double edge = viewer.getJmolFrame().getRotationRadius() * 2;
-    edge *= 1.1; // for some reason I need a little more margin
-    edge /= viewer.getZoomPercent() / 100.0;
+    float zoom = (float)viewer.getJmolFrame().getRotationRadius() * 2;
+    zoom *= 1.1f; // for some reason I need a little more margin
+    zoom /= viewer.getZoomPercent() / 100f;
 
     rotationMatrix = viewer.getPovRotateMatrix();
     transformMatrix = viewer.getUnscaledTransformMatrix();
+    Dimension screenDimension = viewer.getScreenDimension();
+    int minScreenDimension = screenDimension.width;
+    if (screenDimension.height < minScreenDimension)
+      minScreenDimension = screenDimension.height;
 
     Date now = new Date();
     SimpleDateFormat sdf =
@@ -81,10 +86,12 @@ public class PovraySaver {
     out("// NOTE: if you plan to render at a different resoltion,\n");
     out("// be sure to update the following two lines to maintain\n");
     out("// the correct aspect ratio.\n" + "\n");
-    out("#declare Width = "+ viewer.getScreenDimension().width + ";\n");
-    out("#declare Height = "+ viewer.getScreenDimension().height + ";\n");
+    out("#declare Width = "+ screenDimension.width + ";\n");
+    out("#declare Height = "+ screenDimension.height + ";\n");
+    out("#declare minScreenDimension = " + minScreenDimension + ";\n");
     out("#declare Ratio = Width / Height;\n");
-    out("#declare zoom = " + edge + ";\n\n");
+    out("#declare zoom = " + zoom + ";\n");
+    out("#declare wireRadius = 1 / minScreenDimension * zoom;\n");
     out("camera{\n");
     out("  location < 0, 0, zoom>\n" + "\n");
     out("  // Ratio is negative to switch povray to\n");
@@ -156,36 +163,43 @@ public class PovraySaver {
   }
 
   void writeMacros() throws IOException {
-    out("#macro atom(X, Y, Z, RADIUS, R, G, B)\n" +
+    out("#default { finish {\n" +
+        " ambient .2 diffuse .6 specular 1 roughness .001 metallic}}\n\n");
+    out("#macro atom(X,Y,Z,RADIUS,R,G,B)\n" +
         " sphere{<X,Y,Z>,RADIUS\n" +
-        "  texture{ pigment{rgb<R,G,B>} finish{\n" + 
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  pigment{rgb<R,G,B>}}\n" + 
         "#end\n\n");
-    out("#macro bond1(X1, Y1, Z1, X2, Y2, Z2, RADIUS, R, G, B)\n" +
+    out("#macro ring(X,Y,Z,RADIUS,R,G,B)\n" +
+        " torus{RADIUS,wireRadius pigment{rgb<R,G,B>}" +
+        " translate<X,Z,-Y> rotate<90,0,0>}\n" +
+        "#end\n\n");
+    out("#macro bond1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
         " cylinder{<X1,Y1,Z1>,<X2,Y2,Z2>,RADIUS\n" +
-        "  texture{ pigment{rgb<R,G,B>} finish{\n" +
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  pigment{rgb<R,G,B>}}\n" +
         "  sphere{<X1,Y1,Z1>,RADIUS\n" +
-        "   texture{ pigment{rgb<R,G,B>} finish{\n" + 
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "   pigment{rgb<R,G,B>}}\n" + 
         "  sphere{<X2,Y2,Z2>,RADIUS\n" +
-        "   texture{ pigment{rgb<R,G,B>} finish{\n" + 
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "   pigment{rgb<R,G,B>}}\n" +
         "#end\n\n");
-    out("#macro bond2(X1, Y1, Z1, XC, YC, ZC, X2, Y2, Z2, " +
-        "RADIUS, R1, G1, B1, R2, G2, B2)\n" +
+    out("#macro bond2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,RADIUS,R1,G1,B1,R2,G2,B2)\n" +
         " cylinder{<X1, Y1, Z1>, <XC, YC, ZC>, RADIUS\n" +
-        "  texture{ pigment{rgb<R1, G1, B1>} finish{\n" +
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  pigment{rgb<R1, G1, B1>}}\n" +
         " cylinder{<XC, YC, ZC>, <X2, Y2, Z2>, RADIUS\n" +
-        "  texture{ pigment{rgb<R2,G2,B2>} finish{\n" +
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  pigment{rgb<R2,G2,B2>}}\n" +
         "  sphere{<X1,Y1,Z1>,RADIUS\n" +
-        "   texture{ pigment{rgb<R1,G1,B1>} finish{\n" + 
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "   pigment{rgb<R1,G1,B1>}}\n" +
         "  sphere{<X2,Y2,Z2>,RADIUS\n" +
-        "   texture{ pigment{rgb<R2,G2,B2>} finish{\n" + 
-        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "   pigment{rgb<R2,G2,B2>}}\n" +
+        "#end\n\n");
+    out("#macro wire1(X1,Y1,Z1,X2,Y2,Z2,R,G,B)\n" +
+        " cylinder{<X1,Y1,Z1>,<X2,Y2,Z2>,wireRadius\n" +
+        "  pigment{rgb<R,G,B>}}\n" +
+        "#end\n\n");
+    out("#macro wire2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,R1,G1,B1,R2,G2,B2)\n" +
+        " cylinder{<X1, Y1, Z1>, <XC, YC, ZC>, wireRadius\n" +
+        "  pigment{rgb<R1, G1, B1>}}\n" +
+        " cylinder{<XC, YC, ZC>, <X2, Y2, Z2>, wireRadius\n" +
+        "  pigment{rgb<R2,G2,B2>}}\n" +
         "#end\n\n");
   }
 
@@ -194,45 +208,66 @@ public class PovraySaver {
   Point3d pointC = new Point3d();
 
   void writeAtom(int i) throws IOException {
+    float radius = (float)viewer.getAtomRadius(i);
+    if (radius == 0)
+      return;
     transformMatrix.transform(viewer.getAtomPoint3d(i), point1);
-    double radius = viewer.getAtomRadius(i);
+    float x = (float)point1.x;
+    float y = (float)point1.y;
+    float z = (float)point1.z;
     Color color = viewer.getAtomColor(i);
-    double r = color.getRed() / 255.0;
-    double g = color.getGreen() / 255.0;
-    double b = color.getBlue() / 255.0;
-    out("atom(" + point1.x + "," + point1.y + "," + point1.z + ",\n" +
-        "     " + radius + ",\n" +
-        "     " + r + "," + g + "," + b + ")\n");
+    float r = color.getRed() / 255f;
+    float g = color.getGreen() / 255f;
+    float b = color.getBlue() / 255f;
+    if (radius > 0)
+      out("atom("+x+","+y+","+z+","+radius+","+r+","+g+","+b+")\n");
+    else
+      out("ring("+x+","+y+","+z+","+(-radius)+","+r+","+g+","+b+")\n");
   }
 
   void writeBond(int i) throws IOException {
+    float radius = (float)viewer.getBondRadius(i);
+    if (radius == 0)
+      return;
     transformMatrix.transform(viewer.getBondPoint3d1(i), point1);
+    float x1 = (float)point1.x;
+    float y1 = (float)point1.y;
+    float z1 = (float)point1.z;
     transformMatrix.transform(viewer.getBondPoint3d2(i), point2);
-    double radius = viewer.getBondRadius(i);
+    float x2 = (float)point2.x;
+    float y2 = (float)point2.y;
+    float z2 = (float)point2.z;
     Color color1 = viewer.getBondColor1(i);
     Color color2 = viewer.getBondColor2(i);
-    double r1 = color1.getRed() / 255.0;
-    double g1 = color1.getGreen() / 255.0;
-    double b1 = color1.getBlue() / 255.0;
+    float r1 = color1.getRed() / 255f;
+    float g1 = color1.getGreen() / 255f;
+    float b1 = color1.getBlue() / 255f;
     
     if (color1.equals(color2)) {
-      out("bond1(" + point1.x + "," + point1.y + "," + point1.z + ",\n" +
-          "      " + point2.x + "," + point2.y + "," + point2.z + ",\n" +
-          "      " + radius + ",\n" +
-          "      " + r1 + "," + g1 + "," + b1 + ")\n");
+      if (radius > 0)
+        out("bond1("+x1+","+y1+","+z1+","+x2+","+y2+","+z2+",\n" +
+            "      "+radius+","+r1+","+g1+","+b1+")\n");
+      else
+        out("wire1("+x1+","+y1+","+z1+","+x2+","+y2+","+z2+",\n" +
+            "      "+r1+","+g1+","+b1+")\n");
     } else {
       pointC.set(point1);
       pointC.add(point2);
       pointC.scale(0.5);
-      double r2 = color2.getRed() / 255.0;
-      double g2 = color2.getGreen() / 255.0;
-      double b2 = color2.getBlue() / 255.0;
-      out("bond2(" + point1.x + "," + point1.y + "," + point1.z + ",\n" +
-          "      " + pointC.x + "," + pointC.y + "," + pointC.z + ",\n" +
-          "      " + point2.x + "," + point2.y + "," + point2.z + ",\n" +
-          "      " + radius + ",\n" +
-          "      " + r1 + "," + g1 + "," + b1 + ",\n" +
-          "      " + r2 + "," + g2 + "," + b2 + ")\n");
+      float xC = (float)pointC.x;
+      float yC = (float)pointC.y;
+      float zC = (float)pointC.z;
+      float r2 = color2.getRed() / 255f;
+      float g2 = color2.getGreen() / 255f;
+      float b2 = color2.getBlue() / 255f;
+      if (radius > 0)
+        out("bond2("+x1+","+y1+","+z1+","+xC+","+yC+","+zC+",\n" +
+            "      "+x2+","+y2+","+z2+","+radius+",\n" +
+            "      "+r1+","+g1+","+b1+","+r2+","+g2+","+b2+")\n");
+      else
+        out("wire2("+x1+","+y1+","+z1+","+xC+","+yC+","+zC+",\n" +
+            "      "+x2+","+y2+","+z2+",\n" +
+            "      "+r1+","+g1+","+b1+","+r2+","+g2+","+b2+")\n");
     }
   }
 }

@@ -50,7 +50,7 @@
   <path id="applet-project.class.path">
     <fileset dir="${lib.dir}">
       <include name="*.jar" />
-      <exclude name="jmolcdk.jar"/>
+      <exclude name="jmol2cdk.jar"/>
     </fileset>
   </path>
   
@@ -179,7 +179,7 @@
 
   <target name="check.cdkjars" id="check.cdkjars">
     <uptodate property="cdkjars.uptodate" targetfile="${appjars.dir}/org/openscience/cdk">
-      <srcfiles dir="${lib.dir}" includes="jmolcdk.jar"/>
+      <srcfiles dir="${lib.dir}" includes="jmol2cdk.jar"/>
     </uptodate>
   </target>
   
@@ -204,7 +204,7 @@
   
   <target name="cdkjars" id="cdkjars" depends="check.cdkjars" unless="cdkjars.uptodate">
     <mkdir dir="${appjars.dir}"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/jmol2cdk.jar"/>
   </target>
 
   <target name="pluginjars" id="pluginjars" depends="check.pluginjars" unless="pluginjars.uptodate">

@@ -1003,6 +1003,9 @@ public class Eval implements Runnable {
     case Token.backbone:
       viewer.setColorBackboneScript(getColorOrNoneParam(2));
       break;
+    case Token.trace:
+      viewer.setTraceColor(getColorOrNoneParam(2));
+      break;
     case Token.identifier:
 	String str = (String)statement[1].value;
 	if (str.equalsIgnoreCase("dotsConvex"))
@@ -1677,7 +1680,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setTrace(radius);
+    viewer.setTraceRadius(radius);
   }
 
   /****************************************************************

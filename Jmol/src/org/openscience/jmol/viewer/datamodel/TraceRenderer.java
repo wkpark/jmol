@@ -39,22 +39,32 @@ class TraceRenderer extends Renderer {
 
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     Trace trace = frame.trace;
-    if (trace == null || trace.radius == 0)
+    if (trace == null || !trace.initialized)
       return;
-    Atom[][] chains = frame.pdbMolecule.getAlphaChains();
-    for (int c = chains.length; --c >= 0; ) {
-      Atom[] alphas = chains[c];
-      for (int i = alphas.length; --i > 0; ) {
-        int iPrev = i - 1;
-        int iPrev2 = i - 2;
-        if (iPrev2 < 0) iPrev2 = 0;
-        int iNext = i + 1;
-        if (iNext >= alphas.length) iNext = i;
-        Atom atom0 = alphas[iPrev2];
-        Atom atom1 = alphas[iPrev];
-        Atom atom2 = alphas[i];
-        Atom atom3 = alphas[iNext];
-        g3d.fillHermite(atom1.colixAtom, atom2.colixAtom, atom1.diameter,
+    Atom[][] chains = trace.chains;
+    short[][] marsChains = trace.marsChains;
+    short[][] colixesChains = trace.colixesChains;
+    for (int i = chains.length; --i >= 0; ) {
+      Atom[] alphas = chains[i];
+      short[] mars = marsChains[i];
+      short[] colixes = colixesChains[i];
+      for (int j = alphas.length; --j > 0; ) {
+        int jPrev = j - 1;
+        int jPrev2 = j - 2;
+        if (jPrev2 < 0) jPrev2 = 0;
+        int jNext = j + 1;
+        if (jNext >= alphas.length) jNext = j;
+        Atom atom0 = alphas[jPrev2];
+        Atom atom1 = alphas[jPrev];
+        Atom atom2 = alphas[j];
+        Atom atom3 = alphas[jNext];
+        short colix = colixes[jPrev];
+        if (colix == 0)
+          colix = atom1.colixAtom;
+        int mad = mars[jPrev] * 2;
+        int diameter1 = viewer.scaleToScreen(atom1.z, mad);
+        int diameter2 = viewer.scaleToScreen(atom2.z, mad);
+        g3d.fillHermite(colix, diameter1, diameter2,
                         atom0.x, atom0.y, atom0.z, atom1.x, atom1.y, atom1.z,
                         atom2.x, atom2.y, atom2.z, atom3.x, atom3.y, atom3.z);
       }

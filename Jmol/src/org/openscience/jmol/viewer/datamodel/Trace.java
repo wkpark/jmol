@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.protein.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
@@ -37,8 +38,13 @@ public class Trace {
   Frame frame;
   boolean hasPdbRecords;
   PdbMolecule pdbMolecule;
-  float radius;
-    
+
+  boolean initialized;
+  int chainCount;
+  Atom[][] chains;
+  short[][] marsChains;
+  short[][] colixesChains;
+
   Trace(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
@@ -46,18 +52,33 @@ public class Trace {
     pdbMolecule = frame.pdbMolecule;
   }
 
-  public void setTrace(float radius, BitSet bsSelected) {
-    this.radius = radius;
+  public void set(short value, boolean tMar, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
-    /*
-    for (AtomIterator ai = frame.getAtomIterator(bsSelected); ai.hasNext(); ) {
-      Atom atom = ai.next();
-      PdbAtom pdbAtom = atom.pdbatom;
-      if (! pdbAtom.isAlphaCarbon())
-        continue;
-      Atom[] chainAlphaCarbons = pdbMolecule.getChainAlphaCarbons(pdbAtom.getChain());
+    if (! initialized)
+      initialize();
+    short[][] valuesChains = (tMar ? marsChains : colixesChains);
+    for (int i = chainCount; --i >= 0; ) {
+      Atom[] alphas = chains[i];
+      short[] values = valuesChains[i];
+      for (int j = alphas.length; --j >= 0; ) {
+        Atom alpha = alphas[j];
+        if (bsSelected.get(alpha.getAtomIndex()))
+          values[j] = value;
+      }
     }
-    */
+  }
+
+  void initialize() {
+    chains = pdbMolecule.getAlphaChains();
+    chainCount = chains.length;
+    marsChains = new short[chainCount][];
+    colixesChains = new short[chainCount][];
+    for (int i = chainCount; --i >= 0; ) {
+      int chainLength = chains[i].length;
+      marsChains[i] = new short[chainLength];
+      colixesChains[i] = new short[chainLength];
+    }
+    initialized = true;
   }
 }

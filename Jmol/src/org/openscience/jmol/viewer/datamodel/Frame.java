@@ -203,11 +203,11 @@ public class Frame {
 
   Trace trace;
 
-  public void setTrace(float radius, BitSet bsSelected) {
-    if (radius != 0 && trace == null)
+  public void setTraceValue(short value, boolean tMar, BitSet bsSelected) {
+    if (value != 0 && trace == null)
       trace = new Trace(viewer, this);
     if (trace != null)
-      trace.setTrace(radius, bsSelected);
+      trace.set(value, tMar, bsSelected);
   }
 
   Axes axes;

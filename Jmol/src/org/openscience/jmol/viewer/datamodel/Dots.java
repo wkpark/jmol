@@ -158,11 +158,15 @@ public class Dots extends Shape {
           calcCavities();
         }
     }
-    // update this count to speed up dotsRenderer
-    int i;
-    for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null; )
-      {}
-    dotsConvexMax = i + 1;
+    if (dotsConvexMaps == null)
+      dotsConvexMax = 0;
+    else {
+      // update this count to speed up dotsRenderer
+      int i;
+      for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null; )
+        {}
+      dotsConvexMax = i + 1;
+    }
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {

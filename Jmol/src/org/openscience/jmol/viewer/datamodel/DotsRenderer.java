@@ -56,7 +56,6 @@ class DotsRenderer extends ShapeRenderer {
   void render() {
     perspectiveDepth = viewer.getPerspectiveDepth();
     scalePixelsPerAngstrom = (int)viewer.getScalePixelsPerAngstrom();
-    System.out.println("scalePixelsPerAngstrom=" + scalePixelsPerAngstrom);
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
 
 
@@ -67,21 +66,33 @@ class DotsRenderer extends ShapeRenderer {
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     short[] colixesConvex = dots.colixesConvex;
+    int displayModelIndex = this.displayModelIndex;
     for (int i = dots.dotsConvexMax; --i >= 0; ) {
       int[] map = dotsConvexMaps[i];
-      if (map != null && map != mapNull)
-        renderConvex(atoms[i], colixesConvex[i], map);
+      if (map != null && map != mapNull) {
+        Atom atom = atoms[i];
+        if (displayModelIndex < 0 || displayModelIndex == atom.modelIndex)
+          renderConvex(atom, colixesConvex[i], map);
+      }
     }
     Dots.Torus[] tori = dots.tori;
-    for (int i = dots.torusCount; --i >= 0; )
-      renderTorus(tori[i], atoms, colixesConvex, dotsConvexMaps);
+    for (int i = dots.torusCount; --i >= 0; ) {
+      Dots.Torus torus = tori[i];
+      if (displayModelIndex < 0 ||
+          displayModelIndex == atoms[torus.indexI].modelIndex)
+        renderTorus(torus, atoms, colixesConvex, dotsConvexMaps);
+    }
     Dots.Cavity[] cavities = dots.cavities;
     if (false) {
       System.out.println("concave surface rendering currently disabled");
       return;
     }
-    for (int i = dots.cavityCount; --i >= 0; )
-      renderCavity(cavities[i], atoms, colixesConvex, dotsConvexMaps);
+    for (int i = dots.cavityCount; --i >= 0; ) {
+      Dots.Cavity cavity = cavities[i];
+      if (displayModelIndex < 0 ||
+          displayModelIndex == atoms[cavity.ixI].modelIndex)
+        renderCavity(cavities[i], atoms, colixesConvex, dotsConvexMaps);
+    }
   }
 
   void renderConvex(Atom atom, short colix, int[] visibilityMap) {

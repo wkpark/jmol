@@ -295,17 +295,17 @@ public abstract class MouseManager {
 
   void singleLeftClick(int atomIndex) {
     if (measurementMode) {
-      addToMeasurement(atomIndex);
+      addToMeasurement(atomIndex, false);
     }
   }
 
   void doubleLeftClick(int atomIndex) {
     if (measurementMode) {
-      addToMeasurement(atomIndex);
+      addToMeasurement(atomIndex, true);
       toggleMeasurement();
     } else {
       enterMeasurementMode();
-      addToMeasurement(atomIndex);
+      addToMeasurement(atomIndex, true);
     }
   }
   
@@ -335,7 +335,7 @@ public abstract class MouseManager {
     viewer.setPendingMeasurement(measurementCountPlusIndices);
   }
 
-  void addToMeasurement(int atomIndex) {
+  void addToMeasurement(int atomIndex, boolean dblClick) {
     if (atomIndex == -1) {
       exitMeasurementMode();
       return;
@@ -345,6 +345,8 @@ public abstract class MouseManager {
         //        exitMeasurementMode();
         return;
       }
+    if (measurementCount == 3 & !dblClick)
+      return;
     measurementCountPlusIndices[++measurementCount] = atomIndex;
     measurementCountPlusIndices[0] = measurementCount;
     if (measurementCount == 4)

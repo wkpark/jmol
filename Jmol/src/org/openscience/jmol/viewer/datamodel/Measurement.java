@@ -141,7 +141,7 @@ public class Measurement {
             (atomCountPlusIndices[1] == this.countPlusIndices[4] &&
              atomCountPlusIndices[2] == this.countPlusIndices[3] &&
              atomCountPlusIndices[3] == this.countPlusIndices[2] &&
-             atomCountPlusIndices[4] == this.countPlusIndices[10]));
+             atomCountPlusIndices[4] == this.countPlusIndices[1]));
   }
 
   float computeTorsion(Point3f p1, Point3f p2,

@@ -43,6 +43,9 @@ public final class JMolCDO extends ANIMATIONCDO {
   }
 
   public void endDocument() {
+    if (allFrames.size() == 0) {
+      this.endFrame();
+    }
   }
 
   public void startObject(String type) {

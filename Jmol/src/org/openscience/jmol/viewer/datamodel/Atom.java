@@ -348,6 +348,12 @@ public class Atom implements Bspt.Tuple {
     return pdbAtom.getChainID();
   }
 
+  public int getTemperature() {
+    if (pdbAtom == null)
+      return 0;
+    return pdbAtom.temperature;
+  }
+
   public PdbAtom getPdbAtom() {
     return pdbAtom;
   }

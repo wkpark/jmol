@@ -88,8 +88,12 @@ final public class PdbPolymer {
     return atomIndices;
   }
 
+  public Atom getAlphaCarbonAtom(int groupIndex) {
+    return groups[groupIndex].getAlphaCarbonAtom();
+  }
+
   public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
-    return groups[groupIndex].getAlphaCarbonAtom().point3f;
+    return getAlphaCarbonAtom(groupIndex).point3f;
   }
 
   // to get something other than the alpha carbon atom

@@ -141,18 +141,15 @@ abstract public class Mcps extends Shape {
       }
     }
 
-    short getMadDefault(short mad, byte structureType) {
+    short getMadSpecial(short mad, int polymerIndex) {
       return 1;
     }
 
     public void setMad(short mad, BitSet bsSelected) {
       int[] atomIndices = polymer.getAtomIndices();
       for (int i = polymerCount; --i >= 0; ) {
-        if (bsSelected.get(atomIndices[i])) {
-          mads[i] = mad >= 0
-            ? mad
-            : getMadDefault(mad, polymerGroups[i].getStructureType());
-        }
+        if (bsSelected.get(atomIndices[i]))
+          mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
       }
       if (polymerCount > 1)
         mads[polymerCount] = mads[polymerCount - 1];

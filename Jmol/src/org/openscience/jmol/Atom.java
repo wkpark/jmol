@@ -26,7 +26,6 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.Bspt;
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.render.AtomShape;
 import org.openscience.jmol.render.JmolAtom;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -298,13 +297,6 @@ public class Atom extends org.openscience.cdk.Atom
   }
 
   private DisplayControl control;
-  private AtomShape atomShape;
-
-  public AtomShape getAtomShape() {
-    if (atomShape == null)
-      throw new NullPointerException();
-    return atomShape;
-  }
 
   public boolean isSelected() {
     return control.isSelected(atomNumber);
@@ -333,9 +325,7 @@ public class Atom extends org.openscience.cdk.Atom
     int[] bondOrdersNew = new int[numBondsNew];
     int iNew = 0;
     for (int i = 0; i < bondedAtoms.length; ++i) {
-      if (bondedAtoms[i] == atomDeleted) {
-        getAtomShape().deleteBondedAtomShape(atomDeleted.getAtomShape());
-      } else {
+      if (bondedAtoms[i] != atomDeleted) {
         bondedAtomsNew[iNew] = bondedAtoms[i];
         if (bondOrders != null && bondOrders.length > i)
           bondOrdersNew[iNew] = bondOrders[i];
@@ -349,32 +339,6 @@ public class Atom extends org.openscience.cdk.Atom
   }
 
   private BaseAtomType baseAtomType;
-
-  /**
-   * Position in screen space.
-   */
-
-
-  public int getScreenX() {
-    return atomShape == null ? 0 : atomShape.x;
-  }
-
-  public int getScreenY() {
-    return atomShape == null ? 0 : atomShape.y;
-  }
-
-  public int getScreenZ() {
-    return atomShape == null ? 0 : atomShape.z;
-  }
-
-  public int getScreenDiameter() {
-    return atomShape == null ? 0 : atomShape.diameter;
-  }
-
-  public int getScreenRadius() {
-    return atomShape == null ? 0 : atomShape.diameter / 2;
-  }
-
 
   /**
    * An array of atoms to which this atom is bonded;

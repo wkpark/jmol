@@ -24,12 +24,10 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.render.JmolFrame;
 import org.openscience.jmol.render.AtomShape;
 import org.openscience.jmol.render.AtomShapeIterator;
 import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.render.BondShapeIterator;
-import org.openscience.cdk.renderer.color.AtomColorer;
 
 public class Distributor {
 
@@ -37,66 +35,6 @@ public class Distributor {
 
   public Distributor(DisplayControl control) {
     this.control = control;
-  }
-
-  /****************************************************************
-   * the ChemFrame guys
-   ****************************************************************/
-
-  public void setStyleAtom(byte styleAtom, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      AtomShape atomShape = atom.getAtomShape();
-      if (atomShape == null)
-        System.out.println("how in the hell did you get here?");
-      atomShape.setStyleAtom(styleAtom);
-    }
-    //      iter.nextAtom().atomShape.setStyleAtom(styleAtom);
-  }
-
-  public void setMarAtom(short marAtom, JmolAtomIterator iter) {
-    while (iter.hasNext())
-      iter.nextAtom().getAtomShape().setMarAtom(marAtom);
-  }
-
-  public void setStyleMarAtom(byte style, short mar, JmolAtomIterator iter) {
-    while (iter.hasNext())
-      iter.nextAtom().getAtomShape().setStyleMarAtom(style, mar);
-  }
-
-  public void setColixAtom(byte mode, short colix, JmolAtomIterator iter) {
-    boolean useColorProfile = colix == 0;
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      short colixT = useColorProfile
-        ? control.getColixAtom(mode, atom) : colix;
-      atom.getAtomShape().setColixAtom(colixT);
-    }
-  }
-
-  public void setStyleLabel(byte styleLabel, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      atom.getAtomShape().setLabel(control.getLabelAtom(styleLabel, atom));
-    }
-  }
-
-  public void setLabel(String strLabel, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      atom.getAtomShape().setLabel(control.getLabelAtom(strLabel, atom));
-    }
-  }
-
-  public void setColixMarDots(short colixDots, short marDots,
-                              JmolAtomIterator iter) {
-    short colixT = colixDots;
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      if (colixDots == 0)
-        colixT = control.getColixAtom(atom);
-      atom.getAtomShape().setColixMarDots(colixT, marDots);
-    }
   }
 
   /****************************************************************

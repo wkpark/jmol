@@ -194,6 +194,7 @@
       <srcfiles dir="${lib.dir}" includes="jas.jar"/>
       <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
       <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
+      <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
     </uptodate>
   </target>
   
@@ -219,6 +220,7 @@
     <unjar dest="${appjars.dir}" src="${lib.dir}/jas.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/commons-cli-1.0.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>
   </target>
 
   <target name="jar" id="jar" depends="init,classes,jmolGuide,jmolHistory,appjars">

@@ -39,21 +39,52 @@ import java.io.BufferedReader;
  */
 class MolReader extends AtomSetCollectionReader {
     
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)
+    throws Exception {
     atomSetCollection = new AtomSetCollection("mol");
-    atomSetCollection.setCollectionName(reader.readLine());
+    String firstLine = reader.readLine();
+    if (firstLine.startsWith("$MDL")) {
+      processRgHeader(reader, firstLine);
+      String line;
+      while (!reader.readLine().startsWith("$CTAB"))
+        { }
+      processCtab(reader);
+    } else {
+      processMolSdHeader(reader, firstLine);
+      processCtab(reader);
+    }
+    return atomSetCollection;
+  }
+
+  void processMolSdHeader(BufferedReader reader, String firstLine)
+    throws Exception {
+    atomSetCollection.setCollectionName(firstLine);
     reader.readLine();
     reader.readLine();
+  }
+
+  void processRgHeader(BufferedReader reader, String firstLine)
+    throws Exception {
+    String line;
+    while ((line = reader.readLine()) != null &&
+           !line.startsWith("$HDR"))
+      { }
+    if (line == null) {
+      System.out.println("$HDR not found in MDL RG file");
+      return;
+    }
+    processMolSdHeader(reader, reader.readLine());
+  }
+
+  void processCtab(BufferedReader reader) throws Exception {
     String countLine = reader.readLine();
     int atomCount = parseInt(countLine, 0, 3);
     int bondCount = parseInt(countLine, 3, 6);
     readAtoms(reader, atomCount);
     readBonds(reader, bondCount);
-    return atomSetCollection;
   }
   
-  void readAtoms(BufferedReader reader, int atomCount)
-    throws Exception {
+  void readAtoms(BufferedReader reader, int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String line = reader.readLine();
       String elementSymbol = "";
@@ -79,8 +110,7 @@ class MolReader extends AtomSetCollectionReader {
     }
   }
 
-  void readBonds(BufferedReader reader, int bondCount)
-    throws Exception {
+  void readBonds(BufferedReader reader, int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
       String line = reader.readLine();
       int atomIndex1 = parseInt(line, 0, 3);

@@ -14,15 +14,20 @@
         <td align="right" valign="center">
           <font size="2">
             <a href="[root]/index.html">Home</a> 
-            | <a href="[root]/faqs/">FAQs</a> 
-            | <a href="[root]/history/">History</a> 
-            | <a href="[root]/download/">Download</a> 
             | <a href="[root]/screenshots/">Screenshots</a> 
             | <a href="[root]/applet/">Applet</a> 
             | <a href="[root]/scripting/">Scripting</a> 
             | <a href="[root]/docs/">Docs</a> 
-            | <a href="[root]/changes/">Changes</a> 
-            | <a href="[root]/preview/">Sneak Preview</a> 
+	    | <a href="[root]/history/">History</a> 
+            | <a href="[root]/changes/">Changes</a>
+            | <a href="[root]/download/">Download</a> 
+	    <br/>
+            <a href="[root]/faqs/">FAQs</a> 
+            | <a href="[root]/preview/">Sneak Preview</a>
+            | <a href="[root]/betatest/">Beta Test</a>
+	    | <a href=
+	    "http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133"
+	    >Bug Database</a>
             | <a href="http://sourceforge.net/projects/jmol">Project page</a>
           </font>
         </td>
@@ -32,8 +37,9 @@
 
   <notice>
     Hosted by 
-    <a href="http://www.sf.net/"><img src="http://www.sf.net/sflogo.php?group_id=16035" border="0" 
-                                      alt="SourceForge Logo" align="middle" /></a>
+    <a href="http://www.sf.net/"><img
+    src="http://www.sf.net/sflogo.php?group_id=16035" border="0" 
+    alt="SourceForge Logo" align="middle" /></a>
   </notice>
 
 </project>

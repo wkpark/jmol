@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Jmol v10 Beta Test Program</title>
+    
+    <section title="Jmol v10 Beta Testing">
+
+      <p>
+	Jmol v10 is a major reimplementation of many major
+	Jmol subsystems. Major features/changes include:
+	<ul>
+	  <li>3d graphics engine</li>
+	  <li>additional script commands</li>
+	  <li>JmolAppletControl buttons</li>
+	  <li>reorientation of coordinate system to be RasMol/Chime
+	  compatible</li>
+	</ul>
+      </p>
+      <p>
+	Along with these new features comes a new set of bugs.
+	Thank you for helping us test out new releases of Jmol and
+	helping us find these bugs.
+      </p>
+
+      <section title="Bug reporting procedures">
+	<p>
+	  If you can, please submit bugs directly into the bug tracking
+	  database provided by sourceforge. This will save us a little
+	  time and, most importantly, will ensure that your bugs do not
+	  get lost.
+	</p>
+	<p>
+	  <a href=
+	     "http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133"
+	  ><b>Jmol Bug Tracking Database</b></a>
+	</p>
+      </section>
+      
+      <section title="Support and communications">
+	<p>
+	During the test program, support will be provided through the
+	<b>jmol-users@lists.sf.net</b> mailing list. If you are not on
+	the list and would like to subscribe you can go to
+	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-users"
+	><b>this page to subscribe</b></a>
+	</p>
+      </section>
+      
+      <section title="Release/distribution mechanism">
+	<p>
+	  Test releases will be made on this page. Releases will be a single
+	  .zip file that contains test prerelease. You can unzip this file
+	  using standard tools, including unzip, pkunzip, winzip, and jar.
+	  We do not plan to release sample files or support code. For those
+	  who are interested, source code is always available through
+	  anonymous CVS checkout. 
+	</p>
+      </section>
+    </section>
+      
+    <section title="Jmol10pre1">
+      <p>
+	Jmol version 10 pre-release 1 is our first test release. It has the
+	following functional limitations:
+	<ul>
+	  <li>Only supports .xyz, .mol, and .pdb files</li>
+	</ul>
+      </p>
+      <p>
+	<a href="Jmol10pre1.zip"
+	   ><font size="+1"><i>Give me the code!</i> Jmol10pre1.zip</font></a>
+      </p>
+      <p>
+	Unzip the code using the tool of your choice. It will unzip into
+	a subdirectory.
+      </p>
+      <p>
+	The Java <b>jar</b> tool will work fine since a .jar is the same
+	format as .zip : <b>jar xf Jmol10pre1.zip</b>
+      </p>
+      <p>
+	
+	
+    </section>
+  </body>
+</document>

@@ -65,8 +65,12 @@
 
     <section title="Jmol v10 - a RasMol/Chime replacement">
       <p>
-        Jmol v10 is still under development and has not been released.
-	It includes a completely new high performance 3D graphics
+        Jmol v10 is still under development and has not been officially
+	released. If you are interested in helping out it is currently
+	in public <a href="./betatest">Beta Test</a>.
+      </p>
+      <p>
+	Jmol v10 includes a completely new high performance 3D graphics
 	engine specifically designed for rendering molecules. This
 	major step will	make Jmol an attractive upgrade for most
 	users of the MDL Chime plug-in.
@@ -78,13 +82,9 @@
       <p>
 	Our target release schedule is:
 	<ul>
-	  <li>November - public test release</li>
+	  <li>November - public <a href="./betatest">Beta Test</a> release</li>
 	  <li>December - official Jmol v10 release</li>
 	</ul>
-	<i>
-	  If you </i>just can't wait<i> go to
-	  the <a href="download">download</a> page and pull it out of CVS.
-	</i>
       </p>
     </section>
 

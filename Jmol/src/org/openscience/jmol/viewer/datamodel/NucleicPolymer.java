@@ -29,8 +29,8 @@ import javax.vecmath.Point3f;
 
 public class NucleicPolymer extends Polymer {
 
-  NucleicPolymer(Model model, Monomer[] monomers) {
-    super(model, monomers);
+  NucleicPolymer(Monomer[] monomers) {
+    super(monomers);
   }
 
   public Atom getNucleicPhosphorusAtom(int monomerIndex) {
@@ -40,7 +40,8 @@ public class NucleicPolymer extends Polymer {
   boolean hasWingPoints() { return true; }
 
   void addSecondaryStructure(byte type,
-                             int startSeqcode, int endSeqcode) {
+                             char startChainID, int startSeqcode,
+                             char endChainID, int endSeqcode) {
   }
 
   public boolean isProtein() {

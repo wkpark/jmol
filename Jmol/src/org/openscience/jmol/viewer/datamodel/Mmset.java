@@ -47,8 +47,10 @@ final public class Mmset {
     this.frame = frame;
   }
 
-  public void defineStructure(String structureType, char chainID,
+  public void defineStructure(String structureType,
+                              char startChainID,
                               int startSequenceNumber, char startInsertionCode,
+                              char endChainID,
                               int endSequenceNumber, char endInsertionCode) {
     /*
     System.out.println("Mmset.defineStructure(" + structureType + "," +
@@ -60,11 +62,11 @@ final public class Mmset {
       structures =
         (Structure[])Util.setLength(structures, structureCount + 10);
     structures[structureCount++] =
-      new Structure(structureType, chainID,
-                    Group.getSeqcode(startSequenceNumber,
-                                        startInsertionCode),
-                    Group.getSeqcode(endSequenceNumber,
-                                        endInsertionCode));
+      new Structure(structureType,
+                    startChainID, Group.getSeqcode(startSequenceNumber,
+                                                   startInsertionCode),
+                    endChainID, Group.getSeqcode(endSequenceNumber,
+                                                 endInsertionCode));
   }
 
   public void freeze() {
@@ -105,12 +107,11 @@ final public class Mmset {
       Structure structure = structures[i];
       for (int j = modelCount; --j >= 0; )
         models[j].addSecondaryStructure(structure.type,
-                                        structure.chainID,
-                                        structure.startSeqcode,
-                                        structure.endSeqcode);
+                                        structure.startChainID, structure.startSeqcode,
+                                        structure.endChainID, structure.endSeqcode);
     }
   }
-
+  
   public int getModelCount() {
     return modelCount;
   }
@@ -118,22 +119,6 @@ final public class Mmset {
   public Model[] getModels() {
     return models;
   }
-
-  /*
-    temporary hack for backward compatibility with drawing code
-  */
-
-  /*
-  public Group[] getMainchain(int i) {
-    return models[0].getMainchain(i);
-  }
-  */
-
-  /*
-  public Chain getChain(int i) {
-    return models[0].getChain(i);
-  }
-  */
 
   public int getChainCount() {
     int chainCount = 0;
@@ -157,15 +142,17 @@ final public class Mmset {
   class Structure {
     String typeName;
     byte type;
-    char chainID;
+    char startChainID;
     int startSeqcode;
+    char endChainID;
     int endSeqcode;
     
-    Structure(String typeName, char chainID,
-              int startSeqcode, int endSeqcode) {
+    Structure(String typeName, char startChainID, int startSeqcode,
+              char endChainID, int endSeqcode) {
       this.typeName = typeName;
-      this.chainID = chainID;
+      this.startChainID = startChainID;
       this.startSeqcode = startSeqcode;
+      this.endChainID = endChainID;
       this.endSeqcode = endSeqcode;
       if ("helix".equals(typeName))
         type = JmolConstants.PROTEIN_STRUCTURE_HELIX;

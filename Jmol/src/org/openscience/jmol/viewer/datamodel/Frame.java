@@ -67,6 +67,10 @@ final public class Frame {
   boolean hasVibrationVectors;
 
   BitSet elementsPresent;
+
+  int groupCount;
+  Group[] groups;
+
   BitSet groupsPresent;
 
   public Frame(JmolViewer viewer, String modelTypeName) {

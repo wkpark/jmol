@@ -33,8 +33,8 @@ public class AminoPolymer extends AlphaPolymer {
   // the primary offset within the same mainchain;
   short mainchainHbondOffsets[];
 
-  AminoPolymer(Model model, Monomer[] monomers) {
-    super(model, monomers);
+  AminoPolymer(Monomer[] monomers) {
+    super(monomers);
   }
 
   boolean hasWingPoints() { return true; }

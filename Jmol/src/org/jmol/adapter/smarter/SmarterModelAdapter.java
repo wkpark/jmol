@@ -221,8 +221,8 @@ public class SmarterModelAdapter extends ModelAdapter {
       return structure.structureType;
     }
 
-    public char getChainID() {
-      return canonizeChainID(structure.chainID);
+    public char getStartChainID() {
+      return canonizeChainID(structure.startChainID);
     }
     
     public int getStartSequenceNumber() {
@@ -231,6 +231,10 @@ public class SmarterModelAdapter extends ModelAdapter {
     
     public char getStartInsertionCode() {
       return canonizeInsertionCode(structure.startInsertionCode);
+    }
+    
+    public char getEndChainID() {
+      return canonizeChainID(structure.endChainID);
     }
     
     public int getEndSequenceNumber() {

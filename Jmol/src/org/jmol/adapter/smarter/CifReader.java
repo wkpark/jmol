@@ -481,7 +481,7 @@ class CifReader extends ModelReader {
             structure.structureType = "none";
           break;
         case BEG_ASYM_ID:
-          structure.chainID =
+          structure.startChainID =
             (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
           break;
         case BEG_SEQ_ID:
@@ -489,6 +489,10 @@ class CifReader extends ModelReader {
           break;
         case BEG_INS_CODE:
           structure.startInsertionCode =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        case END_ASYM_ID:
+          structure.endChainID =
             (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
           break;
         case END_SEQ_ID:
@@ -556,7 +560,7 @@ class CifReader extends ModelReader {
         char firstChar = field.charAt(0);
         switch (fieldTypes[i]) {
         case BEG_ASYM_ID:
-          structure.chainID =
+          structure.startChainID =
             (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
           break;
         case BEG_SEQ_ID:
@@ -564,6 +568,10 @@ class CifReader extends ModelReader {
           break;
         case BEG_INS_CODE:
           structure.startInsertionCode =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        case END_ASYM_ID:
+          structure.endChainID =
             (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
           break;
         case END_SEQ_ID:

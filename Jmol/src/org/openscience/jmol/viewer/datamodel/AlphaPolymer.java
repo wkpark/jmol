@@ -29,15 +29,16 @@ import javax.vecmath.Point3f;
 
 public class AlphaPolymer extends Polymer {
 
-  AlphaPolymer(Model model, Monomer[] monomers) {
-    super(model, monomers);
+  AlphaPolymer(Monomer[] monomers) {
+    super(monomers);
   }
 
   void addSecondaryStructure(byte type,
-                             int startSeqcode, int endSeqcode) {
+                             char startChainID, int startSeqcode,
+                             char endChainID, int endSeqcode) {
     int polymerIndexStart, polymerIndexEnd;
-    if ((polymerIndexStart = getIndex(startSeqcode)) == -1 ||
-        (polymerIndexEnd = getIndex(endSeqcode)) == -1)
+    if ((polymerIndexStart = getIndex(startChainID, startSeqcode)) == -1 ||
+        (polymerIndexEnd = getIndex(endChainID, endSeqcode)) == -1)
       return;
     int structureCount = polymerIndexEnd - polymerIndexStart + 1;
     if (structureCount < 1) {

@@ -237,9 +237,10 @@ public abstract class ModelAdapter {
   public abstract class StructureIterator {
     public abstract boolean hasNext();
     public abstract String getStructureType();
-    public abstract char getChainID();
+    public abstract char getStartChainID();
     public abstract int getStartSequenceNumber();
     public abstract char getStartInsertionCode();
+    public abstract char getEndChainID();
     public abstract int getEndSequenceNumber();
     public abstract char getEndInsertionCode();
   }

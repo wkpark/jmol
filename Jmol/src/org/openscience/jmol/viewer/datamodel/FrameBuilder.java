@@ -100,9 +100,10 @@ final public class FrameBuilder {
     if (iterStructure != null) 
       while (iterStructure.hasNext())
         frame.mmset.defineStructure(iterStructure.getStructureType(),
-                                    iterStructure.getChainID(),
+                                    iterStructure.getStartChainID(),
                                     iterStructure.getStartSequenceNumber(),
                                     iterStructure.getStartInsertionCode(),
+                                    iterStructure.getEndChainID(),
                                     iterStructure.getEndSequenceNumber(),
                                     iterStructure.getEndInsertionCode());
   
@@ -114,7 +115,8 @@ final public class FrameBuilder {
 
     frame.doUnitcellStuff();
     frame.doAutobond();
-    finalizeGroupBuild();
+    finalizeGroupBuild(frame);
+    buildPolymers(frame);
     frame.freeze();
     long msToBuild = System.currentTimeMillis() - timeBegin;
     //    System.out.println("Build a frame:" + msToBuild + " ms");
@@ -262,23 +264,29 @@ final public class FrameBuilder {
   int[] seqcodes = new int[defaultGroupCount];
   int[] firstAtomIndexes = new int[defaultGroupCount];
 
+  Group[] groups;
+
   final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
 
   void initializeGroupBuild() {
     groupCount = 0;
   }
 
-  void finalizeGroupBuild() {
+  void finalizeGroupBuild(Frame frame) {
     // run this loop in increasing order so that the
     // groups get defined going up
+    groups = new Group[groupCount];
     for (int i = 0; i < groupCount; ++i) {
-      distinguishAndPropogateGroup(chains[i], group3s[i], seqcodes[i],
+      distinguishAndPropogateGroup(i, chains[i], group3s[i], seqcodes[i],
                                    firstAtomIndexes[i],
                                    i == groupCount - 1
                                    ? atomCount : firstAtomIndexes[i + 1]);
       chains[i] = null;
       group3s[i] = null;
     }
+    frame.groupCount = groupCount;
+    frame.groups = groups;
+    groups = null;
   }
 
   void startGroup(Chain chain, String group3,
@@ -298,7 +306,8 @@ final public class FrameBuilder {
     ++groupCount;
   }
 
-  void distinguishAndPropogateGroup(Chain chain, String group3, int seqcode,
+  void distinguishAndPropogateGroup(int groupIndex,
+                                    Chain chain, String group3, int seqcode,
                                     int firstAtomIndex, int maxAtomIndex) {
     /*
     System.out.println("distinguish & propogate group:" +
@@ -349,10 +358,25 @@ final public class FrameBuilder {
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
 
     chain.addGroup(group);
+    groups[groupIndex] = group;
 
     ////////////////////////////////////////////////////////////////
     for (int i = maxAtomIndex; --i >= firstAtomIndex; )
       atoms[i].setGroup(group);
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  void buildPolymers(Frame frame) {
+    Group[] groups = frame.groups;
+    for (int i = 0; i < groupCount; ++i) {
+      Group group = groups[i];
+      if (group instanceof Monomer) {
+        Monomer monomer = (Monomer)group;
+        if (monomer.polymer == null)
+          Polymer.allocatePolymer(groups, i);
+      }
+    }
   }
 }
 

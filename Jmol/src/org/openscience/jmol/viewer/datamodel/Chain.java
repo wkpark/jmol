@@ -49,14 +49,6 @@ final public class Chain {
 
   void freeze() {
     groups = (Group[])Util.setLength(groups, groupCount);
-    for (int i = 0; i < groupCount; ++i) {
-      Group group = groups[i];
-      if (group instanceof Monomer) {
-        Monomer monomer = (Monomer)group;
-        if (monomer.polymer == null)
-          model.addPolymer(Polymer.allocatePolymer(model, this, i));
-      }
-    }
   }
   
   void addGroup(Group group) {
@@ -64,7 +56,7 @@ final public class Chain {
       groups = (Group[])Util.doubleLength(groups);
     groups[groupCount++] = group;
   }
-
+  
   Group getGroup(int groupIndex) {
     return groups[groupIndex];
   }

@@ -58,12 +58,13 @@ final class Model {
     polymers = (Polymer[])Util.setLength(polymers, polymerCount);
   }
 
-  void addSecondaryStructure(byte type, char chainID,
-                             int startSeqcode, int endSeqcode) {
+  void addSecondaryStructure(byte type,
+                             char startChainID, int startSeqcode,
+                             char endChainID, int endSeqcode) {
     for (int i = polymerCount; --i >= 0; ) {
       Polymer polymer = polymers[i];
-      if (polymer.getChainID() == chainID)
-        polymer.addSecondaryStructure(type, startSeqcode, endSeqcode);
+      polymer.addSecondaryStructure(type, startChainID, startSeqcode,
+                                    endChainID, endSeqcode);
     }
   }
 

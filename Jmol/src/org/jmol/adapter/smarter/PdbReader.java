@@ -296,34 +296,41 @@ class PdbReader extends ModelReader {
 
   void structure() {
     String structureType = "none";
-    int chainIDIndex = 19;
-    int startIndex = 0;
-    int endIndex = 0;
+    int startChainIDIndex;
+    int startIndex;
+    int endChainIDIndex;
+    int endIndex;
     if (line.startsWith("HELIX ")) {
       structureType = "helix";
+      startChainIDIndex = 19;
       startIndex = 21;
+      endChainIDIndex = 31;
       endIndex = 33;
     } else if (line.startsWith("SHEET ")) {
       structureType = "sheet";
-      chainIDIndex = 21;
+      startChainIDIndex = 21;
       startIndex = 22;
+      endChainIDIndex = 32;
       endIndex = 33;
     } else if (line.startsWith("TURN  ")) {
       structureType = "turn";
+      startChainIDIndex = 19;
       startIndex = 20;
+      endChainIDIndex = 30;
       endIndex = 31;
     } else
       return;
 
-    char chainID = line.charAt(chainIDIndex);
+    char startChainID = line.charAt(startChainIDIndex);
     int startSequenceNumber = parseInt(line, startIndex, startIndex + 4);
     char startInsertionCode = line.charAt(startIndex + 4);
+    char endChainID = line.charAt(endChainIDIndex);
     int endSequenceNumber = parseInt(line, endIndex, endIndex + 4);
     char endInsertionCode = line.charAt(endIndex + 4);
 
-    model.addStructure(new Structure(structureType, chainID,
+    model.addStructure(new Structure(structureType, startChainID,
                                      startSequenceNumber, startInsertionCode,
-                                     endSequenceNumber, endInsertionCode));
+                                     endChainID, endSequenceNumber, endInsertionCode));
   }
   
   void model() {

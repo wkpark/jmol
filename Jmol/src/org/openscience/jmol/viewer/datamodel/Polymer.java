@@ -40,12 +40,13 @@ abstract class Polymer {
 
   private int[] atomIndices;
 
-  Polymer(Model model, Monomer[] monomers) {
-    this.model = model;
+  Polymer(Monomer[] monomers) {
     this.monomers = monomers;
     this.count = monomers.length;
     for (int i = count; --i >= 0; )
       monomers[i].setPolymer(this);
+    model = monomers[0].chain.model;
+    model.addPolymer(this);
   }
   
   // these arrays will be one longer than the polymerCount
@@ -55,38 +56,38 @@ abstract class Polymer {
   // holds the vector that runs across the 'ribbon'
   Vector3f[] wingVectors;
 
-  static Polymer allocatePolymer(Model model, Chain chain,
-                                 int firstGroupIndex) {
+  static Polymer allocatePolymer(Group[] groups, int firstGroupIndex) {
     //    System.out.println("allocatePolymer()");
     Monomer[] monomers;
-    monomers = getAminoMonomers(chain, firstGroupIndex);
+    monomers = getAminoMonomers(groups, firstGroupIndex);
     if (monomers != null) {
       //      System.out.println("an AminoPolymer");
-      return new AminoPolymer(model, monomers);
+      return new AminoPolymer(monomers);
     }
-    monomers = getAlphaMonomers(chain, firstGroupIndex);
+    monomers = getAlphaMonomers(groups, firstGroupIndex);
     if (monomers != null) {
       //      System.out.println("an AlphaPolymer");
-      return new AlphaPolymer(model, monomers);
+      return new AlphaPolymer(monomers);
     }
-    monomers = getNucleicMonomers(chain, firstGroupIndex);
+    monomers = getNucleicMonomers(groups, firstGroupIndex);
     if (monomers != null) {
       //      System.out.println("a NucleicPolymer");
-      return new NucleicPolymer(model, monomers);
+      return new NucleicPolymer(monomers);
     }
     System.out.println("Polymer.allocatePolymer() ... why am I here?");
     throw new NullPointerException();
   }
 
-  static Monomer[] getAlphaMonomers(Chain chain, int firstGroupIndex) {
-    Group[] chainGroups = chain.groups;
+  static Monomer[] getAlphaMonomers(Group[] groups, int firstGroupIndex) {
     AlphaMonomer previous = null;
     int count = 0;
-    for (int i = firstGroupIndex; i < chain.groupCount; ++i, ++count) {
-      Group group = chainGroups[i];
+    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
+      Group group = groups[i];
       if (! (group instanceof AlphaMonomer))
         break;
       AlphaMonomer current = (AlphaMonomer)group;
+      if (current.polymer != null)
+        break;
       if (! current.isConnectedAfter(previous))
         break;
       previous = current;
@@ -95,19 +96,20 @@ abstract class Polymer {
       return null;
     Monomer[] monomers = new Monomer[count];
     for (int j = 0; j < count; ++j)
-      monomers[j] = (AlphaMonomer)chainGroups[firstGroupIndex + j];
+      monomers[j] = (AlphaMonomer)groups[firstGroupIndex + j];
     return monomers;
   }
 
-  static Monomer[] getAminoMonomers(Chain chain, int firstGroupIndex) {
-    Group[] chainGroups = chain.groups;
+  static Monomer[] getAminoMonomers(Group[] groups, int firstGroupIndex) {
     AminoMonomer previous = null;
     int count = 0;
-    for (int i = firstGroupIndex; i < chain.groupCount; ++i, ++count) {
-      Group group = chainGroups[i];
+    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
+      Group group = groups[i];
       if (! (group instanceof AminoMonomer))
         break;
       AminoMonomer current = (AminoMonomer)group;
+      if (current.polymer != null)
+        break;
       if (! current.isConnectedAfter(previous))
         break;
       previous = current;
@@ -116,19 +118,20 @@ abstract class Polymer {
       return null;
     Monomer[] monomers = new Monomer[count];
     for (int j = 0; j < count; ++j)
-      monomers[j] = (AminoMonomer)chainGroups[firstGroupIndex + j];
+      monomers[j] = (AminoMonomer)groups[firstGroupIndex + j];
     return monomers;
   }
 
-  static Monomer[] getNucleicMonomers(Chain chain, int firstGroupIndex) {
-    Group[] chainGroups = chain.groups;
+  static Monomer[] getNucleicMonomers(Group[] groups, int firstGroupIndex) {
     NucleicMonomer previous = null;
     int count = 0;
-    for (int i = firstGroupIndex; i < chain.groupCount; ++i, ++count) {
-      Group group = chainGroups[i];
+    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
+      Group group = groups[i];
       if (! (group instanceof NucleicMonomer))
         break;
       NucleicMonomer current = (NucleicMonomer)group;
+      if (current.polymer != null)
+        break;
       if (! current.isConnectedAfter(previous))
         break;
       previous = current;
@@ -137,16 +140,8 @@ abstract class Polymer {
       return null;
     Monomer[] monomers = new Monomer[count];
     for (int j = 0; j < count; ++j)
-      monomers[j] = (NucleicMonomer)chainGroups[firstGroupIndex + j];
+      monomers[j] = (NucleicMonomer)groups[firstGroupIndex + j];
     return monomers;
-  }
-
-  /**
-   * for now, a polymer only comes from a single chain.
-   * this is still used in propogating structures
-   */
-  char getChainID() {
-    return monomers[0].getChainID();
   }
 
   int[] getLeadAtomIndices() {
@@ -158,10 +153,11 @@ abstract class Polymer {
     return atomIndices;
   }
   
-  int getIndex(int seqcode) {
+  int getIndex(char chainID, int seqcode) {
     int i;
     for (i = count; --i >= 0; )
-      if (monomers[i].seqcode == seqcode)
+      if (monomers[i].seqcode == seqcode &&
+          monomers[i].chain.chainID == chainID)
         break;
     return i;
   }
@@ -203,7 +199,8 @@ abstract class Polymer {
   }
   
   abstract void addSecondaryStructure(byte type,
-                                      int startSeqcode, int endSeqcode);
+                                      char chainIdStart, int startSeqcode,
+                                      char chainIdEnd, int endSeqcode);
   abstract boolean isProtein();
 
   abstract void calcHydrogenBonds();

@@ -401,36 +401,17 @@ final public class Frame {
   final static int minimumPixelSelectionRadius = 4;
 
   public int findNearestAtomIndex(int x, int y) {
-    /*
-     * This algorithm assumes that atoms are circles at the z-depth
-     * of their center point. Therefore, it probably has some flaws
-     * around the edges when dealing with intersecting spheres that
-     * are at approximately the same z-depth.
-     * But it is much easier to deal with than trying to actually
-     * calculate which atom was clicked
-     *
-     * A more general algorithm of recording which object drew
-     * which pixel would be very expensive and not worth the trouble
-     ****************************************************************/
-    if (atomCount == 0)
-      return -1;
-    Atom champion = null;
-    int championIndex = -1;
-    for (int i = atomCount; --i >= 0; ) {
-      Atom contender = atoms[i];
-      if (contender.isCursorOnTopOfVisibleAtom(x, y,
-                                               minimumPixelSelectionRadius,
-                                               champion)) {
-        champion = contender;
-        championIndex = i;
+    for (int i = 0; i < shapes.length; ++i) {
+      Shape shape = shapes[i];
+      if (shape != null) {
+        int nearestIndex = shapes[i].findNearestAtomIndex(x, y);
+        if (nearestIndex >= 0)
+          return nearestIndex;
       }
     }
-    if (championIndex >= 0)
-      return championIndex;
-    // not on top of any atoms ... let's try the shapes
     return -1;
   }
-    
+
   // jvm < 1.4 does not have a BitSet.clear();
   // so in order to clear you "and" with an empty bitset.
   final BitSet bsEmpty = new BitSet();

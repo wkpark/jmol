@@ -44,3 +44,4 @@ org/openscience/jmol/PDBReader.java
 org/openscience/jmol/CACheReader.java
 org/openscience/jmol/ReaderFactory.java
 org/openscience/jmol/MdlReader.java
+org/openscience/jmol/CMLResolver.java

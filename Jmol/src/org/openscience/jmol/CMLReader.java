@@ -127,12 +127,13 @@ public class CMLReader implements ChemFileReader {
               new JMOLANIMATIONConvention(cdo));
       parser.setContentHandler(handler);
       parser.setEntityResolver(new CMLResolver());
+      InputSource source;
       if (this.input != null) {
-        InputSource source = new InputSource(input);
-        parser.parse(source);
+        source = new InputSource(input);
       } else {
-        parser.parse(url.toString());
+        source = new InputSource(url.toString());
       }
+      parser.parse(source);
       ChemFile file = new ChemFile(bondsEnabled);
       Enumeration framesIter =
         ((JMolCDO) handler.returnCDO()).returnChemFrames().elements();

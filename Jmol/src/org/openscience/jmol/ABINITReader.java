@@ -19,14 +19,17 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
 import java.util.Vector;
 import java.util.StringTokenizer;
-import javax.vecmath.Point3f;
 import java.lang.reflect.Array;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3f;
 
 /**
- * Abinit summary (www.abinit.org)
+ * Abinit summary (www.abinit.org):
  *   ABINIT is a package whose main program allows one to find the total
  *   energy, charge density and electronic structure of systems made of
  *   electrons and nuclei (molecules and periodic solids) within
@@ -37,11 +40,11 @@ import java.lang.reflect.Array;
  *   dynamical matrices, Born effective charges, and dielectric tensors.
  *
  *
- * An abinit input file is composed of many keywords arranged in a non-spec=
-ific
+ * <p> An abinit input file is composed of many keywords arranged
+ * in a non-specific
  * order. Each keyword is followed by one or more numbers (integers or
- * floats depending of the keyword). Characters following a '#' are ignored=
-.
+ * floats depending of the keyword).
+ * Characters following a '#' are ignored.
  * The fisrt line of the file can be considered as a title.
  * This implementaton supports only 1 dataset!!!
  *
@@ -50,59 +53,99 @@ ific
  * If you have problems, please contact the author of this code, not
  * the developers of XMol.
  *
+ *<p><p> <p> Create an ABINIT input and output reader.
+ *
+ *
+ *
  * @author Fabian Dortu (Fabian.Dortu@wanadoo.be)
- * @version 1.0 */
-public class ABINITReader implements ChemFileReader {
+ * @version 1.3 */
+public class ABINITReader extends DefaultChemFileReader {
 
-  public static final double angstromPerBohr = 0.529177249;
+  // Factor conversion bohr to angstrom
+  private static final float angstromPerBohr = 0.529177249f;
 
   // This variable will be used to parse the input file
   private StringTokenizer st;
 
   /**
-   * Create an ABINIT output reader.
+   * Creates a new <code>ABINITReader</code> instance.
    *
-   * @param input source of ABINIT data
+   * @param input a <code>Reader</code> value
    */
   public ABINITReader(Reader input) {
-    this.input = new BufferedReader(input);
+    super(input);
   }
 
-  /**
-   * Whether bonds are enabled in the files and frames read.
-   */
-  private boolean bondsEnabled = true;
 
   /**
-   * Sets whether bonds are enabled in the files and frames which are read.
-   *
-   * @param bondsEnabled if true, enables bonds.
-   */
-  public void setBondsEnabled(boolean bondsEnabled) {
-    this.bondsEnabled = bondsEnabled;
-  }
-
-  /**
-   * Read the ABINIT output.
+   * Read an ABINIT file. Automagically determines if it is
+   * an abinit input or output file
    *
    * @return a ChemFile with the coordinates
+   * @exception IOException if an error occurs
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
-
-    int natom = 1;
-    int ntype = 1;
-    double[] acell = new double[3];
-    double[][] rprim = new double[3][3];
-    String info = "";
-    String sn;
+    CrystalFile crystalFile = new CrystalFile();
 
     String line;
 
 
+
+    /**
+     * Check if it is an ABINIT *input* file or an abinit *output* file.
+     * Actually we check if it is an abinit output file. If not, this is
+     * an abinit input file
+     */
+
+    /**
+     * The words "Version" and "ABINIT" must be found on the
+     * same line and within the first three lines.
+     */
+
+    input.mark(1024);
+    for (int i = 0; i < 3; i++) {
+      if (input.ready()) {
+        line = input.readLine();
+        if ((line.indexOf("ABINIT") >= 0) && (line.indexOf("Version") >= 0)) {
+
+          //This is an output file
+          input.reset();
+          System.out.println("We have an abinit *output* file");
+          crystalFile = readAbinitOutput();
+          return crystalFile;
+        }
+      }
+    }
+
+    //We don't we an output file so we have an input file
+    input.reset();
+    System.out.println("We have an abinit *input* file");
+    crystalFile = readAbinitInput();
+    return crystalFile;
+  }
+
+
+  /**
+   * Read an ABINIT *input* file.
+   * @return a <code>ChemFile</code> value
+   * @exception IOException if an error occurs
+   */
+  public CrystalFile readAbinitInput() throws IOException {
+
+    CrystalFile crystalFile = new CrystalFile();
+    int natom = 1;
+    int ntype = 1;
+    float acell[] = new float[3];
+    float[][] rprim = new float[3][3];
+    String info = "";
+    String sn;
+    String line;
+
     info = input.readLine();
     System.out.println(info);
+
+
 
     //Check if this is a multidataset file. Multidataset is not yet supported
     input.mark(1024 * 1024);
@@ -115,8 +158,7 @@ public class ABINITReader implements ChemFileReader {
         sn = nextAbinitToken(input);
         if (FortranFormat.atof(sn) > 1) {
           System.out.println("ABINITReader: multidataset not supported");
-          fireFrameRead();
-          return file;
+          return crystalFile;
         }
       }
       sn = nextAbinitToken(input);
@@ -138,26 +180,21 @@ public class ABINITReader implements ChemFileReader {
           if (index >= 0)    //Test if number format of type i*f
           {
             int times = Integer.parseInt(sn.substring(0, index));
-            System.out.println("times : " + times);
             double value = FortranFormat.atof(sn.substring(index + 1));
-            System.out.println("value : " + value);
             for (int j = i; j < i + times; j++) {
-              acell[j] = value;
+              acell[j] = (float) value;
             }
             i = i + times - 1;
           } else {
-            acell[i] = FortranFormat.atof(sn);
+            acell[i] = (float) FortranFormat.atof(sn);
           }
         }
-
-        System.out.println("acell: " + acell[0] + " " + acell[1] + " "
-            + acell[2]);
-
       } else if (sn.equals("rprim")) {
         for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 3; j++) {
             sn = nextAbinitToken(input);
-            rprim[i][j] = FortranFormat.atof(sn);
+            rprim[i][j] = (float) FortranFormat.atof(sn);
+
           }
         }
       } else if (sn.equals("ntype")) {
@@ -167,7 +204,16 @@ public class ABINITReader implements ChemFileReader {
         sn = nextAbinitToken(input);
         natom = Integer.parseInt(sn);
       }
-      sn = nextAbinitToken(input);
+
+      // It is unnecessary to scan the end of the line. 
+      // Go directly to the next line
+      if (input.ready()) {
+        line = input.readLine();
+        st = new StringTokenizer(line, " \t");
+        sn = nextAbinitToken(input);
+      } else {
+        sn = null;
+      }
     }
 
 
@@ -175,13 +221,14 @@ public class ABINITReader implements ChemFileReader {
     //Initialize dynamic variables
     int[] zatnum = (int[]) Array.newInstance(int.class, ntype);
     int[] type = (int[]) Array.newInstance(int.class, natom);
-    ChemFrame frame = new ChemFrame(natom);
+
+    //ChemFrame frame = new ChemFrame(natom);
     int[] dims = {
       natom, 3
     };
-    double[][] xangst = (double[][]) Array.newInstance(double.class, dims);
+    float[][] xangst = (float[][]) Array.newInstance(float.class, dims);
 
-    double[][] xred = (double[][]) Array.newInstance(double.class, dims);
+    float[][] xred = (float[][]) Array.newInstance(float.class, dims);
 
     //Second pass through the file
     input.reset();
@@ -193,17 +240,14 @@ public class ABINITReader implements ChemFileReader {
           sn = nextAbinitToken(input);
           zatnum[i] = Integer.parseInt(sn);
         }
-      } else if (sn.equals("type"))    //type MUST BE after natom in the input  file !!!BUG?!!!
-      {
+      } else if (sn.equals("type")) {
         for (int i = 0; i < natom; i++) {
           sn = nextAbinitToken(input);
           int index = sn.indexOf("*");
           if (index >= 0)    //Test if number format of type i*i
           {
             int times = Integer.parseInt(sn.substring(0, index));
-            System.out.println("times : " + times);
             int value = Integer.parseInt(sn.substring(index + 1));
-            System.out.println("value : " + value);
             for (int j = i; j < i + times; j++) {
               type[j] = value;
             }
@@ -216,21 +260,21 @@ public class ABINITReader implements ChemFileReader {
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             sn = nextAbinitToken(input);
-            xangst[i][j] = FortranFormat.atof(sn);
+            xangst[i][j] = (float) FortranFormat.atof(sn);
           }
         }
       } else if (sn.equals("xcart")) {
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             sn = nextAbinitToken(input);
-            xangst[i][j] = FortranFormat.atof(sn) * angstromPerBohr;
+            xangst[i][j] = (float) FortranFormat.atof(sn) * angstromPerBohr;
           }
         }
       } else if (sn.equals("xred")) {
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
             sn = nextAbinitToken(input);
-            xred[i][j] = FortranFormat.atof(sn);
+            xred[i][j] = (float) FortranFormat.atof(sn);
           }
           xangst[i][0] =
               (xred[i][0] * rprim[0][0] + xred[i][1] * rprim[1][0] + xred[i][2] * rprim[2][0])
@@ -243,26 +287,242 @@ public class ABINITReader implements ChemFileReader {
                 * acell[2] * angstromPerBohr;
         }
       }
-      sn = nextAbinitToken(input);
+
+      // It is unnecessary to scan the end of the line. 
+      // Go directly to the next line
+      if (input.ready()) {
+        line = input.readLine();
+        st = new StringTokenizer(line, " \t");
+        sn = nextAbinitToken(input);
+      } else {
+        sn = null;
+      }
+
     }
 
 
 
-    frame.setInfo(info);
+    //Convert acell from bohr to angstrom
+    acell[0] = acell[0] * (float) angstromPerBohr;
+    acell[1] = acell[1] * (float) angstromPerBohr;
+    acell[2] = acell[2] * (float) angstromPerBohr;
+
+    //set the atom type
+    int[] atomType = new int[natom];
     for (int i = 0; i < natom; i++) {
-      int atomIndex = frame.addAtom(zatnum[type[i] - 1],
-                        (float) xangst[i][0], (float) xangst[i][1],
-                        (float) xangst[i][2]);
+      atomType[i] = zatnum[type[i] - 1];
+    }
+
+    //Store unit cell info
+    crystalFile.setUnitCellBox(new UnitCellBox(rprim, acell, true, atomType,
+        xangst));
+    crystalFile.setCrystalBox(new CrystalBox());    //use defaults value
+    crystalFile.generateCrystalFrame();
+
+    //fireFrameRead();
+    return crystalFile;
+
+  }
+
+
+  /**
+   * Read an ABINIT *output* file.
+   * @return a <code>ChemFile</code> value
+   * @exception IOException if an error occurs
+   */
+  public CrystalFile readAbinitOutput() throws IOException {
+
+    CrystalFile crystalFile = new CrystalFile();
+    int natom = 1;
+    int ntype = 1;
+    float[] acell = new float[3];
+    float[][] rprim = new float[3][3];
+    String info = "";
+    String sn;
+    String line;
+    int count = 0;
+
+
+    //We assume we have only 1 dataset.
+
+    /*
+     * The reading of the output file is essentially the same as the
+     * reading of an output file except that the output file can
+     * contain several frames
+     */
+
+    //First pass through the file (get variables of known dimension)
+    input.mark(1024 * 1024);
+    line = input.readLine();
+    st = new StringTokenizer(line, " \t");
+    sn = nextAbinitToken(input);
+
+    while (sn != null) {
+      if (sn.equals("acell")) {
+        for (int i = 0; i < 3; i++) {
+
+          sn = nextAbinitToken(input);
+          acell[i] = (float) FortranFormat.atof(sn);
+        }
+
+        count++;    //We found acell
+
+      } else if (sn.equals("rprim")) {
+        for (int i = 0; i < 3; i++) {
+          for (int j = 0; j < 3; j++) {
+            sn = nextAbinitToken(input);
+            rprim[i][j] = (float) FortranFormat.atof(sn);
+          }
+        }
+        count++;    //We found rprim
+      } else if (sn.equals("ntype")) {
+        sn = nextAbinitToken(input);
+        ntype = Integer.parseInt(sn);
+        count++;    //We found ntype
+      } else if (sn.equals("natom")) {
+        sn = nextAbinitToken(input);
+        natom = Integer.parseInt(sn);
+        count++;    //We found natom
+      }
+
+      //No need to countinue, we have found all of the searched keyword
+      if (count == 4) {
+        break;
+      }
+
+      // It is unnecessary to scan the end of the line. 
+      // Go directly to the next line
+      if (input.ready()) {
+        line = input.readLine();
+        st = new StringTokenizer(line, " \t");
+        sn = nextAbinitToken(input);
+      } else {
+        sn = null;
+      }
 
     }
 
-    file.addFrame(frame);
-    fireFrameRead();
-    return file;
+
+    //Initialize dynamic variables
+    int[] zatnum = (int[]) Array.newInstance(int.class, ntype);
+    int[] type = (int[]) Array.newInstance(int.class, natom);
+    int[] dims = {
+      natom, 3
+    };
+    float[][] xangst = (float[][]) Array.newInstance(float.class, dims);
+
+    float[][] xred = (float[][]) Array.newInstance(float.class, dims);
+
+    //Second pass through the file
+    input.reset();
+    sn = nextAbinitToken(input);
+
+    count = 0;
+    while (sn != null) {
+      if (sn.equals("zatnum")) {
+        for (int i = 0; i < ntype; i++) {
+          sn = nextAbinitToken(input);
+          zatnum[i] = (int) FortranFormat.atof(sn);
+        }
+        count++;
+      } else if (sn.equals("type")) {
+        for (int i = 0; i < natom; i++) {
+          sn = nextAbinitToken(input);
+          type[i] = Integer.parseInt(sn);
+        }
+        count++;
+      }
+
+
+      //No need to countinue, we have found all of the searched keyword
+      if (count == 2) {
+        break;
+      }
+
+      // It is unnecessary to scan the end of the line. 
+      // Go directly to the next line
+      if (input.ready()) {
+        line = input.readLine();
+        st = new StringTokenizer(line, " \t");
+        sn = nextAbinitToken(input);
+      } else {
+        sn = null;
+      }
+
+    }    //end while
+
+
+    //Convert acell from bohr to angstrom
+    acell[0] = acell[0] * (float) angstromPerBohr;
+    acell[1] = acell[1] * (float) angstromPerBohr;
+    acell[2] = acell[2] * (float) angstromPerBohr;
+
+
+    //We start reading the frames
+    while (sn != null) {
+      if (sn.equals("NUMBER"))                          // Get the step number
+      {
+        info = nextAbinitToken(input);
+      } else if (sn.equals("Cartesian")
+          && nextAbinitToken(input).equals("coordinates")) {
+
+        //ChemFrame frame = new ChemFrame(natom);
+        //frame.setInfo("Step number: " + info);
+
+        //Go to next line
+        if (input.ready()) {
+          line = input.readLine();
+          st = new StringTokenizer(line, " \t");
+        }
+
+        for (int i = 0; i < natom; i++) {
+          for (int j = 0; j < 3; j++) {
+            sn = nextAbinitToken(input);
+            xangst[i][j] = (float) FortranFormat.atof(sn) * angstromPerBohr;
+          }
+
+
+        }
+
+
+        int[] atomType = new int[natom];
+        for (int i = 0; i < natom; i++) {
+          atomType[i] = zatnum[type[i] - 1];
+        }
+
+        //Store unit cell info
+        crystalFile.setUnitCellBox(new UnitCellBox(rprim, acell, true,
+            atomType, xangst));
+        crystalFile.setCrystalBox(new CrystalBox());    //use defaults value
+        crystalFile.generateCrystalFrame();
+
+        //fireFrameRead();
+      }
+
+
+      // It is unnecessary to scan the end of the line. 
+      // Go directly to the next line
+      if (input.ready()) {
+        line = input.readLine();
+        st = new StringTokenizer(line, " \t");
+        sn = nextAbinitToken(input);
+      } else {
+        sn = null;
+      }
+    }
+
+
+
+    return crystalFile;
   }
 
   /**
-   * Find the next token of an abinit file
+   * Find the next token of an abinit file.
+   * ABINIT tokens are words separated by space(s). Characters
+   * following a "#" are ignored till the end of the line.
+   * @param input a <code>BufferedReader</code> value
+   * @return a <code>String</code> value
+   * @exception IOException if an error occurs
    */
   public String nextAbinitToken(BufferedReader input) throws IOException {
 
@@ -288,50 +548,5 @@ public class ABINITReader implements ChemFileReader {
     return sn;
   }
 
-  /**
-   * Holder of reader event listeners.
-   */
-  private Vector listenerList = new Vector();
-
-  /**
-   * An event to be sent to listeners. Lazily initialized.
-   */
-  private ReaderEvent readerEvent = null;
-
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l) {
-    listenerList.addElement(l);
-  }
-
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l) {
-    listenerList.removeElement(l);
-  }
-
-  /**
-   * Sends a frame read event to the reader listeners.
-   */
-  private void fireFrameRead() {
-
-    for (int i = 0; i < listenerList.size(); ++i) {
-      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
-
-      // Lazily create the event:
-      if (readerEvent == null) {
-        readerEvent = new ReaderEvent(this);
-      }
-      listener.frameRead(readerEvent);
-    }
-  }
-
-  private BufferedReader input;
 }
 

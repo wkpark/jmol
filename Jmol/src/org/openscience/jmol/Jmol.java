@@ -118,6 +118,7 @@ class Jmol extends JPanel {
   private Preferences prefs;
   private Animate anim;
   private Vibrate vib;
+  private CrystalPropertiesDialog crystprop;
   private PropertyGraph pg;
   private Measure meas;
   private MeasurementList mlist;
@@ -224,6 +225,9 @@ class Jmol extends JPanel {
     splash.showStatus(resourceHandler.translate("Initializing Vibrate..."));
     vib = new Vibrate(model, frame);
     model.addPropertyChangeListener(vib);
+    splash.showStatus(resourceHandler.translate("Initializing Crystal..."));
+    crystprop = new CrystalPropertiesDialog(model, frame);
+    model.addPropertyChangeListener(crystprop);
     splash.showStatus(resourceHandler
         .translate("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
@@ -589,12 +593,14 @@ class Jmol extends JPanel {
     Action[] measActions = meas.getActions();
     Action[] mlistActions = mlist.getActions();
     Action[] vibActions = vib.getActions();
+    Action[] crystpropActions = crystprop.getActions();
     Action[] pgActions = pg.getActions();
 
     int nactions = defaultActions.length + displayActions.length
                      + prefActions.length + animActions.length
                      + vibActions.length + measActions.length
-                     + mlistActions.length + pgActions.length;
+                     + mlistActions.length + pgActions.length
+                     + crystpropActions.length;
 
     Action[] theActions = new Action[nactions];
 
@@ -622,6 +628,10 @@ class Jmol extends JPanel {
         defaultActions.length + displayActions.length + prefActions.length
           + animActions.length + measActions.length + mlistActions.length
             + vibActions.length, pgActions.length);
+    System.arraycopy(crystpropActions, 0, theActions,
+        defaultActions.length + displayActions.length + prefActions.length
+          + animActions.length + measActions.length + mlistActions.length
+            + vibActions.length + pgActions.length, crystpropActions.length);
     return theActions;
   }
 

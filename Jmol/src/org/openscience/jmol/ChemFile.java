@@ -67,6 +67,18 @@ public class ChemFile {
   }
 
   /**
+   * Set the frame at the given index.
+   *
+   * @param frame the new frame
+   * @param whichframe the index of the frame
+   */
+  public void setFrame(ChemFrame frame, int whichframe) {
+    if (whichframe < frames.size()) {
+      frames.setElementAt(frame, whichframe);
+    }
+  }
+
+  /**
    * Returns the number of frames in this file.
    */
   public int getNumberOfFrames() {

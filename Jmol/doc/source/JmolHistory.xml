@@ -35,6 +35,9 @@
     Temporary removal of defective parsing CONECT fields by PDB reader. Once
     fixed, the feature will be reinstated.
   </change>
+  <change contributor="FD">
+    ABINIT crystal properties dialog.    
+  </change>
 </changes>
 
 <changes version="jmol-4">

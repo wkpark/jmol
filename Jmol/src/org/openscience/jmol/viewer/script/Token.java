@@ -319,6 +319,7 @@ public class Token {
   final static int jmol         = misc | 33;
   final static int displacement = misc | 34;
   final static int type         = misc | 35;
+  final static int fixedtemp    = misc | 36;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -591,6 +592,8 @@ public class Token {
     "jmol",         new Token(jmol,            "jmol"),
     "displacement", new Token(displacement,    "displacement"),
     "type",         new Token(type,            "type"),
+    "fixedtemp",    new Token(fixedtemp,       "fixedtemp"),
+    "fixedtemperature", null,
 
   };
 

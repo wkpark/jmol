@@ -1408,6 +1408,7 @@ public class Eval implements Runnable {
     case Token.shapely:
     case Token.structure:
     case Token.temperature:
+    case Token.fixedtemp:
     case Token.formalCharge:
     case Token.partialCharge:
     case Token.user:
@@ -1496,6 +1497,9 @@ public class Eval implements Runnable {
       break;
     case Token.temperature:
       palette = JmolConstants.PALETTE_TEMPERATURE;
+      break;
+    case Token.fixedtemp:
+      palette = JmolConstants.PALETTE_FIXEDTEMP;
       break;
 
     case Token.group:

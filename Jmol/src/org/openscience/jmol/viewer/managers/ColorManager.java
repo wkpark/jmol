@@ -256,9 +256,17 @@ public class ColorManager {
       argb = JmolConstants.argbsRwbScale[index];
       break;
     case JmolConstants.PALETTE_TEMPERATURE:
-      Frame frame = viewer.getFrame();
-      index = quantize(frame.getBfactor100Lo(), frame.getBfactor100Hi(),
-                       atom.getBfactor100(),
+    case JmolConstants.PALETTE_FIXEDTEMP:
+      float lo,hi;
+      if (palette == JmolConstants.PALETTE_TEMPERATURE) {
+        Frame frame = viewer.getFrame();
+        lo = frame.getBfactor100Lo();
+        hi = frame.getBfactor100Hi();
+      } else {
+        lo = 0;
+        hi = 100 * 100; // scaled by 100
+      }
+      index = quantize(lo, hi, atom.getBfactor100(),
                        JmolConstants.argbsRwbScale.length);
       index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];

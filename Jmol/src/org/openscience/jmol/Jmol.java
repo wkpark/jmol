@@ -78,10 +78,12 @@ class Jmol extends JPanel {
     
     public static File UserPropsFile;
     public static File UserAtypeFile;
+    public static File FileHistoryFile;
     
     private static JFrame consoleframe;
 
     private DisplaySettings settings = new DisplaySettings();
+    private RecentFilesDialog recentFiles;
 
     static {
         if (System.getProperty("user.home") == null) {
@@ -93,6 +95,7 @@ class Jmol extends JPanel {
         JmolResourceHandler.initialize("org.openscience.jmol.Properties.Jmol");        
         UserPropsFile = new File(ujmoldir, "properties");
         UserAtypeFile = new File(ujmoldir, "AtomTypes");
+        FileHistoryFile = new File(ujmoldir, "FileHistory");
         jrh = new JmolResourceHandler("Jmol");
     }
     
@@ -129,6 +132,8 @@ class Jmol extends JPanel {
         anim = new Animate(frame, display);
         splash.showStatus("Initializing Vibrate...");
         vib = new Vibrate(frame, display);
+        splash.showStatus("Initializing Recent Files...");
+        recentFiles = new RecentFilesDialog(frame); 
         splash.showStatus("Initializing Property Graph...");
         pg = new PropertyGraph(frame);
         splash.showStatus("Initializing Measurements...");
@@ -294,7 +299,8 @@ class Jmol extends JPanel {
 					
 					chemicalShifts.setChemFile(cf, apm);
                 }
-
+// Add the file to the recent files list
+                recentFiles.addFile(theFile.toString(), typeHint);
                 frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             } catch(java.io.FileNotFoundException e2) {
                 JOptionPane.showMessageDialog(Jmol.this, 
@@ -807,6 +813,7 @@ class Jmol extends JPanel {
     public static final String uguideAction = "uguide";
     public static final String atompropsAction = "atomprops";
     public static final String printAction = "print";
+    public static final String recentFilesAction = "recentFiles";
 
     class UndoHandler implements UndoableEditListener {
 
@@ -845,7 +852,8 @@ class Jmol extends JPanel {
         undoAction,
         redoAction,
 	new ConsoleAction(),
-	chemicalShifts
+	chemicalShifts,
+      new RecentFilesAction()
             };        
     
     class ConsoleAction extends AbstractAction {
@@ -1125,6 +1133,21 @@ class Jmol extends JPanel {
         }                        
     }
     
+    class RecentFilesAction extends AbstractAction {
+        public RecentFilesAction() {
+            super(recentFilesAction);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+           recentFiles.show();
+           String selection = recentFiles.getFile();
+           if (selection != null){
+             openFile(new File(selection), recentFiles.getFileType());
+System.out.println("Recent File: "+selection+" ("+recentFiles.getFileType()+")");
+           }
+        }
+    }
+
     /**
      * Returns a new File referenced by the property 'user.dir', or null
      * if the property is not defined.

@@ -47,11 +47,21 @@ class HoverRenderer extends ShapeRenderer {
     int msgWidth = fontMetrics.stringWidth(msg);
     short colixBackground = hover.colixBackground;
     short colixForeground = hover.colixForeground;
+    int windowWidth = g3d.getWindowWidth();
+    int windowHeight = g3d.getWindowHeight();
     int width = msgWidth + 8;
     int height = msgHeight + 8;
     int x = atom.getScreenX() + 4;
+    if (x + width > windowWidth)
+      x = windowWidth - width;
+    if (x < 0)
+      x = 0;
     int y = atom.getScreenY() - height - 4;
-
+    if (y + height > windowHeight)
+      y = windowHeight - height;
+    if (y < 0)
+      y = 0;
+      
     int msgX = x + 4;
     int msgYBaseline = y + 4 + ascent;
     if (colixBackground != 0) {

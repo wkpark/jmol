@@ -30,6 +30,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 public class TransformManager {
@@ -56,7 +57,8 @@ public class TransformManager {
   // this matrix only holds rotations ... no translations
   // however, it cannot be a Matrix3f because we need to multiply it by
   // a matrix4f which contains translations
-  public final Matrix4f matrixRotate = new Matrix4f();
+  public final Matrix3f matrixRotate = new Matrix3f();
+  private final Matrix3f matrixTemp3 = new Matrix3f();
 
   public void rotateXYBy(int xDelta, int yDelta) {
     rotateXRadians((float)Math.PI * yDelta / 180);
@@ -103,31 +105,31 @@ public class TransformManager {
   }
 
   public synchronized void rotateXRadians(float angleRadians) {
-    matrixTemp.rotX(angleRadians);
-    matrixRotate.mul(matrixTemp, matrixRotate);
+    matrixTemp3.rotX(angleRadians);
+    matrixRotate.mul(matrixTemp3, matrixRotate);
   }
   public synchronized void rotateYRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
-    matrixTemp.rotY(angleRadians);
-    matrixRotate.mul(matrixTemp, matrixRotate);
+    matrixTemp3.rotY(angleRadians);
+    matrixRotate.mul(matrixTemp3, matrixRotate);
   }
   public synchronized void rotateZRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
-    matrixTemp.rotZ(angleRadians);
-    matrixRotate.mul(matrixTemp, matrixRotate);
+    matrixTemp3.rotZ(angleRadians);
+    matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
   public void rotateZRadiansScript(float angleRadians) {
-    matrixTemp.rotZ(angleRadians);
-    matrixRotate.mul(matrixTemp, matrixRotate);
+    matrixTemp3.rotZ(angleRadians);
+    matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
   public void rotate(AxisAngle4f axisAngle) {
-    matrixTemp.setIdentity();
-    matrixTemp.setRotation(axisAngle);
-    matrixRotate.mul(matrixTemp, matrixRotate);
+    matrixTemp3.setIdentity();
+    matrixTemp3.set(axisAngle);
+    matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
   public void rotateAxisAngle(float x, float y, float z, float degrees) {
@@ -204,11 +206,11 @@ public class TransformManager {
     axisAngle.set(matrixRotate);
   }
 
-  public void setRotation(Matrix4f matrixRotation) {
+  public void setRotation(Matrix3f matrixRotation) {
     this.matrixRotate.set(matrixRotation);
   }
 
-  public void getRotation(Matrix4f matrixRotation) {
+  public void getRotation(Matrix3f matrixRotation) {
     // hmm ... I suppose that there could be a race condiditon here
     // if matrixRotate is being modified while this is called
     matrixRotation.set(this.matrixRotate);
@@ -539,7 +541,8 @@ public class TransformManager {
     matrixTransform.sub(matrixTemp);
     // now, multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
-    matrixTransform.mul(matrixRotate, matrixTransform);
+    matrixTemp.set(matrixRotate);
+    matrixTransform.mul(matrixTemp, matrixTransform);
     //    matrixTransform.mul(matrixRotate, matrixTransform);
     // we want all z coordinates >= 0, with larger coordinates further away
     // this is important for scaling, and is the way our zbuffer works
@@ -575,7 +578,8 @@ public class TransformManager {
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     unscaled.sub(matrixTemp);
-    unscaled.mul(matrixRotate, unscaled);
+    matrixTemp.set(matrixRotate);
+    unscaled.mul(matrixTemp, unscaled);
     return unscaled;
   }
 

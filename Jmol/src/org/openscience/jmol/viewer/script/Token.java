@@ -91,7 +91,7 @@ public class Token {
   final static int specialstring     = (1 << 18); // load, echo, label
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the few commands which allow negative integers
-  final static int negativeints      = (1 << 19);
+  final static int negativenums      = (1 << 19);
   // for some commands the 'set' is optional
   // so, just delete the set command from the token list
   // but not for hbonds nor ssbonds
@@ -125,25 +125,25 @@ public class Token {
   final static int print        = command | 20;
   final static int quit         = command | 21;
   final static int refresh      = command | 22;
-  final static int renumber     = command | 23 | negativeints;
+  final static int renumber     = command | 23 | negativenums;
   final static int reset        = command | 24;
   final static int restrict     = command | 25 | expression;
   final static int ribbon       = command | 26 | bool;
-  final static int rotate       = command | 27 | bool | negativeints;
+  final static int rotate       = command | 27 | bool | negativenums;
   final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expression;
-  final static int set          = command | 31 | bool | negativeints;
+  final static int set          = command | 31 | bool | negativenums;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
-  final static int cpk          = command | 35 | setparam | bool | negativeints;
+  final static int cpk          = command | 35 | setparam | bool | negativenums;
   final static int ssbonds      = command | 36 | setparam | bool;
   final static int star         = command | 37 | bool;
-  final static int stereo       = command | 38 | setspecial | bool | negativeints;
+  final static int stereo       = command | 38 | setspecial | bool | negativenums;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
   final static int trace        = command | 41 | bool;
-  final static int translate    = command | 42 | negativeints;
+  final static int translate    = command | 42 | negativenums;
   final static int unbond       = command | 43;
   final static int wireframe    = command | 44 | bool;
   final static int write        = command | 45 | setparam;
@@ -152,7 +152,7 @@ public class Token {
   // chime commands
   final static int delay        = command | 48;
   final static int loop         = command | 49;
-  final static int move         = command | 50 | negativeints;
+  final static int move         = command | 50 | negativenums;
   final static int view         = command | 51;
   final static int spin         = command | 53 | setparam | showparam | bool;
   final static int list         = command | 54 | showparam;
@@ -168,7 +168,7 @@ public class Token {
   final static int prueba       = command | 63;
   final static int rocket       = command | 64;
   final static int surface      = command | predefinedset | 65;
-  final static int moveto       = command | 66 | negativeints;
+  final static int moveto       = command | 66 | negativenums;
 
   // parameters
   final static int ambient      = setparam |  0;

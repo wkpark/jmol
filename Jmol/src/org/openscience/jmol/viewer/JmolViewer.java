@@ -48,6 +48,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.AxisAngle4d;
 import java.net.URL;
@@ -560,11 +561,11 @@ final public class JmolViewer {
     transformManager.getAxisAngle(axisAngle);
   }
 
-  public void setRotation(Matrix4f matrixRotation) {
+  public void setRotation(Matrix3f matrixRotation) {
     transformManager.setRotation(matrixRotation);
   }
 
-  public void getRotation(Matrix4f matrixRotation) {
+  public void getRotation(Matrix3f matrixRotation) {
     transformManager.getRotation(matrixRotation);
   }
 

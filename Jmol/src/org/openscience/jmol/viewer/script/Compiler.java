@@ -162,7 +162,7 @@ class Compiler {
           ltoken.addElement(new Token(Token.string, str));
           continue;
         }
-        if (lookingAtPositiveDecimal()) {
+        if (lookingAtDecimal((tokCommand & Token.negativenums) != 0)) {
           float value =
           // can't use parseFloat with jvm 1.1
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
@@ -180,9 +180,7 @@ class Compiler {
           ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
           continue;
         }
-        if (lookingAtPositiveInteger() || 
-            ((tokCommand & Token.negativeints) != 0 &&
-             lookingAtNegativeInteger())) {
+        if (lookingAtInteger((tokCommand & Token.negativenums) != 0)) {
           String intString = script.substring(ichToken, ichToken + cchToken);
           int val = Integer.parseInt(intString);
           ltoken.addElement(new Token(Token.integer, val, intString));
@@ -454,23 +452,32 @@ class Compiler {
     return cchToken > 0;
   }
 
-  // FIXME mth -- confirm that we don't need to support negative decimals
-  boolean lookingAtPositiveDecimal() {
+  boolean lookingAtDecimal(boolean allowNegative) {
+    if (ichToken == cchScript)
+      return false;
     int ichT = ichToken;
-    char ch = 'X';
-    while (ichT < cchScript && isDigit(ch = script.charAt(ichT)))
+    if (script.charAt(ichT) == '-')
       ++ichT;
+    boolean digitSeen = false;
+    char ch = 'X';
+    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+      ++ichT;
+      digitSeen = true;
+    }
     if (ichT == cchScript || ch != '.')
       return false;
     // to support 1.ca, let's check the character after the dot
     // to determine if it is an alpha
-    if (ch == '.' && (ichT + 1 < cchScript) && isAlphabetic(script.charAt(ichT + 1)))
+    if (ch == '.' && (ichT + 1 < cchScript) &&
+        isAlphabetic(script.charAt(ichT + 1)))
       return false;
     ++ichT;
-    while (ichT < cchScript && isDigit(ch = script.charAt(ichT)))
+    while (ichT < cchScript && isDigit(script.charAt(ichT))) {
       ++ichT;
+      digitSeen = true;
+    }
     cchToken = ichT - ichToken;
-    return cchToken > 1; // decimal point plust at least one digit
+    return digitSeen;
   }
 
   static boolean isAlphabetic(char ch) {
@@ -496,24 +503,19 @@ class Compiler {
     return true;
   }
 
-  boolean lookingAtPositiveInteger() {
-    int ichT = ichToken;
-    while (ichT < cchScript && isDigit(script.charAt(ichT)))
-      ++ichT;
-    cchToken = ichT - ichToken;
-    return cchToken > 0;
-  }
-
-  boolean lookingAtNegativeInteger() {
+  boolean lookingAtInteger(boolean allowNegative) {
     if (ichToken == cchScript)
       return false;
-    if (script.charAt(ichToken) != '-')
-      return false;
-    int ichT = ichToken + 1;
+    int ichT = ichToken;
+    if (allowNegative && script.charAt(ichToken) == '-')
+      ++ichT;
+    int ichBeginDigits = ichT;
     while (ichT < cchScript && isDigit(script.charAt(ichT)))
       ++ichT;
+    if (ichBeginDigits == ichT)
+      return false;
     cchToken = ichT - ichToken;
-    return cchToken > 1; // minus sign plus at least 1 digit
+    return true;
   }
 
   boolean lookingAtLookupToken() {

@@ -2857,13 +2857,13 @@ public class Eval implements Runnable {
 
   AxisAngle4f aaMoveTo;
   AxisAngle4f aaStep;
-  Matrix4f matrixStart;
-  Matrix4f matrixEnd;
-  Matrix4f matrixStep;
-  Matrix4f matrixInvert;
-  Matrix4f matrixAfter;
-  Matrix4f matrixConfirmIdentity;
-  
+  AxisAngle4f aaTotal;
+  Matrix3f matrixStart;
+  Matrix3f matrixInverse;
+  Matrix3f matrixStep;
+  Matrix3f matrixEnd;
+  Matrix3f matrixIdentity;
+
   void moveto() throws ScriptException {
     if (statementLength < 5 || statementLength > 7)
       badArgumentCount();
@@ -2878,12 +2878,12 @@ public class Eval implements Runnable {
     if (aaMoveTo == null) {
       aaMoveTo = new AxisAngle4f();
       aaStep = new AxisAngle4f();
-      matrixStart = new Matrix4f();
-      matrixEnd = new Matrix4f();
-      matrixStep = new Matrix4f();
-      matrixInvert = new Matrix4f();
-      matrixAfter = new Matrix4f();
-      matrixConfirmIdentity = new Matrix4f();
+      aaTotal = new AxisAngle4f();
+      matrixStart = new Matrix3f();
+      matrixEnd = new Matrix3f();
+      matrixStep = new Matrix3f();
+      matrixInverse = new Matrix3f();
+      matrixIdentity = new Matrix3f();
     }
     if (degrees < 0.01f && degrees > -0.01f) {
       matrixEnd.setIdentity();
@@ -2903,83 +2903,51 @@ public class Eval implements Runnable {
       matrixEnd.set(aaMoveTo);
     }
     viewer.getRotation(matrixStart);
-    matrixInvert.invert(matrixStart);
-    matrixConfirmIdentity.mul(matrixInvert, matrixStart);
-    System.out.println("---------confirm identity\n" +
-                       matrixConfirmIdentity);
+    matrixInverse.invert(matrixStart);
 
-    Matrix3f foo =
-      new Matrix3f(matrixStart.m00, matrixStart.m01, 0,
-                   matrixStart.m10, matrixStart.m11, 0,
-                   0, 0, 0);
-    Matrix3f fooInvert = new Matrix3f();
-    Matrix3f fooIdentity = new Matrix3f();
+    /*
+    matrixIdentity.mul(matrixStart, matrixInverse);
+    System.out.println("\n--------------\nmatrixIdentity=\n" + matrixIdentity +
+                       "\n--------------\n");
+    */
 
-    fooInvert.invert(foo);
-    fooIdentity.mul(foo, fooInvert);
+    matrixStep.mul(matrixEnd, matrixInverse);
+    aaTotal.set(matrixStep);
 
-    System.out.println("---------confirm identity of foo\n" +
-                       fooIdentity);
-
-                   
-
-    Matrix4d bar =
-      new Matrix4d(matrixStart.m00, matrixStart.m01, matrixStart.m02, matrixStart.m03,
-                   matrixStart.m10, matrixStart.m11, matrixStart.m12, matrixStart.m13,
-                   matrixStart.m20, matrixStart.m21, matrixStart.m22, matrixStart.m23,
-                   matrixStart.m30, matrixStart.m31, matrixStart.m32, matrixStart.m33);
-    Matrix4d barInvert = new Matrix4d();
-    Matrix4d barIdentity = new Matrix4d();
-
-    barInvert.invert(bar);
-    barIdentity.mul(bar, barInvert);
-
-    System.out.println("---------confirm identity of bar\n" +
-                       barIdentity);
-
-                   
-
-    matrixStep.mul(matrixInvert, matrixEnd);
-    aaStep.set(matrixStep);
+    /*
     System.out.println("\nmatrixStart=\n" + matrixStart +
-                       "\nmatrixInvert=\n" + matrixInvert +
+                       "\nmatrixInverse=\n" + matrixInverse +
                        "\nmatrixStep=\n" + matrixStep +
                        "\naaStep=\n" + aaStep);
+    */
 
-                       
-
-    if (aaStep.angle > 0.01f || aaStep.angle < -0.01f)
-      viewer.rotate(aaStep);
-
-    viewer.getRotation(matrixAfter);
-    System.out.println("\nmatrixEnd=\n" + matrixEnd +
-                       "\nmatrixAfter=\n" + matrixAfter);
-
-    viewer.requestRepaintAndWait();
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException ie) {
-    }
-    if (false) {
     int totalSteps = (int)(floatSecondsTotal * fps);
-    aaStep.set(matrixStep);
-    System.out.println(" aaStep x=" + aaStep.x + " y=" + aaStep.y +
-                       " z=" + aaStep.z + " angle=" + aaStep.angle);
     if (totalSteps > 1
-        && (aaStep.angle > 0.01f || aaStep.angle < -0.01f)) {
+        && (aaTotal.angle > 0.01f || aaTotal.angle < -0.01f)) {
       aaStep.angle /= totalSteps;
       int frameTimeMillis = 1000 / fps;
       long targetTime = System.currentTimeMillis();
       for (int i = 1; i < totalSteps; ++i) {
-        viewer.rotate(aaStep);
-        viewer.requestRepaintAndWait();
+
+        viewer.getRotation(matrixStart);
+        matrixInverse.invert(matrixStart);
+        matrixStep.mul(matrixEnd, matrixInverse);
+        aaTotal.set(matrixStep);
+
+        aaStep.set(aaTotal);
+        aaStep.angle /= (totalSteps - i + 1);
+        matrixStep.set(aaStep);
+        matrixStep.mul(matrixStart);
+        viewer.setRotation(matrixStep);
         targetTime += frameTimeMillis;
-        int sleepTime = (int)(System.currentTimeMillis() - targetTime);
-        sleepTime = 100; // for testing
-        if (sleepTime > 0) {
-          try {
-            Thread.sleep(sleepTime);
-          } catch (InterruptedException ie) {
+        if (System.currentTimeMillis() < targetTime) {
+          viewer.requestRepaintAndWait();
+          int sleepTime = (int)(targetTime - System.currentTimeMillis());
+          if (sleepTime > 0) {
+            try {
+              Thread.sleep(sleepTime);
+            } catch (InterruptedException ie) {
+            }
           }
         }
       }
@@ -2991,7 +2959,6 @@ public class Eval implements Runnable {
         } catch (InterruptedException ie) {
         }
       }
-    }
     }
     viewer.setRotation(matrixEnd);
   }

@@ -63,8 +63,8 @@ public final class ScriptWindow extends JDialog
   private JButton clearButton;
   private JButton helpButton;
   JmolViewer viewer;
+  
   public ScriptWindow(JmolViewer viewer, JFrame frame) {
-
     super(frame, "Rasmol Scripts", false);
     this.viewer = viewer;
     layoutWindow(getContentPane());
@@ -165,8 +165,8 @@ public final class ScriptWindow extends JDialog
         HelpDialog hd = new HelpDialog(null, url);
         hd.show();
     }
+    console.grabFocus(); // always grab the focus (e.g., after clear)
   }
-  
 }
 
 class ConsoleTextPane extends JTextPane {
@@ -181,7 +181,7 @@ class ConsoleTextPane extends JTextPane {
     consoleDoc = (ConsoleDocument)getDocument();
     consoleDoc.setConsoleTextPane(this);
     this.enterListener = enterListener;
- }
+  }
 
   public String getCommandString() {
     String cmd = consoleDoc.getCommandString();
@@ -338,8 +338,9 @@ class ConsoleDocument extends DefaultStyledDocument {
     this.consoleTextPane = consoleTextPane;
   }
 
-  Position positionBeforePrompt;
-  int offsetAfterPrompt;
+  Position positionBeforePrompt; // starts at 0, so first time isn't tracked (at least on Mac OS X)
+  Position positionAfterPrompt;  // immediately after $, so this will track
+  int offsetAfterPrompt;         // only still needed for the insertString override and replaceCommand
 
   /** 
    * Removes all content of the script window, and add a new prompt.
@@ -358,16 +359,22 @@ class ConsoleDocument extends DefaultStyledDocument {
       super.insertString(getLength(), "$ ", attPrompt);
       offsetAfterPrompt = getLength();
       positionBeforePrompt = createPosition(offsetAfterPrompt - 2);
+       // after prompt should be immediately after $ otherwise tracks the end
+       // of the line (and no command will be found) at least on Mac OS X it did.
+      positionAfterPrompt = createPosition(offsetAfterPrompt-1);
       consoleTextPane.setCaretPosition(offsetAfterPrompt);
     } catch (BadLocationException e) {
     }
   }
 
+  // it looks like the positionBeforePrompt does not track when it started out as 0
+  // and a insertString at location 0 occurs. It may be better to track the
+  // position after the prompt in stead
   void outputBeforePrompt(String str, SimpleAttributeSet attribute) {
     try {
       Position caretPosition = createPosition(consoleTextPane.getCaretPosition());
-      super.insertString(positionBeforePrompt.getOffset(), str, attribute);
-      super.insertString(positionBeforePrompt.getOffset(), "\n", attribute);
+      super.insertString(positionBeforePrompt.getOffset(), str+"\n", attribute);
+      // keep the offsetAfterPrompt in sync
       offsetAfterPrompt = positionBeforePrompt.getOffset() + 2;
       consoleTextPane.setCaretPosition(caretPosition.getOffset());
     } catch (BadLocationException e) {
@@ -380,8 +387,7 @@ class ConsoleDocument extends DefaultStyledDocument {
 
   void outputErrorForeground(String strError) {
     try {
-      super.insertString(getLength(), strError, attError);
-      super.insertString(getLength(), "\n", attError);
+      super.insertString(getLength(), strError+"\n", attError);
       consoleTextPane.setCaretPosition(getLength());
     } catch (BadLocationException e) {
     }
@@ -403,6 +409,8 @@ class ConsoleDocument extends DefaultStyledDocument {
     }
   }
 
+  // override the insertString to make sure everything typed ends up at the end
+  // or in the 'command line' using the proper font, and the newline is processed.
   public void insertString(int offs, String str, AttributeSet a)
     throws BadLocationException {
     int ichNewline = str.indexOf('\n');
@@ -413,7 +421,7 @@ class ConsoleDocument extends DefaultStyledDocument {
         offs = getLength();
       }
       super.insertString(offs, str, attUserInput);
-      consoleTextPane.setCaretPosition(getLength());
+//      consoleTextPane.setCaretPosition(getLength());
     }
     if (ichNewline >= 0) {
       consoleTextPane.enterPressed();
@@ -423,8 +431,9 @@ class ConsoleDocument extends DefaultStyledDocument {
   String getCommandString() {
     String strCommand = "";
     try {
-      strCommand =  getText(offsetAfterPrompt,
-                            getLength() - offsetAfterPrompt);
+      int cmdStart = positionAfterPrompt.getOffset();
+      // skip unnecessary leading spaces in the command.
+      strCommand =  getText(cmdStart, getLength() - cmdStart).trim();
     } catch (BadLocationException e) {
     }
     return strCommand;
@@ -456,11 +465,11 @@ class ConsoleDocument extends DefaultStyledDocument {
     super.replace(offs, length, str, attUserInput);
 //    consoleTextPane.setCaretPosition(offs + str.length());
   }
-  
+
    /**
     * Replaces current command on script.
     * 
-    * @param newCommand mew command value
+    * @param newCommand new command value
     * 
     * @throws BadLocationException
     */

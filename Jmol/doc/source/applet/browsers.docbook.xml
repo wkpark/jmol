@@ -20,26 +20,26 @@
       configurations:
       <itemizedlist>
 	<listitem>
-	  Win32 (98/ME/2K/XP)
+		<para>Win32 (98/ME/2K/XP)</para>
 	  <itemizedlist>
-	    <listitem>Microsoft Internet Explorer with Microsoft JVM </listitem>
-	    <listitem>Microsoft Internet Explorer with Sun Java Plugin >= 1.4 </listitem>
-	    <listitem>Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis></listitem>
-	    <listitem>Netscape 7 with Sun Java Plugin >= 1.4 </listitem>
-	    <listitem>Mozilla with Sun Java Plugin >= 1.4 </listitem>
-	    <listitem>Firefox 1.0 with Sun Java Plugin >= 1.4 </listitem>
-	    <listitem>Opera 7.5.4 with Sun Java Plugin >= 1.4 </listitem>
+	    <listitem><para>Microsoft Internet Explorer with Microsoft JVM</para></listitem>
+	    <listitem><para>Microsoft Internet Explorer with Sun Java Plugin &gt;= 1.4</para></listitem>
+	    <listitem><para>Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis></para></listitem>
+	    <listitem><para>Netscape 7 with Sun Java Plugin &gt;= 1.4</para></listitem>
+	    <listitem><para>Mozilla with Sun Java Plugin &gt;= 1.4</para></listitem>
+	    <listitem><para>Firefox 1.0 with Sun Java Plugin &gt;= 1.4</para></listitem>
+	    <listitem><para>Opera 7.5.4 with Sun Java Plugin &gt;= 1.4</para></listitem>
 	  </itemizedlist>
 	</listitem>
 	<listitem>
-	  Mac OS X 10.3.3 or greater
+	  <para>Mac OS X 10.3.3 or greater</para>
 	  <para>
 	    Mac OS X prior to 10.3.3 did not support LiveConnect
 	    communications between JavaScript and Java
 	  </para>
 	  <itemizedlist>
 	    <listitem>
-	      Safari 1.2 (v125)
+	      <para>Safari 1.2 (v125)</para>
 	      <para>
 		Previous versions of OSX &amp; Safari have significant problems.
 		Even subsequent versions have problems. Lets hope that
@@ -47,16 +47,16 @@
 	      </para>
 	    </listitem>
 	    <listitem>
-	      Netscape 7.2 with javaplugin.sourceforge.net installed
+	      <para>Netscape 7.2 with javaplugin.sourceforge.net installed</para>
 	    </listitem>
 	    <listitem>
-	      Mozilla 1.7.3 with javaplugin.sourceforge.net installed
+	      <para>Mozilla 1.7.3 with javaplugin.sourceforge.net installed</para>
 	    </listitem>
 	    <listitem>
-	      Firefox 1.0 with javaplugin.sourceforge.net installed
+	      <para>Firefox 1.0 with javaplugin.sourceforge.net installed</para>
 	    </listitem>
 	    <listitem>
-	      Opera 7.5.4
+	      <para>Opera 7.5.4</para>
 	      <para>
 		all versions of Opera OSX up through 7.5.4 are
 		completely broken
@@ -65,12 +65,12 @@
 	  </itemizedlist>
 	</listitem>
 	<listitem>
-	  Linux/Unix
+	  <para>Linux/Unix</para>
 	  <itemizedlist>
-	    <listitem> Mozilla 1.6 + Sun Java >= 1.4</listitem>
-	    <listitem> Firefox 1.0 + Sun Java >= 1.4</listitem>
+	    <listitem><para>Mozilla 1.6 + Sun Java &gt;= 1.4</para></listitem>
+	    <listitem><para>Firefox 1.0 + Sun Java &gt;= 1.4</para></listitem>
 	    <listitem>
-	      Konqueror 3.3
+	      <para>Konqueror 3.3</para>
 	      <para>
 		all versions of Konqueror up through 3.3 are broken
 	      </para>
@@ -78,11 +78,11 @@
 	  </itemizedlist>
 	</listitem>
 	<listitem>
-	  Mac OS 9
+	  <para>Mac OS 9</para>
 	  <itemizedlist>
 	    <listitem>
-	      Netscape 4.7*
-	      <emphasis>marginal performance with limited functionality</emphasis>
+	      <para>Netscape 4.7*
+	      <emphasis>marginal performance with limited functionality</emphasis></para>
 	    </listitem>
 	  </itemizedlist>
 	</listitem>

@@ -1134,4 +1134,17 @@ final public class Frame {
     return torsion;
   }
 
+  ////////////////////////////////////////////////////////////////
+
+  public BitSet getGroupBitSet(int atomIndex) {
+    BitSet bsGroup = new BitSet();
+    atoms[atomIndex].group.selectAtoms(bsGroup);
+    return bsGroup;
+  }
+
+  public BitSet getChainBitSet(int atomIndex) {
+    BitSet bsChain = new BitSet();
+    atoms[atomIndex].group.chain.selectAtoms(bsChain);
+    return bsChain;
+  }
 }

@@ -153,7 +153,6 @@ final public class JmolViewer {
     // FIXME -- need to hold repaint during this process, but first 
     // figure out the interaction with the current holdRepaint setting
     setCenter(null);
-    selectAll();
     transformManager.homePosition();
     refresh();
   }
@@ -828,6 +827,11 @@ final public class JmolViewer {
     refresh();
   }
 
+  public void setSelection(int atomIndex) {
+    selectionManager.setSelection(atomIndex);
+    refresh();
+  }
+
   public boolean isSelected(Atom atom) {
     return selectionManager.isSelected(atom.atomIndex);
   }
@@ -877,6 +881,11 @@ final public class JmolViewer {
 
   public void setSelectionSet(BitSet set) {
     selectionManager.setSelectionSet(set);
+    refresh();
+  }
+
+  public void toggleSelectionSet(BitSet set) {
+    selectionManager.toggleSelectionSet(set);
     refresh();
   }
 
@@ -1002,6 +1011,7 @@ final public class JmolViewer {
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
+    selectAll();
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();
     // there probably needs to be a better startup mechanism for shapes
@@ -1781,8 +1791,12 @@ final public class JmolViewer {
       jmolStatusListener.notifyMeasurementsChanged();
   }
 
-  public void atomPicked(int atomIndex) {
-    pickingManager.atomPicked(atomIndex);
+  public void atomPicked(int atomIndex, boolean shiftKey) {
+    pickingManager.atomPicked(atomIndex, shiftKey);
+  }
+
+  public void clearClickCount() {
+    mouseManager.clearClickCount();
   }
 
   public void notifyAtomPicked(int atomIndex) {

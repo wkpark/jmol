@@ -104,10 +104,43 @@ public class SelectionManager {
     empty = UNKNOWN;
   }
 
+  public void setSelection(int atomIndex) {
+    bsSelection.and(bsNull);
+    bsSelection.set(atomIndex);
+    empty = FALSE;
+  }
+
   public void setSelectionSet(BitSet set) {
     bsSelection.and(bsNull);
     bsSelection.or(set);
     empty = UNKNOWN;
+  }
+
+  public void toggleSelectionSet(BitSet bs) {
+    /*
+      toggle each one independently
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (bs.get(i))
+        toggleSelection(i);
+    */
+    int atomCount = viewer.getAtomCount();
+    int i = atomCount;
+    while (--i >= 0)
+      if (bs.get(i) && !bsSelection.get(i))
+        break;
+    if (i < 0) { // all were selected
+      for (i = atomCount; --i >= 0; )
+        if (bs.get(i))
+          bsSelection.clear(i);
+      empty = UNKNOWN;
+    } else { // at least one was not selected
+      do {
+        if (bs.get(i)) {
+          bsSelection.set(i);
+          empty = FALSE;
+        }
+      } while (--i >= 0);
+    }
   }
 
   public void invertSelection() {

@@ -28,6 +28,7 @@ import org.jmol.viewer.*;
 import org.jmol.viewer.datamodel.Atom;
 import org.jmol.viewer.datamodel.Frame;
 import javax.vecmath.Point3f;
+import java.util.BitSet;
 
 public class PickingManager {
 
@@ -44,7 +45,7 @@ public class PickingManager {
     this.viewer = viewer;
   }
 
-  public void atomPicked(int atomIndex) {
+  public void atomPicked(int atomIndex, boolean shiftKey) {
     if (atomIndex == -1)
       return;
     Frame frame = viewer.getFrame();
@@ -123,7 +124,26 @@ public class PickingManager {
       viewer.setCenter(frame.getAtomPoint3f(atomIndex));
       break;
     case JmolConstants.PICKING_SELECT_ATOM:
-      viewer.toggleSelection(atomIndex);
+      if (shiftKey)
+        viewer.toggleSelection(atomIndex);
+      else
+        viewer.setSelection(atomIndex);
+      break;
+    case JmolConstants.PICKING_SELECT_GROUP:
+      BitSet bsGroup = frame.getGroupBitSet(atomIndex);
+      if (shiftKey)
+        viewer.toggleSelectionSet(bsGroup);
+      else
+        viewer.setSelectionSet(bsGroup);
+      viewer.clearClickCount();
+      break;
+    case JmolConstants.PICKING_SELECT_CHAIN:
+      BitSet bsChain = frame.getChainBitSet(atomIndex);
+      if (shiftKey)
+        viewer.toggleSelectionSet(bsChain);
+      else
+        viewer.setSelectionSet(bsChain);
+      viewer.clearClickCount();
       break;
     }
   }

@@ -192,11 +192,16 @@ public abstract class MouseManager {
   int previousClickModifiers, previousClickCount;
   long previousClickTime;
 
+  public void clearClickCount() {
+    previousClickX = -1;
+  }
+
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
     // clickCount is not reliable on some platforms
     // so we will just deal with it ourselves
+    clickCount = 1;
     if (previousClickX == x && previousClickY == y &&
-        previousClickModifiers == modifiers && clickCount == 1 &&
+        previousClickModifiers == modifiers && 
         (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
       clickCount = previousClickCount + 1;
     }
@@ -234,8 +239,11 @@ public abstract class MouseManager {
       if (measurementMode) {
         addToMeasurement(nearestAtomIndex, false);
       } else {
-        viewer.atomPicked(nearestAtomIndex);
+        viewer.atomPicked(nearestAtomIndex, false);
       }
+      break;
+    case SHIFT_LEFT:
+      viewer.atomPicked(nearestAtomIndex, true);
       break;
     }
   }
@@ -254,7 +262,8 @@ public abstract class MouseManager {
     case ALT_LEFT:
     case MIDDLE:
     case SHIFT_LEFT:
-      viewer.homePosition();
+      if (nearestAtomIndex < 0)
+        viewer.homePosition();
       break;
     }
   }

@@ -1,5 +1,7 @@
 <project name="Jmol" default="main" basedir=".">
 
+  <property file="${user.home}/.jmol.build.properties" />
+
   <property name="version" value="4" />
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
@@ -15,8 +17,8 @@
   <property name="doc.dir" value="doc" />
   <property name="javadoc.dir" value="javadoc" />
   <property name="manifest" value="${source.dir}/manifest"/>
-  <property name="docbook.dir" value="${user.dir}/../docbook-xsl" />
-  <property name="keystore.name" value="${user.dir}/jmol.keystore" />
+  <property name="docbook.dir" value="Must be set by user." />
+  <property name="keystore.name" value="Must be set by user." />
 
   <property file="proxy.properties" />
 

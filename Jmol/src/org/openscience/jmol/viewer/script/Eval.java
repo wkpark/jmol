@@ -159,7 +159,7 @@ public class Eval implements Runnable {
 
   public boolean loadScriptFile(String filename) {
     clearState();
-    return loadScriptFile(filename);
+    return loadScriptFileInternal(filename);
   }
 
   boolean loadScriptFileInternal(String filename) {

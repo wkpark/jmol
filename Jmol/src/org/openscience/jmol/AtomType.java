@@ -71,8 +71,8 @@ import java.util.Hashtable;
 import javax.swing.*;
 
 public class AtomType {
-
-	private BaseAtomType baseType;
+    
+    private BaseAtomType baseType;
     private static JPanel jpanel;
     /* 
        Place the light source for shaded atoms to the upper right of the

@@ -98,7 +98,7 @@ class Jmol extends JPanel {
     Jmol(Splash splash) {
 	super(true);
         
-        splash.showStatus("Initialising Swing...");
+        splash.showStatus("Initializing Swing...");
         try {
 	    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 	} catch (Exception exc) {
@@ -120,14 +120,14 @@ class Jmol extends JPanel {
 	}
 
         status = (StatusBar)createStatusBar();
-        splash.showStatus("Initialising 3D display...");
+        splash.showStatus("Initializing 3D display...");
         display = new displayPanel(status, settings);
-        splash.showStatus("Initialising Preferences...");
+        splash.showStatus("Initializing Preferences...");
         prefs = new Preferences(frame, display);
-        splash.showStatus("Initialising Animate and Vibrate...");
+        splash.showStatus("Initializing Animate and Vibrate...");
         anim = new Animate(frame, display);
         vib = new Vibrate(frame, display);
-        splash.showStatus("Initialising Measurements...");
+        splash.showStatus("Initializing Measurements...");
         mlist = new MeasurementList(frame, display);
         meas = new Measure(frame, display);
         meas.setMeasurementList(mlist);
@@ -209,7 +209,7 @@ class Jmol extends JPanel {
             frame.setTitle(jrh.getString("Title"));
             frame.setBackground(Color.lightGray);
             frame.getContentPane().setLayout(new BorderLayout());
-            splash.showStatus("Initialising Jmol...");
+            splash.showStatus("Initializing Jmol...");
             frame.getContentPane().add("Center", new Jmol(splash));
             frame.addWindowListener(new AppCloser());
             frame.pack();

@@ -89,18 +89,27 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 
 		myBean.addMouseListener(this);
 		myBean.addKeyListener(this);
-		String bg = getParameter("BCOLOUR");
+                String bg;
+		bg = getParameter("BCOLOUR");
 		if (bg != null) {
-			myBean.setBackgroundColour(bg);
-		}
-		String fg = getParameter("FCOLOUR");
+                    myBean.setBackgroundColour(bg);
+		} else {
+                    bg = getParameter("BCOLOR");
+                    if (bg != null) myBean.setBackgroundColour(bg);
+                }
+                    
+		String fg;
+                fg = getParameter("FCOLOUR");
 		if (fg != null) {
 			myBean.setForegroundColour(fg);
-		}
+		} else {
+                    fg = getParameter("FCOLOR");
+                    if (fg != null) myBean.setForegroundColour(fg);
+                }
 		String style = getParameter("STYLE");
 		if (style != null){
-			myBean.setAtomRenderingStyle(style);
-			myBean.setBondRenderingStyle(style);
+                    myBean.setAtomRenderingStyle(style);
+                    myBean.setBondRenderingStyle(style);
 		}
 		setLayout(new java.awt.BorderLayout());
 		add(myBean,"Center");

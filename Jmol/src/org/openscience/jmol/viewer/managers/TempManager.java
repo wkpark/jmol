@@ -73,27 +73,55 @@ public class TempManager {
     return -1;
   }
 
+  ////////////////////////////////////////////////////////////////
+  // temp Points
+  ////////////////////////////////////////////////////////////////
   final static int freePointsSize = 8;
   final short[] lengthsFreePoints = new short[freePointsSize];
   final Point3f[][] freePoints = new Point3f[freePointsSize][];
 
-  public Point3f[] allocTempPoints(int minCount) {
+  public Point3f[] allocTempPoints(int size) {
     Point3f[] tempPoints;
-    int iFit = findBestFit(minCount, lengthsFreePoints);
+    int iFit = findBestFit(size, lengthsFreePoints);
     if (iFit > 0) {
       tempPoints = freePoints[iFit];
-      freePoints[iFit] = null;
     } else {
-      tempPoints = new Point3f[minCount];
-      for (int i = minCount; --i >= 0; )
+      tempPoints = new Point3f[size];
+      for (int i = size; --i >= 0; )
         tempPoints[i] = new Point3f();
     }
     return tempPoints;
   }
 
-  public void freeTemp(Point3f[] tempPoints) {
+  public void freeTempPoints(Point3f[] tempPoints) {
     int iFree = findShorter(tempPoints.length, lengthsFreePoints);
     if (iFree >= 0)
       freePoints[iFree] = tempPoints;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // temp Screens
+  ////////////////////////////////////////////////////////////////
+  final static int freeScreensSize = 8;
+  final short[] lengthsFreeScreens = new short[freeScreensSize];
+  final Point3i[][] freeScreens = new Point3i[freeScreensSize][];
+
+  public Point3i[] allocTempScreens(int size) {
+    Point3i[] tempScreens;
+    int iFit = findBestFit(size, lengthsFreeScreens);
+    if (iFit > 0) {
+      tempScreens = freeScreens[iFit];
+    } else {
+      tempScreens = new Point3i[size];
+      for (int i = size; --i >= 0; )
+        tempScreens[i] = new Point3i();
+    }
+    return tempScreens;
+  }
+
+  public void freeTempScreens(Point3i[] tempScreens) {
+    int iFree = findShorter(tempScreens.length, lengthsFreeScreens);
+    if (iFree >= 0)
+      freeScreens[iFree] = tempScreens;
   }
 }

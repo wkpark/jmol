@@ -82,6 +82,7 @@ final public class JmolViewer {
   public ModelManager modelManager;
   public RepaintManager repaintManager;
   public StyleManager styleManager;
+  public TempManager tempManager;
   public Eval eval;
   public Graphics3D g3d;
 
@@ -134,6 +135,7 @@ final public class JmolViewer {
     repaintManager = new RepaintManager(this);
     modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
+    tempManager = new TempManager(this);
   }
 
   public Component getAwtComponent() {
@@ -2032,6 +2034,26 @@ final public class JmolViewer {
 
   public int getLabelOffsetY() {
     return styleManager.labelOffsetY;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // temp manager
+  ////////////////////////////////////////////////////////////////
+
+  public Point3f[] allocTempPoints(int size) {
+    return tempManager.allocTempPoints(size);
+  }
+
+  public void freeTempPoints(Point3f[] tempPoints) {
+    tempManager.freeTempPoints(tempPoints);
+  }
+
+  public Point3i[] allocTempScreens(int size) {
+    return tempManager.allocTempScreens(size);
+  }
+
+  public void freeTempScreens(Point3i[] tempScreens) {
+    tempManager.freeTempScreens(tempScreens);
   }
 
   ////////////////////////////////////////////////////////////////

@@ -308,7 +308,7 @@ class Compiler {
         if (tokCommand != Token.nada) {
           if (! compileCommand(ltoken))
             return false;
-          lltoken.add(atokenCommand);
+          lltoken.addElement(atokenCommand);
           int iCommand = lltoken.size();
           if (iCommand == lnLength) {
             short[] lnT = new short[lnLength * 2];
@@ -333,22 +333,20 @@ class Compiler {
       }
       if (tokCommand != Token.nada) {
         if (lookingAtString()) {
-          ltoken.add(new Token(Token.string,
-                               script.substring(ichToken + 1,
-                                                ichToken + cchToken - 1)));
+          String str = script.substring(ichToken+1, ichToken+cchToken-1);
+          ltoken.addElement(new Token(Token.string, str));
           continue;
         }
         if ((tokCommand & Token.specialstring) != 0 &&
             lookingAtSpecialString()) {
-          ltoken.add(new Token(Token.string,
-                               script.substring(ichToken,
-                                                ichToken + cchToken)));
+          String str = script.substring(ichToken, ichToken + cchToken);
+          ltoken.addElement(new Token(Token.string, str));
           continue;
         }
         if (lookingAtPositiveDecimal()) {
           double value =
             Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
-          ltoken.add(new Token(Token.decimal, new Double(value)));
+          ltoken.addElement(new Token(Token.decimal, new Double(value)));
           continue;
         }
         if (lookingAtPositiveInteger() || 
@@ -356,7 +354,7 @@ class Compiler {
              lookingAtNegativeInteger())) {
           int val = Integer.parseInt(script.substring(ichToken,
                                                       ichToken + cchToken));
-          ltoken.add(new Token(Token.integer, val, null));
+          ltoken.addElement(new Token(Token.integer, val, null));
           continue;
         }
       }
@@ -379,7 +377,7 @@ class Compiler {
             if ((token.tok & Token.setspecial) != 0) {
               tokenCommand = token;
               tokCommand = token.tok;
-              ltoken.clear();
+              ltoken.removeAllElements();
               break;
             }
             if ((token.tok & Token.setparam) == 0)
@@ -411,7 +409,7 @@ class Compiler {
             return invalidExpressionToken(ident);
           break;
         }
-        ltoken.add(token);
+        ltoken.addElement(token);
         continue;
       }
       if (ltoken.size() == 0)
@@ -473,16 +471,17 @@ class Compiler {
   }
 
   private boolean compileCommand(Vector ltoken) {
-    Token tokenCommand = (Token)ltoken.get(0);
+    Token tokenCommand = (Token)ltoken.firstElement();
     int tokCommand = tokenCommand.tok;
     if ((tokenCommand.intValue & Token.onDefault1) != 0 && ltoken.size() == 1)
-      ltoken.add(Token.tokenOn);
+      ltoken.addElement(Token.tokenOn);
     if (tokCommand == Token.set) {
       int size = ltoken.size();
       if (size < 2)
         return badArgumentCount();
-      if (size == 2 && (((Token)ltoken.get(1)).tok & Token.setDefaultOn) != 0)
-        ltoken.add(Token.tokenOn);
+      if (size == 2 &&
+          (((Token)ltoken.elementAt(1)).tok & Token.setDefaultOn) != 0)
+        ltoken.addElement(Token.tokenOn);
     }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
@@ -532,7 +531,7 @@ class Compiler {
   public boolean compileExpression(int itoken) {
     ltokenPostfix = new Vector();
     for (int i = 0; i < itoken; ++i)
-      ltokenPostfix.add(atokenCommand[i]);
+      ltokenPostfix.addElement(atokenCommand[i]);
     atokenInfix = atokenCommand;
     itokenInfix = itoken;
     if (! clauseOr())
@@ -563,7 +562,7 @@ class Compiler {
       Token tokenOr = tokenNext();
       if (! clauseAnd())
         return false;
-      ltokenPostfix.add(tokenOr);
+      ltokenPostfix.addElement(tokenOr);
     }
     return true;
   }
@@ -575,7 +574,7 @@ class Compiler {
       Token tokenAnd = tokenNext();
       if (! clauseNot())
         return false;
-      ltokenPostfix.add(tokenAnd);
+      ltokenPostfix.addElement(tokenAnd);
     }
     return true;
   }
@@ -585,7 +584,7 @@ class Compiler {
       Token tokenNot = tokenNext();
       if (! clauseNot())
         return false;
-      ltokenPostfix.add(tokenNot);
+      ltokenPostfix.addElement(tokenNot);
       return true;
     }
     return clausePrimitive();
@@ -610,7 +609,7 @@ class Compiler {
     case Token.all:
     case Token.none:
     case Token.identifier:
-      ltokenPostfix.add(tokenNext());
+      ltokenPostfix.addElement(tokenNext());
       return true;
     case Token.leftparen:
       tokenNext();
@@ -628,7 +627,7 @@ class Compiler {
   boolean clauseInteger() {
     Token tokenInt1 = tokenNext();
     if (tokPeek() != Token.hyphen) {
-      ltokenPostfix.add(tokenInt1);
+      ltokenPostfix.addElement(tokenInt1);
       return true;
     }
     tokenNext();
@@ -640,7 +639,7 @@ class Compiler {
     if (max < min) {
       int intT = max; max = min; min = intT;
     }
-    ltokenPostfix.add(new Token(Token.hyphen, min, new Integer(max)));
+    ltokenPostfix.addElement(new Token(Token.hyphen, min, new Integer(max)));
     return true;
   }
 
@@ -657,9 +656,9 @@ class Compiler {
     // int intValue is the tok of the property you are comparing
     // the value against which you are comparing is stored as an Integer
     // in the object value
-    ltokenPostfix.add(new Token(tokenComparator.tok,
-                                tokenAtomProperty.tok,
-                                new Integer(val)));
+    ltokenPostfix.addElement(new Token(tokenComparator.tok,
+                                       tokenAtomProperty.tok,
+                                       new Integer(val)));
     return true;
   }
 

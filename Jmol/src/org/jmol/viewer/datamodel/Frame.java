@@ -40,13 +40,13 @@ final public class Frame {
 
   final JmolViewer viewer;
   final JmolAdapter adapter;
-  FrameRenderer frameRenderer;
+  final FrameRenderer frameRenderer;
   // NOTE: these strings are interned and are lower case
   // therefore, we can do == comparisions against string constants
   // if (modelTypeName == "xyz")
-  String modelTypeName;
-  Mmset mmset;
-  Graphics3D g3d;
+  final String modelTypeName;
+  final Mmset mmset;
+  final Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
   float maxBondingRadius = Integer.MIN_VALUE;
@@ -1292,10 +1292,8 @@ final public class Frame {
     this.pdbTranslateVector = new Vector3f(pdbScaleTranslate);
   }
 
-  // FIXME mth 2004 05 04 - do NOT pass a null in here
-  // figure out what to do about the g3d when allocating a shape renderer
   ShapeRenderer getRenderer(int shapeID) {
-    return frameRenderer.getRenderer(shapeID, null);
+    return frameRenderer.getRenderer(shapeID, g3d);
   }
 
   void doUnitcellStuff() {

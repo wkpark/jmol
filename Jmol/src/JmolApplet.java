@@ -493,62 +493,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     g.drawString(fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms", x, y);
   }
 
-  //METHODS FOR JAVASCRIPT
-
-  /****************************************************************
-   * These methods are intended for use from JavaScript via LiveConnect
-   *
-   * Note that there are some bug in LiveConnect implementations that
-   * place some restrictions on the names of the functions in this file.
-   * For example, LiveConnect on Netscape 4.7 will get confused if you
-   * overload a method name with different parameter signatures ...
-   * ... even if one of the methods is private
-   * mth 2003 02
-   ****************************************************************/
-
-  /****************************************************************
-   * FIXME mth 2004 01 12
-   * these routines are all DEPRECATED
-   ****************************************************************/
-
-  /*
-  private final String[] styleStrings = {"SHADED", "WIREFRAME"};
-  private final byte[] styles = {JmolConstants.STYLE_SHADED,
-                                 JmolConstants.STYLE_WIREFRAME};
-
-  public void setStyle(String style) {
-    for (int i = 0; i < styleStrings.length; ++i) {
-      if (styleStrings[i].equalsIgnoreCase(style)) {
-        //        viewer.setStyleAtom(styles[i]);
-        viewer.setStyleBond(styles[i]);
-        return;
-      }
-    }
-  }
-
-  private final String[] labelStyleStrings = {"NONE","SYMBOL","NUMBER"};
-  private final byte[] labelStyles = {JmolConstants.LABEL_NONE,
-                                      JmolConstants.LABEL_SYMBOL,
-                                      JmolConstants.LABEL_ATOMNO};
-
-  public void setLabelStyle(String style) {
-    for (int i = 0; i < labelStyles.length; ++i) {
-      if (labelStyleStrings[i].equalsIgnoreCase(style)) {
-        viewer.setStyleLabel(labelStyles[i]);
-        return;
-      }
-    }
-  }
-
-  public void setPerspectiveDepth(boolean perspectiveDepth) {
-    viewer.setPerspectiveDepth(perspectiveDepth);
-  }
-
-  public void setWireframeRotation(boolean wireframeRotation) {
-    viewer.setWireframeRotation(wireframeRotation);
-  }
-  */
-
   private final Object[] buttonCallbackBefore = { null, new Boolean(false)};
   private final Object[] buttonCallbackAfter = { null, new Boolean(true)};
 

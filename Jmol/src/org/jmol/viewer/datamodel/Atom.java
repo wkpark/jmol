@@ -423,9 +423,6 @@ public final class Atom implements Bspt.Tuple {
 		   : (dimension == 1 ? point3f.y : point3f.z));
   }
 
-  // FIXME mth 2003-01-10
-  // store the vdw & covalent mars in the atom when the atom is created
-  // then you can eliminate all the calls involving the model manager
   short getVanderwaalsMar() {
     return JmolConstants.vanderwaalsMars[elementNumber];
   }

@@ -82,10 +82,6 @@ public class Token {
   final static int atomproperty      = (1 << 14) | expression;
   // every predefined is also valid in an expression context
   final static int comparator        = (1 << 15) | expression;
-  // FIXME mth 2003 07 19
-  // "backbone on" is not compiling because it is also a predefinedset
-  // so, I am taking a stab in the dark by not defining it as an expression
-  // ... we'll see
   final static int predefinedset     = (1 << 16); // | expression;
   final static int colorparam        = (1 << 17);
   final static int specialstring     = (1 << 18); // load, echo, label
@@ -117,8 +113,7 @@ public class Token {
   final static int hbonds       = command | 13 | setparam | bool;
   final static int help         = command | 14;
   final static int label        = command | 15 | specialstring;
-  // FIXME -- why did I have load tagged as a setparam?
-  final static int load         = command | 16 | specialstring; // setparam;
+  final static int load         = command | 16 | specialstring;
   final static int molecule     = command | 17;
   final static int monitor      = command | 18 | setparam | bool;
   final static int pause        = command | 19;
@@ -366,7 +361,7 @@ public class Token {
     "bond",              new Token(bond,     varArgCount, "bond"),
     "cartoon",           new Token(cartoon,   onDefault1, "cartoon"),
     "cartoons",          null,
-    "center",            new Token(center,   varArgCount,  "center"),
+    "center",            new Token(center,   varArgCount, "center"),
     "centre",            null,
     "clipboard",         new Token(clipboard,          0, "clipboard"),
     "color",             new Token(color,    varArgCount, "color"),

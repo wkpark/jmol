@@ -149,8 +149,6 @@ final public class JmolViewer {
   }
 
   public void homePosition() {
-    // FIXME -- need to hold repaint during this process, but first 
-    // figure out the interaction with the current holdRepaint setting
     setCenter(null);
     transformManager.homePosition();
     refresh();
@@ -1122,11 +1120,6 @@ final public class JmolViewer {
 
   public int getBoundingBoxCenterY() {
     return dimScreen.height / 2;
-  }
-
-  public int getNumberOfFrames() {
-    // FIXME
-    return 1;
   }
 
   public int getModelCount() {

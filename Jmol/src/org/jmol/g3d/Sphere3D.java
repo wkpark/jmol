@@ -209,34 +209,6 @@ class Sphere3D {
     }
   }
 
-  /*
-  void renderBigClipped(int[] shades, int diameter, int x, int y, int z) {
-    int radius = diameter / 2;
-    x -= radius;
-    y -= radius;
-    // FIXME optimize me some
-    float r = diameter / 2.0f;
-    float r2 = r * r;
-
-    float yF = -r + 0.5f;
-    int y0 = y;
-    for (int i = 0; i < diameter; ++i, ++y0, ++yF) {
-      float y2 = yF * yF;
-      float xF = -r + 0.5f;
-      int x0 = x;
-      for (int j = 0; j < diameter; ++j, ++x0, ++xF) {
-        float z2 = r2 - y2 - xF*xF;
-        if (z2 >= 0) {
-          float zF = (float)Math.sqrt(z2);
-          int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
-          int z0 = z - (int)(zF + 0.5f);
-          g3d.plotPixelClipped(shades[intensity], x0, y0, z0);
-        }
-      }
-    }
-  }
-  */
-
   void render(short colix, int diameter, int x, int y, int z) {
     int[] shades = g3d.getShades(colix);
     int radius = (diameter + 1) >> 1;

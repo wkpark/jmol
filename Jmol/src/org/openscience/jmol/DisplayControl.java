@@ -588,13 +588,13 @@ final public class DisplayControl {
     this.mouseDragged = mouseDragged;
   }
 
-  private boolean supportsGraphics2D = false;
+  public boolean jvm12orGreater = false;
   private boolean wantsGraphics2D = true;
   public boolean useGraphics2D = false;
   private boolean wantsAntialiased = false;
-  public void setSupportsGraphics2D(boolean supportsGraphics2D) {
-    this.supportsGraphics2D = supportsGraphics2D;
-    useGraphics2D = supportsGraphics2D && wantsGraphics2D;
+  public void setJvm12orGreater(boolean jvm12orGreater) {
+    this.jvm12orGreater = jvm12orGreater;
+    useGraphics2D = jvm12orGreater && wantsGraphics2D;
     // kludge for now -- doesn't work with dynamic preference panel changes
     wantsAntialiased = settings.isAntiAliased();
   }
@@ -602,7 +602,7 @@ final public class DisplayControl {
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
     if (this.wantsGraphics2D != wantsGraphics2D) {
       this.wantsGraphics2D = wantsGraphics2D;
-      useGraphics2D = supportsGraphics2D && wantsGraphics2D;
+      useGraphics2D = jvm12orGreater && wantsGraphics2D;
       flushCachedImages();
       recalc();
     }

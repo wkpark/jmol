@@ -30,7 +30,7 @@ import java.awt.Graphics;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-interface Shape {
+public interface Shape {
 
   public void render(Graphics g);
 

@@ -19,6 +19,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Iterator;
@@ -26,8 +27,7 @@ import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Vector;
 import javax.vecmath.Point3f;
-import java.util.Arrays;
-import java.util.Comparator;
+import org.openscience.jmol.applet.NonJavaSort;
 
 /**
  *  Drawing methods for ChemFrame.
@@ -117,19 +117,11 @@ public class ChemFrameRenderer {
       Transformable t1 = (Transformable) iter.next();
       t1.transform(control);
     }
-    Arrays.sort(shapes,
-                new Comparator() {
-                  public int compare(Object shape1, Object shape2) {
-                    int z1 = ((Shape) shape1).getZ();
-                    int z2 = ((Shape) shape2).getZ();
-                    if (z1 < z2)
-                      return -1;
-                    if (z1 == z2)
-                      return 0;
-                    return 1;
-                  }
-                }
-                );
+    if (control.jvm12orGreater)
+      UseJavaSort.sortShapes(shapes);
+    else
+      NonJavaSort.sortShapes(shapes);
+                              
     AtomShape.prepareRendering(g, rectClip, control);
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g);
@@ -149,5 +141,6 @@ public class ChemFrameRenderer {
    * Point for calculating lengths of vectors.
    */
   private static final Point3f zeroPoint = new Point3f();
+
 }
 

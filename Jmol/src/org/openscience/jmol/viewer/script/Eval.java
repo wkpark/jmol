@@ -31,6 +31,7 @@ import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
+import javax.vecmath.AxisAngle4f;
 
 class Context {
   String filename;
@@ -2850,6 +2851,9 @@ public class Eval implements Runnable {
     showString("axis-angle rotation = " + viewer.getAxisAngleText());
   }
 
+  AxisAngle4f aaMoveTo;
+  AxisAngle4f aaCurrent;
+
   void moveto() throws ScriptException {
     if (statementLength < 5 || statementLength > 7)
       badArgumentCount();
@@ -2857,8 +2861,14 @@ public class Eval implements Runnable {
     float axisY = floatParameter(2);
     float axisZ = floatParameter(3);
     float degrees = floatParameter(4);
-    float time = statementLength >= 6 ? floatParameter(5) : 0;
+    float floatSecondsTotal = statementLength >= 6 ? floatParameter(5) : 0;
     int zoom = statementLength == 7 ? intParameter(6) : 0;
-    viewer.rotateTo(axisX, axisY, axisZ, degrees);
+
+    if (aaMoveTo == null) {
+      aaMoveTo = new AxisAngle4f();
+      aaCurrent = new AxisAngle4f();
+    }
+    aaMoveTo.set(axisX, axisY, axisZ, degrees * (float)Math.PI / 180);
+    viewer.rotateTo(aaMoveTo);
   }
 }

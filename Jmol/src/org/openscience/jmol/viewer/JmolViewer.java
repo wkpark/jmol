@@ -248,6 +248,10 @@ final public class JmolViewer {
     transformManager.rotateTo(xAxis, yAxis, zAxis, degrees);
   }
 
+  public void rotateTo(AxisAngle4f axisAngle) {
+    transformManager.rotateTo(axisAngle);
+  }
+
   public void translateXYBy(int xDelta, int yDelta) {
     transformManager.translateXYBy(xDelta, yDelta);
     refresh();
@@ -550,6 +554,10 @@ final public class JmolViewer {
 
   public String getAxisAngleText() {
     return transformManager.getAxisAngleText();
+  }
+
+  public void getAxisAngle(AxisAngle4f axisAngle) {
+    transformManager.getAxisAngle(axisAngle);
   }
 
   /****************************************************************

@@ -144,6 +144,13 @@ public class TransformManager {
     }
   }
 
+  public void rotateTo(AxisAngle4f axisAngle) {
+    if (axisAngle.angle < .01 && axisAngle.angle > -.01)
+      matrixRotate.setIdentity();
+    else
+      matrixRotate.set(axisAngle);
+  }
+
   /****************************************************************
    TRANSLATIONS
   ****************************************************************/
@@ -191,6 +198,10 @@ public class TransformManager {
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
     vectorT.normalize();
     return "" + vectorT.x + " " + vectorT.y + " " + vectorT.z + " " + degrees;
+  }
+
+  public void getAxisAngle(AxisAngle4f axisAngle) {
+    axisAngle.set(matrixRotate);
   }
 
   /****************************************************************

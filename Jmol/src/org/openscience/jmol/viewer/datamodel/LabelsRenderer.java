@@ -34,8 +34,6 @@ import java.awt.FontMetrics;
 
 class LabelsRenderer extends ShapeRenderer {
 
-  short colixLabel;
-  boolean isLabelAtomColor;
   // offsets are from the font baseline
   int labelOffsetX;
   int labelOffsetY;
@@ -44,8 +42,6 @@ class LabelsRenderer extends ShapeRenderer {
   int labelFontAscent;
 
   void render() {
-    colixLabel = viewer.getColixShape(JmolConstants.SHAPE_LABELS);
-    isLabelAtomColor = colixLabel == 0;
     labelOffsetX = viewer.getLabelOffsetX();
     labelOffsetY = viewer.getLabelOffsetY();
     labelFont = viewer.getLabelFont();
@@ -55,7 +51,8 @@ class LabelsRenderer extends ShapeRenderer {
     g3d.setFont(labelFont);
 
     Labels labels = (Labels)shape;
-    String[] labelStrings = labels.labelStrings;
+    String[] labelStrings = labels.strings;
+    short[] colixes = labels.colixes;
     if (labelStrings == null)
       return;
     Atom[] atoms = frame.atoms;
@@ -67,11 +64,12 @@ class LabelsRenderer extends ShapeRenderer {
       Atom atom = atoms[i];
       if (displayModel != 0 && atom.modelNumber != displayModel)
         continue;
-      renderLabel(atom, label);
+      short colix = colixes == null || i >= colixes.length ? 0 : colixes[i];
+      renderLabel(atom, label, colix);
     }
   }
   
-  void renderLabel(Atom atom, String strLabel) {
+  void renderLabel(Atom atom, String strLabel, short colix) {
     /*
       left over from when font sizes changed;
       Font font = viewer.getLabelFont(atom.diameter);
@@ -105,7 +103,7 @@ class LabelsRenderer extends ShapeRenderer {
       ++yOffset;
     }
     g3d.drawString(strLabel,
-                   isLabelAtomColor ? atom.colixAtom : colixLabel,
+                   colix == 0 ? atom.colixAtom : colix,
                    atom.x + xOffset, atom.y - yOffset, zLabel);
   }
 

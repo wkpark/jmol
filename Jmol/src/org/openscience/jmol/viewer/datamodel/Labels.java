@@ -26,38 +26,67 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.pdb.PdbAtom;
+
+import java.awt.Color;
 import java.util.BitSet;
 
 public class Labels extends Shape {
 
-  String labelStrings[];
+  String[] strings;
+  short[] colixes;
+  byte[] fontSizes;
 
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
+    Atom[] atoms = frame.atoms;
+    if (propertyName.equals("color")) {
+      short colix = viewer.getColix((Color)value);
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i)) {
+          Atom atom = atoms[i];
+          if (colixes == null || i >= colixes.length) {
+            if (colix == 0)
+              continue;
+            colixes = ensureMinimumLengthArray(colixes, i + 1);
+          }
+          colixes[i] = colix;
+        }
+    }
+
     if ("label".equals(propertyName)) {
       String strLabel = (String)value;
-      Atom[] atoms = frame.atoms;
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
           String label = getLabelAtom(strLabel, atom, i);
-          if (labelStrings == null || i >= labelStrings.length) {
+          if (strings == null || i >= strings.length) {
             if (label == null)
               continue;
-            labelStrings = ensureMinimumLengthStringArray(labelStrings, i + 1);
+            strings = ensureMinimumLengthArray(strings, i + 1);
           }
-          labelStrings[i] = label;
+          strings[i] = label;
         }
+      return;
     }
   }
 
-  static String[] ensureMinimumLengthStringArray(String[] stringArray, int minimumLength) {
+  static String[] ensureMinimumLengthArray(String[] stringArray, int minimumLength) {
     if (stringArray == null)
       return new String[minimumLength];
     if (stringArray.length >= minimumLength)
       return stringArray;
     String[] t = new String[minimumLength];
     System.arraycopy(stringArray, 0, t, 0, stringArray.length);
+    return t;
+  }
+
+  static short[] ensureMinimumLengthArray(short[] shortArray, int minimumLength) {
+    if (shortArray == null)
+      return new short[minimumLength];
+    if (shortArray.length >= minimumLength)
+      return shortArray;
+    short[] t = new short[minimumLength];
+    System.arraycopy(shortArray, 0, t, 0, shortArray.length);
     return t;
   }
 

@@ -49,8 +49,7 @@ import java.util.StringTokenizer;
 class ShelxReader extends ModelReader {
 
   boolean endReached;
-  ModelAdapter.Logger logger;
-  
+
   Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
     throws Exception {
     this.logger = logger;

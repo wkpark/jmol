@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 
 abstract class ModelReader {
   Model model;
+  ModelAdapter.Logger logger;
 
   abstract Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
     throws Exception;

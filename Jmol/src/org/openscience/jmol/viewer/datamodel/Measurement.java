@@ -123,8 +123,7 @@ public class Measurement {
   }
 
   boolean sameAs(int[] atomCountPlusIndices) {
-    int count = countPlusIndices[0];
-    if (count != this.count)
+    if (count != atomCountPlusIndices[0])
       return false;
     if (count == 2)
       return ((atomCountPlusIndices[1] == this.countPlusIndices[1] &&

@@ -28,7 +28,7 @@ package org.openscience.jmol.viewer.g3d;
 public class Shade3D {
 
   public final static byte shadeAmbient = 0;
-  public static final byte shadeNormal = 24;
+  public static final byte shadeNormal = 40;
   public static final byte shadeDarker = 16;
   public static final int shadeMax = 64;
   // the light source vector

@@ -28,6 +28,7 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
 import org.openscience.jmol.viewer.datamodel.AtomShape;
 import org.openscience.jmol.viewer.g3d.Colix;
+import org.openscience.jmol.viewer.protein.PdbAtom;
 import org.openscience.jmol.viewer.script.Token;
 
 import java.awt.Color;
@@ -529,6 +530,7 @@ public class ColorManager {
 
   public short getColixAtomScheme(AtomShape atom, byte scheme) {
     int argb = 0;
+    PdbAtom pdbatom = atom.pdbatom;
     if (suppliesAtomArgb) {
       argb = modelAdapter.getAtomArgb(atom.clientAtom, scheme);
       if (argb != 0)
@@ -540,19 +542,19 @@ public class ColorManager {
       argb = JmolModelAdapter.argbsCpk[atom.atomicNumber];
       break;
     case JmolModelAdapter.COLORSCHEME_PDB_STRUCTURE:
-      if (atom.pdbatom != null)
-        argb = JmolModelAdapter.argbsPdbStructure[atom.pdbatom.structureType];
+      if (pdbatom != null)
+        argb = JmolModelAdapter.argbsPdbStructure[pdbatom.structureType];
       break;
     case JmolModelAdapter.COLORSCHEME_PDB_AMINO:
-      if (atom.pdbatom != null) {
-        byte resid = atom.pdbatom.getResID();
+      if (pdbatom != null) {
+        byte resid = pdbatom.getResID();
         if (resid >= 0 && resid < Token.RESID_AMINO_MAX)
           argb = JmolModelAdapter.argbsPdbAmino[resid];
       }
       break;
     case JmolModelAdapter.COLORSCHEME_PDB_SHAPELY:
-      if (atom.pdbatom != null) {
-        byte resid = atom.pdbatom.getResID();
+      if (pdbatom != null) {
+        byte resid = pdbatom.getResID();
         if (resid >= 0 && resid < Token.RESID_DNA_MAX)
           argb = JmolModelAdapter.argbsPdbShapely[resid];
         else
@@ -560,9 +562,11 @@ public class ColorManager {
       }
       break;
     case JmolModelAdapter.COLORSCHEME_PDB_CHAIN:
-      if (atom.pdbatom != null) {
-        int chain = atom.pdbatom.getChain() & 0x0F;
-        argb = JmolModelAdapter.argbsPdbChain[chain];
+      if (pdbatom != null) {
+        int chain = pdbatom.getChain() & 0x07;
+        argb = (pdbatom.isHetero()
+                ? JmolModelAdapter.argbsPdbChainHetero
+                : JmolModelAdapter.argbsPdbChainAtom)[chain];
       }
       break;
     case JmolModelAdapter.COLORSCHEME_CHARGE:

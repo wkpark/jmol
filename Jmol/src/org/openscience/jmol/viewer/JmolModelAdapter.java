@@ -988,28 +988,34 @@ public interface JmolModelAdapter {
 
   /**
    * colors used for chains
-   * as currently implemented, this array must be of length 16
+   * as currently implemented, this array must be of length 8
    */
 
-  public final static int[] argbsPdbChain = {
+  public final static int[] argbsPdbChainAtom = {
     // xwindows colors
     // ' '->0 'A'->1, 'B'->2
-    // colors are too bright and are washing out with hilites
-    0xFF6B8E23, // OliveDrab 0xFF6B8E23
-    0xFF0000F0, // blue 0xFF0000FF
-    0xFF00F0F0, // cyan 0xFF00FFFF
-    0xFF00F000, // lime 0xFF00FF00
-    0xFFF0F000, // yellow 0xFFFFFF00
-    0xFFF00000, // red 0xFFFF0000
-    0xFFF000F0, // magenta 0xFFFF00FF
+    0xFFFFFAF0, // floralwhite 0xFFFFFAF0
+    0xFF0000FF, // blue 0xFF0000FF
+    0xFF00FFFF, // cyan 0xFF00FFFF
+    0xFF00FF00, // lime 0xFF00FF00
+    0xFFFFFF00, // yellow 0xFFFFFF00
+    // these need to be changed
+    0xFFFF0000, // red 0xFFFF0000
+    0xFFFF00FF, // magenta 0xFFFF00FF
+    0xFFFFA500, // orange 0xFFFFA500
+  };
+
+  public final static int[] argbsPdbChainHetero = {
+    // xwindows colors
+    // ' '->0 'A'->1, 'B'->2
+    0xFFFF0000, // red
+    0xFF1E90FF, // dodgerblue
+    0xFF00FA9A, // mediumspringgreen
+    0xFF6B8E23, // olivedrab
+    0xFFFF8C00, // darkorange
+    // these need to be changed
+    0xFFFF00FF, // magenta 0xFFFF00FF
     0xFFFFA500, // orange 0xFFFFA500
     0xFF87CEEB, // SkyBlue 0xFF87CEEB
-    0xFF8B0000, // red4 0xFF8B0000
-    0xFF006400, // DarkGreen 0xFF006400
-    0xFF000080, // NavyBlue 0xFF000080
-    0xFFA020F0, // purple 0xFFA020F0
-    0xFF40E0D0, // turquoise 0xFF40E0D0
-    0xFFFA8072, // salmon 0xFFFA8072
-    0xFF00FF7F, // SpringGreen 0xFF00FF7F
   };
 }

@@ -1495,7 +1495,6 @@ public class Eval implements Runnable {
   }
 
   void colorObject(int tokObject, int itoken) throws ScriptException {
-    System.out.println(" colorObject"); 
     // I do not like this 'palette' scheme
     // I need to change it so that you can pass either a java.awt.Color
     // or an object that uniquely identifies the various palettes

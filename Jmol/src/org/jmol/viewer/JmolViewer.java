@@ -2232,6 +2232,14 @@ final public class JmolViewer {
     return g3d.getColor(modelManager.getAtomColix(i));
   }
 
+  public String getAtomChain(int i) {
+    return modelManager.getAtomChain(i);
+  }
+
+  public String getAtomSequenceCode(int i) {
+    return modelManager.getAtomSequenceCode(i);
+  }
+
   public Point3f getBondPoint3f1(int i) {
     return modelManager.getBondPoint3f1(i);
   }

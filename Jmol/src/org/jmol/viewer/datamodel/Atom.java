@@ -553,7 +553,7 @@ public final class Atom implements Bspt.Tuple {
     return group.groupID;
   }
 
-  String getSeqcodeString() {
+  public String getSeqcodeString() {
     return group.getSeqcodeString();
   }
 

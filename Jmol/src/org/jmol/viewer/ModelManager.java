@@ -389,6 +389,14 @@ String getAtomInfoChime(int i) {
     return frame.getAtomAt(i).getColix();
   }
 
+  String getAtomChain(int i) {
+    return "" + frame.getAtomAt(i).getChainID();
+  }
+
+  String getAtomSequenceCode(int i) {
+    return frame.getAtomAt(i).getSeqcodeString();
+  }
+
   Point3f getBondPoint3f1(int i) {
     return frame.getBondAt(i).getAtom1().getPoint3f();
   }

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.CrystalFile;
@@ -49,14 +50,15 @@ public class ShelXReader extends DefaultChemFileReader {
    *
    * @param input source of CML data
    */
-  public ShelXReader(Reader input) {
-    super(input);
+  public ShelXReader(DisplayControl control, Reader input) {
+    super(control, input);
     cdkreader = new org.openscience.cdk.io.ShelXReader(input);
   }
 
   public org.openscience.jmol.ChemFile read() throws IOException {
   
-    org.openscience.jmol.ChemFile file = new org.openscience.jmol.ChemFile();
+    org.openscience.jmol.ChemFile file =
+      new org.openscience.jmol.ChemFile(control);
 
     try {
       org.openscience.cdk.ChemFile cf = (org.openscience.cdk.ChemFile)cdkreader.read(
@@ -72,7 +74,7 @@ public class ShelXReader extends DefaultChemFileReader {
           if (crystal != null) {
             // found crystal
             ac = crystal;
-            CrystalFile cfile = Convertor.convertCrystal(crystal);
+            CrystalFile cfile = Convertor.convertCrystal(control, crystal);
             // dirty ! But CrystalFrame does not unit cell stuff
             return cfile;
           } else {
@@ -82,7 +84,7 @@ public class ShelXReader extends DefaultChemFileReader {
 
           // store read data
           if (ac != null) {
-            ChemFrame frame = Convertor.convert(ac);
+            ChemFrame frame = Convertor.convert(control, ac);
             file.addFrame(frame);
             fireFrameRead();
           }

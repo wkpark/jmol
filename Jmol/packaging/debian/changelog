@@ -1,3 +1,12 @@
+jmol (6-1) unstable; urgency=low
+
+  * new upstream release
+  * fixed a few lintian errors
+  * cleaned up dependencies
+  * updated URL in manual page
+
+ -- E.L. Willighagen (Egon) <egonw@sci.kun.nl>  Sat, 16 May 2003 21:36:15 +0100
+
 jmol (4-1) unstable; urgency=low
 
   * new upstream release

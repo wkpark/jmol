@@ -119,7 +119,7 @@ public class Animate extends JDialog implements ActionListener,
     }
 
     // Create set of new frames
-    ChemFile newFile = new ChemFile();
+    ChemFile newFile = new ChemFile(control);
     int frameNumber = 0;
     ChemFrame fromFrame = inFile.getFrame(frameNumber);
 
@@ -136,9 +136,9 @@ public class Animate extends JDialog implements ActionListener,
           toFrame.getAtomCount());
       for (int i = 0; i < numberExtraFrames; i++) {
           if (fromFrame instanceof CrystalFrame) {
-              extraFrames[i] = new CrystalFrame(numberVertices);
+              extraFrames[i] = new CrystalFrame(control, numberVertices);
           } else {
-              extraFrames[i] = new ChemFrame(numberVertices);
+              extraFrames[i] = new ChemFrame(control, numberVertices);
           }
       }
 

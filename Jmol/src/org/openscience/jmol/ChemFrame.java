@@ -25,6 +25,7 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.Atom;
+import org.openscience.jmol.render.AtomShape;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.geometry.BondTools;
 import java.beans.PropertyChangeSupport;
@@ -47,6 +48,8 @@ public class ChemFrame extends AtomContainer {
 
   // This stuff can vary for each frame in the dynamics:
 
+  DisplayControl control;
+
   private String info;     // The title or info string for this frame.
   private Vector properties = new Vector();
 
@@ -64,24 +67,25 @@ public class ChemFrame extends AtomContainer {
    *
    * @param na the number of atoms in the frame
    */
-  public ChemFrame(int na) {
-      this(na, true);
+  public ChemFrame(DisplayControl control, int na) {
+      this(control, na, true);
   }
 
-  public ChemFrame(int na, boolean bondsEnabled) {
+  public ChemFrame(DisplayControl control, int na, boolean bondsEnabled) {
       super(na, na);
       this.bondsEnabled = bondsEnabled;
+      this.control = control;
   }
 
-  public ChemFrame(boolean bondsEnabled) {
-      this(100, bondsEnabled);
+  public ChemFrame(DisplayControl control, boolean bondsEnabled) {
+      this(control, 100, bondsEnabled);
   }
 
   /**
    * Constructor for a ChemFrame with an unknown number of atoms.
    */
-  public ChemFrame() {
-      this(true);
+  public ChemFrame(DisplayControl control) {
+      this(control, true);
   }
 
   /**
@@ -162,7 +166,7 @@ public class ChemFrame extends AtomContainer {
     public void addAtom(org.openscience.cdk.Atom atom) {
         Atom jmolAtom = null;
         if (!(atom instanceof org.openscience.jmol.Atom)) {
-            jmolAtom = new org.openscience.jmol.Atom(atom);
+            jmolAtom = new org.openscience.jmol.Atom(control, atom);
         } else {
             jmolAtom = (Atom)atom;
         }
@@ -181,12 +185,12 @@ public class ChemFrame extends AtomContainer {
       clearBounds();
       int i = getAtomCount();
       
-      Atom atom = new Atom(type, i, x, y, z, pprop);
+      Atom atom = new Atom(control, type, i, x, y, z, pprop);
       this.addAtom(atom);
-      if (DisplayControl.control.getAutoBond()) {
+      if (control.getAutoBond()) {
           for (int j = 0; j < i; j++) {
               if (BondTools.closeEnoughToBond(atom, getAtomAt(j),
-                                              DisplayControl.control.getBondFudge())) {
+                                              control.getBondFudge())) {
                   addBond(i, j);
               }
           }
@@ -355,7 +359,8 @@ public class ChemFrame extends AtomContainer {
     bsFoundRectangle.and(bsEmpty);
     Atom[] atoms = getJmolAtoms();
     for (int i = 0; i < atoms.length; ++i) {
-      if (rect.contains(atoms[i].atomShape.x, atoms[i].atomShape.y))
+      AtomShape atomShape = atoms[i].getAtomShape();
+      if (rect.contains(atomShape.x, atomShape.y))
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;
@@ -446,8 +451,7 @@ public class ChemFrame extends AtomContainer {
     //
     // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
     double radius = 0.0f;
-    double atomSphereFactor =
-      DisplayControl.control.getPercentVdwAtom() / 100.0;
+    double atomSphereFactor = control.getPercentVdwAtom() / 100.0;
     Atom[] atoms = getJmolAtoms();
     for (int i = 0; i < atoms.length; ++i) {
       Atom atom = atoms[i];
@@ -488,7 +492,7 @@ public class ChemFrame extends AtomContainer {
           for (int i = 0; i < atoms.length - 1; ++i) {
               for (int j = i; j < atoms.length; j++) {
                   if (BondTools.closeEnoughToBond(atoms[i], atoms[j],
-                  DisplayControl.control.getBondFudge())) {
+                                                  control.getBondFudge())) {
                       addBond(i, j);
                   }
               }

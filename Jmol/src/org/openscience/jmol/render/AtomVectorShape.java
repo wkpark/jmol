@@ -56,7 +56,7 @@ public class AtomVectorShape extends Shape {
     }
     ArrowLine al =
       new ArrowLine(g, control, atom.getScreenX(), atom.getScreenY(),
-                    x, y,
+                    x, y, true,
                     false, true, scaling);
   }
 

@@ -1,0 +1,228 @@
+<chapter>
+<title>Scripting</title>
+<para>
+  Scripting commands are the same under the applet as under the Jmol
+  application. However, with the applet you do not have the feedback of
+  the script command window.
+</para>
+<section>
+  <title>Scripting References</title>
+  <para>
+    Jmol implements most of the scripting language found in the RasMol
+    molecular visualization tool. For more detailed documentation on RasMol
+    scripting see http://www.openrasmol.org
+  </para>
+  <para>
+    MDL extended the RasMol scripting language for use in their Chime plug-in.
+    Jmol implements some of these script language extensions.
+    For more detailed information on Chime and Chime/RasMol extensions
+    see http://www.mdlchime.com/chime
+  </para>
+  <para>
+    For a complete listing of the RasMol/Chime scripting commands which
+    are implemented in Jmol see the Jmol Guide. This listing gives brief
+    descriptions of the commands. 
+  </para>
+  <para>
+    The RasMol commands which are currently not implemented in Jmol are
+    generally those associated with protein visualization: ribbons, strands,
+    etc. In addition, the Jmol rendering engine does not currently handle
+    intersecting spheres. So if you make the atom sizes large you will get
+    disappointing results.
+  </para>
+</section>
+<section>
+  <title>Ways to integrate scripts</title>
+  <para>
+    There are two methods of defining a script to be run by the applet
+    <itemizedlist>
+      <listitem>
+	by using the parameter="script" tag as part of the applet specification
+      </listitem>
+      <listitem>
+	by using the JavaScript script('script-commands') method
+      </listitem>
+    </itemizedlist>
+    In either of these cases you can
+    <itemizedlist>
+      <listitem>
+	include the entire script in the html page
+      </listitem>
+      <listitem>
+	use the 'script [scriptname]' command to load a script from the
+	webserver
+      </listitem>
+    </itemizedlist>
+    In general, the first of these methods is only acceptable for short
+    scripts.
+    For longer scripts it is probably better to store the script files
+    on the server and run them indirectly through the 'script' command. 
+  </para>
+</section>
+<section>
+  <para>
+    All of the following examples load the molecule caffeine.xyz. 
+    Various ways of invoking scripts are demonstrated
+  </para>
+  <para>
+    A short script included as an applet parameter which is executed
+    as soon as the applet is loaded.
+    <programlisting><![CDATA[
+      <html>
+	<title>Example 1</title>
+	<body>
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	    width="350" height="350">
+	    <param name="load"   value="caffeine.xyz">
+	    <param name="script" value="rotate x 90 ; background yellow">
+	  </applet>
+	</body>
+      </html>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    In this example, the <command>script</command> command is used
+    to execute a longer script which is stored in the scripts
+    subdirectory on the web server.
+    <programlisting><![CDATA[
+      <html>
+	<title>Example 2</title>
+	<body>
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	    width="350" height="350">
+	    <param name="load"   value="caffeine.xyz">
+	    <param name="script" value="script scripts/myLongScript.txt">
+	  </applet>
+	</body>
+      </html>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    This example uses <command>onLoad</command> to execute JavaScript which,
+    in turn, drives the applet. 
+    <programlisting><![CDATA[
+      <html>
+	<title>Example 3</title>
+        <body onLoad="document.jmol.script('select carbon; color green')">
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	    width="350" height="350">
+	    <param name="load"   value="caffeine.xyz">
+	  </applet>
+	</body>
+      </html>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    Essentially the same thing, but loading a script off of the web server. 
+    <programlisting><![CDATA[
+      <html>
+	<title>Example 4</title>
+	<body onLoad="document.jmol.script('script scripts/myLongScript.txt')">
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	    width="350" height="350">
+	    <param name="load"   value="caffeine.xyz">
+	  </applet>
+	</body>
+      </html>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    Calling a javascript function which controls the script.
+    <programlisting><![CDATA[
+      <html>
+	<title>Example 5</title>
+	<script>
+	  function runMyScript() {
+	    document.jmol.script('move 0 0 360 0 0 0 0 0 4');
+	  }
+	</script>
+	<body onLoad="runMyScript()">
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	    width="350" height="350">
+	    <param name="load"   value="caffeine.xyz">
+	  </applet>
+	</body>
+      </html>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    Using buttons to call javascript methods, each of which is
+    running a jmol script. 
+    <programlisting><![CDATA[
+      <html>
+	<title>Example 6</title>
+	<script>
+	  function rotateX() {
+	    document.jmol.script('move 360 0 0 0 0 0 0 0 4');
+	  }
+	  function rotateY() {
+	    document.jmol.script('move 0 360 0 0 0 0 0 0 4');
+	  }
+	  function rotateZ() {
+	    document.jmol.script('move 0 0 360 0 0 0 0 0 4');
+	  }
+	</script>
+	<body>
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	    width="350" height="350">
+	    <param name="load"   value="caffeine.xyz">
+	  </applet>
+	  <form>
+	    <input type="button" value="rotate x" onClick="rotateX()"/>
+	    <input type="button" value="rotate y" onClick="rotateY()"/>
+	    <input type="button" value="rotate z" onClick="rotateZ()"/>
+	  </form>
+	</body>
+      </html>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    Using buttons to call javascript methods, each of which is
+    driving a jmol animate script
+    <programlisting><![CDATA[
+    <html>
+      <title>Example 7</title>
+        <script>
+	  function play(script) {
+	    document.jmol.script(script);
+	  }
+	</script>
+	<body>
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+                  width="350" height="350">
+            <param name="load"   value="models/SN1_reaction.xyz">
+          </applet>
+          <form>
+            <input type="button" value="next"
+	           onClick="play('animate next')">
+            <input type="button" value="prev"
+	           onClick="play('animate prev')">
+            <input type="button" value="rewind"
+	           onClick="play('animate rewind')">
+            <input type="button" value="play"
+	           onClick="play('animate play')">
+            <input type="button" value="revplay"
+	           onClick="play('animate revplay')">
+            <br>
+            <input type="button" value="repeated with 2 second delay"
+                   onClick="play('animate play; loop 2')">
+            <br>
+            <input type="button" value="repeated no delay"
+                   onClick="play('animate play; loop 0')">
+            <br>
+            <input type="button" value="forward and reverse"
+                   onClick="play('animate play; animate revplay; loop 0')">
+          </form>
+        </body>
+      </html>
+      ]]>
+    </programlisting>
+  </para>
+</section>
+</chapter>

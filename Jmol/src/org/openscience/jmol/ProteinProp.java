@@ -120,7 +120,7 @@ public class ProteinProp {
   public int getTemperature() {
     double temp = 0;
     try {
-      temp = Double.parseDouble(recordPdb.substring(60, 66).trim());
+      temp = Double.valueOf(recordPdb.substring(60, 66).trim()).doubleValue();
     } catch (NumberFormatException e) {
       System.out.println("temp is not a decimal:" + recordPdb);
     }

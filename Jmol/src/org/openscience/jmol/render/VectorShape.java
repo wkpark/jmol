@@ -31,6 +31,12 @@ import javax.vecmath.Point3d;
 
 public class VectorShape extends LineShape {
 
+  // mth 2003 05 08
+  // This code only renders the "arrowhead" part of a vector.
+  // That is, it no longer draws the "shaft" of the arrow.
+  // As far as I know, it has only been tested with the
+  // the end of the vector, not the beginning
+
   boolean arrowStart;
   boolean arrowEnd;
 
@@ -48,8 +54,23 @@ public class VectorShape extends LineShape {
   public void render(Graphics g, DisplayControl control) {
     double scaling = 1.0;
     ArrowLine al = new ArrowLine(g, control, x, y, xEnd, yEnd,
+                                 false,
                                  arrowStart, arrowEnd, scaling);
 
+  }
+
+  public void transform(DisplayControl control) {
+    Point3d screen = control.transformPoint(pointOrigin);
+    x = (int)screen.x;
+    y = (int)screen.y;
+    z = (int)screen.z;
+    screen = control.transformPoint(pointEnd);
+    xEnd = (int)screen.x;
+    yEnd = (int)screen.y;
+    zEnd = (int)screen.z;
+
+    if (arrowEnd)
+      z = zEnd;
   }
 }
 

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.util.*;
 import org.openscience.cdk.geometry.BondTools;
 import java.util.Vector;
@@ -104,7 +105,8 @@ public class CrystalFile extends ChemFile {
    * set to define a cube, the space group is set to 1
    * and the atom box and bond box are set to {0,0,0}->{1,1,1}.
    */
-  public CrystalFile() {
+  public CrystalFile(DisplayControl control) {
+    super(control);
 
     unitCellBoxS = new UnitCellBox();
     crystalBoxS = new CrystalBox();
@@ -118,7 +120,9 @@ public class CrystalFile extends ChemFile {
    *
    * @param cf a <code>ChemFile</code> value.
    */
-  public CrystalFile(ChemFile cf, double[][] rprim, double[] acell) {
+  public CrystalFile(DisplayControl control, ChemFile cf,
+                     double[][] rprim, double[] acell) {
+    super(control);
 
     crystalBoxS = new CrystalBox();
 
@@ -246,7 +250,7 @@ public class CrystalFile extends ChemFile {
   public void generateCrystalFrame(int whichframe) {
 
     Vector crystalFAtomRedPos = new Vector(1);
-    CrystalFrame crystalFrame = new CrystalFrame();
+    CrystalFrame crystalFrame = new CrystalFrame(control);
     int natom = unitCellBoxS.getAtomCount();
     Vector frameEquivAtoms[] = (Vector[]) Array.newInstance(Vector.class,
                                  natom);
@@ -503,7 +507,7 @@ public class CrystalFile extends ChemFile {
           if (BondTools.closeEnoughToBond(
               (org.openscience.jmol.Atom)crystalFrame.getAtomAt(i),
               (org.openscience.jmol.Atom)crystalFrame.getAtomAt(j),
-              DisplayControl.control.getBondFudge())) {
+              control.getBondFudge())) {
 
             redPos = ((double[]) crystalRedPos.elementAt(j));
             if ((redPos[0] >= bondBox[0][0]) && (redPos[0] <= bondBox[1][0])

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.AtomicSymbol;
@@ -42,13 +43,13 @@ import java.io.IOException;
  */
 class JaguarReader extends DefaultChemFileReader {
 
-  public JaguarReader(Reader input) {
-    super(input);
+  public JaguarReader(DisplayControl control, Reader input) {
+    super(control, input);
   }
 
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
+    ChemFile file = new ChemFile(control, bondsEnabled);
     ChemFrame frame = null;
 
     // Find energy
@@ -64,7 +65,7 @@ class JaguarReader extends DefaultChemFileReader {
             frame.rebond();
             file.addFrame(frame);
         }
-        frame = new ChemFrame();
+        frame = new ChemFrame(control);
         readCoordinates(frame);
       } else if (line.indexOf("new geometry:") >= 0) {
         line = input.readLine();
@@ -73,7 +74,7 @@ class JaguarReader extends DefaultChemFileReader {
             frame.rebond();
             file.addFrame(frame);
         }
-        frame = new ChemFrame();
+        frame = new ChemFrame(control);
         readCoordinates(frame);
       } else if (line.indexOf("harmonic frequencies in cm") >= 0) {
         line = input.readLine();

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import java.util.Vector;
 import java.io.BufferedReader;
@@ -37,7 +38,8 @@ abstract class DefaultChemFileReader implements ChemFileReader {
    *
    * @param input source of ChemFile data
    */
-  protected DefaultChemFileReader(Reader input) {
+  protected DefaultChemFileReader(DisplayControl control, Reader input) {
+    this.control = control;
     this.input = new BufferedReader(input);
   }
 
@@ -104,4 +106,5 @@ abstract class DefaultChemFileReader implements ChemFileReader {
    * The source for data.
    */
   protected BufferedReader input;
+  DisplayControl control;
 }

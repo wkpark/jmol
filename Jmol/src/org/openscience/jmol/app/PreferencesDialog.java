@@ -157,7 +157,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("showDarkerOutline", "true");
     props.put("isLabelAtomColor", "false");
     props.put("isBondAtomColor", "true");
-    props.put("graphics2D", "true");
+    // mth 2003 05 20
+    // The Apple JVMs have a problem with graphics2D operations
+    // so, we will default to turning graphics2D off until
+    // they get their issues resolved.
+    // props.put("graphics2D", "true");
+    String vendor = System.getProperty("java.vendor");
+    String strBool = vendor.startsWith("Apple Computer") ? "false" : "true";
+    props.put("graphics2D", strBool);
+    //
     props.put("antialias", "true");
     props.put("antialiasAlways", "false");
     props.put("Perspective", "false");

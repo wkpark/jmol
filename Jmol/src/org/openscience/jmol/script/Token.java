@@ -146,6 +146,8 @@ public class Token {
   final static int spin         = command | 53 | showparam | bool;
   final static int list         = command | 54 | showparam;
   final static int display3d    = command | 55;
+  // jmol commands
+  final static int animate      = command | 100;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -346,6 +348,8 @@ public class Token {
     "spin",              new Token(spin,      onDefault1, "spin"),
     "list",              new Token(list,     varArgCount, "list"),
     "display3d",         new Token(display3d,  "display3d"),
+  // jmol extended commands
+    "animate",           new Token(animate, "animate"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

@@ -405,10 +405,10 @@ public class Vibrate extends JDialog implements ActionListener,
     // Create set of frames animating the vectors
     ChemFrame inputFrame = inputFile.getFrame(inputFrameNumber);
     Vibration vib = inputFrame.getVibration(vibrationNumber);
-    vibFile = new ChemFile();
+    vibFile = new ChemFile(control);
     for (int n = 0; n < numberFrames; ++n) {
       int numberVerticies = inputFrame.getAtomCount();
-      ChemFrame newFrame = new ChemFrame(numberVerticies);
+      ChemFrame newFrame = new ChemFrame(control, numberVerticies);
       for (int i = 0; i < numberVerticies; ++i) {
         double scaling = amplitudeScale
                            * Math.sin(2.0 * Math.PI * n / numberFrames);

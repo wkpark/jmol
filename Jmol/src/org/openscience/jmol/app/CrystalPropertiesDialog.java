@@ -1786,7 +1786,7 @@ public class CrystalPropertiesDialog extends JDialog
       // In case of a classical ChemFile has been loaded,
       // a CrystalFile is created.
       if (hasCrystalInfo == false) {
-	this.crystalFile = new CrystalFile(chemFile, rprim, acell);
+	this.crystalFile = new CrystalFile(control, chemFile, rprim, acell);
       this.chemFile = (ChemFile) crystalFile;
       
       // Say to everybody that we have a new chemfile!

@@ -15,7 +15,7 @@
 <section>
   <title>Testing results</title>
   <para>
-    The applet Jmol v6 is tested succesfully with these browsers:
+    The applet Jmol v6 is tested successfully with these browsers:
     <informaltable>
       <tgroup cols="4">
 	<thead>
@@ -28,16 +28,76 @@
 	</thead>
 	<tbody>
 	  <row>
+	    <entry>Mozilla 1.2.1</entry>
+	    <entry>RedHat Linux 9.0</entry>
+	    <entry>Intel Celeron</entry>
+	    <entry>Sun 1.4.1_02-b06</entry>
+	  </row>
+	  <row>
+	    <entry>Netscape 4.79</entry>
+	    <entry>RedHat Linux 9.0</entry>
+	    <entry>Intel Celeron</entry>
+	    <entry>Sun 1.4.1_01-b03</entry>
+	  </row>
+	  <row>
+	    <entry>Konqueror 3.1-12 Red Hat</entry>
+	    <entry>RedHat Linux 9.0</entry>
+	    <entry>Intel Celeron</entry>
+	    <entry>Sun 1.4.2</entry>
+	  </row>
+	  <row>
+	    <entry>Galeon 1.2.7</entry>
+	    <entry>RedHat Linux 9.0</entry>
+	    <entry>Intel Celeron</entry>
+	    <entry>Sun 1.4.1_02-b06</entry>
+	  </row>
+	  <row>
+	    <entry>IE 5.50.4134.0600</entry>
+	    <entry>WinME</entry>
+	    <entry>Inten Pentium</entry>
+	    <entry>MS JVM 5.00.3309</entry>
+	  </row>
+	  <row>
+	    <entry>IE 5.50.4134.0600</entry>
+	    <entry>WinME</entry>
+	    <entry>Intel Pentium</entry>
+	    <entry>Sun 1.3.1_06</entry>
+	  </row>
+	  <row>
+	    <entry>Netscape 4.61</entry>
+	    <entry>WinME</entry>
+	    <entry>Intel Pentium</entry>
+	    <entry>1.1.5</entry>
+	  </row>
+	  <row>
+	    <entry>Mozilla 1.3</entry>
+	    <entry>WinME</entry>
+	    <entry>Intel Pentium</entry>
+	    <entry>Sun 1.4.1_01</entry>
+	  </row>
+	  <row>
+	    <entry>above this line</entry>
+	    <entry>tested </entry>
+	    <entry>for</entry>
+	    <entry>jmol 6</entry>
+	  </row>
+	  <row>
 	    <entry>IE 6.0</entry>
 	    <entry>WinME</entry>
 	    <entry>Intel Pentium</entry>
 	    <entry>Sun 1.4.1_01</entry>
 	  </row>
 	  <row>
-	    <entry>IE 5.50.4134.0600</entry>
+	    <entry>IE 6.0</entry>
+	    <entry>WinME</entry>
+	    <entry>Intel Pentium</entry>
+	    <entry>Sun 1.4.1_01</entry>
+	  </row>
+	  <row>
+	    <entry>IE 5.50.4134.0100</entry>
 	    <entry>Win98</entry>
-	    <entry>i386</entry>
-	    <entry>MS JVM 5.00.3309</entry>
+	    <entry>Pentium</entry>
+	    <entry>MS JVM 5.0.0.3809</entry>
 	  </row>
 	  <row>
 	    <entry>IE 5.0.0</entry>

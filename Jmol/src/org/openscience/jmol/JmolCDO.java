@@ -32,6 +32,7 @@ import org.openscience.cdk.io.cml.cdopi.CDOAcceptedObjects;
 
 public final class JmolCDO extends ANIMATIONCDO {
 
+  DisplayControl control;
   private ChemFile file;
   private ChemFrame currentFrame;
 
@@ -44,9 +45,10 @@ public final class JmolCDO extends ANIMATIONCDO {
   //Crystal
   private double[][] rprimd; //the dimensional primitive vectors
 
-  public JmolCDO() {
-    currentFrame = new ChemFrame();
-    file = new ChemFile();
+  public JmolCDO(DisplayControl control) {
+    this.control = control;
+    currentFrame = new ChemFrame(control);
+    file = new ChemFile(control);
   }
 
   public void startDocument() {
@@ -76,7 +78,7 @@ public final class JmolCDO extends ANIMATIONCDO {
     } else if (type.equals("Crystal")) {
       this.startCrystal();
       if (!(file instanceof CrystalFile)) {
-	file = new CrystalFile();
+	file = new CrystalFile(control);
       }
       // assume frame has been started       
     } else {
@@ -144,7 +146,7 @@ public final class JmolCDO extends ANIMATIONCDO {
   }
 
   public void startFrame() {
-    currentFrame = new ChemFrame();
+    currentFrame = new ChemFrame(control);
   }
   
   public void endFrame() {

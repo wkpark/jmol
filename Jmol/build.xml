@@ -1,5 +1,8 @@
 <project name="Jmol" default="main" basedir=".">
 
+  <!-- pull developer-specific settings from their home directory -->
+  <property file="${user.home}/.jmol.build.properties" />
+
   <!-- compile options -->
   <property name="build.sysclasspath" value="ignore" />
   <property name="build.compiler" value="javac1.4" />
@@ -11,7 +14,6 @@
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
   <property name="build.dir" value="build" />
-  <property name="generatedSource.dir" value="${build.dir}/generatedSource" />
   <property name="lib.dir" value="jars" />
   <property name="appjars.dir" value="appjars" />
   <property name="classes.dir" value="${build.dir}/classes" />
@@ -25,7 +27,10 @@
   <property name="javadoc.dir" value="javadoc" />
   <property name="manifest" value="${source.dir}/manifest"/>
   <property name="manifest-applet" value="${source.dir}/manifest"/>
-  <property name="docbook.dir" value="Must be set by user." />
+  <property name="docbook-xsl" value="docbook-xsl-1.55.0" />
+  <property name="docbook.dir"
+            value="${user.dir}/${build.dir}/${docbook-xsl}" />
+  <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
 
   <property file="proxy.properties" />
@@ -46,31 +51,41 @@
   
   <target name="main" id="main" depends="init,jar,applet-jar"/>
   
-  <target name="init">
+  <target name="all" id="all" depends="doc,main"/>
+
+  <target name="init" id="init">
     <tstamp/>
   </target>
 
-  <target name="initFailure">
+  <target name="initFailure" id="initFailure">
     <fail message="Init failed. See messages above." />
   </target>
 
   <target name="setup" id="setup">
+    <uptodate property="docbook-xsl.uptodate"
+      targetfile="${build.dir}/${docbook-xsl}"
+      srcfile="${doc.dir}/${docbook-xsl}.tar.gz" />
     <uptodate property="jmolGuide.uptodate" 
-      targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
-      <srcfiles dir="${doc.dir}/source" includes="JmolGuide.docbook.xml" />
+      targetfile="${build.dir}/${doc.dir}/JmolUserGuide/index.html">
+      <srcfiles dir="${doc.dir}/source"
+                includes="JmolGuide.docbook.xml, guide/*.docbook.xml" />
     </uptodate>
-    <uptodate property="jmolHistory.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html">
-      <srcfiles dir="${doc.dir}/source" includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
+    <uptodate property="jmolHistory.uptodate"
+      targetfile="${build.dir}/${doc.dir}/JmolHistory/ChangeLog.html">
+      <srcfiles dir="${doc.dir}/source"
+        includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
     </uptodate>
     <uptodate property="jmolDevelopersGuide.uptodate"
-        targetfile="${doc.dir}/JmolDevelopersGuide.html">
-      <srcfiles dir="${doc.dir}/source" includes="JmolDevelopersGuide.docbook.xml" />
+        targetfile="${build.dir}/${doc.dir}/JmolDevelopersGuide.html">
+      <srcfiles dir="${doc.dir}/source"
+        includes="JmolDevelopersGuide.docbook.xml" />
     </uptodate>
     <uptodate property="jmolAppletGuide.uptodate"
-        targetfile="${doc.dir}/JmolAppletGuide.html">
-      <srcfiles dir="${doc.dir}/source" includes="JmolAppletGuide.docbook.xml" />
+        targetfile="${build.dir}/${doc.dir}/JmolAppletGuide.html">
+      <srcfiles dir="${doc.dir}/source"
+        includes="JmolAppletGuide.docbook.xml, applet/*.docbook.xml" />
     </uptodate>
-    <available file="${docbook.dir}" property="docbook.dir.present"/>
+
     <available classname="com.icl.saxon.StyleSheet"
       classpath="${lib.dir}/saxon.jar"
       property="xsl.available"/>
@@ -95,7 +110,6 @@
 
   <target id="classes" name="classes" depends="init">
     <mkdir dir="${classes.dir}"/>
-    <mkdir dir="${generatedSource.dir}"/>
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
         debug="${debug}" deprecation="${deprecation}" optimize="${optimization}">
       <classpath refid="project.class.path" />
@@ -113,16 +127,9 @@
         <include name="**/*.txt" />
       </fileset>
     </copy>
-    <copy todir="${classes.dir}" >
-      <fileset dir="${generatedSource.dir}">
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.html" />
-      </fileset>
-    </copy>
   </target>
   
-  <target name="compile.tests" depends="classes">
+  <target name="compile.tests" id="compile.tests" depends="classes">
     <mkdir dir="${tests.classes.dir}"/>
     <javac srcdir="${tests.source.dir}" destdir="${tests.classes.dir}"
         debug="${debug}" deprecation="${deprecation}" optimize="${optimization}">
@@ -136,7 +143,7 @@
     </copy>
   </target>
 
-  <target name="applet-classes" depends="init">
+  <target name="applet-classes" id="applet-classes" depends="init">
     <mkdir dir="${applet.classes.dir}"/>
     <property name="build.compiler" value="javac1.1" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
@@ -157,7 +164,7 @@
     </copy>
   </target>
 
-  <target name="check.appjars">
+  <target name="check.appjars" id="check.appjars">
     <uptodate property="appjars.uptodate"
       targetfile="${appjars.dir}">
       <srcfiles dir="${lib.dir}" includes="jmolcdk.jar"/>
@@ -171,7 +178,7 @@
     </uptodate>
   </target>
   
-  <target name="appjars" depends="check.appjars" unless="appjars.uptodate">
+  <target name="appjars" id="appjars" depends="check.appjars" unless="appjars.uptodate">
     <delete dir="${appjars.dir}"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
@@ -183,7 +190,17 @@
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
   </target>
 
-  <target name="jar" id="jar" depends="init,classes,appjars">
+  <target name="jar" id="jar" depends="init,classes,jmolGuide,jmolHistory,appjars">
+    <copy todir="${classes.dir}/org/openscience/jmol/Data/guide" >
+      <fileset dir="${build.dir}/${doc.dir}/JmolUserGuide">
+        <include name="**/*.html" />
+      </fileset>
+    </copy>
+    <copy todir="${classes.dir}/org/openscience/jmol/Data" >
+      <fileset dir="${build.dir}/${doc.dir}/JmolHistory">
+        <include name="**/*.html" />
+      </fileset>
+    </copy>
     <jar jarfile="jmol.jar" manifest="${manifest}" >
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
@@ -197,14 +214,15 @@
     </jar>
   </target>
 
-  <target name="check.appletjars">
+  <target name="check.appletjars" id="check.appletjars">
     <uptodate property="appletjars.uptodate"
       targetfile="${appletjars.dir}">
       <srcfiles dir="${lib.dir}"
            includes="jmolappletcdk.jar,gnujaxp-saxonly.jar,vecmath1.2-1.14.jar"/>
     </uptodate>
   </target>
-  <target name="appletjars" depends="check.appletjars"
+  
+  <target name="appletjars" id="appletjars" depends="check.appletjars"
          unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
@@ -231,7 +249,12 @@
         <include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>
-  </target>
+    <!-- delete stuff we do not want to ship with the applet -->
+    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cmlCore.xsd"/>
+    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cml1_0_1.xsd"/>
+    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/tools/jmol_atomtypes.txt"/>
+    <delete file="${appletjars.dir}/org/openscience/cdk/config/log4j.properties"/>
+ </target>
 
   <target name="applet-jar" id="applet-jar" depends="applet-classes,appletjars">
     <jar jarfile="JmolApplet.jar" >
@@ -242,7 +265,7 @@
     </jar>
   </target>
 
-  <target name="dist" depends="jar,applet-jar">
+  <target name="dist" id="dist" depends="doc,jar,applet-jar">
     <mkdir dir="${dist.dir}/jmol-${version}"/>
     <copy todir="${dist.dir}/jmol-${version}" >
       <fileset dir=".">
@@ -265,13 +288,17 @@
     <copy todir="${dist.dir}/jmol-${version}/samples" >
       <fileset dir="samples" />
     </copy>
-    <copy   file="doc/JmolDevelopersGuide.html"
+    <copy   file="${build.dir}/${doc.dir}/JmolDevelopersGuide.html"
           tofile="${dist.dir}/jmol-${version}/${doc.dir}/JmolDevelopersGuide.html" />
-    <copy   file="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html"
+    <copy   file="${build.dir}/${doc.dir}/JmolHistory/ChangeLog.html"
           tofile="${dist.dir}/jmol-${version}/ChangeLog.html" />
-    <copy todir="${dist.dir}/jmol-${version}/${doc.dir}/UserGuide" >
-      <fileset dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
+    <copy todir="${dist.dir}/jmol-${version}/${doc.dir}/JmolUserGuide">
+      <fileset dir="${build.dir}/${doc.dir}/JmolUserGuide">
+        <include name="**/*.html" />
+      </fileset>
     </copy>
+    <copy   file="${build.dir}/${doc.dir}/JmolAppletGuide.html"
+          tofile="${dist.dir}/jmol-${version}/${doc.dir}/JmolAppletGuide.html" />
 
     <mkdir dir="${dist.dir}/jmol-applet-${version}"/>
     <copy todir="${dist.dir}/jmol-applet-${version}" >
@@ -280,19 +307,26 @@
         <include name="*.txt" />
       </fileset>
     </copy>
-    <copy   file="doc/JmolAppletGuide.html"
+    <copy todir="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolUserGuide">
+      <fileset dir="${build.dir}/${doc.dir}/JmolUserGuide">
+        <include name="**/*.html" />
+      </fileset>
+    </copy>
+    <copy   file="${build.dir}/${doc.dir}/JmolDevelopersGuide.html"
+          tofile="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolDevelopersGuide.html" />
+    <copy   file="${build.dir}/${doc.dir}/JmolAppletGuide.html"
           tofile="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolAppletGuide.html" />
-    <copy   file="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html"
+    <copy   file="${build.dir}/${doc.dir}/JmolHistory/ChangeLog.html"
           tofile="${dist.dir}/jmol-applet-${version}/ChangeLog.html" />
   </target>
 
-  <target name="check.jws" depends="setup" unless="keystore.present" >
+  <target name="check.jws" id="check.jws" depends="setup" unless="keystore.present" >
     <echo message="Keystore '${keystore.name}' not found." />
     <echo message="Please set with the argument '-Dkeystore.name=file'." />
     <antcall target="initFailure" />
   </target>
 
-  <target name="dist-jws" depends="check.jws,dist" >
+  <target name="dist-jws" id="dist-jws" depends="check.jws,dist" >
     <copy todir="${dist.dir}/jmol-jws-${version}" >
       <fileset dir="${source.dir}">
         <include name="jmol.jnlp" />
@@ -322,7 +356,7 @@
     workaround for a bugs in the fileset feature of the signjar task. See bugs
     5230 and 6988.
   -->
-  <target name="internal-dist-jws-sign" >
+  <target name="internal-dist-jws-sign" id="internal-dist-jws-sign">
     <signjar alias="${keystore.alias}" 
         storepass="${keystore.password}" 
         keystore="${keystore.name}" >
@@ -339,12 +373,12 @@
       includes="jmol-${version}/**" />
   </target>
 
-  <target name="applet.dist.zip" depends="dist">
+  <target name="applet.dist.zip" id="applet.dist.zip" depends="dist">
     <zip zipfile="${build.dir}/jmol-applet-${version}.zip" basedir="${dist.dir}"
       includes="jmol-applet-${version}/**" />
   </target>
 
-  <target name="dist.tar.gz" depends="dist">
+  <target name="dist.tar.gz" id="dist.tar.gz" depends="dist">
     <tar tarfile="${build.dir}/jmol-${version}.tar" basedir="${dist.dir}"
         excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
@@ -364,7 +398,7 @@
     <delete file="${build.dir}/jmol-${version}.tar" />
   </target>
 
-  <target name="applet.dist.tar.gz" depends="dist">
+  <target name="applet.dist.tar.gz" id="applet.dist.tar.gz" depends="dist">
     <tar tarfile="${build.dir}/jmol-applet-${version}.tar" basedir="${dist.dir}"
       includes="jmol-applet-${version}/**"/>
     <gzip zipfile="${build.dir}/jmol-applet-${version}.tar.gz"
@@ -372,42 +406,57 @@
     <delete file="${build.dir}/jmol-applet-${version}.tar" />
   </target>
 
-  <target name="sourcedist" id="sourcedist">
+  <target name="sourcedist" id="sourcedist" depends="doc">
     <mkdir dir="${sourcedist.dir}/jmol-${version}"/>
     <copy todir="${sourcedist.dir}/jmol-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-        <exclude name="jmol*.jar" />
+        <include name="*.jar" />
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}" >
       <fileset dir=".">
-        <include name="*" />
-        <exclude name="${build.dir}" />
+        <include name="*.txt" />
+        <include name="applet.classes" />
+        <include name="build.xml" />
+        <include name="jmol" />
+        <include name="jmol.bat" />
+        <include name="jmol.sh" />
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${source.dir}" >
-      <fileset dir="${source.dir}" />
+      <fileset dir="${source.dir}">
+        <exclude name="**/CVS"/>
+      </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${tests.source.dir}" >
-      <fileset dir="${tests.source.dir}" />
+      <fileset dir="${tests.source.dir}">
+        <exclude name="**/CVS"/>
+      </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${doc.dir}" >
-      <fileset dir="${doc.dir}" />
+      <fileset dir="${doc.dir}">
+        <exclude name="**/CVS"/>
+      </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/samples" >
-      <fileset dir="samples" />
+      <fileset dir="samples">
+        <exclude name="**/CVS"/>
+      </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/packaging" >
-      <fileset dir="packaging" />
+      <fileset dir="packaging">
+        <exclude name="**/CVS"/>
+        <exclude name="rpm/dist"/>
+      </fileset>
     </copy>
   </target>
 
-  <target name="sourcedist.zip" depends="sourcedist">
+  <target name="sourcedist.zip" id="sourcedist.zip" depends="sourcedist">
     <zip zipfile="${build.dir}/jmol-${version}.source.zip"
         basedir="${sourcedist.dir}" includes="**" />
   </target>
 
-  <target name="sourcedist.tar.gz" depends="sourcedist">
+  <target name="sourcedist.tar.gz" id="sourcedist.tar.gz" depends="sourcedist">
     <tar tarfile="${build.dir}/jmol-${version}.source.tar"
         basedir="${sourcedist.dir}" excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
@@ -427,15 +476,14 @@
     <delete file="${build.dir}/jmol-${version}.source.tar" />
   </target>
 
-  <target name="main-dists" description="Builds primary distributions."
+  <target id="main-dists" name="main-dists" description="Builds primary distributions."
       depends="dist.zip,dist.tar.gz,sourcedist.zip,sourcedist.tar.gz"/>
 
-  <target name="applet-dists" description="Builds applet distributions."
+  <target id="applet-dists" name="applet-dists" description="Builds applet distributions."
       depends="applet.dist.zip,applet.dist.tar.gz"/>
 
   <target name="clean" id="clean">
     <delete dir="${classes.dir}"/>
-    <delete dir="${generatedSource.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${tests.classes.dir}"/>
     <delete dir="${appjars.dir}"/>
@@ -448,9 +496,10 @@
     </delete>
   </target>
 
-  <target name="spotless" depends="clean">
+  <target name="spotless" id="spotless" depends="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${javadoc.dir}"/>
+    <delete dir="packaging/rpm/dist"/>
   </target>
   
   <target name="run" id="run" depends="classes">
@@ -475,15 +524,14 @@
   <!-- ********************************
        Documentation Targets
        ******************************** -->
-  <target name="doc"
+  <target name="doc" id="doc"
   depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
   
   <target name="initdoc" depends="init,check.docbook,check.xsl" />
   
-  <target name="check.docbook" depends="setup" unless="docbook.dir.present" >
-    <echo message="Docbook directory '${docbook.dir}' not found." />
-    <echo message="Please set with the argument '-Ddocbook.dir=directory'." />
-    <echo message="Note that the documentation is CANNOT generated now." />
+  <target name="check.docbook" depends="setup" unless="docbook-xsl.uptodate" >
+    <untar src="${doc.dir}/${docbook-xsl}.tar.gz" dest="${build.dir}"
+      compression="gzip" />
   </target>
 
   <target name="check.xsl" depends="setup" unless="xsl.available" >
@@ -502,8 +550,8 @@
   <target name="jmolGuide" id="jmolGuide" depends="initdoc"
           unless="jmolGuide.uptodate" >
     <echo message="Generating user's guide" />
-    <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
-    <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide"
+    <mkdir dir="${build.dir}/${doc.dir}/JmolUserGuide" />
+    <java fork="true" dir="${build.dir}/${doc.dir}/JmolUserGuide"
         classname="com.icl.saxon.StyleSheet"
         classpath="${lib.dir}/saxon.jar" >
       <jvmarg value="${proxyHost}" />
@@ -513,10 +561,10 @@
     </java>
   </target>
 
-  <target name="jmolHistory" depends="initdoc" unless="jmolHistory.uptodate" >
+  <target name="jmolHistory" id="jmolHistory" depends="initdoc" unless="jmolHistory.uptodate" >
     <echo message="Generating history of changes" />
-    <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data" />
-    <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data"
+    <mkdir dir="${build.dir}/${doc.dir}/JmolHistory" />
+    <java fork="true" dir="${build.dir}/${doc.dir}/JmolHistory"
         classname="com.icl.saxon.StyleSheet"
         classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
@@ -526,27 +574,27 @@
     </java>
   </target>
 
-  <target name="jmolDevelopersGuide" depends="initdoc"
+  <target name="jmolDevelopersGuide" id="jmolDevelopersGuide" depends="initdoc"
           unless="jmolDevelopersGuide.uptodate" >
     <echo message="Generating developer's guide" />
-    <java fork="true" dir="${doc.dir}"
+    <java fork="true" dir="${build.dir}/${doc.dir}"
         classname="com.icl.saxon.StyleSheet"
         classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
-      <arg value="${user.dir}/${doc.dir}/JmolDevelopersGuide.html" />
+      <arg value="JmolDevelopersGuide.html" />
       <arg value="${user.dir}/${doc.dir}/source/JmolDevelopersGuide.docbook.xml" />
       <arg value="${docbook.dir}/html/docbook.xsl" />
     </java>
   </target>
 
-  <target name="jmolAppletGuide" depends="initdoc"
+  <target name="jmolAppletGuide" id="jmolAppletGuide" depends="initdoc"
           unless="jmolAppletGuide.uptodate" >
     <echo message="Generating applet guide" />
-    <java fork="true" dir="${doc.dir}"
+    <java fork="true" dir="${build.dir}/${doc.dir}"
         classname="com.icl.saxon.StyleSheet"
         classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
-      <arg value="${user.dir}/${doc.dir}/JmolAppletGuide.html" />
+      <arg value="JmolAppletGuide.html" />
       <arg value="${user.dir}/${doc.dir}/source/JmolAppletGuide.docbook.xml" />
       <arg value="${docbook.dir}/html/docbook.xsl" />
     </java>

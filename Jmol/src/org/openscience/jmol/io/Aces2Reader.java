@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Vibration;
@@ -66,8 +67,8 @@ public class Aces2Reader extends DefaultChemFileReader {
    *
    * @param input source of Aces2 data
    */
-  public Aces2Reader(Reader input) {
-    super(input);
+  public Aces2Reader(DisplayControl control, Reader input) {
+    super(control, input);
   }
 
   /**
@@ -78,7 +79,7 @@ public class Aces2Reader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
+    ChemFile file = new ChemFile(control, bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
 
@@ -87,7 +88,7 @@ public class Aces2Reader extends DefaultChemFileReader {
       if (line.indexOf("Z-matrix   Atomic") >= 0) {
 
         // Found a set of coordinates.
-        frame = new ChemFrame();
+        frame = new ChemFrame(control);
         readCoordinates(frame);
         break;
       }
@@ -103,7 +104,7 @@ public class Aces2Reader extends DefaultChemFileReader {
           // Found a set of coordinates.
           // Add current frame to file and create a new one.
           file.addFrame(frame);
-          frame = new ChemFrame();
+          frame = new ChemFrame(control);
           readCoordinates(frame);
         } else if (line.indexOf("E(SCF)") >= 0) {
 

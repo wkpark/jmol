@@ -31,9 +31,9 @@ fi
 JMOL_HOME=${JMOL_HOME:-$binDir}
 libDir=${JMOL_HOME}/jars
 
-if [ ! -e $libDir/jmol.jar ]; then
+if [ ! -e ${JMOL_HOME}/jmol.jar ]; then
 	echo "Jmol could not find its installed files."
 	exit
 fi
 
-$command -Djmol.home="$JMOL_HOME" -jar $libDir/jmol.jar "$@"
+$command -Djmol.home="$JMOL_HOME" -jar ${JMOL_HOME}/jmol.jar "$@"

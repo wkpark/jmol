@@ -64,17 +64,17 @@ public class AtomTypeList {
     private AtomTypeList(File UAF) {
         data = new Vector();
         logger = new org.openscience.cdk.tools.LoggingTool(this.getClass().getName());
-        System.out.println("AtomTypeList:" + UAF);
+        // System.out.println("AtomTypeList:" + UAF);
         try {
             if (UAF.exists()) {
-              System.out.println("exists");
+                // System.out.println("exists");
                 ReadAtypes(UAF.toString());
             } else {
-              System.out.println("does not exist");
+                // System.out.println("does not exist");
                 ReadAtypes(SAU);
             }
         } catch (Exception exc) {
-            System.err.println("Error while reading AtomTypes." + exc);
+            // System.err.println("Error while reading AtomTypes." + exc);
         }
     }
 
@@ -161,17 +161,17 @@ public class AtomTypeList {
     }
 
     private void ReadAtypes(String configFile) throws Exception {
-        System.out.println("Reading config file... " + configFile);
+        // System.out.println("Reading config file... " + configFile);
         AtomTypeFactory atf = new AtomTypeFactory(configFile);
         
         org.openscience.cdk.AtomType[] types = atf.getAllAtomTypes();
-        System.out.println("Read atom types: " + types.length);
+        // System.out.println("Read atom types: " + types.length);
         for (int i=0; i<types.length; i++) {
             // convert all AtomType's to BaseAtomType and add then
             // to the list
             data.addElement(BaseAtomType.get(types[i]));
         }
-        System.out.println("done.");
+        // ystem.out.println("done.");
     }
 
     /**

@@ -70,7 +70,7 @@
 	For high quality images, Jmol interfaces with the POV-Ray ray tracer.
 	To use this feature, you must have the <command>povray</command> command
 	line utility installed. You can download it from
-	<ulink url="http://www.povray.org/">www.povray.org/</ulink>.
+	<ulink url="http://www.povray.org/">www.povray.org</ulink>.
 	</para>
       </section>
     </section>
@@ -100,6 +100,29 @@
       </para>
     </section>
     <section>
+      <title>Make Crystal...</title>
+      <para>
+        Opens a dialog that permits to build a new crystal starting 
+        from the present file.
+      </para>
+      <para> 
+        This dialog is
+        only active if the file does not contain information about 
+        the crystal structure. 
+        Once the crystal has been created, the Make Crystal item is disabled
+        but the crystal structure information can be accessed through
+        the Crystal Properties dialog in the Extra menu.
+      </para>
+      <para>
+        The Make Crystal dialog in the Edit menu and the Crystal Properties 
+        dialog in the Extra menu are actually the same but their behavior
+        is slightly different depending from where there are called. 
+        Their description is given 
+        in <xref linkend="crystal" /> 
+        later on in this manual.
+      </para>
+    </section>
+    <section>
       <title>Atom Properties...</title>
       <para> 
 	This menu opens a dialog in which atomic properties can be added to
@@ -126,6 +149,10 @@
 	  anti-aliasing operations. Therefore, you may need to disable the
 	  use of Java Graphics2D on this platform. 
 	</para>
+	<para>
+	  Note: The 1.4.1 JVM which has been released by Apple seems to
+	  have fixed a few problems for jmol ... but created a *lot* more :(
+	</para>
       </section>
       <section>
 	<title>Colors Tab</title>
@@ -141,6 +168,17 @@
     <title>The Display menu</title>
     <para>
       In this menu display settings/styles can be changed.
+    </para>
+    <para>
+      In general, display styles are applied to the currently selected
+      set of atoms and bonds.
+    </para>
+    <para>
+      By default, all atoms and bonds in a molecule are selected.
+    </para>
+    <para>
+      You may select individual atoms/bonds by using the selection cursor
+      or by using script commands.
     </para>
     <section>
       <title>Atom Style</title>
@@ -209,7 +247,7 @@
       <section>
 	<title>Boxes</title>
 	<para>
-	  Renders bonds as rectangle outlines.
+	  Renders bonds as rectangle outlines. (deprecated)
 	</para>
       </section>
       <section>
@@ -279,9 +317,9 @@
       <title>Perspective Depth</title>
       <para>
 	This option controls rendering with perspective depth. When this
-	option is unchecked molecules are rendered as a flat projection
-	onto the screen. When checked, sizes and distances are adjusted
-	for a camara perspective.
+	option is unchecked molecules are rendered as an orthogonal
+	flat projection	onto the screen. When this option is checked,
+	sizes and distances are adjusted for a camara perspective.
       </para>
       <para>
 	For a good example of this take a look at some of the crystal
@@ -289,7 +327,8 @@
 	or <filename>samples/HfO2_on_Si_relax.in</filename>
       </para>
       <para>
-	Alternatively, turn on the bounding box (see below).
+	Alternatively, you can turn on the bounding box to see the
+	effect of this setting (see below).
       </para>
     </section>
     <section>
@@ -363,7 +402,7 @@
       </para>
       <para>
 	{If you think there is a better definition for this
-	(center of gravity? center of the bounding box?)
+	(center of gravity?)
 	then let us know and we can either change this or add a
 	new definition.}
       </para>
@@ -451,11 +490,213 @@
 	CML animation with energies given for each frame.</para>
 	<para>An example file is supplied: conformeren.cml.</para>
       </section>
-      <section>
-	<title>Crystal Properties...</title>
-	<para>
-	  Opens the crystal properties dialog box. 
-	</para>
+    <section>
+      <title id="crystal">Crystal Properties...</title>
+      <para>Opens the crystal properties dialog box.</para>
+         <section>
+	    <title>The Primitive Vectors Panel.</title>
+	    <para>
+	      The three primitive vectors of the crystal can be defined in two different
+	      ways: by using either a "cartesian" or a "crystallographic" representation. 
+	      The choice of the representation is only a question of convenience and one
+	      can always switch from one representation to the other by using the
+	      "Representation" combo box. However, the "cartesian" representation allows
+              to orient the crystal freely in space whereas the crystallographic representation
+              restricts the "a" edge to be parallel to the x axis and the "b" edge to be in
+              the xy-plane.
+             </para>
+             <section>
+  	       <title>Cartesian representation.</title>	     
+	       <para> 
+	       There is three lines containing two fields each. Each line corresponds
+	       to a primitive vector. The first field contains the x, y, and z components
+	       of the vector separated with a coma. The second field is a multiplication factor
+	       for the first field and is barely a matter of convenience. The unit of
+	       the resulting vector is the Angstrom. When the values are settled, clicking
+	       on the Apply button  will update the data in the crystallographic 
+	       representation and will update the Display Panel.
+	       </para>
+             </section>
+             <section>
+	       <title>Crystallographic representation</title>
+	       <para>
+	       The a, b and c fields contain the three edge lengths (in angstrom) 
+	       of the crystal.
+	       As soon as the apply button is clicked, the a edge will be set parallel to x 
+	       and the b edge will lie in plane (x,y).
+	       The alpha, beta and gamma fields contain the angles (in degrees) 
+	       between the a and b, b and c, and b and a edges, respectively.
+	       </para>
+	       <para>
+	       Note that the atomic positions are always assumed in reduced coordinates of the
+	       primitive vectors. So, for instance, when the primitive vectors are scaled, the
+	       atoms remains in the same relative position.
+	       However, when a file containing no crystal information (and therefore no
+	       primitive vector) is loaded into jmol, reduced coordinates doesn't exist yet.
+	       In this case the Crystal dialog is only available via the Make Crystal 
+	       item in the Edit menu. The primitive vectors must be entered in a way to correspond to the atomic
+	       position defined in the input file. 
+               </para>
+               <para>
+               For example, the file bulk_Si.xyz in the
+	       samples directory contains the atomic positions of the crystalline silicon, i.e.
+	       one atom at (0, 0, 0) and another one at (1.347, 1.347, 1.347). A valid set of
+	       primitive vector is (0.0 0.5 0.5), (0.5 0.0 0.5) and  (0.5 0.5 0.0) with
+	       a multiplication factor of 5.387. In this
+	       case, the crystallographic representation cannot be used to create
+	       the crystal because a set of 3 primitive vectors whose one is parallel to x
+	       cannot lead to the Silicon crystal with the given particular atomic positions. 
+	       </para>
+            </section>
+	  </section>
+	  <section>
+	    <title>The Crystal Box Panel.</title>
+	    <para>
+	     This is the place to define the visualization range of the crystal.
+	     Three subpanels are present: the Atom Box, the Bond Box and the Unit
+	     Cell Box. In each subpanel, two fields are present: the minimum and the
+	     maximum coordinates in term of the unit vectors. They define a
+             parallelepipede where the visualization take place. 
+            </para>
+            <para>
+             For instance, 
+	     minimum = (0,0,0) and maximum = (1,1,2) leads to 2 unit cells aligned in
+	     the direction of the third primitive vector.  Non integer values are
+	     also accepted.
+            </para>
+            <para>
+            One can define a visualization range for three different aspects, the atoms, 
+            the bonds and the unit cell frame:
+            </para>
+            <section>
+	      <title>The Atom Box</title>	     
+	      <para> 	    
+	      Only the atoms of the crystal lying in the Atom Box will be displayed.
+	      If an atom exactly lie on a face, edge or corner of the unit cell, it will
+	      be displayed respectively 2, 4 or 8 times in the unit cell, 
+	      one for each equivalent
+	      face, edge or corner. This is due to a limitation of Jmol that cannot
+	      display a partial atom. It results that the total number of displayed atoms
+	      can be larger than the expected (in a crystallographic point of view) 
+	      number of atoms. Another nasty effect can be shown with the sample file 
+	      slab_7Si_3Vac_2x_relax_2x1.out. If you create an animation with frame
+	      interpolation, the interpolation results in erroneous frames due to the
+	      different number of atoms in two successive frames. 
+              </para>
+              <para>
+	      If the "Original atoms only" check box is checked, only the original atoms,
+	      i.e. the atoms as specified in the input file, will be displayed.
+	      </para>
+            </section>
+            <section>
+	      <title>The Bond Box</title>
+	      <para>
+	      A bond between two atoms will be drawn if these are lying in 
+	      the Bond Box. Of course, if the distance is bigger than the bond fudge,
+	      no bond will be drawn. 
+	      </para>
+             <section>
+	      <title>The Unit Cell Box</title>	     
+	      <para>
+	      Unit cell frames fully inside the specified range will be displayed. Non
+	      integer value can be specified but are useless. 
+	      </para>
+             </section>
+            </section>
+	  </section>
+	  <section>
+	    <title>The Base Vectors Panel.</title>
+            <para>
+	     In this panel, you will find the atomic position and the type
+	     of the base atoms in either
+	     cartesian (angstrom) or lattice (=reduced) coordinates depending on what is 
+	     selected in the combo box.
+            </para>
+	  </section>
+	  <section>
+	    <title>The Band Plot Panel.</title>
+            <para>
+	    This panel allows you to generate band plots used to represent the electronic 
+	    band structure or the phonon dispersion curves of crystals. So far,
+	    data can only be loaded from ABINIT output files and only electronic bands
+	    are supported. An example, Si_eband.out, can be found in the samples directory.
+            This file contains 2 datasets. Only dataset 2 contains information for a band plot.   
+            </para>
+            <para>
+            A band plot or band diagram, represents the electronic energy
+	    (the phonon frequency) of a state (mode) versus its wave vector along particular
+	    lines.
+	    Each line of the table on the top of the panel represents such particular line. The first
+	    field is an index that is used to refer to the line (it will be referred below as 
+            the "line index"). The second ("Origin") and forth ("End") fields are
+	    the position of the first end last point of the line given in reduced coordinates
+	    of the primitive reciprocal vectors. 
+            The third ("Origin Label") and fith ("End Label") are the labels of the origin and end
+            point of the line respectively. These two fields are editable. Typically it will consist
+            of a single letter ("X" for instance). Greek letters are also supported by putting a
+            "\S" in front of the letter (for instance "\S G" gives the Greekletter Gamma). A complete
+            description of the syntax is given below in <xref linkend="formatting" />. 
+            The last field is the total number of points n in
+	    that line. The first point of the line has index 0 and the last point has index n-1.
+	    Below the table, are a number of fields used to tune the aspect of the plot:
+	    </para>
+
+           <itemizedlist>
+	    <listitem><para>Resolution: the horizontal resolution of the plot in pixels.</para></listitem>
+	    <listitem><para>Ratio: the y/x ratio of the plot.</para></listitem>
+	    <listitem><para>Fontsize 1: fontsize of the abscisse values.</para></listitem>
+	    <listitem><para>Fontsize 2: fontsize of the ordinate values.</para></listitem>
+	    <listitem><para>Fontsize 3: fontsize of the ordinate label.</para></listitem>
+	    <listitem><para>Energy Units: the units of the ordinate axis. As you may have noticed,
+	    the dimensions are either an energy or an inverse wavelength (corresponding to
+	    the wavelength that would have light of that energy).</para></listitem>
+	    <listitem><para>Minimum Energy: the minimum energy of the ordinate axis.</para></listitem>
+	    <listitem><para>Maximum Energy: the maximum energy of the ordinate axis.</para></listitem>
+	    <listitem><para>Fermi Level: an horizontal line will be ploted at that position.</para></listitem>
+	    <listitem><para>The Fix Fraction Digits/Exp Fraction Digits combo box: indicates the number format
+	    of the ordinate values - fixed or exponential. The number on the right of the 
+	    combo box is the number of decimal figures.</para></listitem>
+	    <listitem><para>Vertical Tics: the number of tics on the ordinate axis.</para></listitem>
+	    <listitem><para>Horizontal Tics: the number of tics on the abscisse axis.</para></listitem>
+	    <listitem><para>Separator size: the size of the separation between two subplot (see below ";").</para></listitem>
+	    <listitem><para>The Y label: The label of the ordinate axis.</para></listitem>
+	    <listitem><para>Define Plot: defines  the structure of the plot.</para>
+                      <para>The structure is basically defined by a string which is a coma separated list
+                            of the line numbers in the table in the top of the panel. For example "0,1,2" with
+                            the sample file Si_eband.out/dataset2 will draw a continuous band plot along the path
+                            (0.5, 0.0, 0.0) - (0.0, 0.0, 0.0) - (0.0, 0.5, 0.5) - (1.0, 1.0, 1.0) or 
+                            X - G - M - G.
+                      </para>
+                      <para>A coma in the list can be replaced by a ";". In that case,
+                            the plot is no more continuous but a separation is drawn (see "Separator Size" hier above).
+                            For example "0,1;2" will draw the band diagram along the path X - G | M - G with a
+                            separation between the first G and M.
+                      </para>
+                      <para>A partial line can also be drawn by specifying the range in square brackets. For
+                            example "0,1[0-7];2" will only draw line 1 between points 0 and 7. The user has to know
+                            the position of the points as there are defined in the input file. Notice that the
+                            maximum range is [0,Number Of Points - 1] and is assumed by default.
+                      </para>
+                      <para>A line can also be drawn in the reverse direction. For this, a minus has to be prepended
+                            in front of the line number. For example "0,1;-2" will draw band diagram along the path
+                            X - G | G - M. 
+                      </para>
+                      </listitem>
+           </itemizedlist>
+
+           <section>
+            <title id="formatting">Text Formatting</title>
+            <para>
+            A very basic text formatting alows to combine greek and latin characters. Greek 
+            characters are obtained by preceding the text with \S, latin characters by \N.
+            If nothing is specified, latin characters are assumed. Superscript characters are obtained
+            with a ^.
+            </para>
+            <para>
+            For example : \S l \N \ ( \S m \N m^-1 ).
+            </para>
+           </section>
+	 </section>
       </section>
     </section>
     <section>

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.NMRShielding;
@@ -62,8 +63,8 @@ public class Gaussian98Reader extends DefaultChemFileReader {
    *
    * @param input source of Gaussian98 data
    */
-  public Gaussian98Reader(Reader input) {
-    super(input);
+  public Gaussian98Reader(DisplayControl control, Reader input) {
+    super(control, input);
   }
 
   /**
@@ -74,7 +75,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
+    ChemFile file = new ChemFile(control, bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
     String levelOfTheory = null;
@@ -84,7 +85,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
       if (line.indexOf("Standard orientation:") >= 0) {
 
         // Found a set of coordinates
-        frame = new ChemFrame(bondsEnabled);
+        frame = new ChemFrame(control, bondsEnabled);
         readCoordinates(frame);
         break;
       }
@@ -102,7 +103,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
           frame.rebond();
           file.addFrame(frame);
           fireFrameRead();
-          frame = new ChemFrame(bondsEnabled);
+          frame = new ChemFrame(control, bondsEnabled);
           readCoordinates(frame);
         } else if (line.indexOf("SCF Done:") >= 0) {
 

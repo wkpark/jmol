@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.render.AtomShape;
 import java.awt.Color;
 import java.util.Vector;
@@ -42,16 +43,17 @@ public class Atom extends org.openscience.cdk.Atom {
    *
    * @param the type of this atom.
    */
-  public Atom(Atom atom, int atomNumber,
+  public Atom(DisplayControl control, Atom atom, int atomNumber,
               double x, double y, double z, ProteinProp pprop) {
     super(atom.getSymbol(), new Point3d(x, y, z));
     super.setID(atom.getAtomTypeName());
     this.baseAtomType = atom.baseAtomType;
     this.atomNumber = atomNumber;
     this.pprop = pprop;
+    this.control = control;
   }
 
-  public Atom(org.openscience.cdk.Atom atom) {
+  public Atom(DisplayControl control, org.openscience.cdk.Atom atom) {
     super(atom.getSymbol(), atom.getPoint3D());
     super.setAtomicNumber(atom.getAtomicNumber());
     super.setAtomTypeName(atom.getAtomTypeName());
@@ -69,6 +71,7 @@ public class Atom extends org.openscience.cdk.Atom {
     } else {
         this.baseAtomType = BaseAtomType.get(atom.getAtomicNumber());
     }
+    this.control = control;
   }
 
   /**
@@ -271,12 +274,13 @@ public class Atom extends org.openscience.cdk.Atom {
     return (bondedAtoms == null) ? 0 : bondedAtoms.length;
   }
 
-  public AtomShape atomShape;
-  public void setAtomShape(AtomShape atomShape) {
-    this.atomShape = atomShape;
-  }
+  private DisplayControl control;
+  private AtomShape atomShape;
 
   public AtomShape getAtomShape() {
+    if (atomShape == null) {
+      atomShape = new AtomShape(this, control);
+    }
     return atomShape;
   }
 

@@ -40,12 +40,12 @@ public class CrystalFrame extends ChemFrame {
   //etc.
   private Vector boxEdges; //Vector of Point3d
   
-  public CrystalFrame() {
-    super();
+  public CrystalFrame(DisplayControl control) {
+    super(control);
   }
 
-  public CrystalFrame(int na) {
-    super(na);
+  public CrystalFrame(DisplayControl control, int na) {
+    super(control, na);
   }
 
   public void setRprimd(double[][] rprimd) {

@@ -353,6 +353,9 @@ public class Eval implements Runnable {
       case Token.wireframe:
         wireframe();
         break;
+      case Token.animate:
+        animate();
+        break;
         // not implemented
       case Token.backbone:
       case Token.bond:
@@ -462,6 +465,10 @@ public class Eval implements Runnable {
 
   void unrecognizedSetParameter() throws ScriptException {
     evalError("unrecognized SET parameter");
+  }
+
+  void unrecognizedSubcommand() throws ScriptException {
+    evalError("unrecognized subcommand");
   }
 
   void setspecialShouldNotBeHere() throws ScriptException {
@@ -1432,6 +1439,77 @@ public class Eval implements Runnable {
       booleanOrNumberExpected();
     }
     control.setStyleMarBondScript(style, mar);
+  }
+
+  void animate() throws ScriptException {
+    if (statement.length < 2 || statement[1].tok != Token.identifier)
+      unrecognizedSubcommand();
+    String cmd = (String)statement[1].value;
+    if (cmd.equalsIgnoreCase("frame")) {
+      if (statement.length != 3 || statement[2].tok != Token.integer)
+        integerExpected();
+      int frame = statement[2].intValue;
+      if (frame < 0 || frame >= control.getNumberOfFrames()) 
+       numberOutOfRange();
+      control.setFrame(frame);
+    } else if (cmd.equalsIgnoreCase("next")) {
+      int frame = control.getCurrentFrameNumber() + 1;
+      if (frame < control.getNumberOfFrames())
+        control.setFrame(frame);
+    } else if (cmd.equalsIgnoreCase("prev")) {
+      int frame = control.getCurrentFrameNumber() - 1;
+      if (frame >= 0)
+        control.setFrame(frame);
+    } else if (cmd.equalsIgnoreCase("nextwrap")) {
+      int frame = control.getCurrentFrameNumber() + 1;
+      if (frame >= control.getNumberOfFrames())
+        frame = 0;
+      control.setFrame(frame);
+    } else if (cmd.equalsIgnoreCase("prevwrap")) {
+      int frame = control.getCurrentFrameNumber() - 1;
+      if (frame < 0)
+        frame = control.getNumberOfFrames() - 1;
+      control.setFrame(frame);
+    } else if (cmd.equalsIgnoreCase("play")) {
+      animatePlay(true);
+    } else if (cmd.equalsIgnoreCase("revplay")) {
+      animatePlay(false);
+    } else if (cmd.equalsIgnoreCase("rewind")) {
+      control.setFrame(0);
+    } else {
+      unrecognizedSubcommand();
+    }
+  }
+
+  void animatePlay(boolean forward) {
+    int nframes = control.getNumberOfFrames();
+    long timeBegin = System.currentTimeMillis();
+    long targetTime = timeBegin;
+    int frameTimeMillis = 100;
+    int frameBegin, frameEnd, frameDelta;
+    if (forward) {
+      frameBegin = 0;
+      frameEnd = nframes;
+      frameDelta = 1;
+    } else {
+      frameBegin = nframes - 1;
+      frameEnd = -1;
+      frameDelta = -1;
+    }
+    control.setInMotion(true);
+    for (int frame = frameBegin; frame != frameEnd; frame += frameDelta) {
+      control.setFrame(frame);
+      refresh();
+      targetTime += frameTimeMillis;
+      long sleepTime = targetTime - System.currentTimeMillis();
+      if (sleepTime > 0) {
+        try {
+          Thread.sleep(sleepTime);
+        } catch (InterruptedException ie) {
+        }
+      }
+    }
+    control.setInMotion(false);
   }
 
   /****************************************************************

@@ -503,7 +503,7 @@ public class Jmol extends JPanel {
     try {
       ChemFileReader reader = null;
       try {
-        reader = ReaderFactory.createReader(input);
+        reader = ReaderFactory.createReader(control, input);
       } catch (IOException ex) {
         throw new JmolException("readMolecule",
             "Error determining input format: " + ex);

@@ -46,6 +46,7 @@ public class ModelManager {
   public ChemFile chemfile;
   public ChemFrame chemframe;
   public int nframes = 0;
+  public int currentFrameNumber;
   public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
   public void setChemFile(ChemFile chemfile) {
@@ -94,9 +95,18 @@ public class ModelManager {
   }
   
 
+  public int getNumberOfFrames() {
+    return nframes;
+  }
+
+  public int getCurrentFrameNumber() {
+    return currentFrameNumber;
+  }
+
   public void setFrame(int fr) {
     if (haveFile && fr >= 0 && fr < nframes) {
-        setFrame(chemfile.getFrame(fr));
+      currentFrameNumber = fr;
+      setFrame(chemfile.getFrame(fr));
     }
   }
 

@@ -37,29 +37,10 @@ public class Distributor {
     this.control = control;
   }
 
-  public void initializeAtomShapes() {
-    byte styleAtom = control.getStyleAtom();
-    short marAtom = control.getMarAtom();
-    byte styleBond = control.getStyleBond();
-    short marBond = control.getMarBond();
-    Color colorBond = control.getColorBond();
-    JmolAtomIterator iter = control.getChemFileIterator();
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      if (atom.atomShape == null)
-        atom.setAtomShape(new AtomShape(atom,
-                                        styleAtom, marAtom,
-                                        control.getColorAtom(atom),
-                                        styleBond, marBond,
-                                        colorBond,
-                                        control.getLabelAtom(atom)));
-    }
-  }
-
   public void setStyleAtom(byte styleAtom, JmolAtomIterator iter) {
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
-      AtomShape atomShape = atom.atomShape;
+      AtomShape atomShape = atom.getAtomShape();
       if (atomShape == null)
         System.out.println("how in the hell did you get here?");
       atomShape.setStyleAtom(styleAtom);
@@ -69,48 +50,51 @@ public class Distributor {
 
   public void setMarAtom(short marAtom, JmolAtomIterator iter) {
     while (iter.hasNext())
-      iter.nextAtom().atomShape.setMarAtom(marAtom);
+      iter.nextAtom().getAtomShape().setMarAtom(marAtom);
   }
 
   public void setStyleMarAtom(byte style, short mar, JmolAtomIterator iter) {
     while (iter.hasNext())
-      iter.nextAtom().atomShape.setStyleMarAtom(style, mar);
+      iter.nextAtom().getAtomShape().setStyleMarAtom(style, mar);
   }
 
   public void setStyleBond(byte styleBond, JmolAtomIterator iter) {
     while (iter.hasNext()) {
+      AtomShape atomShape = iter.nextAtom().getAtomShape();
       if (iter.allBonds())
-        iter.nextAtom().atomShape.setStyleAllBonds(styleBond);
+        atomShape.setStyleAllBonds(styleBond);
       else
-        iter.nextAtom().atomShape.setStyleBond(styleBond, iter.indexBond());
+        atomShape.setStyleBond(styleBond, iter.indexBond());
     }
   }
 
   public void setMarBond(short marBond, JmolAtomIterator iter) {
     while (iter.hasNext()) {
+      AtomShape atomShape = iter.nextAtom().getAtomShape();
       if (iter.allBonds())
-        iter.nextAtom().atomShape.setMarAllBonds(marBond);
+        atomShape.setMarAllBonds(marBond);
       else
-        iter.nextAtom().atomShape.setMarBond(marBond, iter.indexBond());
+        atomShape.setMarBond(marBond, iter.indexBond());
     }
   }
 
   public void setStyleMarBond(byte style, short mar, JmolAtomIterator iter) {
     while (iter.hasNext()) {
+      AtomShape atomShape = iter.nextAtom().getAtomShape();
       if (iter.allBonds())
-        iter.nextAtom().atomShape.setStyleMarAllBonds(style, mar);
+        atomShape.setStyleMarAllBonds(style, mar);
       else
-        iter.nextAtom().atomShape.setStyleMarBond(style, mar,iter.indexBond());
+        atomShape.setStyleMarBond(style, mar,iter.indexBond());
     }
   }
 
   public void setColorBond(Color colorBond, JmolAtomIterator iter) {
     while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
+      AtomShape atomShape = iter.nextAtom().getAtomShape();
       if (iter.allBonds())
-        atom.atomShape.setColorAllBonds(colorBond);
+        atomShape.setColorAllBonds(colorBond);
       else
-        atom.atomShape.setColorBond(colorBond, iter.indexBond());
+        atomShape.setColorBond(colorBond, iter.indexBond());
     }
   }
 
@@ -120,21 +104,21 @@ public class Distributor {
       Atom atom = iter.nextAtom();
       Color colorT = useColorProfile
         ? control.getColorAtom(mode, atom) : color;
-      atom.atomShape.setColorAtom(colorT);
+      atom.getAtomShape().setColorAtom(colorT);
     }
   }
 
   public void setStyleLabel(byte styleLabel, JmolAtomIterator iter) {
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
-      atom.atomShape.setLabel(control.getLabelAtom(styleLabel, atom));
+      atom.getAtomShape().setLabel(control.getLabelAtom(styleLabel, atom));
     }
   }
 
   public void setLabel(String strLabel, JmolAtomIterator iter) {
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
-      atom.atomShape.setLabel(control.getLabelAtom(strLabel, atom));
+      atom.getAtomShape().setLabel(control.getLabelAtom(strLabel, atom));
     }
   }
 }

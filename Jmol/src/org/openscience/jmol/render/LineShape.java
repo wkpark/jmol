@@ -54,6 +54,7 @@ class LineShape extends Shape {
     xEnd = (int)screen.x;
     yEnd = (int)screen.y;
     zEnd = (int)screen.z;
+    // z = (z + zEnd) / 2;
     if (zEnd > z)
       z = zEnd;
   }

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.cdk.Atom;
@@ -52,8 +53,8 @@ public class MdlReader extends DefaultChemFileReader {
    *
    * @param input source of data
    */
-  public MdlReader(Reader input) {
-    super(input);
+  public MdlReader(DisplayControl control, Reader input) {
+    super(control, input);
   }
 
   /**
@@ -64,7 +65,7 @@ public class MdlReader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
+    ChemFile file = new ChemFile(control, bondsEnabled);
     ChemFrame frame = readFrame();
     file.addFrame(frame);
     return file;
@@ -75,7 +76,7 @@ public class MdlReader extends DefaultChemFileReader {
    */
   public ChemFrame readFrame() throws IOException {
 
-    ChemFrame frame = new ChemFrame(bondsEnabled);
+    ChemFrame frame = new ChemFrame(control, bondsEnabled);
 
     // Read the molecule name
     String line = input.readLine();

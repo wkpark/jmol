@@ -311,17 +311,21 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
     writeLine(psLine);
   }
 
-  String replaceCharString(String strOld, char charOld, String substrNew) {
+  static String
+    replaceCharString(String strOld, char charOld, String substrNew) {
     // FIXME - mth 2003 01 07 - confirm that this works
     // I wrote this as a replacement for the replaceAll code because
     // replaceAll is only available on JVM >= 1.4
-    // I have not tested this code to convirm that it works
+    // I have not tested this code to confirm that it works
+    // mth 2003 05 13
+    // fixed a bug with ichStart and tested this code outside the context of
+    // jmol
     String strNew = "";
     int ichStart = 0;
     int ichMatch;
     while ((ichMatch = strOld.indexOf(charOld, ichStart)) != -1) {
       strNew += strOld.substring(ichStart, ichMatch) + substrNew;
-      ++ichStart;
+      ichStart = ichMatch + 1;
     }
     strNew += strOld.substring(ichStart);
     return strNew;

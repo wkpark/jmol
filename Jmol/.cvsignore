@@ -7,3 +7,4 @@ appjars
 appletjars
 jmol.jar
 JmolApplet.jar
+packaging/rpm/dist

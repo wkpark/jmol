@@ -68,15 +68,15 @@ import java.util.Enumeration;
  */
 public class PDBReader extends DefaultChemFileReader {
 
-    org.openscience.cdk.tools.LoggingTool logger;
+  org.openscience.cdk.tools.LoggingTool logger;
     
   /**
    * Creates a PDB file reader.
    *
    * @param input source of PDB data
    */
-  public PDBReader(Reader input) {
-    super(input);
+  public PDBReader(DisplayControl control, Reader input) {
+    super(control, input);
     logger = new org.openscience.cdk.tools.LoggingTool(this.getClass().getName());
   }
 
@@ -85,9 +85,9 @@ public class PDBReader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
-    ChemFrame frame = new ChemFrame();
-    DisplayControl.control.setAutoBond(false);
+    ChemFile file = new ChemFile(control, bondsEnabled);
+    ChemFrame frame = new ChemFrame(control);
+    control.setAutoBond(false);
     boolean bondsCleared = false;
     StringTokenizer st;
 
@@ -123,7 +123,7 @@ public class PDBReader extends DefaultChemFileReader {
         double x = FortranFormat.atof(sx);
         double y = FortranFormat.atof(sy);
         double z = FortranFormat.atof(sz);
-        Atom atom = new Atom(new org.openscience.cdk.Atom(atype));
+        Atom atom = new Atom(control, new org.openscience.cdk.Atom(atype));
         atom.setX3D(x);
         atom.setY3D(y);
         atom.setZ3D(z);
@@ -193,16 +193,16 @@ public class PDBReader extends DefaultChemFileReader {
         frame.setInfo(line.trim());
       } else if (command.equalsIgnoreCase("ENDMDL")) {
           logger.info("Found new frame");
-        DisplayControl.control.setAutoBond(true);
+        control.setAutoBond(true);
         frame.rebond();
         file.addFrame(frame);
         fireFrameRead();
         
-        frame = new ChemFrame();
-        DisplayControl.control.setAutoBond(false);
+        frame = new ChemFrame(control);
+        control.setAutoBond(false);
         
       } else if (command.equalsIgnoreCase("END")) {
-        DisplayControl.control.setAutoBond(true);
+        control.setAutoBond(true);
         if (frame.getAtomCount() > 0) {
           frame.rebond();
           file.addFrame(frame);
@@ -215,7 +215,7 @@ public class PDBReader extends DefaultChemFileReader {
     }
 
     // No END marker, so just wrap things up as if we had seen one:
-    DisplayControl.control.setAutoBond(true);
+    control.setAutoBond(true);
     if (frame.getAtomCount() > 0) {
       frame.rebond();
       file.addFrame(frame);

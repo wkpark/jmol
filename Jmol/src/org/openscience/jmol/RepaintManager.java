@@ -34,7 +34,10 @@ public class RepaintManager {
   DisplayControl control;
 
   public boolean useGraphics2D = false;
-  public boolean wantsGraphics2D = true;
+  // mth 2003 05 20
+  // Apple JVMs don't work with graphics2d ... disable until they fix it
+  public boolean wantsGraphics2D =
+    ! System.getProperty("java.vendor").startsWith("Apple Computer");
   public boolean wantsAntialias = true;
   public boolean wantsAntialiasAlways = false;
 

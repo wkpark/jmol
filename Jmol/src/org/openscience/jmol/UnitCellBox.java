@@ -24,7 +24,6 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.app.Jmol;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix3d;
 import java.lang.reflect.Array;

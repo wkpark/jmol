@@ -1,24 +1,33 @@
 <chapter id="rasmol" xreflabel="RasMol/Chime Scripts">
 <title id="rasmol.title">RasMol/Chime Scripts</title>
 <para>
-  Note: The scripting engine has been completely rewritten for Jmol Release
-  6. As of this writing it should be considered *alpha test* code. Please
-  supply feedback in case of bugs and/or unexpected behavior. 
+  <note>
+    <title>New Scripting Engine</title>
+    <para>
+      The scripting engine has been completely rewritten for Jmol Release
+      6. As of this writing it should be considered *alpha test* code. Please
+      supply feedback in case of bugs and/or unexpected behavior and/or
+      with feature requests. You can do this through the jmol home page
+      <ulink url="http://jmol.sourceforge.net">jmol.sourceforge.net</ulink>
+    </para>
+  </note>
 </para>
 <para>
   Jmol supports the RasMol scripting language defined by RasMol. 
   Information about RasMol can be found at 
   <ulink url="http://www.openrasmol.org/">www.openrasmol.org</ulink>
   The current URL for full RasMol documentation is:
-  <ulink url="http://www.openrasmol.org/doc/rasmol.htm">http://www.openrasmol.org/doc/rasmol.htm</ulink>.
+  <ulink url="http://www.openrasmol.org/doc/rasmol.htm">
+         www.openrasmol.org/doc/rasmol.htm</ulink>.
 </para>
 <para>
   The Chime web browser plug-in was based upon the RasMol source code.
   Various extensions were added, including additional scripting
   commands. Information about Chime can be found at
-  <ulink url="http://www.mdlchime.com/">http://www.mdlchime.com</ulink>
+  <ulink url="http://www.mdlchime.com/">www.mdlchime.com</ulink>
   The current URL for extended chime scripting commands is:
-  <ulink url="http://www.mdlchime.com/chime/chimerasmol.html">http://www.mdlchime.com/chime/chimerasmol.html</ulink>.
+  <ulink url="http://www.mdlchime.com/chime/chimerasmol.html">
+         www.mdlchime.com/chime/chimerasmol.html</ulink>.
 </para>
 <para>
   Jmol currently supports many of RasMol/Chime scripting commands. Our
@@ -41,11 +50,46 @@
   larger vanderWaals percentages (such as 50% or more).
 </para>
 <para>
-  Please give us feedback on what features you would like. This will help
-  us prioritize future development.
+  Please give us feedback on what features you would use and would like to
+  see. This will help us prioritize future development.
 </para>
 <section>
   <title>RasMol/Chime commands</title>
+  <section>
+    <title>animate play|revplay|rewind|next|prev|nextwrap|prevwrap|frame
+    </title>
+    <para>
+      This is a Jmol specific command that is not available in
+      RasMol/Chime.
+    </para>
+    <para>
+      The animate command provides basic control over files which
+      contain multiple chemical frames. This mechanism can be used
+      to play short movies of reactions, vibrations, etc.
+    </para>
+    <para>
+      The <command>play</command> and <command>revplay</command> commands
+      will play all frames in the file, either in forward or reverse. The
+      frame rate is currently limited by a) the rendering speed of the
+      system, and b) with a maximum of 10 frames per second.
+    </para>
+    <para>
+      The <command>next</command>, <command>prev</command>, <command>
+      nextwrap</command>, <command>prevwrap</command> and <command>
+      rewind</command> commands allow one to step through a file frame
+      by frame. <command>nextwrap</command>/<command>prevwrap</command>
+      will wrap around to the first/last frame.
+    </para>
+    <para>
+      The <command>frame</command> command takes an integer argument
+      which specifies the frame number to show.
+    </para>
+    <para>
+      Additional work will be done on this command for the next
+      release of Jmol, allowing additional control over display frame
+      rate, interpolated frames, etc.
+    </para>
+  </section>
   <section>
     <title>background &lt;color&gt;</title>
     <para>
@@ -64,11 +108,12 @@
     </para>
   </section>
   <section>
-    <title>Color {&lt;object&gt;} &lt;color&gt;</title>
+    <title>color {&lt;object&gt;} &lt;color&gt;</title>
     <para>
       Colors the object with the specified color. If no object is given
-      then atom is assumed. Currently supported objects are atoms, bonds,
-      labels and axes.
+      then atom is assumed. Currently supported objects are
+      <varname>atoms</varname>, <varname>bonds</varname>,
+	<varname>labels</varname> and <varname>axes</varname>.
     </para>
   </section>
   <section>
@@ -187,7 +232,7 @@
     </para>
   </section>
   <section>
-    <title>move &lt;xRot&gt; &lt;yRot&gt; &lt;zRot; &lt;zoom&gt;
+    <title>move &lt;xRot&gt; &lt;yRot&gt; &lt;zRot&gt; &lt;zoom&gt;
       &lt;xTrans&gt; &lt;yTrans&gt; &lt;zTrans&gt; &lt;slab&gt;
       &lt;time&gt; {&lt;FPS&gt;} {&lt;MaxAccel&gt;}
     </title>
@@ -274,28 +319,39 @@
       file, up to 10 deep.
     </para>
     <para>
-      The command *source* is a synonym for *script*.
+      The command <function>source</function> is a synonym for
+      <function>script</function>.
     </para>
   </section>
   <section>
-    <title>select {&lt;expression%gt;}</title>
+    <title>select {&lt;expression&gt;}</title>
     <para>
       Selects the atoms identified by the expression. 
     </para>
     <para>
       If no expression is given then all atoms are selected.
     </para>
-    <para>
-      Note that RasMol does not hilite selections. To see the selected
-      atoms use the command 'set display selected'
-    </para>
-    <para>
-      (This is a problem area for Jmol. If you have suggestions on how
-      this can be improved please let us know.)
-    </para>
+    <tip>
+      <title>Displaying Selections</title>
+      <para>
+	RasMol does not hilite selections. To see selected atoms use
+	the command <function>set display selected</function>
+      </para>
+    </tip>
+    <note>
+      <title>Feedback Wanted</title>
+      <para>
+	The handling of selection hilites is a problem for Jmol. We are
+	torn between providing RasMol compatibility and useful visual
+	feedback to the user.
+      </para>
+      <para>
+	If you have suggestions on how this can be improved please let us know.
+      </para>
+    </note>
   </section>
   <section>
-    <title>set &lt;parameter%gt; {&lt;value&gt;}</title>
+    <title>set &lt;parameter&gt; {&lt;value&gt;}</title>
     <para>
       See separate section for set parameters.
     </para>

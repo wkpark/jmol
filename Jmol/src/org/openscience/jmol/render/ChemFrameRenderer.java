@@ -58,20 +58,8 @@ public class ChemFrameRenderer {
     if (shapes == null || control.hasStructuralChange()) {
       control.resetStructuralChange();
       shapesVector.removeAllElements();
-      for (int i = 0; i < numAtoms; ++i) {
-        Atom atom = (org.openscience.jmol.Atom)frame.getJmolAtomAt(i);
-        AtomShape atomShape = atom.getAtomShape();
-        if (atomShape == null) {
-          // FIXME mth -- atomShapes should be allocated as part of new Atom()
-          // but the Atom code does not have a control at that point
-          atomShape = new AtomShape(atom, control);
-          atom.setAtomShape(atomShape);
-          // FIX? elw -- overwrite the CDK/Jmol atom with a Jmol atom *with*
-          //             atomShape
-          frame.setAtomAt(i, atom);
-        }
-        shapesVector.addElement(atom.getAtomShape());
-      }
+      for (int i = 0; i < numAtoms; ++i)
+        shapesVector.addElement(frame.getJmolAtomAt(i).getAtomShape());
       if (control.getShowVectors()) {
         double minAtomVectorMagnitude = frame.getMinAtomVectorMagnitude();
         double atomVectorRange = frame.getAtomVectorRange();

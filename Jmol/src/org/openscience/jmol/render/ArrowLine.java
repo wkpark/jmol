@@ -33,6 +33,7 @@ public class ArrowLine {
 
   private boolean arrowStart = false;
   private boolean arrowEnd = true;
+  private boolean drawLine = false;
 
   private double scaling = 1.0;
   private double ctheta = 0.0;
@@ -56,8 +57,10 @@ public class ArrowLine {
 
   public ArrowLine(Graphics gc, DisplayControl control,
                    double x1, double y1, double x2, double y2,
+                   boolean drawLine,
                    boolean arrowStart, boolean arrowEnd, double scaling) {
     this.scaling = scaling;
+    this.drawLine = drawLine;
     this.arrowStart = arrowStart;
     this.arrowEnd = arrowEnd;
     this.x1 = x1;
@@ -91,10 +94,11 @@ public class ArrowLine {
     if (arrowLengthScale < 0.0) {
       offset = -offset;
     }
-    gc.drawLine((int) x1, (int) y1,
-        (int) (x1 + (offset + magnitude * arrowLengthScale) * ctheta),
-          (int) (y1 + (offset + magnitude * arrowLengthScale) * stheta));
-
+    if (drawLine) {
+      gc.drawLine((int) x1, (int) y1,
+                  (int)(x1 + (offset + magnitude*arrowLengthScale) * ctheta),
+                  (int)(y1 + (offset + magnitude*arrowLengthScale) * stheta));
+    }
     if (arrowStart) {
       paintArrowHead(gc, 0.0, false, arrowHeadSize, arrowHeadRadius);
     }

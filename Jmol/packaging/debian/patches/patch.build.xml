@@ -1,0 +1,23 @@
+--- build.xml	2003-05-17 14:53:55.000000000 +0200
++++ build.xml.debian	2003-05-17 16:28:21.000000000 +0200
+@@ -38,6 +38,11 @@
+       <include name="*.jar" />
+       <exclude name="jmolappletcdk.jar"/>
+     </fileset>
++    <!-- added for Debian -->
++    <fileset dir="/usr/share/java">
++      <include name="junit.jar" />
++      <include name="saxon.jar" />
++    </fileset>
+   </path>
+   
+   <path id="applet-project.class.path">
+@@ -79,7 +84,7 @@
+     </uptodate>
+     <available file="${docbook.dir}" property="docbook.dir.present"/>
+     <available classname="com.icl.saxon.StyleSheet"
+-      classpath="${lib.dir}/saxon.jar"
++      classpath="/usr/share/java/saxon.jar"
+       property="xsl.available"/>
+     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
+       <srcfiles dir="${source.dir}" includes="**/*.java" />

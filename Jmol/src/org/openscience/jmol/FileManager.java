@@ -113,7 +113,7 @@ public class FileManager {
     try {
       ChemFileReader reader = null;
       try {
-        reader = ReaderFactory.createReader(bufreader);
+        reader = ReaderFactory.createReader(control, bufreader);
         /*
           FIXME -- need to notify the awt component of file change
         firePropertyChange(openFileProperty, oldFile, currentFile);

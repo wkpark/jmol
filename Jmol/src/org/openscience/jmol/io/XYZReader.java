@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.FortranFormat;
@@ -100,8 +101,8 @@ public class XYZReader extends DefaultChemFileReader {
    *
    * @param input source of XYZ data
    */
-  public XYZReader(Reader input) {
-    super(input);
+  public XYZReader(DisplayControl control, Reader input) {
+    super(control, input);
   }
 
   /**
@@ -111,7 +112,7 @@ public class XYZReader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
+    ChemFile file = new ChemFile(control, bondsEnabled);
 
     int na = 0;
     String info = "";
@@ -132,7 +133,7 @@ public class XYZReader extends DefaultChemFileReader {
       info = input.readLine();
       System.out.println(info);
 
-      ChemFrame frame = new ChemFrame(na);
+      ChemFrame frame = new ChemFrame(control, na);
       frame.setInfo(info);
 
       for (int i = 0; i < na; i++) {

@@ -54,7 +54,7 @@ import java.beans.PropertyChangeListener;
 
 final public class DisplayControl {
 
-  public static DisplayControl control;
+  //  public static DisplayControl control;
 
   public Component awtComponent;
   public ColorManager colorManager;
@@ -88,7 +88,7 @@ final public class DisplayControl {
     jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJvmVersion.compareTo("1.4") >= 0);
 
-    control = this;
+    //    control = this;
     colorManager = new ColorManager(this);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
@@ -743,18 +743,16 @@ final public class DisplayControl {
   public static final String PROP_CHEM_FRAME = "chemFrame";
 
   public void setChemFile(ChemFile chemfile) {
-    control.pushHoldRepaint();
+    pushHoldRepaint();
     modelManager.setChemFile(chemfile);
-    // FIXME mth -- allocate atom shapes in the right place
-    distributor.initializeAtomShapes();
     homePosition();
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
     // but perhaps not if we are in the midst of executing a script?
     eval.clearDefinitionsAndLoadPredefined();
     clearMeasurements();
-    control.setStructuralChange();
-    control.popHoldRepaint();
+    setStructuralChange();
+    popHoldRepaint();
   }
 
   public void clear() {
@@ -801,6 +799,10 @@ final public class DisplayControl {
 
   // FIXME mth -- consolidate these two calls to setFrame
 
+  public int getNumberOfFrames() {
+    return modelManager.getNumberOfFrames();
+  }
+
   public void setFrame(int fr) {
     modelManager.setFrame(fr);
     selectAll();
@@ -817,6 +819,10 @@ final public class DisplayControl {
     clearMeasurements();
     structuralChange = true;
     refresh();
+  }
+
+  public int getCurrentFrameNumber() {
+    return modelManager.getCurrentFrameNumber();
   }
 
   public int numberOfAtoms() {

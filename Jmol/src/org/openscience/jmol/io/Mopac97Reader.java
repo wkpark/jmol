@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Vibration;
@@ -47,8 +48,8 @@ class Mopac97Reader extends DefaultChemFileReader {
    *
    * @param input source of MOPAC data
    */
-  public Mopac97Reader(Reader input) {
-    super(input);
+  public Mopac97Reader(DisplayControl control, Reader input) {
+    super(control, input);
   }
 
   /**
@@ -59,7 +60,7 @@ class Mopac97Reader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(bondsEnabled);
+    ChemFile file = new ChemFile(control, bondsEnabled);
     ChemFrame frame = null;
     String line;
     String frameInfo = null;
@@ -82,7 +83,7 @@ class Mopac97Reader extends DefaultChemFileReader {
           }
           file.addFrame(frame);
         }
-        frame = new ChemFrame();
+        frame = new ChemFrame(control);
         readCoordinates(frame);
       } else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0) {
         for (int i = 0; i < 2; ++i) {

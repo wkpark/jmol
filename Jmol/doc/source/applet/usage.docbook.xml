@@ -172,7 +172,7 @@
     is loaded.
   </para>
   <para>
-    Multiple script commands can be separated by the semicolon (;)
+    Multiple script commands must be separated by the semicolon (;)
     character.
   </para>
 </section>

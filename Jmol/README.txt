@@ -13,14 +13,28 @@ Jmol was developed through a voluntary collaboration of researchers
 around the world. For more information, please visit the Jmol Web site
 at http://jmol.sourceforge.net/.
 
+Installation:
 
-Instructions:
+  If you have downloaded the source distribution, e.g. jmol-6.source.zip,
+  then Jmol needs to be compiled first. For this you need an Ant
+  installation (ant.apache.org).
+
+  Then, on both Unix and Windows, you can compile Jmol with:
+
+    ant jar
+
+Running Jmol:
 
   On Unix, run the jmol script found in the distribution's main
   directory.
 
   On Windows, run the jmol.bat batch script found in the distribution's
-  main directory.
+  main directory. Alternatively, from any Windows Explorer, you can 
+  double click on the jmol.jar.
+
+  On all platforms this should also work:
+
+    java -jar jmol.jar
 
   For information about building Jmol from the source, please read the
   Jmol Developers Guide in doc/.

@@ -158,7 +158,10 @@ class Compiler {
         }
         if (lookingAtPositiveDecimal()) {
           double value =
-            Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
+          // can't use parseFloat with jvm 1.1
+          // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
+            Float.valueOf(script.substring(ichToken, ichToken + cchToken))
+            .floatValue();
           ltoken.addElement(new Token(Token.decimal, new Double(value)));
           continue;
         }
@@ -308,7 +311,8 @@ class Compiler {
       return false;
     int ichT = ichToken + 1;
     char ch;
-    while (ichT < cchScript && (ch = script.charAt(ichT)) != '\r' && ch != 'n')
+    while (ichT < cchScript &&
+           (ch = script.charAt(ichT)) != ';' && ch != '\r' && ch != 'n')
       ++ichT;
     cchToken = ichT - ichToken;
     return true;
@@ -374,7 +378,7 @@ class Compiler {
     int ichT = ichToken;
     char ch;
     while (ichT < cchScript &&
-           (ch = script.charAt(ichT)) != '\r' && ch != '\n')
+           (ch = script.charAt(ichT)) != ';' && ch != '\r' && ch != '\n')
       ++ichT;
     cchToken = ichT - ichToken;
     if (logMessages)

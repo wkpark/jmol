@@ -29,6 +29,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.cdk.*;
 
 /**
@@ -57,8 +58,9 @@ public class Convertor {
      * @param   atom    class to be converted
      * @return          converted class in Jmol
      **/
-    public static org.openscience.jmol.Atom convert(org.openscience.cdk.Atom atom) {
-        return new org.openscience.jmol.Atom(atom);
+    public static org.openscience.jmol.Atom
+      convert(DisplayControl control, org.openscience.cdk.Atom atom) {
+        return new org.openscience.jmol.Atom(control, atom);
     }
 
     /**
@@ -86,10 +88,10 @@ public class Convertor {
      * @param   ac      class to be converted
      * @return          converted class in Jmol
      **/
-    public static ChemFrame convert(AtomContainer ac) {
+    public static ChemFrame convert(DisplayControl control, AtomContainer ac) {
         if (ac != null) {
             int NOatoms = ac.getAtomCount();
-            ChemFrame converted = new ChemFrame(NOatoms);
+            ChemFrame converted = new ChemFrame(control, NOatoms);
             for (int i=0; i<NOatoms; i++) {
                 org.openscience.cdk.Atom atom = (org.openscience.cdk.Atom)ac.getAtomAt(i).clone();
                 converted.addAtom(atom);
@@ -110,12 +112,13 @@ public class Convertor {
      * @param   atom    class to be converted
      * @return          converted class in CDK
      **/
-    public static AtomContainer convert(org.openscience.jmol.ChemFrame mol) {
+    public static AtomContainer
+      convert(DisplayControl control, org.openscience.jmol.ChemFrame mol) {
         if (mol != null) {
             AtomContainer converted = new AtomContainer();
             int NOatoms = mol.getAtomCount();
             for (int i=0; i<NOatoms; i++) {
-                converted.addAtom(convert(mol.getAtomAt(i)));
+                converted.addAtom(convert(control, mol.getAtomAt(i)));
             }
             return converted;
         } else {
@@ -134,11 +137,13 @@ public class Convertor {
      * @param   crystal class to be converted
      * @return          converted class in Jmol
      **/
-    public static org.openscience.jmol.CrystalFile convertCrystal(Crystal crystal) {
+    public static org.openscience.jmol.CrystalFile
+      convertCrystal(DisplayControl control, Crystal crystal) {
         if (crystal != null) {
             // first convert content
-            org.openscience.jmol.ChemFile file = new org.openscience.jmol.ChemFile();
-            file.addFrame(convert((AtomContainer)crystal));
+            org.openscience.jmol.ChemFile file =
+              new org.openscience.jmol.ChemFile(control);
+            file.addFrame(convert(control, (AtomContainer)crystal));
             // now add unit cell info
             double[][] rprim = new double[3][3];
             double[] acell = new double[3];
@@ -157,7 +162,8 @@ public class Convertor {
             for (int i=0; i<3; i++) {
                 acell[i] = 1.0;
             }
-            CrystalFile converted = new CrystalFile(file, rprim, acell);
+            CrystalFile converted =
+              new CrystalFile(control, file, rprim, acell);
             return converted;
         } else {
             return null;

@@ -13,28 +13,32 @@
 <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
 <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
-<contributor id="MH"><name>Miguel Howard</name><email>michaelthoward@users.sourceforge.net</email></contributor>
+<contributor id="MTH"><name>Miguel Howard</name><email>mth@mth.com</email></contributor>
 </contributors>
 
 <changes version="jmol-6">
-  <change contributor="MH">
-    Performance improvements for rendering.
+  <change contributor="MTH">
+    Reimplementation of rendering with perspective depth support
+    and performance improvements. 
   </change>
   <change contributor="EW">
     Moved IO classes into separate package.
   </change>
-  <change contributor="MH">
+  <change contributor="MTH">
     Moved rendering classes into separate package.
   </change>
   <change contributor="EW">
-    Jmol is now based on CDK.
+    Jmol is now based on CDK (Chemistry Development Kit).
+  </change>
+  <change contributor="MTH">
+    Added Spanish translation. 
   </change>
   <change contributor="EW">
     Display speed can be displayed in milliseconds and in frames per second.
   </change>
-  <change contributor="MH">
-    Reimplementation of scripting functinality with support for
-    Chime scripts.
+  <change contributor="MTH">
+    Reimplementation of scripting functinality with support for most
+    RasMol/Chime scripting commands. 
   </change>
 </changes>
 
@@ -67,8 +71,8 @@
   <change contributor="EW">
     Added reader for ShelX97 files containing a crystal structure.
   </change>
-  <change contributor="MH">
-    Translated the Jmol GUI into Spanish.
+  <change contributor="MTH">
+    Translated the Jmol GUI into Spanish. 
   </change>
   <change contributor="EW">
     Fixed the PropertyGraph. Data is no longer duplicated on reopening the dialog

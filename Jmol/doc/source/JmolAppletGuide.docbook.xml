@@ -6,6 +6,7 @@
 <!ENTITY appletBrowsers   SYSTEM "applet/browsers.docbook.xml">
 <!ENTITY appletUsage      SYSTEM "applet/usage.docbook.xml">
 <!ENTITY appletJavaScript SYSTEM "applet/javascript.docbook.xml">
+<!ENTITY appletScripting  SYSTEM "applet/scripting.docbook.xml">
 ]
 >
 <book id="jmol-applet-guide">
@@ -18,4 +19,5 @@
   &appletBrowsers;
   &appletUsage;
   &appletJavaScript;
+  &appletScripting;
 </book>

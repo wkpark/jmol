@@ -43,6 +43,8 @@ class Normix3D {
   final Graphics3D g3d;
   final Geodesic3D geodesic3d;
   final Vector3f[] vertexVectors;
+  final Vector3f[] transformedVectors;
+  final byte[] intensities;
   final short[] neighborVertexes;
   final int normixCount;
   final Object root;
@@ -62,6 +64,11 @@ class Normix3D {
     vertexVectors = geodesic3d.vertexVectors;
     neighborVertexes = geodesic3d.getNeighborVertexes(level);
     normixCount = geodesic3d.getVertexCount(level);
+    intensities = new byte[normixCount];
+    transformedVectors = new Vector3f[normixCount];
+    for (int i = normixCount; --i >= 0; )
+      transformedVectors[i] = new Vector3f();
+
     root = buildTree();
 
     if (GEODESIC_DUMP)
@@ -368,15 +375,24 @@ class Normix3D {
     return champion;
   }
 
-  static byte tempIntensity;
-
   byte getIntensity(short normix) {
-    tempIntensity = (byte)((tempIntensity + 17) & 0x3F);
-    return tempIntensity;
+    return intensities[normix];
   }
 
   void setRotationMatrix(Matrix3f rotationMatrix) {
     this.rotationMatrix.set(rotationMatrix);
+    for (int i = normixCount; --i >= 0; ) {
+      Vector3f tv = transformedVectors[i];
+      rotationMatrix.transform(vertexVectors[i], tv);
+      float length = tv.length();
+      if (length > 1.01 || length < .99) {
+        System.out.println("transformed length=" + length);
+      }
+      tv.normalize();
+      intensities[i] = (tv.z >= 0
+                        ? Shade3D.calcIntensity(tv.x, -tv.y, tv.z)
+                        : Shade3D.calcIntensity(-tv.x, tv.y, -tv.z));
+    }
   }
 }
 

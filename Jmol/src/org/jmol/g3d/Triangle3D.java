@@ -239,8 +239,10 @@ class Triangle3D {
                              "\ngenerated=" + generated);
           throw new NullPointerException();
         }
+        /*
         if (rgb16Base.getArgb() != rgb16sGouraud[iS].getArgb())
           throw new NullPointerException();
+        */
       }
     }
   }

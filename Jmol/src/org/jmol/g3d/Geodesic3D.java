@@ -138,14 +138,9 @@ class Geodesic3D {
   static short[][] faceVertexesArrays;
   static Vector3f[] vertexVectors;
 
-  Vector3f[] transformedVertexVectors;
-
   Geodesic3D(Graphics3D g3d) {
     if (vertexCounts == null)
       initialize();
-    transformedVertexVectors = new Vector3f[vertexVectors.length];
-    for (int i = vertexVectors.length; --i >= 0; )
-      transformedVertexVectors[i] = new Vector3f();
   }
 
   private synchronized void initialize() {

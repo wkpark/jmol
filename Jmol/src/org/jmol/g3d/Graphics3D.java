@@ -654,9 +654,12 @@ final public class Graphics3D {
 
 
   // 3D specific routines
-  public void beginRendering(Rectangle rectClip, boolean antialiasThisFrame) {
+  public void beginRendering(Rectangle rectClip,
+                             Matrix3f rotationMatrix,
+                             boolean antialiasThisFrame) {
     if (currentlyRendering)
       endRendering();
+    normix3d.setRotationMatrix(rotationMatrix);
     antialiasThisFrame &= isFullSceneAntialiasingEnabled;
     this.antialiasThisFrame = antialiasThisFrame;
     currentlyRendering = true;
@@ -680,9 +683,6 @@ final public class Graphics3D {
     yLast = height - 1;
     setRectClip(rectClip);
     platform.obtainScreenBuffer();
-  }
-
-  public void setRotationMatrix(Matrix3f rotationMatrix) {
   }
 
   public void endRendering() {

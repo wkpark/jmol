@@ -1487,7 +1487,8 @@ final public class Viewer extends JmolViewer {
       setScreenDimension(size);
     boolean antialiasThisFrame = true;
     setRectClip(clip, antialiasThisFrame);
-    g3d.beginRendering(rectClip, antialiasThisFrame);
+    g3d.beginRendering(rectClip, transformManager.matrixRotate,
+                       antialiasThisFrame);
     /*
     System.out.println("renderScreenImage() thread:" + Thread.currentThread() +
                        " priority:" + Thread.currentThread().getPriority());
@@ -1512,7 +1513,8 @@ final public class Viewer extends JmolViewer {
     boolean antialiasThisFrame = true;
     setRectClip(null, antialiasThisFrame);
     // FIXME ... rectClip is messed up for FSAA
-    g3d.beginRendering(rectClip, antialiasThisFrame);
+    g3d.beginRendering(rectClip, transformManager.matrixRotate,
+                       antialiasThisFrame);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                           repaintManager.displayModelIndex);
     g3d.endRendering();

@@ -35,7 +35,7 @@ public class ChemFile {
 
   DisplayControl control;
   private ChemFrame[] frames = new ChemFrame[0];
-  private boolean bondsEnabled = true;
+  //  private boolean bondsEnabled = true;
   private Vector propertyList = new Vector();
 
   /**
@@ -48,11 +48,7 @@ public class ChemFile {
 
   public ChemFile(DisplayControl control, boolean bondsEnabled) {
     this.control = control;
-    this.bondsEnabled = bondsEnabled;
-  }
-
-  public boolean getBondsEnabled() {
-    return bondsEnabled;
+    //    this.bondsEnabled = bondsEnabled;
   }
 
   /**
@@ -98,28 +94,34 @@ public class ChemFile {
   /**
    * Returns the array of all the frames
    */
+  /*
   public ChemFrame[] getFrames() {
     return frames;
   }
+  */
 
   /**
    * Returns a list of descriptions for physical properties
    * contained by this file.
    */
+  /*
   public Vector getPropertyList() {
     return propertyList;
   }
+  */
 
   /**
    * Adds a property description to the property list.
    *
    * @param prop the property description
    */
+  /*
   public void addProperty(String prop) {
     if (propertyList.indexOf(prop) < 0) {
       propertyList.addElement(prop);
     }
   }
+  */
 
   /**
    * Returns a list of the names of atom properties on frames in this file.

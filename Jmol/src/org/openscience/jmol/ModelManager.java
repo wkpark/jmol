@@ -142,9 +142,11 @@ public class ModelManager {
   }
   */
 
+  /*
   public ChemFrame[] getFrames() {
     return chemfile.getFrames();
   }
+  */
 
   public void setCenterAsSelected() {
     int numberOfAtoms = numberOfAtoms();

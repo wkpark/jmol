@@ -53,7 +53,6 @@ public class JmolSimpleBean extends java.awt.Panel
 
 	private DisplaySettings settings = new DisplaySettings();
 	private DisplayPanel display;
-	private ChemFile cf;
 	private java.awt.Panel animPanel = null;
 	private java.awt.Panel customViewPanel = null;
 
@@ -150,7 +149,6 @@ public class JmolSimpleBean extends java.awt.Panel
 			add(customViewPanel, "North");
 		}
 		modelReady = true;
-		this.cf = cf;
 		display.setChemFile(cf);
 		ready = areWeReady();
 	}
@@ -508,17 +506,6 @@ public class JmolSimpleBean extends java.awt.Panel
 
 	*/
 
-
-	//Private and unuseful methods
-
-	/**
-	 * returns the ChemFile that we are currently working with
-	 *
-	 * @see ChemFile
-	 */
-	public ChemFile getCurrentFile() {
-		return cf;
-	}
 
 	/**
 	 * Returns true if passed "T" and "F" if passed false. Throws

@@ -228,11 +228,15 @@ public class Atom {
 /**
    * Adds an atom to this atom's bonded list.
    */
-  public void addBondedAtom(Atom toAtom) {
+  public void addBondedAtom(Atom toAtom, int bondOrder) {
     if (bondedAtoms == null) {
       bondedAtoms = new Vector();
     }
+    if (bondOrders == null) {
+      bondOrders = new Vector();
+    }
     bondedAtoms.addElement(toAtom);
+    bondOrders.addElement(new Integer(bondOrder));
   }
 
   /**
@@ -248,11 +252,24 @@ public class Atom {
   }
 
   /**
+   * Returns the list of bond orders.
+   */
+  public Enumeration getBondOrders() {
+
+    if (bondOrders == null) {
+      return new NoBondsEnumeration();
+    } else {
+      return bondOrders.elements();
+    }
+  }
+
+  /**
    * Clears the bonded atoms list.
    */
   public void clearBondedAtoms() {
     if (bondedAtoms != null) {
       bondedAtoms.removeAllElements();
+      bondOrders.removeAllElements();
     }
   }
 
@@ -312,6 +329,11 @@ public class Atom {
    * A list of atoms to which this atom is bonded. Lazily initialized.
    */
   private Vector bondedAtoms = null;
+
+  /**
+   * A list of bond orders. Lazily initialized.
+   */
+  private Vector bondOrders = null;
 
   /**
    * Vibrational vector in world space.

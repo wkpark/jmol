@@ -291,8 +291,7 @@ public class ChemFrame {
     if (AutoBond) {
       for (int j = 0; j < i; j++) {
         if (Atom.closeEnoughToBond(atoms[i], atoms[j], bondFudge)) {
-          atoms[i].addBondedAtom(atoms[j]);
-          atoms[j].addBondedAtom(atoms[i]);
+          addBond(i, j);
         }
       }
     }
@@ -663,8 +662,7 @@ public class ChemFrame {
       for (int i = 0; i < numberAtoms - 1; i++) {
         for (int j = i; j < numberAtoms; j++) {
           if (Atom.closeEnoughToBond(atoms[i], atoms[j], bondFudge)) {
-            atoms[i].addBondedAtom(atoms[j]);
-            atoms[j].addBondedAtom(atoms[i]);
+            addBond(i, j);
           }
         }
       }
@@ -721,15 +719,26 @@ public class ChemFrame {
   }
 
   /**
-   * Adds a bond between the two atoms given.
+   * Adds a single bond between the two atoms given.
    *
    * @param i index to the first atom in the bond.
    * @param j index to the second atom in the bond.
    */
   public void addBond(int i, int j) {
+    addBond(i, j, 1);
+  }
 
-    atoms[i].addBondedAtom(atoms[j]);
-    atoms[j].addBondedAtom(atoms[i]);
+  /**
+   * Adds a bond between the two atoms given.
+   *
+   * @param i index to the first atom in the bond.
+   * @param j index to the second atom in the bond.
+   * @param bondOrder the order (single, double, triple) of the bond.
+   */
+  public void addBond(int i, int j, int bondOrder) {
+
+    atoms[i].addBondedAtom(atoms[j], bondOrder);
+    atoms[j].addBondedAtom(atoms[i], bondOrder);
   }
 
   /**

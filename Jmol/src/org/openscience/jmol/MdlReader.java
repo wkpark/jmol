@@ -130,7 +130,8 @@ public class MdlReader implements ChemFileReader {
       }
       int atom0 = Integer.parseInt(line.substring(0, 3).trim());
       int atom1 = Integer.parseInt(line.substring(3, 6).trim());
-      frame.addBond(atom0-1, atom1-1);
+      int bondOrder = Integer.parseInt(line.substring(6, 9).trim());
+      frame.addBond(atom0-1, atom1-1, bondOrder);
     }
     
     fireFrameRead();

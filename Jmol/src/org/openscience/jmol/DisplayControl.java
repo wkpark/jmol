@@ -823,7 +823,8 @@ final public class DisplayControl {
     recalc();
   }
 
-  public int screenAtomDiameter(int z, double vdwRadius) {
+  public int screenAtomDiameter(int z, Atom atom) {
+    double vdwRadius = atom.getVdwRadius();
     if (z > 0)
       System.out.println("--?QUE? no way that z > 0--");
     if (vdwRadius <= 0)

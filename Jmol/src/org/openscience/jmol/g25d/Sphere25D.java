@@ -95,6 +95,9 @@ public class Sphere25D {
   }
 
   void renderBigUnclipped(int[] shades, int diameter, int x, int y, int z) {
+    int radius = diameter / 2;
+    x -= radius;
+    y -= radius;
     float r = diameter / 2.0f;
     float r2 = r * r;
     
@@ -130,6 +133,9 @@ public class Sphere25D {
   }
 
   void renderBigClipped(int[] shades, int diameter, int x, int y, int z) {
+    int radius = diameter / 2;
+    x -= radius;
+    y -= radius;
     // FIXME optimize me some
     float r = diameter / 2.0f;
     float r2 = r * r;
@@ -245,68 +251,65 @@ public class Sphere25D {
   }
 
   void renderShapeClipped(int[] shades, int[] sphereShape,
-                            int diameter, int x, int y, int z) {
+                          int diameter, int x, int y, int z) {
     int[] pbuf = g25d.pbuf;
     short[] zbuf = g25d.zbuf;
     int offsetSphere = 0;
     int width = g25d.width;
     int height = g25d.height;
-    int diameterMinus1 = diameter - 1;
-    int offsetNorthBeginLine = width * y + x;
-    int offsetSouthBeginLine = offsetNorthBeginLine + diameterMinus1 * width;
-    int halfDiameter = (diameter + 1) / 2;
-    int i = halfDiameter;
-    int yNorth = y;
-    int ySouth = y + diameterMinus1;
+    int evenSizeCorrection = 1 - (diameter & 1);
+    int offsetSouthCenter = width * y + x;
+    int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
+    int nLines = (diameter + 1) / 2;
+    int ySouth = y;
+    int yNorth = y - evenSizeCorrection;
     do {
-      boolean tNorthVisible = yNorth >= 0 && yNorth < height;
       boolean tSouthVisible = ySouth >= 0 && ySouth < height;
-      int plotCount = sphereShape[offsetSphere++];
-      int skipCount = halfDiameter - plotCount;
-      int offsetNW = offsetNorthBeginLine + skipCount;
-      int offsetNE = offsetNorthBeginLine + diameterMinus1 - skipCount;
-      int offsetSW = offsetSouthBeginLine + skipCount;
-      int offsetSE = offsetSouthBeginLine + diameterMinus1 - skipCount;
-      int xWest = x + skipCount;
-      int xEast = x + diameterMinus1 - skipCount;
+      boolean tNorthVisible = yNorth >= 0 && yNorth < height;
+      int offsetSE = offsetSouthCenter;
+      int offsetSW = offsetSouthCenter - evenSizeCorrection;
+      int offsetNE = offsetNorthCenter;
+      int offsetNW = offsetNorthCenter - evenSizeCorrection;
+      int packed;
+      int xEast = x;
+      int xWest = x - evenSizeCorrection;
       do {
         boolean tWestVisible = xWest >= 0 && xWest < width;
         boolean tEastVisible = xEast >= 0 && xEast < width;
-        int packed = sphereShape[offsetSphere++];
+        packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
-        if (tNorthVisible) {
-          if (tWestVisible && zPixel < zbuf[offsetNW]) {
-            zbuf[offsetNW] = (short)zPixel;
-            pbuf[offsetNW] = shades[(packed >> 7) & 0x3F];
-          }
-          if (tEastVisible && zPixel < zbuf[offsetNE]) {
-            zbuf[offsetNE] = (short)zPixel;
-            pbuf[offsetNE] = shades[(packed >> 13) & 0x3F];
-          }
-        }
         if (tSouthVisible) {
-          if (tWestVisible && zPixel < zbuf[offsetSW]) {
-            zbuf[offsetSW] = (short)zPixel;
-            pbuf[offsetSW] = shades[(packed >> 19) & 0x3F];
-          }
           if (tEastVisible && zPixel < zbuf[offsetSE]) {
             zbuf[offsetSE] = (short)zPixel;
-            pbuf[offsetSE] = shades[(packed >> 25) & 0x3F];
+            pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
+          }
+          if (tWestVisible && zPixel < zbuf[offsetSW]) {
+            zbuf[offsetSW] = (short)zPixel;
+            pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
           }
         }
-
-        ++xWest;
-        --xEast;
-        ++offsetNW;
-        --offsetNE;
-        ++offsetSW;
-        --offsetSE;
-      } while (--plotCount > 0);
-      ++yNorth;
-      --ySouth;
-      offsetNorthBeginLine += width;
-      offsetSouthBeginLine -= width;
-    } while (--i > 0);
+        if (tNorthVisible) {
+          if (tEastVisible && zPixel < zbuf[offsetNE]) {
+            zbuf[offsetNE] = (short)zPixel;
+            pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
+          }
+          if (tWestVisible && zPixel < zbuf[offsetNW]) {
+            zbuf[offsetNW] = (short)zPixel;
+            pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+          }
+        }
+        ++offsetSE;
+        --offsetSW;
+        ++offsetNE;
+        --offsetNW;
+        ++xEast;
+        --xWest;
+      } while (packed >= 0);
+      offsetSouthCenter += width;
+      offsetNorthCenter -= width;
+      ++ySouth;
+      --yNorth;
+    } while (--nLines > 0);
   }
 
   final static int maxSphereCache = 64;

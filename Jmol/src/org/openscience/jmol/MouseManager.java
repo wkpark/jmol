@@ -105,6 +105,20 @@ public class MouseManager {
     }
   }
 
+  final static int LEFT = InputEvent.BUTTON1_MASK;
+  final static int MIDDLE = InputEvent.BUTTON2_MASK;
+  final static int RIGHT = InputEvent.BUTTON3_MASK;
+  final static int SHIFT_RIGHT =
+    InputEvent.SHIFT_MASK | InputEvent.BUTTON3_MASK;
+  final static int CTRL_RIGHT =
+    InputEvent.CTRL_MASK | InputEvent.BUTTON3_MASK;
+  final static int SHIFT_LEFT =
+    InputEvent.SHIFT_MASK | InputEvent.BUTTON1_MASK;
+  final static int CTRL_LEFT =
+    InputEvent.CTRL_MASK | InputEvent.BUTTON1_MASK;
+  final static int CTRL_SHIFT_LEFT =
+    InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK | InputEvent.BUTTON1_MASK;
+
   class MyMouseListener extends MouseAdapter {
 
     public void mousePressed(MouseEvent e) {
@@ -123,6 +137,10 @@ public class MouseManager {
     public void mouseClicked(MouseEvent e) {
 
       if (control.haveFile()) {
+        if ((e.getModifiers() & MIDDLE) == MIDDLE) {
+          control.homePosition();
+          return;
+        }
         Atom atom = control.getFrame().getNearestAtom(e.getX(), e.getY());
         switch (modeMouse) {
         case PICK:
@@ -163,18 +181,11 @@ public class MouseManager {
 
   class MyMouseMotionListener extends MouseMotionAdapter {
 
-    final static int LEFT = InputEvent.BUTTON1_MASK;
-    final static int RIGHT = InputEvent.BUTTON3_MASK;
-    final static int SHIFT_RIGHT =
-      InputEvent.SHIFT_MASK | InputEvent.BUTTON3_MASK;
-    final static int SHIFT_LEFT =
-      InputEvent.SHIFT_MASK | InputEvent.BUTTON1_MASK;
-    final static int CTRL_LEFT =
-      InputEvent.CTRL_MASK | InputEvent.BUTTON1_MASK;
-
     int getMode(int modifiers) {
       if (modeMouse != ROTATE)
         return modeMouse;
+      /* RASMOL
+         // mth - I think that right click should be reserved for a popup menu
       if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
         return SLAB_PLANE;
       if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
@@ -183,6 +194,17 @@ public class MouseManager {
         return ROTATE_Z;
       if ((modifiers & RIGHT) == RIGHT)
         return XLATE;
+      if ((modifiers & LEFT) == LEFT)
+        return ROTATE;
+      */
+      if ((modifiers & CTRL_SHIFT_LEFT) == CTRL_SHIFT_LEFT)
+        return ZOOM;
+      if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
+        return ROTATE_Z;
+      if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
+        return XLATE;
+      if ((modifiers & LEFT) == LEFT)
+        return ROTATE;
       return modeMouse;
     }
 

@@ -548,7 +548,7 @@ public class Eval implements Runnable {
       Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
       switch (property) {
       case Token.atomno:
-        propertyValue = i;
+        propertyValue = i + 1; // in the user world the atoms start with 1
         break;
       case Token.elemno:
         propertyValue = atom.getAtomicNumber();

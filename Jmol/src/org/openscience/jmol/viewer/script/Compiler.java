@@ -902,7 +902,7 @@ class Compiler {
     log("still here looking at:" + strToken);
 
     // still might be an identifier ... so be careful
-    int resno = -1;
+    int sequence = -1;
     char chain = '?';
     if (cchToken > 3) {
       // let's take a look at the last character
@@ -917,8 +917,9 @@ class Compiler {
         strResno = strToken.substring(3, cchToken - 1);
       }
       try {
-        resno = Integer.parseInt(strResno);
-        log("I parsed resno=" + resno);
+        int sequenceNum = Integer.parseInt(strResno);
+        log("I parsed sequenceNum=" + sequenceNum);
+        sequence = PdbGroup.getSequence(sequenceNum, ' ');
       } catch (NumberFormatException e) {
         return generateResidueSpecCode(tokenIdent);
       }
@@ -935,11 +936,12 @@ class Compiler {
       return generateResidueSpecCode(tokenIdent);
     }
     log(" I see a residue name:" + strUpper3 +
-                       " resno=" + resno +
+                       " sequence=" + sequence +
                        " chain=" + chain);
 
-    if (resno != -1)
-      generateResidueSpecCode(new Token(Token.spec_number, resno, "spec_number"));
+    if (sequence != -1)
+      generateResidueSpecCode(new Token(Token.spec_number,
+                                        sequence, "spec_number"));
     if (chain != '?')
       generateResidueSpecCode(new Token(Token.spec_chain, chain, "spec_chain"));
     return true;
@@ -959,11 +961,12 @@ class Compiler {
     Token tokenInt1 = tokenNext();
     if (tokenInt1.tok != Token.integer)
       return resnumSpecificationExpected();
-    int resNum1 = (negativeInt1 ? -tokenInt1.intValue : tokenInt1.intValue);
-    log("resNum1=" + resNum1);
+    int sequenceNum = negativeInt1 ? -tokenInt1.intValue : tokenInt1.intValue;
+    log("sequenceNum=" + sequenceNum);
+    int sequence = PdbGroup.getSequence(sequenceNum, ' ');
     if (tokPeek() != Token.hyphen)
       return generateResidueSpecCode(new Token(Token.spec_number,
-                                               resNum1, "spec_number"));
+                                               sequence, "spec_number"));
     log("seems to be a range");
     tokenNext(); // throw away range hyphen
     // now look for negative int hyphen
@@ -975,16 +978,15 @@ class Compiler {
     Token tokenInt2 = tokenNext();
     if (tokenInt2.tok != Token.integer)
       return resnumSpecificationExpected();
-    int resNum2 = (negativeInt2 ? -tokenInt2.intValue : tokenInt2.intValue);
-    log("resNum2=" + resNum2);
+    int sequenceNumLast =
+      (negativeInt2 ? -tokenInt2.intValue : tokenInt2.intValue);
+    log("sequenceNumLast=" + sequenceNumLast);
 
-    int min = resNum1;
-    int max = resNum2;
-    if (max < min) {
-      int intT = max; max = min; min = intT;
-    }
+    int sequenceLast = PdbGroup.getSequence(sequenceNumLast, ' ');
+
     return generateResidueSpecCode(new Token(Token.spec_number_range,
-                                             min, new Integer(max)));
+                                             sequence,
+                                             new Integer(sequenceLast)));
   }
 
   boolean clauseChainSpec() {

@@ -74,8 +74,11 @@ public class Frame {
 
   public void freeze() {
     htAtomMap = null;
-    if (bondCount == 0 && viewer.getAutoBond())
-      rebond();
+    if (viewer.getAutoBond()) {
+      if ((bondCount == 0) ||
+          (hasPdbRecords && (bondCount < (atomCount / 2))))
+        rebond();
+    }
     if (hasPdbRecords)
       pdbMolecule.freeze();
   }

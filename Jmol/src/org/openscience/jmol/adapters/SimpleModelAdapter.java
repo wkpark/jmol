@@ -474,50 +474,27 @@ class MolModel extends Model {
 }
 
 class PdbModel extends Model {
+  String line;
+  int atomIndexA;
     
   PdbModel(BufferedReader reader) throws Exception {
-    String line;
     atoms = new Atom[512];
+    bonds = new Bond[32];
     pdbStructureRecords = new String[32];
     while ((line = reader.readLine()) != null) {
       if (line.startsWith("ATOM  ") ||
           line.startsWith("HETATM")) {
-        // for now, we are only taking alternate location 'A'
-        char charAlternateLocation = line.charAt(16);
-        if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
-          continue;
-        int len = line.length();
-        String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
-        if (atomicSymbol.length() == 0 ||
-            Character.isDigit(atomicSymbol.charAt(0))) {
-          char ch12 = line.charAt(12);
-          atomicSymbol = ((ch12 == ' ' || Character.isDigit(ch12))
-                          ? line.substring(13, 14)
-                          : line.substring(12, 14));
-        }
-        float x =
-          Float.valueOf(line.substring(30, 38).trim()).floatValue();
-        float y =
-          Float.valueOf(line.substring(38, 46).trim()).floatValue();
-        float z =
-          Float.valueOf(line.substring(46, 54).trim()).floatValue();
-        if (atomCount == atoms.length) {
-          Atom[] t = new Atom[atomCount + 512];
-          System.arraycopy(atoms, 0, t, 0, atomCount);
-          atoms = t;
-        }
-        atoms[atomCount++] = new Atom(atomicSymbol, x, y, z, line);
+        atom();
+        continue;
+      }
+      if (line.startsWith("CONECT")) {
+        conect();
         continue;
       }
       if (line.startsWith("HELIX ") ||
           line.startsWith("SHEET ") ||
           line.startsWith("TURN  ")) {
-        if (pdbStructureRecordCount == pdbStructureRecords.length) {
-          String[] t = new String[2 * pdbStructureRecordCount];
-          System.arraycopy(pdbStructureRecords, 0, t, 0, pdbStructureRecordCount);
-          pdbStructureRecords = t;
-        }
-        pdbStructureRecords[pdbStructureRecordCount++] = line;
+        structure();
         continue;
       }
       if (line.startsWith("HEADER") && line.length() >= 66) {
@@ -525,5 +502,75 @@ class PdbModel extends Model {
         continue;
       }
     }
+  }
+
+  void atom() {
+    try {
+      // for now, we are only taking alternate location 'A'
+      char charAlternateLocation = line.charAt(16);
+      if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
+        return;
+      int len = line.length();
+      String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
+      if (atomicSymbol.length() == 0 ||
+          Character.isDigit(atomicSymbol.charAt(0))) {
+        char ch12 = line.charAt(12);
+        atomicSymbol = ((ch12 == ' ' || Character.isDigit(ch12))
+                        ? line.substring(13, 14)
+                        : line.substring(12, 14));
+      }
+      float x =
+        Float.valueOf(line.substring(30, 38).trim()).floatValue();
+      float y =
+        Float.valueOf(line.substring(38, 46).trim()).floatValue();
+      float z =
+        Float.valueOf(line.substring(46, 54).trim()).floatValue();
+      if (atomCount == atoms.length) {
+        Atom[] t = new Atom[atomCount + 512];
+        System.arraycopy(atoms, 0, t, 0, atomCount);
+        atoms = t;
+      }
+      atoms[atomCount++] = new Atom(atomicSymbol, x, y, z, line);
+    } catch (NumberFormatException e) {
+      System.out.println("bad record:" + line);
+    }
+  }
+
+  void conect() {
+    if (bondCount + 4 >= bonds.length) {
+      Bond[] t = new Bond[bonds.length + 256];
+      System.arraycopy(bonds, 0, t, 0, bondCount);
+      bonds = t;
+    }
+    try {
+      atomIndexA = Integer.parseInt(line.substring(6, 11).trim()) - 1;
+      for (int i = 11; i < 31; i += 5)
+        if (! conect1(i))
+          return;
+    } catch (NumberFormatException e) {
+    }
+  }
+
+  boolean conect1(int offset) {
+    try {
+      String str = line.substring(offset, offset + 5).trim();
+      if (str.length() == 0)
+        return false;
+      int atomIndexB = Integer.parseInt(line.substring(offset, offset + 5).trim()) - 1;
+      bonds[bondCount++] = new Bond(atomIndexA, atomIndexB, 1);
+      return true;
+    } catch (StringIndexOutOfBoundsException e) {
+    } catch (NumberFormatException e) {
+    }
+    return false;
+  }
+  
+  void structure() {
+    if (pdbStructureRecordCount == pdbStructureRecords.length) {
+      String[] t = new String[2 * pdbStructureRecordCount];
+      System.arraycopy(pdbStructureRecords, 0, t, 0, pdbStructureRecordCount);
+      pdbStructureRecords = t;
+    }
+    pdbStructureRecords[pdbStructureRecordCount++] = line;
   }
 }

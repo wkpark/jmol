@@ -62,6 +62,7 @@ final public class DisplayControl {
   public int yTranslation;
   public int cameraZ = 750;
   public final Matrix4d matrixTransform = new Matrix4d();
+  private final Point3d point3dScreenTemp = new Point3d();
 
   private DisplayPanel panel;
 
@@ -149,23 +150,23 @@ final public class DisplayControl {
   }
 
   private Color pickedColor = Color.orange;
-  private Color pickedTranslucentColor;
+  private Color pickedTransparentColor;
   public void setPickedColor(Color c) {
     if (pickedColor == null || !pickedColor.equals(c)) {
       pickedColor = c;
-      pickedTranslucentColor = null;
+      pickedTransparentColor = null;
       recalc();
     }
   }
   public Color getPickedColor() {
-    if (pickedTranslucentColor == null) {
-      pickedTranslucentColor = pickedColor;
+    if (pickedTransparentColor == null) {
+      pickedTransparentColor = pickedColor;
       if (useGraphics2D) {
         int rgba = (pickedColor.getRGB() & 0x00FFFFFF) | 0x80000000;
-        pickedTranslucentColor = new Color(rgba, true);
+        pickedTransparentColor = new Color(rgba, true);
       }
     }
-    return pickedTranslucentColor;
+    return pickedTransparentColor;
   }
 
   public Color textColor = Color.black;
@@ -421,15 +422,22 @@ final public class DisplayControl {
   }
 
   public void transformPoint(Point3d pointAngstroms, Point3d pointScreen) {
-    matrixTransform.transform(pointAngstroms, pointScreen);
+    pointScreen.set(transformPoint(pointAngstroms));
+  }
+
+  public Point3d transformPoint(Point3d pointAngstroms) {
+    matrixTransform.transform(pointAngstroms, point3dScreenTemp);
     if (perspectiveDepth) {
-      int depth = cameraZ - (int)pointScreen.z;
-      pointScreen.x = (((int)pointScreen.x * cameraZ) / depth) + xTranslation;
-      pointScreen.y = (((int)pointScreen.y * cameraZ) / depth) + yTranslation;
+      int depth = cameraZ - (int)point3dScreenTemp.z;
+      point3dScreenTemp.x =
+        (((int)point3dScreenTemp.x * cameraZ) / depth) + xTranslation;
+      point3dScreenTemp.y =
+        (((int)point3dScreenTemp.y * cameraZ) / depth) + yTranslation;
     } else {
-      pointScreen.x += xTranslation;
-      pointScreen.y += yTranslation;
+      point3dScreenTemp.x += xTranslation;
+      point3dScreenTemp.y += yTranslation;
     }
+    return point3dScreenTemp;
   }
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -460,9 +468,10 @@ final public class DisplayControl {
     recalc();
   }
 
-  public void setScreenDimension(Dimension dimCurrent) {
+  /*  public void setScreenDimension(Dimension dimCurrent) {
     this.dimCurrent = dimCurrent;
   }
+  */
 
   public Dimension getScreenDimension() {
     return dimCurrent;
@@ -470,10 +479,19 @@ final public class DisplayControl {
 
   // don't do recalc here
   public void scaleFitToScreen(Dimension dimCurrent) {
-    setScreenDimension(dimCurrent);
+    this.dimCurrent = dimCurrent;
     scaleFitToScreen();
+    // FIXME perspective view resize - mth dec 2003
+    // there is some problem with perspective view with the screen is
+    // resized larger. only shows up in perspective view. things are being
+    // displayed larger than they should be. that is, rotations can go
+    // off the edge of the screen. goes away when home is hit
+
   }
+
   public void scaleFitToScreen() {
+    if (dimCurrent == null) // I have a race condition at startup
+      return;
     // translate to the middle of the screen
     xTranslation = dimCurrent.width / 2;
     yTranslation = dimCurrent.height / 2;
@@ -763,7 +781,7 @@ final public class DisplayControl {
   public final Hashtable imageCache = new Hashtable();
   private void flushCachedImages() {
     imageCache.clear();
-    pickedTranslucentColor = null;
+    pickedTransparentColor = null;
   }
 
   // FIXME NEEDSWORK -- bond binding stuff
@@ -807,10 +825,13 @@ final public class DisplayControl {
     vectorColor = c;
     recalc();
   }
-
   public Color getVectorColor() {
+    // mth dec 2002
+    // I tried a transparent color here, but was disappointed with the
+    // results ... so I backed it out. 
     return vectorColor;
   }
+
 
   public void setArrowHeadSize(double ls) {
     arrowHeadSize = 10.0f * ls;

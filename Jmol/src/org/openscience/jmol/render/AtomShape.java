@@ -60,13 +60,10 @@ import javax.vecmath.Matrix4d;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class AtomShape implements Shape {
+public class AtomShape extends Shape {
 
   Atom atom;
-  private Point3d screenPosition = new Point3d();
-  public int x;
-  public int y;
-  public int z;
+  //  private Point3d screenPosition = new Point3d();
   public int diameter;
   
   public AtomShape(Atom atom) {
@@ -74,12 +71,7 @@ public class AtomShape implements Shape {
   }
 
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("Atom shape for ");
-    buffer.append(atom);
-    buffer.append(": z = ");
-    buffer.append(getZ());
-    return buffer.toString();
+    return "Atom shape for " + atom + ": z = " + z;
   }
 
   public void render(Graphics g, Rectangle clip, DisplayControl control) {
@@ -103,24 +95,13 @@ public class AtomShape implements Shape {
   }
   
   public void transform(DisplayControl control) {
-    control.matrixTransform.transform(atom.getPosition(), screenPosition);
-    x = (int)screenPosition.x;
-    y = (int)screenPosition.y;
-    z = (int)screenPosition.z;
+    Point3d screen = control.transformPoint(atom.getPosition());
+    x = (int)screen.x;
+    y = (int)screen.y;
+    z = (int)screen.z;
     diameter = control.getScreenDiameter(z, atom.getType().getVdwRadius());
-    if (control.isPerspectiveDepth()) {
-      int cameraZ = control.cameraZ;
-      x = (x * cameraZ) / (cameraZ - z);
-      y = (y * cameraZ) / (cameraZ - z);
-    }
-    x += control.xTranslation;
-    y += control.yTranslation;
   }
 
-  public int getZ() {
-    return z;
-  }
-  
   public void renderLabel(Graphics g, Rectangle clip, DisplayControl control) {
     if (control.labelMode == control.NOLABELS)
       return;

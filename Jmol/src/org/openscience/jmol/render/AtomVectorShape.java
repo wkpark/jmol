@@ -5,13 +5,12 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 
-public class AtomVectorShape implements Shape {
+public class AtomVectorShape extends Shape {
 
   Atom atom;
   DisplayControl control;
   double minMagnitude;
   double magnitudeRange;
-  final Point3d screenVector = new Point3d();
   
   AtomVectorShape(Atom atom, DisplayControl control,
                   double minMagnitude, double magnitudeRange) {
@@ -22,12 +21,7 @@ public class AtomVectorShape implements Shape {
   }
 
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("Atom vector shape for ");
-    buffer.append(atom);
-    buffer.append(": z = ");
-    buffer.append(getZ());
-    return buffer.toString();
+    return "Atom vector shape for " + atom + ": z = " + z;
   }
 
   public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
@@ -39,16 +33,17 @@ public class AtomVectorShape implements Shape {
     }
     ArrowLine al =
       new ArrowLine(g, control, atom.getScreenX(), atom.getScreenY(),
-                    (int)screenVector.x, (int)screenVector.y,
+                    x, y,
                     false, true, scaling);
   }
 
   public void transform(DisplayControl control) {
-    control.transformPoint(atom.getScaledVector(), screenVector);
-  }
-  
-  public int getZ() {
-    return (atom.getScreenZ() + (int)screenVector.z) / 2;
+    Point3d screen = control.transformPoint(atom.getPosition());
+    int zAtom = (int)screen.z;
+    screen = control.transformPoint(atom.getScaledVector());
+    x = (int)screen.x;
+    y = (int)screen.y;
+    z = (zAtom + (int)screen.z) / 2;
   }
   
   /**

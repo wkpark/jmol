@@ -73,8 +73,6 @@ public class DisplayPanel extends JPanel
   // current dimensions of the display screen
   private static Dimension dimCurrent = null;
   private static final Rectangle rectClip = new Rectangle();
-  // previous dimensions ... used to detect resize operations
-  private static Dimension dimPrevious = null;
 
   public static final int ROTATE = 0;
   public static final int ZOOM = 1;
@@ -259,14 +257,12 @@ public class DisplayPanel extends JPanel
     Color fg = getForeground();
 
     dimCurrent = getSize();
-    if (dimPrevious == null)
-      control.setScreenDimension(dimCurrent);
     rectClip.setBounds(0, 0, dimCurrent.width, dimCurrent.height);
     g.getClipBounds(rectClip);
     g.setColor(control.getBackgroundColor());
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
-      if (! dimCurrent.equals(dimPrevious)) {
+      if (! dimCurrent.equals(control.getScreenDimension())) {
         control.scaleFitToScreen(dimCurrent);
         setRotateMode();
       }
@@ -281,7 +277,6 @@ public class DisplayPanel extends JPanel
       if (showPaintTime)
         stopPaintClock();
     }
-    dimPrevious = dimCurrent;
   }
 
   ChemFrameRenderer frameRenderer = new ChemFrameRenderer();

@@ -32,12 +32,16 @@ import java.awt.Rectangle;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public interface Shape {
+public abstract class Shape {
 
-  public void render(Graphics g, Rectangle rectClip, DisplayControl control);
+  public int x, y, z; // screen coordinates after transformation
+  // note that this z is used for the z-order sort process
+  // remember that for perspective depth calculations all values
+  // of z are <= 0 ... 0 is at the surface of the screen and
+  // more negative is further back away from the screen
 
-  public void transform(DisplayControl control);
+  abstract public void render(Graphics g, Rectangle rectClip,
+                              DisplayControl control);
 
-  public int getZ();
-
+  abstract public void transform(DisplayControl control);
 }

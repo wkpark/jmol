@@ -7,45 +7,37 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
 
-class LineShape implements Shape {
+class LineShape extends Shape {
 
-  Point3d origPoint;
-  Point3d endPoint;
+  Point3d pointOrigin;
+  Point3d pointEnd;
+  int xEnd, yEnd, zEnd;
 
-  LineShape(Point3d origPoint, Point3d endPoint) {
-
-    this.origPoint = origPoint;
-    this.endPoint = endPoint;
+  LineShape(Point3d pointOrigin, Point3d pointEnd) {
+    this.pointOrigin = pointOrigin;
+    this.pointEnd = pointEnd;
   }
 
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("Primitive line shape");
-    return buffer.toString();
+    return "Primitive line shape";
   }
 
   public void transform(DisplayControl control) {
-    control.transformPoint(origPoint, screenPositionOrig);
-    control.transformPoint(endPoint, screenPositionEnd);
+    Point3d screen = control.transformPoint(pointOrigin);
+    x = (int)screen.x;
+    y = (int)screen.y;
+    z = (int)screen.z;
+    screen = control.transformPoint(pointEnd);
+    xEnd = (int)screen.x;
+    yEnd = (int)screen.y;
+    zEnd = (int)screen.z;
+    if (zEnd > z)
+      z = zEnd;
   }
   
   public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
-
-    PlainLine al = new PlainLine(g, screenPositionOrig.x,
-                     screenPositionOrig.y, screenPositionEnd.x,
-                     screenPositionEnd.y);
-
+    g.setColor(control.getVectorColor());
+    g.drawLine(x, y, xEnd, yEnd);
   }
-
-  public int getZ() {
-    return (int)screenPositionEnd.z + 4;
-  }
-
-  /**
-   * Point for calculating lengths of vectors.
-   */
-  private static final Point3d zeroPoint = new Point3d();
-  private Point3d screenPositionEnd = new Point3d();
-  private Point3d screenPositionOrig = new Point3d();
 }
 

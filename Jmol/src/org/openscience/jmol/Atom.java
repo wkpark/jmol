@@ -198,16 +198,6 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
-   * Returns the atom's on-screen vibrational vector. Note: the atom must
-   * first be transformed. Otherwise, a point at the origin is returned.
-   */
-  /*
-  public Point3d getScreenVector() {
-    return atomShape.screenVector;
-  }
-  */
-
-  /**
      * Adds an atom to this atom's bonded list.
      */
   public void addBondedAtom(Atom toAtom, int bondOrder) {

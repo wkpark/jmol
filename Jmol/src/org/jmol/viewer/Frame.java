@@ -28,7 +28,6 @@ package org.jmol.viewer;
 import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Bspf;
-import org.jmol.bspt.Bspt;
 import org.jmol.bspt.SphereIterator;
 import org.jmol.bspt.Tuple;
 import javax.vecmath.Point3f;

@@ -62,6 +62,8 @@ public class SphereIterator {
   /**
    * initialize to return all points within the sphere defined
    * by <code>center</code> and <code>radius</code>.
+   * @param center
+   * @param radius
    */
   public void initialize(Tuple center, float radius) {
     this.center = center;
@@ -100,6 +102,8 @@ public class SphereIterator {
    * Note that if you are iterating through all points, and two
    * points are within <code>radius</code> and have the same
    * x coordinate, then each will return the other
+   * @param center
+   * @param radius
    */
   public void initializeHemisphere(Tuple center, float radius) {
     initialize(center, radius);
@@ -136,6 +140,7 @@ public class SphereIterator {
     
   /**
    * normal iterator predicate
+   * @return boolean
    */
   public boolean hasMoreElements() {
     while (true) {
@@ -177,6 +182,7 @@ public class SphereIterator {
 
   /**
    * normal iterator method
+   * @return Tuple
    */
   public Tuple nextElement() {
     return leaf.tuples[leafIndex++];
@@ -186,6 +192,7 @@ public class SphereIterator {
    * After calling nextElement(), allows one to find out
    * the value of the distance squared. To get the distance
    * just take the sqrt.
+   * @return float
    */
   public float foundDistance2() {
     return foundDistance2;

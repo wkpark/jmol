@@ -93,6 +93,7 @@ public final class Bspt {
   /**
    * Create a bspt with the specified number of dimensions. For a 3-dimensional
    * tree (x,y,z) call new Bspt(3).
+   * @param dimMax
    */
   public Bspt(int dimMax) {
     this.dimMax = dimMax;
@@ -102,6 +103,7 @@ public final class Bspt {
 
   /**
    * Iterate through all of your data points, calling addTuple
+   * @param tuple
    */
   public void addTuple(Tuple tuple) {
     eleRoot = eleRoot.addTuple(0, tuple);

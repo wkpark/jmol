@@ -90,6 +90,19 @@ public class SelectionManager {
     empty = TRUE;
   }
 
+  public void delete(int iDeleted) {
+    if (empty == TRUE)
+      return;
+    int numAfterDelete = control.numberOfAtoms() - 1;
+    for (int i = iDeleted; i < numAfterDelete; ++i) {
+      if (bsSelection.get(i + 1))
+        bsSelection.set(i);
+      else
+        bsSelection.clear(i);
+    }
+    empty = UNKNOWN;
+  }
+
   public void setSelectionSet(BitSet set) {
     bsSelection.and(bsNull);
     bsSelection.or(set);

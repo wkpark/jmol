@@ -260,37 +260,18 @@ public class ChemFrame extends AtomContainer {
 
   /**
    * Deletes an Atom from the frame
-   * FIXME - mth
-   * Rather than deleting, I think it may be better if we change this to
-   * set a *deleted* flag. That way, atom numbers do not change and other
-   * things work better
    */
-  public void deleteAtom(Atom a) {
-    clearBounds();
-    // deteremine atomID
-    int atomID = 0;
-    for (int i = 0; i < numberOfAtoms; i++) {
-      if (atoms[i].hashCode() == a.hashCode()) {
-        atomID = i;
-        i = numberOfAtoms;
-      }
-    }
-    for (int i = atomID; i < numberOfAtoms -1; i++) {
-      atoms[i] = atoms[i + 1];
-    }
-    atoms[numberOfAtoms - 1] = null;
-    numberOfAtoms--;
-    rebond();
-  }
-
   public void deleteAtom(int atomIndex) {
-    clearBounds();
+    Atom atomDeleted = atoms[atomIndex];
+    //    System.arraycopy(atoms, i+1, atoms, i, numberOfAtoms - i - 1);
     for (int i = atomIndex; i < numberOfAtoms -1; i++) {
       atoms[i] = atoms[i + 1];
     }
     atoms[numberOfAtoms - 1] = null;
-    numberOfAtoms--;
-    rebond();
+    --numberOfAtoms;
+    atomDeleted.delete();
+    clearBounds();
+    // FIXME mth -- do I need to do this?    rebond();
   }
 
   /**

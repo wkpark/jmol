@@ -40,9 +40,9 @@ public class AtomShape extends Shape {
   public short marAtom;
   public Color colorAtom;
   public int diameter;
-  public int numBonds;
-  public int[] bondWidths;
-  public byte[] styleBonds;
+  public int numBonds;    
+  public int[] bondWidths;  // after a delete operation, these arrays
+  public byte[] styleBonds; // will be longer than numBonds
   public short[] marBonds;
   public Color[] colorBonds;
   public String strLabel;
@@ -73,6 +73,17 @@ public class AtomShape extends Shape {
 
   public String toString() {
     return "Atom shape for " + atom + ": z = " + z;
+  }
+
+  public void deleteBond(int i) {
+    --numBonds;
+    int numAbove = numBonds - i;
+    if (numAbove > 0) {
+      System.arraycopy(bondWidths, i+1, bondWidths, i, numAbove);
+      System.arraycopy(styleBonds, i+1, styleBonds, i, numAbove);
+      System.arraycopy(marBonds,   i+1, marBonds,   i, numAbove);
+      System.arraycopy(colorBonds, i+1, colorBonds, i, numAbove);
+    }
   }
 
   /*

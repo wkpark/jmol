@@ -298,6 +298,45 @@ public class Atom extends org.openscience.cdk.Atom {
     return atomShape;
   }
 
+  public void delete() {
+    // this atom has been deleted ...
+    // so notify bonded atoms so that they can make appropriate adjustments
+    if (bondedAtoms == null)
+      return;
+    for (int i = bondedAtoms.length; --i >= 0; )
+      bondedAtoms[i].deleteBondedAtom(this);
+  }
+
+  public void deleteBondedAtom(Atom atomDeleted) {
+    if (bondedAtoms.length == 1) {
+      if (bondedAtoms[0] != atomDeleted)
+        System.out.println("Atom.deleteBondedAtom() - inconsistent #1");
+      bondedAtoms = null;
+      bondOrders = null;
+      return;
+    }
+    int numBondsNew = bondedAtoms.length - 1;
+    Atom[] bondedAtomsNew = new Atom[numBondsNew];
+    // in this case, just allocate the bond orders
+    int[] bondOrdersNew = new int[numBondsNew];
+    int iNew = 0;
+    for (int i = 0; i < bondedAtoms.length; ++i) {
+      if (bondedAtoms[i] == atomDeleted) {
+        if (atomShape != null)
+          atomShape.deleteBond(i);
+      } else {
+        bondedAtomsNew[iNew] = bondedAtoms[i];
+        if (bondOrders != null && bondOrders.length > i)
+          bondOrdersNew[iNew] = bondOrders[i];
+        ++iNew;
+      }
+    }
+    if (iNew != bondedAtomsNew.length)
+      System.out.println("Atom.deleteBondedAtom() - inconsistent #2");
+    bondedAtoms = bondedAtomsNew;
+    bondOrders = bondOrdersNew;
+  }
+
   private AtomType atomType;
 
   /**

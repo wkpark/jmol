@@ -817,10 +817,11 @@ final public class DisplayControl {
   }
 
   public void deleteAtom(int atomIndex) {
-    // FIXME -- there are problems with deleting atoms
-    // for example, the selection set gets messed up
-    // The answer is that delete does *not* delete, it only *hides*
-    // in fact, this is completely compatible with rasmol
+    // FIXME mth -- deletion
+    // after a delete operation, all the sets are messed up
+    // the selection set *and* the script sets
+    // selectionManager.delete(atomIndex);
+    selectionManager.clearSelection();
     modelManager.deleteAtom(atomIndex);
     //            status.setStatus(2, "Atom deleted"); 
     structuralChange = true;

@@ -90,8 +90,6 @@ class FrameRenderer {
 
   void renderStringOutside(String str, short colix, Font3D font3d,
                                   int x, int y, int z, Graphics3D g3d) {
-    g3d.setColix(colix);
-    g3d.setFont(font3d);
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
@@ -110,6 +108,6 @@ class FrameRenderer {
     }
     int xStrBaseline = xStrCenter - strWidth / 2;
     int yStrBaseline = yStrCenter + strAscent / 2;
-    g3d.drawString(str, colix, xStrBaseline, yStrBaseline, z);
+    g3d.drawString(str, font3d, colix, xStrBaseline, yStrBaseline, z);
   }
 }

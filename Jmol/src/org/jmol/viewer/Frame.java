@@ -29,6 +29,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.Bspt;
+import org.jmol.bspt.SphereIterator;
 import org.jmol.bspt.Tuple;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
@@ -1061,7 +1062,7 @@ final class Frame {
     int bsptIndex;
     Tuple center;
     float radius;
-    Bspt.SphereIterator bsptIter;
+    SphereIterator bsptIter;
 
     void initialize(int bsptIndex, Tuple center, float radius) {
       initializeBspf();
@@ -1134,7 +1135,7 @@ final class Frame {
         continue;
       float searchRadius =
         myBondingRadius + maxBondingRadius + bondTolerance;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
+      SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
@@ -1215,7 +1216,7 @@ final class Frame {
       if (elementNumber != 7 && elementNumber != 8)
         continue;
       //float searchRadius = hbondMax;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
+      SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();

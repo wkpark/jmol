@@ -36,12 +36,12 @@ public final class Bspf {
 
   int dimMax;
   Bspt bspts[];
-  Bspt.SphereIterator[] sphereIterators;
+  SphereIterator[] sphereIterators;
   
   public Bspf(int dimMax) {
     this.dimMax = dimMax;
     bspts = new Bspt[0];
-    sphereIterators = new Bspt.SphereIterator[0];
+    sphereIterators = new SphereIterator[0];
   }
 
   public int getBsptCount() {
@@ -75,9 +75,9 @@ public final class Bspf {
   }
   */
 
-  public Bspt.SphereIterator getSphereIterator(int bsptIndex) {
+  public SphereIterator getSphereIterator(int bsptIndex) {
     if (bsptIndex >= sphereIterators.length) {
-      Bspt.SphereIterator[] t = new Bspt.SphereIterator[bsptIndex + 1];
+      SphereIterator[] t = new SphereIterator[bsptIndex + 1];
       System.arraycopy(sphereIterators, 0, t, 0, sphereIterators.length);
       sphereIterators = t;
     }

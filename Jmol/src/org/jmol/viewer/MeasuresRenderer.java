@@ -207,7 +207,6 @@ class MeasuresRenderer extends ShapeRenderer {
     String strMeasurement = measurement.strMeasurement;
     if (strMeasurement == null)
       return;
-    g3d.setFont(font3d);
     FontMetrics fontMetrics = font3d.fontMetrics;
     //FIXME: Is the next line useful ?
     /*int j = */fontMetrics.stringWidth(strMeasurement);
@@ -216,7 +215,7 @@ class MeasuresRenderer extends ShapeRenderer {
     int zT = z - radius - 2;
     if (zT < 1)
       zT = 1;
-    g3d.drawString(strMeasurement, colix, xT, yT, zT);
+    g3d.drawString(strMeasurement, font3d, colix, xT, yT, zT);
   }
 
   void renderPendingMeasurement(PendingMeasurement pendingMeasurement) {

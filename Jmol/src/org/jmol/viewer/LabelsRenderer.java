@@ -128,7 +128,7 @@ class LabelsRenderer extends ShapeRenderer {
     }
     int msgX = xBox + 4;
     int msgYBaseline = yBox + 4 + ascent;
-    g3d.drawString(strLabel, colix, msgX, msgYBaseline, zBox-1);
+    g3d.drawString(strLabel, font3d, colix, msgX, msgYBaseline, zBox-1);
   }
 
 }

@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,17 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+
+/**
+ * Provides high-level graphics primitives for 3D visualization.
+ *<p>
+ * A pure software implementation of a 3D graphics engine.
+ * No hardware required.
+ * Depending upon what you are rendering ... some people say it
+ * is pretty fast.
+ *
+ * @author Miguel, miguel@jmol.org
+ */
 
 final public class Graphics3D {
 
@@ -71,6 +82,11 @@ final public class Graphics3D {
 
   final static int ZBUFFER_BACKGROUND = Platform3D.ZBUFFER_BACKGROUND;
 
+  /**
+   * Allocates a g3d object
+   *
+   * @param awtComponent the java.awt.Component where the image will be drawn
+   */
   public Graphics3D(Component awtComponent) {
     platform = Platform3D.createInstance(awtComponent);
     //    Font3D.initialize(platform);
@@ -83,6 +99,12 @@ final public class Graphics3D {
     //    setFontOfSize(13);
   }
   
+  /**
+   * sets the image size
+   *
+   * @param dim java.awt.Dimension with width and height
+   * @param enableFullSceneAntialiasing currently not in production
+   */
   public void setSize(Dimension dim, boolean enableFullSceneAntialiasing) {
     if (dim.width == windowWidth && dim.height == windowHeight &&
         enableFullSceneAntialiasing == isFullSceneAntialiasingEnabled)
@@ -96,14 +118,29 @@ final public class Graphics3D {
     platform.releaseBuffers();
   }
 
+  /**
+   * is full scene / oversampling antialiasing in effect
+   *
+   * @return the answer
+   */
   public boolean fullSceneAntialiasRendering() {
     return false;
   }
 
+  /**
+   * gets g3d width
+   *
+   * @return width pixel count;
+   */
   public int getWindowWidth() {
     return width;
   }
 
+  /**
+   * gets g3d height
+   *
+   * @return heigh pixel count
+   */
   public int getWindowHeight() {
     return height;
   }
@@ -116,6 +153,12 @@ final public class Graphics3D {
     return height;
   }
 
+  /**
+   * sets background color using colix color index
+   *
+   * @param colix a color index represented as a short
+   * @see Colix
+   */
   public void setBackground(short colix) {
     colixBackground = colix;
     argbBackground = getArgb(colix);
@@ -125,17 +168,54 @@ final public class Graphics3D {
       calcGrayscaleFromRgb(argbBackground) < 128 ? WHITE : BLACK;
   }
 
+  /**
+   * black or white, whichever contrasts more with the current background
+   *
+   * @return black or white colix value
+   */
   public short getColixBackgroundContrast() {
     return colixBackgroundContrast;
   }
 
+  /**
+   * return a grayscale value 0-FF using NTSC color luminance algorithm
+   *<p>
+   * the alpha component is ignored
+   *
+   * @param rgb the rgb value
+   * @return a grayscale value in the range 0 - 255 decimal
+   */
   public static int calcGrayscaleFromRgb(int rgb) {
-    // return a grayscale value 0-FF using NTSC color luminance algorithm
     return ((2989 * (rgb >> 16) & 0xFF) +
             (5870 * (rgb >> 8) & 0xFF) +
             (1140 * (rgb & 0xFF)) + 500) / 1000;
   }
   
+  /**
+   * clipping from the front and the back
+   *<p>
+   * the plane is defined as a percentage from the back of the image
+   * to the front
+   *<p>
+   * For slab values:
+   * <ul>
+   *  <li>100 means 100% is shown
+   *  <li>75 means the back 75% is shown
+   *  <li>50 means the back half is shown
+   *  <li>0 means that nothing is shown
+   * </ul>
+   *<p>
+   * for depth values:
+   * <ul>
+   *  <li>0 means 100% is shown
+   *  <li>25 means the back 25% is <i>not</i> shown
+   *  <li>50 means the back half is <i>not</i> shown
+   *  <li>100 means that nothing is shown
+   * </ul>
+   *<p>
+   * @param slabValue front clipping percentage [0,100]
+   * @param depthValue rear clipping percentage [0,100]
+   */
   public void setSlabAndDepthValues(int slabValue, int depthValue) {
     slab =
       slabValue < 0 ? 0
@@ -145,6 +225,9 @@ final public class Graphics3D {
       : depthValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : depthValue;
   }
 
+  /**
+   * used internally when oversampling is enabled
+   */
   private void downSampleFullSceneAntialiasing() {
     int[] pbuf1 = pbuf;
     int[] pbuf4 = pbuf;
@@ -173,27 +256,49 @@ final public class Graphics3D {
     return platform.hasContent();
   }
 
+  /**
+   * sets current color using java.awt.Color
+   *
+   * @param color the Color to set
+   */
   public void setColor(Color color) {
     argbCurrent = argbNoisyUp = argbNoisyDn = color.getRGB();
   }
 
+  /**
+   * sets current color using int argb
+   *
+   * @param argb the RGB value ... alpha is not used
+   */
   public void setColorArgb(int argb) {
     argbCurrent = argbNoisyUp = argbNoisyDn = argb;
   }
 
-  public void setColorNoisy(short colix, int intensity) {
+  /**
+   * sets current color from colix color index
+   * @param colix the color index
+   */
+  public void setColix(short colix) {
+    argbCurrent = argbNoisyUp = argbNoisyDn = getArgb(colix);
+  }
+
+  void setColorNoisy(short colix, int intensity) {
     int[] shades = getShades(colix);
     argbCurrent = shades[intensity];
     argbNoisyUp = shades[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shades[intensity > 0 ? intensity - 1 : 0];
   }
 
-  public void setColix(short colix) {
-    argbCurrent = argbNoisyUp = argbNoisyDn = getArgb(colix);
-  }
-
   int[] imageBuf = new int[0];
 
+  /**
+   * draws a flat image whose upper left corner is at x,y,z
+   *
+   * @param image the image
+   * @param x x
+   * @param y y
+   * @param z z
+   */
   public void drawImage(Image image, int x, int y, int z) {
     int imageWidth = image.getWidth(null);
     int imageHeight = image.getHeight(null);
@@ -223,11 +328,26 @@ final public class Graphics3D {
     }
   }
 
+  /**
+   * draws a circle of the specified color at the specified location
+   *
+   * @param colix the color index
+   * @param xyzd a long holding x, y, z, and d
+   */
   public void drawCircleCentered(short colix, long xyzd) {
     drawCircleCentered(colix, Xyzd.getD(xyzd),
                        Xyzd.getX(xyzd), Xyzd.getY(xyzd), Xyzd.getZ(xyzd));
   }
 
+  /**
+   * draws a circle of the specified color at the specified location
+   *
+   * @param colix the color index
+   * @param diameter pixel diameter
+   * @param x center x
+   * @param y center y
+   * @param z center z
+   */
   public void drawCircleCentered(short colix, int diameter,
                                  int x, int y, int z) {
     if (z < slab || z > depth)
@@ -263,6 +383,15 @@ final public class Graphics3D {
     }
   }
 
+  /**
+   * draws a screened circle ... every other dot is turned on
+   *
+   * @param colixFill the color index
+   * @param diameter the pixel diameter
+   * @param x center x
+   * @param y center y
+   * @param z center z
+   */
   public void fillScreenedCircleCentered(short colixFill, int diameter, 
                                          int x, int y, int z) {
     if (diameter == 0 || z < slab || z > depth)
@@ -278,6 +407,15 @@ final public class Graphics3D {
     }
   }
 
+  /**
+   * fills a solid circle
+   *
+   * @param colixFill the color index
+   * @param diameter the pixel diameter
+   * @param x center x
+   * @param y center y
+   * @param z center z
+   */
   public void fillCircleCentered(short colixFill, int diameter, 
                                  int x, int y, int z) {
     if (diameter == 0 || z < slab || z > depth)
@@ -291,15 +429,27 @@ final public class Graphics3D {
     }
   }
 
+
+  /**
+   * fills a solid sphere
+   *
+   * @param colix the color index
+   * @param xyzd x,y,z,diameter
+   */
   public void fillSphereCentered(short colix, long xyzd) {
     fillSphereCentered(colix, Xyzd.getD(xyzd),
                        Xyzd.getX(xyzd), Xyzd.getY(xyzd), Xyzd.getZ(xyzd));
   }
 
-  public void fillSphereCentered(short colix, Point3i center, int diameter) {
-    fillSphereCentered(colix, diameter, center.x, center.y, center.z);
-  }
-
+  /**
+   * fills a solid sphere
+   *
+   * @param colix the color index
+   * @param diameter pixel count
+   * @param x center x
+   * @param y center y
+   * @param z center z
+   */
   public void fillSphereCentered(short colix, int diameter,
                                  int x, int y, int z) {
     if (diameter <= 1) {
@@ -309,14 +459,39 @@ final public class Graphics3D {
     }
   }
 
-  public void fillSphereCentered(short colix, int diameter, Point3i screen) {
-    fillSphereCentered(colix, diameter, screen.x, screen.y, screen.z);
+  /**
+   * fills a solid sphere
+   *
+   * @param colix the color index
+   * @param diameter pixel count
+   * @param center javax.vecmath.Point3i defining the center
+   */
+  public void fillSphereCentered(short colix, int diameter, Point3i center) {
+    fillSphereCentered(colix, diameter, center.x, center.y, center.z);
   }
 
-  public void fillSphereCentered(short colix, int diameter, Point3f screen) {
-    fillSphereCentered(colix, diameter, (int)screen.x, (int)screen.y, (int)screen.z);
+  /**
+   * fills a solid sphere
+   *
+   * @param colix the color index
+   * @param diameter pixel count
+   * @param center a javax.vecmath.Point3f ... floats are casted to ints
+   */
+  public void fillSphereCentered(short colix, int diameter, Point3f center) {
+    fillSphereCentered(colix, diameter,
+                       (int)center.x, (int)center.y, (int)center.z);
   }
 
+  /**
+   * draws a rectangle
+   *
+   * @param colix the color index
+   * @param x upper left x
+   * @param y upper left y
+   * @param z upper left z
+   * @param width pixel count
+   * @param height pixel count
+   */
   public void drawRect(short colix, int x, int y, int z,
                        int width, int height) {
     argbCurrent = getArgb(colix);
@@ -328,6 +503,18 @@ final public class Graphics3D {
     line3d.drawHLine(argbCurrent, x, yBottom, z, width, true);
   }
 
+  /**
+   * draws a rectangle while ignoring slab/depth clipping
+   *<p>
+   * could be useful for UI work
+   *
+   * @param colix the color index
+   * @param x upper left x
+   * @param y upper left y
+   * @param z upper left z
+   * @param width pixel count
+   * @param height pixel count
+   */
   public void drawRectNoSlab(short colix, int x, int y, int z,
                        int width, int height) {
     argbCurrent = getArgb(colix);
@@ -339,11 +526,48 @@ final public class Graphics3D {
     line3d.drawHLine(argbCurrent, x, yBottom, z, width, false);
   }
 
+  /**
+   * draws the specified string in the current font.
+   * no line wrapping
+   *
+   * @param str the string
+   * @param colix the color index
+   * @param xBaseline baseline x
+   * @param yBaseline baseline y
+   * @param z baseline z
+   */
   public void drawString(String str, short colix,
                          int xBaseline, int yBaseline, int z) {
     drawString(str, font3dCurrent, colix, (short)0, xBaseline, yBaseline, z);
   }
   
+  /**
+   * draws the specified string in the current font.
+   * no line wrapping
+   *
+   * @param str the String
+   * @param font3d the Font3D
+   * @param colix the color index
+   * @param xBaseline baseline x
+   * @param yBaseline baseline y
+   * @param z baseline z
+   */
+  public void drawString(String str, Font3D font3d, short colix,
+                         int xBaseline, int yBaseline, int z) {
+    drawString(str, font3d, colix, (short)0, xBaseline, yBaseline, z);
+  }
+  
+  /**
+   * draws the specified string in the current font.
+   * no line wrapping
+   *
+   * @param str the String
+   * @param font3d the Font3D
+   * @param colix the color index
+   * @param xBaseline baseline x
+   * @param yBaseline baseline y
+   * @param z baseline z
+   */
   public void drawString(String str, Font3D font3d, short colix, short bgcolix,
                          int xBaseline, int yBaseline, int z) {
     //    System.out.println("Graphics3D.drawString(" + str + "," + font3d +

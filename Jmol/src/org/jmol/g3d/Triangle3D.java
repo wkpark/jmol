@@ -62,7 +62,7 @@ class Triangle3D {
    ****************************************************************/
   
 
-  void fillTriangle() {
+  void fillTriangleNoisy() {
     int iMinY = 0;
     if (ay[1] < ay[0]) iMinY = 1;
     if (ay[2] < ay[iMinY]) iMinY = 2;
@@ -192,8 +192,7 @@ class Triangle3D {
       numLines = g3d.height - y;
     for ( ; --numLines >= 0; ++y, ++i) {
       int xW = axW[i];
-      g3d.plotPixelsClipped(g3d.argbCurrent,
-                            axE[i] - xW + 1, xW, y, azW[i], azE[i]);
+      g3d.plotNoisyPixelsClipped(axE[i] - xW + 1, xW, y, azW[i], azE[i]);
     }
   }
 }

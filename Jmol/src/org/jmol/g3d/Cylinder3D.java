@@ -299,9 +299,10 @@ class Cylinder3D {
         System.out.println("endcap y="+y+" xMin="+xMin+" xMax="+xMax);
       */
       int count = xMax - xMin + 1;
-      g3d.plotPixelsClipped(argbEndcap, count,
-                            xT + xMin,  yT + y, zT - zXMin - 1,
-                            zT - zXMax - 1);
+      g3d.setColorArgb(argbEndcap);
+      g3d.plotNoisyPixelsClipped(count,
+                                 xT + xMin,  yT + y, zT - zXMin - 1,
+                                 zT - zXMax - 1);
     }
   }
 

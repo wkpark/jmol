@@ -340,8 +340,8 @@ class Hermite3D {
                 g3d.fillQuadrilateral(colix, a, b, d, c);
                 needToFill[sp] = false;
               }
-              if (dxTop2 + dyTop2 < 3 &&
-                  dxBot2 + dyBot2 < 3) {
+              if (dxTop2 + dyTop2 < 2 &&
+                  dxBot2 + dyBot2 < 2) {
                 --sp;
                 continue;
               }

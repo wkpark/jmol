@@ -39,7 +39,7 @@ public class Backbone extends Mcps {
   class Chain extends Mcps.Chain {
 
     Chain(PdbPolymer polymer) {
-      super(polymer);
+      super(polymer, 1, 1500, 500);
     }
 
     public void setSize(int size, BitSet bsSelected) {

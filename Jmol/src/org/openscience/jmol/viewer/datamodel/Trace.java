@@ -32,63 +32,13 @@ import java.util.BitSet;
 
 public class Trace extends Mcps {
 
-  boolean hasTemperatureRange = false;
-  int temperatureMin, temperatureMax;
-  int range;
-  float floatRange;
-
   Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
     return new Chain(polymer);
   }
 
   class Chain extends Mcps.Chain {
     Chain(PdbPolymer polymer) {
-      super(polymer);
-    }
-
-    short getMadSpecial(short mad, int groupIndex) {
-      switch (mad) {
-      case -1: // trace on
-        return (short)600;
-      case -2: // trace structure
-        int structureType = polymerGroups[groupIndex].getStructureType();
-        if (structureType == JmolConstants.SECONDARY_STRUCTURE_SHEET ||
-            structureType == JmolConstants.SECONDARY_STRUCTURE_HELIX)
-          return (short)1500;
-        return (short)500;
-      case -3: // trace temperature
-        if (! hasTemperatureRange)
-          calcTemperatureRange();
-        Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
-        PdbAtom pdbAtom = atom.getPdbAtom();
-        int temperature = pdbAtom.getTemperature(); // scaled by 1000
-        int scaled = temperature - temperatureMin;
-        if (range == 0)
-          return (short)0;
-        float percentile = scaled / floatRange;
-        if (percentile < 0 || percentile > 1)
-          System.out.println("Que ha ocurrido? " + percentile);
-        return (short)((1500 * percentile) + 500);
-      }
-      System.out.println("unrecognized parameter to Trace.getMadDefault(" +
-                         mad + ")");
-      return 0;
-    }
-
-    void calcTemperatureRange() {
-      temperatureMin = temperatureMax =
-        polymerGroups[0].getAlphaCarbonAtom().getTemperature();
-      for (int i = polymerCount; --i > 0; ) {
-        int temperature = polymerGroups[i].getAlphaCarbonAtom().getTemperature();
-        if (temperature < temperatureMin)
-          temperatureMin = temperature;
-        else if (temperature > temperatureMax)
-          temperatureMax = temperature;
-      }
-      range = temperatureMax - temperatureMin;
-      floatRange = range;
-      System.out.println("temperature range=" + range);
-      hasTemperatureRange = true;
+      super(polymer, 600, 1500, 500);
     }
   }
 }

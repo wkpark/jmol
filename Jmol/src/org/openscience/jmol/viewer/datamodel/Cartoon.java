@@ -40,15 +40,7 @@ public class Cartoon extends Mcps {
   class Chain extends Mcps.Chain {
 
     Chain(PdbPolymer polymer) {
-      super(polymer);
-    }
-
-    short getMadSpecial(short mad, int groupIndex) {
-      int structureType = polymerGroups[groupIndex].getStructureType();
-      if (structureType == JmolConstants.SECONDARY_STRUCTURE_SHEET ||
-          structureType == JmolConstants.SECONDARY_STRUCTURE_HELIX)
-        return (short)3000;
-      return (short)500;
+      super(polymer, -2, 3000, 500);
     }
   }
 }

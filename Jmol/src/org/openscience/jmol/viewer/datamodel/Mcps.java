@@ -126,13 +126,21 @@ abstract public class Mcps extends Shape {
 
   abstract class Chain {
     PdbPolymer polymer;
+    short madOn;
+    short madHelixSheet;
+    short madTurnRandom;
+
     int polymerCount;
     PdbGroup[] polymerGroups;
     short[] colixes;
     short[] mads;
     
-    Chain(PdbPolymer polymer) {
+    Chain(PdbPolymer polymer, int madOn, int madHelixSheet, int madTurnRandom) {
       this.polymer = polymer;
+      this.madOn = (short)madOn;
+      this.madHelixSheet = (short)madHelixSheet;
+      this.madTurnRandom = (short)madTurnRandom;
+
       polymerCount = polymer.getCount();
       if (polymerCount > 0) {
         colixes = new short[polymerCount];
@@ -141,8 +149,60 @@ abstract public class Mcps extends Shape {
       }
     }
 
-    short getMadSpecial(short mad, int polymerIndex) {
-      return 1;
+    short getMadSpecial(short mad, int groupIndex) {
+      switch (mad) {
+      case -1: // trace on
+        if (madOn >= 0)
+          return madOn;
+        if (madOn != -2) {
+          System.out.println("not supported?");
+          return 0;
+        }
+        // fall into;
+      case -2: // trace structure
+        int structureType = polymerGroups[groupIndex].getStructureType();
+        if (structureType == JmolConstants.SECONDARY_STRUCTURE_SHEET ||
+            structureType == JmolConstants.SECONDARY_STRUCTURE_HELIX)
+          return madHelixSheet;
+        return madTurnRandom;
+      case -3: // trace temperature
+        if (! hasTemperatureRange)
+          calcTemperatureRange();
+        Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
+        PdbAtom pdbAtom = atom.getPdbAtom();
+        int temperature = pdbAtom.getTemperature(); // scaled by 1000
+        int scaled = temperature - temperatureMin;
+        if (range == 0)
+          return (short)0;
+        float percentile = scaled / floatRange;
+        if (percentile < 0 || percentile > 1)
+          System.out.println("Que ha ocurrido? " + percentile);
+        return (short)((1500 * percentile) + 500);
+      }
+      System.out.println("unrecognized Mcps.getSpecial(" +
+                         mad + ")");
+      return 0;
+    }
+
+    boolean hasTemperatureRange = false;
+    int temperatureMin, temperatureMax;
+    int range;
+    float floatRange;
+
+    void calcTemperatureRange() {
+      temperatureMin = temperatureMax =
+        polymerGroups[0].getAlphaCarbonAtom().getTemperature();
+      for (int i = polymerCount; --i > 0; ) {
+        int temperature = polymerGroups[i].getAlphaCarbonAtom().getTemperature();
+        if (temperature < temperatureMin)
+          temperatureMin = temperature;
+        else if (temperature > temperatureMax)
+          temperatureMax = temperature;
+      }
+      range = temperatureMax - temperatureMin;
+      floatRange = range;
+      System.out.println("temperature range=" + range);
+      hasTemperatureRange = true;
     }
 
     public void setMad(short mad, BitSet bsSelected) {

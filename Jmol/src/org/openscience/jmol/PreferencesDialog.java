@@ -101,7 +101,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
   private static int VibrationFrames;
-  private DisplayControl control;
   private JButton bButton, oButton, pButton, tButton, vButton;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
@@ -166,13 +165,18 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props = new Properties(props);
   }
 
-  public PreferencesDialog(JFrame f, DisplayControl control) {
+  private DisplayControl control;
+  private GuiMap guimap;
+
+  public PreferencesDialog(JFrame f, GuiMap guimap, DisplayControl control) {
 
     super(f, false);
+    this.guimap = guimap;
+    this.control = control;
+
     JmolResourceHandler jrh = JmolResourceHandler.getInstance();
     this.setTitle(jrh.translate("Preferences"));
 
-    this.control = control;
     initVariables();
     commands = new Hashtable();
     Action[] actions = getActions();
@@ -239,19 +243,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     g2dPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.graphics2DPanelLabel")));
     graphics2D = control.wantsGraphics2D;
-    cbGraphics2D = new JCheckBox(JmolResourceHandler.getInstance()
-                                .getString("Prefs.graphics2DLabel"),
-                                 graphics2D);
+    cbGraphics2D = guimap.newJCheckBox("Prefs.graphics2D", graphics2D);
     cbGraphics2D.addItemListener(checkBoxListener);
     antialias = control.wantsAntialias;
-    cbAntialias = new JCheckBox(JmolResourceHandler.getInstance()
-                                .getString("Prefs.antialiasLabel"),
-                                antialias);
+    cbAntialias = guimap.newJCheckBox("Prefs.antialias", antialias);
     cbAntialias.addItemListener(checkBoxListener);
     antialiasAlways = control.wantsAntialiasAlways;
-    cbAntialiasAlways = new JCheckBox(JmolResourceHandler.getInstance()
-                                      .getString("Prefs.antialiasAlwaysLabel"),
-                                      antialiasAlways);
+    cbAntialiasAlways = guimap.newJCheckBox("Prefs.antialiasAlways",
+                                            antialiasAlways);
     cbAntialiasAlways.addItemListener(checkBoxListener);
     g2dPanel.add(cbGraphics2D);
     g2dPanel.add(cbAntialias);
@@ -276,17 +275,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showPanel.setLayout(new GridLayout(0, 4));
     showPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.showLabel")));
-    cA = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showAtomsLabel"), control.getShowAtoms());
+    cA = guimap.newJCheckBox("Prefs.showAtoms", control.getShowAtoms());
     cA.addItemListener(checkBoxListener);
-    cB = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showBondsLabel"), control.getShowBonds());
+    cB = guimap.newJCheckBox("Prefs.showBonds", control.getShowBonds());
     cB.addItemListener(checkBoxListener);
-    cV = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showVectorsLabel"), control.getShowVectors());
+    cV = guimap.newJCheckBox("Prefs.showVectors", control.getShowVectors());
     cV.addItemListener(checkBoxListener);
-    cH = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showHydrogensLabel"), control.getShowHydrogens());
+    cH = guimap.newJCheckBox("Prefs.showHydrogens",
+                             control.getShowHydrogens());
     cH.addItemListener(checkBoxListener);
     showPanel.add(cA);
     showPanel.add(cB);
@@ -842,9 +838,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
           .getString("Prefs.outlineLabel")));
 
     cbDarkerOutline =
-      new JCheckBox(JmolResourceHandler.getInstance()
-                    .getString("Prefs.showDarkerOutlineLabel"),
-                    control.getShowDarkerOutline());
+      guimap.newJCheckBox("Prefs.showDarkerOutline",
+                          control.getShowDarkerOutline());
     cbDarkerOutline.addItemListener(checkBoxListener);
     outlinePanel.add(cbDarkerOutline, BorderLayout.NORTH);
 
@@ -1272,56 +1267,42 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     public void itemStateChanged(ItemEvent e) {
 
       JCheckBox cb = (JCheckBox) e.getSource();
-      if (cb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.showBondsLabel"))) {
-        showBonds = cb.isSelected();
+      String key = guimap.getKey(cb);
+      boolean isSelected = cb.isSelected();
+      if (key.equals("Prefs.showBonds")) {
+        showAtoms = isSelected;
         control.setShowBonds(showBonds);
         props.put("showBonds", new Boolean(showBonds).toString());
-      } else if (cb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.showAtomsLabel"))) {
-        showAtoms = cb.isSelected();
+      } else if (key.equals("Prefs.showAtoms")) {
+        showAtoms = isSelected;
         control.setShowAtoms(showAtoms);
         props.put("showAtoms", new Boolean(showAtoms).toString());
-      } else if (cb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.showVectorsLabel"))) {
-        showVectors = cb.isSelected();
+      } else if (key.equals("Prefs.showVectors")) {
+        showVectors = isSelected;
         control.setShowVectors(showVectors);
         props.put("showVectors", new Boolean(showVectors).toString());
-      } else if (cb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.showHydrogensLabel"))) {
-        showHydrogens = cb.isSelected();
+      } else if (key.equals("Prefs.showHydrogens")) {
+        showHydrogens = isSelected;
         control.setShowHydrogens(showHydrogens);
         props.put("showHydrogens", new Boolean(showHydrogens).toString());
-      } else if (cb.getText()
-                 .equals(JmolResourceHandler.getInstance().
-                         getString("Prefs.showDarkerOutlineLabel"))) {
-        showDarkerOutline = cb.isSelected();
+      } else if (key.equals("Prefs.showDarkerOutline")) {
+        showDarkerOutline = isSelected;
         control.setShowDarkerOutline(showDarkerOutline);
         props.put("showDarkerOutline",
                   new Boolean(showDarkerOutline).toString());
         oButton.setEnabled(!showDarkerOutline);
-      } else if (cb.getText()
-                 .equals(JmolResourceHandler.getInstance().
-                         getString("Prefs.graphics2DLabel"))) {
-        graphics2D = cb.isSelected();
+      } else if (key.equals("Prefs.graphics2D")) {
+        graphics2D = isSelected;
         control.setWantsGraphics2D(graphics2D);
         props.put("graphics2D", new Boolean(graphics2D).toString());
         setEnabledGraphics();
-      } else if (cb.getText()
-                 .equals(JmolResourceHandler.getInstance().
-                         getString("Prefs.antialiasLabel"))) {
-        antialias = cb.isSelected();
+      } else if (key.equals("Prefs.antialias")) {
+        antialias = isSelected;
         control.setWantsAntialias(antialias);
         props.put("antialias", new Boolean(antialias).toString());
         setEnabledGraphics();
-      } else if (cb.getText()
-                 .equals(JmolResourceHandler.getInstance().
-                         getString("Prefs.antialiasAlwaysLabel"))) {
-        antialiasAlways = cb.isSelected();
+      } else if (key.equals("Prefs.antialiasAlways")) {
+        antialiasAlways = isSelected;
         control.setWantsAntialiasAlways(antialiasAlways);
         props.put("antialiasAlways", new Boolean(antialiasAlways).toString());
       }

@@ -30,6 +30,7 @@ import javax.swing.JMenuItem;
 import javax.swing.AbstractButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JCheckBox;
 
 class GuiMap {
 
@@ -46,6 +47,9 @@ class GuiMap {
   }
   JRadioButtonMenuItem newJRadioButtonMenuItem(String key) {
     return new KeyJRadioButtonMenuItem(key);
+  }
+  JCheckBox newJCheckBox(String key, boolean isChecked) {
+    return new KeyJCheckBox(key, isChecked);
   }
 
   Object get(String key) {
@@ -73,7 +77,7 @@ class GuiMap {
     String key;
     KeyJMenu(String key) {
       super(JmolResourceHandler.
-            getInstance().getString("Jmol."+key+Jmol.labelSuffix));
+            getInstance().getString(key+Jmol.labelSuffix));
       this.key = key;
       map.put(key, this);
     }
@@ -86,7 +90,7 @@ class GuiMap {
     String key;
     KeyJMenuItem(String key) {
       super(JmolResourceHandler.
-            getInstance().getString("Jmol."+key+Jmol.labelSuffix));
+            getInstance().getString(key+Jmol.labelSuffix));
       this.key = key;
       map.put(key, this);
     }
@@ -100,7 +104,7 @@ class GuiMap {
     String key;
     KeyJCheckBoxMenuItem(String key, boolean isChecked) {
       super(JmolResourceHandler.
-            getInstance().getString("Jmol."+key+Jmol.labelSuffix), isChecked);
+            getInstance().getString(key+Jmol.labelSuffix), isChecked);
       this.key = key;
       map.put(key, this);
     }
@@ -114,7 +118,21 @@ class GuiMap {
     String key;
     KeyJRadioButtonMenuItem(String key) {
       super(JmolResourceHandler.
-            getInstance().getString("Jmol."+key+Jmol.labelSuffix));
+            getInstance().getString(key+Jmol.labelSuffix));
+      this.key = key;
+      map.put(key, this);
+    }
+    public String getKey() {
+      return key;
+    }
+  }
+
+  class KeyJCheckBox
+    extends JCheckBox implements GetKey {
+    String key;
+    KeyJCheckBox(String key, boolean isChecked) {
+      super(JmolResourceHandler.
+            getInstance().getString(key+Jmol.labelSuffix), isChecked);
       this.key = key;
       map.put(key, this);
     }

@@ -243,7 +243,7 @@ public class Jmol extends JPanel {
     model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
         .translate("Initializing Preferences..."));
-    preferencesDialog = new PreferencesDialog(frame, control);
+    preferencesDialog = new PreferencesDialog(frame, guimap, control);
     splash.showStatus(resourceHandler.translate("Initializing Animate..."));
     anim = new Animate(model, frame);
     model.addPropertyChangeListener(anim);
@@ -672,7 +672,7 @@ public class Jmol extends JPanel {
 
     JMenuItem mi;
     if (isRadio) {
-      mi = guimap.newJRadioButtonMenuItem(cmd);
+      mi = guimap.newJRadioButtonMenuItem("Jmol."+cmd);
     } else {
       String checked = JmolResourceHandler.getInstance().getString("Jmol."
                          + cmd + checkSuffix);
@@ -681,9 +681,9 @@ public class Jmol extends JPanel {
         if (checked.equals("true")) {
           c = true;
         }
-        mi = guimap.newJCheckBoxMenuItem(cmd, c);
+        mi = guimap.newJCheckBoxMenuItem("Jmol."+cmd, c);
       } else {
-        mi = guimap.newJMenuItem(cmd);
+        mi = guimap.newJMenuItem("Jmol."+cmd);
       }
     }
     String mnem = JmolResourceHandler.getInstance().getString("Jmol." + cmd
@@ -924,7 +924,7 @@ public class Jmol extends JPanel {
     }
 
     // Get label associated with this menu:
-    JMenu menu = guimap.newJMenu(key);
+    JMenu menu = guimap.newJMenu("Jmol."+key);
 
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {

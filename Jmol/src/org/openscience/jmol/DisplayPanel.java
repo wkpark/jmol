@@ -855,7 +855,7 @@ public class DisplayPanel extends JPanel
   MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
         String menuKey = guimap.getKey(e.getSource());
-        if (menuKey.equals("display")) {
+        if (menuKey.equals("Jmol.display")) {
           setDisplayMenuState();
         }
       }
@@ -870,18 +870,22 @@ public class DisplayPanel extends JPanel
   }
 
   private void setDisplayMenuState() {
-    guimap.setSelected("wireframerotation", control.wireframeRotation);
-    guimap.setSelected("bonds", control.showBonds);
-    guimap.setSelected("atoms", control.showAtoms);
-    guimap.setSelected("vectors", control.showVectors);
-    guimap.setSelected("hydrogens", control.showHydrogens);
-    final String[] modeLabel = {"plain", "symbols", "types", "numbers"};
+    guimap.setSelected("Jmol.wireframerotation", control.wireframeRotation);
+    guimap.setSelected("Jmol.bonds", control.showBonds);
+    guimap.setSelected("Jmol.atoms", control.showAtoms);
+    guimap.setSelected("Jmol.vectors", control.showVectors);
+    guimap.setSelected("Jmol.hydrogens", control.showHydrogens);
+    final String[] modeLabel =
+      {"Jmol.plain", "Jmol.symbols", "Jmol.types", "Jmol.numbers"};
     guimap.setSelected(modeLabel[control.labelMode], true);
-    final String[] modeAtom = {"aquickdraw", "ashading", "awireframe"};
+    final String[] modeAtom
+      = {"Jmol.aquickdraw", "Jmol.ashading", "Jmol.awireframe"};
     guimap.setSelected(modeAtom[control.atomDrawMode], true);
-    final String[] modeBond = {"bquickdraw", "bshading", "bwireframe","bline"};
+    final String[] modeBond =
+      {"Jmol.bquickdraw", "Jmol.bshading", "Jmol.bwireframe","Jmol.bline"};
     guimap.setSelected(modeBond[control.bondDrawMode], true);
-    final String[] modeColor = {"actype", "accharge"};
+    final String[] modeColor =
+      {"Jmol.actype", "Jmol.accharge"};
     guimap.setSelected(modeColor[control.atomColorProfile], true);
   }
 

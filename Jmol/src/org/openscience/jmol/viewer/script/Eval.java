@@ -696,6 +696,20 @@ public class Eval implements Runnable {
     return floatValue;
   }
 
+  float getSetAngstroms() throws ScriptException {
+    checkLength3();
+    Token token = statement[2];
+    switch (token.tok) {
+    case Token.integer:
+      return token.intValue / 250f;
+    case Token.decimal:
+      return ((Float)token.value).floatValue();
+    default:
+      numberExpected();
+    }
+    return -1;
+  }
+
   boolean getSetBoolean() throws ScriptException {
     checkLength3();
     switch (statement[2].tok) {
@@ -2454,6 +2468,9 @@ public class Eval implements Runnable {
     case Token.solvent:
       setSolvent();
       break;
+    case Token.radius:
+      setRadius();
+      break;
     case Token.strands:
       setStrands();
       break;
@@ -2492,7 +2509,6 @@ public class Eval implements Runnable {
     case Token.menus:
     case Token.mouse:
     case Token.picking:
-    case Token.radius:
     case Token.shadow:
     case Token.slabmode:
     case Token.transparent:
@@ -2681,26 +2697,11 @@ public class Eval implements Runnable {
   }
 
   void setSolvent() throws ScriptException {
-    checkLength3();
-    float probeRadius = 0;
-    switch (statement[2].tok) {
-    case Token.on:
-      probeRadius = 1.2f;
-    case Token.off:
-      break;
-    case Token.decimal:
-      probeRadius = ((Float)statement[2].value).floatValue();
-      break;
-    case Token.integer:
-      int radiusRasMol = statement[2].intValue;
-      if (radiusRasMol >= 500)
-        numberOutOfRange();
-      probeRadius = radiusRasMol * 4 / 1000f;
-      break;
-    default:
-      booleanOrNumberExpected();
-    }
-    viewer.setSolventProbeRadius(probeRadius);
+    viewer.setSolventOn(getSetBoolean());
+  }
+
+  void setRadius() throws ScriptException {
+    viewer.setSolventProbeRadius(getSetAngstroms());
   }
 
   void setStrands() throws ScriptException {

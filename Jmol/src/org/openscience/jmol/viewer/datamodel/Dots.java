@@ -133,14 +133,14 @@ public class Dots extends Shape {
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     this.mad = mad;
-    if (radiusP != viewer.getSolventProbeRadius()) {
+    if (radiusP != viewer.getCurrentSolventProbeRadius()) {
       dotsConvexCount = 0;
       dotsConvexMaps = null;
       bsToriCalculated = null;
       htTori = null;
       torusCount = 0;
       cavities = null;
-      radiusP = viewer.getSolventProbeRadius();
+      radiusP = viewer.getCurrentSolventProbeRadius();
       diameterP = 2 * radiusP;
     }
     int atomCount = frame.atomCount;

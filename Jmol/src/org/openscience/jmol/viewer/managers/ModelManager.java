@@ -224,9 +224,14 @@ public class ModelManager {
   }
 
   // FIXME mth 2004 02 23 -- this does *not* belong here
-  public float solventProbeRadius = 0;
+  public float solventProbeRadius = 1.2f;
   public void setSolventProbeRadius(float radius) {
     this.solventProbeRadius = radius;
+  }
+
+  public boolean solventOn = false;
+  public void setSolventOn(boolean solventOn) {
+    this.solventOn = solventOn;
   }
 
   /****************************************************************

@@ -1153,6 +1153,18 @@ final public class JmolViewer {
     return modelManager.solventProbeRadius;
   }
 
+  public float getCurrentSolventProbeRadius() {
+    return modelManager.solventOn ? modelManager.solventProbeRadius : 0;
+  }
+
+  public void setSolventOn(boolean solventOn) {
+    modelManager.setSolventOn(solventOn);
+  }
+
+  public boolean getSolventOn() {
+    return modelManager.solventOn;
+  }
+
   public int getAtomIndexFromAtomNumber(int atomNumber) {
     return modelManager.getAtomIndexFromAtomNumber(atomNumber);
   }

@@ -604,9 +604,9 @@ public class Frame {
         if ((bond.order & bondType) == 0)
           continue;
         boolean isSelected1 =
-          bsSelected.get(bond.atom1.getAtomIndex());
+          bsSelected.get(bond.atom1.atomIndex);
         boolean isSelected2 =
-          bsSelected.get(bond.atom2.getAtomIndex());
+          bsSelected.get(bond.atom2.atomIndex);
         if ((!bondSelectionModeOr & isSelected1 & isSelected2) ||
             (bondSelectionModeOr & (isSelected1 | isSelected2)))
           return true;

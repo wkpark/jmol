@@ -651,7 +651,7 @@ final public class JmolViewer {
   }
 
   public boolean isSelected(Atom atom) {
-    return isSelected(atom.getAtomIndex());
+    return selectionManager.isSelected(atom.atomIndex);
   }
 
   public boolean isSelected(int atomIndex) {

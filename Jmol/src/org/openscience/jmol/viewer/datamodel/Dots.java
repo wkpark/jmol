@@ -279,7 +279,7 @@ public class Dots {
       }
       neighbors[neighborCount] = neighbor;
       neighborCenters[neighborCount] = neighbor.point3f;
-      neighborIndices[neighborCount] = neighbor.getAtomIndex();
+      neighborIndices[neighborCount] = neighbor.atomIndex;
       neighborPlusProbeRadii2[neighborCount] = neighborRadii2;
       ++neighborCount;
     }
@@ -343,7 +343,7 @@ public class Dots {
       pointT.add(torus.center);
       int iStart = iLastNeighbor;
       do {
-        if (neighbors[iLastNeighbor].getAtomIndex() != torus.indexJ) {
+        if (neighbors[iLastNeighbor].atomIndex != torus.indexJ) {
           if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
               < neighborPlusProbeRadii2[iLastNeighbor]) {
             probeMap &= ~(1L << (63 - a));

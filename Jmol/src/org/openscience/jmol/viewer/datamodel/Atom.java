@@ -36,19 +36,17 @@ import javax.vecmath.Point3i;
 
 public class Atom implements Bspt.Tuple {
 
-  private short atomIndex = -1;
-  public byte atomicNumber;
+  public int atomIndex;
   public Object clientAtom;
   public PdbAtom pdbAtom;
   Frame frame;
   public Point3f point3f;
-  // don't store this as a Point3i because allocating lots of
-  // small objects will create more work for the garbabe collector
   int x, y, z;
+  short diameter;
+  public byte atomicNumber;
   byte styleAtom;
   short marAtom;
   short colixAtom;
-  short diameter;
   Bond[] bonds;
 
   String strLabel;
@@ -57,7 +55,7 @@ public class Atom implements Bspt.Tuple {
               PdbMolecule pdbMolecule, Object clientAtom) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
-    this.atomIndex = (short)atomIndex;
+    this.atomIndex = atomIndex;
     this.clientAtom = clientAtom;
     this.atomicNumber = (byte) viewer.getAtomicNumber(clientAtom);
     this.colixAtom = viewer.getColixAtom(this);
@@ -75,11 +73,7 @@ public class Atom implements Bspt.Tuple {
     return clientAtom;
   }
 
-  public int getAtomIndex() {
-    return atomIndex & 0xFFFF;
-  }
-
-public boolean isBonded(Atom atomOther) {
+  public boolean isBonded(Atom atomOther) {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
         Bond bond = bonds[i];
@@ -264,7 +258,7 @@ public boolean isBonded(Atom atomOther) {
   public int getAtomno() {
     if (pdbAtom != null)
       return pdbAtom.getAtomSerial();
-    return getAtomIndex() +
+    return atomIndex +
       (frame.modelType == JmolConstants.MODEL_TYPE_XYZ ? 0 : 1);
   }
 

@@ -33,15 +33,19 @@ public class PdbAtom {
   // FIXME mth -- a very quick/dirty/ugly implementation
   // just to get some complex queries running
   public PdbGroup group;
-  public String recordPdb;
+  String name;
   short atomID;
   int atomSerial;
+  int temperature;
+  boolean isHetero;
 
   public PdbAtom(int atomIndex, String recordPdb, PdbGroup group) {
-    this.recordPdb = recordPdb;
     this.group = group;
+    isHetero = recordPdb.startsWith("HETATM");
 
-    atomID = lookupAtomID(recordPdb.substring(12, 16));
+    String t = recordPdb.substring(12, 16);
+    name = t.trim();
+    atomID = lookupAtomID(t);
     atomSerial = -999999;
     try {
       atomSerial = Integer.parseInt(recordPdb.substring(6, 11).trim());
@@ -51,10 +55,18 @@ public class PdbAtom {
       if (! group.registerMainchainAtomIndex(atomID, atomIndex))
         atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
     }
+    if (recordPdb.length() >= 66) {
+      try {
+        t = recordPdb.substring(60, 66).trim();
+        temperature = (int)(Float.valueOf(t).floatValue() * 100);
+      } catch (NumberFormatException e) {
+        System.out.println("temp is not a decimal:" + recordPdb);
+      }
+    }
   }
   
   public boolean isHetero() {
-    return recordPdb.startsWith("HETATM");
+    return isHetero;
   }
   
   public boolean isGroup3(String group3) {
@@ -62,7 +74,7 @@ public class PdbAtom {
   }
   
   public String getName() {
-    return recordPdb.substring(12, 16).trim();
+    return name;
   }
 
   public String getGroup3() {
@@ -119,15 +131,7 @@ public class PdbAtom {
   }
 
   public int getTemperature() {
-    float temp = 0;
-    if (recordPdb.length() >= 66) {
-      try {
-        temp = Float.valueOf(recordPdb.substring(60, 66).trim()).floatValue();
-      } catch (NumberFormatException e) {
-        System.out.println("temp is not a decimal:" + recordPdb);
-      }
-    }
-    return (int)(temp * 100);
+    return temperature;
   }
 
   public char getChainID() {

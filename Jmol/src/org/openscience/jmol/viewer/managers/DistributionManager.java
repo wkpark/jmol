@@ -92,7 +92,7 @@ public class DistributionManager {
       Atom atom = iter.next();
       atom.setLabel(viewer.getLabelAtom(styleLabel,
                                               atom,
-                                              atom.getAtomIndex()));
+                                              atom.atomIndex));
     }
   }
 
@@ -100,7 +100,7 @@ public class DistributionManager {
     while (iter.hasNext()) {
       Atom atom = iter.next();
       atom.setLabel(viewer.getLabelAtom(strLabel, atom,
-                                              atom.getAtomIndex()));
+                                              atom.atomIndex));
     }
   }
 }

@@ -964,7 +964,7 @@ public class Eval implements Runnable {
       AtomIterator iterWithin =
         frame.getWithinIterator(iterSelected.next(), distance);
       while (iterWithin.hasNext())
-        bsResult.set(iterWithin.next().getAtomIndex());
+        bsResult.set(iterWithin.next().atomIndex);
     }
   }
 

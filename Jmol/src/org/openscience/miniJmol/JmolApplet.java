@@ -44,6 +44,21 @@ import org.openscience.jmol.FortranFormat;
 
 public class JmolApplet extends java.applet.Applet implements MouseListener, KeyListener, StatusDisplay{
 
+	public static String appletInfo = "Jmol Applet.  Part of the OpenScience project.  See www.openscience.org/Jmol for more information";
+
+	public static String[][] paramInfo = {
+		{ "FORMAT" , "string" , "Set this to CMLSTRING for an embedded CML string in the MODEL parameter, otherwise leave blank" },
+		{ "MODEL" , "url/model", "URL of the chemical data, or CML chemical data if FORMAT set to CMLSTRING.  REQUIRED" },
+		{ "ATOMTYPES" , "url" , "URL of custom Atomtypes file, or leave blank to use the default atom definitions" },
+		{ "BCOLOUR", "color", "Background color" },
+		{ "FCOLOUR", "color", "Text color" },
+		{ "STYLE", "SHADED QUICKDRAW or WIREFRAME", "One of the three possible rendering styles" },
+		{ "WIREFRAMEROTATION", "ON or OFF", "Select change to wireframe mode during rotation" },
+		{ "ZOOM", "number", "Changes the initial zoom and perspective.  1 is the default"},
+		{ "ATOMSIZE", "number", "Changes the size of the atoms without zooming.  1 is the default" },
+		{ "BONDS" , "ON OFF or NEVER", "Specifies if bonds are drawn initially, and if they can be selected by the user" },
+		{ "CUSTOMVIEWS", "Button1{HOME;FRAME=n;ROTATE=y,x,y;ZOOM=n;TRANSLATE=x,y}Button2{HOME;ZOOM=n;...}..." , "Specifies custom actions to be performed by custom buttons" }};
+
 	JmolSimpleBean myBean;
 	int mode;
 	int labelMode;
@@ -87,7 +102,7 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 		java.net.URL atURL;
 		String atomtypes = getParameter("ATOMTYPES");
 		try {
-			if (atomtypes==null) {
+			if ((atomtypes==null)||(atomtypes.length()==0)) {
 				AtomTypeSet ats1 = new AtomTypeSet();
 				ats1.load(getClass().getResourceAsStream("Data/AtomTypes.txt"));
 			} else {
@@ -146,6 +161,14 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
 		}
 		setLayout(new java.awt.BorderLayout());
 		add(myBean,"Center");
+	}
+
+	public String[][] getParameterInfo() {
+		return paramInfo;
+	}
+
+	public String getAppletInfo() {
+		return appletInfo;
 	}
 
 	public void setStatusMessage(String statusMessage) {

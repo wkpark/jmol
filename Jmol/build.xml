@@ -635,7 +635,7 @@
       </zipfileset>
       <zipfileset dir="appletweb" prefix="Jmol${version}/">
 	<include name="JmolApplet.properties"/>
-	<include name="chime2jmol.pl"/>
+	<include name="Jmol.js"/>
       </zipfileset>
     </zip>
   </target>

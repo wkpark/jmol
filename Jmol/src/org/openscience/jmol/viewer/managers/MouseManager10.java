@@ -53,7 +53,7 @@ public class MouseManager10 extends MouseManager {
     switch (e.id) {
     case Event.MOUSE_DOWN:
       xWhenPressed = x; yWhenPressed = y; modifiersWhenPressed = modifiers;
-      mousePressed(x, y, modifiers, false);
+      mousePressed(x, y, modifiers, false, e.when);
       break;
     case Event.MOUSE_DRAG:
       mouseDragged(x, y, modifiers);
@@ -71,8 +71,10 @@ public class MouseManager10 extends MouseManager {
       mouseReleased(x, y, modifiers);
       // simulate a mouseClicked event for us
       if (x == xWhenPressed && y == yWhenPressed &&
-          modifiers == modifiersWhenPressed)
+          modifiers == modifiersWhenPressed) {
+        // the underlying code will turn this into dbl clicks for us
         mouseClicked(x, y, modifiers, 1, e.when);
+      }
       break;
     default:
       return false;

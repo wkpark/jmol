@@ -50,7 +50,7 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
-  private static final boolean logMouseEvents = true;
+  private static final boolean logMouseEvents = false;
 
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
@@ -117,9 +117,26 @@ public abstract class MouseManager {
   final static int BUTTON_MODIFIER_MASK =
     CTRL | ALT | SHIFT | LEFT | MIDDLE | RIGHT;
 
-  void mousePressed(int x, int y, int modifiers, boolean isPopupTrigger) {
-    previousDragX = xCurrent = x;
-    previousDragY = yCurrent = y;
+  int previousPressedX, previousPressedY;
+  int previousPressedModifiers, previousPressedCount;
+  long previousPressedTime;
+  int pressedCount;
+
+  void mousePressed(int x, int y, int modifiers, boolean isPopupTrigger,
+                    long pressedTime) {
+    if (previousPressedX == x && previousPressedY == y &&
+        previousPressedModifiers == modifiers && 
+        (pressedTime - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
+      ++pressedCount;
+    } else {
+      pressedCount = 1;
+    }
+
+    previousPressedX = previousDragX = xCurrent = x;
+    previousPressedY = previousDragY = yCurrent = y;
+    previousPressedModifiers = modifiers;
+    previousPressedTime = pressedTime;
+
     if (logMouseEvents)
       System.out.println("mousePressed("+x+","+y+","+modifiers+
                          " isPopupTrigger=" + isPopupTrigger+")");
@@ -144,6 +161,22 @@ public abstract class MouseManager {
       viewer.popupMenu(x, y);
       return;
     }
+  }
+
+  void mouseEntered(int x, int y) {
+    xCurrent = x; yCurrent = y;
+  }
+
+  void mouseExited(int x, int y) {
+    xCurrent = x; yCurrent = y;
+    exitMeasurementMode();
+  }
+
+  void mouseReleased(int x, int y, int modifiers) {
+    xCurrent = x; yCurrent = y;
+    if (logMouseEvents)
+      System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
+    viewer.setInMotion(false);
   }
 
   int previousClickX, previousClickY;
@@ -199,22 +232,6 @@ public abstract class MouseManager {
     }
   }
 
-  void mouseEntered(int x, int y) {
-    xCurrent = x; yCurrent = y;
-  }
-
-  void mouseExited(int x, int y) {
-    xCurrent = x; yCurrent = y;
-    exitMeasurementMode();
-  }
-
-  void mouseReleased(int x, int y, int modifiers) {
-    xCurrent = x; yCurrent = y;
-    if (logMouseEvents)
-      System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
-    viewer.setInMotion(false);
-  }
-
   void mouseDoubleClick(int x, int y, int modifiers, int nearestAtomIndex) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
@@ -239,6 +256,13 @@ public abstract class MouseManager {
     xCurrent = previousDragX = x; yCurrent = previousDragY = y;
     wasDragged = true;
     viewer.setInMotion(true);
+    if (pressedCount == 1)
+      mouseSinglePressDrag(deltaX, deltaY, modifiers);
+    else if (pressedCount == 2)
+      mouseDoublePressDrag(deltaX, deltaY, modifiers);
+  }
+
+  void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       viewer.rotateXYBy(deltaX, deltaY);
@@ -248,6 +272,9 @@ public abstract class MouseManager {
       viewer.translateXYBy(deltaX, deltaY);
       break;
     }
+  }
+
+  void mouseDoublePressDrag(int deltaX, int deltaY, int modifiers) {
   }
 
 

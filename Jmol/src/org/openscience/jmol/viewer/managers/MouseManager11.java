@@ -60,7 +60,8 @@ public class MouseManager11 extends MouseManager
   }
   
   public void mousePressed(MouseEvent e) {
-    mousePressed(e.getX(), e.getY(), e.getModifiers(), e.isPopupTrigger());
+    mousePressed(e.getX(), e.getY(), e.getModifiers(), e.isPopupTrigger(),
+                 e.getWhen());
   }
   
   public void mouseReleased(MouseEvent e) {

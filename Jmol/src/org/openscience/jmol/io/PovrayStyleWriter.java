@@ -27,7 +27,7 @@ package org.openscience.jmol.io;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.BaseAtomType;
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.render.AtomColors;
+//import org.openscience.jmol.render.AtomColors;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4d;
@@ -35,6 +35,7 @@ import javax.vecmath.Vector3d;
 import java.io.BufferedWriter;
 import java.io.Writer;
 import java.io.IOException;
+import java.awt.Color;
 
 /* THIS IS THE OLD COMMENT, SOME OF THE IDEAS STILL APPLY, BUT THE NEW
  * COMMENT SECTION DETAILS THE ACTUAL IMPLEMENTATION IN THE CODE.
@@ -400,16 +401,22 @@ public class PovrayStyleWriter {
    * @return The string representation of the color in povray rgb format.
    */
   protected String povrayColor(ChemFrame cf, int indexOfExampleAtom) {
-
-    AtomColors ac = AtomColors.getInstance();
-    Atom a = (org.openscience.jmol.Atom)cf.getAtomAt(indexOfExampleAtom);
-    java.awt.Color col = ac.getAtomColor((org.openscience.cdk.Atom)a);
+    Color col = getAtomColor(cf.getAtomAt(indexOfExampleAtom));
     double tff = 255.0;
     return "rgb < " + (col.getRed() / tff) + ", "
         + (col.getGreen() / tff) + ", "
           + (col.getBlue() / tff) + ">";
   }
 
+  private Color getAtomColor(org.openscience.cdk.Atom a) {
+    Object o = a.getProperty("org.openscience.jmol.color");
+    if (o instanceof Color) {
+      return (Color)o;
+    } else {
+      // no color set. return pink - easy to see
+      return Color.pink;
+    }
+  }
   /**
    * Identifys atoms types based on the name of the atom.<p>
    *

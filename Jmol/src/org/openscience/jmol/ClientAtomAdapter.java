@@ -35,10 +35,10 @@ public interface ClientAtomAdapter {
   public final static int COLORSCHEME_MAX = 2;
 
   public int getAtomicNumber(Object clientAtom);
-  public String getAtomicSymbol(Object clientAtom);
-  public String getAtomTypeName(Object clientAtom);
-  public double getVanderwaalsRadius(Object clientAtom);
+  public String getAtomicSymbol(int atomicNumber, Object clientAtom);
+  public String getAtomTypeName(int atomicNumber, Object clientAtom);
+  public double getVanderwaalsRadius(int atomicNumber, Object clientAtom);
   public Point3d getPoint3d(Object clientAtom);
   public ProteinProp getProteinProp(Object clientAtom);
-  public Color getColor(Object clientAtom, int colorScheme);
+  public Color getColor(int atomicNumber, Object clientAtom, int colorScheme);
 }

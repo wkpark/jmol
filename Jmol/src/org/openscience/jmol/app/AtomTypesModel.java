@@ -31,7 +31,6 @@ import java.awt.Color;
 import javax.swing.table.AbstractTableModel;
 import java.util.Vector;
 import java.util.Enumeration;
-import org.openscience.jmol.render.AtomColors;
 
 class AtomTypesModel extends AbstractTableModel {
 

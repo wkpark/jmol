@@ -78,27 +78,30 @@ public class LabelManager {
     this.pointsLabelFontSize = points;
   }
 
-  public String getLabelAtom(byte styleLabel, Atom atom) {
+  public String getLabelAtom(byte styleLabel,
+                             int atomicNumber, Object clientAtom,
+                             int atomIndex) {
     String label = null;
     switch (styleLabel) {
     case DisplayControl.SYMBOLS:
-      label = atom.getSymbol();
+      label = control.getAtomicSymbol(atomicNumber, clientAtom);
       break;
     case DisplayControl.TYPES:
-      label = atom.getAtomTypeName();
+      label = control.getAtomTypeName(atomicNumber, clientAtom);
        break;
     case DisplayControl.NUMBERS:
-      // Note that this is incremented by one for display purposes
-      label = "" + (atom.getAtomNumber() + 1);
+      label = "" + atomIndex;
       break;
     }
     return label;
   }
 
-  public String getLabelAtom(String strFormat, Atom atom) {
+  public String getLabelAtom(String strFormat,
+                             int atomicNumber, Object clientAtom,
+                             int atomIndex) {
     if (strFormat == null || strFormat.equals(""))
       return null;
-    ProteinProp pprop = atom.getProteinProp();
+    ProteinProp pprop = control.getProteinProp(clientAtom);
     String strLabel = "";
     String strExpansion = "";
     int ich = 0;
@@ -117,11 +120,11 @@ public class LabelManager {
       ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
-        strExpansion = "" + atom.getAtomNumber() + 1;
+        strExpansion = "" + atomIndex;
         break;
       case 'a': // FIXME -- mth -- a is not the same as e
       case 'e':
-        strExpansion = atom.getSymbol();
+        strExpansion = control.getAtomicSymbol(atomicNumber, clientAtom);
         break;
       case 'b': // these two are the same
       case 't':

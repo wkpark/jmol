@@ -41,7 +41,7 @@ public class AtomShape extends Shape {
   public short atomIndex = -1;
   public Object clientAtom;
   public Point3d point3d;
-  public boolean isHydrogen;
+  public byte atomicNumber;
   public byte styleAtom;
   public short marAtom;
   public short colixAtom;
@@ -53,28 +53,20 @@ public class AtomShape extends Shape {
 
   public String strLabel;
   
-  public AtomShape(JmolFrame frame, Object clientAtom, boolean isHydrogen,
-                   byte styleAtom, short marAtom, short colixAtom,
-                   String strLabel) {
+  public AtomShape(JmolFrame frame, Object clientAtom) {
+    DisplayControl control = frame.control;
     this.frame = frame;
     this.clientAtom = clientAtom;
-    this.isHydrogen = isHydrogen;
-    this.colixAtom = colixAtom;
-    this.strLabel = strLabel;
+    this.atomicNumber = (byte) control.getAtomicNumber(clientAtom);
+    this.colixAtom = control.getColixAtom(atomicNumber, clientAtom);
+    this.strLabel = control.getLabelAtom(atomicNumber, clientAtom, 0);
     this.colixDots = 0;
     this.marDots = 0;
-    setStyleMarAtom(styleAtom, marAtom);
-    this.point3d = frame.control.getPoint3d(clientAtom);
+    setStyleMarAtom(control.getStyleAtom(), control.getMarAtom());
+    this.point3d = control.getPoint3d(clientAtom);
   }
 
-  public AtomShape(JmolFrame frame, Object clientAtom) {
-    this(frame, clientAtom, frame.control.getAtomicNumber(clientAtom) == 1,
-         frame.control.getStyleAtom(),
-         frame.control.getMarAtom(),
-         frame.control.getColixAtom(clientAtom),
-         frame.control.getLabelAtom(clientAtom));
-  }
-
+  // FIXME need to pass in the atomIndex to the AtomShape constructor
   public void setAtomIndex(int atomIndex) {
     this.atomIndex = (short)atomIndex;
   }
@@ -95,12 +87,6 @@ public class AtomShape extends Shape {
       }
     return false;
   }
-
-  /*
-  public boolean isSelected() {
-    return frame.control.isSelected(this);
-  }
-  */
 
   public void bondMutually(AtomShape atomShapeOther, int order) {
     if (isBonded(atomShapeOther))
@@ -205,7 +191,8 @@ public class AtomShape extends Shape {
   public void setMarAtom(short marAtom) {
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) *
-                        frame.control.getVanderwaalsRadius(clientAtom));
+                        frame.control.getVanderwaalsRadius(atomicNumber, 
+                                                           clientAtom));
     this.marAtom = marAtom;
   }
 
@@ -213,7 +200,8 @@ public class AtomShape extends Shape {
     this.styleAtom = styleAtom;
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) *
-                        frame.control.getVanderwaalsRadius(clientAtom));
+                        frame.control.getVanderwaalsRadius(atomicNumber,
+                                                           clientAtom));
     this.marAtom = marAtom;
   }
         
@@ -221,7 +209,8 @@ public class AtomShape extends Shape {
     this.colixDots = colixDots;
     if (marDots < 0)
       marDots = (short)((-10 * marDots) *
-                        frame.control.getVanderwaalsRadius(clientAtom));
+                        frame.control.getVanderwaalsRadius(atomicNumber,
+                                                           clientAtom));
     this.marDots = marDots;
   }
 
@@ -269,7 +258,7 @@ public class AtomShape extends Shape {
   }
 
   public void render(Graphics25D g25d, DisplayControl control) {
-    if (isHydrogen && !control.getShowHydrogens())
+    if (atomicNumber == 1 && !control.getShowHydrogens())
       return;
     if (control.getShowBonds())
       renderBonds(control);
@@ -287,7 +276,7 @@ public class AtomShape extends Shape {
       AtomShape atomShapeOther =
         (bond.atomShape1 == this) ? bond.atomShape2 : bond.atomShape1;
       int zOther = atomShapeOther.z;
-      if ((!atomShapeOther.isHydrogen || control.getShowHydrogens()) &&
+      if ((atomShapeOther.atomicNumber != 1 || control.getShowHydrogens()) &&
           ((z < zOther) ||
            (z==zOther && (bond.atomShape1 == this))) &&
           isBondClipVisible(control.bondRenderer.clip,
@@ -366,12 +355,12 @@ public class AtomShape extends Shape {
    * but soon they will go through an interface which defines their behavior
    */
 
-  public String getAtomicSymbol() {
-    return frame.control.getAtomicSymbol(clientAtom);
-  }
-
   public int getAtomicNumber() {
     return frame.control.getAtomicNumber(clientAtom);
+  }
+
+  public String getAtomicSymbol() {
+    return frame.control.getAtomicSymbol(atomicNumber, clientAtom);
   }
 
   public Point3d getPoint3d() {
@@ -391,7 +380,7 @@ public class AtomShape extends Shape {
   }
 
   public double getVanderwaalsRadius() {
-    return frame.control.getVanderwaalsRadius(clientAtom);
+    return frame.control.getVanderwaalsRadius(atomicNumber, clientAtom);
   }
 
   public ProteinProp getProteinProp() {

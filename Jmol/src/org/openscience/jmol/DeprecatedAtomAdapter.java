@@ -45,15 +45,15 @@ public class DeprecatedAtomAdapter implements ClientAtomAdapter {
     return ((Atom)clientAtom).getAtomicNumber();
   }
   
-  public String getAtomicSymbol(Object clientAtom) {
+  public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
     return ((Atom)clientAtom).getSymbol();
   }
 
-  public String getAtomTypeName(Object clientAtom) {
+  public String getAtomTypeName(int atomicNumber, Object clientAtom) {
     return ((Atom)clientAtom).getAtomTypeName();
   }
 
-  public double getVanderwaalsRadius(Object clientAtom) {
+  public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
     return ((Atom)clientAtom).getVanderwaalsRadius();
   }
 
@@ -65,7 +65,7 @@ public class DeprecatedAtomAdapter implements ClientAtomAdapter {
     return ((Atom)clientAtom).getProteinProp();
   }
 
-  public Color getColor(Object clientAtom, int colorScheme) {
+  public Color getColor(int atomicNumber, Object clientAtom, int colorScheme) {
     if (colorScheme >= colorSchemes.length ||
         colorSchemes[colorScheme] == null)
       colorScheme = 0;

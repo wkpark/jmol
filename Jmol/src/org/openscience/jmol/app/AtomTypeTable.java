@@ -25,7 +25,6 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.render.AtomColors;
 
 import org.openscience.cdk.tools.AtomTypeFactory;
 

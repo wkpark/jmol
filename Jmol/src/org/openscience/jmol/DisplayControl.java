@@ -1567,19 +1567,24 @@ final public class DisplayControl {
     return labelManager.styleLabel;
   }
 
-  public String getLabelAtom(Object clientAtom) {
+  public String getLabelAtom(int atomicNumber, Object clientAtom,
+                             int atomIndex) {
     return labelManager.getLabelAtom(labelManager.styleLabel,
-                                     (Atom)clientAtom);
+                                     atomicNumber, clientAtom, atomIndex);
   }
 
-  public String getLabelAtom(byte styleLabel, Object clientAtom) {
-    return labelManager.getLabelAtom(styleLabel,
-                                     (Atom)clientAtom);
+  public String getLabelAtom(byte styleLabel,
+                             int atomicNumber, Object clientAtom,
+                             int atomIndex) {
+    return labelManager.getLabelAtom(styleLabel, atomicNumber, clientAtom,
+                                     atomIndex);
   }
 
-  public String getLabelAtom(String strLabel, Object clientAtom) {
-    return labelManager.getLabelAtom(strLabel,
-                                     (Atom)clientAtom);
+  public String getLabelAtom(String strLabel,
+                             int atomicNumber, Object clientAtom,
+                             int atomIndex) {
+    return labelManager.getLabelAtom(strLabel, atomicNumber, clientAtom,
+                                     atomIndex);
   }
 
   public void setLabelFontSize(int points) {
@@ -1671,16 +1676,16 @@ final public class DisplayControl {
     return clientAtomAdapter.getAtomicNumber(clientAtom);
   }
 
-  public String getAtomicSymbol(Object clientAtom) {
-    return clientAtomAdapter.getAtomicSymbol(clientAtom);
+  public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
+    return clientAtomAdapter.getAtomicSymbol(atomicNumber, clientAtom);
   }
 
-  public String getAtomTypeName(Object clientAtom) {
-    return clientAtomAdapter.getAtomTypeName(clientAtom);
+  public String getAtomTypeName(int atomicNumber, Object clientAtom) {
+    return clientAtomAdapter.getAtomTypeName(atomicNumber, clientAtom);
   }
 
-  public double getVanderwaalsRadius(Object clientAtom) {
-    return clientAtomAdapter.getVanderwaalsRadius(clientAtom);
+  public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
+    return clientAtomAdapter.getVanderwaalsRadius(atomicNumber, clientAtom);
   }
 
   public Point3d getPoint3d(Object clientAtom) {
@@ -1691,12 +1696,14 @@ final public class DisplayControl {
     return clientAtomAdapter.getProteinProp(clientAtom);
   }
 
-  public short getColixAtom(Object clientAtom) {
-    return Colix.getColix(clientAtomAdapter.getColor(clientAtom,
-                                        colorManager.modeAtomColorProfile));
+  public short getColixAtom(int atomicNumber, Object clientAtom) {
+    return Colix.getColix(clientAtomAdapter.getColor(
+     atomicNumber, clientAtom, colorManager.modeAtomColorProfile));
   }
 
-  public short getColixAtom(byte mode, Object clientAtom) {
-    return Colix.getColix(clientAtomAdapter.getColor(clientAtom, mode));
+  public short getColixAtom(int atomicNumber, Object clientAtom, byte scheme) {
+    return Colix.getColix(clientAtomAdapter.getColor(atomicNumber, 
+                                                     clientAtom, 
+                                                     scheme));
   }
 }

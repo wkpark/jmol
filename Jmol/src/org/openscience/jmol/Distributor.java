@@ -90,7 +90,9 @@ public class Distributor {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       atomShape.setLabel(control.getLabelAtom(styleLabel,
-                                              atomShape.clientAtom));
+                                              atomShape.atomicNumber,
+                                              atomShape.clientAtom,
+                                              atomShape.atomIndex));
     }
   }
 
@@ -98,7 +100,9 @@ public class Distributor {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       atomShape.setLabel(control.getLabelAtom(strLabel,
-                                              atomShape.clientAtom));
+                                              atomShape.atomicNumber,
+                                              atomShape.clientAtom,
+                                              atomShape.atomIndex));
     }
   }
 
@@ -108,7 +112,8 @@ public class Distributor {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       if (colixDots == 0)
-        colixT = control.getColixAtom(atomShape.clientAtom);
+        colixT = control.getColixAtom(atomShape.atomicNumber,
+                                      atomShape.clientAtom);
       atomShape.setColixMarDots(colixT, marDots);
     }
   }

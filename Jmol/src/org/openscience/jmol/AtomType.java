@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -34,12 +39,6 @@ public class AtomType {
 
   private BaseAtomType baseType;
 
-  /** color is specified also at atom itself.
-   *  if color == null then it uses the color of
-   *  the base type
-   */
-  private Color color = null;
-
   /**
    * Constructor
    *
@@ -49,14 +48,11 @@ public class AtomType {
    * @param mass the atomic mass
    * @param vdwRadius the van der Waals radius (helps determine drawing size)
    * @param covalentRadius the covalent radius (helps determine bonding)
-   * @param Rl red component for drawing colored atoms
-   * @param Gl green component for drawing colored atoms
-   * @param Bl blue component for drawing colored atoms
    */
   public AtomType(String name, String root, int AtomicNumber, double mass,
-      double vdwRadius, double covalentRadius, int Rl, int Gl, int Bl) {
+      double vdwRadius, double covalentRadius) {
     baseType = BaseAtomType.get(name, root, AtomicNumber, mass, vdwRadius,
-        covalentRadius, new Color(Rl, Gl, Bl));
+        covalentRadius);
   }
 
   /**
@@ -79,23 +75,4 @@ public class AtomType {
     return baseType;
   }
 
-  /**
-   * return atom specific color. If not given, return
-   * default color
-   **/
-  public Color getColor() {
-
-    if (color != null) {
-      return this.color;
-    } else {
-      return baseType.getColor();
-    }
-  }
-
-  /**
-   * set atom specific color
-   **/
-  public void setColor(Color c) {
-    this.color = c;
-  }
 }

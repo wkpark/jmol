@@ -24,6 +24,8 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.AtomColors;
+
 import javax.swing.JTable;
 import javax.swing.DefaultCellEditor;
 import javax.swing.event.TableModelEvent;
@@ -572,6 +574,8 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
     StringTokenizer st;
 
+    AtomColors atomColors = AtomColors.getInstance();
+
     String s;
 
     atModel.clear();
@@ -614,8 +618,8 @@ public class AtomTypeTable extends JDialog implements ActionListener {
                   "Malformed Number");
             }
 
-            AtomType at = new AtomType(name, rootType, an, mass, vdw,
-                            covalent, rl, gl, bl);
+            AtomType at = new AtomType(name, rootType, an, mass, vdw, covalent);
+            atomColors.setAtomColor(at, new Color(rl, gl, bl));
 
             atModel.updateAtomType(at.getBaseAtomType());
 

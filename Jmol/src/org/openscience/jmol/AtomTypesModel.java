@@ -28,6 +28,7 @@ import java.awt.Color;
 import javax.swing.table.AbstractTableModel;
 import java.util.Vector;
 import java.util.Enumeration;
+import org.openscience.jmol.render.AtomColors;
 
 class AtomTypesModel extends AbstractTableModel {
 
@@ -114,7 +115,7 @@ class AtomTypesModel extends AbstractTableModel {
       break;
 
     case 6 :
-      at.setColor((Color) o);
+      AtomColors.getInstance().setAtomColor(at, (Color) o);
       break;
     }
     updateAtomType(at);
@@ -144,7 +145,7 @@ class AtomTypesModel extends AbstractTableModel {
         return new Double(at.getCovalentRadius());
 
       case 6 :
-        return (Color) at.getColor();
+        return AtomColors.getInstance().getAtomColor(at);
       }
     } catch (Exception e) {
     }

@@ -54,9 +54,9 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * @return the atom type corresponding to the name.
    */
   public static BaseAtomType get(String name, String root, int atomicNumber,
-      double mass, double vdwRadius, double covalentRadius, Color color) {
+      double mass, double vdwRadius, double covalentRadius) {
     BaseAtomType at = get(name, root);
-    at.set(root, atomicNumber, mass, vdwRadius, covalentRadius, color);
+    at.set(root, atomicNumber, mass, vdwRadius, covalentRadius);
     return at;
   }
 
@@ -129,14 +129,13 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * @param color the color for drawing
    */
   public void set(String root, int atomicNumber, double mass,
-      double vdwRadius, double covalentRadius, Color color) {
+      double vdwRadius, double covalentRadius) {
 
     super.setSymbol(root);
     super.setAtomicNumber(atomicNumber);
     super.setExactMass(mass);
     this.vdwRadius = vdwRadius;
     this.covalentRadius = covalentRadius;
-    this.color = color;
   }
 
   /**
@@ -190,22 +189,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    */
   public void setVdwRadius(double vr) {
     this.vdwRadius = vr;
-  }
-
-  /**
-   * Returns the color.
-   */
-  public Color getColor() {
-    return color;
-  }
-
-  /**
-   * Sets the color.
-   *
-   * @param c the Color
-   */
-  public void setColor(Color c) {
-    this.color = c;
   }
 
   /**

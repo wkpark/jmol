@@ -13,15 +13,21 @@
 <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
 <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
-<contributor id="MH"><name>Miguel Howard</name></contributor>
+<contributor id="MH"><name>Miguel Howard</name><email>michaelthoward@users.sourceforge.net</email></contributor>
 </contributors>
 
 <changes version="jmol-6">
   <change contributor="MH">
-    Performance improvements for display.
+    Performance improvements for rendering.
   </change>
   <change contributor="EW">
-    Move IO classes into separte package.
+    Moved IO classes into separate package.
+  </change>
+  <change contributor="MH">
+    Moved rendering classes into separate package.
+  </change>
+  <change contributor="EW">
+    Jmol is now based on CDK.
   </change>
 </changes>
 

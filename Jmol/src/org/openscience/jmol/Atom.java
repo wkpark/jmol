@@ -155,24 +155,6 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
-   * Returns this atom's color.
-   *
-   * @return the color of this atom.
-   */
-  public Color getColor() {
-    return atomType.getColor();
-  }
-
-  /**
-   * Sets this atom's color.
-   *
-   * @param the color to set the atom.
-   */
-  public void setColor(Color color) {
-    atomType.setColor(color);
-  }
-
-  /**
    * Returns the atom's position.
    */
   public Point3d getPosition() {

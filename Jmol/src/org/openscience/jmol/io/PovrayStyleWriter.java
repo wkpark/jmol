@@ -27,6 +27,7 @@ package org.openscience.jmol.io;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.BaseAtomType;
 import org.openscience.jmol.Atom;
+import org.openscience.jmol.render.AtomColors;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4d;
@@ -399,8 +400,9 @@ public class PovrayStyleWriter {
    */
   protected String povrayColor(ChemFrame cf, int indexOfExampleAtom) {
 
-    BaseAtomType at = cf.getAtomAt(indexOfExampleAtom).getType();
-    java.awt.Color col = at.getColor();
+    AtomColors ac = AtomColors.getInstance();
+    Atom a = cf.getAtomAt(indexOfExampleAtom);
+    java.awt.Color col = ac.getAtomColor((org.openscience.cdk.Atom)a);
     double tff = 255.0;
     return "rgb < " + (col.getRed() / tff) + ", "
         + (col.getGreen() / tff) + ", "

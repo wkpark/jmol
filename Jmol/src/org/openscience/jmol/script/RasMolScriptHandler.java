@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -113,20 +118,6 @@ public class RasMolScriptHandler {
           }
         } else {
           throw new RasMolScriptException("Error: omitted parameter.");
-        }
-      } else if (word.equals("colour") || word.equals("color")) {
-        if (st.hasMoreElements()) {
-          String param = (String) st.nextElement();
-          String color;
-          if (st.hasMoreElements()) {
-            color = (String) st.nextElement();
-          } else {
-            color = param;
-            param = "atom";
-          }
-          setColor(param, color);
-        } else {
-          throw new RasMolScriptException("Error: omitted colour.");
         }
       } else if (word.equals("echo")) {
         while (st.hasMoreElements()) {
@@ -354,23 +345,6 @@ public class RasMolScriptHandler {
       return Color.yellow;
     } else {
       throw new RasMolScriptException("Unknown color: " + value);
-    }
-  }
-
-  private void setColor(String object, String value)
-      throws RasMolScriptException {
-
-    if (object.equals("atom")) {
-
-      // give selected atoms new colour
-      int[] selectedAtoms = control.getSelection();
-      for (int i = 0; i < selectedAtoms.length; ++i) {
-        int atom = selectedAtoms[i];
-        control.getFrame().getAtomAt(atom - 1).setColor(this.getColor(value));
-      }
-
-    } else {
-      throw new RasMolScriptException("Error: unknown object: " + object);
     }
   }
 

@@ -115,7 +115,7 @@ public class AtomShape implements Shape {
   private static Color pickedColor;
   private static Color backgroundColor;
   private static Graphics g;
-  private static ColorProfile colorProfile;
+  private static org.openscience.cdk.renderer.color.AtomColorer colorProfile;
 
   public static void prepareRendering(Graphics gc, Rectangle rectClip,
                                       DisplayControl ctrl) {
@@ -136,9 +136,9 @@ public class AtomShape implements Shape {
     backgroundColor = control.getBackgroundColor();
     mouseDragged = control.mouseDragged;
     if (control.getAtomColorProfile() == DisplayControl.ATOMCHARGE) {
-        colorProfile = new ChargeColorProfile();
+        colorProfile = new org.openscience.cdk.renderer.color.PartialAtomicChargeColors();
     } else {
-        colorProfile = new DefaultColorProfile();
+        colorProfile = AtomColors.getInstance();
     }
   }
 
@@ -210,8 +210,8 @@ public class AtomShape implements Shape {
   private static final boolean showCoveredBonds = false;
 
   public void renderBond(Graphics g, Atom atom1, Atom atom2) {
-    Color color1 = colorProfile.getColor(atom1);
-    Color color2 = colorProfile.getColor(atom2);
+    Color color1 = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom1);
+    Color color2 = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom2);
     int x1 = atom1.screenX, y1 = atom1.screenY;
     int x2 = atom2.screenX, y2 = atom2.screenY;
     int dx = x2 - x1, dx2 = dx * dx;
@@ -568,7 +568,7 @@ public class AtomShape implements Shape {
       g.setColor(pickedColor);
       g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
-    Color color = colorProfile.getColor(atom);
+    Color color = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
     g.setColor(color);
     if (diameter <= 3) {
       if (diameter > 0) {

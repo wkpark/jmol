@@ -105,9 +105,28 @@ final public class Frame {
           (modelTypeName == "pdb" && (bondCount < (atomCount / 2))))
         rebond(false);
     }
+    hackAtomSerialNumbersForAnimations();
     pdbFile.freeze();
     findElementsPresent();
     findGroupsPresent();
+  }
+
+  void hackAtomSerialNumbersForAnimations() {
+    // first, validate that all atomSerials are NaN
+    for (int i = atomCount; --i >= 0; )
+      if (atoms[i].atomSerial != Integer.MIN_VALUE)
+        return;
+    // now, we'll assign 1-based atom numbers within each model
+    int lastModelNumber = Integer.MAX_VALUE;
+    int modelAtomIndex = 0;
+    for (int i = 0; i < atomCount; ++i) {
+      Atom atom = atoms[i];
+      if (atom.modelNumber != lastModelNumber) {
+        lastModelNumber = atom.modelNumber;
+        modelAtomIndex = 1;
+      }
+      atom.atomSerial = modelAtomIndex++;
+    }
   }
 
   public Atom addAtom(int modelNumber, Object atomUid,

@@ -373,7 +373,8 @@ public class Jmol extends JPanel {
                       withValueSeparator().
                       withDescription(
 "supported are: user.language=[EN|ES|NL], display.speed=fps, " +
-"and cdk.debugging=[true|false], JmolConsole=[true|false]").
+"cdk.debugging=[true|false], cdk.debug.stdout=[true|false], " +
+"and JmolConsole=[true|false]").
                       create("D")
     );
     

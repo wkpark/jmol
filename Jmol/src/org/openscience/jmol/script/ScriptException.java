@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -23,7 +22,26 @@ import org.openscience.jmol.JmolException;
 
 public class ScriptException extends JmolException {
 
-  public ScriptException(String message) {
+  String message;
+  String line;
+  String filename;
+  int linenumber;
+
+  public ScriptException(String message, String line,
+                         String filename, int linenumber) {
     super("ScriptException:", message);
+    this.message = message;
+    this.line = line;
+    this.filename = filename;
+    this.linenumber = linenumber;
+  }
+
+  public String toString() {
+    String str = "ScriptException:" + message;
+    if (line != null)
+      str += "\n    Script line:" + line;
+    if (filename != null)
+      str += "\n           File:" + filename + " Line number:" + linenumber;
+    return str;
   }
 }

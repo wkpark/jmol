@@ -32,44 +32,64 @@ import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
 
-public class Eval {
+public class Eval implements Runnable {
 
-  Token[][] aatoken;
-  int iStatement;
-  Token[] statement;
-  DisplayControl control;
-  String filename;
+  Compiler compiler;
+
   final static int scriptLevelMax = 10;
   int scriptLevel;
+  String filename;
+  String script;
+  short[] linenumbers;
+  short[] lineIndices;
+  Token[][] aatoken;
+
+  boolean error;
+  String errorMessage;
+
+  int pc; // program counter
+  Token[] statement;
+  DisplayControl control;
+  Thread myThread;
+  boolean haltExecution;
 
   public Eval(DisplayControl control) {
+    compiler = new Compiler(this);
     this.control = control;
   }
 
-  void load(String filename, String script) throws ScriptException {
+  boolean load(String filename, String script, int scriptLevel) {
     this.filename = filename;
-    iStatement = 0;
-    aatoken = Token.tokenize(script);
-  }
-
-  void executeString(String script) throws ScriptException {
-    load(null, script);
-    run();
-  }
-
-  public void executeFile(String filename) throws ScriptException {
-    executeFile(filename, 0);
-  }
-
-  void executeFile(String filename, int scriptLevel) throws ScriptException {
+    this.script = script;
     this.scriptLevel = scriptLevel;
     if (scriptLevel == scriptLevelMax)
-      throw new ScriptException("too many script levels:" + filename);
+      return TooManyScriptLevels(filename);
+    pc = 0;
+    try {
+      compiler.compile();
+      return true;
+    } catch (ScriptException e) {
+      error = true;
+      errorMessage = "" + e;
+      System.out.println(errorMessage);
+      return false;
+    }
+  }
+
+  public boolean loadString(String script) {
+    return load(null, script, 0);
+  }
+
+  public boolean loadFile(String filename) {
+    return loadFile(filename, 0);
+  }
+
+  boolean loadFile(String filename, int scriptLevel) {
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(new FileReader(filename));
     } catch (FileNotFoundException e) {
-      throw new ScriptException("file not found:" + filename);
+      return FileNotFound(filename);
     }
     String script = "";
     try {
@@ -80,11 +100,40 @@ public class Eval {
         script += command + "\n";
       }
     } catch (IOException e) {
-      throw new ScriptException("io error reading file:" + filename);
+      return IOError(filename);
     }
-    System.out.println("script:" + script + ":");
-    load(filename, script);
-    run();
+    return load(filename, script, scriptLevel);
+  }
+
+  boolean LoadError(String msg) {
+    error = true;
+    errorMessage = msg;
+    return false;
+  }
+
+  boolean TooManyScriptLevels(String filename) {
+    return LoadError("too many script levels:" + filename);
+  }
+
+  boolean FileNotFound(String filename) {
+    return LoadError("file not found:" + filename);
+  }
+
+  boolean IOError(String filename) {
+    return LoadError("io error reading:" + filename);
+  }
+
+  public void start() {
+    if (myThread == null) {
+      haltExecution = false;
+      myThread = new Thread(this);
+      myThread.start();
+    }
+  }
+
+  public void haltExecution() {
+    if (myThread != null)
+      haltExecution = true;
   }
 
   public String toString() {
@@ -103,15 +152,28 @@ public class Eval {
     return str;
   }
 
-  void run() throws ScriptException {
-    System.out.println("running!");
-    System.out.println(toString());
-    while (iStatement < aatoken.length) {
-      statement = aatoken[iStatement++];
+  public void run() {
+    try {
+      // FIXME -- confirm repaint behavior during script execution
+      control.setHoldRepaint(true);
+      instructionDispatchLoop();
+    } catch (ScriptException e) {
+      System.out.println("" + e);
+    }
+    myThread = null;
+    control.setHoldRepaint(false);
+  }
+
+  public void instructionDispatchLoop() throws ScriptException {
+    while (!haltExecution && pc < aatoken.length) {
+      statement = aatoken[pc++];
       Token token = statement[0];
       switch (token.tok) {
       case Token.background:
         background();
+        break;
+      case Token.center:
+        center();
         break;
       case Token.define:
         define();
@@ -119,10 +181,18 @@ public class Eval {
       case Token.echo:
         echo();
         break;
+      case Token.exit:
+      case Token.quit: // in rasmol quit actually exits the program
+        haltExecution = true;
+        break;
       case Token.load:
         load();
         break;
       case Token.refresh:
+        refresh();
+        break;
+      case Token.reset:
+        reset();
         break;
       case Token.rotate:
         rotate();
@@ -133,16 +203,31 @@ public class Eval {
       case Token.select:
         select();
         break;
+      case Token.translate:
+        translate();
+        break;
+      case Token.zoom:
+        zoom();
+        break;
+        // chime extended commands
+      case Token.delay:
+        delay();
+        break;
+      case Token.loop:
+        delay(); // a loop is just a delay followed by ...
+        pc = 0;  // ... resetting the program counter
+        break;
+      case Token.move:
+        move();
+        break;
+        // not implemented
       case Token.backbone:
       case Token.bond:
       case Token.cartoon:
-      case Token.center:
       case Token.clipboard:
       case Token.color:
       case Token.connect:
-      case Token.cpk:
       case Token.dots:
-      case Token.exit:
       case Token.hbonds:
       case Token.help:
       case Token.label:
@@ -150,16 +235,13 @@ public class Eval {
       case Token.monitor:
       case Token.pause:
       case Token.print:
-      case Token.quit:
       case Token.renumber:
-      case Token.reset:
       case Token.restrict:
       case Token.ribbons:
       case Token.save:
       case Token.set:
       case Token.show:
       case Token.slab:
-      case Token.source:
       case Token.spacefill:
       case Token.ssbonds:
       case Token.star:
@@ -167,48 +249,87 @@ public class Eval {
       case Token.strands:
       case Token.structure:
       case Token.trace:
-      case Token.translate:
       case Token.unbond:
       case Token.wireframe:
       case Token.write:
       case Token.zap:
-      case Token.zoom:
+        // chime extended commands
+      case Token.view:
+      case Token.spin:
+      case Token.list:
+      case Token.display3d:
         System.out.println("Script command not implemented:" + token.value);
         break;
       default:
-        System.out.println("Eval error - not a command " + token.value);
+        UnrecognizedCommand(token);
         return;
       }
     }
-    System.out.println("done!");
+  }
+
+  int getLinenumber() {
+    return linenumbers[pc];
+  }
+
+  String getLine() {
+    int ichBegin = lineIndices[pc];
+    int ichEnd;
+    if ((ichEnd = script.indexOf('\r', ichBegin)) == -1 &&
+        (ichEnd = script.indexOf('\n', ichBegin)) == -1)
+      ichEnd = script.length();
+    return script.substring(ichBegin, ichEnd);
+  }
+
+  void EvalError(String message) throws ScriptException {
+    throw new ScriptException(message, getLine(), filename, getLinenumber());
+  }
+
+  void UnrecognizedCommand(Token token) throws ScriptException {
+    EvalError("unrecognized command:" + token.value);
   }
 
   void FilenameExpected() throws ScriptException {
-    throw new ScriptException("filename expected");
+    EvalError("filename expected");
+  }
+
+  void BooleanExpected() throws ScriptException {
+    EvalError("boolean expected");
   }
 
   void IntegerExpected() throws ScriptException {
-    throw new ScriptException("integer expected");
+    EvalError("integer expected");
+  }
+
+  void NumberExpected() throws ScriptException {
+    EvalError("number expected");
   }
 
   void AxisExpected() throws ScriptException {
-    throw new ScriptException("x y z axis expected");
+    EvalError("x y z axis expected");
   }
 
   void ColorExpected() throws ScriptException {
-    throw new ScriptException("color expected");
+    EvalError("color expected");
   }
 
   void UnrecognizedExpression() throws ScriptException {
-    throw new ScriptException("runtime unrecognized expression");
+    EvalError("runtime unrecognized expression");
   }
 
   void UndefinedVariable() throws ScriptException {
-    throw new ScriptException("variable undefined");
+    EvalError("variable undefined");
   }
 
   void BadArgumentCount() throws ScriptException {
-    throw new ScriptException("bad argument count");
+    EvalError("bad argument count");
+  }
+
+  void OutOfRange() throws ScriptException {
+    EvalError("out of range");
+  }
+
+  void ErrorLoadingScript(String msg) throws ScriptException {
+    EvalError("error loading script -> " + msg);
   }
 
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
@@ -282,8 +403,7 @@ public class Eval {
       }
     }
     if (sp != 1)
-      throw new ScriptException("atom expression compiler error" +
-                                " - stack over/underflow");
+      EvalError("atom expression compiler error - stack over/underflow");
     return stack[0];
   }
 
@@ -340,43 +460,27 @@ public class Eval {
     }
   }
 
-  Color colorsRasmol[] = {
-    /* black      */ Color.black,
-    /* blue       */ Color.blue,
-    /* bluetint   */ new Color( 58 << 16 | 144 << 8 | 255),
-    /* brown      */ new Color(175 << 16 | 117 << 8 |  89),
-    /* cyan       */ Color.cyan,
-    /* gold       */ new Color(255 << 16 | 156 << 8 |   0),
-    /* grey       */ Color.gray,
-    /* green      */ Color.green,
-    /* greenblue  */ new Color(0x002E8B57),
-    /* greentint  */ new Color(152 << 16 | 214 << 8 | 179),
-    /* hotpink    */ new Color(255 << 16 |   0 << 8 | 101),
-    /* magenta    */ Color.magenta,
-    /* orange     */ Color.orange,
-    /* pink       */ Color.pink,
-    /* pinktint   */ new Color(255 << 16 | 171 << 8 | 187),
-    /* purple     */ new Color(0xA020F0),
-    /* red        */ Color.red,
-    /* redorange  */ new Color(0x00FF4500),
-    /* seagreen   */ new Color(  0 << 16 | 250 << 8 | 109),
-    /* skyblue    */ new Color( 58 << 16 | 144 << 8 | 255),
-    /* violet     */ new Color(0x00EE82EE),
-    /* white      */ Color.white,
-    /* yellow     */ Color.yellow,
-    /* yellowtint */ new Color(246 << 16 | 246 << 8 | 117)
-  };
-
   void background() throws ScriptException {
-    if (statement.length != 2)
-      BadArgumentCount();
     if ((statement[1].tok & Token.colorparam) == 0)
       ColorExpected();
-    control.setBackgroundColor(colorsRasmol[statement[1].intValue]);
+    control.setColorBackground(new Color(statement[1].intValue));
+  }
+
+  // mth - 2003 01
+  // the doc for RasMol says that they use the center of gravity
+  // this is currently only using the geometric center
+  // but someplace in the rasmol doc it makes reference to the geometric
+  // center as the default for rotations. who knows. 
+  void center() throws ScriptException {
+    if (statement.length == 1) {
+      control.clearSelection();
+    } else {
+      control.setSelectionSet(expression(statement, 1));
+    }
+    control.setCenterAsSelected();
   }
 
   Hashtable variables = new Hashtable();
-
   void define() throws ScriptException {
     String variable = (String)statement[1].value;
     variables.put(variable, statement);
@@ -390,8 +494,6 @@ public class Eval {
   }
 
   void load() throws ScriptException {
-    if (statement.length != 2)
-      BadArgumentCount();
     if (statement[1].tok != Token.string)
       FilenameExpected();
     String filename = (String)statement[1].value;
@@ -401,14 +503,20 @@ public class Eval {
   }
 
   void refresh() throws ScriptException {
-    if (statement.length != 1)
-      BadArgumentCount();
-    control.refresh();
+    control.requestRepaintAndWait();
+  }
+
+  void reset() throws ScriptException {
+    control.zoomToPercent(100);
+    control.setZoomEnabled(true);
+    control.rotateFront();
+    control.setCenter(null);
+    control.translateToXPercent(0);
+    control.translateToYPercent(0);
+    control.translateToZPercent(0);
   }
 
   void rotate() throws ScriptException {
-    if (statement.length != 3)
-      BadArgumentCount();
     if (statement[2].tok != Token.integer)
       IntegerExpected();
     int degrees = statement[2].intValue;
@@ -428,13 +536,14 @@ public class Eval {
   }
 
   void script() throws ScriptException {
-    if (statement.length != 2)
-      BadArgumentCount();
     if (statement[1].tok != Token.string)
       FilenameExpected();
     String filename = (String)statement[1].value;
     Eval eval = new Eval(control);
-    eval.executeFile(filename, scriptLevel+1);
+    if (eval.loadFile(filename, scriptLevel+1))
+      eval.run();
+    else
+      ErrorLoadingScript(eval.errorMessage);
   }
 
   void select() throws ScriptException {
@@ -442,6 +551,135 @@ public class Eval {
       // FIXME -- what is behavior when there are no arguments to select
     } else {
       control.setSelectionSet(expression(statement, 1));
+    }
+  }
+
+  void translate() throws ScriptException {
+    if (statement[2].tok != Token.integer)
+      IntegerExpected();
+    int percent = statement[2].intValue;
+    if (percent > 100 || percent < -100)
+      OutOfRange();
+    switch (statement[1].tok) {
+    case Token.x:
+      control.translateToXPercent(percent);
+      break;
+    case Token.y:
+      control.translateToYPercent(percent);
+      break;
+    case Token.z:
+      control.translateToZPercent(percent);
+      break;
+    default:
+      AxisExpected();
+    }
+  }
+
+  void zoom() throws ScriptException {
+    if (statement[1].tok == Token.integer) {
+      int percent = statement[1].intValue;
+      if (percent < 10 || percent > 500)
+        OutOfRange();
+      control.zoomToPercent(percent);
+      return;
+    }
+    switch (statement[1].tok) {
+    case Token.on:
+      control.setZoomEnabled(true);
+      break;
+    case Token.off:
+      control.setZoomEnabled(false);
+      break;
+    default:
+      BooleanExpected();
+    }
+  }
+
+  void delay() throws ScriptException {
+    long millis = 0;
+    Token token = statement[1];
+    switch (token.tok) {
+    case Token.integer:
+    case Token.on: // this is auto-provided as a default
+      millis = token.intValue * 1000;
+      break;
+    case Token.decimal:
+      millis = (long)(((Double)token.value).doubleValue() * 1000);
+      break;
+    default:
+      IntegerExpected();
+    }
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+    }
+  }
+
+  void move() throws ScriptException {
+    if (statement.length < 10 || statement.length > 12)
+      BadArgumentCount();
+    for (int i = 1; i < statement.length; ++i)
+      if (statement[i].tok != Token.integer)
+        IntegerExpected();
+    int dRotX = statement[1].intValue;
+    int dRotY = statement[2].intValue;
+    int dRotZ = statement[3].intValue;
+    int dZoom = statement[4].intValue;
+    int dTransX = statement[5].intValue;
+    int dTransY = statement[6].intValue;
+    int dTransZ = statement[7].intValue;
+    int dSlab = statement[8].intValue;
+    int secondsTotal = statement[9].intValue;
+    int fps = 30, maxAccel = 5;
+    if (statement.length > 10) {
+      fps = statement[10].intValue;
+      if (statement.length > 11)
+        maxAccel = statement[11].intValue;
+    }
+
+    int zoom = control.getZoomPercent();
+    int transX = control.getTranslationXPercent();
+    int transY = control.getTranslationYPercent();
+    int transZ = control.getTranslationZPercent();
+
+    long timeBegin = System.currentTimeMillis();
+    int timePerStep = 1000 / fps;
+    int totalSteps = fps * secondsTotal;
+    double radiansPerDegreePerStep = Math.PI / 180 / totalSteps;
+    double radiansXStep = radiansPerDegreePerStep * dRotX;
+    double radiansYStep = radiansPerDegreePerStep * dRotY;
+    double radiansZStep = radiansPerDegreePerStep * dRotZ;
+    if (totalSteps == 0)
+      totalSteps = 1; // to catch a zero secondsTotal parameter
+    for (int i = 1; i <= totalSteps; ++i) {
+      if (dRotX != 0)
+        control.rotateByX(radiansXStep);
+      if (dRotY != 0)
+        control.rotateByY(radiansYStep);
+      if (dRotZ != 0)
+        control.rotateByZ(radiansZStep);
+      if (dZoom != 0)
+        control.zoomToPercent(zoom + dZoom * i / totalSteps);
+      if (dTransX != 0)
+        control.translateToXPercent(transX + dTransX * i / totalSteps);
+      if (dTransY != 0)
+        control.translateToYPercent(transY + dTransY * i / totalSteps);
+      if (dTransZ != 0)
+        control.translateToZPercent(transZ + dTransZ * i / totalSteps);
+      int timeSpent = (int)(System.currentTimeMillis() - timeBegin);
+      int timeAllowed = i * timePerStep;
+      if (timeSpent < timeAllowed) {
+        control.requestRepaintAndWait();
+        timeSpent = (int)(System.currentTimeMillis() - timeBegin);
+        int timeToSleep = timeAllowed - timeSpent;
+        if (timeToSleep > 0) {
+          try {
+            Thread.sleep(timeToSleep);
+          } catch (InterruptedException e) {
+            return;
+          }
+        }
+      }
     }
   }
 }

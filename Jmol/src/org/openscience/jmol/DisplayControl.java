@@ -36,6 +36,7 @@ import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.Dimension;
+import java.awt.Component;
 import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3d;
@@ -44,6 +45,12 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
 
 final public class DisplayControl {
+
+  public static DisplayControl control;
+
+  public DisplayControl() {
+    control = this;
+  }
 
   public static final int NOLABELS =  0;
   public static final int SYMBOLS =   1;
@@ -67,25 +74,27 @@ final public class DisplayControl {
   public final Matrix4d matrixTransform = new Matrix4d();
   private final Point3d point3dScreenTemp = new Point3d();
 
-  private DisplayPanel panel;
+  private Component panel;
 
   private int minScreenDimension;
   private Dimension dimCurrent;
   private double scalePixelsPerAngstrom;
   private double scaleDefaultPixelsPerAngstrom;
-  private double zoomScale;
+  private boolean zoomEnabled = true;
+  private int zoomPercent = 100;
+  private int zoomPercentSetting = 100;
   private double cameraDepth = 3;
-  private final Matrix4d matrixRotate = new Matrix4d();
+  public final Matrix4d matrixRotate = new Matrix4d();
   private final Matrix4d matrixTemp = new Matrix4d();
   private final Vector3d vectorTemp = new Vector3d();
-  private boolean perspectiveDepth = true;
+  private boolean perspectiveDepth = false;
   private boolean structuralChange = false;
 
-  public void setDisplayPanel(DisplayPanel panel) {
-    this.panel = panel;
+  public void setAwtComponent(Component component) {
+    this.panel = component;
   }
 
-  public DisplayPanel getDisplayPanel() {
+  public Component getAwtComponent() {
     return panel;
   }
 
@@ -130,75 +139,59 @@ final public class DisplayControl {
     }
   }
 
-  public int percentAngBond = 10;
-  public void setPercentAngBond(int percentAngBond) {
-    this.percentAngBond = percentAngBond;
+  public int percentAngstromBond = 10;
+  public void setPercentAngstromBond(int percentAngstromBond) {
+    this.percentAngstromBond = percentAngstromBond;
     recalc();
   }
 
-  public Color outlineColor = Color.black;
-  public void setOutlineColor(Color c) {
-    outlineColor = c;
+  public Color colorOutline = Color.black;
+  public void setColorOutline(Color c) {
+    colorOutline = c;
     recalc();
   }
-  public Color getOutlineColor() {
-    return outlineColor;
-  }
 
-  private Color pickedColor = Color.orange;
-  private Color pickedTransparentColor;
-  public void setPickedColor(Color c) {
-    if (pickedColor == null || !pickedColor.equals(c)) {
-      pickedColor = c;
-      pickedTransparentColor = null;
+  private Color colorSelection = Color.orange;
+  private Color colorSelectionTransparent;
+  public void setColorSelection(Color c) {
+    if (colorSelection == null || !colorSelection.equals(c)) {
+      colorSelection = c;
+      colorSelectionTransparent = null;
       recalc();
     }
   }
-  public Color getPickedColor() {
-    if (pickedTransparentColor == null) {
-      pickedTransparentColor = pickedColor;
-      if (useGraphics2D) {
-        int rgba = (pickedColor.getRGB() & 0x00FFFFFF) | 0x80000000;
-        pickedTransparentColor = new Color(rgba, true);
-      }
+  public Color getColorSelection() {
+    if (colorSelectionTransparent == null) {
+      colorSelectionTransparent = 
+        useGraphics2D ? getColorTransparent(colorSelection) : colorSelection;
     }
-    return pickedTransparentColor;
+    return colorSelectionTransparent;
   }
 
-  public Color textColor = Color.black;
-  public void setTextColor(Color c) {
-    textColor = c;
+  public Color colorRubberband = Color.pink;
+
+  public Color colorText = Color.black;
+  public void setColorText(Color c) {
+    colorText = c;
     recalc();
-  }
-  public Color getTextColor() {
-    return textColor;
   }
 
-  public Color distanceColor = Color.black;
-  public void setDistanceColor(Color c) {
-    distanceColor = c;
+  public Color colorDistance = Color.black;
+  public void setColorDistance(Color c) {
+    colorDistance = c;
     recalc();
-  }
-  public Color getDistanceColor() {
-    return distanceColor;
   }
 
-  public Color angleColor = Color.black;
-  public void setAngleColor(Color c) {
-    angleColor = c;
+  public Color colorAngle = Color.black;
+  public void setColorAngle(Color c) {
+    colorAngle = c;
     recalc();
-  }
-  public Color getAngleColor() {
-    return angleColor;
   }
 
-  public Color dihedralColor = Color.black;
-  public void setDihedralColor(Color c) {
-    dihedralColor = c;
+  public Color colorDihedral = Color.black;
+  public void setColorDihedral(Color c) {
+    colorDihedral = c;
     recalc();
-  }
-  public Color getDihedralColor() {
-    return dihedralColor;
   }
 
   public boolean showAtoms = true;
@@ -343,6 +336,7 @@ final public class DisplayControl {
   public void translateBy(int xDelta, int yDelta) {
     xTranslation += xDelta;
     yTranslation += yDelta;
+    recalc();
   }
 
   public void rotateBy(int xDelta, int yDelta) {
@@ -356,21 +350,50 @@ final public class DisplayControl {
     double rotateAccelerator = 1.1f;
 
     // a change in the x coordinate generates a rotation about the y axis
-    double ytheta = Math.PI * xDelta / minScreenDimension / zoomScale;
+    double ytheta = Math.PI * xDelta / minScreenDimension;
     rotateByY(ytheta * rotateAccelerator);
-    double xtheta = Math.PI * yDelta / minScreenDimension / zoomScale;
+    double xtheta = Math.PI * yDelta / minScreenDimension;
     rotateByX(xtheta * rotateAccelerator);
     recalc();
   }
 
-  public void multiplyZoomScale(double scale) {
-    zoomScale *= scale;
-    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomScale;
+  public void zoomBy(int pixels) {
+    int percent = pixels * zoomPercentSetting / minScreenDimension;
+    if (percent == 0)
+      percent = (pixels < 0) ? -1 : 1;
+    zoomByPercent(percent);
+  }
+
+  public int getZoomPercent() {
+    return zoomPercent;
+  }
+
+  public void zoomToPercent(int percent) {
+    zoomPercentSetting = percent;
+    calcZoom();
+  }
+
+  public void zoomByPercent(int percent) {
+    zoomPercentSetting += percent;
+    calcZoom();
+  }
+
+  private void calcZoom() {
+    if (zoomPercentSetting < 10)
+      zoomPercentSetting = 10;
+    if (zoomPercentSetting > 1000)
+      zoomPercentSetting = 1000;
+    zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
+    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom *
+      zoomPercent / 100;
     recalc();
   }
 
-  public double getZoomScale() {
-    return zoomScale;
+  public void setZoomEnabled(boolean zoomEnabled) {
+    if (this.zoomEnabled != zoomEnabled) {
+      this.zoomEnabled = zoomEnabled;
+      calcZoom();
+    }
   }
 
   public Matrix4d getPovRotateMatrix() {
@@ -381,8 +404,8 @@ final public class DisplayControl {
     Matrix4d matrixPovTranslate = new Matrix4d();
     matrixPovTranslate.setIdentity();
     matrixPovTranslate.get(vectorTemp);
-    vectorTemp.x = (xTranslation - dimCurrent.width/2) / scalePixelsPerAngstrom;
-    vectorTemp.y = -(yTranslation - dimCurrent.height/2)
+    vectorTemp.x = (xTranslation-dimCurrent.width/2) / scalePixelsPerAngstrom;
+    vectorTemp.y = -(yTranslation-dimCurrent.height/2)
       / scalePixelsPerAngstrom; // invert y axis
     vectorTemp.z = 0;
     matrixPovTranslate.set(vectorTemp);
@@ -463,30 +486,26 @@ final public class DisplayControl {
     recalc();
   }
 
-  /*  public void setScreenDimension(Dimension dimCurrent) {
+  public void setScreenDimension(Dimension dimCurrent) {
     this.dimCurrent = dimCurrent;
   }
-  */
 
   public Dimension getScreenDimension() {
     return dimCurrent;
   }
 
-  // don't do recalc here
-  public void scaleFitToScreen(Dimension dimCurrent) {
-    this.dimCurrent = dimCurrent;
-    scaleFitToScreen();
+  public void scaleFitToScreen() {
+    if (dimCurrent == null || chemframe == null)  {
+      // FIXME -- what is proper startup sequence in this case? 
+      return;
+    }
+
     // FIXME perspective view resize - mth dec 2003
     // there is some problem with perspective view with the screen is
     // resized larger. only shows up in perspective view. things are being
     // displayed larger than they should be. that is, rotations can go
     // off the edge of the screen. goes away when home is hit
 
-  }
-
-  public void scaleFitToScreen() {
-    if (dimCurrent == null) // I have a race condition at startup
-      return;
     // translate to the middle of the screen
     xTranslation = dimCurrent.width / 2;
     yTranslation = dimCurrent.height / 2;
@@ -504,24 +523,31 @@ final public class DisplayControl {
     scalePixelsPerAngstrom =
       minScreenDimension / 2 / getFrame().getRotationRadius();
     if (perspectiveDepth) {
-      double scaleFactor = (cameraZ + minScreenDimension / 2) / (double)cameraZ;
+      double scaleFactor = (cameraZ + minScreenDimension/2) / (double)cameraZ;
       scaleFactor += .02f; // don't know why I need this, but seems I do -- mth
       scalePixelsPerAngstrom *= scaleFactor;
     }
     // these are important!
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
-    zoomScale = 1;
+    zoomPercentSetting = zoomPercent = 100;
+    zoomEnabled = true;
     cameraZ = (int)cameraDepth * minScreenDimension;
   }
 
   public void maybeEnableAntialiasing(Graphics g) {
-    if (useGraphics2D && wantsAntialias &&
-        (wantsAntialiasAlways || !mouseDragged)) {
+    if (useGraphics2D && wantsAntialias) {
       Graphics2D g2d = (Graphics2D) g;
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                           RenderingHints.VALUE_ANTIALIAS_ON);
-      g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                           RenderingHints.VALUE_RENDER_QUALITY);
+      if (wantsAntialiasAlways || !mouseDragged) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                             RenderingHints.VALUE_RENDER_QUALITY);
+      } else {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_OFF);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                             RenderingHints.VALUE_RENDER_SPEED);
+      }
     }
   }
 
@@ -580,6 +606,8 @@ final public class DisplayControl {
     structuralChange = true;
     clearSelection();
     recalc();
+    //    System.out.println("scalePixelsPerAngstrom="+scalePixelsPerAngstrom+
+    //                       " zoomPercentSetting=" + zoomPercentSetting);
   }
 
   public int numberOfAtoms() {
@@ -594,17 +622,13 @@ final public class DisplayControl {
                            mlist.getDihedralList());
   }
 
-  private Color backgroundColor = null;
-  public void setBackgroundColor(Color bg) {
+  public Color colorBackground = Color.white;
+  public void setColorBackground(Color bg) {
     if (bg == null)
-      backgroundColor = Color.getColor("backgroundColor");
+      colorBackground = Color.getColor("colorBackground");
     else
-      backgroundColor = bg;
+      colorBackground = bg;
     recalc();
-  }
-
-  public Color getBackgroundColor() {
-    return backgroundColor;
   }
 
   public boolean wireframeRotation = false;
@@ -656,11 +680,8 @@ final public class DisplayControl {
   }
 
   public Image takeSnapshot() {
-    return panel.takeSnapshot();
-  }
-
-  private void recalc() {
-    panel.repaint();
+    return null;
+    //return panel.takeSnapshot();
   }
 
   public void rotateFront() {
@@ -715,19 +736,58 @@ final public class DisplayControl {
   public void rotateByZ(int angleDegrees) {
     rotateByZ(Math.toRadians(angleDegrees));
   }
+
   public void rotate(AxisAngle4d axisAngle) {
     matrixTemp.setIdentity();
     matrixTemp.setRotation(axisAngle);
     matrixRotate.mul(matrixTemp, matrixRotate);
     recalc();
   }
+
   public void setCenter(Point3d center) {
     getFrame().setRotationCenter(center);
   }
 
+  private boolean holdRepaint;
+  private boolean repaintPending;
+
+  public void setHoldRepaint(boolean holdRepaint) {
+    if (this.holdRepaint != holdRepaint) {
+      this.holdRepaint = holdRepaint;
+      if (!holdRepaint && repaintPending)
+        panel.repaint();
+    }
+  }
+
+  Object monitorRepaint = new Object();
+
+  private void recalc() {
+    if (repaintPending)
+      return;
+    repaintPending = true;
+    if (! holdRepaint)
+      panel.repaint();
+  }
+
   public void refresh() {
-  // this is here temporarily while I figure out what to do in scripting
     recalc();
+  }
+
+  public void requestRepaintAndWait() {
+    panel.repaint();
+    synchronized(monitorRepaint) {
+      try {
+        monitorRepaint.wait();
+      } catch (InterruptedException e) {
+      }
+    }
+  }
+
+  public void notifyRepainted() {
+    repaintPending = false;
+    synchronized(monitorRepaint) {
+      monitorRepaint.notify();
+    }
   }
   
   public void setCenterAsSelected() {
@@ -754,6 +814,8 @@ final public class DisplayControl {
   public int screenAtomDiameter(int z, double vdwRadius) {
     if (z > 0)
       System.out.println("--?QUE? no way that z > 0--");
+    if (vdwRadius <= 0)
+      System.out.println("--?QUE? vdwRadius=" + vdwRadius);
     int d = (int)(2 * vdwRadius *
                   scalePixelsPerAngstrom * percentVdwAtom / 100);
     if (perspectiveDepth)
@@ -762,7 +824,7 @@ final public class DisplayControl {
   }
 
   public int screenBondWidth(int z) {
-    int w = (int)(scalePixelsPerAngstrom * percentAngBond / 100);
+    int w = (int)(scalePixelsPerAngstrom * percentAngstromBond / 100);
     if (perspectiveDepth)
       w = (w * cameraZ) / (cameraZ - z);
     return w;
@@ -792,7 +854,7 @@ final public class DisplayControl {
   public final Hashtable imageCache = new Hashtable();
   private void flushCachedImages() {
     imageCache.clear();
-    pickedTransparentColor = null;
+    colorSelectionTransparent = null;
   }
 
   // FIXME NEEDSWORK -- bond binding stuff
@@ -827,22 +889,15 @@ final public class DisplayControl {
   }
 
   // FIXME NEEDSWORK -- arrow vector stuff
-  private Color vectorColor = Color.black;
+  public Color colorVector = Color.black;
   private double arrowHeadSize = 10.0f;
   private double arrowHeadRadius = 1.0f;
   private double arrowLengthScale = 1.0f;
 
-  public void setVectorColor(Color c) {
-    vectorColor = c;
+  public void setColorVector(Color c) {
+    colorVector = c;
     recalc();
   }
-  public Color getVectorColor() {
-    // mth dec 2002
-    // I tried a transparent color here, but was disappointed with the
-    // results ... so I backed it out. 
-    return vectorColor;
-  }
-
 
   public void setArrowHeadSize(double ls) {
     arrowHeadSize = 10.0f * ls;
@@ -879,18 +934,18 @@ final public class DisplayControl {
     return arrowHeadRadius;
   }
 
-  public Color getAtomColor(Atom atom) {
+  public Color getColorAtom(Atom atom) {
     Color color = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
     if (modeTransparentColors)
-      color = getTransparent(color);
+      color = getColorTransparent(color);
     return color;
   }
 
-  public Color getAtomOutlineColor(Color color) {
+  public Color getColorAtomOutline(Color color) {
     Color outline = (showDarkerOutline || modeAtomDraw == SHADING)
-      ? getDarker(color) : outlineColor;
+      ? getDarker(color) : colorOutline;
     if (modeTransparentColors)
-      outline = getTransparent(outline);
+      outline = getColorTransparent(outline);
     return outline;
   }
 
@@ -909,9 +964,9 @@ final public class DisplayControl {
     this.modeTransparentColors = modeTransparentColors;
   }
 
-  private final static int transparency = 0x40;
+  private final static int transparency = 0x60;
   private Hashtable htTransparent = new Hashtable();
-  public Color getTransparent(Color color) {
+  public Color getColorTransparent(Color color) {
     Color transparent = (Color) htTransparent.get(color);
     if (transparent == null) {
       int argb = (color.getRGB() & 0x00FFFFFF) | (transparency << 24);
@@ -929,5 +984,45 @@ final public class DisplayControl {
     // FIXME -- if there is a script window it should go there
     // for an applet it needs to go someplace else
     System.out.println(str);
+  }
+
+  public void translateToXPercent(int percent) {
+    // FIXME -- what is the proper RasMol interpretation of this with zooming?
+    xTranslation = (dimCurrent.width / 2) + dimCurrent.width * percent / 100;
+    recalc();
+  }
+
+  public void translateToYPercent(int percent) {
+    yTranslation = (dimCurrent.height / 2) + dimCurrent.height * percent / 100;
+    recalc();
+  }
+
+  public void translateToZPercent(int percent) {
+    // FIXME who knows what this should be? some type of zoom?
+    recalc();
+  }
+
+  public int getTranslationXPercent() {
+    return (xTranslation - dimCurrent.width/2) * 100 / dimCurrent.width;
+  }
+
+  public int getTranslationYPercent() {
+    return (yTranslation - dimCurrent.height/2) * 100 / dimCurrent.height;
+  }
+
+  public int getTranslationZPercent() {
+    return 0;
+  }
+
+  public void translateByXPercent(int percent) {
+    translateToXPercent(getTranslationXPercent() + percent);
+  }
+
+  public void translateByYPercent(int percent) {
+    translateToYPercent(getTranslationYPercent() + percent);
+  }
+
+  public void translateByZPercent(int percent) {
+    translateToZPercent(getTranslationZPercent() + percent);
   }
 }

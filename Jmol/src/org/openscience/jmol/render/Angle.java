@@ -57,7 +57,7 @@ public class Angle extends Measurement implements MeasurementInterface {
     int yb = (y3 + y2) / 2;
 
     control.maybeDottedStroke(g);
-    g.setColor(control.getAngleColor());
+    g.setColor(control.colorAngle);
     g.drawLine(xa, ya, xb, yb);
   }
 
@@ -78,7 +78,7 @@ public class Angle extends Measurement implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getTextColor());
+    g.setColor(control.colorText);
     String s = angleFormat.sprintf(getAngle());
     int j = fontMetrics.stringWidth(s);
 

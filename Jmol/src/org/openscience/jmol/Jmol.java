@@ -30,7 +30,6 @@ import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.io.XYZSaver;
 import org.openscience.jmol.script.ScriptWindow;
-import org.openscience.jmol.script.ScriptException;
 import org.openscience.jmol.script.Eval;
 import org.openscience.cdk.tools.IsotopeFactory;
 import Acme.JPM.Encoders.GifEncoder;
@@ -130,8 +129,9 @@ public class Jmol extends JPanel {
   private JScrollPane scroller;
   private JViewport port;
 
-  public static DisplayControl control;
+  public DisplayControl control;
 
+  private MouseManager mouseman;
   private DisplayPanel display;
   private StatusBar status;
   private AtomPropsMenu apm;
@@ -238,9 +238,13 @@ public class Jmol extends JPanel {
     model = new JmolModel();
     splash.showStatus(resourceHandler
         .translate("Initializing 3D display..."));
+    //
     control = new DisplayControl();
     display = new DisplayPanel(status, guimap, control);
-    control.setDisplayPanel(display);
+    control.setAwtComponent(display);
+    mouseman = new MouseManager(display, control);
+    display.setMouseManager(mouseman);
+
     model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
         .translate("Initializing Preferences..."));
@@ -270,12 +274,14 @@ public class Jmol extends JPanel {
         .translate("Initializing Property Graph..."));
     pg = new PropertyGraph(frame);
     model.addPropertyChangeListener(pg);
+
     splash.showStatus(resourceHandler
         .translate("Initializing Measurements..."));
     mlist = new MeasurementList(frame, display);
-    meas = new Measure(frame, display);
+    meas = new Measure(frame, display, mouseman);
     meas.setMeasurementList(mlist);
     display.setMeasure(meas);
+    mouseman.setMeasure(meas);
     mlist.addMeasurementListListener(display);
     port.add(display);
 
@@ -417,13 +423,9 @@ public class Jmol extends JPanel {
         jmol.splash
           .showStatus(JmolResourceHandler.getInstance()
                       .getString("Executing script..."));
-        Eval eval = new Eval(control);
-        try {
-          eval.executeFile(scriptFilename);
-        } catch (ScriptException e) {
-          // just stop handling the script
-          // or should we exit here?
-        }
+        Eval eval = new Eval(jmol.control);
+        if (eval.loadFile(scriptFilename))
+          eval.run();
       }
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);

@@ -92,8 +92,8 @@ public class AtomRenderer {
     radius = diameter / 2;
     xUpperLeft = x - radius;
     yUpperLeft = y - radius;
-    color = control.getAtomColor(atom);
-    colorOutline = control.getAtomOutlineColor(color);
+    color = control.getColorAtom(atom);
+    colorOutline = control.getColorAtomOutline(color);
 
     renderAtom();
     if (control.modeLabel != control.NOLABELS)
@@ -107,7 +107,7 @@ public class AtomRenderer {
         halowidth = 2;
       int halodiameter = diameter + 2 * halowidth;
       int haloradius = halodiameter / 2;
-      g.setColor(control.getPickedColor());
+      g.setColor(control.getColorSelection());
       g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
 
@@ -188,7 +188,7 @@ public class AtomRenderer {
   private static final double[] lightSource = { -1.0f, -1.0f, 2.0f };
   private void loadShadedSphereCache(DisplayControl control, Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
-    Component component = control.getDisplayPanel();
+    Component component = control.getAwtComponent();
     control.imageCache.put(color, shadedImages);
     if (! control.useGraphics2D) {
       for (int d = minCachedSize; d < maxCachedSize; ++d) {
@@ -372,7 +372,7 @@ public class AtomRenderer {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     int k = fontMetrics.getAscent();
-    g.setColor(control.getTextColor());
+    g.setColor(control.colorText);
     
     String label = null;
     switch (control.modeLabel) {
@@ -405,7 +405,7 @@ public class AtomRenderer {
           // screen:
           font = new Font("Helvetica", Font.PLAIN, radius / 2);
           g.setFont(font);
-          g.setColor(control.getTextColor());
+          g.setColor(control.colorText);
           s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);

@@ -25,19 +25,13 @@
 
 package org.openscience.jmol.script;
 
-import java.io.*;
 import java.util.Hashtable;
-import java.util.regex.*;
-import java.util.Vector;
 
 class Token {
 
   int tok;
   Object value;
   int intValue = Integer.MAX_VALUE;
-
-  static String str;
-  static Matcher m;
 
   Token(int tok, int intValue, Object value) {
     this.tok = tok;
@@ -54,13 +48,17 @@ class Token {
     this.value = value;
   }
 
-  final static int nada         = 0;
-  final static int identifier   = 1;
-  final static int integer      = 2;
-  final static int decimal      = 3;
-  final static int string       = 4;
-  final static int unknown      = 5;
-  final static int keyword      = 6;
+  final static int nada              =  0;
+  final static int identifier        =  1;
+  final static int integer           =  2;
+  final static int decimal           =  3;
+  final static int string            =  4;
+  final static int unknown           =  5;
+  final static int keyword           =  6;
+  final static int whitespace        =  7;
+  final static int comment           =  8;
+  final static int endofline         =  9;
+  final static int endofstatement    = 10;
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string", "unknown", "keyword"
@@ -87,66 +85,68 @@ class Token {
   // but not for hbonds nor ssbonds
   final static int setspecial        = (1 << 20);
 
+
+  final static int varArgCount     = (1 << 21);
+  final static int onDefault1      = (1 << 22) | 1;
+  final static int setDefaultOn    = (1 << 23);
+
   // rasmol commands
-  // backbone
-  final static int background   = command |  0 | colorparam | setspecial;
-  final static int bond         = command |  1 | bool;
-  final static int cartoon      = command |  2 | setspecial;
-  final static int center       = command |  3 | showparam | expression;
-  final static int clipboard    = command |  4;
-  final static int color        = command |  5 | colorparam;
-  final static int connect      = command |  6 | bool;
-  final static int cpk          = command |  7;
-  final static int define       = command |  8 | expression;
-  final static int dots         = command |  9 | bool;
-  final static int echo         = command | 10 | specialstring;
-  final static int exit         = command | 11;
-  final static int hbonds       = command | 12 | setparam | bool;
-  final static int help         = command | 13;
-  final static int label        = command | 14 | bool;
+  final static int backbone     = command |  0 | predefinedset;
+  final static int background   = command |  1 | colorparam | setspecial;
+  final static int bond         = command |  2 | bool;
+  final static int cartoon      = command |  3 | setspecial;
+  final static int center       = command |  4 | showparam | expression;
+  final static int clipboard    = command |  5;
+  final static int color        = command |  6 | colorparam;
+  final static int connect      = command |  7 | bool;
+  final static int define       = command |  9 | expression;
+  final static int dots         = command | 10 | bool;
+  final static int echo         = command | 11 | specialstring;
+  final static int exit         = command | 12;
+  final static int hbonds       = command | 13 | setparam | bool;
+  final static int help         = command | 14;
+  final static int label        = command | 15 | bool;
   // FIXME -- why did I have load tagged as a setparam?
-  final static int load         = command | 15 | specialstring; // setparam;
-  final static int molecule     = command | 16;
-  final static int monitor      = command | 17 | setspecial | bool;
-  final static int pause        = command | 18;
-  final static int print        = command | 19;
-  final static int quit         = command | 20;
-  final static int refresh      = command | 21;
-  final static int renumber     = command | 22 | negativeints;
-  final static int reset        = command | 23;
-  final static int restrict     = command | 24 | expression;
-  final static int ribbons      = command | 25 | bool;
-  final static int rotate       = command | 26 | bool | negativeints;
-  final static int save         = command | 27;
-  final static int script       = command | 28 | specialstring;
-  final static int select       = command | 29 | expression;
-  final static int set          = command | 30 | bool | negativeints;
-  final static int show         = command | 31;
-  final static int slab         = command | 32 | bool;
-  final static int source       = command | 33 | specialstring;
-  final static int spacefill    = command | 34 | bool;
-  final static int ssbonds      = command | 35 | setparam | bool;
-  final static int star         = command | 36 | bool;
-  final static int stereo       = command | 37
+  final static int load         = command | 16 | specialstring; // setparam;
+  final static int molecule     = command | 17;
+  final static int monitor      = command | 18 | setspecial | bool;
+  final static int pause        = command | 19;
+  final static int print        = command | 20;
+  final static int quit         = command | 21;
+  final static int refresh      = command | 22;
+  final static int renumber     = command | 23 | negativeints;
+  final static int reset        = command | 24;
+  final static int restrict     = command | 25 | expression;
+  final static int ribbons      = command | 26 | bool;
+  final static int rotate       = command | 27 | bool | negativeints;
+  final static int save         = command | 28;
+  final static int script       = command | 29 | specialstring;
+  final static int select       = command | 30 | expression;
+  final static int set          = command | 31 | bool | negativeints;
+  final static int show         = command | 32;
+  final static int slab         = command | 33 | bool;
+  final static int spacefill    = command | 35 | bool;
+  final static int ssbonds      = command | 36 | setparam | bool;
+  final static int star         = command | 37 | bool;
+  final static int stereo       = command | 38
     | setspecial | bool | negativeints;
-  final static int strands      = command | 38 | setspecial | bool;
-  final static int structure    = command | 39;
-  final static int trace        = command | 40 | bool;
-  final static int translate    = command | 41 | negativeints;
-  final static int unbond       = command | 42;
-  final static int wireframe    = command | 43 | bool;
-  final static int write        = command | 44 | setparam;
-  final static int zap          = command | 45;
-  final static int zoom         = command | 46 | showparam | bool;
+  final static int strands      = command | 39 | setspecial | bool;
+  final static int structure    = command | 40;
+  final static int trace        = command | 41 | bool;
+  final static int translate    = command | 42 | negativeints;
+  final static int unbond       = command | 43;
+  final static int wireframe    = command | 44 | bool;
+  final static int write        = command | 45 | setparam;
+  final static int zap          = command | 46;
+  final static int zoom         = command | 47 | showparam | bool;
   // chime commands
-  final static int delay        = command | 47;
-  final static int loop         = command | 48;
-  final static int move         = command | 49 | negativeints;
-  final static int view         = command | 50;
-  final static int restore      = command | 51;
-  final static int spin         = command | 52 | showparam | bool;
-  final static int list         = command | 53 | showparam;
-  final static int display3d    = command | 54;
+  final static int delay        = command | 48;
+  final static int loop         = command | 49;
+  final static int move         = command | 50 | negativeints;
+  final static int view         = command | 51;
+  final static int spin         = command | 53 | showparam | bool;
+  final static int list         = command | 54 | showparam;
+  final static int display3d    = command | 55;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -256,6 +256,9 @@ class Token {
   final static int angle        = misc | 13;
   final static int torsion      = misc | 14;
   final static int coord        = misc | 15;
+  final static int leftsquare   = misc | 16;
+  final static int rightsquare  = misc | 17;
+  final static int restore      = misc | 18; // chime extended
   
   final static int at          = predefinedset |  0;
   final static int acidic      = predefinedset |  1;
@@ -264,7 +267,7 @@ class Token {
   final static int alpha       = predefinedset |  4;
   final static int amino       = predefinedset |  5;
   final static int aromatic    = predefinedset |  6;
-  final static int backbone    = predefinedset |  7 | command |  bool;
+  // backbone
   final static int basic       = predefinedset |  8;
   final static int bonded      = predefinedset |  9;
   final static int buried      = predefinedset | 10;
@@ -342,67 +345,69 @@ class Token {
   final static int yellow               = colorparam | 22;
   final static int yellowtint           = colorparam | 23;
 
+  final static Token tokenOn = new Token(on, 1, "on");
+
   final static Object[] arrayPairs  = {
     // commands
-    // backbone
-    "background",        new Token(background, "background"),
-    "bond",              new Token(bond,       "bond"),
-    "cartoon",           new Token(cartoon,    "cartoon"),
-    "center",            new Token(center,     "center"),
+    "backbone",          new Token(backbone,  onDefault1, "backbone"),
+    "background",        new Token(background,         1, "background"),
+    "bond",              new Token(bond,     varArgCount, "bond"),
+    "cartoon",           new Token(cartoon,  varArgCount, "cartoon"),
+    "center",            new Token(center,   varArgCount,  "center"),
     "centre",            null,
-    "clipboard",         new Token(clipboard,  "clipboard"),
-    "color",             new Token(color,      "color"),
+    "clipboard",         new Token(clipboard,          0, "clipboard"),
+    "color",             new Token(color,    varArgCount, "color"),
     "colour",            null,
-    "connect",           new Token(connect,    "connect"),
-    "cpk",               new Token(cpk,        "cpk"),
-    "define",            new Token(define,     "define"),
-    "dots",              new Token(dots,       "dots"),
-    "echo",              new Token(echo,       "echo"),
-    "exit",              new Token(exit,       "exit"),
-    "hbonds",            new Token(hbonds,     "hbonds"),
-    "help",              new Token(help,       "help"),
-    "label",             new Token(label,      "label"),
-    "load",              new Token(load,       "load"),
-    "molecule",          new Token(molecule,   "molecule"),
-    "monitor",           new Token(monitor,    "monitor"),
+    "connect",           new Token(connect,  varArgCount, "connect"),
+    "define",            new Token(define,   varArgCount, "define"),
+    "dots",              new Token(dots,      onDefault1, "dots"),
+    "echo",              new Token(echo,     varArgCount, "echo"),
+    "exit",              new Token(exit,               0, "exit"),
+    "hbonds",            new Token(hbonds,    onDefault1, "hbonds"),
+    "help",              new Token(help,     varArgCount, "help"),
+    "label",             new Token(label,    varArgCount, "label"),
+    "load",              new Token(load,     varArgCount, "load"),
+    "molecule",          new Token(molecule,           1, "molecule"),
+    "monitor",           new Token(monitor,  varArgCount, "monitor"),
     "monitors",          null,
-    "pause",             new Token(pause,      "pause"),
-    "print",             new Token(print,      "print"),
-    "quit",              new Token(quit,       "quit"),
-    "refresh",           new Token(refresh,    "refresh"),
-    "renumber",          new Token(renumber,   "renumber"),
-    "reset",             new Token(reset,      "reset"),
-    "restrict",          new Token(restrict,   "restrict"),
-    "ribbons",           new Token(ribbons,    "ribbons"),
-    "rotate",            new Token(rotate,     "rotate"),
-    "save",              new Token(save,       "save"),
-    "script",            new Token(script,     "script"),
-    "select",            new Token(select,     "select"),
-    "set",               new Token(set,        "set"),
-    "show",              new Token(show,       "show"),
-    "slab",              new Token(slab,       "slab"),
-    "source",            new Token(source,     "source"),
-    "spacefill",         new Token(spacefill,  "spacefill"),
-    "ssbonds",           new Token(ssbonds,    "ssbonds"),
-    "star",              new Token(star,       "star"),
-    "stereo",            new Token(stereo,     "stereo"),
-    "strands",           new Token(strands,    "strands"),
-    "structure",         new Token(structure,  "structure"),
-    "trace",             new Token(trace,      "trace"),
-    "translate",         new Token(translate,  "translate"),
-    "unbond",            new Token(unbond,     "unbond"),
-    "wireframe",         new Token(wireframe,  "wireframe"),
-    "write",             new Token(write,      "write"),
-    "zap",               new Token(zap,        "zap"),
-    "zoom",              new Token(zoom,       "zoom"),
+    "pause",             new Token(pause,              0, "pause"),
+    "wait",              null,
+    "print",             new Token(print,              0, "print"),
+    "quit",              new Token(quit,               0, "quit"),
+    "refresh",           new Token(refresh,            0, "refresh"),
+    "renumber",          new Token(renumber,  onDefault1, "renumber"),
+    "reset",             new Token(reset,              0, "reset"),
+    "restrict",          new Token(restrict, varArgCount, "restrict"),
+    "ribbons",           new Token(ribbons,   onDefault1, "ribbons"),
+    "rotate",            new Token(rotate,   varArgCount, "rotate"),
+    "save",              new Token(save,     varArgCount, "save"),
+    "script",            new Token(script,             1, "script"),
+    "source",            null,
+    "select",            new Token(select,   varArgCount, "select"),
+    "set",               new Token(set,      varArgCount, "set"),
+    "show",              new Token(show,     varArgCount, "show"),
+    "slab",              new Token(slab,      onDefault1, "slab"),
+    "spacefill",         new Token(spacefill, onDefault1, "spacefill"),
+    "cpk",               null,
+    "ssbonds",           new Token(ssbonds,   onDefault1, "ssbonds"),
+    "star",              new Token(star,      onDefault1, "star"),
+    "stereo",            new Token(stereo,             1, "stereo"),
+    "strands",           new Token(strands,   onDefault1, "strands"),
+    "structure",         new Token(structure,          0, "structure"),
+    "trace",             new Token(trace,     onDefault1, "trace"),
+    "translate",         new Token(translate,varArgCount, "translate"),
+    "unbond",            new Token(unbond,   varArgCount, "unbond"),
+    "wireframe",         new Token(wireframe, onDefault1, "wireframe"),
+    "write",             new Token(write,    varArgCount, "write"),
+    "zap",               new Token(zap,                0, "zap"),
+    "zoom",              new Token(zoom,      onDefault1, "zoom"),
   // chime commands
-    "delay",             new Token(delay,      "delay"),
-    "loop",              new Token(loop,       "loop"),
-    "move",              new Token(move,       "move"),
-    "view",              new Token(view,       "view"),
-    "restore",           new Token(restore,    "restore"),
-    "spin",              new Token(spin,       "spin"),
-    "list",              new Token(list,       "list"),
+    "delay",             new Token(delay,     onDefault1, "delay"),
+    "loop",              new Token(loop,      onDefault1, "loop"),
+    "move",              new Token(move,     varArgCount, "move"),
+    "view",              new Token(view,     varArgCount, "view"),
+    "spin",              new Token(spin,      onDefault1, "spin"),
+    "list",              new Token(list,     varArgCount, "list"),
     "display3d",         new Token(display3d,  "display3d"),
 
     // setparams
@@ -480,17 +485,17 @@ class Token {
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
 
-    "false",        new Token(off, "false"),
-    "off",          null,
+    "off",          new Token(off, 0, "off"),
+    "false",        null,
     "no",           null,
-    "true",         new Token(on, "true"),
-    "on",           null,
+    "on",           tokenOn,
+    "true",         null,
     "yes",          null,
 
     "dash",         new Token(dash, "dash"),
     "user",         new Token(user, "user"),
     "x",            new Token(x, "x"),
-    "y",            new Token(y, "y"),
+    // y
     "z",            new Token(z, "z"),
     "all",          new Token(all, "all"),
     "*",            null,
@@ -504,6 +509,8 @@ class Token {
     "angle",        new Token(angle, "angle"),
     "torsion",      new Token(torsion, "torsion"),
     "coord",        new Token(coord, "coord"),
+
+    "restore",           new Token(restore,    "restore"),
   
     "at",           new Token(at, "at"),
     "acidic",       new Token(acidic, "acidic"),
@@ -512,7 +519,7 @@ class Token {
     "alpha",        new Token(alpha, "alpha"),
     "amino",        new Token(amino, "amino"),
     "aromatic",     new Token(aromatic, "aromatic"),
-    "backbone",     new Token(backbone,   "backbone"),
+    // backbone
     "basic",        new Token(basic, "basic"),
     "bonded",       new Token(bonded, "bonded"),
     "buried",       new Token(buried, "buried"),
@@ -585,30 +592,32 @@ class Token {
     "v",         null,
 
 
-    "black",      new Token(black,     black     &(colorparam-1), "black"),
-    "blue",       new Token(blue,      blue      &(colorparam-1), "blue"),
-    "bluetint",   new Token(bluetint,  bluetint  &(colorparam-1), "bluetint"),
-    "brown",      new Token(brown,     brown     &(colorparam-1), "brown"),
-    "cyan",       new Token(cyan,      cyan      &(colorparam-1), "cyan"),
-    "gold",       new Token(gold,      gold      &(colorparam-1), "gold"),
-    "grey",       new Token(grey,      grey      &(colorparam-1), "grey"),
-    "green",      new Token(green,     green     &(colorparam-1), "green"),
-    "greenblue",  new Token(greenblue, greenblue &(colorparam-1), "greenblue"),
-    "greentint",  new Token(greentint, greentint &(colorparam-1), "greentint"),
-    "hotpink",    new Token(hotpink,   hotpink   &(colorparam-1), "hotpink"),
-    "magenta",    new Token(magenta,   magenta   &(colorparam-1), "magenta"),
-    "orange",     new Token(orange,    orange    &(colorparam-1), "orange"),
-    "pink",       new Token(pink,      pink      &(colorparam-1), "pink"),
-    "pinktint",   new Token(pinktint,  pinktint  &(colorparam-1), "pinktint"),
-    "purple",     new Token(purple,    purple    &(colorparam-1), "purple"),
-    "red",        new Token(red,       red       &(colorparam-1), "red"),
-    "redorange",  new Token(redorange, redorange &(colorparam-1), "redorange"),
-    "seagreen",   new Token(seagreen,  seagreen  &(colorparam-1), "seagreen"),
-    "skyblue",    new Token(skyblue,   skyblue   &(colorparam-1), "skyblue"),
-    "violet",     new Token(violet,    violet    &(colorparam-1), "violet"),
-    "white",      new Token(white,     white     &(colorparam-1), "white"),
-    "yellow",     new Token(yellow,    yellow    &(colorparam-1), "yellow"),
-    "yellowtint", new Token(yellowtint,yellowtint&(colorparam-1), "yellowtint")
+    "black",      new Token(black,      0x000000, "black"),
+    "blue",       new Token(blue,       0x0000FF, "blue"),
+    "bluetint",   new Token(bluetint,   0xAFD7FF, "bluetint"),
+    "brown",      new Token(brown,      0xAF7559, "brown"),
+    "cyan",       new Token(cyan,       0x00FFFF, "cyan"),
+    "gold",       new Token(gold,       0xFC9C00, "gold"),
+    "grey",       new Token(grey,       0x7D7D7D, "grey"),
+    "green",      new Token(green,      0x00FF00, "green"),
+    "greenblue",  new Token(greenblue,  0x2E8B57, "greenblue"),
+    "greentint",  new Token(greentint,  0x98FFB3, "greentint"),
+    "hotpink",    new Token(hotpink,    0xFF0065, "hotpink"),
+    "magenta",    new Token(magenta,    0xFF00FF, "magenta"),
+    "orange",     new Token(orange,     0xFFA500, "orange"),
+    "pink",       new Token(pink,       0xFF6575, "pink"),
+    "pinktint",   new Token(pinktint,   0xFFABBB, "pinktint"),
+    "purple",     new Token(purple,     0xA020F0, "purple"),
+    "red",        new Token(red,        0xFF0000, "red"),
+    "redorange",  new Token(redorange,  0xFF4500, "redorange"),
+    "seagreen",   new Token(seagreen,   0x00FA6D, "seagreen"),
+    "skyblue",    new Token(skyblue,    0x3A90FF, "skyblue"),
+    "violet",     new Token(violet,     0xEE82EE, "violet"),
+    "white",      new Token(white,      0xFFFFFF, "white"),
+    "yellow",     new Token(yellow,     0xFFFF00, "yellow"),
+    "yellowtint", new Token(yellowtint, 0xF6F675, "yellowtint"),
+    "[",          new Token(leftsquare,  "["),
+    "]",          new Token(rightsquare, "]")
   };
   static Hashtable map = new Hashtable();
   static {
@@ -627,341 +636,10 @@ class Token {
     }
   }
 
-  final static Pattern patternLeadingWhiteSpace =
-    Pattern.compile("[\\s&&[^\\r\\n]]+");
-  final static Pattern patternComment =
-    Pattern.compile("#[^;\\r\\n]*");
-  final static Pattern patternEndOfStatement =
-    Pattern.compile(";|\\r?\\n|\\r|$", Pattern.MULTILINE);
-  final static Pattern patternDecimal =
-    Pattern.compile("-?\\d+\\.(\\d*)?|-?\\.\\d+");
-  final static Pattern patternPositiveInteger =
-    Pattern.compile("\\d+");
-  final static Pattern patternPossibleNegativeInteger =
-    Pattern.compile("-?\\d+");
-  final static Pattern patternString =
-    Pattern.compile("([\"'`])(.*?)\\1");
-  final static Pattern patternSpecialString =
-    Pattern.compile("[^;\\r\\n]+");
-  final static Pattern patternLookup =
-    Pattern.compile("\\(|\\)|," +
-                    "|<=|<|>=|>|==|=|!=|<>|/=" +
-                    "|&|\\||!" +
-                    "|\\*" +                      // select *
-                    "|-" +                        // range
-                    "|\\+" +                      // bond
-                    "|\\?" +                      // help command
-                    "|[a-zA-Z_][a-zA-Z_0-9]*"
-                    );
-
-  static boolean lookingAt(Pattern pattern, String description) {
-    m = pattern.matcher(str);
-    boolean looking = m.lookingAt();
-    if (looking) {
-      System.out.println("lookingAt:" + description + ":" + m.group() + ":");
-    }
-    return looking;
-  }
-  public static Token[][] tokenize(String strScript) throws ScriptException {
-    Vector lltoken = new Vector();
-    Vector ltoken = new Vector();
-    Token tokenCommand = null;
-    int tokCommand = nada;
-    str = strScript;
-
-    for ( ; true; str = str.substring(m.end())) {
-      if (lookingAt(patternLeadingWhiteSpace, "leading whitespace"))
-        continue;
-      if (lookingAt(patternComment, "comment"))
-        continue;
-      if (lookingAt(patternEndOfStatement, "end of statement")) {
-        if (tokCommand != nada) {
-          System.out.println("tokCommand != nada");
-          Token[] atoken = new Token[ltoken.size()];
-          ltoken.copyInto(atoken);
-          if ((atoken[0].tok & expression) != 0)
-            atoken = compileExpression(atoken);
-          lltoken.add(atoken);
-          ltoken.setSize(0);
-          tokCommand = nada;
-        }
-        if (str.length() > 0)
-          continue;
-        break;
-      }
-      if (tokCommand != nada) {
-        if (lookingAt(patternString, "string")) {
-          System.out.println("lookingAt end of Statement");
-          ltoken.add(new Token(Token.string, m.group(2)));
-          continue;
-        }
-        if ((tokCommand & specialstring) != 0 &&
-            lookingAt(patternSpecialString, "special string")) {
-          ltoken.add(new Token(Token.string, m.group()));
-          continue;
-        }
-        if (lookingAt(patternDecimal, "decimal")) {
-          double value = Float.parseFloat(m.group());
-          ltoken.add(new Token(Token.decimal, new Double(value)));
-          continue;
-        }
-        if (lookingAt(patternPositiveInteger, "positive integer") || 
-            ((tokCommand & negativeints) != 0 &&
-             lookingAt(patternPossibleNegativeInteger, "negative integer"))) {
-          int val = Integer.parseInt(m.group());
-          ltoken.add(new Token(integer, val, null));
-          continue;
-        }
-      }
-      if (lookingAt(patternLookup, "lookup")) {
-        String ident = m.group().toLowerCase();
-        Token token = (Token) map.get(ident);
-        if (token == null)
-          token = new Token(identifier, ident);
-        switch (tokCommand) {
-        case nada:
-          tokenCommand = token;
-          tokCommand = token.tok;
-          if ((tokCommand & command) == 0)
-            throw new ScriptException("Command expected - found:" + ident);
-          break;
-        case set:
-          if (ltoken.size() == 1) {
-            if ((token.tok & setspecial) != 0) {
-              tokenCommand = token;
-              tokCommand = token.tok;
-              ltoken.clear();
-              break;
-            }
-            if ((token.tok & setparam) == 0)
-              throw new ScriptException("Cannot set:" + ident);
-          }
-          break;
-        case show:
-          if ((token.tok & showparam) == 0)
-            throw new ScriptException("Cannot show:" + ident);
-          break;
-        case define:
-          if ((ltoken.size() >= 2) && ((token.tok & expression) == 0))
-            throw new ScriptException("Invalid expression token:" + ident);
-          break;
-        case center:
-        case restrict:
-        case select:
-          if (token.tok != identifier && (token.tok & expression) == 0)
-            throw new ScriptException("Invalid expression token:" + ident);
-          break;
-        }
-        ltoken.add(token);
-        continue;
-      }
-      throw new ScriptException(((ltoken.size() == 0)
-                                   ? "Command Expected:"
-                                   : "Unrecognized token:") +
-                                  str.substring(0,Math.min(str.length(),32)));
-    }
-    Token[][] aatoken = new Token[lltoken.size()][];
-    lltoken.copyInto(aatoken);
-    return aatoken;
-  }
-
   public String toString() {
     return "Token[" + astrType[tok<=keyword ? tok : keyword] +
       "-" + tok +
       ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue) +
       ((value == null) ? "" : ":" + value) + "]";
-  }
-
-  Token lookAhead(Token[] atoken, int i) {
-    if (atoken.length <= i)
-      return null;
-    return atoken[i];
-  }
-
-  /*
-    expression       :: = clauseOr
-
-    clauseOr         ::= clauseAnd {OR clauseAnd}*
-
-    clauseAnd        ::= clauseNot {AND clauseNot}*
-
-    clauseNot        ::= {NOT}?  | clausePrimitive
-
-    clausePrimitive  ::= clauseInteger |
-                         clauseComparator | 
-                         all | none |
-                         identifier
-                         ( clauseOr )
-
-    clauseInteger    ::= integer | integer - integer
-
-    clauseComparator ::= atomproperty comparatorop integer
-  */
-
-  public static Token[] compileExpression(Token[] atoken)
-    throws ScriptException {
-    int i = 1;
-    if (atoken[0].tok == define)
-      i = 2;
-    return compileExpression(atoken, i);
-  }
-
-  static Vector ltokenPostfix = null;
-  static Token[] atokenInfix;
-  static int itokenInfix;
-                  
-  public static Token[] compileExpression(Token[] atoken, int itoken)
-    throws ScriptException {
-    ltokenPostfix = new Vector();
-    for (int i = 0; i < itoken; ++i)
-      ltokenPostfix.add(atoken[i]);
-    atokenInfix = atoken;
-    itokenInfix = itoken;
-    clauseOr();
-    if (itokenInfix != atokenInfix.length)
-      throw new ScriptException("end of expression expected");
-    Token[] atokenPostfix = new Token[ltokenPostfix.size()];
-    ltokenPostfix.copyInto(atokenPostfix);
-    System.out.println("compiled expression:");
-    for (int i = 0; i < atokenPostfix.length; ++i) {
-      System.out.print(" " + atokenPostfix[i]);
-    }
-    System.out.println("");
-    return atokenPostfix;
-  }
-
-  static Token tokenNext() {
-    if (itokenInfix == atokenInfix.length)
-      return null;
-    return atokenInfix[itokenInfix++];
-  }
-
-  static int tokPeek() {
-    if (itokenInfix == atokenInfix.length)
-      return 0;
-    return atokenInfix[itokenInfix].tok;
-  }
-
-  static void clauseOr() throws ScriptException {
-    clauseAnd();
-    while (tokPeek() == opOr) {
-      Token tokenOr = tokenNext();
-      clauseAnd();
-      ltokenPostfix.add(tokenOr);
-    }
-  }
-
-  static void clauseAnd() throws ScriptException {
-    clauseNot();
-    while (tokPeek() == opAnd) {
-      Token tokenAnd = tokenNext();
-      clauseNot();
-      ltokenPostfix.add(tokenAnd);
-    }
-  }
-
-  static void clauseNot() throws ScriptException {
-    if (tokPeek() == opNot) {
-      Token tokenNot = tokenNext();
-      clauseNot();
-      ltokenPostfix.add(tokenNot);
-    } else {
-      clausePrimitive();
-    }
-  }
-
-  static void clausePrimitive() throws ScriptException {
-    switch (tokPeek()) {
-    case integer:
-      clauseInteger();
-      break;
-    case atomno:
-    case elemno:
-    case resno:
-    case radius:
-    case temperature:
-      clauseComparator();
-      break;
-    case all:
-    case none:
-    case identifier:
-      ltokenPostfix.add(tokenNext());
-      break;
-    case leftparen:
-      tokenNext();
-      clauseOr();
-      if (tokPeek() != rightparen)
-        throw new ScriptException("right parenthesis expected");
-      tokenNext();
-      break;
-    default:
-      throw new ScriptException("unrecognized expression token");
-    }
-  }
-
-  static void clauseInteger() throws ScriptException {
-    Token tokenInt1 = tokenNext();
-    if (tokPeek() != hyphen) {
-      ltokenPostfix.add(tokenInt1);
-      return;
-    }
-    tokenNext();
-    if (tokPeek() != integer)
-      throw new ScriptException("integer expected after hyphen");
-    Token tokenInt2 = tokenNext();
-    int min = tokenInt1.intValue;
-    int max = tokenInt2.intValue;
-    if (max < min) {
-      int intT = max; max = min; min = intT;
-    }
-    ltokenPostfix.add(new Token(hyphen, min, new Integer(max)));
-  }
-
-  static void clauseComparator() throws ScriptException {
-    Token tokenAtomProperty = tokenNext();
-    if ((tokPeek() & comparator) == 0)
-      throw new ScriptException("comparison operator expected");
-    Token tokenComparator = tokenNext();
-    if (tokPeek() != integer)
-      throw new ScriptException("integer expected after comparison operator");
-    Token tokenValue = tokenNext();
-    int val = tokenValue.intValue;
-    System.out.println("atomProperty=" + tokenAtomProperty +
-                       " comparator=" + tokenComparator);
-    ltokenPostfix.add(new Token(tokenComparator.tok,
-                                tokenAtomProperty.tok,
-                                new Integer(val)));
-  }
-
-  public static void main (String arg[] ) {
-    System.out.println("hola " + y);
-    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-    String lines = "";
-    String line;
-    try {
-      while ((line = in.readLine()) != null)
-        lines += line + "\n";
-      System.out.println("----");
-      System.out.println(lines);
-      System.out.println("----");
-      Token[][] aatoken = Token.tokenize(lines);
-      System.out.println("" + aatoken.length + " statements");
-      for (int i = 0; i < aatoken.length; ++i) {
-        Token[] atoken = aatoken[i];
-        if (atoken.length == 0) {
-          System.out.println("null");
-          continue;
-        }
-        System.out.println("" + atoken.length + " tokens in the line");
-        for (int j = 0; j < atoken.length; ++j) {
-            System.out.print(atoken[j] + " ");
-        }
-        System.out.println();
-      }
-    } catch (Exception e) {
-      System.out.println(e);
-      System.out.println("que?");
-    }
-    System.out.println("adios");
   }
 }

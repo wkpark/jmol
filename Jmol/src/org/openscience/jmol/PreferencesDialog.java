@@ -95,7 +95,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static double ArrowHeadRadius;
   private static double ArrowLengthScale;
   private static double BondFudge;
-  private static int percentAngBond;
+  private static int percentAngstromBond;
   private static double FieldOfView;
   private static int percentVdwAtom;
   private static double VibrateAmplitudeScale;
@@ -149,7 +149,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("percentVdwAtom", "20");
     props.put("modeBondDraw", "0");
     props.put("AutoBond", "true");
-    props.put("percentAngBond", "10");
+    props.put("percentAngstromBond", "10");
     props.put("BondFudge", "1.12");
     props.put("ArrowHeadSize", "1.0");
     props.put("ArrowHeadRadius", "1.0");
@@ -551,7 +551,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.bondWidthExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
     bwSlider =
-      new JSlider(JSlider.HORIZONTAL, 0, 100, control.percentAngBond);
+      new JSlider(JSlider.HORIZONTAL, 0, 100, control.percentAngstromBond);
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
     bwSlider.setMajorTickSpacing(20);
@@ -581,9 +581,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        percentAngBond = source.getValue();
-        control.setPercentAngBond(percentAngBond);
-        props.put("percentAngBond", "" + percentAngBond);
+        percentAngstromBond = source.getValue();
+        control.setPercentAngstromBond(percentAngstromBond);
+        props.put("percentAngstromBond", "" + percentAngstromBond);
       }
     });
 
@@ -822,7 +822,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.bgChooserTitle"), colorBackground);
         colorBackground = color;
         bButton.setBackground(colorBackground);
-        control.setBackgroundColor(colorBackground);
+        control.setColorBackground(colorBackground);
         props.put("colorBackground",
             Integer.toString(colorBackground.getRGB()));
       }
@@ -857,7 +857,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.outlineChooserTitle"), colorOutline);
         colorOutline = color;
         oButton.setBackground(colorOutline);
-        control.setOutlineColor(colorOutline);
+        control.setColorOutline(colorOutline);
         props.put("colorOutline", Integer.toString(colorOutline.getRGB()));
       }
     };
@@ -884,7 +884,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.pickedChooserTitle"), colorSelection);
         colorSelection = color;
         pButton.setBackground(colorSelection);
-        control.setPickedColor(colorSelection);
+        control.setColorSelection(colorSelection);
         props.put("colorSelection", Integer.toString(colorSelection.getRGB()));
       }
     };
@@ -911,7 +911,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.textChooserTitle"), colorText);
         colorText = color;
         tButton.setBackground(colorText);
-        control.setTextColor(colorText);
+        control.setColorText(colorText);
         props.put("colorText", Integer.toString(colorText.getRGB()));
       }
     };
@@ -938,7 +938,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.vectorChooserTitle"), colorVector);
         colorVector = color;
         vButton.setBackground(colorVector);
-        control.setVectorColor(colorVector);
+        control.setColorVector(colorVector);
         props.put("colorVector", Integer.toString(colorVector.getRGB()));
         control.refresh();
       }
@@ -1119,7 +1119,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     // Bond panel controls:
     bRender.setSelectedIndex(control.modeBondDraw);
     abYes.setSelected(control.getAutoBond());
-    bwSlider.setValue(control.percentAngBond);
+    bwSlider.setValue(control.percentAngstromBond);
     bfSlider.setValue((int) (50.0 * control.getBondFudge()));
 
     // Vector panel controls:
@@ -1197,8 +1197,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     ArrowLengthScale =
         new Double(props.getProperty("ArrowLengthScale")).doubleValue();
     BondFudge = new Double(props.getProperty("BondFudge")).doubleValue();
-    percentAngBond =
-      Integer.parseInt(props.getProperty("percentAngBond"));
+    percentAngstromBond =
+      Integer.parseInt(props.getProperty("percentAngstromBond"));
     FieldOfView = new Double(props.getProperty("FieldOfView")).doubleValue();
     percentVdwAtom =
       Integer.parseInt(props.getProperty("percentVdwAtom"));
@@ -1207,20 +1207,20 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     VibrateVectorScale =
         new Double(props.getProperty("VibrateVectorScale")).doubleValue();
 
-    control.setOutlineColor(colorOutline);
-    control.setPickedColor(colorSelection);
-    control.setTextColor(colorText);
+    control.setColorOutline(colorOutline);
+    control.setColorSelection(colorSelection);
+    control.setColorText(colorText);
     control.setPercentVdwAtom(percentVdwAtom);
     control.setModeAtomDraw(modeAtomDraw);
     control.setModeLabel(modeLabel);
     control.setPropertyMode(AtomPropsMode);
-    control.setPercentAngBond(percentAngBond);
+    control.setPercentAngstromBond(percentAngstromBond);
     control.setModeBondDraw(modeBondDraw);
-    control.setVectorColor(colorVector);
+    control.setColorVector(colorVector);
     control.setArrowHeadRadius(ArrowHeadRadius);
     control.setArrowHeadSize(ArrowHeadSize);
     control.setArrowLengthScale(ArrowLengthScale);
-    control.setBackgroundColor(colorBackground);
+    control.setColorBackground(colorBackground);
     control.setWantsGraphics2D(graphics2D);
     control.setWantsAntialias(antialias);
     control.setWantsAntialiasAlways(antialiasAlways);

@@ -1912,6 +1912,7 @@ public class CrystalPropertiesDialog extends JDialog
     crystalBox_ApplyToWhichFrameCBO.addItem(applyToList[1]);
     crystalBox_ApplyToWhichFrameCBO.setSelectedIndex(boxIndex);
 
+    /*
     //Check if we have an "EnergyBand" property
     //TODO
     hasEnergyBand=false;
@@ -1925,6 +1926,7 @@ public class CrystalPropertiesDialog extends JDialog
 	hasEnergyBand=true;
       }
     }
+    */
   }
   
 

@@ -66,7 +66,7 @@ public class Dihedral extends Measurement implements MeasurementInterface {
     int yb = (y3 + y4) / 2;
 
     control.maybeDottedStroke(g);
-    g.setColor(control.getDihedralColor());
+    g.setColor(control.colorDihedral);
     g.drawLine(xa, ya, xb, yb);
   }
 
@@ -90,7 +90,7 @@ public class Dihedral extends Measurement implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getTextColor());
+    g.setColor(control.colorText);
     String s = dihedralFormat.sprintf(getDihedral());
     int j = fontMetrics.stringWidth(s);
 

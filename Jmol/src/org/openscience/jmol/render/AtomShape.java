@@ -83,11 +83,14 @@ public class AtomShape extends Shape {
   }
 
   public void render(Graphics g, Rectangle clip, DisplayControl control) {
-    if (!control.showHydrogens && atom.isHydrogen())
+    if (!control.showHydrogens && atom.isHydrogen()) {
       return;
-    if (control.showBonds)
+    }
+    if (control.showBonds) {
       renderBonds(g, clip, control);
+    }
     if (control.showAtoms && isClipVisible(clip)) {
+      // FIXME -- no reason to allocate a new AtomRenderer every time
       AtomRenderer atomRenderer = new AtomRenderer();
       atomRenderer.setContext(g, clip, control);
       atomRenderer.render(this);
@@ -96,8 +99,9 @@ public class AtomShape extends Shape {
 
   public void renderBonds(Graphics g, Rectangle clip, DisplayControl control) {
     Atom[] bondedAtoms = atom.getBondedAtoms();
-    if (bondedAtoms == null)
+    if (bondedAtoms == null) {
       return;
+    }
     // FIXME -- the one instance of BondRenderer needs to be stored-in
     // and retrieved-from the DisplayControl. It can be initialized before
     // a paint cycle
@@ -123,7 +127,13 @@ public class AtomShape extends Shape {
     rectTemp.setRect(x - radius, y - radius, diameter, diameter);
     // note that this is not correct if the atom is selected
     // because the halo may be visible while the atom is not
-    return clip.intersects(rectTemp);
+    boolean visible = clip.intersects(rectTemp);
+    /*
+    System.out.println("isClipVisible -> " + visible);
+    System.out.println(" x=" + x + " y=" + y + " diameter=" + diameter);
+    visible = true;
+    */
+    return visible;
   }
 
   private boolean isBondClipVisible(Rectangle clip,
@@ -163,6 +173,7 @@ public class AtomShape extends Shape {
                        " & " + clip.x + "," + clip.y +
                        " W " + clip.width + " H " + clip.height +
                        "->" + visible);
+    visible = true;
     */
     return visible;
   }

@@ -19,10 +19,19 @@
  */
 package org.openscience.jmol.applet;
 
-import java.awt.event.MouseListener;
-import java.awt.event.KeyListener;
+import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.MouseManager;
+import org.openscience.jmol.AtomTypeSet;
+import org.openscience.jmol.script.Eval;
+
+import java.applet.Applet;
+import java.awt.Canvas;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.ComponentListener;
 import java.io.InputStream;
 import org.openscience.jmol.io.ReaderProgress;
 import org.openscience.jmol.io.ReaderFactory;
@@ -34,8 +43,7 @@ import org.openscience.jmol.io.CMLReader;
 /**
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class JmolApplet extends java.applet.Applet
-    implements MouseListener, KeyListener, StatusDisplay {
+public class JmolApplet extends Applet implements StatusDisplay {
 
   private static String appletInfo =
     "Jmol Applet.  Part of the OpenScience project.  See www.openscience.org/Jmol for more information";
@@ -79,7 +87,12 @@ public class JmolApplet extends java.applet.Applet
     }
   };
 
-  JmolSimpleBean myBean;
+  AppletCanvas canvas;
+  DisplayControl control;
+  MouseManager mouseman;
+
+  Eval eval;
+  
   int mode;
   int labelMode;
   private String helpMessage =
@@ -91,9 +104,39 @@ public class JmolApplet extends java.applet.Applet
   private boolean bondsEnabled = true;
 
   public void init() {
+    initWindows();
+    initApplication();
+  }
+  
+  public void initWindows() {
 
+    control = new DisplayControl();
+    canvas = new AppletCanvas(control);
+
+    String vers = System.getProperty("java.version");
+    control.setJvm12orGreater(vers.compareTo("1.2") >= 0);
+    control.setAwtComponent(canvas);
+
+    mouseman = new MouseManager(canvas, control);
+    canvas.setMouseManager(mouseman);
+
+    canvas.addMouseListener(new MyMouseListener());
+    canvas.addKeyListener(new MyKeyListener());
+
+    setLayout(new java.awt.BorderLayout());
+    add(canvas, "Center");
+
+    eval = new Eval(control);
+  }
+
+  public void initApplication() {
+
+    control.setShowBonds(true);
+    control.setShowAtoms(true);
+    control.zoomToPercent(100);
+    control.setPercentVdwAtom(20);
+    /*
     double zoomFactor = 1;
-    myBean = new JmolSimpleBean();
 
     myBean.setBondsShown(true);
     String bonds = getParameter("BONDS");
@@ -111,7 +154,7 @@ public class JmolApplet extends java.applet.Applet
       zoomFactor = FortranFormat.atof(zoom);
     }
     myBean.setZoomFactor(zoomFactor);
-    zoomFactor = 1;
+    zoomFactor = .2;
     zoom = getParameter("ATOMSIZE");
     if (zoom != null) {
       zoomFactor = FortranFormat.atof(zoom);
@@ -125,6 +168,7 @@ public class JmolApplet extends java.applet.Applet
     if ((wfr != null) && (wfr.equalsIgnoreCase("OFF"))) {
       myBean.setWireframeRotation(false);
     }
+    */
 
     InputStream atis = null;
     String atomtypes = getParameter("ATOMTYPES");
@@ -143,10 +187,12 @@ public class JmolApplet extends java.applet.Applet
               + atomTypesFileName + "\"");
         }
       }
-      myBean.setAtomPropertiesFromStream(atis);
+      System.out.println("reading atom properties from stream");
+      setAtomPropertiesFromStream(atis);
     } catch (java.io.IOException ex) {
       System.err.println("Error loading atom types: " + ex);
     }
+
     String model = getParameter("MODEL");
     if (model != null) {
       try {
@@ -179,7 +225,7 @@ public class JmolApplet extends java.applet.Applet
         if (cfr != null) {
           cfr.addReaderListener(readerProgress);
           cfr.setBondsEnabled(bondsEnabled);
-          myBean.setModel(cfr.read());
+          control.setChemFile(cfr.read());
         } else {
           setErrorMessage("Error: Unable to read input format");
         }
@@ -187,8 +233,7 @@ public class JmolApplet extends java.applet.Applet
         e.printStackTrace();
       }
     }
-    myBean.addMouseListener(this);
-    myBean.addKeyListener(this);
+    /*
     String bg = getParameter("BCOLOUR");
     if (bg != null) {
       myBean.setBackgroundColour(bg);
@@ -214,8 +259,6 @@ public class JmolApplet extends java.applet.Applet
       mode = getDrawMode(style);
     }
     setRenderingStyle();
-    setLayout(new java.awt.BorderLayout());
-    add(myBean, "Center");
 
     String pickmode = getParameter("PICKMODE");
     if (pickmode != null) {
@@ -225,6 +268,17 @@ public class JmolApplet extends java.applet.Applet
     String atomLabels = getParameter("ATOMLABELS");
     if (atomLabels != null) {
       myBean.setLabelRenderingStyle(atomLabels);
+    }
+    */
+  }
+
+  public void setAtomPropertiesFromStream(InputStream is) {
+    try {
+      AtomTypeSet ats1 = new AtomTypeSet();
+      ats1.load(is);
+    } catch (java.io.IOException e1) {
+      System.err.println("Error loading atom properties from Stream'"
+          + is.toString() + "': " + e1);
     }
   }
 
@@ -299,21 +353,28 @@ public class JmolApplet extends java.applet.Applet
     return -1;
   }
 
-  void setRenderingStyle() {
+  // FIXME -- modes should be the same so that map is not necessary
+  // map from applet modes to DisplayControl modes
+  static int[] mapModeAtomDraw = {
+    DisplayControl.WIREFRAME,
+    DisplayControl.QUICKDRAW,
+    DisplayControl.SHADING,
+    DisplayControl.SHADING};
+    
+  static int[] mapModeBondDraw = {
+    DisplayControl.LINE,
+    DisplayControl.QUICKDRAW,
+    DisplayControl.QUICKDRAW,
+    DisplayControl.SHADING};
 
-    if (mode == WIREFRAME) {
-      myBean.setAtomRenderingStyle("WIREFRAME");
-      myBean.setBondRenderingStyle("WIREFRAME");
-    } else if (mode == QUICKDRAW) {
-      myBean.setAtomRenderingStyle("QUICKDRAW");
-      myBean.setBondRenderingStyle("QUICKDRAW");
-    } else if (mode == HALFSHADED) {
-      myBean.setAtomRenderingStyle("SHADED");
-      myBean.setBondRenderingStyle("QUICKDRAW");
-    } else if (mode == SHADED) {
-      myBean.setAtomRenderingStyle("SHADED");
-      myBean.setBondRenderingStyle("SHADED");
-    }
+  void setRenderingStyle() {
+    control.setModeAtomDraw(mapModeAtomDraw[mode]);
+    control.setModeBondDraw(mapModeBondDraw[mode]);
+  }
+
+  void setLabelStyle() {
+    // no mapping is necessary in this case
+    control.setModeLabel(labelMode);
   }
 
   /**
@@ -427,81 +488,58 @@ public class JmolApplet extends java.applet.Applet
   }
 
 
-  /**
-   * Invoked when the mouse has been clicked on a component.
-   */
-  public void mouseClicked(MouseEvent e) {
-    setStatusMessage(helpMessage);
+  class MyMouseListener extends MouseAdapter {
+
+    public void mouseClicked(MouseEvent e) {
+      setStatusMessage(helpMessage);
+    }
+
+    public void mouseEntered(MouseEvent e) {
+      setStatusMessage(helpMessage);
+    }
   }
 
-  /**
-   * Invoked when the mouse enters a component.
-   */
-  public void mouseEntered(MouseEvent e) {
-    setStatusMessage(helpMessage);
-  }
+  class MyKeyListener extends KeyAdapter {
 
-  /**
-   * Invoked when the mouse exits a component.
-   */
-  public void mouseExited(MouseEvent e) {
-  }
+    public void keyTyped(KeyEvent e) {
 
-  /**
-   * Invoked when a mouse button has been pressed on a component.
-   */
-  public void mousePressed(MouseEvent e) {
-  }
-
-  /**
-   * Invoked when a mouse button has been released on a component.
-   */
-  public void mouseReleased(MouseEvent e) {
-  }
-
-  /**
-   * Invoked when a key has been pressed.
-   */
-  public void keyPressed(KeyEvent e) {
-  }
-
-  /**
-   * Invoked when a key has been released.
-   */
-  public void keyReleased(KeyEvent e) {
-  }
-
-  public void keyTyped(KeyEvent e) {
-
-    String keyChar = new Character(e.getKeyChar()).toString();
-    if (keyChar.equalsIgnoreCase("s")) {
-      mode++;
-      mode %= drawModeNames.length;
-      setStatusMessage("JmolApplet: Changing rendering style to "
-          + drawModeNames[mode]);
-      setRenderingStyle();
-    } else if (keyChar.equalsIgnoreCase("l")) {
-      labelMode++;
-      labelMode %= 4;
-      if (labelMode == 0) {
-        setStatusMessage("JmolApplet: Changing label style to NONE");
-        myBean.setLabelRenderingStyle("NONE");
-      } else if (labelMode == 1) {
-        setStatusMessage("JmolApplet: Changing label style to SYMBOLS");
-        myBean.setLabelRenderingStyle("SYMBOLS");
-      } else if (labelMode == 2) {
-        setStatusMessage("JmolApplet: Changing label style to TYPES");
-        myBean.setLabelRenderingStyle("TYPES");
-      } else if (labelMode == 3) {
-        setStatusMessage("JmolApplet: Changing label style to NUMBERS");
-        myBean.setLabelRenderingStyle("NUMBERS");
-      } else {
-        setStatusMessage("JmolApplet: Changing label style to default");
-        myBean.setBondRenderingStyle("NONE");
+      switch(e.getKeyChar()) {
+      case 's':
+      case 'S':
+        mode++;
+        mode %= drawModeNames.length;
+        setStatusMessage("JmolApplet: Changing rendering style to "
+                         + drawModeNames[mode]);
+        setRenderingStyle();
+        break;
+      case 'l':
+      case 'L':
+        labelMode++;
+        labelMode %= 4;
+        setLabelStyle();
+        break;
+      case 'b':
+      case 'B':
+        if (bondsEnabled)
+          control.setShowBonds(!control.showBonds);
+        break;
+      case 'p':
+      case 'P':
+        mouseman.setMode(MouseManager.PICK);
+        break;
+      case 't':
+      case 'T':
+        mouseman.setMode(MouseManager.XLATE);
+        break;
+      case 'r':
+      case 'R':
+        mouseman.setMode(MouseManager.ROTATE);
+        break;
+      case 'z':
+      case 'Z':
+        mouseman.setMode(MouseManager.ZOOM);
+        break;
       }
-    } else if ((bondsEnabled)
-        && (keyChar.equalsIgnoreCase("b"))) {
-      myBean.toggleBonds();
     }
   }
 
@@ -525,7 +563,7 @@ public class JmolApplet extends java.applet.Applet
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeXYZString));
       cfr.setBondsEnabled(bondsEnabled);
-      myBean.setModel(cfr.read());
+      //      myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
     }
@@ -542,7 +580,7 @@ public class JmolApplet extends java.applet.Applet
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeCMLString));
       cfr.setBondsEnabled(bondsEnabled);
-      myBean.setModel(cfr.read());
+      //      myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
     }
@@ -554,6 +592,7 @@ public class JmolApplet extends java.applet.Applet
    */
   public void setModelToRenderFromURL(String modelURLString) {
 
+    System.out.println("setModelToRenderFromURL");
     try {
       java.net.URL modelURL = null;
       try {
@@ -566,7 +605,7 @@ public class JmolApplet extends java.applet.Applet
         ReaderFactory
           .createReader(new java.io.InputStreamReader(modelURL.openStream()));
       cfr.setBondsEnabled(bondsEnabled);
-      myBean.setModel(cfr.read());
+      control.setChemFile(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
     }
@@ -578,7 +617,7 @@ public class JmolApplet extends java.applet.Applet
    * @param type Either "XYZ", "CML" or "PDB"
    */
   public void setModelToRenderFromFile(String modelFile, String type) {
-    setModelToRenderFromFile(modelFile, type);
+    // setModelToRenderFromFile(modelFile, type);
   }
 
   /**
@@ -586,7 +625,7 @@ public class JmolApplet extends java.applet.Applet
    * @param propertiesFile The filename of the properties we want.
    */
   public void setAtomPropertiesFromFile(String propertiesFile) {
-    myBean.setAtomPropertiesFromFile(propertiesFile);
+    //    myBean.setAtomPropertiesFromFile(propertiesFile);
   }
 
   /**
@@ -594,7 +633,7 @@ public class JmolApplet extends java.applet.Applet
    * @param propertiesFileURL The URL of the properties we want.
    */
   public void setAtomPropertiesFromURL(String propertiesURL) {
-    myBean.setAtomPropertiesFromURL(propertiesURL);
+    //    myBean.setAtomPropertiesFromURL(propertiesURL);
   }
 
   /**
@@ -602,7 +641,7 @@ public class JmolApplet extends java.applet.Applet
    * @param colourInHex The colour in the format #FF0000 for red etc
    */
   public void setBackgroundColour(String colourInHex) {
-    myBean.setBackgroundColour(colourInHex);
+    //    myBean.setBackgroundColour(colourInHex);
   }
 
   /**
@@ -610,7 +649,7 @@ public class JmolApplet extends java.applet.Applet
    * @param colourInHex The colour in the format #FF0000 for red etc
    */
   public void setForegroundColour(String colourInHex) {
-    myBean.setForegroundColour(colourInHex);
+    //    myBean.setForegroundColour(colourInHex);
   }
 
   /**
@@ -618,7 +657,7 @@ public class JmolApplet extends java.applet.Applet
    * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
    */
   public void setAtomsShown(String value) {
-    myBean.setAtomsShown(value);
+    //    myBean.setAtomsShown(value);
   }
 
   /**
@@ -626,14 +665,14 @@ public class JmolApplet extends java.applet.Applet
    * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
    */
   public void setBondsShown(String value) {
-    myBean.setBondsShown(value);
+    //    myBean.setBondsShown(value);
   }
 
   /**
    * <b>For Javascript:<\b> Sets the rendering mode for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
    */
   public void setAtomRenderingStyle(String style) {
-    myBean.setAtomRenderingStyle(style);
+    //    myBean.setAtomRenderingStyle(style);
   }
 
   /**
@@ -647,28 +686,30 @@ public class JmolApplet extends java.applet.Applet
    * <b>For Javascript:<\b> Sets the rendering mode for bonds. Valid values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'.
    */
   public void setBondRenderingStyle(String style) {
-    myBean.setBondRenderingStyle(style);
+    //    myBean.setBondRenderingStyle(style);
   }
 
   /**
    * <b>For Javascript:<\b> Gets the rendering mode for bonds. Values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'.
    */
   public String getBondRenderingStyleDescription() {
-    return myBean.getBondRenderingStyleDescription();
+    //    return myBean.getBondRenderingStyleDescription();
+    return "FOO";
   }
 
   /**
    * <b>For Javascript:<\b> Sets the rendering mode for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
    */
   public void setLabelRenderingStyle(String style) {
-    myBean.setLabelRenderingStyle(style);
+    //    myBean.setLabelRenderingStyle(style);
   }
 
   /**
    * <b>For Javascript:<\b> Gets the rendering mode for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
    */
   public String getLabelRenderingStyleDescription() {
-    return myBean.getLabelRenderingStyleDescription();
+    //    return myBean.getLabelRenderingStyleDescription();
+    return "FOO";
   }
 
   /**
@@ -676,8 +717,11 @@ public class JmolApplet extends java.applet.Applet
    * @param doesIt String either 'T' or 'F'
    */
   public void setAutoWireframe(String doesIt) {
-    myBean.setAutoWireframe(doesIt);
+    //    myBean.setAutoWireframe(doesIt);
   }
 
-
+  public void scriptInline(String script) {
+    if (eval.loadString(script))
+      eval.run();
+  }
 }

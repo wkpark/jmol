@@ -28,6 +28,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.ComponentListener;
 import javax.swing.event.MenuListener;
 import javax.swing.event.MenuEvent;
 import java.beans.PropertyChangeEvent;
@@ -47,11 +48,12 @@ import javax.swing.RepaintManager;
  *  @author  J. Daniel Gezelter
  */
 public class DisplayPanel extends JPanel
-    implements MeasurementListListener, PropertyChangeListener {
-
+  implements MeasurementListListener, PropertyChangeListener,
+             ComponentListener {
   private StatusBar status;
   private GuiMap guimap;
   private DisplayControl control;
+  private MouseManager mouseman;
   
   private String displaySpeed;
 
@@ -68,10 +70,9 @@ public class DisplayPanel extends JPanel
     }
   }
 
-
-  private boolean rubberbandSelectionMode = false;
-  private int bx, by, rtop, rbottom, rleft, rright;
-  private static int prevMouseX, prevMouseY;
+  public void setMouseManager(MouseManager mouseman) {
+    this.mouseman = mouseman;
+  }
 
   // for now, default to true
   private boolean showPaintTime = true;
@@ -80,43 +81,29 @@ public class DisplayPanel extends JPanel
   private static Dimension dimCurrent = null;
   private static final Rectangle rectClip = new Rectangle();
 
-  public static final int ROTATE = 0;
-  public static final int ZOOM = 1;
-  public static final int XLATE = 2;
-  public static final int PICK = 3;
-  public static final int DEFORM = 4;
-  public static final int MEASURE = 5;
-  public static final int DELETE = 6;
-  private int modeMouse = ROTATE;
-
   private Measure measure = null;
 
   public DisplayControl getDisplayControl() {
     return control;
   }
 
-  public int getMode() {
-    return modeMouse;
-  }
-
-  public void setMode(int modeMouse) {
-    this.modeMouse = modeMouse;
-  }
-
   public void setMeasure(Measure measure) {
     this.measure = measure;
   }
 
+  public void firePickedMeasure(int atomnum) {
+    measure.firePicked(atomnum);
+  }
+
   public void start() {
-    this.addMouseListener(new MyAdapter());
-    this.addMouseMotionListener(new MyMotionAdapter());
+    addComponentListener(this);
     String vers = System.getProperty("java.version");
     control.setJvm12orGreater(vers.compareTo("1.2") >= 0);
   }
 
   private void setRotateMode() {
       Jmol.setRotateButton();
-      modeMouse = ROTATE;
+      mouseman.setMode(MouseManager.ROTATE);
   }
     
   public ChemFrame getFrame() {
@@ -127,162 +114,48 @@ public class DisplayPanel extends JPanel
     control.mlistChanged(mle);
   }
 
-  class MyAdapter extends MouseAdapter {
-
-    public void mousePressed(MouseEvent e) {
-
-      prevMouseX = e.getX();
-      prevMouseY = e.getY();
-
-      if (modeMouse == PICK) {
-        rubberbandSelectionMode = true;
-        bx = e.getX();
-        rright = bx;
-        rleft = bx;
-        by = e.getY();
-        rtop = by;
-        rbottom = by;
-      }
-
-    }
-
-    public void mouseClicked(MouseEvent e) {
-
-      if (control.haveFile()) {
-        Atom atom = control.getFrame().getNearestAtom(e.getX(), e.getY());
-        switch (modeMouse) {
-        case PICK:
-          if (atom == null) {
-            control.clearSelection();
-            break;
-          }
-          if (!e.isShiftDown()) {
-            int selectionCount = control.countSelection();
-            boolean wasSelected = control.isSelected(atom);
-            control.clearSelection();
-            if (selectionCount == 1 && wasSelected)
-              break;
-          }
-          control.toggleSelection(atom);
-          break;
-        case DELETE:
-          if (atom != null) {
-            control.getFrame().deleteAtom(atom);
-            status.setStatus(2, "Atom deleted");
-          }
-          repaint();
-          break;
-        case MEASURE:
-          if (atom != null)
-            measure.firePicked(atom.getAtomNumber());
-        }
-      }
-    }
-
-    public void mouseReleased(MouseEvent e) {
-      control.setMouseDragged(false);
-      if (modeMouse == PICK) {
-        rubberbandSelectionMode = false;
-        repaint();
-      }
-    }
+  public void componentHidden(java.awt.event.ComponentEvent e) {
   }
 
-  class MyMotionAdapter extends MouseMotionAdapter {
-
-    public void mouseDragged(MouseEvent e) {
-
-      int x = e.getX();
-      int y = e.getY();
-
-      if (! control.mouseDragged) {
-        control.setMouseDragged(true);
-        resetTimes();
-      }
-      switch (modeMouse) {
-      case ROTATE:
-        control.rotateBy(x - prevMouseX, y - prevMouseY);
-        break;
-      case XLATE:
-        control.translateBy(x - prevMouseX, y - prevMouseY);
-        break;
-      case ZOOM:
-        double xs = 1.0 + (double)(x - prevMouseX) / dimCurrent.width;
-        double ys = 1.0 + (double)(prevMouseY - y) / dimCurrent.height;
-        double s = (xs + ys) / 2;
-        control.multiplyZoomScale(s);
-        break;
-      case PICK:
-        if (x < bx) {
-          rleft = x;
-          rright = bx;
-        } else {
-          rleft = bx;
-          rright = x;
-        }
-        if (y < by) {
-          rtop = y;
-          rbottom = by;
-        } else {
-          rtop = by;
-          rbottom = y;
-        }
-        if (control.haveFile()) {
-          Atom[] selectedAtoms =
-            control.getFrame().findAtomsInRegion(rleft, rtop, rright, rbottom);
-          if (e.isShiftDown()) {
-            control.addSelection(selectedAtoms);
-          } else {
-            control.clearSelection();
-            control.addSelection(selectedAtoms);
-          }
-        }
-        break;
-      }
-      prevMouseX = x;
-      prevMouseY = y;
-      // I can't figure out if I want this repaint here or not
-      repaint();
-    }
+  public void componentMoved(java.awt.event.ComponentEvent e) {
   }
 
-  /*
-  public static void setBackgroundColor(Color bg) {
-    control.setBackgroundColor(bg);
+  public void componentResized(java.awt.event.ComponentEvent e) {
+    updateSize();
   }
 
-  public static Color getBackgroundColor() {
-    return control.getBackgroundColor();
+  public void componentShown(java.awt.event.ComponentEvent e) {
+    updateSize();
   }
-  */
+
+  private void updateSize() {
+    dimCurrent = getSize();
+    if ((dimCurrent.width == 0) || (dimCurrent.height == 0))
+      dimCurrent = null;
+    control.setScreenDimension(dimCurrent);
+    control.scaleFitToScreen();
+    setRotateMode();
+  }
 
   public void paint(Graphics g) {
     if (showPaintTime)
       startPaintClock();
-
-    Color fg = getForeground();
-
-    dimCurrent = getSize();
-    rectClip.setBounds(0, 0, dimCurrent.width, dimCurrent.height);
     g.getClipBounds(rectClip);
-    g.setColor(control.getBackgroundColor());
+    g.setColor(control.colorBackground);
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
-      if (! dimCurrent.equals(control.getScreenDimension())) {
-        control.scaleFitToScreen(dimCurrent);
-        setRotateMode();
-      }
       control.maybeEnableAntialiasing(g);
-
       frameRenderer.paint(g, rectClip, control);
       measureRenderer.paint(g, rectClip, control);
-      if (rubberbandSelectionMode) {
-        g.setColor(fg);
-        g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
+      Rectangle rect = mouseman.getRubberBand();
+      if (rect != null) {
+        g.setColor(control.colorRubberband);
+        g.drawRect(rect.x, rect.y, rect.width, rect.height);
       }
       if (showPaintTime)
         stopPaintClock();
     }
+    control.notifyRepainted();
   }
 
   ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
@@ -548,9 +421,9 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       if (measure.isShowing()) {
-        modeMouse = MEASURE;
+        mouseman.setMode(MouseManager.MEASURE);
       } else {
-        modeMouse = PICK;
+        mouseman.setMode(MouseManager.PICK);
       }
       status.setStatus(1, "Select Atoms");
     }
@@ -564,7 +437,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      modeMouse = DELETE;
+      mouseman.setMode(MouseManager.DELETE);
       status.setStatus(1, "Delete Atoms");
     }
   }
@@ -577,7 +450,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      modeMouse = ROTATE;
+      mouseman.setMode(MouseManager.ROTATE);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -590,7 +463,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      modeMouse = ZOOM;
+      mouseman.setMode(MouseManager.ZOOM);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -603,7 +476,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      modeMouse = XLATE;
+      mouseman.setMode(MouseManager.XLATE);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }

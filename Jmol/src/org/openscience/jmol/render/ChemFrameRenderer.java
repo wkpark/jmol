@@ -24,7 +24,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.Enumeration;
-import java.util.ArrayList;
 import java.util.Vector;
 import javax.vecmath.Point3d;
 import org.openscience.jmol.applet.NonJavaSort;
@@ -43,6 +42,7 @@ public class ChemFrameRenderer {
    *
    * @param g the Graphics context to paint to
    */
+  // FIXME -- mth 2003 01 03  why is this synchronized?
   public synchronized void paint(Graphics g, Rectangle rectClip,
                                  DisplayControl control) {
     ChemFrame frame = control.getFrame();
@@ -57,10 +57,10 @@ public class ChemFrameRenderer {
        ) {
       control.resetStructuralChange();
       previousNumberAtoms = numAtoms;
-      shapesList.clear();
+      shapesVector.removeAllElements();
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = frame.getAtomAt(i);
-        shapesList.add(atom.getAtomShape());
+        shapesVector.addElement(atom.getAtomShape());
       }
       if (control.getShowVectors()) {
         double minAtomVectorMagnitude = frame.getMinAtomVectorMagnitude();
@@ -69,9 +69,9 @@ public class ChemFrameRenderer {
         for (int i = 0; i < numAtoms; ++i) {
           Atom atom = frame.getAtomAt(i);
           if (atom.hasVector() && (showHydrogens || !atom.isHydrogen())) {
-            shapesList.add(new AtomVectorShape(atom, control,
-                                               minAtomVectorMagnitude,
-                                               atomVectorRange));
+            shapesVector.addElement(new AtomVectorShape(atom, control,
+                                                        minAtomVectorMagnitude,
+                                                        atomVectorRange));
           }
         }
       }
@@ -85,7 +85,7 @@ public class ChemFrameRenderer {
           VectorShape vector = new VectorShape(zeroPoint,
               new Point3d(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
                 true);
-          shapesList.add(vector);
+          shapesVector.addElement(vector);
         }
         
         // The full primitive cell
@@ -96,22 +96,24 @@ public class ChemFrameRenderer {
             LineShape line =
               new LineShape((Point3d) boxEdges.elementAt(i),
                             (Point3d) boxEdges.elementAt(i + 1));
-            shapesList.add(line);
+            shapesVector.addElement(line);
           }
         }
       }
-      shapes = (Shape[]) shapesList.toArray(new Shape[0]);
+      shapes = new Shape[shapesVector.size()];
+      shapesVector.copyInto(shapes);
     }
     
     control.calcViewTransformMatrix();
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].transform(control);
     }
-
-    if (control.jvm12orGreater)
+    
+    if (control.jvm12orGreater) {
       UseJavaSort.sortShapes(shapes);
-    else
+    } else {
       NonJavaSort.sortShapes(shapes);
+    }
                               
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g, rectClip, control);
@@ -121,7 +123,7 @@ public class ChemFrameRenderer {
   private int previousNumberAtoms;
 
   private Shape[] shapes = null;
-  private final ArrayList shapesList = new ArrayList();
+  private final Vector shapesVector = new Vector();
   
   /**
    * Point for calculating lengths of vectors.

@@ -90,17 +90,15 @@ public class BondRenderer {
     dz = z2 - z1; dz2 = dz * dz;
     mag2d2 = dx2 + dy2;
     mag3d2 = mag2d2 + dz2;
-    color1 = control.getAtomColor(atomShape1.atom);
-    color2 = control.getAtomColor(atomShape2.atom);
+    color1 = control.getColorAtom(atomShape1.atom);
+    color2 = control.getColorAtom(atomShape2.atom);
     sameColor = color1.equals(color2);
     if (mag2d2 <= 2 || control.fastRendering && mag2d2 <= 49)
       return; // also avoids divide by zero when magnitude == 0
     if (control.showAtoms && (mag2d2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
-    if (!control.showAtoms &&
+    if (!control.showAtoms && bondOrder == 1 &&
         (control.fastRendering || control.modeBondDraw==control.LINE)) {
-      // the trivial case of no atoms and only single lines
-      // in this case double & triple bonds are not drawn
       if (sameColor) {
         drawLineInside(g, color1, x1, y1, x2, y2);
       } else {
@@ -128,8 +126,8 @@ public class BondRenderer {
     int radius1Bond = radius1 * mag2d / mag3d;
     int radius2Bond = radius2 * mag2d / mag3d;
 
-    outline1 = control.getAtomOutlineColor(color1);
-    outline2 = control.getAtomOutlineColor(color2);
+    outline1 = control.getColorAtomOutline(color1);
+    outline2 = control.getColorAtomOutline(color2);
 
     width1 = control.screenBondWidth(z1);
     width2 = control.screenBondWidth(z2);
@@ -142,7 +140,7 @@ public class BondRenderer {
 
     boolean lineBond =
       control.modeBondDraw == control.LINE || control.fastRendering;
-    if (!lineBond && width1 < 2 && width2 < 2) {
+    if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline
       color1 = outline1;
@@ -237,14 +235,16 @@ public class BondRenderer {
       g.drawPolygon(axPoly, ayPoly, 4);
       break;
     case DisplayControl.SHADING:
-      int numPasses = calcNumShadeSteps();
-      Color[] shades = getShades(color, Color.black);
-      for (int i = numPasses; --i >= 0; ) {
-        g.setColor(shades[i * maxShade / numPasses]);
-        g.fillPolygon(axPoly, ayPoly, 4);
-        stepPolygon();
-      }
+      if (width1 > 5) {
+        int numPasses = calcNumShadeSteps();
+        Color[] shades = getShades(color, Color.black);
+        for (int i = numPasses; --i >= 0; ) {
+          g.setColor(shades[i * maxShade / numPasses]);
+          g.fillPolygon(axPoly, ayPoly, 4);
+          stepPolygon();
+        }
         break;
+      }
     case DisplayControl.QUICKDRAW:
       g.fillPolygon(axPoly, ayPoly, 4);
       drawInside(g, outline, 2, axPoly, ayPoly);

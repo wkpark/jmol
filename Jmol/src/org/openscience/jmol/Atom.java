@@ -76,7 +76,12 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   public double getVdwRadius() {
-    return atomType.getBaseAtomType().getVdwRadius();
+    double radius = atomType.getBaseAtomType().getVdwRadius();
+    if (radius == 0) {
+      System.out.println("Radius not defined -- defaulting to 1");
+      radius = 1;
+    }
+    return radius;
   }
 
   /**

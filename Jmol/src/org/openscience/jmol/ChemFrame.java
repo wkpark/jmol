@@ -225,10 +225,10 @@ public class ChemFrame {
 
     atoms[i] = new Atom(type, numberAtoms, x, y, z);
 
-    if (Jmol.control.getAutoBond()) {
+    if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {
         if (Atom.closeEnoughToBond(atoms[i], atoms[j],
-                                   Jmol.control.getBondFudge())) {
+                                   DisplayControl.control.getBondFudge())) {
           addBond(i, j);
         }
       }
@@ -518,7 +518,7 @@ public class ChemFrame {
     //
     // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
     double radius = 0.0f;
-    double atomSphereFactor = Jmol.control.percentVdwAtom / 100.0;
+    double atomSphereFactor = DisplayControl.control.percentVdwAtom / 100.0;
     for (int i = 0; i < numberAtoms; ++i) {
       Atom atom = atoms[i];
       Point3d posAtom = atom.getPosition();
@@ -550,11 +550,11 @@ public class ChemFrame {
     clearBonds();
 
     // Do a n*(n-1) scan to get new bonds.
-    if (Jmol.control.getAutoBond()) {
+    if (DisplayControl.control.getAutoBond()) {
       for (int i = 0; i < numberAtoms - 1; i++) {
         for (int j = i; j < numberAtoms; j++) {
           if (Atom.closeEnoughToBond(atoms[i], atoms[j],
-                                     Jmol.control.getBondFudge())) {
+                                     DisplayControl.control.getBondFudge())) {
             addBond(i, j);
           }
         }

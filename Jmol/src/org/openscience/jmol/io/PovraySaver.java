@@ -91,7 +91,7 @@ public class PovraySaver extends FileSaver {
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
     edge = cf.getRotationRadius() * 2;
     edge *= 1.1; // for some reason I need a little more margin
-    edge /= control.getZoomScale();
+    edge /= control.getZoomPercent() / 100.0;
 
     style.setRotate(control.getPovRotateMatrix());
     style.setTranslate(control.getPovTranslateMatrix());
@@ -137,7 +137,7 @@ public class PovraySaver extends FileSaver {
     w.write("\n");
 
     w.write("background { color " +
-            povrayColor(control.getBackgroundColor()) + " }\n");
+            povrayColor(control.colorBackground) + " }\n");
     w.write("\n");
 
     w.write("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
@@ -147,7 +147,7 @@ public class PovraySaver extends FileSaver {
     w.write("\n");
 
     style.writeAtomsAndBondsMacros(w, cf, control.percentVdwAtom / 100.0,
-                                   control.percentAngBond / 100.0);
+                                   control.percentAngstromBond / 100.0);
 
     boolean drawHydrogen = control.getShowHydrogens();
 

@@ -29,7 +29,6 @@ import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowListener;
 
 /**
  * Window for entering script commands. Also displays errors which may result.
@@ -39,7 +38,7 @@ import java.awt.event.WindowListener;
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class ScriptWindow extends JDialog
-    implements WindowListener, ActionListener {
+    implements ActionListener {
 
   private JTextArea output;
   private JTextField input;
@@ -74,6 +73,7 @@ public class ScriptWindow extends JDialog
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == closeButton) {
+      System.out.println("closeButton");
       hide();
     } else {
       String command = input.getText();
@@ -82,10 +82,11 @@ public class ScriptWindow extends JDialog
       input.setText(null);
 
       // execute script
-      try {
-        eval.executeString(command);
-      } catch (ScriptException se) {
-        System.out.println("ScriptException thrown:" + se.getMessage());
+      if (eval.loadString(command))
+        eval.start();
+      else {
+        output.append(eval.errorMessage);
+        output.append("\n");
       }
 
       // return prompt
@@ -93,26 +94,8 @@ public class ScriptWindow extends JDialog
     }
   }
 
-  public void windowClosing(java.awt.event.WindowEvent e) {
-    hide();
+  public void hide() {
+    eval.haltExecution();
+    super.hide();
   }
-
-  public void windowClosed(java.awt.event.WindowEvent e) {
-  }
-
-  public void windowOpened(java.awt.event.WindowEvent e) {
-  }
-
-  public void windowIconified(java.awt.event.WindowEvent e) {
-  }
-
-  public void windowDeiconified(java.awt.event.WindowEvent e) {
-  }
-
-  public void windowActivated(java.awt.event.WindowEvent e) {
-  }
-
-  public void windowDeactivated(java.awt.event.WindowEvent e) {
-  }
-
 }

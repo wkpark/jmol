@@ -125,7 +125,7 @@ class Sphere3D {
           int z0 = z - (int)(zF + 0.5f);
           if (zbuf[offsetPbuf] <= z0)
             continue;
-          int intensity = viewer.calcIntensity(xF, yF, zF);
+          int intensity = calcIntensity(xF, yF, zF);
           pbuf[offsetPbuf] = shades[intensity];
           zbuf[offsetPbuf] = (short) z0;
         }

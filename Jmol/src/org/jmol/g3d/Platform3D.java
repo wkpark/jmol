@@ -43,7 +43,7 @@ abstract class Platform3D {
   Graphics gOffscreen;
 
   final static boolean forcePlatformAWT = false;
-  final static boolean desireClearingThread = true;
+  final static boolean desireClearingThread = false;
   boolean useClearingThread = true;
 
   ClearingThread clearingThread;

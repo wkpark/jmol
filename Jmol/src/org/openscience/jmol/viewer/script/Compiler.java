@@ -982,17 +982,31 @@ class Compiler {
     }
     Token tokenIdent = tokenNext();
     if (tokenIdent.tok == Token.leftsquare) {
+      log("I see a left square bracket");
       // FIXME mth -- maybe need to deal with asterisks here too
       tokenIdent = tokenNext();
-      String strSpec = null;
+      String strSpec = "";
       if (tokenIdent.tok == Token.plus) {
         strSpec = "+";
         tokenIdent = tokenNext();
       }
-      if (tokenIdent.tok != Token.identifier)
+      // note .. this will not work if they have residue names that
+      // start with the digit '0'
+      // as in [01A] ... we will reconstruct [1A]
+      //
+      // what a hack :-(
+      int tok = tokenIdent.tok;
+      if (tok == Token.integer) {
+        strSpec += tokenIdent.intValue;
+        tokenIdent = tokenNext();
+        tok = tokenIdent.tok;
+      }
+      if (tok == Token.identifier ||
+          tok == Token.x || tok == Token.y || tok == Token.z) {
+        strSpec += tokenIdent.value;
+      }
+      if (strSpec == "")
         return residueSpecificationExpected();
-      String ident = (String)tokenIdent.value;
-      strSpec = (strSpec == null) ? ident : strSpec + ident;
       strSpec = strSpec.toUpperCase();
       int groupID = PdbGroup.lookupGroupID(strSpec);
       if (groupID != -1)

@@ -230,7 +230,7 @@ public class ChemFrame {
 			Vector props) {
 
 		addAtom(name, x, y, z);
-		atoms[numberAtoms].setProperties(props);
+		atoms[numberAtoms-1].setProperties(props);
 
 		for (int j = 0; j < props.size(); j++) {
 			PhysicalProperty p = (PhysicalProperty) props.elementAt(j);

@@ -103,16 +103,16 @@
     Bugfix release
   </change>
   <change>
-    Fixed PDB reading (bug #496332)
+    Fixed PDB reading. (bug #496332)
   </change>
   <change>
-    Fixed jmol script to work on Solaris (bug #425925)
+    Fixed jmol script to work on Solaris. (bug #425925)
   </change>
   <change>
-    Added workaround for precompiled Jmol on Solaris (bugs #426229, #508364)
+    Added workaround for precompiled Jmol on Solaris. (bugs #426229, #508364)
   </change>
   <change>
-    Removed infinite loops (bug #426679)
+    Removed infinite loops. (bug #426679)
   </change>
   <change>
     Fixed problems with file type setting
@@ -121,7 +121,7 @@
     Added cancel button to RecentFiles dialog
   </change>
   <change>
-    Bond computation is now really setable (closes bug #431146)
+    Bond computation is now really setable. (bug #431146)
   </change>
 </changes>
 

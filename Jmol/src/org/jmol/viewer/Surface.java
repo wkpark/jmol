@@ -80,7 +80,8 @@ class Surface extends Shape {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
-  private final static int GEODESIC_LEVEL = 3;
+  private final static int GEODESIC_CALC_LEVEL = 3;
+  int geodesicRenderingLevel = 2;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
   int[][] surfaceConvexMaps;
@@ -114,7 +115,7 @@ class Surface extends Shape {
     
   void initShape() {
     geodesicVertexVectors = g3d.getGeodesicVertexVectors();
-    geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_LEVEL);
+    geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_CALC_LEVEL);
     geodesicMap = allocateBitmap(geodesicVertexCount);
   }
 

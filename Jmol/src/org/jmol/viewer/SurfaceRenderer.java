@@ -35,6 +35,9 @@ class SurfaceRenderer extends ShapeRenderer {
   boolean bondSelectionModeOr;
   int geodesicVertexCount;
   Vector3f[] transformedVectors;
+  int geodesicFaceCount;
+  short[] geodesicFaceVertexes;
+  short[] geodesicFaceNormixes;
   Point3i[] screens;
 
   final static int[] mapNull = Surface.mapNull;
@@ -50,9 +53,15 @@ class SurfaceRenderer extends ShapeRenderer {
     Surface surface = (Surface)shape;
     if (surface == null)
       return;
-    geodesicVertexCount = surface.geodesicVertexCount;
     transformedVectors = g3d.getTransformedVertexVectors();
+    geodesicVertexCount = surface.geodesicVertexCount;
     screens = viewer.allocTempScreens(geodesicVertexCount);
+    geodesicFaceCount =
+      g3d.getGeodesicFaceCount(surface.geodesicRenderingLevel);
+    geodesicFaceVertexes =
+      g3d.getGeodesicFaceVertexes(surface.geodesicRenderingLevel);
+    geodesicFaceNormixes =
+      g3d.getGeodesicFaceNormixes(surface.geodesicRenderingLevel);
     Atom[] atoms = frame.atoms;
     int[][] surfaceConvexMaps = surface.surfaceConvexMaps;
     short[] colixesConvex = surface.colixesConvex;
@@ -87,20 +96,49 @@ class SurfaceRenderer extends ShapeRenderer {
     screens = null;
   }
 
+  private final static boolean CONVEX_DOTS = false;
+
   void renderConvex(Atom atom, short colix, int[] visibilityMap) {
     calcScreenPoints(visibilityMap,
                      atom.getVanderwaalsRadiusFloat(),
                      atom.getScreenX(), atom.getScreenY(),
                      atom.getScreenZ());
-    g3d.setColix(colix == 0 ? atom.colixAtom : colix);
-    for (int vertex = getMaxMappedVertex(visibilityMap); --vertex >= 0; ) {
-      if (! getBit(visibilityMap, vertex))
-        continue;
-      g3d.drawPixel(screens[vertex], vertex);
+    if (colix == 0)
+      colix = atom.colixAtom;
+    int maxMappedVertex = getMaxMappedVertex(visibilityMap);
+    if (CONVEX_DOTS) {
+      // for the dots code
+      g3d.setColix(colix);
+      for (int vertex = maxMappedVertex; --vertex >= 0; ) {
+        if (! getBit(visibilityMap, vertex))
+          continue;
+        g3d.drawPixel(screens[vertex], vertex);
+      }
+    } else {
+      for (int i = geodesicFaceCount, j = 0; --i >= 0; ) {
+        short vA = geodesicFaceVertexes[j++];
+        short vB = geodesicFaceVertexes[j++];
+        short vC = geodesicFaceVertexes[j++];
+        if (vA >= maxMappedVertex ||
+            vB >= maxMappedVertex ||
+            vC >= maxMappedVertex ||
+            !getBit(visibilityMap, vA) ||
+            !getBit(visibilityMap, vB) ||
+            !getBit(visibilityMap, vC))
+          continue;
+        // miguel 2005 01 14
+        // for some reason it does not work when trying to
+        // use the normix for the face. Something is wrong somewhere
+        // but I give up.
+        // just use gouraud shading, in spite of performance penalty
+        g3d.fillTriangle(colix, false,
+                         screens[vA], vA, 
+                         screens[vB], vB, 
+                         screens[vC], vC);
+      }
     }
   }
 
-  /*
   Point3f pointT = new Point3f();
   Point3f pointT1 = new Point3f();
   Matrix3f matrixT = new Matrix3f();
@@ -111,12 +149,8 @@ class SurfaceRenderer extends ShapeRenderer {
 
   static final float torusStepAngle = 2 * (float)Math.PI / 64;
 
-  */
-  
   void renderTorus(Surface.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
-  }
-  /*
     if (surfaceConvexMaps[torus.indexII] != null)
       renderTorusHalf(torus,
                       getColix(torus.colixI, colixes, atoms, torus.indexII),
@@ -166,7 +200,6 @@ class SurfaceRenderer extends ShapeRenderer {
       }
     }
   }
-  */
 
   void calcScreenPoints(int[] visibilityMap, float radius,
 			  int atomX, int atomY, int atomZ) {
@@ -178,12 +211,10 @@ class SurfaceRenderer extends ShapeRenderer {
       Point3i screen = screens[vertex];
       screen.x = atomX + (int)(scaledRadius * tv.x);
       screen.y = atomY - (int)(scaledRadius * tv.y); // y inverted on screen!
-      screen.z = atomZ + (int)(scaledRadius * tv.z);
+      screen.z = atomZ - (int)(scaledRadius * tv.z); // smaller z comes to me
     }
   }
 
-  /*
-  
   int getTorusIncrement() {
     if (scalePixelsPerAngstrom <= 5)
       return 16;
@@ -218,7 +249,6 @@ class SurfaceRenderer extends ShapeRenderer {
    * So, if you have an idea how to render this, please let me know.
    */
 
-  /*
   final static byte nearI = (byte)(1 << 0);
   final static byte nearJ = (byte)(1 << 1);
   final static byte nearK = (byte)(1 << 2);
@@ -235,12 +265,8 @@ class SurfaceRenderer extends ShapeRenderer {
     nearI, nearJ, nearJ, nearK, nearK, nearI,
   };
 
-  */
-  
   void renderCavity(Surface.Cavity cavity,
                     Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
-  }
-  /*
     Point3f[] points = cavity.points;
     if (surfaceConvexMaps[cavity.ixI] != null) {
       g3d.setColix(getColix(cavity.colixI, colixes, atoms, cavity.ixI));
@@ -296,8 +322,6 @@ class SurfaceRenderer extends ShapeRenderer {
     11, 9, 8,
     11, 10, 9,
   };
-
-  */
 
   final static boolean getBit(int[] bitmap, int i) {
     return (bitmap[(i >> 5)] << (i & 31)) < 0;

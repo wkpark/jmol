@@ -75,6 +75,8 @@ import java.util.Hashtable;
 
 class Geodesic3D {
   
+  Graphics3D g3d;
+
   private final static boolean DUMP = false;
 
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
@@ -130,15 +132,17 @@ class Geodesic3D {
   };
 
   /**
-   * 4 levels, 0 through 3
+   * 5 levels, 0 through 4
    */
   final static int maxLevel = 4;
   static short[] vertexCounts;
   static short[][] neighborVertexesArrays;
   static short[][] faceVertexesArrays;
+  static short[][] faceNormixesArrays;
   static Vector3f[] vertexVectors;
 
   Geodesic3D(Graphics3D g3d) {
+    this.g3d = g3d;
     if (vertexCounts == null)
       initialize();
   }
@@ -149,6 +153,7 @@ class Geodesic3D {
     vertexCounts = new short[maxLevel];
     neighborVertexesArrays = new short[maxLevel][];
     faceVertexesArrays = new short[maxLevel][];
+    faceNormixesArrays = new short[maxLevel][];
 
     vertexVectors = new Vector3f[12];
     vertexVectors[0] = new Vector3f(0, 0, halfRoot5);
@@ -205,6 +210,59 @@ class Geodesic3D {
   static short[] getFaceVertexes(int level) {
     return faceVertexesArrays[level];
   }
+
+  short[] getFaceNormixes(int level) {
+    short[] faceNormixes = faceNormixesArrays[level];
+    if (faceNormixes != null)
+      return faceNormixes;
+    return calcFaceNormixes(level);
+  }
+
+  private synchronized short[] calcFaceNormixes(int level) {
+    System.out.println("calcFaceNormixes(" + level + ")");
+    short[] faceNormixes = faceNormixesArrays[level];
+    if (faceNormixes != null)
+      return faceNormixes;
+    Vector3f t = new Vector3f();
+    short[] faceVertexes = faceVertexesArrays[level];
+    int j = faceVertexes.length;
+    int faceCount = j / 3;
+    faceNormixes = new short[faceCount];
+    for (int i = faceCount; --i >= 0; ) {
+      Vector3f vA = vertexVectors[faceVertexes[--j]];
+      Vector3f vB = vertexVectors[faceVertexes[--j]];
+      Vector3f vC = vertexVectors[faceVertexes[--j]];
+      float dAB, dBC, dAC;
+      dAB = g3d.normix3d.distance(vA, vB);
+      dBC = g3d.normix3d.distance(vB, vC);
+      dAC = g3d.normix3d.distance(vA, vC);
+      t.add(vA, vB);
+      t.add(vC);
+      short normix = g3d.normix3d.getNormix(t);
+      faceNormixes[i] = normix;
+      System.out.println("" + t + " = " + vA + " + " + vB + " + " + vC);
+      Vector3f faceNormal = vertexVectors[normix];
+      System.out.println(" --> " + faceNormal);
+      System.out.println("dAB=" + dAB + " dBC=" + dBC + " dAC=" + dAC);
+
+      float champD = g3d.normix3d.distance(vertexVectors[normix], t);
+      int champ = normix;
+      int vertexCount = getVertexCount(g3d.normix3d.level);
+      for (int k = vertexCount; --k >= 0; ) {
+        float d = g3d.normix3d.distance(vertexVectors[k], t);
+        if (d < champD) {
+          champ = k;
+          champD = d;
+        }
+      }
+      if (champ != normix)
+        System.out.println("sequential search says " + champ + " ? is == " +
+                           normix);
+    }
+    faceNormixesArrays[level] = faceNormixes;
+    return faceNormixes;
+  }
+    
 
   private static short vertexNext;
   private static Hashtable htVertex;

@@ -3366,22 +3366,24 @@ class Eval implements Runnable {
   }
 
   void surface() throws ScriptException {
-    short mad = 0;
-    switch (statement[1].tok) {
-    case Token.on:
-      mad = -1;
-      break;
-    case Token.off:
-      break;
-    case Token.integer:
-      int dotsParam = statement[1].intValue;
-      if (dotsParam < 0 || dotsParam > 1000)
-        numberOutOfRange();
-      // I don't know what to do with this thing yet
-      mad = (short)dotsParam;
-      break;
-    default:
-      booleanOrNumberExpected();
+    short mad = -1;
+    if (statementLength > 1) {
+      switch (statement[1].tok) {
+      case Token.on:
+        break;
+      case Token.off:
+        mad = 0;
+        break;
+      case Token.integer:
+        int dotsParam = statement[1].intValue;
+        if (dotsParam < 0 || dotsParam > 1000)
+          numberOutOfRange();
+        // I don't know what to do with this thing yet
+        mad = (short)dotsParam;
+        break;
+      default:
+        booleanOrNumberExpected();
+      }
     }
     viewer.setShapeSize(JmolConstants.SHAPE_SURFACE, mad);
   }

@@ -52,7 +52,7 @@ class Normix3D {
 
   private final static boolean TIMINGS = false;
 
-  private final static int level = 3;
+  final static int level = 3;
 
   private final Matrix3f rotationMatrix = new Matrix3f();
 
@@ -140,6 +140,13 @@ class Normix3D {
     float dx = v1.x - v2.x;
     float dy = v1.y - v2.y;
     float dz = v1.z - v2.z;
+    return (float)Math.sqrt(dx*dx + dy*dy + dz*dz);
+  }
+    
+  float distance(Vector3f v1, float x, float y, float z) {
+    float dx = v1.x - x;
+    float dy = v1.y - y;
+    float dz = v1.z - z;
     return (float)Math.sqrt(dx*dx + dy*dy + dz*dz);
   }
     
@@ -289,6 +296,8 @@ class Normix3D {
   private int newChampionCount;
   private int[] playoffCounts;
 
+  private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = true;
+
   short getNormixNormalized(float x, float y, float z) {
     if (PRINT_STATS) {
       if (playoffCounts == null)
@@ -332,45 +341,61 @@ class Normix3D {
       //      System.out.println("KO:" + champion);
       if (PRINT_STATS)
         ++playoffCounts[0];
-      return champion;
+    } else {
+      boolean newChampion;
+      int playoffLevel = 0;
+      do {
+        int offsetNeighborMin = champion * 6;
+        ++playoffLevel;
+        newChampion = false;
+        for (int offsetNeighbor = offsetNeighborMin + 6;
+             --offsetNeighbor >= offsetNeighborMin; ) {
+          short challenger = neighborVertexes[offsetNeighbor];
+          if (challenger == -1)
+            continue;
+          v = vertexVectors[challenger];
+          dx = x - v.x;
+          float challengerDist2 = dx*dx;
+          if (challengerDist2 >= championDist2)
+            continue;
+          dy = y - v.y;
+          challengerDist2 += dy*dy;
+          if (challengerDist2 >= championDist2)
+            continue;
+          dz = z - v.z;
+          challengerDist2 += dz*dz;
+          if (challengerDist2 >= championDist2)
+            continue;
+          /*
+            System.out.println("champion:" + champion +
+            " defeated by challenger:" + challenger);
+          */
+          champion = challenger;
+          championDist2 = challengerDist2;
+          newChampion = true;
+          if (PRINT_STATS)
+            ++newChampionCount;
+        }
+      } while (newChampion);
+      if (PRINT_STATS)
+        ++playoffCounts[playoffLevel];
     }
-    boolean newChampion;
-    int playoffLevel = 0;
-    do {
-      int offsetNeighborMin = champion * 6;
-      ++playoffLevel;
-      newChampion = false;
-      for (int offsetNeighbor = offsetNeighborMin + 6;
-           --offsetNeighbor >= offsetNeighborMin; ) {
-        short challenger = neighborVertexes[offsetNeighbor];
-        if (challenger == -1)
-          continue;
-        v = vertexVectors[challenger];
-        dx = x - v.x;
-        float challengerDist2 = dx*dx;
-        if (challengerDist2 >= championDist2)
-          continue;
-        dy = y - v.y;
-        challengerDist2 += dy*dy;
-        if (challengerDist2 >= championDist2)
-          continue;
-        dz = z - v.z;
-        challengerDist2 += dz*dz;
-        if (challengerDist2 >= championDist2)
-          continue;
-        /*
-        System.out.println("champion:" + champion +
-                           " defeated by challenger:" + challenger);
-        */
-        champion = challenger;
-        championDist2 = challengerDist2;
-        newChampion = true;
-        if (PRINT_STATS)
-          ++newChampionCount;
+    if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
+      int champ = champion;
+      float champD = distance(vertexVectors[champion], x, y, z);
+      for (int k = normixCount; --k >= 0; ) {
+        float d = distance(vertexVectors[k], x, y, z);
+        if (d < champD) {
+          champ = k;
+          champD = d;
+        }
       }
-    } while (newChampion);
-    if (PRINT_STATS)
-      ++playoffCounts[playoffLevel];
+      if (champion != champ) {
+        System.out.println("?que? getNormixNormalized is messed up?");
+        return (short)champ;
+      }
+    }
+
     return champion;
   }
 

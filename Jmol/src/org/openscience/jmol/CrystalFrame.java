@@ -66,11 +66,19 @@ public class CrystalFrame extends ChemFrame {
   }
 
   void calcBoundingBox() {
+
+    Vector boxEdges;
+    if (this.boxEdges.isEmpty()) {
+      boxEdges = CrystalFile.getSingleBoxEdge(rprimd);
+    } else {
+      boxEdges = this.boxEdges;
+    }
+    
     Point3d position = (Point3d) boxEdges.elementAt(0);
     double minX = position.x, maxX = minX;
     double minY = position.y, maxY = minY;
     double minZ = position.z, maxZ = minZ;
-
+    
     for (int i = 1, size = boxEdges.size(); i < size; ++i) {
       position = (Point3d) boxEdges.elementAt(i);
       double x = position.x;
@@ -84,12 +92,12 @@ public class CrystalFrame extends ChemFrame {
       if (z > maxZ) { maxZ = z; }
     }
     centerBoundingBox = new Point3d((minX + maxX) / 2,
-                                    (minY + maxY) / 2,
-                                    (minZ + maxZ) / 2);
+				    (minY + maxY) / 2,
+				    (minZ + maxZ) / 2);
     cornerBoundingBox = new Point3d(maxX, maxY, maxZ);
     cornerBoundingBox.sub(centerBoundingBox);
   }
-
+  
   // arrowhead size isn't included because it is currently in screen
   // coordinates .. oh well. 
   public double calcRadius(Point3d center) {

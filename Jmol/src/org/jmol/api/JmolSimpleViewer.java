@@ -27,24 +27,19 @@ package org.jmol.api;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.Image;
 
 /**
  * This is the high-level API for the JmolViewer for simple access.
- * <p>
- * We will implement a low-level API at some point
  **/
 
 public interface JmolSimpleViewer {
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip);
 
-  public Image getScreenImage();
-
-  public void releaseScreenImage();
-
   public String evalFile(String strFilename);
-
   public String evalString(String strScript);
 
+  public void openStringInline(String strModel);
+  public void openFile(String name);
+  public String getOpenFileError();
 }

@@ -28,6 +28,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Color;
+import java.awt.Image;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
@@ -70,14 +71,16 @@ public interface JmolViewer extends JmolSimpleViewer {
   public int getScreenWidth();
   public int getScreenHeight();
 
+  public Image getScreenImage();
+  public void releaseScreenImage();
+
+
   public void notifyRepainted();
 
   public boolean handleOldJvm10Event(Event e);
 
   public int getMotionEventNumber();
 
-  public void openStringInline(String strModel);
-  public void openFile(String name);
   public void openReader(String fullPathName, String name, Reader reader);
   public void openClientFile(String fullPathName, String fileName,
                              Object clientFile);
@@ -87,8 +90,6 @@ public interface JmolViewer extends JmolSimpleViewer {
   public int getMeasurementCount();
   public String getMeasurementStringValue(int i);
   public int[] getMeasurementCountPlusIndices(int i);
-
-  public String getOpenFileError();
 
   public Component getAwtComponent();
 

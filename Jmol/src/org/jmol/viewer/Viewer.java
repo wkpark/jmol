@@ -132,7 +132,7 @@ final public class Viewer implements JmolViewer {
   }
 
   public static JmolSimpleViewer
-    allocateSimpleJmolViewer(Component awtComponent,
+    allocateJmolSimpleViewer(Component awtComponent,
                              JmolAdapter modelAdapter) {
     return new Viewer(awtComponent, modelAdapter);
   }

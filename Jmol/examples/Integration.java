@@ -24,7 +24,6 @@
  */
 import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.viewer.JmolViewer;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -53,17 +52,17 @@ public class Integration {
     frame.setSize(300, 300);
     frame.setVisible(true);
 
-    JmolViewer viewer = jmolPanel.getViewer();
+    JmolSimpleViewer viewer = jmolPanel.getViewer();
     //    viewer.openFile("../samples/caffeine.xyz");
     //    viewer.openFile("http://database.server/models/1pdb.pdb.gz");
-    viewer.openStringInline(strHOH);
+    viewer.openStringInline(strXyzHOH);
     viewer.evalString(strScript);
     String strError = viewer.getOpenFileError();
     if (strError != null)
       System.out.println(strError);
   }
 
-  final static String strHOH =
+  final static String strXyzHOH = 
     "3\n" +
     "water\n" +
     "O  0.0 0.0 0.0\n" +
@@ -80,22 +79,22 @@ class ApplicationCloser extends WindowAdapter {
 }
 
 class JmolPanel extends JPanel {
-  JmolViewer viewer;
+  JmolSimpleViewer viewer;
   JmolAdapter adapter;
   JmolPanel() {
     adapter = new SmarterJmolAdapter(null);
-    viewer = new JmolViewer(this, adapter);
+    viewer = org.jmol.viewer.Viewer.allocateJmolSimpleViewer(this, adapter);
   }
 
-  public JmolViewer getViewer() {
+  public JmolSimpleViewer getViewer() {
     return viewer;
   }
 
   final Dimension currentSize = new Dimension();
+  final Rectangle rectClip = new Rectangle();
 
   public void paint(Graphics g) {
-    viewer.setScreenDimension(getSize(currentSize));
-    Rectangle rectClip = new Rectangle();
+    getSize(currentSize);
     g.getClipBounds(rectClip);
     viewer.renderScreenImage(g, currentSize, rectClip);
   }

@@ -78,8 +78,8 @@ public class NucleicMonomer extends Monomer {
           firstAtomIndex, lastAtomIndex);
     this.hasRnaO2Prime = o2PrimeIndex >= 0;
 
-    this.leadAtomOffset = (byte)(phosphorusIndex - firstAtomIndex);
-    this.wingAtomOffset = (byte)(wingIndex - firstAtomIndex);
+    offsets[0] = (byte)(phosphorusIndex - firstAtomIndex);
+    offsets[1] = (byte)(wingIndex - firstAtomIndex);
   }
 
   boolean hasRnaO2Prime;

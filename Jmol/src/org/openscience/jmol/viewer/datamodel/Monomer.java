@@ -35,14 +35,17 @@ abstract class Monomer extends Group {
 
   Polymer polymer;
 
-  byte leadAtomOffset;
-  byte wingAtomOffset = -1;
+  final byte[] offsets;
 
   Monomer(Chain chain, String group3,
           int sequenceNumber, char insertionCode,
           int firstAtomIndex, int lastAtomIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
           firstAtomIndex, lastAtomIndex);
+    int interestingCount = 2;
+    offsets = new byte[interestingCount];
+    for (int i = interestingCount; --i >= 0; )
+      offsets[i] = -1;
   }
 
   void setPolymer(Polymer polymer) {
@@ -81,29 +84,44 @@ abstract class Monomer extends Group {
     return chain.frame.atoms[firstAtomIndex + (offset & 0xFF)].point3f;
   }
 
+  ////////////////////////////////////////////////////////////////
+
+  final Atom getAtomFromOffsetIndex(int offsetIndex) {
+    if (offsetIndex > offsets.length)
+      return null;
+    int offset = offsets[offsetIndex] & 0xFF;
+    if (offset == 255)
+      return null;
+    return chain.frame.atoms[firstAtomIndex + offset];
+  }
+
+  final Point3f getAtomPointFromOffsetIndex(int offsetIndex) {
+    if (offsetIndex > offsets.length)
+      return null;
+    int offset = offsets[offsetIndex] & 0xFF;
+    if (offset == 255)
+      return null;
+    return chain.frame.atoms[firstAtomIndex + offset].point3f;
+  }
+
   final int getLeadAtomIndex() {
-    return firstAtomIndex + (leadAtomOffset & 0xFF);
+    return firstAtomIndex + (offsets[0] & 0xFF);
   }
 
   final Atom getLeadAtom() {
-    return getAtomFromOffset(leadAtomOffset);
+    return getAtomFromOffsetIndex(0);
   }
 
   final Point3f getLeadAtomPoint() {
-    return getAtomPointFromOffset(leadAtomOffset);
+    return getAtomPointFromOffsetIndex(0);
   }
 
   final Atom getWingAtom() {
-    if (wingAtomOffset == -1) {
-      System.out.println("Monomer.getWingAtomIndex() called ... " +
-                         "but I have no wing man");
-      throw new NullPointerException();
-    }
-    return getAtomFromOffset(wingAtomOffset);
+    return getAtomFromOffsetIndex(1);
   }
 
   final Point3f getWingAtomPoint() {
-    return getWingAtom().point3f;
+    return getAtomPointFromOffsetIndex(1);
   }
 
   ////////////////////////////////////////////////////////////////

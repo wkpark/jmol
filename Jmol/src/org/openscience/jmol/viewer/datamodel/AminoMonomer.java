@@ -104,8 +104,8 @@ public class AminoMonomer extends AlphaMonomer {
                int terminatingOxtIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
           firstAtomIndex, lastAtomIndex);
-    this.leadAtomOffset = (byte)(alphaCarbonIndex - firstAtomIndex);
-    this.wingAtomOffset = (byte)(carbonylOxygenIndex - firstAtomIndex);
+    offsets[0] = (byte)(alphaCarbonIndex - firstAtomIndex);
+    offsets[1] = (byte)(carbonylOxygenIndex - firstAtomIndex);
 
     this.aminoNitrogenOffset = (byte)(aminoNitrogenIndex - firstAtomIndex);
     this.carbonylCarbonOffset = (byte)(carbonylCarbonIndex - firstAtomIndex);

@@ -48,6 +48,7 @@ public class AlphaMonomer extends Monomer {
                int firstAtomIndex, int lastAtomIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
           firstAtomIndex, lastAtomIndex);
+    offsets[0] = 0;
   }
 
   boolean isAlphaMonomer() { return true; }

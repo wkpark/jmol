@@ -26,6 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolModelAdapter;
 import org.openscience.jmol.viewer.protein.PdbMolecule;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
@@ -43,6 +44,7 @@ public class JmolFrame {
   float maxCovalentRadius = 0;
   float maxVanderwaalsRadius = 0;
   // whether or not this frame has any protein properties
+  int modelType;
   boolean hasPdbRecords;
   PdbMolecule pdbmolecule;
 
@@ -53,8 +55,9 @@ public class JmolFrame {
   public BondShape[] bondShapes;
 
   public JmolFrame(JmolViewer viewer, int atomCount,
-                   boolean hasPdbRecords) {
+                   int modelType, boolean hasPdbRecords) {
     this.viewer = viewer;
+    this.modelType = modelType;
     this.hasPdbRecords = hasPdbRecords;
     if (hasPdbRecords)
       pdbmolecule = new PdbMolecule(this);
@@ -63,12 +66,12 @@ public class JmolFrame {
     this.frameRenderer = viewer.getFrameRenderer();
   }
 
-  public JmolFrame(JmolViewer viewer, boolean hasPdbRecords) {
-    this(viewer, growthIncrement, hasPdbRecords);
+  public JmolFrame(JmolViewer viewer, int modelType, boolean hasPdbRecords) {
+    this(viewer, growthIncrement, modelType, hasPdbRecords);
   }
 
   public JmolFrame(JmolViewer viewer) {
-    this(viewer, false);
+    this(viewer, JmolModelAdapter.MODEL_TYPE_OTHER, false);
   }
 
   public void finalize() {

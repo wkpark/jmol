@@ -803,7 +803,7 @@ public class Eval implements Runnable {
       AtomShape atom = frame.getAtomAt(i);
       switch (property) {
       case Token.atomno:
-        propertyValue = i + 1; // in the user world the atoms start with 1
+        propertyValue = atom.getAtomno();
         break;
       case Token.elemno:
         propertyValue = atom.getAtomicNumber();
@@ -811,7 +811,7 @@ public class Eval implements Runnable {
       case Token.temperature:
         propertyValue = getTemperature(atom);
         if (propertyValue == -1)
-          return;
+          continue;
         break;
       case Token.resno:
         propertyValue = getResno(atom);

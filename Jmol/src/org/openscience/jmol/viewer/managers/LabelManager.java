@@ -118,7 +118,7 @@ public class LabelManager {
       int ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
-        strLabel += (atomIndex + 1);
+        strLabel += atomShape.getAtomno();
         break;
       case 'a':
         strLabel += atomShape.getAtomTypeName();

@@ -96,6 +96,10 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return chemFile;
   }
 
+  public int getModelType(Object clientFile) {
+    return JmolModelAdapter.MODEL_TYPE_OTHER;
+  }
+
   public String getModelName(Object clientFile) {
     return null;
   }

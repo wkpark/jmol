@@ -135,6 +135,18 @@ public interface JmolModelAdapter {
                                    BufferedReader bufferedReader);
 
   /**
+   * listing of model types
+   */
+  public final static int MODEL_TYPE_OTHER = 0;
+  public final static int MODEL_TYPE_PDB = 1;
+  public final static int MODEL_TYPE_XYZ = 2;
+
+  /**
+   * returns the type of this model
+   */
+  public int getModelType(Object clientFile);
+
+  /**
    * The number of frames in this file. Used for animations, etc.
    */
   public int getFrameCount(Object clientFile);
@@ -1018,4 +1030,5 @@ public interface JmolModelAdapter {
     0xFFFFA500, // orange 0xFFFFA500
     0xFF87CEEB, // SkyBlue 0xFF87CEEB
   };
+
 }

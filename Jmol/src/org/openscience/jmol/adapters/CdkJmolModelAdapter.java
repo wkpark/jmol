@@ -122,6 +122,12 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return chemFile;
   }
 
+  public int getModelType(Object clientFile) {
+    // this need to return MODEL_TYPE_PDB
+    // or MODEL_TYPE_XYZ, as appropriate
+    return JmolModelAdapter.MODEL_TYPE_OTHER;
+  }
+
   public String getModelName(Object clientFile) {
       if (clientFile instanceof ChemFile) {
           Object title = ((ChemFile)clientFile).getProperty(CDKConstants.TITLE);

@@ -26,6 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolModelAdapter;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.protein.PdbAtom;
@@ -258,6 +259,13 @@ public class AtomShape implements Bspt.Tuple {
 
   public String getAtomTypeName() {
     return frame.viewer.getAtomTypeName(this);
+  }
+
+  public int getAtomno() {
+    if (pdbatom != null)
+      return pdbatom.getAtomNumber();
+    return getAtomIndex() +
+      (frame.modelType == JmolModelAdapter.MODEL_TYPE_XYZ ? 0 : 1);
   }
 
   public Point3f getPoint3f() {

@@ -40,6 +40,7 @@ public class PdbAtom {
   public String recordPdb;
   byte resid;
   byte atomid;
+  int atomNumber;
   public byte structureType = STRUCTURE_NONE;
 
   public PdbAtom(String recordPdb) {
@@ -47,6 +48,11 @@ public class PdbAtom {
 
     resid = Token.getResid(recordPdb.substring(17, 20));
     atomid = Token.getPdbAtomid(getName());
+    atomNumber = -999999;
+    try {
+      atomNumber = Integer.parseInt(recordPdb.substring(6, 11).trim());
+    } catch (NumberFormatException e)
+      {}
   }
 
   public boolean isHetero() {
@@ -151,11 +157,6 @@ public class PdbAtom {
   }
 
   public int getAtomNumber() {
-    int num = -999999;
-    try {
-      num = Integer.parseInt(recordPdb.substring(6, 11).trim());
-    } catch (NumberFormatException e)
-      {}
-    return num;
+    return atomNumber;
   }
 }

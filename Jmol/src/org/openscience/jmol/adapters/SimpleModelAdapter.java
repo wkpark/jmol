@@ -134,6 +134,14 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     "ATOM  ", "HETATM", "MODEL ",
   };
 
+  public int getModelType(Object clientFile) {
+    if (clientFile instanceof PdbModel)
+      return JmolModelAdapter.MODEL_TYPE_PDB;
+    if (clientFile instanceof XyzModel)
+      return JmolModelAdapter.MODEL_TYPE_XYZ;
+    return JmolModelAdapter.MODEL_TYPE_OTHER;
+  }
+
   public String getModelName(Object clientFile) {
     return ((Model)clientFile).modelName;
   }

@@ -188,6 +188,8 @@ class CmlReader extends ModelReader {
             atom.z = parseFloat(attValue);
           } else if ("elementType".equals(attLocalName)) {
             atom.elementSymbol = attValue;
+          } else if ("formalCharge".equals(attLocalName)) {
+            atom.formalCharge = parseInt(attValue);
           }
         }
         atom.modelNumber = moleculeCount;

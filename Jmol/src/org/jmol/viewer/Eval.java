@@ -1431,6 +1431,7 @@ class Eval implements Runnable {
     int tok = statement[1].tok;
     switch (tok) {
     case Token.colorRGB:
+    case Token.none:
     case Token.cpk:
     case Token.amino:
     case Token.chain:

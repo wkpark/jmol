@@ -157,6 +157,7 @@ class CmlReader extends AtomSetCollectionReader {
     }
     
     int parseBondToken(String str) {
+      System.out.println("reading bond: " + str);
       if (str.length() == 1) {
         switch (str.charAt(0)) {
         case 'S':
@@ -171,8 +172,17 @@ class CmlReader extends AtomSetCollectionReader {
         return parseInt(str);
       }
       float floatOrder = parseFloat(str);
+      if (Float.isNaN(floatOrder)) {
+          if (str.equals("partial01")) {
+              return JmolAdapter.ORDER_PARTIAL01;
+          } else if (str.equals("partial12")) {
+              return JmolAdapter.ORDER_PARTIAL12;
+          } else if (str.equals("hbond")) {
+              return JmolAdapter.ORDER_HBOND;
+          }
+      }
       if (floatOrder == 1.5)
-        return JmolAdapter.ORDER_AROMATIC;
+        return JmolAdapter.ORDER_PARTIAL12;
       if (floatOrder == 2)
         return 2;
       if (floatOrder == 3)
@@ -336,6 +346,7 @@ class CmlReader extends AtomSetCollectionReader {
             breakOutTokens(attValue);
           } else if ("order".equals(attLocalName)) {
             order = parseBondToken(attValue);
+            System.out.println("Bond order read: " + order);
           }
         }
         /*

@@ -46,7 +46,7 @@ public class Atom extends org.openscience.cdk.Atom {
     super(atom.getSymbol(), new Point3d(x, y, z));
     super.setID(atom.getAtomTypeName());
     this.baseAtomType = atom.baseAtomType;
-    this.atomNumber = atomNumber;
+    //    this.atomNumber = atomNumber;
     this.pprop = pprop;
     this.control = control;
   }
@@ -55,7 +55,6 @@ public class Atom extends org.openscience.cdk.Atom {
     super(atom.getSymbol(), atom.getPoint3D());
     super.setAtomicNumber(atom.getAtomicNumber());
     super.setAtomTypeName(atom.getAtomTypeName());
-    this.atomNumber = atomNumber;
     String atomName = atom.getAtomTypeName();
     if (atomName == null) {
         atomName = atom.getSymbol();
@@ -73,27 +72,10 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
-   * Returns the atom's number.
-   */
-  public int getAtomNumber() {
-    return atomNumber;
-  }
-
-  /**
-   * Returns the atom's number.
-   */
-  public void setAtomNumber(int number) {
-    this.atomNumber = number;
-  }
-
-  /**
    * Returns whether this atom is a hydrogen atom.
    *
    * @return true if this atom is a hydrogen atom.
    */
-  public boolean isHydrogen() {
-    return getAtomicNumber() == 1;
-  }
   
   ProteinProp pprop = null;
   public ProteinProp getProteinProp() {
@@ -295,10 +277,6 @@ public class Atom extends org.openscience.cdk.Atom {
 
   private DisplayControl control;
 
-  public boolean isSelected() {
-    return control.isSelected(atomNumber);
-  }
-
   public void delete() {
     // this atom has been deleted ...
     // so notify bonded atoms so that they can make appropriate adjustments
@@ -358,19 +336,9 @@ public class Atom extends org.openscience.cdk.Atom {
   private Point3d vector = null;
   
   /**
-   * Atom number in set of all atoms. Not the atomic number!
-   */
-  private int atomNumber;
-
-  /**
    * A list of properties
    */
   private Vector properties = new Vector();
-
-  public double getDimValue(int dim) {
-    Point3d point = getPoint3D();
-    return (dim == 0) ? point.x : (dim == 1) ? point.y : point.z;
-  }
 
 }
 

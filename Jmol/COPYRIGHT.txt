@@ -67,6 +67,10 @@ Jmol also includes jar files for the Acme Image encoders by Jef Poskanzer
 (http://www.acme.com) as well as the junit Java testing framework 
 (http://www.xprogramming.com/software.htm)
 
+The Ptolemy PtPlot Library (http://ptolemy.eecs.berkeley.edu/) is used for viewing plots. 
+Copyright (C) 1997-1999 The Regents of the University of California. 
+All rights reserved. 
+
 #######################################################################
 
 Other contributors to Jmol have not expressly copyrighted their 

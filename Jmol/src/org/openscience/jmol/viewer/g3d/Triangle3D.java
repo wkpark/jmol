@@ -70,28 +70,47 @@ public class Triangle3D {
                        "  midY="+ax[iMidY]+","+ay[iMidY]+","+az[iMidY]+"\n" +
                        "  maxY="+ax[iMaxY]+","+ay[iMaxY]+","+az[iMaxY]+"\n");
     */
-    if (ay[iMinY] < ay[iMidY]) {
-      // there is an upper triangle
-      if (ay[iMidY] == ay[iMaxY]) {
-        fillUpper(iMinY, iMidY, iMaxY);
-        return;
-      }
+    int yMin = ay[iMinY];
+    int yMid = ay[iMidY];
+    int yMax = ay[iMaxY];
+    int nLines = yMax - yMin;
+    if (nLines == 0)
+      return;
+    if (nLines > axW.length)
+      reallocRasterArrays(nLines);
+    boolean paintTopLine = false;
+    int dyMidMin = yMid - yMin;
+    if (dyMidMin == 0) {
+      // flat top
+      if (ax[iMidY] < ax[iMinY])
+        { int t = iMidY; iMidY = iMinY; iMinY = t; }
+      paintTopLine = true;
+      generateRaster(nLines, iMinY, iMaxY, axW, azW, 0);
+      generateRaster(nLines, iMidY, iMaxY, axE, azE, 0);
+    } else if (yMid == yMax) {
+      // flat bottom
+      if (ax[iMaxY] < ax[iMidY])
+        { int t = iMidY; iMidY = iMaxY; iMaxY = t; }
+      generateRaster(nLines, iMinY, iMidY, axW, azW, 0);
+      generateRaster(nLines, iMinY, iMaxY, axE, azE, 0);
+    } else {
       int dxMaxMin = ax[iMaxY] - ax[iMinY];
-      int dyMaxMin = ay[iMaxY] - ay[iMinY];
       int dzMaxMin = az[iMaxY] - az[iMinY];
-      int dyMidMin = ay[iMidY] - ay[iMinY];
       int roundFactor;
-      roundFactor = dyMaxMin / 2;
+      roundFactor = nLines / 2;
       if (dxMaxMin < 0) roundFactor = -roundFactor;
-      ax[3] = ax[iMinY] + (dxMaxMin * dyMidMin + roundFactor) / dyMaxMin;
-      ay[3] = ay[iMidY];
-      roundFactor = dyMaxMin / 2;
-      if (dzMaxMin < 0) roundFactor = -roundFactor;
-      az[3] = az[iMinY] + (dzMaxMin * dyMidMin + roundFactor) / dyMaxMin;
-      fillUpper(iMinY, iMidY, 3);
-      iMinY = 3;
+      int axSplit = ax[iMinY] + (dxMaxMin * dyMidMin + roundFactor) / nLines;
+      if (axSplit < ax[iMidY]) {
+        generateRaster(nLines, iMinY, iMaxY, axW, azW, 0);
+        generateRaster(dyMidMin, iMinY, iMidY, axE, azE, 0);
+        generateRaster(nLines-dyMidMin, iMidY, iMaxY, axE, azE, dyMidMin);
+      } else {
+        generateRaster(dyMidMin, iMinY, iMidY, axW, azW, 0);
+        generateRaster(nLines-dyMidMin, iMidY, iMaxY, axW, azW, dyMidMin);
+        generateRaster(nLines, iMinY, iMaxY, axE, azE, 0);
+      }
     }
-    fillLower(iMinY, iMidY, iMaxY);
+    fillRaster(yMin, nLines, paintTopLine);
   }
 
   int[] axW = new int[32], azW = new int[32];
@@ -105,46 +124,8 @@ public class Triangle3D {
     azE = new int[n];
   }
 
-  void fillUpper(int iN, int iW, int iE) {
-    if (ax[iW] > ax[iE]) { int t = iW; iW = iE; iE = t; }
-
-    /*
-    System.out.println("fillUpper\n" +
-                       "N="+ax[iN]+"," + ay[iN] + "," + az[iN] + "\n" +
-                       "W="+ax[iW]+"," + ay[iW] + "," + az[iW] + "\n" +
-                       "E="+ax[iE]+"," + ay[iE] + "," + az[iE] + "\n");
-    */
-    int nLines = ay[iW] - ay[iN];
-    if (nLines == 0)
-      return;
-    if (nLines > axW.length)
-      reallocRasterArrays(nLines);
-    generateRaster(nLines, iN, iW, axW, azW);
-    generateRaster(nLines, iN, iE, axE, azE);
-    fillRaster(ay[iN], nLines, false);
-  }
-  
-  void fillLower(int iW, int iE, int iS) {
-    if (ax[iW] > ax[iE]) { int t = iW; iW = iE; iE = t; }
-    
-    /*
-    System.out.println("fillLower\n" +
-                       "W="+ax[iW]+","+ay[iW]+","+az[iW]+"\n" +
-                       "E="+ax[iE]+","+ay[iE]+","+az[iE]+"\n" +
-                       "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
-    */
-    int nLines = ay[iS] - ay[iW];
-    if (nLines == 0)
-      return;
-    if (nLines > axW.length)
-      reallocRasterArrays(nLines);
-    generateRaster(nLines, iW, iS, axW, azW);
-    generateRaster(nLines, iE, iS, axE, azE);
-    fillRaster(ay[iW], nLines, true);
-  }
-
   void generateRaster(int dy, int iN, int iS,
-                      int[] axRaster, int[] azRaster) {
+                      int[] axRaster, int[] azRaster, int iRaster) {
     /*
     System.out.println("generateRaster\n" +
                        "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
@@ -183,8 +164,8 @@ public class Triangle3D {
       xMajorError = width % dy;
     }
     for (int y = 0; y < dy; ++y, zCurrentScaled += zIncrementScaled) {
-      axRaster[y] = xCurrent;
-      azRaster[y] = zCurrentScaled >> 10;
+      axRaster[iRaster] = xCurrent;
+      azRaster[iRaster++] = zCurrentScaled >> 10;
       //      System.out.println("z=" + azRaster[y]);
       xCurrent += xMajorIncrement;
       errorTerm += xMajorError;

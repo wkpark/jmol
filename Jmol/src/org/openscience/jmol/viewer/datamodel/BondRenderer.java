@@ -258,7 +258,7 @@ public class BondRenderer {
   private static float wideWidthAngstroms = 0.4f;
 
   private void renderTriangle(BondShape bondShape) {
-    // for now, only colix1 and always solid
+    // for now, always solid
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
     int wideWidthPixels = (int)viewer.scaleToScreen(z2, wideWidthAngstroms);
     int dxWide, dyWide;
@@ -284,8 +284,22 @@ public class BondRenderer {
     System.out.println("up=" + xWideUp + "," + yWideUp +
                        " dn=" + xWideDn + "," + yWideDn);
     */
-    g3d.drawfillTriangle(colix1, x1, y1, z1,
-                         xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
+    if (colix1 == colix2) {
+      g3d.drawfillTriangle(colix1, x1, y1, z1,
+                           xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
+    } else {
+      int xMidUp = (x1 + xWideUp) / 2;
+      int yMidUp = (y1 + yWideUp) / 2;
+      int zMid = (z1 + z2) / 2;
+      int xMidDn = (x1 + xWideDn) / 2;
+      int yMidDn = (y1 + yWideDn) / 2;
+      g3d.drawfillTriangle(colix1, x1, y1, z1,
+                           xMidUp, yMidUp, zMid, xMidDn, yMidDn, zMid);
+      g3d.drawfillTriangle(colix2, xMidUp, yMidUp, zMid,
+                           xMidDn, yMidDn, zMid, xWideDn, yWideDn, z2);
+      g3d.drawfillTriangle(colix2, xMidUp, yMidUp, zMid,
+                           xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
+    }
   }
 }
 

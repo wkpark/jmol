@@ -328,6 +328,29 @@ public class Sphere25D {
     return ss;
   }
 
+  int calcIntensity1(float x, float y, float radius2) {
+    float z2 = radius2 - x*x - y*y;
+    if (z2 < 0)
+      return -1;
+    return Shade25D.calcIntensity(x, y, (float)Math.sqrt(z2));
+  }
+
+  byte calcIntensity(float x, float y, float radius2) {
+    int count = 0;
+    int intensitySum = 0;
+    for (float i = -.17f; i < 0; i += .34f)
+      for (float j = -.17f; j < 0; j += .34f) {
+        int intensity = calcIntensity1(x + i, y + j, radius2);
+        if (intensity >= 0) {
+          intensitySum += intensity;
+          ++count;
+        }
+      }
+    if (count == 0)
+      return -1;
+    return (byte)((intensitySum + count/2) / count);
+  }
+
   int[] createSphereShape(int diameter) {
     float radiusF = diameter / 2.0f;
     float radiusF2 = radiusF * radiusF;
@@ -345,7 +368,7 @@ public class Sphere25D {
         float z2 = radiusF2 - y2 - x*x;
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
-          intensities[offset] = Shade25D.calcIntensity(x, y, z);
+          intensities[offset] = calcIntensity(x, y, radiusF2);
           heights[offset] = (byte)(z + 0.5f);
           if (j >= radius && i >= radius)
             ++countSE;

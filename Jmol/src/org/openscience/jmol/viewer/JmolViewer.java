@@ -560,6 +560,14 @@ final public class JmolViewer {
     transformManager.getAxisAngle(axisAngle);
   }
 
+  public void setRotation(Matrix4f matrixRotation) {
+    transformManager.setRotation(matrixRotation);
+  }
+
+  public void getRotation(Matrix4f matrixRotation) {
+    transformManager.getRotation(matrixRotation);
+  }
+
   /****************************************************************
    * delegated to ColorManager
    ****************************************************************/

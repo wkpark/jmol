@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Matrix4f;
 
 class Context {
   String filename;
@@ -2852,8 +2853,11 @@ public class Eval implements Runnable {
   }
 
   AxisAngle4f aaMoveTo;
-  AxisAngle4f aaCurrent;
-
+  AxisAngle4f aaStep;
+  Matrix4f matrixStart;
+  Matrix4f matrixEnd;
+  Matrix4f matrixStep;
+  
   void moveto() throws ScriptException {
     if (statementLength < 5 || statementLength > 7)
       badArgumentCount();
@@ -2862,13 +2866,39 @@ public class Eval implements Runnable {
     float axisZ = floatParameter(3);
     float degrees = floatParameter(4);
     float floatSecondsTotal = statementLength >= 6 ? floatParameter(5) : 0;
+    int fps = 30;
     int zoom = statementLength == 7 ? intParameter(6) : 0;
 
     if (aaMoveTo == null) {
       aaMoveTo = new AxisAngle4f();
-      aaCurrent = new AxisAngle4f();
+      aaStep = new AxisAngle4f();
+      matrixStart = new Matrix4f();
+      matrixEnd = new Matrix4f();
+      matrixStep = new Matrix4f();
     }
-    aaMoveTo.set(axisX, axisY, axisZ, degrees * (float)Math.PI / 180);
-    viewer.rotateTo(aaMoveTo);
+    if (degrees < 0.01f && degrees > -0.01f) {
+      matrixEnd.setIdentity();
+    } else {
+      aaMoveTo.set(axisX, axisY, axisZ, degrees * (float)Math.PI / 180);
+      matrixEnd.set(aaMoveTo);
+    }
+    viewer.getRotation(matrixStart);
+    matrixStart.invert();
+    matrixStep.mul(matrixStart, matrixEnd);
+    int totalSteps = (int)(floatSecondsTotal * fps);
+    if (totalSteps > 1) {
+      aaStep.set(matrixStep);
+      aaStep.angle /= totalSteps;
+      int stepTime = 1000 / fps;
+      for (int i = 1; i < totalSteps; ++i) {
+        viewer.rotate(aaStep);
+        viewer.requestRepaintAndWait();
+        try {
+          Thread.sleep(stepTime);
+        } catch (InterruptedException ie) {
+        }
+      }
+    }
+    viewer.setRotation(matrixEnd);
   }
 }

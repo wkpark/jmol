@@ -204,6 +204,16 @@ public class TransformManager {
     axisAngle.set(matrixRotate);
   }
 
+  public void setRotation(Matrix4f matrixRotation) {
+    this.matrixRotate.set(matrixRotation);
+  }
+
+  public void getRotation(Matrix4f matrixRotation) {
+    // hmm ... I suppose that there could be a race condiditon here
+    // if matrixRotate is being modified while this is called
+    matrixRotation.set(this.matrixRotate);
+  }
+
   /****************************************************************
    ZOOM
   ****************************************************************/

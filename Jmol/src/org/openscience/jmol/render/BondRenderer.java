@@ -68,7 +68,13 @@ public class BondRenderer {
   public void setGraphicsContext(Graphics g, Rectangle clip) {
     this.g = g;
     this.clip = clip;
+
+    fastRendering = control.getFastRendering();
+    showAtoms = control.getShowAtoms();
   }
+
+  boolean fastRendering;
+  boolean showAtoms;
 
   int x1, y1, z1;
   int x2, y2, z2;
@@ -84,9 +90,11 @@ public class BondRenderer {
   int width1, width2;
   Color outline1, outline2;
   int bondOrder;
+  byte styleBond;
 
-  public void render(AtomShape atomShape1, AtomShape atomShape2,
-                     byte styleBond, int bondOrder) {
+  public void render(AtomShape atomShape1, int index1,
+                     AtomShape atomShape2, int index2,
+                     int bondOrder) {
     x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
     x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
     dx = x2 - x1; dx2 = dx * dx; sgndx = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
@@ -97,13 +105,13 @@ public class BondRenderer {
     color1 = control.getColorAtom(atomShape1.atom);
     color2 = control.getColorAtom(atomShape2.atom);
     sameColor = color1.equals(color2);
-    if (mag2d2 <= 2 || mag2d2 <= 49 && control.getFastRendering())
+    if (mag2d2 <= 2 || mag2d2 <= 49 && fastRendering)
       return; // also avoids divide by zero when magnitude == 0
-    if (control.getShowAtoms() && (mag2d2 <= 16))
+    if (showAtoms && (mag2d2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
-    if (!control.getShowAtoms() && bondOrder == 1 &&
-        (control.getFastRendering() ||
-         styleBond == control.WIREFRAME)) {
+    styleBond = atomShape1.styleBonds[index1];
+    if (!showAtoms && bondOrder == 1 &&
+        (fastRendering || styleBond == control.WIREFRAME)) {
       if (sameColor) {
         drawLineInside(g, color1, x1, y1, x2, y2);
       } else {
@@ -114,14 +122,16 @@ public class BondRenderer {
       }
       return;
     }
-    if (!control.getShowAtoms()) {
-      diameter1 = radius1 = diameter2 = radius2 = 0;
+    if (!showAtoms) {
+      diameter1 = diameter2 = 0;
     } else {
-      diameter1 = atomShape1.diameter;
-      radius1 = diameter1 >> 1;
-      diameter2 = atomShape2.diameter;
-      radius2 = diameter2 >> 1;
+      diameter1 =
+        (atomShape1.styleAtom==DisplayControl.NONE) ? 0 : atomShape1.diameter;
+      diameter2 =
+        (atomShape2.styleAtom==DisplayControl.NONE) ? 0 : atomShape2.diameter;
     }
+    radius1 = diameter1 >> 1;
+    radius2 = diameter2 >> 1;
     mag2d = (int)Math.sqrt(mag2d2);
     // if the front atom (radius1) has completely obscured the bond, stop
     if (radius1 >= mag2d)
@@ -134,8 +144,8 @@ public class BondRenderer {
     outline1 = control.getColorAtomOutline(color1);
     outline2 = control.getColorAtomOutline(color2);
 
-    width1 = atomShape1.bondWidth;
-    width2 = atomShape2.bondWidth;
+    width1 = atomShape1.bondWidths[index1];
+    width2 = atomShape2.bondWidths[index2];
 
     if (width1 < 4 && width2 < 4) {
       // to smooth out narrow bonds
@@ -144,8 +154,7 @@ public class BondRenderer {
     this.bondOrder = bondOrder;
 
     boolean lineBond =
-      styleBond == control.WIREFRAME ||
-      control.getFastRendering();
+      styleBond == control.WIREFRAME || fastRendering;
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline

@@ -37,32 +37,45 @@ public class StyleManager {
     this.control = control;
   }
 
+  // FIXME -- mth -- write some iterators to clean this up
+
   public void initializeAtomShapes() {
     ChemFrame[] frames = control.getFrames();
     for (int iframe = frames.length; --iframe >= 0; ) {
       Atom[] atoms = frames[iframe].getJmolAtoms();
       for (int iatom = atoms.length; --iatom >= 0; ) {
         AtomShape atomShape =
-          new AtomShape(atoms[iatom], styleAtom, styleBond);
+          new AtomShape(atoms[iatom],
+                        styleAtom, -percentVdwAtom,
+                        styleBond, percentAngstromBond * 10);
         atoms[iatom].setAtomShape(atomShape);
       }
     }
   }
 
-  public byte styleLabel = DisplayControl.NOLABELS;
-  public void setStyleLabel(byte style) {
-    styleLabel = style;
-  }
-
   public byte styleAtom = DisplayControl.QUICKDRAW;
-  public void setStyleAtom(byte style) {
-    styleAtom = style;
+  public void setStyleAtom(byte styleAtom) {
+    this.styleAtom = styleAtom;
     if (control.haveFile()) {
       ChemFrame[] frames = control.getFrames();
       for (int iframe = frames.length; --iframe >= 0; ) {
         Atom[] atoms = frames[iframe].getJmolAtoms();
         for (int iatom = atoms.length; --iatom >= 0; ) {
-          atoms[iatom].atomShape.setStyleAtom(style);
+          atoms[iatom].atomShape.setStyleAtom(styleAtom);
+        }
+      }
+    }
+  }
+
+  public int percentVdwAtom = 20;
+  public void setPercentVdwAtom(int percentVdwAtom) {
+    this.percentVdwAtom = percentVdwAtom;
+    if (control.haveFile()) {
+      ChemFrame[] frames = control.getFrames();
+      for (int iframe = frames.length; --iframe >= 0; ) {
+        Atom[] atoms = frames[iframe].getJmolAtoms();
+        for (int iatom = atoms.length; --iatom >= 0; ) {
+          atoms[iatom].atomShape.setMadAtom(-percentVdwAtom);
         }
       }
     }
@@ -75,15 +88,44 @@ public class StyleManager {
         atoms[iatom].atomShape.setStyleAtom(style);
   }
 
+  public void setPercentVdwAtom(int percentVdwAtom, BitSet set) {
+    Atom[] atoms = control.getCurrentFrameAtoms();
+    for (int iatom = atoms.length; --iatom >= 0 ; )
+      if (set.get(iatom))
+        atoms[iatom].atomShape.setMadAtom(-percentVdwAtom);
+  }
+
+  public void setStyleMadAtom(byte style, int mad, BitSet set) {
+    Atom[] atoms = control.getCurrentFrameAtoms();
+    for (int iatom = atoms.length; --iatom >= 0 ; )
+      if (set.get(iatom))
+        atoms[iatom].atomShape.setStyleMadAtom(style, mad);
+  }
+
   public byte styleBond = DisplayControl.QUICKDRAW;
-  public void setStyleBond(byte style) {
-    styleBond = style;
+  public void setStyleBond(byte styleBond) {
+    this.styleBond = styleBond;
     if (control.haveFile()) {
       ChemFrame[] frames = control.getFrames();
       for (int iframe = frames.length; --iframe >= 0; ) {
         Atom[] atoms = frames[iframe].getJmolAtoms();
         for (int iatom = atoms.length; --iatom >= 0; ) {
-          atoms[iatom].atomShape.setStyleBond(style);
+          atoms[iatom].atomShape.setStyleAllBonds(styleBond);
+        }
+      }
+    }
+  }
+
+  public int percentAngstromBond = 10;
+  public void setPercentAngstromBond(int percentAngstromBond) {
+    this.percentAngstromBond = percentAngstromBond;
+    int mad = percentAngstromBond * 10;
+    if (control.haveFile()) {
+      ChemFrame[] frames = control.getFrames();
+      for (int iframe = frames.length; --iframe >= 0; ) {
+        Atom[] atoms = frames[iframe].getJmolAtoms();
+        for (int iatom = atoms.length; --iatom >= 0; ) {
+          atoms[iatom].atomShape.setMadAllBonds(mad);
         }
       }
     }
@@ -97,7 +139,7 @@ public class StyleManager {
         continue;
       Atom atom = atoms[iatom];
       if (isSelected && bondmodeOr) {
-        atom.atomShape.setStyleBond(style);
+        atom.atomShape.setStyleAllBonds(style);
         continue;
       }
       Atom[] bondedAtoms = atom.getBondedAtoms();
@@ -109,9 +151,53 @@ public class StyleManager {
     }
   }
 
-  public int percentAngstromBond = 10;
-  public void setPercentAngstromBond(int percentAngstromBond) {
-    this.percentAngstromBond = percentAngstromBond;
+  public void setPercentAngstromBond(int percentAngstromBond,
+                                     BitSet set, boolean bondmodeOr) {
+    int mad = percentAngstromBond * 10;
+    Atom[] atoms = control.getCurrentFrameAtoms();
+    for (int iatom = atoms.length; --iatom >= 0 ; ) {
+      boolean isSelected = set.get(iatom);
+      if (!isSelected && !bondmodeOr)
+        continue;
+      Atom atom = atoms[iatom];
+      if (isSelected && bondmodeOr) {
+        atom.atomShape.setMadAllBonds(mad);
+        continue;
+      }
+      Atom[] bondedAtoms = atom.getBondedAtoms();
+      for (int i = bondedAtoms.length; --i >= 0; ) {
+        int indexOtherAtom = bondedAtoms[i].getAtomNumber();
+        if (set.get(indexOtherAtom))
+          atom.atomShape.setMadBond(mad, i);
+      }
+    }
+    setStyleMadBond(styleBond, percentAngstromBond*10, set, bondmodeOr);
+  }
+
+  public void setStyleMadBond(byte style, int mad,
+                               BitSet set, boolean bondmodeOr) {
+    Atom[] atoms = control.getCurrentFrameAtoms();
+    for (int iatom = atoms.length; --iatom >= 0 ; ) {
+      boolean isSelected = set.get(iatom);
+      if (!isSelected && !bondmodeOr)
+        continue;
+      Atom atom = atoms[iatom];
+      if (isSelected && bondmodeOr) {
+        atom.atomShape.setStyleMadAllBonds(style, mad);
+        continue;
+      }
+      Atom[] bondedAtoms = atom.getBondedAtoms();
+      for (int i = bondedAtoms.length; --i >= 0; ) {
+        int indexOtherAtom = bondedAtoms[i].getAtomNumber();
+        if (set.get(indexOtherAtom))
+          atom.atomShape.setStyleMadBond(style, mad, i);
+      }
+    }
+  }
+
+  public byte styleLabel = DisplayControl.NOLABELS;
+  public void setStyleLabel(byte style) {
+    styleLabel = style;
   }
 
   public boolean showAtoms = true;
@@ -146,11 +232,6 @@ public class StyleManager {
   public boolean showDarkerOutline = false;
   public void setShowDarkerOutline(boolean showDarkerOutline) {
     this.showDarkerOutline = showDarkerOutline;
-  }
-
-  public int percentVdwAtom = 20;
-  public void setPercentVdwAtom(int percentVdwAtom) {
-    this.percentVdwAtom = percentVdwAtom;
   }
 
   public String propertyStyleString = "";

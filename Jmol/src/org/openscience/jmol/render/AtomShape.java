@@ -34,19 +34,25 @@ import javax.vecmath.Point3d;
 
 public class AtomShape extends Shape {
 
-  Atom atom;
+  public Atom atom;
   public int diameter;
-  public int bondWidth;
+  public int numBonds;
+  public int[] bondWidths;
   public byte styleAtom;
-  public byte[] stylesBond;
+  public int madAtom;
+  public byte[] styleBonds;
+  public int[] madBonds;
   
-  public AtomShape(Atom atom, byte styleAtom, byte styleBond) {
+  public AtomShape(Atom atom,
+                   byte styleAtom, int madAtom,
+                   byte styleBond, int madBond) {
     this.atom = atom;
-    this.styleAtom = styleAtom;
-    int numBonds = atom.getBondedCount();
-    stylesBond = new byte[numBonds];
-    while (--numBonds >= 0)
-      stylesBond[numBonds] = styleBond;
+    numBonds = atom.getBondedCount();
+    bondWidths = new int[numBonds];
+    styleBonds = new byte[numBonds];
+    madBonds = new int[numBonds];
+    setStyleMadAtom(styleAtom, madAtom);
+    setStyleMadAllBonds(styleBond, madBond);
   }
 
   public String toString() {
@@ -57,14 +63,65 @@ public class AtomShape extends Shape {
     this.styleAtom = styleAtom;
   }
 
-  public void setStyleBond(byte styleBond) {
-    for (int i = stylesBond.length; --i >= 0; ) {
-      stylesBond[i] = styleBond;
+  /*
+   * What is a MAD?
+   *  - just a term that I made up
+   *  - an abbreviation for Milli Angstrom Diameter
+   * that is
+   *  - a *diameter* of either a bond or an atom
+   *  - in *millis*, or thousandths of an *angstrom*
+   *  - stored as an integer
+   *
+   * However! In the case of an atom diameter, if the parameter
+   * gets passed in as a negative number, then that number
+   * represents a percentage of the vdw radius of that atom.
+   * This is converted to a normal MAD as soon as possible
+   */
+
+  public void setMadAtom(int madAtom) {
+    if (madAtom < 0)
+      madAtom = (int)((-20 * madAtom) * atom.getVdwRadius());
+    this.madAtom = madAtom;
+  }
+        
+  public void setStyleMadAtom(byte styleAtom, int madAtom) {
+    this.styleAtom = styleAtom;
+    if (madAtom < 0) {
+      // a percentage of the atom vdw
+      // radius * 2 * 1000 * -madAtom / 100
+      madAtom = (int)((-20 * madAtom) * atom.getVdwRadius());
+    }
+    this.madAtom = madAtom;
+  }
+        
+  public void setStyleAllBonds(byte styleBond) {
+    for (int i = numBonds; --i >= 0; )
+      styleBonds[i] = styleBond;
+  }
+
+  public void setMadAllBonds(int madBond) {
+    for (int i = numBonds; --i >= 0; )
+      madBonds[i] = madBond;
+  }
+
+  public void setStyleMadAllBonds(byte styleBond, int madBond) {
+    for (int i = numBonds; --i >= 0; ) {
+      styleBonds[i] = styleBond;
+      madBonds[i] = madBond;
     }
   }
 
   public void setStyleBond(byte styleBond, int indexBond) {
-    stylesBond[indexBond] = styleBond;
+    styleBonds[indexBond] = styleBond;
+  }
+
+  public void setMadBond(int madBond, int indexBond) {
+    madBonds[indexBond] = madBond;
+  }
+
+  public void setStyleMadBond(byte styleBond, int madBond, int indexBond) {
+    styleBonds[indexBond] = styleBond;
+    madBonds[indexBond] = madBond;
   }
 
   public void transform(DisplayControl control) {
@@ -72,8 +129,9 @@ public class AtomShape extends Shape {
     x = (int)screen.x;
     y = (int)screen.y;
     z = (int)screen.z;
-    diameter = control.screenAtomDiameter(z, atom);
-    bondWidth = control.screenBondWidth(z);
+    diameter = control.scaleToScreen(z, madAtom);
+    for (int i = numBonds; --i >= 0; )
+      bondWidths[i] = control.scaleToScreen(z, madBonds[i]);
   }
 
   public void render(Graphics g, DisplayControl control) {
@@ -93,7 +151,7 @@ public class AtomShape extends Shape {
     if (bondedAtoms == null) {
       return;
     }
-    for (int i = 0; i < bondedAtoms.length; ++i) {
+    for (int i = numBonds; --i >= 0 ; ) {
       Atom atomOther = bondedAtoms[i];
       AtomShape atomShapeOther = atomOther.getAtomShape();
       int zOther = atomShapeOther.z;
@@ -102,8 +160,14 @@ public class AtomShape extends Shape {
            (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
           isBondClipVisible(control.bondRenderer.clip,
                             x, y, atomShapeOther.x, atomShapeOther.y)) {
-        control.bondRenderer.render(this, atomShapeOther, stylesBond[i],
-                                    atom.getBondOrder(atomOther));
+        Atom[] otherAtomBonds = atomOther.getBondedAtoms();
+        for (int j = atomShapeOther.numBonds; --j >= 0; ) {
+          if (otherAtomBonds[j] == atom) {
+            control.bondRenderer.render(this, i, atomShapeOther, j,
+                                        atom.getBondOrder(atomOther));
+            // FIXME implement atom.getBondOrder(int)
+          }
+        }
       }
     }
   }

@@ -359,6 +359,10 @@ final public class DisplayControl {
     return transformManager.scaleToScreen(z, sizeAngstroms);
   }
 
+  public int scaleToScreen(int z, int milliAngstroms) {
+    return transformManager.scaleToScreen(z, milliAngstroms);
+  }
+
   public void setScreenDimension(Dimension dimCurrent) {
     transformManager.setScreenDimension(dimCurrent);
   }
@@ -845,7 +849,11 @@ final public class DisplayControl {
   }
 
   public void setPercentAngstromBond(int percentAngstromBond) {
-    styleManager.setPercentAngstromBond(percentAngstromBond);
+    if (selectionManager.countSelection() == 0)
+      styleManager.setPercentAngstromBond(percentAngstromBond);
+    else
+      styleManager.setPercentAngstromBond(percentAngstromBond,
+                                          selectionManager.bsSelection, false);
     refresh();
   }
 
@@ -912,7 +920,11 @@ final public class DisplayControl {
   }
 
   public void setPercentVdwAtom(int percentVdwAtom) {
-    styleManager.setPercentVdwAtom(percentVdwAtom);
+    if (selectionManager.countSelection() == 0)
+      styleManager.setPercentVdwAtom(percentVdwAtom);
+    else
+      styleManager.setPercentVdwAtom(percentVdwAtom,
+                                     selectionManager.bsSelection);
     refresh();
   }
 

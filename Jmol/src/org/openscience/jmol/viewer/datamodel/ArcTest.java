@@ -114,7 +114,7 @@ public class ArcTest {
       pointT.set(center);
       pointT.add(vector1);
       matrixT.transform(pointT);
-      g3d.plotPoint(viewer.transformPoint(pointT));
+      g3d.drawPixel(viewer.transformPoint(pointT));
     }
   }
 }

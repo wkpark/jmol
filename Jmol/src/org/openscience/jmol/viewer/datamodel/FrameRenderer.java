@@ -110,7 +110,7 @@ public class FrameRenderer {
 
     for (int i = frame.measurementShapeCount; --i >= 0; ) {
       MeasurementShape measurementShape = frame.measurementShapes[i];
-      measurementShape.transform(viewer);
+      //      measurementShape.transform(viewer);
       measurementRenderer.render(measurementShape);
     }
 

@@ -77,20 +77,57 @@ public class MeasurementRenderer {
     default:
       throw new NullPointerException();
     }
-    if (showMeasurementLabels)
-      paintMeasurementString();
   }
 
   void renderDistance() {
+    AtomShape atomA = frame.getAtomAt(measurement.atomIndices[0]);
+    AtomShape atomB = frame.getAtomAt(measurement.atomIndices[1]);
+    int diamMax = atomA.diameter;
+    if (atomB.diameter > diamMax)
+      diamMax = atomB.diameter;
+    int zOffset = diamMax;
+    int zA = atomA.z - zOffset;
+    if (zA < 0) zA = 0;
+    int zB = atomB.z - zOffset;
+    if (zB < 0) zB = 0;
     g3d.drawDottedLine(colixDistance,
-                       measurement.x, measurement.y, measurement.z,
-                       measurement.xEnd, measurement.yEnd, measurement.zEnd);
+                       atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
+    paintMeasurementString((atomA.x + atomB.x) / 2,
+                           (atomA.y + atomB.y) / 2,
+                           (zA + zB) / 2);
   }
+                           
 
   void renderDihedral() {
+    AtomShape atomA = frame.getAtomAt(measurement.atomIndices[0]);
+    AtomShape atomB = frame.getAtomAt(measurement.atomIndices[1]);
+    AtomShape atomC = frame.getAtomAt(measurement.atomIndices[2]);
+    AtomShape atomD = frame.getAtomAt(measurement.atomIndices[3]);
+    int diamMax = atomA.diameter;
+    if (atomB.diameter > diamMax)
+      diamMax = atomB.diameter;
+    if (atomC.diameter > diamMax)
+      diamMax = atomC.diameter;
+    if (atomD.diameter > diamMax)
+      diamMax = atomD.diameter;
+    int zOffset = diamMax;
+    int zA = atomA.z - zOffset;
+    if (zA < 0) zA = 0;
+    int zB = atomB.z - zOffset;
+    if (zB < 0) zB = 0;
+    int zC = atomC.z - zOffset;
+    if (zC < 0) zC = 0;
+    int zD = atomD.z - zOffset;
+    if (zD < 0) zD = 0;
     g3d.drawDottedLine(colixDistance,
-                       measurement.x, measurement.y, measurement.z,
-                       measurement.xEnd, measurement.yEnd, measurement.zEnd);
+                       atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
+    g3d.drawDottedLine(colixDistance,
+                       atomB.x, atomB.y, zB, atomC.x, atomC.y, zC);
+    g3d.drawDottedLine(colixDistance,
+                       atomC.x, atomC.y, zC, atomD.x, atomD.y, zD);
+    paintMeasurementString((atomA.x + atomB.x + atomC.x + atomD.x) / 4,
+                           (atomA.y + atomB.y + atomC.y + atomD.y) / 4,
+                           (zA + zB + zC + zD) / 4);
   }
 
   AxisAngle4f aaT = new AxisAngle4f();
@@ -99,38 +136,63 @@ public class MeasurementRenderer {
 
   void renderAngle() {
     g3d.setColix(colixDistance);
+    AtomShape atomA = frame.getAtomAt(measurement.atomIndices[0]);
+    AtomShape atomB = frame.getAtomAt(measurement.atomIndices[1]);
+    AtomShape atomC = frame.getAtomAt(measurement.atomIndices[2]);
+    int diamMax = atomA.diameter;
+    if (atomB.diameter > diamMax)
+      diamMax = atomB.diameter;
+    if (atomC.diameter > diamMax)
+      diamMax = atomC.diameter;
+    int zOffset = diamMax;
+    int zA = atomA.z - zOffset;
+    if (zA < 0) zA = 0;
+    int zB = atomB.z - zOffset;
+    if (zB < 0) zB = 0;
+    int zC = atomC.z - zOffset;
+    if (zC < 0) zC = 0;
+    g3d.drawDottedLine(colixDistance,
+                       atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
+    g3d.drawDottedLine(colixDistance,
+                       atomB.x, atomB.y, zB, atomC.x, atomC.y, zC);
+
     AxisAngle4f aa = measurement.aa;
-    Vector3f vector21 = measurement.vector21;
     // FIXME mth -- this really should be a function of pixelsPerAngstrom
     int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
     float stepAngle = aa.angle / dotCount;
     aaT.set(aa);
+    int iMid = dotCount / 2;
     for (int i = dotCount; --i >= 0; ) {
       aaT.angle = i * stepAngle;
       matrixT.set(aaT);
-      pointT.set(vector21);
-      pointT.scale(0.75f);
+      pointT.set(measurement.pointArc);
       matrixT.transform(pointT);
-      pointT.add(measurement.center);
-      g3d.plotPoint(viewer.transformPoint(pointT));
+      pointT.add(atomB.point3f);
+      Point3i screenArc = viewer.transformPoint(pointT);
+      int zArc = screenArc.z - zOffset;
+      if (zArc < 0) zArc = 0;
+      g3d.drawPixel(screenArc.x, screenArc.y, zArc);
+      if (i == iMid) {
+        pointT.set(measurement.pointArc);
+        pointT.scale(1.1f);
+        matrixT.transform(pointT);
+        pointT.add(atomB.point3f);
+        Point3i screenLabel = viewer.transformPoint(pointT);
+        int zLabel = screenLabel.z - zOffset;
+        if (zLabel < 0) zLabel = 0;
+        paintMeasurementString(screenLabel.x, screenLabel.y, zLabel);
+      }
     }
-    int xC, yC, zC;
-    Point3i pointC = viewer.transformPoint(measurement.center);
-    g3d.drawDottedLine(colixDistance,
-                       pointC.x, pointC.y, pointC.z, measurement.x, measurement.y, measurement.z);
-    g3d.drawDottedLine(colixDistance,
-                       pointC.x, pointC.y, pointC.z, measurement.xEnd, measurement.yEnd, measurement.zEnd);
   }
 
-  void paintMeasurementString() {
+  void paintMeasurementString(int x, int y, int z) {
+    if (! showMeasurementLabels)
+      return;
     String strMeasurement = measurement.strMeasurement;
     Font font = viewer.getMeasureFont(10);
     g3d.setFont(font);
     FontMetrics fontMetrics = g3d.getFontMetrics(font);
     int j = fontMetrics.stringWidth(strMeasurement);
-    int xT = (measurement.x + measurement.xEnd) / 2;
-    int yT = (measurement.y + measurement.yEnd) / 2;
-    int zT = (measurement.z + measurement.zEnd) / 2;
-    g3d.drawString(strMeasurement, colixDistance, xT, yT, zT);
+    g3d.drawString(strMeasurement, colixDistance, x+2, y, z);
   }
 }

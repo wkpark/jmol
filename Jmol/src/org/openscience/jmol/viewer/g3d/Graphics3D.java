@@ -514,6 +514,9 @@ final public class Graphics3D {
   public void drawPixel(Point3i point) {
     plotPixelClipped(point.x, point.y, point.z);
   }
+  public void drawPixel(int x, int y, int z) {
+    plotPixelClipped(x, y, z);
+  }
 
   /****************************************************************
    * the plotting routines
@@ -767,21 +770,4 @@ final public class Graphics3D {
       }
     }
   }
-
-    public void plotPoint(Point3i point) {
-	int x = point.x;
-	if (x < 0 || x >= width)
-	    return;
-	int y = point.y;
-	if (y < 0 || y >= height)
-	    return;
-	int z = point.z;
-	if (z < 0 || z >= 8192)
-	    return;
-	int offset = y * width + x;
-	if (z < zbuf[offset]) {
-	    zbuf[offset] = (short)z;
-	    pbuf[offset] = argbCurrent;
-	}
-    }
 }

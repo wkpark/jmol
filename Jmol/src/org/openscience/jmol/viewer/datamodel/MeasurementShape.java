@@ -33,73 +33,49 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-public class MeasurementShape extends LineShape {
+public class MeasurementShape {
 
+  public int count;
   public int[] atomIndices;
   public String strMeasurement;
 
-  public Point3f center, pointT;
-  Vector3f vector21;
-  public int count;
-  AxisAngle4f aa, aaT;
-  Matrix3f matrixT;
-
+  AxisAngle4f aa;
+  Point3f pointArc;
+  
   public MeasurementShape(JmolFrame frame, int count, int[] atomIndices) {
-    Point3f point1 = frame.getAtomPoint3f(atomIndices[0]);
-    Point3f point2 = frame.getAtomPoint3f(atomIndices[1]);
-    Point3f point3 = null;
-    Point3f point4 = null;
+    Point3f pointA = frame.getAtomPoint3f(atomIndices[0]);
+    Point3f pointB = frame.getAtomPoint3f(atomIndices[1]);
+    Point3f pointC = null;
+    Point3f pointD = null;
     this.count = count;
     switch (count) {
     case 2:
-      strMeasurement = formatDistance(point1.distance(point2));;
-
-      pointOrigin = point1;
-      pointEnd = point2;
+      strMeasurement = formatDistance(pointA.distance(pointB));
       break;
     case 3:
-      point3 = frame.getAtomPoint3f(atomIndices[2]);
-      vector21 = new Vector3f(point1);
-      vector21.sub(point2);
-      Vector3f vector23 = new Vector3f(point3);
-      vector23.sub(point2);
-      float angle = vector21.angle(vector23);
+      pointC = frame.getAtomPoint3f(atomIndices[2]);
+      Vector3f vectorBA = new Vector3f();
+      Vector3f vectorBC = new Vector3f();
+      vectorBA.sub(pointA, pointB);
+      vectorBC.sub(pointC, pointB);
+      float angle = vectorBA.angle(vectorBC);
       float degrees = toDegrees(angle);
       strMeasurement = formatAngle(degrees);
-      float len21 = vector21.length();
-      float len23 = vector23.length();
-      if (len21 < len23)
-        vector23.scale(len21/len23);
-      else
-        vector21.scale(len23/len21);
-
-      pointOrigin = new Point3f(point2);
-      pointOrigin.add(vector21);
-      pointEnd = new Point3f(point2);
-      pointEnd.add(vector23);
-
-      center = point2;
 
       Vector3f vectorAxis = new Vector3f();
-      vectorAxis.cross(vector21, vector23);
+      vectorAxis.cross(vectorBA, vectorBC);
       aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, angle);
 
-      pointT = new Point3f();
-      aaT = new AxisAngle4f();
-      matrixT = new Matrix3f();
+      vectorBA.normalize();
+      vectorBA.scale(0.5f);
+      pointArc = new Point3f(vectorBA);
+
       break;
     case 4:
-      point3 = frame.getAtomPoint3f(atomIndices[2]);
-      point4 = frame.getAtomPoint3f(atomIndices[3]);
-      float dihedral = computeDihedral(point1, point2, point3, point4);
+      pointC = frame.getAtomPoint3f(atomIndices[2]);
+      pointD = frame.getAtomPoint3f(atomIndices[3]);
+      float dihedral = computeDihedral(pointA, pointB, pointC, pointD);
       strMeasurement = formatAngle(dihedral);
-
-      pointOrigin = new Point3f(point1);
-      pointOrigin.add(point2);
-      pointOrigin.scale(0.5f);
-      pointEnd = new Point3f(point3);
-      pointEnd.add(point4);
-      pointEnd.scale(0.5f);
       break;
     default:
       System.out.println("Invalid count to measurement shape:" + count);

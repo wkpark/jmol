@@ -179,7 +179,7 @@ public class DotsRenderer {
         matrixT1.transform(torus.outerRadial, pointT1);
         matrixT.transform(pointT1);
         pointT1.add(pointT);
-        g3d.plotPoint(viewer.transformPoint(pointT1));
+        g3d.drawPixel(viewer.transformPoint(pointT1));
       }
     }
   }

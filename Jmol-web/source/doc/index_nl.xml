@@ -39,7 +39,7 @@
         Het draait op Windows, Max OS/X en Linux/Unix-systemen.
 	<ul>
 	  <li>
-        De JmolApplet is een webbrowserapplet die ge&iuml;ntegreerd kan worden
+        De JmolApplet is een webbrowserapplet die ge&#x00EF;ntegreerd kan worden
         met internetpagina's.
 	  </li>
 	  <li>
@@ -261,7 +261,7 @@
 	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
 	  jmol-users emaillijst
 	</a>
-        waar u idee&euml;n en ervaringen kunt uitwisselen, help kunt vragen
+        waar u ideeen en ervaringen kunt uitwisselen, help kunt vragen
         en uw wensen over Jmol kenbaar kunt maken.
 	De
 	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
@@ -271,7 +271,7 @@
       </p>
       
       <p>
-        Diegenen die serieus ge&iuml;nteresseerd zijn in het deelnemen aan de
+        Diegenen die serieus ge&#x00EF;nteresseerd zijn in het deelnemen aan de
         Jmol-gemeenschap worden aangeraden zich aan te melden op de
 	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
 	  jmol-developers emaillijst

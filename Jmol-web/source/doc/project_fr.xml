@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   French translation 
-  Translated from default version : project_en.xml (v 1.1)
+  Translated from default version : project_en.xml (v 1.2)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY language SYSTEM "language.xml" >

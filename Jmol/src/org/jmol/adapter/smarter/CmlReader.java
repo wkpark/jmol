@@ -133,8 +133,16 @@ class CmlReader extends ModelReader {
         case 'A':
           return ModelAdapter.ORDER_AROMATIC;
         }
+        return parseInt(str);
       }
-      return parseInt(str);
+      float floatOrder = parseFloat(str);
+      if (floatOrder == 1.5)
+        return ModelAdapter.ORDER_AROMATIC;
+      if (floatOrder == 2)
+        return 2;
+      if (floatOrder == 3)
+        return 3;
+      return 1;
     }
 
     void breakOutAtomTokens(String str) {
@@ -182,10 +190,10 @@ class CmlReader extends ModelReader {
                              String qName, Attributes atts)
       throws SAXException
     {
-      /* */
+      /*
         System.out.println("startElement(" + namespaceURI + "," + localName +
         "," + qName + "," + atts +  ")");
-      /* */
+      */
       if ("molecule".equals(localName)) {
         ++moleculeCount;
         return;
@@ -193,28 +201,39 @@ class CmlReader extends ModelReader {
       if ("atom".equals(localName)) {
         elementContext = ATOM;
         atom = new Atom();
+        boolean coords3D = false;
         for (int i = atts.getLength(); --i >= 0; ) {
           String attLocalName = atts.getLocalName(i);
           String attValue = atts.getValue(i);
           if ("id".equals(attLocalName)) {
             atom.atomName = attValue;
           } else if ("x3".equals(attLocalName)) {
+            coords3D = true;
             atom.x = parseFloat(attValue);
           } else if ("y3".equals(attLocalName)) {
             atom.y = parseFloat(attValue);
           } else if ("z3".equals(attLocalName)) {
             atom.z = parseFloat(attValue);
+          } else if ("x2".equals(attLocalName)) {
+            if (Float.isNaN(atom.x))
+              atom.x = parseFloat(attValue);
+          } else if ("y2".equals(attLocalName)) {
+            if (Float.isNaN(atom.y))
+              atom.y = parseFloat(attValue);
           } else if ("elementType".equals(attLocalName)) {
             atom.elementSymbol = attValue;
           } else if ("formalCharge".equals(attLocalName)) {
             atom.formalCharge = parseInt(attValue);
           }
         }
+        if (! coords3D)
+          atom.z = 0;
         atom.modelNumber = moleculeCount;
         return;
       }
       if ("atomArray".equals(localName)) {
         atomCount = 0;
+        boolean coords3D = false;
         for (int i = atts.getLength(); --i >= 0; ) {
           String attLocalName = atts.getLocalName(i);
           String attValue = atts.getValue(i);
@@ -223,6 +242,7 @@ class CmlReader extends ModelReader {
             for (int j = tokenCount; --j >= 0; )
               atomArray[j].atomName = tokens[j];
           } else if ("x3".equals(attLocalName)) {
+            coords3D = true;
             breakOutAtomTokens(attValue);
             for (int j = tokenCount; --j >= 0; )
               atomArray[j].x = parseFloat(tokens[j]);
@@ -234,14 +254,26 @@ class CmlReader extends ModelReader {
             breakOutAtomTokens(attValue);
             for (int j = tokenCount; --j >= 0; )
               atomArray[j].z = parseFloat(tokens[j]);
+          } else if ("x2".equals(attLocalName)) {
+            breakOutAtomTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
+              atomArray[j].z = parseFloat(tokens[j]);
+          } else if ("y2".equals(attLocalName)) {
+            breakOutAtomTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
+              atomArray[j].z = parseFloat(tokens[j]);
           } else if ("elementType".equals(attLocalName)) {
             breakOutAtomTokens(attValue);
             for (int j = tokenCount; --j >= 0; )
               atomArray[j].elementSymbol = tokens[j];
           }
         }
-        for (int j = atomCount; --j >= 0; )
-          atomArray[j].modelNumber = moleculeCount;
+        for (int j = atomCount; --j >= 0; ) {
+          Atom atom = atomArray[j];
+          atom.modelNumber = moleculeCount;
+          if (! coords3D)
+            atom.z = 0;
+        }
         return;
       }
       if ("bond".equals(localName)) {
@@ -256,6 +288,10 @@ class CmlReader extends ModelReader {
             order = parseBondToken(attValue);
           }
         }
+        /*
+        System.out.println("trying to add a new bond tokenCount:" +
+                           tokenCount + " order:" + order);
+        */
         if (tokenCount == 2 && order > 0)
           model.newBond(tokens[0], tokens[1], order);
         return;
@@ -311,6 +347,11 @@ class CmlReader extends ModelReader {
         if (atom.elementSymbol != null &&
             ! Float.isNaN(atom.z)) {
           model.addAtomWithMappedName(atom);
+          /*
+          System.out.println(" I just added an atom of type "
+                             + atom.elementSymbol +
+                             " @ " + atom.x + "," + atom.y + "," + atom.z);
+          */
         }
         atom = null;
         elementContext = UNSET;
@@ -342,7 +383,7 @@ class CmlReader extends ModelReader {
         return;
       }
       if ("atomArray".equals(localName)) {
-        System.out.println("adding atomArray:" + atomCount);
+        //        System.out.println("adding atomArray:" + atomCount);
         for (int i = 0; i < atomCount; ++i) {
           Atom atom = atomArray[i];
           if (atom.elementSymbol != null &&
@@ -352,7 +393,7 @@ class CmlReader extends ModelReader {
         return;
       }
       if ("bondArray".equals(localName)) {
-        System.out.println("adding bondArray:" + bondCount);
+        //        System.out.println("adding bondArray:" + bondCount);
         for (int i = 0; i < bondCount; ++i)
           model.addBond(bondArray[i]);
         return;

@@ -105,6 +105,8 @@ public final class Atom implements Bspt.Tuple {
     this.atomIndex = atomIndex;
     this.modelNumber = (short)modelNumber;
     this.elementNumber = elementNumber;
+    if (formalCharge == Integer.MIN_VALUE)
+      formalCharge = 0;
     this.formalChargeAndFlags = (byte)(formalCharge << 4);
     this.partialCharge = partialCharge; // temporarily here
     this.occupancy = (occupancy < 0

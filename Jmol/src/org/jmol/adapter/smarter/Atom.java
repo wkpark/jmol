@@ -30,10 +30,10 @@ class Atom implements Cloneable {
   String elementSymbol;
   byte elementNumber = -1;
   String atomName;
-  int formalCharge;
-  float partialCharge;
+  int formalCharge = Integer.MIN_VALUE;
+  float partialCharge = Float.NaN;
   int scatterFactor = Integer.MIN_VALUE;
-  float x, y, z;
+  float x = Float.NaN, y = Float.NaN, z = Float.NaN;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
   int occupancy = 100;

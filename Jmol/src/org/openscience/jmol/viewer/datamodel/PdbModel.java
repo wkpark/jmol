@@ -34,19 +34,17 @@ import java.util.Vector;
 final public class PdbModel {
 
   PdbFile pdbfile;
-  public int modelNumber;
+  int modelNumber;
+  public int modelIndex;
 
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
 
 
-  public PdbModel(PdbFile pdbfile, int modelNumber) {
+  public PdbModel(PdbFile pdbfile, int modelIndex, int modelNumber) {
     this.pdbfile = pdbfile;
+    this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;
-  }
-
-  public int getModelNumber() {
-    return modelNumber;
   }
 
   public void freeze() {

@@ -996,6 +996,10 @@ final public class JmolViewer {
     return modelManager.getModelFileHeader();
   }
 
+  public int getModelIndex(int modelID) {
+    return modelManager.getModelIndex(modelID);
+  }
+
   public boolean haveFrame() {
     return modelManager.frame != null;
   }
@@ -1301,8 +1305,12 @@ final public class JmolViewer {
     return repaintManager.setDisplayModelID(modelID);
   }
 
-  public int getDisplayModel() {
-    return repaintManager.displayModelID;
+  public boolean setDisplayModelIndex(int modelIndex) {
+    return repaintManager.setDisplayModelIndex(modelIndex);
+  }
+
+  public int getDisplayModelIndex() {
+    return repaintManager.displayModelIndex;
   }
 
   public FrameRenderer getFrameRenderer() {
@@ -1375,7 +1383,7 @@ final public class JmolViewer {
                        " priority:" + Thread.currentThread().getPriority());
     */
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-                          repaintManager.displayModelID);
+                          repaintManager.displayModelIndex);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized. 
@@ -1395,7 +1403,7 @@ final public class JmolViewer {
     g3d.setRectClip(rectClip);
     g3d.beginRendering(false);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-                          repaintManager.displayModelID);
+                          repaintManager.displayModelIndex);
     g3d.endRendering();
     return g3d.getScreenImage();
   }

@@ -81,7 +81,16 @@ final public class PdbFile {
       modelNumbers = Util.doubleLength(modelNumbers);
     }
     modelNumbers[modelCount] = modelNumber;
-    return pdbmodels[modelCount++] = new PdbModel(this, modelNumber);
+    PdbModel pdbmodel = new PdbModel(this, modelCount, modelNumber);
+    pdbmodels[modelCount++] = pdbmodel;
+    return pdbmodel;
+  }
+
+  int getModelIndex(int modelID) {
+    int i;
+    for (i = modelCount; --i >= 0 && modelNumbers[i] != modelID; )
+      ;
+    return i;
   }
 
   private void propogateSecondaryStructure() {

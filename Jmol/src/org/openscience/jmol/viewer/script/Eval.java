@@ -1056,16 +1056,16 @@ public class Eval implements Runnable {
     return lookupValue(variable, true);
   }
 
-  void selectModelAtoms(int modelNumber, BitSet bsResult) {
+  void selectModelIndexAtoms(int modelIndex, BitSet bsResult) {
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; )
-      if (frame.getAtomAt(i).getModelNumber() == modelNumber)
+      if (frame.getAtomAt(i).modelIndex == modelIndex)
         bsResult.set(i);
   }
 
-  BitSet getSpecModel(int modelNumber) {
+  BitSet getSpecModel(int modelID) {
     BitSet bsModel = new BitSet(viewer.getAtomCount());
-    selectModelAtoms(modelNumber, bsModel);
+    selectModelIndexAtoms(viewer.getModelIndex(modelID), bsModel);
     return bsModel;
   }
 
@@ -1121,7 +1121,7 @@ public class Eval implements Runnable {
         propertyValue = atom.getCovalentBondCount();
         break;
       case Token.model:
-        propertyValue = atom.getModelNumber();
+        propertyValue = atom.getModelID();
         break;
       default:
         unrecognizedAtomProperty(property);
@@ -1224,13 +1224,13 @@ public class Eval implements Runnable {
 
   void withinModel(BitSet bs, BitSet bsResult) {
     Frame frame = viewer.getFrame();
-    int modelLast = -1;
+    int modelIndexLast = -1;
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       if (bs.get(i)) {
-        int model = frame.getAtomAt(i).getModelNumber();
-        if (model != modelLast) {
-          selectModelAtoms(model, bsResult);
-          modelLast = model;
+        int modelIndex = frame.getAtomAt(i).modelIndex;
+        if (modelIndex != modelIndexLast) {
+          selectModelIndexAtoms(modelIndex, bsResult);
+          modelIndexLast = modelIndex;
         }
       }
     }

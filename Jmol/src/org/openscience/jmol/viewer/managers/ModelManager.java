@@ -130,6 +130,10 @@ public class ModelManager {
     return (frame == null) ? 0 : frame.getModelCount();
   }
 
+  public int getModelIndex(int modelID) {
+    return (frame == null) ? -1 : frame.getModelIndex(modelID);
+  }
+
   public int getChainCount() {
     return (frame == null) ? 0 : frame.getChainCount();
   }

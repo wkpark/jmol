@@ -42,7 +42,7 @@ public final class Atom implements Bspt.Tuple {
   public int atomIndex;
   Frame frame; // maybe we can get rid of this ...
   Group group; // ... if everybody has a group
-  short modelNumber; // we want this here for the BallsRenderer
+  public short modelIndex; // we want this here for the BallsRenderer
   public Point3f point3f;
   long xyzd;
   //  private short x, y, z;
@@ -66,7 +66,7 @@ public final class Atom implements Bspt.Tuple {
   float partialCharge;
 
   public Atom(Frame frame, int atomIndex,
-              int modelNumber,
+              int modelIndex, int modelNumber,
               byte elementNumber,
               String atomName,
               int formalCharge, float partialCharge,
@@ -92,7 +92,7 @@ public final class Atom implements Bspt.Tuple {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
-    this.modelNumber = (short)modelNumber;
+    this.modelIndex = (short)modelIndex;
     this.elementNumber = elementNumber;
     if (formalCharge == Integer.MIN_VALUE)
       formalCharge = 0;
@@ -413,10 +413,6 @@ public final class Atom implements Bspt.Tuple {
     return madAtom / (1000f * 2);
   }
 
-  public int getModelNumber() {
-    return modelNumber;
-  }
-
   public char getChainID() {
     return group.chain.chainID;
   }
@@ -622,7 +618,7 @@ public final class Atom implements Bspt.Tuple {
         strLabel += getChainID();
         break;
       case 'M':
-        strLabel += "/" + getModelNumber();
+        strLabel += "/" + getModelID();
         break;
       case 'm':
         strLabel += "<X>";
@@ -678,7 +674,7 @@ public final class Atom implements Bspt.Tuple {
     }
     if (frame.getModelCount() > 1) {
       info.append(" Model:");
-      info.append(modelNumber);
+      info.append(getModelID());
     }
     return "" + info;
   }
@@ -712,7 +708,7 @@ public final class Atom implements Bspt.Tuple {
     }
     if (frame.getModelCount() > 1) {
       info.append("/");
-      info.append(modelNumber);
+      info.append(getModelID());
     }
     return "" + info;
   }

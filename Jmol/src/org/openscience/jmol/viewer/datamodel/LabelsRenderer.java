@@ -52,13 +52,13 @@ class LabelsRenderer extends ShapeRenderer {
     if (labelStrings == null)
       return;
     Atom[] atoms = frame.atoms;
-    int displayModel = this.displayModel;
+    int displayModelIndex = this.displayModelIndex;
     for (int i = labelStrings.length; --i >= 0; ) {
       String label = labelStrings[i];
       if (label == null)
         continue;
       Atom atom = atoms[i];
-      if (displayModel != 0 && atom.modelNumber != displayModel)
+      if (displayModelIndex >= 0 && displayModelIndex != atom.modelIndex)
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
       short bgcolix =

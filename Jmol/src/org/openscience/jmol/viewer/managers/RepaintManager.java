@@ -45,8 +45,25 @@ public class RepaintManager {
     frameRenderer = new FrameRenderer(viewer);
   }
 
-  public int displayModelID = 0;
-  int displayModelIndex = -1;
+  public int displayModelIndex = 0;
+
+  public boolean setDisplayModelIndex(int modelIndex) {
+    if (modelIndex > 0) {
+      Frame frame = viewer.getFrame();
+      if (modelIndex >= frame.modelCount) {
+        System.out.println("bad model index");
+        System.out.println("modelIndex=" + modelIndex +
+                           "\nframe.modelIDs.length=" + frame.modelIDs.length +
+                           "viewer.getModelCount()=" + viewer.getModelCount() +
+                           "frame.modelCount=" + frame.modelCount);
+        return false;
+      }
+    }
+    this.displayModelIndex = modelIndex;
+    viewer.notifyFrameChanged(modelIndex);
+    return true;
+  }
+
   public boolean setDisplayModelID(int modelID) {
     int i = -1;
     if (modelID != 0) {
@@ -58,25 +75,7 @@ public class RepaintManager {
       if (i < 0)
         return false;
     }
-    //    System.out.println("display modelID=" + modelID);
-    displayModelID = modelID;
-    displayModelIndex = i;
-    viewer.notifyFrameChanged(displayModelIndex);
-    return true;
-  }
-
-  void setDisplayModelIndex(int modelIndex) {
-    Frame frame = viewer.getFrame();
-    try {
-      this.displayModelIndex = modelIndex;
-      this.displayModelID = frame.modelIDs[modelIndex];
-    } catch (Exception ex) {
-      System.out.println("modelIndex=" + modelIndex +
-                         "\nframe.modelIDs.length=" + frame.modelIDs.length +
-                         "viewer.getModelCount()=" + viewer.getModelCount() +
-                         "frame.modelCount=" + frame.modelCount);
-    }
-    viewer.notifyFrameChanged(modelIndex);
+    return setDisplayModelIndex(i);
   }
 
   public int animationDirection = 1;
@@ -129,7 +128,7 @@ public class RepaintManager {
   }
 
   public boolean setAnimationRelative(int direction) {
-    if (displayModelID == 0)
+    if (displayModelIndex < 0)
       return false;
     int modelIndexNext = displayModelIndex + (direction * currentDirection);
     int modelCount = viewer.getModelCount();
@@ -271,7 +270,7 @@ public class RepaintManager {
   
   public void clearAnimation() {
     setAnimationOn(false);
-    setDisplayModelID(0);
+    setDisplayModelID(1);
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(0, 0, 0, 0);

@@ -52,6 +52,7 @@ final public class Frame {
 
   final static int growthIncrement = 128;
   public int modelCount;
+  int modelIndex = -1;
   int lastModelNumber = -1;
   public short modelIDs[];
   int atomCount = 0;
@@ -117,12 +118,12 @@ final public class Frame {
       if (atoms[i].atomSerial != Integer.MIN_VALUE)
         return;
     // now, we'll assign 1-based atom numbers within each model
-    int lastModelNumber = Integer.MAX_VALUE;
+    int lastModelIndex = Integer.MAX_VALUE;
     int modelAtomIndex = 0;
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atoms[i];
-      if (atom.modelNumber != lastModelNumber) {
-        lastModelNumber = atom.modelNumber;
+      if (atom.modelIndex != lastModelIndex) {
+        lastModelIndex = atom.modelIndex;
         modelAtomIndex = 1;
       }
       atom.atomSerial = modelAtomIndex++;
@@ -143,12 +144,13 @@ final public class Frame {
     if (modelNumber != lastModelNumber) {
       if (modelCount == modelIDs.length)
         modelIDs = Util.setLength(modelIDs, modelCount + 20);
+      modelIndex = modelCount;
       lastModelNumber = modelIDs[modelCount++] = (short)modelNumber;
     }
     if (atomCount == atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount + growthIncrement);
     Atom atom = new Atom(this, atomCount,
-                         modelNumber, 
+                         modelIndex, modelNumber, 
                          atomicNumber,
                          atomName,
                          formalCharge, partialCharge,
@@ -171,7 +173,7 @@ final public class Frame {
     ++atomCount;
     htAtomMap.put(atomUid, atom);
     if (bspf != null)
-      bspf.addTuple(atom.getModelNumber(), atom);
+      bspf.addTuple(atom.modelIndex, atom);
     float bondingRadius = atom.getBondingRadiusFloat();
     if (bondingRadius > maxBondingRadius)
       maxBondingRadius = bondingRadius;
@@ -191,6 +193,10 @@ final public class Frame {
 
   public int getModelCount() {
     return modelCount;
+  }
+
+  public int getModelIndex(int modelID) {
+    return pdbFile.getModelIndex(modelID);
   }
 
   public int getChainCount() {
@@ -582,7 +588,7 @@ final public class Frame {
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         if (! atom.isDeleted())
-          bspf.addTuple(atom.getModelNumber(), atom);
+          bspf.addTuple(atom.modelIndex, atom);
       }
     }
   }
@@ -700,7 +706,7 @@ final public class Frame {
       float myBondingRadius = atom.getBondingRadiusFloat();
       float searchRadius =
         myBondingRadius + maxBondingRadius + bondTolerance;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
@@ -768,7 +774,7 @@ final public class Frame {
       if (elementNumber != 7 && elementNumber != 8)
         continue;
       float searchRadius = hbondMax;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();

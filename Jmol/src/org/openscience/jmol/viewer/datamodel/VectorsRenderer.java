@@ -38,12 +38,12 @@ class VectorsRenderer extends ShapeRenderer {
     if (mads == null)
       return;
     short[] colixes = vectors.colixes;
-    int displayModel = this.displayModel;
+    int displayModelIndex = this.displayModelIndex;
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       if (mads[i] == 0 ||
           atom.vibrationVector == null ||
-          (displayModel != 0 && atom.modelNumber != displayModel))
+          (displayModelIndex >= 0 && atom.modelIndex != displayModelIndex))
         continue;
       if (transform(mads[i], atom))
         renderVector(colixes[i], atom);

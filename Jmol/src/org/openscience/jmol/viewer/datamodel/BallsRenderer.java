@@ -47,8 +47,8 @@ class BallsRenderer extends ShapeRenderer {
     showHydrogens = viewer.getShowHydrogens();
 
     Atom[] atoms = frame.atoms;
-    int displayModel = this.displayModel;
-    if (displayModel == 0) {
+    int displayModelIndex = this.displayModelIndex;
+    if (displayModelIndex < 0) {
       for (int i = frame.atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         atom.transform(viewer);
@@ -57,7 +57,7 @@ class BallsRenderer extends ShapeRenderer {
     } else {
       for (int i = frame.atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
-        if (atom.modelNumber != displayModel) {
+        if (atom.modelIndex != displayModelIndex) {
           atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
           continue;
         }

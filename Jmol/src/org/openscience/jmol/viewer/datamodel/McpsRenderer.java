@@ -38,7 +38,7 @@ abstract class McpsRenderer extends ShapeRenderer {
     Mcps mcps = (Mcps)shape;
     for (int m = mcps.getMcpsmodelCount(); --m >= 0; ) {
       Mcps.Mcpsmodel mcpsmodel = mcps.getMcpsmodel(m);
-      if (displayModel > 0 && displayModel != mcpsmodel.modelNumber)
+      if (displayModelIndex >= 0 && displayModelIndex != mcpsmodel.modelIndex)
         continue;
       for (int c = mcpsmodel.getMcpschainCount(); --c >= 0; ) {
         Mcps.Mcpschain mcpschain = mcpsmodel.getMcpschain(c);

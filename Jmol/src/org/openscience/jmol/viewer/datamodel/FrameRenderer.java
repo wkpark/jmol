@@ -46,9 +46,9 @@ public class FrameRenderer {
   }
 
   public void render(Graphics3D g3d, Rectangle rectClip,
-                     Frame frame, int displayModel) {
+                     Frame frame, int displayModelIndex) {
 
-    if (frame.atomCount <= 0 || displayModel < 0)
+    if (frame.atomCount <= 0)
       return;
 
     viewer.calcTransformMatrices();
@@ -57,7 +57,8 @@ public class FrameRenderer {
       Shape shape = frame.shapes[i];
       if (shape == null)
         continue;
-      getRenderer(i, g3d).render(g3d, rectClip, frame, displayModel, shape);
+      getRenderer(i, g3d).render(g3d, rectClip, frame,
+                                 displayModelIndex, shape);
     }
   }
 

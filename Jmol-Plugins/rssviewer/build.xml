@@ -13,6 +13,7 @@
       <include name="jmol.jar"/>
       <include name="cdk-io.jar"/>
       <include name="cdk-core.jar"/>
+      <include name="cdk-extra.jar"/>
     </fileset>
   </path>
    

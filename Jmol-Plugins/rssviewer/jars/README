@@ -1,2 +1,2 @@
 The plugin needs the JmolPluginInterface to compile.
-And, additionally, the cdk-core.jar and cdk-io.jar.
+And, additionally, the cdk-core.jar, cdk-io.jar and cdk-extra.jar.

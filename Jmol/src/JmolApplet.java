@@ -23,6 +23,7 @@
  *  02111-1307  USA.
  */
 
+import org.openscience.jmol.applet.*;
 import org.openscience.jmol.viewer.*;
 import org.jmol.api.ModelAdapter;
 import org.openscience.jmol.viewer.JmolStatusListener;

@@ -3224,7 +3224,7 @@ class Eval implements Runnable {
                             new Short(order));
   }
 
-  void console() throws ScriptException {
+  void console() {
     viewer.showConsole(statement[1].tok == Token.on);
   }
 }

@@ -9,6 +9,14 @@
       </p>
     </header>
 
+    <section title="Requirements">
+      <p>The Jmol applet requires Java 1.1 or later.
+      Although, the applet should work with any browser, the latest
+      <a href="http://java.sun.com/getjava/download.html">Java Plug-in</a>
+      is recommended.
+      </p>
+
+    </section>
     <section title="Downloading the applet">
       <p>To use the applet, you must first download the applet distribution and
       extract the files. It can be downloaded from <a

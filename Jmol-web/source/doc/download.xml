@@ -3,7 +3,15 @@
   <body>
     <title>Download Jmol</title>
     
-    <section title="Running Jmol with Java Web Start.">
+    <section title="Requirements">
+      <p>The Jmol application requires Java 1.2 or later. The latest
+      <a href="http://java.sun.com/j2se/">Java 2 Platform Standard Edition</a>
+      is recommended.
+      </p>
+
+    </section>
+
+    <section title="Running Jmol with Java Web Start">
       <p>If you have <a
       href="http://java.sun.com/products/javawebstart/index.html">Java Web
       Start</a> installed, you can run Jmol by simply clicking on the following

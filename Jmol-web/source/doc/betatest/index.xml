@@ -6,11 +6,11 @@
     <section title="Jmol v10 Beta Testing">
 
       <p>
-	Jmol v10 is a complete rewrite of most of Jmol.
+	Jmol v10 is a complete rewrite of Jmol.
 	Major features/changes include:
 	<ul>
 	  <li>substantial performance improvements</li>
-	  <li>true 3d graphics engine</li>
+	  <li>true 3d graphics engine that requires no special hardware</li>
 	  <li>support for macromolecule secondary structure graphics</li>
 	  <li>additional script commands</li>
 	  <li>support for the RasMol/Chime coordinate system orientation</li>
@@ -70,84 +70,46 @@
       </section>
     </section>
     
-    <section title="Jmol10pre8">
+    <section title="Jmol10pre9">
       <p>
-	Jmol version 10 pre-release 8 was released on 28 Mar 2004.
+	Jmol version 10 pre-release 9 was released on Sun 9 May 2004.
 	This release includes
 	the following enhancements:
 	<ul>
-	  <li>initial support for CIF/mmCIF files</li>
-	  <li>better support for ShelX .res files</li>
+	  <li>initial support for CML files (on >= 1.4 JVMs)</li>
+	  <li>initial support for Gaussian output</li>
 	  <li>
-	    initial support for atom <strong>hover</strong> with
-	    the addition of the 'hover {labelFormat}' command
+	    initial support for Ribbons &amp; Mesh rendering of
+	    protein secondary structures
 	  </li>
-	  <li>
-	    support for --script and -s as a script parameter to the
-	    Jmol application
-	  </li>
-	  <li>lightened default 'carbon' color</li>
-	  <li>corrected bugs in atom expressions with numeric group IDs</li>
-	  <li>corrected bugs in label and font control </li>
-	  <li>adjusted mouse gestures</li>
+	  <li>initial scripting support for vibrations</li>
+	  <li>restructuring of the Graphics3D code</li>
+	  <li>bug fixes</li>
 	</ul>
-	This release continues to have the
-	following functional limitations:
+	The following areas are still not supported. We hope to begin
+	work in one or more of these areas over the coming weeks:
 	<ul>
-	  <li>Supports .xyz, .mol, .pdb, .res and .cif files</li>
-	  <li>Does not handle vibrations</li>
-	  <li>Does not have full crystal cell support</li>
-	</ul>
-	No work is planned in the following areas until at least July 2004
-	<ul>
-	  <li>nucleotide graphic shapes</li>
-	  <li>ribbons support</li>
+	  <li>nucleotide chain graphic shapes</li>
 	  <li>
-	    automatic recognition of protein secondary structures using DSSP
-	    or related algorithms
+	    automatic recognition of protein secondary structures
+	    using DSSP or related algorithms
 	  </li>
 	  <li>isosurfaces</li>
 	  <li>full animation support</li>
 	</ul>
       </p>
       <p>
-	Additional notes regarding support for .cif files
-	<ul>
-	  <li>
-	    Both cartesian and fractional coordinates are supported.
-	  </li>
-	  <li>
-	    Protein secondary structures of helix, turn, and sheet are
-	    supported.
-	  </li>
-	  <li>
-	    <i>No</i> bonding information is read from CIF/mmCIF files ...
-	    bonds are generated through autobonding.
-	    (It would be a big help to me if someone could explain to
-	    me how bonds are defined in CIF/mmCIF files.)
-	  </li>
-	  <li>
-	    Supporting mmCIF files required some fundamental changes to the
-	    underlying data structures for atom expression queries. This
-	    had an impact on PDB files. Therefore, some bugs were
-	    <i>probably</i> introduced. Please be aware of this and
-	    report any incorrect behavior with atom expressions when
-	    working with either mmCIF or PDB files.
-	  </li>
-	</ul>
-      </p>
-      <p>
-	<a href="Jmol10pre8.zip">
+	<a href="Jmol10pre9.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre8.zip
+	    Jmol10pre9.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre7.zip">
+	<a href="Jmol10pre8.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre7.zip
+	    <i>Give me the old code</i> Jmol10pre8.zip
 	  </font>
 	</a>
       </p>

@@ -1,0 +1,1354 @@
+<?xml version="1.0"?>
+<!-- Made with the CLUSTER::CRYSTAL package. -->
+<molecule>
+  <atom id="a1">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 -8.08140194554239 -4.20810379119021</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a2">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 -7.15682904611274 -5.34267046621204</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a3">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 -6.5370725539979 -5.53986789595266</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a4">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 -8.39914443175117 -3.58488902152459</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a5">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 -8.64923676370286 -3.84198475787724</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a6">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 -5.97254126967714 -6.38481961040961</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a7">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 -7.25105347001468 -5.61622243821107</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a8">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 -5.92931573864712 -4.74470795726055</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a9">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 -7.70775390091184 -6.23240768437421</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a10">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 -6.37952769573429 -5.17896836089947</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a11">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 -8.08140194554239 0.61047973180669</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a12">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 -7.15682904611274 -0.52408694321514</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a13">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 -6.5370725539979 -0.72128437295576</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a14">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 -8.39914443175117 1.23369450147231</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a15">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 -8.64923676370286 0.976598765119667</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a16">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 -5.97254126967714 -1.56623608741271</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a17">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 -7.25105347001468 -0.79763891521417</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a18">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 -5.92931573864712 0.0738755657363552</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a19">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 -7.70775390091184 -1.4138241613773</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a20">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 -6.37952769573429 -0.360384837902563</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a21">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 -8.08140194554239 5.42906325480359</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a22">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 -7.15682904611274 4.29449657978176</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a23">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 -6.5370725539979 4.09729915004114</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a24">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 -8.39914443175117 6.05227802446922</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a25">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 -8.64923676370286 5.79518228811657</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a26">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 -5.97254126967714 3.2523474355842</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a27">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 -7.25105347001468 4.02094460778273</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a28">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 -5.92931573864712 4.89245908873326</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a29">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 -7.70775390091184 3.4047593616196</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a30">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 -6.37952769573429 4.45819868509434</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a31">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 -0.50697037536138 -4.20810379119021</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a32">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 0.417602524068274 -5.34267046621204</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a33">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 1.03735901618311 -5.53986789595266</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a34">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 -0.824712861570152 -3.58488902152459</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a35">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 -1.07480519352185 -3.84198475787723</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a36">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 1.60189030050387 -6.38481961040961</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a37">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 0.323378100166336 -5.61622243821107</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a38">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 1.6451158315339 -4.74470795726055</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a39">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 -0.13332233073083 -6.2324076843742</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a40">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 1.19490387444673 -5.17896836089946</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a41">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 -0.50697037536138 0.610479731806692</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a42">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 0.417602524068274 -0.524086943215138</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a43">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 1.03735901618311 -0.721284372955758</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a44">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 -0.824712861570152 1.23369450147232</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a45">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 -1.07480519352185 0.976598765119669</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a46">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 1.60189030050387 -1.56623608741271</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a47">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 0.323378100166336 -0.797638915214168</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a48">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 1.6451158315339 0.073875565736357</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a49">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 -0.13332233073083 -1.4138241613773</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a50">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 1.19490387444673 -0.360384837902561</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a51">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 -0.50697037536138 5.42906325480359</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a52">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 0.417602524068274 4.29449657978176</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a53">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 1.03735901618311 4.09729915004115</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a54">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 -0.824712861570152 6.05227802446922</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a55">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 -1.07480519352185 5.79518228811657</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a56">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 1.60189030050387 3.2523474355842</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a57">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 0.323378100166336 4.02094460778273</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a58">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 1.6451158315339 4.89245908873326</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a59">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 -0.13332233073083 3.4047593616196</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a60">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 1.19490387444673 4.45819868509434</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a61">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 7.06746119481964 -4.20810379119021</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a62">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 7.99203409424929 -5.34267046621204</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a63">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 8.61179058636413 -5.53986789595266</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a64">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 6.74971870861086 -3.58488902152459</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a65">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 6.49962637665917 -3.84198475787723</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a66">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 9.17632187068489 -6.38481961040961</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a67">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 7.89780967034735 -5.61622243821107</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a68">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 9.21954740171491 -4.74470795726054</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a69">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 7.44110923945019 -6.2324076843742</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a70">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 8.76933544462774 -5.17896836089946</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a71">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 7.06746119481964 0.610479731806694</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a72">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 7.99203409424929 -0.524086943215136</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a73">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 8.61179058636413 -0.721284372955756</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a74">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 6.74971870861086 1.23369450147232</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a75">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 6.49962637665917 0.976598765119671</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a76">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 9.17632187068489 -1.5662360874127</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a77">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 7.89780967034735 -0.797638915214166</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a78">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 9.21954740171491 0.0738755657363588</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a79">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 7.44110923945019 -1.4138241613773</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a80">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 8.76933544462774 -0.360384837902559</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a81">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.25995207520028 7.06746119481964 5.4290632548036</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a82">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">-2.28061450292032 7.99203409424929 4.29449657978177</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a83">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">-3.60182729884772 8.61179058636413 4.09729915004115</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a84">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-3.29474209276677 6.74971870861086 6.05227802446922</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a85">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">-1.20551446227219 6.49962637665917 5.79518228811657</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a86">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.61406200654592 9.17632187068489 3.2523474355842</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a87">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-4.31869086843868 7.89780967034735 4.02094460778274</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a88">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-3.80596131838303 9.21954740171491 4.89245908873326</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a89">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.99981284955537 7.44110923945019 3.4047593616196</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a90">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">-1.53946722166009 8.76933544462774 4.45819868509434</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a91">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 -8.08140194554239 -2.04954426068902</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a92">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 -7.15682904611274 -3.18411093571085</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a93">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 -6.5370725539979 -3.38130836545147</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a94">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 -8.39914443175117 -1.4263294910234</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a95">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 -8.64923676370286 -1.68342522737605</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a96">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 -5.97254126967714 -4.22626007990842</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a97">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 -7.25105347001468 -3.45766290770988</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a98">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 -5.92931573864712 -2.58614842675936</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a99">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 -7.70775390091184 -4.07384815387302</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a100">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 -6.37952769573429 -3.02040883039828</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a101">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 -8.08140194554239 2.76903926230788</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a102">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 -7.15682904611274 1.63447258728605</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a103">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 -6.5370725539979 1.43727515754543</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a104">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 -8.39914443175117 3.3922540319735</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a105">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 -8.64923676370286 3.13515829562086</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a106">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 -5.97254126967714 0.592323443088482</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a107">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 -7.25105347001468 1.36092061528702</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a108">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 -5.92931573864712 2.23243509623754</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a109">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 -7.70775390091184 0.744735369123886</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a110">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 -6.37952769573429 1.79817469259863</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a111">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 -8.08140194554239 7.58762278530478</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a112">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 -7.15682904611274 6.45305611028295</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a113">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 -6.5370725539979 6.25585868054233</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a114">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 -8.39914443175117 8.21083755497041</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a115">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 -8.64923676370286 7.95374181861776</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a116">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 -5.97254126967714 5.41090696608538</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a117">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 -7.25105347001468 6.17950413828392</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a118">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 -5.92931573864712 7.05101861923445</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a119">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 -7.70775390091184 5.56331889212079</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a120">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 -6.37952769573429 6.61675821559553</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a121">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 -0.506970375361379 -2.04954426068902</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a122">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 0.417602524068274 -3.18411093571085</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a123">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 1.03735901618311 -3.38130836545147</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a124">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 -0.824712861570152 -1.4263294910234</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a125">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 -1.07480519352185 -1.68342522737604</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a126">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 1.60189030050387 -4.22626007990842</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a127">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 0.323378100166336 -3.45766290770988</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a128">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 1.6451158315339 -2.58614842675936</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a129">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 -0.133322330730829 -4.07384815387302</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a130">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 1.19490387444673 -3.02040883039828</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a131">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 -0.506970375361379 2.76903926230788</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a132">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 0.417602524068274 1.63447258728605</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a133">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 1.03735901618311 1.43727515754543</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a134">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 -0.824712861570152 3.39225403197351</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a135">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 -1.07480519352185 3.13515829562086</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a136">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 1.60189030050387 0.592323443088483</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a137">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 0.323378100166336 1.36092061528702</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a138">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 1.6451158315339 2.23243509623755</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a139">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 -0.133322330730829 0.744735369123888</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a140">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 1.19490387444673 1.79817469259863</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a141">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 -0.506970375361379 7.58762278530478</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a142">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 0.417602524068274 6.45305611028295</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a143">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 1.03735901618311 6.25585868054233</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a144">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 -0.824712861570152 8.21083755497041</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a145">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 -1.07480519352185 7.95374181861776</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a146">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 1.60189030050387 5.41090696608539</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a147">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 0.323378100166336 6.17950413828392</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a148">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 1.6451158315339 7.05101861923445</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a149">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 -0.133322330730829 5.56331889212079</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a150">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 1.19490387444673 6.61675821559553</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a151">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 7.06746119481964 -2.04954426068902</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a152">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 7.99203409424929 -3.18411093571085</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a153">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 8.61179058636413 -3.38130836545147</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a154">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 6.74971870861086 -1.4263294910234</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a155">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 6.49962637665917 -1.68342522737604</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a156">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 9.17632187068489 -4.22626007990842</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a157">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 7.89780967034735 -3.45766290770988</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a158">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 9.21954740171491 -2.58614842675936</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a159">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 7.44110923945019 -4.07384815387301</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a160">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 8.76933544462774 -3.02040883039827</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a161">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 7.06746119481964 2.76903926230788</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a162">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 7.99203409424929 1.63447258728605</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a163">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 8.61179058636413 1.43727515754543</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a164">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 6.74971870861086 3.39225403197351</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a165">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 6.49962637665917 3.13515829562086</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a166">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 9.17632187068489 0.592323443088485</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a167">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 7.89780967034735 1.36092061528702</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a168">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 9.21954740171491 2.23243509623755</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a169">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 7.44110923945019 0.744735369123889</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a170">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 8.76933544462774 1.79817469259863</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a171">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.15268609665969 7.06746119481964 7.58762278530479</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a172">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">2.13202366893966 7.99203409424929 6.45305611028296</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a173">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">0.810810873012253 8.61179058636413 6.25585868054234</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a174">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">1.11789607909321 6.74971870861086 8.21083755497041</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a175">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">3.20712370958779 6.49962637665917 7.95374181861776</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a176">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.798576165314054 9.17632187068489 5.41090696608539</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a177">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.093947303421297 7.89780967034735 6.17950413828393</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a178">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">0.606676853476947 9.21954740171491 7.05101861923445</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a179">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.41282532230461 7.44110923945019 5.56331889212079</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a180">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">2.87317095019989 8.76933544462774 6.61675821559553</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a181">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 -8.08140194554239 0.109015269812165</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a182">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 -7.15682904611274 -1.02555140520966</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a183">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 -6.5370725539979 -1.22274883495028</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a184">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 -8.39914443175117 0.732230039477789</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a185">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 -8.64923676370286 0.475134303125142</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a186">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 -5.97254126967714 -2.06770054940723</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a187">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 -7.25105347001468 -1.29910337720869</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a188">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 -5.92931573864712 -0.42758889625817</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a189">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 -7.70775390091184 -1.91528862337183</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a190">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 -6.37952769573429 -0.861849299897088</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a191">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 -8.08140194554239 4.92759879280907</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a192">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 -7.15682904611274 3.79303211778724</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a193">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 -6.5370725539979 3.59583468804662</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a194">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 -8.39914443175117 5.55081356247469</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a195">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 -8.64923676370286 5.29371782612205</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a196">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 -5.97254126967714 2.75088297358967</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a197">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 -7.25105347001468 3.51948014578821</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a198">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 -5.92931573864712 4.39099462673873</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a199">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 -7.70775390091184 2.90329489962507</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a200">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 -6.37952769573429 3.95673422309982</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a201">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 -8.08140194554239 9.74618231580597</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a202">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 -7.15682904611274 8.61161564078414</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a203">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 -6.5370725539979 8.41441821104352</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a204">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 -8.39914443175117 10.3693970854716</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a205">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 -8.64923676370286 10.1123013491189</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a206">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 -5.97254126967714 7.56946649658657</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a207">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 -7.25105347001468 8.33806366878511</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a208">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 -5.92931573864712 9.20957814973564</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a209">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 -7.70775390091184 7.72187842262198</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a210">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 -6.37952769573429 8.77531774609672</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a211">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 -0.506970375361379 0.109015269812167</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a212">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 0.417602524068274 -1.02555140520966</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a213">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 1.03735901618311 -1.22274883495028</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a214">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 -0.824712861570152 0.732230039477791</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a215">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 -1.07480519352185 0.475134303125144</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a216">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 1.60189030050387 -2.06770054940723</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a217">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 0.323378100166336 -1.29910337720869</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a218">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 1.6451158315339 -0.427588896258168</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a219">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 -0.133322330730829 -1.91528862337183</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a220">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 1.19490387444673 -0.861849299897086</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a221">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 -0.506970375361379 4.92759879280907</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a222">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 0.417602524068274 3.79303211778724</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a223">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 1.03735901618311 3.59583468804662</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a224">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 -0.824712861570152 5.55081356247469</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a225">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 -1.07480519352185 5.29371782612205</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a226">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 1.60189030050387 2.75088297358967</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a227">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 0.323378100166336 3.51948014578821</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a228">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 1.6451158315339 4.39099462673873</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a229">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 -0.133322330730829 2.90329489962508</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a230">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 1.19490387444673 3.95673422309982</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a231">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 -0.506970375361379 9.74618231580597</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a232">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 0.417602524068274 8.61161564078414</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a233">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 1.03735901618311 8.41441821104352</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a234">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 -0.824712861570152 10.3693970854716</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a235">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 -1.07480519352185 10.112301349119</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a236">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 1.60189030050387 7.56946649658657</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a237">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 0.323378100166336 8.33806366878511</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a238">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 1.6451158315339 9.20957814973564</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a239">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 -0.133322330730829 7.72187842262198</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a240">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 1.19490387444673 8.77531774609672</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a241">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 7.06746119481964 0.109015269812169</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a242">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 7.99203409424929 -1.02555140520966</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a243">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 8.61179058636413 -1.22274883495028</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a244">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 6.74971870861086 0.732230039477793</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a245">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 6.49962637665917 0.475134303125146</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a246">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 9.17632187068489 -2.06770054940723</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a247">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 7.89780967034735 -1.29910337720869</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a248">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 9.21954740171491 -0.427588896258166</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a249">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 7.44110923945019 -1.91528862337182</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a250">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 8.76933544462774 -0.861849299897084</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a251">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 7.06746119481964 4.92759879280907</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a252">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 7.99203409424929 3.79303211778724</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a253">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 8.61179058636413 3.59583468804662</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a254">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 6.74971870861086 5.5508135624747</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a255">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 6.49962637665917 5.29371782612205</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a256">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 9.17632187068489 2.75088297358967</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a257">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 7.89780967034735 3.51948014578821</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a258">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 9.21954740171491 4.39099462673874</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a259">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 7.44110923945019 2.90329489962508</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a260">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 8.76933544462774 3.95673422309982</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+  <atom id="a261">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.56532426851967 7.06746119481964 9.74618231580597</coordinate3>
+    <float builtin="charge">0.818317</float>
+  </atom>
+  <atom id="a262">
+    <string builtin="elementType">C</string>
+    <coordinate3 builtin="xyz3">6.54466184079963 7.99203409424929 8.61161564078414</coordinate3>
+    <float builtin="charge">-0.048057001</float>
+  </atom>
+  <atom id="a263">
+    <string builtin="elementType">N</string>
+    <coordinate3 builtin="xyz3">5.22344904487223 8.61179058636413 8.41441821104353</coordinate3>
+    <float builtin="charge">-0.050248001</float>
+  </atom>
+  <atom id="a264">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">5.53053425095319 6.74971870861086 10.3693970854716</coordinate3>
+    <float builtin="charge">-0.782435</float>
+  </atom>
+  <atom id="a265">
+    <string builtin="elementType">O</string>
+    <coordinate3 builtin="xyz3">7.61976188144777 6.49962637665917 10.112301349119</coordinate3>
+    <float builtin="charge">-0.74999303</float>
+  </atom>
+  <atom id="a266">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.21121433717403 9.17632187068489 7.56946649658658</coordinate3>
+    <float builtin="charge">0.23779</float>
+  </atom>
+  <atom id="a267">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">4.50658547528127 7.89780967034735 8.33806366878511</coordinate3>
+    <float builtin="charge">0.227253</float>
+  </atom>
+  <atom id="a268">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">5.01931502533692 9.21954740171491 9.20957814973564</coordinate3>
+    <float builtin="charge">0.224866</float>
+  </atom>
+  <atom id="a269">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">6.82546349416459 7.44110923945019 7.72187842262198</coordinate3>
+    <float builtin="charge">0.062651001</float>
+  </atom>
+  <atom id="a270">
+    <string builtin="elementType">H</string>
+    <coordinate3 builtin="xyz3">7.28580912205987 8.76933544462774 8.77531774609672</coordinate3>
+    <float builtin="charge">0.059856001</float>
+  </atom>
+</molecule>

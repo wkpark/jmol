@@ -218,7 +218,7 @@ class Jmol extends JPanel {
 		}
             }
         }
-        if (args.length != 0) {            
+        if (args.length == 0) {            
             /* Read only one argument as a file name for now: */
             String astring = args[0];            
             initialFile = new File(getUserDirectory(), astring);
@@ -251,6 +251,11 @@ class Jmol extends JPanel {
             frame.setIconImage(iconImage);
             splash.showStatus("Launching main frame...");
             frame.show();
+
+            // Open a file if on is given as an argument
+            if (initialFile != null) {
+                window.openFile(initialFile, "");
+	    }
 
 	    // Oke, by now it is time to execute the script
 	    if (script != null) {

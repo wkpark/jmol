@@ -188,6 +188,17 @@ public class ChemFrame extends AtomContainer {
       
       Atom atom = new Atom(control, type, i, x, y, z, pprop);
       this.addAtom(atom);
+      /*
+        mth 2003 05 23
+      if (control.getAutoBond()) {
+          for (int j = 0; j < i; j++) {
+              if (BondTools.closeEnoughToBond(atom, getAtomAt(j),
+                                              control.getBondFudge())) {
+                  addBond(i, j);
+              }
+          }
+      }
+      */
       return getAtomCount() -1;
   }
 
@@ -497,8 +508,7 @@ public class ChemFrame extends AtomContainer {
         }
       }
     } else {
-      System.err.println("Skipped rebonding, because more than " + limit +
-                         " found");
+      System.err.println("Skipped rebonding, because more than " + limit + " found");
     }
     long timeEnd = System.currentTimeMillis();
     System.out.println("Time to rebond=" + (timeEnd - timeBegin));
@@ -632,10 +642,13 @@ public class ChemFrame extends AtomContainer {
 
     Atom atomI = (Atom)getAtomAt(i);
     Atom atomJ = (Atom)getAtomAt(j);
-    if (! atomI.isBondedAtom(atomJ)) {
+    //    if (! atomI.isBondedAtom(atomJ)) {
       ((Atom)getAtomAt(i)).addBondedAtom((Atom)getAtomAt(j), bondOrder);
       ((Atom)getAtomAt(j)).addBondedAtom((Atom)getAtomAt(i), bondOrder);
-    }
+      //      System.out.println("not bonded yet!");
+      //    } else {
+      //      System.out.println("already bonded!");
+      //    }
   }
 
   /**

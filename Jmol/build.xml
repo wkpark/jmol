@@ -246,7 +246,7 @@
     <uptodate property="appletjars.uptodate"
       targetfile="${appletjars.dir}">
       <srcfiles dir="${lib.dir}"
-           includes="jmolcdk.jar,gnujaxp.jar,vecmath1.2-1.14.jar"/>
+           includes="jmolcdk.jar,gnujaxp-saxonly.jar,vecmath1.2-1.14.jar"/>
     </uptodate>
   </target>
   <target name="appletjars" depends="check.appletjars"
@@ -254,7 +254,7 @@
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp.jar"/>
+    <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-saxonly.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
         <include name="**/Tuple2d.class"/>
@@ -292,6 +292,7 @@
     <copy todir="${dist.dir}/jmol-${version}" >
       <fileset dir=".">
         <include name="jmol.jar" />
+        <include name="JmolApplet.jar" />
         <include name="jmol" />
         <include name="jmol.sh" />
         <include name="jmol.mac" />
@@ -346,12 +347,9 @@
     <copy todir="${dist.dir}/jmol-jws-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
         <include name="*.jar" />
-        <exclude name="JmolApplet.jar" />
         <exclude name="gnujaxp-saxonly.jar" />
-        <exclude name="swing.jar" />
         <exclude name="junit.jar" />
         <exclude name="saxon.jar" />
-        <exclude name="baysmith-io.jar" />
       </fileset>
     </copy>
     <mkdir dir="${dist.dir}/jmol-jws-${version}/images" />

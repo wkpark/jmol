@@ -710,9 +710,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setModeAxes(cbmi.isSelected()
-                          ? DisplayControl.AXES_BBOX
-                          : DisplayControl.AXES_NONE);
+      control.setShowAxes(cbmi.isSelected());
     }
   }
 
@@ -753,8 +751,7 @@ public class DisplayPanel extends JPanel
     guimap.setSelected("Jmol.hydrogens", control.getShowHydrogens());
     guimap.setSelected("Jmol.vectors", control.getShowVectors());
     guimap.setSelected("Jmol.measurements", control.getShowMeasurements());
-    guimap.setSelected("Jmol.axes",
-                       control.getModeAxes() != DisplayControl.AXES_NONE);
+    guimap.setSelected("Jmol.axes", control.getShowAxes());
     guimap.setSelected("Jmol.boundbox", control.getShowBoundingBox());
   }
 

@@ -1321,6 +1321,14 @@ final public class DisplayControl {
   public final static byte AXES_UNIT = 1;
   public final static byte AXES_BBOX = 2;
 
+  public void setShowAxes(boolean showAxes) {
+    setModeAxes(showAxes ? AXES_BBOX : AXES_NONE);
+  }
+
+  public boolean getShowAxes() {
+    return axesManager.modeAxes != AXES_NONE;
+  }
+
   public void setModeAxes(byte modeAxes) {
     axesManager.setModeAxes(modeAxes);
     structuralChange = true;

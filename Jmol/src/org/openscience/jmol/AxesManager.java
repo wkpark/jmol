@@ -57,9 +57,11 @@ public class AxesManager {
   }
 
   public void recalc() {
-    axes.recalc(modeAxes);
-    if (showBoundingBox)
-      bbox.recalc();
+    if (control.haveFile()) {
+      axes.recalc(modeAxes);
+      if (showBoundingBox)
+        bbox.recalc();
+    }
   }
 
   public Color colorAxes;

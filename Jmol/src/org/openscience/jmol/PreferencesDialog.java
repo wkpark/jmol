@@ -80,6 +80,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean showMeasurements;
   private static boolean wireframeRotation;
   private static boolean perspectiveDepth;
+  private static boolean showAxes;
+  private static boolean showBoundingBox;
   private static boolean showDarkerOutline;
   private static boolean isLabelAtomColor;
   private static boolean isBondAtomColor;
@@ -114,6 +116,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JSlider vfSlider;
   private JCheckBox cH, cV, cM;
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
+  private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbDarkerOutline, cbIsLabelAtomColor, cbIsBondAtomColor;
   private JCheckBox cbGraphics2D, cbAntialias, cbAntialiasAlways;
   private static Properties props;
@@ -142,6 +145,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("showMeasurements", "true");
     props.put("wireframeRotation", "false");
     props.put("perspectiveDepth", "true");
+    props.put("showAxes", "false");
+    props.put("showBoundingBox", "false");
     props.put("showDarkerOutline", "true");
     props.put("isLabelAtomColor", "false");
     props.put("isBondAtomColor", "true");
@@ -308,12 +313,26 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       guimap.newJCheckBox("Prefs.wireframeRotation",
                           control.getWireframeRotation());
     cbWireframeRotation.addItemListener(checkBoxListener);
+    fooPanel.add(cbWireframeRotation);
+
     cbPerspectiveDepth =
       guimap.newJCheckBox("Prefs.perspectiveDepth",
                           control.getPerspectiveDepth());
     cbPerspectiveDepth.addItemListener(checkBoxListener);
-    fooPanel.add(cbWireframeRotation);
     fooPanel.add(cbPerspectiveDepth);
+
+    cbShowAxes =
+      guimap.newJCheckBox("Prefs.showAxes", control.getShowAxes());
+    cbShowAxes.addItemListener(checkBoxListener);
+    fooPanel.add(cbShowAxes);
+
+    cbShowBoundingBox =
+      guimap.newJCheckBox("Prefs.showBoundingBox",
+                          control.getShowBoundingBox());
+    cbShowBoundingBox.addItemListener(checkBoxListener);
+    fooPanel.add(cbShowBoundingBox);
+
+
 
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -1180,7 +1199,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cM.setSelected(control.getShowMeasurements());
 
     cbWireframeRotation.setSelected(control.getWireframeRotation());
+
     cbPerspectiveDepth.setSelected(control.getPerspectiveDepth());
+    cbShowAxes.setSelected(control.getShowAxes());
+    cbShowBoundingBox.setSelected(control.getShowBoundingBox());
 
     // Atom panel controls: 
     aRender.setSelectedIndex(control.getStyleAtom());
@@ -1255,6 +1277,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showMeasurements = Boolean.getBoolean("showMeasurements");
     wireframeRotation = Boolean.getBoolean("wireframeRotation");
     perspectiveDepth = Boolean.getBoolean("perspectiveDepth");
+    showAxes = Boolean.getBoolean("showAxes");
+    showBoundingBox = Boolean.getBoolean("showBoundingBox");
     showDarkerOutline = Boolean.getBoolean("showDarkerOutline");
     colorBackground = Color.getColor("colorBackground");
     colorOutline = Color.getColor("colorOutline");
@@ -1312,6 +1336,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setShowMeasurements(showMeasurements);
     control.setWireframeRotation(wireframeRotation);
     control.setPerspectiveDepth(perspectiveDepth);
+    control.setShowAxes(showAxes);
+    control.setShowBoundingBox(showBoundingBox);
     control.setShowDarkerOutline(showDarkerOutline);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
@@ -1401,6 +1427,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         perspectiveDepth = isSelected;
         control.setPerspectiveDepth(perspectiveDepth);
         props.put("perspectiveDepth", strSelected);
+      } else if (key.equals("Prefs.showAxes")) {
+        showAxes = isSelected;
+        control.setShowAxes(showAxes);
+        props.put("showAxes", strSelected);
+      } else if (key.equals("Prefs.showBoundingBox")) {
+        showBoundingBox = isSelected;
+        control.setShowBoundingBox(showBoundingBox);
+        props.put("showBoundingBox", strSelected);
       }
     }
   };

@@ -85,11 +85,11 @@ public class ModelManager {
   }
 
   public Point3d getBoundingBoxCenter() {
-    return chemframe.getBoundingBoxCenter();
+    return haveFile ? chemframe.getBoundingBoxCenter() : null;
   }
 
   public Point3d getBoundingBoxCorner() {
-    return chemframe.getBoundingBoxCorner();
+    return haveFile ? chemframe.getBoundingBoxCorner() : null;
   }
   
 

@@ -18,6 +18,8 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.AtomShape;
+
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Font;
@@ -26,6 +28,7 @@ import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.Dimension;
+import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
@@ -69,7 +72,7 @@ final public class DisplayControl {
   private boolean perspectiveDepth = true;
   private boolean structuralChange = false;
 
-  DisplayControl(DisplayPanel panel, DisplaySettings settings) {
+  DisplayControl(DisplayPanel panel, DisplaySettings settings ) {
     this.panel = panel;
     this.settings = settings;
   }
@@ -258,10 +261,6 @@ final public class DisplayControl {
     recalc();
   }
 
-  public boolean isAntiAliased() {
-    return settings.isAntiAliased();
-  }
-
   public void setFastRendering(boolean b) {
     settings.setFastRendering(b);
     recalc();
@@ -271,37 +270,43 @@ final public class DisplayControl {
     return settings.getFastRendering();
   }
 
+  private final SelectionSet setPicked = new SelectionSet();
+
   public void addPickedAtom(Atom atom) {
-    settings.addPickedAtom(atom);
+    setPicked.addPickedAtom(atom);
     recalc();
   }
 
   public void removePickedAtom(Atom atom) {
-    settings.removePickedAtom(atom);
+    setPicked.removePickedAtom(atom);
     recalc();
   }
 
   public void addPickedAtoms(Atom[] atoms) {
-    settings.addPickedAtoms(atoms);
+    setPicked.addPickedAtoms(atoms);
     recalc();
   }
 
   public void removePickedAtoms(Atom[] atoms) {
-    settings.removePickedAtoms(atoms);
+    setPicked.removePickedAtoms(atoms);
     recalc();
   }
 
   public IntSet getPickedAtoms() {
-    return settings.getPickedAtoms();
+    return setPicked.getPickedAtoms();
   }
   
   public void clearPickedAtoms() {
-    settings.clearPickedAtoms();
+    setPicked.clearPickedAtoms();
     recalc();
   }
 
+  public int countPickedAtoms() {
+    return setPicked.countPickedAtoms();
+  }
+
   public boolean isAtomPicked(Atom atom) {
-    return settings.isAtomPicked(atom);
+    return setPicked.isAtomPicked(atom);
   }
 
   public float getScalePixelsPerAngstrom() {
@@ -466,7 +471,7 @@ final public class DisplayControl {
   }
 
   public void maybeEnableAntialiasing(Graphics g) {
-    if (!mouseDragged && antialiasCapable && settings.isAntiAliased()) {
+    if (useGraphics2D && wantsAntialiased && !mouseDragged) {
       Graphics2D g2d = (Graphics2D) g;
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                            RenderingHints.VALUE_ANTIALIAS_ON);
@@ -477,7 +482,7 @@ final public class DisplayControl {
 
   private BasicStroke dottedStroke = null;
   public void maybeDottedStroke(Graphics g) {
-    if (antialiasCapable) {
+    if (useGraphics2D) {
       if (dottedStroke == null) {
         dottedStroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
                                        BasicStroke.JOIN_ROUND, 0,
@@ -565,19 +570,29 @@ final public class DisplayControl {
     this.mouseDragged = mouseDragged;
   }
 
-  private boolean antialiasCapable = false;
-  public void setAntialiasCapable(boolean antialiasCapable) {
-    this.antialiasCapable = antialiasCapable;
+  private boolean supportsGraphics2D = false;
+  private boolean wantsGraphics2D = true;
+  public boolean useGraphics2D = false;
+  private boolean wantsAntialiased = false;
+  public void setSupportsGraphics2D(boolean supportsGraphics2D) {
+    this.supportsGraphics2D = supportsGraphics2D;
+    useGraphics2D = supportsGraphics2D && wantsGraphics2D;
+    // kludge for now
+    wantsAntialiased = settings.isAntiAliased();
   }
 
-  public boolean isAntialiasCapable() {
-    return antialiasCapable;
+  public void setWantsGraphics2D(boolean wantsGraphics2D) {
+    if (this.wantsGraphics2D != wantsGraphics2D) {
+      this.wantsGraphics2D = wantsGraphics2D;
+      useGraphics2D = supportsGraphics2D && wantsGraphics2D;
+      flushImageCache();
+      recalc();
+    }
   }
 
-  public boolean isAntialiased() {
-    return antialiasCapable && settings.isAntiAliased();
+  public void setWantsAntialiased(boolean wantsAntialiased) {
+    this.wantsAntialiased = wantsAntialiased;
   }
-
 
   public Image takeSnapshot() {
     return panel.takeSnapshot();
@@ -692,7 +707,12 @@ final public class DisplayControl {
     return structuralChange;
   }
 
-  public void resetStructuralChanges() {
+  public void resetStructuralChange() {
     structuralChange = false;
+  }
+
+  public final Hashtable imageCache = new Hashtable();
+  private void flushImageCache() {
+    imageCache.clear();
   }
 }

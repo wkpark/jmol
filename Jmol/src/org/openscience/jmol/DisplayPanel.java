@@ -103,7 +103,7 @@ public class DisplayPanel extends JPanel
     this.addMouseMotionListener(new MyMotionAdapter());
     RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);
     String vers = System.getProperty("java.version");
-    control.setAntialiasCapable(vers.compareTo("1.2") >= 0);
+    control.setSupportsGraphics2D(vers.compareTo("1.2") >= 0);
   }
 
   private void setRotateMode() {
@@ -686,8 +686,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      //      rotateX(45);
-      repaint();
+      control.setWantsGraphics2D(true);
     }
   }
 
@@ -699,7 +698,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      //      rotateY(45);
+      control.setWantsGraphics2D(false);
       repaint();
     }
   }

@@ -93,7 +93,6 @@ public class AtomShape implements Shape {
     return atom.screenZ;
   }
   
-  private static AtomRenderer atomRenderer;
   private static boolean showAtoms;
   private static boolean showHydrogens;
   private static boolean showBonds;
@@ -592,7 +591,6 @@ public class AtomShape implements Shape {
 
   private static final int minCachedSize = 4;
   private static final int maxCachedSize = 50;
-  private static final Hashtable ballImages = new Hashtable();
   private static final int scalableSize = 47;
   private static final int maxSmoothedSize = 200;
   // I am getting severe graphical artifacts around the edges when
@@ -605,10 +603,10 @@ public class AtomShape implements Shape {
     
   
   private void renderShadedAtom(int x, int y, int diameter, Color color) {
-    if (! ballImages.containsKey(color)) {
+    if (! control.imageCache.containsKey(color)) {
       loadShadedSphereCache(color);
     }
-    Image[] shadedImages = (Image[]) ballImages.get(color);
+    Image[] shadedImages = (Image[]) control.imageCache.get(color);
     int radius = diameter / 2;
     if (diameter < minCachedSize) {
       // the area drawn by an oval is 1 larger than the area
@@ -622,17 +620,30 @@ public class AtomShape implements Shape {
       // images in the cache have a margin of 1
       g.drawImage(shadedImages[diameter],
                    x - radius - 1, y - radius - 1, null);
-    } else if (diameter < maxSmoothedSize) {
-      // warning ... must fix this for the applet
-      drawScaledShadedAtom((Graphics2D) g, shadedImages[0], x, y,
-                           diameter, artifactMargin);
+    } else {
+      renderLargeShadedAtom(g, shadedImages[0], x, y, diameter);
+    }
+  }
+
+  private void renderLargeShadedAtom(Graphics g, Image imgSphere,
+                                    int x, int y, int diameter) {
+    int radius = diameter / 2;
+    if (! control.useGraphics2D) {
+      g.drawImage(imgSphere, x - radius, y - radius,
+                   diameter, diameter, null);
+      return;
+    }
+    if (diameter < maxSmoothedSize) {
+      drawScaledShadedAtom((Graphics2D) g,
+                           imgSphere, x, y, diameter, artifactMargin);
     } else {
       // too big ... just forget the smoothing
+      // but we *can* clip it to eliminate fat pixels
       Ellipse2D circle =
         new Ellipse2D.Float((float)(x-radius), (float)(y-radius),
                             (float)diameter, (float)diameter);
       g.setClip(circle);
-      g.drawImage(shadedImages[0], x - radius, y - radius,
+      g.drawImage(imgSphere, x - radius, y - radius,
                    diameter, diameter, null);
       g.setClip(null);
     }
@@ -641,9 +652,8 @@ public class AtomShape implements Shape {
   private static final float[] lightSource = { -1.0f, -1.0f, 2.0f };
   private void loadShadedSphereCache(Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
-    ballImages.put(color, shadedImages);
-    boolean oldJvm = false;
-    if (oldJvm) {
+    control.imageCache.put(color, shadedImages);
+    if (! control.useGraphics2D) {
       for (int d = minCachedSize; d < maxCachedSize; ++d) {
         shadedImages[d] = sphereSetup(color, d+2, lightSource, false);
       }
@@ -658,7 +668,8 @@ public class AtomShape implements Shape {
       drawScaledShadedAtom(g2, shadedImages[0], d/2+1, d/2+1, d, 1);
       shadedImages[d] = bi;
     }
-}
+  }
+  
   private static byte[] mapRGBA;
   private static IndexColorModel cmMask;
   private static int sizeMask = 0;

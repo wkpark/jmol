@@ -7,6 +7,40 @@
     <title>Jmol Developer's Guide</title>
   </bookinfo>
 
+  <chapter id="Prerequisites">
+    <title>Prerequisites</title>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>Java 2 JDK 1.4
+	  (<ulink url="http://java.sun.com/">
+	    http://java.sun.com/</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+          <para>Apache Ant
+	  (<ulink url="http://jakarta.apache.org/ant">
+	    http://jakarta.apache.org/ant</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+	  <para>CVS
+	    (The definitive CVS documentation is at
+	    <ulink url="http://cvsbook.red-bean.com/cvsbook.html">
+	      http://cvsbook.red-bean.com/cvsbook.html
+	    </ulink>)
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+  </chapter>
+
+  <chapter id="CheckingOutJmol">
+    <para>
+      Put stuff here.
+    </para>
+  </chapter>
+
   <chapter id="BuildingJmol">
     <title>Building Jmol</title>
     <para>Prerequisites:

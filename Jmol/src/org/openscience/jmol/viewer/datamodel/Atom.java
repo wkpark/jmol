@@ -313,20 +313,19 @@ public class Atom implements Bspt.Tuple {
   }
 
   public String getGroup3() {
-    return group == null ? null : group.getGroup3();
+    return group.getGroup3();
   }
 
   public boolean isGroup3(String group3) {
-    return group == null ? false : group.isGroup3(group3);
+    return group.isGroup3(group3);
   }
 
   public boolean isGroup3Match(String strWildcard) {
-    return group == null ? false : group.isGroup3Match(strWildcard);
+    return group.isGroup3Match(strWildcard);
   }
 
   public int getSeqcode() {
-    // I wonder if this should be -infinity instead of -1
-    return group == null ? -1 : group.seqcode;
+    return group.seqcode;
   }
 
   public boolean isAtomNameMatch(String strPattern) {
@@ -417,7 +416,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public char getChainID() {
-    return group == null ? '\0' : group.chain.chainID;
+    return group.chain.chainID;
   }
 
   // a percentage value in the range 0-100
@@ -438,20 +437,14 @@ public class Atom implements Bspt.Tuple {
   }
 
   public PdbPolymer getPdbPolymer() {
-    if (group == null)
-      return null;
     return group.polymer;
   }
 
   public PdbChain getPdbChain() {
-    if (group == null)
-      return null;
     return group.chain;
   }
 
   public PdbModel getPdbModel() {
-    if (group == null)
-      return null;
     return group.chain.pdbmodel;
   }
   
@@ -476,27 +469,19 @@ public class Atom implements Bspt.Tuple {
   }
 
   public byte getSecondaryStructureType() {
-    if (group != null)
-      return group.getStructureType();
-    return 0;
+    return group.getStructureType();
   }
 
   public short getGroupID() {
-    if (group != null)
-      return group.groupID;
-    return -1;
+    return group.groupID;
   }
 
   public String getSeqcodeString() {
-    if (group != null)
-      return group.getSeqcodeString();
-    return null;
+    return group.getSeqcodeString();
   }
 
   public int getModelID() {
-    if (group != null)
-      return group.chain.pdbmodel.modelNumber;
-    return 1;
+    return group.chain.pdbmodel.modelNumber;
   }
   
   public byte getSpecialAtomID() {

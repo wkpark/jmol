@@ -69,6 +69,7 @@ final public class Frame {
   public Matrix3f matrixFractionalToEuclidean;
 
   BitSet elementsPresent;
+  BitSet groupsPresent;
 
   public Frame(JmolViewer viewer, String modelTypeName, int atomCount) {
     this.viewer = viewer;
@@ -106,6 +107,7 @@ final public class Frame {
     }
     pdbFile.freeze();
     findElementsPresent();
+    findGroupsPresent();
   }
 
   public Atom addAtom(int modelNumber, Object atomUid,
@@ -1024,5 +1026,20 @@ final public class Frame {
 
   public BitSet getElementsPresentBitSet() {
     return elementsPresent;
+  }
+
+  void findGroupsPresent() {
+    PdbGroup groupLast = null;
+    groupsPresent = new BitSet();
+    for (int i = atomCount; --i >= 0; ) {
+      if (groupLast != atoms[i].group) {
+        groupLast = atoms[i].group;
+        groupsPresent.set(groupLast.getGroupID());
+      }
+    }
+  }
+
+  public BitSet getGroupsPresentBitSet() {
+    return groupsPresent;
   }
 }

@@ -24,6 +24,7 @@
  */
 package org.jmol.g3d;
 
+import java.awt.Graphics;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
@@ -49,13 +50,18 @@ final public class Font3D {
 
   ////////////////////////////////////////////////////////////////
   
+  static Graphics graphicsOffscreen;
+  static void initialize(Platform3D platform) {
+    if (graphicsOffscreen == null)
+      graphicsOffscreen = platform.allocateOffscreenImage(1, 1).getGraphics();
+  }
+
   private final static int FONT_ALLOCATION_UNIT = 8;
   private static int fontkeyCount = 1;
   private static short[] fontkeys = new short[FONT_ALLOCATION_UNIT];
   private static Font3D[] font3ds = new Font3D[FONT_ALLOCATION_UNIT];
 
-  static Font3D getFont3D(Platform3D platform,
-                          int fontface, int fontstyle, int fontsize) {
+  static Font3D getFont3D(int fontface, int fontstyle, int fontsize) {
     /*
     System.out.println("Font3D.getFont3D("  + fontFaces[fontface] + "," +
                        fontStyles[fontstyle] + "," + fontsize + ")");
@@ -67,11 +73,18 @@ final public class Font3D {
     for (int i = fontkeyCount; --i > 0; )
       if (fontkey == fontkeys[i])
         return font3ds[i];
-    return allocFont3D(platform, fontkey, fontface, fontstyle, fontsize);
+    return allocFont3D(fontkey, fontface, fontstyle, fontsize);
   }
   
-  public static synchronized Font3D allocFont3D(Platform3D platform,
-                                                short fontkey, int fontface,
+  /*
+  FontMetrics getFontMetrics(Font font) {
+    if (gOffscreen == null)
+      checkOffscreenSize(16, 64);
+    return gOffscreen.getFontMetrics(font);
+  }
+  */
+  
+  public static synchronized Font3D allocFont3D(short fontkey, int fontface,
                                                 int fontstyle, int fontsize) {
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length) {
@@ -85,7 +98,9 @@ final public class Font3D {
     }
     fontkeys[fontIndexNext] = fontkey;
     Font font = new Font(fontFaces[fontface], fontstyle, fontsize);
-    FontMetrics fontMetrics = platform.getFontMetrics(font);
+    if (graphicsOffscreen == null)
+      System.out.println("Font3D.graphicsOffscreen not initialized");
+    FontMetrics fontMetrics = graphicsOffscreen.getFontMetrics(font);
     return
       font3ds[fontIndexNext] = new Font3D((byte)fontIndexNext,
                                           fontface, fontstyle, fontsize,

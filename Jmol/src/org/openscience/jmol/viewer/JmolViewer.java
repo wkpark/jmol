@@ -1159,6 +1159,10 @@ final public class JmolViewer {
     return modelManager.getElementsPresentBitSet();
   }
 
+  public BitSet getGroupsPresentBitSet() {
+    return modelManager.getGroupsPresentBitSet();
+  }
+
   /****************************************************************
    * delegated to MeasurementManager
    ****************************************************************/

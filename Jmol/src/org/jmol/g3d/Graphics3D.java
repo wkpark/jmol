@@ -41,7 +41,7 @@ import javax.vecmath.Point3i;
 
 final public class Graphics3D {
 
-  static Platform3D platform;
+  Platform3D platform;
   final static boolean forcePlatformAWT = false;
   Line3D line3d;
   Circle3D circle3d;
@@ -74,14 +74,10 @@ final public class Graphics3D {
 
   public Graphics3D(Component awtComponent) {
     jvm12orGreater = System.getProperty("java.version").compareTo("1.2") >= 0;
-    if (platform == null) {
-      if (jvm12orGreater && !forcePlatformAWT) {
-        platform = allocateSwing3D();
-      } else {
-        platform = new Awt3D(awtComponent);
-      }
-      platform.initialize();
-    }
+    platform =(jvm12orGreater && !forcePlatformAWT
+               ? allocateSwing3D() : new Awt3D(awtComponent));
+    platform.initialize();
+    Font3D.initialize(platform);
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);
@@ -1087,18 +1083,18 @@ final public class Graphics3D {
    ****************************************************************/
 
   public static Font3D getFont3D(int fontSize) {
-    return Font3D.getFont3D(platform, Font3D.FONT_FACE_SANS,
+    return Font3D.getFont3D(Font3D.FONT_FACE_SANS,
                             Font3D.FONT_STYLE_PLAIN, fontSize);
   }
 
   public static Font3D getFont3D(String fontFace, int fontSize) {
-    return Font3D.getFont3D(platform, Font3D.getFontFaceID(fontFace),
+    return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
                             Font3D.FONT_STYLE_PLAIN, fontSize);
   }
     
   // {"Plain", "Bold", "Italic", "BoldItalic"};
   public static Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
-    return Font3D.getFont3D(platform, Font3D.getFontFaceID(fontFace),
+    return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
                             Font3D.getFontStyleID(fontStyle), fontSize);
   }
 

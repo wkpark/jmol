@@ -76,6 +76,7 @@ public class Jmol extends JPanel {
   private PreferencesDialog preferencesDialog;
   private MeasurementTable measurementTable;
   private RecentFilesDialog recentFiles;
+  private JMenu recentFilesMenu;
   public ScriptWindow scriptWindow;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
@@ -251,7 +252,7 @@ public class Jmol extends JPanel {
     pcs.addPropertyChangeListener(chemFileProperty,
                                   viewMeasurementTableAction);
 
-    jmolpopup = new JmolPopup(viewer, display);
+    jmolpopup = JmolPopup.newJmolPopup(viewer);
 
     // prevent new Jmol from covering old Jmol
     if (parent != null) {
@@ -734,7 +735,11 @@ public class Jmol extends JPanel {
       }
       if (item.endsWith("Menu")) {
         JMenu pm;
-        pm = createMenu(item);
+        if ("recentFilesMenu".equals(item)) {
+          pm = recentFilesMenu = createMenu(item);
+        } else {
+          pm = createMenu(item);
+        }
         menu.add(pm);
         continue;
       }

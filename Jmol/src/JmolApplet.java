@@ -503,7 +503,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       // this is a background task
       JmolPopup popup;
       try {
-        popup = new JmolPopup(viewer, jmolApplet);
+        popup = JmolPopup.newJmolPopup(viewer);
       } catch (Exception e) {
         System.out.println("JmolPopup not loaded");
         return;

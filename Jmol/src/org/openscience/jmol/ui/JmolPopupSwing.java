@@ -36,47 +36,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.util.StringTokenizer;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.BitSet;
 
-public class JmolPopupSwing extends JPopupMenu {
+public class JmolPopupSwing extends JmolPopup {
 
-  JmolViewer viewer;
-  Component component;
-  MenuItemListener mil;
+  JPopupMenu swingPopup;
   CheckboxMenuItemListener cmil;
-  ResourceBundle rbStructure;
-  ResourceBundle rbWords;
+  JMenu elementComputedMenu;
 
-  public JmolPopupSwing(JmolViewer viewer, Component parent,
-                        ResourceBundle rbStructure, ResourceBundle rbWords) {
-    super("Jmol");
-    this.viewer = viewer;
-    this.rbStructure = rbStructure;
-    this.rbWords = rbWords;
-    mil = new MenuItemListener();
+  public JmolPopupSwing(JmolViewer viewer) {
+    super(viewer);
+    swingPopup = new JPopupMenu("Jmol");
     cmil = new CheckboxMenuItemListener();
-    addMenuItems("popupMenu", this);
-    addVersionAndDate();
-    rbWords = null;
-    component = viewer.getAwtComponent();
+    build(swingPopup);
   }
 
-  void addVersionAndDate() {
-    addSeparator();
-    JMenuItem jmi = new JMenuItem("Jmol " + JmolConstants.version);
-    add(jmi);
-    jmi = new JMenuItem(JmolConstants.date);
-    add(jmi);
-  }
-
-
-  public void showSwing(int x, int y) {
+  public void show(int x, int y) {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       JCheckBoxMenuItem jcbmi = (JCheckBoxMenuItem)htCheckbox.get(key);
@@ -84,15 +61,7 @@ public class JmolPopupSwing extends JPopupMenu {
       //System.out.println("found:" + key + " & it is:" + b);
       jcbmi.setState(b);
     }
-    show(component, x, y);
-  }
-
-  class MenuItemListener implements ActionListener {
-    public void actionPerformed(ActionEvent e) {
-      String script = e.getActionCommand();
-      if (script != null)
-        viewer.evalString(script);
-    }
+    swingPopup.show(jmolComponent, x, y);
   }
 
   class CheckboxMenuItemListener implements ItemListener {
@@ -103,79 +72,56 @@ public class JmolPopupSwing extends JPopupMenu {
     }
   }
 
-  void addMenuItems(String key, JComponent menu) {
-    String value = getValue(key);
-    if (value == null) {
-      JMenuItem jmi = new JMenuItem("#" + key);
-      addToMenu(menu, jmi);
-      return;
-    }
-    StringTokenizer st = new StringTokenizer(value);
-    while (st.hasMoreTokens()) {
-      String item = st.nextToken();
-      String word = getWord(item);
-      if (item.endsWith("Menu")) {
-        JMenu subMenu;
-        if (item.endsWith("ComputedMenu"))
-          subMenu = getComputedMenu(word, item);
-        else
-          addMenuItems(item, subMenu = new JMenu(word));
-        addToMenu(menu, subMenu);
-      } else if (item.equals("-")) {
-        if (menu instanceof JPopupMenu)
-          ((JPopupMenu)menu).addSeparator();
-        else
-          ((JMenu)menu).addSeparator();
-      } else {
-        JMenuItem jmi;
-        if (item.endsWith("Checkbox")) {
-          //System.out.println("I see a cheeckbox named:" + item);
-          JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(word);
-          String basename = item.substring(0, item.length() - 8);
-          jcmi.setActionCommand(getScriptValue(basename));
-          jcmi.addItemListener(cmil);
-          rememberCheckbox(basename, jcmi);
-          jmi = jcmi;
-        } else {
-          jmi = new JMenuItem(word);
-          jmi.addActionListener(mil);
-          jmi.setActionCommand(getScriptValue(item));
-        }
-        addToMenu(menu, jmi);
-      }
-    }
+  void addToMenu(Object menu, JComponent item) {
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu)menu).add(item);
+    else if (menu instanceof JMenu)
+      ((JMenu)menu).add(item);
+    else
+      System.out.println("cannot add object to menu:" + menu);
   }
 
-  private String getValue(String key) {
-    try {
-      return rbStructure.getString(key);
-    } catch (MissingResourceException e) {
-      return null;
-    }
+  ////////////////////////////////////////////////////////////////
+
+  void addMenuSeparator() {
+    swingPopup.addSeparator();
+  }
+  
+  void addMenuSeparator(Object menu) {
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu)menu).addSeparator();
+    else
+      ((JMenu)menu).addSeparator();
   }
 
-  private String getScriptValue(String key) {
-    return getValue(key);
+  void addMenuItem(String entry) {
+    swingPopup.add(new JMenuItem(entry));
   }
 
-  private String getWord(String key) {
-    String str = key;
-    try {
-      str = rbWords.getString(key);
-    } catch (MissingResourceException e) {
-    }
-    return str;
+  void addMenuItem(Object menu, String entry, String script) {
+    JMenuItem jmi = new JMenuItem(entry);
+    jmi.addActionListener(mil);
+    jmi.setActionCommand(script);
+    addToMenu(menu, jmi);
   }
 
-  Hashtable htCheckbox = new Hashtable();
-
-  void rememberCheckbox(String key, JCheckBoxMenuItem cbmi) {
-    htCheckbox.put(key, cbmi);
+  void addCheckboxMenuItem(Object menu, String entry, String basename) {
+    JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
+    jcmi.addItemListener(cmil);
+    jcmi.setActionCommand(basename);
+    addToMenu(menu, jcmi);
+    rememberCheckbox(basename, jcmi);
   }
 
-  JMenu elementComputedMenu;
+  void addMenuSubMenu(Object menu, Object subMenu) {
+    addToMenu(menu, (JMenu)subMenu);
+  }
 
-  JMenu getComputedMenu(String word, String key) {
+  Object newMenu(String menuName) {
+    return new JMenu(menuName);
+  }
+
+  Object newComputedMenu(String key, String word) {
     if ("elementComputedMenu".equals(key)) {
       elementComputedMenu = new JMenu(word);
       return elementComputedMenu;
@@ -183,24 +129,8 @@ public class JmolPopupSwing extends JPopupMenu {
     return new JMenu("unrecognized ComputedMenu:" + key);
   }
 
-  void addToMenu(JComponent menu, JComponent item) {
-    if (menu instanceof JPopupMenu)
-      ((JPopupMenu)menu).add(item);
-    else
-      ((JMenu)menu).add(item);
+  void removeAll(Object menu) {
+    ((JMenu)menu).removeAll();
   }
 
-  void updateElementComputedMenu(BitSet elementsPresentBitSet) {
-    elementComputedMenu.removeAll();
-    for (int i = 0; i < JmolConstants.elementNames.length; ++i) {
-      if (elementsPresentBitSet.get(i)) {
-        String elementName = JmolConstants.elementNames[i];
-        String elementSymbol = JmolConstants.elementSymbols[i];
-        JMenuItem jmi = new JMenuItem(elementSymbol + " - " + elementName);
-        jmi.addActionListener(mil);
-        jmi.setActionCommand("select " + elementName);
-        addToMenu(elementComputedMenu, jmi);
-      }
-    }
-  }
 }

@@ -277,6 +277,10 @@ public class ModelManager {
     return (frame == null) ? null : frame.getElementsPresentBitSet();
   }
 
+  public BitSet getGroupsPresentBitSet() {
+    return (frame == null) ? null : frame.getGroupsPresentBitSet();
+  }
+
   ////////////////////////////////////////////////////////////////
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////

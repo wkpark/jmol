@@ -47,56 +47,39 @@ import java.util.BitSet;
 // This class is built with awt instead of swing so that it will
 // operate as an applet with old JVMs
 
-public class JmolPopupAwt extends PopupMenu {
+public class JmolPopupAwt extends JmolPopup {
 
-  JmolViewer viewer;
-  Component component;
-  MenuItemListener mil;
+  PopupMenu awtPopup;
   CheckboxMenuItemListener cmil;
-  ResourceBundle rbStructure;
-  ResourceBundle rbWords;
+  Menu elementComputedMenu;
 
-  public JmolPopupAwt(JmolViewer viewer, Component parent,
-                      ResourceBundle rbStructure, ResourceBundle rbWords) {
-    super("Jmol");
-    this.viewer = viewer;
-    this.rbStructure = rbStructure;
-    this.rbWords = rbWords;
+  public JmolPopupAwt(JmolViewer viewer) {
+    super(viewer);
+    awtPopup = new PopupMenu("Jmol");
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
-    addMenuItems("popupMenu", this);
-    addVersionAndDate();
-    parent.add(this);
-    rbWords = null;
-    component = viewer.getAwtComponent();
+    jmolComponent.add(awtPopup);
+    build(awtPopup);
   }
 
-  public void showAwt(int x, int y) {
+  public void show(int x, int y) {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       CheckboxMenuItem cbmi = (CheckboxMenuItem)htCheckbox.get(key);
       boolean b = viewer.getBooleanProperty(key);
       cbmi.setState(b);
     }
-    show(component, x, y);
-  }
-
-  class MenuItemListener implements ActionListener {
-    public void actionPerformed(ActionEvent e) {
-      String script = getValue(e.getActionCommand());
-      if (script != null)
-        viewer.evalString(script);
-    }
+    awtPopup.show(jmolComponent, x, y);
   }
 
   class CheckboxMenuItemListener implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
-      System.out.println("CheckboxMenuItemListener() " + e.getSource());
       CheckboxMenuItem cmi = (CheckboxMenuItem)e.getSource();
       viewer.setBooleanProperty(cmi.getActionCommand(), cmi.getState());
     }
   }
 
+  /*
   void addMenuItems(String key, Menu menu) {
     String value = getValue(key);
     if (value == null) {
@@ -142,34 +125,58 @@ public class JmolPopupAwt extends PopupMenu {
     mi = new MenuItem(JmolConstants.date);
     add(mi);
   }
+  */
 
-  private String getValue(String key) {
-    String value = null;
-    try {
-      //    System.out.println("getValue(" + key + ")");
-      value = rbStructure.getString(key);
-    } catch (MissingResourceException mre) {
+  void addToMenu(Object menu, MenuItem item) {
+    ((Menu)menu).add(item);
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  void addMenuSeparator() {
+    awtPopup.addSeparator();
+  }
+  
+  void addMenuSeparator(Object menu) {
+    ((Menu)menu).addSeparator();
+  }
+
+  void addMenuItem(String entry) {
+    awtPopup.add(new MenuItem(entry));
+  }
+
+  void addMenuItem(Object menu, String entry, String script) {
+    MenuItem mi = new MenuItem(entry);
+    mi.addActionListener(mil);
+    mi.setActionCommand(script);
+    addToMenu(menu, mi);
+  }
+
+  void addCheckboxMenuItem(Object menu, String entry, String basename) {
+    CheckboxMenuItem cmi = new CheckboxMenuItem(entry);
+    cmi.addItemListener(cmil);
+    cmi.setActionCommand(basename);
+    addToMenu(menu, cmi);
+    rememberCheckbox(basename, cmi);
+  }
+
+  void addMenuSubMenu(Object menu, Object subMenu) {
+    addToMenu(menu, (Menu)subMenu);
+  }
+
+  Object newMenu(String menuName) {
+    return new Menu(menuName);
+  }
+
+  Object newComputedMenu(String key, String word) {
+    if ("elementComputedMenu".equals(key)) {
+      elementComputedMenu = new Menu(word);
+      return elementComputedMenu;
     }
-    return value;
+    return new Menu("unrecognized ComputedMenu:" + key);
   }
 
-  private String getWord(String key) {
-    String word = key;
-    try {
-      //      System.out.println("getWord(" + key + ")");
-      word = rbWords.getString(key);
-    } catch (MissingResourceException mre) {
-      //      System.out.println(" :-( could not find word " + key);
-    }
-    return word;
-  }
-
-  Hashtable htCheckbox = new Hashtable();
-
-  void rememberCheckbox(String key, CheckboxMenuItem cbmi) {
-    htCheckbox.put(key, cbmi);
-  }
-
-  void updateElementComputedMenu(BitSet elementsPresentBitSet) {
+  void removeAll(Object menu) {
+    ((Menu)menu).removeAll();
   }
 }

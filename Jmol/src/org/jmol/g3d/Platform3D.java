@@ -26,8 +26,6 @@ package org.jmol.g3d;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Rectangle;
 
 abstract class Platform3D {
@@ -102,12 +100,6 @@ abstract class Platform3D {
   void notifyEndOfRendering() {
   }
 
-  FontMetrics getFontMetrics(Font font) {
-    if (gOffscreen == null)
-      checkOffscreenSize(16, 64);
-    return gOffscreen.getFontMetrics(font);
-  }
-  
   abstract Image allocateOffscreenImage(int width, int height);
   
   void checkOffscreenSize(int width, int height) {

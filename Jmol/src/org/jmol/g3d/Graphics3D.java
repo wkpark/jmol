@@ -623,6 +623,12 @@ final public class Graphics3D {
     hermite3d.render(false, colix, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
+  public void drawHermite(boolean fill, short colix, int tension,
+                          Point3i s0, Point3i s1, Point3i s2, Point3i s3,
+                          Point3i s4, Point3i s5, Point3i s6, Point3i s7) {
+    hermite3d.render2(fill, colix, tension, s0, s1, s2, s3, s4, s5, s6, s7);
+  }
+  
   public void fillRect(short colix,
                        int x, int y, int z, int widthFill, int heightFill) {
     argbCurrent = getArgb(colix);

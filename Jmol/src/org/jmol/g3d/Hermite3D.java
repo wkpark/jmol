@@ -28,6 +28,7 @@ package org.jmol.g3d;
 import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
+import java.util.Vector;
 import javax.vecmath.Point3i;
 
 /****************************************************************
@@ -121,4 +122,116 @@ class Hermite3D {
       }
     } while (sp >= 0);
   }
+
+  public void render2(boolean fill,//use fill to draw filled polygons
+                      short colix, int tension,
+                      Point3i p0, Point3i p1,//top strand segment
+                      Point3i p2, Point3i p3,//bottom strand segment
+                      Point3i p4, Point3i p5,
+                      Point3i p6, Point3i p7) {
+
+    Point3i[] endPoints = {p1, p2, p5, p6};
+    // stores all points for top+bottom strands of 1 segment
+    Vector points = new Vector(10);
+    int whichPoint = 0;
+
+    //first and last points automatically included
+    int numTopStrandPoints = 2;
+    // could make it so you can set this from script command
+    float numPointsPerSegment = 5.0f;
+    float interval = (1.0f / numPointsPerSegment);
+    float currentInt = 0.0f;
+
+    int x1 = p1.x, y1 = p1.y, z1 = p1.z;
+    int x2 = p2.x, y2 = p2.y, z2 = p2.z;
+    int xT1 = ( (x2 - p0.x) * tension) / 8;
+    int yT1 = ( (y2 - p0.y) * tension) / 8;
+    int zT1 = ( (z2 - p0.z) * tension) / 8;
+    int xT2 = ( (p3.x - x1) * tension) / 8;
+    int yT2 = ( (p3.y - y1) * tension) / 8;
+    int zT2 = ( (p3.z - z1) * tension) / 8;
+    sA[0] = 0;
+    pA[0].set(p1);
+    sB[0] = 1;
+    pB[0].set(p2);
+    sp = 0;
+    g3d.setColix(colix);
+
+     for (int strands = 2; strands > 0; strands--) {
+       if (strands == 1) {
+         x1 = p5.x; y1 = p5.y; z1 = p5.z;
+         x2 = p6.x; y2 = p6.y; z2 = p6.z;
+         xT1 = ( (x2 - p4.x) * tension) / 8;
+         yT1 = ( (y2 - p4.y) * tension) / 8;
+         zT1 = ( (z2 - p4.z) * tension) / 8;
+         xT2 = ( (p7.x - x1) * tension) / 8;
+         yT2 = ( (p7.y - y1) * tension) / 8;
+         zT2 = ( (p7.z - z1) * tension) / 8;
+         sA[0] = 0;
+         pA[0].set(p5);
+         sB[0] = 1;
+         pB[0].set(p6);
+         sp = 0;
+       }
+
+       points.add(endPoints[whichPoint++]);
+       currentInt = interval;
+       do {
+         Point3i a = pA[sp];
+         Point3i b = pB[sp];
+         int dx = b.x - a.x;
+         int dy = b.y - a.y;
+         int dist2 = dx * dx + dy * dy;
+         if (dist2 <= 2) {
+           // mth 2003 10 13
+           // I tried drawing short cylinder segments here,
+           // but drawing spheres was faster
+           float s = sA[sp];
+           g3d.plotPixelClipped(a); //draw outside edges of mesh
+
+           if (s < 1.0f - currentInt) { //if first point over the interval
+             Point3i temp = new Point3i();
+             temp.set(a);
+             points.add(temp); //store it
+             currentInt += interval; // increase to next interval
+             if (strands == 2) {
+               numTopStrandPoints++;
+             }
+           }
+           --sp;
+         }
+         else {
+           double s = (sA[sp] + sB[sp]) / 2;
+           double s2 = s * s;
+           double s3 = s2 * s;
+           double h1 = 2 * s3 - 3 * s2 + 1;
+           double h2 = -2 * s3 + 3 * s2;
+           double h3 = s3 - 2 * s2 + s;
+           double h4 = s3 - s2;
+           Point3i pMid = pB[sp + 1];
+           pMid.x = (int) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
+           pMid.y = (int) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
+           pMid.z = (int) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
+           pB[sp + 1] = pB[sp];
+           sB[sp + 1] = sB[sp];
+           pB[sp] = pMid;
+           sB[sp] = (float) s;
+           ++sp;
+           pA[sp].set(pMid);
+           sA[sp] = (float) s;
+         }
+       }
+       while (sp >= 0);
+       points.add(endPoints[whichPoint++]);
+     } //end of for loop - processed top and bottom strands
+
+   //paint
+   for(int top = 0;
+       top < numTopStrandPoints && (top+numTopStrandPoints) < points.size();
+       top++){
+     g3d.drawLine((Point3i)points.elementAt(top),
+                  (Point3i)points.elementAt(top+numTopStrandPoints));
+   }
+  }
+
 }

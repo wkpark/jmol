@@ -22,6 +22,7 @@ package org.openscience.jmol;
 import junit.framework.*;
 import java.io.*;
 import java.util.*;
+import java.awt.Color;
 
 /**
  * Unit tests for the AtomTypesModel class.
@@ -48,14 +49,14 @@ public class TestAtomTypesModel extends TestCase {
 	/**
 	 * AtomType fixture for loading into AtomTypesModels.
 	 */
-	AtomType at1;
+	BaseAtomType at1;
 
 	/**
 	 * Set up for testing.
 	 */
 	public void setUp() {
 		atm1 = new AtomTypesModel();
-		at1 = new AtomType("type1", "root1", 0, 0.0, 0.0, 0.0, 0, 0, 0);
+		at1 = BaseAtomType.get("type1", "root1", 0, 0.0, 0.0, 0.0, new Color(0, 0, 0));
 		atm2 = new AtomTypesModel();
 		atm2.updateAtomType(at1);
 	} 
@@ -115,13 +116,13 @@ public class TestAtomTypesModel extends TestCase {
 		assertEquals(null, atm1.get("root1"));
 		assertEquals(at1, atm1.get("type1"));
 
-		AtomType tmpAt1 = new AtomType("temp type", "type1", 0, 0.0, 0.0, 0.0, 0, 0, 0);
+		BaseAtomType tmpAt1 = BaseAtomType.get("temp type", "type1", 0, 0.0, 0.0, 0.0, new Color(0, 0, 0));
 		atm1.updateAtomType(tmpAt1);
 		assertEquals(at1, atm1.get(0));
 		assertEquals(tmpAt1, atm1.get("temp type"));
 		assertEquals(at1, atm1.get("type1"));
 
-		AtomType at1Replace = new AtomType("type1", "root2", 1, 0.0, 0.0, 0.0, 0, 0, 0);
+		BaseAtomType at1Replace = BaseAtomType.get("type1", "root2", 1, 0.0, 0.0, 0.0, new Color(0, 0, 0));
 		atm2.updateAtomType(at1Replace);
 		assertEquals(null, atm2.get(0));
 		assertEquals(at1Replace, atm2.get(1));
@@ -132,7 +133,7 @@ public class TestAtomTypesModel extends TestCase {
 	/**
 	 * Test setValueAt method.
 	 * Expect exceptions if range or object class incorrect.
-	 * Expect set of AtomType values if correct parameters, except for name.
+	 * Expect set of BaseAtomType values if correct parameters, except for name.
 	 */
 	public void testSetValueAt() {
 		try {
@@ -148,8 +149,35 @@ public class TestAtomTypesModel extends TestCase {
 	} 
 
 	/**
+	 * Test changing BaseAtomType name with setValueAt method.
+	 * Expect name column to not be editable, and setValueAt on name
+	 * column will not change value.
+	 */
+	public void testNameSetValueAt() {
+		assertEquals("type1", atm2.get(0).getName());
+		assert(false == atm2.isCellEditable(0, 0));
+		atm2.setValueAt("test", 0, 0);
+		assertEquals("type1", atm2.get(0).getName());
+	} 
+
+	/**
+	 * Test isCellEditable method.
+	 * Expect false if invalid row or column 0. Otherwise expect true.
+	 */
+	public void testIsCellEditable() {
+		assert(false == atm2.isCellEditable(0, 0));
+		assert(false == atm2.isCellEditable(0, -1));
+		assert(false == atm2.isCellEditable(0, 23));
+		assert(false == atm2.isCellEditable(0, 0));
+		assert(true == atm2.isCellEditable(0, 1));
+		assert(true == atm2.isCellEditable(0, 2));
+		assert(true == atm2.isCellEditable(0, 3));
+		assert(true == atm2.isCellEditable(0, 5));
+	} 
+
+	/**
 	 * Test the getValueAt method.
-	 * Expect appropriate object returned for values of AtomType if
+	 * Expect appropriate object returned for values of BaseAtomType if
 	 * correct parameters given. Otherwise an empty String is returned.
 	 */
 	public void testGetValueAt() {
@@ -188,7 +216,7 @@ public class TestAtomTypesModel extends TestCase {
 		assertEquals(Double.class, atm1.getColumnClass(3));
 		assertEquals(String.class, atm1.getColumnClass(1));
 		assertEquals(String.class, atm1.getColumnClass(-1));
-	} 
+	}
 
 	/**
 	 * Returns a Test containing all the tests.

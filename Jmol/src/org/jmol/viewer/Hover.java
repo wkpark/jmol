@@ -43,7 +43,7 @@ class Hover extends Shape {
 
   void initShape() {
     font3d = g3d.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
-    colixBackground = g3d.getColix("lightskyblue");
+    colixBackground = g3d.getColix("#FFFFC3"); // 255, 255, 195
     colixForeground = Graphics3D.BLACK;
   }
 

@@ -468,7 +468,8 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
       }
       if (arg.equals("save")) {
         createVibration();
-        FileTyper ft = new FileTyper(saveChooser);
+        FileTyper ft = new FileTyper();
+        saveChooser.addPropertyChangeListener(ft);
         saveChooser.setAccessory(ft);
         if (System.getProperty("user.dir") != null) {
           File currentDir = new File(System.getProperty("user.dir"));

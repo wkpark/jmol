@@ -482,6 +482,10 @@ class PdbModel extends Model {
     while ((line = reader.readLine()) != null) {
       if (line.startsWith("ATOM  ") ||
           line.startsWith("HETATM")) {
+        // for now, we are only taking alternate location 'A'
+        char charAlternateLocation = line.charAt(16);
+        if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
+          continue;
         int len = line.length();
         String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
         if (atomicSymbol.length() == 0 ||

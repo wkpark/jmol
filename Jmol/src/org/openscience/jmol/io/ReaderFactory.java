@@ -204,14 +204,15 @@ public abstract class ReaderFactory {
       } else if (line.startsWith("molstruct")) {
         System.out.println("ReaderFactory: CACheReader");
         return new CACheReader(buffer);
-      } else if (line.startsWith("ZERR ")) {
+      } else if (line.startsWith("ZERR ") ||
+                 line.startsWith("TITL ")) {
         buffer.reset();
         System.out.println("ReaderFactory: ShelXReader");
         return new ShelXReader(buffer);
       }
       line = buffer.readLine();
     }
-    System.out.println("ReaderFactory: Formut undertemined");
+    System.out.println("ReaderFactory: Format undetermined");
     return null;
   }
 

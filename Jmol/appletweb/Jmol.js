@@ -151,7 +151,7 @@ function jmolLink(script, text, id) {
   var t = "<a name='" + id + "' id='" + id + 
           "' href='javascript:_jmolClick(" + scriptIndex +
           _jmol.targetText +
-          ");return false;' onMouseover='_jmolMouseOver(" + scriptIndex +
+          ");' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true;' onMouseout='_jmolMouseOut()' " +
           _jmol.linkCssText + ">" + text + "</a>";
   if (_jmol.debugAlert)

@@ -467,11 +467,11 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
           try {
 			  ChemFileReader reader = null;
               if (type.equalsIgnoreCase("PDB")) {
-				  reader = new PDBFile(myReader);
+				  reader = new PDBReader(myReader);
               }else if (type.equalsIgnoreCase("CML")) {
-				  reader = new CMLFile(myReader);
+				  reader = new CMLReader(myReader);
               }else if(type.equalsIgnoreCase("XYZ")) {
-				  reader = new XYZFile(myReader);
+				  reader = new XYZReader(myReader);
               }else if(type.equalsIgnoreCase("Gaussian98")) {
 				  reader = new Gaussian98Reader(myReader);
               } else {

@@ -28,7 +28,7 @@ import org.openscience.jmol.applet.*;
 import java.awt.*;
 import java.awt.Event;
 import java.util.*;
-import org.openscience.jmol.viewer.managers.ColorManager;
+import org.jmol.g3d.Graphics3D;
 
 import netscape.javascript.JSObject;
 
@@ -135,11 +135,11 @@ public class JmolAppletControl extends Applet {
     colorName = getParam("bgcolor");
     setBackground(colorName == null
                   ? Color.white
-                  : ColorManager.getColorFromString(colorName));
+                  : Graphics3D.getColorFromString(colorName));
     colorName = getParam("fgcolor");
     setForeground(colorName == null
                   ? Color.black
-                  : ColorManager.getColorFromString(colorName));
+                  : Graphics3D.getColorFromString(colorName));
     buttonCallback = getParam("buttoncallback");
 
     setLayout(new GridLayout(1, 1));

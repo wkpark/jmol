@@ -67,7 +67,7 @@
                   <input type='button' value='XML'
                     onclick='showXMLFile()'/>
                   <small>
-                    <fah_count_files/> faile / <fah_count_projects/> projekte.
+                    <fah_count_files/> faili / <fah_count_projects/> projekti.
                   </small>
                 </td>
               </tr>

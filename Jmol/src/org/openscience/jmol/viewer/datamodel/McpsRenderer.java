@@ -49,4 +49,51 @@ abstract class McpsRenderer extends ShapeRenderer {
   }
 
   abstract void renderMcpschain(Mcps.Mcpschain mcpschain);
+
+  ////////////////////////////////////////////////////////////////
+  // some utilities
+  final boolean[] calcIsSpecials(int polymerCount, Group[] polymerGroups) {
+    boolean[] isSpecials = viewer.allocTempBooleans(polymerCount + 1);
+    for (int i = polymerCount; --i >= 0; )
+      isSpecials[i] = polymerGroups[i].isHelixOrSheet();
+    isSpecials[polymerCount] = isSpecials[polymerCount - 1];
+    return isSpecials;
+  }
+
+
+  final Point3i[] calcScreenLeadMidpoints(int polymerCount, Point3f[] leadMidpoints) {
+    int count = polymerCount + 1;
+    Point3i[] leadMidpointScreens = viewer.allocTempScreens(count);
+    for (int i = count; --i >= 0; ) {
+      viewer.transformPoint(leadMidpoints[i], leadMidpointScreens[i]);
+      //g3d.fillSphereCentered(Graphics3D.CYAN, 15, leadMidpointScreens[i]);
+    }
+    return leadMidpointScreens;
+  }
+
+  final void renderRopeSegment(short colix, short[] mads, int i,
+                               int polymerCount, Group[] polymerGroups,
+                               Point3i[] leadMidpointScreens, boolean[] isSpecials) {
+    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
+    int iNext1 = i + 1; if (iNext1 > polymerCount) iNext1 = polymerCount;
+    int iNext2 = i + 2; if (iNext2 > polymerCount) iNext2 = polymerCount;
+    
+    int madThis, madBeg, madEnd;
+    madThis = madBeg = madEnd = mads[i];
+    if (isSpecials != null) {
+      if (! isSpecials[iPrev1])
+        madBeg = (mads[iPrev1] + madThis) / 2;
+      if (! isSpecials[iNext1])
+        madEnd = (mads[iNext1] + madThis) / 2;
+    }
+    int diameterBeg = viewer.scaleToScreen(leadMidpointScreens[i].z, madBeg);
+    int diameterEnd = viewer.scaleToScreen(leadMidpointScreens[iNext1].z, madEnd);
+    int diameterMid =
+      viewer.scaleToScreen(polymerGroups[i].getLeadAtom().getScreenZ(),
+                           madThis);
+    g3d.fillHermite(colix, 4,
+                    diameterBeg, diameterMid, diameterEnd,
+                    leadMidpointScreens[iPrev1], leadMidpointScreens[i],
+                    leadMidpointScreens[iNext1], leadMidpointScreens[iNext2]);
+  }
 }

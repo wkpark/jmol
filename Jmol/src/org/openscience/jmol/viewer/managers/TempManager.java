@@ -76,7 +76,7 @@ public class TempManager {
   ////////////////////////////////////////////////////////////////
   // temp Points
   ////////////////////////////////////////////////////////////////
-  final static int freePointsSize = 8;
+  final static int freePointsSize = 6;
   final short[] lengthsFreePoints = new short[freePointsSize];
   final Point3f[][] freePoints = new Point3f[freePointsSize][];
 
@@ -102,7 +102,7 @@ public class TempManager {
   ////////////////////////////////////////////////////////////////
   // temp Screens
   ////////////////////////////////////////////////////////////////
-  final static int freeScreensSize = 8;
+  final static int freeScreensSize = 6;
   final short[] lengthsFreeScreens = new short[freeScreensSize];
   final Point3i[][] freeScreens = new Point3i[freeScreensSize][];
 
@@ -123,5 +123,29 @@ public class TempManager {
     int iFree = findShorter(tempScreens.length, lengthsFreeScreens);
     if (iFree >= 0)
       freeScreens[iFree] = tempScreens;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // temp booleans
+  ////////////////////////////////////////////////////////////////
+  final static int freeBooleansSize = 2;
+  final short[] lengthsFreeBooleans = new short[freeBooleansSize];
+  final boolean[][] freeBooleans = new boolean[freeBooleansSize][];
+
+  public boolean[] allocTempBooleans(int size) {
+    boolean[] tempBooleans;
+    int iFit = findBestFit(size, lengthsFreeBooleans);
+    if (iFit > 0) {
+      tempBooleans = freeBooleans[iFit];
+    } else {
+      tempBooleans = new boolean[size];
+    }
+    return tempBooleans;
+  }
+
+  public void freeTempBooleans(boolean[] tempBooleans) {
+    int iFree = findShorter(tempBooleans.length, lengthsFreeBooleans);
+    if (iFree >= 0)
+      freeBooleans[iFree] = tempBooleans;
   }
 }

@@ -2059,6 +2059,14 @@ final public class JmolViewer {
     tempManager.freeTempScreens(tempScreens);
   }
 
+  public boolean[] allocTempBooleans(int size) {
+    return tempManager.allocTempBooleans(size);
+  }
+
+  public void freeTempBooleans(boolean[] tempBooleans) {
+    tempManager.freeTempBooleans(tempBooleans);
+  }
+
   ////////////////////////////////////////////////////////////////
   // font stuff
   ////////////////////////////////////////////////////////////////

@@ -35,8 +35,6 @@ class TraceRenderer extends McpsRenderer {
 
   void render() {
     super.render();
-    screens = null;
-    centerAtoms = null;
   }
 
   boolean isNucleotidePolymer;
@@ -44,73 +42,35 @@ class TraceRenderer extends McpsRenderer {
   void renderMcpschain(Mcps.Mcpschain mcpschain) {
     Trace.Tchain tchain = (Trace.Tchain)mcpschain;
     isNucleotidePolymer = tchain.polymer instanceof NucleotidePolymer;
-    render1Chain(tchain.polymer,
-                 tchain.polymerCount,
-                 tchain.polymerGroups,
-                 tchain.mads,
+    polymerCount = tchain.polymerCount;
+    if (polymerCount == 0)
+      return;
+    polymerGroups = tchain.polymerGroups;
+    leadMidpoints = tchain.leadMidpoints;
+    leadMidpointScreens = calcScreenLeadMidpoints(polymerCount, leadMidpoints);
+    render1Chain(tchain.mads,
                  tchain.colixes);
+    viewer.freeTempScreens(leadMidpointScreens);
   }
 
-  Point3i[] screens;
-  Atom[] centerAtoms;
-  
-  void render1Chain(Polymer polymer, int count, Group[] groups,
-                    short[] mads, short[] colixes) {
-    if (count > 0) {
-      screens = viewer.allocTempScreens(count + 1);
-      calcMidPoints(polymer, count, groups);
-      for (int i = count; --i >= 0; ) {
-        if (mads[i] == 0)
-          continue;
-        short colix = colixes[i];
-        if (colix == 0)
-          colix = centerAtoms[i].colixAtom;
-        render1Segment(colix, mads, i, count);
-      }
-      viewer.freeTempScreens(screens);
+  int polymerCount;
+
+  Group[] polymerGroups;
+  Point3i[] leadMidpointScreens;
+  Point3f[] leadMidpoints;
+
+  void render1Chain(short[] mads, short[] colixes) {
+    for (int i = polymerCount; --i >= 0; ) {
+      if (mads[i] == 0)
+        continue;
+      short colix = colixes[i];
+      if (colix == 0)
+        colix = polymerGroups[i].getLeadAtom().colixAtom;
+      renderRopeSegment(colix, mads, i,
+                        polymerCount, polymerGroups,
+                        leadMidpointScreens, null);
     }
   }
 
-  void calcMidPoints(Polymer polymer, int count, Group[] groups) {
-    centerAtoms = frameRenderer.getTempAtoms(count);
-    Atom atomPrev = centerAtoms[0] = polymer.getLeadAtom(0);
-    setScreen(atomPrev, screens[0]);
-    for (int i = 1; i < count; ++i) {
-      Atom atomThis = centerAtoms[i] = polymer.getLeadAtom(i);
-      calcAverageScreen(atomPrev, atomThis, screens[i]);
-      atomPrev = atomThis;
-    }
-    setScreen(atomPrev, screens[count]);
-  }
-  
-  void setScreen(Atom atom, Point3i dest) {
-    dest.x = atom.getScreenX();
-    dest.y = atom.getScreenY();
-    dest.z = atom.getScreenZ();
-  }
-
-  void calcAverageScreen(Atom atomA, Atom atomB, Point3i dest) {
-    dest.x = (atomA.getScreenX() + atomB.getScreenX()) / 2;
-    dest.y = (atomA.getScreenY() + atomB.getScreenY()) / 2;
-    dest.z = (atomA.getScreenZ() + atomB.getScreenZ()) / 2;
-  }
-
-  void render1Segment(short colix, short[] mads, int i, int count) {
-    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
-    int iNext1 = i + 1; if (iNext1 > count) iNext1 = count;
-    int iNext2 = i + 2; if (iNext2 > count) iNext2 = count;
-    
-    int madThis = mads[i];
-    int madBeg = (mads[iPrev1] + madThis) / 2;
-    int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
-    int madEnd = (mads[iNext1] + madThis) / 2;
-    int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
-    int diameterMid = viewer.scaleToScreen(centerAtoms[i].getScreenZ(),
-                                           madThis);
-    g3d.fillHermite(colix, isNucleotidePolymer ? 4 : 7,
-                    diameterBeg, diameterMid, diameterEnd,
-                    screens[iPrev1], screens[i],
-                    screens[iNext1], screens[iNext2]);
-  }
 }
 

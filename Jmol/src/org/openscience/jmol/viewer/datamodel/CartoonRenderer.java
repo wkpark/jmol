@@ -75,15 +75,6 @@ class CartoonRenderer extends McpsRenderer {
     return screens;
   }
 
-  void calcScreenLeadMidpoints() {
-    int count = polymerCount + 1;
-    leadMidpointScreens = viewer.allocTempScreens(count);
-    for (int i = count; --i >= 0; ) {
-      viewer.transformPoint(leadMidpoints[i], leadMidpointScreens[i]);
-      //g3d.fillSphereCentered(Graphics3D.CYAN, 15, leadMidpointScreens[i]);
-    }
-  }
-
   boolean isNucleotidePolymer;
   int polymerCount;
   Group[] polymerGroups;
@@ -92,6 +83,7 @@ class CartoonRenderer extends McpsRenderer {
   short[] mads;
   short[] colixes;
 
+  boolean[] isSpecials;
   Point3i[] leadMidpointScreens;
   Point3i[] ribbonTopScreens;
   Point3i[] ribbonBottomScreens;
@@ -101,7 +93,6 @@ class CartoonRenderer extends McpsRenderer {
     if (strandsChain.wingVectors != null) {
       polymerCount = strandsChain.polymerCount;
       polymerGroups = strandsChain.polymerGroups;
-      calcIsSpecials();
       isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
       leadMidpoints = strandsChain.leadMidpoints;
       wingVectors = strandsChain.wingVectors;
@@ -112,18 +103,10 @@ class CartoonRenderer extends McpsRenderer {
   }
 
 
-  boolean[] isSpecials;
-
-  void calcIsSpecials() {
-    isSpecials = frameRenderer.getTempBooleans(polymerCount);
-    for (int i = polymerCount; --i >= 0; )
-      isSpecials[i] = polymerGroups[i].isHelixOrSheet();
-  }
-
-
   void render1Chain() {
 
-    calcScreenLeadMidpoints();
+    isSpecials = calcIsSpecials(polymerCount, polymerGroups);
+    leadMidpointScreens = calcScreenLeadMidpoints(polymerCount, leadMidpoints);
     ribbonTopScreens = calcScreens(leadMidpoints, wingVectors, mads,
                              isNucleotidePolymer ? 1f / 1000 : 0.5f / 1000);
     ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
@@ -143,12 +126,15 @@ class CartoonRenderer extends McpsRenderer {
             render2StrandArrowhead(polymerCount, group, colix, mads, i);
         }
         else
-          renderRopeSegment(colix, mads, i);
+          renderRopeSegment(colix, mads, i,
+                            polymerCount, polymerGroups,
+                            leadMidpointScreens, isSpecials);
         lastWasSpecial = isSpecial;
       }
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
     viewer.freeTempScreens(leadMidpointScreens);
+    viewer.freeTempBooleans(isSpecials);
   }
   
   void render2StrandSegment(int polymerCount, Group group, short colix,
@@ -200,32 +186,5 @@ class CartoonRenderer extends McpsRenderer {
                     leadMidpointScreens[iNext], leadMidpointScreens[iNext2]
                     );
   }
-
-  void renderRopeSegment(short colix, short[] mads, int i) {
-    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
-    int iNext1 = i + 1; if (iNext1 > polymerCount) iNext1 = polymerCount;
-    int iNext2 = i + 2; if (iNext2 > polymerCount) iNext2 = polymerCount;
-    
-    int madThis, madBeg, madEnd;
-    madThis = madBeg = madEnd = mads[i];
-    if (! isSpecials[iPrev1])
-      madBeg = (mads[iPrev1] + madThis) / 2;
-    if (! isSpecials[iNext1])
-      madEnd = (mads[iNext1] + madThis) / 2;
-    int diameterBeg = viewer.scaleToScreen(leadMidpointScreens[i].z, madBeg);
-    int diameterEnd = viewer.scaleToScreen(leadMidpointScreens[iNext1].z, madEnd);
-    int diameterMid =
-      viewer.scaleToScreen(polymerGroups[i].getLeadAtom().getScreenZ(),
-                           madThis);
-    g3d.fillHermite(colix, 4,
-                    diameterBeg, diameterMid, diameterEnd,
-                    leadMidpointScreens[iPrev1], leadMidpointScreens[i],
-                    leadMidpointScreens[iNext1], leadMidpointScreens[iNext2]);
-//    System.out.println("render1Segment: iPrev1=" + iPrev1 +
-//                       " i=" + i + " iNext1=" + iNext1 + " iNext2=" + iNext2 +
-//                       " leadMidpointScreens[i]=" + leadMidpointScreens[i] + " colix=" + colix +
-//                       " mads[i]=" + mads[i]);
-  }
-
 
 }

@@ -56,36 +56,37 @@ class RocketsRenderer extends McpsRenderer {
       if (mads[i] == 0)
         continue;
       short colix = colixes[i];
-      if (colix == 0)
-        colix = alphas[i].colixAtom;
       Group group = polymerGroups[i];
+      if (colix == 0)
+        colix = group.getLeadAtom().colixAtom;
       if (group.isHelixOrSheet()) {
         //        System.out.println("renderSpecialSegment[" + i + "]");
         renderSpecialSegment(group, colix, mads[i]);
       } else {
         //        System.out.println("renderRopeSegment[" + i + "]");
-        renderRopeSegment(colix, mads, i);
+        renderRopeSegment(colix, mads, i,
+                          polymerCount, polymerGroups,
+                          screens, isSpecials);
       }
     }
     renderPending();
     viewer.freeTempScreens(screens);
     viewer.freeTempPoints(cordMidPoints);
+    viewer.freeTempBooleans(isSpecials);
   }
 
   int polymerCount;
   Group[] polymerGroups;
   Point3i[] screens;
-  Atom[] alphas;
   boolean[] isSpecials;
   Point3f[] cordMidPoints;
 
   void initializeChain(AminoPolymer aminopolymer) {
     polymerGroups = aminopolymer.getGroups();
     polymerCount = aminopolymer.getCount();
-    isSpecials = frameRenderer.getTempBooleans(polymerCount);
+    isSpecials = calcIsSpecials(polymerCount, polymerGroups);
     cordMidPoints = calcRopeMidPoints(aminopolymer);
     screens = getScreens();
-    alphas = getAlphas();
   }
 
   Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
@@ -97,7 +98,7 @@ class RocketsRenderer extends McpsRenderer {
     for (int i = 0; i < polymerCount; ++i) {
       point = cordMidPoints[i];
       Group residue = polymerGroups[i];
-      if (isSpecials[i] = residue.isHelixOrSheet()) {
+      if (isSpecials[i]) {
         AminoStructure aminostructure = residue.aminostructure;
         point.set(i - 1 != aminostructure.getPolymerIndex()
                   ? aminostructure.getAxisStartPoint()
@@ -134,38 +135,6 @@ class RocketsRenderer extends McpsRenderer {
       //      g3d.fillSphereCentered(Colix.CYAN, 15, screens[i]);
     }
     return screens;
-  }
-
-  Atom[] getAlphas() {
-    Atom[] alphas = frameRenderer.getTempAtoms(polymerCount);
-    for (int i = polymerCount; --i >= 0; )
-      alphas[i] = polymerGroups[i].getAlphaCarbonAtom();
-    return alphas;
-  }
-
-  void renderRopeSegment(short colix, short[] mads, int i) {
-    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
-    int iNext1 = i + 1; if (iNext1 > polymerCount) iNext1 = polymerCount;
-    int iNext2 = i + 2; if (iNext2 > polymerCount) iNext2 = polymerCount;
-    
-    int madThis, madBeg, madEnd;
-    madThis = madBeg = madEnd = mads[i];
-    if (! isSpecials[iPrev1])
-      madBeg = (mads[iPrev1] + madThis) / 2;
-    if (! isSpecials[iNext1])
-      madEnd = (mads[iNext1] + madThis) / 2;
-    int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
-    int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
-    int diameterMid = viewer.scaleToScreen(alphas[i].getScreenZ(), madThis);
-    g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
-                    screens[iPrev1], screens[i],
-                    screens[iNext1], screens[iNext2]);
-    /*
-    System.out.println("render1Segment: iPrev1=" + iPrev1 +
-                       " i=" + i + " iNext1=" + iNext1 + " iNext2=" + iNext2 +
-                       " screens[i]=" + screens[i] + " colix=" + colix +
-                       " mads[i]=" + mads[i]);
-    */
   }
 
   final Point3i screenA = new Point3i();

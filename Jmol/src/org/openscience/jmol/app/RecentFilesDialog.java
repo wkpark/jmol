@@ -95,7 +95,8 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     fileList.addMouseListener(dblClickListener);
 
     getContentPane().add("Center", fileList);
-    setLocationRelativeTo(boss);
+    //    System.out.println("I am setting my location relative to:" + boss);
+    setLocation(100, 100);
     pack();
   }
 

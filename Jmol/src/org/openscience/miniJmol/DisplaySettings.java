@@ -253,13 +253,6 @@ public class DisplaySettings {
 	} 
 
 	/**
-	 * Toggles flag for whether to draw bonds to atom centers.
-	 */
-    public void toggleDrawBondsToAtomCenters() {
-        drawBondsToAtomCenters = !drawBondsToAtomCenters;
-    }
-
-	/**
 	 * Sets flag for whether to draw bonds to atom centers.
 	 */
     public void setDrawBondsToAtomCenters(boolean on) {
@@ -338,6 +331,21 @@ public class DisplaySettings {
 	 */
 	public double getAtomSphereFactor() {
 		return atomSphereFactor;
+	} 
+
+	/**
+	 * Sets the fast rendering flag.
+	 * @param b  whether to do fast rendering
+	 */
+	public void setFastRendering(boolean b) {
+		doFastRendering = b;
+	} 
+
+	/**
+	 * Gets the fast rendering flag.
+	 */
+	public boolean getFastRendering() {
+		return doFastRendering;
 	} 
 
     /**
@@ -443,4 +451,11 @@ public class DisplaySettings {
 	 * Atom sphere factor.
 	 */
     private double atomSphereFactor = 0.2;
+
+	/**
+	 * Flag for fast rendering.
+	 * Added by T.GREY for quick drawing on atom movement.
+	 */
+    private boolean doFastRendering = false;
+
 }

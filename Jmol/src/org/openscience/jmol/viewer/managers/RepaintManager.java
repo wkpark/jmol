@@ -98,7 +98,20 @@ public class RepaintManager {
   // 1 = loop
   // 2 = palindrome
   public int animationReplayMode = 0;
-  public void setAnimationReplayMode(int animationReplayMode) {
+  public float leadInDelay, firstFrameDelay, lastFrameDelay;
+  int leadInDelayMs, firstFrameDelayMs, lastFrameDelayMs;
+
+  public void setAnimationReplayMode(int animationReplayMode,
+                                     float leadInDelay,
+                                     float firstFrameDelay,
+                                     float lastFrameDelay) {
+    leadInDelayMs =
+      (int)((this.leadInDelay = leadInDelay > 0 ? leadInDelay : 0) * 1000);
+    firstFrameDelayMs =
+      (int)((this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0) * 1000);
+    lastFrameDelayMs =
+      (int)((this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0) * 1000);
+
     if (animationReplayMode >= 0 && animationReplayMode <= 2)
       this.animationReplayMode = animationReplayMode;
     else
@@ -253,7 +266,7 @@ public class RepaintManager {
     setDisplayModelID(0);
     setAnimationDirection(1);
     setAnimationFps(10);
-    setAnimationReplayMode(0);
+    setAnimationReplayMode(0, 0, 0, 0);
   }
 
   public boolean animationOn = false;
@@ -275,47 +288,64 @@ public class RepaintManager {
     currentDirection = animationDirection;
     setDisplayModelIndex(animationDirection == 1 ? 0 : modelCount - 1);
     if (animationThread == null) {
-      animationThread = new AnimationThread();
+      animationThread = new AnimationThread(modelCount);
       animationThread.start();
     }
     this.animationOn = true;
   }
 
   class AnimationThread extends Thread implements Runnable {
+    final int modelCount;
+    final int lastModelIndex;
+    AnimationThread(int modelCount) {
+      this.modelCount = modelCount;
+      lastModelIndex = modelCount - 1;
+    }
+
     public void run() {
-      int myFps = animationFps;
+      int accumulatedDelayTime = 0;
       int i = 0;
-      requestRepaintAndWait();
       long timeBegin = System.currentTimeMillis();
-      while (! isInterrupted()) {
-        if (myFps != animationFps) {
-          myFps = animationFps;
-          i = 0;
-          timeBegin = System.currentTimeMillis();
-        }
-        if (! setAnimationNext()) {
-          setAnimationOn(false);
-          return;
-        }
-        ++i;
-        int targetTime = i * 1000 / myFps;
-        int currentTime = (int)(System.currentTimeMillis() - timeBegin);
-        int sleepTime = targetTime - currentTime;
-        if (sleepTime < 0)
-          continue;
-        refresh();
-        currentTime = (int)(System.currentTimeMillis() - timeBegin);
-        sleepTime = targetTime - currentTime;
-        if (sleepTime > 0) {
-          try {
-            Thread.sleep(sleepTime);
-          } catch (InterruptedException e) {
-            //            System.out.println("interrupt caught!");
-            break;
+      int targetTime = 0;
+      int currentTime, sleepTime;
+      boolean firstTimeThrough = true;
+      requestRepaintAndWait();
+      try {
+        targetTime += leadInDelayMs;
+        sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+        if (sleepTime > 0)
+          Thread.sleep(sleepTime);
+        while (! isInterrupted()) {
+          if (!firstTimeThrough && displayModelIndex == 0) {
+            targetTime += firstFrameDelayMs;
+            sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+            if (sleepTime > 0)
+              Thread.sleep(sleepTime);
           }
+          if (!firstTimeThrough && displayModelIndex == lastModelIndex) {
+            targetTime += lastFrameDelayMs;
+            sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+            if (sleepTime > 0)
+              Thread.sleep(sleepTime);
+          }
+          firstTimeThrough = false;
+          if (! setAnimationNext()) {
+            setAnimationOn(false);
+            return;
+          }
+          ++i;
+          targetTime += (1000 / animationFps);
+          sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+          if (sleepTime < 0)
+            continue;
+          refresh();
+          sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+          if (sleepTime > 0)
+            Thread.sleep(sleepTime);
         }
+      } catch (InterruptedException ie) {
+        System.out.println("animation interrupted!");
       }
-      
     }
   }
 }

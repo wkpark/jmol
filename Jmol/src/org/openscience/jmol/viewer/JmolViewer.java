@@ -1155,11 +1155,15 @@ final public class JmolViewer {
     return repaintManager.animationFps;
   }
 
-  public void setAnimationReplayMode(int replay) {
+  public void setAnimationReplayMode(int replay,
+                                     float leadInDelay,
+                                     float firstFrameDelay,
+                                     float lastFrameDelay) {
     // 0 means once
     // 1 means loop
     // 2 means palindrome
-    repaintManager.setAnimationReplayMode(replay);
+    repaintManager.setAnimationReplayMode(replay, leadInDelay,
+                                          firstFrameDelay, lastFrameDelay);
   }
   public int getAnimationReplayMode() {
     return repaintManager.animationReplayMode;

@@ -63,6 +63,7 @@ public class Eval implements Runnable {
   String errorMessage;
 
   Token[] statement;
+  int statementLength;
   JmolViewer viewer;
   Thread myThread;
   boolean terminationNotification;
@@ -299,6 +300,7 @@ public class Eval implements Runnable {
     }
     while (!interruptExecution && pc < aatoken.length) {
       statement = aatoken[pc++];
+      statementLength = statement.length;
       if (viewer.getDebugScript())
         logDebugScript();
       Token token = statement[0];
@@ -462,7 +464,7 @@ public class Eval implements Runnable {
   void logDebugScript() {
     strbufLog.setLength(0);
     strbufLog.append(statement[0].value.toString());
-    for (int i = 1; i < statement.length; ++i) {
+    for (int i = 1; i < statementLength; ++i) {
       strbufLog.append(' ');
       Token token = statement[i];
       switch (token.tok) {
@@ -625,7 +627,7 @@ public class Eval implements Runnable {
   // as in set foo <boolean>
 
   void checkStatementLength(int length) throws ScriptException {
-    if (statement.length != length)
+    if (statementLength != length)
       badArgumentCount();
   }
 
@@ -1171,7 +1173,7 @@ public class Eval implements Runnable {
 
 
   Color getColorParam(int itoken) throws ScriptException {
-    if (itoken >= statement.length)
+    if (itoken >= statementLength)
       colorExpected();
     if (statement[itoken].tok != Token.colorRGB)
       colorExpected();
@@ -1179,7 +1181,7 @@ public class Eval implements Runnable {
   }
 
   Color getColorOrNoneParam(int itoken) throws ScriptException {
-    if (itoken >= statement.length)
+    if (itoken >= statementLength)
       colorExpected();
     if (statement[itoken].tok == Token.colorRGB)
       return new Color(statement[itoken].intValue);
@@ -1198,7 +1200,7 @@ public class Eval implements Runnable {
   // but someplace in the rasmol doc it makes reference to the geometric
   // center as the default for rotations. who knows. 
   void center() throws ScriptException {
-    if (statement.length == 1) {
+    if (statementLength == 1) {
       viewer.clearSelection();
     } else {
       viewer.setSelectionSet(expression(statement, 1));
@@ -1207,7 +1209,7 @@ public class Eval implements Runnable {
   }
 
   void color() throws ScriptException {
-    if (statement.length > 3 || statement.length < 2)
+    if (statementLength > 3 || statementLength < 2)
       badArgumentCount();
     int tok = statement[1].tok;
     switch (tok) {
@@ -1355,7 +1357,7 @@ public class Eval implements Runnable {
   }
 
   void echo() throws ScriptException {
-    if (statement.length == 2 && statement[1].tok == Token.string)
+    if (statementLength == 2 && statement[1].tok == Token.string)
       viewer.scriptEcho((String)statement[1].value);
     else
       viewer.scriptEcho("");
@@ -1377,7 +1379,7 @@ public class Eval implements Runnable {
       ++i;
     if (statement[i].tok != Token.string)
       filenameExpected();
-    if (statement.length != i + 1)
+    if (statementLength != i + 1)
       badArgumentCount();
     String filename = (String)statement[i].value;
     viewer.openFile(filename);
@@ -1389,11 +1391,11 @@ public class Eval implements Runnable {
   }
 
   void monitor() throws ScriptException {
-    if (statement.length == 1) {
+    if (statementLength == 1) {
       viewer.setShowMeasurements(true);
       return;
     }
-    if (statement.length == 2) {
+    if (statementLength == 2) {
       if (statement[1].tok == Token.on)
         viewer.setShowMeasurements(true);
       else if (statement[1].tok == Token.off)
@@ -1402,13 +1404,13 @@ public class Eval implements Runnable {
         booleanExpected();
       return;
     }
-    if (statement.length < 3 || statement.length > 5)
+    if (statementLength < 3 || statementLength > 5)
       badArgumentCount();
-    for (int i = 1; i < statement.length; ++i) {
+    for (int i = 1; i < statementLength; ++i) {
       if (statement[i].tok != Token.integer)
         integerExpected();
     }
-    int argCount = statement.length - 1;
+    int argCount = statementLength - 1;
     int numAtoms = viewer.getAtomCount();
     int[] args = new int[argCount];
     for (int i = 0; i < argCount; ++i) {
@@ -1450,7 +1452,7 @@ public class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
-    if (statement.length < 2)
+    if (statementLength < 2)
       axisExpected();
     switch (statement[1].tok) {
     case Token.x:
@@ -1460,7 +1462,7 @@ public class Eval implements Runnable {
     default:
       axisExpected();
     }
-    if (statement.length != 3 || statement[2].tok != Token.integer)
+    if (statementLength != 3 || statement[2].tok != Token.integer)
         integerExpected();
     int degrees = statement[2].intValue;
     switch (statement[1].tok) {
@@ -1514,7 +1516,7 @@ public class Eval implements Runnable {
 
   void select() throws ScriptException {
     // NOTE this is called by restrict()
-    if (statement.length == 1) {
+    if (statementLength == 1) {
       viewer.selectAll();
       if (!viewer.getRasmolHydrogenSetting())
         viewer.excludeSelectionSet(getHydrogenSet());
@@ -1596,9 +1598,9 @@ public class Eval implements Runnable {
   }
 
   void move() throws ScriptException {
-    if (statement.length < 10 || statement.length > 12)
+    if (statementLength < 10 || statementLength > 12)
       badArgumentCount();
-    for (int i = 1; i < statement.length; ++i)
+    for (int i = 1; i < statementLength; ++i)
       if (statement[i].tok != Token.integer)
         integerExpected();
     int dRotX = statement[1].intValue;
@@ -1611,9 +1613,9 @@ public class Eval implements Runnable {
     int dSlab = statement[8].intValue;
     int secondsTotal = statement[9].intValue;
     int fps = 30, maxAccel = 5;
-    if (statement.length > 10) {
+    if (statementLength > 10) {
       fps = statement[10].intValue;
-      if (statement.length > 11)
+      if (statementLength > 11)
         maxAccel = statement[11].intValue;
     }
 
@@ -1690,10 +1692,10 @@ public class Eval implements Runnable {
   void cpk() throws ScriptException {
     short mar = 0;
     int tok = Token.on;
-    if (statement.length > 1) {
+    if (statementLength > 1) {
       tok = statement[1].tok;
-      if (! ((statement.length == 2) ||
-             (statement.length == 3 &&
+      if (! ((statementLength == 2) ||
+             (statementLength == 3 &&
               tok == Token.integer &&
               statement[2].tok == Token.percent))) {
         badArgumentCount();
@@ -1707,7 +1709,7 @@ public class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
-      if (statement.length == 2) {
+      if (statementLength == 2) {
         if (radiusRasMol >= 500 || radiusRasMol < -100)
           numberOutOfRange();
         mar = (short)radiusRasMol;
@@ -1823,7 +1825,7 @@ public class Eval implements Runnable {
   }
 
   void animation() throws ScriptException {
-    if (statement.length < 2)
+    if (statementLength < 2)
       subcommandExpected();
     int tok = statement[1].tok;
     boolean animate = false;
@@ -1854,7 +1856,8 @@ public class Eval implements Runnable {
   }
 
   void animationMode() throws ScriptException {
-    checkStatementLength(3);
+    if (statementLength != 3 && statementLength != 6)
+      badArgumentCount();
     int animationMode = 0;
     switch (statement[2].tok) {
     case Token.loop:
@@ -1870,7 +1873,25 @@ public class Eval implements Runnable {
       }
       unrecognizedSubcommand();
     }
-    viewer.setAnimationReplayMode(animationMode);
+    viewer.setAnimationReplayMode(animationMode,
+                                  getFloat(3), getFloat(4), getFloat(5));
+  }
+
+  float getFloat(int index) throws ScriptException {
+    float f = 0;
+    if (index < statementLength) {
+      switch (statement[index].tok) {
+      case Token.integer:
+        f = statement[index].intValue;
+        break;
+      case Token.decimal:
+        f = ((Float)statement[index].value).floatValue();
+        break;
+      default:
+        numberExpected();
+      }
+    }
+    return f;
   }
 
   void animationDirection() throws ScriptException {
@@ -2225,7 +2246,7 @@ public class Eval implements Runnable {
 
   void setFontsize() throws ScriptException {
     int fontsize = 8;
-    if (statement.length == 3) {
+    if (statementLength == 3) {
       fontsize=getSetInteger();
       if (fontsize > 72)
         numberOutOfRange();
@@ -2288,8 +2309,7 @@ public class Eval implements Runnable {
   }
 
   void setSolvent() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
+    checkLength3();
     float probeRadius = 0;
     switch (statement[2].tok) {
     case Token.on:
@@ -2313,7 +2333,7 @@ public class Eval implements Runnable {
 
   void setStrands() throws ScriptException {
     int strandCount = 5;
-    if (statement.length == 3) {
+    if (statementLength == 3) {
       if (statement[2].tok != Token.integer)
         integerExpected();
       strandCount = statement[2].intValue;
@@ -2324,8 +2344,7 @@ public class Eval implements Runnable {
   }
 
   void setSpecular() throws ScriptException {
-    if (statement.length != 3)
-      booleanOrNumberExpected();
+    checkLength3();
     if (statement[2].tok == Token.integer)
       viewer.setSpecularPercent(getSetInteger());
     else
@@ -2366,8 +2385,7 @@ public class Eval implements Runnable {
   }
 
   void setSsbonds() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
+    checkLength3();
     boolean ssbondsBackbone = false;
     switch(statement[2].tok) {
     case Token.backbone:
@@ -2382,8 +2400,7 @@ public class Eval implements Runnable {
   }
 
   void setHbonds() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
+    checkLength3();
     boolean hbondsBackbone = false;
     switch(statement[2].tok) {
     case Token.backbone:
@@ -2398,8 +2415,7 @@ public class Eval implements Runnable {
   }
 
   void setScale3d() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
+    checkLength3();
     float angstromsPerInch = 0;
     switch (statement[2].tok) {
     case Token.decimal:

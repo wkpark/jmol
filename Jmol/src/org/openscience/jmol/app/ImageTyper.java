@@ -43,7 +43,7 @@ import java.awt.FlowLayout;
 public class ImageTyper extends JPanel {
 
   private String[] Choices = {
-    "BMP", "GIF", "JPEG", "PNG", "PPM"
+    "BMP", "JPEG", "PNG", "PPM"
   };
   private int def = 0;
   private String result = Choices[def];
@@ -127,18 +127,4 @@ public class ImageTyper extends JPanel {
     }
     return qual;
   }
-
-  /**
-   * removes the GIF entry for those times when we have > 8 bit images
-   */
-  public void disableGIF() {
-
-    for (int i = 0; i < cb.getItemCount(); i++) {
-      if (((String) cb.getItemAt(i)).equals("GIF")) {
-        cb.removeItemAt(i);
-      }
-    }
-  }
-
-
 }

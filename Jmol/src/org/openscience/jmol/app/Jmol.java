@@ -40,7 +40,6 @@ import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.ui.JmolPopup;
-import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
 import com.lowagie.text.Document;
@@ -1069,8 +1068,6 @@ public class Jmol extends JPanel {
 
       // GIF doesn't support more than 8 bits:
       //      if (viewer.getStyleAtom() == JmolConstants.STYLE_SHADED) {
-      it.disableGIF();
-      //      }
       exportChooser.setAccessory(it);
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
@@ -1089,9 +1086,6 @@ public class Jmol extends JPanel {
             } else if (it.getType().equals("PPM")) {
               PpmEncoder pc = new PpmEncoder(eImage, os);
               pc.encode();
-            } else if (it.getType().equals("GIF")) {
-              GifEncoder gc = new GifEncoder(eImage, os, true);
-              gc.encode();
             } else if (it.getType().equals("PNG")) {
               PngEncoder png = new PngEncoder(eImage);
               byte[] pngbytes = png.pngEncode();

@@ -1312,45 +1312,76 @@ final public class JmolConstants {
 
   /**
    * colors used for chains
-   * as currently implemented, this array must be of length 8
    */
 
   public final static int[] argbsPdbChainAtom = {
-    // protein explorer colors
     // ' '->0 'A'->1, 'B'->2
-    0xFF00ffff, // pecyan 0xFF00ffff
-    0xFFd020ff, // pepurple 0xFFd020ff
-    0xFF00ff00, // pegreen 0xFF00ff00
-    0xFF6060ff, // peblue 0xFF6060ff
-    0xFFff80c0, // peviolet 0xFFff80c0
-    0xFFa42028, // pebrown 0xFFa42028
-    0xFFffd8d8, // pepink 0xFFffd8d8
-    0xFFffff00, // peyellow 0xFFffff00
-    0xFF00c000, // pedarkgreen 0xFF00c000
-    0xFFffb000, // peorange 0xFFffb000
-    0xFFb0b0ff, // pelightblue 0xFFb0b0ff
-    0xFF00a0a0, // pedarkcyan 0xFF00a0a0
-    0xFF606060, // pedarkgray 0xFF606060
-    0xFFffffff, // pewhite 0xFFffffff
+    // protein explorer colors
+    0xFFffffff, // ' ' & '0' pewhite 0xFFffffff
+    //
+    0xFF00f0f0, // A & 1 pecyan 0xFF00ffff
+    0xFFd020f0, // B & 2 pepurple 0xFFd020ff
+    0xFF00f000, // C & 3 pegreen 0xFF00ff00
+    0xFF6060f0, // D & 4 peblue 0xFF6060ff
+    0xFFf080c0, // E & 5 peviolet 0xFFff80c0
+    0xFFa42028, // F & 6 pebrown 0xFFa42028
+    0xFFf0d8d8, // G & 7 pepink 0xFFffd8d8
+    0xFFf0f000, // H & 8 peyellow 0xFFffff00
+    0xFF00c000, // I & 9 pedarkgreen 0xFF00c000
+    0xFFf0b000, // J peorange 0xFFffb000
+    0xFFb0b0f0, // K pelightblue 0xFFb0b0ff
+    0xFF00a0a0, // L pedarkcyan 0xFF00a0a0
+    0xFF606060, // M pedarkgray 0xFF606060
+    // fix me ... pick two more colors
+    0xFFffffff, // N pewhite 0xFFffffff
+    0xFFffffff, // O pewhite 0xFFffffff
+    // 2nd 32
+    0xFFffffff, // P white
+    0xFFffffff, // Q white
+    0xFFffffff, // R white
+    0xFFffffff, // S white
+    0xFFffffff, // T white
+    0xFFffffff, // U white
+    0xFFffffff, // V white
+    0xFFffffff, // W white
+    0xFFffffff, // X white
+    0xFFffffff, // Y white
+    0xFFffffff, // Z white
   };
 
   public final static int[] argbsPdbChainHetero = {
     // protein explorer-derived colors
     // ' '->0 'A'->1, 'B'->2
-    0xFF66ffff, // pewashedcyan 0xFF66ffff
-    0xFFe37aff, // pewashedpurple 0xFFe37aff
-    0xFFa3ffa3, // pewashedgreen 0xFFa3ffa3
-    0xFFbfbfff, // pewashedblue 0xFFbfbfff
-    0xFFffb3d9, // pewashedviolet 0xFFffb3d9
-    0xFFa3555a, // pewashedbrown 0xFFa3555a
-    0xFFffe8e9, // pewashedpink 0xFFffe8e9
-    0xFFffff66, // pewashedyellow 0xFFffff66
-    0xFF4cbf4c, // pewasheddarkgreen 0xFF4cbf4c
-    0xFFffcf66, // pewashedorange 0xFFffcf66
-    0xFFcfcfff, // pewashedlightblue 0xFFcfcfff
-    0xFF40a1a1, // pewasheddarkcyan 0xFF40a1a1
-    0xFF505050, // pedarkergray 0xFF505050
-    0xFFf3f3e1, // pesand 0xFFf3f3e1
+    0xFFf3f3e1, // ' ' & 0 pesand 0xFFf3f3e1
+    //
+    0xFF80f0f0, // A & 1 pewashedcyan 0xFF66ffff
+    0xFFe37af0, // B & 2 pewashedpurple 0xFFe37aff
+    0xFFa3f0a3, // C & 3 pewashedgreen 0xFFa3ffa3
+    0xFFbfbfff, // D & 4 pewashedblue 0xFFbfbfff
+    0xFFf0b3d9, // E & 5 pewashedviolet 0xFFffb3d9
+    0xFFa3555a, // F & 6 pewashedbrown 0xFFa3555a
+    0xFFf0e8e9, // G & 7 pewashedpink 0xFFffe8e9
+    0xFFf0f066, // H & 8 pewashedyellow 0xFFffff66
+    0xFF4cbf4c, // I & 9 pewasheddarkgreen 0xFF4cbf4c
+    0xFFf0cf66, // J pewashedorange 0xFFffcf66
+    0xFFcfcfff, // K pewashedlightblue 0xFFcfcfff
+    0xFF40a1a1, // L pewasheddarkcyan 0xFF40a1a1
+    0xFF505050, // M pedarkergray 0xFF505050
+    // fix me ... pick two more colors
+    0xFFf3f3e1, // N pesand 0xFFf3f3e1
+    0xFFf3f3e1, // O pesand 0xFFf3f3e1
+
+    0xFFf3f3e1, // P pesand 0xFFf3f3e1
+    0xFFf3f3e1, // Q pesand 0xFFf3f3e1
+    0xFFf3f3e1, // R pesand 0xFFf3f3e1
+    0xFFf3f3e1, // S pesand 0xFFf3f3e1
+    0xFFf3f3e1, // T pesand 0xFFf3f3e1
+    0xFFf3f3e1, // U pesand 0xFFf3f3e1
+    0xFFf3f3e1, // V pesand 0xFFf3f3e1
+    0xFFf3f3e1, // W pesand 0xFFf3f3e1
+    0xFFf3f3e1, // X pesand 0xFFf3f3e1
+    0xFFf3f3e1, // Y pesand 0xFFf3f3e1
+    0xFFf3f3e1, // Z pesand 0xFFf3f3e1
   };
 
   public final static int[] argbsCharge = {

@@ -542,6 +542,9 @@ public class Token {
     "@turn _structure=1",
     "@water _resid=27,_resid=28", "@hoh water",
 
+    /*
+      eliminated because some of these conflict with nucleic acids
+
     "@a ala",
     "@r arg",
     "@n asn",
@@ -562,6 +565,7 @@ public class Token {
     "@w trp",
     "@y tyr",
     "@v val",
+    */
 
     // "@hydrogen _e=1", handled specially
     "@helium _e=2",

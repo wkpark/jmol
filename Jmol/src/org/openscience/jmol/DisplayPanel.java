@@ -52,6 +52,8 @@ public class DisplayPanel extends JPanel
   private StatusBar status;
   private GuiMap guimap;
   private DisplayControl control;
+  
+  private String displaySpeed;
 
   public DisplayPanel(StatusBar status, GuiMap guimap,
                       DisplayControl control) {
@@ -60,6 +62,10 @@ public class DisplayPanel extends JPanel
     this.control = control;
     if (System.getProperty("painttime", "false").equals("true"))
       showPaintTime = true;
+    displaySpeed = System.getProperty("display.speed");
+    if (displaySpeed == null) {
+        displaySpeed = "ms";
+    }
   }
 
 
@@ -958,7 +964,7 @@ public class DisplayPanel extends JPanel
       (timeCount == 0)
       ? -1
       : (timeTotal + timeCount/2) / timeCount; // round, don't truncate
-    if (System.getProperty("display.speed").equalsIgnoreCase("fps")) {
+    if (displaySpeed.equalsIgnoreCase("fps")) {
         status.setStatus(3, fmt(1000/timeLast) + "FPS : " + fmt(1000/timeAverage) + "FPS");
     } else {
         status.setStatus(3, fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms");

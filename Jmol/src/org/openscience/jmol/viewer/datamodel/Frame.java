@@ -204,8 +204,8 @@ public class Frame {
     addBond(atom1.bondMutually(atom2, order));
   }
 
-  Shape allocateShape(int refShape) {
-    String classBase = JmolConstants.shapeClassBases[refShape];
+  Shape allocateShape(int shapeType) {
+    String classBase = JmolConstants.shapeClassBases[shapeType];
     String className = "org.openscience.jmol.viewer.datamodel." + classBase;
 
     try {
@@ -224,30 +224,30 @@ public class Frame {
   final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
   final short[] shapeMads = new short[JmolConstants.SHAPE_MAX];
 
-  void checkShape(int refShape) {
-    if (shapes[refShape] == null) {
-      shapes[refShape] = allocateShape(refShape);
+  void checkShape(int shapeType) {
+    if (shapes[shapeType] == null) {
+      shapes[shapeType] = allocateShape(shapeType);
     }
   }
   
-  public void setShapeMad(int refShape, short mad, BitSet bsSelected) {
-    shapeMads[refShape] = mad;
+  public void setShapeMad(int shapeType, short mad, BitSet bsSelected) {
+    shapeMads[shapeType] = mad;
     if (mad != 0)
-      checkShape(refShape);
-    if (shapes[refShape] != null)
-      shapes[refShape].setMad(mad, bsSelected);
+      checkShape(shapeType);
+    if (shapes[shapeType] != null)
+      shapes[shapeType].setMad(mad, bsSelected);
   }
 
-  public short getShapeMad(int refShape) {
-    return shapeMads[refShape];
+  public short getShapeMad(int shapeType) {
+    return shapeMads[shapeType];
   }
 
-  public void setShapeColix(int refShape, byte palette,
+  public void setShapeColix(int shapeType, byte palette,
                               short colix, BitSet bsSelected) {
     if (palette != JmolConstants.PALETTE_CPK || colix != 0)
-      checkShape(refShape);
-    if (shapes[refShape] != null)
-      shapes[refShape].setColix(palette, colix, bsSelected);
+      checkShape(shapeType);
+    if (shapes[shapeType] != null)
+      shapes[shapeType].setColix(palette, colix, bsSelected);
   }
 
   Point3f centerBoundingBox;
@@ -876,8 +876,8 @@ public class Frame {
     this.pdbTranslateVector = new Vector3f(pdbScaleTranslate);
   }
 
-  public ShapeRenderer getRenderer(int refShape) {
-    return frameRenderer.getRenderer(refShape);
+  public ShapeRenderer getRenderer(int shapeType) {
+    return frameRenderer.getRenderer(shapeType);
   }
 
   void doUnitcellStuff() {

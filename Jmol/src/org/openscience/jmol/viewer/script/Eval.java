@@ -304,7 +304,7 @@ public class Eval implements Runnable {
       Token token = statement[0];
       switch (token.tok) {
       case Token.backbone:
-        proteinGraphic(JmolConstants.SHAPE_BACKBONE);
+        proteinShape(JmolConstants.SHAPE_BACKBONE);
         break;
       case Token.background:
         background();
@@ -392,13 +392,13 @@ public class Eval implements Runnable {
         // for now, just let ribbons and strands do the same thing
         System.out.println("sorry - ribbons not implemented, using strands");
       case Token.strands:
-        proteinGraphic(JmolConstants.SHAPE_STRANDS);
+        proteinShape(JmolConstants.SHAPE_STRANDS);
         break;
       case Token.trace:
-        proteinGraphic(JmolConstants.SHAPE_TRACE);
+        proteinShape(JmolConstants.SHAPE_TRACE);
         break;
       case Token.cartoon:
-        proteinGraphic(JmolConstants.SHAPE_CARTOON);
+        proteinShape(JmolConstants.SHAPE_CARTOON);
         break;
       case Token.spin:
         spin();
@@ -1293,40 +1293,40 @@ public class Eval implements Runnable {
       viewer.setColorAtomScript(palette, color);
       return;
     }
-    int refShape = 0;
+    int shapeType = 0;
     switch(tokObject) {
     case Token.trace:
-      refShape = JmolConstants.SHAPE_TRACE;
+      shapeType = JmolConstants.SHAPE_TRACE;
       break;
     case Token.backbone:
-      refShape = JmolConstants.SHAPE_BACKBONE;
+      shapeType = JmolConstants.SHAPE_BACKBONE;
       break;
     case Token.ribbons:
     case Token.strands:
-      refShape = JmolConstants.SHAPE_STRANDS;
+      shapeType = JmolConstants.SHAPE_STRANDS;
       break;
     case Token.cartoon:
-      refShape = JmolConstants.SHAPE_CARTOON;
+      shapeType = JmolConstants.SHAPE_CARTOON;
       break;
     case Token.dots:
-      refShape = JmolConstants.SHAPE_DOTS;
+      shapeType = JmolConstants.SHAPE_DOTS;
       break;
     case Token.axes:
-      refShape = JmolConstants.SHAPE_AXES;
+      shapeType = JmolConstants.SHAPE_AXES;
       break;
     case Token.unitcell:
-      refShape = JmolConstants.SHAPE_UCCAGE;
+      shapeType = JmolConstants.SHAPE_UCCAGE;
       break;
     case Token.boundbox:
-      refShape = JmolConstants.SHAPE_BBCAGE;
+      shapeType = JmolConstants.SHAPE_BBCAGE;
       break;
     case Token.frank:
-      refShape = JmolConstants.SHAPE_FRANK;
+      shapeType = JmolConstants.SHAPE_FRANK;
       break;
     default:
       unrecognizedColorObject();
     }
-    viewer.setShapeColor(refShape, palette, color);
+    viewer.setShapeColor(shapeType, palette, color);
   }
 
   Hashtable variables = new Hashtable();
@@ -1426,6 +1426,11 @@ public class Eval implements Runnable {
     viewer.setBondSelectionModeOr(bondmode);
     viewer.setMarAtom((short)0);
     viewer.setLabelScript(null);
+
+    for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT;
+         --shapeType >= 0; )
+      viewer.setShapeMad(shapeType, (short)0);
+
     // also need to turn off backbones, ribbons, strands, cartoons
     viewer.invertSelection();
   }
@@ -1895,7 +1900,7 @@ public class Eval implements Runnable {
     viewer.setShapeMad(JmolConstants.SHAPE_DOTS, mad);
   }
 
-  void proteinGraphic(int graphicType) throws ScriptException {
+  void proteinShape(int shapeType) throws ScriptException {
     short mad = 0;
     int tok = statement[1].tok;
     switch (tok) {
@@ -1919,7 +1924,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setShapeMad(graphicType, mad);
+    viewer.setShapeMad(shapeType, mad);
   }
 
   void spin() throws ScriptException {

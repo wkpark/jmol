@@ -1299,26 +1299,26 @@ final public class JmolViewer {
     return selectionManager.bsSelection;
   }
 
-  public void setShapeShow(int refGraphic, boolean show) {
-    getFrame().setShapeMad(refGraphic, (short)(show ? -1 : 0), null);
+  public void setShapeShow(int shapeType, boolean show) {
+    getFrame().setShapeMad(shapeType, (short)(show ? -1 : 0), null);
     refresh();
   }
-
-  public boolean getShapeShow(int refShape) {
-    return getFrame().getShapeMad(refShape) != 0;
+  
+  public boolean getShapeShow(int shapeType) {
+    return getFrame().getShapeMad(shapeType) != 0;
   }
 
-  public void setShapeMad(int refShape, short mad) {
-    getFrame().setShapeMad(refShape, mad,
-                             refShape <
+  public void setShapeMad(int shapeType, short mad) {
+    getFrame().setShapeMad(shapeType, mad,
+                             shapeType <
                              JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
                              ? selectionManager.bsSelection
                              : null);
   }
 
-  public void setShapeColor(int refShape, byte palette, Color color) {
-    getFrame().setShapeColix(refShape, palette, Colix.getColix(color),
-                             refShape <
+  public void setShapeColor(int shapeType, byte palette, Color color) {
+    getFrame().setShapeColix(shapeType, palette, Colix.getColix(color),
+                             shapeType <
                              JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
                              ? selectionManager.bsSelection
                              : null);

@@ -43,14 +43,12 @@ public class Cartoon extends Mcps {
       super(polymer);
     }
 
-    short getMadDefault(short mad, byte structureType) {
-      switch(structureType) {
-      case JmolConstants.SECONDARY_STRUCTURE_SHEET:
-      case JmolConstants.SECONDARY_STRUCTURE_HELIX:
+    short getMadSpecial(short mad, int groupIndex) {
+      int structureType = polymerGroups[groupIndex].getStructureType();
+      if (structureType == JmolConstants.SECONDARY_STRUCTURE_SHEET ||
+          structureType == JmolConstants.SECONDARY_STRUCTURE_HELIX)
         return (short)3000;
-      default:
-        return (short)500;
-      }
+      return (short)500;
     }
   }
 }

@@ -63,6 +63,10 @@ class AtomSetCollection {
 
   AtomSetCollection(String fileTypeName) {
     this.fileTypeName = fileTypeName;
+    // set the default PATH properties as defined in the SmarterJmolAdapter
+    atomSetCollectionProperties.setProperty("PATH_KEY",SmarterJmolAdapter.PATH_KEY);
+    atomSetCollectionProperties.setProperty("PATH_SEPARATOR",
+        SmarterJmolAdapter.PATH_SEPARATOR);
   }
 
   protected void finalize() {

@@ -33,15 +33,7 @@ import java.io.IOException;
  *
  **/
 class GaussianReader extends AtomSetCollectionReader {
-  /** Key for path property in AtomSetProperties.
-   *
-   * <p>Should really be part of the JmolAdapter itself so that
-   * any adapter can use the same path as the JmolViewer...
-   */
-  private final static String PATH_KEY = ".PATH";
-  private final static String PATH_SEPARATOR =
-    System.getProperty("path.separator");
-  
+ 
   /**
    * Word index of atomic number in line with atom coordinates in an
    * orientation block.
@@ -99,14 +91,7 @@ class GaussianReader extends AtomSetCollectionReader {
     throws Exception {
 
     atomSetCollection = new AtomSetCollection("gaussian");
-    
-    // add the properties for unraveling a path as properties for the
-    // whole atomSetCollection. This way the AtomSetChooser knows how
-    // to 'group' atomSets.
-    atomSetCollection.setAtomSetCollectionProperty("PATH_KEY",PATH_KEY);
-    atomSetCollection.setAtomSetCollectionProperty("PATH_SEPARATOR",
-       PATH_SEPARATOR);
-
+ 
     try {
       String line;
       int lineNum = 0;
@@ -257,9 +242,9 @@ class GaussianReader extends AtomSetCollectionReader {
       atom.y = parseFloat(tokens[++offset]);
       atom.z = parseFloat(tokens[++offset]);
     }
-    // the Path will be the calculation number and the type of orientation
-    atomSetCollection.setAtomSetProperty(PATH_KEY,
-      calculationNumber+PATH_SEPARATOR+path);
+    // the path will be the calculation number and the type of orientation
+    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+      calculationNumber+SmarterJmolAdapter.PATH_SEPARATOR+path);
   }
 
 /* SAMPLE FREQUENCY OUTPUT */
@@ -352,8 +337,8 @@ class GaussianReader extends AtomSetCollectionReader {
         atomSetCollection.setAtomSetProperty("Reduced Mass",red_masses[i]+" AMU");
         atomSetCollection.setAtomSetProperty("Force Constant",frc_consts[i]+" mDyne/A");
         atomSetCollection.setAtomSetProperty("IR Intensity",intensities[i]+" KM/Mole");
-        atomSetCollection.setAtomSetProperty(PATH_KEY,
-          calculationNumber+PATH_SEPARATOR+"Frequencies");
+        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+          calculationNumber+SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
       }
       
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
@@ -391,7 +376,7 @@ class GaussianReader extends AtomSetCollectionReader {
 */
   
 /**
- * Reads partial charges and assigns them to the last atom set 
+ * Reads partial charges and assigns them only to the last atom set. 
  * @param reader The reader from which to read the charges
  * @throws Exception When an I/O error or discardlines error occurs
  */

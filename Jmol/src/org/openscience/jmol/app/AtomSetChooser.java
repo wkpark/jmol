@@ -175,7 +175,10 @@ public class AtomSetChooser extends JDialog
     	  	// show the properties in the properties pane
     	  	showProperties(viewer.getModelProperties(atomSetIndex));
     	  } else { // selected branch
-    	  	propertiesPane.setText("Collection has " +
+    	    if (node == treeModel.getRoot())
+    	      showProperties(viewer.getModelSetProperties());
+    	    else
+    	      propertiesPane.setText("Collection has " +
     	  			node.getLeafCount() + " AtomSets");
     	  }
     }
@@ -203,18 +206,11 @@ public class AtomSetChooser extends JDialog
 
   
   /**
-   * Creates the treeModel of the AtomSets the ModelManager knows about.
-   *
-   * <p>Since currently the <code>AtomSetCollectionProperties</code>
-   * (or <code>ModelSetProperties</code>) are not returned, the
-   * system's path.separator and .PATH key are used to determine
-   * the which property should be decoded and how.
+   * Creates the treeModel of the AtomSets available in the JmolViewer
    */
   private void createTreeModel() {
-  	// FIXME when viewer.getModelSetProperties indeed returns the
-    // properties, initialize key and separator back to null
-    String key=".PATH";
-    String separator=System.getProperty("path.separator");
+    String key=null;
+    String separator=null;
     DefaultMutableTreeNode root =
       new DefaultMutableTreeNode(viewer.getModelSetName());
       
@@ -223,9 +219,6 @@ public class AtomSetChooser extends JDialog
     if (modelSetProperties != null) {
       key = modelSetProperties.getProperty("PATH_KEY");
       separator = modelSetProperties.getProperty("PATH_SEPARATOR");
-    } else {
-      System.out.println("No PATH info found in the atomSetCollectionProperties "    
-         + modelSetProperties);
     }
     if (key == null || separator == null) {
       // make a flat hierarchy if no key or separator are known

@@ -45,6 +45,12 @@ public class SmarterJmolAdapter extends JmolAdapter {
   final static int MOL = 1;
   final static int JME = 2;
   final static int PDB = 3;
+  
+  public final static String PATH_KEY = ".PATH";
+  public final static String PATH_SEPARATOR =
+    System.getProperty("path.separator");
+  
+
 
   public void finish(Object clientFile) {
     ((AtomSetCollection)clientFile).finish();

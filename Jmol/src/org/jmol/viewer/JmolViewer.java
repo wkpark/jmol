@@ -158,9 +158,9 @@ final public class JmolViewer {
     System.out.println(strMsg);
   }
 
-  /****************************************************************
-   * delegated to TransformManager
-   ****************************************************************/
+  /////////////////////////////////////////////////////////////////
+  // delegated to TransformManager
+  /////////////////////////////////////////////////////////////////
 
   public void rotateXYBy(int xDelta, int yDelta) {
     transformManager.rotateXYBy(xDelta, yDelta);
@@ -572,10 +572,10 @@ final public class JmolViewer {
     transformManager.getRotation(matrixRotation);
   }
 
-  /****************************************************************
-   * delegated to ColorManager
-   ****************************************************************/
-
+  /////////////////////////////////////////////////////////////////
+  // delegated to ColorManager
+  /////////////////////////////////////////////////////////////////
+    
   public void setModeAtomColorProfile(byte palette) {
     colorManager.setPaletteDefault(palette);
     refresh();
@@ -800,10 +800,10 @@ final public class JmolViewer {
     return colorManager.colixAxesText;
   }
 
-  /****************************************************************
-   * delegated to SelectionManager
-   ****************************************************************/
-
+  /////////////////////////////////////////////////////////////////
+  // delegated to SelectionManager
+  /////////////////////////////////////////////////////////////////
+  
   public void addSelection(int atomIndex) {
     selectionManager.addSelection(atomIndex);
     refresh();
@@ -901,9 +901,9 @@ final public class JmolViewer {
     return selectionManager.getSelectionCount();
   }
 
-  /****************************************************************
-   * delegated to MouseManager
-   ****************************************************************/
+  /////////////////////////////////////////////////////////////////
+  // delegated to MouseManager
+  /////////////////////////////////////////////////////////////////
 
   public void setModeMouse(int modeMouse) {
     // deprecated
@@ -926,9 +926,9 @@ final public class JmolViewer {
     return mouseManager.yCurrent;
   }
 
-  /****************************************************************
-   * delegated to FileManager
-   ****************************************************************/
+  /////////////////////////////////////////////////////////////////
+  // delegated to FileManager
+  /////////////////////////////////////////////////////////////////
 
   public void setAppletContext(URL documentBase, URL codeBase,
                                String appletProxy) {
@@ -964,6 +964,9 @@ final public class JmolViewer {
    * name is a text name of the file ... to be displayed in the window
    * no need to pass a BufferedReader ...
    * ... the FileManager will wrap a buffer around it
+   * @param fullPathName 
+   * @param name
+   * @param reader
    */
   public void openReader(String fullPathName, String name, Reader reader) {
     clear();
@@ -993,9 +996,9 @@ final public class JmolViewer {
     return null;
   }
 
-  /****************************************************************
-   * delegated to ModelManager
-   ****************************************************************/
+   /////////////////////////////////////////////////////////////////
+   // delegated to ModelManager
+   /////////////////////////////////////////////////////////////////
 
   public void openClientFile(String fullPathName, String fileName,
                              Object clientFile) {
@@ -1078,6 +1081,7 @@ final public class JmolViewer {
    *  int bondedAtom2 = ((Integer)bondIterator.getAtomUid2()).intValue();
    *
    * post questions to jmol-developers@lists.sf.net
+   * @return A JmolAdapter
    ****************************************************************/
 
   public JmolAdapter getExportJmolAdapter() {
@@ -1311,9 +1315,9 @@ final public class JmolViewer {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "clear", null);
   }
 
-  /****************************************************************
-   * delegated to RepaintManager
-   ****************************************************************/
+  /////////////////////////////////////////////////////////////////
+  // delegated to RepaintManager
+  /////////////////////////////////////////////////////////////////
 
   public void setAnimationDirection(int direction) {// 1 or -1
     repaintManager.setAnimationDirection(direction);
@@ -1484,9 +1488,9 @@ final public class JmolViewer {
     repaintManager.setOversample(tOversample);
   }
 
-  /****************************************************************
-   * routines for script support
-   ****************************************************************/
+  /////////////////////////////////////////////////////////////////
+  // routines for script support
+  /////////////////////////////////////////////////////////////////
 
   public Eval getEval() {
     if (eval == null)
@@ -1836,6 +1840,8 @@ final public class JmolViewer {
    * this should be implemented using properties
    * or as a hashtable using boxed/wrapped values so that the
    * values could be shared
+   * @param key
+   * @return the boolean property
    ****************************************************************/
 
   public boolean getBooleanProperty(String key) {
@@ -1959,10 +1965,10 @@ final public class JmolViewer {
     refresh();
   }
 
-  /****************************************************************
-   * Frame
-   ****************************************************************/
-
+  /////////////////////////////////////////////////////////////////
+  // Frame
+  /////////////////////////////////////////////////////////////////
+  
   private BondIterator bondIteratorSelected(byte bondType) {
     return
       getFrame().getBondIterator(bondType, selectionManager.bsSelection);
@@ -1985,9 +1991,9 @@ final public class JmolViewer {
     public Bond next() { return null; }
   }
 
-  /****************************************************************
-   * delegated to StyleManager
-   ****************************************************************/
+  /////////////////////////////////////////////////////////////////
+  // delegated to StyleManager
+  /////////////////////////////////////////////////////////////////
 
   /*
    * for rasmol compatibility with continued menu operation:

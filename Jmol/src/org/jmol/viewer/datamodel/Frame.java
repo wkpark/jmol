@@ -122,6 +122,8 @@ final public class Frame {
     setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile));
     setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
 
+    setModelSetProperties(adapter.getAtomSetCollectionProperties(clientFile));
+
     currentModelIndex = -1;
     int modelCount = adapter.getAtomSetCount(clientFile);
     setModelCount(modelCount);

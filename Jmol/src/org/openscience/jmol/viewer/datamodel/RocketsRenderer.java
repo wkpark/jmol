@@ -191,11 +191,13 @@ class RocketsRenderer extends MpsRenderer {
                            segments[endIndexPending],
                            segments[endIndexPending + 1],
                            tEnd);
-      else
+      else if (proteinstructurePending instanceof Sheet)
         renderPendingSheet(segments[startIndexPending],
                            segments[endIndexPending],
                            segments[endIndexPending + 1],
                            tEnd);
+      else
+        System.out.println("?Que? neither helix nor sheet");
       tPending = false;
     }
   }

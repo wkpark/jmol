@@ -68,17 +68,17 @@ class Sheet extends ProteinStructure {
   Vector3f widthUnitVector;
   Vector3f heightUnitVector;
   
-  /*
-    FIXME
   void calcSheetUnitVectors() {
     if (widthUnitVector == null) {
       Vector3f vectorCO = new Vector3f();
       Vector3f vectorCOSum = new Vector3f();
-      vectorCOSum.sub(aminoPolymer.getResiduePoint(monomerIndex, 3),
-                      aminoPolymer.getResiduePoint(monomerIndex, 2));
+      AminoMonomer amino = (AminoMonomer)aminoPolymer.monomers[monomerIndex];
+      vectorCOSum.sub(amino.getCarbonylOxygenAtomPoint(),
+                      amino.getCarbonylCarbonAtomPoint());
       for (int i = monomerCount; --i > 0; ) {
-        vectorCO.sub(aminoPolymer.getResiduePoint(monomerIndex + i, 3),
-                     aminoPolymer.getResiduePoint(monomerIndex + i, 2));
+        amino = (AminoMonomer)aminoPolymer.monomers[i];
+        vectorCO.sub(amino.getCarbonylOxygenAtomPoint(),
+                     amino.getCarbonylCarbonAtomPoint());
         if (vectorCOSum.angle(vectorCO) < (float)Math.PI/2)
           vectorCOSum.add(vectorCO);
         else
@@ -92,22 +92,15 @@ class Sheet extends ProteinStructure {
     }
   }
 
-  */
   Vector3f getWidthUnitVector() {
-    return null;
-    /*
     if (widthUnitVector == null)
       calcSheetUnitVectors();
     return widthUnitVector;
-    */
   }
 
   Vector3f getHeightUnitVector() {
-    return null;
-    /*
     if (heightUnitVector == null)
       calcSheetUnitVectors();
     return heightUnitVector;
-    */
   }
 }

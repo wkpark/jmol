@@ -9,6 +9,8 @@ org/openscience/jmol/ColorManager.java
 org/openscience/jmol/TransformManager.java
 org/openscience/jmol/SelectionManager.java
 org/openscience/jmol/MouseManager.java
+org/openscience/jmol/FileManager.java
+org/openscience/jmol/ModelManager.java
 org/openscience/jmol/PhysicalProperty.java
 org/openscience/jmol/AtomType.java
 org/openscience/jmol/Atom.java

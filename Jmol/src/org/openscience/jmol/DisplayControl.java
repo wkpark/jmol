@@ -61,6 +61,7 @@ final public class DisplayControl {
   SelectionManager selectionManager;
   MouseManager mouseManager;
   FileManager fileManager;
+  ModelManager modelManager;
 
   public DisplayControl(Component awtComponent) {
     control = this;
@@ -70,6 +71,7 @@ final public class DisplayControl {
     selectionManager = new SelectionManager();
     mouseManager = new MouseManager(awtComponent, this);
     fileManager = new FileManager(this);
+    modelManager = new ModelManager(this);
   }
 
   public Component getAwtComponent() {
@@ -268,74 +270,50 @@ final public class DisplayControl {
     }
   }
 
-  private boolean haveFile = false;
-  private ChemFile chemfile;
-  private ChemFrame chemframe;
-  private int nframes = 0;
-  private MeasurementList mlist = null;
-
   public void setChemFile(ChemFile chemfile) {
-    // FIXME -- I think I need to disable repaints during this process
-    this.chemfile = chemfile;
-    haveFile = true;
-    nframes = chemfile.getNumberOfFrames();
-    this.chemframe = chemfile.getFrame(0);
-    Measurement.setChemFrame(chemframe);
-    if (mlist != null) {
-      mlistChanged(new MeasurementListEvent(mlist));
-    }
+    modelManager.setChemFile(chemfile);
     homePosition();
     // don't know if I need this firm recalc here or not
     recalcFirmly();
   }
 
   public boolean haveFile() {
-    return haveFile;
+    return modelManager.haveFile();
   }
 
   public ChemFrame getFrame() {
-    return chemframe;
+    return modelManager.chemframe;
   }
 
   public double getRotationRadius() {
-    return chemframe.getRotationRadius();
+    return modelManager.getRotationRadius();
   }
 
   public Point3d getRotationCenter() {
-    return chemframe.getRotationCenter();
+    return modelManager.getRotationCenter();
   }
 
   public void setFrame(int fr) {
-    if (haveFile && fr >= 0 && fr < nframes) {
-        setFrame(chemfile.getFrame(fr));
-    }
-  }
-
-  public void setFrame(ChemFrame frame) {
-    chemframe = frame;
-    Measurement.setChemFrame(frame);
-    if (mlist != null) {
-      mlistChanged(new MeasurementListEvent(mlist));
-    }
+    modelManager.setFrame(fr);
     structuralChange = true;
     clearSelection();
     recalc();
-    //    System.out.println("scalePixelsPerAngstrom="+scalePixelsPerAngstrom+
-    //                       " zoomPercentSetting=" + zoomPercentSetting);
+  }
+
+  public void setFrame(ChemFrame frame) {
+    modelManager.setFrame(frame);
+    structuralChange = true;
+    clearSelection();
+    recalc();
   }
 
   public int numberOfAtoms() {
-    return (chemframe == null) ? 0 : chemframe.getNumberOfAtoms();
+    return modelManager.numberOfAtoms();
   }
 
   public void mlistChanged(MeasurementListEvent mle) {
-    MeasurementList source = (MeasurementList) mle.getSource();
-    mlist = source;
-    chemframe.updateMlists(mlist.getDistanceList(),
-                           mlist.getAngleList(),
-                           mlist.getDihedralList());
+    modelManager.mlistChanged(mle);
   }
-
 
   public boolean wireframeRotation = false;
   public void setWireframeRotation(boolean wireframeRotation) {
@@ -395,7 +373,7 @@ final public class DisplayControl {
   }
 
   public void setCenter(Point3d center) {
-    chemframe.setRotationCenter(center);
+    modelManager.setRotationCenter(center);
   }
 
   private boolean holdRepaint;
@@ -445,22 +423,7 @@ final public class DisplayControl {
   }
   
   public void setCenterAsSelected() {
-    int numberOfAtoms = numberOfAtoms();
-    int countSelected = 0;
-    Point3d  center = new Point3d(); // defaults to 0,00,
-    BitSet bsSelection = getSelectionSet();
-    for (int i = 0; i < numberOfAtoms; ++i) {
-      if (!bsSelection.get(i))
-        continue;
-      ++countSelected;
-      center.add(((org.openscience.jmol.Atom)chemframe.getAtomAt(i)).getPosition());
-    }
-    if (countSelected > 0) {
-      center.scale(1.0f / countSelected); // just divide by the quantity
-    } else {
-      center = null;
-    }
-    chemframe.setRotationCenter(center);
+    modelManager.setCenterAsSelected();
     clearSelection();
     scaleFitToScreen();
     recalc();
@@ -471,17 +434,17 @@ final public class DisplayControl {
   }
 
   public void defineMeasure(int atom1, int atom2) {
-    mlist.addDistance(atom1, atom2);
+    modelManager.defineMeasure(atom1, atom2);
     recalc();
   }
 
   public void defineMeasure(int atom1, int atom2, int atom3) {
-    mlist.addAngle(atom1, atom2, atom3);
+    modelManager.defineMeasure(atom1, atom2, atom3);
     recalc();
   }
 
   public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
-    mlist.addDihedral(atom1, atom2, atom3, atom4);
+    modelManager.defineMeasure(atom1, atom2, atom3, atom4);
     recalc();
   }
 
@@ -495,35 +458,27 @@ final public class DisplayControl {
     colorManager.flushCachedColors();
   }
 
-  // FIXME NEEDSWORK -- bond binding stuff
-  private double bondFudge = 1.12f;
-  private boolean autoBond = true;
-
   public void rebond() {
-    if (chemframe != null) {
-      try {
-        chemframe.rebond();
-      } catch (Exception e){
-      }
-    }
+    modelManager.rebond();
+    recalc();
   }
 
   public void setBondFudge(double bf) {
-    bondFudge = bf;
+    modelManager.setBondFudge(bf);
     recalc();
   }
 
   public double getBondFudge() {
-    return bondFudge;
+    return modelManager.bondFudge;
   }
 
   public void setAutoBond(boolean ab) {
-    autoBond = ab;
+    modelManager.setAutoBond(ab);
     recalc();
   }
 
   public boolean getAutoBond() {
-    return autoBond;
+    return modelManager.autoBond;
   }
 
   // FIXME NEEDSWORK -- arrow vector stuff

@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
 <book>
   <bookinfo>
     <title>JMol Documentation</title>
@@ -14,19 +15,24 @@
 
   <chapter>
     <title>Command Line Options</title>
-    <section>
-      <para>
-        The program jmol has (at this moment) one command line
-        option: -script. De current syntax is:
-	<cmdsynopsis>
-	  <command>jmol</command>
-	  <arg>-script <arg choice="req">rasmol.script</arg></arg>
-	</cmdsynopsis>
-        This makes it possible to start jmol with a Rasmol script.
-        The syntax of these scripts is explained later in this
-        documentation.
-      </para>
-    </section>
+    <para>
+      The program jmol has (at this moment) one command line
+      option: -script. De current syntax is:
+      <cmdsynopsis>
+	<command>jmol</command>
+	<arg>-script <arg choice="req"><replaceable>rasmol.script</replaceable></arg></arg>
+      </cmdsynopsis>
+      This makes it possible to start jmol with a Rasmol script.
+      The syntax of these scripts is explained in <link linkend="rasmol"></link>.
+    </para>
+    <para>
+      Alternatively, jmol can be started with one argument, being a
+      CML file:
+      <cmdsynopsis>
+	<command>jmol</command>
+	<arg choice="req"><replaceable>CML file</replaceable></arg>
+      </cmdsynopsis>
+    </para>
   </chapter>        
   
   <chapter>
@@ -50,15 +56,22 @@
       </section>
       <section>
         <title>Script...</title>
+        <para>
+          Opens a window where Rasmol scripting commands can be executed.
+          <xref linkend="rasmol" /> contains information about Rasmol Scripts.
+        </para>
       </section>
       <section>
         <title>Close</title>
+        <para> </para>
       </section>
       <section>
         <title>Save</title>
+        <para> </para>
       </section>
       <section>
         <title>Save As...</title>
+        <para> </para>
       </section>
       <section>
         <title>Export Image</title>
@@ -77,9 +90,11 @@
       </section>
       <section>
         <title>Revert</title>
+        <para> </para>
       </section>
       <section>
         <title>Print</title>
+        <para> </para>
       </section>
       <section>
         <title>Exit</title>
@@ -100,27 +115,35 @@
       <title>The Edit menu</title>
       <section>
         <title>Undo</title>
+        <para> </para>
       </section>
       <section>
         <title>Redo</title>
+        <para> </para>
       </section>
       <section>
         <title>Select All</title>
+        <para> </para>
       </section>
       <section>
         <title>Deselect All</title>
+        <para> </para>
       </section>
       <section>
         <title>Rebond Atoms</title>
+        <para> </para>
       </section>
       <section>
         <title>Command...</title>
+        <para> </para>
       </section>
       <section>
         <title>Atom Properties...</title>
+        <para> </para>
       </section>
       <section>
         <title>Preferences...</title>
+        <para> </para>
       </section>
     </section>
     <section>
@@ -146,21 +169,26 @@
         </section>
         <section>
           <title>Wire Frame</title>	  
+	  <para> </para>
         </section>
       </section>      
       <section>
         <title>Bond Style</title>
         <section>
           <title>Quick Draw</title>	  
+	  <para> </para>
         </section>
         <section>
           <title>Shading</title>	  
+	  <para> </para>
         </section>
         <section>
           <title>Wire Frame</title>	  
+	  <para> </para>
         </section>
         <section>
           <title>Lines</title>	  
+	  <para> </para>
         </section>
       </section>
       <section>
@@ -185,12 +213,14 @@
         </section>
         <section>
           <title>Atom Numbers</title>	  
+	  <para> </para>
         </section>
       </section>
       <section>
         <title>Property Labels</title>
         <section>
           <title>None</title>	  
+	  <para> </para>
         </section>
       </section>
       <section>
@@ -219,84 +249,111 @@
       </section>
       <section>
         <title>Hydrogens</title>
+	<para> </para>
       </section>
       <section>
         <title>Dummy Atoms</title>
+	<para> </para>
       </section>
       <section>
         <title>Axes</title>
+	<para> </para>
       </section>
       <section>
         <title>Boundary Box</title>
+	<para> </para>
       </section>
     </section>
     <section>
       <title>The View menu</title>
       <section>
         <title>Front</title>
+	<para> </para>
       </section>
       <section>
         <title>Top</title>
+	<para> </para>
       </section>
       <section>
         <title>Bottom</title>
+	<para> </para>
       </section>
       <section>
         <title>Right</title>
+	<para> </para>
       </section>
       <section>
         <title>Left</title>
+	<para> </para>
       </section>
       <section>
         <title>Split...</title>
+	<para> </para>
       </section>
       <section>
         <title>Set Split...</title>
+	<para> </para>
       </section>
     </section>
     <section>
       <title>The Measure menu</title>
       <section>
         <title>Distance...</title>
+	<para> </para>
       </section>
       <section>
         <title>Angle...</title>
+	<para> </para>
       </section>
       <section>
         <title>Dihedral...</title>
+	<para> </para>
       </section>
       <section>
         <title>Delete Distance...</title>
+	<para> </para>
       </section>
       <section>
         <title>Delete Angle...</title>
+	<para> </para>
       </section>
       <section>
         <title>Delete Dihedral...</title>
+	<para> </para>
       </section>
       <section>
         <title>Clear all Distances...</title>
+	<para> </para>
       </section>
       <section>
         <title>Clear all Angles...</title>
+	<para> </para>
       </section>
       <section>
         <title>Clear all Dihedrals...</title>
+	<para> </para>
       </section>
       <section>
         <title>Clear all Measurements...</title>
+	<para> </para>
       </section>
       <section>
         <title>View Measurement List...</title>
+	<para> </para>
       </section>
     </section>
     <section>
       <title>The Extras menu</title>
       <section>
         <title>Animate...</title>
+	<para>
+	  If the document contains more than one frame, it is considered an
+animation. With Animate the animation can be viewed.
+	</para>
       </section>
       <section>
         <title>Vibrate...</title>
+	<para> </para>
       </section>
       <section>
         <title>Graph...</title>
@@ -307,9 +364,11 @@
       </section>
       <section>
         <title>Bounding Box...</title>
+	<para> </para>
       </section>
       <section>
         <title>IPC...</title>
+	<para> </para>
       </section>
     </section>
     <section>
@@ -337,7 +396,7 @@
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="rasmol">
     <title>Rasmol Scripts</title>
     <para>
       The scripting language within Jmol is inherited from another
@@ -353,7 +412,7 @@
 	  <cmdsynopsis>
 	    <command>load</command>
 	    <arg>format</arg>
-            <arg choice="req">filename</arg>
+            <arg choice="req"><replaceable>filename</replaceable></arg>
 	  </cmdsynopsis>
 	</para>
         <para>

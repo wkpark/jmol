@@ -842,8 +842,8 @@ final public class JmolViewer {
   
   public String getOpenFileError() {
     String errorMsg = getOpenFileError1();
-    System.gc();
-    System.runFinalization();
+//    System.gc();
+//   System.runFinalization();
     return errorMsg;
   }
 
@@ -1210,6 +1210,7 @@ final public class JmolViewer {
   public boolean wasInMotion = false;
 
   public void setInMotion(boolean inMotion) {
+	//System.out.println("viewer.setInMotion("+inMotion+")");
     if (wasInMotion ^ inMotion) {
       if (inMotion)
         ++motionEventNumber;

@@ -260,8 +260,20 @@ public class ModelManager {
       return "Atom: " + atom.getAtomicSymbol() + " " + atom.getAtomno();
     return "Atom: " + pdbAtom.getAtomName() + " " + pdbAtom.getAtomSerial() +
       " " + pdbAtom.getGroup3() + " " + pdbAtom.getSeqcodeString() +
+      " Chain:" + pdbAtom.getChainID() + " Model: " + pdbAtom.getModelID();
+  }
+
+/*
+public String getAtomInfoChime(int i) {
+    Atom atom = frame.atoms[i];
+    PdbAtom pdbAtom = atom.pdbAtom;
+    if (pdbAtom == null)
+      return "Atom: " + atom.getAtomicSymbol() + " " + atom.getAtomno();
+    return "Atom: " + pdbAtom.getAtomName() + " " + pdbAtom.getAtomSerial() +
+      " " + pdbAtom.getGroup3() + " " + pdbAtom.getSeqcodeString() +
       " Chain:" + pdbAtom.getChainID();
   }
+*/
 
   public String getAtomicSymbol(int i) {
     return frame.atoms[i].getAtomicSymbol();

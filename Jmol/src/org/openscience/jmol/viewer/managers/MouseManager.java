@@ -45,7 +45,7 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
-  private static final boolean logMouseEvents = false;
+  private static final boolean logMouseEvents = true;
 
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
@@ -228,15 +228,23 @@ public abstract class MouseManager {
     yCurrent = y;
     switch (getMode(modifiers)) {
     case JmolConstants.MOUSE_ROTATE:
+		//if (logMouseEvents)
+		  //System.out.println("mouseDragged Rotate("+x+","+y+","+modifiers+","+clickCount+")");
       viewer.rotateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
       break;
     case JmolConstants.MOUSE_ROTATE_Z:
+		//if (logMouseEvents)
+		  //System.out.println("mouseDragged RotateZ("+x+","+y+","+modifiers+","+clickCount+")");
       viewer.rotateZBy(xPrevious - xCurrent);
       break;
     case JmolConstants.MOUSE_XLATE:
+		//if (logMouseEvents)
+		  //System.out.println("mouseDragged Translate("+x+","+y+","+modifiers+","+clickCount+")");
       viewer.translateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
       break;
     case JmolConstants.MOUSE_ZOOM:
+		//if (logMouseEvents)
+		  //System.out.println("mouseDragged Zoom("+x+","+y+","+modifiers+","+clickCount+")");
       viewer.zoomBy(yCurrent - yPrevious);
       break;
     case JmolConstants.MOUSE_SLAB_PLANE:

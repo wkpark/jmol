@@ -123,6 +123,10 @@ public class PdbAtom {
     return group.chain.chainID;
   }
 
+  public int getModelID() {
+    return group.chain.pdbmodel.modelNumber;
+  }
+
   public PdbModel getPdbModel() {
     return group.chain.pdbmodel;
   }

@@ -7,7 +7,7 @@
   <para>
     The JmolApplet.jar and Jmol.js files are placed in a directory
     on your web server.
-    We advise placing them in a in a sibling directory or subdirectory of
+    We advise placing them in a sibling directory or subdirectory of
     your .html pages ... something like <command>../jmol</command>
     or <command>./jmol</command>
   </para>

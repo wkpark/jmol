@@ -271,6 +271,7 @@ class Token {
   final static int rightsquare  = expression | 13;
   final static int colon        = expression | 14;
   final static int slash        = expression | 15;
+  final static int substructure = expression | 16;
 
   // miguel 2005 01 01
   // these are used to demark the beginning and end of expressions
@@ -577,6 +578,7 @@ class Token {
     "]",            new Token(rightsquare, "]"),
     ":",            new Token(colon, ":"),
     "/",            new Token(slash, "/"),
+    "substructure", new Token(substructure, "substructure"),
 
     "atomno",       new Token(atomno, "atomno"),
     "elemno",       tokenElemno,

@@ -250,7 +250,7 @@ support for assertions (which were introduced in 1.4).
       <and>
         <uptodate targetfile="${appjars.dir}/org/openscience/cdk">
           <srcfiles dir="${lib.dir}" includes="jmol2cdk.jar"/>
-          <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
+<!--          <srcfiles dir="${lib.dir}" includes="dadml.jar"/> -->
         </uptodate>
         <uptodate targetfile="build/cdkjars.timestamp"
                   srcfile="${appjars.dir}/org/openscience/cdk"/>
@@ -309,7 +309,7 @@ support for assertions (which were introduced in 1.4).
     <delete file="build/pluginjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${plugin.dir}/dirbrowser.jar"/>
-    <unjar dest="${appjars.dir}" src="${plugin.dir}/dadmlbrowser.jar"/>
+<!--    <unjar dest="${appjars.dir}" src="${plugin.dir}/dadmlbrowser.jar"/> -->
     <touch file="build/pluginjars.timestamp"/>
   </target>
 

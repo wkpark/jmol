@@ -560,6 +560,9 @@ class Eval implements Runnable {
       case Token.within:
         strbufLog.append("within ");
         break;
+      case Token.substructure:
+        strbufLog.append("substructure ");
+        break;
       case Token.opEQ:
       case Token.opNE:
       case Token.opGT:
@@ -845,6 +848,9 @@ class Eval implements Runnable {
         bs = stack[sp - 1];
         stack[sp - 1] = new BitSet();
         withinInstruction(instruction, bs, stack[sp - 1]);
+        break;
+      case Token.substructure:
+        stack[sp++] = getSubstructureSet((String)instruction.value);
         break;
       case Token.selected:
         stack[sp++] = copyBitSet(viewer.getSelectionSet());
@@ -1395,6 +1401,25 @@ class Eval implements Runnable {
         }
       }
     }
+  }
+
+  BitSet getSubstructureSet(String smiles) {
+    System.out.println("smiles=" + smiles);
+    Frame frame = viewer.getFrame();
+    BitSet bsSubstructure = new BitSet();
+    ////////////////////////////////////////////////////////////////
+    // Nico,
+    // the test code below will select every atom if the element
+    // symbol is found in the string
+    //
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      Atom atom = frame.getAtomAt(i);
+      String elementSymbol = atom.getElementSymbol();
+      if (smiles.indexOf(elementSymbol) >= 0)
+        bsSubstructure.set(i);
+    }
+    ////////////////////////////////////////////////////////////////
+    return bsSubstructure;
   }
 
   int getProteinStructureType(Atom atom) {

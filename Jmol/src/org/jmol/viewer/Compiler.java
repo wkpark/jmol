@@ -664,6 +664,9 @@ class Compiler {
   private boolean commaExpected() {
     return compileError("comma expected");
   }
+  private boolean stringExpected() {
+    return compileError("string expected");
+  }
   private boolean unrecognizedExpressionToken() {
     return compileError("unrecognized expression token:" + valuePeek());
   }
@@ -919,6 +922,8 @@ class Compiler {
     switch (tok) {
     case Token.within:
       return clauseWithin();
+    case Token.substructure:
+      return clauseSubstructure();
     case Token.hyphen: // selecting a negative residue spec
     case Token.integer:
     case Token.seqcode:
@@ -994,6 +999,18 @@ class Compiler {
     if (tokenNext().tok != Token.rightparen) // )T
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.within, distance));
+  }
+
+  boolean clauseSubstructure() {
+    tokenNext();                             // substructure
+    if (tokenNext().tok != Token.leftparen)  // (
+      return leftParenthesisExpected();
+    Token tokenSmiles = tokenNext();         // "smiles"
+    if (tokenSmiles.tok != Token.string)
+      return stringExpected();
+    if (tokenNext().tok != Token.rightparen) // )
+      return rightParenthesisExpected();
+    return addTokenToPostfix(new Token(Token.substructure, tokenSmiles.value));
   }
 
   boolean residueSpecCodeGenerated;

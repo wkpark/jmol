@@ -23,6 +23,8 @@
  *  02111-1307  USA.
  */
 
+// for documentation see www.jmol.org/jslibrary
+
 ////////////////////////////////////////////////////////////////
 // Basic Scripting infrastruture
 ////////////////////////////////////////////////////////////////
@@ -47,7 +49,6 @@ function jmolSetAppletColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
           " boxbgcolor=" + _jmol.boxbgcolor +
           " boxfgcolor=" + _jmol.boxfgcolor +
           " progresscolor=" + _jmol.progresscolor);
-
 }
 
 function jmolApplet(size, modelFilename, script, nameSuffix) {
@@ -67,9 +68,9 @@ function jmolButton(script, label) {
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
           _jmol.buttonCssText + "/>";
-//  document.open();
+  if (_jmol.debugAlert)
+    alert(t);
   document.write(t);
-//  document.close();
 }
 
 function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
@@ -92,28 +93,34 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
           ");return true' onMouseout='_jmolMouseOut()' " +
 	  (isChecked ? "checked " : "") + _jmol.checkboxCssText + "/>" +
           labelHtml;
-//  document.open();
+  if (_jmol.debugAlert)
+    alert(t);
   document.write(t);
-//  document.close();
 }
 
 function jmolRadioGroup(arrayOfRadioButtons, separatorHtml) {
   var type = typeof arrayOfRadioButtons;
-  if (type == "object" && type != null && arrayOfRadioButtons.length) {
-    if (separatorHtml == undefined || separatorHtml == null)
-      separatorHtml = "&nbsp; ";
-    jmolStartRadioGroup();
-    var length = arrayOfRadioButtons.length;
-    for (var i = 0; i < length; ++i) {
-      var radio = arrayOfRadioButtons[i];
-      type = typeof radio;
-      if (type == "object") {
-        jmolRadio(radio[0], radio[1], radio[2], separatorHtml);
-      } else {
-        jmolRadio(radio, null, null, separatorHtml);
-      }
+  if (type != "object" || type == null || ! arrayOfRadioButtons.length) {
+    alert("invalid arrayOfRadioButtons");
+    return;
+  }
+  if (separatorHtml == undefined || separatorHtml == null)
+    separatorHtml = "&nbsp; ";
+  jmolStartNewRadioGroup();
+  var length = arrayOfRadioButtons.length;
+  var t = "";
+  for (var i = 0; i < length; ++i) {
+    var radio = arrayOfRadioButtons[i];
+    type = typeof radio;
+    if (type == "object") {
+      t += _jmolRadio(radio[0], radio[1], radio[2], separatorHtml);
+    } else {
+      t += _jmolRadio(radio, null, null, separatorHtml);
     }
   }
+  if (_jmol.debugAlert)
+    alert(t);
+  document.write(t);
 }
 
 function jmolLink(script, text) {
@@ -123,9 +130,9 @@ function jmolLink(script, text) {
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
           _jmol.linkCssText + ">" + text + "</a>";
-//  document.open();
+  if (_jmol.debugAlert)
+    alert(t);
   document.write(t);
-//  document.close();
 }
 
 function jmolMenu(arrayOfMenuItems, size) {
@@ -160,22 +167,18 @@ function jmolMenu(arrayOfMenuItems, size) {
       t += "<option value='" + scriptIndex + selectedText + text + "</option>";
     }
     t += "</select>";
-//    document.open();
+    if (_jmol.debugAlert)
+      alert(t);
     document.write(t);
-//    document.close();
   }
 }
 
 function jmolHtml(html) {
-//  document.open();
   document.write(html);
-//  document.close();
 }
 
 function jmolBr() {
-//  document.open();
   document.write("<br />");
-//  document.close();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -217,28 +220,15 @@ function jmolLoadInline(model, targetSuffix) {
   }
 }
 
-function jmolStartRadioGroup() {
+function jmolStartNewRadioGroup() {
   ++_jmol.radioGroupCount;
 }
 
 function jmolRadio(script, labelHtml, isChecked, separatorHtml) {
-  if (!script)
-    return;
-  if (labelHtml == undefined || labelHtml == null)
-    labelHtml = script.substring(0, 32);
-  if (! separatorHtml)
-    separatorHtml = "";
-  var scriptIndex = _jmolAddScript(script);
-  var t = "<input name='" + "jmolGroup" + _jmol.radioGroupCount +
-          "' type='radio' onClick='_jmolClick(" + scriptIndex +
-          _jmol.targetText +
-          ")' onMouseover='_jmolMouseOver(" + scriptIndex +
-          ");return true' onMouseout='_jmolMouseOut()' " +
-	  (isChecked ? "checked " : "") + _jmol.radioCssText + "/>" +
-          labelHtml + separatorHtml;
-//  document.open();
+  var t = _jmolRadio(script, labelHtml, isChecked, separatorHtml);
+  if (_jmol.debugAlert)
+    alert(t);
   document.write(t);
-//  document.close();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -362,12 +352,9 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       t += "  <param name='script' value='" + script + "' />\n";
     t += "</applet>\n";
     jmolSetTarget(nameSuffix);
-    if (debugAlert)
-      alert("jmolApplet(" + size + "," + modelFilename + "," +
-            script + "," + name + " ->\n" + t);
-//    document.open(); // NS4 compatibility
+    if (_jmol.debugAlert)
+      alert(t);
     document.write(t);
-//    document.close(); // NS4 compatibility
   }
 }
 
@@ -393,19 +380,37 @@ function _jmolGetAppletSize(size) {
   return [width, height];
 }
 
+function _jmolRadio(script, labelHtml, isChecked, separatorHtml) {
+  if (!script)
+    return "";
+  if (labelHtml == undefined || labelHtml == null)
+    labelHtml = script.substring(0, 32);
+  if (! separatorHtml)
+    separatorHtml = "";
+  var scriptIndex = _jmolAddScript(script);
+  return "<input name='" + "jmolGroup" + _jmol.radioGroupCount +
+         "' type='radio' onClick='_jmolClick(" + scriptIndex +
+         _jmol.targetText +
+         ")' onMouseover='_jmolMouseOver(" + scriptIndex +
+         ");return true' onMouseout='_jmolMouseOut()' " +
+	 (isChecked ? "checked " : "") + _jmol.radioCssText + "/>" +
+         labelHtml + separatorHtml;
+}
+
 function _jmolFindApplet(target) {
-  var applet = _jmolFindAppletWindow(window, target);
-  if (applet == undefined) // search the frames from the top
-    applet = _jmolFindAppletWindow(top, target);
+  // first look for the target in the current window
+  var applet = _jmolSearchFrames(window, target);
+  if (applet == undefined)
+    applet = _jmolSearchFrames(top, target); // look starting in top frame
   return applet;
 }
 
-function _jmolFindAppletWindow(win, target) {
+function _jmolSearchFrames(win, target) {
   var applet;
   var frames = win.frames;
   if (frames && frames.length) { // look in all the frames below this window
     for (var i = 0; i < frames.length; ++i) {
-      applet = _jmolFindAppletWindow(frames[i++], target);
+      applet = _jmolSearchFrames(frames[i++], target);
       if (applet)
         break;
     }

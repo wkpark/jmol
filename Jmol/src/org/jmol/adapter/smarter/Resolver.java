@@ -28,6 +28,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
+import java.util.StringTokenizer;
 
 class Resolver {
 
@@ -87,9 +88,9 @@ class Resolver {
     } catch (NumberFormatException e) {
     }
     try {
-      String[] elements = lines[0].trim().split("[ \t]+");
-      if (elements.length >= 2) {
-        Integer.parseInt(elements[0].trim());
+      StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
+      if ((tokens != null) && (tokens.countTokens() >= 2)) {
+        Integer.parseInt(tokens.nextToken().trim());
         return "FoldingXyz";
       }
     } catch (NumberFormatException e) {

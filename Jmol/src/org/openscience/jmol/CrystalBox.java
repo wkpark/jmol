@@ -23,14 +23,14 @@ package org.openscience.jmol;
 /**
  * Describe class <code>CrystalBox</code> here.
  *
- * @author <a href="mailto:fabian@sandy">Fabian Dortu</a>
+ * @author <a href="mailto:Fabian.Dortu@wanadoo.be">Fabian Dortu</a>
  * @version 1.0
  */
 public class CrystalBox {
 
   private float[][] atomBox;
   private float[][] bondBox;
-
+  private float[][] unitBox;
 
   /**
    * Two different parallepipedic clipping boxes can be combined.
@@ -48,14 +48,16 @@ public class CrystalBox {
    *                   1,1,1}
    * (idem for bondBox).
    *
+   * The *unitBox* defines how many unit cell box will be drawn.
+   *
    * @param atomBox a <code>float[2][3]</code> value
    * @param bondBox a <code>float[2][3]</code> value
+   * @param unitBox a <code>float[2][3]</code> value
    */
-  public CrystalBox(float[][] atomBox, float[][] bondBox) {
-    this.atomBox = new float[2][3];
-    this.bondBox = new float[2][3];
+  public CrystalBox(float[][] atomBox, float[][] bondBox, float unitBox[][]) {
     this.atomBox = atomBox;
     this.bondBox = bondBox;
+    this.unitBox = unitBox;
   }
 
   /**
@@ -80,6 +82,13 @@ public class CrystalBox {
     bondBox[1][1] = 1;
     bondBox[1][2] = 1;
 
+    unitBox = new float[2][3];
+    unitBox[0][0] = 0;
+    unitBox[0][1] = 0;
+    unitBox[0][2] = 0;
+    unitBox[1][0] = 1;
+    unitBox[1][1] = 1;
+    unitBox[1][2] = 1;
 
   }
 
@@ -101,6 +110,15 @@ public class CrystalBox {
     this.bondBox = bondBox;
   }
 
+  /**
+   * Describe <code>setUnitBox</code> method here.
+   *
+   * @param bondBox a <code>float[][]</code> value
+   */
+  public void setUnitBox(float[][] unitBox) {
+    this.unitBox = unitBox;
+  }
+
 
   /**
    * Describe <code>getAtomBox</code> method here.
@@ -118,6 +136,15 @@ public class CrystalBox {
    */
   public float[][] getBondBox() {
     return bondBox;
+  }
+
+  /**
+   * Describe <code>getUnitBox</code> method here.
+   *
+   * @return a <code>float[][]</code> value
+   */
+  public float[][] getUnitBox() {
+    return unitBox;
   }
 
 }

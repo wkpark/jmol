@@ -611,5 +611,12 @@ public class ChemFrame {
     }
   }
 
+  /**
+   * Returns the transformation matrix.
+   */
+  public Matrix4d getMatrix() {
+    return mat;
+  }
+  
 }
 

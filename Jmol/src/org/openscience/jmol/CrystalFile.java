@@ -56,7 +56,7 @@ public class CrystalFile extends ChemFile {
   private UnitCellBox unitCellBoxS;
   private Vector unitCellBox = new Vector(1);          //one element per frame
 
-  // Defines the crystal box (what is visible: atomBox, bondBox)
+  // Defines the crystal box (what is visible: atomBox, bondBox, unitBox)
   private CrystalBox crystalBoxS;
   private Vector crystalBox = new Vector(1);           //one element per frame
 
@@ -218,28 +218,88 @@ public class CrystalFile extends ChemFile {
    */
   public void generateCrystalFrame(int whichframe) {
 
-    float[][] unitCellAtomRedPos;
     Vector crystalFAtomRedPos = new Vector(1);
-    int natom;
-    float[] newAtomCartPos = new float[3];
-    ChemFrame crystalFrame = new ChemFrame();
-    Matrix3f op = new Matrix3f();
-    int mina, minb, minc, maxa, maxb, maxc;
-
-    unitCellAtomRedPos = unitCellBoxS.getReducedPos();
-    natom = unitCellBoxS.getNumberOfAtoms();
-
+    CrystalFrame crystalFrame = new CrystalFrame();
+    int natom = unitCellBoxS.getNumberOfAtoms();
     Vector frameEquivAtoms[] = (Vector[]) Array.newInstance(Vector.class,
                                  natom);
+    int numberBondedAtoms;
+    Vector boxEdges;
 
+    // Generate the reduced atomic coordinate according
+    // to the Atom Box and put it in crystalFAtomRedPos.
+    // Generate the CrystalFrame.
+    // Generate a list of equivalent atoms.
+    generateAtoms(crystalFAtomRedPos, crystalFrame, frameEquivAtoms);
+
+
+
+    //Compute the coordinates of the unit cell box frames.
+    boxEdges = generateUnitBoxFrame();
+
+    //to draw the primitive vectors and unit cell box
+    crystalFrame.setRprimd(unitCellBoxS.getRprimd());
+    crystalFrame.setBoxEdges(boxEdges);
+
+    crystalFrame.setInfo(unitCellBoxS.getInfo());
+
+    if (whichframe < super.getNumberOfFrames()) {
+      this.unitCellBox.setElementAt(unitCellBoxS, whichframe);
+      this.crystalBox.setElementAt(crystalBoxS, whichframe);
+      this.equivAtoms.setElementAt(frameEquivAtoms, whichframe);
+
+      //store in reduced coordinate in *this* object
+      this.crystalAtomRedPos.setElementAt(crystalFAtomRedPos, whichframe);
+
+      //store in cartesian coordinate in *super* object    
+      super.setFrame(crystalFrame, whichframe);
+
+      // Bond the atoms according to the Bond Box
+      numberBondedAtoms = rebond(whichframe);
+      this.numberBondedAtoms
+          .setElementAt((Object) (new Integer(numberBondedAtoms)),
+            whichframe);
+    } else if (whichframe == super.getNumberOfFrames()) {
+      this.unitCellBox.addElement(unitCellBoxS);
+      this.crystalBox.addElement(crystalBoxS);
+      this.equivAtoms.addElement(frameEquivAtoms);
+
+      //sorte in reduced in this object
+      this.crystalAtomRedPos.addElement(crystalFAtomRedPos);
+
+      //store in cartesian in super object
+      super.addFrame(crystalFrame);
+
+      // Bond the atoms according to the Bond Box
+      numberBondedAtoms = rebond(whichframe);
+      this.numberBondedAtoms
+          .addElement((Object) (new Integer(numberBondedAtoms)));
+    } else {
+      System.out.println("Frame index too high in CrystalFile.java!");
+    }
+
+
+
+  }    //end generateCrystal
+
+
+
+  private void generateAtoms(Vector crystalFAtomRedPos,
+      CrystalFrame crystalFrame, Vector frameEquivAtoms[]) {
+
+    float[][] unitCellAtomRedPos = unitCellBoxS.getReducedPos();
     float[][] atomBox = crystalBoxS.getAtomBox();
-    float[][] bondBox = crystalBoxS.getBondBox();
+    int natom = unitCellBoxS.getNumberOfAtoms();
+    int mina, minb, minc, maxa, maxb, maxc;
+    Matrix3f op = new Matrix3f();
+
 
     //Operator "op" needed to transform atomic crystal 
     //coordinate (atomCrystCoord) in cartesian atomic 
     //position (atomPos) 
 
     op.transpose(arrayToMatrix3f(unitCellBoxS.getRprimd()));
+
 
     int atomCrystalIndex = 0;
     for (int at = 0; at < natom; at++) {
@@ -260,14 +320,13 @@ public class CrystalFile extends ChemFile {
           for (int k = minc; k <= maxc; k++) {
 
             float[] newAtomRedPos = new float[3];
-
             newAtomRedPos[0] = unitCellAtomRedPos[at][0] + (float) i;
             newAtomRedPos[1] = unitCellAtomRedPos[at][1] + (float) j;
             newAtomRedPos[2] = unitCellAtomRedPos[at][2] + (float) k;
 
             crystalFAtomRedPos.addElement(newAtomRedPos);
 
-
+            float[] newAtomCartPos = new float[3];
             newAtomCartPos = mulVec(op, newAtomRedPos);
 
             crystalFrame.addAtom(unitCellBoxS.getAtomType(at),
@@ -281,43 +340,95 @@ public class CrystalFile extends ChemFile {
           }    //end k
         }      //end j
       }        //end i
-
-
     }          //end for at
 
-    crystalFrame.setInfo(unitCellBoxS.getInfo());
-
-    if (whichframe < super.getNumberOfFrames()) {
-      unitCellBox.setElementAt(unitCellBoxS, whichframe);
-      crystalBox.setElementAt(crystalBoxS, whichframe);
-      equivAtoms.setElementAt(frameEquivAtoms, whichframe);
-
-      //sort in reduced in this object
-      this.crystalAtomRedPos.setElementAt(crystalFAtomRedPos, whichframe);
-
-      //store in cartesian in super object    
-      super.setFrame(crystalFrame, whichframe);
-      numberBondedAtoms.setElementAt(
-          (Object) (new Integer(rebond(whichframe))), whichframe);
-    } else if (whichframe == super.getNumberOfFrames()) {
-      unitCellBox.addElement(unitCellBoxS);
-      crystalBox.addElement(crystalBoxS);
-      equivAtoms.addElement(frameEquivAtoms);
-
-      //sorte in reduced in this object
-      this.crystalAtomRedPos.addElement(crystalFAtomRedPos);
-
-      //store in cartesian in super object
-      super.addFrame(crystalFrame);
-      numberBondedAtoms
-          .addElement((Object) (new Integer(rebond(whichframe))));
-    } else {
-      System.out.println("Frame index too high in CrystalFile.java!");
-    }
+  }            //end generateAtoms()
 
 
+  private Vector generateUnitBoxFrame() {
 
-  }    //end generateCrystal
+    float[][] unitBox = crystalBoxS.getUnitBox();
+    int mina, minb, minc, maxa, maxb, maxc;
+    Matrix3f op = new Matrix3f();
+    Vector boxEdgesTemplate = new Vector(24);
+    Vector boxEdges = new Vector(1);
+    Point3f vec;
+    float[][] rprimd = unitCellBoxS.getRprimd();
+
+    //Compute the Unit Cell Box edges
+    boxEdgesTemplate.add(new Point3f());           //O
+    boxEdgesTemplate.add(new Point3f(1, 0, 0));    //E
+
+    boxEdgesTemplate.add(new Point3f());           //O
+    boxEdgesTemplate.add(new Point3f(0, 1, 0));    //E
+
+    boxEdgesTemplate.add(new Point3f());           //O
+    boxEdgesTemplate.add(new Point3f(0, 0, 1));    //E
+
+
+    boxEdgesTemplate.add(new Point3f(1, 0, 0));    //O
+    boxEdgesTemplate.add(new Point3f(1, 1, 0));    //E
+
+    boxEdgesTemplate.add(new Point3f(1, 1, 0));    //O
+    boxEdgesTemplate.add(new Point3f(0, 1, 0));    //E
+
+    boxEdgesTemplate.add(new Point3f(0, 1, 0));    //O
+    boxEdgesTemplate.add(new Point3f(0, 1, 1));    //E
+
+    boxEdgesTemplate.add(new Point3f(0, 1, 1));    //O
+    boxEdgesTemplate.add(new Point3f(0, 0, 1));    //E
+
+    boxEdgesTemplate.add(new Point3f(0, 0, 1));    //O
+    boxEdgesTemplate.add(new Point3f(1, 0, 1));    //E
+
+    boxEdgesTemplate.add(new Point3f(1, 0, 1));    //O
+    boxEdgesTemplate.add(new Point3f(1, 0, 0));    //E
+
+    boxEdgesTemplate.add(new Point3f(1, 0, 1));    //O
+    boxEdgesTemplate.add(new Point3f(1, 1, 1));    //E
+
+    boxEdgesTemplate.add(new Point3f(1, 1, 1));    //O
+    boxEdgesTemplate.add(new Point3f(1, 1, 0));    //E
+
+    boxEdgesTemplate.add(new Point3f(0, 1, 1));    //O
+    boxEdgesTemplate.add(new Point3f(1, 1, 1));    //E
+
+    //Operator "op" needed to transform atomic crystal 
+    //coordinate (atomCrystCoord) in cartesian atomic 
+    //position (atomPos) 
+
+    op.transpose(arrayToMatrix3f(unitCellBoxS.getRprimd()));
+
+    float[] redEdge = new float[3];
+    float[] cartEdge;
+
+    for (int i = intSup(unitBox[0][0]); i <= intInf(unitBox[1][0]) - 1; i++) {
+      for (int j = intSup(unitBox[0][1]); j <= intInf(unitBox[1][1]) - 1;
+          j++) {
+        for (int k = intSup(unitBox[0][2]); k <= intInf(unitBox[1][2]) - 1;
+            k++) {
+
+          System.out.println("ijk: " + i + " " + " " + j + " " + k);
+          for (int l = 0; l < boxEdgesTemplate.size(); l++) {
+            redEdge[0] = ((Point3f) boxEdgesTemplate.elementAt(l)).x + i;
+            redEdge[1] = ((Point3f) boxEdgesTemplate.elementAt(l)).y + j;
+            redEdge[2] = ((Point3f) boxEdgesTemplate.elementAt(l)).z + k;
+
+            cartEdge = mulVec(op, redEdge);
+
+            boxEdges.addElement(new Point3f(cartEdge[0], cartEdge[1],
+                cartEdge[2]));
+
+          }    //end l;
+
+        }      //end k
+      }        //end j
+    }          //end i
+
+    return boxEdges;
+
+  }    //end generate UnitBoxFrame
+
 
 
   /**
@@ -329,9 +440,7 @@ public class CrystalFile extends ChemFile {
   public int rebond(int whichframe) {
 
     float[] redPos;
-
     int numberBondedAtoms = 0;
-
     Vector crystalRedPos =
       (Vector) (this.crystalAtomRedPos.elementAt(whichframe));
     ChemFrame crystalFrame = super.getFrame(whichframe);

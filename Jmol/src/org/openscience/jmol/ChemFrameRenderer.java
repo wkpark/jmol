@@ -96,6 +96,30 @@ public class ChemFrameRenderer {
         }
       }
       
+      if (frame instanceof CrystalFrame) {
+        CrystalFrame crystalFrame = (CrystalFrame) frame;
+        float[][] rprimd = crystalFrame.getRprimd();
+        
+        // The three primitives vectors with arrows
+        for (int i = 0; i < 3; i++) {
+          shapesList.addElement(new VectorShape(settings, frame.getMatrix(),
+              zeroPoint,
+                new Point3f(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
+                  true));
+        }
+        
+        // The full primitive cell
+        if (true) {
+          // Depends on the settings...TODO
+          Vector boxEdges = crystalFrame.getBoxEdges();
+          for (int i = 0; i < boxEdges.size(); i = i + 2) {
+            shapesList.addElement(new LineShape(settings, frame.getMatrix(),
+                (Point3f) boxEdges.elementAt(i),
+                  (Point3f) boxEdges.elementAt(i + 1)));
+          }
+        }
+      }
+      
       shapes = new Shape[shapesList.size()];
       Enumeration shapeIter = shapesList.elements();
       for (int i = 0; i < shapes.length && shapeIter.hasMoreElements(); ++i) {

@@ -300,12 +300,7 @@ public class ChemFrame {
     }
     atoms[numberAtoms - 1] = null;
     numberAtoms--;
-    try {
-      rebond();
-    } catch (Exception e) {
-
-      // could not rebond atoms
-    }
+    rebond();
   }
 
   /**
@@ -535,7 +530,7 @@ public class ChemFrame {
   /**
    * Walk through this frame and find all bonds again.
    */
-  public void rebond() throws Exception {
+  public void rebond() {
 
     // Clear the currently existing bonds.
     clearBonds();

@@ -80,12 +80,17 @@ abstract class Polymer {
 
   static Monomer[] getAlphaMonomers(Chain chain, int firstGroupIndex) {
     Group[] chainGroups = chain.groups;
-    int firstNonMainchain = 0;
+    AlphaMonomer previous = null;
     int count = 0;
-    for (int i = firstGroupIndex;
-         i < chain.groupCount &&
-           chainGroups[i] instanceof AlphaMonomer; ++i, ++count )
-      {}
+    for (int i = firstGroupIndex; i < chain.groupCount; ++i, ++count) {
+      Group group = chainGroups[i];
+      if (! (group instanceof AlphaMonomer))
+        break;
+      AlphaMonomer current = (AlphaMonomer)group;
+      if (! current.isConnectedAfter(previous))
+        break;
+      previous = current;
+    }
     if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
@@ -96,12 +101,17 @@ abstract class Polymer {
 
   static Monomer[] getAminoMonomers(Chain chain, int firstGroupIndex) {
     Group[] chainGroups = chain.groups;
-    int firstNonMainchain = 0;
+    AminoMonomer previous = null;
     int count = 0;
-    for (int i = firstGroupIndex;
-         i < chain.groupCount &&
-           chainGroups[i] instanceof AminoMonomer; ++i, ++count )
-      {}
+    for (int i = firstGroupIndex; i < chain.groupCount; ++i, ++count) {
+      Group group = chainGroups[i];
+      if (! (group instanceof AminoMonomer))
+        break;
+      AminoMonomer current = (AminoMonomer)group;
+      if (! current.isConnectedAfter(previous))
+        break;
+      previous = current;
+    }
     if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
@@ -112,12 +122,17 @@ abstract class Polymer {
 
   static Monomer[] getNucleicMonomers(Chain chain, int firstGroupIndex) {
     Group[] chainGroups = chain.groups;
-    int firstNonMainchain = 0;
+    NucleicMonomer previous = null;
     int count = 0;
-    for (int i = firstGroupIndex;
-         i < chain.groupCount &&
-           chainGroups[i] instanceof NucleicMonomer; ++i, ++count )
-      {}
+    for (int i = firstGroupIndex; i < chain.groupCount; ++i, ++count) {
+      Group group = chainGroups[i];
+      if (! (group instanceof NucleicMonomer))
+        break;
+      NucleicMonomer current = (NucleicMonomer)group;
+      if (! current.isConnectedAfter(previous))
+        break;
+      previous = current;
+    }
     if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
@@ -125,7 +140,6 @@ abstract class Polymer {
       monomers[j] = (NucleicMonomer)chainGroups[firstGroupIndex + j];
     return monomers;
   }
-
 
   /**
    * for now, a polymer only comes from a single chain.

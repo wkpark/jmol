@@ -131,6 +131,17 @@ public class AminoMonomer extends AlphaMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
+    if (possiblyPreviousMonomer == null)
+      return true;
+    if (! (possiblyPreviousMonomer instanceof AminoMonomer))
+      return false;
+    AminoMonomer other = (AminoMonomer)possiblyPreviousMonomer;
+    return other.getCarbonylCarbonAtom().isBonded(getNitrogenAtom());
+  }
+
+  ////////////////////////////////////////////////////////////////
+
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
     JmolViewer viewer = chain.frame.viewer;

@@ -94,6 +94,16 @@ public class AlphaMonomer extends Monomer {
     return getLeadAtom();
   }
 
+  boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
+    if (possiblyPreviousMonomer == null)
+      return true;
+    if (! (possiblyPreviousMonomer instanceof AlphaMonomer))
+      return false;
+    float distance =
+      getLeadAtomPoint().distance(possiblyPreviousMonomer.getLeadAtomPoint());
+    return distance <= 6;
+  }
+
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
   }

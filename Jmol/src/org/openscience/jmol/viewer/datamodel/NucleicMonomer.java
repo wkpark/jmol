@@ -63,6 +63,7 @@ public class NucleicMonomer extends Monomer {
 
     ~JmolConstants.ATOMID_H3T_TERMINUS, // 23 H3T terminus
     JmolConstants.ATOMID_O3_PRIME,      // 24 O3' terminus
+    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 25 P phosphorus
   };
 
   static Monomer
@@ -182,6 +183,14 @@ public class NucleicMonomer extends Monomer {
     return getAtomFromOffsetIndex(offsets[23] != -1 ? 23 : 24);
   }
 
+  Atom getO3PrimeAtom() {
+    return getAtomFromOffsetIndex(24);
+  }
+
+  Atom getPhosphorusAtom() {
+    return getAtomFromOffsetIndex(25);
+  }
+
   void getBaseRing6Points(Point3f[] ring6Points) {
     for (int i = 6; --i >= 0; )
       ring6Points[i] = getAtomPointFromOffsetIndex(i + 3);
@@ -196,7 +205,24 @@ public class NucleicMonomer extends Monomer {
     return isPurine;
   }
 
+  ////////////////////////////////////////////////////////////////
+
+  boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
+    if (possiblyPreviousMonomer == null)
+      return true;
+    Atom myPhosphorusAtom = getPhosphorusAtom();
+    if (myPhosphorusAtom == null)
+      return false;
+    if (! (possiblyPreviousMonomer instanceof NucleicMonomer))
+      return false;
+    NucleicMonomer other = (NucleicMonomer)possiblyPreviousMonomer;
+    return other.getO3PrimeAtom().isBonded(myPhosphorusAtom);
+  }
+
+  ////////////////////////////////////////////////////////////////
+
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
+    // FIXME --- needs to be implemented
   }
 }

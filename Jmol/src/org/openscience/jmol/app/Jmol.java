@@ -80,6 +80,7 @@ public class Jmol extends JPanel {
   private MeasurementTable measurementTable;
   private RecentFilesDialog recentFiles;
   public ScriptWindow scriptWindow;
+  private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
   private static File currentDir;
   private JFileChooser openChooser;
@@ -243,6 +244,7 @@ public class Jmol extends JPanel {
     vib.addConflictingAction(getAction(openAction));
     menuItems = new Hashtable();
     say("Building Menubar...");
+    executeScriptAction = new ExecuteScriptAction();
     menubar = createMenubar();
     add("North", menubar);
 
@@ -484,19 +486,13 @@ public class Jmol extends JPanel {
    * hashtable so that it can be fetched with getMenuItem().
    * @see #getMenuItem
    */
-  protected JMenuItem createMenuItem(String cmd, boolean isRadio) {
+  protected JMenuItem createMenuItem(String cmd) {
 
-      // System.out.println("Creating menu for " + cmd + " (radio:" + isRadio + ")");
-      
     JMenuItem mi;
-    if (isRadio) {
-      mi = guimap.newJRadioButtonMenuItem(cmd);
+    if (cmd.endsWith("Check")) {
+      mi = guimap.newJCheckBoxMenuItem(cmd, false);
     } else {
-      if (cmd.endsWith("Check")) {
-        mi = guimap.newJCheckBoxMenuItem(cmd, false);
-      } else {
-        mi = guimap.newJMenuItem(cmd);
-      }
+      mi = guimap.newJMenuItem(cmd);
     }
     String mnem =
       JmolResourceHandler.getInstance().getString(cmd + "Mnemonic");
@@ -504,7 +500,7 @@ public class Jmol extends JPanel {
       char mn = mnem.charAt(0);
       mi.setMnemonic(mn);
     }
-
+    
     ImageIcon f =
       JmolResourceHandler.getInstance().getIcon(cmd + "Image");
     if (f != null) {
@@ -512,15 +508,19 @@ public class Jmol extends JPanel {
       mi.setIcon(f);
     }
     
-    mi.setActionCommand(cmd);
-    Action a = getAction(cmd);
-    if (a != null) {
-        // System.out.println("Connected to Action: " + a.getClass().getName());
-      mi.addActionListener(a);
-      a.addPropertyChangeListener(new ActionChangedListener(mi));
-      mi.setEnabled(a.isEnabled());
+    if (cmd.endsWith("Script")) {
+      mi.setActionCommand(JmolResourceHandler.getInstance().getString(cmd));
+      mi.addActionListener(executeScriptAction);
     } else {
-      mi.setEnabled(false);
+      mi.setActionCommand(cmd);
+      Action a = getAction(cmd);
+      if (a != null) {
+        mi.addActionListener(a);
+        a.addPropertyChangeListener(new ActionChangedListener(mi));
+        mi.setEnabled(a.isEnabled());
+      } else {
+        mi.setEnabled(false);
+      }
     }
     menuItems.put(cmd, mi);
     return mi;
@@ -683,25 +683,22 @@ public class Jmol extends JPanel {
         if (menuKeys[i].equals("-")) {
             menuBar.add(Box.createHorizontalGlue());
         } else {
-            JMenu m = createMenu(menuKeys[i], false);
-            
-            if (m != null) {
+            JMenu m = createMenu(menuKeys[i]);
+            if (m != null)
                 menuBar.add(m);
-            }
             String mnem = JmolResourceHandler.
               getInstance().getString(menuKeys[i] + "Mnemonic");
             if (mnem != null) {
                 char mn = mnem.charAt(0);
                 m.setMnemonic(mn);
             }
-            
         }
     }
   }
   
   protected void addHelpMenuBar(JMenuBar menuBar) {
       String menuKey = "help";
-      JMenu m = createMenu(menuKey, false);
+      JMenu m = createMenu(menuKey);
       if (m != null) {
           menuBar.add(m);
       }
@@ -717,17 +714,11 @@ public class Jmol extends JPanel {
    * Create a menu for the app.  By default this pulls the
    * definition of the menu from the associated resource file.
    */
-  protected JMenu createMenu(String key, boolean isPopup) {
+  protected JMenu createMenu(String key) {
 
     // Get list of items from resource file:
-    String[] itemKeys;
-    if (isPopup) {
-      itemKeys = tokenize(JmolResourceHandler.
-                          getInstance().getString(key + "Popup"));
-    } else {
-      itemKeys = tokenize(JmolResourceHandler.
-                          getInstance().getString(key));
-    }
+    String[] itemKeys = tokenize(JmolResourceHandler.
+                                 getInstance().getString(key));
 
     // Get label associated with this menu:
     JMenu menu = guimap.newJMenu(key);
@@ -735,54 +726,19 @@ public class Jmol extends JPanel {
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {
 
-      // Check to see if it is a radio group:
-      String radiogroup =
-        JmolResourceHandler.getInstance().getString(itemKeys[i] + "Radio");
-      if (radiogroup != null) {
-
-        // Get the list of items in the radio group:
-        String[] radioKeys = tokenize(radiogroup);
-
-        // See what is the selected member of the radio group:
-        String si = JmolResourceHandler.
-          getInstance().getString(itemKeys[i] + "Selected");
-
-        // Create the button group:
-        ButtonGroup bg = new ButtonGroup();
-
-        // Loop over the items in the radio group:
-        for (int j = 0; j < radioKeys.length; j++) {
-          JRadioButtonMenuItem mi =
-            (JRadioButtonMenuItem) createMenuItem(radioKeys[j], true);
-          menu.add(mi);
-          bg.add(mi);
-          if (radioKeys[j].equals(si)) {
-            mi.setSelected(true);
-          }
-        }
-      } else if (itemKeys[i].equals("-")) {
+      String item = itemKeys[i];
+      if (item.equals("-")) {
         menu.addSeparator();
-      } else {
-        // Check to see if it is a popup menu:
-        String popup = JmolResourceHandler.getInstance().
-          getString(itemKeys[i] + "Popup");
-        if (popup != null) {
-          if (popup.equals("prop")) {
-            apm =
-              new AtomPropsMenu(JmolResourceHandler.getInstance()
-                                .getString(itemKeys[i] + "Label"),
-                                viewer);
-            menu.add(apm);
-          } else {
-            JMenu pm;
-            pm = createMenu(itemKeys[i], true);
-            menu.add(pm);
-          }
-        } else {
-          JMenuItem mi = createMenuItem(itemKeys[i], false);
-          menu.add(mi);
-        }
+        continue;
       }
+      if (item.endsWith("Menu")) {
+        JMenu pm;
+        pm = createMenu(item);
+        menu.add(pm);
+        continue;
+      }
+      JMenuItem mi = createMenuItem(item);
+      menu.add(mi);
     }
     menu.addMenuListener(display.getMenuListener());
     return menu;
@@ -862,7 +818,7 @@ public class Jmol extends JPanel {
     new WhatsNewAction(),
     new UguideAction(), new AtompropsAction(), new ConsoleAction(),
     chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction,
-    new ScriptAction(), viewMeasurementTableAction
+    new ScriptWindowAction(), viewMeasurementTableAction
   };
 
   class CloseAction extends AbstractAction {
@@ -1182,9 +1138,9 @@ public class Jmol extends JPanel {
     }
   }
 
-  class ScriptAction extends AbstractAction {
+  class ScriptWindowAction extends AbstractAction {
 
-    public ScriptAction() {
+    public ScriptWindowAction() {
       super(scriptAction);
     }
 
@@ -1365,4 +1321,13 @@ public class Jmol extends JPanel {
     }
   }
 
+  class ExecuteScriptAction extends AbstractAction {
+    public ExecuteScriptAction() {
+      super("executeScriptAction");
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      viewer.evalString(e.getActionCommand());
+    }
+  }
 }

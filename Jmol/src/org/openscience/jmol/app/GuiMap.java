@@ -40,7 +40,11 @@ class GuiMap {
     return new KeyJMenu(key);
   }
   JMenuItem newJMenuItem(String key) {
-    return new KeyJMenuItem(key);
+    String label =
+      JmolResourceHandler.getInstance().getString(key+"Label");
+    if (label == null)
+      label = key;
+    return new KeyJMenuItem(key, label);
   }
   JCheckBoxMenuItem newJCheckBoxMenuItem(String key, boolean isChecked) {
     return new KeyJCheckBoxMenuItem(key, isChecked);
@@ -88,9 +92,8 @@ class GuiMap {
 
   class KeyJMenuItem extends JMenuItem implements GetKey {
     String key;
-    KeyJMenuItem(String key) {
-      super(JmolResourceHandler.
-            getInstance().getString(key+"Label"));
+    KeyJMenuItem(String key, String label) {
+      super(label);
       this.key = key;
       map.put(key, this);
     }

@@ -151,17 +151,8 @@ public class DisplayPanel extends JPanel
   private RightAction rightAction = new RightAction();
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
-  private aNoneAction anoneAction = new aNoneAction();
-  private aShadingAction ashadingAction = new aShadingAction();
   private aChargeColorAction acchargeAction = new aChargeColorAction();
   private aAtomTypeColorAction actypeAction = new aAtomTypeColorAction();
-  private bNoneAction bnoneAction = new bNoneAction();
-  private bWireframeAction bwireframeAction = new bWireframeAction();
-  private bShadingAction bshadingAction = new bShadingAction();
-  private PlainAction plainAction = new PlainAction();
-  private SymbolsAction symbolsAction = new SymbolsAction();
-  private TypesAction typesAction = new TypesAction();
-  private NumbersAction numbersAction = new NumbersAction();
   private HydrogensAction hydrogensAction = new HydrogensAction();
   private VectorsAction vectorsAction = new VectorsAction();
   private MeasurementsAction measurementsAction =
@@ -243,32 +234,6 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class aNoneAction extends AbstractAction {
-
-    public aNoneAction() {
-      super("anone");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setMarAtom((short)0);
-      viewer.refresh();
-    }
-  }
-
-  class aShadingAction extends AbstractAction {
-
-    public aShadingAction() {
-      super("ashading");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setMarAtom(viewer.getMarAtom());
-      viewer.refresh();
-    }
-  }
-
   class aChargeColorAction extends AbstractAction {
 
     public aChargeColorAction() {
@@ -290,45 +255,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       viewer.setModeAtomColorProfile(JmolConstants.PALETTE_CPK);
-    }
-  }
-
-  class bNoneAction extends AbstractAction {
-
-    public bNoneAction() {
-      super("bnone");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setMarBond((short)0);
-      viewer.refresh();
-    }
-  }
-
-  class bShadingAction extends AbstractAction {
-
-    public bShadingAction() {
-      super("bshading");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setMarBond(viewer.getMarBond());
-      viewer.refresh();
-    }
-  }
-
-  class bWireframeAction extends AbstractAction {
-
-    public bWireframeAction() {
-      super("bwireframe");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setMarBond((short)1);
-      viewer.refresh();
     }
   }
 
@@ -476,54 +402,6 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class PlainAction extends AbstractAction {
-
-    public PlainAction() {
-      super("plain");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolConstants.LABEL_NONE);
-    }
-  }
-
-  class SymbolsAction extends AbstractAction {
-
-    public SymbolsAction() {
-      super("symbols");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolConstants.LABEL_SYMBOL);
-    }
-  }
-
-  class TypesAction extends AbstractAction {
-
-    public TypesAction() {
-      super("types");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolConstants.LABEL_TYPENAME);
-    }
-  }
-
-  class NumbersAction extends AbstractAction {
-
-    public NumbersAction() {
-      super("numbers");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolConstants.LABEL_ATOMNO);
-    }
-  }
-
   class HomeAction extends AbstractAction {
 
     public HomeAction() {
@@ -607,8 +485,8 @@ public class DisplayPanel extends JPanel
   }
 
   private void setDisplayMenuState() {
-    guimap.setSelected("wireframerotationCheck",
-                       viewer.getWireframeRotation());
+    //    guimap.setSelected("wireframerotationCheck",
+    //                       viewer.getWireframeRotation());
     guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
     guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
     guimap.setSelected("vectorsCheck", viewer.getShowVectors());
@@ -623,10 +501,6 @@ public class DisplayPanel extends JPanel
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction,
-      anoneAction, ashadingAction,
-      bnoneAction, bwireframeAction, bshadingAction,
-      plainAction,
-      symbolsAction, typesAction, numbersAction,
       hydrogensAction, vectorsAction, measurementsAction,
       selectallAction, deselectallAction,
       homeAction, wireframerotationAction, perspectiveAction,

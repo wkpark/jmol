@@ -1,6 +1,6 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
-           JAVA_HOME= /usr/local/jdk1.2.2
+           JAVA_HOME= /usr/j2se
                JIKES= /usr/local/bin/jikes
                JAVAC= $(JAVA_HOME)/bin/javac
 # Choose a compiler here:

@@ -136,9 +136,9 @@ class StyleManager {
     viewer.setMarBond((short)1);
   }
 
-  boolean showFrank;
-  void setShowFrank(boolean showFrank) {
-    this.showFrank = showFrank;
+  boolean frankOn;
+  void setFrankOn(boolean frankOn) {
+    this.frankOn = frankOn;
   }
 
   boolean ssbondsBackbone;

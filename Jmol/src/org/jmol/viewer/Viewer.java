@@ -52,9 +52,6 @@ import java.io.Reader;
  * to extract information from the client data structures and
  * render the molecule to the supplied java.awt.Component
  *
- * The default implementation of Jmol uses the CDK library
- * <a href='http://cdk.sourceforge.net'>cdk.sourceforge.net</a>
- *
  * The JmolViewer runs on Java 1.1 virtual machines.
  * The 3d graphics rendering package is a software implementation
  * of a z-buffer. It does not use Java3D and does not use Graphics2D
@@ -1033,7 +1030,8 @@ final public class Viewer extends JmolViewer {
     // there probably needs to be a better startup mechanism for shapes
     if (modelManager.hasVibrationVectors())
       setShapeSize(JmolConstants.SHAPE_VECTORS, 1);
-    
+    setFrankOn(styleManager.frankOn);
+
     popHoldRepaint();
   }
 
@@ -2081,7 +2079,12 @@ final public class Viewer extends JmolViewer {
   }
 
   public void setFrankOn(boolean frankOn) {
+    styleManager.setFrankOn(frankOn);
     setShapeSize(JmolConstants.SHAPE_FRANK, frankOn ? -1 : 0);
+  }
+
+  boolean getFrankOn() {
+    return styleManager.frankOn;
   }
 
   public int getPercentVdwAtom() {
@@ -2187,14 +2190,6 @@ final public class Viewer extends JmolViewer {
   public void setRasmolDefaults() {
     styleManager.setRasmolDefaults();
   }
-
-  void setShowFrank(boolean showFrank) {
-    styleManager.setShowFrank(showFrank);
-  }
-  boolean getShowFrank() {
-    return styleManager.showFrank;
-  }
-
 
   void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
     styleManager.setZeroBasedXyzRasmol(zeroBasedXyzRasmol);

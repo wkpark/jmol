@@ -24,6 +24,7 @@
  */
 
 package org.jmol.applet;
+import org.jmol.appletwrapper.*;
 
 import java.applet.*;
 import java.util.Hashtable;
@@ -128,11 +129,11 @@ public class JmolAppletRegistry {
       System.out.println("tryDirect failed to find applet:" + targetName);
       return false;
     }
-    if (! (target instanceof Wrapper)) {
+    if (! (target instanceof AppletWrapper)) {
       System.out.println("target " + targetName + " is not a JmolApplet");
       return true;
     }
-    Wrapper targetJmolApplet = (Wrapper)target;
+    AppletWrapper targetJmolApplet = (AppletWrapper)target;
     targetJmolApplet.scriptButton((buttonCallback == null
                                    ? null : getJsoWindow()),
                                   name, script, buttonCallback);

@@ -25,8 +25,6 @@
   <property name="applet.classes.dir" value="build/applet-classes" />
   <property name="tests.dir" value="build/unit.tests" />
   <property name="javadoc.dir" value="javadoc" />
-  <property name="manifest" value="src/manifest"/>
-  <property name="manifest-applet" value="src/manifest"/>
   <property name="docbook-xsl" value="docbook-xsl-1.61.2" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
@@ -261,7 +259,7 @@ support for assertions (which were introduced in 1.4).
 	<include name="**/*.html" />
       </fileset>
     </copy>
-    <jar jarfile="Jmol.jar" manifest="${manifest}">
+    <jar jarfile="Jmol.jar" manifest="manifest/application.txt">
       <fileset dir="${classes.dir}" >
 	<exclude name="**/.*" />
 	<exclude name="**/Test*.class" />
@@ -339,31 +337,51 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="applet-jar" id="applet-jar" depends="applet-classes,appletjars">
-    <jar jarfile="JmolApplet.jar" index="true">
+    <jar jarfile="JmolApplet.jar"
+	 manifest="manifest/application.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
 	<include name="**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
-    <jar jarfile="JmolApplet1.jar" manifest="src/manifest1.txt">
-      <fileset dir="${applet.classes.dir}">
-	<exclude name="org/jmol/applet/*" />
-	<exclude name="JmolApplet*.class" />
-	<include name="**/*" />
-      </fileset>
-    </jar>
-
-    <jar jarfile="JmolApplet2.jar">
+    <jar jarfile="JmolApplet1.jar" manifest="manifest/applet1.txt" >
+      <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
-    <jar jarfile="JmolApplet0.jar" manifest="src/manifest0.txt" index="true">
+    <jar jarfile="JmolApplet2.jar" manifest="manifest/applet2.txt" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/jmol/applet/*" />
+	<include name="org/jmol/g3d/**" />
+	<include name="org/jmol/adapter/smarter/**" />
+      </fileset>
+    </jar>
+
+    <jar jarfile="JmolApplet3.jar" manifest="manifest/applet3.txt" >
+      <fileset dir="${applet.classes.dir}">
+	<include name="org/jmol/api/**" />
+	<include name="org/openscience/jmol/**" />
+	<include name="org/jmol/applet/**" />
+      </fileset>
+    </jar>
+
+    <jar jarfile="JmolApplet4.jar" manifest="manifest/applet4.txt" >
+      <fileset dir="${applet.classes.dir}">
+	<include name="org/jmol/viewer/**" />
+      </fileset>
+    </jar>
+
+    <jar jarfile="JmolApplet0.jar" manifest="manifest/applet0.txt" index="true" >
+      <fileset dir="${applet.classes.dir}">
+	<include name="org/jmol/appletwrapper/*" />
 	<include name="JmolApplet*.class" />
       </fileset>
-      <indexjars path="JmolApplet1.jar:JmolApplet2.jar" />
+      <indexjars>
+	<pathelement path="JmolApplet1.jar" />
+	<pathelement path="JmolApplet2.jar" />
+	<pathelement path="JmolApplet3.jar" />
+	<pathelement path="JmolApplet4.jar" />
+      </indexjars>
     </jar>
 
   </target>

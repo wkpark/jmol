@@ -8,5 +8,4 @@ packaging/rpm/dist
 *.bak
 *.deprecated
 *~
-Jmol.jar
-JmolApplet.jar
+*.jar

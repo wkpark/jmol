@@ -27,6 +27,11 @@
 
 var undefined; // for IE 5 ... wherein undefined is undefined
 
+var _jmolArchivePath = "JmolApplet0.jar";
+var _jmolLastJar = 4;
+for (var i = 1; i <= _jmolLastJar; ++i)
+  _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
+
 ////////////////////////////////////////////////////////////////
 // Basic Scripting infrastruture
 ////////////////////////////////////////////////////////////////
@@ -498,8 +503,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     t = "<applet name='jmolApplet" + nameSuffix + "' id='jmolApplet" + nameSuffix +
         "' " + appletCssText +
         " code='JmolApplet'" +
-        " archive='JmolApplet0.jar,JmolApplet1.jar,JmolApplet2.jar'\n" +
-        " codebase='" + codebase + "'\n" +
+        " archive='" + _jmolArchivePath + "' codebase='" + codebase + "'\n" +
         " width='" + sz[0] + "' height='" + sz[1] +
         "' mayscript='true'>\n" +
         "  <param name='progressbar' value='true' />\n" +

@@ -23,22 +23,22 @@
  *  02111-1307  USA.
  */
 
-/**
- * This class only exists so that people can declare
- * JmolApplet in applet tags without having to give a full package
- * specification
- *
- * see org.jmol.applet.JmolApplet
- *
- */
-public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
+package org.jmol.appletwrapper;
 
-  public JmolApplet() {
-    super("org.jmol.applet.Jmol", 4, preloadClasses);
-  }
+import java.awt.*;
+import java.awt.event.*;
+import netscape.javascript.JSObject;
 
-  private final static String[] preloadClasses = {
-    "javax.vecmath.Point3f",
-  };
+public interface WrappedApplet {
+  public void setAppletWrapper(AppletWrapper appletWrapper);
+  public void init();
+  public String getAppletInfo();
+  public void update(Graphics g);
+  public boolean handleEvent(Event e);
+
+  public void scriptButton(JSObject buttonWindow, String buttonName,
+                           String script, String buttonCallback);
+  public void script(String script);
+  public void loadInline(String strModel);
 
 }

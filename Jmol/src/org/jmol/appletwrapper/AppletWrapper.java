@@ -23,34 +23,43 @@
  *  02111-1307  USA.
  */
 
-package org.jmol.applet;
+package org.jmol.appletwrapper;
 
 import netscape.javascript.JSObject;
 
 import java.applet.*;
 import java.awt.*;
 
-public class Wrapper extends Applet {
+public class AppletWrapper extends Applet {
 
-  Jmol jmol;
+  String wrappedAppletClassName;
+  int preloadThreadCount;
+  String[] preloadClassNames;
+
+  WrappedApplet wrappedApplet;
   int percentage;
   long startTime;
 
-  static String appletInfo = "Jmol Applet -- www.jmol.org";
+  public AppletWrapper(String wrappedAppletClassName,
+                       int preloadThreadCount, String[] preloadClassNames) {
+    this.wrappedAppletClassName = wrappedAppletClassName;
+    this.preloadThreadCount = preloadThreadCount;
+    this.preloadClassNames = preloadClassNames;
+  }
+
   public String getAppletInfo() {
-    return appletInfo;
+    return (wrappedApplet != null ? wrappedApplet.getAppletInfo() : null);
   }
 
   public void init() {
     
     startTime = System.currentTimeMillis();
-    new Thread(new LoadJmolTask(this)).start();
-
+    new Thread(new WrappedAppletLoader(this, wrappedAppletClassName)).start();
   }
   
   public void update(Graphics g) {
-    if (jmol != null) {
-      jmol.update(g);
+    if (wrappedApplet != null) {
+      wrappedApplet.update(g);
       return;
     }
 
@@ -73,68 +82,26 @@ public class Wrapper extends Applet {
   }
 
   public boolean handleEvent(Event e) {
-    if (jmol != null)
-      return jmol.handleEvent(e);
+    if (wrappedApplet != null)
+      return wrappedApplet.handleEvent(e);
     return false;
   }
   
   public void scriptButton(JSObject buttonWindow, String buttonName,
                            String script, String buttonCallback) {
-    if (jmol != null)
-      jmol.scriptButton(buttonWindow, buttonName,
+    if (wrappedApplet != null)
+      wrappedApplet.scriptButton(buttonWindow, buttonName,
                               script, buttonCallback);
   }
   
   public void script(String script) {
-    if (jmol != null)
-      jmol.script(script);
+    if (wrappedApplet != null)
+      wrappedApplet.script(script);
   }
   
   public void loadInline(String strModel) {
-    if (jmol != null)
-      jmol.loadInline(strModel);
-  }
-}
-
-class LoadJmolTask implements Runnable {
-    
-  Wrapper wrapper;
-
-  LoadJmolTask(Wrapper wrapper) {
-    this.wrapper = wrapper;
-  }
-    
-  public void run() {
-    long startTime = System.currentTimeMillis();
-    System.out.println("LoadJmolTask.run()");
-    Thread tickerThread = new Thread(new TickerTask(wrapper));
-    tickerThread.start();
-    Jmol jmol = new Jmol(wrapper);
-    tickerThread.interrupt();
-    wrapper.jmol = jmol;
-    wrapper.repaint();
-    long loadTimeSeconds =
-      (System.currentTimeMillis() - startTime + 500) / 1000;
-    System.out.println("appletloadTime=" + loadTimeSeconds);
-  }
-}
-
-class TickerTask implements Runnable {
-  Wrapper wrapper;
-
-  TickerTask(Wrapper wrapper) {
-    this.wrapper = wrapper;
-  }
-
-  public void run() {
-    do {
-      try {
-        Thread.sleep(999);
-      } catch (InterruptedException ie) {
-        break;
-      }
-      wrapper.repaint();
-    } while (! Thread.interrupted());
+    if (wrappedApplet != null)
+      wrappedApplet.loadInline(strModel);
   }
 }
 

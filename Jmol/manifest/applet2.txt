@@ -1,0 +1,6 @@
+
+Name: org/jmol/g3d
+Sealed: true
+
+Name: org/jmol/adapter/smarter
+Sealed: true

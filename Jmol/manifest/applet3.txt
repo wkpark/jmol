@@ -1,0 +1,9 @@
+
+Name: org/jmol/api
+Sealed: true
+
+Name: org/openscience/jmol
+Sealed: true
+
+Name: org/jmol/applet
+Sealed: true

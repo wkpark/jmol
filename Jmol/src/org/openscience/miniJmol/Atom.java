@@ -1,18 +1,19 @@
+
 /*
  * Atom.java
- * 
+ *
  * Copyright (C) 1999  Bradley A. Smith
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -114,8 +115,8 @@ class Atom {
 	 * Adds an atom to this atom's bonded list.
 	 */
 	public void addBondedAtom(Atom toAtom) {
-		if (bondedAtoms==null) {
-			bondedAtoms=new Vector();
+		if (bondedAtoms == null) {
+			bondedAtoms = new Vector();
 		}
 		bondedAtoms.addElement(toAtom);
 	}
@@ -124,7 +125,8 @@ class Atom {
 	 * Returns the list of atoms to which this atom is bonded.
 	 */
 	public Enumeration getBondedAtoms() {
-		if (bondedAtoms==null) {
+
+		if (bondedAtoms == null) {
 			return new NoBondsEnumeration();
 		} else {
 			return bondedAtoms.elements();
@@ -135,7 +137,7 @@ class Atom {
 	 * Clears the bonded atoms list.
 	 */
 	public void clearBondedAtoms() {
-		if (bondedAtoms!=null) {
+		if (bondedAtoms != null) {
 			bondedAtoms.removeAllElements();
 		}
 	}
@@ -144,13 +146,19 @@ class Atom {
 	 * Returns true if the two atoms are within the distance fudge
 	 * factor of each other.
 	 */
-	public static boolean closeEnoughToBond(Atom atom1, Atom atom2, float distanceFudgeFactor) {
+	public static boolean closeEnoughToBond(Atom atom1, Atom atom2,
+			float distanceFudgeFactor) {
+
 		if (atom1 != atom2) {
-			float squaredDistanceBetweenAtoms = atom1.position.distanceSquared(atom2.position);
-			float bondingDistance = distanceFudgeFactor*((float) atom1.type.getCovalentRadius() + 
-														 (float) atom2.type.getCovalentRadius());
-			
-			if (squaredDistanceBetweenAtoms <= bondingDistance*bondingDistance) {
+			float squaredDistanceBetweenAtoms =
+				atom1.position.distanceSquared(atom2.position);
+			float bondingDistance =
+				distanceFudgeFactor
+					* ((float) atom1.type.getCovalentRadius()
+					   + (float) atom2.type.getCovalentRadius());
+
+			if (squaredDistanceBetweenAtoms
+					<= bondingDistance * bondingDistance) {
 				return true;
 			}
 		}
@@ -161,22 +169,27 @@ class Atom {
 	 * The atom's type.
 	 */
 	private BaseAtomType type;
+
 	/**
 	 * The number assigned to this atom.
 	 */
 	private int atomNumber;
+
 	/**
 	 * This atom's Cartesian coordinate.
 	 */
 	private Point3f position;
+
 	/**
 	 * This atom's screen coordinate.
 	 */
 	private Point3f screenPosition = new Point3f();
+
 	/**
 	 * A list of atoms to which this atom is bonded.
 	 */
-	private Vector bondedAtoms = null;//new Vector();
+	private Vector bondedAtoms = null;		//new Vector();
+
 	/**
 	 * A list of properties
 	 */
@@ -185,6 +198,7 @@ class Atom {
 }
 
 class NoBondsEnumeration implements Enumeration {
+
 	public boolean hasMoreElements() {
 		return false;
 	}

@@ -1,3 +1,4 @@
+
 /*
  * @(#)XYZReader.java    1.0 98/08/27
  *
@@ -5,7 +6,7 @@
  *
  * J. Daniel Gezelter grants you ("Licensee") a non-exclusive, royalty
  * free, license to use, modify and redistribute this software in
- * source and binary code form, provided that the following conditions 
+ * source and binary code form, provided that the following conditions
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
@@ -34,7 +35,7 @@
  * communications; or in the design, construction, operation or
  * maintenance of any nuclear facility. Licensee represents and
  * warrants that it will not use or redistribute the Software for such
- * purposes.  
+ * purposes.
  */
 
 package org.openscience.miniJmol;
@@ -65,11 +66,13 @@ public class XYZReader implements ChemFileReader {
 	/**
 	 * Read the XYZ file.
 	 */
-    public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled) throws IOException {
-		int fr=0;
+	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
+			throws IOException {
+
+		int fr = 0;
 		ChemFile file = new ChemFile(bondsEnabled);
 
-        while (true) {
+		while (true) {
 			fr++;
 			ChemFrame cf = readFrame(putStatus, fr, bondsEnabled);
 			if (cf == null) {
@@ -78,46 +81,53 @@ public class XYZReader implements ChemFileReader {
 			file.addFrame(cf);
 			Enumeration propIter = cf.getFrameProps().elements();
 			while (propIter.hasMoreElements()) {
-				file.addProperty((String)propIter.nextElement());
+				file.addProperty((String) propIter.nextElement());
 			}
-        }
+		}
 		return file;
-    }
+	}
 
-    /**
-     * Parses the next section of the XYZ file into a ChemFrame.
-     */
-    public ChemFrame readFrame(StatusDisplay putStatus, int frameNum, boolean bondsEnabled) throws IOException {
-        int na = 0;
-        String info = "";
-		StringBuffer stat=new StringBuffer();
-		String statBase=null;
+	/**
+	 * Parses the next section of the XYZ file into a ChemFrame.
+	 */
+	public ChemFrame readFrame(
+			StatusDisplay putStatus, int frameNum, boolean bondsEnabled)
+				throws IOException {
+
+		int na = 0;
+		String info = "";
+		StringBuffer stat = new StringBuffer();
+		String statBase = null;
 
 		String l = input.readLine();
-		if (l == null) return null;
+		if (l == null) {
+			return null;
+		}
 		StringTokenizer st = new StringTokenizer(l, "\t ,;");
 		String sn = st.nextToken();
 		na = Integer.parseInt(sn);
 		info = input.readLine();
-		if (putStatus!=null) {
+		if (putStatus != null) {
 			stat.append("Reading Frame ");
 			stat.append(frameNum);
 			stat.append(": ");
-			statBase=stat.toString();
+			statBase = stat.toString();
 			stat.append("0 %");
 			putStatus.setStatusMessage(stat.toString());
 		}
-		
+
 		// OK, we got enough to start building a ChemFrame:
 		ChemFrame cf = new ChemFrame(na, bondsEnabled);
 		cf.setInfo(info);
-		
-		String s; // temporary variable used to store data as we read it
-		
+
+		String s;		// temporary variable used to store data as we read it
+
 		for (int i = 0; i < na; i++) {
 			s = input.readLine();
-			if (s == null) break;
-			if (!s.startsWith("#")) {          
+			if (s == null) {
+				break;
+			}
+			if (!s.startsWith("#")) {
 				double x = 0.0f, y = 0.0f, z = 0.0f, c = 0.0f;
 				double vect[] = new double[3];
 				st = new StringTokenizer(s, "\t ,;");
@@ -125,39 +135,43 @@ public class XYZReader implements ChemFileReader {
 				boolean readvect = false;
 				int nt = st.countTokens();
 				switch (nt) {
-				case 1:
-				case 2:
-				case 3:
-					throw new IOException("XYZFile.readFrame(): Not enough fields on line.");
-					
-				case 5: // atype, x, y, z, charge                    
+				case 1 :
+				case 2 :
+				case 3 :
+					throw new IOException(
+							"XYZFile.readFrame(): Not enough fields on line.");
+
+				case 5 :	// atype, x, y, z, charge                    
 					readcharge = true;
 					break;
-				case 7: // atype, x, y, z, vx, vy, vz
+
+				case 7 :	// atype, x, y, z, vx, vy, vz
 					readvect = true;
 					break;
-				case 8: // atype, x, y, z, charge, vx, vy, vz
+
+				case 8 :	// atype, x, y, z, charge, vx, vy, vz
 					readcharge = true;
 					readvect = true;
 					break;
-				default: // 4, 6, or > 8  fields, just read atype, x, y, z
+
+				default :		// 4, 6, or > 8  fields, just read atype, x, y, z
 					break;
 				}
-				
-				String aname = st.nextToken();                    
+
+				String aname = st.nextToken();
 				String sx = st.nextToken();
 				String sy = st.nextToken();
 				String sz = st.nextToken();
 				x = FortranFormat.atof(sx);
 				y = FortranFormat.atof(sy);
 				z = FortranFormat.atof(sz);
-				
+
 				Vector props = new Vector();
 				if (readcharge) {
 					String sc = st.nextToken();
 					c = FortranFormat.atof(sc);
 				}
-				
+
 				if (readvect) {
 					String svx = st.nextToken();
 					String svy = st.nextToken();
@@ -166,24 +180,18 @@ public class XYZReader implements ChemFileReader {
 					vect[1] = FortranFormat.atof(svy);
 					vect[2] = FortranFormat.atof(svz);
 				}
-				
+
 				if (readcharge || readvect) {
-					cf.addAtom(aname, 
-							   (float) x,
-							   (float) y, 
-							   (float) z, 
-							   props);
-				} else 
-					cf.addAtom(aname, 
-							   (float) x, 
-							   (float) y, 
-							   (float) z);
+					cf.addAtom(aname, (float) x, (float) y, (float) z, props);
+				} else {
+					cf.addAtom(aname, (float) x, (float) y, (float) z);
+				}
 			}
-			if (putStatus!=null) {
+			if (putStatus != null) {
 				stat.setLength(0);
 				stat.append(statBase);
-				if (na>1) {
-					stat.append((int) (100*i/(na-1)));
+				if (na > 1) {
+					stat.append((int) (100 * i / (na - 1)));
 				} else {
 					stat.append(100);
 				}
@@ -192,7 +200,7 @@ public class XYZReader implements ChemFileReader {
 			}
 		}
 		return cf;
-    }
+	}
 
-    private BufferedReader input;
+	private BufferedReader input;
 }

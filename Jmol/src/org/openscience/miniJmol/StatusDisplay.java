@@ -1,6 +1,7 @@
+
 /*
-	This interface allows a function to produce a status message to an
-	unknown component.
+		This interface allows a function to produce a status message to an
+		unknown component.
 */
 
 package org.openscience.miniJmol;

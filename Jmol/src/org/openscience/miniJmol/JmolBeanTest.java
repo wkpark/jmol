@@ -1,3 +1,4 @@
+
 /*
  * @(#)JmolXMLComponentTester.java    1.0 3/9/99
  *
@@ -6,7 +7,7 @@
  *
  * Thomas James Grey grants you ("Licensee") a non-exclusive, royalty
  * free, license to use, modify and redistribute this software in
- * source and binary code form, provided that the following conditions 
+ * source and binary code form, provided that the following conditions
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
@@ -35,7 +36,7 @@
  * communications; or in the design, construction, operation or
  * maintenance of any nuclear facility. Licensee represents and
  * warrants that it will not use or redistribute the Software for such
- * purposes.  
+ * purposes.
  */
 package org.openscience.miniJmol;
 
@@ -46,54 +47,68 @@ import java.awt.event.WindowEvent;
 
 public class JmolBeanTest {
 
-      static public void main(String[] args){
-          JFrame myFrame = new JFrame();
-          JmolSimpleBean myXMLThing1 = new JmolSimpleBean();
-          JmolSimpleBean myXMLThing2 = new JmolSimpleBean();
-          JPanel p2 = new JPanel(new BorderLayout());
-          p2.add(myXMLThing2,"Center");
-          p2.add(javax.swing.Box.createVerticalStrut(400),"East");
-          p2.add(javax.swing.Box.createHorizontalStrut(400),"North");
-          myFrame.getContentPane().setLayout(new BorderLayout());
-          myFrame.getContentPane().add(myXMLThing1,"Center");
-          myFrame.getContentPane().add(javax.swing.Box.createHorizontalStrut(400),"North");
-          myFrame.getContentPane().add(p2,"East");
-          try{
-			  java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");
-			  ChemFileReader cfr1 = ReaderFactory.createReader(r1);
-			  myXMLThing1.setAtomPropertiesFromFile("AtomTypes");
-			  myXMLThing1.setModel(cfr1.read(new NoStatus(), true));
+	static public void main(String[] args) {
 
-			  java.io.Reader r2 = new java.io.FileReader("methanol1.cml");
-			  ChemFileReader cfr2 = ReaderFactory.createReader(r2);
-			  myXMLThing2.setAtomPropertiesFromFile("AtomTypes");
-			  myXMLThing2.setModel(cfr2.read(new NoStatus(), true));
-          }catch(java.io.FileNotFoundException e){
-            System.out.println("File not found: "+e);
-          }catch(java.io.IOException e){
-            System.out.println("IOException: "+e);
-          }
-          myFrame.pack();
-          myFrame.show();
-      }
+		JFrame myFrame = new JFrame();
+		JmolSimpleBean myXMLThing1 = new JmolSimpleBean();
+		JmolSimpleBean myXMLThing2 = new JmolSimpleBean();
+		JPanel p2 = new JPanel(new BorderLayout());
+		p2.add(myXMLThing2, "Center");
+		p2.add(javax.swing.Box.createVerticalStrut(400), "East");
+		p2.add(javax.swing.Box.createHorizontalStrut(400), "North");
+		myFrame.getContentPane().setLayout(new BorderLayout());
+		myFrame.getContentPane().add(myXMLThing1, "Center");
+		myFrame.getContentPane()
+				.add(javax.swing.Box.createHorizontalStrut(400), "North");
+		myFrame.getContentPane().add(p2, "East");
+		try {
+			java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");
+			ChemFileReader cfr1 = ReaderFactory.createReader(r1);
+			myXMLThing1.setAtomPropertiesFromFile("AtomTypes");
+			myXMLThing1.setModel(cfr1.read(new NoStatus(), true));
+
+			java.io.Reader r2 = new java.io.FileReader("methanol1.cml");
+			ChemFileReader cfr2 = ReaderFactory.createReader(r2);
+			myXMLThing2.setAtomPropertiesFromFile("AtomTypes");
+			myXMLThing2.setModel(cfr2.read(new NoStatus(), true));
+		} catch (java.io.FileNotFoundException e) {
+			System.out.println("File not found: " + e);
+		} catch (java.io.IOException e) {
+			System.out.println("IOException: " + e);
+		}
+		myFrame.pack();
+		myFrame.show();
+	}
 
 
-      class Windowa implements java.awt.event.WindowListener{
-        public void windowClosing(java.awt.event.WindowEvent e){
-          System.exit(0);
-        }
+	class Windowa implements java.awt.event.WindowListener {
 
-        public void windowOpened(WindowEvent e){}
-        public void windowClosed(WindowEvent e){ }
-        public void windowIconified(WindowEvent e) {}
-        public void windowDeiconified(WindowEvent e) {}
-        public void windowActivated(WindowEvent e){} 
-        public void windowDeactivated(WindowEvent e){} 
-      }
+		public void windowClosing(java.awt.event.WindowEvent e) {
+			System.exit(0);
+		}
 
-      public java.awt.Dimension getMinimumSize(){
-        return new java.awt.Dimension(200,200);
-      }
+		public void windowOpened(WindowEvent e) {
+		}
+
+		public void windowClosed(WindowEvent e) {
+		}
+
+		public void windowIconified(WindowEvent e) {
+		}
+
+		public void windowDeiconified(WindowEvent e) {
+		}
+
+		public void windowActivated(WindowEvent e) {
+		}
+
+		public void windowDeactivated(WindowEvent e) {
+		}
+	}
+
+	public java.awt.Dimension getMinimumSize() {
+		return new java.awt.Dimension(200, 200);
+	}
 }
 
 class NoStatus implements StatusDisplay {

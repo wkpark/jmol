@@ -1,3 +1,4 @@
+
 /*
  * @(#)CMLReader.java    0.2 99/08/15
  *
@@ -25,26 +26,30 @@ public class CMLReader implements ChemFileReader {
 	 *
 	 * @param input source of CML data
 	 */
-    public CMLReader(Reader input) {
+	public CMLReader(Reader input) {
 		this.input = input;
 	}
 
 	/**
 	 * Read the CML data.
 	 */
-	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled) throws IOException {
+	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
+			throws IOException {
+
 		try {
 			InputSource source = new InputSource(input);
-			Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
+			Parser parser =
+				ParserFactory.makeParser("com.microstar.xml.SAXDriver");
 			EntityResolver resolver = new DTDResolver();
 			DocumentHandler handler = new CMLHandler(bondsEnabled);
 			parser.setEntityResolver(resolver);
 			parser.setDocumentHandler(handler);
 			parser.parse(source);
 			ChemFile file = new ChemFile(bondsEnabled);
-			Enumeration framesIter = ((CMLHandler)handler).returnChemFrames().elements();
+			Enumeration framesIter =
+				((CMLHandler) handler).returnChemFrames().elements();
 			while (framesIter.hasMoreElements()) {
-					file.addFrame((ChemFrame)framesIter.nextElement());
+				file.addFrame((ChemFrame) framesIter.nextElement());
 			}
 			return file;
 		} catch (ClassNotFoundException ex) {
@@ -56,7 +61,7 @@ public class CMLReader implements ChemFileReader {
 		} catch (IllegalAccessException ex) {
 			throw new IOException("CMLReader exception: " + ex);
 		}
-    }
+	}
 
 	/**
 	 * The source for CML data.

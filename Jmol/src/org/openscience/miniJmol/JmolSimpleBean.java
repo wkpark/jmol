@@ -277,7 +277,7 @@ public class JmolSimpleBean extends java.awt.Panel
 	 * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
 	 */
 	public void setAtomsShown(String value) {
-		display.showAtoms(getBooleanFromString(value));
+		settings.setShowAtoms(getBooleanFromString(value));
 	}
 
 	/**
@@ -285,14 +285,14 @@ public class JmolSimpleBean extends java.awt.Panel
 	 * @param value if true then atoms are displayed, if false then they aren't.
 	 */
 	public void setAtomsShown(boolean value) {
-		display.showAtoms(value);
+		settings.setShowAtoms(value);
 	}
 
 	/**
 	 * Are Atoms to being shown or hidden?
 	 */
 	public boolean getAtomsShown() {
-		return display.getShowAtoms();
+		return settings.getShowAtoms();
 	}
 
 	/**

@@ -102,13 +102,11 @@ class Atom {
 	}
 
 	/**
-	 * Transforms the atom's position.
-	 *
-	 * @returns the z coordinate of transformed position.
+	 * Sets the atom's screen position by transforming the atom's position by
+     * the given matrix.
 	 */
-	public float transform(Matrix3D transformationMatrix) {
+	public void transform(Matrix3D transformationMatrix) {
 		transformationMatrix.transform(position, screenPosition);
-		return screenPosition.z;
 	}
 
 	/**

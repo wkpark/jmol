@@ -59,6 +59,7 @@ public class DisplayPanel extends Canvas
 
 	private String message = "Waiting for structure...";
 	private DisplaySettings settings;
+    private ChemFrameRenderer chemFrameRenderer = new ChemFrameRenderer();
 	private boolean perspective = false;
 	private float fieldOfView;
 	private boolean painted = false;
@@ -709,7 +710,8 @@ public class DisplayPanel extends Canvas
 				g.fillRect(0, 0, drawWidth, drawHeight);
 				g.setColor(fg);
 
-				md.paint(g, settings);
+                chemFrameRenderer.paint(g, md, settings);
+				//md.paint(g, settings);
 				if (rubberband) {
 					g.setColor(fg);
 					g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
@@ -783,22 +785,6 @@ public class DisplayPanel extends Canvas
 		settings.setShowBonds(doWe);
 		painted = false;
 		repaint();
-	}
-
-	public void showAtoms(boolean doWe) {
-
-		for (int i = 0; i < nframes; i++) {
-			cf.getFrame(i).setShowAtoms(doWe);
-		}
-		settings.setDrawBondsToAtomCenters(!doWe);
-		if (painted) {
-			painted = false;
-		}
-		repaint();
-	}
-
-	public boolean getShowAtoms() {
-		return md.getShowAtoms();
 	}
 
 	public void setWireframeRotation(boolean on) {

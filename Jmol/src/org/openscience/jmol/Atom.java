@@ -22,6 +22,7 @@ package org.openscience.jmol;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Vector;
+import javax.vecmath.Point3f;
 
 public class Atom {
   
@@ -62,6 +63,20 @@ public class Atom {
   }
   
   /**
+   * Returns the atom's position.
+   */
+  public Point3f getPosition() {
+    return new Point3f(position);
+  }
+  
+  /**
+   * Sets the atom's position.
+   */
+  public void setPosition(Point3f position) {
+    this.position.set(position);
+  }
+  
+  /**
    * Draws the atom on a particular graphics context
    *
    * @param gc the Graphics context
@@ -80,5 +95,9 @@ public class Atom {
   
   private AtomType atomType;
   
+  /**
+   * Position in world space.
+   */
+  private Point3f position = new Point3f();
 }
 

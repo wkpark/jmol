@@ -413,6 +413,7 @@ class ConsoleDocument extends DefaultStyledDocument {
   // or in the 'command line' using the proper font, and the newline is processed.
   public void insertString(int offs, String str, AttributeSet a)
     throws BadLocationException {
+//    System.out.println("insertString("+offs+","+str+",attr)");
     int ichNewline = str.indexOf('\n');
     if (ichNewline > 0)
       str = str.substring(0, ichNewline);
@@ -421,7 +422,7 @@ class ConsoleDocument extends DefaultStyledDocument {
         offs = getLength();
       }
       super.insertString(offs, str, attUserInput);
-//      consoleTextPane.setCaretPosition(getLength());
+      consoleTextPane.setCaretPosition(offs+str.length());
     }
     if (ichNewline >= 0) {
       consoleTextPane.enterPressed();
@@ -441,6 +442,7 @@ class ConsoleDocument extends DefaultStyledDocument {
 
   public void remove(int offs, int len)
     throws BadLocationException {
+//    System.out.println("remove("+offs+","+len+")");
     if (offs < offsetAfterPrompt) {
       len -= offsetAfterPrompt - offs;
       if (len <= 0)
@@ -448,11 +450,12 @@ class ConsoleDocument extends DefaultStyledDocument {
       offs = offsetAfterPrompt;
     }
     super.remove(offs, len);
-    consoleTextPane.setCaretPosition(offs);
+//    consoleTextPane.setCaretPosition(offs);
   }
 
   public void replace(int offs, int length, String str, AttributeSet attrs)
     throws BadLocationException {
+//    System.out.println("replace("+offs+","+length+","+str+",attr)");
     if (offs < offsetAfterPrompt) {
       if (offs + length < offsetAfterPrompt) {
         offs = getLength();

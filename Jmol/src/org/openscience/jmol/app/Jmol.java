@@ -935,6 +935,7 @@ public class Jmol extends JPanel {
 
   private static final String newwinAction = "newwin";
   private static final String openAction = "open";
+  private static final String openurlAction = "openurl";
   private static final String newAction = "new";
   private static final String saveasAction = "saveas";
   private static final String exportActionProperty = "export";
@@ -970,8 +971,10 @@ public class Jmol extends JPanel {
    * Actions defined by the Jmol class
    */
   private Action[] defaultActions = {
-    new NewAction(), new NewwinAction(), new OpenAction(), saveAction, printAction, exportAction,
-    new CloseAction(), new ExitAction(), new AboutAction(), new WhatsNewAction(),
+    new NewAction(), new NewwinAction(), new OpenAction(),
+    new OpenUrlAction(), saveAction, printAction, exportAction,
+    new CloseAction(), new ExitAction(), new AboutAction(),
+    new WhatsNewAction(),
     new UguideAction(), new AtompropsAction(), new ConsoleAction(),
     chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction,
     new ScriptAction(), viewMeasurementTableAction
@@ -1109,6 +1112,29 @@ public class Jmol extends JPanel {
         viewer.openFile(file.getAbsolutePath());
         return;
       }
+    }
+  }
+
+  class OpenUrlAction extends NewAction {
+
+    String title;
+    String prompt;
+
+    OpenUrlAction() {
+      super(openurlAction);
+      title = JmolResourceHandler.getInstance().getString("OpenUrl.title");
+      prompt = JmolResourceHandler.getInstance().getString("OpenUrl.prompt");
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      String url = JOptionPane.showInputDialog(frame, prompt, title, 
+                                               JOptionPane.PLAIN_MESSAGE);
+      if (url != null) {
+        if (url.indexOf("://") == -1)
+          url = "http://" + url;
+        viewer.openFile(url);
+      }
+      return;
     }
   }
 

@@ -543,19 +543,17 @@ public class JmolFrame {
     }
 
     public boolean hasNext() {
-      for ( ; iBondShape < atomShapeCount; ++iBondShape) {
+      for ( ; iBondShape < bondShapeCount; ++iBondShape) {
         BondShape bondShape = bondShapes[iBondShape];
         if ((bondShape.order & bondType) == 0)
           continue;
-        int atomIndex1 = bondShape.atomShape1.getAtomIndex();
-        int atomIndex2 = bondShape.atomShape2.getAtomIndex();
-        if (bondSelectionModeOr) {
-          if (bsSelected.get(atomIndex1) || bsSelected.get(atomIndex2))
-            return true;
-        } else {
-          if (bsSelected.get(atomIndex1) && bsSelected.get(atomIndex2))
-            return true;
-        }
+        boolean isSelected1 =
+          bsSelected.get(bondShape.atomShape1.getAtomIndex());
+        boolean isSelected2 =
+          bsSelected.get(bondShape.atomShape2.getAtomIndex());
+        if ((!bondSelectionModeOr & isSelected1 & isSelected2) ||
+            (bondSelectionModeOr & (isSelected1 | isSelected2)))
+          return true;
       }
       return false;
     }

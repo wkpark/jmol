@@ -69,6 +69,8 @@ class ModelManager {
         if (modelSetName.length() == 0)
           modelSetName = null;
       }
+      if (modelSetName == null)
+        modelSetName = fileName;
       modelFileHeader = adapter.getFileHeader(clientFile);
       frame = new Frame(viewer, adapter, clientFile);
       haveFile = true;

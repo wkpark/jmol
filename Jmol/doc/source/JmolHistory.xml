@@ -12,6 +12,7 @@
 <contributor id="MM"><name>Matthew Meinek</name><email>mmeineke@nd.edu</email></contributor>
 <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
 <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
+<contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
 </contributors>
 
 <changes version="jmol-4">
@@ -29,6 +30,9 @@
   <change contributor="EW">
     Atoms can now also be colored by their partial atomic charge.
     Implements feature request #552476.
+  </change>
+  <change contributor="FD">
+    Addition of a ABINIT reader.
   </change>
 </changes>
 

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2001 The Jmol Development Team
  *
@@ -60,6 +59,20 @@ public abstract class ReaderFactory {
       if ((line != null) && line.startsWith("<?xml")) {
         return new CMLReader(buffer);
       }
+
+      // Abinit
+      // We test the presence of an essential keywords,
+      // for instance 'natom'.
+      buffer.mark(1024*1024);
+      while ((buffer.ready()) && (line != null)) {
+         line = buffer.readLine();
+         if (line.indexOf("natom") >= 0)
+             {
+                 buffer.reset();
+                 return new ABINITReader(buffer);
+             }
+      }
+      buffer.reset();
 
       buffer.mark(1024);
       line = buffer.readLine();

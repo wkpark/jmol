@@ -31,7 +31,7 @@ public class NucleicMonomer extends Monomer {
 
   // negative values are optional
   final static byte[] interestingNucleicAtomIDs = {
-    JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,     // 0 P  the lead, phosphorus
+    -JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 0 P  the lead, phosphorus
     JmolConstants.ATOMID_NUCLEIC_WING,           // 1 the wing man, c6
 
     -JmolConstants.ATOMID_RNA_O2PRIME, // 2  O2' for RNA
@@ -56,6 +56,8 @@ public class NucleicMonomer extends Monomer {
     -JmolConstants.ATOMID_N6,  // 17 N6   A
     -JmolConstants.ATOMID_N2,  // 18 N2   G
     -JmolConstants.ATOMID_S4,  // 19 S4   tU
+
+    -JmolConstants.ATOMID_H5T_TERMINUS, // 20 H5T terminus
   };
 
   static Monomer
@@ -67,7 +69,7 @@ public class NucleicMonomer extends Monomer {
                                     specialAtomIndexes,
                                     interestingNucleicAtomIDs);
 
-    if (offsets == null)
+    if (offsets == null || (offsets[0] == -1 && offsets[20] == -1))
       return null;
     NucleicMonomer nucleicMonomer =
       new NucleicMonomer(chain, group3, seqcode,
@@ -82,6 +84,8 @@ public class NucleicMonomer extends Monomer {
                  byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
+    if (offsets[0] == -1)
+      offsets[0] = offsets[20];
     this.hasRnaO2Prime = offsets[2] != -1;
     this.isPyrimidine = offsets[9] != -1;
     this.isPurine =

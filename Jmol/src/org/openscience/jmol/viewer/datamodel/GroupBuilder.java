@@ -105,18 +105,21 @@ final class GroupBuilder {
   Group distinguishAndAllocateGroup() {
     Atom[] atoms = frameBuilder.atoms;
     Group group = null;
-    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
+    int bits = distinguishingBits;
+    if ((bits & JmolConstants.ATOMID_PROTEIN_MASK) ==
         JmolConstants.ATOMID_PROTEIN_MASK) {
       group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
                                                specialAtomIndexes);
-    } else if ((distinguishingBits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
+    } else if ((bits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
                JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
       group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
                                                specialAtomIndexes);
-    } else if ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
-               JmolConstants.ATOMID_NUCLEIC_MASK) {
+    } else if (((bits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
+                JmolConstants.ATOMID_NUCLEIC_MASK) ||
+               ((bits & JmolConstants.ATOMID_NUCLEIC_H5T_MASK) ==
+                JmolConstants.ATOMID_NUCLEIC_H5T_MASK)) {
       group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
                                                  firstAtomIndex, lastAtomIndex,
                                                  specialAtomIndexes);

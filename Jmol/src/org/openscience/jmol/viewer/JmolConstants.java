@@ -1532,31 +1532,33 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     
     // protein backbone
     //
-    "N",   //  1	//  1 - amino nitrogen
-    "CA",  //  2	//  3 - alpha carbon
-    "C",   //  3	//  4 - carbonyl carbon
-    "O",   //  4	//  5 - carbonyl oxygen
+    "N",   //  1 - amino nitrogen
+    "CA",  //  2 - alpha carbon
+    "C",   //  3 - carbonyl carbon
+    "O",   //  4 - carbonyl oxygen
 
     // nucleic acid backbone phosphate
     //
-    "P",   //  5	// 12 - phosphate phosphorus
-    "O1P", //  6 // 13 - first equivalent oxygen on phosphorus of phosphate
-    "O2P", //  7 // 14 - second equivalent oxygen on phosphorus of phosphate
-    
+    "P",   //  5 - phosphate phosphorus
+    "O1P", //  6 - first equivalent oxygen on phosphorus of phosphate
+    "O2P", //  7 - second equivalent oxygen on phosphorus of phosphate
     
     // nucleic acid backbone sugar
     //
-    "O5*", //  8	// 15 - sugar 5' oxygen
-    "C5*", //  9	// 16 - sugar 5' carbon
-    "C4*", // 10	// 17 - sugar ring 4' carbon
-    "O4*", // 11	// 18 - sugar ring 4' oxygen
-    "C3*", // 12	// 19 - sugar ring 3' carbon
-    "O3*", // 13	// 20 - sugar 3' oxygen
-    "C2*", // 14	// 21 - sugar ring 2' carbon
-    "C1*", // 15	// 22 - sugar ring 1' carbon
+    "O5*", //  8 - sugar 5' oxygen
+    "C5*", //  9 - sugar 5' carbon
+    "C4*", // 10 - sugar ring 4' carbon
+    "O4*", // 11 - sugar ring 4' oxygen
+    "C3*", // 12 - sugar ring 3' carbon
+    "O3*", // 13 - sugar 3' oxygen
+    "C2*", // 14 - sugar ring 2' carbon
+    "C1*", // 15 - sugar ring 1' carbon
+
+    // Terminal nuclic aced
+    "H5T", // 16 - 5' terminus hydrogen which replaces P + O1P + O2P
 
     // reserved for future expansion ... lipids & carbohydrates
-    null, null, null, null, // 16 - 19
+    null, null, null, // 17 - 19
     null, null, null, null, // 20 - 23
     null, null, null, null, // 24 - 27
     null, null, null, null, // 28 - 31
@@ -1595,16 +1597,18 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // nucleic acid backbone hydrogens
     //
-    "1H5*", // 51 	// 37 - first  equivalent H on sugar 5' carbon
-    "2H5*", // 52	// 38 - second  equivalent H on sugar 5' carbon 
-    "H4*",  // 53	// 39 - H on sugar ring 4' carbon
-    "H3*",  // 54	// 40 - H on sugar ring 3' carbon
-    "1H2*", // 55	// 41 - first equivalent H on sugar ring 2' carbon
-    "2H2*", // 56	// 42 - second equivalent H on sugar ring 2' carbon
-    "2HO*", // 57	// 43 - H on sugar 2' oxygen, unique to RNA 
-    "H1*",  // 58	// 44 - H on sugar ring 1' carbon 
-    "H5T",  // 59	// 45 - 5' terminus 
-    "H3T",  // 60	// 46 - 3' terminus
+    "1H5*", // 51 - first  equivalent H on sugar 5' carbon
+    "2H5*", // 52 - second  equivalent H on sugar 5' carbon 
+    "H4*",  // 53 - H on sugar ring 4' carbon
+    "H3*",  // 54 - H on sugar ring 3' carbon
+    "1H2*", // 55 - first equivalent H on sugar ring 2' carbon
+    "2H2*", // 56 - second equivalent H on sugar ring 2' carbon
+    "2HO*", // 57 - H on sugar 2' oxygen, unique to RNA 
+    "H1*",  // 58 - H on sugar ring 1' carbon 
+    //
+    "H3T",  // 59 - 3' terminus hydrogen
+    //
+    null,   // 60
     null,   // 61
     null,   // 62
     null,   // 63
@@ -1662,6 +1666,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_CARBONYL_CARBON = 3;
   public final static byte ATOMID_CARBONYL_OXYGEN = 4;
   public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 5;
+  public final static byte ATOMID_H5T_TERMINUS = 16;
   public final static byte ATOMID_TERMINATING_OXT = 32;
   public final static byte ATOMID_RNA_O2PRIME = 50;
   public final static byte ATOMID_N1 = 64;
@@ -1691,6 +1696,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_ALPHA_ONLY_MASK = 1 << 3;
   // this is entries 5 through through 15 ... 11 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x07FF << 5;
+  public final static int ATOMID_NUCLEIC_H5T_MASK = 0x01FF << 8;
 
   // this is a problem ... should O2' be part of the distingushing bits?
   // RNA also includes the O2'

@@ -44,6 +44,12 @@ public class RepaintManager {
     frameRenderer = new FrameRenderer(viewer);
   }
 
+  public int displayModel = -1;
+  public void setDisplayModel(int model) {
+    System.out.println("display model=" + model);
+    this.displayModel = model;
+  }
+
   public boolean wireframeRotating = false;
   public void setWireframeRotating(boolean wireframeRotating) {
     this.wireframeRotating = wireframeRotating;

@@ -144,12 +144,6 @@ public class ModelManager {
     }
   }
 
-  public int displayModel = -1;
-  public void setDisplayModel(int model) {
-    System.out.println("display model=" + model);
-    this.displayModel = model;
-  }
-
   public int getAtomCount() {
     return atomCount;
   }

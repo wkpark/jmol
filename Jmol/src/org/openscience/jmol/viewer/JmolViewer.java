@@ -1012,10 +1012,6 @@ final public class JmolViewer {
     return modelManager.getCurrentFrameNumber();
   }
 
-  public void setDisplayModel(int model) {
-    modelManager.setDisplayModel(model);
-  }
-
   public int getAtomCount() {
     return modelManager.getAtomCount();
   }
@@ -1154,6 +1150,14 @@ final public class JmolViewer {
   /****************************************************************
    * delegated to RepaintManager
    ****************************************************************/
+
+  public void setDisplayModel(int model) {
+    repaintManager.setDisplayModel(model);
+  }
+
+  public int getDisplayModel() {
+    return repaintManager.displayModel;
+  }
 
   public FrameRenderer getFrameRenderer() {
     return repaintManager.frameRenderer;

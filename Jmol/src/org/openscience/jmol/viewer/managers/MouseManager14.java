@@ -39,11 +39,12 @@ public class MouseManager14 extends MouseManager11
     component.addMouseWheelListener(this);
   }
   
-  final static int wheelClickPercentage = 10;
+  final static int wheelClickPercentage = 25;
   
   public void mouseWheelMoved(MouseWheelEvent e) {
     int rotation = e.getWheelRotation();
     int modifiers = e.getModifiers();
-    viewer.zoomByPercent(rotation * wheelClickPercentage);
+    if ((modifiers & BUTTON_MODIFIER_MASK) == 0)
+      viewer.zoomByPercent(rotation * wheelClickPercentage);
   }
 }

@@ -1666,7 +1666,7 @@ public class Eval implements Runnable {
   void zoom() throws ScriptException {
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
-      if (percent < 10 || percent > 1000)
+      if (percent < 5 || percent > 2000)
         numberOutOfRange();
       viewer.zoomToPercent(percent);
       return;

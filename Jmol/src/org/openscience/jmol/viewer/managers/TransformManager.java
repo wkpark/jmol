@@ -170,10 +170,15 @@ public class TransformManager {
   public int zoomPercentSetting = 100;
 
   public void zoomBy(int pixels) {
-    int percent = pixels * zoomPercentSetting / minScreenDimension;
-    if (percent == 0)
-      percent = (pixels < 0) ? -1 : 1;
-    zoomByPercent(percent);
+    if (pixels > 20)
+      pixels = 20;
+    else if (pixels < -20)
+      pixels = -20;
+    int deltaPercent = pixels * zoomPercentSetting / 50;
+    if (deltaPercent == 0)
+      deltaPercent = (pixels > 0 ? 1 : (deltaPercent < 0 ? -1 : 0));
+    int percent = deltaPercent + zoomPercentSetting;
+    zoomToPercent(percent);
   }
 
   public int getZoomPercent() {
@@ -200,8 +205,8 @@ public class TransformManager {
   private void calcZoom() {
     if (zoomPercentSetting < 5)
       zoomPercentSetting = 5;
-    if (zoomPercentSetting > 1000)
-      zoomPercentSetting = 1000;
+    if (zoomPercentSetting > 2000)
+      zoomPercentSetting = 2000;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom *
       zoomPercent / 100;

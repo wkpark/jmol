@@ -106,10 +106,12 @@ public abstract class MouseManager {
   final static int MIDDLE_RIGHT = MIDDLE | RIGHT;
   final static int CTRL_SHIFT = CTRL | SHIFT;
   final static int CTRL_LEFT = CTRL | LEFT;
+  final static int CTRL_RIGHT = CTRL | RIGHT;
+  final static int CTRL_MIDDLE = CTRL | MIDDLE;
+  final static int CTRL_ALT_LEFT = CTRL | ALT | LEFT;
   final static int ALT_LEFT = ALT | LEFT;
   final static int SHIFT_LEFT = SHIFT | LEFT;
   final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
-  final static int CTRL_RIGHT = CTRL | RIGHT;
   final static int SHIFT_MIDDLE = SHIFT | MIDDLE;
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
@@ -269,6 +271,11 @@ public abstract class MouseManager {
       break;
     case ALT_LEFT:
     case MIDDLE:
+      viewer.zoomBy(deltaY);
+      viewer.rotateZBy(-deltaX);
+      break;
+    case CTRL_ALT_LEFT:
+    case CTRL_MIDDLE:
       viewer.translateXYBy(deltaX, deltaY);
       break;
     }

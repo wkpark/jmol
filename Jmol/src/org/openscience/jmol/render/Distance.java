@@ -17,12 +17,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.render;
+import org.openscience.jmol.*;
 
 import freeware.PrintfFormat;
 import java.awt.Font;
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
@@ -30,7 +29,7 @@ import java.awt.Graphics;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-class Distance extends Measurement implements MeasurementInterface {
+public class Distance extends Measurement implements MeasurementInterface {
 
   private int[] Atoms = new int[2];
   private double distance;
@@ -44,29 +43,17 @@ class Distance extends Measurement implements MeasurementInterface {
     compute();
   }
 
-  public void paint(
-      Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2)
-        throws Exception {
-    paintDistLine(g, settings, x1, y1, x2, y2);
-    paintDistString(g, settings, x1, y1, z1, x2, y2, z2);
+  public void paint(Graphics g, DisplayControl control,
+                    Atom atom1, Atom atom2) throws Exception {
+    paintDistLine(g, control, atom1, atom2);
+    paintDistString(g, control, atom1, atom2);
   }
 
-  private void paintDistLine(Graphics g, DisplaySettings settings, int x1,
-      int y1, int x2, int y2) {
-
-    g.setColor(settings.getDistanceColor());
-    String vers = System.getProperty("java.version");
-    if (vers.compareTo("1.2") >= 0) {
-      Graphics2D g2 = (Graphics2D) g;
-      BasicStroke dotted = new BasicStroke(1, BasicStroke.CAP_ROUND,
-                             BasicStroke.JOIN_ROUND, 0, new float[] {
-        3, 3
-      }, 0);
-      g2.setStroke(dotted);
-      g2.drawLine(x1, y1, x2, y2);
-    } else {
-      g.drawLine(x1, y1, x2, y2);
-    }
+  private void paintDistLine(Graphics g, DisplayControl control,
+                             Atom atom1, Atom atom2) {
+    control.maybeDottedStroke(g);
+    g.setColor(control.getDistanceColor());
+    g.drawLine(atom1.screenX, atom1.screenY, atom2.screenX, atom2.screenY);
   }
 
   /**
@@ -74,17 +61,17 @@ class Distance extends Measurement implements MeasurementInterface {
    */
   private static PrintfFormat distanceFormat = new PrintfFormat("%0.3f \u00c5");
   
-  private void paintDistString(Graphics g, DisplaySettings settings, int x1,
-      int y1, int z1, int x2, int y2, int z2) {
+  private void paintDistString(Graphics g, DisplayControl control,
+                               Atom atom1, Atom atom2) {
+    int x1 = atom1.screenX, y1 = atom1.screenY, d1 = atom1.screenDiameter;
+    int x2 = atom2.screenX, y2 = atom2.screenY, d2 = atom2.screenDiameter;
+    
+    int avgRadius = (d1 + d2) / 4;
 
-    double run = (double) (x2 - x1);
-    double rise = (double) (y2 - y1);
-    double m = rise / run;
-    Font font = new Font("Helvetica", Font.PLAIN,
-                  (int) (getAvgRadius(settings, z1, z2)));
+    Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(settings.getTextColor());
+    g.setColor(control.getTextColor());
     String s = distanceFormat.sprintf(getDistance());
     int j = fontMetrics.stringWidth(s);
 
@@ -94,20 +81,6 @@ class Distance extends Measurement implements MeasurementInterface {
       g.drawString(s, (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1);
     }
   }
-
-  public float getAvgRadius(DisplaySettings settings, int z1, int z2) {
-
-    if (cf == null) {
-      return 0.0f;
-    }
-
-    BaseAtomType a = cf.getAtomAt(Atoms[0]).getType();
-    BaseAtomType b = cf.getAtomAt(Atoms[1]).getType();
-
-    return (settings.getCircleRadius(z1, a.getVdwRadius()) + settings.getCircleRadius(z2, b.getVdwRadius()))
-        / 2.0f;
-  }
-
 
   public int[] getAtomList() {
     return Atoms;

@@ -19,6 +19,10 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.Angle;
+import org.openscience.jmol.render.Distance;
+import org.openscience.jmol.render.Dihedral;
+
 import java.io.File;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;

@@ -520,39 +520,6 @@ public class DisplaySettings implements Cloneable {
   }
 
   /**
-   * Returns the on-screen radius of an atom with the given radius.
-   *
-   * @param z z position in screen space
-   */
-  public float getCircleRadius(int z, double radius) {
-
-    double raw = radius * atomSphereFactor;
-    float depth = (float) (z - atomZOffset) / (2.0f * atomZOffset);
-    float tmp = atomScreenScale * ((float) raw + atomDepthFactor * depth);
-    if (tmp < 0.0f) {
-      tmp = 1.0f;
-    }
-    return tmp;
-  }
-
-  /**
-   * Returns the on-screen radius of something at location z which
-   * has an approximate size of one angstrom;
-   *
-   * @param z z position in screen space
-   */
-  public float getScreenSize(int z) {
-
-    double raw = atomSphereFactor;
-    float depth = (float) (z - atomZOffset) / (2.0f * atomZOffset);
-    float tmp = atomScreenScale * ((float) raw + atomDepthFactor * depth);
-    if (tmp < 0.0f) {
-      tmp = 1.0f;
-    }
-    return tmp;
-  }
-
-  /**
    * Gets the light source vector.
    */
   public float[] getLightSourceVector() {

@@ -17,12 +17,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.render;
+import org.openscience.jmol.*;
 
 import freeware.PrintfFormat;
 import java.awt.Font;
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
@@ -30,7 +29,7 @@ import java.awt.Graphics;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-class Dihedral extends Measurement implements MeasurementInterface {
+public class Dihedral extends Measurement implements MeasurementInterface {
 
   private int[] Atoms = new int[4];
   private double dihedral;
@@ -47,35 +46,28 @@ class Dihedral extends Measurement implements MeasurementInterface {
     compute();
   }
 
-  public void paint(
-      Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3, int x4, int y4, int z4)
-        throws Exception {
-    paintDihedralLine(g, settings, x1, y1, x2, y2, x3, y3, x4, y4);
-    paintDihedralString(g, settings, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4,
-        y4, z4);
+  public void paint(Graphics g, DisplayControl control,
+                    Atom atom1, Atom atom2,
+                    Atom atom3, Atom atom4) throws Exception {
+    paintDihedralLine(g, control, atom1, atom2, atom3, atom4);
+    paintDihedralString(g, control, atom1, atom2, atom3, atom4);
   }
 
-  private void paintDihedralLine(Graphics g, DisplaySettings settings,
-      int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
-
+  private void paintDihedralLine(Graphics g, DisplayControl control,
+                                 Atom atom1, Atom atom2,
+                                 Atom atom3, Atom atom4) {
+    int x1 = atom1.screenX, y1 = atom1.screenY;
+    int x2 = atom2.screenX, y2 = atom2.screenY;
+    int x3 = atom3.screenX, y3 = atom3.screenY;
+    int x4 = atom4.screenX, y4 = atom4.screenY;
     int xa = (x1 + x2) / 2;
     int ya = (y1 + y2) / 2;
     int xb = (x3 + x4) / 2;
     int yb = (y3 + y4) / 2;
 
-    g.setColor(settings.getDihedralColor());
-    String vers = System.getProperty("java.version");
-    if (vers.compareTo("1.2") >= 0) {
-      Graphics2D g2 = (Graphics2D) g;
-      BasicStroke dotted = new BasicStroke(1, BasicStroke.CAP_ROUND,
-                             BasicStroke.JOIN_ROUND, 0, new float[] {
-        3, 3
-      }, 0);
-      g2.setStroke(dotted);
-      g2.drawLine(xa, ya, xb, yb);
-    } else {
-      g.drawLine(xa, ya, xb, yb);
-    }
+    control.maybeDottedStroke(g);
+    g.setColor(control.getDihedralColor());
+    g.drawLine(xa, ya, xb, yb);
   }
 
   /**
@@ -83,15 +75,18 @@ class Dihedral extends Measurement implements MeasurementInterface {
    */
   private static PrintfFormat dihedralFormat = new PrintfFormat("%0.1f\u00b0");
   
-  private void paintDihedralString(Graphics g, DisplaySettings settings,
-      int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3,
-        int x4, int y4, int z4) {
-
-    Font font = new Font("Helvetica", Font.PLAIN,
-                  (int) (getAvgRadius(settings, z1, z2, z3, z4)));
+  private void paintDihedralString(Graphics g, DisplayControl control,
+                                 Atom atom1, Atom atom2,
+                                 Atom atom3, Atom atom4) {
+    int x1 = atom1.screenX, y1 = atom1.screenY, d1 = atom1.screenDiameter;
+    int x2 = atom2.screenX, y2 = atom2.screenY, d2 = atom2.screenDiameter;
+    int x3 = atom3.screenX, y3 = atom3.screenY, d3 = atom3.screenDiameter;
+    int x4 = atom4.screenX, y4 = atom4.screenY, d4 = atom4.screenDiameter;
+    int avgRadius = (d1 + d2 + d3 + d4) / 8;
+    Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(settings.getTextColor());
+    g.setColor(control.getTextColor());
     String s = dihedralFormat.sprintf(getDihedral());
     int j = fontMetrics.stringWidth(s);
 
@@ -99,24 +94,6 @@ class Dihedral extends Measurement implements MeasurementInterface {
     int yloc = (y1 + y2 + y3 + y4) / 4;
 
     g.drawString(s, xloc, yloc);
-  }
-
-  private float getAvgRadius(DisplaySettings settings, int z1, int z2,
-      int z3, int z4) {
-
-    if (cf == null) {
-      return 0.0f;
-    }
-
-    BaseAtomType a = cf.getAtomAt(Atoms[0]).getType();
-    BaseAtomType b = cf.getAtomAt(Atoms[1]).getType();
-    BaseAtomType c = cf.getAtomAt(Atoms[2]).getType();
-    BaseAtomType d = cf.getAtomAt(Atoms[3]).getType();
-
-    return (settings.getCircleRadius(z1, a.getVdwRadius())
-        + settings.getCircleRadius(z2, b.getVdwRadius())
-          + settings.getCircleRadius(z3, c.getVdwRadius())
-            + settings.getCircleRadius(z4, d.getVdwRadius())) / 4.0f;
   }
 
   public int[] getAtomList() {

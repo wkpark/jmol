@@ -20,8 +20,10 @@ package org.openscience.jmol;
 
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.Dimension;
 import javax.vecmath.Point3f;
@@ -382,13 +384,20 @@ final public class DisplayControl {
     // you absolutely *must* watch the order of these operations
     matrixViewTransform.setIdentity();
     // first, translate the coordinates back to the center
-    matrixTemp.setZero();
     vectorTemp.set(getFrame().getRotationCenter());
+    matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixViewTransform.sub(matrixTemp);
     // now, multiply by angular rotations
     // this is *not* the same as  matrixViewTransform.mul(matrixRotate);
     matrixViewTransform.mul(matrixRotate, matrixViewTransform);
+    // now shift so that all z coordinates are <= 0
+    // this is important for scaling
+    vectorTemp.x = 0;
+    vectorTemp.y = 0;
+    vectorTemp.z = getFrame().getRotationRadius();
+    matrixTemp.setTranslation(vectorTemp);
+    matrixViewTransform.sub(matrixTemp);
     // now scale to screen coordinates
     matrixTemp.set(scalePixelsPerAngstrom);
     matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
@@ -457,6 +466,17 @@ final public class DisplayControl {
                            RenderingHints.VALUE_RENDER_QUALITY);
     }
   }
+  public void maybeDottedStroke(Graphics g) {
+    if (antialiasCapable) {
+      Graphics2D g2 = (Graphics2D) g;
+      BasicStroke dotted =
+        new BasicStroke(1, BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_ROUND, 0,
+                        new float[] {3, 3}, 0);
+      g2.setStroke(dotted);
+    }
+  }
+
   private boolean haveFile = false;
   private ChemFile chemfile;
   private ChemFrame chemframe;
@@ -644,18 +664,13 @@ final public class DisplayControl {
    *
    * @param z z position in screen space
    */
-  public float getCircleRadius(int z, float radius) {
 
-    float raw = radius * getAtomSphereFactor();
-    float depth = (float) (z - atomZOffset) / (2.0f * atomZOffset);
-    float tmp = scalePixelsPerAngstrom *
-      ((float) raw + atomDepthFactor * depth);
-    if (tmp < 0.0f) {
-      tmp = 1.0f;
-    }
-    return tmp;
+  public int getScreenDiameter(int z, float vdwRadius) {
+    // all z's are <= 0
+    // so the more negative z is, the smaller the radius
+    float d = 2 * vdwRadius * scalePixelsPerAngstrom * getAtomSphereFactor();
+    return (int)((d * 750) / (750 - z));
   }
-
 
   private int atomZOffset = 1;
   private float atomDepthFactor = 0.33f;
@@ -667,5 +682,9 @@ final public class DisplayControl {
 
   public float[] getLightSource() {
     return settings.getLightSourceVector();
+  }
+
+  public Font getMeasureFont(int size) {
+    return new Font("Helvetica", Font.PLAIN, size);
   }
 }

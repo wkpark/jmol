@@ -21,8 +21,8 @@ package org.openscience.jmol;
 
 public class Measurement {
 
-  static ChemFrame cf;
-  static void setChemFrame(ChemFrame cfi) {
+  public static ChemFrame cf;
+  public static void setChemFrame(ChemFrame cfi) {
     cf = cfi;
   }
 }

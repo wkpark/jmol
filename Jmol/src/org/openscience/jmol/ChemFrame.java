@@ -47,7 +47,7 @@ public class ChemFrame implements Transformable {
   /**
    * Returns the list of distance measurements.
    */
-  Vector getDistanceMeasurements() {
+  public Vector getDistanceMeasurements() {
     return dlist;
   }
 
@@ -59,7 +59,7 @@ public class ChemFrame implements Transformable {
   /**
    * Returns the list of angle measurements.
    */
-  Vector getAngleMeasurements() {
+  public Vector getAngleMeasurements() {
     return alist;
   }
 
@@ -71,7 +71,7 @@ public class ChemFrame implements Transformable {
   /**
    * Returns the list of dihedral measurements.
    */
-  Vector getDihedralMeasurements() {
+  public Vector getDihedralMeasurements() {
     return dhlist;
   }
 

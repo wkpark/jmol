@@ -17,7 +17,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.render;
+import org.openscience.jmol.*;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -48,13 +49,7 @@ public class MeasureRenderer {
         int l = al[0];
         int j = al[1];
         try {
-          d.paint(g, control.getSettings(),
-                  frame.getAtomAt(l).screenX,
-                  frame.getAtomAt(l).screenY,
-                  frame.getAtomAt(l).screenZ,
-                  frame.getAtomAt(j).screenX,
-                  frame.getAtomAt(j).screenY,
-                  frame.getAtomAt(j).screenZ);
+          d.paint(g, control, frame.getAtomAt(l), frame.getAtomAt(j));
         } catch (Exception ex) {
         }
       }
@@ -68,16 +63,8 @@ public class MeasureRenderer {
         int j = al[1];
         int k = al[2];
         try {
-          an.paint(g, control.getSettings(),
-                   frame.getAtomAt(l).screenX,
-                   frame.getAtomAt(l).screenY,
-                   frame.getAtomAt(l).screenZ,
-                   frame.getAtomAt(j).screenX,
-                   frame.getAtomAt(j).screenY,
-                   frame.getAtomAt(j).screenZ,
-                   frame.getAtomAt(k).screenX,
-                   frame.getAtomAt(k).screenY,
-                   frame.getAtomAt(k).screenZ);
+          an.paint(g, control,
+                   frame.getAtomAt(l), frame.getAtomAt(j), frame.getAtomAt(k));
         } catch (Exception ex) {
         }
       }
@@ -92,19 +79,9 @@ public class MeasureRenderer {
         int k = dhl[2];
         int m = dhl[3];
         try {
-          dh.paint(g, control.getSettings(),
-                   frame.getAtomAt(l).screenX,
-                   frame.getAtomAt(l).screenY,
-                   frame.getAtomAt(l).screenZ,
-                   frame.getAtomAt(j).screenX,
-                   frame.getAtomAt(j).screenY,
-                   frame.getAtomAt(j).screenZ,
-                   frame.getAtomAt(k).screenX,
-                   frame.getAtomAt(k).screenY,
-                   frame.getAtomAt(k).screenZ,
-                   frame.getAtomAt(m).screenX,
-                   frame.getAtomAt(m).screenY,
-                   frame.getAtomAt(m).screenZ);
+          dh.paint(g, control,
+                   frame.getAtomAt(l), frame.getAtomAt(j),
+                   frame.getAtomAt(k), frame.getAtomAt(m));
         } catch (Exception ex) {
         }
       }

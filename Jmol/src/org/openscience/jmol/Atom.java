@@ -244,9 +244,8 @@ public class Atom extends org.openscience.cdk.Atom {
     screenY = (int) screenPosition.y;
     screenZ = (int) screenPosition.z;
     screenDiameter =
-      (int) (2.0f
-        * control.getCircleRadius(screenZ,
-                        (float) atomType.getBaseAtomType().getVdwRadius()));
+      control.getScreenDiameter(screenZ,
+                         (float) atomType.getBaseAtomType().getVdwRadius());
     if (vector != null) {
       screenVector.set(getScaledVector());
       transformationMatrix.transform(screenVector);

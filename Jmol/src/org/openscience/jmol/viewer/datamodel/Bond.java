@@ -86,6 +86,10 @@ public class Bond {
     this.colix = colix;
   }
 
+  void setOrder(short order) {
+    this.order = order;
+  }
+
   public float getRadius() {
     return mad / 2000f;
   }

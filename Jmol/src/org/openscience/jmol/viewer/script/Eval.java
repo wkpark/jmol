@@ -3023,10 +3023,10 @@ public class Eval implements Runnable {
 
   void bondorder() throws ScriptException {
     Token tokenArg = statement[1];
-    int order;
+    short order = 0;
     switch (tokenArg.tok) {
     case Token.integer:
-      order = tokenArg.intValue;
+      order = (short)tokenArg.intValue;
       if (order < 0 || order > 3)
         invalidArgument();
       break;
@@ -3035,8 +3035,8 @@ public class Eval implements Runnable {
       break;
     case Token.decimal:
       float f = ((Float)tokenArg.value).floatValue();
-      if (f == (int)f) {
-        order = (int)f;
+      if (f == (short)f) {
+        order = (short)f;
         if (order < 0 || order > 3)
           invalidArgument();
       } else if (f == 0.5f)
@@ -3046,8 +3046,17 @@ public class Eval implements Runnable {
       else
         invalidArgument();
       break;
+    case Token.identifier:
+      if ("aromatic".equalsIgnoreCase((String)tokenArg.value)) {
+        order = JmolConstants.BOND_AROMATIC;
+        break;
+      }
+      // fall into
     default:
       invalidArgument();
     }
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+                            "bondOrder",
+                            new Short(order));
   }
 }

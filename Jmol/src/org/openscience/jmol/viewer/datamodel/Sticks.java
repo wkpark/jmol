@@ -50,6 +50,12 @@ public class Sticks extends Shape {
         return;
       }
     }
+    if ("bondOrder" == propertyName) {
+      if (value instanceof Short) {
+        short order = ((Short)value).shortValue();
+        setOrderBond(order, bsSelected);
+      }
+    }
   }
 
   void setMadBond(short mad, short bondTypeMask, BitSet bs) {
@@ -62,5 +68,11 @@ public class Sticks extends Shape {
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext())
       iter.next().setColix(colix);
+  }
+
+  void setOrderBond(short order, BitSet bs) {
+    BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
+    while (iter.hasNext())
+      iter.next().setOrder(order);
   }
 }

@@ -498,7 +498,11 @@ final public class Frame {
     public boolean hasNext() {
       for ( ; iBond < bondCount; ++iBond) {
         Bond bond = bonds[iBond];
-        if ((bond.order & bondType) == 0)
+        // mth 2004 10 20
+        // a hack put in here to support bonds of order '0'
+        // during implementation of 'bondOrder' script command
+        if (bondType != JmolConstants.BOND_ALL_MASK &&
+            (bond.order & bondType) == 0)
           continue;
         boolean isSelected1 =
           bsSelected.get(bond.atom1.atomIndex);

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
   "../../build/docbook-xml/docbookx.dtd"
 >
 <book id="jmol-devel-guide">
@@ -140,12 +140,14 @@
     <title>Coding Standard</title>
     <itemizedlist>
       <listitem>
+  <para>
 	Your text editor should indent for you. If it doesn't
 	then either learn how to enable it or get another
 	editor.
+	</para>
       </listitem>
       <listitem>
-	Indentation level should be two spaces
+	<para>Indentation level should be two spaces</para>
 	<programlisting>
 	  class Foo {
 	    int someClassVariable;
@@ -159,22 +161,28 @@
 	</programlisting>
       </listitem>
       <listitem>
+	<para>
 	Space characters should be used, not tabs
+	</para>
       </listitem>
       <listitem>
+	<para>
 	Assignment and arithmetic operators generally contain
 	spaces on both sides.
+	</para>
 	<programlisting>
 	  a = b + c;
 	</programlisting>
-	you are allowed to eliminate the spaces within expressions
-	in order to make operator precedence more clear
+	<para>you are allowed to eliminate the spaces within expressions
+	in order to make operator precedence more clear</para>
 	<programlisting>
 	  int cSquared = a*a + b*b;
 	</programlisting>
       </listitem>
       <listitem>
+	<para>
 	spaces follow commas in argument lists
+	</para>
 	<programlisting>
 	  foo(a, 3.14159, "jmol");
 	</programlisting>

@@ -32,6 +32,7 @@ import org.openscience.jmol.viewer.g3d.Shade3D;
 import java.awt.Rectangle;
 
 import java.util.Hashtable;
+import java.util.BitSet;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -48,6 +49,7 @@ public class DotsRenderer {
     short colixConvex;
     short colixSaddle;
     int pixelsPerAngstrom;
+    boolean bondSelectionModeOr;
 
   public DotsRenderer(JmolViewer viewer) {
     this.viewer = viewer;
@@ -67,6 +69,7 @@ public class DotsRenderer {
     colixConvex = viewer.getColixDotsConvex();
     colixSaddle = viewer.getColixDotsSaddle();
     pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1f);
+    bondSelectionModeOr = viewer.getBondSelectionModeOr();
   }
 
   Geodesic geodesic;
@@ -80,17 +83,34 @@ public class DotsRenderer {
     if (dots == null)
       return;
     AtomShape[] atomShapes = frame.atomShapes;
+    BitSet bsDotsOn = dots.bsDotsOn;
+    int[] mapNull = dots.mapNull;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
+    System.out.println("rendering and dotsConvexCount=" +
+		       dots.dotsConvexCount);
     for (int i = dots.dotsConvexCount; --i >= 0; ) {
-      int[] map = dotsConvexMaps[i];
-      if (map != null)
-        renderConvex(atomShapes[i], map);
+	if (! bsDotsOn.get(i))
+	    continue;
+	int[] map = dotsConvexMaps[i];
+	if (map != null && map != mapNull)
+	    renderConvex(atomShapes[i], map);
     }
     Dots.Torus[] tori = dots.tori;
     if (tori == null)
       return;
-    for (int i = dots.torusCount; --i >= 0; )
+    for (int i = dots.torusCount; --i >= 0; ) {
+	Dots.Torus torus = tori[i];
+	boolean onI = bsDotsOn.get(torus.i);
+	boolean onJ = bsDotsOn.get(torus.j);
+	if (bondSelectionModeOr) {
+	    if (! (onI | onJ))
+		continue;
+	} else {
+	    if (! (onI & onJ))
+		continue;
+	}
 	renderTorus(tori[i]);
+    }
     Dots.Cavity[] cavities = dots.cavities;
     if (true) {
 	System.out.println("concave surface rendering currently disabled");

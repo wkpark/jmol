@@ -1,0 +1,131 @@
+<html>
+  <head><title>jmol applet cartoons demo</title>
+  </head>
+  <body>
+    <table border="1">
+      <tr>
+	<td>
+
+	  <h2>Cartoons</h2>
+	  <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  width="400" height="400" mayscript="true" >
+	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Downloading JmolApplet ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />
+	    <param name="load"          value="../trace/1crn.pdb.gz" />
+	    <param name="script"        value="
+		   cpk off; wireframe off; cartoon; color cartoon structure" />
+
+	  </applet>
+	</td>
+	<td>
+
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="3PTE.cif" />
+	    <param name="target" value="jmol" />
+	    <param name="script"    value="
+		   load 3PTE.cif.gz;
+		   cpk off; wireframe off; cartoon; color cartoon structure" />
+	  </applet>
+	  <br />
+
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="1GFL.pdb" />
+	    <param name="target" value="jmol" />
+	    <param name="script"    value="
+		   load ../strands/1gfl.pdb.gz;
+		   cpk off; wireframe off; cartoon; color cartoon structure" />
+	  </applet>
+	  <br />
+
+
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="1PSI.cif" />
+	    <param name="target" value="jmol" />
+	    <param name="script"    value="
+		   load ../ribbons/1PSI.cif.gz;
+		   cpk off; wireframe off; cartoon; color cartoon structure" />
+	  </applet>
+	  <br />
+
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="1D66.cif" />
+	    <param name="target" value="jmol" />
+	    <param name="script"    value="
+		   load ../ribbons/1D66.pdb.gz;
+		   cpk off; wireframe off; cartoon; color cartoon structure" />
+	  </applet>
+	  <br />
+
+
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="1CRN.pdb" />
+	    <param name="target" value="jmol" />
+	    <param name="script"    value="
+		   load ../trace/1crn.pdb.gz;
+		   cpk off; wireframe off; cartoon; color cartoon structure" />
+	  </applet>
+	  <br />
+
+	  Zoom in and take a closer look<br />
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="zoom 300" />
+	    <param name="target" value="jmol" />
+	    <param name="script" value="zoom 300" />
+	  </applet>
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="zoom 100" />
+	    <param name="target" value="jmol" />
+	    <param name="script" value="zoom 100" />
+	  </applet>
+	  <br />
+
+	  Take it for a spin<br />
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="spin on" />
+	    <param name="target" value="jmol" />
+	    <param name="script" value="spin on" />
+	  </applet>
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
+	    <param name="label"  value="spin off" />
+	    <param name="target" value="jmol" />
+	    <param name="script" value="spin off" />
+	  </applet>
+	  <br />
+
+	</td>
+
+      </tr>
+    </table>
+  </body>
+</html>

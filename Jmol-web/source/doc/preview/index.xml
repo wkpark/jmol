@@ -12,11 +12,12 @@
 	<a href="http://www.mdlchime.com">http://www.mdlchime.com</a>
       </p>
       <p>
-	In the spring the RasMol/Chime script compiler and interpreter
-	were written. That code was introduced in Jmol v6. 
+	In the spring of 2003 the RasMol/Chime script compiler and
+	interpreter were written. That code was introduced in Jmol v6. 
       </p>
       <p>
-	More recently, the graphics engine has been completely rewritten
+	Through the summer and winter of 2003 the graphics engine was
+	completely rewritten
 	to provide true 3D rendering capabilities. It is a software
 	implementation designed and optimized for rendering molecules.
 	It does not require any special hardware and will run on most
@@ -38,6 +39,8 @@
 	  <li><a href="[root]/demo/strands">strands</a></li>
 	  <li><a href="[root]/demo/vibration">vibration</a> <i>--New!--</i></li>
 	  <li><a href="[root]/demo/animation">animation</a> <i>--New!--</i></li>
+	  <li><a href="[root]/demo/ribbons">ribbons</a> <i>--New!--</i></li>
+	  <li><a href="[root]/demo/cartoons">cartoons</a> <i>--New!--</i></li>
 	</ul>
       </p>
       <p>

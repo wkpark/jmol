@@ -355,9 +355,6 @@ abstract class Polymer {
   BitSet bsSelectedMonomers;
 
   void calcSelectedMonomersCount(BitSet bsSelected) {
-    // FIXME miguel 2004 12 13
-    // WARNING! note that this code is currently being
-    // calculated once for each *atom*
     selectedMonomerCount = 0;
     if (bsSelectedMonomers == null)
       bsSelectedMonomers = new BitSet();

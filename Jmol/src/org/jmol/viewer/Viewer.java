@@ -1689,15 +1689,16 @@ final public class Viewer extends JmolViewer {
   }
 
   void setShapeColor(int shapeID, byte palette, Color color) {
-    System.out.println("setShapeColor()");
     if (palette == JmolConstants.PALETTE_COLOR) {
-      System.out.println("PALETTE_COLOR");
       modelManager.setShapeProperty(shapeID, "colorScheme", null,
                                     selectionManager.bsSelection);
       modelManager.setShapeProperty(shapeID, "color", color,
                                     selectionManager.bsSelection);
     } else {
-      System.out.println("other PALETTE");
+      if (palette == JmolConstants.PALETTE_GROUP)
+        calcSelectedGroupsCount();
+      else if (palette == JmolConstants.PALETTE_MONOMER)
+        calcSelectedMonomersCount();
       modelManager.setShapeProperty(shapeID, "colorScheme",
                                     JmolConstants.colorSchemes[palette],
                                     selectionManager.bsSelection);

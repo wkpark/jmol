@@ -300,7 +300,6 @@ class ColorManager {
               : JmolConstants.argbsChainAtom)[chain];
       break;
     case JmolConstants.PALETTE_GROUP:
-      viewer.calcSelectedGroupsCount();
       index = quantize(0,
                        atom.getSelectedGroupCountWithinChain(),
                        atom.getSelectedGroupIndexWithinChain(),
@@ -308,7 +307,6 @@ class ColorManager {
       argb = JmolConstants.argbsBlueRedRainbow[index];
       break;
     case JmolConstants.PALETTE_MONOMER:
-      viewer.calcSelectedMonomersCount();
       index = quantize(0,
                        atom.getSelectedMonomerCountWithinPolymer(),
                        atom.getSelectedMonomerIndexWithinPolymer(),

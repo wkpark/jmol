@@ -75,9 +75,6 @@ final class Chain {
   }
 
   void calcSelectedGroupsCount(BitSet bsSelected) {
-    // FIXME miguel 2004 12 13
-    // WARNING! note that this code is currently being
-    // calculated once for each *atom*
     selectedGroupCount = 0;
     if (bsSelectedGroups == null)
       bsSelectedGroups = new BitSet();

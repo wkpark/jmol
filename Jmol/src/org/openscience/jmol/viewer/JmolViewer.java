@@ -1295,8 +1295,8 @@ final public class JmolViewer {
     distributionManager.setLabel(strLabel, atomIteratorSelected());
   }
 
-  public void setDotsOn(boolean dotsOn) {
-    getFrame().setDotsOn(dotsOn, selectionManager.bsSelection);
+  public BitSet getBitSetSelection() {
+    return selectionManager.bsSelection;
   }
 
   public void setGraphicShow(int refGraphic, boolean show) {

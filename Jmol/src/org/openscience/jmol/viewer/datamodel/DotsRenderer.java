@@ -52,8 +52,7 @@ class DotsRenderer extends Renderer {
 
   final static int[] mapNull = Dots.mapNull;
 
-  DotsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    setViewerFrameRenderer(viewer, frameRenderer);
+  void initRenderer() {
 
     this.geodesic = new Geodesic(); // 12 vertices
     geodesic.quadruple(); // 12 * 4 - 6 = 42 vertices
@@ -73,7 +72,7 @@ class DotsRenderer extends Renderer {
 
 
     geodesic.transform();
-    Dots dots = frame.dots;
+    Dots dots = (Dots)graphic;
     if (dots == null)
       return;
     Atom[] atoms = frame.atoms;

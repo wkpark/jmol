@@ -52,8 +52,11 @@ abstract public class Graphic {
     return show;
   }
 
-  abstract public void setMad(short mad, BitSet bsSelected);
-  abstract public void setColix(byte palette, short colix, BitSet bsSelected);
+  public void setMad(short mad, BitSet bsSelected) {
+  }
+
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
+  }
 
   public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
   }

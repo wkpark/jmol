@@ -1709,10 +1709,12 @@ final public class JmolConstants {
   public final static int GRAPHIC_CARTOON  = 4;
   public final static int GRAPHIC_STRANDS  = 5;
   public final static int GRAPHIC_UNITCELL = 6;
-  public final static int GRAPHIC_MAX      = 7;
+  public final static int GRAPHIC_DOTS     = 7;
+  public final static int GRAPHIC_MAX      = 8;
 
   public final static String[] graphicClassBases = {
-    "Backbone", "Trace", "Axes", "Bbox", "Cartoon", "Strands", "Unitcell"
+    "Backbone", "Trace", "Axes", "Bbox", "Cartoon", "Strands", "Unitcell",
+    "Dots"
   };
 
   // all of these things are compile-time constants

@@ -82,10 +82,8 @@ import java.awt.Rectangle;
  *
  ****************************************************************/
 
-public class Dots {
+public class Dots extends Graphic {
 
-  JmolViewer viewer;
-  Frame frame;
   DotsRenderer dotsRenderer;
 
   BitSet bsDotsOn;
@@ -120,17 +118,17 @@ public class Dots {
   final Point3f pointT1 = new Point3f();
 
     
-  Dots(JmolViewer viewer, Frame frame, DotsRenderer dotsRenderer) {
-    this.viewer = viewer;
-    this.frame = frame;
-    this.dotsRenderer = dotsRenderer;
+  public void initGraphic() {
+    dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.GRAPHIC_DOTS);
     bsDotsOn = new BitSet();
     geodesicVertices = dotsRenderer.geodesic.vertices;
     geodesicCount = geodesicVertices.length;
     geodesicMap = allocateBitmap(geodesicCount);
   }
 
-  public void setDotsOn(boolean dotsOn, BitSet bsSelected) {
+  public void setShow(boolean show) {
+    this.show = show;
+    BitSet bsSelected = viewer.getBitSetSelection();
     if (radiusP != viewer.getSolventProbeRadius()) {
       dotsConvexCount = 0;
       dotsConvexMaps = null;
@@ -143,7 +141,7 @@ public class Dots {
     }
     int atomCount = frame.atomCount;
     dotsConvexCount = 0;
-    if (dotsOn) {
+    if (show) {
       bsDotsOn.or(bsSelected);
       if (dotsConvexMaps == null)
         dotsConvexMaps = new int[atomCount][];

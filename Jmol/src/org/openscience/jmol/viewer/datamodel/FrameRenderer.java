@@ -42,7 +42,6 @@ public class FrameRenderer {
   AtomRenderer atomRenderer;
   BondRenderer bondRenderer;
   MeasurementRenderer measurementRenderer;
-  DotsRenderer dotsRenderer;
   LineRenderer lineRenderer;
 
   Renderer[] renderers;
@@ -68,20 +67,12 @@ public class FrameRenderer {
         measurementRenderer = new MeasurementRenderer(viewer, this);
       measurementRenderer.render(g3d, rectClip, frame, null);
     }
-    if (frame.dots != null) {
-      if (dotsRenderer == null)
-        dotsRenderer = new DotsRenderer(viewer, this);
-      dotsRenderer.render(g3d, rectClip, frame, null);
-    }
 
     for (int i = 0; i < JmolConstants.GRAPHIC_MAX; ++i) {
       Graphic graphic = frame.graphics[i];
       if (graphic == null)
         continue;
-      Renderer renderer = renderers[i];
-      if (renderer == null)
-        renderer = renderers[i] = allocateRenderer(i);
-      renderer.render(g3d, rectClip, frame, graphic);
+      getRenderer(i).render(g3d, rectClip, frame, graphic);
     }
 
     if (frame.lineCount > 0) {
@@ -89,6 +80,12 @@ public class FrameRenderer {
         lineRenderer = new LineRenderer(viewer, this);
       lineRenderer.render(g3d, rectClip, frame, null);
     }
+  }
+
+  Renderer getRenderer(int refGraphic) {
+    if (renderers[refGraphic] == null)
+      renderers[refGraphic] = allocateRenderer(refGraphic);
+    return renderers[refGraphic];
   }
 
   Renderer allocateRenderer(int refGraphic) {
@@ -102,7 +99,9 @@ public class FrameRenderer {
       renderer.setViewerFrameRenderer(viewer, this);
       return renderer;
     } catch (Exception e) {
-      System.out.println("Could not instantiate renderer:" + classBase);
+      System.out.println("Could not instantiate renderer:" + classBase +
+                         "\n" + e);
+      e.printStackTrace();
     }
     return null;
   }
@@ -137,12 +136,6 @@ public class FrameRenderer {
     int xStrBaseline = xStrCenter - strWidth / 2;
     int yStrBaseline = yStrCenter + strAscent / 2;
     g3d.drawString(str, colix, xStrBaseline, yStrBaseline, z);
-  }
-
-  public DotsRenderer getDotsRenderer() {
-    if (dotsRenderer == null)
-      dotsRenderer = new DotsRenderer(viewer, this);
-    return dotsRenderer;
   }
 
   private Point3i[] tempScreens = new Point3i[32];

@@ -194,15 +194,6 @@ public class Frame {
     addBond(atom1.bondMutually(atom2, order));
   }
 
-  Dots dots;
-
-  public void setDotsOn(boolean dotsOn, BitSet bsSelected) {
-    if (dotsOn && dots == null)
-      dots = new Dots(viewer, this, frameRenderer.getDotsRenderer());
-    if (dots != null)
-      dots.setDotsOn(dotsOn, bsSelected);
-  }
-
   Graphic allocateGraphic(int refGraphic) {
     String classBase = JmolConstants.graphicClassBases[refGraphic];
     String className = "org.openscience.jmol.viewer.datamodel." + classBase;
@@ -213,7 +204,9 @@ public class Frame {
       graphic.setViewerFrame(viewer, this);
       return graphic;
     } catch (Exception e) {
-      System.out.println("Could not instantiate graphic:" + classBase);
+      System.out.println("Could not instantiate graphic:" + classBase +
+                         "\n" + e);
+      e.printStackTrace();
     }
     return null;
   }
@@ -839,6 +832,10 @@ public class Frame {
                          notionalUnitcell);
     else
       this.notionalUnitcell = notionalUnitcell;
+  }
+
+  public Renderer getRenderer(int refGraphic) {
+    return frameRenderer.getRenderer(refGraphic);
   }
 
 }

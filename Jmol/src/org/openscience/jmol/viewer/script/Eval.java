@@ -1846,7 +1846,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setDotsOn(dotsOn);
+    viewer.setGraphicShow(JmolConstants.GRAPHIC_DOTS, dotsOn);
   }
 
   void proteinGraphic(int graphicType) throws ScriptException {

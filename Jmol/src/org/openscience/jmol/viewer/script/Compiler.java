@@ -666,7 +666,10 @@ class Compiler {
     }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
-    if ((tokCommand & Token.expression) != 0 && !compileExpression())
+    // a hack ... just to take care of model
+    if (tokCommand != Token.model &&
+        (tokCommand & Token.expression) != 0
+        && !compileExpression())
       return false;
     if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;

@@ -266,7 +266,8 @@ public class Token {
   final static int resno        = atomproperty | 2;
   final static int radius       = atomproperty | 3 | setparam;
   final static int temperature  = atomproperty | 4;
-  final static int model        = atomproperty | 5 | showparam | expression;
+  final static int model        =
+    atomproperty | 5 | showparam | expression | command;
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
   final static int _atomID      = atomproperty | 8;

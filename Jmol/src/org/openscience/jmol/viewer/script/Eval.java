@@ -436,6 +436,7 @@ public class Eval implements Runnable {
         show();
         break;
       case Token.frame:
+      case Token.model:
         frame();
         break;
       case Token.font:
@@ -2265,7 +2266,8 @@ public class Eval implements Runnable {
   }
 
   void frame(int offset) throws ScriptException {
-    checkStatementLength(offset + 1);
+    if (statementLength <= offset)
+      badArgumentCount();
     if (statement[offset].tok == Token.hyphen) {
       ++offset;
       checkStatementLength(offset + 1);
@@ -2275,6 +2277,8 @@ public class Eval implements Runnable {
       viewer.setAnimationPrevious();
       return;
     }
+    if (statementLength != offset + 1)
+      badArgumentCount();
     String modelTag = null;
     switch(statement[offset].tok) {
     case Token.all:

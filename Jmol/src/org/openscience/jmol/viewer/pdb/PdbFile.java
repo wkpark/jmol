@@ -37,7 +37,7 @@ public class PdbFile {
 
   int modelCount = 0;
   PdbModel[] models = new PdbModel[1];
-  short[] modelNumbers = new short[1];
+  short[] modelIDs = new short[1];
 
   public PdbFile(Frame frame) {
     this.frame = frame;
@@ -48,32 +48,27 @@ public class PdbFile {
   }
 
   public void freeze() {
-    if (chainCount != chains.length) {
-      PdbChain[] t = new PdbChain[chainCount];
-      System.arraycopy(chains, 0, t, 0, chainCount);
-      chains = t;
-    }
-    for (int i = chainCount; --i >= 0; )
-      chains[i].freeze();
+    for (int i = modelCount; --i >= 0; )
+      models[i].freeze();
     propogateSecondaryStructure();
   }
 
 
-  PdbModel getModelNumber(int modelNumber) {
+  PdbModel getOrAllocateModel(short modelID) {
     for (int i = modelCount; --i >= 0; )
-      if (modelNumbers[i] == modelNumber)
+      if (modelIDs[i] == modelID)
         return models[i];
     if (modelCount == models.length) {
       short[] tNumbers = new short[modelCount * 2];
-      System.arraycopy(modelNumbers, 0, tNumbers, 0, modelCount);
-      modelNumbers = tNumbers;
+      System.arraycopy(modelIDs, 0, tNumbers, 0, modelCount);
+      modelIDs = tNumbers;
 
       PdbModel[] t = new PdbModel[modelCount * 2];
       System.arraycopy(models, 0, t, 0, modelCount);
       models = t;
     }
-    modelNumbers[modelCount] = (short)modelNumber;
-    return models[modelCount++] = new PdbModel(this, modelNumber);
+    modelIDs[modelCount] = modelID;
+    return models[modelCount++] = new PdbModel(this, modelID);
   }
 
   private void propogateSecondaryStructure() {
@@ -101,12 +96,6 @@ public class PdbFile {
       } else
         continue;
 
-      PdbChain chain = getPdbChain(structureRecord.charAt(chainIDIndex));
-      if (chain == null) {
-        System.out.println("secondary structure record error");
-        continue;
-      }
-
       short startID = 0;
       short endID = -1;
       try {
@@ -120,112 +109,62 @@ public class PdbFile {
         System.out.println("secondary structure record error");
         continue;
       }
-      chain.addSecondaryStructure(type, startID, endID);
+
+      char chainID = structureRecord.charAt(chainIDIndex);
+
+      for (int j = modelCount; --j >= 0; )
+        models[j].addSecondaryStructure(chainID, type, startID, endID);
     }
   }
 
-  int chainCount = 0;
-  PdbChain[] chains = new PdbChain[8];
-
-  public int getChainCount() {
-    return chainCount;
-  }
-
-  public PdbChain getChain(int chainIndex) {
-    return chains[chainIndex];
-  }
-
-  public PdbGroup[] getMainchain(int chainIndex) {
-    return chains[chainIndex].getMainchain();
-  }
-
-  /*
-  Point3f[][] midpointsChains;
-
-  public Point3f[][] getMidpointsChains() {
-    calcMidpoints();
-    return midpointsChains;
-  }
-
-  public Point3f[] getMidpointsChain(int chainIndex) {
-    calcMidpoints();
-    return midpointsChains[chainIndex];
-  }
-  */
-
-  /*
-  void calcMidpoints() {
-    //    buildAlphaChains();
-    midpointsChains = new Point3f[chainIDCount][];
-    for (int i = chainIDCount; --i >= 0; ) {
-      Atom[] alphaChain = alphaChains[i];
-      int chainLength = alphaChain.length;
-      calcMidpoints(alphaChain, midpointsChains[i] = new Point3f[chainLength + 1]);
-    }
-  }
-
-  void calcMidpoints(Atom[] alphas, Point3f[] midpoints) {
-    int chainLength = alphas.length;
-    Point3f atomPrevious = alphas[0].point3f;
-    midpoints[0] = atomPrevious;
-    for (int i = 1; i < chainLength; ++i) {
-      Point3f mid = midpoints[i] = new Point3f(atomPrevious);
-      atomPrevious = alphas[i].point3f;
-      mid.add(atomPrevious);
-      mid.scale(0.5f);
-    }
-    midpoints[chainLength] = atomPrevious;
-  }
-  */
-  
-  PdbChain getPdbChain(char chainID) {
-    for (int i = chainCount; --i >= 0; ) {
-      PdbChain chain = chains[i];
-      if (chain.chainID == chainID)
-        return chain;
-    }
-    return null;
-  }
-
-  public PdbChain getPdbChain(int chainIndex) {
-    return chains[chainIndex];
-  }
-
-  PdbChain getOrAllocPdbChain(char chainID) {
-    PdbChain chain = getPdbChain(chainID);
-    if (chain != null)
-      return chain;
-    if (chainCount == chains.length) {
-      PdbChain[] t = new PdbChain[chainCount * 2];
-      System.arraycopy(chains, 0, t, 0, chainCount);
-      chains = t;
-    }
-    return chains[chainCount++] = new PdbChain(chainID);
-  }
-
-
+  int modelIDCurrent = -1;
   char chainIDCurrent = '\uFFFF';
   short groupSequenceCurrent;
   PdbGroup groupCurrent;
 
-  void setCurrentResidue(char chainID, short groupSequence, String group3) {
+  void setCurrentResidue(short modelID, char chainID,
+                         short groupSequence, String group3) {
+    System.out.println("setResidueCurrent(" + modelID + ",'" +
+                       chainID + "'," + groupSequence + "," +
+                       group3);
+    modelIDCurrent = modelID;
     chainIDCurrent = chainID;
     groupSequenceCurrent = groupSequence;
-    PdbChain chain = getOrAllocPdbChain(chainID);
-    groupCurrent = new PdbGroup(this, chainID, groupSequence, group3);
-    chain.addGroup(groupCurrent);
+    PdbModel model = getOrAllocateModel(modelID);
+    PdbChain chain = model.getOrAllocateChain(chainID);
+    groupCurrent = chain.allocateGroup(groupSequence, group3);
+  }
+  
+  public PdbAtom allocatePdbAtom(int atomIndex, short modelID,
+                                 String pdbRecord) {
+    char chainID = pdbRecord.charAt(21);
+    short groupSequence = Short.MIN_VALUE;
+    try {
+      groupSequence = Short.parseShort(pdbRecord.substring(22, 26).trim());
+    } catch (NumberFormatException e) {
+      System.out.println("bad residue number in: " + pdbRecord);
+    }
+    if (modelID != modelIDCurrent ||
+        chainID != chainIDCurrent ||
+        groupSequence != groupSequenceCurrent)
+      setCurrentResidue(modelID, chainID,
+                        groupSequence, pdbRecord.substring(17, 20));
+    return groupCurrent.allocatePdbAtom(atomIndex, pdbRecord);
   }
 
-  public PdbAtom allocatePdbAtom(int atomIndex, int modelNumber, String pdbRecord) {
-      char chainID = pdbRecord.charAt(21);
-      short groupSequence = Short.MIN_VALUE;
-      try {
-	  groupSequence = Short.parseShort(pdbRecord.substring(22, 26).trim());
-      } catch (NumberFormatException e) {
-	  System.out.println("bad residue number in: " + pdbRecord);
-      }
-      if (chainID != chainIDCurrent || groupSequence != groupSequenceCurrent)
-	  setCurrentResidue(chainID, groupSequence, pdbRecord.substring(17, 20));
-      return new PdbAtom(atomIndex, modelNumber, pdbRecord, groupCurrent);
+  /*
+    temporary hack for backward compatibility with drawing code
+  */
+
+  public PdbGroup[] getMainchain(int i) {
+    return models[0].getMainchain(i);
+  }
+
+  public PdbChain getChain(int i) {
+    return models[0].getChain(i);
+  }
+
+  public int getChainCount() {
+    return models[0].getChainCount();
   }
 }

@@ -32,16 +32,13 @@ import javax.vecmath.Point3f;
 public class PdbGroup {
 
   public PdbStructure structure;
-  public PdbFile pdbFile;
-  public char chainID;
+  public PdbChain chain;
   public short groupSequence;
   public short groupID;
   int[] mainchainIndices;
 
-  public PdbGroup(PdbFile pdbFile, char chainID,
-                  short groupSequence, String group3) {
-    this.pdbFile = pdbFile;
-    this.chainID = chainID;
+  public PdbGroup(PdbChain chain, short groupSequence, String group3) {
+    this.chain = chain;
     this.groupSequence = groupSequence;
     this.groupID = lookupGroupID(group3);
   }
@@ -91,7 +88,7 @@ public class PdbGroup {
   }
 
   public char getChainID() {
-    return chainID;
+    return chain.chainID;
   }
 
   public boolean isHelix() {
@@ -138,11 +135,23 @@ public class PdbGroup {
     return addGroup3Name(group3);
   }
 
+  public PdbAtom allocatePdbAtom(int atomIndex, String pdbRecord) {
+    PdbAtom pdbAtom = new PdbAtom(this, atomIndex, pdbRecord);
+    if (pdbAtom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
+      if (! registerMainchainAtomIndex(pdbAtom.atomID, atomIndex))
+        pdbAtom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
+    }
+    return pdbAtom;
+  }
+
   boolean registerMainchainAtomIndex(short atomid, int atomIndex) {
     if (mainchainIndices == null) {
       mainchainIndices = new int[4];
       for (int i = 4; --i >= 0; )
         mainchainIndices[i] = -1;
+      System.out.println("group=" + this + 
+                         " groupSequence=" + groupSequence +
+                         " mainchainIndices=" + mainchainIndices);
     }
     if (mainchainIndices[atomid] != -1) {
       // my residue already has a mainchain atom with this atomid
@@ -163,7 +172,7 @@ public class PdbGroup {
     int j;
     if (mainchainIndices == null || (j = mainchainIndices[i]) == -1)
       return null;
-    return pdbFile.frame.getAtomAt(j);
+    return chain.model.file.frame.getAtomAt(j);
   }
 
   public Atom getNitrogenAtom() {
@@ -185,4 +194,5 @@ public class PdbGroup {
   public Point3f getAlphaCarbonPoint() {
     return getMainchainAtom(1).point3f;
   }
+
 }

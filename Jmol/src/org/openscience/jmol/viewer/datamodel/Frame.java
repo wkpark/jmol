@@ -95,7 +95,7 @@ public class Frame {
     if (htAtomMap != null)
       htAtomMap.put(clientAtom, atom);
     if (bspf != null)
-      bspf.addTuple(atom.getModelNumber(), atom);
+      bspf.addTuple(atom.getModelID(), atom);
     float covalentRadius = atom.getCovalentRadius();
     if (covalentRadius > maxCovalentRadius)
       maxCovalentRadius = covalentRadius;
@@ -628,7 +628,7 @@ public class Frame {
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         if (atom.styleAtom >= JmolConstants.STYLE_NONE) // not deleted atoms
-          bspf.addTuple(atom.getModelNumber(), atom);
+          bspf.addTuple(atom.getModelID(), atom);
       }
     }
   }
@@ -740,7 +740,7 @@ public class Frame {
       float myCovalentRadius = atom.getCovalentRadius();
       float searchRadius =
         myCovalentRadius + maxCovalentRadius + bondTolerance;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelID());
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
@@ -826,7 +826,7 @@ public class Frame {
       if (atomicNumber != 7 && atomicNumber != 8)
         continue;
       float searchRadius = hbondMax;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelID());
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();

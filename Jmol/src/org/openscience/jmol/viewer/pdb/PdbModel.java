@@ -33,12 +33,66 @@ import java.util.Vector;
 
 public class PdbModel {
 
-  PdbFile pdbFile;
-  short modelNumber;
+  PdbFile file;
+  short modelID;
 
-  public PdbModel(PdbFile pdbFile, int modelNumber) {
-    this.pdbFile = pdbFile;
-    this.modelNumber = (short)modelNumber;
+  int chainCount = 0;
+  PdbChain[] chains = new PdbChain[8];
+
+
+  public PdbModel(PdbFile file, short modelID) {
+    this.file = file;
+    this.modelID = modelID;
+  }
+
+  public void freeze() {
+    if (chainCount != chains.length) {
+      PdbChain[] t = new PdbChain[chainCount];
+      System.arraycopy(chains, 0, t, 0, chainCount);
+      chains = t;
+    }
+    for (int i = chainCount; --i >= 0; )
+      chains[i].freeze();
+  }
+
+  public void addSecondaryStructure(char chainID, byte type,
+                                    short startID, short endID) {
+    PdbChain chain = getChain(chainID);
+    if (chain != null)
+      chain.addSecondaryStructure(type, startID, endID);
+  }
+
+  public int getChainCount() {
+    return chainCount;
+  }
+
+  public PdbChain getChain(char chainID) {
+    for (int i = chainCount; --i >= 0; ) {
+      PdbChain chain = chains[i];
+      if (chain.chainID == chainID)
+        return chain;
+    }
+    return null;
+  }
+
+  public PdbChain getChain(int chainIndex) {
+    return chains[chainIndex];
+  }
+
+  PdbChain getOrAllocateChain(char chainID) {
+    PdbChain chain = getChain(chainID);
+    if (chain != null)
+      return chain;
+    if (chainCount == chains.length) {
+      PdbChain[] t = new PdbChain[chainCount * 2];
+      System.arraycopy(chains, 0, t, 0, chainCount);
+      chains = t;
+    }
+    return chains[chainCount++] = new PdbChain(this, chainID);
+  }
+  
+  public PdbGroup[] getMainchain(int chainIndex) {
+    return chains[chainIndex].getMainchain();
   }
 
 }

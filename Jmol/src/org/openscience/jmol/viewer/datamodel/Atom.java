@@ -64,9 +64,10 @@ public class Atom implements Bspt.Tuple {
 			       viewer.getAtomY(clientAtom),
 			       viewer.getAtomZ(clientAtom));
     if (pdbFile != null)
-      pdbAtom = pdbFile.allocatePdbAtom(atomIndex,
-                                            viewer.getPdbModelNumber(clientAtom),
-                                            viewer.getPdbAtomRecord(clientAtom));
+      pdbAtom =
+        pdbFile.allocatePdbAtom(atomIndex,
+                                viewer.getPdbModelID(clientAtom),
+                                viewer.getPdbAtomRecord(clientAtom));
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
 
@@ -309,10 +310,10 @@ public class Atom implements Bspt.Tuple {
     return pdbAtom;
   }
 
-  public int getModelNumber() {
+  public short getModelID() {
     if (pdbAtom == null)
       return 0;
-    return pdbAtom.getModelNumber();
+    return pdbAtom.getModelID();
   }
 
   public Object markDeleted() {

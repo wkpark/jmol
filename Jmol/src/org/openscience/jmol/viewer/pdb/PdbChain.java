@@ -31,13 +31,15 @@ import javax.vecmath.Point3f;
 
 public class PdbChain {
 
-  public char chainID;
+  PdbModel model;
+  char chainID;
   short firstGroupSequence;
   int groupCount;
   PdbGroup[] groups = new PdbGroup[16];
   PdbGroup[] mainchain;
 
-  public PdbChain(char chainID) {
+  public PdbChain(PdbModel model, char chainID) {
+    this.model = model;
     this.chainID = chainID;
   }
 
@@ -49,14 +51,16 @@ public class PdbChain {
     }
   }
   
-  void addGroup(PdbGroup group) {
-    short groupSequence = group.groupSequence;
+  PdbGroup allocateGroup(short groupSequence, String group3) {
+
+    PdbGroup group = new PdbGroup(this, groupSequence, group3);
+    
     if (groupCount == 0)
       firstGroupSequence = groupSequence;
     int groupIndex = groupSequence - firstGroupSequence;
     if (groupIndex < 0) {
       System.out.println("residue out of sequence?");
-      return;
+      return group;
     }
     if (groupIndex >= groups.length) {
       PdbGroup[] t = new PdbGroup[groupIndex * 2];
@@ -66,6 +70,7 @@ public class PdbChain {
     groups[groupIndex] = group;
     if (groupIndex >= groupCount)
       groupCount = groupIndex + 1;
+    return group;
   }
 
   public PdbGroup getResidue(int groupIndex) {
@@ -93,15 +98,17 @@ public class PdbChain {
     int mainchainCount = 0;
     outer:
     for (int i = groupCount; --i >= 0; ) {
-      PdbGroup residue = groups[i];
-      int[] mainchainIndices = residue.mainchainIndices;
-      if (mainchainIndices == null)
+      PdbGroup group = groups[i];
+      int[] mainchainIndices = group.mainchainIndices;
+      if (mainchainIndices == null) {
+        System.out.println("group.mainchainIndices == null :-(");
         continue;
+      }
       for (int j = 4; --j >=0; )
         if (mainchainIndices[j] == -1)
           continue outer;
       if (addGroups)
-        mainchain[mainchainCount] = residue;
+        mainchain[mainchainCount] = group;
       ++mainchainCount;
     }
     return mainchainCount;

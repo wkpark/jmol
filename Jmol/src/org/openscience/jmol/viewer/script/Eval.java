@@ -876,7 +876,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (pdbatom.modelNumber == modelNumber)
+      if (pdbatom.getModelID() == modelNumber)
         bsModel.set(i);
     }
     return bsModel;
@@ -931,7 +931,7 @@ public class Eval implements Runnable {
         propertyValue = atom.getCovalentBondCount();
         break;
       case Token.model:
-        propertyValue = atom.getModelNumber();
+        propertyValue = atom.getModelID();
         break;
       default:
         unrecognizedAtomProperty(property);

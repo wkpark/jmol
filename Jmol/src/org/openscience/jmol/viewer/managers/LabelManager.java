@@ -147,7 +147,7 @@ public class LabelManager {
         break;
       case 'M':
         if (pdbatom != null)
-          strLabel += "/" + pdbatom.getModelNumber();
+          strLabel += "/" + pdbatom.getModelID();
         break;
       default:
         strLabel += "" + ch;

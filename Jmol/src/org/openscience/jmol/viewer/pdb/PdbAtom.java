@@ -36,12 +36,10 @@ public class PdbAtom {
   public int atomSerial;
   public int temperature;
   public boolean isHetero;
-  public byte modelNumber;
 
-  public PdbAtom(int atomIndex, int modelNumber, String recordPdb, PdbGroup group) {
+  public PdbAtom(PdbGroup group, int atomIndex, String recordPdb) {
     this.group = group;
     isHetero = recordPdb.startsWith("HETATM");
-    this.modelNumber = (byte)modelNumber;
 
     String t = recordPdb.substring(12, 16);
     name = t.trim();
@@ -50,10 +48,6 @@ public class PdbAtom {
     try {
       atomSerial = Integer.parseInt(recordPdb.substring(6, 11).trim());
     } catch (NumberFormatException e) {
-    }
-    if (atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
-      if (! group.registerMainchainAtomIndex(atomID, atomIndex))
-        atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
     }
     if (recordPdb.length() >= 66) {
       try {
@@ -134,12 +128,12 @@ public class PdbAtom {
     return temperature;
   }
 
-  public int getModelNumber() {
-    return modelNumber;
+  public short getModelID() {
+    return group.chain.model.modelID;
   }
 
   public char getChainID() {
-    return group.chainID;
+    return group.chain.chainID;
   }
 
   public int getAtomSerial() {

@@ -1,2 +1,2 @@
 Main-Class: org.openscience.jmol.Jmol
-Class-Path: Acme.jar cml.jar aelfred.jar sax.jar multi.jar vecmath1.1-1.12.jar 
+Class-Path: Acme.jar cml.jar aelfred.jar sax.jar multi.jar vecmath1.1-1.12.jar plot.jar

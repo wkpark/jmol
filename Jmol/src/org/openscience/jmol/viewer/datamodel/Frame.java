@@ -90,18 +90,6 @@ final public class Frame {
   }
 
   void freeze() {
-    ////////////////////////////////////////////////////////////////
-    // convert fractional coordinates to cartesian
-    if (notionalUnitcell != null)
-      doUnitcellStuff();
-
-    ////////////////////////////////////////////////////////////////
-    // perform bonding if necessary
-    if (viewer.getAutoBond()) {
-      if ((bondCount == 0) ||
-          (modelTypeName == "pdb" && (bondCount < (atomCount / 2))))
-        rebond(false);
-    }
 
     ////////////////////////////////////////////////////////////////
     // resize arrays
@@ -592,6 +580,18 @@ final public class Frame {
     }
   }
 
+  ////////////////////////////////////////////////////////////////
+  // autobonding stuff
+  ////////////////////////////////////////////////////////////////
+  void doAutobond() {
+    // perform bonding if necessary
+    if (viewer.getAutoBond()) {
+      if ((bondCount == 0) ||
+          (modelTypeName == "pdb" && (bondCount < (atomCount / 2))))
+        rebond(false);
+    }
+  }
+
   final static boolean showRebondTimes = false;
 
   private float bondTolerance;
@@ -809,9 +809,12 @@ final public class Frame {
   }
 
   void doUnitcellStuff() {
-    constructFractionalMatrices();
-    if (fileCoordinatesAreFractional)
-      convertFractionalToEuclidean();
+    if (notionalUnitcell != null) {
+      // convert fractional coordinates to cartesian
+      constructFractionalMatrices();
+      if (fileCoordinatesAreFractional)
+        convertFractionalToEuclidean();
+    }
     /*
       mth 2004 03 06
       We do not want to pack the unitcell automatically.

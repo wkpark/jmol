@@ -117,6 +117,8 @@ final public class FrameBuilder {
     frame.bondCount = bondCount;
     frame.bonds = bonds;
 
+    frame.doUnitcellStuff();
+    frame.doAutobond();
     frame.freeze();
     long msToBuild = System.currentTimeMillis() - timeBegin;
     System.out.println("Build a frame:" + msToBuild + " ms");

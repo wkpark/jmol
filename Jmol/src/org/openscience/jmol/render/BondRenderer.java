@@ -119,15 +119,12 @@ public class BondRenderer {
   }
 
   private void renderBond() {
-    dx = x2 - x1;
-    int dx2 = dx * dx;
-    dy = y2 - y1;
-    int dy2 = dy * dy;
-    int mag2d2 = dx2 + dy2;
     boolean lineBond = (styleBond == control.WIREFRAME ||
                         fastRendering ||
-                        width == 1);
-    if (mag2d2 == 0) {
+                        width <= 1);
+    dx = x2 - x1;
+    dy = y2 - y1;
+    if (dx == 0 && dy == 0) {
       if (! lineBond) {
         int space = width / 8 + 3;
         int step = width + space;
@@ -148,6 +145,9 @@ public class BondRenderer {
         g25d.fillCylinder(colix1, colix2, width, x1, y1, z1, x2, y2, z2);
       return;
     }
+    int dx2 = dx * dx;
+    int dy2 = dy * dy;
+    int mag2d2 = dx2 + dy2;
     mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
     resetAxisCoordinates(lineBond);
     while (true) {

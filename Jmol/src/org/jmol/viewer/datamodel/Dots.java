@@ -190,9 +190,9 @@ public class Dots extends Shape {
       short colix = g3d.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = tori[i];
-        if (bs.get(torus.indexI))
+        if (bs.get(torus.indexII))
           torus.colixI = colix;
-        if (bs.get(torus.indexJ))
+        if (bs.get(torus.indexJJ))
           torus.colixJ = colix;
       }
       return;
@@ -221,11 +221,11 @@ public class Dots extends Shape {
         }
         for (int i = torusCount; --i >= 0; ) {
           Torus torus = tori[i];
-          if (bs.get(torus.indexI))
-            torus.colixI = viewer.getColixAtomPalette(atoms[torus.indexI],
+          if (bs.get(torus.indexII))
+            torus.colixI = viewer.getColixAtomPalette(atoms[torus.indexII],
                                                       palette);
-          if (bs.get(torus.indexJ))
-            torus.colixJ = viewer.getColixAtomPalette(atoms[torus.indexJ],
+          if (bs.get(torus.indexJJ))
+            torus.colixJ = viewer.getColixAtomPalette(atoms[torus.indexJJ],
                                                       palette);
         }
         for (int i = cavityCount; --i >= 0; ) {
@@ -391,8 +391,8 @@ public class Dots extends Shape {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = tori[i];
-      if (dotsConvexMaps[torus.indexI] == null &&
-          dotsConvexMaps[torus.indexJ] == null) {
+      if (dotsConvexMaps[torus.indexII] == null &&
+          dotsConvexMaps[torus.indexJJ] == null) {
         torusDeleted = true;
         tori[i] = null;
       }
@@ -426,7 +426,7 @@ public class Dots extends Shape {
       pointT.add(torus.center);
       int iStart = iLastNeighbor;
       do {
-        if (neighbors[iLastNeighbor].atomIndex != torus.indexJ) {
+        if (neighbors[iLastNeighbor].atomIndex != torus.indexJJ) {
           if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
               < neighborPlusProbeRadii2[iLastNeighbor]) {
             probeMap &= ~(1L << (63 - a));
@@ -449,7 +449,7 @@ public class Dots extends Shape {
   final Vector3f vectorPJ = new Vector3f();
 
   class Torus {
-    int indexI, indexJ;
+    int indexII, indexJJ;
     Point3f center;
     float radius;
     Vector3f axisVector;
@@ -464,8 +464,8 @@ public class Dots extends Shape {
 
     Torus(Point3f centerI, int indexI, Point3f centerJ, int indexJ,
           Point3f center, float radius) {
-      this.indexI = indexI;
-      this.indexJ = indexJ;
+      this.indexII = indexI;
+      this.indexJJ = indexJ;
       this.center = center;
       this.radius = radius;
 

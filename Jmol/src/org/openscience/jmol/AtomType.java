@@ -1,4 +1,23 @@
 /*
+ * BaseAtomType.java
+ * 
+ * Copyright (C) 1999  Bradley A. Smith
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+/*
  * @(#)AtomType.java    1.0 98/08/27
  *
  * Copyright (c) 1998 J. Daniel Gezelter All Rights Reserved.
@@ -48,10 +67,12 @@ import java.awt.image.ColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.*;
 import java.util.Vector;
+import java.util.Hashtable;
 import javax.swing.*;
 
 public class AtomType {
 
+	private BaseAtomType baseType;
     private static JPanel jpanel;
     /* 
        Place the light source for shaded atoms to the upper right of the
@@ -59,8 +80,8 @@ public class AtomType {
     */
     private static float lightsource[] = { 1.0f, -1.0f, 2.0f};
 
-    private static float screenScale;
-    private static int zOffset;
+    private static float screenScale = 1.0f;
+    private static int zOffset = 1;
     private static float depthFactor = 0.33f;
     /**
      * QUICKDRAW mode draws a filled circle
@@ -88,16 +109,10 @@ public class AtomType {
     private static double sphereFactor = 0.2;  /* static vars, once for each 
                                                   class, not once per instance
                                                   of class */
-    private String name, root;
-    private int AtomicNumber;
-    private double mass;
-    private double vdWRadius;
-    private double covalentRadius;    
-    private int Rl;
-    private int Gl;
-    private int Bl;
-    private Image ball;
-    private Color col;
+	/**
+	 * Pool of atom images for shaded renderings.
+	 */
+    private static Hashtable ballImages = new Hashtable();
     
     /**
      * Sets the JPanel where all atoms will be drawn
@@ -196,46 +211,39 @@ public class AtomType {
      * @param root the root of this atom type (e.g. C for alpha carbon)
      * @param AtomicNumber the atomic number (usually the number of protons of the root)
      * @param mass the atomic mass 
-     * @param vdWRadius the van der Waals radius (helps determine drawing size)
+     * @param vdwRadius the van der Waals radius (helps determine drawing size)
      * @param covalentRadius the covalent radius (helps determine bonding)
      * @param Rl red component for drawing colored atoms
      * @param Gl green component for drawing colored atoms
      * @param Bl blue component for drawing colored atoms
      */
     public AtomType(String name, String root, int AtomicNumber, 
-             double mass, double vdWRadius, double covalentRadius, 
+             double mass, double vdwRadius, double covalentRadius, 
              int Rl, int Gl, int Bl) {
-        this.name = name;
-        this.root = root;
-        this.AtomicNumber = AtomicNumber;
-        this.mass = mass;
-        this.vdWRadius = vdWRadius;
-        this.covalentRadius = covalentRadius;
-        this.Rl = Rl;
-        this.Gl = Gl;
-        this.Bl = Bl;
-        this.col = new Color(Rl, Gl, Bl);
+		baseType = BaseAtomType.get(name, root, AtomicNumber, mass, vdwRadius, covalentRadius, new Color(Rl, Gl, Bl));
     }        
 
     /**
-     * Constructor
-     *
-     * @param Rl red component for drawing colored atoms
-     * @param Gl green component for drawing colored atoms
-     * @param Bl blue component for drawing colored atoms
+     * Constructs an AtomType from the another AtomType.
+     * @param at atom type 
      */
-    public AtomType(int Rl, int Gl, int Bl) {
-        this.Rl = Rl;
-        this.Gl = Gl;
-        this.Bl = Bl;
-        this.col = new Color(Rl, Gl, Bl);
+    public AtomType(AtomType at) {
+		baseType = at.baseType;
+    }
+
+    /**
+     * Constructs an AtomType from the BaseAtomType.
+     * @param at base atom type 
+     */
+    public AtomType(BaseAtomType at) {
+		baseType = at;
     }
 
     private final int blend(int fg, int bg, float fgfactor) {
         return (int) (bg + (fg - bg) * fgfactor);
     }
     
-    private void SphereSetup() {        
+    private static Image SphereSetup(Color ballColor) {
         float v1[] = new float[3];
         float v2[] = new float[3];
         byte b = 40;
@@ -262,9 +270,9 @@ public class AtomType {
                                                           +v1[2]*lightsource[2]
                                                           ));
                     if (len2 < 0.995f) {
-                        R2 = (int)((float)Rl*len2);
-                        G2 = (int)((float)Gl*len2);
-                        B2 = (int)((float)Bl*len2);
+                        R2 = (int)((float)ballColor.getRed()*len2);
+                        G2 = (int)((float)ballColor.getGreen()*len2);
+                        B2 = (int)((float)ballColor.getBlue()*len2);
                     } else {
                         v2[0] = lightsource[0]+0.0f;
                         v2[1] = lightsource[1]+0.0f;
@@ -274,9 +282,9 @@ public class AtomType {
                         float len4 = 8.0f * len3*len3 - 7.0f;
                         float len5 = 100.0f * len4;
                         len5 = Math.max(len5, 0.0f);                        
-                        R2 = (int)((float)(Rl * 155) * len2 + 100.0 + len5);
-                        G2 = (int)((float)(Gl * 155) * len2 + 100.0 + len5);
-                        B2 = (int)((float)(Bl * 155) * len2 + 100.0 + len5);
+                        R2 = (int)((float)(ballColor.getRed() * 155) * len2 + 100.0 + len5);
+                        G2 = (int)((float)(ballColor.getGreen() * 155) * len2 + 100.0 + len5);
+                        B2 = (int)((float)(ballColor.getBlue() * 155) * len2 + 100.0 + len5);
                         R2 = Math.min(R2, 255);
                         G2 = Math.min(G2, 255);
                         B2 = Math.min(B2, 255);
@@ -287,7 +295,7 @@ public class AtomType {
                     model[j] = 0;
             }            
         }
-        ball = jpanel.createImage(new MemoryImageSource(i, i, model, 0, i));
+        return jpanel.createImage(new MemoryImageSource(i, i, model, 0, i));
     }
     
     /**
@@ -315,21 +323,22 @@ public class AtomType {
         }
         switch( DrawMode ) {
         case WIREFRAME:
-            gc.setColor(col);
+            gc.setColor(baseType.getColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
             break;
         case SHADING:
-            Image ba = ball;
-            if (ba == null) {
-                SphereSetup();
-                ba = ball;
+			Image shadedImage;
+			if (ballImages.containsKey(baseType.getColor())) {
+				shadedImage = (Image)ballImages.get(baseType.getColor());
+			} else {
+                shadedImage = SphereSetup(baseType.getColor());
+				ballImages.put(baseType.getColor(), shadedImage);
             }
-            Image i = ba;
-            gc.drawImage(i, x - radius, y - radius, diameter, diameter, 
-                         jpanel);
+            gc.drawImage(shadedImage, x - radius, y - radius, diameter,
+						 diameter, jpanel);
             break;
         default:
-            gc.setColor(col);
+            gc.setColor(baseType.getColor());
             gc.fillOval(x - radius, y - radius, diameter, diameter);
             gc.setColor(outlineColor);
             gc.drawOval(x - radius, y - radius, diameter, diameter);
@@ -347,12 +356,12 @@ public class AtomType {
                 
             switch( LabelMode ) {
             case SYMBOLS:
-                j = fontMetrics.stringWidth(root);
-                gc.drawString(root, x-j/2, y+k/2); 
+                j = fontMetrics.stringWidth(baseType.getRoot());
+                gc.drawString(baseType.getRoot(), x-j/2, y+k/2); 
                 break;
             case TYPES:
-                j = fontMetrics.stringWidth(name);
-                gc.drawString(name, x-j/2, y+k/2);
+                j = fontMetrics.stringWidth(baseType.getName());
+                gc.drawString(baseType.getName(), x-j/2, y+k/2);
                 break;
             case NUMBERS:
                 s = new Integer(n).toString();
@@ -386,131 +395,18 @@ public class AtomType {
     }
     
     /**
-     * returns the name of this AtomType
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * returns the root of this AtomType
-     */
-    public String getRoot() {
-        return root;
-    }
-    
-    /**
-     * returns the Atomic Number of this AtomType
-     */
-    public int getAtomicNumber() {
-        return AtomicNumber;
-    }
-
-    /**
-     * returns the mass of this AtomType
-     */
-    public double getMass() {
-        return mass;
-    }
-
-    /**
-     * returns the covalent radius of this AtomType
-     */
-    public double getCovalentRadius() {
-        return covalentRadius;
-    }
-    
-    /**
-     * returns the Van derWaals radius of this AtomType
-     */
-    public double getvdWRadius() {
-        return vdWRadius;
-    }
-
-    /**
-     * returns the color of this AtomType
-     */
-    public Color getColor() {
-        return col;
-    }
-
-    /**
-     * sets the name of this AtomType
-     *
-     * @param n the Name
-     */
-    public void setName(String n) {
-        this.name = n;
-    }
-
-    /**
-     * sets the root of this AtomType
-     *
-     * @param r the root
-     */
-    public void setRoot(String r) {
-        this.root = r;
-    }
-    
-    /**
-     * sets the Atomic Number of this AtomType
-     *
-     * @param an the AtomicNumber
-     */
-    public void setAtomicNumber(int an) {
-        this.AtomicNumber = an;
-    }
-
-    /**
-     * sets the mass of this AtomType
-     *
-     * @param m the mass
-     */
-    public void setMass(double m) {
-        this.mass = m;
-    }
-
-    /**
-     * sets the covalent radius of this AtomType
-     *
-     * @param cr the covalent radius
-     */
-    public void setCovalentRadius(double cr) {
-        this.covalentRadius = cr;
-    }
-    
-    /**
-     * sets the Van derWaals radius of this AtomType
-     *
-     * @param vr the Van derWaals Radius
-     */
-    public void setvdWRadius(double vr) {
-        this.vdWRadius = vr;
-    }
-
-    /**
-     * sets the color of this AtomType
-     *
-     * @param c the Color
-     */
-    public void setColor(Color c) {
-        this.col = c;
-    }
-
-
-    /**
      * returns the on-screen radius of this Atom
      *
      * @param z z position in screen space
      */ 
     public float getCircleRadius(int z) {
-        double raw = vdWRadius*sphereFactor;
+        double raw = baseType.getVdwRadius()*sphereFactor;
         float depth = (float)(z - zOffset) / (2.0f*zOffset);
         float tmp = screenScale * ((float)raw + depthFactor*depth);
         return tmp < 0.0f ? 1.0f : tmp;
     }
 
-    private float[] normalize(float v[]) {
+    private static float[] normalize(float v[]) {
         float len = (float) Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
         float v2[] = new float[3];
         if (len == 0.0F) {
@@ -525,4 +421,24 @@ public class AtomType {
         return v2;
     }
 
+
+	public String getName() {
+		return baseType.getName();
+	}
+
+	public String getRoot() {
+		return baseType.getRoot();
+	}
+
+	public Color getColor() {
+		return baseType.getColor();
+	}
+
+	public double getCovalentRadius() {
+		return baseType.getCovalentRadius();
+	}
+
+	public BaseAtomType getBaseAtomType() {
+		return baseType;
+	}
 }

@@ -555,6 +555,7 @@ public class Token {
     "*",            new Token(asterisk, "*"),
     "all",          tokenAll,
     "none",         new Token(none, "none"),
+    "null",         null,
     "normal",       new Token(normal, "normal"),
     "rasmol",       new Token(rasmol, "rasmol"),
     "insight",      new Token(insight, "insight"),

@@ -2041,15 +2041,15 @@ public class Eval implements Runnable {
       viewer.setAnimationPrevious();
       return;
     }
-    int model = 0;
+    int modelID = 0;
     switch(statement[offset].tok) {
     case Token.all:
     case Token.asterisk:
-      model = -1;
+      modelID = -1;
     case Token.none:
       break;
     case Token.integer:
-      model = statement[offset].intValue;
+      modelID = statement[offset].intValue;
       break;
     case Token.identifier:
       String ident = (String)statement[offset].value;
@@ -2064,7 +2064,8 @@ public class Eval implements Runnable {
     default:
       invalidArgument();
     }
-    viewer.setDisplayModel(model);
+    if (! viewer.setDisplayModelID(modelID))
+      evalError("Invalid modelID:" + modelID);
   }
 
   /****************************************************************
@@ -2471,6 +2472,6 @@ public class Eval implements Runnable {
   }
 
   void showAnimation() {
-    showString("show animation informatio goes here");
+    showString("show animation information goes here");
   }
 }

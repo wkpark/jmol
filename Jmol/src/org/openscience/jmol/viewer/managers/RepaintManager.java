@@ -44,10 +44,30 @@ public class RepaintManager {
     frameRenderer = new FrameRenderer(viewer);
   }
 
-  public int displayModel = 0;
-  public void setDisplayModel(int model) {
-    System.out.println("display model=" + model);
-    this.displayModel = model;
+  public int displayModelID = 0;
+  int displayModelIndex = -1;
+  int modelCount;
+  public boolean setDisplayModelID(int modelID) {
+    int i = -1;
+    if (modelID != 0) {
+      Frame frame = viewer.getFrame();
+      short[] ids = frame.modelIDs;
+      i = modelCount = frame.modelCount;
+      while ((--i >= 0) && (ids[i] != modelID))
+        ;
+      if (i < 0)
+        return false;
+    }
+    System.out.println("display modelID=" + modelID);
+    displayModelID = modelID;
+    displayModelIndex = i;
+    return true;
+  }
+
+  void setDisplayModelIndex(int modelIndex) {
+    Frame frame = viewer.getFrame();
+    this.displayModelIndex = modelIndex;
+    this.displayModelID = frame.modelIDs[modelIndex];
   }
 
   public int animationDirection = 1;
@@ -89,26 +109,10 @@ public class RepaintManager {
     this.isAnimating = animate;
   }
 
-  private int getIndex(int id, int idCount, short[] ids) {
-    int index = idCount;
-    while ((--index >= 0) && (ids[index] != id))
-      ;
-    return index;
-  }
-
   public boolean setAnimationRelative(int direction) {
-    if (displayModel == 0)
+    if (displayModelID == 0)
       return false;
-    Frame frame = viewer.getFrame();
-    short[] modelIDs = frame.modelIDs;
-    int modelCount = frame.modelCount;
-    int modelIndex = modelCount;
-    modelIndex = getIndex(displayModel, modelCount, modelIDs);
-    if (modelIndex < 0) {
-      displayModel = 0;
-      return false;
-    }
-    int modelIndexNext = modelIndex + direction;
+    int modelIndexNext = displayModelIndex + direction;
     /*
     System.out.println("setAnimationRelative: displayModel=" + displayModel +
                        " modelIndex=" + modelIndex +
@@ -120,29 +124,29 @@ public class RepaintManager {
     */
     if (modelIndexNext == modelCount) {
       switch (animationReplayMode) {
+      case 0:
+        return false;
       case 1:
-        displayModel = modelIDs[0];
-        return true;
+        modelIndexNext = 0;
+        break;
       case 2:
-        displayModel = modelIDs[modelCount - 2];
         animationDirection = -1;
-        return true;
+        modelIndexNext = modelCount - 2;
       }
     } else if (modelIndexNext < 0) {
       switch (animationReplayMode) {
+      case 0:
+        return false;
       case 1:
-        displayModel = modelIDs[modelCount - 1];
-        return true;
+        modelIndexNext = modelCount -1;
+        break;
       case 2:
-        displayModel = modelIDs[1];
         animationDirection = 1;
-        return true;
+        modelIndexNext = 1;
       }
-    } else {
-      displayModel = modelIDs[modelIndexNext];
-      return true;
     }
-    return false;
+    setDisplayModelIndex(modelIndexNext);
+    return true;
   }
 
   public boolean setAnimationNext() {
@@ -218,7 +222,7 @@ public class RepaintManager {
   }
 
   public void render(Graphics3D g3d, Rectangle rectClip,
-                     Frame frame, int displayModel) {
+                     Frame frame, int displayModelID) {
     g3d.validateRectClip(rectClip);
     g3d.beginRendering(tOversample);
     if (tOversample) {
@@ -229,7 +233,7 @@ public class RepaintManager {
       rectClip = rectOversample;
     }
     g3d.clearScreenBuffer(viewer.getColorBackground().getRGB(), rectClip);
-    frameRenderer.render(g3d, rectClip, frame, displayModel);
+    frameRenderer.render(g3d, rectClip, frame, displayModelID);
     viewer.checkCameraDistance();
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null)

@@ -1193,12 +1193,12 @@ final public class JmolViewer {
       refresh();
   }
 
-  public void setDisplayModel(int model) {
-    repaintManager.setDisplayModel(model);
+  public boolean setDisplayModelID(int modelID) {
+    return repaintManager.setDisplayModelID(modelID);
   }
 
   public int getDisplayModel() {
-    return repaintManager.displayModel;
+    return repaintManager.displayModelID;
   }
 
   public FrameRenderer getFrameRenderer() {
@@ -1257,7 +1257,7 @@ final public class JmolViewer {
   public Image renderScreenImage(Rectangle rectClip) {
     manageScriptTermination();
     repaintManager.render(g3d, rectClip,
-                          modelManager.getFrame(), repaintManager.displayModel);
+                          modelManager.getFrame(), repaintManager.displayModelID);
     return g3d.getScreenImage();
   }
 

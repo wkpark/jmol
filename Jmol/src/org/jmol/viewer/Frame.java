@@ -532,6 +532,7 @@ final class Frame {
     loadShape(JmolConstants.SHAPE_STICKS);
     if (fileHasHbonds)
       loadShape(JmolConstants.SHAPE_HSTICKS);
+    loadShape(JmolConstants.SHAPE_MEASURES);
   }
 
   void hackAtomSerialNumbersForAnimations() {

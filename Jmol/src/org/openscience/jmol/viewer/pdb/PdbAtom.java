@@ -34,7 +34,6 @@ public class PdbAtom {
   public String name;
   public short atomID;
   public int atomSerial;
-  public int temperature;
   public boolean isHetero;
 
   public PdbAtom(PdbGroup group, int atomIndex, String recordPdb) {
@@ -48,14 +47,6 @@ public class PdbAtom {
     try {
       atomSerial = Integer.parseInt(recordPdb.substring(6, 11).trim());
     } catch (NumberFormatException e) {
-    }
-    if (recordPdb.length() >= 66) {
-      try {
-        t = recordPdb.substring(60, 66).trim();
-        temperature = (int)(Float.valueOf(t).floatValue() * 100);
-      } catch (NumberFormatException e) {
-        System.out.println("temp is not a decimal:" + recordPdb);
-      }
     }
   }
   
@@ -126,10 +117,6 @@ public class PdbAtom {
       if (strAtomName.charAt(ichAtomName++) != ' ')
         return false;
     return true;
-  }
-
-  public int getTemperature() {
-    return temperature;
   }
 
   public char getChainID() {

@@ -998,8 +998,8 @@ public class Eval implements Runnable {
         propertyValue = atom.getAtomicNumber();
         break;
       case Token.temperature:
-        propertyValue = getTemperature(atom);
-        if (propertyValue == -1)
+        propertyValue = atom.getBfactor100();
+        if (propertyValue < 0)
           continue;
         break;
       case Token.resno:
@@ -1151,11 +1151,6 @@ public class Eval implements Runnable {
   int getResno(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
     return (pdbatom == null) ? -1 : pdbatom.getSeqcode();
-  }
-
-  int getTemperature(Atom atom) {
-    PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getTemperature();
   }
 
   int getGroupID(Atom atom) {

@@ -94,8 +94,7 @@ public class Labels extends Shape {
         break;
       case 'b': // these two are the same
       case 't':
-        if (pdbatom != null)
-          strLabel += pdbatom.getTemperature();
+        strLabel += (atom.getBfactor100() / 100.0);
         break;
       case 'c': // these two are the same
       case 's':

@@ -388,15 +388,6 @@ public class Atom implements Bspt.Tuple {
     return pdbAtom.group.chain.pdbmodel;
   }
 
-  short getPdbTemperatureMar() {
-    // some .pdb files have a radius (measured in angstroms) stored in the
-    // TEMPERATURE field of the .pdb file format
-    if (pdbAtom == null)
-      return 0;
-    // the temperature field is in 100th, but we want *milli* angstroms
-    return (short)(pdbAtom.temperature * 10);
-  }
-
   public boolean isDeleted() {
     return madAtom == JmolConstants.MAR_DELETED;
   }

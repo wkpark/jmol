@@ -23,6 +23,8 @@
  *  02111-1307  USA.
  */
 
+package org.jmol.applet;
+
 import java.applet.*;
 import java.awt.*;
 import java.awt.Event;

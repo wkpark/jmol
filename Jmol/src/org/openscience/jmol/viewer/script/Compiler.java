@@ -714,16 +714,8 @@ class Compiler {
   }
 
   boolean clausePrimitive() {
-    switch (tokPeek()) {
-    case Token.atomno:
-    case Token.elemno:
-    case Token.resno:
-    case Token.radius:
-    case Token.temperature:
-    case Token._bondedcount:
-    case Token._resid:
-    case Token._atomid:
-      return clauseComparator();
+    int tok = tokPeek();
+    switch (tok) {
     case Token.within:
       return clauseWithin();
     case Token.hyphen: // selecting a negative residue spec
@@ -734,7 +726,8 @@ class Compiler {
     case Token.colon:
       return clauseResidueSpec();
     default:
-      int tok = tokPeek();
+      if ((tok & Token.atomproperty) == Token.atomproperty)
+        return clauseComparator();
       if ((tok & Token.predefinedset) != Token.predefinedset)
         break;
       // fall into the code and below and just add the token

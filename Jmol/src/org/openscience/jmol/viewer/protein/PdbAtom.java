@@ -136,14 +136,7 @@ public class PdbAtom {
     return atomNumber;
   }
 
-  /*
-  public void setStructureType(byte type) {
-    if (residue != null)
-      residue.structureType = type;
-  }
-  */
-
-  public int getProteinStructureType() {
+  public int getSecondaryStructureType() {
     return residue == null ? 0 : residue.getStructureType();
   }
 

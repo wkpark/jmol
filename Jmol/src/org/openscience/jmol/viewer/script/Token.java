@@ -247,6 +247,7 @@ public class Token {
   final static int _bondedcount = atomproperty | 4;
   final static int _resid       = atomproperty | 5;
   final static int _atomid      = atomproperty | 6;
+  final static int _structure   = atomproperty | 7;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -453,6 +454,7 @@ public class Token {
     "_bondedcount", new Token(_bondedcount, "_bondedcount"),
     "_resid",       new Token(_resid, "_resid"),
     "_atomid",      new Token(_atomid, "_atomid"),
+    "_structure",   new Token(_structure, "_structure"),
 
     "off",          new Token(off, 0, "off"),
     "false",        null,
@@ -510,7 +512,7 @@ public class Token {
     "@charged acidic,basic",
     "@cyclic h,f,p,w,y",
     //    "@cystine",
-    //    "@helix",
+    "@helix _structure=3",
     //    "@hetero", handled specially
     // doc on hydrophobic is inconsistent
     // text description of hydrophobic says this
@@ -532,12 +534,12 @@ public class Token {
     "@purine a,g",
     "@pyrimidine c,t",
     // selected - special and is handled at runtime
-    //    "@sheet"
+    "@sheet _structure=2",
     "@sidechain (protein or nucleic) and !backbone", // doc & code inconsistent
     "@small a,g,s",
     "@solvent _resid>=27 & _resid<=30", // water or ions
     "@surface !buried",
-    //    "@turn",
+    "@turn _structure=1",
     "@water _resid=27,_resid=28", "@hoh water",
 
     "@a ala",

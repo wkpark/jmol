@@ -841,6 +841,11 @@ public class Eval implements Runnable {
         if (propertyValue == -1)
           continue;
         break;
+      case Token._structure:
+        propertyValue = getSecondaryStructureType(atom);
+        if (propertyValue == -1)
+          continue;
+        break;
       case Token.radius:
         propertyValue = atom.getRasMolRadius();
         break;
@@ -904,6 +909,11 @@ public class Eval implements Runnable {
   int getAtomID(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
     return (pdbatom == null) ? -1 : pdbatom.getAtomID();
+  }
+
+  int getSecondaryStructureType(Atom atom) {
+    PdbAtom pdbatom = atom.getPdbAtom();
+    return (pdbatom == null) ? -1 : pdbatom.getSecondaryStructureType();
   }
 
 

@@ -790,7 +790,7 @@ final public class Graphics3D {
     fillTriangle(screenA, screenC, screenD);
   }
 
-  public void fillTriangle(short colix, boolean transparent,
+  public void fillTriangle(short colix, boolean translucent,
                            Point3i screenA, short normixA,
                            Point3i screenB, short normixB,
                            Point3i screenC, short normixC) {
@@ -804,19 +804,19 @@ final public class Graphics3D {
 
     if (normixA == normixB && normixA == normixC) {
       setColorNoisy(colix, normix3d.getIntensity(normixA));
-      triangle3d.fillTriangle(transparent, false);
+      triangle3d.fillTriangle(translucent, false);
     } else {
       int[] shades = getShades(colix);
       triangle3d.setGouraud(shades[normix3d.getIntensity(normixA)],
                             shades[normix3d.getIntensity(normixB)],
                             shades[normix3d.getIntensity(normixC)]);
-      triangle3d.fillTriangle(transparent, true);
+      triangle3d.fillTriangle(translucent, true);
     }
   }
 
-  public void fillTriangle(short colix, boolean transparent,
+  public void fillTriangle(short colix, boolean translucent,
                            Point3i screenA, Point3i screenB, Point3i screenC) {
-    calcSurfaceShade(colix, transparent, screenA, screenB, screenC);
+    calcSurfaceShade(colix, translucent, screenA, screenB, screenC);
     int[] t;
     t = triangle3d.ax;
     t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
@@ -825,17 +825,17 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
-    triangle3d.fillTriangle(transparent, false);
+    triangle3d.fillTriangle(translucent, false);
   }
 
   public final static byte ALPHA_OFF         = 0;
-  public final static byte ALPHA_TRANSPARENT = (byte)0x80;
+  public final static byte ALPHA_TRANSLUCENT = (byte)0x80;
   public final static byte ALPHA_OPAQUE      = (byte)0xFF;
 
   public void fillTriangle(short colix, byte alpha,
                            long xyzdA, long xyzdB, long xyzdC) {
-    boolean transparent = (alpha != ALPHA_OPAQUE);
-    calcSurfaceShade(colix, transparent, xyzdA, xyzdB, xyzdC);
+    boolean translucent = (alpha != ALPHA_OPAQUE);
+    calcSurfaceShade(colix, translucent, xyzdA, xyzdB, xyzdC);
     int[] t;
     t = triangle3d.ax;
     t[0] = Xyzd.getX(xyzdA); t[1] = Xyzd.getX(xyzdB); t[2] = Xyzd.getX(xyzdC);
@@ -844,7 +844,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = Xyzd.getZ(xyzdA); t[1] = Xyzd.getZ(xyzdB); t[2] = Xyzd.getZ(xyzdC);
 
-    triangle3d.fillTriangle(transparent, false);
+    triangle3d.fillTriangle(translucent, false);
   }
 
   public void fillTriangle(short colix, Point3f screenA,
@@ -853,23 +853,23 @@ final public class Graphics3D {
     fillTriangle(screenA, screenB, screenC);
   }
 
-  public void fillQuadrilateral(short colix, boolean transparent,
+  public void fillQuadrilateral(short colix, boolean translucent,
                                 Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {
-    fillTriangle(colix, transparent, screenA, screenB, screenC);
-    fillTriangle(colix, transparent, screenA, screenC, screenD);
+    fillTriangle(colix, translucent, screenA, screenB, screenC);
+    fillTriangle(colix, translucent, screenA, screenC, screenD);
   }
 
-  public void fillQuadrilateral(short colix, boolean transparent,
+  public void fillQuadrilateral(short colix, boolean translucent,
                                 Point3i screenA, short normixA,
                                 Point3i screenB, short normixB,
                                 Point3i screenC, short normixC,
                                 Point3i screenD, short normixD) {
-    fillTriangle(colix, transparent,
+    fillTriangle(colix, translucent,
                  screenA, normixA,
                  screenB, normixB,
                  screenC, normixC);
-    fillTriangle(colix, transparent,
+    fillTriangle(colix, translucent,
                  screenA, normixA,
                  screenC, normixC,
                  screenD, normixD);
@@ -993,7 +993,7 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false, false);
   }
 
-  public void fillTriangle(short colix, boolean transparent,
+  public void fillTriangle(short colix, boolean translucent,
                            int xA, int yA, int zA,
                            int xB, int yB, int zB, int xC, int yC, int zC) {
     /*
@@ -1010,7 +1010,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = zA; t[1] = zB; t[2] = zC;
 
-    triangle3d.fillTriangle(transparent, false);
+    triangle3d.fillTriangle(translucent, false);
   }
 
   final Point3i warrenA = new Point3i();
@@ -1309,11 +1309,18 @@ final public class Graphics3D {
         (zAtLeft > depth && zPastRight > depth))
       return;
     int rScaled = rgb16Left.rScaled << 8;
-    int rIncrement = ((rgb16Right.rScaled - rScaled) << 8) / count;
+    int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
     int gScaled = rgb16Left.gScaled;
     int gIncrement = (rgb16Right.gScaled - gScaled) / count;
     int bScaled = rgb16Left.bScaled;
     int bIncrement = (rgb16Right.bScaled - bScaled) / count;
+    /*
+    System.out.println("gouraud left=" + rgb16Left +
+                       "\n       right=" + rgb16Right +
+                       " r= " + (rScaled >> 16) +
+                       " g=" + (gScaled >> 8) +
+                       " b=" + (bScaled >> 8));
+    */
     
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
@@ -1339,7 +1346,7 @@ final public class Graphics3D {
       if ((!tScreened || (flipflop = !flipflop)) &&
           (z >= slab && z <= depth && z < zbuf[offsetPbuf])) {
         zbuf[offsetPbuf] = (short)z;
-        pbuf[offsetPbuf] = (0xFF00000 |
+        pbuf[offsetPbuf] = (0xFF000000 |
                             (rScaled & 0xFF0000) |
                             (gScaled & 0xFF00) |
                             (bScaled >> 8) & 0xFF);

@@ -342,7 +342,8 @@ class Token {
   final static int monomer      = misc | 38;
   final static int defaultColors= misc | 39 | setparam;
   final static int opaque       = misc | 40;
-  final static int delete       = misc | 41;
+  final static int translucent  = misc | 41;
+  final static int delete       = misc | 42;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -644,6 +645,7 @@ class Token {
     "monomer",      new Token(monomer,         "monomer"),
     "defaultcolors",new Token(defaultColors,   "defaultColors"),
     "opaque",       new Token(opaque,          "opaque"),
+    "translucent",  new Token(translucent,     "translucent"),
     "delete",       new Token(delete,          "delete"),
   };
 

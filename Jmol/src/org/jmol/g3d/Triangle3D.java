@@ -73,7 +73,7 @@ class Triangle3D {
    *==============================================================*/
   
 
-  void fillTriangle(boolean transparent, boolean useGouraud) {
+  void fillTriangle(boolean translucent, boolean useGouraud) {
     int iMinY = 0;
     if (ay[1] < ay[0]) iMinY = 1;
     if (ay[2] < ay[iMinY]) iMinY = 2;
@@ -131,7 +131,7 @@ class Triangle3D {
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
-    fillRaster(yMin, nLines, transparent, useGouraud);
+    fillRaster(yMin, nLines, translucent, useGouraud);
   }
 
   private final static int DEFAULT = 64;

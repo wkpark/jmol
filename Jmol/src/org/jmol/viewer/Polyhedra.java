@@ -56,9 +56,9 @@ class Polyhedra extends SelectionIndependentShape {
       setVisible(false, bs);
       return;
     }
-    if ("transparent" == propertyName) {
-      defaultAlpha = TRANSPARENT;
-      setAlpha(TRANSPARENT, bs);
+    if ("translucent" == propertyName) {
+      defaultAlpha = TRANSLUCENT;
+      setAlpha(TRANSLUCENT, bs);
       return;
     }
     if ("opaque" == propertyName) {
@@ -210,7 +210,7 @@ class Polyhedra extends SelectionIndependentShape {
     return p;
   }
 
-  final static byte TRANSPARENT = (byte)0x80;
+  final static byte TRANSLUCENT = (byte)0x80;
   final static byte OPAQUE      = (byte)0xFF;
 
   class Polyhedron {

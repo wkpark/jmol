@@ -52,7 +52,7 @@ class Pmesh extends SelectionIndependentShape {
       System.out.println("i=" + i +
                          " mesh.meshID=" + mesh.meshID +
                          " mesh.visible=" + mesh.visible +
-                         " mesh.transparent=" + mesh.transparent +
+                         " mesh.translucent=" + mesh.translucent +
                          " mesh.colix=" + mesh.meshColix);
     }
     */
@@ -79,7 +79,7 @@ class Pmesh extends SelectionIndependentShape {
       readPmesh(br);
       currentMesh.initialize();
       currentMesh.visible = true;
-      currentMesh.transparent = false;
+      currentMesh.translucent = false;
       return;
     }
     if ("on" == propertyName) {
@@ -100,21 +100,21 @@ class Pmesh extends SelectionIndependentShape {
       }
       return;
     }
-    if ("transparent" == propertyName) {
+    if ("translucent" == propertyName) {
       if (currentMesh != null)
-        currentMesh.transparent = true;
+        currentMesh.translucent = true;
       else {
         for (int i = meshCount; --i >= 0; )
-          meshes[i].transparent = true;
+          meshes[i].translucent = true;
       }
       return;
     }
     if ("opaque" == propertyName) {
       if (currentMesh != null)
-        currentMesh.transparent = false;
+        currentMesh.translucent = false;
       else {
         for (int i = meshCount; --i >= 0; )
-          meshes[i].transparent = false;
+          meshes[i].translucent = false;
       }
       return;
     }
@@ -133,7 +133,7 @@ class Pmesh extends SelectionIndependentShape {
   }
   
   void allocMesh(String meshID) {
-    Util.ensureLength(meshes, meshCount + 1);
+    meshes = (Mesh[])Util.ensureLength(meshes, meshCount + 1);
     currentMesh = meshes[meshCount++] = new Mesh(meshID);
   }
 
@@ -330,7 +330,7 @@ class Pmesh extends SelectionIndependentShape {
 
   class Mesh {
     String meshID;
-    boolean transparent;
+    boolean translucent;
     boolean visible;
     short meshColix;
     

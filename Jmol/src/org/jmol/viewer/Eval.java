@@ -3337,7 +3337,7 @@ class Eval implements Runnable {
       case Token.on:
       case Token.off:
       case Token.opaque:
-      case Token.transparent:
+      case Token.translucent:
         propertyName = (String)statement[i].value;
         break;
       default:
@@ -3360,7 +3360,7 @@ class Eval implements Runnable {
       case Token.off:
       case Token.delete:
       case Token.opaque:
-      case Token.transparent:
+      case Token.translucent:
         propertyName = (String)statement[i].value;
         break;
       case Token.decimal:

@@ -158,13 +158,15 @@ class Sphere3D {
     float yF = -r + 0.5f;
     int zMin = z - ((diameter + 1) >> 1);
     int width = g3d.width;
+    int height = g3d.height;
+    int slab = g3d.slab;
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int y0 = y;
     int offsetPbufBeginLine = width * y + x;
     for (int i = 0; i < diameter;
          ++i, ++y0, ++yF, offsetPbufBeginLine += width) {
-      if ((y0 < 0) || (y0 >= g3d.height))
+      if ((y0 < 0) || (y0 >= height))
       	continue;
       float y2 = yF * yF;
       float xF = -r + 0.5f;
@@ -180,11 +182,11 @@ class Sphere3D {
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
           int z0 = z - (int)(zF + 0.5f);
-          if (zbuf[offsetPbuf] <= z0)
-            continue;
-          int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
-          pbuf[offsetPbuf] = shades[intensity];
-          zbuf[offsetPbuf] = (short) z0;
+          if (z0 >= slab && z0 < zbuf[offsetPbuf]) {
+            int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
+            pbuf[offsetPbuf] = shades[intensity];
+            zbuf[offsetPbuf] = (short) z0;
+          }
         }
       }
     }
@@ -223,12 +225,14 @@ class Sphere3D {
     int radius = (diameter + 1) >> 1;
     int minX = x - radius, maxX = x + radius;
     int minY = y - radius, maxY = y + radius;
-    boolean clipped = false;
     if (maxX < 0 || minX >= g3d.width ||
-        maxY < 0 || minY >= g3d. height)
+        maxY < 0 || minY >= g3d.height ||
+        z < g3d.slab)
       return;
-    clipped = (x-radius < 0 || x+radius >= g3d.width ||
-               y-radius < 0 || y+radius >= g3d.height);
+    int minZ = z - radius;
+    boolean clipped = (minX < 0 || maxX >= g3d.width ||
+                       minY < 0 || maxY >= g3d.height ||
+                       minZ < g3d.slab);
     if (diameter >= maxSphereCache) {
       if (clipped)
         renderBigClipped(shades, diameter, x, y, z);
@@ -312,6 +316,7 @@ class Sphere3D {
     int offsetSphere = 0;
     int width = g3d.width;
     int height = g3d.height;
+    int slab = g3d.slab;
     int evenSizeCorrection = 1 - (diameter & 1);
     int offsetSouthCenter = width * y + x;
     int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
@@ -333,39 +338,41 @@ class Sphere3D {
         boolean tEastVisible = xEast >= 0 && xEast < width;
         packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
-        if (tSouthVisible) {
-          if (tEastVisible && zPixel <= zbuf[offsetSE]) {
-            if (zPixel < zbuf[offsetSE]) {
-              zbuf[offsetSE] = (short)zPixel;
-              pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
-            } else {
-              g3d.averageOffsetArgb(offsetSE, shades[(packed >> 7) & 0x3F]);
+        if (zPixel >= slab) {
+          if (tSouthVisible) {
+            if (tEastVisible && zPixel <= zbuf[offsetSE]) {
+              if (zPixel < zbuf[offsetSE]) {
+                zbuf[offsetSE] = (short)zPixel;
+                pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
+              } else {
+                g3d.averageOffsetArgb(offsetSE, shades[(packed >> 7) & 0x3F]);
+              }
+            }
+            if (tWestVisible && zPixel <= zbuf[offsetSW]) {
+              if (zPixel < zbuf[offsetSW]) {
+                zbuf[offsetSW] = (short)zPixel;
+                pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
+              } else {
+                g3d.averageOffsetArgb(offsetSW, shades[(packed >> 13) & 0x3F]);
+              }
             }
           }
-          if (tWestVisible && zPixel <= zbuf[offsetSW]) {
-            if (zPixel < zbuf[offsetSW]) {
-              zbuf[offsetSW] = (short)zPixel;
-              pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
-            } else {
-              g3d.averageOffsetArgb(offsetSW, shades[(packed >> 13) & 0x3F]);
+          if (tNorthVisible) {
+            if (tEastVisible && zPixel <= zbuf[offsetNE]) {
+              if (zPixel < zbuf[offsetNE]) {
+                zbuf[offsetNE] = (short)zPixel;
+                pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
+              } else {
+                g3d.averageOffsetArgb(offsetNE, shades[(packed >> 19) & 0x3F]);
+              }
             }
-          }
-        }
-        if (tNorthVisible) {
-          if (tEastVisible && zPixel <= zbuf[offsetNE]) {
-            if (zPixel < zbuf[offsetNE]) {
-              zbuf[offsetNE] = (short)zPixel;
-              pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
-            } else {
-              g3d.averageOffsetArgb(offsetNE, shades[(packed >> 19) & 0x3F]);
-            }
-          }
-          if (tWestVisible && zPixel <= zbuf[offsetNW]) {
-            if (zPixel < zbuf[offsetNW]) {
-              zbuf[offsetNW] = (short)zPixel;
-              pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
-            } else {
-              g3d.averageOffsetArgb(offsetNW, shades[(packed >> 25) & 0x3F]);
+            if (tWestVisible && zPixel <= zbuf[offsetNW]) {
+              if (zPixel < zbuf[offsetNW]) {
+                zbuf[offsetNW] = (short)zPixel;
+                pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+              } else {
+                g3d.averageOffsetArgb(offsetNW, shades[(packed >> 25) & 0x3F]);
+              }
             }
           }
         }

@@ -337,9 +337,7 @@ public class TransformManager {
   }
 
   public void setSlabEnabled(boolean slabEnabled) {
-    if (this.slabEnabled != slabEnabled) {
-      this.slabEnabled = slabEnabled;
-    }
+    this.slabEnabled = slabEnabled;
   }
 
   public void setModeSlab(int modeSlab) {
@@ -363,6 +361,7 @@ public class TransformManager {
       int radius =
         (int)(viewer.getRotationRadius() * scalePixelsPerAngstrom);
       slab = (int)((100-slabPercentSetting) * 2 * radius / 100);
+      slab += cameraDistance;
     }
     return slab;
   }

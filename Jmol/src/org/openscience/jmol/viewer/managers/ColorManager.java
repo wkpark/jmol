@@ -400,8 +400,6 @@ public class ColorManager {
   }
 
   public int calcIntensity(float x, float y, float z) {
-    float magnitude = (float)Math.sqrt(x*x + y*y + z*z);
-    return g3d.calcIntensityNormalized(x/magnitude, y/magnitude,
-                                       z/magnitude);
+    return g3d.calcIntensity(x, y, z);
   }
 }

@@ -111,11 +111,20 @@ final class Shade3D {
 
   static byte calcIntensity(float x, float y, float z) {
     double magnitude = Math.sqrt(x*x + y*y + z*z);
-    return calcIntensityNormalized((float)(x/magnitude),
-                                   (float)(y/magnitude),
-                                   (float)(z/magnitude));
+    return (byte)(calcFloatIntensityNormalized((float)(x/magnitude),
+                                               (float)(y/magnitude),
+                                               (float)(z/magnitude))
+                  * shadeLast + 0.5f);
   }
-  
+
+  static int calcFp8Intensity(float x, float y, float z) {
+    double magnitude = Math.sqrt(x*x + y*y + z*z);
+    return (int)(calcFloatIntensityNormalized((float)(x/magnitude),
+                                              (float)(y/magnitude),
+                                              (float)(z/magnitude))
+                 * shadeLast * (1 << 8));
+  }
+
   static float calcFloatIntensity(float x, float y, float z) {
     double magnitude = Math.sqrt(x*x + y*y + z*z);
     return calcFloatIntensityNormalized((float)(x/magnitude),
@@ -146,24 +155,14 @@ final class Shade3D {
     return intensity;
   }
 
-  static byte calcIntensityNormalized(float x, float y, float z) {
-    byte intensity =
-      (byte)(shadeMax * calcFloatIntensityNormalized(x, y, z) + 0.5f);
-    if (intensity >= shadeMax)
-      return shadeMax - 1;
-    return intensity;
-  }
-
   static byte calcDitheredNoisyIntensity(float x, float y, float z) {
     // add some randomness to prevent banding
-    int intensityPlus4Bits =
-      (int)(calcFloatIntensity(x, y, z) * shadeLast * (1<<4));
-    
-    int intensity = intensityPlus4Bits >> 4;
+    int fp8Intensity = calcFp8Intensity(x, y, z);
+    int intensity = fp8Intensity >> 8;
     // this cannot overflow because the if the float intensity is 1.0
     // then intensity will be == shadeLast
     // but there will be no fractional component, so the next test will fail
-    if ((intensityPlus4Bits & 0x0F) > nextRandom4Bit())
+    if ((fp8Intensity & 0xFF) > nextRandom8Bit())
       ++intensity;
     int random16bit = (int)seed & 0xFFFF;
     if (random16bit < 65536 / 3 && intensity > 0)
@@ -183,10 +182,10 @@ final class Shade3D {
   // this doesn't really need to be synchronized
   // no serious harm done if two threads write seed at the same time
   static long seed = 1;
-  static int nextRandom4Bit() {
+  static int nextRandom8Bit() {
     seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
     //    return (int)(seed >>> (48 - bits));
-    return (int)(seed >>> 44);
+    return (int)(seed >>> 40);
   }
 
 

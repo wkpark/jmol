@@ -1006,7 +1006,7 @@ final public class Graphics3D {
     Shade3D.setLightsourceZ(dist);
   }
 
-  public int calcIntensityNormalized(float x, float y, float z) {
-    return Shade3D.calcIntensityNormalized(x, y, z);
+  public int calcIntensity(float x, float y, float z) {
+    return Shade3D.calcIntensity(x, y, z);
   }
 }

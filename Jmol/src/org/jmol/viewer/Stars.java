@@ -33,11 +33,12 @@ class Stars extends Shape {
   short[] colixes;
 
   void setSize(int size, BitSet bsSelected) {
+    Atom[] atoms = frame.atoms;
     for (int i = frame.atomCount; --i >= 0; )
       if (bsSelected.get(i)) {
         if (mads == null)
           mads = new short[frame.atomCount];
-        mads[i] = (short)size;
+        mads[i] = Atom.convertEncodedMad(atoms[i], size);
       }
   }
 

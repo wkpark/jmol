@@ -998,11 +998,19 @@ final class Frame {
 
   void initializeBspf() {
     if (bspf == null) {
+      long timeBegin, timeEnd;
+      if (showRebondTimes)
+        timeBegin = System.currentTimeMillis();
       bspf = new Bspf(3);
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         if (! atom.isDeleted())
           bspf.addTuple(atom.modelIndex, atom);
+      }
+      if (showRebondTimes) {
+        timeEnd = System.currentTimeMillis();
+        System.out.println("time to build bspf=" + (timeEnd - timeBegin) +
+                           " ms");
       }
     }
   }
@@ -1067,7 +1075,7 @@ final class Frame {
     }
   }
 
-  final static boolean showRebondTimes = false;
+  final static boolean showRebondTimes = true;
 
   private float bondTolerance;
   private float minBondDistance;

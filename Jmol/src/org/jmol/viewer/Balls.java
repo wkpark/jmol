@@ -59,7 +59,7 @@ class Balls extends Shape {
     }
   }
 
-  final static int minimumPixelSelectionRadius = 4;
+  final static int minimumPixelSelectionRadius = 6;
 
   /*
    * This algorithm assumes that atoms are circles at the z-depth

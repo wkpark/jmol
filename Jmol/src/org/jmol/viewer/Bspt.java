@@ -64,9 +64,10 @@ package org.jmol.viewer;
 
 final class Bspt {
 
-  private final static int leafCountMax = 4;
+  private final static int leafCountMax = 8;
   // this corresponds to the max height of the tree
-  private final static int stackDepth = 64;
+  private final static int MAX_TREE_DEPTH = 100;
+  int treeDepth = 0;
   int dimMax;
   Element eleRoot;
 
@@ -91,11 +92,7 @@ final class Bspt {
   }
 
   void addTuple(Tuple tuple) {
-    if (! eleRoot.addTuple(tuple)) {
-      eleRoot = new Node(0, dimMax, (Leaf) eleRoot);
-      if (! eleRoot.addTuple(tuple))
-        System.out.println("Bspt.addTuple() failed");
-    }
+    eleRoot = eleRoot.addTuple(0, tuple);
   }
 
   /*
@@ -243,7 +240,7 @@ final class Bspt {
 
     SphereIterator() {
       centerValues = new float[dimMax];
-      stack = new Node[stackDepth];
+      stack = new Node[treeDepth];
     }
 
     void initialize(Tuple center, float radius) {
@@ -258,7 +255,7 @@ final class Bspt {
       while (ele instanceof Node) {
         Node node = (Node) ele;
         if (centerValues[node.dim] - radius <= node.splitValue) {
-          if (sp == stackDepth)
+          if (sp == treeDepth)
             System.out.println("Bspt.SphereIterator tree stack overflow");
           stack[sp++] = node;
           ele = node.eleLE;
@@ -276,7 +273,7 @@ final class Bspt {
     }
 
     void release() {
-      for (int i = stackDepth; --i >= 0; )
+      for (int i = treeDepth; --i >= 0; )
         stack[i] = null;
     }
 
@@ -341,120 +338,91 @@ final class Bspt {
     float getDimensionValue(int dim);
   }
 
-  interface Element {
-    boolean addTuple(Tuple tuple);
-    //    void dump(int level);
-    boolean isLeafWithSpace();
+  abstract class Element {
+    int count;
+    abstract Element addTuple(int level, Tuple tuple);
   }
 
-  static class Node implements Element {
+  class Node extends Element {
     Element eleLE;
     int dim;
-    int dimMax;
     float splitValue;
     Element eleGE;
-
-    Node(int dim, int dimMax, Leaf leafLE) {
-      this.eleLE = leafLE;
-      this.dim = dim;
-      this.dimMax = dimMax;
-      this.splitValue = leafLE.getSplitValue(dim);
-      this.eleGE = new Leaf(leafLE, dim, splitValue);
+    
+    Node(int level, Leaf leafLE) {
+      if (level >= treeDepth) {
+        if (level >= MAX_TREE_DEPTH) {
+          System.out.println("BSPT tree depth too great");
+          throw new NullPointerException();
+        }
+        treeDepth = level;
+      }
+      eleLE = leafLE;
+      dim = level % dimMax;
+      leafLE.sort(dim);
+      splitValue = leafLE.tuples[leafCountMax/2 - 1].getDimensionValue(dim);
+      eleGE = new Leaf(leafLE, leafCountMax/2);
     }
 
-    public boolean addTuple(Tuple tuple) {
-      if (tuple.getDimensionValue(dim) < splitValue) {
-        if (eleLE.addTuple(tuple))
-          return true;
-        eleLE = new Node((dim + 1) % dimMax, dimMax, (Leaf)eleLE);
-        return eleLE.addTuple(tuple);
-      }
-      if (tuple.getDimensionValue(dim) > splitValue) {
-        if (eleGE.addTuple(tuple))
-          return true;
-        eleGE = new Node((dim + 1) % dimMax, dimMax, (Leaf)eleGE);
-        return eleGE.addTuple(tuple);
-      }
-      if (eleLE.isLeafWithSpace())
-        eleLE.addTuple(tuple);
-      else if (eleGE.isLeafWithSpace())
-        eleGE.addTuple(tuple);
-      else if (eleLE instanceof Node)
-        eleLE.addTuple(tuple);
-      else if (eleGE instanceof Node)
-        eleGE.addTuple(tuple);
-      else {
-        eleLE = new Node((dim + 1) % dimMax, dimMax, (Leaf)eleLE);
-        return eleLE.addTuple(tuple);
-      }
-      return true;
+    Element addTuple(int level, Tuple tuple) {
+      float dimValue = tuple.getDimensionValue(dim);
+      if (dimValue < splitValue ||
+          (dimValue == splitValue && eleLE.count <= eleGE.count))
+        eleLE = eleLE.addTuple(level + 1, tuple);
+      else
+        eleGE = eleGE.addTuple(level + 1, tuple);
+      ++count;
+      return this;
     }
 
-    /*
-    String toString() {
-      return eleLE.toString() + dim + ":" + splitValue + "\n" + eleGE.toString();
-    }
+      /*
+        String toString() {
+        return eleLE.toString() + dim + ":" + splitValue + "\n" + eleGE.toString();
+        }
 
-    void dump(int level) {
-      System.out.println("");
-      eleLE.dump(level + 1);
-      for (int i = 0; i < level; ++i)
+        void dump(int level) {
+        System.out.println("");
+        eleLE.dump(level + 1);
+        for (int i = 0; i < level; ++i)
         System.out.print("-");
-      System.out.println(">" + splitValue);
-      eleGE.dump(level + 1);
-    }
-    */
-
-    public boolean isLeafWithSpace() {
-      return false;
-    }
+        System.out.println(">" + splitValue);
+        eleGE.dump(level + 1);
+        }
+      */
   }
 
-  static class Leaf implements Element {
-    int count;
+  class Leaf extends Element {
     Tuple[] tuples;
-
+    
     Leaf() {
       count = 0;
       tuples = new Tuple[leafCountMax];
     }
-
-    Leaf(Leaf leaf, int dim, float splitValue) {
+    
+    Leaf(Leaf leaf, int countToKeep) {
       this();
-      // first, move over all that are greater
-      for (int i = leafCountMax; --i >= 0; ) {
-        Tuple tuple = leaf.tuples[i];
-        float value = tuple.getDimensionValue(dim);
-        if (value > splitValue) {
-          leaf.tuples[i] = null;
-          tuples[count++] = tuple;
-        }
+      for (int i = countToKeep; i < leafCountMax; ++i) {
+        tuples[count++] = leaf.tuples[i];
+        leaf.tuples[i] = null;
       }
-      // now, move the ones that are ==, keeping a balance
-      for (int i = leafCountMax; --i >= 0; ) {
-        Tuple tuple = leaf.tuples[i];
-        if (tuple != null &&
-            tuple.getDimensionValue(dim) == splitValue &&
-            count < (leafCountMax / 2)) {
-          leaf.tuples[i] = null;
-          tuples[count++] = tuple;
-        }
-      }
-      // slide down the null values
-      int dest = 0;
-      for (int src = 0; src < leafCountMax; ++src)
-        if (leaf.tuples[src] != null)
-          leaf.tuples[dest++] = leaf.tuples[src];
-      leaf.count = dest;
-      if (count == 0 || leaf.count == 0)
-        throw new NullPointerException("Bspt leaf splitting error");
+      leaf.count = countToKeep;
     }
 
-    float getSplitValue(int dim) {
-      if (count != leafCountMax)
-        throw new NullPointerException("Bspt leaf splitting too soon");
-      return (tuples[0].getDimensionValue(dim) +
-              tuples[1].getDimensionValue(dim)) / 2;
+    void sort(int dim) {
+      for (int i = count; --i > 0; ) { // this is > not >=
+        Tuple champion = tuples[i];
+        float championValue = champion.getDimensionValue(dim);
+        for (int j = i; --j >= 0; ) {
+          Tuple challenger = tuples[j];
+          float challengerValue = challenger.getDimensionValue(dim);
+          if (challengerValue > championValue) {
+            tuples[i] = challenger;
+            tuples[j] = champion;
+            champion = challenger;
+            championValue = challengerValue;
+          }
+        }
+      }
     }
 
     /*
@@ -463,13 +431,15 @@ final class Bspt {
     }
     */
 
-    public boolean addTuple(Tuple tuple) {
-      if (count == leafCountMax)
-        return false;
-      tuples[count++] = tuple;
-      return true;
+    Element addTuple(int level, Tuple tuple) {
+      if (count < leafCountMax) {
+        tuples[count++] = tuple;
+        return this;
+      }
+      Node node = new Node(level, this);
+      return node.addTuple(level, tuple);
     }
-
+    
     /*
     void dump(int level) {
       for (int i = 0; i < count; ++i) {
@@ -482,12 +452,8 @@ final class Bspt {
       }
     }
     */
-
-    public boolean isLeafWithSpace() {
-      return count < leafCountMax;
-    }
   }
-}
+  }
 
 /*
 class Point implements Bspt.Tuple {

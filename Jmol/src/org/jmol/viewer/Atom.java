@@ -246,17 +246,25 @@ final class Atom implements Bspt.Tuple {
 
   void setMadAtom(short madAtom) {
     if (this.madAtom == JmolConstants.MAR_DELETED) return;
-    if (madAtom == -1000) { // temperature
-      int diameter = getBfactor100() * 10 * 2;
+    this.madAtom = convertEncodedMad(this, madAtom);
+  }
+
+  static short convertEncodedMad(Atom atom, int size) {
+    if (size == -1000) { // temperature
+      int diameter = atom.getBfactor100() * 10 * 2;
       if (diameter > 4000)
         diameter = 4000;
-      madAtom = (short)diameter;
-    } else if (madAtom == -1001) // ionic
-      madAtom = (short)(getBondingMar() * 2);
-    else if (madAtom < 0)
-      madAtom = // we are going from a radius to a diameter
-        (short)(-madAtom * getVanderwaalsMar() / 50);
-    this.madAtom = madAtom;
+      size = diameter;
+    } else if (size == -1001) // ionic
+      size = (atom.getBondingMar() * 2);
+    else if (size < 0) {
+      size = -size;
+      if (size > 100)
+        size = 100;
+      size = // we are going from a radius to a diameter
+        (size * atom.getVanderwaalsMar() / 50);
+    }
+    return (short)size;
   }
 
   int getRasMolRadius() {

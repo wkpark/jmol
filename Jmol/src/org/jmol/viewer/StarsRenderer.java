@@ -48,7 +48,19 @@ class StarsRenderer extends ShapeRenderer {
   }
 
   void render1(Atom atom, short mad, short colix) {
-    System.out.println("StarsRenderer.render1");
+    long xyzd = atom.xyzd;
+    int x = Xyzd.getX(xyzd);
+    int y = Xyzd.getY(xyzd);
+    int z = Xyzd.getZ(xyzd);
+    int d = viewer.scaleToScreen(z, mad);
+    // make available for hover/click/measure
+    atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+    d -= (d & 1) ^ 1; // round down to odd value
+    if (colix == 0)
+      colix = atom.colixAtom;
+    int r = d / 2;
+    g3d.drawLine(colix, x - r, y, z, x - r + d, y, z);
+    g3d.drawLine(colix, x, y - r, z, x, y - r + d, z);
     /*
     long xyzd = atom.xyzd;
     int diameter = Xyzd.getD(xyzd);

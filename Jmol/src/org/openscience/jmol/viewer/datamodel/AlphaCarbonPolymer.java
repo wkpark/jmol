@@ -42,6 +42,10 @@ public class AlphaCarbonPolymer extends Polymer {
     return groups[groupIndex].getAlphaCarbonAtom();
   }
 
+  public Point3f getCenterPoint(int groupIndex) {
+    return getAlphaCarbonAtom(groupIndex).point3f;
+  }
+
   public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
     return getAlphaCarbonAtom(groupIndex).point3f;
   }

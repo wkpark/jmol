@@ -134,6 +134,12 @@ abstract public class Polymer {
     return i;
   }
 
+  abstract public Point3f getCenterPoint(int polymerIndex);
+
+  boolean hasWingPoints() { return false; }
+
+  Point3f getWingPoint(int polymerIndex) { return null; }
+
   abstract void addSecondaryStructure(byte type,
                                       int startSeqcode, int endSeqcode);
   abstract boolean isProtein();

@@ -82,6 +82,8 @@ class StrandsRenderer extends McpsRenderer {
   void render1Chain(int polymerCount,
                     Group[] groups, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
+    if (vectors == null)
+      return;
     Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0; ) {
       float f = (i * strandSeparation) + baseOffset;

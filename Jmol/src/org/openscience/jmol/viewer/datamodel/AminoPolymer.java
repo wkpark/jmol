@@ -25,8 +25,6 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.datamodel.Frame;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -36,6 +34,12 @@ public class AminoPolymer extends AlphaCarbonPolymer {
 
   AminoPolymer(Chain chain, Group[] groups) {
     super(chain, groups);
+  }
+
+  boolean hasWingPoints() { return true; }
+
+  Point3f getWingPoint(int polymerIndex) {
+    return groups[polymerIndex].getCarbonylOxygenAtom().point3f;
   }
 
   // to get something other than the alpha carbon atom

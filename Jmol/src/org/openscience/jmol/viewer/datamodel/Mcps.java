@@ -149,8 +149,9 @@ abstract class Mcps extends Shape {
         polymerGroups = polymer.getGroups();
 
         centers = new Point3f[polymerCount + 1];
-        vectors = new Vector3f[polymerCount + 1];
-        calcCentersAndVectors(polymerCount, polymerGroups, centers, vectors);
+        if (polymer.hasWingPoints())
+          vectors = new Vector3f[polymerCount + 1];
+        calcCentersAndVectors(polymer, centers, vectors);
       }
     }
 
@@ -161,38 +162,41 @@ abstract class Mcps extends Shape {
     // holds the vector that runs across the 'ribbon'
     Vector3f[] vectors;
 
-    void calcCentersAndVectors(int count, Group[] groups,
+    void calcCentersAndVectors(Polymer polymer,
                                Point3f[] centers, Vector3f[] vectors) {
+      int count = polymer.getCount();
       Vector3f vectorA = new Vector3f();
       Vector3f vectorB = new Vector3f();
       Vector3f vectorC = new Vector3f();
       Vector3f vectorD = new Vector3f();
       
-      Point3f alphaPointPrev, alphaPoint;
-      centers[0] = alphaPointPrev = alphaPoint =
-        groups[0].getAlphaCarbonAtom().point3f;
+      Point3f centerPointPrev, centerPoint;
+      centers[0] = centerPointPrev = centerPoint = polymer.getCenterPoint(0);
       Vector3f previousVectorD = null;
       for (int i = 1; i < count; ++i) {
-        alphaPointPrev = alphaPoint;
-        alphaPoint = groups[i].getAlphaCarbonAtom().point3f;
-        Point3f center = new Point3f(alphaPoint);
-        center.add(alphaPointPrev);
+        centerPointPrev = centerPoint;
+        centerPoint = polymer.getCenterPoint(i);
+        Point3f center = new Point3f(centerPoint);
+        center.add(centerPointPrev);
         center.scale(0.5f);
         centers[i] = center;
-        vectorA.sub(alphaPoint, alphaPointPrev);
-        vectorB.sub(groups[i-1].getCarbonylOxygenAtom().point3f,
-                    alphaPointPrev);
-        vectorC.cross(vectorA, vectorB);
-        vectorD.cross(vectorC, vectorA);
-        vectorD.normalize();
-        if (previousVectorD != null &&
-            previousVectorD.angle(vectorD) > Math.PI/2)
-          vectorD.scale(-1);
-        previousVectorD = vectors[i] = new Vector3f(vectorD);
+        if (vectors != null) {
+          vectorA.sub(centerPoint, centerPointPrev);
+          vectorB.sub(polymer.getWingPoint(i - 1), centerPointPrev);
+          vectorC.cross(vectorA, vectorB);
+          vectorD.cross(vectorC, vectorA);
+          vectorD.normalize();
+          if (previousVectorD != null &&
+              previousVectorD.angle(vectorD) > Math.PI/2)
+            vectorD.scale(-1);
+          previousVectorD = vectors[i] = new Vector3f(vectorD);
+        }
       }
-      vectors[0] = vectors[1];
-      vectors[count] = vectors[count - 1];
-      centers[count] = groups[count - 1].getAlphaCarbonAtom().point3f;
+      if (vectors != null) {
+        vectors[0] = vectors[1];
+        vectors[count] = vectors[count - 1];
+      }
+      centers[count] = polymer.getCenterPoint(count - 1);
     }
 
     short getMadSpecial(short mad, int groupIndex) {

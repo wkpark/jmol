@@ -35,7 +35,8 @@ class Resolver {
   static Object resolve(String name, BufferedReader bufferedReader,
                         JmolAdapter.Logger logger) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
-    String atomSetCollectionReaderName = determineAtomSetCollectionReader(bufferedReader, logger);
+    String atomSetCollectionReaderName =
+      determineAtomSetCollectionReader(bufferedReader, logger);
     logger.log("The Resolver thinks", atomSetCollectionReaderName);
     String className =
       "org.jmol.adapter.smarter." + atomSetCollectionReaderName + "Reader";
@@ -45,7 +46,8 @@ class Resolver {
 
     try {
       Class atomSetCollectionReaderClass = Class.forName(className);
-      atomSetCollectionReader = (AtomSetCollectionReader)atomSetCollectionReaderClass.newInstance();
+      atomSetCollectionReader =
+        (AtomSetCollectionReader)atomSetCollectionReaderClass.newInstance();
     } catch (Exception e) {
       String err = "Could not instantiate:" + className;
       logger.log(err);
@@ -55,7 +57,8 @@ class Resolver {
     atomSetCollectionReader.setLogger(logger);
     atomSetCollectionReader.initialize();
 
-    AtomSetCollection atomSetCollection = atomSetCollectionReader.readAtomSetCollection(bufferedReader);
+    AtomSetCollection atomSetCollection =
+      atomSetCollectionReader.readAtomSetCollection(bufferedReader);
     if (atomSetCollection.errorMessage != null)
       return atomSetCollection.errorMessage;
     if (atomSetCollection.atomCount == 0)
@@ -64,7 +67,8 @@ class Resolver {
   }
 
   static String determineAtomSetCollectionReader(BufferedReader bufferedReader,
-                                     JmolAdapter.Logger logger) throws Exception {
+                                                 JmolAdapter.Logger logger)
+    throws Exception {
     String[] lines = new String[4];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     for (int i = 0; i < lines.length; ++i)

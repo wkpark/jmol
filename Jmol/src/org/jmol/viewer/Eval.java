@@ -1869,9 +1869,9 @@ class Eval implements Runnable {
 
     int zoom = viewer.getZoomPercent();
     int slab = viewer.getSlabPercentSetting();
-    int transX = viewer.getTranslationXPercent();
-    int transY = viewer.getTranslationYPercent();
-    int transZ = viewer.getTranslationZPercent();
+    float transX = viewer.getTranslationXPercent();
+    float transY = viewer.getTranslationYPercent();
+    float transZ = viewer.getTranslationZPercent();
 
     long timeBegin = System.currentTimeMillis();
     int timePerStep = 1000 / fps;
@@ -3198,10 +3198,10 @@ class Eval implements Runnable {
       long targetTime = System.currentTimeMillis();
       int zoomStart = viewer.getZoomPercent();
       int zoomDelta = zoom - zoomStart;
-      int xTransStart = viewer.getTranslationXPercent();
-      int xTransDelta = xTrans - xTransStart;
-      int yTransStart = viewer.getTranslationYPercent();
-      int yTransDelta = yTrans - yTransStart;
+      float xTransStart = viewer.getTranslationXPercent();
+      float xTransDelta = xTrans - xTransStart;
+      float yTransStart = viewer.getTranslationYPercent();
+      float yTransDelta = yTrans - yTransStart;
       for (int i = 1; i < totalSteps; ++i) {
 
         viewer.getRotation(matrixStart);

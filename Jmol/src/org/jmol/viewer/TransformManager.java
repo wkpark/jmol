@@ -158,36 +158,36 @@ class TransformManager {
   /****************************************************************
    TRANSLATIONS
   ****************************************************************/
-  int xTranslation;
-  int yTranslation;
+  float xTranslation;
+  float yTranslation;
 
   void translateXYBy(int xDelta, int yDelta) {
     xTranslation += xDelta;
     yTranslation += yDelta;
   }
 
-  void translateToXPercent(int percent) {
+  void translateToXPercent(float percent) {
     // FIXME -- what is the proper RasMol interpretation of this with zooming?
     xTranslation = (width/2) + width * percent / 100;
   }
 
-  void translateToYPercent(int percent) {
+  void translateToYPercent(float percent) {
     yTranslation = (height/2) + height * percent / 100;
   }
 
-  void translateToZPercent(int percent) {
+  void translateToZPercent(float percent) {
     // FIXME who knows what this should be? some type of zoom?
   }
 
-  int getTranslationXPercent() {
+  float getTranslationXPercent() {
     return (xTranslation - width/2) * 100 / width;
   }
 
-  int getTranslationYPercent() {
+  float getTranslationYPercent() {
     return (yTranslation - height/2) * 100 / height;
   }
 
-  int getTranslationZPercent() {
+  float getTranslationZPercent() {
     return 0;
   }
 
@@ -215,17 +215,17 @@ class TransformManager {
       truncate1(sb, degrees);
     }
     int zoom = getZoomPercent();
-    int tX = getTranslationXPercent();
-    int tY = getTranslationYPercent();
+    int tX = (int)getTranslationXPercent();
+    int tY = (int)getTranslationYPercent();
     if (zoom != 100 || tX != 0 || tY != 0) {
       sb.append(" ");
       sb.append(zoom);
-    }
-    if (tX != 0 || tY != 0) {
-      sb.append(" ");
-      sb.append(tX);
-      sb.append(" ");
-      sb.append(tY);
+      if (tX != 0 || tY != 0) {
+        sb.append(" ");
+        sb.append(tX);
+        sb.append(" ");
+        sb.append(tY);
+      }
     }
     return "" + sb + ";";
   }
@@ -315,12 +315,12 @@ class TransformManager {
       sb.append("; zoom ");
       sb.append(zoom);
     }
-    int tX = getTranslationXPercent();
+    int tX = (int)getTranslationXPercent();
     if (tX != 0) {
       sb.append("; translate x ");
       sb.append(tX);
     }
-    int tY = getTranslationYPercent();
+    int tY = (int)getTranslationYPercent();
     if (tY != 0) {
       sb.append("; translate y ");
       sb.append(tY);

@@ -250,42 +250,42 @@ final public class Viewer extends JmolViewer {
     refresh();
   }
 
-  void translateToXPercent(int percent) {
+  void translateToXPercent(float percent) {
     transformManager.translateToXPercent(percent);
     refresh();
   }
 
-  void translateToYPercent(int percent) {
+  void translateToYPercent(float percent) {
     transformManager.translateToYPercent(percent);
     refresh();
   }
 
-  void translateToZPercent(int percent) {
+  void translateToZPercent(float percent) {
     transformManager.translateToZPercent(percent);
     refresh();
   }
 
-  int getTranslationXPercent() {
+  float getTranslationXPercent() {
     return transformManager.getTranslationXPercent();
   }
 
-  int getTranslationYPercent() {
+  float getTranslationYPercent() {
     return transformManager.getTranslationYPercent();
   }
 
-  int getTranslationZPercent() {
+  float getTranslationZPercent() {
     return transformManager.getTranslationZPercent();
   }
 
-  void translateByXPercent(int percent) {
+  void translateByXPercent(float percent) {
     translateToXPercent(getTranslationXPercent() + percent);
   }
 
-  void translateByYPercent(int percent) {
+  void translateByYPercent(float percent) {
     translateToYPercent(getTranslationYPercent() + percent);
   }
 
-  void translateByZPercent(int percent) {
+  void translateByZPercent(float percent) {
     translateToZPercent(getTranslationZPercent() + percent);
   }
 

@@ -49,21 +49,21 @@ final public class FrameExportModelAdapter extends JmolModelAdapter {
     return viewer.getModelName();
   }
 
-  public int getAtomCount(Object clientFile, int frameNumber) {
+  public int getAtomCount(Object clientFile) {
     return frame.atomCount;
   }
 
-  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
+  public float[] getNotionalUnitcell(Object clientFile) {
     return frame.notionalUnitcell;
   }
 
   public JmolModelAdapter.AtomIterator
-    getAtomIterator(Object clientFile, int frameNumber) {
+    getAtomIterator(Object clientFile) {
     return new AtomIterator();
   }
 
   public JmolModelAdapter.BondIterator
-    getBondIterator(Object clientFile, int frameNumber) {
+    getBondIterator(Object clientFile) {
     return new BondIterator();
   }
 

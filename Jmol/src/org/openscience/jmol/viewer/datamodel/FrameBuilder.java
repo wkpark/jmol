@@ -41,11 +41,11 @@ final public class FrameBuilder {
     System.out.println("FrameBuilder.finalize() called!");
   }
 
-  public Frame buildFrame(Object clientFile, int frameNumber) {
+  public Frame buildFrame(Object clientFile) {
     long timeBegin = System.currentTimeMillis();
-    int atomCount = adapter.getAtomCount(clientFile, frameNumber);
+    int atomCount = adapter.getAtomCount(clientFile);
     int modelType = adapter.getModelType(clientFile);
-    boolean hasPdbRecords = adapter.hasPdbRecords(clientFile, frameNumber);
+    boolean hasPdbRecords = adapter.hasPdbRecords(clientFile);
 
     Frame frame = new Frame(viewer, atomCount, modelType, hasPdbRecords);
 
@@ -53,17 +53,13 @@ final public class FrameBuilder {
      * crystal cell must come first, in case atom coordinates
      * need to be transformed to fit in the crystal cell
      ****************************************************************/
-    frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile,
-                                                          frameNumber));
-    frame.setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile,
-                                                      frameNumber));
-    frame.setPdbScaleTranslate(adapter.
-                               getPdbScaleTranslate(clientFile,
-                                                    frameNumber));
+    frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile));
+    frame.setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile));
+    frame.setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
 
 
     for (JmolModelAdapter.AtomIterator iterAtom =
-           adapter.getAtomIterator(clientFile, frameNumber);
+           adapter.getAtomIterator(clientFile);
          iterAtom.hasNext(); ) {
       byte atomicNumber = (byte)iterAtom.getAtomicNumber();
       if (atomicNumber <= 0)
@@ -78,7 +74,7 @@ final public class FrameBuilder {
 
     {
       JmolModelAdapter.BondIterator iterBond =
-        adapter.getBondIterator(clientFile, frameNumber);
+        adapter.getBondIterator(clientFile);
       if (iterBond != null)
         while (iterBond.hasNext())
           frame.bondAtoms(iterBond.getAtomUid1(),
@@ -88,7 +84,7 @@ final public class FrameBuilder {
 
     if (hasPdbRecords) {
       String[] structures =
-        adapter.getPdbStructureRecords(clientFile, frameNumber);
+        adapter.getPdbStructureRecords(clientFile);
       if (structures != null && structures.length > 0)
         frame.pdbFile.setStructureRecords(structures);
     }

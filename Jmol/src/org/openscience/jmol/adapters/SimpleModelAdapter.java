@@ -147,15 +147,15 @@ public class SimpleModelAdapter extends JmolModelAdapter {
    * The frame related methods
    ****************************************************************/
 
-  public int getAtomCount(Object clientFile, int frameNumber) {
+  public int getAtomCount(Object clientFile) {
     return ((Model)clientFile).atomCount;
   }
 
-  public boolean hasPdbRecords(Object clientFile, int frameNumber) {
+  public boolean hasPdbRecords(Object clientFile) {
     return clientFile instanceof PdbModel;
   }
 
-  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
+  public String[] getPdbStructureRecords(Object clientFile) {
     Model model = (Model)clientFile;
     if (model.pdbStructureRecordCount == 0)
       return null;
@@ -165,25 +165,25 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     return t;
   }
 
-  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
+  public float[] getNotionalUnitcell(Object clientFile) {
     return ((Model)clientFile).notionalUnitcell;
   }
 
-  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber) {
+  public float[] getPdbScaleMatrix(Object clientFile) {
     return ((Model)clientFile).pdbScaleMatrix;
   }
 
-  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber) {
+  public float[] getPdbScaleTranslate(Object clientFile) {
     return ((Model)clientFile).pdbScaleTranslate;
   }
 
   public JmolModelAdapter.AtomIterator
-    getAtomIterator(Object clientFile, int frameNumber) {
+    getAtomIterator(Object clientFile) {
     return new AtomIterator((Model)clientFile);
   }
 
   public JmolModelAdapter.BondIterator
-    getCovalentBondIterator(Object clientFile, int frameNumber) {
+    getCovalentBondIterator(Object clientFile) {
     return new BondIterator((Model)clientFile);
   }
 

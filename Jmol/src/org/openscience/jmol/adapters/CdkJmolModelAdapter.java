@@ -106,7 +106,7 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
   }
 
   public int getModelType(Object clientFile) {
-    if (hasPdbRecords(clientFile, 0))
+    if (hasPdbRecords(clientFile))
       return JmolConstants.MODEL_TYPE_PDB;
     return JmolConstants.MODEL_TYPE_OTHER;
   }
@@ -119,7 +119,7 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
         return title.toString();
       } else {
         // try to recurse
-        AtomContainer container = getAtomContainer((ChemFile)clientFile, 0);
+        AtomContainer container = getAtomContainer((ChemFile)clientFile);
         if (container != null) {
           Object moleculeTitle = container.getProperty(CDKConstants.TITLE);
           if (moleculeTitle != null) {
@@ -131,20 +131,15 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     return null;
   }
 
-  public int getFrameCount(Object clientFile) {
-    return ((ChemFile)clientFile).getChemSequenceCount();
-  }
-
-
   /****************************************************************
    * The frame related methods
    ****************************************************************/
 
-  private AtomContainer getAtomContainer(Object clientFile, int frameNumber) {
+  private AtomContainer getAtomContainer(Object clientFile) {
     ChemFile chemFile = (ChemFile)clientFile;
     ChemSequence chemSequence = chemFile.getChemSequence(0);
     ChemModel[] chemModels = chemSequence.getChemModels();
-    ChemModel chemModel = chemModels[frameNumber];
+    ChemModel chemModel = chemModels[0];
     SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
     Crystal crystal = chemModel.getCrystal();
     if (setOfMolecules != null) {
@@ -162,20 +157,20 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     }
   }
 
-  public int getAtomCount(Object clientFile, int frameNumber) {
-    return getAtomContainer(clientFile, frameNumber).getAtomCount();
+  public int getAtomCount(Object clientFile) {
+    return getAtomContainer(clientFile).getAtomCount();
   }
 
-  public boolean hasPdbRecords(Object clientFile, int frameNumber) {
-    AtomContainer atomContainer = getAtomContainer(clientFile, frameNumber);
+  public boolean hasPdbRecords(Object clientFile) {
+    AtomContainer atomContainer = getAtomContainer(clientFile);
     return (atomContainer.getAtomCount() > 0 &&
             atomContainer.getAtomAt(0).getProperty("pdb.record") != null);
   }
 
-  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
+  public String[] getPdbStructureRecords(Object clientFile) {
     ChemFile chemFile = (ChemFile)clientFile;
     ChemSequence chemSequence = chemFile.getChemSequence(0);
-    ChemModel chemModel = chemSequence.getChemModel(frameNumber);
+    ChemModel chemModel = chemSequence.getChemModel(0);
     Vector structureVector =
       (Vector)chemModel.getProperty("pdb.structure.records");
     if (structureVector == null)
@@ -185,8 +180,8 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     return t;
   }
 
-  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
-    AtomContainer container = getAtomContainer(clientFile, frameNumber);
+  public float[] getNotionalUnitcell(Object clientFile) {
+    AtomContainer container = getAtomContainer(clientFile);
     if (container instanceof Crystal) {
         Crystal crystal = (Crystal)container;
         double[] notional = CrystalGeometryTools.cartesianToNotional(
@@ -204,13 +199,13 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
   }
 
   public JmolModelAdapter.AtomIterator
-    getAtomIterator(Object clientFile, int frameNumber) {
-    return new AtomIterator(getAtomContainer(clientFile, frameNumber));
+    getAtomIterator(Object clientFile) {
+    return new AtomIterator(getAtomContainer(clientFile));
   }
 
   public JmolModelAdapter.BondIterator
-    getBondIterator(Object clientFile, int frameNumber) {
-    return new BondIterator(getAtomContainer(clientFile, frameNumber));
+    getBondIterator(Object clientFile) {
+    return new BondIterator(getAtomContainer(clientFile));
   }
 
   /****************************************************************

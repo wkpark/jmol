@@ -84,10 +84,9 @@ public class ModelManager {
       }
       modelName = modelAdapter.getModelName(clientFile);
       modelHeader = modelAdapter.getModelHeader(clientFile);
-      frameCount = modelAdapter.getFrameCount(clientFile);
+      frameCount = 1;
       frames = new Frame[frameCount];
-      for (int i = 0; i < frameCount; ++i)
-        frames[i] = frameBuilder.buildFrame(clientFile, i);
+      frames[0] = frameBuilder.buildFrame(clientFile);
 
       haveFile = true;
     }

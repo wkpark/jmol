@@ -81,11 +81,6 @@ public abstract class JmolModelAdapter {
   public int getModelType(Object clientFile) { return 0; }
 
   /**
-   * The number of frames in this file. Used for animations, etc.
-   */
-  public int getFrameCount(Object clientFile) { return 1; }
-
-  /**
    * Some file formats contain a formal name of the molecule in the file.
    * If this method returns <code>null</code> then the JmolViewer will
    * automatically supply the file/URL name as a default.
@@ -99,19 +94,17 @@ public abstract class JmolModelAdapter {
    */
   public String getModelHeader(Object clientFile) { return null; }
 
-  /****************************************************************
-   * frame related
-   ****************************************************************/
   /**
-   * The number of atoms contained in the specified frame.
+   * The number of atoms contained in the file.
+   * Just return -1 if you don't know (or don't want to figure it out)
    */
-  abstract public int getAtomCount(Object clientFile, int frameNumber);
+  abstract public int getAtomCount(Object clientFile);
   /**
-   * Whether or not this frame has records in the .pdb format as specified
+   * Whether or not this file has records in the .pdb format as specified
    * by the Protein Data Bank.
    * @see <a href='http://www.rcsb.org/pdb'>www.rcsb.org/pdb</a>
    */
-  public boolean hasPdbRecords(Object clientFile, int frameNumber) {
+  public boolean hasPdbRecords(Object clientFile) {
     return false;
   }
 
@@ -119,9 +112,9 @@ public abstract class JmolModelAdapter {
    * If hasPdbRecords(clientFile, frameNumber) returns true then structural
    * PDB records are returned here as an array of strings. 
    * The individual strings are exact HELIX, SHEET, and TURN recordsfrom the .pdb file.
-   * @see #hasPdbRecords(Object clientFile, int frameNumber)
+   * @see #hasPdbRecords(Object clientFile)
    */
-  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
+  public String[] getPdbStructureRecords(Object clientFile) {
     return null;
   }
 
@@ -134,15 +127,15 @@ public abstract class JmolModelAdapter {
    * alpha, beta, gamma : degrees
    * if there is no unit cell data then return null
    */
-  public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
+  public float[] getNotionalUnitcell(Object clientFile) {
     return null;
   }
 
-  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber) {
+  public float[] getPdbScaleMatrix(Object clientFile) {
     return null;
   }
 
-  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber) {
+  public float[] getPdbScaleTranslate(Object clientFile) {
     return null;
   }
 
@@ -151,16 +144,14 @@ public abstract class JmolModelAdapter {
    * This method may not return <code>null</code>.
    * @see AtomIterator
    */
-  abstract public AtomIterator getAtomIterator(Object clientFile,
-                                               int frameNumber);
+  abstract public AtomIterator getAtomIterator(Object clientFile);
   /**
    * Returns a BondIterator. If this method returns <code>null</code> and no
    * bonds are defined then the JmolViewer will automatically apply its
    * rebonding code to build bonds between atoms.
    * @see BondIterator
    */
-  public BondIterator getBondIterator(Object clientFile,
-                                      int frameNumber) {
+  public BondIterator getBondIterator(Object clientFile) {
     return null;
   }
 

@@ -62,6 +62,8 @@ public class DisplayPanel extends JPanel
   private int nframes = 0;
   private static int prevx, prevy, outx, outy;
 
+  // for now, default to true
+  private boolean showPaintTime = true;
   private static float scalePixelsPerAngstrom;
   private static float scaleDefaultPixelsPerAngstrom;
   private static final Matrix4f matrixRotate = new Matrix4f();
@@ -100,6 +102,8 @@ public class DisplayPanel extends JPanel
     this.settings = settings;
     settings.addPropertyChangeListener(this);
     AtomShape.setImageComponent(this);
+    if (System.getProperty("painttime", "false").equals("true"))
+      showPaintTime = true;
   }
 
   public int getMode() {
@@ -402,7 +406,8 @@ public class DisplayPanel extends JPanel
 
   public void paint(Graphics g) {
     Graphics2D g2d = (Graphics2D) g;
-    long millisBegin = System.currentTimeMillis();
+    if (showPaintTime)
+      startPaintClock();
 
     if (backgroundColor == null) {
       setBackgroundColor();
@@ -436,9 +441,8 @@ public class DisplayPanel extends JPanel
         g2d.setColor(fg);
         g2d.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
       }
-      int time = (int)(System.currentTimeMillis() - millisBegin);
-      recordTime(time);
-      showTimes();
+      if (showPaintTime)
+        stopPaintClock();
     }
     dimPrevious = dimCurrent;
   }
@@ -980,9 +984,29 @@ public class DisplayPanel extends JPanel
       longestTime = time;
   }
 
+  private long timeBegin;
+
+  private void startPaintClock() {
+    timeBegin = System.currentTimeMillis();
+  }
+
+  private void stopPaintClock() {
+    int time = (int)(System.currentTimeMillis() - timeBegin);
+    recordTime(time);
+    showTimes();
+  }
+
+  private String fmt(int num) {
+    if (num < 10)
+      return "  " + num;
+    if (num < 100)
+      return " " + num;
+    return "" + num;
+  }
+
   private void showTimes() {
     int timeAverage = totalTime / cTimes;
-    status.setStatus(3, "" + lastTime + ":" + timeAverage);
+    status.setStatus(3, fmt(lastTime) + "ms : " + fmt(timeAverage) + "ms");
   }
 }
 

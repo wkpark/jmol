@@ -22,6 +22,7 @@ package org.openscience.jmol;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -47,6 +48,7 @@ class StatusBar extends JPanel {
     status[2] = new JLabel();
     status[2].setPreferredSize(new Dimension(100, 100));
     status[2].setBorder(BorderFactory.createBevelBorder(1));
+    status[2].setFont(new Font("Monospaced", Font.PLAIN, 12));
     status[2].setHorizontalAlignment(0);
     add(status[0]);
     add(status[1]);

@@ -19,9 +19,10 @@
  */
 package org.openscience.jmol;
 
-import java.util.Vector;
-import java.io.*;
 import javax.vecmath.Point3f;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)

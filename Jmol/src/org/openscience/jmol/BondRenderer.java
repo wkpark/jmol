@@ -20,8 +20,6 @@
 package org.openscience.jmol;
 
 import java.awt.Graphics;
-import java.awt.Polygon;
-import java.awt.Color;
 
 /**
  * Drawing methods for bonds.

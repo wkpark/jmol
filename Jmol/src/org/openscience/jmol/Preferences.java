@@ -19,16 +19,54 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.util.*;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import javax.swing.plaf.metal.*;
-import javax.swing.JColorChooser.*;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Window;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.Dialog;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Properties;
+import java.util.Hashtable;
+import java.util.Dictionary;
+import java.util.EventObject;
+import java.io.FileInputStream;
+import java.io.PrintStream;
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import javax.swing.JRadioButton;
+import javax.swing.BoxLayout;
+import javax.swing.JSlider;
+import javax.swing.AbstractAction;
+import javax.swing.JDialog;
+import javax.swing.JCheckBox;
+import javax.swing.JRootPane;
+import javax.swing.JComboBox;
+import javax.swing.Box;
+import javax.swing.JTabbedPane;
+import javax.swing.ButtonGroup;
+import javax.swing.JColorChooser;
+import javax.swing.JButton;
+import javax.swing.AbstractButton;
+import javax.swing.JLabel;
+import javax.swing.Action;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JComponent;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 public class Preferences extends JDialog {
 
@@ -68,7 +106,7 @@ public class Preferences extends JDialog {
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
-  private JCheckBox cB, cA, cV, cH, cX, cXX;
+  private JCheckBox cB, cA, cV, cH;
   private static Properties props;
 
   // The actions:

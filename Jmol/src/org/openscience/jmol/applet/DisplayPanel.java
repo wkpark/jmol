@@ -30,7 +30,12 @@ import java.util.NoSuchElementException;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
-import org.openscience.jmol.*;
+import org.openscience.jmol.ChemFrame;
+import org.openscience.jmol.ChemFile;
+import org.openscience.jmol.DisplaySettings;
+import org.openscience.jmol.AtomRenderer;
+import org.openscience.jmol.FortranFormat;
+import org.openscience.jmol.ChemFrameRenderer;
 
 public class DisplayPanel extends Canvas
         implements java.awt.event.ComponentListener,
@@ -69,8 +74,6 @@ public class DisplayPanel extends Canvas
   double[] mtmp;
   String[] names;
   Color[] colors;
-  private double angle;
-  private double prevangle;
   ChemFile cf;
   ChemFrame md = null;
   private float xfac0 = 1;    // Zoom factor determined by screen size/initial settings.
@@ -107,7 +110,6 @@ public class DisplayPanel extends Canvas
 
   private int drawWidth;
   private int drawHeight;
-  private int attribute1;
 
   public DisplayPanel() {
 

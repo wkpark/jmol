@@ -19,7 +19,6 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
 
 public class FortranFormat {
 
@@ -60,8 +59,8 @@ public class FortranFormat {
         if (state == 0) {
           r = r * 10 + ch - '0';
         } else if (state == 1) {
-          p = p / 10;
-          r = r + p * (ch - '0');
+          p /= 10;
+          r += p * (ch - '0');
         }
       } else if (ch == '.') {
         if (state == 0) {

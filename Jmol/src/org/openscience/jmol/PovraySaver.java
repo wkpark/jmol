@@ -27,7 +27,12 @@ import java.util.Enumeration;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
-import java.io.*;
+import java.io.OutputStreamWriter;
+import java.io.BufferedWriter;
+import java.io.PrintStream;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Generates files for viewing in the freeware povray reaytracer
@@ -40,13 +45,12 @@ import java.io.*;
 public class PovraySaver extends FileSaver {
 
   private DisplaySettings settings;
-  private String viewMat = null;
   private String background = null;
   private PovrayStyleWriter myStyle;
   private int framenumber = 0;
   private Matrix4d amat, tmat, zmat, ttmat;
   private float xfac, edge;
-  private float dx, dy, dz, scale;
+  private float dx, dy, dz;
   private int screenWidth, screenHeight;
   protected ChemFile cf;
 

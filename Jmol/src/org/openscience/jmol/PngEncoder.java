@@ -19,11 +19,16 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
-import java.util.zip.*;
-import java.io.*;
+import java.awt.Image;
+import java.awt.image.PixelGrabber;
+import java.awt.image.ImageObserver;
+import java.awt.image.DirectColorModel;
+import java.util.zip.CRC32;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.io.PrintStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * PngEncoder takes a Java Image object and creates a byte string which can be saved as a PNG file.

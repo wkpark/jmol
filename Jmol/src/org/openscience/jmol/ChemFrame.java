@@ -19,13 +19,12 @@
  */
 package org.openscience.jmol;
 
-import java.awt.Graphics;
-import java.awt.*;
-import java.util.*;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
+import java.util.Vector;
+import java.util.Enumeration;
 
 /**
  *  Data representation for a molecule in a particular set of coordinates.

@@ -19,9 +19,10 @@
  */
 package org.openscience.jmol;
 
-import junit.framework.*;
-import java.awt.*;
-import java.util.*;
+import junit.framework.TestSuite;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import junit.framework.Test;
 
 /**
  * Unit tests for the AtomType class.

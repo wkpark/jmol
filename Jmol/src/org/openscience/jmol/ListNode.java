@@ -20,8 +20,8 @@
 package org.openscience.jmol;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.*;
 import java.util.Vector;
+import java.util.Enumeration;
 
 public class ListNode extends DefaultMutableTreeNode {
 
@@ -38,7 +38,7 @@ public class ListNode extends DefaultMutableTreeNode {
   }
 
   public ListNode(String s, Vector v) {
-    super((Object) s);
+    super(s);
     this.v = v;
   }
 
@@ -73,7 +73,8 @@ public class ListNode extends DefaultMutableTreeNode {
 
       int counter = 0;
 
-      for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
+      Enumeration e = v.elements();
+      while (e.hasMoreElements()) {
         newNode = new DefaultMutableTreeNode(e.nextElement());
         insert(newNode, counter);
         counter++;

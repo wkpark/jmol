@@ -19,10 +19,7 @@
  */
 package org.openscience.jmol;
 
-import java.awt.Graphics;
 import java.awt.Polygon;
-import java.awt.Color;
-import java.util.Enumeration;
 
 /**
  * Contains methods which assist in rendering of molecules.

@@ -19,42 +19,26 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
 import java.util.Vector;
+import java.io.Reader;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  *  Reads Mopac 7 output files.
  *
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
-class Mopac7Reader implements ChemFileReader {
-
-  /**
-   * The source for data.
-   */
-  BufferedReader input;
-
+class Mopac7Reader extends DefaultChemFileReader {
   /**
    * Create an MOPAC output reader.
    *
    * @param input source of MOPAC data
    */
   public Mopac7Reader(Reader input) {
-    this.input = new BufferedReader(input);
-  }
-
-  /**
-   * Whether bonds are enabled in the files and frames read.
-   */
-  private boolean bondsEnabled = true;
-  
-  /**
-   * Sets whether bonds are enabled in the files and frames which are read.
-   *
-   * @param bondsEnabled if true, enables bonds.
-   */
-  public void setBondsEnabled(boolean bondsEnabled) {
-    this.bondsEnabled = bondsEnabled;
+    super(input);
   }
   
   /**
@@ -240,48 +224,6 @@ class Mopac7Reader implements ChemFileReader {
       line = input.readLine();
     }
     return line;
-  }
-
-  /**
-   * Holder of reader event listeners.
-   */
-  private Vector listenerList = new Vector();
-  
-  /**
-   * An event to be sent to listeners. Lazily initialized.
-   */
-  private ReaderEvent readerEvent = null;
-  
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l) {
-    listenerList.addElement(l);
-  }
-  
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l) {
-    listenerList.removeElement(l);
-  }
-  
-  /**
-   * Sends a frame read event to the reader listeners.
-   */
-  private void fireFrameRead() {
-    for (int i = 0; i < listenerList.size(); ++i) {
-      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
-      // Lazily create the event:
-      if (readerEvent == null) {
-        readerEvent = new ReaderEvent(this);
-      }
-      listener.frameRead(readerEvent);
-    }
-  }
+  }  
 }
 

@@ -19,7 +19,11 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 class Angle extends Measurement implements MeasurementInterface {
 
@@ -82,7 +86,7 @@ class Angle extends Measurement implements MeasurementInterface {
       s = s.substring(0, 5);
     }
 
-    s = s + "\u00b0";
+    s += "\u00b0";
     int j = fontMetrics.stringWidth(s);
 
     int xloc = (2 * x2 + x1 + x3) / 4;

@@ -20,7 +20,6 @@
 package org.openscience.jmol;
 
 import javax.swing.JTable;
-import javax.swing.table.*;
 import javax.swing.DefaultCellEditor;
 import javax.swing.event.TableModelEvent;
 
@@ -30,33 +29,59 @@ import javax.swing.JDialog;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JToolBar;
-import javax.swing.JToolBar.*;
 import javax.swing.JColorChooser;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
-import javax.swing.*;
 
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import java.net.URL;
 import java.io.IOException;
 import java.io.File;
-import java.util.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.AbstractButton;
+import javax.swing.JTextField;
+import javax.swing.ImageIcon;
+import javax.swing.AbstractCellEditor;
+import javax.swing.SwingConstants;
+import java.awt.Container;
+import java.awt.Color;
+import java.awt.Window;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.Insets;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FilterOutputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.StringReader;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.util.EventObject;
 
 /**
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class AtomTypeTable extends JDialog implements ActionListener {
 
-  private boolean DEBUG = false;
   private static String SAU = "org/openscience/jmol/Data/AtomTypes";
 
   /*
@@ -464,20 +489,22 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
       String headline = "#" + atModel.getColumnName(0);
       for (int j = 1; j < numCols - 1; j++) {
-        headline = headline + "\t";
+        headline += "\t";
 
         String str = atModel.getColumnName(j);
         BufferedReader br = new BufferedReader(new StringReader(str));
         String line;
         try {
-          while ((line = br.readLine()) != null) {
+          line = br.readLine();
+          while (line != null) {
             headline = headline + line + " ";
+            line = br.readLine();
           }
         } catch (IOException ex) {
           ex.printStackTrace();
         }
       }
-      headline = headline + "\tRed\tGreen\tBlue";
+      headline += "\tRed\tGreen\tBlue";
       pw.println(headline);
 
       for (int i = 0; i < numRows; i++) {

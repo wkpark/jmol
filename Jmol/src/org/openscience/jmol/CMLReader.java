@@ -24,17 +24,18 @@ import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.event.EventListenerList;
 import java.net.URL;
-import org.openscience.cdk.io.cml.cdopi.*;
-import org.openscience.cdk.io.cml.*;
-import org.xml.sax.helpers.*;
-import org.xml.sax.*;
+import org.openscience.cdk.io.cml.CMLHandler;
+import org.openscience.cdk.io.cml.CMLErrorHandler;
+import org.openscience.cdk.io.cml.JMOLANIMATIONConvention;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.InputSource;
 
 /**
  * CML files contain a single ChemFrame object.
  * @see ChemFrame
  */
-public class CMLReader implements ChemFileReader {
-
+public class CMLReader extends DefaultChemFileReader {
   private URL url;
 
   /**
@@ -43,7 +44,7 @@ public class CMLReader implements ChemFileReader {
    * @param input source of CML data
    */
   public CMLReader(Reader input) {
-    this.input = input;
+    super(input);
   }
 
   /**
@@ -52,21 +53,8 @@ public class CMLReader implements ChemFileReader {
    * @param input source of CML data
    */
   public CMLReader(URL url) {
+    super(null);
     this.url = url;
-  }
-
-  /**
-   * Whether bonds are enabled in the files and frames read.
-   */
-  private boolean bondsEnabled = true;
-
-  /**
-   * Sets whether bonds are enabled in the files and frames which are read.
-   *
-   * @param bondsEnabled if true, enables bonds.
-   */
-  public void setBondsEnabled(boolean bondsEnabled) {
-    this.bondsEnabled = bondsEnabled;
   }
 
   /**
@@ -87,7 +75,7 @@ public class CMLReader implements ChemFileReader {
       }
       JMolCDO cdo = new JMolCDO();
       CMLHandler handler = new CMLHandler(cdo);
-      ((CMLHandler) handler).registerConvention("JMOL-ANIMATION",
+      handler.registerConvention("JMOL-ANIMATION",
               new JMOLANIMATIONConvention(cdo));
       parser.setContentHandler(handler);
       parser.setEntityResolver(new CMLResolver());
@@ -123,7 +111,7 @@ public class CMLReader implements ChemFileReader {
       XMLReader parser = new gnu.xml.aelfred2.SAXDriver();
       JMolCDO cdo = new JMolCDO();
       CMLHandler handler = new CMLHandler(cdo);
-      ((CMLHandler) handler).registerConvention("JMOL-ANIMATION",
+      handler.registerConvention("JMOL-ANIMATION",
               new JMOLANIMATIONConvention(cdo));
       parser.setContentHandler(handler);
       parser.setEntityResolver(new CMLResolver());
@@ -145,52 +133,5 @@ public class CMLReader implements ChemFileReader {
     } catch (SAXException ex) {
       throw new IOException("CMLReader exception: " + ex);
     }
-  }
-
-  /**
-   * Holder of reader event listeners.
-   */
-  private Vector listenerList = new Vector();
-
-  /**
-   * An event to be sent to listeners. Lazily initialized.
-   */
-  private ReaderEvent readerEvent = null;
-
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l) {
-    listenerList.addElement(l);
-  }
-  
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l) {
-    listenerList.removeElement(l);
-  }
-  
-  /**
-   * Sends a frame read event to the reader listeners.
-   */
-  private void fireFrameRead() {
-    for (int i = 0; i < listenerList.size(); ++i) {
-      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
-      // Lazily create the event:
-      if (readerEvent == null) {
-        readerEvent = new ReaderEvent(this);
-      }
-      listener.frameRead(readerEvent);
-    }
-  }
-
-  /**
-   * The source for CML data.
-   */
-  private Reader input;
+  }  
 }

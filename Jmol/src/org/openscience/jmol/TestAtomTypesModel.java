@@ -19,10 +19,13 @@
  */
 package org.openscience.jmol;
 
-import junit.framework.*;
-import java.io.*;
-import java.util.*;
 import java.awt.Color;
+import junit.framework.TestSuite;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import junit.framework.Test;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 /**
  * Unit tests for the AtomTypesModel class.

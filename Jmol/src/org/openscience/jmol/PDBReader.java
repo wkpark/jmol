@@ -22,7 +22,6 @@ package org.openscience.jmol;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Vector;
 import java.util.StringTokenizer;
 
 
@@ -54,7 +53,7 @@ import java.util.StringTokenizer;
  * @author Bradley A. Smith (bradley@baysmith.com)
  * @author Egon Willighagen (egonw@sci.kun.nl)
  */
-public class PDBReader implements ChemFileReader {
+public class PDBReader extends DefaultChemFileReader {
 
   /**
    * Creates a PDB file reader.
@@ -62,21 +61,7 @@ public class PDBReader implements ChemFileReader {
    * @param input source of PDB data
    */
   public PDBReader(Reader input) {
-    this.input = new BufferedReader(input);
-  }
-
-  /**
-   * Whether bonds are enabled in the files and frames read.
-   */
-  private boolean bondsEnabled = true;
-  
-  /**
-   * Sets whether bonds are enabled in the files and frames which are read.
-   *
-   * @param bondsEnabled if true, enables bonds.
-   */
-  public void setBondsEnabled(boolean bondsEnabled) {
-    this.bondsEnabled = bondsEnabled;
+    super(input);
   }
   
   /**
@@ -127,52 +112,5 @@ public class PDBReader implements ChemFileReader {
     file.addFrame(frame);
     fireFrameRead();
     return file;
-  }
-
-  /**
-   * Holder of reader event listeners.
-   */
-  private Vector listenerList = new Vector();
-  
-  /**
-   * An event to be sent to listeners. Lazily initialized.
-   */
-  private ReaderEvent readerEvent = null;
-  
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l) {
-    listenerList.addElement(l);
-  }
-  
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l) {
-    listenerList.removeElement(l);
-  }
-  
-  /**
-   * Sends a frame read event to the reader listeners.
-   */
-  private void fireFrameRead() {
-    for (int i = 0; i < listenerList.size(); ++i) {
-      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
-      // Lazily create the event:
-      if (readerEvent == null) {
-        readerEvent = new ReaderEvent(this);
-      }
-      listener.frameRead(readerEvent);
-    }
-  }
- 
-  /**
-   * The source for PDB data.
-   */
-  private BufferedReader input;
+  }  
 }

@@ -67,7 +67,7 @@ public class HeapSorter {
       Object temp = array[0];
       array[0] = array[N - 1];
       array[N - 1] = temp;
-      N = N - 1;
+      --N;
       downheap(array, 1, N);
     } while (N > 1);
   }
@@ -87,7 +87,7 @@ public class HeapSorter {
       int temp = array[0];
       array[0] = array[N - 1];
       array[N - 1] = temp;
-      N = N - 1;
+      --N;
       downheap(array, 1, N, ascending);
     } while (N > 1);
   }
@@ -107,7 +107,7 @@ public class HeapSorter {
       double temp = array[0];
       array[0] = array[N - 1];
       array[N - 1] = temp;
-      N = N - 1;
+      --N;
       downheap(array, 1, N);
     } while (N > 1);
   }

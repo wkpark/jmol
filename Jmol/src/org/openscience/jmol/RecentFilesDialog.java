@@ -19,8 +19,13 @@
  */
 package org.openscience.jmol;
 
-import javax.swing.*;
 import java.util.ResourceBundle;
+import javax.swing.AbstractButton;
+import javax.swing.ListSelectionModel;
+import javax.swing.JList;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 
 public class RecentFilesDialog extends JDialog
         implements java.awt.event.WindowListener,

@@ -19,10 +19,16 @@
  */
 package org.openscience.jmol;
 
-import java.util.*;
-import java.io.*;
 import java.awt.Color;
 import javax.swing.JTextArea;
+import java.util.Vector;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.io.PrintStream;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.FileReader;
 
 /**
  * Processes RasMol script commands. Suggested by Henry Rzepa.
@@ -80,7 +86,7 @@ class RasMolScriptHandler {
         if (st.hasMoreElements()) {
           String file = (String) st.nextElement();
           try {
-            File script = new File(program.getUserDirectory(), file);
+            File script = new File(Jmol.getUserDirectory(), file);
             if (script.exists()) {
               BufferedReader reader =
                 new BufferedReader(new FileReader(script));
@@ -255,11 +261,11 @@ class RasMolScriptHandler {
 
     try {
       boolean b = checkBoolean(type);
-      if (!b) {
-        program.display.settings.setLabelMode(DisplaySettings.NOLABELS);
-      } else {
+      if (b) {
 
         // "label true" does not yet work
+      } else {
+        program.display.settings.setLabelMode(DisplaySettings.NOLABELS);
       }
     } catch (RasMolScriptException e) {
 

@@ -396,9 +396,10 @@ public class DisplaySettings {
     double raw = radius * atomSphereFactor;
     float depth = (float) (z - atomZOffset) / (2.0f * atomZOffset);
     float tmp = atomScreenScale * ((float) raw + atomDepthFactor * depth);
-    return (tmp < 0.0f)
-           ? 1.0f
-           : tmp;
+    if (tmp < 0.0f) {
+        tmp = 1.0f;
+    }
+    return tmp;
   }
 
   /**
@@ -412,9 +413,10 @@ public class DisplaySettings {
     double raw = atomSphereFactor;
     float depth = (float) (z - atomZOffset) / (2.0f * atomZOffset);
     float tmp = atomScreenScale * ((float) raw + atomDepthFactor * depth);
-    return (tmp < 0.0f)
-           ? 1.0f
-           : tmp;
+    if (tmp < 0.0f) {
+      tmp = 1.0f;
+    }
+    return tmp;
   }
 
   /**

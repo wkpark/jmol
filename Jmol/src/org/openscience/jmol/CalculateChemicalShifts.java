@@ -21,9 +21,12 @@ package org.openscience.jmol;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.util.*;
-import java.io.*;
 import java.net.URL;
+import java.util.Vector;
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -60,7 +63,8 @@ class CalculateChemicalShifts extends AbstractAction {
 
         String[] shieldingNames = new String[shieldings.size()];
         int i = 0;
-        for (Enumeration k = shieldings.keys(); k.hasMoreElements(); ) {
+        Enumeration k = shieldings.keys();
+        while (k.hasMoreElements()) {
           shieldingNames[i] = (String) k.nextElement();
           i++;
         }

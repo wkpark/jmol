@@ -19,10 +19,13 @@
  */
 package org.openscience.jmol.applet;
 
-import org.openscience.jmol.*;
 import java.awt.BorderLayout;
 import java.io.InputStream;
 import java.net.URL;
+import org.openscience.jmol.ChemFrame;
+import org.openscience.jmol.ChemFile;
+import org.openscience.jmol.DisplaySettings;
+import org.openscience.jmol.AtomTypeSet;
 
 /**
  * Subset version of JMol which appears as a componant and can be controlled with strings.

@@ -19,12 +19,24 @@
  */
 package org.openscience.jmol;
 
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.beans.*;
-import java.awt.*;
 import java.io.File;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.AbstractButton;
+import javax.swing.JLabel;
+import javax.swing.JFileChooser;
+import javax.swing.JComponent;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JComboBox;
+import javax.swing.border.EmptyBorder;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.awt.Container;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.BorderLayout;
 
 public class FileTyper extends JPanel implements PropertyChangeListener,
     ItemListener {

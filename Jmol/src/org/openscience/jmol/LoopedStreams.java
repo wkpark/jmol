@@ -19,7 +19,12 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
+import java.io.PipedOutputStream;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PipedInputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 
 public class LoopedStreams {
 

@@ -20,10 +20,13 @@
 package org.openscience.jmol;
 
 import java.util.Vector;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.Component;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.AbstractButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JMenu;
+import javax.swing.ButtonGroup;
 
 
 /**

@@ -19,7 +19,8 @@
  */
 package org.openscience.jmol;
 
-import junit.framework.*;
+import junit.framework.TestSuite;
+import junit.framework.Test;
 
 /**
  * Program that runs all the tests using the text interface.

@@ -19,7 +19,11 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -86,7 +90,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
     if (s.length() > 5) {
       s = s.substring(0, 5);
     }
-    s = s + "\u00b0";
+    s += "\u00b0";
     int j = fontMetrics.stringWidth(s);
 
     int xloc = (x1 + x2 + x3 + x4) / 4;

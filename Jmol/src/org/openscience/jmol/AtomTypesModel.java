@@ -19,9 +19,10 @@
  */
 package org.openscience.jmol;
 
-import javax.swing.table.*;
-import java.util.*;
 import java.awt.Color;
+import javax.swing.table.AbstractTableModel;
+import java.util.Vector;
+import java.util.Enumeration;
 
 class AtomTypesModel extends AbstractTableModel {
 
@@ -215,7 +216,8 @@ class AtomTypesModel extends AbstractTableModel {
   public BaseAtomType get(String name) {
 
     if (name != null) {
-      for (Enumeration e = data.elements(); e.hasMoreElements(); ) {
+      Enumeration e = data.elements();
+      while (e.hasMoreElements()) {
         BaseAtomType at = (BaseAtomType) e.nextElement();
         if (name.equalsIgnoreCase(at.getName())) {
           return at;
@@ -230,7 +232,8 @@ class AtomTypesModel extends AbstractTableModel {
    */
   public BaseAtomType get(int atomicNumber) {
 
-    for (Enumeration e = data.elements(); e.hasMoreElements(); ) {
+    Enumeration e = data.elements();
+    while (e.hasMoreElements()) {
       BaseAtomType at = (BaseAtomType) e.nextElement();
       if (atomicNumber == at.getAtomicNumber()) {
         return at;

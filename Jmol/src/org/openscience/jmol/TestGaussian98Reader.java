@@ -19,9 +19,12 @@
  */
 package org.openscience.jmol;
 
-import junit.framework.*;
-import java.io.*;
-import java.util.*;
+import junit.framework.TestSuite;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import junit.framework.Test;
+import java.io.IOException;
+import java.io.FileReader;
 
 public class TestGaussian98Reader extends TestCase {
 

@@ -19,10 +19,11 @@
  */
 package org.openscience.jmol;
 
-import java.util.Vector;
-import java.io.*;
 import freeware.PrintfFormat;
 import javax.vecmath.Point3f;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Saves molecules in a rudimentary PDB format.

@@ -19,12 +19,26 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
+import java.awt.Color;
+import java.awt.RenderingHints;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseMotionAdapter;
+import javax.swing.AbstractButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -45,17 +59,15 @@ public class DisplayPanel extends JPanel
   private boolean rubberband = false;
   private boolean AntiAliased = false;
   private int bx, by, rtop, rbottom, rleft, rright;
-  private int fileType;
   private int nframes = 0;
   private static int prevx, prevy, outx, outy;
   private static Matrix4d amat = new Matrix4d();    // Matrix to do mouse angular rotations.
   private static Matrix4d tmat = new Matrix4d();    // Matrix to do translations.
   private static Matrix4d zmat = new Matrix4d();    // Matrix to do zooming.
   float[] quat = new float[4];
-  double mtmp[];
-  String names[];
-  Color colors[];
-  private double angle, prevangle;
+  double[] mtmp;
+  String[] names;
+  Color[] colors;
   ChemFile cf;
   ChemFrame md;
   private float xfac, xmin, xmax, ymin, ymax, zmin, zmax;
@@ -201,9 +213,12 @@ public class DisplayPanel extends JPanel
     }
     float f1 = getSize().width / xw;
     float f2 = getSize().height / xw;
-    xfac = 0.7f * ((f1 < f2)
-                   ? f1
-                   : f2) * scalefudge;
+    if (f1 < f2) {
+      xfac = f1;
+    } else {
+      xfac = f2;
+    }
+    xfac *= 0.7f * scalefudge;
     settings.setAtomScreenScale(xfac);
     settings.setBondScreenScale(xfac);
     settings.setVectorScreenScale(xfac);
@@ -934,9 +949,12 @@ public class DisplayPanel extends JPanel
       }
       float f1 = getSize().width / xw;
       float f2 = getSize().height / xw;
-      xfac = 0.7f * ((f1 < f2)
-                     ? f1
-                     : f2) * scalefudge;
+      if (f1 < f2) {
+        xfac = f1;
+      } else {
+        xfac = f2;
+      }
+      xfac *= 0.7f * scalefudge;
       settings.setAtomScreenScale(xfac);
       settings.setBondScreenScale(xfac);
       settings.setVectorScreenScale(xfac);

@@ -21,8 +21,6 @@ package org.openscience.jmol;
 
 import java.awt.Graphics;
 import java.awt.Polygon;
-import java.awt.Color;
-import java.util.Enumeration;
 
 /**
  * Draws bonds as filled rectangles colored on each half with the color of the

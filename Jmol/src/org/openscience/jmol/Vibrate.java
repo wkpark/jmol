@@ -19,16 +19,49 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.io.*;
 import java.io.File;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import javax.vecmath.Point3f;
+import java.awt.Container;
+import java.awt.Window;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Insets;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.PrintStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.util.Vector;
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.util.EventObject;
+import javax.swing.JDialog;
+import javax.swing.Action;
+import javax.swing.Box;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import javax.swing.JSlider;
+import javax.swing.BoxLayout;
+import javax.swing.AbstractAction;
+import javax.swing.JLabel;
+import javax.swing.JComponent;
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.border.TitledBorder;
 
 /**
  * A dialog for controling the animation of a molecular vibration.

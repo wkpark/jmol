@@ -46,7 +46,7 @@ import java.util.Vector;
  * @author Bradley A. Smith (yeldar@home.com)
  * @version 1.2
  */
-public class Gaussian98Reader implements ChemFileReader {
+public class Gaussian98Reader extends DefaultChemFileReader {
 
   /**
    * Create an Gaussian98 output reader.
@@ -54,21 +54,7 @@ public class Gaussian98Reader implements ChemFileReader {
    * @param input source of Gaussian98 data
    */
   public Gaussian98Reader(Reader input) {
-    this.input = new BufferedReader(input);
-  }
-
-  /**
-   * Whether bonds are enabled in the files and frames read.
-   */
-  private boolean bondsEnabled = true;
-  
-  /**
-   * Sets whether bonds are enabled in the files and frames which are read.
-   *
-   * @param bondsEnabled if true, enables bonds.
-   */
-  public void setBondsEnabled(boolean bondsEnabled) {
-    this.bondsEnabled = bondsEnabled;
+    super(input);
   }
   
   /**
@@ -330,53 +316,5 @@ public class Gaussian98Reader implements ChemFileReader {
       st1.nextToken();
     }
     return st1.nextToken() + "/" + st1.nextToken();
-  }
-
-  /**
-   * Holder of reader event listeners.
-   */
-  private Vector listenerList = new Vector();
-  
-  /**
-   * An event to be sent to listeners. Lazily initialized.
-   */
-  private ReaderEvent readerEvent = null;
-  
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l) {
-    listenerList.addElement(l);
-  }
-  
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l) {
-    listenerList.removeElement(l);
-  }
-  
-  /**
-   * Sends a frame read event to the reader listeners.
-   */
-  private void fireFrameRead() {
-    for (int i = 0; i < listenerList.size(); ++i) {
-      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
-      // Lazily create the event:
-      if (readerEvent == null) {
-        readerEvent = new ReaderEvent(this);
-      }
-      listener.frameRead(readerEvent);
-    }
-  }
- 
-
-  /**
-   * The source for Gaussian98 data.
-   */
-  private BufferedReader input;
+  }  
 }

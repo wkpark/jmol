@@ -19,13 +19,21 @@
  */
 package org.openscience.jmol;
 
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import java.beans.*;
-import java.awt.*;
 import java.io.File;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.JFileChooser;
+import javax.swing.JComponent;
+import javax.swing.SwingConstants;
+import javax.swing.JSlider;
+import javax.swing.JPanel;
+import javax.swing.JComboBox;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.Container;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 public class ImageTyper extends JPanel {
 

@@ -19,12 +19,17 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.Dimension;
+import javax.swing.JLabel;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 class StatusBar extends JPanel {
 
-  JLabel status[];
+  JLabel[] status;
 
   public StatusBar() {
 

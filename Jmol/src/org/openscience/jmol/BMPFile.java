@@ -19,9 +19,11 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.io.*;
-import java.awt.image.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.awt.image.PixelGrabber;
 
 /**
  * A BMP file encoder.
@@ -38,8 +40,8 @@ public class BMPFile extends Component {
 
   //--- Private variable declaration
   //--- Bitmap file header
-  private byte bitmapFileHeader[] = new byte[14];
-  private byte bfType[] = {
+  private byte[] bitmapFileHeader = new byte[14];
+  private byte[] bfType = {
     (byte) 'B', (byte) 'M'
   };
   private int bfSize = 0;
@@ -48,7 +50,7 @@ public class BMPFile extends Component {
   private int bfOffBits = BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_SIZE;
 
   //--- Bitmap info header
-  private byte bitmapInfoHeader[] = new byte[40];
+  private byte[] bitmapInfoHeader = new byte[40];
   private int biSize = BITMAPINFOHEADER_SIZE;
   private int biWidth = 0;
   private int biHeight = 0;
@@ -62,7 +64,7 @@ public class BMPFile extends Component {
   private int biClrImportant = 0;
 
   //--- Bitmap raw data
-  private int bitmap[];
+  private int[] bitmap;
 
   //--- File section
   private FileOutputStream fo;

@@ -20,7 +20,11 @@
 package org.openscience.jmol;
 
 import java.util.Vector;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.PrintStream;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  *
@@ -103,12 +107,12 @@ public class CMLSaver extends FileSaver {
     w.write("  <string title=\"COMMENT\">" + name + "</string>");
     w.newLine();
 
-    String ids = "";
-    String elementTypes = "";
-    String x3s = "";
-    String y3s = "";
-    String z3s = "";
-    String formalCharges = "";
+    StringBuffer ids = new StringBuffer();
+    StringBuffer elementTypes = new StringBuffer();
+    StringBuffer x3s = new StringBuffer();
+    StringBuffer y3s = new StringBuffer();
+    StringBuffer z3s = new StringBuffer();
+    StringBuffer formalCharges = new StringBuffer();
     String lineSeparator = System.getProperty("line.separator");
     
     int count = 0;
@@ -116,43 +120,48 @@ public class CMLSaver extends FileSaver {
     for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
       if (ids.length() > 0) {
-        ids += " ";
+        ids.append(" ");
       }
-      ids += "a" + i;
+      ids.append("a");
+      ids.append(Integer.toString(i));
 
       Atom a = cf.getAtomAt(i);
       if (elementTypes.length() > 0) {
-        elementTypes += " ";
+        elementTypes.append(" ");
       }
-      elementTypes += a.getType().getName();
+      elementTypes.append(a.getType().getName());
 
       double[] pos = cf.getAtomCoords(i);
       if (x3s.length() > 0) {
-        x3s += " ";
+        x3s.append(" ");
       }
       if (y3s.length() > 0) {
-        y3s += " ";
+        y3s.append(" ");
       }
       if (z3s.length() > 0) {
-        z3s += " ";
+        z3s.append(" ");
       }
-      x3s += new Double(pos[0]).toString();
-      y3s += new Double(pos[1]).toString();
-      z3s += new Double(pos[2]).toString();
+      x3s.append(new Double(pos[0]).toString());
+      y3s.append(new Double(pos[1]).toString());
+      z3s.append(new Double(pos[2]).toString());
 
-      if ((++count == 5) && (i + 1 < cf.getNumberOfAtoms())) {
+      ++count;
+      if ((count == 5) && (i + 1 < cf.getNumberOfAtoms())) {
         count = 0;
-        x3s += lineSeparator + "     ";
-        y3s += lineSeparator + "     ";
-        z3s += lineSeparator + "     ";
+        x3s.append(lineSeparator);
+        x3s.append("     ");
+        y3s.append(lineSeparator);
+        y3s.append("     ");
+        z3s.append(lineSeparator);
+        z3s.append("     ");
       }
 
       if (writecharge) {
         if (formalCharges.length() > 0) {
-          formalCharges += " ";
+          formalCharges.append(" ");
         }
         Charge ct = (Charge) cf.getAtomAt(i).getProperty(Charge.DESCRIPTION);
-        formalCharges += ct.stringValue();
+        formalCharges.append(ct.stringValue());
       }
     }
     w.write("  <atomArray>");

@@ -21,14 +21,21 @@ package org.openscience.jmol;
 
 import javax.swing.Timer;
 import javax.swing.ImageIcon;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Toolkit;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Frame;
+import java.awt.Window;
+import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Splash extends Window {
 
   private Image splashImage;
   private int imgWidth, imgHeight;
-  private String imgName;
   private static final int BORDERSIZE = 10;
   private static final Color BORDERCOLOR = Color.blue;
   Toolkit tk;

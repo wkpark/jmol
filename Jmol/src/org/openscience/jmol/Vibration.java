@@ -19,7 +19,8 @@
  */
 package org.openscience.jmol;
 
-import java.util.*;
+import java.util.Vector;
+import java.util.Enumeration;
 
 /**
  * A molecular vibration composed of a set of atom vectors.

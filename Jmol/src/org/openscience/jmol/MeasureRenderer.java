@@ -39,7 +39,8 @@ public class MeasureRenderer {
   public synchronized void paint(Graphics g, ChemFrame frame, DisplaySettings settings) {
 
     if (frame.getDistanceMeasurements() != null) {
-      for (Enumeration e = frame.getDistanceMeasurements().elements(); e.hasMoreElements(); ) {
+      Enumeration e = frame.getDistanceMeasurements().elements();
+      while (e.hasMoreElements()) {
         Distance d = (Distance) e.nextElement();
         int[] al = d.getAtomList();
         int l = al[0];
@@ -56,7 +57,8 @@ public class MeasureRenderer {
       }
     }
     if (frame.getAngleMeasurements() != null) {
-      for (Enumeration e = frame.getAngleMeasurements().elements(); e.hasMoreElements(); ) {
+      Enumeration e = frame.getAngleMeasurements().elements();
+      while (e.hasMoreElements()) {
         Angle an = (Angle) e.nextElement();
         int[] al = an.getAtomList();
         int l = al[0];
@@ -77,7 +79,8 @@ public class MeasureRenderer {
       }
     }
     if (frame.getDihedralMeasurements() != null) {
-      for (Enumeration e = frame.getDihedralMeasurements().elements(); e.hasMoreElements(); ) {
+      Enumeration e = frame.getDihedralMeasurements().elements();
+      while (e.hasMoreElements()) {
         Dihedral dh = (Dihedral) e.nextElement();
         int[] dhl = dh.getAtomList();
         int l = dhl[0];

@@ -19,7 +19,10 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
+import java.io.OutputStreamWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public abstract class FileSaver {
 

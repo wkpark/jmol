@@ -19,17 +19,28 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import java.io.StringReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Vector;
+import java.awt.Container;
+import java.awt.Component;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.UIManager;
+import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
 
 public class MultiLineHeaderRenderer extends JPanel
         implements TableCellRenderer {
 
-  private ImageIcon theIcon;
   private JList theList = new JList();
   private JLabel theImage = new JLabel();
 
@@ -66,15 +77,18 @@ public class MultiLineHeaderRenderer extends JPanel
           boolean isSelected, boolean hasFocus, int row, int column) {
 
     setFont(table.getFont());
-    String str = (value == null)
-                 ? ""
-                 : value.toString();
+    String str = "";
+    if (value != null) {
+      str = value.toString();
+    }
     BufferedReader br = new BufferedReader(new StringReader(str));
     String line;
     Vector v = new Vector();
     try {
-      while ((line = br.readLine()) != null) {
+      line = br.readLine();
+      while (line != null) {
         v.addElement(line);
+        line = br.readLine();
       }
     } catch (IOException ex) {
       ex.printStackTrace();

@@ -20,10 +20,11 @@
 package org.openscience.jmol;
 
 import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.Writer;
+import java.io.IOException;
 
 /* THIS IS THE OLD COMMENT, SOME OF THE IDEAS STILL APPLY, BUT THE NEW
  * COMMENT SECTION DETAILS THE ACTUAL IMPLEMENTATION IN THE CODE.

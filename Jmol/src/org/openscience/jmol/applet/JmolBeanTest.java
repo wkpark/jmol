@@ -23,7 +23,8 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.event.WindowEvent;
-import org.openscience.jmol.*;
+import org.openscience.jmol.ReaderFactory;
+import org.openscience.jmol.ChemFileReader;
 
 public class JmolBeanTest {
 

@@ -19,7 +19,6 @@
  */
 package org.openscience.jmol;
 
-import java.awt.Graphics;
 
 public interface MeasurementInterface {
 

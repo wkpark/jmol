@@ -19,8 +19,12 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
 import java.util.Vector;
+import java.io.Reader;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * A reader for ACES II output.
@@ -41,7 +45,7 @@ import java.util.Vector;
  * @author Bradley A. Smith (yeldar@home.com)
  * @version 1.0
  */
-public class Aces2Reader implements ChemFileReader {
+public class Aces2Reader extends DefaultChemFileReader {
 
   /**
    * Scaling factor for converting atomic coordinates from
@@ -55,21 +59,7 @@ public class Aces2Reader implements ChemFileReader {
    * @param input source of Aces2 data
    */
   public Aces2Reader(Reader input) {
-    this.input = new BufferedReader(input);
-  }
-
-  /**
-   * Whether bonds are enabled in the files and frames read.
-   */
-  private boolean bondsEnabled = true;
-  
-  /**
-   * Sets whether bonds are enabled in the files and frames which are read.
-   *
-   * @param bondsEnabled if true, enables bonds.
-   */
-  public void setBondsEnabled(boolean bondsEnabled) {
-    this.bondsEnabled = bondsEnabled;
+    super(input);
   }
   
   /**
@@ -259,52 +249,5 @@ public class Aces2Reader implements ChemFileReader {
         break;
       }
     }
-  }
-
-  /**
-   * The source for Aces2 data.
-   */
-  private BufferedReader input;
-
-  /**
-   * Holder of reader event listeners.
-   */
-  private Vector listenerList = new Vector();
-  
-  /**
-   * An event to be sent to listeners. Lazily initialized.
-   */
-  private ReaderEvent readerEvent = null;
-  
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l) {
-    listenerList.addElement(l);
-  }
-  
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l) {
-    listenerList.removeElement(l);
-  }
-  
-  /**
-   * Sends a frame read event to the reader listeners.
-   */
-  private void fireFrameRead() {
-    for (int i = 0; i < listenerList.size(); ++i) {
-      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
-      // Lazily create the event:
-      if (readerEvent == null) {
-        readerEvent = new ReaderEvent(this);
-      }
-      listener.frameRead(readerEvent);
-    }
-  }
+  }  
 }

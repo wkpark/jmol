@@ -19,7 +19,6 @@
  */
 package org.openscience.jmol;
 
-import java.util.EventListener;
 
 /**
  * Displays progress of file reader activities in the status display.

@@ -23,9 +23,10 @@ import java.awt.Graphics;
 import java.awt.image.IndexColorModel;
 import java.awt.image.ColorModel;
 import java.awt.image.MemoryImageSource;
-import java.awt.*;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.awt.Color;
+import java.awt.Component;
 //import javax.swing.*;
 
 public class AtomType {
@@ -38,11 +39,6 @@ public class AtomType {
    *  the base type
    */
   private Color color = null;
-
-  /**
-   * Pool of atom images for shaded renderings.
-   */
-  private static Hashtable ballImages = new Hashtable();
 
   /**
    * Sets the JPanel where all atoms will be drawn

@@ -19,7 +19,11 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -79,7 +83,7 @@ class Distance extends Measurement implements MeasurementInterface {
     if (s.length() > 5) {
       s = s.substring(0, 5);
     }
-    s = s + " \u00c5";
+    s += " \u00c5";
     int j = fontMetrics.stringWidth(s);
 
     if (x2 == x1) {

@@ -19,20 +19,72 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.io.*;
 import java.io.File;
-import java.util.*;
 
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.filechooser.*;
-import javax.swing.JToolBar.*;
 
-import Acme.JPM.Encoders.*;
 import com.obrador.JpegEncoder;
+import java.awt.Container;
+import java.awt.Image;
+import java.awt.PrintJob;
+import java.awt.Color;
+import java.awt.Window;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.util.Vector;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+import java.util.MissingResourceException;
+import java.util.EventObject;
+import javax.swing.JToolBar;
+import javax.swing.JFileChooser;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JTextArea;
+import javax.swing.JViewport;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.JScrollPane;
+import javax.swing.JMenuBar;
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JComponent;
+import javax.swing.UIManager;
+import javax.swing.JMenu;
+import javax.swing.SwingConstants;
+import javax.swing.JOptionPane;
+import Acme.JPM.Encoders.GifEncoder;
+import Acme.JPM.Encoders.PpmEncoder;
+import Acme.JPM.Encoders.ImageEncoder;
 
 class Jmol extends JPanel {
 
@@ -884,23 +936,13 @@ class Jmol extends JPanel {
    */
   private static final String mnemonicSuffix = "Mnemonic";
 
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for Mnemonics.
-   */
-  private static final String acceleratorSuffix = "Accelerator";
-
   private static final String openAction = "open";
   private static final String newAction = "new";
-  private static final String closeAction = "close";
   private static final String saveasAction = "saveas";
   private static final String exportActionProperty = "export";
   private static final String exitAction = "exit";
   private static final String aboutAction = "about";
-  private static final String prefsAction = "prefs";
-  private static final String animAction = "animate";
   private static final String vibAction = "vibrate";
-  private static final String graphAction = "graph";
   private static final String whatsnewAction = "whatsnew";
   private static final String uguideAction = "uguide";
   private static final String atompropsAction = "atomprops";

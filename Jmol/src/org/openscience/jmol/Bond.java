@@ -19,10 +19,7 @@
  */
 package org.openscience.jmol;
 
-import java.util.*;
-import java.awt.Graphics;
-import java.awt.*;
-import javax.swing.*;
+import java.util.Enumeration;
 
 /**
  * Represents the connection between two atoms.

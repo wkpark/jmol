@@ -19,17 +19,39 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
 import java.io.File;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.JScrollPane;
+import java.awt.Container;
+import java.awt.Component;
+import java.awt.Toolkit;
+import java.awt.BorderLayout;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
+import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import java.util.EventObject;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.Action;
+import javax.swing.ListSelectionModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.BoxLayout;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.border.TitledBorder;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)

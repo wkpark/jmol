@@ -306,7 +306,7 @@ public class PovrayDialog extends JDialog {
         povs.setTmat(tmat);
         povs.setZmat(zmat);
         povs.setSize(outputWidth, outputHeight);
-        povs.setBackgroundColor(display.getBackgroundColor());
+        povs.setBackgroundColor(DisplayPanel.getBackgroundColor());
         povs.writeFile();
         os.flush();
         os.close();
@@ -342,9 +342,9 @@ public class PovrayDialog extends JDialog {
   private void showSavePathDialog() {
 
     JFileChooser myChooser = new JFileChooser();
-    myChooser.setFileSelectionMode(myChooser.DIRECTORIES_ONLY);
+    myChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     int button = myChooser.showDialog(this, "Select");
-    if (button == myChooser.APPROVE_OPTION) {
+    if (button == JFileChooser.APPROVE_OPTION) {
       java.io.File newFile = myChooser.getSelectedFile();
       if (newFile.isDirectory()) {
         savePath = newFile.toString();
@@ -364,7 +364,7 @@ public class PovrayDialog extends JDialog {
 
     JFileChooser myChooser = new JFileChooser();
     int button = myChooser.showDialog(this, "Select");
-    if (button == myChooser.APPROVE_OPTION) {
+    if (button == JFileChooser.APPROVE_OPTION) {
       java.io.File newFile = myChooser.getSelectedFile();
       povrayPath = newFile.toString();
       povrayPathLabel.setText(povrayPath);
@@ -386,7 +386,7 @@ public class PovrayDialog extends JDialog {
 
     //Append a file separator to the savePath is necessary
     if (!savePath.endsWith(java.io.File.separator)) {
-      savePath = savePath + java.io.File.separator;
+      savePath += java.io.File.separator;
     }
 
     //Get the current setup
@@ -400,11 +400,11 @@ public class PovrayDialog extends JDialog {
     }
 
     if (doAntiAlias) {
-      commandLine = commandLine + " +A0";
+      commandLine += " +A0";
     }
 
     if (displayWhileRendering) {
-      commandLine = commandLine + " +D +P";
+      commandLine += " +D +P";
     }
     if (commandLineField != null) {
       commandLineField.setText(commandLine);

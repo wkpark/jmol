@@ -20,8 +20,6 @@
 package org.openscience.jmol;
 
 import java.awt.Graphics;
-import java.awt.Polygon;
-import java.awt.Color;
 
 /**
  * Draws bonds as lines colored on each half with the color of the

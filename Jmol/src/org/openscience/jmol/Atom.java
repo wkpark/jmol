@@ -20,7 +20,6 @@
 package org.openscience.jmol;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3f;

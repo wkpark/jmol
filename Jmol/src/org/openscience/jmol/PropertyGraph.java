@@ -19,12 +19,28 @@
  */
 package org.openscience.jmol;
 
-import jas.hist.*;
-import jas.plot.PrintHelper;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import jas.hist.ScatterPlotSource;
+import jas.hist.ScatterEnumeration;
+import jas.hist.JASHistData;
+import jas.hist.JASHist;
+import jas.hist.DataSource;
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.JFrame;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import java.awt.Container;
+import java.awt.Component;
+import java.awt.Toolkit;
+import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+import java.util.Enumeration;
 
 public class PropertyGraph extends JDialog implements ActionListener {
 
@@ -112,7 +128,8 @@ public class PropertyGraph extends JDialog implements ActionListener {
 
         for (int i = 0; i < nPoints; i++) {
           Vector fp = inputFile.getFrame(i).getFrameProperties();
-          for (Enumeration ef = fp.elements(); ef.hasMoreElements(); ) {
+          Enumeration ef = fp.elements();
+          while (ef.hasMoreElements()) {
 
             PhysicalProperty pf = (PhysicalProperty) ef.nextElement();
             if (pf.getDescriptor().equals(desc)) {

@@ -19,16 +19,42 @@
  */
 package org.openscience.jmol;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
 import java.io.File;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import javax.swing.plaf.metal.*;
-import javax.swing.JColorChooser.*;
+import java.awt.Container;
+import java.awt.Window;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.Insets;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.event.ItemEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import java.util.EventObject;
+import javax.swing.JDialog;
+import javax.swing.Box;
+import javax.swing.JPanel;
+import javax.swing.Action;
+import javax.swing.JFrame;
+import javax.swing.JRootPane;
+import javax.swing.JSlider;
+import javax.swing.BoxLayout;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.AbstractButton;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.border.TitledBorder;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -189,10 +215,10 @@ public class Animate extends JDialog implements ActionListener, Runnable {
              user doesn't want to repeat.  Otherwise, reset to
              frame zero and keep going.
           */
-          if (!repeat) {
-            animThread = null;
-          } else {
+          if (repeat) {
             currentFrame = 0;
+          } else {
+            animThread = null;
           }
         }
         setFrame(currentFrame, true);

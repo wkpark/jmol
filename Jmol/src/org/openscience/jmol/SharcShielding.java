@@ -19,7 +19,8 @@
  */
 package org.openscience.jmol;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 public class SharcShielding {
 

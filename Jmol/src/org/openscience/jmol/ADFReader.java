@@ -19,9 +19,13 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.io.Reader;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * A reader for ADF output.
@@ -43,7 +47,7 @@ import java.util.Hashtable;
  * @author Bradley A. Smith (yeldar@home.com)
  * @version 1.0
  */
-public class ADFReader implements ChemFileReader {
+public class ADFReader extends DefaultChemFileReader {
 
   /**
    * Create an ADF output reader.
@@ -51,21 +55,7 @@ public class ADFReader implements ChemFileReader {
    * @param input source of ADF data
    */
   public ADFReader(Reader input) {
-    this.input = new BufferedReader(input);
-  }
-
-  /**
-   * Whether bonds are enabled in the files and frames read.
-   */
-  private boolean bondsEnabled = true;
-  
-  /**
-   * Sets whether bonds are enabled in the files and frames which are read.
-   *
-   * @param bondsEnabled if true, enables bonds.
-   */
-  public void setBondsEnabled(boolean bondsEnabled) {
-    this.bondsEnabled = bondsEnabled;
+    super(input);
   }
   
   /**
@@ -270,11 +260,6 @@ public class ADFReader implements ChemFileReader {
   }
 
   /**
-   * The source for ADF data.
-   */
-  private BufferedReader input;
-
-  /**
    * Table for mapping atomic symbols to atomic numbers.
    * Keys are atomic symbols represented by String.
    * Values are atomic numbers represented by Integer.
@@ -324,45 +309,4 @@ public class ADFReader implements ChemFileReader {
     atomicSymbols.put("Kr", new Integer(36));
   }
 
-  /**
-   * Holder of reader event listeners.
-   */
-  private Vector listenerList = new Vector();
-  
-  /**
-   * An event to be sent to listeners. Lazily initialized.
-   */
-  private ReaderEvent readerEvent = null;
-  
-  /**
-   * Adds a reader listener.
-   *
-   * @param l the reader listener to add.
-   */
-  public void addReaderListener(ReaderListener l) {
-    listenerList.addElement(l);
-  }
-  
-  /**
-   * Removes a reader listener.
-   *
-   * @param l the reader listener to remove.
-   */
-  public void removeReaderListener(ReaderListener l) {
-    listenerList.removeElement(l);
-  }
-  
-  /**
-   * Sends a frame read event to the reader listeners.
-   */
-  private void fireFrameRead() {
-    for (int i = 0; i < listenerList.size(); ++i) {
-      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
-      // Lazily create the event:
-      if (readerEvent == null) {
-        readerEvent = new ReaderEvent(this);
-      }
-      listener.frameRead(readerEvent);
-    }
-  }
 }

@@ -19,17 +19,36 @@
  */
 package org.openscience.jmol;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import java.io.File;
 import java.net.URL;
 import java.net.MalformedURLException;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.JScrollPane;
+import javax.swing.JFrame;
+import javax.swing.JRootPane;
+import javax.swing.JEditorPane;
+import javax.swing.JComponent;
+import javax.swing.JButton;
+import javax.swing.AbstractButton;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.Document;
+import java.awt.Container;
+import java.awt.Component;
+import java.awt.Toolkit;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
+import java.awt.Window;
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.PrintStream;
+import java.io.IOException;
 
 public class HelpDialog extends JDialog implements HyperlinkListener {
 

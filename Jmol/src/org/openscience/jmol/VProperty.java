@@ -19,7 +19,6 @@
  */
 package org.openscience.jmol;
 
-import java.util.*;
 
 /**
  * A class to store the VProperty (an arbitrary 3-vector) for an atom
@@ -34,7 +33,7 @@ public class VProperty extends PhysicalProperty {
    * Constructor for VProperty
    * @param v The 3-vector containing the VProperty
    */
-  public VProperty(double v[]) {
+  public VProperty(double[] v) {
     super(DESCRIPTION, v);
   }
 

@@ -24,7 +24,8 @@
 	<li>
 	  <a href="http://www.weizmann.ac.il">
 	    Weizmann Institute of Science
-	  </a> - Israel
+	  </a>
+	  - Israel
 	  <ul>
 	    <li>
 	      <a href="http://bip.weizmann.ac.il/oca/">
@@ -33,25 +34,29 @@
 	    </li>
 	    <li>
 	      <a href="http://bip.weizmann.ac.il/hypare/">
-		HyPare - Predicting Association Rate Enhancement
+		HyPare
 	      </a>
+	      - Predicting Association Rate Enhancement
 	    </li>
 	  </ul>
 	</li>
 	<li>
 	  <a href="http://www.imb-jena.de/IMAGE_PDB_SEARCH.html">
 	    IMB Jena Image Library of Biological Macromolecules
-	  </a> - Germany
+	  </a>
+	  - Germany
 	</li>
 	<li>
 	  <a href="http://surya.bic.nus.edu.sg/xdom/">
 	    XdomView
-	  </a> - National University of Singapore
+	  </a>
+	  - National University of Singapore
 	</li>
 	<li>
 	  <a href="http://www.stolaf.edu/depts/chemistry/mo/struc/">
-	     St. Olaf College - USA
+	     CoolMolecules
 	  </a>
+	  - St. Olaf College, USA
 	</li>
       </ul>
     </section>

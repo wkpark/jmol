@@ -176,11 +176,16 @@ class ModelResolver {
   final static String[] gamessRecords =
   { "GAMESS" };
 
+  final static String[] spartanRecords =
+  { "Spartan" };
+
   final static String[][] containsRecords =
-  { cmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords };
+  { cmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
+    spartanRecords
+  };
 
   final static String[] containsFormats =
-  { "Cml", "Gaussian", "Mopac", "Qchem", "Gamess" };
+  { "Cml", "Gaussian", "Mopac", "Qchem", "Gamess", "Spartan" };
 }
 
 class LimitedLineReader {

@@ -27,20 +27,20 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
-class GamessReader extends ModelReader {
+class SpartanReader extends ModelReader {
     
-  final static float angstromsPerBohr = 0.529177f;
-
   Model readModel(BufferedReader reader) throws Exception {
 
-    model = new Model("gamess");
+    model = new Model("spartan");
 
     try {
       String line;
-      discardLinesUntilContains(reader, "COORDINATES (BOHR)");
-      readAtomsInBohrCoordinates(reader);
-      discardLinesUntilContains(reader, "FREQUENCIES IN CM");
-      readFrequencies(reader);
+      if (discardLinesUntilContains(reader, "Cartesian Coordinates (Ang") !=
+          null)
+        readAtoms(reader);
+      if (discardLinesUntilContains(reader, "Vibrational Frequencies") !=
+          null)
+        readFrequencies(reader);
     } catch (Exception ex) {
       ex.printStackTrace();
       model.errorMessage = "Could not read file:" + ex;
@@ -52,22 +52,23 @@ class GamessReader extends ModelReader {
     return model;
   }
 
-  void readAtomsInBohrCoordinates(BufferedReader reader) throws Exception {
-    reader.readLine(); // discard one line
+  void readAtoms(BufferedReader reader) throws Exception {
+    discardLinesUntilBlank(reader);
     String line;
-    String atomName;
+    int atomNum;
     while ((line = reader.readLine()) != null &&
-           (atomName = parseToken(line, 1, 6)) != null) {
-      float x = parseFloat(line, 17, 37);
-      float y = parseFloat(line, 37, 57);
-      float z = parseFloat(line, 57, 77);
-      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-        break;
+           (atomNum = parseInt(line, 0, 3)) > 0) {
+      String elementSymbol = parseToken(line, 4, 6);
+      String atomName = parseToken(line, 7, 13);
+      float x = parseFloat(line, 17, 30);
+      float y = parseFloat(line, 31, 44);
+      float z = parseFloat(line, 45, 58);
       Atom atom = model.addNewAtom();
+      atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.x = x * angstromsPerBohr;
-      atom.y = y * angstromsPerBohr;
-      atom.z = z * angstromsPerBohr;
+      atom.x = x;
+      atom.y = y;
+      atom.z = z;
     }
   }
 
@@ -79,42 +80,41 @@ class GamessReader extends ModelReader {
     float[] yComponents = new float[5];
     float[] zComponents = new float[5];
 
-    String line = discardLinesUntilContains(reader, "FREQUENCY:");
-    do {
+    while (true) {
+      String line = discardLinesUntilNonBlank(reader);
       int lineBaseFreqCount = totalFrequencyCount;
-      ichNextParse = 17;
+      System.out.println("lineBaseFreqCount=" + lineBaseFreqCount);
+      ichNextParse = 16;
       int lineFreqCount;
-      for (lineFreqCount = 0; lineFreqCount < 5; ++lineFreqCount) {
+      for (lineFreqCount = 0; lineFreqCount < 3; ++lineFreqCount) {
         float frequency = parseFloat(line, ichNextParse);
         //        System.out.println("frequency=" + frequency);
         if (Float.isNaN(frequency))
-          break;
+          break; //////////////// loop exit is here
         ++totalFrequencyCount;
         if (totalFrequencyCount > 1)
           createNewModel(totalFrequencyCount);
       }
+      if (lineFreqCount == 0)
+        return;
       Atom[] atoms = model.atoms;
-      discardLinesUntilBlank(reader);
+      discardLines(reader, 2);
       for (int i = 0; i < atomCountInFirstModel; ++i) {
-        readComponents(reader.readLine(), lineFreqCount, xComponents);
-        readComponents(reader.readLine(), lineFreqCount, yComponents);
-        readComponents(reader.readLine(), lineFreqCount, zComponents);
+        line = reader.readLine();
         for (int j = 0; j < lineFreqCount; ++j) {
+          int ichCoords = j * 23 + 10;
+          float x = parseFloat(line, ichCoords,      ichCoords +  7);
+          float y = parseFloat(line, ichCoords +  7, ichCoords + 14);
+          float z = parseFloat(line, ichCoords + 14, ichCoords + 21);
           int atomIndex = (lineBaseFreqCount + j) * atomCountInFirstModel + i;
           Atom atom = atoms[atomIndex];
-          atom.vectorX = xComponents[j];
-          atom.vectorY = yComponents[j];
-          atom.vectorZ = zComponents[j];
+          atom.vectorX = x;
+          atom.vectorY = y;
+          atom.vectorZ = z;
+          System.out.println("x=" + x + " y=" + y + " z=" + z);
         }
       }
-      discardLines(reader, 12);
-      line = reader.readLine();
-    } while (line.indexOf("FREQUENCY:") > 0);
-  }
-
-  void readComponents(String line, int count, float[] components) {
-    for (int i = 0, start = 20; i < count; ++i, start += 12)
-      components[i] = parseFloat(line, start, start + 12);
+    }
   }
 
   int atomCountInFirstModel;
@@ -127,6 +127,4 @@ class GamessReader extends ModelReader {
       atomNew.modelNumber = modelNumber;
     }
   }
-
 }
-

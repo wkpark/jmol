@@ -291,11 +291,10 @@ abstract class ModelReader {
       {}
   }
 
-  /*
   String discardLinesUntilNonBlank(BufferedReader reader) throws Exception {
     String line;
     while ((line = reader.readLine()) != null && line.length() == 0)
       {}
+    return line;
   }
-  */
 }

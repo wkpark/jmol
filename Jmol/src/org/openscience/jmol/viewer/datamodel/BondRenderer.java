@@ -44,6 +44,7 @@ class BondRenderer extends Renderer {
   boolean showHydrogens;
   byte endcaps;
 
+  Atom atomA, atomB;
   int xA, yA, zA;
   int xB, yB, zB;
   int dx, dy;
@@ -83,8 +84,8 @@ class BondRenderer extends Renderer {
     styleBond = bond.style;
     if (styleBond == JmolConstants.STYLE_NONE)
       return;
-    Atom atomA = bond.atom1;
-    Atom atomB = bond.atom2;
+    atomA = bond.atom1;
+    atomB = bond.atom2;
     if (!showHydrogens && (atomA.atomicNumber == 1 ||
                            atomB.atomicNumber == 1))
       return;
@@ -108,7 +109,7 @@ class BondRenderer extends Renderer {
       break;
     case JmolConstants.BOND_AROMATIC:
       bondOrder = 2;
-      renderCylinder(1);
+      renderCylinder(getAromaticDottedBondMask(bond));
       break;
     case JmolConstants.BOND_STEREO_NEAR:
     case JmolConstants.BOND_STEREO_FAR:
@@ -160,7 +161,7 @@ class BondRenderer extends Renderer {
       boolean tDotted = (dottedMask & 1) != 0;
       if (lineBond) {
         if (tDotted)
-          g3d.drawDashedLine(colixA, colixB, 6, 3, xA, yA, zA, xB, yB, zB);
+          g3d.drawDashedLine(colixA, colixB, 8, 4, xA, yA, zA, xB, yB, zB);
         else 
           g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
@@ -182,7 +183,7 @@ class BondRenderer extends Renderer {
       dottedMask >>= 1;
       if (lineBond) {
         if (tDotted)
-          g3d.drawDashedLine(colixA, colixB, 6, 3,
+          g3d.drawDashedLine(colixA, colixB, 8, 4,
                              xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
         else
           g3d.drawLine(colixA, colixB,
@@ -276,7 +277,7 @@ class BondRenderer extends Renderer {
   private void renderDotted() {
     if (dx == 0 && dy == 0)
       return;
-    g3d.drawDashedLine(colixA, colixB, 6, 3, xA, yA, zA, xB, yB, zB);
+    g3d.drawDashedLine(colixA, colixB, 8, 4, xA, yA, zA, xB, yB, zB);
   }
 
   private static float wideWidthAngstroms = 0.4f;
@@ -337,6 +338,31 @@ class BondRenderer extends Renderer {
       int z = z1 + (dz * i) / 7;
       g3d.fillSphereCentered(i > 3 ? colixB : colixA, width, x, y, z);
     }
+  }
+
+  private int getAromaticDottedBondMask(Bond bond) {
+    Atom atomC = findAromaticNeighbor(bond);
+    if (atomC == null)
+      return 1;
+    int dxAC = atomC.x - atomA.x;
+    int dyAC = atomC.y - atomA.y;
+    return (dx * dyAC - dy * dxAC) >= 0 ? 2 : 1;
+  }
+
+  private Atom findAromaticNeighbor(Bond bond) {
+    Bond[] bonds = atomB.bonds;
+    for (int i = bonds.length; --i >= 0; ) {
+      Bond bondT = bonds[i];
+      if ((bondT.order & JmolConstants.BOND_AROMATIC) == 0)
+        continue;
+      if (bondT == bond)
+        continue;
+      if (bondT.atom1 == atomB)
+        return bondT.atom2;
+      if (bondT.atom2 == atomB)
+        return bondT.atom1;
+    }
+    return null;
   }
 }
 

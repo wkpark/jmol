@@ -310,7 +310,8 @@ public class TransformManager {
   ****************************************************************/
   public boolean perspectiveDepth = true;
   public float cameraDepth = 3;
-  public int cameraZ = 1000; // prevent divide by zero on startup
+  int cameraDistance = 1000;        // prevent divide by zero on startup
+  float cameraDistanceFloat = 1000; // prevent divide by zero on startup
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
     this.perspectiveDepth = perspectiveDepth;
@@ -327,10 +328,6 @@ public class TransformManager {
 
   public float getCameraDepth() {
     return cameraDepth;
-  }
-
-  public int getCameraZ() {
-    return cameraZ;
   }
 
   /****************************************************************
@@ -384,8 +381,10 @@ public class TransformManager {
     scaleDefaultPixelsPerAngstrom =
       minScreenDimension / 2 / viewer.getRotationRadius();
     if (perspectiveDepth) {
-      cameraZ = (int)(cameraDepth * minScreenDimension);
-      float scaleFactor = (cameraZ + minScreenDimension/2) / (float)cameraZ;
+      cameraDistance = (int)(cameraDepth * minScreenDimension);
+      cameraDistanceFloat = cameraDistance;
+      float scaleFactor = (cameraDistance + minScreenDimension/2) /
+        cameraDistanceFloat;
       // mth - for some reason, I can make the scaleFactor bigger in this
       // case. I do not know why, but there is extra space around the edges.
       // I have looked at it three times and still cannot figure it out
@@ -405,13 +404,13 @@ public class TransformManager {
     // so the more positive z is, the smaller the screen scale
     float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
     if (perspectiveDepth)
-      pixelSize = (pixelSize * cameraZ) / (cameraZ + z);
+      pixelSize = (pixelSize * cameraDistance) / z;
     return pixelSize;
   }
 
   public float scaleToPerspective(int z, float sizeAngstroms) {
     return (perspectiveDepth
-            ? (sizeAngstroms * cameraZ) / (cameraZ + z)
+            ? (sizeAngstroms * cameraDistance) / + z
             : sizeAngstroms);
   }
 
@@ -420,7 +419,7 @@ public class TransformManager {
       return 0;
     int pixelSize = (int)(milliAngstroms * scalePixelsPerAngstrom / 1000);
     if (perspectiveDepth)
-      pixelSize = (pixelSize * cameraZ) / (cameraZ + z);
+      pixelSize = (pixelSize * cameraDistance) / z;
     if (pixelSize == 0)
       return 1;
     return (short)pixelSize;
@@ -445,6 +444,21 @@ public class TransformManager {
   public void calcTransformMatrices() {
     calcTransformMatrix();
     viewer.setSlabValue(calcSlabValue());
+    increaseRotationRadius = false;
+    minimumZ = Integer.MAX_VALUE;
+  }
+
+  public boolean increaseRotationRadius;
+  int minimumZ;
+
+  public float getRotationRadiusIncrease() {
+    System.out.println("TransformManager.getRotationRadiusIncrease()");
+    System.out.println("minimumZ=" + minimumZ);
+    // add one more pixel just for good luck;
+    int backupDistance = cameraDistance - minimumZ + 1;
+    float angstromsIncrease = backupDistance / scalePixelsPerAngstrom;
+    System.out.println("angstromsIncrease=" + angstromsIncrease);
+    return angstromsIncrease;
   }
 
   private void calcTransformMatrix() {
@@ -465,7 +479,8 @@ public class TransformManager {
     // so first, translate an make all z coordinates negative
     vectorTemp.x = 0;
     vectorTemp.y = 0;
-    vectorTemp.z = viewer.getRotationRadius();
+    vectorTemp.z = viewer.getRotationRadius() +
+      cameraDistanceFloat / scalePixelsPerAngstrom;
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     if (orientationRasMolChime)
@@ -504,14 +519,20 @@ public class TransformManager {
   public Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3dScreenTemp);
 
-    int z = (int)(point3dScreenTemp.z + 0.5);
-    if (z < 0) {
-      System.out.println("WARNING! DANGER! z < 0! transformPoint()");
-      z = 0;
+    int z = (int)point3dScreenTemp.z;
+    if (z < cameraDistance) {
+      System.out.println("need to back up the camera");
+      increaseRotationRadius = true;
+      if (z < minimumZ)
+        minimumZ = z;
+      if (z <= 0) {
+        System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
+        z = 1;
+      }
     }
     point3iScreenTemp.z = z;
     if (perspectiveDepth) {
-      float perspectiveFactor = (float)cameraZ / (cameraZ + z);
+      float perspectiveFactor = cameraDistanceFloat / z;
       point3dScreenTemp.x *= perspectiveFactor;
       point3dScreenTemp.y *= perspectiveFactor;
     }

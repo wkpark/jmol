@@ -122,6 +122,10 @@ public class ModelManager {
     return frame.getRotationRadius();
   }
 
+  public void increaseRotationRadius(float increaseInAngstroms) {
+    frame.increaseRotationRadius(increaseInAngstroms);
+  }
+
   public Point3f getRotationCenter() {
     return frame.getRotationCenter();
   }

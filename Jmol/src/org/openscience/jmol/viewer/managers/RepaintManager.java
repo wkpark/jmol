@@ -120,6 +120,7 @@ public class RepaintManager {
     }
     g3d.clearScreenBuffer(viewer.getColorBackground().getRGB(), rectClip);
     frameRenderer.render(g3d, rectClip, frame);
+    viewer.checkCameraDistance();
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null)
       g3d.drawRect(viewer.getColixRubberband(),

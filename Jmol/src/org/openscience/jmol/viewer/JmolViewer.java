@@ -420,8 +420,10 @@ final public class JmolViewer {
     return transformManager.cameraDepth;
   }
 
-  public int getCameraZ() {
-    return transformManager.cameraZ;
+  public void checkCameraDistance() {
+    if (transformManager.increaseRotationRadius)
+      modelManager.
+        increaseRotationRadius(transformManager.getRotationRadiusIncrease());
   }
 
   public int screenWidth, screenHeight;

@@ -263,13 +263,6 @@ public class Frame {
   Point3f rotationCenterDefault;
   float rotationRadiusDefault;
 
-  /*
-  public float getGeometricRadius() {
-    findBounds();
-    return radiusBoundingBox;
-  }
-  */
-
   public Point3f getBoundingBoxCenter() {
     findBounds();
     return centerBoundingBox;
@@ -283,6 +276,10 @@ public class Frame {
   public Point3f getRotationCenter() {
     findBounds();
     return rotationCenter;
+  }
+
+  public void increaseRotationRadius(float increaseInAngstroms) {
+    rotationRadius += increaseInAngstroms;
   }
 
   public float getRotationRadius() {
@@ -396,7 +393,6 @@ public class Frame {
       }
     }
     float radius = (float)Math.sqrt(maxRadius2);
-    radius += 2; // the biggest radius of any atom or cage
     return radius;
   }
 

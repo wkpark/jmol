@@ -235,9 +235,6 @@ public abstract class MouseManager {
         viewer.notifyPicked(nearestAtomIndex);
       }
       break;
-    case SHIFT_LEFT:
-      viewer.zoomToPercent(100);
-      break;
     }
   }
 
@@ -290,6 +287,11 @@ public abstract class MouseManager {
   }
 
   void mouseDoublePressDrag(int deltaX, int deltaY, int modifiers) {
+    switch (modifiers & BUTTON_MODIFIER_MASK) {
+    case SHIFT_LEFT:
+      viewer.translateXYBy(deltaX, deltaY);
+      break;
+    }
   }
 
 

@@ -158,4 +158,14 @@ public class PdbChain {
     }
     midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
   }
+
+  void getStructureMidPoint(int residueNumber, Point3f midPoint) {
+    int i = residueNumber;
+    if (i > residueCount)
+      i = residueCount - 1;
+    if (residues[i].isHelixOrSheet()) {
+    } else {
+      getAlphaCarbonMidPoint(residueNumber, midPoint);
+    }
+  }
 }

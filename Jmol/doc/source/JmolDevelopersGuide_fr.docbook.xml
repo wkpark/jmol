@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
   "../../build/docbook-xml/docbookx.dtd"
 >
 <!--
@@ -152,12 +152,12 @@
     <title>R&egrave;gles de Programmation</title>
     <itemizedlist>
       <listitem>
-        Votre &eacute;diteur de texte devrait indenter pour vous. Si il ne
+        <para>Votre &eacute;diteur de texte devrait indenter pour vous. Si il ne
         le fait pas, alors apprenez comment l'activer ou trouvez un autre
-        &eacute;diteur.
+        &eacute;diteur.</para>
       </listitem>
       <listitem>
-        Le niveau d'indentation devrait &ecirc;tre deux espaces
+        <para>Le niveau d'indentation devrait &ecirc;tre deux espaces</para>
 	<programlisting>
 	  class Foo {
 	    int someClassVariable;
@@ -171,35 +171,35 @@
 	</programlisting>
       </listitem>
       <listitem>
-        Les caract&egrave;res espace devraient &ecirc;tre
-        utilis&eacute;s, pas les tabulations
+        <para>Les caract&egrave;res espace devraient &ecirc;tre
+        utilis&eacute;s, pas les tabulations</para>
       </listitem>
       <listitem>
-        Les op&eacute;rateurs d'assignation et arithm&eacute;tiques
+        <para>Les op&eacute;rateurs d'assignation et arithm&eacute;tiques
         contiennent g&eacute;n&eacute;ralement des espaces des deux
-        c&ocirc;t&eacute;s.
+        c&ocirc;t&eacute;s.</para>
 	<programlisting>
 	  a = b + c;
 	</programlisting>
-        Vous &ecirc;tres autoris&eacute;s &agrave; &eacute;liminer
+        <para>Vous &ecirc;tres autoris&eacute;s &agrave; &eacute;liminer
         les espaces dans des expressions pour rendre les priorit&eacute;s
-        des op&eacute;rateurs plus claires
+        des op&eacute;rateurs plus claires</para>
 	<programlisting>
 	  int cSquared = a*a + b*b;
 	</programlisting>
       </listitem>
       <listitem>
-        les espaces suivent les virgules dans les listes d'arguments
+        <para>les espaces suivent les virgules dans les listes d'arguments</para>
 	<programlisting>
 	  foo(a, 3.14159, "jmol");
 	</programlisting>
       </listitem>
       <listitem>
-        Les lignes ne devraient pas avoir plus de 80 caract&egrave;res
+        <para>Les lignes ne devraient pas avoir plus de 80 caract&egrave;res</para>
       </listitem>
       <listitem>
-        Les accolades ouvrantes sont sur la ligne qui commence le bloc.
-        Les accolades fermantes sont sur une ligne &agrave; elles.
+        <para>Les accolades ouvrantes sont sur la ligne qui commence le bloc.
+        Les accolades fermantes sont sur une ligne &agrave; elles.</para>
 	<programlisting>
 	  if (condition) {
 	    ...
@@ -213,44 +213,44 @@
 	</programlisting>
       </listitem>
       <listitem>
-        les indices de boucles commencent &agrave; 0, et non 1.
+        <para>les indices de boucles commencent &agrave; 0, et non 1.</para>
       </listitem>
       <listitem>
-        les <emphasis>seuls</emphasis> op&eacute;rateurs valides pour
+        <para>les <emphasis>seuls</emphasis> op&eacute;rateurs valides pour
         les fins de boucle sont <command>&lt;</command> and
           <command>&gt;=</command> ... tous les autres sont probablement
           des anomalies.
           Si vous &ecirc;tes <emphasis>s&ucirc;rs</emphasis> qu'il ne
-          s'agit pas d'une anomalie, mettez un commentaire dans le code.
+          s'agit pas d'une anomalie, mettez un commentaire dans le code.</para>
       </listitem>
       <listitem>
-        utilisez des noms de variables et de m&eacute;thodes longs et
-        descriptifs. N'ayez pas peur de taper.
+        <para>utilisez des noms de variables et de m&eacute;thodes longs et
+        descriptifs. N'ayez pas peur de taper.</para>
       </listitem>
       <listitem>
-        les commentaires ligne &agrave; ligne avec le code sont
+        <para>les commentaires ligne &agrave; ligne avec le code sont
         <emphasis>d&eacute;courag&eacute;s</emphasis> ... &agrave;
         l'exception de cas tr&egrave;s particuliers. Si vous mettez
         beaucoup de commentaires de ce genre vous risquez de les voir
-        effac&eacute;s.
+        effac&eacute;s.</para>
       </listitem>
       <listitem>
-        si vous vous sentez oblig&eacute;s de mettre des commentaires,
-        mettez les sous forme de javadoc avant le corps de la fonction
+        <para>si vous vous sentez oblig&eacute;s de mettre des commentaires,
+        mettez les sous forme de javadoc avant le corps de la fonction</para>
       </listitem>
       <listitem>
-        Si votre code change, ne le mettez pas en commentaires.
+        <para>Si votre code change, ne le mettez pas en commentaires.
         <emphasis>
           Les commentaires incorrects/d&eacute;pass&eacute;s sont pires
           que pas de commentaires.
-        </emphasis>
+        </emphasis></para>
       </listitem>
       
       <listitem>
-        Vous pouvez regarder &agrave; l'adresse
+        <para>Vous pouvez regarder &agrave; l'adresse
         <ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">
           "The Elements of Java Style" by Vermeulen, et al
-        </ulink>
+        </ulink></para>
       </listitem>
     </itemizedlist>
   </chapter>
@@ -382,6 +382,7 @@
     <title>Utilisation d'Eclipse</title>
     
     <section id="Eclipse_prerequisites">
+    <title></title>
       <para>
         Cette documentation a &eacute;t&eacute; test&eacute;e avec
         Eclipse 3.01.

@@ -113,10 +113,27 @@ public class DisplayPanel extends JPanel
     if (pageIndex > 0)
       return Printable.NO_SUCH_PAGE;
     rectClip.x = rectClip.y = 0;
-    rectClip.width = viewer.getScreenWidth();
-    rectClip.height = viewer.getScreenHeight();
+    int screenWidth = rectClip.width = viewer.getScreenWidth();
+    int screenHeight = rectClip.height = viewer.getScreenHeight();
     Image image = viewer.renderScreenImage(rectClip);
-    g.drawImage(image, (int)pf.getImageableX(), (int)pf.getImageableY(), null);
+    int pageX = (int)pf.getImageableX();
+    int pageY = (int)pf.getImageableY();
+    int pageWidth = (int)pf.getImageableWidth();
+    int pageHeight = (int)pf.getImageableHeight();
+    float scaleWidth = pageWidth / (float)screenWidth;
+    float scaleHeight = pageHeight / (float)screenHeight;
+    float scale = (scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
+    if (scale < 1) {
+      int width =(int)(screenWidth * scale);
+      int height =(int)(screenHeight * scale);
+      g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+                          RenderingHints.VALUE_RENDER_QUALITY);
+      g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      g2.drawImage(image, pageX, pageY, width, height, null);
+    } else {
+      g2.drawImage(image, pageX, pageY, null);
+    }
     return Printable.PAGE_EXISTS;
   }
 

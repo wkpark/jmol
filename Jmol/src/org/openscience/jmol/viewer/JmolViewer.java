@@ -1363,7 +1363,8 @@ final public class JmolViewer {
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized. 
     try {
-      g.drawImage(g3d.getScreenImage(), 0, 0, null);
+      Image img = g3d.getScreenImage();
+      g.drawImage(img, 0, 0, null);
     } catch (NullPointerException npe) {
       System.out.println("Sun!! ... fix graphics your bugs!");
     }

@@ -58,7 +58,7 @@ public class RepaintManager {
       if (i < 0)
         return false;
     }
-    System.out.println("display modelID=" + modelID);
+    //    System.out.println("display modelID=" + modelID);
     displayModelID = modelID;
     displayModelIndex = i;
     return true;
@@ -207,6 +207,7 @@ public class RepaintManager {
     if (--holdRepaint <= 0) {
       holdRepaint = 0;
       repaintPending = true;
+      //      System.out.println("popHoldRepaint called awtComponent.repaint()");
       viewer.awtComponent.repaint();
     }
   }

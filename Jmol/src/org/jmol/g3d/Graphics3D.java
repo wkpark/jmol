@@ -77,14 +77,14 @@ final public class Graphics3D {
     platform =(jvm12orGreater && !forcePlatformAWT
                ? allocateSwing3D() : new Awt3D(awtComponent));
     platform.initialize();
-    Font3D.initialize(platform);
+    //    Font3D.initialize(platform);
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
-    setFontOfSize(13);
+    //    setFontOfSize(13);
   }
   
   private Platform3D allocateSwing3D() {
@@ -162,6 +162,10 @@ final public class Graphics3D {
     }
   }
   */
+
+  public boolean hasContent() {
+    return platform.hasContent();
+  }
 
   public Image getScreenImage() {
     return platform.imagePixelBuffer;
@@ -1082,31 +1086,34 @@ final public class Graphics3D {
    * a fontID is a byte that contains the size + the face + the style
    ****************************************************************/
 
-  public static Font3D getFont3D(int fontSize) {
+  public Font3D getFont3D(int fontSize) {
+    Font3D.initialize(platform);
     return Font3D.getFont3D(Font3D.FONT_FACE_SANS,
                             Font3D.FONT_STYLE_PLAIN, fontSize);
   }
 
-  public static Font3D getFont3D(String fontFace, int fontSize) {
+  public Font3D getFont3D(String fontFace, int fontSize) {
+    Font3D.initialize(platform);
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
                             Font3D.FONT_STYLE_PLAIN, fontSize);
   }
     
   // {"Plain", "Bold", "Italic", "BoldItalic"};
-  public static Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
+  public Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
+    Font3D.initialize(platform);
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
                             Font3D.getFontStyleID(fontStyle), fontSize);
   }
 
-  public static byte getFontFid(int fontSize) {
+  public byte getFontFid(int fontSize) {
     return getFont3D(fontSize).fid;
   }
 
-  public static byte getFontFid(String fontFace, int fontSize) {
+  public byte getFontFid(String fontFace, int fontSize) {
     return getFont3D(fontFace, fontSize).fid;
   }
 
-  public static byte getFontFid(String fontFace, String fontStyle, int fontSize) {
+  public byte getFontFid(String fontFace, String fontStyle, int fontSize) {
     return getFont3D(fontFace, fontStyle, fontSize).fid;
   }
 

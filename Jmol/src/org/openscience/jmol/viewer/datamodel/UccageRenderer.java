@@ -39,7 +39,7 @@ class UccageRenderer extends ShapeRenderer {
 
   void initRenderer() {
     nf = NumberFormat.getInstance();
-    fid = Graphics3D.getFontFid("Monospaced", 12);
+    fid = g3d.getFontFid("Monospaced", 12);
   }
 
   void render() {

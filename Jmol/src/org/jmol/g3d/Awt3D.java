@@ -56,7 +56,10 @@ final class Awt3D extends Platform3D implements ImageProducer {
   }
 
   Image allocateOffscreenImage(int width, int height) {
-    return component.createImage(widthOffscreen, heightOffscreen);
+    //    System.out.println("allocateOffscreenImage(" + width + "," + height + ")");
+    Image img = component.createImage(width, height);
+    //    System.out.println("img=" + img);
+    return img;
   }
 
   void clearScreenBuffer(int argbBackground) {
@@ -64,8 +67,8 @@ final class Awt3D extends Platform3D implements ImageProducer {
       zBuffer[i] = ZBUFFER_BACKGROUND;
       pBuffer[i] = argbBackground;
     }
-    for (int i = height, offset = size; --i > 0; offset -= width) {
-      System.arraycopy(pBuffer, 0, pBuffer, offset, width);
+    for (int i = height, offset = size; --i > 0; ) {
+      System.arraycopy(pBuffer, 0, pBuffer, offset -= width, width);
       System.arraycopy(zBuffer, 0, zBuffer, offset, width);
     }
   }

@@ -27,6 +27,9 @@ package org.openscience.jmol.viewer;
 import java.awt.event.MouseEvent;
 
 public interface JmolStatusListener {
+  public void notifyFileLoaded(String fullPathName, String fileName,
+                               String modelName);
+
   public void setStatusMessage(String statusMessage);
 
   public void scriptEcho(String strEcho);

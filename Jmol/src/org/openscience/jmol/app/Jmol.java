@@ -216,7 +216,7 @@ public class Jmol extends JPanel {
     // get a resource handler
     resourceHandler = JmolResourceHandler.getInstance();
 
-    frame.setTitle(resourceHandler.getString("Jmol.Title"));
+    frame.setTitle("Jmol");
     frame.setBackground(Color.lightGray);
     frame.getContentPane().setLayout(new BorderLayout());
     
@@ -266,7 +266,6 @@ public class Jmol extends JPanel {
     viewer.addPropertyChangeListener(transform);
     say("Initializing Recent Files...");
     recentFiles = new RecentFilesDialog(frame);
-    addPropertyChangeListener(openFileProperty, recentFiles);
     say("Initializing Script Window...");
     scriptWindow = new ScriptWindow(viewer, frame);
     //scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
@@ -485,101 +484,6 @@ public class Jmol extends JPanel {
   }
   
   /**
-   * Opens a file.
-   *
-   * @param file the file to open.
-   */
-  public boolean openFile(File file) {
-    boolean successFlag = false;
-
-    if (file != null) {
-      frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
-      try {
-        FileInputStream is = new FileInputStream(file);
-
-        readMolecule(new InputStreamReader(is));
-
-        frame.setTitle(file.getName());
-
-        File oldFile = currentFile;
-        currentFile = file;
-
-        firePropertyChange(openFileProperty, oldFile, currentFile);
-        successFlag = true;
-      } catch (java.io.FileNotFoundException ex) {
-        JOptionPane.showMessageDialog(Jmol.this,
-            "Unable to find file \"" + file + "\"", "File not found",
-              JOptionPane.ERROR_MESSAGE);
-      } catch (JmolException ex) {
-        JOptionPane.showMessageDialog(Jmol.this,
-            "Unable to read file \"" + file + "\": " + ex.getMessage()
-              + "\nIf this is in error, please contact the Jmol development team.",
-                "Unable to read file", JOptionPane.ERROR_MESSAGE);
-      } catch (Exception ex) {
-        JOptionPane.showMessageDialog(Jmol.this,
-            "Unexpected exception: " + ex.getMessage()
-              + "\nPlease contact the Jmol development team.",
-                "Unexpected error", JOptionPane.ERROR_MESSAGE);
-        ex.printStackTrace();
-      } finally {
-        frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-      }
-    }
-    return successFlag;
-  }
-
-  /**
-   * Reads a molecule from the given input.
-   *
-   * @param input the location from which to read.
-   * @throws JmolException if the input format cannot be determined, the input
-   *   is empty, or otherwise cannot be read.
-   */
-  public void readMolecule(Reader input) throws JmolException {
-
-    frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    try {
-      ChemObjectReader reader = null;
-      try {
-          ReaderFactory factory = new ReaderFactory();
-        reader = factory.createReader(input);
-      } catch (IOException ex) {
-        throw new JmolException("readMolecule",
-            "Error determining input format: " + ex);
-      }
-      if (reader == null) {
-        throw new JmolException("readMolecule", "Unknown input format");
-      }
-      ChemFile newChemFile = null;
-      // ChemFile chemFile = reader.read(new ChemFile()); -> CDK ChemFile
-
-      if (newChemFile != null) {
-        if (newChemFile.getNumberOfFrames() > 0) {
-          setChemFile(newChemFile);
-        } else {
-          throw new JmolException("readMolecule",
-              "the input appears to be empty");
-        }
-      } else {
-        throw new JmolException("readMolecule",
-            "unknown error reading input");
-      }
-    } catch (Exception ex) {
-      throw new JmolException("readMolecule", "Error reading input: " + ex);
-    } finally {
-      frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
-  }
-
-  void setChemFile(ChemFile chemFile) {
-
-    viewer.setClientFile("CommandLine", chemFile);
-    //    apm.replaceList(chemFile.getAtomPropertyList());
-    mlist.clear();
-  }
-
-  /**
    * returns a list of Actions that is understood by the upper level
    * application
    */
@@ -670,20 +574,6 @@ public class Jmol extends JPanel {
       mi.setMnemonic(mn);
     }
 
-    /*        String accel = JmolResourceHandler.getInstance().getString("Jmol." + cmd + acceleratorSuffix);
-    if (accel != null) {
-            if (accel.startsWith("Ctrl-")) {
-                    char ac = accel.charAt(5);
-                    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
-                                                                                                     ActionEvent.CTRL_MASK));
-            }
-            if (accel.startsWith("Alt-")) {
-                    char ac = accel.charAt(4);
-                    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
-                                                                                                     ActionEvent.ALT_MASK));
-            }
-    }
-    */
     ImageIcon f = JmolResourceHandler.getInstance().getIcon("Jmol." + cmd
                     + imageSuffix);
     if (f != null) {
@@ -1216,7 +1106,7 @@ public class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
-        viewer.openFile(file);
+        viewer.openFile(file.getAbsolutePath());
         return;
       }
     }
@@ -1493,6 +1383,17 @@ public class Jmol extends JPanel {
   }
 
   class MyJmolStatusListener implements JmolStatusListener {
+    public void notifyFileLoaded(String fullPathName, String fileName,
+                                 String modelName) {
+      String title = modelName;
+      if (title == null)
+        title = fileName;
+      if (title == null)
+        title = "Jmol";
+      frame.setTitle(title);
+      recentFiles.notifyFileOpen(fullPathName);
+    }
+
     public void setStatusMessage(String statusMessage) {
       System.out.println("setStatusMessage:" + statusMessage);
     }

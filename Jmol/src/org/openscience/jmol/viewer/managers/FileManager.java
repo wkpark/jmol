@@ -94,30 +94,59 @@ public class FileManager {
     return null;
   }
 
+  private String fullPathName;
+  private String fileName;
+
+  private void getNames(String name) {
+    fullPathName = fileName = null;
+    if (name == null)
+      return;
+    if (appletDocumentBase != null) {
+      try {
+        URL url = new URL(appletDocumentBase, name);
+        fullPathName = url.toString();
+        fileName = url.getFile();
+      } catch (MalformedURLException e) {
+      }
+      return;
+    }
+    for (int i = 0; i < urlPrefixes.length; ++i) {
+      if (name.startsWith(urlPrefixes[i])) {
+        try {
+          URL url = new URL(name);
+          fullPathName = url.toString();
+          fileName = url.getFile();
+        } catch (MalformedURLException e) {
+        }
+        return;
+      }
+    }
+    File file = new File(name);
+    fullPathName = file.getAbsolutePath();
+    fileName = file.getName();
+  }
+
   public String openFile(String name) {
     System.out.println("openFile(" + name + ")");
+    getNames(name);
+    System.out.println(" fullPathName=" + fullPathName +
+                       " fileName=" + fileName);
+    if (fullPathName == null)
+      return "invalid url/filename:" + name;
     InputStream istream = getInputStreamFromName(name);
     if (istream == null)
         return "error opening url/filename:" + name;
-    return openInputStream(name, istream);
-  }
-
-  public String openFile(File file) {
-    System.out.println("openFile(File:" + file.getName() + ")");
-    try {
-      FileInputStream fis = new FileInputStream(file);
-      return openInputStream(file.getName(), fis);
-    } catch (FileNotFoundException e) {
-      return "file not found:" + file;
-    }
+    return openInputStream(fullPathName, fileName, istream);
   }
 
   public String openStringInline(String strModel) {
-    return openReader("StringInline", new StringReader(strModel));
+    return openReader("StringInline", "StringInline",
+                      new StringReader(strModel));
   }
 
   byte[] abMagic = new byte[4];
-  private String openInputStream(String name, InputStream istream) {
+  private String openInputStream(String fullPathName, String fileName,
+                                 InputStream istream) {
     BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
     InputStream istreamToRead = bistream;
     bistream.mark(5);
@@ -130,19 +159,20 @@ public class FileManager {
           istreamToRead = new GZIPInputStream(bistream);
         }
       }
-      return openReader(name, new InputStreamReader(istreamToRead));
+      return openReader(fullPathName, fileName,
+                        new InputStreamReader(istreamToRead));
     } catch (IOException ioe) {
       return "Error reading stream header: " + ioe;
     }
   }
 
-  private String openReader(String name, Reader reader) {
-    System.out.println("openReader(" + name + ")");
+  private String openReader(String fullPathName, String fileName,
+                            Reader reader) {
     Object clientFile = viewer.getJmolModelAdapter()
-      .openBufferedReader(viewer, name, new BufferedReader(reader));
+      .openBufferedReader(viewer, fullPathName, new BufferedReader(reader));
     if (clientFile instanceof String)
       return (String)clientFile;
-    viewer.setClientFile(name, clientFile);
+    viewer.setClientFile(fullPathName, fileName, clientFile);
     return null;
   }
 }

@@ -128,6 +128,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     viewer.popHoldRepaint();
   }
 
+  public void notifyFileLoaded(String fullPathName, String fileName,
+                               String modelName) {
+  }
+
   public void setStatusMessage(String statusMessage) {
     if (statusMessage != null)
       showStatus(statusMessage);

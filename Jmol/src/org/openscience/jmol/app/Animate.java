@@ -241,7 +241,7 @@ public class Animate extends JDialog implements ActionListener,
     cf = newFile;
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
-    viewer.setClientFile("Animate2", cf);
+    viewer.setClientFile(null, "Animate2", cf);
   }
 
   /**

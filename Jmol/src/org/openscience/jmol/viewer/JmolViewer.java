@@ -715,10 +715,6 @@ final public class JmolViewer {
     return fileManager.openFile(name);
   }
 
-  public String openFile(File file) {
-    return fileManager.openFile(file);
-  }
-
   public String openStringInline(String strModel) {
     return fileManager.openStringInline(strModel);
   }
@@ -729,9 +725,10 @@ final public class JmolViewer {
 
   public static final String PROP_CHEM_FILE = "chemFile";
 
-  public void setClientFile(String name, Object clientFile) {
+  public void setClientFile(String fullPathName, String fileName,
+                            Object clientFile) {
     pushHoldRepaint();
-    modelManager.setClientFile(name, clientFile);
+    modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
@@ -746,7 +743,7 @@ final public class JmolViewer {
   }
 
   public void clear() {
-    modelManager.setClientFile(null, null);
+    modelManager.setClientFile(null, null, null);
     clearMeasurements();
     refresh();
   }
@@ -1123,6 +1120,12 @@ final public class JmolViewer {
 
   public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
     this.jmolStatusListener = jmolStatusListener;
+  }
+
+  public void notifyFileLoaded(String fullPathName, String fileName,
+                               String modelName) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyFileLoaded(fullPathName, fileName, modelName);
   }
 
   public void manageScriptTermination() {

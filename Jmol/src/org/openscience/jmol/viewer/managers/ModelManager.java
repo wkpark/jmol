@@ -73,7 +73,9 @@ public class ModelManager {
   }
 
   public Object clientFile;
-  public String clientFileName;
+  public String fullPathName;
+  public String fileName;
+  public String modelName;
   public int frameCount = 0;
   public int atomCount = 0;
   public boolean haveFile = false;
@@ -83,12 +85,13 @@ public class ModelManager {
 
   public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-  public void setClientFile(String name, Object clientFile) {
-    System.out.println("setClientFile:" + name);
+  public void setClientFile(String fullPathName, String fileName,
+                            Object clientFile) {
+    System.out.println("setClientFile:" + fileName);
     Object clientFilePrevious = this.clientFile;
     this.clientFile = clientFile;
     if (clientFile == null) {
-      clientFileName = "<null>";
+      fullPathName = fileName = modelName = null;
       frameCount = 0;
       currentFrameNumber = -1;
       jmolFrame = null;
@@ -96,7 +99,14 @@ public class ModelManager {
       haveFile = false;
       jmolFrames = null;
     } else {
-      this.clientFileName = name;
+      this.fullPathName = fullPathName;
+      this.fileName = fileName;
+      modelName = viewer.getModelName(clientFile);
+      if (modelName != null) {
+        modelName = modelName.trim();
+        if (modelName.length() == 0)
+          modelName = null;
+      }
       frameCount = viewer.getFrameCount(clientFile);
       jmolFrames = new JmolFrame[frameCount];
       haveFile = true;
@@ -104,6 +114,7 @@ public class ModelManager {
     }
     pcs.firePropertyChange(JmolViewer.PROP_CHEM_FILE,
                            clientFilePrevious, clientFile);
+    viewer.notifyFileLoaded(fullPathName, fileName, modelName);
   }
 
   public Object getClientFile() {
@@ -115,13 +126,7 @@ public class ModelManager {
   }
 
   public String getModelName() {
-    String name = viewer.getModelName(clientFile);
-    if (name == null) {
-      name = clientFileName;
-      if (name == null)
-        name = "Jmol";
-    }
-    return name;
+    return modelName;
   }
 
   public double getRotationRadius() {

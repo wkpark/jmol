@@ -66,6 +66,10 @@ public class LabelManager {
     return font;
   }
 
+  public Font getLabelFont() {
+    return getFontOfSize(pointsLabelFontSize);
+  }
+
   public Font getLabelFont(int diameter) {
     return getFontOfSize(pointsLabelFontSize);
     /*
@@ -81,6 +85,13 @@ public class LabelManager {
   public int pointsLabelFontSize = 13;
   public void setLabelFontSize(int points) {
     this.pointsLabelFontSize = points <= 0 ? 13 : points;
+  }
+
+  public int labelOffsetX = 4;
+  public int labelOffsetY = 4;
+  public void setLabelOffset(int offsetX, int offsetY) {
+    labelOffsetX = offsetX;
+    labelOffsetY = offsetY;
   }
 
   public String getLabelAtom(byte styleLabel, Atom atom, int atomIndex) {

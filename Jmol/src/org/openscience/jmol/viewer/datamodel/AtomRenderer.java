@@ -44,7 +44,12 @@ class AtomRenderer extends Renderer {
   short colixSelection;
   short colixLabel;
   boolean isLabelAtomColor;
-
+  // offsets are from the font baseline
+  int labelOffsetX;
+  int labelOffsetY;
+  Font labelFont;
+  FontMetrics labelFontMetrics;
+  int labelFontAscent;
 
   void render() {
     minX = rectClip.x;
@@ -57,6 +62,13 @@ class AtomRenderer extends Renderer {
     showHydrogens = viewer.getShowHydrogens();
     colixLabel = viewer.getColixLabel();
     isLabelAtomColor = colixLabel == 0;
+    labelOffsetX = viewer.getLabelOffsetX();
+    labelOffsetY = viewer.getLabelOffsetY();
+    labelFont = viewer.getLabelFont();
+    labelFontMetrics = g3d.getFontMetrics(labelFont);
+    labelFontAscent = labelFontMetrics.getAscent();
+
+    g3d.setFont(labelFont);
 
     Atom[] atoms = frame.atoms;
     for (int i = frame.atomCount; --i >= 0; ) {
@@ -100,19 +112,41 @@ class AtomRenderer extends Renderer {
 
   void renderLabel(Atom atom) {
     String strLabel = atom.strLabel;
+    /*
+      left over from when font sizes changed;
     Font font = viewer.getLabelFont(atom.diameter);
     if (font == null)
       return;
     g3d.setFont(font);
+    */
 
-    int zLabel = atom.z - atom.diameter/2 - 2;
+    int xOffset, yOffset, zLabel;
+    zLabel = atom.z - atom.diameter / 2 - 2;
     if (zLabel < 0) zLabel = 0;
+
+    if (labelOffsetX > 0) {
+      xOffset = labelOffsetX;
+    } else {
+      xOffset = -labelFontMetrics.stringWidth(strLabel);
+      if (labelOffsetX == 0)
+        xOffset /= 2;
+      else
+        xOffset += labelOffsetX;
+    }
+
+    if (labelOffsetY > 0) {
+      yOffset = labelOffsetY;
+    } else {
+      yOffset = -labelFontAscent;
+      if (labelOffsetY == 0)
+        yOffset /= 2;
+      else
+        yOffset += labelOffsetY;
+      ++yOffset;
+    }
     g3d.drawString(strLabel,
                    isLabelAtomColor ? atom.colixAtom : colixLabel,
-                   atom.x + 4,
-                   atom.y - 4,
-                   zLabel
-                   );
+                   atom.x + xOffset, atom.y - yOffset, zLabel);
   }
 
 }

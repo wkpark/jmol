@@ -583,9 +583,27 @@ public class Eval implements Runnable {
   // gets a boolean value from the 2nd parameter to the command
   // as in set foo <boolean>
 
-  boolean getSetBoolean() throws ScriptException {
-    if (statement.length != 3)
+  void checkStatementLength(int length) throws ScriptException {
+    if (statement.length != length)
       badArgumentCount();
+  }
+
+  void checkLength3() throws ScriptException {
+    checkStatementLength(3);
+  }
+
+  void checkLength4() throws ScriptException {
+    checkStatementLength(4);
+  }
+  
+  int intParameter(int index) throws ScriptException {
+    if (statement[index].tok != Token.integer)
+      integerExpected();
+    return statement[index].intValue;
+  }
+
+  boolean getSetBoolean() throws ScriptException {
+    checkLength3();
     switch (statement[2].tok) {
     case Token.on:
       return true;
@@ -598,11 +616,8 @@ public class Eval implements Runnable {
   }
 
   int getSetInteger() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
-    if (statement[2].tok != Token.integer)
-      integerExpected();
-    return statement[2].intValue;
+    checkLength3();
+    return intParameter(2);
   }
 
   BitSet copyBitSet(BitSet bitSet) {
@@ -1790,6 +1805,9 @@ public class Eval implements Runnable {
     case Token.fontsize:
       setFontsize();
       break;
+    case Token.labeloffset:
+      setLabelOffset();
+      break;
     case Token.hetero:
       setHetero();
       break;
@@ -1859,8 +1877,7 @@ public class Eval implements Runnable {
   }
 
   void setAxes() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
+    checkLength3();
     byte modeAxes = JmolConstants.AXES_NONE;
     switch (statement[2].tok) {
     case Token.on:
@@ -1874,8 +1891,7 @@ public class Eval implements Runnable {
   }
 
   void setBondmode() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
+    checkLength3();
     boolean bondmodeOr = false;
     switch(statement[2].tok) {
     case Token.opAnd:
@@ -1912,6 +1928,11 @@ public class Eval implements Runnable {
     viewer.setLabelFontSize(fontsize + 5);
   }
 
+  void setLabelOffset() throws ScriptException {
+    checkLength4();
+    viewer.setLabelOffset(intParameter(2), intParameter(3));
+  }
+
   void setHetero() throws ScriptException {
     viewer.setRasmolHeteroSetting(getSetBoolean());
   }
@@ -1929,8 +1950,7 @@ public class Eval implements Runnable {
   }
 
   void setProperty() throws ScriptException {
-    if (statement.length != 4)
-      badArgumentCount();
+    checkLength4();
     if (statement[2].tok != Token.identifier)
       propertyNameExpected();
     String propertyName = (String)statement[2].value;
@@ -2008,10 +2028,8 @@ public class Eval implements Runnable {
   }
 
   void setSpin() throws ScriptException {
-    if (statement.length != 4 ||
-        statement[3].tok != Token.integer)
-      integerExpected();
-    int value = statement[3].intValue;
+    checkLength4();
+    int value = intParameter(3);
     switch (statement[2].tok) {
     case Token.x:
       viewer.setSpinX(value);

@@ -1714,12 +1714,29 @@ final public class JmolViewer {
     refresh();
   }
 
+  public Font getLabelFont() {
+    return labelManager.getLabelFont();
+  }
+
   public Font getLabelFont(int diameter) {
     return labelManager.getLabelFont(diameter);
   }
 
   public Font getFontOfSize(int points) {
     return labelManager.getFontOfSize(points);
+  }
+
+  public void setLabelOffset(int xOffset, int yOffset) {
+    labelManager.setLabelOffset(xOffset, yOffset);
+    refresh();
+  }
+
+  public int getLabelOffsetX() {
+    return labelManager.labelOffsetX;
+  }
+
+  public int getLabelOffsetY() {
+    return labelManager.labelOffsetY;
   }
 
   /****************************************************************

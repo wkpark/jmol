@@ -1826,22 +1826,71 @@ public class Eval implements Runnable {
     if (statement.length < 2)
       subcommandExpected();
     int tok = statement[1].tok;
+    boolean animate = false;
     switch(tok) {
     case Token.on:
+      animate = true;
     case Token.off:
+      viewer.setAnimate(animate);
+      break;
     case Token.information:
-    case Token.mode:
-    case Token.direction:
-    case Token.fps:
-      System.out.println("anim subcommand not implemented");
+      showAnimation();
       break;
     case Token.frame:
-      frame(3);
+      frame(2);
+      break;
+    case Token.mode:
+      animationMode();
+      break;
+    case Token.direction:
+      animationDirection();
+      break;
+    case Token.fps:
+      viewer.setAnimationFps(getSetInteger());
       break;
     default:
       unrecognizedSubcommand();
     }
   }
+
+  void animationMode() throws ScriptException {
+    checkStatementLength(3);
+    int animationMode = 0;
+    switch (statement[2].tok) {
+    case Token.loop:
+      ++animationMode;
+      break;
+    case Token.identifier:
+      String cmd = (String)statement[2].value;
+      if (cmd.equalsIgnoreCase("once"))
+        break;
+      if (cmd.equalsIgnoreCase("palindrome")) {
+        animationMode = 2;
+        break;
+      }
+      unrecognizedSubcommand();
+    }
+    viewer.setAnimationReplayMode(animationMode);
+  }
+
+  void animationDirection() throws ScriptException {
+    checkStatementLength(4);
+    boolean negative = false;
+    if (statement[2].tok == Token.hyphen)
+      negative = true;
+    else if (statement[2].tok != Token.plus)
+      invalidArgument();
+
+    if (statement[3].tok != Token.integer)
+      invalidArgument();
+    int direction = statement[3].intValue;
+    if (direction != 1)
+      numberOutOfRange();
+    if (negative)
+      direction = -direction;
+    viewer.setAnimationDirection(direction);
+  }
+
 
   /*
   void animate() throws ScriptException {
@@ -1978,23 +2027,42 @@ public class Eval implements Runnable {
   }
       
   void frame() throws ScriptException {
-    frame(2);
+    frame(1);
   }
 
-  void frame(int length) throws ScriptException {
-    checkStatementLength(length);
+  void frame(int offset) throws ScriptException {
+    checkStatementLength(offset + 1);
+    if (statement[offset].tok == Token.hyphen) {
+      ++offset;
+      checkStatementLength(offset + 1);
+      if (statement[offset].tok != Token.integer ||
+          statement[offset].intValue != 1)
+        invalidArgument();
+      viewer.setAnimationPrevious();
+      return;
+    }
     int model = 0;
-    switch(statement[length - 1].tok) {
+    switch(statement[offset].tok) {
     case Token.all:
     case Token.asterisk:
       model = -1;
     case Token.none:
       break;
     case Token.integer:
-      model = statement[length - 1].intValue;
+      model = statement[offset].intValue;
       break;
+    case Token.identifier:
+      String ident = (String)statement[offset].value;
+      if (ident.equalsIgnoreCase("next")) {
+        viewer.setAnimationNext();
+        return;
+      }
+      if (ident.equalsIgnoreCase("prev")) {
+        viewer.setAnimationPrevious();
+        return;
+      }
     default:
-      integerExpected();
+      invalidArgument();
     }
     viewer.setDisplayModel(model);
   }
@@ -2354,6 +2422,12 @@ public class Eval implements Runnable {
     case Token.pdbheader:
       showPdbHeader();
       break;
+    case Token.model:
+      showModel();
+      break;
+    case Token.animation:
+      showAnimation();
+      break;
 
       // not implemented
     case Token.center:
@@ -2373,7 +2447,6 @@ public class Eval implements Runnable {
     case Token.translation:
     case Token.residue:
     case Token.all:
-    case Token.model:
     case Token.selected:
       notImplemented(1);
       break;
@@ -2391,5 +2464,13 @@ public class Eval implements Runnable {
 
   void showPdbHeader() {
     showString(viewer.getModelHeader());
+  }
+
+  void showModel() {
+    showString("model count=" + viewer.getModelCount());
+  }
+
+  void showAnimation() {
+    showString("show animation informatio goes here");
   }
 }

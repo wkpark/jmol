@@ -996,6 +996,10 @@ final public class JmolViewer {
     return 1;
   }
 
+  public int getModelCount() {
+    return modelManager.getModelCount();
+  }
+
   public int getAtomCount() {
     return modelManager.getAtomCount();
   }
@@ -1134,6 +1138,60 @@ final public class JmolViewer {
   /****************************************************************
    * delegated to RepaintManager
    ****************************************************************/
+
+  public void setAnimationDirection(int direction) {// 1 or -1
+    repaintManager.setAnimationDirection(direction);
+  }
+
+  public int getAnimationDirection() {
+    return repaintManager.animationDirection;
+  }
+
+  public void setAnimationFps(int fps) {
+    repaintManager.setAnimationFps(fps);
+  }
+  public int getAnimationFps() {
+    return repaintManager.animationFps;
+  }
+
+  public void setAnimationReplayMode(int replay) {
+    // 0 means once
+    // 1 means loop
+    // 2 means palindrome
+    repaintManager.setAnimationReplayMode(replay);
+  }
+  public int getAnimationReplayMode() {
+    return repaintManager.animationReplayMode;
+  }
+
+  public void setAnimationReplayDelay(int ms) {
+    repaintManager.setAnimationReplayDelay(ms);
+  }
+
+  public int getAnimationReplayDelay() {
+    return repaintManager.animationReplayDelay;
+  }
+
+  public void setAnimate(boolean animate) {
+    boolean wasAnimating = repaintManager.isAnimating;
+    repaintManager.setAnimate(animate);
+    if (animate != wasAnimating)
+      refresh();
+  }
+
+  public boolean isAnimating() {
+    return repaintManager.isAnimating;
+  }
+
+  public void setAnimationNext() {
+    if (repaintManager.setAnimationNext())
+      refresh();
+  }
+
+  public void setAnimationPrevious() {
+    if (repaintManager.setAnimationPrevious())
+      refresh();
+  }
 
   public void setDisplayModel(int model) {
     repaintManager.setDisplayModel(model);

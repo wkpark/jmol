@@ -532,6 +532,7 @@ public class Token {
     "dotted",       new Token(dotted,          "dotted"),
     "sidechain",    new Token(sidechain,       "sidechain"),
     "mode",         new Token(mode,            "mode"),
+    "direction",    new Token(direction,       "direction"),
 
   };
 

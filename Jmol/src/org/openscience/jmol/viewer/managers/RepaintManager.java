@@ -44,10 +44,113 @@ public class RepaintManager {
     frameRenderer = new FrameRenderer(viewer);
   }
 
-  public int displayModel = -1;
+  public int displayModel = 0;
   public void setDisplayModel(int model) {
     System.out.println("display model=" + model);
     this.displayModel = model;
+  }
+
+  public int animationDirection = 1;
+  public void setAnimationDirection(int animationDirection) {
+    if (animationDirection == 1 || animationDirection == -1)
+      this.animationDirection = animationDirection;
+    else
+      System.out.println("invalid animationDirection:" + animationDirection);
+  }
+
+  public int animationFps = 10;
+  public void setAnimationFps(int animationFps) {
+    if (animationFps >= 1 && animationFps <= 30)
+      this.animationFps = animationFps;
+    else
+      System.out.println("invalid animationFps:" + animationFps);
+  }
+
+  // 0 = once
+  // 1 = loop
+  // 2 = palindrome
+  public int animationReplayMode = 0;
+  public void setAnimationReplayMode(int animationReplayMode) {
+    if (animationReplayMode >= 0 && animationReplayMode <= 2)
+      this.animationReplayMode = animationReplayMode;
+    else
+      System.out.println("invalid animationReplayMode:" + animationReplayMode);
+  }
+
+  public int animationReplayDelay = 1000;
+  public void setAnimationReplayDelay(int ms) {
+    if (animationReplayDelay < 0)
+      animationReplayDelay = 0;
+    this.animationReplayDelay = ms;
+  }
+
+  public boolean isAnimating = false;
+  public void setAnimate(boolean animate) {
+    this.isAnimating = animate;
+  }
+
+  private int getIndex(int id, int idCount, short[] ids) {
+    int index = idCount;
+    while ((--index >= 0) && (ids[index] != id))
+      ;
+    return index;
+  }
+
+  public boolean setAnimationRelative(int direction) {
+    if (displayModel == 0)
+      return false;
+    Frame frame = viewer.getFrame();
+    short[] modelIDs = frame.modelIDs;
+    int modelCount = frame.modelCount;
+    int modelIndex = modelCount;
+    modelIndex = getIndex(displayModel, modelCount, modelIDs);
+    if (modelIndex < 0) {
+      displayModel = 0;
+      return false;
+    }
+    int modelIndexNext = modelIndex + direction;
+    /*
+    System.out.println("setAnimationRelative: displayModel=" + displayModel +
+                       " modelIndex=" + modelIndex +
+                       " direction=" + direction +
+                       " modelIndexNext=" + modelIndexNext +
+                       " modelCount=" + modelCount +
+                       " animationReplayMode=" + animationReplayMode +
+                       " animationDirection=" + animationDirection);
+    */
+    if (modelIndexNext == modelCount) {
+      switch (animationReplayMode) {
+      case 1:
+        displayModel = modelIDs[0];
+        return true;
+      case 2:
+        displayModel = modelIDs[modelCount - 2];
+        animationDirection = -1;
+        return true;
+      }
+    } else if (modelIndexNext < 0) {
+      switch (animationReplayMode) {
+      case 1:
+        displayModel = modelIDs[modelCount - 1];
+        return true;
+      case 2:
+        displayModel = modelIDs[1];
+        animationDirection = 1;
+        return true;
+      }
+    } else {
+      displayModel = modelIDs[modelIndexNext];
+      return true;
+    }
+    return false;
+  }
+
+  public boolean setAnimationNext() {
+    return setAnimationRelative(animationDirection);
+  }
+
+  public boolean setAnimationPrevious() {
+    return setAnimationRelative(-animationDirection);
   }
 
   public boolean wireframeRotating = false;

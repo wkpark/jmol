@@ -84,7 +84,7 @@ class BondRenderer extends ShapeRenderer {
 
     Bond[] bonds = frame.bonds;
     int displayModel = this.displayModel;
-    if (displayModel == -1) {
+    if (displayModel == 0) {
       for (int i = frame.bondCount; --i >= 0; )
         render(bonds[i]);
     } else {

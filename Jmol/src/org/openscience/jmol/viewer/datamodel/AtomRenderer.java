@@ -72,7 +72,7 @@ class AtomRenderer extends ShapeRenderer {
 
     Atom[] atoms = frame.atoms;
     int displayModel = this.displayModel;
-    if (displayModel == -1) {
+    if (displayModel == 0) {
       for (int i = frame.atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         atom.transform(viewer);

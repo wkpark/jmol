@@ -121,6 +121,10 @@ public class ModelManager {
     return frame.getBoundingBoxCornerVector();
   }
 
+  public int getModelCount() {
+    return frame.getModelCount();
+  }
+
   public int getAtomCount() {
     return frame.getAtomCount();
   }

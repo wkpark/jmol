@@ -49,6 +49,9 @@ final public class Frame {
   PdbFile pdbFile;
 
   final static int growthIncrement = 128;
+  public int modelCount;
+  int lastModelNumber = -1;
+  public short modelIDs[];
   int atomCount = 0;
   public Atom[] atoms;
   int bondCount = 0;
@@ -68,6 +71,7 @@ final public class Frame {
     this.hasPdbRecords = hasPdbRecords;
     if (hasPdbRecords)
       pdbFile = new PdbFile(this);
+    modelIDs = new short[10];
     atoms = new Atom[atomCount];
     bonds = new Bond[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
@@ -106,6 +110,14 @@ final public class Frame {
                       byte atomicNumber, int atomicCharge,
                       String atomTypeName, float x, float y, float z,
                       String pdbAtomRecord) {
+    if (modelNumber != lastModelNumber) {
+      if (modelCount == modelIDs.length) {
+      short[] newModelIDs = new short[atoms.length + 20];
+      System.arraycopy(modelIDs, 0, newModelIDs, 0, modelIDs.length);
+      modelIDs = newModelIDs;
+      }
+      lastModelNumber = modelIDs[modelCount++] = (short)modelNumber;
+    }
     if (atomCount == atoms.length) {
       Atom[] newAtoms =
         new Atom[atoms.length + growthIncrement];
@@ -127,6 +139,10 @@ final public class Frame {
     if (vdwRadius > maxVanderwaalsRadius)
       maxVanderwaalsRadius = vdwRadius;
     return atom;
+  }
+
+  public int getModelCount() {
+    return modelCount;
   }
 
   public int getAtomCount() {

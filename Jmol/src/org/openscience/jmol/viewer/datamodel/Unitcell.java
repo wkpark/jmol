@@ -39,77 +39,40 @@ public class Unitcell extends SelectionIndependentShape {
 
   final static Point3f pointOrigin = new Point3f();
 
+  final static Point3f[] unitCubePoints = {
+    new Point3f( 0, 0, 0),
+    new Point3f( 0, 0, 1),
+    new Point3f( 0, 1, 0),
+    new Point3f( 0, 1, 1),
+    new Point3f( 1, 0, 0),
+    new Point3f( 1, 0, 1),
+    new Point3f( 1, 1, 0),
+    new Point3f( 1, 1, 1),
+  };
+
   final static float toRadians = (float)Math.PI * 2 / 360;
 
   void initShape() {
-    colix = viewer.getColixAxes();
+    colix = viewer.getColixAxes(); // do this, or it will be BLACK
+
+    Matrix3f matrixFractionalToEuclidean = frame.matrixFractionalToEuclidean;
+    hasUnitcell = matrixFractionalToEuclidean != null;
+    if (! hasUnitcell)
+      return;
+    vertices = new Point3f[8];
+    for (int i = 8; --i >= 0; ) {
+      Point3f vertex = vertices[i] = new Point3f();
+      matrixFractionalToEuclidean.transform(unitCubePoints[i], vertex);
+    }
 
     float[] notionalUnitcell = frame.notionalUnitcell;
-    Matrix3f crystalScaleMatrix = frame.crystalScaleMatrix;
-    Vector3f crystalTranslateVector = frame.crystalTranslateVector;
-    Matrix3f crystalScaleMatrixTranspose = frame.crystalScaleMatrixTranspose;
-    Matrix3f matrixUnitcellToOrthogonal = frame.matrixUnitcellToOrthogonal;
-    dumpCellData(notionalUnitcell,
-                 crystalScaleMatrix,
-                 crystalTranslateVector,
-                 crystalScaleMatrixTranspose,
-                 matrixUnitcellToOrthogonal);
-    hasUnitcell = notionalUnitcell != null;
-    if (hasUnitcell) {
-      float a = this.a = notionalUnitcell[0];
-      float b = this.b = notionalUnitcell[1];
-      float c = this.c = notionalUnitcell[2];
-      float alpha = this.alpha = notionalUnitcell[3];
-      float beta  = this.beta  = notionalUnitcell[4];
-      float gamma = this.gamma = notionalUnitcell[5];
-
-      /* some intermediate variables */
-      float cosAlpha = (float)Math.cos(toRadians*alpha);
-      float sinAlpha = (float)Math.sin(toRadians*alpha);
-      float cosBeta  = (float)Math.cos(toRadians*beta);
-      float sinBeta  = (float)Math.sin(toRadians*beta);
-      float cosGamma = (float)Math.cos(toRadians*gamma);
-      float sinGamma = (float)Math.sin(toRadians*gamma);
     
-
-      // 1. align the a axis with x axis
-      Point3f pointA = new Point3f(a, 0, 0);
-      // 2. place the b is in xy plane making a angle gamma with a
-      Point3f pointB = new Point3f(b * cosGamma, b * sinGamma, 0);
-      // 3. now the c axis,
-      // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
-      float V = a * b * c *
-        (float) Math.sqrt(1.0 - cosAlpha*cosAlpha -
-                          cosBeta*cosBeta -
-                          cosGamma*cosGamma +
-                          2.0*cosAlpha*cosBeta*cosGamma);
-
-      Point3f pointC = new Point3f(c * cosBeta,
-                                   c * (cosAlpha - cosBeta*cosGamma)/sinGamma,
-                                   V/(a * b * sinGamma));
-
-      // 4. the other points
-
-      Point3f pointAB = new Point3f();
-      pointAB.add(pointA, pointB);
-      Point3f pointAC = new Point3f();
-      pointAC.add(pointA, pointC);
-      Point3f pointBC = new Point3f();
-      pointBC.add(pointB, pointC);
-      Point3f pointABC = new Point3f();
-      pointABC.add(pointA, pointBC);
-      
-      vertices = new Point3f[] {
-        pointOrigin,
-        pointA,
-        pointB,
-        pointAB,
-        pointC,
-        pointAC,
-        pointBC,
-        pointABC
-      };
-    }
+    a = notionalUnitcell[0];
+    b = notionalUnitcell[1];
+    c = notionalUnitcell[2];
+    alpha = notionalUnitcell[3];
+    beta  = notionalUnitcell[4];
+    gamma = notionalUnitcell[5];
   }
 
   void dumpCellData(float[] notionalUnitcell,

@@ -24,10 +24,12 @@
  */
 package org.openscience.jmol.app;
 import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolModelAdapter;
 import org.openscience.jmol.viewer.JmolStatusListener;
 import org.openscience.jmol.viewer.JmolMeasureWatcher;
 
 import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
+import org.openscience.jmol.adapters.CdkJmolModelAdapter;
 
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -229,7 +231,14 @@ public class Jmol extends JPanel {
     say("Initializing 3D display...");
     //
     display = new DisplayPanel(status, guimap);
-    viewer = new JmolViewer(display, new DeprecatedJmolModelAdapter());
+    JmolModelAdapter modelAdapter;
+    if (System.getProperty("cdkmodel") != null) {
+      System.out.println("using CDK Model Adapter");
+      modelAdapter = new CdkJmolModelAdapter();
+    } else {
+      modelAdapter = new DeprecatedJmolModelAdapter();
+    }
+    viewer = new JmolViewer(display, modelAdapter);
     display.setViewer(viewer);
 
     //    viewer.addPropertyChangeListener(display);

@@ -35,20 +35,23 @@ class ModelResolver {
                              ModelAdapter.Logger logger) throws Exception {
     ModelReader modelReader;
     String modelReaderName = determineModelReader(bufferedReader);
-    if (modelReaderName == "Xyz")
-      modelReader = new XyzReader();
-    else if (modelReaderName == "Mol")
-      modelReader = new MolReader();
-    else if (modelReaderName == "Jme")
-      modelReader = new JmeReader();
-    else if (modelReaderName == "Pdb")
-      modelReader = new PdbReader();
-    else if (modelReaderName == "ShelX")
-      modelReader = new ShelXReader();
-    else if (modelReaderName == "Cml")
-      return "CML not yet supported";
-    else
+    String className =
+      "org.jmol.adapter.smarter." + modelReaderName + "Reader";
+
+    if (modelReaderName == null)
       return "unrecognized file format";
+
+    if (modelReaderName == "Cml")
+      return "CML not yet supported";
+
+    try {
+      Class modelReaderClass = Class.forName(className);
+      modelReader = (ModelReader)modelReaderClass.newInstance();
+    } catch (Exception e) {
+      String err = "Could not instantiate:" + className;
+      logger.log(err);
+      return err;
+    }
 
     Model model = modelReader.readModel(bufferedReader, logger);
     if (model.errorMessage != null)
@@ -104,7 +107,7 @@ class ModelResolver {
     }
     if (lines[1] == null || lines[1].trim().length() == 0)
       return "Jme"; // this is really quite broken :-)
-    return "unknown";
+    return null;
   }
 
   final static String[] pdbRecords = {

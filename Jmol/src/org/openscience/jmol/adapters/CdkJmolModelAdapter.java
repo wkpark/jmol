@@ -149,9 +149,9 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
 
   private AtomContainer getAtomContainer(Object clientFile, int frameNumber) {
     ChemFile chemFile = (ChemFile)clientFile;
-    ChemSequence chemSequence = chemFile.getChemSequence(frameNumber);
+    ChemSequence chemSequence = chemFile.getChemSequence(0);
     ChemModel[] chemModels = chemSequence.getChemModels();
-    ChemModel chemModel = chemModels[0];
+    ChemModel chemModel = chemModels[frameNumber];
     SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
     Crystal crystal = chemModel.getCrystal();
     if (setOfMolecules != null) {
@@ -160,7 +160,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     } else if (crystal != null) {
         return crystal;
     } else {
-        System.out.println("Cannot display data in file");
+        System.out.println("Cannot display data in model");
         return null;
     }
   }

@@ -98,9 +98,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private float bondTolerance;
   private short marBond;
   private int percentVdwAtom;
-  private double VibrateAmplitudeScale;
-  private double VibrateVectorScale;
-  private int VibrationFrames;
+  //  private double VibrateAmplitudeScale;
+  //  private double VibrateVectorScale;
+  //  private int VibrationFrames;
   private JButton bButton, pButton, tButton, eButton, vButton;
   private JButton measurementColorButton;
   private JRadioButton pYes, pNo, abYes, abNo;
@@ -146,9 +146,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "colorBond",                      "0",
     "colorVector",                    "16777215",
     "colorMeasurement",               "16777215",
-    "VibrateAmplitudeScale",          "0.7",
-    "VibrateVectorScale",             "1.0",
-    "VibrationFrames",                "20",
+    //    "VibrateAmplitudeScale",          "0.7",
+    //    "VibrateVectorScale",             "1.0",
+    //    "VibrationFrames",                "20",
   };
 
   final static String[] rasmolOverrides = {
@@ -188,12 +188,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel atoms = buildAtomsPanel();
     JPanel bonds = buildBondPanel();
     JPanel colors = buildColorsPanel();
-    JPanel vibrate = buildVibratePanel();
+    //    JPanel vibrate = buildVibratePanel();
     tabs.addTab(jrh.getString("Prefs.displayLabel"), null, disp);
     tabs.addTab(jrh.getString("Prefs.atomsLabel"), null, atoms);
     tabs.addTab(jrh.getString("Prefs.bondsLabel"), null, bonds);
     tabs.addTab(jrh.getString("Prefs.colorsLabel"), null, colors);
-    tabs.addTab(jrh.getString("Prefs.vibrateLabel"), null, vibrate);
+    //    tabs.addTab(jrh.getString("Prefs.vibrateLabel"), null, vibrate);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -763,6 +763,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     return colorPanel;
   }
 
+  /*
   public JPanel buildVibratePanel() {
 
     JPanel vibratePanel = new JPanel();
@@ -891,6 +892,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     return vibratePanel;
   }
+  */
 
   protected void centerDialog() {
 
@@ -951,10 +953,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     vButton.setBackground(colorVector);
     measurementColorButton.setBackground(colorMeasurement);
 
+    /*
     // Vibrate panel controls
     vasSlider.setValue((int) (100.0 * Vibrate.getAmplitudeScale()));
     vvsSlider.setValue((int) (100.0 * Vibrate.getVectorScale()));
     vfSlider.setValue(Vibrate.getNumberFrames());
+    */
 
   }
 
@@ -1016,7 +1020,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     colorBond = Color.getColor("colorBond");
     colorVector = Color.getColor("colorVector");
     colorMeasurement = Color.getColor("colorMeasurement");
+    /*
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
+    */
 
     minBondDistance =
       new Float(currentProperties.getProperty("minBondDistance")).floatValue();
@@ -1025,11 +1031,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));
+    /*
     VibrateAmplitudeScale =
         new Double(currentProperties.getProperty("VibrateAmplitudeScale")).doubleValue();
     VibrateVectorScale =
         new Double(currentProperties.getProperty("VibrateVectorScale")).doubleValue();
-
+    */
     //    viewer.setColorOutline(colorOutline);
     viewer.setColorSelection(colorSelection);
     viewer.setColorLabel(isLabelAtomColor ? null : colorText);
@@ -1051,9 +1058,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setShapeShow(JmolConstants.SHAPE_AXES, showAxes);
     viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, showBoundingBox);
     viewer.setAxesOrientationRasmol(axesOrientationRasmol);
+    /*
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
+    */
   }
 
   class PrefsAction extends AbstractAction {

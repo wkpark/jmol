@@ -79,12 +79,6 @@ public class Jmol extends JPanel {
   private StatusBar status;
   private AtomPropsMenu apm;
   private PreferencesDialog preferencesDialog;
-  private Animate anim;
-  private Vibrate vib;
-  private CrystalPropertiesDialog crystprop;
-  private MakeCrystal makecrystal;
-  private TransformDialog transform;
-  private PropertyGraph pg;
   private MeasurementTable measurementTable;
   private RecentFilesDialog recentFiles;
   public ScriptWindow scriptWindow;
@@ -192,35 +186,14 @@ public class Jmol extends JPanel {
 
     viewer = new JmolViewer(display, modelAdapter);
     display.setViewer(viewer);
-
-    //    pcs.addPropertyChangeListener(display);
+    
     say("Initializing Preferences...");
     preferencesDialog = new PreferencesDialog(frame, guimap, viewer);
-    say("Initializing Animate...");
-    anim = new Animate(viewer, frame);
-    // mth 2003 08 15
-    // get rid of this property change listener for Animate.java
-    // may break animations
-    pcs.addPropertyChangeListener(anim);
-    say("Initializing Vibrate...");
-    vib = new Vibrate(viewer, frame);
-    // pcs.addPropertyChangeListener(vib);
-    say("Initializing Crystal...");
-    crystprop = new CrystalPropertiesDialog(viewer, frame);
-    // pcs.addPropertyChangeListener(crystprop);
-    makecrystal = new MakeCrystal(viewer, crystprop);
-    // pcs.addPropertyChangeListener(makecrystal);
-    transform = new TransformDialog(viewer, frame);
-    // pcs.addPropertyChangeListener(transform);
     say("Initializing Recent Files...");
     recentFiles = new RecentFilesDialog(frame);
     say("Initializing Script Window...");
     scriptWindow = new ScriptWindow(viewer, frame);
-    //scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
     viewer.setJmolStatusListener(new MyJmolStatusListener());
-    say("Initializing Property Graph...");
-    pg = new PropertyGraph(frame);
-    // pcs.addPropertyChangeListener(pg);
 
     say("Initializing Measurements...");
     measurementTable = new MeasurementTable(viewer, frame);
@@ -246,13 +219,6 @@ public class Jmol extends JPanel {
       commands.put(a.getValue(Action.NAME), a);
     }
 
-    // Fix for actions that confict with the operation of
-    // vibration animations
-    Action[] animActions = anim.getActions();
-    for (int i = 0; i < animActions.length; ++i) {
-      vib.addConflictingAction(animActions[i]);
-    }
-    vib.addConflictingAction(getAction(openAction));
     menuItems = new Hashtable();
     say("Building Menubar...");
     executeScriptAction = new ExecuteScriptAction();
@@ -272,7 +238,6 @@ public class Jmol extends JPanel {
 
     say("Initializing Chemical Shifts...");
     chemicalShifts.initialize(apm);
-    // pcs.addPropertyChangeListener(chemicalShifts);
 
     say("Starting display...");
     display.start();
@@ -477,12 +442,12 @@ public class Jmol extends JPanel {
     actions.addAll(Arrays.asList(defaultActions));
     actions.addAll(Arrays.asList(display.getActions()));
     actions.addAll(Arrays.asList(preferencesDialog.getActions()));
-    actions.addAll(Arrays.asList(anim.getActions()));
-    actions.addAll(Arrays.asList(vib.getActions()));
-    actions.addAll(Arrays.asList(crystprop.getActions()));
-    actions.addAll(Arrays.asList(makecrystal.getActions()));
-    actions.addAll(Arrays.asList(transform.getActions()));
-    actions.addAll(Arrays.asList(pg.getActions()));
+    //    actions.addAll(Arrays.asList(anim.getActions()));
+    //    actions.addAll(Arrays.asList(vib.getActions()));
+    //    actions.addAll(Arrays.asList(crystprop.getActions()));
+    //    actions.addAll(Arrays.asList(makecrystal.getActions()));
+    //    actions.addAll(Arrays.asList(transform.getActions()));
+    //    actions.addAll(Arrays.asList(pg.getActions()));
 
     return (Action[]) actions.toArray(new Action[0]);
   }

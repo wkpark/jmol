@@ -25,6 +25,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
+import javax.vecmath.Point3f;
 
 public class AlphaMonomer extends Monomer {
 
@@ -73,4 +74,15 @@ public class AlphaMonomer extends Monomer {
       proteinStructure.type >= JmolConstants.PROTEIN_STRUCTURE_SHEET;
   }
 
+  Atom getAtom(byte specialAtomID) {
+    return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+            ? getLeadAtom()
+            : null);
+  }
+
+  Point3f getAtomPoint(byte specialAtomID) {
+    return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+            ? getLeadAtomPoint()
+            : null);
+  }
 }

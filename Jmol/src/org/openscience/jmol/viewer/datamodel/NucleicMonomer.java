@@ -25,6 +25,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
+import javax.vecmath.Point3f;
 
 public class NucleicMonomer extends Monomer {
 
@@ -118,15 +119,11 @@ public class NucleicMonomer extends Monomer {
 
   ////////////////////////////////////////////////////////////////
 
-  Atom getPurineN1() {
-    if (! isPurine())
-      return null;
+  Atom getN1() {
     return getAtomFromOffsetIndex(3);
   }
 
-  Atom getPyrimidineN3() {
-    if (! isPyrimidine())
-      return null;
+  Atom getN3() {
     return getAtomFromOffsetIndex(5);
   }
 
@@ -153,4 +150,13 @@ public class NucleicMonomer extends Monomer {
   Atom getO4() {
     return getAtomFromOffsetIndex(13);
   }
+
+  Atom getAtom(byte specialAtomID) {
+    return getSpecialAtom(interestingNucleicAtomIDs, specialAtomID);
+  }
+
+  Point3f getAtomPoint(byte specialAtomID) {
+    return getSpecialAtomPoint(interestingNucleicAtomIDs, specialAtomID);
+  }
+
 }

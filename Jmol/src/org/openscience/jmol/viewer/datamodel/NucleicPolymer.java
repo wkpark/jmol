@@ -62,34 +62,34 @@ public class NucleicPolymer extends Polymer {
     System.out.println("NucleicPolymer.lookForHbonds()");
     for (int i = count; --i >= 0; ) {
       NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
-      Atom myN1 = myNucleotide.getPurineN1();
-      if (myN1 != null) {
-        Atom bestN3 = null;
-        float minDist2 = 5*5;
-        NucleicMonomer bestNucleotide = null;
-        for (int j = other.count; --j >= 0; ) {
-          NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
-          Atom otherN3 = otherNucleotide.getPyrimidineN3();
-          if (otherN3 != null) {
-            float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);
-            if (dist2 < minDist2) {
-              bestNucleotide = otherNucleotide;
-              bestN3 = otherN3;
-              minDist2 = dist2;
-            }
-          }
+      if (! myNucleotide.isPurine())
+        continue;
+      Atom myN1 = myNucleotide.getN1();
+      Atom bestN3 = null;
+      float minDist2 = 5*5;
+      NucleicMonomer bestNucleotide = null;
+      for (int j = other.count; --j >= 0; ) {
+        NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
+        if (! otherNucleotide.isPyrimidine())
+          continue;
+        Atom otherN3 = otherNucleotide.getN3();
+        float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);
+        if (dist2 < minDist2) {
+          bestNucleotide = otherNucleotide;
+          bestN3 = otherN3;
+          minDist2 = dist2;
         }
-        if (bestN3 != null) {
-          createHydrogenBond(myN1, bestN3);
-          if (myNucleotide.isGuanine()) {
-            createHydrogenBond(myNucleotide.getN2(),
-                               bestNucleotide.getO2());
-            createHydrogenBond(myNucleotide.getO6(),
-                               bestNucleotide.getN4());
-          } else {
-            createHydrogenBond(myNucleotide.getN6(),
-                               bestNucleotide.getO4());
-          }
+      }
+      if (bestN3 != null) {
+        createHydrogenBond(myN1, bestN3);
+        if (myNucleotide.isGuanine()) {
+          createHydrogenBond(myNucleotide.getN2(),
+                             bestNucleotide.getO2());
+          createHydrogenBond(myNucleotide.getO6(),
+                             bestNucleotide.getN4());
+        } else {
+          createHydrogenBond(myNucleotide.getN6(),
+                             bestNucleotide.getO4());
         }
       }
     }
@@ -103,5 +103,4 @@ public class NucleicPolymer extends Polymer {
       frame.bondAtoms(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE);
     }
   }
-
 }

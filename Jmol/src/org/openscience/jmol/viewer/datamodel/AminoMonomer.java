@@ -96,5 +96,11 @@ public class AminoMonomer extends AlphaMonomer {
     return aminoBackboneHbondOffset;
   }
 
+  Atom getAtom(byte specialAtomID) {
+    return getSpecialAtom(interestingAminoAtomIDs, specialAtomID);
+  }
 
+  Point3f getAtomPoint(byte specialAtomID) {
+    return getSpecialAtomPoint(interestingAminoAtomIDs, specialAtomID);
+  }
 }

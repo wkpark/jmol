@@ -43,11 +43,15 @@ final public class Chain {
 
   public Chain(PdbModel pdbmodel, char chainID) {
     this.pdbmodel = pdbmodel;
+    this.chainID = canonizeChainID(chainID);
+  }
+
+  static char canonizeChainID(char chainID) {
     if (!((chainID >= 'A' && chainID <= 'Z') ||
           (chainID >= 'a' && chainID <= 'z') ||
           (chainID >= '0' && chainID <= '9')))
-      chainID = 0;
-    this.chainID = chainID;
+      return '\0';
+    return chainID;
   }
 
   void freeze() {

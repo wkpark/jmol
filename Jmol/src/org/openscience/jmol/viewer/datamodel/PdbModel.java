@@ -48,10 +48,10 @@ final public class PdbModel {
   }
 
   public void freeze() {
-    System.out.println("PdbFile.freeze() chainCount=" + chainCount);
+    //    System.out.println("PdbFile.freeze() chainCount=" + chainCount);
     chains = (Chain[])Util.setLength(chains, chainCount);
     for (int i = chainCount; --i >= 0; ) {
-      System.out.println(" chain:" + i);
+      //      System.out.println(" chain:" + i);
       chains[i].freeze();
     }
   }
@@ -75,6 +75,7 @@ final public class PdbModel {
   }
 
   public Chain getChain(char chainID) {
+    chainID = Chain.canonizeChainID(chainID);
     for (int i = chainCount; --i >= 0; ) {
       Chain chain = chains[i];
       if (chain.chainID == chainID)
@@ -88,6 +89,7 @@ final public class PdbModel {
   }
 
   Chain getOrAllocateChain(char chainID) {
+    //    System.out.println("chainID=" + chainID + " -> " + (chainID + 0));
     Chain chain = getChain(chainID);
     if (chain != null)
       return chain;

@@ -461,7 +461,7 @@ public class JmolApplet extends Applet {
     if (viewer.getOperatingSystemName().equals("Mac OS") &&
         viewer.getJavaVersion().equals("1.1.5"))
       return;
-    new LoadPopupThread(this).run();
+    new Thread(new LoadPopupThread(this)).start();
   }
 
   class LoadPopupThread implements Runnable {

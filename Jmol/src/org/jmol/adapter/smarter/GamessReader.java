@@ -27,13 +27,13 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
-class GamessReader extends ModelReader {
+class GamessReader extends AtomSetCollectionReader {
     
   final static float angstromsPerBohr = 0.529177f;
 
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
-    model = new Model("gamess");
+    atomSetCollection = new AtomSetCollection("gamess");
 
     try {
       String line;
@@ -43,13 +43,13 @@ class GamessReader extends ModelReader {
       readFrequencies(reader);
     } catch (Exception ex) {
       ex.printStackTrace();
-      model.errorMessage = "Could not read file:" + ex;
-      return model;
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
+      return atomSetCollection;
     }
-    if (model.atomCount == 0) {
-      model.errorMessage = "No atoms in file";
+    if (atomSetCollection.atomCount == 0) {
+      atomSetCollection.errorMessage = "No atoms in file";
     }
-    return model;
+    return atomSetCollection;
   }
 
   void readAtomsInBohrCoordinates(BufferedReader reader) throws Exception {
@@ -63,7 +63,7 @@ class GamessReader extends ModelReader {
       float z = parseFloat(line, 57, 77);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName;
       atom.x = x * angstromsPerBohr;
       atom.y = y * angstromsPerBohr;
@@ -73,7 +73,7 @@ class GamessReader extends ModelReader {
 
   void readFrequencies(BufferedReader reader) throws Exception {
     int totalFrequencyCount = 0;
-    atomCountInFirstModel = model.atomCount;
+    atomCountInFirstModel = atomSetCollection.atomCount;
     float[] frequencies = new float[5];
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
@@ -93,7 +93,7 @@ class GamessReader extends ModelReader {
         if (totalFrequencyCount > 1)
           createNewModel(totalFrequencyCount);
       }
-      Atom[] atoms = model.atoms;
+      Atom[] atoms = atomSetCollection.atoms;
       discardLinesUntilBlank(reader);
       for (int i = 0; i < atomCountInFirstModel; ++i) {
         readComponents(reader.readLine(), lineFreqCount, xComponents);
@@ -121,9 +121,9 @@ class GamessReader extends ModelReader {
   
   void createNewModel(int modelNumber) {
     //    System.out.println("createNewModel(" + modelNumber + ")");
-    Atom[] atoms = model.atoms;
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < atomCountInFirstModel; ++i) {
-      Atom atomNew = model.newCloneAtom(atoms[i]);
+      Atom atomNew = atomSetCollection.newCloneAtom(atoms[i]);
       atomNew.modelNumber = modelNumber;
     }
   }

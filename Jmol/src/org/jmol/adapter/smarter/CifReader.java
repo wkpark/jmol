@@ -36,7 +36,7 @@ import java.io.BufferedReader;
  * http://www.iucr.org/iucr-top/cif/
  * </a>
  */
-class CifReader extends ModelReader {
+class CifReader extends AtomSetCollectionReader {
 
   float[] notionalUnitcell;
 
@@ -50,9 +50,9 @@ class CifReader extends ModelReader {
       notionalUnitcell[i] = Float.NaN;
   }
 
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
     this.reader = reader;
-    model = new Model("cif");
+    atomSetCollection = new AtomSetCollection("cif");
     
     // this loop is a little tricky
     // the CIF format seems to generate lots of problems for parsers
@@ -75,7 +75,7 @@ class CifReader extends ModelReader {
       line = reader.readLine();
     }
     checkUnitcell();
-    return model;
+    return atomSetCollection;
   }
   
 
@@ -105,11 +105,11 @@ class CifReader extends ModelReader {
   void processDataParameter() {
     String modelName = line.substring(5).trim();
     if (modelName.length() > 0)
-      model.modelName = modelName;
+      atomSetCollection.modelName = modelName;
   }
   
   void processSymmetrySpaceGroupNameHM() {
-    model.spaceGroup = line.substring(29).trim();
+    atomSetCollection.spaceGroup = line.substring(29).trim();
   }
 
   final static String[] cellParamNames =
@@ -133,7 +133,7 @@ class CifReader extends ModelReader {
       if (Float.isNaN(notionalUnitcell[i]))
         return;
     }
-    model.notionalUnitcell = notionalUnitcell;
+    atomSetCollection.notionalUnitcell = notionalUnitcell;
   }
   
   private void processLoopBlock() throws Exception {
@@ -220,7 +220,7 @@ class CifReader extends ModelReader {
   };
 
   // don't forget to deal with alternate conformations!
-  // or, even better, move that code out of the ModelReader
+  // or, even better, move that code out of the AtomSetCollectionReader
 
   final static byte[] atomFieldMap = {
     TYPE_SYMBOL,
@@ -250,7 +250,7 @@ class CifReader extends ModelReader {
       for (int i = FRACT_X; i < FRACT_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
     } else if (atomPropertyReferenced[FRACT_X]) {
-      model.coordinatesAreFractional = true;
+      atomSetCollection.coordinatesAreFractional = true;
       for (int i = CARTN_X; i < CARTN_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
     } else {
@@ -355,7 +355,7 @@ class CifReader extends ModelReader {
         logger.log("atom " + atom.atomName +
                    " has invalid/unknown coordinates");
       else
-        model.addAtomWithMappedName(atom);
+        atomSetCollection.addAtomWithMappedName(atom);
     }
   }
 
@@ -436,15 +436,15 @@ class CifReader extends ModelReader {
         case NONE:
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_1:
-          bond.atomIndex1 = model.getAtomNameIndex(field);
+          bond.atomIndex1 = atomSetCollection.getAtomNameIndex(field);
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_2:
-          bond.atomIndex2 = model.getAtomNameIndex(field);
+          bond.atomIndex2 = atomSetCollection.getAtomNameIndex(field);
           break;
         }
       }
       if (bond.atomIndex1 >= 0 && bond.atomIndex2 >= 0)
-        model.addBond(bond);
+        atomSetCollection.addBond(bond);
     }
   }
 
@@ -540,7 +540,7 @@ class CifReader extends ModelReader {
           break;
         }
       }
-      model.addStructure(structure);
+      atomSetCollection.addStructure(structure);
     }
   }
 
@@ -619,7 +619,7 @@ class CifReader extends ModelReader {
           break;
         }
       }
-      model.addStructure(structure);
+      atomSetCollection.addStructure(structure);
     }
   }
 

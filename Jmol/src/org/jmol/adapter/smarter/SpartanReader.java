@@ -27,11 +27,11 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
-class SpartanReader extends ModelReader {
+class SpartanReader extends AtomSetCollectionReader {
     
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
-    model = new Model("spartan");
+    atomSetCollection = new AtomSetCollection("spartan");
 
     try {
       String line;
@@ -43,13 +43,13 @@ class SpartanReader extends ModelReader {
         readFrequencies(reader);
     } catch (Exception ex) {
       ex.printStackTrace();
-      model.errorMessage = "Could not read file:" + ex;
-      return model;
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
+      return atomSetCollection;
     }
-    if (model.atomCount == 0) {
-      model.errorMessage = "No atoms in file";
+    if (atomSetCollection.atomCount == 0) {
+      atomSetCollection.errorMessage = "No atoms in file";
     }
-    return model;
+    return atomSetCollection;
   }
 
   void readAtoms(BufferedReader reader) throws Exception {
@@ -63,7 +63,7 @@ class SpartanReader extends ModelReader {
       float x = parseFloat(line, 17, 30);
       float y = parseFloat(line, 31, 44);
       float z = parseFloat(line, 45, 58);
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       atom.x = x;
@@ -74,7 +74,7 @@ class SpartanReader extends ModelReader {
 
   void readFrequencies(BufferedReader reader) throws Exception {
     int totalFrequencyCount = 0;
-    atomCountInFirstModel = model.atomCount;
+    atomCountInFirstModel = atomSetCollection.atomCount;
     float[] frequencies = new float[5];
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
@@ -97,7 +97,7 @@ class SpartanReader extends ModelReader {
       }
       if (lineFreqCount == 0)
         return;
-      Atom[] atoms = model.atoms;
+      Atom[] atoms = atomSetCollection.atoms;
       discardLines(reader, 2);
       for (int i = 0; i < atomCountInFirstModel; ++i) {
         line = reader.readLine();
@@ -121,9 +121,9 @@ class SpartanReader extends ModelReader {
   
   void createNewModel(int modelNumber) {
     //    System.out.println("createNewModel(" + modelNumber + ")");
-    Atom[] atoms = model.atoms;
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < atomCountInFirstModel; ++i) {
-      Atom atomNew = model.newCloneAtom(atoms[i]);
+      Atom atomNew = atomSetCollection.newCloneAtom(atoms[i]);
       atomNew.modelNumber = modelNumber;
     }
   }

@@ -34,14 +34,14 @@ import java.io.BufferedReader;
  *
  * @author Egon Willighagen <egonw@jmol.org>
  */
-class MopacReader extends ModelReader {
+class MopacReader extends AtomSetCollectionReader {
     
   String frameInfo;
   int modelNumber;
   int baseAtomIndex;
 
-  Model readModel(BufferedReader input) throws Exception {
-    model = new Model("mopac");
+  AtomSetCollection readAtomSetCollection(BufferedReader input) throws Exception {
+    atomSetCollection = new AtomSetCollection("mopac");
         
     frameInfo = null;
     modelNumber = 1;
@@ -63,7 +63,7 @@ class MopacReader extends ModelReader {
       else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
         processFrequencies(input);
     }
-    return model;
+    return atomSetCollection;
   }
     
   void processTotalEnergy(String line) {
@@ -87,7 +87,7 @@ class MopacReader extends ModelReader {
   void processAtomicCharges(BufferedReader input) throws Exception {
     discardLines(input, 2);
     //    System.out.println("Reading atomic charges");
-    baseAtomIndex = model.atomCount;
+    baseAtomIndex = atomSetCollection.atomCount;
     int expectedAtomNumber = 0;
     String line;
     while ((line = input.readLine()) != null) {
@@ -97,7 +97,7 @@ class MopacReader extends ModelReader {
       ++expectedAtomNumber;
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in atomic charges");
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = parseToken(line, ichNextParse);
       atom.partialCharge = parseFloat(line, ichNextParse);
     }
@@ -129,7 +129,7 @@ class MopacReader extends ModelReader {
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in coordinates");
       
-      Atom atom = model.atoms[baseAtomIndex + atomNumber - 1];
+      Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
       atom.x = parseFloat(line, 30);
       atom.y = parseFloat(line, 40);
       atom.z = parseFloat(line, 50);

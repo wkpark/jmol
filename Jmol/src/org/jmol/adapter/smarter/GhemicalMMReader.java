@@ -67,11 +67,11 @@ import java.io.BufferedReader;
  *
  * @author Egon Willighagen <egonw@sci.kun.nl>
  */
-class GhemicalMMReader extends ModelReader {
+class GhemicalMMReader extends AtomSetCollectionReader {
     
-  Model readModel(BufferedReader input) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader input) throws Exception {
 
-    model = new Model("ghemicalMM");
+    atomSetCollection = new AtomSetCollection("ghemicalMM");
 
     String line;
     while ((line = input.readLine()) != null) {
@@ -88,11 +88,11 @@ class GhemicalMMReader extends ModelReader {
       else if (line.startsWith("!Charges"))
         processCharges(input, line);
       else if (line.startsWith("!End")) {
-        return model;
+        return atomSetCollection;
       }
     }
-    model.errorMessage = "unexpected end of file";
-    return model;
+    atomSetCollection.errorMessage = "unexpected end of file";
+    return atomSetCollection;
   }
 
   void processHeader(String line) {
@@ -105,7 +105,7 @@ class GhemicalMMReader extends ModelReader {
     int atomCount = parseInt(line, 6);
     System.out.println("atomCount=" + atomCount);
     for (int i = 0; i < atomCount; ++i) {
-      if (model.atomCount != i)
+      if (atomSetCollection.atomCount != i)
         throw new Exception("GhemicalMMReader error #1");
       line = input.readLine();
       int atomIndex = parseInt(line);
@@ -113,7 +113,7 @@ class GhemicalMMReader extends ModelReader {
         throw new Exception("bad atom index in !Atoms" +
                             "expected: " + i + " saw:" + atomIndex);
       int elementNumber = parseInt(line, ichNextParse);
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (byte)elementNumber;
     }
   }
@@ -137,18 +137,18 @@ class GhemicalMMReader extends ModelReader {
       default:
         ++order;
       }
-      model.addNewBond(atomIndex1, atomIndex2, order);
+      atomSetCollection.addNewBond(atomIndex1, atomIndex2, order);
     }
   }
 
   void processCoord(BufferedReader input, String line) throws Exception {
-    for (int i = 0; i < model.atomCount; ++i) {
+    for (int i = 0; i < atomSetCollection.atomCount; ++i) {
       line = input.readLine();
       int atomIndex = parseInt(line);
       if (atomIndex != i)
         throw new Exception("bad atom index in !Coord" +
                             "expected: " + i + " saw:" + atomIndex);
-      Atom atom = model.atoms[i];
+      Atom atom = atomSetCollection.atoms[i];
       atom.x = parseFloat(line, ichNextParse) * 10;
       atom.y = parseFloat(line, ichNextParse) * 10;
       atom.z = parseFloat(line, ichNextParse) * 10;
@@ -156,13 +156,13 @@ class GhemicalMMReader extends ModelReader {
   }
 
   void processCharges(BufferedReader input, String line) throws Exception {
-    for (int i = 0; i < model.atomCount; ++i) {
+    for (int i = 0; i < atomSetCollection.atomCount; ++i) {
       line = input.readLine();
       int atomIndex = parseInt(line);
       if (atomIndex != i)
         throw new Exception("bad atom index in !Charges" +
                             "expected: " + i + " saw:" + atomIndex);
-      Atom atom = model.atoms[i];
+      Atom atom = atomSetCollection.atoms[i];
       atom.partialCharge = parseFloat(line, ichNextParse);
     }
   }

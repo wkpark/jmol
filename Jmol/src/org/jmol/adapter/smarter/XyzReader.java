@@ -32,27 +32,27 @@ import java.io.BufferedReader;
  * file format. Suggestions appreciated
  */
 
-class XyzReader extends ModelReader {
+class XyzReader extends AtomSetCollectionReader {
     
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
-    model = new Model("xyz");
+    atomSetCollection = new AtomSetCollection("xyz");
 
     try {
       int modelNumber = 1;
       int modelAtomCount;
       while ((modelAtomCount = readAtomCount(reader)) > 0) {
         if (modelNumber == 1)
-          model.setModelName(reader.readLine());
+          atomSetCollection.setModelName(reader.readLine());
         else
           reader.readLine();
         readAtoms(reader, modelNumber, modelAtomCount);
         ++modelNumber;
       }
     } catch (Exception ex) {
-      model.errorMessage = "Could not read file:" + ex;
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
     }
-    return model;
+    return atomSetCollection;
   }
     
   int readAtomCount(BufferedReader reader) throws Exception {
@@ -72,7 +72,7 @@ class XyzReader extends ModelReader {
                  int modelNumber, int modelAtomCount) throws Exception {
     for (int i = 0; i < modelAtomCount; ++i) {
       String line = reader.readLine();
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.modelNumber = modelNumber;
       atom.elementSymbol = parseToken(line);
       atom.x = parseFloat(line, ichNextParse);

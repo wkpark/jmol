@@ -30,7 +30,7 @@ import org.jmol.api.ModelAdapter;
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
-class PdbReader extends ModelReader {
+class PdbReader extends AtomSetCollectionReader {
   String line;
   int lineLength;
   // index into atoms array + 1
@@ -45,11 +45,11 @@ class PdbReader extends ModelReader {
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
 
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
-    model = new Model("pdb");
+    atomSetCollection = new AtomSetCollection("pdb");
 
-    model.pdbStructureRecords = new String[32];
+    atomSetCollection.pdbStructureRecords = new String[32];
     StringBuffer sbHeader = new StringBuffer();
     initialize();
     boolean accumulatingHeader = true;
@@ -107,7 +107,7 @@ class PdbReader extends ModelReader {
         continue;
       }
       if (line.startsWith("HEADER") && lineLength >= 66) {
-        model.setModelName(line.substring(62, 66));
+        atomSetCollection.setModelName(line.substring(62, 66));
         continue;
       }
       if (accumulatingHeader) {
@@ -117,10 +117,10 @@ class PdbReader extends ModelReader {
     }
     serialMap = null;
     if (isNMRdata)
-      model.notionalUnitcell =
-        model.pdbScaleMatrix = model.pdbScaleTranslate = null;
-    model.fileHeader = "" + sbHeader;
-    return model;
+      atomSetCollection.notionalUnitcell =
+        atomSetCollection.pdbScaleMatrix = atomSetCollection.pdbScaleTranslate = null;
+    atomSetCollection.fileHeader = "" + sbHeader;
+    return atomSetCollection;
   }
 
   void initialize() {
@@ -203,7 +203,7 @@ class PdbReader extends ModelReader {
       /****************************************************************/
       if (serial >= serialMap.length)
         serialMap = setLength(serialMap, serial + 500);
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.modelNumber = currentModelNumber;
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
@@ -219,7 +219,7 @@ class PdbReader extends ModelReader {
       atom.insertionCode = ModelAdapter.canonizeInsertionCode(insertionCode);
 
       // note that values are +1 in this serial map
-      serialMap[serial] = model.atomCount;
+      serialMap[serial] = atomSetCollection.atomCount;
     } catch (NumberFormatException e) {
       logger.log("bad record", "" + line);
     }
@@ -268,8 +268,8 @@ class PdbReader extends ModelReader {
         int targetIndex = serialMap[targetSerial] - 1;
         if (targetIndex < 0)
           continue;
-        if (model.bondCount > 0) {
-          Bond bond = model.bonds[model.bondCount - 1];
+        if (atomSetCollection.bondCount > 0) {
+          Bond bond = atomSetCollection.bonds[atomSetCollection.bondCount - 1];
           if (i < 4 &&
               bond.atomIndex1 == sourceIndex &&
               bond.atomIndex2 == targetIndex) {
@@ -279,7 +279,7 @@ class PdbReader extends ModelReader {
         }
         //        if (i >= 4)
         //          logger.log("hbond:" + sourceIndex + "->" + targetIndex);
-        model.addBond(new Bond(sourceIndex, targetIndex,
+        atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
                                i < 4
                                ? 1 : ModelAdapter.ORDER_HBOND));
       }
@@ -329,7 +329,7 @@ class PdbReader extends ModelReader {
     int endSequenceNumber = parseInt(line, endIndex, endIndex + 4);
     char endInsertionCode = line.charAt(endIndex + 4);
 
-    model.addStructure(new Structure(structureType, startChainID,
+    atomSetCollection.addStructure(new Structure(structureType, startChainID,
                                      startSequenceNumber, startInsertionCode,
                                      endChainID, endSequenceNumber, endInsertionCode));
   }
@@ -353,7 +353,7 @@ class PdbReader extends ModelReader {
         endModelColumn = lineLength;
       int modelNumber = parseInt(line, startModelColumn, endModelColumn);
       if (modelNumber != currentModelNumber + 1)
-        logger.log("Model number sequence seems confused");
+        logger.log("AtomSetCollection number sequence seems confused");
       currentModelNumber = modelNumber;
     } catch (NumberFormatException e) {
     }
@@ -367,7 +367,7 @@ class PdbReader extends ModelReader {
       float alpha = getFloat(33, 7);
       float beta  = getFloat(40, 7);
       float gamma = getFloat(47, 7);
-      float[] notionalUnitcell = model.notionalUnitcell = new float[6];
+      float[] notionalUnitcell = atomSetCollection.notionalUnitcell = new float[6];
       notionalUnitcell[0] = a;
       notionalUnitcell[1] = b;
       notionalUnitcell[2] = c;
@@ -383,23 +383,23 @@ class PdbReader extends ModelReader {
   }
 
   void scale(int n) throws Exception {
-    model.pdbScaleMatrix[n*3 + 0] = getFloat(10, 10);
-    model.pdbScaleMatrix[n*3 + 1] = getFloat(20, 10);
-    model.pdbScaleMatrix[n*3 + 2] = getFloat(30, 10);
+    atomSetCollection.pdbScaleMatrix[n*3 + 0] = getFloat(10, 10);
+    atomSetCollection.pdbScaleMatrix[n*3 + 1] = getFloat(20, 10);
+    atomSetCollection.pdbScaleMatrix[n*3 + 2] = getFloat(30, 10);
     float translation = getFloat(45, 10);
     if (translation != 0) {
-      if (model.pdbScaleTranslate == null)
-        model.pdbScaleTranslate = new float[3];
-      model.pdbScaleTranslate[n] = translation;
+      if (atomSetCollection.pdbScaleTranslate == null)
+        atomSetCollection.pdbScaleTranslate = new float[3];
+      atomSetCollection.pdbScaleTranslate[n] = translation;
     }
   }
 
   void scale1() {
     try {
-      model.pdbScaleMatrix = new float[9];
+      atomSetCollection.pdbScaleMatrix = new float[9];
       scale(0);
     } catch (Exception e) {
-      model.pdbScaleMatrix = null;
+      atomSetCollection.pdbScaleMatrix = null;
       logger.log("scale1 died:" + 3);
     }
   }
@@ -408,7 +408,7 @@ class PdbReader extends ModelReader {
     try {
       scale(1);
     } catch (Exception e) {
-      model.pdbScaleMatrix = null;
+      atomSetCollection.pdbScaleMatrix = null;
       logger.log("scale2 died");
     }
   }
@@ -417,7 +417,7 @@ class PdbReader extends ModelReader {
     try {
       scale(2);
     } catch (Exception e) {
-      model.pdbScaleMatrix = null;
+      atomSetCollection.pdbScaleMatrix = null;
       logger.log("scale3 died");
     }
   }

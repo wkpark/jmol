@@ -33,36 +33,36 @@ class ModelResolver {
 
   static Object resolveModel(String name, BufferedReader bufferedReader,
                              ModelAdapter.Logger logger) throws Exception {
-    ModelReader modelReader;
-    String modelReaderName = determineModelReader(bufferedReader, logger);
-    logger.log("The model resolver thinks", modelReaderName);
+    AtomSetCollectionReader atomSetCollectionReader;
+    String atomSetCollectionReaderName = determineAtomSetCollectionReader(bufferedReader, logger);
+    logger.log("The model resolver thinks", atomSetCollectionReaderName);
     String className =
-      "org.jmol.adapter.smarter." + modelReaderName + "Reader";
+      "org.jmol.adapter.smarter." + atomSetCollectionReaderName + "Reader";
 
-    if (modelReaderName == null)
+    if (atomSetCollectionReaderName == null)
       return "unrecognized file format";
 
     try {
-      Class modelReaderClass = Class.forName(className);
-      modelReader = (ModelReader)modelReaderClass.newInstance();
+      Class atomSetCollectionReaderClass = Class.forName(className);
+      atomSetCollectionReader = (AtomSetCollectionReader)atomSetCollectionReaderClass.newInstance();
     } catch (Exception e) {
       String err = "Could not instantiate:" + className;
       logger.log(err);
       return err;
     }
 
-    modelReader.setLogger(logger);
-    modelReader.initialize();
+    atomSetCollectionReader.setLogger(logger);
+    atomSetCollectionReader.initialize();
 
-    Model model = modelReader.readModel(bufferedReader);
-    if (model.errorMessage != null)
-      return model.errorMessage;
-    if (model.atomCount == 0)
+    AtomSetCollection atomSetCollection = atomSetCollectionReader.readAtomSetCollection(bufferedReader);
+    if (atomSetCollection.errorMessage != null)
+      return atomSetCollection.errorMessage;
+    if (atomSetCollection.atomCount == 0)
       return "No atoms in file";
-    return model;
+    return atomSetCollection;
   }
 
-  static String determineModelReader(BufferedReader bufferedReader,
+  static String determineAtomSetCollectionReader(BufferedReader bufferedReader,
                                      ModelAdapter.Logger logger) throws Exception {
     String[] lines = new String[4];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);

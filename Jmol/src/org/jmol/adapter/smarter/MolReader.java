@@ -37,11 +37,11 @@ import java.io.BufferedReader;
  * </a>
  *<p>
  */
-class MolReader extends ModelReader {
+class MolReader extends AtomSetCollectionReader {
     
-  Model readModel(BufferedReader reader) throws Exception {
-    model = new Model("mol");
-    model.setModelName(reader.readLine());
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+    atomSetCollection = new AtomSetCollection("mol");
+    atomSetCollection.setModelName(reader.readLine());
     reader.readLine();
     reader.readLine();
     String countLine = reader.readLine();
@@ -49,7 +49,7 @@ class MolReader extends ModelReader {
     int bondCount = parseInt(countLine, 3, 6);
     readAtoms(reader, atomCount);
     readBonds(reader, bondCount);
-    return model;
+    return atomSetCollection;
   }
   
   void readAtoms(BufferedReader reader, int atomCount)
@@ -72,7 +72,7 @@ class MolReader extends ModelReader {
         if (chargeCode >= 1 && chargeCode <= 7)
           charge = 4 - chargeCode;
       }
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.formalCharge = charge;
       atom.x = x; atom.y = y; atom.z = z;
@@ -88,7 +88,7 @@ class MolReader extends ModelReader {
       int order = parseInt(line, 6, 9);
       if (order == 4)
         order = ModelAdapter.ORDER_AROMATIC;
-      model.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
+      atomSetCollection.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }
   }
 }

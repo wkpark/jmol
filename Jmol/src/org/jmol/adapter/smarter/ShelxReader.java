@@ -45,13 +45,13 @@ import java.io.BufferedReader;
  *
  */
 
-class ShelxReader extends ModelReader {
+class ShelxReader extends AtomSetCollectionReader {
 
   boolean endReached;
 
-  Model readModel(BufferedReader reader) throws Exception {
-    model = new Model("shelx");
-    model.coordinatesAreFractional = true;
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+    atomSetCollection = new AtomSetCollection("shelx");
+    atomSetCollection.coordinatesAreFractional = true;
 
     String line;
     int lineLength;
@@ -83,7 +83,7 @@ class ShelxReader extends ModelReader {
         }
       assumeAtomRecord(line);
     }
-    return model;
+    return atomSetCollection;
   }
 
   final static String[] supportedRecordTypes =
@@ -93,13 +93,13 @@ class ShelxReader extends ModelReader {
     throws Exception {
     switch(recordIndex) {
     case 0: // TITL
-      model.modelName = parseTrimmed(line, 4);
+      atomSetCollection.modelName = parseTrimmed(line, 4);
       break;
     case 1: // CELL
       cell(line);
       break;
     case 2: // SPGR
-      model.spaceGroup = parseTrimmed(line, 4);
+      atomSetCollection.spaceGroup = parseTrimmed(line, 4);
       break;
     case 3: // END
       endReached = true;
@@ -116,8 +116,8 @@ class ShelxReader extends ModelReader {
     float[] notionalUnitcell = new float[6];
     for (int i = 0; i < 6; ++i)
       notionalUnitcell[i] = parseFloat(line, ichNextParse);
-    model.wavelength = wavelength;
-    model.notionalUnitcell = notionalUnitcell;
+    atomSetCollection.wavelength = wavelength;
+    atomSetCollection.notionalUnitcell = notionalUnitcell;
   }
 
   void assumeAtomRecord(String line) {
@@ -132,7 +132,7 @@ class ShelxReader extends ModelReader {
       float c = parseFloat(line, ichNextParse);
       // skip the rest
       
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName;
       atom.scatterFactor = scatterFactor;
       atom.x = a;

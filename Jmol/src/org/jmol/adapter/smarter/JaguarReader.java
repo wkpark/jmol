@@ -32,11 +32,11 @@ import java.util.StringTokenizer;
  * Jaguar reader tested for the two samples files in CVS. Both
  * these files were created with Jaguar version 4.0, release 20.
  */
-class JaguarReader extends ModelReader {
+class JaguarReader extends AtomSetCollectionReader {
     
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
-    model = new Model("jaguar");
+    atomSetCollection = new AtomSetCollection("jaguar");
 
     try {
       String line;
@@ -51,13 +51,13 @@ class JaguarReader extends ModelReader {
       }
     } catch (Exception ex) {
       ex.printStackTrace();
-      model.errorMessage = "Could not read file:" + ex;
-      return model;
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
+      return atomSetCollection;
     }
-    if (model.atomCount == 0) {
-      model.errorMessage = "No atoms in file";
+    if (atomSetCollection.atomCount == 0) {
+      atomSetCollection.errorMessage = "No atoms in file";
     }
-    return model;
+    return atomSetCollection;
   }
 
   int atomCount;
@@ -65,7 +65,7 @@ class JaguarReader extends ModelReader {
 
   void readAtoms(BufferedReader reader) throws Exception {
     // we only take the last set of atoms before the frequencies
-    model.discardPreviousAtoms();
+    atomSetCollection.discardPreviousAtoms();
     atomCount = 0;
     modelCount = 1;
     // start parsing the atoms
@@ -89,7 +89,7 @@ class JaguarReader extends ModelReader {
         elementSymbol = atomName.substring(0, 2);
       else
         elementSymbol = atomName.substring(0, 1);
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       atom.x = x; atom.y = y; atom.z = z;
@@ -168,7 +168,7 @@ class JaguarReader extends ModelReader {
       if (modelNumber > 1)
         createNewModel(modelNumber);
     }
-    Atom atom = model.atoms[(modelNumber - 1) * atomCount +
+    Atom atom = atomSetCollection.atoms[(modelNumber - 1) * atomCount +
                             atomCenterNumber - 1];
     atom.vectorX = x;
     atom.vectorY = y;
@@ -177,9 +177,9 @@ class JaguarReader extends ModelReader {
 
   void createNewModel(int modelNumber) {
     modelCount = modelNumber - 1;
-    Atom[] atoms = model.atoms;
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < atomCount; ++i) {
-      Atom atomNew = model.newCloneAtom(atoms[i]);
+      Atom atomNew = atomSetCollection.newCloneAtom(atoms[i]);
       atomNew.modelNumber = modelNumber;
     }
   }

@@ -30,13 +30,13 @@ import org.jmol.api.ModelAdapter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
-class JmeReader extends ModelReader {
+class JmeReader extends AtomSetCollectionReader {
 
   String line;
   StringTokenizer tokenizer;
   
-  Model readModel(BufferedReader reader) throws Exception {
-    model = new Model("jme");
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+    atomSetCollection = new AtomSetCollection("jme");
 
     try {
       line = reader.readLine();
@@ -44,14 +44,14 @@ class JmeReader extends ModelReader {
       int atomCount = parseInt(tokenizer.nextToken());
       System.out.println("atomCount=" + atomCount);
       int bondCount = parseInt(tokenizer.nextToken());
-      model.setModelName("JME");
+      atomSetCollection.setModelName("JME");
       readAtoms(atomCount);
       readBonds(bondCount);
     } catch (Exception ex) {
-      model.errorMessage = "Could not read file:" + ex;
-      logger.log(model.errorMessage);
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
+      logger.log(atomSetCollection.errorMessage);
     }
-    return model;
+    return atomSetCollection;
   }
     
   void readAtoms(int atomCount) throws Exception {
@@ -65,7 +65,7 @@ class JmeReader extends ModelReader {
       float x = parseFloat(tokenizer.nextToken());
       float y = parseFloat(tokenizer.nextToken());
       float z = 0;
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.x = x; atom.y = y; atom.z = z;
     }
@@ -83,7 +83,7 @@ class JmeReader extends ModelReader {
                  ? ModelAdapter.ORDER_STEREO_NEAR
                  : ModelAdapter.ORDER_STEREO_FAR);
       }
-      model.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
+      atomSetCollection.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }
   }
 }

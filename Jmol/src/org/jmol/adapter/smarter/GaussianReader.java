@@ -28,7 +28,7 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
-class GaussianReader extends ModelReader {
+class GaussianReader extends AtomSetCollectionReader {
   // offset of atomic number in coordinate line
   private final static int STD_ORIENTATION_ATOMIC_NUMBER_OFFSET = 1;
   // the offset of the first X vector of the first frequency in the frequency output
@@ -44,9 +44,9 @@ class GaussianReader extends ModelReader {
   // a single frequency calculation can not go to the first frequency
 
   
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
-    model = new Model("gaussian");
+    atomSetCollection = new AtomSetCollection("gaussian");
 
     try {
       String line;
@@ -77,13 +77,13 @@ class GaussianReader extends ModelReader {
       }
     } catch (Exception ex) {
       ex.printStackTrace();
-      model.errorMessage = "Could not read file:" + ex;
-      return model;
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
+      return atomSetCollection;
     }
-    if (model.atomCount == 0) {
-      model.errorMessage = "No atoms in file";
+    if (atomSetCollection.atomCount == 0) {
+      atomSetCollection.errorMessage = "No atoms in file";
     }
-    return model;
+    return atomSetCollection;
   }
 
 /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
@@ -122,7 +122,7 @@ class GaussianReader extends ModelReader {
     while ((line = reader.readLine()) != null &&
            !line.startsWith(" --")) {
       tokens = getTokens(line); // get the tokens in the line
-      Atom atom = model.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom();
       atom.modelNumber = modelCount;  // associate that current model number
       atom.elementNumber = (byte)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
       if (atom.elementNumber < 0)
@@ -215,7 +215,7 @@ class GaussianReader extends ModelReader {
       }
       for (int i = nNewModels; --i >= 0; )
         duplicateLastModel();
-      int firstModelAtom = model.atomCount - nFreq * atomCount;
+      int firstModelAtom = atomSetCollection.atomCount - nFreq * atomCount;
       
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith(reader, " Atom AN");
@@ -226,7 +226,7 @@ class GaussianReader extends ModelReader {
         int atomCenterNumber = parseInt(tokens[0]);
         for (int j = 0, offset=FREQ_FIRST_VECTOR_OFFSET; j < nFreq; ++j) {
           int atomOffset = firstModelAtom+j*atomCount + atomCenterNumber - 1 ;
-          Atom atom = model.atoms[atomOffset];
+          Atom atom = atomSetCollection.atoms[atomOffset];
           atom.vectorX = parseFloat(tokens[offset++]);
           atom.vectorY = parseFloat(tokens[offset++]);
           atom.vectorZ = parseFloat(tokens[offset++]);
@@ -251,18 +251,18 @@ class GaussianReader extends ModelReader {
 */
   void readPartialCharges(BufferedReader reader) throws Exception {
     discardLines(reader, 1);
-    for (int i = atomCount, atomOffset = model.atomCount - atomCount; --i >= 0; ++atomOffset)
-      model.atoms[atomOffset].partialCharge =
+    for (int i = atomCount, atomOffset = atomSetCollection.atomCount - atomCount; --i >= 0; ++atomOffset)
+      atomSetCollection.atoms[atomOffset].partialCharge =
         parseFloat(getTokens(reader.readLine())[2]);
   }
 
   // duplicate the last model
   private void duplicateLastModel() {
-    Atom[] atoms = model.atoms;
+    Atom[] atoms = atomSetCollection.atoms;
     modelCount++;  // new count of models is increased
-    int atomOffset = model.atomCount - atomCount; // first atom to be duplicated
+    int atomOffset = atomSetCollection.atomCount - atomCount; // first atom to be duplicated
     for (int i = atomCount; --i >= 0;) {
-      Atom atomNew = model.newCloneAtom(atoms[atomOffset++]);
+      Atom atomNew = atomSetCollection.newCloneAtom(atoms[atomOffset++]);
       atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
     }
   }

@@ -46,7 +46,7 @@ public class SmarterModelAdapter extends ModelAdapter {
   final static int PDB = 3;
 
   public void finish(Object clientFile) {
-    ((Model)clientFile).finish();
+    ((AtomSetCollection)clientFile).finish();
   }
 
   public Object openBufferedReader(String name,
@@ -56,11 +56,11 @@ public class SmarterModelAdapter extends ModelAdapter {
         ModelResolver.resolveModel(name, bufferedReader, logger);
       if (modelOrErrorMessage instanceof String)
         return modelOrErrorMessage;
-      if (modelOrErrorMessage instanceof Model) {
-        Model model = (Model)modelOrErrorMessage;
-        if (model.errorMessage != null)
-          return model.errorMessage;
-        return model;
+      if (modelOrErrorMessage instanceof AtomSetCollection) {
+        AtomSetCollection atomSetCollection = (AtomSetCollection)modelOrErrorMessage;
+        if (atomSetCollection.errorMessage != null)
+          return atomSetCollection.errorMessage;
+        return atomSetCollection;
       }
       return "unknown reader error";
     } catch (Exception e) {
@@ -70,15 +70,15 @@ public class SmarterModelAdapter extends ModelAdapter {
   }
 
   public String getFileTypeName(Object clientFile) {
-    return ((Model)clientFile).modelTypeName;
+    return ((AtomSetCollection)clientFile).modelTypeName;
   }
 
   public String getModelSetName(Object clientFile) {
-    return ((Model)clientFile).modelName;
+    return ((AtomSetCollection)clientFile).modelName;
   }
 
   public String getModelFileHeader(Object clientFile) {
-    return ((Model)clientFile).fileHeader;
+    return ((AtomSetCollection)clientFile).fileHeader;
   }
 
   /****************************************************************
@@ -86,57 +86,57 @@ public class SmarterModelAdapter extends ModelAdapter {
    ****************************************************************/
 
   public int getEstimatedAtomCount(Object clientFile) {
-    return ((Model)clientFile).atomCount;
+    return ((AtomSetCollection)clientFile).atomCount;
   }
 
   public boolean coordinatesAreFractional(Object clientFile) {
-    return ((Model)clientFile).coordinatesAreFractional;
+    return ((AtomSetCollection)clientFile).coordinatesAreFractional;
   }
 
   public float[] getNotionalUnitcell(Object clientFile) {
-    return ((Model)clientFile).notionalUnitcell;
+    return ((AtomSetCollection)clientFile).notionalUnitcell;
   }
 
   public float[] getPdbScaleMatrix(Object clientFile) {
-    return ((Model)clientFile).pdbScaleMatrix;
+    return ((AtomSetCollection)clientFile).pdbScaleMatrix;
   }
 
   public float[] getPdbScaleTranslate(Object clientFile) {
-    return ((Model)clientFile).pdbScaleTranslate;
+    return ((AtomSetCollection)clientFile).pdbScaleTranslate;
   }
 
   public ModelAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
-    return new AtomIterator((Model)clientFile);
+    return new AtomIterator((AtomSetCollection)clientFile);
   }
 
   public ModelAdapter.BondIterator
     getBondIterator(Object clientFile) {
-    return new BondIterator((Model)clientFile);
+    return new BondIterator((AtomSetCollection)clientFile);
   }
 
   public ModelAdapter.StructureIterator
     getStructureIterator(Object clientFile) {
-    Model model = (Model)clientFile;
-    return model.structureCount == 0 ? null : new StructureIterator(model);
+    AtomSetCollection atomSetCollection = (AtomSetCollection)clientFile;
+    return atomSetCollection.structureCount == 0 ? null : new StructureIterator(atomSetCollection);
   }
 
   /****************************************************************
    * the frame iterators
    ****************************************************************/
   class AtomIterator extends ModelAdapter.AtomIterator {
-    Model model;
+    AtomSetCollection atomSetCollection;
     int iatom;
     Atom atom;
 
-    AtomIterator(Model model) {
-      this.model = model;
+    AtomIterator(AtomSetCollection atomSetCollection) {
+      this.atomSetCollection = atomSetCollection;
       iatom = 0;
     }
     public boolean hasNext() {
-      if (iatom == model.atomCount)
+      if (iatom == atomSetCollection.atomCount)
         return false;
-      atom = model.atoms[iatom++];
+      atom = atomSetCollection.atoms[iatom++];
       return true;
     }
     public int getModelNumber() { return atom.modelNumber; }
@@ -169,20 +169,20 @@ public class SmarterModelAdapter extends ModelAdapter {
   }
 
   class BondIterator extends ModelAdapter.BondIterator {
-    Model model;
+    AtomSetCollection atomSetCollection;
     Atom[] atoms;
     Bond[] bonds;
     int ibond;
     Bond bond;
 
-    BondIterator(Model model) {
-      this.model = model;
-      atoms = model.atoms;
-      bonds = model.bonds;
+    BondIterator(AtomSetCollection atomSetCollection) {
+      this.atomSetCollection = atomSetCollection;
+      atoms = atomSetCollection.atoms;
+      bonds = atomSetCollection.bonds;
       ibond = 0;
     }
     public boolean hasNext() {
-      if (ibond == model.bondCount)
+      if (ibond == atomSetCollection.bondCount)
         return false;
       bond = bonds[ibond++];
       return true;
@@ -204,9 +204,9 @@ public class SmarterModelAdapter extends ModelAdapter {
     Structure structure;
     int istructure;
     
-    StructureIterator(Model model) {
-      structureCount = model.structureCount;
-      structures = model.structures;
+    StructureIterator(AtomSetCollection atomSetCollection) {
+      structureCount = atomSetCollection.structureCount;
+      structures = atomSetCollection.structures;
       istructure = 0;
     }
 

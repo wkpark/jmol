@@ -28,7 +28,7 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
-class NWChemReader extends ModelReader {
+class NWChemReader extends AtomSetCollectionReader {
 
   // multiplication factor to go from AU to Angstrom
   private final static float AU2ANGSTROM = (float) (1.0/1.889725989);  
@@ -38,9 +38,9 @@ class NWChemReader extends ModelReader {
   // it looks like model numbers really need to start with 1 and not 0 otherwise
   // a single frequency calculation can not go to the first frequency
   
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
-    model = new Model("nwchem");
+    atomSetCollection = new AtomSetCollection("nwchem");
 
     try {
       String line;
@@ -63,13 +63,13 @@ class NWChemReader extends ModelReader {
       }
     } catch (Exception ex) {
       ex.printStackTrace();
-      model.errorMessage = "Could not read file:" + ex;
-      return model;
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
+      return atomSetCollection;
     }
-    if (model.atomCount == 0) {
-      model.errorMessage = "No atoms in file";
+    if (atomSetCollection.atomCount == 0) {
+      atomSetCollection.errorMessage = "No atoms in file";
     }
-    return model;
+    return atomSetCollection;
   }
 
 // NWChem Output coordinates
@@ -93,7 +93,7 @@ class NWChemReader extends ModelReader {
     atomCount = 0; // we have no atoms for this model yet
     while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
-			Atom atom = model.addNewAtom();
+			Atom atom = atomSetCollection.addNewAtom();
 			atom.modelNumber = modelCount;  // associate that current model number
 			atom.atomName = fixTag(tokens[1]);
 			atom.x = parseFloat(tokens[3]);
@@ -125,7 +125,7 @@ class NWChemReader extends ModelReader {
     atomCount = 0; // we have no atoms for this model yet
     while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
-			Atom atom = model.addNewAtom();
+			Atom atom = atomSetCollection.addNewAtom();
 			atom.modelNumber = modelCount;  // associate that current model number
 			atom.atomName = fixTag(tokens[1]);
 			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
@@ -221,7 +221,7 @@ class NWChemReader extends ModelReader {
     atomCount = 0;           // start with 0 atoms...
     do {
       tokens = getTokens(line);
-			Atom atom = model.addNewAtom();
+			Atom atom = atomSetCollection.addNewAtom();
 			atom.modelNumber = modelCount;
 			atom.elementSymbol = tokens[0];
 			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
@@ -258,9 +258,9 @@ class NWChemReader extends ModelReader {
       for (int i = nNewModels; --i >= 0; )
         duplicateLastModel();
 
-      // firstModelAtom is the index in model.atoms that has the first atom
+      // firstModelAtom is the index in atomSetCollection.atoms that has the first atom
       // of the first model where the first to be read vibration needs to go
-      int firstModelAtom = model.atomCount - nFreq*atomCount;
+      int firstModelAtom = atomSetCollection.atomCount - nFreq*atomCount;
       
       discardLines(reader, 1);      // skip over empty line
       
@@ -270,7 +270,7 @@ class NWChemReader extends ModelReader {
         line = reader.readLine();
         tokens = getTokens(line);
         for (int j = 0; j < nFreq; ++j) {
-					Atom atom = model.atoms[firstModelAtom+j*atomCount + i/3];
+					Atom atom = atomSetCollection.atoms[firstModelAtom+j*atomCount + i/3];
 					float val = parseFloat(tokens[j+1]);
 					switch (i%3) {
 						case 0:
@@ -298,11 +298,11 @@ class NWChemReader extends ModelReader {
 
 // duplicate the last model 
   private void duplicateLastModel() {
-    Atom[] atoms = model.atoms;
-    int atomOffset = model.atomCount - atomCount; // first atom to be duplicated
+    Atom[] atoms = atomSetCollection.atoms;
+    int atomOffset = atomSetCollection.atomCount - atomCount; // first atom to be duplicated
     modelCount++;  // new count of models is increased
     for (int i = atomCount; --i >= 0 ;) {
-      Atom atomNew = model.newCloneAtom(atoms[atomOffset++]);
+      Atom atomNew = atomSetCollection.newCloneAtom(atoms[atomOffset++]);
       atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
     }
   }

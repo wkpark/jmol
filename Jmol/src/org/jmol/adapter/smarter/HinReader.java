@@ -42,18 +42,18 @@ import java.io.BufferedReader;
  * interesting fields are partialCharge, x, y, z, bondCount<br />
  * bonds are atom number and s/d/t/a for single/double/triple/aromatic
  */
-class HinReader extends ModelReader {
+class HinReader extends AtomSetCollectionReader {
   
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
     
-    model = new Model("hin");
+    atomSetCollection = new AtomSetCollection("hin");
     
     readAtoms(reader);
     if (errorMessage != null)
-      model.errorMessage = errorMessage;
-    else if (model.atomCount == 0)
-      model.errorMessage = "No atoms in file";
-    return model;
+      atomSetCollection.errorMessage = errorMessage;
+    else if (atomSetCollection.atomCount == 0)
+      atomSetCollection.errorMessage = "No atoms in file";
+    return atomSetCollection;
   }
   
   String errorMessage;
@@ -86,9 +86,9 @@ class HinReader extends ModelReader {
   }
 
   void processMol(String line) {
-    model.setModelName(getMolName(line));
+    atomSetCollection.setModelName(getMolName(line));
     atomIndex = 0;
-    baseAtomIndex = model.atomCount;
+    baseAtomIndex = atomSetCollection.atomCount;
     ++modelNumber;
   }
 
@@ -107,7 +107,7 @@ class HinReader extends ModelReader {
       return;
     }
 
-    Atom atom = model.addNewAtom();
+    Atom atom = atomSetCollection.addNewAtom();
     atom.modelNumber = modelNumber;
     parseToken(line, ichNextParse); // discard
     atom.elementSymbol = parseToken(line, ichNextParse);
@@ -143,7 +143,7 @@ class HinReader extends ModelReader {
           " atom #" + fileAtomNumber;
         return;
       }
-      model.addNewBond(baseAtomIndex + atomIndex,
+      atomSetCollection.addNewBond(baseAtomIndex + atomIndex,
                        baseAtomIndex + otherAtomNumber - 1,
                        bondOrder);
     }

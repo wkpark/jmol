@@ -37,12 +37,12 @@ import org.jmol.api.ModelAdapter;
 /**
  * A CML2 Reader, it does not support the old CML1 architecture.
  */
-class CmlReader extends ModelReader {
+class CmlReader extends AtomSetCollectionReader {
 
-  Model readModel(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
     SAXParserFactory spf = SAXParserFactory.newInstance();
     SAXParser saxp = spf.newSAXParser();
-    model = new Model("cml");
+    atomSetCollection = new AtomSetCollection("cml");
 
     XMLReader xmlr = saxp.getXMLReader();
     //    System.out.println("opening InputSource");
@@ -60,10 +60,10 @@ class CmlReader extends ModelReader {
 
     xmlr.parse(is);
     
-    if (model.atomCount == 0) {
-      model.errorMessage = "No atoms in file";
+    if (atomSetCollection.atomCount == 0) {
+      atomSetCollection.errorMessage = "No atoms in file";
     }
-    return model;
+    return atomSetCollection;
   }
 
   class CmlHandler extends DefaultHandler implements ErrorHandler {
@@ -291,7 +291,7 @@ class CmlReader extends ModelReader {
                            tokenCount + " order:" + order);
         */
         if (tokenCount == 2 && order > 0)
-          model.addNewBond(tokens[0], tokens[1], order);
+          atomSetCollection.addNewBond(tokens[0], tokens[1], order);
         return;
       }
       if ("bondArray".equals(localName)) {
@@ -306,11 +306,11 @@ class CmlReader extends ModelReader {
           } else if ("atomRef1".equals(attLocalName)) {
             breakOutBondTokens(attValue);
             for (int j = tokenCount; --j >= 0; )
-              bondArray[j].atomIndex1 = model.getAtomNameIndex(tokens[j]);
+              bondArray[j].atomIndex1 = atomSetCollection.getAtomNameIndex(tokens[j]);
           } else if ("atomRef2".equals(attLocalName)) {
             breakOutBondTokens(attValue);
             for (int j = tokenCount; --j >= 0; )
-              bondArray[j].atomIndex2 = model.getAtomNameIndex(tokens[j]);
+              bondArray[j].atomIndex2 = atomSetCollection.getAtomNameIndex(tokens[j]);
           }
         }
         return;
@@ -344,7 +344,7 @@ class CmlReader extends ModelReader {
       if ("atom".equals(localName)) {
         if (atom.elementSymbol != null &&
             ! Float.isNaN(atom.z)) {
-          model.addAtomWithMappedName(atom);
+          atomSetCollection.addAtomWithMappedName(atom);
           /*
           System.out.println(" I just added an atom of type "
                              + atom.elementSymbol +
@@ -357,7 +357,7 @@ class CmlReader extends ModelReader {
       }
       if ("crystal".equals(localName)) {
         elementContext = UNSET;
-        model.notionalUnitcell = notionalUnitcell;
+        atomSetCollection.notionalUnitcell = notionalUnitcell;
         return;
       }
       if ("scalar".equals(localName)) {
@@ -396,14 +396,14 @@ class CmlReader extends ModelReader {
           Atom atom = atomArray[i];
           if (atom.elementSymbol != null &&
               ! Float.isNaN(atom.z))
-            model.addAtomWithMappedName(atom);
+            atomSetCollection.addAtomWithMappedName(atom);
         }
         return;
       }
       if ("bondArray".equals(localName)) {
         //        System.out.println("adding bondArray:" + bondCount);
         for (int i = 0; i < bondCount; ++i)
-          model.addBond(bondArray[i]);
+          atomSetCollection.addBond(bondArray[i]);
         return;
       }
     }

@@ -57,6 +57,15 @@ class Colix {
     for (int i = colixMax; --i >= 0; )
       if (argb == argbs[i])
         return (short)i;
+    return allocateColix(argb);
+  }
+
+  synchronized static short allocateColix(int argb) {
+    // double-check to make sure that someone else did not allocate
+    // something of the same color while we were waiting for the lock
+    for (int i = colixMax; --i >= 0; )
+      if (argb == argbs[i])
+        return (short)i;
     if (colixMax == argbs.length) {
       int oldSize = argbs.length;
       int[] t0 = new int[oldSize * 2];

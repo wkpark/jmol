@@ -54,6 +54,7 @@ public class Frame {
   int bondCount = 0;
   public Bond[] bonds;
   public float[] notionalUnitcell;
+  public Matrix3f matrixNotional;
   public Matrix3f crystalScaleMatrix;
   public Matrix3f crystalScaleMatrixTranspose;
   public Vector3f crystalTranslateVector;
@@ -83,7 +84,7 @@ public class Frame {
 
   public void freeze() {
     htAtomMap = null;
-    if (crystalScaleMatrix != null)
+    if (notionalUnitcell != null)
       doUnitcellStuff();
     if (viewer.getAutoBond()) {
       if ((bondCount == 0) ||
@@ -852,14 +853,63 @@ public class Frame {
   }
 
   void constructFractionalMatrices() {
-    matrixEuclideanToFractional = new Matrix3f();
-    matrixEuclideanToFractional.transpose(crystalScaleMatrix);
-    System.out.println("matrixEuclideanToFractional\n" +
+    System.out.println("constructFractionalMatrices()");
+    matrixNotional = new Matrix3f();
+    calcNotionalMatrix(notionalUnitcell, matrixNotional);
+    if (crystalScaleMatrix != null) {
+      System.out.println("using PDB Scale matrix");
+      matrixEuclideanToFractional = new Matrix3f();
+      matrixEuclideanToFractional.transpose(crystalScaleMatrix);
+      matrixFractionalToEuclidean = new Matrix3f();
+      matrixFractionalToEuclidean.invert(matrixEuclideanToFractional);
+    } else {
+      System.out.println("using notional unit cell");
+      matrixFractionalToEuclidean = matrixNotional;
+      matrixEuclideanToFractional = new Matrix3f();
+      matrixEuclideanToFractional.invert(matrixFractionalToEuclidean);
+    }
+    System.out.println("matrixNotional\n" +
+                       matrixNotional +
+                       "matrixFractionalToEuclidean\n" +
+                       matrixFractionalToEuclidean + "\n" +
+                       "matrixEuclideanToFractional\n" +
                        matrixEuclideanToFractional);
-    matrixFractionalToEuclidean = new Matrix3f();
-    matrixFractionalToEuclidean.invert(matrixEuclideanToFractional);
-    System.out.println("matrixFractionalToEuclidean\n" +
-                       matrixFractionalToEuclidean);
+  }
+
+  final static float toRadians = (float)Math.PI * 2 / 360;
+
+  void calcNotionalMatrix(float[] notionalUnitcell,
+                          Matrix3f matrixNotional) {
+    float gamma = notionalUnitcell[5];
+    float beta  = notionalUnitcell[4];
+    float alpha = notionalUnitcell[3];
+    float c = notionalUnitcell[2];
+    float b = notionalUnitcell[1];
+    float a = notionalUnitcell[0];
+    
+    /* some intermediate variablesn */
+    float cosAlpha = (float)Math.cos(toRadians * alpha);
+    float sinAlpha = (float)Math.sin(toRadians * alpha);
+    float cosBeta  = (float)Math.cos(toRadians * beta);
+    float sinBeta  = (float)Math.sin(toRadians * beta);
+    float cosGamma = (float)Math.cos(toRadians * gamma);
+    float sinGamma = (float)Math.sin(toRadians * gamma);
+    
+    
+    // 1. align the a axis with x axis
+    matrixNotional.setRow(0, a, 0, 0);
+    // 2. place the b is in xy plane making a angle gamma with a
+    matrixNotional.setRow(1, b * cosGamma, b * sinGamma, 0);
+    // 3. now the c axis,
+    // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
+    float V = a * b * c *
+      (float) Math.sqrt(1.0 - cosAlpha*cosAlpha -
+                        cosBeta*cosBeta -
+                        cosGamma*cosGamma +
+                        2.0*cosAlpha*cosBeta*cosGamma);
+    matrixNotional.
+      setRow(2, c * cosBeta,
+             c * (cosAlpha - cosBeta*cosGamma)/sinGamma, V/(a * b * sinGamma));
   }
 
   void putAtomsInsideUnitcell() {

@@ -20,6 +20,7 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.ArrayList;
@@ -43,8 +44,9 @@ public class ChemFrameRenderer {
    *
    * @param g the Graphics context to paint to
    */
-  public synchronized void paint(Graphics g, ChemFrame frame,
-      DisplaySettings settings, Matrix4f matrix) {
+  public synchronized void paint(Graphics g, Rectangle rectClip,
+                                 ChemFrame frame, DisplaySettings settings,
+                                 Matrix4f matrix) {
 
     int numAtoms = frame.getNumberOfAtoms();
     if (numAtoms <= 0) {
@@ -130,11 +132,10 @@ public class ChemFrameRenderer {
                   }
                 }
                 );
-    AtomShape.prepareRendering(g, settings);
+    AtomShape.prepareRendering(g, rectClip, settings);
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g);
     }
-
   }
 
   private int previousFrameHashCode;

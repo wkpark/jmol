@@ -20,6 +20,7 @@
 package org.openscience.jmol;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.Enumeration;
 
 /**
@@ -36,8 +37,8 @@ public class MeasureRenderer {
    *
    * @param g the Graphics context to paint to
    */
-  public synchronized void paint(Graphics g, ChemFrame frame,
-      DisplaySettings settings) {
+  public synchronized void paint(Graphics g, Rectangle rectClip,
+                                 ChemFrame frame, DisplaySettings settings) {
 
     if (frame.getDistanceMeasurements() != null) {
       Enumeration e = frame.getDistanceMeasurements().elements();

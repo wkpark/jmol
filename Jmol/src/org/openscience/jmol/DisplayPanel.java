@@ -25,8 +25,9 @@ import java.awt.RenderingHints;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.InputEvent;
@@ -75,6 +76,7 @@ public class DisplayPanel extends JPanel
 
   // current dimensions of the display screen
   private static Dimension dimCurrent = null;
+  private static final Rectangle rectClip = new Rectangle();
   private static int minScreenDimension;
   // previous dimensions ... used to detect resize operations
   private static Dimension dimPrevious = null;
@@ -413,7 +415,6 @@ public class DisplayPanel extends JPanel
   }
 
   public void paint(Graphics g) {
-    Graphics2D g2d = (Graphics2D) g;
     if (showPaintTime)
       startPaintClock();
 
@@ -425,29 +426,28 @@ public class DisplayPanel extends JPanel
     Color fg = getForeground();
 
     dimCurrent = getSize();
-
-    g2d.setColor(bg);
-    g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
+    rectClip.setBounds(0, 0, dimCurrent.width, dimCurrent.height);
+    g.getClipBounds(rectClip);
+    g.setColor(bg);
+    g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (chemframe != null) {
       if (! dimCurrent.equals(dimPrevious))
         scaleFitToScreen();
       if (antialiasCapable && settings.isAntiAliased() && !mouseDragged) {
+        Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                              RenderingHints.VALUE_RENDER_QUALITY);
       }
-      g2d.setColor(bg);
-      g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
-
       Matrix4f matrix = getViewTransformMatrix();
       settings.setAtomZOffset(dimCurrent.width / 2);
 
-      frameRenderer.paint(g2d, chemframe, settings, matrix);
-      measureRenderer.paint(g2d, chemframe, settings);
+      frameRenderer.paint(g, rectClip, chemframe, settings, matrix);
+      measureRenderer.paint(g, rectClip, chemframe, settings);
       if (rubberbandSelectionMode) {
-        g2d.setColor(fg);
-        g2d.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
+        g.setColor(fg);
+        g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
       }
       if (showPaintTime)
         stopPaintClock();

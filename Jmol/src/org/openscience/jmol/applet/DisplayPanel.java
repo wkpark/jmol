@@ -22,6 +22,7 @@ package org.openscience.jmol.applet;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -701,8 +702,9 @@ public class DisplayPanel extends Canvas
         g.setColor(bg);
         g.fillRect(0, 0, drawWidth, drawHeight);
         g.setColor(fg);
+        Rectangle rectClip = g.getClipBounds();
 
-        chemFrameRenderer.paint(g, chemframe, settings, mat);
+        chemFrameRenderer.paint(g, rectClip, chemframe, settings, mat);
 
         //chemframe.paint(g, settings);
         if (rubberband) {

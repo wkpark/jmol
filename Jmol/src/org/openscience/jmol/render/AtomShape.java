@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -110,7 +111,8 @@ public class AtomShape implements Shape {
   private static Graphics2D g2;
   private static ColorProfile colorProfile;
 
-  public static void prepareRendering(Graphics g, DisplaySettings ds) {
+  public static void prepareRendering(Graphics g, Rectangle rectClip,
+                                      DisplaySettings ds) {
     g2 = (Graphics2D) g;
     settings = ds;
     atomDrawMode = settings.getAtomDrawMode();

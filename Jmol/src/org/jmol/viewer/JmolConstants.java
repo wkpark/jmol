@@ -2058,7 +2058,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@solvent _g>=70 & _g<=74", // water or ions
     "@hoh water",
     "@water _g>=70 & _g<=72",
-    "@ions _g=70,_g=71",
+    "@ions _g=73,_g=74",
 
     //
     // structure related

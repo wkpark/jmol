@@ -25,6 +25,7 @@
 package org.openscience.jmol.viewer.protein;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.Atom;
+import org.openscience.jmol.viewer.JmolConstants;
 
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
@@ -57,41 +58,55 @@ public class PdbMolecule {
     if (structureRecords == null)
       return;
     for (int i = structureRecords.length; --i >= 0; ) {
-      String structure = structureRecords[i];
+      String structureRecord = structureRecords[i];
       byte type = PdbResidue.STRUCTURE_NONE;
       int chainIDIndex = 19;
       int startIndex = 0;
       int endIndex = 0;
-      if (structure.startsWith("HELIX ")) {
+      if (structureRecord.startsWith("HELIX ")) {
         type = PdbResidue.STRUCTURE_HELIX;
         startIndex = 21;
         endIndex = 33;
-      } else if (structure.startsWith("SHEET ")) {
+      } else if (structureRecord.startsWith("SHEET ")) {
         type = PdbResidue.STRUCTURE_SHEET;
         chainIDIndex = 21;
         startIndex = 22;
         endIndex = 33;
-      } else if (structure.startsWith("TURN  ")) {
+      } else if (structureRecord.startsWith("TURN  ")) {
         type = PdbResidue.STRUCTURE_TURN;
         startIndex = 20;
         endIndex = 31;
       } else
         continue;
 
-      int start = 0;
-      int end = -1;
-      try {
-        start = Integer.parseInt(structure.substring(startIndex, startIndex + 4).trim());
-        end = Integer.parseInt(structure.substring(endIndex, endIndex + 4).trim());
-      } catch (NumberFormatException e) {
+      PdbChain chain = getPdbChain(structureRecord.charAt(chainIDIndex));
+      if (chain == null) {
         System.out.println("secondary structure record error");
         continue;
       }
 
-      PdbChain chain = getPdbChain(structure.charAt(chainIDIndex));
-      if (chain == null) {
+      int start = 0;
+      int end = -1;
+      try {
+        start = Integer.parseInt(structureRecord.substring(startIndex,
+                                                     startIndex + 4).trim());
+        end = Integer.parseInt(structureRecord.substring(endIndex,
+                                                   endIndex + 4).trim());
+      } catch (NumberFormatException e) {
         System.out.println("secondary structure record error");
         continue;
+      }
+      PdbStructure structure;
+      switch(type) {
+      case PdbResidue.STRUCTURE_HELIX:
+        structure = new Helix(chain, start, end);
+        break;
+      case PdbResidue.STRUCTURE_SHEET:
+        structure = new Sheet(chain, start, end);
+        break;
+      case PdbResidue.STRUCTURE_TURN:
+        structure = new Turn(chain, start, end);
+        break;
       }
       chain.propogateSecondaryStructure(type, start, end);
     }
@@ -170,26 +185,31 @@ public class PdbMolecule {
 
 
   char chainIDCurrent = '\uFFFF';
-  int resNumberCurrent = -1;
+  short resNumberCurrent = -1;
   PdbResidue pdbResidueCurrent;
+  short residCurrent;
 
-  PdbResidue allocResidue(char chainID, int resNumber, String residue3) {
+  void setCurrentResidue(char chainID, short resNumber, String residue3) {
+    resNumberCurrent = resNumber;
+    chainIDCurrent = chainID;
     PdbChain chain = getOrAllocPdbChain(chainID);
-    PdbResidue residue = new PdbResidue(this, chainID, resNumber, residue3);
-    chain.addResidue(residue);
-    return residue;
+    residCurrent = PdbResidue.lookupResid(residue3);
+    pdbResidueCurrent = null;
+    if (residCurrent < JmolConstants.RESID_AMINO_MAX) {
+      pdbResidueCurrent =
+        new PdbResidue(this, chainID, resNumber, residCurrent);
+      chain.addResidue(pdbResidueCurrent);
+    }
   }
 
   public PdbAtom getPdbAtom(int atomIndex, String pdbRecord) {
     try {
       char chainID = pdbRecord.charAt(21);
-      int resNumber = Integer.parseInt(pdbRecord.substring(22, 26).trim());
-      if (chainID != chainIDCurrent || resNumber != resNumberCurrent) {
-        pdbResidueCurrent = allocResidue(chainID, resNumber, pdbRecord.substring(17, 20));
-        chainIDCurrent = chainID;
-        resNumberCurrent = resNumber;
-      }
-      return pdbResidueCurrent.newPdbAtom(atomIndex, pdbRecord);
+      short resNumber = Short.parseShort(pdbRecord.substring(22, 26).trim());
+      if (chainID != chainIDCurrent || resNumber != resNumberCurrent)
+        setCurrentResidue(chainID, resNumber, pdbRecord.substring(17, 20));
+      return new PdbAtom(atomIndex, pdbRecord,
+                         pdbResidueCurrent, residCurrent, resNumber);
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }

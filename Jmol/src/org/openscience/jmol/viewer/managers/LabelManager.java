@@ -139,11 +139,11 @@ public class LabelManager {
         break;
       case 'n':
         if (pdbatom != null)
-          strLabel += pdbatom.getResidue();
+          strLabel += pdbatom.getResidue3();
         break;
       case 'r':
         if (pdbatom != null)
-          strLabel += pdbatom.getResno();
+          strLabel += pdbatom.getResidueNumber();
         break;
       default:
         strLabel += "" + ch;

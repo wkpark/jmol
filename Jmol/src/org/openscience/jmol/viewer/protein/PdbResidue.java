@@ -42,26 +42,27 @@ public class PdbResidue {
   public byte structureType = STRUCTURE_NONE;
   int[] mainchainIndices;
 
-  public PdbResidue(PdbMolecule pdbmolecule, char chainID, int resNumber, String residue3) {
+  public PdbResidue(PdbMolecule pdbmolecule, char chainID,
+                    short resNumber, short resid) {
     this.pdbmolecule = pdbmolecule;
     this.chainID = chainID;
-    this.resNumber = (short) resNumber;
-    resid = lookupResid(residue3);
+    this.resNumber = resNumber;
+    this.resid = resid;
   }
 
   public void setStructureType(byte structureType) {
     this.structureType = structureType;
   }
 
-  public boolean isResidue(String residue3) {
+  public static boolean isResidue3(short resid, String residue3) {
     return residueNames3[resid].equalsIgnoreCase(residue3);
   }
 
-  public String getResidue3() {
+  public static String getResidue3(short resid) {
     return residueNames3[resid];
   }
 
-  public int getResidueNumber() {
+  public short getResidueNumber() {
     return resNumber;
   }
 
@@ -69,7 +70,7 @@ public class PdbResidue {
     return resid;
   }
 
-  public boolean isResidueNameMatch(String strWildcard) {
+  public static boolean isResidueNameMatch(short resid, String strWildcard) {
     if (strWildcard.length() != 3) {
       System.err.println("residue wildcard length != 3");
       return false;
@@ -83,10 +84,6 @@ public class PdbResidue {
         return false;
     }
     return true;
-  }
-
-  public int getResno() {
-    return resNumber;
   }
 
   public char getChainID() {
@@ -131,18 +128,19 @@ public class PdbResidue {
     return addResidueName(strRes3);
   }
 
-  PdbAtom newPdbAtom(int atomIndex, String pdbRecord) {
-    PdbAtom pdbatom = new PdbAtom(this, pdbRecord);
-    if (pdbatom.atomid <= 3) {
-      if (mainchainIndices == null) {
-        mainchainIndices = new int[4];
-        for (int i = 4; --i >= 0; )
-          mainchainIndices[i] = -1;
-      }
-      if (mainchainIndices[pdbatom.atomid] == -1)
-        mainchainIndices[pdbatom.atomid] = atomIndex;
+  boolean registerMainchainAtomIndex(short atomid, int atomIndex) {
+    if (mainchainIndices == null) {
+      mainchainIndices = new int[4];
+      for (int i = 4; --i >= 0; )
+        mainchainIndices[i] = -1;
     }
-    return pdbatom;
+    if (mainchainIndices[atomid] != -1) {
+      // my residue already has a mainchain atom with this atomid
+      // I must be an imposter
+      return false;
+    }
+    mainchainIndices[atomid] = atomIndex;
+    return true;
   }
 
   public int getAlphaCarbonIndex() {

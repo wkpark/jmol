@@ -32,45 +32,54 @@ public class PdbAtom {
 
   // FIXME mth -- a very quick/dirty/ugly implementation
   // just to get some complex queries running
-  public PdbResidue pdbResidue;
+  public PdbResidue residue;
   public String recordPdb;
   short atomid;
+  short resid;
+  short resNumber;
   int atomNumber;
 
-  public PdbAtom(PdbResidue pdbResidue, String recordPdb) {
-    this.pdbResidue = pdbResidue;
+  public PdbAtom(int atomIndex, String recordPdb,
+                 PdbResidue residue, short resid, short resNumber) {
     this.recordPdb = recordPdb;
+    this.residue = residue;
+    this.resid = resid;
+    this.resNumber = resNumber;
 
     atomid = lookupAtomid(recordPdb.substring(12, 16));
     atomNumber = -999999;
     try {
       atomNumber = Integer.parseInt(recordPdb.substring(6, 11).trim());
-    } catch (NumberFormatException e)
-      {}
+    } catch (NumberFormatException e) {
+    }
+    if (residue != null && atomid < JmolConstants.ATOMID_MAINCHAIN_MAX) {
+      if (! residue.registerMainchainAtomIndex(atomid, atomIndex))
+        atomid += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
+    }
   }
 
   public boolean isHetero() {
     return recordPdb.startsWith("HETATM");
   }
 
-  public boolean isResidue(String residue) {
-    return pdbResidue.isResidue(residue);
+  public boolean isResidue3(String residue3) {
+    return PdbResidue.isResidue3(resid, residue3);
   }
 
   public String getName() {
     return recordPdb.substring(12, 16).trim();
   }
 
-  public String getResidue() {
-    return pdbResidue.getResidue3();
+  public String getResidue3() {
+    return PdbResidue.getResidue3(resid);
   }
 
   public int getResidueNumber() {
-    return pdbResidue.getResidueNumber();
+    return resNumber;
   }
 
   public short getResID() {
-    return pdbResidue.resid;
+    return resid;
   }
 
   public short getAtomID() {
@@ -86,7 +95,7 @@ public class PdbAtom {
   }
 
   public boolean isResidueNameMatch(String strWildcard) {
-    return pdbResidue.isResidueNameMatch(strWildcard);
+    return PdbResidue.isResidueNameMatch(resid, strWildcard);
   }
 
   public boolean isAtomNameMatch(String strPattern) {
@@ -105,10 +114,6 @@ public class PdbAtom {
         return false;
     }
     return true;
-  }
-
-  public int getResno() {
-    return pdbResidue.getResno();
   }
 
   public int getTemperature() {
@@ -132,11 +137,12 @@ public class PdbAtom {
   }
 
   public void setStructureType(byte type) {
-    pdbResidue.structureType = type;
+    if (residue != null)
+      residue.structureType = type;
   }
 
   public int getProteinStructureType() {
-    return pdbResidue.structureType;
+    return residue != null ? residue.structureType : PdbResidue.STRUCTURE_NONE;
   }
 
   /*
@@ -183,6 +189,7 @@ public class PdbAtom {
   static short atomidMax = 0;
 
   static {
+    // this loop *must* run in forward direction;
     for (int i = 0; i < JmolConstants.predefinedAtomNames4.length; ++i)
       addAtomName(JmolConstants.predefinedAtomNames4[i]);
   }
@@ -235,7 +242,9 @@ public class PdbAtom {
     short atomid = atomidMax++;
     atomNames[atomid] = name;
     atomPrettyNames[atomid] = prettyName;
-    htAtom.put(name, new Short(atomid));
+    // if already exists then this is an imposter entry
+    if (htAtom.get(name) == null)
+      htAtom.put(name, new Short(atomid));
     return atomid;
   }
 

@@ -666,6 +666,7 @@ public class Eval implements Runnable {
     return bsHydrogen;
   }
 
+  /*
   BitSet getResidueSet(String strResidue) {
     Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
@@ -676,6 +677,7 @@ public class Eval implements Runnable {
     }
     return bsResidue;
   }
+  */
 
   BitSet getSpecName(String resNameSpec) {
     BitSet bsRes = new BitSet();
@@ -714,7 +716,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (number == pdbatom.getResno())
+      if (number == pdbatom.getResidueNumber())
         bsResno.set(i);
     }
     return bsResno;
@@ -727,7 +729,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      int atomResno = pdbatom.getResno();
+      int atomResno = pdbatom.getResidueNumber();
       if (atomResno >= resnoMin && atomResno <= resnoLast)
         bsResidue.set(i);
     }
@@ -884,7 +886,7 @@ public class Eval implements Runnable {
 
   int getResno(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getResno();
+    return (pdbatom == null) ? -1 : pdbatom.getResidueNumber();
   }
 
   int getTemperature(Atom atom) {

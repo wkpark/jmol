@@ -998,13 +998,26 @@ final public class JmolConstants {
     0xFFF6F675, // yellowtint
   };
 
+  public final static short ATOMID_MAINCHAIN_MAX = 4;
+  // some pdbfiles do not have sidechain atoms labeled properly
+  // we call these MAINCHAIN_IMPOSTERS
+  // the residue will accept the first atom with the proper name
+  // others will get their atomid changed
+  public final static short ATOMID_MAINCHAIN_IMPOSTERS = 4;
+
   public final static String[] predefinedAtomNames4 = {
     " N  ",  // 0
     " CA ",
     " C  ",
     " O  ", // 3
+    " N  ", // imposter N
+    " C  ", // imposter CA
+    " C  ", // imposter C
+    " O  ", // imposter O
   };
   
+  public final static short RESID_AMINO_MAX = 22;
+
   public final static String[] predefinedResidueNames3 = {
     // taken from PDB spec
     "ALA", // 0

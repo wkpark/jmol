@@ -61,7 +61,8 @@ public class Trace {
       for (int j = mainchain.length; --j >= 0; ) {
         if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
           if (mad < 0) {
-            if (mad == -4000) // -2.0 angstrom diameter -> -4000 milliangstroms diameter
+            // -2.0 angstrom diameter -> -4000 milliangstroms diameter
+            if (mad == -4000)
               mads[j] = 1000; // trace temperature goes here
             else
               mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 1500 : 500);
@@ -83,7 +84,9 @@ public class Trace {
         int atomIndex = mainchain[j].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))
           colixes[j] =
-            (colix == 0 ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette) : colix);
+            (colix == 0
+             ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
+             : colix);
       }
     }
   }

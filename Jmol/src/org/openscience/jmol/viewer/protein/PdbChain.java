@@ -88,7 +88,8 @@ public class PdbChain {
     return mainchain;
   }
 
-  void propogateSecondaryStructure(byte type, int startResidueNumber, int endResidueNumber) {
+  void propogateSecondaryStructure(byte type, int startResidueNumber,
+                                   int endResidueNumber) {
     for (int i = residueCount; --i >= 0; ) {
       PdbResidue residue = residues[i];
       int resNumber = residue.resNumber;

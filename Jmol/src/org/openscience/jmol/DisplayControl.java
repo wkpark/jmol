@@ -64,18 +64,17 @@ final public class DisplayControl {
     control = this;
   }
 
-  public static final int NOLABELS =  0;
-  public static final int SYMBOLS =   1;
-  public static final int TYPES =     2;
-  public static final int NUMBERS =   3;
-  public static final int QUICKDRAW = 0;
-  public static final int SHADING =   1;
-  public static final int WIREFRAME = 2;
-  public static final int LINE =      3;
-  public static final int ATOMTYPE =   0;
-  public static final int ATOMCHARGE = 1;
+  public final static int NOLABELS =  0;
+  public final static int SYMBOLS =   1;
+  public final static int TYPES =     2;
+  public final static int NUMBERS =   3;
+  public final static int QUICKDRAW = 0;
+  public final static int SHADING =   1;
+  public final static int WIREFRAME = 2;
+  public final static int LINE =      3;
+  public final static int ATOMTYPE =   0;
+  public final static int ATOMCHARGE = 1;
 
-  
   // while these variables are public, they should be considered *read-only*
   // to write these variables you *must* use the appropriate set function
   // they are currently used by Atom and AtomShape for transforms & rendering
@@ -409,6 +408,45 @@ final public class DisplayControl {
     if (this.zoomEnabled != zoomEnabled) {
       this.zoomEnabled = zoomEnabled;
       calcZoom();
+    }
+  }
+
+  public final static int SLABREJECT = 0;
+  public final static int SLABHALF = 1;
+  public final static int SLABHOLLOW = 2;
+  public final static int SLABSOLID = 3;
+  public final static int SLABSECTION = 4;
+
+  private boolean slabEnabled = false;
+  private int modeSlab;
+  private int slabPercentSetting = 100;
+
+  public boolean getSlabEnabled() {
+    return slabEnabled;
+  }
+
+  public void setSlabPercent(int percentSlab) {
+    this.slabPercentSetting = percentSlab;
+  }
+
+  public void setSlabEnabled(boolean slabEnabled) {
+    if (this.slabEnabled != slabEnabled) {
+      this.slabEnabled = slabEnabled;
+      calcSlab();
+    }
+  }
+
+  public void setModeSlab(int modeSlab) {
+    this.modeSlab = modeSlab;
+  }
+
+  public int getModeSlab() {
+    return modeSlab;
+  }
+
+  private void calcSlab() {
+    if (slabEnabled) {
+      
     }
   }
 

@@ -262,7 +262,7 @@ public class Jmol extends JPanel {
     // mth 2003 08 15
     // get rid of this property change listener for Animate.java
     // may break animations
-    // pcs.addPropertyChangeListener(anim);
+    pcs.addPropertyChangeListener(anim);
     say("Initializing Vibrate...");
     vib = new Vibrate(viewer, frame);
     // pcs.addPropertyChangeListener(vib);

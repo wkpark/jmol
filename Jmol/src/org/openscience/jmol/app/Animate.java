@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.app;
-import org.openscience.jmol.*;
+//import org.openscience.jmol.*;
 
 import org.openscience.jmol.viewer.JmolViewer;
 
@@ -79,16 +79,18 @@ public class Animate extends JDialog implements ActionListener,
   
   private Thread animThread = null;
   private boolean haveFile = false;
-  private int nframes = 1;
   private int speed = 10;
 
   private boolean repeat = true;
 
-  public static int currentFrame;
+  public static int currentFrame, nframes;
   private JSlider progressSlider = new JSlider(JSlider.HORIZONTAL, 1, 1, 1);
   private JSlider iSlider;
   private JLabel infoLabel = new JLabel(" ");
+  /*
+  private Object inFile,
   private ChemFile inFile, cf;
+  */
 
   // The actions:
 
@@ -100,12 +102,10 @@ public class Animate extends JDialog implements ActionListener,
   private void restoreInFile() {
 
     currentFrame = 0;
-    cf = inFile;
-    haveFile = inFile != null;
+    nframes = viewer.getNumberOfFrames();
+    haveFile = nframes > 0;
     if (haveFile) {
-      nframes = inFile.getNumberOfFrames();
       progressSlider.setMaximum(nframes);
-      haveFile = true;
       //      viewer.setClientFile("Animate1", cf);
       setFrame(currentFrame, true);
     } else {
@@ -115,6 +115,7 @@ public class Animate extends JDialog implements ActionListener,
 
   private void createExtraFrames() {
 
+    /*
     restoreInFile();
     if (nframes < 2) {
       return;
@@ -242,6 +243,7 @@ public class Animate extends JDialog implements ActionListener,
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
     viewer.setClientFile(null, "Animate2", cf);
+    */
   }
 
   /**
@@ -249,11 +251,11 @@ public class Animate extends JDialog implements ActionListener,
    *
    * @param cf the ChemFile
    */
-  private void setChemFile(ChemFile cf) {
+  private void setChemFile(/*ChemFile cf*/) {
 
     stop();
     setVisible(false);
-    this.inFile = cf;
+    //    this.inFile = cf;
     restoreInFile();
     if (nframes > 1) {
       animateAction.setEnabled(true);
@@ -626,12 +628,15 @@ public class Animate extends JDialog implements ActionListener,
   synchronized void setFrame(int which, boolean setSlider) {
 
     viewer.setFrame(which);
+    /*
+    System.out.println("which=" + which);
     ChemFile file = (ChemFile)viewer.getClientFile();
     ChemFrame frame = file.getFrame(viewer.getCurrentFrameNumber());
     String inf = frame.getInfo();
     if (inf != null) {
       infoLabel.setText(inf);
     }
+    */
     if (setSlider) {
       progressSlider.setValue(which + 1);
     }
@@ -704,9 +709,12 @@ public class Animate extends JDialog implements ActionListener,
   public void propertyChange(PropertyChangeEvent event) {
     
     if (event.getPropertyName().equals(Jmol.chemFileProperty)) {
+      setChemFile();
+      /*
       if (event.getNewValue() != inFile && event.getNewValue() != cf) {
         setChemFile((ChemFile) event.getNewValue());
       }
+      */
     }
   }
 }

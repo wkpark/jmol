@@ -147,6 +147,7 @@ public class ModelManager {
 
   public void setFrame(int frameNumber) {
     if (haveFile && frameNumber >= 0 && frameNumber < frameCount) {
+      currentFrameNumber = frameNumber;
       frame = frames[frameNumber];
       if (frame == null)
         frame = frames[frameNumber] =

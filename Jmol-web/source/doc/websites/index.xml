@@ -33,6 +33,22 @@
 	</li>
       </ul>
     </section>
+
+    <section title="Applications with embedded Jmol">
+      <p>
+	Jmol can easily be integrated into existing applications.
+	The following are some links to applications that
+	have embedded Jmol.
+      </p>
+      <ul>
+	<li>
+	  <a href="http://www.charite.de/bioinf/strap">
+	    STRAP - Structural Alignment Program for Proteins
+	  </a>
+	</li>
+      </ul>
+    </section>
+	
       
     <section title="Directly Related Documentation Links">
       <ul>

@@ -25,6 +25,8 @@
 
 // for documentation see www.jmol.org/jslibrary
 
+var undefined; // for IE 5 ... wherein undefined is undefined
+
 ////////////////////////////////////////////////////////////////
 // Basic Scripting infrastruture
 ////////////////////////////////////////////////////////////////
@@ -579,4 +581,3 @@ function _testBrowserCheck() {
   }
   document.writeln("</pre>");
 }
-                                                                                

@@ -6,12 +6,20 @@
     <header>
       <p>
 	Jmol is a free, open source molecule viewer.
-      </p>
-      <p>
-	The JmolApplet is a web browser applet that can be integrated into
-	web pages. The Jmol application is a standalone Java application
-	that runs on the desktop. The JmolViewer can also be integrated
-	into other Java applications.
+	<ul>
+	  <li>
+	    The JmolApplet is a web browser applet that can be
+	    integrated into web pages.
+	  </li>
+	  <li>
+	    The Jmol application is a standalone Java application
+	    that runs on the desktop.
+	  </li>
+	  <li>
+	    The JmolViewer can also be integrated
+	    into other Java applications.
+	  </li>
+	</ul>
       </p>
     </header>
 

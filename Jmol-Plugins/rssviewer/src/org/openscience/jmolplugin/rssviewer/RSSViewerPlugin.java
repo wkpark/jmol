@@ -22,16 +22,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.plugin;
+package org.openscience.cdk.applications.plugin;
 
-import org.openscience.jmol.ChemFile;
-import org.openscience.jmol.ChemFrame;
-import org.openscience.jmol.Convertor;
-import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.app.SortedTableModel;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.ChemSequence;
+import org.openscience.cdk.ChemFile;
+import org.openscience.cdk.applications.swing.SortedTableModel;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.io.ChemicalRSSReader;
 import org.openscience.cdk.tools.ChemModelManipulator;
@@ -63,18 +60,18 @@ import javax.swing.table.AbstractTableModel;
  * Plugin that can read RSS sources and extract molecular content
  * in the CML2 format from it.
  *
- * @author Egon Willighagen
+ * @author Egon Willighagen <egonw@sci.kun.nl>
  */
-public class RSSViewerPlugin implements JmolPluginInterface {
+public class RSSViewerPlugin implements CDKPluginInterface {
 
-    private DisplayControl control = null;
+    private CDKEditBus editBus = null;
     private Vector channels = null;
     private JTree rssTree = null;
     private RSSContentModel channelContent = null;
     private SortedTableModel sortedContent = null;
     
-    public void setDisplayControl(DisplayControl control) {
-        this.control = control;
+    public void setEditBus(CDKEditBus editBus) {
+        this.editBus = editBus;
     }
     
     public void start() {
@@ -192,15 +189,15 @@ public class RSSViewerPlugin implements JmolPluginInterface {
                 } else {
                     int selectedRow = lsm.getMinSelectionIndex();
                     ChemModel model = channelContent.getValueAt(sortedContent.getSortedIndex(selectedRow));
-                    AtomContainer container = ChemModelManipulator.getAllInOneContainer(model);
-                    ChemFrame frame = Convertor.convert(control, container);
-                    ChemFile file = new ChemFile(control, true);
-                    file.addFrame(frame);
-                    control.setChemFile(file);
+                    ChemSequence sequence = new ChemSequence();
+                    sequence.addChemModel(model);
+                    ChemFile file = new ChemFile();
+                    file.addChemSequence(sequence);
+                    editBus.showChemFile(file);
                 }
             }
         });
-        
+
         channelTable.validate();
         JScrollPane contentPane = new JScrollPane(channelTable);
         contentPane.validate();

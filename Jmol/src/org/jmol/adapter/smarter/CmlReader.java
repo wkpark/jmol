@@ -73,12 +73,12 @@ class CmlReader extends ModelReader {
     int moleculeCount = 0;
     Atom atom;
     float[] notionalUnitcell;
-    
+
     // the same atom array gets reused
     // it will grow to the maximum length;
     // atomCount holds the current number of atoms
     int atomCount;
-    Atom[] atomArray = new Atom[16];
+    Atom[] atomArray = new Atom[100];
     
     // the same string array gets reused
     // tokenCount holds the current number of tokens
@@ -114,15 +114,23 @@ class CmlReader extends ModelReader {
           tokens[i] = null;
         }
       }
+    }
+    
+
+    void breakOutAtomTokens(String str) {
+      breakOutTokens(str);
       checkAtomArrayLength(tokenCount);
     }
     
     void checkAtomArrayLength(int newAtomCount) {
-      if (newAtomCount > atomCount) {
+      if (atomCount == 0) {
         if (newAtomCount > atomArray.length)
-          atomArray = (Atom[])setLength(atomArray, newAtomCount);
-        while (atomCount < newAtomCount)
-          atomArray[atomCount++] = new Atom();
+          atomArray = new Atom[newAtomCount];
+        for (int i = newAtomCount; --i >= 0; )
+          atomArray[i] = new Atom();
+        atomCount = newAtomCount;
+      } else if (newAtomCount != atomCount) {
+        throw new IndexOutOfBoundsException("bad atom attribute length");
       }
     }
 
@@ -138,8 +146,8 @@ class CmlReader extends ModelReader {
       throws SAXException
     {
       /*
-      System.out.println("startElement(" + namespaceURI + "," + localName +
-                         "," + qName + "," + atts +  ")");
+        System.out.println("startElement(" + namespaceURI + "," + localName +
+        "," + qName + "," + atts +  ")");
       */
       if ("molecule".equals(qName)) {
         ++moleculeCount;
@@ -167,29 +175,43 @@ class CmlReader extends ModelReader {
         atomCount = 0;
         for (int i=0; i<atts.getLength(); i++) {
           if ("atomID".equals(atts.getLocalName(i))) {
-            breakOutTokens(atts.getValue(i));
+            breakOutAtomTokens(atts.getValue(i));
             for (int j = 0; j < tokenCount; ++j)
               atomArray[j].atomName = tokens[j];
           } else if ("x3".equals(atts.getLocalName(i))) {
-            breakOutTokens(atts.getValue(i));
+            breakOutAtomTokens(atts.getValue(i));
             for (int j = 0; j < tokenCount; ++j)
               atomArray[j].x = parseFloat(tokens[j]);
           } else if ("y3".equals(atts.getLocalName(i))) {
-            breakOutTokens(atts.getValue(i));
+            breakOutAtomTokens(atts.getValue(i));
             for (int j = 0; j < tokenCount; ++j)
               atomArray[j].y = parseFloat(tokens[j]);
           } else if ("z3".equals(atts.getLocalName(i))) {
-            breakOutTokens(atts.getValue(i));
+            breakOutAtomTokens(atts.getValue(i));
             for (int j = 0; j < tokenCount; ++j)
               atomArray[j].z = parseFloat(tokens[j]);
           } else if ("elementType".equals(atts.getLocalName(i))) {
-            breakOutTokens(atts.getValue(i));
+            breakOutAtomTokens(atts.getValue(i));
             for (int j = 0; j < tokenCount; ++j)
               atomArray[j].elementSymbol = tokens[j];
           }
         }
         for (int j = 0; j < atomCount; ++j)
           atomArray[j].modelNumber = moleculeCount;
+        return;
+      }
+      if ("bond".equals(qName)) {
+        //  <bond atomRefs2="a20 a21" id="b41" order="2"/>
+        int order = -1;
+        for (int i=0; i<atts.getLength(); i++) {
+          if ("atomRefs2".equals(atts.getLocalName(i))) {
+            breakOutTokens(atts.getValue(i));
+          } else if ("order".equals(atts.getLocalName(i))) {
+            order = parseInt(atts.getValue(i));
+          }
+        }
+        if (tokenCount == 2 && order > 0)
+          model.newBond(tokens[0], tokens[1], order);
         return;
       }
       if ("crystal".equals(qName)) {
@@ -209,17 +231,17 @@ class CmlReader extends ModelReader {
         return;
       }
     }
-
+    
     public void endElement(String uri, String localName,
                            String qName) throws SAXException {
       /*
-      System.out.println("endElement(" + uri + "," + localName +
-                         "," + qName + ")");
+        System.out.println("endElement(" + uri + "," + localName +
+        "," + qName + ")");
       */
       if ("atom".equals(qName)) {
         if (atom.elementSymbol != null &&
             ! Float.isNaN(atom.z)) {
-          model.addAtom(atom);
+          model.addAtomWithMappedName(atom);
         }
         atom = null;
         elementContext = UNSET;
@@ -233,19 +255,11 @@ class CmlReader extends ModelReader {
       if ("scalar".equals(qName)) {
         if (elementContext == CRYSTAL) {
           System.out.println("CRYSTAL atts.title: " + title);
-          if ("a".equals(title)) {
-            notionalUnitcell[0] = parseFloat(chars);
-          } else if ("b".equals(title)) {
-            notionalUnitcell[1] = parseFloat(chars);
-          } else if ("c".equals(title)) {
-            notionalUnitcell[2] = parseFloat(chars);
-          } else if ("alpha".equals(title)) {
-            notionalUnitcell[3] = parseFloat(chars);
-          } else if ("beta".equals(title)) {
-            notionalUnitcell[4] = parseFloat(chars);
-          } else if ("gamma".equals(title)) {
-            notionalUnitcell[5] = parseFloat(chars);
-          }
+          int i = 6;
+          while (--i >= 0 && ! title.equals(Model.notionalUnitcellTags[i]))
+            ;
+          if (i >= 0)
+            notionalUnitcell[i] = parseFloat(chars);
         } else if (elementContext == ATOM) {
           if ("jmol:charge".equals(dictRef)) {
             // atom.partialCharge = parseFloat(chars);
@@ -262,20 +276,20 @@ class CmlReader extends ModelReader {
           Atom atom = atomArray[i];
           if (atom.elementSymbol != null &&
               ! Float.isNaN(atom.z))
-            model.addAtom(atom);
+            model.addAtomWithMappedName(atom);
         }
         return;
       }
     }
-
+    
     public void characters(char[] ch, int start, int length) {
       // System.out.println("End chars");
       if (keepChars) {
-          if (chars == null) {
-              chars = new String(ch, start, length);
-          } else {
-              chars += new String(ch, start, length);
-          }
+        if (chars == null) {
+          chars = new String(ch, start, length);
+        } else {
+          chars += new String(ch, start, length);
+        }
       }
     }
     
@@ -290,26 +304,24 @@ class CmlReader extends ModelReader {
       System.out.println("   baseURI: " + baseURI);
       return null;
     }
-
+    
     public InputSource resolveEntity (String publicId, String systemId) {
       System.out.println("Not resolving this:");
       System.out.println("  publicID: " + publicId);
       System.out.println("  systemID: " + systemId);
       return null;
     }
-
+    
     public void error (SAXParseException exception) throws SAXException {
       System.out.println("SAX ERROR:" + exception.getMessage());
     }
-
+    
     public void fatalError (SAXParseException exception) throws SAXException {
       System.out.println("SAX FATAL:" + exception.getMessage());
     }
-
+    
     public void warning (SAXParseException exception) throws SAXException {
       System.out.println("SAX WARNING:" + exception.getMessage());
     }
-
   }
 }
-

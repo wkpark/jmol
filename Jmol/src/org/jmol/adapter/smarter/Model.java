@@ -31,6 +31,9 @@ class Model {
   String modelTypeName;
   String modelName;
 
+  final static String[] notionalUnitcellTags =
+  { "a", "b", "c", "alpha", "beta", "gamma" };
+
   int atomCount;
   Atom[] atoms = new Atom[256];
   int bondCount;
@@ -91,20 +94,33 @@ class Model {
     atoms[atomCount++] = atom;
   }
 
+  void addAtomWithMappedName(Atom atom) {
+    addAtom(atom);
+    mapMostRecentAtomName();
+  }
+
   Bond newBond(int atomIndex1, int atomIndex2) {
-    Bond bond = new Bond(atomIndex1, atomIndex2, 1);
-    addBond(bond);
-    return bond;
+    return newBond(atomIndex1, atomIndex2, 1);
   }
 
   Bond newBond(String atomName1, String atomName2) {
-    int atomIndex1 = getAtomNameIndex(atomName1);
-    if (atomIndex1 < 0)
+    return newBond(atomName1, atomName2, 1);
+  }
+
+  Bond newBond(int atomIndex1, int atomIndex2, int order) {
+    if (atomIndex1 < 0 ||
+        atomIndex2 < 0 ||
+        order <= 0)
       return null;
-    int atomIndex2 = getAtomNameIndex(atomName2);
-    if (atomIndex2 < 0)
-      return null;
-    return newBond(atomIndex1, atomIndex2);
+    Bond bond = new Bond(atomIndex1, atomIndex2, order);
+    addBond(bond);
+    return bond;
+  }
+  
+  Bond newBond(String atomName1, String atomName2, int order) {
+    return newBond(getAtomNameIndex(atomName1),
+                   getAtomNameIndex(atomName2),
+                   order);
   }
 
   void addBond(Bond bond) {
@@ -130,19 +146,24 @@ class Model {
 
   Hashtable atomNameMap = new Hashtable();
 
-  void mapAtomName(Atom atom) {
-    if (atom.atomName != null && atoms[atomCount - 1] != atom)
-      atomNameMap.put(atom.atomName, new Integer(atomCount - 1));
+  void mapMostRecentAtomName() {
+    if (atomCount > 0) {
+      int index = atomCount - 1;
+      String atomName = atoms[index].atomName;
+      if (atomName != null)
+        atomNameMap.put(atomName, new Integer(atomCount - 1));
+    }
   }
 
   void mapAtomName(String atomName, int atomIndex) {
     atomNameMap.put(atomName, new Integer(atomIndex));
   }
-
+  
   int getAtomNameIndex(String atomName) {
+    int index = -1;
     Object value = atomNameMap.get(atomName);
-    if (value == null)
-      return -1;
-    return ((Integer)value).intValue();
+    if (value != null)
+      index = ((Integer)value).intValue();
+    return index;
   }
 }

@@ -255,7 +255,7 @@ class CifReader extends ModelReader {
           break;
         case LABEL:
           atom.atomName = field;
-          model.mapAtomName(atom);
+          model.mapMostRecentAtomName();
           break;
         case CARTN_X:
         case FRACT_X:

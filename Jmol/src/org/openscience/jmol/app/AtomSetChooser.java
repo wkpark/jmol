@@ -35,7 +35,7 @@ import java.awt.event.ActionEvent;
 import java.beans.*;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.JEditorPane;
+import javax.swing.JTextArea;
 import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.JButton;
@@ -46,31 +46,32 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Properties;
+import java.util.Enumeration;
 
 public class AtomSetChooser extends JDialog
   implements TreeSelectionListener, PropertyChangeListener {
   
-  private JEditorPane propertiesPane;
+  private JTextArea propertiesPane;
   private JTree tree;
   private DefaultTreeModel treeModel;
   private JmolViewer viewer;
-  private JButton recreateButton;
   
   public AtomSetChooser(JmolViewer viewer, JFrame frame) {
     super(frame,"AtomSetChooser", false);
     this.viewer = viewer;
     layoutWindow(getContentPane());
-    setSize(500,400);
+    setSize(300,200);
     setLocationRelativeTo(frame);
   }
   
-  void layoutWindow(Container container) {
+  private void layoutWindow(Container container) {
     // setup the container like the TreeDemo.java from the Java Tutorial
     container.setLayout(new BorderLayout());
 
     // create the root for the treeModel only, later this gets set
     // to the tree based on the frame.
-    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("File");
+    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("");
     treeModel = new DefaultTreeModel(rootNode);
     tree = new JTree(treeModel);
     // only allow single selection (may want to change this later?)
@@ -82,7 +83,7 @@ public class AtomSetChooser extends JDialog
     JScrollPane treeView = new JScrollPane(tree);
     
     // create the properties pane.
-    propertiesPane = new JEditorPane();
+    propertiesPane = new JTextArea();
     propertiesPane.setEditable(false);
     JScrollPane propertiesView = new JScrollPane(propertiesPane);
     
@@ -92,27 +93,12 @@ public class AtomSetChooser extends JDialog
     splitPane.setBottomComponent(propertiesView);
    
     // set the dimensions of the views
-    Dimension minimumSize = new Dimension(100, 50);
-    treeView.setMinimumSize(minimumSize);
-    propertiesView.setMinimumSize(minimumSize);
-    splitPane.setDividerLocation(100);
-    splitPane.setPreferredSize(new Dimension(500,300));
+    treeView.setMinimumSize(new Dimension(100, 50));
+    splitPane.setDividerLocation(120);
+    splitPane.setPreferredSize(new Dimension(300,200));
     
     // now we are ready to add the split frame
     container.add(splitPane,BorderLayout.CENTER);
-    
-    JPanel buttonPanel = new JPanel();
-    container.add(buttonPanel, BorderLayout.SOUTH);
-    
-    recreateButton = new JButton("Recreate");
-    recreateButton.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          createTreeModel();
-        }
-      }
-    );
-    buttonPanel.add(recreateButton);
   }
   
   public void valueChanged(TreeSelectionEvent e) {
@@ -124,14 +110,30 @@ public class AtomSetChooser extends JDialog
     if (node.isLeaf()) {
       int atomSetIndex = ((AtomSet) node).getAtomSetIndex();
       int atomSetNumber = viewer.getModelNumber(atomSetIndex);
-      viewer.evalString("frame " + atomSetNumber);      
-      // Currently I don't see how I can get a hold of the properties that
-      // were read.
-      propertiesPane.setText("Properties to be shown later...");
-    } else { // selected brach
-      propertiesPane.setText("Clicked on a branch");
+      // show the model in the viewer
+      viewer.evalString("frame " + atomSetNumber);
+      // show the properties in the properties pane
+      showProperties(viewer.getModelProperties(atomSetIndex));
+    } else { // selected branch
+      propertiesPane.setText("Collection has " +
+        node.getChildCount() + " AtomSets");
     }
   }
+  
+  public void showProperties(Properties properties) {
+    propertiesPane.setText("Properties:");
+    if (properties == null) {
+       propertiesPane.append(" null");
+    } else {
+      Enumeration e = properties.propertyNames();
+      while (e.hasMoreElements()) {
+        String propertyName = (String)e.nextElement();
+        propertiesPane.append("\n " + propertyName + "=" +
+                   properties.getProperty(propertyName));
+      }
+    }
+  }
+
   
   /**
    * Creates the treeModel of the AtomSets the ModelManager knows about.
@@ -144,7 +146,7 @@ public class AtomSetChooser extends JDialog
    * and only needs to be done once. Or it could be added to the ModelManager's
    * buildFrame method.
    */
-  public void createTreeModel() {
+  private void createTreeModel() {
     DefaultMutableTreeNode root =
       new DefaultMutableTreeNode(viewer.getModelSetName());
     // flat: add every AtomSet to the root
@@ -193,9 +195,8 @@ public class AtomSetChooser extends JDialog
   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
     String eventName = propertyChangeEvent.getPropertyName();
     if (eventName.equals(Jmol.chemFileProperty)) {
-      System.out.println("AtomSetChooser has received notification " +
-                         "that the underlying AtomSetCollection has changed");
       // Rene, put your things here
+      createTreeModel(); // all I need to do is to recreate the tree model
       return;
     }
   }

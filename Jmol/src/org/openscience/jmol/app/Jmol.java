@@ -517,13 +517,9 @@ public class Jmol extends JPanel {
       mi.setHorizontalTextPosition(JButton.RIGHT);
       mi.setIcon(f);
     }
-    String astr = JmolResourceHandler.getInstance().getString("Jmol." + cmd
-                    + actionSuffix);
-    if (astr == null) {
-      astr = cmd;
-    }
-    mi.setActionCommand(astr);
-    Action a = getAction(astr);
+    
+    mi.setActionCommand(cmd);
+    Action a = getAction(cmd);
     if (a != null) {
         // System.out.println("Connected to Action: " + a.getClass().getName());
       mi.addActionListener(a);
@@ -622,16 +618,9 @@ public class Jmol extends JPanel {
     b.setRequestFocusEnabled(false);
     b.setMargin(new Insets(1, 1, 1, 1));
 
-    String astr = JmolResourceHandler.getInstance().getString("Jmol." + key
-                    + actionSuffix);
-    if (astr == null) {
-      astr = key;
-    }
-    Action a = getAction(astr);
+    Action a = getAction(key);
     if (a != null) {
-
-      // b = new JButton(a);
-      b.setActionCommand(astr);
+      b.setActionCommand(key);
       b.addActionListener(a);
       a.addPropertyChangeListener(new ActionChangedListener(b));
       b.setEnabled(a.isEnabled());
@@ -873,12 +862,6 @@ public class Jmol extends JPanel {
    * lookups for a popup menu.
    */
   private static final String popupSuffix = "Popup";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for an action.
-   */
-  private static final String actionSuffix = "Action";
 
   /**
    * Suffix applied to the key used in resource file

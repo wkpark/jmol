@@ -52,6 +52,7 @@ import java.util.StringTokenizer;
  *
  * @author J. Daniel Gezelter (gezelter.1@nd.edu)
  * @author Bradley A. Smith (bradley@baysmith.com)
+ * @author Egon Willighagen (egonw@sci.kun.nl)
  */
 public class PDBReader implements ChemFileReader {
 
@@ -102,8 +103,8 @@ public class PDBReader implements ChemFileReader {
       if (command.equalsIgnoreCase("ATOM")
               || command.equalsIgnoreCase("HETATM")) {
 
-        String atype = new String(line.substring(13, 14).trim());
-        String sx = new String(line.substring(29, 38).trim());
+        String atype = new String(line.substring(12, 16).trim());
+        String sx = new String(line.substring(30, 38).trim());
         String sy = new String(line.substring(38, 46).trim());
         String sz = new String(line.substring(46, 54).trim());
 

@@ -11,6 +11,10 @@
         <a href="http://cdk.sourceforge.net/plugins.html">CDK Plugins</a>
         website, which also explains where these plugins are installed.
       </p>
+      <p>
+        Both Jmol $VERSION$ and Jmol 10 support plugins. The latter needs to 
+        be started as <i>java -Dmodel=cdk -jar jmol.jar</i>.
+      </p>
     </section>
     
     <section title="Default Plugins">

@@ -151,8 +151,7 @@ public class JmolApplet extends java.applet.Applet
                 && getParameter("FORMAT").toUpperCase().equals("CMLSTRING")) {
           StringBuffer cmlString = new StringBuffer();
           cmlString.append(convertEscapeChars(model));
-          cfr = ReaderFactory
-                  .createReader(new java.io.StringReader(cmlString.toString()));
+          cfr = new CMLReader(new java.io.StringReader(cmlString.toString()));
           readerProgress.setFileName("CML string");
         } else {
           java.net.URL modelURL = null;

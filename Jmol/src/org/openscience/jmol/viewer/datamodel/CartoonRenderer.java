@@ -72,66 +72,31 @@ class CartoonRenderer extends McpsRenderer {
 
   int polymerCount;
   Group[] polymerGroups;
-  Point3i[] screens;
+  Point3i[] leadMidpointScreens;
   Atom[] alphas;
   boolean[] isSpecials;
-  Point3f[] cordMidPoints;
 
   void initializeChain(AminoPolymer aminopolymer) {
     polymerGroups = aminopolymer.getGroups();
     polymerCount = aminopolymer.getCount();
-    isSpecials = frameRenderer.getTempBooleans(polymerCount);
-    cordMidPoints = calcRopeMidPoints(aminopolymer);
-    screens = getScreens();
+    calcIsSpecials();
+    calcScreenLeadMidpoints(aminopolymer.leadMidpoints);
     alphas = getAlphas();
   }
 
-  Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
-    int midPointCount = polymerCount + 1;
-    Point3f[] cordMidPoints = frameRenderer.getTempPoints(midPointCount);
-    Group residuePrev = null;
-    AminoStructure aminostructurePrev = null;
-    Point3f point;
-    for (int i = 0; i < polymerCount; ++i) {
-      point = cordMidPoints[i];
-      Group residue = polymerGroups[i];
-      if (isSpecials[i] = residue.isHelixOrSheet()) {
-        AminoStructure aminostructure = residue.aminostructure;
-        point.set(i - 1 != aminostructure.getPolymerIndex()
-                  ? aminostructure.getAxisStartPoint()
-                  : aminostructure.getAxisEndPoint());
-
-        //        if (i != structure.getStartResidueIndex()) {
-        //          point.add(structure.getAxisEndPoint());
-        //          point.scale(0.5f);
-        //        }
-        residuePrev = residue;
-        aminostructurePrev = aminostructure;
-      } else {
-        if (aminostructurePrev != null)
-          point.set(aminostructurePrev.getAxisEndPoint());
-        else
-          aminopolymer.getLeadMidPoint(i, point);
-        residuePrev = null;
-        aminostructurePrev = null;
-      }
-    }
-    point = cordMidPoints[polymerCount];
-    if (aminostructurePrev != null)
-      point.set(aminostructurePrev.getAxisEndPoint());
-    else
-      aminopolymer.getLeadMidPoint(polymerCount, point);
-    return cordMidPoints;
+  void calcIsSpecials() {
+    isSpecials = frameRenderer.getTempBooleans(polymerCount);
+    for (int i = polymerCount; --i >= 0; )
+      isSpecials[i] = polymerGroups[i].isHelixOrSheet();
   }
 
-  Point3i[] getScreens() {
+  void calcScreenLeadMidpoints(Point3f[] leadMidpoints) {
     int count = polymerCount + 1;
-    Point3i[] screens = frameRenderer.getTempScreens(count);
+    leadMidpointScreens = frameRenderer.getTempScreens(count);
     for (int i = count; --i >= 0; ) {
-      viewer.transformPoint(cordMidPoints[i], screens[i]);
-      //      g3d.fillSphereCentered(Colix.CYAN, 15, screens[i]);
+      viewer.transformPoint(leadMidpoints[i], leadMidpointScreens[i]);
+      g3d.fillSphereCentered(Graphics3D.CYAN, 15, leadMidpointScreens[i]);
     }
-    return screens;
   }
 
   Atom[] getAlphas() {
@@ -152,16 +117,16 @@ class CartoonRenderer extends McpsRenderer {
       madBeg = (mads[iPrev1] + madThis) / 2;
     if (! isSpecials[iNext1])
       madEnd = (mads[iNext1] + madThis) / 2;
-    int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
-    int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
+    int diameterBeg = viewer.scaleToScreen(leadMidpointScreens[i].z, madBeg);
+    int diameterEnd = viewer.scaleToScreen(leadMidpointScreens[iNext1].z, madEnd);
     int diameterMid = viewer.scaleToScreen(alphas[i].getScreenZ(), madThis);
     g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
-                    screens[iPrev1], screens[i],
-                    screens[iNext1], screens[iNext2]);
+                    leadMidpointScreens[iPrev1], leadMidpointScreens[i],
+                    leadMidpointScreens[iNext1], leadMidpointScreens[iNext2]);
     /*
     System.out.println("render1Segment: iPrev1=" + iPrev1 +
                        " i=" + i + " iNext1=" + iNext1 + " iNext2=" + iNext2 +
-                       " screens[i]=" + screens[i] + " colix=" + colix +
+                       " leadMidpointScreens[i]=" + leadMidpointScreens[i] + " colix=" + colix +
                        " mads[i]=" + mads[i]);
     */
   }

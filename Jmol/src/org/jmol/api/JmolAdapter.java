@@ -44,7 +44,7 @@ import java.util.Properties;
  * are probably returning stray values. Therefore, these atoms are getting
  * mapped to element 0 (Xx), which has color pink and a relatively large
  * covalent bonding radius. 
- * @see org.opensource.jmol.viewer.JmolViewer
+ * @see org.jmol.viewer.JmolViewer
  ****************************************************************/
 public abstract class JmolAdapter {
   
@@ -122,9 +122,8 @@ public abstract class JmolAdapter {
 
   /**
    * The number of atomSets in the file
-   *
-   * NOTE WARNING
-   * this is currently broken ... but is not used
+   * NOTE WARNING:
+   * This is currently broken, but is not used.
    * This is associated with the work for getAtomSetName
    */
   public int getAtomSetCount(Object clientFile) { return 1; }
@@ -282,9 +281,9 @@ public abstract class JmolAdapter {
     }
   }
 
-  /****************************************************************
+  /* ***************************************************************
    * range-checking routines
-   ****************************************************************/
+   * ***************************************************************/
 
   public static char canonizeChainID(char chainID) {
     if ((chainID >= 'A' && chainID <= 'Z') ||

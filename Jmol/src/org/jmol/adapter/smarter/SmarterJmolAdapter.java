@@ -35,9 +35,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
     super("SmarterJmolAdapter", logger);
   }
 
-  /****************************************************************
+  /* **************************************************************
    * the file related methods
-   ****************************************************************/
+   * **************************************************************/
 
   final static int UNKNOWN = -1;
   final static int XYZ = 0;
@@ -97,9 +97,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return ((AtomSetCollection)clientFile).getAtomSetName(atomSetIndex);
   }
 
-  /****************************************************************
+  /* **************************************************************
    * The frame related methods
-   ****************************************************************/
+   * **************************************************************/
 
   public int getEstimatedAtomCount(Object clientFile) {
     return ((AtomSetCollection)clientFile).atomCount;
@@ -137,9 +137,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return atomSetCollection.structureCount == 0 ? null : new StructureIterator(atomSetCollection);
   }
 
-  /****************************************************************
+  /* **************************************************************
    * the frame iterators
-   ****************************************************************/
+   * **************************************************************/
   class AtomIterator extends JmolAdapter.AtomIterator {
     AtomSetCollection atomSetCollection;
     int iatom;

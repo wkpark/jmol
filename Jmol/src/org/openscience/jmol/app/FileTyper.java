@@ -66,8 +66,6 @@ public class FileTyper extends JPanel
   /**
    * A simple panel with a combo box for allowing the user to choose
    * the input file type.
-   *
-   * @param fileChooser the file chooser
    */
   public FileTyper() {
 

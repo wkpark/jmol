@@ -31,8 +31,7 @@ import java.util.*;
  * 
  * 
  * @author  Agust\u00ED S\u00E1nchez Furrasola
- * @version $Revision$
- * @created 2003-07-28
+ * @version $Revision$ 2003-07-28
  *
  */
 final class CommandHistory
@@ -112,7 +111,7 @@ final class CommandHistory
    /**
     * Adds a new command to the bottom of the list, resets
     * list position.
-    * @param the String value of a command
+    * @param command the String value of a command
     */
    void addCommand(String command)
    {

@@ -63,9 +63,9 @@ public class CdkJmolAdapter extends JmolAdapter {
     super("CdkJmolAdapter", logger);
   }
 
-  /****************************************************************
+  /* **************************************************************
    * the file related methods
-   ****************************************************************/
+   * **************************************************************/
 
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
@@ -137,9 +137,9 @@ public class CdkJmolAdapter extends JmolAdapter {
     return null;
   }
 
-  /****************************************************************
+  /* **************************************************************
    * The frame related methods
-   ****************************************************************/
+   * **************************************************************/
 
   private AtomContainer getAtomContainer(Object clientFile) {
     ChemFile chemFile = (ChemFile)clientFile;
@@ -218,9 +218,9 @@ public class CdkJmolAdapter extends JmolAdapter {
     return new BondIterator(getAtomContainer(clientFile));
   }
 
-  /****************************************************************
+  /* ***************************************************************
    * the frame iterators
-   ****************************************************************/
+   * **************************************************************/
   class AtomIterator extends JmolAdapter.AtomIterator {
     AtomContainer atomContainer;
     int atomCount, iatom;

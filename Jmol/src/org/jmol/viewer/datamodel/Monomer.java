@@ -201,7 +201,7 @@ abstract class Monomer extends Group {
   abstract boolean isConnectedAfter(Monomer possiblyPreviousMonomer);
 
   /**
-   * Selects LeadAtom when this Monomer is clicked ... iff it is
+   * Selects LeadAtom when this Monomer is clicked iff it is
    * closer to the user.
    */
   void findNearestAtomIndex(int x, int y, Closest closest,

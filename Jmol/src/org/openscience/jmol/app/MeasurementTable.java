@@ -61,8 +61,8 @@ public class MeasurementTable extends JDialog {
   /**
    * Constructor
    *
-   * @param f the parent frame
-   * @param dp the DisplayPanel in which the animation will take place
+   * @param parentFrame the parent frame
+   * @param viewer the JmolViewer in which the animation will take place (?)
    */
   public MeasurementTable(JmolViewer viewer, JFrame parentFrame) {
 

@@ -739,12 +739,12 @@ public class Dots extends Shape {
 
 
   /****************************************************************
-   * I could not understand the algorithm that is described
-   * in the Connolly article ... seemed too complicated ... :-(
    * All that it is trying to do is calculate the base point between
    * the two probes. This is the intersection of three planes:
    * the plane defined by atoms IJK, the bisecting plane of torusIJ,
    * and the bisecting plane of torusIK. <p>
+   * I could not understand the algorithm that is described
+   * in the Connolly article... seemed too complicated ... :-(
    * This algorithm takes finds the intersection of three planes,
    * where each plane is defined by a normal + a point on the plane
    ****************************************************************/

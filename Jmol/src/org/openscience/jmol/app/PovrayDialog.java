@@ -84,8 +84,7 @@ public class PovrayDialog extends JDialog {
    * Creates a dialog for getting info related to output frames in
    *  povray format.
    * @param f The frame assosiated with the dialog
-   * @param dp The interacting display we are reproducing (source of view angle info etc)
-   * @param bn The default name to base frame names on
+   * @param viewer The interacting display we are reproducing (source of view angle info etc)
    */
   public PovrayDialog(JFrame f, JmolViewer viewer) {
 

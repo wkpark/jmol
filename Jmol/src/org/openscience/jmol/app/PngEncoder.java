@@ -363,7 +363,7 @@ public class PngEncoder extends Object {
   /**
    * Write a single byte into the pngBytes array at a given position.
    *
-   * @param n The integer to be written into pngBytes.
+   * @param b The byte to be written into pngBytes.
    * @param offset The starting point to write to.
    * @return The next place to be written to in the pngBytes array.
    */
@@ -379,7 +379,7 @@ public class PngEncoder extends Object {
    * This uses the getBytes method, so the encoding used will
    * be its default.
    *
-   * @param n The integer to be written into pngBytes.
+   * @param s The string to be written into pngBytes.
    * @param offset The starting point to write to.
    * @return The next place to be written to in the pngBytes array.
    * @see java.lang.String#getBytes()

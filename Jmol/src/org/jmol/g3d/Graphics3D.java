@@ -758,9 +758,9 @@ final public class Graphics3D {
     plotPixelClipped(x, y, z);
   }
 
-  /****************************************************************
+  /* ***************************************************************
    * the plotting routines
-   ****************************************************************/
+   * ***************************************************************/
 
 
   void plotPixelClipped(int x, int y, int z) {
@@ -1196,10 +1196,10 @@ final public class Graphics3D {
     return Shade3D.calcIntensity(x, y, z);
   }
 
-  /****************************************************************
+  /* ***************************************************************
    * fontID stuff
    * a fontID is a byte that contains the size + the face + the style
-   ****************************************************************/
+   * ***************************************************************/
 
   public Font3D getFont3D(int fontSize) {
     return Font3D.getFont3D(Font3D.FONT_FACE_SANS,

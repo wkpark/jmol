@@ -430,7 +430,7 @@ class ConsoleDocument extends DefaultStyledDocument {
       }
     }
     super.replace(offs, length, str, attUserInput);
-    consoleTextPane.setCaretPosition(offs + str.length());
+//    consoleTextPane.setCaretPosition(offs + str.length());
   }
   
    /**

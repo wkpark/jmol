@@ -149,7 +149,7 @@ public class PovraySaver {
    * Takes a java colour and returns a String representing the
    * colour in povray eg 'rgb<1.0,0.0,0.0>'
    *
-   * @param col The color to convert
+   * @param color The color to convert
    *
    * @return A string representaion of the color in povray rgb format.
    */

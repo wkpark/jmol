@@ -146,7 +146,7 @@ public class ArrowLine {
 
     xpoints[3] = (int) (x1 + rx * ctheta - ry * stheta);
     ypoints[3] = (int) (y1 + rx * stheta + ry * ctheta);
-    g25d.fillPolygon(xpoints, ypoints, 4);
+    g25d.fillPolygon(xpoints, ypoints, null, 4);
   }
 }
 

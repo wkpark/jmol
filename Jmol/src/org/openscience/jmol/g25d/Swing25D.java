@@ -43,16 +43,16 @@ final public class Swing25D implements Platform25D{
   int[] pbuf;
   Graphics2D g2;
 
-  public Image allocateImage(int width, int height) {
+  public Image allocateImage(int width, int height, boolean useAlphaChannel) {
     this.width = width;
     this.height = height;
-    bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    bi = new BufferedImage(width, height,
+                           useAlphaChannel ? BufferedImage.TYPE_INT_ARGB :
+                           BufferedImage.TYPE_INT_RGB);
     wr = bi.getRaster();
     db = wr.getDataBuffer();
     dbi = (DataBufferInt) db;
     pbuf = dbi.getData();
-    System.out.println("success & width*height=" + (width * height) +
-                       " & length=" + pbuf.length);
     g2 = bi.createGraphics();
     return bi;
   }

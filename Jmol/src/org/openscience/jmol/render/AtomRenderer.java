@@ -108,7 +108,7 @@ public class AtomRenderer {
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
     g25d.setColor(colorSelection);
-    g25d.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
+    g25d.fillCircle(x - haloradius, y - haloradius, z, halodiameter);
   }
 
   private void renderAtom() {
@@ -135,16 +135,11 @@ public class AtomRenderer {
       }
       return;
     }
-    // the area *drawn* by an oval is 1 larger than the area
-    // *filled* by an oval because of the stroke offset
-    int diamT = diameter-1;
     g25d.setColor(color);
     if (!fastRendering && styleAtom != DisplayControl.WIREFRAME) {
-      // diamT should work here, but if background dots are appearing
-      // just inside the circles then change the parameter to *diameter*
-      g25d.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
+      g25d.fillCircle(xUpperLeft, yUpperLeft, z, diameter);
       g25d.setColor(colorOutline);
     }
-    g25d.drawOval(xUpperLeft, yUpperLeft, diamT, diamT);
+    g25d.drawCircle(xUpperLeft, yUpperLeft, z, diameter);
   }
 }

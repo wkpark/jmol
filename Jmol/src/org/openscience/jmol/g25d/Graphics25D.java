@@ -31,11 +31,15 @@ import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
+import java.awt.image.PixelGrabber;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Shape;
 
 final public class Graphics25D {
+
+  final static boolean wantsPbuf = false;
+
   DisplayControl control;
   Platform25D platform;
   Image img;
@@ -52,7 +56,7 @@ final public class Graphics25D {
     this.control = control;
     this.g = g;
     if (control.jvm12orGreater) {
-      usePbuf = true;
+      usePbuf = wantsPbuf & true;
       platform = new Swing25D();
     } else {
       usePbuf = false;
@@ -72,10 +76,12 @@ final public class Graphics25D {
       zbuf = null;
       return;
     }
-    img = platform.allocateImage(width, height);
+    img = platform.allocateImage(width, height, !usePbuf);
     g = platform.getGraphics();
-    pbuf = platform.getPbuf();
-    zbuf = new short[width * height];
+    if (usePbuf) {
+      pbuf = platform.getPbuf();
+      zbuf = new short[width * height];
+    }
   }
 
   public Image getScreenImage() {
@@ -87,41 +93,54 @@ final public class Graphics25D {
     g.setColor(color);
   }
 
-  public void drawPolygon(int[] ax, int[] ay, int numPoints) {
-    g.drawPolygon(ax, ay, numPoints);
+  int[] imageBuf = new int[256];
+
+  public void drawImage(Image image, int x, int y, int z) {
+    if (! usePbuf) {
+      g.drawImage(image, x, y, null);
+      return;
+    }
+    int imageWidth = image.getWidth(null);
+    int imageHeight = image.getHeight(null);
+    int imageSize = imageWidth * imageHeight;
+    if (imageSize > imageBuf.length)
+      imageBuf = new int[imageSize];
+    PixelGrabber pg = new PixelGrabber(image, 0, 0, imageWidth, imageHeight,
+                                       imageBuf, 0, imageWidth);
+    try {
+      pg.grabPixels();
+    } catch (InterruptedException e) {
+      System.out.println("pg.grabPixels Interrupted");
+    }
+    int offsetSrc = 0;
+    do {
+      plotPixels(imageBuf, offsetSrc, imageWidth, x, y, z);
+      offsetSrc += imageWidth;
+      ++y;
+    } while (--imageHeight > 0);
   }
 
-  public void fillPolygon(int[] ax, int[] ay, int numPoints) {
-    g.fillPolygon(ax, ay, numPoints);
+  public void drawImage(Image image, int x, int y, int z,
+                        int width, int height) {
+    g.drawImage(image, x, y, width, height, null);
   }
 
-  public void drawImage(Image image, int x, int y, ImageObserver observer) {
-    g.drawImage(image, x, y, observer);
+  public void drawCircle(int x, int y, int z, int diameter) {
+    if (! usePbuf) {
+      g.drawOval(x, y, diameter-1, diameter-1);
+      return;
+    }
+    int r = diameter / 2;
+    plotCircleCentered(x + r, y + r, z, r);
   }
 
-  public void drawImage(Image image, int x, int y, int width, int height,
-                        ImageObserver observer) {
-    g.drawImage(image, x, y, width, height, observer);
-  }
-
-  public void drawImage(Image image, int x, int y) {
-    g.drawImage(image, x, y, null);
-  }
-
-  public void drawOval(int x, int y, int width, int height) {
-    g.drawOval(x, y, width, height);
-  }
-
-  public void drawOval(int x, int y, int z, int width, int height) {
-    g.drawOval(x, y, width, height);
-  }
-
-  public void fillOval(int x, int y, int z, int width, int height) {
-    g.fillOval(x, y, width, height);
-  }
-
-  public void fillOval(int x, int y, int width, int height) {
-    g.fillOval(x, y, width, height);
+  public void fillCircle(int x, int y, int z, int diameter) {
+    if (! usePbuf) {
+      g.fillOval(x, y, diameter, diameter);
+      return;
+    }
+    int r = diameter / 2;
+    plotDiscCentered(x + r, y + r, z, r);
   }
 
   public void drawRect(int x, int y, int width, int height) {
@@ -184,12 +203,20 @@ final public class Graphics25D {
   }
 
   public void drawPolygon(int[] ax, int[] ay, int[] az, int numPoints) {
-    g.drawPolygon(ax, ay, numPoints);
+    int i = numPoints - 1;
+    drawLine(ax[0], ay[0], az[0], ax[i], ay[i], az[i]);
+    while (--i >= 0)
+      drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
   }
 
   public void fillPolygon(int[] ax, int[] ay, int[] az, int numPoints) {
     g.fillPolygon(ax, ay, numPoints);
   }
+
+  /****************************************************************
+   * the plotting routines
+   ****************************************************************/
+
 
   void plotPixel(int x, int y, int z) {
     if (x < 0 || x >= width ||
@@ -205,6 +232,35 @@ final public class Graphics25D {
       pbuf[offset] = argbCurrent;
     }
     */
+  }
+
+  void plotPixels(int[] pixels, int offset, int count, int x, int y, int z) {
+    if (y < 0 || y >= height || x >= width)
+      return;
+    if (x < 0) {
+      count += x; // x is negative, so this is subtracting -x
+      if (count < 0)
+        return;
+      offset -= x; // and this is adding -x
+      x = 0;
+    }
+    if (count + x > width)
+      count = width - x;
+    int offsetPbuf = y * width + x;
+    while (--count >= 0) {
+      int pixel = pixels[offset++];
+      int alpha = pixel & 0xFF000000;
+      if (alpha == 0xFF000000) {
+        pbuf[offsetPbuf] = pixel;
+        /*
+          if (zbuf[offset] < z) {
+          zbuf[offset] = (short)z;
+          pbuf[offset] = argbCurrent;
+          }
+        */
+      }
+      ++offsetPbuf;
+    }
   }
 
   void plotLineDelta(int x1, int y1, int z1, int dx, int dy, int dz) {
@@ -232,6 +288,7 @@ final public class Graphics25D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
+      int n = dx;
       do {
         xCurrent += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -241,13 +298,14 @@ final public class Graphics25D {
           twoDxAccumulatedYError -= twoDx;
         }
         plotPixel(xCurrent, yCurrent, zCurrentScaled >> 10);
-      } while (--dx > 0);
+      } while (--n > 0);
       return;
     }
     int roundingFactor = dy - 1;
     if (dy < 0) roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
+    int n = dy;
     do {
       yCurrent += yIncrement;
       zCurrentScaled += zIncrementScaled;
@@ -257,7 +315,76 @@ final public class Graphics25D {
         twoDyAccumulatedXError -= twoDy;
       }
       plotPixel(xCurrent, yCurrent, zCurrentScaled >> 10);
-    } while (--dy > 0);
+    } while (--n > 0);
+  }
+
+  int xCenter, yCenter, zCenter;
+
+  void plotCircleCentered(int xCenter, int yCenter, int zCenter, int r) {
+    this.xCenter = xCenter;
+    this.yCenter = yCenter;
+    this.zCenter = zCenter;
+    int x = r;
+    int y = 0;
+    int xChange = 1 - 2*r;
+    int yChange = 1;
+    int radiusError = 0;
+    while (x >= y) {
+      plot8CircleCentered(x, y);
+      ++y;
+      radiusError += yChange;
+      yChange += 2;
+      if (2*radiusError + xChange > 0) {
+        --x;
+        radiusError += xChange;
+        xChange += 2;
+      }
+    }
+  }
+
+  void plot8CircleCentered(int dx, int dy) {
+    plotPixel(xCenter + dx, yCenter + dy, zCenter);
+    plotPixel(xCenter + dx, yCenter - dy, zCenter);
+    plotPixel(xCenter - dx, yCenter + dy, zCenter);
+    plotPixel(xCenter - dx, yCenter - dy, zCenter);
+
+    plotPixel(xCenter + dy, yCenter + dx, zCenter);
+    plotPixel(xCenter + dy, yCenter - dx, zCenter);
+    plotPixel(xCenter - dy, yCenter + dx, zCenter);
+    plotPixel(xCenter - dy, yCenter - dx, zCenter);
+  }
+
+  void plot8DiscCentered(int dx, int dy) {
+    for (int i = -dx; i <= dx; ++i) {
+      plotPixel(xCenter + i, yCenter + dy, zCenter);
+      plotPixel(xCenter + i, yCenter - dy, zCenter);
+    }
+    for (int i = -dy; i <= dy; ++i) {
+      plotPixel(xCenter + i, yCenter + dx, zCenter);
+      plotPixel(xCenter + i, yCenter - dx, zCenter);
+    }
+  }
+
+  void plotDiscCentered(int xCenter, int yCenter, int zCenter, int r) {
+    this.xCenter = xCenter;
+    this.yCenter = yCenter;
+    this.zCenter = zCenter;
+    int x = r;
+    int y = 0;
+    int xChange = 1 - 2*r;
+    int yChange = 1;
+    int radiusError = 0;
+    while (x >= y) {
+      plot8DiscCentered(x, y);
+      ++y;
+      radiusError += yChange;
+      yChange += 2;
+      if (2*radiusError + xChange > 0) {
+        --x;
+        radiusError += xChange;
+        xChange += 2;
+      }
+    }
   }
 
 }

@@ -41,7 +41,7 @@ final public class Awt25D implements Platform25D {
     this.component = component;
   }
 
-  public Image allocateImage(int width, int height) {
+  public Image allocateImage(int width, int height, boolean useAlphaChannel) {
     this.width = width;
     this.height = height;
     image = component.createImage(width, height);

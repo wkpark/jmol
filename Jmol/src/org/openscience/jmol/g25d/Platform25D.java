@@ -29,7 +29,7 @@ import java.awt.Image;
 
 public interface Platform25D {
 
-  public Image allocateImage(int width, int height);
+  public Image allocateImage(int width, int height, boolean useAlphaChannel);
   public Graphics getGraphics();
   public int[] getPbuf();
 }

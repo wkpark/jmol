@@ -145,13 +145,13 @@ public class ShadedSphereRenderer {
       if (sphere == null)
         sphere = loadShadedSphereCache(control, color, shadedImages, diameter);
       int margin = control.getUseGraphics2D() ? 1 : 0;
-      g25d.drawImage(sphere, xUpperLeft - margin, yUpperLeft - margin, null);
+      g25d.drawImage(sphere, xUpperLeft - margin, yUpperLeft - margin, 0);
       return;
     }
     Image imgSphere = shadedImages[0];
     if (! control.getUseGraphics2D()) {
-      g25d.drawImage(imgSphere, xUpperLeft, yUpperLeft,
-                  diameter, diameter, null);
+      g25d.drawImage(imgSphere, xUpperLeft, yUpperLeft, 0,
+                  diameter, diameter);
     } else if (diameter < maxSmoothedSize) {
       sphereG2D.drawSphereG2D(g25d, imgSphere,
                               xUpperLeft - artifactMargin,

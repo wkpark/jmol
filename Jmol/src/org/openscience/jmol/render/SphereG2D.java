@@ -57,7 +57,7 @@ class SphereG2D {
     // but we *can* clip it to eliminate fat pixels
     Ellipse2D circle = new Ellipse2D.Double(x, y, d, d);
     g25d.setClip(circle);
-    g25d.drawImage(imgSphere, x, y, d, d, null);
+    g25d.drawImage(imgSphere, x, y, 0, d, d);
     g25d.setClip(null);
   }
   
@@ -157,7 +157,7 @@ class SphereG2D {
     g2ShadingBuffer.drawImage(image, 0, 0, size, size, null);
     applyCircleMask(g2ShadingBuffer, diameter, margin);
     g25d.setClip(xUpperLeft, yUpperLeft, size, size);
-    g25d.drawImage(biShadingBuffer, xUpperLeft, yUpperLeft, null);
+    g25d.drawImage(biShadingBuffer, xUpperLeft, yUpperLeft, 0);
     g25d.setClip(null);
   }
   

@@ -87,8 +87,7 @@ public class BondRenderer {
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
     g25d.setColor(colorSelection);
-    g25d.fillOval(x - haloradius, y - haloradius, z,
-                  halodiameter, halodiameter);
+    g25d.fillCircle(x - haloradius, y - haloradius, z, halodiameter);
   }
 
   public void render(AtomShape atomShape1, int index1,
@@ -206,10 +205,10 @@ public class BondRenderer {
       g25d.setColor(control.transparentGreen());
       g25d.drawLine(x1 + 5, y1, z1, x1 - 5, y1, z1);
       g25d.drawLine(x1, y1 + 5, z1, x1, y1 - 5, z1);
-      g25d.drawOval(x1-5, y1-5, z1, 10, 10);
+      g25d.drawCircle(x1-5, y1-5, z1, 10);
       g25d.drawLine(x2 + 5, y2, z2, x2 - 5, y2, z2);
       g25d.drawLine(x2, y2 + 5, z2, x2, y2 - 5, z2);
-      g25d.drawOval(x2-5, y2-5, z2, 10, 10);
+      g25d.drawCircle(x2-5, y2-5, z2, 10);
     }
   }
 
@@ -338,7 +337,7 @@ public class BondRenderer {
         break;
       } // else fall into QUICKDRAW
     case DisplayControl.QUICKDRAW:
-      g25d.fillPolygon(axPoly, ayPoly, 4);
+      g25d.fillPolygon(axPoly, ayPoly, azPoly, 4);
       drawInside(g25d, outline, 2, axPoly, ayPoly, azPoly);
       break;
     }
@@ -361,11 +360,10 @@ public class BondRenderer {
     yUpperLeft = y - radiusCap;
     switch (styleBond) {
     case DisplayControl.QUICKDRAW:
-      --diameter; // don't forget that a drawn circle is one larger
       g25d.setColor(color);
-      g25d.fillOval(xUpperLeft, yUpperLeft, diameter, diameter);
+      g25d.fillCircle(xUpperLeft, yUpperLeft, z, diameter);
       g25d.setColor(outline);
-      g25d.drawOval(xUpperLeft, yUpperLeft, diameter, diameter);
+      g25d.drawCircle(xUpperLeft, yUpperLeft, z, diameter);
       break;
     case DisplayControl.SHADING:
       if (shadedSphereRenderer == null)

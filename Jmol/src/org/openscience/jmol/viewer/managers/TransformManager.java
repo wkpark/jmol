@@ -419,6 +419,11 @@ public class TransformManager {
   private final Matrix4f matrixTemp = new Matrix4f();
   private final Vector3f vectorTemp = new Vector3f();
 
+  public boolean yAxisPointsUpwards = false;
+  public void setYAxisPointsUpwards(boolean yAxisPointsUpwards) {
+    this.yAxisPointsUpwards = yAxisPointsUpwards;
+  }
+
   public void calcTransformMatrices() {
     calcPointTransformMatrix();
     calcVectorTransformMatrix();

@@ -413,6 +413,14 @@ final public class JmolViewer {
     refresh();
   }
 
+  public void setYAxisPointsUpwards(boolean yAxisPointsUpwards) {
+    transformManager.setYAxisPointsUpwards(yAxisPointsUpwards);
+    refresh();
+  }
+  public boolean getYAxisPointsUpwards() {
+    return transformManager.yAxisPointsUpwards;
+  }
+
   public boolean getPerspectiveDepth() {
     return transformManager.perspectiveDepth;
   }
@@ -1244,6 +1252,8 @@ final public class JmolViewer {
       return getOversampleAlwaysEnabled();
     if (key.equals("oversampleStopped"))
       return getOversampleStoppedEnabled();
+    if (key.equals("yAxisPointsUpwards"))
+      return getYAxisPointsUpwards();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -1272,6 +1282,8 @@ final public class JmolViewer {
       { setOversampleAlwaysEnabled(value); return; }
     if (key.equals("oversampleStopped"))
       { setOversampleStoppedEnabled(value); return; }
+    if (key.equals("yAxisPointsUpwards"))
+      { setYAxisPointsUpwards(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }

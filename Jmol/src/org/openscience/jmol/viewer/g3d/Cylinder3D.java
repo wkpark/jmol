@@ -47,10 +47,9 @@ public class Cylinder3D {
   private int[] shades1;
   private int[] shades2;
   private int xOrigin, yOrigin, zOrigin;
-  private int dx, dy, dz;
+  private int dxCyl, dyCyl, dzCyl;
   private boolean tEvenDiameter;
   private int diameter;
-  private byte endcaps;
 
   private float radius2, cosTheta, cosPhi, sinPhi;
 
@@ -59,29 +58,28 @@ public class Cylinder3D {
 
   public void render(short colix1, short colix2, byte endcaps, int diameter,
                      int xOrigin, int yOrigin, int zOrigin,
-                     int dx, int dy, int dz) {
+                     int dxCyl, int dyCyl, int dzCyl) {
     this.diameter = diameter;
     if (this.diameter <= 1) {
       if (this.diameter == 1)
         g3d.plotLineDelta(colix1, colix2,
-                          xOrigin, yOrigin, zOrigin, dx, dy, dz);
+                          xOrigin, yOrigin, zOrigin, dxCyl, dyCyl, dzCyl);
       return;
     }
     this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
-    this.dx = dx; this.dy = dy; this.dz = dz;
+    this.dxCyl = dxCyl; this.dyCyl = dyCyl; this.dzCyl = dzCyl;
     this.shades1 = Colix.getShades(this.colix1 = colix1);
     this.shades2 = Colix.getShades(this.colix2 = colix2);
-    this.endcaps = endcaps;
     this.tEvenDiameter = (diameter & 1) == 0;
     
     float radius = diameter / 2.0f;
     this.radius2 = radius*radius;
-    int mag2d2 = dx*dx + dy*dy;
+    int mag2d2 = dxCyl*dxCyl + dyCyl*dyCyl;
     float mag2d = (float)Math.sqrt(mag2d2);
-    float mag3d = (float)Math.sqrt(mag2d2 + dz*dz);
-    this.cosTheta = dz / mag3d;
-    this.cosPhi = dx / mag2d;
-    this.sinPhi = dy / mag2d;
+    float mag3d = (float)Math.sqrt(mag2d2 + dzCyl*dzCyl);
+    this.cosTheta = dzCyl / mag3d;
+    this.cosPhi = dxCyl / mag2d;
+    this.sinPhi = dyCyl / mag2d;
 
     float x, y, z, h, xR, yR;
     float yMax = radius * (float)Math.sin(Math.PI/4);
@@ -99,73 +97,90 @@ public class Cylinder3D {
 
     initRotatedPoints();
 
-    plotSamples(true);
-    if (endcaps == Graphics3D.ENDCAPS_NONE)
-      plotSamples(false);
-    /*
-    for (float y = -radius + 1/4f; y < radius; y += 1/2f) {
-      float y2 = y * y;
-      float h = (float)Math.sqrt(radius2 - y2);
-      float x = h * cosTheta;
-      float z = (float)Math.sqrt(radius2 - y2 - x*x);
-      float xR = x * cosPhi - y * sinPhi;
-      float yR = x * sinPhi + y * cosPhi;
-      plotRotatedPoint(xR, yR, z);
-    }
-    */
-
-    plotLastRotatedPoint();
-    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL)
+    generateRotatedPoints(true);
+    switch (endcaps) {
+    case Graphics3D.ENDCAPS_SPHERICAL:
+      reduceRecorded();
+      plotRecorded(false);
       renderSphericalEndcaps();
+      return;
+    case Graphics3D.ENDCAPS_FLAT:
+      generateRotatedPoints(false);
+      reduceRecorded();
+      renderFlatEndcap();
+      plotRecorded(false);
+      return;
+    case Graphics3D.ENDCAPS_NONE:
+      generateRotatedPoints(false);
+      reduceRecorded();
+      renderNoEndcap();
+      plotRecorded(true);
+      return;
+    }
   }
 
-  void plotSamples(boolean tUp) {
+  void generateRotatedPoints(boolean tUp) {
     int i = 0;
     float x, y;
     while (i < sampleCount) {
       y = -samples[i++];
       x = samples[i++] * cosTheta;
-      rotateAndPlot(x, y, tUp);
+      rotateAndRecord(x, y, tUp);
     }
     while (i > 0) {
       y = -samples[--i];
       x = samples[--i] * cosTheta;
-      rotateAndPlot(x, y, tUp);
+      rotateAndRecord(x, y, tUp);
     }
     while (i < sampleCount) {
       x = samples[i++] * cosTheta;
       y = samples[i++];
-      rotateAndPlot(x, y, tUp);
+      rotateAndRecord(x, y, tUp);
     }
     while (i > 0) {
       x = samples[--i] * cosTheta;
       y = samples[--i];
-      rotateAndPlot(x, y, tUp);
+      rotateAndRecord(x, y, tUp);
     }
 
   }
 
-  void rotateAndPlot(float x, float y, boolean tUp) {
+  void rotateAndRecord(float x, float y, boolean tUp) {
     float z = (float)Math.sqrt(radius2 - x*x - y*y);
     float xR = x * cosPhi - y * sinPhi;
     float yR = x * sinPhi + y * cosPhi;
     if (tUp)
-      plotRotatedPoint(xR, yR, z);
+      recordRotatedPoint(xR, yR, z);
     else
-      plotRotatedPoint(-xR, -yR, -z);
+      recordRotatedPoint(-xR, -yR, -z);
   }
 
-  private int xLast, yLast, zLast, intensityLast, countLast;
-  private boolean tBeforeLast;
-  private int xBeforeLast, yBeforeLast, zBeforeLast, intensityBeforeLast;
+  int numRecorded;
+  int[] xRecorded = new int[32];
+  int[] yRecorded = new int[32];
+  int[] zRecorded = new int[32];
+  int[] intensityRecorded = new int[32];
+  int[] countRecorded = new int[32];
 
   private void initRotatedPoints() {
-    xLast = Integer.MAX_VALUE;
-    countLast = 0;
-    tBeforeLast = false;
+    numRecorded = 0;
   }
 
-  private void plotRotatedPoint(float xF, float yF, float zF) {
+  int[] doubleLength(int[] a) {
+    int[] t = new int[a.length * 2];
+    System.arraycopy(a, 0, t, 0, a.length);
+    return t;
+  }
+
+  void doubleRecorded() {
+    xRecorded = doubleLength(xRecorded);
+    yRecorded = doubleLength(yRecorded);
+    zRecorded = doubleLength(zRecorded);
+    intensityRecorded = doubleLength(intensityRecorded);
+    countRecorded = doubleLength(countRecorded);
+  }
+
+  private void recordRotatedPoint(float xF, float yF, float zF) {
     int x, y, z;
     if (tEvenDiameter) {
       x = (int)(xF + (xF < 0 ? -1 : 0));
@@ -176,73 +191,158 @@ public class Cylinder3D {
     }
     z = (int)(zF + 0.5f);
     int intensity = Shade3D.calcIntensity(xF, yF, zF);
-    if (x == xLast && y == yLast) {
-      zLast += z;
-      intensityLast += intensity;
-      ++countLast;
+    
+    int iPrevious = numRecorded - 1;
+    if (iPrevious >= 0 &&
+        x == xRecorded[iPrevious] &&
+        y == yRecorded[iPrevious]) {
+      zRecorded[iPrevious] += z;
+      intensityRecorded[iPrevious] += intensity;
+      ++countRecorded[iPrevious];
     } else {
-      plotLastRotatedPoint();
-      xLast = x;
-      yLast = y;
-      zLast = z;
-      intensityLast = intensity;
-      countLast = 1;
+      if (numRecorded == xRecorded.length)
+        doubleRecorded();
+      xRecorded[numRecorded] = x;
+      yRecorded[numRecorded] = y;
+      zRecorded[numRecorded] = z;
+      intensityRecorded[numRecorded] = intensity;
+      countRecorded[numRecorded] = 1;
+      ++numRecorded;
     }
   }
-  
-  void plotLastRotatedPoint() {
-    if (countLast > 0) {
-      if (countLast > 1) {
-        zLast = (zLast + countLast/2) / countLast;
-        intensityLast = (intensityLast + countLast/2) / countLast;
+
+  void reduceRecorded() {
+    // reduce any pixel that that had multiple hits
+    for (int i = numRecorded; --i >= 0; ) {
+      int count = countRecorded[i];
+      if (count > 1) {
+        int z = zRecorded[i];
+        zRecorded[i] = (z + (z >= 0 ? count : -count)/2) / count;
+        intensityRecorded[i] = (intensityRecorded[i] + count/2) / count;
       }
-      //      System.out.println("plot " + xLast + "," + yLast);
-      g3d.plotLineDelta(shades1[intensityLast], shades2[intensityLast],
-                         xOrigin + xLast, yOrigin + yLast,
-                         zOrigin - zLast,
-                         dx, dy, dz);
-      int xDiff = xLast - xBeforeLast;
-      if (xDiff < 0)
-        xDiff = -xDiff;
-      int yDiff = yLast - yBeforeLast;
-      if (yDiff < 0)
-        yDiff = -yDiff;
-      if (tBeforeLast &&
-          ((xDiff > 1) || (yDiff > 1) || (xDiff != 0) && (yDiff != 0))) {
-        int xInterpolate, yInterpolate;
-        if (xDiff > 1 || yDiff > 1) {
-          xInterpolate = (xLast + xBeforeLast) / 2;
-          yInterpolate = (yLast + yBeforeLast) / 2;
-        } else {
-          xInterpolate = xLast;
-          yInterpolate = yBeforeLast;
-        }
-        int zInterpolate = (zLast + zBeforeLast) / 2;
-        int intensityInterpolate = (intensityLast + intensityBeforeLast) / 2;
-        /*
-        System.out.println(" before=" + xBeforeLast + "," + yBeforeLast +
-                           " last=" + xLast + "," + yLast + " -> " +
-                           xInterpolate + "," + yInterpolate);
-        */
-        g3d.plotLineDelta(shades1[intensityInterpolate],
-                           shades2[intensityInterpolate],
-                           xOrigin + xInterpolate,
-                           yOrigin + yInterpolate,
-                           zOrigin - zInterpolate,
-                           dx, dy, dz);
+    }
+  }
+
+  void plotRecorded(boolean tPlotNegativeZ) {
+    // FIXME mth - tPlotNegativeZ needs to be used for ENDCAPS_FLAT
+    for (int i = 0; i < numRecorded; ++i) {
+      int z = zRecorded[i];
+      int x = xRecorded[i];
+      int y = yRecorded[i];
+      int intensity = intensityRecorded[i];
+      g3d.plotLineDelta(shades1[intensity], shades2[intensity],
+                         xOrigin + x, yOrigin + y,
+                         zOrigin - z,
+                         dxCyl, dyCyl, dzCyl);
+      /*
+      System.out.println("plot (" + (xOrigin + x) + "," + (yOrigin + y) + ","+
+                         (zOrigin-z) + ") intensity=" + intensity);
+      */
+      if (i == 0)
+        continue;
+      int iPrev = i - 1;
+      int dx = x - xRecorded[iPrev];
+      int dy = y - yRecorded[iPrev];
+      int dist2 = dx*dx + dy*dy;
+      if (dist2 <= 1)
+        continue;
+      // if we jumped more than one pixel then interpolate
+      int xInterpolate, yInterpolate;
+      if (dx == 0 || dy == 0) {
+        xInterpolate = x - dx/2;
+        yInterpolate = y - dy/2;
+      } else {
+        xInterpolate = x;
+        yInterpolate = y - dy;
       }
-      tBeforeLast = true;
-      xBeforeLast = xLast;
-      yBeforeLast = yLast;
-      zBeforeLast = zLast;
-      intensityBeforeLast = intensityLast;
+      int zInterpolate = (z + zRecorded[iPrev]) / 2;
+      int intensityInterpolate = (intensity + intensityRecorded[iPrev]) / 2;
+      /*
+      System.out.println("interpolate between " + iPrev + " & " + i +
+                         " (" + xInterpolate + "," + yInterpolate + "," +
+                         zInterpolate + ") intensity:" + intensityInterpolate);
+      */
+      g3d.plotLineDelta(shades1[intensityInterpolate],
+                        shades2[intensityInterpolate],
+                        xOrigin + xInterpolate,
+                        yOrigin + yInterpolate,
+                        zOrigin - zInterpolate,
+                        dxCyl, dyCyl, dzCyl);
+      /*
+      System.out.println("interpolate (" + (xOrigin + xInterpolate) + "," +
+                         (yOrigin + yInterpolate) +  "," +
+                         (zOrigin - zInterpolate) +
+                         ") intensity=" + intensity);
+      */
     }
   }
 
   void renderSphericalEndcaps() {
     g3d.fillSphereCentered(colix1, diameter, xOrigin, yOrigin, zOrigin);
     g3d.fillSphereCentered(colix2, diameter,
-                            xOrigin+dx, yOrigin+dy, zOrigin+dz);
+                            xOrigin+dxCyl, yOrigin+dyCyl, zOrigin+dzCyl);
   }
 
+  int yMin, yMax;
+  int xMin, xMax;
+  int zXMin, zXMax;
+
+  void findMinMaxY() {
+    yMin = yMax = yRecorded[0];
+    for (int i = numRecorded; --i > 0; ) {
+      int y = yRecorded[i];
+      if (y < yMin)
+        yMin = y;
+      else if (y > yMax)
+        yMax = y;
+    }
+  }
+
+  void findMinMaxX(int y) {
+    xMin = Integer.MAX_VALUE;
+    xMax = Integer.MIN_VALUE;
+    for (int i = numRecorded; --i >= 0; ) {
+      if (yRecorded[i] != y)
+        continue;
+      int x = xRecorded[i];
+      if (x < xMin) {
+        xMin = x;
+        zXMin = zRecorded[i];
+      }
+      if (x > xMax) {
+        xMax = x;
+        zXMax = zRecorded[i];
+      }
+    }
+  }
+
+  int calcArgbEnd() {
+    return shades1[Shade3D.calcIntensity(-dxCyl, -dyCyl, dzCyl)];
+  }
+
+  void renderNoEndcap() {
+    // yes, when there is no endcap we do something special
+    findMinMaxY();
+    int argbEnd = calcArgbEnd();
+    for (int y = yMin; y <= yMax; ++y) {
+      findMinMaxX(y);
+      int count = xMax - xMin;
+      g3d.plotPixelClipped(argbEnd, xOrigin + xMin,  yOrigin + y,
+                           zOrigin - zXMin);
+      if (xMax != xMin)
+        g3d.plotPixelClipped(argbEnd, xOrigin + xMax,  yOrigin + y,
+                             zOrigin - zXMax);
+    }
+  }
+
+  void renderFlatEndcap() {
+    findMinMaxY();
+    int argbEnd = calcArgbEnd();
+    for (int y = yMin; y <= yMax; ++y) {
+      findMinMaxX(y);
+      int count = xMax - xMin;
+      g3d.plotPixelsClipped(argbEnd, count, xOrigin + xMin,  yOrigin + y,
+                            zOrigin - zXMin, zOrigin - zXMax);
+    }
+  }
 }

@@ -41,17 +41,17 @@ import java.io.BufferedReader;
 
 class NWChemReader extends AtomSetCollectionReader {
 
-  // multiplication factor to go from AU to Angstrom
   /**
    * Conversion factor from atomic units to Angstrom based on the NWChem
    * reported conversion value.
    **/
   private final static float AU2ANGSTROM = (float) (1.0/1.889725989);  
+    
+  /** The number of the task begin interpreted. */
+  private int taskNumber = 1;
   
-  /**
-   * The number of atoms read for the current or last AtomSet.
-   **/
-  private int atomCount  = 0;  // the number of atoms in the last read model
+  /** The number of atomsets read for an optimization step. */
+  private int atomSetsInStep = 0;
   
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
@@ -60,15 +60,18 @@ class NWChemReader extends AtomSetCollectionReader {
     try {
       String line;
       while ((line = reader.readLine()) != null) {
-        if (line.indexOf("Output coordinates in angstroms") >= 0) {
-//          System.out.println("Interpreting output coordinates in angstroms");
+        if (line.startsWith("          Step")) {
+          atomSetsInStep = 0;
+        } else if (line.indexOf("Output coordinates in angstroms") >= 0) {
+          atomSetsInStep++;
           readAtoms(reader);
         } else if (line.indexOf("ENERGY GRADIENTS") >=0 ) {
-//          System.out.println("Interpreting ENERGY GRADIENTS");
+          atomSetsInStep++;
           readGradients(reader);
         } else if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >=0 ) {
-//          System.out.println("Interpreting Hessian and Frequency Analysis");
           readFrequencies(reader);
+        } else if (line.startsWith(" Task  times")) {
+          taskNumber++; // starting a new task
         }
         /* else if (line.startsWith(" Total atomic charges:") ||
                     line.startsWith(" Mulliken atomic charges:")) {
@@ -110,15 +113,16 @@ class NWChemReader extends AtomSetCollectionReader {
     String line;
     String tokens[];
     atomSetCollection.newAtomSet();
-    atomCount = 0; // we have no atoms for this model yet
+    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+        "Task "+taskNumber+
+        SmarterJmolAdapter.PATH_SEPARATOR+"Geometry");
     while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
-			Atom atom = atomSetCollection.addNewAtom();
-			atom.atomName = fixTag(tokens[1]);
-			atom.x = parseFloat(tokens[3]);
-			atom.y = parseFloat(tokens[4]);
-			atom.z = parseFloat(tokens[5]);
-			++atomCount;
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.atomName = fixTag(tokens[1]);
+      atom.x = parseFloat(tokens[3]);
+      atom.y = parseFloat(tokens[4]);
+      atom.z = parseFloat(tokens[5]);
     }
   }
   
@@ -150,21 +154,22 @@ class NWChemReader extends AtomSetCollectionReader {
     String line;
     String tokens[];
     atomSetCollection.newAtomSet();
-    atomCount = 0; // we have no atoms for this model yet
+    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+        "Task "+taskNumber+
+        SmarterJmolAdapter.PATH_SEPARATOR+"Gradients");
     while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
-			Atom atom = atomSetCollection.addNewAtom();
-			atom.atomName = fixTag(tokens[1]);
-			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
-			atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
-			atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
-			// Keep gradients in a.u. (larger value that way)
-			// need to multiply with -1 so the direction is in the direction the
-			// atom needs to move to lower the energy
-			atom.vectorX = -parseFloat(tokens[5]);
-			atom.vectorY = -parseFloat(tokens[6]);
-			atom.vectorZ = -parseFloat(tokens[7]);
-			++atomCount;
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.atomName = fixTag(tokens[1]);
+      atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
+      atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
+      atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
+      // Keep gradients in a.u. (larger value that way)
+      // need to multiply with -1 so the direction is in the direction the
+      // atom needs to move to lower the energy
+      atom.vectorX = -parseFloat(tokens[5]);
+      atom.vectorY = -parseFloat(tokens[6]);
+      atom.vectorZ = -parseFloat(tokens[7]);
     }
   }
 
@@ -176,11 +181,10 @@ class NWChemReader extends AtomSetCollectionReader {
  ---------------------------- Atom information ----------------------------
      atom    #        X              Y              Z            mass
  --------------------------------------------------------------------------
-    O        1  0.0000000E+00  0.0000000E+00  9.5835421E-02  1.5994910E+01
-    H        2  1.5498088E+00  0.0000000E+00 -9.8328435E-01  1.0078250E+00
-    H        3 -1.5498088E+00  0.0000000E+00 -9.8328435E-01  1.0078250E+00
+    O        1  9.5835700E-02  3.1863970E-07  0.0000000E+00  1.5994910E+01
+    H        2 -9.8328438E-01  1.5498085E+00  0.0000000E+00  1.0078250E+00
+    H        3 -9.8328460E-01 -1.5498088E+00  0.0000000E+00  1.0078250E+00
  --------------------------------------------------------------------------
-
 
 */
 // NB another header but with subhead (Frequencies expressed in cm-1)
@@ -195,29 +199,29 @@ class NWChemReader extends AtomSetCollectionReader {
  
  P.Frequency        0.00        0.00        0.00        0.00        0.00        0.00
  
-           1     0.00000     0.00000     0.00000     0.23565    -0.01637     0.04279
-           2     0.00000     0.25004     0.00000     0.00000     0.00000     0.00000
-           3     0.00000     0.00000     0.00000     0.00000     0.22007     0.08421
-           4     0.00000     0.00000     0.00000     0.23552     0.13016    -0.34017
-           5     0.99611     0.00000     0.00000     0.00000     0.00000     0.00000
-           6     0.00000     0.00000     0.00000    -0.00018     0.43052    -0.46580
-           7     0.00000     0.00000     0.00000     0.23552     0.13016    -0.34017
-           8     0.00000     0.00000     0.99611     0.00000     0.00000     0.00000
-           9     0.00000     0.00000     0.00000     0.00018     0.00963     0.63422
+           1     0.03302     0.00000     0.00000     0.00000    -0.02102     0.23236
+           2     0.08894     0.00000     0.00000     0.00000     0.22285     0.00752
+           3     0.00000     0.00000     0.25004     0.00000     0.00000     0.00000
+           4     0.52206     0.00000     0.00000     0.00000    -0.33418     0.13454
+           5     0.42946     0.00000     0.00000     0.00000     0.00480    -0.06059
+           6     0.00000     0.99611     0.00000     0.00000     0.00000     0.00000
+           7    -0.45603     0.00000     0.00000     0.00000     0.29214     0.33018
+           8     0.42946     0.00000     0.00000     0.00000     0.00480    -0.06059
+           9     0.00000     0.00000     0.00000     0.99611     0.00000     0.00000
 
                     7           8           9
  
- P.Frequency     1484.77     3460.15     3551.50
+ P.Frequency     1484.76     3460.15     3551.50
  
-           1     0.00000     0.00000    -0.06994
-           2     0.00000     0.00000     0.00000
-           3    -0.06910    -0.04713     0.00000
-           4     0.39688    -0.58190     0.55497
-           5     0.00000     0.00000     0.00000
-           6     0.54837     0.37401    -0.38642
-           7    -0.39688     0.58190     0.55497
-           8     0.00000     0.00000     0.00000
-           9     0.54837     0.37401     0.38642
+           1    -0.06910    -0.04713     0.00000
+           2     0.00000     0.00000    -0.06994
+           3     0.00000     0.00000     0.00000
+           4     0.54837     0.37401    -0.38643
+           5     0.39688    -0.58189     0.55498
+           6     0.00000     0.00000     0.00000
+           7     0.54837     0.37402     0.38641
+           8    -0.39688     0.58191     0.55496
+           9     0.00000     0.00000     0.00000
 
 
 
@@ -225,15 +229,34 @@ class NWChemReader extends AtomSetCollectionReader {
  Normal Eigenvalue ||    Projected Derivative Dipole Moments (debye/angs)
   Mode   [cm**-1]  ||      [d/dqX]             [d/dqY]           [d/dqZ]
  ------ ---------- || ------------------ ------------------ -----------------
-    1        0.000 ||       0.000               2.480             0.000
-    2        0.000 ||       0.000              -0.044             0.000
-    3        0.000 ||       0.000               2.480             0.000
-    4        0.000 ||       1.131               0.000             0.000
-    5        0.000 ||       0.651               0.000             1.057
-    6        0.000 ||      -1.701               0.000             0.404
-    7     1484.765 ||       0.000               0.000             2.112
-    8     3460.153 ||       0.000               0.000             1.877
-    9     3551.497 ||       3.435               0.000             0.000
+    1        0.000 ||       0.159               2.123             0.000
+    2        0.000 ||       0.000               0.000             2.480
+    3        0.000 ||       0.000               0.000            -0.044
+    4        0.000 ||       0.000               0.000             2.480
+    5        0.000 ||      -0.101              -0.015             0.000
+    6        0.000 ||       1.116              -0.303             0.000
+    7     1484.764 ||       2.112               0.000             0.000
+    8     3460.151 ||       1.877               0.000             0.000
+    9     3551.497 ||       0.000               3.435             0.000
+ ----------------------------------------------------------------------------
+
+
+
+  
+  
+ ----------------------------------------------------------------------------
+ Normal Eigenvalue ||           Projected Infra Red Intensities
+  Mode   [cm**-1]  || [atomic units] [(debye/angs)**2] [(KM/mol)] [arbitrary]
+ ------ ---------- || -------------- ----------------- ---------- -----------
+    1        0.000 ||    0.196398           4.531       191.459      10.742
+    2        0.000 ||    0.266537           6.149       259.833      14.578
+    3        0.000 ||    0.000084           0.002         0.081       0.005
+    4        0.000 ||    0.266537           6.149       259.833      14.578
+    5        0.000 ||    0.000452           0.010         0.441       0.025
+    6        0.000 ||    0.057967           1.337        56.509       3.170
+    7     1484.764 ||    0.193384           4.462       188.520      10.577
+    8     3460.151 ||    0.152668           3.522       148.828       8.350
+    9     3551.497 ||    0.511498          11.801       498.633      27.976
  ----------------------------------------------------------------------------
 */
 
@@ -253,48 +276,44 @@ class NWChemReader extends AtomSetCollectionReader {
     discardLines(reader, 2);
     line = reader.readLine();
     atomSetCollection.newAtomSet();
-    atomCount = 0;           // start with 0 atoms...
     do {
       tokens = getTokens(line);
-			Atom atom = atomSetCollection.addNewAtom();
-			atom.elementSymbol = tokens[0];
-			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
-			atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
-			atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
-			++atomCount;
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.elementSymbol = tokens[0];
+      atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
+      atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
+      atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
     } while ( ((line=reader.readLine()) != null) &&
               (line.indexOf("---") < 0) );  
     
-    // now we are ready to put the vibrations on the structure(s)
-    // the number of models before I start adding vectors
-    int modelNumber = atomSetCollection.atomSetCount;
-    boolean firstTime = true;     // flag for first time 1 model less to duplicate..
-    int nNewModels;               // the number of models to duplicate
-
+    // the first atomsetindex for the frequencies needed to add properties later
+    int firstFrequencyAtomSetIndex = atomSetCollection.currentAtomSetIndex;
+    // the number of frequencies read
+    int totalFrequencies = 0;
+    // the number of atoms in each atomset that the vectors are added to
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    // flag for first time: 1 model less to duplicate..
+    boolean firstTime = true;
+    
     // position myself to start reading the frequencies themselves
     discardLinesUntilContains(reader, "(Projected Frequencies expressed in cm-1)");
     discardLines(reader, 3); // step over the line with the numbers
-
+    
     while ((line=reader.readLine())!=null && line.indexOf("P.Frequency") >= 0) {
       
-      tokens = getTokens(line);      // FIXME deal with frequency line here
-
-      // determine the number of frequencies to interpret in this set of lines
-      int nFreq = tokens.length - 1; // P.Frequency comes in as a token
+      tokens = getTokens(line, 12);
       
-      // determine and duplicate the number of models needed to put the vectors on
-      if (firstTime) {
-        modelNumber--;        // use the first model to put the vectors on
-        nNewModels = nFreq-1; // so I need to create 1 model less than the # of freqs
-        firstTime = false;    // really do this only the first time
-      } else {
-        nNewModels = nFreq;   // I need to create new models for every frequency
-      }
-      for (int i = nNewModels; --i >= 0; )
+      // the number of frequencies to interpret in this set of lines
+      int nFreq = tokens.length;
+      // clone the last atom set nFreq-1 times the first time, later nFreq times.
+      for (int fIndex=(firstTime?1:0); fIndex < nFreq; fIndex++) {
         atomSetCollection.cloneLastAtomSet();
-
-      // firstModelAtom is the index in atomSetCollection.atoms that has the first atom
-      // of the first model where the first to be read vibration needs to go
+      }
+      firstTime = false;
+      
+      // firstModelAtom is the index in atomSetCollection.atoms that has the
+      // first atom of the first model where the first to be read vibration
+      // needs to go
       int firstModelAtom = atomSetCollection.atomCount - nFreq*atomCount;
       
       discardLines(reader, 1);      // skip over empty line
@@ -305,23 +324,39 @@ class NWChemReader extends AtomSetCollectionReader {
         line = reader.readLine();
         tokens = getTokens(line);
         for (int j = 0; j < nFreq; ++j) {
-					Atom atom = atomSetCollection.atoms[firstModelAtom+j*atomCount + i/3];
-					float val = parseFloat(tokens[j+1]);
-					switch (i%3) {
-						case 0:
-							atom.vectorX = val;
-							break;
-						 case 1:
-							 atom.vectorY = val;
-							 break;
-						 case 2:
-							 atom.vectorZ = val;
-					 }
+          Atom atom = atomSetCollection.atoms[firstModelAtom+j*atomCount + i/3];
+          float val = parseFloat(tokens[j+1]);
+          switch (i%3) {
+          case 0:
+            atom.vectorX = val;
+            break;
+          case 1:
+            atom.vectorY = val;
+            break;
+          case 2:
+            atom.vectorZ = val;
+          }
         }
       }
-      modelNumber += nFreq;
+      totalFrequencies += nFreq;
       discardLines(reader, 3);
     }
+    
+    // now set the names and properties of the atomsets associated with
+    // the frequencies 
+    discardLinesUntilContains(reader, "Projected Infra Red Intensities");
+    discardLines(reader, 2);
+    String path = "Task " + taskNumber +
+                  SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies";
+    for (int i=totalFrequencies, idx=firstFrequencyAtomSetIndex; --i>=0; idx++) {
+      line = reader.readLine();
+      tokens = getTokens(line);
+      String frequencyString = tokens[1] + " cm**-1";
+      atomSetCollection.setAtomSetName(frequencyString, idx);
+      atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
+      atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5] + " KM/mol", idx);
+      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path, idx);
+   }
   }
 
   /**

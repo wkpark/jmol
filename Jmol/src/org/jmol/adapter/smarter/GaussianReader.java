@@ -270,8 +270,8 @@ class GaussianReader extends AtomSetCollectionReader {
    activities (A**4/AMU), depolarization ratios for plane and unpolarized
    incident light, reduced masses (AMU), force constants (mDyne/A),
    and normal coordinates:
-   1                      2                      3
-   A1                     B2                     B1
+                       1                      2                      3
+                      A1                     B2                     B1
    Frequencies --    64.6809                64.9485               203.8241
    Red. masses --     8.0904                 2.2567                 1.0164
    Frc consts  --     0.0199                 0.0056                 0.0249
@@ -284,8 +284,8 @@ class GaussianReader extends AtomSetCollectionReader {
    5   1     0.00   0.00  -0.16     0.00  -0.31   0.00    -1.00   0.00   0.00
    6  35     0.00   0.00  -0.16     0.00   0.02   0.00     0.01   0.00   0.00
    ##SNIP##
-   10                     11                     12
-   A1                     B2                     A1
+                      10                     11                     12
+                      A1                     B2                     A1
    Frequencies --  2521.0940              3410.1755              3512.0957
    Red. masses --     1.0211                 1.0848                 1.2333
    Frc consts  --     3.8238                 7.4328                 8.9632

@@ -81,12 +81,15 @@ public class Colix {
   }
 
   public static short getColix(int argb) {
+    argb |= 0xFF000000;
     return getColix(new Color(argb));
   }
 
   public static short getColix(Color color) {
     if (color == null)
       return 0;
+    if ((color.getRGB() & 0xFF000000) != 0xFF000000)
+      color = new Color(color.getRGB() | 0xFF000000);
     Short colixBoxed = (Short) htColix.get(color);
     if (colixBoxed != null)
       return colixBoxed.shortValue();

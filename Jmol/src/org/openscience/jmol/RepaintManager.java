@@ -134,7 +134,22 @@ public class RepaintManager {
     notify();
   }
 
+  final Rectangle rectOversample = new Rectangle();
+  boolean tOversample;
+
+  public void setOversample(boolean tOversample) {
+    this.tOversample = tOversample;
+  }
+
   public void render(Graphics25D g25d, Rectangle rectClip) {
+    g25d.beginRendering(tOversample);
+    if (tOversample) {
+      rectOversample.x = rectClip.x << 1;
+      rectOversample.y = rectClip.y << 1;
+      rectOversample.width = rectClip.width << 1;
+      rectOversample.height = rectClip.height << 1;
+      rectClip = rectOversample;
+    }
     g25d.clearScreenBuffer(control.getColorBackground(),
                            rectClip.x, rectClip.y,
                            rectClip.width, rectClip.height);
@@ -151,8 +166,7 @@ public class RepaintManager {
         g25d.drawRect(control.getColixRubberband(),
                       band.x, band.y, band.width, band.height);
     }
+    g25d.endRendering();
     notifyRepainted();
   }
-
-
 }

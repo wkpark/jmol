@@ -434,7 +434,7 @@ final public class DisplayControl {
     if (dim.equals(dimCurrent))
       return;
     dimCurrent = dim;
-    transformManager.setScreenDimension(dim);
+    transformManager.setScreenDimension(dim.width, dim.height);
     transformManager.scaleFitToScreen();
     g25d.setSize(dim.width, dim.height);
   }
@@ -855,11 +855,11 @@ final public class DisplayControl {
     // FIXME mth 2003 05 31
     // for now this is returning the center of the screen
     // need to transform the center of the bounding box and return that point
-    return transformManager.dimCurrent.width / 2;
+    return dimCurrent.width / 2;
   }
 
   public int getBoundingBoxCenterY() {
-    return transformManager.dimCurrent.height / 2;
+    return dimCurrent.height / 2;
   }
 
   // FIXME mth -- consolidate these two calls to setFrame
@@ -1062,6 +1062,9 @@ final public class DisplayControl {
 
   public void setInMotion(boolean inMotion) {
     repaintManager.setInMotion(inMotion);
+    boolean tOversample = !inMotion & g25d.tEnabled;
+    repaintManager.setOversample(tOversample);
+    transformManager.setOversample(tOversample);
   }
 
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
@@ -1127,6 +1130,10 @@ final public class DisplayControl {
     return g25d.getScreenImage();
   }
 
+  public void setOversample(boolean tOversample) {
+    transformManager.setOversample(tOversample);
+    repaintManager.setOversample(tOversample);
+  }
 
   /****************************************************************
    * routines for java12
@@ -1324,7 +1331,7 @@ final public class DisplayControl {
    ****************************************************************/
 
   public boolean getGraphics25DEnabled() {
-    return g25d.enabled;
+    return g25d.tEnabled;
   }
 
   public void setGraphics25DEnabled(boolean value) {

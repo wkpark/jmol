@@ -123,11 +123,11 @@ public class TransformManager {
 
   public void translateToXPercent(int percent) {
     // FIXME -- what is the proper RasMol interpretation of this with zooming?
-    xTranslation = (dimCurrent.width/2) + dimCurrent.width * percent / 100;
+    xTranslation = (width/2) + width * percent / 100;
   }
 
   public void translateToYPercent(int percent) {
-    yTranslation = (dimCurrent.height/2) + dimCurrent.height * percent / 100;
+    yTranslation = (height/2) + height * percent / 100;
   }
 
   public void translateToZPercent(int percent) {
@@ -135,11 +135,11 @@ public class TransformManager {
   }
 
   public int getTranslationXPercent() {
-    return (xTranslation - dimCurrent.width/2) * 100 / dimCurrent.width;
+    return (xTranslation - width/2) * 100 / width;
   }
 
   public int getTranslationYPercent() {
-    return (yTranslation - dimCurrent.height/2) * 100 / dimCurrent.height;
+    return (yTranslation - height/2) * 100 / height;
   }
 
   public int getTranslationZPercent() {
@@ -321,30 +321,45 @@ public class TransformManager {
   /****************************************************************
    SCREEN SCALING
   ****************************************************************/
-  public Dimension dimCurrent;
+  boolean tOversample;
+  public int width,height;
+  public int width1, height1, width4, height4;
   public int minScreenDimension;
   public double scalePixelsPerAngstrom;
   public double scaleDefaultPixelsPerAngstrom;
 
-  public void setScreenDimension(Dimension dimCurrent) {
-    this.dimCurrent = dimCurrent;
+  public void setScreenDimension(int width, int height) {
+    this.width1 = this.width = width;
+    this.width4 = width + width;
+    this.height1 = this.height = height;
+    this.height4 = height + height;
   }
 
-  public Dimension getScreenDimension() {
-    return dimCurrent;
+  public void setOversample(boolean tOversample) {
+    if (this.tOversample == tOversample)
+      return;
+    this.tOversample = tOversample;
+    if (tOversample) {
+      width = width4;
+      height = height4;
+    } else {
+      width = width1;
+      height = height1;
+    }
+    scaleFitToScreen();
   }
 
   public void scaleFitToScreen() {
-    if (dimCurrent == null || control.getFrame() == null)  {
+    if (width == 0 || height == 0 || control.getFrame() == null)  {
       return;
     }
     // translate to the middle of the screen
-    xTranslation = dimCurrent.width / 2;
-    yTranslation = dimCurrent.height / 2;
+    xTranslation = width / 2;
+    yTranslation = height / 2;
     // find smaller screen dimension
-    minScreenDimension = dimCurrent.width;
-    if (dimCurrent.height < minScreenDimension)
-      minScreenDimension = dimCurrent.height;
+    minScreenDimension = width;
+    if (height < minScreenDimension)
+      minScreenDimension = height;
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom
     // given the current VDW radius setting. it is currently *not*
@@ -461,8 +476,8 @@ public class TransformManager {
     Matrix4d matrixPovTranslate = new Matrix4d();
     matrixPovTranslate.setIdentity();
     matrixPovTranslate.get(vectorTemp);
-    vectorTemp.x = (xTranslation-dimCurrent.width/2) / scalePixelsPerAngstrom;
-    vectorTemp.y = -(yTranslation-dimCurrent.height/2)
+    vectorTemp.x = (xTranslation-width/2) / scalePixelsPerAngstrom;
+    vectorTemp.y = -(yTranslation-height/2)
       / scalePixelsPerAngstrom; // invert y axis
     vectorTemp.z = 0;
     matrixPovTranslate.set(vectorTemp);

@@ -303,7 +303,7 @@ class Compiler {
   }
   */
 
-  final static boolean isSpaceOrTab(char ch) {
+  private final static boolean isSpaceOrTab(char ch) {
     return ch == ' ' || ch == '\t';
   }
 
@@ -319,27 +319,63 @@ class Compiler {
 
   boolean lookingAtComment() {
     log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
-    if (ichToken == cchScript || script.charAt(ichToken) != '#')
-      return false;
-    int ichT = ichToken + 1;
+    // first, find the end of the statement and scan for # (sharp) signs
     char ch;
+    int ichEnd = ichToken;
+    int ichFirstSharp = -1;
+    while (ichEnd < cchScript &&
+           (ch = script.charAt(ichEnd)) != ';' && ch != '\r' && ch != '\n') {
+      if (ch == '#' && ichFirstSharp == -1) {
+        ichFirstSharp = ichEnd;
+        System.out.println("I see a first sharp @ " + ichFirstSharp);
+      }
+      ++ichEnd;
+    }
+    if (ichFirstSharp == -1) // there were no sharps found
+      return false;
+
+    /****************************************************************
+     * check for #jc comment
+     * if it occurs anywhere in the statement, then the statement is
+     * not executed.
+     * This allows statements which are executed in RasMol but are
+     * comments in Jmol
+     ****************************************************************/
+
+    System.out.println("looking for #jc comment");
+    System.out.println("count left=" + (cchScript - ichFirstSharp) + '\n' +
+                       script.charAt(ichFirstSharp + 1) +
+                       script.charAt(ichFirstSharp + 2));
+    
+
+    if (cchScript - ichFirstSharp >= 3 &&
+        script.charAt(ichFirstSharp + 1) == 'j' &&
+        script.charAt(ichFirstSharp + 2) == 'c') {
+      // statement contains a #jc before then end ... strip it all
+      cchToken = ichEnd - ichToken;
+      return true;
+    }
+
+    // if the sharp was not the first character then it isn't a comment
+    if (ichFirstSharp != ichToken)
+      return false;
+
     /****************************************************************
      * check for leading #jx <space> or <tab>
      * if you see it, then only strip those 4 characters
      * if they put in #jx <newline> then they are not going to
      * execute anything, and the regular code will take care of it
      ****************************************************************/
-    if (cchScript > ichT + 3 &&
-        script.charAt(ichT) == 'j' &&
-        script.charAt(ichT + 1) == 'x' &&
-        isSpaceOrTab(script.charAt(ichT + 2))) {
+    if (cchScript > ichToken + 3 &&
+        script.charAt(ichToken + 1) == 'j' &&
+        script.charAt(ichToken + 2) == 'x' &&
+        isSpaceOrTab(script.charAt(ichToken + 3))) {
       cchToken = 4; // #jx[\s\t]
       return true;
     }
-    while (ichT < cchScript &&
-           (ch = script.charAt(ichT)) != ';' && ch != '\r' && ch != '\n')
-      ++ichT;
-    cchToken = ichT - ichToken;
+
+    // first character was a sharp, but was not #jx ... strip it all
+    cchToken = ichEnd - ichToken;
     return true;
   }
 

@@ -24,7 +24,6 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.Bspt;
 import org.openscience.jmol.DisplayControl;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -35,8 +34,7 @@ import javax.vecmath.Matrix4d;
  * Stores and manipulations information and properties of
  * atoms.
  */
-public class Atom extends org.openscience.cdk.Atom
-  implements Bspt.Tuple {
+public class Atom extends org.openscience.cdk.Atom {
 
   /**
    * Creates an atom with the given type.

@@ -24,7 +24,6 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.Bspt;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.render.AtomShape;
 import org.openscience.jmol.render.BondShape;

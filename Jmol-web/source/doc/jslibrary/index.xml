@@ -69,7 +69,7 @@
   <body>
     <script>
       jmolInitialize("../jmol"); // REQUIRED
-      jmolApplet(200, "caffeine.xyz");
+      jmolApplet(200, "load caffeine.xyz");
     </script>
   </body>
 </html>
@@ -96,7 +96,7 @@
         jmolSetAppletColor("skyblue"); // if you don't want black
 
 	// 200x200 + file from another directory
-	jmolApplet(200, "../jssample0/caffeine.xyz");
+	jmolApplet(200, "load ../jssample0/caffeine.xyz");
 	jmolBr();
 	// a radio group
 	jmolHtml("atoms ");
@@ -201,13 +201,10 @@
       </section>
 
       <section title="jmolApplet">
-	<code>jmolApplet(size, {modelFilename}, {script}, {nameSuffix})</code>
+	<code>jmolApplet(size, {script}, {nameSuffix})</code>
 	Allocates an JmolApplet. <code>size</code> should generally be an
 	integer	pixel count in the range 100 to 800.
-	<code>modelFilename</code> is the name of a file
-	(or a relative URL to a cgi)
-	on your web server. This can include a directory
-	specification. <code>script</code> is a script that should be run
+	<code>script</code> is a script that will be run
 	after the molecular model is loaded.
 	<p>
 	  <i>
@@ -373,7 +370,7 @@
       </section>
       
       <section title="jmolAppletInline">
-	<code>jmolApplet(size, inlineModel, {script}, {nameSuffix})</code>
+	<code>jmolAppletInline(size, inlineModel, {script}, {nameSuffix})</code>
 	<p>
 	  Creates an instance of the JmolApplet, but passes in the
 	  <i>contents</i> of the molecular model rather than

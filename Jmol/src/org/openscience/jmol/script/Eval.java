@@ -998,9 +998,11 @@ public class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500)
+      if (radiusRasMol >= 500 || radiusRasMol < -100)
         outOfRange();
-      mar = (short)(radiusRasMol * 4);
+      mar = (short)radiusRasMol;
+      if (radiusRasMol > 0)
+        mar *= 4;
       break;
     case Token.decimal:
       double angstroms = ((Double)statement[1].value).doubleValue();

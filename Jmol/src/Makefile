@@ -1,10 +1,12 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
-               JAVAC= /usr/local/jdk1.2.2/bin/javac
-                JAVA= java
-             JAVADOC= javadoc -private
+           JAVA_HOME= /usr/local/jdk1.2.2
+               JIKES= /usr/local/bin/jikes
+               JAVAC= $(JAVA_HOME)/bin/javac
+                JAVA= $(JAVA_HOME)/bin/java
+             JAVADOC= $(JAVA_HOME)/bin/javadoc -private
         THREADS_FLAG=native
-           CLASSPATH=${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar
+           CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar:${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar
 #
 # put Jmol.java first, so that compilation is fast
 #
@@ -23,7 +25,6 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/BaseAtomType.java \
 		org/openscience/jmol/Bond.java \
 		org/openscience/jmol/CMLReader.java \
-		org/openscience/jmol/CMLFile.java \
 		org/openscience/jmol/CMLSaver.java \
 		org/openscience/jmol/Charge.java \
 		org/openscience/jmol/ChemFile.java \
@@ -61,7 +62,6 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/MultiLineHeaderRenderer.java \
 		org/openscience/jmol/NMRShielding.java \
 		org/openscience/jmol/PDBReader.java \
-		org/openscience/jmol/Pair.java \
 		org/openscience/jmol/PhysicalProperty.java \
 		org/openscience/jmol/Preferences.java \
 		org/openscience/jmol/ReaderFactory.java \
@@ -129,7 +129,7 @@ TEST_CLASSES = $(TEST_SOURCES:%.java=%.class)
 #
 %.class: %.java
 	@echo "compiling $*"
-	$(JAVAC) -classpath $(CLASSPATH) -O -deprecation $<
+	$(JIKES) -classpath $(CLASSPATH) -O -deprecation $<
 
 all: archive applet_archive
 

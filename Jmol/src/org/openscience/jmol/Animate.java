@@ -357,7 +357,7 @@ public class Animate extends JDialog implements ActionListener,Runnable {
         iSlider.setPaintLabels(true);
         iSlider.addChangeListener(new NondragChangeListener());
 		
-        JCheckBox iC = new JCheckBox(jrh.getString("interpCBLabel"), true);
+        JCheckBox iC = new JCheckBox(jrh.getString("interpCBLabel"), false);
         iC.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     stop();

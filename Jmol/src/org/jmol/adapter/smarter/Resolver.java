@@ -134,7 +134,7 @@ class Resolver {
   { "TITL ", "ZERR ", "LATT ", "SYMM ", "CELL " };
 
   final static String[] cifRecords =
-  { "data_" };
+  { "data_", "_publ" };
 
   final static String[] ghemicalMMRecords =
   { "!Header mm1gp", "!Header gpr" };

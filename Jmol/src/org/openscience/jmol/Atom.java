@@ -81,6 +81,15 @@ public class Atom {
   }
 
   /**
+   * Returns whether this atom is a hydrogen atom.
+   *
+   * @return true if this atom is a hydrogen atom.
+   */
+  public boolean isHydrogen() {
+    return getType().getAtomicNumber() == 1;
+  }
+  
+  /**
    * Adds a <code>PhysicalProperty</code> to this atom if not already defined.
    * If a <code>PhysicalProperty</code> with the same description already
    * exists, the property is not added.

@@ -43,9 +43,6 @@ abstract public class Mcpg extends Graphic {
     pdbFile = frame.pdbFile;
   }
 
-  public void setShow(boolean show) {
-  }
-
   public void setMad(short mad, BitSet bsSelected) {
     initialize();
     for (int m = models.length; --m >= 0; )

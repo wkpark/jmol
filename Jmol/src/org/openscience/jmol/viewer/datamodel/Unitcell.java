@@ -24,7 +24,6 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.cdk.geometry.CrystalGeometryTools;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
@@ -32,57 +31,74 @@ import java.util.BitSet;
 
 public class Unitcell extends Graphic {
 
-  boolean show;
   boolean hasUnitcell;
-  float a, b, c;
-  float alpha, beta, gamma;
+  float a,b,c,alpha,beta,gamma;
   Point3f[] vertices;
+
+  final static Point3f pointOrigin = new Point3f();
+
+  final static float toRadians = (float)Math.PI * 2 / 360;
 
   public void initGraphic() {
     float[] notionalUnitcell = frame.notionalUnitcell;
     hasUnitcell = notionalUnitcell != null;
     if (hasUnitcell) {
-      /****************************************************************
-       * someone needs to fix this code
-       * all you have to do is calculate the correct
-       * points for the vertices
-       ****************************************************************/
-      a = notionalUnitcell[0];
-      b = notionalUnitcell[1];
-      c = notionalUnitcell[2];
-      alpha = notionalUnitcell[3];
-      beta  = notionalUnitcell[4];
-      gamma = notionalUnitcell[5];
-      // these vertices are wrong, but it is the best that mth can do
-      double[][] cart = CrystalGeometryTools.notionalToCartesian(a,b,c,alpha,beta,gamma);
+      float a = this.a = notionalUnitcell[0];
+      float b = this.b = notionalUnitcell[1];
+      float c = this.c = notionalUnitcell[2];
+      float alpha = this.alpha = notionalUnitcell[3];
+      float beta  = this.beta  = notionalUnitcell[4];
+      float gamma = this.gamma = notionalUnitcell[5];
+
+      /* some intermediate variables */
+      float cosAlpha = (float)Math.cos(toRadians*alpha);
+      float sinAlpha = (float)Math.sin(toRadians*alpha);
+      float cosBeta  = (float)Math.cos(toRadians*beta);
+      float sinBeta  = (float)Math.sin(toRadians*beta);
+      float cosGamma = (float)Math.cos(toRadians*gamma);
+      float sinGamma = (float)Math.sin(toRadians*gamma);
+    
+
+      // 1. align the a axis with x axis
+      Point3f pointA = new Point3f(a, 0, 0);
+      // 2. place the b is in xy plane making a angle gamma with a
+      Point3f pointB = new Point3f(b * cosGamma, b * sinGamma, 0);
+      // 3. now the c axis,
+      // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
+      float V = a * b * c *
+        (float) Math.sqrt(1.0 - cosAlpha*cosAlpha -
+                          cosBeta*cosBeta -
+                          cosGamma*cosGamma +
+                          2.0*cosAlpha*cosBeta*cosGamma);
+
+      Point3f pointC = new Point3f(c * cosBeta,
+                                   c * (cosAlpha - cosBeta*cosGamma)/sinGamma,
+                                   V/(a * b * sinGamma));
+
+      // 4. the other points
+
+      Point3f pointAB = new Point3f();
+      pointAB.add(pointA, pointB);
+      Point3f pointAC = new Point3f();
+      pointAC.add(pointA, pointC);
+      Point3f pointBC = new Point3f();
+      pointBC.add(pointB, pointC);
+      Point3f pointABC = new Point3f();
+      pointABC.add(pointA, pointBC);
+      
       vertices = new Point3f[] {
-        new Point3f(0, 0, 0),
-        new Point3f((float)cart[0][0], (float)cart[0][1], (float)cart[0][2]), // a
-        new Point3f((float)cart[1][0], (float)cart[1][1], (float)cart[1][2]), // b
-        new Point3f((float)cart[0][0] + (float)cart[1][0], 
-                    (float)cart[0][1] + (float)cart[1][1], 
-                    (float)cart[0][2] + (float)cart[1][2]), // a+b
-        new Point3f((float)cart[2][0], (float)cart[2][1], (float)cart[2][2]), // c
-        new Point3f((float)cart[0][0] + (float)cart[2][0], 
-                    (float)cart[0][1] + (float)cart[2][1], 
-                    (float)cart[0][2] + (float)cart[2][2]), // a+c
-        new Point3f((float)cart[1][0] + (float)cart[2][0], 
-                    (float)cart[1][1] + (float)cart[2][1], 
-                    (float)cart[1][2] + (float)cart[2][2]), // b+c
-        new Point3f((float)cart[0][0] + (float)cart[1][0] + (float)cart[2][0], 
-                    (float)cart[0][1] + (float)cart[1][1] + (float)cart[2][1], 
-                    (float)cart[0][2] + (float)cart[1][2] + (float)cart[2][2]), // a+b+c
+        pointOrigin,
+        pointA,
+        pointB,
+        pointAB,
+        pointC,
+        pointAC,
+        pointBC,
+        pointABC
       };
-      /****************************************************************
-       * all your changes should be above this line
-       ****************************************************************/
     }
   }
 
-  public void setShow(boolean show) {
-    this.show = show;
-  }
-  
   public void setMad(short mad, BitSet bsSelected) {
   }
   

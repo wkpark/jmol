@@ -1303,6 +1303,10 @@ final public class JmolViewer {
     getFrame().setGraphicShow(refGraphic, show);
   }
 
+  public boolean getGraphicShow(int refGraphic) {
+    return getFrame().getGraphicShow(refGraphic);
+  }
+
   public void setGraphicMad(int refGraphic, short mad) {
     getFrame().setGraphicMad(refGraphic, mad, selectionManager.bsSelection);
   }
@@ -1421,6 +1425,8 @@ final public class JmolViewer {
       return getShowAxes();
     if (key.equals("showBoundingBox"))
       return getShowBoundingBox();
+    if (key.equals("showUnitcell"))
+      return getGraphicShow(JmolConstants.GRAPHIC_UNITCELL);
     if (key.equals("showHydrogens"))
       return getShowHydrogens();
     if (key.equals("showVectors"))
@@ -1447,24 +1453,27 @@ final public class JmolViewer {
   }
 
   public void setBooleanProperty(String key, boolean value) {
+    refresh();
     if (key.equals("wireframeRotation"))
-      { setWireframeRotation(value); return ; }
+      { setWireframeRotation(value); return; }
     if (key.equals("perspectiveDepth"))
-      { setPerspectiveDepth(value); return ; }
+      { setPerspectiveDepth(value); return; }
     if (key.equals("showAxes"))
-      { setShowAxes(value); return ; }
+      { setShowAxes(value); return; }
     if (key.equals("showBoundingBox"))
-      { setShowBoundingBox(value); return ; }
+      { setShowBoundingBox(value); return; }
+    if (key.equals("showUnitcell"))
+      { setGraphicShow(JmolConstants.GRAPHIC_UNITCELL, value); return; }
     if (key.equals("showHydrogens"))
-      { setShowHydrogens(value); return ; }
+      { setShowHydrogens(value); return; }
     if (key.equals("showHydrogens"))
-      { setShowHydrogens(value); return ; }
+      { setShowHydrogens(value); return; }
     if (key.equals("showVectors"))
-      { setShowVectors(value); return ; }
+      { setShowVectors(value); return; }
     if (key.equals("showMeasurements"))
-      { setShowMeasurements(value); return ; }
+      { setShowMeasurements(value); return; }
     if (key.equals("showSelections"))
-      { setSelectionHaloEnabled(value); return ; }
+      { setSelectionHaloEnabled(value); return; }
     if (key.equals("oversampleAlways"))
       { setOversampleAlwaysEnabled(value); return; }
     if (key.equals("oversampleStopped"))

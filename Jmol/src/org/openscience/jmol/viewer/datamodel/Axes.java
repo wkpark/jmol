@@ -54,6 +54,7 @@ public class Axes extends Graphic {
   }
 
   public void setShow(boolean show) {
+    this.show = show;
     this.mode = (show ? JmolConstants.AXES_BBOX : JmolConstants.AXES_NONE);
     if (mode == JmolConstants.AXES_NONE)
       return;

@@ -32,6 +32,7 @@ abstract public class Graphic {
 
   JmolViewer viewer;
   Frame frame;
+  boolean show;
 
   final public void setViewerFrame(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
@@ -42,7 +43,14 @@ abstract public class Graphic {
   public void initGraphic() {
   }
 
-  abstract public void setShow(boolean show);
+  public void setShow(boolean show) {
+    this.show = show;
+  }
+
+  final public boolean getShow() {
+    return show;
+  }
+
   abstract public void setMad(short mad, BitSet bsSelected);
   abstract public void setColix(byte palette, short colix, BitSet bsSelected);
 }

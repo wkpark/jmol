@@ -233,6 +233,12 @@ public class Frame {
       graphics[refGraphic].setShow(show);
   }
 
+  public boolean getGraphicShow(int refGraphic) {
+    if (graphics[refGraphic] == null)
+      return false;
+    return graphics[refGraphic].getShow();
+  }
+
   public void setGraphicMad(int refGraphic, short mad, BitSet bsSelected) {
     if (mad != 0)
       checkGraphic(refGraphic);

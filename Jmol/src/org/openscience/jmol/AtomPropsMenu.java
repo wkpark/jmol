@@ -81,7 +81,13 @@ public class AtomPropsMenu extends JMenu {
         }
         
         for (int i = 0; i < propsList.size(); i++) {
-            JRadioButtonMenuItem mi3 = new JRadioButtonMenuItem((String) propsList.elementAt(i));
+			String propertyName = (String) propsList.elementAt(i);
+			if (propertyName.equals("Vector")) {
+				// Ignore vector properties because a special checkbox menu
+				// item already exists in Display menu.
+				continue;
+			}
+            JRadioButtonMenuItem mi3 = new JRadioButtonMenuItem(propertyName);
             list.addElement(mi3);
             add(mi3);
             bg.add(mi3);
@@ -98,10 +104,6 @@ public class AtomPropsMenu extends JMenu {
                 String mode = rbmi.getText();
                 if(mode.equals("None")) {
                     settings.setPropertyMode("");
-                    settings.setShowVectors(false);
-                } else if (mode.equals("Vector")) {
-                    settings.setPropertyMode(""); 
-                    settings.setShowVectors(true);
                 } else
                     settings.setPropertyMode(rbmi.getText());            
                 Jmol.display.repaint();

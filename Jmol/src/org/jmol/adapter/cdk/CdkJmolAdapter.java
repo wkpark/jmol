@@ -223,7 +223,7 @@ public class CdkJmolAdapter extends JmolAdapter {
       if (iatom == atomCount)
         return false;
       atom = atomContainer.getAtomAt(iatom++);
-      System.out.println("CDK atom: " + atom);
+      // System.out.println("CDK atom: " + atom);
       return true;
     }
 
@@ -238,7 +238,7 @@ public class CdkJmolAdapter extends JmolAdapter {
     }
     public char getChainID() {
         String chainID = (String)atom.getProperty("pdb.chainID");
-        System.out.println("chainID: " + chainID);
+        // System.out.println("chainID: " + chainID);
         if (chainID != null && chainID.length() > 0) {
             return chainID.charAt(0);
         } else {
@@ -247,7 +247,7 @@ public class CdkJmolAdapter extends JmolAdapter {
     }
     public String getGroup3() {
         String resName = (String)atom.getProperty("pdb.resName");
-        System.out.println("resName: " + resName);
+        // System.out.println("resName: " + resName);
         if (resName != null && resName.length() > 0) {
             return resName.trim();
         } else {
@@ -256,7 +256,7 @@ public class CdkJmolAdapter extends JmolAdapter {
     }
     public int getSequenceNumber() {
         String sequence = (String)atom.getProperty("pdb.resSeq");
-        System.out.println("sequence: " + sequence);
+        // System.out.println("sequence: " + sequence);
         try {
             int sequenceInt = Integer.parseInt((String)atom.getProperty("pdb.resSeq"));
             System.out.println("     int: " + sequenceInt);
@@ -268,7 +268,7 @@ public class CdkJmolAdapter extends JmolAdapter {
     }
     public char getInsertionCode() {
         String iCode = (String)atom.getProperty("pdb.iCode");
-        System.out.println("iCode: " + iCode);
+        // System.out.println("iCode: " + iCode);
         if (iCode != null && iCode.length() > 0) {
             return iCode.charAt(0);
         } else {

@@ -248,10 +248,8 @@
          unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
-<!-- Commented out for testing small applet
     <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolappletcdk.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-saxonly.jar"/>
--->
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
         <include name="**/Point3f.class"/>

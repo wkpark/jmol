@@ -120,7 +120,7 @@ public class ModelManager {
     return modelName;
   }
 
-  public double getRotationRadius() {
+  public float getRotationRadius() {
     return frame.getRotationRadius();
   }
 
@@ -203,15 +203,15 @@ public class ModelManager {
   }
 
   // angstroms of slop ... from OpenBabel ... mth 2003 05 26
-  public double bondTolerance = 0.45;
-  public void setBondTolerance(double bondTolerance) {
+  public float bondTolerance = 0.45f;
+  public void setBondTolerance(float bondTolerance) {
     this.bondTolerance = bondTolerance;
   }
 
   // minimum acceptable bonding distance ... from OpenBabel ... mth 2003 05 26
-  public double minBondDistance = 0.4;
-  public void setMinBondDistance(double minBondDistance) {
-    this.minBondDistance =  minBondDistance;
+  public float minBondDistance = 0.4f;
+  public void setMinBondDistance(float minBondDistance) {
+    this.minBondDistance = minBondDistance;
   }
 
   public void deleteAtom(int atomIndex) {
@@ -314,8 +314,8 @@ public class ModelManager {
     return JmolModelAdapter.atomColors[atomicNumber];
   }
 
-  public double solventProbeRadius = 0;
-  public void setSolventProbeRadius(double radius) {
+  public float solventProbeRadius = 0;
+  public void setSolventProbeRadius(float radius) {
     this.solventProbeRadius = radius;
   }
 
@@ -357,15 +357,15 @@ public class ModelManager {
     return frame.atomShapes[i].getAtomicSymbol();
   }
 
-  public double getAtomX(int i) {
+  public float getAtomX(int i) {
     return frame.atomShapes[i].getAtomX();
   }
 
-  public double getAtomY(int i) {
+  public float getAtomY(int i) {
     return frame.atomShapes[i].getAtomY();
   }
 
-  public double getAtomZ(int i) {
+  public float getAtomZ(int i) {
     return frame.atomShapes[i].getAtomZ();
   }
 
@@ -373,7 +373,7 @@ public class ModelManager {
     return frame.atomShapes[i].getPoint3d();
   }
 
-  public double getAtomRadius(int i) {
+  public float getAtomRadius(int i) {
     return frame.atomShapes[i].getRadius();
   }
 
@@ -389,7 +389,7 @@ public class ModelManager {
     return frame.bondShapes[i].atomShape2.getPoint3d();
   }
 
-  public double getBondRadius(int i) {
+  public float getBondRadius(int i) {
     return frame.bondShapes[i].getRadius();
   }
 

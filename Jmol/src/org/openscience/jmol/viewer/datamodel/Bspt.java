@@ -51,13 +51,13 @@ package org.openscience.jmol.viewer.datamodel;
   3-d boxes.
 
   Three iterators are provided
-    enumNear(Bspt.Tuple center, double distance)
+    enumNear(Bspt.Tuple center, float distance)
       returns all the points contained in of all the boxes which are within
       distance from the center.
-    enumSphere(Bspt.Tuple center, double distance)
+    enumSphere(Bspt.Tuple center, float distance)
       returns all the points which are contained within the sphere (inclusive)
       defined by center + distance
-    enumHemiSphere(Bspt.Tuple center, double distance)
+    enumHemiSphere(Bspt.Tuple center, float distance)
       same as sphere, but only the points which are greater along the
       x dimension
 */
@@ -71,14 +71,14 @@ public final class Bspt {
   Element eleRoot;
 
   /*
-  static double distance(int dim, Tuple t1, Tuple t2) {
+  static float distance(int dim, Tuple t1, Tuple t2) {
     return Math.sqrt(distance2(dim, t1, t2));
   }
 
-  static double distance2(int dim, Tuple t1, Tuple t2) {
-    double distance2 = 0.0;
+  static float distance2(int dim, Tuple t1, Tuple t2) {
+    float distance2 = 0.0;
     while (--dim >= 0) {
-      double distT = t1.getDimensionValue(dim) - t2.getDimensionValue(dim);
+      float distT = t1.getDimensionValue(dim) - t2.getDimensionValue(dim);
       distance2 += distT*distT;
     }
     return distance2;
@@ -152,7 +152,7 @@ public final class Bspt {
     }
   }
 
-  public Enumeration enumNear(Tuple center, double distance) {
+  public Enumeration enumNear(Tuple center, float distance) {
     return new EnumerateNear(center, distance);
   }
 
@@ -161,10 +161,10 @@ public final class Bspt {
     int sp;
     int i;
     Leaf leaf;
-    double distance;
+    float distance;
     Tuple center;
 
-    EnumerateNear(Tuple center, double distance) {
+    EnumerateNear(Tuple center, float distance) {
       this.distance = distance;
       this.center = center;
 
@@ -229,22 +229,22 @@ public final class Bspt {
     Leaf leaf;
 
     Tuple center;
-    double radius;
+    float radius;
 
-    double centerValues[];
-    double radius2;
-    double foundDistance2; // the dist squared of a found Element;
+    float centerValues[];
+    float radius2;
+    float foundDistance2; // the dist squared of a found Element;
 
     // when set, only the hemisphere sphere .GT. or .EQ. the point
     // (on the first dim) is returned
     boolean tHemisphere;
 
     SphereIterator() {
-      centerValues = new double[dimMax];
+      centerValues = new float[dimMax];
       stack = new Node[stackDepth];
     }
 
-    public void initialize(Tuple center, double radius) {
+    public void initialize(Tuple center, float radius) {
       this.center = center;
       this.radius = radius;
       this.radius2 = radius*radius;
@@ -268,7 +268,7 @@ public final class Bspt {
       leafIndex = 0;
     }
 
-    public void initializeHemisphere(Tuple center, double radius) {
+    public void initializeHemisphere(Tuple center, float radius) {
       initialize(center, radius);
       tHemisphere = true;
     }
@@ -279,8 +279,8 @@ public final class Bspt {
     }
 
     private boolean isWithin(Tuple t) {
-      double dist2;
-      double distT;
+      float dist2;
+      float distT;
       distT = t.getDimensionValue(0) - centerValues[0];
       dist2 = distT * distT;
       if (dist2 > radius2)
@@ -346,13 +346,13 @@ public final class Bspt {
       return leaf.tuples[leafIndex++];
     }
 
-    public double foundDistance2() {
+    public float foundDistance2() {
       return foundDistance2;
     }
   }
 
   public interface Tuple {
-    public double getDimensionValue(int dim);
+    public float getDimensionValue(int dim);
   }
 
   interface Element {
@@ -365,7 +365,7 @@ public final class Bspt {
     Element eleLE;
     int dim;
     int dimMax;
-    double splitValue;
+    float splitValue;
     Element eleGE;
 
     Node(int dim, int dimMax, Leaf leafLE) {
@@ -431,11 +431,11 @@ public final class Bspt {
       tuples = new Tuple[leafCountMax];
     }
 
-    Leaf(Leaf leaf, int dim, double splitValue) {
+    Leaf(Leaf leaf, int dim, float splitValue) {
       this();
       for (int i = leafCountMax; --i >= 0; ) {
         Tuple tuple = leaf.tuples[i];
-        double value = tuple.getDimensionValue(dim);
+        float value = tuple.getDimensionValue(dim);
         if (value > splitValue ||
             (value == splitValue && ((i & 1) == 1))) {
           leaf.tuples[i] = null;
@@ -451,7 +451,7 @@ public final class Bspt {
         tuples[leafCountMax] = null; // explode
     }
 
-    public double getSplitValue(int dim) {
+    public float getSplitValue(int dim) {
       if (count != leafCountMax)
         tuples[leafCountMax] = null;
       return (tuples[0].getDimensionValue(dim) +
@@ -487,17 +487,17 @@ public final class Bspt {
 }
 
 class Point implements Bspt.Tuple {
-  double x;
-  double y;
-  double z;
+  float x;
+  float y;
+  float z;
 
-  Point(double x, double y, double z) {
+  Point(float x, float y, float z) {
     this.x = x;
     this.y = y;
     this.z = z;
   }
 
-  public double getDimensionValue(int dim) {
+  public float getDimensionValue(int dim) {
     if (dim == 0)
       return x;
     if (dim == 1)

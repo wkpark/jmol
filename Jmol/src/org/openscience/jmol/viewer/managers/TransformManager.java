@@ -63,18 +63,18 @@ public class TransformManager {
     // track with the mouse cursor
 
     // the accelerator is just a slop factor ... it felt a litte slow to me
-    double rotateAccelerator = 1.1f;
+    float rotateAccelerator = 1.1f;
 
     // a change in the x coordinate generates a rotation about the y axis
-    double ytheta = Math.PI * xDelta / minScreenDimension;
+    float ytheta = (float)Math.PI * xDelta / minScreenDimension;
     rotateByY(ytheta * rotateAccelerator);
-    double xtheta = Math.PI * yDelta / minScreenDimension;
+    float xtheta = (float)Math.PI * yDelta / minScreenDimension;
     rotateByX(xtheta * rotateAccelerator);
   }
 
   public void rotateZBy(int zDelta) {
-    double rotateAccelerator = 1.1f;
-    double ztheta = Math.PI * zDelta / minScreenDimension;
+    float rotateAccelerator = 1.1f;
+    float ztheta = (float)Math.PI * zDelta / minScreenDimension;
     rotateByZ(ztheta * rotateAccelerator);
   }
 
@@ -82,25 +82,25 @@ public class TransformManager {
     matrixRotate.setIdentity();
   }
 
-  public void rotateToX(double angleRadians) {
+  public void rotateToX(float angleRadians) {
     matrixRotate.rotX(angleRadians);
   }
-  public void rotateToY(double angleRadians) {
+  public void rotateToY(float angleRadians) {
     matrixRotate.rotY(angleRadians);
   }
-  public void rotateToZ(double angleRadians) {
+  public void rotateToZ(float angleRadians) {
     matrixRotate.rotZ(angleRadians);
   }
 
-  public void rotateByX(double angleRadians) {
+  public void rotateByX(float angleRadians) {
     matrixTemp.rotX(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
-  public void rotateByY(double angleRadians) {
+  public void rotateByY(float angleRadians) {
     matrixTemp.rotY(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
-  public void rotateByZ(double angleRadians) {
+  public void rotateByZ(float angleRadians) {
     matrixTemp.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
@@ -295,7 +295,7 @@ public class TransformManager {
    PERSPECTIVE
   ****************************************************************/
   public boolean perspectiveDepth = true;
-  public double cameraDepth = 3;
+  public float cameraDepth = 3;
   public int cameraZ = 1000; // prevent divide by zero on startup
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -307,11 +307,11 @@ public class TransformManager {
     return perspectiveDepth;
   }
 
-  public void setCameraDepth(double depth) {
+  public void setCameraDepth(float depth) {
     cameraDepth = depth;
   }
 
-  public double getCameraDepth() {
+  public float getCameraDepth() {
     return cameraDepth;
   }
 
@@ -326,8 +326,8 @@ public class TransformManager {
   public int width,height;
   public int width1, height1, width4, height4;
   public int minScreenDimension;
-  public double scalePixelsPerAngstrom;
-  public double scaleDefaultPixelsPerAngstrom;
+  public float scalePixelsPerAngstrom;
+  public float scaleDefaultPixelsPerAngstrom;
 
   public void setScreenDimension(int width, int height) {
     this.width1 = this.width = width;
@@ -371,7 +371,7 @@ public class TransformManager {
       minScreenDimension / 2 / viewer.getRotationRadius();
     if (perspectiveDepth) {
       cameraZ = (int)(cameraDepth * minScreenDimension);
-      double scaleFactor = (cameraZ + minScreenDimension/2) / (double)cameraZ;
+      float scaleFactor = (cameraZ + minScreenDimension/2) / (float)cameraZ;
       // mth - for some reason, I can make the scaleFactor bigger in this
       // case. I do not know why, but there is extra space around the edges.
       // I have looked at it three times and still cannot figure it out
@@ -386,16 +386,16 @@ public class TransformManager {
    * scalings
    ****************************************************************/
 
-  public double scaleToScreen(int z, double sizeAngstroms) {
+  public float scaleToScreen(int z, float sizeAngstroms) {
     // all z's are >= 0
     // so the more positive z is, the smaller the screen scale
-    double pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
+    float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
     if (perspectiveDepth)
       pixelSize = (pixelSize * cameraZ) / (cameraZ + z);
     return pixelSize;
   }
 
-  public double scaleToPerspective(int z, double sizeAngstroms) {
+  public float scaleToPerspective(int z, float sizeAngstroms) {
     return (perspectiveDepth
             ? (sizeAngstroms * cameraZ) / (cameraZ + z)
             : sizeAngstroms);
@@ -487,7 +487,7 @@ public class TransformManager {
     }
     point3iScreenTemp.z = z;
     if (perspectiveDepth) {
-      double perspectiveFactor = (double)cameraZ / (cameraZ + z);
+      float perspectiveFactor = (float)cameraZ / (cameraZ + z);
       point3dScreenTemp.x *= perspectiveFactor;
       point3dScreenTemp.y *= perspectiveFactor;
     }
@@ -504,7 +504,7 @@ public class TransformManager {
   /*
   public void transformVector(Point3d pointAngstroms,
                               Point3d vectorAngstroms,
-                              double scale,
+                              float scale,
                               Point3i results) {
     point3dScreenTemp.set(vectorAngstroms);
     point3dScreenTemp.scaleAdd(scale, pointAngstroms);

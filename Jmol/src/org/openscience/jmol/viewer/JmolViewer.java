@@ -387,7 +387,7 @@ final public class JmolViewer {
     transformManager.transformVector(vectorAngstroms, vectorTransformed);
   }
 
-  public double scaleToScreen(int z, double sizeAngstroms) {
+  public float scaleToScreen(int z, float sizeAngstroms) {
     return transformManager.scaleToScreen(z, sizeAngstroms);
   }
 
@@ -395,7 +395,7 @@ final public class JmolViewer {
     return transformManager.scaleToScreen(z, milliAngstroms);
   }
 
-  public double scaleToPerspective(int z, double sizeAngstroms) {
+  public float scaleToPerspective(int z, float sizeAngstroms) {
     return transformManager.scaleToPerspective(z, sizeAngstroms);
   }
 
@@ -412,11 +412,11 @@ final public class JmolViewer {
     return transformManager.perspectiveDepth;
   }
 
-  public void setCameraDepth(double depth) {
+  public void setCameraDepth(float depth) {
     transformManager.setCameraDepth(depth);
   }
 
-  public double getCameraDepth() {
+  public float getCameraDepth() {
     return transformManager.cameraDepth;
   }
 
@@ -776,7 +776,7 @@ final public class JmolViewer {
     return modelManager.getJmolFrame();
   }
 
-  public double getRotationRadius() {
+  public float getRotationRadius() {
     return modelManager.getRotationRadius();
   }
 
@@ -869,20 +869,20 @@ final public class JmolViewer {
   }
 
   public void setBondTolerance(double bondTolerance) {
-    modelManager.setBondTolerance(bondTolerance);
+    modelManager.setBondTolerance((float)bondTolerance);
     refresh();
   }
 
-  public double getBondTolerance() {
+  public float getBondTolerance() {
     return modelManager.bondTolerance;
   }
 
   public void setMinBondDistance(double minBondDistance) {
-    modelManager.setMinBondDistance(minBondDistance);
+    modelManager.setMinBondDistance((float)minBondDistance);
     refresh();
   }
 
-  public double getMinBondDistance() {
+  public float getMinBondDistance() {
     return modelManager.minBondDistance;
   }
 
@@ -896,10 +896,10 @@ final public class JmolViewer {
   }
 
   public void setSolventProbeRadius(double radius) {
-    modelManager.setSolventProbeRadius(radius);
+    modelManager.setSolventProbeRadius((float)radius);
   }
 
-  public double getSolventProbeRadius() {
+  public float getSolventProbeRadius() {
     return modelManager.solventProbeRadius;
   }
 
@@ -1445,33 +1445,33 @@ final public class JmolViewer {
   }
 
   public void setArrowHeadSize(double ls) {
-    styleManager.setArrowHeadSize(ls);
+    styleManager.setArrowHeadSize((float)ls);
     refresh();
   }
 
-  public double getArrowHeadSize() {
+  public float getArrowHeadSize() {
     return styleManager.getArrowHeadSize();
   }
 
-  public double getArrowHeadSize10() {
+  public float getArrowHeadSize10() {
     return styleManager.getArrowHeadSize10();
   }
 
   public void setArrowLengthScale(double ls) {
-    styleManager.setArrowLengthScale(ls);
+    styleManager.setArrowLengthScale((float)ls);
     refresh();
   }
 
-  public double getArrowLengthScale() {
+  public float getArrowLengthScale() {
     return styleManager.arrowLengthScale;
   }
 
   public void setArrowHeadRadius(double rs) {
-    styleManager.setArrowHeadRadius(rs);
+    styleManager.setArrowHeadRadius((float)rs);
     refresh();
   }
 
-  public double getArrowHeadRadius() {
+  public float getArrowHeadRadius() {
     return styleManager.arrowHeadRadius;
   }
 
@@ -1645,15 +1645,15 @@ final public class JmolViewer {
     return modelManager.getAtomicSymbol(i);
   }
 
-  public double getAtomX(int i) {
+  public float getAtomX(int i) {
     return modelManager.getAtomX(i);
   }
 
-  public double getAtomY(int i) {
+  public float getAtomY(int i) {
     return modelManager.getAtomY(i);
   }
 
-  public double getAtomZ(int i) {
+  public float getAtomZ(int i) {
     return modelManager.getAtomZ(i);
   }
 
@@ -1661,7 +1661,7 @@ final public class JmolViewer {
     return modelManager.getAtomPoint3d(i);
   }
 
-  public double getAtomRadius(int i) {
+  public float getAtomRadius(int i) {
     return modelManager.getAtomRadius(i);
   }
 
@@ -1677,7 +1677,7 @@ final public class JmolViewer {
     return modelManager.getBondPoint3d2(i);
   }
 
-  public double getBondRadius(int i) {
+  public float getBondRadius(int i) {
     return modelManager.getBondRadius(i);
   }
 

@@ -70,7 +70,7 @@ public class DotsRenderer {
            atomShape.x, atomShape.y, atomShape.z);
   }
 
-  void render(short colix, double vdwRadius, int[] visibilityMap,
+  void render(short colix, float vdwRadius, int[] visibilityMap,
               int x, int y, int z) {
     icosohedron.calcScreenPoints(visibilityMap, vdwRadius, x, y, z);
     if (icosohedron.screenCoordinateCount > 0)
@@ -85,9 +85,9 @@ public class DotsRenderer {
   int neighborCount;
   AtomShape[] neighbors = new AtomShape[16];
   Point3d[] neighborCenters = new Point3d[16];
-  double[] neighborRadii2 = new double[16];
+  float[] neighborRadii2 = new float[16];
   
-  void getNeighbors(AtomShape atom, double vdwRadius, double probeRadius) {
+  void getNeighbors(AtomShape atom, float vdwRadius, float probeRadius) {
     AtomShapeIterator iter =
       atom.frame.getWithinIterator(atom, vdwRadius + probeRadius*2 +
                                    atom.frame.getMaxVanderwaalsRadius());
@@ -102,13 +102,13 @@ public class DotsRenderer {
           Point3d[] centersNew = new Point3d[2 * neighborCount];
           System.arraycopy(neighborCenters, 0, centersNew, 0, neighborCount);
           neighborCenters = centersNew;
-          double[] radiiNew = new double[2 * neighborCount];
+          float[] radiiNew = new float[2 * neighborCount];
           System.arraycopy(neighborRadii2, 0, radiiNew, 0, neighborCount);
           neighborRadii2 = radiiNew;
         }
         neighbors[neighborCount] = neighbor;
         neighborCenters[neighborCount] = neighbor.point3d;
-        double effectiveRadius = (neighbor.getVanderwaalsRadius() +
+        float effectiveRadius = (neighbor.getVanderwaalsRadius() +
                                   probeRadius);
         neighborRadii2[neighborCount] = effectiveRadius * effectiveRadius;
         ++neighborCount;
@@ -130,14 +130,14 @@ public class DotsRenderer {
   int[] bitmap;
   Point3d pointT = new Point3d();
 
-  void calcBits(Point3d myCenter, double vdwRadius, double probeRadius) {
+  void calcBits(Point3d myCenter, float vdwRadius, float probeRadius) {
     Vector3d[] vertices = icosohedron.vertices;
     int dotCount = vertices.length;
     setAllBits(bitmap, dotCount);
     if (neighborCount == 0)
       return;
     int iNeighborLast = 0;
-    double fullRadius = vdwRadius + probeRadius;
+    float fullRadius = vdwRadius + probeRadius;
     for (int iDot = dotCount; --iDot >= 0; ) {
       pointT.set(vertices[iDot]);
       pointT.scaleAdd(fullRadius, myCenter);
@@ -154,8 +154,8 @@ public class DotsRenderer {
   }
 
   int[] calcVisibilityMap(AtomShape atom) {
-    double vdwRadius = atom.getVanderwaalsRadius();
-    double probeRadius = viewer.getSolventProbeRadius();
+    float vdwRadius = atom.getVanderwaalsRadius();
+    float probeRadius = viewer.getSolventProbeRadius();
     getNeighbors(atom, vdwRadius, probeRadius);
     calcBits(atom.getPoint3d(), vdwRadius, probeRadius);
     int indexLast;
@@ -170,9 +170,9 @@ public class DotsRenderer {
     return visibilityMap;
   }
 
-  final static double halfRoot5 = 0.5 * Math.sqrt(5);
-  final static double oneFifth = 2 * Math.PI / 5;
-  final static double oneTenth = oneFifth / 2;
+  final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
+  final static float oneFifth = 2 * (float)Math.PI / 5;
+  final static float oneTenth = oneFifth / 2;
   
   final static short[] faceIndicesInitial = {
     0, 1, 2,
@@ -243,9 +243,9 @@ public class DotsRenderer {
       }
     }
 
-    void calcScreenPoints(int[] visibilityMap, double radius,
+    void calcScreenPoints(int[] visibilityMap, float radius,
 			  int x, int y, int z) {
-      int pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1.0);
+      int pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1f);
       int dotCount = 12;
       if (pixelsPerAngstrom > 4) {
         dotCount = 42;
@@ -259,7 +259,7 @@ public class DotsRenderer {
         }
       }
 
-      double scaledRadius = viewer.scaleToPerspective(z, radius);
+      float scaledRadius = viewer.scaleToPerspective(z, radius);
       int icoordinates = 0;
       //      int iintensities = 0;
       int iDot = visibilityMap.length << 5;

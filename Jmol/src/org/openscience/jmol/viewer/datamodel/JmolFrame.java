@@ -39,8 +39,8 @@ public class JmolFrame {
   public FrameRenderer frameRenderer;
   // the maximum CovalentRadius seen in this set of atoms
   // used in autobonding
-  double maxCovalentRadius = 0.0;
-  double maxVanderwaalsRadius = 0.0;
+  float maxCovalentRadius = 0;
+  float maxVanderwaalsRadius = 0;
   // whether or not this frame has any protein properties
   boolean hasPdbRecords;
 
@@ -86,10 +86,10 @@ public class JmolFrame {
       htAtomMap.put(clientAtom, atomShape);
     if (bspt != null)
       bspt.addTuple(atomShape);
-    double covalentRadius = atomShape.getCovalentRadius();
+    float covalentRadius = atomShape.getCovalentRadius();
     if (covalentRadius > maxCovalentRadius)
       maxCovalentRadius = covalentRadius;
-    double vdwRadius = atomShape.getVanderwaalsRadius();
+    float vdwRadius = atomShape.getVanderwaalsRadius();
     if (vdwRadius > maxVanderwaalsRadius)
       maxVanderwaalsRadius = vdwRadius;
     return atomShape;
@@ -199,10 +199,10 @@ public class JmolFrame {
   Point3d centerBoundingBox;
   Point3d cornerBoundingBox;
   Point3d centerRotation;
-  double radiusBoundingBox;
-  double radiusRotation;
+  float radiusBoundingBox;
+  float radiusRotation;
 
-  public double getGeometricRadius() {
+  public float getGeometricRadius() {
     findBounds();
     return radiusBoundingBox;
   }
@@ -222,7 +222,7 @@ public class JmolFrame {
     return centerRotation;
   }
 
-  public double getRotationRadius() {
+  public float getRotationRadius() {
     findBounds();
     return radiusRotation;
   }
@@ -255,45 +255,45 @@ public class JmolFrame {
     // as stored in the file
     // Note that this is not really the geometric center of the molecule
     // ... for this we would need to do a Minimal Enclosing Sphere calculation
-    double minX, minY, minZ, maxX, maxY, maxZ;
+    float minX, minY, minZ, maxX, maxY, maxZ;
     Point3d point;
     if (crystalCellLineCount == 0) { // non-crystal, so find extremes of atoms
       point = atomShapes[0].getPoint3d();
-      minX = maxX = point.x;
-      minY = maxY = point.y;
-      minZ = maxZ = point.z;
+      minX = maxX = (float)point.x;
+      minY = maxY = (float)point.y;
+      minZ = maxZ = (float)point.z;
       
       for (int i = atomShapeCount; --i > 0; ) {
         // note that the 0 element was set above
         point = atomShapes[i].getPoint3d();
-        double t;
-        t = point.x;
+        float t;
+        t = (float)point.x;
         if (t < minX) { minX = t; }
         else if (t > maxX) { maxX = t; }
-        t = point.y;
+        t = (float)point.y;
         if (t < minY) { minY = t; }
         else if (t > maxY) { maxY = t; }
-        t = point.z;
+        t = (float)point.z;
         if (t < minZ) { minZ = t; }
         else if (t > maxZ) { maxZ = t; }
       }
     } else { // a crystal cell, so use center of crystal cell box
       point = crystalCellLines[0].getPoint1();
-      minX = maxX = point.x;
-      minY = maxY = point.y;
-      minZ = maxZ = point.z;
+      minX = maxX = (float)point.x;
+      minY = maxY = (float)point.y;
+      minZ = maxZ = (float)point.z;
       for (int i = crystalCellLineCount; --i >= 0; ) {
         point = crystalCellLines[i].getPoint1();
         int j = 0;
         do {
-          double t;
-          t = point.x;
+          float t;
+          t = (float)point.x;
           if (t < minX) { minX = t; }
           else if (t > maxX) { maxX = t; }
-          t = point.y;
+          t = (float)point.y;
           if (t < minY) { minY = t; }
           else if (t > maxY) { maxY = t; }
-          t = point.z;
+          t = (float)point.z;
           if (t < minZ) { minZ = t; }
           else if (t > maxZ) { maxZ = t; }
           point = crystalCellLines[i].getPoint2();
@@ -308,14 +308,14 @@ public class JmolFrame {
     cornerBoundingBox.sub(centerBoundingBox);
   }
 
-  private double calcRadius(Point3d center) {
-    double radius = 0.0f;
+  private float calcRadius(Point3d center) {
+    float radius = 0.0f;
     for (int i = atomShapeCount; --i >= 0; ) {
       AtomShape atomShape = atomShapes[i];
       Point3d posAtom = atomShape.getPoint3d();
-      double distAtom = center.distance(posAtom);
-      double radiusVdw = atomShape.getVanderwaalsRadius();
-      double distVdw = distAtom + radiusVdw;
+      float distAtom = (float)center.distance(posAtom);
+      float radiusVdw = atomShape.getVanderwaalsRadius();
+      float distVdw = distAtom + radiusVdw;
       
       if (distVdw > radius)
         radius = distVdw;
@@ -324,9 +324,9 @@ public class JmolFrame {
         // mth 2002 nov
         // this calculation isn't right, but I can't get it to work with
         // samples/cs2.syz when I try to use
-        // double distVector = center.distance(atom.getScaledVector());
+        // float distVector = center.distance(atom.getScaledVector());
         // So I am over-estimating and giving up for the day. 
-        double distVector = distAtom + atom.getVectorMagnitude();
+        float distVector = distAtom + atom.getVectorMagnitude();
         if (distVector > radius)
           radius = distVector;
       }
@@ -334,21 +334,21 @@ public class JmolFrame {
     }
     for (int i = lineShapeCount; --i >= 0; ) {
       LineShape ls = lineShapes[i];
-      double distLineEnd;
-      distLineEnd = center.distance(ls.getPoint1());
+      float distLineEnd;
+      distLineEnd = (float)center.distance(ls.getPoint1());
       if (distLineEnd > radius)
         radius = distLineEnd;
-      distLineEnd = center.distance(ls.getPoint2());
+      distLineEnd = (float)center.distance(ls.getPoint2());
       if (distLineEnd > radius)
         radius = distLineEnd;
     }
     for (int i = crystalCellLineCount; --i >= 0; ) {
       LineShape ls = crystalCellLines[i];
-      double distLineEnd;
-      distLineEnd = center.distance(ls.getPoint1());
+      float distLineEnd;
+      distLineEnd = (float)center.distance(ls.getPoint1());
       if (distLineEnd > radius)
         radius = distLineEnd;
-      distLineEnd = center.distance(ls.getPoint2());
+      distLineEnd = (float)center.distance(ls.getPoint2());
       if (distLineEnd > radius)
         radius = distLineEnd;
     }
@@ -577,12 +577,12 @@ public class JmolFrame {
   private PointWrapper pointWrapper = new PointWrapper();
 
   public AtomShapeIterator getWithinIterator(AtomShape atomCenter,
-                                             double radius) {
+                                             float radius) {
     withinAtomIterator.initialize(atomCenter, radius);
     return withinAtomIterator;
   }
 
-  public AtomShapeIterator getWithinIterator(Point3d point, double radius) {
+  public AtomShapeIterator getWithinIterator(Point3d point, float radius) {
     pointWrapper.setPoint(point);
     withinPointIterator.initialize(pointWrapper, radius);
     return withinPointIterator;
@@ -592,7 +592,7 @@ public class JmolFrame {
 
     Bspt.SphereIterator iter;
 
-    void initialize(Bspt.Tuple center, double radius) {
+    void initialize(Bspt.Tuple center, float radius) {
       iter = getSphereIterator();
       iter.initialize(center, radius);
     }
@@ -617,16 +617,18 @@ public class JmolFrame {
       this.point.set(point);
     }
     
-    public double getDimensionValue(int dim) {
-      return (dim == 0 ? point.x : (dim == 1 ? point.y : point.z));
+    public float getDimensionValue(int dim) {
+      return (dim == 0
+	      ? (float)point.x
+	      : (dim == 1 ? (float)point.y : (float)point.z));
     }
   }
 
   final static boolean showRebondTimes = true;
 
-  private double bondTolerance;
-  private double minBondDistance;
-  private double minBondDistance2;
+  private float bondTolerance;
+  private float minBondDistance;
+  private float minBondDistance2;
 
   public void rebond() {
     deleteAllBonds();
@@ -645,8 +647,8 @@ public class JmolFrame {
     for (int i = atomShapeCount; --i >= 0; ) {
       AtomShape atom = atomShapes[i];
       // Covalent bonds
-      double myCovalentRadius = atom.getCovalentRadius();
-      double searchRadius =
+      float myCovalentRadius = atom.getCovalentRadius();
+      float searchRadius =
         myCovalentRadius + maxCovalentRadius + bondTolerance;
       Bspt.SphereIterator iter = getSphereIterator();
       iter.initialize(atom, searchRadius);
@@ -691,15 +693,15 @@ public class JmolFrame {
     }
   }
 
-  private int getBondOrder(AtomShape atomA, double covalentRadiusA,
-                           AtomShape atomB, double covalentRadiusB,
-                           double distance2) {
+  private int getBondOrder(AtomShape atomA, float covalentRadiusA,
+                           AtomShape atomB, float covalentRadiusB,
+                           float distance2) {
     //            System.out.println(" radiusA=" + covalentRadiusA +
     //                               " radiusB=" + covalentRadiusB +
     //                         " distance2=" + distance2 +
     //                         " tolerance=" + bondTolerance);
-    double maxAcceptable = covalentRadiusA + covalentRadiusB + bondTolerance;
-    double maxAcceptable2 = maxAcceptable * maxAcceptable;
+    float maxAcceptable = covalentRadiusA + covalentRadiusB + bondTolerance;
+    float maxAcceptable2 = maxAcceptable * maxAcceptable;
     if (distance2 < minBondDistance2) {
       //System.out.println("less than minBondDistance");
       return 0;
@@ -754,7 +756,7 @@ public class JmolFrame {
     return atomShapes[atomIndex].markDeleted();
   }
 
-  public double getMaxVanderwaalsRadius() {
+  public float getMaxVanderwaalsRadius() {
     return maxVanderwaalsRadius;
   }
 }

@@ -157,12 +157,12 @@ class Compiler {
           continue;
         }
         if (lookingAtPositiveDecimal()) {
-          double value =
+          float value =
           // can't use parseFloat with jvm 1.1
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
             Float.valueOf(script.substring(ichToken, ichToken + cchToken))
             .floatValue();
-          ltoken.addElement(new Token(Token.decimal, new Double(value)));
+          ltoken.addElement(new Token(Token.decimal, new Float(value)));
           continue;
         }
         if (lookingAtPositiveInteger() || 
@@ -777,12 +777,12 @@ class Compiler {
     tokenNext();                             // WITHIN
     if (tokenNext().tok != Token.leftparen)  // (
       return leftParenthesisExpected();
-    Double distance;
+    Float distance;
     Token tokenDistance = tokenNext();       // distance
     if (tokenDistance.tok == Token.integer)
-      distance = new Double((tokenDistance.intValue * 4) / 1000.0);
+      distance = new Float((tokenDistance.intValue * 4) / 1000f);
     else if (tokenDistance.tok == Token.decimal)
-      distance = (Double)tokenDistance.value;
+      distance = (Float)tokenDistance.value;
     else
       return numberExpected();
     if (tokenNext().tok != Token.opOr)       // ,

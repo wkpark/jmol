@@ -862,7 +862,7 @@ public class Eval implements Runnable {
   }
 
   void withinInstruction(Token instruction, BitSet bs, BitSet bsResult) {
-    double distance = ((Double)instruction.value).doubleValue();
+    float distance = ((Float)instruction.value).floatValue();
     JmolFrame frame = viewer.getJmolFrame();
     AtomShapeIterator iterSelected = frame.getAtomIterator(bs);
     while (iterSelected.hasNext()) {
@@ -930,7 +930,7 @@ public class Eval implements Runnable {
       style = JmolViewer.SHADED;
       break;
     case Token.decimal:
-      double angstroms = ((Double)statement[1].value).doubleValue();
+      float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
@@ -1271,7 +1271,7 @@ public class Eval implements Runnable {
       millis = token.intValue * 1000;
       break;
     case Token.decimal:
-      millis = (long)(((Double)token.value).doubleValue() * 1000);
+      millis = (long)(((Float)token.value).floatValue() * 1000);
       break;
     default:
       numberExpected(); 
@@ -1472,7 +1472,7 @@ public class Eval implements Runnable {
         mar *= 4;
       break;
     case Token.decimal:
-      double angstroms = ((Double)statement[1].value).doubleValue();
+      float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
@@ -1511,7 +1511,7 @@ public class Eval implements Runnable {
       style = JmolViewer.SHADED;
       break;
     case Token.decimal:
-      double angstroms = ((Double)statement[1].value).doubleValue();
+      float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
@@ -1721,20 +1721,20 @@ public class Eval implements Runnable {
   void setSolvent() throws ScriptException {
     if (statement.length != 3)
       badArgumentCount();
-    double probeRadius = 0;
+    float probeRadius = 0;
     switch (statement[2].tok) {
     case Token.on:
-      probeRadius = 1.2;
+      probeRadius = 1.2f;
     case Token.off:
       break;
     case Token.decimal:
-      probeRadius = ((Double)statement[2].value).doubleValue();
+      probeRadius = ((Float)statement[2].value).floatValue();
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
-      probeRadius = radiusRasMol * 4 / 1000.0;
+      probeRadius = radiusRasMol * 4 / 1000f;
       break;
     default:
       booleanOrNumberExpected();

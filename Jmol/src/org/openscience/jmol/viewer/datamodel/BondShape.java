@@ -110,9 +110,9 @@ public class BondShape {
     this.colix = colix;
   }
 
-  public double getRadius() {
+  public float getRadius() {
     if (style == JmolViewer.NONE) return 0;
-    double radius = mar/1000.0;
+    float radius = mar/1000f;
     if (style == JmolViewer.WIREFRAME)
       return -radius;
     return radius;

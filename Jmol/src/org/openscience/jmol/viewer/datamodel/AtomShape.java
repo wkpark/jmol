@@ -270,29 +270,29 @@ public class AtomShape implements Bspt.Tuple {
     return point3d;
   }
 
-  public double getAtomX() {
-    return point3d.x;
+  public float getAtomX() {
+    return (float)point3d.x;
   }
 
-  public double getAtomY() {
-    return point3d.y;
+  public float getAtomY() {
+    return (float)point3d.y;
   }
 
-  public double getAtomZ() {
-    return point3d.z;
+  public float getAtomZ() {
+    return (float)point3d.z;
   }
 
-  public double getDimensionValue(int dimension) {
-    return (dimension == 0
-            ? point3d.x
-            : (dimension == 1 ? point3d.y : point3d.z));
+  public float getDimensionValue(int dimension) {
+    return (float)(dimension == 0
+		   ? point3d.x
+		   : (dimension == 1 ? point3d.y : point3d.z));
   }
 
-  public double getVanderwaalsRadius() {
+  public float getVanderwaalsRadius() {
     return frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom);
   }
 
-  public double getCovalentRadius() {
+  public float getCovalentRadius() {
     return frame.viewer.getCovalentRadius(atomicNumber, clientAtom);
   }
 
@@ -300,10 +300,10 @@ public class AtomShape implements Bspt.Tuple {
     return colixAtom;
   }
 
-  public double getRadius() {
+  public float getRadius() {
     if (styleAtom <= JmolViewer.NONE)
       return 0;
-    double radius = marAtom / 1000.0;
+    float radius = marAtom / 1000f;
     if (styleAtom == JmolViewer.WIREFRAME) return -radius;
     return radius;
   }

@@ -33,7 +33,7 @@ import javax.vecmath.Point3i;
 
 public class ArrowLineShape extends LineShape {
 
-  double headWidthAngstroms;
+  float headWidthAngstroms;
   int[] ax = new int[4];
   int[] ay = new int[4];
   int[] az = new int[4];
@@ -44,7 +44,8 @@ public class ArrowLineShape extends LineShape {
 
   public ArrowLineShape(Point3d pointOrigin, Point3d pointVector) {
     super(pointOrigin, pointVector);
-    headWidthAngstroms = pointOrigin.distance(this.pointEnd) / widthDivisor;
+    headWidthAngstroms =
+	(float)pointOrigin.distance(this.pointEnd) / widthDivisor;
   }
 
   public void render(Graphics3D g3d, JmolViewer viewer) {
@@ -56,7 +57,7 @@ public class ArrowLineShape extends LineShape {
     int mag2d = (int)(Math.sqrt(dx*dx + dy*dy) + 0.5);
     int dz = zEnd - z, zHead = zEnd - (dz / shaftDivisor);
     int headWidthPixels =
-      (int)(viewer.scaleToScreen(zHead, headWidthAngstroms) + 0.5);
+      (int)(viewer.scaleToScreen(zHead, headWidthAngstroms) + 0.5f);
 
     ax[0] = xEnd; ax[2] = xEnd - dx/finDivisor;
     ay[0] = yEnd; ay[2] = yEnd - dy/finDivisor;

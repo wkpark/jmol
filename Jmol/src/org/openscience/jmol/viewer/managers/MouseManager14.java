@@ -22,25 +22,28 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.datamodel;
+package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
 
-import java.awt.Font;
+import java.awt.Component;
 
-class FrankRenderer extends ShapeRenderer {
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
-  void render() {
-    Frank frank = (Frank)shape;
-    short mad = frank.mad;
-    if (mad == 0)
-      return;
+public class MouseManager14 extends MouseManager11
+  implements MouseWheelListener {
 
-    g3d.setFontID(frank.frankFontID);
-    g3d.drawString(frank.frankString, frank.colix,
-                   g3d.width - frank.frankWidth - frank.frankMargin,
-                   g3d.height - frank.frankDescent - frank.frankMargin,
-                   0);
+  public MouseManager14(Component component, JmolViewer viewer) {
+    super(component, viewer);
+    component.addMouseWheelListener(this);
+  }
+  
+  final static int wheelClickPercentage = 10;
+  
+  public void mouseWheelMoved(MouseWheelEvent e) {
+    int rotation = e.getWheelRotation();
+    int modifiers = e.getModifiers();
+    viewer.zoomByPercent(rotation * wheelClickPercentage);
   }
 }

@@ -36,7 +36,7 @@ class LabelsRenderer extends ShapeRenderer {
 
   // offsets are from the font baseline
   int fontSizePrevious = -1;
-  Font labelFont;
+  byte labelFontID;
   FontMetrics labelFontMetrics;
 
   void render() {
@@ -64,8 +64,8 @@ class LabelsRenderer extends ShapeRenderer {
          ? JmolConstants.LABEL_DEFAULT_FONTSIZE
          : sizes[i]);
       if (fontSize != fontSizePrevious) {
-        Font font = labelFont = viewer.getFontOfSize(fontSize);
-        g3d.setFont(font);
+        byte fontID = labelFontID = g3d.getFontID(fontSize);
+        g3d.setFontID(fontID);
         labelFontMetrics = g3d.getFontMetrics();
         fontSizePrevious = fontSize;
       }

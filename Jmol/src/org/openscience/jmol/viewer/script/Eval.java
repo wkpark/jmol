@@ -1300,6 +1300,7 @@ public class Eval implements Runnable {
     case Token.temperature:
     case Token.charge:
     case Token.user:
+    case Token.monitor:
       colorObject(Token.atom, 1);
       break;
     case Token.bond:
@@ -1314,9 +1315,6 @@ public class Eval implements Runnable {
       break;
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));
-      break;
-    case Token.monitor:
-      viewer.setColorMeasurement(getColorParam(2));
       break;
     case Token.atom:
     case Token.trace:
@@ -1415,6 +1413,9 @@ public class Eval implements Runnable {
       break;
     case Token.frank:
       shapeType = JmolConstants.SHAPE_FRANK;
+      break;
+    case Token.monitor:
+      shapeType = JmolConstants.SHAPE_MEASURES;
       break;
     default:
       unrecognizedColorObject();

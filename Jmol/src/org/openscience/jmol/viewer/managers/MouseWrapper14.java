@@ -27,8 +27,8 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.*;
 import java.awt.Component;
 
-public class MouseWrapper12 {
+public class MouseWrapper14 {
   public static MouseManager alloc(Component component, JmolViewer viewer) {
-    return new MouseManager12(component, viewer);
+    return new MouseManager14(component, viewer);
   }
 }

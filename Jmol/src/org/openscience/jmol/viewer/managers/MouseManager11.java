@@ -24,36 +24,21 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.Atom;
 import org.openscience.jmol.viewer.*;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Event;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.BitSet;
-/*
-    REMOVE COMMENT TO ENABLE WHEELMOUSE
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-*/
 
-public class MouseManager12 extends MouseManager
+public class MouseManager11 extends MouseManager
   implements MouseListener, MouseMotionListener {
 
-  public MouseManager12(Component component, JmolViewer viewer) {
+  public MouseManager11(Component component, JmolViewer viewer) {
     super(component, viewer);
     component.addMouseListener(this);
     component.addMouseMotionListener(this);
-    /*
-    REMOVE COMMENT TO ENABLE WHEELMOUSE
-    if (viewer.jvm14orGreater)
-      component.addMouseWheelListener(new MyMouseWheelListener());
-    */
   }
 
   public boolean handleEvent(Event e) {
@@ -74,7 +59,8 @@ public class MouseManager12 extends MouseManager
   }
   
   public void mousePressed(MouseEvent e) {
-    mousePressed(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
+    mousePressed(e.getX(), e.getY(), e.getModifiers(), e.getClickCount(),
+                 e.isPopupTrigger());
   }
   
   public void mouseReleased(MouseEvent e) {
@@ -88,20 +74,4 @@ public class MouseManager12 extends MouseManager
   public void mouseMoved(MouseEvent e) {
     mouseMoved(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
-
-  /*
-    REMOVE COMMENT TO ENABLE WHEELMOUSE
-  final static int wheelClickPercentage = 10;
-
-  class MyMouseWheelListener implements MouseWheelListener {
-    public void mouseWheelMoved(MouseWheelEvent e) {
-      int rotation = e.getWheelRotation();
-      int modifiers = e.getModifiers();
-      if ((modifiers & SHIFT) == SHIFT)
-        viewer.slabByPercent(rotation * wheelClickPercentage);
-      else
-        viewer.zoomByPercent(rotation * -wheelClickPercentage);
-    }
-  }
-  */
 }

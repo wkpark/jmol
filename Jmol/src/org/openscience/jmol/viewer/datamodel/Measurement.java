@@ -35,19 +35,24 @@ import javax.vecmath.AxisAngle4f;
 
 public class Measurement {
 
-  public int count;
+  Frame frame;
+  int count;
+  // FIXME ... make this not public
   public int[] atomIndices;
   public String strMeasurement;
 
   AxisAngle4f aa;
   Point3f pointArc;
   
-  public Measurement(Frame frame, int count, int[] atomIndices) {
+  Measurement(Frame frame, int count, int[] atomIndices) {
+    this.frame = frame;
+    this.count = count;
+    this.atomIndices = new int[count];
+    System.arraycopy(atomIndices, 0, this.atomIndices, 0, count);
     Point3f pointA = frame.getAtomPoint3f(atomIndices[0]);
     Point3f pointB = frame.getAtomPoint3f(atomIndices[1]);
     Point3f pointC = null;
     Point3f pointD = null;
-    this.count = count;
     switch (count) {
     case 2:
       strMeasurement = formatDistance(pointA.distance(pointB));
@@ -81,8 +86,70 @@ public class Measurement {
       System.out.println("Invalid count to measurement shape:" + count);
       throw new IndexOutOfBoundsException();
     }
-    this.atomIndices = new int[count];
     System.arraycopy(atomIndices, 0, this.atomIndices, 0, count);
+  }
+
+  Measurement(Frame frame, int[] atomCountPlusIndices) {
+    this.frame = frame;
+    if (atomCountPlusIndices == null)
+      count = 0;
+    else {
+      count = atomCountPlusIndices[0];
+      this.atomIndices = new int[count];
+      System.arraycopy(atomCountPlusIndices, 1, atomIndices, 0, count);
+    }
+    formatMeasurement();
+  }
+
+  void formatMeasurement() {
+    for (int i = count; --i >= 0; )
+      if (atomIndices[i] < 0) {
+        strMeasurement = "";
+        return;
+      }
+    if (count < 2)
+      return;
+    Point3f pointA = getAtomPoint3f(0);
+    Point3f pointB = getAtomPoint3f(1);
+    Point3f pointC = null;
+    Point3f pointD = null;
+    switch (count) {
+    case 2:
+      strMeasurement = formatDistance(pointA.distance(pointB));
+      break;
+    case 3:
+      pointC = getAtomPoint3f(2);
+      Vector3f vectorBA = new Vector3f();
+      Vector3f vectorBC = new Vector3f();
+      vectorBA.sub(pointA, pointB);
+      vectorBC.sub(pointC, pointB);
+      float angle = vectorBA.angle(vectorBC);
+      float degrees = toDegrees(angle);
+      strMeasurement = formatAngle(degrees);
+
+      Vector3f vectorAxis = new Vector3f();
+      vectorAxis.cross(vectorBA, vectorBC);
+      aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, angle);
+
+      vectorBA.normalize();
+      vectorBA.scale(0.5f);
+      pointArc = new Point3f(vectorBA);
+
+      break;
+    case 4:
+      pointC = getAtomPoint3f(2);
+      pointD = getAtomPoint3f(3);
+      float torsion = computeTorsion(pointA, pointB, pointC, pointD);
+      strMeasurement = formatAngle(torsion);
+      break;
+    default:
+      System.out.println("Invalid count to measurement shape:" + count);
+      throw new IndexOutOfBoundsException();
+    }
+  }
+  
+  Point3f getAtomPoint3f(int i) {
+    return frame.getAtomPoint3f(atomIndices[i]);
   }
 
   String formatDistance(float dist) {
@@ -97,7 +164,7 @@ public class Measurement {
     return "" + angle + '\u00B0';
   }
 
-  public int[] getAtomList() {
+  int[] getAtomList() {
     return atomIndices;
   }
 
@@ -125,8 +192,33 @@ public class Measurement {
              atomIndices[3] == this.atomIndices[0]));
   }
 
-  public float computeTorsion(Point3f p1, Point3f p2,
-                              Point3f p3, Point3f p4) {
+  boolean sameAs(int[] atomCountPlusIndices) {
+    int count = atomCountPlusIndices[0];
+    if (count != this.atomIndices.length)
+      return false;
+    if (count == 2)
+      return ((atomCountPlusIndices[1] == this.atomIndices[0] &&
+               atomCountPlusIndices[2] == this.atomIndices[1]) ||
+              (atomCountPlusIndices[1] == this.atomIndices[1] &&
+               atomCountPlusIndices[2] == this.atomIndices[0]));
+    if (count == 3)
+      return (atomCountPlusIndices[2] == this.atomIndices[1] &&
+              ((atomCountPlusIndices[1] == this.atomIndices[0] &&
+                atomCountPlusIndices[3] == this.atomIndices[2]) ||
+               (atomCountPlusIndices[1] == this.atomIndices[2] &&
+                atomCountPlusIndices[3] == this.atomIndices[0])));
+    return ((atomCountPlusIndices[1] == this.atomIndices[0] &&
+             atomCountPlusIndices[2] == this.atomIndices[1] &&
+             atomCountPlusIndices[3] == this.atomIndices[2] &&
+             atomCountPlusIndices[4] == this.atomIndices[3]) ||
+            (atomCountPlusIndices[1] == this.atomIndices[3] &&
+             atomCountPlusIndices[2] == this.atomIndices[2] &&
+             atomCountPlusIndices[3] == this.atomIndices[1] &&
+             atomCountPlusIndices[4] == this.atomIndices[0]));
+  }
+
+  float computeTorsion(Point3f p1, Point3f p2,
+                       Point3f p3, Point3f p4) {
 
     float ijx = p1.x - p2.x;
     float ijy = p1.y - p2.y;
@@ -169,7 +261,7 @@ public class Measurement {
     return torsion;
   }
 
-  public static float toDegrees(float angrad) {
+  static float toDegrees(float angrad) {
     return angrad * 180 / (float)Math.PI;
   }
 

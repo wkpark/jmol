@@ -22,25 +22,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.datamodel;
+package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+import java.awt.Component;
 
-import java.awt.Font;
-
-class FrankRenderer extends ShapeRenderer {
-
-  void render() {
-    Frank frank = (Frank)shape;
-    short mad = frank.mad;
-    if (mad == 0)
-      return;
-
-    g3d.setFontID(frank.frankFontID);
-    g3d.drawString(frank.frankString, frank.colix,
-                   g3d.width - frank.frankWidth - frank.frankMargin,
-                   g3d.height - frank.frankDescent - frank.frankMargin,
-                   0);
+public class MouseWrapper11 {
+  public static MouseManager alloc(Component component, JmolViewer viewer) {
+    return new MouseManager11(component, viewer);
   }
 }

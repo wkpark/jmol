@@ -200,7 +200,7 @@ public class ModelManager {
   }
 
   public int findNearestAtomIndex(int x, int y) {
-    return frame.findNearestAtomIndex(x, y);
+    return (frame == null) ? -1 : frame.findNearestAtomIndex(x, y);
   }
 
   public BitSet findAtomsInRectangle(Rectangle rectRubber) {

@@ -95,9 +95,8 @@ public class FrameRenderer {
   public void renderStringOutside(String str, short colix, int pointsFontsize,
                                   int x, int y, int z, Graphics3D g3d) {
     g3d.setColix(colix);
-    Font font = viewer.getFontOfSize(pointsFontsize);
-    g3d.setFont(font);
-    FontMetrics fontMetrics = g3d.getFontMetrics(font);
+    g3d.setFontOfSize(pointsFontsize);
+    FontMetrics fontMetrics = g3d.getFontMetrics();
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
     int xStrCenter, yStrCenter;

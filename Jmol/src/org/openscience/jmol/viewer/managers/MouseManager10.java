@@ -47,24 +47,25 @@ public class MouseManager10 extends MouseManager {
 
   public boolean handleEvent(Event e) {
     int x = e.x, y = e.y, modifiers = e.modifiers, clickCount = e.clickCount;
+    modifiers = applyLeftMouse(modifiers);
     switch (e.id) {
     case Event.MOUSE_DOWN:
-      mousePressed(x, y, applyLeftMouse(modifiers), clickCount);
+      mousePressed(x, y, modifiers, clickCount, false);
       break;
     case Event.MOUSE_DRAG:
-      mouseDragged(x, y, applyLeftMouse(modifiers), clickCount);
+      mouseDragged(x, y, modifiers, clickCount);
       break;
     case Event.MOUSE_ENTER:
-      mouseEntered(x, y, applyLeftMouse(modifiers), clickCount);
+      mouseEntered(x, y, modifiers, clickCount);
       break;
     case Event.MOUSE_EXIT:
-      mouseExited(x, y, applyLeftMouse(modifiers), clickCount);
+      mouseExited(x, y, modifiers, clickCount);
       break;
     case Event.MOUSE_MOVE:
-      mouseMoved(x, y, applyLeftMouse(modifiers), clickCount);
+      mouseMoved(x, y, modifiers, clickCount);
       break;
     case Event.MOUSE_UP:
-      mouseReleased(x, y, applyLeftMouse(modifiers), clickCount);
+      mouseReleased(x, y, modifiers, clickCount);
       break;
     default:
       return false;

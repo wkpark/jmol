@@ -32,11 +32,11 @@ import org.openscience.jmol.viewer.script.Eval;
 
 import java.awt.Image;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
+import java.awt.Cursor;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
@@ -88,6 +88,7 @@ final public class JmolViewer {
   public String strJavaVendor;
   public String strJavaVersion;
   public String strOSName;
+  public boolean jvm11orGreater = false;
   public boolean jvm12orGreater = false;
   public boolean jvm14orGreater = false;
 
@@ -102,6 +103,11 @@ final public class JmolViewer {
     strJavaVendor = System.getProperty("java.vendor");
     strOSName = System.getProperty("os.name");
     strJavaVersion = System.getProperty("java.version");
+    // FIXME to run on MacOS9
+    // on Netscape MacOS9 they don't have a 1.1 event model,
+    // so they should not be jvm11orGreater
+    jvm11orGreater = (strJavaVersion.compareTo("1.1") >= 0 &&
+                      strJavaVendor != "apple");
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
 
@@ -115,8 +121,10 @@ final public class JmolViewer {
     colorManager = new ColorManager(this, g3d);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
-    if (jvm12orGreater) 
-      mouseManager = MouseWrapper12.alloc(awtComponent, this);
+    if (jvm14orGreater) 
+      mouseManager = MouseWrapper14.alloc(awtComponent, this);
+    else if (jvm11orGreater)
+      mouseManager = MouseWrapper11.alloc(awtComponent, this);
     else
       mouseManager = new MouseManager10(awtComponent, this);
     fileManager = new FileManager(this, modelAdapter);
@@ -799,6 +807,14 @@ final public class JmolViewer {
       jmolStatusListener.handlePopupMenu(x, y);
   }
 
+  public int getCursorX() {
+    return mouseManager.xCurrent;
+  }
+
+  public int getCursorY() {
+    return mouseManager.yCurrent;
+  }
+
   /****************************************************************
    * delegated to FileManager
    ****************************************************************/
@@ -1138,6 +1154,35 @@ final public class JmolViewer {
     if (deleted)
       refresh();
     return deleted;
+  }
+
+  public void setMeasurementCursor(boolean measurementCursor) {
+  }
+
+  public void setPendingMeasurement(int[] atomCountPlusIndices) {
+    setShapeSize(JmolConstants.SHAPE_MEASURES, 1);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "pending",
+                     atomCountPlusIndices);
+  }
+
+  public void defineMeasurement(int[] atomCountPlusIndices) {
+    setShapeSize(JmolConstants.SHAPE_MEASURES, 1);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "define",
+                     atomCountPlusIndices);
+  }
+
+  public void deleteMeasurement(int[] atomCountPlusIndices) {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", atomCountPlusIndices);
+  }
+
+  public void toggleMeasurement(int[] atomCountPlusIndices) {
+    setShapeSize(JmolConstants.SHAPE_MEASURES, 1);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggle",
+                     atomCountPlusIndices);
+  }
+
+  public void clearAllMeasurements() {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "clear", null);
   }
 
   /****************************************************************
@@ -1824,10 +1869,6 @@ final public class JmolViewer {
     return styleManager.measurementMad;
   }
 
-  public Font getMeasureFont(int size) {
-    return styleManager.getMeasureFont(size);
-  }
-
   public void setWireframeRotation(boolean wireframeRotation) {
     styleManager.setWireframeRotation(wireframeRotation);
     // no need to refresh since we are not currently rotating
@@ -1864,18 +1905,6 @@ final public class JmolViewer {
   public void setLabelFontSize(int points) {
     styleManager.setLabelFontSize(points);
     refresh();
-  }
-
-  public Font getLabelFont() {
-    return styleManager.getLabelFont();
-  }
-
-  public Font getLabelFont(int diameter) {
-    return styleManager.getLabelFont(diameter);
-  }
-
-  public Font getFontOfSize(int points) {
-    return styleManager.getFontOfSize(points);
   }
 
   public void setLabelOffset(int xOffset, int yOffset) {

@@ -27,7 +27,6 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.*;
 
 import java.awt.Color;
-import java.awt.Font;
 
 public class StyleManager {
 
@@ -93,10 +92,6 @@ public class StyleManager {
     this.measurementMad = measurementMad;
   }
 
-  public Font getMeasureFont(int size) {
-    return new Font("Helvetica", Font.PLAIN, size);
-  }
-
   public String propertyStyleString = "";
   public void setPropertyStyleString(String s) {
     propertyStyleString = s;
@@ -156,33 +151,6 @@ public class StyleManager {
   /****************************************************************
    * label related
    ****************************************************************/
-  public String strFontFace = JmolConstants.LABEL_DEFAULT_FONTFACE;
-  public void setFontFace(String strFontFace) {
-    this.strFontFace = strFontFace;
-  }
-
-  Font[] fonts = new Font[JmolConstants.LABEL_MAXIMUM_FONTSIZE -
-                          JmolConstants.LABEL_MINIMUM_FONTSIZE + 1];
-
-  public Font getFontOfSize(int points) {
-    if (points < JmolConstants.LABEL_MINIMUM_FONTSIZE)
-      points = JmolConstants.LABEL_MINIMUM_FONTSIZE;
-    else if (points > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
-      points = JmolConstants.LABEL_MAXIMUM_FONTSIZE;
-    int index = points - JmolConstants.LABEL_MINIMUM_FONTSIZE;
-    Font font = fonts[index];
-    if (font == null)
-      font = fonts[index] = new Font(strFontFace, Font.PLAIN, points);
-    return font;
-  }
-
-  public Font getLabelFont() {
-    return getFontOfSize(pointsLabelFontSize);
-  }
-
-  public Font getLabelFont(int diameter) {
-    return getFontOfSize(pointsLabelFontSize);
-  }
 
   public int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
   public void setLabelFontSize(int points) {

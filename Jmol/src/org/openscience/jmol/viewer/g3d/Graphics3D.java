@@ -69,6 +69,7 @@ final public class Graphics3D {
 
   int argbCurrent;
   boolean jvm12orGreater;
+  byte fontIDCurrent = -1;
   Font fontCurrent;
   FontMetrics fontmetricsCurrent;
 
@@ -309,22 +310,20 @@ final public class Graphics3D {
                 argbCurrent, str, fontCurrent, this);
   }
 
-  public void setFont(Font font) {
-    if (fontCurrent != font) {
-      fontCurrent = font;
-      fontmetricsCurrent = platform.getFontMetrics(font);
+  public void setFontOfSize(int fontsize) {
+    setFontID(getFontID(fontsize));
+  }
+
+  public void setFontID(byte fontID) {
+    if (fontIDCurrent != fontID) {
+      fontIDCurrent = fontID;
+      fontCurrent = getFont(fontID);
+      fontmetricsCurrent = getFontMetrics(fontID);
     }
   }
 
   public FontMetrics getFontMetrics() {
       return fontmetricsCurrent;
-  }
-
-  public FontMetrics getFontMetrics(Font font) {
-    if (font == fontCurrent)
-      return fontmetricsCurrent;
-    else
-      return platform.getFontMetrics(font);
   }
 
   // 3D specific routines
@@ -1027,4 +1026,77 @@ final public class Graphics3D {
   public int calcIntensity(float x, float y, float z) {
     return Shade3D.calcIntensity(x, y, z);
   }
+
+  /****************************************************************
+   * fontID stuff
+   * a fontID is a byte that contains the size + the face + the style
+   ****************************************************************/
+
+  final public static int FONT_FACE_SANS = 0;
+  final public static int FONT_FACE_SERIF = 1;
+  final public static int FONT_FACE_MONO = 2;
+  public final static String[] fontfaces =
+  {"SanSerif", "Serif", "Monospaced", ""};
+
+  private static int getFontface(String fontface) {
+    if ("Monospaced".equalsIgnoreCase(fontface))
+      return FONT_FACE_MONO;
+    if ("Serif".equalsIgnoreCase(fontface))
+      return FONT_FACE_SERIF;
+    return FONT_FACE_SANS;
+  }
+
+  public static byte getFontID(int fontsize) {
+    return getFontID(fontsize, FONT_FACE_SANS);
+  }
+
+  public static byte getFontID(int fontsize, String fontface) {
+    return getFontID(fontsize, getFontface(fontface));
+  }
+    
+  public static byte getFontID(int fontsize, int fontface) {
+    if (fontsize <= 0)
+      return 0;
+    if (fontsize > 63)
+      fontsize = 63;
+    return (byte)((fontface << 6) | fontsize);
+  }
+
+  Font[] fonts = new Font[16];
+  FontMetrics[] fontmetrix = new FontMetrics[16];
+
+  public Font getFont(byte fontID) {
+    int fontIndex = fontID & 0xFF;
+    if (fontIndex > fonts.length)
+      growFontArrays(fontIndex);
+    Font font = fonts[fontIndex];
+    if (font == null) {
+      String fontface = fontfaces[(fontIndex >> 6) & 3];
+      int fontsize = fontIndex & 63;
+      font = fonts[fontIndex] = new Font(fontface, Font.PLAIN, fontsize);
+    }
+    return font;
+  }
+
+  public FontMetrics getFontMetrics(byte fontID) {
+    int fontIndex = fontID & 0xFF;
+    if (fontIndex > fontmetrix.length)
+      growFontArrays(fontIndex);
+    FontMetrics fontmetrics = fontmetrix[fontIndex];
+    if (fontmetrics == null)
+      fontmetrics = fontmetrix[fontIndex] =
+        platform.getFontMetrics(getFont(fontID));
+    return fontmetrics;
+  }
+
+  private void growFontArrays(int fontIndex) {
+      Font[] t = new Font[fontIndex + 1];
+      System.arraycopy(fonts, 0, t, 0, fonts.length);
+      fonts = t;
+
+      FontMetrics[] t2 = new FontMetrics[fontIndex + 1];
+      System.arraycopy(fontmetrix, 0, t2, 0, fontmetrix.length);
+      fontmetrix = t2;
+  }
+
 }

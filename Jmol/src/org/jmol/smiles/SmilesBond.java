@@ -42,6 +42,8 @@ public class SmilesBond {
   public final static char CODE_DOUBLE = '=';
   public final static char CODE_TRIPLE = '#';
   public final static char CODE_AROMATIC = ':';
+  public final static char CODE_DIRECTIONAL_1 = '/';
+  public final static char CODE_DIRECTIONAL_2 = '\\';
 
   private SmilesAtom atom1;
   private SmilesAtom atom2;
@@ -67,6 +69,8 @@ public class SmilesBond {
   public static int getBondTypeFromCode(char code) {
     switch (code) {
     case CODE_SINGLE:
+    case CODE_DIRECTIONAL_1:
+    case CODE_DIRECTIONAL_2:
       return TYPE_SINGLE;
     case CODE_DOUBLE:
       return TYPE_DOUBLE;

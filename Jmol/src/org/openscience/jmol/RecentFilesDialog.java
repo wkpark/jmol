@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,11 @@
  */
 package org.openscience.jmol;
 
+import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ResourceBundle;
 import javax.swing.AbstractButton;
 import javax.swing.ListSelectionModel;
@@ -27,8 +32,13 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-public class RecentFilesDialog extends JDialog
-    implements java.awt.event.WindowListener, java.awt.event.ActionListener {
+/**
+ * Manages a list of recently opened files.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ */
+class RecentFilesDialog extends JDialog implements ActionListener,
+    WindowListener, PropertyChangeListener {
 
   private boolean ready = false;
   private String fileName = null;
@@ -181,4 +191,17 @@ public class RecentFilesDialog extends JDialog
   public void windowDeactivated(java.awt.event.WindowEvent e) {
   }
 
+  /**
+   * Listens for opening files and adds them to the recent files list.
+   *
+   * @param event a property change event
+   */
+  public void propertyChange(PropertyChangeEvent event) {
+    if (event.getPropertyName().equals(Jmol.openFileProperty)) {
+      File newFile = (File) event.getNewValue();
+      addFile(newFile.toString());
+    }
+  }
+
+  
 }

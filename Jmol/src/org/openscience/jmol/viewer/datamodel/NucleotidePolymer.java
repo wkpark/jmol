@@ -106,6 +106,7 @@ public class NucleotidePolymer extends Polymer {
   }
 
   void createHydrogenBond(Atom atom1, Atom atom2) {
+    System.out.println("createHydrogenBond:" + atom1 + "<->" + atom2);
   }
 
   void lookForHbonds(NucleotidePolymer other) {
@@ -118,7 +119,7 @@ public class NucleotidePolymer extends Polymer {
         Group otherNucleotide = null;
         for (int j = other.count; --j >= 0; ) {
           otherNucleotide = other.groups[j];
-          Atom otherN3 = otherNucleotide.getPyramidineN3();
+          Atom otherN3 = otherNucleotide.getPyrimidineN3();
           if (otherN3 != null) {
             float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);
             if (dist2 < minDist) {
@@ -129,20 +130,20 @@ public class NucleotidePolymer extends Polymer {
         }
         if (bestN3 != null) {
           if (myNucleotide.isGuanine()) {
-            Atom myN2 = myNucleotide.getAtomID(JmolConstants.SPECIALATOMID_N2);
+            Atom myN2 = myNucleotide.getAtomID(JmolConstants.ATOMID_N2);
             Atom otherO2 =
-              otherNucleotide.getAtomID(JmolConstants.SPECIALATOMID_O2);
+              otherNucleotide.getAtomID(JmolConstants.ATOMID_O2);
             if (myN2 != null && otherO2 != null)
               createHydrogenBond(myN2, otherO2);
-            Atom myO6 = myNucleotide.getAtomID(JmolConstants.SPECIALATOMID_O6);
+            Atom myO6 = myNucleotide.getAtomID(JmolConstants.ATOMID_O6);
             Atom otherN4 =
-              otherNucleotide.getAtomID(JmolConstants.SPECIALATOMID_N4);
+              otherNucleotide.getAtomID(JmolConstants.ATOMID_N4);
             if (myO6 != null && otherN4 != null)
               createHydrogenBond(myN2, otherO2);
           } else {
-            Atom myN6 = myNucleotide.getAtomID(JmolConstants.SPECIALATOMID_N6);
+            Atom myN6 = myNucleotide.getAtomID(JmolConstants.ATOMID_N6);
             Atom otherO4 =
-              otherNucleotide.getAtomID(JmolConstants.SPECIALATOMID_O4);
+              otherNucleotide.getAtomID(JmolConstants.ATOMID_O4);
             if (myN6 != null && otherO4 != null)
               createHydrogenBond(myN6, otherO4);
           }

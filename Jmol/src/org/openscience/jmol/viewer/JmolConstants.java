@@ -1530,33 +1530,37 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "2HO*", // 30
 
     "C6",   // 31
+
     "N1",   // 32
     "N2",   // 33
-    "O2",   // 34
-    "O6",   // 35
-    "N4",   // 36
-    "N6",   // 37
+    "N3",   // 34
+    "N4",   // 35
+    "N6",   // 36
+    "O2",   // 37
     "O4",   // 38
+    "O6",   // 39
   };
 
-  public final static int SPECIALATOMID_MAINCHAIN_MAX = 4;
+  public final static int ATOMID_MAINCHAIN_MAX = 4;
   // some pdbfiles do not have sidechain atoms labeled properly
   // we call these MAINCHAIN_IMPOSTERS
   // the residue will accept the first atom with the proper name
   // others will get their atomid changed
-  public final static int SPECIALATOMID_MAINCHAIN_IMPOSTERS = 4;
+  public final static int ATOMID_MAINCHAIN_IMPOSTERS = 4;
 
-  public final static int SPECIALATOMID_NUCLEOTIDE_WING = 31;
+  public final static int ATOMID_NUCLEOTIDE_WING = 31;
 
-  public final static int SPECIALATOMID_N1 = 32;
-  public final static int SPECIALATOMID_N2 = 33;
-  public final static int SPECIALATOMID_O2 = 34;
-  public final static int SPECIALATOMID_O6 = 35;
-  public final static int SPECIALATOMID_N4 = 36;
-  public final static int SPECIALATOMID_N6 = 37;
-  public final static int SPECIALATOMID_O4 = 38;
+  public final static int ATOMID_NUCLEOTIDE_MIN = 32;
+  public final static int ATOMID_N1 = 32;
+  public final static int ATOMID_N2 = 33;
+  public final static int ATOMID_N3 = 34;
+  public final static int ATOMID_N4 = 35;
+  public final static int ATOMID_N6 = 36;
+  public final static int ATOMID_O2 = 37;
+  public final static int ATOMID_O4 = 38;
+  public final static int ATOMID_O6 = 39;
     
-  public final static int SPECIALATOMID_NUCLEOTIDE_MAX = 39;
+  public final static int ATOMID_NUCLEOTIDE_MAX = 40;
 
   public final static short RESID_AMINO_MAX = 22;
 

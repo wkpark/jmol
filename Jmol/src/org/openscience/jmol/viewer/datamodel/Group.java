@@ -38,7 +38,20 @@ final public class Group {
   public int seqcode;
   public short groupID;
   public AminoStructure aminostructure;
+
+  // FIXME - mth 2004 05 17
+  // these two arrays of indices need to be merged
+  // one is for amino acid residues
+  // the other is for nucleotide bases
   public int[] mainchainIndices;
+
+  public int[] nucleotideIndices;
+  int atomIndexNucleotidePhosphorus = -1;
+  int atomIndexNucleotideWing = -1;
+  int atomIndexRnaO2Prime = -1;
+  int nucleicCount = 0;
+
+
 
   public Group(Chain chain,
                   int sequenceNumber, char insertionCode, String group3) {
@@ -187,12 +200,12 @@ final public class Group {
     byte specialAtomID = atom.getSpecialAtomID();
     if (specialAtomID < 0)
       return;
-    if (specialAtomID < JmolConstants.SPECIALATOMID_MAINCHAIN_MAX) {
+    if (specialAtomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
       if (! registerMainchainAtomIndex(specialAtomID, atom.atomIndex))
         atom.demoteSpecialAtomImposter();
       return;
     }
-    if (specialAtomID < JmolConstants.SPECIALATOMID_NUCLEOTIDE_MAX) {
+    if (specialAtomID < JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
       registerNucleicAtomIndex(specialAtomID, atom.atomIndex);
       return;
     }
@@ -261,7 +274,7 @@ final public class Group {
       System.out.println("sequence=" + getSeqcodeString());
       return null;
     }
-    return chain.pdbmodel.pdbfile.frame.getAtomAt(j);
+    return getAtomIndex(j);
   }
 
   public Atom getNitrogenAtom() {
@@ -324,11 +337,6 @@ final public class Group {
     }
   }
 
-  int atomIndexNucleotidePhosphorus = -1;
-  int atomIndexNucleotideWing = -1;
-  int atomIndexRnaO2Prime = -1;
-  int nucleicCount = 0;
-
   void registerNucleicAtomIndex(short atomid, int atomIndex) {
     if (atomid == 8) {
       if (atomIndexNucleotidePhosphorus < 0) {
@@ -337,7 +345,7 @@ final public class Group {
       }
       return;
     }
-    if (atomid == JmolConstants.SPECIALATOMID_NUCLEOTIDE_WING) {
+    if (atomid == JmolConstants.ATOMID_NUCLEOTIDE_WING) {
       if (atomIndexNucleotideWing < 0) {
         ++nucleicCount;
         atomIndexNucleotideWing = atomIndex;
@@ -347,21 +355,34 @@ final public class Group {
     if (atomid == 15) {
       atomIndexRnaO2Prime = atomIndex;
     }
+    if (atomid >= JmolConstants.ATOMID_NUCLEOTIDE_MIN &&
+        atomid < JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
+      if (nucleotideIndices == null)
+        allocateNucleotideIndices();
+      nucleotideIndices[atomid -
+                        JmolConstants.ATOMID_NUCLEOTIDE_MIN] =
+        atomIndex;
+    }
     ++nucleicCount;
   }
 
+
+  void allocateNucleotideIndices() {
+    nucleotideIndices =
+      new int[JmolConstants.ATOMID_NUCLEOTIDE_MAX -
+              JmolConstants.ATOMID_NUCLEOTIDE_MIN];
+    for (int i = nucleotideIndices.length; --i >= 0; )
+      nucleotideIndices[i] = -1;
+  }
+
   Atom getNucleotidePhosphorusAtom() {
-    if (atomIndexNucleotidePhosphorus < 0)
-      return null;
-    return
-      chain.pdbmodel.pdbfile.frame.getAtomAt(atomIndexNucleotidePhosphorus);
+    return getAtomIndex(atomIndexNucleotidePhosphorus);
   }
 
   Atom getNucleotideWingAtom() {
     if (atomIndexNucleotidePhosphorus < 0)
       return null;
-    return
-      chain.pdbmodel.pdbfile.frame.getAtomAt(atomIndexNucleotideWing);
+    return getAtomIndex(atomIndexNucleotideWing);
   }
 
   boolean hasNucleotidePhosphorus() {
@@ -370,20 +391,26 @@ final public class Group {
             nucleicCount > 5);
   }
 
+  Atom getAtomIndex(int atomIndex) {
+    return (atomIndex < 0
+            ? null
+            : chain.pdbmodel.pdbfile.frame.getAtomAt(atomIndex));
+  }
+
   Atom getPurineN1() {
-    if (groupID >= 23 && groupID <= 28) {
-      System.out.println("need to return purine N1");
-      return null;
-    }
-    return null;
+    return ((groupID >= 23 && groupID <= 28)
+            ? getAtomIndex(JmolConstants.ATOMID_N1 -
+                           JmolConstants.ATOMID_NUCLEOTIDE_MIN)
+            : null);
   }
 
-  Atom getPyramidineN3() {
-    if (groupID >= 29 && groupID <= 34)
-      System.out.println("need to return pyramidine N3");
-    return null;
+  Atom getPyrimidineN3() {
+    return ((groupID >= 29 && groupID <= 34)
+            ? getAtomIndex(JmolConstants.ATOMID_N3 -
+                           JmolConstants.ATOMID_NUCLEOTIDE_MIN)
+            : null);
   }
-
+            
   boolean isGuanine() {
     //    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
     return (groupID == 25 ||
@@ -393,7 +420,9 @@ final public class Group {
   }
 
   Atom getAtomID(int specialAtomID) {
-    System.out.println("Group.getAtomID(...) called");
+    if (specialAtomID >= JmolConstants.ATOMID_NUCLEOTIDE_MIN &&
+        specialAtomID < JmolConstants.ATOMID_NUCLEOTIDE_MAX)
+      return getAtomIndex(specialAtomID - JmolConstants.ATOMID_NUCLEOTIDE_MIN);
     return null;
   }
 }

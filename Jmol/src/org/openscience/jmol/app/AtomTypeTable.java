@@ -27,6 +27,8 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.*;
 import org.openscience.jmol.render.AtomColors;
 
+import org.openscience.cdk.tools.AtomTypeFactory;
+
 import javax.swing.JTable;
 import javax.swing.DefaultCellEditor;
 import javax.swing.event.TableModelEvent;
@@ -89,7 +91,8 @@ import java.util.EventObject;
  */
 public class AtomTypeTable extends JDialog implements ActionListener {
 
-  private static String SAU = "org/openscience/jmol/Data/AtomTypes";
+  private static String SAU = "jmol_atomtypes.txt";
+    private org.openscience.cdk.tools.LoggingTool logger;
 
   /*
      OK, this is going to be a bit confusing:
@@ -105,21 +108,15 @@ public class AtomTypeTable extends JDialog implements ActionListener {
   //static BaseAtomType defaultAtomType;
 
   public AtomTypeTable(JFrame fr, File UAF) {
-
     this(fr);
-
     try {
-      ReadAtypes(new FileInputStream(UAF));
-    } catch (Exception e1) {
-      try {
-        URL url = this.getClass().getClassLoader().getResource(SAU);
-
-        // URL url = ClassLoader.getSystemResource(SAU);
-        ReadAtypes(url.openStream());
-      } catch (Exception e2) {
-        System.err.println("Cannot read System AtomTypes: " + e2.toString());
-        e2.printStackTrace();
-      }
+        if (UAF.exists()) {
+            ReadAtypes(UAF.toString());
+        } else {
+            ReadAtypes(SAU);
+        }
+    } catch (Exception exc) {
+        System.err.println("Error while reading AtomTypes.");
     }
   }
 
@@ -129,6 +126,8 @@ public class AtomTypeTable extends JDialog implements ActionListener {
         JmolResourceHandler.getInstance().getString("AtomTypeTable.Title"),
           true);
 
+    logger = new org.openscience.cdk.tools.LoggingTool(this.getClass().getName());
+          
     // Create a model of the data.
     atModel = new AtomTypesModel();
 
@@ -243,7 +242,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     });
     buttonPanel.add(OK);
 
-    JToolBar toolbar = new JToolBar();
+    /** JToolBar toolbar = new JToolBar();
 
     JButton natb =
       new JButton(JmolResourceHandler.getInstance()
@@ -264,12 +263,12 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     datb.addActionListener(this);
 
     toolbar.add(natb);
-    toolbar.add(datb);
+    toolbar.add(datb); **/
 
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout());
 
-    container.add(toolbar, BorderLayout.NORTH);
+    // container.add(toolbar, BorderLayout.NORTH);
     container.add(AtomTableWrapper, BorderLayout.CENTER);
     container.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -569,75 +568,18 @@ public class AtomTypeTable extends JDialog implements ActionListener {
   }
 
 
-  void ReadAtypes(InputStream is) throws Exception {
-      // FIXME: this method should be removed (Egon)
-      // It is superceded by CDK's TXTBasedAtomTypeConfigurator.
-
-    BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
-    StringTokenizer st;
-
-    AtomColors atomColors = AtomColors.getInstance();
-
-    String s;
-
-    atModel.clear();
-
-    try {
-      while (true) {
-        s = r.readLine();
-        if (s == null) {
-          break;
-        }
-        if (!s.startsWith("#")) {
-          String name = "";
-          String rootType = "";
-          int an = 0, rl = 0, gl = 0, bl = 0;
-          double mass = 0.0, vdw = 0.0, covalent = 0.0;
-          st = new StringTokenizer(s, "\t ,;");
-          int nt = st.countTokens();
-
-          if (nt == 9) {
-            name = st.nextToken();
-            rootType = st.nextToken();
-            String san = st.nextToken();
-            String sam = st.nextToken();
-            String svdw = st.nextToken();
-            String scov = st.nextToken();
-            String sr = st.nextToken();
-            String sg = st.nextToken();
-            String sb = st.nextToken();
-
-            try {
-              mass = new Double(sam).doubleValue();
-              vdw = new Double(svdw).doubleValue();
-              covalent = new Double(scov).doubleValue();
-              an = new Integer(san).intValue();
-              rl = new Integer(sr).intValue();
-              gl = new Integer(sg).intValue();
-              bl = new Integer(sb).intValue();
-            } catch (NumberFormatException nfe) {
-              throw new JmolException("AtomTypeTable.ReadAtypes",
-                  "Malformed Number");
-            }
-
-            AtomType at = new AtomType(name, rootType, an, mass, vdw, covalent);
-            // atomColors.setAtomColor(at, new Color(rl, gl, bl));
-
-            atModel.updateAtomType(at.getBaseAtomType());
-
-          } else {
-            throw new JmolException("AtomTypeTable.ReadAtypes",
-                "Wrong Number of fields");
-          }
-        }
-      }    // end while
-
-      is.close();
-
-    }      // end Try
-        catch (IOException e) {
-    }
-
+  void ReadAtypes(String configFile) throws Exception {
+      // System.out.print("Reading config file... ");
+      AtomTypeFactory atf = new AtomTypeFactory(configFile);
+      
+      org.openscience.cdk.AtomType[] types = atf.getAllAtomTypes();
+      System.out.println("Read atom types: " + types.length);
+      for (int i=0; i<types.length; i++) {
+          // convert all AtomType's to BaseAtomType and add then
+          // to the list
+          atModel.updateAtomType(BaseAtomType.get(types[i]));
+      }
+      // System.out.println("done.");
   }
 
   public BaseAtomType get(String name) {
@@ -648,7 +590,40 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     return atModel.get(atomicNumber);
   }
 
-  public synchronized Enumeration elements() {
+	/**
+	 *  Configures an atom. Finds the correct element type
+	 *  by looking at the atoms atom type id (atom.getID()).
+	 *
+	 * @param  atom  The atom to be configured
+	 * @return       The configured atom
+	 */
+	public Atom configure(Atom atom) {
+        try {
+            BaseAtomType at = get(atom.getID());
+            atom.setMaxBondOrder(at.getMaxBondOrder());
+            atom.setMaxBondOrderSum(at.getMaxBondOrderSum());
+            atom.setVanderwaalsRadius(at.getVanderwaalsRadius());
+            atom.setCovalentRadius(at.getCovalentRadius());
+            atom.setProperty("org.openscience.jmol.color", at.getColor());
+            if (at.getAtomicNumber() != 0) {
+                atom.setAtomicNumber(at.getAtomicNumber());
+            } else {
+                logger.debug("Did not configure atomic number: AT.an=" + at.getAtomicNumber());
+            }
+            if (at.getExactMass() > 0.0) {
+                atom.setExactMass(at.getExactMass());
+            } else {
+                logger.debug("Did not configure mass: AT.mass=" + at.getAtomicNumber());
+            }
+        } catch (Exception exc) {
+            logger.warn("Could not configure atom with unknown ID: " + 
+                        atom.toString() + " + (id=" + atom.getID() + ")");
+        }
+        logger.debug("Configured " + atom.toString());
+		return atom;
+	}
+
+    public synchronized Enumeration elements() {
     return atModel.elements();
   }
 }

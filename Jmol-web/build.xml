@@ -80,6 +80,33 @@
       <replacefilter token="[codebase]" value="../jmol" />
     </replace>
 
+    <!-- Manage language flags -->
+    <echo message="Generating flags for available languages..."/>
+    <for param="current.dir">
+      <dirset dir="${build.html}"/>
+      <sequential>
+        <for list="${all.languages}" delimiter="," param="current.language">
+          <sequential>
+            <if>
+              <available file="@{current.dir}/index.@{current.language}.html"/>
+              <then>
+                <replaceregexp match='&lt;!-- &lt;flag lang="@{current.language}"&gt;(.*)&lt;/flag&gt; --&gt;'
+                               replace='\1' flags='g'>
+                  <fileset dir="@{current.dir}" includes="index.*.html"/>
+                </replaceregexp>
+              </then>
+              <else>
+                <replaceregexp match='&lt;!-- &lt;flag lang="@{current.language}"&gt;(.*)&lt;/flag&gt; --&gt;'
+                               replace='&lt;!-- \1 --&gt;' flags='g'>
+                  <fileset dir="@{current.dir}" includes="index.*.html"/>
+                </replaceregexp>
+              </else>
+          	</if>
+          </sequential>
+      	</for>
+      </sequential>
+    </for>
+
   	<!-- Modify access rights -->
     <chmod perm="ug=rw,o=r" dir="${build.html}" includes="**/*" />
   </target>

@@ -37,20 +37,17 @@
       <section>
         <title>-Duser.language</title>
         <para>
-            In addition to the above command line options there is also one
-            important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
-            With this option the GUI language can be set. At this moment
-            these languages are supported:
-            <literal>en</literal>,
-            <literal>es</literal>, and
-            <literal>nl</literal>.
-        </para>
-        <para>
-            Alternatively, you can also use the <envar>LANG</envar> environment variable
-            for setting the prefered language. This is common in many UNIX systems, like
-            Linux. However, it is known not to work on Solaris and the above command line
-            option must be used.
-        </para>
+	  In addition to the above command line options there is also one
+	  important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
+	  With this option the GUI language can be set. At this moment
+	  these languages are supported: <literal>en</literal>, <literal>es</literal>, and <literal>nl</literal>.
+	</para>
+	<para>
+	  Alternatively, you can also use the <envar>LANG</envar> environment
+	  variable for setting the prefered language. This is common in many
+	  UNIX systems, like Linux. However, it is known not to work on
+	  Solaris and the above command line option must be used.
+	</para>
       </section>
       <section>
         <title>-Ddisplay.speed</title>
@@ -352,6 +349,26 @@
 	  structures, such as <filename>samples/CdSe_nanocrystal.xyz</filename>
 	  or <filename>samples/HfO2_on_Si_relax.in</filename>
 	</para>
+	<para>
+	  Alternatively, turn on the bounding box (see below).
+	</para>
+      </section>
+      <section>
+	<title>Axes</title>
+	<para>
+	  Displays cartesian axes with the origin at the center of the
+	  bounding box defined by the extreme coordinates of the molecule.
+	</para>
+	<para>
+	  Note that the positive Y axis is at the top, unlike RasMol.
+	</para>
+      </section>
+      <section>
+	<title>Bounding Box</title>
+	<para>
+	  Displays the bounding box, defined by the extreme coordinates
+	  of the centers of the atoms in each of the three dimensions.
+	</para>
       </section>
       <section>
         <title>Hydrogens</title>
@@ -525,107 +542,155 @@
     </section>
   </chapter>
 
-  <chapter id="rasmol" xreflabel="Rasmol Scripts">
-    <title id="rasmol.title">Rasmol Scripts</title>
+  <chapter id="rasmol" xreflabel="RasMol/Chime Scripts">
+    <title id="rasmol.title">RasMol/Chime Scripts</title>
     <para>
-      The scripting language within Jmol is inherited from another
-      3D viewer, Rasmol. Note that it this time, only a limited
-      amount of commands can be used. All commands mentioned
-      in this chapter do.
+      Note: The scripting engine has been completely rewritten for Jmol Release
+      6. As of this writing it should be considered *alpha test* code. Please
+      supply feedback in case of bugs and/or unexpected behavior. 
+    </para>
+    <para>
+      Jmol supports the majority of RasMol/Chime scripting commands. 
     </para>
     <section>
-      <title>General Commands</title>
-      <section>
-        <title>load</title>
-        <para>
-	  <cmdsynopsis>
-	    <command>load</command>
-	    <arg>format</arg>
-            <arg choice="req"><replaceable>filename</replaceable></arg>
-	  </cmdsynopsis>
-	</para>
-        <para>
-          Currently accepted formats are PDB, CML and XYZ.
-        </para>
-      </section>
-      <section>
-        <title>script</title>
-        <para>
-	  <cmdsynopsis>
-	    <command>script</command>
-            <arg choice="req"><replaceable>filename</replaceable></arg>
-	  </cmdsynopsis>
-	</para>
-        <para>
-          Loads and execute a script file from disk.
-        </para>
-      </section>
-      <section>
-        <title>exit</title>
-        <para>
-	  <cmdsynopsis>
-	    <command>exit</command>
-	  </cmdsynopsis>
-	</para>
-        <para>
-          If given from script window, closes this window.
-        </para>
-      </section>
+      <title>background &lt;color&gt;</title>
+      <para>
+	Sets color of the background. See Color Specification.
+      </para>
     </section>
     <section>
-      <title>Display Commands</title>
-      <para> </para>
+      <title>center {&lt;expression&gt;}</title>
+      <para>
+	Sets the center of rotation to be the center of the set of atoms
+	defined by the expression. If no atoms are selected then the center
+	is set to the center of the bounding box (the default).
+      </para>
     </section>
     <section>
-      <title>Colour Commands</title>
-      <section>
-        <title>colour or color</title>
-        <para>
-	  <cmdsynopsis>
-	    <command>colour</command>
-            <arg><replaceable>object</replaceable></arg>
-            <arg choice="req"><replaceable>colour</replaceable></arg>
-	  </cmdsynopsis>
-	</para>
-        <para>
-	  Gives selected objects a colour as specified by the colour 
-          value. Note that color is synonymous with colour.
-	</para>
-	<para>
-	  Currently accepted colour values: black, red, grey, blue, 
-          green, cyan, magenta, orange, white and pink.
-	</para>
-      </section>
+      <title>Color {&lt;object&gt;} &lt;color&gt;</title>
+      <para>
+	Colors the object with the specified color. If no object is given
+	then atom is assumed. Currently supported objects are atoms, bonds,
+	labels and axes.
+      </para>
     </section>
     <section>
-      <title>Manipulation Commands</title>
-      <para> </para>
+      <title>cpk &lt;boolean&gt; | cpk &lt;value&gt;</title>
+      <para>
+	Renders selected atoms as spheres.
+      </para>
+      <para>
+	A boolean value renders the
+	spheres with the vanderWaals radius. The current jmol implementation
+	does a poor job of rendering these because the renderer does not
+	handle intersecting objects. 
+      </para>
+      <para>
+	A decimal value specifies sphere radius in Angstroms.
+      </para>
+      <para>
+	A positive integer specifies sphere radius in RasMol units,
+	1/250th of an Angstrom.
+      </para>
+      <para>
+	A negative integer specifies sphere radius as a percentage of
+	the vanderWaals radius. Thus, a value of -25 specifies that the
+	selected atoms should be rendered with a sphere radius of 25%
+	of the vanderWaals radius for that element.
+      </para>
+      <para>
+	cpk is synonymous with spacefill.
+      </para>
     </section>
     <section>
-      <title>Scripted Commands</title>
-      <section>
-        <title>echo</title>
-        <para>
-	  <cmdsynopsis>
-	    <command>echo</command>
-            <arg><replaceable>string</replaceable></arg>
-	  </cmdsynopsis>
-	</para>
-        <para>
-	  Prints a text to the output.
-	</para>
-      </section>
-      <section>
-        <title>refresh</title>
-        <para>
-	  <cmdsynopsis>
-	    <command>refresh</command>
-	  </cmdsynopsis>
-	</para>
-        <para>
-          Redraws the structure.
-	</para>
-      </section>
+      <title>define &lt;variable&gt; &lt;expression&gt;</title>
+      <para>
+	defines the specified variable to the the atoms selected by
+	the expression;
+      </para>
+    </section>
+    <section>
+      <title>echo &lt;string&gt;</title>
+      <para>
+	Prints the specified string to the console. (We need to find a
+	better place to send the output. Status line?)
+      </para>
+    </section>
+    <section>
+      <title>exit</title>
+      <para>
+	Stops script execution.
+      </para>
+    </section>
+    <section>
+      <title>label &lt;boolean&gt; | label &lt;string&gt;</title>
+      <para>
+	Allows you to specify a label to be shown with the selected atoms.
+	%a  Atom Name
+	%b %t Protein B-Factor/Temperature
+	%c %s Protein chain
+	%e Element atomic symbol
+	%i Atom serial number
+	%m single letter amino acid code
+	%n 3 letter residue name
+	%r PDB residue number
+      </para>
+    </section>
+    <section>
+      <title>load {&lt;format&gt;} &lt;filename | url&gt;</title>
+      <para>
+	The format parameter is ignored. It is allowed for backward
+	compatibility with RasMol/Chime.
+      </para>
+    </section>
+    <section>
+      <title>monitor &lt;number&gt; &lt;number&gt; {&lt;number&gt;} {&lt;number&gt;}</title>
+      <para>
+	Renders a measurement between the specified atoms.
+      </para>
+      <para>
+	Two atoms specify a distance measurement.
+      </para>
+      <para>
+	Three atoms specify an angle measurement.
+      </para>
+      <para>
+	Four atoms specify a dihedral angle measurement.
+      </para>
+    </section>
+    <section>
+      <title>refresh</title>
+      <para>
+	Forces screen repaint during script execution. (Not sure under
+	what circumstances this would be necessary?)
+      </para>
+    </section>
+    <section>
+      <title>reset</title>
+      <para>
+	Resets molecule to its original position: zoom 100; center; 
+	translate x 0; translate y 0;
+      </para>
+    </section>
+    <section>
+      <title>restrict &lt;expression&gt;</title>
+      <para>
+	Selects the atoms identified by expression and hides all atoms
+	and bonds which are outside the selection set.
+      </para>
+    </section>
+    <section>
+      <title>rotate &lt;axis&gt; &lt;value&gt;</title>
+      <para>
+	Rotates the model the specified angle about the specified axis.
+	Integer values specify degrees. Decimal values specify radians.
+      </para>
+    </section>
+    <section>
+      <title>script &lt;filename | url&gt;</title>
+      <para>
+	Loads and executes the specified script file/url.
+      </para>
     </section>
     <section>
       <title>Atom Expressions</title>

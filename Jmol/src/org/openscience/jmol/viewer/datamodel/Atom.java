@@ -287,19 +287,19 @@ public class Atom implements Bspt.Tuple {
   }
 
   public float getAtomX() {
-    return (float)point3f.x;
+    return point3f.x;
   }
 
   public float getAtomY() {
-    return (float)point3f.y;
+    return point3f.y;
   }
 
   public float getAtomZ() {
-    return (float)point3f.z;
+    return point3f.z;
   }
 
   public float getDimensionValue(int dimension) {
-    return (float)(dimension == 0
+    return (dimension == 0
 		   ? point3f.x
 		   : (dimension == 1 ? point3f.y : point3f.z));
   }

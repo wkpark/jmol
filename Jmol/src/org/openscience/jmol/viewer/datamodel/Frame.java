@@ -81,6 +81,14 @@ final public class Frame {
     this(viewer, JmolConstants.MODEL_TYPE_OTHER, false);
   }
 
+  FrameExportModelAdapter exportModelAdapter;
+
+  public JmolModelAdapter getExportModelAdapter() {
+    if (exportModelAdapter == null)
+      exportModelAdapter = new FrameExportModelAdapter(viewer, this);
+    return exportModelAdapter;
+  }
+
   public void freeze() {
     htAtomMap = null;
     if (notionalUnitcell != null)

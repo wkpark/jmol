@@ -196,7 +196,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
       iatom = 0;
     }
     public boolean hasNext() {
-      if (iatom >= model.atomCount)
+      if (iatom == model.atomCount)
         return false;
       atom = model.atoms[iatom++];
       return true;
@@ -225,7 +225,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
       ibond = 0;
     }
     public boolean hasNext() {
-      if (ibond >= model.bondCount)
+      if (ibond == model.bondCount)
         return false;
       bond = bonds[ibond++];
       return true;

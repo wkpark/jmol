@@ -919,6 +919,10 @@ final public class JmolViewer {
     return modelManager.frame != null;
   }
 
+  public JmolModelAdapter getExportModelAdapter() {
+    return modelManager.getExportModelAdapter();
+  }
+
   public Frame getFrame() {
     return modelManager.getFrame();
   }

@@ -65,8 +65,10 @@ public abstract class JmolModelAdapter {
    * considered an error condition and the returned String is the error
    * message. 
    */
-  abstract public Object openBufferedReader(JmolViewer viewer, String name,
-                                   BufferedReader bufferedReader);
+  public Object openBufferedReader(JmolViewer viewer, String name,
+                                   BufferedReader bufferedReader) {
+    return null;
+  }
 
   /**
    * returns the type of this model
@@ -74,32 +76,26 @@ public abstract class JmolModelAdapter {
    public final static int MODEL_TYPE_PDB = 1;
    public final static int MODEL_TYPE_XYZ = 2;
    */
-  abstract public int getModelType(Object clientFile);
+  public int getModelType(Object clientFile) { return 0; }
 
   /**
    * The number of frames in this file. Used for animations, etc.
    */
-  public int getFrameCount(Object clientFile) {
-    return 1;
-  }
+  public int getFrameCount(Object clientFile) { return 1; }
 
   /**
    * Some file formats contain a formal name of the molecule in the file.
    * If this method returns <code>null</code> then the JmolViewer will
    * automatically supply the file/URL name as a default.
    */
-  public String getModelName(Object clientFile) {
-    return null;
-  }
+  public String getModelName(Object clientFile) { return null; }
 
   /**
    * We may need the file header.
    * This is currently only used for the script command 'show pdbheader'
    * Other than for pdb files, the client can return <code>null</code>
    */
-  public String getModelHeader(Object clientFile) {
-    return null;
-  }
+  public String getModelHeader(Object clientFile) { return null; }
 
   /****************************************************************
    * frame related
@@ -123,7 +119,9 @@ public abstract class JmolModelAdapter {
    * The individual strings are exact HELIX, SHEET, and TURN recordsfrom the .pdb file.
    * @see #hasPdbRecords(Object clientFile, int frameNumber)
    */
-  abstract public String[] getPdbStructureRecords(Object clientFile, int frameNumber);
+  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
+    return null;
+  }
 
 
   /**

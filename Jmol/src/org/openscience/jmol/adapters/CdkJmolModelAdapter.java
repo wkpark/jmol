@@ -226,7 +226,7 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
       iatom = 0;
     }
     public boolean hasNext() {
-      if (iatom >= atomCount)
+      if (iatom == atomCount)
         return false;
       atom = atomContainer.getAtomAt(iatom++);
       return true;
@@ -259,7 +259,7 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
       ibond = 0;
     }
     public boolean hasNext() {
-      if (ibond >= bonds.length)
+      if (ibond == bonds.length)
         return false;
       bond = bonds[ibond++];
       bondedAtoms = bond.getAtoms();

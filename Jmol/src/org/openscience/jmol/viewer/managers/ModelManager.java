@@ -99,6 +99,10 @@ public class ModelManager {
     return (frame == null) ? nullFrame : frame;
   }
 
+  public JmolModelAdapter getExportModelAdapter() {
+    return (frame == null) ? null : frame.getExportModelAdapter();
+  }
+
   public String getModelName() {
     return modelName;
   }

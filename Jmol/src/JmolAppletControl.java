@@ -26,7 +26,7 @@
 import java.applet.*;
 import org.openscience.jmol.applet.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.Event;
 import java.util.*;
 import org.openscience.jmol.viewer.managers.ColorManager;
 
@@ -139,8 +139,37 @@ public class JmolAppletControl extends Applet {
       jsoWindow = JSObject.getWindow(this);
 
     setLayout(new GridLayout(1, 1));
-    allocateControl();
+    add(allocateControl());
     logWarnings();
+  }
+  
+  public boolean action(Event e, Object what) {
+    switch (type) {
+    case typeChimeToggle:
+      toggleState = !toggleState;
+      awtButton.setLabel(toggleState ? "X" : "");
+      // fall into;
+    case typeChimePush:
+    case typeButton:
+      runScript();
+      break;
+    case typeChimeRadio:
+      if (! toggleState) {
+        notifyRadioPeers();
+        toggleState = true;
+        awtButton.setLabel("X");
+        runScript();
+      }
+      break;
+    case typeCheckbox:
+      if (toggleState != awtCheckbox.getState()) {
+        if (! toggleState && groupName != null)
+          notifyRadioPeers();
+        toggleState = ! toggleState;
+        runScript();
+      }
+    }
+    return true;
   }
 
   private void logWarnings() {
@@ -156,68 +185,21 @@ public class JmolAppletControl extends Applet {
       System.out.println("chimeToggle with no altScript?");
   }
 
-  private void allocateControl() {
+  private Component allocateControl() {
     switch (type) {
     case typeChimePush:
       label = "X";
+      // fall into;
     case typeButton:
-      allocateButton();
-      break;
+      toggleState = true; // so that 'script' will run instead of 'altscript'
+      return awtButton = new Button(label);
     case typeChimeToggle:
-      allocateChimeToggle();
-      break;
     case typeChimeRadio:
-      allocateChimeRadio();
-      break;
+      return awtButton = new Button(toggleState ? "X" : "");
     case typeCheckbox:
-      allocateCheckbox();
-      break;
+      return awtCheckbox = new Checkbox(label, toggleState);
     }
-    if (myControl == null)
-      myControl = new Button("?");
-    add(myControl);
-    validate();
-  }
-
-  private void allocateButton() {
-    awtButton = new Button(label);
-    awtButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          runScript();
-        }
-      }
-                                  );
-    toggleState = true;
-    myControl = awtButton;
-  }
-
-  private void allocateChimeToggle() {
-    awtButton = new Button(toggleState ? "X" : "");
-    awtButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          toggleState = !toggleState;
-          awtButton.setLabel(toggleState ? "X" : "");
-          runScript();
-        }
-      }
-                                  );
-    myControl = awtButton;
-  }
-
-  private void allocateChimeRadio() {
-    awtButton = new Button(toggleState ? "X" : "");
-    awtButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (! toggleState) {
-            notifyRadioPeers();
-            toggleState = true;
-            awtButton.setLabel("X");
-            runScript();
-          }
-        }
-      }
-                                  );
-    myControl = awtButton;
+    return new Button("?");
   }
 
   private void notifyRadio(String radioGroupName) {
@@ -236,7 +218,8 @@ public class JmolAppletControl extends Applet {
   }
 
   private void notifyRadioPeers() {
-    for (Enumeration enum = JmolAppletRegistry.applets(); enum.hasMoreElements(); ) {
+    for (Enumeration enum = JmolAppletRegistry.applets();
+         enum.hasMoreElements(); ) {
       Object peer = enum.nextElement();
       if (! (peer instanceof JmolAppletControl))
         continue;
@@ -245,28 +228,12 @@ public class JmolAppletControl extends Applet {
     }
   }
 
-  private void allocateCheckbox() {
-    awtCheckbox = new Checkbox(label, toggleState);
-    awtCheckbox.addItemListener(new ItemListener() {
-        public void itemStateChanged(ItemEvent e) {
-          if (toggleState != awtCheckbox.getState()) {
-            if (! toggleState && groupName != null)
-              notifyRadioPeers();
-            toggleState = ! toggleState;
-            runScript();
-          }
-        }
-      }
-                                  );
-    myControl = awtCheckbox;
-  }
-
   private void runScript() {
     String scriptToRun = (toggleState ? script : altScript);
     if (scriptToRun == null)
       return;
     if (targetName == null) {
-      System.out.println(typeName + " has no target?");
+      System.out.println(typeName + " with name" + myName + " has no target?");
       return;
     }
     Applet targetApplet = JmolAppletRegistry.lookup(targetName);

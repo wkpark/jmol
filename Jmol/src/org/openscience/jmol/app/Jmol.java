@@ -216,11 +216,13 @@ public class Jmol extends JPanel {
     say("Loading plugins...");
     pluginManager = new CDKPluginManager(
         System.getProperty("user.home") + System.getProperty("file.separator")
-        + ".jmol/plugins", 
-        System.getProperty("user.home") + System.getProperty("file.separator")
         + ".jmol", new JmolEditBus(viewer)
     );
     pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
+    pluginManager.loadPlugins(
+        System.getProperty("user.home") + System.getProperty("file.separator")
+        + ".jmol/plugins"
+    );
 
     // install the command table
     say("Building Command Hooks...");
@@ -452,7 +454,9 @@ public class Jmol extends JPanel {
 
   private void doClose() {
       numWindows--;
-      if (numWindows <= 0) {
+      if (numWindows <= 1) {
+          System.out.println("Closing Jmol...");
+          pluginManager.closePlugins();
           System.exit(0);
       } else {
           this.frame.dispose();
@@ -982,7 +986,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      System.exit(0);
+        Jmol.this.doClose();
     }
   }
 

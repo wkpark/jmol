@@ -53,6 +53,9 @@ public class TransformManager {
    ROTATIONS
   ****************************************************************/
 
+  // this matrix only holds rotations ... no translations
+  // however, it cannot be a Matrix3f because we need to multiply it by
+  // a matrix4f which contains translations
   public final Matrix4f matrixRotate = new Matrix4f();
 
   public void rotateXYBy(int xDelta, int yDelta) {
@@ -419,7 +422,8 @@ public class TransformManager {
   private final Matrix4f matrixTemp = new Matrix4f();
   private final Vector3f vectorTemp = new Vector3f();
 
-  public boolean yAxisPointsUpwards = false;
+
+  public boolean yAxisPointsUpwards = true;
   public void setYAxisPointsUpwards(boolean yAxisPointsUpwards) {
     this.yAxisPointsUpwards = yAxisPointsUpwards;
   }
@@ -440,16 +444,25 @@ public class TransformManager {
     // now, multiply by angular rotations
     // this is *not* the same as  matrixPointTransform.mul(matrixRotate);
     matrixPointTransform.mul(matrixRotate, matrixPointTransform);
-    // now shift so that all z coordinates are >= 0
-    // this is important for scaling
+    if (! yAxisPointsUpwards) {
+      matrixTemp.rotX((float)Math.PI);
+      matrixPointTransform.mul(matrixRotate, matrixPointTransform);
+    }
+    //    matrixPointTransform.mul(matrixRotate, matrixPointTransform);
+    // we want all z coordinates >= 0, with larger coordinates further away
+    // this is important for scaling, and is the way our zbuffer works
+    // so first, translate an make all z coordinates negative
     vectorTemp.x = 0;
     vectorTemp.y = 0;
     vectorTemp.z = viewer.getRotationRadius();
+    matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixPointTransform.sub(matrixTemp);
     // now scale to screen coordinates
-    matrixTemp.set(-scalePixelsPerAngstrom); // invert y & z
-    matrixTemp.m00=scalePixelsPerAngstrom; // preserve x
+    matrixTemp.setZero();
+    matrixTemp.set(scalePixelsPerAngstrom);
+    matrixTemp.m22 = -scalePixelsPerAngstrom; // but invert Z to make them positive
+    matrixTemp.m11 = -scalePixelsPerAngstrom;
     matrixPointTransform.mul(matrixTemp, matrixPointTransform);
     // note that the image is still centered at 0, 0
     // translations come later (to deal with perspective)
@@ -467,8 +480,11 @@ public class TransformManager {
     // this is *not* the same as  matrixVectorTransform.mul(matrixRotate);
     matrixVectorTransform.mul(matrixRotate, matrixVectorTransform);
     // now scale to screen coordinates
-    matrixTemp.set(-scalePixelsPerAngstrom); // invert y & z
-    matrixTemp.m00=scalePixelsPerAngstrom; // preserve x
+    matrixTemp.setZero();
+    matrixTemp.set(scalePixelsPerAngstrom);
+    matrixTemp.m22 = -scalePixelsPerAngstrom; // but invert Z to make them positive
+    if (yAxisPointsUpwards)
+      matrixTemp.m11 = -scalePixelsPerAngstrom;
     matrixVectorTransform.mul(matrixTemp, matrixVectorTransform);
   }
 
@@ -488,7 +504,35 @@ public class TransformManager {
   }
 
   public Point3i transformPoint(Point3f pointAngstroms) {
-    matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
+    if (viewer.testFlag1) {
+      point3dScreenTemp.set(pointAngstroms);
+      System.out.println("Transforming:" + pointAngstroms);
+      vectorTemp.set(viewer.getRotationCenter());
+      System.out.println("rotationCenter:" + vectorTemp);
+      point3dScreenTemp.sub(vectorTemp);
+      System.out.println("reset to center:" + point3dScreenTemp);
+      matrixRotate.transform(point3dScreenTemp);
+      System.out.println("rotated:" + point3dScreenTemp);
+      
+      vectorTemp.x = 0;
+      vectorTemp.y = 0;
+      vectorTemp.z = viewer.getRotationRadius();
+      
+      point3dScreenTemp.sub(vectorTemp);
+      
+      System.out.println("pushed into negative space:" + point3dScreenTemp);
+      
+      matrixTemp.setZero();
+      matrixTemp.set(scalePixelsPerAngstrom);
+      matrixTemp.m22 = -scalePixelsPerAngstrom; // but invert Z to make them positive
+      if (yAxisPointsUpwards)
+        matrixTemp.m11 = -scalePixelsPerAngstrom; // invert y because screen goes down
+      matrixTemp.transform(point3dScreenTemp);
+      System.out.println("scaled and z made positive:" + point3dScreenTemp);
+    } else {
+      matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
+    }
+
     int z = (int)(point3dScreenTemp.z + 0.5);
     if (z < 0) {
       System.out.println("WARNING! DANGER! z < 0! transformPoint()");

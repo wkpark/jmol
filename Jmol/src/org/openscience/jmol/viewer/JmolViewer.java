@@ -1258,6 +1258,12 @@ final public class JmolViewer {
       return getOversampleStoppedEnabled();
     if (key.equals("yAxisPointsUpwards"))
       return getYAxisPointsUpwards();
+    if (key.equals("testFlag1"))
+      return getTestFlag1();
+    if (key.equals("testFlag2"))
+      return getTestFlag2();
+    if (key.equals("testFlag3"))
+      return getTestFlag3();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -1288,8 +1294,36 @@ final public class JmolViewer {
       { setOversampleStoppedEnabled(value); return; }
     if (key.equals("yAxisPointsUpwards"))
       { setYAxisPointsUpwards(value); return; }
+    if (key.equals("testFlag1"))
+      { setTestFlag1(value); return; }
+    if (key.equals("testFlag2"))
+      { setTestFlag2(value); return; }
+    if (key.equals("testFlag3"))
+      { setTestFlag3(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
+  }
+
+  public boolean testFlag1;
+  public boolean testFlag2;
+  public boolean testFlag3;
+  void setTestFlag1(boolean value) {
+    testFlag1 = value;
+  }
+  boolean getTestFlag1() {
+    return testFlag1;
+  }
+  void setTestFlag2(boolean value) {
+    testFlag2 = value;
+  }
+  boolean getTestFlag2() {
+    return testFlag2;
+  }
+  void setTestFlag3(boolean value) {
+    testFlag3 = value;
+  }
+  boolean getTestFlag3() {
+    return testFlag3;
   }
 
   /****************************************************************

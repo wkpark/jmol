@@ -115,14 +115,13 @@ public class CdkJmolAdapter extends JmolAdapter {
       if (title != null) {
         System.out.println("Setting model name to title");
         return title.toString();
-      } else {
-        // try to recurse
-        AtomContainer container = getAtomContainer((ChemFile)clientFile);
-        if (container != null) {
-          Object moleculeTitle = container.getProperty(CDKConstants.TITLE);
-          if (moleculeTitle != null) {
-            return moleculeTitle.toString();
-          }
+      }
+      // try to recurse
+      AtomContainer container = getAtomContainer(clientFile);
+      if (container != null) {
+        Object moleculeTitle = container.getProperty(CDKConstants.TITLE);
+        if (moleculeTitle != null) {
+          return moleculeTitle.toString();
         }
       }
     }
@@ -188,9 +187,8 @@ public class CdkJmolAdapter extends JmolAdapter {
             fNotional[i] = (float)notional[i];
         }
         return fNotional;
-    } else {
-        System.err.println("Cannot return notional unit cell params: no Crystal found");
     }
+    System.err.println("Cannot return notional unit cell params: no Crystal found");
     return null;
   }
 

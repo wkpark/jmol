@@ -42,36 +42,27 @@ public class ColorManager {
     this.control = control;
   }
 
+  private PartialAtomicChargeColors chargeColors =
+    new PartialAtomicChargeColors();
+  private AtomColors atomColors = AtomColors.getInstance();
   private AtomColorer colorProfile = AtomColors.getInstance();
   public int modeAtomColorProfile = DisplayControl.ATOMTYPE;
-  public void setModeAtomColorProfile(int mode) {
-    if (modeAtomColorProfile != mode) {
-      modeAtomColorProfile = mode;
-      if (mode == DisplayControl.ATOMTYPE)
-        colorProfile = AtomColors.getInstance();
-      else
-        colorProfile = new PartialAtomicChargeColors();
-    }
-    JmolAtomIterator iter = control.getChemFileIterator();
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      Color color = getColorAtom(atom);
-      atom.atomShape.setColorAtom(color);
-    }
-  }
-
-  public void setModeAtomColorProfile(int mode, BitSet set) {
+  public void setModeAtomColorProfile(int mode, boolean setDefault,
+                                      JmolAtomIterator iter) {
     AtomColorer colorProfile;
     if (mode == DisplayControl.ATOMTYPE)
-      colorProfile = AtomColors.getInstance();
+      colorProfile = atomColors;
     else
-      colorProfile = new PartialAtomicChargeColors();
-    Atom[] atoms = control.getCurrentFrameAtoms();
-    for (int iatom = atoms.length; --iatom >= 0 ; )
-      if (set.get(iatom)) {
-        Atom atom = atoms[iatom];
-        atom.atomShape.setColorAtom(colorProfile.getAtomColor(atom));
-      }
+      colorProfile = chargeColors;
+    if (setDefault) {
+      this.modeAtomColorProfile = mode;
+      this.colorProfile = colorProfile;
+    }
+    while (iter.hasNext()) {
+      Atom atom = iter.nextAtom();
+      Color color = colorProfile.getAtomColor(atom);
+      atom.atomShape.setColorAtom(color);
+    }
   }
 
   public int getModeAtomColorProfile() {
@@ -81,9 +72,6 @@ public class ColorManager {
   public Color colorOutline = Color.black;
   public void setColorOutline(Color c) {
     colorOutline = c;
-  }
-  public Color getColorOutline() {
-    return colorOutline;
   }
 
   public Color colorSelection = Color.orange;
@@ -163,6 +151,11 @@ public class ColorManager {
     return colorVector;
   }
 
+  public boolean showDarkerOutline = false;
+  public void setShowDarkerOutline(boolean showDarkerOutline) {
+    this.showDarkerOutline = showDarkerOutline;
+  }
+
   public Color getColorAtom(Atom atom) {
     Color color = colorProfile.getAtomColor(atom);
     if (modeTransparentColors)
@@ -170,10 +163,9 @@ public class ColorManager {
     return color;
   }
 
-  public Color getColorAtomOutline(Color color) {
+  public Color getColorAtomOutline(byte style, Color color) {
     Color outline =
-      (control.getShowDarkerOutline() ||
-       control.getStyleAtom() == DisplayControl.SHADING)
+      (showDarkerOutline || style == DisplayControl.SHADING)
       ? getDarker(color) : colorOutline;
     if (modeTransparentColors)
       outline = getColorTransparent(outline);

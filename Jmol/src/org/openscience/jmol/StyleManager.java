@@ -49,120 +49,48 @@ public class StyleManager {
   }
 
   public byte styleAtom = DisplayControl.QUICKDRAW;
-  public void setStyleAtom(byte styleAtom) {
-    this.styleAtom = styleAtom;
-    JmolAtomIterator iter = control.getChemFileIterator();
+  public void setStyleAtom(byte styleAtom, boolean setDefault,
+                           JmolAtomIterator iter) {
+    if (setDefault)
+      this.styleAtom = styleAtom;
     while (iter.hasNext())
       iter.nextAtom().atomShape.setStyleAtom(styleAtom);
   }
 
   public int percentVdwAtom = 20;
-  public void setPercentVdwAtom(int percentVdwAtom) {
-    this.percentVdwAtom = percentVdwAtom;
-    JmolAtomIterator iter = control.getChemFileIterator();
+  public void setPercentVdwAtom(int percentVdwAtom, boolean setDefault,
+                           JmolAtomIterator iter) {
+    if (setDefault)
+      this.percentVdwAtom = percentVdwAtom;
     while (iter.hasNext())
       iter.nextAtom().atomShape.setMadAtom(-percentVdwAtom);
   }
 
-  public void setStyleAtom(byte style, BitSet set) {
-    Atom[] atoms = control.getCurrentFrameAtoms();
-    for (int iatom = atoms.length; --iatom >= 0 ; )
-      if (set.get(iatom))
-        atoms[iatom].atomShape.setStyleAtom(style);
-  }
-
-  public void setPercentVdwAtom(int percentVdwAtom, BitSet set) {
-    Atom[] atoms = control.getCurrentFrameAtoms();
-    for (int iatom = atoms.length; --iatom >= 0 ; )
-      if (set.get(iatom))
-        atoms[iatom].atomShape.setMadAtom(-percentVdwAtom);
-  }
-
-  public void setStyleMadAtom(byte style, int mad, BitSet set) {
-    Atom[] atoms = control.getCurrentFrameAtoms();
-    for (int iatom = atoms.length; --iatom >= 0 ; )
-      if (set.get(iatom))
-        atoms[iatom].atomShape.setStyleMadAtom(style, mad);
-  }
-
   public byte styleBond = DisplayControl.QUICKDRAW;
-  public void setStyleBond(byte styleBond) {
-    this.styleBond = styleBond;
-    JmolAtomIterator iter = control.getChemFileIterator();
-    while (iter.hasNext())
-      iter.nextAtom().atomShape.setStyleAllBonds(styleBond);
+  public void setStyleBond(byte styleBond, boolean setDefault,
+                           JmolAtomIterator iter) {
+    if (setDefault)
+      this.styleBond = styleBond;
+    while (iter.hasNext()) {
+      if (iter.allBonds())
+        iter.nextAtom().atomShape.setStyleAllBonds(styleBond);
+      else
+        iter.nextAtom().atomShape.setStyleBond(styleBond, iter.indexBond());
+    }
   }
 
   public int percentAngstromBond = 10;
-  public void setPercentAngstromBond(int percentAngstromBond) {
-    this.percentAngstromBond = percentAngstromBond;
-    int mad = percentAngstromBond * 10;
-    JmolAtomIterator iter = control.getChemFileIterator();
-    while (iter.hasNext())
-      iter.nextAtom().atomShape.setMadAllBonds(mad);
-  }
-
-  public void setStyleBond(byte style, BitSet set, boolean bondmodeOr) {
-    Atom[] atoms = control.getCurrentFrameAtoms();
-    for (int iatom = atoms.length; --iatom >= 0 ; ) {
-      boolean isSelected = set.get(iatom);
-      if (!isSelected && !bondmodeOr)
-        continue;
-      Atom atom = atoms[iatom];
-      if (isSelected && bondmodeOr) {
-        atom.atomShape.setStyleAllBonds(style);
-        continue;
-      }
-      Atom[] bondedAtoms = atom.getBondedAtoms();
-      for (int i = bondedAtoms.length; --i >= 0; ) {
-        int indexOtherAtom = bondedAtoms[i].getAtomNumber();
-        if (set.get(indexOtherAtom))
-          atom.atomShape.setStyleBond(style, i);
-      }
-    }
-  }
-
   public void setPercentAngstromBond(int percentAngstromBond,
-                                     BitSet set, boolean bondmodeOr) {
+                                     boolean setDefault,
+                                     JmolAtomIterator iter) {
+    if (setDefault)
+      this.percentAngstromBond = percentAngstromBond;
     int mad = percentAngstromBond * 10;
-    Atom[] atoms = control.getCurrentFrameAtoms();
-    for (int iatom = atoms.length; --iatom >= 0 ; ) {
-      boolean isSelected = set.get(iatom);
-      if (!isSelected && !bondmodeOr)
-        continue;
-      Atom atom = atoms[iatom];
-      if (isSelected && bondmodeOr) {
-        atom.atomShape.setMadAllBonds(mad);
-        continue;
-      }
-      Atom[] bondedAtoms = atom.getBondedAtoms();
-      for (int i = bondedAtoms.length; --i >= 0; ) {
-        int indexOtherAtom = bondedAtoms[i].getAtomNumber();
-        if (set.get(indexOtherAtom))
-          atom.atomShape.setMadBond(mad, i);
-      }
-    }
-    setStyleMadBond(styleBond, percentAngstromBond*10, set, bondmodeOr);
-  }
-
-  public void setStyleMadBond(byte style, int mad,
-                               BitSet set, boolean bondmodeOr) {
-    Atom[] atoms = control.getCurrentFrameAtoms();
-    for (int iatom = atoms.length; --iatom >= 0 ; ) {
-      boolean isSelected = set.get(iatom);
-      if (!isSelected && !bondmodeOr)
-        continue;
-      Atom atom = atoms[iatom];
-      if (isSelected && bondmodeOr) {
-        atom.atomShape.setStyleMadAllBonds(style, mad);
-        continue;
-      }
-      Atom[] bondedAtoms = atom.getBondedAtoms();
-      for (int i = bondedAtoms.length; --i >= 0; ) {
-        int indexOtherAtom = bondedAtoms[i].getAtomNumber();
-        if (set.get(indexOtherAtom))
-          atom.atomShape.setStyleMadBond(style, mad, i);
-      }
+    while (iter.hasNext()) {
+      if (iter.allBonds())
+        iter.nextAtom().atomShape.setMadAllBonds(mad);
+      else
+        iter.nextAtom().atomShape.setMadBond(mad, iter.indexBond());
     }
   }
 
@@ -198,11 +126,6 @@ public class StyleManager {
 
   public Font getMeasureFont(int size) {
     return new Font("Helvetica", Font.PLAIN, size);
-  }
-
-  public boolean showDarkerOutline = false;
-  public void setShowDarkerOutline(boolean showDarkerOutline) {
-    this.showDarkerOutline = showDarkerOutline;
   }
 
   public String propertyStyleString = "";

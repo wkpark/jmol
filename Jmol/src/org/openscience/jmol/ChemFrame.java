@@ -717,5 +717,88 @@ public class ChemFrame extends AtomContainer {
       return atoms[iAtom++];
     }
   }
+
+  public JmolAtomIterator getJmolAtomIterator(BitSet set) {
+    return new ChemFrameSetIterator(set);
+  }
+
+  class ChemFrameSetIterator extends JmolAtomIterator {
+    BitSet set;
+    int iatom = 0;
+
+    public ChemFrameSetIterator(BitSet set) {
+      this.set = set;
+    }
+
+    public boolean hasNext() {
+      for ( ; iatom < numberOfAtoms; ++iatom)
+        if (set.get(iatom))
+          return true;
+      return false;
+    }
+
+    public Atom nextAtom() {
+      return atoms[iatom++];
+    }
+  }
+
+  public JmolAtomIterator getJmolBondIterator(BitSet set, boolean bondmodeOr) {
+    return new ChemFrameBondSetIterator(set, bondmodeOr);
+  }
+
+  class ChemFrameBondSetIterator extends JmolAtomIterator {
+    BitSet set;
+    boolean bondmodeOr;
+    int iatom;
+    int ibond;
+    boolean bigHit;
+    Atom atom;
+    Atom[] bondedAtoms;
+
+    public ChemFrameBondSetIterator(BitSet set, boolean bondmodeOr) {
+      this.set = set;
+      this.bondmodeOr = bondmodeOr;
+      bigHit = true;
+      iatom = -1;
+    }
+
+    public boolean hasNext() {
+      while (true) {
+        if (! bigHit) {
+          while (++ibond < bondedAtoms.length) {
+            int indexOtherAtom = bondedAtoms[ibond].getAtomNumber();
+            if (set.get(indexOtherAtom)) {
+              bigHit = false;
+              return true;
+            }
+          }
+        }
+        boolean isSelected;
+        do {
+          if (++iatom >= numberOfAtoms)
+            return false;
+          isSelected = set.get(iatom);
+          if (isSelected && bondmodeOr)
+            return bigHit = true;
+        } while (!isSelected && !bondmodeOr);
+        atom = atoms[iatom];
+        bondedAtoms = atom.getBondedAtoms();
+        bigHit = false;
+        ibond = -1;
+      }
+    }
+
+    public Atom nextAtom() {
+      return atom;
+    }
+
+    public boolean allBonds() {
+      return bigHit;
+    }
+
+    public int indexBond() {
+      return ibond;
+    }
+  }
 }
 

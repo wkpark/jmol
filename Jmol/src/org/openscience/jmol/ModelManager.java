@@ -45,15 +45,14 @@ public class ModelManager {
   public MeasurementList mlist = null;
 
   public void setChemFile(ChemFile chemfile) {
-    // FIXME -- I think I need to disable repaints during this process
     this.chemfile = chemfile;
-    haveFile = true;
     nframes = chemfile.getNumberOfFrames();
     this.chemframe = chemfile.getFrame(0);
     Measurement.setChemFrame(chemframe);
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
+    haveFile = true;
   }
 
   public boolean haveFile() {
@@ -165,6 +164,14 @@ public class ModelManager {
 
   public JmolAtomIterator getChemFileIterator() {
     return chemfile.getJmolAtomIterator();
+  }
+
+  public JmolAtomIterator getChemFrameIterator(BitSet set) {
+    return chemframe.getJmolAtomIterator(set);
+  }
+
+  public JmolAtomIterator getChemFrameIterator(BitSet set,boolean bondmodeOr) {
+    return chemframe.getJmolBondIterator(set, bondmodeOr);
   }
 
   public int findNearestAtomIndex(int x, int y) {

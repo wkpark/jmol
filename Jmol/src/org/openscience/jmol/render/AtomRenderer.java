@@ -96,7 +96,7 @@ public class AtomRenderer {
     xUpperLeft = x - radius;
     yUpperLeft = y - radius;
     color = atomShape.colorAtom;
-    colorOutline = control.getColorAtomOutline(color);
+    colorOutline = control.getColorAtomOutline(styleAtom, color);
 
     renderAtom();
     if (control.getStyleLabel() != DisplayControl.NOLABELS)

@@ -36,6 +36,14 @@ public abstract class JmolAtomIterator implements Iterator {
 
   public abstract Atom nextAtom();
 
+  public boolean allBonds() {
+    return true;
+  }
+
+  public int indexBond() {
+    return -1;
+  }
+
   public void remove() {
   }
 }

@@ -403,10 +403,9 @@ final public class DisplayControl {
   public void setModeAtomColorProfile(int mode) {
     if (!modelManager.haveFile)
       return;
-    if (selectionManager.countSelection() == 0) 
-      colorManager.setModeAtomColorProfile(mode);
-    else
-      colorManager.setModeAtomColorProfile(mode, selectionManager.bsSelection);
+    boolean empty = selectionManager.isEmpty();
+    colorManager.setModeAtomColorProfile(mode, empty,
+                                         empty ? iterAll() : iterSelection());
     refresh();
   }
 
@@ -504,8 +503,17 @@ final public class DisplayControl {
     return colorManager.getColorAtom(atom);
   }
 
-  public Color getColorAtomOutline(Color color) {
-    return colorManager.getColorAtomOutline(color);
+  public Color getColorAtomOutline(byte style, Color color) {
+    return colorManager.getColorAtomOutline(style, color);
+  }
+
+  public void setShowDarkerOutline(boolean showDarkerOutline) {
+    colorManager.setShowDarkerOutline(showDarkerOutline);
+    refresh();
+  }
+
+  public boolean getShowDarkerOutline() {
+    return colorManager.showDarkerOutline;
   }
 
   public Color getDarker(Color color) {
@@ -541,10 +549,6 @@ final public class DisplayControl {
 
   public boolean isSelected(int atomIndex) {
     return selectionManager.isSelected(atomIndex);
-  }
-
-  public int countSelection() {
-    return selectionManager.countSelection();
   }
 
   public void selectAll() {
@@ -745,6 +749,10 @@ final public class DisplayControl {
     return modelManager.getChemFileIterator();
   }
 
+  public JmolAtomIterator getChemFrameIterator(BitSet set) {
+    return modelManager.getChemFrameIterator(set);
+  }
+
   /****************************************************************
    * delegated to RepaintManager
    ****************************************************************/
@@ -836,13 +844,25 @@ final public class DisplayControl {
     return styleManager.styleLabel;
   }
 
+  private JmolAtomIterator iterAll() {
+    return modelManager.getChemFileIterator();
+  }
+
+  private JmolAtomIterator iterSelection() {
+    return modelManager.getChemFrameIterator(selectionManager.bsSelection);
+  }
+
+  private JmolAtomIterator iterBond() {
+    return modelManager.getChemFrameIterator(selectionManager.bsSelection,
+                                             false);
+  }
+
   public void setStyleAtom(byte style) {
     if (!modelManager.haveFile)
       return;
-    if (selectionManager.countSelection() == 0) 
-      styleManager.setStyleAtom(style);
-    else
-      styleManager.setStyleAtom(style, selectionManager.bsSelection);
+    boolean empty = selectionManager.isEmpty();
+    styleManager.setStyleAtom(style, empty,
+                              empty ? iterAll() : iterSelection());
     refresh();
   }
 
@@ -850,13 +870,25 @@ final public class DisplayControl {
     return styleManager.styleAtom;
   }
 
+  public void setPercentVdwAtom(int percentVdwAtom) {
+    if (!modelManager.haveFile)
+      return;
+    boolean empty = selectionManager.isEmpty();
+    styleManager.setPercentVdwAtom(percentVdwAtom, empty,
+                                   empty ? iterAll() : iterSelection());
+    refresh();
+  }
+
+  public int getPercentVdwAtom() {
+    return styleManager.percentVdwAtom;
+  }
+
   public void setStyleBond(byte style) {
     if (!modelManager.haveFile)
       return;
-    if (selectionManager.countSelection() == 0)
-      styleManager.setStyleBond(style);
-    else
-      styleManager.setStyleBond(style, selectionManager.bsSelection, false);
+    boolean empty = selectionManager.isEmpty();
+    styleManager.setStyleBond(style, empty,
+                              empty ? iterAll() : iterBond());
     refresh();
   }
 
@@ -867,11 +899,9 @@ final public class DisplayControl {
   public void setPercentAngstromBond(int percentAngstromBond) {
     if (!modelManager.haveFile)
       return;
-    if (selectionManager.countSelection() == 0)
-      styleManager.setPercentAngstromBond(percentAngstromBond);
-    else
-      styleManager.setPercentAngstromBond(percentAngstromBond,
-                                          selectionManager.bsSelection, false);
+    boolean empty = selectionManager.isEmpty();
+    styleManager.setPercentAngstromBond(percentAngstromBond, empty,
+                                        empty ? iterAll() : iterBond());
     refresh();
   }
 
@@ -926,30 +956,6 @@ final public class DisplayControl {
 
   public Font getMeasureFont(int size) {
     return styleManager.getMeasureFont(size);
-  }
-
-  public void setShowDarkerOutline(boolean showDarkerOutline) {
-    styleManager.setShowDarkerOutline(showDarkerOutline);
-    refresh();
-  }
-
-  public boolean getShowDarkerOutline() {
-    return styleManager.showDarkerOutline;
-  }
-
-  public void setPercentVdwAtom(int percentVdwAtom) {
-    if (!modelManager.haveFile)
-      return;
-    if (selectionManager.countSelection() == 0)
-      styleManager.setPercentVdwAtom(percentVdwAtom);
-    else
-      styleManager.setPercentVdwAtom(percentVdwAtom,
-                                     selectionManager.bsSelection);
-    refresh();
-  }
-
-  public int getPercentVdwAtom() {
-    return styleManager.percentVdwAtom;
   }
 
   public void setPropertyStyleString(String s) {

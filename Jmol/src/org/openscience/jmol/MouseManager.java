@@ -236,7 +236,6 @@ public class MouseManager {
       case PICK:
         calcRectRubberBand();
         if (control.haveFile()) {
-          System.out.println("we're pickin' bits, buddy");
           BitSet selectedAtoms = control.findAtomsInRectangle(rectRubber);
           if (e.isShiftDown()) {
             control.addSelection(selectedAtoms);

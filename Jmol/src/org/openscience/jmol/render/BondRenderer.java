@@ -141,8 +141,8 @@ public class BondRenderer {
     int radius1Bond = radius1 * mag2d / mag3d;
     int radius2Bond = radius2 * mag2d / mag3d;
 
-    outline1 = control.getColorAtomOutline(color1);
-    outline2 = control.getColorAtomOutline(color2);
+    outline1 = control.getColorAtomOutline(styleBond, color1);
+    outline2 = control.getColorAtomOutline(styleBond, color2);
 
     width1 = atomShape1.bondWidths[index1];
     width2 = atomShape2.bondWidths[index2];

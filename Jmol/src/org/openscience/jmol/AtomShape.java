@@ -201,24 +201,31 @@ class AtomShape implements Shape {
     }
   }
 
-  public void renderBond(Graphics2D g2, Atom atom1, Atom atom2) {
+  // When this variable is set then a wireframe atom will behave
+  // as though it is translucent. This allows you to see that the bonds
+  // are being clipped when they are obscured by the atom
+  private static final boolean debugBondClipping = false;
 
+  public void renderBond(Graphics2D g2, Atom atom1, Atom atom2) {
     Color color1 = colorProfile.getColor(atom1);
     Color color2 = colorProfile.getColor(atom2);
-
-    int x1 = atom1.screenX;
-    int y1 = atom1.screenY;
-    int x2 = atom2.screenX;
-    int y2 = atom2.screenY;
-    int dx = x2 - x1;
-    int dx2 = dx * dx;
-    int dy = y2 - y1;
-    int dy2 = dy * dy;
-    if (dx2 + dy2 < 4) {
-      // if magnitude is very small
-      // ... and avoid divide by zero when magnitude==0
-      return;
-    }
+    int x1 = atom1.screenX, y1 = atom1.screenY;
+    int x2 = atom2.screenX, y2 = atom2.screenY;
+    int dx = x2 - x1, dx2 = dx * dx;
+    int dy = y2 - y1, dy2 = dy * dy;
+    int magnitude2 = dx2 + dy2;
+    if ((magnitude2 <= 2) || (fastRendering && magnitude2 <= 49))
+      return; // also avoid divide by zero when magnitude == 0
+    if (showAtoms &&
+        (atomDrawMode != DisplaySettings.WIREFRAME) &&
+        (magnitude2 <= 16))
+      return; // the pixels from the atoms will nearly cover the bond
+    // technically, we should draw a bond (actually little more than a dot)
+    // when:
+    //  atomDrawMode == DisplaySettings.WIREFRAME
+    //  && and the centers of the bonds are very close
+    //  && the diameter of the atom1 is >= 3
+    // ... but I'm not going to do it right now
     if (fastRendering ||
         ((bondDrawMode == DisplaySettings.LINE) && drawBondsToAtomCenters)) {
       if (color1.equals(color2)) {
@@ -227,10 +234,10 @@ class AtomShape implements Shape {
       } else {
         int xMid = (x1 + x2) / 2;
         int yMid = (y1 + y2) / 2;
-        g2.setColor(color1);
-        g2.drawLine(x1, y1, xMid, yMid);
         g2.setColor(color2);
         g2.drawLine(xMid, yMid, x2, y2);
+        g2.setColor(color1);
+        g2.drawLine(x1, y1, xMid, yMid);
       }
       return;
     }
@@ -243,177 +250,228 @@ class AtomShape implements Shape {
     int z2 = atom2.screenZ;
     int dz = z2 - z1;
     int dz2 = dz * dz;
-    int diameter1 =
-      (int) (2.0f
-        * settings.getCircleRadius(z1, atom1.getType().getVdwRadius()));
-    int radius1 = diameter1 >> 1;
-    int diameter2 =
-      (int) (2.0f
-        * settings.getCircleRadius(z2, atom2.getType().getVdwRadius()));
-    int radius2 = diameter2 >> 1;
-
-    int magnitude = (int) Math.sqrt(dx2 + dy2);
-    int bondOrder = Bond.getBondOrder(atom1, atom2);
-    // calculate entry/exit radius of the bond connection points
-    double cosine = magnitude / Math.sqrt(dx2 + dy2 + dz2);
-    int radius1Bond = (int)(radius1 * cosine);
-    int radius2Bond = (int)(radius2 * cosine);
-    int arcFactor = 1;
-    int x1Bond = x1 + ((radius1Bond + arcFactor) * dx) / magnitude;
-    int y1Bond = y1 + ((radius1Bond + arcFactor) * dy) / magnitude;
-    int x2Bond = x2 - ((radius2Bond + arcFactor) * dx) / magnitude;
-    int y2Bond = y2 - ((radius2Bond + arcFactor) * dy) / magnitude;
-
-    if (bondDrawMode == DisplaySettings.LINE) {
-      if ((bondOrder == 1) || (bondOrder == 3)) {
-        drawBondLine(x1Bond, y1Bond, color1,
-                     x2Bond, y2Bond, color2,
-                     dx, dy, magnitude, 0);
-      }
-      if ((bondOrder == 2) || (bondOrder == 3)) {
-        int bondSeparation = (bondOrder == 2) ? 2 : 4;
-        drawBondLine(x1Bond, y1Bond, color1,
-                     x2Bond, y2Bond, color2,
-                     dx, dy, magnitude, bondSeparation);
-        drawBondLine(x1Bond, y1Bond, color1,
-                     x2Bond, y2Bond, color2,
-                     dx, dy, magnitude, -bondSeparation);
-      }
-      return;
+    int diameter1, radius1, diameter2, radius2;
+    if (drawBondsToAtomCenters) {
+      diameter1 = radius1 = diameter2 = radius2 = 0;
+    } else {
+      diameter1 =
+        (int) (2.0f
+               * settings.getCircleRadius(z1, atom1.getType().getVdwRadius()));
+      radius1 = diameter1 >> 1;
+      diameter2 =
+        (int) (2.0f
+               * settings.getCircleRadius(z2, atom2.getType().getVdwRadius()));
+      radius2 = diameter2 >> 1;
     }
 
-    if ((atomDrawMode != DisplaySettings.WIREFRAME) &&
+    int magnitude = (int) Math.sqrt(magnitude2);
+    int bondOrder = Bond.getBondOrder(atom1, atom2);
+    double cosine = magnitude / Math.sqrt(magnitude2 + dz2);
+    int radius1Bond = (int)(radius1 * cosine);
+    int radius2Bond = (int)(radius2 * cosine);
+    if (((atomDrawMode != DisplaySettings.WIREFRAME) || debugBondClipping) &&
         (magnitude < radius1 + radius2Bond)) {
       // the shapes are solid and the front atom (radius1) has
       // completely obscured the bond
       return;
     }
 
-    if ((bondOrder == 1) || (bondOrder == 3)) {
-      drawBondRectangle(x1Bond, y1Bond, color1,
-                        x2Bond, y2Bond, color2,
-                        dx, dy, magnitude, 0);
-    }
-    if ((bondOrder == 2) || (bondOrder == 3)) {
-      int bondSeparation = (bondOrder == 2) ? 2 : 4;
-      drawBondRectangle(x1Bond, y1Bond, color1,
-                        x2Bond, y2Bond, color2,
-                        dx, dy, magnitude, bondSeparation);
-      drawBondRectangle(x1Bond, y1Bond, color1,
-                        x2Bond, y2Bond, color2,
-                        dx, dy, magnitude, -bondSeparation);
-    }
-  }
-
-  private void drawBondLine(int x1Bond, int y1Bond, Color color1,
-                            int x2Bond, int y2Bond, Color color2,
-                            int dx, int dy, int magnitude, int separation) {
-    // offset from the centerline by the bond separation factor
-    int sepUp = (int) (separation * halfBondWidth);
-    int sepDn = sepUp - (int) ((separation * 2) * halfBondWidth);
-    x1Bond += (sepDn * dy) / magnitude;
-    y1Bond += (sepUp * dx) / magnitude;
-    x2Bond -= (sepUp * dy) / magnitude;
-    y2Bond -= (sepDn * dx) / magnitude;
-    if (color1.equals(color2)) {
-      g2.setColor(color1);
-      g2.drawLine(x1Bond, y1Bond, x2Bond, y2Bond);
+    int arcFactor = 1;
+    int x1Bond = x1 + ((radius1Bond - arcFactor) * dx) / magnitude;
+    int y1Bond = y1 + ((radius1Bond - arcFactor) * dy) / magnitude;
+    int x2Bond = x2 - ((radius2Bond - arcFactor) * dx) / magnitude;
+    int y2Bond = y2 - ((radius2Bond - arcFactor) * dy) / magnitude;
+    int x1Edge;
+    int y1Edge;
+    if ((atomDrawMode == DisplaySettings.WIREFRAME) && !debugBondClipping) {
+      x1Edge = x1Bond;
+      y1Edge = y1Bond;
     } else {
-      // calculate the midpoint
-      int xMid = (x1Bond + x2Bond) / 2;
-      int yMid = (y1Bond + y2Bond) / 2;
-      // draw the two line segments
-      g2.setColor(color1);
-      g2.drawLine(x1Bond, y1Bond, xMid, yMid);
-      g2.setColor(color2);
-      g2.drawLine(xMid, yMid, x2Bond, y2Bond);
+      x1Edge = x1 + ((radius1 - arcFactor) * dx) / magnitude;
+      y1Edge = y1 + ((radius1 - arcFactor) * dy) / magnitude;
+    }
+
+    if (bondDrawMode == DisplaySettings.LINE) {
+      drawLineBond(g2,
+                   x1Bond, y1Bond, color1,
+                   x1Edge, y1Edge,
+                   x2Bond, y2Bond, color2,
+                   dx, dy, magnitude, bondOrder, halfBondWidth);
+    } else {
+      drawRectBond(g2,
+                   x1Bond, y1Bond, color1, getDarker(color1),
+                   x1Edge, y1Edge,
+                   x2Bond, y2Bond, color2, getDarker(color2),
+                   bondDrawMode != DisplaySettings.WIREFRAME,
+                   dx, dy, magnitude, bondOrder, halfBondWidth);
     }
   }
 
-  private static final int[] xPoints = new int[4];
-  private static final int[] yPoints = new int[4];
+  private boolean isVisible(int x1, int y1, int xEdge, int yEdge,
+                            int x2, int y2) {
+    int dxEdge = xEdge - x1, dyEdge = yEdge - y1;
+    int dx2 = x2 - x1, dy2 = y2 - y1;
+    return (dx2*dx2 + dy2*dy2) > (dxEdge*dxEdge + dyEdge*dyEdge);
+  }
 
-  private void drawBondRectangle(int x1Bond, int y1Bond, Color color1,
-                                 int x2Bond, int y2Bond, Color color2,
-                                 int dx, int dy,
-                                 int magnitude, int separation) {
-    // offset from the centerline by the bond separation factor
-    int sepUp = (int) (separation * halfBondWidth);
-    int sepDn = sepUp - (int) ((separation * 2) * halfBondWidth);
-    x1Bond += (sepDn * dy) / magnitude;
-    y1Bond += (sepUp * dx) / magnitude;
-    x2Bond -= (sepUp * dy) / magnitude;
-    y2Bond -= (sepDn * dx) / magnitude;
+  private static final int separationIncrement = 4;
+
+  private void drawLineBond(final Graphics2D g2,
+                            int x1, int y1, final Color color1,
+                            int xEdge, int yEdge,
+                            int x2, int y2, final Color color2,
+                            final int dx, final int dy, final int magnitude,
+                            int bondOrder, final double halfBondWidth) {
+    if (! isVisible(x1, y1, xEdge, yEdge, x2, y2))
+      return;
+    int sepUp = (int) (separationIncrement * halfBondWidth);
+    int sepDn = sepUp - (int)((separationIncrement * 2) * halfBondWidth);
+    int xOffset = (sepDn * dy) / magnitude;
+    int yOffset = (sepUp * dx) / magnitude;
+    if (bondOrder == 2) {
+      int xHalfOffset = xOffset/2, yHalfOffset = yOffset/2;
+      x1 -= xHalfOffset; y1 -= yHalfOffset;
+      x2 -= xHalfOffset; y2 -= yHalfOffset;
+      xEdge -= xHalfOffset; yEdge -= yHalfOffset;
+    } else if (bondOrder == 3) {
+      x1 -= xOffset; y1 -= yOffset;
+      x2 -= xOffset; y2 -= yOffset;
+      xEdge -= xOffset; yEdge -= yOffset;
+    } else if (bondOrder > 3) {
+      bondOrder = 3; // just for protection against a wild parameter value
+    }
+    while (true) {
+      int xTemp, yTemp;
+      int xMid = (x1 + x2) / 2;
+      int yMid = (y1 + y2) / 2;
+      if (color1.equals(color2) || 
+          !isVisible(x1, y1, xEdge, yEdge, xMid, yMid)) {
+        xTemp = xEdge; yTemp = yEdge;
+      } else {
+        g2.setColor(color1);
+        g2.drawLine(xEdge, yEdge, xMid, yMid);
+        xTemp = xMid; yTemp = yMid;
+      }
+      g2.setColor(color2);
+      g2.drawLine(xTemp, yTemp, x2, y2);      
+      if (--bondOrder <= 0) // also catch initial parameter values <= 0
+        return;
+      x1 += xOffset; y1 += yOffset;
+      x2 += xOffset; y2 += yOffset;
+      xEdge += xOffset; yEdge += yOffset;
+    }
+  }
+
+  private static final int[] xBondRectPoints = new int[4];
+  private static final int[] yBondRectPoints = new int[4];
+
+  private void drawRectBond(final Graphics2D g2,
+                            final int x1, final int y1,
+                            final Paint paint1, final Paint paint1Outline,
+                            final int xEdge, final int yEdge,
+                            final int x2, final int y2,
+                            final Paint paint2, final Paint paint2Outline,
+                            final boolean boolFill,
+                            final int dx, final int dy, final int magnitude,
+                            int bondOrder, final double halfBondWidth) {
+    if (! isVisible(x1, y1, xEdge, yEdge, x2, y2))
+      return;
     // offsets for the width of the bond rectangle
     int xHalfWidth = (int)(halfBondWidth * dy / magnitude);
     int yHalfWidth = (int)(halfBondWidth * dx / magnitude);
     int xFullWidth = (int)(halfBondWidth * 2 * dy / magnitude);
     int yFullWidth = (int)(halfBondWidth * 2 * dx / magnitude);
 
-    int x1Top = x1Bond + xHalfWidth;
-    int y1Top = y1Bond - yHalfWidth;
-    int x1Bot = x1Top - xFullWidth;
-    int y1Bot = y1Top + yFullWidth;
+    int x1Top = x1 + xHalfWidth, x1Bot = x1Top - xFullWidth;
+    int y1Top = y1 - yHalfWidth, y1Bot = y1Top + yFullWidth;
+    int x2Top = x2 + xHalfWidth, x2Bot = x2Top - xFullWidth;
+    int y2Top = y2 - yHalfWidth, y2Bot = y2Top + yFullWidth;
+    int xEdgeTop = xEdge + xHalfWidth, xEdgeBot = xEdgeTop - xFullWidth;
+    int yEdgeTop = yEdge - yHalfWidth, yEdgeBot = yEdgeTop + yFullWidth;
+    int xMidTop = (x1Top + x2Top) / 2, yMidTop = (y1Top + y2Top) / 2;
+    int xMidBot = (x1Bot + x2Bot) / 2, yMidBot = (y1Bot + y2Bot) / 2;
 
-    int x2Top = x2Bond + xHalfWidth;
-    int y2Top = y2Bond - yHalfWidth;
-    int x2Bot = x2Top - xFullWidth;
-    int y2Bot = y2Top + yFullWidth;
+    int sepUp = (int) (separationIncrement * halfBondWidth);
+    int sepDn = sepUp - (int)((separationIncrement * 2) * halfBondWidth);
+    int xOffset = (sepDn * dy) / magnitude;
+    int yOffset = (sepUp * dx) / magnitude;
+    if (bondOrder == 2) {
+      int xHalfOffset = xOffset/2;
+      x1Top -=    xHalfOffset; x1Bot -=    xHalfOffset;
+      x2Top -=    xHalfOffset; x2Bot -=    xHalfOffset;
+      xEdgeTop -= xHalfOffset; xEdgeBot -= xHalfOffset;
+      xMidTop -=  xHalfOffset; xMidBot -=  xHalfOffset;
+      int yHalfOffset = yOffset/2;
+      y1Top -=    yHalfOffset; y1Bot -=    yHalfOffset;
+      y2Top -=    yHalfOffset; y2Bot -=    yHalfOffset;
+      yEdgeTop -= yHalfOffset; yEdgeBot -= yHalfOffset;
+      yMidTop -=  yHalfOffset; yMidBot -=  yHalfOffset;
+    } else if (bondOrder == 3) {
+      x1Top -=    xOffset; x1Bot -=    xOffset;
+      x2Top -=    xOffset; x2Bot -=    xOffset;
+      xEdgeTop -= xOffset; xEdgeBot -= xOffset;
+      xMidTop -=  xOffset; xMidBot -=  xOffset;
 
-    int xMidTop = (x1Top + x2Top) / 2;
-    int yMidTop = (y1Top + y2Top) / 2;
-    int xMidBot = (x1Bot + x2Bot) / 2;
-    int yMidBot = (y1Bot + y2Bot) / 2;
-
-    if (color1.equals(color2)) {
-      xPoints[0] = x2Top; yPoints[0] = y2Top;
-      xPoints[1] = x2Bot; yPoints[1] = y2Bot;
-      xPoints[2] = x1Bot; yPoints[2] = y1Bot;
-      xPoints[3] = x1Top; yPoints[3] = y1Top;
-
-      g2.setColor(color1);
-      if (bondDrawMode == DisplaySettings.WIREFRAME) {
-        g2.drawPolygon(xPoints, yPoints, 4);
-      } else {
-        g2.fillPolygon(xPoints, yPoints, 4);
-      }
-    } else {
-
-      xPoints[0] = x2Top; yPoints[0] = y2Top;
-      xPoints[1] = x2Bot; yPoints[1] = y2Bot;
-      xPoints[2] = xMidBot; yPoints[2] = yMidBot;
-      xPoints[3] = xMidTop; yPoints[3] = yMidTop;
-
-      g2.setColor(color2);
-      if (bondDrawMode == DisplaySettings.WIREFRAME) {
-        g2.drawPolygon(xPoints, yPoints, 4);
-      } else {
-        g2.fillPolygon(xPoints, yPoints, 4);
-      }
-
-      xPoints[0] = x1Top; yPoints[0] = y1Top;
-      xPoints[1] = x1Bot; yPoints[1] = y1Bot;
-      g2.setColor(color1);
-      if (bondDrawMode == DisplaySettings.WIREFRAME) {
-        g2.drawPolygon(xPoints, yPoints, 4);
-      } else {
-        g2.fillPolygon(xPoints, yPoints, 4);
-      }
+      y1Top -=    yOffset; y1Bot -=    yOffset;
+      y2Top -=    yOffset; y2Bot -=    yOffset;
+      yEdgeTop -= yOffset; yEdgeBot -= yOffset;
+      yMidTop -=  yOffset; yMidBot -=  yOffset;
+    } else if (bondOrder > 3) {
+      bondOrder = 3; // just in case
     }
-    if ((bondDrawMode != DisplaySettings.WIREFRAME) &&
-        (bondDrawMode != DisplaySettings.SHADING)) {
-      if (!darkerOutlineColor || color1.equals(color2)) {
-        g2.setColor(darkerOutlineColor ? getDarker(color1) : outlineColor);
-        g2.drawLine(x1Top, y1Top, x2Top, y2Top);
-        g2.drawLine(x1Bot, y1Bot, x2Bot, y2Bot);
-      } else {
-        g2.setColor(getDarker(color1));
-        g2.drawLine(x1Top, y1Top, xMidTop, yMidTop);
-        g2.drawLine(x1Bot, y1Bot, xMidBot, yMidBot);
-        g2.setColor(getDarker(color2));
-        g2.drawLine(x2Top, y2Top, xMidTop, yMidTop);
-        g2.drawLine(x2Bot, y2Bot, xMidBot, yMidBot);
+
+    while (true) {
+      if (paint1.equals(paint2) ||
+          !isVisible(x1Top, y1Top, xEdgeTop, yEdgeTop, xMidTop, yMidTop)) {
+        xBondRectPoints[0] = xEdgeTop; yBondRectPoints[0] = yEdgeTop;
+        xBondRectPoints[1] = xEdgeBot; yBondRectPoints[1] = yEdgeBot;
+      } else { // two different bond colors
+        xBondRectPoints[0] = xMidTop; yBondRectPoints[0] = yMidTop;
+        xBondRectPoints[1] = xMidBot; yBondRectPoints[1] = yMidBot;
+        xBondRectPoints[2] = xEdgeBot; yBondRectPoints[2] = yEdgeBot;
+        xBondRectPoints[3] = xEdgeTop; yBondRectPoints[3] = yEdgeTop;
+        g2.setPaint(paint1);
+        if (boolFill) 
+          g2.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
+        else
+          g2.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
       }
+      xBondRectPoints[2] = x2Bot; yBondRectPoints[2] = y2Bot; 
+      xBondRectPoints[3] = x2Top; yBondRectPoints[3] = y2Top;
+      g2.setPaint(paint2);
+      if (boolFill) 
+        g2.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
+      else
+        g2.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
+
+      if (paint1Outline != null) {
+        int xOutlineTop, yOutlineTop, xOutlineBot, yOutlineBot;
+        if (paint1Outline.equals(paint2Outline) ||
+            !isVisible(x1Top, y1Top, xEdgeTop, yEdgeTop, xMidTop, yMidTop)) {
+          xOutlineTop = xEdgeTop; yOutlineTop = yEdgeTop;
+          xOutlineBot = xEdgeBot; yOutlineBot = yEdgeBot;
+        } else {
+          g2.setPaint(paint1Outline);
+          g2.drawLine(xEdgeTop, yEdgeTop, xMidTop, yMidTop);
+          g2.drawLine(xEdgeBot, yEdgeBot, xMidBot, yMidBot);
+          xOutlineTop = xMidTop; yOutlineTop = yMidTop;
+          xOutlineBot = xMidBot; yOutlineBot = yMidBot;
+        }
+        g2.setPaint(paint2Outline);
+        g2.drawLine(xOutlineTop, yOutlineTop, x2Top, y2Top);
+        g2.drawLine(xOutlineBot, yOutlineBot, x2Bot, y2Bot);
+      }
+      if (--bondOrder <= 0) // also catch a crazy parameter value
+        return;
+      x1Top +=    xOffset; x1Bot +=    xOffset;
+      x2Top +=    xOffset; x2Bot +=    xOffset;
+      xEdgeTop += xOffset; xEdgeBot += xOffset;
+      xMidTop +=  xOffset; xMidBot +=  xOffset;
+
+      y1Top +=    yOffset; y1Bot +=    yOffset;
+      y2Top +=    yOffset; y2Bot +=    yOffset;
+      yEdgeTop += yOffset; yEdgeBot += yOffset;
+      yMidTop +=  yOffset; yMidBot +=  yOffset;
     }
   }
 
@@ -540,7 +598,7 @@ class AtomShape implements Shape {
     GradientPaint gp;
     int lightPct = 2;
     int lighteningPct = 20;
-    int colorPct = 65;
+    int colorPct = 60;
     int darkeningPct = 85;
 
     g2Scale.setPaint(lighter);

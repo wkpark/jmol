@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre9c";
+  public final static String version = "10pre10";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -73,10 +73,9 @@ final public class JmolConstants {
   public static final int MOUSE_PICK = 3;
   public static final int MOUSE_DELETE = 4;
   public static final int MOUSE_MEASURE = 5;
-  public static final int MOUSE_DEFORM = 6; // mth -- what is this?
-  public static final int MOUSE_ROTATE_Z = 7;
-  public static final int MOUSE_SLAB_PLANE = 8;
-  public static final int MOUSE_POPUP_MENU = 9;
+  public static final int MOUSE_ROTATE_Z = 6;
+  public static final int MOUSE_SLAB_PLANE = 7;
+  public static final int MOUSE_POPUP_MENU = 8;
 
   public final static byte MULTIBOND_NEVER =     0;
   public final static byte MULTIBOND_WIREFRAME = 1;

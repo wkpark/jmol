@@ -29,14 +29,31 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 
-final public class Awt25D {
+final public class Awt25D implements Platform25D {
 
-  public static Image allocateImage(Component component,
-                                    int width, int height) {
-    return component.createImage(width, height);
+  Component component;
+  int width, height;
+  Image image;
+  Graphics g;
+  int[] pbuf;
+
+  public Awt25D(Component component) {
+    this.component = component;
   }
 
-  public static Graphics createGraphics(Image image) {
-    return (image == null) ? null : image.getGraphics();
+  public Image allocateImage(int width, int height) {
+    this.width = width;
+    this.height = height;
+    image = component.createImage(width, height);
+    g = (image == null) ? null : image.getGraphics();
+    return image;
+  }
+
+  public Graphics getGraphics() {
+    return g;
+  }
+
+  public int[] getPbuf() {
+    return pbuf;
   }
 }

@@ -37,33 +37,45 @@ import java.awt.Shape;
 
 final public class Graphics25D {
   DisplayControl control;
+  Platform25D platform;
   Image img;
   Graphics g;
-  int width, height;
+  int width,height;
+  int[] pbuf;
+  short[] zbuf;
+
+  boolean usePbuf;
+
+  int argbCurrent;
 
   public Graphics25D(DisplayControl control) {
     this.control = control;
     this.g = g;
+    if (control.jvm12orGreater) {
+      usePbuf = true;
+      platform = new Swing25D();
+    } else {
+      usePbuf = false;
+      platform = new Awt25D(control.getAwtComponent());
+    }
   }
 
   public void setSize(int width, int height) {
     this.width = width;
     this.height = height;
-    System.out.println("Graphics25D.setSize(" + width + "," + height + ")");
     if (g != null)
       g.dispose();
     if (width == 0 || height == 0) {
       img = null;
       g = null;
+      pbuf = null;
+      zbuf = null;
       return;
     }
-    if (control.jvm12orGreater) {
-      img = Swing25D.allocateImage(control.getAwtComponent(), width, height);
-      g = Swing25D.createGraphics(img);
-    } else {
-      img = Awt25D.allocateImage(control.getAwtComponent(), width, height);
-      g = Awt25D.createGraphics(img);
-    }
+    img = platform.allocateImage(width, height);
+    g = platform.getGraphics();
+    pbuf = platform.getPbuf();
+    zbuf = new short[width * height];
   }
 
   public Image getScreenImage() {
@@ -71,6 +83,7 @@ final public class Graphics25D {
   }
 
   public void setColor(Color color) {
+    argbCurrent = color.getRGB();
     g.setColor(color);
   }
 
@@ -153,11 +166,21 @@ final public class Graphics25D {
 
   // 3D specific routines
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    g.drawLine(x1, y1, x2, y2);
+    if (! usePbuf) {
+      g.drawLine(x1, y1, x2, y2);
+      return;
+    }
+    plotLineDelta(x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
   public void drawPixel(int x, int y, int z) {
-    g.drawLine(x, y, x, y);
+    if (! usePbuf) {
+      g.drawLine(x, y, x, y);
+      return;
+    }
+    if (x >= 0 && x < width && y >= 0 && y < height) {
+      pbuf[y*width + x] = argbCurrent;
+    }
   }
 
   public void drawPolygon(int[] ax, int[] ay, int[] az, int numPoints) {
@@ -166,6 +189,75 @@ final public class Graphics25D {
 
   public void fillPolygon(int[] ax, int[] ay, int[] az, int numPoints) {
     g.fillPolygon(ax, ay, numPoints);
+  }
+
+  void plotPixel(int x, int y, int z) {
+    if (x < 0 || x >= width ||
+        y < 0 || y >= height
+        //        || z < 0 || z >= 8192
+        )
+      return;
+    int offset = y * width + x;
+    pbuf[offset] = argbCurrent;
+    /*
+    if (zbuf[offset] < z) {
+      zbuf[offset] = (short)z;
+      pbuf[offset] = argbCurrent;
+    }
+    */
+  }
+
+  void plotLineDelta(int x1, int y1, int z1, int dx, int dy, int dz) {
+    int xCurrent = x1;
+    int yCurrent = y1;
+    int xIncrement = 1, yIncrement = 1;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      yIncrement = -1;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+    plotPixel(xCurrent, yCurrent, z1);
+    if (dx == 0 && dy == 0)
+      return;
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z1 << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      do {
+        xCurrent += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          yCurrent += yIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        plotPixel(xCurrent, yCurrent, zCurrentScaled >> 10);
+      } while (--dx > 0);
+      return;
+    }
+    int roundingFactor = dy - 1;
+    if (dy < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+    int twoDyAccumulatedXError = 0;
+    do {
+      yCurrent += yIncrement;
+      zCurrentScaled += zIncrementScaled;
+      twoDyAccumulatedXError += twoDx;
+      if (twoDyAccumulatedXError > dy) {
+        xCurrent += xIncrement;
+        twoDyAccumulatedXError -= twoDy;
+      }
+      plotPixel(xCurrent, yCurrent, zCurrentScaled >> 10);
+    } while (--dy > 0);
   }
 
 }

@@ -24,22 +24,17 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.*;
-
 import java.io.File;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import javax.swing.AbstractButton;
 import javax.swing.JLabel;
 import javax.swing.JFileChooser;
-import javax.swing.JComponent;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.border.EmptyBorder;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.awt.Container;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

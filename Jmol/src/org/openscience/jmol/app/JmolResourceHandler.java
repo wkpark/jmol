@@ -31,7 +31,6 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-import javax.swing.JComponent;
 import javax.swing.ImageIcon;
 
 /**

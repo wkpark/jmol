@@ -24,13 +24,11 @@
  */
 package org.openscience.jmol.app;
 
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 class StatusBar extends JPanel {

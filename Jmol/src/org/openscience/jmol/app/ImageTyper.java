@@ -24,19 +24,13 @@
  */
 package org.openscience.jmol.app;
 
-import java.io.File;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JFileChooser;
-import javax.swing.JComponent;
-import javax.swing.SwingConstants;
 import javax.swing.JSlider;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.Container;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 

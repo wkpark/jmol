@@ -25,8 +25,6 @@
 package org.openscience.jmol.app;
 import org.jmol.viewer.*;
 
-import org.openscience.jmol.*;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

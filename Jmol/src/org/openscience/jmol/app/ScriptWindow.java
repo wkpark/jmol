@@ -28,10 +28,7 @@ import org.jmol.viewer.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.Dimension;
 import java.awt.Container;
-import java.awt.GridLayout;
 import java.awt.Component;
 import java.awt.event.*;
 import java.net.URL;
@@ -39,18 +36,13 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
-import javax.swing.JWindow;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.text.Position;
-import javax.swing.text.Document;
-import javax.swing.text.StyledDocument;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 
 public final class ScriptWindow extends JDialog

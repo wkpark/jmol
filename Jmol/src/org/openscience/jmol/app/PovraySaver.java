@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
-import java.awt.Dimension;
 
 public class PovraySaver {
 

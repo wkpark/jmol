@@ -24,10 +24,8 @@
  */
 package org.openscience.jmol.app;
 
-import javax.swing.Timer;
 import javax.swing.ImageIcon;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.Image;

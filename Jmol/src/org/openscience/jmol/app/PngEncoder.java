@@ -27,11 +27,9 @@ package org.openscience.jmol.app;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.awt.image.ImageObserver;
-import java.awt.image.DirectColorModel;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
-import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

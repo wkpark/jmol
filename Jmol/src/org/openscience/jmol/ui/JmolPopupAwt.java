@@ -26,22 +26,13 @@ package org.openscience.jmol.ui;
 
 import org.jmol.viewer.*;
 
-import java.awt.Component;
 import java.awt.PopupMenu;
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.CheckboxMenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.util.StringTokenizer;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-import java.util.Hashtable;
 import java.util.Enumeration;
-import java.util.BitSet;
 
 // mth 2003 05 27
 // This class is built with awt instead of swing so that it will

@@ -25,28 +25,21 @@
 package org.openscience.jmol.app;
 
 import org.jmol.viewer.*;
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Color;
-import java.awt.Window;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Toolkit;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Component;
 import java.awt.GridBagLayout;
-import java.awt.Dialog;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.Hashtable;
-import java.util.Dictionary;
-import java.util.EventObject;
 import java.io.FileInputStream;
-import java.io.PrintStream;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import javax.swing.JRadioButton;
@@ -55,7 +48,6 @@ import javax.swing.JSlider;
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
 import javax.swing.JCheckBox;
-import javax.swing.JRootPane;
 import javax.swing.JComboBox;
 import javax.swing.Box;
 import javax.swing.JTabbedPane;
@@ -67,11 +59,8 @@ import javax.swing.JLabel;
 import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
-import javax.swing.JComponent;
-import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 public class PreferencesDialog extends JDialog implements ActionListener {

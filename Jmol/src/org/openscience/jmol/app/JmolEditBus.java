@@ -36,13 +36,8 @@ import org.openscience.cdk.geometry.CrystalGeometryTools;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
-import org.openscience.jmol.*;
 import org.jmol.viewer.JmolViewer;
 
-import java.util.StringTokenizer;
-import java.util.Vector;
-import javax.swing.JOptionPane;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -57,7 +52,7 @@ public class JmolEditBus implements CDKEditBus {
     }
     
     public String getAPIVersion() {
-        return this.APIVersion;
+        return APIVersion;
     }
     
     public void showChemFile(Reader file) {

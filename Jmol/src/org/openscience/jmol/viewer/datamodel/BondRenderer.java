@@ -90,11 +90,6 @@ class BondRenderer extends Renderer {
     if (!showHydrogens && (atomA.atomicNumber == 1 ||
                            atomB.atomicNumber == 1))
       return;
-    // make sure atomA is closer to the front
-    if (atomA.z > atomB.z) {
-      atomB = atomA;
-      atomA = bond.atom2;
-    }
     xA = atomA.x; yA = atomA.y; zA = atomA.z;
     xB = atomB.x; yB = atomB.y; zB = atomB.z;
     dx = xB - xA;

@@ -41,15 +41,17 @@ public class Cylinder3D {
     this.g3d = g3d;
   }
 
-  private short colix1, colix2;
-  private int[] shades1;
-  private int[] shades2;
-  private int xOrigin, yOrigin, zOrigin;
-  private int dxCyl, dyCyl, dzCyl;
+  private short colixA, colixB;
+  private int[] shadesA;
+  private int[] shadesB;
+  private int xA, yA, zA;
+  private int dxB, dyB, dzB;
   private boolean tEvenDiameter;
   private int evenCorrection;
   private int diameter;
   private byte endcaps;
+  private boolean tEndcapNone;
+  private int xEndcap, yEndcap, zEndcap;
   private int argbEndcap;
 
   private float radius, radius2, cosTheta, cosPhi, sinPhi;
@@ -57,56 +59,52 @@ public class Cylinder3D {
   int sampleCount;
   private float[] samples = new float[32];
 
-  public void render(short colix1, short colix2, byte endcaps, int diameter,
-                     int xOrigin, int yOrigin, int zOrigin,
-                     int dxCyl, int dyCyl, int dzCyl) {
+  public void render(short colixA, short colixB, byte endcaps, int diameter,
+                     int xA, int yA, int zA,
+                     int dxB, int dyB, int dzB) {
     this.diameter = diameter;
-    if (this.diameter <= 1) {
-      if (this.diameter == 1)
-        g3d.plotLineDelta(colix1, colix2,
-                          xOrigin, yOrigin, zOrigin, dxCyl, dyCyl, dzCyl);
+    if (diameter <= 1) {
+      if (diameter == 1)
+        g3d.plotLineDelta(colixA, colixB, xA, yA, zA, dxB, dyB, dzB);
       return;
     }
-    this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
-    this.dxCyl = dxCyl; this.dyCyl = dyCyl; this.dzCyl = dzCyl;
-    this.shades1 = Colix.getShades(this.colix1 = colix1);
-    this.shades2 = Colix.getShades(this.colix2 = colix2);
+    this.xA = xA; this.yA = yA; this.zA = zA;
+    this.dxB = dxB; this.dyB = dyB; this.dzB = dzB;
+    this.shadesA = Colix.getShades(this.colixA = colixA);
+    this.shadesB = Colix.getShades(this.colixB = colixB);
     this.endcaps = endcaps;
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL) {
-      int intensityEndcap = Shade3D.calcIntensity(-dxCyl, -dyCyl, dzCyl); 
-      if (intensityEndcap > 44) // limit specular glare on endcap
-        intensityEndcap = 44;
-      argbEndcap = shades1[intensityEndcap];
-    }
-    this.tEvenDiameter = (diameter & 1) == 0;
-    
-    //    System.out.println("diameter=" + diameter);
-    radius = diameter / 2.0f;
-    this.radius2 = radius*radius;
-    int mag2d2 = dxCyl*dxCyl + dyCyl*dyCyl;
-    float mag2d = (float)Math.sqrt(mag2d2);
-    float mag3d = (float)Math.sqrt(mag2d2 + dzCyl*dzCyl);
-    this.cosTheta = dzCyl / mag3d;
-    this.cosPhi = dxCyl / mag2d;
-    this.sinPhi = dyCyl / mag2d;
+    calcArgbEndcap(true);
 
-    float x, y, z, h, xR, yR;
-    float yMax = radius * (float)Math.sin(Math.PI/4);
+    generateBaseEllipse();
 
-    calcRotatedPoint(  0f, 0);
-    calcRotatedPoint(0.5f, 1);
-    calcRotatedPoint(  1f, 2);
-    rasterCount = 3;
-    interpolate(0, 1);
-    interpolate(1, 2);
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
-      renderFlatEndcap();
+      renderFlatEndcap(true);
     for (int i = rasterCount; --i >= 0; )
       plotRaster(i);
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL)
       renderSphericalEndcaps();
   }
 
+  void generateBaseEllipse() {
+    tEvenDiameter = (diameter & 1) == 0;
+    //    System.out.println("diameter=" + diameter);
+    radius = diameter / 2.0f;
+    radius2 = radius*radius;
+    int mag2d2 = dxB*dxB + dyB*dyB;
+    float mag2d = (float)Math.sqrt(mag2d2);
+    float mag3d = (float)Math.sqrt(mag2d2 + dzB*dzB);
+    this.cosTheta = dzB / mag3d;
+    this.cosPhi = dxB / mag2d;
+    this.sinPhi = dyB / mag2d;
+    
+    calcRotatedPoint(  0f, 0);
+    calcRotatedPoint(0.5f, 1);
+    calcRotatedPoint(  1f, 2);
+    rasterCount = 3;
+    interpolate(0, 1);
+    interpolate(1, 2);
+  }
+    
   void interpolate(int iLower, int iUpper) {
     int dx = xRaster[iUpper] - xRaster[iLower];
     if (dx < 0)
@@ -156,17 +154,17 @@ public class Cylinder3D {
     int x = xRaster[i];
     int y = yRaster[i];
     int z = zRaster[i];
-    if (endcaps == Graphics3D.ENDCAPS_NONE) {
-      g3d.plotPixelClipped(argbEndcap, xOrigin + x,  yOrigin + y, zOrigin - z);
-      g3d.plotPixelClipped(argbEndcap, xOrigin - x,  yOrigin - y, zOrigin + z);
+    if (tEndcapNone) {
+      g3d.plotPixelClipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
+      g3d.plotPixelClipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);
     }
-    g3d.plotLineDelta(shades1[iUp], shades2[iUp],
-                      xOrigin + x, yOrigin + y, zOrigin - z,
-                      dxCyl, dyCyl, dzCyl);
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL || dzCyl >= 0) {
-      g3d.plotLineDelta(shades1[iDn], shades2[iDn],
-                        xOrigin - x, yOrigin - y, zOrigin + z,
-                        dxCyl, dyCyl, dzCyl);
+    g3d.plotLineDelta(shadesA[iUp], shadesB[iUp],
+                      xA + x, yA + y, zA - z,
+                      dxB, dyB, dzB);
+    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL || dzB >= 0) {
+      g3d.plotLineDelta(shadesA[iDn], shadesB[iDn],
+                        xA - x, yA - y, zA + z,
+                        dxB, dyB, dzB);
     }
   }
 
@@ -281,29 +279,103 @@ public class Cylinder3D {
     }
   }
 
-  void renderFlatEndcap() {
+  void renderFlatEndcap(boolean tCylinder) {
+    if (dzB == 0 || (!tCylinder && dzB < 0))
+      return;
+    int xT = xA, yT = yA, zT = zA;
+    if (dzB < 0) {
+      xT += dxB; yT += dyB; zT += dzB;
+    }
+
     findMinMaxY();
     for (int y = yMin; y <= yMax; ++y) {
       findMinMaxX(y);
       /*
-      System.out.println("endcap y=" + y + " xMin=" + xMin + " xMax=" + xMax);
+        System.out.println("endcap y="+y+" xMin="+xMin+" xMax="+xMax);
       */
       int count = xMax - xMin;
       g3d.plotPixelsClipped(argbEndcap, count,
-                            xOrigin + xMin,  yOrigin + y, zOrigin - zXMin - 1,
-                            zOrigin - zXMax - 1);
+                            xT + xMin,  yT + y, zT - zXMin - 2,
+                            zT - zXMax - 2);
     }
   }
 
   void renderSphericalEndcaps() {
-    g3d.fillSphereCentered(colix1, diameter, xOrigin, yOrigin, zOrigin + 1);
-    g3d.fillSphereCentered(colix2, diameter,
-                           xOrigin + dxCyl, yOrigin + dyCyl, zOrigin+dzCyl+1);
+    g3d.fillSphereCentered(colixA, diameter, xA, yA, zA + 1);
+    g3d.fillSphereCentered(colixB, diameter, xA + dxB, yA + dyB, zA + dzB + 1);
   }
+
+  int xTip, yTip, zTip;
 
   public void renderCone(short colix, byte endcap, int diameter,
-                         int xBase, int yBase, int zBase,
+                         int xA, int yA, int zA,
                          int xTip, int yTip, int zTip) {
+    dxB = (this.xTip = xTip) - (this.xA = xA);
+    dyB = (this.yTip = yTip) - (this.yA = yA);
+    dzB = (this.zTip = zTip) - (this.zA = zA);
+    shadesA = Colix.getShades(this.colixA = colix);
+    this.diameter = diameter;
+    if (diameter <= 1) {
+      if (diameter == 1)
+        g3d.plotLineDelta(colixA, xA, yA, zA, dxB, dyB, dzB);
+      return;
+    }
+    this.endcaps = endcap;
+    calcArgbEndcap(false);
+    generateBaseEllipse();
+    if (endcaps == Graphics3D.ENDCAPS_FLAT)
+      renderFlatEndcap(false);
+    for (int i = rasterCount; --i >= 0; )
+      plotRasterCone(i);
   }
 
+  void plotRasterCone(int i) {
+    /*
+    System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
+                       yRaster[i] + "," + zRaster[i] + ")" +
+                       " iUp=" + iUp + " iDn=" + iDn);
+    */
+    int x = xRaster[i];
+    int y = yRaster[i];
+    int z = zRaster[i];
+    int xUp = xA + x, yUp = yA + y, zUp = zA - z;
+    int xDn = xA - x, yDn = yA - y, zDn = zA + z;
+
+    if (tEndcapNone) {
+      g3d.plotPixelClipped(argbEndcap, xUp, yUp, zUp);
+      g3d.plotPixelClipped(argbEndcap, xDn, yDn, zDn);
+    }
+    int iUp = intensityUp[i], iDn = intensityDn[i];
+    g3d.plotLineDelta(shadesA[iUp], shadesB[iUp],
+                      xUp, yUp, zUp, xTip - xUp, yTip - yUp, zTip - zUp);
+    if (! (endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0))
+      g3d.plotLineDelta(shadesA[iDn], shadesB[iDn],
+                        xDn, yDn, zDn, xTip - xDn, yTip - yDn, zTip - zDn);
+  }
+
+  void calcArgbEndcap(boolean tCylinder) {
+    tEndcapNone = false;
+    if ((endcaps == Graphics3D.ENDCAPS_SPHERICAL) ||
+        (dzB == 0) ||
+        (!tCylinder && dzB < 0))
+      return;
+    xEndcap = xA; yEndcap = yA; zEndcap = zA;
+    int intensityEndcap;
+    int[] shadesEndcap;
+    if (dzB >= 0) {
+      intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB);
+      shadesEndcap = shadesA;
+      System.out.println("endcap is A");
+    } else {
+      intensityEndcap = Shade3D.calcIntensity(dxB, dyB, -dzB);
+      shadesEndcap = shadesB;
+      xEndcap += dxB; yEndcap += dyB; zEndcap += dzB;
+      System.out.println("endcap is B");
+    }
+    if (intensityEndcap > 44) // limit specular glare on endcap
+      intensityEndcap = 44;
+    argbEndcap = shadesEndcap[intensityEndcap];
+    tEndcapNone = (endcaps == Graphics3D.ENDCAPS_NONE);
+    System.out.println("tEndcapNone=" + tEndcapNone);
+  }
 }

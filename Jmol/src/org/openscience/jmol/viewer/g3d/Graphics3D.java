@@ -482,16 +482,8 @@ final public class Graphics3D {
   public void fillCylinder(short colix1, short colix2, byte endcaps,
                            int diameter,
                            int x1, int y1, int z1, int x2, int y2, int z2) {
-    endcaps = ENDCAPS_NONE;
-    if (viewer.getTestFlag1())
-      endcaps = ENDCAPS_FLAT;
-    if (viewer.getTestFlag2())
-      endcaps = ENDCAPS_SPHERICAL;
-
     cylinder3d.render(colix1, colix2, endcaps, diameter,
                       x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
-    fillCone(colix1, endcaps, diameter,
-             x1+100, y1+100, z1+100, x2+100, y2+100, z2+100);
   }
 
   public void fillCone(short colix, byte endcap, int diameter,

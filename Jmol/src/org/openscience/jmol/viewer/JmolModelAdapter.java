@@ -781,7 +781,8 @@ public interface JmolModelAdapter {
     0xFF228B22, // ForestGreen    Be   4
     0xFF00FF00, // green           B   5
     //    0xFF708090, // SlateGray       C   6
-    0xFF404040, // grey25          C   6
+    //0xFF404040, // grey25          C   6
+    0xFF545454, // grey33          C   6
     0xFF00BFFF, // DeepSkyBlue     N   7
     0xFFEE0000, // red2            O   8
     0xFFDAA520, // goldenrod       F   9 change me

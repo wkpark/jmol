@@ -24,13 +24,10 @@
  */
 
 import java.applet.*;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Component;
-import java.awt.Button;
-import java.util.Enumeration;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import org.openscience.jmol.viewer.managers.ColorManager;
 
 public class JmolAppletControl extends Applet {
 
@@ -50,10 +47,12 @@ public class JmolAppletControl extends Applet {
   private final static int typeChimePush =   0;
   private final static int typeChimeToggle = 1;
   private final static int typeChimeRadio =  2;
+  private final static int typeButton =      3;
+  private final static int typeCheckbox =    4;
 
   // put these in lower case
   private final static String[] typeNames =
-  {"chimepush", "chimetoggle", "chimeradio"};
+  {"chimepush", "chimetoggle", "chimeradio", "button", "checkbox"};
 
   String myName;
   AppletContext context;
@@ -62,7 +61,10 @@ public class JmolAppletControl extends Applet {
   int type;
   int width;
   int height;
+  Color colorBackground;
+  Color colorForeground;
   String script;
+  String label;
   String altScript;
   //  JmolApplet jmolApplet;
 
@@ -70,6 +72,7 @@ public class JmolAppletControl extends Applet {
   boolean toggleState;
 
   Button awtButton;
+  Checkbox awtCheckbox;
   Component myControl;
 
   private String getParam(String paramName) {
@@ -108,6 +111,7 @@ public class JmolAppletControl extends Applet {
                     buttonState.equals("pushed") ||
                     buttonState.equals("checked") ||
                     buttonState.equals("1")));
+    label = getParameter("label"); // don't trim white space from a label
     script = getParam("script");
     altScript = getParam("altScript");
     try {
@@ -115,6 +119,15 @@ public class JmolAppletControl extends Applet {
       height = Integer.parseInt(getParam("height"));
     } catch (NumberFormatException e) {
     }
+    String colorName;
+    colorName = getParam("bgcolor");
+    setBackground(colorName == null
+                  ? Color.white
+                  : ColorManager.getColorFromString(colorName));
+    colorName = getParam("fgcolor");
+    setForeground(colorName == null
+                  ? Color.black
+                  : ColorManager.getColorFromString(colorName));
     setLayout(new GridLayout(1, 1));
     allocateControl();
     logWarnings();
@@ -133,18 +146,21 @@ public class JmolAppletControl extends Applet {
       System.out.println("chimeToggle with no altScript?");
   }
 
-  int clickCount;
-
   private void allocateControl() {
     switch (type) {
     case typeChimePush:
-      allocateChimePush();
+      label = "X";
+    case typeButton:
+      allocateButton();
       break;
     case typeChimeToggle:
       allocateChimeToggle();
       break;
     case typeChimeRadio:
       allocateChimeRadio();
+      break;
+    case typeCheckbox:
+      allocateCheckbox();
       break;
     }
     if (myControl == null)
@@ -153,11 +169,10 @@ public class JmolAppletControl extends Applet {
     validate();
   }
 
-  private void allocateChimePush() {
-    awtButton = new Button("X");
+  private void allocateButton() {
+    awtButton = new Button(label);
     awtButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          context.showStatus("click " + (++clickCount));
           runScript();
         }
       }
@@ -196,13 +211,16 @@ public class JmolAppletControl extends Applet {
   }
 
   private void notifyRadio(String radioGroupName) {
-    if (type != typeChimeRadio ||
+    if ((type != typeChimeRadio && type != typeCheckbox) ||
         radioGroupName == null ||
         ! radioGroupName.equals(groupName))
       return;
     if (toggleState) {
       toggleState = false;
-      awtButton.setLabel("");
+      if (type == typeChimeRadio)
+        awtButton.setLabel("");
+      else
+        awtCheckbox.setState(false);
       runScript();
     }
   }
@@ -215,6 +233,22 @@ public class JmolAppletControl extends Applet {
       JmolAppletControl controlPeer = (JmolAppletControl)peer;
       controlPeer.notifyRadio(groupName);
     }
+  }
+
+  private void allocateCheckbox() {
+    awtCheckbox = new Checkbox(label, toggleState);
+    awtCheckbox.addItemListener(new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+          if (toggleState != awtCheckbox.getState()) {
+            if (! toggleState && groupName != null)
+              notifyRadioPeers();
+            toggleState = ! toggleState;
+            runScript();
+          }
+        }
+      }
+                                  );
+    myControl = awtCheckbox;
   }
 
   private void runScript() {

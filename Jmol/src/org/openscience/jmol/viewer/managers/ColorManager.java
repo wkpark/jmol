@@ -199,7 +199,7 @@ public class ColorManager {
     }
   }
 
-  public Color getColorFromString(String strColor) {
+  public static Color getColorFromString(String strColor) {
     if (strColor != null) {
       if (strColor.length() == 7 && strColor.charAt(0) == '#') {
         try {

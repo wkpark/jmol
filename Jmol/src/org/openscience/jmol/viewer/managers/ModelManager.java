@@ -48,7 +48,7 @@ public class ModelManager {
   public ModelManager(JmolViewer viewer, ModelAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
-    nullFrame = new Frame(viewer, "null", 0);
+    nullFrame = new Frame(viewer, "null");
     frameBuilder = new FrameBuilder(viewer, modelAdapter);
   }
 

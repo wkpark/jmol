@@ -31,7 +31,6 @@ import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
-import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
@@ -47,16 +46,15 @@ final public class Frame {
   Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
-  float maxBondingRadius = 0;
-  float maxVanderwaalsRadius = 0;
+  float maxBondingRadius = Integer.MIN_VALUE;
+  float maxVanderwaalsRadius = Integer.MIN_VALUE;
 
-  final static int growthIncrement = 128;
-  //  public short modelIDs[];
-  int atomCount = 0;
+  int atomCount;
   public Atom[] atoms;
   Object[] clientAtomReferences;
-  int bondCount = 0;
+  int bondCount;
   public Bond[] bonds;
+  private final static int growthIncrement = 250;
   boolean fileCoordinatesAreFractional;
   public float[] notionalUnitcell;
   public Matrix3f matrixNotional;
@@ -69,16 +67,13 @@ final public class Frame {
   BitSet elementsPresent;
   BitSet groupsPresent;
 
-  public Frame(JmolViewer viewer, String modelTypeName, int atomCount) {
+  public Frame(JmolViewer viewer, String modelTypeName) {
     this.viewer = viewer;
     // NOTE: these strings are interned and are lower case
     // therefore, we can do == comparisions against string constants
     // if (modelTypeName == "xyz") { }
     this.modelTypeName = modelTypeName.toLowerCase().intern();
     mmset = new Mmset(this);
-    //    modelIDs = new short[10];
-    atoms = new Atom[atomCount];
-    bonds = new Bond[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
     this.g3d = viewer.g3d;
 
@@ -95,7 +90,6 @@ final public class Frame {
   }
 
   public void freeze() {
-    htAtomMap = null;
     if (notionalUnitcell != null)
       doUnitcellStuff();
     if (viewer.getAutoBond()) {
@@ -103,10 +97,18 @@ final public class Frame {
           (modelTypeName == "pdb" && (bondCount < (atomCount / 2))))
         rebond(false);
     }
+    if (atomCount < atoms.length)
+      atoms = (Atom[])Util.setLength(atoms, atomCount);
+    if (clientAtomReferences != null &&
+        atomCount < clientAtomReferences.length)
+      clientAtomReferences =
+        (Object[])Util.setLength(clientAtomReferences, atomCount);
+    if (bondCount < bonds.length)
+      bonds = (Bond[])Util.setLength(bonds, bondCount);
     hackAtomSerialNumbersForAnimations();
-    mmset.freeze();
     findElementsPresent();
     findGroupsPresent();
+    mmset.freeze();
   }
 
   void hackAtomSerialNumbersForAnimations() {
@@ -127,31 +129,6 @@ final public class Frame {
     }
   }
 
-
-  void addAtom(Group group, Atom atom,
-               Object atomUid, Object clientAtomReference) {
-    if (atomCount == atoms.length)
-      atoms = (Atom[])Util.setLength(atoms, atomCount + growthIncrement);
-    atoms[atomCount] = atom;
-    if (clientAtomReference != null) {
-      if (clientAtomReferences == null)
-        clientAtomReferences = new Object[atoms.length];
-      else if (clientAtomReferences.length <= atomCount)
-        clientAtomReferences =
-          (Object[])Util.setLength(clientAtomReferences, atoms.length);
-      clientAtomReferences[atomCount] = clientAtomReference;
-    }
-    ++atomCount;
-    htAtomMap.put(atomUid, atom);
-    if (bspf != null)
-      bspf.addTuple(atom.modelIndex, atom);
-    float bondingRadius = atom.getBondingRadiusFloat();
-    if (bondingRadius > maxBondingRadius)
-      maxBondingRadius = bondingRadius;
-    float vdwRadius = atom.getVanderwaalsRadiusFloat();
-    if (vdwRadius > maxVanderwaalsRadius)
-      maxVanderwaalsRadius = vdwRadius;
-  }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {
     for (int i = atomCount; --i >= 0; ) {
@@ -201,37 +178,12 @@ final public class Frame {
     return bonds[bondIndex];
   }
 
-  private Hashtable htAtomMap = new Hashtable();
-
   private void addBond(Bond bond) {
     if (bond == null)
       return;
     if (bondCount == bonds.length)
       bonds = (Bond[])Util.setLength(bonds, bondCount + growthIncrement);
     bonds[bondCount++] = bond;
-  }
-
-  public void bondAtoms(Object atomUid1, Object atomUid2,
-                             int order) {
-    Atom atom1 = (Atom)htAtomMap.get(atomUid1);
-    if (atom1 == null) {
-      System.out.println("Frame.bondAtoms cannot find atomUid1?");
-      return;
-    }
-    Atom atom2 = (Atom)htAtomMap.get(atomUid2);
-    if (atom2 == null) {
-      System.out.println("Frame.bondAtoms cannot find atomUid2?");
-      return;
-    }
-    addBond(atom1.bondMutually(atom2, order));
-  }
-
-  public void bondAtoms(Atom atom1, Object clientAtom2,
-                             int order) {
-    Atom atom2 = (Atom)htAtomMap.get(clientAtom2);
-    if (atom2 == null)
-      return;
-    addBond(atom1.bondMutually(atom2, order));
   }
 
   public void bondAtoms(Atom atom1, Atom atom2,
@@ -273,11 +225,6 @@ final public class Frame {
 
   public void setShapeProperty(int shapeType, String propertyName,
                                Object value, BitSet bsSelected) {
-    /*
-    System.out.println("Frame.setShapeProperty(" +
-                       JmolConstants.shapeClassBases[shapeType] +
-                       "," + propertyName + "," + value + ")");
-    */
     if (shapes[shapeType] != null)
       shapes[shapeType].setProperty(propertyName, value, bsSelected);
   }
@@ -436,23 +383,6 @@ final public class Frame {
     }
     
     return maxRadius;
-
-    /*
-    // check the 8 corners of the bounding box
-    float maxRadius2 = center.distanceSquared(bboxVertices[7]);
-    for (int i = 7; --i >= 0; ) {
-      float radius2 = center.distanceSquared(bboxVertices[i]);
-      if (radius2 > maxRadius2)
-        maxRadius2 = radius2;
-    }
-    if (unitcellVertices != null) {
-      for (int i = 8; --i >= 0; ) {
-        float radius2 = center.distanceSquared(bboxVertices[i]);
-        if (radius2 > maxRadius2)
-          maxRadius2 = radius2;
-      }
-    }
-    */
   }
 
   final static int measurementGrowthIncrement = 16;
@@ -472,7 +402,7 @@ final public class Frame {
   final static int selectionPixelLeeway = 5;
 
   public int findNearestAtomIndex(int x, int y) {
-    /****************************************************************
+    /*
      * This algorithm assumes that atoms are circles at the z-depth
      * of their center point. Therefore, it probably has some flaws
      * around the edges when dealing with intersecting spheres that
@@ -657,6 +587,8 @@ final public class Frame {
   public void rebond(boolean deleteFirst) {
     if (deleteFirst)
       deleteAllBonds();
+    if (maxBondingRadius == Integer.MIN_VALUE)
+      findMaxRadii();
     bondTolerance = viewer.getBondTolerance();
     minBondDistance = viewer.getMinBondDistance();
     minBondDistance2 = minBondDistance*minBondDistance;
@@ -815,6 +747,8 @@ final public class Frame {
   }
 
   public float getMaxVanderwaalsRadius() {
+    if (maxVanderwaalsRadius == Integer.MIN_VALUE)
+      findMaxRadii();
     return maxVanderwaalsRadius;
   }
 
@@ -882,14 +816,6 @@ final public class Frame {
       matrixEuclideanToFractional = new Matrix3f();
       matrixEuclideanToFractional.invert(matrixFractionalToEuclidean);
     }
-    /*
-    System.out.println("matrixNotional\n" +
-                       matrixNotional +
-                       "matrixFractionalToEuclidean\n" +
-                       matrixFractionalToEuclidean + "\n" +
-                       "matrixEuclideanToFractional\n" +
-                       matrixEuclideanToFractional);
-    */
   }
 
   final static float toRadians = (float)Math.PI * 2 / 360;
@@ -933,7 +859,7 @@ final public class Frame {
   }
 
   void putAtomsInsideUnitcell() {
-    /****************************************************************
+    /*
      * find connected-sets ... aka 'molecules'
      * convert to fractional coordinates
      * for each connected-set
@@ -1029,6 +955,18 @@ final public class Frame {
         groupLast = atoms[i].group;
         groupsPresent.set(groupLast.getGroupID());
       }
+    }
+  }
+
+  void findMaxRadii() {
+    for (int i = atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      float bondingRadius = atom.getBondingRadiusFloat();
+      if (bondingRadius > maxBondingRadius)
+        maxBondingRadius = bondingRadius;
+      float vdwRadius = atom.getVanderwaalsRadiusFloat();
+      if (vdwRadius > maxVanderwaalsRadius)
+        maxVanderwaalsRadius = vdwRadius;
     }
   }
 

@@ -26,6 +26,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.jmol.api.ModelAdapter;
 import org.openscience.jmol.viewer.*;
+import java.util.Hashtable;
 import javax.vecmath.Point3f;
 
 final public class FrameBuilder {
@@ -43,12 +44,11 @@ final public class FrameBuilder {
   }
 
   public Frame buildFrame(Object clientFile) {
-    initializeBuild();
     long timeBegin = System.currentTimeMillis();
     String fileTypeName = adapter.getFileTypeName(clientFile);
-    int atomCount = adapter.getAtomCount(clientFile);
+    initializeBuild(adapter.getAtomCount(clientFile));
 
-    Frame frame = new Frame(viewer, fileTypeName, atomCount);
+    Frame frame = new Frame(viewer, fileTypeName);
 
     /****************************************************************
      * crystal cell must come first, in case atom coordinates
@@ -90,9 +90,9 @@ final public class FrameBuilder {
         adapter.getBondIterator(clientFile);
       if (iterBond != null)
         while (iterBond.hasNext())
-          frame.bondAtoms(iterBond.getAtomUid1(),
-                          iterBond.getAtomUid2(),
-                          iterBond.getOrder());
+          bondAtoms(iterBond.getAtomUid1(),
+                    iterBond.getAtomUid2(),
+                    iterBond.getOrder());
     }
 
     ModelAdapter.StructureIterator iterStructure =
@@ -106,6 +106,12 @@ final public class FrameBuilder {
                                        iterStructure.getEndSequenceNumber(),
                                        iterStructure.getEndInsertionCode());
   
+    frame.atomCount = atomCount;
+    frame.atoms = atoms;
+    frame.clientAtomReferences = clientAtomReferences;
+    frame.bondCount = bondCount;
+    frame.bonds = bonds;
+
     frame.freeze();
     long msToBuild = System.currentTimeMillis() - timeBegin;
     System.out.println("Build a frame:" + msToBuild + " ms");
@@ -114,6 +120,8 @@ final public class FrameBuilder {
     return frame;
   }
 
+  private final static int ATOM_GROWTH_INCREMENT = 2000;
+
   int currentModelID;
   Model currentModel;
   char currentChainID;
@@ -121,20 +129,43 @@ final public class FrameBuilder {
   int currentGroupSequenceNumber;
   char currentGroupInsertionCode;
   Group currentGroup;
+  
+  int atomCount;
+  Atom[] atoms;
+  Object[] clientAtomReferences;
 
-  void initializeBuild() {
+  int bondCount;
+  Bond[] bonds;
+
+  private final Hashtable htAtomMap = new Hashtable();
+
+
+  void initializeBuild(int atomCountEstimate) {
     currentModelID = Integer.MIN_VALUE;
     currentModel = null;
     currentChainID = '\uFFFF';
     currentChain = null;
     currentGroupInsertionCode = '\uFFFF';
     currentGroup = null;
+
+    this.atomCount = 0;
+    if (atomCountEstimate <= 0)
+      atomCountEstimate = ATOM_GROWTH_INCREMENT;
+    atoms = new Atom[atomCountEstimate];
+    clientAtomReferences = null;
+    this.bondCount = 0;
+    bonds = new Bond[2 * atomCountEstimate];
+    htAtomMap.clear();
   }
 
   void finalizeBuild() {
     currentModel = null;
     currentChain = null;
     currentGroup = null;
+    atoms = null;
+    clientAtomReferences = null;
+    bonds = null;
+    htAtomMap.clear();
   }
 
 
@@ -180,7 +211,41 @@ final public class FrameBuilder {
                          isHetero, atomSerial, chainID,
                          vectorX, vectorY, vectorZ);
     currentGroup.registerAtom(atom);
-    frame.addAtom(currentGroup, atom, atomUid, clientAtomReference);
+
+    if (atomCount == atoms.length)
+      atoms = (Atom[])Util.setLength(atoms, atomCount + ATOM_GROWTH_INCREMENT);
+    atoms[atomCount] = atom;
+    if (clientAtomReference != null) {
+      if (clientAtomReferences == null)
+        clientAtomReferences = new Object[atoms.length];
+      else if (clientAtomReferences.length <= atomCount)
+        clientAtomReferences =
+          (Object[])Util.setLength(clientAtomReferences, atoms.length);
+      clientAtomReferences[atomCount] = clientAtomReference;
+    }
+    ++atomCount;
+    htAtomMap.put(atomUid, atom);
   }
 
+  public void bondAtoms(Object atomUid1, Object atomUid2,
+                             int order) {
+    Atom atom1 = (Atom)htAtomMap.get(atomUid1);
+    if (atom1 == null) {
+      System.out.println("bondAtoms cannot find atomUid1?");
+      return;
+    }
+    Atom atom2 = (Atom)htAtomMap.get(atomUid2);
+    if (atom2 == null) {
+      System.out.println("bondAtoms cannot find atomUid2?");
+      return;
+    }
+    if (bondCount == bonds.length)
+      bonds = (Bond[])Util.setLength(bonds,
+                                     bondCount + 2 * ATOM_GROWTH_INCREMENT);
+    // note that if the atoms are already bonded then
+    // Atom.bondMutually(...) will return null
+    Bond bond = atom1.bondMutually(atom2, order);
+    if (bond != null)
+      bonds[bondCount++] = bond;
+  }
 }

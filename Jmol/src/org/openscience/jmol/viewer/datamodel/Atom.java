@@ -525,9 +525,27 @@ public final class Atom implements Bspt.Tuple {
   static {
     for (int i = JmolConstants.specialAtomNames.length; --i >= 0; ) {
       String specialAtomName = JmolConstants.specialAtomNames[i];
-      if (specialAtomName != null)
-        htAtom.put(JmolConstants.specialAtomNames[i], new Integer(i));
+      if (specialAtomName != null) {
+        htAtom.put(specialAtomName, new Integer(i));
+        String alternateAtomName = generateStarredAtomName(specialAtomName);
+        if (alternateAtomName != null)
+          htAtom.put(specialAtomName, new Integer(i));
+      }
     }
+  }
+
+  static String generateStarredAtomName(String primedAtomName) {
+    int primeIndex = primedAtomName.indexOf('\'');
+    if (primeIndex < 0)
+      return null;
+    return primedAtomName.replace('\'', '*');
+  }
+
+  static String generatePrimeAtomName(String starredAtomName) {
+    int starIndex = starredAtomName.indexOf('*');
+    if (starIndex < 0)
+      return null;
+    return starredAtomName.replace('*', '\'');
   }
 
   byte lookupSpecialAtomID(String atomName) {

@@ -76,7 +76,6 @@ public class Jmol extends JPanel {
 
   private DisplayPanel display;
   private StatusBar status;
-  private AtomPropsMenu apm;
   private PreferencesDialog preferencesDialog;
   private MeasurementTable measurementTable;
   private RecentFilesDialog recentFiles;
@@ -234,9 +233,6 @@ public class Jmol extends JPanel {
     panel.add("Center", ip);
     add("Center", panel);
     add("South", status);
-
-    say("Initializing Chemical Shifts...");
-    chemicalShifts.initialize(apm);
 
     say("Starting display...");
     display.start();
@@ -804,9 +800,6 @@ public class Jmol extends JPanel {
 
   // --- action implementations -----------------------------------
 
-  private CalculateChemicalShifts chemicalShifts =
-    new CalculateChemicalShifts();
-
   private SaveAction saveAction = new SaveAction();
   private ExportAction exportAction = new ExportAction();
   private PovrayAction povrayAction = new PovrayAction();
@@ -825,7 +818,7 @@ public class Jmol extends JPanel {
     new CloseAction(), new ExitAction(), new AboutAction(),
     new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
-    chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction,
+    new RecentFilesAction(), povrayAction, pdfAction,
     new ScriptWindowAction(), viewMeasurementTableAction
   };
 

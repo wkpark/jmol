@@ -70,10 +70,15 @@ class VectorsRenderer extends ShapeRenderer {
     pointArrowHead.set(atom.vibrationVector);
     pointArrowHead.scaleAdd(arrowHeadBase, atom.point3f);
     viewer.transformPoint(pointArrowHead, vibrationVector, screenArrowHead);
+    /*
     headWidthAngstroms = atom.vibrationVector.length() / widthDivisor;
     headWidthPixels =
       (int)(viewer.scaleToScreen(screenArrowHead.z,
                                  headWidthAngstroms) + 0.5f);
+    */
+    headWidthPixels = diameter * 3 / 2;
+    if (headWidthPixels < 3)
+      headWidthPixels = 3;
     return true;
   }
   
@@ -83,9 +88,12 @@ class VectorsRenderer extends ShapeRenderer {
   void renderVector(short colix, Atom atom) {
     if (colix == 0)
       colix = atom.colixAtom;
+    g3d.fillCylinder(colix, Graphics3D.ENDCAPS_OPEN, diameter,
+    /*
     g3d.drawLine(colix,
+    */
                  atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(),
-                 screenVectorEnd.x, screenVectorEnd.y, screenVectorEnd.z);
+                 screenArrowHead.x, screenArrowHead.y, screenArrowHead.z);
     g3d.fillCone(colix, Graphics3D.ENDCAPS_NONE, headWidthPixels,
                  screenArrowHead, screenVectorEnd);
   }

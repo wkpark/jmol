@@ -26,6 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
+import org.openscience.jmol.viewer.g3d.Font3D;
 
 import java.awt.Color;
 import java.util.BitSet;
@@ -34,14 +35,20 @@ abstract public class SelectionIndependentShape extends Shape {
 
   short mad;
   short colix;
+  Font3D font3d;
 
   public void setSize(int size, BitSet bsSelected) {
     this.mad = (short)size;
   }
   
   public void setProperty(String propertyName, Object value, BitSet bs) {
-    if (propertyName.equals("color"))
-      colix = viewer.getColix((Color)value);
+    if ("color".equals(propertyName)) {
+      colix = g3d.getColix(value);
+      return;
+    }
+    if ("font".equals(propertyName)) {
+      font3d = (Font3D)value;
+    }
   }
 }
 

@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolConstants;
 import org.openscience.jmol.viewer.pdb.PdbAtom;
+import org.openscience.jmol.viewer.g3d.Font3D;
 
 import java.awt.Color;
 import java.util.BitSet;
@@ -35,14 +36,22 @@ public class Labels extends Shape {
 
   String[] strings;
   short[] colixes;
-  byte[] sizes;
+  byte[] fontBids;
   short[] offsets;
+
+  Font3D defaultFont3D;
+
+  void initShape() {
+    defaultFont3D = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
+                                  JmolConstants.DEFAULT_FONTSTYLE,
+                                  JmolConstants.LABEL_DEFAULT_FONTSIZE);
+  }
 
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     Atom[] atoms = frame.atoms;
-    if (propertyName.equals("color")) {
-      short colix = viewer.getColix((Color)value);
+    if ("color".equals(propertyName)) {
+      short colix = g3d.getColix(value);
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
@@ -54,7 +63,7 @@ public class Labels extends Shape {
           colixes[i] = colix;
         }
     }
-
+    
     if ("label".equals(propertyName)) {
       String strLabel = (String)value;
       for (int i = frame.atomCount; --i >= 0; )
@@ -73,14 +82,27 @@ public class Labels extends Shape {
     
     if ("fontsize".equals(propertyName)) {
       int fontsize = ((Integer)value).intValue();
+      if (fontsize == JmolConstants.LABEL_DEFAULT_FONTSIZE) {
+        fontBids = null;
+        return;
+      }
+      byte bid = g3d.getFont3D(fontsize).bid;
+      fontBids = ensureMinimumLengthArray(fontBids, frame.atomCount);
+      for (int i = frame.atomCount; --i >= 0; )
+        fontBids[i] = bid;
+      return;
+    }
+    
+    if ("font".equals(propertyName)) {
+      byte bid = ((Font3D)value).bid;
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          if (sizes == null || i >= sizes.length) {
-            if (fontsize == JmolConstants.LABEL_DEFAULT_FONTSIZE)
+          if (fontBids == null || i >= fontBids.length) {
+            if (bid == defaultFont3D.bid)
               continue;
-            sizes = ensureMinimumLengthArray(sizes, i + 1);
+            fontBids = ensureMinimumLengthArray(fontBids, i + 1);
           }
-          sizes[i] = (byte)fontsize;
+          fontBids[i] = bid;
         }
       return;
     }

@@ -57,11 +57,13 @@ public class Echo extends Shape {
 
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
+    /*
     System.out.println("Echo.setProperty(" + propertyName + "," + value + ")");
+    */
 
     if ("color".equals(propertyName)) {
       if (currentText != null)
-        currentText.colix = viewer.getColix((Color)value);
+        currentText.colix = g3d.getColix(value);
       return;
     }
 

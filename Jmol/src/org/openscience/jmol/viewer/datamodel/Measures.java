@@ -27,8 +27,8 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.g3d.Font3D;
 
-import java.awt.Color;
 import java.util.BitSet;
 
 public class Measures extends Shape {
@@ -39,10 +39,11 @@ public class Measures extends Shape {
   PendingMeasurement pendingMeasurement;
 
   short colix = Graphics3D.WHITE;
-  int fontsize = JmolConstants.MEASURE_DEFAULT_FONTSIZE;
+  Font3D font3d;
 
   void initShape() {
     pendingMeasurement = new PendingMeasurement(frame);
+    font3d = g3d.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
   }
 
   void clear() {
@@ -114,9 +115,9 @@ public class Measures extends Shape {
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if ("color".equals(propertyName))
-      { colix = viewer.getColix((Color)value); return; }
-    else if ("fontsize".equals(propertyName))
-      { fontsize = ((Integer)value).intValue(); return; }
+      { colix = g3d.getColix(value); return; }
+    else if ("font".equals(propertyName))
+      { font3d = (Font3D)value; return; }
     else if ("define".equals(propertyName))
       { define((int[])value); }
     else if ("delete".equals(propertyName))

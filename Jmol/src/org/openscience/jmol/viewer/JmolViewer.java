@@ -1432,9 +1432,11 @@ final public class JmolViewer {
   public void setShapeProperty(int shapeID,
                                String propertyName, Object value) {
 
-    System.out.println("setShapeProperty("+JmolConstants.shapeClassBases[shapeID]+
+    /*
+    System.out.println("JmolViewer.setShapeProperty("+
+                       JmolConstants.shapeClassBases[shapeID]+
                        "," + propertyName + "," + value + ")");
-
+    */
     modelManager.setShapeProperty(shapeID, propertyName, value,
                                   selectionManager.bsSelection);
     refresh();
@@ -1483,6 +1485,10 @@ final public class JmolViewer {
 
   public short getColix(Color color) {
     return g3d.getColix(color);
+  }
+
+  public short getColix(Object object) {
+    return g3d.getColix(object);
   }
 
   int strandsCount = 5;
@@ -1889,6 +1895,11 @@ final public class JmolViewer {
   ////////////////////////////////////////////////////////////////
   // font stuff
   ////////////////////////////////////////////////////////////////
+  public Font3D getFont3D(int fontSize) {
+    return g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
+                         JmolConstants.DEFAULT_FONTSTYLE, fontSize);
+  }
+
   public Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
     return g3d.getFont3D(fontFace, fontStyle, fontSize);
   }

@@ -1972,13 +1972,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     
   };
 
+  public final static String DEFAULT_FONTFACE = "SansSerif";
+  public final static String DEFAULT_FONTSTYLE = "Plain";
+
   public final static int LABEL_MINIMUM_FONTSIZE = 6;
-  public final static int LABEL_MAXIMUM_FONTSIZE = 52;
+  public final static int LABEL_MAXIMUM_FONTSIZE = 63;
   public final static int LABEL_DEFAULT_FONTSIZE = 13;
-  public final static String LABEL_DEFAULT_FONTFACE = "SansSerif";
   public final static int LABEL_DEFAULT_X_OFFSET = 4;
   public final static int LABEL_DEFAULT_Y_OFFSET = 4;
+
   public final static int MEASURE_DEFAULT_FONTSIZE = 15;
+  public final static int AXES_DEFAULT_FONTSIZE = 14;
 
   public final static int SHAPE_BALLS    = 0;
   public final static int SHAPE_STICKS   = 1;

@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.g3d.Font3D;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -41,7 +42,7 @@ class MeasuresRenderer extends ShapeRenderer {
   short colixDistance;
   boolean showMeasurementLabels;
   short measurementMad;
-  int fontsize;
+  Font3D font3d;
 
   Measurement measurement;
 
@@ -51,7 +52,7 @@ class MeasuresRenderer extends ShapeRenderer {
 
     colixDistance = measures.colix;
     measurementMad = (short)-1;
-    fontsize = measures.fontsize;
+    font3d = measures.font3d;
     showMeasurementLabels = viewer.getShowMeasurementLabels();
     
     for (int i = measures.measurementCount; --i >= 0; )
@@ -204,8 +205,8 @@ class MeasuresRenderer extends ShapeRenderer {
     String strMeasurement = measurement.strMeasurement;
     if (strMeasurement == null)
       return;
-    g3d.setFontOfSize(fontsize);
-    FontMetrics fontMetrics = g3d.getFontMetrics();
+    g3d.setFont3D(font3d);
+    FontMetrics fontMetrics = font3d.fontMetrics;
     int j = fontMetrics.stringWidth(strMeasurement);
     g3d.drawString(strMeasurement, colix,
                    x+radius/2+2, y-radius/2, z - radius - 2);

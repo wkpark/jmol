@@ -66,6 +66,8 @@ public class Axes extends SelectionIndependentShape {
       axisPoint.add(originPoint);
 
       colix = viewer.getColixAxes();
+
+      font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     }
   }
 }

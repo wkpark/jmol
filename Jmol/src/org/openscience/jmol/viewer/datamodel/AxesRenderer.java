@@ -33,12 +33,9 @@ import javax.vecmath.Point3i;
 
 class AxesRenderer extends ShapeRenderer {
 
-  final static int axisFontsize = 14;
-
   String[] axisLabels = { "+X", "+Y", "+Z",
                           null, null, null };
 
-  
   void render() {
     Axes axes = (Axes)shape;
     short mad = axes.mad;
@@ -63,8 +60,8 @@ class AxesRenderer extends ShapeRenderer {
                          widthPixels, originScreen, axisScreens[i]);
       String label = axisLabels[i];
       if (label != null)
-        frameRenderer.renderStringOutside(label, colix,
-                                          axisFontsize, axisScreens[i], g3d);
+        frameRenderer.renderStringOutside(label, colix, axes.font3d,
+                                          axisScreens[i], g3d);
     }
   }
 }

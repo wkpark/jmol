@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.g3d.Font3D;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
@@ -85,17 +86,17 @@ public class FrameRenderer {
     return null;
   }
 
-  public void renderStringOutside(String str, short colix, int pointsFontsize,
+  public void renderStringOutside(String str, short colix, Font3D font3d,
                                   Point3i screen, Graphics3D g3d) {
-    renderStringOutside(str, colix, pointsFontsize,
+    renderStringOutside(str, colix, font3d,
                         screen.x, screen.y, screen.z, g3d);
   }
 
-  public void renderStringOutside(String str, short colix, int pointsFontsize,
+  public void renderStringOutside(String str, short colix, Font3D font3d,
                                   int x, int y, int z, Graphics3D g3d) {
     g3d.setColix(colix);
-    g3d.setFontOfSize(pointsFontsize);
-    FontMetrics fontMetrics = g3d.getFontMetrics();
+    g3d.setFont3D(font3d);
+    FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
     int xStrCenter, yStrCenter;

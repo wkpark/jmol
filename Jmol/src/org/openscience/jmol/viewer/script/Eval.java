@@ -2247,6 +2247,9 @@ public class Eval implements Runnable {
     case Token.monitor:
       shapeType = JmolConstants.SHAPE_MEASURES;
       break;
+    case Token.label:
+      shapeType = JmolConstants.SHAPE_LABELS;
+      break;
     default:
       unrecognizedColorObject();
     }
@@ -2276,8 +2279,10 @@ public class Eval implements Runnable {
     default:
       badArgumentCount();
     }
+    /*
     System.out.println("font <obj> fontsize=" + fontsize);
     System.out.println("fontface=" + fontface + " fontstyle=" + fontstyle);
+    */
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     viewer.setShapeProperty(shapeType, "font", font3d);
   }
@@ -2492,18 +2497,18 @@ public class Eval implements Runnable {
   }
   
   void setFontsize() throws ScriptException {
-    int fontsize = 13;
+    int rasmolSize = 8;
     if (statementLength == 3) {
-      fontsize=getSetInteger();
-      if (fontsize < JmolConstants.LABEL_MINIMUM_FONTSIZE ||
-          fontsize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
+      rasmolSize=getSetInteger();
+      // this is a kludge/hack to be somewhat compatible with RasMol
+      rasmolSize += 5;
+      
+      if (rasmolSize < JmolConstants.LABEL_MINIMUM_FONTSIZE ||
+          rasmolSize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
         numberOutOfRange();
     }
-    // this is a kludge/hack to be somewhat compatible with RasMol
-    // but I am deprecating it for now ... mth 2004 03 12
-    //    viewer.setLabelFontSize(fontsize + 5);
     viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "fontsize",
-                            new Integer(fontsize));
+                            new Integer(rasmolSize));
   }
 
   void setLabelOffset() throws ScriptException {
@@ -2511,7 +2516,8 @@ public class Eval implements Runnable {
     int xOffset = intParameter(2);
     int yOffset = intParameter(3);
     int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
-    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset", new Integer(offset));
+    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset",
+                            new Integer(offset));
   }
 
   void setHetero() throws ScriptException {

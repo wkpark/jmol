@@ -312,7 +312,7 @@ final public class Graphics3D {
     font3dCurrent = getFont3D(fontsize);
   }
 
-  public void setFontBid(byte fontBid) {
+  public void setFont3D(byte fontBid) {
     font3dCurrent = Font3D.getFont3D(fontBid);
   }
 

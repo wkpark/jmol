@@ -171,8 +171,7 @@ final class Line3D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      int n = dx;
-      do {
+      for (int n = dx - 1; --n >= 0; ) {
         // xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -187,15 +186,14 @@ final class Line3D {
           zbuf[offset] = (short)zCurrent;
           pbuf[offset] = argb;
         }
-      } while (--n > 0);
+      }
       return;
     }
     int roundingFactor = dy - 1;
     if (dy < 0) roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
-    int n = dy;
-    do {
+    for (int n = dy - 1; --n >= 0; ) {
       // yCurrent += yIncrement;
       offset += yOffsetIncrement;
       zCurrentScaled += zIncrementScaled;
@@ -210,7 +208,7 @@ final class Line3D {
         zbuf[offset] = (short)zCurrent;
         pbuf[offset] = argb;
       }
-    } while (--n > 0);
+    }
   }
 
   void plotDottedLineDeltaUnclipped(int argb, int x1, int y1, int z1,
@@ -252,8 +250,7 @@ final class Line3D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      int n = dx;
-      do {
+      for (int n = dx - 1; --n >= 0; ) {
         // xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -269,15 +266,14 @@ final class Line3D {
           pbuf[offset] = argb;
         }
         flipFlop = !flipFlop;
-      } while (--n > 0);
+      }
       return;
     }
     int roundingFactor = dy - 1;
     if (dy < 0) roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
-    int n = dy;
-    do {
+    for (int n = dy - 1; --n >= 0; ) {
       // yCurrent += yIncrement;
       offset += yOffsetIncrement;
       zCurrentScaled += zIncrementScaled;
@@ -293,7 +289,7 @@ final class Line3D {
         pbuf[offset] = argb;
       }
       flipFlop = !flipFlop;
-    } while (--n > 0);
+    }
   }
 
   void plotDottedLineDeltaClipped(int argb, int x, int y, int z,
@@ -337,8 +333,7 @@ final class Line3D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      int n = dx;
-      do {
+      for (int n = dx - 1; --n >= 0; ) {
         // xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -354,15 +349,14 @@ final class Line3D {
           pbuf[offset] = argb;
         }
         flipFlop = !flipFlop;
-      } while (--n > 0);
+      }
       return;
     }
     int roundingFactor = dy - 1;
     if (dy < 0) roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
-    int n = dy;
-    do {
+    for (int n = dy - 1; --n > 0; ) {
       // yCurrent += yIncrement;
       offset += yOffsetIncrement;
       zCurrentScaled += zIncrementScaled;
@@ -378,9 +372,10 @@ final class Line3D {
         pbuf[offset] = argb;
       }
       flipFlop = !flipFlop;
-    } while (--n > 0);
+    }
   }
 
+  /*
   void plotLineDeltaUnclippedGradient(int argb1, int argb2,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
@@ -511,6 +506,7 @@ final class Line3D {
       }
     } while (--n > 0);
   }
+  */
 
   void plotLineDeltaUnclipped(int argb1, int argb2,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
@@ -550,8 +546,7 @@ final class Line3D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      int n = dx, nMid = n / 2;
-      do {
+      for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
         // xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -566,15 +561,14 @@ final class Line3D {
           zbuf[offset] = (short)zCurrent;
           pbuf[offset] = n > nMid ? argb1 : argb2;
         }
-      } while (--n > 0);
+      }
       return;
     }
     int roundingFactor = dy - 1;
     if (dz < 0) roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
-    int n = dy, nMid = n / 2;
-    do {
+    for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
       // yCurrent += yIncrement;
       offset += yOffsetIncrement;
       zCurrentScaled += zIncrementScaled;
@@ -589,7 +583,7 @@ final class Line3D {
         zbuf[offset] = (short)zCurrent;
         pbuf[offset] = n > nMid ? argb1 : argb2;
       }
-    } while (--n > 0);
+    }
   }
 
   void plotLineDeltaClipped(int argb1, int argb2,
@@ -633,8 +627,7 @@ final class Line3D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      int n = dx, nMid = n / 2;
-      do {
+      for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
         xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -652,15 +645,14 @@ final class Line3D {
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
         }
-      } while (--n > 0);
+      }
       return;
     }
     int roundingFactor = dy - 1;
     if (dz < 0) roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
-    int n = dy, nMid = n / 2;
-    do {
+    for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
       yCurrent += yIncrement;
       offset += yOffsetIncrement;
       zCurrentScaled += zIncrementScaled;
@@ -678,6 +670,6 @@ final class Line3D {
           pbuf[offset] = n > nMid ? argb1 : argb2;
         }
       }
-    } while (--n > 0);
+    }
   }
 }

@@ -42,12 +42,15 @@ class LineRenderer extends Renderer {
 
   final Point3i screenOrigin = new Point3i();
   final Point3i screenEnd = new Point3i();
+  final Point3i screenArrowHead = new Point3i();
 
-  final static int shaftDivisor = 5;
-  final static int finDivisor = 6;
+  /*
+  final static int shaftDivisor = 6;
+  final static int finDivisor = 8;
   final static int[] ax = new int[4];
   final static int[] ay = new int[4];
   final static int[] az = new int[4];
+  */
 
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     render(g3d, rectClip, frame, frame.lineCount, frame.lines);
@@ -55,13 +58,22 @@ class LineRenderer extends Renderer {
 
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame,
               int lineCount, Line[] lines) {
-    g3d.setColix(viewer.getColixVector());
+    short colix = viewer.getColixVector();
+    g3d.setColix(colix);
     for (int i = lineCount; --i >= 0; ) {
       Line line = lines[i];
       viewer.transformPoint(line.pointOrigin, screenOrigin);
       viewer.transformPoint(line.pointEnd, screenEnd);
       g3d.drawLine(screenOrigin, screenEnd);
-      if (line.tArrowHead) {
+      if (line.pointArrowHead != null) {
+        viewer.transformPoint(line.pointArrowHead, screenArrowHead);
+        int headWidthPixels =
+          (int)(viewer.scaleToScreen(screenArrowHead.z,
+                                     line.headWidthAngstroms) + 0.5f);
+        g3d.fillCone(colix, Graphics3D.ENDCAPS_NONE, headWidthPixels,
+                     screenArrowHead, screenEnd);
+        return;
+        /*
         int x = screenOrigin.x, y = screenOrigin.y, z = screenOrigin.z;
         int xEnd = screenEnd.x, yEnd = screenEnd.y, zEnd = screenEnd.z;
         int dx = xEnd - x, xHead = xEnd - (dx / shaftDivisor);
@@ -87,6 +99,7 @@ class LineRenderer extends Renderer {
         ay[1] = yHead - dyHead/2; ay[3] = ay[1] + dyHead;
         az[1] = zHead;            az[3] = zHead;
         g3d.drawfillPolygon4(ax, ay, az);
+        */
       }
     }
   }

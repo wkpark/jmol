@@ -35,7 +35,7 @@ public class Line {
 
   Point3f pointOrigin;
   Point3f pointEnd;
-  boolean tArrowHead;
+  Point3f pointArrowHead;
   float headWidthAngstroms;
 
   public Line(Point3f pointOrigin, Point3f pointEnd) {
@@ -46,11 +46,14 @@ public class Line {
   public Line(Point3f pointOrigin, Point3f pointEnd, boolean tArrowHead) {
     this.pointOrigin = pointOrigin;
     this.pointEnd = pointEnd;
-    this.tArrowHead = tArrowHead;
-    if (tArrowHead)
-      headWidthAngstroms =
-	(float)pointOrigin.distance(pointEnd) / widthDivisor;
+    if (tArrowHead) {
+      headWidthAngstroms = pointOrigin.distance(pointEnd) / widthDivisor;
+      pointArrowHead = new Point3f(pointEnd);
+      pointArrowHead.sub(pointOrigin);
+      pointArrowHead.scaleAdd(arrowHeadBase, pointOrigin);
+    }
   }
   final static int widthDivisor = 8;
+  final static float arrowHeadBase = 0.8f;
 }
 

@@ -479,11 +479,21 @@ final public class Graphics3D {
   public final static byte ENDCAPS_FLAT = 1;
   public final static byte ENDCAPS_SPHERICAL = 2;
 
-  public void fillCylinder(short colix1, short colix2, byte endcaps,
+  public void fillCylinder(short colixA, short colixB, byte endcaps,
                            int diameter,
-                           int x1, int y1, int z1, int x2, int y2, int z2) {
-    cylinder3d.render(colix1, colix2, endcaps, diameter,
-                      x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
+                           int xA, int yA, int zA, int xB, int yB, int zB) {
+    if (viewer.getTestFlag1())
+      endcaps = ENDCAPS_NONE;
+    if (viewer.getTestFlag2())
+      endcaps = ENDCAPS_FLAT;
+    if (viewer.getTestFlag3())
+      endcaps = ENDCAPS_SPHERICAL;
+    cylinder3d.render(colixA, colixB, endcaps, diameter,
+                      xA, yA, zA, xB - xA, yB - yA, zB - zA);
+    /*
+    fillCone(colixA, endcaps, 4 * diameter,
+             xA+100, yA+100, zA, xB+100, yB+100, zB);
+    */
   }
 
   public void fillCone(short colix, byte endcap, int diameter,
@@ -491,6 +501,15 @@ final public class Graphics3D {
                        int xTip, int yTip, int zTip) {
     cylinder3d.renderCone(colix, endcap, diameter,
                       xBase, yBase, zBase, xTip, yTip, zTip);
+
+  }
+
+  public void fillCone(short colix, byte endcap, int diameter,
+                       Point3i screenBase, Point3i screenTip) {
+    cylinder3d.renderCone(colix, endcap, diameter,
+                          screenBase.x, screenBase.y, screenBase.z,
+                          screenTip.x, screenTip.y, screenTip.z);
+
   }
 
   public void fillHermite(short colix, int diameter1, int diameter2,
@@ -555,6 +574,18 @@ final public class Graphics3D {
       pbuf[offset] = argb;
     }
   }
+
+  /*
+  void plotPixelClipped(short colix, int x, int y, int z) {
+    if (x < 0 || x >= width || y < 0 || y >= height || z < slab)
+      return;
+    int offset = y * width + x;
+    if (z < zbuf[offset]) {
+      zbuf[offset] = (short)z;
+      pbuf[offset] = Colix.getArgb(colix);
+    }
+  }
+  */
 
   void forcePixel(Color co, int x, int y) {
     if (x < 0 || x >= width || y < 0 || y >= height)

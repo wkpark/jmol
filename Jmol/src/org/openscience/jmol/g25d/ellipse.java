@@ -28,15 +28,19 @@ class EllipseCanvas extends Canvas {
   
   int ax[] = new int[3];
   int ay[] = new int[3];
-  int i = 0;
+  int iMouse = 0;
 
   EllipseCanvas() {
     addMouseListener(new EllipseMouseAdapter());
+    ax[1] = ay[1] = 10;
+    ax[2] = 5;
   }
 
   Graphics g;
 
   Color transBlue = new Color(0x400000FF, true);
+  Color transGrn = new Color(0x4000FF00, true);
+  Color transRed = new Color(0x40FF0000, true);
 
   public void paint(Graphics g) {
     this.g = g;
@@ -46,23 +50,42 @@ class EllipseCanvas extends Canvas {
     g.drawLine(ax[0], ay[0], ax[2], ay[2]);
     g.drawLine(ax[1], ay[1], ax[2], ay[2]);
 
-    g.setColor(Color.red);
-    ellipse0(50, 3, .25);
-    ellipse1();
-    ellipse2();
+    int dx = ax[0] - ax[1];
+    int dy = ay[0] - ay[1];
+    int len = (int)Math.sqrt(dx*dx + dy*dy);
+
+    int xMid = (ax[0] + ax[1]) / 2;
+    int yMid = (ay[0] + ay[1]) / 2;
+
+    int dxTheta = ax[2] - xMid;
+    int dyTheta = ay[2] - yMid;
+
+    for (int i = 3; i < 15; ++ i) {
+      xOrigin = yOrigin = 50 + i * 10;
+      //EllipseShape ellipse = new EllipseShape(i, i, 100, 100);
+      //ellipse.render(g, xOrigin, yOrigin);
+      doit(i, i, 100, 100);
+    }
+  }
+
+  void doit(int major, int minor, int dx, int dy) {
+    ellipse0a(major, minor, dx, dy);
+    g.setColor(transRed);
+    //    ellipse1();
+    calcCriticalPoints();
     g.setColor(transBlue);
-    if (false) {
-      ellipse3();
-    } else {
-      int scanlines = yN - yS + 1;
-      byte[] ax = new byte[scanlines];
-      byte[] an = new byte[scanlines];
-      ellipse4(ax, an);
-      int yCurrent = yN;
-      for (int i = 0; i < scanlines; ++i, --yCurrent) {
-        setPixels(ax[i], yCurrent, an[i]);
-        setPixels(-ax[i], -yCurrent, -an[i]);
-      }
+    int nScanlines = yN - yS + 1;
+    byte[] ax = new byte[nScanlines];
+    byte[] an = new byte[nScanlines];
+    ellipse4(ax, an);
+    renderRaster(ax, an, yN, nScanlines);
+  }
+
+  void renderRaster(byte[] ax, byte[] an, int yN, int nScanlines) {
+    int yCurrent = yN;
+    for (int i = 0; i < nScanlines; ++i, --yCurrent) {
+      setPixels(ax[i], yCurrent, an[i]);
+      setPixels(-ax[i], -yCurrent, -an[i]);
     }
   }
 
@@ -97,110 +120,89 @@ class EllipseCanvas extends Canvas {
   int c_ab2; //2(c**2 - ab)
   int oldpoint;
 
-  int A, B, C, F;
-  int twoA, twoB, twoC, CplusAdiv4, CplusBdiv4;
+  long A, B, C, F;
+  long twoA, twoB, twoC, _Adiv4, _Bdiv4;
+  double scaleFactor;
  
-  int eval(int x, int y) {
-    return A*x*x + B*y*y + 2*C*x*y + F;
+  boolean isInside(int x, int y) {
+    return (A*(x*x) + B*(y*y) + C*(2*x*y) + F) <= 0;
   }
 
-  int evalNextMidpointNNE(int x, int y) {
-    //return A*x*x + B*y*y + 2*C*x*y+ F + (2*A-C)*x + (2*C-B)*y + A - C + B/4;
-    return A*x*x + B*y*y + twoC*x*y+ F +
-      (twoA-C)*x + (twoC-B)*y + A - CplusBdiv4;
-
+  long evalNextMidpointNNE(int x, int y) {
+    long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y - 1)+ F +
+      (twoA-C)*x + (twoC-B)*y + _Bdiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F + (2*A-C)*x + (2*C-B)*y + A - C + B/4;
+    return n;
   }
 
-  int evalNextMidpointENE(int x, int y) {
-    //return A*x*x + B*y*y + 2*C*x*y+ F + (A-2*C)*x + (C-2*B)*y + B - C + A/4;
-    return A*x*x + B*y*y + twoC*x*y+ F +
-      (A-twoC)*x + (C-twoB)*y + B - CplusAdiv4;
+  long evalNextMidpointENE(int x, int y) {
+    long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y - 1)+ F +
+      (A-twoC)*x + (C-twoB)*y + _Adiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F + (A-2*C)*x + (C-2*B)*y + B - C + A/4;
+    return n;
   }
 
-  int evalNextMidpointESE(int x, int y) {
-    //return A*x*x + B*y*y + 2*C*x*y+ F - (A+2*C)*x - (2*B+C)*y + B + C + A/4;
-    return A*x*x + B*y*y + twoC*x*y+ F +
-      -(A+twoC)*x - (twoB+C)*y + B + CplusAdiv4;
+  long evalNextMidpointESE(int x, int y) {
+    long m = A*x*x + B*y*y + 2*C*x*y+ F - (A+2*C)*x - (2*B+C)*y + B + C + A/4;
+    long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y + 1)+ F +
+      -(A+twoC)*x - (twoB+C)*y + _Adiv4;
+    assert m==n;
+    return n;
   }
 
-  int evalNextMidpointSSE(int x, int y) {
-    //return A*x*x + B*y*y + 2*C*x*y+ F - (2*A+C)*x - (B+2*C)*y + A + C + B/4;
-    return A*x*x + B*y*y + twoC*x*y+ F +
-      -(twoA+C)*x - (B+twoC)*y + A + CplusBdiv4;
+  long evalNextMidpointSSE(int x, int y) {
+    long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y + 1)+ F +
+      -(twoA+C)*x - (B+twoC)*y + _Bdiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F - (2*A+C)*x - (B+2*C)*y + A + C + B/4;
+    return n;
   }
 
-  void ellipse0(int majorAxisLength, int minorAxisLength,
-                int dx, int dy) {
-    ellipse0(majorAxisLength, minorAxisLength,
-             dx, dy, (int)(Math.sqrt(dx*dx + dy*dy) + .5));
-  }
-
-  void ellipse0(int majorAxisLength, int minorAxisLength,
-                int dxTheta, int dyTheta, int mag2dTheta) {
+  void ellipse0a(int majorAxisLength, int minorAxisLength, int dx, int dy) {
     if (majorAxisLength < minorAxisLength) {
       int t = majorAxisLength;
       majorAxisLength = minorAxisLength;
       minorAxisLength = t;
-      t = dxTheta;
-      dxTheta = dyTheta;
-      dyTheta = t;
+      t = dx;
+      dx = t;
+      dy = dx;
     }
-    double a = majorAxisLength / 2.0;
-    double b = minorAxisLength / 2.0;
-    double c = Math.sqrt(a*a - b*b);
-    double xC = c * dxTheta / mag2dTheta;
-    double yC = c * dyTheta / mag2dTheta;
-    double a2 = a*a;
-    double dblA = a2 - xC*xC;
-    int adiv4 = (int)dblA;
-    A = adiv4 * 4;
-    twoA = A * 2;
-    double dblB = a2 - yC*yC;
-    int bdiv4 = (int)dblB;
-    B = bdiv4 * 4;
-    twoB = B * 2;
-    double dblC = -xC * yC;
-    C = (int)dblC * 4;
-    CplusAdiv4 = C + adiv4;
-    CplusBdiv4 = C + bdiv4;
-    twoC = C * 2;
-    double dblF = -(a2*b*b);
-    F = (int)dblF * 4;
-  }
+    int dx2 = dx*dx;
+    int dy2 = dy*dy;
+    int dx2_plus_dy2=dx2+dy2;
+    long _2a = majorAxisLength;
+    long _2b = minorAxisLength;
 
-  void ellipse0(int majorAxisLength, int minorAxisLength, double theta) {
-    /* FIXME mth
-       with a little more work I think I can get rid of all these doubles
-    */
-    if (majorAxisLength < minorAxisLength) {
-      int t = majorAxisLength;
-      majorAxisLength = minorAxisLength;
-      minorAxisLength = t;
-      theta += Math.PI/2;
-    }
-    double a = majorAxisLength / 2.0;
-    double b = minorAxisLength / 2.0;
-    double c = Math.sqrt(a*a - b*b);
-    double xC = c * Math.cos(theta);
-    double yC = c * Math.sin(theta);
-    double a2 = a*a;
-    double dblA = a2 - xC*xC;
-    int adiv4 = (int)dblA;
-    // should these be rounded instead of truncated?
-    A = adiv4 * 4;
+    long _4a2 = _2a*_2a;
+    long _4b2 = _2b*_2b;
+
+    long mthA = (_4a2*dx2 + _4b2*dy2);
+    long mthB = (_4a2*dy2 + _4b2*dx2);
+    long mthC = -((_4a2 - _4b2)*(dx*dy));
+    long mthF = -(_4a2*_4b2) * dx2_plus_dy2;
+
+    _Adiv4 = mthA;
+    A = mthA * 4;
     twoA = A * 2;
-    double dblB = a2 - yC*yC;
-    int bdiv4 = (int)dblB;
-    B = bdiv4 * 4;
+
+    _Bdiv4 = mthB;
+    B = mthB * 4;
     twoB = B * 2;
-    double dblC = -xC * yC;
-    C = (int)dblC * 4;
-    CplusAdiv4 = C + adiv4;
-    CplusBdiv4 = C + bdiv4;
+
+    C = mthC * 4;
     twoC = C * 2;
-    double dblF = -(a2*b*b);
-    F = (int)dblF * 4;
-    //    System.out.println("A=" + A + " B=" + B + " C=" + C + " F=" + F);
+
+    F = mthF;
+
+    scaleFactor = 4 * Math.sqrt(dx2_plus_dy2);
+
+    System.out.println("ellipse0a");
+    System.out.println(" _2a=" + _2a + " _2b=" + _2b);
+    System.out.println("angle: " +
+                       " A=" + A + " B=" + B + " C=" + C + " F=" + F +
+                       " A/4=" + _Adiv4 + " B/4=" + _Bdiv4);
   }
 
   void ellipse1() {
@@ -208,34 +210,31 @@ class EllipseCanvas extends Canvas {
     int kmin = 0;
     for (int i = -127; i < 127; ++i)
       for (int j = - 127; j < 127; ++j) {
-        int k = eval(i, j);
-        if (k > 0)
-          continue;
-        g.setColor(Color.red);
-        set_pixel(i, j);
+        if (isInside(i, j))
+          set_pixel(i, j);
       }
   }
 
   int xN, yN, xNE, yNE, xE, yE, xSE, ySE, xS, yS;
 
-  void ellipse2() {
+  void calcCriticalPoints() {
     //    g.setColor(transBlue);
     //    int yN = (int)Math.sqrt(A*F/(C*C-A*B));
     //    int xN = (int)(-C/A*yN);
     double sqrtA = Math.sqrt(A);
     double dblxN = -C/sqrtA;
     double dblyN = sqrtA;
-    dblxN /= 2;
-    dblyN /= 2;
+    dblxN /= scaleFactor;
+    dblyN /= scaleFactor;
     xN = (int)(dblxN - 0.5);
     yN = (int)(dblyN + 0.5);
 
     double sqrtAplusBminus2C = Math.sqrt(A + B - 2*C);
     double dblxNE = (B - C)/sqrtAplusBminus2C;
     double dblyNE = (A - C)/sqrtAplusBminus2C;
-    dblxNE /= 2;
+    dblxNE /= scaleFactor;
     dblxNE += (dblxNE < 0) ? -0.5 : 0.5;
-    dblyNE /= 2;
+    dblyNE /= scaleFactor;
     dblyNE += (dblyNE < 0) ? -0.5 : 0.5;
     xNE = (int)dblxNE;
     yNE = (int)dblyNE;
@@ -243,10 +242,10 @@ class EllipseCanvas extends Canvas {
 
     double sqrtB = Math.sqrt(B);
     double dblxE = sqrtB;
-    dblxE /= 2;
+    dblxE /= scaleFactor;
     dblxE += 0.5;
     double dblyE = -C/sqrtB;
-    dblyE /= 2;
+    dblyE /= scaleFactor;
     dblyE += (dblyE < 0) ? -0.5 : 0.5;
     xE = (int)dblxE;
     yE = (int)dblyE;
@@ -254,10 +253,10 @@ class EllipseCanvas extends Canvas {
 
     double sqrtAplusBplus2C = Math.sqrt(A + B + 2*C);
     double dblxSE = (B + C)/sqrtAplusBplus2C;
-    dblxSE /= 2;
+    dblxSE /= scaleFactor;
     dblxSE += (dblxSE < 0) ? -0.5 : 0.5;
     double dblySE = -(A + C)/sqrtAplusBplus2C;
-    dblySE /= 2;
+    dblySE /= scaleFactor;
     dblySE += (dblySE < 0) ? -0.5 : 0.5;
     xSE = (int)dblxSE;
     ySE = (int)dblySE;
@@ -266,87 +265,18 @@ class EllipseCanvas extends Canvas {
     xS = -xN;
     //    set_pixel(xS, yS);
 
-  }
 
-  void ellipse3() {
-    int xCurrent = xN;
-    int yCurrent = yN;
-    int discriminator;
-    set_pixel(xCurrent, yCurrent);
-    if (xCurrent != xNE || yCurrent != yNE) {
-      discriminator = evalNextMidpointNNE(xN, yN);
-      int xStop = xNE - 1;
-      while (xCurrent < xStop && yCurrent > yNE) {
-        ++xCurrent;
-        if (discriminator < 0) {
-          set_pixel(xCurrent, yCurrent);
-          discriminator += 2*A*xCurrent + 2*C*yCurrent + A - C;
-        } else {
-          set_pixel(xCurrent, --yCurrent);
-          discriminator += 2*(A-C)*xCurrent + 2*(C-B)*yCurrent + A - C;
-        }
-      }
-      while (xCurrent < xNE)
-        set_pixel(++xCurrent, yNE);
-      yCurrent = yNE;
-    }
-    if (xCurrent != xE || yCurrent != yE) {
-      discriminator = evalNextMidpointENE(xNE, yNE);
-      int yStop = yE + 1;
-      while (yCurrent > yStop && xCurrent < xE) {
-        --yCurrent;
-        if (discriminator < 0) {
-          set_pixel(++xCurrent, yCurrent);
-          discriminator += 2*(A-C)*xCurrent + 2*(C-B)*yCurrent + B - C;
-        } else {
-          set_pixel(xCurrent, yCurrent);
-          discriminator += -2*C*xCurrent - 2*B*yCurrent + B - C;
-        }
-      }
-      while (yCurrent > yE)
-        set_pixel(xE, --yCurrent);
-      xCurrent = xE;
-    }
-    if (xCurrent != xSE || yCurrent != ySE) {
-      discriminator = evalNextMidpointESE(xE, yE);
-      int yStop = ySE + 1;
-      while (yCurrent > yStop && xCurrent > xSE) {
-        --yCurrent;
-        if (discriminator < 0) {
-          set_pixel(xCurrent, yCurrent);
-          discriminator += -2*C*xCurrent - 2*B*yCurrent + B + C;
-        } else {
-          set_pixel(--xCurrent, yCurrent);
-          discriminator += -2*(A+C)*xCurrent - 2*(B+C)*yCurrent + B + C;
-        }
-      }
-      while (yCurrent > ySE)
-        set_pixel(xSE, --yCurrent);
-      xCurrent = xSE;
-    }
-    if (xCurrent != xS || yCurrent != xS) {
-      discriminator = evalNextMidpointSSE(xSE, ySE);
-      int xStop = xS + 1;
-      while (xCurrent > xStop && yCurrent > yS) {
-        --xCurrent;
-        if (discriminator < 0) {
-          set_pixel(xCurrent, --yCurrent);
-          discriminator += -2*(A+C)*xCurrent - 2*(B+C)*yCurrent + A + C;
-        } else {
-          set_pixel(xCurrent, yCurrent);
-          discriminator += -2*A*xCurrent - 2*C*yCurrent + A + C;
-        }
-      }
-      while (xCurrent > xS)
-        set_pixel(--xCurrent, yS);
-      yS = yCurrent;
-    }
+    //System.out.println("  N=" + xN  + "," + yN  +
+    //                 " NE=" + xNE + "," + yNE +
+    //                 "  E=" + xE  + "," + yE  +
+    //                 " SE=" + xSE + "," + ySE +
+    //                 "  S=" + xS  + "," + yS);
   }
 
   void ellipse4(byte[] ax, byte[] an) {
     int xCurrent = xN;
     int yCurrent = yN;
-    int discriminator;
+    long discriminator;
     initializeRecorder(xN, yN, yS, ax, an);
     // NNE octant
     assert xCurrent == xN && yCurrent == yN;
@@ -357,18 +287,16 @@ class EllipseCanvas extends Canvas {
         ++xCurrent;
         if (discriminator < 0) {
           recordCoordinate(xCurrent, yCurrent);
-          discriminator += 2*A*xCurrent + 2*C*yCurrent + A - C;
+          discriminator += A*(2*xCurrent + 1) + C*(2*yCurrent - 1);
         } else {
           recordCoordinate(xCurrent, --yCurrent);
-          discriminator += 2*(A-C)*xCurrent + 2*(C-B)*yCurrent + A - C;
+          discriminator += (A-C)*(2*xCurrent + 1) + (C-B)*2*yCurrent;
         }
+        assert discriminator == evalNextMidpointNNE(xCurrent, yCurrent);
       }
       while (xCurrent < xNE)
         recordCoordinate(++xCurrent, yNE);
       yCurrent = yNE;
-      if (xCurrent != xNE || yCurrent != yNE) {
-        System.out.println("ellipse error #8a");
-      }
     }
 
     // ENE octant
@@ -380,17 +308,16 @@ class EllipseCanvas extends Canvas {
         --yCurrent;
         if (discriminator < 0) {
           recordCoordinate(++xCurrent, yCurrent);
-          discriminator += 2*(A-C)*xCurrent + 2*(C-B)*yCurrent + B - C;
+          discriminator += (A-C)*2*xCurrent + (C-B)*(2*yCurrent - 1);
         } else {
           recordCoordinate(xCurrent, yCurrent);
-          discriminator += -2*C*xCurrent - 2*B*yCurrent + B - C;
+          discriminator += -( C*(2*xCurrent + 1) + B*(2*yCurrent - 1) );
         }
+        assert discriminator == evalNextMidpointENE(xCurrent, yCurrent);
       }
       while (yCurrent > yE)
         recordCoordinate(xE, --yCurrent);
       xCurrent = xE;
-      if (xCurrent != xE || yCurrent != yE)
-        System.out.println("ellipse error #9a");
     }
 
     // ESE octant
@@ -402,17 +329,16 @@ class EllipseCanvas extends Canvas {
         --yCurrent;
         if (discriminator < 0) {
           recordCoordinate(xCurrent, yCurrent);
-          discriminator += -2*C*xCurrent - 2*B*yCurrent + B + C;
+          discriminator += -( C*(2*xCurrent - 1) + B*(2*yCurrent - 1) );
         } else {
           recordCoordinate(--xCurrent, yCurrent);
-          discriminator += -2*(A+C)*xCurrent - 2*(B+C)*yCurrent + B + C;
+          discriminator += -( (A+C)*2*xCurrent + (B+C)*(2*yCurrent - 1) );
         }
+        assert discriminator == evalNextMidpointESE(xCurrent, yCurrent);
       }
       while (yCurrent > ySE)
         recordCoordinate(xSE, --yCurrent);
       xCurrent = xSE;
-      if (xCurrent != xSE || yCurrent != ySE)
-        System.out.println("ellipse error #10");
     }
 
     // SSE octant
@@ -424,17 +350,16 @@ class EllipseCanvas extends Canvas {
         --xCurrent;
         if (discriminator < 0) {
           recordCoordinate(xCurrent, --yCurrent);
-          discriminator += -2*(A+C)*xCurrent - 2*(B+C)*yCurrent + A + C;
+          discriminator += -( (A+C)*(2*xCurrent - 1) + 2*(B+C)*yCurrent );
         } else {
           recordCoordinate(xCurrent, yCurrent);
-          discriminator += -2*A*xCurrent - 2*C*yCurrent + A + C;
+          discriminator += -( A*(2*xCurrent - 1) + C*(2*yCurrent - 1) );
         }
+        assert discriminator == evalNextMidpointSSE(xCurrent, yCurrent);
       }
       while (xCurrent > xS)
         recordCoordinate(--xCurrent, yS);
       yS = yCurrent;
-      if (xCurrent != xS || yCurrent != yS)
-        System.out.println("ellipse error #11");
     }
     assert xCurrent == xS && yCurrent == yS;
   }
@@ -571,15 +496,18 @@ class EllipseCanvas extends Canvas {
     return ret;
   }
 
+  int xOrigin;
+  int yOrigin;
+
   void set_pixel(int x, int y) {
-    x += 100;
-    y += 100;
+    x += xOrigin;
+    y += xOrigin;
     g.drawLine(x, y, x, y);
   }
 
   void setPixels(int x, int y, int n) {
-    x += 100;
-    y += 100;
+    x += xOrigin;
+    y += yOrigin;
     if (n < 0) {
       n = -n;
       x -= (n - 1);
@@ -592,6 +520,7 @@ class EllipseCanvas extends Canvas {
   int iaxRaster = 0;
 
   void initializeRecorder(int xN, int yN, int yS, byte[] ax, byte[] an) {
+    System.out.println(" init  N=" + xN + "," + yN);
     for (int i = yN - yS + 1; --i > 0; )
       ax[i] = an[i] = 0;
     ax[0] = (byte)xN;
@@ -622,10 +551,624 @@ class EllipseCanvas extends Canvas {
     public void mouseClicked(MouseEvent e) {
       int xMouse = e.getX();
       int yMouse = e.getY();
-      ax[i] = xMouse;
-      ay[i] = yMouse;
-      i = (i + 1) % 3;
+      ax[iMouse] = xMouse;
+      ay[iMouse] = yMouse;
+      iMouse = (iMouse + 1) % 3;
       repaint();
     }
   }
+}
+
+class EllipseShape {
+  int _2a;
+  int _2b;
+  int dxTheta;
+  int dyTheta;
+
+  long A, B, C, F;
+  long twoA, twoB, twoC, _Adiv4, _Bdiv4;
+  double scaleFactor;
+
+  int xN, yN, xNE, yNE, xE, yE, xSE, ySE, xS, yS;
+
+  int nScanlines;
+  byte[] ax;
+  byte[] an;
+  
+
+  public EllipseShape(int majorAxisLength, int minorAxisLength,
+                      int dxTheta, int dyTheta) {
+    if (majorAxisLength < minorAxisLength) {
+      int t = majorAxisLength;
+      majorAxisLength = minorAxisLength;
+      minorAxisLength = t;
+      t = dxTheta;
+      dxTheta = dyTheta;
+      dyTheta = t;
+    }
+    this._2a = majorAxisLength;
+    this._2b = minorAxisLength;
+    this.dxTheta = dxTheta;
+    this.dyTheta = dyTheta;
+
+    ellipse0a();
+    calcCriticalPoints();
+    nScanlines = yN - yS + 1;
+    ax = new byte[nScanlines];
+    an = new byte[nScanlines];
+    rasterize();
+  }
+
+  void ellipse0a() {
+    int dx2 = dxTheta*dxTheta;
+    int dy2 = dyTheta*dyTheta;
+    int dx2_plus_dy2=dx2+dy2;
+
+    long _4a2 = _2a*_2a;
+    long _4b2 = _2b*_2b;
+
+    long tmpA = (_4a2*dx2 + _4b2*dy2);
+    long tmpB = (_4a2*dy2 + _4b2*dx2);
+    long tmpC = -((_4a2 - _4b2)*(dxTheta*dyTheta));
+    long tmpF = -(_4a2*_4b2) * dx2_plus_dy2;
+
+    _Adiv4 = tmpA;
+    A = tmpA * 4;
+    twoA = A * 2;
+
+    _Bdiv4 = tmpB;
+    B = tmpB * 4;
+    twoB = B * 2;
+
+    C = tmpC * 4;
+    twoC = C * 2;
+
+    F = tmpF;
+
+    scaleFactor = 4 * Math.sqrt(dx2_plus_dy2);
+
+    System.out.println("ellipse0a");
+    System.out.println(" _2a=" + _2a + " _2b=" + _2b);
+    System.out.println("angle: " +
+                       " A=" + A + " B=" + B + " C=" + C + " F=" + F +
+                       " A/4=" + _Adiv4 + " B/4=" + _Bdiv4);
+  }
+
+  void calcCriticalPoints() {
+    //    g.setColor(transBlue);
+    //    int yN = (int)Math.sqrt(A*F/(C*C-A*B));
+    //    int xN = (int)(-C/A*yN);
+    double sqrtA = Math.sqrt(A);
+    double dblxN = -C/sqrtA;
+    double dblyN = sqrtA;
+    dblxN /= scaleFactor;
+    dblyN /= scaleFactor;
+    xN = (int)(dblxN - 0.5);
+    yN = (int)(dblyN + 0.5);
+
+    double sqrtAplusBminus2C = Math.sqrt(A + B - 2*C);
+    double dblxNE = (B - C)/sqrtAplusBminus2C;
+    double dblyNE = (A - C)/sqrtAplusBminus2C;
+    dblxNE /= scaleFactor;
+    dblxNE += (dblxNE < 0) ? -0.5 : 0.5;
+    dblyNE /= scaleFactor;
+    dblyNE += (dblyNE < 0) ? -0.5 : 0.5;
+    xNE = (int)dblxNE;
+    yNE = (int)dblyNE;
+    //    set_pixel(xNE, yNE);
+
+    double sqrtB = Math.sqrt(B);
+    double dblxE = sqrtB;
+    dblxE /= scaleFactor;
+    dblxE += 0.5;
+    double dblyE = -C/sqrtB;
+    dblyE /= scaleFactor;
+    dblyE += (dblyE < 0) ? -0.5 : 0.5;
+    xE = (int)dblxE;
+    yE = (int)dblyE;
+    //    set_pixel(xE, yE);
+
+    double sqrtAplusBplus2C = Math.sqrt(A + B + 2*C);
+    double dblxSE = (B + C)/sqrtAplusBplus2C;
+    dblxSE /= scaleFactor;
+    dblxSE += (dblxSE < 0) ? -0.5 : 0.5;
+    double dblySE = -(A + C)/sqrtAplusBplus2C;
+    dblySE /= scaleFactor;
+    dblySE += (dblySE < 0) ? -0.5 : 0.5;
+    xSE = (int)dblxSE;
+    ySE = (int)dblySE;
+
+    yS = -yN;
+    xS = -xN;
+    //    set_pixel(xS, yS);
+
+
+    //System.out.println("  N=" + xN  + "," + yN  +
+    //                 " NE=" + xNE + "," + yNE +
+    //                 "  E=" + xE  + "," + yE  +
+    //                 " SE=" + xSE + "," + ySE +
+    //                 "  S=" + xS  + "," + yS);
+  }
+
+  long evalNextMidpointNNE(int x, int y) {
+    long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y - 1)+ F +
+      (twoA-C)*x + (twoC-B)*y + _Bdiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F + (2*A-C)*x + (2*C-B)*y + A - C + B/4;
+    return n;
+  }
+
+  long evalNextMidpointENE(int x, int y) {
+    long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y - 1)+ F +
+      (A-twoC)*x + (C-twoB)*y + _Adiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F + (A-2*C)*x + (C-2*B)*y + B - C + A/4;
+    return n;
+  }
+
+  long evalNextMidpointESE(int x, int y) {
+    long m = A*x*x + B*y*y + 2*C*x*y+ F - (A+2*C)*x - (2*B+C)*y + B + C + A/4;
+    long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y + 1)+ F +
+      -(A+twoC)*x - (twoB+C)*y + _Adiv4;
+    assert m==n;
+    return n;
+  }
+
+  long evalNextMidpointSSE(int x, int y) {
+    long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y + 1)+ F +
+      -(twoA+C)*x - (B+twoC)*y + _Bdiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F - (2*A+C)*x - (B+2*C)*y + A + C + B/4;
+    return n;
+  }
+
+  void rasterize() {
+    int xCurrent = xN;
+    int yCurrent = yN;
+    long discriminator;
+    initializeRecorder(xN, yN, yS, ax, an);
+    // NNE octant
+    assert xCurrent == xN && yCurrent == yN;
+    if (xCurrent != xNE || yCurrent != yNE) {
+      discriminator = evalNextMidpointNNE(xN, yN);
+      int xStop = xNE - 1;
+      while (xCurrent < xStop && yCurrent > yNE) {
+        ++xCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += A*(2*xCurrent + 1) + C*(2*yCurrent - 1);
+        } else {
+          recordCoordinate(xCurrent, --yCurrent);
+          discriminator += (A-C)*(2*xCurrent + 1) + (C-B)*2*yCurrent;
+        }
+        assert discriminator == evalNextMidpointNNE(xCurrent, yCurrent);
+      }
+      while (xCurrent < xNE)
+        recordCoordinate(++xCurrent, yNE);
+      yCurrent = yNE;
+    }
+
+    // ENE octant
+    assert xCurrent == xNE && yCurrent == yNE;
+    if (xCurrent != xE || yCurrent != yE) {
+      discriminator = evalNextMidpointENE(xNE, yNE);
+      int yStop = yE + 1;
+      while (yCurrent > yStop && xCurrent < xE) {
+        --yCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(++xCurrent, yCurrent);
+          discriminator += (A-C)*2*xCurrent + (C-B)*(2*yCurrent - 1);
+        } else {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += -( C*(2*xCurrent + 1) + B*(2*yCurrent - 1) );
+        }
+        assert discriminator == evalNextMidpointENE(xCurrent, yCurrent);
+      }
+      while (yCurrent > yE)
+        recordCoordinate(xE, --yCurrent);
+      xCurrent = xE;
+    }
+
+    // ESE octant
+    assert xCurrent == xE && yCurrent == yE;
+    if (xCurrent != xSE || yCurrent != ySE) {
+      discriminator = evalNextMidpointESE(xE, yE);
+      int yStop = ySE + 1;
+      while (yCurrent > yStop && xCurrent > xSE) {
+        --yCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += -( C*(2*xCurrent - 1) + B*(2*yCurrent - 1) );
+        } else {
+          recordCoordinate(--xCurrent, yCurrent);
+          discriminator += -( (A+C)*2*xCurrent + (B+C)*(2*yCurrent - 1) );
+        }
+        assert discriminator == evalNextMidpointESE(xCurrent, yCurrent);
+      }
+      while (yCurrent > ySE)
+        recordCoordinate(xSE, --yCurrent);
+      xCurrent = xSE;
+    }
+
+    // SSE octant
+    assert xCurrent == xSE && yCurrent == ySE;
+    if (xCurrent != xS || yCurrent != xS) {
+      discriminator = evalNextMidpointSSE(xSE, ySE);
+      int xStop = xS + 1;
+      while (xCurrent > xStop && yCurrent > yS) {
+        --xCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(xCurrent, --yCurrent);
+          discriminator += -( (A+C)*(2*xCurrent - 1) + 2*(B+C)*yCurrent );
+        } else {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += -( A*(2*xCurrent - 1) + C*(2*yCurrent - 1) );
+        }
+        assert discriminator == evalNextMidpointSSE(xCurrent, yCurrent);
+      }
+      while (xCurrent > xS)
+        recordCoordinate(--xCurrent, yS);
+      yS = yCurrent;
+    }
+    assert xCurrent == xS && yCurrent == yS;
+  }
+
+  void render(Graphics g, int xOrigin, int yOrigin) {
+    int yCurrent = yN;
+    for (int i = 0; i < nScanlines; ++i, --yCurrent) {
+      setPixels(g, xOrigin, yOrigin, ax[i], yCurrent, an[i]);
+      setPixels(g, xOrigin, yOrigin, -ax[i], -yCurrent, -an[i]);
+    }
+  }
+
+  void setPixels(Graphics g, int xOrigin, int yOrigin, int x, int y, int n) {
+    x += xOrigin;
+    y += yOrigin;
+    if (n < 0) {
+      n = -n;
+      x -= (n - 1);
+    }
+    g.drawLine(x, y, x+n-1, y);
+  }
+
+  byte[] axRaster, anRaster;
+  int yRaster;
+  int iaxRaster = 0;
+
+  void initializeRecorder(int xN, int yN, int yS, byte[] ax, byte[] an) {
+    System.out.println(" init  N=" + xN + "," + yN);
+    for (int i = yN - yS + 1; --i > 0; )
+      ax[i] = an[i] = 0;
+    ax[0] = (byte)xN;
+    an[0] = 1;
+    iaxRaster = 0;
+    axRaster = ax;
+    anRaster = an;
+    yRaster = yN;
+  }
+
+  void recordCoordinate(int x, int y) {
+    if (y != yRaster) {
+      --yRaster;
+      assert yRaster == y;
+      ++iaxRaster;
+      axRaster[iaxRaster] = (byte)x;
+      anRaster[iaxRaster] = 1;
+    } else {
+      if (x < axRaster[iaxRaster]) {
+        --axRaster[iaxRaster];
+        assert axRaster[iaxRaster] == x;
+      }
+      ++anRaster[iaxRaster];
+    }
+  }
+
+}
+
+class CylinderShape {
+  int _2a;
+  int _2b;
+  int dxTheta;
+  int dyTheta;
+
+  long A, B, C, F;
+  long twoA, twoB, twoC, _Adiv4, _Bdiv4;
+  double scaleFactor;
+
+  int xN, yN, xNE, yNE, xE, yE, xSE, ySE, xS, yS;
+
+  int nScanlines;
+  byte[] ax;
+  byte[] an;
+  
+
+  public CylinderShape(int x1, int y1, int z1, int x2, int y2, int z2,
+                       int width, Color co, 
+int majorAxisLength, int minorAxisLength,
+                      int dxTheta, int dyTheta) {
+    if (majorAxisLength < minorAxisLength) {
+      int t = majorAxisLength;
+      majorAxisLength = minorAxisLength;
+      minorAxisLength = t;
+      t = dxTheta;
+      dxTheta = dyTheta;
+      dyTheta = t;
+    }
+    this._2a = majorAxisLength;
+    this._2b = minorAxisLength;
+    this.dxTheta = dxTheta;
+    this.dyTheta = dyTheta;
+
+    ellipse0a();
+    calcCriticalPoints();
+    nScanlines = yN - yS + 1;
+    ax = new byte[nScanlines];
+    an = new byte[nScanlines];
+    rasterize();
+  }
+
+  void ellipse0a() {
+    int dx2 = dxTheta*dxTheta;
+    int dy2 = dyTheta*dyTheta;
+    int dx2_plus_dy2=dx2+dy2;
+
+    long _4a2 = _2a*_2a;
+    long _4b2 = _2b*_2b;
+
+    long tmpA = (_4a2*dx2 + _4b2*dy2);
+    long tmpB = (_4a2*dy2 + _4b2*dx2);
+    long tmpC = -((_4a2 - _4b2)*(dxTheta*dyTheta));
+    long tmpF = -(_4a2*_4b2) * dx2_plus_dy2;
+
+    _Adiv4 = tmpA;
+    A = tmpA * 4;
+    twoA = A * 2;
+
+    _Bdiv4 = tmpB;
+    B = tmpB * 4;
+    twoB = B * 2;
+
+    C = tmpC * 4;
+    twoC = C * 2;
+
+    F = tmpF;
+
+    scaleFactor = 4 * Math.sqrt(dx2_plus_dy2);
+
+    System.out.println("ellipse0a");
+    System.out.println(" _2a=" + _2a + " _2b=" + _2b);
+    System.out.println("angle: " +
+                       " A=" + A + " B=" + B + " C=" + C + " F=" + F +
+                       " A/4=" + _Adiv4 + " B/4=" + _Bdiv4);
+  }
+
+  void calcCriticalPoints() {
+    //    g.setColor(transBlue);
+    //    int yN = (int)Math.sqrt(A*F/(C*C-A*B));
+    //    int xN = (int)(-C/A*yN);
+    double sqrtA = Math.sqrt(A);
+    double dblxN = -C/sqrtA;
+    double dblyN = sqrtA;
+    dblxN /= scaleFactor;
+    dblyN /= scaleFactor;
+    xN = (int)(dblxN - 0.5);
+    yN = (int)(dblyN + 0.5);
+
+    double sqrtAplusBminus2C = Math.sqrt(A + B - 2*C);
+    double dblxNE = (B - C)/sqrtAplusBminus2C;
+    double dblyNE = (A - C)/sqrtAplusBminus2C;
+    dblxNE /= scaleFactor;
+    dblxNE += (dblxNE < 0) ? -0.5 : 0.5;
+    dblyNE /= scaleFactor;
+    dblyNE += (dblyNE < 0) ? -0.5 : 0.5;
+    xNE = (int)dblxNE;
+    yNE = (int)dblyNE;
+    //    set_pixel(xNE, yNE);
+
+    double sqrtB = Math.sqrt(B);
+    double dblxE = sqrtB;
+    dblxE /= scaleFactor;
+    dblxE += 0.5;
+    double dblyE = -C/sqrtB;
+    dblyE /= scaleFactor;
+    dblyE += (dblyE < 0) ? -0.5 : 0.5;
+    xE = (int)dblxE;
+    yE = (int)dblyE;
+    //    set_pixel(xE, yE);
+
+    double sqrtAplusBplus2C = Math.sqrt(A + B + 2*C);
+    double dblxSE = (B + C)/sqrtAplusBplus2C;
+    dblxSE /= scaleFactor;
+    dblxSE += (dblxSE < 0) ? -0.5 : 0.5;
+    double dblySE = -(A + C)/sqrtAplusBplus2C;
+    dblySE /= scaleFactor;
+    dblySE += (dblySE < 0) ? -0.5 : 0.5;
+    xSE = (int)dblxSE;
+    ySE = (int)dblySE;
+
+    yS = -yN;
+    xS = -xN;
+    //    set_pixel(xS, yS);
+
+
+    //System.out.println("  N=" + xN  + "," + yN  +
+    //                 " NE=" + xNE + "," + yNE +
+    //                 "  E=" + xE  + "," + yE  +
+    //                 " SE=" + xSE + "," + ySE +
+    //                 "  S=" + xS  + "," + yS);
+  }
+
+  long evalNextMidpointNNE(int x, int y) {
+    long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y - 1)+ F +
+      (twoA-C)*x + (twoC-B)*y + _Bdiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F + (2*A-C)*x + (2*C-B)*y + A - C + B/4;
+    return n;
+  }
+
+  long evalNextMidpointENE(int x, int y) {
+    long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y - 1)+ F +
+      (A-twoC)*x + (C-twoB)*y + _Adiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F + (A-2*C)*x + (C-2*B)*y + B - C + A/4;
+    return n;
+  }
+
+  long evalNextMidpointESE(int x, int y) {
+    long m = A*x*x + B*y*y + 2*C*x*y+ F - (A+2*C)*x - (2*B+C)*y + B + C + A/4;
+    long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y + 1)+ F +
+      -(A+twoC)*x - (twoB+C)*y + _Adiv4;
+    assert m==n;
+    return n;
+  }
+
+  long evalNextMidpointSSE(int x, int y) {
+    long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y + 1)+ F +
+      -(twoA+C)*x - (B+twoC)*y + _Bdiv4;
+    assert
+      n == A*x*x + B*y*y + 2*C*x*y+ F - (2*A+C)*x - (B+2*C)*y + A + C + B/4;
+    return n;
+  }
+
+  void rasterize() {
+    int xCurrent = xN;
+    int yCurrent = yN;
+    long discriminator;
+    initializeRecorder(xN, yN, yS, ax, an);
+    // NNE octant
+    assert xCurrent == xN && yCurrent == yN;
+    if (xCurrent != xNE || yCurrent != yNE) {
+      discriminator = evalNextMidpointNNE(xN, yN);
+      int xStop = xNE - 1;
+      while (xCurrent < xStop && yCurrent > yNE) {
+        ++xCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += A*(2*xCurrent + 1) + C*(2*yCurrent - 1);
+        } else {
+          recordCoordinate(xCurrent, --yCurrent);
+          discriminator += (A-C)*(2*xCurrent + 1) + (C-B)*2*yCurrent;
+        }
+        assert discriminator == evalNextMidpointNNE(xCurrent, yCurrent);
+      }
+      while (xCurrent < xNE)
+        recordCoordinate(++xCurrent, yNE);
+      yCurrent = yNE;
+    }
+
+    // ENE octant
+    assert xCurrent == xNE && yCurrent == yNE;
+    if (xCurrent != xE || yCurrent != yE) {
+      discriminator = evalNextMidpointENE(xNE, yNE);
+      int yStop = yE + 1;
+      while (yCurrent > yStop && xCurrent < xE) {
+        --yCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(++xCurrent, yCurrent);
+          discriminator += (A-C)*2*xCurrent + (C-B)*(2*yCurrent - 1);
+        } else {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += -( C*(2*xCurrent + 1) + B*(2*yCurrent - 1) );
+        }
+        assert discriminator == evalNextMidpointENE(xCurrent, yCurrent);
+      }
+      while (yCurrent > yE)
+        recordCoordinate(xE, --yCurrent);
+      xCurrent = xE;
+    }
+
+    // ESE octant
+    assert xCurrent == xE && yCurrent == yE;
+    if (xCurrent != xSE || yCurrent != ySE) {
+      discriminator = evalNextMidpointESE(xE, yE);
+      int yStop = ySE + 1;
+      while (yCurrent > yStop && xCurrent > xSE) {
+        --yCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += -( C*(2*xCurrent - 1) + B*(2*yCurrent - 1) );
+        } else {
+          recordCoordinate(--xCurrent, yCurrent);
+          discriminator += -( (A+C)*2*xCurrent + (B+C)*(2*yCurrent - 1) );
+        }
+        assert discriminator == evalNextMidpointESE(xCurrent, yCurrent);
+      }
+      while (yCurrent > ySE)
+        recordCoordinate(xSE, --yCurrent);
+      xCurrent = xSE;
+    }
+
+    // SSE octant
+    assert xCurrent == xSE && yCurrent == ySE;
+    if (xCurrent != xS || yCurrent != xS) {
+      discriminator = evalNextMidpointSSE(xSE, ySE);
+      int xStop = xS + 1;
+      while (xCurrent > xStop && yCurrent > yS) {
+        --xCurrent;
+        if (discriminator < 0) {
+          recordCoordinate(xCurrent, --yCurrent);
+          discriminator += -( (A+C)*(2*xCurrent - 1) + 2*(B+C)*yCurrent );
+        } else {
+          recordCoordinate(xCurrent, yCurrent);
+          discriminator += -( A*(2*xCurrent - 1) + C*(2*yCurrent - 1) );
+        }
+        assert discriminator == evalNextMidpointSSE(xCurrent, yCurrent);
+      }
+      while (xCurrent > xS)
+        recordCoordinate(--xCurrent, yS);
+      yS = yCurrent;
+    }
+    assert xCurrent == xS && yCurrent == yS;
+  }
+
+  void render(Graphics g, int xOrigin, int yOrigin) {
+    int yCurrent = yN;
+    for (int i = 0; i < nScanlines; ++i, --yCurrent) {
+      setPixels(g, xOrigin, yOrigin, ax[i], yCurrent, an[i]);
+      setPixels(g, xOrigin, yOrigin, -ax[i], -yCurrent, -an[i]);
+    }
+  }
+
+  void setPixels(Graphics g, int xOrigin, int yOrigin, int x, int y, int n) {
+    x += xOrigin;
+    y += yOrigin;
+    if (n < 0) {
+      n = -n;
+      x -= (n - 1);
+    }
+    g.drawLine(x, y, x+n-1, y);
+  }
+
+  byte[] axRaster, anRaster;
+  int yRaster;
+  int iaxRaster = 0;
+
+  void initializeRecorder(int xN, int yN, int yS, byte[] ax, byte[] an) {
+    System.out.println(" init  N=" + xN + "," + yN);
+    for (int i = yN - yS + 1; --i > 0; )
+      ax[i] = an[i] = 0;
+    ax[0] = (byte)xN;
+    an[0] = 1;
+    iaxRaster = 0;
+    axRaster = ax;
+    anRaster = an;
+    yRaster = yN;
+  }
+
+  void recordCoordinate(int x, int y) {
+    if (y != yRaster) {
+      --yRaster;
+      assert yRaster == y;
+      ++iaxRaster;
+      axRaster[iaxRaster] = (byte)x;
+      anRaster[iaxRaster] = 1;
+    } else {
+      if (x < axRaster[iaxRaster]) {
+        --axRaster[iaxRaster];
+        assert axRaster[iaxRaster] == x;
+      }
+      ++anRaster[iaxRaster];
+    }
+  }
+
 }

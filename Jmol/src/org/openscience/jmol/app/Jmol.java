@@ -24,9 +24,8 @@
  */
 package org.openscience.jmol.app;
 import org.jmol.viewer.*;
-import org.jmol.viewer.JmolStatusListener;
 
-import org.jmol.api.JmolAdapter;
+import org.jmol.api.*;
 import org.jmol.adapter.cdk.CdkJmolAdapter;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 

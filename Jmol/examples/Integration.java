@@ -22,10 +22,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-import org.jmol.api.JmolAdapter;
+import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.viewer.JmolViewer;
-import org.jmol.viewer.JmolStatusListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -40,7 +39,7 @@ import javax.swing.*;
  * java -cp .:../Jmol.jar Integration
  * </pre>
  *
- * @author Miguel <mth@mth.com>
+ * @author Miguel <miguel@jmol.org>
  */
 
 public class Integration {

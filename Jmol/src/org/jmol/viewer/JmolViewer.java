@@ -24,7 +24,7 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.api.JmolAdapter;
+import org.jmol.api.*;
 import org.jmol.g3d.*;
 import org.jmol.viewer.datamodel.*;
 

@@ -1076,18 +1076,18 @@ public class Eval implements Runnable {
         propertyValue = atom.getOccupancy();
         break;
       case Token.resno:
-        propertyValue = getResno(atom);
+        propertyValue = atom.getSeqcode();
         if (propertyValue == -1)
           continue;
         break;
       case Token._groupID:
-       propertyValue = getGroupID(atom);
-        if (propertyValue == -1)
+        propertyValue = atom.getGroupID();
+        if (propertyValue < 0)
           continue;
         break;
       case Token._atomID:
-       propertyValue = getAtomID(atom);
-        if (propertyValue == -1)
+        propertyValue = atom.getSpecialAtomID();
+        if (propertyValue < 0)
           continue;
         break;
       case Token._structure:
@@ -1215,18 +1215,6 @@ public class Eval implements Runnable {
         }
       }
     }
-  }
-
-  int getResno(Atom atom) {
-    return atom.getSeqcode();
-  }
-
-  int getGroupID(Atom atom) {
-    return atom.getGroupID();
-  }
-
-  int getAtomID(Atom atom) {
-    return atom.getAtomID();
   }
 
   int getSecondaryStructureType(Atom atom) {

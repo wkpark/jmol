@@ -181,9 +181,11 @@ final public class PdbGroup {
     System.out.println("PdbGroup.registerAtom(atom) atom.atomID="+atom.atomID+
                        " atom.atomName=" + atom.atomName);
     */
-    if (atom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
-      if (! registerMainchainAtomIndex(atom.atomID, atom.atomIndex))
-        atom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
+    byte specialAtomID = atom.getSpecialAtomID();
+    if (specialAtomID >= 0 &&
+        specialAtomID < JmolConstants.SPECIALATOMID_MAINCHAIN_MAX) {
+      if (! registerMainchainAtomIndex(specialAtomID, atom.atomIndex))
+        atom.demoteSpecialAtomImposter();
     }
   }
 

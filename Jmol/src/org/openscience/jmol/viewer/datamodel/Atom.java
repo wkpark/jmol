@@ -60,7 +60,7 @@ public class Atom implements Bspt.Tuple {
   /* move these out of here */
   int atomSerial;
   public String atomName;
-  public short atomID = -1;
+  byte specialAtomID;
 
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
@@ -85,6 +85,8 @@ public class Atom implements Bspt.Tuple {
                        group3 + "," + sequenceNumber + ","
                        + insertionCode + "," + pdbFile);
     */
+    ////////////////////////////////////////////////////////////////
+    // these do *not* belong here ... but are here temporarily
     if (group3 == null)
       group3 = "";
     if (sequenceNumber < 0)
@@ -93,6 +95,7 @@ public class Atom implements Bspt.Tuple {
       chainID = ' ';
     if (insertionCode == '\0')
       insertionCode = ' ';
+    ////////////////////////////////////////////////////////////////
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
@@ -106,17 +109,20 @@ public class Atom implements Bspt.Tuple {
                          : (byte)occupancy));
     this.bfactor100 =
       (bfactor == Float.NaN ? Short.MIN_VALUE : (short)(bfactor*100));
+    atomName = (atomName != null
+                ? atomName.intern()
+                : JmolConstants.elementSymbols[elementNumber]);
     this.atomName = atomName;
+    specialAtomID = lookupSpecialAtomID(atomName);
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
     this.isHetero = isHetero;
     this.atomSerial = atomSerial;
-    if (pdbFile != null) {
-      atomID = lookupAtomID(atomName);
-      group = pdbFile.registerAtom(this, modelNumber, chainID,
-                                   sequenceNumber, insertionCode, group3);
-    }
+    // this does not belong here
+    // put it in the higher level and pass in the group
+    group = pdbFile.registerAtom(this, modelNumber, chainID,
+                                 sequenceNumber, insertionCode, group3);
   }
   
   public boolean isBonded(Atom atomOther) {
@@ -309,9 +315,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public String getAtomName() {
-    if (atomName != null)
-      return atomName;
-    return JmolConstants.elementSymbols[elementNumber];
+    return atomName;
   }
   
   public String getPdbAtomName4() {
@@ -336,30 +340,18 @@ public class Atom implements Bspt.Tuple {
   }
 
   public boolean isAtomNameMatch(String strPattern) {
-    if (atomID < 0)
-      return false;
+    int cchAtomName = atomName.length();
     int cchPattern = strPattern.length();
-    if (cchPattern > 4) {
-      System.err.println("atom wildcard length > 4 : " + strPattern);
-      return false;
-    }
-    String strAtomName = atomNames[atomID];
-    int cchAtomName = strAtomName.length();
-    int ichAtomName = 0;
-    while (strAtomName.charAt(ichAtomName) == ' ')
-      ++ichAtomName;
-    for (int i = 0; i < cchPattern; ++i, ++ichAtomName) {
-      char charWild = strPattern.charAt(i);
+    int ich;
+    for (ich = 0; ich < cchPattern; ++ich) {
+      char charWild = strPattern.charAt(ich);
       if (charWild == '?')
         continue;
-      if (ichAtomName >= cchAtomName ||
-          charWild != Character.toUpperCase(strAtomName.charAt(ichAtomName)))
+      if (ich >= cchAtomName ||
+          charWild != Character.toUpperCase(atomName.charAt(ich)))
         return false;
     }
-    while (ichAtomName < cchAtomName)
-      if (strAtomName.charAt(ichAtomName++) != ' ')
-        return false;
-    return true;
+    return ich >= cchAtomName;
   }
 
   public int getAtomNumber() {
@@ -435,7 +427,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public char getChainID() {
-    return group == null ? (char)0 : group.chain.chainID;
+    return group == null ? '\0' : group.chain.chainID;
   }
 
   // a percentage value in the range 0-100
@@ -517,27 +509,18 @@ public class Atom implements Bspt.Tuple {
     return 1;
   }
   
-  public short getAtomID() {
-    return atomID;
-  }
-  
-  public String getAtomPrettyName() {
-    return atomPrettyNames[atomID];
+  public byte getSpecialAtomID() {
+    return specialAtomID;
   }
 
-  public final static short atomIDMainchainMax = 3;
-  
-  private static Hashtable htAtom = new Hashtable();
-  public static String[] atomNames = new String[128];
-  private static String[] atomPrettyNames = new String[128];
-  private static short atomIDMax = 0;
-  
-  static {
-    // this loop *must* run in forward direction;
-    for (int i = 0; i < JmolConstants.predefinedAtomNames4.length; ++i)
-      addAtomName(JmolConstants.predefinedAtomNames4[i]);
+  public void demoteSpecialAtomImposter() {
+    specialAtomID = -1;
   }
   
+  /****************************************************************
+   * disabled until I figure out how to generate pretty names
+   * without breaking inorganic compounds
+
   // this requires a 4 letter name, in PDB format
   // only here for transition purposes
   static String calcPrettyName(String name) {
@@ -575,33 +558,20 @@ public class Atom implements Bspt.Tuple {
       pretty += chRemote;
     return pretty;
   }
+  */
   
-  synchronized static short addAtomName(String name) {
-    String prettyName = calcPrettyName(name);
-    if (atomIDMax == atomNames.length) {
-      String[] t;
-      t = new String[atomIDMax * 2];
-      System.arraycopy(atomNames, 0, t, 0, atomIDMax);
-      atomNames = t;
-      t = new String[atomIDMax * 2];
-      System.arraycopy(atomPrettyNames, 0, t, 0, atomIDMax);
-      atomPrettyNames = t;
-    }
-    short atomID = atomIDMax++;
-    atomNames[atomID] = name;
-    atomPrettyNames[atomID] = prettyName;
-    // if already exists then this is an imposter entry
-    if (htAtom.get(name) == null)
-      htAtom.put(name, new Short(atomID));
-    return atomID;
+  private static Hashtable htAtom = new Hashtable();
+  static {
+    // this loop *must* run in reverse direction because of
+    // protein mainchain imposters
+    for (int i = JmolConstants.specialAtomNames.length; --i >= 0; )
+      htAtom.put(JmolConstants.specialAtomNames[i], new Integer(i));
   }
 
-  short lookupAtomID(String strAtom) {
-    if (strAtom == null)
-      strAtom = "";
-    Short boxedAtomID = (Short)htAtom.get(strAtom);
+  byte lookupSpecialAtomID(String atomName) {
+    Integer boxedAtomID = (Integer)htAtom.get(atomName);
     if (boxedAtomID != null)
-      return boxedAtomID.shortValue();
-    return addAtomName(strAtom);
+      return (byte)(boxedAtomID.intValue());
+    return -1;
   }
 }

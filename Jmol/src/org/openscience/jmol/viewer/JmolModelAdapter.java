@@ -23,6 +23,20 @@
  *  02111-1307  USA.
  */
 
+/**
+ * The JmolModelAdapter interface defines the API used by the JmolViewer to
+ * read external files and fetch atom properties necessary for rendering.
+ *
+ * A client of the JmolViewer implements this interface on top of their existing
+ * molecular model representation. The JmolViewer then requests information
+ * from the implementation using this API. 
+ *
+ * Jmol will automatically calculate some atom properties if the client
+ * is not capable or does not want to supply them.
+ * @see JmolViewer
+ */
+  
+
 package org.openscience.jmol.viewer;
 
 import javax.vecmath.Point3d;
@@ -34,11 +48,58 @@ public interface JmolModelAdapter {
   /****************************************************************
    * the capabilities
    ****************************************************************/
+  /**
+   * Whether or not this client wants to implement getAtomicNumber(clientAtom)
+   * If not, then the JmolViewer will look up the atomicNumber using
+   * getAtomicSymbol(clientAtom).
+   * A client which implements getAtomicNumber() may still choose to
+   * return the value -1, thereby asking Jmol to map using getAtomicSymbol()
+   * @see getAtomicSymbol(Object clientAtom)
+   */
   public boolean suppliesAtomicNumber();
+
+  /**
+   * Whether or not this client wants to implement getAtomicSymbol(clientAtom)
+   * If not, then the JmolViewere will look up the atomicSymbol using
+   * getAtomicNumber(clientAtom)
+   * A client which implements getAtomicSymbol() may still choose to
+   * return the value null, thereby asking Jmol to map to the appropriate
+   * atomic symbol by using getAtomicNumber()
+   * The default atomic symbol table is included in this file for user reference
+   * Note that either getAtomicNumber(clientAtom) or getAtomicSymbol(clientAtom)
+   * must be implemented.
+   */
   public boolean suppliesAtomicSymbol();
+
+  /**
+   * Whether or not this client wants to implement getAtomTypeName(clientAtom)
+   * If suppliesAtomTypeName() returns false or getAtomTypeName returns nul
+   * then the atomicSymbol is substituted.
+   */
   public boolean suppliesAtomTypeName();
+
+  /**
+   * Whether or not this client implements getVanderwaalsRadius(clientAtom)
+   * If not, then the atomic number is used to look up vanderwaals Radius values
+   * in a default table. Default values are taken from OpenBabel.
+   * The default vanderwaals radius table is included in this file for user reference
+   */
   public boolean suppliesVanderwaalsRadius();
+
+  /**
+   * Whether or not this client implements getCovalentRadius(clientAtom)
+   * If not, then the atomic number is used to look up covalent bonding radius
+   * values in a default table. Default values are taken from OpenBabel.
+   * The default covalent radius table is included in this file for user reference
+   */
   public boolean suppliesCovalentRadius();
+
+  /**
+   * Whether or not this client implements getAtomColor(clientAtom, colorScheme)
+   * If not, then the atomic number is used to look up colors in a
+   * default table.
+   * The default atom colors table is included in this file for user reference
+   */
   public boolean suppliesAtomColor();
 
 

@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -75,15 +81,17 @@ public class ScriptWindow extends JDialog
     JPanel buttonPanel = new JPanel();
     container.add(buttonPanel, BorderLayout.SOUTH);
 
-    closeButton = new JButton("Close");
+    JmolResourceHandler resources = JmolResourceHandler.getInstance();
+    
+    closeButton = new JButton(resources.translate("Close"));
     closeButton.addActionListener(this);
     buttonPanel.add(closeButton);
 
-    runButton = new JButton("Run");
+    runButton = new JButton(resources.translate("Run"));
     runButton.addActionListener(this);
     buttonPanel.add(runButton);
 
-    haltButton = new JButton("Halt");
+    haltButton = new JButton(resources.translate("Halt"));
     haltButton.addActionListener(this);
     buttonPanel.add(haltButton);
     haltButton.setEnabled(false);

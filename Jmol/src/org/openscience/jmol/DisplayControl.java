@@ -111,6 +111,8 @@ final public class DisplayControl {
     eval = new Eval(this);
     if (jvm12orGreater)
       java12 = new Java12(this);
+  
+    // System.out.println("New DisplayControl");
   }
 
   public Component getAwtComponent() {
@@ -868,11 +870,11 @@ final public class DisplayControl {
   }
 
   public void deleteAtom(int atomIndex) {
-    // FIXME mth -- deletion
-    // after a delete operation, all the sets are messed up
-    // the selection set *and* the script sets
-    // selectionManager.delete(atomIndex);
+    // FIXME mth -- after a delete operation, all the sets are messed up
     clearSelection();
+    clearMeasurements();
+    eval.clearDefinitionsAndLoadPredefined();
+    //
     modelManager.deleteAtom(atomIndex);
     //            status.setStatus(2, "Atom deleted"); 
     selectAll();

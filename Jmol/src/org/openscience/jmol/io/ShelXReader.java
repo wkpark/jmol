@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Project
+ *
+ * Contact: jmol-developers@lists.sourceforge.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -27,7 +33,8 @@ import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.Crystal;
-import org.openscience.cdk.libio.jmol.Convertor;
+import org.openscience.cdk.tools.ChemModelManipulator;
+import org.openscience.jmol.Convertor;
 
 /**
  * CML files contain a single ChemFrame object.
@@ -70,7 +77,7 @@ public class ShelXReader extends DefaultChemFileReader {
             return cfile;
           } else {
             // no crystal
-            ac = chemModel.getAllInOneContainer();
+            ac = ChemModelManipulator.getAllInOneContainer(chemModel);
           }
 
           // store read data

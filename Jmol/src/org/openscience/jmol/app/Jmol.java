@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2000-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -595,6 +595,8 @@ public class Jmol extends JPanel {
    */
   protected JMenuItem createMenuItem(String cmd, boolean isRadio) {
 
+      // System.out.println("Creating menu for " + cmd + " (radio:" + isRadio + ")");
+      
     JMenuItem mi;
     if (isRadio) {
       mi = guimap.newJRadioButtonMenuItem("Jmol."+cmd);
@@ -646,6 +648,7 @@ public class Jmol extends JPanel {
     mi.setActionCommand(astr);
     Action a = getAction(astr);
     if (a != null) {
+        // System.out.println("Connected to Action: " + a.getClass().getName());
       mi.addActionListener(a);
       a.addPropertyChangeListener(new ActionChangedListener(mi));
       mi.setEnabled(a.isEnabled());

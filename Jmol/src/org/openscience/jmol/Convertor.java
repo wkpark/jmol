@@ -4,8 +4,9 @@
  * $Revision$
  *
  * Copyright (C) 2002-2003  The Chemistry Development Kit (CDK) project
+ * Copyright (C) 2003       The Jmol Project
  *
- * Contact: steinbeck@ice.mpg.de, gezelter@maul.chem.nd.edu, egonw@sci.kun.nl
+ * Contact: jmol-developers@lists.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -57,7 +58,7 @@ public class Convertor {
      * @return          converted class in Jmol
      **/
     public static org.openscience.jmol.Atom convert(org.openscience.cdk.Atom atom) {
-        return new Atom(atom);
+        return new org.openscience.jmol.Atom(atom);
     }
 
     /**

@@ -69,7 +69,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    *         parameter, or null if not found.
    */
   public static BaseAtomType get(int atomicNumber) {
-      System.out.println("Using atomic number to find base atom type: " + atomicNumber);
     Enumeration iter = typePool.elements();
     while (iter.hasMoreElements()) {
       BaseAtomType at = (BaseAtomType) iter.nextElement();

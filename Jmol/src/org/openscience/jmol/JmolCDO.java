@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -142,6 +148,7 @@ public final class JmolCDO extends ANIMATIONCDO {
   }
   
   public void endFrame() {
+      currentFrame.rebond();
     if (file instanceof CrystalFile) {
       double[] acell = {1.0f ,1.0f ,1.0f};
       UnitCellBox unitCellBox = new UnitCellBox(rprimd, acell, currentFrame);
@@ -208,13 +215,13 @@ public final class JmolCDO extends ANIMATIONCDO {
         atom.setZ3D(z);
         currentFrame.addAtom(atom);
         int index = currentFrame.getAtomCount();
-      if (partialCharge.length() > 0) {
-        //        System.out.println("Adding charge for atom " + index);
-        double c = FortranFormat.atof(partialCharge);
-        currentFrame.getAtomAt(index).setCharge(c);
-      } else {
-        //        System.out.println("Not adding charge for atom " + index);
-      }
+        if (partialCharge.length() > 0) {
+            // System.out.println("Adding charge for atom " + index);
+            double c = FortranFormat.atof(partialCharge);
+            atom.setCharge(c);
+        } else {
+            // System.out.println("Not adding charge for atom " + index);
+        }
     } catch (Exception e) {
       System.out.println("JMolCDO error while adding atom: " + e);
 

@@ -18,28 +18,60 @@
     </cmdsynopsis>
   </para>
   <section>
-    <title>Java Options</title>
+    <title>Other user options</title>
     <section>
       <title>-Duser.language</title>
       <para>
-	In addition to the above command line options there is also one
-	important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
-	With this option the GUI language can be set. At this moment
-	these languages are supported: <literal>en</literal>, <literal>es</literal>, and <literal>nl</literal>.
+        In addition to the above command line options there is also one
+        important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
+        With this option the GUI language can be set. At this moment
+        these languages are supported: <literal>en</literal>, <literal>es</literal>, and 
+        <literal>nl</literal>.
       </para>
       <para>
-	Alternatively, you can also use the <envar>LANG</envar> environment
-	variable for setting the prefered language. This is common in many
-	UNIX systems, like Linux. However, it is known not to work on
-	Solaris and the above command line option must be used.
+        Alternatively, you can also use the <envar>LANG</envar> environment
+        variable for setting the prefered language. This is common in many
+        UNIX systems, like Linux. However, it is known not to work on
+        Solaris and the above command line option must be used.
       </para>
     </section>
     <section>
       <title>-Ddisplay.speed</title>
       <para>
-	The <cmdsynopsis><arg>-Ddisplay.speed=fps</arg></cmdsynopsis> option can be used
-	to reporting the display speed in <emphasis>frames per second</emphasis> instead
-	of milliseconds per frame.
+        The <cmdsynopsis><arg>-Ddisplay.speed=fps</arg></cmdsynopsis> option can be used
+        to reporting the display speed in <emphasis>frames per second</emphasis> instead
+        of milliseconds per frame.
+      </para>
+    </section>
+    <section>
+      <title>-Xmx</title>
+      <para>
+        With this option you can change the maximum heap size the Java virtual
+        machine can address on Java 1.4 systems. By default this is 64 MB.
+        For large files this might not be enough. Using <arg>-Xmx512m</arg>
+        the heap size is enlarge to half a gigabyte. On older Java systems the syntax
+        of this option is different (see <command>java --help</command>).
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>Developers/Debug Options</title>
+    <section>
+      <title>-Dcdk.debugging</title>
+      <para>
+        The <cmdsynopsis><arg>-Dcdk.debugging=true</arg></cmdsynopsis> option can be used
+        to turn on output of debugging information for the classes that make use of CDK's
+        LoggingTool. When bugs are found, this can be used to get an idea on what might be
+        causing the problem.
+      </para>
+    </section>
+    <section>
+      <title>-DJmolConsole</title>
+      <para>
+        Sometimes it is more convenient to not use the Jmol Console.
+        The <cmdsynopsis><arg>-DJmolConsole=false</arg></cmdsynopsis> option can be used
+        for this. The System.out and System.err messages are then no longer redirected to
+        the Jmol Console.
       </para>
     </section>
   </section>

@@ -1,8 +1,13 @@
 <project name="Jmol" default="main" basedir=".">
 
-  <property file="${user.home}/.jmol.build.properties" />
+  <!-- compile options -->
+  <property name="build.sysclasspath" value="ignore" />
+  <property name="build.compiler" value="javac1.4" />
+  <property name="debug" value="on" />
+  <property name="deprecation" value="on" />
+  <property name="optimization" value="off" />
 
-  <property name="version" value="5" />
+  <property name="version" value="6" />
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
   <property name="build.dir" value="build" />
@@ -41,8 +46,10 @@
   
   <target name="main" id="main" depends="init,jar,applet-jar"/>
   
-  <target name="init" depends="check.docbook,check.xsl" />
-  
+  <target name="init">
+    <tstamp/>
+  </target>
+
   <target name="initFailure">
     <fail message="Init failed. See messages above." />
   </target>
@@ -86,73 +93,11 @@
     </condition>
   </target>
 
-  <target name="check.docbook" depends="setup" unless="docbook.dir.present" >
-    <echo message="Docbook directory '${docbook.dir}' not found." />
-    <echo message="Please set with the argument '-Ddocbook.dir=directory'." />
-    <echo message="Note that the documentation is CANNOT generated now." />
-  </target>
-
-  <target name="check.xsl" depends="setup" unless="xsl.available" >
-    <echo message="XSLT class 'com.icl.saxon.StyleSheet' not found." />
-    <echo message="Note that the documentation is CANNOT generated now." />
-  </target>
-
-  <target name="jmolGuide" id="jmolGuide" depends="init" unless="jmolGuide.uptodate, docbook.dir.present, xsl.available" >
-    <echo message="Generating user's guide" />
-    <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
-    <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
-      <jvmarg value="${proxyHost}" />
-      <jvmarg value="${proxyPort}" />
-      <arg value="${user.dir}/${doc.dir}/source/JmolGuide.docbook.xml" />
-      <arg value="${docbook.dir}/html/chunk.xsl" />
-    </java>
-  </target>
-
-  <target name="jmolHistory" depends="init" unless="jmolHistory.uptodate" >
-    <echo message="Generating history of changes" />
-    <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data" />
-    <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
-      <arg value="-o" />
-      <arg value="ChangeLog.html" />
-      <arg value="${user.dir}/${doc.dir}/source/JmolHistory.xml" />
-      <arg value="${user.dir}/${doc.dir}/source/JmolHistoryToHtml.xsl" />
-    </java>
-  </target>
-
-  <target name="doc" depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc" />
-  
-  <target name="jmolDevelopersGuide" depends="init" unless="jmolDevelopersGuide.uptodate" >
-    <echo message="Generating developer's guide" />
-    <java fork="true" dir="${doc.dir}"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
-      <arg value="-o" />
-      <arg value="${user.dir}/${doc.dir}/JmolDevelopersGuide.html" />
-      <arg value="${user.dir}/${doc.dir}/source/JmolDevelopersGuide.docbook.xml" />
-      <arg value="${docbook.dir}/html/docbook.xsl" />
-    </java>
-  </target>
-
-  <target name="jmolAppletGuide" depends="init" unless="jmolAppletGuide.uptodate" >
-    <echo message="Generating applet guide" />
-    <java fork="true" dir="${doc.dir}"
-        classname="com.icl.saxon.StyleSheet"
-        classpath="${lib.dir}/saxon.jar" >
-      <arg value="-o" />
-      <arg value="${user.dir}/${doc.dir}/JmolAppletGuide.html" />
-      <arg value="${user.dir}/${doc.dir}/source/JmolAppletGuide.docbook.xml" />
-      <arg value="${docbook.dir}/html/docbook.xsl" />
-    </java>
-  </target>
-
-  <target id="classes" name="classes" depends="init,jmolGuide,jmolHistory">
+  <target id="classes" name="classes" depends="init">
     <mkdir dir="${classes.dir}"/>
+    <mkdir dir="${generatedSource.dir}"/>
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
-        debug="on" deprecation="on">
+        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}">
       <classpath refid="project.class.path" />
       <!-- removed until all base classes are CDK based -->
       <exclude name="org/openscience/jmol/io/ShelXReader.java"/>
@@ -180,7 +125,7 @@
   <target name="compile.tests" depends="classes">
     <mkdir dir="${tests.classes.dir}"/>
     <javac srcdir="${tests.source.dir}" destdir="${tests.classes.dir}"
-        debug="on" deprecation="on">
+        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}">
       <classpath location="${classes.dir}" />
       <classpath refid="project.class.path" />
     </javac>
@@ -191,13 +136,14 @@
     </copy>
   </target>
 
-  <target name="applet-classes" depends="jmolAppletGuide">
+  <target name="applet-classes" depends="init">
     <mkdir dir="${applet.classes.dir}"/>
+    <property name="build.compiler" value="javac1.1" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
-        debug="on" deprecation="on" target="1.1"
+        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}" target="1.1"
         includesfile="applet.classes" classpathref="applet-project.class.path" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
-        debug="on" deprecation="on" target="1.1"
+        debug="${debug}" deprecation="${deprecation}" optimize="${optimization}" target="1.1"
         includes="JmolApplet.java" classpathref="applet-project.class.path" />
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
@@ -489,6 +435,7 @@
 
   <target name="clean" id="clean">
     <delete dir="${classes.dir}"/>
+    <delete dir="${generatedSource.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${tests.classes.dir}"/>
     <delete dir="${appjars.dir}"/>
@@ -525,12 +472,84 @@
     </junit>
   </target>
 
-  <target name="javadoc" depends="init" unless="javadoc.uptodate">
+  <!-- ********************************
+       Documentation Targets
+       ******************************** -->
+  <target name="doc"
+  depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
+  
+  <target name="initdoc" depends="init,check.docbook,check.xsl" />
+  
+  <target name="check.docbook" depends="setup" unless="docbook.dir.present" >
+    <echo message="Docbook directory '${docbook.dir}' not found." />
+    <echo message="Please set with the argument '-Ddocbook.dir=directory'." />
+    <echo message="Note that the documentation is CANNOT generated now." />
+  </target>
+
+  <target name="check.xsl" depends="setup" unless="xsl.available" >
+    <echo message="XSLT class 'com.icl.saxon.StyleSheet' not found." />
+    <echo message="Note that the documentation is CANNOT generated now." />
+  </target>
+
+  <target name="javadoc" depends="initdoc" unless="javadoc.uptodate">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc destdir="${javadoc.dir}" sourcepath="src"
         private="true" packagenames="org.openscience.*">
       <classpath refid="project.class.path" />
     </javadoc>
+  </target>
+
+  <target name="jmolGuide" id="jmolGuide" depends="initdoc"
+          unless="jmolGuide.uptodate" >
+    <echo message="Generating user's guide" />
+    <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
+    <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide"
+        classname="com.icl.saxon.StyleSheet"
+        classpath="${lib.dir}/saxon.jar" >
+      <jvmarg value="${proxyHost}" />
+      <jvmarg value="${proxyPort}" />
+      <arg value="${user.dir}/${doc.dir}/source/JmolGuide.docbook.xml" />
+      <arg value="${docbook.dir}/html/chunk.xsl" />
+    </java>
+  </target>
+
+  <target name="jmolHistory" depends="initdoc" unless="jmolHistory.uptodate" >
+    <echo message="Generating history of changes" />
+    <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data" />
+    <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data"
+        classname="com.icl.saxon.StyleSheet"
+        classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="ChangeLog.html" />
+      <arg value="${user.dir}/${doc.dir}/source/JmolHistory.xml" />
+      <arg value="${user.dir}/${doc.dir}/source/JmolHistoryToHtml.xsl" />
+    </java>
+  </target>
+
+  <target name="jmolDevelopersGuide" depends="initdoc"
+          unless="jmolDevelopersGuide.uptodate" >
+    <echo message="Generating developer's guide" />
+    <java fork="true" dir="${doc.dir}"
+        classname="com.icl.saxon.StyleSheet"
+        classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="${user.dir}/${doc.dir}/JmolDevelopersGuide.html" />
+      <arg value="${user.dir}/${doc.dir}/source/JmolDevelopersGuide.docbook.xml" />
+      <arg value="${docbook.dir}/html/docbook.xsl" />
+    </java>
+  </target>
+
+  <target name="jmolAppletGuide" depends="initdoc"
+          unless="jmolAppletGuide.uptodate" >
+    <echo message="Generating applet guide" />
+    <java fork="true" dir="${doc.dir}"
+        classname="com.icl.saxon.StyleSheet"
+        classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="${user.dir}/${doc.dir}/JmolAppletGuide.html" />
+      <arg value="${user.dir}/${doc.dir}/source/JmolAppletGuide.docbook.xml" />
+      <arg value="${docbook.dir}/html/docbook.xsl" />
+    </java>
   </target>
 
 </project>

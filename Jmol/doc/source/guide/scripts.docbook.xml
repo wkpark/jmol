@@ -7,17 +7,18 @@
 </para>
 <para>
   Jmol supports the RasMol scripting language defined by RasMol. 
-  Information about RasMol can be found at www.openrasmol.org
+  Information about RasMol can be found at 
+  <ulink url="http://www.openrasmol.org/">www.openrasmol.org</ulink>
   The current URL for full RasMol documentation is:
-  http://www.openrasmol.org/doc/rasmol.htm
+  <ulink url="http://www.openrasmol.org/doc/rasmol.htm">http://www.openrasmol.org/doc/rasmol.htm</ulink>.
 </para>
 <para>
   The Chime web browser plug-in was based upon the RasMol source code.
   Various extensions were added, including additional scripting
   commands. Information about Chime can be found at
-  http://www.mdlchime.com
+  <ulink url="http://www.mdlchime.com/">http://www.mdlchime.com</ulink>
   The current URL for extended chime scripting commands is:
-  http://www.mdlchime.com/chime/chimerasmol.html
+  <ulink url="http://www.mdlchime.com/chime/chimerasmol.html">http://www.mdlchime.com/chime/chimerasmol.html</ulink>.
 </para>
 <para>
   Jmol currently supports many of RasMol/Chime scripting commands. Our

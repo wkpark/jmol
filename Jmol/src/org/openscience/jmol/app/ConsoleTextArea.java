@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -44,11 +49,14 @@ public class ConsoleTextArea extends JTextArea {
 
     final LoopedStreams ls = new LoopedStreams();
 
-    // Redirect System.out & System.err.
-
-    PrintStream ps = new PrintStream(ls.getOutputStream());
-    System.setOut(ps);
-    System.setErr(ps);
+    String redirect = System.getProperty("JmolConsole");
+    if (redirect == null || redirect.equals("true")) {
+        // Redirect System.out & System.err.
+        
+        PrintStream ps = new PrintStream(ls.getOutputStream());
+        System.setOut(ps);
+        System.setErr(ps);
+    }
 
     startConsoleReaderThread(ls.getInputStream());
   }    // ConsoleTextArea()

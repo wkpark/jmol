@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -94,6 +99,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
 
           // Found a set of coordinates
           // Add current frame to file and create a new one.
+          frame.rebond();
           file.addFrame(frame);
           fireFrameRead();
           frame = new ChemFrame(bondsEnabled);
@@ -120,6 +126,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
       }
 
       // Add current frame to file
+      frame.rebond();
       file.addFrame(frame);
       fireFrameRead();
     }

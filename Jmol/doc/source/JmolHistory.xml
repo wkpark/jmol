@@ -32,6 +32,10 @@
   <change contributor="EW">
     Display speed can be displayed in milliseconds and in frames per second.
   </change>
+  <change contributor="MH">
+    Reimplementation of scripting functinality with support for
+    Chime scripts.
+  </change>
 </changes>
 
 <changes version="jmol-5">

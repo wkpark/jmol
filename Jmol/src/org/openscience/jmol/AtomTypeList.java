@@ -64,10 +64,13 @@ public class AtomTypeList {
     private AtomTypeList(File UAF) {
         data = new Vector();
         logger = new org.openscience.cdk.tools.LoggingTool(this.getClass().getName());
+        System.out.println("AtomTypeList:" + UAF);
         try {
             if (UAF.exists()) {
+              System.out.println("exists");
                 ReadAtypes(UAF.toString());
             } else {
+              System.out.println("does not exist");
                 ReadAtypes(SAU);
             }
         } catch (Exception exc) {
@@ -158,7 +161,7 @@ public class AtomTypeList {
     }
 
     private void ReadAtypes(String configFile) throws Exception {
-        System.out.print("Reading config file... ");
+        System.out.println("Reading config file... " + configFile);
         AtomTypeFactory atf = new AtomTypeFactory(configFile);
         
         org.openscience.cdk.AtomType[] types = atf.getAllAtomTypes();
@@ -168,7 +171,7 @@ public class AtomTypeList {
             // to the list
             data.addElement(BaseAtomType.get(types[i]));
         }
-        // System.out.println("done.");
+        System.out.println("done.");
     }
 
     /**
@@ -256,17 +259,17 @@ public class AtomTypeList {
             BaseAtomType at = null;
             if (atomTypeName.length() > 0) {
                 atom.setAtomTypeName(atomTypeName);
-                logger.debug("Looking up base with: " + atomTypeName);
+                // logger.debug("Looking up base with: " + atomTypeName);
                 at = get(atomTypeName);
             } else {
                 /* if the atom does not have an symbol and an atomTypeName
                    either, then use the atomic number */
-                logger.debug("Looking up base with: " + atom.getAtomicNumber());
+                // logger.debug("Looking up base with: " + atom.getAtomicNumber());
                 at = get(atom.getAtomicNumber());
                 atom.setSymbol(at.getSymbol());
                 atom.setAtomTypeName(at.getAtomTypeName());
             }
-            logger.debug("BaseAtomType: " + at.toString());
+            // logger.debug("BaseAtomType: " + at.toString());
             atom.setMaxBondOrder(at.getMaxBondOrder());
             atom.setMaxBondOrderSum(at.getMaxBondOrderSum());
             atom.setVanderwaalsRadius(at.getVanderwaalsRadius());

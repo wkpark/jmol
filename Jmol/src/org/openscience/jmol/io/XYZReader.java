@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2002-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -167,7 +167,7 @@ public class XYZReader extends DefaultChemFileReader {
 
           if ((numberTokens == 5) || (numberTokens > 7)) {
             double c = FortranFormat.atof(st.nextToken());
-            frame.getAtomAt(atomIndex).setCharge(c);
+            frame.getAtomAt(atomIndex-1).setCharge(c);
           }
 
           if (numberTokens >= 7) {
@@ -175,12 +175,13 @@ public class XYZReader extends DefaultChemFileReader {
             vect[0] = FortranFormat.atof(st.nextToken());
             vect[1] = FortranFormat.atof(st.nextToken());
             vect[2] =  FortranFormat.atof(st.nextToken());
-            ((org.openscience.jmol.Atom)frame.getAtomAt(atomIndex)).
+            ((org.openscience.jmol.Atom)frame.getAtomAt(atomIndex-1)).
                 setVector(new Point3d(vect));
           }
 
         }
       }
+      frame.rebond();
       file.addFrame(frame);
       fireFrameRead();
       line = input.readLine();

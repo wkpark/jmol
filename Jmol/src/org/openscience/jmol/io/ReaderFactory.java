@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -203,12 +209,11 @@ public abstract class ReaderFactory {
       } else if (line.startsWith("molstruct")) {
         System.out.println("ReaderFactory: CACheReader");
         return new CACheReader(buffer);
-      /** This is removed until all base classes are CDK based
       } else if (line.startsWith("ZERR ") ||
                  line.startsWith("TITL ")) {
         buffer.reset();
         System.out.println("ReaderFactory: ShelXReader");
-        return new ShelXReader(buffer); **/
+        return new ShelXReader(buffer);
       }
       line = buffer.readLine();
     }

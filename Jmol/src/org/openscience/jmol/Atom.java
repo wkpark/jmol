@@ -79,6 +79,13 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
+   * Returns the atom's number.
+   */
+  public void setAtomNumber(int number) {
+    this.atomNumber = number;
+  }
+
+  /**
    * Returns whether this atom is a hydrogen atom.
    *
    * @return true if this atom is a hydrogen atom.

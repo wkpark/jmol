@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -161,6 +167,7 @@ public class ChemFrame extends AtomContainer {
             jmolAtom = (Atom)atom;
         }
         AtomTypeList.getInstance().configure(jmolAtom);
+        jmolAtom.setAtomNumber(this.getAtomCount());
         super.addAtom(jmolAtom);
     }
     
@@ -214,7 +221,7 @@ public class ChemFrame extends AtomContainer {
       Atom atomDeleted = (org.openscience.jmol.Atom)getAtomAt(atomIndex);
       removeAtom(atomDeleted);
       clearBounds();
-      // FIXME mth -- do I need to do this?    rebond();
+      atomDeleted.delete();
   }
 
   public double getGeometricRadius() {
@@ -469,18 +476,25 @@ public class ChemFrame extends AtomContainer {
    * Walk through this frame and find all bonds again.
    */
   public void rebond() {
-      // Clear the currently existing bonds.
-      clearBonds();
-      
-      // Do a n*(n-1) scan to get new bonds.
-      Atom[] atoms = getJmolAtoms();
-      for (int i = 0; i < atoms.length - 1; ++i) {
-          for (int j = i; j < atoms.length; j++) {
-              if (BondTools.closeEnoughToBond(atoms[i], atoms[j],
-              DisplayControl.control.getBondFudge())) {
-                  addBond(i, j);
+      int limit = 1000;
+      if (getAtomCount() < limit) {
+          System.out.println("Rebonding atoms");
+          
+          // Clear the currently existing bonds.
+          clearBonds();
+          
+          // Do a n*(n-1) scan to get new bonds.
+          Atom[] atoms = getJmolAtoms();
+          for (int i = 0; i < atoms.length - 1; ++i) {
+              for (int j = i; j < atoms.length; j++) {
+                  if (BondTools.closeEnoughToBond(atoms[i], atoms[j],
+                  DisplayControl.control.getBondFudge())) {
+                      addBond(i, j);
+                  }
               }
           }
+      } else {
+          System.err.println("Skipped rebonding, because more than " + limit + " found");
       }
   }
 
@@ -551,7 +565,7 @@ public class ChemFrame extends AtomContainer {
   public void dumpAtoms(PrintStream out) {
       Atom[] atoms = getJmolAtoms();
       for (int i = 0; i < atoms.length; i++) {
-          atoms[i].clearBondedAtoms();
+          out.println(atoms[i].toString());
       }
   }
 

@@ -414,8 +414,8 @@ class TransformManager {
   private void calcZoom() {
     if (zoomPercentSetting < 5)
       zoomPercentSetting = 5;
-    if (zoomPercentSetting > 2000)
-      zoomPercentSetting = 2000;
+    if (zoomPercentSetting > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
+      zoomPercentSetting = Viewer.MAXIMUM_ZOOM_PERCENTAGE;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom *
       zoomPercent / 100;

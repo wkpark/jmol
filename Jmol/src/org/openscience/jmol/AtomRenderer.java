@@ -60,6 +60,14 @@ public class AtomRenderer {
   public void paint(Graphics gc, Atom atom, boolean picked,
       DisplaySettings settings) {
 
+    ColorProfile colorProfile;
+    if (settings.getAtomColorProfile() == DisplaySettings.ATOMCHARGE) {
+        colorProfile = new ChargeColorProfile();
+    } else {
+        colorProfile = new DefaultColorProfile();
+    }
+    Color atomColor = colorProfile.getColor(atom);
+
     int x = (int) atom.getScreenPosition().x;
     int y = (int) atom.getScreenPosition().y;
     int z = (int) atom.getScreenPosition().z;
@@ -69,7 +77,7 @@ public class AtomRenderer {
     int radius = diameter >> 1;
 
     if (settings.getFastRendering()) {
-      gc.setColor(atom.getType().getColor());
+      gc.setColor(atomColor);
       gc.drawOval(x - radius, y - radius, diameter, diameter);
       return;
     }
@@ -81,24 +89,24 @@ public class AtomRenderer {
     }
     switch (settings.getAtomDrawMode()) {
     case DisplaySettings.WIREFRAME :
-      gc.setColor(atom.getType().getColor());
+      gc.setColor(atomColor);
       gc.drawOval(x - radius, y - radius, diameter, diameter);
       break;
 
     case DisplaySettings.SHADING :
       Image shadedImage = null;
-      if (ballImages.containsKey(atom.getType().getColor())) {
-        shadedImage = (Image) ballImages.get(atom.getType().getColor());
+      if (ballImages.containsKey(atomColor)) {
+        shadedImage = (Image) ballImages.get(atomColor);
       } else {
-        shadedImage = sphereSetup(atom.getType().getColor(), settings);
-        ballImages.put(atom.getType().getColor(), shadedImage);
+        shadedImage = sphereSetup(atomColor, settings);
+        ballImages.put(atomColor, shadedImage);
       }
       gc.drawImage(shadedImage, x - radius, y - radius, diameter, diameter,
           imageComponent);
       break;
 
     default :
-      gc.setColor(atom.getType().getColor());
+      gc.setColor(atomColor);
       gc.fillOval(x - radius, y - radius, diameter, diameter);
       gc.setColor(settings.getOutlineColor());
       gc.drawOval(x - radius, y - radius, diameter, diameter);

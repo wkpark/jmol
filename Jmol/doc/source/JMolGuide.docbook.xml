@@ -51,6 +51,7 @@
             <listitem><para>XYZ (single and multiple frame)</para></listitem>
             <listitem><para>PDB (ATOM and HETATM entries only)</para></listitem>
             <listitem><para>CML</para></listitem>
+            <listitem><para>Ghemical MM</para></listitem>
           </itemizedlist>
         </para>
       </section>

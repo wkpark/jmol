@@ -67,6 +67,16 @@ public class DisplaySettings {
   public static final int LINE = 3;
 
   /**
+   * Color atoms by type; invalid for bonds.
+   */
+  public static final int ATOMTYPE = 0;
+
+  /**
+   * Color atoms by charge; invalid for bonds.
+   */
+  public static final int ATOMCHARGE = 1;
+
+  /**
    * Sets the display style for labels.
    */
   public void setLabelMode(int i) {
@@ -98,6 +108,23 @@ public class DisplaySettings {
    */
   public int getAtomDrawMode() {
     return atomDrawMode;
+  }
+
+  /**
+   * Sets the display style for drawing atoms.
+   */
+  public void setAtomColorProfile(int i) {
+    if (i > ATOMCHARGE) {
+      return;
+    }
+    atomColorProfile = i;
+  }
+
+  /**
+   * Gets the display style for drawing atoms.
+   */
+  public int getAtomColorProfile() {
+    return atomColorProfile;
   }
 
   /**
@@ -247,6 +274,11 @@ public class DisplaySettings {
    * Display style for drawing atoms.
    */
   private int atomDrawMode = QUICKDRAW;
+
+  /**
+   * Coloring profile for drawing atoms.
+   */
+  private int atomColorProfile = ATOMTYPE;
 
   /**
    * Display style for drawing bonds.

@@ -48,6 +48,13 @@ public class ShadingBondRenderer implements BondRenderer {
   public void paint(Graphics gc, Atom atom1, Atom atom2,
       DisplaySettings settings) {
 
+    ColorProfile colorProfile;
+    if (settings.getAtomColorProfile() == DisplaySettings.ATOMCHARGE) {
+        colorProfile = new ChargeColorProfile();
+    } else {
+        colorProfile = new DefaultColorProfile();
+    }
+    
     int x1 = (int) atom1.getScreenPosition().x;
     int y1 = (int) atom1.getScreenPosition().y;
     int z1 = (int) atom1.getScreenPosition().z;
@@ -99,7 +106,7 @@ public class ShadingBondRenderer implements BondRenderer {
       bondSeparation *= 2.0;
     }
 
-    Color atom1Color = atom1.getType().getColor();
+    Color atom1Color = colorProfile.getColor(atom1);
     for (int i = (int) halfBondWidth; i > -1; --i) {
       double len = ((double) i) / (int) halfBondWidth;
       int red1 = (int) ((float) atom1Color.getRed() * (1.0f - len));

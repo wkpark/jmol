@@ -20,11 +20,15 @@
   </change>
   <change contributor="EW">
     Jmol can now also read files in non-CML with the command "jmol &lt;filename&gt;".
-    Implements feature request 555462.
+    Implements feature request #555462.
   </change>
   <change contributor="EW">
     The PDB reader now also parses CONECT fields and implements Rasmol's perception of
     bond orders.
+  </change>
+  <change contributor="EW">
+    Atoms can now also be colored by their partial atomic charge.
+    Implements feature request #552476.
   </change>
 </changes>
 

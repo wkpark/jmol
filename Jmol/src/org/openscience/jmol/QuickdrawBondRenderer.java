@@ -47,6 +47,13 @@ public class QuickdrawBondRenderer implements BondRenderer {
   public void paint(Graphics gc, Atom atom1, Atom atom2,
       DisplaySettings settings) {
 
+    ColorProfile colorProfile;
+    if (settings.getAtomColorProfile() == DisplaySettings.ATOMCHARGE) {
+        colorProfile = new ChargeColorProfile();
+    } else {
+        colorProfile = new DefaultColorProfile();
+    }
+
     int x1 = (int) atom1.getScreenPosition().x;
     int y1 = (int) atom1.getScreenPosition().y;
     int z1 = (int) atom1.getScreenPosition().z;
@@ -102,15 +109,14 @@ public class QuickdrawBondRenderer implements BondRenderer {
                         stheta, radius1, bondSeparation * halfBondWidth,
                         magnitude, halfBondWidth);
 
-      gc.setColor(atom1.getType().getColor());
+      gc.setColor(colorProfile.getColor(atom1));
       gc.fillPolygon(poly1);
       gc.setColor(settings.getOutlineColor());
       gc.drawPolygon(poly1);
-
       poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta, stheta,
           radius1, -bondSeparation * halfBondWidth, magnitude, halfBondWidth);
 
-      gc.setColor(atom1.getType().getColor());
+      gc.setColor(colorProfile.getColor(atom1));
       gc.fillPolygon(poly1);
       gc.setColor(settings.getOutlineColor());
       gc.drawPolygon(poly1);
@@ -119,7 +125,7 @@ public class QuickdrawBondRenderer implements BondRenderer {
       Polygon poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta,
                         stheta, radius1, 0.0, magnitude, halfBondWidth);
 
-      gc.setColor(atom1.getType().getColor());
+      gc.setColor(colorProfile.getColor(atom1));
       gc.fillPolygon(poly1);
       gc.setColor(settings.getOutlineColor());
       gc.drawPolygon(poly1);

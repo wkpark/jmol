@@ -83,6 +83,7 @@ public class Preferences extends JDialog {
   private static Color textColor;
   private static Color vectorColor;
   private static int AtomRenderMode;
+  private static int AtomColorProfile;
   private static int AtomLabelMode;
   private static String AtomPropsMode;
   private static int BondRenderMode;
@@ -100,7 +101,7 @@ public class Preferences extends JDialog {
   private JButton bButton, oButton, pButton, tButton, vButton;
   private JRadioButton aaYes, aaNo;
   private JRadioButton pYes, pNo, abYes, abNo;
-  private JComboBox aRender, aLabel, aProps, bRender;
+  private JComboBox aRender, aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
   private JSlider bfSlider, bwSlider, ahSlider, arSlider, alSlider;
   private JSlider vasSlider;
@@ -380,6 +381,22 @@ public class Preferences extends JDialog {
         AtomRenderMode = source.getSelectedIndex();
         display.getSettings().setAtomDrawMode(AtomRenderMode);
         props.put("AtomRenderMode", Integer.toString(AtomRenderMode));
+        display.repaint();
+      }
+    });
+    cRender = new JComboBox();
+    cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cATChoice"));
+    cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cCChoice"));
+    renderPanel.add(cRender);
+    cRender.setSelectedIndex(display.getSettings().getAtomColorProfile());
+    cRender.addItemListener(new ItemListener() {
+
+      public void itemStateChanged(ItemEvent e) {
+
+        JComboBox source = (JComboBox) e.getSource();
+        AtomColorProfile = source.getSelectedIndex();
+        display.getSettings().setAtomColorProfile(AtomColorProfile);
+        props.put("AtomColorProfile", Integer.toString(AtomColorProfile));
         display.repaint();
       }
     });

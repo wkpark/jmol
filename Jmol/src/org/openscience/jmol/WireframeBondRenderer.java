@@ -47,6 +47,13 @@ public class WireframeBondRenderer implements BondRenderer {
   public void paint(Graphics gc, Atom atom1, Atom atom2,
       DisplaySettings settings) {
 
+    ColorProfile colorProfile;
+    if (settings.getAtomColorProfile() == DisplaySettings.ATOMCHARGE) {
+        colorProfile = new ChargeColorProfile();
+    } else {
+        colorProfile = new DefaultColorProfile();
+    }
+
     int x1 = (int) atom1.getScreenPosition().x;
     int y1 = (int) atom1.getScreenPosition().y;
     int z1 = (int) atom1.getScreenPosition().z;
@@ -98,7 +105,7 @@ public class WireframeBondRenderer implements BondRenderer {
       bondSeparation *= 2.0;
     }
 
-    gc.setColor(atom1.getType().getColor());
+    gc.setColor(colorProfile.getColor(atom1));
 
     if ((bondOrder == 2) || (bondOrder == 3)) {
       Polygon poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta,

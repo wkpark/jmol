@@ -548,6 +548,8 @@ public class DisplayPanel extends JPanel
   private aQuickdrawAction aquickdrawAction = new aQuickdrawAction();
   private aShadingAction ashadingAction = new aShadingAction();
   private aWireframeAction awireframeAction = new aWireframeAction();
+  private aChargeColorAction acchargeAction = new aChargeColorAction();
+  private aAtomTypeColorAction actypeAction = new aAtomTypeColorAction();
   private bQuickdrawAction bquickdrawAction = new bQuickdrawAction();
   private bShadingAction bshadingAction = new bShadingAction();
   private bLineAction blineAction = new bLineAction();
@@ -689,6 +691,32 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setAtomDrawMode(DisplaySettings.WIREFRAME);
+      repaint();
+    }
+  }
+
+  class aChargeColorAction extends AbstractAction {
+
+    public aChargeColorAction() {
+      super("accharge");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      settings.setAtomColorProfile(DisplaySettings.ATOMCHARGE);
+      repaint();
+    }
+  }
+
+  class aAtomTypeColorAction extends AbstractAction {
+
+    public aAtomTypeColorAction() {
+      super("actype");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      settings.setAtomColorProfile(DisplaySettings.ATOMTYPE);
       repaint();
     }
   }
@@ -1003,7 +1031,8 @@ public class DisplayPanel extends JPanel
       bshadingAction, blineAction, bwireframeAction, plainAction,
       symbolsAction, typesAction, numbersAction, bondsAction, atomsAction,
       vectorsAction, hydrogensAction, selectallAction, deselectallAction,
-      homeAction, wireframerotationAction
+      homeAction, wireframerotationAction,
+      acchargeAction, actypeAction
     };
     return defaultActions;
   }

@@ -30,6 +30,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JSlider;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -80,7 +81,7 @@ public class ImageTyper extends JPanel {
     JPanel qPanel = new JPanel();
     qPanel.setLayout(new BorderLayout());
     qPanel.setBorder(new TitledBorder("JPEG Quality"));
-    qSlider = new JSlider(JSlider.HORIZONTAL, 50, 100, 90);
+    qSlider = new JSlider(SwingConstants.HORIZONTAL, 50, 100, 90);
     qSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSlider.setPaintTicks(true);
     qSlider.setMajorTickSpacing(10);
@@ -92,14 +93,14 @@ public class ImageTyper extends JPanel {
   }
 
   /**
-   * returns the file type which contains the user's choice
+   * @return The file type which contains the user's choice
    */
   public String getType() {
     return result;
   }
 
   /**
-   * returns the quality (on a scale from 0 to 10) of the JPEG
+   * @return The quality (on a scale from 0 to 10) of the JPEG
    * image that is to be generated.  Returns -1 if choice was not JPEG.
    */
   public int getQuality() {

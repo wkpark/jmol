@@ -110,7 +110,7 @@ public class FileTyper extends JPanel
   }
 
   /**
-   * Returns the file type which contains the user's choice
+   * @return The file type which contains the user's choice
    */
   public String getType() {
     return fileType;

@@ -1968,12 +1968,12 @@ final public class JmolViewer {
   /////////////////////////////////////////////////////////////////
   // Frame
   /////////////////////////////////////////////////////////////////
-  
+  /*
   private BondIterator bondIteratorSelected(byte bondType) {
     return
       getFrame().getBondIterator(bondType, selectionManager.bsSelection);
   }
-
+  */
   final AtomIterator nullAtomIterator =
     new NullAtomIterator();
 

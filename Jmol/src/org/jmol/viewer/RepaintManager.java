@@ -280,7 +280,7 @@ class RepaintManager {
     public void run() {
       long timeBegin = System.currentTimeMillis();
       int targetTime = 0;
-      int currentTime, sleepTime;
+      int sleepTime;
       requestRepaintAndWait();
       try {
         sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);

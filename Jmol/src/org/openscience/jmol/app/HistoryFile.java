@@ -83,7 +83,7 @@ class HistoryFile {
   }
 
   /**
-   * Returns the properties stored in the history file.
+   * @return The properties stored in the history file.
    */
   Properties getProperties() {
     return new Properties(properties);

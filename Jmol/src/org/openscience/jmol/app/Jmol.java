@@ -461,7 +461,7 @@ public class Jmol extends JPanel {
   }
   
   /**
-   * returns a list of Actions that is understood by the upper level
+   * @return A list of Actions that is understood by the upper level
    * application
    */
   public Action[] getActions() {
@@ -499,7 +499,7 @@ public class Jmol extends JPanel {
 
   
   /**
-   * Find the hosting frame, for the file-chooser dialog.
+   * @return The hosting frame, for the file-chooser dialog.
    */
   protected Frame getFrame() {
 
@@ -515,6 +515,8 @@ public class Jmol extends JPanel {
    * This is the hook through which all menu items are
    * created.  It registers the result with the menuitem
    * hashtable so that it can be fetched with getMenuItem().
+   * @param cmd
+   * @return Menu item created
    * @see #getMenuItem
    */
   protected JMenuItem createMenuItem(String cmd) {
@@ -534,7 +536,7 @@ public class Jmol extends JPanel {
     ImageIcon f =
       JmolResourceHandler.getIconX(cmd + "Image");
     if (f != null) {
-      mi.setHorizontalTextPosition(JButton.RIGHT);
+      mi.setHorizontalTextPosition(SwingConstants.RIGHT);
       mi.setIcon(f);
     }
     
@@ -571,6 +573,7 @@ public class Jmol extends JPanel {
    * Fetch the action that was created for the given
    * command.
    * @param cmd  Name of the action.
+   * @return The action
    */
   protected Action getAction(String cmd) {
     return (Action) commands.get(cmd);
@@ -579,6 +582,7 @@ public class Jmol extends JPanel {
   /**
    * Create the toolbar.  By default this reads the
    * resource file for the definition of the toolbars.
+   * @return The toolbar
    */
   private Component createToolbar() {
 
@@ -601,6 +605,8 @@ public class Jmol extends JPanel {
 
   /**
    * Hook through which every toolbar item is created.
+   * @param key
+   * @return Toolbar item
    */
   protected Component createTool(String key) {
     return createToolbarButton(key);
@@ -614,6 +620,7 @@ public class Jmol extends JPanel {
    *
    * @param key The key in the resource file to serve as the basis
    *  of lookups.
+   * @return Button
    */
   protected AbstractButton createToolbarButton(String key) {
 
@@ -669,6 +676,8 @@ public class Jmol extends JPanel {
    * of strings on whitespace boundries.  This is useful
    * for trying to get an array of strings out of the
    * resource file.
+   * @param input String to chop
+   * @return Strings chopped on whitespace boundries
    */
   protected String[] tokenize(String input) {
 
@@ -694,6 +703,7 @@ public class Jmol extends JPanel {
   /**
    * Create the menubar for the app.  By default this pulls the
    * definition of the menu from the associated resource file.
+   * @return Menubar
    */
   protected JMenuBar createMenubar() {
     JMenuBar mb = new JMenuBar();
@@ -784,6 +794,8 @@ public class Jmol extends JPanel {
   /**
    * Create a menu for the app.  By default this pulls the
    * definition of the menu from the associated resource file.
+   * @param key
+   * @return Menu created
    */
   protected JMenu createMenu(String key) {
 
@@ -948,7 +960,7 @@ public class Jmol extends JPanel {
       
       public void actionPerformed(ActionEvent e) {
           JFrame newFrame = new JFrame();
-          Jmol newJmol = new Jmol(null, newFrame, Jmol.this,
+          new Jmol(null, newFrame, Jmol.this,
                                   startupWidth, startupHeight);
           newFrame.show();
       }
@@ -1072,8 +1084,6 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      Frame frame = getFrame();
 
       ImageTyper it = new ImageTyper(exportChooser);
 

@@ -70,7 +70,7 @@ class FileManager {
   String appletProxy = null;
 
   // for expanding names into full path names
-  private boolean isURL;
+  //private boolean isURL;
   private String nameAsGiven;
   private String fullPathName;
   private String fileName;
@@ -172,12 +172,12 @@ class FileManager {
   final String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
 
   private void classifyName(String name) {
-    isURL = false;
+    //isURL = false;
     if (name == null)
       return;
     if (appletDocumentBase != null) {
       // This code is only for the applet
-      isURL = true;
+      //isURL = true;
       try {
         URL url = new URL(appletDocumentBase, name);
         fullPathName = url.toString();
@@ -192,7 +192,7 @@ class FileManager {
     // This code is for the app
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
-        isURL = true;
+        //isURL = true;
         try {
           URL url = new URL(name);
           fullPathName = url.toString();
@@ -207,7 +207,7 @@ class FileManager {
     /****************************************************************
      * we need to comment this out because it will not work with applet
     if (name.startsWith("dadml:")) {
-        isURL = true;
+        //isURL = true;
         try {
             URI uri = new URI(name);
             URL resolvedURL = resolveLink(uri);
@@ -223,7 +223,7 @@ class FileManager {
         return;
     }
     ****************************************************************/
-    isURL = false;
+    //isURL = false;
     file = new File(name);
     fullPathName = file.getAbsolutePath();
     fileName = file.getName();

@@ -230,8 +230,10 @@ public class ModelManager {
     Hashtable props = shapeProperties[shapeType];
     if (props == null)
       props = shapeProperties[shapeType] = new Hashtable();
+    /*
     System.out.println("propertyName=" + propertyName + "\n" +
                        "value=" + value);
+    */
     props.put(propertyName, value != null ? value : NULL_SURROGATE);
     if (frame != null)
       frame.setShapeProperty(shapeType, propertyName, value, bsSelected);

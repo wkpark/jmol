@@ -906,6 +906,21 @@ final public class Graphics3D {
   public final static short MAGENTA = 17;
   public final static short FUCHSIA = 17;
   public final static short YELLOW = 18;
+  public final static short HOTPINK = 19;
+
+  static Color[] colorsPredefined = {
+    Color.black, Color.orange, Color.pink, Color.blue,
+    Color.white, Color.cyan, Color.red, new Color(0, 128, 0),
+    Color.gray, Color.lightGray, Color.green, new Color(128, 0, 0),
+    new Color(0, 0, 128), new Color(128, 128, 0), new Color(128, 0, 128),
+    new Color(0, 128, 128), Color.magenta, Color.yellow,
+    new Color(0xFF, 0x69, 0xB4),
+  };
+
+  static {
+    for (int i = 0; i < colorsPredefined.length; ++i)
+      Colix.getColix(colorsPredefined[i]);
+  }
 
   public int getArgb(short colix) {
     return Colix.getArgb(colix >= 0 ? colix : changableColixMap[-colix]);

@@ -6,20 +6,32 @@
     <section title="Jmol v10 Beta Testing">
 
       <p>
-	Jmol v10 is a major reimplementation of many major
-	Jmol subsystems. Major features/changes include:
+	Jmol v10 is a complete rewrite of most of Jmol.
+	Major features/changes include:
 	<ul>
-	  <li>3d graphics engine</li>
+	  <li>substantial performance improvements</li>
+	  <li>true 3d graphics engine</li>
+	  <li>support for macromolecule secondary structure graphics</li>
 	  <li>additional script commands</li>
+	  <li>support for the RasMol/Chime coordinate system orientation</li>
 	  <li>JmolAppletControl buttons</li>
-	  <li>reorientation of coordinate system to be RasMol/Chime
-	  compatible</li>
 	</ul>
       </p>
       <p>
 	Along with these new features comes a new set of bugs.
 	Thank you for helping us test out new releases of Jmol and
 	helping us find these bugs.
+      </p>
+
+      <p>
+	<i>
+	  At this point, we feel obligated to admit that this is not
+	  really being conducted as a formal <strong>beta test.</strong>
+	  During the test phase we are continuing to make substantial
+	  changes to the code; changes that go far beyond a beta test.
+	  But we are continuing to develop and enhance the code,
+	  regardless of what we call it.
+	</i>
       </p>
 
       <section title="Bug reporting procedures">
@@ -58,25 +70,29 @@
       </section>
     </section>
       
-    <section title="Jmol10pre5">
+    <section title="Jmol10pre6">
       <p>
-	Jmol version 10 pre-release 5 is now released. This release includes
+	Jmol version 10 pre-release 6 was released on 7 Mar 2004.
+	This release includes
 	the following enhancements:
 	<ul>
-	  <li>support for ssbonds</li>
-	  <li>support for hbonds</li>
-	  <li>more flexible parsing of .pdb files</li>
-	  <li>support for pdb inseration codes</li>
-	  <li>adoption of the RasMol/Chime cpk coloring scheme</li>
-	  <li>implemention of the DRuMS coloring scheme</li>
+	  <li>more fully populated popup menu</li>
+	  <li>adoption of a proposed Jmol/Ghemical cpk coloring scheme</li>
+	  <li>improved nucleotide set definitions</li>
+	  <li>preliminary support for animations</li>
+	  <li>preliminary support for unitcells</li>
+	  <li>support for aromatic bonds in .mol files</li>
+	  <li>support for color by charge</li>
 	  <li>bug fixes</li>
 	</ul>
 	This release continues to have the
 	following functional limitations:
 	<ul>
+	  <li>Macintosh popup menu gesture is incorrect</li>
 	  <li>Only supports .xyz, .mol, and .pdb files</li>
-	  <li>Does not handle animations</li>
-	  <li>Does not handle crystal cells</li>
+	  <li>Does not have full animation support</li>
+	  <li>Does not handle vibrations</li>
+	  <li>Does not have full crystal cell support</li>
 	  <li>
 	    Will not automatically recognize protein secondary structures
 	  </li>
@@ -85,16 +101,19 @@
 	</ul>
       </p>
       <p>
-	<i>
-	  At this point, we feel obligated to admit that this is not a formal
-	  <strong>beta test.</strong> We have made substantial changes to the
-	  code; changes that go far beyond a beta test. But we are continuing
-	  to develop and enhance the code, regardless of what we call it.
-	</i>
+	<a href="Jmol10pre6.zip">
+	  <font size="+1">
+	    <i>Give me the code!</i>
+	    Jmol10pre6.zip
+	  </font>
+	</a>
       </p>
       <p>
-	<a href="Jmol10pre5.zip"
-	   ><font size="+1"><i>Give me the code!</i> Jmol10pre5.zip</font></a>
+	<a href="Jmol10pre5.zip">
+	  <font size="-1">
+	    <i>Give me the old code</i> Jmol10pre5.zip
+	  </font>
+	</a>
       </p>
       <p>
 	Unzip the code using the tool of your choice. It will unzip into
@@ -102,7 +121,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre5.zip</b>
+	format as .zip : <b>jar xf Jmol10pre6.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

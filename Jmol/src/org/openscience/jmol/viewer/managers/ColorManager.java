@@ -334,7 +334,7 @@ public class ColorManager {
       break;
     }
     if (argb == 0)
-      return Graphics3D.PINK;
+      return Graphics3D.HOTPINK;
     return g3d.getColix(argb);
   }
 

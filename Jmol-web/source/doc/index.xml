@@ -71,7 +71,12 @@
     <section title="Jmol v10 - a RasMol/Chime replacement">
       <p>
         Jmol v10 is still under development and has not been officially
-	released. If you are interested in helping out it is currently
+	released.
+      </p>
+      <p>
+	However, we have a very active prerelease test
+	program in place with regular snapshot releases. 
+	If you are interested in helping out it is currently
 	in public <a href="./betatest">Beta Test</a>.
       </p>
       <p>
@@ -87,9 +92,22 @@
       <p>
 	Our target release schedule is:
 	<ul>
-	  <li>November - public <a href="./betatest">Beta Test</a> release</li>
-	  <li>March/April (postponed) - official Jmol v10 release</li>
+	  <li>
+	    November 2003 - first public
+	    <a href="./betatest">Beta Test</a> release
+	  </li>
+	  <li>
+	    Today - ongoing <a href="./betatest">Beta Test</a> releases
+	  </li>
+	  <li>
+	    May 2004 <i>postponed yet again :-(</i> -
+	    target official Jmol v10 release
+	  </li>
 	</ul>
+      </p>
+      <p>
+	We strongly encourage you to participate in the
+	<a href="./betatest">Beta Test</a>.
       </p>
     </section>
 

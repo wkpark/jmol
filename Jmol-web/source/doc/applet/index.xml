@@ -122,9 +122,16 @@
         </param>
         
         <param name="loadInline">
-          CML data stored inline. (Unfortunately, newline characters
-	  get ignored inside the double quotes in HTML elements. Therefore,
-	  it is not possible to pass other file formats using loadInline.
+          <p>CML data stored inline.</p>
+	  <p>
+	    <i>
+	      Unfortunately, newline characters get ignored inside the
+	      double quotes in HTML elements. Therefore, it is not possible
+	      to pass other file formats using loadInline.
+	      Jmol v10 will introduce a new technique for dealing with
+	      this problem.
+	    </i>
+	  </p>
         </param>
         
         <param name="bgcolor">
@@ -144,6 +151,9 @@
         </param>
         
         <param name="style">
+	  <p>
+	    <b><i>Note:</i> This parameter will be deprecated in Jmol v10. </b>
+	  </p>
           The rendering style used for atoms and bonds.  One of:
           <ul>
             <li>shaded &lt;default&gt;</li>
@@ -169,6 +179,9 @@
         </param>
         
         <param name="label">
+	  <p>
+	    <b><i>Note:</i> This parameter will be deprecated in Jmol v10. </b>
+	  </p>
           The labels to display for atoms.  One of:
           <dl>
             <dt>none &lt;default&gt;</dt> <dd>do not display labels.</dd>
@@ -194,6 +207,7 @@
         </param>
         
         <param name="wireframeRotation">
+	  <b><i>Note:</i> This parameter will be deprecated in Jmol v10. </b>
           Whether or not to use the wireframe mode during rotations.
 	  Improves rendering performance of large molecules. One of:
           <ul>

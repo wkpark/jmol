@@ -9,16 +9,13 @@
 <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
         codebase="../jmol"
         width="400" height="400" mayscript="true" >
-	<param name="emulate"   value="chime" />
         <param name="load"      value="aspirina.mol.gz" />
 </applet>
 </td>
 
 <td>
-If you use &lt;param name='emulate' value='chime' /&gt; then the default
-representation is wireframe bonds on a black background. For
-compatibility with the RasMol scripting language, the command to control
-bondsize is called <b>wireframe</b>. Try the following: <br />
+For compatibility with the RasMol scripting language, the command to
+control bondsize is called <b>wireframe</b>. Try the following: <br />
 <applet code="JmolAppletControl" archive="JmolApplet.jar"
         codebase="../jmol"
         height="20" width="200" mayscript="true" >

@@ -62,133 +62,153 @@ public class Triangle3D {
     int iMaxY = (iMinY + 2) % 3;
     if (ay[iMidY] > ay[iMaxY]) { int t = iMidY; iMidY = iMaxY; iMaxY = t; }
 
+    /*
     System.out.println("----fillTriangle\n" +
                        " iMinY=" + iMinY + " iMidY=" + iMidY +
                        " iMaxY=" + iMaxY + "\n" +
-                       "  minY=" + ax[iMinY] + "," + ay[iMinY] + "\n" +
-                       "  midY=" + ax[iMidY] + "," + ay[iMidY] + "\n" +
-                       "  maxY=" + ax[iMaxY] + "," + ay[iMaxY] + "\n");
-
+                       "  minY="+ax[iMinY]+","+ay[iMinY]+","+az[iMinY]+"\n" +
+                       "  midY="+ax[iMidY]+","+ay[iMidY]+","+az[iMidY]+"\n" +
+                       "  maxY="+ax[iMaxY]+","+ay[iMaxY]+","+az[iMaxY]+"\n");
+    */
     if (ay[iMinY] < ay[iMidY]) {
       // there is an upper triangle
       if (ay[iMidY] == ay[iMaxY]) {
         fillUpper(iMinY, iMidY, iMaxY);
         return;
       }
-      int dxMax = ax[iMaxY] - ax[iMinY];
-      int dyMax = ay[iMaxY] - ay[iMinY];
-      int dzMax = az[iMaxY] - az[iMinY];
-      int dyMid = ay[iMidY] - ay[iMinY];
-      int roundX = (dxMax < 0) ? -dyMax/2 : dyMax/2;
-      int roundZ = (dzMax < 0) ? -dyMax/2 : dyMax/2;
-      ax[3] = ax[iMinY] + (dxMax * dyMid + roundX) / dyMax;
+      int dxMaxMin = ax[iMaxY] - ax[iMinY];
+      int dyMaxMin = ay[iMaxY] - ay[iMinY];
+      int dzMaxMin = az[iMaxY] - az[iMinY];
+      int dyMidMin = ay[iMidY] - ay[iMinY];
+      int roundFactor;
+      roundFactor = dyMaxMin / 2;
+      if (dxMaxMin < 0) roundFactor = -roundFactor;
+      ax[3] = ax[iMinY] + (dxMaxMin * dyMidMin + roundFactor) / dyMaxMin;
       ay[3] = ay[iMidY];
-      az[3] = az[iMinY] + (dzMax * dyMid + roundZ) / dyMax;
+      roundFactor = dyMaxMin / 2;
+      if (dzMaxMin < 0) roundFactor = -roundFactor;
+      az[3] = az[iMinY] + (dzMaxMin * dyMidMin + roundFactor) / dyMaxMin;
       fillUpper(iMinY, iMidY, 3);
       iMinY = 3;
     }
     fillLower(iMinY, iMidY, iMaxY);
   }
 
-  int[] axLeft = new int[32], azLeft = new int[32];
-  int[] axRight = new int[32], azRight = new int[32];
+  int[] axW = new int[32], azW = new int[32];
+  int[] axE = new int[32], azE = new int[32];
 
   void reallocRasterArrays(int n) {
     n = (n + 31) & ~31;
-    axLeft = new int[n];
-    azLeft = new int[n];
-    axRight = new int[n];
-    azRight = new int[n];
+    axW = new int[n];
+    azW = new int[n];
+    axE = new int[n];
+    azE = new int[n];
   }
 
-  void fillUpper(int iTop, int iLeft, int iRight) {
-    if (ax[iLeft] > ax[iRight]) { int t = iLeft; iLeft = iRight; iRight = t; }
+  void fillUpper(int iN, int iW, int iE) {
+    if (ax[iW] > ax[iE]) { int t = iW; iW = iE; iE = t; }
 
+    /*
     System.out.println("fillUpper\n" +
-                       "   top=" + ax[iTop] + "," + ay[iTop] + "\n" +
-                       "  left=" + ax[iLeft] + "," + ay[iLeft] + "\n" +
-                       " right=" + ax[iRight] + "," + ay[iRight] + "\n");
-
-    int nLines = ay[iLeft] - ay[iTop] + 1;
-    if (nLines > axLeft.length)
+                       "N="+ax[iN]+"," + ay[iN] + "," + az[iN] + "\n" +
+                       "W="+ax[iW]+"," + ay[iW] + "," + az[iW] + "\n" +
+                       "E="+ax[iE]+"," + ay[iE] + "," + az[iE] + "\n");
+    */
+    int nLines = ay[iW] - ay[iN];
+    if (nLines > axW.length)
       reallocRasterArrays(nLines);
-    generateRasterPoints(nLines, iTop, iLeft, axLeft, azLeft);
-    generateRasterPoints(nLines, iTop, iRight, axRight, azRight);
-    fillRaster(ay[iTop], nLines);
+    generateRaster(nLines, iN, iW, axW, azW);
+    generateRaster(nLines, iN, iE, axE, azE);
+    fillRaster(ay[iN], nLines, false);
   }
-
-  void fillLower(int iLeft, int iRight, int iBottom) {
-    if (ax[iLeft] > ax[iRight]) { int t = iLeft; iLeft = iRight; iRight = t; }
-
+  
+  void fillLower(int iW, int iE, int iS) {
+    if (ax[iW] > ax[iE]) { int t = iW; iW = iE; iE = t; }
+    
+    /*
     System.out.println("fillLower\n" +
-                       "  left=" + ax[iLeft] + "," + ay[iLeft] + "\n" +
-                       " right=" + ax[iRight] + "," + ay[iRight] + "\n" +
-                       "bottom=" + ax[iBottom] + "," + ay[iBottom] + "\n");
-
-    int nLines = ay[iBottom] - ay[iLeft] + 1;
-    if (nLines > axLeft.length)
+                       "W="+ax[iW]+","+ay[iW]+","+az[iW]+"\n" +
+                       "E="+ax[iE]+","+ay[iE]+","+az[iE]+"\n" +
+                       "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
+    */
+    int nLines = ay[iS] - ay[iW];
+    if (nLines > axW.length)
       reallocRasterArrays(nLines);
-    generateRasterPoints(nLines, iLeft, iBottom, axLeft, azLeft);
-    generateRasterPoints(nLines, iRight, iBottom, axRight, azRight);
-    fillRaster(ay[iLeft], nLines);
+    generateRaster(nLines, iW, iS, axW, azW);
+    generateRaster(nLines, iE, iS, axE, azE);
+    fillRaster(ay[iW], nLines, true);
   }
 
-  void generateRasterPoints(int dy, int iTop, int iBot,
-                            int[] axRaster, int[] azRaster) {
-    int xTop = ax[iTop], zTop = az[iTop];
-    int xBot = ax[iBot], zBot = az[iBot];
-    int dx = xBot - xTop, dz = zBot - zTop;
+  void generateRaster(int dy, int iN, int iS,
+                      int[] axRaster, int[] azRaster) {
+    /*
+    System.out.println("generateRaster\n" +
+                       "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
+                       "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
+    */
+    int xN = ax[iN], zN = az[iN];
+    int xS = ax[iS], zS = az[iS];
+    int dx = xS - xN, dz = zS - zN;
+    int xCurrent = xN;
+    int xIncrement, width, errorTerm;
+    if (dx >= 0) {
+      xIncrement = 1;
+      width = dx;
+      errorTerm = 0;
+    } else {
+      xIncrement = -1;
+      width = -dx;
+      errorTerm = -dy + 1;
+    }
 
-    System.out.println("xTop=" + xTop +
-                       " xBot=" + xBot + " dy=" + dy
-                       );
+    /*
+    System.out.println("xN=" + xN + " xS=" + xS + " dy=" + dy + " dz=" + dz);
+    */
+    int zCurrentScaled = (zN << 10) + (1 << 9);
+    int roundingFactor;
+    roundingFactor = dy/2; if (dz < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled =((dz << 10) + roundingFactor) / dy;
 
-    axRaster[0] = xTop;
-    azRaster[0] = zTop;
-
-    int dyMinus1 = dy - 1;
-    if (dyMinus1 == 0)
-      return;
-    int zCurrentScaled = zTop << 10;
-    int roundingFactor = dyMinus1; if (dz < 0) roundingFactor = -roundingFactor;
-
-    int zIncrementScaled =((dz << 10) + roundingFactor) / dyMinus1;
-
-    roundingFactor = dyMinus1 / 2; if (dx < 0) roundingFactor = -roundingFactor;
-
-    for (int y = 1; y < dy; ++y) {
-      int x = xTop + ((dx * y) + roundingFactor) / dyMinus1;
-      axRaster[y] = x;
-      zCurrentScaled += zIncrementScaled;
+    int xMajorIncrement;
+    int xMajorError;
+    if (dy >= width) {
+      xMajorIncrement = 0;
+      xMajorError = width;
+    } else {
+      xMajorIncrement = dx / dy;
+      xMajorError = width % dy;
+    }
+    for (int y = 0; y < dy; ++y, zCurrentScaled += zIncrementScaled) {
+      axRaster[y] = xCurrent;
       azRaster[y] = zCurrentScaled >> 10;
+      //      System.out.println("z=" + azRaster[y]);
+      xCurrent += xMajorIncrement;
+      errorTerm += xMajorError;
+      if (errorTerm > 0) {
+        xCurrent += xIncrement;
+        errorTerm -= dy;
+      }
     }
   }
 
-  void fillRaster(int y, int dy) {
+  void fillRaster(int y, int numLines, boolean paintFirstLine) {
+    //    System.out.println("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     if (y < 0) {
-      dy += y;
+      numLines += y;
       i -= y;
       y = 0;
-    }
-    while (--dy >= 0) {
-      if (y >= g3d.height)
-        return;
-      int xLeft = axLeft[i];
-      if (xLeft < 0)
-        xLeft = 0;
-      int xRight = axRight[i];
-      if (xRight >= g3d.width)
-        xRight = g3d.width - 1;
-      int nPix = xRight - xLeft;
-      if (nPix > 0) {
-        // FIXME mth 2003 06 09
-        // z is not correct
-        // needs to change from azLeft[i] to azRight[i]
-        g3d.plotPixelsUnclipped(nPix, xLeft, y, azLeft[i]);
-      }
+    } else if (! paintFirstLine) {
+      --numLines;
       ++y;
       ++i;
+    }
+    if (y + numLines > g3d.height)
+      numLines = g3d.height - y;
+    for ( ; --numLines >= 0; ++y, ++i) {
+      int xW = axW[i];
+      g3d.plotPixelsClipped(g3d.argbCurrent,
+                            axE[i] - xW, xW, y, azW[i], azE[i]);
     }
   }
 }

@@ -80,7 +80,8 @@ public class ArcTest {
     aaT = new AxisAngle4f();
   }
 
-  public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip) {
+  public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
+                                 JmolFrame frame) {
     this.g3d = g3d;
   }
 

@@ -470,11 +470,30 @@ final public class Graphics3D {
     fillPolygon4(colixFill, ax, ay, az);
   }
 
+  public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
+                               int yB, int zB, int xC, int yC, int zC) {
+    int argb = argbCurrent = Colix.getArgb(colix);
+    line3d.drawLine(argb, xA, yA, zA, xB, yB, zB, false);
+    line3d.drawLine(argb, xA, yA, zA, xC, yC, zC, false);
+    line3d.drawLine(argb, xB, yB, zB, xC, yC, zC, false);
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = xA; t[1] = xB; t[2] = xC;
+    t = triangle3d.ay;
+    t[0] = yA; t[1] = yB; t[2] = yC;
+    t = triangle3d.az;
+    t[0] = zA; t[1] = zB; t[2] = zC;
+
+    triangle3d.fillTriangle();
+  }
+
   public void fillTriangle(short colix, int xA, int yA, int zA,
                            int xB, int yB, int zB, int xC, int yC, int zC) {
+    /*
     System.out.println("fillTriangle:" + xA + "," + yA + "," + zA + "->" +
                        xB + "," + yB + "," + zB + "->" +
                        xC + "," + yC + "," + zC);
+    */
     argbCurrent = Colix.getArgb(colix);
     int[] t;
     t = triangle3d.ax;
@@ -489,9 +508,11 @@ final public class Graphics3D {
 
   public void drawTriangle(short colix, int xA, int yA, int zA,
                            int xB, int yB, int zB, int xC, int yC, int zC) {
+    /*
     System.out.println("drawTriangle:" + xA + "," + yA + "," + zA + "->" +
                        xB + "," + yB + "," + zB + "->" +
                        xC + "," + yC + "," + zC);
+    */
     int argb = Colix.getArgb(colix);
     line3d.drawLine(argb, xA, yA, zA, xB, yB, zB, false);
     line3d.drawLine(argb, xA, yA, zA, xC, yC, zC, false);
@@ -608,19 +629,25 @@ final public class Graphics3D {
   }
 
   void plotPixelsClipped(int argb, int count, int x, int y,
-                         int zAtLeft, int zAtRight) {
-    if (y < 0 || y >= height || x >= width)
+                         int zAtLeft, int zPastRight) {
+    //    System.out.print("plotPixelsClipped z values:");
+    /*
+    System.out.println("plotPixelsClipped count=" + count + "x,y,z=" +
+                       x + "," + y + "," + zAtLeft + " -> " + zPastRight);
+    */
+    if (count <= 0 || y < 0 || y >= height || x >= width)
       return;
     // scale the z coordinates;
-    int zScaled = zAtLeft << 10;
-    int zIncrement = ((zAtRight << 10) - zScaled + (count + 1) / 2)/count;
-    // all Z values are positive, although zIncrement can be negative
-    // add 1/2 so that z rounds properly when truncated
-    zScaled += 1 << 9;
+    int zScaled = (zAtLeft << 10) + (1 << 9);
+    int dz = zPastRight - zAtLeft;
+    int roundFactor = count / 2;
+    int zIncrementScaled =
+      ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
     if (x < 0) {
       x = -x;
-      zScaled += (zIncrement * x) / count;
-      count += x;      if (count < 0)
+      zScaled += (zIncrementScaled * x) / count;
+      count += x;
+      if (count < 0)
         return;
       x = 0;
     }
@@ -629,13 +656,15 @@ final public class Graphics3D {
     int offsetPbuf = y * width + x;
     while (--count >= 0) {
       int z = zScaled >> 10;
+      //      System.out.print(" " + z);
       if (z < zbuf[offsetPbuf]) {
         zbuf[offsetPbuf] = (short)z;
         pbuf[offsetPbuf] = argb;
       }
       ++offsetPbuf;
-      zScaled += zIncrement;
+      zScaled += zIncrementScaled;
     }
+    //    System.out.println("");
   }
 
   void plotPixelsUnclipped(int count, int x, int y, int z) {

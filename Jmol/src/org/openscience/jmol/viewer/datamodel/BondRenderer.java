@@ -254,12 +254,12 @@ public class BondRenderer {
     g3d.drawDottedLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
   }
 
+  private static float wideWidthAngstroms = 0.4f;
+
   private void renderTriangle(BondShape bondShape) {
     // for now, only colix1 and always solid
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
-    float dist =
-      bondShape.atomShape1.point3f.distance(bondShape.atomShape2.point3f);
-    int wideWidthPixels = (int)(viewer.scaleToScreen(z2, dist) / 3);
+    int wideWidthPixels = (int)viewer.scaleToScreen(z2, wideWidthAngstroms);
     int dxWide, dyWide;
     if (mag2d == 0) {
       dxWide = 0;
@@ -283,8 +283,8 @@ public class BondRenderer {
     System.out.println("up=" + xWideUp + "," + yWideUp +
                        " dn=" + xWideDn + "," + yWideDn);
     */
-    g3d.fillTriangle(colix1, x1, y1, z1,
-                     xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
+    g3d.drawfillTriangle(colix1, x1, y1, z1,
+                         xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
   }
 }
 

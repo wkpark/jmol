@@ -289,6 +289,11 @@ final public class JmolConstants {
     */
   };
 
+  /**
+   * one larger than the last elementNumber, same as elementSymbols.length
+   */
+  public final static int elementNumberMax = elementSymbols.length;
+
   private static Hashtable htElementMap;
 
   /**
@@ -324,12 +329,6 @@ final public class JmolConstants {
     System.out.println("" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }
-
-
-  /**
-   * one larger than the last elementNumber, same as elementSymbols.length
-   */
-  public final static int elementNumberMax = elementSymbols.length;
 
   public final static String elementNames[] = {
     "unknown",

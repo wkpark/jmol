@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -252,5 +252,20 @@ class Atom implements Cloneable {
 
   static boolean isValidFirstSymbolChar(char ch) {
     return ch >= 'A' && ch <= 'Z' && elementCharMasks[ch - 'A'] != 0;
+  }
+
+  static boolean isValidElementSymbolNoCaseSecondChar(String str) {
+    if (str == null)
+      return false;
+    int length = str.length();
+    if (length == 0)
+      return false;
+    char chFirst = str.charAt(0);
+    if (length == 1)
+      return isValidElementSymbol(chFirst);
+    if (length > 2)
+      return false;
+    char chSecond = str.charAt(1);
+    return isValidElementSymbolNoCaseSecondChar(chFirst, chSecond);
   }
 }

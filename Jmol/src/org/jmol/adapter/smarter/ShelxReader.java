@@ -3,28 +3,24 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Chemistry Development Kit (CDK) project
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: cdk-devel@lists.sourceforge.net
+ * Contact: miguel@jmol.org
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1
- * of the License, or (at your option) any later version.
- * All we ask is that proper credit is given for our work, which includes
- * - but is not limited to - adding the above copyright notice to the beginning
- * of your source code files, and to any copyright notice that you may
- * distribute with programs based on this work.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
  */
 package org.jmol.adapter.smarter;
 
@@ -58,11 +54,9 @@ class ShelxReader extends AtomSetCollectionReader {
     readLine_loop:
     while ((line = reader.readLine()) != null) {
       lineLength = line.length();
-      if (lineLength > 0 && line.charAt(lineLength - 1) == '=') {
-        // this cannot be correct ... the '=' is still in the line
-        // but this is what the cdk reader had in place
-        line += reader.readLine();
-      }
+      // '=' as last char of line means continue on next line
+      while (lineLength > 0 && line.charAt(lineLength - 1) == '=')
+        line = line.substring(0, lineLength - 1) + reader.readLine();
       if (lineLength < 4) {
         if (lineLength == 3 && "END".equalsIgnoreCase(line))
           break;
@@ -105,7 +99,7 @@ class ShelxReader extends AtomSetCollectionReader {
       endReached = true;
       break;
     case 4: // SFAC
-      parseSfacElementSymbols(line);
+      parseSfacRecord(line);
       break;
     }
   }
@@ -123,9 +117,53 @@ class ShelxReader extends AtomSetCollectionReader {
     atomSetCollection.notionalUnitcell = notionalUnitcell;
   }
 
-  void parseSfacElementSymbols(String line) {
-    sfacElementSymbols = getTokens(line);
-    sfacElementSymbols[0] = null;
+  void parseSfacRecord(String line) {
+    // an SFAC record is one of two cases
+    // a simple SFAC record contains element names
+    // a general SFAC record contains coefficients for a single element
+    String[] sfacTokens = getTokens(line, 4);
+    boolean allElementSymbols = true;
+    for (int i = sfacTokens.length; allElementSymbols && --i >= 0; ) {
+      String token = sfacTokens[i];
+      allElementSymbols = Atom.isValidElementSymbolNoCaseSecondChar(token);
+      }
+    if (allElementSymbols)
+      parseSfacElementSymbols(sfacTokens);
+    else
+      parseSfacCoefficients(sfacTokens);
+  }
+
+  void parseSfacElementSymbols(String[] sfacTokens) {
+    if (sfacElementSymbols == null) {
+      sfacElementSymbols = sfacTokens;
+    } else {
+      int oldCount = sfacElementSymbols.length;
+      int tokenCount = sfacTokens.length;
+      sfacElementSymbols = setLength(sfacElementSymbols,
+                                     oldCount + tokenCount);
+      for (int i = tokenCount; --i >= 0; )
+        sfacElementSymbols[oldCount + tokenCount] = sfacTokens[i];
+    }
+  }
+
+  void parseSfacCoefficients(String[] sfacTokens) {
+    float a1 = parseFloat(sfacTokens[1]);
+    float a2 = parseFloat(sfacTokens[3]);
+    float a3 = parseFloat(sfacTokens[5]);
+    float a4 = parseFloat(sfacTokens[7]);
+    float c  = parseFloat(sfacTokens[9]);
+    // element # is these floats rounded to nearest int
+    int z = (int)(a1 + a2 + a3 + a4 + c + 0.5f);
+    String elementSymbol = getElementSymbol(z);
+    int oldCount = 0;
+    if (sfacElementSymbols == null) {
+      sfacElementSymbols = new String[1];
+    } else {
+      oldCount = sfacElementSymbols.length;
+      sfacElementSymbols = setLength(sfacElementSymbols, oldCount + 1);
+      sfacElementSymbols[oldCount] = elementSymbol;
+    }
+    sfacElementSymbols[oldCount] = elementSymbol;
   }
 
   void assumeAtomRecord(String line) {
@@ -142,10 +180,12 @@ class ShelxReader extends AtomSetCollectionReader {
       
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName;
-      if (sfacElementSymbols != null &&
-          scatterFactor > 0 &&
-          scatterFactor < sfacElementSymbols.length)
-        atom.elementSymbol = sfacElementSymbols[scatterFactor];
+      if (sfacElementSymbols != null) {
+        int elementIndex = scatterFactor - 1;
+        if (elementIndex >= 0 &&
+            elementIndex < sfacElementSymbols.length)
+          atom.elementSymbol = sfacElementSymbols[elementIndex];
+      }
       atom.x = a;
       atom.y = b;
       atom.z = c;

@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.viewer.JmolConstants;
 import java.io.BufferedReader;
 import java.lang.reflect.Array;
 
@@ -37,7 +38,8 @@ abstract class AtomSetCollectionReader {
 
   void initialize() { }
 
-  abstract AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception;
+  abstract AtomSetCollection readAtomSetCollection(BufferedReader reader)
+    throws Exception;
 
   int ichNextParse;
 
@@ -361,5 +363,12 @@ abstract class AtomSetCollectionReader {
     while ((line = reader.readLine()) != null && line.length() == 0)
       {}
     return line;
+  }
+
+  static String getElementSymbol(int elementNumber) {
+    if (elementNumber < 0 ||
+        elementNumber >= JmolConstants.elementSymbols.length)
+      elementNumber = 0;
+    return JmolConstants.elementSymbols[elementNumber];
   }
 }

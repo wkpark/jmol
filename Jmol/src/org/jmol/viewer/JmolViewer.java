@@ -1005,6 +1005,10 @@ final public class JmolViewer {
     return fileManager.getFileAsString(fileName);
   }
 
+  public String getFileAsString(String fileName) {
+    return fileManager.getFileAsString(fileName);
+  }
+
    /////////////////////////////////////////////////////////////////
    // delegated to ModelManager
    /////////////////////////////////////////////////////////////////

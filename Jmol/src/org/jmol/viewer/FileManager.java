@@ -115,7 +115,7 @@ class FileManager {
 
   String getFileAsString(String name) {
     System.out.println("FileManager.getFileAsString(" + name + ")");
-    Object t = getInputStreamOrErrorMessageFromName(nameAsGiven);
+    Object t = getInputStreamOrErrorMessageFromName(name);
     byte[] abMagic = new byte[4];
     if (t instanceof String)
       return "Error:" + t;

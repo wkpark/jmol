@@ -3007,8 +3007,19 @@ public class Eval implements Runnable {
     }
   }
 
-  void showFile() {
-    showString(viewer.getCurrentFileAsString());
+  void showFile() throws ScriptException {
+    System.out.println("showFile && statementLength=" + statementLength);
+    if (statementLength == 2) {
+      showString(viewer.getCurrentFileAsString());
+      return;
+    }
+    if (statementLength == 3 && statement[2].tok == Token.string) {
+      String fileName = (String)statement[2].value;
+      System.out.println("fileName=" + fileName);
+      showString(viewer.getFileAsString(fileName));
+      return;
+    }
+    invalidArgument();
   }
 
   void printProperties(Properties props) {

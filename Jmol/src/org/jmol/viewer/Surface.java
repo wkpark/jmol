@@ -312,7 +312,8 @@ class Surface extends Shape {
           clearBit(geodesicMap, iDot);
           break;
         }
-        iLastUsed = (iLastUsed + 1) % neighborCount;
+        if (++iLastUsed == neighborCount)
+          iLastUsed = 0;
       } while (iLastUsed != iStart);
     }
   }
@@ -434,15 +435,15 @@ class Surface extends Shape {
     int cavityCount;
     Cavity[] cavities;
 
-    Torus(Point3f centerI, int indexI, Point3f centerJ, int indexJ,
+    Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius) {
-      this.indexII = indexI;
-      this.indexJJ = indexJ;
-      this.center = center;
+      this.indexII = indexA;
+      this.indexJJ = indexB;
+      this.center = new Point3f(center);
       this.radius = radius;
 
       axisVector = new Vector3f();
-      axisVector.sub(centerJ, centerI);
+      axisVector.sub(centerB, centerA);
 
       if (axisVector.x == 0)
         unitRadialVector = new Vector3f(1, 0, 0);
@@ -463,11 +464,11 @@ class Surface extends Shape {
 
       pointTorusP.add(center, radialVector);
 
-      vectorPI.sub(centerI, pointTorusP);
+      vectorPI.sub(centerA, pointTorusP);
       vectorPI.normalize();
       vectorPI.scale(radiusP);
 
-      vectorPJ.sub(centerJ, pointTorusP);
+      vectorPJ.sub(centerB, pointTorusP);
       vectorPJ.normalize();
       vectorPJ.scale(radiusP);
 
@@ -541,7 +542,7 @@ class Surface extends Shape {
     }
     
 
-    Torus torus = new Torus(centerI, indexI, centerJ, indexJ, center, radius);
+    Torus torus = new Torus(indexI, centerI, indexJ, centerJ, center, radius);
     htToruses.put(key, torus);
   }
 
@@ -552,8 +553,8 @@ class Surface extends Shape {
     Long key = new Long(((long)indexA << 32) + indexB);
     if (htToruses.get(key) != null)
       throw new NullPointerException();
-    Torus torus = new Torus(centerA, indexA, centerB, indexB, torusCenterAB,
-                            torusRadius);
+    Torus torus = new Torus(indexA, centerA, indexB, centerB,
+                            torusCenterAB, torusRadius);
     htToruses.put(key, torus);
     return torus;
   }
@@ -632,6 +633,9 @@ class Surface extends Shape {
       if (indexI >= neighborIndexes[iJ])
         continue;
       setNeighborJ(iJ);
+      vectorIJ.sub(centerJ, centerI);
+      calcTorusCenter(centerI, radiiIP2, centerJ, radiiJP2, distanceIJ2,
+                      torusCenterIJ);
       for (int iK = neighborCount; --iK >= 0; ) {
         if (indexJ >= neighborIndexes[iK])
           continue;
@@ -640,6 +644,11 @@ class Surface extends Shape {
           continue;
         getCavitiesIJK();
       }
+      // check for a full torus between I & J
+      // if found, then calculate the convex surfaces of both I & J
+      // for now, just calc them :-(
+      convexSurfaceMaps[indexI] = calculateMyConvexSurfaceMap; 
+      convexSurfaceMaps[indexJ] = calculateMyConvexSurfaceMap; 
     }
   }
 
@@ -676,14 +685,11 @@ class Surface extends Shape {
   private final Point3f cavityProbe = new Point3f();
 
   void getCavitiesIJK() {
-    vectorIJ.sub(centerJ, centerI);
     vectorIK.sub(centerK, centerI);
     normalIJK.cross(vectorIJ, vectorIK);
     if (Float.isNaN(normalIJK.x))
       return;
     normalIJK.normalize();
-    calcTorusCenter(centerI, radiiIP2, centerJ, radiiJP2, distanceIJ2,
-                    torusCenterIJ);
     calcTorusCenter(centerI, radiiIP2, centerK, radiiKP2, distanceIK2,
                     torusCenterIK);
     if (! intersectPlanes(vectorIJ, torusCenterIJ,

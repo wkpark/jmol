@@ -59,7 +59,7 @@ class Model {
   }
 
   protected void finalize() {
-    System.out.println("Model.finalize() called");
+    //    System.out.println("Model.finalize() called");
   }
 
   void finish() {

@@ -66,7 +66,6 @@ public class SortedTableModel extends ListeningTableModel {
   }
 
   void sort() {
-    System.out.println("We are sorting!");
     Arrays.sort(indexes,
                 new Comparator() {
 

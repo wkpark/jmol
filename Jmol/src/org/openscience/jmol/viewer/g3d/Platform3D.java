@@ -63,8 +63,23 @@ abstract public class Platform3D {
       zBuffer[offsetT] = ZBUFFER_BACKGROUND;
       pBuffer[offsetT++] = argbBackground;
     }
-    int offsetDst = offsetSrc + width; 
+    int offsetDst = offsetSrc + width;
     for (int nLines = rectClip.height-1; --nLines >= 0; offsetDst += width) {
+      if (offsetDst + countPerLine > pBuffer.length) {
+        System.out.println("\nPlatform3D.clearScreenBuffer dst out of bounds!" +
+                           "\npBuffer.length=" + pBuffer.length + 
+                           "\noffsetDst=" + offsetDst +
+                           "\ncountPerLine=" + countPerLine +
+                           "\nrectClip.x=" + rectClip.x +
+                           "\nrectClip.y=" + rectClip.y +
+                           "\nrectClip.width=" + rectClip.width +
+                           "\nrectClip.height=" + rectClip.height +
+                           "\noffsetSrc=" + offsetSrc +
+                           "\nwidth=" + width +
+                           "\nheight=" + height +
+                           "\nsize=" + size +
+                           "zBuffer.length=" + zBuffer.length);
+      }
       System.arraycopy(pBuffer, offsetSrc, pBuffer, offsetDst, countPerLine);
       System.arraycopy(zBuffer, offsetSrc, zBuffer, offsetDst, countPerLine);
     }

@@ -316,23 +316,36 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     viewer.setScreenDimension(size);
     Rectangle rectClip =
       jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
-    g.drawImage(viewer.renderScreenImage(rectClip), 0, 0, null);
-    if (showPaintTime) {
-      stopPaintClock();
-      showTimes(10, 10, g);
+    Image screenImage = viewer.renderScreenImage(rectClip);
+    if (screenImage == null) {
+      System.out.println("screenImage == null?");
+      return;
     }
-    if (viewer.getShowFrank()) {
-      if (frankFont == null) {
-        frankFont = new Font(frankFontName, frankFontStyle, frankFontSize);
-        FontMetrics fm = getFontMetrics(frankFont);
-        frankWidth = fm.stringWidth(frankString);
-        frankDescent = fm.getDescent();
+    // mth 2003-01-09 Linux Sun JVM 1.4.2_02
+    // Sun is throwing a NullPointerExceptions inside graphics routines
+    // while the window is resized. Especially in setColor(frankColor)
+    // and g.drawImage
+    try {
+      g.drawImage(screenImage, 0, 0, null);
+      if (showPaintTime) {
+        stopPaintClock();
+        showTimes(10, 10, g);
       }
-      g.setFont(frankFont);
-      g.setColor(frankColor);
-      g.drawString(frankString,
-                   size.width - frankWidth - frankMargin,
-                   size.height - frankDescent - frankMargin);
+      if (viewer.getShowFrank()) {
+        if (frankFont == null) {
+          frankFont = new Font(frankFontName, frankFontStyle, frankFontSize);
+          FontMetrics fm = getFontMetrics(frankFont);
+          frankWidth = fm.stringWidth(frankString);
+          frankDescent = fm.getDescent();
+        }
+        g.setFont(frankFont);
+        g.setColor(frankColor);
+        g.drawString(frankString,
+                     size.width - frankWidth - frankMargin,
+                     size.height - frankDescent - frankMargin);
+      }
+    } catch (NullPointerException npe) {
+      System.out.println("Sun!! ... fix graphics your bugs!");
     }
   }
 
@@ -488,6 +501,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     System.out.println(htmlName + " will try to run:\n-----" +
                        script + "\n-----\n");
     String strError = viewer.evalString(script);
+    if (strError == null)
+      strError = "Jmol executing script ...";
     setStatusMessage(strError);
   }
 

@@ -122,6 +122,19 @@ final public class Graphics3D {
     //    zbuf4 = new short[size4];
   }
 
+  public void validateRectClip(Rectangle rectClip) {
+    // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
+    // that is wider than the current window during window resize
+    if (rectClip.x < 0)
+      rectClip.x = 0;
+    if (rectClip.y < 0)
+      rectClip.y = 0;
+    if (rectClip.x + rectClip.width > width)
+      rectClip.width = width - rectClip.x;
+    if (rectClip.y + rectClip.height > height)
+      rectClip.height = height - rectClip.y;
+  }
+
   public void setSlabValue(int slab) {
     this.slab = slab;
   }

@@ -109,6 +109,7 @@ public class RepaintManager {
   }
 
   public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    g3d.validateRectClip(rectClip);
     g3d.beginRendering(tOversample);
     if (tOversample) {
       rectOversample.x = rectClip.x << 1;

@@ -28,8 +28,8 @@ final public class JmolConstants {
 
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
-  public static String version="10pre4";
-  public final static String copyright="(C) 2003 The Jmol Development Team";
+  public static String version="10pre4a";
+  public final static String copyright="(C) 2004 The Jmol Development Team";
 
   public final static byte LABEL_NONE     = 0;
   public final static byte LABEL_SYMBOL   = 1;
@@ -591,16 +591,17 @@ final public class JmolConstants {
 
   /**
    * Default table of PdbStructure colors
-   * Used when the client does not implement
-   *    getAtomColor(clientAtom, colorScheme)
-   * I didn't know what color to define for many of the atoms,
-   * so I made them pink.
    */
+  public final static byte SECONDARY_STRUCTURE_NONE = 0;
+  public final static byte SECONDARY_STRUCTURE_TURN = 1;
+  public final static byte SECONDARY_STRUCTURE_SHEET = 2;
+  public final static byte SECONDARY_STRUCTURE_HELIX = 3;
+
   public final static int[] argbsPdbStructure = {
     0xFFFFFFFF, // white       STRUCTURE_NONE
-    0xFFEE00EE, // magenta2    STRUCTURE_HELIX
-    0xFFFFFF00, // yellow      STRUCTURE_SHEET
     0xFF4876FF, // RoyalBlue1  STRUCTURE_TURN
+    0xFFFFFF00, // yellow      STRUCTURE_SHEET
+    0xFFEE00EE, // magenta2    STRUCTURE_HELIX
   };
 
   public final static int argbPdbAminoDefault =  0xFFBEA06E; // tan
@@ -1139,11 +1140,6 @@ final public class JmolConstants {
     "SO4", // 72 sulphate ions 
     
   };
-
-  public final static byte SECONDARY_STRUCTURE_NONE = 0;
-  public final static byte SECONDARY_STRUCTURE_TURN = 1;
-  public final static byte SECONDARY_STRUCTURE_SHEET = 2;
-  public final static byte SECONDARY_STRUCTURE_HELIX = 3;
 
   public final static int GRAPHIC_BACKBONE = 0;
   public final static int GRAPHIC_TRACE    = 1;

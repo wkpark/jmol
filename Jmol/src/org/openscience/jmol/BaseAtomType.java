@@ -143,8 +143,8 @@ public class BaseAtomType {
 
     StringTokenizer st1 = new StringTokenizer(s1, "\t ,;");
 
-    String name = st1.nextToken();
-    BaseAtomType at = get(name);
+    String localName = st1.nextToken();
+    BaseAtomType at = get(localName);
     at.root = st1.nextToken();
     at.atomicNumber = Integer.parseInt(st1.nextToken());
     at.mass = Double.valueOf(st1.nextToken()).doubleValue();
@@ -166,10 +166,10 @@ public class BaseAtomType {
   /**
    * Sets the name.
    *
-   * @param n the Name
+   * @param name the name
    */
-  public void setName(String n) {
-    this.name = n;
+  public void setName(String name) {
+    this.name = name;
   }
 
   /**
@@ -182,10 +182,10 @@ public class BaseAtomType {
   /**
    * Sets the root.
    *
-   * @param r the root
+   * @param root the root
    */
-  public void setRoot(String r) {
-    this.root = r;
+  public void setRoot(String root) {
+    this.root = root;
   }
 
   /**
@@ -214,10 +214,10 @@ public class BaseAtomType {
   /**
    * Sets the mass.
    *
-   * @param m the mass
+   * @param mass the mass
    */
-  public void setMass(double m) {
-    this.mass = m;
+  public void setMass(double mass) {
+    this.mass = mass;
   }
 
   /**
@@ -272,24 +272,62 @@ public class BaseAtomType {
    * Returns true if this and the Object are equal.
    *
    * @param obj object for comparison.
+   * @return true if the objects are equal.
    */
   public boolean equals(Object obj) {
 
-    if (obj instanceof BaseAtomType) {
-      BaseAtomType at = (BaseAtomType) obj;
-      boolean nameEqual = name.equals(at.name);
-      boolean rootEqual = root.equals(at.root);
-      boolean atomicNumberEqual = atomicNumber == at.atomicNumber;
-      boolean massEqual = mass == at.mass;
-      boolean radiiEqual = (vdwRadius == at.vdwRadius)
-                             && (covalentRadius == at.covalentRadius);
-      boolean colorEqual = color.equals(at.color);
-      return (nameEqual && rootEqual && atomicNumberEqual && massEqual
-              && radiiEqual && colorEqual);
+    if (this == obj) {
+      return true;
     }
-    return false;
+    if (!(obj instanceof BaseAtomType)) {
+      return false;
+    }
+    BaseAtomType at = (BaseAtomType) obj;
+    boolean nameEqual = name.equals(at.name);
+    boolean rootEqual = root.equals(at.root);
+    boolean atomicNumberEqual = atomicNumber == at.atomicNumber;
+    boolean massEqual =
+      (Double.doubleToLongBits(mass)
+        == Double.doubleToLongBits(at.mass));
+    boolean vdwRadiiEqual =
+      (Double.doubleToLongBits(vdwRadius)
+        == Double.doubleToLongBits(at.vdwRadius));
+    boolean covalentRadiiEqual =
+      (Double.doubleToLongBits(covalentRadius)
+        == Double.doubleToLongBits(at.covalentRadius));
+    boolean colorEqual = color.equals(at.color);
+    return (nameEqual && rootEqual && atomicNumberEqual && massEqual
+            && vdwRadiiEqual && covalentRadiiEqual && colorEqual);
   }
 
+  /**
+   * Returns a hash code for this object.
+   *
+   * @return the hash code.
+   */
+  public int hashCode() {
+    if (hashCode == 0) {
+      int result = 17;
+      result = 37*result + name.hashCode();
+      result = 37*result + root.hashCode();
+      result = 37*result + atomicNumber;
+      long longHashValue = Double.doubleToLongBits(mass);
+      result = 37*result + (int)(longHashValue ^ (longHashValue >> 32));
+      longHashValue = Double.doubleToLongBits(vdwRadius);
+      result = 37*result + (int)(longHashValue ^ (longHashValue >> 32));
+      longHashValue = Double.doubleToLongBits(covalentRadius);
+      result = 37*result + (int)(longHashValue ^ (longHashValue >> 32));
+      result = 37*result + color.hashCode();
+      hashCode = result;
+    }
+    return hashCode;
+  }
+  
+  /**
+   * The hash code for this object. It is lazily initialized.
+   */
+  private volatile int hashCode = 0;
+  
   /**
    * Returns a String representation of this atom type.
    */

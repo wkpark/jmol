@@ -81,10 +81,15 @@ class ColorManager {
     return paletteDefault;
   }
 
-  Color colorSelection = Color.orange;
-  short colixSelection = Graphics3D.ORANGE;
+  final static Color colorSelectionDefault = Graphics3D.COLOR_GOLD;
+  final static short colixSelectionDefault = Graphics3D.GOLD;
+
+  Color colorSelection = colorSelectionDefault;
+  short colixSelection = colixSelectionDefault;
 
   void setColorSelection(Color c) {
+    if (c == null)
+      c = colorSelectionDefault;
     colorSelection = c;
     colixSelection = g3d.getColix(c);
   }

@@ -1475,15 +1475,15 @@ class Eval implements Runnable {
       break;
     case Token.identifier:
 	String str = (String)statement[1].value;
+        Color color = getColorOrNoneParam(2);
 	if (str.equalsIgnoreCase("dotsConvex"))
-          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex",
-                                  getColorOrNoneParam(2));
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex", color);
 	else if (str.equalsIgnoreCase("dotsConcave"))
-          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave",
-                                  getColorOrNoneParam(2));
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave", color);
 	else if (str.equalsIgnoreCase("dotsSaddle"))
-          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle",
-                                  getColorOrNoneParam(2));
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle", color);
+        else if (str.equalsIgnoreCase("selectionHalo"))
+          viewer.setColorSelection(color);
 	else
 	    invalidArgument();
 	break;

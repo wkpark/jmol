@@ -328,40 +328,50 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
     //Now create an editor to encapsulate the button, and
     //set it up as the editor for all Color cells.
-    final ColorEditor colorEditor = new ColorEditor(button);
-    table.setDefaultEditor(Color.class, colorEditor);
+    try {
+      final ColorEditor colorEditor = new ColorEditor(button);
+      table.setDefaultEditor(Color.class, colorEditor);
 
-    //Set up the dialog that the button brings up.
-    final JColorChooser colorChooser = new JColorChooser();
-
-    //XXX: PENDING: add the following when setPreviewPanel
-    //XXX: starts working.
-    //JComponent preview = new ColorRenderer(false);
-    //preview.setPreferredSize(new Dimension(50, 10));
-    //colorChooser.setPreviewPanel(preview);
-    ActionListener okListener = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        colorEditor.currentColor = colorChooser.getColor();
-      }
-    };
-    final JDialog dialog = JColorChooser.createDialog(button, "Pick a Color",
-                             true, colorChooser, okListener, null);    //XXXDoublecheck this is OK
-
-    //Here's the code that brings up the dialog.
-    button.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        button.setBackground(colorEditor.currentColor);
-        colorChooser.setColor(colorEditor.currentColor);
-
-        //Without the following line, the dialog comes up
-        //in the middle of the screen.
-        //dialog.setLocationRelativeTo(button);
-        dialog.show();
-      }
-    });
+      //Set up the dialog that the button brings up.
+      final JColorChooser colorChooser = new JColorChooser();
+      
+      //XXX: PENDING: add the following when setPreviewPanel
+      //XXX: starts working.
+      //JComponent preview = new ColorRenderer(false);
+      //preview.setPreferredSize(new Dimension(50, 10));
+      //colorChooser.setPreviewPanel(preview);
+      ActionListener okListener = new ActionListener() {
+	      
+	      public void actionPerformed(ActionEvent e) {
+		  colorEditor.currentColor = colorChooser.getColor();
+	      }
+	  };
+      final JDialog dialog = JColorChooser.createDialog(button, "Pick a Color",
+							true, colorChooser, okListener, null);    //XXXDoublecheck this is OK
+      
+      //Here's the code that brings up the dialog.
+      button.addActionListener(new ActionListener() {
+	      
+	      public void actionPerformed(ActionEvent e) {
+		  
+		  button.setBackground(colorEditor.currentColor);
+		  colorChooser.setColor(colorEditor.currentColor);
+		  
+		  //Without the following line, the dialog comes up
+		  //in the middle of the screen.
+		  //dialog.setLocationRelativeTo(button);
+		  dialog.show();
+	      }
+	  });
+    } catch (VerifyError e) {
+	/* not catching this gives problems on 
+           "SunOS ac9 5.8 Generic_108528-10 sun4u sparc SUNW,Ultra-5_10" with
+           java version "1.2.2" Solaris VM (build Solaris_JDK_1.2.2_07a, native threads, sunwjit) 
+	   
+           See also: http://www.geocrawler.com/lists/3/SourceForge/11143/0/
+	   date: 22 January 2002
+	*/
+    }
   }
 
 

@@ -25,16 +25,19 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
+
 public class Dots {
 
-  AtomShape atom;
-  boolean dotsOn;
-  Dots(AtomShape atom) {
-    this.atom = atom;
-    dotsOn = true;
-  }
-
-  void setDotsOn(boolean dotsOn) {
-    this.dotsOn = dotsOn;
-  }
+    AtomShape atom;
+    boolean dotsOn;
+    int[] visibilityMap;
+    Dots(AtomShape atom, DotsRenderer dotsRenderer) {
+	this.atom = atom;
+	dotsOn = true;
+	visibilityMap = dotsRenderer.calcVisibilityMap(atom);
+    }
+    
+    void setDotsOn(boolean dotsOn) {
+	this.dotsOn = dotsOn;
+    }
 }

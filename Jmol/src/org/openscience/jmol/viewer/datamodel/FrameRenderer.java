@@ -126,4 +126,8 @@ public class FrameRenderer {
                                   int x, int y, int z) {
     labelRenderer.renderStringOutside(str, colix, pointsFontsize, x, y, z);
   }
+
+    public DotsRenderer getDotsRenderer() {
+	return dotsRenderer;
+    }
 }

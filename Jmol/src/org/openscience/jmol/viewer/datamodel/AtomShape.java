@@ -216,17 +216,18 @@ public class AtomShape implements Bspt.Tuple {
     this.marAtom = marAtom;
   }
         
-  public void setDotsOn(boolean dotsOn) {
-    if (dotsOn) {
-      if (dots == null)
-        dots = new Dots(this);
-      else
-        dots.setDotsOn(true);
-    } else {
-      if (dots != null)
-        dots.setDotsOn(false);
+    public void setDotsOn(boolean dotsOn) {
+	if (dotsOn) {
+	    if (dots == null)
+		dots = new Dots(this, frame.frameRenderer.dotsRenderer);
+	    else
+		dots.setDotsOn(true);
+	} else {
+	    if (dots != null)
+		dots.setDotsOn(false);
+	}
     }
-  }
+
 
   public int getRasMolRadius() {
     if (styleAtom <= JmolViewer.NONE)

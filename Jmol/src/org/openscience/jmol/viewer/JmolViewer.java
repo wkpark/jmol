@@ -111,8 +111,8 @@ final public class JmolViewer {
     selectionManager = new SelectionManager(this);
     mouseManager = new MouseManager(awtComponent, this);
     fileManager = new FileManager(this);
-    modelManager = new ModelManager(this, jmolModelAdapter);
     repaintManager = new RepaintManager(this);
+    modelManager = new ModelManager(this, jmolModelAdapter);
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
     axesManager = new AxesManager(this);

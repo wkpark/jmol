@@ -32,6 +32,7 @@ import java.awt.Rectangle;
 
 import java.util.Hashtable;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Point3d;
 import javax.vecmath.Point3i;
 
 public class DotsRenderer {
@@ -43,10 +44,11 @@ public class DotsRenderer {
 
   public DotsRenderer(JmolViewer viewer) {
     this.viewer = viewer;
-    this.icosohedron = new Icosohedron();
-    icosohedron.quadruple();
-    icosohedron.quadruple();
-    icosohedron.quadruple();
+    this.icosohedron = new Icosohedron(); // 12 vertices
+    icosohedron.quadruple(); // 12 * 4 - 6 = 42 vertices
+    icosohedron.quadruple(); // 42 * 4 - 6 = 162 vertices
+    icosohedron.quadruple(); // 162 * 4 - 6 = 642 vertices
+    //    icosohedron.quadruple(); // 642 * 4 - 6 = 2562 vertices
   }
 
   public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip) {
@@ -63,21 +65,103 @@ public class DotsRenderer {
 
   public void render(AtomShape atomShape) {
     Dots dots = atomShape.dots;
-    if (dots == null || !dots.dotsOn)
+    if (dots == null || !dots.dotsOn || dots.visibilityMap == null)
       return;
     render(colixDots == 0 ? atomShape.colixAtom : colixDots,
            atomShape.getVanderwaalsRadius(),
+	   dots.visibilityMap,
            atomShape.x, atomShape.y, atomShape.z);
   }
 
 
-  void render(short colix, double vdwRadius, int x, int y, int z) {
-    icosohedron.calcScreenPoints(vdwRadius, x, y, z);
-    short[] faceIndices = icosohedron.faceIndices;
-    g3d.plotPoints(colix,
-                   icosohedron.vertices.length,
-                   icosohedron.screenCoordinates);
-  }
+    void render(short colix, double vdwRadius, int[] visibilityMap,
+		int x, int y, int z) {
+	icosohedron.calcScreenPoints(visibilityMap, vdwRadius, x, y, z);
+	if (icosohedron.screenCoordinateCount > 0)
+	    g3d.plotPoints(colix,
+			   icosohedron.screenCoordinateCount,
+			   icosohedron.screenCoordinates);
+    }
+
+
+    // I have no idea what this number should be
+    final static int neighborMax = 24;
+    int neighborCount;
+    AtomShape[] neighbors = new AtomShape[neighborMax];
+    Point3d[] neighborCenters = new Point3d[neighborMax];
+    double[] neighborVdwRadii = new double[neighborMax];
+
+    void getNeighbors(AtomShape atom) {
+	double myVdwRadius = atom.getVanderwaalsRadius();
+	JmolFrame frame = atom.frame;
+	double maxVdwRadius = frame.getMaxVanderwaalsRadius();
+	AtomShapeIterator iter = 
+	    frame.getWithinIterator(atom, myVdwRadius + maxVdwRadius);
+	neighborCount = 0;
+	while (iter.hasNext()) {
+	    AtomShape neighbor = iter.next();
+	    if (neighbor != atom) {
+		neighbors[neighborCount] = neighbor;
+		neighborCenters[neighborCount] = neighbor.point3d;
+		neighborVdwRadii[neighborCount] =
+		    neighbor.getVanderwaalsRadius();
+		++neighborCount;
+	    }
+	}
+	/*
+	System.out.println("neighborsFound=" + neighborCount);
+	System.out.println("myVdwRadius=" + myVdwRadius +
+			   " maxVdwRadius=" + maxVdwRadius +
+			   " distMax=" + (myVdwRadius + maxVdwRadius));
+	Point3d me = atom.getPoint3d();
+	for (int i = 0; i < neighborCount; ++i) {
+	    System.out.println(" dist=" +
+			       me.distance(neighbors[i].getPoint3d()));
+	}
+	*/
+    }
+
+    int[] bitmap;
+    Point3d pointT = new Point3d();
+
+    void calcBits(AtomShape atom) {
+	Point3d myCenter = atom.point3d;
+	Vector3d[] vertices = icosohedron.vertices;
+	int dotCount = vertices.length;
+	setAllBits(bitmap, dotCount);
+	if (neighborCount == 0)
+	    return;
+	double myVdwRadius = atom.getVanderwaalsRadius();
+	int iNeighborLast = 0;
+	for (int iDot = dotCount; --iDot >= 0; ) {
+	    pointT.set(vertices[iDot]);
+	    pointT.scaleAdd(myVdwRadius, myCenter);
+	    int iStart = iNeighborLast;
+	    do {
+		if (pointT.distance(neighborCenters[iNeighborLast])
+		    < neighborVdwRadii[iNeighborLast]) {
+		    clearBit(bitmap, iDot);
+		    break;
+		}
+		iNeighborLast = (iNeighborLast + 1) % neighborCount;
+	    } while (iNeighborLast != iStart);
+	}
+    }
+
+    int[] calcVisibilityMap(AtomShape atom) {
+	getNeighbors(atom);
+	calcBits(atom);
+	int indexLast;
+	for (indexLast = bitmap.length;
+	     --indexLast >= 0 && bitmap[indexLast] == 0; )
+	    {}
+	if (indexLast == -1)
+	    return null;
+	int count = indexLast + 1;
+	int[] visibilityMap = new int[indexLast + 1];
+	System.arraycopy(bitmap, 0, visibilityMap, 0, count);
+	return visibilityMap;
+    }
 
   final static double halfRoot5 = 0.5 * Math.sqrt(5);
   final static double oneFifth = 2 * Math.PI / 5;
@@ -114,6 +198,7 @@ public class DotsRenderer {
 
     Vector3d[] vertices;
     Vector3d[] verticesTransformed;
+      int screenCoordinateCount;
     int[] screenCoordinates;
     short[] faceIndices;
 
@@ -143,17 +228,39 @@ public class DotsRenderer {
         viewer.transformVector(vertices[i], verticesTransformed[i]);
     }
 
-    void calcScreenPoints(double radius, int x, int y, int z) {
+    void calcScreenPoints(int[] visibilityMap, double radius,
+			  int x, int y, int z) {
+      int pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1.0);
+      int dotCount = 12;
+      if (pixelsPerAngstrom > 4) {
+	  dotCount = 42;
+	  if (pixelsPerAngstrom > 8) {
+	      dotCount = 162;
+	      if (pixelsPerAngstrom > 16) {
+		  dotCount = 642;
+		  //		  if (pixelsPerAngstrom > 32)
+		  //		      dotCount = 2562;
+	      }
+	  }
+      }
+
       double scaledRadius = viewer.scaleToPerspective(z, radius);
-      for (int i = vertices.length, icoordinates = screenCoordinates.length;
-           --i >= 0; ) {
-        Vector3d vertex = verticesTransformed[i];
-        screenCoordinates[--icoordinates] = z
-          + (int)((scaledRadius*vertex.z) + (vertex.z < 0 ? -0.5 : 0.5));
-        screenCoordinates[--icoordinates] = y
-          + (int)((scaledRadius*vertex.y) + (vertex.y < 0 ? -0.5 : 0.5));
-        screenCoordinates[--icoordinates] = x
-          + (int)((scaledRadius*vertex.x) + (vertex.x < 0 ? -0.5 : 0.5));
+      screenCoordinateCount = 0;
+      int icoordinates = 0;
+      int iDot = visibilityMap.length << 5;
+      if (iDot > dotCount)
+	  iDot = dotCount;
+      while (--iDot >= 0) {
+	  if (! getBit(visibilityMap, iDot))
+	      continue;
+	  Vector3d vertex = verticesTransformed[iDot];
+	  screenCoordinates[icoordinates++] = x
+	      + (int)((scaledRadius*vertex.x) + (vertex.x < 0 ? -0.5 : 0.5));
+	  screenCoordinates[icoordinates++] = y
+	      + (int)((scaledRadius*vertex.y) + (vertex.y < 0 ? -0.5 : 0.5));
+	  screenCoordinates[icoordinates++] = z
+	      + (int)((scaledRadius*vertex.z) + (vertex.z < 0 ? -0.5 : 0.5));
+	  ++screenCoordinateCount;
       }
     }
 
@@ -214,6 +321,7 @@ public class DotsRenderer {
         throw new NullPointerException();
       }
       htVertex = null;
+      bitmap = allocateBitmap(nVerticesNew);
     }
     
     private short getVertex(short i1, short i2) {
@@ -235,5 +343,35 @@ public class DotsRenderer {
       return iVertexNew++;
     }
   }
+
+  final static int[] allocateBitmap(int count) {
+      return new int[(count + 31) >> 5];
+  }
+
+  final static void setBit(int[] bitmap, int i) {
+      bitmap[(i >> 5)] |= 1 << (~i & 31);
+  }
+
+  final static void clearBit(int[] bitmap, int i) {
+      bitmap[(i >> 5)] &= ~(1 << (~i & 31));
+  }
+
+  final static boolean getBit(int[] bitmap, int i) {
+      return (bitmap[(i >> 5)] << (i & 31)) < 0;
+  }
+
+  final static void setAllBits(int[] bitmap, int count) {
+      int i = count >> 5;
+      if ((count & 31) != 0)
+	  bitmap[i] = 0x80000000 >> (count - 1);
+      while (--i >= 0)
+	  bitmap[i] = -1;
+  }
+  
+  final static void clearBitmap(int[] bitmap) {
+      for (int i = bitmap.length; --i >= 0; )
+	  bitmap[i] = 0;
+  }
+    
 }
 

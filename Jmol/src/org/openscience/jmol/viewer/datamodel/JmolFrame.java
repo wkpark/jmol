@@ -36,6 +36,7 @@ import java.awt.Rectangle;
 public class JmolFrame {
 
   public JmolViewer viewer;
+    public FrameRenderer frameRenderer;
   // the maximum CovalentRadius seen in this set of atoms
   // used in autobonding
   double maxCovalentRadius = 0.0;
@@ -55,6 +56,7 @@ public class JmolFrame {
     this.hasPdbRecords = hasPdbRecords;
     atomShapes = new AtomShape[atomCount];
     bondShapes = new BondShape[atomCount * 2];
+    this.frameRenderer = viewer.getFrameRenderer();
   }
 
   public JmolFrame(JmolViewer viewer, boolean hasPdbRecords) {

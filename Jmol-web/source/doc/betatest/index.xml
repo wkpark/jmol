@@ -70,14 +70,17 @@
       </section>
     </section>
     
-    <section title="Jmol10pre15">
+    <section title="Jmol10pre16">
       <p>
-	Jmol version 10 pre-release 15 was released on Thu 14 Oct 2004.
+	Jmol version 10 pre-release 16 was released on Fri 15 Oct 2004.
 	This release includes the following:
 	<ul>
 	  <li>
 	    support for 'show orientation and 'moveTo' commands ...
 	    very useful
+	  </li>
+	  <li>
+	    Bug fix on pre15 with moveTo
 	  </li>
 	  <li>
 	    Bug fix so that 'slab mode' now works again
@@ -88,10 +91,10 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre15.zip">
+	<a href="Jmol10pre16.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre15.zip
+	    Jmol10pre16.zip
 	  </font>
 	</a>
       </p>
@@ -108,7 +111,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre15.zip</b>
+	format as .zip : <b>jar xf Jmol10pre16.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

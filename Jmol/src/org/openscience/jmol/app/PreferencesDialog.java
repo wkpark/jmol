@@ -139,7 +139,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "minBondDistance",                "0.40",
     "bondTolerance",                  "0.45",
     "colorSelection",                 "16762880",
-    "colorBackground",                "16775930", // snow
+    "colorBackground",                "0",
     "isLabelAtomColor",               "false",
     "colorText",                      "0",
     "isBondAtomColor",                "true",

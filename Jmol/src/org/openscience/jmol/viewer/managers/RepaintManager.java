@@ -210,6 +210,11 @@ public class RepaintManager {
     }
   }
 
+  public void forceRefresh() {
+    repaintPending = true;
+    viewer.awtComponent.repaint();
+  }
+
   public void refresh() {
     if (repaintPending)
       return;

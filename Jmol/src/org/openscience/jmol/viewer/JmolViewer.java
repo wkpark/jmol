@@ -813,7 +813,10 @@ final public class JmolViewer {
   }
 
   public void openFile(String name) {
+    System.out.println("openFile(" + name + ") thread:" + Thread.currentThread() +
+                       " priority:" + Thread.currentThread().getPriority());
     clear();
+    forceRefresh();
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name);
     long ms = System.currentTimeMillis() - timeBegin;
@@ -1230,6 +1233,10 @@ final public class JmolViewer {
     repaintManager.popHoldRepaint();
   }
 
+  public void forceRefresh() {
+    repaintManager.forceRefresh();
+  }
+
   public void refresh() {
     repaintManager.refresh();
   }
@@ -1244,6 +1251,8 @@ final public class JmolViewer {
 
   public Image renderScreenImage(Rectangle rectClip) {
     manageScriptTermination();
+    System.out.println("renderScreenImage() thread:" + Thread.currentThread() +
+                       " priority:" + Thread.currentThread().getPriority());
     repaintManager.render(g3d, rectClip,
                           modelManager.getFrame(), repaintManager.displayModelID);
     return g3d.getScreenImage();

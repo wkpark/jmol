@@ -54,9 +54,9 @@ public class ColorManager {
     System.out.println("setting color scheme to:" + colorScheme);
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;
-      viewer.setColorBackground("snow");
-      viewer.setColorMeasurement(Color.black);
-      viewer.setColorLabel(Color.black);
+      viewer.setColorBackground(Color.black);
+      viewer.setColorMeasurement(Color.white);
+      viewer.setColorLabel(Color.white);
       viewer.setColorDots(null);
     } else if (colorScheme.equals("rasmol")) {
       int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;

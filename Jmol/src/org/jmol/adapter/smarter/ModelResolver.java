@@ -34,7 +34,8 @@ class ModelResolver {
   static Object resolveModel(String name, BufferedReader bufferedReader,
                              ModelAdapter.Logger logger) throws Exception {
     ModelReader modelReader;
-    String modelReaderName = determineModelReader(bufferedReader);
+    String modelReaderName = determineModelReader(bufferedReader, logger);
+    logger.log("The model resolver thinks", modelReaderName);
     String className =
       "org.jmol.adapter.smarter." + modelReaderName + "Reader";
 
@@ -59,7 +60,8 @@ class ModelResolver {
     return model;
   }
 
-  static String determineModelReader(BufferedReader bufferedReader)
+  static String determineModelReader(BufferedReader bufferedReader,
+                                     ModelAdapter.Logger logger)
     throws Exception {
     bufferedReader.mark(512);
     String[] lines = new String[4];

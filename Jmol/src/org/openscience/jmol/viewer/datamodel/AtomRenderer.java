@@ -83,17 +83,25 @@ class AtomRenderer extends Renderer {
   void render(Atom atom) {
     if (!showHydrogens && atom.atomicNumber == 1)
       return;
+    boolean hasHalo = viewer.hasSelectionHalo(atom);
     int diameter = atom.diameter;
-    if (diameter == 0)
+    if (diameter == 0 && !hasHalo)
       return;
-    int radius = (diameter + 1) / 2;
+    int effectiveDiameter = diameter;
+    if (hasHalo) {
+      int halowidth = diameter / 4;
+      if (halowidth < 4) halowidth = 4;
+      if (halowidth > 10) halowidth = 10;
+      effectiveDiameter = diameter + 2 * halowidth;
+    }
+    int effectiveRadius = (effectiveDiameter + 1) / 2;
     int x = atom.x;
     int y = atom.y;
     int z = atom.z;
-    if (x + radius < minX ||
-        x - radius >= maxX ||
-        y + radius < minY ||
-        y - radius >= maxY)
+    if (x + effectiveRadius < minX ||
+        x - effectiveRadius >= maxX ||
+        y + effectiveRadius < minY ||
+        y - effectiveRadius >= maxY)
       return;
 
     if (!wireframeRotating)
@@ -101,13 +109,9 @@ class AtomRenderer extends Renderer {
     else
       g3d.drawCircleCentered(atom.colixAtom, diameter, x, y, z);
 
-    if (viewer.hasSelectionHalo(atom)) {
-      int halowidth = diameter / 4;
-      if (halowidth < 4) halowidth = 4;
-      if (halowidth > 10) halowidth = 10;
-      int halodiameter = diameter + 2 * halowidth;
-      g3d.fillScreenedCircleCentered(colixSelection, halodiameter, x, y, z);
-    }
+    if (viewer.hasSelectionHalo(atom))
+      g3d.fillScreenedCircleCentered(colixSelection,
+                                     effectiveDiameter, x, y, z);
   }
 
   void renderLabel(Atom atom) {

@@ -22,6 +22,7 @@ package org.openscience.jmol;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
+import java.io.*;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
@@ -171,6 +172,49 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
         speedSlider.addChangeListener(new SpeedSliderChangeListener());
         speedPanel.add(speedSlider);
         container.add(speedPanel);
+
+        JPanel savePanel = new JPanel();
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        savePanel.setLayout(gridbag);
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        savePanel.setBorder(new TitledBorder(jrh.getString("saveLabel")));
+
+        JButton snmb = new JButton(jrh.getIcon("saveImage"));
+        snmb.setMargin(new Insets(1, 1, 1, 1));
+        snmb.setActionCommand("save");
+        snmb.addActionListener(this);
+        c.gridx = 0;
+        c.gridy = 0;
+        gridbag.setConstraints(snmb,c);
+        savePanel.add(snmb);
+
+        JLabel snml = new JLabel(jrh.getString("saveTooltip"));
+        c.gridx = 1;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(snml,c);
+        savePanel.add(snml);
+        
+        JButton sgb = new JButton(jrh.getIcon("movieImage"));
+        sgb.setMargin(new Insets(1, 1, 1, 1));
+        sgb.setActionCommand("movie");
+        sgb.addActionListener(this);
+        sgb.setEnabled(false);
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 1;
+        gridbag.setConstraints(sgb,c);
+        savePanel.add(sgb);
+
+        JLabel sgl = new JLabel(jrh.getString("movieTooltip"));
+        c.gridx = 1;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sgl,c);
+        savePanel.add(sgl);
+
+        container.add(savePanel);
         
         addWindowListener(new VibrateWindowListener());
         getContentPane().add(container);
@@ -360,32 +404,69 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     public void actionPerformed(ActionEvent evt) {
         if (vibFile != null) {
             String arg = evt.getActionCommand();
-			if (arg.equals("rewind")) {
-                            stop();
-                            currentFrame = 0;
-                            setFrame(currentFrame, true);
-			}
-			if (arg.equals("ff")) {
-                            stop();
-                            currentFrame = vibFile.nFrames() - 1;
-                            setFrame(currentFrame, true);
-			}
-			if (arg.equals("next")) {
-                            stop();
-                            if (currentFrame < vibFile.nFrames() - 1)  currentFrame++;
-                            setFrame(currentFrame, true);
-			}
-			if (arg.equals("prev")) {
-                            stop();
-                            if (currentFrame > 0)  currentFrame--;
-                            setFrame(currentFrame, true);
-			}
-			if (arg == "pause") {
-                            stop();
-			}
-			if (arg == "play") {
-                            start();
-			}
+            if (arg.equals("rewind")) {
+                stop();
+                currentFrame = 0;
+                setFrame(currentFrame, true);
+            }
+            if (arg.equals("ff")) {
+                stop();
+                currentFrame = vibFile.nFrames() - 1;
+                setFrame(currentFrame, true);
+            }
+            if (arg.equals("next")) {
+                stop();
+                if (currentFrame < vibFile.nFrames() - 1)  currentFrame++;
+                setFrame(currentFrame, true);
+            }
+            if (arg.equals("prev")) {
+                stop();
+                if (currentFrame > 0)  currentFrame--;
+                setFrame(currentFrame, true);
+            }
+            if (arg == "pause") {
+                stop();
+            }
+            if (arg == "play") {
+                start();
+            }
+            if (arg == "save") {
+                createVibration();
+                FileTyper ft = new FileTyper(saveChooser);
+                saveChooser.setAccessory(ft);
+                if (System.getProperty("user.dir") != null) {
+                    File currentDir = new File(System.getProperty("user.dir"));
+                    saveChooser.setCurrentDirectory(currentDir);
+                }
+                int retval = saveChooser.showSaveDialog(this);
+                if(retval == 0) {
+                    File theFile = saveChooser.getSelectedFile();
+                    if(theFile != null) {
+                        try {
+                            FileOutputStream os = new FileOutputStream(theFile);                            
+                            if (ft.getType().equals("XYZ (xmol)")) {
+                                XYZSaver xyzs = new XYZSaver(vibFile, os);
+                                xyzs.writeFile();
+                            } else if (ft.getType().equals("PDB")) {
+                                // PDBSaver ps = new PDBSaver(vibFile, os);
+                                // ps.writeFile();
+                            } else if (ft.getType().equals("CML")) {
+                                CMLSaver cs = new CMLSaver(vibFile, os);
+                                cs.writeFile();
+                            } else {
+                            }
+                            
+                            os.flush();
+                            os.close();
+                            
+                        } catch(Exception exc) {
+                            System.out.println(exc.toString());
+                        }
+                    }
+                }
+            }
+            if (arg == "movie") {
+            }
         }
     }
     
@@ -395,7 +476,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
      * @return the Dimension preferred by the dialog
      */
     public Dimension getPreferredSize() {
-        return new Dimension(275, 300);
+        return new Dimension(280, 385);
     }
     
     /**
@@ -675,4 +756,8 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
      * Resource handler for loading interface strings and icons.
      */
     private static JmolResourceHandler jrh = new JmolResourceHandler("Vibrate");
+    /**
+     * FileChooser for saving normal mode files.
+     */
+    private static JFileChooser saveChooser = new JFileChooser();
 }

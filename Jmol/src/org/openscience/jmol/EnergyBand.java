@@ -45,6 +45,10 @@ import javax.vecmath.Point3d;
  */
 public class EnergyBand extends PhysicalProperty {
   
+  private int energyUnits;
+  private double maxE=0;
+  private double minE=0;
+  private double fermiE=0;
   private Vector kLines = new Vector(0);  //a Vector of KLine
 
   private int kLineIndex=-1;
@@ -55,8 +59,9 @@ public class EnergyBand extends PhysicalProperty {
    * Constructor for energyBand
    * @param c The electronic energy bands of a frame
    */
-  public EnergyBand() {
+  public EnergyBand(int energyUnits) {
     super("EnergyBand", null);
+    this.energyUnits = energyUnits;
     System.out.println("New ENERGY Band set!!!!!!!!!!!!!!!!!!!!!!");
   }
   
@@ -94,6 +99,12 @@ public class EnergyBand extends PhysicalProperty {
     ((KLine)kLines.elementAt(kLineIndex))
       .energy[kPosIndex][bandIndex] = energy;
     
+    if(energy > maxE) {
+      maxE = energy;
+    } else if (energy < minE) {
+      minE = energy;
+    }
+
   }
   
   public int getNumberOfKLines() {
@@ -104,6 +115,26 @@ public class EnergyBand extends PhysicalProperty {
     return (KLine)kLines.elementAt(index);
   }
 
+  public int getEnergyUnits() {
+    return energyUnits;
+  }
+
+  public double getMinE() {
+    return minE;
+  }
+
+  public double getMaxE() {
+    return maxE;
+  }
+  
+  public double getFermiE() {
+    return fermiE;
+  }
+  
+  public void setFermiE(double fermiE) {
+    this.fermiE = fermiE;
+  }
+
   public class KLine {
     
     private Point3d orig; // for example (0, 0, 0)
@@ -112,7 +143,7 @@ public class EnergyBand extends PhysicalProperty {
     private String endName;  // "X"
     private int nkpt;
     private int nband;
-
+    
     //enrergy[k][n] is the enregy value at wave vector pos[k] and band n
     //pos[k] is the reduce coordinate along this KLine.
     private double[][] energy;
@@ -133,15 +164,31 @@ public class EnergyBand extends PhysicalProperty {
     public Point3d getOrigin() {
       return orig;
     }
+    
+    public String getOriginName() {
+      return origName;
+    }
+
+    public void setOriginName(String origName) {
+      this.origName = origName;
+    }
 
     public Point3d getEnd() {
       return end;
     }
     
+    public String getEndName() {
+      return endName;
+    }
+    
+    public void setEndName(String endName) {
+      this.endName = endName;
+    }
+    
     public int getNumberOfkPoints() {
       return nkpt;
     }
-
+    
     public int getNumberOfBands() {
       return nband;
     }
@@ -150,6 +197,10 @@ public class EnergyBand extends PhysicalProperty {
       return pos;
     }
     
+    /**
+     * Get the reduce coordinate of the k-point along the segment line.
+     */
+
     public double getkPoint(int index) {
       return pos[index];
     }
@@ -157,6 +208,12 @@ public class EnergyBand extends PhysicalProperty {
     public double[] getEnergies(int index) {
       return energy[index];
     }
+
+    public double getDistance(int indexa, int indexb) {
+      return orig.distance(end) * Math.abs(pos[indexa] - pos[indexb]); 
+    }
+    
   }   //end KLine
+  
   
 } //end class EnergyBand

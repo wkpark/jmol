@@ -1,4 +1,6 @@
-/* $RCSfile$
+/**
+ * Copyright 2002 The Jmol Development Team
+ * $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
@@ -22,13 +24,16 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.openscience.jmol;
+import  org.openscience.jmol.util.*;
 
 import javax.swing.table.AbstractTableModel;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
+import javax.swing.JTable;  //TBL
+import javax.swing.JScrollPane; //SCP
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
@@ -41,26 +46,30 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import javax.swing.JDialog; //DLG
+import javax.swing.JPanel;  //PNL
 import javax.swing.Action;
-import javax.swing.JFrame;
+import javax.swing.JFrame;  //FRM
 import javax.swing.AbstractAction;
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JCheckBox;
+import javax.swing.JLabel;  //LBL
+import javax.swing.JButton; //BUT
+import javax.swing.JTextField; //TXF
+import javax.swing.JCheckBox;  //CKB
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.border.TitledBorder;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.Vector;   //VEC
 import java.lang.reflect.Array;
-import javax.swing.JTabbedPane;
+import javax.swing.JTabbedPane; //TBP
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
+import javax.swing.JComboBox;  //CBO  and CBOLST for the associated list
 import javax.swing.JOptionPane;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import java.io.File;
+import java.awt.BorderLayout;
 import javax.vecmath.Point3d;
 
 /**
@@ -70,13 +79,12 @@ import javax.vecmath.Point3d;
  * @version 1.3
  */
 public class CrystalPropertiesDialog extends JDialog
-    implements ActionListener, PropertyChangeListener {
+  implements ActionListener, PropertyChangeListener {
 
   // This class is instanciated in Jmol.java as "crystprop". 
   // In Properties/Jmol.Properties, the dialog box must
   // be defined as "crystprop" exactly!
 
-  
   private JDialog thisDialog;  //reference to this dialog
   
   /**
@@ -98,43 +106,65 @@ public class CrystalPropertiesDialog extends JDialog
   JTabbedPane tabbedPane;
 
   //Primitive Vectors fields
-  JComboBox primVTypeList;
-  Vector jRprim = new Vector(3);    //basis vectors text field
-  Vector jRprimLabel = new Vector(3);
-  Vector jAcell = new Vector(3);
-  Vector jAcellLabel = new Vector(3);
-  Vector jEdges = new Vector(3);
-  Vector jEdgesLabel = new Vector(3);
-  Vector jAngles = new Vector(3);
-  Vector jAnglesLabel = new Vector(3);
-  JComboBox primApplyTo;        // apply to which frame?
+  JComboBox primitiveVectorTypeCBO;
+  Vector jRprim_VEC_TXF = new Vector(3);    //basis vectors text field
+  Vector jRprim_VEC_LBL = new Vector(3);
+  Vector jAcell_VEC_TXF = new Vector(3);
+  Vector jAcell_VEC_LBL = new Vector(3);
+  Vector jEdges_VEC_TXF = new Vector(3);
+  Vector jEdges_VEC_LBL = new Vector(3);
+  Vector jAngles_VEC_TXF = new Vector(3);
+  Vector jAngles_VEC_LBL = new Vector(3);
+  JComboBox primitiveVectors_ApplyToWhichFrameCBO;        // apply to which frame?
   String[] applyToList = new String[2];
 
   //Crystal Box fields
-  JCheckBox origAtomsOnly;
-  Vector jAtomBox = new Vector(2);
-  Vector jAtomBoxLabel = new Vector(2);
-  Vector jBondBox = new Vector(2);
-  Vector jBondBoxLabel = new Vector(2);
-  Vector jUnitBox = new Vector(2);
-  Vector jUnitBoxLabel = new Vector(2);
+  JCheckBox origAtomsOnlyCKB;
+  Vector jAtomBox_VEC_TXF = new Vector(2);
+  Vector jAtomBox_VEC_LBL = new Vector(2);
+  Vector jBondBox_VEC_TXF = new Vector(2);
+  Vector jBondBox_VEC_LBL = new Vector(2);
+  Vector jUnitBox_VEC_TXF = new Vector(2);
+  Vector jUnitBox_VEC_LBL = new Vector(2);
 
-  JComboBox boxApplyTo;    //aplly to which frame?
+  JComboBox crystalBox_ApplyToWhichFrameCBO;    //aplly to which frame?
 
-  JLabel jNatomInBoxInfo;
-  JLabel jNatomInCellInfo;
-  JLabel jNatomInClipInfo;
+  JLabel jNatomInBoxLBL;
+  JLabel jNatomInCellLBL;
+  JLabel jNatomInClipLBL;
 
   //Basis Vectors fields
-  JComboBox basisVectorTypeList;
+  JComboBox basisVectorType_CBO;
   BasisVTableModel basisVectorTableModel = new BasisVTableModel();
-  JComboBox basisApplyTo;
+  JComboBox basisVector_ApplyToWhichFrameCBO;
 
   //Energy Band fields
-
   EnergyLinesTableModel energyLinesTableModel = new EnergyLinesTableModel();
-  EnergyLineTableModel energyLineTableModel = new EnergyLineTableModel();
-  
+  JTextField plotDefTXF;
+  JTextField resolutionTXF;
+  JTextField ratioTXF;
+  JTextField nRoundTXF;
+  JComboBox roundSchemeCBO;
+  JComboBox unitsCBO;
+  int unitsComboOldIndex;
+  JTextField maxETXF;
+  JTextField minETXF;
+  JTextField fermiETXF;
+  JTextField nvTicsTXF;
+  JTextField nhTicsTXF;
+  JTextField ticSizeTXF;
+  JTextField fontsize1TXF;
+  JTextField fontsize2TXF;
+  JTextField fontsize3TXF;
+  JTextField sectionSepTXF;
+  JTextField yLabelTXF;
+  String[] yLabels;
+
+  boolean hasEnergyBand;
+  EnergyBand energyBand;
+  JFileChooser chooser;
+  int fileChooserReturnVal;
+  BandPlot bandPlot;
 
   // The actions:
 
@@ -183,27 +213,27 @@ public class CrystalPropertiesDialog extends JDialog
 
     Component panel1 = makePrimVectorsPanel();
     tabbedPane.addTab(resources.getString("Crystprop.primVLabel"),
-        resources.getIcon("Crystprop.primVImage"), panel1,
-          resources.getString("Crystprop.primVToolTip"));
+		      resources.getIcon("Crystprop.primVImage"), panel1,
+		      resources.getString("Crystprop.primVToolTip"));
     tabbedPane.setSelectedIndex(0);
 
     Component panel2 = makeCrystalBoxPanel();
     tabbedPane.addTab(resources.getString("Crystprop.crystalboxLabel"),
-        resources.getIcon("Crystprop.crystalboxImage"), panel2,
-          resources.getString("Crystprop.crystalboxToolTip"));
+		      resources.getIcon("Crystprop.crystalboxImage"), panel2,
+		      resources.getString("Crystprop.crystalboxToolTip"));
 
     Component panel3 = makeBasisVectorsPanel();
     tabbedPane.addTab(resources.getString("Crystprop.basisVLabel"),
-        resources.getIcon("Crystprop.basisVImage"), panel3,
-          resources.getString("Crystprop.basisVToolTip"));
+		      resources.getIcon("Crystprop.basisVImage"), panel3,
+		      resources.getString("Crystprop.basisVToolTip"));
 
-    //Component panel4 = makeEnergyBandPanel();
-    //tabbedPane.addTab(resources.getString("Crystprop.energyBandLabel"),
-    //    resources.getIcon("Crystprop.energyBandImage"), panel4,
-    //      resources.getString("Crystprop.energyBandToolTip"));
-    ////EnergyBand is disabled by default
-    //tabbedPane.setEnabledAt(3,false);
-
+    Component panel4 = makeEnergyBandPanel();
+    tabbedPane.addTab(resources.getString("Crystprop.energyBandLabel"),
+		      resources.getIcon("Crystprop.energyBandImage"), panel4,
+		      resources.getString("Crystprop.energyBandToolTip"));
+    //EnergyBand is disabled by default
+    tabbedPane.setEnabledAt(3,false);
+    
     //Component panel4 = makeSpaceGroupPanel("Blah blah blah blah");
     //tabbedPane.addTab("Space Group", icon, panel4, 
     //                "Does nothing at all");
@@ -226,12 +256,12 @@ public class CrystalPropertiesDialog extends JDialog
       new JButton(resources.translate("Read current frame"));
 
     jApplyButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        commitChange();
-        updateDialog();
+	public void actionPerformed(ActionEvent e) {
+	  commitChange();
+	  updateDialog();
 
-      }
-    });
+	}
+      });
 
     jOkButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -242,7 +272,6 @@ public class CrystalPropertiesDialog extends JDialog
       }
     });
 
-
     jCancelButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         crystpropAction.setEnabled(true);
@@ -251,11 +280,11 @@ public class CrystalPropertiesDialog extends JDialog
     });
 
     jReadButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        updateCurrentFrameIndex();
-        updateDialog();
-      }
-    });
+	public void actionPerformed(ActionEvent e) {
+	  updateCurrentFrameIndex();
+	  updateDialog();
+	}
+      });
 
 
     jConfirmPanel.add(jOkButton);
@@ -304,17 +333,16 @@ public class CrystalPropertiesDialog extends JDialog
    */
   protected void updateBasisVectorsPanel() {
     
-    int index = basisVectorTypeList.getSelectedIndex();
+    int index = basisVectorType_CBO.getSelectedIndex();
       
-      if (hasCrystalInfo) {
-	int natom = unitCellBox.getNumberOfAtoms();
-	Object[][] basisVectorData = new Object[natom][5];
-	Atom atom;
-	
+    if (hasCrystalInfo) {
+      int natom = unitCellBox.getNumberOfAtoms();
+      Object[][] basisVectorData = new Object[natom][5];
+      Atom atom;
 	
 	if (index == 0) {    //Cartesian coord.
         double[][] cartPos = unitCellBox.getCartesianPos();
-        for (int i = 0; i < natom; i++) {
+	for (int i = 0; i < natom; i++) {
           basisVectorData[i][0] = new String(String.valueOf(i));
           basisVectorData[i][1] = new String(unitCellBox.getAtomType(i).getID());
           basisVectorData[i][2] = new Double(cartPos[i][0]);
@@ -337,10 +365,10 @@ public class CrystalPropertiesDialog extends JDialog
       }
     } else {               //is not a crystal
       if (index == 1) {
-        basisVectorTypeList.setSelectedIndex(0);
+        basisVectorType_CBO.setSelectedIndex(0);
         String message =
           JmolResourceHandler.getInstance().translate(
-            "You must define the primitive vectors to use lattice coordinates");
+						      "You must define the primitive vectors to use lattice coordinates");
         errorDialog(message);
         System.out.println(message);
       }
@@ -367,27 +395,27 @@ public class CrystalPropertiesDialog extends JDialog
   /**
    * This method set which of the cartesian or crystallographic
    * primitive vectors is editable.
-   * Depends of primVTypeList state
+   * Depends of primitiveVectorTypeCBO state
    *
    * @param index an <code>int</code> value
    */
   protected void setPrimVectorsState() {
 
     //Set what is editable depending on the combo box value
-    int index = primVTypeList.getSelectedIndex();
+    int index = primitiveVectorTypeCBO.getSelectedIndex();
     if (index == 0) {
       for (int i = 0; i < 3; i++) {
-        ((JTextField) (jRprim.elementAt(i))).setEditable(true);
-        ((JTextField) (jAcell.elementAt(i))).setEditable(true);
-        ((JTextField) (jEdges.elementAt(i))).setEditable(false);
-        ((JTextField) (jAngles.elementAt(i))).setEditable(false);
+        ((JTextField) (jRprim_VEC_TXF.elementAt(i))).setEditable(true);
+        ((JTextField) (jAcell_VEC_TXF.elementAt(i))).setEditable(true);
+        ((JTextField) (jEdges_VEC_TXF.elementAt(i))).setEditable(false);
+        ((JTextField) (jAngles_VEC_TXF.elementAt(i))).setEditable(false);
       }
     } else if (index == 1) {
       for (int i = 0; i < 3; i++) {
-        ((JTextField) (jRprim.elementAt(i))).setEditable(false);
-        ((JTextField) (jAcell.elementAt(i))).setEditable(false);
-        ((JTextField) (jEdges.elementAt(i))).setEditable(true);
-        ((JTextField) (jAngles.elementAt(i))).setEditable(true);
+        ((JTextField) (jRprim_VEC_TXF.elementAt(i))).setEditable(false);
+        ((JTextField) (jAcell_VEC_TXF.elementAt(i))).setEditable(false);
+        ((JTextField) (jEdges_VEC_TXF.elementAt(i))).setEditable(true);
+        ((JTextField) (jAngles_VEC_TXF.elementAt(i))).setEditable(true);
       }
     }
   }    //end setPrimVectorsState
@@ -395,22 +423,18 @@ public class CrystalPropertiesDialog extends JDialog
 
   /**
    * Make usage or not of atomBox, bondBox, unitBox 
-   * Depends of origAtomsOnly state
+   * Depends of origAtomsOnlyCKB state
    */
   protected void setCrystalBoxState() {
 
     //Set what is editable depending on the checkbox value
-    if (origAtomsOnly.isSelected()) {
+    if (origAtomsOnlyCKB.isSelected()) {
       for (int i = 0; i < 2; i++) {
-        ((JTextField) (jAtomBox.elementAt(i))).setEditable(false);
-        ((JTextField) (jBondBox.elementAt(i))).setEditable(false);
-        ((JTextField) (jUnitBox.elementAt(i))).setEditable(false);
+        ((JTextField) (jAtomBox_VEC_TXF.elementAt(i))).setEditable(false);
       }
     } else {
       for (int i = 0; i < 2; i++) {
-        ((JTextField) (jAtomBox.elementAt(i))).setEditable(true);
-        ((JTextField) (jBondBox.elementAt(i))).setEditable(true);
-        ((JTextField) (jUnitBox.elementAt(i))).setEditable(true);
+        ((JTextField) (jAtomBox_VEC_TXF.elementAt(i))).setEditable(true);
       }
     }
   }    //end setCrystalBoxState
@@ -444,61 +468,61 @@ public class CrystalPropertiesDialog extends JDialog
       resources.translate("Cartesian"),
       resources.translate("Crystallographic")
     };
-    primVTypeList = new JComboBox(primVTypeStrings);
-    primVTypeList.setSelectedIndex(0);
-    primVTypeList.addActionListener(new ActionListener() {
+    primitiveVectorTypeCBO = new JComboBox(primVTypeStrings);
+    primitiveVectorTypeCBO.setSelectedIndex(0);
+    primitiveVectorTypeCBO.addActionListener(new ActionListener() {
 
-      public void actionPerformed(ActionEvent e) {
-	//        JComboBox cb = (JComboBox) e.getSource();
-        //int primVTypeIndex = cb.getSelectedIndex();
-        setPrimVectorsState();//FIX
-      }
-    });
+	public void actionPerformed(ActionEvent e) {
+	  //        JComboBox cb = (JComboBox) e.getSource();
+	  //int primVTypeIndex = cb.getSelectedIndex();
+	  setPrimVectorsState();//FIX
+	}
+      });
 
     JLabel jPrimVTypeLabel = new JLabel(resources.translate("Representation")
-                               + ": ", SwingConstants.LEFT);
+					+ ": ", SwingConstants.LEFT);
 
 
     //The jCart subPanel (level 1)
     JPanel jCart = new JPanel();
     jCart.setLayout(gridbag);
     jCart.setBorder(new TitledBorder(resources
-        .getString("Crystprop.cartesianLabel")));
+				     .getString("Crystprop.cartesianLabel")));
 
 
     //The 3 basis vectors text box in Cartesian representation
-    jRprim.addElement(new JTextField(22));
-    jRprim.addElement(new JTextField(22));
-    jRprim.addElement(new JTextField(22));
-    jRprimLabel.addElement(new JLabel("1:", SwingConstants.RIGHT));
-    jRprimLabel.addElement(new JLabel("2:", SwingConstants.RIGHT));
-    jRprimLabel.addElement(new JLabel("3:", SwingConstants.RIGHT));
-    ((JTextField) (jRprim.elementAt(0)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.rprim1Tooltip"));
-    ((JTextField) (jRprim.elementAt(1)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.rprim2Tooltip"));
-    ((JTextField) (jRprim.elementAt(2)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.rprim3Tooltip"));
+    jRprim_VEC_TXF.addElement(new JTextField(22));
+    jRprim_VEC_TXF.addElement(new JTextField(22));
+    jRprim_VEC_TXF.addElement(new JTextField(22));
+    jRprim_VEC_LBL.addElement(new JLabel("1:", SwingConstants.RIGHT));
+    jRprim_VEC_LBL.addElement(new JLabel("2:", SwingConstants.RIGHT));
+    jRprim_VEC_LBL.addElement(new JLabel("3:", SwingConstants.RIGHT));
+    ((JTextField) (jRprim_VEC_TXF.elementAt(0)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.rprim1Tooltip"));
+    ((JTextField) (jRprim_VEC_TXF.elementAt(1)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.rprim2Tooltip"));
+    ((JTextField) (jRprim_VEC_TXF.elementAt(2)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.rprim3Tooltip"));
 
     //The 3 acell text box
-    jAcell.addElement(new JTextField(7));
-    jAcell.addElement(new JTextField(7));
-    jAcell.addElement(new JTextField(7));
-    jAcellLabel.addElement(new JLabel("*", SwingConstants.RIGHT));
-    jAcellLabel.addElement(new JLabel("*", SwingConstants.RIGHT));
-    jAcellLabel.addElement(new JLabel("*", SwingConstants.RIGHT));
-    ((JTextField) (jAcell.elementAt(0)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.acell1Tooltip"));
-    ((JTextField) (jAcell.elementAt(1)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.acell2Tooltip"));
-    ((JTextField) (jAcell.elementAt(2)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.acell3Tooltip"));
+    jAcell_VEC_TXF.addElement(new JTextField(7));
+    jAcell_VEC_TXF.addElement(new JTextField(7));
+    jAcell_VEC_TXF.addElement(new JTextField(7));
+    jAcell_VEC_LBL.addElement(new JLabel("*", SwingConstants.RIGHT));
+    jAcell_VEC_LBL.addElement(new JLabel("*", SwingConstants.RIGHT));
+    jAcell_VEC_LBL.addElement(new JLabel("*", SwingConstants.RIGHT));
+    ((JTextField) (jAcell_VEC_TXF.elementAt(0)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.acell1Tooltip"));
+    ((JTextField) (jAcell_VEC_TXF.elementAt(1)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.acell2Tooltip"));
+    ((JTextField) (jAcell_VEC_TXF.elementAt(2)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.acell3Tooltip"));
 
 
 
@@ -506,47 +530,47 @@ public class CrystalPropertiesDialog extends JDialog
     JPanel jCryst = new JPanel();
     jCryst.setLayout(gridbag);
     jCryst.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Crystprop.crystalloLabel")));
+				      .getString("Crystprop.crystalloLabel")));
 
     //The 3 edges (Crystallographic representation)
-    jEdges.addElement(new JTextField(7));
-    jEdges.addElement(new JTextField(7));
-    jEdges.addElement(new JTextField(7));
-    jEdgesLabel.addElement(new JLabel("a:", SwingConstants.RIGHT));
-    jEdgesLabel.addElement(new JLabel("b:", SwingConstants.RIGHT));
-    jEdgesLabel.addElement(new JLabel("c:", SwingConstants.RIGHT));
-    ((JTextField) (jEdges.elementAt(0)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.edgeaTooltip"));
-    ((JTextField) (jEdges.elementAt(1)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.edgebTooltip"));
-    ((JTextField) (jEdges.elementAt(2)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.edgecTooltip"));
+    jEdges_VEC_TXF.addElement(new JTextField(7));
+    jEdges_VEC_TXF.addElement(new JTextField(7));
+    jEdges_VEC_TXF.addElement(new JTextField(7));
+    jEdges_VEC_LBL.addElement(new JLabel("a:", SwingConstants.RIGHT));
+    jEdges_VEC_LBL.addElement(new JLabel("b:", SwingConstants.RIGHT));
+    jEdges_VEC_LBL.addElement(new JLabel("c:", SwingConstants.RIGHT));
+    ((JTextField) (jEdges_VEC_TXF.elementAt(0)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.edgeaTooltip"));
+    ((JTextField) (jEdges_VEC_TXF.elementAt(1)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.edgebTooltip"));
+    ((JTextField) (jEdges_VEC_TXF.elementAt(2)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.edgecTooltip"));
 
 
     //The 3 angles
-    jAngles.addElement(new JTextField(7));
-    jAngles.addElement(new JTextField(7));
-    jAngles.addElement(new JTextField(7));
-    jAnglesLabel.addElement(new JLabel("Alpha:", SwingConstants.RIGHT));
-    jAnglesLabel.addElement(new JLabel("Beta:", SwingConstants.RIGHT));
-    jAnglesLabel.addElement(new JLabel("Gamma:", SwingConstants.RIGHT));
-    ((JTextField) (jAngles.elementAt(0)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.angleaTooltip"));
-    ((JTextField) (jAngles.elementAt(1)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.anglebTooltip"));
-    ((JTextField) (jAngles.elementAt(2)))
-        .setToolTipText(JmolResourceHandler.getInstance()
-          .getString("Crystprop.anglecTooltip"));
+    jAngles_VEC_TXF.addElement(new JTextField(7));
+    jAngles_VEC_TXF.addElement(new JTextField(7));
+    jAngles_VEC_TXF.addElement(new JTextField(7));
+    jAngles_VEC_LBL.addElement(new JLabel("Alpha:", SwingConstants.RIGHT));
+    jAngles_VEC_LBL.addElement(new JLabel("Beta:", SwingConstants.RIGHT));
+    jAngles_VEC_LBL.addElement(new JLabel("Gamma:", SwingConstants.RIGHT));
+    ((JTextField) (jAngles_VEC_TXF.elementAt(0)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.angleaTooltip"));
+    ((JTextField) (jAngles_VEC_TXF.elementAt(1)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.anglebTooltip"));
+    ((JTextField) (jAngles_VEC_TXF.elementAt(2)))
+      .setToolTipText(JmolResourceHandler.getInstance()
+		      .getString("Crystprop.anglecTooltip"));
 
 
     //Apply to all/current frame radio box
-    primApplyTo = new JComboBox(applyToList);
-    primApplyTo.setSelectedIndex(1);
+    primitiveVectors_ApplyToWhichFrameCBO = new JComboBox(applyToList);
+    primitiveVectors_ApplyToWhichFrameCBO.setSelectedIndex(1);
 
 
 
@@ -560,79 +584,79 @@ public class CrystalPropertiesDialog extends JDialog
     jPrimVType.add(jPrimVTypeLabel);
     c.weightx = 100000;
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(primVTypeList, c);
-    jPrimVType.add(primVTypeList);
+    gridbag.setConstraints(primitiveVectorTypeCBO, c);
+    jPrimVType.add(primitiveVectorTypeCBO);
 
 
     //   add widgets to jCart Panel.
     //c.fill = GridBagConstraints.HORIZONTAL;
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridwidth = 4;
-    gridbag.setConstraints((JLabel) jRprimLabel.elementAt(0), c);
-    jCart.add((JLabel) jRprimLabel.elementAt(0));
-    gridbag.setConstraints((JTextField) jRprim.elementAt(0), c);
-    jCart.add((JTextField) jRprim.elementAt(0));
-    gridbag.setConstraints((JLabel) jAcellLabel.elementAt(0), c);
-    jCart.add((JLabel) jAcellLabel.elementAt(0));
+    gridbag.setConstraints((JLabel) jRprim_VEC_LBL.elementAt(0), c);
+    jCart.add((JLabel) jRprim_VEC_LBL.elementAt(0));
+    gridbag.setConstraints((JTextField) jRprim_VEC_TXF.elementAt(0), c);
+    jCart.add((JTextField) jRprim_VEC_TXF.elementAt(0));
+    gridbag.setConstraints((JLabel) jAcell_VEC_LBL.elementAt(0), c);
+    jCart.add((JLabel) jAcell_VEC_LBL.elementAt(0));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAcell.elementAt(0), c);
-    jCart.add((JTextField) jAcell.elementAt(0));
+    gridbag.setConstraints((JTextField) jAcell_VEC_TXF.elementAt(0), c);
+    jCart.add((JTextField) jAcell_VEC_TXF.elementAt(0));
 
     c.gridwidth = 4;
-    gridbag.setConstraints((JLabel) jRprimLabel.elementAt(1), c);
-    jCart.add((JLabel) jRprimLabel.elementAt(1));
-    gridbag.setConstraints((JTextField) jRprim.elementAt(1), c);
-    jCart.add((JTextField) jRprim.elementAt(1));
-    gridbag.setConstraints((JLabel) jAcellLabel.elementAt(1), c);
-    jCart.add((JLabel) jAcellLabel.elementAt(1));
+    gridbag.setConstraints((JLabel) jRprim_VEC_LBL.elementAt(1), c);
+    jCart.add((JLabel) jRprim_VEC_LBL.elementAt(1));
+    gridbag.setConstraints((JTextField) jRprim_VEC_TXF.elementAt(1), c);
+    jCart.add((JTextField) jRprim_VEC_TXF.elementAt(1));
+    gridbag.setConstraints((JLabel) jAcell_VEC_LBL.elementAt(1), c);
+    jCart.add((JLabel) jAcell_VEC_LBL.elementAt(1));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAcell.elementAt(1), c);
-    jCart.add((JTextField) jAcell.elementAt(1));
+    gridbag.setConstraints((JTextField) jAcell_VEC_TXF.elementAt(1), c);
+    jCart.add((JTextField) jAcell_VEC_TXF.elementAt(1));
 
     c.gridwidth = 4;
-    gridbag.setConstraints((JLabel) jRprimLabel.elementAt(2), c);
-    jCart.add((JLabel) jRprimLabel.elementAt(2));
-    gridbag.setConstraints((JTextField) jRprim.elementAt(2), c);
-    jCart.add((JTextField) jRprim.elementAt(2));
-    gridbag.setConstraints((JLabel) jAcellLabel.elementAt(2), c);
-    jCart.add((JLabel) jAcellLabel.elementAt(2));
+    gridbag.setConstraints((JLabel) jRprim_VEC_LBL.elementAt(2), c);
+    jCart.add((JLabel) jRprim_VEC_LBL.elementAt(2));
+    gridbag.setConstraints((JTextField) jRprim_VEC_TXF.elementAt(2), c);
+    jCart.add((JTextField) jRprim_VEC_TXF.elementAt(2));
+    gridbag.setConstraints((JLabel) jAcell_VEC_LBL.elementAt(2), c);
+    jCart.add((JLabel) jAcell_VEC_LBL.elementAt(2));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAcell.elementAt(2), c);
-    jCart.add((JTextField) jAcell.elementAt(2));
+    gridbag.setConstraints((JTextField) jAcell_VEC_TXF.elementAt(2), c);
+    jCart.add((JTextField) jAcell_VEC_TXF.elementAt(2));
 
     //   add widgets to jCryst Panel.
     c.gridwidth = 4;
-    gridbag.setConstraints((JLabel) jEdgesLabel.elementAt(0), c);
-    jCryst.add((JLabel) jEdgesLabel.elementAt(0));
-    gridbag.setConstraints((JTextField) jEdges.elementAt(0), c);
-    jCryst.add((JTextField) jEdges.elementAt(0));
-    gridbag.setConstraints((JLabel) jAnglesLabel.elementAt(0), c);
-    jCryst.add((JLabel) jAnglesLabel.elementAt(0));
+    gridbag.setConstraints((JLabel) jEdges_VEC_LBL.elementAt(0), c);
+    jCryst.add((JLabel) jEdges_VEC_LBL.elementAt(0));
+    gridbag.setConstraints((JTextField) jEdges_VEC_TXF.elementAt(0), c);
+    jCryst.add((JTextField) jEdges_VEC_TXF.elementAt(0));
+    gridbag.setConstraints((JLabel) jAngles_VEC_LBL.elementAt(0), c);
+    jCryst.add((JLabel) jAngles_VEC_LBL.elementAt(0));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAngles.elementAt(0), c);
-    jCryst.add((JTextField) jAngles.elementAt(0));
+    gridbag.setConstraints((JTextField) jAngles_VEC_TXF.elementAt(0), c);
+    jCryst.add((JTextField) jAngles_VEC_TXF.elementAt(0));
 
     c.gridwidth = 4;
-    gridbag.setConstraints((JLabel) jEdgesLabel.elementAt(1), c);
-    jCryst.add((JLabel) jEdgesLabel.elementAt(1));
-    gridbag.setConstraints((JTextField) jEdges.elementAt(1), c);
-    jCryst.add((JTextField) jEdges.elementAt(1));
-    gridbag.setConstraints((JLabel) jAnglesLabel.elementAt(1), c);
-    jCryst.add((JLabel) jAnglesLabel.elementAt(1));
+    gridbag.setConstraints((JLabel) jEdges_VEC_LBL.elementAt(1), c);
+    jCryst.add((JLabel) jEdges_VEC_LBL.elementAt(1));
+    gridbag.setConstraints((JTextField) jEdges_VEC_TXF.elementAt(1), c);
+    jCryst.add((JTextField) jEdges_VEC_TXF.elementAt(1));
+    gridbag.setConstraints((JLabel) jAngles_VEC_LBL.elementAt(1), c);
+    jCryst.add((JLabel) jAngles_VEC_LBL.elementAt(1));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAngles.elementAt(1), c);
-    jCryst.add((JTextField) jAngles.elementAt(1));
+    gridbag.setConstraints((JTextField) jAngles_VEC_TXF.elementAt(1), c);
+    jCryst.add((JTextField) jAngles_VEC_TXF.elementAt(1));
 
     c.gridwidth = 4;
-    gridbag.setConstraints((JLabel) jEdgesLabel.elementAt(2), c);
-    jCryst.add((JLabel) jEdgesLabel.elementAt(2));
-    gridbag.setConstraints((JTextField) jEdges.elementAt(2), c);
-    jCryst.add((JTextField) jEdges.elementAt(2));
-    gridbag.setConstraints((JLabel) jAnglesLabel.elementAt(2), c);
-    jCryst.add((JLabel) jAnglesLabel.elementAt(2));
+    gridbag.setConstraints((JLabel) jEdges_VEC_LBL.elementAt(2), c);
+    jCryst.add((JLabel) jEdges_VEC_LBL.elementAt(2));
+    gridbag.setConstraints((JTextField) jEdges_VEC_TXF.elementAt(2), c);
+    jCryst.add((JTextField) jEdges_VEC_TXF.elementAt(2));
+    gridbag.setConstraints((JLabel) jAngles_VEC_LBL.elementAt(2), c);
+    jCryst.add((JLabel) jAngles_VEC_LBL.elementAt(2));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAngles.elementAt(2), c);
-    jCryst.add((JTextField) jAngles.elementAt(2));
+    gridbag.setConstraints((JTextField) jAngles_VEC_TXF.elementAt(2), c);
+    jCryst.add((JTextField) jAngles_VEC_TXF.elementAt(2));
 
 
     //add level 1 Panels to level 0 Panel
@@ -653,8 +677,8 @@ public class CrystalPropertiesDialog extends JDialog
     c.fill = GridBagConstraints.NONE;
     c.gridheight = GridBagConstraints.REMAINDER;
     c.anchor = GridBagConstraints.NORTHWEST;
-    gridbag.setConstraints(primApplyTo, c);
-    jPrimVPanel.add(primApplyTo);
+    gridbag.setConstraints(primitiveVectors_ApplyToWhichFrameCBO, c);
+    jPrimVPanel.add(primitiveVectors_ApplyToWhichFrameCBO);
 
     //JLabel picture =
     //    new JLabel(JmolResourceHandler.getInstance()
@@ -676,33 +700,48 @@ public class CrystalPropertiesDialog extends JDialog
     boolean isPrimVectorsCart = unitCellBox.isPrimVectorsCartesian();
     
     if (isPrimVectorsCart) {
-      primVTypeList.setSelectedIndex(0);
+      primitiveVectorTypeCBO.setSelectedIndex(0);
       setPrimVectorsState();
     } else {
-      primVTypeList.setSelectedIndex(1);
+      primitiveVectorTypeCBO.setSelectedIndex(1);
       setPrimVectorsState();
     }
 
     double[][] rprim = unitCellBox.getRprim();
     double[] acell = unitCellBox.getAcell();
-    ((JTextField) (jRprim.elementAt(0)))
-      .setText(rprim[0][0] + ", " + rprim[0][1] + ", " + rprim[0][2]);
-    ((JTextField) (jRprim.elementAt(1)))
-      .setText(rprim[1][0] + ", " + rprim[1][1] + ", " + rprim[1][2]);
-    ((JTextField) (jRprim.elementAt(2)))
-      .setText(rprim[2][0] + ", " + rprim[2][1] + ", " + rprim[2][2]);
-    ((JTextField) (jAcell.elementAt(0))).setText(acell[0] + "");
-    ((JTextField) (jAcell.elementAt(1))).setText(acell[1] + "");
-    ((JTextField) (jAcell.elementAt(2))).setText(acell[2] + "");
+    ((JTextField) (jRprim_VEC_TXF.elementAt(0)))
+      .setText((float)rprim[0][0] + ", " + (float)rprim[0][1] + ", " 
+	       + (float)rprim[0][2]);
+    ((JTextField) (jRprim_VEC_TXF.elementAt(1)))
+      .setText((float)rprim[1][0] + ", " + (float)rprim[1][1] + ", " 
+	       + (float)rprim[1][2]);
+    ((JTextField) (jRprim_VEC_TXF.elementAt(2)))
+      .setText((float)rprim[2][0] + ", " + (float)rprim[2][1] + ", " 
+	       + (float)rprim[2][2]);
+    ((JTextField) (jAcell_VEC_TXF.elementAt(0))).setText((float)acell[0] 
+							 + "");
+    ((JTextField) (jAcell_VEC_TXF.elementAt(1))).setText((float)acell[1] 
+							 + "");
+    ((JTextField) (jAcell_VEC_TXF.elementAt(2))).setText((float)acell[2] 
+							 + "");
     
+
     double[] edges = unitCellBox.getEdges();
     double[] angles = unitCellBox.getAngles();
-    ((JTextField) (jEdges.elementAt(0))).setText(edges[0] + "");
-    ((JTextField) (jEdges.elementAt(1))).setText(edges[1] + "");
-    ((JTextField) (jEdges.elementAt(2))).setText(edges[2] + "");
-    ((JTextField) (jAngles.elementAt(0))).setText(angles[0] + "");
-    ((JTextField) (jAngles.elementAt(1))).setText(angles[1] + "");
-    ((JTextField) (jAngles.elementAt(2))).setText(angles[2] + "");
+    ((JTextField) (jEdges_VEC_TXF.elementAt(0))).setText((float)edges[0] 
+							 + "");
+    ((JTextField) (jEdges_VEC_TXF.elementAt(1))).setText((float)edges[1] 
+							 + "");
+    ((JTextField) (jEdges_VEC_TXF.elementAt(2))).setText((float)edges[2] 
+							 + "");
+    ((JTextField) (jAngles_VEC_TXF.elementAt(0))).setText((float)angles[0] 
+							  + "");
+    ((JTextField) (jAngles_VEC_TXF.elementAt(1))).setText((float)angles[1] 
+							  + "");
+    ((JTextField) (jAngles_VEC_TXF.elementAt(2))).setText((float)angles[2] 
+							  + "");
+
+
     
   } //end updatePrimVectorsPanel
   
@@ -719,13 +758,13 @@ public class CrystalPropertiesDialog extends JDialog
     GridBagLayout gridbag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
 
-    //Panel that contains jAtomBox, the jBondBox and the jUnitBox panels
+    //Panel that contains jAtomBox_VEC_TXF, the jBondBox_VEC_TXF and the jUnitBox_VEC_TXF panels
     JPanel jCrystBoxPanel = new JPanel();
     jCrystBoxPanel.setLayout(gridbag);
 
-    origAtomsOnly = new JCheckBox
+    origAtomsOnlyCKB = new JCheckBox
       (resources.getString("Crystprop.origatomCheckBox"));
-    origAtomsOnly.addItemListener(new ItemListener() {
+    origAtomsOnlyCKB.addItemListener(new ItemListener() {
 	
 	public void itemStateChanged(ItemEvent e) {
 	  setCrystalBoxState();
@@ -740,54 +779,54 @@ public class CrystalPropertiesDialog extends JDialog
     
     JPanel jBondBoxPanel = new JPanel();
     jBondBoxPanel
-        .setBorder(new TitledBorder
-		   (resources.getString("Crystprop.bondboxLabel")));
+      .setBorder(new TitledBorder
+		 (resources.getString("Crystprop.bondboxLabel")));
     jBondBoxPanel.setLayout(gridbag);
 
     JPanel jUnitBoxPanel = new JPanel();
     jUnitBoxPanel
-        .setBorder(new TitledBorder
-		   (resources.getString("Crystprop.unitboxLabel")));
+      .setBorder(new TitledBorder
+		 (resources.getString("Crystprop.unitboxLabel")));
     jUnitBoxPanel.setLayout(gridbag);
 
-    jAtomBox.addElement(new JTextField(15));
-    jAtomBoxLabel.addElement(
-        new JLabel(
-          resources.translate("Minimum atom box coordinate") + ": ",
-            SwingConstants.LEFT));
-    jAtomBox.addElement(new JTextField(15));
-    jAtomBoxLabel.addElement(
-        new JLabel(
-          resources.translate("Maximum atom box coordinate") + ": ",
-            SwingConstants.LEFT));
-    jBondBox.addElement(new JTextField(15));
-    jBondBoxLabel.addElement(
-        new JLabel(
-          resources.translate("Minimum bond box coordinate") + ": ",
-            SwingConstants.LEFT));
-    jBondBox.addElement(new JTextField(15));
-    jBondBoxLabel.addElement(
-        new JLabel(
-          resources.translate("Maximum bond box coordinate") + ": ",
-            SwingConstants.LEFT));
-    jUnitBox.addElement(new JTextField(15));
-    jUnitBoxLabel.addElement(
-        new JLabel(
-          resources.translate("Minimum unit box coordinate") + ": ",
-            SwingConstants.LEFT));
-    jUnitBox.addElement(new JTextField(15));
-    jUnitBoxLabel.addElement(
-        new JLabel(
-          resources.translate("Maximum unit box coordinate") + ": ",
-            SwingConstants.LEFT));
+    jAtomBox_VEC_TXF.addElement(new JTextField(15));
+    jAtomBox_VEC_LBL.addElement(
+			     new JLabel(
+					resources.translate("Minimum atom box coordinate") + ": ",
+					SwingConstants.LEFT));
+    jAtomBox_VEC_TXF.addElement(new JTextField(15));
+    jAtomBox_VEC_LBL.addElement(
+			     new JLabel(
+					resources.translate("Maximum atom box coordinate") + ": ",
+					SwingConstants.LEFT));
+    jBondBox_VEC_TXF.addElement(new JTextField(15));
+    jBondBox_VEC_LBL.addElement(
+			     new JLabel(
+					resources.translate("Minimum bond box coordinate") + ": ",
+					SwingConstants.LEFT));
+    jBondBox_VEC_TXF.addElement(new JTextField(15));
+    jBondBox_VEC_LBL.addElement(
+			     new JLabel(
+					resources.translate("Maximum bond box coordinate") + ": ",
+					SwingConstants.LEFT));
+    jUnitBox_VEC_TXF.addElement(new JTextField(15));
+    jUnitBox_VEC_LBL.addElement(
+			     new JLabel(
+					resources.translate("Minimum unit box coordinate") + ": ",
+					SwingConstants.LEFT));
+    jUnitBox_VEC_TXF.addElement(new JTextField(15));
+    jUnitBox_VEC_LBL.addElement(
+			     new JLabel(
+					resources.translate("Maximum unit box coordinate") + ": ",
+					SwingConstants.LEFT));
 
-    jNatomInBoxInfo =
-        new JLabel(JmolResourceHandler.getInstance()
-          .getString("Crystprop.NatomBox"), SwingConstants.LEFT);
+    jNatomInBoxLBL =
+      new JLabel(JmolResourceHandler.getInstance()
+		 .getString("Crystprop.NatomBox"), SwingConstants.LEFT);
 
-    jNatomInClipInfo =
-        new JLabel(JmolResourceHandler.getInstance()
-          .getString("Crystprop.NCell"), SwingConstants.LEFT);
+    jNatomInClipLBL =
+      new JLabel(JmolResourceHandler.getInstance()
+		 .getString("Crystprop.NCell"), SwingConstants.LEFT);
 
 
     //AtomBox
@@ -797,68 +836,67 @@ public class CrystalPropertiesDialog extends JDialog
     c.fill = GridBagConstraints.NONE;
     c.gridheight = 4;
     c.gridwidth= GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(origAtomsOnly, c);
-    jAtomBoxPanel.add(origAtomsOnly);
+    gridbag.setConstraints(origAtomsOnlyCKB, c);
+    jAtomBoxPanel.add(origAtomsOnlyCKB);
     c.gridwidth = 2;
-    gridbag.setConstraints((JLabel) jAtomBoxLabel.elementAt(0), c);
-    jAtomBoxPanel.add((JLabel) jAtomBoxLabel.elementAt(0));
+    gridbag.setConstraints((JLabel) jAtomBox_VEC_LBL.elementAt(0), c);
+    jAtomBoxPanel.add((JLabel) jAtomBox_VEC_LBL.elementAt(0));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAtomBox.elementAt(0), c);
-    jAtomBoxPanel.add((JTextField) jAtomBox.elementAt(0));
+    gridbag.setConstraints((JTextField) jAtomBox_VEC_TXF.elementAt(0), c);
+    jAtomBoxPanel.add((JTextField) jAtomBox_VEC_TXF.elementAt(0));
     c.gridwidth = 2;
-    gridbag.setConstraints((JLabel) jAtomBoxLabel.elementAt(1), c);
-    jAtomBoxPanel.add((JLabel) jAtomBoxLabel.elementAt(1));
+    gridbag.setConstraints((JLabel) jAtomBox_VEC_LBL.elementAt(1), c);
+    jAtomBoxPanel.add((JLabel) jAtomBox_VEC_LBL.elementAt(1));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jAtomBox.elementAt(1), c);
-    jAtomBoxPanel.add((JTextField) jAtomBox.elementAt(1));
+    gridbag.setConstraints((JTextField) jAtomBox_VEC_TXF.elementAt(1), c);
+    jAtomBoxPanel.add((JTextField) jAtomBox_VEC_TXF.elementAt(1));
     c.gridheight = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(jNatomInBoxInfo, c);
-    jAtomBoxPanel.add(jNatomInBoxInfo);
+    gridbag.setConstraints(jNatomInBoxLBL, c);
+    jAtomBoxPanel.add(jNatomInBoxLBL);
 
+    
     //BondBox
     c.gridwidth = 2;
     c.gridheight = 3;
-    gridbag.setConstraints((JLabel) jBondBoxLabel.elementAt(0), c);
-    jBondBoxPanel.add((JLabel) jBondBoxLabel.elementAt(0));
+    gridbag.setConstraints((JLabel) jBondBox_VEC_LBL.elementAt(0), c);
+    jBondBoxPanel.add((JLabel) jBondBox_VEC_LBL.elementAt(0));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jBondBox.elementAt(0), c);
-    jBondBoxPanel.add((JTextField) jBondBox.elementAt(0));
+    gridbag.setConstraints((JTextField) jBondBox_VEC_TXF.elementAt(0), c);
+    jBondBoxPanel.add((JTextField) jBondBox_VEC_TXF.elementAt(0));
     c.gridwidth = 2;
-    gridbag.setConstraints((JLabel) jBondBoxLabel.elementAt(1), c);
-    jBondBoxPanel.add((JLabel) jBondBoxLabel.elementAt(1));
+    gridbag.setConstraints((JLabel) jBondBox_VEC_LBL.elementAt(1), c);
+    jBondBoxPanel.add((JLabel) jBondBox_VEC_LBL.elementAt(1));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jBondBox.elementAt(1), c);
-    jBondBoxPanel.add((JTextField) jBondBox.elementAt(1));
+    gridbag.setConstraints((JTextField) jBondBox_VEC_TXF.elementAt(1), c);
+    jBondBoxPanel.add((JTextField) jBondBox_VEC_TXF.elementAt(1));
     c.gridheight = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(jNatomInClipInfo, c);
-    jBondBoxPanel.add(jNatomInClipInfo);
+    gridbag.setConstraints(jNatomInClipLBL, c);
+    jBondBoxPanel.add(jNatomInClipLBL);
 
     //UnitBox
     c.gridwidth = 2;
     c.gridheight = 3;
-    gridbag.setConstraints((JLabel) jUnitBoxLabel.elementAt(0), c);
-    jUnitBoxPanel.add((JLabel) jUnitBoxLabel.elementAt(0));
+    gridbag.setConstraints((JLabel) jUnitBox_VEC_LBL.elementAt(0), c);
+    jUnitBoxPanel.add((JLabel) jUnitBox_VEC_LBL.elementAt(0));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jUnitBox.elementAt(0), c);
-    jUnitBoxPanel.add((JTextField) jUnitBox.elementAt(0));
+    gridbag.setConstraints((JTextField) jUnitBox_VEC_TXF.elementAt(0), c);
+    jUnitBoxPanel.add((JTextField) jUnitBox_VEC_TXF.elementAt(0));
     c.gridwidth = 2;
-    gridbag.setConstraints((JLabel) jUnitBoxLabel.elementAt(1), c);
-    jUnitBoxPanel.add((JLabel) jUnitBoxLabel.elementAt(1));
+    gridbag.setConstraints((JLabel) jUnitBox_VEC_LBL.elementAt(1), c);
+    jUnitBoxPanel.add((JLabel) jUnitBox_VEC_LBL.elementAt(1));
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints((JTextField) jUnitBox.elementAt(1), c);
-    jUnitBoxPanel.add((JTextField) jUnitBox.elementAt(1));
+    gridbag.setConstraints((JTextField) jUnitBox_VEC_TXF.elementAt(1), c);
+    jUnitBoxPanel.add((JTextField) jUnitBox_VEC_TXF.elementAt(1));
 
 
-    boxApplyTo = new JComboBox(applyToList);
-    boxApplyTo.setSelectedIndex(0);
+    crystalBox_ApplyToWhichFrameCBO = new JComboBox(applyToList);
+    crystalBox_ApplyToWhichFrameCBO.setSelectedIndex(0);
 
-    c.gridheight = 5;
+    c.gridheight = 4;
     c.weighty = 10000;
     c.anchor = GridBagConstraints.NORTHWEST;
     c.fill = GridBagConstraints.BOTH;
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(origAtomsOnly, c);
-    jCrystBoxPanel.add(origAtomsOnly);
     gridbag.setConstraints(jAtomBoxPanel, c);
     jCrystBoxPanel.add(jAtomBoxPanel);
     gridbag.setConstraints(jBondBoxPanel, c);
@@ -868,8 +906,8 @@ public class CrystalPropertiesDialog extends JDialog
     c.weighty = 1;
     c.fill = GridBagConstraints.NONE;
     c.gridheight = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(boxApplyTo, c);
-    jCrystBoxPanel.add(boxApplyTo);
+    gridbag.setConstraints(crystalBox_ApplyToWhichFrameCBO, c);
+    jCrystBoxPanel.add(crystalBox_ApplyToWhichFrameCBO);
 
 
     return jCrystBoxPanel;
@@ -882,33 +920,39 @@ public class CrystalPropertiesDialog extends JDialog
     double[][] bondBox = crystalBox.getBondBox();
     double[][] unitBox = crystalBox.getUnitBox();
     
-    origAtomsOnly.setSelected(crystalBox.getOrigAtomsOnly());
+    origAtomsOnlyCKB.setSelected(crystalBox.getOrigAtomsOnly());
 
-    ((JTextField) (jAtomBox.elementAt(0)))
-      .setText(atomBox[0][0] + ", " + atomBox[0][1] + ", " + atomBox[0][2]);
-    ((JTextField) (jAtomBox.elementAt(1)))
-      .setText(atomBox[1][0] + ", " + atomBox[1][1] + ", " + atomBox[1][2]);
-    ((JTextField) (jBondBox.elementAt(0)))
-      .setText(bondBox[0][0] + ", " + bondBox[0][1] + ", " + bondBox[0][2]);
-    ((JTextField) (jBondBox.elementAt(1)))
-      .setText(bondBox[1][0] + ", " + bondBox[1][1] + ", " + bondBox[1][2]);
-    ((JTextField) (jUnitBox.elementAt(0)))
-      .setText(unitBox[0][0] + ", " + unitBox[0][1] + ", " + unitBox[0][2]);
-    ((JTextField) (jUnitBox.elementAt(1)))
-      .setText(unitBox[1][0] + ", " + unitBox[1][1] + ", " + unitBox[1][2]);
+    ((JTextField) (jAtomBox_VEC_TXF.elementAt(0)))
+      .setText((float)atomBox[0][0] + ", " + (float)atomBox[0][1] 
+	       + ", " + (float)atomBox[0][2]);
+    ((JTextField) (jAtomBox_VEC_TXF.elementAt(1)))
+      .setText((float)atomBox[1][0] + ", " + (float)atomBox[1][1] 
+	       + ", " + (float)atomBox[1][2]);
+    ((JTextField) (jBondBox_VEC_TXF.elementAt(0)))
+      .setText((float)bondBox[0][0] + ", " + (float)bondBox[0][1] 
+	       + ", " + (float)bondBox[0][2]);
+    ((JTextField) (jBondBox_VEC_TXF.elementAt(1)))
+      .setText((float)bondBox[1][0] + ", " + (float)bondBox[1][1] 
+	       + ", " + (float)bondBox[1][2]);
+    ((JTextField) (jUnitBox_VEC_TXF.elementAt(0)))
+      .setText((float)unitBox[0][0] + ", " + (float)unitBox[0][1] 
+	       + ", " + (float)unitBox[0][2]);
+    ((JTextField) (jUnitBox_VEC_TXF.elementAt(1)))
+      .setText((float)unitBox[1][0] + ", " + (float)unitBox[1][1] 
+	       + ", " + (float)unitBox[1][2]);
     
     // the number of atoms in the unit cell
 
-    jNatomInCellInfo.setText
+    jNatomInCellLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NCell")
        + " " + unitCellBox.getNumberOfAtoms());
     
     // the number of atoms in the crystal box
-    jNatomInBoxInfo.setText
+    jNatomInBoxLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NatomBox")
        + " " + crystalFile.getFrame(currentFrameIndex).getNumberOfAtoms());
     
-    jNatomInClipInfo.setText
+    jNatomInClipLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NbondBox")
        + " " + crystalFile.getNumberBondedAtoms(currentFrameIndex));
     
@@ -936,9 +980,9 @@ public class CrystalPropertiesDialog extends JDialog
     String[] basisVectorTypeStrings = {
       resources.translate("Cartesian"), resources.translate("Lattice")
     };
-    basisVectorTypeList = new JComboBox(basisVectorTypeStrings);
-    basisVectorTypeList.setSelectedIndex(0);
-    basisVectorTypeList.addActionListener(new ActionListener() {
+    basisVectorType_CBO = new JComboBox(basisVectorTypeStrings);
+    basisVectorType_CBO.setSelectedIndex(0);
+    basisVectorType_CBO.addActionListener(new ActionListener() {
 	public void actionPerformed(ActionEvent e) {
 	  updateBasisVectorsPanel();
 	}
@@ -951,9 +995,9 @@ public class CrystalPropertiesDialog extends JDialog
     //Create the scroll pane and add the table to it. 
     JScrollPane scrollPane = new JScrollPane(table);
 
-    jNatomInCellInfo =
-        new JLabel(JmolResourceHandler.getInstance()
-          .getString("Crystprop.NbondBox"), SwingConstants.LEFT);
+    jNatomInCellLBL =
+      new JLabel(JmolResourceHandler.getInstance()
+		 .getString("Crystprop.NbondBox"), SwingConstants.LEFT);
 
 
 
@@ -961,29 +1005,29 @@ public class CrystalPropertiesDialog extends JDialog
       resources.translate("Apply to all frames"),
       resources.translate("Apply to current frame")
     };
-    basisApplyTo = new JComboBox(basisApplyToList);
-    basisApplyTo.setSelectedIndex(1);
+    basisVector_ApplyToWhichFrameCBO = new JComboBox(basisApplyToList);
+    basisVector_ApplyToWhichFrameCBO.setSelectedIndex(1);
 
 
 
     c.gridheight = 4;
     c.anchor = GridBagConstraints.NORTHWEST;
     c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(basisVectorTypeList, c);
-    jBasisVPanel.add(basisVectorTypeList);
+    gridbag.setConstraints(basisVectorType_CBO, c);
+    jBasisVPanel.add(basisVectorType_CBO);
     c.weighty = 10000;
     c.fill = GridBagConstraints.BOTH;
     gridbag.setConstraints(scrollPane, c);
     jBasisVPanel.add(scrollPane);
     c.fill = GridBagConstraints.NONE;
     c.weighty = 1;
-    gridbag.setConstraints(jNatomInCellInfo, c);
-    jBasisVPanel.add(jNatomInCellInfo);
+    gridbag.setConstraints(jNatomInCellLBL, c);
+    jBasisVPanel.add(jNatomInCellLBL);
     c.gridheight = GridBagConstraints.REMAINDER;
     c.fill = GridBagConstraints.NONE;
-    gridbag.setConstraints(basisApplyTo, c);
+    gridbag.setConstraints(basisVector_ApplyToWhichFrameCBO, c);
 
-    //jBasisVPanel.add(basisApplyTo);
+    //jBasisVPanel.add(basisVector_ApplyToWhichFrameCBO);
 
 
     return jBasisVPanel;
@@ -992,7 +1036,7 @@ public class CrystalPropertiesDialog extends JDialog
 
 
 
-/**
+  /**
    * Describe <code>makeEnergyBandPanel</code> method here.
    *
    * @return a <code>Component</code> value
@@ -1009,70 +1053,509 @@ public class CrystalPropertiesDialog extends JDialog
     JPanel jEnergyBandPanel = new JPanel();
     jEnergyBandPanel.setLayout(gridbag);
 
-
     JTable table1 = new JTable(energyLinesTableModel);
     table1.setPreferredScrollableViewportSize(new Dimension(250, 90));
     
-    JTable table2 = new JTable(energyLineTableModel);
-    table2.setPreferredScrollableViewportSize(new Dimension(150, 90));
+    JLabel resolutionLabel = new JLabel
+      (resources.getString("Crystalprop.ebTab.resolution"));
+    resolutionTXF = new JTextField(5);
+    resolutionTXF.setText("300"); //Default value
+    JLabel ratioLabel = new JLabel
+      (resources.getString("Crystalprop.ebTab.ratio"));
+    ratioTXF = new JTextField(5);
+    ratioTXF.setText("1"); //Default value
+    JLabel unitsLabel = new JLabel
+      (resources.getString("Crystalprop.ebTab.eunits"));
+    yLabels = Units.getFormatedEnergyList();
+    String[] unitsList = Units.getEnergyList(); //Order must follow Units class
+    unitsCBO = new JComboBox(unitsList); 
+    unitsCBO.addActionListener(new ActionListener() {
+	
+	public void actionPerformed(ActionEvent e) {
+	  double cf = (float)Units.getConversionFactor(unitsComboOldIndex+100,
+				     unitsCBO.getSelectedIndex()+100);
+	  minETXF.setText(Float.toString((float)(FieldReader.readField1(minETXF)*cf)));
+	  maxETXF.setText(Float.toString((float)(FieldReader.readField1(maxETXF)*cf)));
+	  fermiETXF.setText(Float.toString
+			    ((float)(FieldReader.readField1(fermiETXF)*cf)));
+	  yLabelTXF.setText(yLabels[unitsCBO.getSelectedIndex()]);
+	  unitsComboOldIndex=unitsCBO.getSelectedIndex();
+	}
+      });
+
+    JLabel plotDefLabel = new JLabel
+      (resources.getString("Crystalprop.ebTab.defplot"));
+    plotDefTXF = new JTextField(50);
+    plotDefTXF.setToolTipText
+      (resources.getString("Crystalprop.ebTab.defplotToolTip"));
+    plotDefTXF.setText("0");
+    nRoundTXF = new JTextField(3);
+    nRoundTXF.setText("2");
+    String[] roundSchemeList = 
+      {resources.getString("Crystalprop.ebTab.ffd"), 
+       resources.getString("Crystalprop.ebTab.efd")};
+    roundSchemeCBO = new JComboBox(roundSchemeList);
+    JLabel maxELabel = new JLabel
+      (resources.getString("Crystalprop.ebTab.emax"));
+    maxETXF = new JTextField(10);
+    JLabel minELabel = new JLabel
+      (resources.getString("Crystalprop.ebTab.emin"));
+    minETXF = new JTextField(10);
+    JLabel fermiELabel = new JLabel
+      (resources.getString("Crystalprop.ebTab.efermi"));
+    fermiETXF = new JTextField(10);
     
+    JLabel nvTicsLBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.nvtics"));
+    nvTicsTXF = new JTextField(5);
+    nvTicsTXF.setText("10");
+
+    JLabel nhTicsLBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.nhtics"));
+    nhTicsTXF = new JTextField(5);
+    nhTicsTXF.setText("5");
+
+    JLabel ticSizeLBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.ticsize"));
+    ticSizeTXF = new JTextField(5);
+    ticSizeTXF.setText("5");
+       
+    
+    JLabel fontsize1LBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.fontsize1"));
+    fontsize1TXF = new JTextField(5);
+    fontsize1TXF.setText("20");
+
+    JLabel fontsize2LBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.fontsize2"));
+    fontsize2TXF = new JTextField(5);
+    fontsize2TXF.setText("10");
+
+    JLabel fontsize3LBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.fontsize3"));
+    fontsize3TXF = new JTextField(5);
+    fontsize3TXF.setText("25");
+
+    JLabel sectionSepLBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.sepsize"));
+    sectionSepTXF = new JTextField(5);
+    sectionSepTXF.setText("0.1");
+
+    JLabel yLabelLBL = new JLabel
+      (resources.getString("Crystalprop.ebTab.ylabel"));
+    yLabelTXF = new JTextField(15);
+    yLabelTXF.setText("(eV)");
+    yLabelTXF.setToolTipText(resources.getString
+			 ("Crystalprop.ebTab.ylabelToolTip"));
+    
+    JButton showBUT = new JButton
+      (resources.getString("Crystalprop.ebTab.showBUT"));
+    
+    showBUT.addActionListener(new ActionListener() {
+	public void actionPerformed(ActionEvent e) {
+	  // Draw the band plot in new Frame
+	  showEnergyBandPlot();	  
+	}
+      });
+    
+    // Logical:
+    //
+    //               /-scrollPane1             
+    //               |                         /-col1Panel
+    //energyBandPanel|          /- tunningPanel|-col2Panel
+    //               \-plotPanel|              \-col3Panel 
+    //                          |- linePanel
+    //                          \- buttonPanel
+
+    // Visual:
+    // |------------------------|
+    // |                        |
+    // |                        |
+    // |      scrollPane1       |
+    // |                        |
+    // |------------------------|
+    // | col1Panel | col2Panel  |
+    // |           |            |
+    // |------------------------|
+    // |     LinePanel          |
+    // |------------------------| 
+    // |     buttonPanel        |    
+    // |------------------------|
+     
     //Create the scroll pane and add the table to it. 
     JScrollPane scrollPane1 = new JScrollPane(table1);
-    JScrollPane scrollPane2 = new JScrollPane(table2);
+    
+    // JPanel containing plot definition stuff (col1Panel, col2Panel, linePanel)
+    JPanel tunningPanel = new JPanel();
+    tunningPanel.setLayout(new FlowLayout(FlowLayout.LEFT,20,5));
+    
+    JPanel col1Panel = new JPanel();
+    col1Panel.setLayout(gridbag);
+    //    c.anchor = GridBagConstraints.NORTHEAST;
+    c.fill = GridBagConstraints.BOTH;
+    c.weighty=1;
+    c.weightx=1;
+    c.gridheight = 5;
+    c.gridwidth = 2;
+    gridbag.setConstraints(resolutionLabel, c);
+    col1Panel.add(resolutionLabel);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    c.weightx = 1000;
+    gridbag.setConstraints(resolutionTXF, c);
+    col1Panel.add(resolutionTXF);
+    c.weightx=1;
+    c.gridwidth = 2;
+    gridbag.setConstraints(ratioLabel, c);
+    col1Panel.add(ratioLabel);
+    c.weightx = 1000;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(ratioTXF, c);
+    col1Panel.add(ratioTXF);
+    c.gridwidth = 2;
+    gridbag.setConstraints(fontsize1LBL, c);
+    col1Panel.add(fontsize1LBL);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(fontsize1TXF, c);
+    col1Panel.add(fontsize1TXF);
+    c.gridwidth = 2;
+    gridbag.setConstraints(fontsize2LBL, c);
+    col1Panel.add(fontsize2LBL);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(fontsize2TXF, c);
+    col1Panel.add(fontsize2TXF);
+    c.gridwidth = 2;
+    c.gridheight = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(fontsize3LBL, c);
+    col1Panel.add(fontsize3LBL);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(fontsize3TXF, c);
+    col1Panel.add(fontsize3TXF);
 
-    c.gridheight = 1;
+
+    JPanel col2Panel = new JPanel();
+    col2Panel.setLayout(gridbag);
+    c.gridheight = 4;
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(unitsLabel, c);
+    col2Panel.add(unitsLabel);
+    c.gridwidth = GridBagConstraints.REMAINDER;
     c.anchor = GridBagConstraints.NORTHWEST;
-    //c.weighty = 10000;
+    gridbag.setConstraints(unitsCBO, c);
+    col2Panel.add(unitsCBO);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(minELabel, c);
+    col2Panel.add(minELabel);
+    c.anchor = GridBagConstraints.NORTHWEST;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(minETXF, c);
+    col2Panel.add(minETXF);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(maxELabel, c);
+    col2Panel.add(maxELabel);
+    c.anchor = GridBagConstraints.NORTHWEST;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(maxETXF, c);
+    col2Panel.add(maxETXF);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(fermiELabel, c);
+    col2Panel.add(fermiELabel);
+    c.anchor = GridBagConstraints.NORTHWEST;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(fermiETXF, c);
+    col2Panel.add(fermiETXF);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    c.gridheight = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(roundSchemeCBO, c);
+    col2Panel.add(roundSchemeCBO);
+    c.anchor = GridBagConstraints.NORTHWEST;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(nRoundTXF, c);
+    col2Panel.add(nRoundTXF);
+
+
+    JPanel col3Panel = new JPanel();
+    col3Panel.setLayout(gridbag);
+    c.gridheight = 5;
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(nvTicsLBL, c);
+    col3Panel.add(nvTicsLBL);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    c.anchor = GridBagConstraints.NORTHWEST;
+    gridbag.setConstraints(nvTicsTXF, c);
+    col3Panel.add(nvTicsTXF);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(nhTicsLBL, c);
+    col3Panel.add(nhTicsLBL);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    c.anchor = GridBagConstraints.NORTHWEST;
+    gridbag.setConstraints(nhTicsTXF, c);
+    col3Panel.add(nhTicsTXF);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(ticSizeLBL, c);
+    col3Panel.add(ticSizeLBL);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    c.anchor = GridBagConstraints.NORTHWEST;
+    gridbag.setConstraints(ticSizeTXF, c);
+    col3Panel.add(ticSizeTXF);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(sectionSepLBL, c);
+    col3Panel.add(sectionSepLBL);
+    c.anchor = GridBagConstraints.NORTHWEST;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(sectionSepTXF, c);
+    col3Panel.add(sectionSepTXF);
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.NORTHEAST;
+    gridbag.setConstraints(yLabelLBL, c);
+    col3Panel.add(yLabelLBL);
+    c.anchor = GridBagConstraints.NORTHWEST;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    c.gridheight = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(yLabelTXF, c);
+    col3Panel.add(yLabelTXF);
+
+    tunningPanel.add(col1Panel);
+    tunningPanel.add(col2Panel);
+    tunningPanel.add(col3Panel);
+
+
+    JPanel linePanel = new JPanel();
+    linePanel.setLayout(gridbag);
+    c.gridwidth = 2;
+    c.gridheight = GridBagConstraints.REMAINDER;    
+    c.fill = GridBagConstraints.BOTH;
+    c.weightx = 1;
+    gridbag.setConstraints(plotDefLabel, c);
+    linePanel.add(plotDefLabel);
+    c.weightx = 10000;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(plotDefTXF, c);
+    linePanel.add(plotDefTXF);
+
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    gridbag.setConstraints(showBUT, c);
+    buttonPanel.add(showBUT);
+    //gridbag.setConstraints(selectFileBUT, c);
+    //buttonPanel.add(selectFileBUT);
+
+    JPanel plotPanel = new JPanel();
+    plotPanel.setLayout(gridbag);
+    c.gridwidth = GridBagConstraints.REMAINDER;;
+    c.gridheight = 3;
+    gridbag.setConstraints(tunningPanel, c);
+    plotPanel.add(tunningPanel);
+    gridbag.setConstraints(linePanel, c);
+    plotPanel.add(linePanel);
+    c.gridheight = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(buttonPanel, c);
+    plotPanel.add(buttonPanel);
+    
+    
+    // Add widget to jEnergyBandPanel
+    c.gridheight = 2;
+    c.weighty =10000;
+    c.anchor = GridBagConstraints.NORTHWEST;
+    c.gridwidth = GridBagConstraints.REMAINDER;
     c.fill = GridBagConstraints.BOTH;
     gridbag.setConstraints(scrollPane1, c);
     jEnergyBandPanel.add(scrollPane1);
-    //c.fill = GridBagConstraints.NONE;
-    //c.weighty = 1;
-    c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(scrollPane2, c);
-    jEnergyBandPanel.add(scrollPane2);
+    c.weighty = 1;
+    c.weightx = 1;
+    c.gridheight = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(plotPanel, c);
+    jEnergyBandPanel.add(plotPanel);
     
-
-
     return jEnergyBandPanel;
 
   }    //end makeEnergyBandPanel
 
   protected void updateEnergyBandPanel() {
-    //Vector frameProperties = crystalFile.getFramePropertyList();
-    Vector frameProperties = currentFrame.getFrameProperties();
-    boolean hasEnergyBand=false;
-    EnergyBand energyBand=null;
-
+    
     //Do we have an EnergyBand?
-    for (int i=0; i< frameProperties.size();i++) {
-      if(((PhysicalProperty)frameProperties.elementAt(i)).getDescriptor()
-	 .equals("EnergyBand")) {
-	//We have an EnergyBand
-	hasEnergyBand=true;
-	energyBand =
-	  (EnergyBand)frameProperties.elementAt(i);
-	tabbedPane.setEnabledAt(3, true);
-      } else { //We don't have an EnergyBand
-	tabbedPane.setEnabledAt(3, false);
-      }
+    if(hasEnergyBand) {
+      tabbedPane.setEnabledAt(3, true);
+    } else { 
+      tabbedPane.setEnabledAt(3, false);
+      tabbedPane.setSelectedIndex(0); 
     }
     
-
     if(hasEnergyBand) {
-      Object data[][]=new Object[energyBand.getNumberOfKLines()][4];
+      Object data[][]=new Object[energyBand.getNumberOfKLines()][6];
       for (int i=0; i< energyBand.getNumberOfKLines();i++) {
 	data[i][0] = new String(String.valueOf(i));
 	data[i][1] = new Point3d(energyBand.getKLine(i).getOrigin());
-	data[i][2] = new Point3d(energyBand.getKLine(i).getEnd());
-	data[i][3] = new String
+	data[i][2] = new String(energyBand.getKLine(i).getOriginName());
+	data[i][3] = new Point3d(energyBand.getKLine(i).getEnd());
+	data[i][4] = new String(energyBand.getKLine(i).getEndName());
+	data[i][5] = new String
 	  (String.valueOf(energyBand.getKLine(i).getNumberOfkPoints()));
       }
       energyLinesTableModel.setData(data);
+      unitsCBO.setSelectedIndex(energyBand.getEnergyUnits()-100);
+      minETXF.setText(Double.toString(energyBand.getMinE()));    
+      maxETXF.setText(Double.toString(energyBand.getMaxE()));
+      fermiETXF.setText(Double.toString(energyBand.getFermiE()));
+      unitsComboOldIndex=unitsCBO.getSelectedIndex();
     }
-    
   }
-
+  
+  
+  protected void showEnergyBandPlot() {
+    JmolResourceHandler resources = JmolResourceHandler.getInstance();
+    int roundScheme=0;
+    switch(roundSchemeCBO.getSelectedIndex()) {
+    case 0: roundScheme = Rounder.FIX; break;
+    case 1: roundScheme = Rounder.EXP; break;
+    }
+    // Create a new EnergyBandPlot
+    create:
+    {
+      try {
+	bandPlot 
+	  = new BandPlot(energyBand, 
+			       plotDefTXF.getText(),
+			       unitsCBO.getSelectedIndex()+100,
+			       FieldReader.readField1(minETXF),
+			       FieldReader.readField1(maxETXF),
+			       FieldReader.readField1(fermiETXF),
+			       (int)FieldReader.readField1(nRoundTXF), 
+			       roundScheme,
+			       (int)FieldReader.readField1(nvTicsTXF),
+			       (int)FieldReader.readField1(nhTicsTXF),
+			       (int)FieldReader.readField1(ticSizeTXF),
+			       FieldReader.readField1(fontsize1TXF),
+			       FieldReader.readField1(fontsize2TXF),
+			       FieldReader.readField1(fontsize3TXF),
+			       FieldReader.readField1(sectionSepTXF),
+			       yLabelTXF.getText());
+	
+      } catch (BandPlot.ParseErrorException peEc) {
+	System.out.println ("Parse Error");
+	break create;
+      }
+      
+      BandPlotG2DRenderer ebpr
+	= new BandPlotG2DRenderer
+	(bandPlot,
+	 FieldReader.readField1(resolutionTXF),
+	 FieldReader.readField1(ratioTXF));
+      
+      // Create a new frame containing the plot and a "Save As..." button
+      //
+      //  Logical:
+      //  
+      //                         /- scrollPane - plot_PNL
+      //   f_FRM--container_PNL--|
+      //                         \- button_PNL - saveAsBUT
+      //
+      //  
+      //  Visual:
+      //
+      //    -----------------
+      //    |              "|
+      //    |              "|
+      //    |    plot_PNL  "|
+      //    |              "|
+      //    |=============="|
+      //    |---------------|
+      //    |   button_PNL  |
+      //    |---------------|
+      
+      
+      final JFrame f_FRM = new JFrame("Energy Band Plot");
+      f_FRM.addWindowListener(new WindowAdapter() {
+	  public void windowClosing(WindowEvent e) {
+	    f_FRM.dispose();
+	  }
+	});
+      
+      JPanel plot_PNL =ebpr.getJPanel();
+      int height = (int)ebpr.getPlotHeight();
+      int width = (int)ebpr.getPlotLength();
+      plot_PNL.setPreferredSize(new Dimension(width+5,
+					      height+5));
+      JScrollPane scrollPane = new JScrollPane(plot_PNL);    
+      
+      // Save as button
+      JButton saveAsBUT = new JButton
+	(resources.getString("Crystalprop.ebTab.saveAs"));
+      fileChooserReturnVal = JFileChooser.CANCEL_OPTION;
+      saveAsBUT.addActionListener(new ActionListener() {
+	  public void actionPerformed(ActionEvent e) {
+	    chooser = new JFileChooser();
+	    fileChooserReturnVal = chooser.showDialog
+	      (null,JmolResourceHandler.getInstance().getString("Crystalprop.ebTab.saveEPS"));
+	    
+	    //If a file was selected
+	    if (fileChooserReturnVal == JFileChooser.APPROVE_OPTION) {
+	      // Draw the band plot as a PostScript
+	      try {
+		BandPlotEPSRenderer ebpr
+		  = new BandPlotEPSRenderer
+		  (bandPlot,
+		   FieldReader.readField1(resolutionTXF),
+		   FieldReader.readField1(ratioTXF),
+		   chooser.getSelectedFile());
+		ebpr.generateEPS();
+		
+	      } catch (IOException ex) {
+		System.out.println ("Error while writing the file");
+	      }
+	    }
+	  }
+	});
+      
+      JButton dismissBUT = new JButton(resources.translate("Dismiss"));
+      dismissBUT.addActionListener(new ActionListener() {
+	  public void actionPerformed(ActionEvent e) {
+	    f_FRM.dispose();
+	  }
+	  
+	});
+      
+      JPanel button_PNL = new JPanel();
+      button_PNL.setLayout(new FlowLayout(FlowLayout.RIGHT));    
+      button_PNL.add(saveAsBUT);        
+      button_PNL.add(dismissBUT);        
+      
+      GridBagLayout gridbag = new GridBagLayout();
+      GridBagConstraints c = new GridBagConstraints();
+      JPanel container_PNL = new JPanel();  
+      container_PNL.setLayout(gridbag);
+      c.weightx = 1;
+      c.weighty = 100000;
+      c.fill = GridBagConstraints.BOTH;
+      c.gridwidth = GridBagConstraints.REMAINDER;
+      gridbag.setConstraints(scrollPane, c);
+      container_PNL.add(scrollPane);    
+      c.weighty = 1; 
+      c.gridheight = GridBagConstraints.REMAINDER;
+      gridbag.setConstraints(button_PNL, c);
+      container_PNL.add(button_PNL);    
+      
+      
+      f_FRM.getContentPane().add(container_PNL, BorderLayout.CENTER);
+      
+      
+      f_FRM.setSize(new Dimension(width < 700 ? width + 50 : 700,
+				  height < 700 ? height + 90 : 700));
+      f_FRM.setVisible(true);
+      
+    } //label "create"
+  }
+  
+  
   /**
    * Describe <code>makeSpaceGroupPanel</code> method here.
    *
@@ -1094,52 +1577,52 @@ public class CrystalPropertiesDialog extends JDialog
    */
   protected void updateBarePanels() {
 
-    primVTypeList.setSelectedIndex(0);
+    primitiveVectorTypeCBO.setSelectedIndex(0);
     
     
-    ((JTextField) (jRprim.elementAt(0))).setText("1.0, 0.0, 0.0");
-    ((JTextField) (jRprim.elementAt(1))).setText("0.0, 1.0, 0.0");
-    ((JTextField) (jRprim.elementAt(2))).setText("0.0, 0.0, 1.0");
-    ((JTextField) (jAcell.elementAt(0))).setText("1.0");
-    ((JTextField) (jAcell.elementAt(1))).setText("1.0");
-    ((JTextField) (jAcell.elementAt(2))).setText("1.0");
+    ((JTextField) (jRprim_VEC_TXF.elementAt(0))).setText("1.0, 0.0, 0.0");
+    ((JTextField) (jRprim_VEC_TXF.elementAt(1))).setText("0.0, 1.0, 0.0");
+    ((JTextField) (jRprim_VEC_TXF.elementAt(2))).setText("0.0, 0.0, 1.0");
+    ((JTextField) (jAcell_VEC_TXF.elementAt(0))).setText("1.0");
+    ((JTextField) (jAcell_VEC_TXF.elementAt(1))).setText("1.0");
+    ((JTextField) (jAcell_VEC_TXF.elementAt(2))).setText("1.0");
     
-    ((JTextField) (jEdges.elementAt(0))).setText("1.0");
-    ((JTextField) (jEdges.elementAt(1))).setText("1.0");
-    ((JTextField) (jEdges.elementAt(2))).setText("1.0");
-    ((JTextField) (jAngles.elementAt(0))).setText("90.0");
-    ((JTextField) (jAngles.elementAt(1))).setText("90.0");
-    ((JTextField) (jAngles.elementAt(2))).setText("90.0");
+    ((JTextField) (jEdges_VEC_TXF.elementAt(0))).setText("1.0");
+    ((JTextField) (jEdges_VEC_TXF.elementAt(1))).setText("1.0");
+    ((JTextField) (jEdges_VEC_TXF.elementAt(2))).setText("1.0");
+    ((JTextField) (jAngles_VEC_TXF.elementAt(0))).setText("90.0");
+    ((JTextField) (jAngles_VEC_TXF.elementAt(1))).setText("90.0");
+    ((JTextField) (jAngles_VEC_TXF.elementAt(2))).setText("90.0");
     
     for (int i = 0; i < 3; i++) {
-      ((JTextField) (jRprim.elementAt(i))).setEditable(true);
-      ((JTextField) (jAcell.elementAt(i))).setEditable(true);
-      ((JTextField) (jEdges.elementAt(i))).setEditable(false);
-      ((JTextField) (jAngles.elementAt(i))).setEditable(false);
+      ((JTextField) (jRprim_VEC_TXF.elementAt(i))).setEditable(true);
+      ((JTextField) (jAcell_VEC_TXF.elementAt(i))).setEditable(true);
+      ((JTextField) (jEdges_VEC_TXF.elementAt(i))).setEditable(false);
+      ((JTextField) (jAngles_VEC_TXF.elementAt(i))).setEditable(false);
     }
     
 
     // crystal box
     
-    ((JTextField) (jAtomBox.elementAt(0))).setText("0.0, 0.0, 0.0");
-    ((JTextField) (jAtomBox.elementAt(1))).setText("1.0, 1.0, 1.0");
-    ((JTextField) (jBondBox.elementAt(0))).setText("0.0, 0.0, 0.0");
-    ((JTextField) (jBondBox.elementAt(1))).setText("1.0, 1.0, 1.0");
-    ((JTextField) (jUnitBox.elementAt(0))).setText("0.0, 0.0, 0.0");
-    ((JTextField) (jUnitBox.elementAt(1))).setText("1.0, 1.0, 1.0");
+    ((JTextField) (jAtomBox_VEC_TXF.elementAt(0))).setText("0.0, 0.0, 0.0");
+    ((JTextField) (jAtomBox_VEC_TXF.elementAt(1))).setText("1.0, 1.0, 1.0");
+    ((JTextField) (jBondBox_VEC_TXF.elementAt(0))).setText("0.0, 0.0, 0.0");
+    ((JTextField) (jBondBox_VEC_TXF.elementAt(1))).setText("1.0, 1.0, 1.0");
+    ((JTextField) (jUnitBox_VEC_TXF.elementAt(0))).setText("0.0, 0.0, 0.0");
+    ((JTextField) (jUnitBox_VEC_TXF.elementAt(1))).setText("1.0, 1.0, 1.0");
     
     // Display other usefull information:
     // the number of atoms in the unit cell
-    jNatomInCellInfo.setText
+    jNatomInCellLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NCell")
        + " " + chemFile.getFrame(currentFrameIndex).getNumberOfAtoms());
     
     // the number of atoms in the crystal box
-    jNatomInBoxInfo.setText
+    jNatomInBoxLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NatomBox")
        + " " + chemFile.getFrame(currentFrameIndex).getNumberOfAtoms());
     
-    jNatomInClipInfo.setText
+    jNatomInClipLBL.setText
       (JmolResourceHandler.getInstance().getString("Crystprop.NbondBox")
        + " " + chemFile.getFrame(currentFrameIndex).getNumberOfAtoms());
     
@@ -1194,8 +1677,6 @@ public class CrystalPropertiesDialog extends JDialog
     public void setValueAt(Object value, int row, int col) {
       data[row][col] = value;
       fireTableCellUpdated(row, col);
-      System.out.println("Table Updated");
-
     }
 
   }    //end class BasisVTableModel
@@ -1205,7 +1686,9 @@ public class CrystalPropertiesDialog extends JDialog
     private String[] columnNames = {
       JmolResourceHandler.getInstance().translate("Line Number"),
       JmolResourceHandler.getInstance().translate("Origin"),
+      JmolResourceHandler.getInstance().translate("Origin Label"),      
       JmolResourceHandler.getInstance().translate("End"),
+      JmolResourceHandler.getInstance().translate("End Label"),
       JmolResourceHandler.getInstance().translate("Number Of Points")
     };
     private Object[][] data = {
@@ -1240,52 +1723,26 @@ public class CrystalPropertiesDialog extends JDialog
       
       //Note that the data/cell address is constant,
       //no matter where the cell appears onscreen.
-      if (col < 5) {    //no cell editable
-        return false;
-      } else {
+      if (col == 2 || col == 4) {    //no cell editable
         return true;
+      } else {
+        return false;
       }
     }
     
     public void setValueAt(Object value, int row, int col) {
       data[row][col] = value;
       fireTableCellUpdated(row, col);
-      System.out.println("Table Updated");
+      
+      // Save value in energyBand object
+      switch(col) {
+      case 2:energyBand.getKLine(row).setOriginName((String)value); break;
+      case 4:energyBand.getKLine(row).setEndName((String)value); break;
+      }
       
     }
-
   }    //end class EnergyLinesTableModel
-
-  class EnergyLineTableModel extends AbstractTableModel {
-
-    private String[] columnNames = {
-      JmolResourceHandler.getInstance().translate("Point Number"),
-      "kx", "ky", "kz" };
-    private Object[][] data = {
-    };
-
-
-    public void setData(Object[][] data) {
-      this.data = data;
-    }
-
-    public int getColumnCount() {
-      return columnNames.length;
-    }
-
-    public int getRowCount() {
-      return data.length;
-    }
-
-    public String getColumnName(int col) {
-      return columnNames[col];
-    }
-
-    public Object getValueAt(int row, int col) {
-      return data[row][col];
-    }
-  }    //end class EnergyLineTableModel
-
+  
   private void commitChange() {
 
     boolean isPrimVectorsCart;
@@ -1298,80 +1755,99 @@ public class CrystalPropertiesDialog extends JDialog
     double[][] unitBox;
     UnitCellBox unitCellBox;
     CrystalBox crystalBox;
-
+    
     // Read text from the various text fields
     // and set it in the CrystalFile object.
-
-    rprim = readField3(jRprim);
-    acell = readField1(jAcell);
-    edges = readField1(jEdges);
-    angles = readField1(jAngles);
-    atomBox = readField3(jAtomBox);
-    bondBox = readField3(jBondBox);
-    unitBox = readField3(jUnitBox);
     
-
-    // In case of a classical ChemFile has been loaded,
-    // a CrystalFile is created with defaults parameters
-    if (hasCrystalInfo == false) {
-      this.crystalFile = new CrystalFile(chemFile, rprim, acell);
+    commit:
+    {
+      String unreadField="";
+      try {
+	unreadField = "rprim";
+	rprim = FieldReader.readField3(jRprim_VEC_TXF);
+	unreadField = "acell";
+	acell = FieldReader.readField1(jAcell_VEC_TXF);
+	unreadField = "edges";
+	edges = FieldReader.readField1(jEdges_VEC_TXF);
+	unreadField = "angles";
+	angles = FieldReader.readField1(jAngles_VEC_TXF);
+	unreadField = "atomBox";
+	atomBox = FieldReader.readField3(jAtomBox_VEC_TXF);
+	unreadField = "bondBox";
+	bondBox = FieldReader.readField3(jBondBox_VEC_TXF);
+	unreadField = "unitBox";
+	unitBox = FieldReader.readField3(jUnitBox_VEC_TXF);
+      } catch (NumberFormatException nfe) {
+	System.out.println(nfe.getMessage());
+	errorDialog(JmolResourceHandler.getInstance().translate
+		    ("Ooups! The value you entered in the field \"" +
+		     unreadField + 
+		     "\" is not a valid number."));
+	break commit; //Exit the commitChange method
+      }
+      
+      // In case of a classical ChemFile has been loaded,
+      // a CrystalFile is created.
+      if (hasCrystalInfo == false) {
+	this.crystalFile = new CrystalFile(chemFile, rprim, acell);
       this.chemFile = (ChemFile) crystalFile;
-
+      
       // Say to everybody that we have a new chemfile!
       model.setChemFile(this.chemFile);
       hasCrystalInfo = true;
-      primApplyTo.setEnabled(true);
-      boxApplyTo.setEnabled(true);
-    }
-
-   
-
-    for (int i = 0; i < model.getNumberOfFrames(); i++) {
-
-      //set Primitive Vectors
-      unitCellBox = crystalFile.getUnitCellBox(i);
-      if (primApplyTo.getSelectedIndex() == 0
-          | ((primApplyTo.getSelectedIndex() == 1) 
-	     && (i == currentFrameIndex))) {
-        if (primVTypeList.getSelectedIndex() == 0) {   
-	  //Cartesian repres.
-          unitCellBox.setPrimVectorsCartesian(rprim, acell);
-        } else {    
-	  //Crystallographic representation
-          unitCellBox.setPrimVectorsCrystallo(edges, angles);
-        }
+      primitiveVectors_ApplyToWhichFrameCBO.setEnabled(true);
+      crystalBox_ApplyToWhichFrameCBO.setEnabled(true);
       }
-      crystalFile.setUnitCellBox(unitCellBox);
-
-      //set Crystal Box
-      crystalBox = crystalFile.getCrystalBox(i);
-      crystalBox.setOrigAtomsOnly(origAtomsOnly.isSelected());
-      if (boxApplyTo.getSelectedIndex() == 0
-          | ((boxApplyTo.getSelectedIndex() == 1) 
-	     && (i == currentFrameIndex))) {
-        crystalBox.setAtomBox(atomBox);
-        crystalBox.setBondBox(bondBox);
-        crystalBox.setUnitBox(unitBox);
-
-      }
-      crystalFile.setCrystalBox(crystalBox);
-
-      if (((primApplyTo.getSelectedIndex() == 1) 
-	   && (boxApplyTo.getSelectedIndex() == 1)
-	   && (i == currentFrameIndex))
-          | !((primApplyTo.getSelectedIndex() == 1)
-	      && (boxApplyTo.getSelectedIndex() == 1))) {
+      
+      
+      
+      for (int i = 0; i < model.getNumberOfFrames(); i++) {
 	
+	//set Primitive Vectors
+	unitCellBox = crystalFile.getUnitCellBox(i);
+	if (primitiveVectors_ApplyToWhichFrameCBO.getSelectedIndex() == 0
+	    | ((primitiveVectors_ApplyToWhichFrameCBO.getSelectedIndex() == 1) 
+	       && (i == currentFrameIndex))) {
+	  if (primitiveVectorTypeCBO.getSelectedIndex() == 0) {   
+	    //Cartesian repres.
+	    unitCellBox.setPrimVectorsCartesian(rprim, acell);
+	  } else {    
+	    //Crystallographic representation
+	    unitCellBox.setPrimVectorsCrystallo(edges, angles);
+	  }
+	}
+	crystalFile.setUnitCellBox(unitCellBox);
 	
-        crystalFile.generateCrystalFrame(i);
+	//set Crystal Box
+	crystalBox = crystalFile.getCrystalBox(i);
+	crystalBox.setOrigAtomsOnly(origAtomsOnlyCKB.isSelected());
+	if (crystalBox_ApplyToWhichFrameCBO.getSelectedIndex() == 0
+	    | ((crystalBox_ApplyToWhichFrameCBO.getSelectedIndex() == 1) 
+	       && (i == currentFrameIndex))) {
+	  crystalBox.setAtomBox(atomBox);
+	  crystalBox.setBondBox(bondBox);
+	  crystalBox.setUnitBox(unitBox);
+	  
+	}
+	crystalFile.setCrystalBox(crystalBox);
+	
+	if (((primitiveVectors_ApplyToWhichFrameCBO.getSelectedIndex() == 1) 
+	     && (crystalBox_ApplyToWhichFrameCBO.getSelectedIndex() == 1) 
+	     && (i == currentFrameIndex))
+	    | !((primitiveVectors_ApplyToWhichFrameCBO.getSelectedIndex() == 1)
+		&& (crystalBox_ApplyToWhichFrameCBO.getSelectedIndex() == 1)))
+	  {
+	  
+	  
+	  crystalFile.generateCrystalFrame(i);
+	}
       }
+      
+      //Display the updated ChemFile
+      restoreInFile();
     }
-
-    //Display the updated ChemFile
-    restoreInFile();
-    
   }    //end commitChange()
-
+  
   private void updateDialog() {
 
     
@@ -1395,7 +1871,7 @@ public class CrystalPropertiesDialog extends JDialog
       updateBasisVectorsPanel();
 
       // The EnergyBand
-      //updateEnergyBandPanel();
+      updateEnergyBandPanel();
 
 
     } else {    // hasNoCrystalInfo
@@ -1414,30 +1890,43 @@ public class CrystalPropertiesDialog extends JDialog
 
   private void updateCurrentFrameIndex() {
   
-    int primIndex = primApplyTo.getSelectedIndex();
-    int boxIndex = boxApplyTo.getSelectedIndex();
-    primApplyTo.removeItem(applyToList[1]);
-    primApplyTo.removeItem(applyToList[0]);
-    boxApplyTo.removeItem(applyToList[1]);
-    boxApplyTo.removeItem(applyToList[0]);
+    int primIndex = primitiveVectors_ApplyToWhichFrameCBO.getSelectedIndex();
+    int boxIndex = crystalBox_ApplyToWhichFrameCBO.getSelectedIndex();
+    primitiveVectors_ApplyToWhichFrameCBO.removeItem(applyToList[1]);
+    primitiveVectors_ApplyToWhichFrameCBO.removeItem(applyToList[0]);
+    crystalBox_ApplyToWhichFrameCBO.removeItem(applyToList[1]);
+    crystalBox_ApplyToWhichFrameCBO.removeItem(applyToList[0]);
 
     currentFrameIndex = Animate.currentFrame;
     String s = new String("(" + currentFrameIndex + ")");
     applyToList[0] =
-        JmolResourceHandler.getInstance().translate("Apply to all frames");
+      JmolResourceHandler.getInstance().translate("Apply to all frames");
     applyToList[1] =
-        JmolResourceHandler.getInstance().translate("Apply to current frame ")
-          + s;
+      JmolResourceHandler.getInstance().translate("Apply to current frame ")
+      + s;
 
-    primApplyTo.addItem(applyToList[0]);
-    primApplyTo.addItem(applyToList[1]);
-    primApplyTo.setSelectedIndex(primIndex);
-    boxApplyTo.addItem(applyToList[0]);
-    boxApplyTo.addItem(applyToList[1]);
-    boxApplyTo.setSelectedIndex(boxIndex);
+    primitiveVectors_ApplyToWhichFrameCBO.addItem(applyToList[0]);
+    primitiveVectors_ApplyToWhichFrameCBO.addItem(applyToList[1]);
+    primitiveVectors_ApplyToWhichFrameCBO.setSelectedIndex(primIndex);
+    crystalBox_ApplyToWhichFrameCBO.addItem(applyToList[0]);
+    crystalBox_ApplyToWhichFrameCBO.addItem(applyToList[1]);
+    crystalBox_ApplyToWhichFrameCBO.setSelectedIndex(boxIndex);
 
+    //Check if we have an "EnergyBand" property
+    //TODO
+    hasEnergyBand=false;
+    Vector frameProperties 
+      = crystalFile.getFrame(currentFrameIndex).getFrameProperties();
+    for (int i=0; i< frameProperties.size();i++) {
+      if(((PhysicalProperty)frameProperties.elementAt(i)).getDescriptor()
+	 .equals("EnergyBand")) {
+	energyBand =
+	  (EnergyBand)frameProperties.elementAt(i);
+	hasEnergyBand=true;
+      }
+    }
   }
-
+  
 
   /**
    * Describe <code>errorDialog</code> method here.
@@ -1450,77 +1939,6 @@ public class CrystalPropertiesDialog extends JDialog
       (null, s, "alert", JOptionPane.ERROR_MESSAGE);
 
   }    //end errorDialog
-
-
-  /**
-   * Read a vector of text fields of the form "double, double, double".
-   */
-  private double[][] readField3(Vector jTextField) {
-
-    StringTokenizer st;
-    String sn;
-    double matrix[][] = new double[jTextField.size()][3] ;
-
-    for (int i = 0; i < jTextField.size(); i++) {
-      st = new StringTokenizer(((JTextField) jTextField.elementAt(i))
-          .getText(), ",");
-      for (int j = 0; j < 3; j++) {
-        if (st.hasMoreTokens()) {
-          sn = st.nextToken();
-          try {
-            matrix[i][j] = Double.parseDouble(sn);
-          } catch (NumberFormatException e) {
-            String message =
-              JmolResourceHandler.getInstance().translate(
-                "Ooups! The value you entered in the field is not a valid number.");
-            System.out.println(message);
-            errorDialog(message);
-
-            matrix[i][j] = 1f;
-          }
-
-        }
-      }
-    }
-    return matrix;
-  }    //end readField3(...)
-
-
-
-  /**
-   * Read a vector of text fields of the form "double".
-   */
-  private double[] readField1(Vector jTextField) {
-
-    StringTokenizer st;
-    String sn;
-    int dim = jTextField.size();
-    double vect[] = (double[]) Array.newInstance(double.class, dim);
-
-    for (int i = 0; i < jTextField.size(); i++) {
-      st = new StringTokenizer(((JTextField) jTextField.elementAt(i))
-          .getText(), ",");
-
-      if (st.hasMoreTokens()) {
-        sn = st.nextToken();
-        try {
-          vect[i] = Double.parseDouble(sn);
-        } catch (NumberFormatException e) {
-          String message =
-            JmolResourceHandler.getInstance().translate(
-              "Ooups! The value you entered in the field is not a valid number.");
-          System.out.println(message);
-          errorDialog(message);
-          vect[i] = 1f;
-        }
-
-      }
-
-    }
-    return vect;
-  }    //end readField1(...)
-
-
 
   private void restoreInFile() {
 
@@ -1555,12 +1973,14 @@ public class CrystalPropertiesDialog extends JDialog
     if (cf instanceof CrystalFile) {
       hasCrystalInfo = true;
       this.crystalFile = (CrystalFile) cf;
-      primApplyTo.setEnabled(true);
-      primApplyTo.setSelectedIndex(1);
-      boxApplyTo.setEnabled(true);
-      boxApplyTo.setSelectedIndex(0);
-      basisApplyTo.setEnabled(true);
-      basisApplyTo.setSelectedIndex(1);
+      primitiveVectors_ApplyToWhichFrameCBO.setEnabled(true);
+      primitiveVectors_ApplyToWhichFrameCBO.setSelectedIndex(1);
+      crystalBox_ApplyToWhichFrameCBO.setEnabled(true);
+      crystalBox_ApplyToWhichFrameCBO.setSelectedIndex(0);
+      basisVector_ApplyToWhichFrameCBO.setEnabled(true);
+      basisVector_ApplyToWhichFrameCBO.setSelectedIndex(1);
+
+      
     } else if (cf instanceof ChemFile) {
       hasCrystalInfo = false;
       this.chemFile = cf;
@@ -1568,12 +1988,12 @@ public class CrystalPropertiesDialog extends JDialog
       // When a ChemFile is loaded, crystal parameters
       // can only be applied to *all* frames the first time
       // the ok or apply button is clicked.
-      primApplyTo.setEnabled(false);
-      primApplyTo.setSelectedIndex(0);
-      boxApplyTo.setEnabled(false);
-      boxApplyTo.setSelectedIndex(0);
-      basisApplyTo.setEnabled(false);
-      basisApplyTo.setSelectedIndex(0);
+      primitiveVectors_ApplyToWhichFrameCBO.setEnabled(false);
+      primitiveVectors_ApplyToWhichFrameCBO.setSelectedIndex(0);
+      crystalBox_ApplyToWhichFrameCBO.setEnabled(false);
+      crystalBox_ApplyToWhichFrameCBO.setSelectedIndex(0);
+      basisVector_ApplyToWhichFrameCBO.setEnabled(false);
+      basisVector_ApplyToWhichFrameCBO.setSelectedIndex(0);
     }
 
     //Hide CystalPropertiesDialog if we have a normal ChemFile
@@ -1652,9 +2072,9 @@ public class CrystalPropertiesDialog extends JDialog
 
       //The crystprop dialog is available only if a file is loaded
       if (hasFile) {
-        this.setEnabled(true);
+	this.setEnabled(true);
       } else {
-        this.setEnabled(false);
+	this.setEnabled(false);
       }
     }
 
@@ -1719,8 +2139,8 @@ public class CrystalPropertiesDialog extends JDialog
 
       // Workaround for documented bug 4246117 for JDK 1.2.2
       if (System.getProperty("java.version").equals("1.2.2")
-          && System.getProperty("java.vendor").startsWith("Sun Micro")) {
-        overrideIsAdjusting = true;
+	  && System.getProperty("java.vendor").startsWith("Sun Micro")) {
+	overrideIsAdjusting = true;
       }
     }
 
@@ -1740,7 +2160,7 @@ public class CrystalPropertiesDialog extends JDialog
 
     if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
       if (event.getNewValue() != chemFile) {
-        setChemFile((ChemFile) event.getNewValue());
+	setChemFile((ChemFile) event.getNewValue());
       }
     }
 

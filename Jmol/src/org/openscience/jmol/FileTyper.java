@@ -189,7 +189,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
             String lastSection = f.getName();
             if (lastSection.startsWith("*.")){
                String type = lastSection.substring(2);
-               myChooser.setFileFilter(new JmolFileFilter(type,null,true));
+               //myChooser.setFileFilter(new JmolFileFilter(type,null,true));
             }else if (UseFileExtensions) {
                 if (fname.endsWith("xyz")) {
                     cb.setSelectedIndex(1); 

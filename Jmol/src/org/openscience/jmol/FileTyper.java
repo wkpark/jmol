@@ -116,8 +116,8 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
                     result = (String)source.getSelectedItem();
                     int resultNo = source.getSelectedIndex();
                     if (resultNo > 0){
-                        myChooser.setFileFilter(new JmolFileFilter(extensions[resultNo],
-                                                               result,true));
+                        //myChooser.setFileFilter(new JmolFileFilter(extensions[resultNo],
+                        //                                      result,true));
                     }
                     if (result.equals(jrh.getString("Gaussian"))) {
                         sYes.setEnabled(true);

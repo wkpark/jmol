@@ -173,15 +173,11 @@ class Jmol extends JPanel {
         display.start();        
     }
     
-    private static void beguine() {
-        //try {                        
-            atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
-        //} catch(Exception e1) { }
-        
-        
+    private static void begin() {
+        atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
         ft = new FileTyper(openChooser);
         openChooser.setAccessory(ft);
-		File currentDir = getUserDirectory();
+	File currentDir = getUserDirectory();
         openChooser.setCurrentDirectory(currentDir);
         saveChooser.setCurrentDirectory(currentDir);
         exportChooser.setCurrentDirectory(currentDir);        
@@ -219,7 +215,7 @@ class Jmol extends JPanel {
             frame.pack();
             frame.setSize(500, 600);
             splash.showStatus("Reading AtomTypes...");
-            beguine();
+            begin();
             splash.showStatus("Launching main frame...");
             frame.show();
         } catch (Throwable t) {

@@ -44,6 +44,8 @@ public class Cylinder25D {
 
   void test(short colix1, short colix2,int diameter,
             int x, int y, int z, int dx, int dy, int dz) {
+    if (true)
+      return;
     CylinderShape cs = new CylinderShape(diameter,
                                          x, y, z,
                                          dx, dy, dz);
@@ -60,8 +62,6 @@ public class Cylinder25D {
 
   void renderClipped(short colix1, short colix2, int diameter,
                      int x1, int y1, int z1, int dx, int dy, int dz) {
-    if (true)
-      return;
     Sphere25D sphere25d = g25d.sphere25d;
     sphere25d.render(colix1, diameter, x1, y1, z1);
     if (dx == 0 && dy == 0)
@@ -91,6 +91,7 @@ public class Cylinder25D {
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
       int n = dx;
+      int nMid = n / 2;
       do {
         xCurrent += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -100,7 +101,7 @@ public class Cylinder25D {
           twoDxAccumulatedYError -= twoDx;
         }
         int zCurrent = zCurrentScaled >> 10;
-        sphere25d.render(colix1, diameter, xCurrent, yCurrent, zCurrent);
+        sphere25d.render(n > nMid ? colix1 : colix2, diameter, xCurrent, yCurrent, zCurrent);
       } while (--n > 0);
       return;
     }
@@ -109,6 +110,7 @@ public class Cylinder25D {
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
     int n = dy;
+    int nMid = n / 2;
     do {
       yCurrent += yIncrement;
       zCurrentScaled += zIncrementScaled;
@@ -118,7 +120,7 @@ public class Cylinder25D {
         twoDyAccumulatedXError -= twoDy;
       }
       int zCurrent = zCurrentScaled >> 10;
-      sphere25d.render(colix1, diameter, xCurrent, yCurrent, zCurrent);
+      sphere25d.render(n > nMid ? colix1 : colix2, diameter, xCurrent, yCurrent, zCurrent);
     } while (--n > 0);
   }
 
@@ -128,6 +130,7 @@ public class Cylinder25D {
     int dxTheta;
     int dyTheta;
     int mag2d;
+    float mag2df;
 
     boolean tLine;
     int x1, y1, x2, y2;
@@ -157,7 +160,8 @@ public class Cylinder25D {
                          int dx, int dy, int dz) {
       radius3d2 = (diameter*diameter) / 4.0;
       int mag2d2 = dx*dx + dy*dy;
-      mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
+      mag2df = (float)Math.sqrt(mag2d2);
+      mag2d = (int)(mag2df + 0.5f);
       int mag3d2 = mag2d2 + dz*dz;
       int mag3d = (int)(Math.sqrt(mag3d2) + 0.5);
       this._2a = this.diameter = diameter;
@@ -331,7 +335,7 @@ public class Cylinder25D {
 
     void allocRaster() {
       ibRaster = 0;
-      raster = new byte[_2a * 4 * 2];
+      raster = new byte[_2a * 3 * 2];
     }
 
     void reallocRaster() {
@@ -465,21 +469,22 @@ public class Cylinder25D {
         plotEdgewiseCylinder(shades1, shades2, x1, y1, x2, y2);
         return;
       }
-      for (int i = 0; i < ibRaster; i += 4) {
+      for (int i = 0; i < ibRaster; i += 3) {
         int x0 = raster[i];
         int y0 = raster[i+1];
         int z0 = raster[i+2];
-        int intensity = raster[i+3];
-        g25d.plotLineDelta(shades1[intensity], shades2[intensity],
-                           //                           x + ((x0 > 0 && tEven) ? x0 - 1 : x0),
-                           //                           y + ((y0 > 0 && tEven) ? y0 - 1 : y0),
+        int intensity1 = Shade25D.getIntensity(x0, y0, -z0);
+        int intensity2 = Shade25D.getIntensity(x0, y0, z0);
+        System.out.println("x,y,z=" + x0 + "," + y0 + "," + z0 +
+                           " intensity1=" + intensity1 + " intensity2=" + intensity2);
+        g25d.plotLineDelta(shades1[intensity1], shades2[intensity1],
+                           //x + ((x0 > 0 && tEven) ? x0 - 1 : x0),
                            x + x0,
                            y + y0,
                            z + z0,
                            dx, dy, dz);
-        g25d.plotLineDelta(shades1[intensity], shades2[intensity],
-                           //                           x - ((x0 < 0 && tEven) ? x0 + 1 : x0),
-                           //                           y - ((y0 < 0 && tEven) ? y0 + 1 : y0),
+        g25d.plotLineDelta(shades1[intensity2], shades2[intensity2],
+                           //x - ((x0 < 0 && tEven) ? x0 + 1 : x0),
                            x - x0,
                            y - y0,
                            z - z0,
@@ -492,14 +497,15 @@ public class Cylinder25D {
       double t = radius3d2 - (x*x + y*y);
       if (t > 0)
         z = (int)(Math.sqrt(t) + 0.5);
-      byte shade = Shade25D.getIntensity(x, y, z);
-      //      System.out.println("record " + x + "," + y + "," + z);
+      int xR = x*dx + y*dy;
+      if (xR <= 0 ^ dz >= 0)
+        z = -z;
+
       if (ibRaster == raster.length)
         reallocRaster();
       raster[ibRaster++] = (byte)x;
       raster[ibRaster++] = (byte)y;
       raster[ibRaster++] = (byte)z;
-      raster[ibRaster++] = shade;
     }
 
     /****************************************************************
@@ -509,14 +515,10 @@ public class Cylinder25D {
 
     void calcLineFactors() {
       int radius = (diameter + 1) / 2; // add one here to control rounding properly
-      /*
-      System.out.println("dy=" + dy + " dx=" + dx + " mag2d=" + mag2d +
-                         " diameter=" + diameter);
-      */
-      x1 = -(radius * -dy + -dy/2) / mag2d;
-      y1 = -(radius * dx + dx/2) / mag2d;
-      x2 = x1 + (diameter * -dy + -dy/2) / mag2d;
-      y2 = y1 + (diameter * dx + dx/2) / mag2d;
+      x1 = -(radius * -dy) / mag2d;
+      y1 = -(radius * dx) / mag2d;
+      x2 = x1 + (diameter * -dy) / mag2d;
+      y2 = y1 + (diameter * dx) / mag2d;
     }
 
     int[] shades1;
@@ -524,8 +526,10 @@ public class Cylinder25D {
 
     void plotEdgewiseCylinder(int[] shades1, int[] shades2,
                               int x1, int y1, int x2, int y2) {
+      /*
       System.out.println("plotEdgewiseCylinder (" + x1 + "," + y1 + ") -> (" + x2 + "," + y2
                          + ")");
+      */
       this.shades1 = shades1;
       this.shades2 = shades2;
 

@@ -221,7 +221,7 @@ class Compiler {
         case Token.restrict:
         case Token.select:
           if ((token.tok != Token.identifier) &&
-              (token.tok & Token.expression) == 0)
+              (token.tok & (Token.expression | Token.predefinedset)) == 0)
             return invalidExpressionToken(ident);
           break;
         }

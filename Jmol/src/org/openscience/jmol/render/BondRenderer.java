@@ -243,7 +243,8 @@ public class BondRenderer {
     int w = (width1 + width2) / 2;
     g25d.fillCylinder(colix1, colix2, w,
                       xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
-    drawEndCaps(w);
+    //FIXME remove this comment to enable endcaps
+    // drawEndCaps(w);
   }
 
 
@@ -347,7 +348,6 @@ public class BondRenderer {
 
   void drawEndCap(int x, int y, int z, int diameter,
                   short colix, short outline) {
-    System.out.println("drawEndCap (" + x + "," + y + "," + z + ") diameter=" + diameter);
     if (styleBond == DisplayControl.SHADING)
       g25d.fillSphereCentered(outline, colix, x, y, z, diameter);
     else if (styleBond == DisplayControl.QUICKDRAW)

@@ -40,7 +40,7 @@ public class Shade25D {
   public static int exponentSpecular = 5;
   public static final float intensityDiffuseSource = 0.6f;
   public static final float intensitySpecularSource = 0.8f;
-  public static final float intensityAmbient = 0.5f;
+  public static final float intensityAmbient = 0.6f;
   static boolean tInitialized;
   
   static synchronized void initialize() {

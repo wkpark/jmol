@@ -209,6 +209,8 @@ public class DisplayPanel extends JPanel
   private WireFrameRotationAction wireframerotationAction =
     new WireFrameRotationAction();
   private PerspectiveAction perspectiveAction = new PerspectiveAction();
+  private AxesAction axesAction = new AxesAction();
+  private BoundboxAction boundboxAction = new BoundboxAction();
 
   class BondsAction extends AbstractAction {
 
@@ -699,6 +701,34 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class AxesAction extends AbstractAction {
+
+    public AxesAction() {
+      super("axes");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setModeAxes(cbmi.isSelected()
+                          ? DisplayControl.AXES_BBOX
+                          : DisplayControl.AXES_NONE);
+    }
+  }
+
+  class BoundboxAction extends AbstractAction {
+
+    public BoundboxAction() {
+      super("boundbox");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setShowBoundingBox(cbmi.isSelected());
+    }
+  }
+
   MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
         String menuKey = guimap.getKey(e.getSource());
@@ -723,6 +753,9 @@ public class DisplayPanel extends JPanel
     guimap.setSelected("Jmol.hydrogens", control.getShowHydrogens());
     guimap.setSelected("Jmol.vectors", control.getShowVectors());
     guimap.setSelected("Jmol.measurements", control.getShowMeasurements());
+    guimap.setSelected("Jmol.axes",
+                       control.getModeAxes() != DisplayControl.AXES_NONE);
+    guimap.setSelected("Jmol.boundbox", control.getShowBoundingBox());
   }
 
   public Action[] getActions() {
@@ -741,6 +774,7 @@ public class DisplayPanel extends JPanel
       vectorsAction, measurementsAction,
       selectallAction, deselectallAction,
       homeAction, wireframerotationAction, perspectiveAction,
+      axesAction, boundboxAction,
       acchargeAction, actypeAction,
     };
     return defaultActions;

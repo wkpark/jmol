@@ -40,11 +40,7 @@ class PdbReader extends ModelReader {
 
   boolean isNMRdata;
 
-  ModelAdapter.Logger logger;
-
-  Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
-    throws Exception {
-    this.logger = logger;
+  Model readModel(BufferedReader reader) throws Exception {
 
     model = new Model(ModelAdapter.MODEL_TYPE_PDB);
 

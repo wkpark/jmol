@@ -32,8 +32,7 @@ import java.util.StringTokenizer;
 
 class MolReader extends ModelReader {
     
-  Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
-    throws Exception {
+  Model readModel(BufferedReader reader) throws Exception {
     model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
     model.setModelName(reader.readLine());
     reader.readLine();

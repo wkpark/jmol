@@ -33,8 +33,11 @@ abstract class ModelReader {
   Model model;
   ModelAdapter.Logger logger;
 
-  abstract Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
-    throws Exception;
+  void setLogger(ModelAdapter.Logger logger) { this.logger = logger; }
+
+  void initialize() { }
+
+  abstract Model readModel(BufferedReader reader) throws Exception;
 
   static float floatFromString(String str) throws NumberFormatException {
     return Float.valueOf(str).floatValue();

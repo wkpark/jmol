@@ -41,8 +41,9 @@ import java.util.StringTokenizer;
  */
 public class CifReader extends ModelReader {
 
-  private BufferedReader input;
+  float[] notionalUnitcell;
 
+  
   float a = Float.NaN;
   float b = Float.NaN;
   float c = Float.NaN;

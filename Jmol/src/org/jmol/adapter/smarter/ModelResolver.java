@@ -54,7 +54,10 @@ class ModelResolver {
       return err;
     }
 
-    Model model = modelReader.readModel(bufferedReader, logger);
+    modelReader.setLogger(logger);
+    modelReader.initialize();
+
+    Model model = modelReader.readModel(bufferedReader);
     if (model.errorMessage != null)
       return model.errorMessage;
     return model;

@@ -35,8 +35,7 @@ class JmeReader extends ModelReader {
   String line;
   StringTokenizer tokenizer;
   
-  Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
-    throws Exception {
+  Model readModel(BufferedReader reader) throws Exception {
     model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
 
     try {

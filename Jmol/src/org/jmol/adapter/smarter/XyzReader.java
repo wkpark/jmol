@@ -31,7 +31,7 @@ import java.util.StringTokenizer;
 
 class XyzReader extends ModelReader {
     
-  Model readModel(BufferedReader reader, ModelAdapter.Logger logger) {
+  Model readModel(BufferedReader reader) throws Exception {
 
     model = new Model(ModelAdapter.MODEL_TYPE_XYZ);
 

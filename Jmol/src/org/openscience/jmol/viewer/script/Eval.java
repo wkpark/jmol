@@ -2105,24 +2105,21 @@ public class Eval implements Runnable {
   void vibration() throws ScriptException {
     if (statementLength < 2)
       subcommandExpected();
-    int tok = statement[1].tok;
-    switch(tok) {
-    case Token.on:
-      float period = 2;
-      if (statementLength >= 3) {
-        checkLength3();
-        period = floatParameter(2);
-      }
-      viewer.setVibrationPeriod(period);
-      viewer.setVibrationT(0f);
-      viewer.setVibrationOn(true);
-      break;
+    Token token = statement[1];
+    float period = 0;
+    switch(token.tok) {
     case Token.off:
-      viewer.setVibrationOn(false);
+    case Token.on:
+    case Token.integer:
+      period = token.intValue;
+      break;
+    case Token.decimal:
+      period = floatParameter(1);
       break;
     default:
       unrecognizedSubcommand();
     }
+    viewer.setVibrationPeriod(period);
   }
 
   void animationDirection() throws ScriptException {

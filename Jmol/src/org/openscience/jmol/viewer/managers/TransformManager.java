@@ -634,15 +634,22 @@ public class TransformManager {
 
   ////////////////////////////////////////////////////////////////
 
-  public boolean vibrationOn;
+  boolean vibrationOn;
   public float vibrationPeriod;
   int vibrationPeriodMs;
   float vibrationScale;
   public float vibrationRadians;
   
   public void setVibrationPeriod(float period) {
-    this.vibrationPeriod = period;
-    this.vibrationPeriodMs = (int)(period * 1000);
+    if (period <= 0) {
+      this.vibrationPeriod = 0;
+      this.vibrationPeriodMs = 0;
+      clearVibration();
+    } else {
+      this.vibrationPeriod = period;
+      this.vibrationPeriodMs = (int)(period * 1000);
+      setVibrationOn(true);
+    }
   }
 
   public void setVibrationT(float t) {
@@ -750,7 +757,7 @@ public class TransformManager {
   }
 
   VibrationThread vibrationThread;
-  public void setVibrationOn(boolean vibrationOn) {
+  private void setVibrationOn(boolean vibrationOn) {
     if (! vibrationOn || ! viewer.haveFrame()) {
       if (vibrationThread != null) {
         vibrationThread.interrupt();

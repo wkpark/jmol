@@ -491,20 +491,12 @@ final public class JmolViewer {
     transformManager.setVibrationPeriod(period);
   }
 
-  public float getVibrationPeriod() {
-    return transformManager.vibrationPeriod;
-  }
-
   public void setVibrationT(float t) {
     transformManager.setVibrationT(t);
   }
 
   public float getVibrationRadians() {
     return transformManager.vibrationRadians;
-  }
-
-  public void setVibrationOn(boolean vibrationOn) {
-    transformManager.setVibrationOn(vibrationOn);
   }
 
   public void setSpinX(int value) {

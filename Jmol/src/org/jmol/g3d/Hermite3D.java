@@ -314,15 +314,15 @@ class Hermite3D {
       Point3f a = pTopLeft[sp];
       Point3f b = pTopRight[sp];
       double dxTop = b.x - a.x;
-      if (dxTop >= -8 && dxTop <= 8) {
+      if (dxTop >= -2 && dxTop <= 2) {
         double dyTop = b.y - a.y;
-        if (dyTop >= -8 && dyTop <= 8) {
+        if (dyTop >= -2 && dyTop <= 2) {
           Point3f c = pBotLeft[sp];
           Point3f d = pBotRight[sp];
           float dxBot = d.x - c.x;
-          if (dxBot >= -8 && dxBot <= 8) {
+          if (dxBot >= -2 && dxBot <= 2) {
             float dyBot = d.y - c.y;
-            if (dyBot >= -8 && dyBot <= 8) {
+            if (dyBot >= -2 && dyBot <= 2) {
               
               g3d.fillSphereCentered(colix, 3, a);
               g3d.fillSphereCentered(colix, 3, c);
@@ -345,9 +345,9 @@ class Hermite3D {
       double h4 = s3 - s2;
 
       Point3f pMidTop = pTopRight[sp + 1];
-      pMidTop.x = (int) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
-      pMidTop.y = (int) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
-      pMidTop.z = (int) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
+      pMidTop.x = (float) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
+      pMidTop.y = (float) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
+      pMidTop.z = (float) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
       Point3f pMidBot = pBotRight[sp + 1];
       pMidBot.x = (float) (h1 * x5 + h2 * x6 + h3 * xT5 + h4 * xT6);
       pMidBot.y = (float) (h1 * y5 + h2 * y6 + h3 * yT5 + h4 * yT6);

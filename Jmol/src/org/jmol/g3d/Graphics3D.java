@@ -492,6 +492,13 @@ final public class Graphics3D {
   public void fillQuadrilateral(short colix,
                                 Point3f screenA, Point3f screenB,
                                 Point3f screenC, Point3f screenD) {
+    /*
+    System.out.println("fillQuad----------------");
+    System.out.println("screenA="+ screenA +
+                       "\nscreenB=" + screenB +
+                       "\nscreenC=" + screenC +
+                       "\nscreenD=" + screenD);
+    */
     calcSurfaceShade(colix, screenA, screenB, screenC);
     fillTriangle(argbCurrent, screenA, screenB, screenC);
     fillTriangle(argbCurrent, screenA, screenC, screenD);
@@ -585,6 +592,8 @@ final public class Graphics3D {
   final Vector3f vectorAC = new Vector3f();
   final Vector3f vectorNormal = new Vector3f();
 
+  int foo = 0;
+
   void calcSurfaceShade(short colix, Point3f screenA,
                         Point3f screenB, Point3f screenC) {
     vectorAB.sub(screenB, screenA);
@@ -594,6 +603,10 @@ final public class Graphics3D {
       vectorNormal.z >= 0
       ? calcIntensity(-vectorNormal.x, -vectorNormal.y, vectorNormal.z)
       : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
+    /*
+    System.out.println("intensity=" + intensity + " : " + foo++ + " : " + vectorNormal);
+    System.out.println("vectorAB="+ vectorAB + " vectorAC="+ vectorAC);
+    */
     argbCurrent = getShades(colix)[intensity];
   }
 

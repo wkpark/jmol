@@ -50,7 +50,11 @@ class PruebaRenderer extends ShapeRenderer {
     Prueba prueba = (Prueba)shape;
 
     viewer.transformPoints(points, screens);
-    g3d.fillQuadrilateral(prueba.colix, screens[0],
-                          screens[1], screens[2], screens[3]);
+    g3d.drawHermite(true, prueba.colix, 7,
+                    screens[0], screens[0],
+                    screens[1], screens[1],
+                    screens[3], screens[3],
+                    screens[2], screens[2]
+                    );
   }
 }

@@ -461,6 +461,7 @@ public class Eval implements Runnable {
       case Token.view:
       case Token.list:
       case Token.display3d:
+      case Token.surface:
         viewer.scriptStatus("Script command not implemented:" + token.value);
         break;
       default:
@@ -2461,6 +2462,7 @@ public class Eval implements Runnable {
     case Token.transparent:
     case Token.vectps:
     case Token.write:
+    case Token.formalCharge: // set charge in Chime
       notImplemented(1);
       break;
     case Token.identifier:

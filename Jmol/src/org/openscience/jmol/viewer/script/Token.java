@@ -167,6 +167,7 @@ public class Token {
   final static int mesh         = command | 62;
   final static int prueba       = command | 63;
   final static int rocket       = command | 64;
+  final static int surface      = command | 65;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -421,12 +422,13 @@ public class Token {
     "font",              new Token(font,       "font"),
     "hover",             new Token(hover,      "hover"),
     "vibration",         new Token(vibration,  "vibration"),
-    "vector",            new Token(vector,  varArgCount, "vector"),
+    "vector",            new Token(vector,   varArgCount, "vector"),
     "vectors",           null,
     "mesh",              new Token(mesh,      onDefault1, "mesh"),
-    "prueba",            new Token(prueba, onDefault1, "prueba"),
-    "rocket",            new Token(rocket, onDefault1, "rocket"),
+    "prueba",            new Token(prueba,    onDefault1, "prueba"),
+    "rocket",            new Token(rocket,    onDefault1, "rocket"),
     "rockets",           null,
+    "surface",           new Token(surface,  varArgCount, "surface"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

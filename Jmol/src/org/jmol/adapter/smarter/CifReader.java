@@ -156,6 +156,10 @@ public class CifReader extends ModelReader {
       processStructConfLoopBlock();
       return;
     }
+    if (line.startsWith("_struct_sheet_range")) {
+      processStructSheetRangeLoopBlock();
+      return;
+    }
     //    logger.log("Skipping loop block:" + line);
     skipUntilEmptyOrCommentLine();
   }
@@ -177,11 +181,12 @@ public class CifReader extends ModelReader {
   final static byte CARTN_Y   = 7;
   final static byte CARTN_Z   = 8;
   final static byte OCCUPANCY = 9;
-  final static byte COMP_ID   = 10;
-  final static byte ASYM_ID   = 11;
-  final static byte SEQ_ID    = 12;
-  final static byte INS_CODE  = 13;
-  final static byte ATOM_PROPERTY_MAX = 14;
+  final static byte B_ISO     = 10;
+  final static byte COMP_ID   = 11;
+  final static byte ASYM_ID   = 12;
+  final static byte SEQ_ID    = 13;
+  final static byte INS_CODE  = 14;
+  final static byte ATOM_PROPERTY_MAX = 15;
   
 
   final static String[] atomFields = {
@@ -190,6 +195,7 @@ public class CifReader extends ModelReader {
     "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
     "_atom_site.Cartn_x", "_atom_site.Cartn_y", "_atom_site.Cartn_z",
     "_atom_site_occupancy",
+    "_atom_site.b_iso_or_equiv",
     "_atom_site.label_comp_id", "_atom_site.label_asym_id",
     "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
   };
@@ -202,7 +208,7 @@ public class CifReader extends ModelReader {
     LABEL, LABEL,
     FRACT_X, FRACT_Y, FRACT_Z,
     CARTN_X, CARTN_Y, CARTN_Z,
-    OCCUPANCY,
+    OCCUPANCY, B_ISO,
     COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
   };
 
@@ -268,6 +274,9 @@ public class CifReader extends ModelReader {
           float floatOccupancy = parseFloat(field);
           if (! Float.isNaN(floatOccupancy))
             atom.occupancy = (int)(floatOccupancy * 100);
+          break;
+        case B_ISO:
+          atom.bfactor = parseFloat(field);
           break;
         case COMP_ID:
           atom.group3 = field;
@@ -384,6 +393,76 @@ public class CifReader extends ModelReader {
           else
             structure.structureType = "none";
           break;
+        case BEG_ASYM_ID:
+          structure.chainID =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        case BEG_SEQ_ID:
+          structure.startSequenceNumber = parseInt(field);
+          break;
+        case BEG_INS_CODE:
+          structure.startInsertionCode =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        case END_SEQ_ID:
+          structure.endSequenceNumber = parseInt(field);
+          break;
+        case END_INS_CODE:
+          structure.endInsertionCode =
+            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          break;
+        }
+      }
+      model.addStructure(structure);
+    }
+  }
+
+  // note that the conf_id is not used
+  final static byte STRUCT_SHEET_RANGE_PROPERTY_MAX = 8;
+
+  final static String[] structSheetRangeFields = {
+    "_struct_sheet_range.beg_label_asym_id",
+    "_struct_sheet_range.beg_label_seq_id",
+    "_struct_sheet_range.pdbx_beg_PDB_ins_code",
+    
+    "_struct_sheet_range.end_label_asym_id",
+    "_struct_sheet_range.end_label_seq_id",
+    "_struct_sheet_range.pdbx_end_PDB_ins_code",
+  };
+
+  final static byte[] structSheetRangeFieldMap = {
+    BEG_ASYM_ID, BEG_SEQ_ID, BEG_INS_CODE,
+    END_ASYM_ID, END_SEQ_ID, END_INS_CODE,
+  };
+
+  void processStructSheetRangeLoopBlock() throws Exception {
+    int[] fieldTypes = new int[100]; // should be enough
+    boolean[] propertyReferenced =
+      new boolean[STRUCT_SHEET_RANGE_PROPERTY_MAX];
+    int fieldCount = parseLoopParameters(structSheetRangeFields,
+                                         structSheetRangeFieldMap,
+                                         fieldTypes,
+                                         propertyReferenced);
+    for (int i = STRUCT_SHEET_RANGE_PROPERTY_MAX; --i > 1; )
+      if (! propertyReferenced[i]) {
+        logger.log("?que? missing _struct_conf property:" + i);
+        skipUntilEmptyOrCommentLine();
+        return;
+      }
+
+    for (;
+         line != null && line.length() > 0 && line.charAt(0) != '#';
+         line = reader.readLine().trim()) {
+      StringTokenizer tokenizer = new StringTokenizer(line);
+      Structure structure = new Structure();
+      structure.structureType = "sheet";
+      
+      for (int i = 0; i < fieldCount; ++i) {
+        if (! tokenizer.hasMoreTokens())
+          tokenizer = new StringTokenizer(reader.readLine());
+        String field = tokenizer.nextToken();
+        char firstChar = field.charAt(0);
+        switch (fieldTypes[i]) {
         case BEG_ASYM_ID:
           structure.chainID =
             (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;

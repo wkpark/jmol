@@ -12,50 +12,83 @@
 	
 	<property name="build.compiler" value="classic"/>
 
-	<target name="main" depends="classes"/>
+	<target name="main" depends="jar"/>
 
 	<target name="classes">
 		<mkdir dir="${classes.dir}"/>
 		<javac srcdir="${source.dir}" destdir="${classes.dir}" classpath="${classpath}"
 			debug="off" deprecation="on"
-			excludes="**/pending/**,**/jmol/ColorCellEditor.java,**/jmol/FrameHandler.java,**/jmol/MeasurementFactory.java,**/jmol/XYZFile.java,*"
+			excludes="**/pending/**,**/jmol/ColorCellEditor.java,**/jmol/FrameHandler.java,**/jmol/MeasurementFactory.java,**/jmol/XYZFile.java"
 		/>
-		<copydir src="${source.dir}" dest="${classes.dir}" includes="**/Properties" />
+		<copy todir="${classes.dir}" >
+			<fileset dir="${source.dir}">
+				<include name="**/*.jpg" />
+				<include name="**/*.gif" />
+				<include name="**/*.html" />
+				<include name="**/*.dtd" />
+				<include name="**/Properties/*" />
+				<include name="**/Data/*" />
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="jar" depends="classes">
-		<jar jarfile="jars/jmol.jar" basedir="${classes.dir}"/>
+		<jar jarfile="jars/jmol.jar" >
+			<fileset dir="${classes.dir}" >
+				<exclude name="**/.*" />
+				<exclude name="**/Test*.class" />
+				<include name="**/jmol/**" />
+			</fileset>
+		</jar>
+		<jar jarfile="jars/JmolApplet.jar" >
+			<fileset dir="${classes.dir}" >
+				<exclude name="**/.*" />
+				<include name="**/miniJmol/**" />
+				<include name="**/jmol/FortranFormat.class" />
+				<include name="**/jmol/DisplaySettings.class" />
+				<include name="**/jmol/PhysicalProperty.class" />
+			</fileset>
+		</jar>
 	</target>
 
-	<target name="dist" depends="classes">
+	<target name="dist" depends="jar">
 		<mkdir dir="${dist.dir}/jmol"/>
-		<jar jarfile="${dist.dir}/jmol/jmol.jar" basedir="${classes.dir}" manifest="src/manifest"
-			excludes="**/miniJmol/**,**/.*"
-		/>
-		<jar jarfile="${dist.dir}/jmol/JmolApplet.jar" basedir="${classes.dir}"
-			includes="**/miniJmol/**,**/jmol/FortranFormat.class,**/jmol/PhysicalProperty.class,**/jmol/ChemFileReader.class,**/jmol/DisplaySettings.class"
-			excludes="**/.*"
-		/>
-		<copydir src="jars" dest="${dist.dir}/jmol" includes="*.jar"
-			excludes="jmol.jar,JmolApplet.jar,swing.jar,junit.jar"
-		/>
+		<copy todir="${dist.dir}/jmol/jars" >
+			<fileset dir="jars">
+				<exclude name="swing.jar" />
+				<exclude name="junit.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/jmol" >
+			<fileset dir=".">
+				<include name="jmol" />
+				<include name="jmol.mac" />
+				<include name="jmol.bat" />
+				<include name="*.txt" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/jmol/samples" >
+			<fileset dir="samples" />
+		</copy>
 	</target>
 
 	<target name="dist.zip" depends="dist">
-		<exec dir="${dist.dir}" command="jar cMf ../jmol.zip *" />
+		<zip zipfile="jmol.zip" basedir="${dist.dir}" includes="**" />
 	</target>
 
 	<target name="dist.tar.gz" depends="dist">
-		<exec dir="${dist.dir}" command="tar zcf ../jmol.tar.gz *" />
+		<tar tarfile="jmol.tar" basedir="${dist.dir}" includes="**"/>
+		<gzip zipfile="jmol.tar.gz" src="jmol.tar"/>
+		<delete file="jmol.tar" />
 	</target>
 
 	<target name="clean">
-		<deltree dir="${classes.dir}"/>
+		<delete dir="${classes.dir}"/>
 	</target>
 
 	<target name="real_clean" depends="clean">
-		<deltree dir="${docs.dir}"/>
-		<deltree dir="${dist.dir}"/>
+		<delete dir="${docs.dir}"/>
+		<delete dir="${dist.dir}"/>
 	</target>
 
 	<target name="run" depends="classes">
@@ -68,7 +101,7 @@
 
 	<target name="docs">
 		<mkdir dir="${docs.dir}"/>
-		<javadoc2 destdir="${docs.dir}" classpath="${classpath}" sourcepath="src"
+		<javadoc destdir="${docs.dir}" classpath="${classpath}" sourcepath="src"
 			private="true" packagenames="org.openscience.jmol,org.openscience.miniJmol"
 		/>
 	</target>

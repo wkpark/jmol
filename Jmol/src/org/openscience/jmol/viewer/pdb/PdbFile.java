@@ -35,6 +35,10 @@ public class PdbFile {
   Frame frame;
   String[] structureRecords;
 
+  int modelCount = 0;
+  PdbModel[] models = new PdbModel[1];
+  short[] modelNumbers = new short[1];
+
   public PdbFile(Frame frame) {
     this.frame = frame;
   }
@@ -52,6 +56,24 @@ public class PdbFile {
     for (int i = chainCount; --i >= 0; )
       chains[i].freeze();
     propogateSecondaryStructure();
+  }
+
+
+  PdbModel getModelNumber(int modelNumber) {
+    for (int i = modelCount; --i >= 0; )
+      if (modelNumbers[i] == modelNumber)
+        return models[i];
+    if (modelCount == models.length) {
+      short[] tNumbers = new short[modelCount * 2];
+      System.arraycopy(modelNumbers, 0, tNumbers, 0, modelCount);
+      modelNumbers = tNumbers;
+
+      PdbModel[] t = new PdbModel[modelCount * 2];
+      System.arraycopy(models, 0, t, 0, modelCount);
+      models = t;
+    }
+    modelNumbers[modelCount] = (short)modelNumber;
+    return models[modelCount++] = new PdbModel(this, modelNumber);
   }
 
   private void propogateSecondaryStructure() {

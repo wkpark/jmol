@@ -257,10 +257,6 @@
 	  unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
-<!--
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolappletcdk.jar"/>
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-onlysax.jar"/>
-    -->
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
 	<include name="**/Point3f.class"/>
@@ -288,9 +284,6 @@
 	<include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>
-    <!-- delete stuff we do not want to ship with the applet -->
-    <delete dir="${appletjars.dir}/org/openscience/cdk"/>
-    <delete dir="${appletjars.dir}/org/xml"/>
 
   </target>
 

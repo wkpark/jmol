@@ -1,7 +1,7 @@
 <project default="html" basedir=".">
 
-  <property name="version" value="7" />
-  <property name="applet-version" value="7" />
+  <property name="version" value="8" />
+  <property name="applet-version" value="8" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />
   <property name="build.html" value="${build.dir}/html" />

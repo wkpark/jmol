@@ -41,12 +41,14 @@
       
       <p>
         In the end of 2002, Egon Willighagen became the new project leader
-	and a start was made with integrating Jmol with
-	<a href="http://cdk.sf.net/">The Chemical Development Kit</a>,
-	something that was already planned in September 2000 by Dan, Egon
-	and Christoph Steinbeck. In the same period Miguel Howard
+	    and a start was made with integrating Jmol with
+	    <a href="http://cdk.sf.net/">The Chemical Development Kit</a>,
+	    something that was already planned in September 2000 by Dan, Egon
+	    and Christoph Steinbeck. Since then Jmol has been ported to CDK for 
+        about 80%. In the same period Miguel Howard
         completely rewrote the graphical engine of Jmol and implemented
-	the RasMol/Chime script interpreter. 
+        the RasMol/Chime script interpreter, making the Jmol a full alternative
+        to the Chime plugin.
       </p>
     </section>
 

@@ -34,24 +34,36 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import javax.vecmath.Point3d;
 
+class Context {
+  String filename;
+  String script;
+  short[] linenumbers;
+  short[] lineIndices;
+  Token[][] aatoken;
+  int pc;
+}
+
 public class Eval implements Runnable {
 
   Compiler compiler;
 
   final static int scriptLevelMax = 10;
   int scriptLevel;
+
+  Context[] stack = new Context[scriptLevelMax];
+
   String filename;
   String script;
   short[] linenumbers;
   short[] lineIndices;
   Token[][] aatoken;
+  int pc; // program counter
 
   long timeBeginExecution;
   long timeEndExecution;
   boolean error;
   String errorMessage;
 
-  int pc; // program counter
   Token[] statement;
   DisplayControl control;
   Thread myThread;
@@ -109,20 +121,15 @@ public class Eval implements Runnable {
     return (int)(timeEndExecution - timeBeginExecution);
   }
 
-  boolean loadScript(String filename, String script, int scriptLevel) {
+  boolean loadScript(String filename, String script) {
     this.filename = filename;
     this.script = script;
-    this.scriptLevel = scriptLevel;
-    if (scriptLevel == scriptLevelMax)
-      return TooManyScriptLevels(filename);
     if (! compiler.compile(filename, script)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
       System.out.println(errorMessage);
       return false;
     }
-    error = false;
-    errorMessage = null;
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
@@ -130,15 +137,27 @@ public class Eval implements Runnable {
     return true;
   }
 
+  void clearState() {
+    for (int i = scriptLevelMax; --i >= 0; )
+      stack[i] = null;
+    scriptLevel = 0;
+    error = false;
+    errorMessage = null;
+    terminationNotification = false;
+    interruptExecution = false;
+  }
+
   public boolean loadScriptString(String script) {
-    return loadScript(null, script, 0);
+    clearState();
+    return loadScript(null, script);
   }
 
   public boolean loadScriptFile(String filename) {
-    return loadScriptFile(filename, 0);
+    clearState();
+    return loadScriptFile(filename);
   }
 
-  boolean loadScriptFile(String filename, int scriptLevel) {
+  boolean loadScriptFileInternal(String filename) {
     InputStream istream = control.getInputStreamFromName(filename);
     if (istream == null)
       return false;
@@ -156,18 +175,13 @@ public class Eval implements Runnable {
     } catch (IOException e) {
       return IOError(filename);
     }
-    boolean loaded = loadScript(filename, script, scriptLevel);
-    return loaded;
+    return loadScript(filename, script);
   }
 
   boolean LoadError(String msg) {
     error = true;
     errorMessage = msg;
     return false;
-  }
-
-  boolean TooManyScriptLevels(String filename) {
-    return LoadError("too many script levels:" + filename);
   }
 
   boolean FileNotFound(String filename) {
@@ -1086,14 +1100,40 @@ public class Eval implements Runnable {
     }
   }
 
+  void pushContext() throws ScriptException {
+    if (scriptLevel == scriptLevelMax)
+      evalError("too many script levels");
+    Context context = new Context();
+    context.filename = filename;
+    context.script = script;
+    context.linenumbers = linenumbers;
+    context.lineIndices = lineIndices;
+    context.aatoken = aatoken;
+    context.pc = pc;
+    stack[scriptLevel++] = context;
+  }
+
+  void popContext() throws ScriptException {
+    if (scriptLevel == 0)
+      evalError("RasMol virtual machine error - stack underflow");
+    Context context = stack[--scriptLevel];
+    stack[scriptLevel] = null;
+    filename = context.filename;
+    script = context.script;
+    linenumbers = context.linenumbers;
+    lineIndices = context.lineIndices;
+    aatoken = context.aatoken;
+    pc = context.pc;
+  }
   void script() throws ScriptException {
     if (statement[1].tok != Token.string)
       filenameExpected();
+    pushContext();
     String filename = (String)statement[1].value;
-    Eval child = new Eval(control);
-    if (! child.loadScriptFile(filename, scriptLevel+1))
-      errorLoadingScript(child.errorMessage);
-    child.instructionDispatchLoop();
+    if (! loadScriptFileInternal(filename))
+      errorLoadingScript(errorMessage);
+    instructionDispatchLoop();
+    popContext();
   }
 
   void select() throws ScriptException {

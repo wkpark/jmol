@@ -305,7 +305,7 @@ public class Jmol extends JPanel {
     frame.pack();
     frame.setSize(500, 550);
     ImageIcon jmolIcon =
-      JmolResourceHandler.getInstance().getIcon("Jmol.icon");
+      JmolResourceHandler.getInstance().getIcon("icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
     // splash.showStatus(jrh.translate("Launching main frame..."));
@@ -314,7 +314,7 @@ public class Jmol extends JPanel {
 
   public static Jmol getJmol(JFrame frame) {
     JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-    ImageIcon splash_image = jrh.getIcon("Jmol.splash");
+    ImageIcon splash_image = jrh.getIcon("splash");
     Splash splash = new Splash(frame, splash_image);
     splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     splash.showStatus(jrh.translate("Creating main window..."));
@@ -490,29 +490,23 @@ public class Jmol extends JPanel {
       
     JMenuItem mi;
     if (isRadio) {
-      mi = guimap.newJRadioButtonMenuItem("Jmol."+cmd);
+      mi = guimap.newJRadioButtonMenuItem(cmd);
     } else {
-      String checked = JmolResourceHandler.getInstance().getString("Jmol."
-                         + cmd + "Check");
-      if (checked != null) {
-        boolean c = false;
-        if (checked.equals("true")) {
-          c = true;
-        }
-        mi = guimap.newJCheckBoxMenuItem("Jmol."+cmd, c);
+      if (cmd.endsWith("Check")) {
+        mi = guimap.newJCheckBoxMenuItem(cmd, false);
       } else {
-        mi = guimap.newJMenuItem("Jmol."+cmd);
+        mi = guimap.newJMenuItem(cmd);
       }
     }
-    String mnem = JmolResourceHandler.getInstance().getString("Jmol." + cmd
-                    + "Mnemonic");
+    String mnem =
+      JmolResourceHandler.getInstance().getString(cmd + "Mnemonic");
     if (mnem != null) {
       char mn = mnem.charAt(0);
       mi.setMnemonic(mn);
     }
 
-    ImageIcon f = JmolResourceHandler.getInstance().getIcon("Jmol." + cmd
-                    + "Image");
+    ImageIcon f =
+      JmolResourceHandler.getInstance().getIcon(cmd + "Image");
     if (f != null) {
       mi.setHorizontalTextPosition(JButton.RIGHT);
       mi.setIcon(f);
@@ -560,7 +554,7 @@ public class Jmol extends JPanel {
 
     toolbar = new JToolBar();
     String[] tool1Keys =
-      tokenize(JmolResourceHandler.getInstance().getString("Jmol.toolbar"));
+      tokenize(JmolResourceHandler.getInstance().getString("toolbar"));
     for (int i = 0; i < tool1Keys.length; i++) {
       if (tool1Keys[i].equals("-")) {
         toolbar.addSeparator();
@@ -593,11 +587,11 @@ public class Jmol extends JPanel {
    */
   protected AbstractButton createToolbarButton(String key) {
 
-    ImageIcon ii = JmolResourceHandler.getInstance().getIcon("Jmol." + key
-                     + "Image");
+    ImageIcon ii =
+      JmolResourceHandler.getInstance().getIcon(key + "Image");
     AbstractButton b = new JButton(ii);
     String isToggleString =
-      JmolResourceHandler.getInstance().getString("Jmol." + key + "Toggle");
+      JmolResourceHandler.getInstance().getString(key + "Toggle");
     if (isToggleString != null) {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
@@ -606,8 +600,7 @@ public class Jmol extends JPanel {
           buttonRotate = b;
         toolbarButtonGroup.add(b);
         String isSelectedString =
-          JmolResourceHandler.getInstance().getString("Jmol." + key
-            + "ToggleSelected");
+          JmolResourceHandler.getInstance().getString(key + "ToggleSelected");
         if (isSelectedString != null) {
           boolean isSelected =
             Boolean.valueOf(isSelectedString).booleanValue();
@@ -628,8 +621,7 @@ public class Jmol extends JPanel {
       b.setEnabled(false);
     }
 
-    String tip = JmolResourceHandler.getInstance().getString("Jmol." + key
-                   + "Tip");
+    String tip = JmolResourceHandler.getInstance().getString(key + "Tip");
     if (tip != null) {
       b.setToolTipText(tip);
     }
@@ -686,7 +678,7 @@ public class Jmol extends JPanel {
 
   protected void addNormalMenuBar(JMenuBar menuBar) {
     String[] menuKeys =
-      tokenize(JmolResourceHandler.getInstance().getString("Jmol.menubar"));
+      tokenize(JmolResourceHandler.getInstance().getString("menubar"));
     for (int i = 0; i < menuKeys.length; i++) {
         if (menuKeys[i].equals("-")) {
             menuBar.add(Box.createHorizontalGlue());
@@ -696,8 +688,8 @@ public class Jmol extends JPanel {
             if (m != null) {
                 menuBar.add(m);
             }
-            String mnem = JmolResourceHandler.getInstance().getString("Jmol."
-                + menuKeys[i] + "Mnemonic");
+            String mnem = JmolResourceHandler.
+              getInstance().getString(menuKeys[i] + "Mnemonic");
             if (mnem != null) {
                 char mn = mnem.charAt(0);
                 m.setMnemonic(mn);
@@ -713,8 +705,8 @@ public class Jmol extends JPanel {
       if (m != null) {
           menuBar.add(m);
       }
-      String mnem = JmolResourceHandler.getInstance().getString("Jmol."
-          + menuKey + "Mnemonic");
+      String mnem =
+        JmolResourceHandler.getInstance().getString(menuKey + "Mnemonic");
       if (mnem != null) {
           char mn = mnem.charAt(0);
           m.setMnemonic(mn);
@@ -730,30 +722,30 @@ public class Jmol extends JPanel {
     // Get list of items from resource file:
     String[] itemKeys;
     if (isPopup) {
-      itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol."
-          + key + "Popup"));
+      itemKeys = tokenize(JmolResourceHandler.
+                          getInstance().getString(key + "Popup"));
     } else {
-      itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol."
-          + key));
+      itemKeys = tokenize(JmolResourceHandler.
+                          getInstance().getString(key));
     }
 
     // Get label associated with this menu:
-    JMenu menu = guimap.newJMenu("Jmol."+key);
+    JMenu menu = guimap.newJMenu(key);
 
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {
 
       // Check to see if it is a radio group:
-      String radiogroup = JmolResourceHandler.getInstance().getString("Jmol."
-                            + itemKeys[i] + "Radio");
+      String radiogroup =
+        JmolResourceHandler.getInstance().getString(itemKeys[i] + "Radio");
       if (radiogroup != null) {
 
         // Get the list of items in the radio group:
         String[] radioKeys = tokenize(radiogroup);
 
         // See what is the selected member of the radio group:
-        String si = JmolResourceHandler.getInstance().getString("Jmol."
-                      + itemKeys[i] + "Selected");
+        String si = JmolResourceHandler.
+          getInstance().getString(itemKeys[i] + "Selected");
 
         // Create the button group:
         ButtonGroup bg = new ButtonGroup();
@@ -773,12 +765,12 @@ public class Jmol extends JPanel {
       } else {
         // Check to see if it is a popup menu:
         String popup = JmolResourceHandler.getInstance().
-          getString("Jmol." + itemKeys[i] + "Popup");
+          getString(itemKeys[i] + "Popup");
         if (popup != null) {
           if (popup.equals("prop")) {
             apm =
               new AtomPropsMenu(JmolResourceHandler.getInstance()
-                                .getString("Jmol." + itemKeys[i] + "Label"),
+                                .getString(itemKeys[i] + "Label"),
                                 viewer);
             menu.add(apm);
           } else {
@@ -795,7 +787,6 @@ public class Jmol extends JPanel {
     menu.addMenuListener(display.getMenuListener());
     return menu;
   }
-
 
   private class ActionChangedListener implements PropertyChangeListener {
 

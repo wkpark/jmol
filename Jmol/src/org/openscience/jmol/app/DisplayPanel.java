@@ -177,7 +177,7 @@ public class DisplayPanel extends JPanel
   class HydrogensAction extends AbstractAction {
 
     public HydrogensAction() {
-      super("hydrogens");
+      super("hydrogensCheck");
       this.setEnabled(true);
     }
 
@@ -190,7 +190,7 @@ public class DisplayPanel extends JPanel
   class VectorsAction extends AbstractAction {
 
     public VectorsAction() {
-      super("vectors");
+      super("vectorsCheck");
       this.setEnabled(true);
     }
 
@@ -203,7 +203,7 @@ public class DisplayPanel extends JPanel
   class MeasurementsAction extends AbstractAction {
 
     public MeasurementsAction() {
-      super("measurements");
+      super("measurementsCheck");
       this.setEnabled(true);
     }
 
@@ -540,7 +540,7 @@ public class DisplayPanel extends JPanel
   class WireFrameRotationAction extends AbstractAction {
 
     public WireFrameRotationAction() {
-      super("wireframerotation");
+      super("wireframerotationCheck");
       this.setEnabled(true);
     }
 
@@ -553,7 +553,7 @@ public class DisplayPanel extends JPanel
   class PerspectiveAction extends AbstractAction {
 
     public PerspectiveAction() {
-      super("perspective");
+      super("perspectiveCheck");
       this.setEnabled(true);
     }
 
@@ -566,7 +566,7 @@ public class DisplayPanel extends JPanel
   class AxesAction extends AbstractAction {
 
     public AxesAction() {
-      super("axes");
+      super("axesCheck");
       this.setEnabled(true);
     }
 
@@ -579,7 +579,7 @@ public class DisplayPanel extends JPanel
   class BoundboxAction extends AbstractAction {
 
     public BoundboxAction() {
-      super("boundbox");
+      super("boundboxCheck");
       this.setEnabled(true);
     }
 
@@ -592,7 +592,7 @@ public class DisplayPanel extends JPanel
   MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
         String menuKey = guimap.getKey(e.getSource());
-        if (menuKey.equals("Jmol.display")) {
+        if (menuKey.equals("display")) {
           setDisplayMenuState();
         }
       }
@@ -607,14 +607,14 @@ public class DisplayPanel extends JPanel
   }
 
   private void setDisplayMenuState() {
-    guimap.setSelected("Jmol.wireframerotation",
+    guimap.setSelected("wireframerotationCheck",
                        viewer.getWireframeRotation());
-    guimap.setSelected("Jmol.perspective", viewer.getPerspectiveDepth());
-    guimap.setSelected("Jmol.hydrogens", viewer.getShowHydrogens());
-    guimap.setSelected("Jmol.vectors", viewer.getShowVectors());
-    guimap.setSelected("Jmol.measurements", viewer.getShowMeasurements());
-    guimap.setSelected("Jmol.axes", viewer.getShowAxes());
-    guimap.setSelected("Jmol.boundbox", viewer.getShowBoundingBox());
+    guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
+    guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
+    guimap.setSelected("vectorsCheck", viewer.getShowVectors());
+    guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
+    guimap.setSelected("axesCheck", viewer.getShowAxes());
+    guimap.setSelected("boundboxCheck", viewer.getShowBoundingBox());
   }
 
   public Action[] getActions() {

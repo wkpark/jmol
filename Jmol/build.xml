@@ -154,11 +154,6 @@
       </fileset>
     </delete>
     
-    <!-- delete stuff we do not want to ship with the applet -->
-    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cmlCore.xsd"/>
-    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cml1_0_1.xsd"/>
-    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/tools/jmol_atomtypes.txt"/>
-    <delete file="${appletjars.dir}/org/openscience/cdk/config/log4j.properties"/>
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
@@ -262,8 +257,10 @@
 	  unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
+<!--
     <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolappletcdk.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-onlysax.jar"/>
+    -->
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
 	<include name="**/Point3f.class"/>
@@ -292,10 +289,9 @@
       </patternset>
     </unjar>
     <!-- delete stuff we do not want to ship with the applet -->
-    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cmlCore.xsd"/>
-    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cml1_0_1.xsd"/>
-    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/tools/jmol_atomtypes.txt"/>
-    <delete file="${appletjars.dir}/org/openscience/cdk/config/log4j.properties"/>
+    <delete dir="${appletjars.dir}/org/openscience/cdk"/>
+    <delete dir="${appletjars.dir}/org/xml"/>
+
   </target>
 
   <target name="applet-jar" id="applet-jar" depends="applet-classes,appletjars">

@@ -51,12 +51,18 @@ public final class Shade3D {
 
   // the viewer vector is always 0,0,1
 
+  // set specular on|off
   static boolean specularOn = true;
-  static int specularExponent = 7;
-  static float intenseFraction = 0.25f;
-  static float intensitySpecular = 1.0f;
+  // set specular 0-100
+  static float intensitySpecular = 0.25f;
+  // set specpower -6
+  static int specularExponent = 6;
+  // set specpower 0-100
+  static float intenseFraction = 0.5f;
+  // set diffuse 0-100
   static float intensityDiffuse = 0.8f;
-  static float ambientFraction = 0.6f;
+  // set ambient 0-100
+  static float ambientFraction = 0.5f;
 
   public static int[] getShades(int rgb) {
     int[] shades = new int[shadeMax];
@@ -124,10 +130,10 @@ public final class Shade3D {
         // but the viewer only has a z component
         float dotProduct = z * 2 * cosTheta - zLight;
         if (dotProduct > 0) {
-          for (int n = specularExponent; --n >= 0; )
+          for (int n = specularExponent; --n >= 0 && dotProduct > .0001f; )
             dotProduct *= dotProduct;
-          // specular component ... intensitySpecular == 1.0
-          intensity += dotProduct ; // * intensitySpecular
+          // specular component
+          intensity += dotProduct * intensitySpecular;
         }
       }
     }

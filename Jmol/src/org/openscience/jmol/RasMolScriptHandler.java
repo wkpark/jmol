@@ -20,9 +20,8 @@
  **/
 package org.openscience.jmol;
 
-import java.util.StringTokenizer;
-import java.util.Enumeration;
-import java.io.File;
+import java.util.*;
+import java.io.*;
 import java.awt.Color;
 import javax.swing.JTextArea;
 
@@ -65,6 +64,33 @@ class RasMolScriptHandler {
                         param = "CML";
 		    }
                     program.openFile(new File(file), param);
+   	        } else {
+		    throw new RasMolScriptException("Error: omitted parameter.");
+		}
+	    } else if (word.equals("script")) {
+                if (st.hasMoreElements()) {
+                    String file = (String)st.nextElement();
+		    try {
+			File script = new File(program.getUserDirectory(), file);
+			if (script.exists()) {
+			    BufferedReader reader = new BufferedReader(new FileReader(script));
+			    String command2 = reader.readLine();
+			    while (command2 != null) {
+				// note that is does not handle exceptions as the
+				// first exception should *crash* the "script" command 
+				handle(command);
+				command2 = reader.readLine();
+			    }
+			} else {
+			    StringBuffer sb = new StringBuffer();
+			    sb.append("Error: script (");
+			    sb.append(file.toString());
+			    sb.append(") not found!");
+			    throw new RasMolScriptException(sb.toString());
+			}
+		    } catch (IOException ioex) {
+			throw new RasMolScriptException("Error: IOException.");
+		    }
    	        } else {
 		    throw new RasMolScriptException("Error: omitted parameter.");
 		}
@@ -111,7 +137,14 @@ class RasMolScriptHandler {
                 if (st.hasMoreElements()) {
 		    select((String)st.nextElement());
    	        } else {
-		    throw new RasMolScriptException("Error: omitted expression.");
+		    Enumeration selectedAtoms = program.display.md.getSelectedAtoms().elements();
+		    print("Selected atoms: ");
+		    while (selectedAtoms.hasMoreElements()) {
+			int atom = ((Integer)selectedAtoms.nextElement()).intValue();
+			print((new Integer(atom)).toString());
+			print(" ");
+		    }
+		    println();
 		}
 	    } else if (word.equals("list")) {
                 if (st.hasMoreElements()) {
@@ -129,7 +162,7 @@ class RasMolScriptHandler {
 	    } else if (word.equals("clear")) {
                 if (output != null) {
 		    // script command is run from script window
-		    output.setText();
+		    output.setText("");
 		} else {
 		    // script is run from command line
 		}
@@ -197,28 +230,30 @@ class RasMolScriptHandler {
 	}
     }
 
+    /* Note that colors should be renumber to old EGA values :) (0..15)
+    **/
     private Color getColor(String value) throws RasMolScriptException {
-        if (value.equals("red")) {
+        if (value.equals("red") || value.equals("1")) {
             return Color.red;
-	} else if (value.equals("white")) {
+	} else if (value.equals("white") || value.equals("9")) {
             return Color.white;
-	} else if (value.equals("black")) {
+	} else if (value.equals("black") || value.equals("0")) {
             return Color.black;
-	} else if (value.equals("grey")) {
+	} else if (value.equals("grey") || value.equals("2")) {
             return Color.gray;
-	} else if (value.equals("blue")) {
+	} else if (value.equals("blue") || value.equals("3")) {
             return Color.blue;
-	} else if (value.equals("green")) {
+	} else if (value.equals("green") || value.equals("4")) {
             return Color.green;
-	} else if (value.equals("cyan")) {
+	} else if (value.equals("cyan") || value.equals("5")) {
             return Color.cyan;
-	} else if (value.equals("magenta")) {
+	} else if (value.equals("magenta") || value.equals("6")) {
             return Color.magenta;
-	} else if (value.equals("orange")) {
+	} else if (value.equals("orange") || value.equals("7")) {
             return Color.orange;
 	} else if (value.equals("pink")) {
             return Color.pink;
-	} else if (value.equals("yellow")) {
+	} else if (value.equals("yellow") || value.equals("8")) {
             return Color.yellow;
 	} else {
 	    throw new RasMolScriptException("Unknown color: " + value);
@@ -231,8 +266,11 @@ class RasMolScriptHandler {
 	    Enumeration selectedAtoms = program.display.md.getSelectedAtoms().elements();
 	    while (selectedAtoms.hasMoreElements()) {
                 int atom = ((Integer)selectedAtoms.nextElement()).intValue();
-                println("atom " + atom + " selected.");
 		program.display.md.atoms[atom-1].getBaseAtomType().setColor(this.getColor(value));
+		// reset bond colors
+		for (int i=0; i<program.display.md.bonds.length; i++) {
+		    program.display.md.bonds[i].resetColors();
+		}
 	    }
         } else {
             throw new RasMolScriptException("Error: unknown object: " + object);

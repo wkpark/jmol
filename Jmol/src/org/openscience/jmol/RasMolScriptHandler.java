@@ -173,8 +173,8 @@ class RasMolScriptHandler {
     }
  
     private void setParam(String param, String value) throws RasMolScriptException {
+	boolean val = checkBoolean(value);
 	if (param.equals("shadows")) {
-            boolean val = checkBoolean(value);
             if (val) {
 		// turn shading on
                 program.settings.setAtomDrawMode(DisplaySettings.SHADING);
@@ -184,6 +184,12 @@ class RasMolScriptHandler {
                 program.settings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
                 program.settings.setBondDrawMode(DisplaySettings.QUICKDRAW);
 	    }
+	} else if (param.equals("autorefresh")) {
+	    try {
+		program.scriptWindow.setAutoRefresh(val);
+	    } catch (Exception e) {
+		throw new RasMolScriptException("Error: cannot set autorefresh.");
+	    }
 	} else {
 	    throw new RasMolScriptException("Unrecognized parameter: " + param);
 	}
@@ -191,7 +197,7 @@ class RasMolScriptHandler {
 
     private void list(String objectType) throws RasMolScriptException {
         if (objectType.equals("atoms")) {
-	    for (int i=0; i<program.display.md.atoms.length; i++) {
+	    for (int i=0; i<program.display.md.nvert; i++) {
                 StringBuffer sb = new StringBuffer();
                 sb.append("  ");
 		sb.append(i + 1);
@@ -267,10 +273,12 @@ class RasMolScriptHandler {
 	    while (selectedAtoms.hasMoreElements()) {
                 int atom = ((Integer)selectedAtoms.nextElement()).intValue();
 		program.display.md.atoms[atom-1].getBaseAtomType().setColor(this.getColor(value));
-		// reset bond colors
-		for (int i=0; i<program.display.md.bonds.length; i++) {
-		    program.display.md.bonds[i].resetColors();
-		}
+	    }
+
+	    // reset bond colors
+	    for (int i=0; i<program.display.md.nbonds; i++) {
+                println("bond: " + i);
+		program.display.md.bonds[i].resetColors();
 	    }
         } else {
             throw new RasMolScriptException("Error: unknown object: " + object);

@@ -30,6 +30,8 @@ public class ScriptWindow extends JDialog implements java.awt.event.WindowListen
 
     private Jmol window;
 
+    private boolean autorefresh = false;
+
     public ScriptWindow(Jmol boss){
         super(boss.frame,"Rasmol Scripts",true);
         window = boss;
@@ -56,6 +58,14 @@ public class ScriptWindow extends JDialog implements java.awt.event.WindowListen
 		} catch (RasMolScriptException rasmolerror) {
                     output.append(rasmolerror.getMessage());
                     output.append("\n");
+		} catch (Exception exp) {
+		    output.append("Error: " + exp.toString());
+		    output.append("\n");
+		}
+
+                // do a refresh if "set autorefresh true"
+		if (autorefresh) {
+		    window.repaint();
 		}
 
                 // return prompt
@@ -83,4 +93,8 @@ public class ScriptWindow extends JDialog implements java.awt.event.WindowListen
     public void windowDeiconified(java.awt.event.WindowEvent e) {}
     public void windowActivated(java.awt.event.WindowEvent e) {}
     public void windowDeactivated(java.awt.event.WindowEvent e) {}
+
+    public void setAutoRefresh(boolean val) {
+	this.autorefresh = val;
+    }
 }

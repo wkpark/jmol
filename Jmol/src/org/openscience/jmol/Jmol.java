@@ -103,6 +103,11 @@ import com.lowagie.text.pdf.*;
  */
 class Jmol extends JPanel {
 
+  /**
+   * The data model.
+   */
+  private JmolModel model;
+
   private JScrollPane scroller;
   private JViewport port;
   static DisplayPanel display;
@@ -118,7 +123,6 @@ class Jmol extends JPanel {
   private RecentFilesDialog recentFiles;
   protected ScriptWindow scriptWindow;
   protected static JFrame frame;
-  private ChemFile chemFile;
   private JFileChooser openChooser;
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
@@ -203,14 +207,19 @@ class Jmol extends JPanel {
     }
 
     status = (StatusBar) createStatusBar();
+    splash.showStatus(resourceHandler.translate("Initializing data model..."));
+    model = new JmolModel();
     splash.showStatus(resourceHandler.translate("Initializing 3D display..."));
     display = new DisplayPanel(status, settings);
+    model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler.translate("Initializing Preferences..."));
     prefs = new Preferences(frame, display);
     splash.showStatus(resourceHandler.translate("Initializing Animate..."));
-    anim = new Animate(frame, display);
+    anim = new Animate(model, frame);
+    model.addPropertyChangeListener(anim);
     splash.showStatus(resourceHandler.translate("Initializing Vibrate..."));
-    vib = new Vibrate(frame, display);
+    vib = new Vibrate(model, frame);
+    model.addPropertyChangeListener(vib);
     splash.showStatus(resourceHandler.translate("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
     addPropertyChangeListener(openFileProperty, recentFiles);
@@ -225,8 +234,6 @@ class Jmol extends JPanel {
     display.setMeasure(meas);
     mlist.addMeasurementListListener(display);
     port.add(display);
-    splash.showStatus(resourceHandler.translate("Initializing Chemical Shifts..."));
-    chemicalShifts.initialize();
 
     // install the command table
     splash.showStatus(resourceHandler.translate("Building Command Hooks..."));
@@ -260,6 +267,10 @@ class Jmol extends JPanel {
     add("Center", panel);
     add("South", status);
 
+    splash.showStatus(resourceHandler.translate("Initializing Chemical Shifts..."));
+    chemicalShifts.initialize(apm);
+    model.addPropertyChangeListener(chemicalShifts);
+    
     splash.showStatus(resourceHandler.translate("Starting display..."));
     display.start();
 
@@ -277,11 +288,11 @@ class Jmol extends JPanel {
     exportChooser = new JFileChooser();
     exportChooser.setCurrentDirectory(currentDir);
 
-    addPropertyChangeListener(moleculeProperty, saveAction);
-    addPropertyChangeListener(moleculeProperty, exportAction);
-    addPropertyChangeListener(moleculeProperty, povrayAction);
-    addPropertyChangeListener(moleculeProperty, pdfAction);
-    addPropertyChangeListener(moleculeProperty, printAction);
+    model.addPropertyChangeListener(JmolModel.chemFileProperty, saveAction);
+    model.addPropertyChangeListener(JmolModel.chemFileProperty, exportAction);
+    model.addPropertyChangeListener(JmolModel.chemFileProperty, povrayAction);
+    model.addPropertyChangeListener(JmolModel.chemFileProperty, pdfAction);
+    model.addPropertyChangeListener(JmolModel.chemFileProperty, printAction);
   }
 
   public static Jmol getJmol(JFrame frame) {
@@ -355,7 +366,7 @@ class Jmol extends JPanel {
       if (script != null) {
         try {
           System.out.println("Executing script: " + script.toString());
-          window.splash.showStatus(JmolResourceHandler.getInstance().translate("Executing script..."));
+          window.splash.showStatus(JmolResourceHandler.getInstance().getString("Executing script..."));
           RasMolScriptHandler scripthandler = new RasMolScriptHandler(window);
           BufferedReader reader = new BufferedReader(new FileReader(script));
           String command = reader.readLine();
@@ -478,7 +489,7 @@ class Jmol extends JPanel {
       ChemFile newChemFile = reader.read();
   
       if (newChemFile != null) {
-        if (newChemFile.getNumberFrames() > 0) {
+        if (newChemFile.getNumberOfFrames() > 0) {
           setChemFile(newChemFile);
         } else {
           throw new JmolException("readMolecule", "the input appears to be empty");
@@ -541,37 +552,12 @@ class Jmol extends JPanel {
     }
   }
 
-  /**
-   * returns the ChemFile that we are currently working with
-   *
-   * @see ChemFile
-   */
-  public ChemFile getCurrentFile() {
-    return chemFile;
-  }
-
-
   void setChemFile(ChemFile chemFile) {
 
-    ChemFile oldChemFile = this.chemFile;
-    this.chemFile = chemFile;
-    display.setChemFile(chemFile);
-    anim.setChemFile(chemFile);
-    vib.setChemFile(chemFile);
-    pg.setChemFile(chemFile);
+    ChemFile oldChemFile = model.getChemFile();
+    model.setChemFile(chemFile);
     apm.replaceList(chemFile.getAtomPropertyList());
     mlist.clear();
-
-    chemicalShifts.setChemFile(chemFile, apm);
-
-    firePropertyChange(moleculeProperty, oldChemFile, chemFile);
-  }
-
-  /**
-   * Returns whether the application has a molecule loaded.
-   */
-  public boolean hasMolecule() {
-    return chemFile != null;
   }
 
   /**
@@ -659,9 +645,9 @@ class Jmol extends JPanel {
     JMenuItem mi;
     if (isRadio) {
       mi = new JRadioButtonMenuItem(JmolResourceHandler.getInstance()
-          .translate("Jmol." + cmd + labelSuffix));
+          .getString("Jmol." + cmd + labelSuffix));
     } else {
-      String checked = JmolResourceHandler.getInstance().translate("Jmol."
+      String checked = JmolResourceHandler.getInstance().getString("Jmol."
                          + cmd + checkSuffix);
       if (checked != null) {
         boolean c = false;
@@ -1243,13 +1229,13 @@ class Jmol extends JPanel {
             FileOutputStream os = new FileOutputStream(file);
 
             if (fileTyper.getType().equals("XYZ (xmol)")) {
-              XYZSaver xyzs = new XYZSaver(getCurrentFile(), os);
+              XYZSaver xyzs = new XYZSaver(model.getChemFile(), os);
               xyzs.writeFile();
             } else if (fileTyper.getType().equals("PDB")) {
-              PdbSaver ps = new PdbSaver(getCurrentFile(), os);
+              PdbSaver ps = new PdbSaver(model.getChemFile(), os);
               ps.writeFile();
             } else if (fileTyper.getType().equals("CML")) {
-              CMLSaver cs = new CMLSaver(getCurrentFile(), os);
+              CMLSaver cs = new CMLSaver(model.getChemFile(), os);
               cs.writeFile();
             } else {
             }
@@ -1375,7 +1361,7 @@ class Jmol extends JPanel {
         currentFile.getName().substring(0,
             currentFile.getName().lastIndexOf("."));
       }
-      PovrayDialog pvsd = new PovrayDialog(frame, display, getCurrentFile(),
+      PovrayDialog pvsd = new PovrayDialog(frame, display, model.getChemFile(),
                             baseName);
     }
 
@@ -1441,7 +1427,6 @@ class Jmol extends JPanel {
     return new File(System.getProperty("user.dir"));
   }
 
-  public static final String moleculeProperty = "molecule";
   public static final String openFileProperty = "openFile";
 
   private abstract class MoleculeDependentAction extends AbstractAction
@@ -1454,9 +1439,8 @@ class Jmol extends JPanel {
 
     public void propertyChange(PropertyChangeEvent event) {
 
-      if (event.getSource() instanceof Jmol) {
-        Jmol jmol = (Jmol) event.getSource();
-        if (jmol.hasMolecule()) {
+      if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+        if (event.getNewValue() != null) {
           setEnabled(true);
         } else {
           setEnabled(false);

@@ -1122,11 +1122,6 @@ final public class JmolViewer {
                                     bondIteratorSelected(Bond.BACKBONE));
   }
 
-  public void setStyleBondScript(byte style) {
-    distributionManager.setStyle(style,
-                                 bondIteratorSelected(Bond.COVALENT));
-  }
-
   public void setStyleBondScript(byte style, byte bondType) {
     distributionManager.setStyle(style, bondIteratorSelected(bondType));
   }

@@ -1535,7 +1535,7 @@ public class Eval implements Runnable {
   void wireframe() throws ScriptException {
     int tok = statement[1].tok;
     byte style = JmolConstants.STYLE_WIREFRAME;
-    short mar = -1;
+    short mar = 100;
     switch (tok) {
     case Token.on:
       break;
@@ -1565,10 +1565,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    if (mar == -1)
-      viewer.setStyleBondScript(style);
-    else
-      viewer.setStyleMarBondScript(style, mar);
+    viewer.setStyleMarBondScript(style, mar);
   }
 
   void animate() throws ScriptException {

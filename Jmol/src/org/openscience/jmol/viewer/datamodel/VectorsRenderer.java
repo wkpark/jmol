@@ -54,44 +54,35 @@ class VectorsRenderer extends ShapeRenderer {
   final Point3f pointArrowHead = new Point3f();
   final Point3i screenVectorEnd = new Point3i();
   final Point3i screenArrowHead = new Point3i();
+  final Vector3f vibrationVectorScaled = new Vector3f();
   int diameter;
   float headWidthAngstroms;
   int headWidthPixels;
 
+  final static float arrowHeadBase = 0.8f;
 
   boolean transform(short mad, Atom atom) {
-    Vector3f vibrationVector = atom.vibrationVector;
-    pointVectorEnd.add(atom.point3f, vibrationVector);
-
     if (atom.madAtom == JmolConstants.MAR_DELETED)
       return false;
+
+    Vector3f vibrationVector = atom.vibrationVector;
+    pointVectorEnd.add(atom.point3f, vibrationVector);
     viewer.transformPoint(pointVectorEnd, vibrationVector, screenVectorEnd);
-    diameter = (mad == 1) ? 1 : viewer.scaleToScreen(screenVectorEnd.z, mad);
-    pointArrowHead.set(atom.vibrationVector);
-    pointArrowHead.scaleAdd(arrowHeadBase, atom.point3f);
+    diameter = (mad <= 20)
+      ? mad
+      : viewer.scaleToScreen(screenVectorEnd.z, mad);
+    pointArrowHead.scaleAdd(arrowHeadBase, vibrationVector, atom.point3f);
     viewer.transformPoint(pointArrowHead, vibrationVector, screenArrowHead);
-    /*
-    headWidthAngstroms = atom.vibrationVector.length() / widthDivisor;
-    headWidthPixels =
-      (int)(viewer.scaleToScreen(screenArrowHead.z,
-                                 headWidthAngstroms) + 0.5f);
-    */
     headWidthPixels = diameter * 3 / 2;
     if (headWidthPixels < 3)
       headWidthPixels = 3;
     return true;
   }
   
-  final static int widthDivisor = 8;
-  final static float arrowHeadBase = 0.8f;
-
   void renderVector(short colix, Atom atom) {
     if (colix == 0)
       colix = atom.colixAtom;
     g3d.fillCylinder(colix, Graphics3D.ENDCAPS_OPEN, diameter,
-    /*
-    g3d.drawLine(colix,
-    */
                  atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(),
                  screenArrowHead.x, screenArrowHead.y, screenArrowHead.z);
     g3d.fillCone(colix, Graphics3D.ENDCAPS_NONE, headWidthPixels,

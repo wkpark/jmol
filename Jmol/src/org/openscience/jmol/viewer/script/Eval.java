@@ -1917,30 +1917,46 @@ public class Eval implements Runnable {
   }
 
   void vector() throws ScriptException {
-    int tok = statement[1].tok;
     short mad = 1;
-    switch (tok) {
-    case Token.on:
-      break;
-    case Token.off:
-      mad = 0;
-      break;
-    case Token.integer:
-      int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol > 750)
-        numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * 2);
-      break;
-    case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms > 3)
-        numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
-      break;
-    default:
-      booleanOrNumberExpected();
+    if (statementLength > 1) {
+      switch (statement[1].tok) {
+      case Token.on:
+        break;
+      case Token.off:
+        mad = 0;
+        break;
+      case Token.integer:
+        int diameterPixels = statement[1].intValue;
+        if (diameterPixels >= 20)
+          numberOutOfRange();
+        mad = (short)diameterPixels;
+        break;
+      case Token.decimal:
+        float angstroms = ((Float)statement[1].value).floatValue();
+        if (angstroms > 3)
+          numberOutOfRange();
+        mad = (short)(angstroms * 1000 * 2);
+        break;
+      case Token.identifier:
+        String cmd = (String)statement[1].value;
+        if (! cmd.equalsIgnoreCase("scale"))
+          unrecognizedSubcommand();
+        vectorScale();
+        return;
+      default:
+        booleanOrNumberExpected();
+      }
+      checkLength2();
     }
     viewer.setShapeSize(JmolConstants.SHAPE_VECTORS, mad);
+  }
+
+  void vectorScale() throws ScriptException {
+    checkLength3();
+    float scale = getFloat(2);
+    if (scale < -10 || scale > 10)
+      numberOutOfRange();
+    viewer.setVectorScale(scale);
   }
 
   void animation() throws ScriptException {
@@ -2003,14 +2019,11 @@ public class Eval implements Runnable {
     switch(tok) {
     case Token.on:
       float period = 2;
-      float amplitude = 1;
       if (statementLength >= 3) {
+        checkLength3();
         period = getFloat(2);
-        if (statementLength == 4)
-          amplitude = getFloat(3);
       }
       viewer.setVibrationPeriod(period);
-      viewer.setVibrationAmplitude(amplitude);
       viewer.setVibrationT(0f);
       viewer.setVibrationOn(true);
       break;

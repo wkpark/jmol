@@ -509,13 +509,6 @@ final public class JmolViewer {
     return transformManager.vibrationPeriod;
   }
 
-  public void setVibrationAmplitude(float amplitude) {
-    transformManager.setVibrationAmplitude(amplitude);
-  }
-  public float getVibrationAmplitude() {
-    return transformManager.vibrationAmplitude;
-  }
-
   public void setVibrationT(float t) {
     transformManager.setVibrationT(t);
   }
@@ -697,6 +690,14 @@ final public class JmolViewer {
 
   public short getColixVector() {
     return colorManager.colixVector;
+  }
+
+  public float getVectorScale() {
+    return transformManager.vectorScale;
+  }
+
+  public void setVectorScale(float scale) {
+    transformManager.setVectorScale(scale);
   }
 
   public void setColorBackground(Color bg) {

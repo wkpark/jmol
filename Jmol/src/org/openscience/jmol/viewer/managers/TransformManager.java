@@ -630,23 +630,23 @@ public class TransformManager {
   public boolean vibrationOn;
   public float vibrationPeriod;
   int vibrationPeriodMs;
-  public float vibrationAmplitude;
   float vibrationScale;
   public float vibrationRadians;
   
-
   public void setVibrationPeriod(float period) {
     this.vibrationPeriod = period;
     this.vibrationPeriodMs = (int)(period * 1000);
   }
 
-  public void setVibrationAmplitude(float amplitude) {
-    this.vibrationAmplitude = amplitude;
-  }
-
   public void setVibrationT(float t) {
     vibrationRadians = t * twoPI;
-    vibrationScale = (float)Math.cos(vibrationRadians) * vibrationAmplitude;
+    vibrationScale = (float)Math.cos(vibrationRadians) * vectorScale;
+  }
+
+  public float vectorScale = 1f;
+  public void setVectorScale(float scale) {
+    if (scale >= -10 && scale <= 10)
+      vectorScale = scale;
   }
 
   public int spinX, spinY = 30, spinZ, spinFps = 30;

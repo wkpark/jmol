@@ -413,7 +413,7 @@ public class Token {
     "font",              new Token(font,       "font"),
     "hover",             new Token(hover,      "hover"),
     "vibration",         new Token(vibration,  "vibration"),
-    "vector",            new Token(vector,    onDefault1, "vector"),
+    "vector",            new Token(vector,  varArgCount, "vector"),
     "vectors",           null,
     "mesh",              new Token(mesh,      onDefault1, "mesh"),
     "prueba",            new Token(prueba, onDefault1, "prueba"),

@@ -1312,8 +1312,99 @@ final public class JmolConstants {
 
   /**
    * colors used for chains
+   *
    */
 
+  /****************************************************************
+   * some pastel colors
+   * 
+   * C0D0FF - pastel blue
+   * B0FFB0 - pastel green
+   * B0FFFF - pastel cyan
+   * FFC0C8 - pink
+   * FFC0FF - pastel magenta
+   * FFFF80 - pastel yellow
+   * FFDEAD - navajowhite
+   * FFD070 - pastel gold
+
+   * FF9898 - light coral
+   * B4E444 - light yellow-green
+   * C0C000 - light olive
+   * FF8060 - light tomato
+   * 00FF7F - springgreen
+   * 
+cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk off
+   ****************************************************************/
+
+  public final static int[] argbsPdbChainAtom = {
+    // ' '->0 'A'->1, 'B'->2
+    0xFFffffff, // ' ' & '0' white
+    //
+    0xFFC0D0FF, // skyblue
+    0xFFB0FFB0, // pastel green
+    0xFFFFC0C8, // pink
+    0xFFFFFF80, // pastel yellow
+    0xFFFFC0FF, // pastel magenta
+    0xFFB0F0F0, // pastel cyan
+    0xFFFFD070, // pastel gold
+    0xFFF08080, // lightcoral
+
+    0xFFF5DEB3, // wheat
+    0xFF00BFFF, // deepskyblue
+    0xFF66CDAA, // mediumaquamarine
+    0xFFCD5C5C, // indianred
+    0xFF9ACD32, // yellowgreen
+    0xFFEE82EE, // violet
+    0xFF00CED1, // darkturquoise
+    0xFF00FF7F, // springgreen
+    0xFF3CB371, // mediumseagreen
+
+    0xFFBDB76B, // darkkhaki
+    0xFF00008B, // darkblue
+    0xFF006400, // darkgreen
+    0xFF800000, // maroon
+    0xFF808000, // olive
+    0xFF800080, // purple
+    0xFF008080, // teal
+    0xFFB8860B, // darkgoldenrod
+    0xFFB22222, // firebrick
+  };
+
+  public final static int[] argbsPdbChainHetero = {
+    // ' '->0 'A'->1, 'B'->2
+    0xFFffffff, // ' ' & '0' white
+    //
+    0xFFC0D0FF, // skyblue
+    0xFFB0FFB0, // pastel green
+    0xFFFFC0C8, // pink
+    0xFFFFFF80, // pastel yellow
+    0xFFFFC0FF, // pastel magenta
+    0xFFB0F0F0, // pastel cyan
+    0xFFFFD070, // pastel gold
+    0xFFF08080, // lightcoral
+
+    0xFFF5DEB3, // wheat
+    0xFF00BFFF, // deepskyblue
+    0xFF66CDAA, // mediumaquamarine
+    0xFFCD5C5C, // indianred
+    0xFF9ACD32, // yellowgreen
+    0xFFEE82EE, // violet
+    0xFF00CED1, // darkturquoise
+    0xFF00FF7F, // springgreen
+    0xFF3CB371, // mediumseagreen
+
+    0xFFBDB76B, // darkkhaki
+    0xFF00008B, // darkblue
+    0xFF006400, // darkgreen
+    0xFF800000, // maroon
+    0xFF808000, // olive
+    0xFF800080, // purple
+    0xFF008080, // teal
+    0xFFB8860B, // darkgoldenrod
+    0xFFB22222, // firebrick
+  };
+
+  /*
   public final static int[] argbsPdbChainAtom = {
     // ' '->0 'A'->1, 'B'->2
     // protein explorer colors
@@ -1382,6 +1473,7 @@ final public class JmolConstants {
     0xFF000060, // Y a darker darkblue
     0xFFD8B898, // Z a darker wheat
   };
+  */
 
   public final static int[] argbsCharge = {
     0xFFFF0000, // -4

@@ -21,6 +21,13 @@
   <change contributor="BS, JJ">
     Rendering of multiple bonds.
   </change>
+  <change contributor="BS">
+    Scaling of vector arrowheads by magnitude which shows significant
+    vectors more clearly.
+  </change>
+  <change contributor="BS">
+    Fixed bugs 547574 and 548591.
+  </change>
 </changes>
 
 <changes version="jmol-2">

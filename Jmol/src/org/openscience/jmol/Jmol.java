@@ -565,11 +565,6 @@ class Jmol extends JPanel {
     return (Action) commands.get(cmd);
   }
 
-  protected JMenuBar getMenubar() {
-    return menubar;
-  }
-
-
   /**
    * Create the toolbar.  By default this reads the
    * resource file for the definition of the toolbars.

@@ -56,7 +56,8 @@ class JmolResourceHandler {
       // Ignore
     }
     if (iname != null) {
-      URL imageUrl = ClassLoader.getSystemResource(iname);
+      // URL imageUrl = ClassLoader.getSystemResource(iname);
+      URL imageUrl = this.getClass().getClassLoader().getResource(iname);      
       if (imageUrl != null) {
         return new ImageIcon(imageUrl);
       } else {

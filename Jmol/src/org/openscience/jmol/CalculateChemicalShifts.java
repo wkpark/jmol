@@ -47,7 +47,8 @@ class CalculateChemicalShifts extends AbstractAction {
 
     if (shieldings == null) {
       try {
-        URL url = ClassLoader.getSystemResource(RF);
+      	URL url = this.getClass().getClassLoader().getResource(RF);
+        // URL url = ClassLoader.getSystemResource(RF);
         InputStreamReader isr = new InputStreamReader(url.openStream());
         BufferedReader br = new BufferedReader(isr);
         SharcReader sr1 = new SharcReader(br);

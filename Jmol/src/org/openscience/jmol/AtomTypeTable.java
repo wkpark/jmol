@@ -85,7 +85,8 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       ReadAtypes(new FileInputStream(UAF));
     } catch (Exception e1) {
       try {
-        URL url = ClassLoader.getSystemResource(SAU);
+        URL url = this.getClass().getClassLoader().getResource(SAU);
+        // URL url = ClassLoader.getSystemResource(SAU);
         ReadAtypes(url.openStream());
       } catch (Exception e2) {
         System.err.println("Cannot read System AtomTypes: " + e2.toString());

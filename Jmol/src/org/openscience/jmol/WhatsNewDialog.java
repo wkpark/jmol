@@ -45,8 +45,8 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
     super(fr, "What's New in Jmol", true);
 
     try {
-      URL changeLogURL =
-        ClassLoader.getSystemResource(jrh.getString("changeLogURL"));
+      URL changeLogURL = this.getClass().getClassLoader().getResource(jrh.getString("changeLogURL"));
+      //URL changeLogURL = ClassLoader.getSystemResource(jrh.getString("changeLogURL"));
       if (changeLogURL != null) {
         html = new JEditorPane(changeLogURL);
       } else {

@@ -31,6 +31,7 @@ import org.jmol.viewer.datamodel.Atom;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Properties;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
@@ -99,6 +100,14 @@ class ModelManager {
     return modelSetName;
   }
 
+  Properties getModelSetProperties() {
+    return frame == null ? null : frame.getModelSetProperties();
+  }
+
+  String getModelSetProperty(String propertyName) {
+    return frame == null ? null : frame.getModelSetProperty(propertyName);
+  }
+
   String getModelFileHeader() {
     return modelFileHeader;
   }
@@ -107,12 +116,21 @@ class ModelManager {
     return (frame == null) ? 0 : frame.getModelCount();
   }
 
+  String getModelName(int modelIndex) {
+    return (frame == null) ? null : frame.getModelName(modelIndex);
+  }
+
   int getModelNumber(int modelIndex) {
     return (frame == null) ? -1 : frame.getModelNumber(modelIndex);
   }
 
-  String getModelName(int modelIndex) {
-    return (frame == null) ? null : frame.getModelName(modelIndex);
+  Properties getModelProperties(int modelIndex) {
+    return frame == null ? null : frame.getModelProperties(modelIndex);
+  }
+
+  String getModelProperty(int modelIndex, String propertyName) {
+    return frame == null ? null : frame.getModelProperty(modelIndex,
+                                                         propertyName);
   }
 
   int getModelNumberIndex(int modelNumber) {

@@ -32,6 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
+import java.util.Properties;
 import java.awt.Rectangle;
 
 final public class Frame {
@@ -177,6 +178,14 @@ final public class Frame {
     return -1;
   }
 
+  public Properties getModelSetProperties() {
+    return mmset.getModelSetProperties();
+  }
+
+  public String getModelSetProperty(String propertyName) {
+    return mmset.getModelSetProperty(propertyName);
+  }
+
   public int getModelCount() {
     return mmset.getModelCount();
   }
@@ -189,6 +198,14 @@ final public class Frame {
     return mmset.getModelName(modelIndex);
   }
 
+  public Properties getModelProperties(int modelIndex) {
+    return mmset.getModelProperties(modelIndex);
+  }
+
+  public String getModelProperty(int modelIndex, String propertyName) {
+    return mmset.getModelProperty(modelIndex, propertyName);
+  }
+
   public Model getModel(int modelIndex) {
     return mmset.getModel(modelIndex);
   }
@@ -199,13 +216,19 @@ final public class Frame {
 
   ////////////////////////////////////////////////////////////////
   
-  public void setModelCount(int modelCount) {
+  void setModelCount(int modelCount) {
     mmset.setModelCount(modelCount);
   }
 
-  public void setModelNameNumber(int modelIndex,
-                                 String modelName, int modelNumber) {
-    mmset.setModelNameNumber(modelIndex, modelName, modelNumber);
+  void setModelSetProperties(Properties modelSetProperties) {
+    mmset.setModelSetProperties(modelSetProperties);
+  }
+  
+  void setModelNameNumberProperties(int modelIndex,
+                                    String modelName, int modelNumber,
+                                    Properties modelProperties) {
+    mmset.setModelNameNumberProperties(modelIndex, modelName, modelNumber,
+                                       modelProperties);
   }
 
   ////////////////////////////////////////////////////////////////

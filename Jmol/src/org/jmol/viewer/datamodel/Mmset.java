@@ -30,15 +30,19 @@ import org.jmol.viewer.*;
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.Properties;
 
 // Mmset == Molecular Model set
 
 final public class Mmset {
   Frame frame;
 
+  Properties modelSetProperties;
+
   private int modelCount = 0;
   private String[] modelNames = new String[1];
   private int[] modelNumbers = new int[1];
+  private Properties[] modelProperties = new Properties[1];
   private Model[] models = new Model[1];
 
   private int structureCount = 0;
@@ -85,6 +89,19 @@ final public class Mmset {
   }
 
 
+  void setModelSetProperties(Properties modelSetProperties) {
+    this.modelSetProperties = modelSetProperties;
+  }
+
+  Properties getModelSetProperties() {
+    return modelSetProperties;
+  }
+
+  String getModelSetProperty(String propertyName) {
+    return (modelSetProperties == null
+            ? null : modelSetProperties.getProperty(propertyName));
+  }
+
   void setModelCount(int modelCount) {
     System.out.println("setModelCount(" + modelCount + ")");
     if (this.modelCount != 0)
@@ -93,6 +110,8 @@ final public class Mmset {
     models = (Model[])Util.setLength(models, modelCount);
     modelNames = Util.setLength(modelNames, modelCount);
     modelNumbers = Util.setLength(modelNumbers, modelCount);
+    modelProperties = (Properties[])Util.setLength(modelProperties,
+                                                   modelCount);
   }
 
   String getModelName(int modelIndex) {
@@ -101,6 +120,15 @@ final public class Mmset {
 
   int getModelNumber(int modelIndex) {
     return modelNumbers[modelIndex];
+  }
+
+  Properties getModelProperties(int modelIndex) {
+    return modelProperties[modelIndex];
+  }
+
+  String getModelProperty(int modelIndex, String property) {
+    Properties props = modelProperties[modelIndex];
+    return props == null ? null : props.getProperty(property);
   }
 
   Model getModel(int modelIndex) {
@@ -115,10 +143,13 @@ final public class Mmset {
   }
 
 
-  void setModelNameNumber(int modelIndex, String modelName, int modelNumber) {
+  void setModelNameNumberProperties(int modelIndex, String modelName,
+                                    int modelNumber,
+                                    Properties modelProperties) {
     modelNames[modelIndex] = modelName;
     modelNumbers[modelIndex] = modelNumber;
-    models[modelIndex] = new Model(this, modelIndex, "" + modelNumber);
+    this.modelProperties[modelIndex] = modelProperties;
+    models[modelIndex] = new Model(this, modelIndex, modelName);
   }
 
   private void propogateSecondaryStructure() {

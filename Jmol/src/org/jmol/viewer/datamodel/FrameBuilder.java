@@ -28,6 +28,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.viewer.*;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
+import java.util.Properties;
 
 final public class FrameBuilder {
 
@@ -66,7 +67,9 @@ final public class FrameBuilder {
       String modelName = adapter.getAtomSetName(clientFile, i);
       if (modelName == null)
         modelName = "" + modelNumber;
-      frame.setModelNameNumber(i, modelName, modelNumber);
+      Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
+      frame.setModelNameNumberProperties(i, modelName, modelNumber,
+                                         modelProperties);
     }
 
     for (JmolAdapter.AtomIterator iterAtom =
@@ -77,8 +80,6 @@ final public class FrameBuilder {
         elementNumber = JmolConstants.
           elementNumberFromSymbol(iterAtom.getElementSymbol());
       addAtom(frame,
-              // FIXME miguel 2004 10 21
-              // this should not be done using the atomSetName
               iterAtom.getAtomSetIndex(),
               iterAtom.getUniqueID(),
               elementNumber,

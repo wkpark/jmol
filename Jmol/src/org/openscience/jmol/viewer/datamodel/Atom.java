@@ -723,6 +723,38 @@ public class Atom implements Bspt.Tuple {
     return "" + info;
   }
 
+  boolean isCursorOnTop(int xCursor, int yCursor, Atom competitor) {
+    if ((chargeAndFlags & VISIBLE_FLAG) == 0)
+      return false;
+    int r = Xyzd.getD(xyzd) / 2;
+    if (r < 4)
+      r = 4;
+    int r2 = r * r;
+    int dx = Xyzd.getX(xyzd) - xCursor;
+    int dx2 = dx * dx;
+    if (dx2 > r2)
+      return false;
+    int dy = Xyzd.getY(xyzd) - yCursor;
+    int dy2 = dy * dy;
+    int dz2 = r2 - (dx2 + dy2);
+    if (dz2 < 0)
+      return false;
+    if (competitor == null)
+      return true;
+    int z = Xyzd.getZ(xyzd);
+    int zCompetitor = Xyzd.getZ(competitor.xyzd);
+    int rCompetitor = Xyzd.getD(competitor.xyzd) / 2;
+    if (z < zCompetitor - rCompetitor)
+      return true;
+    int dxCompetitor = Xyzd.getX(competitor.xyzd) - xCursor;
+    int dx2Competitor = dxCompetitor * dxCompetitor;
+    int dyCompetitor = Xyzd.getY(competitor.xyzd) - yCursor;
+    int dy2Competitor = dyCompetitor * dyCompetitor;
+    int r2Competitor = rCompetitor * rCompetitor;
+    int dz2Competitor = r2Competitor - (dx2Competitor + dy2Competitor);
+    return (z - Math.sqrt(dz2) < zCompetitor - Math.sqrt(dz2Competitor));
+  }
+
   ////////////////////////////////////////////////////////////////
   int getScreenX() { return Xyzd.getX(xyzd); }
   int getScreenY() { return Xyzd.getY(xyzd); }

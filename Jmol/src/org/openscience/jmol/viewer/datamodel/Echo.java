@@ -66,6 +66,12 @@ public class Echo extends Shape {
       return;
     }
 
+    if ("bgcolor" == propertyName) {
+      if (currentText != null)
+        currentText.bgcolix = value == null ? (short)0 : g3d.getColix(value);
+      return;
+    }
+
     if ("font" == propertyName) {
       if (currentText != null) {
         currentText.font3d = (Font3D)value;
@@ -151,6 +157,7 @@ public class Echo extends Shape {
     int valign;
     Font3D font3d;
     short colix;
+    short bgcolix;
     
     int width;
     int ascent;

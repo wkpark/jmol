@@ -302,14 +302,15 @@ final public class Graphics3D {
     fillSphereCentered(colix, diameter, screen.x, screen.y, screen.z);
   }
 
-  public void drawRect(short colix, int x, int y, int width, int height) {
+  public void drawRect(short colix, int x, int y, int z,
+                       int width, int height) {
     argbCurrent = getArgb(colix);
     int xRight = x + width - 1;
-    drawLine(x, y, 0, xRight, y, 0);
+    drawLine(x, y, z, xRight, y, z);
     int yBottom = y + height - 1;
-    drawLine(x, y, 0, x, yBottom, 0);
-    drawLine(xRight, y, 0, xRight, yBottom, 0);
-    drawLine(x, yBottom, 0, xRight + 1, yBottom, 0);
+    drawLine(x, y, z, x, yBottom, z);
+    drawLine(xRight, y, z, xRight, yBottom, z);
+    drawLine(x, yBottom, z, xRight + 1, yBottom, z);
   }
 
   public void drawString(String str, short colix,
@@ -362,8 +363,6 @@ final public class Graphics3D {
       platform.allocateBuffers(width, height);
       pbuf = pbuf1 = platform.pBuffer;
       zbuf = zbuf1 = platform.zBuffer;
-      System.out.println("calling platform.clearScreenBuffer()");
-      platform.clearScreenBuffer();
     }
     /*
     if (tFullSceneAntialiasing && zbuf4 != null) {
@@ -383,6 +382,7 @@ final public class Graphics3D {
     }
     */
     this.tFullSceneAntialiasing = tFullSceneAntialiasing;
+    platform.obtainScreenBuffer();
   }
 
   public void endRendering() {

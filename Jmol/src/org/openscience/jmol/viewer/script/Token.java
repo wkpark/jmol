@@ -332,7 +332,7 @@ public class Token {
   final static Object[] arrayPairs  = {
     // commands
     "backbone",          new Token(backbone,  onDefault1, "backbone"),
-    "background",        new Token(background,         1, "background"),
+    "background",      new Token(background, varArgCount, "background"),
     "bond",              new Token(bond,     varArgCount, "bond"),
     "cartoon",           new Token(cartoon,   onDefault1, "cartoon"),
     "cartoons",          null,

@@ -27,12 +27,18 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.jmol.g3d.*;
+import java.awt.FontMetrics;
 
 class LabelsRenderer extends ShapeRenderer {
 
   // offsets are from the font baseline
   byte fidPrevious;
   Font3D font3d;
+  FontMetrics fontMetrics;
+  int ascent;
+  int descent;
+  int msgHeight;
+  int msgWidth;
 
   void render() {
     fidPrevious = 0;
@@ -40,6 +46,7 @@ class LabelsRenderer extends ShapeRenderer {
     Labels labels = (Labels)shape;
     String[] labelStrings = labels.strings;
     short[] colixes = labels.colixes;
+    short[] bgcolixes = labels.bgcolixes;
     byte[] fids = labels.fids;
     short[] offsets = labels.offsets;
     if (labelStrings == null)
@@ -53,15 +60,21 @@ class LabelsRenderer extends ShapeRenderer {
       Atom atom = atoms[i];
       if (displayModel != 0 && atom.modelNumber != displayModel)
         continue;
-      short colix = colixes == null || i >= colixes.length ? 0 : colixes[i];
+      short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
+      short bgcolix =
+        (bgcolixes == null || i >= bgcolixes.length) ? 0 : bgcolixes[i];
       byte fid =
         ((fids == null || i >= fids.length || fids[i] == 0)
          ? labels.defaultFont3D.fid
          : fids[i]);
       if (fid != fidPrevious) {
         g3d.setFont(fid);
-        font3d = g3d.getFont3DCurrent();
         fidPrevious = fid;
+        font3d = g3d.getFont3DCurrent();
+        fontMetrics = font3d.fontMetrics;
+        ascent = fontMetrics.getAscent();
+        descent = fontMetrics.getDescent();
+        msgHeight = ascent + descent;
       }
       short offset = offsets == null || i >= offsets.length ? 0 : offsets[i];
       int xOffset, yOffset;
@@ -74,49 +87,50 @@ class LabelsRenderer extends ShapeRenderer {
         xOffset = offset >> 8;
         yOffset = (byte)(offset & 0xFF);
       }
-      renderLabel(atom, label, colix, xOffset, yOffset);
+      renderLabel(atom, label, colix, bgcolix, xOffset, yOffset);
     }
   }
   
-  void renderLabel(Atom atom, String strLabel, short colix,
+  void renderLabel(Atom atom, String strLabel, short colix, short bgcolix,
                    int labelOffsetX, int labelOffsetY) {
-    /*
-      left over from when font sizes changed;
-      Font font = viewer.getLabelFont(atom.getScreenD());
-      if (font == null)
-      return;
-      g3d.setFont(font);
-    */
+    System.out.println("labelOffsetY=" + labelOffsetY);
+    int msgWidth = fontMetrics.stringWidth(strLabel);
+    int boxWidth = msgWidth + 8;
+    int boxHeight = msgHeight + 8;
 
-    int xOffset, yOffset, zLabel;
-    zLabel = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
-    if (zLabel < 0) zLabel = 0;
+    int xBoxOffset, yBoxOffset, zBox;
+    zBox = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
+    if (zBox < 1) zBox = 1;
 
     if (labelOffsetX > 0) {
-      xOffset = labelOffsetX;
+      xBoxOffset = labelOffsetX;
     } else {
-      xOffset = -font3d.fontMetrics.stringWidth(strLabel);
+      xBoxOffset = -boxWidth;
       if (labelOffsetX == 0)
-        xOffset /= 2;
+        xBoxOffset /= 2;
       else
-        xOffset += labelOffsetX;
+        xBoxOffset += labelOffsetX;
     }
 
-    if (labelOffsetY > 0) {
-      yOffset = labelOffsetY;
+    if (labelOffsetY < 0) {
+      yBoxOffset = labelOffsetY;
     } else {
-      yOffset = -font3d.fontMetrics.getAscent();
       if (labelOffsetY == 0)
-        yOffset /= 2;
+        yBoxOffset = boxHeight / 2 + 2;
       else
-        yOffset += labelOffsetY;
-      ++yOffset;
+        yBoxOffset = boxHeight + labelOffsetY;
     }
-    g3d.drawString(strLabel,
-                   colix == 0 ? atom.colixAtom : colix,
-                   atom.getScreenX() + xOffset,
-                   atom.getScreenY() - yOffset,
-                   zLabel);
+    int xBox = atom.getScreenX() + xBoxOffset;
+    int yBox = atom.getScreenY() - yBoxOffset;
+    if (colix == 0)
+      colix = atom.colixAtom;
+    if (bgcolix != 0) {
+      g3d.fillRect(bgcolix, xBox, yBox, zBox, boxWidth, boxHeight);
+      g3d.drawRect(colix, xBox+1, yBox+1, zBox-1, boxWidth - 2, boxHeight - 2);
+    }
+    int msgX = xBox + 4;
+    int msgYBaseline = yBox + 4 + ascent;
+    g3d.drawString(strLabel, colix, msgX, msgYBaseline, zBox-1);
   }
 
 }

@@ -35,6 +35,7 @@ public class Labels extends Shape {
 
   String[] strings;
   short[] colixes;
+  short[] bgcolixes;
   byte[] fids;
   short[] offsets;
 
@@ -60,6 +61,20 @@ public class Labels extends Shape {
             colixes = Util.ensureLength(colixes, i + 1);
           }
           colixes[i] = colix;
+        }
+    }
+    
+    if ("bgcolor" == propertyName) {
+      short bgcolix = g3d.getColix(value);
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i)) {
+          Atom atom = atoms[i];
+          if (bgcolixes == null || i >= bgcolixes.length) {
+            if (bgcolix == 0)
+              continue;
+            bgcolixes = Util.ensureLength(bgcolixes, i + 1);
+          }
+          bgcolixes[i] = bgcolix;
         }
     }
     

@@ -43,7 +43,7 @@ abstract class Platform3D {
   Image imageOffscreen;
   Graphics gOffscreen;
 
-  final static boolean useClearingThread = false;
+  final static boolean useClearingThread = true;
 
   ClearingThread clearingThread;
 
@@ -79,16 +79,16 @@ abstract class Platform3D {
   void setBackground(int argbBackground) {
     if (this.argbBackground != argbBackground) {
       this.argbBackground = argbBackground;
-      clearScreenBuffer();
+      if (useClearingThread)
+        clearingThread.notifyBackgroundChange(argbBackground);
     }
   }
 
   abstract void clearScreenBuffer(int argbBackground);
   
-  final void clearScreenBuffer() {
+  final void obtainScreenBuffer() {
     if (useClearingThread) {
-      clearingThread.clearThreaded();
-      clearingThread.waitUntilCleared();
+      clearingThread.obtainBufferForClient();
     } else {
       clearScreenBuffer(argbBackground);
     }
@@ -96,9 +96,7 @@ abstract class Platform3D {
 
   final void clearScreenBufferThreaded() {
     if (useClearingThread)
-      clearingThread.clearThreaded();
-    else
-      clearScreenBuffer();
+      clearingThread.releaseBufferForClearing();
   }
   
   void notifyEndOfRendering() {
@@ -129,48 +127,54 @@ abstract class Platform3D {
 
   class ClearingThread extends Thread implements Runnable {
 
-    boolean bufferReady = false;
-    boolean clientIsWaiting = false;
 
-    synchronized void waitOnClearingMonitor() {
-      try {
-        wait();
-      } catch (InterruptedException ie) {
-      }
+    boolean bufferHasBeenCleared = false;
+    boolean clientHasBuffer = false;
+
+    synchronized void notifyBackgroundChange(int argbBackground) {
+      //      System.out.println("notifyBackgroundChange");
+      bufferHasBeenCleared = false;
+      notify();
+      // for now do nothing
     }
-    
-    synchronized void clearThreaded() {
-      bufferReady = false;
+
+    synchronized void obtainBufferForClient() {
+      //      System.out.println("obtainBufferForClient()");
+      while (! bufferHasBeenCleared)
+        try { wait(); } catch (InterruptedException ie) {}
+      clientHasBuffer = true;
+    }
+
+    synchronized void releaseBufferForClearing() {
+      //      System.out.println("releaseBufferForClearing()");
+      clientHasBuffer = false;
+      bufferHasBeenCleared = false;
       notify();
     }
 
-    synchronized void waitUntilCleared() {
-      if (! bufferReady) {
-        clientIsWaiting = true;
-        do {
-          waitOnClearingMonitor();
-        } while (! bufferReady);
-      }
-      clientIsWaiting = false;
+    synchronized void waitForClientRelease() {
+      //      System.out.println("waitForClientRelease()");
+      while (clientHasBuffer || bufferHasBeenCleared)
+        try { wait(); } catch (InterruptedException ie) {}
     }
-    
-    synchronized void notifyWaitingClient() {
-      if (clientIsWaiting)
-        notify();
+
+    synchronized void notifyBufferReady() {
+      //      System.out.println("notifyBufferReady()");
+      bufferHasBeenCleared = true;
+      notify();
     }
-    
+
     public void run() {
-      System.out.println("running clearing thread");
+      System.out.println("running clearing thread:" +
+                         Thread.currentThread().getPriority());
       while (true) {
-        while (bufferReady)
-          waitOnClearingMonitor();
+        waitForClientRelease();
         int bg;
         do {
           bg = argbBackground;
           clearScreenBuffer(bg);
         } while (bg != argbBackground); // color changed underneath us
-        bufferReady = true;
-        notifyWaitingClient();
+        notifyBufferReady();
       }
     }
   }

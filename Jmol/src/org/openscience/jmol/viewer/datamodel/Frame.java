@@ -476,41 +476,29 @@ final public class Frame {
   final static int selectionPixelLeeway = 5;
 
   public int findNearestAtomIndex(int x, int y) {
-    /*
-     * FIXME
-     * mth - this code has problems
-     * 0. can select atoms which are not displayed!
-     * 1. doesn't take radius of atom into account until too late
-     * 2. doesn't take Z dimension into account, so it could select an atom
-     *    which is behind the one the user wanted
-     * 3. doesn't take into account the fact that hydrogens could be hidden
-     *    you can select a region and get extra hydrogens
-     */
+    /****************************************************************
+     * This algorithm assumes that atoms are circles at the z-depth
+     * of their center point. Therefore, it probably has some flaws
+     * around the edges when dealing with intersecting spheres that
+     * are at approximately the same z-depth.
+     * But it is much easier to deal with than trying to actually
+     * calculate which atom was clicked
+     *
+     * A more general algorithm of recording which object drew
+     * which pixel would be very expensive and not worth the trouble
+     ****************************************************************/
     if (atomCount == 0)
       return -1;
-    Atom atomNearest = null;
-    int indexNearest = -1;
-    int r2Nearest = Integer.MAX_VALUE;
+    Atom champion = null;
+    int championIndex = -1;
     for (int i = atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      if ((atom.chargeAndFlags & Atom.VISIBLE_FLAG) == 0)
-        continue;
-      int dx = atom.getScreenX() - x;
-      int dx2 = dx * dx;
-      if (dx2 > r2Nearest)
-        continue;
-      int dy = atom.getScreenY() - y;
-      int dy2 = dy * dy;
-      if (dy2 + dx2 > r2Nearest)
-        continue;
-      atomNearest = atom; // will definitely happen the first time through
-      r2Nearest = dx2 + dy2;
-      indexNearest = i;
+      Atom contender = atoms[i];
+      if (contender.isCursorOnTop(x, y, champion)) {
+        champion = contender;
+        championIndex = i;
+      }
     }
-    int rNearest = (int)Math.sqrt(r2Nearest);
-    return (rNearest > atomNearest.getScreenD()/2 + selectionPixelLeeway)
-      ? -1
-      : indexNearest;
+    return championIndex;
   }
     
   // jvm < 1.4 does not have a BitSet.clear();

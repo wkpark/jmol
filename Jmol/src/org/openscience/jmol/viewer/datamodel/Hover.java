@@ -69,7 +69,14 @@ public class Hover extends Shape {
     }
     
     if ("color" == propertyName) {
+      System.out.println("hover colro changed");
       colixForeground = g3d.getColix(value);
+      return;
+    }
+
+    if ("bgcolor" == propertyName) {
+      System.out.println("hover bgcolor changed");
+      colixBackground = g3d.getColix(value);
       return;
     }
     

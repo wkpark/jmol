@@ -249,10 +249,6 @@ public abstract class MouseManager {
         viewer.notifyPicked(nearestAtomIndex);
       }
       break;
-    case ALT_LEFT:
-    case MIDDLE:
-      viewer.homePosition();
-      break;
     }
   }
 
@@ -267,6 +263,8 @@ public abstract class MouseManager {
         addToMeasurement(nearestAtomIndex, true);
       }
       break;
+    case ALT_LEFT:
+    case MIDDLE:
     case SHIFT_LEFT:
       viewer.homePosition();
       break;
@@ -295,13 +293,10 @@ public abstract class MouseManager {
       viewer.rotateXYBy(deltaX, deltaY);
       break;
     case SHIFT_LEFT:
-      viewer.zoomBy(deltaY);
-      viewer.rotateZBy(-deltaX);
-      break;
-
     case ALT_LEFT:
     case MIDDLE:
-      viewer.translateXYBy(deltaX, deltaY);
+      viewer.zoomBy(deltaY);
+      viewer.rotateZBy(-deltaX);
       break;
     }
   }
@@ -309,6 +304,8 @@ public abstract class MouseManager {
   void mouseDoublePressDrag(int deltaX, int deltaY, int modifiers) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case SHIFT_LEFT:
+    case ALT_LEFT:
+    case MIDDLE:
       viewer.translateXYBy(deltaX, deltaY);
       break;
     }

@@ -1249,7 +1249,14 @@ public class Eval implements Runnable {
   }
 
   void background() throws ScriptException {
-    viewer.setColorBackground(getColorParam(1));
+    if (statementLength < 2 || statementLength > 3)
+      badArgumentCount();
+    int tok = statement[1].tok;
+    if (tok == Token.colorRGB) 
+      viewer.setColorBackground(getColorParam(1));
+    else
+      viewer.setShapeProperty(getShapeType(tok),
+                              "bgcolor", getColorOrNoneParam(2));
   }
 
   // mth - 2003 01

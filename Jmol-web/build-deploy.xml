@@ -36,7 +36,7 @@
     <copy file="cache.properties" tofile="cache_tmp.properties" overwrite="true"/>
     <scp
       todir="${ssh.user}:${ssh.password}@shell.sourceforge.net:/home/groups/j/jm/jmol/htdocs"
-      trust="yes" failonerror="false">
+      trust="yes" failonerror="true">
       <fileset dir="${from.dir}">
         <modified>
           <param name="cache.cachefile" value="cache_tmp.properties"/>

@@ -45,6 +45,15 @@ public class Triangle25D {
     this.g25d = g25d;
   }
 
+  /****************************************************************
+   * FIXME mth 2003 08 01
+   * this needs to be reworked
+   * lots of problems with errors caused by integer arithmetic
+   * for now, all shapes will be drawn with lines as well as being
+   * filled. that will get the edges right. 
+   ****************************************************************/
+  
+
   void fillTriangle() {
     int iMinY = 0;
     if (ay[1] < ay[0]) iMinY = 1;
@@ -61,6 +70,7 @@ public class Triangle25D {
                        "  maxY=" + ax[iMaxY] + "," + ay[iMaxY] + "\n");
     */
     if (ay[iMinY] < ay[iMidY]) {
+      // there is an upper triangle
       if (ay[iMidY] == ay[iMaxY]) {
         fillUpper(iMinY, iMidY, iMaxY);
         return;
@@ -99,9 +109,7 @@ public class Triangle25D {
                        "  left=" + ax[iLeft] + "," + ay[iLeft] + "\n" +
                        " right=" + ax[iRight] + "," + ay[iRight] + "\n");
     */
-    int nLines = ay[iLeft] - ay[iTop];
-    if (nLines == 0)
-      return;
+    int nLines = ay[iLeft] - ay[iTop] + 1;
     if (nLines > axLeft.length)
       reallocRasterArrays(nLines);
     generateRasterPoints(nLines, iTop, iLeft, axLeft, azLeft);
@@ -117,9 +125,7 @@ public class Triangle25D {
                        " right=" + ax[iRight] + "," + ay[iRight] + "\n" +
                        "bottom=" + ax[iBottom] + "," + ay[iBottom] + "\n");
     */
-    int nLines = ay[iBottom] - ay[iLeft];
-    if (nLines == 0)
-      return;
+    int nLines = ay[iBottom] - ay[iLeft] + 1;
     if (nLines > axLeft.length)
       reallocRasterArrays(nLines);
     generateRasterPoints(nLines, iLeft, iBottom, axLeft, azLeft);
@@ -140,14 +146,18 @@ public class Triangle25D {
     axRaster[0] = xTop;
     azRaster[0] = zTop;
 
+    int dyMinus1 = dy - 1;
+    if (dyMinus1 == 0)
+      return;
     int zCurrentScaled = zTop << 10;
-    int roundingFactor = dy - 1; if (dz < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+    int roundingFactor = dyMinus1; if (dz < 0) roundingFactor = -roundingFactor;
 
-    roundingFactor = dy / 2; if (dx < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled =((dz << 10) + roundingFactor) / dyMinus1;
+
+    roundingFactor = dyMinus1 / 2; if (dx < 0) roundingFactor = -roundingFactor;
 
     for (int y = 1; y < dy; ++y) {
-      int x = xTop + ((dx * y) + roundingFactor) / dy;
+      int x = xTop + ((dx * y) + roundingFactor) / dyMinus1;
       axRaster[y] = x;
       zCurrentScaled += zIncrementScaled;
       azRaster[y] = zCurrentScaled >> 10;
@@ -156,25 +166,29 @@ public class Triangle25D {
 
   void fillRaster(int y, int dy) {
     int i = 0;
-    do {
+    if (y < 0) {
+      dy += y;
+      i -= y;
+      y = 0;
+    }
+    while (--dy >= 0) {
       if (y >= g25d.height)
         return;
-      if (y >= 0) {
-        int xLeft = axLeft[i];
-        if (xLeft < 0)
-          xLeft = 0;
-        int xRight = axRight[i];
-        if (xRight >= g25d.width)
-          xRight = g25d.width - 1;
-        int nPix = xRight - xLeft;
-        if (nPix > 0) {
-          // FIXME mth 2003 06 09
-          // z is not correct when this is clipped
-          g25d.plotPixelsUnclipped(nPix, xLeft, y, azLeft[i]);
-        }
+      int xLeft = axLeft[i];
+      if (xLeft < 0)
+        xLeft = 0;
+      int xRight = axRight[i];
+      if (xRight >= g25d.width)
+        xRight = g25d.width - 1;
+      int nPix = xRight - xLeft;
+      if (nPix > 0) {
+        // FIXME mth 2003 06 09
+        // z is not correct
+        // needs to change from azLeft[i] to azRight[i]
+        g25d.plotPixelsUnclipped(nPix, xLeft, y, azLeft[i]);
       }
       ++y;
       ++i;
-    } while (--dy > 0);
+    }
   }
 }

@@ -624,6 +624,13 @@ final public class Graphics25D {
       drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
   }
 
+  public void drawPolygon4(Color colorOutline, int[] ax, int[] ay, int[] az) {
+    setColor(colorOutline);
+    drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
+    for (int i = 3; --i >= 0; )
+      drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
+  }
+
   public void fillPolygon4(short colixFill,
                            int[] ax, int[] ay, int[] az) {
     if (! tEnabled) {
@@ -631,6 +638,9 @@ final public class Graphics25D {
       g.fillPolygon(ax, ay, 4);
       return;
     }
+    // draw and then fill
+    // make up for some deficiencies in the fill code
+    drawPolygon4(colixFill, ax, ay, az);
     argbCurrent = Colix.getArgb(colixFill);
     System.arraycopy(ax, 0, triangle25d.ax, 0, 3);
     System.arraycopy(ay, 0, triangle25d.ay, 0, 3);
@@ -649,7 +659,7 @@ final public class Graphics25D {
       g.fillPolygon(ax, ay, 4);
       return;
     }
-    argbCurrent = colorFill.getRGB();
+    drawPolygon4(colorFill, ax, ay, az);
     System.arraycopy(ax, 0, triangle25d.ax, 0, 3);
     System.arraycopy(ay, 0, triangle25d.ay, 0, 3);
     System.arraycopy(az, 0, triangle25d.az, 0, 3);

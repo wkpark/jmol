@@ -76,7 +76,6 @@ public class VectorShape extends Shape {
     ay[1] = yHead - dyHead/2; ay[3] = ay[1] + dyHead;
     az[1] = zHead;            az[3] = zHead;
     g25d.fillPolygon4(colixVector, ax, ay, az);
-    g25d.drawPolygon4(colixVector, ax, ay, az);
   }
 
 

@@ -46,6 +46,8 @@ import org.openscience.cdk.Atom;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.exception.CDKException;
 
+import org.openscience.cdk.geometry.CrystalGeometryTools;
+
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
 
@@ -176,6 +178,9 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
         SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules);
       return molecule;
     } else if (crystal != null) {
+      // create 3D coordinates before returning the object
+      CrystalGeometryTools.fractionalToCartesian(crystal);
+      System.out.println(crystal.toString());
       return crystal;
     } else {
       System.out.println("Cannot display data in model");
@@ -225,6 +230,20 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   */
 
   public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
+    AtomContainer container = getAtomContainer(clientFile, frameNumber);
+    if (container instanceof Crystal) {
+        Crystal crystal = (Crystal)container;
+        double[] notional = CrystalGeometryTools.cartesianToNotional(
+            crystal.getA(), crystal.getB(), crystal.getC()
+        );
+        float[] fNotional = new float[6];
+        for (int i=0; i<6; i++) {
+            fNotional[i] = (float)notional[i];
+        }
+        return fNotional;
+    } else {
+        System.err.println("Cannot return notional unit cell params: no Crystal found");
+    }
     return null;
   }
 

@@ -25,6 +25,7 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.render.JmolFrame;
+import org.openscience.jmol.render.JmolFrameBuilder;
 
 import java.util.BitSet;
 import javax.vecmath.Point3d;
@@ -51,6 +52,7 @@ public class ModelManager {
   public boolean haveFile = false;
   public int currentFrameNumber;
   public JmolFrame jmolFrame;
+  public JmolFrame[] jmolFrames;
 
   public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -64,13 +66,13 @@ public class ModelManager {
       jmolFrame = null;
       atomCount = 0;
       haveFile = false;
+      jmolFrames = null;
     } else {
       this.clientFileName = name;
       frameCount = control.getFrameCount(clientFile);
-      currentFrameNumber = 0;
-      jmolFrame = control.getJmolFrame(clientFile, 0);
-      atomCount = jmolFrame.getAtomCount();
+      jmolFrames = new JmolFrame[frameCount];
       haveFile = true;
+      setFrame(0);
     }
     pcs.firePropertyChange(DisplayControl.PROP_CHEM_FILE,
                            clientFilePrevious, clientFile);
@@ -120,9 +122,14 @@ public class ModelManager {
 
   public void setFrame(int frameNumber) {
     if (haveFile && frameNumber >= 0 && frameNumber < frameCount) {
-      int prevFrameNumber = currentFrameNumber;
-      currentFrameNumber = frameNumber;
-      jmolFrame = control.getJmolFrame(clientFile, frameNumber);
+      jmolFrame = jmolFrames[frameNumber];
+      if (jmolFrame == null)
+        jmolFrame = jmolFrames[frameNumber] =
+          (true
+           ? control.getJmolFrame(clientFile, frameNumber)
+           : (new JmolFrameBuilder(control, clientFile, frameNumber)
+              .buildJmolFrame()));
+      atomCount = jmolFrame.getAtomCount();
     }
   }
 

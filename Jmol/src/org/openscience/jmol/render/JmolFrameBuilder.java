@@ -41,7 +41,7 @@ public class JmolFrameBuilder {
     this.frameNumber = frameNumber;
   }
 
-  private JmolFrame buildJmolFrame() {
+  public JmolFrame buildJmolFrame() {
     int atomCount = control.getAtomCount(clientFile, frameNumber);
     boolean hasPdbRecords = control.hasPdbRecords(clientFile, frameNumber);
 

@@ -87,50 +87,63 @@ public class DeprecatedAdapter implements JmolClientAdapter {
 
 
   public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {
-    return ((ChemFile)clientFile).getFrame(frameNumber).getJmolFrame();
+    return getChemFrame(clientFile, frameNumber).getJmolFrame();
   }
 
   /****************************************************************
    * The frame related methods
    ****************************************************************/
 
+  private ChemFrame getChemFrame(Object clientFile, int frameNumber) {
+    return ((ChemFile)clientFile).getFrame(frameNumber);
+  }
+
   public int getAtomCount(Object clientFile, int frameNumber) {
-    return ((ChemFile)clientFile).getFrame(frameNumber).getAtomCount();
+    return getChemFrame(clientFile, frameNumber).getAtomCount();
   }
 
   public boolean hasPdbRecords(Object clientFile, int frameNumber) {
-    return false;
+    ChemFrame chemFrame = getChemFrame(clientFile, frameNumber);
+    return (chemFrame.getAtomCount() > 0 &&
+            chemFrame.getJmolAtomAt(0).getPdbRecord() != null);
   }
 
   public Iterator getAtomIterator(Object clientFile, int frameNumber) {
-    return new AtomIterator();
+    return new AtomIterator(getChemFrame(clientFile, frameNumber));
   }
 
   public Iterator getCovalentBondIterator(Object clientFile, int frameNumber) {
-    return new CovalentBondIterator();
+    return new CovalentBondIterator(getChemFrame(clientFile, frameNumber));
   }
 
   public Iterator getAssociationIterator(Object clientFile, int frameNumber) {
-    return new AssociationIterator();
+    return new AssociationIterator(getChemFrame(clientFile, frameNumber));
   }
 
   public Iterator getVectorIterator(Object clientFile, int frameNumber) {
-    return new VectorIterator();
+    return new VectorIterator(getChemFrame(clientFile, frameNumber));
   }
 
   public Iterator getCrystalCellIterator(Object clientFile, int frameNumber) {
-    return new CrystalCellIterator();
+    return new CrystalCellIterator(getChemFrame(clientFile, frameNumber));
   }
 
   /****************************************************************
    * the frame iterators
    ****************************************************************/
   class AtomIterator implements Iterator {
+    ChemFrame chemFrame;
+    int atomCount, iatom;
+    AtomIterator(ChemFrame chemFrame) {
+      this.chemFrame = chemFrame;
+      atomCount = chemFrame.getAtomCount();
+      iatom = 0;
+    }
     public boolean hasNext() {
-      return false;
+      return iatom < atomCount;
     }
     public Object next() {
-      return null;
+      return chemFrame.getAtomAt(iatom++);
     }
     public void remove() {
       throw new NullPointerException();
@@ -138,6 +151,10 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   }
 
   class CovalentBondIterator implements Iterator {
+    ChemFrame chemFrame;
+    CovalentBondIterator(ChemFrame chemFrame) {
+      this.chemFrame = chemFrame;
+    }
     public boolean hasNext() {
       return false;
     }
@@ -150,6 +167,10 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   }
 
   class AssociationIterator implements Iterator {
+    ChemFrame chemFrame;
+    AssociationIterator(ChemFrame chemFrame) {
+      this.chemFrame = chemFrame;
+    }
     public boolean hasNext() {
       return false;
     }
@@ -162,6 +183,10 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   }
 
   class VectorIterator implements Iterator {
+    ChemFrame chemFrame;
+    VectorIterator(ChemFrame chemFrame) {
+      this.chemFrame = chemFrame;
+    }
     public boolean hasNext() {
       return false;
     }
@@ -174,6 +199,10 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   }
 
   class CrystalCellIterator implements Iterator {
+    ChemFrame chemFrame;
+    CrystalCellIterator(ChemFrame chemFrame) {
+      this.chemFrame = chemFrame;
+    }
     public boolean hasNext() {
       return false;
     }

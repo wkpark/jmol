@@ -205,6 +205,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
       atom = model.atoms[iatom++];
       return true;
     }
+    public int getModelNumber() { return atom.modelNumber; }
     public Object getUniqueID() { return atom; }
     public String getAtomicSymbol() { return atom.atomicSymbol; }
     public int getAtomicCharge() { return atom.atomicCharge; }
@@ -212,7 +213,6 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     public float getY() { return atom.y; }
     public float getZ() { return atom.z; }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
-    public int getPdbModelNumber() { return atom.pdbModelNumber; }
   }
 
   class BondIterator extends JmolModelAdapter.BondIterator {
@@ -251,7 +251,7 @@ class Atom {
   int atomicCharge;
   float x, y, z;
   String pdbAtomRecord;
-  int pdbModelNumber;
+  int modelNumber;
 
   Atom(String symbol, int charge, float x, float y, float z) {
     this.atomicSymbol = symbol;
@@ -261,14 +261,14 @@ class Atom {
     this.z = z;
   }
 
-  Atom(String symbol, int charge, float x, float y, float z,
-       int model, String pdb) {
+  Atom(int modelNumber, String symbol, int charge,
+       float x, float y, float z, String pdb) {
     this.atomicSymbol = symbol;
     this.atomicCharge = charge;
     this.x = x;
     this.y = y;
     this.z = z;
-    this.pdbModelNumber = model;
+    this.modelNumber = modelNumber;
     this.pdbAtomRecord = pdb;
   }
 }
@@ -583,8 +583,8 @@ class PdbModel extends Model {
         System.arraycopy(serialMap, 0, t, 0, serialMap.length);
         serialMap = t;
       }
-      atoms[atomCount++] = new Atom(atomicSymbol, charge, x, y, z,
-                                    currentModelNumber, line);
+      atoms[atomCount++] = new Atom(currentModelNumber, atomicSymbol,
+                                    charge, x, y, z, line);
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

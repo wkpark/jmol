@@ -132,10 +132,6 @@ public class PdbAtom {
     return temperature;
   }
 
-  public short getModelID() {
-    return group.chain.pdbmodel.pdbmodelID;
-  }
-
   public char getChainID() {
     return group.chain.chainID;
   }

@@ -102,10 +102,10 @@ final public class Frame {
       pdbFile.freeze();
   }
 
-  public Atom addAtom(Object atomUid,
+  public Atom addAtom(int modelNumber, Object atomUid,
                       byte atomicNumber, int atomicCharge,
                       String atomTypeName, float x, float y, float z,
-                      short pdbModelID, String pdbAtomRecord) {
+                      String pdbAtomRecord) {
     if (atomCount == atoms.length) {
       Atom[] newAtoms =
         new Atom[atoms.length + growthIncrement];
@@ -113,12 +113,13 @@ final public class Frame {
       atoms = newAtoms;
     }
     Atom atom = new Atom(this, atomCount,
+                         modelNumber, 
                          atomicNumber, atomicCharge, atomTypeName, x, y, z,
-                         pdbFile, pdbModelID, pdbAtomRecord);
+                         pdbFile, pdbAtomRecord);
     atoms[atomCount++] = atom;
     htAtomMap.put(atomUid, atom);
     if (bspf != null)
-      bspf.addTuple(atom.getModelID(), atom);
+      bspf.addTuple(atom.getModelNumber(), atom);
     float bondingRadius = atom.getBondingRadiusFloat();
     if (bondingRadius > maxBondingRadius)
       maxBondingRadius = bondingRadius;
@@ -603,7 +604,7 @@ final public class Frame {
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         if (atom.marAtom != JmolConstants.MAR_DELETED) // not deleted atoms
-          bspf.addTuple(atom.getModelID(), atom);
+          bspf.addTuple(atom.getModelNumber(), atom);
       }
     }
   }
@@ -721,7 +722,7 @@ final public class Frame {
       float myBondingRadius = atom.getBondingRadiusFloat();
       float searchRadius =
         myBondingRadius + maxBondingRadius + bondTolerance;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelID());
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
@@ -789,7 +790,7 @@ final public class Frame {
       if (atomicNumber != 7 && atomicNumber != 8)
         continue;
       float searchRadius = hbondMax;
-      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelID());
+      Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();

@@ -40,6 +40,7 @@ public class Atom implements Bspt.Tuple {
 
   public int atomIndex;
   public PdbAtom pdbAtom;
+  short modelNumber;
   Frame frame;
   public Point3f point3f;
   short x, y, z;
@@ -55,12 +56,14 @@ public class Atom implements Bspt.Tuple {
   String strLabel;
 
   public Atom(Frame frame, int atomIndex,
+              int modelNumber, 
               byte atomicNumber, int atomicCharge, String atomTypeName,
               float x, float y, float z,
-              PdbFile pdbFile, short pdbModelID, String pdbAtomRecord) {
+              PdbFile pdbFile, String pdbAtomRecord) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
+    this.modelNumber = (short)modelNumber;
     this.atomicNumber = atomicNumber;
     this.chargeAndFlags = (byte)(atomicCharge << 4);
     this.atomTypeName = atomTypeName;
@@ -69,7 +72,7 @@ public class Atom implements Bspt.Tuple {
     this.point3f = new Point3f(x, y, z);
     if (pdbFile != null)
       pdbAtom =
-        pdbFile.allocatePdbAtom(atomIndex, pdbModelID, pdbAtomRecord);
+        pdbFile.allocatePdbAtom(atomIndex, modelNumber, pdbAtomRecord);
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
 
@@ -333,10 +336,8 @@ public class Atom implements Bspt.Tuple {
     return marAtom / 1000f;
   }
 
-  public short getModelID() {
-    if (pdbAtom == null)
-      return 0;
-    return pdbAtom.getModelID();
+  public int getModelNumber() {
+    return modelNumber;
   }
 
   public char getChainID() {

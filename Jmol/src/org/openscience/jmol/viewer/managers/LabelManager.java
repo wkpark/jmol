@@ -169,6 +169,9 @@ public class LabelManager {
         if (pdbatom != null)
           strLabel += pdbatom.getChainID();
         break;
+      case 'M':
+        strLabel += "/" + atom.getModelNumber();
+        break;
       case 'm':
         strLabel += "<X>";
         break;
@@ -179,10 +182,6 @@ public class LabelManager {
       case 'r':
         if (pdbatom != null)
           strLabel += pdbatom.getSeqcodeString();
-        break;
-      case 'M':
-        if (pdbatom != null)
-          strLabel += "/" + pdbatom.getModelID();
         break;
       default:
         strLabel += "" + ch;

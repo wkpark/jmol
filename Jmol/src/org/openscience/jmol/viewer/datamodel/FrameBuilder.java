@@ -65,10 +65,10 @@ final public class FrameBuilder {
       if (atomicNumber <= 0)
         atomicNumber = JmolConstants.
           atomicNumberFromAtomicSymbol(iterAtom.getAtomicSymbol());
-      frame.addAtom(iterAtom.getUniqueID(), atomicNumber,
+      frame.addAtom(iterAtom.getModelNumber(), iterAtom.getUniqueID(),
+                    atomicNumber,
                     iterAtom.getAtomicCharge(), iterAtom.getAtomTypeName(),
                     iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
-                    (short)iterAtom.getPdbModelNumber(),
                     iterAtom.getPdbAtomRecord());
     }
 

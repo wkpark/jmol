@@ -956,7 +956,7 @@ public class Eval implements Runnable {
   void selectModelAtoms(int modelNumber, BitSet bsResult) {
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; )
-      if (frame.getAtomAt(i).getModelID() == modelNumber)
+      if (frame.getAtomAt(i).getModelNumber() == modelNumber)
         bsResult.set(i);
   }
 
@@ -1015,7 +1015,7 @@ public class Eval implements Runnable {
         propertyValue = atom.getCovalentBondCount();
         break;
       case Token.model:
-        propertyValue = atom.getModelID();
+        propertyValue = atom.getModelNumber();
         break;
       default:
         unrecognizedAtomProperty(property);
@@ -1123,7 +1123,7 @@ public class Eval implements Runnable {
     int modelLast = -1;
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       if (bs.get(i)) {
-        int model = frame.getAtomAt(i).getModelID();
+        int model = frame.getAtomAt(i).getModelNumber();
         if (model != modelLast) {
           selectModelAtoms(model, bsResult);
           modelLast = model;

@@ -163,6 +163,7 @@ public abstract class JmolModelAdapter {
    ****************************************************************/
   public abstract class AtomIterator {
     public abstract boolean hasNext();
+    public int getModelNumber(){ return 1; }
     abstract public Object getUniqueID();
     public int getAtomicNumber() { return -1; }
     public String getAtomicSymbol() { return null; }
@@ -172,7 +173,6 @@ public abstract class JmolModelAdapter {
     abstract public float getY();
     abstract public float getZ();
     public String getPdbAtomRecord() { return null; }
-    public int getPdbModelNumber(){ return -1; }
   }
 
   /****************************************************************

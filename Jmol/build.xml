@@ -239,6 +239,17 @@
     </jar>
   </target>
 
+  <target name="io-jar" id="apis-jar" depends="init,classes">
+    <jar jarfile="jmolIO.jar">
+      <fileset dir="${classes.dir}" >
+        <include name="org/jmol/adapter/smarter/**" />
+      </fileset>
+      <fileset dir="." >
+        <include name="LICENSE.txt"/>
+      </fileset>
+    </jar>
+  </target>
+
   <target name="check.appletjars" id="check.appletjars">
     <uptodate property="appletjars.uptodate"
 	      targetfile="${appletjars.dir}">

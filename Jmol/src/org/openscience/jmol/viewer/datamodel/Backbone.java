@@ -40,10 +40,12 @@ class Backbone extends Mps {
       super(polymer, 1, 1500, 500, 2000);
     }
 
-    void setSize(int size, BitSet bsSelected) {
-      short mad = (short)size;
+    void setMad(short mad, BitSet bsSelected) {
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       int[] atomIndices = polymer.getLeadAtomIndices();
+      // note that i is initialized to monomerCount - 1
+      // in order to skip the last atom
+      // but it is picked up within the loop by looking at i+1
       for (int i = monomerCount - 1; --i >= 0; ) {
         if ((bsSelected.get(atomIndices[i]) &&
              bsSelected.get(atomIndices[i + 1]))

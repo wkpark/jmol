@@ -592,7 +592,7 @@ final public class Frame {
     }
   }
 
-  final static boolean showRebondTimes = true;
+  final static boolean showRebondTimes = false;
 
   private float bondTolerance;
   private float minBondDistance;

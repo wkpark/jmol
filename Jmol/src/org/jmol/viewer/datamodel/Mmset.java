@@ -75,6 +75,7 @@ final public class Mmset {
   }
 
   void calculateStructures() {
+    System.out.println("Mmset.calculateStructures()");
     for (int i = modelCount; --i >= 0; )
       models[i].calculateStructures();
   }

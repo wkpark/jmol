@@ -31,7 +31,11 @@ import javax.vecmath.Vector3f;
 public class AminoPolymer extends AlphaPolymer {
 
   // the primary offset within the same mainchain;
-  short mainchainHbondOffsets[];
+  short[] mainchainHbondOffsets;
+  short[] min1Indexes;
+  short[] min1Energies;
+  short[] min2Indexes;
+  short[] min2Energies;
 
   AminoPolymer(Monomer[] monomers) {
     super(monomers);
@@ -43,22 +47,42 @@ public class AminoPolymer extends AlphaPolymer {
 
   void calcHydrogenBonds() {
     if (! hbondsAlreadyCalculated) {
+      allocateHbondDataStructures();
       calcProteinMainchainHydrogenBonds();
       hbondsAlreadyCalculated = true;
+
+      System.out.println("calcHydrogenBonds");
+      for (int i = 0; i < count; ++i) {
+        System.out.println("  min1Indexes=" + min1Indexes[i] +
+                           "\nmin1Energies=" + min1Energies[i] +
+                           "\nmin2Indexes=" + min2Indexes[i] +
+                           "\nmin2Energies=" + min2Energies[i]);
+      }
     }
   }
 
+  
 
-  Vector3f vectorPreviousOC = new Vector3f();
-  Point3f aminoHydrogenPoint = new Point3f();
+  void allocateHbondDataStructures() {
+    mainchainHbondOffsets = new short[count];
+    min1Indexes = new short[count];
+    min1Energies = new short[count];
+    min2Indexes = new short[count];
+    min2Energies = new short[count];
+  }
+
+  void freeHbondDataStructures() {
+    mainchainHbondOffsets =
+      min1Indexes = min1Energies = min2Indexes = min2Energies = null;
+  }
+
+  final Vector3f vectorPreviousOC = new Vector3f();
+  final Point3f aminoHydrogenPoint = new Point3f();
 
   void calcProteinMainchainHydrogenBonds() {
     Point3f carbonPoint;
     Point3f oxygenPoint;
     
-    if (mainchainHbondOffsets == null)
-      mainchainHbondOffsets = new short[count];
-
     for (int i = 0; i < count; ++i) {
       AminoMonomer residue = (AminoMonomer)monomers[i];
       mainchainHbondOffsets[i] = 0;
@@ -105,6 +129,8 @@ public class AminoPolymer extends AlphaPolymer {
       int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
       //      System.out.println("HbondEnergy=" + energy);
       if (energy < energyMin1) {
+        energyMin2 = energyMin1;
+        indexMin2 = indexMin1;
         energyMin1 = energy;
         indexMin1 = i;
       } else if (energy < energyMin2) {
@@ -112,11 +138,17 @@ public class AminoPolymer extends AlphaPolymer {
         indexMin2 = i;
       }
     }
+    min1Indexes[indexDonor] = min2Indexes[indexDonor] = -1;
     if (indexMin1 >= 0) {
       mainchainHbondOffsets[indexDonor] = (short)(indexDonor - indexMin1);
+      min1Indexes[indexDonor] = (short)indexMin1;
+      min1Energies[indexDonor] = (short)energyMin1;
       createResidueHydrogenBond(indexDonor, indexMin1);
-      if (indexMin2 >= 0)
+      if (indexMin2 >= 0) {
         createResidueHydrogenBond(indexDonor, indexMin2);
+        min2Indexes[indexDonor] = (short)indexMin2;
+        min2Energies[indexDonor] = (short)energyMin2;
+      }
     }
   }
 
@@ -211,18 +243,14 @@ public class AminoPolymer extends AlphaPolymer {
    * recognition that would be great
    *
    * miguel 2004 06 16
+   */
 
-   
   void calculateStructures() {
     calcHydrogenBonds();
     char[] structureTags = new char[count];
 
-    findPitch(3, 4, '4', structureTags);
-
-
-    //    System.out.println("secondaryStructureTags:");
-    //    for (int i = 0; i < count; ++i)
-    //      System.out.println("" + i + " : " + structureTags[i]);
+    findHelixes(structureTags);
+    findSheets(structureTags);
 
     int iStart = 0;
     while (iStart < count) {
@@ -241,6 +269,11 @@ public class AminoPolymer extends AlphaPolymer {
     }
   }
 
+
+  void findHelixes(char[] structureTags) {
+    findPitch(3, 4, '4', structureTags);
+  }
+
   void findPitch(int minRunLength, int pitch, char tag, char[] tags) {
     int runLength = 0;
     for (int i = 0; i < count; ++i) {
@@ -257,5 +290,29 @@ public class AminoPolymer extends AlphaPolymer {
     }
   }
 
-  */
+  void findSheets(char[] structureTags) {
+    for (int a = 0; a < count; ++a)
+      for (int b = 0; b < count; ++b) {
+        if (isHbonded(a+1, b) && isHbonded(b, a-1) ||
+            isHbonded(b+1, a) && isHbonded(a, b-1)) {
+          System.out.println("parallel found");
+        }
+
+        if (isHbonded(a, b) && isHbonded(b, a) ||
+            isHbonded(a+1, b-1) && isHbonded(b+1, a-1)) {
+          System.out.println("antiparallel found");
+        }
+      }
+  }
+
+  boolean isHbonded(int indexDonor, int indexAcceptor) {
+    if (indexDonor < 0 || indexDonor >= count ||
+        indexAcceptor < 0 || indexAcceptor >= count)
+      return false;
+    return ((min1Indexes[indexDonor] == indexAcceptor &&
+             min1Energies[indexDonor] <= -500) ||
+            (min2Indexes[indexDonor] == indexAcceptor &&
+             min2Energies[indexDonor] <= -500));
+  }
+
 }

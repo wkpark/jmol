@@ -56,6 +56,7 @@ class Hermite3D {
   final Point3f[] pTopRight = new Point3f[16];
   final Point3f[] pBotLeft = new Point3f[16];
   final Point3f[] pBotRight = new Point3f[16];
+  final boolean[] needToFill = new boolean[16];
   {
     for (int i = 16; --i >= 0; ) {
       pLeft[i] = new Point3i();
@@ -312,30 +313,38 @@ class Hermite3D {
 
     sLeft[0] = 0;
     sRight[0] = 1;
+    needToFill[0] = true;
     sp = 0;
 
     do {
       Point3f a = pTopLeft[sp];
       Point3f b = pTopRight[sp];
       double dxTop = b.x - a.x;
-      if (dxTop >= -2 && dxTop <= 2) {
+      double dxTop2 = dxTop * dxTop;
+      if (dxTop2 < 10) {
         double dyTop = b.y - a.y;
-        if (dyTop >= -2 && dyTop <= 2) {
+        double dyTop2 = dyTop * dyTop;
+        if (dyTop2 < 10) {
           Point3f c = pBotLeft[sp];
           Point3f d = pBotRight[sp];
-          float dxBot = d.x - c.x;
-          if (dxBot >= -2 && dxBot <= 2) {
-            float dyBot = d.y - c.y;
-            if (dyBot >= -2 && dyBot <= 2) {
-              
+          double dxBot = d.x - c.x;
+          double dxBot2 = dxBot * dxBot;
+          if (dxBot2 < 8) {
+            double dyBot = d.y - c.y;
+            double dyBot2 = dyBot * dyBot;
+            if (dyBot2 < 8) {
               g3d.fillSphereCentered(colix, 3, a);
               g3d.fillSphereCentered(colix, 3, c);
               
-              g3d.fillQuadrilateral(colix, a, b, d, c);
-              // render triangles here
-              
-              --sp;
-              continue;
+              if (needToFill[sp]) {
+                g3d.fillQuadrilateral(colix, a, b, d, c);
+                needToFill[sp] = false;
+              }
+              if (dxTop2 + dyTop2 < 3 &&
+                  dxBot2 + dyBot2 < 3) {
+                --sp;
+                continue;
+              }
             }
           }
         }
@@ -348,26 +357,28 @@ class Hermite3D {
       double h3 = s3 - 2 * s2 + s;
       double h4 = s3 - s2;
 
-      Point3f pMidTop = pTopRight[sp + 1];
+      int spNext = sp + 1;
+      Point3f pMidTop = pTopRight[spNext];
       pMidTop.x = (float) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
       pMidTop.y = (float) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
       pMidTop.z = (float) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
-      Point3f pMidBot = pBotRight[sp + 1];
+      Point3f pMidBot = pBotRight[spNext];
       pMidBot.x = (float) (h1 * x5 + h2 * x6 + h3 * xT5 + h4 * xT6);
       pMidBot.y = (float) (h1 * y5 + h2 * y6 + h3 * yT5 + h4 * yT6);
       pMidBot.z = (float) (h1 * z5 + h2 * z6 + h3 * zT5 + h4 * zT6);
       
-      pTopRight[sp + 1] = pTopRight[sp];
+      pTopRight[spNext] = pTopRight[sp];
       pTopRight[sp] = pMidTop;
-      pBotRight[sp + 1] = pBotRight[sp];
+      pBotRight[spNext] = pBotRight[sp];
       pBotRight[sp] = pMidBot;
       
-      sRight[sp + 1] = sRight[sp];
+      sRight[spNext] = sRight[sp];
       sRight[sp] = (float) s;
+      needToFill[spNext] = needToFill[sp];
+      pTopLeft[spNext].set(pMidTop);
+      pBotLeft[spNext].set(pMidBot);
+      sLeft[spNext] = (float) s;
       ++sp;
-      pTopLeft[sp].set(pMidTop);
-      pBotLeft[sp].set(pMidBot);
-      sLeft[sp] = (float) s;
     } while (sp >= 0);
   }
 }

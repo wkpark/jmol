@@ -305,6 +305,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public boolean handleEvent(Event e) {
+    if (viewer == null)
+      return false;
     return viewer.handleEvent(e);
   }
 

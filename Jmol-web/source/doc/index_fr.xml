@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.1)
+  Translated from default version : index_en.xml (v 1.2)
 -->
 <document>
   <body>
@@ -28,7 +28,7 @@
         </tr>
       </table>
       <p>
-        <i>Regardez les</i><a href="./demo/">pages de d&#x00E9;monstration</a>
+        <i>Regardez les</i> <a href="./demo/">pages de d&#x00E9;monstration</a>
         <i>pour voir les boutons et les menus en action</i>
       </p>
       <hr />
@@ -59,17 +59,18 @@
 
     <section title="Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9;">
       <p>
-        Jmol Version 10 a &#x00E9;t&#x00E9; le Vendredi 17 D&#x00E9;cembre 2004.
+        Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9; le Vendredi
+        17 D&#x00E9;cembre 2004.
       </p>
       <p>
         Jmol v10 est une refonte et une r&#x00E9;&#x00E9;criture
         compl&#x00E8;te de Jmol, entreprise au Printemps 2003, avec le
-        but pr&#x00E9; de d&#x00E9;velopper Jmol en un remplacement
+        but pr&#x00E9;cis de d&#x00E9;velopper Jmol en un remplacement
         pour le Plug-in Chime.
       </p>
       <p>
         Jmol v10 conserve la plupart des caract&#x00E9;ristiques et des
-        fonctions des version pr&#x00E9;c&#x00E9;dentes tout en offrant
+        fonctions des versions pr&#x00E9;c&#x00E9;dentes tout en offrant
         des am&#x00E9;liorations significatives dans les domaines suivants:
         <ul>
           <li>
@@ -77,13 +78,13 @@
             pas de mat&#x00E9;riel particulier
           </li>
           <li>
-            couleur 24 bits avec &#x00E9;clairage et ombres exactes
+            couleurs 24 bits avec &#x00E9;clairage et ombres exactes
           </li>
           <li>
             performances de dessins nettement sup&#x00E9;rieures
           </li>
           <li>
-            g&#x00E8;re de grandes macroml&#x00E9;cules avec
+            g&#x00E8;re de grandes macromol&#x00E9;cules avec
             d'excellentes performances
           </li>
           <li>
@@ -91,7 +92,7 @@
             prot&#x00E9;ines/acides nucl&#x00E9;iques
           </li>
           <li>
-            Compatibilit&#x00E9; des scripts RasMol/Chime
+            compatibilit&#x00E9; des scripts RasMol/Chime
           </li>
         </ul>
       </p>
@@ -102,10 +103,10 @@
         Jmol v10: Je ne peux pas croire que c'est du Java!<br />
         Mais c'est aussi open-source, il n'y a donc pas de question
         &#x00E0; ce propos.<br />
-        Obtenez votre copie maintenant, avant qu'ils ne soit
+        Obtenez votre copie maintenant, avant qu'ils ne soient
         &#x00E0; court des ces trucs machine virtuelle Java.<br />
         C'est juste &#x00E0; temps (JIT) pour Noel, d'apr&#x00E8;s
-        ce que j'enteds!
+        ce que j'entends!
       </i>
       <blockquote>
         Warren L. DeLano, shell-shocked C/Python developer<br />
@@ -229,9 +230,6 @@
             <li>
               <a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWChem</a>
             </li>
-            <li>
-              <a href="http://www.q-chem.com">Q-Chem</a>
-            </li>
             <li>XYZ</li>
           </ul>
           <i>
@@ -274,7 +272,7 @@
     <section title="Listes de diffusion">
       <p>
         Les personnes int&#x00E9;ress&#x00E9;es par la visualisation
-        mol&#x00E9;culaire, en particulier les commuaut&#x00E9;s de
+        mol&#x00E9;culaire, en particulier les communaut&#x00E9;s de
         l'&#x00E9;ducation et de la recherche, sont encourag&#x00E9;es &#x00E0;
         rejoindre la
         <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">

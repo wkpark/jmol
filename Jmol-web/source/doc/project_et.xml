@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Estonian translation 
+  Translated from default version : project_en.xml (v 1.4)
+-->
+<!DOCTYPE somethingOrAnything [
+<!ENTITY language SYSTEM "language.xml" >
+]>
+<project name="Jmol">
+
+  <title>Jmol</title>
+
+  <links>
+    <table width="100%">
+      <tr>
+        <td align="left" valign="middle">
+          <a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
+          &language;
+        </td>
+        <td align="right" valign="middle">
+          <font size="2">
+            <a href="[root]/">Koduleht</a> |
+            <a href="[root]/websites/">Veebilehed</a> |
+            <a href="[root]/history/">Ajalugu</a> |
+            <a href="[root]/changes/">Muudatused</a> |
+            <a href="[root]/technotes/">Tehnilised m&#x00E4;rkused</a> |
+            <a href="[root]/faqs/">KKKd</a>
+            <br/>
+            <a href="http://wiki.jmol.org">Wiki</a> |
+            <a href="[root]/docs/">Dokumentatsioon</a> |
+            <a href="http://www.stolaf.edu/people/hansonr/jmol/docs"
+              target="_blank" >
+              Interaktiivne skriptimise dok
+            </a> |
+            <a href="[root]/browsercheck/">Brauseri kontroll</a>
+            <br/>
+            <a href="[root]/demo/">N&#x00E4;idislehed</a> |
+            <a href="[root]/jslibrary/">JavaScript teek</a> |
+            <a href="[root]/plugins/">Pluginad</a> |
+            <a href="[root]/jscolors/">Värvid</a>
+            <br/>
+            <a href="[root]/download/">Lae alla</a> |
+            <a href="[root]/lists/">Postilistid</a> |
+            <a href="http://sourceforge.net/projects/jmol">
+              Sourceforge Projekti leht
+            </a> |
+            <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">
+              Vigade andmebaas
+            </a>
+          </font>
+        </td>
+      </tr>
+    </table>
+  </links>
+
+  <notice>
+    <p>
+      Majutab
+      <a href="http://www.sf.net/projects/jmol/">
+        <img src="http://www.sf.net/sflogo.php?group_id=23629" border="0" 
+          alt="SourceForge Logo" align="middle"/>
+      </a>
+    </p>
+  </notice>
+
+</project>

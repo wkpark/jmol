@@ -30,6 +30,9 @@
   	  <param name="lang_value" value="en"/>
   	</antcall>
   	<antcall target="html_lang">
+  	  <param name="lang_value" value="et"/>
+  	</antcall>
+  	<antcall target="html_lang">
   	  <param name="lang_value" value="fr"/>
   	</antcall>
   	

@@ -42,8 +42,8 @@ package org.openscience.jmol;
 import java.io.*;
 
 /**Used to set the appearence of molecules output by PovraySaver. There are two approaches avalible. For properties that vary continously
-* the value should be set by the call to write the atom- Eg if you are colouring atoms by mulikan charge then the colour will differ for
-* every atom and should be set by overriding writeAtom()<p>
+ * the value should be set by the call to write the atom- Eg if you are colouring atoms by mulikan charge then the colour will differ for
+ * every atom and should be set by overriding writeAtom()<p>
 * <i>write("sphere{ &ltx,y,z&gt,radius texture{pigment{"+getColourFromCharge(myCharge)+"}}}");</i><p>
 * However, many properties will have the same value for a given type of atom eg in the CPK scheme both radius and colour can be determined
 * by the element. In this case you are recommended to use povray declarations of the various types eg<p>
@@ -76,64 +76,64 @@ import java.io.*;
 
 public class PovrayStyleWriter{
 
-/** The number of different atom types found via getTypeNameForAtom(). Set by calling findAtomTypes()**/
-   int numTypes;
-/** The names of different atom types. Set by calling findAtomTypes().**/
-   protected String[] typeName;
-/** The examples of different atom types. Set by calling findAtomTypes(). These can be used to make the declarations in wrietAtomsAndBondsDeclaration().**/
-   protected int[] indexOfExampleAtom;
-
-
-/**Write out objects used to represent the atoms and bonds. Since multiple styles maybe used, definitions should use the name of the class eg:<p>
-* #declare Cl_myClassName=sphere{.... <p>
-* You may assume that Colors.inc and textures.inc have been included.
-**/
+    /** The number of different atom types found via getTypeNameForAtom(). Set by calling findAtomTypes()**/
+    int numTypes;
+    /** The names of different atom types. Set by calling findAtomTypes().**/
+    protected String[] typeName;
+    /** The examples of different atom types. Set by calling findAtomTypes(). These can be used to make the declarations in wrietAtomsAndBondsDeclaration().**/
+    protected int[] indexOfExampleAtom;
+    
+    
+    /**Write out objects used to represent the atoms and bonds. Since multiple styles maybe used, definitions should use the name of the class eg:<p>
+     * #declare Cl_myClassName=sphere{.... <p>
+     * You may assume that Colors.inc and textures.inc have been included.
+     **/
     public void writeAtomsAndBondsDeclare(BufferedWriter w, ChemFrame cf) throws IOException{
         findAtomTypes(cf);
-//Holy cow. Well, we should now know what types there are
+        //Holy cow. Well, we should now know what types there are
         for (int j=0;j<numTypes;j++){
             BaseAtomType at = cf.getAtomType(indexOfExampleAtom[j]).getBaseAtomType();
             java.awt.Color c = at.getColor();
             String def = "#declare "+at.getName()+"_PovrayStyleWriter = sphere{<0,0,0>,"+at.getVdwRadius()+" texture{pigment{"+povrayColor(c)+"}finish{Shiny}}}\n";
             w.write(def);
         }
-   }
+    }
 
-/**This calls getAtomName() for every atom in the frame and identifies how many different types there are (numTypes),
-* the names of the types (typeNames[]) and the index of an example of each type (indexOfExampleAtom[]).
-**/
-   protected void findAtomTypes(ChemFrame cf){
+    /**This calls getAtomName() for every atom in the frame and identifies how many different types there are (numTypes),
+     * the names of the types (typeNames[]) and the index of an example of each type (indexOfExampleAtom[]).
+     **/
+    protected void findAtomTypes(ChemFrame cf){
         int nAtoms = cf.getNvert();
         numTypes = 0;
         int maxTypes = 5; //Never set this less than 1 (ok thats paranoid of me)
         typeName = new String[maxTypes];
         indexOfExampleAtom = new int[maxTypes];
         String currentName;
-//Warning- code like this can damage your health (when someone else has to maintain it)
+        //Warning- code like this can damage your health (when someone else has to maintain it)
         int j;
         int typeOfCurrentAtom;
         for (int i=0; i<nAtoms;i++){
-           typeOfCurrentAtom = -1;
-           currentName = getAtomName(cf,i);
-           for(j=0; j<numTypes && typeOfCurrentAtom==-1;j++){
-              if(currentName.equals(typeName[j])){typeOfCurrentAtom = j;}
-           }
-//Right, we've looked at all the known types of atom, if typeOfCurrentAtom is still -1 it is a new type- comprend?             
-           if (typeOfCurrentAtom == -1){
-             typeName[numTypes] = currentName;
-             indexOfExampleAtom[numTypes] = i;
-             numTypes++;
-             if (numTypes >= maxTypes){
-               int oldMaxTypes = maxTypes;
-               maxTypes *= 2;
-               String[] tempNames = new String[maxTypes];
-               int[] tempExamples = new int[maxTypes];
-               System.arraycopy(typeName,0,tempNames,0,oldMaxTypes);
-               System.arraycopy(indexOfExampleAtom,0,tempExamples,0,oldMaxTypes);
-               typeName = tempNames;
-               indexOfExampleAtom = tempExamples;
-             }
-           }
+            typeOfCurrentAtom = -1;
+            currentName = getAtomName(cf,i);
+            for(j=0; j<numTypes && typeOfCurrentAtom==-1;j++){
+                if(currentName.equals(typeName[j])){typeOfCurrentAtom = j;}
+            }
+            //Right, we've looked at all the known types of atom, if typeOfCurrentAtom is still -1 it is a new type- comprend?             
+            if (typeOfCurrentAtom == -1){
+                typeName[numTypes] = currentName;
+                indexOfExampleAtom[numTypes] = i;
+                numTypes++;
+                if (numTypes >= maxTypes){
+                    int oldMaxTypes = maxTypes;
+                    maxTypes *= 2;
+                    String[] tempNames = new String[maxTypes];
+                    int[] tempExamples = new int[maxTypes];
+                    System.arraycopy(typeName,0,tempNames,0,oldMaxTypes);
+                    System.arraycopy(indexOfExampleAtom,0,tempExamples,0,oldMaxTypes);
+                    typeName = tempNames;
+                    indexOfExampleAtom = tempExamples;
+                }
+            }
         }
     }
 
@@ -143,35 +143,35 @@ public class PovrayStyleWriter{
      * @param atomIndex The index of the atom we are looking at in the chemfile
      * @param cf The file we are writing
      */
-     public void writeAtom(BufferedWriter w, int atomIndex, ChemFrame cf) throws IOException{
-                BaseAtomType a = cf.getAtomType(atomIndex).getBaseAtomType();
-                double[] pos = cf.getVertCoords(atomIndex);
-                String st = ("object{ "+getAtomName(cf,atomIndex)+"_PovrayStyleWriter translate<"
-                                +new Double(pos[0]).toString()+","
-                                +new Double(pos[1]).toString()+","
-                                +new Double(pos[2]).toString()+">}\n");
-                w.write(st);
+    public void writeAtom(BufferedWriter w, int atomIndex, ChemFrame cf) throws IOException{
+        BaseAtomType a = cf.getAtomType(atomIndex).getBaseAtomType();
+        double[] pos = cf.getVertCoords(atomIndex);
+        String st = ("object{ "+getAtomName(cf,atomIndex)+"_PovrayStyleWriter translate<"
+                     +new Double(pos[0]).toString()+","
+                     +new Double(pos[1]).toString()+","
+                     +new Double(pos[2]).toString()+">}\n");
+        w.write(st);
     }
     /**
      * Write this specific bond
      * @param 
      * @param w the Writer to write it to
      */
-//     public void writeBond(BufferedWriter w, int bondIndex, ChemFile cf){
-//    }
+    //     public void writeBond(BufferedWriter w, int bondIndex, ChemFile cf){
+    //    }
 
-/** Takes a java colour and returns a String representing the colour in povray eg 'rgb<1.0,0.0,0.0>'**/
+    /** Takes a java colour and returns a String representing the colour in povray eg 'rgb<1.0,0.0,0.0>'**/
     protected String povrayColor(java.awt.Color col){
-      float tff = (float)255.0;
-      return "rgb<"+((float)col.getRed()/tff)+","+((float)col.getGreen()/tff)+","+((float)col.getBlue()/tff)+">";
+        float tff = (float)255.0;
+        return "rgb<"+((float)col.getRed()/tff)+","+((float)col.getGreen()/tff)+","+((float)col.getBlue()/tff)+">";
     }
-
-/**Override this method to idetify atom types by different properties. By default they are identifed by name.
-   @param cf The ChemFrame we are writing
-   @param atomIndex The specific atom we are examining.
-**/
+    
+    /**Override this method to idetify atom types by different properties. By default they are identifed by name.
+       @param cf The ChemFrame we are writing
+       @param atomIndex The specific atom we are examining.
+    **/
     protected String getAtomName(ChemFrame cf, int atomIndex){
-      return cf.getAtomType(atomIndex).getBaseAtomType().getName();
+        return cf.getAtomType(atomIndex).getBaseAtomType().getName();
     }
-
+    
 }

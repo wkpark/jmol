@@ -71,6 +71,11 @@ class Jmol extends JPanel {
   public String currentFileName = "";
 
   static {
+    if (System.getProperty("javawebstart.version") != null) {
+      // If the property is found, Jmol is running with Java Web Start. To fix
+      // bug 4621090, the security manager is set to null.
+      System.setSecurityManager(null);
+    }
     if (System.getProperty("user.home") == null) {
       System.err.println(
               "Error starting Jmol: the property 'user.home' is not defined.");

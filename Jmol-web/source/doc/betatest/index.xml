@@ -70,24 +70,12 @@
       </section>
     </section>
     
-    <section title="Jmol10pre19">
+    <section title="Jmol10pre20">
       <p>
-	Jmol version 10 pre-release 19 was released on Mon 22 Nov 2004.
+	Jmol version 10 pre-release 20 was released on Sat 27 Nov 2004.
 	<ul>
 	  <li>
-	    Internal repackaging of code
-	  </li>
-	  <li>
 	    work on Jmol.js JavaScript library
-	  </li>
-	  <li>
-	    povray output dialog box has additional features
-	  </li>
-	  <li>
-	    Fonts on OSX inside browsers are not ugly anymore
-	  </li>
-	  <li>
-	    Hover color and font have changed.
 	  </li>
 	  <li>
 	    other bug fixes
@@ -95,17 +83,17 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre19.zip">
+	<a href="Jmol10pre20.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre19.zip
+	    Jmol10pre20.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre16.zip">
+	<a href="Jmol10pre19.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre16.zip
+	    <i>Give me the old code</i> Jmol10pre19.zip
 	  </font>
 	</a>
       </p>
@@ -115,7 +103,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre18.zip</b>
+	format as .zip : <b>jar xf Jmol10pre20.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

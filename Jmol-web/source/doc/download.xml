@@ -3,6 +3,19 @@
   <body>
     <title>Download Jmol</title>
     
+    <section title="Running Jmol with Java Web Start.">
+      <p>If you have <a
+      href="http://java.sun.com/products/javawebstart/index.html">Java Web
+      Start</a> installed, you can run Jmol by simply clicking on the following
+      link:</p>
+      <p>
+      <blockquote>
+        <a href="http://jmol.sourceforge.net/jws/jmol.jnlp">Run Jmol</a>.
+      </blockquote>
+      </p>
+
+    </section>
+
     <section title="Downloading the current release">
       <p>The current release is version $VERSION$.</p>
       <p>It can be downloaded using one of the following links:

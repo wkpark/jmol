@@ -210,9 +210,9 @@ public class TransformManager {
     } else {
       vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
       vectorT.normalize();
-      truncate3(sb, vectorT.x);
-      truncate3(sb, vectorT.y);
-      truncate3(sb, vectorT.z);
+      truncate0(sb, vectorT.x);
+      truncate0(sb, vectorT.y);
+      truncate0(sb, vectorT.z);
       truncate1(sb, degrees);
     }
     int zoom = getZoomPercent();
@@ -333,11 +333,17 @@ public class TransformManager {
     return "" + sb;
   }
 
+  static void truncate0(StringBuffer sb, float val) {
+    sb.append(" ");
+    sb.append(Math.round(val));
+  }
+
   static void truncate1(StringBuffer sb, float val) {
     sb.append(" ");
     sb.append(Math.round(val * 10) / 10f);
   }
 
+  /*
   static void truncate2(StringBuffer sb, float val) {
     sb.append(" ");
     sb.append(Math.round(val * 100) / 100f);
@@ -347,6 +353,7 @@ public class TransformManager {
     sb.append(" ");
     sb.append(Math.round(val * 1000) / 1000f);
   }
+  */
 
   public void getAxisAngle(AxisAngle4f axisAngle) {
     axisAngle.set(matrixRotate);

@@ -1555,12 +1555,14 @@ public class Eval implements Runnable {
       // "%n%r:%c.%a" if the molecule contains more than one chain:
       // "%e%i" if the molecule has only a single residue (a small molecule) and
       // "%n%r.%a" otherwise.
-      if (viewer.getChainCount() > 1)
-        strLabel = "%n%r:%c.%a";
+      if (viewer.getModelCount() > 1)
+        strLabel = "[%n]%r:%c.%a/%M";
+      else if (viewer.getChainCount() > 1)
+        strLabel = "[%n]%r:%c.%a";
       else if (viewer.getGroupCount() <= 1)
         strLabel = "%e%i";
       else
-        strLabel = "%n%r.%a";
+        strLabel = "[%n]%r.%a";
     } else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
     viewer.setLabel(strLabel);
@@ -1659,6 +1661,16 @@ public class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
+    int tok;
+    if (statement.length > 3 &&
+        (tok = statement[1].tok) == Token.axisangle) {
+      checkStatementLength(6);
+      viewer.rotateAxisAngle(floatParameter(2),
+                             floatParameter(3),
+                             floatParameter(4),
+                             floatParameter(5));
+      return;
+    }
     checkLength3();
     float degrees = floatParameter(2);
     switch (statement[1].tok) {
@@ -2782,6 +2794,9 @@ public class Eval implements Runnable {
     case Token.animation:
       showAnimation();
       break;
+    case Token.axisangle:
+      showAxisAngle();
+      break;
 
       // not implemented
     case Token.center:
@@ -2806,7 +2821,7 @@ public class Eval implements Runnable {
       break;
 
     default:
-      unrecognizedSetParameter();
+      evalError("unrecognized SHOW parameter");
     }
   }
 
@@ -2826,5 +2841,9 @@ public class Eval implements Runnable {
 
   void showAnimation() {
     showString("show animation information goes here");
+  }
+
+  void showAxisAngle() {
+    showString("axis-angle rotation = " + viewer.getAxisAngleText());
   }
 }

@@ -243,6 +243,7 @@ public class Token {
   // spin
   final static int all          = showparam | 11 | expression;
   final static int pdbheader    = showparam | 12 | expression;
+  final static int axisangle    = showparam | 13;
 
   // atom expression operators
   final static int leftparen    = expression |  0;
@@ -496,6 +497,7 @@ public class Token {
     "residue",      new Token(residue,         "residue"),
     "model",        new Token(model,           "model"),
     "pdbheader",    new Token(pdbheader,       "pdbheader"),
+    "axisangle",    new Token(axisangle,       "axisangle"),
 
     // atom expressions
     "(",            new Token(leftparen, "("),

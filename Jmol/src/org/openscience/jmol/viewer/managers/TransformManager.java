@@ -130,6 +130,12 @@ public class TransformManager {
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
 
+  public void rotateAxisAngle(float x, float y, float z, float degrees) {
+    matrixTemp.setIdentity();
+    axisangleT.set(x, y, z, degrees * (float)Math.PI / 180);
+    rotate(axisangleT);
+  }
+
   /****************************************************************
    TRANSLATIONS
   ****************************************************************/
@@ -164,6 +170,19 @@ public class TransformManager {
 
   public int getTranslationZPercent() {
     return 0;
+  }
+
+  final AxisAngle4f axisangleT = new AxisAngle4f();
+  final Vector3f vectorT = new Vector3f();
+
+  public String getAxisAngleText() {
+    axisangleT.set(matrixRotate);
+    float degrees = axisangleT.angle * 180 / (float)Math.PI;
+    if (degrees < 0.01f)
+      return "0 0 0 0";
+    vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
+    vectorT.normalize();
+    return "" + vectorT.x + " " + vectorT.y + " " + vectorT.z + " " + degrees;
   }
 
   /****************************************************************

@@ -240,6 +240,10 @@ final public class JmolViewer {
     refresh();
   }
 
+  public void rotateAxisAngle(float x, float y, float z, float degrees) {
+    transformManager.rotateAxisAngle(x, y, z, degrees);
+  }
+
   public void translateXYBy(int xDelta, int yDelta) {
     transformManager.translateXYBy(xDelta, yDelta);
     refresh();
@@ -538,6 +542,10 @@ final public class JmolViewer {
   }
   public boolean getSpinOn() {
     return transformManager.spinOn;
+  }
+
+  public String getAxisAngleText() {
+    return transformManager.getAxisAngleText();
   }
 
   /****************************************************************

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2003-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -2082,7 +2082,8 @@ public class Eval implements Runnable {
   }
 
   void animationMode() throws ScriptException {
-    if (statementLength != 3 && statementLength != 6)
+    float startDelay = 1, endDelay = 1;
+    if (statementLength < 3 || statementLength > 5)
       badArgumentCount();
     int animationMode = 0;
     switch (statement[2].tok) {
@@ -2091,18 +2092,22 @@ public class Eval implements Runnable {
       break;
     case Token.identifier:
       String cmd = (String)statement[2].value;
-      if (cmd.equalsIgnoreCase("once"))
+      if (cmd.equalsIgnoreCase("once")) {
+        startDelay = endDelay = 0;
         break;
+      }
       if (cmd.equalsIgnoreCase("palindrome")) {
         animationMode = 2;
         break;
       }
       unrecognizedSubcommand();
     }
-    viewer.setAnimationReplayMode(animationMode,
-                                  floatParameter(3),
-                                  floatParameter(4),
-                                  floatParameter(5));
+    if (statementLength >= 4) {
+      startDelay = endDelay = floatParameter(3);
+      if (statementLength == 5)
+        endDelay = floatParameter(4);
+    }
+    viewer.setAnimationReplayMode(animationMode, startDelay, endDelay);
   }
 
   void vibration() throws ScriptException {

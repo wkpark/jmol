@@ -92,31 +92,21 @@ public class RepaintManager {
   // 1 = loop
   // 2 = palindrome
   public int animationReplayMode = 0;
-  public float leadInDelay, firstFrameDelay, lastFrameDelay;
-  int leadInDelayMs, firstFrameDelayMs, lastFrameDelayMs;
+  public float firstFrameDelay, lastFrameDelay;
+  int firstFrameDelayMs, lastFrameDelayMs;
 
   public void setAnimationReplayMode(int animationReplayMode,
-                                     float leadInDelay,
                                      float firstFrameDelay,
                                      float lastFrameDelay) {
-    leadInDelayMs =
-      (int)((this.leadInDelay = leadInDelay > 0 ? leadInDelay : 0) * 1000);
-    firstFrameDelayMs =
-      (int)((this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0) * 1000);
-    lastFrameDelayMs =
-      (int)((this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0) * 1000);
-
+    System.out.println("animationReplayMode=" + animationReplayMode);
+    this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;
+    firstFrameDelayMs = (int)(this.firstFrameDelay * 1000);
+    this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
+    lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
     if (animationReplayMode >= 0 && animationReplayMode <= 2)
       this.animationReplayMode = animationReplayMode;
     else
       System.out.println("invalid animationReplayMode:" + animationReplayMode);
-  }
-
-  public int animationReplayDelay = 1000;
-  public void setAnimationReplayDelay(int ms) {
-    if (animationReplayDelay < 0)
-      animationReplayDelay = 0;
-    this.animationReplayDelay = ms;
   }
 
   public boolean setAnimationRelative(int direction) {
@@ -265,7 +255,7 @@ public class RepaintManager {
     setDisplayModelID(1);
     setAnimationDirection(1);
     setAnimationFps(10);
-    setAnimationReplayMode(0, 0, 0, 0);
+    setAnimationReplayMode(0, 0, 0);
   }
 
   public boolean animationOn = false;
@@ -302,43 +292,41 @@ public class RepaintManager {
     }
 
     public void run() {
-      int accumulatedDelayTime = 0;
-      int i = 0;
       long timeBegin = System.currentTimeMillis();
       int targetTime = 0;
       int currentTime, sleepTime;
-      boolean firstTimeThrough = true;
       requestRepaintAndWait();
       try {
-        targetTime += leadInDelayMs;
         sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
         if (sleepTime > 0)
           Thread.sleep(sleepTime);
         while (! isInterrupted()) {
-          if (!firstTimeThrough && displayModelIndex == 0) {
+          if (displayModelIndex == 0) {
             targetTime += firstFrameDelayMs;
-            sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+            sleepTime =
+              targetTime - (int)(System.currentTimeMillis() - timeBegin);
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          if (!firstTimeThrough && displayModelIndex == lastModelIndex) {
+          if (displayModelIndex == lastModelIndex) {
             targetTime += lastFrameDelayMs;
-            sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+            sleepTime =
+              targetTime - (int)(System.currentTimeMillis() - timeBegin);
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          firstTimeThrough = false;
           if (! setAnimationNext()) {
             setAnimationOn(false);
             return;
           }
-          ++i;
           targetTime += (1000 / animationFps);
-          sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+          sleepTime =
+            targetTime - (int)(System.currentTimeMillis() - timeBegin);
           if (sleepTime < 0)
             continue;
           refresh();
-          sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+          sleepTime =
+            targetTime - (int)(System.currentTimeMillis() - timeBegin);
           if (sleepTime > 0)
             Thread.sleep(sleepTime);
         }
@@ -347,5 +335,4 @@ public class RepaintManager {
       }
     }
   }
-
 }

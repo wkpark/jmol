@@ -19,7 +19,7 @@
  */
 package org.openscience.jmol;
 
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 
 /**
  * Provides an interface for objects which are transformed
@@ -34,6 +34,6 @@ public interface Transformable {
    *
    * @param matrix the transformation matrix.
    */
-  public void transform(Matrix4d matrix);
+  public void transform(Matrix4f matrix);
 
 }

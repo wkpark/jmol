@@ -41,7 +41,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
-import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
@@ -165,7 +164,7 @@ public class DisplayPanel extends JPanel
   /**
    *  Returns transform matrix assosiated with the current viewing transform.
    */
-  public Matrix4d getViewTransformMatrix() {
+  public Matrix4f getViewTransformMatrix() {
     // you absolutely *must* watch the order of these operations
     matrixViewTransform.setIdentity();
     // first, translate the coordinates back to the center
@@ -186,7 +185,7 @@ public class DisplayPanel extends JPanel
     matrixTemp.setTranslation(new Vector3f(dimCurrent.width / 2,
                            dimCurrent.height / 2, dimCurrent.width / 2));
     matrixViewTransform.add(matrixTemp);
-    return new Matrix4d(matrixViewTransform);
+    return matrixViewTransform;
   }
 
   public void homePosition() {
@@ -291,7 +290,6 @@ public class DisplayPanel extends JPanel
           }
         }
       }
-
     }
 
     public void mouseReleased(MouseEvent e) {
@@ -432,7 +430,7 @@ public class DisplayPanel extends JPanel
       g2d.setColor(bg);
       g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
 
-      Matrix4d matrix = getViewTransformMatrix();
+      Matrix4f matrix = getViewTransformMatrix();
       settings.setAtomZOffset(dimCurrent.width / 2);
 
       frameRenderer.paint(g2d, chemframe, settings, matrix);

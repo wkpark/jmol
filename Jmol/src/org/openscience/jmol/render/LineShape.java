@@ -4,7 +4,7 @@ import org.openscience.jmol.*;
 
 import java.awt.Graphics;
 import javax.vecmath.Point3f;
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 
 class LineShape implements Shape, Transformable {
 
@@ -26,7 +26,7 @@ class LineShape implements Shape, Transformable {
     return buffer.toString();
   }
 
-  public void transform(Matrix4d matrix) {
+  public void transform(Matrix4f matrix) {
     matrix.transform(origPoint, screenPositionOrig);
     matrix.transform(endPoint, screenPositionEnd);
   }

@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.Vector;
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -44,7 +44,7 @@ public class ChemFrameRenderer {
    * @param g the Graphics context to paint to
    */
   public synchronized void paint(Graphics g, ChemFrame frame,
-      DisplaySettings settings, Matrix4d matrix) {
+      DisplaySettings settings, Matrix4f matrix) {
 
     int numAtoms = frame.getNumberOfAtoms();
     if (numAtoms <= 0) {

@@ -23,7 +23,7 @@ import java.awt.Color;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3f;
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 
 /**
  * Stores and manipulations information and properties of
@@ -205,7 +205,7 @@ public class Atom {
    * Sets the atom's screen position by transforming the atom's position by
    * the given matrix.
    */
-  public void transform(Matrix4d transformationMatrix) {
+  public void transform(Matrix4f transformationMatrix) {
 
     transformationMatrix.transform(position, screenPosition);
     screenX = (int) screenPosition.x;

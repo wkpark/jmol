@@ -22,9 +22,7 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
 import java.util.Enumeration;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Point3d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 
 /**
@@ -328,14 +326,12 @@ public class ChemFrame implements Transformable {
   /**
    * Transform all the points in this model
    */
-  public void transform(Matrix4d matrix) {
+  public void transform(Matrix4f matrix) {
 
     if (numberAtoms <= 0) {
       return;
     }
     for (int i = 0; i < numberAtoms; ++i) {
-      Point3d pt = new Point3d(atoms[i].getPosition());
-      matrix.transform(pt);
       atoms[i].transform(matrix);
     }
   }
@@ -349,7 +345,8 @@ public class ChemFrame implements Transformable {
    * @param y2 the y coordinate of point 2 of the region's bounding rectangle
    * @return the atoms in the region
    */
-  public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2, Matrix4d matrix) {
+  public Atom[] findAtomsInRegion(int x1, int y1,
+                                  int x2, int y2, Matrix4f matrix) {
 
     if (numberAtoms <= 0) {
       return new Atom[0];
@@ -388,7 +385,7 @@ public class ChemFrame implements Transformable {
    * @param y the y screen coordinate
    * @return the atom drawn closest to the coordinates.
    */
-  public Atom getNearestAtom(int x, int y, Matrix4d matrix) {
+  public Atom getNearestAtom(int x, int y, Matrix4f matrix) {
 
     if (numberAtoms <= 0) {
       return null;

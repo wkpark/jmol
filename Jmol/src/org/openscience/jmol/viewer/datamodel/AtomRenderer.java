@@ -82,8 +82,8 @@ public class AtomRenderer {
     if (atomShape.marDots > 0)
       renderDots(atomShape.colixDots, atomShape.diameterDots);
     renderAtom();
-    if (atomShape.strLabel != null)
-      viewer.labelRenderer.render(atomShape);
+    //    if (atomShape.strLabel != null)
+    //      viewer.labelRenderer.render(atomShape);
     if (viewer.hasSelectionHalo(atomShape))
       renderHalo();
   }
@@ -97,7 +97,7 @@ public class AtomRenderer {
   }
 
   private void renderDots(short colixDots, int diameterDots) {
-    g3d.drawDotsCentered(colixDots, x, y, z, diameterDots);
+    //    g3d.drawDotsCentered(colixDots, x, y, z, diameterDots);
   }
 
   private void renderAtom() {

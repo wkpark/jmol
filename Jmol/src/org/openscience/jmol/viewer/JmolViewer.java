@@ -72,8 +72,6 @@ import java.awt.event.MouseEvent;
 
 final public class JmolViewer {
 
-  //  public static JmolViewer viewer;
-
   public Component awtComponent;
   public ColorManager colorManager;
   public TransformManager transformManager;
@@ -87,9 +85,6 @@ final public class JmolViewer {
   public AxesManager axesManager;
   public MeasurementManager measurementManager;
   public DistributionManager distributionManager;
-  public AtomRenderer atomRenderer;
-  public BondRenderer bondRenderer;
-  public LabelRenderer labelRenderer;
   public Eval eval;
   public Graphics3D g3d;
 
@@ -124,10 +119,6 @@ final public class JmolViewer {
     measurementManager = new MeasurementManager(this);
     distributionManager = new DistributionManager(this);
 
-    atomRenderer = new AtomRenderer(this);
-    bondRenderer = new BondRenderer(this);
-    labelRenderer = new LabelRenderer(this);
-
     eval = new Eval(this);
     g3d = new Graphics3D(this);
   
@@ -161,12 +152,6 @@ final public class JmolViewer {
     selectAll();
     transformManager.homePosition();
     refresh();
-  }
-
-  public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip) {
-    atomRenderer.setGraphicsContext(g3d, rectClip);
-    bondRenderer.setGraphicsContext(g3d, rectClip);
-    labelRenderer.setGraphicsContext(g3d, rectClip);
   }
 
   public boolean hasStructuralChange() {
@@ -408,6 +393,10 @@ final public class JmolViewer {
 
   public short scaleToScreen(int z, int milliAngstroms) {
     return transformManager.scaleToScreen(z, milliAngstroms);
+  }
+
+  public double scaleToPerspective(int z, double sizeAngstroms) {
+    return transformManager.scaleToPerspective(z, sizeAngstroms);
   }
 
   public void scaleFitToScreen() {
@@ -963,6 +952,10 @@ final public class JmolViewer {
    * delegated to RepaintManager
    ****************************************************************/
 
+  public FrameRenderer getFrameRenderer() {
+    return repaintManager.frameRenderer;
+  }
+
   public void setWireframeRotating(boolean wireframeRotating) {
     repaintManager.setWireframeRotating(wireframeRotating);
   }
@@ -1502,6 +1495,7 @@ final public class JmolViewer {
     return labelManager.getFontOfSize(points);
   }
   
+  /*
   public void renderStringOffset(String str, short colix, int points,
                                  int x, int y, int z,
                                  int xOffset, int yOffset) {
@@ -1513,6 +1507,7 @@ final public class JmolViewer {
                                   int x, int y, int z) {
     labelRenderer.renderStringOutside(str, colix, pointsFontsize, x, y, z);
   }
+  */
 
   /****************************************************************
    * delegated to AxesManager

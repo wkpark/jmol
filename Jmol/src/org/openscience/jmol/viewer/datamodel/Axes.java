@@ -137,9 +137,11 @@ public class Axes {
         g3d.drawLine(viewer.getColixAxes(), x, y, z,
                       originShape.x, originShape.y, originShape.z);
       }
-      if (label != null)
-        viewer.renderStringOutside(label, viewer.getColixAxesText(),
-                                    axisFontsize, x, y, z);
+      if (label != null) {
+        viewer.getFrameRenderer().
+          renderStringOutside(label, viewer.getColixAxesText(),
+                              axisFontsize, x, y, z);
+      }
     }
   }
 }

@@ -72,39 +72,7 @@ public class LabelRenderer {
                     atomShape.x - labelWidth / 2,
                     atomShape.y - (height + 1) / 2 + ascent,
                     atomShape.z - atomShape.diameter/2 - 2
-                    );
-
-    // FIXME -- mth -- understand this property stuff
-    /*
-    if (!viewer.getPropertyStyleString().equals("")) {
-
-      // check to make sure this atom has this property:
-      Atom atom = (Atom)atomShape.clientAtom;
-      Enumeration propIter = atom.getAtomicProperties().elements();
-      while (propIter.hasMoreElements()) {
-        PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
-        if (p.getDescriptor().equals(viewer.getPropertyStyleString())) {
-        
-          // OK, we had this property.  Let's draw the value on
-          // screen:
-          // font = new Font("Helvetica", Font.PLAIN, radius / 2);
-          // mth -- the code used to divide the radius by 2
-          // but getLabelFont works with diameters
-          // so divide the diameter by 2
-          font = viewer.getLabelFont(atomShape.diameter / 2);
-          g3d.setFont(font);
-          String s = p.stringValue();
-          if (s.length() > 5) {
-            s = s.substring(0, 5);
-          }
-          int k = 2 + (int) (atomShape.diameter/2 / 1.4142136f);
-          g3d.drawString(s, colixLabel,
-                          atomShape.x + k, atomShape.y - k,
-                          atomShape.z - atomShape.diameter/2 - 2);
-        }
-      }
-    }
-    */
+                   );
   }
 
   public void renderStringOffset(String label, short colix, int points,

@@ -38,9 +38,10 @@ public class JmolFrame {
   public JmolViewer viewer;
   // the maximum CovalentRadius seen in this set of atoms
   // used in autobonding
-  private double maxCovalentRadius = 0.0;
+  double maxCovalentRadius = 0.0;
+  double maxVanderwaalsRadius = 0.0;
   // whether or not this frame has any protein properties
-  public boolean hasPdbRecords;
+  boolean hasPdbRecords;
 
   final static int growthIncrement = 128;
   int atomShapeCount = 0;
@@ -86,6 +87,9 @@ public class JmolFrame {
     double covalentRadius = atomShape.getCovalentRadius();
     if (covalentRadius > maxCovalentRadius)
       maxCovalentRadius = covalentRadius;
+    double vdwRadius = atomShape.getVanderwaalsRadius();
+    if (vdwRadius > maxVanderwaalsRadius)
+      maxVanderwaalsRadius = vdwRadius;
     return atomShape;
   }
 
@@ -161,11 +165,11 @@ public class JmolFrame {
     addBondShape(atomShape1.bondMutually(atomShape2, order));
   }
 
-  private Point3d centerBoundingBox;
-  private Point3d cornerBoundingBox;
-  private Point3d centerRotation;
-  private double radiusBoundingBox;
-  private double radiusRotation;
+  Point3d centerBoundingBox;
+  Point3d cornerBoundingBox;
+  Point3d centerRotation;
+  double radiusBoundingBox;
+  double radiusRotation;
 
   public double getGeometricRadius() {
     findBounds();
@@ -320,65 +324,9 @@ public class JmolFrame {
     return radius;
   }
 
-  public void render(Graphics3D g3d, JmolViewer viewer) {
-    if (atomShapeCount <= 0)
-      return;
-
-    viewer.calcTransformMatrices();
-
-    g3d.transform();
-
-    AtomRenderer atomRenderer = viewer.atomRenderer;
-    for (int i = atomShapeCount; --i >= 0; ) {
-      AtomShape atomShape = atomShapes[i];
-      atomShape.transform(viewer);
-      atomRenderer.render(atomShape);
-    }
-
-    BondRenderer bondRenderer = viewer.bondRenderer;
-    for (int i = bondShapeCount; --i >= 0; )
-      bondRenderer.render(bondShapes[i]);
-
-    for (int i = lineShapeCount; --i >= 0; ) {
-      LineShape lineShape = lineShapes[i];
-      lineShape.transform(viewer);
-      lineShape.render(g3d, viewer);
-    }
-
-    for (int i = crystalCellLineCount; --i >= 0; ) {
-      LineShape cellLine = crystalCellLines[i];
-      cellLine.transform(viewer);
-      cellLine.render(g3d, viewer);
-    }
-
-    for (int i = measurementShapeCount; --i >= 0; ) {
-      MeasurementShape measurementShape = measurementShapes[i];
-      measurementShape.transform(viewer);
-      measurementShape.render(g3d, viewer);
-    }
-
-    if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {
-      Shape[] axisShapes = viewer.getAxes().getShapes();
-      for (int i = axisShapes.length; --i >= 0; ) {
-        Shape axisShape = axisShapes[i];
-        axisShape.transform(viewer);
-        axisShape.render(g3d, viewer);
-      }
-    }
-
-    if (viewer.getShowBoundingBox()) {
-      Shape[] bboxShapes = viewer.getBoundingBox().getBboxShapes();
-      for (int i = bboxShapes.length; --i >= 0; ) {
-        Shape bboxShape = bboxShapes[i];
-        bboxShape.transform(viewer);
-        bboxShape.render(g3d, viewer);
-      }
-    }
-  }
-
   final static int lineGrowthIncrement = 16;
-  private int lineShapeCount = 0;
-  private LineShape[] lineShapes = null;
+  int lineShapeCount = 0;
+  LineShape[] lineShapes = null;
 
   public void addLineShape(LineShape shape) {
     if (lineShapes == null || lineShapeCount == lineShapes.length) {
@@ -391,8 +339,8 @@ public class JmolFrame {
     lineShapes[lineShapeCount++] = shape;
   }
 
-  private int crystalCellLineCount = 0;
-  private LineShape[] crystalCellLines = null;
+  int crystalCellLineCount = 0;
+  LineShape[] crystalCellLines = null;
 
   public void addCrystalCellLine(LineShape line) {
     if (crystalCellLines == null ||
@@ -408,8 +356,8 @@ public class JmolFrame {
   }
 
   final static int measurementGrowthIncrement = 16;
-  private int measurementShapeCount = 0;
-  private MeasurementShape[] measurementShapes = null;
+  int measurementShapeCount = 0;
+  MeasurementShape[] measurementShapes = null;
 
   public void addMeasurementShape(MeasurementShape shape) {
     if (measurementShapes == null ||
@@ -488,8 +436,8 @@ public class JmolFrame {
     
   // jvm < 1.4 does not have a BitSet.clear();
   // so in order to clear you "and" with an empty bitset.
-  private final BitSet bsEmpty = new BitSet();
-  private final BitSet bsFoundRectangle = new BitSet();
+  final BitSet bsEmpty = new BitSet();
+  final BitSet bsFoundRectangle = new BitSet();
   public BitSet findAtomsInRectangle(Rectangle rect) {
     bsFoundRectangle.and(bsEmpty);
     for (int i = atomShapeCount; --i >= 0; ) {
@@ -733,5 +681,9 @@ public class JmolFrame {
   public Object deleteAtom(int atomIndex) { // returns the clientAtom
     clearBspt();
     return atomShapes[atomIndex].markDeleted();
+  }
+
+  public double getMaxVanderwaalsRadius() {
+    return maxVanderwaalsRadius;
   }
 }

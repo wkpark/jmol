@@ -44,7 +44,6 @@ final public class Graphics3D {
   Sphere3D sphere3d;
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
-  Dots3D dots3d;
   Graphics g;
 
   boolean tOversample;
@@ -86,11 +85,6 @@ final public class Graphics3D {
     this.sphere3d = new Sphere3D(viewer, this);
     this.triangle3d = new Triangle3D(viewer, this);
     this.cylinder3d = new Cylinder3D(viewer, this);
-    this.dots3d = new Dots3D(viewer, this);
-  }
-
-  public void transform() {
-    dots3d.transform();
   }
 
   public void setSize(int width, int height) {
@@ -284,11 +278,6 @@ final public class Graphics3D {
         circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
       }
     }
-  }
-
-  public void drawDotsCentered(short colixDots, 
-                               int x, int y, int z, int diameterDots) {
-    dots3d.render(colixDots, diameterDots, x, y, z);
   }
 
   public void fillSphereCentered(short colix, int diameter,

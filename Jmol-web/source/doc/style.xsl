@@ -249,24 +249,46 @@
   <xsl:template match="fah_projects">
     <![CDATA[
       var doc = document;
-            
+
       function displayStatus(projectname) {
         window.status = "Project " + projectname;
       }
-            
+
       function clearStatus() {
         window.status = " ";
       }
-            
-      function viewProject(project, filename, projectname,credit) {
+
+      function showProjectDescription() {
+        window.open("http://vspx27.stanford.edu/cgi-bin/allprojects#" + document.fahForm.infoNumber.value);
+      }
+
+      function showXMLFile() {
+        window.open("./fah-projects.xml");
+      }
+
+      function viewProject(project, filename, projectname, credit, atoms, preferred, deadline, frames, code) {
         jmolScript("load ../fah/projects/" + filename + ".xyz.gz", "Fah");
         document.fahForm.infoNumber.value = project;
         document.fahForm.infoName.value = projectname;
         document.fahForm.infoCredit.value = credit;
-        document.getElementById('infoProject').href = "http://vspx27.stanford.edu/cgi-bin/allprojects#" + project;
+        document.fahForm.infoAtoms.value = atoms;
+        document.fahForm.infoPreferred.value = preferred;
+        document.fahForm.infoDeadline.value = deadline;
+        document.fahForm.infoFrames.value = frames;
+        if (code == "A") {
+          document.fahForm.infoCode.value = "Amber";
+        } else if (code == "DG") {
+          document.fahForm.infoCode.value = "Double Gromacs";
+        } else if (code == "G") {
+          document.fahForm.infoCode.value = "Gromacs";
+        } else if (code == "T") {
+          document.fahForm.infoCode.value = "Tinker";
+        } else {
+          document.fahForm.infoCode.value = code;
+        }
       }
-            
-      function addProject(project, filename, projectname, credit) {
+
+      function addProject(project, filename, projectname, credit, atoms, preferred, deadline, frames, code) {
         var varDisabled = "";
         var varOnClick = "";
         var varOnMouseOver = "";
@@ -276,10 +298,15 @@
         } else {
           varOnClick =
           "onclick='viewProject(" +
-          "\"" + project + "\", " +
-          "\"" + filename + "\", " +
-          "\"" + projectname + "\", " +
-          "\"" + credit + "\")'";
+          "\"" + project + "\"," +
+          "\"" + filename + "\"," +
+          "\"" + projectname + "\"," +
+          "\"" + credit + "\"," +
+          "\"" + atoms + "\"," +
+          "\"" + preferred + "\"," +
+          "\"" + deadline + "\"," +
+          "\"" + frames + "\"," +
+          "\"" + code + "\")'";
         }
         if (projectname == undefined || projectname == null) {
         } else {
@@ -311,8 +338,10 @@
           <xsl:text>
 </xsl:text>
           <xsl:text>addProject('</xsl:text>
+          <!-- Project number -->
           <xsl:value-of select="@number" />
           <xsl:text>',</xsl:text>
+          <!-- Project file name -->
           <xsl:choose>
             <xsl:when test="@file = 'y'">
               <xsl:text>'p</xsl:text>
@@ -324,19 +353,51 @@
             </xsl:otherwise>
           </xsl:choose>
           <xsl:text>,'</xsl:text>
+          <!-- Project name -->
           <xsl:value-of select="@name" />
-          <xsl:text>',</xsl:text>
+          <xsl:text>','</xsl:text>
+          <!-- Credit -->
           <xsl:choose>
             <xsl:when test="@credit">
-              <xsl:text>'</xsl:text>
               <xsl:value-of select="@credit" />
-              <xsl:text>'</xsl:text>
             </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>null</xsl:text>
-            </xsl:otherwise>
           </xsl:choose>
-          <xsl:text>);</xsl:text>
+          <xsl:text>','</xsl:text>
+          <!-- Atoms -->
+          <xsl:choose>
+            <xsl:when test="@atoms">
+              <xsl:value-of select="@atoms" />
+            </xsl:when>
+          </xsl:choose>
+          <xsl:text>','</xsl:text>
+          <!-- Preferred -->
+          <xsl:choose>
+            <xsl:when test="@preferred">
+              <xsl:value-of select="@preferred" />
+            </xsl:when>
+          </xsl:choose>
+          <xsl:text>','</xsl:text>
+          <!-- Deadline -->
+          <xsl:choose>
+            <xsl:when test="@deadline">
+              <xsl:value-of select="@deadline" />
+            </xsl:when>
+          </xsl:choose>
+          <xsl:text>','</xsl:text>
+          <!-- Frames -->
+          <xsl:choose>
+            <xsl:when test="@frames">
+              <xsl:value-of select="@frames" />
+            </xsl:when>
+          </xsl:choose>
+          <xsl:text>','</xsl:text>
+          <!-- Code -->
+          <xsl:choose>
+            <xsl:when test="@code">
+              <xsl:value-of select="@code" />
+            </xsl:when>
+          </xsl:choose>
+          <xsl:text>');</xsl:text>
         </xsl:if>
       </xsl:if>
     </xsl:for-each>

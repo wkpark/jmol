@@ -70,90 +70,90 @@
 
   <target name="setup" id="setup">
     <uptodate property="docbook-xsl.uptodate"
-	      targetfile="build/${docbook-xsl}"
-	      srcfile="doc/${docbook-xsl}.tar.gz" />
+              targetfile="build/${docbook-xsl}"
+              srcfile="doc/${docbook-xsl}.tar.gz" />
     <uptodate property="docbook-xml.uptodate"
-	      targetfile="build/docbook-xml"
-	      srcfile="doc/${docbook-xml}.zip" />
+              targetfile="build/docbook-xml"
+              srcfile="doc/${docbook-xml}.zip" />
 
     <condition property="jmolGuide.uptodate">
       <and>
-	<uptodate targetfile="build/doc/JmolUserGuide/index.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolGuide.docbook.xml, guide/*.docbook.xml"/>
-	</uptodate>
-	<uptodate targetfile="build/doc/JmolUserGuide_fr/index.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolGuide_fr.docbook.xml, guide/*_fr.docbook.xml"/>
-	</uptodate>
+        <uptodate targetfile="build/doc/JmolUserGuide/index.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolGuide.docbook.xml, guide/*.docbook.xml"/>
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolUserGuide_fr/index.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolGuide_fr.docbook.xml, guide/*_fr.docbook.xml"/>
+        </uptodate>
       </and>
     </condition>
 
     <condition property="jmolHistory.uptodate">
       <and>
-	<uptodate targetfile="build/doc/JmolHistory/ChangeLog.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
-	</uptodate>
-	<uptodate targetfile="build/doc/JmolHistory/ChangeLog_fr.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolHistory_fr.xml,JmolHistoryToHtml.xsl" />
-	</uptodate>
+        <uptodate targetfile="build/doc/JmolHistory/ChangeLog.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolHistory/ChangeLog_fr.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolHistory_fr.xml,JmolHistoryToHtml.xsl" />
+        </uptodate>
       </and>
     </condition>
     
     <condition property="jmolDevelopersGuide.uptodate">
       <and>
-	<uptodate targetfile="build/doc/JmolDevelopersGuide.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolDevelopersGuide.docbook.xml"/>
-	</uptodate>
-	<uptodate targetfile="build/doc/JmolDevelopersGuide_fr.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolDevelopersGuide_fr.docbook.xml"/>
-	</uptodate>
-	<uptodate targetfile="build/doc/JmolDevelopersGuide_de.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolDevelopersGuide_de.docbook.xml"/>
-	</uptodate>
+        <uptodate targetfile="build/doc/JmolDevelopersGuide.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolDevelopersGuide.docbook.xml"/>
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolDevelopersGuide_fr.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolDevelopersGuide_fr.docbook.xml"/>
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolDevelopersGuide_de.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolDevelopersGuide_de.docbook.xml"/>
+        </uptodate>
       </and>
     </condition>
 
     <condition property="jmolAppletGuide.uptodate">
       <and>
-	<uptodate targetfile="build/doc/JmolAppletGuide.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolAppletGuide.docbook.xml, applet/*.docbook.xml"/>
-	</uptodate>
-	<uptodate targetfile="build/doc/JmolAppletGuide_fr.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolAppletGuide_fr.docbook.xml, applet/*_fr.docbook.xml"/>
-	</uptodate>
-	<uptodate targetfile="build/doc/JmolAppletGuide_de.html">
-	  <srcfiles dir="doc/source"
-		    includes="JmolAppletGuide_de.docbook.xml"/>
-	</uptodate>
+        <uptodate targetfile="build/doc/JmolAppletGuide.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolAppletGuide.docbook.xml, applet/*.docbook.xml"/>
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolAppletGuide_fr.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolAppletGuide_fr.docbook.xml, applet/*_fr.docbook.xml"/>
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolAppletGuide_de.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolAppletGuide_de.docbook.xml"/>
+        </uptodate>
       </and>
     </condition>
 
     <available classname="com.icl.saxon.StyleSheet"
-	       classpath="${lib.dir}/saxon.jar"
-	       property="xsl.available"/>
+               classpath="${lib.dir}/saxon.jar"
+               property="xsl.available"/>
     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
       <srcfiles dir="src" includes="**/*.java, **/*.html" />
     </uptodate>
     <available file="${keystore.name}" property="keystore.present" />
     <!-- Optional proxy settings (if defined) -->
     <condition property="proxyHost"
-	       value="-Dhttp.proxyHost=${http.proxyHost}" >
+               value="-Dhttp.proxyHost=${http.proxyHost}" >
       <not>
-	<equals arg1="http.proxyHost" arg2="" />
+        <equals arg1="http.proxyHost" arg2="" />
       </not>
     </condition>
     <condition property="proxyPort"
-	       value="-Dhttp.proxyPort=${http.proxyPort}" >
+               value="-Dhttp.proxyPort=${http.proxyPort}" >
       <not>
-	<equals arg1="http.proxyPort" arg2="" />
+        <equals arg1="http.proxyPort" arg2="" />
       </not>
     </condition>
   </target>
@@ -161,22 +161,22 @@
   <target id="classes" name="classes" depends="init">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="src" destdir="${classes.dir}"
-	   debug="${debug}" deprecation="${deprecation}"
-	   optimize="${optimization}" source="1.4">
+           debug="${debug}" deprecation="${deprecation}"
+           optimize="${optimization}" source="1.4">
       <classpath refid="project.class.path" />
       <!-- removed until all base classes are CDK based -->
       <exclude name="org/openscience/jmol/io/ShelXReader.java"/>
     </javac>
     <copy todir="${classes.dir}" >
       <fileset dir="src">
-	<include name="**/*.jpg" />
-	<include name="**/*.gif" />
-	<include name="**/*.html" />
-	<include name="**/*.dtd" />
-	<include name="**/*.properties" />
-	<include name="**/Properties/*" />
-	<include name="**/Data/*" />
-	<include name="**/*.txt" />
+        <include name="**/*.jpg" />
+        <include name="**/*.gif" />
+        <include name="**/*.html" />
+        <include name="**/*.dtd" />
+        <include name="**/*.properties" />
+        <include name="**/Properties/*" />
+        <include name="**/Data/*" />
+        <include name="**/*.txt" />
       </fileset>
     </copy>
   </target>
@@ -199,23 +199,23 @@ generate code for a 1.1 jvm, because of the special
 support for assertions (which were introduced in 1.4). 
     -->
     <javac srcdir="src" destdir="${applet.classes.dir}"
-	   debug="${debug}" deprecation="${deprecation}"
-	   optimize="${optimization}"
-	   source="1.3" target="1.1"
-	   includesfile="applet.classes"
-	   classpathref="applet-project.class.path" />
+           debug="${debug}" deprecation="${deprecation}"
+           optimize="${optimization}"
+           source="1.3" target="1.1"
+           includesfile="applet.classes"
+           classpathref="applet-project.class.path" />
     <!-- mth tried to use exclude and excludefiles, but it did not work -->
     <delete includeEmptyDirs="true">
       <fileset dir="${applet.classes.dir}/org/openscience/jmol">
-	<include name="*.class" />
+        <include name="*.class" />
       </fileset>
     </delete>
     
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="src">
-	<include name="**/ui/*.properties" />
-	<include name="jmol75x29x8.gif" />
+        <include name="**/ui/*.properties" />
+        <include name="jmol75x29x8.gif" />
       </fileset>
     </copy>
   </target>
@@ -223,13 +223,13 @@ support for assertions (which were introduced in 1.4).
   <target name="apisio-classes" id="apisio-classes" depends="init">
     <mkdir dir="${apisio.classes.dir}"/>
     <javac srcdir="src" destdir="${apisio.classes.dir}"
-	   debug="${debug}" deprecation="${deprecation}"
-	   optimize="${optimization}" source="1.4"
-	   includesfile="apisio.classes"
-	   classpathref="apisio-project.class.path" />
+           debug="${debug}" deprecation="${deprecation}"
+           optimize="${optimization}" source="1.4"
+           includesfile="apisio.classes"
+           classpathref="apisio-project.class.path" />
     <copy todir="${classes.dir}" >
       <fileset dir="src">
-	<include name="**/g3d/*.html" />
+        <include name="**/g3d/*.html" />
       </fileset>
     </copy>
   </target>
@@ -282,27 +282,27 @@ support for assertions (which were introduced in 1.4).
   <target name="jar" id="jar" depends="init,classes,jmolGuide,jmolHistory,jmolDevelopersGuide,appjars">
     <copy todir="${classes.dir}/org/openscience/jmol/Data/guide" >
       <fileset dir="build/doc/JmolUserGuide">
-	<include name="**/*.html" />
+        <include name="**/*.html" />
       </fileset>
     </copy>
     <copy todir="${classes.dir}/org/openscience/jmol/Data/guide_fr" >
       <fileset dir="build/doc/JmolUserGuide_fr">
-	<include name="**/*.html" />
+        <include name="**/*.html" />
       </fileset>
     </copy>
     <copy todir="${classes.dir}/org/openscience/jmol/Data" >
       <fileset dir="build/doc/JmolHistory">
-	<include name="**/*.html" />
+        <include name="**/*.html" />
       </fileset>
     </copy>
     <jar jarfile="Jmol.jar" manifest="manifest/application.txt">
       <fileset dir="${classes.dir}" >
-	<exclude name="**/.*" />
-	<exclude name="**/Test*.class" />
-	<exclude name="**/jmol/applet/*" />
-	<include name="**/jmol/**" />
-	<include name="com/**" />
-	<include name="freeware/**" />
+        <exclude name="**/.*" />
+        <exclude name="**/Test*.class" />
+        <exclude name="**/jmol/applet/*" />
+        <include name="**/jmol/**" />
+        <include name="com/**" />
+        <include name="freeware/**" />
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
     </jar>
@@ -311,10 +311,10 @@ support for assertions (which were introduced in 1.4).
   <target name="apis-jar" id="apis-jar" depends="init,apisio-classes">
     <jar jarfile="jmolApis.jar">
       <fileset dir="${apisio.classes.dir}" >
-	<include name="org/jmol/api/**" />
+        <include name="org/jmol/api/**" />
       </fileset>
       <fileset dir="." >
-	<include name="LICENSE.txt"/>
+        <include name="LICENSE.txt"/>
       </fileset>
     </jar>
   </target>
@@ -322,71 +322,71 @@ support for assertions (which were introduced in 1.4).
   <target name="io-jar" id="io-jar" depends="init,apisio-classes">
     <jar jarfile="jmolIO.jar">
       <fileset dir="${apisio.classes.dir}" >
-	<include name="org/jmol/adapter/smarter/**" />
+        <include name="org/jmol/adapter/smarter/**" />
       </fileset>
       <fileset dir="." >
-	<include name="LICENSE.txt"/>
+        <include name="LICENSE.txt"/>
       </fileset>
     </jar>
   </target>
 
   <target name="check.appletjars" id="check.appletjars">
     <uptodate property="appletjars.uptodate"
-	      targetfile="${appletjars.dir}">
+              targetfile="${appletjars.dir}">
       <srcfiles dir="${lib.dir}"
-		includes="jmolappletcdk.jar,vecmath1.2-1.14.jar"/>
+                includes="jmolappletcdk.jar,vecmath1.2-1.14.jar"/>
     </uptodate>
   </target>
   
   <target name="appletjars" id="appletjars" depends="check.appletjars"
-	  unless="appletjars.uptodate">
+          unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
-	<include name="**/Point3f.class"/>
-	<include name="**/Vector3f.class"/>
-	<include name="**/Matrix3f.class"/>
-	<include name="**/Matrix4f.class"/>
-	<include name="**/AxisAngle4f.class"/>
-	<include name="**/Quat4f.class"/>
-	<include name="**/Point3i.class"/>
-	<!-- the following are dependencies of the classes above -->
-	<include name="**/Tuple3i.class"/>
-	<include name="**/Tuple3f.class"/>
-	<include name="**/Tuple4f.class"/>
-	<include name="**/Vector4f.class"/>
-	<include name="**/Tuple3d.class"/>
-	<include name="**/Tuple4d.class"/>
-	<include name="**/Vector3d.class"/>
-	<include name="**/Quat4d.class"/>
-	<include name="**/Point4f.class"/>
-	<include name="**/Point3d.class"/>
-	<include name="**/Point4d.class"/>
-	<include name="**/Tuple2d.class"/>
-	<include name="**/Point2d.class"/>
-	<include name="**/Matrix3d.class"/>
-	<include name="**/SingularMatrixException.class"/>
+        <include name="**/Point3f.class"/>
+        <include name="**/Vector3f.class"/>
+        <include name="**/Matrix3f.class"/>
+        <include name="**/Matrix4f.class"/>
+        <include name="**/AxisAngle4f.class"/>
+        <include name="**/Quat4f.class"/>
+        <include name="**/Point3i.class"/>
+        <!-- the following are dependencies of the classes above -->
+        <include name="**/Tuple3i.class"/>
+        <include name="**/Tuple3f.class"/>
+        <include name="**/Tuple4f.class"/>
+        <include name="**/Vector4f.class"/>
+        <include name="**/Tuple3d.class"/>
+        <include name="**/Tuple4d.class"/>
+        <include name="**/Vector3d.class"/>
+        <include name="**/Quat4d.class"/>
+        <include name="**/Point4f.class"/>
+        <include name="**/Point3d.class"/>
+        <include name="**/Point4d.class"/>
+        <include name="**/Tuple2d.class"/>
+        <include name="**/Point2d.class"/>
+        <include name="**/Matrix3d.class"/>
+        <include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>
 
   </target>
 
   <target name="applet-jar" id="applet-jar"
-	  depends="applet-classes,appletjars">
+          depends="applet-classes,appletjars">
     <jar jarfile="JmolApplet.jar"
-	 manifest="manifest/application.txt" index="true" >
+         manifest="manifest/application.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
-	<include name="**/*" />
+        <include name="**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
     <jar jarfile="JmolApplet1.jar" manifest="manifest/applet1.txt" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/jmol/api/**" />
-	<exclude name="org/jmol/api/JmolAppletInterface.class" />
-	<include name="org/jmol/applet/**" />
+        <include name="org/jmol/api/**" />
+        <exclude name="org/jmol/api/JmolAppletInterface.class" />
+        <include name="org/jmol/applet/**" />
       </fileset>
     </jar>
 
@@ -397,44 +397,44 @@ support for assertions (which were introduced in 1.4).
 
     <jar jarfile="JmolApplet3.jar" manifest="manifest/applet3.txt" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/jmol/g3d/**" />
+        <include name="org/jmol/g3d/**" />
       </fileset>
     </jar>
 
     <jar jarfile="JmolApplet4.jar" manifest="manifest/applet4.txt" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/jmol/adapter/smarter/**" />
+        <include name="org/jmol/adapter/smarter/**" />
       </fileset>
     </jar>
 
     <jar jarfile="JmolApplet5.jar" manifest="manifest/applet5.txt" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/openscience/jmol/**" />
+        <include name="org/openscience/jmol/**" />
 	<include name="org/jmol/bspt/**" />
       </fileset>
     </jar>
 
     <jar jarfile="JmolApplet6.jar" manifest="manifest/applet6.txt" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/jmol/viewer/**" />
+        <include name="org/jmol/viewer/**" />
       </fileset>
     </jar>
 
     <jar jarfile="JmolApplet0.jar" manifest="manifest/applet0.txt"
 	 index="true" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/jmol/appletwrapper/*" />
-	<include name="JmolApplet*.class" />
-	<include name="jmol75x29x8.gif" />
-	<include name="org/jmol/api/JmolAppletInterface.class" />
+        <include name="org/jmol/appletwrapper/*" />
+        <include name="JmolApplet*.class" />
+        <include name="jmol75x29x8.gif" />
+        <include name="org/jmol/api/JmolAppletInterface.class" />
       </fileset>
       <indexjars>
-	<pathelement path="JmolApplet1.jar" />
-	<pathelement path="JmolApplet2.jar" />
-	<pathelement path="JmolApplet3.jar" />
-	<pathelement path="JmolApplet4.jar" />
-	<pathelement path="JmolApplet5.jar" />
-	<pathelement path="JmolApplet6.jar" />
+        <pathelement path="JmolApplet1.jar" />
+        <pathelement path="JmolApplet2.jar" />
+        <pathelement path="JmolApplet3.jar" />
+        <pathelement path="JmolApplet4.jar" />
+        <pathelement path="JmolApplet5.jar" />
+        <pathelement path="JmolApplet6.jar" />
       </indexjars>
     </jar>
 
@@ -446,26 +446,26 @@ support for assertions (which were introduced in 1.4).
     <mkdir dir="build/dist/jmol-${version}"/>
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir=".">
-	<include name="Jmol.jar" />
-	<include name="JmolApplet*.jar" />
-	<include name="jmol" />
-	<include name="jmol.sh" />
-	<include name="jmol.mac" />
-	<include name="jmol.bat" />
-	<include name="*.txt" />
+        <include name="Jmol.jar" />
+        <include name="JmolApplet*.jar" />
+        <include name="jmol" />
+        <include name="jmol.sh" />
+        <include name="jmol.mac" />
+        <include name="jmol.bat" />
+        <include name="*.txt" />
       </fileset>
     </copy>
     <chmod perm="ugo+rx">
       <fileset dir="build/dist/jmol-${version}">
-	<include name="jmol"/>
-	<include name="jmol.sh"/>
-	<include name="jmol.bat"/>
+        <include name="jmol"/>
+        <include name="jmol.sh"/>
+        <include name="jmol.bat"/>
       </fileset>
     </chmod>
 
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir="./appletweb">
-	<include name="Jmol.js" />
+        <include name="Jmol.js" />
       </fileset>
     </copy>
 
@@ -476,72 +476,72 @@ support for assertions (which were introduced in 1.4).
     -->
 
     <tar tarfile="build/dist/jmol-${version}-binary.tar.gz"
-	 compression="gzip" >
+         compression="gzip" >
       <tarfileset dir="build/dist"
-		  excludes="*/jmol,*/jmol.sh"
-		  includes="jmol-${version}/**" />
+                  excludes="*/jmol,*/jmol.sh"
+                  includes="jmol-${version}/**" />
       <tarfileset dir="build/dist"
-		  mode="755"
-		  includes="*/jmol,*/jmol.sh" />
+                  mode="755"
+                  includes="*/jmol,*/jmol.sh" />
     </tar>
 
     <!-- then build source distribution -->
 
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir=".">
-	<include name="applet.classes" />
-	<include name="build.xml" />
+        <include name="applet.classes" />
+        <include name="build.xml" />
       </fileset>
     </copy>
 
     <copy todir="build/dist/jmol-${version}/src" >
       <fileset dir="src">
-	<exclude name="**/CVS"/>
+        <exclude name="**/CVS"/>
       </fileset>
     </copy>
 
     <copy todir="build/dist/jmol-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-	<exclude name="**/CVS"/>
+        <exclude name="**/CVS"/>
       </fileset>
     </copy>
 
     <copy todir="build/dist/jmol-${version}/${plugin.dir}" >
       <fileset dir="${plugin.dir}">
-	<exclude name="**/CVS"/>
+        <exclude name="**/CVS"/>
       </fileset>
     </copy>
 
     <copy todir="build/dist/jmol-${version}/appletweb" >
       <fileset dir="appletweb">
-	<exclude name="**/CVS"/>
+        <exclude name="**/CVS"/>
       </fileset>
     </copy>
 
     <copy todir="build/dist/jmol-${version}/doc" >
       <fileset dir="doc">
-	<exclude name="**/CVS"/>
+        <exclude name="**/CVS"/>
       </fileset>
     </copy>
 
     <!-- remove if really obsolete - for now only uncommented -->
     <!-- <copy todir="build/dist/jmol-${version}/samples" >
       <fileset dir="samples">
-	<exclude name="**/CVS"/>
+        <exclude name="**/CVS"/>
       </fileset>
     </copy> -->
 
     <copy   file="build/doc/JmolDevelopersGuide.html"
-	    tofile="build/dist/jmol-${version}/doc/JmolDevelopersGuide.html" />
+            tofile="build/dist/jmol-${version}/doc/JmolDevelopersGuide.html" />
     <copy   file="build/doc/JmolHistory/ChangeLog.html"
-	    tofile="build/dist/jmol-${version}/ChangeLog.html" />
+            tofile="build/dist/jmol-${version}/ChangeLog.html" />
     <copy todir="build/dist/jmol-${version}/doc/JmolUserGuide">
       <fileset dir="build/doc/JmolUserGuide">
-	<include name="**/*.html" />
+        <include name="**/*.html" />
       </fileset>
     </copy>
     <copy   file="build/doc/JmolAppletGuide.html"
-	    tofile="build/dist/jmol-${version}/doc/JmolAppletGuide.html" />
+            tofile="build/dist/jmol-${version}/doc/JmolAppletGuide.html" />
 
 <!--
     zip distributions to not retain file permissions
@@ -550,13 +550,13 @@ support for assertions (which were introduced in 1.4).
     -->
 
     <tar tarfile="build/dist/jmol-${version}-full.tar.gz"
-	 compression="gzip" >
+         compression="gzip" >
       <tarfileset dir="build/dist"
-		  excludes="*/jmol,*/jmol.sh"
-		  includes="jmol-${version}/**" />
+                  excludes="*/jmol,*/jmol.sh"
+                  includes="jmol-${version}/**" />
       <tarfileset dir="build/dist"
-		  mode="755"
-		  includes="*/jmol,*/jmol.sh" />
+                  mode="755"
+                  includes="*/jmol,*/jmol.sh" />
     </tar>
   </target>
 
@@ -569,25 +569,25 @@ support for assertions (which were introduced in 1.4).
   <target name="dist-jws" id="dist-jws" depends="check.jws,dist" >
     <copy todir="build/dist/jmol-jws-${version}" >
       <fileset dir="src">
-	<include name="jmol.jnlp" />
+        <include name="jmol.jnlp" />
       </fileset>
     </copy>
     <mkdir dir="build/dist/jmol-jws-${version}/${lib.dir}" />
     <copy todir="build/dist/jmol-jws-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-	<include name="*.jar" />
-	<exclude name="junit.jar" />
-	<exclude name="saxon.jar" />
+        <include name="*.jar" />
+        <exclude name="junit.jar" />
+        <exclude name="saxon.jar" />
       </fileset>
     </copy>
     <mkdir dir="build/dist/jmol-jws-${version}/images" />
     <copy todir="build/dist/jmol-jws-${version}/images" flatten="yes" >
       <fileset dir="src">
-	<include name="**/icon.jpg" />
+        <include name="**/icon.jpg" />
       </fileset>
     </copy>
     <ant antfile="../../../build.xml" dir="build/dist/jmol-jws-${version}"
-	 target="internal-dist-jws-sign" />
+         target="internal-dist-jws-sign" />
   </target>
   
   <!--
@@ -597,11 +597,11 @@ support for assertions (which were introduced in 1.4).
   -->
   <target name="internal-dist-jws-sign" id="internal-dist-jws-sign">
     <signjar alias="${keystore.alias}" 
-	     storepass="${keystore.password}" 
-	     keystore="${keystore.name}" >
+             storepass="${keystore.password}" 
+             keystore="${keystore.name}" >
       <fileset dir="../jmol-jws-${version}">
-	<include name="**/*.jar" />
-	<exclude name="**/.AppleDouble/**" />
+        <include name="**/*.jar" />
+        <exclude name="**/.AppleDouble/**" />
       </fileset>
     </signjar>
   </target>
@@ -616,8 +616,8 @@ support for assertions (which were introduced in 1.4).
     <delete dir="build/dist"/>
     <delete>
       <fileset dir=".">
-	<include name="Jmol.jar" />
-	<include name="JmolApplet.jar" />
+        <include name="Jmol.jar" />
+        <include name="JmolApplet.jar" />
       </fileset>
     </delete>
   </target>
@@ -636,7 +636,7 @@ support for assertions (which were introduced in 1.4).
        Documentation Targets
        ******************************** -->
   <target name="doc" id="doc"
-	  depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
+          depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
   
   <target name="initdoc" depends="init,check.docbook-xml,check.docbook-xsl,check.xsl" />
   
@@ -644,7 +644,7 @@ support for assertions (which were introduced in 1.4).
     <delete dir="build/${docbook-xsl}" />
     <mkdir dir="build/${docbook-xsl}" />
     <untar src="doc/${docbook-xsl}.tar.gz" dest="build"
-	   compression="gzip" />
+           compression="gzip" />
   </target>
 
   <target name="check.docbook-xml" depends="setup" unless="docbook-xml.uptodate" >
@@ -661,19 +661,19 @@ support for assertions (which were introduced in 1.4).
   <target name="javadoc" depends="initdoc" unless="javadoc.uptodate">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc destdir="${javadoc.dir}" sourcepath="src"
-	     private="true"
-	     packagenames="org.openscience.*,org.jmol.*">
+             private="true"
+             packagenames="org.openscience.*,org.jmol.*">
       <classpath refid="project.class.path" />
     </javadoc>
   </target>
 
   <target name="jmolGuide" id="jmolGuide" depends="initdoc"
-	  unless="jmolGuide.uptodate" >
+          unless="jmolGuide.uptodate" >
     <echo message="Generating user's guide" />
     <mkdir dir="build/doc/JmolUserGuide" />
     <java fork="true" dir="build/doc/JmolUserGuide"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <jvmarg value="${proxyHost}" />
       <jvmarg value="${proxyPort}" />
       <arg value="../../../doc/source/JmolGuide.docbook.xml" />
@@ -682,8 +682,8 @@ support for assertions (which were introduced in 1.4).
     <echo message="Generating user's guide (fr)" />
     <mkdir dir="build/doc/JmolUserGuide_fr" />
     <java fork="true" dir="build/doc/JmolUserGuide_fr"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <jvmarg value="${proxyHost}" />
       <jvmarg value="${proxyPort}" />
       <arg value="../../../doc/source/JmolGuide_fr.docbook.xml" />
@@ -692,12 +692,12 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="jmolHistory" id="jmolHistory"
-	  depends="initdoc" unless="jmolHistory.uptodate" >
+          depends="initdoc" unless="jmolHistory.uptodate" >
     <echo message="Generating history of changes" />
     <mkdir dir="build/doc/JmolHistory" />
     <java fork="true" dir="build/doc/JmolHistory"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="ChangeLog.html" />
       <arg value="../../../doc/source/JmolHistory.xml" />
@@ -705,8 +705,8 @@ support for assertions (which were introduced in 1.4).
     </java>
     <echo message="Generating history of changes (fr)" />
     <java fork="true" dir="build/doc/JmolHistory"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="ChangeLog_fr.html" />
       <arg value="../../../doc/source/JmolHistory_fr.xml" />
@@ -716,11 +716,11 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="jmolDevelopersGuide" id="jmolDevelopersGuide"
-	  depends="initdoc" unless="jmolDevelopersGuide.uptodate" >
+          depends="initdoc" unless="jmolDevelopersGuide.uptodate" >
     <echo message="Generating developer's guide" />
     <java fork="true" dir="build/doc"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide.html" />
       <arg value="../../doc/source/JmolDevelopersGuide.docbook.xml" />
@@ -728,8 +728,8 @@ support for assertions (which were introduced in 1.4).
     </java>
     <echo message="Generating developer's guide (fr)" />
     <java fork="true" dir="build/doc"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide_fr.html" />
       <arg value="../../doc/source/JmolDevelopersGuide_fr.docbook.xml" />
@@ -737,8 +737,8 @@ support for assertions (which were introduced in 1.4).
     </java>
     <echo message="Generating developer's guide (de)" />
     <java fork="true" dir="build/doc"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide_de.html" />
       <arg value="../../doc/source/JmolDevelopersGuide_de.docbook.xml" />
@@ -747,11 +747,11 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="jmolAppletGuide" id="jmolAppletGuide" depends="initdoc"
-	  unless="jmolAppletGuide.uptodate" >
+          unless="jmolAppletGuide.uptodate" >
     <echo message="Generating applet guide" />
     <java fork="true" dir="build/doc"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolAppletGuide.html" />
       <arg value="../../doc/source/JmolAppletGuide.docbook.xml" />
@@ -759,8 +759,8 @@ support for assertions (which were introduced in 1.4).
     </java>
     <echo message="Generating applet guide (fr)" />
     <java fork="true" dir="build/doc"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolAppletGuide_fr.html" />
       <arg value="../../doc/source/JmolAppletGuide_fr.docbook.xml" />
@@ -768,8 +768,8 @@ support for assertions (which were introduced in 1.4).
     </java>
     <echo message="Generating applet guide (de)" />
     <java fork="true" dir="build/doc"
-	  classname="com.icl.saxon.StyleSheet"
-	  classpath="${lib.dir}/saxon.jar" >
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolAppletGuide_de.html" />
       <arg value="../../doc/source/JmolAppletGuide_de.docbook.xml" />

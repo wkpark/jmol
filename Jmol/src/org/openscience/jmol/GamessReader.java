@@ -73,22 +73,32 @@ public class GamessReader implements ChemFileReader {
             if (line.indexOf("COORDINATES (BOHR)") >= 0) {
 				// Found a set of coordinates.
                 frame = new ChemFrame();
-                readCoordinates(frame);
+				input.readLine();		
+                readCoordinates(frame, true);
                 break;
             }
             line = input.readLine();		
         }
+		boolean initialFrame = true;
         if (frame != null) {
             // Read all other data
             line = input.readLine();		
             while (input.ready() && line != null) {
-                if (line.indexOf("COORDINATES (BOHR)") >= 0) {
+                if (line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
                     // Found a set of coordinates.
                     
-                    // Add current frame to file and create a new one.
-                    file.frames.addElement(frame);
+                    // Add current frame to file. Unless it is the first one.
+					// In which case, it is a duplicate of the initial
+					// coordinates.
+					if (!initialFrame) {
+						file.frames.addElement(frame);
+					} else {
+						initialFrame = false;
+					}
                     frame = new ChemFrame();
-                    readCoordinates(frame);
+					input.readLine();		
+					input.readLine();		
+                    readCoordinates(frame, false);
                 } else  if (line.indexOf("TOTAL ENERGY =") >= 0) {
                     // Found an energy
                     frame.setInfo(line.trim());
@@ -110,9 +120,12 @@ public class GamessReader implements ChemFileReader {
      * @param frame  the destination ChemFrame
      * @exception IOException  if an I/O error occurs
      */
-    private void readCoordinates(ChemFrame frame) throws IOException, Exception {
+    private void readCoordinates(ChemFrame frame, boolean unitsAreBohr) throws IOException, Exception {
+		double unitsScaling = 1.0;
+		if (unitsAreBohr) {
+			unitsScaling = angstromPerBohr;
+		}
         String line;
-        line = input.readLine();
         while (input.ready()) {
             line = input.readLine();
             if (line == null || line.trim().length() == 0) {
@@ -134,13 +147,13 @@ public class GamessReader implements ChemFileReader {
             double y;
             double z;
             if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                x = token.nval * angstromPerBohr;
+                x = token.nval * unitsScaling;
             } else  throw new IOException("Error reading coordinates");
             if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                y = token.nval * angstromPerBohr;
+                y = token.nval * unitsScaling;
             } else  throw new IOException("Error reading coordinates");
             if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                z = token.nval * angstromPerBohr;
+                z = token.nval * unitsScaling;
             } else  throw new IOException("Error reading coordinates");
             frame.addVert(atomicNumber, (float)x, (float)y, (float)z);
         }

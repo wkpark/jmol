@@ -128,11 +128,8 @@ public class CdkJmolAdapter extends JmolAdapter {
   public int getAtomSetCount(Object clientFile) {
     ChemFile chemFile = (ChemFile)clientFile;
     ChemSequence chemSequence = chemFile.getChemSequence(0);
-    ChemModel[] chemModels = chemSequence.getChemModels();
-    ChemModel chemModel = chemModels[0];
-    SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
-    if (setOfMolecules != null) {
-      return setOfMolecules.getMoleculeCount();
+    if (chemSequence != null) {
+      return chemSequence.getChemModelCount();
     }
     return super.getAtomSetCount(clientFile);
   }
@@ -141,28 +138,24 @@ public class CdkJmolAdapter extends JmolAdapter {
     ChemFile chemFile = (ChemFile)clientFile;
     ChemSequence chemSequence = chemFile.getChemSequence(0);
     ChemModel[] chemModels = chemSequence.getChemModels();
-    ChemModel chemModel = chemModels[0];
-    SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
-    Crystal crystal = chemModel.getCrystal();
-    if (setOfMolecules != null) {
-      Molecule[] molecules = setOfMolecules.getMolecules();
-      AtomContainer superMolecule = new AtomContainer();
-      for (int molCounter=0; molCounter<molecules.length; molCounter++) {
-        AtomContainerManipulator.setAtomProperties(molecules[molCounter],
-          ATOM_SET_INDEX, new Integer(molCounter)
-        );
-        superMolecule.add(molecules[molCounter]);
-      }
-      return superMolecule;
-    } else if (crystal != null) {
-      // create 3D coordinates before returning the object
-      CrystalGeometryTools.fractionalToCartesian(crystal);
-      System.out.println(crystal.toString());
-      return crystal;
-    } else {
-      System.out.println("Cannot display data in model");
-      return null;
+    AtomContainer superMolecule = new AtomContainer();
+    for (int i=0; i<chemModels.length; i++) {
+        ChemModel chemModel = chemModels[i];
+        ChemModelManipulator.setAtomProperties(chemModel, ATOM_SET_INDEX, new Integer(i));
+        SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
+        Crystal crystal = chemModel.getCrystal();
+        if (setOfMolecules != null) {
+            superMolecule.add(SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules));
+        } else if (crystal != null) {
+            // create 3D coordinates before returning the object
+            CrystalGeometryTools.fractionalToCartesian(crystal);
+            superMolecule.add(crystal);
+        } else {
+            System.out.println("Cannot display data in model");
+            return null;
+        }
     }
+    return superMolecule;
   }
 
   public int getEstimatedAtomCount(Object clientFile) {

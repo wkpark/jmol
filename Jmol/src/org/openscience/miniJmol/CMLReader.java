@@ -44,17 +44,17 @@ public class CMLReader implements ChemFileReader {
 			ChemFile file = new ChemFile();
 			Enumeration framesIter = ((CMLHandler)handler).returnChemFrames().elements();
 			while (framesIter.hasMoreElements()) {
-				file.addFrame((ChemFrame)framesIter.nextElement());
+					file.addFrame((ChemFrame)framesIter.nextElement());
 			}
 			return file;
 		} catch (ClassNotFoundException ex) {
-			throw new IOException(ex.toString());
+			throw new IOException("CMLReader exception: " + ex);
 		} catch (InstantiationException ex) {
-			throw new IOException(ex.toString());
+			throw new IOException("CMLReader exception: " + ex);
 		} catch (SAXException ex) {
-			throw new IOException(ex.toString());
+			throw new IOException("CMLReader exception: " + ex);
 		} catch (IllegalAccessException ex) {
-			throw new IOException(ex.toString());
+			throw new IOException("CMLReader exception: " + ex);
 		}
     }
 

@@ -34,5 +34,5 @@ public interface ChemFileReader  {
 	 * @return a ChemFile with the data.
 	 * @exception IOException if an I/O error occurs
 	 */
-	public ChemFile read() throws IOException, Exception;
+	public ChemFile read() throws IOException;
 }

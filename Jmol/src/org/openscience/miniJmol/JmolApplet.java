@@ -38,80 +38,80 @@
  */
 package org.openscience.miniJmol;
 
-public class JmolApplet extends java.applet.Applet implements java.awt.event.MouseListener, java.awt.event.KeyListener{
+import java.awt.event.*;
 
-      JmolSimpleBean myBean;
-      int mode;
-      int labelMode;
-      private String helpMessage = "Keys: Tab- change style; L- Show labels";
+public class JmolApplet extends java.applet.Applet implements MouseListener, KeyListener{
 
-      public void init(){
-          myBean = new JmolSimpleBean();
-          String format= getParameter("FORMAT");
-          format = format.toUpperCase();
-          if (format == null){
-              throw new RuntimeException("Please specify a format with <PARAM NAME=FORMAT VALUE=whatever>");
-          }else{
-              verifyFormat(format);
-          }
-
-          String atomtypes = getParameter("ATOMTYPES");
-          if (atomtypes == null){
+	JmolSimpleBean myBean;
+	int mode;
+	int labelMode;
+	private String helpMessage = "Keys: Tab- change style; L- Show labels";
+	
+	public void init(){
+		myBean = new JmolSimpleBean();
+		
+		String atomtypes = getParameter("ATOMTYPES");
+		if (atomtypes == null){
             atomtypes = "AtomTypes";
-          }
-          java.net.URL atURL;
-          try{
+		}
+		java.net.URL atURL;
+		try{
             atURL= new java.net.URL(getDocumentBase(),atomtypes);
-          }catch (java.net.MalformedURLException e){
+		}catch (java.net.MalformedURLException e){
             throw new RuntimeException(("Got MalformedURL for Atomtypes: "+e.toString()));
-          }
-          myBean.setAtomPropertiesFromURL(atURL);
-
-          String model = getParameter("MODEL");
-          if (model == null){
+		}
+		myBean.setAtomPropertiesFromURL(atURL);
+		
+		String model = getParameter("MODEL");
+		if (model == null){
             throw new RuntimeException("No model specified, use <PARAM NAME=MODEL VALUE=whatever>");
-          }
-          if (format.equals("CMLSTRING")){
-            String cmlString = convertEscapeChars(model);
-            myBean.setModelToRenderFromCMLString(cmlString);
-          }else{
-            java.net.URL modelURL;
-            try{
-              modelURL= new java.net.URL(getDocumentBase(),model);
-            }catch (java.net.MalformedURLException e){
-              throw new RuntimeException(("Got MalformedURL for model: "+e.toString()));
-            }
-            try{
-               myBean.setModelToRenderFromURL(modelURL,format);
-            }catch(java.io.IOException e){
-              System.out.println("IOException: "+e);
-            }
-          }
-         myBean.addMouseListener(this);
-         myBean.addKeyListener(this);
-         String bg = getParameter("BCOLOUR");
-         if (bg != null){myBean.setBackgroundColour(bg);}
-         String fg = getParameter("FCOLOUR");
-         if (fg != null){myBean.setForegroundColour(fg);}
-         String style = getParameter("STYLE");
-         if (style != null){
-          myBean.setAtomRenderingStyle(style);
-          myBean.setBondRenderingStyle(style);
-         }
-         setLayout(new java.awt.BorderLayout());
-         add(myBean,"Center");
-          myBean.setAtomRenderingStyle("SHADED");
-      }
+		}
+		try {
+			ChemFileReader cfr;
+			if (getParameter("FORMAT").toUpperCase().equals("CMLSTRING")){
+				String cmlString = convertEscapeChars(model);
+				cfr = ReaderFactory.createReader(new java.io.StringReader(cmlString));
+			}else{
+				java.net.URL modelURL;
+				try{
+					modelURL= new java.net.URL(getDocumentBase(),model);
+				}catch (java.net.MalformedURLException e){
+					throw new RuntimeException(("Got MalformedURL for model: "+e.toString()));
+				}
+				cfr = ReaderFactory.createReader(new java.io.InputStreamReader(modelURL.openStream()));
+			}
 
-      private void verifyFormat(String format){
-         if (format.equals("CML")||format.equals("CMLSTRING")||format.equals("XYZ")||format.equals("PDB")||format.equals("GAUSSIAN98")){
-             return;
-         }else{
-             throw new RuntimeException("Format: "+format+" is not a valid value (CML, CMLSTRING, XYZ, PDB, GAUSSIAN98)");
-         }
-      }
-/**Converts the html escape chars in the input and replaces them with the required chars. Handles &lt; &gt and &quot; **/
-     protected String convertEscapeChars(String eChars){
+			myBean.setModel(cfr.read());
+			
+		}catch(java.io.IOException e){
+			e.printStackTrace();
+		}
+
+		myBean.addMouseListener(this);
+		myBean.addKeyListener(this);
+		String bg = getParameter("BCOLOUR");
+		if (bg != null) {
+			myBean.setBackgroundColour(bg);
+		}
+		String fg = getParameter("FCOLOUR");
+		if (fg != null) {
+			myBean.setForegroundColour(fg);
+		}
+		String style = getParameter("STYLE");
+		if (style != null){
+			myBean.setAtomRenderingStyle(style);
+			myBean.setBondRenderingStyle(style);
+		}
+		setLayout(new java.awt.BorderLayout());
+		add(myBean,"Center");
+		myBean.setAtomRenderingStyle("SHADED");
+	}
+
+	/**
+	 * Converts the html escape chars in the input and replaces them
+	 * with the required chars. Handles &lt; &gt and &quot;
+	 */
+	static String convertEscapeChars(String eChars){
         String less = "<";
         char lessThan = less.charAt(0);
         String more = ">";
@@ -167,42 +167,54 @@ public class JmolApplet extends java.applet.Applet implements java.awt.event.Mou
         }
 
         String returnValue = out.toString();
-//        System.out.println("After: "+returnValue);
         return returnValue;
      }
 
-     public void mouseClicked(java.awt.event.MouseEvent e) {
-//     Invoked when the mouse has been clicked on a component. 
-//       requestFocus();
+	/**
+	 * Invoked when the mouse has been clicked on a component. 
+	 */
+     public void mouseClicked(MouseEvent e) {
        showStatus(helpMessage);
      }
 
-     public void mouseEntered(java.awt.event.MouseEvent e) {
-//     Invoked when the mouse enters a component. 
-//       requestFocus();
+	/**
+	 * Invoked when the mouse enters a component. 
+	 */
+     public void mouseEntered(MouseEvent e) {
        showStatus(helpMessage);
      }
 
-     public void mouseExited(java.awt.event.MouseEvent e) {
-//     Invoked when the mouse exits a component. 
+	/**
+	 * Invoked when the mouse exits a component. 
+	 */
+     public void mouseExited(MouseEvent e) {
      }
 
-     public void mousePressed(java.awt.event.MouseEvent e) {
-//     Invoked when a mouse button has been pressed on a component. 
+	/**
+	 * Invoked when a mouse button has been pressed on a component. 
+	 */
+     public void mousePressed(MouseEvent e) {
      }
 
-     public void mouseReleased(java.awt.event.MouseEvent e) {
-//     Invoked when a mouse button has been released on a component. 
+	/**
+	 * Invoked when a mouse button has been released on a component. 
+	 */
+     public void mouseReleased(MouseEvent e) {
      }
 
-     public void keyPressed(java.awt.event.KeyEvent e) {
-//     Invoked when a key has been pressed. 
+	/**
+	 * Invoked when a key has been pressed. 
+	 */
+     public void keyPressed(KeyEvent e) {
      }
-     public void keyReleased(java.awt.event.KeyEvent e) {
-//     Invoked when a key has been released. 
+
+	/**
+	 * Invoked when a key has been released. 
+	 */
+     public void keyReleased(KeyEvent e) {
      }
-     public void keyTyped(java.awt.event.KeyEvent e) {
-//       System.out.println("CHAR: "+e.getKeyChar());
+
+     public void keyTyped(KeyEvent e) {
          String key = e.getKeyText(e.getKeyChar());
          String keyChar = new Character(e.getKeyChar()).toString();
          if (key.equals("Tab")){
@@ -246,5 +258,5 @@ public class JmolApplet extends java.applet.Applet implements java.awt.event.Mou
             }            
          }
      }
-
+	
 }

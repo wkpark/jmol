@@ -58,7 +58,7 @@ public class Gaussian98Reader implements ChemFileReader {
 	 * @return a ChemFile with the coordinates, energies, and vibrations.
 	 * @exception IOException if an I/O error occurs
 	 */
-	public ChemFile read() throws IOException, Exception {
+	public ChemFile read() throws IOException {
 		ChemFile file = new ChemFile();
 		ChemFrame frame = null;
 		String line = input.readLine();
@@ -105,7 +105,7 @@ public class Gaussian98Reader implements ChemFileReader {
 	 * @param frame  the destination ChemFrame
 	 * @exception IOException  if an I/O error occurs
 	 */
-	private void readCoordinates(ChemFrame frame) throws IOException, Exception {
+	private void readCoordinates(ChemFrame frame) throws IOException {
 		String line;
 		line = input.readLine();
 		line = input.readLine();

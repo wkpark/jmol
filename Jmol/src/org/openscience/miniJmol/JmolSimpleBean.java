@@ -39,8 +39,6 @@
  */
 package org.openscience.miniJmol;
 
-//import javax.swing.AbstractAction;
-//import javax.swing.Action;
 import java.util.Hashtable;
 import java.awt.Component;
 import java.awt.Container;
@@ -71,59 +69,22 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
        setForegroundColour("#000000");
     }
 
-/**
- * Takes the argument, pharses it as CML and sets it as the current model.
- * @param hugeCMLString The whole of the molecule CML as a single string.
- */
-    public void setModelToRenderFromCMLString(String hugeCMLString){
-        java.io.Reader r = new java.io.StringReader(hugeCMLString);
-        cf = loadModel(r, "CML");
+	/**
+	 * Sets the current model to the ChemFile given.
+	 *
+	 * @param cf  the ChemFile
+	 */
+    public void setModel(ChemFile cf) {
+        this.cf = cf;
         modelReady = true;
         ready = areWeReady();
-     }
+	}
 
-/**
- * Takes the argument, reads it as a URL and sets it as the current model.
- * If not all the fields have been set then an IllegalStateException is thrown and we return to waiting.
- * @param modelURL The URL of the model we want.
- * @param type Either "XYZ", "CML" or "PDB"
- */
-    public void setModelToRenderFromURL(java.net.URL modelURL, String type) throws IllegalStateException, java.io.IOException{
-        if(modelURL != null && type != null) {
-              java.io.Reader r = new java.io.InputStreamReader(modelURL.openStream());
-              cf = loadModel(r, type);
-              modelReady = true;
-              ready = areWeReady();
-        }else{
-           throw new RuntimeException("Null string passed to loadModelFromURL");
-        }
-     }
-/**
- * Takes the argument, reads it as a URL and sets it as the current model.
- * If not all the fields have been set then an IllegalStateException is thrown and we return to waiting.
- * @param modelURL The URL of the model we want.
- * @param type Either "XYZ", "CML" or "PDB"
- */
-    public void setModelToRenderFromURL(String modelURL, String type) throws IllegalStateException{
-        cf = loadModelFromURL(modelURL,type);
-        modelReady = true;
-        ready = areWeReady();
-     }
-/**
- * Takes the argument, reads it as a file and sets it as the current model.
- * If not all the fields have been set then an IllegalStateException is thrown and we return to waiting.
- * @param modelFile The filename of the model we want.
- * @param type Either "XYZ", "CML" or "PDB"
- */
-    public void setModelToRenderFromFile(String modelFile, String type) throws IllegalStateException, java.io.FileNotFoundException{
-        cf = loadModelFromFile(modelFile,type);
-        modelReady = true;
-        ready = areWeReady();
-     }
-/**
- * Takes the argument, reads it as a file and allocates this as the current atom types- eg radius etc.
- * @param propertiesFile The filename of the properties we want.
- */
+	/**
+	 * Takes the argument, reads it as a file and allocates this as
+	 * the current atom types- eg radius etc.
+	 * @param propertiesFile The filename of the properties we want.
+	 */
     public void setAtomPropertiesFromFile(String propertiesFile){
         try {
 			AtomTypeSet ats1 = new AtomTypeSet();
@@ -135,10 +96,12 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
         typesReady = true;
         ready = areWeReady();
     }
-/**
- * Takes the argument, reads it as a URL and allocates this as the current atom types- eg radius etc.
- * @param propertiesFileURL The URL of the properties we want.
- */
+
+	/**
+	 * Takes the argument, reads it as a URL and allocates this as the
+	 * current atom types- eg radius etc.
+	 * @param propertiesFileURL The URL of the properties we want.
+	 */
     public void setAtomPropertiesFromURL(String propertiesURL){
         try {
 			AtomTypeSet ats1 = new AtomTypeSet();
@@ -150,10 +113,12 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
         typesReady = true;
         ready = areWeReady();
     }
-/**
- * Takes the argument, reads it and allocates this as the current atom types- eg radius etc.
- * @param propertiesURL The URL of the properties we want.
- */
+
+	/**
+	 * Takes the argument, reads it and allocates this as the current
+	 * atom types- eg radius etc.
+	 * @param propertiesURL The URL of the properties we want.
+	 */
     public void setAtomPropertiesFromURL(java.net.URL propertiesURL){
         try {
 			AtomTypeSet ats1 = new AtomTypeSet();
@@ -164,116 +129,128 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
         typesReady = true;
         ready = areWeReady();
     }
-/**
- * Set the background colour.
- * @param colourInHex The colour in the format #FF0000 for red etc
- */
+
+	/**
+	 * Set the background colour.
+	 * @param colourInHex The colour in the format #FF0000 for red etc
+	 */
     public void setBackgroundColour(String colourInHex){
         display.setBackgroundColor(getColourFromHexString(colourInHex));
     }
-/**
- * Set the background colour.
- * @param colour The colour
- */
+
+	/**
+	 * Set the background colour.
+	 * @param colour The colour
+	 */
     public void setBackgroundColour(java.awt.Color colour){
         display.setBackgroundColor(colour);
     }
-/**
- * Get the background colour.
- */
+
+	/**
+	 * Get the background colour.
+	 */
     public java.awt.Color getBackgroundColour(){
         return display.getBackgroundColor();
     }
 
-/**
- * Set the foreground colour.
- * @param colourInHex The colour in the format #FF0000 for red etc
- */
+	/**
+	 * Set the foreground colour.
+	 * @param colourInHex The colour in the format #FF0000 for red etc
+	 */
     public void setForegroundColour(String colourInHex){
         display.setForegroundColor(getColourFromHexString(colourInHex));
     }
-/**
- * Set the foreground colour.
- * @param colour The colour
- */
+
+	/**
+	 * Set the foreground colour.
+	 * @param colour The colour
+	 */
     public void setForegroundColour(java.awt.Color colour){
         display.setForegroundColor(colour);
     }
-/**
- * Get the foreground colour.
- */
+
+	/**
+	 * Get the foreground colour.
+	 */
     public java.awt.Color getForegroundColour(){
         return display.getForegroundColor();
     }
 
-/*
- * Causes the drop down menu button not to be displayed in the corner of the panel.
- * @param TorF if 'T' then button is displayed, if 'F' then it isn't
- *
+	/*
+	 * Causes the drop down menu button not to be displayed in the
+	 * corner of the panel.
+	 * @param TorF if 'T' then button is displayed, if 'F' then it isn't
+	 *
    public void setPopupMenuButtonShown(String TorF){
       display.setPopupMenuActive(getBooleanFromString(TorF));
    }
 
-*
- * Causes the drop down menu button not to be displayed in the corner of the panel.
- * @param TorF if true then button is displayed, if false then it isn't
+   *
+   * Causes the drop down menu button not to be displayed in the corner of the panel.
+   * @param TorF if true then button is displayed, if false then it isn't
  
    public void setPopupMenuButtonShown(boolean TorF){
       display.setPopupMenuActive(TorF);
    }
 
 
- * Is the drop down menu button displayed in the corner of the panel?
- *
+   * Is the drop down menu button displayed in the corner of the panel?
+   *
    public boolean getPopupMenuButtonShown(){
       return display.getPopupMenuActive();
    }
-*/
-/**
- * Causes Atoms to be shown or hidden.
- * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
- */
-   public void setAtomsShown(String TorF){
-      display.showAtoms(getBooleanFromString(TorF));
-   }
-/**
- * Causes Atoms to be shown or hidden.
- * @param TorF if true then atoms are displayed, if false then they aren't.
- */
-   public void setAtomsShown(boolean TorF){
-      display.showAtoms(TorF);
-   }
-/**
- * Are Atoms to being shown or hidden?
- */
-   public boolean getAtomsShown(){
-      return display.getShowAtoms();
-   }
+	*/
 
-/**
- * Causes bonds to be shown or hidden.
- * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
- */
-   public void setBondsShown(String TorF){
-      display.showBonds(getBooleanFromString(TorF));
-   }
-/**
- * Causes bonds to be shown or hidden.
- * @param TorF if true then bonds are displayed, if false then they aren't.
- */
-   public void setBondsShown(boolean TorF){
-      display.showBonds(TorF);
-   }
-/**
- * Are bonds being shown or hidden?
- */
-   public boolean getBondsShown(){
-      return display.getShowBonds();
-   }
+	/**
+	 * Causes Atoms to be shown or hidden.
+	 * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+	 */
+	public void setAtomsShown(String TorF){
+		display.showAtoms(getBooleanFromString(TorF));
+	}
 
-/**
- * Sets the rendering mode for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'. 
- */
+	/**
+	 * Causes Atoms to be shown or hidden.
+	 * @param TorF if true then atoms are displayed, if false then they aren't.
+	 */
+	public void setAtomsShown(boolean TorF){
+		display.showAtoms(TorF);
+	}
+
+	/**
+	 * Are Atoms to being shown or hidden?
+	 */
+	public boolean getAtomsShown(){
+		return display.getShowAtoms();
+	}
+	
+	/**
+	 * Causes bonds to be shown or hidden.
+	 * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+	 */
+	public void setBondsShown(String TorF){
+		display.showBonds(getBooleanFromString(TorF));
+	}
+
+	/**
+	 * Causes bonds to be shown or hidden.
+	 * @param TorF if true then bonds are displayed, if false then they aren't.
+	 */
+	public void setBondsShown(boolean TorF){
+		display.showBonds(TorF);
+	}
+
+	/**
+	 * Are bonds being shown or hidden?
+	 */
+	public boolean getBondsShown(){
+		return display.getShowBonds();
+	}
+	
+	/**
+	 * Sets the rendering mode for atoms. Valid values are
+	 * 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
+	 */
    public void setAtomRenderingStyle(String style){
       if (style.equalsIgnoreCase("QUICKDRAW")){
 		  settings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
@@ -286,10 +263,12 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       }
 	  display.repaint();
    }
-/**
- * Gets the rendering mode for atoms. Values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'. 
- */
-   public String getAtomRenderingStyleDescription(){
+
+	/**
+	 * Gets the rendering mode for atoms. Values are 'QUICKDRAW',
+	 * 'SHADED' and 'WIREFRAME'.
+	 */
+	public String getAtomRenderingStyleDescription(){
       if (settings.getAtomDrawMode()== DisplaySettings.QUICKDRAW){
        return("QUICKDRAW");
       }else if (settings.getAtomDrawMode()== DisplaySettings.SHADING){
@@ -317,9 +296,11 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       }
 	  display.repaint();
    }
-/**
- * Gets the rendering mode for bonds. Values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'. 
- */
+
+	/**
+	 * Gets the rendering mode for bonds. Values are 'QUICKDRAW',
+	 * 'SHADED', 'LINE' and 'WIREFRAME'.
+	 */
    public String getBondRenderingStyleDescription(){
       if (settings.getBondDrawMode()== DisplaySettings.QUICKDRAW){
        return("QUICKDRAW");
@@ -333,9 +314,10 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       return "NULL";
    }
 
-/**
- * Sets the rendering mode for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'. 
- */
+	/**
+	 * Sets the rendering mode for labels. Valid values are 'NONE',
+	 * 'SYMBOLS', 'TYPES' and 'NUMBERS'.
+	 */
    public void setLabelRenderingStyle(String style){
       if (style.equalsIgnoreCase("NONE")){
 		  settings.setLabelMode(DisplaySettings.NOLABELS);
@@ -350,9 +332,11 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       }
 	  display.repaint();
    }
-/**
- * Gets the rendering mode for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'. 
- */
+
+	/**
+	 * Gets the rendering mode for labels. Values are 'NONE',
+	 * 'SYMBOLS', 'TYPES' and 'NUMBERS'.
+	 */
    public String getLabelRenderingStyleDescription(){
       if (settings.getLabelMode()== DisplaySettings.NOLABELS){
        return("NONE");
@@ -441,61 +425,6 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
       display.setChemFile(cf);
     }
 
-    private ChemFile loadModelFromURL(String URL, String type){
-       if(URL != null && type != null) {
-              java.io.Reader r = new java.io.InputStreamReader(getStreamForFile(URL));
-              return loadModel(r, type);
-       }else{
-           throw new RuntimeException("Null string passed to loadModelFromURL");
-       }
-    }
-
-    private ChemFile loadModelFromFile(String file, String type) throws java.io.FileNotFoundException{
-       if(file != null && type != null) {
-              java.io.Reader r = new java.io.FileReader(file);
-              return loadModel(r, type);
-       }else{
-           throw new RuntimeException("Null string passed to loadModelFromFile");
-       }
-    }
-
-    private ChemFile loadModel(java.io.Reader myReader, String type){
-          if (!typesReady){
-            System.out.println("Atom properties file defaulting to 'AtomTypes' in working directory");
-            setAtomPropertiesFromFile("AtomTypes");
-          }
-          try {
-			  ChemFileReader reader = null;
-              if (type.equalsIgnoreCase("PDB")) {
-				  reader = new PDBReader(myReader);
-              }else if (type.equalsIgnoreCase("CML")) {
-				  reader = new CMLReader(myReader);
-              }else if(type.equalsIgnoreCase("XYZ")) {
-				  reader = new XYZReader(myReader);
-              }else if(type.equalsIgnoreCase("Gaussian98")) {
-				  reader = new Gaussian98Reader(myReader);
-              } else {
-                  throw new RuntimeException("Unknown file type in loadModel: "+type);
-              }
-			  return reader.read();
-          }catch (java.lang.Exception e){
-              throw new RuntimeException("Sorry! Unhelpful Exception in loadModel: "+e);
-          }
-    }
-
-/**Fetch an InputStream for the following filename specified relative to the documentbase**/
-    protected java.io.InputStream getStreamForFile(String filename) {
-            try{
-	      java.net.URL modelURL = new java.net.URL(filename);
-	      return modelURL.openStream();
-           }catch (java.net.MalformedURLException e){
-              throw new RuntimeException("MalformedURLException: "+e);            
-           }catch (java.io.IOException f){
-              throw new RuntimeException("IOException in getStreamForFile: "+f);            
-           }
-     }
-
-
     /**
      * returns the ChemFile that we are currently working with
      *
@@ -506,9 +435,11 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
     }
 
     /**
-     * Returns true if passed 'T' and 'F' if passed false. Throws IllegalArgumentException if parameter is not 'T' ot 'F'
+     * Returns true if passed 'T' and 'F' if passed false. Throws
+     * IllegalArgumentException if parameter is not 'T' ot 'F'
+	 *
      * @param TorF String equal to either TorF
-     */
+	 */
     protected boolean getBooleanFromString(String TorF) {
        if (TorF.equalsIgnoreCase("T")){
          return true;
@@ -520,8 +451,9 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
     }
 
     /**
-     * Turns a string in the form '#RRGGBB' eg. '#FFFFFF' is white, into a colour
-     */
+     * Turns a string in the form '#RRGGBB' eg. '#FFFFFF' is white,
+     * into a colour
+	 */
      protected java.awt.Color getColourFromHexString(String colourName){
 	if (colourName == null || colourName.length() != 7){
            throw new IllegalArgumentException("Colour name: "+colourName+" is either null ot not seven chars long");
@@ -552,23 +484,24 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
      * resource file.
      */
     protected String[] tokenize(String input) {
-	java.util.Vector v = new java.util.Vector();
-	java.util.StringTokenizer t = new java.util.StringTokenizer(input);
-	String cmd[];
-
-	while (t.hasMoreTokens())
-	    v.addElement(t.nextToken());
-	cmd = new String[v.size()];
-	for (int i = 0; i < cmd.length; i++)
-	    cmd[i] = (String) v.elementAt(i);
-
-	return cmd;
+		java.util.Vector v = new java.util.Vector();
+		java.util.StringTokenizer t = new java.util.StringTokenizer(input);
+		String cmd[];
+		
+		while (t.hasMoreTokens())
+			v.addElement(t.nextToken());
+		cmd = new String[v.size()];
+		for (int i = 0; i < cmd.length; i++) {
+			cmd[i] = (String) v.elementAt(i);
+		}
+		
+		return cmd;
     }
-
-   private boolean areWeReady(){
-      return (modelReady && typesReady);
-   }
-
+	
+	private boolean areWeReady(){
+		return (modelReady && typesReady);
+	}
+	
    private void whyArentWeReady() throws IllegalStateException{
       if (ready){
         throw new RuntimeException("Why aren't we ready? We ARE ready!!");

@@ -59,10 +59,17 @@ public class JmolBeanTest{
           myFrame.getContentPane().add(javax.swing.Box.createHorizontalStrut(400),"North");
           myFrame.getContentPane().add(p2,"East");
           try{
-             myXMLThing1.setModelToRenderFromFile("caffeine.xyz","XYZ");
-             myXMLThing2.setModelToRenderFromFile("methanol1.cml","CML");
+			  java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");
+			  ChemFileReader cfr1 = ReaderFactory.createReader(r1);
+			  myXMLThing1.setModel(cfr1.read());
+
+			  java.io.Reader r2 = new java.io.FileReader("methanol1.cml");
+			  ChemFileReader cfr2 = ReaderFactory.createReader(r2);
+			  myXMLThing2.setModel(cfr2.read());
           }catch(java.io.FileNotFoundException e){
             System.out.println("File not found: "+e);
+          }catch(java.io.IOException e){
+            System.out.println("IOException: "+e);
           }
           myFrame.pack();
           myFrame.show();

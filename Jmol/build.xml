@@ -80,7 +80,6 @@
 	</target>
 	
 	<target name="classes" depends="init,jmolGuide">
-<antstructure output="project.dtd"/>
 		<mkdir dir="${classes.dir}"/>
 		<javac srcdir="${source.dir}" destdir="${classes.dir}"
 				debug="off" deprecation="on">

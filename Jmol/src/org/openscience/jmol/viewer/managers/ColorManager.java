@@ -96,6 +96,20 @@ public class ColorManager {
     colixBond = Colix.getColix(c);
   }
 
+  public Color colorHbond = null;
+  public short colixHbond = 0;
+  public void setColorHbond(Color c) {
+    colorHbond = c;
+    colixHbond = Colix.getColix(c);
+  }
+
+  public Color colorSsbond = null;
+  public short colixSsbond = 0;
+  public void setColorSsbond(Color c) {
+    colorSsbond = c;
+    colixSsbond = Colix.getColix(c);
+  }
+
   public Color colorLabel = Color.black;
   public short colixLabel = Colix.BLACK;
   public void setColorLabel(Color color) {

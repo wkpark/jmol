@@ -286,7 +286,8 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     if (model.pdbStructureRecordCount == 0)
       return null;
     String[] t = new String[model.pdbStructureRecordCount];
-    System.arraycopy(model.pdbStructureRecords, 0, t, 0, model.pdbStructureRecordCount);
+    System.arraycopy(model.pdbStructureRecords, 0, t, 0,
+                     model.pdbStructureRecordCount);
     return t;
   }
 
@@ -577,8 +578,8 @@ class PdbModel extends Model {
       if (sourceIndex < 0)
         return;
       // use this for HBONDS
-      //      for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
-      for (int i = 0; i < 4; i += (i == 5 ? 2 : 1)) {
+      for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
+      //      for (int i = 0; i < 4; i += (i == 5 ? 2 : 1)) {
         int targetSerial = getTargetSerial(i);
         if (targetSerial == -1)
           continue;
@@ -594,8 +595,11 @@ class PdbModel extends Model {
             continue;
           }
         }
+        if (i >= 4)
+          System.out.println("hbond:" + sourceIndex + "->" + targetIndex);
         bonds[bondCount++] = new Bond(sourceIndex, targetIndex,
-                                      i < 4 ? 1 : 5);
+                                      i < 4
+                                      ? 1 : JmolModelAdapter.ORDER_HBOND);
       }
     } catch (Exception e) {
     }

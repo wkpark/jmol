@@ -644,12 +644,24 @@ final public class JmolViewer {
     refresh();
   }
 
-  public short getColixBond() {
-    return colorManager.colixBond;
-  }
-
   public Color getColorBond() {
     return colorManager.colorBond;
+  }
+
+  public Color getColorHbond() {
+    return colorManager.colorHbond;
+  }
+
+  public Color getColorSsbond() {
+    return colorManager.colorSsbond;
+  }
+
+  public short getColixBond(int order) {
+    if (order == JmolConstants.BOND_HYDROGEN)
+      return colorManager.colixHbond;
+    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
+      return colorManager.colixSsbond;
+    return colorManager.colixBond;
   }
 
   public void setSpecular(boolean specular) {
@@ -1225,12 +1237,14 @@ final public class JmolViewer {
   }
 
   public void setColorSsBondScript(Color color) {
+    colorManager.setColorSsbond(color);
     distributionManager
       .setColix(Colix.getColix(color),
                 bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
   }
 
   public void setColorHBondScript(Color color) {
+    colorManager.setColorHbond(color);
     distributionManager
       .setColix(Colix.getColix(color),
                 bondIteratorSelected(JmolConstants.BOND_HYDROGEN));

@@ -70,7 +70,7 @@ public class Bond {
 
   public Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
     this(atom1, atom2, order, viewer.getStyleBond(),
-         viewer.getMarBond(), viewer.getColixBond());
+         viewer.getMarBond(), viewer.getColixBond(order));
   }
 
   public boolean isCovalent() {

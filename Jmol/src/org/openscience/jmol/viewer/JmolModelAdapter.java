@@ -216,9 +216,13 @@ public interface JmolModelAdapter {
     public abstract Object next();
   }
 
+
   /****************************************************************
    * BondIterator is used to enumerate all the bonds
    ****************************************************************/
+  public final static int ORDER_AROMATIC = 1 << 2;
+  public final static int ORDER_HBOND = 1 << 6;
+
   public abstract class BondIterator {
     public abstract boolean hasNext();
     /**
@@ -239,7 +243,6 @@ public interface JmolModelAdapter {
      * or a value from the extended bond definition table
      */
     public abstract int getOrder();
-
   }
 
   /**

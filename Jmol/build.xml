@@ -26,6 +26,7 @@
   <property name="tests.dir" value="build/unit.tests" />
   <property name="javadoc.dir" value="javadoc" />
   <property name="docbook-xsl" value="docbook-xsl-1.61.2" />
+  <property name="docbook-xml" value="docbook-xml-4.3" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
@@ -62,6 +63,9 @@
     <uptodate property="docbook-xsl.uptodate"
 	      targetfile="build/${docbook-xsl}"
 	      srcfile="doc/${docbook-xsl}.tar.gz" />
+    <uptodate property="docbook-xml.uptodate"
+	      targetfile="build/${docbook-xml}"
+	      srcfile="doc/${docbook-xml}.zip" />
 
     <condition property="jmolGuide.uptodate">
       <and>
@@ -598,13 +602,19 @@ support for assertions (which were introduced in 1.4).
   <target name="doc" id="doc"
 	  depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
   
-  <target name="initdoc" depends="init,check.docbook,check.xsl" />
+  <target name="initdoc" depends="init,check.docbook-xml,check.docbook-xsl,check.xsl" />
   
-  <target name="check.docbook" depends="setup" unless="docbook-xsl.uptodate" >
+  <target name="check.docbook-xsl" depends="setup" unless="docbook-xsl.uptodate" >
     <delete dir="build/${docbook-xsl}" />
     <mkdir dir="build/${docbook-xsl}" />
     <untar src="doc/${docbook-xsl}.tar.gz" dest="build"
 	   compression="gzip" />
+  </target>
+
+  <target name="check.docbook-xml" depends="setup" unless="docbook-xml.uptodate" >
+    <delete dir="build/${docbook-xml}" />
+    <mkdir dir="build/${docbook-xml}" />
+    <unzip src="doc/${docbook-xml}.zip" dest="build/${docbook-xml}" />
   </target>
 
   <target name="check.xsl" depends="setup" unless="xsl.available" >

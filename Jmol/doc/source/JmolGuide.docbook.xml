@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "../xml-dtd-4.2/docbookx.dtd"
+  "../../build/docbook-xml-4.3/docbookx.dtd"
 [
 <!ENTITY guideIntro          SYSTEM "guide/intro.docbook.xml">
 <!ENTITY guideCommandLine    SYSTEM "guide/commandline.docbook.xml">

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter>
+<title>Einführung</title>
+<para>Das Jmol Applet erlaubt die 3D-Darstellungen von Molekülen auf einer Web-Seite.</para>
+<para>Mit der Ausnahme einiger weniger Wrapper-Klassen nutzt das Jmol Applet die (selbe) Codebasis der Jmol Applikation.</para>
+</chapter>

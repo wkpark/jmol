@@ -125,7 +125,7 @@ class Model {
                        bond.atomIndex2 + ":" + bond.order);
     */
     if (bond.atomIndex1 < 0 ||
-        bond.atomIndex1 < 0 ||
+        bond.atomIndex2 < 0 ||
         bond.order <= 0) {
       /*
       System.out.println(">>>>>>BAD BOND:" + bond.atomIndex1 + "-" +

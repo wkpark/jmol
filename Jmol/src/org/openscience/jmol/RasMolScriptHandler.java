@@ -11,10 +11,10 @@
  *  This code is GPL.
  * 
  **/
+package org.openscience.jmol;
 
 import java.util.StringTokenizer;
-
-package org.openscience.jmol;
+import java.io.File;
 
 class RasMolScriptHandler {
 
@@ -24,18 +24,18 @@ class RasMolScriptHandler {
         this.program = program;
     }
 
-    public handle(String command) throws RasMolScriptException {
+    public void handle(String command) throws RasMolScriptException {
         StringTokenizer st = new StringTokenizer(command);
         if (!st.hasMoreElements()) {
             throw new RasMolScriptException("No command is given.");   
 	} else {
-            String command = st.nextElement();
-            if (command.equals("load")) {
+            String word = (String)st.nextElement();
+            if (word.equals("load")) {
                 if (st.hasMoreElements()) {
-                    String param = st.nextElement();
+                    String param = (String)st.nextElement();
                     String file;
                     if (st.hasMoreElements()) {
-			file = st.nextElement();
+			file = (String)st.nextElement();
 		    } else {
                         param = "xyz";
 			file = param;

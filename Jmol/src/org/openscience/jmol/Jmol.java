@@ -199,6 +199,25 @@ class Jmol extends JPanel {
 
         // Read the first argument as a file name:
         File initialFile = null;
+        File script = null;
+        /* to be compatible with current arguments:
+              1 argument  -> filename of file to read
+              2 arguments -> -script <rasmol.script>
+	**/
+	System.out.println("Arguments:"); 
+        for (int i=0; i<args.length; i++) {
+            System.out.println(args[i]);
+	}
+        if (args.length == 2) {
+            String s = args[0];
+            if (s.equals("-script")) {
+                script = new File(getUserDirectory(), args[1]);
+                if (!script.exists()) {
+		    script = null;
+		    System.out.print("Script not found: " + script.toString());
+		}
+            }
+        }
         if (args.length != 0) {            
             /* Read only one argument as a file name for now: */
             String astring = args[0];            
@@ -222,7 +241,8 @@ class Jmol extends JPanel {
             frame.setBackground(Color.lightGray);
             frame.getContentPane().setLayout(new BorderLayout());
             splash.showStatus("Initializing Jmol...");
-            frame.getContentPane().add("Center", new Jmol(splash));
+            Jmol window = new Jmol(splash);
+            frame.getContentPane().add("Center", window);
             frame.addWindowListener(new AppCloser());
             frame.pack();
             frame.setSize(500, 600);
@@ -231,6 +251,32 @@ class Jmol extends JPanel {
             frame.setIconImage(iconImage);
             splash.showStatus("Launching main frame...");
             frame.show();
+
+	    // Oke, by now it is time to execute the script
+	    if (script != null) {
+		try {
+		    System.out.println("Executing script: " + script.toString());
+		    splash.showStatus("Executing script...");
+		    RasMolScriptHandler scripthandler = new RasMolScriptHandler(window);
+		    BufferedReader reader = new BufferedReader(new FileReader(script));
+		    String command = reader.readLine();
+		    while (command != null) {
+			try { 
+			    scripthandler.handle(command);
+			    command = reader.readLine();
+			} catch (RasMolScriptException e) {
+			    // error in script. no user feedback at this moment
+			    System.out.println(e.toString());
+			    command = null;
+			}
+		    }
+		} catch (FileNotFoundException e) {
+		    // since this is tested earlier, this should not happen
+		} catch (IOException e) {
+		    // just stop handling the script
+		}
+	    }
+
         } catch (Throwable t) {
             System.out.println("uncaught exception: " + t);
             t.printStackTrace();

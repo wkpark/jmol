@@ -75,10 +75,28 @@ class Atom {
 	}
 
 	/**
-	 * Returns the atom's number, or zero if unassigned.
+	 * Returns the atom's number.
 	 */
 	public int getAtomNumber() {
 		return atomNumber;
+	}
+
+	/**
+	 * Sets the list of properties for this atom.
+	 *
+	 * @param propList a list of properties
+	 */
+	public void setProperties(Vector propList) {
+		properties = propList;
+	}
+
+	/**
+	 * Gets the list of properties for this atom.
+	 *
+	 * @returns a list of properties
+	 */
+	public Vector getProperties() {
+		return properties;
 	}
 
 	/**
@@ -149,4 +167,9 @@ class Atom {
 	 * A list of atoms to which this atom is bonded.
 	 */
 	private Vector bondedAtoms = new Vector();
+	/**
+	 * A list of properties
+	 */
+	private Vector properties = new Vector();
+
 }

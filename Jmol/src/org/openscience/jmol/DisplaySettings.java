@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,13 @@
 package org.openscience.jmol;
 
 import java.awt.Color;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Stores the display style of graphical elements.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com).
  */
 public class DisplaySettings {
 
@@ -693,4 +697,97 @@ public class DisplaySettings {
    * Added by T.GREY for quick drawing on atom movement.
    */
   private boolean doFastRendering = false;
+
+  /**
+   * The set of indicies for selected atoms.
+   */
+  private IntSet pickedAtoms = new IntSet();
+
+  public IntSet getPickedAtoms() {
+    return pickedAtoms;
+  }
+  
+  public void addPickedAtom(Atom atom) {
+    int atomNumber = atom.getAtomNumber();
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    pickedAtoms.add(atomNumber);
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+  
+  public void addPickedAtoms(Atom[] atoms) {
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    for (int i = 0; i < atoms.length; ++i) {
+      int atomNumber = atoms[i].getAtomNumber();
+      pickedAtoms.add(atomNumber);
+    }
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+  
+  public void removePickedAtom(Atom atom) {
+    int atomNumber = atom.getAtomNumber();
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    pickedAtoms.remove(atomNumber);
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+  
+  public void removePickedAtoms(Atom[] atoms) {
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    for (int i = 0; i < atoms.length; ++i) {
+      int atomNumber = atoms[i].getAtomNumber();
+      pickedAtoms.remove(atomNumber);
+    }
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+  
+  public void togglePickedAtom(Atom atom) {
+    int atomNumber = atom.getAtomNumber();
+    if (pickedAtoms.contains(atomNumber)) {
+      removePickedAtom(atom);
+    } else {
+      addPickedAtom(atom);
+    }
+  }
+
+  public void togglePickedAtoms(Atom[] atoms) {
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    for (int i = 0; i < atoms.length; ++i) {
+      int atomNumber = atoms[i].getAtomNumber();
+      if (pickedAtoms.contains(atomNumber)) {
+        pickedAtoms.remove(atomNumber);
+      } else {
+        pickedAtoms.add(atomNumber);
+      }
+    }
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+  
+  
+  public void clearPickedAtoms() {
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    pickedAtoms.clear();
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+
+  public boolean isAtomPicked(Atom atom) {
+    return pickedAtoms.contains(atom.getAtomNumber());
+  }
+  
+  public static final String atomPickedProperty = "atomPicked";
+
+  public void addPropertyChangeListener(PropertyChangeListener listener) {
+    changeSupport.addPropertyChangeListener(listener);
+  }
+
+  public void removePropertyChangeListener(PropertyChangeListener listener) {
+    changeSupport.removePropertyChangeListener(listener);
+  }
+
+  private PropertyChangeSupport changeSupport =
+    new PropertyChangeSupport(this);
 }

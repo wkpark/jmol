@@ -435,8 +435,12 @@ public class JmolSimpleBean extends java.awt.Panel
    */
   public void setPickedAtoms(boolean[] pickedAtoms) {
     ChemFrame cf = display.getFrame();
-    cf.deselectAll();
-    cf.setPickedAtoms(pickedAtoms);
+    settings.clearPickedAtoms();
+    for (int i = 0; i < pickedAtoms.length; ++i) {
+      if (pickedAtoms[i]) {
+        settings.addPickedAtom(cf.getAtomAt(i));
+      }
+    }
   }
 
 

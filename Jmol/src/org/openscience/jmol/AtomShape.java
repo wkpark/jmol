@@ -12,12 +12,10 @@ class AtomShape implements Shape {
 
   Atom atom;
   DisplaySettings settings;
-  AtomSet pickedAtoms;
   
-  AtomShape(Atom atom, DisplaySettings settings, AtomSet pickedAtoms) {
+  AtomShape(Atom atom, DisplaySettings settings) {
     this.atom = atom;
     this.settings = settings;
-    this.pickedAtoms = pickedAtoms;
   }
 
   public String toString() {
@@ -31,7 +29,7 @@ class AtomShape implements Shape {
 
   public void render(Graphics g) {
     AtomRenderer atomRenderer = getAtomRenderer(settings);
-    atomRenderer.paint(g, atom, pickedAtoms.contains(atom), settings);
+    atomRenderer.paint(g, atom, settings.isAtomPicked(atom), settings);
   }
   
   public double getZ() {

@@ -19,8 +19,6 @@
  */
 package org.openscience.jmol;
 
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Vector3d;
 import java.awt.Color;
 import java.awt.RenderingHints;
 import java.awt.Component;
@@ -41,6 +39,8 @@ import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -96,6 +96,7 @@ public class DisplayPanel extends JPanel
   public DisplayPanel(StatusBar status, DisplaySettings settings) {
     this.status = status;
     this.settings = settings;
+    settings.addPropertyChangeListener(this);
     ShadingAtomRenderer.setImageComponent(this);
   }
 
@@ -132,7 +133,6 @@ public class DisplayPanel extends JPanel
     haveFile = true;
     nframes = cf.getNumberFrames();
     this.md = cf.getFrame(0);
-    md.addPropertyChangeListener(this);
     Measurement.setChemFrame(md);
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
@@ -233,7 +233,6 @@ public class DisplayPanel extends JPanel
     if (haveFile) {
       if (fr < nframes) {
         md = cf.getFrame(fr);
-        md.addPropertyChangeListener(this);
         Measurement.setChemFrame(md);
         if (mlist != null) {
           mlistChanged(new MeasurementListEvent(mlist));
@@ -289,19 +288,23 @@ public class DisplayPanel extends JPanel
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
-        if (mode == PICK) {
-          if (e.isShiftDown()) {
-            md.shiftSelectAtom(e.getX(), e.getY());
-          } else {
-            md.selectAtom(e.getX(), e.getY());
+        Atom atom = md.getNearestAtom(e.getX(), e.getY());
+        if (atom != null) {
+          if (mode == PICK) {
+            if (e.isShiftDown()) {
+              settings.addPickedAtom(atom);
+            } else {
+              settings.clearPickedAtoms();
+              settings.addPickedAtom(atom);
+            }
+            repaint();
+          } else if (mode == DELETE) {
+            md.deleteAtom(atom.getAtomNumber());
+            repaint();
+            status.setStatus(2, "Atom deleted");
+          } else if (mode == MEASURE) {
+            m.firePicked(atom.getAtomNumber());
           }
-          repaint();
-        } else if (mode == DELETE) {
-          md.deleteSelectedAtom(e.getX(), e.getY());
-          repaint();    // this seems to have no effect...
-          status.setStatus(2, "Atom Deleted");
-        } else if (mode == MEASURE) {
-          m.firePicked(md.pickMeasuredAtom(e.getX(), e.getY()));
         }
       }
 
@@ -405,10 +408,12 @@ public class DisplayPanel extends JPanel
           rbottom = y;
         }
         if (haveFile) {
+          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright, rbottom);
           if (e.isShiftDown()) {
-            md.shiftSelectRegion(rleft, rtop, rright, rbottom);
+            settings.addPickedAtoms(selectedAtoms);
           } else {
-            md.selectRegion(rleft, rtop, rright, rbottom);
+            settings.clearPickedAtoms();
+            settings.addPickedAtoms(selectedAtoms);
           }
           repaint();
         }
@@ -630,7 +635,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (haveFile) {
-        md.selectAll();
+        settings.addPickedAtoms(md.getAtoms());
         repaint();
       }
     }
@@ -646,7 +651,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (haveFile) {
-        md.deselectAll();
+        settings.clearPickedAtoms();
         repaint();
       }
     }
@@ -1053,8 +1058,8 @@ public class DisplayPanel extends JPanel
 
   public void propertyChange(PropertyChangeEvent event) {
     
-    if (event.getPropertyName().equals(ChemFrame.atomPickedProperty)) {
-        status.setStatus(2, event.getNewValue() + " Atoms Selected");
+    if (event.getPropertyName().equals(DisplaySettings.atomPickedProperty)) {
+        status.setStatus(2, event.getNewValue() + " atoms selected");
     }
   }
 

@@ -153,11 +153,11 @@ class RasMolScriptHandler {
         if (st.hasMoreElements()) {
           select((String) st.nextElement());
         } else {
-          Enumeration selectedAtoms =
-            program.display.md.getSelectedAtoms().elements();
+          int[] selectedAtoms =
+            program.display.getSettings().getPickedAtoms().elements();
           print("Selected atoms: ");
-          while (selectedAtoms.hasMoreElements()) {
-            int atom = ((Integer) selectedAtoms.nextElement()).intValue();
+          for (int i = 0; i < selectedAtoms.length; ++i) {
+            int atom = selectedAtoms[i];
             print((new Integer(atom)).toString());
             print(" ");
           }
@@ -297,16 +297,16 @@ class RasMolScriptHandler {
   private void select(String value) throws RasMolScriptException {
 
     if (value.equals("all") || value.equals("*")) {
-      program.display.md.selectAll();
+      program.display.getSettings().addPickedAtoms(program.display.md.getAtoms());
     } else if (value.equals("none")) {
-      program.display.md.deselectAll();
+      program.display.getSettings().clearPickedAtoms();
     } else if (value.indexOf(',') != -1) {
       StringTokenizer st = new StringTokenizer(value, ",");
       while (st.hasMoreElements()) {
         String subexpr = (String) st.nextElement();
         try {
           int atom = Integer.parseInt(subexpr);
-          program.display.md.selectAtomByNumber(atom);
+          program.display.getSettings().addPickedAtom(program.display.md.getAtomAt(atom));
         } catch (NumberFormatException e) {
           throw new RasMolScriptException("Error: invalid expression: "
               + subexpr);
@@ -315,7 +315,7 @@ class RasMolScriptHandler {
     } else {
       try {
         int atom = Integer.parseInt(value);
-        program.display.md.selectAtomByNumber(atom);
+        program.display.getSettings().addPickedAtom(program.display.md.getAtomAt(atom));
       } catch (NumberFormatException e) {
         throw new RasMolScriptException("Error: invalid expression: "
             + value);
@@ -360,10 +360,10 @@ class RasMolScriptHandler {
     if (object.equals("atom")) {
 
       // give selected atoms new colour
-      Enumeration selectedAtoms =
-        program.display.md.getSelectedAtoms().elements();
-      while (selectedAtoms.hasMoreElements()) {
-        int atom = ((Integer) selectedAtoms.nextElement()).intValue();
+      int[] selectedAtoms =
+        program.display.getSettings().getPickedAtoms().elements();
+      for (int i = 0; i < selectedAtoms.length; ++i) {
+        int atom = selectedAtoms[i];
         program.display.md.getAtomAt(atom - 1).setColor(this.getColor(value));
       }
 

@@ -40,29 +40,12 @@ public class ChemFrame {
   private static boolean AutoBond = true;
   private static Matrix4d mat;
 
-  /**
-   * The set of selected atoms.
-   */
-  private AtomSet pickedAtoms = new AtomSet();
-
   // This stuff can vary for each frame in the dynamics:
 
   private String info;     // The title or info string for this frame.
   private Atom[] atoms;    // array of atom types
   private Vector properties = new Vector();
   private int numberAtoms = 0;
-
-  /**
-   * Returns whether the atom at the given index is picked.
-   */
-  boolean isAtomPicked(int index) {
-
-    if (index >= atoms.length) {
-      throw new IllegalArgumentException(
-          "isAtomPicked(): atom index to large");
-    }
-    return pickedAtoms.contains(atoms[index]);
-  }
 
   /**
    * Returns the list of distance measurements.
@@ -386,6 +369,12 @@ public class ChemFrame {
     return atoms[index];
   }
 
+  public Atom[] getAtoms() {
+    Atom[] result = new Atom[numberAtoms];
+    System.arraycopy(atoms, 0, result, 0, result.length);
+    return result;
+  }
+  
   /**
    * returns the coordinates of the i'th atom
    *
@@ -416,157 +405,32 @@ public class ChemFrame {
   }
 
   /**
-   * return a Vector with selected atoms
+   * Find all atoms within designated region.
+   *
+   * @param x1 the x coordinate of point 1 of the region's bounding rectangle
+   * @param y1 the y coordinate of point 1 of the region's bounding rectangle
+   * @param x2 the x coordinate of point 2 of the region's bounding rectangle
+   * @param y2 the y coordinate of point 2 of the region's bounding rectangle
+   * @return the atoms in the region
    */
-  public Vector getSelectedAtoms() {
+  public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2) {
 
-    Vector result = new Vector();
+    if (numberAtoms <= 0) {
+      return new Atom[0];
+    }
+    transform();
+    Vector atomsInRegion = new Vector();
     for (int i = 0; i < numberAtoms; i++) {
-      if (pickedAtoms.contains(atoms[i])) {
-        result.addElement(new Integer(i + 1));
+      if (isAtomInRegion(i, x1, y1, x2, y2)) {
+        atomsInRegion.addElement(atoms[i]);
       }
+    }
+    
+    Atom[] result = new Atom[atomsInRegion.size()];
+    for (int i = 0; i < result.length; ++i) {
+      result[i] = (Atom) atomsInRegion.elementAt(i);
     }
     return result;
-  }
-
-  /**
-   * Add atom by its number
-   */
-  public void selectAtomByNumber(int atom) {
-
-    if ((numberAtoms <= 0) || (atom > numberAtoms)) {
-      return;
-    }
-    addPickedAtom(atoms[atom-1]);
-  }
-
-  /**
-   * Add all atoms in this frame to the list of picked atoms
-   */
-  public void selectAll() {
-
-    if (numberAtoms <= 0) {
-      return;
-    }
-    for (int i = 0; i < numberAtoms; i++) {
-      addPickedAtom(atoms[i]);
-    }
-  }
-
-  /**
-   * Remove all atoms in this frame from the list of picked atoms
-   */
-  public void deselectAll() {
-
-    if (numberAtoms <= 0) {
-      return;
-    }
-    clearPickedAtoms();
-  }
-
-  public int pickMeasuredAtom(int x, int y) {
-    return getNearestAtom(x, y);
-  }
-
-  /**
-   * Clear out the list of picked atoms, find the nearest atom to a
-   * set of screen coordinates and add this new atom to the picked
-   * list.
-   *
-   * @param x the screen x coordinate of the selection point
-   * @param y the screen y coordinate of the selection point
-   */
-  public void selectAtom(int x, int y) {
-
-    int smallest = getNearestAtom(x, y);
-    if (smallest < 0) {
-      return;
-    }
-    clearPickedAtoms();
-    if (!pickedAtoms.contains(atoms[smallest])) {
-      addPickedAtom(atoms[smallest]);
-    }
-  }
-
-  /**
-   * Clear out the list of picked atoms, find the nearest atom to a
-   * set of screen coordinates and add this new atom to the picked
-   * list.
-   *
-   * @param x the screen x coordinate of the selection point
-   * @param y the screen y coordinate of the selection point
-   */
-  public void deleteSelectedAtom(int x, int y) {
-
-    int smallest = getNearestAtom(x, y);
-    if (smallest < 0) {
-      return;
-    }
-    deleteAtom(smallest);
-  }
-
-  /**
-   * Find the nearest atom to a set of screen coordinates and add
-   * this new atom to the picked list.
-   *
-   * @param x the screen x coordinate of the selection point
-   * @param y the screen y coordinate of the selection point
-   */
-  public void shiftSelectAtom(int x, int y) {
-
-    int smallest = getNearestAtom(x, y);
-    if (pickedAtoms.contains(atoms[smallest])) {
-      removePickedAtom(atoms[smallest]);
-    } else {
-      addPickedAtom(atoms[smallest]);
-    }
-  }
-
-  /**
-   * Clear out the list of picked atoms, find all atoms within
-   * designated region and add these atoms to the picked list.
-   *
-   * @param x1 the x coordinate of point 1 of the region's bounding rectangle
-   * @param y1 the y coordinate of point 1 of the region's bounding rectangle
-   * @param x2 the x coordinate of point 2 of the region's bounding rectangle
-   * @param y2 the y coordinate of point 2 of the region's bounding rectangle
-   */
-  public void selectRegion(int x1, int y1, int x2, int y2) {
-
-    if (numberAtoms <= 0) {
-      return;
-    }
-    transform();
-    clearPickedAtoms();
-    for (int i = 0; i < numberAtoms; i++) {
-      if (isAtomInRegion(i, x1, y1, x2, y2)) {
-        addPickedAtom(atoms[i]);
-      }
-    }
-  }
-
-  /**
-   * Find all atoms within designated region and add these atoms to
-   * the picked list.
-   *
-   * @param x1 the x coordinate of point 1 of the region's bounding rectangle
-   * @param y1 the y coordinate of point 1 of the region's bounding rectangle
-   * @param x2 the x coordinate of point 2 of the region's bounding rectangle
-   * @param y2 the y coordinate of point 2 of the region's bounding rectangle
-   */
-  public void shiftSelectRegion(int x1, int y1, int x2, int y2) {
-
-    if (numberAtoms <= 0) {
-      return;
-    }
-    transform();
-    for (int i = 0; i < numberAtoms; i++) {
-      if (isAtomInRegion(i, x1, y1, x2, y2)) {
-        if (!pickedAtoms.contains(atoms[i])) {
-          addPickedAtom(atoms[i]);
-        }
-      }
-    }
   }
 
   private boolean isAtomInRegion(int n, int x1, int y1, int x2, int y2) {
@@ -581,28 +445,33 @@ public class ChemFrame {
     return false;
   }
 
-  private int getNearestAtom(int x, int y) {
+  /**
+   * Finds the atom nearest the given screen coordinates.
+   *
+   * @param x the x screen coordinate
+   * @param y the y screen coordinate
+   * @return the atom drawn closest to the coordinates.
+   */
+  public Atom getNearestAtom(int x, int y) {
 
     if (numberAtoms <= 0) {
-      return -1;
+      return null;
     }
     transform();
     int dx, dy, dr2;
-    int smallest = -1;
+    Atom smallest = null;
     int smallr2 = Integer.MAX_VALUE;
     for (int i = 0; i < numberAtoms; i++) {
-      dx = (int) atoms[i].getScreenPosition().x - x;
-      dy = (int) atoms[i].getScreenPosition().y - y;
+      Atom atom = atoms[i];
+      dx = (int) atom.getScreenPosition().x - x;
+      dy = (int) atom.getScreenPosition().y - y;
       dr2 = dx * dx + dy * dy;
       if (dr2 < smallr2) {
-        smallest = i;
+        smallest = atom;
         smallr2 = dr2;
       }
     }
-    if (smallest >= 0) {
-      return smallest;
-    }
-    return -1;
+    return smallest;
   }
 
   public Point3f getMinimumBounds() {
@@ -714,40 +583,6 @@ public class ChemFrame {
     mat = newmat;
   }
 
-  public void setPickedAtoms(boolean[] newPickedAtoms) {
-
-    clearPickedAtoms();
-    for (int i = 0; i < newPickedAtoms.length; ++i) {
-      if (newPickedAtoms[i]) {
-        addPickedAtom(atoms[i]);
-      }
-    }
-  }
-
-  /**
-   * Returns the set of picked atoms.
-   *
-   * @return the AtomSet of picked atoms.
-   */
-  public AtomSet getPickedAtomSet() {
-    return pickedAtoms;
-  }
-  
-  /**
-   * Returns whether each atom in this frame is picked.
-   */
-  public boolean[] getPickedAtoms() {
-    boolean[] pickedAtomsArray = new boolean[atoms.length];
-    for (int i = 0; i < atoms.length; ++i) {
-      if (pickedAtoms.contains(atoms[i])) {
-        pickedAtomsArray[i] = true;
-      } else {
-        pickedAtomsArray[i] = false;
-      }
-    }
-    return pickedAtomsArray;
-  }
-
   /**
    * Adds a single bond between the two atoms given.
    *
@@ -781,38 +616,5 @@ public class ChemFrame {
     }
   }
 
-  private void addPickedAtom(Atom atom) {
-    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
-    pickedAtoms.add(atom);
-    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
-    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
-  }
-  
-  private void removePickedAtom(Atom atom) {
-    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
-    pickedAtoms.remove(atom);
-    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
-    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
-  }
-  
-  private void clearPickedAtoms() {
-    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
-    pickedAtoms.clear();
-    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
-    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
-  }
-
-  public static final String atomPickedProperty = "atomPicked";
-
-  public void addPropertyChangeListener(PropertyChangeListener listener) {
-    changeSupport.addPropertyChangeListener(listener);
-  }
-
-  public void removePropertyChangeListener(PropertyChangeListener listener) {
-    changeSupport.removePropertyChangeListener(listener);
-  }
-
-  private PropertyChangeSupport changeSupport =
-    new PropertyChangeSupport(this);
 }
 

@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
+import org.openscience.jmol.Atom;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.DisplaySettings;
@@ -464,10 +465,12 @@ public class DisplayPanel extends Canvas
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
+        Atom atom = md.getNearestAtom(e.getX(), e.getY());
         if (pickingMode == MULTIPLEPICK) {
-          md.shiftSelectAtom(e.getX(), e.getY());
+          settings.addPickedAtom(atom);
         } else {
-          md.selectAtom(e.getX(), e.getY());
+          settings.clearPickedAtoms();
+          settings.addPickedAtom(atom);
         }
         painted = false;
         repaint();
@@ -568,10 +571,12 @@ public class DisplayPanel extends Canvas
           rbottom = y;
         }
         if (haveFile) {
+          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright, rbottom);
           if (e.isShiftDown()) {
-            md.shiftSelectRegion(rleft, rtop, rright, rbottom);
+            settings.addPickedAtoms(selectedAtoms);
           } else {
-            md.selectRegion(rleft, rtop, rright, rbottom);
+            settings.clearPickedAtoms();
+            settings.addPickedAtoms(selectedAtoms);
           }
           painted = false;
           repaint();

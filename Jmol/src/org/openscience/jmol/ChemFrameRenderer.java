@@ -58,8 +58,7 @@ public class ChemFrameRenderer {
         Atom atom = frame.getAtomAt(i);
         if (settings.getShowAtoms() && (settings.getShowHydrogens()
             || !atom.isHydrogen())) {
-          AtomSet pickedAtoms = frame.getPickedAtomSet();
-          shapesList.addElement(new AtomShape(atom, settings, pickedAtoms));
+          shapesList.addElement(new AtomShape(atom, settings));
           shapesList.addElement(new AtomLabelShape(atom, settings));
         }
         if (settings.getShowBonds()) {

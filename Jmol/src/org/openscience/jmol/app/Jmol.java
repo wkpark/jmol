@@ -218,7 +218,10 @@ public class Jmol extends JPanel {
     // Setup Plugin system
     say("Loading plugins...");
     pluginManager = new CDKPluginManager(
-        ".jmol/plugins", "./jmol", new JmolEditBus(viewer)
+        System.getProperty("user.home") + System.getProperty("file.separator")
+        + ".jmol/plugins", 
+        System.getProperty("user.home") + System.getProperty("file.separator")
+        + ".jmol", new JmolEditBus(viewer)
     );
     pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
 

@@ -54,7 +54,7 @@ class AminoPolymer extends AlphaPolymer {
 
       if (debugHbonds) {
         System.out.println("calcHydrogenBonds");
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < monomerCount; ++i) {
           System.out.println("  min1Indexes=" + min1Indexes[i] +
                              "\nmin1Energies=" + min1Energies[i] +
                              "\nmin2Indexes=" + min2Indexes[i] +
@@ -67,12 +67,12 @@ class AminoPolymer extends AlphaPolymer {
   
 
   void allocateHbondDataStructures() {
-    mainchainHbondOffsets = new short[count];
-    min1Indexes = new short[count];
-    min1Energies = new short[count];
-    min2Indexes = new short[count];
-    min2Energies = new short[count];
-    for (int i = count; --i >= 0; )
+    mainchainHbondOffsets = new short[monomerCount];
+    min1Indexes = new short[monomerCount];
+    min1Energies = new short[monomerCount];
+    min2Indexes = new short[monomerCount];
+    min2Energies = new short[monomerCount];
+    for (int i = monomerCount; --i >= 0; )
       min1Indexes[i] = min2Indexes[i] = -1;
   }
 
@@ -88,7 +88,7 @@ class AminoPolymer extends AlphaPolymer {
     Point3f carbonPoint;
     Point3f oxygenPoint;
     
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < monomerCount; ++i) {
       AminoMonomer residue = (AminoMonomer)monomers[i];
       mainchainHbondOffsets[i] = 0;
       /****************************************************************
@@ -121,7 +121,7 @@ class AminoPolymer extends AlphaPolymer {
     int energyMin2 = 0;
     int indexMin1 = -1;
     int indexMin2 = -1;
-    for (int i = count; --i >= 0; ) {
+    for (int i = monomerCount; --i >= 0; ) {
       if ((i == indexDonor || (i+1) == indexDonor) || (i-1) == indexDonor)
         continue;
       AminoMonomer target = (AminoMonomer)monomers[i];
@@ -249,18 +249,18 @@ class AminoPolymer extends AlphaPolymer {
 
   void calculateStructures() {
     calcHydrogenBonds();
-    char[] structureTags = new char[count];
+    char[] structureTags = new char[monomerCount];
 
     findHelixes(structureTags);
     int iStart = 0;
-    while (iStart < count) {
+    while (iStart < monomerCount) {
       if (structureTags[iStart] == 0) {
         ++iStart;
         continue;
       }
       int iMax;
       for (iMax = iStart + 1;
-           iMax < count && structureTags[iMax] != 0;
+           iMax < monomerCount && structureTags[iMax] != 0;
            ++iMax)
         { }
       addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
@@ -268,26 +268,26 @@ class AminoPolymer extends AlphaPolymer {
       iStart = iMax;
     }
 
-    for (int i = count; --i >= 0; )
+    for (int i = monomerCount; --i >= 0; )
       structureTags[i] = 0;
 
     findSheets(structureTags);
 
     if (debugHbonds)
-      for (int i = 0; i < count; ++i)
+      for (int i = 0; i < monomerCount; ++i)
         System.out.println("" + i + ":" + structureTags[i] +
                            " " + min1Indexes[i] + " " + min2Indexes[i]);
     iStart = 0;
 
-    while (iStart < count) {
+    while (iStart < monomerCount) {
       if (structureTags[iStart] == 0) {
         ++iStart;
         continue;
       }
       int iMax;
       for (iMax = iStart + 1;
-           (iMax < count && structureTags[iMax] != 0 ||
-            iMax < count - 1 && structureTags[iMax + 1] != 0);
+           (iMax < monomerCount && structureTags[iMax] != 0 ||
+            iMax < monomerCount - 1 && structureTags[iMax + 1] != 0);
            ++iMax)
         { }
       if (debugHbonds)
@@ -306,7 +306,7 @@ class AminoPolymer extends AlphaPolymer {
 
   void findPitch(int minRunLength, int pitch, char tag, char[] tags) {
     int runLength = 0;
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < monomerCount; ++i) {
       if (mainchainHbondOffsets[i] == pitch) {
         ++runLength;
         if (runLength == minRunLength)
@@ -321,8 +321,8 @@ class AminoPolymer extends AlphaPolymer {
   }
 
   void findSheets(char[] structureTags) {
-    for (int a = 0; a < count; ++a)
-      for (int b = 0; b < count; ++b) {
+    for (int a = 0; a < monomerCount; ++a)
+      for (int b = 0; b < monomerCount; ++b) {
         if (isHbonded(a+1, b) && isHbonded(b, a-1)) {
           if (debugHbonds)
             System.out.println("parallel found");
@@ -341,8 +341,8 @@ class AminoPolymer extends AlphaPolymer {
   }
 
   boolean isHbonded(int indexDonor, int indexAcceptor) {
-    if (indexDonor < 0 || indexDonor >= count ||
-        indexAcceptor < 0 || indexAcceptor >= count)
+    if (indexDonor < 0 || indexDonor >= monomerCount ||
+        indexAcceptor < 0 || indexAcceptor >= monomerCount)
       return false;
     return ((min1Indexes[indexDonor] == indexAcceptor &&
              min1Energies[indexDonor] <= -500) ||

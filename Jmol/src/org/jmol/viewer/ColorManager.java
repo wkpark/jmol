@@ -237,7 +237,6 @@ class ColorManager {
   short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
     int index;
-    boolean selectedSetOnly = false;
     switch (palette) {
     case JmolConstants.PALETTE_NONE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -300,23 +299,21 @@ class ColorManager {
               ? JmolConstants.argbsChainHetero
               : JmolConstants.argbsChainAtom)[chain];
       break;
-    case JmolConstants.PALETTE_GROUP_NUMBER:
-      selectedSetOnly = true;
-      // fall into
-    case JmolConstants.PALETTE_GROUP_RASMOL:
-      viewer.calcMinMaxSeqcode(selectedSetOnly);
-      index = quantize(viewer.getMinSeqcode(),
-                       viewer.getMaxSeqcode(),
-                       atom.getSeqcode(),
-                       JmolConstants.argbsGroupScale.length);
-      argb = JmolConstants.argbsGroupScale[index];
-      break;
-    case JmolConstants.PALETTE_POLYMER_INDEX:
+    case JmolConstants.PALETTE_GROUP:
+      viewer.calcSelectedGroupsCount();
       index = quantize(0,
-                       atom.getPolymerLength(),
-                       atom.getPolymerIndex(),
-                       JmolConstants.argbsGroupScale.length);
-      argb = JmolConstants.argbsGroupScale[index];
+                       atom.getSelectedGroupCountWithinChain(),
+                       atom.getSelectedGroupIndexWithinChain(),
+                       JmolConstants.argbsBlueRedRainbow.length);
+      argb = JmolConstants.argbsBlueRedRainbow[index];
+      break;
+    case JmolConstants.PALETTE_MONOMER:
+      viewer.calcSelectedMonomersCount();
+      index = quantize(0,
+                       atom.getSelectedMonomerCountWithinPolymer(),
+                       atom.getSelectedMonomerIndexWithinPolymer(),
+                       JmolConstants.argbsBlueRedRainbow.length);
+      argb = JmolConstants.argbsBlueRedRainbow[index];
       break;
     }
     if (argb == 0)

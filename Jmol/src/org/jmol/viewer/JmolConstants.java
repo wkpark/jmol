@@ -60,16 +60,14 @@ final public class JmolConstants {
   public final static byte PALETTE_TYPE          = 7;
   public final static byte PALETTE_TEMPERATURE   = 8;
   public final static byte PALETTE_FIXEDTEMP     = 9;
-  public final static byte PALETTE_GROUP_RASMOL  = 10;
-  public final static byte PALETTE_GROUP_NUMBER  = 11;
-  public final static byte PALETTE_POLYMER_INDEX = 12;
-  public final static byte PALETTE_MAX           = 13;
+  public final static byte PALETTE_GROUP         = 10;
+  public final static byte PALETTE_MONOMER       = 11;
+  public final static byte PALETTE_MAX           = 12;
 
   public final static String[] colorSchemes =
     { "cpk", "charge", "structure", "amino",
       "shapely", "chain", "partialCharge", "type",
-      "temperature", "fixedTemperature", "group", "groupNumber",
-      "polymerIndex"
+      "temperature", "fixedTemperature", "group", "monomer"
     };
 
   public final static byte AXES_NONE = 0;
@@ -1607,8 +1605,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF0000FF, // blue
   };
 
-  // a bad name ... but chosen by RasMol
-  public final static int[] argbsGroupScale = {
+  public final static int[] argbsBlueRedRainbow = {
     0xFF0000FF,
     //0xFF0010FF,
     0xFF0020FF,

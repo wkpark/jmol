@@ -32,8 +32,11 @@ final class Chain {
   Model model;
   char chainID;
   int groupCount;
-  int minSeqcode, maxSeqcode;
+  int selectedGroupCount;
+  BitSet bsSelectedGroups;
+  private final static BitSet bsNull = new BitSet();
   Group[] groups = new Group[16];
+
 
   //  private Group[] mainchain;
 
@@ -71,18 +74,36 @@ final class Chain {
     }
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
-    minSeqcode = Integer.MAX_VALUE;
-    maxSeqcode = Integer.MIN_VALUE;
+  void calcSelectedGroupsCount(BitSet bsSelected) {
+    // FIXME miguel 2004 12 13
+    // WARNING! note that this code is currently being
+    // calculated once for each *atom*
+    selectedGroupCount = 0;
+    if (bsSelectedGroups == null)
+      bsSelectedGroups = new BitSet();
+    else
+      bsSelectedGroups.and(bsNull);
     for (int i = groupCount; --i >= 0; ) {
-      Group group = groups[i];
-      if ((bsSelected == null || group.isSelected(bsSelected)) &&
-          heteroSetting || !group.isHetero()) {
-        if (group.seqcode < minSeqcode)
-          minSeqcode = group.seqcode;
-        if (group.seqcode > maxSeqcode)
-          maxSeqcode = group.seqcode;
+      if (groups[i].isSelected(bsSelected)) {
+        ++selectedGroupCount;
+        bsSelectedGroups.set(i);
       }
     }
+  }
+
+  int getSelectedGroupCount() {
+    return selectedGroupCount;
+  }
+
+  int getSelectedGroupIndex(Group group) {
+    int selectedGroupIndex = 0;
+    for (int i = 0; i < groupCount; ++i) {
+      if (bsSelectedGroups.get(i)) {
+        if (groups[i] == group)
+          return selectedGroupIndex;
+        ++selectedGroupIndex;
+      }
+    }
+    return -1;
   }
 }

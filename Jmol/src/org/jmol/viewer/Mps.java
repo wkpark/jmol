@@ -159,7 +159,7 @@ abstract class Mps extends Shape {
       // FIXME
       // I don't think that polymer can ever be null for this thing
       // so stop checking for null and see if it explodes
-      monomerCount = polymer == null ? 0 : polymer.count;
+      monomerCount = polymer == null ? 0 : polymer.monomerCount;
       if (monomerCount > 0) {
         colixes = new short[monomerCount];
         mads = new short[monomerCount + 1];

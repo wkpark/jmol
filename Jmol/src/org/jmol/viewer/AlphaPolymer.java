@@ -91,7 +91,7 @@ class AlphaPolymer extends Polymer {
    * </a>
    */
   void calculateStructures() {
-    if (count < 4)
+    if (monomerCount < 4)
       return;
     float[] angles = calculateAnglesInDegrees();
     byte[] codes = calculateCodes(angles);
@@ -112,8 +112,8 @@ class AlphaPolymer extends Polymer {
   final static byte CODE_RIGHT_TURN = 5;
   
   float[] calculateAnglesInDegrees() {
-    float[] angles = new float[count];
-    for (int i = count - 1; --i >= 2; )
+    float[] angles = new float[monomerCount];
+    for (int i = monomerCount - 1; --i >= 2; )
       angles[i] = 
         Measurement.computeTorsion(monomers[i - 2].getLeadAtomPoint(),
                                    monomers[i - 1].getLeadAtomPoint(),
@@ -123,8 +123,8 @@ class AlphaPolymer extends Polymer {
   }
 
   byte[] calculateCodes(float[] angles) {
-    byte[] codes = new byte[count];
-    for (int i = count - 1; --i >= 2; ) {
+    byte[] codes = new byte[monomerCount];
+    for (int i = monomerCount - 1; --i >= 2; ) {
       float degrees = angles[i];
       codes[i] = ((degrees >= 10 && degrees < 120)
                   ? CODE_RIGHT_HELIX
@@ -138,7 +138,7 @@ class AlphaPolymer extends Polymer {
   }
 
   void checkBetaSheetAlphaHelixOverlap(byte[] codes, float[] angles) {
-    for (int i = count - 2; --i >= 2; )
+    for (int i = monomerCount - 2; --i >= 2; )
       if (codes[i] == CODE_BETA_SHEET &&
           angles[i] <= 140 &&
           codes[i - 2] == CODE_RIGHT_HELIX &&
@@ -154,11 +154,11 @@ class AlphaPolymer extends Polymer {
   final static byte TAG_HELIX = JmolConstants.PROTEIN_STRUCTURE_HELIX;
 
   byte[] calculateRunsFourOrMore(byte[] codes) {
-    byte[] tags = new byte[count];
+    byte[] tags = new byte[monomerCount];
     byte tag = TAG_NADA;
     byte code = CODE_NADA;
     int runLength = 0;
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < monomerCount; ++i) {
       // throw away the sheets ... their angle technique does not work well
       if (codes[i] == code && code != CODE_NADA && code != CODE_BETA_SHEET) {
         ++runLength;
@@ -177,16 +177,16 @@ class AlphaPolymer extends Polymer {
   }
 
   void extendRuns(byte[] tags) {
-    for (int i = 1; i < count - 4; ++i)
+    for (int i = 1; i < monomerCount - 4; ++i)
       if (tags[i] == TAG_NADA && tags[i + 1] != TAG_NADA)
         tags[i] = tags[i + 1];
     
     tags[0] = tags[1];
-    tags[count - 1] = tags[count - 2];
+    tags[monomerCount - 1] = tags[monomerCount - 2];
   }
 
   void searchForTurns(byte[] codes, float[] angles, byte[] tags) {
-    for (int i = count - 1; --i >= 2; ) {
+    for (int i = monomerCount - 1; --i >= 2; ) {
       codes[i] = CODE_NADA;
       if (tags[i] == TAG_NADA) {
         float angle = angles[i];
@@ -197,7 +197,7 @@ class AlphaPolymer extends Polymer {
       }
     }
 
-    for (int i = count - 1; --i >= 0; ) {
+    for (int i = monomerCount - 1; --i >= 0; ) {
       if (codes[i] != CODE_NADA &&
           codes[i + 1] == codes[i] &&
           tags[i] == TAG_NADA)
@@ -207,7 +207,7 @@ class AlphaPolymer extends Polymer {
 
   void addStructuresFromTags(byte[] tags) {
     int i = 0;
-    while (i < count) {
+    while (i < monomerCount) {
       byte tag = tags[i];
       if (tag == TAG_NADA) {
         ++i;
@@ -215,7 +215,7 @@ class AlphaPolymer extends Polymer {
       }
       int iMax;
       for (iMax = i + 1;
-           iMax < count && tags[iMax] == tag;
+           iMax < monomerCount && tags[iMax] == tag;
            ++iMax)
         { }
       addSecondaryStructure(tag, i, iMax - 1);

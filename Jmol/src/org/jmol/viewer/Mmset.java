@@ -40,8 +40,6 @@ final class Mmset {
   private Properties[] modelProperties = new Properties[1];
   private Model[] models = new Model[1];
 
-  int minSeqcode, maxSeqcode;
-
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
 
@@ -190,23 +188,14 @@ final class Mmset {
     return groupCount;
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
-    minSeqcode = Integer.MAX_VALUE;
-    maxSeqcode = Integer.MIN_VALUE;
-    if (modelCount > 0) {
-      Model model = models[0];
-      model.calcMinMaxSeqcode(bsSelected, heteroSetting);
-      minSeqcode = model.minSeqcode;
-      maxSeqcode = model.maxSeqcode;
-      for (int i = modelCount; --i > 0; ) {
-        model = models[i];
-        model.calcMinMaxSeqcode(bsSelected, heteroSetting);
-        if (model.minSeqcode < minSeqcode)
-          minSeqcode = model.minSeqcode;
-        if (model.maxSeqcode > maxSeqcode)
-          maxSeqcode = model.maxSeqcode;
-      }
-    }
+  void calcSelectedGroupsCount(BitSet bsSelected) {
+    for (int i = modelCount; --i >= 0; )
+      models[i].calcSelectedGroupsCount(bsSelected);
+  }
+
+  void calcSelectedMonomersCount(BitSet bsSelected) {
+    for (int i = modelCount; --i >= 0; )
+      models[i].calcSelectedMonomersCount(bsSelected);
   }
 
   void calcHydrogenBonds() {

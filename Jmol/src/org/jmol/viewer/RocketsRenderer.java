@@ -81,7 +81,7 @@ class RocketsRenderer extends MpsRenderer {
 
   void initializeChain(AminoPolymer aminopolymer) {
     monomers = aminopolymer.monomers;
-    monomerCount = aminopolymer.count;
+    monomerCount = aminopolymer.monomerCount;
     isSpecials = calcIsSpecials(monomerCount, monomers);
     cordMidPoints = calcRopeMidPoints(aminopolymer);
     screens = getScreens();

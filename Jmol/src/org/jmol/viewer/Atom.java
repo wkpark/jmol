@@ -510,6 +510,29 @@ final class Atom implements Bspt.Tuple {
     return group.getPolymerIndex();
   }
 
+  int getSelectedGroupCountWithinChain() {
+    return group.chain.getSelectedGroupCount();
+  }
+
+  int getSelectedGroupIndexWithinChain() {
+    return group.chain.getSelectedGroupIndex(group);
+  }
+
+  int getSelectedMonomerCountWithinPolymer() {
+    if (group instanceof Monomer) {
+      return ((Monomer)group).polymer.selectedMonomerCount;
+    }
+    return 0;
+  }
+
+  int getSelectedMonomerIndexWithinPolymer() {
+    if (group instanceof Monomer) {
+      Monomer monomer = (Monomer) group;
+      return monomer.polymer.getSelectedMonomerIndex(monomer);
+    }
+    return -1;
+  }
+
   int getAtomIndex() {
     return atomIndex;
   }

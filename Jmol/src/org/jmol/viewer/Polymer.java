@@ -26,19 +26,20 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import java.util.BitSet;
 
 abstract class Polymer {
 
   Model model;
   Monomer[] monomers;
-  int count;
+  int monomerCount;
 
   private int[] atomIndices;
 
   Polymer(Monomer[] monomers) {
     this.monomers = monomers;
-    this.count = monomers.length;
-    for (int i = count; --i >= 0; )
+    this.monomerCount = monomers.length;
+    for (int i = monomerCount; --i >= 0; )
       monomers[i].setPolymer(this);
     model = monomers[0].chain.model;
     model.addPolymer(this);
@@ -168,8 +169,8 @@ abstract class Polymer {
 
   int[] getLeadAtomIndices() {
     if (atomIndices == null) {
-      atomIndices = new int[count];
-      for (int i = count; --i >= 0; )
+      atomIndices = new int[monomerCount];
+      for (int i = monomerCount; --i >= 0; )
         atomIndices[i] = monomers[i].getLeadAtomIndex();
     }
     return atomIndices;
@@ -177,7 +178,7 @@ abstract class Polymer {
   
   int getIndex(Monomer monomer) {
     int i;
-    for (i = count; --i >= 0; )
+    for (i = monomerCount; --i >= 0; )
       if (monomers[i] == monomer)
         break;
     return i;
@@ -185,7 +186,7 @@ abstract class Polymer {
 
   int getIndex(char chainID, int seqcode) {
     int i;
-    for (i = count; --i >= 0; )
+    for (i = monomerCount; --i >= 0; )
       if (monomers[i].seqcode == seqcode &&
           monomers[i].chain.chainID == chainID)
         break;
@@ -201,7 +202,7 @@ abstract class Polymer {
   }
 
   final Point3f getTerminatorPoint() {
-    return monomers[count - 1].getTerminatorAtom().point3f;
+    return monomers[monomerCount - 1].getTerminatorAtom().point3f;
   }
 
   final Atom getLeadAtom(int monomerIndex) {
@@ -209,7 +210,7 @@ abstract class Polymer {
   }
 
   void getLeadMidPoint(int groupIndex, Point3f midPoint) {
-    if (groupIndex == count) {
+    if (groupIndex == monomerCount) {
       --groupIndex;
     } else if (groupIndex > 0) {
       midPoint.set(getLeadPoint(groupIndex));
@@ -260,7 +261,7 @@ abstract class Polymer {
 
   final void calcLeadMidpointsAndWingVectors() {
     //    System.out.println("Polymer.calcLeadMidpointsAndWingVectors");
-    int count = this.count;
+    int count = monomerCount;
     leadMidpoints = new Point3f[count + 1];
     wingVectors = new Vector3f[count + 1];
     boolean hasWingPoints = hasWingPoints();
@@ -342,10 +343,43 @@ abstract class Polymer {
 
   void findNearestAtomIndex(int xMouse, int yMouse,
                             Closest closest, short[] mads) {
-    for (int i = count; --i >= 0; ) {
+    for (int i = monomerCount; --i >= 0; ) {
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest,
                                          mads[i], mads[i + 1]);
     }
+  }
+
+  int selectedMonomerCount;
+  private final static BitSet bsNull = new BitSet();
+  BitSet bsSelectedMonomers;
+
+  void calcSelectedMonomersCount(BitSet bsSelected) {
+    // FIXME miguel 2004 12 13
+    // WARNING! note that this code is currently being
+    // calculated once for each *atom*
+    selectedMonomerCount = 0;
+    if (bsSelectedMonomers == null)
+      bsSelectedMonomers = new BitSet();
+    else
+      bsSelectedMonomers.and(bsNull);
+    for (int i = monomerCount; --i >= 0; ) {
+      if (monomers[i].isSelected(bsSelected)) {
+        ++selectedMonomerCount;
+        bsSelectedMonomers.set(i);
+      }
+    }
+  }
+
+  int getSelectedMonomerIndex(Monomer monomer) {
+    int selectedMonomerIndex = 0;
+    for (int i = 0; i < monomerCount; ++i) {
+      if (bsSelectedMonomers.get(i)) {
+        if (monomers[i] == monomer)
+          return selectedMonomerIndex;
+        ++selectedMonomerIndex;
+      }
+    }
+    return -1;
   }
 }

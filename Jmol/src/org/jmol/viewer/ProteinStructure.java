@@ -82,7 +82,7 @@ abstract class ProteinStructure {
 
   boolean upperNeighborIsHelixOrSheet() {
     int upperNeighborIndex = monomerIndex + monomerCount;
-    if (upperNeighborIndex == apolymer.count)
+    if (upperNeighborIndex == apolymer.monomerCount)
       return false;
     return apolymer.monomers[upperNeighborIndex].isHelixOrSheet();
   }

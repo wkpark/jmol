@@ -1297,19 +1297,12 @@ final public class Viewer extends JmolViewer {
     return modelManager.getGroupsPresentBitSet();
   }
 
-  void calcMinMaxSeqcode(boolean selectedOnly) {
-    modelManager.calcMinMaxSeqcode(selectedOnly
-                                   ? selectionManager.bsSelection
-                                   : null,
-                                   rasmolHeteroSetting);
+  void calcSelectedGroupsCount() {
+    modelManager.calcSelectedGroupsCount(selectionManager.bsSelection);
   }
 
-  int getMinSeqcode() {
-    return modelManager.getMinSeqcode();
-  }
-
-  int getMaxSeqcode() {
-    return modelManager.getMaxSeqcode();
+  void calcSelectedMonomersCount() {
+    modelManager.calcSelectedMonomersCount(selectionManager.bsSelection);
   }
 
   /****************************************************************

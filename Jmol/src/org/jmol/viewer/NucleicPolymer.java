@@ -50,7 +50,7 @@ class NucleicPolymer extends Polymer {
 
   void lookForHbonds(NucleicPolymer other) {
     System.out.println("NucleicPolymer.lookForHbonds()");
-    for (int i = count; --i >= 0; ) {
+    for (int i = monomerCount; --i >= 0; ) {
       NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
       if (! myNucleotide.isPurine())
         continue;
@@ -58,7 +58,7 @@ class NucleicPolymer extends Polymer {
       Atom bestN3 = null;
       float minDist2 = 5*5;
       NucleicMonomer bestNucleotide = null;
-      for (int j = other.count; --j >= 0; ) {
+      for (int j = other.monomerCount; --j >= 0; ) {
         NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
         if (! otherNucleotide.isPyrimidine())
           continue;

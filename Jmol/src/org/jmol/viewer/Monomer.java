@@ -44,7 +44,7 @@ abstract class Monomer extends Group {
   }
 
   int getPolymerLength() {
-    return polymer == null ? 0 : polymer.count;
+    return polymer == null ? 0 : polymer.monomerCount;
   }
 
   int getPolymerIndex() {

@@ -1461,16 +1461,12 @@ final class Frame {
     }
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
-    mmset.calcMinMaxSeqcode(bsSelected, heteroSetting);
+  void calcSelectedGroupsCount(BitSet bsSelected) {
+    mmset.calcSelectedGroupsCount(bsSelected);
   }
 
-  int getMinSeqcode() {
-    return mmset.minSeqcode;
-  }
-
-  int getMaxSeqcode() {
-    return mmset.maxSeqcode;
+  void calcSelectedMonomersCount(BitSet bsSelected) {
+    mmset.calcSelectedMonomersCount(bsSelected);
   }
 
   void findMaxRadii() {

@@ -30,7 +30,6 @@ final class Model {
   Mmset mmset;
   int modelIndex;
   String modelTag;
-  int minSeqcode, maxSeqcode;
 
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
@@ -51,17 +50,6 @@ final class Model {
     for (int i = 0; i < chainCount; ++i)
       chains[i].freeze();
     polymers = (Polymer[])Util.setLength(polymers, polymerCount);
-
-    if (chainCount > 0) {
-      minSeqcode = chains[0].minSeqcode;
-      maxSeqcode = chains[0].maxSeqcode;
-      for (int i = chainCount; --i > 0; ) {
-        if (chains[i].minSeqcode < minSeqcode)
-          minSeqcode = chains[i].minSeqcode;
-        if (chains[i].maxSeqcode > maxSeqcode)
-          maxSeqcode = chains[i].maxSeqcode;
-      }
-    }
   }
 
   void addSecondaryStructure(byte type,
@@ -88,23 +76,14 @@ final class Model {
     return polymerCount;
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
-    minSeqcode = Integer.MAX_VALUE;
-    maxSeqcode = Integer.MIN_VALUE;
-    if (chainCount > 0) {
-      Chain chain = chains[0];
-      chain.calcMinMaxSeqcode(bsSelected, heteroSetting);
-      minSeqcode = chain.minSeqcode;
-      maxSeqcode = chain.maxSeqcode;
-      for (int i = chainCount; --i > 0; ) {
-        chain = chains[i];
-        chain.calcMinMaxSeqcode(bsSelected, heteroSetting);
-        if (chain.minSeqcode < minSeqcode)
-          minSeqcode = chain.minSeqcode;
-        if (chain.maxSeqcode > maxSeqcode)
-          maxSeqcode = chain.maxSeqcode;
-      }
-    }
+  void calcSelectedGroupsCount(BitSet bsSelected) {
+    for (int i = chainCount; --i >= 0; )
+      chains[i].calcSelectedGroupsCount(bsSelected);
+  }
+
+  void calcSelectedMonomersCount(BitSet bsSelected) {
+    for (int i = polymerCount; --i >= 0; )
+      polymers[i].calcSelectedMonomersCount(bsSelected);
   }
 
   int getGroupCount() {

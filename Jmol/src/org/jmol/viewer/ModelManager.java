@@ -347,17 +347,14 @@ class ModelManager {
     return (frame == null) ? null : frame.getGroupsPresentBitSet();
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
+  void calcSelectedGroupsCount(BitSet bsSelected) {
     if (frame != null)
-      frame.calcMinMaxSeqcode(bsSelected, heteroSetting);
+      frame.calcSelectedGroupsCount(bsSelected);
   }
 
-  int getMinSeqcode() {
-    return (frame == null) ? Integer.MAX_VALUE : frame.getMinSeqcode();
-  }
-
-  int getMaxSeqcode() {
-    return (frame == null) ? Integer.MIN_VALUE : frame.getMaxSeqcode();
+  void calcSelectedMonomersCount(BitSet bsSelected) {
+    if (frame != null)
+      frame.calcSelectedMonomersCount(bsSelected);
   }
 
   ////////////////////////////////////////////////////////////////

@@ -1661,6 +1661,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
   public final static int ATOMID_PROTEIN_MASK = 0x0F << 1;
+  // this is for groups that only contain an alpha carbon
+  public final static int ATOMID_ALPHA_ONLY_MASK = 1 << 3;
   // this is entries 5 through through 15 ... 11 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x07FF << 5;
   // RNA also includes the O2'

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -53,6 +53,18 @@ public class Monomer extends Group {
 
   int distinguishingBits;
 
+
+  static Monomer validateAndAllocate(Chain chain, String group3,
+                                     int sequenceNumber, char insertionCode,
+                                     Atom[] atoms,
+                                     int firstAtomIndex, int lastAtomIndex) {
+    Monomer monomer = new Monomer(chain, group3, sequenceNumber, insertionCode,
+                                  firstAtomIndex, lastAtomIndex);
+    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
+      monomer.registerAtom(atoms[i]);
+    return monomer;
+  }
+                                     
 
   Monomer(Chain chain, String group3,
           int sequenceNumber, char insertionCode,
@@ -141,13 +153,6 @@ public class Monomer extends Group {
   */
 
   void registerAtom(Atom atom) {
-    int atomIndex = atom.atomIndex;
-    if (firstAtomIndex == -1)
-      firstAtomIndex = lastAtomIndex = atomIndex;
-    else if (++lastAtomIndex != atomIndex) {
-      System.out.println("Group atom registration out of sequence");
-      throw new NullPointerException();
-    }
     byte specialAtomID = atom.getSpecialAtomID();
     if (specialAtomID <= 0)
       return;

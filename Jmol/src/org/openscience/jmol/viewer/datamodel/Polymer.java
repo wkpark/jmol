@@ -63,10 +63,10 @@ abstract class Polymer {
       //      System.out.println("an AminoPolymer");
       return new AminoPolymer(model, monomers);
     }
-    monomers = getAlphaCarbonMonomers(chain);
+    monomers = getAlphaMonomers(chain);
     if (monomers != null) {
-      //      System.out.println("an AlphaCarbonPolymer");
-      return new AlphaCarbonPolymer(model, monomers);
+      //      System.out.println("an AlphaPolymer");
+      return new AlphaPolymer(model, monomers);
     }
     monomers = getNucleotideMonomers(chain);
     if (monomers != null) {
@@ -108,7 +108,7 @@ abstract class Polymer {
     return monomers;
   }
 
-  static Monomer[] getAlphaCarbonMonomers(Chain chain) {
+  static Monomer[] getAlphaMonomers(Chain chain) {
     Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
     int count = 0;

@@ -25,8 +25,6 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.datamodel.Frame;
 import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3f;

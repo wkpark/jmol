@@ -100,7 +100,7 @@ class RocketsRenderer extends MpsRenderer {
       Monomer residue = monomers[i];
       if (isSpecials[i]) {
         ProteinStructure proteinstructure = residue.proteinstructure;
-        point.set(i - 1 != proteinstructure.getPolymerIndex()
+        point.set(i - 1 != proteinstructure.getMonomerIndex()
                   ? proteinstructure.getAxisStartPoint()
                   : proteinstructure.getAxisEndPoint());
 
@@ -176,7 +176,7 @@ class RocketsRenderer extends MpsRenderer {
     if (tPending) {
       Point3f[] segments = proteinstructurePending.getSegments();
       boolean tEnd =
-        (endIndexPending == proteinstructurePending.getPolymerCount() - 1);
+        (endIndexPending == proteinstructurePending.getMonomerCount() - 1);
 
       /*
       System.out.println("structurePending.getPolymerCount()=" +

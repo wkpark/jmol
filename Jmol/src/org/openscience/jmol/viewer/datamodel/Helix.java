@@ -30,9 +30,9 @@ import javax.vecmath.Vector3f;
 
 class Helix extends ProteinStructure {
 
-  Helix(AlphaCarbonPolymer acpolymer, int polymerIndex, int monomerCount) {
-    super(acpolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX,
-          polymerIndex, monomerCount);
+  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
+    super(apolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX,
+          monomerIndex, monomerCount);
     //    System.out.println("new Helix('" + polymer.chain.chainID + "'," +
     //                       polymerIndex + "," + monomerCount + ")");
   }
@@ -44,25 +44,25 @@ class Helix extends ProteinStructure {
 
     axisA = new Point3f();
     if (lowerNeighborIsHelixOrSheet())
-      acpolymer.getLeadMidPoint(polymerIndex, axisA);
+      apolymer.getLeadMidPoint(monomerIndex, axisA);
     else
-      acpolymer.getLeadMidPoint(polymerIndex + 1, axisA);
+      apolymer.getLeadMidPoint(monomerIndex + 1, axisA);
 
     axisB = new Point3f();
     if (upperNeighborIsHelixOrSheet())
-      acpolymer.getLeadMidPoint(polymerIndex + monomerCount, axisB);
+      apolymer.getLeadMidPoint(monomerIndex + monomerCount, axisB);
     else
-      acpolymer.getLeadMidPoint(polymerIndex + monomerCount - 1, axisB);
+      apolymer.getLeadMidPoint(monomerIndex + monomerCount - 1, axisB);
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    acpolymer.getLeadMidPoint(polymerIndex, tempA);
+    apolymer.getLeadMidPoint(monomerIndex, tempA);
     projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    acpolymer.getLeadMidPoint(polymerIndex + monomerCount, tempB);
+    apolymer.getLeadMidPoint(monomerIndex + monomerCount, tempB);
     projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;
@@ -83,10 +83,10 @@ class Helix extends ProteinStructure {
 
   void calcCenter() {
     if (center == null) {
-      int i = polymerIndex + monomerCount - 1;
-      center = new Point3f(acpolymer.getResidueAlphaCarbonPoint(i));
-      while (--i >= polymerIndex)
-        center.add(acpolymer.getResidueAlphaCarbonPoint(i));
+      int i = monomerIndex + monomerCount - 1;
+      center = new Point3f(apolymer.getResidueAlphaCarbonPoint(i));
+      while (--i >= monomerIndex)
+        center.add(apolymer.getResidueAlphaCarbonPoint(i));
       center.scale(1f/monomerCount);
       //      System.out.println("structure center is at :" + center);
     }

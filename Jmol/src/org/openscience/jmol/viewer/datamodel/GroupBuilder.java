@@ -53,6 +53,8 @@ final class GroupBuilder {
   char groupInsertionCode;
   int firstAtomIndex, lastAtomIndex;
 
+  int distinguishingBits;
+
   void startBuildingGroup(Chain chain, String group3,
                           int groupSequenceNumber, char groupInsertionCode) {
     if (hasPendingGroup)
@@ -63,6 +65,7 @@ final class GroupBuilder {
     this.groupSequenceNumber = groupSequenceNumber;
     this.groupInsertionCode = groupInsertionCode;
     firstAtomIndex = -1;
+    distinguishingBits = 0;
   }
 
 
@@ -78,20 +81,53 @@ final class GroupBuilder {
                          " received:" + atomIndex);
       throw new NullPointerException();
     }
+    int specialAtomID = atom.specialAtomID;
+    if ((specialAtomID > 0) &&
+        (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX))
+      distinguishingBits |= 1 << specialAtomID;
   }
-
 
 
   void finishBuildingGroup() {
     if (! hasPendingGroup)
       return;
-    Group group = new Group(chain, group3,
-                            groupSequenceNumber, groupInsertionCode,
-                            firstAtomIndex, lastAtomIndex);
+    Group group = distinguishAndAllocateGroup();
     propogateGroup(group, firstAtomIndex, lastAtomIndex);
     chain.addGroup(group);
     hasPendingGroup = false;
     chain = null;
+  }
+  
+  Group distinguishAndAllocateGroup() {
+    Atom[] atoms = frameBuilder.atoms;
+    Group group = null;
+    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
+        JmolConstants.ATOMID_PROTEIN_MASK) {
+      group = AminoMonomer.validateAndAllocate(chain, group3,
+                                               groupSequenceNumber,
+                                               groupInsertionCode,
+                                               atoms, firstAtomIndex,
+                                               lastAtomIndex);
+    } else if ((distinguishingBits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
+               JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
+      group = AlphaMonomer.validateAndAllocate(chain, group3,
+                                               groupSequenceNumber,
+                                               groupInsertionCode,
+                                               atoms, firstAtomIndex,
+                                               lastAtomIndex);
+    } else if ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
+               JmolConstants.ATOMID_NUCLEIC_MASK) {
+      group = NucleicMonomer.validateAndAllocate(chain, group3,
+                                                 groupSequenceNumber,
+                                                 groupInsertionCode,
+                                                 atoms, firstAtomIndex,
+                                                 lastAtomIndex);
+    }
+    if (group == null)
+      group = new Group(chain, group3,
+                        groupSequenceNumber, groupInsertionCode,
+                        firstAtomIndex, lastAtomIndex);
+    return group;
   }
 
   void propogateGroup(Group group, int firstAtomIndex, int lastAtomIndex) {

@@ -27,9 +27,9 @@ import org.openscience.jmol.viewer.JmolConstants;
 
 class Turn extends ProteinStructure {
 
-  Turn(AlphaCarbonPolymer acpolymer, int polymerIndex, int polymerCount) {
-    super(acpolymer, JmolConstants.PROTEIN_STRUCTURE_TURN,
-          polymerIndex, polymerCount);
+  Turn(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
+    super(apolymer, JmolConstants.PROTEIN_STRUCTURE_TURN,
+          monomerIndex, monomerCount);
   }
 }
 

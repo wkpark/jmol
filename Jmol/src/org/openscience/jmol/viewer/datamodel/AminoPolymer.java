@@ -30,7 +30,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class AminoPolymer extends AlphaCarbonPolymer {
+public class AminoPolymer extends AlphaPolymer {
 
   AminoPolymer(Model model, Monomer[] monomers) {
     super(model, monomers);

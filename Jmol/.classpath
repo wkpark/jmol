@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="jars/netscape.jar"/>
+	<classpathentry kind="lib" path="jars/vecmath1.2-1.14.jar"/>
+	<classpathentry kind="lib" path="jars/jmol2cdk.jar"/>
+	<classpathentry kind="lib" path="jars/Acme.jar"/>
+	<classpathentry kind="lib" path="jars/commons-cli-1.0.jar"/>
+	<classpathentry kind="lib" path="jars/itext-0.94.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>

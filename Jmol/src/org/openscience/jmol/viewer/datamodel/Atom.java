@@ -47,7 +47,7 @@ public class Atom implements Bspt.Tuple {
   short diameter;
   public byte atomicNumber;
   byte chargeAndFlags;
-  short marAtom;
+  short madAtom;
   short colixAtom;
   Bond[] bonds;
 
@@ -68,12 +68,12 @@ public class Atom implements Bspt.Tuple {
     this.chargeAndFlags = (byte)(atomicCharge << 4);
     this.atomTypeName = atomTypeName;
     this.colixAtom = viewer.getColixAtom(this);
-    setMarAtom(viewer.getMarAtom());
+    setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
     if (pdbFile != null)
       pdbAtom =
         pdbFile.allocatePdbAtom(atomIndex, modelNumber, pdbAtomRecord);
-    this.strLabel = viewer.getLabelAtom(this, atomIndex);
+    //    this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
 
   public boolean isBonded(Atom atomOther) {
@@ -187,22 +187,22 @@ public class Atom implements Bspt.Tuple {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setMarAtom(short marAtom) {
-    if (this.marAtom == JmolConstants.MAR_DELETED) return;
-    if (marAtom == -1000) // temperature
-      marAtom = getPdbTemperatureMar();
-    else if (marAtom == -1001) // ionic
-      marAtom = getBondingMar();
-    else if (marAtom < 0)
-      marAtom =
-        (short)(-marAtom * getVanderwaalsMar() / 100);
-    this.marAtom = marAtom;
+  public void setMadAtom(short madAtom) {
+    if (this.madAtom == JmolConstants.MAR_DELETED) return;
+    if (madAtom == -1000) // temperature
+      madAtom = (short)(getPdbTemperatureMar() * 2);
+    else if (madAtom == -1001) // ionic
+      madAtom = (short)(getBondingMar() * 2);
+    else if (madAtom < 0)
+      madAtom = // we are going from a radius to a diameter
+        (short)(-madAtom * getVanderwaalsMar() / 50);
+    this.madAtom = madAtom;
   }
 
   public int getRasMolRadius() {
-    if (marAtom == JmolConstants.MAR_DELETED)
+    if (madAtom == JmolConstants.MAR_DELETED)
       return 0;
-    return marAtom / 4;
+    return madAtom / (4 * 2);
   }
 
   public int getCovalentBondCount() {
@@ -229,7 +229,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public void transform(JmolViewer viewer) {
-    if (marAtom == JmolConstants.MAR_DELETED)
+    if (madAtom == JmolConstants.MAR_DELETED)
       return;
     Point3i screen = viewer.transformPoint(point3f);
     int t;
@@ -255,7 +255,7 @@ public class Atom implements Bspt.Tuple {
             ? Short.MAX_VALUE
             : (short)t));
     
-    diameter = viewer.scaleToScreen(z, marAtom * 2);
+    diameter = viewer.scaleToScreen(z, madAtom);
   }
 
   public int getAtomicNumber() {
@@ -323,7 +323,7 @@ public class Atom implements Bspt.Tuple {
   public short getBondingMar() {
     return JmolConstants.getBondingMar(atomicNumber, chargeAndFlags >> 4);
   }
-
+  
   public float getBondingRadiusFloat() {
     return getBondingMar() / 1000f;
   }
@@ -333,9 +333,9 @@ public class Atom implements Bspt.Tuple {
   }
 
   public float getRadius() {
-    if (marAtom == JmolConstants.MAR_DELETED)
+    if (madAtom == JmolConstants.MAR_DELETED)
       return 0;
-    return marAtom / 1000f;
+    return madAtom / (1000f * 2);
   }
 
   public int getModelNumber() {
@@ -385,9 +385,13 @@ public class Atom implements Bspt.Tuple {
     return (short)(pdbAtom.temperature * 10);
   }
 
+  public boolean isDeleted() {
+    return madAtom == JmolConstants.MAR_DELETED;
+  }
+
   public void markDeleted() {
     deleteAllBonds();
-    marAtom = JmolConstants.MAR_DELETED;
+    madAtom = JmolConstants.MAR_DELETED;
     x = y = z = diameter = 0;
   }
 }

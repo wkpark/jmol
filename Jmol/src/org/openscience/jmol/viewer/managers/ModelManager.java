@@ -207,6 +207,7 @@ public class ModelManager {
   short[] shapeMads = new short[JmolConstants.SHAPE_MAX];
   byte[] shapePalettes = new byte[JmolConstants.SHAPE_MAX];
   short[] shapeColixes = new short[JmolConstants.SHAPE_MAX];
+  Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
 
   public void setShapeMad(int shapeType, short mad, BitSet bsSelected) {
     shapeMads[shapeType] = mad;
@@ -234,7 +235,31 @@ public class ModelManager {
     return shapeColixes[shapeType];
   }
   
-  
+  private static final Object NULL_SURROGATE = new Object();
+
+  public void setShapeProperty(int shapeType, String propertyName,
+                               Object value, BitSet bsSelected) {
+    // Hashtables cannot store null values :-(
+    Hashtable props = shapeProperties[shapeType];
+    if (props == null)
+      props = shapeProperties[shapeType] = new Hashtable();
+    System.out.println("propertyName=" + propertyName + "\n" +
+                       "value=" + value);
+    props.put(propertyName, value != null ? value : NULL_SURROGATE);
+    if (frame != null)
+      frame.setShapeProperty(shapeType, propertyName, value, bsSelected);
+  }
+
+  public Object getShapeProperty(int shapeType, String propertyName) {
+    Hashtable props = shapeProperties[shapeType];
+    if (props != null) {
+      Object value = props.get(propertyName);
+      if (value != NULL_SURROGATE)
+        return value;
+    }
+    return null;
+  }
+
   ////////////////////////////////////////////////////////////////
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////

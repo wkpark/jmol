@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2002-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -24,35 +24,14 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
+
 import org.openscience.jmol.viewer.*;
+import org.openscience.jmol.viewer.g3d.Graphics3D;
 
-import javax.vecmath.Point3f;
-import java.util.BitSet;
+import java.awt.Rectangle;
 
-abstract public class Shape {
+class LabelsRenderer extends ShapeRenderer {
 
-  JmolViewer viewer;
-  Frame frame;
-
-  final public void setViewerFrame(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    this.frame = frame;
-    initShape();
-  }
-
-  void initShape() {
-  }
-
-  public void setMad(short mad, BitSet bsSelected) {
-  }
-
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-  }
-
-  public void setProperty(String propertyName, Object value,
-                          BitSet bsSelected) {
-  }
-
-  public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
+  void render() {
   }
 }

@@ -499,8 +499,10 @@ final public class JmolViewer {
 
   public void setModeAtomColorProfile(byte palette) {
     colorManager.setPaletteDefault(palette);
+    /*
     distributionManager.setColixAtom(palette, (short)0, // FIXME Colix.NULL,
                                      atomIteratorSelected());
+    */
     refresh();
   }
 
@@ -1319,10 +1321,6 @@ final public class JmolViewer {
       eval.haltExecution();
   }
 
-  public void setMarAtom(short mar) {
-    distributionManager.setMarAtom(mar, atomIteratorSelected());
-  }
-
   public void setMarBond(short mar, byte bondTypeMask) {
     distributionManager
       .setMarBond(mar, bondIteratorSelected(bondTypeMask));
@@ -1346,8 +1344,7 @@ final public class JmolViewer {
   }
 
   public void setColorAtomScript(byte palette, Color color) {
-    distributionManager.setColixAtom(palette, g3d.getColix(color),
-                                     atomIteratorSelected());
+    setShapeColor(JmolConstants.SHAPE_BALLS, palette, color);
   }
 
   public void setColorBondScript(Color color) {
@@ -1387,7 +1384,7 @@ final public class JmolViewer {
   }
 
   public void setLabelScript(String strLabel) {
-    distributionManager.setLabel(strLabel, atomIteratorSelected());
+    setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel);
   }
 
   public BitSet getBitSetSelection() {
@@ -1403,11 +1400,7 @@ final public class JmolViewer {
   }
   
   public void setShapeMad(int shapeType, short mad) {
-    modelManager.setShapeMad(shapeType, mad,
-                             shapeType <
-                             JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
-                             ? selectionManager.bsSelection
-                             : null);
+    modelManager.setShapeMad(shapeType, mad, selectionManager.bsSelection);
     refresh();
   }
   
@@ -1417,10 +1410,8 @@ final public class JmolViewer {
   
   public void setShapeColor(int shapeType, byte palette, Color color) {
     modelManager.setShapeColix(shapeType, palette, g3d.getColix(color),
-                               shapeType <
-                               JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
-                               ? selectionManager.bsSelection
-                               : null);
+                               selectionManager.bsSelection);
+    refresh();
   }
   
   public byte getShapePalette(int shapeType) {
@@ -1429,6 +1420,13 @@ final public class JmolViewer {
   
   public short getShapeColix(int shapeType) {
     return modelManager.getShapeColix(shapeType);
+  }
+  
+  public void setShapeProperty(int shapeType,
+                               String propertyName, Object value) {
+    modelManager.setShapeProperty(shapeType, propertyName, value,
+                                  selectionManager.bsSelection);
+    refresh();
   }
   
   int strandsCount = 5;
@@ -1660,10 +1658,6 @@ final public class JmolViewer {
    * Frame
    ****************************************************************/
 
-  private AtomIterator atomIteratorSelected() {
-    return getFrame().getAtomIterator(selectionManager.bsSelection);
-  }
-
   private BondIterator bondIteratorSelected(byte bondType) {
     return
       getFrame().getBondIterator(bondType, selectionManager.bsSelection);
@@ -1677,10 +1671,10 @@ final public class JmolViewer {
     public Atom next() { return null; }
     public void release() {}
   }
-
+  
   final BondIterator nullBondIterator =
     new NullBondIterator();
-
+  
   class NullBondIterator implements BondIterator {
     public boolean hasNext() { return false; }
     public Bond next() { return null; }
@@ -1704,9 +1698,7 @@ final public class JmolViewer {
 
   public void setPercentVdwAtom(int percentVdwAtom) {
     styleManager.setPercentVdwAtom(percentVdwAtom);
-    distributionManager.setMarAtom((short)-percentVdwAtom,
-                                   atomIteratorSelected());
-    refresh();
+    setShapeMad(JmolConstants.SHAPE_BALLS, (short)-percentVdwAtom);
   }
 
   public int getPercentVdwAtom() {
@@ -1719,7 +1711,7 @@ final public class JmolViewer {
     refresh();
   }
 
-  public short getMarAtom() {
+  public short getMadAtom() {
     return (short)-styleManager.percentVdwAtom;
   }
 
@@ -1833,29 +1825,9 @@ final public class JmolViewer {
    * delegated to LabelManager
    ****************************************************************/
 
-  public void setStyleLabel(byte style) {
-    labelManager.setStyleLabel(style);
-    distributionManager.setStyleLabel(style, atomIteratorSelected());
-    refresh();
-  }
-
-  public byte getStyleLabel() {
-    return labelManager.styleLabel;
-  }
-
-  public String getLabelAtom(Atom atom, int atomIndex) {
-    return labelManager.getLabelAtom(labelManager.styleLabel,
-                                     atom, atomIndex);
-  }
-
-  public String getLabelAtom(byte styleLabel, Atom atom,
+  public String getLabelAtom(String strFormat, Atom atom,
                              int atomIndex) {
-    return labelManager.getLabelAtom(styleLabel, atom, atomIndex);
-  }
-
-  public String getLabelAtom(String strLabel, Atom atom,
-                             int atomIndex) {
-    return labelManager.getLabelAtom(strLabel, atom, atomIndex);
+    return labelManager.getLabelAtom(strFormat, atom, atomIndex);
   }
 
   public void setLabelFontSize(int points) {

@@ -389,6 +389,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     atomPanel.add(cRender, constraints);
 
+    /*
     JLabel atomLabelsLabel = new JLabel(JmolResourceHandler.getInstance()
           .getString("Prefs.atomLabelsLabel"));
     constraints = new GridBagConstraints();
@@ -418,6 +419,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     constraints.anchor = GridBagConstraints.WEST;
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     atomPanel.add(aLabel, constraints);
+    */
 
     JLabel filler = new JLabel();
     constraints = new GridBagConstraints();
@@ -989,7 +991,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbAxesOrientationRasmol.setSelected(viewer.getAxesOrientationRasmol());
 
     // Atom panel controls: 
-    aLabel.setSelectedIndex(viewer.getStyleLabel());
+    //    aLabel.setSelectedIndex(viewer.getStyleLabel());
     vdwPercentSlider.setValue(viewer.getPercentVdwAtom());
 
     // Bond panel controls:
@@ -1095,7 +1097,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setColorLabel(isLabelAtomColor ? null : colorText);
     viewer.setColorBond(isBondAtomColor ? null : colorBond);
     viewer.setPercentVdwAtom(percentVdwAtom);
-    viewer.setStyleLabel(styleLabel);
+    //    viewer.setStyleLabel(styleLabel);
     //viewer.setPropertyStyleString(AtomPropsMode);
     viewer.setMarBondDefault(marBond);
     viewer.setColorVector(colorVector);

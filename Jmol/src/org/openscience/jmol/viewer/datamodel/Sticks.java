@@ -24,7 +24,6 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 public class Sticks extends Shape {
 }

@@ -50,7 +50,7 @@ class LineRenderer extends ShapeRenderer {
   */
 
   void render() {
-    render(frame.lineCount, frame.lines);
+    //    render(frame.lineCount, frame.lines);
   }
 
   void render(int lineCount, Line[] lines) {

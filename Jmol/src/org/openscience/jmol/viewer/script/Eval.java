@@ -1088,15 +1088,17 @@ public class Eval implements Runnable {
 
   void withinDistance(float distance, BitSet bs, BitSet bsResult) {
     Frame frame = viewer.getFrame();
-    AtomIterator iterSelected = frame.getAtomIterator(bs);
-    while (iterSelected.hasNext()) {
-      AtomIterator iterWithin =
-        frame.getWithinIterator(iterSelected.next(), distance);
-      while (iterWithin.hasNext())
-        bsResult.set(iterWithin.next().atomIndex);
+    for (int i = frame.getAtomCount(); --i >= 0; ) {
+      if (bs.get(i)) {
+        Atom atom = frame.getAtomAt(i);
+        AtomIterator iterWithin =
+          frame.getWithinIterator(atom, distance);
+        while (iterWithin.hasNext())
+          bsResult.set(iterWithin.next().atomIndex);
+      }
     }
   }
-
+  
   void withinGroup(BitSet bs, BitSet bsResult) {
     System.out.println("withinGroup");
     Frame frame = viewer.getFrame();
@@ -1440,7 +1442,6 @@ public class Eval implements Runnable {
     viewer.setBondSelectionModeOr(true);
     viewer.setMarBondAll((short)0);
     viewer.setBondSelectionModeOr(bondmode);
-    viewer.setMarAtom((short)0);
     viewer.setLabelScript(null);
 
     for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT;
@@ -1690,7 +1691,7 @@ public class Eval implements Runnable {
   }
 
   void cpk() throws ScriptException {
-    short mar = 0;
+    short mad = 0;
     int tok = Token.on;
     if (statementLength > 1) {
       tok = statement[1].tok;
@@ -1703,7 +1704,7 @@ public class Eval implements Runnable {
     }
     switch (tok) {
     case Token.on:
-      mar = -100; // cpk with no args goes to 100%
+      mad = -100; // cpk with no args goes to 100%
       break;
     case Token.off:
       break;
@@ -1712,35 +1713,35 @@ public class Eval implements Runnable {
       if (statementLength == 2) {
         if (radiusRasMol >= 750 || radiusRasMol < -100)
           numberOutOfRange();
-        mar = (short)radiusRasMol;
+        mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
-          mar *= 4;
+          mad *= 4 * 2;
       } else {
         if (radiusRasMol < 0 || radiusRasMol > 100)
           numberOutOfRange();
-        mar = (short)-radiusRasMol; // use a negative number to specify %vdw
+        mad = (short)-radiusRasMol; // use a negative number to specify %vdw
       }
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms > 3)
         numberOutOfRange();
-      mar = (short)(angstroms * 1000);
+      mad = (short)(angstroms * 1000 * 2);
       break;
     case Token.temperature:
-      mar = -1000;
+      mad = -1000;
       break;
     case Token.identifier:
       String t = (String)statement[1].value;
       if (t.equalsIgnoreCase("ionic")) {
-        mar = -1001;
+        mad = -1001;
         break;
       }
 
     default:
       booleanOrNumberExpected();
     }
-    viewer.setMarAtom(mar);
+    viewer.setShapeMad(JmolConstants.SHAPE_BALLS, mad);
   }
 
   void wireframe() throws ScriptException {

@@ -24,7 +24,26 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+
+import java.util.BitSet;
 
 public class Balls extends Shape {
+  public void setMad(short mad, BitSet bsSelected) {
+    Atom[] atoms = frame.atoms;
+    for (int i = frame.atomCount; --i >= 0; )
+      if (bsSelected.get(i))
+        atoms[i].setMadAtom(mad);
+  }
+
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
+    boolean useColorProfile = colix == 0;
+    Atom[] atoms = frame.atoms;
+    for (int i = frame.atomCount; --i >= 0; )
+      if (bsSelected.get(i)) {
+        Atom atom = atoms[i];
+        short colixT = (useColorProfile
+                        ? viewer.getColixAtomPalette(atom, palette) : colix);
+        atom.setColixAtom(colixT);
+      }
+  }
 }

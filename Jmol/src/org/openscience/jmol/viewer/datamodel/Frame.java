@@ -244,7 +244,6 @@ final public class Frame {
   }
 
   final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
-  final short[] shapeMads = new short[JmolConstants.SHAPE_MAX];
 
   void checkShape(int shapeType) {
     if (shapes[shapeType] == null) {
@@ -253,15 +252,10 @@ final public class Frame {
   }
   
   public void setShapeMad(int shapeType, short mad, BitSet bsSelected) {
-    shapeMads[shapeType] = mad;
     if (mad != 0)
       checkShape(shapeType);
     if (shapes[shapeType] != null)
       shapes[shapeType].setMad(mad, bsSelected);
-  }
-
-  public short getShapeMad(int shapeType) {
-    return shapeMads[shapeType];
   }
 
   public void setShapeColix(int shapeType, byte palette,
@@ -270,6 +264,12 @@ final public class Frame {
       checkShape(shapeType);
     if (shapes[shapeType] != null)
       shapes[shapeType].setColix(palette, colix, bsSelected);
+  }
+
+  public void setShapeProperty(int shapeType, String propertyName,
+                               Object value, BitSet bsSelected) {
+    checkShape(shapeType);
+    shapes[shapeType].setProperty(propertyName, value, bsSelected);
   }
 
   Point3f averageAtomPoint;
@@ -439,21 +439,6 @@ final public class Frame {
     */
   }
 
-  final static int lineGrowthIncrement = 16;
-  int lineCount = 0;
-  Line[] lines = null;
-
-  public void addLineShape(Line line) {
-    if (lines == null || lineCount == lines.length) {
-      Line[] newLines =
-        new Line[lineCount + lineGrowthIncrement];
-      if (lines != null)
-        System.arraycopy(lines, 0, newLines, 0, lineCount);
-      lines = newLines;
-    }
-    lines[lineCount++] = line;
-  }
-
   final static int measurementGrowthIncrement = 16;
   int measurementCount = 0;
   Measurement[] measurements = null;
@@ -551,35 +536,6 @@ final public class Frame {
     return bsFoundRectangle;
   }
 
-  public AtomIterator getAtomIterator(BitSet bsSelected) {
-    return new SelectedAtomIterator(bsSelected);
-  }
-
-  class SelectedAtomIterator implements AtomIterator {
-
-    int iAtom;
-    BitSet bsSelected;
-
-    SelectedAtomIterator(BitSet bsSelected) {
-      this.bsSelected = bsSelected;
-      iAtom = 0;
-    }
-
-    public boolean hasNext() {
-      for ( ; iAtom < atomCount; ++iAtom)
-        if (bsSelected.get(iAtom))
-          return true;
-      return false;
-    }
-
-    public Atom next() {
-      return atoms[iAtom++];
-    }
-
-    public void release() {
-    }
-  }
-
   public BondIterator getBondIterator(byte bondType, BitSet bsSelected) {
     return new SelectedBondIterator(bondType, bsSelected);
   }
@@ -626,7 +582,7 @@ final public class Frame {
       bspf = new Bspf(3);
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
-        if (atom.marAtom != JmolConstants.MAR_DELETED) // not deleted atoms
+        if (! atom.isDeleted())
           bspf.addTuple(atom.getModelNumber(), atom);
       }
     }

@@ -42,10 +42,12 @@ public class DistributionManager {
    * the JmolFrame guys
    ****************************************************************/
 
+  /*
   public void setMarAtom(short marAtom, AtomIterator iter) {
     while (iter.hasNext())
       iter.next().setMarAtom(marAtom);
   }
+  */
 
   public void setMarBond(short marBond, BondIterator iter) {
     while (iter.hasNext())
@@ -57,6 +59,7 @@ public class DistributionManager {
       iter.next().setColix(colixBond);
   }
 
+  /*
   public void setColixAtom(byte palette, short colix, AtomIterator iter) {
     boolean useColorProfile = colix == 0;
     while (iter.hasNext()) {
@@ -66,7 +69,9 @@ public class DistributionManager {
       atom.setColixAtom(colixT);
     }
   }
+  */
 
+  /*
   public void setStyleLabel(byte styleLabel, AtomIterator iter) {
     while (iter.hasNext()) {
       Atom atom = iter.next();
@@ -75,7 +80,9 @@ public class DistributionManager {
                                               atom.atomIndex));
     }
   }
+  */
 
+  /*
   public void setLabel(String strLabel, AtomIterator iter) {
     while (iter.hasNext()) {
       Atom atom = iter.next();
@@ -83,5 +90,5 @@ public class DistributionManager {
                                               atom.atomIndex));
     }
   }
+  */
 }
-

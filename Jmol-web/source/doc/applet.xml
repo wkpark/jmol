@@ -159,23 +159,23 @@
         <param name="label">
           The labels to display for atoms.  One of:
           <dl>
-            <dt>NONE</dt> <dd>do not display labels.</dd>
-            <dt>SYMBOLS</dt> <dd>the atomic symbols for the atoms.</dd>
-            <dt>NUMBERS</dt> <dd>the numbers of the atoms.</dd>
+            <dt>none</dt> <dd>do not display labels.</dd>
+            <dt>symbol</dt> <dd>label atoms with their atomic symbol.</dd>
+            <dt>number</dt> <dd>label atoms with their number.</dd>
           </dl>
           The default value is NONE.
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="label" VALUE="NUMBERS"/>
+  <PARAM NAME="label" VALUE="number"/>
 </APPLET>]]>
 </appletExample>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="label" VALUE="SYMBOLS"/>
+  <PARAM NAME="label" VALUE="symbol"/>
 </APPLET>]]>
 </appletExample>
         </param>

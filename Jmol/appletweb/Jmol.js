@@ -200,7 +200,7 @@ function jmolSetTarget(targetSuffix) {
 
 function jmolScript(script, targetSuffix) {
   if (script) {
-    var target = "jmol-" + (targetSuffix ? targetSuffix : "0");
+    var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
     var applet = _jmolFindApplet(target);
     if (applet)
       return applet.script(script);
@@ -211,7 +211,7 @@ function jmolScript(script, targetSuffix) {
 
 function jmolLoadInline(model, targetSuffix) {
   if (model) {
-    var target = "jmol-" + (targetSuffix ? targetSuffix : "0");
+    var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
     var applet = _jmolFindApplet(target);
     if (applet)
       return applet.loadInline(model);
@@ -326,7 +326,7 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       script = "select *";
     var sz = _jmolGetAppletSize(size);
     var t;
-    t = "<applet name='jmol-" + nameSuffix + "' id='jmol-" + nameSuffix +
+    t = "<applet name='jmolApplet" + nameSuffix + "' id='jmolApplet" + nameSuffix +
         "' " + appletCssClass +
         " code='JmolApplet' archive='JmolApplet.jar'\n" +
         " codebase='" + codebase + "'\n" +
@@ -416,11 +416,10 @@ function _jmolSearchFrames(win, target) {
     }
   } else { // look for the applet in this window
     var doc = win.document;
-    if (doc.getElementById) // this is the DOM way to do it
-      applet = doc.getElementById(target);
-    else if (doc.applets) // NS4 compatibility
+// getElementById fails on MacOSX Safari & Mozilla	
+    if (doc.applets)
       applet = doc.applets[target];
-    else // this also works on NS4 & may help with some other old browsers
+    else
       applet = doc[target];
   }
   return applet;

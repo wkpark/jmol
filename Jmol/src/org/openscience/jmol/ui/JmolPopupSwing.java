@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.ui;
 
-import org.openscience.jmol.viewer.*;
+import org.jmol.viewer.*;
 
 import java.awt.Component;
 import javax.swing.JComponent;

@@ -24,9 +24,9 @@
  */
 
 import org.openscience.jmol.applet.*;
-import org.openscience.jmol.viewer.*;
+import org.jmol.viewer.*;
 import org.jmol.api.JmolAdapter;
-import org.openscience.jmol.viewer.JmolStatusListener;
+import org.jmol.viewer.JmolStatusListener;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 //import org.openscience.jmol.adapters.CdkJmolAdapter;
 import org.openscience.jmol.ui.JmolPopup;

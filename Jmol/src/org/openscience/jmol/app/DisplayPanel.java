@@ -25,7 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.viewer.*;
+import org.jmol.viewer.*;
 
 import java.awt.*;
 import java.awt.image.*;

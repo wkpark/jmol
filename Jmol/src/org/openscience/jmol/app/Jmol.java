@@ -23,8 +23,8 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.app;
-import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.JmolStatusListener;
+import org.jmol.viewer.*;
+import org.jmol.viewer.JmolStatusListener;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.adapter.cdk.CdkJmolAdapter;

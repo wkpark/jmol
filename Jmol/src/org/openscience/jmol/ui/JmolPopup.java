@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.ui;
-import org.openscience.jmol.viewer.*;
+import org.jmol.viewer.*;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

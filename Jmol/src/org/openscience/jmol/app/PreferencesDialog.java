@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.viewer.*;
+import org.jmol.viewer.*;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Color;

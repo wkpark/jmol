@@ -110,6 +110,7 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 			java.net.URL url1 = new java.net.URL(propertiesURL);
 			ats1.load(url1.openStream());
         } catch(java.io.IOException e1) {
+			System.err.println("Error loading atom properties from URL '" + propertiesURL + "': " + e1);
 		}
         
         typesReady = true;
@@ -126,6 +127,7 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 			AtomTypeSet ats1 = new AtomTypeSet();
 			ats1.load(propertiesURL.openStream());
         } catch(java.io.IOException e1) {
+			System.err.println("Error loading atom properties from URL '" + propertiesURL + "': " + e1);
 		}
         
         typesReady = true;

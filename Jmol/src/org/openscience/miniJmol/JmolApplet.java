@@ -56,12 +56,12 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
             atomtypes = "AtomTypes";
 		}
 		java.net.URL atURL;
-		try{
-            atURL= new java.net.URL(getDocumentBase(),atomtypes);
-		}catch (java.net.MalformedURLException e){
-            throw new RuntimeException(("Got MalformedURL for Atomtypes: "+e.toString()));
+		try {
+			AtomTypeSet ats1 = new AtomTypeSet();
+			ats1.load(getClass().getResourceAsStream("Data/AtomTypes.txt"));
+		} catch (java.io.IOException ex) {
+			System.err.println("Error loading atom types: " + ex);
 		}
-		myBean.setAtomPropertiesFromURL(atURL);
 		
 		String model = getParameter("MODEL");
 		if (model != null){

@@ -1,18 +1,19 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
-#          JAVA_HOME=/usr/local/jdk1.2.2
+           JAVA_HOME=/usr/local/jdk1.2.2
 #          JAVA_HOME=/usr/java
 #          SWING_HOME=${JMOL_HOME}/jars
                JAVAC= javac
                 JAVA= java
+               JIKES= /usr/local/bin/jikes
              JAVADOC= javadoc -private
-       JAVA_COMPILER= $(JAVAC)
+       JAVA_COMPILER= $(JIKES)
         THREADS_FLAG=native
 # Java 2 classpath:
-           CLASSPATH=${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar
+           CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar:${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.2-1.14.jar:${JMOL_HOME}/jars/junit.jar
 #
 # Java 1.1 classpath:
-#           CLASSPATH=${JAVA_HOME}/lib/classes.zip:${JMOL_HOME}/src:${JAVA_HOME}/lib/rt.jar:${JMOL_HOME}/jars/swing.jar:${JMOL_HOME}/jars/multi.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar
+#           CLASSPATH=${JAVA_HOME}/lib/classes.zip:${JMOL_HOME}/src:${JAVA_HOME}/lib/rt.jar:${JMOL_HOME}/jars/swing.jar:${JMOL_HOME}/jars/multi.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar${JMOL_HOME}/jars/vecmath1.2-1.14.jar:${JMOL_HOME}/jars/junit.jar
 #
 # put Jmol.java first, so that compilation is fast
 #
@@ -25,8 +26,10 @@ SOURCES = org/openscience/jmol/Jmol.java \
         org/openscience/jmol/ArrowLine.java \
         org/openscience/jmol/AtomPropsMenu.java \
         org/openscience/jmol/AtomType.java \
+        org/openscience/jmol/AtomTypeSet.java \
         org/openscience/jmol/AtomTypeTable.java \
         org/openscience/jmol/AtomTypesModel.java \
+        org/openscience/jmol/BaseAtomType.java \
         org/openscience/jmol/Bond.java \
         org/openscience/jmol/CMLFile.java \
         org/openscience/jmol/CMLSaver.java \
@@ -34,8 +37,11 @@ SOURCES = org/openscience/jmol/Jmol.java \
         org/openscience/jmol/ChemFile.java \
         org/openscience/jmol/ChemFileReader.java \
         org/openscience/jmol/ChemFrame.java \
+        org/openscience/jmol/ConsoleTextArea.java \
+        org/openscience/jmol/DTDResolver.java \
         org/openscience/jmol/DecimalNumberField.java \
         org/openscience/jmol/Dihedral.java \
+        org/openscience/jmol/DisplaySettings.java \
         org/openscience/jmol/Distance.java \
         org/openscience/jmol/FileSaver.java \
         org/openscience/jmol/FileTyper.java \
@@ -47,15 +53,23 @@ SOURCES = org/openscience/jmol/Jmol.java \
         org/openscience/jmol/GaussianFile.java \
         org/openscience/jmol/HelpDialog.java \
         org/openscience/jmol/ImageTyper.java \
+        org/openscience/jmol/JMolCDO.java \
         org/openscience/jmol/JmolException.java \
         org/openscience/jmol/JmolResourceHandler.java \
         org/openscience/jmol/JpegEncoder.java \
+        org/openscience/jmol/ListNode.java \
+        org/openscience/jmol/LoopedStreams.java \
         org/openscience/jmol/Matrix3D.java \
         org/openscience/jmol/Measure.java \
+        org/openscience/jmol/Measurement.java \
+        org/openscience/jmol/MeasurementInterface.java \
         org/openscience/jmol/MeasurementList.java \
+        org/openscience/jmol/MeasurementListEvent.java \
+        org/openscience/jmol/MeasurementListListener.java \
         org/openscience/jmol/MultiLineHeaderRenderer.java \
         org/openscience/jmol/NMRShielding.java \
         org/openscience/jmol/PDBReader.java \
+        org/openscience/jmol/Pair.java \
         org/openscience/jmol/PhysicalProperty.java \
         org/openscience/jmol/Preferences.java \
         org/openscience/jmol/ReaderFactory.java \
@@ -121,6 +135,7 @@ TEST_CLASSES = $(TEST_SOURCES:%.java=%.class)
 
 all: archive applet_archive
 
+archive: $(CLASSES)
 application: $(CLASSES)
 applet: $(APPLET_CLASSES) $(APPLET_JMOL_CLASSES)
 tests: $(TEST_CLASSES)
@@ -130,7 +145,7 @@ applet_archive: applet
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar
-	jar cvf ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images org/openscience/jmol/Properties org/openscience/jmol/Data
+	jar cvf ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/NMRReferences org/openscience/jmol/Data/cml.dtd
 	chmod 664 ../jars/jmol.jar
 
 # suggested by Christoph Steinbeck:
@@ -147,4 +162,5 @@ doc::
 clean::
 	find . -name '*~' -exec $(RM) {} \;
 	find org/openscience -name '*.class' -exec $(RM) {} \;
-	/bin/rm -rf doc/*
+        # Messes with CVS:
+	# /bin/rm -rf doc/*

@@ -48,14 +48,6 @@ import java.net.URISyntaxException;
 import java.util.Enumeration;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.ReaderFactory;
-import org.openscience.dadml.DATABASE;
-import org.openscience.dadml.DBDEF;
-import org.openscience.dadml.DBLIST;
-import org.openscience.dadml.FIELD;
-import org.openscience.dadml.INDEX;
-import org.openscience.dadml.filereaders.DBDEFFileReader;
-import org.openscience.dadml.filereaders.DBLISTFileReader;
-import org.openscience.dadml.tools.DBDEFInfo;
 */
 
 class FileManager {
@@ -233,110 +225,11 @@ class FileManager {
         return;
       }
     }
-    /****************************************************************
-     * we need to comment this out because it will not work with applet
-    if (name.startsWith("dadml:")) {
-        //isURL = true;
-        try {
-            URI uri = new URI(name);
-            URL resolvedURL = resolveLink(uri);
-            if (resolvedURL != null) {
-                fullPathName = resolvedURL.toString();
-                fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
-                fullPathName.length());
-            }
-        } catch (URISyntaxException e) {
-            openErrorMessage = e.getMessage();
-        }
-        System.out.println("dadml fullPathName=" + fullPathName);
-        return;
-    }
-    ****************************************************************/
     //isURL = false;
     file = new File(name);
     fullPathName = file.getAbsolutePath();
     fileName = file.getName();
   }
-
-  /* ***************************************************************
-  URL resolveLink(URI dadmlRI) {
-    System.out.println("Resolving URI: " + dadmlRI);
-    
-    boolean found = false; // this is true when a structure is downloaded
-    boolean done = false;  // this is true when all URLS have been tested
-    
-    String indexType = dadmlRI.getPath().substring(1);
-    String index = dadmlRI.getQuery();
-    
-    DBLIST dblist = new DBLIST();
-    String superdb = "http://jmol.sf.net/super.xml";
-    try {
-      System.out.println("Downloading DADML super database: " + superdb);
-      // Proxy authorization has to be ported from Chemistry Development Kit (CDK)
-      // for now, do without authorization
-      DBLISTFileReader reader = new DBLISTFileReader();
-      dblist = reader.read(superdb);
-    } catch (Exception supererror) {
-      openErrorMessage = "Exception while reading super db: " + supererror.getMessage();
-      return null;
-        }
-    Enumeration dbases = dblist.databases();
-    while (!found && !done && dbases.hasMoreElements()) {
-      DATABASE database = (DATABASE)dbases.nextElement();
-      String dburl = database.getURL() + database.getDefinition();
-      DBDEF dbdef = new DBDEF();
-      // Proxy authorization has to be ported from Chemistry Development Kit (CKD)
-      // for now, do without authorization
-      try {
-        System.out.println("Downloading: " + dburl);
-        // do without authorization
-        DBDEFFileReader reader = new DBDEFFileReader();
-        dbdef = reader.read(dburl);
-      } catch (Exception deferror) {
-        openErrorMessage = deferror.getMessage();
-        return null;
-      }
-      if (DBDEFInfo.hasINDEX(dbdef, indexType)) {
-        // oke, find a nice URL to use for download
-        System.out.println("Trying: " + dbdef.getTITLE());
-        Enumeration fields = dbdef.fields();
-        while (fields.hasMoreElements()) {
-          FIELD field = (FIELD)fields.nextElement();
-          String mime = field.getMIMETYPE();
-          String ftype = field.getTYPE();
-          if ((mime.equals("chemical/x-mdl-mol") ||
-               mime.equals("chemical/x-pdb") ||
-               mime.equals("chemical/x-cml")) &&
-              (ftype.equals("3DSTRUCTURE") ||
-               ftype.equals("2DSTRUCTURE"))) {
-            System.out.println("Accepted: " + field.getMIMETYPE() + "," + field.getTYPE());
-            Enumeration indices = field.getINDEX();
-            while (indices.hasMoreElements()) {
-              INDEX ind = (INDEX)indices.nextElement();
-              if (ind.getTYPE().equals(indexType)) {
-                // here is the URL composed
-                String url = dbdef.getURL() + ind.getACCESS_PREFIX() + index + ind.getACCESS_SUFFIX();
-                System.out.println("Will retrieve information from: " + url);
-                try {
-                  return new URL(url);
-                } catch (MalformedURLException exception) {
-                  System.out.println("Malformed URL: " + exception.getMessage());
-                }
-              }
-            }
-          } else {
-            // reject other mime types && type structures
-            System.out.println("Rejected: " + field.getMIMETYPE() + "," + field.getTYPE());
-          }
-        }
-      } else {
-        System.out.println("Database does not have indexType: " + indexType);
-      }
-    }
-    openErrorMessage = "Database does not contain the requested compound";
-    return null;
-  }
-  ****************************************************************/
   
   Object getInputStreamOrErrorMessageFromName(String name) {
     String errorMessage = null;

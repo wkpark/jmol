@@ -28,10 +28,16 @@ package org.openscience.jmol.app;
 import org.jmol.api.*;
 
 import java.beans.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import javax.swing.border.*;
+import javax.vecmath.Point3f;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -63,6 +69,9 @@ ActionListener, ChangeListener, Runnable {
   private JSlider scaleSlider;
   private JSlider radiusSlider;
   
+  private JFileChooser saveChooser;
+
+  
   // Strings for the commands of the buttons and the determination
   // of the tooltips and images associated with them
   static final String REWIND="rewind";
@@ -71,6 +80,7 @@ ActionListener, ChangeListener, Runnable {
   static final String PAUSE="pause";
   static final String NEXT="next";
   static final String FF="ff";
+  static final String SAVE="save";
   
   /**
    * String for prefix/resource identifier for the collection area.
@@ -85,7 +95,7 @@ ActionListener, ChangeListener, Runnable {
   
 
   /**
-   * Sequence if atom set indexes in current tree selection for a branch,
+   * Sequence of atom set indexes in current tree selection for a branch,
    * or siblings for a leaf.
    */
   private int indexes[];
@@ -149,6 +159,7 @@ ActionListener, ChangeListener, Runnable {
  //   super(frame,"AtomSetChooser", false);
     super("AtomSetChooser");
     this.viewer = viewer;
+    saveChooser = new JFileChooser();
     
     // initialize the treeModel
     treeModel = new DefaultTreeModel(new DefaultMutableTreeNode("No AtomSets"));
@@ -352,7 +363,7 @@ ActionListener, ChangeListener, Runnable {
     controlPanel.setBorder(new TitledBorder(
         JmolResourceHandler.translateX("AtomSetChooser."+section+".VCR.label")));
     Insets inset = new Insets(1,1,1,1);
-    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF};
+    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
     for (int i=buttons.length, idx=0; --i>=0; idx++) {
       String action = buttons[idx];
       // the icon and tool tip come from 
@@ -364,8 +375,6 @@ ActionListener, ChangeListener, Runnable {
       btn.setMargin(inset);
       btn.setActionCommand(section+"."+action);
       btn.addActionListener(this);
-//      if (idx>0)
-//        controlPanel.add(Box.createHorizontalGlue());
       controlPanel.add(btn);
     }
     controlPanel.add(Box.createHorizontalGlue());
@@ -460,6 +469,8 @@ ActionListener, ChangeListener, Runnable {
           } else if (FF.equals(cmd)) {
             animThread = null;
             showAtomSetIndex(indexes.length-1, true);
+          } else if (SAVE.equals(cmd)) {
+            saveXYZCollection();
           }
         } else if (section.equals("vector")) {
           if (REWIND.equals(cmd)) {
@@ -474,11 +485,55 @@ ActionListener, ChangeListener, Runnable {
             findFrequency(currentIndex+1,1);
           } else if (FF.equals(cmd)) {
             findFrequency(indexes.length-1,-1);
-          }     
+          } else if (SAVE.equals(cmd)) {
+            System.out.println("Not implemented");
+            // since I can not get to the vectors, I can't output this one (yet)
+            // saveXYZVector();
+          }
         }
       }
     } catch (Exception exception) {
       // exceptions during indexes array access: ignore it
+    }
+  }
+  
+  /**
+   * Saves the currently active collection as a multistep XYZ file. 
+   */
+  public void saveXYZCollection() {
+    int nidx = indexes.length;
+    if (nidx==0) {
+      System.out.println("No collection selected.");
+      return;
+    }
+
+    int retval = saveChooser.showSaveDialog(this);
+    if (retval == 0) {
+      File file = saveChooser.getSelectedFile();
+      String fname = file.getAbsolutePath();
+      try {
+        PrintWriter f = new PrintWriter(new FileOutputStream(fname));
+        for (int idx = 0; idx < nidx; idx++ ) {
+          int modelIndex = indexes[idx];
+          StringBuffer str = new StringBuffer(viewer.getModelName(modelIndex)+"\n");
+          int natoms=0;
+          for (int i = 0; i < viewer.getAtomCount(); i++) {
+            if (viewer.getAtomModelIndex(i)==modelIndex) {
+              natoms++;
+              Point3f p = viewer.getAtomPoint3f(i);
+              // should really be getElementSymbol(i) in stead
+              str.append(viewer.getAtomName(i)+"\t");
+              str.append(p.x+"\t"+p.y+"\t"+p.z+"\n");
+              // not sure how to get the vibration vector and charge here...
+            }
+          }
+          f.println(natoms);
+          f.print(str);
+        }
+        f.close();
+      } catch (FileNotFoundException e) {
+        // e.printStackTrace();
+      }
     }
   }
   

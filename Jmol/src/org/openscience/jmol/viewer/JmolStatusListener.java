@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer;
 
-import java.awt.event.MouseEvent;
+import java.awt.Component;
 
 public interface JmolStatusListener {
   public void notifyFileLoaded(String fullPathName, String fileName,
@@ -40,7 +40,7 @@ public interface JmolStatusListener {
 
   public void notifyScriptTermination(String statusMessage, int msWalltime);
 
-  public void handlePopupMenu(MouseEvent e);
+  public void handlePopupMenu(Component component, int x, int y);
 
   public void measureSelection(int iatom);
 

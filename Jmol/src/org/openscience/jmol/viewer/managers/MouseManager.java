@@ -184,7 +184,7 @@ public class MouseManager {
         // mth 2003 07 07
         // added this modifiersWhenPressed check because of bad
         // behavior on WinME
-        viewer.popupMenu(e);
+        viewer.popupMenu(e.getComponent(), e.getX(), e.getY());
       } else if (modeMouse == PICK) {
         rubberbandSelectionMode = false;
         component.repaint();

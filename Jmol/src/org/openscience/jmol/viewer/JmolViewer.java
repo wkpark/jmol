@@ -53,7 +53,6 @@ import java.net.URL;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.File;
-import java.awt.event.MouseEvent;
 
 /****************************************************************
  * The JmolViewer can be used to render client molecules. Clients
@@ -724,9 +723,9 @@ final public class JmolViewer {
     return mouseManager.getRubberBand();
   }
 
-  public void popupMenu(MouseEvent e) {
+  public void popupMenu(Component component, int x, int y) {
     if (jmolStatusListener != null)
-      jmolStatusListener.handlePopupMenu(e);
+      jmolStatusListener.handlePopupMenu(component, x, y);
   }
 
   private MenuItem makeMenuItem(String id) {

@@ -33,11 +33,7 @@ import org.openscience.jmol.ui.JmolPopup;
 import netscape.javascript.JSObject;
 
 import java.applet.*;
-import java.awt.Graphics;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
+import java.awt.*;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -240,8 +236,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     }
   }
 
-  public void handlePopupMenu(MouseEvent e) {
-    jmolpopup.show(e.getComponent(), e.getX(), e.getY());
+  public void handlePopupMenu(Component component, int x, int y) {
+    jmolpopup.show(component, x, y);
   }
 
   public void measureSelection(int atomIndex) {

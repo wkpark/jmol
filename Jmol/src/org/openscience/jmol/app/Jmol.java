@@ -1465,8 +1465,8 @@ public class Jmol extends JPanel {
         scriptWindow.notifyScriptTermination(strStatus, msWalltime);
     }
 
-    public void handlePopupMenu(MouseEvent e) {
-      jmolpopup.show(e.getComponent(), e.getX(), e.getY());
+    public void handlePopupMenu(Component component, int x, int y) {
+      jmolpopup.show(component, x, y);
     }
 
     public void measureSelection(int atomIndex) {

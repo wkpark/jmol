@@ -1,3 +1,18 @@
+# This file is distributed under the same license as the jmol package.
+# language translation by FIRSTNAME SURNAME <email@domain.tld>
+msgid ""
+msgstr ""
+"Project-Id-Version: jmol GUIDE\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-02-09 HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 #: ../JmolAppletGuide.docbook.xml:15 
 msgid "Jmol Applet Documentation"
 msgstr ""
@@ -155,7 +170,7 @@ msgid "The JmolApplet is configured on the web server just like any other Java a
 msgstr ""
 
 #: ../JmolAppletGuide.docbook.xml:7 
-msgid "The JmolApplet.jar and Jmol.js files are placed in a directory on your web server. We advise placing them in a in a sibling directory or subdirectory of your .html pages ... something like <command>../jmol</command> or <command>./jmol</command>"
+msgid "The JmolApplet.jar and Jmol.js files are placed in a directory on your web server. We advise placing them in a sibling directory or subdirectory of your .html pages ... something like <command>../jmol</command> or <command>./jmol</command>"
 msgstr ""
 
 #: ../JmolAppletGuide.docbook.xml:14 

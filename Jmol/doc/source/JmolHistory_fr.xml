@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : JmolHistory.docbook.xml (v 1.43)
+  Translated from default version : JmolHistory.docbook.xml (v 1.44)
 -->
 <history>
 <contributors>
@@ -84,6 +84,10 @@
     Am&#x00E9;lioration du CdkJmolAdpater: les propri&#x00E9;t&#x00E9;s
     PDB sont maintenant support&#x00E9;es, ChemSequence/ChemModel is
     mapp&#x00E9; sur AtomSetCollection/AtomSet.
+  </change>
+  <change contributor="EW">
+    Ajout de la lecture des structures d'entr&#x00E9;e pour les fichiers
+    Mopac.
   </change>
 </changes>
 

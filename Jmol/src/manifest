@@ -1,2 +1,2 @@
 Main-Class: org.openscience.jmol.Jmol
-Class-Path: Acme.jar cdk-core.jar cdk-standard.jar cdk-extra.jar cdk-io.jar cdk-libio.jar gnujaxp.jar sax.jar multi.jar vecmath1.2-1.14.jar jas.jar itext-0.94.jar JSX1.0.6.0.jar
+Class-Path: Acme.jar cdk-core.jar cdk-standard.jar cdk-render.jar cdk-extra.jar cdk-io.jar cdk-libio.jar gnujaxp.jar sax.jar multi.jar vecmath1.2-1.14.jar jas.jar itext-0.94.jar JSX1.0.6.0.jar

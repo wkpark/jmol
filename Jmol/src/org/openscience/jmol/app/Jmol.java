@@ -72,7 +72,7 @@ public class Jmol extends JPanel {
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
   private static File currentDir;
-  JFileChooser openChooser;
+  FileChooser openChooser;
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
   JFileChooser exportChooser;
@@ -91,6 +91,7 @@ public class Jmol extends JPanel {
   private final static String JMOL_WINDOW_NAME = "Jmol";
   private final static String CONSOLE_WINDOW_NAME = "Console";
   private final static String SCRIPT_WINDOW_NAME = "Script";
+  private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
 
   /**
    * The current file.
@@ -104,7 +105,7 @@ public class Jmol extends JPanel {
   static ButtonGroup toolbarButtonGroup = new ButtonGroup();
 
   static File UserPropsFile;
-  private static HistoryFile historyFile;
+  static HistoryFile historyFile;
 
   Splash splash;
 
@@ -234,7 +235,7 @@ public class Jmol extends JPanel {
     display.start();
 
     say("Setting up File Choosers...");
-    openChooser = new JFileChooser();
+    openChooser = new FileChooser();
     openChooser.setCurrentDirectory(currentDir);
     String previewProperty = System.getProperty("openFilePreview", "true");
     if (Boolean.valueOf(previewProperty).booleanValue()) {
@@ -1074,12 +1075,19 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
 
+      openChooser.setDialogSize(
+        historyFile.getWindowSize(FILE_OPEN_WINDOW_NAME));
+      openChooser.setDialogLocation(
+        historyFile.getWindowPosition(FILE_OPEN_WINDOW_NAME));
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
         viewer.evalStringQuiet("load " + file.getAbsolutePath());
         return;
       }
+      historyFile.addWindowInfo(
+        FILE_OPEN_WINDOW_NAME,
+		openChooser.getDialog());
     }
   }
 

@@ -1,0 +1,402 @@
+<html>
+  <head>
+    <title>Navigation Bar</title>
+    <SCRIPT LANGUAGE="JavaScript">
+      <!--//
+
+      var isIMG = document.images;
+
+      // 100 is an arbitrary value so we can weed out bad choices:
+      var highlighted = 100;
+      var picked = 100;
+      
+      // preload images for rollover and picks:
+      if (isIMG) {
+        var off = new Image(7,11);   
+        var lon = new Image(7,11); 
+        var ron = new Image(7,11);
+        var lp = new Image(7,11);
+        var rp = new Image(7,11);
+        off.src = 'images/BBBBDF.gif';
+        lon.src = 'images/yellow_left.gif';
+        ron.src = 'images/yellow_right.gif';
+        lp.src = 'images/green_left.gif';
+        rp.src = 'images/green_right.gif';
+      }
+      
+      // a simple function to make arrays and set the length:
+      function makeArray() {
+        var args = makeArray.arguments;
+        for (var i = 0; i < args.length; i++) {
+          this[i] = args[i];
+        }
+        this.length = args.length;
+      }
+
+      // make an array of URLs to go into the "right" window:
+      var urls = new makeArray( "main.html",
+                                "features.html",
+                                "FAQ.html",
+                                "screenshots.html",
+                                "JmolApplet.html",
+                                "download.html",
+                                "lists.html",
+                                "news.html",
+                                "contributors.html",
+                                "bugs.html",
+                                "http://www.openscience.org");
+
+      // make an array of labels for the rollover images:
+      var labels = new makeArray( "main",
+                                  "features",
+                                  "FAQ",
+                                  "screenshots",
+                                  "JmolApplet",
+                                  "download",
+                                  "lists",
+                                  "news",
+                                  "contributors",
+                                  "bugs",
+                                  "openscience")
+
+      function live(n) {
+        if (isIMG) {
+
+          // Turn n on if n isn't already the "picked" choice:
+
+          if (n != picked) {
+            document.images[labels[n]+'_button1'].src = lon.src ;
+            document.images[labels[n]+'_button2'].src = ron.src ;
+          }  
+
+          // Turn off whatever was on previously in case we missed doing 
+          // it before.  Check to make sure something was indeed turned
+          // on before attempting to turn anything off.
+
+          if (highlighted != picked && highlighted != n && highlighted != 100 )
+          {
+            document.images[labels[highlighted]+'_button1'].src = off.src ;
+            document.images[labels[highlighted]+'_button2'].src = off.src ;
+          }
+
+          // Remind ourselves which choice is currently on:
+
+          highlighted = n;
+          return true;
+
+          } else {
+            return true;
+        }
+      }
+
+      function die(n) {
+        if (isIMG) {
+
+          // Turn n off as we leave n's space, but don't do anything
+          // if n is currently the "picked" choice:
+
+          if (n != picked) {
+             document.images[labels[n]+'_button1'].src = off.src ;
+             document.images[labels[n]+'_button2'].src = off.src ;
+  
+             // nothing is highlighted anymore, so set this to the
+             // officially "silly" value:
+
+             highlighted = 100 ;
+          }
+        }
+      }
+
+      function clickme(n) {
+        if (isIMG) {
+
+           // Make sure we aren't being told to do something ridiculous,
+           // then turn choice n on to the "picked" state:
+
+           if ( n != 100 ) {
+             document.images[labels[n]+'_button1'].src = lp.src ;
+             document.images[labels[n]+'_button2'].src = rp.src ;
+           }
+
+           // Turn off whatever *used* to be in the "picked" state
+           // because there can be only one "picked" choice.
+
+           if (n != picked && picked != 100) {
+             document.images[labels[picked]+'_button1'].src = off.src ;
+             document.images[labels[picked]+'_button2'].src = off.src ;
+           }
+
+           // Remind ourselves what is currently in the "picked? state:
+
+           picked = n;
+        }
+      }
+
+      function doOnLoad() {
+
+        // Scan through the url choices to see if something matches what
+        // is in the right hand window:
+
+        currentPage =  parent.right.location.href;
+	window.status = currentPage;
+        for (i = 0; i < urls.length; i++) {
+          if (currentPage.indexOf(urls[i]) > 0) {
+            clickme(i);
+            return(1);
+          }
+        }
+        if (i >= urls.length) {
+          clickme(100);
+        }
+        return(-1);
+      }
+
+      //-->
+    </SCRIPT>
+    <STYLE TYPE="text/css">
+      A:link { text-decoration: none }
+      A:visited { text-decoration: none }
+      A:hover { text-decoration: none }
+      A:active { text-decoration: none }
+      A:link IMG { text-decoration: none }
+    </STYLE>
+  </HEAD>
+
+  <BODY BGCOLOR="#BBDDFF" text="#FFFFFF" link="#FFFFFF"
+    vlink="#FFFFFF" alink="#ff0000" LEFTMARGIN="0" onLoad="doOnLoad()"> 
+    
+    <TABLE WIDTH="133" BORDER="0" HSPACE="0" VSPACE="0"
+      CELLPADDING="2" CELLSPACING="0" ALIGN="LEFT">
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD width="7" VALIGN="CENTER" ALIGN="LEFT"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="7"
+            HEIGHT="11" NAME="main_button1"></TD>
+        <TD width="115" bgcolor="#000000"  VALIGN="CENTER"
+          ALIGN="CENTER"><A TARGET="right" HREF="main.html"
+            onMouseOver="live(0)" onMouseOut="die(0)"
+            onClick="clickme(0)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Main
+                Page</strong></font></TD></A>
+        <TD width="7" VALIGN="CENTER" ALIGN="RIGHT"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="RIGHT" WIDTH="7"
+            HEIGHT="11" NAME="main_button2"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="features_button1"></TD>
+        <TD bgcolor="#000000"  VALIGN="CENTER" ALIGN="CENTER"><A
+            TARGET="right" HREF="features.html"
+            onMouseOver="live(1)"
+            onMouseOut="die(1)" onClick="clickme(1)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Features</strong></font></A></TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="features_button2"></TD>
+      </TR>      
+
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="FAQ_button1"></TD>
+        <TD bgcolor="#000000"  VALIGN="CENTER" ALIGN="CENTER"><A
+            TARGET="right" HREF="FAQ.html"
+            onMouseOver="live(2)"
+            onMouseOut="die(2)" onClick="clickme(2)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>FAQ</strong></font></A></TD> 
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="FAQ_button2"></TD>
+      </TR>       
+
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="screenshots_button1"></TD>
+        <TD bgcolor="#000000"  VALIGN="CENTER" ALIGN="CENTER"><A
+            TARGET="right" HREF="screenshots.html"
+            onMouseOver="live(3)"
+            onMouseOut="die(3)" onClick="clickme(3)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Screen Shots</strong></font></A></TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="screenshots_button2"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="JmolApplet_button1"></TD>
+        <TD bgcolor="#000000"  VALIGN="CENTER" ALIGN="CENTER"><A
+            TARGET="right" HREF="JmolApplet.html"
+            onMouseOver="live(4)"
+            onMouseOut="die(4)" onClick="clickme(4)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Jmol Applet</strong></font></A></TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="JmolApplet_button2"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="download_button1"></TD> <TD bgcolor="#000000"
+          VALIGN="CENTER" ALIGN="CENTER"><A TARGET="right"
+            HREF="download.html" onMouseOver="live(5)"
+            onMouseOut="die(5)"
+            onClick="clickme(5)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Download</strong></font></A>
+        </TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="download_button2"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="lists_button1"></TD> <TD bgcolor="#000000"
+          VALIGN="CENTER" ALIGN="CENTER"><A TARGET="right"
+            HREF="lists.html" onMouseOver="live(6)"
+            onMouseOut="die(6)"
+            onClick="clickme(6)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Mailing
+                Lists</strong></font></A>
+        </TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="lists_button2"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="news_button1"></TD>
+        <TD bgcolor="#000000"  VALIGN="CENTER" ALIGN="CENTER"><A
+            TARGET="right" HREF="news.html" onMouseOver="live(7)"
+            onMouseOut="die(7)" onClick="clickme(7)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>News</strong></font></A></TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="news_button2"></TD>
+      </TR>
+
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="contributors_button1"></TD>
+        <TD bgcolor="#000000"  VALIGN="CENTER" ALIGN="CENTER"><A
+            TARGET="right" HREF="contributors.html" onMouseOver="live(8)"
+            onMouseOut="die(8)" onClick="clickme(8)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Contributors</strong></font></A></TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="contributors_button2"></TD>
+      </TR>
+
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="9"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="bugs_button1"></TD>
+        <TD bgcolor="#000000"  VALIGN="CENTER" ALIGN="CENTER"><A
+            TARGET="right" HREF="bugs.html" onMouseOver="live(9)"
+            onMouseOut="die(9)" onClick="clickme(9)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>Bugs</strong></font></A></TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="bugs_button2"></TD>
+      </TR>
+
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT" COLSPAN="3"><IMG
+            SRC="images/BBBBDF.gif" ALT=" " ALIGN="LEFT" WIDTH="1"
+            HEIGHT="50"></TD>
+      </TR>
+      
+      <TR>
+        <TD VALIGN="CENTER" ALIGN="LEFT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="LEFT" WIDTH="7" HEIGHT="11"
+            NAME="openscience_button1"></TD> <TD bgcolor="#000000"
+          VALIGN="CENTER" ALIGN="CENTER"><A TARGET="_top"
+            HREF="http://www.openscience.org" onMouseOver="live(10)"
+            onMouseOut="die(10)" onClick="clickme(10)"><font
+              face="Lucida,Verdana,Helvetica,Arial"><strong>The
+                OpenScience Project</strong></font></A></TD>
+        <TD VALIGN="CENTER" ALIGN="RIGHT"><IMG SRC="images/BBBBDF.gif"
+            ALT=" " ALIGN="RIGHT" WIDTH="7" HEIGHT="11"
+            NAME="openscience_button2"></TD>
+      </TR>
+
+    </TABLE>
+    
+<script language="JavaScript">
+<!--
+// tells the parent frameset that it is done loading
+parent.left_frame_loaded = true;
+// -->
+</script>
+
+  </body>
+</html>

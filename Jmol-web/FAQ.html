@@ -1,0 +1,131 @@
+<HTML>
+  <HEAD>
+    <TITLE>Jmol FAQ</TITLE>
+    <SCRIPT LANGUAGE = "JavaScript">
+      <!-- Hide
+      
+      top.location.target="_top";
+      
+      if(window.location.target == "_top") {
+        top.location.href="http://www.openscience.org/jmol/index.html?right=FAQ.html";
+      }
+
+      var n = 2;
+      function poke_lefty(n) {
+        if (parent.left_frame_loaded == true) {
+          parent.left.clickme(n);
+        } else {
+          setTimeout("poke_lefty(n)",1000);
+        }
+      }
+      poke_lefty(n);
+
+      // -->
+    </SCRIPT>
+    <STYLE TYPE="text/css"><!-- A:link {text-decoration: none}A:visited{text-decoration:none}A:active{text-decoration:none}--></STYLE>
+  </HEAD>
+  <BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#666699" VLINK="#666699" ALINK="#ff0000">
+    
+    <div align=center>
+      <p><img src="images/Jmol_logo.jpg" height=126 width=248
+          alt="Jmol"></p>
+      
+      <p><FONT SIZE="+2" FACE="Lucida,Verdana,Helvetica,Arial"><b>Frequently 
+            Asked Questions</b></font></p>      
+    </div>
+    
+    <FONT FACE="Lucida,Verdana,Helvetica,Arial">
+      
+    <H3>1) What is Jmol?</H3>
+    
+    <p>Jmol is an <a href="http://www.opensource.org"
+        target="_top">open-source</a> molecule viewer and editor. It
+      was originally intended to be a fully functional replacement for <a
+        href="http://www.networkcs.com/msc/docs/xmol/" target="_top">XMol</a>,
+      but along the way, we've tried to improve some parts of the
+      XMol interface that we found annoying. 
+      Jmol is written in <a href="http://java.sun.com/"
+        target="_top">Java</a> using the <a
+        href="http://java.sun.com/products/jfc/tsc/index.html"
+        target="_top">Swing</a> GUI components.  After we duplicate the
+      functionality of XMol, we will be adding features of particular
+      interest to the chemical community, including molecule editing, 
+      simple force-field based minimizations, molecular dynamics 
+      (microcanonical ensemble), and Langevin dynamics (canonical ensemble).
+    </p>
+
+    <h3>2) Why do we need another Molecule Viewer?</h3> 
+
+    <p>There are really two reasons:</p>
+    <ol>
+      <li>Animation.  We do chemical dynamics, and we need to see what
+        our simulations look like at different times.  We weren't aware
+        of any molecule viewers out there (besides XMol) that do
+        animations.</li>
+
+      <li>The XMol source code is not freely available, and the number of
+        machines it runs on is extremely limited (the free binary version
+        does not even run under IRIX 6.x).  From our reading of the <a
+          href="http://www.networkcs.com/msc/docs/xmol/faq.html"
+          target="_top">XMol FAQ</a>, the authors of XMol are not
+        amenable to making the source available, and they do not even sell
+        the binary version as a product.  XMol is also restricted to a
+        UNIX/X environment, and Jmol works anywhere that you can get a
+        Java 1.1 VM to run.</li>
+
+       <li>Normal modes.  Jmol animates normal modes computed via a number 
+     of other ab initio software packages.</li>
+    </ol>
+
+    <h3>3) How far along is Jmol?</h3> 
+
+    <p>Jmol is <em><b>beta</b></em> software.  Many things work: it
+      can be used as an animator of multi-frame XYZ files, it can animate the 
+precalculated normal modes from many ab initio quantum chemistry
+programs (Gaussian, GAMESS, ACES2, ADF) it can read PDB files and a
+wide range of ab initio quantum chemistry log files, and it can 
+output GIFs, JPGs and PPMs of what is displayed on screen.  
+PostScript output is of very high quality if you are using Java2.  It
+can measure distances, angles, and dihedrals for any frame in 
+the animation, and it is a generally useful tool for the chemical 
+sciences.</p>
+    
+    <h3>4) Is Jmol an Applet?  Can it be run from inside a web browser?</h3> 
+
+    <p>Jmol is a Java-based application.  It reads and writes
+      files on the local disk which contain information about atomic
+      coordinates.  Applets are not permitted to write local files, so
+      we made Jmol an application instead.   We are working on a 
+      functional <a href="JmolApplet.html">applet version of Jmol</a> that 
+      is available via the Jmol web site.</P>
+
+
+    <h3>5) What do I need to run Jmol?</h3>
+    
+    <p>A Java 1.1, 1.2 or 1.3 VM.  We like Sun's <a
+        href="http://java.sun.com/j2se/1.3/index.html"
+        target="_top">JDK1.3</a> and IBM's <a href="http://www.ibm.com/java/jdk/download/index.html" target="_top">version of the 1.3 JDK</a>, but Jmol should work with other
+      VMs. Macintosh users should have <a target="_top"
+        href="http://devworld.apple.com/java/text/download.html">MRJ
+        2.2.2</a> or higher.  Users of Linux on PPC or Sparc processors 
+        can get the latest Linux JVM at the <a target="_top"
+        href="http://www.blackdown.org/java-linux/ports.html">Blackdown</a>
+      site.  If you use FreeBSD, you should go to the <a
+        href="http://www.freebsd.org/java/" target="_top">JDK for
+        FreeBSD</a> page.  We will be migrating to Jmol to Java 1.2
+      (a.k.a. Java2) in the very near future, so consider upgrading your
+      JVM.</p>
+
+    <h3>6) What do I need to compile Jmol?</h3> 
+
+    <p> A Java2 (java1.2 or 1.3) JDK.  We've also been using
+      <a href="http://www10.software.ibm.com/developerworks/opensource/jikes "
+        target="_top">Jikes</a>, the very fast java compiler from the
+      IBM's AlphaWorks site to compile Jmol, but you don't necessarily 
+      need to have it.  Developers who use Macs will want to grab
+      the <a href="http://devworld.apple.com/java/text/download.html#sdk" TARGET="_top">MRJ SDK</a> from Apple.
+
+  </font>
+  </BODY>
+</HTML>
+

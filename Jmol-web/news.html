@@ -1,0 +1,305 @@
+<HTML>
+  <HEAD>
+    <TITLE>Jmol News</TITLE>
+    <SCRIPT LANGUAGE = "JavaScript">
+      <!-- Hide
+      
+      top.location.target="_top";
+      
+      if(window.location.target == "_top") {
+        top.location.href="http://www.openscience.org/jmol/index.html?right=news.html";
+      }
+
+      var n = 7;
+      function poke_lefty(n) {
+        if (parent.left_frame_loaded == true) {
+          parent.left.clickme(n);
+        } else {
+          setTimeout("poke_lefty(n)",1000);
+        }
+      }
+      poke_lefty(n);
+
+      // -->
+    </SCRIPT>
+    <STYLE TYPE="text/css"><!-- A:link {text-decoration: none}A:visited{text-decoration:none}A:active{text-decoration:none}--></STYLE>
+  </HEAD>
+  <BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#666699" VLINK="#666699" ALINK="#ff0000">
+    
+    <div align=center>
+      <p><img src="images/Jmol_logo.jpg" height=126 width=248
+          alt="Jmol"></p>
+      
+      <p><FONT SIZE="+2" FACE="Lucida,Verdana,Helvetica,Arial"><b>Jmol
+            News</b></font></p>      
+    </div>
+    <FONT FACE="Lucida,Verdana,Helvetica,Arial">
+    <p>Contributors:</p>
+    <blockquote>  
+      DG = Dan Gezelter (<a href="mailto:gezelter@openscience.org">gezelter@openscience.org</a>)<br>
+      BS = Bradley A. Smith (<a
+        href="mailto:yeldar@home.com">yeldar@home.com</a>)<br>
+      CS = Christoph Steinbeck (<a
+        href="mailto:steinbeck@ice.mpg.de">steinbeck@ice.mpg.de</a>)<br>
+      EW = E.L. Willighagen (<a
+        href="mailto:egonw@sci.kun.nl">egonw@sci.kun.nl</a>)<br>
+      TG = Tom Grey (<a href="mailto:t.grey@ic.ac.uk">t.grey@ic.ac.uk</a>)<br>
+      CF = Charles Fulton (<a
+        href="mailto:fultoncr@ucarb.com">fultoncr@ucarb.com</a>)<br> MB = Mike Beachy (<a
+        href="mailto:beachy@alum.mit.edu">beachy@alum.mit.edu</a>)<br>
+      HG = Hugo Garcia (<a
+        href="mailto:elhugo@objectchemistry.org">elhugo@objectchemistry.org</a>)<br>
+    </blockquote>
+
+    <h3>jmol-0.6.1 (since jmol-0.6)</h3>
+    <ul>
+      <li>Many minor bugfixes (DG)</li>
+      <li>Progress on JmolApplet (TG & BS) </li>
+      <li>JmolFileFilter (TG) </li>
+      <li>Bug fix in Animate (DG) </li>
+      <li>Splash screen now has a status line (TG) </li>
+      <li>DisplaySettings no longer used as static (BS)</li>
+      <li>CMLReader replaces CMLFile (BS)</li>
+      <li>Fewer dependencies on jmol.home property (BS)</li>
+    </ul>
+
+    <h3>jmol-0.6 (since jmol-0.5)</h3>
+    <ul>
+      <li> New ChemFileReader/ReaderFactory architecture (BS)</li>
+      <li> Can now read files from the following <em>ab initio</em>
+        quantum chemistry programs: GAMESS, Gaussian92,
+        Gaussian94, Gaussian98, Amsterdam Density Functional (ADF),
+        Advanced Concepts in Electronic Structure II (ACES2) (BS)</li>
+      <li> Animation of pre-computed Normal Mode Vibrations via the Extras ->
+        Vibrate command (BS)</li>
+      <li> Entirely new distance, angle, and dihedral measurement
+        architecture (DG) </li>
+      <li> Choice of smoother animation using interpolated frames
+        (EW)</li>
+      <li> Wireframe rotation code (TG) and menu choices (DG)</li>
+      <li> Jmol console to capture stdout and stderr (CF and BS)</li>
+      <li> DisplaySettings moved out of various classes and into a single 
+           class (BS)</li>
+      <li> Split of AtomType functionality into BaseAtomType (PENDING - BS)</li>
+      <li> Test Classes for various other classes (BS)</li>
+    </ul>
+
+    <h3>jmol-0.5 (since jmol-0.4)</h3>
+    <ul>
+      <li> Numerous small bug fixes. (DG) </li>
+      <li> FileSaver, XYZSaver and CMLSaver classes are new.  You can now 
+           save the current structure to either XYZ or CML formats. (DG 
+           &amp; EW) </li>
+      <li> Package name is now org.openscience.jmol. (DG) </li>
+      <li> Modifications to the CML parsing routines to use the new
+        CML-1999-05-15.dtd (EW)</li>
+      <li> DTD resolver that allows us to embed the current DTD in the
+        jar file. (DG)</li>
+      <li> Rewrite of file-I/O routines.  They all implement ChemFile now.
+        (DG)</li> 
+    </ul>
+
+    <h3>jmol-0.4 (since jmol-0.3)</h3>
+    <ul>
+      <li> Jmol can now parse Chemical Markup Language (CML) files
+        thanks to E.L. Willighagen (EW)</li>
+      <li> Many internal changes in the AtomType JTable supporting
+        classes to reverse some stupid decisions I made early on. (DG) </li>
+      <li> AtomTypeTable now stores the AtomType information as a
+        resource (DG) </li>
+      <li> Changes in AtomTypeTable headers to support multiple line
+        headers (DG)</li>
+      <li> StatusBar is now a 3-wide set of JLabels that post more
+        useful information (DG & CS) </li>
+      <li> Swing 1.1.1 Beta 2 (HTML labels if we want to use them) (DG) </li>
+    </ul>
+
+    <h3>jmol-0.3 (since jmol-0.2)</h3>
+    <ul>
+      <li> PhysicalProperties (Charges, NMRShieldings, Vectors,
+        etc.) can be set by the file readers.  Christoph Steinbeck 
+        asked for this originally when he wrote GaussianFile.  It was 
+        a good idea, and was worth the extensive rewrite.  (DG) </li>
+      <li> Swing 1.1.1 Beta 1 (fixes some annoying bugs for Java 1.1 
+        users) (DG) </li>
+      <li> The GaussianFile class has been updated to read general 
+        Gaussian files (not just G98) and to automatically compute 
+        chemical shifts using stored <em>ab initio</em> values for 
+        tetramethyl silane's chemical shift. (CS) </li>
+      <li> Some bug fixes. (DG) </li>
+      <li> Shaded bonds that look like cylinders.  Well, at least they look
+        a little bit like cylinders. End caps would be a nice addition, but
+        I've been a bit busy lately. (DG)</li>
+      <li> FileTyper and ImageTyper accessories for JFileChooser make
+        choosing file types more sensible than just using the filename
+        filter.  These classes were rationalized after 0.2 had
+        already been released.  They also listen to the JFileChooser
+        to try to guess what kind of file you just selected (only
+        if UseFileExtensions is set). (DG)</li>
+    </ul>
+
+    <h3>jmol-0.2 (since jmol-0.1.1)</h3>
+    <ul>
+
+      <li>Many internal changes.</li>
+
+      <li>Jmol has moved to a new home.  I've been working on a web
+        site called "The OpenScience Project", and have registered a
+        domain for it, so Jmol is the first of the software projects
+        that is housed at www.openscience.org (DG) </li>
+
+      <li> Christoph Steinbeck contributed a new input filter for
+        Gaussian 98 log files, complete with a parser for NMR chemical
+        shifts. (CS)</li>
+      
+      <li>The file readers now subclass a more general (but very
+        simple) ChemFile class.  This should make addition of other file
+        readers easier. (DG)</li>
+
+      <li>File Type selection is no longer dependent on the file's
+        extension.  You can select a "*.jnk" file and explicitly 
+        tell Jmol what kind of file it is when opening the file. (DG)</li>
+
+      <li>There is a strange interaction between fillPolygon in jdk1.2
+        and the X server under Solaris x86.  (And circles under jdk1.2
+        look lumpy on many architectures.)  I've built a workaround into
+        Jmol which involves talking directly to the Graphics2D object
+        underlying the display panel to set some Rendering hints.  This
+        workaround has the benefit of making some <em>really</em> nice
+        pictures when you want high quality (but lower speed).  If you
+        have jdk1.2, turn on AntiAliasing in the Preferences to see the
+        difference.  An unfortunate side effect is that you now need the
+        jdk1.2 classes to compile (but not run) Jmol.  (DG)</li>
+
+      <li>A Jpeg encoder has been added. The JpegEncoder and its
+        associated classes are Copyright (c) 1998, James R. Weeks and
+        BioElectroMech.  This software is based in part on the work of
+        the Independent JPEG Group. (DG)</li>
+
+      <li>Build process now uses a Makefile. (PENDING - DG) </li>
+      
+      <li>The Makefile now has the ability to create javadocs of 
+        the source code. (HG) </li>
+      </ul>
+
+    <h3>jmol-0.1.1 (since jmol-0.1)</h3>
+
+    <ul>
+      <li>Removed the extra double-buffering that resulted from not
+        understanding that Swing components are automatically
+        double-buffered. This resulted in substantial performance
+        improvements. (DG)</li>
+
+      <li>Fixed some depth strangeness in the drawn atom
+        sizes. (DG)</li>
+      
+      <li>Fixed the bonds so that they render more realistically as
+        the molecule is being rotated.  End caps for the bonds are
+        still in progress. (DG)</li>
+
+      <li>Reordered the toolbar buttons and added a button for
+        molecule deformations that will eventually do something
+        useful. (DG)</li>
+    </ul>
+
+
+    <h3>jmol-0.1 (since jmol-0.0.4)</h3>
+    
+    <ul>
+      <li>There are some major new features, so the minor version number 
+        has been incremented. (DG)</li>
+      
+      <li>Atom Types are now editable using "Atom Properties" in the
+        Edit Menu.  This added a large chunk of interface code to do the
+        JTable and cell editors and column sorters.  The edited atom
+        types are saved in the .jmol directory under the user's home
+        directory. (DG - PENDING)</li>
+      
+      <li>The Preferences dialog now saves preference info in the 
+        .jmol directory under the user's home directory. (DG)</li>
+      
+      <li>Reorganization of classes into a jar file. (DG) </li>
+
+      <li>An atom selection mechanism now is working. (DG) </li>
+
+      <li>Reorganization of source: BondTypeTable is gone, BondType is
+        now replaced by Bond.  Many other changes for new
+        AtomTypeTable. (DG) </li>
+
+      <li>Silly little Splash screen, but it makes startup feel faster
+        when there is something popped up on the screen almost
+        immediately.</li>
+      
+      <li>There is now a "Front" item in the View menu.  The View 
+        menu actions are not intuitive yet, so they will be changing 
+        in a future version. Don't get used to them.(DG)</li>
+      
+      <li>There is a new "fast forward" button in the Animate dialog 
+        that takes the animation to the last frame. (DG)</li>
+      
+      <li>The Rewind, FastForward, Next, and Previous buttons in the
+        Animate dialog now stop the animation when they are pushed. 
+        (DG)</li>
+
+      <li>Swing version incremented to 1.1</li>
+    
+    </ul>
+    
+    <h3>jmol-0.0.4 (since jmol-0.0.3)</h3>
+    
+    <ul>
+
+      <li>Now using swing-1.1beta3, with all of the associated package
+        name changes from com.sun.java.swing to javax.swing (DG)</li>
+      
+      <li>Fixed bug in jmol.bat script (DG)</li>
+      
+      <li>"What's New" menu item in "Help" menu displays a dialog with
+        the contents of this file (DG)</li>
+
+      <li>"doc" subdirectory, empty for now, but it's the thought that
+        counts (DG)</li>
+
+    </ul>
+
+    <h3>jmol-0.0.3 (since jmol-0.0.2)</h3>
+    <ul>
+      <li>Image encoders courtesy Jef Poskanzer were used to export
+        GIF and PPM files (DG)</li>
+
+      <li>New "Display" Menu with submenus for atoms, bonds, and
+        labels (DG)</li>
+
+      <li>New Icons courtesy Dean Jones were used whenever possible
+        (DG)</li>
+
+    </ul>
+ 
+    <h3>jmol-0.0.2 (since jmol-0.0.1)</h3>
+    <ul>
+
+      <li>Atom Labels (DG)</li>
+
+      <li>multi-frame XYZ file-reads (DG)</li>
+
+      <li>Animation (DG)</li>
+
+      <li>Preferences dialog (DG)</li>
+
+    </ul>
+
+    <h3>jmol-0.0.1 (first public release)</h3>
+    <ul>
+
+      <li>Everything (DG)</li>
+
+      <li>Sensible polygon vertexes for QuickDraw Bonds (MB)</li>
+
+      <li>single-frame XYZ file reads (DG)</li>
+
+    </ul>
+
+    </font>
+  </BODY>
+</HTML>
+

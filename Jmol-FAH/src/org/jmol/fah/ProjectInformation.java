@@ -219,6 +219,7 @@ public class ProjectInformation {
     this._staticDate = new GregorianCalendar(2004, Calendar.JULY, 10).getTimeInMillis();
     addStaticInformation();
     addEMInformation();
+    addPSCInformation();
     addPSInformation();
     addQDInformation();
   }
@@ -323,9 +324,9 @@ public class ProjectInformation {
   }
 
   /**
-   * Add information from psummary.html
+   * Add information from psummaryC.html
    */
-  private void addPSInformation() {
+  private void addPSCInformation() {
     try {
       //Check file existence and time
       long psDate = System.currentTimeMillis();
@@ -373,10 +374,49 @@ public class ProjectInformation {
             mue.printStackTrace();
           }
         }
-        HTMLDocument htmlDoc = new HTMLDocumentPSummary();
+        HTMLDocument htmlDoc = new HTMLDocumentPSummaryC();
         HTMLEditorKit htmlEditor = new HTMLEditorKit();
         htmlEditor.read(reader, htmlDoc, 0);
       }
+    } catch (FileNotFoundException e) {
+      //Empty
+    } catch (IOException e) {
+      //Empty
+    } catch (BadLocationException e) {
+      //Empty
+    }
+  }
+
+  /**
+   * Add information from psummary.html
+   */
+  private void addPSInformation() {
+    try {
+      //Check file existence and time
+      long psDate = System.currentTimeMillis();
+      if (_local == true) {
+        return;
+      }
+
+      //Load new information
+      Reader reader = null;
+      if (_local == true) {
+        reader = new FileReader("psummary.html"); //$NON-NLS-1$
+      } else {
+        StringBuffer urlName = new StringBuffer();
+        urlName.append("http://vspx27.stanford.edu/"); //$NON-NLS-1$
+        urlName.append("psummary.html"); //$NON-NLS-1$
+        try {
+          URL url = new URL(urlName.toString());
+          InputStream stream = url.openStream();
+          reader = new InputStreamReader(stream);
+        } catch (MalformedURLException mue) {
+          mue.printStackTrace();
+        }
+      }
+      HTMLDocument htmlDoc = new HTMLDocumentPSummary();
+      HTMLEditorKit htmlEditor = new HTMLEditorKit();
+      htmlEditor.read(reader, htmlDoc, 0);
     } catch (FileNotFoundException e) {
       //Empty
     } catch (IOException e) {
@@ -555,6 +595,7 @@ public class ProjectInformation {
       info._staticPreferred = XMLValue.getInteger(att, "preferred", 86400); //$NON-NLS-1$
       info._staticServer = XMLValue.getString(att, "server", null); //$NON-NLS-1$
       info._staticFile = XMLValue.getYesNo(att, "file"); //$NON-NLS-1$
+      info._staticPublic = XMLValue.getYesNo(att, "public"); //$NON-NLS-1$
     }
   }
 
@@ -577,6 +618,7 @@ public class ProjectInformation {
       this._psPreferred = null;
       this._psServer = null;
       this._psValue = null;
+      this._psPublic = null;
       this._qdValue = null;
       this._staticAtoms = null;
       this._staticCore = null;
@@ -587,6 +629,7 @@ public class ProjectInformation {
       this._staticServer = null;
       this._staticValue = null;
       this._staticFile = null;
+      this._staticPublic = null;
     }
 
     // EM informations
@@ -604,6 +647,7 @@ public class ProjectInformation {
     Integer  _psPreferred;
     String   _psServer;
     Double   _psValue;
+    Boolean  _psPublic;
 
     // QD informations
     Double   _qdValue;
@@ -619,12 +663,13 @@ public class ProjectInformation {
     String   _staticServer;
     Double   _staticValue;
     Boolean  _staticFile;
+    Boolean  _staticPublic;
   }
 
   /**
-   * HTML Document for PSummary
+   * HTML Document for PSummaryC
    */
-  private class HTMLDocumentPSummary extends HTMLDocument {
+  private class HTMLDocumentPSummaryC extends HTMLDocument {
 
     /*
      * (non-Javadoc)
@@ -632,14 +677,14 @@ public class ProjectInformation {
      * @see javax.swing.text.html.HTMLDocument#getReader(int)
      */
     public HTMLEditorKit.ParserCallback getReader(int pos) {
-      return new PSummaryReader();
+      return new PSummaryReaderC();
     }
   }
 
   /**
-   * Reader for PSummary
+   * Reader for PSummaryC
    */
-  private class PSummaryReader extends HTMLEditorKit.ParserCallback {
+  private class PSummaryReaderC extends HTMLEditorKit.ParserCallback {
 
     /*
      * (non-Javadoc)
@@ -820,6 +865,111 @@ public class ProjectInformation {
   }
 
   /**
+   * HTML Document for PSummary
+   */
+  private class HTMLDocumentPSummary extends HTMLDocument {
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.text.html.HTMLDocument#getReader(int)
+     */
+    public HTMLEditorKit.ParserCallback getReader(int pos) {
+      return new PSummaryReader();
+    }
+  }
+
+  /**
+   * Reader for PSummary
+   */
+  private class PSummaryReader extends HTMLEditorKit.ParserCallback {
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.text.html.HTMLEditorKit.ParserCallback#handleStartTag(
+     *      javax.swing.text.html.HTML.Tag,
+     *      javax.swing.text.MutableAttributeSet,
+     *      int)
+     */
+    public void handleStartTag(HTML.Tag tag, MutableAttributeSet att, int pos) {
+      if (tag.equals(HTML.Tag.TABLE)) {
+        this._table++;
+        this._column = 0;
+      }
+      if (tag.equals(HTML.Tag.TR)) {
+        this._row++;
+        this._column = 0;
+      }
+      if (tag.equals(HTML.Tag.TD)) {
+        this._column++;
+      }
+      if ((this._table > 0) && (this._row == 1)) {
+        //System.out.println(tag);
+      }
+      super.handleStartTag(tag, att, pos);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.text.html.HTMLEditorKit.ParserCallback#handleText(char[], int)
+     */
+    public void handleText(char[] data, int pos) {
+      if ((this._table > 0) && (this._row > 1)) {
+        switch (this._column) {
+        case 1: //Project
+          this._project = Integer.parseInt(new String(data));
+          break;
+        }
+      }
+      super.handleText(data, pos);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.text.html.HTMLEditorKit.ParserCallback#handleEndTag(
+     *      javax.swing.text.html.HTML.Tag,
+     *      int)
+     */
+    public void handleEndTag(HTML.Tag tag, int pos) {
+      if ((this._table > 0) && (this._row == 1)) {
+        //System.out.println("/" + tag); //$NON-NLS-1$
+      }
+      if (tag.equals(HTML.Tag.TABLE)) {
+        this._table--;
+        if (this._table == 0) {
+          this._row = 0;
+        }
+      }
+      if (tag.equals(HTML.Tag.TR)) {
+        this._column = 0;
+        if (this._project > 0) {
+          //Retrieve element
+          Information info = null;
+          if (ProjectInformation.this._projectInfo.size() > this._project) {
+            info = ProjectInformation.this.getInfo(this._project);
+          }
+          if (info != null) {
+            info._psPublic = Boolean.TRUE;
+          }
+        }
+        this._project = -1;
+      }
+      super.handleEndTag(tag, pos);
+    }
+
+    // Informations on the current position in the HTML file
+    private int      _column    = 0;
+    private int      _row       = 0;
+    private int      _table     = 0;
+
+    // Informations on the current project
+    private int      _project   = -1;
+  }
+
+  /**
    * Output data in the same format as emprotz.dat file 
    */
   private void outputEmprotzDatFile() {
@@ -927,6 +1077,9 @@ public class ProjectInformation {
       different = true;
     }
     if ((info._psValue != null) && (!info._psValue.equals(info._staticValue))) {
+      different = true;
+    }
+    if (Boolean.TRUE.equals(info._psPublic) && !Boolean.TRUE.equals(info._staticPublic)) {
       different = true;
     }
 
@@ -1218,6 +1371,12 @@ public class ProjectInformation {
       }
       outputNewLine();
     }
+    
+    //Print public difference
+    if (Boolean.TRUE.equals(info._psPublic) && !Boolean.TRUE.equals(info._staticPublic)) {
+        outputText("  Public");
+        outputNewLine();
+      }
   }
 
   /**

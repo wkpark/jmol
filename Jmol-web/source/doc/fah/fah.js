@@ -161,9 +161,13 @@ function createFahPage(select,
 }
 
 function addProject(project, filename, projectname,
-                    credit, atoms, preferred, deadline, frames, code,
+                    credit, atoms, preferred, deadline, frames, code, p,
                     showList) {
-  if (projectname != undefined && projectname !== null && filename != undefined && filename != null) {
+  if ((projectname != undefined) &&
+      (projectname !== null) &&
+      (filename != undefined) &&
+      (filename != null) &&
+      ((p == "y") || (getParameter("view", "p") == "b"))) {
     var varValue = "" + project + ";" + filename + ";" + projectname + ";";
     if (credit != undefined && credit != null) {
       varValue = varValue + credit;

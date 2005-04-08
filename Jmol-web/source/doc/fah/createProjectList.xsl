@@ -74,6 +74,13 @@
               <xsl:value-of select="@code" />
             </xsl:when>
           </xsl:choose>
+          <xsl:text>','</xsl:text>
+          <!-- Public -->
+          <xsl:choose>
+            <xsl:when test="@public">
+              <xsl:value-of select="@public" />
+            </xsl:when>
+          </xsl:choose>
           <xsl:text>',showList);
 </xsl:text>
         </xsl:if>

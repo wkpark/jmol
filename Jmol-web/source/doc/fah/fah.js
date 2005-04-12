@@ -203,7 +203,7 @@ function addProject(project, filename, projectname,
           "/>";
       document.writeln(varButton);
     } else {
-      varOption = "<option value='" + varValue + "'>" + projectname + "</option>";
+      varOption = "<option value='" + varValue + "'>" + project + " - " + projectname + "</option>";
       document.writeln(varOption);
     }
   }

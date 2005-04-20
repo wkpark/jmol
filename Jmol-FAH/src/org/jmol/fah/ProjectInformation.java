@@ -66,6 +66,7 @@ public class ProjectInformation {
   // Flags to enable / disable parts of the code
   private final static boolean _outputEmprotz = false;
   private final static boolean _checkCurrentXyzFiles = true;
+  private final static boolean _checkActiveMissing = true;
 
   // Indicates if informations are stored locally
   private static boolean _local = true;
@@ -992,6 +993,46 @@ public class ProjectInformation {
     System.out.println("Unknown: " + unknownProjects); //$NON-NLS-1$
   }
 
+  private void checkActiveMissing() {
+    // Beta projects
+    boolean separator = false;
+    for (int ii = 0; ii < _projectInfo.size(); ii++) {
+      Information info = getInfo(ii);
+      if (info != null) {
+        if ((info._psName != null) && (!Boolean.TRUE.equals(info._staticFile))) {
+          if (!separator) {
+            outputText("Active missing beta projects: ");
+          }
+          outputInfo("", "" + ii, separator);
+          separator = true;
+        }
+      }
+    }
+    if (separator) {
+      outputNewLine();
+    }
+
+    // Public projects
+    separator = false;
+    for (int ii = 0; ii < _projectInfo.size(); ii++) {
+      Information info = getInfo(ii);
+      if (info != null) {
+        if ((info._psName != null) &&
+            (!Boolean.TRUE.equals(info._staticFile)) &&
+            (Boolean.TRUE.equals(info._staticPublic))) {
+          if (!separator) {
+            outputText("Active missing public projects: ");
+          }
+          outputInfo("", "" + ii, separator);
+          separator = true;
+        }
+      }
+    }
+    if (separator) {
+      outputNewLine();
+    }
+  }
+  
   /**
    * Output a list of problems between fah-projects.xml and existing files
    * 
@@ -1416,6 +1457,11 @@ public class ProjectInformation {
       for (int ii = 0; ii < projectInfo._projectInfo.size(); ii++) {
         projectInfo.outputCurrentXyzProblems(ii);
       }
+    }
+    
+    // Check for missing current.xyz files for active projects
+    if (_checkActiveMissing) {
+      projectInfo.checkActiveMissing();
     }
   }
 }

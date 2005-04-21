@@ -7,8 +7,8 @@
 <!ENTITY guideMenus          SYSTEM "guide/menus.docbook.xml">
 <!ENTITY guideScripts        SYSTEM "guide/scripts.docbook.xml">
 <!ENTITY guideScriptCommands SYSTEM "guide/scriptCommands.docbook.xml">
-]
->
+]>
+
 <book>
   <bookinfo>
     <title>Jmol Documentation</title>

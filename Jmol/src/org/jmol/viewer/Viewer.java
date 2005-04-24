@@ -1633,6 +1633,14 @@ final public class Viewer extends JmolViewer {
     return styleManager.hbondsBackbone;
   }
 
+  void setHbondsSolid(boolean hbondsSolid) {
+    styleManager.setHbondsSolid(hbondsSolid);
+  }
+
+  boolean getHbondsSolid() {
+    return styleManager.hbondsSolid;
+  }
+
   public void setMarBond(short marBond) {
     styleManager.setMarBond(marBond);
     setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);

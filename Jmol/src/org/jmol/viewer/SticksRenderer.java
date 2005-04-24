@@ -41,6 +41,7 @@ class SticksRenderer extends ShapeRenderer {
   boolean ssbondsBackbone;
   boolean hbondsBackbone;
   boolean bondsBackbone;
+  boolean hbondsSolid;
 
   Atom atomA, atomB;
   int xA, yA, zA;
@@ -75,6 +76,7 @@ class SticksRenderer extends ShapeRenderer {
     ssbondsBackbone = viewer.getSsbondsBackbone();
     hbondsBackbone = viewer.getHbondsBackbone();
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
+    hbondsSolid = viewer.getHbondsSolid();
 
     Bond[] bonds = frame.bonds;
     int displayModelIndex = this.displayModelIndex;
@@ -163,7 +165,12 @@ class SticksRenderer extends ShapeRenderer {
       break;
     default:
       if ((bondOrder & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
-        renderHbondDashed();
+        if (hbondsSolid) {
+          bondOrder = 1;
+          renderCylinder(0);
+        } else {
+          renderHbondDashed();
+        }
         break;
       }
     }

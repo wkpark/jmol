@@ -2885,17 +2885,24 @@ class Eval implements Runnable {
 
   void setHbonds() throws ScriptException {
     checkLength3();
+    boolean bool = false;
     boolean hbondsBackbone = false;
     switch(statement[2].tok) {
     case Token.backbone:
-      hbondsBackbone = true;
-      break;
+      bool = true;
+      // fall into
     case Token.sidechain:
+      viewer.setHbondsBackbone(bool);
+      break;
+    case Token.solid:
+      bool = true;
+      // falll into
+    case Token.dotted:
+      viewer.setHbondsSolid(bool);
       break;
     default:
       invalidArgument();
     }
-    viewer.setHbondsBackbone(hbondsBackbone);
   }
 
   void setScale3d() throws ScriptException {

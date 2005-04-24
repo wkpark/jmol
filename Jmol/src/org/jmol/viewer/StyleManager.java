@@ -151,6 +151,11 @@ class StyleManager {
     this.hbondsBackbone = hbondsBackbone;
   }
 
+  boolean hbondsSolid;
+  void setHbondsSolid(boolean hbondsSolid) {
+    this.hbondsSolid = hbondsSolid;
+  }
+
   /****************************************************************
    * label related
    ****************************************************************/

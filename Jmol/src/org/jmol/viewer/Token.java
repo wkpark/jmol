@@ -348,6 +348,7 @@ class Token {
   final static int edges        = misc | 43;
   final static int noedges      = misc | 44;
   final static int frontedges   = misc | 45;
+  final static int solid        = misc | 45;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -655,6 +656,7 @@ class Token {
     "edges",        new Token(edges,           "edges"),
     "noedges",      new Token(noedges,         "noedges"),
     "frontedges",   new Token(frontedges,      "frontedges"),
+    "solid",        new Token(solid,           "solid"),
   };
 
   static Hashtable map = new Hashtable();

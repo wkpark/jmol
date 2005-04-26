@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -63,6 +63,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
   }
 
   boolean isNucleic;
+  boolean border = false;
 
   void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     Ribbons.Schain strandsChain = (Ribbons.Schain)mpspolymer;
@@ -120,8 +121,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
     if (colix == 0)
       colix = monomer.getLeadAtom().colixAtom;
     
-    //change false -> true to fill in mesh
-    g3d.drawHermite(true, colix, isNucleic ? 4 : 7,
+    g3d.drawHermite(true, border, colix, isNucleic ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],
                     ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
                     ribbonBottomScreens[iPrev], ribbonBottomScreens[i],

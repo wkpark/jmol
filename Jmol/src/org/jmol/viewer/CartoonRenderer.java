@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -74,6 +74,7 @@ class CartoonRenderer extends MpsRenderer {
   }
 
   boolean isNucleicPolymer;
+  boolean border = false;
   int monomerCount;
   Monomer[] monomers;
   Point3f[] leadMidpoints;
@@ -155,7 +156,7 @@ class CartoonRenderer extends MpsRenderer {
       colix = group.getLeadAtom().colixAtom;
     
     //change false -> true to fill in mesh
-    g3d.drawHermite(true, colix, isNucleicPolymer ? 4 : 7,
+    g3d.drawHermite(true, border, colix, isNucleicPolymer ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],
                     ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
                     ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
@@ -184,10 +185,11 @@ class CartoonRenderer extends MpsRenderer {
                 -.7f / 1000, screenArrowBot);
     calc1Screen(leadMidpoints[i], wingVectors[i], mads[i],
                 -1.0f / 1000, screenArrowBotPrev);
-    g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
-                     screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
-                     screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
-    g3d.drawHermite(true, colix, isNucleicPolymer ? 4 : 7,
+    if (border)
+      g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+                       screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
+                       screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
+    g3d.drawHermite(true, border, colix, isNucleicPolymer ? 4 : 7,
                     screenArrowTopPrev, screenArrowTop,
                     leadMidpointScreens[iNext], leadMidpointScreens[iNext2],
                     screenArrowBotPrev, screenArrowBot,

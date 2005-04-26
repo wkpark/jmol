@@ -157,7 +157,7 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
     
     //change false -> true to fill in mesh
       
-    g3d.drawHermite(false, colix, isNucleicPolymer ? 4 : 7,
+    g3d.drawHermite(false, true, colix, isNucleicPolymer ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],
                     ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
                     ribbonBottomScreens[iPrev], ribbonBottomScreens[i],

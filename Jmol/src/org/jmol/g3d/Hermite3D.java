@@ -147,19 +147,23 @@ class Hermite3D {
     } while (sp >= 0);
   }
 
-  public void render2x(boolean fill, short colix, int tension,
-                      Point3i p0, Point3i p1, Point3i p2, Point3i p3,//top strand segment
-                      Point3i p4, Point3i p5, Point3i p6, Point3i p7) {//bottom strand segment
+  void render2x(boolean fill, short colix, int tension,
+                //top strand segment
+                Point3i p0, Point3i p1, Point3i p2, Point3i p3,
+                //bottom strand segment
+                Point3i p4, Point3i p5, Point3i p6, Point3i p7) {
     
     Point3i[] endPoints = {p2, p1, p6, p5};
-    Vector points = new Vector(10); // stores all points for top+bottom strands of 1 segment
+    // stores all points for top+bottom strands of 1 segment
+    Vector points = new Vector(10);
     int whichPoint = 0;
 
     int numTopStrandPoints = 2; //first and last points automatically included
     float numPointsPerSegment = 5.0f;//use 5 for mesh
 
+    // could make it so you can set this from script command
     if (fill)
-      numPointsPerSegment = 10.0f; // could make it so you can set this from script command
+      numPointsPerSegment = 10.0f;
 
 
     float interval = (1.0f / numPointsPerSegment);
@@ -286,9 +290,11 @@ class Hermite3D {
     p3f.z = p3i.z;
   }
 
-  public void render2(boolean fill, short colix, int tension,
-                      Point3i p0, Point3i p1, Point3i p2, Point3i p3,//top strand segment
-                      Point3i p4, Point3i p5, Point3i p6, Point3i p7) {//bottom strand segment
+  public void render2(boolean fill, boolean border, short colix, int tension,
+                      //top strand segment
+                      Point3i p0, Point3i p1, Point3i p2, Point3i p3,
+                      //bottom strand segment
+                      Point3i p4, Point3i p5, Point3i p6, Point3i p7) {
     
     if (! fill) {
       render2x(fill, colix, tension, p0, p1, p2, p3, p4, p5, p6, p7);
@@ -343,8 +349,10 @@ class Hermite3D {
             double dyBot = d.y - c.y;
             double dyBot2 = dyBot * dyBot;
             if (dyBot2 < 8) {
-              g3d.fillSphereCentered(colix, 3, a);
-              g3d.fillSphereCentered(colix, 3, c);
+              if (border) {
+                g3d.fillSphereCentered(colix, 3, a);
+                g3d.fillSphereCentered(colix, 3, c);
+              }
               
               if (needToFill[sp]) {
                 g3d.fillQuadrilateral(colix, a, b, d, c);

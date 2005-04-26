@@ -634,7 +634,7 @@ function _jmolSearchFrames(win, target) {
   var frames = win.frames;
   if (frames && frames.length) { // look in all the frames below this window
     for (var i = 0; i < frames.length; ++i) {
-      applet = _jmolSearchFrames(frames[i++], target);
+      applet = _jmolSearchFrames(frames[i], target);
       if (applet)
         break;
     }

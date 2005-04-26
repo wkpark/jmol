@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.1)
+  Translated from default version : index_en.xml (v 1.2)
 -->
 <document>
   <body>
@@ -42,6 +42,9 @@
           </a></li>
           <li><a href="./jssample2/">
             Chargement de mod&#x00E8;les mol&#x00E9;culaires en ligne
+          </a></li>
+          <li><a href="./jssample3/">
+            Plusieurs cadres
           </a></li>
         </ul>
       </p>

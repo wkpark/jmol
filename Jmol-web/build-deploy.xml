@@ -45,6 +45,11 @@
     </scp>
     <copy file="cache_tmp.properties" tofile="cache.properties"/>
     <delete file="cache_tmp.properties"/>
+    <sshexec
+      host="shell.sourceforge.net" username="${ssh.user}" password="${ssh.password}"
+      trust="yes" failonerror="false"
+      command="chmod -R -f ug+rw,o+r /home/groups/j/jm/jmol/htdocs/">
+    </sshexec>
     
   </target>
   

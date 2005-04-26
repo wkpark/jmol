@@ -4,14 +4,10 @@
 -->
 <html>
   <head>
-    <title>Exemple simple</title>
-    <script src="../../jmol/Jmol.js"></script>
+    <title>Exemple de cadres</title>
   </head>
-  <body>
-    <script>
-      jmolInitialize("../../jmol");
-      jmolApplet(200, "load caffeine.xyz");
-    </script>
-  </body>
+  <frameset cols="50%,50%">
+    <frame name="menu_frame" src="menu_frame.fr.html" />
+    <frame name="jmol_frame" src="jmol_frame.fr.html" />
+  </frameset>
 </html>
-

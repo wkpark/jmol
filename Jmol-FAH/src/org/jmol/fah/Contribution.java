@@ -68,8 +68,9 @@ public class Contribution {
    * @param teamNum Team number
    */
   public void addInformation(String userName, int teamNum) {
-    addInformation(userName, teamNum, 0);
-    addInformation(userName, teamNum, 1000);
+    for (int i = 0; i < 4; i++) {
+      addInformation(userName, teamNum, i * 1000);
+    }
   }
 
   /**

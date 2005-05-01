@@ -2867,6 +2867,12 @@
   <fah_proj number="1284" name="p1284_A21nat_ntxd15" public="n" file="n"
     server="171.65.103.155" atoms="7533" preferred="15" deadline="22"
     credit="73" frames="100" code="G" contact="esorin"/>
+  <fah_proj number="1285" name="p1285_A21ext_ntxd15" public="n" file="y"
+    server="171.65.103.155" atoms="7491" preferred="15" deadline="22"
+    credit="73" frames="100" code="G" contact="esorin"/>
+  <fah_proj number="1286" name="p1286_A21nat_ntxd15" public="n" file="y"
+    server="171.65.103.155" atoms="7533" preferred="15" deadline="22"
+    credit="73" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1288" name="p1288_A21nat_305K_amber94s" public="y" file="y"
     server="171.67.89.149" atoms="6426" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
@@ -3246,13 +3252,13 @@
     credit="450" frames="100" code="Q" contact="ymrhee"/>
     
   <!-- Projects 2000 to 2099 -->
-  <fah_proj number="2000" name="p2000_ab1-43" public="n" file="n"
+  <fah_proj number="2000" name="p2000_ab1-43" public="y" file="y"
     server="171.65.103.157" atoms="2576" preferred="30" deadline="44"
     credit="154" frames="100" code="G" contact="luttmann"/>
-  <fah_proj number="2002" name="p2002_ab1-43_4mer_opls" public="n" file="n"
+  <fah_proj number="2002" name="p2002_ab1-43_4mer_opls" public="y" file="n"
     server="171.65.103.157" atoms="2576" preferred="35" deadline="51"
     credit="180" frames="100" code="G" contact="luttmann"/>
-  <fah_proj number="2003" name="p2003_ab1-42_4mer_opls-dummy" public="n" file="n"
+  <fah_proj number="2003" name="p2003_ab1-42_4mer_opls-dummy" public="y" file="y"
     server="171.65.103.157" atoms="2824" preferred="32" deadline="46"
     credit="162" frames="100" code="G" contact="luttmann"/>
 </fah_projects>

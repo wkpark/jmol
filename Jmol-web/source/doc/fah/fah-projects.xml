@@ -1737,8 +1737,9 @@
   <fah_proj number="741" name="p741_Villin-pfold-protein-confined" public="y" file="y"
     server="171.64.122.130" atoms="19399" preferred="29" deadline="43"
     credit="149" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="742" name="p742_Villin-pfold-protein-confined" public="n" file="y"
-    code="G"/>
+  <fah_proj number="742" name="p742_Villin-pfold-protein-confined" public="y" file="y"
+    server="171.64.122.130" atoms="21316" preferred="34" deadline="50"
+    credit="178" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -3049,6 +3050,9 @@
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
   <fah_proj number="1477" name="p1477_release31_0" public="y" file="y"
+    server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
+    credit="364" frames="100" code="G" contact="kasson"/>
+  <fah_proj number="1478" name="p1478_tet_1478" public="n" file="y"
     server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
 

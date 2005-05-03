@@ -260,8 +260,8 @@ final class Atom implements Tuple {
       size = (atom.getBondingMar() * 2);
     else if (size < 0) {
       size = -size;
-      if (size > 100)
-        size = 100;
+      if (size > 200)
+        size = 200;
       size = // we are going from a radius to a diameter
         (size * atom.getVanderwaalsMar() / 50);
     }

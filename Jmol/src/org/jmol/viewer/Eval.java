@@ -2034,13 +2034,13 @@ class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
-        if (radiusRasMol >= 750 || radiusRasMol < -100)
+        if (radiusRasMol >= 750 || radiusRasMol < -200)
           numberOutOfRange();
         mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
           mad *= 4 * 2;
       } else {
-        if (radiusRasMol < 0 || radiusRasMol > 100)
+        if (radiusRasMol < 0 || radiusRasMol > 200)
           numberOutOfRange();
         mad = (short)-radiusRasMol; // use a negative number to specify %vdw
       }

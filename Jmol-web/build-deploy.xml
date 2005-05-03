@@ -5,7 +5,15 @@
     The scp task requires the jsch jar in the class path.
   -->
   
-  <property name="from.dir" value="build/html" />
+  <!-- Contributions -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="./ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
+  <property name="from.dir"  value="build/html" />
+  <property name="tmp.cache" value="build/cache.properties" />
 
   <!-- Copying files to website -->
   <target name="deploy" >
@@ -31,24 +39,78 @@
       addproperty="ssh.password"
     />
     
+    <!-- Path management -->
+    <property
+      name="dir.expanded"
+      value="${basedir}${file.separator}build${file.separator}html${file.separator}"/>
+    <propertyregex
+      property="dir.expanded" override="true" input="${dir.expanded}"
+      regexp="\\" replace="\\\\\\\\" global="true"/>
+    <propertyregex
+      property="dir.expanded" override="true" input="${dir.expanded}"
+      regexp=":" replace="\\\\:" global="true"/>
+    <propertyregex
+      property="dir.expanded" override="true" input="${dir.expanded}"
+      regexp="\\" replace="\\\\\\\\" global="true"/>
+    
+    <!-- Prepare temporary cache.properties -->
+    <copy file="cache.properties" tofile="${tmp.cache}" overwrite="true"/>
+    <property name="separator.replacement" value="${file.separator}"/>
+    <propertyregex
+      property="separator.replacement" override="true"
+      input="${file.separator}"
+      regexp="\\" replace="\\\\\\\\\\\\\\\\" global="true"/>
+    <replaceregexp
+      file="${tmp.cache}"
+      match="/" replace="${separator.replacement}" flags="g"/>
+    <replaceregexp
+      file="${tmp.cache}"
+      match="^([^#])" replace="${dir.expanded}\1" flags="gm"/>
+    <replaceregexp
+      file="${tmp.cache}"
+      match="\\" replace="\\\\\\\\" flags="g"/>
+    <replaceregexp
+      file="${tmp.cache}"
+      match=":" replace="\\\\:" flags="g"/>
+    
     <!-- Do the copy using scp -->
-    <echo message="Copying all files to Jmol website"/>
-    <copy file="cache.properties" tofile="cache_tmp.properties" overwrite="true"/>
+    <echo message="Copying all files to Jmol website" level="info"/>
     <scp
       todir="${ssh.user}:${ssh.password}@shell.sourceforge.net:/home/groups/j/jm/jmol/htdocs"
       trust="yes" failonerror="true">
       <fileset dir="${from.dir}">
         <modified>
-          <param name="cache.cachefile" value="cache_tmp.properties"/>
+          <param name="cache.cachefile" value="${tmp.cache}"/>
         </modified>
       </fileset>
     </scp>
-    <copy file="cache_tmp.properties" tofile="cache.properties"/>
-    <delete file="cache_tmp.properties"/>
+    
+    <!-- Recreate cache.properties -->
+    <replaceregexp
+      file="${tmp.cache}"
+      match="^${dir.expanded}" replace="" flags="gm"/>
+    <replaceregexp
+      file="${tmp.cache}"
+      match="\\\\" replace="/" flags="g"/>
+    <replaceregexp
+      file="${tmp.cache}"
+      match="^#.*$" replace="" flags="gm"/>
+    <loadfile srcfile="${tmp.cache}" property="unsorted.files"/>
+    <sortlist
+      property="sorted.files" value="${unsorted.files}"
+      delimiter="${line.separator}"/>
+    <echo file="cache.properties">${sorted.files}</echo>
+    
+    <!-- Post-processing for access rights -->
     <sshexec
       host="shell.sourceforge.net" username="${ssh.user}" password="${ssh.password}"
       trust="yes" failonerror="false"
       command="chmod -R -f ug+rw,o+r /home/groups/j/jm/jmol/htdocs/">
+    </sshexec>
+    <sshexec
+      host="shell.sourceforge.net" username="${ssh.user}" password="${ssh.password}"
+      trust="yes" failonerror="false"
+      command="chgrp -R -f jmol /home/groups/j/jm/jmol/htdocs/">
     </sshexec>
     
   </target>

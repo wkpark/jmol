@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.3)
+  Translated from default version : index_en.xml (v 1.4)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY aboutJmol             SYSTEM "aboutJmol_fr.xml" >
@@ -11,6 +11,7 @@
 <!ENTITY performance           SYSTEM "performance_fr.xml" >
 <!ENTITY graphics              SYSTEM "graphics_fr.xml" >
 <!ENTITY appletDeployment      SYSTEM "appletDeployment_fr.xml" >
+<!ENTITY scripting             SYSTEM "scripting_fr.xml" >
 ]>
 <document>
   <body>
@@ -27,6 +28,8 @@
     &graphics;
 
     &appletDeployment;
+
+    &scripting;
 
   </body>
 </document>

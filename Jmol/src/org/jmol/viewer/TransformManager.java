@@ -281,6 +281,8 @@ class TransformManager {
       rZ2 = (float)Math.atan2(matrixRotate.m12, matrixRotate.m02) *
         degreesPerRadian;
     }
+    if (rZ1 != 0 && rY != 0 && rZ2 != 0)
+      sb.append("#Follows Z-Y-Z convention for Euler angles\n");
     sb.append("reset");
     if (rZ1 != 0) {
       sb.append("; rotate z");
@@ -309,7 +311,8 @@ class TransformManager {
       sb.append("; translate y ");
       sb.append(tY);
     }
-    return "" + sb + ';';
+    sb.append(';');
+    return "" + sb;
   }
 
   static void truncate0(StringBuffer sb, float val) {

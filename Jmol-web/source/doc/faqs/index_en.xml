@@ -7,6 +7,7 @@
 <!ENTITY performance           SYSTEM "performance_en.xml" >
 <!ENTITY graphics              SYSTEM "graphics_en.xml" >
 <!ENTITY appletDeployment      SYSTEM "appletDeployment_en.xml" >
+<!ENTITY scripting             SYSTEM "scripting_en.xml" >
 ]>
 <document>
   <body>
@@ -23,6 +24,8 @@
     &graphics;
 
     &appletDeployment;
+
+    &scripting;
 
   </body>
 </document>

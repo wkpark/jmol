@@ -113,45 +113,45 @@ public class JmolEditBus implements CDKEditBus {
         if (viewer.getModelCount() != 1) {
             // cannot deal with no models, or more than one model
             return null;
-        } else {
-            ChemModel model = new ChemModel();
-            SetOfMolecules moleculeSet = new SetOfMolecules();
-            Molecule molecule = new Molecule();
-            // copy the atoms
-            Point3f[] atomPoints = new Point3f[viewer.getAtomCount()];
-            for (int i=0; i<viewer.getAtomCount(); i++) {
-                Atom atom = new Atom(viewer.getAtomName(i));
-                atomPoints[i] = viewer.getAtomPoint3f(i);
-                atom.setPoint3d(new Point3d(atomPoints[i]));
-                molecule.addAtom(atom);
-            }
-            // copy the bonds
-            for (int i=0; i<viewer.getBondCount(); i++) {
-                // Ok, at the time or writing the JmolViewer no longer has
-                // something like getBondAtomNumber1() :(
-                int atomNumber1 = -1;
-                int atomNumber2 = -1;
-                Point3f atomCoord = viewer.getBondPoint3f1(i);
-                for (int j=0; j<atomPoints.length; j++) {
-                    if (atomCoord.distance(atomPoints[j]) < 0.01) {
-                        atomNumber1 = j;
-                        j=atomPoints.length;
-                    }
-                }
-                atomCoord = viewer.getBondPoint3f2(i);
-                for (int j=0; j<atomPoints.length; j++) {
-                    if (atomCoord.distance(atomPoints[j]) < 0.01) {
-                        atomNumber2 = j;
-                        j=atomPoints.length;
-                    }
-                }
-                // just assume this is working ...
-                molecule.addBond(atomNumber1, atomNumber2, viewer.getBondOrder(i));
-            }
-            moleculeSet.addMolecule(molecule);
-            model.setSetOfMolecules(moleculeSet);
-            return model;
         }
+        
+        ChemModel model = new ChemModel();
+        SetOfMolecules moleculeSet = new SetOfMolecules();
+        Molecule molecule = new Molecule();
+        // copy the atoms
+        Point3f[] atomPoints = new Point3f[viewer.getAtomCount()];
+        for (int i=0; i<viewer.getAtomCount(); i++) {
+            Atom atom = new Atom(viewer.getAtomName(i));
+            atomPoints[i] = viewer.getAtomPoint3f(i);
+            atom.setPoint3d(new Point3d(atomPoints[i]));
+            molecule.addAtom(atom);
+        }
+        // copy the bonds
+        for (int i=0; i<viewer.getBondCount(); i++) {
+            // Ok, at the time or writing the JmolViewer no longer has
+            // something like getBondAtomNumber1() :(
+            int atomNumber1 = -1;
+            int atomNumber2 = -1;
+            Point3f atomCoord = viewer.getBondPoint3f1(i);
+            for (int j=0; j<atomPoints.length; j++) {
+                if (atomCoord.distance(atomPoints[j]) < 0.01) {
+                    atomNumber1 = j;
+                    j=atomPoints.length;
+                }
+            }
+            atomCoord = viewer.getBondPoint3f2(i);
+            for (int j=0; j<atomPoints.length; j++) {
+                if (atomCoord.distance(atomPoints[j]) < 0.01) {
+                    atomNumber2 = j;
+                    j=atomPoints.length;
+                }
+            }
+            // just assume this is working ...
+            molecule.addBond(atomNumber1, atomNumber2, viewer.getBondOrder(i));
+        }
+        moleculeSet.addMolecule(molecule);
+        model.setSetOfMolecules(moleculeSet);
+        return model;
     }
     
     public ChemFile getChemFile() {

@@ -2886,7 +2886,6 @@ class Eval implements Runnable {
   void setHbonds() throws ScriptException {
     checkLength3();
     boolean bool = false;
-    boolean hbondsBackbone = false;
     switch(statement[2].tok) {
     case Token.backbone:
       bool = true;

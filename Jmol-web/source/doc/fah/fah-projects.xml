@@ -3259,7 +3259,7 @@
   <fah_proj number="2000" name="p2000_ab1-43" public="y" file="y"
     server="171.65.103.157" atoms="2576" preferred="30" deadline="44"
     credit="154" frames="100" code="G" contact="luttmann"/>
-  <fah_proj number="2002" name="p2002_ab1-43_4mer_opls" public="y" file="n"
+  <fah_proj number="2002" name="p2002_ab1-43_4mer_opls" public="y" file="y"
     server="171.65.103.157" atoms="2576" preferred="35" deadline="51"
     credit="180" frames="100" code="G" contact="luttmann"/>
   <fah_proj number="2003" name="p2003_ab1-42_4mer_opls-dummy" public="y" file="y"

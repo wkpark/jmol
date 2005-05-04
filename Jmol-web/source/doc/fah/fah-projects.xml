@@ -2603,10 +2603,10 @@
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1140" name="p1140_RIBO_FSpeptide_EXT_nospring" public="y" file="y"
-    server="171.65.103.156" atoms="84665" preferred="21" deadline="82"
+    server="171.65.103.156" atoms="84665" preferred="14" deadline="82"
     credit="600" frames="100" code="G" contact="csnow"/>
   <fah_proj number="1141" name="p1141_RIBO_FSpeptide_HEL_nospring" public="y" file="y"
-    server="171.65.103.156" atoms="84665" preferred="21" deadline="82"
+    server="171.65.103.156" atoms="84665" preferred="14" deadline="82"
     credit="600" frames="100" code="G" contact="csnow"/>
   <fah_proj number="1142" name="p1142_p1130_L939_K12M_355K" public="y"
     server="171.64.122.143" atoms="393" preferred="5" deadline="7"

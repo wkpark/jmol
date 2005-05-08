@@ -1283,6 +1283,9 @@
   <fah_proj number="578" name="p578_L939_K12M" public="y"
     server="171.67.89.148" atoms="15367" preferred="25" deadline="60"
     credit="47" frames="100" code="G"/>
+  <fah_proj number="579" name="p579_BBA5_pf" public="y" file="y"
+    server="171.65.103.148" atoms="385" preferred="36" deadline="53"
+    credit="186" frames="250" code="T" contact="ymrhee"/>
   <fah_proj number="580" name="p580_BBA5" public="y" file="y"
     server="171.67.89.148" atoms="245" preferred="3.2" deadline="10"
     credit="6.5" frames="100" code="G" contact="ymrhee"/>
@@ -1746,11 +1749,11 @@
 
   <!-- Projects 800 to 899 -->
   <fah_proj number="800" name="p800_p53dimer800" public="y" file="y"
-    server="171.67.89.150" atoms="12248" deadline="8"
-    credit="32" frames="100" code="G"/>
+    server="171.65.103.157" atoms="12215" preferred="30" deadline="44"
+    credit="155" frames="100" code="G" contact="ltchong"/>
   <fah_proj number="801" name="p801_p53dimer801" public="y" file="y"
-    server="171.67.89.150" atoms="12248" deadline="8"
-    credit="32" frames="100" code="G"/>
+    server="171.65.103.157" atoms="12221" preferred="30" deadline="44"
+    credit="155" frames="100" code="G" contact="ltchong"/>
   <fah_proj number="802" name="p802_p53dimer802" public="y" file="y"
     server="171.67.89.150" atoms="12248" deadline="8"
     credit="32" frames="100" code="G"/>
@@ -1997,6 +2000,12 @@
   <fah_proj number="883" name="p883_p53dimer883" public="y" file="y"
     server="171.65.103.157" atoms="12248" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="884" name="p884_p53dimer884" public="y" file="y"
+    server="171.65.103.157" atoms="12248" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="885" name="p885_p53dimer885" public="y" file="y"
+    server="171.65.103.157" atoms="12251" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
 
   <!-- Projects 900 to 999 -->
   <fah_proj number="901" public="y"
@@ -3265,4 +3274,7 @@
   <fah_proj number="2003" name="p2003_ab1-42_4mer_opls-dummy" public="y" file="y"
     server="171.65.103.157" atoms="2824" preferred="32" deadline="46"
     credit="162" frames="100" code="G" contact="luttmann"/>
+  <fah_proj number="2004" name="p2004_a21" public="y" file="n"
+    server="171.65.103.157" atoms="222" preferred="30" deadline="44"
+    credit="154" frames="100" code="G" contact="luttmann"/>
 </fah_projects>

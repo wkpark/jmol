@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : changes.xml (v 1.3)
+  Translated from default version : changes.xml (v 1.5)
 -->
 <changes version="jmol-10.??">
   <change contributor="EW">
@@ -38,6 +38,10 @@
   </change>
   <change contributor="NV">
     Ajout de la commande substructure pour la recherche de structure SMILES.
+  </change>
+  <change contributor="PV,IS,FL,CPN,TIM">
+    Traductions hollandaise, estonienne, hongroise, portugaise, roumaine
+    de la page Folding@Home.
   </change>
 </changes>
 

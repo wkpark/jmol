@@ -31,6 +31,10 @@
   <change contributor="NV">
     Added substructure command for SMILES pattern matching.
   </change>
+  <change contributor="PV,IS,FL,CPN,TIM">
+    Dutch, Estonian, Hungarian, Portuguese, Romanian
+    translations of Folding@Home webpage.
+  </change>
 </changes>
 
 <changes version="jmol-10">

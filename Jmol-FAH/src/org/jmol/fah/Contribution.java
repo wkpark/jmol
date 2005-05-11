@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
@@ -43,6 +44,12 @@ import javax.swing.text.html.parser.ParserDelegator;
  * Manage contributions informations
  */
 public class Contribution {
+
+  // Contributions
+  private Vector _infos = null;
+
+  private final static int PAGES_COUNT = 4;
+  private final static int PROJECTS_BY_PAGE = 1000;
 
   /**
    * @return Contribution singleton
@@ -58,7 +65,7 @@ public class Contribution {
    * Constructor for Contribution
    */
   private Contribution() {
-    //Empty
+    _infos = new Vector(PAGES_COUNT * PROJECTS_BY_PAGE);
   }
 
   /**
@@ -68,8 +75,8 @@ public class Contribution {
    * @param teamNum Team number
    */
   public void addInformation(String userName, int teamNum) {
-    for (int i = 0; i < 4; i++) {
-      addInformation(userName, teamNum, i * 1000);
+    for (int i = 0; i < PAGES_COUNT; i++) {
+      addInformation(userName, teamNum, i * PROJECTS_BY_PAGE);
     }
   }
 
@@ -95,7 +102,7 @@ public class Contribution {
       URL url = new URL(urlName.toString());
       InputStream stream = url.openStream();
       InputStreamReader reader = new InputStreamReader(stream);
-      HTMLDocument htmlDoc = new HTMLDocumentContribution();
+      HTMLDocument htmlDoc = new HTMLDocumentContribution(this);
       HTMLEditorKit htmlEditor = new HTMLEditorKit() {
         protected HTMLEditorKit.Parser getParser() {
           return new ParserDelegator() {
@@ -117,6 +124,54 @@ public class Contribution {
     }
   }
 
+  /**
+   * Adds contribution informations for a project
+   * 
+   * @param project Project number
+   * @param count Contributions
+   */
+  void addProjectInformation(String project, int count) {
+    if ((project == null) || (project.length() == 0)) {
+      System.out.println("Incorrect project: " + project);
+      return;
+    }
+    int projectNum = 0;
+    try {
+      projectNum = Integer.parseInt(project.substring(1));
+    } catch (NumberFormatException e) {
+      System.out.println("Incorrect project: " + project);
+    }
+    Integer currentCount = null;
+    if (projectNum < _infos.size()) {
+      try {
+        currentCount = (Integer) _infos.get(projectNum);
+      } catch (ClassCastException e) {
+        System.out.println("Error in infos: " + _infos.get(projectNum));
+      }
+    }
+    Integer newCount = new Integer(count + (currentCount != null ? currentCount.intValue() : 0));
+    if (projectNum >= _infos.size()) {
+      _infos.setSize(projectNum + 1);
+    }
+    _infos.set(projectNum, newCount);
+  }
+
+  /**
+   * Displays contribution informations 
+   */
+  public void displayContributions() {
+    for (int i = 0; i < _infos.size(); i++) {
+      try {
+        Integer count = (Integer) _infos.get(i);
+        if (count != null) {
+          System.out.println("P" + i + "\t" + count);
+        }
+      } catch (ClassCastException e) {
+        //
+      }
+    }
+  }
+
   // Contribution (Singleton)
   private static Contribution _contrib;
 
@@ -125,25 +180,35 @@ public class Contribution {
    */
   private class HTMLDocumentContribution extends HTMLDocument {
 
+    private Contribution _contrib = null;
+
+    public HTMLDocumentContribution(Contribution contrib) {
+      super();
+      _contrib = contrib;
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see javax.swing.text.html.HTMLDocument#getReader(int)
      */
     public HTMLEditorKit.ParserCallback getReader(int pos) {
-      return new ContributionReader(pos);
+      return new ContributionReader(pos, _contrib);
     }
 
     /**
-     * Reader for Contrubition
+     * Reader for Contribution
      */
     private class ContributionReader extends HTMLDocument.HTMLReader {
+
+      private Contribution _contrib;
 
       /**
        * @param offset
        */
-      public ContributionReader(int offset) {
+      public ContributionReader(int offset, Contribution contrib) {
         super(offset);
+        _contrib = contrib;
       }
 
       /*
@@ -205,11 +270,8 @@ public class Contribution {
           }
         }
         if (tag.equals(HTML.Tag.TR)) {
-          if ((this._project != null) && (this._count > 0)) {
-            System.out.print(this._project);
-            System.out.print("\t"); //$NON-NLS-1$
-            System.out.print(this._count);
-            System.out.println();
+          if ((this._project != null) && (this._count > 0) && (_contrib != null)) {
+            _contrib.addProjectInformation(this._project, this._count);
           }
           this._column = 0;
           this._project = null;
@@ -236,7 +298,6 @@ public class Contribution {
    * @param args Command line arguments
    */
   public static void main(String[] args) {
-    Contribution contrib = getContribution();
     String userName = System.getProperty("org.jmol.fah.user");
     if (userName == null) {
       System.err.println("You must define org.jmol.fah.user");
@@ -247,11 +308,16 @@ public class Contribution {
       System.err.println("You must define org.jmol.fah.team");
       return;
     }
-    try {
-      int teamNumber = Integer.parseInt(team);
-      contrib.addInformation(userName, teamNumber); //$NON-NLS-1$
-    } catch (NumberFormatException e) {
-      System.err.println("org.jmol.fag.team must be an integer");
+    String[] teams = team.split(",");
+    Contribution contrib = getContribution();
+    for (int i = 0; i < teams.length; i++) {
+      try {
+        int teamNumber = Integer.parseInt(teams[i]);
+        contrib.addInformation(userName, teamNumber); //$NON-NLS-1$
+      } catch (NumberFormatException e) {
+        System.err.println("org.jmol.fah.team must be a comma separated list of integers");
+      }
     }
+    contrib.displayContributions();
   }
 }

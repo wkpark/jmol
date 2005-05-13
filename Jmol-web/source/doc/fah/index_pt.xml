@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   Portuguese translation 
-  Translated from default version : index_en.xml (v 1.13)
+  Translated from default version : index_en.xml (v 1.14)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
@@ -30,7 +30,9 @@
           "Esconder solvente",
           "<fah_count_files/> arquivos / <fah_count_projects/> projetos.",
           "Se voc&#x00EA; tiver arquivos <b>current.xyz</b> para os projetos que faltam, por favor envie-os para nicove@users.sourceforge.net",
-          "Projetos ausentes");
+          "Projetos ausentes",
+          "Ajude o Jmol se juntando ao Time Jmol #44383 no Folding@Home"
+          );
       </script>
     </form></section>
   </body>

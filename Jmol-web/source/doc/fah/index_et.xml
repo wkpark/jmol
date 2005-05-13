@@ -30,7 +30,8 @@
           "Peida lahusti",
           "<fah_count_files/> faili / <fah_count_projects/> projekti.",
           "Kui sul on puuduvate projektide <b>current.xyz</b> faile, siis, palun, saada need nicove@users.sourceforge.net",
-          "Puuduvad projektid");
+          "Puuduvad projektid",
+          "Toeta Jmol'i, liitudes Folding@Home Jmol Team #44383");
       </script>
     </form></section>
   </body>

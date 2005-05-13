@@ -43,7 +43,7 @@ function getParameter(paramName, defaultVal) {
 function createFahPage(select,
                        project, name, credit, atoms, preferred, deadline, frames, code,
                        projectDescription, hideSolvent, availableFiles,
-                       findMissing, missingProjects) {
+                       findMissing, missingProjects, supportJmol) {
   document.writeln("<table border='0' cellpadding='0' cellspacing='0' width='100%'>");
   var paramShowList = getParameter("showList", "dropbox");
   if (paramShowList != "button") {
@@ -113,6 +113,9 @@ function createFahPage(select,
   document.writeln("        <td><label>" + code + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoCode' id='infoCode'");
   document.writeln("                   size='45' readonly='readonly'/></td>");
+  document.writeln("       </tr>");
+  document.writeln("       <tr>");
+  document.writeln("        <td align='center' colspan='2'><br/><small><i>" + supportJmol + "</i></small></td>");
   document.writeln("       </tr>");
   document.writeln("      </table>");
   document.writeln("     </td>");

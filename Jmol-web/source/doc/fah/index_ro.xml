@@ -30,7 +30,9 @@
           "Ascunde solvent",
           "<fah_count_files/> fisiere / <fah_count_projects/> proiecte.",
           "Daca ai <b>current.xyz</b> fisiere pentru proiectele lipsa, te rog trimite-le la nicove@users.sourceforge.net",
-          "Proiecte lipsa");
+          "Proiecte lipsa",
+          "Support Jmol by joining the Jmol Team #44383 at Folding@Home"
+          );
       </script>
     </form></section>
   </body>

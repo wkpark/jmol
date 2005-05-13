@@ -30,7 +30,9 @@
           "Hide solvent",
           "<fah_count_files/> Dateien / <fah_count_projects/> Projekte.",
           "Falls Du noch <b>current.xyz</b> Dateien f&#x00FC;r fehlende Projekte hast, schicke sie bitte an nicove@users.sourceforge.net",
-          "Missing projects");
+          "Missing projects",
+          "Support Jmol by joining the Jmol Team #44383 at Folding@Home"
+          );
       </script>
     </form></section>
   </body>

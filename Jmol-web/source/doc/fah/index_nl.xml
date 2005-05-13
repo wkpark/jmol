@@ -30,7 +30,9 @@
           "Verberg het oplosmiddel",
           "<fah_count_files/> bestanden / <fah_count_projects/> Projecten.",
           "Als je <b>current.xyz</b> bestanden hebt van niet aanwezige projecten, zend ze dan aub. naar nicove@users.sourceforge.net",
-          "Missing projects");
+          "Missing projects",
+          "Support Jmol by joining the Jmol Team #44383 at Folding@Home"
+          );
       </script>
     </form></section>
   </body>

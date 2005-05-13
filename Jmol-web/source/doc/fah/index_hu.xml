@@ -30,7 +30,9 @@
           "Old&#x00F3;szer elrejt&#x00E9;se",
           "<fah_count_files/> f&#x00E1;jl / <fah_count_projects/> project.",
           "Ha vannak <b>current.xyz</b> f&#x00E1;jljaid a hi&#x00E1;nyz&#x00F3; projectekhez, k&#x00E9;rlek k&#x00FC;ldd el &#x00F5;ket a nicove@users.sourceforge.net c&#x00ED;mre",
-          "Hi&#x00E1;nyz&#x00F3; projectek");
+          "Hi&#x00E1;nyz&#x00F3; projectek",
+          "Support Jmol by joining the Jmol Team #44383 at Folding@Home"
+          );
       </script>
     </form></section>
   </body>

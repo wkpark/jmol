@@ -1743,6 +1743,9 @@
   <fah_proj number="742" name="p742_Villin-pfold-protein-confined" public="y" file="y"
     server="171.64.122.130" atoms="21316" preferred="34" deadline="50"
     credit="178" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="743" name="p743_Villin-pfold-protein-confined" public="n" file="y"
+    server="171.64.122.130" atoms="24895" preferred="40" deadline="59"
+    credit="210" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -2561,7 +2564,7 @@
     server="171.65.103.157" atoms="84764" preferred="38" deadline="57"
     credit="40" frames="100" code="G" contact="csnow"/>
   <fah_proj number="1123" name="p1123_L939_K12M_429K" public="y" file="y"
-    server="171.64.122.120" atoms="393" preferred="45" deadline="67"
+    server="171.64.122.120" atoms="393" preferred="28" deadline="67"
     credit="237" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1124" name="p1124_p678_L939_K12M_355K" public="y"
     server="171.65.103.156" atoms="393" preferred="46" deadline="68"
@@ -2874,13 +2877,13 @@
   <fah_proj number="1283" name="p1283_A21ext_ntxd15" public="n" file="y"
     server="171.65.103.155" atoms="7491" preferred="15" deadline="22"
     credit="73" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1284" name="p1284_A21nat_ntxd15" public="n" file="n"
+  <fah_proj number="1284" name="p1284_A21nat_ntxd15" public="n"
     server="171.65.103.155" atoms="7533" preferred="15" deadline="22"
     credit="73" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1285" name="p1285_A21ext_ntxd15" public="n" file="y"
+  <fah_proj number="1285" name="p1285_A21ext_ntxd15" public="y" file="y"
     server="171.65.103.155" atoms="7491" preferred="15" deadline="22"
     credit="73" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1286" name="p1286_A21nat_ntxd15" public="n" file="y"
+  <fah_proj number="1286" name="p1286_A21nat_ntxd15" public="y" file="y"
     server="171.65.103.155" atoms="7533" preferred="15" deadline="22"
     credit="73" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1288" name="p1288_A21nat_305K_amber94s" public="y" file="y"
@@ -3061,7 +3064,10 @@
   <fah_proj number="1477" name="p1477_release31_0" public="y" file="y"
     server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
-  <fah_proj number="1478" name="p1478_tet_1478" public="n" file="y"
+  <fah_proj number="1478" name="p1478_tet_1478" public="y" file="y"
+    server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
+    credit="364" frames="100" code="G" contact="kasson"/>
+  <fah_proj number="1479" name="p1479_tet_1479_1" public="n" file="y"
     server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
 
@@ -3274,7 +3280,7 @@
   <fah_proj number="2003" name="p2003_ab1-42_4mer_opls-dummy" public="y" file="y"
     server="171.65.103.157" atoms="2824" preferred="32" deadline="46"
     credit="162" frames="100" code="G" contact="luttmann"/>
-  <fah_proj number="2004" name="p2004_a21" public="y" file="n"
+  <fah_proj number="2004" name="p2004_a21" public="y"
     server="171.65.103.157" atoms="222" preferred="30" deadline="44"
     credit="154" frames="100" code="G" contact="luttmann"/>
 </fah_projects>

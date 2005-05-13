@@ -30,7 +30,9 @@
           "Nascondi solvente",
           "<fah_count_files/> file / <fah_count_projects/> progetti.",
           "Se disponete di file <b>current.xyz</b> dei progetti mancanti, inviateli a nicove@users.sourceforge.net, grazie",
-          "Progetti mancanti");
+          "Progetti mancanti",
+          "Support Jmol by joining the Jmol Team #44383 at Folding@Home"
+          );
       </script>
     </form></section>
   </body>

@@ -31,7 +31,7 @@ set echo top center; font echo 22; color echo cyan
 echo "Ce n'est *pas* un film ..."
 delay 2;
 set echo middle center; font echo 30; color echo tomato
-echo "... c'est la realite ..."
+echo "... c'est la r\u00E9alit\u00E9 ..."
 delay 2;
 set echo bottom center; font echo 22; color echo lime
 echo "r\u00E9alit\u00E9 virtuelle pour mol\u00E9cules"

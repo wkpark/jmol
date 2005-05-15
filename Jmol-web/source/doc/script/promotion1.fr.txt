@@ -5,10 +5,10 @@ set echo top center; font echo 22 serif; color echo white
 echo "Le futur de la ..."
 delay 3
 set echo middle center; font echo 22 serif; color echo white
-echo "visualisation moleculaire"
+echo "visualisation mol\u00E9culaire"
 delay 3
 set echo bottom center; font echo 22 serif; color echo white
-echo "... est arrive ..."
+echo "... est arriv\u00E9 ..."
 delay 5
 #
 set echo off;
@@ -34,7 +34,7 @@ set echo middle center; font echo 30; color echo tomato
 echo "... c'est la realite ..."
 delay 2;
 set echo bottom center; font echo 22; color echo lime
-echo "realite virtuelle pour molecules"
+echo "r\u00E9alit\u00E9 virtuelle pour mol\u00E9cules"
 delay 3;
 #
 set echo off;
@@ -46,13 +46,13 @@ set echo off;
 restrict none;
 set echo off;
 set echo top center; font echo 18; color echo blueviolet
-echo "Compatibilite script RasMol/Chime"
+echo "Compatibilit\u00E9 script RasMol/Chime"
 delay 2;
 set echo middle center; font echo 20; color echo springgreen
-echo "Controle Bouton/menu"
+echo "Contr\u00F4le Bouton/menu"
 delay 2;
 set echo bottom center; font echo 22; color echo lavenderblush
-echo "pour creer des tutoriaux"
+echo "pour cr\u00E9er des tutoriaux"
 delay 3;
 #
 set echo off;
@@ -73,7 +73,7 @@ set echo middle center; font echo 22; color echo violet
 echo "*pas* d'installation"
 delay 2;
 set echo bottom center; font echo 22; color echo orange
-echo "... facile a deployer"
+echo "... facile \u00E0 d\u00E9ployer"
 delay 2;
 #
 set echo off;
@@ -94,11 +94,11 @@ echo "Ecole secondaire"
 delay 1;
 
 set echo bottom center; font echo 24; color echo gold
-echo "Lycee"
+echo "Lyc\u00E9e"
 delay 1;
 
 set echo top center; font echo 24; color echo mediumSpringGreen
-echo "Universite"
+echo "Universit\u00E9"
 delay 1;
 
 set echo middle left; font echo 24; color echo peru
@@ -106,7 +106,7 @@ echo "Ecole professionnelle"
 delay 1;
 
 set echo bottom center; font echo 24; color echo paleTurquoise
-echo "Ecole superieure"
+echo "Ecole sup\u00E9rieure"
 delay 1;
 
 set echo top right; font echo 24; color echo chocolate
@@ -130,7 +130,7 @@ echo "Biochimie"
 delay 1;
 
 set echo bottom right; font echo 24; color echo mediumSeaGreen
-echo "Biologie moleculaire"
+echo "Biologie mol\u00E9culaire"
 delay 1;
 
 set echo top center; font echo 24; color echo mistyRose
@@ -142,11 +142,11 @@ echo "Pharmacologie"
 delay 1;
 
 set echo bottom center; font echo 24; color echo powderBlue
-echo "Science de la matiere"
+echo "Science de la mati\u00E8re"
 delay 1;
 
 set echo top right; font echo 24; color echo lightGoldenrodYellow
-echo "Metalurgie"
+echo "M\u00E9tallurgie"
 delay 1;
 
 set echo middle left; font echo 24; color echo tomato
@@ -166,17 +166,17 @@ echo "Organisations gouvernementales";
 delay 1;
 
 set echo bottom center; font echo 18; color echo lightCyan
-echo "Bases de donnees chimiques web";
+echo "Bases de donn\u00E9es chimiques web";
 delay 1;
 
 set echo off;
 delay .5
 
 set echo top center; font echo 20; color echo orchid
-echo "Si vous etes sur le web ..."
+echo "Si vous \u00EAtes sur le web ..."
 delay 2;
 set echo middle center; font echo 20; color echo peachpuff
-echo "et que vous avez des molecules ..."
+echo "et que vous avez des mol\u00E9cules ..."
 delay 2;
 set echo bottom center; font echo 20; color echo lightSkyBlue
 echo "alors vous avez besoin de ...";

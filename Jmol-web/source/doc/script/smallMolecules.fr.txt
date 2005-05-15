@@ -7,7 +7,7 @@ delay 1;
 wireframe on; delay 2
 wireframe .15; delay 2
 select nitrogen; spacefill 20%; delay 2;
-echo "differentes representations"
+echo "diff\u00E9rentes repr\u00E9sentations"
 select *; spacefill 20%; delay 2;
 select *; label %e; spacefill 20%; delay 2;
 select oxygen; set display selected; delay 2;

@@ -2,7 +2,7 @@ load model/1CRN.pdb.gz
 set frank off
 spacefill off; wireframe off;
 set echo top center; font echo 30; color echo white
-echo "Proteines"
+echo "Prot\u00E9ines"
 delay .1
 wireframe;
 move 0 90 0 100 0 0 0 0 2

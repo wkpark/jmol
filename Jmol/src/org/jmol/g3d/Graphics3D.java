@@ -2190,6 +2190,12 @@ final public class Graphics3D {
     return normix3d.isDirectedTowardsCamera(normix);
   }
 
+  public short getClosestVisibleGeodesicVertexIndex(Vector3f vector,
+                                                    int[] visibilityBitmap) {
+    return normix3d.getVisibleNormix(vector.x, vector.y, vector.z,
+                                     visibilityBitmap);
+  }
+
   public Vector3f[] getGeodesicVertexVectors() {
     return Geodesic3D.getVertexVectors();
   }
@@ -2212,5 +2218,9 @@ final public class Graphics3D {
 
   public short[] getGeodesicFaceNormixes(int level) {
     return normix3d.getFaceNormixes(level);
+  }
+
+  public short[] getGeodesicNeighborVertexes(int level) {
+    return Geodesic3D.getNeighborVertexes(level);
   }
 }

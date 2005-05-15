@@ -360,4 +360,76 @@ class Normix3D {
     // normix < 0 means a double sided normix, so always visible
     return (normix < 0) || (transformedVectors[normix].z > 0);
   }
+
+  short getVisibleNormix(double x, double y, double z,
+                         int[] visibilityBitmap) {
+    short champion;
+    double t;
+    if (z >= 0) {
+      champion = 0;
+      t = z - 1;
+    } else {
+      champion = 11;
+      t = z - (-1);
+    }
+    bsConsidered.and(bsNull);
+    double championDist2 = x*x + y*y + t*t;
+    for (int level = 0; level <= NORMIX_GEODESIC_LEVEL; ++level) {
+      short[] neighborVertexes = Geodesic3D.neighborVertexesArrays[level];
+      for (int offsetNeighbors = 6 * champion,
+             i = offsetNeighbors + (champion < 12 ? 5 : 6);
+           --i >= offsetNeighbors; ) {
+        short challenger = neighborVertexes[i];
+        bsConsidered.set(challenger);
+        //        System.out.println("challenger=" + challenger);
+        Vector3f v = Geodesic3D.vertexVectors[challenger];
+        double d;
+        // d = dist2(v, x, y, z);
+        //        System.out.println("challenger d2=" + (d*d));
+        d = v.x - x;
+        double d2 = d * d;
+        if (d2 >= championDist2)
+          continue;
+        d = v.y - y;
+        d2 += d * d;
+        if (d2 >= championDist2)
+          continue;
+        d = v.z - z;
+        d2 += d * d;
+        if (d2 >= championDist2)
+          continue;
+        champion = challenger;
+        championDist2 = d2;
+      }
+    }
+
+    if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
+      int champ = champion;
+      double champD2 = dist2(Geodesic3D.vertexVectors[champion], x, y, z);
+      if (champD2 != championDist2)
+        System.out.println("slightly unequal!");
+      for (int k = normixCount; --k >= 0; ) {
+        double d2 = dist2(Geodesic3D.vertexVectors[k], x, y, z);
+        if (d2 < champD2) {
+          champ = k;
+          champD2 = d2;
+        }
+      }
+      if (champion != champ) {
+        System.out.println("?que? getNormix is messed up?");
+        boolean considered = bsConsidered.get(champ);
+        System.out.println("Was the sequential winner considered? " +
+                           considered);
+        System.out.println("champion " + champion + " @ " +
+                           dist2(Geodesic3D.vertexVectors[champion], x,y,z) +
+                           " sequential champ " + champ + " @ " +
+                           dist2(Geodesic3D.vertexVectors[champ], x,y,z) +
+                           "\n");
+        return (short)champ;
+      }
+    }
+
+
+    return champion;
+  }
 }

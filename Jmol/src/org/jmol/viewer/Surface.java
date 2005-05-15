@@ -39,7 +39,7 @@ import java.util.Enumeration;
  * its neighbors. If so, then the dot is not displayed. <p>
  * See DotsRenderer.Geodesic for more discussion of the implementation. <p>
  * The Connolly surface is defined by rolling a probe sphere over the
- * surface of the molecule. In this way, a smooth surface is generated ...
+ * surface of the molecule. In this way, a smooth surface is generated ...n
  * one that does not have crevices between atoms. Three types of shapes
  * are generated: convex, saddle, and concave. <p>
  * The 'probe' is a sphere. A sphere of 1.2 angstroms representing HOH
@@ -81,17 +81,21 @@ class Surface extends Shape {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
-  private final static int GEODESIC_CALC_LEVEL = 1;
-  int geodesicRenderingLevel = 1;
+  private final static int GEODESIC_CALC_LEVEL = 3;
+  int geodesicRenderingLevel = 3;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
-  int[][] convexSurfaceMaps;
+  int[][] convexVertexMaps;
+  int[][] convexFaceMaps;
   short[] colixesConvex;
   Vector3f[] geodesicVertexVectors;
   int geodesicVertexCount;
-  int[] geodesicMap;
+  int geodesicFaceCount;
+  short[] geodesicFaceVertexes;
+  short[] geodesicNeighborVertexes;
+  int[] tempVertexMap;
+  int[] tempFaceMap;
   private final static int[] calculateMyConvexSurfaceMap = new int[0];
-  final static int[] mapNull = new int[0];
 
   int cavityCount;
   Cavity[] cavities;
@@ -116,7 +120,13 @@ class Surface extends Shape {
   void initShape() {
     geodesicVertexVectors = g3d.getGeodesicVertexVectors();
     geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_CALC_LEVEL);
-    geodesicMap = allocateBitmap(geodesicVertexCount);
+    tempVertexMap = allocateBitmap(geodesicVertexCount);
+    geodesicFaceCount = g3d.getGeodesicFaceCount(geodesicRenderingLevel);
+    tempFaceMap = allocateBitmap(geodesicFaceCount);
+    geodesicFaceVertexes =
+      g3d.getGeodesicFaceVertexes(geodesicRenderingLevel);
+    geodesicNeighborVertexes =
+      g3d.getGeodesicNeighborVertexes(geodesicRenderingLevel);
   }
 
   void setSize(int size, BitSet bsSelected) {
@@ -124,7 +134,8 @@ class Surface extends Shape {
     this.mad = mad;
     if (radiusP != viewer.getCurrentSolventProbeRadius()) {
       surfaceConvexMax = 0;
-      convexSurfaceMaps = null;
+      convexVertexMaps = null;
+      convexFaceMaps = null;
       torusCount = 0;
       htToruses = null;
       toruses = null;
@@ -134,42 +145,44 @@ class Surface extends Shape {
       diameterP = 2 * radiusP;
     }
     int atomCount = frame.atomCount;
-    // always delete old surfaces for selected atoms
-    if (convexSurfaceMaps != null) {
-      for (int i = atomCount; --i >= 0; )
-        if (bsSelected.get(i))
-          convexSurfaceMaps[i] = null;
-      deleteUnusedToruses();
-      deleteUnusedCavities();
+    if (convexVertexMaps == null) {
+      convexVertexMaps = new int[atomCount][];
+      convexFaceMaps = new int[atomCount][];
+      colixesConvex = new short[atomCount];
     }
+    // always delete old surfaces for selected atoms
+    for (int i = atomCount; --i >= 0; )
+      if (bsSelected.get(i))
+        convexVertexMaps[i] = null;
+    deleteUnusedToruses();
+    deleteUnusedCavities();
+
     // now, calculate surface for selected atoms
     if (mad != 0) {
       long timeBegin = System.currentTimeMillis();
-      if (convexSurfaceMaps == null) {
-        convexSurfaceMaps = new int[atomCount][];
-        colixesConvex = new short[atomCount];
-      }
       if (radiusP > 0 && htToruses == null)
         htToruses = new Hashtable();
+      System.out.println("atomCount=" + atomCount);
       for (int i = 0; i < atomCount; ++i) // make this loop count up
         if (bsSelected.get(i)) {
           setAtomI(i);
           getNeighbors(bsSelected);
           calcCavitiesI();
-          if (convexSurfaceMaps[i] == calculateMyConvexSurfaceMap)
-            calcConvexMapI();
+          if (convexVertexMaps[i] == calculateMyConvexSurfaceMap) {
+            convexVertexMaps[i] = calcVertexBitmapI();
+            convexFaceMaps[i] = calcFaceBitmap();
+          }
         }
-      verifyCavityToruses();
       saveToruses();
       long timeElapsed = System.currentTimeMillis() - timeBegin;
       System.out.println("Surface construction time = " + timeElapsed + " ms");
     }
-    if (convexSurfaceMaps == null)
+    if (convexVertexMaps == null)
       surfaceConvexMax = 0;
     else {
       // update this count to speed up surfaceRenderer
       int i;
-      for (i = atomCount; --i >= 0 && convexSurfaceMaps[i] == null; )
+      for (i = atomCount; --i >= 0 && convexVertexMaps[i] == null; )
         {}
       surfaceConvexMax = i + 1;
     }
@@ -268,6 +281,7 @@ class Surface extends Shape {
   private float distanceIJ2, distanceIK2, distanceJK2;
 
   void setAtomI(int indexI) {
+    System.out.println("setAtomI(" + indexI + ")");
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
@@ -295,41 +309,39 @@ class Surface extends Shape {
     distanceJK2 = centerK.distanceSquared(centerJ);
   }
 
-  void calcConvexMapI() {
-    calcConvexBitsI();
-    int indexLast;
-    for (indexLast = geodesicMap.length;
-         --indexLast >= 0 && geodesicMap[indexLast] == 0; )
-      {}
-    int[] map = mapNull;
-    if (indexLast >= 0) {
-      int count = indexLast + 1;
-      map = new int[count];
-      System.arraycopy(geodesicMap, 0, map, 0, count);
+  int[] calcVertexBitmapI() {
+    System.out.println("calcVertexBitmapI indexI=" + indexI);
+    setAllBits(tempVertexMap, geodesicVertexCount);
+    if (neighborCount > 0) {
+      float combinedRadii = radiusI + radiusP;
+      int iLastUsed = 0;
+      for (int iDot = geodesicVertexCount; --iDot >= 0; ) {
+        pointT.set(geodesicVertexVectors[iDot]);
+        pointT.scaleAdd(combinedRadii, centerI);
+        int iStart = iLastUsed;
+        do {
+          if (pointT.distanceSquared(neighborCenters[iLastUsed])
+              < neighborPlusProbeRadii2[iLastUsed]) {
+            clearBit(tempVertexMap, iDot);
+            break;
+          }
+          if (++iLastUsed == neighborCount)
+            iLastUsed = 0;
+        } while (iLastUsed != iStart);
+      }
     }
-    convexSurfaceMaps[indexI] = map;
+    return copyMinimalBitmap(tempVertexMap);
   }
 
-  void calcConvexBitsI() {
-    setAllBits(geodesicMap, geodesicVertexCount);
-    if (neighborCount == 0)
-      return;
-    float combinedRadii = radiusI + radiusP;
-    int iLastUsed = 0;
-    for (int iDot = geodesicVertexCount; --iDot >= 0; ) {
-      pointT.set(geodesicVertexVectors[iDot]);
-      pointT.scaleAdd(combinedRadii, centerI);
-      int iStart = iLastUsed;
-      do {
-        if (pointT.distanceSquared(neighborCenters[iLastUsed])
-	    < neighborPlusProbeRadii2[iLastUsed]) {
-          clearBit(geodesicMap, iDot);
-          break;
-        }
-        if (++iLastUsed == neighborCount)
-          iLastUsed = 0;
-      } while (iLastUsed != iStart);
+  int[] calcFaceBitmap() {
+    clearAllBits(tempFaceMap);
+    for (int i = geodesicFaceCount, j = 3 * (i - 1); --i >= 0; j -= 3) {
+      if (getBit(tempVertexMap, geodesicFaceVertexes[j]) &&
+          getBit(tempVertexMap, geodesicFaceVertexes[j + 1]) &&
+          getBit(tempVertexMap, geodesicFaceVertexes[j + 2]))
+        setBit(tempFaceMap, i);
     }
+    return copyMinimalBitmap(tempFaceMap);
   }
 
   // I have no idea what this number should be
@@ -391,8 +403,8 @@ class Surface extends Shape {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
-      if (convexSurfaceMaps[torus.ixI] == null &&
-          convexSurfaceMaps[torus.ixJ] == null) {
+      if (convexVertexMaps[torus.ixI] == null &&
+          convexVertexMaps[torus.ixJ] == null) {
         torusDeleted = true;
         toruses[i] = null;
       }
@@ -458,6 +470,7 @@ class Surface extends Shape {
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius) {
+      System.out.println("Torus " + indexA + ":" + indexB);
       this.ixI = indexA;
       this.ixJ = indexB;
       this.center = new Point3f(center);
@@ -892,14 +905,7 @@ class Surface extends Shape {
     Torus torus = new Torus(indexA, centerA, indexB, centerB,
                             torusCenterAB, torusRadius);
     htToruses.put(key, torus);
-    convexSurfaceMaps[indexA] = calculateMyConvexSurfaceMap; 
-    convexSurfaceMaps[indexB] = calculateMyConvexSurfaceMap; 
     return torus;
-  }
-
-  void verifyCavityToruses() {
-    for (int i = cavityCount; --i >= 0; )
-      cavities[i].verifyToruses();
   }
 
   void saveToruses() {
@@ -949,7 +955,7 @@ class Surface extends Shape {
     if (radiusP == 0)
       return;
     if (cavities == null) {
-      cavities = new Cavity[16];
+      cavities = new Cavity[32];
       cavityCount = 0;
     }
     for (int iJ = neighborCount; --iJ >= 0; ) {
@@ -981,6 +987,8 @@ class Surface extends Shape {
         if (checkProbeNotIJ(torusProbePointT)) {
           createTorus(indexI, centerI, indexJ, centerJ,
                       torusCenterIJ, torusRadiusIJ, true);
+          convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
+          convexVertexMaps[indexJ] = calculateMyConvexSurfaceMap; 
         }
       }
     }
@@ -990,9 +998,9 @@ class Surface extends Shape {
     boolean cavityDeleted = false;
     for (int i = cavityCount; --i >= 0; ) {
       Cavity cavity = cavities[i];
-      if (convexSurfaceMaps[cavity.ixI] == null &&
-          convexSurfaceMaps[cavity.ixJ] == null &&
-          convexSurfaceMaps[cavity.ixK] == null) {
+      if (convexVertexMaps[cavity.ixI] == null &&
+          convexVertexMaps[cavity.ixJ] == null &&
+          convexVertexMaps[cavity.ixK] == null) {
         cavityDeleted = true;
         cavities[i] = null;
       }
@@ -1064,7 +1072,6 @@ class Surface extends Shape {
                                 false);
         }
         torusJK.addCavity(cavity, rightHanded);
-          
       }
     }
   }
@@ -1183,6 +1190,7 @@ class Surface extends Shape {
     Cavity(Point3f probeCenter) {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
       atI = atomI; atJ = atomJ; atK = atomK;
+      System.out.println("cavity " + ixI + ":" + ixJ + ":" + ixK);
       /*
       System.out.println(" atI=" + atI +
                          " atJ=" + atJ +
@@ -1278,14 +1286,6 @@ class Surface extends Shape {
                          " -> " + points[0]);
     }
 
-    void verifyToruses() {
-      if (getTorus(ixI, ixJ) == null)
-        throw new NullPointerException();
-      if (getTorus(ixI, ixK) == null)
-        throw new NullPointerException();
-      if (getTorus(ixJ, ixK) == null)
-        throw new NullPointerException();
-    }
   }
 
 
@@ -1376,28 +1376,132 @@ class Surface extends Shape {
   }
 
   final static void setBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] |= 1 << (~i & 31);
+    bitmap[(i >> 5)] |= 1 << (i & 31);
   }
 
   final static void clearBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] &= ~(1 << (~i & 31));
+    bitmap[(i >> 5)] &= ~(1 << (i & 31));
   }
 
   final static boolean getBit(int[] bitmap, int i) {
-    return (bitmap[(i >> 5)] << (i & 31)) < 0;
+    return (bitmap[(i >> 5)] & (1 << (i & 31))) != 0;
   }
 
   final static void setAllBits(int[] bitmap, int count) {
-    int i = count >> 5;
-    if ((count & 31) != 0)
-      bitmap[i] = 0x80000000 >> (count - 1);
+    int i = (count + 31) >> 5;
+    if (bitmap.length != i) {
+      if (bitmap.length < i)
+        throw new IndexOutOfBoundsException();
+      for (int j = bitmap.length; --j > i; )
+        bitmap[j] = 0;
+    }
+    int fractionalBitCount = count & 31;
+    if (fractionalBitCount != 0) {
+      bitmap[--i] =
+        (0x80000000 >> (fractionalBitCount - 1)) >>> (32 - fractionalBitCount);
+    }
     while (--i >= 0)
-      bitmap[i] = -1;
+      bitmap[i] = 0xFFFFFFFF;
   }
-  
+
+  final static void clearAllBits(int[] bitmap) {
+    for (int i = bitmap.length; --i >= 0; )
+      bitmap[i] = 0;
+  }
+
+  final static int[] copyMinimalBitmap(int[] bitmap) {
+    if (true) {
+      int[] map = null;
+      if (bitmap.length > 0) {
+        map = new int[bitmap.length];
+        for (int j = bitmap.length; --j >= 0; )
+          map[j] = bitmap[j];
+      }
+      return map;
+    }
+    int indexLast;
+    for (indexLast = bitmap.length;
+         --indexLast >= 0 && bitmap[indexLast] == 0; )
+      {}
+    int[] map = null;
+    if (indexLast >= 0) {
+      int count = indexLast + 1;
+      map = new int[count];
+      for (int j = count; --j >= 0; )
+        map[j] = bitmap[j];
+    }
+    return map;
+  }
+
+  final static int countBits(int map) {
+    map -= (map & 0xAAAAAAAA) >>> 1;
+    map = (map & 0x33333333) + ((map >>> 2) & 0x33333333);
+    map = (map + (map >>> 4)) & 0x0F0F0F0F;
+    map += map >>> 8;
+    map += map >>> 16;
+    return map & 0xFF;
+  }
+
+  final static int countBits(int[] bitmap) {
+    int count = 0;
+    for (int i = bitmap.length; --i >= 0; ) {
+      int bits = bitmap[i];
+      if (bits != 0)
+        count += countBits(bits);
+    }
+    return count;
+  }
+
   final static void clearBitmap(int[] bitmap) {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
+  }
+
+  final static int getMaxMappedBit(int[] bitmap) {
+    if (bitmap == null)
+      return 0;
+    int answer1;
+    for (answer1 = bitmap.length * 32; --answer1 >= 0; ) {
+      if (getBit(bitmap, answer1))
+        break;
+    }
+    ++answer1;
+    
+    int maxMapped = bitmap.length << 5;
+    int map = bitmap[bitmap.length - 1];
+    for (int i = bitmap.length;
+         --i >= 0 && (map = bitmap[i]) == 0; )
+      maxMapped -= 32;
+    if ((map & 0xFFFF0000) == 0) {
+      map <<= 16;
+      maxMapped -= 16;
+    }
+    if ((map & 0xFF000000) == 0) {
+      map <<= 8;
+      maxMapped -= 8;
+    }
+    if ((map & 0xF0000000) == 0) {
+      map <<= 4;
+      maxMapped -= 4;
+    }
+    if ((map & 0xC0000000) == 0) {
+      map <<= 2;
+      maxMapped -= 2;
+    }
+    if (map >= 0)
+      maxMapped -= 1;
+
+    if (answer1 != maxMapped) {
+      System.out.println("answer1=" + answer1 + " maxMapped=" + maxMapped);
+      System.out.println("bitmap.length=" + bitmap.length +
+                         "last=" +
+                         Integer.toBinaryString(bitmap[bitmap.length - 1]));
+                                                          
+      throw new NullPointerException();
+    }
+      
+  
+    return maxMapped;
   }
 
   final Vector3f vectorRightT = new Vector3f();
@@ -1423,5 +1527,25 @@ class Surface extends Shape {
     if (dotLongerAngle > dotAngle)
       angle = longerAngle;
     return angle;
+  }
+
+  int[] calcEdgeVertexes(int[] visibilityBitmap) {
+    int[] edgeVertexes = new int[visibilityBitmap.length];
+    for (int vertex = getMaxMappedBit(visibilityBitmap),
+           neighborIndex = 6 * (vertex - 1);
+         --vertex >= 0;
+         neighborIndex -= 6) {
+      if (! getBit(visibilityBitmap, vertex))
+        continue;
+      int i;
+      for (i = (vertex < 12) ? 5 : 6; --i >= 0; ) {
+        int neighbor = geodesicNeighborVertexes[neighborIndex + i];
+        if (! getBit(visibilityBitmap, neighbor))
+          break;
+      }
+      if (i >= 0)
+        setBit(edgeVertexes, vertex);
+    }
+    return edgeVertexes;
   }
 }

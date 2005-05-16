@@ -25,9 +25,11 @@
 
 package org.jmol.viewer;
 
+import org.jmol.util.Bmp;
+import org.jmol.g3d.Graphics3D;
+
 import javax.vecmath.*;
 
-import org.jmol.g3d.Graphics3D;
 
 class SurfaceRenderer extends ShapeRenderer {
 
@@ -91,18 +93,18 @@ class SurfaceRenderer extends ShapeRenderer {
       colix = atom.colixAtom;
     if (CONVEX_DOTS) {
       int[] edgeVertexes = ((Surface)shape).calcEdgeVertexes(vertexMap);
-      for (int vertex = Surface.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
-        if (Surface.getBit(edgeVertexes, vertex)) {
+      for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
+        if (Bmp.getBit(edgeVertexes, vertex)) {
           Point3i screen = screens[vertex];
           g3d.fillSphereCentered(colix, 6, screen);
-        } else if (Surface.getBit(vertexMap, vertex)) {
+        } else if (Bmp.getBit(vertexMap, vertex)) {
           Point3i screen = screens[vertex];
           g3d.fillSphereCentered(colix, 3, screen);
         }
       }
     }
-    for (int i = Surface.getMaxMappedBit(faceMap), j = 3*i - 1; --i >= 0; j -= 3) {
-      if (Surface.getBit(faceMap, i)) {
+    for (int i = Bmp.getMaxMappedBit(faceMap), j = 3*i - 1; --i >= 0; j -= 3) {
+      if (Bmp.getBit(faceMap, i)) {
         short vA = geodesicFaceVertexes[j - 2];
         short vB = geodesicFaceVertexes[j - 1];
         short vC = geodesicFaceVertexes[j];
@@ -117,8 +119,8 @@ class SurfaceRenderer extends ShapeRenderer {
   void calcScreenPoints(int[] vertexMap, float radius,
                         int atomX, int atomY, int atomZ) {
     float scaledRadius = viewer.scaleToScreen(atomZ, radius);
-    for (int vertex = Surface.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
-      if (! Surface.getBit(vertexMap, vertex))
+    for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
+      if (! Bmp.getBit(vertexMap, vertex))
         continue;
       Vector3f tv = transformedVectors[vertex];
       Point3i screen = screens[vertex];

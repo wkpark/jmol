@@ -6,6 +6,7 @@ org/jmol/appletwrapper/*.java
 org/jmol/applet/*.java
 org/jmol/viewer/*.java
 org/jmol/g3d/*.java
+ort/jmol/util/*.java
 org/jmol/bspt/*.java
 org/jmol/adapter/smarter/*.java
 org/jmol/smiles/*.java

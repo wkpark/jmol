@@ -25,6 +25,8 @@
 
 package org.jmol.viewer;
 
+import org.jmol.util.Bmp;
+
 import javax.vecmath.*;
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -120,9 +122,9 @@ class Surface extends Shape {
   void initShape() {
     geodesicVertexVectors = g3d.getGeodesicVertexVectors();
     geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_CALC_LEVEL);
-    tempVertexMap = allocateBitmap(geodesicVertexCount);
+    tempVertexMap = Bmp.allocateBitmap(geodesicVertexCount);
     geodesicFaceCount = g3d.getGeodesicFaceCount(geodesicRenderingLevel);
-    tempFaceMap = allocateBitmap(geodesicFaceCount);
+    tempFaceMap = Bmp.allocateBitmap(geodesicFaceCount);
     geodesicFaceVertexes =
       g3d.getGeodesicFaceVertexes(geodesicRenderingLevel);
     geodesicNeighborVertexes =
@@ -173,7 +175,7 @@ class Surface extends Shape {
             convexFaceMaps[i] = calcFaceBitmap();
           }
         }
-      saveToruses();
+      //      saveToruses();
       long timeElapsed = System.currentTimeMillis() - timeBegin;
       System.out.println("Surface construction time = " + timeElapsed + " ms");
     }
@@ -209,10 +211,12 @@ class Surface extends Shape {
       short colix = g3d.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = toruses[i];
+        /*
         if (bs.get(torus.ixI))
           torus.colixI = colix;
         if (bs.get(torus.ixJ))
           torus.colixJ = colix;
+        */
       }
       return;
     }
@@ -240,12 +244,14 @@ class Surface extends Shape {
         }
         for (int i = torusCount; --i >= 0; ) {
           Torus torus = toruses[i];
+          /*
           if (bs.get(torus.ixI))
             torus.colixI = viewer.getColixAtomPalette(atoms[torus.ixI],
                                                       palette);
           if (bs.get(torus.ixJ))
             torus.colixJ = viewer.getColixAtomPalette(atoms[torus.ixJ],
                                                       palette);
+          */
         }
         for (int i = cavityCount; --i >= 0; ) {
           Cavity cavity = cavities[i];
@@ -310,8 +316,7 @@ class Surface extends Shape {
   }
 
   int[] calcVertexBitmapI() {
-    System.out.println("calcVertexBitmapI indexI=" + indexI);
-    setAllBits(tempVertexMap, geodesicVertexCount);
+    Bmp.setAllBits(tempVertexMap, geodesicVertexCount);
     if (neighborCount > 0) {
       float combinedRadii = radiusI + radiusP;
       int iLastUsed = 0;
@@ -322,7 +327,7 @@ class Surface extends Shape {
         do {
           if (pointT.distanceSquared(neighborCenters[iLastUsed])
               < neighborPlusProbeRadii2[iLastUsed]) {
-            clearBit(tempVertexMap, iDot);
+            Bmp.clearBit(tempVertexMap, iDot);
             break;
           }
           if (++iLastUsed == neighborCount)
@@ -330,18 +335,18 @@ class Surface extends Shape {
         } while (iLastUsed != iStart);
       }
     }
-    return copyMinimalBitmap(tempVertexMap);
+    return Bmp.copyMinimalBitmap(tempVertexMap);
   }
 
   int[] calcFaceBitmap() {
-    clearAllBits(tempFaceMap);
+    Bmp.clearBitmap(tempFaceMap);
     for (int i = geodesicFaceCount, j = 3 * (i - 1); --i >= 0; j -= 3) {
-      if (getBit(tempVertexMap, geodesicFaceVertexes[j]) &&
-          getBit(tempVertexMap, geodesicFaceVertexes[j + 1]) &&
-          getBit(tempVertexMap, geodesicFaceVertexes[j + 2]))
-        setBit(tempFaceMap, i);
+      if (Bmp.getBit(tempVertexMap, geodesicFaceVertexes[j]) &&
+          Bmp.getBit(tempVertexMap, geodesicFaceVertexes[j + 1]) &&
+          Bmp.getBit(tempVertexMap, geodesicFaceVertexes[j + 2]))
+        Bmp.setBit(tempFaceMap, i);
     }
-    return copyMinimalBitmap(tempFaceMap);
+    return Bmp.copyMinimalBitmap(tempFaceMap);
   }
 
   // I have no idea what this number should be
@@ -452,21 +457,21 @@ class Surface extends Shape {
     int ixI, ixJ;
     Point3f center;
     float radius;
-    Vector3f axisVector;
-    Vector3f radialVector;
-    Vector3f unitRadialVector;
-    Vector3f tangentVector;
-    Vector3f outerRadial;
-    float outerAngle;
-    AxisAngle4f aaRotate;
-    short colixI, colixJ;
+    //    Vector3f axisVector;
+    //    Vector3f radialVector;
+    //    Vector3f unitRadialVector;
+    //    Vector3f tangentVector;
+    //    Vector3f outerRadial;
+    //    float outerAngle;
+    //    AxisAngle4f aaRotate;
+    //    short colixI, colixJ;
     int torusCavityCount;
     Cavity[] torusCavities;
     boolean[] rightHandeds;
-    Vector3f outerVector;
-    float outerRadians;
-    Point3f[][] stripPointArrays;
-    short[][] stripNormixesArrays;
+    //    Vector3f outerVector;
+    //    float outerRadians;
+    //    Point3f[][] stripPointArrays;
+    //    short[][] stripNormixesArrays;
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius) {
@@ -476,6 +481,7 @@ class Surface extends Shape {
       this.center = new Point3f(center);
       this.radius = radius;
 
+      /*
       axisVector = new Vector3f();
       axisVector.sub(centerB, centerA);
 
@@ -535,6 +541,7 @@ class Surface extends Shape {
       outerVector.scale(radiusP);
 
       outerRadians = outerVector.angle(vectorPJ);
+      */
 
     }
 
@@ -555,14 +562,17 @@ class Surface extends Shape {
       }
       torusCavities[torusCavityCount] = cavity;
 
+      /*
       vectorTorusT.add(cavity.getPoint(ixI), cavity.getPoint(ixJ));
       vectorTorusT.sub(cavity.points[0]);
 
       float dot = vectorTorusT.dot(vectorTorusTangentT);
       rightHandeds[torusCavityCount] = rightHanded;
+      */
       ++torusCavityCount;
     }
       
+    /*
     void checkAngles() {
       for (int i = torusCavityCount; --i >= 0; ) {
         float cavityAngle = -999;
@@ -587,7 +597,9 @@ class Surface extends Shape {
                              " cavity says" + cavityAngle);
       }
     }
+    */
 
+    /*
     void whyIsThisCavityHere(int cavityIndex) {
       
       Cavity cavity = torusCavities[cavityIndex];
@@ -596,7 +608,9 @@ class Surface extends Shape {
                          " ixJ=" + cavity.ixJ + " ixK=" + cavity.ixK);
       throw new NullPointerException();
     }
+    */
 
+    /*
     void organizeCavities() {
       if ((torusCavityCount & 1) != 0) {
         System.out.println(" torusCavityCount=" + torusCavityCount);
@@ -636,15 +650,15 @@ class Surface extends Shape {
         if (i > 0 && (! (rightHandeds[i] ^ rightHandeds[i - 1])))
           throw new NullPointerException();
       }
-      /*
       Cavity cavityT = torusCavities[0];
       torusCavities[0] = torusCavities[1];
       torusCavities[1] = cavityT;
       rightHandeds[0] = true;
       rightHandeds[1] = false;
-      */
     }
+    */
 
+    /*
     void swapCavities(int indexA, int indexB) {
       boolean rightHanded = rightHandeds[indexA];
       rightHandeds[indexA] = rightHandeds[indexB];
@@ -653,9 +667,10 @@ class Surface extends Shape {
       torusCavities[indexA] = torusCavities[indexB];
       torusCavities[indexB] = cavity;
     }
+    */
 
+    /*
     void calculateSegments() {
-      /*
       for (int i = 0; i < cavityCount; ++i) {
         Cavity cavity = cavities[i];
         vectorTorusT.sub(cavity.probeCenter, center);
@@ -678,7 +693,6 @@ class Surface extends Shape {
                            "vectorTorusT=" + vectorTorusT);
 
       }
-      */
 
       Vector3f vA = new Vector3f();
       Vector3f vB = new Vector3f();
@@ -691,7 +705,9 @@ class Surface extends Shape {
         calculate1Segment(vA, vB, outerVector, true);
       }
     }
+    */
 
+    /*
     void calculate1Segment(Vector3f vA, Vector3f vB,
                            Vector3f outerVectorA,
                            boolean longRoute) {
@@ -709,13 +725,11 @@ class Surface extends Shape {
         ++outerSegmentCount;
       float actualRadiansPerOuterSegment = outerRadians / outerSegmentCount;
 
-      /*
       int segments = (int)(outerRadians / radiansPerSegment);
       if (segments == 0)
         ++segments;
       int pointStripCount = segments + 1;
       float actualOuterRadiansPerSegment = outerRadians / segments;
-      */
 
       vectorTorusTangentT.cross(axisVector, vA);
       vectorTorusTangentT.normalize();
@@ -725,11 +739,11 @@ class Surface extends Shape {
       aaAxis.set(axisVector, 0);
       stripPointArrays = new Point3f[outerSegmentCount + 1][];
       stripNormixesArrays = new short[outerSegmentCount + 1][];
-      /*
+
       System.out.println(" outerVectorA.length()=" + outerVectorA.length() +
                          " outerVector.length()=" + outerVector.length() +
                          " radiusP=" + radiusP);
-      */
+
       for (int i = 0; i <= outerSegmentCount; ++i) { // .LE. not .LT.
         aaOuterTangent.angle = i * actualRadiansPerOuterSegment;
         matrixOuterTangent.set(aaOuterTangent);
@@ -750,6 +764,7 @@ class Surface extends Shape {
         }
       }
     }
+    */
 
     /*
 
@@ -844,6 +859,7 @@ class Surface extends Shape {
     }
     */
 
+    /*
     void calculatePoints() {
       int segments = (int)(outerRadians / radiansPerSegment);
       if (segments == 0)
@@ -875,9 +891,10 @@ class Surface extends Shape {
         }
       }
     }
+    */
 
+    /*
     void tellMeAboutYourself() {
-/*
       System.out.println("Well, I am a torus" +
                          " center:" + center +
                          " between ixI:" + ixI + " & ixJ:" + ixJ +
@@ -885,8 +902,8 @@ class Surface extends Shape {
       for (int i = 0; i < cavityCount; ++i)
         cavities[i].tellMeAboutYourself();
       System.out.println("--");
-*/
     }
+    */
   }
 
   Torus createTorus(int indexA, Point3f centerA, int indexB, Point3f centerB,
@@ -908,6 +925,7 @@ class Surface extends Shape {
     return torus;
   }
 
+  /*
   void saveToruses() {
     if (radiusP == 0)
       return;
@@ -928,6 +946,7 @@ class Surface extends Shape {
       }
     }
   }
+  */
 
   Torus getTorus(int atomIndexA, int atomIndexB) {
     if (atomIndexA >= atomIndexB)
@@ -943,13 +962,17 @@ class Surface extends Shape {
     float t2 = t1*t1 - distanceAB2;
     float diff = radiusA - radiusB;
     float t3 = distanceAB2 - diff*diff;
-    if (t2 <= 0 || t3 <= 0 || distanceAB2 == 0)
+    if (t2 <= 0 || t3 <= 0 || distanceAB2 == 0) {
+      System.out.println("calcTorusRadius\n" +
+                         " radiusA=" + radiusA + " radiusB=" + radiusB +
+                         " distanceAB2=" + distanceAB2);
+      System.out.println("distanceAB=" + Math.sqrt(distanceAB2) +
+                         " t1=" + t1 + " t2=" + t2 +
+                         " diff=" + diff + " t3=" + t3);
       throw new NullPointerException();
+    }
     return (float)(0.5*Math.sqrt(t2)*Math.sqrt(t3)/Math.sqrt(distanceAB2));
   }
-
-  final Vector3f normalizedRadialVectorT = new Vector3f();
-  final Point3f torusProbePointT = new Point3f();
 
   void calcCavitiesI() {
     if (radiusP == 0)
@@ -959,37 +982,53 @@ class Surface extends Shape {
       cavityCount = 0;
     }
     for (int iJ = neighborCount; --iJ >= 0; ) {
-      if (indexI >= neighborIndexes[iJ])
+      if (neighborIndexes[iJ] <= indexI)
         continue;
       setNeighborJ(iJ);
+      // deal with corrupt files that have duplicate atoms
+      if (distanceIJ2 < 0.1)
+        continue;
       vectorIJ.sub(centerJ, centerI);
       calcTorusCenter(centerI, radiiIP2, centerJ, radiiJP2, distanceIJ2,
                       torusCenterIJ);
       for (int iK = neighborCount; --iK >= 0; ) {
-        if (indexJ >= neighborIndexes[iK])
+        if (neighborIndexes[iK] <= indexJ)
           continue;
         setNeighborK(iK);
+        // deal with corrupt files that have duplicate atoms
+        if (distanceIK2 < 0.1 || distanceJK2 < 0.1)
+          continue;
         if (distanceJK2 >= radiiJP2 + radiiKP2)
           continue;
         getCavitiesIJK();
       }
-      if (getTorus(indexI, indexJ) == null) {
-        // check for a full torus with no cavities between I & J
-        if (vectorIJ.z == 0)
-          normalizedRadialVectorT.set(vectorZ);
-        else {
-          normalizedRadialVectorT.set(-vectorIJ.y, vectorIJ.x, 0);
-          normalizedRadialVectorT.normalize();
-        }
-        float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
-        torusProbePointT.scaleAdd(torusRadiusIJ, 
-                                  normalizedRadialVectorT, torusCenterIJ);
-        if (checkProbeNotIJ(torusProbePointT)) {
-          createTorus(indexI, centerI, indexJ, centerJ,
-                      torusCenterIJ, torusRadiusIJ, true);
-          convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
-          convexVertexMaps[indexJ] = calculateMyConvexSurfaceMap; 
-        }
+      checkFullTorusIJ();
+    }
+    // check for an isolated atom with no neighbors
+    if (neighborCount == 0)
+      convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
+  }
+
+  final Vector3f normalizedRadialVectorT = new Vector3f();
+  final Point3f torusProbePointT = new Point3f();
+  
+  // check for a full torus with no cavities between I & J
+  void checkFullTorusIJ() {
+    if (getTorus(indexI, indexJ) == null) {
+      if (vectorIJ.z == 0)
+        normalizedRadialVectorT.set(vectorZ);
+      else {
+        normalizedRadialVectorT.set(-vectorIJ.y, vectorIJ.x, 0);
+        normalizedRadialVectorT.normalize();
+      }
+      float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
+      torusProbePointT.scaleAdd(torusRadiusIJ, 
+                                normalizedRadialVectorT, torusCenterIJ);
+      if (checkProbeNotIJ(torusProbePointT)) {
+        createTorus(indexI, centerI, indexJ, centerJ,
+                    torusCenterIJ, torusRadiusIJ, true);
+        convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
+        convexVertexMaps[indexJ] = calculateMyConvexSurfaceMap; 
       }
     }
   }
@@ -1072,6 +1111,9 @@ class Surface extends Shape {
                                 false);
         }
         torusJK.addCavity(cavity, rightHanded);
+        convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
+        convexVertexMaps[indexJ] = calculateMyConvexSurfaceMap; 
+        convexVertexMaps[indexK] = calculateMyConvexSurfaceMap; 
       }
     }
   }
@@ -1094,33 +1136,6 @@ class Surface extends Shape {
     System.out.println("torusCenter=" + torusCenter);
     */
   }
-
-  /*
-  void getCavitiesIJK() {
-    torusIJ = getTorus(indexI, indexJ);
-    torusIK = getTorus(indexI, indexK);
-    if (torusIJ == null || torusIK == null) {
-      System.out.println("null torus found?");
-      return;
-    }
-    uIJK.cross(torusIJ.axisVector, torusIK.axisVector);
-    if (Float.isNaN(uIJK.x)) // linear
-      return;
-    uIJK.normalize();
-    if (! calcBaseIJK() || ! calcHeightIJK())
-      return;
-    for (int i = -1; i <= 1; i += 2) {
-      probeIJK.scaleAdd(i * heightIJK, uIJK, baseIJK);
-      Cavity cavity = null;
-      if (checkProbeIJK()) {
-        cavity = new Cavity();
-        addCavity(cavity);
-        torusIJ.addCavity(cavity);
-        torusIK.addCavity(cavity);
-      }
-    }
-  }
-  */
 
   boolean checkProbeNotIJ(Point3f cavityProbe) {
     for (int i = neighborCount; --i >= 0; ) {
@@ -1371,139 +1386,6 @@ class Surface extends Shape {
     return (float)Math.sqrt(height2);
   }
 
-  final static int[] allocateBitmap(int count) {
-    return new int[(count + 31) >> 5];
-  }
-
-  final static void setBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] |= 1 << (i & 31);
-  }
-
-  final static void clearBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] &= ~(1 << (i & 31));
-  }
-
-  final static boolean getBit(int[] bitmap, int i) {
-    return (bitmap[(i >> 5)] & (1 << (i & 31))) != 0;
-  }
-
-  final static void setAllBits(int[] bitmap, int count) {
-    int i = (count + 31) >> 5;
-    if (bitmap.length != i) {
-      if (bitmap.length < i)
-        throw new IndexOutOfBoundsException();
-      for (int j = bitmap.length; --j > i; )
-        bitmap[j] = 0;
-    }
-    int fractionalBitCount = count & 31;
-    if (fractionalBitCount != 0) {
-      bitmap[--i] =
-        (0x80000000 >> (fractionalBitCount - 1)) >>> (32 - fractionalBitCount);
-    }
-    while (--i >= 0)
-      bitmap[i] = 0xFFFFFFFF;
-  }
-
-  final static void clearAllBits(int[] bitmap) {
-    for (int i = bitmap.length; --i >= 0; )
-      bitmap[i] = 0;
-  }
-
-  final static int[] copyMinimalBitmap(int[] bitmap) {
-    if (true) {
-      int[] map = null;
-      if (bitmap.length > 0) {
-        map = new int[bitmap.length];
-        for (int j = bitmap.length; --j >= 0; )
-          map[j] = bitmap[j];
-      }
-      return map;
-    }
-    int indexLast;
-    for (indexLast = bitmap.length;
-         --indexLast >= 0 && bitmap[indexLast] == 0; )
-      {}
-    int[] map = null;
-    if (indexLast >= 0) {
-      int count = indexLast + 1;
-      map = new int[count];
-      for (int j = count; --j >= 0; )
-        map[j] = bitmap[j];
-    }
-    return map;
-  }
-
-  final static int countBits(int map) {
-    map -= (map & 0xAAAAAAAA) >>> 1;
-    map = (map & 0x33333333) + ((map >>> 2) & 0x33333333);
-    map = (map + (map >>> 4)) & 0x0F0F0F0F;
-    map += map >>> 8;
-    map += map >>> 16;
-    return map & 0xFF;
-  }
-
-  final static int countBits(int[] bitmap) {
-    int count = 0;
-    for (int i = bitmap.length; --i >= 0; ) {
-      int bits = bitmap[i];
-      if (bits != 0)
-        count += countBits(bits);
-    }
-    return count;
-  }
-
-  final static void clearBitmap(int[] bitmap) {
-    for (int i = bitmap.length; --i >= 0; )
-      bitmap[i] = 0;
-  }
-
-  final static int getMaxMappedBit(int[] bitmap) {
-    if (bitmap == null)
-      return 0;
-    int answer1;
-    for (answer1 = bitmap.length * 32; --answer1 >= 0; ) {
-      if (getBit(bitmap, answer1))
-        break;
-    }
-    ++answer1;
-    
-    int maxMapped = bitmap.length << 5;
-    int map = bitmap[bitmap.length - 1];
-    for (int i = bitmap.length;
-         --i >= 0 && (map = bitmap[i]) == 0; )
-      maxMapped -= 32;
-    if ((map & 0xFFFF0000) == 0) {
-      map <<= 16;
-      maxMapped -= 16;
-    }
-    if ((map & 0xFF000000) == 0) {
-      map <<= 8;
-      maxMapped -= 8;
-    }
-    if ((map & 0xF0000000) == 0) {
-      map <<= 4;
-      maxMapped -= 4;
-    }
-    if ((map & 0xC0000000) == 0) {
-      map <<= 2;
-      maxMapped -= 2;
-    }
-    if (map >= 0)
-      maxMapped -= 1;
-
-    if (answer1 != maxMapped) {
-      System.out.println("answer1=" + answer1 + " maxMapped=" + maxMapped);
-      System.out.println("bitmap.length=" + bitmap.length +
-                         "last=" +
-                         Integer.toBinaryString(bitmap[bitmap.length - 1]));
-                                                          
-      throw new NullPointerException();
-    }
-      
-  
-    return maxMapped;
-  }
-
   final Vector3f vectorRightT = new Vector3f();
   final Matrix3f matrixRightT = new Matrix3f();
   final AxisAngle4f aaRightT = new AxisAngle4f();
@@ -1531,20 +1413,20 @@ class Surface extends Shape {
 
   int[] calcEdgeVertexes(int[] visibilityBitmap) {
     int[] edgeVertexes = new int[visibilityBitmap.length];
-    for (int vertex = getMaxMappedBit(visibilityBitmap),
+    for (int vertex = Bmp.getMaxMappedBit(visibilityBitmap),
            neighborIndex = 6 * (vertex - 1);
          --vertex >= 0;
          neighborIndex -= 6) {
-      if (! getBit(visibilityBitmap, vertex))
+      if (! Bmp.getBit(visibilityBitmap, vertex))
         continue;
       int i;
       for (i = (vertex < 12) ? 5 : 6; --i >= 0; ) {
         int neighbor = geodesicNeighborVertexes[neighborIndex + i];
-        if (! getBit(visibilityBitmap, neighbor))
+        if (! Bmp.getBit(visibilityBitmap, neighbor))
           break;
       }
       if (i >= 0)
-        setBit(edgeVertexes, vertex);
+        Bmp.setBit(edgeVertexes, vertex);
     }
     return edgeVertexes;
   }

@@ -1389,10 +1389,16 @@ final public class Graphics3D {
     }
   }
 
+  final static boolean ENABLE_GOURAUD_STATS = true;
+  static int totalGouraud;
+  static int shortCircuitGouraud;
+
   void plotPixelsUnclipped(int count, int x, int y,
                            int zAtLeft, int zPastRight,
                            boolean tScreened,
                            Rgb16 rgb16Left, Rgb16 rgb16Right) {
+    if (count <= 0)
+      return;
     int seed = (x << 16) + (y << 1) ^ 0x33333333;
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
@@ -1419,6 +1425,23 @@ final public class Graphics3D {
         zScaled += zIncrementScaled;
       }
     } else {
+      if (ENABLE_GOURAUD_STATS) {
+        ++totalGouraud;
+        int i = count;
+        int j = offsetPbuf;
+        int zMin = zAtLeft < zPastRight ? zAtLeft : zPastRight;
+        
+        for ( ; zbuf[j] < zMin; ++j)
+          if (--i == 0) {
+            if ((++shortCircuitGouraud % 10000) == 0)
+              System.out.println("totalGouraud=" + totalGouraud +
+                                 " shortCircuitGouraud=" + shortCircuitGouraud
+                                 + " %=" +
+                                 (100.0 * shortCircuitGouraud / totalGouraud));
+            return;
+          }
+      }
+
       int rScaled = rgb16Left.rScaled << 8;
       int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
       int gScaled = rgb16Left.gScaled;

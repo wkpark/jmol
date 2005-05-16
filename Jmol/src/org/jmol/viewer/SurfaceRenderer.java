@@ -82,7 +82,7 @@ class SurfaceRenderer extends ShapeRenderer {
     screens = null;
   }
 
-  private final static boolean CONVEX_DOTS = true;
+  private final static boolean CONVEX_DOTS = false;
 
   void renderConvex(Atom atom, short colix, int[] vertexMap, int[] faceMap) {
     calcScreenPoints(vertexMap,

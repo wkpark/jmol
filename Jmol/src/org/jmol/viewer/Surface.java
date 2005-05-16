@@ -164,7 +164,6 @@ class Surface extends Shape {
       long timeBegin = System.currentTimeMillis();
       if (radiusP > 0 && htToruses == null)
         htToruses = new Hashtable();
-      System.out.println("atomCount=" + atomCount);
       for (int i = 0; i < atomCount; ++i) // make this loop count up
         if (bsSelected.get(i)) {
           setAtomI(i);
@@ -177,6 +176,7 @@ class Surface extends Shape {
         }
       saveToruses();
       long timeElapsed = System.currentTimeMillis() - timeBegin;
+      System.out.println("atomCount=" + atomCount);
       System.out.println("Surface construction time = " + timeElapsed + " ms");
     }
     if (convexVertexMaps == null)
@@ -287,7 +287,6 @@ class Surface extends Shape {
   private float distanceIJ2, distanceIK2, distanceJK2;
 
   void setAtomI(int indexI) {
-    System.out.println("setAtomI(" + indexI + ")");
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
@@ -476,7 +475,6 @@ class Surface extends Shape {
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
-      System.out.println("Torus " + indexA + ":" + indexB);
       this.ixI = indexA;
       this.ixJ = indexB;
       this.center = new Point3f(center);
@@ -1204,7 +1202,6 @@ class Surface extends Shape {
     Cavity(Point3f probeCenter) {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
       atI = atomI; atJ = atomJ; atK = atomK;
-      System.out.println("cavity " + ixI + ":" + ixJ + ":" + ixK);
       /*
       System.out.println(" atI=" + atI +
                          " atJ=" + atJ +

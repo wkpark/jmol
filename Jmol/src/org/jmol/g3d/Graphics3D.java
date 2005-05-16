@@ -2214,9 +2214,10 @@ final public class Graphics3D {
   }
 
   public short getClosestVisibleGeodesicVertexIndex(Vector3f vector,
-                                                    int[] visibilityBitmap) {
+                                                    int[] visibilityBitmap,
+                                                    int level) {
     return normix3d.getVisibleNormix(vector.x, vector.y, vector.z,
-                                     visibilityBitmap);
+                                     visibilityBitmap, level);
   }
 
   public Vector3f[] getGeodesicVertexVectors() {

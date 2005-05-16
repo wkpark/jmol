@@ -54,14 +54,15 @@ class SurfaceRenderer extends ShapeRenderer {
     Surface surface = (Surface)shape;
     if (surface == null)
       return;
+    int renderingLevel = surface.geodesicRenderingLevel;
     geodesicVertexCount = surface.geodesicVertexCount;
     screensCache.alloc(geodesicVertexCount);
     geodesicFaceCount =
-      g3d.getGeodesicFaceCount(surface.geodesicRenderingLevel);
+      g3d.getGeodesicFaceCount(renderingLevel);
     geodesicFaceVertexes =
-      g3d.getGeodesicFaceVertexes(surface.geodesicRenderingLevel);
+      g3d.getGeodesicFaceVertexes(renderingLevel);
     geodesicFaceNormixes =
-      g3d.getGeodesicFaceNormixes(surface.geodesicRenderingLevel);
+      g3d.getGeodesicFaceNormixes(renderingLevel);
     Atom[] atoms = frame.atoms;
     int[][] convexVertexMaps = surface.convexVertexMaps;
     int[][] convexFaceMaps = surface.convexFaceMaps;
@@ -83,7 +84,7 @@ class SurfaceRenderer extends ShapeRenderer {
       int ixJ = torus.ixJ;
       renderTorus(torus,
                   atoms[ixI], convexVertexMaps[ixI],
-                  atoms[ixJ], convexVertexMaps[ixJ]);
+                  atoms[ixJ], convexVertexMaps[ixJ], renderingLevel);
     }
     Surface.Cavity[] cavities = surface.cavities;
     for (int i = surface.cavityCount; --i >= 0; )
@@ -122,20 +123,31 @@ class SurfaceRenderer extends ShapeRenderer {
     }
   }
 
+  Vector3f vectorIJ = new Vector3f();
+  Vector3f vectorJI = new Vector3f();
+
   void renderTorus(Surface.Torus torus,
                    Atom atomI, int[] vertexMapI,
-                   Atom atomJ, int[] vertexMapJ) {
+                   Atom atomJ, int[] vertexMapJ, int renderingLevel) {
+    if (vertexMapI == null || vertexMapJ == null)
+      return;
+    vectorIJ.sub(atomJ.point3f, atomI.point3f);
+    vectorJI.sub(atomI.point3f, atomJ.point3f);
     Point3i[] screensI = screensCache.lookup(atomI, vertexMapI);
     Point3i[] screensJ = screensCache.lookup(atomJ, vertexMapJ);
-    int lastVertexI = Bmp.getMaxMappedBit(vertexMapI) - 1;
+    int lastVertexI =
+      g3d.getClosestVisibleGeodesicVertexIndex(vectorIJ, vertexMapI,
+                                               renderingLevel);
     Point3i screenMaxI = screensI[lastVertexI];
-    int lastVertexJ = Bmp.getMaxMappedBit(vertexMapJ) - 1;
+    int lastVertexJ =
+      g3d.getClosestVisibleGeodesicVertexIndex(vectorJI, vertexMapJ,
+                                               renderingLevel);
     Point3i screenMaxJ = screensJ[lastVertexJ];
     
     g3d.fillCylinder(Graphics3D.PINK, Graphics3D.ENDCAPS_FLAT, 4,
                      atomI.getScreenX(),atomI.getScreenY(),atomI.getScreenZ(),
                      screenMaxJ.x, screenMaxJ.y, screenMaxJ.z);
-                     
+
     g3d.fillCylinder(Graphics3D.GREEN, Graphics3D.ENDCAPS_FLAT, 4,
                      atomJ.getScreenX(),atomJ.getScreenY(),atomJ.getScreenZ(),
                      screenMaxI.x, screenMaxI.y, screenMaxI.z);

@@ -25,6 +25,8 @@
 
 package org.jmol.g3d;
 
+import org.jmol.util.Bmp;
+
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 import java.util.Random;
@@ -52,7 +54,7 @@ class Normix3D {
     new short[NORMIX_GEODESIC_LEVEL + 1][];
 
   private final static boolean TIMINGS = false;
-  private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = false;
+  private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = true;
 
 
   private final Matrix3f rotationMatrix = new Matrix3f();
@@ -175,6 +177,7 @@ class Normix3D {
       t = z - (-1);
     }
     bsConsidered.and(bsNull);
+    bsConsidered.set(champion);
     double championDist2 = x*x + y*y + t*t;
     for (int level = 0; level <= NORMIX_GEODESIC_LEVEL; ++level) {
       short[] neighborVertexes = Geodesic3D.neighborVertexesArrays[level];
@@ -182,6 +185,8 @@ class Normix3D {
              i = offsetNeighbors + (champion < 12 ? 5 : 6);
            --i >= offsetNeighbors; ) {
         short challenger = neighborVertexes[i];
+        if (bsConsidered.get(challenger))
+            continue;
         bsConsidered.set(challenger);
         //        System.out.println("challenger=" + challenger);
         Vector3f v = Geodesic3D.vertexVectors[challenger];
@@ -206,32 +211,30 @@ class Normix3D {
     }
 
     if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
-      int champ = champion;
-      double champD2 = dist2(Geodesic3D.vertexVectors[champion], x, y, z);
-      if (champD2 != championDist2)
-        System.out.println("slightly unequal!");
-      for (int k = normixCount; --k >= 0; ) {
-        double d2 = dist2(Geodesic3D.vertexVectors[k], x, y, z);
-        if (d2 < champD2) {
-          champ = k;
-          champD2 = d2;
+      int champSeq = 0;
+      double champSeqD2 = dist2(Geodesic3D.vertexVectors[champSeq], x, y, z);
+      for (int k = normixCount; --k > 0; ) {
+        double challengerD2 = dist2(Geodesic3D.vertexVectors[k], x, y, z);
+        if (challengerD2 < champSeqD2) {
+          champSeq = k;
+          champSeqD2 = challengerD2;
         }
       }
-      if (champion != champ) {
-        System.out.println("?que? getNormix is messed up?");
-        boolean considered = bsConsidered.get(champ);
-        System.out.println("Was the sequential winner considered? " +
-                           considered);
-        System.out.println("champion " + champion + " @ " +
-                           dist2(Geodesic3D.vertexVectors[champion], x,y,z) +
-                           " sequential champ " + champ + " @ " +
-                           dist2(Geodesic3D.vertexVectors[champ], x,y,z) +
-                           "\n");
-        return (short)champ;
+      if (champion != champSeq) {
+        if (champSeqD2 + .01 < championDist2) {
+          System.out.println("?que? getNormix is messed up?");
+          boolean considered = bsConsidered.get(champSeq);
+          System.out.println("Was the sequential winner considered? " +
+                             considered);
+          System.out.println("champion " + champion + " @ " +
+                             championDist2 +
+                             " sequential champ " + champSeq + " @ " +
+                             champSeqD2 +
+                             "\n");
+          return (short)champSeq;
+        }
       }
     }
-
-
     return champion;
   }
 
@@ -362,74 +365,33 @@ class Normix3D {
   }
 
   short getVisibleNormix(double x, double y, double z,
-                         int[] visibilityBitmap) {
-    short champion;
-    double t;
-    if (z >= 0) {
-      champion = 0;
-      t = z - 1;
-    } else {
-      champion = 11;
-      t = z - (-1);
-    }
-    bsConsidered.and(bsNull);
-    double championDist2 = x*x + y*y + t*t;
-    for (int level = 0; level <= NORMIX_GEODESIC_LEVEL; ++level) {
-      short[] neighborVertexes = Geodesic3D.neighborVertexesArrays[level];
-      for (int offsetNeighbors = 6 * champion,
-             i = offsetNeighbors + (champion < 12 ? 5 : 6);
-           --i >= offsetNeighbors; ) {
-        short challenger = neighborVertexes[i];
-        bsConsidered.set(challenger);
-        //        System.out.println("challenger=" + challenger);
-        Vector3f v = Geodesic3D.vertexVectors[challenger];
-        double d;
-        // d = dist2(v, x, y, z);
-        //        System.out.println("challenger d2=" + (d*d));
-        d = v.x - x;
-        double d2 = d * d;
-        if (d2 >= championDist2)
-          continue;
-        d = v.y - y;
-        d2 += d * d;
-        if (d2 >= championDist2)
-          continue;
-        d = v.z - z;
-        d2 += d * d;
-        if (d2 >= championDist2)
-          continue;
+                         int[] visibilityBitmap, int level) {
+    int minMapped = Bmp.getMinMappedBit(visibilityBitmap);
+    int maxMapped = Bmp.getMaxMappedBit(visibilityBitmap);
+    int maxVisible = Geodesic3D.vertexCounts[level];
+    int max = maxMapped < maxVisible ? maxMapped : maxVisible;
+    Vector3f v;
+    double d;
+    double championDist2;
+    int champion = minMapped;
+    v = Geodesic3D.vertexVectors[champion];
+    d = x - v.x;
+    championDist2 = d * d;
+    d = y - v.y;
+    championDist2 += d * d;
+    d = z - v.z;
+    championDist2 += d * d;
+
+    for (int challenger = champion + 1; challenger < max; ++challenger) {
+      if (! Bmp.getBit(visibilityBitmap, challenger))
+        continue;
+      double challengerDist2 = dist2(Geodesic3D.vertexVectors[challenger],
+                                     x, y, z);
+      if (challengerDist2 < championDist2) {
         champion = challenger;
-        championDist2 = d2;
+        championDist2 = challengerDist2;
       }
     }
-
-    if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
-      int champ = champion;
-      double champD2 = dist2(Geodesic3D.vertexVectors[champion], x, y, z);
-      if (champD2 != championDist2)
-        System.out.println("slightly unequal!");
-      for (int k = normixCount; --k >= 0; ) {
-        double d2 = dist2(Geodesic3D.vertexVectors[k], x, y, z);
-        if (d2 < champD2) {
-          champ = k;
-          champD2 = d2;
-        }
-      }
-      if (champion != champ) {
-        System.out.println("?que? getNormix is messed up?");
-        boolean considered = bsConsidered.get(champ);
-        System.out.println("Was the sequential winner considered? " +
-                           considered);
-        System.out.println("champion " + champion + " @ " +
-                           dist2(Geodesic3D.vertexVectors[champion], x,y,z) +
-                           " sequential champ " + champ + " @ " +
-                           dist2(Geodesic3D.vertexVectors[champ], x,y,z) +
-                           "\n");
-        return (short)champ;
-      }
-    }
-
-
-    return champion;
+    return (short)champion;
   }
 }

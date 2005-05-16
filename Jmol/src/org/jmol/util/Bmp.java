@@ -39,15 +39,23 @@ public class Bmp {
   }
 
   public final static void setBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] |= 1 << (i & 31);
+    int index = i >> 5;
+    if (index >= bitmap.length)
+      throw new IndexOutOfBoundsException();
+    bitmap[index] |= 1 << (i & 31);
   }
 
   public final static void clearBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] &= ~(1 << (i & 31));
+    int index = i >> 5;
+    if (index < bitmap.length)
+      bitmap[(i >> 5)] &= ~(1 << (i & 31));
   }
 
   public final static boolean getBit(int[] bitmap, int i) {
-    return (bitmap[(i >> 5)] & (1 << (i & 31))) != 0;
+    int index = i >> 5;
+    if (index >= bitmap.length)
+      return false;
+    return (bitmap[index] & (1 << (i & 31))) != 0;
   }
 
   public final static void setAllBits(int[] bitmap, int count) {
@@ -68,15 +76,6 @@ public class Bmp {
   }
 
   public final static int[] copyMinimalBitmap(int[] bitmap) {
-    if (true) {
-      int[] map = null;
-      if (bitmap.length > 0) {
-        map = new int[bitmap.length];
-        for (int j = bitmap.length; --j >= 0; )
-          map[j] = bitmap[j];
-      }
-      return map;
-    }
     int indexLast;
     for (indexLast = bitmap.length;
          --indexLast >= 0 && bitmap[indexLast] == 0; )
@@ -162,6 +161,58 @@ public class Bmp {
       }
     }
     return maxMapped;
+  }
+
+  public final static int getMinMappedBit(int[] bitmap) {
+    if (bitmap == null)
+      return -1;
+    int mapLength = bitmap.length;
+    int maxMapped = mapLength << 5;
+    int answer1 = 0;
+    if (debugDoubleCheck) {
+      for ( ; answer1 < maxMapped && !getBit(bitmap, answer1) ; ++answer1)
+        {}
+      if (answer1 == maxMapped)
+        answer1 = 0;
+    }
+    int map = 0;
+    int minMapped = 0;
+    int i;
+    for (i = 0; i < mapLength && (map = bitmap[i]) == 0; ++i)
+      minMapped += 32;
+    if (i == mapLength) {
+      minMapped = 0;
+    } else {
+      if ((map & 0x0000FFFF) == 0) {
+        map >>= 16;
+        minMapped += 16;
+      }
+      if ((map & 0x000000FF) == 0) {
+        map >>= 8;
+        minMapped += 8;
+      }
+      if ((map & 0x0000000F) == 0) {
+        map >>= 4;
+        minMapped += 4;
+      }
+      if ((map & 0x00000003) == 0) {
+        map >>= 2;
+        minMapped += 2;
+      }
+      if ((map & 0x00000001) == 0)
+        minMapped += 1;
+    }
+    if (debugDoubleCheck) {
+      if (answer1 != minMapped) {
+        System.out.println("answer1=" + answer1 + " minMapped=" + minMapped);
+        System.out.println("bitmap.length=" + bitmap.length);
+        for (int j = 0; j < bitmap.length; ++j)
+          System.out.println("bitmap[" + j + "]=" +
+                             Integer.toBinaryString(bitmap[j]));
+        throw new NullPointerException();
+      }
+    }
+    return minMapped;
   }
 }
 

@@ -37,13 +37,13 @@ class SurfaceRenderer extends ShapeRenderer {
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
   int geodesicVertexCount;
-  Vector3f[] transformedVectors;
   int geodesicFaceCount;
   short[] geodesicFaceVertexes;
   short[] geodesicFaceNormixes;
-  Point3i[] screens;
+  ScreensCache screensCache;
 
   void initRenderer() {
+    screensCache = new ScreensCache(viewer, 6);
   }
 
   void render() {
@@ -54,9 +54,8 @@ class SurfaceRenderer extends ShapeRenderer {
     Surface surface = (Surface)shape;
     if (surface == null)
       return;
-    transformedVectors = g3d.getTransformedVertexVectors();
     geodesicVertexCount = surface.geodesicVertexCount;
-    screens = viewer.allocTempScreens(geodesicVertexCount);
+    screensCache.alloc(geodesicVertexCount);
     geodesicFaceCount =
       g3d.getGeodesicFaceCount(surface.geodesicRenderingLevel);
     geodesicFaceVertexes =
@@ -77,18 +76,25 @@ class SurfaceRenderer extends ShapeRenderer {
           renderConvex(atom, colixesConvex[i], vertexMap, faceMap);
       }
     }
-
-    viewer.freeTempScreens(screens);
-    screens = null;
+    Surface.Torus[] toruses = surface.toruses;
+    for (int i = surface.torusCount; --i >= 0; ) {
+      Surface.Torus torus = toruses[i];
+      int ixI = torus.ixI;
+      int ixJ = torus.ixJ;
+      renderTorus(torus,
+                  atoms[ixI], convexVertexMaps[ixI],
+                  atoms[ixJ], convexVertexMaps[ixJ]);
+    }
+    Surface.Cavity[] cavities = surface.cavities;
+    for (int i = surface.cavityCount; --i >= 0; )
+      renderCavity(cavities[i]);
+    screensCache.free();
   }
 
-  private final static boolean CONVEX_DOTS = false;
+  private final static boolean CONVEX_DOTS = true;
 
   void renderConvex(Atom atom, short colix, int[] vertexMap, int[] faceMap) {
-    calcScreenPoints(vertexMap,
-                     atom.getVanderwaalsRadiusFloat(),
-                     atom.getScreenX(), atom.getScreenY(),
-                     atom.getScreenZ());
+    Point3i[] screens = screensCache.lookup(atom, vertexMap);
     if (colix == 0)
       colix = atom.colixAtom;
     if (CONVEX_DOTS) {
@@ -116,8 +122,107 @@ class SurfaceRenderer extends ShapeRenderer {
     }
   }
 
-  void calcScreenPoints(int[] vertexMap, float radius,
-                        int atomX, int atomY, int atomZ) {
+  void renderTorus(Surface.Torus torus,
+                   Atom atomI, int[] vertexMapI,
+                   Atom atomJ, int[] vertexMapJ) {
+    Point3i[] screensI = screensCache.lookup(atomI, vertexMapI);
+    Point3i[] screensJ = screensCache.lookup(atomJ, vertexMapJ);
+    int lastVertexI = Bmp.getMaxMappedBit(vertexMapI) - 1;
+    Point3i screenMaxI = screensI[lastVertexI];
+    int lastVertexJ = Bmp.getMaxMappedBit(vertexMapJ) - 1;
+    Point3i screenMaxJ = screensJ[lastVertexJ];
+    
+    g3d.fillCylinder(Graphics3D.PINK, Graphics3D.ENDCAPS_FLAT, 4,
+                     atomI.getScreenX(),atomI.getScreenY(),atomI.getScreenZ(),
+                     screenMaxJ.x, screenMaxJ.y, screenMaxJ.z);
+                     
+    g3d.fillCylinder(Graphics3D.GREEN, Graphics3D.ENDCAPS_FLAT, 4,
+                     atomJ.getScreenX(),atomJ.getScreenY(),atomJ.getScreenZ(),
+                     screenMaxI.x, screenMaxI.y, screenMaxI.z);
+  }
+
+  void renderCavity(Surface.Cavity cavity) {
+  }
+
+}
+
+class ScreensCache {
+
+  final Viewer viewer;
+  final int cacheSize;
+  int screensLength;
+  Point3i[][] cacheScreens;
+  int[] cacheAtomIndexes;
+  int lruClock;
+  int[] cacheLrus;
+
+  Vector3f[] transformedVectors;
+
+  ScreensCache(Viewer viewer, int cacheSize) {
+    this.viewer = viewer;
+    this.cacheSize = cacheSize;
+    cacheScreens = new Point3i[cacheSize][];
+    cacheAtomIndexes = new int[cacheSize];
+    cacheLrus = new int[cacheSize];
+  }
+
+  void alloc(int screensLength) {
+    this.screensLength = screensLength;
+    for (int i = cacheSize; --i >= 0; ) {
+      cacheScreens[i] = viewer.allocTempScreens(screensLength);
+      cacheAtomIndexes[i] = -1;
+      cacheLrus[i] = -1;
+    }
+    lruClock = 0;
+    transformedVectors = viewer.g3d.getTransformedVertexVectors();
+  }
+
+  Point3i[] lookup(Atom atom, int[] vertexMap) {
+    int atomIndex = atom.atomIndex;
+    for (int i = cacheSize; --i >= 0; ) {
+      if (cacheAtomIndexes[i] == atomIndex) {
+        cacheLrus[i] = lruClock++;
+        return cacheScreens[i];
+      }
+    }
+    int iOldest = 0;
+    int lruOldest = cacheLrus[0];
+    for (int i = cacheSize; --i > 0; ) { // only > 0
+      if (cacheLrus[i] < lruOldest) {
+        lruOldest = cacheLrus[i];
+        iOldest = i;
+      }
+    }
+    Point3i[] screens = cacheScreens[iOldest];
+    calcScreenPoints(atom, vertexMap, screens);
+    cacheAtomIndexes[iOldest] = atomIndex;
+    cacheLrus[iOldest] = lruClock++;
+    return screens;
+  }
+
+  void touch(Point3i[] screens) {
+    for (int i = cacheSize; --i >= 0; ) {
+      if (screens == cacheScreens[i]) {
+        cacheLrus[i] = lruClock++;
+        return;
+      }
+    }
+    throw new NullPointerException();
+  }
+
+  void free() {
+    for (int i = cacheSize; --i >= 0; ) {
+      cacheScreens[i] = null;
+      cacheAtomIndexes[i] = -1;
+      cacheLrus[i] = -1;
+    }
+  }
+
+  void calcScreenPoints(Atom atom, int[] vertexMap, Point3i[] screens) {
+    float radius = atom.getVanderwaalsRadiusFloat();
+    int atomX = atom.getScreenX();
+    int atomY = atom.getScreenY();
+    int atomZ = atom.getScreenZ();
     float scaledRadius = viewer.scaleToScreen(atomZ, radius);
     for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
       if (! Bmp.getBit(vertexMap, vertex))
@@ -129,6 +234,5 @@ class SurfaceRenderer extends ShapeRenderer {
       screen.z = atomZ - (int)(scaledRadius * tv.z); // smaller z comes to me
     }
   }
+
 }
-
-

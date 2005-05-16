@@ -175,7 +175,7 @@ class Surface extends Shape {
             convexFaceMaps[i] = calcFaceBitmap();
           }
         }
-      //      saveToruses();
+      saveToruses();
       long timeElapsed = System.currentTimeMillis() - timeBegin;
       System.out.println("Surface construction time = " + timeElapsed + " ms");
     }
@@ -468,18 +468,20 @@ class Surface extends Shape {
     int torusCavityCount;
     Cavity[] torusCavities;
     boolean[] rightHandeds;
+    boolean fullTorus;
     //    Vector3f outerVector;
     //    float outerRadians;
     //    Point3f[][] stripPointArrays;
     //    short[][] stripNormixesArrays;
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
-          Point3f center, float radius) {
+          Point3f center, float radius, boolean fullTorus) {
       System.out.println("Torus " + indexA + ":" + indexB);
       this.ixI = indexA;
       this.ixJ = indexB;
       this.center = new Point3f(center);
       this.radius = radius;
+      this.fullTorus = fullTorus;
 
       /*
       axisVector = new Vector3f();
@@ -572,6 +574,9 @@ class Surface extends Shape {
       ++torusCavityCount;
     }
       
+    void calcTriangles() {
+    }
+
     /*
     void checkAngles() {
       for (int i = torusCavityCount; --i >= 0; ) {
@@ -920,12 +925,11 @@ class Surface extends Shape {
     if (htToruses.get(key) != null)
       throw new NullPointerException();
     Torus torus = new Torus(indexA, centerA, indexB, centerB,
-                            torusCenterAB, torusRadius);
+                            torusCenterAB, torusRadius, fullTorus);
     htToruses.put(key, torus);
     return torus;
   }
 
-  /*
   void saveToruses() {
     if (radiusP == 0)
       return;
@@ -935,18 +939,13 @@ class Surface extends Shape {
       Object value = e.nextElement();
       if (value instanceof Torus) {
         Torus torus = (Torus)value;
-        torus.checkAngles();
-        torus.organizeCavities();
-        //        torus.calculateSegments();
-        //torus.calculatePoints();
-        torus.tellMeAboutYourself();
+        torus.calcTriangles();
         if (torusCount == toruses.length)
           toruses = (Torus[])Util.doubleLength(toruses);
         toruses[torusCount++] = torus;
       }
     }
   }
-  */
 
   Torus getTorus(int atomIndexA, int atomIndexB) {
     if (atomIndexA >= atomIndexB)

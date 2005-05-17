@@ -49,6 +49,7 @@ class Normix3D {
   final byte[] intensities;
   final byte[] intensities2Sided;
   final int normixCount;
+  final static int[] vertexCounts = {12, 42, 162, 642, 2562};
 
   final static short[][] faceNormixesArrays =
     new short[NORMIX_GEODESIC_LEVEL + 1][];
@@ -151,22 +152,14 @@ class Normix3D {
     }
   }
 
-  short getNormix(Vector3f vector) {
-    return getNormix(vector.x, vector.y, vector.z);
-  }
-
-  short getInverseNormix(Vector3f vector) {
-    return getNormix(-vector.x, -vector.y, -vector.z);
-  }
-
-  short get2SidedNormix(Vector3f vector) {
-    return (short)~getNormix(vector.x, vector.y, vector.z);
-  }
-
   final BitSet bsNull = new BitSet();
   final BitSet bsConsidered = new BitSet();
 
-  short getNormix(double x, double y, double z) {
+  short getNormix(Vector3f v) {
+    return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL);
+  }
+
+  short getNormix(double x, double y, double z, int geodesicLevel) {
     short champion;
     double t;
     if (z >= 0) {
@@ -179,8 +172,8 @@ class Normix3D {
     bsConsidered.and(bsNull);
     bsConsidered.set(champion);
     double championDist2 = x*x + y*y + t*t;
-    for (int level = 0; level <= NORMIX_GEODESIC_LEVEL; ++level) {
-      short[] neighborVertexes = Geodesic3D.neighborVertexesArrays[level];
+    for (int lvl = 0; lvl <= geodesicLevel; ++lvl) {
+      short[] neighborVertexes = Geodesic3D.neighborVertexesArrays[lvl];
       for (int offsetNeighbors = 6 * champion,
              i = offsetNeighbors + (champion < 12 ? 5 : 6);
            --i >= offsetNeighbors; ) {
@@ -213,7 +206,7 @@ class Normix3D {
     if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
       int champSeq = 0;
       double champSeqD2 = dist2(Geodesic3D.vertexVectors[champSeq], x, y, z);
-      for (int k = normixCount; --k > 0; ) {
+      for (int k = vertexCounts[geodesicLevel]; --k > 0; ) {
         double challengerD2 = dist2(Geodesic3D.vertexVectors[k], x, y, z);
         if (challengerD2 < champSeqD2) {
           champSeq = k;

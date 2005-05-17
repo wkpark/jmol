@@ -38,11 +38,32 @@ public class Bmp {
     return new int[(count + 31) >> 5];
   }
 
+  public final static int[] growBitmap(int[] bitmap, int count) {
+    if (count < 0)
+      throw new IndexOutOfBoundsException();
+    if (bitmap == null)
+      return (count == 0) ? null : allocateBitmap(count);
+    int minLength = (count + 31) >> 5;
+    if (bitmap.length >= minLength)
+      return bitmap;
+    int[] newBitmap = new int[minLength];
+    for (int i = bitmap.length; --i >= 0; )
+      newBitmap[i] = bitmap[i];
+    return newBitmap;
+  }
+
   public final static void setBit(int[] bitmap, int i) {
     int index = i >> 5;
     if (index >= bitmap.length)
       throw new IndexOutOfBoundsException();
     bitmap[index] |= 1 << (i & 31);
+  }
+
+  public final static int[] setBitGrow(int[] bitmap, int i) {
+    bitmap = growBitmap(bitmap, i + 1);
+    if (bitmap != null)
+      bitmap[i >> 5] |= 1 << (i & 31);
+    return bitmap;
   }
 
   public final static void clearBit(int[] bitmap, int i) {

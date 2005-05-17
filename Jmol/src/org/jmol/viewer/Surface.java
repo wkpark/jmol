@@ -83,12 +83,11 @@ class Surface extends Shape {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
-  private final static int GEODESIC_CALC_LEVEL = 1;
-  int geodesicRenderingLevel = 1;
+  private final static int GEODESIC_CALC_LEVEL = 2;
+  int geodesicRenderingLevel = 2;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
   int[][] convexVertexMaps;
-  int[][] convexEdgeVertexMaps;
   int[][] convexFaceMaps;
   short[] colixesConvex;
   Vector3f[] geodesicVertexVectors;
@@ -150,7 +149,6 @@ class Surface extends Shape {
     int atomCount = frame.atomCount;
     if (convexVertexMaps == null) {
       convexVertexMaps = new int[atomCount][];
-      convexEdgeVertexMaps = new int[atomCount][];
       convexFaceMaps = new int[atomCount][];
       colixesConvex = new short[atomCount];
     }
@@ -158,7 +156,6 @@ class Surface extends Shape {
     for (int i = atomCount; --i >= 0; )
       if (bsSelected.get(i)) {
         convexVertexMaps[i] = null;
-        convexEdgeVertexMaps[i] = null;
         convexFaceMaps[i] = null;
       }
     deleteUnusedToruses();
@@ -176,13 +173,17 @@ class Surface extends Shape {
           calcCavitiesI();
           if (convexVertexMaps[i] == calculateMyConvexSurfaceMap) {
             convexVertexMaps[i] = calcVertexBitmapI();
-            convexEdgeVertexMaps[i] = calcEdgeVertexes(convexVertexMaps[i]);
-            convexFaceMaps[i] = calcFaceBitmap();
           }
         }
       for (int i = cavityCount; --i >= 0; )
         cavities[i].calcNearestGeodesicVertexes();
       saveToruses();
+      for (int i = atomCount; --i >= 0; ) {
+        int[] vertexMap = convexVertexMaps[i];
+        if (vertexMap != null)
+            convexFaceMaps[i] = calcFaceBitmap(vertexMap);
+      }
+
       long timeElapsed = System.currentTimeMillis() - timeBegin;
       System.out.println("atomCount=" + atomCount);
       System.out.println("Surface construction time = " + timeElapsed + " ms");
@@ -345,12 +346,12 @@ class Surface extends Shape {
     return Bmp.copyMinimalBitmap(tempVertexMap);
   }
 
-  int[] calcFaceBitmap() {
+  int[] calcFaceBitmap(int[] vertexMap) {
     Bmp.clearBitmap(tempFaceMap);
     for (int i = geodesicFaceCount, j = 3 * (i - 1); --i >= 0; j -= 3) {
-      if (Bmp.getBit(tempVertexMap, geodesicFaceVertexes[j]) &&
-          Bmp.getBit(tempVertexMap, geodesicFaceVertexes[j + 1]) &&
-          Bmp.getBit(tempVertexMap, geodesicFaceVertexes[j + 2]))
+      if (Bmp.getBit(vertexMap, geodesicFaceVertexes[j]) &&
+          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 1]) &&
+          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 2]))
         Bmp.setBit(tempFaceMap, i);
     }
     return Bmp.copyMinimalBitmap(tempFaceMap);
@@ -1257,20 +1258,16 @@ class Surface extends Shape {
 
     void calcNearestGeodesicVertexes() {
       vectorT.sub(probeCenter, atI.point3f);
-      vertexI =
-        g3d.getClosestVisibleGeodesicVertexIndex(vectorT,
-                                                 convexEdgeVertexMaps[ixI],
-                                                 geodesicRenderingLevel);
+      vertexI = g3d.getNormix(vectorT, geodesicRenderingLevel);
       vectorT.sub(probeCenter, atJ.point3f);
-      vertexJ =
-        g3d.getClosestVisibleGeodesicVertexIndex(vectorT,
-                                                 convexEdgeVertexMaps[ixJ],
-                                                 geodesicRenderingLevel);
+      vertexJ = g3d.getNormix(vectorT, geodesicRenderingLevel);
       vectorT.sub(probeCenter, atK.point3f);
-      vertexK =
-        g3d.getClosestVisibleGeodesicVertexIndex(vectorT,
-                                                 convexEdgeVertexMaps[ixK],
-                                                 geodesicRenderingLevel);
+      vertexK = g3d.getNormix(vectorT, geodesicRenderingLevel);
+
+      convexVertexMaps[ixI] = Bmp.setBitGrow(convexVertexMaps[ixI], vertexI);
+      convexVertexMaps[ixJ] = Bmp.setBitGrow(convexVertexMaps[ixJ], vertexJ);
+      convexVertexMaps[ixK] = Bmp.setBitGrow(convexVertexMaps[ixK], vertexK);
+
       System.out.println("calcNearestGeodesicVertexes vertexI=" + vertexI +
                          " vertexJ=" + vertexJ + " vertexK=" + vertexK);
     }

@@ -2198,15 +2198,23 @@ final public class Graphics3D {
   }
 
   public short getNormix(Vector3f vector) {
-    return normix3d.getNormix(vector);
+    return normix3d.getNormix(vector.x, vector.y, vector.z,
+                              Normix3D.NORMIX_GEODESIC_LEVEL);
+  }
+
+  public short getNormix(Vector3f vector, int geodesicLevel) {
+    System.out.println("getNormix with geodesicLevel=" + geodesicLevel);
+    return normix3d.getNormix(vector.x, vector.y, vector.z, geodesicLevel);
   }
 
   public short getInverseNormix(Vector3f vector) {
-    return normix3d.getInverseNormix(vector);
+    return normix3d.getNormix(-vector.x, -vector.y, -vector.z,
+                              Normix3D.NORMIX_GEODESIC_LEVEL);
   }
 
   public short get2SidedNormix(Vector3f vector) {
-    return normix3d.get2SidedNormix(vector);
+    return (short)~normix3d.getNormix(vector.x, vector.y, vector.z,
+                                      Normix3D.NORMIX_GEODESIC_LEVEL);
   }
 
   public boolean isDirectedTowardsCamera(short normix) {

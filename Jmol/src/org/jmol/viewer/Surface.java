@@ -88,6 +88,7 @@ class Surface extends Shape {
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
   int[][] convexVertexMaps;
+  int[][] convexEdgeVertexMaps;
   int[][] convexFaceMaps;
   short[] colixesConvex;
   Vector3f[] geodesicVertexVectors;
@@ -149,13 +150,17 @@ class Surface extends Shape {
     int atomCount = frame.atomCount;
     if (convexVertexMaps == null) {
       convexVertexMaps = new int[atomCount][];
+      convexEdgeVertexMaps = new int[atomCount][];
       convexFaceMaps = new int[atomCount][];
       colixesConvex = new short[atomCount];
     }
     // always delete old surfaces for selected atoms
     for (int i = atomCount; --i >= 0; )
-      if (bsSelected.get(i))
+      if (bsSelected.get(i)) {
         convexVertexMaps[i] = null;
+        convexEdgeVertexMaps[i] = null;
+        convexFaceMaps[i] = null;
+      }
     deleteUnusedToruses();
     deleteUnusedCavities();
 
@@ -171,9 +176,12 @@ class Surface extends Shape {
           calcCavitiesI();
           if (convexVertexMaps[i] == calculateMyConvexSurfaceMap) {
             convexVertexMaps[i] = calcVertexBitmapI();
+            convexEdgeVertexMaps[i] = calcEdgeVertexes(convexVertexMaps[i]);
             convexFaceMaps[i] = calcFaceBitmap();
           }
         }
+      for (int i = cavityCount; --i >= 0; )
+        cavities[i].calcNearestGeodesicVertexes();
       saveToruses();
       long timeElapsed = System.currentTimeMillis() - timeBegin;
       System.out.println("atomCount=" + atomCount);
@@ -1175,18 +1183,6 @@ class Surface extends Shape {
   // plus use vectorPI and vectorPJ from above;
   final Vector3f vectorPK = new Vector3f();
 
-  final static byte[] gcSplits = {
-    1, 2, 4,
-    2, 3, 5,
-    3, 1, 6,
-    1, 4, 7,
-    2, 4, 8,
-    2, 5, 9,
-    3, 5, 10,
-    3, 6, 11,
-    1, 6, 12
-  };
-
   class Cavity {
     final int ixI, ixJ, ixK;
     final Atom atI, atJ, atK;
@@ -1196,6 +1192,10 @@ class Surface extends Shape {
     final float radiansIJ;
     final float radiansJK;
     final float radiansKI;
+    final Point3f pointPI = new Point3f();
+    final Point3f pointPJ = new Point3f();
+    final Point3f pointPK = new Point3f();
+    short vertexI, vertexJ, vertexK;
     short colixI, colixJ, colixK;
     byte segmentsIJ, segmentsJK, segmentsKI;
 
@@ -1212,10 +1212,16 @@ class Surface extends Shape {
 
       vectorPI.sub(centerI, probeCenter);
       vectorPI.normalize();
+      pointPI.scaleAdd(radiusP, vectorPI, probeCenter);
+
       vectorPJ.sub(centerJ, probeCenter);
       vectorPJ.normalize();
+      pointPJ.scaleAdd(radiusP, vectorPJ, probeCenter);
+
       vectorPK.sub(centerK, probeCenter);
       vectorPK.normalize();
+      pointPK.scaleAdd(radiusP, vectorPK, probeCenter);
+
       radiansIJ = vectorPI.angle(vectorPJ);
       segmentsIJ = (byte)(radiansIJ / radiansPerSegment);
       if (segmentsIJ == 0)
@@ -1247,6 +1253,26 @@ class Surface extends Shape {
                   points, normixes, 1 + segmentsIJ);
       addSegments(probeCenter, radiansKI, segmentsKI, vectorPK, vectorPI,
                   points, normixes, 1 + segmentsIJ + segmentsJK);
+    }
+
+    void calcNearestGeodesicVertexes() {
+      vectorT.sub(probeCenter, atI.point3f);
+      vertexI =
+        g3d.getClosestVisibleGeodesicVertexIndex(vectorT,
+                                                 convexEdgeVertexMaps[ixI],
+                                                 geodesicRenderingLevel);
+      vectorT.sub(probeCenter, atJ.point3f);
+      vertexJ =
+        g3d.getClosestVisibleGeodesicVertexIndex(vectorT,
+                                                 convexEdgeVertexMaps[ixJ],
+                                                 geodesicRenderingLevel);
+      vectorT.sub(probeCenter, atK.point3f);
+      vertexK =
+        g3d.getClosestVisibleGeodesicVertexIndex(vectorT,
+                                                 convexEdgeVertexMaps[ixK],
+                                                 geodesicRenderingLevel);
+      System.out.println("calcNearestGeodesicVertexes vertexI=" + vertexI +
+                         " vertexJ=" + vertexJ + " vertexK=" + vertexK);
     }
 
     Point3f getPoint(int atomIndex) {
@@ -1290,11 +1316,6 @@ class Surface extends Shape {
         normixes[j] = g3d.getInverseNormix(vectorT1);
         aaT.angle +=  radiansPerSegment;
       }
-    }
-
-    void tellMeAboutYourself() {
-      System.out.println("   cavity i,j,k:" + ixI + "," + ixJ + "," + ixK +
-                         " -> " + points[0]);
     }
 
   }
@@ -1408,6 +1429,8 @@ class Surface extends Shape {
   }
 
   int[] calcEdgeVertexes(int[] visibilityBitmap) {
+    if (visibilityBitmap == null)
+      return null;
     int[] edgeVertexes = new int[visibilityBitmap.length];
     for (int vertex = Bmp.getMaxMappedBit(visibilityBitmap),
            neighborIndex = 6 * (vertex - 1);

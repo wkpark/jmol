@@ -367,6 +367,8 @@ class Normix3D {
   short getVisibleNormix(double x, double y, double z,
                          int[] visibilityBitmap, int level) {
     int minMapped = Bmp.getMinMappedBit(visibilityBitmap);
+    if (minMapped < 0)
+      return -1;
     int maxMapped = Bmp.getMaxMappedBit(visibilityBitmap);
     int maxVisible = Geodesic3D.vertexCounts[level];
     int max = maxMapped < maxVisible ? maxMapped : maxVisible;

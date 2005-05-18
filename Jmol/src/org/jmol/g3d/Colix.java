@@ -49,14 +49,20 @@ final class Colix {
   private static int[] argbs = new int[128];
   private static Color[] colors = new Color[128];
   private static int[][] ashades = new int[128][];
+  final static int changableMask = 0xFFFF8000;
   final static int translucentMask = 0x4000;
-  final static int unmaskTranslucent = 0x3FFF;
+  final static int unmaskTranslucent = ~translucentMask;
+  final static int unmaskChangableAndTranslucent = 0x3FFF;
 
   final static short getColix(int argb) {
     if (argb == 0)
       return 0;
     int translucent = 0;
     if ((argb & 0xFF000000) != 0xFF000000) {
+      if ((argb & 0xFF000000) == 0) {
+        System.out.println("zero alpha channel + non-zero rgb not supported");
+        throw new IndexOutOfBoundsException();
+      }
       argb |= 0xFF000000;
       translucent = translucentMask;
     }

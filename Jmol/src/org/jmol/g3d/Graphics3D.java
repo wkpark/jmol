@@ -170,7 +170,7 @@ final public class Graphics3D {
    */
   public void setBackground(short colix) {
     colixBackground = colix;
-    argbBackground = getArgb(colix);
+    argbBackground = getColixArgb(colix);
     platform.setBackground(argbBackground);
 
     colixBackgroundContrast =
@@ -272,15 +272,15 @@ final public class Graphics3D {
   public void setColix(short colix) {
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
-    argbCurrent = argbNoisyUp = argbNoisyDn = getArgb(colix);
-    isTranslucent = (colix & 0x4000) != 0;
+    argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
+    isTranslucent = (colix & Colix.translucentMask) != 0;
   }
 
   public void setColixIntensity(short colix, int intensity) {
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
-    isTranslucent = (colix & 0x4000) != 0;
+    isTranslucent = (colix & Colix.translucentMask) != 0;
   }
 
   public void setIntensity(int intensity) {
@@ -294,7 +294,7 @@ final public class Graphics3D {
     argbCurrent = shades[intensity];
     argbNoisyUp = shades[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shades[intensity > 0 ? intensity - 1 : 0];
-    isTranslucent = (colix & 0x4000) != 0;
+    isTranslucent = (colix & Colix.translucentMask) != 0;
   }
 
   int[] imageBuf = new int[0];
@@ -588,7 +588,7 @@ final public class Graphics3D {
       return;
     //    System.out.println("ready to call");
     Text3D.plot(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
-                z, argbCurrent, getArgb(bgcolix), str, font3dCurrent, this);
+                z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, this);
     //    System.out.println("done");
   }
 
@@ -598,7 +598,7 @@ final public class Graphics3D {
     font3dCurrent = font3d;
     setColix(colix);
     Text3D.plot(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
-                z, argbCurrent, getArgb(bgcolix), str, font3dCurrent, this);
+                z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, this);
   }
   
   public void setFontOfSize(int fontsize) {
@@ -706,20 +706,20 @@ final public class Graphics3D {
 
   public void drawDashedLine(short colix, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = getArgb(colix);
+    int argb = getColixArgb(colix);
     line3d.drawDashedLine(argb, argb, run, rise, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawDottedLine(short colix,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = getArgb(colix);
+    int argb = getColixArgb(colix);
     line3d.drawDashedLine(argb, argb, 2, 1, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawDashedLine(short colix1, short colix2, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
         
-    line3d.drawDashedLine(getArgb(colix1), getArgb(colix2),
+    line3d.drawDashedLine(getColixArgb(colix1), getColixArgb(colix2),
                           run, rise, x1, y1, z1, x2, y2, z2);
   }
   
@@ -731,7 +731,7 @@ final public class Graphics3D {
   }
 
   public void drawLine(short colix, Point3i pointA, Point3i pointB) {
-    int argb = getArgb(colix);
+    int argb = getColixArgb(colix);
     line3d.drawLine(argb, argb,
                     pointA.x, pointA.y, pointA.z,
                     pointB.x, pointB.y, pointB.z);
@@ -743,7 +743,7 @@ final public class Graphics3D {
 
   public void drawDashedLine(short colix, int run, int rise,
                              Point3i pointA, Point3i pointB) {
-    int argb = getArgb(colix);
+    int argb = getColixArgb(colix);
     line3d.drawDashedLine(argb, argb, run, rise,
                           pointA.x, pointA.y, pointA.z,
                           pointB.x, pointB.y, pointB.z);
@@ -761,13 +761,13 @@ final public class Graphics3D {
 
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = getArgb(colix);
+    int argb = getColixArgb(colix);
     line3d.drawLine(argb, argb, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(short colix1, short colix2,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(getArgb(colix1), getArgb(colix2),
+    line3d.drawLine(getColixArgb(colix1), getColixArgb(colix2),
                     x1, y1, z1, x2, y2, z2);
   }
   
@@ -1048,7 +1048,7 @@ final public class Graphics3D {
                        xB + "," + yB + "," + zB + "->" +
                        xC + "," + yC + "," + zC);
     */
-    int argb = getArgb(colix);
+    int argb = getColixArgb(colix);
     line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
     line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
     line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
@@ -1205,7 +1205,7 @@ final public class Graphics3D {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
       zbuf[offset] = (short)z;
-      pbuf[offset] = getArgb(colix);
+      pbuf[offset] = getColixArgb(colix);
     }
   }
 
@@ -1535,7 +1535,7 @@ final public class Graphics3D {
       int offset = y * width + x;
       if (z < zbuf[offset]) {
         zbuf[offset] = (short)z;
-        //        pbuf[offset] = getArgb(colix);
+        //        pbuf[offset] = getColixArgb(colix);
         pbuf[offset] = shades[intensities[j]];
       }
     }
@@ -1590,16 +1590,32 @@ final public class Graphics3D {
       Colix.getColix(colorsPredefined[i]);
   }
 
-  public int getArgb(short colix) {
-    return Colix.getRgb(colix >= 0 ? colix : changableColixMap[-colix]);
+  private int getColixArgb(short colix) {
+    return
+      Colix.getRgb(colix >= 0 ? colix :
+                   changableColixMap[colix &
+                                     Colix.unmaskChangableAndTranslucent]);
   }
 
-  public boolean isTranslucent(short colix) {
+  public boolean isColixTranslucent(short colix) {
     return (colix & Colix.translucentMask) != 0;
   }
 
+  public short setColixTranslucent(short colix, boolean translucent) {
+    if (colix < 0 && translucent) {
+      System.out.println("changable translucent colix not yet implemented");
+      throw new NullPointerException();
+    }
+    if (translucent)
+      return (short)(colix | Colix.translucentMask);
+    return (short)(colix & Colix.unmaskTranslucent);
+  }
+
   public int[] getShades(short colix) {
-    return Colix.getShades(colix >= 0 ? colix : changableColixMap[-colix]);
+    return
+      Colix.getShades(colix >= 0 ? colix :
+                      changableColixMap[colix &
+                                        Colix.unmaskChangableAndTranslucent]);
   }
 
   public short getColix(int argb) {
@@ -1628,7 +1644,10 @@ final public class Graphics3D {
   }
 
   public Color getColor(short colix) {
-    return Colix.getColor(colix >= 0 ? colix : changableColixMap[-colix]);
+    return
+      Colix.getColor(colix >= 0 ? colix :
+                     changableColixMap[colix &
+                                       Colix.unmaskChangableAndTranslucent]);
   }
 
   /****************************************************************
@@ -1640,7 +1659,6 @@ final public class Graphics3D {
   short[] changableColixMap = new short[16];
 
   public short getChangableColix(short id, int argb) {
-    ++id; // to deal with 0;
     if (id >= changableColixMap.length) {
       short[] t = new short[id + 16];
       System.arraycopy(changableColixMap, 0, t, 0, changableColixMap.length);
@@ -1648,11 +1666,10 @@ final public class Graphics3D {
     }
     if (changableColixMap[id] == 0)
       changableColixMap[id] = getColix(argb);
-    return (short)-id;
+    return (short)(id | Colix.changableMask);
   }
 
   public void changeColixArgb(short id, int argb) {
-    ++id;
     if (id < changableColixMap.length && changableColixMap[id] != 0)
       changableColixMap[id] = getColix(argb);
   }
@@ -2096,7 +2113,7 @@ final public class Graphics3D {
 
   public static int getArgbFromString(String strColor) {
     /*
-    System.out.println("ColorManager.getArgbFromString(" + strColor + ")");
+    System.out.println("ColorManager.getArgb!FromString(" + strColor + ")");
     */
     if (strColor != null) {
       if (strColor.length() == 7 && strColor.charAt(0) == '#') {

@@ -445,8 +445,16 @@ final public class Graphics3D {
    * @param xyzd x,y,z,diameter
    */
   public void fillSphereCentered(short colix, long xyzd) {
-    fillSphereCentered(colix, Xyzd.getD(xyzd),
-                       Xyzd.getX(xyzd), Xyzd.getY(xyzd), Xyzd.getZ(xyzd));
+    int diameter = Xyzd.getD(xyzd);
+    int x = Xyzd.getX(xyzd);
+    int y = Xyzd.getY(xyzd);
+    int z = Xyzd.getZ(xyzd);
+    if (diameter <= 1) {
+      plotPixelClipped(colix, x, y, z);
+    } else {
+      sphere3d.render(getShades(colix), ((colix & Colix.translucentMask) != 0),
+                      diameter, x, y, z);
+    }
   }
 
   /**
@@ -463,7 +471,8 @@ final public class Graphics3D {
     if (diameter <= 1) {
       plotPixelClipped(colix, x, y, z);
     } else {
-      sphere3d.render(colix, diameter, x, y, z);
+      sphere3d.render(getShades(colix), ((colix & Colix.translucentMask) != 0),
+                      diameter, x, y, z);
     }
   }
 
@@ -1292,7 +1301,9 @@ final public class Graphics3D {
     }
     if (count + x > width)
       count = width - x;
-    boolean flipflop = ((x ^ y) & 1) == 0;
+    // when screening 0,0 should be turned ON
+    // the first time through this will get flipped to true
+    boolean flipflop = ((x ^ y) & 1) != 0;
     int offsetPbuf = y * width + x;
     if (rgb16Left == null) {
       while (--count >= 0) {
@@ -1354,7 +1365,7 @@ final public class Graphics3D {
     int roundFactor = count / 2;
     int zIncrementScaled =
       ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
-    boolean flipflop = ((x ^ y) & 1) == 0;
+    boolean flipflop = ((x ^ y) & 1) != 0;
     int offsetPbuf = y * width + x;
     if (rgb16Left == null) {
       while (--count >= 0) {
@@ -1590,14 +1601,14 @@ final public class Graphics3D {
       Colix.getColix(colorsPredefined[i]);
   }
 
-  private int getColixArgb(short colix) {
+  public int getColixArgb(short colix) {
     return
       Colix.getRgb(colix >= 0 ? colix :
                    changableColixMap[colix &
                                      Colix.unmaskChangableAndTranslucent]);
   }
 
-  public boolean isColixTranslucent(short colix) {
+  public static boolean isColixTranslucent(short colix) {
     return (colix & Colix.translucentMask) != 0;
   }
 

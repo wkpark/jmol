@@ -68,7 +68,7 @@ class Cylinder3D {
                      int dxB, int dyB, int dzB) {
     this.diameter = diameter;
     if (diameter <= 1) {
-      g3d.plotLineDelta(g3d.getArgb(colixA), g3d.getArgb(colixB),
+      g3d.plotLineDelta(g3d.getColixArgb(colixA), g3d.getColixArgb(colixB),
                         xA, yA, zA, dxB, dyB, dzB);
       return;
     }

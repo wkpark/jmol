@@ -68,8 +68,8 @@ final class Colix {
     }
     for (int i = colixMax; --i >= 0; )
       if (argb == argbs[i])
-        return (short)(i | translucentMask);
-    return (short)(allocateColix(argb, null) | translucentMask);
+        return (short)(i | translucent);
+    return (short)(allocateColix(argb, null) | translucent);
   }
 
   final static short getColix(Color color) {
@@ -85,7 +85,7 @@ final class Colix {
     }
     for (int i = colixMax; --i >= 0; )
       if (argb == argbs[i])
-        return (short)(i | translucentMask);
+        return (short)(i | translucent);
     return (short)(allocateColix(argb, translucent == 0 ? color : null) |
                    translucent);
   }

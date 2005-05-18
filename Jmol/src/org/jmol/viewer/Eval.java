@@ -1420,6 +1420,7 @@ class Eval implements Runnable {
   }
 
 
+  // note that text color names are mapped to color argb values at compile time
   Color getColorParam(int itoken) throws ScriptException {
     if (itoken >= statementLength)
       colorExpected();
@@ -1436,6 +1437,31 @@ class Eval implements Runnable {
     if (statement[itoken].tok != Token.none)
       colorExpected();
     return null;
+  }
+
+  Color getColorParamOptionalTranslucent(int itoken) throws ScriptException {
+    boolean translucent = false;
+    int argb = 0;
+    for ( ; itoken < statementLength; ++itoken) {
+      switch (statement[itoken].tok) {
+      case Token.translucent:
+        translucent = true;
+        break;
+      case Token.opaque:
+        translucent = false;
+        break;
+      case Token.colorRGB:
+        argb = statement[itoken].intValue;
+      }
+    }
+    if (argb == 0)
+      colorExpected();
+    if (translucent)
+      argb = (argb & 0x00FFFFFF) | 0x80000000;
+    System.out.println("colorParamOrTranslucent argb=" +
+                       Integer.toHexString(argb) +
+                       " translucent=" + translucent);
+    return new Color(argb, translucent);
   }
 
   void background() throws ScriptException {
@@ -1461,7 +1487,7 @@ class Eval implements Runnable {
   }
 
   void color() throws ScriptException {
-    if (statementLength > 3 || statementLength < 2)
+    if (statementLength > 4 || statementLength < 2)
       badArgumentCount();
     int tok = statement[1].tok;
     outer:
@@ -1565,9 +1591,11 @@ class Eval implements Runnable {
     case Token.user:
       notImplemented(itoken);
       return;
+    case Token.translucent:
+    case Token.opaque:
     case Token.colorRGB:
       palette = JmolConstants.PALETTE_COLOR;
-      color = getColorParam(itoken);
+      color = getColorParamOptionalTranslucent(itoken);
       break;
     default:
         invalidArgument();

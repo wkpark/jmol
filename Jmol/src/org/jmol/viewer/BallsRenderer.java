@@ -94,5 +94,4 @@ class BallsRenderer extends ShapeRenderer {
                                      Xyzd.getZ(xyzd));
     }
   }
-
 }

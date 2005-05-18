@@ -64,8 +64,7 @@ class SticksRenderer extends ShapeRenderer {
 
   void render() {
 
-    endcaps = viewer.getTestFlag1()
-      ? Graphics3D.ENDCAPS_NONE : Graphics3D.ENDCAPS_SPHERICAL;
+    endcaps = Graphics3D.ENDCAPS_SPHERICAL;
 
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();

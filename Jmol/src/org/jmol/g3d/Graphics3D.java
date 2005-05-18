@@ -82,6 +82,7 @@ final public class Graphics3D {
   short colixCurrent;
   int[] shadesCurrent;
   int argbCurrent;
+  boolean isTranslucent;
   int argbNoisyUp, argbNoisyDn;
 
   Font3D font3dCurrent;
@@ -147,7 +148,7 @@ final public class Graphics3D {
   /**
    * gets g3d height
    *
-   * @return heigh pixel count
+   * @return height pixel count
    */
   public int getWindowHeight() {
     return height;
@@ -265,24 +266,6 @@ final public class Graphics3D {
   }
 
   /**
-   * sets current color using java.awt.Color
-   *
-   * @param color the Color to set
-   */
-  public void setColor(Color color) {
-    argbCurrent = argbNoisyUp = argbNoisyDn = color.getRGB();
-  }
-
-  /**
-   * sets current color using int argb
-   *
-   * @param argb the RGB value ... alpha is not used
-   */
-  public void setColorArgb(int argb) {
-    argbCurrent = argbNoisyUp = argbNoisyDn = argb;
-  }
-
-  /**
    * sets current color from colix color index
    * @param colix the color index
    */
@@ -290,23 +273,28 @@ final public class Graphics3D {
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getArgb(colix);
+    isTranslucent = (colix & 0x4000) != 0;
   }
 
   public void setColixIntensity(short colix, int intensity) {
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
+    isTranslucent = (colix & 0x4000) != 0;
   }
 
   public void setIntensity(int intensity) {
+    // only adjusting intensity, but colix & isTranslucent stay the same
     argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
   }
 
   void setColorNoisy(short colix, int intensity) {
+    colixCurrent = colix;
     int[] shades = getShades(colix);
     argbCurrent = shades[intensity];
     argbNoisyUp = shades[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shades[intensity > 0 ? intensity - 1 : 0];
+    isTranslucent = (colix & 0x4000) != 0;
   }
 
   int[] imageBuf = new int[0];
@@ -373,7 +361,7 @@ final public class Graphics3D {
     if (z < slab || z > depth)
       return;
     int r = (diameter + 1) / 2;
-    argbCurrent = getArgb(colix);
+    setColix(colix);
     if ((x >= r && x + r < width) && (y >= r && y + r < height)) {
       switch (diameter) {
       case 2:
@@ -417,7 +405,7 @@ final public class Graphics3D {
     if (diameter == 0 || z < slab || z > depth)
       return;
     int r = (diameter + 1) / 2;
-    argbCurrent = getArgb(colixFill);
+    setColix(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, true);
       circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
@@ -441,7 +429,7 @@ final public class Graphics3D {
     if (diameter == 0 || z < slab || z > depth)
       return;
     int r = (diameter + 1) / 2;
-    argbCurrent = getArgb(colixFill);
+    setColix(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, false);
     } else {
@@ -514,7 +502,7 @@ final public class Graphics3D {
    */
   public void drawRect(short colix, int x, int y, int z,
                        int width, int height) {
-    argbCurrent = getArgb(colix);
+    setColix(colix);
     int xRight = x + width - 1;
     line3d.drawHLine(argbCurrent, x, y, z, width -1, true);
     int yBottom = y + height - 1;
@@ -537,7 +525,7 @@ final public class Graphics3D {
    */
   public void drawRectNoSlab(short colix, int x, int y, int z,
                        int width, int height) {
-    argbCurrent = getArgb(colix);
+    setColix(colix);
     int xRight = x + width - 1;
     line3d.drawHLine(argbCurrent, x, y, z, width -1, false);
     int yBottom = y + height - 1;
@@ -595,7 +583,7 @@ final public class Graphics3D {
     //                       ", ...)");
 
     font3dCurrent = font3d;
-    argbCurrent = getArgb(colix);
+    setColix(colix);
     if (z < slab || z > depth)
       return;
     //    System.out.println("ready to call");
@@ -608,7 +596,7 @@ final public class Graphics3D {
                                short bgcolix, int xBaseline, int yBaseline,
                                int z) {
     font3dCurrent = font3d;
-    argbCurrent = getArgb(colix);
+    setColix(colix);
     Text3D.plot(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
                 z, argbCurrent, getArgb(bgcolix), str, font3dCurrent, this);
   }
@@ -928,34 +916,6 @@ final public class Graphics3D {
                  screenD, normixD);
   }
 
-  public void fillQuadrilateral(int argb,
-                                Point3i screenA, Point3i screenB,
-                                Point3i screenC, Point3i screenD) {
-    fillTriangle(argb, screenA, screenB, screenC);
-    fillTriangle(argb, screenA, screenC, screenD);
-  }
-  
-  public void fillTriangle(int argb, Point3i screenA,
-                                    Point3i screenB, Point3i screenC) {
-    
-    /*
-      System.out.println("fillTriangle----------------");
-      System.out.println("screenA="+ screenA +
-      " screenB=" + screenB +
-      " screenC=" + screenC);
-    */
-    argbCurrent = argbNoisyUp = argbNoisyDn = argb;
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
-    t = triangle3d.ay;
-    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
-    t = triangle3d.az;
-    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
-
-    triangle3d.fillTriangle(false, false);
-  }
-
   public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
     
     int[] t;
@@ -1016,22 +976,10 @@ final public class Graphics3D {
     setColorNoisy(colix, intensity);
   }
 
-
-  public void calcSurfaceShade(short colix, Point3f screenA,
-                               Point3f screenB, Point3f screenC) {
-    vectorAB.sub(screenB, screenA);
-    vectorAC.sub(screenC, screenA);
-    vectorNormal.cross(vectorAB, vectorAC);
-    int intensity =
-      vectorNormal.z >= 0
-      ? calcIntensity(-vectorNormal.x, -vectorNormal.y, vectorNormal.z)
-      : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
-    argbCurrent = getShades(colix)[intensity];
-  }
-
   public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {
-    int argb = argbCurrent = getArgb(colix);
+    setColix(colix);
+    int argb = argbCurrent;
     line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
     line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
     line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
@@ -1054,7 +1002,7 @@ final public class Graphics3D {
                        xB + "," + yB + "," + zB + "->" +
                        xC + "," + yC + "," + zC);
     */
-    argbCurrent = getArgb(colix);
+    setColix(colix);
     int[] t;
     t = triangle3d.ax;
     t[0] = xA; t[1] = xB; t[2] = xC;
@@ -1178,7 +1126,7 @@ final public class Graphics3D {
   
   public void fillRect(short colix,
                        int x, int y, int z, int widthFill, int heightFill) {
-    argbCurrent = getArgb(colix);
+    setColix(colix);
     if (x < 0) {
       widthFill += x;
       if (widthFill <= 0)
@@ -1211,8 +1159,8 @@ final public class Graphics3D {
   }
 
   public void drawPixel(Point3i point, int normix) {
-    argbCurrent = shadesCurrent[normix3d.intensities[normix]];
-    plotPixelClipped(point);
+    plotPixelClipped(shadesCurrent[normix3d.intensities[normix]],
+                     point.x, point.y, point.z);
   }
 
   /* ***************************************************************
@@ -1559,7 +1507,8 @@ final public class Graphics3D {
   }
 
   public void plotPoints(short colix, int count, int[] coordinates) {
-    int argb = argbCurrent = getArgb(colix);
+    setColix(colix);
+    int argb = argbCurrent;
     for (int i = count * 3; i > 0; ) {
       int z = coordinates[--i];
       int y = coordinates[--i];
@@ -1642,7 +1591,11 @@ final public class Graphics3D {
   }
 
   public int getArgb(short colix) {
-    return Colix.getArgb(colix >= 0 ? colix : changableColixMap[-colix]);
+    return Colix.getRgb(colix >= 0 ? colix : changableColixMap[-colix]);
+  }
+
+  public boolean isTranslucent(short colix) {
+    return (colix & Colix.translucentMask) != 0;
   }
 
   public int[] getShades(short colix) {

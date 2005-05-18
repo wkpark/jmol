@@ -260,26 +260,28 @@ class Hermite3D {
        Point3i b2 = null;
        int top = 1;
 
+       g3d.setColix(colix);
        for (;top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++) {
          t1 = (Point3i) points.elementAt(top - 1);
          b1 = (Point3i) points.elementAt(numTopStrandPoints + (top - 1));
          t2 = (Point3i) points.elementAt(top);
          b2 = (Point3i) points.elementAt(numTopStrandPoints + top);
 
-         g3d.fillTriangle(colix, t1, b1, t2);
-         g3d.fillTriangle(colix, b2, t2, b1);
+         g3d.fillTriangle(t1, b1, t2);
+         g3d.fillTriangle(b2, t2, b1);
        }
        if((numTopStrandPoints*2) != size){//BUG(DC09_MAY_2004): not sure why but
          //sometimes misses triangle at very start of segment
          //temp fix - will inestigate furture
-         g3d.fillTriangle(colix, p1, p5, t2);
-         g3d.fillTriangle(colix, b2, t2, p5);
+         g3d.fillTriangle(p1, p5, t2);
+         g3d.fillTriangle(b2, t2, p5);
        }
      }
      else {//MESH
        for (int top = 0;
             top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++) {
-       g3d.drawLine(colix, (Point3i) points.elementAt(top), (Point3i) points.elementAt(top + numTopStrandPoints));
+       g3d.drawLine((Point3i) points.elementAt(top),
+                    (Point3i) points.elementAt(top + numTopStrandPoints));
      }}
 
   }

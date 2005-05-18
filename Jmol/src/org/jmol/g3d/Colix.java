@@ -42,27 +42,53 @@ import java.awt.Color;
  *
  * @author Miguel, miguel@jmol.org
  */
-class Colix {
+final class Colix {
 
 
-  private static short colixMax = 1;
+  private static int colixMax = 1;
   private static int[] argbs = new int[128];
   private static Color[] colors = new Color[128];
   private static int[][] ashades = new int[128][];
+  final static int translucentMask = 0x4000;
+  final static int unmaskTranslucent = 0x3FFF;
 
-  static short getColix(int argb) {
+  final static short getColix(int argb) {
     if (argb == 0)
       return 0;
-    argb |= 0xFF000000;
+    int translucent = 0;
+    if ((argb & 0xFF000000) != 0xFF000000) {
+      argb |= 0xFF000000;
+      translucent = translucentMask;
+    }
     for (int i = colixMax; --i >= 0; )
       if (argb == argbs[i])
-        return (short)i;
-    return allocateColix(argb);
+        return (short)(i | translucentMask);
+    return (short)(allocateColix(argb, null) | translucentMask);
   }
 
-  synchronized static short allocateColix(int argb) {
+  final static short getColix(Color color) {
+    if (color == null)
+      return 0;
+    int argb = color.getRGB();
+    if (argb == 0)
+      return 0;
+    int translucent = 0;
+    if ((argb & 0xFF000000) != 0xFF000000) {
+      argb |= 0xFF000000;
+      translucent = translucentMask;
+    }
+    for (int i = colixMax; --i >= 0; )
+      if (argb == argbs[i])
+        return (short)(i | translucentMask);
+    return (short)(allocateColix(argb, translucent == 0 ? color : null) |
+                   translucent);
+  }
+
+  private synchronized static int allocateColix(int argb, Color opaqueColor) {
     // double-check to make sure that someone else did not allocate
     // something of the same color while we were waiting for the lock
+    if ((argb & 0xFF000000) != 0xFF000000)
+      throw new IndexOutOfBoundsException();
     for (int i = colixMax; --i >= 0; )
       if (argb == argbs[i])
         return (short)i;
@@ -81,40 +107,33 @@ class Colix {
       ashades = t2;
     }
     argbs[colixMax] = argb;
+    colors[colixMax] = (opaqueColor != null) ? opaqueColor : new Color(argb);
     return colixMax++;
   }
 
-  static short getColix(Color color) {
-    if (color == null)
-      return 0;
-    int argb = color.getRGB();
-    short colix = getColix(argb);
-    if (colors[colix] == null && (argb & 0xFF000000) == 0xFF000000)
-      colors[colix] = color;
-    return colix;
-  }
-
-  static Color getColor(short colix) {
+  final static Color getColor(short colix) {
     if (colix == 0)
       return null;
-    Color color = colors[colix];
-    if (color == null)
-      color = colors[colix] = new Color(argbs[colix]);
-    return colors[colix];
+    return colors[colix & unmaskTranslucent];
   }
 
-  static int getArgb(short colix) {
-    return argbs[colix];
+  final static int getRgb(short colix) {
+    return argbs[colix & unmaskTranslucent];
   }
 
-  static int[] getShades(short colix) {
+  final static boolean isTranslucent(short colix) {
+    return (colix & translucentMask) != 0;
+  }
+
+  final static int[] getShades(short colix) {
+    colix &= unmaskTranslucent;
     int[] shades = ashades[colix];
     if (shades == null)
       shades = ashades[colix] = Shade3D.getShades(argbs[colix]);
     return shades;
   }
 
-  static void flushShades() {
+  final static void flushShades() {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
   }

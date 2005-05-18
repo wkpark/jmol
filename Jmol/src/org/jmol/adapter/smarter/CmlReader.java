@@ -40,16 +40,14 @@ class CmlReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
     throws Exception {
-    atomSetCollection = new AtomSetCollection("cml");
+      return readAtomSetCollectionXml(reader, (new CmlHandler()),"cml");
+  }
 
-    XMLReader xmlr = null;
-    // JAXP is preferred (comes with Sun JVM 1.4.0 and higher)
-    if (xmlr == null &&
-        System.getProperty("java.version").compareTo("1.4") >= 0)
-      xmlr = allocateXmlReader14();
-    // Aelfred is the first alternative.
-    if (xmlr == null)
-      xmlr = allocateXmlReaderAelfred2();
+    AtomSetCollection readAtomSetCollectionXml(BufferedReader reader, Object handler, String name)
+    throws Exception {
+    atomSetCollection = new AtomSetCollection(name);
+    
+    XMLReader xmlr = getXmlReader();
     if (xmlr == null) {
       System.out.println("No XML reader found");
       atomSetCollection.errorMessage = "No XML reader found";
@@ -58,15 +56,12 @@ class CmlReader extends AtomSetCollectionReader {
     //    System.out.println("opening InputSource");
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");
-    //    System.out.println("creating CmlHandler");
-    CmlHandler cmlh = new CmlHandler();
-    
     //    System.out.println("setting features");
     xmlr.setFeature("http://xml.org/sax/features/validation", false);
     xmlr.setFeature("http://xml.org/sax/features/namespaces", true);
-    xmlr.setEntityResolver(cmlh);
-    xmlr.setContentHandler(cmlh);
-    xmlr.setErrorHandler(cmlh);
+    xmlr.setEntityResolver((CmlHandler)handler);
+    xmlr.setContentHandler((CmlHandler)handler);
+    xmlr.setErrorHandler((CmlHandler)handler);
     
     xmlr.parse(is);
     
@@ -74,6 +69,18 @@ class CmlReader extends AtomSetCollectionReader {
       atomSetCollection.errorMessage = "No atoms in file";
     }
     return atomSetCollection;
+  }
+  
+  XMLReader getXmlReader() {
+  XMLReader xmlr = null;
+  // JAXP is preferred (comes with Sun JVM 1.4.0 and higher)
+  if (xmlr == null &&
+    System.getProperty("java.version").compareTo("1.4") >= 0)
+    xmlr = allocateXmlReader14();
+  // Aelfred is the first alternative.
+  if (xmlr == null)
+    xmlr = allocateXmlReaderAelfred2();
+  return xmlr;
   }
 
   XMLReader allocateXmlReader14() {
@@ -157,7 +164,7 @@ class CmlReader extends AtomSetCollectionReader {
     }
     
     int parseBondToken(String str) {
-      System.out.println("reading bond: " + str);
+      // System.out.println("reading bond: " + str);
       if (str.length() == 1) {
         switch (str.charAt(0)) {
         case 'S':
@@ -235,7 +242,12 @@ class CmlReader extends AtomSetCollectionReader {
 
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts) {
-      /*
+      processStartElement(namespaceURI, localName, qName, atts);
+    }
+
+    public void processStartElement(String namespaceURI, String localName,
+                             String qName, Attributes atts) {
+	/*
         System.out.println("startElement(" + namespaceURI + "," + localName +
         "," + qName + "," + atts +  ")");
       /* */
@@ -346,7 +358,7 @@ class CmlReader extends AtomSetCollectionReader {
             breakOutTokens(attValue);
           } else if ("order".equals(attLocalName)) {
             order = parseBondToken(attValue);
-            System.out.println("Bond order read: " + order);
+            // System.out.println("Bond order read: " + order);
           }
         }
         /*

@@ -181,6 +181,9 @@ class Resolver {
   // contains formats
   ////////////////////////////////////////////////////////////////
   
+  final static String[] molproRecords =
+  {"http://www.molpro.net/schema/molpro"};
+
   final static String[] cmlRecords =
   { "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
     "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };
@@ -201,13 +204,14 @@ class Resolver {
   final static String[] spartanRecords =
   { "Spartan" };
 
+    // It's important that molpro gets looked for before cml otherwise molpro files will probably parse as cml
   final static String[][] containsRecords =
-  { cmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
+  { molproRecords, cmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
     spartanRecords
   };
 
   final static String[] containsFormats =
-  { "Cml", "Gaussian", "Mopac", "Qchem", "Gamess", "Spartan" };
+  { "Molpro", "Cml", "Gaussian", "Mopac", "Qchem", "Gamess", "Spartan" };
 }
 
 class LimitedLineReader {

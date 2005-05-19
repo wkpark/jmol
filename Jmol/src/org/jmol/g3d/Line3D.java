@@ -44,20 +44,22 @@ final class Line3D {
     this.g3d = g3d;
   }
 
-  void drawLine(int argbA, int argbB,
+  void drawLine(int argbA, boolean tScreenedA, int argbB, boolean tScreenedB,
                 int xA, int yA, int zA, int xB, int yB, int zB) {
     int dxBA = xB - xA, dyBA = yB - yA, dzBA = zB - zA;
     switch (visibilityCheck(xA, yA, zA, xB, yB, zB)) {
     case VISIBILITY_UNCLIPPED:
-      plotLineDeltaUnclipped(argbA, argbB, xA, yA, zA, dxBA, dyBA, dzBA);
+      plotLineDeltaUnclipped(argbA, tScreenedA, argbB, tScreenedB,
+                             xA, yA, zA, dxBA, dyBA, dzBA);
       break;
     case VISIBILITY_CLIPPED:
-      plotLineDeltaClipped(argbA, argbB,
+      plotLineDeltaClipped(argbA, tScreenedA, argbB, tScreenedB,
                            xA, yA, zA, dxBA, dyBA, dzBA);
     }
   }
 
-  void drawVLine(int argb, int x, int y, int z, int h, boolean checkSlab) {
+  void drawVLine(int argb, boolean tScreened,
+                 int x, int y, int z, int h, boolean checkSlab) {
     int width = g3d.width;
     int height = g3d.height;
   	if ((x < 0) || (x >= width)) {
@@ -82,16 +84,28 @@ final class Line3D {
     	h = height - 1 - y;
     }
     int offset = x + width * y;
-    for (int i = 0; i <= h; i++) {
+    if (! tScreened) {
+      for (int i = 0; i <= h; i++) {
     	if (z < zbuf[offset]) {
-    		zbuf[offset] = (short)z;
-    		pbuf[offset] = argb;
+          zbuf[offset] = (short)z;
+          pbuf[offset] = argb;
     	}
     	offset += width;
+      }
+      return;
+    }
+    boolean flipflop = ((x ^ y) & 1) != 0;
+    for (int i = 0; i <= h; i++) {
+      if ((flipflop = !flipflop) && z < zbuf[offset]) {
+        zbuf[offset] = (short)z;
+        pbuf[offset] = argb;
+      }
+      offset += width;
     }
   }
   
-  void drawHLine(int argb, int x, int y, int z, int w, boolean checkSlab) {
+  void drawHLine(int argb, boolean tScreened,
+                 int x, int y, int z, int w, boolean checkSlab) {
     int width = g3d.width;
     int height = g3d.height;
   	if ((y < 0) || (y >= height)) {
@@ -116,27 +130,40 @@ final class Line3D {
     	w = width - 1 - x;
     }
     int offset = x + width * y;
-    for (int i = 0; i <= w; i++) {
+    if (! tScreened) {
+      for (int i = 0; i <= w; i++) {
     	if (z < zbuf[offset]) {
-    		zbuf[offset] = (short)z;
-    		pbuf[offset] = argb;
+          zbuf[offset] = (short)z;
+          pbuf[offset] = argb;
     	}
     	offset++;
+      }
+      return;
+    }
+    boolean flipflop = ((x ^ y) & 1) != 0;
+    for (int i = 0; i <= w; i++) {
+      if ((flipflop = !flipflop) && z < zbuf[offset]) {
+        zbuf[offset] = (short)z;
+        pbuf[offset] = argb;
+      }
+      offset++;
     }
   }
   
-  void drawDashedLine(int argbA, int argbB, int run, int rise,
+  void drawDashedLine(int argbA, boolean tScreenedA,
+                      int argbB, boolean tScreenedB,
+                      int run, int rise,
                       int xA, int yA, int zA,
                       int xB, int yB, int zB) {
     int dxBA = xB - xA, dyBA = yB - yA, dzBA = zB - zA;
     switch (visibilityCheck(xA, yA, zA, xB, yB, zB)) {
     case VISIBILITY_UNCLIPPED:
-      plotDashedLineDeltaUnclipped(argbA, argbB, run, rise,
-                                   xA, yA, zA, dxBA, dyBA, dzBA);
+      plotDashedLineDeltaUnclipped(argbA, tScreenedA, argbB, tScreenedB,
+                                   run, rise, xA, yA, zA, dxBA, dyBA, dzBA);
       break;
     case VISIBILITY_CLIPPED:
-      plotDashedLineDeltaClipped(argbA, argbB, run, rise,
-                                 xA, yA, zA, dxBA, dyBA, dzBA);
+      plotDashedLineDeltaClipped(argbA, tScreenedA, argbB, tScreenedB,
+                                 run, rise, xA, yA, zA, dxBA, dyBA, dzBA);
     }
   }
 
@@ -240,11 +267,14 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     return code;
   }
 
-  void plotDashedLineDeltaUnclipped(int argb1, int argb2, int run, int rise, 
+  void plotDashedLineDeltaUnclipped(int argb1, boolean tScreened1,
+                                    int argb2, boolean tScreened2,
+                                    int run, int rise, 
                                     int x, int y, int z,
                                     int dx, int dy, int dz) {
     if (rise >= run) {
-      plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
+      plotLineDeltaUnclipped(argb1, tScreened1, argb2, tScreened2,
+                             x, y, z, dx, dy, dz);
       return;
     }
     int runIndex = 0;
@@ -330,11 +360,14 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     }
   }
 
-  void plotDashedLineDeltaClipped(int argb1, int argb2, int run, int rise,
+  void plotDashedLineDeltaClipped(int argb1, boolean tScreened1,
+                                  int argb2, boolean tScreened2,
+                                  int run, int rise,
                                   int x, int y, int z,
                                   int dx, int dy, int dz) {
     if (rise >= run) {
-      plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
+      plotLineDeltaClipped(argb1, tScreened1, argb2, tScreened2,
+                           x, y, z, dx, dy, dz);
       return;
     }
     int runIndex = 0;
@@ -569,7 +602,9 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
   }
   */
 
-  void plotLineDeltaUnclipped(int[] shades1, int[] shades2, int fp8Intensity,
+  void plotLineDeltaUnclipped(int[] shades1, boolean tScreened1,
+                              int[] shades2, boolean tScreened2,
+                              int fp8Intensity,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
@@ -587,17 +622,21 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb2 = shades2[intensity];
     int argb2Up = shades2[intensityUp];
     int argb2Dn = shades2[intensityDn];
-    if (z1 < zbuf[offset]) {
-      zbuf[offset] = (short)z1;
-      pbuf[offset] = argb1;
+    boolean tScreened = tScreened1;
+    boolean flipflop = ((x1 ^ y1) & 1) != 0;
+    if (!tScreened || (flipflop = !flipflop)) {
+      if (z1 < zbuf[offset]) {
+        zbuf[offset] = (short)z1;
+        pbuf[offset] = argb1;
+      }
     }
     if (dx == 0 && dy == 0)
       return;
 
-    // int xCurrent = x1;
-    // int yCurrent = y1;
+    //    int xCurrent = x1;
+    //    int yCurrent = y1;
     int xIncrement = 1;
-    // int yIncrement = 1;
+    //    int yIncrement = 1;
     int yOffsetIncrement = width;
 
     if (dx < 0) {
@@ -606,7 +645,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     }
     if (dy < 0) {
       dy = -dy;
-      // yIncrement = -1;
+      //      yIncrement = -1;
       yOffsetIncrement = -width;
     }
     int twoDx = dx + dx, twoDy = dy + dy;
@@ -614,29 +653,45 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     // the z dimension and the z increment are stored with a fractional
     // component in the bottom 10 bits.
     int zCurrentScaled = z1 << 10;
+
+    int argb = argb1;
+    int argbUp = argb1Up;
+    int argbDn = argb1Dn;
     if (dy <= dx) {
       int roundingFactor = dx - 1;
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
       for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
-        // xCurrent += xIncrement;
+        if (n == nMid) {
+          argb = argb2;
+          argbUp = argb2Up;
+          argbDn = argb2Dn;
+          tScreened = tScreened2;
+          if (tScreened && !tScreened1) {
+            int yT = offset / width;
+            int xT = offset % width;
+            flipflop = ((xT ^ yT) & 1) == 0;
+          }
+        }
+        //        xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
         twoDxAccumulatedYError += twoDy;
         if (twoDxAccumulatedYError > dx) {
-          // yCurrent += yIncrement;
+          //          yCurrent += yIncrement;
           offset += yOffsetIncrement;
           twoDxAccumulatedYError -= twoDx;
+          flipflop = !flipflop;
         }
-        int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          int rand8 = Shade3D.nextRandom8Bit();
-          pbuf[offset] =
-            (n > nMid
-             ? (rand8 < 85 ? argb1Dn : (rand8 > 170 ? argb1Up : argb1))
-             : (rand8 < 85 ? argb2Dn : (rand8 > 170 ? argb2Up : argb2)));
+        if (!tScreened || (flipflop = !flipflop)) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            int rand8 = Shade3D.nextRandom8Bit();
+            pbuf[offset] =
+              rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb);
+          }
         }
       }
     } else {
@@ -645,6 +700,17 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
       int twoDyAccumulatedXError = 0;
       for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        if (n == nMid) {
+          argb = argb2;
+          argbUp = argb2Up;
+          argbDn = argb2Dn;
+          tScreened = tScreened2;
+          if (tScreened && !tScreened1) {
+            int yT = offset / width;
+            int xT = offset % width;
+            flipflop = ((xT ^ yT) & 1) == 0;
+          }
+        }
         // yCurrent += yIncrement;
         offset += yOffsetIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -653,38 +719,45 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
           // xCurrent += xIncrement;
           offset += xIncrement;
           twoDyAccumulatedXError -= twoDy;
+          flipflop = !flipflop;
         }
-        int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          int rand8 = Shade3D.nextRandom8Bit();
-          pbuf[offset] =
-            (n > nMid
-             ? (rand8 < 85 ? argb1Dn : (rand8 > 170 ? argb1Up : argb1))
-             : (rand8 < 85 ? argb2Dn : (rand8 > 170 ? argb2Up : argb2)));
+        if (!tScreened || (flipflop = !flipflop)) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            int rand8 = Shade3D.nextRandom8Bit();
+            pbuf[offset] =
+              rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb);
+          }
         }
       }
     }
   }
 
 
-  void plotLineDeltaUnclipped(int argb1, int argb2,
+  void plotLineDeltaUnclipped(int argb1, boolean tScreened1,
+                              int argb2, boolean tScreened2,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int offset = y1 * width + x1;
-    if (z1 < zbuf[offset]) {
-      zbuf[offset] = (short)z1;
-      pbuf[offset] = argb1;
+    boolean flipflop = ((x1 ^ y1) & 1) != 0;
+    boolean tScreened = tScreened1;
+    int argb = argb1;
+    if (!tScreened || (flipflop = !flipflop)) {
+      if (z1 < zbuf[offset]) {
+        zbuf[offset] = (short)z1;
+        pbuf[offset] = argb1;
+      }
     }
     if (dx == 0 && dy == 0)
       return;
 
-    // int xCurrent = x1;
-    // int yCurrent = y1;
+    //    int xCurrent = x1;
+    //    int yCurrent = y1;
     int xIncrement = 1;
-    // int yIncrement = 1;
+    //    int yIncrement = 1;
     int yOffsetIncrement = width;
 
     if (dx < 0) {
@@ -693,7 +766,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     }
     if (dy < 0) {
       dy = -dy;
-      // yIncrement = -1;
+      //      yIncrement = -1;
       yOffsetIncrement = -width;
     }
     int twoDx = dx + dx, twoDy = dy + dy;
@@ -707,19 +780,26 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
       for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
-        // xCurrent += xIncrement;
+        if (n == nMid) {
+          tScreened = tScreened2;
+          argb = argb2;
+        }
+        //        xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
         twoDxAccumulatedYError += twoDy;
         if (twoDxAccumulatedYError > dx) {
-          // yCurrent += yIncrement;
+          //          yCurrent += yIncrement;
           offset += yOffsetIncrement;
           twoDxAccumulatedYError -= twoDx;
+          flipflop = !flipflop;
         }
-        int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = n > nMid ? argb1 : argb2;
+        if (!tScreened || (flipflop = !flipflop)) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = argb;
+          }
         }
       }
     } else {
@@ -728,6 +808,10 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
       int twoDyAccumulatedXError = 0;
       for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        if (n == nMid) {
+          tScreened = tScreened2;
+          argb = argb2;
+        }
         // yCurrent += yIncrement;
         offset += yOffsetIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -736,29 +820,35 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
           // xCurrent += xIncrement;
           offset += xIncrement;
           twoDyAccumulatedXError -= twoDy;
+          flipflop = !flipflop;
         }
-        int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = n > nMid ? argb1 : argb2;
+        if (!tScreened || (flipflop = !flipflop)) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = argb;
+          }
         }
       }
     }
   }
 
-  void plotLineDeltaClipped(int argb1, int argb2, 
+  void plotLineDeltaClipped(int argb1, boolean tScreened1,
+                            int argb2, boolean tScreened2,
                             int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int width = g3d.width, height = g3d.height;
     int slab = g3d.slab, depth = g3d.depth;
     int offset = y1 * width + x1;
-    if (x1 >= 0 && x1 < width &&
-        y1 >= 0 && y1 < height &&
-        z1 >= slab && z1 <= depth &&
-        z1 < zbuf[offset]) {
-      zbuf[offset] = (short)z1;
-      pbuf[offset] = argb1;
+    if (!tScreened1 || ((x1 ^ y1) & 1) == 0) {
+      if (x1 >= 0 && x1 < width &&
+          y1 >= 0 && y1 < height &&
+          z1 >= slab && z1 <= depth &&
+          z1 < zbuf[offset]) {
+        zbuf[offset] = (short)z1;
+        pbuf[offset] = argb1;
+      }
     }
     if (dx == 0 && dy == 0)
       return;
@@ -783,12 +873,18 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     // the z dimension and the z increment are stored with a fractional
     // component in the bottom 10 bits.
     int zCurrentScaled = z1 << 10;
+    boolean tScreened = tScreened1;
+    int argb = argb1;
     if (dy <= dx) {
       int roundingFactor = dx - 1;
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
       for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
+        if (n == nMid) {
+          tScreened = tScreened2;
+          argb = argb2;
+        }
         xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -800,12 +896,14 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         }
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
-          int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab &&
-              zCurrent <= depth &&
-              zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
-            pbuf[offset] = n > nMid ? argb1 : argb2;
+          if (!tScreened || ((xCurrent ^ yCurrent) & 1) == 0) {
+            int zCurrent = zCurrentScaled >> 10;
+            if (zCurrent >= slab &&
+                zCurrent <= depth &&
+                zCurrent < zbuf[offset]) {
+              zbuf[offset] = (short)zCurrent;
+              pbuf[offset] = argb;
+            }
           }
         }
       }
@@ -815,6 +913,10 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
       int twoDyAccumulatedXError = 0;
       for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        if (n == nMid) {
+          tScreened = tScreened2;
+          argb = argb2;
+        }
         yCurrent += yIncrement;
         offset += yOffsetIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -826,19 +928,23 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         }
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
-          int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab &&
-              zCurrent <= depth &&
-              zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
-            pbuf[offset] = n > nMid ? argb1 : argb2;
+          if (!tScreened || ((xCurrent ^ yCurrent) & 1) == 0) {
+            int zCurrent = zCurrentScaled >> 10;
+            if (zCurrent >= slab &&
+                zCurrent <= depth &&
+                zCurrent < zbuf[offset]) {
+              zbuf[offset] = (short)zCurrent;
+              pbuf[offset] = argb;
+            }
           }
         }
       }
     }
   }
 
-  void plotLineDeltaClipped(int[] shades1, int[] shades2, int fp8Intensity,
+  void plotLineDeltaClipped(int[] shades1, boolean tScreened1,
+                            int[] shades2, boolean tScreened2,
+                            int fp8Intensity,
                             int x1, int y1, int z1, int dx, int dy, int dz) {
     int intensity = fp8Intensity >> 8;
     int argb1 = shades1[intensity];
@@ -848,12 +954,14 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     int width = g3d.width, height = g3d.height;
     int slab = g3d.slab, depth = g3d.depth;
     int offset = y1 * width + x1;
-    if (x1 >= 0 && x1 < width &&
-        y1 >= 0 && y1 < height &&
-        z1 >= slab && z1 <= depth &&
-        z1 < zbuf[offset]) {
-      zbuf[offset] = (short)z1;
-      pbuf[offset] = argb1;
+    if (!tScreened1 || ((x1 ^ y1) & 1) == 0) {
+      if (x1 >= 0 && x1 < width &&
+          y1 >= 0 && y1 < height &&
+          z1 >= slab && z1 <= depth &&
+          z1 < zbuf[offset]) {
+        zbuf[offset] = (short)z1;
+        pbuf[offset] = argb1;
+      }
     }
     if (dx == 0 && dy == 0)
       return;
@@ -878,12 +986,18 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     // the z dimension and the z increment are stored with a fractional
     // component in the bottom 10 bits.
     int zCurrentScaled = z1 << 10;
+    boolean tScreened = tScreened1;
+    int argb = argb1;
     if (dy <= dx) {
       int roundingFactor = dx - 1;
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
       for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
+        if (n == nMid) {
+          tScreened = tScreened2;
+          argb = argb2;
+        }
         xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -895,12 +1009,14 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         }
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
-          int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab &&
-              zCurrent <= depth &&
-              zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
-            pbuf[offset] = n > nMid ? argb1 : argb2;
+          if (!tScreened || ((xCurrent ^ yCurrent) & 1) == 0) {
+            int zCurrent = zCurrentScaled >> 10;
+            if (zCurrent >= slab &&
+                zCurrent <= depth &&
+                zCurrent < zbuf[offset]) {
+              zbuf[offset] = (short)zCurrent;
+              pbuf[offset] = argb;
+            }
           }
         }
       }
@@ -910,6 +1026,10 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
       int twoDyAccumulatedXError = 0;
       for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        if (n == nMid) {
+          argb = argb2;
+          tScreened = tScreened2;
+        }
         yCurrent += yIncrement;
         offset += yOffsetIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -921,12 +1041,14 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         }
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
-          int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent >= slab &&
-              zCurrent <= depth &&
-              zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
-            pbuf[offset] = n > nMid ? argb1 : argb2;
+          if (!tScreened || ((xCurrent ^ yCurrent) & 1) == 0) {
+            int zCurrent = zCurrentScaled >> 10;
+            if (zCurrent >= slab &&
+                zCurrent <= depth &&
+                zCurrent < zbuf[offset]) {
+              zbuf[offset] = (short)zCurrent;
+              pbuf[offset] = argb;
+            }
           }
         }
       }

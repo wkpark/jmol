@@ -45,7 +45,9 @@ class Cylinder3D {
 
   private short colixA, colixB;
   private int[] shadesA;
+  private boolean isScreenedA;
   private int[] shadesB;
+  private boolean isScreenedB;
   private int xA, yA, zA;
   private int dxB, dyB, dzB;
   private boolean tEvenDiameter;
@@ -68,14 +70,16 @@ class Cylinder3D {
                      int dxB, int dyB, int dzB) {
     this.diameter = diameter;
     if (diameter <= 1) {
-      g3d.plotLineDelta(g3d.getColixArgb(colixA), g3d.getColixArgb(colixB),
-                        xA, yA, zA, dxB, dyB, dzB);
+      g3d.plotLineDelta(colixA, colixB, xA, yA, zA, dxB, dyB, dzB);
       return;
     }
     this.xA = xA; this.yA = yA; this.zA = zA;
     this.dxB = dxB; this.dyB = dyB; this.dzB = dzB;
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);
+    this.isScreenedA = (colixA & Colix.translucentMask) != 0;
+    this.isScreenedB = (colixB & Colix.translucentMask) != 0;
+
     this.endcaps = endcaps;
     calcArgbEndcap(true);
 
@@ -174,11 +178,11 @@ class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
       g3d.plotPixelClipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);
     }
-    g3d.plotLineDelta(shadesA, shadesB, fp8Up, 
+    g3d.plotLineDelta(shadesA, isScreenedA, shadesB, isScreenedB, fp8Up, 
                       xA + x, yA + y, zA - z,
                       dxB, dyB, dzB);
     if (endcaps == Graphics3D.ENDCAPS_OPEN) {
-      g3d.plotLineDelta(shadesA[0], shadesB[0],
+      g3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB,
                         xA - x, yA - y, zA + z,
                         dxB, dyB, dzB);
     }
@@ -370,11 +374,11 @@ class Cylinder3D {
                        " iUp=" + iUp);
     */
     int fp8Up = fp8IntensityUp[i];
-    g3d.plotLineDelta(shadesA, shadesA, fp8Up,
+    g3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fp8Up,
                       xUp, yUp, zUp, xTip - xUp, yTip - yUp, zTip - zUp);
     if (! (endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
       int argb = shadesA[0];
-      g3d.plotLineDelta(argb, argb,
+      g3d.plotLineDelta(argb, isScreenedA, argb, isScreenedA,
                         xDn, yDn, zDn, xTip - xDn, yTip - yDn, zTip - zDn);
     }
   }

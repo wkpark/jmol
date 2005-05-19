@@ -513,11 +513,12 @@ final public class Graphics3D {
                        int width, int height) {
     setColix(colix);
     int xRight = x + width - 1;
-    line3d.drawHLine(argbCurrent, x, y, z, width -1, true);
+    line3d.drawHLine(argbCurrent, isTranslucent, x, y, z, width -1, true);
     int yBottom = y + height - 1;
-    line3d.drawVLine(argbCurrent, x, y, z, height - 1, true);
-    line3d.drawVLine(argbCurrent, xRight, y, z, height - 1, true);
-    line3d.drawHLine(argbCurrent, x, yBottom, z, width, true);
+    line3d.drawVLine(argbCurrent, isTranslucent, x, y, z, height - 1, true);
+    line3d.drawVLine(argbCurrent, isTranslucent,
+                     xRight, y, z, height - 1, true);
+    line3d.drawHLine(argbCurrent, isTranslucent, x, yBottom, z, width, true);
   }
 
   /**
@@ -536,11 +537,12 @@ final public class Graphics3D {
                        int width, int height) {
     setColix(colix);
     int xRight = x + width - 1;
-    line3d.drawHLine(argbCurrent, x, y, z, width -1, false);
+    line3d.drawHLine(argbCurrent, isTranslucent, x, y, z, width -1, false);
     int yBottom = y + height - 1;
-    line3d.drawVLine(argbCurrent, x, y, z, height - 1, false);
-    line3d.drawVLine(argbCurrent, xRight, y, z, height - 1, false);
-    line3d.drawHLine(argbCurrent, x, yBottom, z, width, false);
+    line3d.drawVLine(argbCurrent, isTranslucent, x, y, z, height - 1, false);
+    line3d.drawVLine(argbCurrent, isTranslucent,
+                     xRight, y, z, height - 1, false);
+    line3d.drawHLine(argbCurrent, isTranslucent, x, yBottom, z, width, false);
   }
 
   /**
@@ -716,32 +718,28 @@ final public class Graphics3D {
   public void drawDashedLine(short colix, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb = getColixArgb(colix);
-    line3d.drawDashedLine(argb, argb, run, rise, x1, y1, z1, x2, y2, z2);
+    line3d.drawDashedLine(argb, isTranslucent, argb, isTranslucent,
+                          run, rise, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawDottedLine(short colix,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb = getColixArgb(colix);
-    line3d.drawDashedLine(argb, argb, 2, 1, x1, y1, z1, x2, y2, z2);
+    line3d.drawDashedLine(argb, isTranslucent, argb, isTranslucent,
+                          2, 1, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawDashedLine(short colix1, short colix2, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
         
-    line3d.drawDashedLine(getColixArgb(colix1), getColixArgb(colix2),
+    line3d.drawDashedLine(getColixArgb(colix1), isColixTranslucent(colix1),
+                          getColixArgb(colix2), isColixTranslucent(colix2),
                           run, rise, x1, y1, z1, x2, y2, z2);
   }
   
 
   public void drawLine(Point3i pointA, Point3i pointB) {
-    line3d.drawLine(argbCurrent, argbCurrent,
-                    pointA.x, pointA.y, pointA.z,
-                    pointB.x, pointB.y, pointB.z);
-  }
-
-  public void drawLine(short colix, Point3i pointA, Point3i pointB) {
-    int argb = getColixArgb(colix);
-    line3d.drawLine(argb, argb,
+    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
                     pointA.x, pointA.y, pointA.z,
                     pointB.x, pointB.y, pointB.z);
   }
@@ -753,30 +751,35 @@ final public class Graphics3D {
   public void drawDashedLine(short colix, int run, int rise,
                              Point3i pointA, Point3i pointB) {
     int argb = getColixArgb(colix);
-    line3d.drawDashedLine(argb, argb, run, rise,
+    line3d.drawDashedLine(argb, isTranslucent, argb, isTranslucent,
+                          run, rise,
                           pointA.x, pointA.y, pointA.z,
                           pointB.x, pointB.y, pointB.z);
   }
 
   public void drawDashedLine(int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawDashedLine(argbCurrent, argbCurrent, run, rise,
-                          x1, y1, z1, x2, y2, z2);
+    line3d.drawDashedLine(argbCurrent, isTranslucent,
+                          argbCurrent, isTranslucent,
+                          run, rise, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(argbCurrent, argbCurrent, x1, y1, z1, x2, y2, z2);
+    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
+                    x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb = getColixArgb(colix);
-    line3d.drawLine(argb, argb, x1, y1, z1, x2, y2, z2);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(short colix1, short colix2,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(getColixArgb(colix1), getColixArgb(colix2),
+    line3d.drawLine(getColixArgb(colix1), isColixTranslucent(colix1),
+                    getColixArgb(colix2), isColixTranslucent(colix2),
                     x1, y1, z1, x2, y2, z2);
   }
   
@@ -989,9 +992,12 @@ final public class Graphics3D {
                                int yB, int zB, int xC, int yC, int zC) {
     setColix(colix);
     int argb = argbCurrent;
-    line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
-    line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
-    line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xA, yA, zA, xB, yB, zB);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xA, yA, zA, xC, yC, zC);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xB, yB, zB, xC, yC, zC);
     int[] t;
     t = triangle3d.ax;
     t[0] = xA; t[1] = xB; t[2] = xC;
@@ -1058,9 +1064,12 @@ final public class Graphics3D {
                        xC + "," + yC + "," + zC);
     */
     int argb = getColixArgb(colix);
-    line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
-    line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
-    line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xA, yA, zA, xB, yB, zB);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xA, yA, zA, xC, yC, zC);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xB, yB, zB, xC, yC, zC);
   }
 
   public void drawTriangle(short colix, long xyzdA, long xyzdB, long xyzdC) {
@@ -1495,26 +1504,55 @@ final public class Graphics3D {
     }
   }
   
-  void plotLineDelta(int[] shades1, int[] shades2, int fp8Intensity,
+  void plotLineDelta(int[] shades1, boolean isTranslucent1,
+                     int[] shades2, boolean isTranslucent2,
+                     int fp8Intensity,
                      int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
         y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
         z < slab || z + dz < slab || z > depth || z + dz > depth)
-      line3d.plotLineDeltaClipped(shades1, shades2, fp8Intensity,
+      line3d.plotLineDeltaClipped(shades1, isTranslucent1,
+                                  shades2, isTranslucent2,
+                                  fp8Intensity,
                                   x, y, z, dx, dy, dz);
     else 
-      line3d.plotLineDeltaUnclipped(shades1, shades2, fp8Intensity,
+      line3d.plotLineDeltaUnclipped(shades1, isTranslucent1,
+                                    shades2, isTranslucent2,
+                                    fp8Intensity,
                                     x, y, z, dx, dy, dz);
   }
 
-  void plotLineDelta(int argb1, int argb2,
+  void plotLineDelta(short colixA, short colixB,
                      int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
         y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
         z < slab || z + dz < slab || z > depth || z + dz > depth)
-      line3d.plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
+      line3d.plotLineDeltaClipped(getColixArgb(colixA),
+                                  isColixTranslucent(colixA),
+                                  getColixArgb(colixB),
+                                  isColixTranslucent(colixB),
+                                  x, y, z, dx, dy, dz);
     else 
-      line3d.plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
+      line3d.plotLineDeltaUnclipped(getColixArgb(colixA),
+                                    isColixTranslucent(colixA),
+                                    getColixArgb(colixB),
+                                    isColixTranslucent(colixB),
+                                    x, y, z, dx, dy, dz);
+  }
+
+  void plotLineDelta(int argb1, boolean isTranslucent1,
+                     int argb2, boolean isTranslucent2,
+                     int x, int y, int z, int dx, int dy, int dz) {
+    if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
+        y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
+        z < slab || z + dz < slab || z > depth || z + dz > depth)
+      line3d.plotLineDeltaClipped(argb1, isTranslucent1,
+                                  argb2, isTranslucent2,
+                                  x, y, z, dx, dy, dz);
+    else 
+      line3d.plotLineDeltaUnclipped(argb1, isTranslucent1,
+                                    argb2, isTranslucent2,
+                                    x, y, z, dx, dy, dz);
   }
 
   public void plotPoints(short colix, int count, int[] coordinates) {

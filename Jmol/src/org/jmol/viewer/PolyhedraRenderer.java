@@ -62,7 +62,7 @@ class PolyhedraRenderer extends ShapeRenderer {
                vertices[faces[j++]],
                vertices[faces[j++]]);
     for (int i = 0, j = 0; j < faces.length; )
-      fillFace(colix, p.alpha, p.normixes[i++],
+      fillFace(colix, p.normixes[i++],
                vertices[faces[j++]],
                vertices[faces[j++]],
                vertices[faces[j++]]);
@@ -72,13 +72,14 @@ class PolyhedraRenderer extends ShapeRenderer {
                 Atom atomA, Atom atomB, Atom atomC) {
     if (drawEdges == Polyhedra.EDGES_ALL ||
         (drawEdges == Polyhedra.EDGES_FRONT &&
-         g3d.isDirectedTowardsCamera(normix)))
-      g3d.drawTriangle(colix, atomA.xyzd, atomB.xyzd, atomC.xyzd);
+         g3d.isDirectedTowardsCamera(normix))) {
+      g3d.drawTriangle(g3d.getOpaqueColix(colix),
+                       atomA.xyzd, atomB.xyzd, atomC.xyzd);
+    }
   }
 
-  void fillFace(short colix, byte alpha, short normix,
+  void fillFace(short colix, short normix,
                   Atom atomA, Atom atomB, Atom atomC) {
-    g3d.fillTriangle(colix, alpha, normix,
-                     atomA.xyzd, atomB.xyzd, atomC.xyzd);
+    g3d.fillTriangle(colix, normix, atomA.xyzd, atomB.xyzd, atomC.xyzd);
   }
 }

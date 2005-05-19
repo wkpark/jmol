@@ -116,7 +116,7 @@ class SurfaceRenderer extends ShapeRenderer {
         short vA = geodesicFaceVertexes[j - 2];
         short vB = geodesicFaceVertexes[j - 1];
         short vC = geodesicFaceVertexes[j];
-        g3d.fillTriangle(colix, false,
+        g3d.fillTriangle(colix,
                          screens[vA], vA,
                          screens[vB], vB,
                          screens[vC], vC);

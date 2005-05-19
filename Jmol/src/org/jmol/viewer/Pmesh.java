@@ -79,7 +79,6 @@ class Pmesh extends SelectionIndependentShape {
       readPmesh(br);
       currentMesh.initialize();
       currentMesh.visible = true;
-      currentMesh.translucent = false;
       return;
     }
     if ("on" == propertyName) {
@@ -97,24 +96,6 @@ class Pmesh extends SelectionIndependentShape {
       else {
         for (int i = meshCount; --i >= 0; )
           meshes[i].visible = false;
-      }
-      return;
-    }
-    if ("translucent" == propertyName) {
-      if (currentMesh != null)
-        currentMesh.translucent = true;
-      else {
-        for (int i = meshCount; --i >= 0; )
-          meshes[i].translucent = true;
-      }
-      return;
-    }
-    if ("opaque" == propertyName) {
-      if (currentMesh != null)
-        currentMesh.translucent = false;
-      else {
-        for (int i = meshCount; --i >= 0; )
-          meshes[i].translucent = false;
       }
       return;
     }
@@ -330,7 +311,6 @@ class Pmesh extends SelectionIndependentShape {
 
   class Mesh {
     String meshID;
-    boolean translucent;
     boolean visible;
     short meshColix;
     

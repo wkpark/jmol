@@ -49,7 +49,7 @@ class PruebaRenderer extends ShapeRenderer {
       short vA = geodesicFaceVertexes[j++];
       short vB = geodesicFaceVertexes[j++];
       short vC = geodesicFaceVertexes[j++];
-      g3d.fillTriangle(colix, false,
+      g3d.fillTriangle(colix,
                        screens[vA], vA,
                        screens[vB], vB,
                        screens[vC], vC);

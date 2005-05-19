@@ -807,7 +807,7 @@ final public class Graphics3D {
     fillTriangle(screenA, screenC, screenD);
   }
 
-  public void fillTriangle(short colix, boolean translucent,
+  public void fillTriangle(short colix,
                            Point3i screenA, short normixA,
                            Point3i screenB, short normixB,
                            Point3i screenC, short normixC) {
@@ -863,9 +863,9 @@ final public class Graphics3D {
     }
   }
 
-  public void fillTriangle(short colix, boolean translucent,
+  public void fillTriangle(short colix,
                            Point3i screenA, Point3i screenB, Point3i screenC) {
-    calcSurfaceShade(colix, translucent, screenA, screenB, screenC);
+    calcSurfaceShade(colix, screenA, screenB, screenC);
     int[] t;
     t = triangle3d.ax;
     t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
@@ -877,14 +877,8 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false);
   }
 
-  public final static byte ALPHA_OFF         = 0;
-  public final static byte ALPHA_TRANSLUCENT = (byte)0x80;
-  public final static byte ALPHA_OPAQUE      = (byte)0xFF;
-
-  public void fillTriangle(short colix, byte alpha,
-                           long xyzdA, long xyzdB, long xyzdC) {
-    boolean translucent = (alpha != ALPHA_OPAQUE);
-    calcSurfaceShade(colix, translucent, xyzdA, xyzdB, xyzdC);
+  public void fillTriangle(short colix, long xyzdA, long xyzdB, long xyzdC) {
+    calcSurfaceShade(colix, xyzdA, xyzdB, xyzdC);
     int[] t;
     t = triangle3d.ax;
     t[0] = Xyzd.getX(xyzdA); t[1] = Xyzd.getX(xyzdB); t[2] = Xyzd.getX(xyzdC);
@@ -896,9 +890,8 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false);
   }
 
-  public void fillTriangle(short colix, byte alpha, short normix,
+  public void fillTriangle(short colix, short normix,
                            long xyzdA, long xyzdB, long xyzdC) {
-    boolean translucent = (alpha != ALPHA_OPAQUE);
     setColorNoisy(colix, normix3d.getIntensity(normix));
     int[] t;
     t = triangle3d.ax;
@@ -917,23 +910,23 @@ final public class Graphics3D {
     fillTriangle(screenA, screenB, screenC);
   }
 
-  public void fillQuadrilateral(short colix, boolean translucent,
+  public void fillQuadrilateral(short colix,
                                 Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {
-    fillTriangle(colix, translucent, screenA, screenB, screenC);
-    fillTriangle(colix, translucent, screenA, screenC, screenD);
+    fillTriangle(colix, screenA, screenB, screenC);
+    fillTriangle(colix, screenA, screenC, screenD);
   }
 
-  public void fillQuadrilateral(short colix, boolean translucent,
+  public void fillQuadrilateral(short colix,
                                 Point3i screenA, short normixA,
                                 Point3i screenB, short normixB,
                                 Point3i screenC, short normixC,
                                 Point3i screenD, short normixD) {
-    fillTriangle(colix, translucent,
+    fillTriangle(colix,
                  screenA, normixA,
                  screenB, normixB,
                  screenC, normixC);
-    fillTriangle(colix, translucent,
+    fillTriangle(colix,
                  screenA, normixA,
                  screenC, normixC,
                  screenD, normixD);
@@ -976,16 +969,15 @@ final public class Graphics3D {
   final static Point3i tmpScreenB = new Point3i();
   final static Point3i tmpScreenC = new Point3i();
 
-  public void calcSurfaceShade(short colix, boolean tScreened,
+  public void calcSurfaceShade(short colix,
                                long xyzdA, long xyzdB, long xyzdC) {
     Xyzd.setPoint3i(xyzdA, tmpScreenA);
     Xyzd.setPoint3i(xyzdB, tmpScreenB);
     Xyzd.setPoint3i(xyzdC, tmpScreenC);
-    calcSurfaceShade(colix, tScreened, tmpScreenA, tmpScreenB, tmpScreenC);
+    calcSurfaceShade(colix, tmpScreenA, tmpScreenB, tmpScreenC);
   }
 
-  public void calcSurfaceShade(short colix, boolean tScreened,
-                               Point3i screenA,
+  public void calcSurfaceShade(short colix, Point3i screenA,
                                Point3i screenB, Point3i screenC) {
     diff(vectorAB, screenB, screenA);
     diff(vectorAC, screenC, screenA);
@@ -994,7 +986,7 @@ final public class Graphics3D {
       vectorNormal.z >= 0
       ? calcIntensity(-vectorNormal.x, -vectorNormal.y, vectorNormal.z)
       : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
-    if (tScreened && intensity > intensitySpecularSurfaceLimit)
+    if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
     setColorNoisy(colix, intensity);
   }
@@ -1069,20 +1061,19 @@ final public class Graphics3D {
   }
   */
 
-  public void drawTriangle(short colix, int xA, int yA, int zA,
-                           int xB, int yB, int zB, int xC, int yC, int zC) {
+  public void drawTriangle(short colix,
+                           int xA, int yA, int zA,
+                           int xB, int yB, int zB,
+                           int xC, int yC, int zC) {
     /*
     System.out.println("drawTriangle:" + xA + "," + yA + "," + zA + "->" +
                        xB + "," + yB + "," + zB + "->" +
                        xC + "," + yC + "," + zC);
     */
-    int argb = getColixArgb(colix);
-    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
-                    xA, yA, zA, xB, yB, zB);
-    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
-                    xA, yA, zA, xC, yC, zC);
-    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
-                    xB, yB, zB, xC, yC, zC);
+    setColix(colix);
+    drawLine(xA, yA, zA, xB, yB, zB);
+    drawLine(xA, yA, zA, xC, yC, zC);
+    drawLine(xB, yB, zB, xC, yC, zC);
   }
 
   public void drawTriangle(short colix, long xyzdA, long xyzdB, long xyzdC) {
@@ -1410,9 +1401,9 @@ final public class Graphics3D {
                                 ? argbNoisyDn
                                 : (bits == 1 ? argbNoisyUp : argbCurrent));
           }
+          ++offsetPbuf;
+          zScaled += zIncrementScaled;
         }
-        ++offsetPbuf;
-        zScaled += zIncrementScaled;
       } else {
         boolean flipflop = ((x ^ y) & 1) != 0;
         while (--count >= 0) {
@@ -1686,18 +1677,23 @@ final public class Graphics3D {
                                      Colix.unmaskChangableAndTranslucent]);
   }
 
-  public static boolean isColixTranslucent(short colix) {
+  public final static boolean isColixTranslucent(short colix) {
     return (colix & Colix.translucentMask) != 0;
   }
 
-  public short setColixTranslucent(short colix, boolean translucent) {
-    if (colix < 0 && translucent) {
-      System.out.println("changable translucent colix not yet implemented");
-      throw new NullPointerException();
-    }
-    if (translucent)
-      return (short)(colix | Colix.translucentMask);
-    return (short)(colix & Colix.unmaskTranslucent);
+  public final static short getTranslucentColix(short colix,
+                                                boolean translucent) {
+    return (short)(translucent ?
+                   (colix | Colix.translucentMask) :
+                   (colix & ~Colix.translucentMask));
+  }
+
+  public final static short getTranslucentColix(short colix) {
+    return (short)(colix | Colix.translucentMask);
+  }
+
+  public final static short getOpaqueColix(short colix) {
+    return (short)(colix & ~Colix.translucentMask);
   }
 
   public int[] getShades(short colix) {
@@ -1707,19 +1703,19 @@ final public class Graphics3D {
                                         Colix.unmaskChangableAndTranslucent]);
   }
 
-  public short getColix(int argb) {
+  public final static short getColix(int argb) {
     return Colix.getColix(argb);
   }
 
-  public short getColix(Color color) {
+  public final static short getColix(Color color) {
     return Colix.getColix(color);
   }
 
-  public short getColix(String colorName) {
+  public final static short getColix(String colorName) {
     return getColix(getColorFromString(colorName));
   }
 
-  public short getColix(Object obj) {
+  public final static short getColix(Object obj) {
     if (obj == null)
       return 0;
     if (obj instanceof Color)

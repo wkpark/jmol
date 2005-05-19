@@ -54,13 +54,13 @@ class PmeshRenderer extends ShapeRenderer {
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
       if (vertexIndexes.length == 3) {
-        g3d.fillTriangle(colix, mesh.translucent,
+        g3d.fillTriangle(colix,
                          screens[iA], normixes[iA],
                          screens[iB], normixes[iB],
                          screens[iC], normixes[iC]);
       } else if (vertexIndexes.length == 4) {
         int iD = vertexIndexes[3];
-        g3d.fillQuadrilateral(colix, mesh.translucent,
+        g3d.fillQuadrilateral(colix,
                               screens[iA], normixes[iA],
                               screens[iB], normixes[iB],
                               screens[iC], normixes[iC],

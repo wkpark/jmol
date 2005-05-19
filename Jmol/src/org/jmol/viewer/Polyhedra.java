@@ -33,7 +33,6 @@ class Polyhedra extends SelectionIndependentShape {
 
   int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
-  byte defaultAlpha = OPAQUE;
   float radius;
   int drawEdges;
 
@@ -60,16 +59,6 @@ class Polyhedra extends SelectionIndependentShape {
     }
     if ("off" == propertyName) {
       setVisible(false, bs);
-      return;
-    }
-    if ("translucent" == propertyName) {
-      defaultAlpha = TRANSLUCENT;
-      setAlpha(TRANSLUCENT, bs);
-      return;
-    }
-    if ("opaque" == propertyName) {
-      defaultAlpha = OPAQUE;
-      setAlpha(OPAQUE, bs);
       return;
     }
     if ("noedges" == propertyName) {
@@ -128,16 +117,6 @@ class Polyhedra extends SelectionIndependentShape {
         continue;
       if (bs.get(p.centralAtom.atomIndex))
         p.visible = visible;
-    }
-  }
-
-  void setAlpha(byte alpha, BitSet bs) {
-    for (int i = polyhedronCount; --i >= 0; ) {
-      Polyhedron p = polyhedrons[i];
-      if (p == null)
-        continue;
-      if (bs.get(p.centralAtom.atomIndex))
-        p.alpha = alpha;
     }
   }
 
@@ -368,14 +347,10 @@ class Polyhedra extends SelectionIndependentShape {
     return atomFarthest;
   }
 
-  final static byte TRANSLUCENT = (byte)0x80;
-  final static byte OPAQUE      = (byte)0xFF;
-
   class Polyhedron {
     final Atom centralAtom;
     final Atom[] vertices;
     boolean visible;
-    byte alpha;
     final short[] normixes;
     short polyhedronColix;
 
@@ -384,7 +359,6 @@ class Polyhedra extends SelectionIndependentShape {
       this.centralAtom = centralAtom;
       this.vertices = new Atom[vertexCount];
       this.visible = true;
-      this.alpha = defaultAlpha;
       this.polyhedronColix = colix;
       this.normixes = new short[faceCount];
       for (int i = vertexCount; --i >= 0; )

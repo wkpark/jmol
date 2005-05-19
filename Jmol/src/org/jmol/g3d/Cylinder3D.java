@@ -320,7 +320,7 @@ class Cylinder3D {
       g3d.setColorNoisy(colixEndcap, intensityEndcap);
       g3d.plotPixelsClipped(count,
                             xT + xMin,  yT + y, zT - zXMin - 1,
-                            zT - zXMax - 1, false, null, null);
+                            zT - zXMax - 1, null, null);
     }
   }
 
@@ -338,14 +338,17 @@ class Cylinder3D {
     dyB = (this.yTip = yTip) - (this.yA = yA);
     dzB = (this.zTip = zTip) - (this.zA = zA);
     
-    shadesA = g3d.getShades(this.colixA = colix);
+    this.colixA = colix;
+    this.shadesA = g3d.getShades(colix);
+    this.isScreenedA = (colixA & Colix.translucentMask) != 0;
     int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
-    g3d.plotPixelClipped(shadesA[intensityTip], xTip, yTip, zTip);
+    g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, xTip, yTip, zTip);
 
     this.diameter = diameter;
     if (diameter <= 1) {
       if (diameter == 1)
-        g3d.plotLineDelta(colixA, colixA, xA, yA, zA, dxB, dyB, dzB);
+        g3d.plotLineDelta(colixA, isScreenedA, colixA, isScreenedA,
+                          xA, yA, zA, dxB, dyB, dzB);
       return;
     }
     this.endcaps = endcap;
@@ -365,8 +368,8 @@ class Cylinder3D {
     int xDn = xA - x, yDn = yA - y, zDn = zA + z;
 
     if (tEndcapOpen) {
-      g3d.plotPixelClipped(argbEndcap, xUp, yUp, zUp);
-      g3d.plotPixelClipped(argbEndcap, xDn, yDn, zDn);
+      g3d.plotPixelClipped(argbEndcap, isScreenedA, xUp, yUp, zUp);
+      g3d.plotPixelClipped(argbEndcap, isScreenedA, xDn, yDn, zDn);
     }
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +

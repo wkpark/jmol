@@ -75,7 +75,7 @@ class Triangle3D {
    *==============================================================*/
   
 
-  void fillTriangle(boolean translucent, boolean useGouraud) {
+  void fillTriangle(boolean useGouraud) {
     int cc0 = line3d.clipCode(ax[0], ay[0], az[0]);
     int cc1 = line3d.clipCode(ax[1], ay[1], az[1]);
     int cc2 = line3d.clipCode(ax[2], ay[2], az[2]);
@@ -156,7 +156,7 @@ class Triangle3D {
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
-    fillRaster(yMin, nLines, translucent, useGouraud, isClipped);
+    fillRaster(yMin, nLines, useGouraud, isClipped);
   }
 
   private final static int DEFAULT = 64;
@@ -274,8 +274,7 @@ class Triangle3D {
 
   static int bar;
 
-  void fillRaster(int y, int numLines, boolean tScreened, boolean useGouraud,
-                  boolean isClipped) {
+  void fillRaster(int y, int numLines, boolean useGouraud, boolean isClipped) {
     //    System.out.println("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     ++bar;
@@ -292,7 +291,6 @@ class Triangle3D {
         int pixelCount = axE[i] - xW + 1;
         if (pixelCount > 0)
           g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
-                                tScreened,
                                 useGouraud ? rgb16sW[i] : null,
                                 useGouraud ? rgb16sE[i] : null);
       }
@@ -306,7 +304,6 @@ class Triangle3D {
         // something must be going wrong with the scaled addition
         if (pixelCount > 0)
           g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
-                                  tScreened,
                                   useGouraud ? rgb16sW[i] : null,
                                   useGouraud ? rgb16sE[i] : null);
       }

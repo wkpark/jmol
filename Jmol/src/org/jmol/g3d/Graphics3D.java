@@ -406,11 +406,14 @@ final public class Graphics3D {
       return;
     int r = (diameter + 1) / 2;
     setColix(colixFill);
+    isTranslucent = true;
     if (x >= r && x + r < width && y >= r && y + r < height) {
-      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, true);
+      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+      isTranslucent = false;
       circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
     } else {
-      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter, true);
+      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+      isTranslucent = false;
       circle3d.plotCircleCenteredClipped(x, y, z, diameter);
     }
   }
@@ -431,9 +434,9 @@ final public class Graphics3D {
     int r = (diameter + 1) / 2;
     setColix(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < height) {
-      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, false);
+      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
     } else {
-      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter, false);
+      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
     }
   }
 
@@ -818,13 +821,13 @@ final public class Graphics3D {
 
     if (normixA == normixB && normixA == normixC) {
       setColorNoisy(colix, normix3d.getIntensity(normixA));
-      triangle3d.fillTriangle(translucent, false);
+      triangle3d.fillTriangle(false);
     } else {
-      int[] shades = getShades(colix);
-      triangle3d.setGouraud(shades[normix3d.getIntensity(normixA)],
-                            shades[normix3d.getIntensity(normixB)],
-                            shades[normix3d.getIntensity(normixC)]);
-      triangle3d.fillTriangle(translucent, true);
+      setColix(colix);
+      triangle3d.setGouraud(shadesCurrent[normix3d.getIntensity(normixA)],
+                            shadesCurrent[normix3d.getIntensity(normixB)],
+                            shadesCurrent[normix3d.getIntensity(normixC)]);
+      triangle3d.fillTriangle(true);
     }
   }
 
@@ -843,12 +846,20 @@ final public class Graphics3D {
     if (normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {
       setColorNoisy(colixA, normix3d.getIntensity(normixA));
-      triangle3d.fillTriangle(translucent, false);
+      triangle3d.fillTriangle(false);
     } else {
       triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
                             getShades(colixB)[normix3d.getIntensity(normixB)],
                             getShades(colixC)[normix3d.getIntensity(normixC)]);
-      triangle3d.fillTriangle(translucent, true);
+      int translucentCount = 0;
+      if (isColixTranslucent(colixA))
+        ++translucentCount;
+      if (isColixTranslucent(colixB))
+        ++translucentCount;
+      if (isColixTranslucent(colixC))
+        ++translucentCount;
+      isTranslucent = translucentCount >= 2;
+      triangle3d.fillTriangle(true);
     }
   }
 
@@ -863,7 +874,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
-    triangle3d.fillTriangle(translucent, false);
+    triangle3d.fillTriangle(false);
   }
 
   public final static byte ALPHA_OFF         = 0;
@@ -882,7 +893,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = Xyzd.getZ(xyzdA); t[1] = Xyzd.getZ(xyzdB); t[2] = Xyzd.getZ(xyzdC);
 
-    triangle3d.fillTriangle(translucent, false);
+    triangle3d.fillTriangle(false);
   }
 
   public void fillTriangle(short colix, byte alpha, short normix,
@@ -897,7 +908,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = Xyzd.getZ(xyzdA); t[1] = Xyzd.getZ(xyzdB); t[2] = Xyzd.getZ(xyzdC);
 
-    triangle3d.fillTriangle(translucent, false);
+    triangle3d.fillTriangle(false);
   }
 
   public void fillTriangle(short colix, Point3f screenA,
@@ -938,7 +949,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
-    triangle3d.fillTriangle(false, false);
+    triangle3d.fillTriangle(false);
   }
 
   public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
@@ -950,7 +961,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = (int)screenA.z; t[1] = (int)screenB.z; t[2] = (int)screenC.z;
 
-    triangle3d.fillTriangle(false, false);
+    triangle3d.fillTriangle(false);
   }
 
   int intensity = 0;
@@ -1006,7 +1017,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = zA; t[1] = zB; t[2] = zC;
 
-    triangle3d.fillTriangle(false, false);
+    triangle3d.fillTriangle(false);
   }
 
   public void fillTriangle(short colix, boolean translucent,
@@ -1026,9 +1037,10 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = zA; t[1] = zB; t[2] = zC;
 
-    triangle3d.fillTriangle(translucent, false);
+    triangle3d.fillTriangle(false);
   }
 
+  /*
   final Point3i warrenA = new Point3i();
   final Point3i warrenB = new Point3i();
   final Point3i warrenC = new Point3i();
@@ -1055,6 +1067,7 @@ final public class Graphics3D {
 
     triangle3d.fillTriangle(false, false);
   }
+  */
 
   public void drawTriangle(short colix, int xA, int yA, int zA,
                            int xB, int yB, int zB, int xC, int yC, int zC) {
@@ -1165,7 +1178,7 @@ final public class Graphics3D {
     if (y + heightFill > height)
       heightFill = height - y;
     while (--heightFill >= 0)
-      plotPixelsUnclipped(widthFill, x, y++, z, false);
+      plotPixelsUnclipped(widthFill, x, y++, z);
   }
 
   public void drawPixel(Point3i point) {
@@ -1217,6 +1230,18 @@ final public class Graphics3D {
     }
   }
 
+  void plotPixelClipped(int argb, boolean isTranslucent, int x, int y, int z) {
+    if (x < 0 || x >= width || y < 0 || y >= height || z < slab || z > depth)
+      return;
+    if (isTranslucent && ((x ^ y) & 1) != 0)
+      return;
+    int offset = y * width + x;
+    if (z < zbuf[offset]) {
+      zbuf[offset] = (short)z;
+      pbuf[offset] = argb;
+    }
+  }
+
   void plotPixelClipped(short colix, int x, int y, int z) {
     if (x < 0 || x >= width || y < 0 || y >= height || z < slab || z > depth)
       return;
@@ -1251,7 +1276,7 @@ final public class Graphics3D {
     }
   }
 
-  void plotPixelsClipped(int count, int x, int y, int z, boolean tScreened) {
+  void plotPixelsClipped(int count, int x, int y, int z) {
     if (y < 0 || y >= height || x >= width || z < slab || z > depth)
       return;
     if (x < 0) {
@@ -1265,7 +1290,7 @@ final public class Graphics3D {
     int offsetPbuf = y * width + x;
     int offsetMax = offsetPbuf + count;
     int step = 1;
-    if (tScreened) {
+    if (isTranslucent) {
       step = 2;
       if (((x ^ y) & 1) != 0)
         if (++offsetPbuf == offsetMax)
@@ -1282,7 +1307,6 @@ final public class Graphics3D {
 
   void plotPixelsClipped(int count, int x, int y,
                          int zAtLeft, int zPastRight,
-                         boolean tScreened,
                          Rgb16 rgb16Left, Rgb16 rgb16Right) {
     //    System.out.print("plotPixelsClipped z values:");
     /*
@@ -1316,7 +1340,7 @@ final public class Graphics3D {
     int offsetPbuf = y * width + x;
     if (rgb16Left == null) {
       while (--count >= 0) {
-        if (!tScreened || (flipflop = !flipflop)) {
+        if (! isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z >= slab && z <= depth && z < zbuf[offsetPbuf]) {
             zbuf[offsetPbuf] = (short)z;
@@ -1338,7 +1362,7 @@ final public class Graphics3D {
       int bScaled = rgb16Left.bScaled;
       int bIncrement = (rgb16Right.bScaled - bScaled) / count;
       while (--count >= 0) {
-        if (!tScreened || (flipflop = !flipflop)) {
+        if (! isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z >= slab && z <= depth && z < zbuf[offsetPbuf]) {
             zbuf[offsetPbuf] = (short)z;
@@ -1363,7 +1387,6 @@ final public class Graphics3D {
 
   void plotPixelsUnclipped(int count, int x, int y,
                            int zAtLeft, int zPastRight,
-                           boolean tScreened,
                            Rgb16 rgb16Left, Rgb16 rgb16Right) {
     if (count <= 0)
       return;
@@ -1374,11 +1397,10 @@ final public class Graphics3D {
     int roundFactor = count / 2;
     int zIncrementScaled =
       ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
-    boolean flipflop = ((x ^ y) & 1) != 0;
     int offsetPbuf = y * width + x;
     if (rgb16Left == null) {
-      while (--count >= 0) {
-        if (!tScreened || (flipflop = !flipflop)) {
+      if (! isTranslucent) {
+        while (--count >= 0) {
           int z = zScaled >> 10;
           if (z < zbuf[offsetPbuf]) {
             zbuf[offsetPbuf] = (short)z;
@@ -1391,6 +1413,23 @@ final public class Graphics3D {
         }
         ++offsetPbuf;
         zScaled += zIncrementScaled;
+      } else {
+        boolean flipflop = ((x ^ y) & 1) != 0;
+        while (--count >= 0) {
+          if ((flipflop = !flipflop)) {
+            int z = zScaled >> 10;
+            if (z < zbuf[offsetPbuf]) {
+              zbuf[offsetPbuf] = (short)z;
+              seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+              int bits = (seed >> 16) & 0x07;
+              pbuf[offsetPbuf] = (bits == 0
+                                  ? argbNoisyDn
+                                  : (bits == 1 ? argbNoisyUp : argbCurrent));
+            }
+          }
+          ++offsetPbuf;
+          zScaled += zIncrementScaled;
+        }
       }
     } else {
       if (ENABLE_GOURAUD_STATS) {
@@ -1416,8 +1455,9 @@ final public class Graphics3D {
       int gIncrement = (rgb16Right.gScaled - gScaled) / count;
       int bScaled = rgb16Left.bScaled;
       int bIncrement = (rgb16Right.bScaled - bScaled) / count;
+      boolean flipflop = ((x ^ y) & 1) != 0;
       while (--count >= 0) {
-        if (!tScreened || (flipflop = !flipflop)) {
+        if (! isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z < zbuf[offsetPbuf]) {
             zbuf[offsetPbuf] = (short)z;
@@ -1436,9 +1476,9 @@ final public class Graphics3D {
     }
   }
 
-  void plotPixelsUnclipped(int count, int x, int y, int z, boolean tScreened) {
+  void plotPixelsUnclipped(int count, int x, int y, int z) {
     int offsetPbuf = y * width + x;
-    if (! tScreened) {
+    if (! isTranslucent) {
       while (--count >= 0) {
         if (z < zbuf[offsetPbuf]) {
           zbuf[offsetPbuf] = (short)z;

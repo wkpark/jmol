@@ -38,7 +38,7 @@ TODO:
   </target>
 
   <target name="update-po" id="update-po">
-    <apply executable="xml2po" parallel="false" dir="${pot.dir}" dest="${pot.dir}" force="yes">
+    <apply executable="xml2po" parallel="false" dir="${pot.dir}" dest="${pot.dir}" force="true">
       <arg value="-e"/>
       <arg value="-u"/>
       <targetfile/>

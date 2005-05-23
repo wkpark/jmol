@@ -23,14 +23,9 @@
  */
 package org.jmol.adapter.smarter;
 
-import org.xml.sax.*;
-import org.xml.sax.helpers.DefaultHandler;
+import java.io.BufferedReader;
 
-import java.io.*;
-import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
-
-import org.jmol.api.JmolAdapter;
+import org.xml.sax.Attributes;
 
 /**
  * A Molpro 2005 reader
@@ -65,25 +60,25 @@ class MolproReader extends CmlReader {
       //logger.log("molproStartElement(" + namespaceURI + "," + localName +
       //"," + qName + "," + atts +  ")");
       if (normalCoordinateTag.equals(localName)) {
-	int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-	String wavenumber = "";
-	String units = "";
-	String tokens[];
-	atomSetCollection.cloneLastAtomSet();
-	frequencyCount++;
-	for (int i = atts.getLength(); --i >= 0; ) {
-	  String attLocalName = atts.getLocalName(i);
-	  String attValue = atts.getValue(i);
-	  if ("wavenumber".equals(attLocalName)) {
-	    wavenumber = attValue;
+        //int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+        String wavenumber = "";
+        //String units = "";
+        //String tokens[];
+        atomSetCollection.cloneLastAtomSet();
+        frequencyCount++;
+        for (int i = atts.getLength(); --i >= 0; ) {
+	        String attLocalName = atts.getLocalName(i);
+	        String attValue = atts.getValue(i);
+	        if ("wavenumber".equals(attLocalName)) {
+	          wavenumber = attValue;
           } else if ("units".equals(attLocalName)) {
-            units = attValue;
+            //units = attValue;
           }
         }
         atomSetCollection.setAtomSetProperty("Frequency", wavenumber+" cm**-1");
-	//logger.log("new normal mode " + wavenumber + " " + units);
-	keepChars = true;
-        return;
+        //logger.log("new normal mode " + wavenumber + " " + units);
+        keepChars = true;
+         return;
       }
 
       if (vibrationsTag.equals(localName)) {

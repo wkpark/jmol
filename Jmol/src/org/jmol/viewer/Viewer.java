@@ -1774,7 +1774,7 @@ final public class Viewer extends JmolViewer {
   }
 
   short getColixShape(int shapeID) {
-    return g3d.getColix(getColorShape(shapeID));
+    return Graphics3D.getColix(getColorShape(shapeID));
   }
 
   int getShapeID(String shapeName) {
@@ -1787,11 +1787,11 @@ final public class Viewer extends JmolViewer {
   }
 
   short getColix(Color color) {
-    return g3d.getColix(color);
+    return Graphics3D.getColix(color);
   }
 
   short getColix(Object object) {
-    return g3d.getColix(object);
+    return Graphics3D.getColix(object);
   }
 
   int strandsCount = 5;

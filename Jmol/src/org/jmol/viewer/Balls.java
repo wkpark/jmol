@@ -27,6 +27,8 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
+import org.jmol.g3d.Graphics3D;
+
 class Balls extends Shape {
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
@@ -40,7 +42,7 @@ class Balls extends Shape {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
           atoms[i].setColixAtom(colix);

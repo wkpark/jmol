@@ -49,7 +49,7 @@ class Labels extends Shape {
                           BitSet bsSelected) {
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           //Atom atom = atoms[i];
@@ -63,7 +63,7 @@ class Labels extends Shape {
     }
     
     if ("bgcolor" == propertyName) {
-      short bgcolix = g3d.getColix(value);
+      short bgcolix = Graphics3D.getColix(value);
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           //Atom atom = atoms[i];

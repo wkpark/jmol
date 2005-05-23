@@ -24,6 +24,8 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
+
 class PolyhedraRenderer extends ShapeRenderer {
 
   int drawEdges;
@@ -73,7 +75,7 @@ class PolyhedraRenderer extends ShapeRenderer {
     if (drawEdges == Polyhedra.EDGES_ALL ||
         (drawEdges == Polyhedra.EDGES_FRONT &&
          g3d.isDirectedTowardsCamera(normix))) {
-      g3d.drawTriangle(g3d.getOpaqueColix(colix),
+      g3d.drawTriangle(Graphics3D.getOpaqueColix(colix),
                        atomA.xyzd, atomB.xyzd, atomC.xyzd);
     }
   }

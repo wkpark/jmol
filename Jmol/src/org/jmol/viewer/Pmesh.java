@@ -101,7 +101,7 @@ class Pmesh extends SelectionIndependentShape {
     }
     if ("color" == propertyName) {
       if (value != null) {
-        colix = g3d.getColix(value);
+        colix = Graphics3D.getColix(value);
         if (currentMesh != null)
           currentMesh.meshColix = colix;
         else {

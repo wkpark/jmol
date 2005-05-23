@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
+
 import java.awt.Color;
 
 class ColorManager {
@@ -91,7 +92,7 @@ class ColorManager {
     if (c == null)
       c = colorSelectionDefault;
     colorSelection = c;
-    colixSelection = g3d.getColix(c);
+    colixSelection = Graphics3D.getColix(c);
   }
 
   Color getColorSelection() {
@@ -116,7 +117,7 @@ class ColorManager {
     if (color == null)
       color = Color.pink;
     colorRubberband = color;
-    colixRubberband = g3d.getColix(color);
+    colixRubberband = Graphics3D.getColix(color);
   }
 
   boolean isBondAtomColor = true;
@@ -128,28 +129,28 @@ class ColorManager {
   short colixBond = 0;
   void setColorBond(Color c) {
     colorBond = c;
-    colixBond = g3d.getColix(c);
+    colixBond = Graphics3D.getColix(c);
   }
 
   Color colorHbond = null;
   short colixHbond = 0;
   void setColorHbond(Color c) {
     colorHbond = c;
-    colixHbond = g3d.getColix(c);
+    colixHbond = Graphics3D.getColix(c);
   }
 
   Color colorSsbond = null;
   short colixSsbond = 0;
   void setColorSsbond(Color c) {
     colorSsbond = c;
-    colixSsbond = g3d.getColix(c);
+    colixSsbond = Graphics3D.getColix(c);
   }
 
   Color colorLabel = Color.black;
   short colixLabel = Graphics3D.BLACK;
   void setColorLabel(Color color) {
     colorLabel = color;
-    colixLabel = g3d.getColix(color);
+    colixLabel = Graphics3D.getColix(color);
   }
 
   short colixDotsConvex = 0;
@@ -157,39 +158,39 @@ class ColorManager {
   short colixDotsSaddle = 0;
 
   void setColorDotsConvex(Color color) {
-    colixDotsConvex = g3d.getColix(color);
+    colixDotsConvex = Graphics3D.getColix(color);
   }
   void setColorDotsConcave(Color color) {
-    colixDotsConcave = g3d.getColix(color);
+    colixDotsConcave = Graphics3D.getColix(color);
   }
   void setColorDotsSaddle(Color color) {
-    colixDotsSaddle = g3d.getColix(color);
+    colixDotsSaddle = Graphics3D.getColix(color);
   }
 
   Color colorDistance = Color.white;
   short colixDistance = Graphics3D.WHITE;
   void setColorDistance(Color c) {
     colorDistance = c;
-    colixDistance = g3d.getColix(c);
+    colixDistance = Graphics3D.getColix(c);
   }
 
   Color colorAngle = Color.white;
   short colixAngle = Graphics3D.WHITE;
   void setColorAngle(Color c) {
     colorAngle = c;
-    colixAngle = g3d.getColix(c);
+    colixAngle = Graphics3D.getColix(c);
   }
 
   Color colorTorsion = Color.white;
   short colixTorsion = Graphics3D.WHITE;
   void setColorTorsion(Color c) {
     colorTorsion = c;
-    colixTorsion = g3d.getColix(c);
+    colixTorsion = Graphics3D.getColix(c);
   }
 
   void setColorMeasurement(Color c) {
     colorDistance = colorAngle = colorTorsion = c;
-    colixDistance = colixAngle = colixTorsion = g3d.getColix(c);
+    colixDistance = colixAngle = colixTorsion = Graphics3D.getColix(c);
   }
 
   Color colorBackground = Color.white;
@@ -199,7 +200,7 @@ class ColorManager {
       colorBackground = Color.getColor("colorBackground");
     else
       colorBackground = bg;
-    colixBackground = g3d.getColix(colorBackground);
+    colixBackground = Graphics3D.getColix(colorBackground);
     g3d.setBackground(colixBackground);
   }
 
@@ -207,14 +208,14 @@ class ColorManager {
   short colixAxes = Graphics3D.OLIVE;
   void setColorAxes(Color color) {
     colorAxes = color;
-    colixAxes = g3d.getColix(color);
+    colixAxes = Graphics3D.getColix(color);
   }
 
   Color colorAxesText = colorAxes;
   short colixAxesText = Graphics3D.OLIVE;
   void setColorAxesText(Color color) {
     colorAxesText = color;
-    colixAxesText = g3d.getColix(color);
+    colixAxesText = Graphics3D.getColix(color);
   }
 
   // FIXME NEEDSWORK -- arrow vector stuff
@@ -222,7 +223,7 @@ class ColorManager {
   short colixVector = Graphics3D.BLACK;
   void setColorVector(Color c) {
     colorVector = c;
-    colixVector = g3d.getColix(c);
+    colixVector = Graphics3D.getColix(c);
   }
   Color getColorVector() {
     return colorVector;
@@ -319,7 +320,7 @@ class ColorManager {
     }
     if (argb == 0)
       return Graphics3D.HOTPINK;
-    return g3d.getColix(argb);
+    return Graphics3D.getColix(argb);
   }
 
   int quantize(float lo, float hi, float val, int segmentCount) {
@@ -339,7 +340,7 @@ class ColorManager {
   short getColixHbondType(short order) {
     int argbIndex = ((order & JmolConstants.BOND_HYDROGEN_MASK)
                      >> JmolConstants.BOND_HBOND_SHIFT);
-    return g3d.getColix(JmolConstants.argbsHbondType[argbIndex]);
+    return Graphics3D.getColix(JmolConstants.argbsHbondType[argbIndex]);
   }
 
   void flushCachedColors() {

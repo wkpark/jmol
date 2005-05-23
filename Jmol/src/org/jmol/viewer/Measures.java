@@ -122,7 +122,7 @@ class Measures extends Shape {
     if ("color".equals(propertyName))
       {
         System.out.println("Measures.color set to:" + value);
-        colix = value == null ? 0 : g3d.getColix(value); return; }
+        colix = value == null ? 0 : Graphics3D.getColix(value); return; }
     else if ("font".equals(propertyName))
       { font3d = (Font3D)value; return; }
     else if ("define".equals(propertyName))

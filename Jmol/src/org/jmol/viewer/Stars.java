@@ -27,6 +27,8 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
+import org.jmol.g3d.Graphics3D;
+
 class Stars extends Shape {
 
   short[] mads;
@@ -46,7 +48,7 @@ class Stars extends Shape {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i)) {
           if (colixes == null)

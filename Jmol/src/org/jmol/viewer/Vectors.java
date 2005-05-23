@@ -27,6 +27,8 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
+import org.jmol.g3d.Graphics3D;
+
 class Vectors extends Shape {
 
   String[] strings;
@@ -55,7 +57,7 @@ class Vectors extends Shape {
     if (frame.hasVibrationVectors) {
       //Atom[] atoms = frame.atoms;
       if ("color" == propertyName) {
-        short colix = g3d.getColix(value);
+        short colix = Graphics3D.getColix(value);
         for (int i = frame.atomCount; --i >= 0; )
           if (bsSelected.get(i))
             colixes[i] = colix;

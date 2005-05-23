@@ -26,6 +26,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Font3D;
+import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
 
@@ -42,7 +43,7 @@ abstract class SelectionIndependentShape extends Shape {
   
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
-      colix = g3d.getColix(value);
+      colix = Graphics3D.getColix(value);
       return;
     }
 
@@ -52,7 +53,7 @@ abstract class SelectionIndependentShape extends Shape {
     }
 
     if ("bgcolor" == propertyName) {
-      bgcolix = g3d.getColix(value);
+      bgcolix = Graphics3D.getColix(value);
       return;
     }
   }

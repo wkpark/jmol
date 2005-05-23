@@ -60,13 +60,13 @@ class Echo extends Shape {
 
     if ("color" == propertyName) {
       if (currentText != null)
-        currentText.colix = g3d.getColix(value);
+        currentText.colix = Graphics3D.getColix(value);
       return;
     }
 
     if ("bgcolor" == propertyName) {
       if (currentText != null)
-        currentText.bgcolix = value == null ? (short)0 : g3d.getColix(value);
+        currentText.bgcolix = value == null ? (short)0 : Graphics3D.getColix(value);
       return;
     }
 

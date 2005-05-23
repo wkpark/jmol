@@ -26,6 +26,9 @@
 package org.jmol.viewer;
 
 import javax.vecmath.*;
+
+import org.jmol.g3d.Graphics3D;
+
 import java.util.Hashtable;
 import java.util.BitSet;
 
@@ -179,14 +182,14 @@ class Dots extends Shape {
     }
     if ("colorConvex" == propertyName) {
       System.out.println("Dots.setProperty('colorConvex')");
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
           colixesConvex[i] = colix;
       return;
     }
     if ("colorSaddle" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = tori[i];
         if (bs.get(torus.indexII))
@@ -197,7 +200,7 @@ class Dots extends Shape {
       return;
     }
     if ("colorConcave" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = cavityCount; --i >= 0; ) {
         Cavity cavity = cavities[i];
         if (bs.get(cavity.ixI))

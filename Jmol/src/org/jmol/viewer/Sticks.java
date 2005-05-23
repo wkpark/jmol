@@ -28,6 +28,8 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
+import org.jmol.g3d.Graphics3D;
+
 class Sticks extends Shape {
 
   void setSize(int size, BitSet bsSelected) {
@@ -38,7 +40,7 @@ class Sticks extends Shape {
   void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if ("color" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       setColixBond(colix, JmolConstants.BOND_COVALENT_MASK, bsSelected);
       return;
     }

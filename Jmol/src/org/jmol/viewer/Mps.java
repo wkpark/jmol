@@ -29,6 +29,8 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.g3d.Graphics3D;
+
 /****************************************************************
  * Mps stands for Model-Chain-Polymer-Shape
  ****************************************************************/
@@ -59,7 +61,7 @@ abstract class Mps extends Shape {
       palette = viewer.getPalette((String)value);
     } else if ("color" == propertyName) {
       palette = JmolConstants.PALETTE_COLOR;
-      colix = g3d.getColix(value);
+      colix = Graphics3D.getColix(value);
     } else {
       return;
     }

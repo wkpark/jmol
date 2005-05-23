@@ -43,7 +43,7 @@ class Hover extends Shape {
 
   void initShape() {
     font3d = g3d.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
-    colixBackground = g3d.getColix("#FFFFC3"); // 255, 255, 195
+    colixBackground = Graphics3D.getColix("#FFFFC3"); // 255, 255, 195
     colixForeground = Graphics3D.BLACK;
   }
 
@@ -59,13 +59,13 @@ class Hover extends Shape {
     
     if ("color" == propertyName) {
       //      System.out.println("hover color changed");
-      colixForeground = g3d.getColix(value);
+      colixForeground = Graphics3D.getColix(value);
       return;
     }
 
     if ("bgcolor" == propertyName) {
       //      System.out.println("hover bgcolor changed");
-      colixBackground = g3d.getColix(value);
+      colixBackground = Graphics3D.getColix(value);
       return;
     }
     

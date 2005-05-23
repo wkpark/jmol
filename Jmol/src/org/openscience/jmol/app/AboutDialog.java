@@ -46,13 +46,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import org.jmol.util.GT;
+
 public class AboutDialog extends JDialog implements HyperlinkListener {
 
   JEditorPane html;
 
   public AboutDialog(JFrame fr) {
 
-    super(fr, "About Jmol", true);
+    super(fr, GT._("About Jmol"), true);
 
     try {
       URL aboutURL =
@@ -62,9 +64,9 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
         html = new JEditorPane(aboutURL);
       } else {
         html = new JEditorPane("text/plain",
-            "Unable to find url '"
-              + JmolResourceHandler.getStringX("About.aboutURL")
-                + "'.");
+            MessageFormat.format(
+              GT._("Unable to find url '{0}'."), new Object[] 
+              { JmolResourceHandler.getStringX("About.aboutURL") }));
       }
       html.setEditable(false);
       html.addHyperlinkListener(this);
@@ -91,16 +93,20 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton ok =
-      new JButton(JmolResourceHandler.getStringX("About.okLabel"));
-    ok.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        OKPressed();
-      }
-    });
-    buttonPanel.add(ok);
-    getRootPane().setDefaultButton(ok);
+    try {
+        JButton ok = new JButton(GT._("OK"));
+        ok.addActionListener(new ActionListener() {
+    
+          public void actionPerformed(ActionEvent e) {
+            OKPressed();
+          }
+        });
+        buttonPanel.add(ok);
+        getRootPane().setDefaultButton(ok);
+    } catch (Exception exception) {
+        System.out.println(exception.getMessage());
+        exception.printStackTrace();
+    }
 
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout());

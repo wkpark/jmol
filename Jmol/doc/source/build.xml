@@ -1,0 +1,130 @@
+<project name="Jmol-doc" default="main" basedir=".">
+
+<!--
+TODO:
+- is there a way for a 'for i in $LANG ; do {} done' construct to
+  run update-po for all available translations?
+  -> same for updating all Guides at once (I can't find a construct to provide
+     more than only one source- and one target-file
+- the force attribute in update-po target is only known by ant 1.6.3, so
+  updating the *.LANG.po files fails, because they exist
+  -> we could use instead:
+     msgmerge -o tmp.po MY_LANG.po MY_GUIDE.pot
+     mv tmp.po MY_LANG.po
+     msgfmt --statistics MY_LANG.po
+-->
+
+  <property name="src.dir" value="." />
+  <property name="pot.dir" value="po" />
+
+  <target name="main" id="main"
+    depends="init,create-pot,update-po,update-applet-translation,update-devel-translation,update-guide-translation"/>
+  
+  <target name="init" id="init">
+    <tstamp/>
+  </target>
+
+  <target name="create-pot" id="create-pot" depends="clean-pot">
+    <apply executable="xml2po" parallel="false" dest="${pot.dir}" dir="${src.dir}">
+      <arg value="-e"/>
+      <arg value="-o"/>
+      <targetfile/>
+      <srcfile/>
+      <fileset dir="${src.dir}">
+        <include name="*Guide.docbook.xml" />
+      </fileset>
+      <mapper type="glob" from="*.docbook.xml" to="*.pot"/>
+    </apply>
+  </target>
+
+  <target name="update-po" id="update-po">
+    <apply executable="xml2po" parallel="false" dir="${pot.dir}" dest="${pot.dir}" force="yes">
+      <arg value="-e"/>
+      <arg value="-u"/>
+      <targetfile/>
+      <srcfile/>
+      <fileset dir="${src.dir}">
+        <include name="*Guide.docbook.xml" />
+      </fileset>
+      <mapper>
+      <globmapper from="*.docbook.xml" to="*.de.po"/>
+      </mapper>
+    </apply>
+    <!--
+    <exec executable="xml2po" dir="${pot.dir}">
+      <arg line="-e -u JmolAppletGuide.de.po ../JmolAppletGuide.docbook.xml"/>
+    </exec>
+    -->
+  </target>
+
+  <mapper id="translation" type="glob" from="*.po" to="*.docbook.xml"/>
+  
+  <target name="update-applet-translation" id="update-applet-translation" depends="clean-translation">
+    <apply executable="xml2po" parallel="false" dest="${src.dir}" dir="${pot.dir}">
+      <arg value="-e"/>
+      <arg value="-p"/>
+      <srcfile/>
+      <arg value="-o"/>
+      <targetfile/>
+      <arg value="../JmolAppletGuide.docbook.xml"/>
+      <fileset dir="${pot.dir}">
+        <include name="JmolAppletGuide.*.po" />
+      </fileset>
+      <mapper refid="translation"/>
+    </apply>
+  </target>
+
+  <target name="update-devel-translation" id="update-devel-translation" depends="clean-translation">
+    <apply executable="xml2po" parallel="false" dest="${src.dir}" dir="${pot.dir}">
+      <arg value="-e"/>
+      <arg value="-p"/>
+      <srcfile/>
+      <arg value="-o"/>
+      <targetfile/>
+      <arg value="../JmolDevelopersGuide.docbook.xml"/>
+      <fileset dir="${pot.dir}">
+        <include name="JmolDevelopersGuide.*.po" />
+      </fileset>
+      <mapper refid="translation"/>
+    </apply>
+  </target>
+
+  <target name="update-guide-translation" id="update-guide-translation" depends="clean-translation">
+    <apply executable="xml2po" parallel="false" dest="${src.dir}" dir="${pot.dir}">
+      <arg value="-e"/>
+      <arg value="-p"/>
+      <srcfile/>
+      <arg value="-o"/>
+      <targetfile/>
+      <arg value="../JmolGuide.docbook.xml"/>
+      <fileset dir="${pot.dir}">
+        <include name="JmolGuide.*.po" />
+      </fileset>
+      <mapper refid="translation"/>
+    </apply>
+  </target>
+
+  <target name="clean" id="clean" depends="clean-pot,clean-translation">
+    <fileset dir="${pot.dir}">
+      <include name=".xml2po.mo" />
+    </fileset>
+  </target>
+
+  <target name="clean-translation" id="clean-translation">
+    <delete>
+      <fileset dir="${src.dir}">
+        <include name="*_de.docbook.xml" />
+        <include name="*.de.docbook.xml" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clean-pot" id="clean-pot">
+    <delete>
+      <fileset dir="${pot.dir}">
+        <include name="*.pot" />
+      </fileset>
+    </delete>
+  </target>
+
+</project>

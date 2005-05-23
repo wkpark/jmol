@@ -2,108 +2,99 @@
 
 <!--
 TODO:
-- is there a way for a 'for i in $LANG ; do {} done' construct to
-  run update-po for all available translations?
-  -> same for updating all Guides at once (I can't find a construct to provide
-     more than only one source- and one target-file
-- the force attribute in update-po target is only known by ant 1.6.3, so
-  updating the *.LANG.po files fails, because they exist
-  -> we could use instead:
-     msgmerge -o tmp.po MY_LANG.po MY_GUIDE.pot
-     mv tmp.po MY_LANG.po
-     msgfmt --statistics MY_LANG.po
+- should check for existance of gettext and xml2po
+- should maybe execute xml2po depending on the os (os attribute)
 -->
 
-  <property name="src.dir" value="." />
-  <property name="pot.dir" value="po" />
+  <!-- <for list ...> construct needs ant-contrib.jar -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="./ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
 
+  <!-- our properties section -->
+  <property name="src.dir" value="${basedir}" />
+  <property name="pot.dir" value="po" />
+  <property name="all.languages" value="de" />
+  <property name="all.guides" value="JmolAppletGuide,JmolDevelopersGuide,JmolGuide" />
+
+  <!-- main target creates .pot files, update existing .po files and creates
+       translated XML files by default -->
   <target name="main" id="main"
-    depends="init,create-pot,update-po,update-applet-translation,update-devel-translation,update-guide-translation"/>
+    depends="init,create-pot,update-po,update-xml"/>
   
   <target name="init" id="init">
     <tstamp/>
   </target>
 
+  <!-- parse list of possible guides and create .pot for every guide -->
   <target name="create-pot" id="create-pot" depends="clean-pot">
-    <apply executable="xml2po" parallel="false" dest="${pot.dir}" dir="${src.dir}">
-      <arg value="-e"/>
-      <arg value="-o"/>
-      <targetfile/>
-      <srcfile/>
-      <fileset dir="${src.dir}">
-        <include name="*Guide.docbook.xml" />
-      </fileset>
-      <mapper type="glob" from="*.docbook.xml" to="*.pot"/>
-    </apply>
+    <for list="${all.guides}" delimiter="," param="current.guide">
+      <sequential>
+        <antcall target="create-pot-guide">
+          <param name="guide_value" value="@{current.guide}"/>
+        </antcall>
+      </sequential>
+    </for>
   </target>
-
-  <target name="update-po" id="update-po">
-    <apply executable="xml2po" parallel="false" dir="${pot.dir}" dest="${pot.dir}" force="true">
-      <arg value="-e"/>
-      <arg value="-u"/>
-      <targetfile/>
-      <srcfile/>
-      <fileset dir="${src.dir}">
-        <include name="*Guide.docbook.xml" />
-      </fileset>
-      <mapper>
-      <globmapper from="*.docbook.xml" to="*.de.po"/>
-      </mapper>
-    </apply>
-    <!--
-    <exec executable="xml2po" dir="${pot.dir}">
-      <arg line="-e -u JmolAppletGuide.de.po ../JmolAppletGuide.docbook.xml"/>
-    </exec>
-    -->
-  </target>
-
-  <mapper id="translation" type="glob" from="*.po" to="*.docbook.xml"/>
   
-  <target name="update-applet-translation" id="update-applet-translation" depends="clean-translation">
-    <apply executable="xml2po" parallel="false" dest="${src.dir}" dir="${pot.dir}">
-      <arg value="-e"/>
-      <arg value="-p"/>
-      <srcfile/>
-      <arg value="-o"/>
-      <targetfile/>
-      <arg value="../JmolAppletGuide.docbook.xml"/>
-      <fileset dir="${pot.dir}">
-        <include name="JmolAppletGuide.*.po" />
-      </fileset>
-      <mapper refid="translation"/>
-    </apply>
+  <target name="create-pot-guide" id="create-pot-guide">
+    <echo message="Generating ${guide_value} gettext PO-template file ..."/>
+    <exec executable="xml2po" dir="${src.dir}">
+      <arg line="-e -o ${pot.dir}/${guide_value}.pot ${guide_value}.docbook.xml"/>
+    </exec>
   </target>
 
-  <target name="update-devel-translation" id="update-devel-translation" depends="clean-translation">
-    <apply executable="xml2po" parallel="false" dest="${src.dir}" dir="${pot.dir}">
-      <arg value="-e"/>
-      <arg value="-p"/>
-      <srcfile/>
-      <arg value="-o"/>
-      <targetfile/>
-      <arg value="../JmolDevelopersGuide.docbook.xml"/>
-      <fileset dir="${pot.dir}">
-        <include name="JmolDevelopersGuide.*.po" />
-      </fileset>
-      <mapper refid="translation"/>
-    </apply>
+  <!-- parse list of possible languages and update LANG.po gettext files -->
+  <target name="update-po" id="update-po">
+    <for list="${all.languages}" delimiter="," param="current.language">
+      <sequential>
+        <for list="${all.guides}" delimiter="," param="current.guide">
+          <sequential>
+            <antcall target="update-po-guide-lang">
+              <param name="lang_value" value="@{current.language}"/>
+              <param name="guide_value" value="@{current.guide}"/>
+            </antcall>
+          </sequential>
+        </for>
+      </sequential>
+    </for>
+  </target>  
+  
+  <target name="update-po-guide-lang" id="update-po-guide-lang">
+    <echo message="Updating ${guide_value}.${lang_value}.po gettext file ..."/>
+    <exec executable="xml2po" dir="${pot.dir}">
+      <arg line="-e -u ${guide_value}.${lang_value}.po ${src.dir}/${guide_value}.docbook.xml"/>
+    </exec>
   </target>
 
-  <target name="update-guide-translation" id="update-guide-translation" depends="clean-translation">
-    <apply executable="xml2po" parallel="false" dest="${src.dir}" dir="${pot.dir}">
-      <arg value="-e"/>
-      <arg value="-p"/>
-      <srcfile/>
-      <arg value="-o"/>
-      <targetfile/>
-      <arg value="../JmolGuide.docbook.xml"/>
-      <fileset dir="${pot.dir}">
-        <include name="JmolGuide.*.po" />
-      </fileset>
-      <mapper refid="translation"/>
-    </apply>
+
+  <!-- parse list of vailable languages and guides and marge translations back -->
+  <target name="update-xml" id="update-xml" depends="clean-translation">
+    <for list="${all.languages}" delimiter="," param="current.language">
+      <sequential>
+        <for list="${all.guides}" delimiter="," param="current.guide">
+          <sequential>
+            <antcall target="update-xml-guide-lang">
+              <param name="lang_value" value="@{current.language}"/>
+              <param name="guide_value" value="@{current.guide}"/>
+            </antcall>
+          </sequential>
+        </for>
+      </sequential>
+    </for>
+  </target>  
+
+  <target name="update-xml-guide-lang" id="update-xml-guide-lang">
+    <echo message="Merging back translations for ${guide_value}.docbook.xml
+    ${line.separator}into ${guide_value}.${lang_value}.docbook.xml file ..."/>
+    <exec executable="xml2po" dir="${pot.dir}">
+      <arg line="-e -p ${guide_value}.${lang_value}.po -o ${src.dir}/${guide_value}_${lang_value}.docbook.xml ${src.dir}/${guide_value}.docbook.xml"/>
+    </exec>
   </target>
 
+  <!-- we can clean .pot, .LANG.docbook.xml and .xml2po.mo files -->
   <target name="clean" id="clean" depends="clean-pot,clean-translation">
     <fileset dir="${pot.dir}">
       <include name=".xml2po.mo" />
@@ -114,7 +105,6 @@ TODO:
     <delete>
       <fileset dir="${src.dir}">
         <include name="*_de.docbook.xml" />
-        <include name="*.de.docbook.xml" />
       </fileset>
     </delete>
   </target>

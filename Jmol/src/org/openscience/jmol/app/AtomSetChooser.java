@@ -45,6 +45,8 @@ import java.awt.event.*;
 import java.util.Properties;
 import java.util.Enumeration;
 
+import org.jmol.util.GT;
+
 /**
  * A JFrame that allows for choosing an Atomset to view.
  * 
@@ -157,12 +159,12 @@ ActionListener, ChangeListener, Runnable {
   
   public AtomSetChooser(JmolViewer viewer, JFrame frame) {
  //   super(frame,"AtomSetChooser", false);
-    super("AtomSetChooser");
+    super(GT._("AtomSetChooser"));
     this.viewer = viewer;
     saveChooser = new JFileChooser();
     
     // initialize the treeModel
-    treeModel = new DefaultTreeModel(new DefaultMutableTreeNode("No AtomSets"));
+    treeModel = new DefaultTreeModel(new DefaultMutableTreeNode(GT._("No AtomSets")));
     
     layoutWindow(getContentPane());
     pack();
@@ -191,8 +193,7 @@ ActionListener, ChangeListener, Runnable {
     // the panel for the properties
     JPanel propertiesPanel = new JPanel();
     propertiesPanel.setLayout(new BorderLayout());
-    propertiesPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.tree.properties.label")));
+    propertiesPanel.setBorder(new TitledBorder(GT._("Properties")));
     propertiesTextArea = new JTextArea();
     propertiesTextArea.setEditable(false);
     propertiesPanel.add(new JScrollPane(propertiesTextArea), BorderLayout.CENTER);
@@ -200,8 +201,7 @@ ActionListener, ChangeListener, Runnable {
     // create the split pane with the treePanel and propertiesPanel
     JPanel astPanel = new JPanel();
     astPanel.setLayout(new BorderLayout());
-    astPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.tree.label")));
+    astPanel.setBorder(new TitledBorder(GT._("Atom Set Collection")));
     
     JSplitPane splitPane = new JSplitPane(
         JSplitPane.VERTICAL_SPLIT, treePanel, propertiesPanel); 
@@ -221,22 +221,19 @@ ActionListener, ChangeListener, Runnable {
     //////////////////////////////////////////////////////////
     JPanel collectionPanel = new JPanel();
     collectionPanel.setLayout(new BoxLayout(collectionPanel, BoxLayout.Y_AXIS));
-    collectionPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.collection.label")));
+    collectionPanel.setBorder(new TitledBorder(GT._("Collection")));
     controllerPanel.add(collectionPanel);
     // info area
     JPanel infoPanel = new JPanel();
     infoPanel.setLayout(new BorderLayout());
-    infoPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.collection.info.label")));
+    infoPanel.setBorder(new TitledBorder(GT._("Info")));
     infoLabel = new JLabel(" ");
     infoPanel.add(infoLabel, BorderLayout.SOUTH);
     collectionPanel.add(infoPanel);
     // select slider area
     JPanel cpsPanel = new JPanel();
     cpsPanel.setLayout(new BorderLayout());
-    cpsPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.collection.select.label")));
+    cpsPanel.setBorder(new TitledBorder(GT._("Select")));
     selectSlider = new JSlider(0, 0, 0);
     selectSlider.addChangeListener(this);
     selectSlider.setMajorTickSpacing(5);
@@ -251,9 +248,7 @@ ActionListener, ChangeListener, Runnable {
     collectionPanel.add(row);
     row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
     // repeat check box to be added to the controller
-    repeatCheckBox = new JCheckBox(
-        JmolResourceHandler.translateX("AtomSetChooser.collection.repeat.label"),
-        false);
+    repeatCheckBox = new JCheckBox(GT._("Repeat"), false);
     JPanel vcrpanel = createVCRController("collection");
     vcrpanel.add(repeatCheckBox); // put the repeat text box in the vcr control
     // VCR-like play controller
@@ -265,8 +260,7 @@ ActionListener, ChangeListener, Runnable {
     if (fps > FPS_MAX)
       fps = FPS_MAX;
     fpsPanel.setLayout(new BorderLayout());
-    fpsPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.collection.fps.label")));
+    fpsPanel.setBorder(new TitledBorder(GT._("FPS")));
     fpsSlider = new JSlider(0, FPS_MAX, fps);
     fpsSlider.setMajorTickSpacing(5);
     fpsSlider.setMinorTickSpacing(1);
@@ -282,16 +276,14 @@ ActionListener, ChangeListener, Runnable {
     controllerPanel.add(vectorPanel);
     // fill out the contents of the vectorPanel
     vectorPanel.setLayout(new BoxLayout(vectorPanel, BoxLayout.Y_AXIS));
-    vectorPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.vector.label")));
+    vectorPanel.setBorder(new TitledBorder(GT._("Vector")));
     // the first row in the vectoPanel: radius and scale of the vector
     JPanel row1 = new JPanel();
     row1.setLayout(new BoxLayout(row1,BoxLayout.X_AXIS));
     // controller for the vector representation
     JPanel radiusPanel = new JPanel();
     radiusPanel.setLayout(new BorderLayout());
-    radiusPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.vector.radius.label")));
+    radiusPanel.setBorder(new TitledBorder(GT._("Radius")));
     radiusSlider = new JSlider(0, RADIUS_MAX, RADIUS_VALUE);
     radiusSlider.setMajorTickSpacing(5);
     radiusSlider.setMinorTickSpacing(1);
@@ -304,8 +296,7 @@ ActionListener, ChangeListener, Runnable {
     // controller for the vector scale
     JPanel scalePanel = new JPanel();
     scalePanel.setLayout(new BorderLayout());
-    scalePanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.vector.scale.label")));
+    scalePanel.setBorder(new TitledBorder(GT._("Scale")));
     scaleSlider = new JSlider(0, (int)(SCALE_MAX/SCALE_PRECISION),
         (int) (SCALE_VALUE/SCALE_PRECISION));
     scaleSlider.addChangeListener(this);
@@ -319,8 +310,7 @@ ActionListener, ChangeListener, Runnable {
     // controller for vibrationScale = amplitude
     JPanel amplitudePanel = new JPanel();
     amplitudePanel.setLayout(new BorderLayout());
-    amplitudePanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.vector.amplitude.label")));
+    amplitudePanel.setBorder(new TitledBorder(GT._("Amplitude")));
     amplitudeSlider = new JSlider(0, (int) (AMPLITUDE_MAX/AMPLITUDE_PRECISION),
         (int)(AMPLITUDE_VALUE/AMPLITUDE_PRECISION));
     viewer.setVibrationScale(AMPLITUDE_VALUE);
@@ -330,8 +320,7 @@ ActionListener, ChangeListener, Runnable {
     // controller for the vibrationPeriod
     JPanel periodPanel = new JPanel();
     periodPanel.setLayout(new BorderLayout());
-    periodPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser.vector.period.label")));
+    periodPanel.setBorder(new TitledBorder(GT._("Period")));
     periodSlider = new JSlider(0,
         (int)(PERIOD_MAX/PERIOD_PRECISION),
         (int)(PERIOD_VALUE/PERIOD_PRECISION));

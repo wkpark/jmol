@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
+import org.jmol.util.GT;
 
 /**
  * File previsualisation before opening
@@ -63,7 +64,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     Box box = Box.createVerticalBox();
 
     // Add a checkbox to activate / deactivate preview
-    active = new JCheckBox("Preview", false);
+    active = new JCheckBox(GT._("Preview"), false);
     active.addActionListener(new ActionListener()
       {
         public void actionPerformed(ActionEvent e) {

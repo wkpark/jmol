@@ -32,6 +32,7 @@ import java.io.IOException;
 import javax.swing.JTextArea;
 import javax.swing.JOptionPane;
 import javax.swing.text.Document;
+import org.jmol.util.GT;
 
 public class ConsoleTextArea extends JTextArea {
 
@@ -83,8 +84,9 @@ public class ConsoleTextArea extends JTextArea {
             s = br.readLine();
           }
         } catch (IOException e) {
-          JOptionPane.showMessageDialog(null,
-              "Error reading from BufferedReader: " + e);
+          JOptionPane.showMessageDialog(null, GT._(
+              "Error reading from BufferedReader: {0}",
+              new Object[] { e.getMessage() }));
           System.exit(1);
         }
       }

@@ -26,6 +26,7 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.util.GT;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.*;
@@ -249,7 +250,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
       viewer.setModeMouse(JmolConstants.MOUSE_PICK);
       viewer.setSelectionHaloEnabled(true);
-      status.setStatus(1, "Select Atoms");
+      status.setStatus(1, GT._("Select Atoms"));
     }
   }
 
@@ -263,7 +264,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
       viewer.setModeMouse(JmolConstants.MOUSE_DELETE);
       viewer.setSelectionHaloEnabled(false);
-      status.setStatus(1, "Delete Atoms");
+      status.setStatus(1, GT._("Delete Atoms"));
     }
   }
 

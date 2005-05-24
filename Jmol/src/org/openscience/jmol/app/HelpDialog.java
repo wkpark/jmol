@@ -45,6 +45,7 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import org.jmol.util.GT;
 
 public class HelpDialog extends JDialog implements HyperlinkListener {
 
@@ -60,7 +61,7 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
    * @param url
    */
   public HelpDialog(JFrame fr, URL url) {
-    super(fr, "Jmol Help", false);
+    super(fr, GT._("Jmol Help"), false);
 
     try {
         URL helpURL = url;
@@ -73,9 +74,9 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
             html = new JEditorPane(helpURL);
         } else {
             html = new JEditorPane("text/plain",
-              "Unable to find url '"
-              + JmolResourceHandler.getStringX("Help.helpURL")
-              + "'.");
+                GT._("Unable to find url '{0}'.",
+                     new Object[] { JmolResourceHandler.getStringX("Help.helpURL") }
+                ));
         }
         html.setEditable(false);
         html.addHyperlinkListener(this);
@@ -102,8 +103,7 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton ok =
-      new JButton(JmolResourceHandler.getStringX("Help.okLabel"));
+    JButton ok = new JButton(GT._("OK"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-24 18:09+0200\n"
+"POT-Creation-Date: 2005-05-24 20:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,93 +16,93 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AboutDialog.java:58
+#: org/openscience/jmol/app/AboutDialog.java:58
 msgid "About Jmol"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:313
+#: org/openscience/jmol/app/AtomSetChooser.java:313
 msgid "Amplitude"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:204
+#: org/openscience/jmol/app/AtomSetChooser.java:204
 msgid "Atom Set Collection"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:162
+#: org/openscience/jmol/app/AtomSetChooser.java:162
 msgid "AtomSetChooser"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:224
+#: org/openscience/jmol/app/AtomSetChooser.java:224
 msgid "Collection"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/DisplayPanel.java:267
+#: org/openscience/jmol/app/DisplayPanel.java:267
 msgid "Delete Atoms"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/ConsoleTextArea.java:88
+#: org/openscience/jmol/app/ConsoleTextArea.java:88
 #, java-format
 msgid "Error reading from BufferedReader: {0}"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:263
+#: org/openscience/jmol/app/AtomSetChooser.java:263
 msgid "FPS"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:229
+#: org/openscience/jmol/app/AtomSetChooser.java:229
 msgid "Info"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/HelpDialog.java:64
+#: org/openscience/jmol/app/HelpDialog.java:64
 msgid "Jmol Help"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:167
+#: org/openscience/jmol/app/AtomSetChooser.java:167
 msgid "No AtomSets"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AboutDialog.java:97
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/HelpDialog.java:106
+#: org/openscience/jmol/app/AboutDialog.java:97
+#: org/openscience/jmol/app/HelpDialog.java:106
 msgid "OK"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:323
+#: org/openscience/jmol/app/AtomSetChooser.java:323
 msgid "Period"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/FilePreview.java:67
+#: org/openscience/jmol/app/FilePreview.java:67
 msgid "Preview"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:196
+#: org/openscience/jmol/app/AtomSetChooser.java:196
 msgid "Properties"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:286
+#: org/openscience/jmol/app/AtomSetChooser.java:286
 msgid "Radius"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:251
+#: org/openscience/jmol/app/AtomSetChooser.java:251
 msgid "Repeat"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:299
+#: org/openscience/jmol/app/AtomSetChooser.java:299
 msgid "Scale"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:236
+#: org/openscience/jmol/app/AtomSetChooser.java:236
 msgid "Select"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/DisplayPanel.java:253
+#: org/openscience/jmol/app/DisplayPanel.java:253
 msgid "Select Atoms"
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AboutDialog.java:68
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/HelpDialog.java:77
+#: org/openscience/jmol/app/AboutDialog.java:68
+#: org/openscience/jmol/app/HelpDialog.java:77
 msgid "Unable to find url '{0}'."
 msgstr ""
 
-#: /mnt/hda8/homes/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/src/org/openscience/jmol/app/AtomSetChooser.java:279
+#: org/openscience/jmol/app/AtomSetChooser.java:279
 msgid "Vector"
 msgstr ""

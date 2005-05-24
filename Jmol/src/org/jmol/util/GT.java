@@ -24,14 +24,47 @@
  */
 package org.jmol.util;
 
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class GT {
-    public static ResourceBundle myResources =
-        ResourceBundle.getBundle("JmolStrings");
-        
-    public static String _(String s) {
-        return myResources.getString(s);
+    
+    private static GT getTextWrapper = null;
+    private static ResourceBundle translationResources = null;
+
+    private GT() {
+        System.out.println("Instantiating gettext wrapper...");
+        try {
+            translationResources = ResourceBundle.getBundle(
+                "org.translation.application"
+            );
+        } catch (MissingResourceException mre) {
+            System.out.println("Translations do not seem to have been installed!");
+            System.out.println(mre.getMessage());
+            mre.printStackTrace();
+            translationResources = null;
+        } catch (Exception exception) {
+            System.out.println("Some exception occured!");
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            translationResources = null;
+        }
+    }
+    
+    public static String _(String string) {
+        if (getTextWrapper == null) { 
+            getTextWrapper = new GT();
+        }
+        return getTextWrapper.getString(string);
+    }
+    
+    private String getString(String string) {
+        if (translationResources != null) {
+            String trans = translationResources.getString(string);
+            System.out.println("trans: " + string  + " ->" + trans);
+            return trans;
+        }
+        System.out.println("No trans, using default: " + string);
+        return string;
     }
 }
 

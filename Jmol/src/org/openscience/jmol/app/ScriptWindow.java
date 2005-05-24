@@ -45,6 +45,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
 
+import org.jmol.util.GT;
+
 public final class ScriptWindow extends JDialog
     implements ActionListener, EnterListener{
 
@@ -57,7 +59,7 @@ public final class ScriptWindow extends JDialog
   JmolViewer viewer;
   
   public ScriptWindow(JmolViewer viewer, JFrame frame) {
-    super(frame, "Rasmol Scripts", false);
+    super(frame, GT._("Rasmol Scripts"), false);
     this.viewer = viewer;
     layoutWindow(getContentPane());
     setSize(500, 400);
@@ -76,24 +78,24 @@ public final class ScriptWindow extends JDialog
     JPanel buttonPanel = new JPanel();
     container.add(buttonPanel, BorderLayout.SOUTH);
 
-    closeButton = new JButton(JmolResourceHandler.translateX("Close"));
+    closeButton = new JButton(GT._("Close"));
     closeButton.addActionListener(this);
     buttonPanel.add(closeButton);
 
-    runButton = new JButton(JmolResourceHandler.translateX("Run"));
+    runButton = new JButton(GT._("Run"));
     runButton.addActionListener(this);
     buttonPanel.add(runButton);
 
-    haltButton = new JButton(JmolResourceHandler.translateX("Halt"));
+    haltButton = new JButton(GT._("Halt"));
     haltButton.addActionListener(this);
     buttonPanel.add(haltButton);
     haltButton.setEnabled(false);
 
-    clearButton = new JButton(JmolResourceHandler.translateX("Clear"));
+    clearButton = new JButton(GT._("Clear"));
     clearButton.addActionListener(this);
     buttonPanel.add(clearButton);
 
-    helpButton = new JButton(JmolResourceHandler.translateX("Help"));
+    helpButton = new JButton(GT._("Help"));
     helpButton.addActionListener(this);
     buttonPanel.add(helpButton);
   }

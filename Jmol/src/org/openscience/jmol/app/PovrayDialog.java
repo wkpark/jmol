@@ -25,6 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
+import org.jmol.util.GT;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -115,8 +116,7 @@ public class PovrayDialog extends JDialog {
    */
   public PovrayDialog(JFrame f, JmolViewer viewer) {
 
-    super(f, JmolResourceHandler
-        .getStringX("Povray.povrayDialogTitle"), true);
+    super(f, GT._("Render in povray"), true);
     this.viewer = viewer;
 
     //
@@ -154,13 +154,13 @@ public class PovrayDialog extends JDialog {
     
     //GUI for save name selection
     Box justSavingBox = Box.createVerticalBox();
-    text = JmolResourceHandler.getStringX("Povray.savingPov");
+    text = GT._("Jmol-to-Povray Conversion");
     justSavingBox.setBorder(new TitledBorder(text));
     
     Box saveBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.workingName");
+    text = GT._("Filename Stem");
     saveBox.setBorder(new TitledBorder(text));
-    text = JmolResourceHandler.getStringX("Povray.workingNameTip");
+    text = GT._("Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'");
     saveBox.setToolTipText(text);
     saveField = new JTextField("jmol", 20);
     saveField.addActionListener(updateActionListener);
@@ -170,15 +170,15 @@ public class PovrayDialog extends JDialog {
 
     //GUI for save path selection
     Box savePathBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.workingDirectory");
+    text = GT._("Working Directory");
     savePathBox.setBorder(new TitledBorder(text));
-    text = JmolResourceHandler.getStringX("Povray.workingDirectoryTip");
+    text = GT._("Where the pov files will be saved");
     savePathBox.setToolTipText(text);
     savePathLabel = new JTextField("");
     savePathLabel.setEditable(false);
     savePathLabel.setBorder(null);
     savePathBox.add(savePathLabel);
-    text = JmolResourceHandler.getStringX("Povray.selectButton");
+    text = GT._("Select...");
     JButton savePathButton = new JButton(text);
     savePathButton.addActionListener(new ActionListener() {
 
@@ -192,14 +192,14 @@ public class PovrayDialog extends JDialog {
 
     //GUI for povray options
     Box povOptionsBox = Box.createVerticalBox();
-    text = JmolResourceHandler.getStringX("Povray.povOptions");
+    text = GT._("Pov-Ray Runtime Options");
     povOptionsBox.setBorder(new TitledBorder(text));
     
     // Run povray option
     Box runPovBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.runPov");
+    text = GT._("Run Pov-Ray directly");
     runPovCheck = new JCheckBox(text, true);
-    text = JmolResourceHandler.getStringX("Povray.runPovTip");
+    text = GT._("aunch Pov-Ray from with-in Jmol");
     runPovCheck.setToolTipText(text);
     runPovCheck.addItemListener(updateItemListener);
     runPovBox.add(runPovCheck);
@@ -208,9 +208,9 @@ public class PovrayDialog extends JDialog {
 
     // Use Ini option
     Box useIniBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.useIni");
+    text = GT._("Use .ini file");
     useIniCheck = new JCheckBox(text, true);
-    text = JmolResourceHandler.getStringX("Povray.useIniTip");
+    text = GT._("Save options in a .ini file");
     useIniCheck.setToolTipText(text);
     useIniCheck.addItemListener(updateItemListener);
     useIniBox.add(useIniCheck);
@@ -219,9 +219,9 @@ public class PovrayDialog extends JDialog {
     
     // Render all frames options
     Box allFramesBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.allFrames");
+    text = GT._("Render all frames");
     allFramesCheck = new JCheckBox(text, false);
-    text = JmolResourceHandler.getStringX("Povray.allFramesTip");
+    text = GT._("Render each model (not only the currently displayed one)");
     allFramesCheck.setToolTipText(text);
     allFramesCheck.addItemListener(updateItemListener);
     allFramesBox.add(allFramesCheck);
@@ -230,9 +230,9 @@ public class PovrayDialog extends JDialog {
     
     // Antialias option
     Box antiAliasBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.antiAlias");
+    text = GT._("Turn on Pov-Ray anti-aliasing");
     antiAliasCheck = new JCheckBox(text, true);
-    text = JmolResourceHandler.getStringX("Povray.antiAliasTip");
+    text = GT._("Use Pov-Ray's slower but higher quality anti-aliasing mode");
     antiAliasCheck.setToolTipText(text);
     antiAliasCheck.addItemListener(updateItemListener);
     antiAliasBox.add(antiAliasCheck);
@@ -241,9 +241,9 @@ public class PovrayDialog extends JDialog {
 
     // Display when rendering option
     Box displayBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.displayWhileRendering");
+    text = GT._("Display While Rendering");
     displayWhileRenderingCheck = new JCheckBox(text, true);
-    text = JmolResourceHandler.getStringX("Povray.displayWhileRenderingTip");
+    text = GT._("Should Pov-Ray attempt to display while rendering?");
     displayWhileRenderingCheck.setToolTipText(text);
     displayWhileRenderingCheck.addItemListener(updateItemListener);
     displayBox.add(displayWhileRenderingCheck);
@@ -252,9 +252,9 @@ public class PovrayDialog extends JDialog {
 
     // Image size option
     Box imageBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.imageSize");
+    text = GT._("Image size");
     imageSizeCheck = new JCheckBox(text, false);
-    text = JmolResourceHandler.getStringX("Povray.imageSizeTip");
+    text = GT._("Image size");
     imageSizeCheck.setToolTipText(text);
     imageSizeCheck.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -266,9 +266,9 @@ public class PovrayDialog extends JDialog {
     imageBox.add(Box.createHorizontalStrut(10));
     Box imageSizeDetailBox = Box.createVerticalBox();
     Box imageSizeXYBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.imageSizeWidth");
+    text = GT._("Width : ");
     imageSizeWidth = new JLabel(text);
-    text = JmolResourceHandler.getStringX("Povray.imageSizeWidthTip");
+    text = GT._("Image width");
     imageSizeWidth.setToolTipText(text);
     imageSizeXYBox.add(imageSizeWidth);
     imageSizeTextWidth = new JFormattedTextField();
@@ -283,9 +283,9 @@ public class PovrayDialog extends JDialog {
     );
     imageSizeXYBox.add(imageSizeTextWidth);
     imageSizeXYBox.add(Box.createHorizontalStrut(10));
-    text = JmolResourceHandler.getStringX("Povray.imageSizeHeight");
+    text = GT._("Height : ");
     imageSizeHeight = new JLabel(text);
-    text = JmolResourceHandler.getStringX("Povray.imageSizeHeightTip");
+    text = GT._("Image height");
     imageSizeHeight.setToolTipText(text);
     imageSizeXYBox.add(imageSizeHeight);
     imageSizeTextHeight = new JFormattedTextField();
@@ -302,9 +302,9 @@ public class PovrayDialog extends JDialog {
     imageSizeXYBox.add(Box.createGlue());
     imageSizeDetailBox.add(imageSizeXYBox);
     Box imageSizeBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.imageSizeKeepRatio");
+    text = GT._("Fixed ratio : ");
     imageSizeRatioBox = new JCheckBox(text, true);
-    text = JmolResourceHandler.getStringX("Povray.imageSizeKeepRatioTip");
+    text = GT._("Use a fixed ratio for width:height");
     imageSizeRatioBox.setToolTipText(text);
     imageSizeRatioBox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -315,13 +315,13 @@ public class PovrayDialog extends JDialog {
     imageSizeBox.add(imageSizeRatioBox);
     imageSizeBox.add(Box.createHorizontalStrut(10));
     imageSizeRatioCombo = new JComboBox();
-    text = JmolResourceHandler.getStringX("Povray.imageSizeRatioFree");
+    text = GT._("User defined");
     imageSizeRatioCombo.addItem(text);
-    text = JmolResourceHandler.getStringX("Povray.imageSizeRatioJmol");
+    text = GT._("Keep ratio of Jmol window");
     imageSizeRatioCombo.addItem(text);
-    text = JmolResourceHandler.getStringX("Povray.imageSizeRatio4_3");
+    text = GT._("4/3");
     imageSizeRatioCombo.addItem(text);
-    text = JmolResourceHandler.getStringX("Povray.imageSizeRatio16_9");
+    text = GT._("16/9");
     imageSizeRatioCombo.addItem(text);
     imageSizeRatioCombo.setSelectedIndex(1);
     imageSizeRatioCombo.addActionListener(new ActionListener() {
@@ -341,9 +341,9 @@ public class PovrayDialog extends JDialog {
     
     // Output format option
     Box outputBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.outputFormat");
+    text = GT._("Output format : ");
     outputFormatCheck = new JCheckBox(text, false);
-    text = JmolResourceHandler.getStringX("Povray.outputFormatTip");
+    text = GT._("Select the file format of the output file");
     outputFormatCheck.setToolTipText(text);
     outputFormatCheck.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -353,13 +353,13 @@ public class PovrayDialog extends JDialog {
     });
     outputBox.add(outputFormatCheck);
     outputFormatCombo = new JComboBox();
-    text = JmolResourceHandler.getStringX("Povray.outputFormatC");
+    text = GT._("C - Compressed Targa-24");
     outputFormatCombo.addItem(text);
-    text = JmolResourceHandler.getStringX("Povray.outputFormatN");
+    text = GT._("N - PNG");
     outputFormatCombo.addItem(text);
-    text = JmolResourceHandler.getStringX("Povray.outputFormatP");
+    text = GT._("P - PPM");
     outputFormatCombo.addItem(text);
-    text = JmolResourceHandler.getStringX("Povray.outputFormatT");
+    text = GT._("T - Uncompressed Targa-24");
     outputFormatCombo.addItem(text);
     outputFormatCombo.setSelectedIndex(3);
     outputFormatCombo.addActionListener(new ActionListener() {
@@ -375,9 +375,9 @@ public class PovrayDialog extends JDialog {
 
     // Alpha option
     Box alphaBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.outputAlpha");
+    text = GT._("Alpha transparency");
     outputAlphaCheck = new JCheckBox(text, false);
-    text = JmolResourceHandler.getStringX("Povray.outputAlphaTip");
+    text = GT._("Output Alpha transparency data");
     outputAlphaCheck.setToolTipText(text);
     outputAlphaCheck.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -390,9 +390,9 @@ public class PovrayDialog extends JDialog {
     
     // Mosaic preview option
     Box mosaicBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.mosaicPreview");
+    text = GT._("Mosaic preview");
     mosaicPreviewCheck = new JCheckBox(text, false);
-    text = JmolResourceHandler.getStringX("Povray.mosaicPreviewTip");
+    text = GT._("Render the image in several passes");
     mosaicPreviewCheck.setToolTipText(text);
     mosaicPreviewCheck.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -402,9 +402,9 @@ public class PovrayDialog extends JDialog {
     });
     mosaicBox.add(mosaicPreviewCheck);
     mosaicBox.add(Box.createHorizontalStrut(10));
-    text = JmolResourceHandler.getStringX("Povray.mosaicPreviewStart");
+    text = GT._("Start size : ");
     mosaicPreviewStart = new JLabel(text);
-    text = JmolResourceHandler.getStringX("Povray.mosaicPreviewStartTip");
+    text = GT._("Inital size of the tiles");
     mosaicPreviewStart.setToolTipText(text);
     mosaicBox.add(mosaicPreviewStart);
     mosaicPreviewComboStart = new JComboBox();
@@ -420,9 +420,9 @@ public class PovrayDialog extends JDialog {
     });
     mosaicBox.add(mosaicPreviewComboStart);
     mosaicBox.add(Box.createHorizontalStrut(10));
-    text = JmolResourceHandler.getStringX("Povray.mosaicPreviewEnd");
+    text = GT._("End size : ");
     mosaicPreviewEnd = new JLabel(text);
-    text = JmolResourceHandler.getStringX("Povray.mosaicPreviewEndTip");
+    text = GT._("Final size of the tiles");
     mosaicPreviewEnd.setToolTipText(text);
     mosaicBox.add(mosaicPreviewEnd);
     mosaicPreviewComboEnd = new JComboBox();
@@ -443,15 +443,15 @@ public class PovrayDialog extends JDialog {
     
     //GUI for povray path selection
     Box povrayPathBox = Box.createHorizontalBox();
-    text = JmolResourceHandler.getStringX("Povray.povrayExecutable");
+    text = GT._("Povray Executable Location");
     povrayPathBox.setBorder(new TitledBorder(text));
-    text = JmolResourceHandler.getStringX("Povray.povrayExecutableTip");
+    text = GT._("Location of the Povray Executable");
     povrayPathBox.setToolTipText(text);
     povrayPathLabel = new JTextField("");
     povrayPathLabel.setEditable(false);
     povrayPathLabel.setBorder(null);
     povrayPathBox.add(povrayPathLabel);
-    text = JmolResourceHandler.getStringX("Povray.selectButton");
+    text = GT._("Select...");
     povrayPathButton = new JButton(text);
     povrayPathButton.addActionListener(new ActionListener() {
 
@@ -464,12 +464,12 @@ public class PovrayDialog extends JDialog {
 
     //GUI for command selection
     Box commandLineBox = Box.createVerticalBox();
-    text = JmolResourceHandler.getStringX("Povray.commandLineTitle");
+    text = GT._("Command Line to Execute");
     commandLineBox.setBorder(new TitledBorder(text));
-    text = JmolResourceHandler.getStringX("Povray.commandLineTip");
+    text = GT._("The actual command which will be executed");
     commandLineBox.setToolTipText(text);
     commandLineField = new JTextField(30);
-    text = JmolResourceHandler.getStringX("Povray.commandLineTip");
+    text = GT._("The actual command which will be executed");
     commandLineField.setToolTipText(text);
     commandLineField.addActionListener(updateActionListener);
     commandLineBox.add(commandLineField);
@@ -479,9 +479,9 @@ public class PovrayDialog extends JDialog {
     //GUI for panel with go, cancel and stop (etc) buttons
     Box buttonBox = Box.createHorizontalBox();
     buttonBox.add(Box.createGlue());
-    text = JmolResourceHandler.getStringX("Povray.goLabel");
+    text = GT._("Go!");
     goButton = new JButton(text);
-    text = JmolResourceHandler.getStringX("Povray.goButtonTip");
+    text = GT._("Save file and possible launch povray");
     goButton.setToolTipText(text);
     goButton.addActionListener(new ActionListener() {
 
@@ -490,9 +490,9 @@ public class PovrayDialog extends JDialog {
       }
     });
     buttonBox.add(goButton);
-    text = JmolResourceHandler.getStringX("Povray.cancelLabel");
+    text = GT._("Cancel");
     JButton cancelButton = new JButton(text);
-    text = JmolResourceHandler.getStringX("Povray.cancelButtonTip");
+    text = GT._("Cancel this dialog without saving");
     cancelButton.setToolTipText(text);
     cancelButton.addActionListener(new ActionListener() {
 
@@ -751,9 +751,9 @@ public class PovrayDialog extends JDialog {
   	}
     String text = null;
     if (callPovray) {
-      text = JmolResourceHandler.getStringX("Povray.goLabel");
+      text = GT._("Go!");
     } else {
-      text = JmolResourceHandler.getStringX("Povray.saveLabel");
+      text = GT._("Save");
     }
     if (goButton != null) {
       goButton.setText(text);
@@ -814,7 +814,7 @@ public class PovrayDialog extends JDialog {
         (povrayPath == null) ||
 	    (basename == null)) {
       if (commandLineField != null) {
-        commandLineField.setText("null component string");
+        commandLineField.setText(GT._("null component string"));
       }
       return;
     }

@@ -35,13 +35,15 @@ import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import org.jmol.util.GT;
+
 public class Splash extends Window {
 
   private Image splashImage;
   private int imgWidth, imgHeight;
   private static final int BORDERSIZE = 10;
   private static final Color BORDERCOLOR = Color.blue;
-  private String status = "Loading...";
+  private String status = GT._("Loading...");
   private int textY;
   private int statusTop;
   private static final int STATUSSIZE = 10;

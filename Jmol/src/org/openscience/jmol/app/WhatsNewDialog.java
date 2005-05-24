@@ -46,13 +46,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import org.jmol.util.GT;
+
 public class WhatsNewDialog extends JDialog implements HyperlinkListener {
 
   JEditorPane html;
 
   public WhatsNewDialog(JFrame fr) {
 
-    super(fr, "What's New in Jmol", true);
+    super(fr, GT._("What's New in Jmol"), true);
 
     try {
       URL changeLogURL =
@@ -62,9 +64,9 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
       if (changeLogURL != null) {
         html = new JEditorPane(changeLogURL);
       } else {
-        html = new JEditorPane("text/plain", "Unable to find url '"
-            + JmolResourceHandler.getStringX("WhatsNew.changeLogURL")
-              + "'.");
+        html = new JEditorPane("text/plain", 
+            GT._("Unable to find url '{0}'.", new Object[] {
+                 JmolResourceHandler.getStringX("WhatsNew.changeLogURL") }));
       }
       html.setEditable(false);
       html.addHyperlinkListener(this);
@@ -91,9 +93,7 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton ok =
-      new JButton(JmolResourceHandler
-        .getStringX("WhatsNew.okLabel"));
+    JButton ok = new JButton(GT._("OK"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

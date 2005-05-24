@@ -25,6 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
+import org.jmol.util.GT;
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -163,7 +164,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     initializeProperties();
 
-    this.setTitle(JmolResourceHandler.translateX("Preferences"));
+    this.setTitle(GT._("Preferences"));
 
     initVariables();
     commands = new Hashtable();
@@ -181,29 +182,28 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel bonds = buildBondPanel();
     JPanel colors = buildColorsPanel();
     //    JPanel vibrate = buildVibratePanel();
-    tabs.addTab(JmolResourceHandler.getStringX("Prefs.displayLabel"), null, disp);
-    tabs.addTab(JmolResourceHandler.getStringX("Prefs.atomsLabel"), null, atoms);
-    tabs.addTab(JmolResourceHandler.getStringX("Prefs.bondsLabel"), null, bonds);
-    tabs.addTab(JmolResourceHandler.getStringX("Prefs.colorsLabel"), null, colors);
+    tabs.addTab(GT._("Display"), null, disp);
+    tabs.addTab(GT._("Atoms"), null, atoms);
+    tabs.addTab(GT._("Bonds"), null, bonds);
+    tabs.addTab(GT._("Colors"), null, colors);
     //    tabs.addTab(JmolResourceHandler.getStringX("Prefs.vibrateLabel"), null, vibrate);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    jmolDefaultsButton = new JButton(JmolResourceHandler.getStringX("Prefs.jmolDefaultsLabel"));
+    jmolDefaultsButton = new JButton(GT._("Jmol Defaults"));
     jmolDefaultsButton.addActionListener(this);
     buttonPanel.add(jmolDefaultsButton);
 
-    rasmolDefaultsButton =
-      new JButton(JmolResourceHandler.getStringX("Prefs.rasmolDefaultsLabel"));
+    rasmolDefaultsButton = new JButton(GT._("RasMol Defaults"));
     rasmolDefaultsButton.addActionListener(this);
     buttonPanel.add(rasmolDefaultsButton);
 
-    cancelButton = new JButton(JmolResourceHandler.getStringX("Prefs.cancelButton"));
+    cancelButton = new JButton(GT._("Cancel"));
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
 
-    applyButton = new JButton(JmolResourceHandler.getStringX("Prefs.applyButton"));
+    applyButton = new JButton(GT._("Apply"));
     applyButton.addActionListener(this);
     buttonPanel.add(applyButton);
 

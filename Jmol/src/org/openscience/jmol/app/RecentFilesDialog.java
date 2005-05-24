@@ -35,6 +35,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.jmol.util.GT;
+
 /**
  * Manages a list of recently opened files.
  *
@@ -56,20 +58,16 @@ class RecentFilesDialog extends JDialog implements ActionListener,
    */
   public RecentFilesDialog(java.awt.Frame boss) {
 
-    super(boss, JmolResourceHandler
-        .getStringX("RecentFiles.windowTitle"), true);
+    super(boss, GT._("Recent Files"), true);
     props = new java.util.Properties();
     getFiles();
     getContentPane().setLayout(new java.awt.BorderLayout());
     JPanel buttonPanel = new JPanel();
-    okButton =
-        new JButton(JmolResourceHandler
-          .getStringX("RecentFiles.okLabel"));
+    okButton = new JButton(GT._("Open"));
     okButton.addActionListener(this);
     buttonPanel.add(okButton);
     cancelButton =
-        new JButton(JmolResourceHandler
-          .getStringX("RecentFiles.cancelLabel"));
+        new JButton(GT._("Cancel"));
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
     getContentPane().add("South", buttonPanel);

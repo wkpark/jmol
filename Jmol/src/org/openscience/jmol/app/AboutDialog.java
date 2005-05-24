@@ -47,7 +47,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import org.jmol.util.GT;
-import java.text.MessageFormat;
 
 public class AboutDialog extends JDialog implements HyperlinkListener {
 

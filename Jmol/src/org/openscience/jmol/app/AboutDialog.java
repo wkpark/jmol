@@ -65,8 +65,7 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
         html = new JEditorPane(aboutURL);
       } else {
         html = new JEditorPane("text/plain",
-            MessageFormat.format(
-              GT._("Unable to find url '{0}'."), new Object[] 
+            GT._("Unable to find url '{0}'.", new Object[] 
               { JmolResourceHandler.getStringX("About.aboutURL") }));
       }
       html.setEditable(false);

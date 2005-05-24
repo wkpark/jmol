@@ -24,11 +24,12 @@
  */
 package org.jmol.util;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class GT {
     
-    private static GT getTextWrapper = null;
+    private static GT getTextWrapper = new GT();
     private static ResourceBundle translationResources = null;
 
     private GT() {
@@ -51,15 +52,26 @@ public class GT {
     }
     
     public static String _(String string) {
-        if (getTextWrapper == null) { 
-            getTextWrapper = new GT();
-        }
         return getTextWrapper.getString(string);
+    }
+    
+    public static String _(String string, Object[] objects) {
+        return getTextWrapper.getString(string, objects);
     }
     
     private String getString(String string) {
         if (translationResources != null) {
             String trans = translationResources.getString(string);
+            System.out.println("trans: " + string  + " ->" + trans);
+            return trans;
+        }
+        System.out.println("No trans, using default: " + string);
+        return string;
+    }
+
+    private String getString(String string, Object[] objects) {
+        if (translationResources != null) {
+            String trans = MessageFormat.format(translationResources.getString(string), objects);
             System.out.println("trans: " + string  + " ->" + trans);
             return trans;
         }

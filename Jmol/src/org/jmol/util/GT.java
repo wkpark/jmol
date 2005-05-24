@@ -35,7 +35,7 @@ public class GT {
         System.out.println("Instantiating gettext wrapper...");
         try {
             translationResources = ResourceBundle.getBundle(
-                "org.translation.application"
+                "Messages"
             );
         } catch (MissingResourceException mre) {
             System.out.println("Translations do not seem to have been installed!");

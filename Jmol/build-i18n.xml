@@ -1,0 +1,187 @@
+<project name="Jmol-i18n" default="main" basedir=".">
+
+<!--
+TODO:
+- Jmol.filelist and JmolApplet.filelist must be created
+- ant-contrib.jar needs to go into jars/
+- should check for existance of gettext
+- should execute gettext commands depending on the os (os attribute)
+-->
+
+<!-- our properties section -->
+
+  <property name="lib.dir" value="jars" />
+  <property name="src.dir" value="src" />
+  <property name="Jmol.po.dir" value="src/org/jmol/translation/Jmol" />
+  <property name="JmolApplet.po.dir" value="src/org/jmol/translation/JmolApplet" />
+  <property name="all.Jmol.languages" value="de" />
+  <property name="all.JmolApplet.languages" value="de" />
+  <!-- <property name="all.modules" value="Jmol,JmolApplet" /> -->
+
+
+<!-- <for list ...> construct needs ant-contrib.jar -->
+
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${lib.dir}/ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
+
+<!-- the main target -->
+
+  <target name="main" id="main" depends="init,update-pot,update-po,update-catalog"/>
+  
+  <target name="init" id="init">
+    <tstamp/>
+  </target>
+
+
+<!-- create initial gettext po-template files -->
+
+  <target name="update-pot" id="update-pot" depends="create-application-pot,create-applet-pot" />
+
+  <!-- create Jmol.pot -->
+  <target name="create-application-pot" id="create-application-pot" depends="clean-application-pot">
+    <echo message="Generating Jmol.pot (gettext PO-template) file ..."/>
+    <apply executable="xgettext" dir="${Jmol.po.dir}">
+      <arg value="-k_" />
+      <arg value="-kGT._" />
+      <arg value="-s" />
+      <arg value="--language=Java" />
+      <arg value="--output=Jmol.pot" />
+      <fileset dir="${src.dir}">
+         <include name="**/*.java"/>
+      </fileset>
+    </apply>
+  </target>
+
+  <!-- create JmolApplet.pot -->
+  <target name="create-applet-pot" id="create-applet-pot" depends="clean-applet-pot">
+    <echo message="Generating JmolApplet.pot (gettext PO-template) file ..."/>
+    <apply executable="xgettext" dir="${JmolApplet.po.dir}">
+      <arg value="-k_" />
+      <arg value="-kGT._" />
+      <arg value="-s" />
+      <arg value="--language=Java" />
+      <arg value="--output=JmolApplet.pot" />
+      <fileset dir="${src.dir}">
+         <include name="**/*.java"/>
+      </fileset>
+    </apply>
+  </target>
+
+
+<!-- update po files using newly created .pot files -->
+
+  <target name="update-po" id="update-po" depends="update-application-po,update-applet-po"/>
+
+  <!-- update Jmol po files using newly created Jmol.pot file -->
+  <target name="update-application-po" id="update-application-po" depends="create-application-pot">
+    <for list="${all.Jmol.languages}" delimiter="," param="current.Jmol.language">
+      <sequential>
+        <antcall target="update-application-po-lang">
+          <param name="Jmol_lang_value" value="@{current.Jmol.language}"/>
+        </antcall>
+      </sequential>
+    </for>
+  </target>  
+  
+  <target name="update-application-po-lang" id="update-application-po-lang">
+    <echo message="Updating ${Jmol_lang_value}.po gettext file for Jmol ..."/>
+    <exec executable="msgmerge" dir="${Jmol.po.dir}">
+      <arg line="-U ${Jmol_lang_value}.po Jmol.pot"/>
+    </exec>
+  </target>
+
+  <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
+  <target name="update-applet-po" id="update-applet-po" depends="create-applet-pot">
+    <for list="${all.JmolApplet.languages}" delimiter="," param="current.JmolApplet.language">
+      <sequential>
+        <antcall target="update-applet-po-lang">
+          <param name="JmolApplet_lang_value" value="@{current.JmolApplet.language}"/>
+        </antcall>
+      </sequential>
+    </for>
+  </target>  
+  
+  <target name="update-applet-po-lang" id="update-applet-po-lang">
+    <echo message="Updating ${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
+    <exec executable="msgmerge" dir="${JmolApplet.po.dir}">
+      <arg line="-U ${JmolApplet_lang_value}.po JmolApplet.pot"/>
+    </exec>
+  </target>
+
+<!-- Update message cataloges and create messages_LANG.class files -->
+
+<target name="update-catalog" id="update-catalog" depends="update-application-catalog,update-applet-catalog" />
+
+  <!-- update Jmol po files using newly created Jmol.pot file -->
+  <target name="update-application-catalog" id="update-application-catalog">
+    <for list="${all.Jmol.languages}" delimiter="," param="current.Jmol.language">
+      <sequential>
+        <antcall target="update-application-catalog-lang">
+          <param name="Jmol_lang_value" value="@{current.Jmol.language}"/>
+        </antcall>
+      </sequential>
+    </for>
+  </target>  
+
+  <target name="update-application-catalog-lang" id="update-application-catalog-lang">
+    <echo message="Updating messages_${Jmol_lang_value}.class file for Jmol ..."/>
+    <exec executable="msgfmt" dir="${Jmol.po.dir}">
+      <arg line="--statistics -j -l ${Jmol_lang_value} -d . ${Jmol_lang_value}.po"/>
+    </exec>
+  </target>
+
+  <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
+  <target name="update-applet-catalog" id="update-applet-catalog">
+    <for list="${all.JmolApplet.languages}" delimiter="," param="current.JmolApplet.language">
+      <sequential>
+        <antcall target="update-applet-catalog-lang">
+          <param name="JmolApplet_lang_value" value="@{current.JmolApplet.language}"/>
+        </antcall>
+      </sequential>
+    </for>
+  </target>  
+
+  <target name="update-applet-catalog-lang" id="update-applet-catalog-lang">
+    <echo message="Updating messages_${JmolApplet_lang_value}.class file for JmolApplet ..."/>
+    <exec executable="msgfmt" dir="${JmolApplet.po.dir}">
+      <arg line="--statistics -j -l ${JmolApplet_lang_value} -d . ${JmolApplet_lang_value}.po"/>
+    </exec>
+  </target>
+
+
+  <!-- clean target: removes .pot files -->
+  <target name="clean" id="clean"/>
+
+  <!-- the following targets are for special purposes -->
+  <target name="clean-application-pot" id="clean-application-pot">
+    <delete>
+      <fileset dir="${Jmol.po.dir}">
+        <include name="Jmol.pot" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clean-applet-pot" id="clean-applet-pot">
+    <delete>
+      <fileset dir="${JmolApplet.po.dir}">
+        <include name="JmolApplet.pot" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clean-catalogs" id="clean-pot">
+    <delete>
+      <fileset dir="${Jmol.po.dir}">
+        <include name="messages*.class" />
+      </fileset>
+      <fileset dir="${JmolApplet.po.dir}">
+        <include name="messages*.class" />
+      </fileset>
+    </delete>
+  </target>
+
+</project>

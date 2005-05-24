@@ -44,9 +44,8 @@ TODO:
 
   <!-- create Jmol.pot -->
   <target name="create-application-pot" id="create-application-pot" depends="clean-application-pot">
-    <echo message="Generating Jmol.pot (gettext PO-template) file ..."/>
-    <apply executable="xgettext" dir="${Jmol.po.dir}">
-      <arg value="-k_" />
+    <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
+    <apply executable="xgettext" dir="${Jmol.po.dir}" parallel="true" verbose="true">
       <arg value="-kGT._" />
       <arg value="-s" />
       <arg value="--language=Java" />
@@ -60,8 +59,7 @@ TODO:
   <!-- create JmolApplet.pot -->
   <target name="create-applet-pot" id="create-applet-pot" depends="clean-applet-pot">
     <echo message="Generating JmolApplet.pot (gettext PO-template) file ..."/>
-    <apply executable="xgettext" dir="${JmolApplet.po.dir}">
-      <arg value="-k_" />
+    <apply executable="xgettext" dir="${JmolApplet.po.dir}" parallel="true" verbose="true">
       <arg value="-kGT._" />
       <arg value="-s" />
       <arg value="--language=Java" />

@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
-"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-24 14:31+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-05-24 16:14+0200\n"
 "PO-Revision-Date: 2005-05-24 14:31+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,10 +19,89 @@ msgstr ""
 msgid "About Jmol"
 msgstr "Über Jmol"
 
-#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AboutDialog.java:98
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:313
+msgid "Amplitude"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:204
+msgid "Atom Set Collection"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:162
+msgid "AtomSetChooser"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:224
+msgid "Collection"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/DisplayPanel.java:267
+msgid "Delete Atoms"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/ConsoleTextArea.java:88
+#, java-format
+msgid "Error reading from BufferedReader: {0}"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:263
+msgid "FPS"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:229
+msgid "Info"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/HelpDialog.java:64
+msgid "Jmol Help"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:167
+msgid "No AtomSets"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AboutDialog.java:97
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/HelpDialog.java:106
 msgid "OK"
 msgstr "OK"
 
-#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AboutDialog.java:69
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:323
+msgid "Period"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/FilePreview.java:67
+msgid "Preview"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:196
+msgid "Properties"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:286
+msgid "Radius"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:251
+msgid "Repeat"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:299
+msgid "Scale"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:236
+msgid "Select"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/DisplayPanel.java:253
+msgid "Select Atoms"
+msgstr ""
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AboutDialog.java:68
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/HelpDialog.java:77
 msgid "Unable to find url '{0}'."
 msgstr "URL '{0}' wurde nicht gefunden."
+
+#: /home/dl/packages/cvs/Jmol/src/org/openscience/jmol/app/AtomSetChooser.java:279
+msgid "Vector"
+msgstr ""

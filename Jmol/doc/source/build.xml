@@ -4,7 +4,16 @@
 TODO:
 - should check for existance of gettext and xml2po
 - should maybe execute xml2po depending on the os (os attribute)
+- ant-contrib.jar will be in jars/
 -->
+
+  <!-- our properties section -->
+  <property name="src.dir" value="${basedir}" />
+  <property name="pot.dir" value="po" />
+  <property name="all.JmolAppletGuide.languages" value="de" />
+  <property name="all.JmolDevelopersGuide.languages" value="de" />
+  <property name="all.JmolGuide.languages" value="de" />
+  <property name="all.guides" value="JmolAppletGuide,JmolDevelopersGuide,JmolGuide" />
 
   <!-- <for list ...> construct needs ant-contrib.jar -->
   <taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -13,16 +22,9 @@ TODO:
     </classpath>
   </taskdef>
 
-  <!-- our properties section -->
-  <property name="src.dir" value="${basedir}" />
-  <property name="pot.dir" value="po" />
-  <property name="all.languages" value="de" />
-  <property name="all.guides" value="JmolAppletGuide,JmolDevelopersGuide,JmolGuide" />
-
   <!-- main target creates .pot files, update existing .po files and creates
        translated XML files by default -->
-  <target name="main" id="main"
-    depends="init,create-pot,update-po,update-xml"/>
+  <target name="main" id="main" depends="init,create-pot,update-po,update-xml"/>
   
   <target name="init" id="init">
     <tstamp/>
@@ -48,9 +50,9 @@ TODO:
 
   <!-- parse list of possible languages and update LANG.po gettext files -->
   <target name="update-po" id="update-po">
-    <for list="${all.languages}" delimiter="," param="current.language">
+    <for list="${all.guides}" delimiter="," param="current.guide">
       <sequential>
-        <for list="${all.guides}" delimiter="," param="current.guide">
+        <for list="${all.@{current.guide}.languages}" delimiter="," param="current.language">
           <sequential>
             <antcall target="update-po-guide-lang">
               <param name="lang_value" value="@{current.language}"/>
@@ -72,9 +74,9 @@ TODO:
 
   <!-- parse list of vailable languages and guides and marge translations back -->
   <target name="update-xml" id="update-xml" depends="clean-translation">
-    <for list="${all.languages}" delimiter="," param="current.language">
+    <for list="${all.guides}" delimiter="," param="current.guide">
       <sequential>
-        <for list="${all.guides}" delimiter="," param="current.guide">
+        <for list="${all.@{current.guide}.languages}" delimiter="," param="current.language">
           <sequential>
             <antcall target="update-xml-guide-lang">
               <param name="lang_value" value="@{current.language}"/>

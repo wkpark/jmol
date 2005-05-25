@@ -70,13 +70,15 @@ public class GT {
     }
 
     private String getString(String string, Object[] objects) {
+        String trans = string;
         if (translationResources != null) {
-            String trans = MessageFormat.format(translationResources.getString(string), objects);
+            trans = MessageFormat.format(translationResources.getString(string), objects);
             System.out.println("trans: " + string  + " ->" + trans);
-            return trans;
+        } else {
+            trans = MessageFormat.format(string, objects);
+            System.out.println("No trans, using default: " + trans);
         }
-        System.out.println("No trans, using default: " + string);
-        return string;
+        return trans;
     }
 }
 

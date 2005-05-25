@@ -19,9 +19,9 @@
         </td>
         <td align="right" valign="middle">
           <font size="2">
-            <a href="[root]/">Home</a> |
-            <a href="[root]/websites/">Websites</a> |
-            <a href="[root]/history/">History</a> |
+            <a href="[root]/">Startseite</a> |
+            <a href="[root]/websites/">Links</a> |
+            <a href="[root]/history/">Historie</a> |
             <a href="[root]/changes/">Ver&#x00E4;nderungen</a> |
             <a href="[root]/technotes/">Technische Dokumente</a> |
             <a href="[root]/faqs/">H&#x00E4;ufig gestellte Fragen</a>
@@ -30,22 +30,22 @@
             <a href="[root]/docs/">Dokumentation</a> |
             <a href="http://www.stolaf.edu/people/hansonr/jmol/docs"
               target="_blank" >
-              Interaktives Scripting Dokument
+              Doku zum interaktiven Scripting
             </a> |
-            <a href="[root]/browsercheck/">Browser Test</a>
+            <a href="[root]/browsercheck/">Browser-Test</a>
             <br/>
-            <a href="[root]/demo/">Beispiel-Seiten</a> |
-            <a href="[root]/jslibrary/">JavaScript Bibliothek</a> |
+            <a href="[root]/demo/">Beispiele</a> |
+            <a href="[root]/jslibrary/">JavaScript-Bibliothek</a> |
             <a href="[root]/plugins/">Plugins</a> |
             <a href="[root]/jscolors/">Farben</a>
             <br/>
             <a href="[root]/download/">Download</a> |
-            <a href="[root]/lists/">Mail-Adressen Liste</a> |
+            <a href="[root]/lists/">Mailinglisten</a> |
             <a href="http://sourceforge.net/projects/jmol">
-              Sourceforge Project homepage
+              SourceForge-Projekt
             </a> |
             <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">
-              Fehler Datenbank
+              Bug-Datenbank
             </a>
           </font>
         </td>

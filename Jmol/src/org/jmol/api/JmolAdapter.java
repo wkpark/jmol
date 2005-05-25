@@ -57,7 +57,6 @@ public abstract class JmolAdapter {
   public final static short ORDER_STEREO_FAR      = ((2 << 3) | 2);
   public final static short ORDER_PARTIAL01       = (1 << 10);
   public final static short ORDER_PARTIAL12       = (1 << 11);
-    
 
   //////////////////////////////////////////////////////////////////
   // file related

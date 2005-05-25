@@ -30,6 +30,7 @@ import org.jmol.appletwrapper.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 //import org.openscience.jmol.adapters.CdkJmolAdapter;
 import org.openscience.jmol.ui.JmolPopup;
+import org.jmol.util.GT;
 
 import netscape.javascript.JSObject;
 
@@ -114,8 +115,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   static String appletInfo =
-    "Jmol Applet.  Part of the OpenScience project. " +
-    "See jmol.sourceforge.net for more information";
+    GT._("Jmol Applet.  Part of the OpenScience project. " +
+         "See http://www.jmol.org for more information");
 
   public void setAppletWrapper(AppletWrapper appletWrapper) {
     this.appletWrapper = appletWrapper;
@@ -446,7 +447,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   public void script(String script) {
     String strError = viewer.evalString(script);
     if (strError == null)
-      strError = "Jmol executing script ...";
+      strError = GT._("Jmol executing script ...");
     myStatusListener.setStatusMessage(strError);
   }
 
@@ -503,7 +504,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
                                  String modelName, Object clientFile,
                                  String errorMsg) {
       if (errorMsg != null) {
-        showStatusAndConsole("File Error:" + errorMsg);
+        showStatusAndConsole(GT._("File Error:") + errorMsg);
         return;
       }
       if (fullPathName != null)
@@ -532,7 +533,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void notifyScriptTermination(String errorMessage, int msWalltime) {
-      showStatusAndConsole("Jmol script completed");
+      showStatusAndConsole(GT._("Jmol script completed"));
       if (buttonCallbackNotificationPending) {
         System.out.println("!!!! calling back " + buttonCallback);
         buttonCallbackAfter[0] = buttonName;

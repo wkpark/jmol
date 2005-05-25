@@ -90,9 +90,9 @@ public class Jmol extends JPanel {
 
   // Window names for the history file
   private final static String JMOL_WINDOW_NAME = "Jmol";
-  private final static String CONSOLE_WINDOW_NAME = GT._("Console");
-  private final static String SCRIPT_WINDOW_NAME = GT._("Script");
-  private final static String FILE_OPEN_WINDOW_NAME = GT._("FileOpen");
+  private final static String CONSOLE_WINDOW_NAME = "Console";
+  private final static String SCRIPT_WINDOW_NAME = "Script";
+  private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
 
   /**
    * The current file.

@@ -2,11 +2,9 @@
 
 <!--
 TODO:
-- fileset must be adjusted to fit Jmol and JmolApplet needs
-  (currently covers all *.java files)
-- ant-contrib.jar needs to go into jars/
 - should check for existance of gettext
 - should execute gettext commands depending on the os (os attribute)
+  (add no-location option to gettext?)
 -->
 
 <!-- our properties section -->
@@ -67,7 +65,10 @@ TODO:
       <arg value="--output-dir=${JmolApplet.po.dir}" />
       <arg value="--output=JmolApplet.pot" />
       <fileset dir="${src.dir}">
-         <include name="**/*.java"/>
+        <include name="JmolApplet*.java"/>
+        <include name="org/jmol/**/*.java"/>
+        <exclude name="org/jmol/**/cdk/*.java"/>
+        <include name="org/openscience/jmol/ui/*.java"/>
       </fileset>
     </apply>
   </target>

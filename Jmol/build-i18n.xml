@@ -45,7 +45,6 @@ TODO:
     <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
     <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true">
       <arg value="-kGT._" />
-      <arg value="-s" />
       <arg value="--language=Java" />
       <arg value="--output-dir=${Jmol.po.dir}" />
       <arg value="--output=Jmol.pot" />
@@ -60,7 +59,6 @@ TODO:
     <echo message="Generating JmolApplet.pot (gettext PO-template) file ..."/>
     <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true">
       <arg value="-kGT._" />
-      <arg value="-s" />
       <arg value="--language=Java" />
       <arg value="--output-dir=${JmolApplet.po.dir}" />
       <arg value="--output=JmolApplet.pot" />

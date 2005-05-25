@@ -199,7 +199,7 @@ public class PovrayDialog extends JDialog {
     Box runPovBox = Box.createHorizontalBox();
     text = GT._("Run Pov-Ray directly");
     runPovCheck = new JCheckBox(text, true);
-    text = GT._("aunch Pov-Ray from with-in Jmol");
+    text = GT._("Launch Pov-Ray from with-in Jmol");
     runPovCheck.setToolTipText(text);
     runPovCheck.addItemListener(updateItemListener);
     runPovBox.add(runPovCheck);

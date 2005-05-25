@@ -33,6 +33,7 @@
  */
 
 import org.jmol.api.JmolAppletInterface;
+import org.jmol.util.GT;
 import netscape.javascript.JSObject;
 
 public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
@@ -40,7 +41,7 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
   public JmolApplet() {
     super("org.jmol.applet.Jmol",
           "jmol75x29x8.gif",
-          "Loading Jmol applet ...",
+          GT._("Loading Jmol applet ..."),
           3, preloadClasses);
   }
 

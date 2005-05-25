@@ -25,6 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
+import org.jmol.util.GT;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -63,8 +64,7 @@ public class MeasurementTable extends JDialog {
    */
   public MeasurementTable(JmolViewer viewer, JFrame parentFrame) {
 
-    super(parentFrame, JmolResourceHandler
-          .translateX("Measurements..."), false);
+    super(parentFrame, GT._("Measurements..."), false);
     this.viewer = viewer;
 
     JPanel container = new JPanel();
@@ -122,8 +122,7 @@ public class MeasurementTable extends JDialog {
     JPanel measurementButtonPanel = new JPanel();
     measurementButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-    deleteButton = new JButton(JmolResourceHandler
-                               .translateX("Delete"));
+    deleteButton = new JButton(GT._("Delete"));
     deleteButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           viewer.deleteMeasurement(selectedMeasurementRow);
@@ -132,8 +131,7 @@ public class MeasurementTable extends JDialog {
       });
     deleteButton.setEnabled(false);
     
-    deleteAllButton = new JButton(JmolResourceHandler
-                                  .translateX("DeleteAll"));
+    deleteAllButton = new JButton(GT._("DeleteAll"));
     deleteAllButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           viewer.clearMeasurements();
@@ -151,8 +149,7 @@ public class MeasurementTable extends JDialog {
     JPanel dismissButtonPanel = new JPanel();
     dismissButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    JButton dismissButton = new JButton(JmolResourceHandler
-                                        .translateX("Dismiss"));
+    JButton dismissButton = new JButton(GT._("Dismiss"));
     dismissButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           close();
@@ -202,7 +199,7 @@ public class MeasurementTable extends JDialog {
   class MeasurementTableModel extends AbstractTableModel {
 
     final String[] measurementHeaders = {
-      JmolResourceHandler.translateX("Value"),
+      GT._("Value"),
       "a", "b", "c", "d", };
 
     public String getColumnName(int col) { 

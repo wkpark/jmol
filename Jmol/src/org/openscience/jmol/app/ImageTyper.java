@@ -34,6 +34,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import org.jmol.util.GT;
 
 public class ImageTyper extends JPanel {
 
@@ -55,7 +56,7 @@ public class ImageTyper extends JPanel {
 
     JPanel cbPanel = new JPanel();
     cbPanel.setLayout(new FlowLayout());
-    cbPanel.setBorder(new TitledBorder("Image Type"));
+    cbPanel.setBorder(new TitledBorder(GT._("Image Type")));
     cb = new JComboBox();
     for (int i = 0; i < Choices.length; i++) {
       cb.addItem(Choices[i]);
@@ -80,7 +81,7 @@ public class ImageTyper extends JPanel {
 
     JPanel qPanel = new JPanel();
     qPanel.setLayout(new BorderLayout());
-    qPanel.setBorder(new TitledBorder("JPEG Quality"));
+    qPanel.setBorder(new TitledBorder(GT._("JPEG Quality")));
     qSlider = new JSlider(SwingConstants.HORIZONTAL, 50, 100, 90);
     qSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSlider.setPaintTicks(true);

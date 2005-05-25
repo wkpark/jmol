@@ -86,10 +86,6 @@ class JmolResourceHandler {
     return getInstance().getIcon(key);
   }
 
-  public static String translateX(String key) {
-    return getInstance().translate(key);
-  }
-
   private synchronized ImageIcon getIcon(String key) {
 
     String resourceName = null;

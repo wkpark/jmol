@@ -27,6 +27,7 @@ package org.openscience.jmol.app;
 import org.jmol.api.*;
 import org.jmol.adapter.cdk.CdkJmolAdapter;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.util.GT;
 
 import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import org.openscience.jmol.ui.JmolPopup;
@@ -89,9 +90,9 @@ public class Jmol extends JPanel {
 
   // Window names for the history file
   private final static String JMOL_WINDOW_NAME = "Jmol";
-  private final static String CONSOLE_WINDOW_NAME = "Console";
-  private final static String SCRIPT_WINDOW_NAME = "Script";
-  private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
+  private final static String CONSOLE_WINDOW_NAME = GT._("Console");
+  private final static String SCRIPT_WINDOW_NAME = GT._("Script");
+  private final static String FILE_OPEN_WINDOW_NAME = GT._("FileOpen");
 
   /**
    * The current file.
@@ -124,7 +125,7 @@ public class Jmol extends JPanel {
     }
     if (System.getProperty("user.home") == null) {
       System.err.println(
-          "Error starting Jmol: the property 'user.home' is not defined.");
+          GT._("Error starting Jmol: the property 'user.home' is not defined."));
       System.exit(1);
     }
     File ujmoldir = new File(new File(System.getProperty("user.home")),
@@ -153,7 +154,7 @@ public class Jmol extends JPanel {
     setLayout(new BorderLayout());
 
     status = (StatusBar) createStatusBar();
-    say("Initializing 3D display...");
+    say(GT._("Initializing 3D display..."));
     //
     display = new DisplayPanel(status, guimap);
     JmolAdapter modelAdapter;
@@ -175,22 +176,22 @@ public class Jmol extends JPanel {
     viewer = JmolViewer.allocateViewer(display, modelAdapter);
     display.setViewer(viewer);
     
-    say("Initializing Preferences...");
+    say(GT._("Initializing Preferences..."));
     preferencesDialog = new PreferencesDialog(frame, guimap, viewer);
-    say("Initializing Recent Files...");
+    say(GT._("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
-    say("Initializing Script Window...");
+    say(GT._("Initializing Script Window..."));
     scriptWindow = new ScriptWindow(viewer, frame);
-    say("Initializing AtomSetChooser Window...");
+    say(GT._("Initializing AtomSetChooser Window..."));
     atomSetChooser = new AtomSetChooser(viewer, frame);
 
     viewer.setJmolStatusListener(new MyJmolStatusListener());
 
-    say("Initializing Measurements...");
+    say(GT._("Initializing Measurements..."));
     measurementTable = new MeasurementTable(viewer, frame);
 
     // Setup Plugin system
-    say("Loading plugins...");
+    say(GT._("Loading plugins..."));
     pluginManager = new CDKPluginManager(
         System.getProperty("user.home") + System.getProperty("file.separator")
         + ".jmol", new JmolEditBus(viewer)
@@ -207,7 +208,7 @@ public class Jmol extends JPanel {
     }
 
     // install the command table
-    say("Building Command Hooks...");
+    say(GT._("Building Command Hooks..."));
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -216,7 +217,7 @@ public class Jmol extends JPanel {
     }
 
     menuItems = new Hashtable();
-    say("Building Menubar...");
+    say(GT._("Building Menubar..."));
     executeScriptAction = new ExecuteScriptAction();
     menubar = createMenubar();
     add("North", menubar);
@@ -232,10 +233,10 @@ public class Jmol extends JPanel {
     add("Center", panel);
     add("South", status);
 
-    say("Starting display...");
+    say(GT._("Starting display..."));
     display.start();
 
-    say("Setting up File Choosers...");
+    say(GT._("Setting up File Choosers..."));
     openChooser = new FileChooser();
     openChooser.setCurrentDirectory(currentDir);
     String previewProperty = System.getProperty("openFilePreview", "true");
@@ -287,7 +288,7 @@ public class Jmol extends JPanel {
     // Repositionning windows
     historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow);
     
-    say("Setting up Drag-and-Drop...");
+    say(GT._("Setting up Drag-and-Drop..."));
     FileDropper dropper = new FileDropper ();
     final JFrame f = frame;
     dropper.addPropertyChangeListener (new PropertyChangeListener () {
@@ -313,8 +314,7 @@ public class Jmol extends JPanel {
     this.setDropTarget(new DropTarget (this, dropper));
     this.setEnabled(true);
 
-    // splash.showStatus(jrh.translate("Launching main frame..."));
-    say("Launching main frame...");
+    say(GT._("Launching main frame..."));
   }
 
   public static Jmol getJmol(JFrame frame,
@@ -323,10 +323,8 @@ public class Jmol extends JPanel {
     System.out.println("splash_image=" + splash_image);
     Splash splash = new Splash(frame, splash_image);
     splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    splash.showStatus(JmolResourceHandler
-                      .translateX("Creating main window..."));
-    splash.showStatus(JmolResourceHandler.
-                      translateX("Initializing Swing..."));
+    splash.showStatus(GT._("Creating main window..."));
+    splash.showStatus(GT._("Initializing Swing..."));
     try {
         UIManager
         .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -336,7 +334,7 @@ public class Jmol extends JPanel {
     
     screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     
-    splash.showStatus(JmolResourceHandler.translateX("Initializing Jmol..."));
+    splash.showStatus(GT._("Initializing Jmol..."));
     
     // cache the current directory to speed up Jmol window creation
     currentDir = getUserDirectory();
@@ -354,7 +352,7 @@ public class Jmol extends JPanel {
     String scriptFilename = null;
 
     Options options = new Options();
-    options.addOption("h", "help", false, "give this help page");
+    options.addOption("h", "help", false, GT._("give this help page"));
     
     OptionBuilder.withLongOpt("script");
     OptionBuilder.withDescription("script to run");
@@ -362,14 +360,14 @@ public class Jmol extends JPanel {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
     
-    OptionBuilder.withArgName("property=value");
+    OptionBuilder.withArgName(GT._("property=value"));
     OptionBuilder.hasArg();
     OptionBuilder.withValueSeparator();
-    OptionBuilder.withDescription("supported options are given below");
+    OptionBuilder.withDescription(GT._("supported options are given below"));
     options.addOption(OptionBuilder.create("D"));
     
     OptionBuilder.withLongOpt("geometry");
-    OptionBuilder.withDescription("window size 500x500");
+    OptionBuilder.withDescription(GT._("window size 500x500"));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
@@ -388,13 +386,13 @@ public class Jmol extends JPanel {
         
         // now report on the -D options
         System.out.println();
-        System.out.println("The -D options are as follows (defaults in parathesis):");
-        System.out.println("  cdk.debugging=[true|false] (false)");
-        System.out.println("  cdk.debug.stdout=[true|false] (false)");
-        System.out.println("  display.speed=[fps|ms] (ms)");
-        System.out.println("  JmolConsole=[true|false] (true)");
-        System.out.println("  plugin.dir (unset)");
-        System.out.println("  user.language=[DE|EN|ES|FR|NL|PL] (EN)");
+        System.out.println(GT._("The -D options are as follows (defaults in parathesis):"));
+        System.out.println(GT._("  cdk.debugging=[true|false] (false)"));
+        System.out.println(GT._("  cdk.debug.stdout=[true|false] (false)"));
+        System.out.println(GT._("  display.speed=[fps|ms] (ms)"));
+        System.out.println(GT._("  JmolConsole=[true|false] (true)"));
+        System.out.println(GT._("  plugin.dir (unset)"));
+        System.out.println(GT._("  user.language=[DE|EN|ES|FR|NL|PL] (EN)"));
 
         System.exit(0);
     }
@@ -452,7 +450,7 @@ public class Jmol extends JPanel {
       if (scriptFilename != null) {
         System.out.println("Executing script: " + scriptFilename);
         jmol.splash
-          .showStatus(JmolResourceHandler.getStringX("Executing script..."));
+          .showStatus(GT._("Executing script..."));
         jmol.viewer.evalFile(scriptFilename);
       }
     } catch (Throwable t) {
@@ -464,7 +462,7 @@ public class Jmol extends JPanel {
     Dimension size = jmol.frame.getSize();
 
     // Adding console frame to grab System.out & System.err
-    consoleframe = new JFrame("Jmol Console");
+    consoleframe = new JFrame(GT._("Jmol Console"));
     consoleframe.setIconImage(jmol.frame.getIconImage());
     try {
       ConsoleTextArea consoleTextArea = new ConsoleTextArea();
@@ -476,7 +474,7 @@ public class Jmol extends JPanel {
       errorTextArea.setFont(java.awt.Font.decode("monospaced"));
       consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
                                         java.awt.BorderLayout.CENTER);
-      errorTextArea.append("Could not create ConsoleTextArea: " + e);
+      errorTextArea.append(GT._("Could not create ConsoleTextArea: ") + e);
     }
     
     Dimension consoleSize = historyFile.getWindowSize(CONSOLE_WINDOW_NAME);
@@ -509,7 +507,7 @@ public class Jmol extends JPanel {
       if (splash == null) {
           System.out.println(message);
       } else {
-          splash.showStatus(JmolResourceHandler.translateX(message));
+          splash.showStatus(message);
       }
   }
   
@@ -791,7 +789,7 @@ public class Jmol extends JPanel {
 
   protected void addMacrosMenuBar(JMenuBar menuBar) {
       // ok, here needs to be added the funny stuff
-      JMenu macroMenu = new JMenu("Macros");
+      JMenu macroMenu = new JMenu(GT._("Macros"));
       File macroDir = new File(
           System.getProperty("user.home") + System.getProperty("file.separator")
           + ".jmol" + System.getProperty("file.separator") + "macros"
@@ -1107,8 +1105,8 @@ public class Jmol extends JPanel {
 
     OpenUrlAction() {
       super(openurlAction);
-      title = JmolResourceHandler.getStringX("OpenUrl.title");
-      prompt = JmolResourceHandler.getStringX("OpenUrl.prompt");
+      title = GT._("Open URL");
+      prompt = GT._("Enter URL of molecular model");
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1195,7 +1193,7 @@ public class Jmol extends JPanel {
             os.close();
 
           } catch (IOException exc) {
-            status.setStatus(1, "IO Exception:");
+            status.setStatus(1, GT._("IO Exception:"));
             status.setStatus(2, exc.toString());
             System.out.println(exc.toString());
           }
@@ -1361,9 +1359,9 @@ public class Jmol extends JPanel {
                                  String errorMsg) {
       if (errorMsg != null) {
         JOptionPane.showMessageDialog(null,
-                                      fullPathName + '\n' + errorMsg,
-                                      "File not loaded",
-                                      JOptionPane.ERROR_MESSAGE);
+          fullPathName + '\n' + errorMsg,
+          GT._("File not loaded"),
+          JOptionPane.ERROR_MESSAGE);
         return;
       }
       jmolpopup.updateComputedMenus();

@@ -249,7 +249,7 @@ ActionListener, ChangeListener, Runnable {
     row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
     // repeat check box to be added to the controller
     repeatCheckBox = new JCheckBox(GT._("Repeat"), false);
-    JPanel vcrpanel = createVCRController("collection");
+    JPanel vcrpanel = createVCRController(COLLECTION);
     vcrpanel.add(repeatCheckBox); // put the repeat text box in the vcr control
     // VCR-like play controller
     row.add(vcrpanel);
@@ -330,7 +330,7 @@ ActionListener, ChangeListener, Runnable {
     row2.add(periodPanel);
     vectorPanel.add(row2);
     // finally the controller at the bottom
-    vectorPanel.add(createVCRController("vector"));
+    vectorPanel.add(createVCRController(VECTORS));
   }
   
   /**
@@ -349,20 +349,31 @@ ActionListener, ChangeListener, Runnable {
   private JPanel createVCRController(String section) {
     JPanel controlPanel = new JPanel();
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
-    controlPanel.setBorder(new TitledBorder(
-        JmolResourceHandler.translateX("AtomSetChooser."+section+".VCR.label")));
+    controlPanel.setBorder(new TitledBorder(GT._("Controller")));
     Insets inset = new Insets(1,1,1,1);
 // take out the save functionality until the XYZ file can properly be created
 //    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
     String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF};
+    String insert = null;
+    if (section.equals(COLLECTION)) {
+        insert = GT._("atom set");
+    } else if (section.equals(VECTORS)) {
+        insert = GT._("vector");
+    }
+    String tooltips[] = {
+        GT._("Go to first {0} in the collection", new Object[] { insert }),
+        GT._("Go to previous {0} in the collection", new Object[] { insert }),
+        GT._("Play the whole collection of {0}'s", new Object[] { insert }),
+        GT._("Pause playing"),
+        GT._("Go to next {0} in the collection", new Object[] { insert }),
+        GT._("Jump to last {0} in the collection", new Object[] { insert })
+    };
     for (int i=buttons.length, idx=0; --i>=0; idx++) {
       String action = buttons[idx];
       // the icon and tool tip come from 
       JButton btn = new JButton(
           JmolResourceHandler.getIconX("AtomSetChooser."+action+"Image"));
-      btn.setToolTipText(
-          JmolResourceHandler.translateX(
-              "AtomSetChooser."+section+"."+action+"Tooltip"));
+      btn.setToolTipText(tooltips[idx]);
       btn.setMargin(inset);
       btn.setActionCommand(section+"."+action);
       btn.addActionListener(this);

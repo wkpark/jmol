@@ -1521,8 +1521,8 @@ class Eval implements Runnable {
   void colorObject(int tokObject, int itoken) throws ScriptException {
     if (itoken >= statementLength)
       badArgumentCount();
-    boolean isTranslucent = false;
-    boolean isOpaque = false;
+    //boolean isTranslucent = false;
+    //boolean isOpaque = false;
     String translucentOrOpaque = null;
     Object colorvalue = null;
     int shapeType = getShapeType(tokObject);

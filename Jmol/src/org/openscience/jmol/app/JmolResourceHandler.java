@@ -130,7 +130,7 @@ class JmolResourceHandler {
    * @param text Text to translate
    * @return Translated text
    */
-  private synchronized String translate(String text) {
+  /*private synchronized String translate(String text) {
     StringTokenizer st = new StringTokenizer(text, " ");
     StringBuffer key = new StringBuffer();
     while (st.hasMoreTokens()) {
@@ -141,7 +141,7 @@ class JmolResourceHandler {
     }
     String translatedText = getString(key.toString());
     return (translatedText != null) ? translatedText : text;
-  }
+  }*/
 
 }
 

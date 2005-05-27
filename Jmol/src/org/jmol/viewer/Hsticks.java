@@ -43,7 +43,20 @@ class Hsticks extends Sticks {
                           BitSet bsSelected) {
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
-      setColixBond(colix, JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
+      if (colix == Graphics3D.UNRECOGNIZED && "type" == (String)value) {
+        BondIterator iter =
+          frame.getBondIterator(JmolConstants.BOND_HYDROGEN_MASK,
+                                bsSelected);
+        while (iter.hasNext()) {
+          Bond bond = iter.next();
+          bond.setColix(viewer.getColixHbondType(bond.order));
+        }
+        return;
+      }
+      setColixBond(colix,
+                   (colix != Graphics3D.UNRECOGNIZED) ? null : (String)value,
+                   JmolConstants.BOND_HYDROGEN_MASK,
+                   bsSelected);
       return;
     }
     if ("translucency" == propertyName) {
@@ -51,27 +64,5 @@ class Hsticks extends Sticks {
                           JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
       return;
     }
-    //FIXME mth 2005 05 27 - I bet I broke color "type" for Hsticks
-    /*
-    if ("colorScheme" == propertyName) {
-      if (value instanceof String) {
-        if ("type" == (String)value) {
-          BondIterator iter =
-            frame.getBondIterator(JmolConstants.BOND_HYDROGEN_MASK,
-                                  bsSelected);
-          while (iter.hasNext()) {
-            Bond bond = iter.next();
-            bond.setColix(viewer.getColixHbondType(bond.order));
-          }
-          return;
-        }
-        if ("cpk" == (String)value) {
-          setColixBond((short)0, JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
-          return;
-        }
-      }
-      return;
-    }
-    */
   }
 }

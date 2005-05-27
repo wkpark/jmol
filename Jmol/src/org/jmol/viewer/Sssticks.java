@@ -41,7 +41,10 @@ class Sssticks extends Sticks {
                           BitSet bsSelected) {
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
-      setColixBond(colix, JmolConstants.BOND_SULFUR_MASK, bsSelected);
+      setColixBond(colix,
+                   (colix != Graphics3D.UNRECOGNIZED) ? null : (String)value,
+                   JmolConstants.BOND_SULFUR_MASK,
+                   bsSelected);
       return;
     }
     /*

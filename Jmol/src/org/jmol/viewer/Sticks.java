@@ -41,7 +41,10 @@ class Sticks extends Shape {
                           BitSet bsSelected) {
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
-      setColixBond(colix, JmolConstants.BOND_COVALENT_MASK, bsSelected);
+      setColixBond(colix,
+                   (colix != Graphics3D.UNRECOGNIZED) ? null : (String)value,
+                   JmolConstants.BOND_COVALENT_MASK,
+                   bsSelected);
       return;
     }
     if ("translucency" == propertyName) {
@@ -64,10 +67,15 @@ class Sticks extends Shape {
       iter.next().setMad(mad);
   }
 
-  void setColixBond(short colix, short bondTypeMask, BitSet bs) {
-    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
-    while (iter.hasNext())
-      iter.next().setColix(colix);
+  void setColixBond(short colix, String palette,
+                    short bondTypeMask, BitSet bs) {
+    if (colix != Graphics3D.UNRECOGNIZED) {
+      BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+      while (iter.hasNext())
+        iter.next().setColix(colix);
+    } else {
+      System.out.println("setColixBond called with palette:" + palette);
+    }
   }
 
   void setTranslucencyBond(boolean isTranslucent,

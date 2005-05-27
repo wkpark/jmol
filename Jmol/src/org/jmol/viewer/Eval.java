@@ -1519,10 +1519,6 @@ class Eval implements Runnable {
   }
 
   void colorObject(int tokObject, int itoken) throws ScriptException {
-    // I do not like this 'palette' scheme
-    // I need to change it so that you can pass either a java.awt.Color
-    // or an object that uniquely identifies the various palettes
-    // this should be an object which is either a Color or a String
     if (itoken >= statementLength)
       badArgumentCount();
     boolean isTranslucent = false;

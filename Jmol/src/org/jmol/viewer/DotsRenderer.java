@@ -25,6 +25,7 @@
 
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
 import java.util.Hashtable;
 import javax.vecmath.*;
 
@@ -96,7 +97,7 @@ class DotsRenderer extends ShapeRenderer {
                               atom.getScreenX(), atom.getScreenY(),
                               atom.getScreenZ());
     if (geodesic.screenCoordinateCount > 0)
-      g3d.plotPoints(colix == 0 ? atom.colixAtom : colix,
+      g3d.plotPoints(Graphics3D.inheritColix(colix, atom.colixAtom),
                      geodesic.screenCoordinateCount,
                      geodesic.screenCoordinates);
   }
@@ -124,11 +125,7 @@ class DotsRenderer extends ShapeRenderer {
   }
 
   short getColix(short colix, short[] colixes, Atom[] atoms, int index) {
-    if (colix != 0)
-      return colix;
-    if (colixes[index] != 0)
-      return colixes[index];
-    return atoms[index].colixAtom;
+    return Graphics3D.inheritColix(colix, atoms[index].colixAtom);
   }
 
   void renderTorusHalf(Dots.Torus torus, short colix, boolean renderJHalf) {

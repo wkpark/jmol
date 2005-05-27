@@ -114,9 +114,8 @@ class CartoonRenderer extends MpsRenderer {
     for (int i = monomerCount; --i >= 0; )
       if (mads[i] > 0) {
         Monomer group = monomers[i];
-        short colix = colixes[i];
-        if (colix == 0)
-          colix = group.getLeadAtom().colixAtom;
+        short colix = Graphics3D.inheritColix(colixes[i],
+                                              group.getLeadAtom().colixAtom);
         boolean isSpecial = isSpecials[i];
         if (isSpecial) {
           if (lastWasSpecial)
@@ -152,8 +151,6 @@ class CartoonRenderer extends MpsRenderer {
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
-    if (colix == 0)
-      colix = group.getLeadAtom().colixAtom;
     
     //change false -> true to fill in mesh
     g3d.drawHermite(true, border, colix, isNucleicPolymer ? 4 : 7,
@@ -175,8 +172,6 @@ class CartoonRenderer extends MpsRenderer {
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
-    if (colix == 0)
-      colix = group.getLeadAtom().colixAtom;
     calc1Screen(leadMidpoints[i], wingVectors[i], mads[i],
                 .7f / 1000, screenArrowTop);
     calc1Screen(leadMidpoints[iPrev], wingVectors[iPrev], mads[iPrev],

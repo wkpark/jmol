@@ -25,6 +25,8 @@
 
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
+
 class Bond {
 
   Atom atom1;
@@ -105,11 +107,11 @@ class Bond {
   }
 
   short getColix1() {
-    return (colix != 0 ? colix : atom1.colixAtom);
+    return Graphics3D.inheritColix(colix, atom1.colixAtom);
   }
 
   short getColix2() {
-    return (colix != 0 ? colix : atom2.colixAtom);
+    return Graphics3D.inheritColix(colix, atom2.colixAtom);
   }
 }
 

@@ -25,6 +25,7 @@
 
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
@@ -56,9 +57,9 @@ class TraceRenderer extends MpsRenderer {
     for (int i = monomerCount; --i >= 0; ) {
       if (mads[i] == 0)
         continue;
-      short colix = colixes[i];
-      if (colix == 0)
-        colix = monomers[i].getLeadAtom().colixAtom;
+      short colix =
+        Graphics3D.inheritColix(colixes[i],
+                                monomers[i].getLeadAtom().colixAtom);
       renderRopeSegment(colix, mads, i,
                         monomerCount, monomers,
                         leadMidpointScreens, null);

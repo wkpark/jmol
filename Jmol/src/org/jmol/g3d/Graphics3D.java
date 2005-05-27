@@ -1627,30 +1627,43 @@ final public class Graphics3D {
                    (argb & 0xFF010101));
   }
 
-  public final static short NULL = 0;
-  public final static short BLACK = 1;
-  public final static short ORANGE = 2;
-  public final static short PINK = 3;
-  public final static short BLUE = 4;
-  public final static short WHITE = 5;
-  public final static short AQUA = 6;
-  public final static short CYAN = 6;
-  public final static short RED = 7;
-  public final static short GREEN = 8;
-  public final static short GRAY = 9;
-  public final static short SILVER = 10;
-  public final static short LIGHTGRAY = 10;
-  public final static short LIME = 11;
-  public final static short MAROON = 12;
-  public final static short NAVY = 13;
-  public final static short OLIVE = 14;
-  public final static short PURPLE = 15;
-  public final static short TEAL = 16;
-  public final static short MAGENTA = 17;
-  public final static short FUCHSIA = 17;
-  public final static short YELLOW = 18;
-  public final static short HOTPINK = 19;
-  public final static short GOLD = 20;
+  /* entries 0 through 3 are reserved and are special
+     TRANSLUCENT and OPAQUE are used to inherit
+     the underlying color, but change the translucency
+
+     Note that colors are not actually translucent. Rather,
+     they are 'screened' where every-other pixel is turned
+     on. 
+  */
+  public final static short NULL_COLIX  = 0;
+  public final static short TRANSLUCENT = 1;
+  public final static short OPAQUE      = 2;
+  public final static short _RESERVED   = 3;
+  public final static short SPECIAL_COLIX_MAX = 4;
+
+  public final static short BLACK       = 4;
+  public final static short ORANGE      = 5;
+  public final static short PINK        = 6;
+  public final static short BLUE        = 7;
+  public final static short WHITE       = 8;
+  public final static short AQUA        = 9;
+  public final static short CYAN        = AQUA;
+  public final static short RED         = 10;
+  public final static short GREEN       = 11;
+  public final static short GRAY        = 12;
+  public final static short SILVER      = 13;
+  public final static short LIGHTGRAY   = SILVER;
+  public final static short LIME        = 14;
+  public final static short MAROON      = 15;
+  public final static short NAVY        = 16;
+  public final static short OLIVE       = 17;
+  public final static short PURPLE      = 18;
+  public final static short TEAL        = 19;
+  public final static short MAGENTA     = 20;
+  public final static short FUCHSIA     = MAGENTA;
+  public final static short YELLOW      = 21;
+  public final static short HOTPINK     = 22;
+  public final static short GOLD        = 23;
 
   public final static Color COLOR_GOLD = new Color(0xFF, 0xD7, 0x00);
   public final static Color COLOR_HOTPINK = new Color(0xFF, 0x69, 0xB4);
@@ -1726,6 +1739,19 @@ final public class Graphics3D {
       return getColix((String)obj);
     System.out.println("?? getColix(" + obj + ")");
     return HOTPINK;
+  }
+
+  public final static short inheritColix(short myColix, short parentColix) {
+    switch (myColix) {
+    case 0:
+      return parentColix;
+    case TRANSLUCENT:
+      return (short)(parentColix | Colix.translucentMask);
+    case OPAQUE:
+      return (short)(parentColix & ~Colix.translucentMask);
+    default:
+      return myColix;
+    }
   }
 
   public Color getColor(short colix) {

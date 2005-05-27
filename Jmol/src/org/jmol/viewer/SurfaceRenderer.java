@@ -97,8 +97,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderConvex(Atom atom, short colix, int[] vertexMap, int[] faceMap) {
     Point3i[] screens = screensCache.lookup(atom, vertexMap);
-    if (colix == 0)
-      colix = atom.colixAtom;
+    colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     if (CONVEX_DOTS) {
       int[] edgeVertexes = ((Surface)shape).calcEdgeVertexes(vertexMap);
       for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {

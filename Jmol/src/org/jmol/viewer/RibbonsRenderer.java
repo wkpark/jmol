@@ -25,6 +25,7 @@
 
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
@@ -118,8 +119,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
-    if (colix == 0)
-      colix = monomer.getLeadAtom().colixAtom;
+    colix = Graphics3D.inheritColix(colix, monomer.getLeadAtom().colixAtom);
     
     g3d.drawHermite(true, border, colix, isNucleic ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],

@@ -41,9 +41,8 @@ class PolyhedraRenderer extends ShapeRenderer {
   void render1(Polyhedra.Polyhedron p) {
     if (! p.visible)
       return;
-    short colix = p.polyhedronColix;
-    if (colix == 0)
-      colix = p.centralAtom.colixAtom;
+    short colix = Graphics3D.inheritColix(p.polyhedronColix,
+                                          p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
     byte[] faces;
     switch(vertices.length) {

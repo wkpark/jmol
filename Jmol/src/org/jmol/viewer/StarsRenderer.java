@@ -56,8 +56,7 @@ class StarsRenderer extends ShapeRenderer {
     // make available for hover/click/measure
     atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     d -= (d & 1) ^ 1; // round down to odd value
-    if (colix == 0)
-      colix = atom.colixAtom;
+    colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     int r = d / 2;
     g3d.drawLine(colix, x - r, y, z, x - r + d, y, z);
     g3d.drawLine(colix, x, y - r, z, x, y - r + d, z);

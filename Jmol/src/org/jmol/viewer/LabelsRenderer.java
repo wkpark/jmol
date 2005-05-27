@@ -120,8 +120,7 @@ class LabelsRenderer extends ShapeRenderer {
     }
     int xBox = atom.getScreenX() + xBoxOffset;
     int yBox = atom.getScreenY() - yBoxOffset;
-    if (colix == 0)
-      colix = atom.colixAtom;
+    colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     if (bgcolix != 0) {
       g3d.fillRect(bgcolix, xBox, yBox, zBox, boxWidth, boxHeight);
       g3d.drawRect(colix, xBox+1, yBox+1, zBox-1, boxWidth - 2, boxHeight - 2);

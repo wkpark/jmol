@@ -39,13 +39,18 @@ import java.awt.Color;
  * The value 0 is considered a null value ... for no color. In Jmol this
  * generally means that the value is inherited from some other object.
  *</p>
+ *<p>
+ * The value 1 is used to indicate TRANSLUCENT, but with the color
+ * coming from the parent. The value 2 indicates OPAQUE, but with the
+ * color coming from the parent.
+ *</p>
  *
  * @author Miguel, miguel@jmol.org
  */
 final class Colix {
 
 
-  private static int colixMax = 1;
+  private static int colixMax = Graphics3D.SPECIAL_COLIX_MAX;
   private static int[] argbs = new int[128];
   private static Color[] colors = new Color[128];
   private static int[][] ashades = new int[128][];

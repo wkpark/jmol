@@ -53,10 +53,9 @@ class RocketsRenderer extends MpsRenderer {
     for (int i = 0; i < monomerCount; ++i) {
       if (mads[i] == 0)
         continue;
-      short colix = colixes[i];
       Monomer monomer = monomers[i];
-      if (colix == 0)
-        colix = monomer.getLeadAtom().colixAtom;
+      short colix = Graphics3D.inheritColix(colixes[i],
+                                            monomer.getLeadAtom().colixAtom);
       if (monomer.isHelixOrSheet()) {
         //        System.out.println("renderSpecialSegment[" + i + "]");
         renderSpecialSegment(monomer, colix, mads[i]);

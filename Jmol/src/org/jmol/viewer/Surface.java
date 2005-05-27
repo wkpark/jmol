@@ -216,7 +216,7 @@ class Surface extends Shape {
     }
     if ("colorConvex" == propertyName) {
       System.out.println("Surface.setProperty('colorConvex')");
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
           colixesConvex[i] =
@@ -234,9 +234,10 @@ class Surface extends Shape {
       return;
     }
     if ("colorSaddle" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = toruses[i];
+        colix = colix; // try to eliminate eclipse warning
         /*
         if (bs.get(torus.ixI))
           torus.colixI = colix;
@@ -246,10 +247,11 @@ class Surface extends Shape {
       }
       return;
     }
-    if ("translucencyConvex" == propertyName) {
+    if ("translucencySaddle" == propertyName) {
       boolean isTranslucent = ("translucent" == value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = toruses[i];
+        torus = torus;
         // something
       }
       return;

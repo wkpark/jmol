@@ -1407,7 +1407,8 @@ final public class Graphics3D {
       } else {
         boolean flipflop = ((x ^ y) & 1) != 0;
         while (--count >= 0) {
-          if ((flipflop = !flipflop)) {
+          flipflop = !flipflop;
+          if (flipflop) {
             int z = zScaled >> 10;
             if (z < zbuf[offsetPbuf]) {
               zbuf[offsetPbuf] = (short)z;

@@ -86,6 +86,10 @@ class Bond {
     this.colix = colix;
   }
 
+  void setTranslucent(boolean isTranslucent) {
+    colix = Graphics3D.setTranslucent(colix, isTranslucent);
+  }
+
   void setOrder(short order) {
     this.order = order;
   }

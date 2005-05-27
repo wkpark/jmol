@@ -44,19 +44,18 @@ class Balls extends Shape {
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
-        if (bs.get(i))
-          atoms[i].setColixAtom(colix);
+        if (bs.get(i)) {
+          Atom atom = atoms[i];
+          atom.setColixAtom((colix != Graphics3D.UNRECOGNIZED)
+                            ? colix
+                            : viewer.getColixAtomPalette(atom, (String)value));
+        }
       return;
     }
-    if ("colorScheme" == propertyName) {
-      if (value != null) {
-        byte palette = viewer.getPalette((String)value);
-        for (int i = atomCount; --i >= 0; ) {
-          Atom atom = atoms[i];
-          if (bs.get(i))
-            atom.setColixAtom(viewer.getColixAtomPalette(atom, palette));
-        }
-      }
+    if ("translucency" == propertyName) {
+      for (int i = atomCount; --i >= 0; )
+        if (bs.get(i))
+          atoms[i].setTranslucent(value == "translucent");
       return;
     }
   }

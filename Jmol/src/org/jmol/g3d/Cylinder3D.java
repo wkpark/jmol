@@ -77,8 +77,8 @@ class Cylinder3D {
     this.dxB = dxB; this.dyB = dyB; this.dzB = dzB;
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);
-    this.isScreenedA = (colixA & Colix.translucentMask) != 0;
-    this.isScreenedB = (colixB & Colix.translucentMask) != 0;
+    this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
+    this.isScreenedB = (colixB & Graphics3D.TRANSLUCENT_MASK) != 0;
 
     this.endcaps = endcaps;
     calcArgbEndcap(true);
@@ -340,7 +340,7 @@ class Cylinder3D {
     
     this.colixA = colix;
     this.shadesA = g3d.getShades(colix);
-    this.isScreenedA = (colixA & Colix.translucentMask) != 0;
+    this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
     int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
     g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, xTip, yTip, zTip);
 

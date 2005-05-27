@@ -78,12 +78,15 @@ class Polyhedra extends SelectionIndependentShape {
     if ("color" == propertyName) {
       colix = Graphics3D.getColix(value);
       //      System.out.println("color polyhedra:" + colix);
-      setColix(colix, bs);
+      setColix(colix,
+               (colix != Graphics3D.UNRECOGNIZED) ? null : (String) value,
+               bs);
       return;
     }
-    if ("colorScheme" == propertyName) {
-      if ("cpk" == value)
-        setColix((short)0, bs);
+    
+    if ("translucency" == propertyName) {
+      colix = Graphics3D.getColix(value);
+      setTranslucent("translucent" == value, bs);
       return;
     }
     if ("radius" == propertyName) {
@@ -122,13 +125,28 @@ class Polyhedra extends SelectionIndependentShape {
     }
   }
 
-  void setColix(short colix, BitSet bs) {
+  void setColix(short colix, String palette, BitSet bs) {
+    for (int i = polyhedronCount; --i >= 0; ) {
+      Polyhedron p = polyhedrons[i];
+      if (p == null)
+        continue;
+      int atomIndex = p.centralAtom.atomIndex;
+      if (bs.get(atomIndex))
+        p.polyhedronColix =
+          ((colix != Graphics3D.UNRECOGNIZED)
+           ? colix
+           : viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette));
+    }
+  }
+
+  void setTranslucent(boolean isTranslucent, BitSet bs) {
     for (int i = polyhedronCount; --i >= 0; ) {
       Polyhedron p = polyhedrons[i];
       if (p == null)
         continue;
       if (bs.get(p.centralAtom.atomIndex))
-        p.polyhedronColix = colix;
+        p.polyhedronColix =
+          Graphics3D.setTranslucent(p.polyhedronColix, isTranslucent);
     }
   }
 

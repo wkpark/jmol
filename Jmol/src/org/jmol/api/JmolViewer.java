@@ -142,7 +142,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void clearSelection();
 
   // get rid of this!
-  abstract public void setModeAtomColorProfile(byte mode);
+  abstract public void setModeAtomColorProfile(String mode);
 
   abstract public void homePosition();
   abstract public void rotateFront();

@@ -521,9 +521,9 @@ class Token {
     "labeloffset",  new Token(labeloffset,     "labeloffset"),
     "frank",        new Token(frank,           "frank"),
     // must be lower case - see comment above
-    "formalcharge", new Token(formalCharge,    "formalCharge"),
+    "formalcharge", new Token(formalCharge,    "formalcharge"),
     "charge",       null,
-    "partialcharge",new Token(partialCharge,   "partialCharge"),
+    "partialcharge",new Token(partialCharge,   "partialcharge"),
   
     // show parameters
     "information",  new Token(information,     "information"),

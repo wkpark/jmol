@@ -61,7 +61,7 @@ class Labels extends Shape {
           colixes[i] = colix;
         }
     }
-    
+    // no translucency
     if ("bgcolor" == propertyName) {
       short bgcolix = Graphics3D.getColix(value);
       for (int i = frame.atomCount; --i >= 0; )

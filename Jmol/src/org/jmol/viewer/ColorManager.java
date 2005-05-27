@@ -34,8 +34,6 @@ class ColorManager {
   Graphics3D g3d;
   int[] argbsCpk;
 
-  byte paletteDefault = JmolConstants.PALETTE_NONE_CPK;
-
   ColorManager(Viewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
     this.g3d = g3d;
@@ -74,13 +72,17 @@ class ColorManager {
       g3d.changeColixArgb((short)i, argbsCpk[i]);
   }
 
-  void setPaletteDefault(byte palette) {
-    paletteDefault = palette;
+  String paletteDefault = "cpk";
+
+  void setPaletteDefault(String palette) {
+    paletteDefault = palette.intern();
   }
 
+  /*
   byte getPaletteDefault() {
     return paletteDefault;
   }
+  */
 
   final static Color colorSelectionDefault = Graphics3D.COLOR_GOLD;
   final static short colixSelectionDefault = Graphics3D.GOLD;
@@ -238,16 +240,16 @@ class ColorManager {
     return getColixAtomPalette(atom, paletteDefault);
   }
 
-  short getColixAtomPalette(Atom atom, byte palette) {
+  short getColixAtomPalette(Atom atom, String palette) {
     int argb = 0;
     int index;
-    switch (palette) {
-    case JmolConstants.PALETTE_NONE_CPK:
+    if ("cpk" == palette) {
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
       short id = atom.getElementNumber();
       return g3d.getChangableColix(id, argbsCpk[id]);
-    case JmolConstants.PALETTE_PARTIALCHARGE:
+    }
+    if ("partialcharge" == palette) {
       /*
         This code assumes that the range of partial charges is
         [-1, 1].
@@ -259,11 +261,10 @@ class ColorManager {
       index = quantize(-1, 1, atom.getPartialCharge(),
                        JmolConstants.argbsRwbScale.length);
       argb = JmolConstants.argbsRwbScale[index];
-      break;
-    case JmolConstants.PALETTE_TEMPERATURE:
-    case JmolConstants.PALETTE_FIXEDTEMP:
+    } else if ("temperature" == palette ||
+               "fixedtemperature" == palette) {
       float lo,hi;
-      if (palette == JmolConstants.PALETTE_TEMPERATURE) {
+      if ("temperature" == palette) {
         Frame frame = viewer.getFrame();
         lo = frame.getBfactor100Lo();
         hi = frame.getBfactor100Hi();
@@ -275,49 +276,45 @@ class ColorManager {
                        JmolConstants.argbsRwbScale.length);
       index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
-      break;
-    case JmolConstants.PALETTE_FORMALCHARGE:
+    } else if ("formalcharge" == palette) {
       index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
       argb = JmolConstants.argbsCharge[index];
-      break;
-    case JmolConstants.PALETTE_STRUCTURE:
+    } else if ("stucture" == palette) {
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
-      break;
-    case JmolConstants.PALETTE_AMINO:
+    } else if ("amino" == palette) {
       index = atom.getGroupID();
       if (index >= JmolConstants.GROUPID_AMINO_MAX)
         index = 0;
       argb = JmolConstants.argbsAmino[index];
-      break;
-    case JmolConstants.PALETTE_SHAPELY:
+    } else if ("shapely" == palette) {
       index = atom.getGroupID();
       if (index >= JmolConstants.GROUPID_SHAPELY_MAX)
         index = 0;
       argb = JmolConstants.argbsShapely[index];
-      break;
-    case JmolConstants.PALETTE_CHAIN:
+    } else if ("chain" == palette) {
       int chain = atom.getChainID() & 0x1F;
       if (chain >= JmolConstants.argbsChainAtom.length)
         chain = chain % JmolConstants.argbsChainAtom.length;
       argb = (atom.isHetero()
               ? JmolConstants.argbsChainHetero
               : JmolConstants.argbsChainAtom)[chain];
-      break;
-    case JmolConstants.PALETTE_GROUP:
+    } else if ("group" == palette) {
       index = quantize(0,
                        atom.getSelectedGroupCountWithinChain() - 1,
                        atom.getSelectedGroupIndexWithinChain(),
                        JmolConstants.argbsBlueRedRainbow.length);
       argb = JmolConstants.argbsBlueRedRainbow[index];
-      break;
-    case JmolConstants.PALETTE_MONOMER:
+    } else if ("monomer" == palette) {
       index = quantize(0,
                        atom.getSelectedMonomerCountWithinPolymer() - 1,
                        atom.getSelectedMonomerIndexWithinPolymer(),
                        JmolConstants.argbsBlueRedRainbow.length);
       argb = JmolConstants.argbsBlueRedRainbow[index];
-      break;
+    } else {
+      System.out.println("ColorManager ... unrecognized color palette");
+      return Graphics3D.HOTPINK;
     }
+    // FIXME I think that we should assert that argb != 0 here
     if (argb == 0)
       return Graphics3D.HOTPINK;
     return Graphics3D.getColix(argb);

@@ -25,6 +25,7 @@
 
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Xyzd;
 import org.jmol.bspt.Tuple;
 
@@ -289,7 +290,13 @@ final class Atom implements Tuple {
   }
 
   void setColixAtom(short colixAtom) {
+    if (colixAtom == 0)
+      colixAtom = group.chain.frame.viewer.getColixAtomPalette(this, "cpk");
     this.colixAtom = colixAtom;
+  }
+
+  void setTranslucent(boolean isTranslucent) {
+    colixAtom = Graphics3D.setTranslucent(colixAtom, isTranslucent);
   }
 
   Vector3f getVibrationVector() {

@@ -587,12 +587,12 @@ final public class Viewer extends JmolViewer {
   // delegated to ColorManager
   /////////////////////////////////////////////////////////////////
     
-  public void setModeAtomColorProfile(byte palette) {
+  public void setModeAtomColorProfile(String palette) {
     colorManager.setPaletteDefault(palette);
     refresh();
   }
 
-  byte getModeAtomColorProfile() {
+  String getModeAtomColorProfile() {
     return colorManager.paletteDefault;
   }
 
@@ -790,7 +790,7 @@ final public class Viewer extends JmolViewer {
     return colorManager.getColixAtom(atom);
   }
 
-  short getColixAtomPalette(Atom atom, byte palette) {
+  short getColixAtomPalette(Atom atom, String palette) {
     return colorManager.getColixAtomPalette(atom, palette);
   }
 
@@ -1596,10 +1596,6 @@ final public class Viewer extends JmolViewer {
       eval.haltExecution();
   }
 
-  void setColorAtomScript(byte palette, Color color) {
-    setShapeColor(JmolConstants.SHAPE_BALLS, palette, color);
-  }
-
   public void setColorBond(Color color) {
     colorManager.setColorBond(color);
     setShapeColorProperty(JmolConstants.SHAPE_STICKS, color);
@@ -1704,34 +1700,6 @@ final public class Viewer extends JmolViewer {
     return modelManager.getShapeSize(shapeID);
   }
   
-  byte getPalette(String colorScheme) {
-    if (colorScheme == null)
-      return JmolConstants.PALETTE_COLOR;
-    byte palette;
-    for (palette = 0; palette < JmolConstants.PALETTE_MAX; ++palette)
-      if (colorScheme.equals(JmolConstants.colorSchemes[palette]))
-        break;
-    return palette;
-  }
-
-  void setShapeColor(int shapeID, byte palette, Color color) {
-    if (palette == JmolConstants.PALETTE_COLOR) {
-      modelManager.setShapeProperty(shapeID, "colorScheme", null,
-                                    selectionManager.bsSelection);
-      modelManager.setShapeProperty(shapeID, "color", color,
-                                    selectionManager.bsSelection);
-    } else {
-      if (palette == JmolConstants.PALETTE_GROUP)
-        calcSelectedGroupsCount();
-      else if (palette == JmolConstants.PALETTE_MONOMER)
-        calcSelectedMonomersCount();
-      modelManager.setShapeProperty(shapeID, "colorScheme",
-                                    JmolConstants.colorSchemes[palette],
-                                    selectionManager.bsSelection);
-    }
-    refresh();
-  }
-
   void setShapeProperty(int shapeID,
                                String propertyName, Object value) {
 

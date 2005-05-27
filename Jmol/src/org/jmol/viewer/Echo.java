@@ -64,6 +64,10 @@ class Echo extends Shape {
       return;
     }
 
+    if ("translucent" == propertyName) {
+      System.out.println("translucent echo not implemented");
+    }
+
     if ("bgcolor" == propertyName) {
       if (currentText != null)
         currentText.bgcolix = value == null ? (short)0 : Graphics3D.getColix(value);

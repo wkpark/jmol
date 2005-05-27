@@ -44,6 +44,8 @@ class Sssticks extends Sticks {
       setColixBond(colix, JmolConstants.BOND_SULFUR_MASK, bsSelected);
       return;
     }
+    /*
+      perhaps broken because of elminiation of colorScheme
     if ("colorScheme" == propertyName) {
       if (value instanceof String) {
         if ("cpk" == (String)value) {
@@ -53,5 +55,6 @@ class Sssticks extends Sticks {
       }
       return;
     }
+    */
   }
 }

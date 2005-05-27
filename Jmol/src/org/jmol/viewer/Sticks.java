@@ -44,17 +44,17 @@ class Sticks extends Shape {
       setColixBond(colix, JmolConstants.BOND_COVALENT_MASK, bsSelected);
       return;
     }
-    if ("colorScheme" == propertyName) {
-      if (value instanceof String && "cpk" == (String)value) {
-        setColixBond((short)0, JmolConstants.BOND_COVALENT_MASK, bsSelected);
-        return;
-      }
+    if ("translucency" == propertyName) {
+      setTranslucencyBond(value == "translucent",
+                          JmolConstants.BOND_COVALENT_MASK, bsSelected);
+      return;
     }
     if ("bondOrder" == propertyName) {
       if (value instanceof Short) {
         short order = ((Short)value).shortValue();
         setOrderBond(order, bsSelected);
       }
+      return;
     }
   }
 
@@ -68,6 +68,14 @@ class Sticks extends Shape {
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext())
       iter.next().setColix(colix);
+  }
+
+  void setTranslucencyBond(boolean isTranslucent,
+                           short bondTypeMask, BitSet bs) {
+    System.out.println("setTranslucencyBond " + isTranslucent);
+    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+    while (iter.hasNext())
+      iter.next().setTranslucent(isTranslucent);
   }
 
   void setOrderBond(short order, BitSet bs) {

@@ -49,27 +49,6 @@ final public class JmolConstants {
   public final static byte STYLE_WIREFRAME = 1;
   public final static byte STYLE_SHADED    = 2;
     
-  public final static byte PALETTE_COLOR         =-1;
-  public final static byte PALETTE_NONE_CPK      = 0;
-  public final static byte PALETTE_FORMALCHARGE  = 1;
-  public final static byte PALETTE_STRUCTURE     = 2;
-  public final static byte PALETTE_AMINO         = 3;
-  public final static byte PALETTE_SHAPELY       = 4;
-  public final static byte PALETTE_CHAIN         = 5;
-  public final static byte PALETTE_PARTIALCHARGE = 6;
-  public final static byte PALETTE_TYPE          = 7;
-  public final static byte PALETTE_TEMPERATURE   = 8;
-  public final static byte PALETTE_FIXEDTEMP     = 9;
-  public final static byte PALETTE_GROUP         = 10;
-  public final static byte PALETTE_MONOMER       = 11;
-  public final static byte PALETTE_MAX           = 12;
-
-  public final static String[] colorSchemes =
-    { "cpk", "charge", "structure", "amino",
-      "shapely", "chain", "partialCharge", "type",
-      "temperature", "fixedTemperature", "group", "monomer"
-    };
-
   public final static byte AXES_NONE = 0;
   public final static byte AXES_UNIT = 1;
   public final static byte AXES_BBOX = 2;
@@ -2189,10 +2168,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
     if (shapeClassBases.length != SHAPE_MAX) {
       System.out.println("graphicBaseClasses wrong length");
-      throw new NullPointerException();
-    }
-    if (colorSchemes.length != PALETTE_MAX) {
-      System.out.println("colorSchemes wrong length");
       throw new NullPointerException();
     }
     if (argbsAmino.length != GROUPID_AMINO_MAX) {

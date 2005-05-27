@@ -1439,31 +1439,6 @@ class Eval implements Runnable {
     return null;
   }
 
-  Color getColorParamOptionalTranslucent(int itoken) throws ScriptException {
-    boolean translucent = false;
-    int argb = 0;
-    for ( ; itoken < statementLength; ++itoken) {
-      switch (statement[itoken].tok) {
-      case Token.translucent:
-        translucent = true;
-        break;
-      case Token.opaque:
-        translucent = false;
-        break;
-      case Token.colorRGB:
-        argb = statement[itoken].intValue;
-      }
-    }
-    if (argb == 0)
-      colorExpected();
-    if (translucent)
-      argb = (argb & 0x00FFFFFF) | 0x80000000;
-    System.out.println("colorParamOrTranslucent argb=" +
-                       Integer.toHexString(argb) +
-                       " translucent=" + translucent);
-    return new Color(argb, translucent);
-  }
-
   void background() throws ScriptException {
     if (statementLength < 2 || statementLength > 3)
       badArgumentCount();
@@ -1532,6 +1507,8 @@ class Eval implements Runnable {
 	    invalidArgument();
 	break;
     default:
+      if (tok == Token.bond) // special hack for bond/bonds confusion
+        tok = Token.bonds;
       for (int i = 0; i < shapeToks.length; ++i)
         if (tok == shapeToks[i]) {
           colorObject(tok, 2);
@@ -1546,71 +1523,51 @@ class Eval implements Runnable {
     // I need to change it so that you can pass either a java.awt.Color
     // or an object that uniquely identifies the various palettes
     // this should be an object which is either a Color or a String
-    byte palette = JmolConstants.PALETTE_NONE_CPK;
-    Color color = null;
     if (itoken >= statementLength)
       badArgumentCount();
-    switch (statement[itoken].tok) {
-    case Token.none:
-    case Token.cpk:
-      break;
-    case Token.formalCharge:
-      palette = JmolConstants.PALETTE_FORMALCHARGE;
-      break;
-    case Token.partialCharge:
-      palette = JmolConstants.PALETTE_PARTIALCHARGE;
-      break;
-    case Token.structure:
-      palette = JmolConstants.PALETTE_STRUCTURE;
-      break;
-    case Token.amino:
-      palette = JmolConstants.PALETTE_AMINO;
-      break;
-    case Token.shapely:
-      palette = JmolConstants.PALETTE_SHAPELY;
-      break;
-    case Token.chain:
-      palette = JmolConstants.PALETTE_CHAIN;
-      break;
-    case Token.type:
-      palette = JmolConstants.PALETTE_TYPE;
-      break;
-    case Token.temperature:
-      palette = JmolConstants.PALETTE_TEMPERATURE;
-      break;
-    case Token.fixedtemp:
-      palette = JmolConstants.PALETTE_FIXEDTEMP;
-      break;
-    case Token.group:
-      palette = JmolConstants.PALETTE_GROUP;
-      break;
-    case Token.monomer:
-      palette = JmolConstants.PALETTE_MONOMER;
-      break;
-
-    case Token.user:
-      notImplemented(itoken);
-      return;
-    case Token.translucent:
-    case Token.opaque:
-    case Token.colorRGB:
-      palette = JmolConstants.PALETTE_COLOR;
-      color = getColorParamOptionalTranslucent(itoken);
-      break;
-    default:
-        invalidArgument();
-    }
-    if (tokObject == Token.atom) {
-      viewer.setColorAtomScript(palette, color);
-      return;
-    }
+    boolean isTranslucent = false;
+    boolean isOpaque = false;
+    String translucentOrOpaque = null;
+    Object colorvalue = null;
     int shapeType = getShapeType(tokObject);
-    if (tokObject == Token.monitor) {
-      // monitor is broken (and others probably also)
-      // unless the PALETTE is color when you say 'none'
-      palette = JmolConstants.PALETTE_COLOR;
+    int tok = statement[itoken].tok;
+    System.out.println("color object " + statement[itoken].value);
+    if (tok == Token.translucent || tok == Token.opaque) {
+      translucentOrOpaque = (String)(statement[itoken].value);
+      System.out.println("translucentOrOpaque=" + translucentOrOpaque);
+      ++itoken;
     }
-    viewer.setShapeColor(shapeType, palette, color);
+    if (itoken < statementLength) {
+      colorvalue = statement[itoken].value;
+      tok = statement[itoken].tok;
+      switch (tok) {
+      case Token.none:
+      case Token.cpk:
+      case Token.formalCharge:
+      case Token.partialCharge:
+      case Token.structure:
+      case Token.amino:
+      case Token.shapely:
+      case Token.chain:
+      case Token.type:
+      case Token.temperature:
+      case Token.fixedtemp:
+      case Token.group:
+      case Token.monomer:
+        break;
+      case Token.user:
+        notImplemented(itoken);
+        return;
+      case Token.colorRGB:
+        colorvalue = getColorParam(itoken);
+        break;
+      default:
+        invalidArgument();
+      }
+      viewer.setShapeProperty(shapeType, "color", colorvalue);
+    }
+    if (translucentOrOpaque != null)
+      viewer.setShapeProperty(shapeType, "translucency", translucentOrOpaque);
   }
 
   Hashtable variables = new Hashtable();

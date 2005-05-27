@@ -26,6 +26,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Bmp;
+import org.jmol.g3d.Graphics3D;
 
 import javax.vecmath.*;
 import java.util.Hashtable;
@@ -208,12 +209,28 @@ class Surface extends Shape {
       setProperty("colorConcave", value, bs);
       setProperty("colorSaddle", value, bs);
     }
+    if ("translucency" == propertyName) {
+      setProperty("translucencyConvex", value, bs);
+      setProperty("translucencyConcave", value, bs);
+      setProperty("translucencySaddle", value, bs);
+    }
     if ("colorConvex" == propertyName) {
       System.out.println("Surface.setProperty('colorConvex')");
       short colix = g3d.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
-          colixesConvex[i] = colix;
+          colixesConvex[i] =
+            (colix != Graphics3D.UNRECOGNIZED)
+            ? colix
+            : viewer.getColixAtomPalette(atoms[i], (String)value);
+      return;
+    }
+    if ("translucencyConvex" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      for (int i = atomCount; --i >= 0; )
+        if (bs.get(i))
+          colixesConvex[i] = Graphics3D.setTranslucent(colixesConvex[i],
+                                                       isTranslucent);
       return;
     }
     if ("colorSaddle" == propertyName) {
@@ -229,52 +246,49 @@ class Surface extends Shape {
       }
       return;
     }
+    if ("translucencyConvex" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      for (int i = torusCount; --i >= 0; ) {
+        Torus torus = toruses[i];
+        // something
+      }
+      return;
+    }
     if ("colorConcave" == propertyName) {
       short colix = g3d.getColix(value);
       for (int i = cavityCount; --i >= 0; ) {
         Cavity cavity = cavities[i];
         if (bs.get(cavity.ixI))
-          cavity.colixI = colix;
+          cavity.colixI = 
+            (colix != Graphics3D.UNRECOGNIZED)
+            ? colix
+            : viewer.getColixAtomPalette(atoms[cavity.ixI], (String)value);
         if (bs.get(cavity.ixJ))
-          cavity.colixJ = colix;
+          cavity.colixJ = 
+            (colix != Graphics3D.UNRECOGNIZED)
+            ? colix
+            : viewer.getColixAtomPalette(atoms[cavity.ixJ], (String)value);
         if (bs.get(cavity.ixK))
-          cavity.colixK = colix;
+          cavity.colixK = 
+            (colix != Graphics3D.UNRECOGNIZED)
+            ? colix
+            : viewer.getColixAtomPalette(atoms[cavity.ixK], (String)value);
       }
       return;
     }
-    if ("colorScheme" == propertyName) {
-      if (value != null) {
-        byte palette = viewer.getPalette((String)value);
-        for (int i = atomCount; --i >= 0; ) {
-          if (bs.get(i)) {
-            Atom atom = atoms[i];
-            colixesConvex[i] = viewer.getColixAtomPalette(atom, palette);
-          }
-        }
-        for (int i = torusCount; --i >= 0; ) {
-          Torus torus = toruses[i];
-          /*
-          if (bs.get(torus.ixI))
-            torus.colixI = viewer.getColixAtomPalette(atoms[torus.ixI],
-                                                      palette);
-          if (bs.get(torus.ixJ))
-            torus.colixJ = viewer.getColixAtomPalette(atoms[torus.ixJ],
-                                                      palette);
-          */
-        }
-        for (int i = cavityCount; --i >= 0; ) {
-          Cavity cavity = cavities[i];
-          if (bs.get(cavity.ixI))
-            cavity.colixI = viewer.getColixAtomPalette(atoms[cavity.ixI],
-                                                       palette);
-          if (bs.get(cavity.ixJ))
-            cavity.colixJ = viewer.getColixAtomPalette(atoms[cavity.ixJ],
-                                                       palette);
-          if (bs.get(cavity.ixK))
-            cavity.colixK = viewer.getColixAtomPalette(atoms[cavity.ixK],
-                                                       palette);
-        }
-        return;
+    if ("translucencyConcave" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      for (int i = cavityCount; --i >= 0; ) {
+        Cavity cavity = cavities[i];
+        if (bs.get(cavity.ixI))
+          cavity.colixI = Graphics3D.setTranslucent(cavity.colixI,
+                                                    isTranslucent);
+        if (bs.get(cavity.ixJ))
+          cavity.colixJ = Graphics3D.setTranslucent(cavity.colixJ,
+                                                    isTranslucent);
+        if (bs.get(cavity.ixK))
+          cavity.colixK = Graphics3D.setTranslucent(cavity.colixK,
+                                                    isTranslucent);
       }
       return;
     }

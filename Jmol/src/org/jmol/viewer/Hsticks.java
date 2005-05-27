@@ -46,6 +46,13 @@ class Hsticks extends Sticks {
       setColixBond(colix, JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
       return;
     }
+    if ("translucency" == propertyName) {
+      setTranslucencyBond(value == "translucent",
+                          JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
+      return;
+    }
+    //FIXME mth 2005 05 27 - I bet I broke color "type" for Hsticks
+    /*
     if ("colorScheme" == propertyName) {
       if (value instanceof String) {
         if ("type" == (String)value) {
@@ -65,5 +72,6 @@ class Hsticks extends Sticks {
       }
       return;
     }
+    */
   }
 }

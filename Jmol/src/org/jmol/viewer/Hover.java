@@ -63,6 +63,8 @@ class Hover extends Shape {
       return;
     }
 
+    // translucency not implemented
+
     if ("bgcolor" == propertyName) {
       //      System.out.println("hover bgcolor changed");
       colixBackground = Graphics3D.getColix(value);

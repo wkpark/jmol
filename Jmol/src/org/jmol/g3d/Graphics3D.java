@@ -273,14 +273,14 @@ final public class Graphics3D {
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
-    isTranslucent = (colix & Colix.translucentMask) != 0;
+    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
   }
 
   public void setColixIntensity(short colix, int intensity) {
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
-    isTranslucent = (colix & Colix.translucentMask) != 0;
+    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
   }
 
   public void setIntensity(int intensity) {
@@ -294,7 +294,7 @@ final public class Graphics3D {
     argbCurrent = shades[intensity];
     argbNoisyUp = shades[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shades[intensity > 0 ? intensity - 1 : 0];
-    isTranslucent = (colix & Colix.translucentMask) != 0;
+    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
   }
 
   int[] imageBuf = new int[0];
@@ -455,7 +455,7 @@ final public class Graphics3D {
     if (diameter <= 1) {
       plotPixelClipped(colix, x, y, z);
     } else {
-      sphere3d.render(getShades(colix), ((colix & Colix.translucentMask) != 0),
+      sphere3d.render(getShades(colix), ((colix & TRANSLUCENT_MASK) != 0),
                       diameter, x, y, z);
     }
   }
@@ -474,7 +474,7 @@ final public class Graphics3D {
     if (diameter <= 1) {
       plotPixelClipped(colix, x, y, z);
     } else {
-      sphere3d.render(getShades(colix), ((colix & Colix.translucentMask) != 0),
+      sphere3d.render(getShades(colix), ((colix & TRANSLUCENT_MASK) != 0),
                       diameter, x, y, z);
     }
   }
@@ -1635,10 +1635,15 @@ final public class Graphics3D {
      they are 'screened' where every-other pixel is turned
      on. 
   */
-  public final static short NULL_COLIX  = 0;
-  public final static short TRANSLUCENT = 1;
-  public final static short OPAQUE      = 2;
-  public final static short _RESERVED   = 3;
+  final static short TRANSLUCENT_MASK = 0x4000;
+  final static short OPAQUE_MASK  = ~TRANSLUCENT_MASK;
+  final static short CHANGABLE_MASK = (short)0x8000; // negative
+  final static short UNMASK_CHANGABLE_TRANSLUCENT = 0x3FFF;
+
+  public final static short NULL_COLIX   = 0;
+  public final static short TRANSLUCENT  = 1;
+  public final static short OPAQUE       = 2;
+  public final static short UNRECOGNIZED = 3;
   public final static short SPECIAL_COLIX_MAX = 4;
 
   public final static short BLACK       = 4;
@@ -1670,6 +1675,8 @@ final public class Graphics3D {
   public final static Color COLOR_TEAL = new Color(0x00, 0x80, 0x80);
 
   static Color[] colorsPredefined = {
+    Color.red, Color.green, Color.blue, COLOR_HOTPINK, // the special colixes
+
     Color.black, Color.orange, Color.pink, Color.blue,
     Color.white, Color.cyan, Color.red, new Color(0, 128, 0),
     Color.gray, Color.lightGray, Color.green, new Color(128, 0, 0),
@@ -1680,40 +1687,39 @@ final public class Graphics3D {
 
   static {
     for (int i = 0; i < colorsPredefined.length; ++i)
-      Colix.getColix(colorsPredefined[i]);
+      if (Colix.getColix(colorsPredefined[i]) != i)
+        throw new NullPointerException();
   }
 
   public int getColixArgb(short colix) {
     return
       Colix.getRgb(colix >= 0 ? colix :
-                   changableColixMap[colix &
-                                     Colix.unmaskChangableAndTranslucent]);
+                   changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT]);
   }
 
   public final static boolean isColixTranslucent(short colix) {
-    return (colix & Colix.translucentMask) != 0;
+    return (colix & TRANSLUCENT_MASK) != 0;
   }
 
   public final static short getTranslucentColix(short colix,
                                                 boolean translucent) {
     return (short)(translucent ?
-                   (colix | Colix.translucentMask) :
-                   (colix & ~Colix.translucentMask));
+                   (colix | TRANSLUCENT_MASK) :
+                   (colix & OPAQUE_MASK));
   }
 
   public final static short getTranslucentColix(short colix) {
-    return (short)(colix | Colix.translucentMask);
+    return (short)(colix | TRANSLUCENT_MASK);
   }
 
   public final static short getOpaqueColix(short colix) {
-    return (short)(colix & ~Colix.translucentMask);
+    return (short)(colix & OPAQUE_MASK);
   }
 
   public int[] getShades(short colix) {
     return
       Colix.getShades(colix >= 0 ? colix :
-                      changableColixMap[colix &
-                                        Colix.unmaskChangableAndTranslucent]);
+                      changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT]);
   }
 
   public final static short getColix(int argb) {
@@ -1724,8 +1730,30 @@ final public class Graphics3D {
     return Colix.getColix(color);
   }
 
+  public final static short setTranslucent(short colix,
+                                           boolean isTranslucent) {
+    if (isTranslucent) {
+      if (colix >= 0 && colix < SPECIAL_COLIX_MAX)
+        return TRANSLUCENT;
+      return (short)(colix | TRANSLUCENT_MASK);
+    } else {
+      if (colix >= 0 && colix < SPECIAL_COLIX_MAX)
+        return OPAQUE;
+      return (short)(colix & OPAQUE_MASK);
+    }
+  }
+
   public final static short getColix(String colorName) {
-    return getColix(getColorFromString(colorName));
+    Color color = getColorFromString(colorName);
+    if (color != null)
+      return getColix(color);
+    if (colorName == "none")
+      return 0;
+    if (colorName == "translucent")
+      return TRANSLUCENT;
+    if (colorName == "opaque")
+      return OPAQUE;
+    return UNRECOGNIZED;
   }
 
   public final static short getColix(Object obj) {
@@ -1746,9 +1774,9 @@ final public class Graphics3D {
     case 0:
       return parentColix;
     case TRANSLUCENT:
-      return (short)(parentColix | Colix.translucentMask);
+      return (short)(parentColix | TRANSLUCENT_MASK);
     case OPAQUE:
-      return (short)(parentColix & ~Colix.translucentMask);
+      return (short)(parentColix & OPAQUE_MASK);
     default:
       return myColix;
     }
@@ -1757,8 +1785,7 @@ final public class Graphics3D {
   public Color getColor(short colix) {
     return
       Colix.getColor(colix >= 0 ? colix :
-                     changableColixMap[colix &
-                                       Colix.unmaskChangableAndTranslucent]);
+                     changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT]);
   }
 
   /****************************************************************
@@ -1777,7 +1804,7 @@ final public class Graphics3D {
     }
     if (changableColixMap[id] == 0)
       changableColixMap[id] = getColix(argb);
-    return (short)(id | Colix.changableMask);
+    return (short)(id | CHANGABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {
@@ -2263,8 +2290,7 @@ final public class Graphics3D {
           return color;
       }
     }
-    System.out.println("error converting string to color:" + strColor);
-    return Color.pink;
+    return null;
   }
 
   final Vector3f vAB = new Vector3f();

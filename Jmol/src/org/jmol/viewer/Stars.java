@@ -53,22 +53,20 @@ class Stars extends Shape {
         if (bs.get(i)) {
           if (colixes == null)
             colixes = new short[atomCount];
-          colixes[i] = colix;
+          colixes[i] = ((colix != Graphics3D.UNRECOGNIZED)
+                        ? colix
+                        : viewer.getColixAtomPalette(atoms[i], (String)value));
         }
       return;
     }
-    if ("colorScheme" == propertyName) {
-      if (value != null) {
-        byte palette = viewer.getPalette((String)value);
-        for (int i = atomCount; --i >= 0; ) {
-          Atom atom = atoms[i];
-          if (bs.get(i)) {
-            if (colixes == null)
-              colixes = new short[atomCount];
-            colixes[i] = viewer.getColixAtomPalette(atom, palette);
-          }
+    if ("translucency" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      for (int i = atomCount; --i >= 0; )
+        if (bs.get(i)) {
+          if (colixes == null)
+            colixes = new short[atomCount];
+          colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
         }
-      }
       return;
     }
   }

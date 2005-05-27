@@ -111,6 +111,17 @@ class Pmesh extends SelectionIndependentShape {
       }
       return;
     }
+    if ("translucent" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      if (currentMesh != null)
+        currentMesh.meshColix =
+          Graphics3D.setTranslucent(currentMesh.meshColix, isTranslucent);
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].meshColix = 
+            Graphics3D.setTranslucent(meshes[i].meshColix, isTranslucent);
+      }
+    }
   }
   
   void allocMesh(String meshID) {

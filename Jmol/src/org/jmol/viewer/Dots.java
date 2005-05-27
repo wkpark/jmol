@@ -180,12 +180,15 @@ class Dots extends Shape {
       setProperty("colorConcave", value, bs);
       setProperty("colorSaddle", value, bs);
     }
+    // no translucency for dots
     if ("colorConvex" == propertyName) {
       System.out.println("Dots.setProperty('colorConvex')");
       short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
-          colixesConvex[i] = colix;
+          colixesConvex[i] =
+            ((colix != Graphics3D.UNRECOGNIZED)
+             ? colix : viewer.getColixAtomPalette(atoms[i], (String)value));
       return;
     }
     if ("colorSaddle" == propertyName) {
@@ -193,9 +196,15 @@ class Dots extends Shape {
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = tori[i];
         if (bs.get(torus.indexII))
-          torus.colixI = colix;
+          torus.colixI =
+            ((colix != Graphics3D.UNRECOGNIZED)
+             ? colix
+             : viewer.getColixAtomPalette(atoms[torus.indexII],(String)value));
         if (bs.get(torus.indexJJ))
-          torus.colixJ = colix;
+          torus.colixJ =
+            ((colix != Graphics3D.UNRECOGNIZED)
+             ? colix
+             : viewer.getColixAtomPalette(atoms[torus.indexJJ],(String)value));
       }
       return;
     }
@@ -204,45 +213,20 @@ class Dots extends Shape {
       for (int i = cavityCount; --i >= 0; ) {
         Cavity cavity = cavities[i];
         if (bs.get(cavity.ixI))
-          cavity.colixI = colix;
+          cavity.colixI =
+            ((colix != Graphics3D.UNRECOGNIZED)
+             ? colix
+             : viewer.getColixAtomPalette(atoms[cavity.ixI], (String)value));
         if (bs.get(cavity.ixJ))
-          cavity.colixJ = colix;
+          cavity.colixJ =
+            ((colix != Graphics3D.UNRECOGNIZED)
+             ? colix
+             : viewer.getColixAtomPalette(atoms[cavity.ixJ], (String)value));
         if (bs.get(cavity.ixK))
-          cavity.colixK = colix;
-      }
-      return;
-    }
-    if ("colorScheme" == propertyName) {
-      if (value != null) {
-        byte palette = viewer.getPalette((String)value);
-        for (int i = atomCount; --i >= 0; ) {
-          if (bs.get(i)) {
-            Atom atom = atoms[i];
-            colixesConvex[i] = viewer.getColixAtomPalette(atom, palette);
-          }
-        }
-        for (int i = torusCount; --i >= 0; ) {
-          Torus torus = tori[i];
-          if (bs.get(torus.indexII))
-            torus.colixI = viewer.getColixAtomPalette(atoms[torus.indexII],
-                                                      palette);
-          if (bs.get(torus.indexJJ))
-            torus.colixJ = viewer.getColixAtomPalette(atoms[torus.indexJJ],
-                                                      palette);
-        }
-        for (int i = cavityCount; --i >= 0; ) {
-          Cavity cavity = cavities[i];
-          if (bs.get(cavity.ixI))
-            cavity.colixI = viewer.getColixAtomPalette(atoms[cavity.ixI],
-                                                       palette);
-          if (bs.get(cavity.ixJ))
-            cavity.colixJ = viewer.getColixAtomPalette(atoms[cavity.ixJ],
-                                                       palette);
-          if (bs.get(cavity.ixK))
-            cavity.colixK = viewer.getColixAtomPalette(atoms[cavity.ixK],
-                                                       palette);
-        }
-        return;
+          cavity.colixK = 
+            ((colix != Graphics3D.UNRECOGNIZED)
+             ? colix
+             : viewer.getColixAtomPalette(atoms[cavity.ixK], (String)value));
       }
       return;
     }

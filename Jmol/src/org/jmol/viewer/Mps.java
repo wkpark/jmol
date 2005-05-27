@@ -53,20 +53,20 @@ abstract class Mps extends Shape {
   
   void setProperty(String propertyName, Object value, BitSet bs) {
     initialize();
-    byte palette = 0;
-    short colix = 0;
-    if ("colorScheme" == propertyName) {
-      if (value == null)
-        return;
-      palette = viewer.getPalette((String)value);
-    } else if ("color" == propertyName) {
-      palette = JmolConstants.PALETTE_COLOR;
-      colix = Graphics3D.getColix(value);
-    } else {
+    if ("color" == propertyName) {
+      String palette = null;
+      short colix = Graphics3D.getColix(value);
+      if (colix == Graphics3D.UNRECOGNIZED)
+        palette = (String)value;
+      for (int m = mpsmodels.length; --m >= 0; )
+        mpsmodels[m].setColix(colix, palette, bs);
       return;
     }
-    for (int m = mpsmodels.length; --m >= 0; )
-      mpsmodels[m].setColix(palette, colix, bs);
+    if ("translucency" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      for (int m = mpsmodels.length; --m >= 0; )
+        mpsmodels[m].setTranslucent(isTranslucent, bs);
+    }
   }
 
   abstract Mpspolymer allocateMpspolymer(Polymer polymer);
@@ -113,11 +113,19 @@ abstract class Mps extends Shape {
       }
     }
 
-    void setColix(byte palette, short colix, BitSet bsSelected) {
+    void setColix(short colix, String palette, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
         Mpspolymer polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
-          polymer.setColix(palette, colix, bsSelected);
+          polymer.setColix(colix, palette, bsSelected);
+      }
+    }
+
+    void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
+      for (int i = mpspolymers.length; --i >= 0; ) {
+        Mpspolymer polymer = mpspolymers[i];
+        if (polymer.monomerCount > 0)
+          polymer.setTranslucent(isTranslucent, bsSelected);
       }
     }
 
@@ -251,15 +259,23 @@ abstract class Mps extends Shape {
         mads[monomerCount] = mads[monomerCount - 1];
     }
 
-    void setColix(byte palette, short colix, BitSet bsSelected) {
+    void setColix(short colix, String palette, BitSet bsSelected) {
       int[] atomIndices = polymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex))
           colixes[i] =
-            palette > JmolConstants.PALETTE_NONE_CPK
-            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
-            : colix;
+            ((colix != Graphics3D.UNRECOGNIZED) ? colix :
+             viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette));
+      }
+    }
+
+    void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
+      int[] atomIndices = polymer.getLeadAtomIndices();
+      for (int i = monomerCount; --i >= 0; ) {
+        int atomIndex = atomIndices[i];
+        if (bsSelected.get(atomIndex))
+          colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
       }
     }
 

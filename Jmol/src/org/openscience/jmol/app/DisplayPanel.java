@@ -224,7 +224,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_FORMALCHARGE);
+      viewer.setModeAtomColorProfile("formalcharge");
     }
   }
 
@@ -236,7 +236,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_NONE_CPK);
+      viewer.setModeAtomColorProfile("cpk");
     }
   }
 

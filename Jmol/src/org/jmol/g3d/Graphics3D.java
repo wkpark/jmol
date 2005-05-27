@@ -1737,11 +1737,10 @@ final public class Graphics3D {
       if (colix >= 0 && colix < SPECIAL_COLIX_MAX)
         return TRANSLUCENT;
       return (short)(colix | TRANSLUCENT_MASK);
-    } else {
-      if (colix >= 0 && colix < SPECIAL_COLIX_MAX)
-        return OPAQUE;
-      return (short)(colix & OPAQUE_MASK);
     }
+    if (colix >= 0 && colix < SPECIAL_COLIX_MAX)
+      return OPAQUE;
+    return (short)(colix & OPAQUE_MASK);
   }
 
   public final static short getColix(String colorName) {

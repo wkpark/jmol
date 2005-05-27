@@ -257,7 +257,7 @@ class Surface extends Shape {
       return;
     }
     if ("colorConcave" == propertyName) {
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = cavityCount; --i >= 0; ) {
         Cavity cavity = cavities[i];
         if (bs.get(cavity.ixI))
@@ -305,7 +305,7 @@ class Surface extends Shape {
    * these state variables are set by the routines below
    */
   int indexI, indexJ, indexK;
-  private Atom atomI, atomJ, atomK;
+  Atom atomI, atomJ, atomK;
   Point3f centerI, centerJ, centerK;
   private float radiusI, radiusJ, radiusK;
   private float radiiIP2, radiiJP2, radiiKP2;

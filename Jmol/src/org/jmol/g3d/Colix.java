@@ -50,7 +50,7 @@ import java.awt.Color;
 final class Colix {
 
 
-  private static int colixMax = 0;
+  private static int colixMax = 1; // skip the null entry
   private static int[] argbs = new int[128];
   private static Color[] colors = new Color[128];
   private static int[][] ashades = new int[128][];

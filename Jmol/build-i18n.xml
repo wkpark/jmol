@@ -175,7 +175,7 @@ TODO:
     </delete>
   </target>
 
-  <target name="clean-catalogs" id="clean-pot">
+  <target name="clean-catalogs" id="clean-catalogs">
     <delete>
       <fileset dir="${Jmol.po.dir}">
         <include name="messages*.class" />

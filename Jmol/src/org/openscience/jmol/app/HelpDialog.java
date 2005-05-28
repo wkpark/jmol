@@ -74,7 +74,7 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
             html = new JEditorPane(helpURL);
         } else {
             html = new JEditorPane("text/plain",
-                GT._("Unable to find url '{0}'.",
+                GT._("Unable to find url \"{0}\".",
                      new Object[] { JmolResourceHandler.getStringX("Help.helpURL") }
                 ));
         }

@@ -387,12 +387,12 @@ public class Jmol extends JPanel {
         // now report on the -D options
         System.out.println();
         System.out.println(GT._("The -D options are as follows (defaults in parathesis):"));
-        System.out.println(GT._("  cdk.debugging=[true|false] (false)"));
-        System.out.println(GT._("  cdk.debug.stdout=[true|false] (false)"));
-        System.out.println(GT._("  display.speed=[fps|ms] (ms)"));
-        System.out.println(GT._("  JmolConsole=[true|false] (true)"));
-        System.out.println(GT._("  plugin.dir (unset)"));
-        System.out.println(GT._("  user.language=[DE|EN|ES|FR|NL|PL] (EN)"));
+        System.out.println("  cdk.debugging=[true|false] (false)");
+        System.out.println("  cdk.debug.stdout=[true|false] (false)");
+        System.out.println("  display.speed=[fps|ms] (ms)");
+        System.out.println("  JmolConsole=[true|false] (true)");
+        System.out.println("  plugin.dir (unset)");
+        System.out.println("  user.language=[DE|EN|ES|FR|NL|PL] (EN)");
 
         System.exit(0);
     }

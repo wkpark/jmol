@@ -2205,7 +2205,7 @@
   <fah_proj number="973" name="p973_fkcomp_dock_M24" public="y" file="y"
     server="171.64.122.132" atoms="14923" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="974" name="p974_fkcomp_boltz" public="n"
+  <fah_proj number="974" name="p974_fkcomp_boltz" public="y"
     server="171.64.122.132" atoms="14917" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
   <fah_proj number="997" name="pAla7-2" public="y"

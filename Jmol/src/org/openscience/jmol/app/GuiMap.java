@@ -32,15 +32,138 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBox;
 
+import org.jmol.util.GT;
+
 class GuiMap {
 
   Hashtable map = new Hashtable();
+  
+  Hashtable labels = null;
+  
+  private Hashtable setupLabels() {
+      Hashtable labels = new Hashtable();
+      labels.put("file", GT._("File"));
+      labels.put("newwin", GT._("New"));
+      labels.put("open", GT._("Open"));
+      labels.put("openurl", GT._("Open URL"));
+      labels.put("script", GT._("Script..."));
+      labels.put("atomsetchooser", GT._("AtomSetChooser..."));
+      labels.put("saveas", GT._("Save As..."));
+      labels.put("export", GT._("Export Image..."));
+      labels.put("pdf", GT._("Export PDF..."));
+      labels.put("print", GT._("Print..."));
+      labels.put("closeLabel", GT._("Close"));
+      labels.put("exit", GT._("Exit"));
+      labels.put("recentFiles", GT._("Recent Files..."));
+      labels.put("edit", GT._("Edit"));
+      labels.put("makecrystal", GT._("Make crystal..."));
+      labels.put("selectall", GT._("Select All"));
+      labels.put("deselectall", GT._("Deselect All"));
+      labels.put("prefs", GT._("Preferences..."));
+      labels.put("editSelectAllScript", GT._("Select All"));
+      labels.put("selectMenu", GT._("Select"));
+      labels.put("selectAllScript", GT._("All"));
+      labels.put("selectNoneScript", GT._("None"));
+      labels.put("selectHydrogenScript", GT._("Hydrogen"));
+      labels.put("selectCarbonScript", GT._("Carbon"));
+      labels.put("selectNitrogenScript", GT._("Nitrogen"));
+      labels.put("selectOxygenScript", GT._("Oxygen"));
+      labels.put("selectPhosphorusScript", GT._("Phosphorus"));
+      labels.put("selectSulphurScript", GT._("Sulphur"));
+      labels.put("display", GT._("Display"));
+      labels.put("atomMenu", GT._("Atom"));
+      labels.put("atomNoneScript", GT._("None"));
+      labels.put("atom15Script", GT._("15% vanderWaals"));
+      labels.put("atom20Script", GT._("20% vanderWaals"));
+      labels.put("atom25Script", GT._("25% vanderWaals"));
+      labels.put("atom100Script", GT._("100% vanderWaals"));
+      labels.put("bondMenu", GT._("Bond"));
+      labels.put("bondNoneScript", GT._("None"));
+      labels.put("bondWireframeScript", GT._("Wireframe"));
+      labels.put("bond100Script", GT._("0.10 \u00C5"));
+      labels.put("bond150Script", GT._("0.15 \u00C5"));
+      labels.put("bond200Script", GT._("0.20 \u00C5"));
+      labels.put("labelMenu", GT._("Label"));
+      labels.put("labelNoneScript", GT._("Symbol"));
+      labels.put("labelNameScript", GT._("Name"));
+      labels.put("labelNumberScript", GT._("Number"));
+      labels.put("labelCenteredScript", GT._("Centered"));
+      labels.put("labelUpperRightScript", GT._("Upper right"));
+      labels.put("vectorMenu", GT._("Vector"));
+      labels.put("vectorOffScript", GT._("None"));
+      labels.put("vectorOnScript", GT._("On"));
+      labels.put("vector3Script", GT._("3 pixels"));
+      labels.put("vector005Script", GT._("0.05 \u00C5"));
+      labels.put("vector01Script", GT._("0.1 \u00C5"));
+      labels.put("vector02ScaleScript", GT._("Scale 0.2"));
+      labels.put("vector05ScaleScript", GT._("Scale 0.5"));
+      labels.put("vector1ScaleScript", GT._("Scale 1"));
+      labels.put("vector2ScaleScript", GT._("Scale 2"));
+      labels.put("vector5ScaleScript", GT._("Scale 5"));
+      labels.put("zoomMenu", GT._("Zoom"));
+      labels.put("zoom100Script", GT._("100%"));
+      labels.put("zoom150Script", GT._("150%"));
+      labels.put("zoom200Script", GT._("200%"));
+      labels.put("zoom400Script", GT._("400%"));
+      labels.put("zoom800Script", GT._("800%"));
+      labels.put("wireframerotationCheck", GT._("Wireframe Rotation"));
+      labels.put("perspectiveCheck", GT._("Perspective Depth"));
+      labels.put("axesCheck", GT._("Axes"));
+      labels.put("boundboxCheck", GT._("Bounding Box"));
+      labels.put("hydrogensCheck", GT._("Hydrogens"));
+      labels.put("vectorsCheck", GT._("Vectors"));
+      labels.put("measurementsCheck", GT._("Measurements"));
+      labels.put("view", GT._("View"));
+      labels.put("front", GT._("Front"));
+      labels.put("top", GT._("Top"));
+      labels.put("bottom", GT._("Bottom"));
+      labels.put("right", GT._("Right"));
+      labels.put("left", GT._("Left"));
+      labels.put("transform", GT._("Transform..."));
+      labels.put("definecenter", GT._("Define Center"));
+      labels.put("tools", GT._("Tools"));
+      labels.put("viewMeasurementTable", GT._("Measurements..."));
+      labels.put("distanceUnitsMenu", GT._("Distance Units"));
+      labels.put("distanceNanometersScript", GT._("Nanometers 1E-9"));
+      labels.put("distanceAngstromsScript", GT._("Angstroms 1E-10"));
+      labels.put("distancePicometersScript", GT._("Picometers 1E-12"));
+      labels.put("animateMenu", GT._("Animate..."));
+      labels.put("vibrateMenu", GT._("Vibrate..."));
+      labels.put("graph", GT._("Graph..."));
+      labels.put("chemicalShifts", GT._("Calculate chemical shifts..."));
+      labels.put("crystprop", GT._("Crystal Properties"));
+      labels.put("animateOnceScript", GT._("Once"));
+      labels.put("animateLoopScript", GT._("Loop"));
+      labels.put("animatePalindromeScript", GT._("Palindrome"));
+      labels.put("animateStopScript", GT._("Stop animation"));
+      labels.put("animateRewindScript", GT._("Rewind to first frame"));
+      labels.put("animateNextScript", GT._("Go to next frame"));
+      labels.put("animatePrevScript", GT._("Go to previous frame"));
+      labels.put("vibrateStartScript", GT._("Start vibration"));
+      labels.put("vibrateStopScript", GT._("Stop vibration"));
+      labels.put("vibrateRewindScript", GT._("First frequency"));
+      labels.put("vibrateNextScript", GT._("Next frequency"));
+      labels.put("vibratePrevScript", GT._("Previous frequency"));
+      labels.put("help", GT._("Help"));
+      labels.put("about", GT._("About Jmol"));
+      labels.put("uguide", GT._("User Guide"));
+      labels.put("whatsnew", GT._("What's New"));
+      labels.put("console", GT._("Jmol Console"));
+      
+      return labels;
+  }
 
   String getLabel(String key) {
-    String label =
-      JmolResourceHandler.getStringX(key+"Label");
+    if (labels == null) {
+      labels = setupLabels();
+    }
+    String label = (String)labels.get(key);
     if (label == null)
-      label = key;
+    // Use the previous system as backup
+    if (label == null) {
+      System.out.println("Missing i18n menu resource, trying old scheme for: " +key);
+      JmolResourceHandler.getStringX(key+"Label");
+    }
     return label;
   }
 

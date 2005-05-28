@@ -46,6 +46,7 @@ TODO:
     <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
+      <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
       <arg value="--output-dir=${Jmol.po.dir}" />
       <arg value="--output=Jmol.pot" />
       <fileset dir="${src.dir}">
@@ -60,6 +61,7 @@ TODO:
     <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
+      <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
       <arg value="--output-dir=${JmolApplet.po.dir}" />
       <arg value="--output=JmolApplet.pot" />
       <fileset dir="${src.dir}">

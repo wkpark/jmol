@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-28 09:26+0200\n"
+"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
+"POT-Creation-Date: 2005-05-28 18:04+0200\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -735,30 +735,6 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:390
-msgid "  cdk.debugging=[true|false] (false)"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:391
-msgid "  cdk.debug.stdout=[true|false] (false)"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:392
-msgid "  display.speed=[fps|ms] (ms)"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:393
-msgid "  JmolConsole=[true|false] (true)"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:394
-msgid "  plugin.dir (unset)"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:395
-msgid "  user.language=[DE|EN|ES|FR|NL|PL] (EN)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:453

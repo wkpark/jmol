@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-28 18:04+0200\n"
+"POT-Creation-Date: 2005-05-28 18:52+0200\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -43,7 +43,8 @@ msgstr "Over Jmol"
 #: org/openscience/jmol/app/AboutDialog.java:67
 #: org/openscience/jmol/app/HelpDialog.java:77
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
-msgid "Unable to find url '{0}'."
+#, fuzzy, java-format
+msgid "Unable to find url \"{0}\"."
 msgstr "Kan de URL '{0}' niet vinden."
 
 #: org/openscience/jmol/app/AboutDialog.java:96

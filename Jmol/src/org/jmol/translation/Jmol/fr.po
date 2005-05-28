@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-28 18:04+0200\n"
+"POT-Creation-Date: 2005-05-28 18:52+0200\n"
 "PO-Revision-Date: 2005-05-28 18:26+0100\n"
 "Last-Translator: Nicolas Vervelle <nvervell@club-internet.fr>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -19,8 +19,12 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 
 #: org/jmol/applet/Jmol.java:118
-msgid "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for more information"
-msgstr "Jmol Applet. Fait partie du projet OpenScience. Voir http://www.jmol.org pour de plus amples informations"
+msgid ""
+"Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
+"more information"
+msgstr ""
+"Jmol Applet. Fait partie du projet OpenScience. Voir http://www.jmol.org "
+"pour de plus amples informations"
 
 #: org/jmol/applet/Jmol.java:450
 msgid "Jmol executing script ..."
@@ -42,7 +46,8 @@ msgstr "A propos de Jmol"
 #: org/openscience/jmol/app/AboutDialog.java:67
 #: org/openscience/jmol/app/HelpDialog.java:77
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
-msgid "Unable to find url '{0}'."
+#, fuzzy, java-format
+msgid "Unable to find url \"{0}\"."
 msgstr "Impossible de trouve l'url '{0}'"
 
 #: org/openscience/jmol/app/AboutDialog.java:96
@@ -640,7 +645,8 @@ msgstr "Qualité JPEG"
 
 #: org/openscience/jmol/app/Jmol.java:128
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
+msgstr ""
+"Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
 
 #: org/openscience/jmol/app/Jmol.java:157
 msgid "Initializing 3D display..."
@@ -725,7 +731,8 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
+msgstr ""
+"Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
 #: org/openscience/jmol/app/Jmol.java:453
 msgid "Executing script..."
@@ -781,8 +788,12 @@ msgid "Filename Stem"
 msgstr "Racine du nom de fichier"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
@@ -823,7 +834,9 @@ msgstr "Calculer toutes les images"
 
 #: org/openscience/jmol/app/PovrayDialog.java:224
 msgid "Render each model (not only the currently displayed one)"
-msgstr "Crée une image pour chaque modèle (pas seulement pour celui actuellement affiché)"
+msgstr ""
+"Crée une image pour chaque modèle (pas seulement pour celui actuellement "
+"affiché)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
 msgid "Turn on Pov-Ray anti-aliasing"
@@ -831,7 +844,8 @@ msgstr "Activer l'anti-aliasing de Pov-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
 msgid "Use Pov-Ray's slower but higher quality anti-aliasing mode"
-msgstr "Utiliser l'anti-aliasing de Pov-Ray, plus lent mais de meilleure qualité"
+msgstr ""
+"Utiliser l'anti-aliasing de Pov-Ray, plus lent mais de meilleure qualité"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
@@ -1041,4 +1055,3 @@ msgstr "Chargement..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
-

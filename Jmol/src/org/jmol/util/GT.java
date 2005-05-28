@@ -41,7 +41,7 @@ public class GT {
         } catch (MissingResourceException mre) {
             System.out.println("Translations do not seem to have been installed!");
             System.out.println(mre.getMessage());
-            mre.printStackTrace();
+            //mre.printStackTrace();
             translationResources = null;
         } catch (Exception exception) {
             System.out.println("Some exception occured!");

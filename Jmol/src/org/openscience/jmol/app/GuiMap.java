@@ -49,10 +49,12 @@ class GuiMap {
       labels.put("script", GT._("Script..."));
       labels.put("atomsetchooser", GT._("AtomSetChooser..."));
       labels.put("saveas", GT._("Save As..."));
+      labels.put("exportMenu", GT._("Export"));
       labels.put("export", GT._("Export Image..."));
+      labels.put("povray", GT._("Render in pov-ray..."));
       labels.put("pdf", GT._("Export PDF..."));
       labels.put("print", GT._("Print..."));
-      labels.put("closeLabel", GT._("Close"));
+      labels.put("close", GT._("Close"));
       labels.put("exit", GT._("Exit"));
       labels.put("recentFiles", GT._("Recent Files..."));
       labels.put("edit", GT._("Edit"));
@@ -70,6 +72,10 @@ class GuiMap {
       labels.put("selectOxygenScript", GT._("Oxygen"));
       labels.put("selectPhosphorusScript", GT._("Phosphorus"));
       labels.put("selectSulphurScript", GT._("Sulphur"));
+      labels.put("selectAminoScript", GT._("Amino"));
+      labels.put("selectNucleicScript", GT._("Nucleic"));
+      labels.put("selectWaterScript", GT._("Water"));
+      labels.put("selectHeteroScript", GT._("Hetero"));
       labels.put("display", GT._("Display"));
       labels.put("atomMenu", GT._("Atom"));
       labels.put("atomNoneScript", GT._("None"));
@@ -84,7 +90,8 @@ class GuiMap {
       labels.put("bond150Script", GT._("0.15 \u00C5"));
       labels.put("bond200Script", GT._("0.20 \u00C5"));
       labels.put("labelMenu", GT._("Label"));
-      labels.put("labelNoneScript", GT._("Symbol"));
+      labels.put("labelNoneScript", GT._("None"));
+      labels.put("labelSymbolScript", GT._("Symbol"));
       labels.put("labelNameScript", GT._("Name"));
       labels.put("labelNumberScript", GT._("Number"));
       labels.put("labelCenteredScript", GT._("Centered"));
@@ -95,11 +102,11 @@ class GuiMap {
       labels.put("vector3Script", GT._("3 pixels"));
       labels.put("vector005Script", GT._("0.05 \u00C5"));
       labels.put("vector01Script", GT._("0.1 \u00C5"));
-      labels.put("vector02ScaleScript", GT._("Scale 0.2"));
-      labels.put("vector05ScaleScript", GT._("Scale 0.5"));
-      labels.put("vector1ScaleScript", GT._("Scale 1"));
-      labels.put("vector2ScaleScript", GT._("Scale 2"));
-      labels.put("vector5ScaleScript", GT._("Scale 5"));
+      labels.put("vectorScale02Script", GT._("Scale 0.2"));
+      labels.put("vectorScale05Script", GT._("Scale 0.5"));
+      labels.put("vectorScale1Script", GT._("Scale 1"));
+      labels.put("vectorScale2Script", GT._("Scale 2"));
+      labels.put("vectorScale5Script", GT._("Scale 5"));
       labels.put("zoomMenu", GT._("Zoom"));
       labels.put("zoom100Script", GT._("100%"));
       labels.put("zoom150Script", GT._("150%"));
@@ -148,7 +155,17 @@ class GuiMap {
       labels.put("about", GT._("About Jmol"));
       labels.put("uguide", GT._("User Guide"));
       labels.put("whatsnew", GT._("What's New"));
-      labels.put("console", GT._("Jmol Console"));
+      labels.put("Prefs.showHydrogens", GT._("Hydrogens"));
+      labels.put("Prefs.showMeasurements", GT._("Measurements"));
+      labels.put("Prefs.wireframeRotation", GT._("Wireframe Rotation"));
+      labels.put("Prefs.perspectiveDepth", GT._("Perspective Depth"));
+      labels.put("Prefs.showAxes", GT._("Axes"));
+      labels.put("Prefs.showBoundingBox", GT._("Bounding Box"));
+      labels.put("Prefs.axesOrientationRasmol", GT._("RasMol/Chime compatible axes orientation/rotations"));
+      labels.put("Prefs.openFilePreview", GT._("File Preview (needs restarting Jmol)"));
+      labels.put("Prefs.isLabelAtomColor", GT._("Jmol Console"));
+      labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
+      labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
       
       return labels;
   }

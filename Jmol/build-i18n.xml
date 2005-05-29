@@ -51,6 +51,7 @@ TODO:
       <arg value="--output=Jmol.pot" />
       <fileset dir="${src.dir}">
          <include name="**/*.java"/>
+         <exclude name="**/jmol/applet/*.java"/>
       </fileset>
     </apply>
   </target>
@@ -132,7 +133,7 @@ TODO:
   <target name="update-application-catalog-lang" id="update-application-catalog-lang">
     <echo message="Updating messages_${Jmol_lang_value}.class file for Jmol ..."/>
     <exec executable="msgfmt" dir="${Jmol.po.dir}">
-      <arg line="--statistics -j -l ${Jmol_lang_value} -d . ${Jmol_lang_value}.po"/>
+      <arg line="--statistics --java2 -l ${Jmol_lang_value} -d . ${Jmol_lang_value}.po"/>
     </exec>
   </target>
 
@@ -150,7 +151,7 @@ TODO:
   <target name="update-applet-catalog-lang" id="update-applet-catalog-lang">
     <echo message="Updating messages_${JmolApplet_lang_value}.class file for JmolApplet ..."/>
     <exec executable="msgfmt" dir="${JmolApplet.po.dir}">
-      <arg line="--statistics -j -l ${JmolApplet_lang_value} -d . ${JmolApplet_lang_value}.po"/>
+      <arg line="--statistics --java -l ${JmolApplet_lang_value} -d . ${JmolApplet_lang_value}.po"/>
     </exec>
   </target>
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-28 18:52+0200\n"
+"POT-Creation-Date: 2005-05-29 22:40+0200\n"
 "PO-Revision-Date: 2005-05-28 18:26+0100\n"
 "Last-Translator: Nicolas Vervelle <nvervell@club-internet.fr>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -18,26 +18,6 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:118
-msgid ""
-"Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
-"more information"
-msgstr ""
-"Jmol Applet. Fait partie du projet OpenScience. Voir http://www.jmol.org "
-"pour de plus amples informations"
-
-#: org/jmol/applet/Jmol.java:450
-msgid "Jmol executing script ..."
-msgstr "Jmol exécute un script ..."
-
-#: org/jmol/applet/Jmol.java:507
-msgid "File Error:"
-msgstr "Erreur de Fichier:"
-
-#: org/jmol/applet/Jmol.java:536
-msgid "Jmol script completed"
-msgstr "Script Jmol terminé"
-
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:155
 msgid "About Jmol"
@@ -46,7 +26,7 @@ msgstr "A propos de Jmol"
 #: org/openscience/jmol/app/AboutDialog.java:67
 #: org/openscience/jmol/app/HelpDialog.java:77
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to find url \"{0}\"."
 msgstr "Impossible de trouver l'url \"{0}\"."
 
@@ -1055,3 +1035,19 @@ msgstr "Chargement..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
+
+#~ msgid ""
+#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
+#~ "for more information"
+#~ msgstr ""
+#~ "Jmol Applet. Fait partie du projet OpenScience. Voir http://www.jmol.org "
+#~ "pour de plus amples informations"
+
+#~ msgid "Jmol executing script ..."
+#~ msgstr "Jmol exécute un script ..."
+
+#~ msgid "File Error:"
+#~ msgstr "Erreur de Fichier:"
+
+#~ msgid "Jmol script completed"
+#~ msgstr "Script Jmol terminé"

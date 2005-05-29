@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-28 18:52+0200\n"
+"POT-Creation-Date: 2005-05-29 22:40+0200\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -16,24 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Dutch\n"
 "X-Poedit-Country: The Netherlands\n"
-
-#: org/jmol/applet/Jmol.java:118
-msgid ""
-"Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
-"more information"
-msgstr ""
-
-#: org/jmol/applet/Jmol.java:450
-msgid "Jmol executing script ..."
-msgstr ""
-
-#: org/jmol/applet/Jmol.java:507
-msgid "File Error:"
-msgstr ""
-
-#: org/jmol/applet/Jmol.java:536
-msgid "Jmol script completed"
-msgstr ""
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:155

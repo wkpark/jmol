@@ -30,18 +30,16 @@ import java.util.*;
 public class GT {
     
     private static GT getTextWrapper = new GT();
-    private static ResourceBundle translationResources = null;
+    private ResourceBundle translationResources;
 
     private GT() {
         System.out.println("Instantiating gettext wrapper...");
         try {
-            translationResources = ResourceBundle.getBundle(
-                "Messages"
-            );
+            translationResources = ResourceBundle.getBundle("Messages");
         } catch (MissingResourceException mre) {
             System.out.println("Translations do not seem to have been installed!");
             System.out.println(mre.getMessage());
-            //mre.printStackTrace();
+            mre.printStackTrace();
             translationResources = null;
         } catch (Exception exception) {
             System.out.println("Some exception occured!");
@@ -61,19 +59,30 @@ public class GT {
     
     private String getString(String string) {
         if (translationResources != null) {
-            String trans = translationResources.getString(string);
-            System.out.println("trans: " + string  + " ->" + trans);
-            return trans;
-        }
-        System.out.println("No trans, using default: " + string);
-        return string;
+            try {
+                String trans = translationResources.getString(string);
+                System.out.println("trans: " + string  + " ->" + trans);
+                return trans;
+            } catch (MissingResourceException mre) {
+                System.out.println("No trans, using default: " + string);
+                return string;
+	    }
+        } else {
+            System.out.println("No trans, using default: " + string);
+            return string;
+	}
     }
 
     private String getString(String string, Object[] objects) {
         String trans = string;
         if (translationResources != null) {
-            trans = MessageFormat.format(translationResources.getString(string), objects);
-            System.out.println("trans: " + string  + " ->" + trans);
+            try {
+                trans = MessageFormat.format(translationResources.getString(string), objects);
+                System.out.println("trans: " + string  + " ->" + trans);
+            } catch (MissingResourceException mre) {
+                trans = MessageFormat.format(string, objects);
+                System.out.println("No trans, using default: " + trans);
+            }
         } else {
             trans = MessageFormat.format(string, objects);
             System.out.println("No trans, using default: " + trans);

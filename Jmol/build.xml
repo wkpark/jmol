@@ -188,6 +188,7 @@
         <include name="**/Properties/*" />
         <include name="**/Data/*" />
         <include name="**/*.txt" />
+        <include name="**/translation/Jmol/*.class" />
       </fileset>
     </copy>
   </target>

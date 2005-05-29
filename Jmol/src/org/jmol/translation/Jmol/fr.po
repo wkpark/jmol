@@ -48,7 +48,7 @@ msgstr "A propos de Jmol"
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
 #, fuzzy, java-format
 msgid "Unable to find url \"{0}\"."
-msgstr "Impossible de trouver l url \"{0}\".'"
+msgstr "Impossible de trouver l'url \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:106

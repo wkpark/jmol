@@ -28,7 +28,7 @@ msgstr "A propos de Jmol"
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
 #, java-format
 msgid "Unable to find url \"{0}\"."
-msgstr "Impossible de trouver l'url \"{0}\"."
+msgstr "Impossible de trouver l''url \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:106
@@ -1035,19 +1035,3 @@ msgstr "Chargement..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
-
-#~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
-#~ msgstr ""
-#~ "Jmol Applet. Fait partie du projet OpenScience. Voir http://www.jmol.org "
-#~ "pour de plus amples informations"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol exécute un script ..."
-
-#~ msgid "File Error:"
-#~ msgstr "Erreur de Fichier:"
-
-#~ msgid "Jmol script completed"
-#~ msgstr "Script Jmol terminé"

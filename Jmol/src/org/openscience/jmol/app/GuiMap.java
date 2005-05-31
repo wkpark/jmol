@@ -166,7 +166,18 @@ class GuiMap {
       labels.put("Prefs.openFilePreview", GT._("File Preview (needs restarting Jmol)"));
       labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
-      
+      labels.put("openTip", GT._("Open a file."));
+      labels.put("exportTip", GT._("Export view to an image file."));
+      labels.put("povrayTip", GT._("Render in pov-ray."));
+      labels.put("printTip", GT._("Print view."));
+      labels.put("rotateTip", GT._("Rotate molecule."));
+      labels.put("pickTip", GT._("Select an atom or region."));
+      labels.put("viewMeasurementTableTip", GT._("View measurement table."));
+      labels.put("homeTip", GT._("Return molecule to home position."));
+      labels.put("animateRewindScriptTip", GT._("Rewind to first frame"));
+      labels.put("animateNextScriptTip", GT._("Go to next frame"));
+      labels.put("animatePrevScriptTip", GT._("Go to previous frame"));
+
       return labels;
   }
 

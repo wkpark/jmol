@@ -548,7 +548,7 @@ public class Jmol extends JPanel {
       // Close Jmol
       numWindows--;
       if (numWindows <= 1) {
-          System.out.println("Closing Jmol...");
+          System.out.println(GT._("Closing Jmol..."));
           pluginManager.closePlugins();
           System.exit(0);
       } else {
@@ -725,7 +725,7 @@ public class Jmol extends JPanel {
       b.setEnabled(false);
     }
 
-    String tip = JmolResourceHandler.getStringX(key + "Tip");
+    String tip = guimap.getLabel(key + "Tip");
     if (tip != null) {
       b.setToolTipText(tip);
     }

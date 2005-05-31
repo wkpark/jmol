@@ -186,6 +186,13 @@
         <include name="**/*.dtd" />
         <include name="**/*.properties" />
         <include name="**/Properties/*" />
+        <!-- for testing internationalisation only:
+             comment out the 2 lines above and uncomment the following 3 lines -->
+        <!--
+        <include name="**/JmolPop*.properties" />
+        <include name="**/Properties/Jmol.properties" />
+        <include name="**/Properties/Jmol-resources.properties" />
+        -->
         <include name="**/Data/*" />
         <include name="**/*.txt" />
       </fileset>

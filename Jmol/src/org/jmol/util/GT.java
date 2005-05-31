@@ -61,7 +61,7 @@ public class GT {
         if (translationResources != null) {
             try {
                 String trans = translationResources.getString(string);
-                System.out.println("trans: " + string  + " ->" + trans);
+                //System.out.println("trans: " + string  + " ->" + trans);
                 return trans;
             } catch (MissingResourceException mre) {
                 System.out.println("No trans, using default: " + string);
@@ -78,7 +78,7 @@ public class GT {
         if (translationResources != null) {
             try {
                 trans = MessageFormat.format(translationResources.getString(string), objects);
-                System.out.println("trans: " + string  + " ->" + trans);
+                //System.out.println("trans: " + string  + " ->" + trans);
             } catch (MissingResourceException mre) {
                 trans = MessageFormat.format(string, objects);
                 System.out.println("No trans, using default: " + trans);

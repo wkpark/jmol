@@ -758,14 +758,12 @@ msgid "Value"
 msgstr "Valeur"
 
 #: org/openscience/jmol/app/PovrayDialog.java:119
-#, fuzzy
 msgid "Render in POV-Ray"
-msgstr "Rendu dans povray"
+msgstr "Rendu dans POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-#, fuzzy
 msgid "Jmol-to-POV-Ray Conversion"
-msgstr "Conversion de Jmol vers Povray"
+msgstr "Conversion de Jmol vers POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
 msgid "Filename Stem"
@@ -784,24 +782,20 @@ msgid "Working Directory"
 msgstr "Répertoire de travail"
 
 #: org/openscience/jmol/app/PovrayDialog.java:175
-#, fuzzy
 msgid "Where the .pov files will be saved"
-msgstr "Où les fichier pov seront sauvés"
+msgstr "Où les fichier .pov seront sauvés"
 
 #: org/openscience/jmol/app/PovrayDialog.java:195
-#, fuzzy
 msgid "POV-Ray Runtime Options"
-msgstr "Options de Pov-Ray à l'exécution"
+msgstr "Options de POV-Ray àl'exécution"
 
 #: org/openscience/jmol/app/PovrayDialog.java:200
-#, fuzzy
 msgid "Run POV-Ray directly"
-msgstr "Lancer Pov-Ray directement"
+msgstr "Lancer POV-Ray directement"
 
 #: org/openscience/jmol/app/PovrayDialog.java:202
-#, fuzzy
 msgid "Launch povray from within Jmol"
-msgstr "Lancer Pov-Ray depuis Jmol"
+msgstr "Lancer povray depuis Jmol"
 
 #: org/openscience/jmol/app/PovrayDialog.java:211
 msgid "Use .ini file"
@@ -822,24 +816,21 @@ msgstr ""
 "affiché)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
-#, fuzzy
 msgid "Turn on POV-Ray anti-aliasing"
-msgstr "Activer l'anti-aliasing de Pov-Ray"
+msgstr "Activer l'anti-aliasing de POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
-#, fuzzy
 msgid "Use povray's slower but higher quality anti-aliasing mode"
 msgstr ""
-"Utiliser l'anti-aliasing de Pov-Ray, plus lent mais de meilleure qualité"
+"Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
 msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/PovrayDialog.java:246
-#, fuzzy
 msgid "Should povray attempt to display while rendering?"
-msgstr "Pov-Ray doit-il essayer d'afficher pendant le calcul?"
+msgstr "povray doit-il essayer d'afficher pendant le calcul?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:255
 #: org/openscience/jmol/app/PovrayDialog.java:257
@@ -935,14 +926,12 @@ msgid "Final size of the tiles"
 msgstr "Taille finale des carreaux"
 
 #: org/openscience/jmol/app/PovrayDialog.java:446
-#, fuzzy
 msgid "POV-Ray Executable Location"
-msgstr "Emplacement de l'exécutable Povray"
+msgstr "Emplacement de l'exécutable POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:448
-#, fuzzy
 msgid "Location of the povray Executable"
-msgstr "Emplacement de l'exécutable Povray"
+msgstr "Emplacement de l'exécutable povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:467
 msgid "Command Line to Execute"
@@ -959,7 +948,6 @@ msgid "Go!"
 msgstr "Aller!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:484
-#, fuzzy
 msgid "Save file and possibly launch povray"
 msgstr "Sauver le fichier et lancer povray"
 

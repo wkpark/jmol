@@ -1,12 +1,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: \n"
+"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
+"POT-Creation-Date: 2005-05-31 14:35+0200\n"
 "PO-Revision-Date: 2005-05-30 20:19+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -53,6 +54,8 @@ msgstr "Información"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:236
 #: org/openscience/jmol/app/GuiMap.java:66
+#: org/openscience/jmol/app/PovrayDialog.java:181
+#: org/openscience/jmol/app/PovrayDialog.java:454
 msgid "Select"
 msgstr "Selecciona"
 
@@ -739,11 +742,13 @@ msgid "Value"
 msgstr "Valor"
 
 #: org/openscience/jmol/app/PovrayDialog.java:119
-msgid "Render in povray"
+#, fuzzy
+msgid "Render in POV-Ray"
 msgstr "Generar en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid "Jmol-to-Povray Conversion"
+#, fuzzy
+msgid "\"Jmol to POV-Ray\" Conversion"
 msgstr "Conversión de Jmol a POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
@@ -751,32 +756,35 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
+"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
 msgstr "Carpeta de trabajo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:175
-msgid "Where the pov files will be saved"
+#, fuzzy
+msgid "Where the .pov files will be saved"
 msgstr "Donde se grabarán los archivos pov"
 
-#: org/openscience/jmol/app/PovrayDialog.java:181
-#: org/openscience/jmol/app/PovrayDialog.java:454
-msgid "Select..."
-msgstr "Seleccionar..."
-
 #: org/openscience/jmol/app/PovrayDialog.java:195
-msgid "Pov-Ray Runtime Options"
+#, fuzzy
+msgid "POV-Ray Runtime Options"
 msgstr "Opciones de ejecución de POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:200
-msgid "Run Pov-Ray directly"
+#, fuzzy
+msgid "Run POV-Ray directly"
 msgstr "Ejecutar POV-Ray directamente"
 
 #: org/openscience/jmol/app/PovrayDialog.java:202
-msgid "Launch Pov-Ray from with-in Jmol"
+#, fuzzy
+msgid "Launch povray from within Jmol"
 msgstr "Iniciar POV-Ray dentro de Jmol"
 
 #: org/openscience/jmol/app/PovrayDialog.java:211
@@ -796,20 +804,26 @@ msgid "Render each model (not only the currently displayed one)"
 msgstr "Generar cada modelo (no sólo el que se muestra ahora)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
-msgid "Turn on Pov-Ray anti-aliasing"
+#, fuzzy
+msgid "Turn on POV-Ray anti-aliasing"
 msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
-msgid "Use Pov-Ray's slower but higher quality anti-aliasing mode"
-msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
+#, fuzzy
+msgid "Use povray's slower but higher quality anti-aliasing mode"
+msgstr ""
+"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
+"calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
 msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:246
-msgid "Should Pov-Ray attempt to display while rendering?"
-msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+#, fuzzy
+msgid "Should povray attempt to display while rendering?"
+msgstr ""
+"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:255
 #: org/openscience/jmol/app/PovrayDialog.java:257
@@ -847,14 +861,6 @@ msgstr "Definido por el usuario"
 #: org/openscience/jmol/app/PovrayDialog.java:320
 msgid "Keep ratio of Jmol window"
 msgstr "Mantener la proporción de la ventana de Jmol"
-
-#: org/openscience/jmol/app/PovrayDialog.java:322
-msgid "4/3"
-msgstr "4/3"
-
-#: org/openscience/jmol/app/PovrayDialog.java:324
-msgid "16/9"
-msgstr "16/9"
 
 #: org/openscience/jmol/app/PovrayDialog.java:344
 msgid "Output format : "
@@ -913,11 +919,13 @@ msgid "Final size of the tiles"
 msgstr "Tamaño final de las teselas"
 
 #: org/openscience/jmol/app/PovrayDialog.java:446
-msgid "Povray Executable Location"
+#, fuzzy
+msgid "POV-Ray Executable Location"
 msgstr "Ubicación del POV-Ray ejecutable"
 
 #: org/openscience/jmol/app/PovrayDialog.java:448
-msgid "Location of the Povray Executable"
+#, fuzzy
+msgid "Location of the povray Executable"
 msgstr "Ubicación del POV-Ray ejecutable"
 
 #: org/openscience/jmol/app/PovrayDialog.java:467
@@ -935,7 +943,8 @@ msgid "Go!"
 msgstr "Aceptar"
 
 #: org/openscience/jmol/app/PovrayDialog.java:484
-msgid "Save file and possible launch povray"
+#, fuzzy
+msgid "Save file and possibly launch povray"
 msgstr "Guardar archivo y posiblemente iniciar POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:493
@@ -1012,3 +1021,11 @@ msgstr "Cargando..."
 msgid "What's New in Jmol"
 msgstr "Novedades en Jmol"
 
+#~ msgid "Select..."
+#~ msgstr "Seleccionar..."
+
+#~ msgid "4/3"
+#~ msgstr "4/3"
+
+#~ msgid "16/9"
+#~ msgstr "16/9"

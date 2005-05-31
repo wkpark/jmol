@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-29 22:45+0200\n"
+"POT-Creation-Date: 2005-05-31 14:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,6 +60,8 @@ msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:236
 #: org/openscience/jmol/app/GuiMap.java:66
+#: org/openscience/jmol/app/PovrayDialog.java:181
+#: org/openscience/jmol/app/PovrayDialog.java:454
 msgid "Select"
 msgstr ""
 
@@ -746,11 +748,11 @@ msgid "Value"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:119
-msgid "Render in povray"
+msgid "Render in POV-Ray"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid "Jmol-to-Povray Conversion"
+msgid "\"Jmol to POV-Ray\" Conversion"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
@@ -768,24 +770,19 @@ msgid "Working Directory"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:175
-msgid "Where the pov files will be saved"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:181
-#: org/openscience/jmol/app/PovrayDialog.java:454
-msgid "Select..."
+msgid "Where the .pov files will be saved"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:195
-msgid "Pov-Ray Runtime Options"
+msgid "POV-Ray Runtime Options"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:200
-msgid "Run Pov-Ray directly"
+msgid "Run POV-Ray directly"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:202
-msgid "Launch Pov-Ray from with-in Jmol"
+msgid "Launch povray from within Jmol"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:211
@@ -805,11 +802,11 @@ msgid "Render each model (not only the currently displayed one)"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
-msgid "Turn on Pov-Ray anti-aliasing"
+msgid "Turn on POV-Ray anti-aliasing"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
-msgid "Use Pov-Ray's slower but higher quality anti-aliasing mode"
+msgid "Use povray's slower but higher quality anti-aliasing mode"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
@@ -817,7 +814,7 @@ msgid "Display While Rendering"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:246
-msgid "Should Pov-Ray attempt to display while rendering?"
+msgid "Should povray attempt to display while rendering?"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:255
@@ -855,14 +852,6 @@ msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:320
 msgid "Keep ratio of Jmol window"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:322
-msgid "4/3"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:324
-msgid "16/9"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:344
@@ -922,11 +911,11 @@ msgid "Final size of the tiles"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:446
-msgid "Povray Executable Location"
+msgid "POV-Ray Executable Location"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:448
-msgid "Location of the Povray Executable"
+msgid "Location of the povray Executable"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:467
@@ -944,7 +933,7 @@ msgid "Go!"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:484
-msgid "Save file and possible launch povray"
+msgid "Save file and possibly launch povray"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:493

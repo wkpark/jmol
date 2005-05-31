@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: \n"
+"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
+"POT-Creation-Date: 2005-05-31 14:12+0200\n"
 "PO-Revision-Date: 2005-05-30 12:40+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: \n"
@@ -10,8 +11,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: org/jmol/applet/Jmol.java:118
-msgid "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for more information"
-msgstr "Applet Jmol. Parte del proyecto OpenScience. Para más información, vea http://www.jmol.org"
+msgid ""
+"Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
+"more information"
+msgstr ""
+"Applet Jmol. Parte del proyecto OpenScience. Para más información, vea "
+"http://www.jmol.org"
 
 #: org/jmol/applet/Jmol.java:450
 msgid "Jmol executing script ..."

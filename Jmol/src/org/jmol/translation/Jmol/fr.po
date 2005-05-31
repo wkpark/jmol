@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-29 22:40+0200\n"
+"POT-Creation-Date: 2005-05-31 14:35+0200\n"
 "PO-Revision-Date: 2005-05-28 18:26+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -63,6 +63,8 @@ msgstr "Info"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:236
 #: org/openscience/jmol/app/GuiMap.java:66
+#: org/openscience/jmol/app/PovrayDialog.java:181
+#: org/openscience/jmol/app/PovrayDialog.java:454
 msgid "Select"
 msgstr "Sélectionner"
 
@@ -756,11 +758,13 @@ msgid "Value"
 msgstr "Valeur"
 
 #: org/openscience/jmol/app/PovrayDialog.java:119
-msgid "Render in povray"
+#, fuzzy
+msgid "Render in POV-Ray"
 msgstr "Rendu dans povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid "Jmol-to-Povray Conversion"
+#, fuzzy
+msgid "\"Jmol to POV-Ray\" Conversion"
 msgstr "Conversion de Jmol vers Povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
@@ -780,24 +784,23 @@ msgid "Working Directory"
 msgstr "Répertoire de travail"
 
 #: org/openscience/jmol/app/PovrayDialog.java:175
-msgid "Where the pov files will be saved"
+#, fuzzy
+msgid "Where the .pov files will be saved"
 msgstr "Où les fichier pov seront sauvés"
 
-#: org/openscience/jmol/app/PovrayDialog.java:181
-#: org/openscience/jmol/app/PovrayDialog.java:454
-msgid "Select..."
-msgstr "Sélectionner..."
-
 #: org/openscience/jmol/app/PovrayDialog.java:195
-msgid "Pov-Ray Runtime Options"
+#, fuzzy
+msgid "POV-Ray Runtime Options"
 msgstr "Options de Pov-Ray à l'exécution"
 
 #: org/openscience/jmol/app/PovrayDialog.java:200
-msgid "Run Pov-Ray directly"
+#, fuzzy
+msgid "Run POV-Ray directly"
 msgstr "Lancer Pov-Ray directement"
 
 #: org/openscience/jmol/app/PovrayDialog.java:202
-msgid "Launch Pov-Ray from with-in Jmol"
+#, fuzzy
+msgid "Launch povray from within Jmol"
 msgstr "Lancer Pov-Ray depuis Jmol"
 
 #: org/openscience/jmol/app/PovrayDialog.java:211
@@ -819,11 +822,13 @@ msgstr ""
 "affiché)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
-msgid "Turn on Pov-Ray anti-aliasing"
+#, fuzzy
+msgid "Turn on POV-Ray anti-aliasing"
 msgstr "Activer l'anti-aliasing de Pov-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
-msgid "Use Pov-Ray's slower but higher quality anti-aliasing mode"
+#, fuzzy
+msgid "Use povray's slower but higher quality anti-aliasing mode"
 msgstr ""
 "Utiliser l'anti-aliasing de Pov-Ray, plus lent mais de meilleure qualité"
 
@@ -832,7 +837,8 @@ msgid "Display While Rendering"
 msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/PovrayDialog.java:246
-msgid "Should Pov-Ray attempt to display while rendering?"
+#, fuzzy
+msgid "Should povray attempt to display while rendering?"
 msgstr "Pov-Ray doit-il essayer d'afficher pendant le calcul?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:255
@@ -871,14 +877,6 @@ msgstr "Défini par l'utilisateur"
 #: org/openscience/jmol/app/PovrayDialog.java:320
 msgid "Keep ratio of Jmol window"
 msgstr "Conserver le ratio de la fenêtre Jmol"
-
-#: org/openscience/jmol/app/PovrayDialog.java:322
-msgid "4/3"
-msgstr "4/3"
-
-#: org/openscience/jmol/app/PovrayDialog.java:324
-msgid "16/9"
-msgstr "16/9"
 
 #: org/openscience/jmol/app/PovrayDialog.java:344
 msgid "Output format : "
@@ -937,11 +935,13 @@ msgid "Final size of the tiles"
 msgstr "Taille finale des carreaux"
 
 #: org/openscience/jmol/app/PovrayDialog.java:446
-msgid "Povray Executable Location"
+#, fuzzy
+msgid "POV-Ray Executable Location"
 msgstr "Emplacement de l'exécutable Povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:448
-msgid "Location of the Povray Executable"
+#, fuzzy
+msgid "Location of the povray Executable"
 msgstr "Emplacement de l'exécutable Povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:467
@@ -959,7 +959,8 @@ msgid "Go!"
 msgstr "Aller!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:484
-msgid "Save file and possible launch povray"
+#, fuzzy
+msgid "Save file and possibly launch povray"
 msgstr "Sauver le fichier et lancer povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:493
@@ -1035,3 +1036,12 @@ msgstr "Chargement..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
+
+#~ msgid "Select..."
+#~ msgstr "Sélectionner..."
+
+#~ msgid "4/3"
+#~ msgstr "4/3"
+
+#~ msgid "16/9"
+#~ msgstr "16/9"

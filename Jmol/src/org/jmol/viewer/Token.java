@@ -406,7 +406,7 @@ class Token {
     "hbonds",            new Token(hbonds,    onDefault1, "hbonds"),
     "hbond",             null,
     "help",              new Token(help,     varArgCount, "help"),
-    "label",             new Token(label,              1, "label"),
+    "label",             new Token(label,     onDefault1, "label"),
     "labels",            null,
     "load",              new Token(load,     varArgCount, "load"),
     "molecule",          new Token(molecule,           1, "molecule"),

@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -30,8 +30,8 @@ final public class JmolConstants {
 
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
-  public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10.00.11";
+  public final static String copyright = "(C) 2005 The Jmol Development Team";
+  public final static String version = "10.00.12";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 

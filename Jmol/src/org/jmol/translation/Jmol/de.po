@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-31 15:36+0200\n"
-"PO-Revision-Date: 2005-05-26 00:16+0200\n"
+"POT-Creation-Date: 2005-06-01 00:10+0200\n"
+"PO-Revision-Date: 2005-05-31 21:44+0200\n"
 "Last-Translator: Daniel Leidert <daniel.leidert@wgdd.de>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -30,6 +30,7 @@ msgstr "URL \"{0}\" wird nicht gefunden."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:106
+#: org/openscience/jmol/app/PreferencesDialog.java:210
 #: org/openscience/jmol/app/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "OK"
@@ -274,7 +275,7 @@ msgstr "Schwefel"
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "Amino"
-msgstr "Amin"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:76
 msgid "Nucleic"
@@ -430,7 +431,7 @@ msgstr "Perspektifische Tiefe"
 #: org/openscience/jmol/app/GuiMap.java:118
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Axes"
-msgstr "Axen"
+msgstr "Achsen"
 
 #: org/openscience/jmol/app/GuiMap.java:119
 #: org/openscience/jmol/app/GuiMap.java:164
@@ -443,11 +444,13 @@ msgid "Hydrogens"
 msgstr "Wasserstoffatome"
 
 #: org/openscience/jmol/app/GuiMap.java:121
+#: org/openscience/jmol/app/PreferencesDialog.java:678
 msgid "Vectors"
 msgstr "Vektoren"
 
 #: org/openscience/jmol/app/GuiMap.java:122
 #: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/PreferencesDialog.java:704
 msgid "Measurements"
 msgstr "Messwerte"
 
@@ -545,14 +548,17 @@ msgid "Stop animation"
 msgstr "Animation stoppen"
 
 #: org/openscience/jmol/app/GuiMap.java:146
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Rewind to first frame"
 msgstr "Zurück zum ersten Frame"
 
 #: org/openscience/jmol/app/GuiMap.java:147
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to next frame"
 msgstr "Zum nächsten Frame"
 
 #: org/openscience/jmol/app/GuiMap.java:148
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Go to previous frame"
 msgstr "Zum vorherigen Frame"
 
@@ -600,13 +606,44 @@ msgstr "RasMol/Chime-kompatible Achs-Orientierung/Rotationen"
 
 #: org/openscience/jmol/app/GuiMap.java:166
 msgid "File Preview (needs restarting Jmol)"
-msgstr "Datei-Vorschau (Jmol muss dafür neu gestartet werden)"
+msgstr "Datei-Vorschau (Neustart erforderlich)"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168
-#, fuzzy
 msgid "Use Atom Color"
-msgstr "Benutze Atome-Farbe"
+msgstr "Atom-Farbe anwenden"
+
+#: org/openscience/jmol/app/GuiMap.java:169
+msgid "Open a file."
+msgstr "Eine Datei öffnen."
+
+#: org/openscience/jmol/app/GuiMap.java:170
+msgid "Export view to an image file."
+msgstr "Ansicht in einer Bilddatei exportieren."
+
+#: org/openscience/jmol/app/GuiMap.java:171
+msgid "Render in pov-ray."
+msgstr "In POV-Ray rendern."
+
+#: org/openscience/jmol/app/GuiMap.java:172
+msgid "Print view."
+msgstr "Druckvorschau"
+
+#: org/openscience/jmol/app/GuiMap.java:173
+msgid "Rotate molecule."
+msgstr "Molekül rotieren."
+
+#: org/openscience/jmol/app/GuiMap.java:174
+msgid "Select an atom or region."
+msgstr "Ein Atom oder einen Bereich markieren."
+
+#: org/openscience/jmol/app/GuiMap.java:175
+msgid "View measurement table."
+msgstr "Messwerte-Tabelle anzeigen."
+
+#: org/openscience/jmol/app/GuiMap.java:176
+msgid "Return molecule to home position."
+msgstr "Molekül in Ausgangsposition bringen."
 
 #: org/openscience/jmol/app/HelpDialog.java:64
 msgid "Jmol Help"
@@ -721,6 +758,11 @@ msgstr "Skript ausführen..."
 #: org/openscience/jmol/app/Jmol.java:477
 msgid "Could not create ConsoleTextArea: "
 msgstr "ConsoleTextArea konnte nicht erstellt werden: "
+
+#: org/openscience/jmol/app/Jmol.java:551
+#, fuzzy
+msgid "Closing Jmol..."
+msgstr "Initialisiere Jmol..."
 
 #: org/openscience/jmol/app/Jmol.java:792
 msgid "Macros"
@@ -978,6 +1020,7 @@ msgid "Atoms"
 msgstr "Atome"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:187
+#: org/openscience/jmol/app/PreferencesDialog.java:645
 msgid "Bonds"
 msgstr "Bindungen"
 
@@ -997,9 +1040,111 @@ msgstr "RasMol-Standards"
 msgid "Apply"
 msgstr "Anwenden"
 
+#: org/openscience/jmol/app/PreferencesDialog.java:234
+msgid "Show All"
+msgstr "Alle zeigen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:334
+msgid "Default atom size"
+msgstr "Standard Atomgröße"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:335
+msgid "(percentage of vanDerWaals radius)"
+msgstr "(in Prozent des van-der-WAALS-Radius)"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:387
+msgid "Compute Bonds"
+msgstr "Bindungen berechnen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:389
+msgid "Automatically"
+msgstr "Automatisch"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:390
+msgid "Don't Compute Bonds"
+msgstr "Bindungen nicht berechnen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:417
+msgid "Default Bond Radius"
+msgstr "Standard Bindungsradius"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:418
+#: org/openscience/jmol/app/PreferencesDialog.java:456
+#: org/openscience/jmol/app/PreferencesDialog.java:507
+msgid "(Angstroms)"
+msgstr "(in Angstrom)"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:455
+msgid "Bond Tolerance - sum of two covalent radii + this value"
+msgstr ""
+
+#: org/openscience/jmol/app/PreferencesDialog.java:506
+msgid "Minimum Bonding Distance"
+msgstr "Minimaler Bindungsabstand"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:563
+msgid "Background"
+msgstr "Hintergrund"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:566
+msgid "Set the Background Color"
+msgstr "Hintergrundfarbe festlegen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:573
+msgid "Background Color"
+msgstr "Hintergrundfarbe"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:587
+msgid "Picked Atoms"
+msgstr "Markierte Atome"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:590
+msgid "Set the Color for Picked Atoms"
+msgstr "Farbe für markierte Atome festlegen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:597
+msgid "Picked Atom Color"
+msgstr "Farbe der markierten Atome"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:612
+msgid "Text"
+msgstr "Text"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:622
+msgid "Set the Color for Text"
+msgstr "Textfarbe festlegen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:630
+msgid "Text Color"
+msgstr "Textfarbe"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:655
+msgid "Set the Color for Bonds"
+msgstr "Farbe der Bindungen festlegen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:663
+msgid "Bond Color"
+msgstr "Farbe der Bindungen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:681
+msgid "Set the Vector Color"
+msgstr "Farbe der Vektoren festlegen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:688
+msgid "Vector Color"
+msgstr "Farbe der Vektoren"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:708
+msgid "Color for distance, angle, & torsion measurements"
+msgstr "Farbe der Distanz-, Winkel- und Torsionsmessungen"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:715
+msgid "Measurements Color"
+msgstr "Farbe der Messwerte"
+
 #: org/openscience/jmol/app/RecentFilesDialog.java:61
 msgid "Recent Files"
-msgstr "Zuletzt verwendete Dateien"
+msgstr "Zuletzt geöffnete Dateien"
 
 #: org/openscience/jmol/app/ScriptWindow.java:62
 msgid "Rasmol Scripts"

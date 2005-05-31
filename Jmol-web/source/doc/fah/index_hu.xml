@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   Hungarian translation 
-  Translated from default version : index_en.xml (v 1.13)
+  Translated from default version : index_en.xml (v 1.14)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
@@ -31,7 +31,7 @@
           "<fah_count_files/> f&#x00E1;jl / <fah_count_projects/> project.",
           "Ha vannak <b>current.xyz</b> f&#x00E1;jljaid a hi&#x00E1;nyz&#x00F3; projectekhez, k&#x00E9;rlek k&#x00FC;ldd el &#x00F5;ket a nicove@users.sourceforge.net c&#x00ED;mre",
           "Hi&#x00E1;nyz&#x00F3; projectek",
-          "Support Jmol by joining the Jmol Team #44383 at Folding@Home"
+          "T&#x00E1;mogatni szeretn&#x00E9;d a Jmolt? Csatlakozz a 44383-as Jmol Csapathoz a Folding@Home-n&#x00E1;l."
           );
       </script>
     </form></section>

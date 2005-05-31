@@ -760,9 +760,8 @@ msgid "Could not create ConsoleTextArea: "
 msgstr "ConsoleTextArea konnte nicht erstellt werden: "
 
 #: org/openscience/jmol/app/Jmol.java:551
-#, fuzzy
 msgid "Closing Jmol..."
-msgstr "Initialisiere Jmol..."
+msgstr "Beende Jmol..."
 
 #: org/openscience/jmol/app/Jmol.java:792
 msgid "Macros"
@@ -791,7 +790,7 @@ msgstr "Alles löschen"
 
 #: org/openscience/jmol/app/MeasurementTable.java:152
 msgid "Dismiss"
-msgstr "Abbrechen"
+msgstr "Verwerfen"
 
 #: org/openscience/jmol/app/MeasurementTable.java:202
 msgid "Value"
@@ -802,7 +801,6 @@ msgid "Render in POV-Ray"
 msgstr "POV-Ray Darstellung"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-#, fuzzy
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Jmol-zu-POV-Ray Konvertierung"
 

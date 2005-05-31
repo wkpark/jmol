@@ -116,7 +116,7 @@ public class PovrayDialog extends JDialog {
    */
   public PovrayDialog(JFrame f, JmolViewer viewer) {
 
-    super(f, GT._("Render in povray"), true);
+    super(f, GT._("Render in POV-Ray"), true);
     this.viewer = viewer;
 
     //
@@ -154,7 +154,7 @@ public class PovrayDialog extends JDialog {
     
     //GUI for save name selection
     Box justSavingBox = Box.createVerticalBox();
-    text = GT._("Jmol-to-Povray Conversion");
+    text = GT._("\"Jmol to POV-Ray\" Conversion");
     justSavingBox.setBorder(new TitledBorder(text));
     
     Box saveBox = Box.createHorizontalBox();
@@ -172,13 +172,13 @@ public class PovrayDialog extends JDialog {
     Box savePathBox = Box.createHorizontalBox();
     text = GT._("Working Directory");
     savePathBox.setBorder(new TitledBorder(text));
-    text = GT._("Where the pov files will be saved");
+    text = GT._("Where the .pov files will be saved");
     savePathBox.setToolTipText(text);
     savePathLabel = new JTextField("");
     savePathLabel.setEditable(false);
     savePathLabel.setBorder(null);
     savePathBox.add(savePathLabel);
-    text = GT._("Select...");
+    text = GT._("Select");
     JButton savePathButton = new JButton(text);
     savePathButton.addActionListener(new ActionListener() {
 
@@ -192,14 +192,14 @@ public class PovrayDialog extends JDialog {
 
     //GUI for povray options
     Box povOptionsBox = Box.createVerticalBox();
-    text = GT._("Pov-Ray Runtime Options");
+    text = GT._("POV-Ray Runtime Options");
     povOptionsBox.setBorder(new TitledBorder(text));
     
     // Run povray option
     Box runPovBox = Box.createHorizontalBox();
-    text = GT._("Run Pov-Ray directly");
+    text = GT._("Run POV-Ray directly");
     runPovCheck = new JCheckBox(text, true);
-    text = GT._("Launch Pov-Ray from with-in Jmol");
+    text = GT._("Launch povray from within Jmol");
     runPovCheck.setToolTipText(text);
     runPovCheck.addItemListener(updateItemListener);
     runPovBox.add(runPovCheck);
@@ -230,9 +230,9 @@ public class PovrayDialog extends JDialog {
     
     // Antialias option
     Box antiAliasBox = Box.createHorizontalBox();
-    text = GT._("Turn on Pov-Ray anti-aliasing");
+    text = GT._("Turn on POV-Ray anti-aliasing");
     antiAliasCheck = new JCheckBox(text, true);
-    text = GT._("Use Pov-Ray's slower but higher quality anti-aliasing mode");
+    text = GT._("Use povray's slower but higher quality anti-aliasing mode");
     antiAliasCheck.setToolTipText(text);
     antiAliasCheck.addItemListener(updateItemListener);
     antiAliasBox.add(antiAliasCheck);
@@ -243,7 +243,7 @@ public class PovrayDialog extends JDialog {
     Box displayBox = Box.createHorizontalBox();
     text = GT._("Display While Rendering");
     displayWhileRenderingCheck = new JCheckBox(text, true);
-    text = GT._("Should Pov-Ray attempt to display while rendering?");
+    text = GT._("Should povray attempt to display while rendering?");
     displayWhileRenderingCheck.setToolTipText(text);
     displayWhileRenderingCheck.addItemListener(updateItemListener);
     displayBox.add(displayWhileRenderingCheck);
@@ -319,9 +319,9 @@ public class PovrayDialog extends JDialog {
     imageSizeRatioCombo.addItem(text);
     text = GT._("Keep ratio of Jmol window");
     imageSizeRatioCombo.addItem(text);
-    text = GT._("4/3");
+    text = "4:3";
     imageSizeRatioCombo.addItem(text);
-    text = GT._("16/9");
+    text = "16:9";
     imageSizeRatioCombo.addItem(text);
     imageSizeRatioCombo.setSelectedIndex(1);
     imageSizeRatioCombo.addActionListener(new ActionListener() {
@@ -443,15 +443,15 @@ public class PovrayDialog extends JDialog {
     
     //GUI for povray path selection
     Box povrayPathBox = Box.createHorizontalBox();
-    text = GT._("Povray Executable Location");
+    text = GT._("POV-Ray Executable Location");
     povrayPathBox.setBorder(new TitledBorder(text));
-    text = GT._("Location of the Povray Executable");
+    text = GT._("Location of the povray Executable");
     povrayPathBox.setToolTipText(text);
     povrayPathLabel = new JTextField("");
     povrayPathLabel.setEditable(false);
     povrayPathLabel.setBorder(null);
     povrayPathBox.add(povrayPathLabel);
-    text = GT._("Select...");
+    text = GT._("Select");
     povrayPathButton = new JButton(text);
     povrayPathButton.addActionListener(new ActionListener() {
 
@@ -481,7 +481,7 @@ public class PovrayDialog extends JDialog {
     buttonBox.add(Box.createGlue());
     text = GT._("Go!");
     goButton = new JButton(text);
-    text = GT._("Save file and possible launch povray");
+    text = GT._("Save file and possibly launch povray");
     goButton.setToolTipText(text);
     goButton.addActionListener(new ActionListener() {
 

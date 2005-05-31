@@ -120,7 +120,7 @@ TODO:
 <target name="update-catalog" id="update-catalog" depends="update-application-catalog,update-applet-catalog" />
 
   <!-- update Jmol po files using newly created Jmol.pot file -->
-  <target name="update-application-catalog" id="update-application-catalog">
+  <target name="update-application-catalog" id="update-application-catalog" depends="clean-application-catalogs">
     <for list="${all.Jmol.languages}" delimiter="," param="current.Jmol.language">
       <sequential>
         <antcall target="update-application-catalog-lang">
@@ -138,7 +138,7 @@ TODO:
   </target>
 
   <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
-  <target name="update-applet-catalog" id="update-applet-catalog">
+  <target name="update-applet-catalog" id="update-applet-catalog" depends="clean-applet-catalogs">
     <for list="${all.JmolApplet.languages}" delimiter="," param="current.JmolApplet.language">
       <sequential>
         <antcall target="update-applet-catalog-lang">
@@ -176,13 +176,18 @@ TODO:
     </delete>
   </target>
 
-  <target name="clean-catalogs" id="clean-catalogs">
+  <target name="clean-application-catalogs" id="clean-application-catalogs">
     <delete>
       <fileset dir="${Jmol.po.dir}">
-        <include name="messages*.class" />
+        <include name="Messages*.class" />
       </fileset>
+    </delete>
+  </target>
+
+  <target name="clean-applet-catalogs" id="clean-applet-catalogs">
+    <delete>
       <fileset dir="${JmolApplet.po.dir}">
-        <include name="messages*.class" />
+        <include name="Messages*.class" />
       </fileset>
     </delete>
   </target>

@@ -1,10 +1,16 @@
 <project name="Jmol-i18n" default="main" basedir=".">
 
 <!--
-TODO:
-- should check for existance of gettext
-- should execute gettext commands depending on the os (os attribute)
-  (add no-location option to gettext?)
+DocumentId  $Id$
+Author      $Author$
+Date        $Date$
+Version     $Revision$
+Summary      	
+  Localization support for Jmol and Jmol applet using the gettext suite
+Todo
+  - should check for existance of gettext
+  - should execute gettext commands depending on the os (os attribute)
+    (add no-location option to gettext?)
 -->
 
 <!-- our properties section -->

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-31 15:24+0200\n"
+"POT-Creation-Date: 2005-05-31 15:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -418,27 +418,27 @@ msgid "800%"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:116
-#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/GuiMap.java:161
 msgid "Wireframe Rotation"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:117
-#: org/openscience/jmol/app/GuiMap.java:161
+#: org/openscience/jmol/app/GuiMap.java:162
 msgid "Perspective Depth"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:118
-#: org/openscience/jmol/app/GuiMap.java:162
+#: org/openscience/jmol/app/GuiMap.java:163
 msgid "Axes"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:119
-#: org/openscience/jmol/app/GuiMap.java:163
+#: org/openscience/jmol/app/GuiMap.java:164
 msgid "Bounding Box"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:120
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
 msgstr ""
 
@@ -447,7 +447,7 @@ msgid "Vectors"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#: org/openscience/jmol/app/GuiMap.java:159
+#: org/openscience/jmol/app/GuiMap.java:160
 msgid "Measurements"
 msgstr ""
 
@@ -589,17 +589,17 @@ msgstr ""
 msgid "What's New"
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:164
-msgid "RasMol/Chime compatible axes orientation/rotations"
+#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/Jmol.java:465
+msgid "Jmol Console"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:165
-msgid "File Preview (needs restarting Jmol)"
+msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:166
-#: org/openscience/jmol/app/Jmol.java:465
-msgid "Jmol Console"
+msgid "File Preview (needs restarting Jmol)"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:167

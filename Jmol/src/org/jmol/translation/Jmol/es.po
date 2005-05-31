@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-31 15:24+0200\n"
+"POT-Creation-Date: 2005-05-31 15:36+0200\n"
 "PO-Revision-Date: 2005-05-30 20:19+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: \n"
@@ -412,27 +412,27 @@ msgid "800%"
 msgstr "800%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
-#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/GuiMap.java:161
 msgid "Wireframe Rotation"
 msgstr "Rotar en modelo de alambres"
 
 #: org/openscience/jmol/app/GuiMap.java:117
-#: org/openscience/jmol/app/GuiMap.java:161
+#: org/openscience/jmol/app/GuiMap.java:162
 msgid "Perspective Depth"
 msgstr "Perspectiva"
 
 #: org/openscience/jmol/app/GuiMap.java:118
-#: org/openscience/jmol/app/GuiMap.java:162
+#: org/openscience/jmol/app/GuiMap.java:163
 msgid "Axes"
 msgstr "Ejes"
 
 #: org/openscience/jmol/app/GuiMap.java:119
-#: org/openscience/jmol/app/GuiMap.java:163
+#: org/openscience/jmol/app/GuiMap.java:164
 msgid "Bounding Box"
 msgstr "Caja"
 
 #: org/openscience/jmol/app/GuiMap.java:120
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
 msgstr "Hidrógenos"
 
@@ -441,7 +441,7 @@ msgid "Vectors"
 msgstr "Vectores"
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#: org/openscience/jmol/app/GuiMap.java:159
+#: org/openscience/jmol/app/GuiMap.java:160
 msgid "Measurements"
 msgstr "Mediciones"
 
@@ -583,18 +583,18 @@ msgstr "Manual del usuario"
 msgid "What's New"
 msgstr "Novedades"
 
-#: org/openscience/jmol/app/GuiMap.java:164
-msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr "Orientación de ejes y rotación compatibles con RasMol/Chime"
-
-#: org/openscience/jmol/app/GuiMap.java:165
-msgid "File Preview (needs restarting Jmol)"
-msgstr "Previsualización de archivos (requiere reiniciar Jmol)"
-
-#: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:158
 #: org/openscience/jmol/app/Jmol.java:465
 msgid "Jmol Console"
 msgstr "Consola de Jmol"
+
+#: org/openscience/jmol/app/GuiMap.java:165
+msgid "RasMol/Chime compatible axes orientation/rotations"
+msgstr "Orientación de ejes y rotación compatibles con RasMol/Chime"
+
+#: org/openscience/jmol/app/GuiMap.java:166
+msgid "File Preview (needs restarting Jmol)"
+msgstr "Previsualización de archivos (requiere reiniciar Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168

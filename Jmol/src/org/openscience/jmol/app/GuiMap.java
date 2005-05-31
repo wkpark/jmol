@@ -155,6 +155,7 @@ class GuiMap {
       labels.put("about", GT._("About Jmol"));
       labels.put("uguide", GT._("User Guide"));
       labels.put("whatsnew", GT._("What's New"));
+      labels.put("console", GT._("Jmol Console"));
       labels.put("Prefs.showHydrogens", GT._("Hydrogens"));
       labels.put("Prefs.showMeasurements", GT._("Measurements"));
       labels.put("Prefs.wireframeRotation", GT._("Wireframe Rotation"));
@@ -163,7 +164,6 @@ class GuiMap {
       labels.put("Prefs.showBoundingBox", GT._("Bounding Box"));
       labels.put("Prefs.axesOrientationRasmol", GT._("RasMol/Chime compatible axes orientation/rotations"));
       labels.put("Prefs.openFilePreview", GT._("File Preview (needs restarting Jmol)"));
-      labels.put("Prefs.isLabelAtomColor", GT._("Jmol Console"));
       labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
       

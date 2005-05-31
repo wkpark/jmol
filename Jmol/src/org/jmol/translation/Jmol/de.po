@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-31 15:24+0200\n"
+"POT-Creation-Date: 2005-05-31 15:36+0200\n"
 "PO-Revision-Date: 2005-05-26 00:16+0200\n"
 "Last-Translator: Daniel Leidert <daniel.leidert@wgdd.de>\n"
 "Language-Team: none\n"
@@ -418,27 +418,27 @@ msgid "800%"
 msgstr "800%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
-#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/GuiMap.java:161
 msgid "Wireframe Rotation"
 msgstr "Rotation des Drahtgitter-Modells"
 
 #: org/openscience/jmol/app/GuiMap.java:117
-#: org/openscience/jmol/app/GuiMap.java:161
+#: org/openscience/jmol/app/GuiMap.java:162
 msgid "Perspective Depth"
 msgstr "Perspektifische Tiefe"
 
 #: org/openscience/jmol/app/GuiMap.java:118
-#: org/openscience/jmol/app/GuiMap.java:162
+#: org/openscience/jmol/app/GuiMap.java:163
 msgid "Axes"
 msgstr "Axen"
 
 #: org/openscience/jmol/app/GuiMap.java:119
-#: org/openscience/jmol/app/GuiMap.java:163
+#: org/openscience/jmol/app/GuiMap.java:164
 msgid "Bounding Box"
 msgstr "Rahmenbox"
 
 #: org/openscience/jmol/app/GuiMap.java:120
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
 msgstr "Wasserstoffatome"
 
@@ -447,7 +447,7 @@ msgid "Vectors"
 msgstr "Vektoren"
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#: org/openscience/jmol/app/GuiMap.java:159
+#: org/openscience/jmol/app/GuiMap.java:160
 msgid "Measurements"
 msgstr "Messwerte"
 
@@ -589,23 +589,24 @@ msgstr "Benutzerhandbuch"
 msgid "What's New"
 msgstr "Neuigkeiten"
 
-#: org/openscience/jmol/app/GuiMap.java:164
-msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr ""
-
-#: org/openscience/jmol/app/GuiMap.java:165
-msgid "File Preview (needs restarting Jmol)"
-msgstr "Datei-Vorschau (Jmol muss dafür neu gestartet werden)"
-
-#: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:158
 #: org/openscience/jmol/app/Jmol.java:465
 msgid "Jmol Console"
 msgstr "Jmol Konsole"
 
+#: org/openscience/jmol/app/GuiMap.java:165
+msgid "RasMol/Chime compatible axes orientation/rotations"
+msgstr "RasMol/Chime-kompatible Achs-Orientierung/Rotationen"
+
+#: org/openscience/jmol/app/GuiMap.java:166
+msgid "File Preview (needs restarting Jmol)"
+msgstr "Datei-Vorschau (Jmol muss dafür neu gestartet werden)"
+
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168
+#, fuzzy
 msgid "Use Atom Color"
-msgstr ""
+msgstr "Benutze Atome-Farbe"
 
 #: org/openscience/jmol/app/HelpDialog.java:64
 msgid "Jmol Help"
@@ -655,8 +656,9 @@ msgid "Loading plugins..."
 msgstr "Lade Plugins..."
 
 #: org/openscience/jmol/app/Jmol.java:211
+#, fuzzy
 msgid "Building Command Hooks..."
-msgstr ""
+msgstr "Erstelle Kommando-Hooks..."
 
 #: org/openscience/jmol/app/Jmol.java:220
 msgid "Building Menubar..."

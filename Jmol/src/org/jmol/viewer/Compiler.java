@@ -1205,11 +1205,11 @@ class Compiler {
       return false;
     if (tokPeek() == Token.hyphen) {
       tokenNext();
-      int seqcodeMin = seqcode;
+      int seqcodeA = seqcode;
       if (! clauseSequenceCode())
         return false;
       return generateResidueSpecCode(new Token(Token.spec_seqcode_range,
-                                               seqcodeMin,
+                                               seqcodeA,
                                                new Integer(seqcode)));
     }
     return generateResidueSpecCode(new Token(Token.spec_seqcode,

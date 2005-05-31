@@ -211,6 +211,11 @@ final class Mmset {
       models[i].calcHydrogenBonds();
   }
 
+  void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
+    for (int i = modelCount; --i >= 0; )
+      models[i].selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+  }
+
   static class Structure {
     String typeName;
     byte type;

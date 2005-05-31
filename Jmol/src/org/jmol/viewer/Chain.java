@@ -88,6 +88,29 @@ final class Chain {
     }
   }
 
+  void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
+    int indexA = getSeqcodeIndex(seqcodeA);
+    if (indexA < 0)
+      return;
+    int indexB = getSeqcodeIndex(seqcodeB);
+    if (indexB < 0)
+      return;
+    if (indexA > indexB) {
+      int t = indexA;
+      indexA = indexB;
+      indexB = t;
+    }
+    for (int i = indexA; i <= indexB; ++i)
+      groups[i].selectAtoms(bs);
+  }
+
+  int getSeqcodeIndex(int seqcode) {
+    int i;
+    for (i = groupCount; --i >= 0 && groups[i].seqcode != seqcode; )
+      {}
+    return i;
+  }
+
   int getSelectedGroupCount() {
     return selectedGroupCount;
   }

@@ -86,6 +86,11 @@ final class Model {
       polymers[i].calcSelectedMonomersCount(bsSelected);
   }
 
+  void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
+    for (int i = chainCount; --i >= 0; )
+      chains[i].selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+  }
+
   int getGroupCount() {
     int groupCount = 0;
     for (int i = chainCount; --i >= 0; )

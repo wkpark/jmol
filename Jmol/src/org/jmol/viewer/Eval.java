@@ -873,9 +873,9 @@ class Eval implements Runnable {
         stack[sp++] = getSpecSeqcode(instruction.intValue);
         break;
       case Token.spec_seqcode_range:
-        int min = instruction.intValue;
-        int last = ((Integer)instruction.value).intValue();
-        stack[sp++] = getSpecSeqcodeRange(min, last);
+        int seqcodeA = instruction.intValue;
+        int seqcodeB = ((Integer)instruction.value).intValue();
+        stack[sp++] = getSpecSeqcodeRange(seqcodeA, seqcodeB);
         break;
       case Token.spec_chain:
         stack[sp++] = getSpecChain((char)instruction.intValue);
@@ -1142,15 +1142,10 @@ class Eval implements Runnable {
     return bsResno;
   }
 
-  BitSet getSpecSeqcodeRange(int seqcodeMin, int seqcodeLast) {
+  BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB) {
     Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      Atom atom = frame.getAtomAt(i);
-      int atomSeqcode = atom.getSeqcode();
-      if (atomSeqcode >= seqcodeMin && atomSeqcode <= seqcodeLast)
-        bsResidue.set(i);
-    }
+    frame.selectSeqcodeRange(seqcodeA, seqcodeB, bsResidue);
     return bsResidue;
   }
 

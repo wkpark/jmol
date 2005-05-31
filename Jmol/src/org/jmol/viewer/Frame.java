@@ -1703,4 +1703,8 @@ final class Frame {
     atoms[atomIndex].group.chain.selectAtoms(bsChain);
     return bsChain;
   }
+
+  void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
+    mmset.selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+  }
 }

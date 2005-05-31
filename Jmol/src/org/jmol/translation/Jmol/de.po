@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-31 14:34+0200\n"
+"POT-Creation-Date: 2005-05-31 15:24+0200\n"
 "PO-Revision-Date: 2005-05-26 00:16+0200\n"
 "Last-Translator: Daniel Leidert <daniel.leidert@wgdd.de>\n"
 "Language-Team: none\n"
@@ -758,8 +758,9 @@ msgid "Render in POV-Ray"
 msgstr "POV-Ray Darstellung"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid "\"Jmol to POV-Ray\" Conversion"
-msgstr "\"Jmol -> POV-Ray\" Konvertierung"
+#, fuzzy
+msgid "Jmol-to-POV-Ray Conversion"
+msgstr "Jmol-zu-POV-Ray Konvertierung"
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
 msgid "Filename Stem"

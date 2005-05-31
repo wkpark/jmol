@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-31 14:35+0200\n"
+"POT-Creation-Date: 2005-05-31 15:24+0200\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -770,7 +770,7 @@ msgid "Render in POV-Ray"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid "\"Jmol to POV-Ray\" Conversion"
+msgid "Jmol-to-POV-Ray Conversion"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:161

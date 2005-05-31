@@ -154,7 +154,7 @@ public class PovrayDialog extends JDialog {
     
     //GUI for save name selection
     Box justSavingBox = Box.createVerticalBox();
-    text = GT._("\"Jmol to POV-Ray\" Conversion");
+    text = GT._("Jmol-to-POV-Ray Conversion");
     justSavingBox.setBorder(new TitledBorder(text));
     
     Box saveBox = Box.createHorizontalBox();

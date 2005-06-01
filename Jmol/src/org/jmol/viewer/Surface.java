@@ -172,9 +172,8 @@ class Surface extends Shape {
           setAtomI(i);
           getNeighbors(bsSelected);
           calcCavitiesI();
-          if (convexVertexMaps[i] == calculateMyConvexSurfaceMap) {
-            convexVertexMaps[i] = calcVertexBitmapI();
-          }
+          if (convexVertexMaps[i] != null)
+            calcVertexBitmapI();
         }
       for (int i = cavityCount; --i >= 0; )
         cavities[i].calcNearestGeodesicVertexes();
@@ -341,7 +340,7 @@ class Surface extends Shape {
     distanceJK2 = centerK.distanceSquared(centerJ);
   }
 
-  int[] calcVertexBitmapI() {
+  void calcVertexBitmapI() {
     Bmp.setAllBits(tempVertexMap, geodesicVertexCount);
     if (neighborCount > 0) {
       float combinedRadii = radiusI + radiusP;
@@ -361,7 +360,7 @@ class Surface extends Shape {
         } while (iLastUsed != iStart);
       }
     }
-    return Bmp.copyMinimalBitmap(tempVertexMap);
+    Bmp.orInto(convexVertexMaps[indexI], tempVertexMap);
   }
 
   int[] calcFaceBitmap(int[] vertexMap) {
@@ -967,21 +966,23 @@ class Surface extends Shape {
     */
   }
 
-  Torus createTorus(int indexA, Point3f centerA, int indexB, Point3f centerB,
-                    Point3f torusCenterAB, float torusRadius,
+  void allocateConvexVertexBitmap(int atomIndex) {
+    if (convexVertexMaps[atomIndex] == null)
+      convexVertexMaps[atomIndex] = Bmp.allocateBitmap(geodesicVertexCount);
+  }
+
+  Torus createTorus(int indexI, Point3f centerI, int indexJ, Point3f centerJ,
+                    Point3f torusCenterIJ, float torusRadius,
                     boolean fullTorus) {
-    /*
-    System.out.println("createTorus(" + indexA + "," + centerA + "," +
-                       indexB + "," + centerB + "," + torusCenterAB + "," +
-                       torusRadius + "," + fullTorus + ")");
-    */
-    if (indexA >= indexB)
+    if (indexI >= indexJ)
       throw new NullPointerException();
-    Long key = new Long(((long)indexA << 32) + indexB);
+    Long key = new Long(((long)indexI << 32) + indexJ);
     if (htToruses.get(key) != null)
       throw new NullPointerException();
-    Torus torus = new Torus(indexA, centerA, indexB, centerB,
-                            torusCenterAB, torusRadius, fullTorus);
+    allocateConvexVertexBitmap(indexI);
+    allocateConvexVertexBitmap(indexJ);
+    Torus torus = new Torus(indexI, centerI, indexJ, centerJ,
+                            torusCenterIJ, torusRadius, fullTorus);
     htToruses.put(key, torus);
     return torus;
   }
@@ -1061,7 +1062,7 @@ class Surface extends Shape {
     }
     // check for an isolated atom with no neighbors
     if (neighborCount == 0)
-      convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
+      allocateConvexVertexBitmap(indexI);
   }
 
   final Vector3f normalizedRadialVectorT = new Vector3f();
@@ -1077,14 +1078,11 @@ class Surface extends Shape {
         normalizedRadialVectorT.normalize();
       }
       float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
-      torusProbePointT.scaleAdd(torusRadiusIJ, 
+      torusProbePointT.scaleAdd(torusRadiusIJ,
                                 normalizedRadialVectorT, torusCenterIJ);
-      if (checkProbeNotIJ(torusProbePointT)) {
+      if (checkProbeNotIJ(torusProbePointT))
         createTorus(indexI, centerI, indexJ, centerJ,
                     torusCenterIJ, torusRadiusIJ, true);
-        convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
-        convexVertexMaps[indexJ] = calculateMyConvexSurfaceMap; 
-      }
     }
   }
 
@@ -1166,9 +1164,6 @@ class Surface extends Shape {
                                 false);
         }
         torusJK.addCavity(cavity, rightHanded);
-        convexVertexMaps[indexI] = calculateMyConvexSurfaceMap; 
-        convexVertexMaps[indexJ] = calculateMyConvexSurfaceMap; 
-        convexVertexMaps[indexK] = calculateMyConvexSurfaceMap; 
       }
     }
   }

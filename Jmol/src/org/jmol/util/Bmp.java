@@ -96,6 +96,13 @@ public class Bmp {
       bitmap[i] = 0xFFFFFFFF;
   }
 
+  public final static void orInto(int[] bmDestination, int[] bmSource) {
+    int minLength = (bmDestination.length < bmSource.length
+                     ? bmDestination.length : bmSource.length);
+    for (int i = minLength; --i >= 0; )
+      bmDestination[i] |= bmSource[i];
+  }
+
   public final static int[] copyMinimalBitmap(int[] bitmap) {
     int indexLast;
     for (indexLast = bitmap.length;

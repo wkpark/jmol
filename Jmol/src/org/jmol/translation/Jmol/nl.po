@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-06-01 00:10+0200\n"
+"POT-Creation-Date: 2005-06-01 02:02+0200\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -64,6 +64,8 @@ msgstr "Info"
 #: org/openscience/jmol/app/GuiMap.java:66
 #: org/openscience/jmol/app/PovrayDialog.java:181
 #: org/openscience/jmol/app/PovrayDialog.java:454
+#: org/openscience/jmol/app/PovrayDialog.java:623
+#: org/openscience/jmol/app/PovrayDialog.java:644
 msgid "Select"
 msgstr "Selecteren"
 

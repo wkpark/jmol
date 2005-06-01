@@ -620,7 +620,7 @@ public class PovrayDialog extends JDialog {
 
     JFileChooser myChooser = new JFileChooser();
     myChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    int button = myChooser.showDialog(this, "Select");
+    int button = myChooser.showDialog(this, GT._("Select"));
     if (button == JFileChooser.APPROVE_OPTION) {
       java.io.File newFile = myChooser.getSelectedFile();
       String savePath;
@@ -641,7 +641,7 @@ public class PovrayDialog extends JDialog {
   void showPovrayPathDialog() {
 
     JFileChooser myChooser = new JFileChooser();
-    int button = myChooser.showDialog(this, "Select");
+    int button = myChooser.showDialog(this, GT._("Select"));
     if (button == JFileChooser.APPROVE_OPTION) {
       java.io.File newFile = myChooser.getSelectedFile();
       povrayPathLabel.setText(newFile.toString());

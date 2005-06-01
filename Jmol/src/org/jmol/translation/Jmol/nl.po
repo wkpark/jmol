@@ -7,6 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
+"POT-Creation-Date: 2005-05-31 15:24+0200\n"
+"PO-Revision-Date: 2005-06-01 10:18+0100\n"
+"Last-Translator: Egon Willighagen <e.willighagen@science.ru.nl>\n"
 "POT-Creation-Date: 2005-06-01 02:02+0200\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
@@ -25,9 +28,9 @@ msgstr "Over Jmol"
 #: org/openscience/jmol/app/AboutDialog.java:67
 #: org/openscience/jmol/app/HelpDialog.java:77
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to find url \"{0}\"."
-msgstr "Kan de URL '{0}' niet vinden."
+msgstr "Kan de URL \"{0}\" niet vinden."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:106
@@ -100,45 +103,44 @@ msgstr "Periode"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:352
 msgid "Controller"
-msgstr ""
+msgstr "Controller"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:359
 msgid "atom set"
-msgstr ""
+msgstr "atoomset"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:361
-#, fuzzy
 msgid "vector"
-msgstr "Vector"
+msgstr "vector"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:364
 #, java-format
 msgid "Go to first {0} in the collection"
-msgstr ""
+msgstr "Ga naar de eerste {0} in de collectie"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:365
 #, java-format
 msgid "Go to previous {0} in the collection"
-msgstr ""
+msgstr "Ga naar de vorige {0} in de collectie"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:366
 #, java-format
 msgid "Play the whole collection of {0}'s"
-msgstr ""
+msgstr "Speel de hele collectie van {0}'s af"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:367
 msgid "Pause playing"
-msgstr ""
+msgstr "Pausseer het afspelen"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:368
 #, java-format
 msgid "Go to next {0} in the collection"
-msgstr ""
+msgstr "Ga naar de volgende {0} in de collectie"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:369
 #, java-format
 msgid "Jump to last {0} in the collection"
-msgstr ""
+msgstr "Ga naar de laatste {0} in de collectie"
 
 #: org/openscience/jmol/app/ConsoleTextArea.java:88
 #, java-format
@@ -159,95 +161,91 @@ msgstr "Preview"
 
 #: org/openscience/jmol/app/GuiMap.java:45
 msgid "File"
-msgstr ""
+msgstr "Bestand"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 msgid "New"
-msgstr ""
+msgstr "Nieuw"
 
 #: org/openscience/jmol/app/GuiMap.java:47
 #: org/openscience/jmol/app/RecentFilesDialog.java:66
 msgid "Open"
-msgstr ""
+msgstr "Open"
 
 #: org/openscience/jmol/app/GuiMap.java:48
 #: org/openscience/jmol/app/Jmol.java:1108
 msgid "Open URL"
-msgstr ""
+msgstr "Open URL"
 
 #: org/openscience/jmol/app/GuiMap.java:49
-#, fuzzy
 msgid "Script..."
-msgstr "Selecteren"
+msgstr "Script..."
 
 #: org/openscience/jmol/app/GuiMap.java:50
-#, fuzzy
 msgid "AtomSetChooser..."
-msgstr "Atoomsetmenu"
+msgstr "AtoomSetMenu"
 
 #: org/openscience/jmol/app/GuiMap.java:51
 msgid "Save As..."
-msgstr ""
+msgstr "Opslaan als..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
 msgid "Export"
-msgstr ""
+msgstr "Exporteren"
 
 #: org/openscience/jmol/app/GuiMap.java:53
 msgid "Export Image..."
-msgstr ""
+msgstr "Exporteer Figuur..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "Render in pov-ray..."
-msgstr ""
+msgstr "Renderen in pov-ray..."
 
 #: org/openscience/jmol/app/GuiMap.java:55
 msgid "Export PDF..."
-msgstr ""
+msgstr "PDF exporteren..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
 msgid "Print..."
-msgstr ""
+msgstr "Printen..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
 #: org/openscience/jmol/app/ScriptWindow.java:81
 msgid "Close"
-msgstr ""
+msgstr "Sluiten"
 
 #: org/openscience/jmol/app/GuiMap.java:58
 msgid "Exit"
-msgstr ""
+msgstr "Afsluiten"
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "Recent Files..."
-msgstr ""
+msgstr "Recente Bestanden..."
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "Edit"
-msgstr ""
+msgstr "Bewerken"
 
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "Make crystal..."
-msgstr ""
+msgstr "Maak kristal..."
 
 #: org/openscience/jmol/app/GuiMap.java:62
 #: org/openscience/jmol/app/GuiMap.java:65
-#, fuzzy
 msgid "Select All"
-msgstr "Selecteren"
+msgstr "Alles Selecteren"
 
 #: org/openscience/jmol/app/GuiMap.java:63
-#, fuzzy
 msgid "Deselect All"
-msgstr "Wis Atomen"
+msgstr "Niets Selecteren"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "Preferences..."
-msgstr ""
+msgstr "Eigenschappen..."
 
 #: org/openscience/jmol/app/GuiMap.java:67
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: org/openscience/jmol/app/GuiMap.java:68
 #: org/openscience/jmol/app/GuiMap.java:81
@@ -255,367 +253,358 @@ msgstr ""
 #: org/openscience/jmol/app/GuiMap.java:93
 #: org/openscience/jmol/app/GuiMap.java:100
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: org/openscience/jmol/app/GuiMap.java:69
 msgid "Hydrogen"
-msgstr ""
+msgstr "Waterstof"
 
 #: org/openscience/jmol/app/GuiMap.java:70
 msgid "Carbon"
-msgstr ""
+msgstr "Koolstof"
 
 #: org/openscience/jmol/app/GuiMap.java:71
 msgid "Nitrogen"
-msgstr ""
+msgstr "Stikstof"
 
 #: org/openscience/jmol/app/GuiMap.java:72
 msgid "Oxygen"
-msgstr ""
+msgstr "Zuurstof"
 
 #: org/openscience/jmol/app/GuiMap.java:73
 msgid "Phosphorus"
-msgstr ""
+msgstr "Fosfor"
 
 #: org/openscience/jmol/app/GuiMap.java:74
 msgid "Sulphur"
-msgstr ""
+msgstr "Zwavel"
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "Amino"
-msgstr ""
+msgstr "Aminozuren"
 
 #: org/openscience/jmol/app/GuiMap.java:76
 msgid "Nucleic"
-msgstr ""
+msgstr "Nucleinezuren"
 
 #: org/openscience/jmol/app/GuiMap.java:77
 msgid "Water"
-msgstr ""
+msgstr "Water"
 
 #: org/openscience/jmol/app/GuiMap.java:78
 msgid "Hetero"
-msgstr ""
+msgstr "Heteroatomen"
 
 #: org/openscience/jmol/app/GuiMap.java:79
 #: org/openscience/jmol/app/PreferencesDialog.java:185
 msgid "Display"
-msgstr ""
+msgstr "Weergave"
 
 #: org/openscience/jmol/app/GuiMap.java:80
-#, fuzzy
 msgid "Atom"
-msgstr "Geen Atoomset"
+msgstr "Atoom"
 
 #: org/openscience/jmol/app/GuiMap.java:82
 msgid "15% vanderWaals"
-msgstr ""
+msgstr "15% vanderwaals"
 
 #: org/openscience/jmol/app/GuiMap.java:83
 msgid "20% vanderWaals"
-msgstr ""
+msgstr "20% vanderwaals"
 
 #: org/openscience/jmol/app/GuiMap.java:84
 msgid "25% vanderWaals"
-msgstr ""
+msgstr "25% vanderwaals"
 
 #: org/openscience/jmol/app/GuiMap.java:85
 msgid "100% vanderWaals"
-msgstr ""
+msgstr "100% vanderwaals"
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Bond"
-msgstr ""
+msgstr "Binding"
 
 #: org/openscience/jmol/app/GuiMap.java:88
 msgid "Wireframe"
-msgstr ""
+msgstr "Draadmodel"
 
 #: org/openscience/jmol/app/GuiMap.java:89
 msgid "0.10 Å"
-msgstr ""
+msgstr "0.10 Å"
 
 #: org/openscience/jmol/app/GuiMap.java:90
 msgid "0.15 Å"
-msgstr ""
+msgstr "0.15 Å"
 
 #: org/openscience/jmol/app/GuiMap.java:91
 msgid "0.20 Å"
-msgstr ""
+msgstr "0.20 Å"
 
 #: org/openscience/jmol/app/GuiMap.java:92
 msgid "Label"
-msgstr ""
+msgstr "Label"
 
 #: org/openscience/jmol/app/GuiMap.java:94
 msgid "Symbol"
-msgstr ""
+msgstr "Symbool"
 
 #: org/openscience/jmol/app/GuiMap.java:95
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #: org/openscience/jmol/app/GuiMap.java:96
 msgid "Number"
-msgstr ""
+msgstr "Nummer"
 
 #: org/openscience/jmol/app/GuiMap.java:97
 msgid "Centered"
-msgstr ""
+msgstr "Gecentreerd"
 
 #: org/openscience/jmol/app/GuiMap.java:98
 msgid "Upper right"
-msgstr ""
+msgstr "Top-rechts"
 
 #: org/openscience/jmol/app/GuiMap.java:101
 msgid "On"
-msgstr ""
+msgstr "Aan"
 
 #: org/openscience/jmol/app/GuiMap.java:102
 msgid "3 pixels"
-msgstr ""
+msgstr "3 pixels"
 
 #: org/openscience/jmol/app/GuiMap.java:103
 msgid "0.05 Å"
-msgstr ""
+msgstr "0.05 Å"
 
 #: org/openscience/jmol/app/GuiMap.java:104
 msgid "0.1 Å"
-msgstr ""
+msgstr "0.1 Å"
 
 #: org/openscience/jmol/app/GuiMap.java:105
-#, fuzzy
 msgid "Scale 0.2"
-msgstr "Schalen"
+msgstr "Schalen naar 0.2"
 
 #: org/openscience/jmol/app/GuiMap.java:106
-#, fuzzy
 msgid "Scale 0.5"
-msgstr "Schalen"
+msgstr "Schalen naar 0.5"
 
 #: org/openscience/jmol/app/GuiMap.java:107
-#, fuzzy
 msgid "Scale 1"
-msgstr "Schalen"
+msgstr "Schalen naar 1"
 
 #: org/openscience/jmol/app/GuiMap.java:108
-#, fuzzy
 msgid "Scale 2"
-msgstr "Schalen"
+msgstr "Schalen naar 2"
 
 #: org/openscience/jmol/app/GuiMap.java:109
-#, fuzzy
 msgid "Scale 5"
-msgstr "Schalen"
+msgstr "Schalen naar 5"
 
 #: org/openscience/jmol/app/GuiMap.java:110
 msgid "Zoom"
-msgstr ""
+msgstr "Inzoomen"
 
 #: org/openscience/jmol/app/GuiMap.java:111
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: org/openscience/jmol/app/GuiMap.java:112
 msgid "150%"
-msgstr ""
+msgstr "150%"
 
 #: org/openscience/jmol/app/GuiMap.java:113
 msgid "200%"
-msgstr ""
+msgstr "200%"
 
 #: org/openscience/jmol/app/GuiMap.java:114
 msgid "400%"
-msgstr ""
+msgstr "400%"
 
 #: org/openscience/jmol/app/GuiMap.java:115
 msgid "800%"
-msgstr ""
+msgstr "800%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Wireframe Rotation"
-msgstr ""
+msgstr "Draadmodelrotatie"
 
 #: org/openscience/jmol/app/GuiMap.java:117
 #: org/openscience/jmol/app/GuiMap.java:162
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Perspectief"
 
 #: org/openscience/jmol/app/GuiMap.java:118
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Axes"
-msgstr ""
+msgstr "Assen"
 
 #: org/openscience/jmol/app/GuiMap.java:119
 #: org/openscience/jmol/app/GuiMap.java:164
 msgid "Bounding Box"
-msgstr ""
+msgstr "Omvattende Doos"
 
 #: org/openscience/jmol/app/GuiMap.java:120
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
-msgstr ""
+msgstr "Waterstoffen"
 
 #: org/openscience/jmol/app/GuiMap.java:121
 #: org/openscience/jmol/app/PreferencesDialog.java:678
-#, fuzzy
 msgid "Vectors"
-msgstr "Vector"
+msgstr "Vectoren"
 
 #: org/openscience/jmol/app/GuiMap.java:122
 #: org/openscience/jmol/app/GuiMap.java:160
 #: org/openscience/jmol/app/PreferencesDialog.java:704
 msgid "Measurements"
-msgstr ""
+msgstr "Metingen"
 
 #: org/openscience/jmol/app/GuiMap.java:123
 msgid "View"
-msgstr ""
+msgstr "Orientatie"
 
 #: org/openscience/jmol/app/GuiMap.java:124
 msgid "Front"
-msgstr ""
+msgstr "Voor"
 
 #: org/openscience/jmol/app/GuiMap.java:125
 msgid "Top"
-msgstr ""
+msgstr "Top"
 
 #: org/openscience/jmol/app/GuiMap.java:126
 msgid "Bottom"
-msgstr ""
+msgstr "Onder"
 
 #: org/openscience/jmol/app/GuiMap.java:127
 msgid "Right"
-msgstr ""
+msgstr "Rechts"
 
 #: org/openscience/jmol/app/GuiMap.java:128
 msgid "Left"
-msgstr ""
+msgstr "Links"
 
 #: org/openscience/jmol/app/GuiMap.java:129
 msgid "Transform..."
-msgstr ""
+msgstr "Transformeren..."
 
 #: org/openscience/jmol/app/GuiMap.java:130
 msgid "Define Center"
-msgstr ""
+msgstr "Definieer centrum"
 
 #: org/openscience/jmol/app/GuiMap.java:131
 msgid "Tools"
-msgstr ""
+msgstr "Tools"
 
 #: org/openscience/jmol/app/GuiMap.java:132
 #: org/openscience/jmol/app/MeasurementTable.java:67
 msgid "Measurements..."
-msgstr ""
+msgstr "Metingen..."
 
 #: org/openscience/jmol/app/GuiMap.java:133
 msgid "Distance Units"
-msgstr ""
+msgstr "Afstandsmaten"
 
 #: org/openscience/jmol/app/GuiMap.java:134
 msgid "Nanometers 1E-9"
-msgstr ""
+msgstr "Nanometers 1E-9"
 
 #: org/openscience/jmol/app/GuiMap.java:135
 msgid "Angstroms 1E-10"
-msgstr ""
+msgstr "Angstroms 1E-10"
 
 #: org/openscience/jmol/app/GuiMap.java:136
 msgid "Picometers 1E-12"
-msgstr ""
+msgstr "Picometers 1E-12"
 
 #: org/openscience/jmol/app/GuiMap.java:137
 msgid "Animate..."
-msgstr ""
+msgstr "Animeren..."
 
 #: org/openscience/jmol/app/GuiMap.java:138
 msgid "Vibrate..."
-msgstr ""
+msgstr "Vibraties..."
 
 #: org/openscience/jmol/app/GuiMap.java:139
 msgid "Graph..."
-msgstr ""
+msgstr "Grafiek..."
 
 #: org/openscience/jmol/app/GuiMap.java:140
 msgid "Calculate chemical shifts..."
-msgstr ""
+msgstr "Bereken chemische shifts..."
 
 #: org/openscience/jmol/app/GuiMap.java:141
-#, fuzzy
 msgid "Crystal Properties"
-msgstr "Eigenschappen"
+msgstr "Kristaleigenschappen"
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "Once"
-msgstr ""
+msgstr "Enkelmaal"
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "Loop"
-msgstr ""
+msgstr "Herhalend"
 
 #: org/openscience/jmol/app/GuiMap.java:144
 msgid "Palindrome"
-msgstr ""
+msgstr "Palindroom"
 
 #: org/openscience/jmol/app/GuiMap.java:145
 msgid "Stop animation"
-msgstr ""
+msgstr "Stop animatie"
 
 #: org/openscience/jmol/app/GuiMap.java:146
 #: org/openscience/jmol/app/GuiMap.java:177
 msgid "Rewind to first frame"
-msgstr ""
+msgstr "Spoel terug naar eerste frame"
 
 #: org/openscience/jmol/app/GuiMap.java:147
 #: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to next frame"
-msgstr ""
+msgstr "Ga naar volgende frame"
 
 #: org/openscience/jmol/app/GuiMap.java:148
 #: org/openscience/jmol/app/GuiMap.java:179
 msgid "Go to previous frame"
-msgstr ""
+msgstr "Ga naar vorige frame"
 
 #: org/openscience/jmol/app/GuiMap.java:149
 msgid "Start vibration"
-msgstr ""
+msgstr "Start vibratie"
 
 #: org/openscience/jmol/app/GuiMap.java:150
 msgid "Stop vibration"
-msgstr ""
+msgstr "Stop vibratie"
 
 #: org/openscience/jmol/app/GuiMap.java:151
 msgid "First frequency"
-msgstr ""
+msgstr "Eerste frequentie"
 
 #: org/openscience/jmol/app/GuiMap.java:152
 msgid "Next frequency"
-msgstr ""
+msgstr "Volgende frequentie"
 
 #: org/openscience/jmol/app/GuiMap.java:153
 msgid "Previous frequency"
-msgstr ""
+msgstr "Vorige frequentie"
 
 #: org/openscience/jmol/app/GuiMap.java:154
 #: org/openscience/jmol/app/ScriptWindow.java:98
-#, fuzzy
 msgid "Help"
-msgstr "Jmol Help"
+msgstr "Help"
 
 #: org/openscience/jmol/app/GuiMap.java:156
 msgid "User Guide"
-msgstr ""
+msgstr "Gebruikershandleiding"
 
 #: org/openscience/jmol/app/GuiMap.java:157
 msgid "What's New"
-msgstr ""
+msgstr "Wat is Nieuw"
 
 #: org/openscience/jmol/app/GuiMap.java:158
 #: org/openscience/jmol/app/Jmol.java:465
 msgid "Jmol Console"
-msgstr ""
+msgstr "Jmol Console"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "RasMol/Chime compatible axes orientation/rotations"
@@ -628,11 +617,11 @@ msgstr ""
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168
 msgid "Use Atom Color"
-msgstr ""
+msgstr "Gebruik atoomkleuren"
 
 #: org/openscience/jmol/app/GuiMap.java:169
 msgid "Open a file."
-msgstr ""
+msgstr "Open een bestand."
 
 #: org/openscience/jmol/app/GuiMap.java:170
 msgid "Export view to an image file."
@@ -643,21 +632,20 @@ msgid "Render in pov-ray."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:172
-#, fuzzy
 msgid "Print view."
-msgstr "Preview"
+msgstr "Printweergave"
 
 #: org/openscience/jmol/app/GuiMap.java:173
 msgid "Rotate molecule."
-msgstr ""
+msgstr "Roteer molecuul."
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Select an atom or region."
-msgstr ""
+msgstr "Selecteer een atoom of gebied."
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "View measurement table."
-msgstr ""
+msgstr "Laat Metingentabel zien."
 
 #: org/openscience/jmol/app/GuiMap.java:176
 msgid "Return molecule to home position."
@@ -669,146 +657,143 @@ msgstr "Jmol Help"
 
 #: org/openscience/jmol/app/ImageTyper.java:59
 msgid "Image Type"
-msgstr ""
+msgstr "Figuurformaat"
 
 #: org/openscience/jmol/app/ImageTyper.java:84
 msgid "JPEG Quality"
-msgstr ""
+msgstr "JPEG-kwaliteit"
 
 #: org/openscience/jmol/app/Jmol.java:128
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr ""
+msgstr "Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
 
 #: org/openscience/jmol/app/Jmol.java:157
 msgid "Initializing 3D display..."
-msgstr ""
+msgstr "Initialiseren 3D display..."
 
 #: org/openscience/jmol/app/Jmol.java:179
 msgid "Initializing Preferences..."
-msgstr ""
+msgstr "Initialiseren Eigenschappen..."
 
 #: org/openscience/jmol/app/Jmol.java:181
 msgid "Initializing Recent Files..."
-msgstr ""
+msgstr "Initialiseren Recente Bestanden..."
 
 #: org/openscience/jmol/app/Jmol.java:183
 msgid "Initializing Script Window..."
-msgstr ""
+msgstr "Initialiseren Script-window..."
 
 #: org/openscience/jmol/app/Jmol.java:185
 msgid "Initializing AtomSetChooser Window..."
-msgstr ""
+msgstr "Initialiseren AtoomSetMenu WIndow...."
 
 #: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing Measurements..."
-msgstr ""
+msgstr "Initialiseren Metingen...."
 
 #: org/openscience/jmol/app/Jmol.java:194
 msgid "Loading plugins..."
-msgstr ""
+msgstr "Loading plugins..."
 
 #: org/openscience/jmol/app/Jmol.java:211
 msgid "Building Command Hooks..."
-msgstr ""
+msgstr "Opbouwen Opdrachten..."
 
 #: org/openscience/jmol/app/Jmol.java:220
 msgid "Building Menubar..."
-msgstr ""
+msgstr "Opbouwen Menus..."
 
 #: org/openscience/jmol/app/Jmol.java:236
 msgid "Starting display..."
-msgstr ""
+msgstr "Starten viewer..."
 
 #: org/openscience/jmol/app/Jmol.java:239
 msgid "Setting up File Choosers..."
-msgstr ""
+msgstr "Make van Bestanskiezer..."
 
 #: org/openscience/jmol/app/Jmol.java:291
 msgid "Setting up Drag-and-Drop..."
-msgstr ""
+msgstr "Initialiseren van Drag-and-Drop..."
 
 #: org/openscience/jmol/app/Jmol.java:317
 msgid "Launching main frame..."
-msgstr ""
+msgstr "Starten mainwindow..."
 
 #: org/openscience/jmol/app/Jmol.java:326
 msgid "Creating main window..."
-msgstr ""
+msgstr "Maken van main window..."
 
 #: org/openscience/jmol/app/Jmol.java:327
 msgid "Initializing Swing..."
-msgstr ""
+msgstr "Initialiseren Swing..."
 
 #: org/openscience/jmol/app/Jmol.java:337
 msgid "Initializing Jmol..."
-msgstr ""
+msgstr "Initialiseren Jmol...."
 
 #: org/openscience/jmol/app/Jmol.java:355
 msgid "give this help page"
-msgstr ""
+msgstr "geef deze help pagina"
 
 #: org/openscience/jmol/app/Jmol.java:363
 msgid "property=value"
-msgstr ""
+msgstr "eigenschap=waarde"
 
 #: org/openscience/jmol/app/Jmol.java:366
 msgid "supported options are given below"
-msgstr ""
+msgstr "ondersteunde waarde staan hieronder"
 
 #: org/openscience/jmol/app/Jmol.java:370
 msgid "window size 500x500"
-msgstr ""
+msgstr "windowgrootte 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
+msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
 
 #: org/openscience/jmol/app/Jmol.java:453
 msgid "Executing script..."
-msgstr ""
+msgstr "Afspelen van script..."
 
 #: org/openscience/jmol/app/Jmol.java:477
 msgid "Could not create ConsoleTextArea: "
-msgstr ""
+msgstr "Kon geen ConsoleTextArea aanmaken:"
 
 #: org/openscience/jmol/app/Jmol.java:551
 msgid "Closing Jmol..."
-msgstr ""
+msgstr "Bezig met afsluiten Jmol..."
 
 #: org/openscience/jmol/app/Jmol.java:792
 msgid "Macros"
-msgstr ""
+msgstr "Macro's"
 
 #: org/openscience/jmol/app/Jmol.java:1109
 msgid "Enter URL of molecular model"
-msgstr ""
+msgstr "Geef URL van molecuulmodel"
 
 #: org/openscience/jmol/app/Jmol.java:1196
 msgid "IO Exception:"
-msgstr ""
+msgstr "IO-fout:"
 
 #: org/openscience/jmol/app/Jmol.java:1363
 msgid "File not loaded"
-msgstr ""
+msgstr "Bestand niet geladen"
 
 #: org/openscience/jmol/app/MeasurementTable.java:125
-#, fuzzy
 msgid "Delete"
-msgstr "Selecteren"
+msgstr "Wissen"
 
 #: org/openscience/jmol/app/MeasurementTable.java:134
-#, fuzzy
 msgid "DeleteAll"
-msgstr "Wis Atomen"
+msgstr "Alles wissen"
 
 #: org/openscience/jmol/app/MeasurementTable.java:152
 msgid "Dismiss"
-msgstr ""
+msgstr "Afsluiten"
 
 #: org/openscience/jmol/app/MeasurementTable.java:202
-#, fuzzy
 msgid "Value"
-msgstr "Schalen"
+msgstr "Waarde"
 
 #: org/openscience/jmol/app/PovrayDialog.java:119
 msgid "Render in POV-Ray"
@@ -816,25 +801,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
 msgid "Jmol-to-POV-Ray Conversion"
-msgstr ""
+msgstr "Jmol-naar-POV-Ray conversie"
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
 msgid "Filename Stem"
-msgstr ""
+msgstr "Begin Bestandsnaam"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
-msgstr ""
+msgstr "Werkfolder"
 
 #: org/openscience/jmol/app/PovrayDialog.java:175
 msgid "Where the .pov files will be saved"
-msgstr ""
+msgstr "Waar de .pov-bestanden moeten worden opgeslagen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:195
 msgid "POV-Ray Runtime Options"
@@ -850,11 +833,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:211
 msgid "Use .ini file"
-msgstr ""
+msgstr "Gebruik .ini-bestand"
 
 #: org/openscience/jmol/app/PovrayDialog.java:213
 msgid "Save options in a .ini file"
-msgstr ""
+msgstr "Bewaar de opties in een .ini-bestand"
 
 #: org/openscience/jmol/app/PovrayDialog.java:222
 msgid "Render all frames"
@@ -874,52 +857,52 @@ msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
-msgstr ""
+msgstr "Weergeven tijdens renderen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:246
 msgid "Should povray attempt to display while rendering?"
-msgstr ""
+msgstr "Moet povray proberen "
 
 #: org/openscience/jmol/app/PovrayDialog.java:255
 #: org/openscience/jmol/app/PovrayDialog.java:257
 msgid "Image size"
-msgstr ""
+msgstr "Figuurgrootte"
 
 #: org/openscience/jmol/app/PovrayDialog.java:269
 msgid "Width : "
-msgstr ""
+msgstr "Breedte :"
 
 #: org/openscience/jmol/app/PovrayDialog.java:271
 msgid "Image width"
-msgstr ""
+msgstr "Figuurbreedte"
 
 #: org/openscience/jmol/app/PovrayDialog.java:286
 msgid "Height : "
-msgstr ""
+msgstr "Hoogte :"
 
 #: org/openscience/jmol/app/PovrayDialog.java:288
 msgid "Image height"
-msgstr ""
+msgstr "Figuurhoogte"
 
 #: org/openscience/jmol/app/PovrayDialog.java:305
 msgid "Fixed ratio : "
-msgstr ""
+msgstr "Vaste verhoudingen :"
 
 #: org/openscience/jmol/app/PovrayDialog.java:307
 msgid "Use a fixed ratio for width:height"
-msgstr ""
+msgstr "Gebruik een vaste verhouding tussen breedte en hoogte"
 
 #: org/openscience/jmol/app/PovrayDialog.java:318
 msgid "User defined"
-msgstr ""
+msgstr "Gebruikersdefinitie"
 
 #: org/openscience/jmol/app/PovrayDialog.java:320
 msgid "Keep ratio of Jmol window"
-msgstr ""
+msgstr "Behoud verhoudingen Jmol-scherm"
 
 #: org/openscience/jmol/app/PovrayDialog.java:344
 msgid "Output format : "
-msgstr ""
+msgstr "Uitvoerformaat:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:346
 msgid "Select the file format of the output file"
@@ -931,11 +914,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:358
 msgid "N - PNG"
-msgstr ""
+msgstr "N - PNG"
 
 #: org/openscience/jmol/app/PovrayDialog.java:360
 msgid "P - PPM"
-msgstr ""
+msgstr "P - PPM"
 
 #: org/openscience/jmol/app/PovrayDialog.java:362
 msgid "T - Uncompressed Targa-24"
@@ -943,7 +926,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:378
 msgid "Alpha transparency"
-msgstr ""
+msgstr "Alpha-transparantie"
 
 #: org/openscience/jmol/app/PovrayDialog.java:380
 msgid "Output Alpha transparency data"
@@ -993,7 +976,7 @@ msgstr ""
 #: org/openscience/jmol/app/PovrayDialog.java:482
 #: org/openscience/jmol/app/PovrayDialog.java:754
 msgid "Go!"
-msgstr ""
+msgstr "Gaan!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:484
 msgid "Save file and possibly launch povray"
@@ -1003,16 +986,15 @@ msgstr ""
 #: org/openscience/jmol/app/PreferencesDialog.java:202
 #: org/openscience/jmol/app/RecentFilesDialog.java:70
 msgid "Cancel"
-msgstr ""
+msgstr "Afbreken"
 
 #: org/openscience/jmol/app/PovrayDialog.java:495
 msgid "Cancel this dialog without saving"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:756
-#, fuzzy
 msgid "Save"
-msgstr "Schalen"
+msgstr "Opslaan"
 
 #: org/openscience/jmol/app/PovrayDialog.java:817
 msgid "null component string"
@@ -1020,71 +1002,66 @@ msgstr ""
 
 #: org/openscience/jmol/app/PreferencesDialog.java:167
 msgid "Preferences"
-msgstr ""
+msgstr "Eigenschappen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:186
-#, fuzzy
 msgid "Atoms"
-msgstr "Geen Atoomset"
+msgstr "Atomen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:187
 #: org/openscience/jmol/app/PreferencesDialog.java:645
 msgid "Bonds"
-msgstr ""
+msgstr "Bindingen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:188
 msgid "Colors"
-msgstr ""
+msgstr "Kleuren"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:194
-#, fuzzy
 msgid "Jmol Defaults"
-msgstr "Jmol Help"
+msgstr "Standaard Jmol-waarden"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:198
 msgid "RasMol Defaults"
-msgstr ""
+msgstr "Rasmol-standaarden"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:206
 msgid "Apply"
-msgstr ""
+msgstr "Toepassen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:234
 msgid "Show All"
-msgstr ""
+msgstr "Laat alles zien"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:334
-#, fuzzy
 msgid "Default atom size"
-msgstr "Wis Atomen"
+msgstr "Standaard atoomgrootte"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:335
 msgid "(percentage of vanDerWaals radius)"
-msgstr ""
+msgstr "(percentage van de vanderwaals-straal)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:387
 msgid "Compute Bonds"
-msgstr ""
+msgstr "Bepaal de Bindingen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:389
 msgid "Automatically"
-msgstr ""
+msgstr "Automatisch"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:390
 msgid "Don't Compute Bonds"
-msgstr ""
+msgstr "Bepaal geen bindingen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
-#, fuzzy
 msgid "Default Bond Radius"
-msgstr "Wis Atomen"
+msgstr "Standaard bondstraal"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:418
 #: org/openscience/jmol/app/PreferencesDialog.java:456
 #: org/openscience/jmol/app/PreferencesDialog.java:507
-#, fuzzy
 msgid "(Angstroms)"
-msgstr "Geen Atoomset"
+msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:455
 msgid "Bond Tolerance - sum of two covalent radii + this value"
@@ -1092,23 +1069,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/PreferencesDialog.java:506
 msgid "Minimum Bonding Distance"
-msgstr ""
+msgstr "Minimum bindingsafstand"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:563
 msgid "Background"
-msgstr ""
+msgstr "Achtergrond"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:566
 msgid "Set the Background Color"
-msgstr ""
+msgstr "Stel de achtergrondkleur in"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:573
 msgid "Background Color"
-msgstr ""
+msgstr "Achtergrondkleur"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:587
 msgid "Picked Atoms"
-msgstr ""
+msgstr "Geselecteerde Atomen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:590
 msgid "Set the Color for Picked Atoms"
@@ -1120,32 +1097,31 @@ msgstr ""
 
 #: org/openscience/jmol/app/PreferencesDialog.java:612
 msgid "Text"
-msgstr ""
+msgstr "Tekst"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:622
 msgid "Set the Color for Text"
-msgstr ""
+msgstr "Stel de kleur voor de tekst in"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:630
 msgid "Text Color"
-msgstr ""
+msgstr "Kleur Tekst"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:655
 msgid "Set the Color for Bonds"
-msgstr ""
+msgstr "Stel de kleur voor de bindingen in"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:663
 msgid "Bond Color"
-msgstr ""
+msgstr "Kleur Bindingen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:681
 msgid "Set the Vector Color"
-msgstr ""
+msgstr "Stel de kleur van de vectoren in "
 
 #: org/openscience/jmol/app/PreferencesDialog.java:688
-#, fuzzy
 msgid "Vector Color"
-msgstr "Vector"
+msgstr "Vectorkleur"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:708
 msgid "Color for distance, angle, & torsion measurements"
@@ -1153,36 +1129,33 @@ msgstr ""
 
 #: org/openscience/jmol/app/PreferencesDialog.java:715
 msgid "Measurements Color"
-msgstr ""
+msgstr "Kleur Metingen"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:61
 msgid "Recent Files"
-msgstr ""
+msgstr "Recente Bestanden"
 
 #: org/openscience/jmol/app/ScriptWindow.java:62
 msgid "Rasmol Scripts"
-msgstr ""
+msgstr "Rasmol-scripts"
 
 #: org/openscience/jmol/app/ScriptWindow.java:85
 msgid "Run"
-msgstr ""
+msgstr "Starten"
 
 #: org/openscience/jmol/app/ScriptWindow.java:89
 msgid "Halt"
-msgstr ""
+msgstr "Stoppen"
 
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
-msgstr ""
+msgstr "Wissen"
 
 #: org/openscience/jmol/app/Splash.java:46
 msgid "Loading..."
-msgstr ""
+msgstr "Laden..."
 
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
-msgstr ""
+msgstr "Wat is nieuw in Jmol"
 
-#, fuzzy
-#~ msgid "Select..."
-#~ msgstr "Selecteren"

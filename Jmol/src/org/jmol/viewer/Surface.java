@@ -179,6 +179,8 @@ class Surface extends Shape {
       for (int i = cavityCount; --i >= 0; )
         cavities[i].calcNearestGeodesicVertexes();
       saveToruses();
+      for (int i = torusCount; --i >= 0; )
+        toruses[i].calcCloseNormixes();
       for (int i = atomCount; --i >= 0; ) {
         int[] vertexMap = convexVertexMaps[i];
         if (vertexMap != null)
@@ -470,17 +472,26 @@ class Surface extends Shape {
   final Vector3f vectorTorusT = new Vector3f();
   final Vector3f vectorTorusTangentT = new Vector3f();
 
-  final Point3f pointTorusP = new Point3f();
   final Vector3f vectorPI = new Vector3f();
   final Vector3f vectorPJ = new Vector3f();
 
   final Vector3f vOrganizeA = new Vector3f();
   final Vector3f vOrganizeB = new Vector3f();
 
+  final Vector3f axisVectorT = new Vector3f();
+  final Vector3f unitRadialVectorT = new Vector3f();
+  final Vector3f radialVectorT = new Vector3f();
+  final Point3f pointTorusP = new Point3f();
+  final Vector3f vectorIP = new Vector3f();
+  final Vector3f vectorJP = new Vector3f();
+
+  
+
   class Torus {
     int ixI, ixJ;
     Point3f center;
     float radius;
+    short normixI, normixJ; // the closest points
     //    Vector3f axisVector;
     //    Vector3f radialVector;
     //    Vector3f unitRadialVector;
@@ -595,6 +606,28 @@ class Surface extends Shape {
       rightHandeds[torusCavityCount] = rightHanded;
       */
       ++torusCavityCount;
+    }
+
+    void calcCloseNormixes() {
+      Point3f centerI = frame.atoms[ixI].point3f;
+      Point3f centerJ = frame.atoms[ixJ].point3f;
+      axisVectorT.sub(centerI, centerJ);
+      if (axisVectorT.z == 0)
+        unitRadialVectorT.set(vectorZ);
+      else {
+        unitRadialVectorT.set(-axisVectorT.y, axisVectorT.x, 0);
+        unitRadialVectorT.normalize();
+      }
+      radialVectorT.set(unitRadialVectorT);
+      radialVectorT.scale(radius);
+      pointTorusP.add(center, radialVectorT);
+      vectorIP.sub(pointTorusP, centerI);
+      normixI = g3d.getNormix(vectorIP, geodesicRenderingLevel);
+      vectorJP.sub(pointTorusP, centerJ);
+      normixJ = g3d.getNormix(vectorJP, geodesicRenderingLevel);
+      
+      convexVertexMaps[ixI] = Bmp.setBitGrow(convexVertexMaps[ixI], normixI);
+      convexVertexMaps[ixJ] = Bmp.setBitGrow(convexVertexMaps[ixJ], normixJ);
     }
       
     void calcTriangles() {
@@ -1202,7 +1235,6 @@ class Surface extends Shape {
 
   class Cavity {
     final int ixI, ixJ, ixK;
-    final Atom atI, atJ, atK;
     final Point3f probeCenter;
     final Point3f[] points;
     final short[] normixes;
@@ -1218,12 +1250,6 @@ class Surface extends Shape {
 
     Cavity(Point3f probeCenter) {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
-      atI = atomI; atJ = atomJ; atK = atomK;
-      /*
-      System.out.println(" atI=" + atI +
-                         " atJ=" + atJ +
-                         " atK=" + atK);
-      */
 
       this.probeCenter = new Point3f(probeCenter);
 
@@ -1273,11 +1299,11 @@ class Surface extends Shape {
     }
 
     void calcNearestGeodesicVertexes() {
-      vectorT.sub(probeCenter, atI.point3f);
+      vectorT.sub(probeCenter, frame.atoms[ixI].point3f);
       vertexI = g3d.getNormix(vectorT, geodesicRenderingLevel);
-      vectorT.sub(probeCenter, atJ.point3f);
+      vectorT.sub(probeCenter, frame.atoms[ixJ].point3f);
       vertexJ = g3d.getNormix(vectorT, geodesicRenderingLevel);
-      vectorT.sub(probeCenter, atK.point3f);
+      vectorT.sub(probeCenter, frame.atoms[ixK].point3f);
       vertexK = g3d.getNormix(vectorT, geodesicRenderingLevel);
 
       convexVertexMaps[ixI] = Bmp.setBitGrow(convexVertexMaps[ixI], vertexI);
@@ -1301,6 +1327,7 @@ class Surface extends Shape {
       throw new NullPointerException();
     }
 
+    /*
     Point3f getAtomCenter(int atomIndex) {
       if (atomIndex == ixI)
         return atI.point3f;
@@ -1310,6 +1337,7 @@ class Surface extends Shape {
         return atK.point3f;
       throw new NullPointerException();
     }
+    */
 
     void addSegments(Point3f probeCenter,
                      float radians, float segments, Vector3f v1, Vector3f v2,

@@ -49,7 +49,7 @@ msgstr "Eigenschaften"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:204
 msgid "Atom Set Collection"
-msgstr ""
+msgstr "Atom-Satz-Sammlung"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:224
 msgid "Collection"
@@ -682,7 +682,6 @@ msgid "Initializing Script Window..."
 msgstr "Initialisiere Skriptfesnter..."
 
 #: org/openscience/jmol/app/Jmol.java:185
-#, fuzzy
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Initialisiere AtomSetChooser-Fenster..."
 
@@ -695,7 +694,6 @@ msgid "Loading plugins..."
 msgstr "Lade Plugins..."
 
 #: org/openscience/jmol/app/Jmol.java:211
-#, fuzzy
 msgid "Building Command Hooks..."
 msgstr "Erstelle Kommando-Hooks..."
 
@@ -770,7 +768,6 @@ msgid "Macros"
 msgstr "Makros"
 
 #: org/openscience/jmol/app/Jmol.java:1109
-#, fuzzy
 msgid "Enter URL of molecular model"
 msgstr "URL eines Molekül-Modells eingeben"
 
@@ -808,7 +805,7 @@ msgstr "Jmol-zu-POV-Ray Konvertierung"
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
 msgid "Filename Stem"
-msgstr "Dateiname"
+msgstr "Stamm des Dateinamen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
 msgid ""
@@ -939,16 +936,15 @@ msgstr "Alpha-Transparenz"
 
 #: org/openscience/jmol/app/PovrayDialog.java:380
 msgid "Output Alpha transparency data"
-msgstr ""
+msgstr "Daten der Alpha-Transparenz ausgeben"
 
 #: org/openscience/jmol/app/PovrayDialog.java:393
 msgid "Mosaic preview"
 msgstr "Mosaik-Vorschau"
 
 #: org/openscience/jmol/app/PovrayDialog.java:395
-#, fuzzy
 msgid "Render the image in several passes"
-msgstr "Bild in mehreren Arbeitsgängen rendern"
+msgstr "Bild in mehreren Schritten rendern"
 
 #: org/openscience/jmol/app/PovrayDialog.java:405
 msgid "Start size : "
@@ -968,11 +964,11 @@ msgstr "Finale Größe der Kacheln"
 
 #: org/openscience/jmol/app/PovrayDialog.java:446
 msgid "POV-Ray Executable Location"
-msgstr ""
+msgstr "POV-Ray Programmpfad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:448
 msgid "Location of the povray Executable"
-msgstr ""
+msgstr "Programmpfad zum POV-Ray-Programm"
 
 #: org/openscience/jmol/app/PovrayDialog.java:467
 msgid "Command Line to Execute"
@@ -1007,9 +1003,8 @@ msgid "Save"
 msgstr "Speichern"
 
 #: org/openscience/jmol/app/PovrayDialog.java:817
-#, fuzzy
 msgid "null component string"
-msgstr "Null-Komponenten-String"
+msgstr ""
 
 #: org/openscience/jmol/app/PreferencesDialog.java:167
 msgid "Preferences"
@@ -1076,7 +1071,7 @@ msgstr "(in Angstrom)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:455
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
+msgstr "Toleranz der Bindung - Summe zweier kovalenter Radien + dieser Wert"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:506
 msgid "Minimum Bonding Distance"

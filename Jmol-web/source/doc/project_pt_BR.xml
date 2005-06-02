@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
-  Portuguese translation 
+  Portuguese translation (Brazil)
   Translated from default version : project_en.xml (v 1.5)
 -->
 <!DOCTYPE somethingOrAnything [
@@ -19,8 +19,8 @@
         </td>
         <td align="right" valign="middle">
           <font size="2">
-            <a href="[root]/">In&#x00ED;cio</a> |
-            <a href="[root]/websites/">P&#x00E1;ginas Web</a> |
+            <a href="[root]/">P&#x00E1;gina Inicial</a> |
+            <a href="[root]/websites/">S&#x00ED;tios Web</a> |
             <a href="[root]/history/">Hist&#x00F3;ria</a> |
             <a href="[root]/changes/">Mudan&#x00E7;as</a> |
             <a href="[root]/technotes/">Notas T&#x00E9;cnicas</a> |
@@ -30,9 +30,9 @@
             <a href="[root]/docs/">Documenta&#x00E7;&#x00E3;o</a> |
             <a href="http://www.stolaf.edu/people/hansonr/jmol/docs"
               target="_blank" >
-              Documenta&#x00E7;&#x00E3;o sobre scripting interactivo
+              Documenta&#x00E7;&#x00E3;o sobre scripting interativo
             </a> |
-            <a href="[root]/browsercheck/">Verifica&#x00E7;&#x00E3;o do browser</a>
+            <a href="[root]/browsercheck/">Checagem do Navegador</a>
             <br/>
             <a href="[root]/demo/">P&#x00E1;ginas de Demonstra&#x00E7;&#x00E3;o</a> |
             <a href="[root]/jslibrary/">Biblioteca JavaScript</a> |
@@ -55,7 +55,7 @@
 
   <notice>
     <p><small>
-      Alojado por
+      Hospedado por
       <a href="http://www.sf.net/projects/jmol/">
         <img src="http://www.sf.net/sflogo.php?group_id=23629" border="0" 
           alt="SourceForge Logo" align="middle"/>

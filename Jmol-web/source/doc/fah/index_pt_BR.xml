@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  Portuguese translation 
+  Portuguese translation (Brazil)
   Translated from default version : index_en.xml (v 1.14)
 -->
 <!DOCTYPE somethingOrAnything [
@@ -18,18 +18,18 @@
       <script type="text/javascript">
         createFahPage(
           "Selecione o projeto",
-          "Projecto",
+          "Projeto",
           "Nome",
           "Cr&#x00E9;dito",
           "N&#x00FA;mero de &#x00E1;tomos",
           "Preferido",
-          "Final do prazo",
+          "Prazo final",
           "Quadros",
           "C&#x00F3;digo",
           "Descri&#x00E7;&#x00E3;o do projeto",
           "Esconder solvente",
-          "<fah_count_files/> ficheiros / <fah_count_projects/> projectos.",
-          "Se voc&#x00EA; tiver ficheiros <b>current.xyz</b> para os projectos que faltam, por favor envie-os para nicove@users.sourceforge.net",
+          "<fah_count_files/> arquivos / <fah_count_projects/> projetos.",
+          "Se voc&#x00EA; tiver arquivos <b>current.xyz</b> para os projetos que faltam, por favor envie-os para nicove@users.sourceforge.net",
           "Projetos ausentes",
           "Ajude o Jmol se juntando ao Time Jmol #44383 no Folding@Home"
           );

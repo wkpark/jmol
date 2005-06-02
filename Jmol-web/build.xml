@@ -12,7 +12,7 @@
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />
   <property name="build.html" value="${build.dir}/html" />
-  <property name="all.languages" value="de,en,et,fr,hu,it,nl,pt,ro" />
+  <property name="all.languages" value="de,en,et,fr,hu,it,nl,pt,pt_BR,ro" />
 
   <target name="clean">
     <delete dir="${build.dir}"/>

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-05-31 15:24+0200\n"
-"PO-Revision-Date: 2005-06-01 10:18+0100\n"
+"PO-Revision-Date: 2005-06-02 14:20+0100\n"
 "Last-Translator: Egon Willighagen <e.willighagen@science.ru.nl>\n"
 "POT-Creation-Date: 2005-06-01 02:02+0200\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
@@ -608,11 +608,11 @@ msgstr "Jmol Console"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr ""
+msgstr "RasMol/Chime-gelijkende assen-orientatie/"
 
 #: org/openscience/jmol/app/GuiMap.java:166
 msgid "File Preview (needs restarting Jmol)"
-msgstr ""
+msgstr "Bestands Preview (vereist een herstart van Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168
@@ -625,11 +625,11 @@ msgstr "Open een bestand."
 
 #: org/openscience/jmol/app/GuiMap.java:170
 msgid "Export view to an image file."
-msgstr ""
+msgstr "Exporteer de weergave naar bestand."
 
 #: org/openscience/jmol/app/GuiMap.java:171
 msgid "Render in pov-ray."
-msgstr ""
+msgstr "Render in pov-ray."
 
 #: org/openscience/jmol/app/GuiMap.java:172
 msgid "Print view."
@@ -649,7 +649,7 @@ msgstr "Laat Metingentabel zien."
 
 #: org/openscience/jmol/app/GuiMap.java:176
 msgid "Return molecule to home position."
-msgstr ""
+msgstr "Zet molecule terug in startpositie."
 
 #: org/openscience/jmol/app/HelpDialog.java:64
 msgid "Jmol Help"
@@ -797,7 +797,7 @@ msgstr "Waarde"
 
 #: org/openscience/jmol/app/PovrayDialog.java:119
 msgid "Render in POV-Ray"
-msgstr ""
+msgstr "Render in POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
 msgid "Jmol-to-POV-Ray Conversion"
@@ -809,7 +809,7 @@ msgstr "Begin Bestandsnaam"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
 msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
+msgstr "Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. 'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
@@ -821,15 +821,15 @@ msgstr "Waar de .pov-bestanden moeten worden opgeslagen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:195
 msgid "POV-Ray Runtime Options"
-msgstr ""
+msgstr "POV-Ray Runtime Opties"
 
 #: org/openscience/jmol/app/PovrayDialog.java:200
 msgid "Run POV-Ray directly"
-msgstr ""
+msgstr "Start POV-Ray direct"
 
 #: org/openscience/jmol/app/PovrayDialog.java:202
 msgid "Launch povray from within Jmol"
-msgstr ""
+msgstr "Start POR-Ray vanuit Jmol"
 
 #: org/openscience/jmol/app/PovrayDialog.java:211
 msgid "Use .ini file"
@@ -841,19 +841,19 @@ msgstr "Bewaar de opties in een .ini-bestand"
 
 #: org/openscience/jmol/app/PovrayDialog.java:222
 msgid "Render all frames"
-msgstr ""
+msgstr "Render alle frames"
 
 #: org/openscience/jmol/app/PovrayDialog.java:224
 msgid "Render each model (not only the currently displayed one)"
-msgstr ""
+msgstr "Render elk model (en niet alleen het huidige model)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
 msgid "Turn on POV-Ray anti-aliasing"
-msgstr ""
+msgstr "Zet POV-Ray antialiasing aan"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
+msgstr "Gebruik povray's langzamere antialiasing aan voor hogere kwaliteit"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
@@ -906,11 +906,11 @@ msgstr "Uitvoerformaat:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:346
 msgid "Select the file format of the output file"
-msgstr ""
+msgstr "Selecteer het bestandsformaat van het uitvoerbestand"
 
 #: org/openscience/jmol/app/PovrayDialog.java:356
 msgid "C - Compressed Targa-24"
-msgstr ""
+msgstr "C - geComprimeerde Targa-24"
 
 #: org/openscience/jmol/app/PovrayDialog.java:358
 msgid "N - PNG"
@@ -922,7 +922,7 @@ msgstr "P - PPM"
 
 #: org/openscience/jmol/app/PovrayDialog.java:362
 msgid "T - Uncompressed Targa-24"
-msgstr ""
+msgstr "T - Ongecomprimeerder Targa-24"
 
 #: org/openscience/jmol/app/PovrayDialog.java:378
 msgid "Alpha transparency"
@@ -930,48 +930,48 @@ msgstr "Alpha-transparantie"
 
 #: org/openscience/jmol/app/PovrayDialog.java:380
 msgid "Output Alpha transparency data"
-msgstr ""
+msgstr "Voer alpa-transparantie data uit"
 
 #: org/openscience/jmol/app/PovrayDialog.java:393
 msgid "Mosaic preview"
-msgstr ""
+msgstr "Mozaiek-weergave"
 
 #: org/openscience/jmol/app/PovrayDialog.java:395
 msgid "Render the image in several passes"
-msgstr ""
+msgstr "Verwerk het plaatje in verschillende stappen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:405
 msgid "Start size : "
-msgstr ""
+msgstr "Begin grootte :"
 
 #: org/openscience/jmol/app/PovrayDialog.java:407
 msgid "Inital size of the tiles"
-msgstr ""
+msgstr "Eerste grootte van de blokken"
 
 #: org/openscience/jmol/app/PovrayDialog.java:423
 msgid "End size : "
-msgstr ""
+msgstr "Eind grootte:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:425
 msgid "Final size of the tiles"
-msgstr ""
+msgstr "Definitieve grootte van de blokken"
 
 #: org/openscience/jmol/app/PovrayDialog.java:446
 msgid "POV-Ray Executable Location"
-msgstr ""
+msgstr "Locatie POV-Ray executable"
 
 #: org/openscience/jmol/app/PovrayDialog.java:448
 msgid "Location of the povray Executable"
-msgstr ""
+msgstr "Plaats waar het POV-Ray-programma is te vinden"
 
 #: org/openscience/jmol/app/PovrayDialog.java:467
 msgid "Command Line to Execute"
-msgstr ""
+msgstr "Commando om uit te voeren"
 
 #: org/openscience/jmol/app/PovrayDialog.java:469
 #: org/openscience/jmol/app/PovrayDialog.java:472
 msgid "The actual command which will be executed"
-msgstr ""
+msgstr "Het echte commando dat uitgevoerd wordt"
 
 #: org/openscience/jmol/app/PovrayDialog.java:482
 #: org/openscience/jmol/app/PovrayDialog.java:754
@@ -980,7 +980,7 @@ msgstr "Gaan!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:484
 msgid "Save file and possibly launch povray"
-msgstr ""
+msgstr "Bewaar bestand en start povray indien nodig"
 
 #: org/openscience/jmol/app/PovrayDialog.java:493
 #: org/openscience/jmol/app/PreferencesDialog.java:202
@@ -990,7 +990,7 @@ msgstr "Afbreken"
 
 #: org/openscience/jmol/app/PovrayDialog.java:495
 msgid "Cancel this dialog without saving"
-msgstr ""
+msgstr "Afbreken zonder opslaan"
 
 #: org/openscience/jmol/app/PovrayDialog.java:756
 msgid "Save"
@@ -998,7 +998,7 @@ msgstr "Opslaan"
 
 #: org/openscience/jmol/app/PovrayDialog.java:817
 msgid "null component string"
-msgstr ""
+msgstr "lege-component-tekst"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:167
 msgid "Preferences"
@@ -1065,7 +1065,7 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:455
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
+msgstr "Bindingstolerantie - som van de twee covalente stralen + deze waarde"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:506
 msgid "Minimum Bonding Distance"
@@ -1089,11 +1089,11 @@ msgstr "Geselecteerde Atomen"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:590
 msgid "Set the Color for Picked Atoms"
-msgstr ""
+msgstr "Stel de kleur van de gekozen atomen in"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:597
 msgid "Picked Atom Color"
-msgstr ""
+msgstr "Gekozen Atoomkleur"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:612
 msgid "Text"
@@ -1125,7 +1125,7 @@ msgstr "Vectorkleur"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:708
 msgid "Color for distance, angle, & torsion measurements"
-msgstr ""
+msgstr "Kleur de afstands-, hoek-, en torsiehoekmetingen."
 
 #: org/openscience/jmol/app/PreferencesDialog.java:715
 msgid "Measurements Color"

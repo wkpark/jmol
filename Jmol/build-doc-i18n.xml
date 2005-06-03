@@ -1,6 +1,12 @@
 <project name="Jmol-doc" default="main" basedir=".">
 
 <!--
+DocumentId $Id$
+Author     $Author$
+Date       $Date$
+Version    $Revision$
+Summary	   create and update applet-, developers- and user-guide translation
+
 TODO:
 - should check for existance of gettext and xml2po
 - should maybe execute xml2po depending on the os (os attribute)
@@ -8,8 +14,10 @@ TODO:
 -->
 
   <!-- our properties section -->
-  <property name="src.dir" value="${basedir}" />
-  <property name="pot.dir" value="po" />
+
+  <property name="src.dir" value="doc/source" />
+  <property name="lib.dir" value="jars" />
+  <property name="pot.dir" value="doc/source/po" />
   <property name="all.JmolAppletGuide.languages" value="de" />
   <property name="all.JmolDevelopersGuide.languages" value="de" />
   <property name="all.JmolGuide.languages" value="de" />
@@ -18,7 +26,7 @@ TODO:
   <!-- <for list ...> construct needs ant-contrib.jar -->
   <taskdef resource="net/sf/antcontrib/antlib.xml">
     <classpath>
-      <pathelement location="./ant-contrib.jar"/>
+      <pathelement location="${lib.dir}/ant-contrib.jar"/>
     </classpath>
   </taskdef>
 

@@ -175,11 +175,6 @@ class Surface extends Shape {
           if (convexVertexMaps[i] != null)
             calcVertexBitmapI();
         }
-      for (int i = cavityCount; --i >= 0; )
-        cavities[i].calcNearestGeodesicVertexes();
-      saveToruses();
-      for (int i = torusCount; --i >= 0; )
-        toruses[i].calcCloseNormixes();
       for (int i = atomCount; --i >= 0; ) {
         int[] vertexMap = convexVertexMaps[i];
         if (vertexMap != null)
@@ -984,24 +979,16 @@ class Surface extends Shape {
     Torus torus = new Torus(indexI, centerI, indexJ, centerJ,
                             torusCenterIJ, torusRadius, fullTorus);
     htToruses.put(key, torus);
+    saveTorus(torus);
     return torus;
   }
 
-  void saveToruses() {
-    if (radiusP == 0)
-      return;
+  void saveTorus(Torus torus) {
     if (toruses == null)
       toruses = new Torus[128];
-    for (Enumeration e = htToruses.elements(); e.hasMoreElements(); ) {
-      Object value = e.nextElement();
-      if (value instanceof Torus) {
-        Torus torus = (Torus)value;
-        torus.calcTriangles();
-        if (torusCount == toruses.length)
-          toruses = (Torus[])Util.doubleLength(toruses);
-        toruses[torusCount++] = torus;
-      }
-    }
+    else if (torusCount == toruses.length)
+      toruses = (Torus[])Util.doubleLength(toruses);
+    toruses[torusCount++] = torus;
   }
 
   Torus getTorus(int atomIndexA, int atomIndexB) {
@@ -1230,7 +1217,6 @@ class Surface extends Shape {
 
   class Cavity {
     final int ixI, ixJ, ixK;
-    final Point3f probeCenter;
     final Point3f[] points;
     final short[] normixes;
     final float radiansIJ;
@@ -1245,8 +1231,6 @@ class Surface extends Shape {
 
     Cavity(Point3f probeCenter) {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
-
-      this.probeCenter = new Point3f(probeCenter);
 
       vectorPI.sub(centerI, probeCenter);
       vectorPI.normalize();
@@ -1291,9 +1275,8 @@ class Surface extends Shape {
                   points, normixes, 1 + segmentsIJ);
       addSegments(probeCenter, radiansKI, segmentsKI, vectorPK, vectorPI,
                   points, normixes, 1 + segmentsIJ + segmentsJK);
-    }
 
-    void calcNearestGeodesicVertexes() {
+      // calc nearest geodesic vertexes 
       vectorT.sub(probeCenter, frame.atoms[ixI].point3f);
       vertexI = g3d.getNormix(vectorT, geodesicRenderingLevel);
       vectorT.sub(probeCenter, frame.atoms[ixJ].point3f);
@@ -1305,8 +1288,6 @@ class Surface extends Shape {
       convexVertexMaps[ixJ] = Bmp.setBitGrow(convexVertexMaps[ixJ], vertexJ);
       convexVertexMaps[ixK] = Bmp.setBitGrow(convexVertexMaps[ixK], vertexK);
 
-      System.out.println("calcNearestGeodesicVertexes vertexI=" + vertexI +
-                         " vertexJ=" + vertexJ + " vertexK=" + vertexK);
     }
 
     Point3f getPoint(int atomIndex) {

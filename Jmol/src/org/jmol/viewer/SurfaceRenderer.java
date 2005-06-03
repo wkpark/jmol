@@ -136,9 +136,11 @@ class SurfaceRenderer extends ShapeRenderer {
 
     Point3i screenClosestI = screensI[torus.normixI];
     Point3i screenClosestJ = screensJ[torus.normixJ];
+    /*
     g3d.fillCylinder(Graphics3D.PINK, Graphics3D.ENDCAPS_FLAT, 4,
                      screensI[torus.normixI],
                      screensJ[torus.normixJ]);
+    */
   }
 
   void renderCavity(Surface.Cavity cavity, Atom[] atoms,

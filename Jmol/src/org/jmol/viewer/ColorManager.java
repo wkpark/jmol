@@ -279,7 +279,7 @@ class ColorManager {
     } else if ("formalcharge" == palette) {
       index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
       argb = JmolConstants.argbsCharge[index];
-    } else if ("stucture" == palette) {
+    } else if ("structure" == palette) {
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
     } else if ("amino" == palette) {
       index = atom.getGroupID();
@@ -311,7 +311,8 @@ class ColorManager {
                        JmolConstants.argbsBlueRedRainbow.length);
       argb = JmolConstants.argbsBlueRedRainbow[index];
     } else {
-      System.out.println("ColorManager ... unrecognized color palette");
+      System.out.println("ColorManager.getColixAtomPalette:" +
+                         " unrecognized color palette:" + palette);
       return Graphics3D.HOTPINK;
     }
     // FIXME I think that we should assert that argb != 0 here

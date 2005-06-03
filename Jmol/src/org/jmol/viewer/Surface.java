@@ -493,12 +493,16 @@ class Surface extends Shape {
   final Vector3f vOrganizeA = new Vector3f();
   final Vector3f vOrganizeB = new Vector3f();
 
-  final Vector3f axisVectorT = new Vector3f();
-  final Vector3f unitRadialVectorT = new Vector3f();
-  final Vector3f radialVectorT = new Vector3f();
+  final Vector3f axisVector = new Vector3f();
+  final Vector3f unitRadialVector = new Vector3f();
+  final Vector3f radialVector = new Vector3f();
   final Point3f pointTorusP = new Point3f();
+  final Vector3f vectorTorusP = new Vector3f();
+  final AxisAngle4f aaRotate = new AxisAngle4f();
+  /*
   final Vector3f vectorIP = new Vector3f();
   final Vector3f vectorJP = new Vector3f();
+  */
 
   
 
@@ -515,14 +519,16 @@ class Surface extends Shape {
     //    float outerAngle;
     //    AxisAngle4f aaRotate;
     //    short colixI, colixJ;
-    int torusCavityCount;
-    Cavity[] torusCavities;
-    boolean[] rightHandeds;
     boolean fullTorus;
+    short[] connections;
+    int connectionCount;
     //    Vector3f outerVector;
     //    float outerRadians;
     //    Point3f[][] stripPointArrays;
     //    short[][] stripNormixesArrays;
+
+    int pointspCount;
+    Point3f[] pointsp;
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
@@ -596,35 +602,70 @@ class Surface extends Shape {
 
     }
 
+    void addConnection(short vertexI, short vertexJ) {
+      if (connections == null)
+        connections = new short[32];
+      for (int i = connectionCount; (i -= 2) >= 0; )
+        if (connections[i] == vertexI &&
+            connections[i+1] == vertexJ)
+          return;
+      if (connectionCount == connections.length)
+        connections = Util.doubleLength(connections);
+      connections[connectionCount++] = vertexI;
+      connections[connectionCount++] = vertexJ;
+      Bmp.setBit(convexVertexMaps[ixI], vertexI);
+      Bmp.setBit(convexVertexMaps[ixJ], vertexJ);
+    }
+
     void addCavity(Cavity cavity, boolean rightHanded) {
-      /*
-      System.out.println("Torus.addCavity(" + cavity + ") " + ixI + "," + ixJ);
-      */
-      if (! ((cavity.ixI == ixI && (cavity.ixJ == ixJ || cavity.ixK == ixJ)) ||
-             (cavity.ixJ == ixI && cavity.ixK == ixJ)))
+      if (cavity.ixI == ixI) {
+        if (cavity.ixJ == ixJ)
+          addConnection(cavity.vertexI, cavity.vertexJ);
+        else if (cavity.ixK == ixJ)
+          addConnection(cavity.vertexI, cavity.vertexK);
+        else
+          throw new NullPointerException();
+      } else if (cavity.ixJ == ixI) {
+        if (cavity.ixK == ixJ)
+          addConnection(cavity.vertexJ, cavity.vertexK);
+        else
+          throw new NullPointerException();
+      } else {
         throw new NullPointerException();
-      if (torusCavities == null) {
-        torusCavities = new Cavity[4];
-        rightHandeds = new boolean[4];
       }
-      else if (torusCavityCount == torusCavities.length) {
-        torusCavities = (Cavity[])Util.doubleLength(torusCavities);
-        rightHandeds = Util.doubleLength(rightHandeds);
-      }
-      torusCavities[torusCavityCount] = cavity;
-
-      /*
-      vectorTorusT.add(cavity.getPoint(ixI), cavity.getPoint(ixJ));
-      vectorTorusT.sub(cavity.points[0]);
-
-      float dot = vectorTorusT.dot(vectorTorusTangentT);
-      rightHandeds[torusCavityCount] = rightHanded;
-      */
-      ++torusCavityCount;
     }
 
     void connect() {
-      //      System.out.println("connect torus " + ixI + ":" + ixJ);
+      if (indexI != ixI)
+        throw new NullPointerException();
+      if (indexJ != ixJ)
+        throw new NullPointerException();
+      System.out.println("connect " + ixI + ":" + ixJ);
+
+      axisVector.sub(frame.atoms[ixJ].point3f,
+                     frame.atoms[ixI].point3f);
+      if (axisVector.z == 0)
+        unitRadialVector.set(vectorZ);
+      else {
+        unitRadialVector.set(-axisVector.y, axisVector.x, 0);
+        unitRadialVector.normalize();
+      }
+      radialVector.scale(radius, unitRadialVector);
+
+      aaRotate.set(axisVector, 0);
+
+      int numSteps = 32;
+      pointspCount = 0;
+      pointsp = new Point3f[32];
+      float stepRadians = 2 * (float)Math.PI / numSteps;
+      for (int i = 0; i < numSteps; ++i) {
+        aaRotate.angle = i * stepRadians;
+        matrixT.set(aaRotate);
+        matrixT.transform(radialVector, vectorTorusP);
+        pointTorusP.add(center, vectorTorusP);
+        if (checkProbeNotIJ(pointTorusP))
+          pointsp[pointspCount++] = new Point3f(pointTorusP);
+      }
     }
 
     /*
@@ -747,22 +788,18 @@ class Surface extends Shape {
       allocateConvexVertexBitmap(indexI);
   }
 
-  final Vector3f normalizedRadialVectorT = new Vector3f();
-  final Point3f torusProbePointT = new Point3f();
-  
   // check for a full torus with no cavities between I & J
   void checkFullTorusIJ() {
     if (getTorus(indexI, indexJ) == null) {
       if (vectorIJ.z == 0)
-        normalizedRadialVectorT.set(vectorZ);
+        unitRadialVector.set(vectorZ);
       else {
-        normalizedRadialVectorT.set(-vectorIJ.y, vectorIJ.x, 0);
-        normalizedRadialVectorT.normalize();
+        unitRadialVector.set(-vectorIJ.y, vectorIJ.x, 0);
+        unitRadialVector.normalize();
       }
       float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
-      torusProbePointT.scaleAdd(torusRadiusIJ,
-                                normalizedRadialVectorT, torusCenterIJ);
-      if (checkProbeNotIJ(torusProbePointT))
+      pointTorusP.scaleAdd(torusRadiusIJ, unitRadialVector, torusCenterIJ);
+      if (checkProbeNotIJ(pointTorusP))
         createTorus(indexI, centerI, indexJ, centerJ,
                     torusCenterIJ, torusRadiusIJ, true);
     }
@@ -874,19 +911,19 @@ class Surface extends Shape {
     */
   }
 
-  boolean checkProbeNotIJ(Point3f cavityProbe) {
+  boolean checkProbeNotIJ(Point3f probeCenter) {
     for (int i = neighborCount; --i >= 0; ) {
       int neighborIndex = neighborIndexes[i];
       if (neighborIndex == indexI ||
           neighborIndex == indexJ)
         continue;
-      if (cavityProbe.distanceSquared(neighborCenters[i]) <
+      if (probeCenter.distanceSquared(neighborCenters[i]) <
           neighborPlusProbeRadii2[i])
         return false;
     }
     return true;
   }
-  
+
   boolean checkProbeAgainstNeighborsIJK(Point3f cavityProbe) {
     for (int i = neighborCount; --i >= 0; ) {
       int neighborIndex = neighborIndexes[i];

@@ -141,6 +141,20 @@ class SurfaceRenderer extends ShapeRenderer {
                      screensI[torus.normixI],
                      screensJ[torus.normixJ]);
     */
+    for (int i = torus.connectionCount; (i -= 2) >= 0; ) {
+      short vertexA = torus.connections[i];
+      short vertexB = torus.connections[i + 1];
+
+      g3d.fillCylinder(Graphics3D.ORANGE, Graphics3D.ENDCAPS_FLAT, 4,
+                       screensI[vertexA],
+                       screensJ[vertexB]);
+    }
+
+    for (int i = torus.pointspCount; --i >= 0; ) {
+      g3d.fillSphereCentered(Graphics3D.GREEN, 3,
+                             viewer.transformPoint(torus.pointsp[i]));
+    }
+                                                 
   }
 
   void renderCavity(Surface.Cavity cavity, Atom[] atoms,

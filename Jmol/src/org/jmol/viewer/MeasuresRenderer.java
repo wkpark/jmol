@@ -132,18 +132,26 @@ class MeasuresRenderer extends ShapeRenderer {
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
     int zC = atomC.getScreenZ() - atomC.getScreenD() - 10;
     int zOffset = (zA + zB + zC) / 3;
-    int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA, atomB.getScreenX(), atomB.getScreenY(), zB,
+    int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA,
+                             atomB.getScreenX(), atomB.getScreenY(), zB,
                              colix);
-    radius += drawSegment(atomB.getScreenX(), atomB.getScreenY(), zB, atomC.getScreenX(), atomC.getScreenY(), zC, colix);
+    radius += drawSegment(atomB.getScreenX(), atomB.getScreenY(), zB,
+                          atomC.getScreenX(), atomC.getScreenY(), zC, colix);
     radius = (radius + 1) / 2;
 
     if (! renderArcs)
       return;
 
+
     // FIXME mth -- this really should be a function of pixelsPerAngstrom
     // in addition, the location of the arc is not correct
     // should probably be some percentage of the smaller distance
     AxisAngle4f aa = measurement.aa;
+    if (aa == null) { // 180 degrees
+      paintMeasurementString(atomB.getScreenX() + 5, atomB.getScreenY() - 5,
+                             zB, radius, colix);
+      return;
+    }
     int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
     float stepAngle = aa.angle / dotCount;
     aaT.set(aa);

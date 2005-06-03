@@ -70,23 +70,28 @@ class Measurement {
                                      countPlusIndices[3]);
       strMeasurement = formatAngle(degrees);
 
-      Point3f pointA = getAtomPoint3f(1);
-      Point3f pointB = getAtomPoint3f(2);
-      Point3f pointC = getAtomPoint3f(3);
+      if (degrees == 180) {
+        aa = null;
+        pointArc = null;
+      } else {
+        Point3f pointA = getAtomPoint3f(1);
+        Point3f pointB = getAtomPoint3f(2);
+        Point3f pointC = getAtomPoint3f(3);
+        
+        Vector3f vectorBA = new Vector3f();
+        Vector3f vectorBC = new Vector3f();
+        vectorBA.sub(pointA, pointB);
+        vectorBC.sub(pointC, pointB);
+        float radians = vectorBA.angle(vectorBC);
+        
+        Vector3f vectorAxis = new Vector3f();
+        vectorAxis.cross(vectorBA, vectorBC);
+        aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 
-      Vector3f vectorBA = new Vector3f();
-      Vector3f vectorBC = new Vector3f();
-      vectorBA.sub(pointA, pointB);
-      vectorBC.sub(pointC, pointB);
-      float radians = vectorBA.angle(vectorBC);
-
-      Vector3f vectorAxis = new Vector3f();
-      vectorAxis.cross(vectorBA, vectorBC);
-      aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
-
-      vectorBA.normalize();
-      vectorBA.scale(0.5f);
-      pointArc = new Point3f(vectorBA);
+        vectorBA.normalize();
+        vectorBA.scale(0.5f);
+        pointArc = new Point3f(vectorBA);
+      }
 
       break;
     case 4:

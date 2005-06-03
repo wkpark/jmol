@@ -10,14 +10,13 @@ Summary	   create and update applet-, developers- and user-guide translation
 TODO:
 - should check for existance of gettext and xml2po
 - should maybe execute xml2po depending on the os (os attribute)
-- ant-contrib.jar will be in jars/
 -->
 
   <!-- our properties section -->
 
-  <property name="src.dir" value="doc/source" />
   <property name="lib.dir" value="jars" />
-  <property name="pot.dir" value="doc/source/po" />
+  <property name="src.dir" value="${basedir}/doc/source" />
+  <property name="pot.dir" value="${basedir}/doc/source/po" />
   <property name="all.JmolAppletGuide.languages" value="de" />
   <property name="all.JmolDevelopersGuide.languages" value="de" />
   <property name="all.JmolGuide.languages" value="de" />
@@ -40,20 +39,17 @@ TODO:
 
   <!-- parse list of possible guides and create .pot for every guide -->
   <target name="create-pot" id="create-pot" depends="clean-pot">
-    <for list="${all.guides}" delimiter="," param="current.guide">
-      <sequential>
-        <antcall target="create-pot-guide">
-          <param name="guide_value" value="@{current.guide}"/>
-        </antcall>
-      </sequential>
-    </for>
-  </target>
-  
-  <target name="create-pot-guide" id="create-pot-guide">
-    <echo message="Generating ${guide_value} gettext PO-template file ..."/>
-    <exec executable="xml2po" dir="${src.dir}">
-      <arg line="-e -o ${pot.dir}/${guide_value}.pot ${guide_value}.docbook.xml"/>
-    </exec>
+    <echo message="Generating gettext PO-template file for all Guides ..."/>
+    <apply executable="xml2po" dir="${src.dir}" dest="${pot.dir}" parallel="false" verbose="true" relative="true">
+      <arg value="-e"/>
+      <arg value="-o"/>
+      <targetfile/>
+      <srcfile/>
+      <fileset dir="${src.dir}">
+        <include name="*Guide.docbook.xml"/>
+      </fileset>
+      <mapper type="glob" from="*.docbook.xml" to="${pot.dir}/*.pot"/>
+    </apply>
   </target>
 
   <!-- parse list of possible languages and update LANG.po gettext files -->
@@ -98,14 +94,15 @@ TODO:
 
   <target name="update-xml-guide-lang" id="update-xml-guide-lang">
     <echo message="Merging back translations for ${guide_value}.docbook.xml
-    ${line.separator}into ${guide_value}.${lang_value}.docbook.xml file ..."/>
+    ${line.separator}into ${guide_value}_${lang_value}.docbook.xml file ..."/>
     <exec executable="xml2po" dir="${pot.dir}">
-      <arg line="-e -p ${guide_value}.${lang_value}.po -o ${src.dir}/${guide_value}_${lang_value}.docbook.xml ${src.dir}/${guide_value}.docbook.xml"/>
+      <arg line="-e -p ${guide_value}.${lang_value}.po
+      -o ${src.dir}/${guide_value}_${lang_value}.docbook.xml ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
   </target>
 
   <!-- we can clean .pot, .LANG.docbook.xml and .xml2po.mo files -->
-  <target name="clean" id="clean" depends="clean-pot,clean-translation">
+  <target name="clean" id="clean">
     <fileset dir="${pot.dir}">
       <include name=".xml2po.mo" />
     </fileset>

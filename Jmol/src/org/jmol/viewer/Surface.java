@@ -304,35 +304,45 @@ class Surface extends Shape {
   Atom atomI, atomJ, atomK;
   Point3f centerI, centerJ, centerK;
   private float radiusI, radiusJ, radiusK;
+  private float radiiIP, radiiJP, radiiKP;
   private float radiiIP2, radiiJP2, radiiKP2;
+  private float distanceIJ, distanceIK, distanceJK;
   private float distanceIJ2, distanceIK2, distanceJK2;
 
   void setAtomI(int indexI) {
+    System.out.println("setAtomI:" + indexI);
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
     radiusI = atomI.getVanderwaalsRadiusFloat();
-    radiiIP2 = radiusI + radiusP;
-    radiiIP2 *= radiiIP2;
+    radiiIP = radiusI + radiusP;
+    radiiIP2 = radiiIP * radiiIP;
   }
 
   void setNeighborJ(int indexNeighbor) {
     indexJ = neighborIndexes[indexNeighbor];
+    System.out.println(" setNeighborJ:" + indexJ);
     atomJ = neighbors[indexNeighbor];
     radiusJ = atomJ.getVanderwaalsRadiusFloat();
+    radiiJP = neighborPlusProbeRadii[indexNeighbor];
     radiiJP2 = neighborPlusProbeRadii2[indexNeighbor];
     centerJ = neighborCenters[indexNeighbor];
     distanceIJ2 = centerJ.distanceSquared(centerI);
+    distanceIJ = (float)Math.sqrt(distanceIJ2);
   }
 
   void setNeighborK(int indexNeighbor) {
     indexK = neighborIndexes[indexNeighbor];
+    System.out.println("  setNeighborK:" + indexK);
     atomK = neighbors[indexNeighbor];
     radiusK = atomK.getVanderwaalsRadiusFloat();
+    radiiKP = neighborPlusProbeRadii[indexNeighbor];
     radiiKP2 = neighborPlusProbeRadii2[indexNeighbor];
     centerK = neighborCenters[indexNeighbor];
     distanceIK2 = centerK.distanceSquared(centerI);
+    distanceIK = (float)Math.sqrt(distanceIK2);
     distanceJK2 = centerK.distanceSquared(centerJ);
+    distanceJK = (float)Math.sqrt(distanceJK2);
   }
 
   void calcVertexBitmapI() {
@@ -374,6 +384,7 @@ class Surface extends Shape {
   Atom[] neighbors = new Atom[16];
   int[] neighborIndexes = new int[16];
   Point3f[] neighborCenters = new Point3f[16];
+  float[] neighborPlusProbeRadii = new float[16];
   float[] neighborPlusProbeRadii2 = new float[16];
   
   void getNeighbors(BitSet bsSelected) {
@@ -401,14 +412,15 @@ class Surface extends Shape {
         neighbors = (Atom[])Util.doubleLength(neighbors);
         neighborIndexes = Util.doubleLength(neighborIndexes);
         neighborCenters = (Point3f[])Util.doubleLength(neighborCenters);
+        neighborPlusProbeRadii = Util.doubleLength(neighborPlusProbeRadii);
         neighborPlusProbeRadii2 = Util.doubleLength(neighborPlusProbeRadii2);
       }
       neighbors[neighborCount] = neighbor;
       neighborCenters[neighborCount] = neighbor.point3f;
       neighborIndexes[neighborCount] = neighbor.atomIndex;
-      float neighborPlusProbeRadii = neighborRadius + radiusP;
-      neighborPlusProbeRadii2[neighborCount] =
-        neighborPlusProbeRadii * neighborPlusProbeRadii;
+      float radii = neighborRadius + radiusP;
+      neighborPlusProbeRadii[neighborCount] = radii;
+      neighborPlusProbeRadii2[neighborCount] = radii * radii;
       ++neighborCount;
     }
     /*
@@ -1039,9 +1051,9 @@ class Surface extends Shape {
           continue;
         setNeighborK(iK);
         // deal with corrupt files that have duplicate atoms
-        if (distanceIK2 < 0.1 || distanceJK2 < 0.1)
+        if (distanceIK < 0.1 || distanceJK < 0.1)
           continue;
-        if (distanceJK2 >= radiiJP2 + radiiKP2)
+        if (distanceJK >= radiiJP + radiiKP)
           continue;
         getCavitiesIJK();
       }
@@ -1106,6 +1118,8 @@ class Surface extends Shape {
   private final Point3f cavityProbe = new Point3f();
 
   void getCavitiesIJK() {
+    System.out.println("getCavitiesIJK:" + indexI + "," + indexJ + "," +
+                       indexK);
     vectorIK.sub(centerK, centerI);
     normalIJK.cross(vectorIJ, vectorIK);
     if (Float.isNaN(normalIJK.x))
@@ -1217,17 +1231,12 @@ class Surface extends Shape {
 
   class Cavity {
     final int ixI, ixJ, ixK;
-    final Point3f[] points;
-    final short[] normixes;
-    final float radiansIJ;
-    final float radiansJK;
-    final float radiansKI;
+
     final Point3f pointPI = new Point3f();
     final Point3f pointPJ = new Point3f();
     final Point3f pointPK = new Point3f();
-    short vertexI, vertexJ, vertexK;
+    final short vertexI, vertexJ, vertexK;
     short colixI, colixJ, colixK;
-    byte segmentsIJ, segmentsJK, segmentsKI;
 
     Cavity(Point3f probeCenter) {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
@@ -1244,38 +1253,6 @@ class Surface extends Shape {
       vectorPK.normalize();
       pointPK.scaleAdd(radiusP, vectorPK, probeCenter);
 
-      radiansIJ = vectorPI.angle(vectorPJ);
-      segmentsIJ = (byte)(radiansIJ / radiansPerSegment);
-      if (segmentsIJ == 0)
-        ++segmentsIJ;
-      radiansJK = vectorPJ.angle(vectorPK);
-      segmentsJK = (byte)(radiansJK / radiansPerSegment);
-      if (segmentsJK == 0)
-        ++segmentsJK;
-      radiansKI = vectorPK.angle(vectorPI);
-      segmentsKI = (byte)(radiansKI / radiansPerSegment);
-      if (segmentsKI == 0)
-        ++segmentsKI;
-
-      int pointCount = 1 + segmentsIJ + segmentsJK + segmentsKI;
-      normixes = new short[pointCount];
-      points = new Point3f[pointCount];
-      for (int i = pointCount; --i >= 0; )
-        points[i] = new Point3f();
-      
-      vectorT.add(vectorPI, vectorPJ);
-      vectorT.add(vectorPK);
-      vectorT.normalize();
-      points[0].scaleAdd(radiusP, vectorT, probeCenter);
-      normixes[0] = g3d.getInverseNormix(vectorT);
-
-      addSegments(probeCenter, radiansIJ, segmentsIJ, vectorPI, vectorPJ,
-                  points, normixes, 1);
-      addSegments(probeCenter, radiansJK, segmentsJK, vectorPJ, vectorPK,
-                  points, normixes, 1 + segmentsIJ);
-      addSegments(probeCenter, radiansKI, segmentsKI, vectorPK, vectorPI,
-                  points, normixes, 1 + segmentsIJ + segmentsJK);
-
       // calc nearest geodesic vertexes 
       vectorT.sub(probeCenter, frame.atoms[ixI].point3f);
       vertexI = g3d.getNormix(vectorT, geodesicRenderingLevel);
@@ -1288,51 +1265,10 @@ class Surface extends Shape {
       convexVertexMaps[ixJ] = Bmp.setBitGrow(convexVertexMaps[ixJ], vertexJ);
       convexVertexMaps[ixK] = Bmp.setBitGrow(convexVertexMaps[ixK], vertexK);
 
-    }
+      System.out.println(" vertexI=" + vertexI +
+                         " vertexJ=" + vertexJ +
+                         " vertexK=" + vertexK);
 
-    Point3f getPoint(int atomIndex) {
-      if (atomIndex == ixI)
-        return points[1];
-      if (atomIndex == ixJ)
-        return points[1 + segmentsIJ];
-      if (atomIndex == ixK)
-        return points[1 + segmentsIJ + segmentsJK];
-      System.out.println("I am a cavity with " +
-                         ixI + ":" + ixJ + ":" + ixK +
-                         " you are looking for " + atomIndex);
-      throw new NullPointerException();
-    }
-
-    /*
-    Point3f getAtomCenter(int atomIndex) {
-      if (atomIndex == ixI)
-        return atI.point3f;
-      if (atomIndex == ixJ)
-        return atJ.point3f;
-      if (atomIndex == ixK)
-        return atK.point3f;
-      throw new NullPointerException();
-    }
-    */
-
-    void addSegments(Point3f probeCenter,
-                     float radians, float segments, Vector3f v1, Vector3f v2,
-                     Point3f[] points, short[] normixes, int index) {
-      points[index].scaleAdd(radiusP, v1, probeCenter);
-      normixes[index] = g3d.getNormix(v1);
-      if (segments == 1)
-        return;
-      vectorT.cross(v1, v2);
-      aaT.set(vectorT, 0);
-      float radiansPerSegment = radians / segments;
-      for (int i = 0, j = index + i; i < segments; ++i, ++j) {
-        matrixT.set(aaT);
-        vectorT.set(v1);
-        matrixT.transform(vectorT, vectorT1);
-        points[j].scaleAdd(radiusP, vectorT1, probeCenter);
-        normixes[j] = g3d.getInverseNormix(vectorT1);
-        aaT.angle +=  radiansPerSegment;
-      }
     }
 
   }

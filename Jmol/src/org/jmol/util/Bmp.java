@@ -54,8 +54,6 @@ public class Bmp {
 
   public final static void setBit(int[] bitmap, int i) {
     int index = i >> 5;
-    if (index >= bitmap.length)
-      throw new IndexOutOfBoundsException();
     bitmap[index] |= 1 << (i & 31);
   }
 

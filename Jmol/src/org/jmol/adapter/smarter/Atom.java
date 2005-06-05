@@ -38,11 +38,11 @@ class Atom implements Cloneable {
   int occupancy = 100;
   boolean isHetero;
   int atomSerial = Integer.MIN_VALUE;
-  char chainID = (char)0;
+  char chainID = '\0';
+  char altLocID = '\0';
   String group3;
   int sequenceNumber = Integer.MIN_VALUE;
-  char insertionCode = (char)0;
-  String pdbAtomRecord;
+  char insertionCode = '\0';
 
   Atom() {
   }

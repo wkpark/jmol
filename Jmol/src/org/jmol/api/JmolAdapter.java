@@ -307,6 +307,7 @@ public abstract class JmolAdapter {
     public boolean getIsHetero() { return false; }
     public int getAtomSerial() { return Integer.MIN_VALUE; }
     public char getChainID() { return (char)0; }
+    public char getAltLocID() { return (char)0; }
     public String getGroup3() { return null; }
     public int getSequenceNumber() { return Integer.MIN_VALUE; }
     public char getInsertionCode() { return (char)0; }
@@ -361,20 +362,25 @@ public abstract class JmolAdapter {
   // range-checking routines
   /////////////////////////////////////////////////////////////////
 
-  public static char canonizeChainID(char chainID) {
-    if ((chainID >= 'A' && chainID <= 'Z') ||
-        (chainID >= 'a' && chainID <= 'z') ||
-        (chainID >= '0' && chainID <= '9'))
-      return chainID;
+  public final static char canonizeAlphaDigit(char ch) {
+    if ((ch >= 'A' && ch <= 'Z') ||
+        (ch >= 'a' && ch <= 'z') ||
+        (ch >= '0' && ch <= '9'))
+      return ch;
     return '\0';
   }
 
-  public static char canonizeInsertionCode(char insertionCode) {
-    if ((insertionCode >= 'A' && insertionCode <= 'Z') ||
-        (insertionCode >= 'a' && insertionCode <= 'z') ||
-        (insertionCode >= '0' && insertionCode <= '9'))
-      return insertionCode;
-    return '\0';
+  public final static char canonizeChainID(char chainID) {
+    return canonizeAlphaDigit(chainID);
+  }
+
+  public final static char canonizeInsertionCode(char insertionCode) {
+    return canonizeAlphaDigit(insertionCode);
+  }
+
+  public final static char canonizeAltLocID(char altLoc) {
+    // pdb alternate location
+    return canonizeAlphaDigit(altLoc);
   }
 
 }

@@ -195,11 +195,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public boolean getIsHetero() { return atom.isHetero; }
     public int getAtomSerial() { return atom.atomSerial; }
     public char getChainID() { return canonizeChainID(atom.chainID); }
+    public char getAltLocID() { return canonizeAltLocID(atom.altLocID); }
     public String getGroup3() { return atom.group3; }
     public int getSequenceNumber() { return atom.sequenceNumber; }
     public char getInsertionCode()
     { return canonizeInsertionCode(atom.insertionCode); }
-    public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
   class BondIterator extends JmolAdapter.BondIterator {

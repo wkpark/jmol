@@ -128,7 +128,8 @@ class Eval implements Runnable {
   boolean loadScript(String filename, String script) {
     this.filename = filename;
     this.script = script;
-    if (! compiler.compile(filename, script)) {
+    if (! compiler.compile(filename, script,
+                           viewer.getCaseSensitive())) {
       error = true;
       errorMessage = compiler.getErrorMessage();
       viewer.scriptStatus(errorMessage);
@@ -241,7 +242,7 @@ class Eval implements Runnable {
     // the name 'hydrogen' handled specially
     for (int i = JmolConstants.elementNames.length; --i > 1; ) {
       String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
-      if (! compiler.compile("#element", definition)) {
+      if (! compiler.compile("#element", definition, true)) {
         System.out.println("element definition error:" + definition);
         continue;
       }
@@ -254,7 +255,7 @@ class Eval implements Runnable {
   }
 
   void predefine(String script) {
-    if (compiler.compile("#predefine", script)) {
+    if (compiler.compile("#predefine", script, true)) {
       Token [][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
         viewer.scriptStatus("predefinition does not have exactly 1 command:"
@@ -527,10 +528,6 @@ class Eval implements Runnable {
       strbufLog.append(' ');
       Token token = statement[i];
       switch (token.tok) {
-      case Token.spec_model:
-        strbufLog.append("/");
-        strbufLog.append("" + token.value);
-        break;
       case Token.integer:
         strbufLog.append(token.intValue);
         continue;
@@ -541,6 +538,14 @@ class Eval implements Runnable {
         strbufLog.append(':');
         strbufLog.append((char)token.intValue);
         continue;
+      case Token.spec_alternate:
+        strbufLog.append("%");
+        strbufLog.append("" + token.value);
+        break;
+      case Token.spec_model:
+        strbufLog.append("/");
+        strbufLog.append("" + token.value);
+        break;
       case Token.spec_resid:
         strbufLog.append('[');
         strbufLog.append(Group.getGroup3((short)token.intValue));
@@ -823,8 +828,8 @@ class Eval implements Runnable {
         viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.expressionBegin:
-        break;
-      case Token.expressionEnd:
+        break; 
+     case Token.expressionEnd:
         break expression_loop;
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
@@ -881,6 +886,9 @@ class Eval implements Runnable {
         stack[sp++] = getSpecChain((char)instruction.intValue);
         break;
       case Token.spec_atom:
+        stack[sp++] = getSpecAtom((String)instruction.value);
+        break;
+      case Token.spec_alternate:
         stack[sp++] = getSpecAtom((String)instruction.value);
         break;
       case Token.spec_model:
@@ -1215,6 +1223,14 @@ class Eval implements Runnable {
     for (int i = viewer.getAtomCount(); --i >= 0; )
       if (frame.getAtomAt(i).getModelIndex() == modelIndex)
         bsResult.set(i);
+  }
+
+  BitSet getSpecAlternate(String alternateTag) {
+    int numberOfAtoms = viewer.getAtomCount();
+    BitSet bs = new BitSet(numberOfAtoms);
+    for (int i = numberOfAtoms; --i >= 0; )
+      bs.set(i);
+    return bs;
   }
 
   BitSet getSpecModel(String modelTag) {

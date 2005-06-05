@@ -328,14 +328,14 @@ class Token {
   final static int spec_seqcode         = misc | 23;
   final static int spec_seqcode_range   = misc | 24;
   final static int spec_chain           = misc | 25;
-  final static int spec_model           = misc | 26;
-  final static int spec_atom            = misc | 27;
-  final static int percent      = misc | 28;
-  final static int dotted       = misc | 29;
-  final static int mode         = misc | 30;
-  final static int direction    = misc | 31;
-  final static int fps          = misc | 32;
-  final static int jmol         = misc | 33;
+  final static int spec_alternate       = misc | 26;
+  final static int spec_model           = misc | 27;
+  final static int spec_atom            = misc | 28;
+  final static int percent      = misc | expression | 29;
+  final static int dotted       = misc | 30;
+  final static int mode         = misc | 31;
+  final static int direction    = misc | 32;
+  final static int fps          = misc | 33;
   final static int displacement = misc | 34;
   final static int type         = misc | 35;
   final static int fixedtemp    = misc | 36;
@@ -349,6 +349,7 @@ class Token {
   final static int noedges      = misc | 44;
   final static int frontedges   = misc | 45;
   final static int solid        = misc | 45;
+  final static int jmol         = misc | 46;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;

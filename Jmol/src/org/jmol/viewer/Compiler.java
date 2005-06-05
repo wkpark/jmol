@@ -32,6 +32,7 @@ class Compiler {
 
   String filename;
   String script;
+  boolean caseSensitive;
 
   short[] lineNumbers;
   short[] lineIndices;
@@ -48,9 +49,10 @@ class Compiler {
       System.out.println(message);
   }
 
-  boolean compile(String filename, String script) {
+  boolean compile(String filename, String script, boolean caseSensitive) {
     this.filename = filename;
     this.script = script;
+    this.caseSensitive = caseSensitive;
     lineNumbers = lineIndices = null;
     aatokenCompiled = null;
     errorMessage = errorLine = null;
@@ -149,7 +151,8 @@ class Compiler {
         }
         if (tokCommand == Token.load && lookingAtLoadFormat()) {
           String strFormat = script.substring(ichToken, ichToken + cchToken);
-          strFormat = strFormat.toLowerCase();
+          if (! caseSensitive)
+            strFormat = strFormat.toLowerCase();
           ltoken.addElement(new Token(Token.identifier, strFormat));
           continue;
         }
@@ -186,7 +189,8 @@ class Compiler {
       }
       if (lookingAtLookupToken()) {
         String ident = script.substring(ichToken, ichToken + cchToken);
-        ident = ident.toLowerCase();
+        if (! caseSensitive)
+          ident = ident.toLowerCase();
         Token token = (Token) Token.map.get(ident);
         if (token == null)
           token = new Token(Token.identifier, ident);
@@ -786,9 +790,10 @@ class Compiler {
 
     clauseResidueSpec::= { clauseResNameSpec }
                          { clauseResNumSpec }
-                         { chainSpec }
+                         { clauseChainSpec }
                          { clauseAtomSpec }
-                         { modelSpec }
+                         { clauseAlternateSpec }
+                         { clauseModelSpec }
 
     clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
 
@@ -809,6 +814,8 @@ class Compiler {
     clauseChainSpec  ::= {:} * | identifier | integer
 
     clauseAtomSpec   ::= . * | . identifier {*} // note that this * is *not* a wildcard
+
+    clauseAlternateSpec ::= {%} identifier | integer
 
     clauseModelSpec  ::= {:|/} * | integer
 
@@ -1068,6 +1075,12 @@ class Compiler {
       specSeen = true;
       tok = tokPeek();
     }
+    if (tok == Token.percent) {
+      if (! clauseAlternateSpec())
+        return false;
+      specSeen = true;
+      tok = tokPeek();
+    }
     if (tok == Token.colon ||
         tok == Token.slash) {
       if (! clauseModelSpec())
@@ -1277,6 +1290,31 @@ class Compiler {
     }
     return generateResidueSpecCode(new Token(Token.spec_chain,
                                              chain, "spec_chain"));
+  }
+
+  boolean clauseAlternateSpec() {
+    int tok = tokPeek();
+    if (tok == Token.percent)
+      tokenNext();
+    if (tokPeek() == Token.asterisk) {
+      tokenNext();
+      return true;
+    }
+    Token tokenAlternate = tokenNext();
+    switch (tokenAlternate.tok) {
+    case Token.string:
+    case Token.integer:
+    case Token.identifier:
+    case Token.x:
+    case Token.y:
+    case Token.z:
+      break;
+    default:
+      return invalidModelSpecification();
+    }
+    String alternate = (String)tokenAlternate.value;
+    System.out.println("alternate specification seen:" + alternate);
+    return generateResidueSpecCode(new Token(Token.spec_alternate, alternate));
   }
 
   boolean clauseModelSpec() {

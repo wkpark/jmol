@@ -1596,6 +1596,16 @@ final public class Viewer extends JmolViewer {
       eval.haltExecution();
   }
 
+  boolean caseSensitive = true;
+
+  boolean getCaseSensitive() {
+    return caseSensitive;
+  }
+
+  void setCaseSensitive(boolean caseSensitive) {
+    this.caseSensitive = caseSensitive;
+  }
+
   public void setColorBond(Color color) {
     colorManager.setColorBond(color);
     setShapeColorProperty(JmolConstants.SHAPE_STICKS, color);

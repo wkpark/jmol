@@ -2208,7 +2208,7 @@
   <fah_proj number="974" name="p974_fkcomp_boltz" public="y" file="y"
     server="171.64.122.132" atoms="14917" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="975" name="p975_fk-fstr-nprot" public="y"
+  <fah_proj number="975" name="p975_fk-fstr-nprot" public="y" file="y"
     server="171.64.122.132" atoms="14836" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
   <fah_proj number="997" name="pAla7-2" public="y"
@@ -2630,7 +2630,7 @@
     server="171.64.122.143" atoms="393" preferred="5" deadline="7"
     credit="25" frames="40" code="T" contact="csnow"/>
   <fah_proj number="1144" name="p1144_RIBO_nopeptide" public="y" file="y"
-    server="171.65.103.156" atoms="87749" preferred="40" deadline="82"
+    server="171.65.103.156" atoms="87749" preferred="25" deadline="82"
     credit="600" frames="100" code="G" contact="csnow"/>
   <fah_proj number="1145" name="p1145_L939_WT_298K" public="y" file="y"
     server="171.64.122.133" atoms="397" preferred="46" deadline="68"

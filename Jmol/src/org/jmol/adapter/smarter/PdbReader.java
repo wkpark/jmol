@@ -117,8 +117,8 @@ class PdbReader extends AtomSetCollectionReader {
     try {
       // for now, we are only taking alternate location 'A'
       char charAlternateLocation = line.charAt(16);
-      if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
-        return;
+      //      if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
+      //        return;
       ////////////////////////////////////////////////////////////////
       // get the group so that we can check the formul
       int serial = parseInt(line, 6, 11);
@@ -192,7 +192,7 @@ class PdbReader extends AtomSetCollectionReader {
       /****************************************************************/
       if (serial >= serialMap.length)
         serialMap = setLength(serialMap, serial + 500);
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = new Atom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       atom.alternateLocationID = charAlternateLocation;
@@ -207,6 +207,7 @@ class PdbReader extends AtomSetCollectionReader {
       atom.sequenceNumber = sequenceNumber;
       atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
 
+      atomSetCollection.addAtom(atom);
       // note that values are +1 in this serial map
       serialMap[serial] = atomSetCollection.atomCount;
     } catch (NumberFormatException e) {

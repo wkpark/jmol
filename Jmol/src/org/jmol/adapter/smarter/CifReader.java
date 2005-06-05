@@ -206,7 +206,8 @@ class CifReader extends AtomSetCollectionReader {
   final static byte ASYM_ID     = 12;
   final static byte SEQ_ID      = 13;
   final static byte INS_CODE    = 14;
-  final static byte ATOM_PROPERTY_MAX = 15;
+  final static byte ALT_ID      = 15;
+  final static byte ATOM_PROPERTY_MAX = 16;
   
 
   final static String[] atomFields = {
@@ -218,10 +219,8 @@ class CifReader extends AtomSetCollectionReader {
     "_atom_site.b_iso_or_equiv",
     "_atom_site.label_comp_id", "_atom_site.label_asym_id",
     "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
+    "_atom_site.label_alt_id",
   };
-
-  // don't forget to deal with alternate conformations!
-  // or, even better, move that code out of the AtomSetCollectionReader
 
   final static byte[] atomFieldMap = {
     TYPE_SYMBOL,
@@ -230,6 +229,7 @@ class CifReader extends AtomSetCollectionReader {
     CARTN_X, CARTN_Y, CARTN_Z,
     OCCUPANCY, B_ISO,
     COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
+    ALT_ID,
   };
 
   static {
@@ -349,6 +349,11 @@ class CifReader extends AtomSetCollectionReader {
           char insCode = field.charAt(0);
           if (insCode != '?' && insCode != '.')
             atom.chainID = insCode;
+          break;
+        case ALT_ID:
+          char alternateLocationID = field.charAt(0);
+          if (alternateLocationID != '?' && alternateLocationID != '.')
+            atom.alternateLocationID = alternateLocationID;
           break;
         }
       }

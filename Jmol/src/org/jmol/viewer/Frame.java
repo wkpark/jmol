@@ -161,6 +161,7 @@ final class Frame {
               iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(),
               iterAtom.getVectorX(), iterAtom.getVectorY(),
               iterAtom.getVectorZ(),
+              iterAtom.getAlternateLocationID(),
               iterAtom.getClientAtomReference());
     }
 
@@ -254,15 +255,17 @@ final class Frame {
 
   void addAtom(int modelIndex, Object atomUid,
                byte atomicNumber,
-               String atomName, 
+               String atomName,
                int formalCharge, float partialCharge,
                int occupancy,
                float bfactor,
                float x, float y, float z,
-               boolean isHetero, int atomSerial, char chainID,
+               boolean isHetero, int atomSerial,
+               char chainID,
                String group3,
                int groupSequenceNumber, char groupInsertionCode,
                float vectorX, float vectorY, float vectorZ,
+               char alternateLocationID,
                Object clientAtomReference) {
     if (modelIndex != currentModelIndex) {
       currentModel = mmset.getModel(modelIndex);
@@ -296,6 +299,7 @@ final class Frame {
                          x, y, z,
                          isHetero, atomSerial, chainID,
                          vectorX, vectorY, vectorZ,
+                         alternateLocationID,
                          clientAtomReference);
 
     atoms[atomCount] = atom;

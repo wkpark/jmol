@@ -889,7 +889,7 @@ class Eval implements Runnable {
         stack[sp++] = getSpecAtom((String)instruction.value);
         break;
       case Token.spec_alternate:
-        stack[sp++] = getSpecAtom((String)instruction.value);
+        stack[sp++] = getSpecAlternate((String)instruction.value);
         break;
       case Token.spec_model:
         stack[sp++] = getSpecModel((String)instruction.value);
@@ -1225,11 +1225,15 @@ class Eval implements Runnable {
         bsResult.set(i);
   }
 
-  BitSet getSpecAlternate(String alternateTag) {
-    int numberOfAtoms = viewer.getAtomCount();
-    BitSet bs = new BitSet(numberOfAtoms);
-    for (int i = numberOfAtoms; --i >= 0; )
-      bs.set(i);
+  BitSet getSpecAlternate(String alternateSpec) {
+    System.out.println("getSpecAlternate(" + alternateSpec + ")");
+    Frame frame = viewer.getFrame();
+    BitSet bs = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      Atom atom = frame.getAtomAt(i);
+      if (atom.isAlternateLocationMatch(alternateSpec))
+        bs.set(i);
+    }
     return bs;
   }
 

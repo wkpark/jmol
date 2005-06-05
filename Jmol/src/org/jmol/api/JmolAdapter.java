@@ -307,7 +307,7 @@ public abstract class JmolAdapter {
     public boolean getIsHetero() { return false; }
     public int getAtomSerial() { return Integer.MIN_VALUE; }
     public char getChainID() { return (char)0; }
-    public char getAltLocID() { return (char)0; }
+    public char getAlternateLocationID() { return (char)0; }
     public String getGroup3() { return null; }
     public int getSequenceNumber() { return Integer.MIN_VALUE; }
     public char getInsertionCode() { return (char)0; }
@@ -378,9 +378,8 @@ public abstract class JmolAdapter {
     return canonizeAlphaDigit(insertionCode);
   }
 
-  public final static char canonizeAltLocID(char altLoc) {
-    // pdb alternate location
+  public final static char canonizeAlternateLocationID(char altLoc) {
+    // pdb altLoc
     return canonizeAlphaDigit(altLoc);
   }
-
 }

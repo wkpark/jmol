@@ -48,6 +48,7 @@ final class Atom implements Tuple {
   short modelIndex; // we want this here for the BallsRenderer
   byte elementNumber;
   byte formalChargeAndFlags;
+  byte alternateLocationID;
   short madAtom;
   short colixAtom;
   Bond[] bonds;
@@ -64,6 +65,7 @@ final class Atom implements Tuple {
        float x, float y, float z,
        boolean isHetero, int atomSerial, char chainID,
        float vibrationX, float vibrationY, float vibrationZ,
+       char alternateLocationID,
        Object clientAtomReference) {
     this.modelIndex = (short)modelIndex;
     this.atomIndex = atomIndex;
@@ -72,6 +74,7 @@ final class Atom implements Tuple {
       formalCharge = 0;
     this.formalChargeAndFlags = (byte)(formalCharge << 4);
     this.colixAtom = viewer.getColixAtom(this);
+    this.alternateLocationID = (byte)alternateLocationID;
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
     if (isHetero)
@@ -386,6 +389,14 @@ final class Atom implements Tuple {
         return false;
     }
     return ich >= cchAtomName;
+  }
+
+  boolean isAlternateLocationMatch(String strPattern) {
+    if (strPattern == null)
+      return true;
+    if (strPattern.length() != 1)
+      return false;
+    return alternateLocationID == strPattern.charAt(0);
   }
 
   int getAtomNumber() {

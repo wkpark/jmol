@@ -195,7 +195,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public boolean getIsHetero() { return atom.isHetero; }
     public int getAtomSerial() { return atom.atomSerial; }
     public char getChainID() { return canonizeChainID(atom.chainID); }
-    public char getAltLocID() { return canonizeAltLocID(atom.altLocID); }
+    public char getAlternateLocationID()
+    { return canonizeAlternateLocationID(atom.alternateLocationID); }
     public String getGroup3() { return atom.group3; }
     public int getSequenceNumber() { return atom.sequenceNumber; }
     public char getInsertionCode()

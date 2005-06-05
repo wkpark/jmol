@@ -39,7 +39,7 @@ class Atom implements Cloneable {
   boolean isHetero;
   int atomSerial = Integer.MIN_VALUE;
   char chainID = '\0';
-  char altLocID = '\0';
+  char alternateLocationID = '\0';
   String group3;
   int sequenceNumber = Integer.MIN_VALUE;
   char insertionCode = '\0';

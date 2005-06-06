@@ -88,7 +88,8 @@ class AtomSetCollection {
 
   void freeze() {
     System.out.println("AtomSetCollection.freeze called");
-    System.out.println("hasAlternateLocations() : " + hasAlternateLocations());
+    if (hasAlternateLocations())
+      hackAlternateLocationDamage();
   }
 
   void discardPreviousAtoms() {
@@ -402,5 +403,9 @@ class AtomSetCollection {
       if (atoms[i].alternateLocationID != '\0')
         return true;
     return false;
+  }
+
+  void hackAlternateLocationDamage() {
+    System.out.println("hacking alternate location damage");
   }
 }

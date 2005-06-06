@@ -59,6 +59,7 @@ class Resolver {
 
     AtomSetCollection atomSetCollection =
       atomSetCollectionReader.readAtomSetCollection(bufferedReader);
+    atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)
       return atomSetCollection.errorMessage;
     if (atomSetCollection.atomCount == 0)

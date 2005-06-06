@@ -195,7 +195,8 @@ class PdbReader extends AtomSetCollectionReader {
       Atom atom = new Atom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.alternateLocationID = charAlternateLocation;
+      if (charAlternateLocation != ' ')
+        atom.alternateLocationID = charAlternateLocation;
       atom.formalCharge = charge;
       atom.occupancy = occupancy;
       atom.bfactor = bfactor;

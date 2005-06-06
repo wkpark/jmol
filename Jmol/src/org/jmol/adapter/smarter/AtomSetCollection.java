@@ -86,6 +86,11 @@ class AtomSetCollection {
     pdbStructureRecords = null;
   }
 
+  void freeze() {
+    System.out.println("AtomSetCollection.freeze called");
+    System.out.println("hasAlternateLocations() : " + hasAlternateLocations());
+  }
+
   void discardPreviousAtoms() {
     for (int i = atomCount; --i >= 0; )
       atoms[i] = null;
@@ -387,5 +392,15 @@ class AtomSetCollection {
   Properties getAtomSetProperties(int atomSetIndex) {
     return atomSetProperties[atomSetIndex];
   }
-  
+
+  ////////////////////////////////////////////////////////////////
+  // special support for alternate locations
+  ////////////////////////////////////////////////////////////////
+
+  boolean hasAlternateLocations() {
+    for (int i = atomCount; --i >= 0; )
+      if (atoms[i].alternateLocationID != '\0')
+        return true;
+    return false;
+  }
 }

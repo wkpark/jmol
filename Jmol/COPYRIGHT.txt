@@ -17,6 +17,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307  USA.
 
 
+Complete source code for the Jmol application, the Jmol applet, and
+surrounding utilities is available from http://www.jmol.org
+
+
 This software uses several external libraries and resources:
 
 JUnit
@@ -24,7 +28,8 @@ JUnit
   doc/ibm.license.html). See http://www.junit.org/.
 
 The Chemical Development Kit
-  Used for reading and writing CML and ShelX. Distributed by Lesser GNU Public License 
+  Used for reading and writing CML and ShelX. Distributed by Lesser GNU Public
+  License 
   See http://cdk.sf.net/.
 
 AElfred

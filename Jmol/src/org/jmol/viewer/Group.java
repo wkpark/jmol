@@ -167,10 +167,13 @@ class Group {
   static int getSeqcode(int sequenceNumber, char insertionCode) {
     if (sequenceNumber == Integer.MIN_VALUE)
       return sequenceNumber;
-    if (insertionCode >= 'a' && insertionCode <= 'z')
-      insertionCode -= 'a' - 'A';
-    else if (insertionCode < 'A' || insertionCode > 'Z')
+    if (! ((insertionCode >= 'A' && insertionCode <= 'Z') ||
+           (insertionCode >= 'a' && insertionCode <= 'z') ||
+           (insertionCode >= '0' && insertionCode <= '9'))) {
+      if (insertionCode != ' ' && insertionCode != '\0')
+        System.out.println("unrecognized insertionCode:" + insertionCode);
       insertionCode = '\0';
+    }
     return (sequenceNumber << 8) + insertionCode;
   }
 

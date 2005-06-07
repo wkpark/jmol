@@ -128,8 +128,7 @@ class Eval implements Runnable {
   boolean loadScript(String filename, String script) {
     this.filename = filename;
     this.script = script;
-    if (! compiler.compile(filename, script,
-                           viewer.getCaseSensitive())) {
+    if (! compiler.compile(filename, script)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
       viewer.scriptStatus(errorMessage);
@@ -242,7 +241,7 @@ class Eval implements Runnable {
     // the name 'hydrogen' handled specially
     for (int i = JmolConstants.elementNames.length; --i > 1; ) {
       String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
-      if (! compiler.compile("#element", definition, true)) {
+      if (! compiler.compile("#element", definition)) {
         System.out.println("element definition error:" + definition);
         continue;
       }
@@ -255,7 +254,7 @@ class Eval implements Runnable {
   }
 
   void predefine(String script) {
-    if (compiler.compile("#predefine", script, true)) {
+    if (compiler.compile("#predefine", script)) {
       Token [][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
         viewer.scriptStatus("predefinition does not have exactly 1 command:"
@@ -1158,19 +1157,22 @@ class Eval implements Runnable {
   }
 
   BitSet getSpecChain(char chain) {
-    chain = Character.toUpperCase(chain);
+    boolean caseSensitive = viewer.getChainCaseSensitive();
+    if (! caseSensitive)
+      chain = Character.toUpperCase(chain);
     Frame frame = viewer.getFrame();
     BitSet bsChain = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      Atom atom = frame.getAtomAt(i);
-      if (chain == atom.getChainID())
+      char ch = frame.getAtomAt(i).getChainID();
+      if (! caseSensitive)
+        ch = Character.toUpperCase(ch);
+      if (chain == ch)
         bsChain.set(i);
     }
     return bsChain;
   }
 
   BitSet getSpecAtom(String atomSpec) {
-    atomSpec = atomSpec.toUpperCase();
     Frame frame = viewer.getFrame();
     BitSet bsAtom = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {

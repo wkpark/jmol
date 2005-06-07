@@ -1596,14 +1596,14 @@ final public class Viewer extends JmolViewer {
       eval.haltExecution();
   }
 
-  boolean caseSensitive = true;
+  boolean chainCaseSensitive = false;
 
-  boolean getCaseSensitive() {
-    return caseSensitive;
+  boolean getChainCaseSensitive() {
+    return chainCaseSensitive;
   }
 
-  void setCaseSensitive(boolean caseSensitive) {
-    this.caseSensitive = caseSensitive;
+  void setChainCaseSensitive(boolean chainCaseSensitive) {
+    this.chainCaseSensitive = chainCaseSensitive;
   }
 
   public void setColorBond(Color color) {
@@ -1939,6 +1939,8 @@ final public class Viewer extends JmolViewer {
       return getTestFlag2();
     if (key.equalsIgnoreCase("testFlag3"))
       return getTestFlag3();
+    if (key.equalsIgnoreCase("chainCaseSensitive"))
+      return getChainCaseSensitive();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -1980,6 +1982,8 @@ final public class Viewer extends JmolViewer {
       { setTestFlag2(value); return; }
     if (key.equalsIgnoreCase("testFlag3"))
       { setTestFlag3(value); return; }
+    if (key.equalsIgnoreCase("chainCaseSensitive"))
+      { setChainCaseSensitive(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }

@@ -32,7 +32,6 @@ class Compiler {
 
   String filename;
   String script;
-  boolean caseSensitive;
 
   short[] lineNumbers;
   short[] lineIndices;
@@ -49,10 +48,9 @@ class Compiler {
       System.out.println(message);
   }
 
-  boolean compile(String filename, String script, boolean caseSensitive) {
+  boolean compile(String filename, String script) {
     this.filename = filename;
     this.script = script;
-    this.caseSensitive = caseSensitive;
     lineNumbers = lineIndices = null;
     aatokenCompiled = null;
     errorMessage = errorLine = null;
@@ -151,8 +149,7 @@ class Compiler {
         }
         if (tokCommand == Token.load && lookingAtLoadFormat()) {
           String strFormat = script.substring(ichToken, ichToken + cchToken);
-          if (! caseSensitive)
-            strFormat = strFormat.toLowerCase();
+          strFormat = strFormat.toLowerCase();
           ltoken.addElement(new Token(Token.identifier, strFormat));
           continue;
         }
@@ -189,9 +186,22 @@ class Compiler {
       }
       if (lookingAtLookupToken()) {
         String ident = script.substring(ichToken, ichToken + cchToken);
-        if (! caseSensitive)
+        Token token;
+        // hack to support case sensitive alternate locations and chains
+        // if an identifier is a single character long, then
+        // allocate a new Token with the original character preserved
+        if (ident.length() == 1) {
+          token = (Token) Token.map.get(ident);
+          if (token == null) {
+            String lowerCaseIdent = ident.toLowerCase();
+            token = (Token) Token.map.get(lowerCaseIdent);
+            if (token != null)
+              token = new Token(token.tok, token.intValue, ident);
+          }
+        } else {
           ident = ident.toLowerCase();
-        Token token = (Token) Token.map.get(ident);
+          token = (Token) Token.map.get(ident);
+        }
         if (token == null)
           token = new Token(Token.identifier, ident);
         int tok = token.tok;
@@ -813,7 +823,9 @@ class Compiler {
 
     clauseChainSpec  ::= {:} * | identifier | integer
 
-    clauseAtomSpec   ::= . * | . identifier {*} // note that this * is *not* a wildcard
+    clauseAtomSpec   ::= . * | . identifier {*}
+    // note that in atom spec context a * is *not* a wildcard
+    // rather, it denotes a 'prime'
 
     clauseAlternateSpec ::= {%} identifier | integer
 

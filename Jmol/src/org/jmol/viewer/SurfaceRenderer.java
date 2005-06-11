@@ -84,14 +84,18 @@ class SurfaceRenderer extends ShapeRenderer {
       int ixJ = torus.ixJ;
       renderTorus(torus,
                   atoms[ixI], convexVertexMaps[ixI],
-                  atoms[ixJ], convexVertexMaps[ixJ], renderingLevel);
+                  atoms[ixJ], convexVertexMaps[ixJ],
+                  colixesConvex,
+                  renderingLevel);
     }
     Surface.Cavity[] cavities = surface.cavities;
     for (int i = surface.cavityCount; --i >= 0; )
-      renderCavity(cavities[i], atoms, convexVertexMaps);
+      renderCavity(cavities[i], atoms,
+                   colixesConvex,
+                   convexVertexMaps);
     screensCache.free();
   }
-
+  
   private final static boolean CONVEX_DOTS = false;
   private final static boolean CAVITY_DOTS = false;
 
@@ -126,47 +130,58 @@ class SurfaceRenderer extends ShapeRenderer {
   Vector3f vectorIJ = new Vector3f();
   Vector3f vectorJI = new Vector3f();
 
+  boolean SHOW_TORUS_PROBE_CENTERS = false;
+  boolean SHOW_TORUS_PROBE_CENTER_VERTEX_CONNECTIONS = false;
+  boolean SHOW_TORUS_VERTEX_CONNECTIONS = false;
+
+  boolean SHOW_TORUS_CAVITY_FOO = false;
+  
   void renderTorus(Surface.Torus torus,
                    Atom atomI, int[] vertexMapI,
-                   Atom atomJ, int[] vertexMapJ, int renderingLevel) {
+                   Atom atomJ, int[] vertexMapJ,
+                   short[] colixesSaddle,
+                   int renderingLevel) {
     if (vertexMapI == null || vertexMapJ == null)
       return;
+    short colixI = Graphics3D.inheritColix(colixesSaddle[torus.ixI],
+                                           atomI.colixAtom);
+    short colixJ = Graphics3D.inheritColix(colixesSaddle[torus.ixI],
+                                           atomJ.colixAtom);
+
     Point3i[] screensI = screensCache.lookup(atomI, vertexMapI);
     Point3i[] screensJ = screensCache.lookup(atomJ, vertexMapJ);
 
     Point3i screenClosestI = screensI[torus.normixI];
     Point3i screenClosestJ = screensJ[torus.normixJ];
-    /*
-    g3d.fillCylinder(Graphics3D.PINK, Graphics3D.ENDCAPS_FLAT, 4,
-                     screensI[torus.normixI],
-                     screensJ[torus.normixJ]);
-    */
-    for (int i = torus.connectionCount; (i -= 2) >= 0; ) {
-      short vertexA = torus.connections[i];
-      short vertexB = torus.connections[i + 1];
 
-      g3d.fillCylinder(Graphics3D.ORANGE, Graphics3D.ENDCAPS_FLAT, 4,
-                       screensI[vertexA],
-                       screensJ[vertexB]);
+    if (SHOW_TORUS_CAVITY_FOO) {
+      for (int i = torus.connectionCount; (i -= 2) >= 0; ) {
+        short vertexA = torus.connections[i];
+        short vertexB = torus.connections[i + 1];
+        
+        g3d.fillCylinder(Graphics3D.ORANGE, Graphics3D.ENDCAPS_FLAT, 4,
+                         screensI[vertexA],
+                         screensJ[vertexB]);
+      }
     }
 
     for (int i = torus.pointspCount; --i >= 0; ) {
       Point3i screenP = viewer.transformPoint(torus.pointsp[i]);
-      g3d.fillSphereCentered(Graphics3D.GREEN, 3, screenP);
+      if (SHOW_TORUS_PROBE_CENTERS)
+        g3d.fillSphereCentered(Graphics3D.GREEN, 3, screenP);
 
-      boolean CONNECT_WITH_DOT = false;
-      if (CONNECT_WITH_DOT) {
+      if (SHOW_TORUS_PROBE_CENTER_VERTEX_CONNECTIONS) {
         g3d.fillCylinder(Graphics3D.YELLOW, Graphics3D.ENDCAPS_FLAT, 4,
                          screensI[torus.vertexesIP[i]], screenP);
         
         g3d.fillCylinder(Graphics3D.CYAN, Graphics3D.ENDCAPS_FLAT, 4,
                          screensJ[torus.vertexesJP[i]], screenP);
-      } else {
-        /*
+      }
+
+      if (SHOW_TORUS_VERTEX_CONNECTIONS) {
         g3d.fillCylinder(Graphics3D.MAGENTA, Graphics3D.ENDCAPS_FLAT, 4,
                          screensI[torus.vertexesIP[i]],
                          screensJ[torus.vertexesJP[i]]);
-        */
       }
     }
 
@@ -176,9 +191,9 @@ class SurfaceRenderer extends ShapeRenderer {
       short vertexI2 = torus.ijTriangles[i + 2];
       
       g3d.fillTriangle(false,
-                       screensI[vertexI1], atomI.colixAtom, vertexI1,
-                       screensJ[vertexJ1], atomJ.colixAtom, vertexJ1,
-                       screensI[vertexI2], atomI.colixAtom, vertexI2);
+                       screensI[vertexI1], colixI, vertexI1,
+                       screensJ[vertexJ1], colixJ, vertexJ1,
+                       screensI[vertexI2], colixI, vertexI2);
     }
 
     for (int i = 0; i < torus.jiTriangleCount; i += 3) {
@@ -187,23 +202,34 @@ class SurfaceRenderer extends ShapeRenderer {
       short vertexJ2 = torus.jiTriangles[i + 2];
       
       g3d.fillTriangle(false,
-                       screensJ[vertexJ1], atomJ.colixAtom, vertexJ1,
-                       screensI[vertexI1], atomI.colixAtom, vertexI1,
-                       screensJ[vertexJ2], atomJ.colixAtom, vertexJ2);
+                       screensJ[vertexJ1], colixJ, vertexJ1,
+                       screensI[vertexI1], colixI, vertexI1,
+                       screensJ[vertexJ2], colixJ, vertexJ2);
     }
 
   }
 
   void renderCavity(Surface.Cavity cavity, Atom[] atoms,
+                    short[] colixesCavity,
                     int[][] convexVertexMaps) {
     short vertexI = cavity.vertexI; if (vertexI < 0) return;
     short vertexJ = cavity.vertexJ; if (vertexJ < 0) return;
     short vertexK = cavity.vertexK; if (vertexK < 0) return;
+    int ixI = cavity.ixI;
+    int ixJ = cavity.ixJ;
+    int ixK = cavity.ixK;
 
-    Atom atomI = atoms[cavity.ixI];
-    Atom atomJ = atoms[cavity.ixJ];
-    Atom atomK = atoms[cavity.ixK];
+    Atom atomI = atoms[ixI];
+    Atom atomJ = atoms[ixJ];
+    Atom atomK = atoms[ixK];
     
+    short colixI = Graphics3D.inheritColix(colixesCavity[ixI],
+                                           atomI.colixAtom);
+    short colixJ = Graphics3D.inheritColix(colixesCavity[ixJ],
+                                           atomJ.colixAtom);
+    short colixK = Graphics3D.inheritColix(colixesCavity[ixK],
+                                           atomK.colixAtom);
+
     if (CAVITY_DOTS) {
       Point3i screen;
       screen = viewer.transformPoint(cavity.pointPI);
@@ -216,11 +242,11 @@ class SurfaceRenderer extends ShapeRenderer {
       g3d.fillSphereCentered(Graphics3D.BLUE, 4, screen);
     }
     Point3i[] screensI = screensCache.lookup(atomI,
-                                             convexVertexMaps[cavity.ixI]);
+                                             convexVertexMaps[ixI]);
     Point3i[] screensJ = screensCache.lookup(atomJ,
-                                             convexVertexMaps[cavity.ixJ]);
+                                             convexVertexMaps[ixJ]);
     Point3i[] screensK = screensCache.lookup(atomK,
-                                             convexVertexMaps[cavity.ixK]);
+                                             convexVertexMaps[ixK]);
     if (CAVITY_DOTS) {
       g3d.fillSphereCentered(Graphics3D.RED, 8, screensI[vertexI]);
       g3d.fillSphereCentered(Graphics3D.GREEN, 8, screensJ[vertexJ]);
@@ -228,9 +254,9 @@ class SurfaceRenderer extends ShapeRenderer {
     }
 
     g3d.fillTriangle(false,
-                     screensI[vertexI], atomI.colixAtom, vertexI,
-                     screensJ[vertexJ], atomJ.colixAtom, vertexJ,
-                     screensK[vertexK], atomK.colixAtom, vertexK);
+                     screensI[vertexI], colixI, vertexI,
+                     screensJ[vertexJ], colixJ, vertexJ,
+                     screensK[vertexK], colixK, vertexK);
   }
 }
 

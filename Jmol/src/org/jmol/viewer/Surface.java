@@ -84,8 +84,8 @@ class Surface extends Shape {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
-  private final static int GEODESIC_CALC_LEVEL = 2;
-  int geodesicRenderingLevel = 2;
+  private final static int GEODESIC_CALC_LEVEL = 3;
+  int geodesicRenderingLevel = 3;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
   int[][] convexVertexMaps;
@@ -105,6 +105,8 @@ class Surface extends Shape {
   Torus[] toruses;
 
   Hashtable htToruses;
+
+  private final static byte[] torusStepCounts = {20, 40, 60, 80};
 
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
@@ -662,11 +664,11 @@ class Surface extends Shape {
       
       aaRotate.set(axisVector, 0);
 
-      int numSteps = 32;
+      int numSteps = torusStepCounts[geodesicRenderingLevel];
       pointspCount = 0;
-      pointsp = new Point3f[32];
-      vertexesIP = new short[32];
-      vertexesJP = new short[32];
+      pointsp = new Point3f[numSteps];
+      vertexesIP = new short[numSteps];
+      vertexesJP = new short[numSteps];
       float stepRadians = 2 * (float)Math.PI / numSteps;
       for (int i = 0; i < numSteps; ++i) {
         aaRotate.angle = i * stepRadians;
@@ -699,7 +701,6 @@ class Surface extends Shape {
         if (ijTriangles == null ||
             ijTriangleCount + 3 >= ijTriangles.length)
           ijTriangles = Util.doubleLength(ijTriangles);
-        System.out.println("ijtriangle seen!");
         ijTriangles[ijTriangleCount++] = vertexesIP[m];
         ijTriangles[ijTriangleCount++] = vertexesJP[m];
         ijTriangles[ijTriangleCount++] = vertexesIP[n];
@@ -717,7 +718,6 @@ class Surface extends Shape {
         if (jiTriangles == null ||
             jiTriangleCount + 3 >= jiTriangles.length)
           jiTriangles = Util.doubleLength(jiTriangles);
-        System.out.println("jitriangle seen!");
         jiTriangles[jiTriangleCount++] = vertexesJP[m];
         jiTriangles[jiTriangleCount++] = vertexesIP[m];
         jiTriangles[jiTriangleCount++] = vertexesJP[n];

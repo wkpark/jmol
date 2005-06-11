@@ -1432,7 +1432,7 @@ final public class Graphics3D {
         
         for ( ; zbuf[j] < zMin; ++j)
           if (--i == 0) {
-            if ((++shortCircuitGouraud % 10000) == 0)
+            if ((++shortCircuitGouraud % 100000) == 0)
               System.out.println("totalGouraud=" + totalGouraud +
                                  " shortCircuitGouraud=" + shortCircuitGouraud
                                  + " %=" +
@@ -2310,7 +2310,6 @@ final public class Graphics3D {
   }
 
   public short getNormix(Vector3f vector, int geodesicLevel) {
-    System.out.println("getNormix with geodesicLevel=" + geodesicLevel);
     return normix3d.getNormix(vector.x, vector.y, vector.z, geodesicLevel);
   }
 

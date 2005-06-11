@@ -294,7 +294,7 @@ class Normix3D {
   private final static boolean DEBUG_FACE_VECTORS = false;
 
   private synchronized short[] calcFaceNormixes(int level) {
-    System.out.println("calcFaceNormixes(" + level + ")");
+    //    System.out.println("calcFaceNormixes(" + level + ")");
     short[] faceNormixes = faceNormixesArrays[level];
     if (faceNormixes != null)
       return faceNormixes;
@@ -360,7 +360,7 @@ class Normix3D {
   short getVisibleNormix(double x, double y, double z,
                          int[] visibilityBitmap, int level) {
     int minMapped = Bmp.getMinMappedBit(visibilityBitmap);
-    System.out.println("minMapped =" + minMapped);
+    //    System.out.println("minMapped =" + minMapped);
     if (minMapped < 0)
       return -1;
     int maxMapped = Bmp.getMaxMappedBit(visibilityBitmap);
@@ -388,7 +388,7 @@ class Normix3D {
         championDist2 = challengerDist2;
       }
     }
-    System.out.println("visible champion=" + champion);
+    //    System.out.println("visible champion=" + champion);
     if (! Bmp.getBit(visibilityBitmap, champion))
       throw new IndexOutOfBoundsException();
     return (short)champion;

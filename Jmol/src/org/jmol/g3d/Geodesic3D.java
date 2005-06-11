@@ -347,11 +347,13 @@ class Geodesic3D {
     throw new NullPointerException();
   }
 
+  /*
   short getNeighborVertex(int level, short vertex, int neighborIndex) {
     short[] neighborVertexes = neighborVertexesArrays[level];
     int offset = vertex * 6 + neighborIndex;
     return neighborVertexes[offset];
   }
+  */
     
   private static short getVertex(short v1, short v2) {
     if (v1 > v2) {
@@ -370,5 +372,15 @@ class Geodesic3D {
     newVertexVector.normalize();
     htVertex.put(hashKey, new Short(vertexNext));
     return vertexNext++;
+  }
+
+  static boolean isNeighborVertex(short vertex1, short vertex2, int level) {
+    short[] neighborVertexes = neighborVertexesArrays[level];
+    int offset1 = vertex1 * 6;
+    for (int i = offset1 + (vertex1 < 12 ? 5 : 6); --i >= offset1; ) {
+      if (neighborVertexes[i] == vertex2)
+        return true;
+    }
+    return false;
   }
 }

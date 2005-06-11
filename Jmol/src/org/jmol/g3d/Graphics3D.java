@@ -2335,6 +2335,10 @@ final public class Graphics3D {
                                      visibilityBitmap, level);
   }
 
+  public boolean isNeighborVertex(short vertex1, short vertex2, int level) {
+    return Geodesic3D.isNeighborVertex(vertex1, vertex2, level);
+  }
+
   public Vector3f[] getGeodesicVertexVectors() {
     return Geodesic3D.getVertexVectors();
   }

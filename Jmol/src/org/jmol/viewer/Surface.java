@@ -533,6 +533,9 @@ class Surface extends Shape {
     int ijTriangleCount;
     short[] ijTriangles;
 
+    int jiTriangleCount;
+    short[] jiTriangles;
+
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
       this.ixI = indexA;
@@ -686,11 +689,12 @@ class Surface extends Shape {
 
       for (int m = 0; m < pointspCount; ++m) {
         int n = m + 1;
-        if (m == pointspCount)
-          m = 0;
+        if (n == pointspCount)
+          n = 0;
         if (vertexesJP[m] != vertexesJP[n])
           continue;
-        if (! isNeighborVertex(vertexesIP[m], vertexesIP[n]))
+        if (! g3d.isNeighborVertex(vertexesIP[m], vertexesIP[n],
+                                   geodesicRenderingLevel))
           continue;
         if (ijTriangles == null ||
             ijTriangleCount + 3 >= ijTriangles.length)
@@ -699,6 +703,52 @@ class Surface extends Shape {
         ijTriangles[ijTriangleCount++] = vertexesIP[m];
         ijTriangles[ijTriangleCount++] = vertexesJP[m];
         ijTriangles[ijTriangleCount++] = vertexesIP[n];
+      }
+
+      for (int m = 0; m < pointspCount; ++m) {
+        int n = m + 1;
+        if (n == pointspCount)
+          n = 0;
+        if (vertexesIP[m] != vertexesIP[n])
+          continue;
+        if (! g3d.isNeighborVertex(vertexesJP[m], vertexesJP[n],
+                                   geodesicRenderingLevel))
+          continue;
+        if (jiTriangles == null ||
+            jiTriangleCount + 3 >= jiTriangles.length)
+          jiTriangles = Util.doubleLength(jiTriangles);
+        System.out.println("jitriangle seen!");
+        jiTriangles[jiTriangleCount++] = vertexesJP[m];
+        jiTriangles[jiTriangleCount++] = vertexesIP[m];
+        jiTriangles[jiTriangleCount++] = vertexesJP[n];
+      }
+
+      for (int m = 0; m < pointspCount; ++m) {
+        int n = m + 1;
+        if (n == pointspCount)
+          n = 0;
+        if (vertexesIP[m] == vertexesIP[n] ||
+            vertexesJP[m] == vertexesJP[n])
+          continue;
+        if (! g3d.isNeighborVertex(vertexesIP[m], vertexesIP[n],
+                                   geodesicRenderingLevel) ||
+            ! g3d.isNeighborVertex(vertexesJP[m], vertexesJP[n],
+                                   geodesicRenderingLevel))
+          continue;
+
+        if (ijTriangles == null ||
+            ijTriangleCount + 3 >= ijTriangles.length)
+          ijTriangles = Util.doubleLength(ijTriangles);
+        ijTriangles[ijTriangleCount++] = vertexesIP[m];
+        ijTriangles[ijTriangleCount++] = vertexesJP[m];
+        ijTriangles[ijTriangleCount++] = vertexesIP[n];
+
+        if (jiTriangles == null ||
+            jiTriangleCount + 3 >= jiTriangles.length)
+          jiTriangles = Util.doubleLength(jiTriangles);
+        jiTriangles[jiTriangleCount++] = vertexesJP[m];
+        jiTriangles[jiTriangleCount++] = vertexesIP[n];
+        jiTriangles[jiTriangleCount++] = vertexesJP[n];
       }
     }
 

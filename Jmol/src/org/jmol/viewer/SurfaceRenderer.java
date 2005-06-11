@@ -154,7 +154,7 @@ class SurfaceRenderer extends ShapeRenderer {
       Point3i screenP = viewer.transformPoint(torus.pointsp[i]);
       g3d.fillSphereCentered(Graphics3D.GREEN, 3, screenP);
 
-      boolean CONNECT_WITH_DOT = true;
+      boolean CONNECT_WITH_DOT = false;
       if (CONNECT_WITH_DOT) {
         g3d.fillCylinder(Graphics3D.YELLOW, Graphics3D.ENDCAPS_FLAT, 4,
                          screensI[torus.vertexesIP[i]], screenP);
@@ -162,9 +162,11 @@ class SurfaceRenderer extends ShapeRenderer {
         g3d.fillCylinder(Graphics3D.CYAN, Graphics3D.ENDCAPS_FLAT, 4,
                          screensJ[torus.vertexesJP[i]], screenP);
       } else {
+        /*
         g3d.fillCylinder(Graphics3D.MAGENTA, Graphics3D.ENDCAPS_FLAT, 4,
                          screensI[torus.vertexesIP[i]],
                          screensJ[torus.vertexesJP[i]]);
+        */
       }
     }
 
@@ -179,7 +181,6 @@ class SurfaceRenderer extends ShapeRenderer {
                        screensI[vertexI2], atomI.colixAtom, vertexI2);
     }
 
-    /*
     for (int i = 0; i < torus.jiTriangleCount; i += 3) {
       short vertexJ1 = torus.jiTriangles[i];
       short vertexI1 = torus.jiTriangles[i + 1];
@@ -190,7 +191,7 @@ class SurfaceRenderer extends ShapeRenderer {
                        screensI[vertexI1], atomI.colixAtom, vertexI1,
                        screensJ[vertexJ2], atomJ.colixAtom, vertexJ2);
     }
-    */
+
   }
 
   void renderCavity(Surface.Cavity cavity, Atom[] atoms,

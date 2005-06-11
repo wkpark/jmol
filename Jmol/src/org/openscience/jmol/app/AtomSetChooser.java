@@ -90,10 +90,10 @@ ActionListener, ChangeListener, Runnable {
    */
   static final String COLLECTION = "collection";
   /**
-   * String for prefix/resource identifier for the vectors area.
+   * String for prefix/resource identifier for the vector area.
    * This value is used in the Jmol properties files.
    */
-  static final String VECTORS = "vectors";
+  static final String VECTOR = "vector";
   
 
   /**
@@ -330,7 +330,7 @@ ActionListener, ChangeListener, Runnable {
     row2.add(periodPanel);
     vectorPanel.add(row2);
     // finally the controller at the bottom
-    vectorPanel.add(createVCRController(VECTORS));
+    vectorPanel.add(createVCRController(VECTOR));
   }
   
   /**
@@ -357,7 +357,7 @@ ActionListener, ChangeListener, Runnable {
     String insert = null;
     if (section.equals(COLLECTION)) {
         insert = GT._("atom set");
-    } else if (section.equals(VECTORS)) {
+    } else if (section.equals(VECTOR)) {
         insert = GT._("vector");
     }
     String tooltips[] = {
@@ -453,8 +453,8 @@ ActionListener, ChangeListener, Runnable {
       if (parts.length==2) {
         String section = parts[0];
         cmd = parts[1];
-        if (section.equals("collection")) {
-          if (REWIND.equals(cmd)) {
+        if (COLLECTION.equals(section)) {
+         if (REWIND.equals(cmd)) {
             animThread = null;
             showAtomSetIndex(0, true);
           } else if (PREVIOUS.equals(cmd)) {
@@ -474,7 +474,7 @@ ActionListener, ChangeListener, Runnable {
           } else if (SAVE.equals(cmd)) {
             saveXYZCollection();
           }
-        } else if (section.equals("vector")) {
+        } else if (VECTOR.equals(section)) {
           if (REWIND.equals(cmd)) {
             findFrequency(0,1);
           } else if (PREVIOUS.equals(cmd)) {

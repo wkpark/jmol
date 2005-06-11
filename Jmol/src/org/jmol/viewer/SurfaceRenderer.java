@@ -167,6 +167,30 @@ class SurfaceRenderer extends ShapeRenderer {
                          screensJ[torus.vertexesJP[i]]);
       }
     }
+
+    for (int i = 0; i < torus.ijTriangleCount; i += 3) {
+      short vertexI1 = torus.ijTriangles[i];
+      short vertexJ1 = torus.ijTriangles[i + 1];
+      short vertexI2 = torus.ijTriangles[i + 2];
+      
+      g3d.fillTriangle(false,
+                       screensI[vertexI1], atomI.colixAtom, vertexI1,
+                       screensJ[vertexJ1], atomJ.colixAtom, vertexJ1,
+                       screensI[vertexI2], atomI.colixAtom, vertexI2);
+    }
+
+    /*
+    for (int i = 0; i < torus.jiTriangleCount; i += 3) {
+      short vertexJ1 = torus.jiTriangles[i];
+      short vertexI1 = torus.jiTriangles[i + 1];
+      short vertexJ2 = torus.jiTriangles[i + 2];
+      
+      g3d.fillTriangle(false,
+                       screensJ[vertexJ1], atomJ.colixAtom, vertexJ1,
+                       screensI[vertexI1], atomI.colixAtom, vertexI1,
+                       screensJ[vertexJ2], atomJ.colixAtom, vertexJ2);
+    }
+    */
   }
 
   void renderCavity(Surface.Cavity cavity, Atom[] atoms,

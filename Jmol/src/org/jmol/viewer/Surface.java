@@ -134,6 +134,7 @@ class Surface extends Shape {
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     this.mad = mad;
+    viewer.setSolventOn(true);
     if (radiusP != viewer.getCurrentSolventProbeRadius()) {
       surfaceConvexMax = 0;
       convexVertexMaps = null;
@@ -529,6 +530,9 @@ class Surface extends Shape {
     short[] vertexesIP;
     short[] vertexesJP;
 
+    int ijTriangleCount;
+    short[] ijTriangles;
+
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
       this.ixI = indexA;
@@ -679,6 +683,27 @@ class Surface extends Shape {
         Bmp.setBit(convexVertexMaps[ixJ], vertexJP);
         pointspCount++;
       }
+
+      for (int m = 0; m < pointspCount; ++m) {
+        int n = m + 1;
+        if (m == pointspCount)
+          m = 0;
+        if (vertexesJP[m] != vertexesJP[n])
+          continue;
+        if (! isNeighborVertex(vertexesIP[m], vertexesIP[n]))
+          continue;
+        if (ijTriangles == null ||
+            ijTriangleCount + 3 >= ijTriangles.length)
+          ijTriangles = Util.doubleLength(ijTriangles);
+        System.out.println("ijtriangle seen!");
+        ijTriangles[ijTriangleCount++] = vertexesIP[m];
+        ijTriangles[ijTriangleCount++] = vertexesJP[m];
+        ijTriangles[ijTriangleCount++] = vertexesIP[n];
+      }
+    }
+
+    boolean isNeighborVertex(int v1, int v2) {
+      return v1 != v2;
     }
 
     /*

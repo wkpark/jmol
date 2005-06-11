@@ -52,11 +52,11 @@ final class Util {
   }
 
   static Object doubleLength(Object array) {
-    return setLength(array, 2 * Array.getLength(array));
+    return setLength(array, (array == null ? 16 : 2 * Array.getLength(array)));
   }
 
   static String[] doubleLength(String[] array) {
-    return setLength(array, 2 * array.length);
+    return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
   static float[] doubleLength(float[] array) {

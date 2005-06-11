@@ -199,7 +199,7 @@ public class Bmp {
       for ( ; answer1 < maxMapped && !getBit(bitmap, answer1) ; ++answer1)
         {}
       if (answer1 == maxMapped)
-        answer1 = 0;
+        answer1 = -1;
     }
     int map = 0;
     int minMapped = 0;
@@ -207,7 +207,7 @@ public class Bmp {
     for (i = 0; i < mapLength && (map = bitmap[i]) == 0; ++i)
       minMapped += 32;
     if (i == mapLength) {
-      minMapped = 0;
+      minMapped = -1;
     } else {
       if ((map & 0x0000FFFF) == 0) {
         map >>= 16;

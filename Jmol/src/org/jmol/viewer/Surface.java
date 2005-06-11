@@ -499,12 +499,9 @@ class Surface extends Shape {
   final Point3f pointTorusP = new Point3f();
   final Vector3f vectorTorusP = new Vector3f();
   final AxisAngle4f aaRotate = new AxisAngle4f();
-  /*
+
   final Vector3f vectorIP = new Vector3f();
   final Vector3f vectorJP = new Vector3f();
-  */
-
-  
 
   class Torus {
     int ixI, ixJ;
@@ -529,6 +526,8 @@ class Surface extends Shape {
 
     int pointspCount;
     Point3f[] pointsp;
+    short[] vertexesIP;
+    short[] vertexesJP;
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
@@ -642,8 +641,10 @@ class Surface extends Shape {
         throw new NullPointerException();
       System.out.println("connect " + ixI + ":" + ixJ);
 
-      axisVector.sub(frame.atoms[ixJ].point3f,
-                     frame.atoms[ixI].point3f);
+      Point3f pointI = frame.atoms[ixI].point3f;
+      Point3f pointJ = frame.atoms[ixJ].point3f;
+      axisVector.sub(pointJ, pointI);
+                     
       if (axisVector.z == 0)
         unitRadialVector.set(vectorZ);
       else {
@@ -651,20 +652,32 @@ class Surface extends Shape {
         unitRadialVector.normalize();
       }
       radialVector.scale(radius, unitRadialVector);
-
+      
       aaRotate.set(axisVector, 0);
 
       int numSteps = 32;
       pointspCount = 0;
       pointsp = new Point3f[32];
+      vertexesIP = new short[32];
+      vertexesJP = new short[32];
       float stepRadians = 2 * (float)Math.PI / numSteps;
       for (int i = 0; i < numSteps; ++i) {
         aaRotate.angle = i * stepRadians;
         matrixT.set(aaRotate);
         matrixT.transform(radialVector, vectorTorusP);
         pointTorusP.add(center, vectorTorusP);
-        if (checkProbeNotIJ(pointTorusP))
-          pointsp[pointspCount++] = new Point3f(pointTorusP);
+        if (! checkProbeNotIJ(pointTorusP))
+          continue;
+        pointsp[pointspCount] = new Point3f(pointTorusP);
+        vectorIP.sub(pointTorusP, pointI);
+        vectorJP.sub(pointTorusP, pointJ);
+        short vertexIP = g3d.getNormix(vectorIP, geodesicRenderingLevel);
+        vertexesIP[pointspCount] = vertexIP;
+        Bmp.setBit(convexVertexMaps[ixI], vertexIP);
+        short vertexJP = g3d.getNormix(vectorJP, geodesicRenderingLevel);
+        vertexesJP[pointspCount] = vertexJP;
+        Bmp.setBit(convexVertexMaps[ixJ], vertexJP);
+        pointspCount++;
       }
     }
 

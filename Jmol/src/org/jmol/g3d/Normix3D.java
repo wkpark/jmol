@@ -360,6 +360,7 @@ class Normix3D {
   short getVisibleNormix(double x, double y, double z,
                          int[] visibilityBitmap, int level) {
     int minMapped = Bmp.getMinMappedBit(visibilityBitmap);
+    System.out.println("minMapped =" + minMapped);
     if (minMapped < 0)
       return -1;
     int maxMapped = Bmp.getMaxMappedBit(visibilityBitmap);
@@ -377,7 +378,7 @@ class Normix3D {
     d = z - v.z;
     championDist2 += d * d;
 
-    for (int challenger = champion + 1; challenger < max; ++challenger) {
+    for (int challenger = minMapped + 1; challenger < max; ++challenger) {
       if (! Bmp.getBit(visibilityBitmap, challenger))
         continue;
       double challengerDist2 = dist2(Geodesic3D.vertexVectors[challenger],
@@ -387,6 +388,9 @@ class Normix3D {
         championDist2 = challengerDist2;
       }
     }
+    System.out.println("visible champion=" + champion);
+    if (! Bmp.getBit(visibilityBitmap, champion))
+      throw new IndexOutOfBoundsException();
     return (short)champion;
   }
 }

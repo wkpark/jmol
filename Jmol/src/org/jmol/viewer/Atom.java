@@ -381,7 +381,7 @@ final class Atom implements Tuple {
     int cchPattern = strPattern.length();
     int ich;
     for (ich = 0; ich < cchPattern; ++ich) {
-      char charWild = strPattern.charAt(ich);
+      char charWild = Character.toUpperCase(strPattern.charAt(ich));
       if (charWild == '?')
         continue;
       if (ich >= cchAtomName ||

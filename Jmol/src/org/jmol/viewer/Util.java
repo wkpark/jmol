@@ -45,6 +45,12 @@ final class Util {
     return setLength(array, minimumLength);
   }
 
+  static int[] ensureLength(int[] array, int minimumLength) {
+    if (array != null && array.length >= minimumLength)
+      return array;
+    return setLength(array, minimumLength);
+  }
+
   static short[] ensureLength(short[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;

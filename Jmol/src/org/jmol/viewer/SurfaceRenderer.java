@@ -34,6 +34,7 @@ import javax.vecmath.*;
 class SurfaceRenderer extends ShapeRenderer {
 
   boolean perspectiveDepth;
+  boolean hideSaddles;
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
   int geodesicVertexCount;
@@ -54,6 +55,7 @@ class SurfaceRenderer extends ShapeRenderer {
     Surface surface = (Surface)shape;
     if (surface == null)
       return;
+    hideSaddles = viewer.getTestFlag1();
     int renderingLevel = surface.geodesicRenderingLevel;
     geodesicVertexCount = surface.geodesicVertexCount;
     screensCache.alloc(geodesicVertexCount);
@@ -141,6 +143,8 @@ class SurfaceRenderer extends ShapeRenderer {
                    Atom atomJ, int[] vertexMapJ,
                    short[] colixesSaddle,
                    int renderingLevel) {
+    if (hideSaddles)
+      return;
     if (vertexMapI == null || vertexMapJ == null)
       return;
     short colixI = Graphics3D.inheritColix(colixesSaddle[torus.ixI],
@@ -156,8 +160,8 @@ class SurfaceRenderer extends ShapeRenderer {
 
     if (SHOW_TORUS_CAVITY_FOO) {
       for (int i = torus.connectionCount; (i -= 2) >= 0; ) {
-        short vertexA = torus.connections[i];
-        short vertexB = torus.connections[i + 1];
+        short vertexA = torus.cavityConnections[i];
+        short vertexB = torus.cavityConnections[i + 1];
         
         g3d.fillCylinder(Graphics3D.ORANGE, Graphics3D.ENDCAPS_FLAT, 4,
                          screensI[vertexA],
@@ -166,18 +170,20 @@ class SurfaceRenderer extends ShapeRenderer {
     }
 
     for (int i = torus.pointspCount; --i >= 0; ) {
-      Point3i screenP = viewer.transformPoint(torus.pointsp[i]);
-      if (SHOW_TORUS_PROBE_CENTERS)
-        g3d.fillSphereCentered(Graphics3D.GREEN, 3, screenP);
-
-      if (SHOW_TORUS_PROBE_CENTER_VERTEX_CONNECTIONS) {
-        g3d.fillCylinder(Graphics3D.YELLOW, Graphics3D.ENDCAPS_FLAT, 4,
-                         screensI[torus.vertexesIP[i]], screenP);
+      Point3f torusPoint = torus.pointsp[i];
+      if (torusPoint != null) {
+        Point3i screenP = viewer.transformPoint(torusPoint);
+        if (SHOW_TORUS_PROBE_CENTERS)
+          g3d.fillSphereCentered(Graphics3D.GREEN, 3, screenP);
         
-        g3d.fillCylinder(Graphics3D.CYAN, Graphics3D.ENDCAPS_FLAT, 4,
-                         screensJ[torus.vertexesJP[i]], screenP);
+        if (SHOW_TORUS_PROBE_CENTER_VERTEX_CONNECTIONS && screenP != null) {
+          g3d.fillCylinder(Graphics3D.YELLOW, Graphics3D.ENDCAPS_FLAT, 4,
+                           screensI[torus.vertexesIP[i]], screenP);
+          
+          g3d.fillCylinder(Graphics3D.CYAN, Graphics3D.ENDCAPS_FLAT, 4,
+                           screensJ[torus.vertexesJP[i]], screenP);
+        }
       }
-
       if (SHOW_TORUS_VERTEX_CONNECTIONS) {
         g3d.fillCylinder(Graphics3D.MAGENTA, Graphics3D.ENDCAPS_FLAT, 4,
                          screensI[torus.vertexesIP[i]],

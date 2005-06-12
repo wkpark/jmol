@@ -84,8 +84,8 @@ class Surface extends Shape {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
-  private final static int GEODESIC_CALC_LEVEL = 3;
-  int geodesicRenderingLevel = 3;
+  private final static int GEODESIC_CALC_LEVEL = 2;
+  int geodesicRenderingLevel = 2;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
   int[][] convexVertexMaps;
@@ -111,9 +111,10 @@ class Surface extends Shape {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
+  private final static float PI = (float)Math.PI;
+
   final static int segmentsPerFullCircle = 50;
-  final static float radiansPerSegment =
-    2*(float)Math.PI/segmentsPerFullCircle;
+  final static float radiansPerSegment = 2 * PI / segmentsPerFullCircle;
 
   final Point3f[] pointStripT = new Point3f[segmentsPerFullCircle];
   final Vector3f stripSurfaceVector = new Vector3f();
@@ -312,7 +313,7 @@ class Surface extends Shape {
   private float distanceIJ2, distanceIK2, distanceJK2;
 
   void setAtomI(int indexI) {
-    //    System.out.println("setAtomI:" + indexI);
+    System.out.println("setAtomI:" + indexI);
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
@@ -323,7 +324,7 @@ class Surface extends Shape {
 
   void setNeighborJ(int indexNeighbor) {
     indexJ = neighborIndexes[indexNeighbor];
-    //    System.out.println(" setNeighborJ:" + indexJ);
+    System.out.println(" setNeighborJ:" + indexJ);
     atomJ = neighbors[indexNeighbor];
     radiusJ = atomJ.getVanderwaalsRadiusFloat();
     radiiJP = neighborPlusProbeRadii[indexNeighbor];
@@ -335,7 +336,7 @@ class Surface extends Shape {
 
   void setNeighborK(int indexNeighbor) {
     indexK = neighborIndexes[indexNeighbor];
-    //    System.out.println("  setNeighborK:" + indexK);
+    System.out.println("  setNeighborK:" + indexK);
     atomK = neighbors[indexNeighbor];
     radiusK = atomK.getVanderwaalsRadiusFloat();
     radiiKP = neighborPlusProbeRadii[indexNeighbor];
@@ -499,12 +500,21 @@ class Surface extends Shape {
   final Vector3f axisVector = new Vector3f();
   final Vector3f unitRadialVector = new Vector3f();
   final Vector3f radialVector = new Vector3f();
+  // 90 degrees, although everything is in radians
+  final Vector3f radialVector90 = new Vector3f();
+  // 270 degrees
+  final Vector3f radialVector270 = new Vector3f();
+  final Vector3f cavityProbeVector = new Vector3f();
   final Point3f pointTorusP = new Point3f();
   final Vector3f vectorTorusP = new Vector3f();
   final AxisAngle4f aaRotate = new AxisAngle4f();
+  Point3f pointAtomI;
+  Point3f pointAtomJ;
 
   final Vector3f vectorIP = new Vector3f();
   final Vector3f vectorJP = new Vector3f();
+
+  float[] cavityAngles = new float[32];
 
   class Torus {
     int ixI, ixJ;
@@ -520,7 +530,7 @@ class Surface extends Shape {
     //    AxisAngle4f aaRotate;
     //    short colixI, colixJ;
     boolean fullTorus;
-    short[] connections;
+    short[] cavityConnections;
     int connectionCount;
     //    Vector3f outerVector;
     //    float outerRadians;
@@ -537,6 +547,9 @@ class Surface extends Shape {
 
     int jiTriangleCount;
     short[] jiTriangles;
+
+    int torusCavityCount;
+    Cavity[] torusCavities = new Cavity[8];
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
@@ -610,32 +623,37 @@ class Surface extends Shape {
 
     }
 
-    void addConnection(short vertexI, short vertexJ) {
-      if (connections == null)
-        connections = new short[32];
+    void addCavityConnection(short vertexI, short vertexJ) {
       for (int i = connectionCount; (i -= 2) >= 0; )
-        if (connections[i] == vertexI &&
-            connections[i+1] == vertexJ)
+        if (cavityConnections[i] == vertexI &&
+            cavityConnections[i+1] == vertexJ)
           return;
-      if (connectionCount == connections.length)
-        connections = Util.doubleLength(connections);
-      connections[connectionCount++] = vertexI;
-      connections[connectionCount++] = vertexJ;
+      if (cavityConnections == null ||
+          connectionCount == cavityConnections.length)
+        cavityConnections = Util.doubleLength(cavityConnections);
+      cavityConnections[connectionCount++] = vertexI;
+      cavityConnections[connectionCount++] = vertexJ;
       Bmp.setBit(convexVertexMaps[ixI], vertexI);
       Bmp.setBit(convexVertexMaps[ixJ], vertexJ);
     }
 
     void addCavity(Cavity cavity, boolean rightHanded) {
+      System.out.println("torus " + ixI + ":" + ixJ +
+                         " addCavity");
+      if (torusCavityCount == torusCavities.length)
+        torusCavities = (Cavity[])Util.doubleLength(torusCavities);
+      torusCavities[torusCavityCount++] = cavity;
+
       if (cavity.ixI == ixI) {
         if (cavity.ixJ == ixJ)
-          addConnection(cavity.vertexI, cavity.vertexJ);
+          addCavityConnection(cavity.vertexI, cavity.vertexJ);
         else if (cavity.ixK == ixJ)
-          addConnection(cavity.vertexI, cavity.vertexK);
+          addCavityConnection(cavity.vertexI, cavity.vertexK);
         else
           throw new NullPointerException();
       } else if (cavity.ixJ == ixI) {
         if (cavity.ixK == ixJ)
-          addConnection(cavity.vertexJ, cavity.vertexK);
+          addCavityConnection(cavity.vertexJ, cavity.vertexK);
         else
           throw new NullPointerException();
       } else {
@@ -643,17 +661,11 @@ class Surface extends Shape {
       }
     }
 
-    void connect() {
-      if (indexI != ixI)
-        throw new NullPointerException();
-      if (indexJ != ixJ)
-        throw new NullPointerException();
-      System.out.println("connect " + ixI + ":" + ixJ);
-
-      Point3f pointI = frame.atoms[ixI].point3f;
-      Point3f pointJ = frame.atoms[ixJ].point3f;
-      axisVector.sub(pointJ, pointI);
-                     
+    void calcReferenceVectors() {
+      pointAtomI = frame.atoms[ixI].point3f;
+      pointAtomJ = frame.atoms[ixJ].point3f;
+      axisVector.sub(pointAtomJ, pointAtomI);
+      
       if (axisVector.z == 0)
         unitRadialVector.set(vectorZ);
       else {
@@ -662,33 +674,91 @@ class Surface extends Shape {
       }
       radialVector.scale(radius, unitRadialVector);
       
-      aaRotate.set(axisVector, 0);
+      aaRotate.set(axisVector, PI / 2);
+      matrixT.set(aaRotate);
+      matrixT.transform(radialVector, radialVector90);
 
+      aaRotate.angle = 3 * PI / 2;
+      matrixT.set(aaRotate);
+      matrixT.transform(radialVector, radialVector270);
+
+    }
+
+    void calcCavityAngles() {
+      cavityAngles = Util.ensureLength(cavityAngles, torusCavityCount);
+      for (int i = torusCavityCount; --i >= 0; )
+        cavityAngles[i] = calcCavityAngle(torusCavities[i]);
+    }
+
+    float calcCavityAngle(Cavity cavity) {
+      cavityProbeVector.sub(cavity.probeCenter, center);
+      float angleCavity0 = cavityProbeVector.angle(radialVector);
+      float angleCavity90 = cavityProbeVector.angle(radialVector90);
+      float angleCavity270 = cavityProbeVector.angle(radialVector270);
+      if (angleCavity90 <= angleCavity270)
+        return angleCavity0;
+      else
+        return PI + angleCavity0;
+    }
+
+    void sortCavitiesByAngle() {
+      System.out.println("sortCavitiesByAngle " +
+                         ixI + ":" + ixJ +
+                         " torusCavityCount=" + torusCavityCount);
+      for (int i = torusCavityCount; --i >= 0; )
+        for (int j = i; --j >= 0; )
+          if (cavityAngles[i] < cavityAngles[j]) {
+            float t = cavityAngles[i];
+            cavityAngles[i] = cavityAngles[j];
+            cavityAngles[j] = t;
+            
+            Cavity x = torusCavities[i];
+            torusCavities[i] = torusCavities[j];
+            torusCavities[j] = x;
+          }
+    }
+    
+    void connect() {
+      if (indexI != ixI)
+        throw new NullPointerException();
+      if (indexJ != ixJ)
+        throw new NullPointerException();
+      System.out.println("connect " + ixI + ":" + ixJ);
+
+      calcReferenceVectors();
+      calcCavityAngles();
+      sortCavitiesByAngle();
+      int sortedCavityIndex = 0;
+      
       int numSteps = torusStepCounts[geodesicRenderingLevel];
       pointspCount = 0;
       pointsp = new Point3f[numSteps];
-      vertexesIP = new short[numSteps];
-      vertexesJP = new short[numSteps];
-      float stepRadians = 2 * (float)Math.PI / numSteps;
+      float stepRadians = 2 * PI / numSteps;
       for (int i = 0; i < numSteps; ++i) {
-        aaRotate.angle = i * stepRadians;
+        float angle = i * stepRadians;
+        // first pick up any cavities that may be in this step
+        for ( ;
+              (sortedCavityIndex < torusCavityCount &&
+               cavityAngles[sortedCavityIndex] <= angle);
+              ++sortedCavityIndex) {
+          System.out.println("cavity angle="+cavityAngles[sortedCavityIndex]);
+          addCavityConnection(torusCavities[sortedCavityIndex]);
+        }
+        System.out.println("angle=" + angle);
+        aaRotate.angle = angle;
         matrixT.set(aaRotate);
         matrixT.transform(radialVector, vectorTorusP);
         pointTorusP.add(center, vectorTorusP);
         if (! checkProbeNotIJ(pointTorusP))
           continue;
         pointsp[pointspCount] = new Point3f(pointTorusP);
-        vectorIP.sub(pointTorusP, pointI);
-        vectorJP.sub(pointTorusP, pointJ);
+        vectorIP.sub(pointTorusP, pointAtomI);
+        vectorJP.sub(pointTorusP, pointAtomJ);
         short vertexIP = g3d.getNormix(vectorIP, geodesicRenderingLevel);
-        vertexesIP[pointspCount] = vertexIP;
-        Bmp.setBit(convexVertexMaps[ixI], vertexIP);
         short vertexJP = g3d.getNormix(vectorJP, geodesicRenderingLevel);
-        vertexesJP[pointspCount] = vertexJP;
-        Bmp.setBit(convexVertexMaps[ixJ], vertexJP);
-        pointspCount++;
+        addConnection(vertexIP, vertexJP);
       }
-
+      
       for (int m = 0; m < pointspCount; ++m) {
         int n = m + 1;
         if (n == pointspCount)
@@ -750,6 +820,42 @@ class Surface extends Shape {
         jiTriangles[jiTriangleCount++] = vertexesIP[n];
         jiTriangles[jiTriangleCount++] = vertexesJP[n];
       }
+    }
+
+    void addCavityConnection(Cavity cavity) {
+      if (cavity.ixI == ixI) {
+        if (cavity.ixJ == ixJ)
+          addConnection(cavity.vertexI, cavity.vertexJ);
+        else if (cavity.ixK == ixJ)
+          addConnection(cavity.vertexI, cavity.vertexK);
+        else
+          throw new NullPointerException();
+      } else if (cavity.ixJ == ixI) {
+        if (cavity.ixK == ixJ)
+          addConnection(cavity.vertexJ, cavity.vertexK);
+        else
+          throw new NullPointerException();
+      } else {
+        throw new NullPointerException();
+      }
+    }
+
+    void addConnection(short vertexIP, short vertexJP) {
+      if (pointspCount > 0 &&
+          vertexesIP[pointspCount - 1] == vertexIP &&
+          vertexesJP[pointspCount - 1] == vertexJP)
+        return;
+
+      if (vertexesIP == null || pointspCount == vertexesIP.length)
+        vertexesIP = Util.doubleLength(vertexesIP);
+      vertexesIP[pointspCount] = vertexIP;
+      Bmp.setBit(convexVertexMaps[ixI], vertexIP);
+
+      if (vertexesJP == null || pointspCount == vertexesJP.length)
+        vertexesJP = Util.doubleLength(vertexesJP);
+      vertexesJP[pointspCount] = vertexJP;
+      Bmp.setBit(convexVertexMaps[ixJ], vertexJP);
+      ++pointspCount;
     }
 
     boolean isNeighborVertex(int v1, int v2) {
@@ -926,8 +1032,8 @@ class Surface extends Shape {
   private final Point3f cavityProbe = new Point3f();
 
   void getCavitiesIJK() {
-    //    System.out.println("getCavitiesIJK:" + indexI + "," + indexJ + "," +
-    //                       indexK);
+    System.out.println("getCavitiesIJK:" + indexI + "," + indexJ + "," +
+                       indexK);
     vectorIK.sub(centerK, centerI);
     normalIJK.cross(vectorIJ, vectorIK);
     if (Float.isNaN(normalIJK.x))
@@ -953,6 +1059,9 @@ class Surface extends Shape {
         allocateConvexVertexBitmap(indexK);
         Cavity cavity = new Cavity(cavityProbe);
         addCavity(cavity);
+        System.out.println(" indexI=" + indexI +
+                           " indexJ=" + indexJ +
+                           " indexK=" + indexK);
         if (torusIJ == null && (torusIJ = getTorus(indexI, indexJ)) == null)
           torusIJ = createTorus(indexI, centerI, indexJ, centerJ,
                                 torusCenterIJ,
@@ -1048,8 +1157,10 @@ class Surface extends Shape {
     final Point3f pointPK = new Point3f();
     final short vertexI, vertexJ, vertexK;
     short colixI, colixJ, colixK;
+    final Point3f probeCenter;
 
     Cavity(Point3f probeCenter) {
+      this.probeCenter = new Point3f(probeCenter);
       ixI = indexI; ixJ = indexJ; ixK = indexK;
 
       vectorPI.sub(centerI, probeCenter);

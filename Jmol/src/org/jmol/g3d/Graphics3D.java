@@ -1424,21 +1424,45 @@ final public class Graphics3D {
         }
       }
     } else {
+      boolean flipflop = ((x ^ y) & 1) != 0;
       if (ENABLE_GOURAUD_STATS) {
         ++totalGouraud;
         int i = count;
         int j = offsetPbuf;
         int zMin = zAtLeft < zPastRight ? zAtLeft : zPastRight;
         
-        for ( ; zbuf[j] < zMin; ++j)
-          if (--i == 0) {
-            if ((++shortCircuitGouraud % 100000) == 0)
-              System.out.println("totalGouraud=" + totalGouraud +
-                                 " shortCircuitGouraud=" + shortCircuitGouraud
-                                 + " %=" +
-                                 (100.0 * shortCircuitGouraud / totalGouraud));
-            return;
+        if (! isTranslucent) {
+          for ( ; zbuf[j] < zMin; ++j)
+            if (--i == 0) {
+              if ((++shortCircuitGouraud % 100000) == 0)
+                System.out.println("totalGouraud=" + totalGouraud +
+                                   " shortCircuitGouraud=" +
+                                   shortCircuitGouraud
+                                   + " %=" +
+                                   (100.0 * shortCircuitGouraud /
+                                    totalGouraud));
+              return;
+            }
+        } else {
+          if (flipflop) {
+            ++j;
+            if (--i == 0)
+              return;
           }
+          for ( ; zbuf[j] < zMin; j += 2) {
+            i -= 2;
+            if (i <= 0) {
+              if ((++shortCircuitGouraud % 100000) == 0)
+                System.out.println("totalGouraud=" + totalGouraud +
+                                   " shortCircuitGouraud=" +
+                                   shortCircuitGouraud
+                                   + " %=" +
+                                   (100.0 * shortCircuitGouraud /
+                                    totalGouraud));
+              return;
+            }
+          }
+        }
       }
 
       int rScaled = rgb16Left.rScaled << 8;
@@ -1447,7 +1471,6 @@ final public class Graphics3D {
       int gIncrement = (rgb16Right.gScaled - gScaled) / count;
       int bScaled = rgb16Left.bScaled;
       int bIncrement = (rgb16Right.bScaled - bScaled) / count;
-      boolean flipflop = ((x ^ y) & 1) != 0;
       while (--count >= 0) {
         if (! isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;

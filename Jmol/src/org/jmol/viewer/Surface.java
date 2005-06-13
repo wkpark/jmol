@@ -145,7 +145,6 @@ class Surface extends Shape {
       convexVertexMaps = null;
       convexFaceMaps = null;
       torusCount = 0;
-      htToruses = null;
       toruses = null;
       cavityCount = 0;
       cavities = null;
@@ -167,11 +166,10 @@ class Surface extends Shape {
     deleteUnusedToruses();
     deleteUnusedCavities();
 
+    htToruses = new Hashtable();
     // now, calculate surface for selected atoms
     if (mad != 0) {
       long timeBegin = System.currentTimeMillis();
-      if (radiusP > 0 && htToruses == null)
-        htToruses = new Hashtable();
       for (int i = 0; i < atomCount; ++i) // make this loop count up
         if (bsSelected.get(i)) {
           setAtomI(i);
@@ -191,6 +189,7 @@ class Surface extends Shape {
       System.out.println("atomCount=" + atomCount);
       System.out.println("Surface construction time = " + timeElapsed + " ms");
     }
+    htToruses = null;
     if (convexVertexMaps == null)
       surfaceConvexMax = 0;
     else {

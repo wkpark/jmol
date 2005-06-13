@@ -35,6 +35,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   boolean perspectiveDepth;
   boolean hideSaddles;
+  boolean hideCavities;
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
   int geodesicVertexCount;
@@ -56,6 +57,7 @@ class SurfaceRenderer extends ShapeRenderer {
     if (surface == null)
       return;
     hideSaddles = viewer.getTestFlag1();
+    hideCavities = viewer.getTestFlag2();
     int renderingLevel = surface.geodesicRenderingLevel;
     geodesicVertexCount = surface.geodesicVertexCount;
     screensCache.alloc(geodesicVertexCount);
@@ -218,6 +220,8 @@ class SurfaceRenderer extends ShapeRenderer {
   void renderCavity(Surface.Cavity cavity, Atom[] atoms,
                     short[] colixesCavity,
                     int[][] convexVertexMaps) {
+    if (hideCavities)
+      return;
     short vertexI = cavity.vertexI; if (vertexI < 0) return;
     short vertexJ = cavity.vertexJ; if (vertexJ < 0) return;
     short vertexK = cavity.vertexK; if (vertexK < 0) return;

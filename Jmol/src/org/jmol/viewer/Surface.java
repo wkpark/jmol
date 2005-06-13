@@ -108,7 +108,7 @@ class Surface extends Shape {
 
   final private static boolean LOG = false;
 
-  private final static byte[] torusStepCounts = {20, 40, 60, 80};
+  private final static short[] torusStepCounts = {20,40,40,80};
 
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
@@ -837,6 +837,9 @@ class Surface extends Shape {
         jiTriangles[jiTriangleCount++] = vertexesIP[n];
         jiTriangles[jiTriangleCount++] = vertexesJP[n];
       }
+
+      torusCavities = null;
+      cavityConnections = null;
     }
 
     void addCavityConnection(Cavity cavity) {

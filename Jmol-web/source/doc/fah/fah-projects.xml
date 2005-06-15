@@ -1746,6 +1746,9 @@
   <fah_proj number="743" name="p743_Villin-pfold-protein-confined" public="y" file="y"
     server="171.64.122.130" atoms="24895" preferred="40" deadline="59"
     credit="210" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="744" name="p744_vln-pf-wtr-cnf" public="n"
+    server="171.64.122.130" atoms="6142" preferred="10" deadline="14"
+    credit="44" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -2531,13 +2534,13 @@
     server="171.64.122.112" atoms="425" preferred="7"
     credit="28" frames="20" code="T" contact="csnow"/>
   <fah_proj number="1110" name="p1110_L939_K12M_nat_min1" public="y" file="y"
-    server="171.64.122.120" atoms="393" preferred="50" deadline="50"
+    server="171.64.122.120" atoms="393" preferred="50"
     credit="249" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1111" name="p1111_L939_wt_ext_444K" public="y"
     server="171.64.122.121" atoms="397" preferred="25" deadline="37"
     credit="249" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1112" name="p1112_L939_K12M_nat_min1_355K" public="y" file="y"
-    server="171.64.122.120" atoms="393" preferred="50" deadline="50"
+    server="171.64.122.120" atoms="393" preferred="50"
     credit="249" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1113" name="p1113_ribo_solvent1" public="y" file="y"
     server="171.67.89.154" atoms="76754" preferred="38" deadline="57"
@@ -2656,7 +2659,7 @@
   <fah_proj number="1152" name="p1152_L939_K12M_ext_from638" public="y" file="y"
     server="171.64.122.112" atoms="393" preferred="45"
     credit="239" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1154" name="p1154_L939_K12M_298K_DT_250ps" public="y"
+  <fah_proj number="1154" name="p1154_L939_K12M_298K_DT_250ps" public="y" file="y"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
 
@@ -3322,4 +3325,7 @@
   <fah_proj number="2004" name="p2004_a21" public="y"
     server="171.65.103.157" atoms="222" preferred="30" deadline="44"
     credit="154" frames="100" code="G" contact="luttmann"/>
+  <fah_proj number="2007" name="p2007_BBA5_pfold" public="y"
+    server="171.65.103.157" atoms="385" preferred="30" deadline="44"
+    credit="154" frames="100" code="G" contact="alexrson"/>
 </fah_projects>

@@ -1086,7 +1086,9 @@ public class ProjectInformation {
     if ((info._emFrames != null) && (!info._emFrames.equals(info._staticFrames))) {
       different = true;
     }
-    if ((info._emValue != null) && (!info._emValue.equals(info._staticValue))) {
+    if ((info._psValue == null) &&
+        (info._emValue != null) &&
+        (!info._emValue.equals(info._staticValue))) {
       different = true;
     }
 

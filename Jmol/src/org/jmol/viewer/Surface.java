@@ -560,6 +560,7 @@ class Surface extends Shape {
 
     int torusCavityCount;
     Cavity[] torusCavities = new Cavity[8];
+    boolean[] torusCavityOpens = new boolean[8];
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
@@ -651,9 +652,13 @@ class Surface extends Shape {
       if (LOG)
         System.out.println("torus " + ixI + ":" + ixJ +
                            " addCavity");
-      if (torusCavityCount == torusCavities.length)
+      if (torusCavityCount == torusCavities.length) {
         torusCavities = (Cavity[])Util.doubleLength(torusCavities);
-      torusCavities[torusCavityCount++] = cavity;
+        torusCavityOpens = Util.doubleLength(torusCavityOpens);
+      }
+      torusCavities[torusCavityCount] = cavity;
+      torusCavityOpens[torusCavityCount] = rightHanded;
+      ++torusCavityCount;
 
       if (cavity.ixI == ixI) {
         if (cavity.ixJ == ixJ)
@@ -727,7 +732,14 @@ class Surface extends Shape {
             Cavity x = torusCavities[i];
             torusCavities[i] = torusCavities[j];
             torusCavities[j] = x;
+
+            boolean b = torusCavityOpens[i];
+            torusCavityOpens[i] = torusCavityOpens[j];
+            torusCavityOpens[j] = b;
           }
+      for (int i = torusCavityCount; --i >= 0; ) {
+        System.out.println("i=" + i + torusCavityOpens[i]);
+      }
     }
     
     void connect() {

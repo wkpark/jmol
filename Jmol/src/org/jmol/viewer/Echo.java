@@ -64,7 +64,7 @@ class Echo extends Shape {
       return;
     }
 
-    if ("translucent" == propertyName) {
+    if ("translucency" == propertyName) {
       System.out.println("translucent echo not implemented");
     }
 

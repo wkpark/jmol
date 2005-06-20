@@ -111,7 +111,7 @@ class Pmesh extends SelectionIndependentShape {
       }
       return;
     }
-    if ("translucent" == propertyName) {
+    if ("translucency" == propertyName) {
       boolean isTranslucent = ("translucent" == value);
       if (currentMesh != null)
         currentMesh.meshColix =
@@ -128,6 +128,13 @@ class Pmesh extends SelectionIndependentShape {
     meshes = (Mesh[])Util.ensureLength(meshes, meshCount + 1);
     currentMesh = meshes[meshCount++] = new Mesh(meshID);
   }
+
+  /*
+   * vertexCount
+   * x.xx y.yy z.zz {vertices}
+   * polygonCount
+   *
+   */
 
   void readPmesh(BufferedReader br) {
     //    System.out.println("Pmesh.readPmesh(" + br + ")");

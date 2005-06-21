@@ -49,7 +49,7 @@ Todo
   <!-- create Jmol.pot -->
   <target name="create-application-pot" id="create-application-pot" depends="clean-application-pot">
     <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
-    <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true">
+    <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
       <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
@@ -65,7 +65,7 @@ Todo
   <!-- create JmolApplet.pot -->
   <target name="create-applet-pot" id="create-applet-pot" depends="clean-applet-pot">
     <echo message="Generating JmolApplet.pot (gettext PO-template) file ..."/>
-    <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true">
+    <apply executable="xgettext" dir="${src.dir}" parallel="true" verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
       <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>

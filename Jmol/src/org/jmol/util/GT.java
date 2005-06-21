@@ -66,11 +66,10 @@ public class GT {
             } catch (MissingResourceException mre) {
                 System.out.println("No trans, using default: " + string);
                 return string;
-	    }
-        } else {
-            System.out.println("No trans, using default: " + string);
-            return string;
-	}
+            }
+        }
+        System.out.println("No trans, using default: " + string);
+        return string;
     }
 
     private String getString(String string, Object[] objects) {

@@ -64,7 +64,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
   }
 
   boolean isNucleic;
-  boolean border = false;
+  boolean ribbonBorder = false;
 
   void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     Ribbons.Schain strandsChain = (Ribbons.Schain)mpspolymer;
@@ -74,6 +74,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
       // vector correctly.
       // if/when we do that then this test will become
       // isNucleic = strandsChain.polymer.isNucleic();
+      ribbonBorder = viewer.getRibbonBorder();
       isNucleic = strandsChain.polymer instanceof NucleicPolymer;
       render1Chain(strandsChain.monomerCount,
                    strandsChain.monomers,
@@ -121,7 +122,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     colix = Graphics3D.inheritColix(colix, monomer.getLeadAtom().colixAtom);
     
-    g3d.drawHermite(true, border, colix, isNucleic ? 4 : 7,
+    g3d.drawHermite(true, ribbonBorder, colix, isNucleic ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],
                     ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
                     ribbonBottomScreens[iPrev], ribbonBottomScreens[i],

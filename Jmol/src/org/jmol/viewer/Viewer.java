@@ -1606,6 +1606,16 @@ final public class Viewer extends JmolViewer {
     this.chainCaseSensitive = chainCaseSensitive;
   }
 
+  boolean ribbonBorder = false;
+
+  boolean getRibbonBorder() {
+    return ribbonBorder;
+  }
+
+  void setRibbonBorder(boolean borderOn) {
+    this.ribbonBorder = borderOn;
+  }
+
   public void setColorBond(Color color) {
     colorManager.setColorBond(color);
     setShapeColorProperty(JmolConstants.SHAPE_STICKS, color);
@@ -1984,6 +1994,8 @@ final public class Viewer extends JmolViewer {
       { setTestFlag3(value); return; }
     if (key.equalsIgnoreCase("chainCaseSensitive"))
       { setChainCaseSensitive(value); return; }
+    if (key.equalsIgnoreCase("ribbonBorder"))
+      { setRibbonBorder(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }

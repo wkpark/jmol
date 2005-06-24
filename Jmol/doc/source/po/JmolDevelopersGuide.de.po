@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol JmolDevelopersGuide\n"
 "Report-Msgid-Bugs-To: dleidert@users.sourceforge.net\n"
-"POT-Creation-Date: 2005-02-09 22:35+0100\n"
+"POT-Creation-Date: 2005-06-25 01:03Westeuropische Sommerzeit\n"
 "PO-Revision-Date: 2005-02-10 20:38+0100\n"
 "Last-Translator: Daniel Leidert <dleidert@users.sourceforge.net>\n"
 "Language-Team: Not a member <LL@li.org>\n"
@@ -13,29 +13,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8 bit\n"
 
-#: ../JmolDevelopersGuide.docbook.xml:8
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:8(title)
 msgid "Jmol Developer's Guide"
 msgstr "Jmol Anleitung für Entwickler"
 
-#: ../JmolDevelopersGuide.docbook.xml:12
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:12(title)
 msgid "Prerequisites"
 msgstr "Voraussetzungen"
 
-#: ../JmolDevelopersGuide.docbook.xml:16 ../JmolDevelopersGuide.docbook.xml:86
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:16(para)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:86(para)
 msgid "Java 2 JDK 1.4 (<ulink url=\"http://java.sun.com/\"/>)"
 msgstr "Java 2 JDK 1.4 (<ulink url=\"http://java.sun.com/\"/>)"
 
-#: ../JmolDevelopersGuide.docbook.xml:21 ../JmolDevelopersGuide.docbook.xml:91
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:21(para)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:91(para)
 msgid "Apache Ant (<ulink url=\"http://jakarta.apache.org/ant\"/>)"
 msgstr "Apache Ant (<ulink url=\"http://jakarta.apache.org/ant\"/>)"
 
-#: ../JmolDevelopersGuide.docbook.xml:24
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:24(para)
 msgid "On Linux/Unix/OSX try to install ant using a package installer"
 msgstr ""
 "Ant sollte auf einem  Linux/Unix/OSX System möglichst mit Hilfe der "
 "Paketverwaltung installiert werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:29
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:29(para)
 msgid ""
 "CVS - The definitive CVS documentation is at <ulink url=\"http://cvsbook.red-"
 "bean.com/cvsbook.html\"/>."
@@ -43,14 +45,14 @@ msgstr ""
 "CVS - The definitive CVS documentation unter <ulink url=\"http://cvsbook.red-"
 "bean.com/cvsbook.html\"/>)"
 
-#: ../JmolDevelopersGuide.docbook.xml:33
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:33(para)
 msgid ""
 "On Win32 you can use wincvs from <ulink url=\"http://www.wincvs.org\"/>."
 msgstr ""
 "Für Win32 kann wincvs von <ulink url=\"http://www.wincvs.org\"/> eingesetzt "
 "werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:37
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:37(para)
 msgid ""
 "On Mac OSX the cvs software comes on the Developer's CD, which can be "
 "downloaded free from Apple."
@@ -58,17 +60,17 @@ msgstr ""
 "Bei Mac OSX befindet sich die CVS-Software auf der Entwickler-CD, welche "
 "kostenlos bei Apple heruntergeladen werden kann."
 
-#: ../JmolDevelopersGuide.docbook.xml:46
-#: ../JmolDevelopersGuide.docbook.xml:516
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:46(title)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:516(title)
 msgid "Checking Out Jmol from CVS"
 msgstr "Jmol per CVS auschecken"
 
-#: ../JmolDevelopersGuide.docbook.xml:48
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:48(para)
 msgid "For anonymous checkout from SourceForge cvs:"
 msgstr "Für den anonymen CVS-Checkout bei SourceForge:"
 
-#: ../JmolDevelopersGuide.docbook.xml:51
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:51(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol login\n"
@@ -78,12 +80,12 @@ msgstr ""
 "  cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol login\n"
 "    "
 
-#: ../JmolDevelopersGuide.docbook.xml:55
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:55(para)
 msgid "Press the <command>Enter</command> key when prompted for the password:"
 msgstr "Bei der Passwortabfrage einfach <command>Enter</command> betätigen:"
 
-#: ../JmolDevelopersGuide.docbook.xml:58
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:58(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol co -d Jmol-HEAD Jmol\n"
@@ -93,12 +95,12 @@ msgstr ""
 "  cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol co -d Jmol-HEAD Jmol\n"
 "    "
 
-#: ../JmolDevelopersGuide.docbook.xml:62
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:62(para)
 msgid "We work from the directory called <command>Jmol-HEAD</command>."
 msgstr "Wir arbeiten im Verzeichnis <command>Jmol-HEAD</command>."
 
-#: ../JmolDevelopersGuide.docbook.xml:65
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:65(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  cd Jmol-HEAD\n"
@@ -108,12 +110,12 @@ msgstr ""
 "  cd Jmol-HEAD\n"
 "    "
 
-#: ../JmolDevelopersGuide.docbook.xml:69
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:69(para)
 msgid "Later, to get updates ..."
 msgstr "Später, für updates ..."
 
-#: ../JmolDevelopersGuide.docbook.xml:72
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:72(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  cd {some-path}/Jmol-HEAD\n"
@@ -125,20 +127,20 @@ msgstr ""
 "  cvs up -dP\n"
 "    "
 
-#: ../JmolDevelopersGuide.docbook.xml:79
-#: ../JmolDevelopersGuide.docbook.xml:633
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:79(title)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:633(title)
 msgid "Building Jmol"
 msgstr "Jmol übersetzen"
 
-#: ../JmolDevelopersGuide.docbook.xml:82
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:82(para)
 msgid "Prerequisites:"
 msgstr "Voraussetzungen:"
 
-#: ../JmolDevelopersGuide.docbook.xml:96
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:96(para)
 msgid "Jmol source code"
 msgstr "Jmol Quellcode"
 
-#: ../JmolDevelopersGuide.docbook.xml:102
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:102(para)
 msgid ""
 "The Jmol source code can be either downloaded (see <ulink url=\"http://"
 "sourceforge.net/project/showfiles.php?group_id=23629\">SourceForge project "
@@ -152,7 +154,7 @@ msgstr ""
 "\"http://sourceforge.net/cvs/?group_id=23629\">SourceForge CVS Zugang</"
 "ulink>)."
 
-#: ../JmolDevelopersGuide.docbook.xml:110
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:110(para)
 msgid ""
 "Once you have all the prerequisites, Jmol can be built from the top source "
 "directory with the following command:"
@@ -161,43 +163,36 @@ msgstr ""
 "Kommando, welches im Arbeitsverzeichnis von Jmol ausgeführt werden muss, "
 "übersetzt werden:"
 
-#: ../JmolDevelopersGuide.docbook.xml:115
-#: ../JmolDevelopersGuide.docbook.xml:137
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:115(para)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:137(para)
 msgid "On Linux/Unix/OSX:"
 msgstr "Unter Linux/OSX/Unix:"
 
-#: ../JmolDevelopersGuide.docbook.xml:118
-#, no-wrap
-msgid ""
-"\n"
-"  <prompt>[~/jmol/Jmol-HEAD]$</prompt> <command>ant</command>\n"
-"    "
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:119(prompt)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:141(prompt)
+msgid "[~/jmol/Jmol-HEAD]$"
 msgstr ""
-"\n"
-"  <prompt>[~/jmol/Jmol-HEAD]$</prompt> <command>ant</command>\n"
-"    "
 
-#: ../JmolDevelopersGuide.docbook.xml:122
-#: ../JmolDevelopersGuide.docbook.xml:144
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:119(command)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:126(command)
+msgid "ant"
+msgstr ""
+
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:122(para)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:144(para)
 msgid "On Windows:"
 msgstr "Unter Windows:"
 
-#: ../JmolDevelopersGuide.docbook.xml:125
-#, no-wrap
-msgid ""
-"\n"
-"  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt> <command>ant</command>\n"
-"    "
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:126(prompt)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:148(prompt)
+msgid "C:\\jmol\\Jmol-HEAD&gt;"
 msgstr ""
-"\n"
-"  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt> <command>ant</command>\n"
-"    "
 
-#: ../JmolDevelopersGuide.docbook.xml:131
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:131(title)
 msgid "Running Jmol"
 msgstr "Jmol starten"
 
-#: ../JmolDevelopersGuide.docbook.xml:132
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:132(para)
 msgid ""
 "The development version of Jmol is normally run by simply executing the jmol "
 "script in the Jmol development directory."
@@ -205,33 +200,19 @@ msgstr ""
 "Die Entwickler-Version von Jmol wird normalerweise einfach durch das jmol "
 "Skript im Arbeitsverzeichnis gestartet."
 
-#: ../JmolDevelopersGuide.docbook.xml:140
-#, no-wrap
-msgid ""
-"\n"
-"  <prompt>[~/jmol/Jmol-HEAD]$</prompt><command>./jmol</command>\n"
-"    "
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:141(command)
+msgid "./jmol"
 msgstr ""
-"\n"
-"  <prompt>[~/jmol/Jmol-HEAD]$</prompt><command>./jmol</command>\n"
-"    "
 
-#: ../JmolDevelopersGuide.docbook.xml:147
-#, no-wrap
-msgid ""
-"\n"
-"  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt><command>jmol</command>\n"
-"    "
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:148(command)
+msgid "jmol"
 msgstr ""
-"\n"
-"  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt><command>jmol</command>\n"
-"    "
 
-#: ../JmolDevelopersGuide.docbook.xml:153
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:153(title)
 msgid "Coding Standard"
 msgstr "Coding-Standard"
 
-#: ../JmolDevelopersGuide.docbook.xml:157
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:157(para)
 msgid ""
 "Your text editor should indent for you. If it doesn't then either learn how "
 "to enable it or get another editor."
@@ -240,13 +221,13 @@ msgstr ""
 "tut und sich dieses Feature auch nicht aktivieren lässt, sollte ein anderer "
 "Editor benutzt werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:163
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:163(para)
 msgid "Indentation level should be two spaces"
 msgstr ""
 "Die Breite der Einrückung (Tabulatorbreite) soll zwei Leerzeichen betragen."
 
-#: ../JmolDevelopersGuide.docbook.xml:166
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:166(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  class Foo {\n"
@@ -272,19 +253,19 @@ msgstr ""
 "  }\n"
 "        "
 
-#: ../JmolDevelopersGuide.docbook.xml:179
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:179(para)
 msgid "Space characters should be used, not tabs"
 msgstr "Statt Tabulatoren sollten Leerzeichen benutzt werden"
 
-#: ../JmolDevelopersGuide.docbook.xml:184
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:184(para)
 msgid ""
 "Assignment and arithmetic operators generally contain spaces on both sides."
 msgstr ""
 "Zuweisungen und arithmetische Operatoren besitzen i.A. auf beiden Seiten "
 "Leerzeichen."
 
-#: ../JmolDevelopersGuide.docbook.xml:188
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:188(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  a = b + c;\n"
@@ -294,7 +275,7 @@ msgstr ""
 "  a = b + c;\n"
 "        "
 
-#: ../JmolDevelopersGuide.docbook.xml:191
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:191(para)
 msgid ""
 "you are allowed to eliminate the spaces within expressions in order to make "
 "operator precedence more clear"
@@ -302,8 +283,8 @@ msgstr ""
 "Es ist erlaubt, die Leerzeichen zwischen Ausdrücken zu entfernen, um die "
 "Operator-Priorität zu verdeutlichen."
 
-#: ../JmolDevelopersGuide.docbook.xml:195
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:195(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  int cSquared = a*a + b*b;\n"
@@ -313,12 +294,12 @@ msgstr ""
 "\t  int cSquared = a*a + b*b;\n"
 "\t"
 
-#: ../JmolDevelopersGuide.docbook.xml:200
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:200(para)
 msgid "spaces follow commas in argument lists"
 msgstr "In der Liste der Argumente folgt auf ein Komma ein Leerzeichen."
 
-#: ../JmolDevelopersGuide.docbook.xml:203
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:203(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  foo(a, 3.14159, \"jmol\");\n"
@@ -328,11 +309,11 @@ msgstr ""
 "  foo(a, 3.14159, \"jmol\");\n"
 "        "
 
-#: ../JmolDevelopersGuide.docbook.xml:208
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:208(para)
 msgid "Lines should be no more than 80 characters wide"
 msgstr "Eine Zeile sollte nicht länger als 80 Zeichen sein."
 
-#: ../JmolDevelopersGuide.docbook.xml:213
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:213(para)
 msgid ""
 "Open brace goes on the line that starts the block. Close brace goes on a "
 "line by itself."
@@ -340,8 +321,8 @@ msgstr ""
 "Öffnende Klammern befinden sich in der Zeile, die den Block öffnet. "
 "Schließende Klammern werden in eine eigene Zeile geschrieben."
 
-#: ../JmolDevelopersGuide.docbook.xml:217
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:217(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  if (condition) {\n"
@@ -367,11 +348,11 @@ msgstr ""
 "  }\n"
 "        "
 
-#: ../JmolDevelopersGuide.docbook.xml:230
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:230(para)
 msgid "loop indexes start at 0, not 1."
 msgstr "Schleifen werden bei 0, nicht bei 1 gestartet."
 
-#: ../JmolDevelopersGuide.docbook.xml:235
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:235(para)
 msgid ""
 "The <emphasis>only</emphasis> valid comparison operators for loop "
 "termination are <command>&lt;</command> and <command>&gt;=</command> ... "
@@ -384,7 +365,7 @@ msgstr ""
 "<emphasis>Gewissheit</emphasis> besteht, dass das Gegenteil der Fall ist, "
 "sollte in diesen Fällen ein Kommentar im Quellcode hinterlassen."
 
-#: ../JmolDevelopersGuide.docbook.xml:244
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:244(para)
 msgid ""
 "Use long descriptive variable names and method names. Do not be afraid of "
 "typing."
@@ -392,7 +373,7 @@ msgstr ""
 "Variablen- und Methodenbezeichnungen müssen eindeutig und beschreibend sein. "
 "Nur keine Hemmungen bei langen Bezeichnungen."
 
-#: ../JmolDevelopersGuide.docbook.xml:250
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:250(para)
 msgid ""
 "line-by-line comments within the code are <emphasis>discouraged</"
 "emphasis> ... except in very special circumstances. If you put in lots of "
@@ -403,7 +384,7 @@ msgstr ""
 "Kommentare im Quellcode finden, könnte es passieren, dass sie einfach "
 "gelöscht werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:258
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:258(para)
 msgid ""
 "if you feel obligated to insert comments put them as javadoc before the "
 "function body"
@@ -411,7 +392,7 @@ msgstr ""
 "Falls Kommentare unbedingt notwendig sind, sollten sie als JavaDoc vor der "
 "Funktion eingefügt werden"
 
-#: ../JmolDevelopersGuide.docbook.xml:264
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:264(para)
 msgid ""
 "If your code is changing then do not put in comments. <emphasis>Bad/outdated "
 "comments are worse than no comments.</emphasis>"
@@ -420,7 +401,7 @@ msgstr ""
 "wird. <emphasis>Schlechte/veraltete Kommentare sind schlimmer als gar keine "
 "Kommentare.</emphasis>"
 
-#: ../JmolDevelopersGuide.docbook.xml:270
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:270(para)
 msgid ""
 "You may want to look at <ulink url=\"http://www.amazon.com/exec/obidos/"
 "ASIN/0521777682\">The Elements of Java Style by Vermeulen, et al</ulink>"
@@ -429,11 +410,11 @@ msgstr ""
 "obidos/ASIN/0521777682\">The Elements of Java Style von Vermeulen, et al</"
 "ulink>."
 
-#: ../JmolDevelopersGuide.docbook.xml:280
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:280(title)
 msgid "Making a release"
 msgstr "Ein Release erstellen"
 
-#: ../JmolDevelopersGuide.docbook.xml:282
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:282(para)
 msgid ""
 "A Jmol release consists of both the application and the applet. Presumably "
 "both will have been well tested."
@@ -441,7 +422,7 @@ msgstr ""
 "Ein Jmol Release besteht aus der Jmol Applikation und dem Applet. Beide "
 "sollten vorher ausführlich getestet werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:287
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:287(para)
 msgid ""
 "In the <filename class=\"directory\">samples/</filename> directory a number "
 "of test files are located for the input filters. All files below that "
@@ -452,11 +433,11 @@ msgstr ""
 "überprüfen. Alle Dateien in diesem Verzeichnis sollten vor einem Release zu "
 "Testzwecken geladen werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:295
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:295(title)
 msgid "Packaging"
 msgstr "Pakete"
 
-#: ../JmolDevelopersGuide.docbook.xml:297
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:297(para)
 msgid ""
 "Distribution packages will be made for any platform for which a developer "
 "promises to provide support. File used to create packages should be commited "
@@ -468,30 +449,30 @@ msgstr ""
 "sind, werden im CVS innerhalb des Verzeichnisses Jmol/packaging abgelegt. "
 "Zur Zeit sind folgenden Pakete erhältlich:"
 
-#: ../JmolDevelopersGuide.docbook.xml:306
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:306(para)
 msgid "Debian (by Daniel Leidert and Egon Wllighagen)"
 msgstr "Debian (Daniel Leidert &amp; Egon Willighagen)"
 
-#: ../JmolDevelopersGuide.docbook.xml:311
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:311(para)
 msgid "RPM (by Miguel Howard)"
 msgstr "RPM (Miguel Howard)"
 
-#: ../JmolDevelopersGuide.docbook.xml:319
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:319(title)
 msgid "Working with Jmol's CVS"
 msgstr "Mit Jmol's CVS-System arbeiten"
 
-#: ../JmolDevelopersGuide.docbook.xml:321
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:321(para)
 msgid ""
 "This section gives information on how to work with Jmol's CVS at SourceForge."
 msgstr ""
 "Dieser Abschnitt gibt Auskunft über das Arbeiten mit dem Jmol CVS bei "
 "SourceForge."
 
-#: ../JmolDevelopersGuide.docbook.xml:327
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:327(title)
 msgid "Tagging CVS"
 msgstr "CVS Tags"
 
-#: ../JmolDevelopersGuide.docbook.xml:329
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:329(para)
 msgid ""
 "It is important to tag CVS when a distribution was made. This makes it "
 "possible to later retrieve the exact source code from CVS in that release. "
@@ -504,11 +485,11 @@ msgstr ""
 "<command>cvs tag <parameter>tag-name</parameter></command> im "
 "Arbeitsverzeichnis erstellt."
 
-#: ../JmolDevelopersGuide.docbook.xml:339
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:339(title)
 msgid "CVS Branches"
 msgstr "CVS Entwicklungszweige"
 
-#: ../JmolDevelopersGuide.docbook.xml:341
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:341(para)
 msgid ""
 "Sometimes it is convenient to have separate branches to work on. One for an "
 "upcoming release, and one branch for the unstable version. Minor bug fixes "
@@ -523,11 +504,11 @@ msgstr ""
 "in die Entwickler-Version eingehen sollten. Dieser Abschnitt erklärt, wie "
 "man mit Entwicklungszweigen arbeitet."
 
-#: ../JmolDevelopersGuide.docbook.xml:350
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:350(title)
 msgid "Accessing a branch"
 msgstr "Einen Entwicklungszweig auschecken"
 
-#: ../JmolDevelopersGuide.docbook.xml:352
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:352(para)
 msgid ""
 "The command <command>cvs checkout <parameter>module</parameter></command> by "
 "default gets the source code from the HEAD branch, which is the unstable "
@@ -537,14 +518,14 @@ msgstr ""
 "checkt den Code aus dem HEAD Entwicklungszweig aus (entspricht dem "
 "Entwicklungszweig &quot;unstable&quot;)."
 
-#: ../JmolDevelopersGuide.docbook.xml:358
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:358(para)
 msgid "Accessing a specific branch can be done with, e.g. the b6 branch:"
 msgstr ""
 "Einen bestimmten Entwicklungszeig zu bearbeiten, soll hier am Beispiel des "
 "b6-Branch gezeigt werden:"
 
-#: ../JmolDevelopersGuide.docbook.xml:361
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:361(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  cvs checkout -r b6 -d Jmol-6 Jmol\n"
@@ -554,7 +535,7 @@ msgstr ""
 "  cvs checkout -r b6 -d Jmol-6 Jmol\n"
 "        "
 
-#: ../JmolDevelopersGuide.docbook.xml:364
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:364(para)
 msgid ""
 "This will check out a copy of the Jmol module from the b6 branch into a "
 "directory called <filename class=\"directory\">Jmol-6</filename>."
@@ -562,7 +543,7 @@ msgstr ""
 "Damit checkt man eine Kopie des b6 Entwicklungszweigs aus und platziert "
 "diese im Verzeichnis <filename class=\"directory\">Jmol-6</filename>."
 
-#: ../JmolDevelopersGuide.docbook.xml:369
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:369(para)
 msgid ""
 "To determine to which branch a specific locally stored file belongs, you can "
 "do <command>cvs status <parameter>file</parameter></command>."
@@ -571,11 +552,11 @@ msgstr ""
 "nutzt man das Kommando <command>cvs status <parameter>file</parameter></"
 "command>."
 
-#: ../JmolDevelopersGuide.docbook.xml:376
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:376(title)
 msgid "Creating a branch"
 msgstr "Einen Entwicklungszweig erstellen"
 
-#: ../JmolDevelopersGuide.docbook.xml:378
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:378(para)
 msgid ""
 "A branch of HEAD can be created with the <command>cvs rtag -b -r HEAD "
 "<parameter>branch-name</parameter><parameter>module</parameter></command> "
@@ -585,11 +566,11 @@ msgstr ""
 "HEAD <parameter>branch-name</parameter><parameter>module</parameter></"
 "command> erzeugt werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:386
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:386(title)
 msgid "Merging branches"
 msgstr "Entwicklungszweige zusammenführen"
 
-#: ../JmolDevelopersGuide.docbook.xml:388
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:388(para)
 msgid ""
 "Bug fixes which have been commited to a branch can be merged to the HEAD "
 "branch. To do this, check out (or update) a HEAD branch, and type in that "
@@ -608,8 +589,8 @@ msgstr ""
 "übertragen werden können. Hier ein Beipsiel, wie eine solche Sitzung "
 "aussehen könnte: "
 
-#: ../JmolDevelopersGuide.docbook.xml:397
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:397(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  &gt; cd ~/data/SF/Jmol/Jmol-HEAD\n"
@@ -625,7 +606,7 @@ msgstr ""
 "  &gt; cvs tag b6-merged-20030725\n"
 "        "
 
-#: ../JmolDevelopersGuide.docbook.xml:404
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:404(para)
 msgid ""
 "Changes made after this merger to branch b6, can then be merged with HEAD "
 "with:"
@@ -633,8 +614,8 @@ msgstr ""
 "Veränderungen, welche sich zu einem späteren Zeitpunkt ergeben, können dann "
 "nach HEAD überführt werden:"
 
-#: ../JmolDevelopersGuide.docbook.xml:408
-#, no-wrap
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:408(programlisting)
+#, fuzzy, no-wrap
 msgid ""
 "\n"
 "  &gt; cd ~/data/SF/Jmol/Jmol-HEAD\n"
@@ -650,19 +631,19 @@ msgstr ""
 "  &gt; cvs tag b6-merged-20031011\n"
 "        "
 
-#: ../JmolDevelopersGuide.docbook.xml:419
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:419(title)
 msgid "Using Eclipse"
 msgstr "Eclipse benutzen"
 
-#: ../JmolDevelopersGuide.docbook.xml:422
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:422(title)
 msgid "Eclipse prerequisites"
 msgstr "Voraussetzungen für Eclipse"
 
-#: ../JmolDevelopersGuide.docbook.xml:424
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:424(para)
 msgid "This documentation has been tested with Eclipse 3.01."
 msgstr "Diese Dokumentation wurde mit Eclipse 3.01 getestet."
 
-#: ../JmolDevelopersGuide.docbook.xml:428
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:428(para)
 msgid ""
 "Eclipse must be installed and correctly configured before following this "
 "procedure."
@@ -670,24 +651,24 @@ msgstr ""
 "Eclipse muss zuerst korrekt installiert und konfiguriert werden, bevor mit "
 "den nächsten Schritten fortgefahren werden kann."
 
-#: ../JmolDevelopersGuide.docbook.xml:435
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:435(title)
 msgid "CVS Repository configuration"
 msgstr "Konfiguration des CVS Repositoriums"
 
-#: ../JmolDevelopersGuide.docbook.xml:437
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:437(para)
 msgid "To configure Eclipse to access Jmol's CVS repository, do the following:"
 msgstr "Der Zugang zum Jmol CVS wird unter Eclipse so konfiguriert:"
 
-#: ../JmolDevelopersGuide.docbook.xml:443
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:443(para)
 msgid "Launch Eclipse."
 msgstr "Eclipse starten."
 
-#: ../JmolDevelopersGuide.docbook.xml:448
-#: ../JmolDevelopersGuide.docbook.xml:524
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:448(para)
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:524(para)
 msgid "Switch to the <command>CVS Repository Exploring</command> perspective."
 msgstr "Zur <command>CVS Repository Exploring</command> Perspektive wechseln."
 
-#: ../JmolDevelopersGuide.docbook.xml:454
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:454(para)
 msgid ""
 "Right click in the <command>CVS Repositories</command> windows and select "
 "<command>New</command> / <command>Repository Location...</command> in the "
@@ -697,7 +678,7 @@ msgstr ""
 "<command>New</command> / <command>Repository Location...</command> im "
 "Kontextmenü auswählen."
 
-#: ../JmolDevelopersGuide.docbook.xml:461
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:461(para)
 msgid ""
 "In the <command>Add CVS Repository</command> window, enter the following "
 "values:"
@@ -705,15 +686,15 @@ msgstr ""
 "Im Fenster <command>Add CVS Repository</command> werden die folgenden Werte "
 "eingegeben:"
 
-#: ../JmolDevelopersGuide.docbook.xml:467
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:467(para)
 msgid "Host: <command>cvs.sourceforge.net</command>"
 msgstr "Host: <command>cvs.sourceforge.net</command>"
 
-#: ../JmolDevelopersGuide.docbook.xml:472
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:472(para)
 msgid "Repository path: <command>/cvsroot/jmol</command>"
 msgstr "Repository path: <command>/cvsroot/jmol</command>"
 
-#: ../JmolDevelopersGuide.docbook.xml:477
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:477(para)
 msgid ""
 "Authentication: <command>anonymous</command> for anonymous access, or your "
 "login for developer access."
@@ -721,12 +702,12 @@ msgstr ""
 "Authentication: <command>anonymous</command> für anonymen Zugriff, oder den "
 "Login für den Zugang als Entwickler."
 
-#: ../JmolDevelopersGuide.docbook.xml:483
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:483(para)
 msgid ""
 "Password: empty for anonymous access, or your password for developer access."
 msgstr "Password: leer oder das Passwort für den Zugang als Entwickler."
 
-#: ../JmolDevelopersGuide.docbook.xml:489
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:489(para)
 msgid ""
 "Connection type: <command>pserver</command> for anonymous access, "
 "<command>extssh</command> for developer access."
@@ -734,7 +715,7 @@ msgstr ""
 "Connection type: <command>pserver</command> für anonymen Zugriff, "
 "<command>extssh</command> für den Zugang als Entwickler."
 
-#: ../JmolDevelopersGuide.docbook.xml:495
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:495(para)
 msgid ""
 "Check <command>Use Default Port</command> and <command>Validate Connection "
 "on Finish</command>."
@@ -742,22 +723,22 @@ msgstr ""
 "Dann sind noch die Optionen <command>Use Default Port</command> und "
 "<command>Validate Connection on Finish</command> zu aktivieren."
 
-#: ../JmolDevelopersGuide.docbook.xml:501
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:501(para)
 msgid "You can choose to check <command>Save Password</command> or not."
 msgstr ""
 "Das Passwort kann mit der Option <command>Save Password</command> wahlweise "
 "gespeicht werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:506
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:506(para)
 msgid "Click on <command>Finish</command>."
 msgstr ""
 "Zum Schluss die Einstellungen mit <command>Finish</command> bestätigen."
 
-#: ../JmolDevelopersGuide.docbook.xml:518
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:518(para)
 msgid "To check out Jmol from CVS, do the following:"
 msgstr "Um Jmol aus dem CVS auszuchecken:"
 
-#: ../JmolDevelopersGuide.docbook.xml:530
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:530(para)
 msgid ""
 "Deploy the repository location you added in the previous section and deploy "
 "<command>HEAD</command>."
@@ -765,7 +746,7 @@ msgstr ""
 "Die Adresse des CVS-Repositoriums (siehe vorangegangener Abschnitt) eingeben "
 "und <command>HEAD</command> eintragen."
 
-#: ../JmolDevelopersGuide.docbook.xml:536
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:536(para)
 msgid ""
 "Right click on <command>Jmol</command> and select <command>Check Out As...</"
 "command> in the contextual menu."
@@ -773,7 +754,7 @@ msgstr ""
 "Rechte Maustaste auf <command>Jmol</command> und <command>Check Out As...</"
 "command> im Kontextmenü auswählen."
 
-#: ../JmolDevelopersGuide.docbook.xml:542
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:542(para)
 msgid ""
 "In the <command>Check Out As</command> window, check the <command>Check out "
 "as a project in the workspace</command> and type <command>Jmol-HEAD</"
@@ -786,7 +767,7 @@ msgstr ""
 "eingegeben. Diese Einstellungen müssen noch mit einem Klick auf "
 "<command>Finish</command> bestätigt werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:550
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:550(para)
 msgid ""
 "If you want, you can also check out Jmol-web: Right click on <command>Jmol-"
 "web</command> and select <command>Check out</command> in the contextual menu."
@@ -795,19 +776,19 @@ msgstr ""
 "Maustaste auf <command>Jmol-web</command> und <command>Check out</command> "
 "im Kontextmenü auswählen."
 
-#: ../JmolDevelopersGuide.docbook.xml:560
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:560(title)
 msgid "Configuring Eclipse to build Jmol"
 msgstr "Eclipse zum Übersetzen von Jmol konfigurieren"
 
-#: ../JmolDevelopersGuide.docbook.xml:562
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:562(para)
 msgid "To configure Eclipse to build Jmol, you can do the following:"
 msgstr "Um Jmol mit Eclipse zu übersetzen:"
 
-#: ../JmolDevelopersGuide.docbook.xml:568
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:568(para)
 msgid "Switch to the <command>Java</command> perspective."
 msgstr "Zuerst zur <command>Java</command> Perspektive wechseln."
 
-#: ../JmolDevelopersGuide.docbook.xml:573
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:573(para)
 msgid ""
 "Right click on <command>Jmol-HEAD</command> and select <command>Properties</"
 "command> in the contextual menu."
@@ -815,7 +796,7 @@ msgstr ""
 "Rechte Maustaste auf <command>Jmol-HEAD</command> und <command>Properties</"
 "command> im Kontextmenü auswählen."
 
-#: ../JmolDevelopersGuide.docbook.xml:579
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:579(para)
 msgid ""
 "In the <command>Properties for Jmol-HEAD</command> window, select "
 "<command>Java Compiler</command>."
@@ -823,11 +804,11 @@ msgstr ""
 "Im Fenster <command>Properties for Jmol-HEAD</command> / <command>Java "
 "Compiler</command> auswählen."
 
-#: ../JmolDevelopersGuide.docbook.xml:585
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:585(para)
 msgid "Check <command>Use project settings</command>."
 msgstr "Die Option <command>Use project settings</command> aktivieren."
 
-#: ../JmolDevelopersGuide.docbook.xml:590
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:590(para)
 msgid ""
 "In the <command>Style</command> tab, select <command>Warning</command> for "
 "every combo-box, except for <command>Unqualified access to instance field</"
@@ -839,7 +820,7 @@ msgstr ""
 "command> und <command>Undocumented empty block</command> kann "
 "<command>Ignore</command> aktiviert werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:599
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:599(para)
 msgid ""
 "In the <command>Advanced</command> tab, select <command>Warning</command> "
 "for every combo-box, except for <command>Local variable declaration hides "
@@ -853,7 +834,7 @@ msgstr ""
 "command> und <command>Usage of non-externalized strings</command> kann "
 "<command>Ignore</command> aktiviert werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:609
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:609(para)
 msgid ""
 "In the <command>Unused code</command> tab, select <command>Warning</command> "
 "for every combo-box, except for <command>Parameter is never read</command> "
@@ -865,19 +846,19 @@ msgstr ""
 "<command>Unnecessary cast or 'instance of' operation</command> kann "
 "<command>Ignore</command> aktiviert werden."
 
-#: ../JmolDevelopersGuide.docbook.xml:621
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:621(title)
 msgid "Running and Debugging Jmol"
 msgstr "Jmol starten und debuggen"
 
-#: ../JmolDevelopersGuide.docbook.xml:623
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:623(para)
 msgid "Eclipse can be used to run and debug Jmol directly in Eclipse."
 msgstr "Eclipse kann benutzt werden um Jmol zu starten und zu debuggen."
 
-#: ../JmolDevelopersGuide.docbook.xml:627
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:627(para)
 msgid "The main class is <command>org.openscience.jmol.app.Jmol</command>."
 msgstr "Die Hauptklasse ist <command>org.openscience.jmol.app.Jmol</command>"
 
-#: ../JmolDevelopersGuide.docbook.xml:635
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:635(para)
 msgid ""
 "To make a full build of Jmol under Eclipse, just do the following: Right "
 "click on <command>build.xml</command> and select <command>Run</command> / "
@@ -888,7 +869,43 @@ msgstr ""
 "<command>Run</command> / <command>Ant Build</command> im Kontextmenü "
 "auswählen."
 
-#. Put one translator per line, in the form of NAME <EMAIL>, YEAR1, YEAR2.
-#: ../JmolDevelopersGuide.docbook.xml:0
+#. Put one translator per line, in the form of NAME <EMAIL>.
+#: S:\Programming\Eclipse\workspace\Jmol-HEAD\doc\source\JmolDevelopersGuide.docbook.xml:0(None)
 msgid "translator-credits"
 msgstr "Jmol Development Team <jmol-developers@lists.sourceforge.net>, 2005"
+
+#~ msgid ""
+#~ "\n"
+#~ "  <prompt>[~/jmol/Jmol-HEAD]$</prompt> <command>ant</command>\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "  <prompt>[~/jmol/Jmol-HEAD]$</prompt> <command>ant</command>\n"
+#~ "    "
+
+#~ msgid ""
+#~ "\n"
+#~ "  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt> <command>ant</command>\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt> <command>ant</command>\n"
+#~ "    "
+
+#~ msgid ""
+#~ "\n"
+#~ "  <prompt>[~/jmol/Jmol-HEAD]$</prompt><command>./jmol</command>\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "  <prompt>[~/jmol/Jmol-HEAD]$</prompt><command>./jmol</command>\n"
+#~ "    "
+
+#~ msgid ""
+#~ "\n"
+#~ "  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt><command>jmol</command>\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "  <prompt>C:\\jmol\\Jmol-HEAD&gt;</prompt><command>jmol</command>\n"
+#~ "    "

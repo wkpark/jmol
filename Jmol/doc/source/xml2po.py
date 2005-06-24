@@ -558,6 +558,7 @@ def load_mode(modename):
     #module = imp.load_module(modename, found[0], found[1], found[2])
     try:
         sys.path.append(submodes_path)
+        sys.path.append(submodes_path_po)
         module = __import__(modename)
         modeModule = '%sXmlMode' % modename
         return getattr(module, modeModule)
@@ -575,6 +576,7 @@ if __name__ != '__main__': raise NotImplementedError
 
 # Parameters
 submodes_path = "xml2po-modes"
+submodes_path_po = "..\\xml2po-modes"
 default_mode = 'docbook'
 
 filename = ''

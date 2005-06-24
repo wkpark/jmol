@@ -121,6 +121,9 @@ TODO:
     <fileset dir="${src.dir}">
       <include name=".xml2po.mo" />
     </fileset>
+    <fileset dir="${pot.dir}">
+      <include name=".xml2po.mo" />
+    </fileset>
   </target>
 
   <target name="clean-translation" id="clean-translation">

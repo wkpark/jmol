@@ -1607,13 +1607,19 @@ final public class Viewer extends JmolViewer {
   }
 
   boolean ribbonBorder = false;
-
   boolean getRibbonBorder() {
     return ribbonBorder;
   }
-
   void setRibbonBorder(boolean borderOn) {
     this.ribbonBorder = borderOn;
+  }
+
+  boolean hideNameInPopup = false;
+  boolean getHideNameInPopup() {
+    return hideNameInPopup;
+  }
+  void setHideNameInPopup(boolean hideNameInPopup) {
+    this.hideNameInPopup = hideNameInPopup;
   }
 
   public void setColorBond(Color color) {
@@ -1916,6 +1922,9 @@ final public class Viewer extends JmolViewer {
    * values could be shared
    * @param key
    * @return the boolean property
+   * mth 2005 06 24
+   * and/or these property names should be interned strings
+   * so that we can just do == comparisions between strings
    ****************************************************************/
 
   public boolean getBooleanProperty(String key) {
@@ -1951,6 +1960,8 @@ final public class Viewer extends JmolViewer {
       return getTestFlag3();
     if (key.equalsIgnoreCase("chainCaseSensitive"))
       return getChainCaseSensitive();
+    if (key.equalsIgnoreCase("hideNameInPopup"))
+      return getHideNameInPopup();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -1996,6 +2007,8 @@ final public class Viewer extends JmolViewer {
       { setChainCaseSensitive(value); return; }
     if (key.equalsIgnoreCase("ribbonBorder"))
       { setRibbonBorder(value); return; }
+    if (key.equalsIgnoreCase("hideNameInPopup"))
+      { setHideNameInPopup(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }

@@ -45,6 +45,7 @@ abstract public class JmolPopup {
   Object consoleMenu;
   Object modelSetInfoMenu;
   String nullModelSetName;
+  String hiddenModelSetName;
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -103,14 +104,15 @@ abstract public class JmolPopup {
   void updateModelSetInfoMenu() {
     if (modelSetInfoMenu == null)
       return;
-    String modelSetName = viewer.getModelSetName();
     removeAll(modelSetInfoMenu);
-    if (modelSetName == null) {
-      renameMenu(modelSetInfoMenu, nullModelSetName);
-      enableMenu(modelSetInfoMenu, false);
+    renameMenu(modelSetInfoMenu, nullModelSetName);
+    enableMenu(modelSetInfoMenu, false);
+    String modelSetName = viewer.getModelSetName();
+    if (modelSetName == null)
       return;
-    }
-    renameMenu(modelSetInfoMenu, modelSetName);
+    renameMenu(modelSetInfoMenu,
+               viewer.getBooleanProperty("hideNameInPopup")
+               ? hiddenModelSetName : modelSetName);
     enableMenu(modelSetInfoMenu, true);
     addMenuItem(modelSetInfoMenu, "atoms:" + viewer.getAtomCount());
     addMenuItem(modelSetInfoMenu, "bonds:" + viewer.getBondCount());
@@ -159,6 +161,8 @@ abstract public class JmolPopup {
           consoleMenu = subMenu;
         else if ("modelSetInfoMenu".equals(item)) {
           nullModelSetName = word;
+          hiddenModelSetName =
+            popupResourceBundle.getWord("hiddenModelSetName");
           modelSetInfoMenu = subMenu;
           enableMenu(modelSetInfoMenu, false);
         }

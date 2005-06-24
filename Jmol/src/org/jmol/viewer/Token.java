@@ -175,6 +175,7 @@ class Token {
   final static int console      = command | 90;
   final static int pmesh        = command | 91;
   final static int polyhedra    = command | 92 | embeddedExpression;
+  final static int centerAt     = command | 93;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -350,6 +351,8 @@ class Token {
   final static int frontedges   = misc | 45;
   final static int solid        = misc | 45;
   final static int jmol         = misc | 46;
+  final static int relative     = misc | 47;
+  final static int absolute     = misc | 48;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -478,6 +481,7 @@ class Token {
     "console",           new Token(console,   onDefault1, "console"),
     "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
     "polyhedra",         new Token(polyhedra,varArgCount, "polyhedra"),
+    "centerat",          new Token(centerAt, varArgCount, "centerat"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),
@@ -658,6 +662,8 @@ class Token {
     "noedges",      new Token(noedges,         "noedges"),
     "frontedges",   new Token(frontedges,      "frontedges"),
     "solid",        new Token(solid,           "solid"),
+    "relative",     new Token(relative,        "relative"),
+    "absolute",     new Token(absolute,        "absolute"),
   };
 
   static Hashtable map = new Hashtable();

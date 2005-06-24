@@ -478,6 +478,8 @@ class Eval implements Runnable {
       case Token.surface:
         surface();
         break;
+      case Token.centerAt:
+        centerAt();
 
         // not implemented
       case Token.bond:
@@ -3407,6 +3409,25 @@ class Eval implements Runnable {
       }
     }
     viewer.setShapeSize(JmolConstants.SHAPE_SURFACE, mad);
+  }
+
+  void centerAt() throws ScriptException {
+    if (statementLength != 5)
+      badArgumentCount();
+    boolean relative = true;
+    switch (statement[1].tok) {
+    case Token.relative:
+      break;
+    case Token.absolute:
+      relative = false;
+      break;
+    default:
+      unrecognizedSubcommand();
+    }
+    float x = floatParameter(2);
+    float y = floatParameter(3);
+    float z = floatParameter(4);
+    viewer.setCenter(relative, x, y, z);
   }
 
 }

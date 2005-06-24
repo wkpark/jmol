@@ -239,6 +239,15 @@ class ModelManager {
     return (frame == null ? null : frame.getRotationCenter());
   }
 
+  void setRotationCenter(boolean relative, float x, float y, float z) {
+    if (frame == null)
+      return;
+    pointT.set(x, y, z);
+    if (relative)
+      pointT.add(frame.getRotationCenterDefault());
+    frame.setRotationCenter(pointT);
+  }
+
   boolean autoBond = true;
 
   void rebond() {

@@ -1228,6 +1228,11 @@ final public class Viewer extends JmolViewer {
     return modelManager.getRotationCenter();
   }
 
+  void setCenter(boolean relative, float x, float y, float z) {
+    modelManager.setRotationCenter(relative, x, y, z);
+    scaleFitToScreen();
+  }
+
   void setCenterBitSet(BitSet bsCenter) {
     modelManager.setCenterBitSet(bsCenter);
     if (! friedaSwitch)

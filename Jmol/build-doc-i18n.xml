@@ -51,6 +51,7 @@ TODO:
       <mapper type="glob" from="*.docbook.xml" to="${pot.dir}/*.pot"/>
     </apply>
     <apply os="Windows XP" executable="${src.dir}\xml2po.bat" dir="${src.dir}" dest="${pot.dir}" parallel="false" verbose="true" relative="true" forwardslash="true">
+      <arg value="${src.dir}/xml2po.py"/>
       <arg value="-e"/>
       <arg value="-o"/>
       <targetfile/>
@@ -83,8 +84,8 @@ TODO:
     <exec os="Linux" executable="xml2po" dir="${pot.dir}">
       <arg line="-e -u ${guide_value}.${lang_value}.po ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
-    <exec os="Windows XP" executable="${src.dir}\xml2po.bat" dir="${src.dir}">
-      <arg line="-e -u po\${guide_value}.${lang_value}.po ${guide_value}.docbook.xml"/>
+    <exec os="Windows XP" executable="${src.dir}\xml2po.bat" dir="${pot.dir}">
+      <arg line="${src.dir}/xml2po.py -e -u ${guide_value}.${lang_value}.po ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
   </target>
 
@@ -111,8 +112,12 @@ TODO:
     <exec os="Linux" executable="xml2po" dir="${pot.dir}">
       <arg line="-e -p ${guide_value}.${lang_value}.po -o ${src.dir}/${guide_value}_${lang_value}.docbook.xml ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
-    <exec os="Windows XP" executable="${src.dir}\xml2po.bat" dir="${src.dir}">
-      <arg line="-e -p po\${guide_value}.${lang_value}.po -o ${guide_value}_${lang_value}.docbook.xml ${guide_value}.docbook.xml"/>
+    <exec os="Windows XP" executable="${src.dir}\xml2po.bat" dir="${pot.dir}">
+      <arg value="${src.dir}/xml2po.py"/>
+      <arg value="-e"/>
+      <arg value="-p ${pot.dir}/${guide_value}.${lang_value}.po"/>
+      <arg value="-o ${src.dir}/${guide_value}_${lang_value}.docbook.xml"/>
+      <arg value="${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
   </target>
 

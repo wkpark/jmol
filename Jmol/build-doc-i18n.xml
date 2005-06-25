@@ -5,7 +5,9 @@ DocumentId $Id$
 Summary	   create and update applet-, developers- and user-guide translation
 
 TODO:
-- should check for existance of gettext and xml2po
+- should check for existance of xml2po
+- translated XML files have lang="Jmol*Guide.LANG", so we need a workaround to
+  set the correct language in the lang attribute
 -->
 
   <!-- our properties section -->

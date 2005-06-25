@@ -2,15 +2,10 @@
 
 <!--
 DocumentId  $Id$
-Author      $Author$
-Date        $Date$
-Version     $Revision$
-Summary      	
-  Localization support for Jmol and Jmol applet using the gettext suite
+Summary     Localization support for Jmol and Jmol applet using the gettext suite
+
 Todo
   - should check for existance of gettext
-  - should execute gettext commands depending on the os (os attribute)
-    (add no-location option to gettext?)
 -->
 
 <!-- our properties section -->
@@ -162,7 +157,7 @@ Todo
   </target>
 
 
-  <!-- clean target: removes .pot files -->
+  <!-- clean target: removes nothing by default -->
   <target name="clean" id="clean"/>
 
   <!-- the following targets are for special purposes -->

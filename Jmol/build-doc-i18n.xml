@@ -2,14 +2,10 @@
 
 <!--
 DocumentId $Id$
-Author     $Author$
-Date       $Date$
-Version    $Revision$
 Summary	   create and update applet-, developers- and user-guide translation
 
 TODO:
 - should check for existance of gettext and xml2po
-- should maybe execute xml2po depending on the os (os attribute)
 -->
 
   <!-- our properties section -->
@@ -121,9 +117,6 @@ TODO:
 
   <!-- we can clean .pot, .LANG.docbook.xml and .xml2po.mo files -->
   <target name="clean" id="clean">
-    <fileset dir="${src.win.dir}">
-      <include name=".xml2po.mo" />
-    </fileset>
     <fileset dir="${pot.dir}">
       <include name=".xml2po.mo" />
     </fileset>

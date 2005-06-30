@@ -1228,6 +1228,11 @@ class Surface extends Shape {
                          " vertexK=" + vertexK);
 
       */
+
+      ////////////////////////////////////////////////////////////////
+      // separately, let's find the geodesics that lie in the cavity
+      ////////////////////////////////////////////////////////////////
+      
     }
 
   }

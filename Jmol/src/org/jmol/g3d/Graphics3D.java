@@ -2341,6 +2341,13 @@ final public class Graphics3D {
                               Normix3D.NORMIX_GEODESIC_LEVEL);
   }
 
+  public short getInverseNormix(short normix) {
+    if (normix3d.inverseNormixes != null)
+      return normix3d.inverseNormixes[normix];
+    normix3d.calculateInverseNormixes();
+    return normix3d.inverseNormixes[normix];
+  }
+
   public short get2SidedNormix(Vector3f vector) {
     return (short)~normix3d.getNormix(vector.x, vector.y, vector.z,
                                       Normix3D.NORMIX_GEODESIC_LEVEL);

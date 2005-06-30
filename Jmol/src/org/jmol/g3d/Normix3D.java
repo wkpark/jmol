@@ -231,6 +231,20 @@ class Normix3D {
     return champion;
   }
 
+  short[] inverseNormixes;
+
+  void calculateInverseNormixes() {
+    inverseNormixes = new short[normixCount];
+    for (int n = normixCount; --n >= 0; ) {
+      Vector3f v = Geodesic3D.vertexVectors[n];
+      inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL);
+      }
+    // validate that everyone's inverse is themselves
+    for (int n = normixCount; --n >= 0; )
+      if (inverseNormixes[inverseNormixes[n]] != n)
+        throw new NullPointerException();
+  }
+
   byte getIntensity(short normix) {
     if (normix < 0)
       return intensities2Sided[~normix];

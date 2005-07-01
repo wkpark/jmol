@@ -36,6 +36,7 @@ class SurfaceRenderer extends ShapeRenderer {
   boolean perspectiveDepth;
   boolean hideSaddles;
   boolean hideCavities;
+  boolean hideConvex;
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
   int geodesicVertexCount;
@@ -62,6 +63,7 @@ class SurfaceRenderer extends ShapeRenderer {
       return;
     hideSaddles = viewer.getTestFlag1();
     hideCavities = viewer.getTestFlag2();
+    hideConvex = viewer.getTestFlag3();
     int renderingLevel = surface.geodesicRenderingLevel;
     radiusP = surface.radiusP;
     geodesicVertexCount = surface.geodesicVertexCount;
@@ -122,9 +124,11 @@ class SurfaceRenderer extends ShapeRenderer {
   }
 
   private final static boolean CONVEX_DOTS = false;
-  private final static boolean CAVITY_DOTS = false;
+  private final static boolean CAVITY_DOTS = true;
 
   void renderConvex(Atom atom, short colix, int[] vertexMap, int[] faceMap) {
+    if (hideConvex)
+      return;
     Point3i[] screens = screensCache.lookup(atom, vertexMap);
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     if (CONVEX_DOTS) {
@@ -243,6 +247,17 @@ class SurfaceRenderer extends ShapeRenderer {
                     int[][] convexVertexMaps) {
     if (hideCavities)
       return;
+    if (CAVITY_DOTS) {
+      Point3i screen;
+      screen = viewer.transformPoint(cavity.pointPI);
+      g3d.fillSphereCentered(Graphics3D.RED, 4, screen);
+      
+      screen = viewer.transformPoint(cavity.pointPJ);
+      g3d.fillSphereCentered(Graphics3D.GREEN, 4, screen);
+      
+      screen = viewer.transformPoint(cavity.pointPK);
+      g3d.fillSphereCentered(Graphics3D.BLUE, 4, screen);
+    }
     int[] faceMap = cavity.cavityFaceMap;
     if (faceMap == null)
       return;

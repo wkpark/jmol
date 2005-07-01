@@ -1196,10 +1196,9 @@ class Surface extends Shape {
 
   // plus use vectorPI and vectorPJ from above;
   final Vector3f vectorPK = new Vector3f();
-  final Vector3f vectorProbeBase = new Vector3f();
-  final Vector3f vectorClipNormal = new Vector3f();
-  final Vector3f vectorClipIJ = new Vector3f();
-  final Vector3f vectorClipIK = new Vector3f();
+  final Vector3f vectorCrossIJ = new Vector3f();
+  final Vector3f vectorCrossIK = new Vector3f();
+  final Vector3f vectorCrossJK = new Vector3f();
 
   class Cavity {
     final int ixI, ixJ, ixK;
@@ -1257,24 +1256,21 @@ class Surface extends Shape {
       ////////////////////////////////////////////////////////////////
       // separately, let's find the geodesics that lie in the cavity
       ////////////////////////////////////////////////////////////////
-      vectorProbeBase.sub(probeBase, probeCenter);
-      calcVertexBitmapCavity(vectorPI, vectorPJ, vectorPK, vectorProbeBase);
+      calcVertexBitmapCavity(vectorPI, vectorPJ, vectorPK);
     }
 
     void calcVertexBitmapCavity(Vector3f vectorPI, Vector3f vectorPJ,
-                                Vector3f vectorPK, Vector3f vectorProbeBase) {
+                                Vector3f vectorPK) {
       int visibleVertexCount = 0;
       Bmp.clearBitmap(tempVertexMap);
-      vectorClipIJ.sub(vectorPJ, vectorPI);
-      vectorClipIK.sub(vectorPK, vectorPI);
-      vectorClipNormal.cross(vectorClipIJ, vectorClipIK);
-      System.out.println("should be 0:" + vectorClipNormal.dot(vectorClipIJ) +
-                         "," + vectorClipNormal.dot(vectorClipIJ));
-      boolean baseIsPositive = vectorClipNormal.dot(vectorProbeBase) >= 0;
+      vectorCrossIJ.cross(vectorPI, vectorPJ);
+      vectorCrossIK.cross(vectorPI, vectorPK);
+      vectorCrossJK.cross(vectorPJ, vectorPK);
       for (int i = geodesicVertexCount; --i >= 0; ) {
-        vectorT.sub(probeVertexVectors[i], vectorPI);
-        boolean vertexIsPositive = vectorClipNormal.dot(vectorT) >= 0;
-        if (! (baseIsPositive ^ vertexIsPositive)) {
+        Vector3f probeVertex = probeVertexVectors[i];
+        if (sameSide(vectorCrossIJ, vectorPK, probeVertex) &&
+            sameSide(vectorCrossIK, vectorPJ, probeVertex) &&
+            sameSide(vectorCrossJK, vectorPI, probeVertex)) {
           ++visibleVertexCount;
           Bmp.setBit(tempVertexMap, i);
         }
@@ -1284,6 +1280,12 @@ class Surface extends Shape {
       if (cavityVertexMap != null)
         cavityFaceMap = calcFaceBitmap(cavityVertexMap);
       System.out.println("visibleVertexCount=" + visibleVertexCount);
+    }
+
+    boolean sameSide(Vector3f normal, Vector3f pointA, Vector3f pointB) {
+      boolean positivePointA = normal.dot(pointA) >= 0;
+      boolean positivePointB = normal.dot(pointB) >= 0;
+      return ! (positivePointA ^ positivePointB);
     }
   }
 

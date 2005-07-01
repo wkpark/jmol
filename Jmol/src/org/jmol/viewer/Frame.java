@@ -146,6 +146,9 @@ final class Frame {
       if (elementNumber <= 0)
         elementNumber = JmolConstants.
           elementNumberFromSymbol(iterAtom.getElementSymbol());
+      char alternateLocation = iterAtom.getAlternateLocationID();
+      if (alternateLocation != '\0' && alternateLocation != 'A')
+        continue;
       addAtom(iterAtom.getAtomSetIndex(),
               iterAtom.getUniqueID(),
               elementNumber,
@@ -161,7 +164,7 @@ final class Frame {
               iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(),
               iterAtom.getVectorX(), iterAtom.getVectorY(),
               iterAtom.getVectorZ(),
-              iterAtom.getAlternateLocationID(),
+              alternateLocation,
               iterAtom.getClientAtomReference());
     }
 

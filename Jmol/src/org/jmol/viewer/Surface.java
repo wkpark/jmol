@@ -123,6 +123,8 @@ class Surface extends Shape {
   final Vector3f outerSurfaceVector = new Vector3f();
   final Point3f outerCenterPoint = new Point3f();
   final Point3f outerSurfacePoint = new Point3f();
+
+  Vector3f[] probeVertexVectors;
     
   void initShape() {
     geodesicVertexVectors = g3d.getGeodesicVertexVectors();
@@ -150,6 +152,7 @@ class Surface extends Shape {
       cavities = null;
       radiusP = viewer.getCurrentSolventProbeRadius();
       diameterP = 2 * radiusP;
+      calcProbeVectors();
     }
     int atomCount = frame.atomCount;
     if (convexVertexMaps == null) {
@@ -198,6 +201,16 @@ class Surface extends Shape {
       for (i = atomCount; --i >= 0 && convexVertexMaps[i] == null; )
         {}
       surfaceConvexMax = i + 1;
+    }
+  }
+
+  void calcProbeVectors() {
+    // calculate a canonical probe that is the geodesic
+    // vectors scaled to the probe radius
+    probeVertexVectors = new Vector3f[geodesicVertexCount];
+    for (int i = geodesicVertexCount; --i >= 0; ) {
+      probeVertexVectors[i] = new Vector3f();
+      probeVertexVectors[i].scale(radiusP, geodesicVertexVectors[i]);
     }
   }
 
@@ -1091,7 +1104,7 @@ class Surface extends Shape {
         allocateConvexVertexBitmap(indexI);
         allocateConvexVertexBitmap(indexJ);
         allocateConvexVertexBitmap(indexK);
-        Cavity cavity = new Cavity(cavityProbe);
+        Cavity cavity = new Cavity(cavityProbe, probeBaseIJK);
         addCavity(cavity);
         if (LOG)
           System.out.println(" indexI=" + indexI +
@@ -1183,6 +1196,10 @@ class Surface extends Shape {
 
   // plus use vectorPI and vectorPJ from above;
   final Vector3f vectorPK = new Vector3f();
+  final Vector3f vectorProbeBase = new Vector3f();
+  final Vector3f vectorClipNormal = new Vector3f();
+  final Vector3f vectorClipIJ = new Vector3f();
+  final Vector3f vectorClipIK = new Vector3f();
 
   class Cavity {
     final int ixI, ixJ, ixK;
@@ -1193,22 +1210,30 @@ class Surface extends Shape {
     final short vertexI, vertexJ, vertexK;
     short colixI, colixJ, colixK;
     final Point3f probeCenter;
+    int[] cavityVertexMap;
+    int[] cavityFaceMap;
 
-    Cavity(Point3f probeCenter) {
+    // probeCenter is the center of the probe
+    // probeBase is the midpoint between this cavity
+    // and its mirror image on the other side
+    Cavity(Point3f probeCenter, Point3f probeBase) {
       this.probeCenter = new Point3f(probeCenter);
       ixI = indexI; ixJ = indexJ; ixK = indexK;
 
       vectorPI.sub(centerI, probeCenter);
       vectorPI.normalize();
-      pointPI.scaleAdd(radiusP, vectorPI, probeCenter);
+      vectorPI.scale(radiusP);
+      pointPI.add(vectorPI, probeCenter);
 
       vectorPJ.sub(centerJ, probeCenter);
       vectorPJ.normalize();
-      pointPJ.scaleAdd(radiusP, vectorPJ, probeCenter);
+      vectorPJ.scale(radiusP);
+      pointPJ.add(vectorPJ, probeCenter);
 
       vectorPK.sub(centerK, probeCenter);
       vectorPK.normalize();
-      pointPK.scaleAdd(radiusP, vectorPK, probeCenter);
+      vectorPK.scale(radiusP);
+      pointPK.add(vectorPK, probeCenter);
 
       // calc nearest geodesic vertexes 
       vectorT.sub(probeCenter, frame.atoms[ixI].point3f);
@@ -1232,11 +1257,35 @@ class Surface extends Shape {
       ////////////////////////////////////////////////////////////////
       // separately, let's find the geodesics that lie in the cavity
       ////////////////////////////////////////////////////////////////
-      
+      vectorProbeBase.sub(probeBase, probeCenter);
+      calcVertexBitmapCavity(vectorPI, vectorPJ, vectorPK, vectorProbeBase);
     }
 
+    void calcVertexBitmapCavity(Vector3f vectorPI, Vector3f vectorPJ,
+                                Vector3f vectorPK, Vector3f vectorProbeBase) {
+      int visibleVertexCount = 0;
+      Bmp.clearBitmap(tempVertexMap);
+      vectorClipIJ.sub(vectorPJ, vectorPI);
+      vectorClipIK.sub(vectorPK, vectorPI);
+      vectorClipNormal.cross(vectorClipIJ, vectorClipIK);
+      System.out.println("should be 0:" + vectorClipNormal.dot(vectorClipIJ) +
+                         "," + vectorClipNormal.dot(vectorClipIJ));
+      boolean baseIsPositive = vectorClipNormal.dot(vectorProbeBase) >= 0;
+      for (int i = geodesicVertexCount; --i >= 0; ) {
+        vectorT.sub(probeVertexVectors[i], vectorPI);
+        boolean vertexIsPositive = vectorClipNormal.dot(vectorT) >= 0;
+        if (! (baseIsPositive ^ vertexIsPositive)) {
+          ++visibleVertexCount;
+          Bmp.setBit(tempVertexMap, i);
+        }
+      }
+      
+      cavityVertexMap = Bmp.copyMinimalBitmap(tempVertexMap);
+      if (cavityVertexMap != null)
+        cavityFaceMap = calcFaceBitmap(cavityVertexMap);
+      System.out.println("visibleVertexCount=" + visibleVertexCount);
+    }
   }
-
 
   /*==============================================================*
    * All that it is trying to do is calculate the base point between

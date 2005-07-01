@@ -43,6 +43,10 @@ class SurfaceRenderer extends ShapeRenderer {
   short[] geodesicFaceVertexes;
   short[] geodesicFaceNormixes;
   ScreensCache screensCache;
+  float radiusP;
+
+  Vector3f[] transformedProbeVertexes;
+  Point3i[] probeScreens;
 
   void initRenderer() {
     screensCache = new ScreensCache(viewer, 6);
@@ -59,6 +63,7 @@ class SurfaceRenderer extends ShapeRenderer {
     hideSaddles = viewer.getTestFlag1();
     hideCavities = viewer.getTestFlag2();
     int renderingLevel = surface.geodesicRenderingLevel;
+    radiusP = surface.radiusP;
     geodesicVertexCount = surface.geodesicVertexCount;
     screensCache.alloc(geodesicVertexCount);
     geodesicFaceCount =
@@ -67,6 +72,9 @@ class SurfaceRenderer extends ShapeRenderer {
       g3d.getGeodesicFaceVertexes(renderingLevel);
     geodesicFaceNormixes =
       g3d.getGeodesicFaceNormixes(renderingLevel);
+    if (transformedProbeVertexes == null ||
+        transformedProbeVertexes.length < geodesicVertexCount)
+      allocTransformedProbeVertexes();
     Atom[] atoms = frame.atoms;
     int[][] convexVertexMaps = surface.convexVertexMaps;
     int[][] convexFaceMaps = surface.convexFaceMaps;
@@ -100,6 +108,19 @@ class SurfaceRenderer extends ShapeRenderer {
     screensCache.free();
   }
   
+  void allocTransformedProbeVertexes() {
+    transformedProbeVertexes = new Vector3f[geodesicVertexCount];
+    probeScreens = new Point3i[geodesicVertexCount];
+    Vector3f[] transformedGeodesicVertexes =
+      viewer.g3d.getTransformedVertexVectors();
+    for (int i = geodesicVertexCount; --i >= 0; ) {
+      transformedProbeVertexes[i] = new Vector3f();
+      transformedProbeVertexes[i].scale(radiusP,
+                                        transformedGeodesicVertexes[i]);
+      probeScreens[i] = new Point3i();
+    }
+  }
+
   private final static boolean CONVEX_DOTS = false;
   private final static boolean CAVITY_DOTS = false;
 
@@ -222,6 +243,29 @@ class SurfaceRenderer extends ShapeRenderer {
                     int[][] convexVertexMaps) {
     if (hideCavities)
       return;
+    int[] faceMap = cavity.cavityFaceMap;
+    if (faceMap == null)
+      return;
+    calcProbePoints(cavity.probeCenter, cavity.cavityVertexMap, probeScreens);
+    short colix = Graphics3D.GREEN;
+    for (int i = Bmp.getMaxMappedBit(faceMap), j = 3*i - 1; --i >= 0; j -= 3) {
+      if (Bmp.getBit(faceMap, i)) {
+        short vA = geodesicFaceVertexes[j - 2];
+        short vB = geodesicFaceVertexes[j - 1];
+        short vC = geodesicFaceVertexes[j];
+        g3d.fillTriangle(colix,
+                         probeScreens[vA], g3d.getInverseNormix(vA),
+                         probeScreens[vB], g3d.getInverseNormix(vB),
+                         probeScreens[vC], g3d.getInverseNormix(vC));
+      }
+    }
+  }
+
+  void renderCavity2(Surface.Cavity cavity, Atom[] atoms,
+                     short[] colixesCavity,
+                     int[][] convexVertexMaps) {
+    if (hideCavities)
+      return;
     short vertexI = cavity.vertexI; if (vertexI < 0) return;
     short vertexJ = cavity.vertexJ; if (vertexJ < 0) return;
     short vertexK = cavity.vertexK; if (vertexK < 0) return;
@@ -267,6 +311,18 @@ class SurfaceRenderer extends ShapeRenderer {
                      screensI[vertexI], colixI, vertexI,
                      screensJ[vertexJ], colixJ, vertexJ,
                      screensK[vertexK], colixK, vertexK);
+  }
+
+  final Point3f probePointT = new Point3f();
+
+  void calcProbePoints(Point3f probeCenter, int[] vertexMap,
+                       Point3i[] screens) {
+    for (int i = Bmp.getMaxMappedBit(vertexMap); --i >= 0; ) {
+      if (! Bmp.getBit(vertexMap, i))
+        continue;
+      probePointT.add(probeCenter, transformedProbeVertexes[i]);
+      screens[i].set(viewer.transformPoint(probePointT));
+    }
   }
 }
 

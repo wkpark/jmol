@@ -10,6 +10,7 @@
 1D68 - short dna section
 1EBL - ?
 1GFL - green florescent
+1HJE - alternate locations
 1IHA - ?
 1JGQ - alpha carbon only + phosphorus only + dna
 1LCD - multiple conformations

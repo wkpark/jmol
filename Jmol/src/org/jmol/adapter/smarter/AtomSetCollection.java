@@ -161,7 +161,6 @@ class AtomSetCollection {
     if (atomSetCount == 0) {
       atomSetCount = 1;
       currentAtomSetIndex = 0;
-      atomSetNumbers[0] = 1;
     }
     atom.atomSetIndex = currentAtomSetIndex;
     ++atomSetAtomCounts[currentAtomSetIndex];
@@ -280,7 +279,7 @@ class AtomSetCollection {
       atomSetProperties = 
         (Properties[]) AtomSetCollectionReader.doubleLength(atomSetProperties);
     }
-    atomSetNumbers[currentAtomSetIndex] = atomSetCount;
+    atomSetNumbers[currentAtomSetIndex] = currentAtomSetIndex;
   }
 
   /**

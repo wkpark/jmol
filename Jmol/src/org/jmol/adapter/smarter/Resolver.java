@@ -74,33 +74,14 @@ class Resolver {
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     for (int i = 0; i < lines.length; ++i)
       lines[i] = llr.readLineWithNewline();
-    if (lines[3].length() >= 6) {
-      String line4trimmed = lines[3].trim();
-      if (line4trimmed.endsWith("V2000") ||
-          line4trimmed.endsWith("v2000") ||
-          line4trimmed.endsWith("V3000"))
-        return "Mol";
-      try {
-        Integer.parseInt(lines[3].substring(0, 3).trim());
-        Integer.parseInt(lines[3].substring(3, 6).trim());
-        return "Mol";
-      } catch (NumberFormatException nfe) {
-      }
-    }
-    try {
-      /*int atomCount = */Integer.parseInt(lines[0].trim());
+    if (checkMol(lines))
+      return "Mol";
+    if (checkXyz(lines))
       return "Xyz";
-    } catch (NumberFormatException e) {
-    }
-    try {
-      StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
-      if ((tokens != null) && (tokens.countTokens() >= 2)) {
-        Integer.parseInt(tokens.nextToken().trim());
-        return "FoldingXyz";
-      }
-    } catch (NumberFormatException e) {
-      //
-    }
+    if (checkFoldingXyz(lines))
+      return "FoldingXyz";
+    if (checkCube(lines))
+      return "Cube";
     // run these loops forward ... easier for people to understand
     for (int i = 0; i < startsWithRecords.length; ++i) {
       String[] recordTags = startsWithRecords[i];
@@ -126,6 +107,52 @@ class Resolver {
     if (lines[1] == null || lines[1].trim().length() == 0)
       return "Jme"; // this is really quite broken :-)
     return null;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // file types that need special treatment
+  ////////////////////////////////////////////////////////////////
+
+  static boolean checkMol(String[] lines) {
+    if (lines[3].length() >= 6) {
+      String line4trimmed = lines[3].trim();
+      if (line4trimmed.endsWith("V2000") ||
+          line4trimmed.endsWith("v2000") ||
+          line4trimmed.endsWith("V3000"))
+        return true;
+      try {
+        Integer.parseInt(lines[3].substring(0, 3).trim());
+        Integer.parseInt(lines[3].substring(3, 6).trim());
+        return true;
+      } catch (NumberFormatException nfe) {
+      }
+    }
+    return false;
+  }
+
+  static boolean checkXyz(String[] lines) {
+    try {
+      Integer.parseInt(lines[0].trim());
+      return true;
+    } catch (NumberFormatException e) {
+    }
+    return false;
+  }
+
+  static boolean checkFoldingXyz(String[] lines) {
+    try {
+      StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
+      if ((tokens != null) && (tokens.countTokens() >= 2)) {
+        Integer.parseInt(tokens.nextToken().trim());
+        return true;
+      }
+    } catch (NumberFormatException e) {
+    }
+    return false;
+  }
+
+  static boolean checkCube(String[] lines) {
+    return false;
   }
 
   ////////////////////////////////////////////////////////////////

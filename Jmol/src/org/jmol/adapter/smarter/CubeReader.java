@@ -37,7 +37,7 @@ import java.io.BufferedReader;
  * We will assume that there was a file format change, denoted by
  * the negative atom count.
  *
- * seems that distances may be in Bohrs
+ * seems that distances are in Bohrs
  *
  */
 
@@ -66,6 +66,9 @@ class CubeReader extends AtomSetCollectionReader {
       readAtoms();
       readExtraLine();
       readVoxelData();
+      atomSetCollection.volumetricSurfaceCounts = voxelCounts;
+      atomSetCollection.volumetricSurfaceVectors = voxelVectors;
+      atomSetCollection.volumetricSurfaceData = voxelData;
     } catch (Exception ex) {
       atomSetCollection.errorMessage = "Could not read file:" + ex;
     }

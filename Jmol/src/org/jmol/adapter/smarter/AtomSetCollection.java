@@ -65,6 +65,10 @@ class AtomSetCollection {
 
   String[] pdbStructureRecords;
 
+  int[] volumetricSurfaceCounts;
+  float[][] volumetricSurfaceVectors;
+  float[] volumetricSurfaceData;
+
   AtomSetCollection(String fileTypeName) {
     this.fileTypeName = fileTypeName;
     // set the default PATH properties as defined in the SmarterJmolAdapter

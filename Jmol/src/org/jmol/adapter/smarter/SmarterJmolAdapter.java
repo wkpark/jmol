@@ -139,6 +139,24 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 */
 
+  public boolean hasVolumetricSurfaceData(Object clientFile) {
+    return ((AtomSetCollection)clientFile).volumetricSurfaceCounts != null;
+  }
+
+  public int[] getVolumetricSurfaceCounts(Object clientFile) {
+    return ((AtomSetCollection)clientFile).volumetricSurfaceCounts;
+  }
+
+  public float[][] getVolumetricSurfaceVectors(Object clientFile) {
+    return ((AtomSetCollection)clientFile).volumetricSurfaceVectors;
+  }
+
+  public float[] getVolumetricSurfaceData(Object clientFile) {
+    return ((AtomSetCollection)clientFile).volumetricSurfaceData;
+  }
+
+  ////////////////////////////////////////////////////////////////
+
   public JmolAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator((AtomSetCollection)clientFile);

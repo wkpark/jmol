@@ -198,6 +198,8 @@ final class Frame {
     freeze();
     //long msToBuild = System.currentTimeMillis() - timeBegin;
     //    System.out.println("Build a frame:" + msToBuild + " ms");
+    if (adapter.hasVolumetricSurfaceData(clientFile))
+      loadVolumetricSurfaceData(clientFile);
     adapter.finish(clientFile);
     finalizeBuild();
     dumpAtomSetNameDiagnostics(clientFile);
@@ -1713,5 +1715,11 @@ final class Frame {
 
   void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
     mmset.selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  void loadVolumetricSurfaceData(Object clientFile) {
+    System.out.println("loadVolumetricSurfaceData");
   }
 }

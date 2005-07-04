@@ -1761,7 +1761,7 @@
   <fah_proj number="748" name="p748_vln-pf-wtr-cnf-b2" public="n"
     server="171.64.122.130" atoms="6895" preferred="11"
     credit="51" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="749" name="p749_vln-pf-wtr-cnf-b5" public="n"
+  <fah_proj number="749" name="p749_vln-pf-wtr-cnf-b5" public="n" file="y"
     server="171.64.122.130" atoms="8218" preferred="13"
     credit="60" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
@@ -3349,13 +3349,13 @@
   <fah_proj number="1712" name="p1712_TZ2_nat_r3055" public="y"
     server="171.65.103.149" atoms="6424" preferred="23" deadline="34"
     credit="116" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1713" name="p1713_TZ2_unf_r3055" public="y"
+  <fah_proj number="1713" name="p1713_TZ2_unf_r3055" public="y" file="y"
     server="171.65.103.149" atoms="6412" preferred="23" deadline="34"
     credit="116" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1714" name="p1714_TZ2_nat_r3230" public="y"
     server="171.65.103.149" atoms="6424" preferred="23" deadline="34"
     credit="116" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1715" name="p1715_TZ2_unf_r3230" public="y"
+  <fah_proj number="1715" name="p1715_TZ2_unf_r3230" public="y" file="y"
     server="171.65.103.149" atoms="6412" preferred="23" deadline="34"
     credit="116" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1716" name="p1716_TZ2_nat_r3405" public="y"
@@ -3427,7 +3427,7 @@
   <fah_proj number="2005" name="p2005_BBA5_pfold" public="n"
     server="171.64.122.136" atoms="385" preferred="17" deadline="25"
     credit="83" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2006" name="p2006_BBA5_pfold" public="n"
+  <fah_proj number="2006" name="p2006_BBA5_pfold" public="n" file="y"
     server="171.64.122.136" atoms="385" preferred="17" deadline="25"
     credit="84" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2007" name="p2007_BBA5_pfold" public="y" file="y"

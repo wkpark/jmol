@@ -45,6 +45,10 @@ class CubeReader extends AtomSetCollectionReader {
   int atomCount;
   float originX, originY, originZ;
 
+  final int[] voxelCounts = new int[3];
+  final float[] voxelVectors = new float[9];
+  int voxelCount;
+  float[] voxelData;
 
   AtomSetCollection readAtomSetCollection(BufferedReader br)
     throws Exception {
@@ -55,7 +59,7 @@ class CubeReader extends AtomSetCollectionReader {
       atomSetCollection.newAtomSet();
       readTitleLines();
       readAtomCountAndOrigin();
-      readVoxelCounts();
+      readVoxelVectors();
       readAtoms();
       readExtraLine();
       readVoxelData();
@@ -84,10 +88,18 @@ class CubeReader extends AtomSetCollectionReader {
     }
   }
 
-  void readVoxelCounts() throws Exception {
-    br.readLine();
-    br.readLine();
-    br.readLine();
+  void readVoxelVectors() throws Exception {
+    readVoxelVector(0);
+    readVoxelVector(1);
+    readVoxelVector(2);
+  }
+
+  void readVoxelVector(int voxelVectorIndex) throws Exception {
+    String line = br.readLine();
+    voxelCounts[voxelVectorIndex] = parseInt(line);
+    voxelVectors[3 * voxelVectorIndex + 0] = parseFloat(line, ichNextParse);
+    voxelVectors[3 * voxelVectorIndex + 1] = parseFloat(line, ichNextParse);
+    voxelVectors[3 * voxelVectorIndex + 2] = parseFloat(line, ichNextParse);
   }
 
   void readAtoms() throws Exception {
@@ -108,7 +120,16 @@ class CubeReader extends AtomSetCollectionReader {
   }
 
   void readVoxelData() throws Exception {
+    voxelCount = voxelCounts[0] * voxelCounts[1] * voxelCounts[2];
+    voxelData = new float[voxelCount];
+    String line = null;
+    for (int i = 0; i < voxelCount; ++i) {
+      if ((i % 6) == 0) {
+        line = br.readLine();
+        ichNextParse = 0;
+      }
+      voxelData[i] = parseFloat(line, ichNextParse);
+    }
+    System.out.println("Successfully read " + voxelCount + " voxels");
   }
-
-
 }

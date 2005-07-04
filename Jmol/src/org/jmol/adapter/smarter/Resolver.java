@@ -162,8 +162,7 @@ class Resolver {
       StringTokenizer tokens3 = new StringTokenizer(lines[3]);
       if (tokens3 == null || tokens3.countTokens() != 4)
         return false;
-      if (Integer.parseInt(tokens3.nextToken()) <= 0)
-        return false;
+      Integer.parseInt(tokens3.nextToken());
       for (int i = 3; --i >= 0; )
         if ((new Float(tokens3.nextToken())).floatValue() < 0)
           return false;

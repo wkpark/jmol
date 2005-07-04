@@ -36,6 +36,9 @@ import java.io.BufferedReader;
  * because they have a negative atom count and an extra line
  * We will assume that there was a file format change, denoted by
  * the negative atom count.
+ *
+ * seems that distances may be in Bohrs
+ *
  */
 
 class CubeReader extends AtomSetCollectionReader {
@@ -46,7 +49,7 @@ class CubeReader extends AtomSetCollectionReader {
   float originX, originY, originZ;
 
   final int[] voxelCounts = new int[3];
-  final float[] voxelVectors = new float[9];
+  final float[][] voxelVectors = new float[3][];
   int voxelCount;
   float[] voxelData;
 
@@ -96,10 +99,12 @@ class CubeReader extends AtomSetCollectionReader {
 
   void readVoxelVector(int voxelVectorIndex) throws Exception {
     String line = br.readLine();
+    float[] voxelVector = new float[3];
+    voxelVectors[voxelVectorIndex] = voxelVector;
     voxelCounts[voxelVectorIndex] = parseInt(line);
-    voxelVectors[3 * voxelVectorIndex + 0] = parseFloat(line, ichNextParse);
-    voxelVectors[3 * voxelVectorIndex + 1] = parseFloat(line, ichNextParse);
-    voxelVectors[3 * voxelVectorIndex + 2] = parseFloat(line, ichNextParse);
+    voxelVector[0] = parseFloat(line, ichNextParse);
+    voxelVector[1] = parseFloat(line, ichNextParse);
+    voxelVector[2] = parseFloat(line, ichNextParse);
   }
 
   void readAtoms() throws Exception {
@@ -108,9 +113,9 @@ class CubeReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (byte)parseInt(line);
       atom.partialCharge = parseFloat(line, ichNextParse);
-      atom.x = parseFloat(line, ichNextParse);
-      atom.y = parseFloat(line, ichNextParse);
-      atom.z = parseFloat(line, ichNextParse);
+      atom.x = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
+      atom.y = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
+      atom.z = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
     }
   }
 

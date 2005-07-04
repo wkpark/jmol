@@ -34,6 +34,8 @@ abstract class AtomSetCollectionReader {
   AtomSetCollection atomSetCollection;
   JmolAdapter.Logger logger;
 
+  final static float ANGSTROMS_PER_BOHR = 0.5291772f;
+
   void setLogger(JmolAdapter.Logger logger) { this.logger = logger; }
 
   void initialize() { }

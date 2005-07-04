@@ -3327,13 +3327,12 @@ class Eval implements Runnable {
         break;
       case Token.string:
         String filename = (String)statement[i].value;
-        Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
+        Object t =
+          viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
-        BufferedReader br =
-          new BufferedReader(new InputStreamReader((InputStream)t));
         propertyName = "bufferedreader";
-        propertyValue = br;
+        propertyValue = t;
         break;
       case Token.on:
       case Token.off:

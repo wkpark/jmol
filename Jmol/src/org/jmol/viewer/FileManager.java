@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -265,6 +265,28 @@ class FileManager {
       errorMessage = "" + e;
     }
     return errorMessage;
+  }
+
+  final byte[] abMagic = new byte[4];
+
+  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
+    Object t = getInputStreamOrErrorMessageFromName(name);
+    if (t instanceof String)
+      return t;
+    try {
+      BufferedInputStream bis = new BufferedInputStream((InputStream)t, 8192);
+      InputStream is = bis;
+      bis.mark(5);
+      int countRead = 0;
+      countRead = bis.read(abMagic, 0, 4);
+      bis.reset();
+      if (countRead == 4 &&
+          abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B)
+        is = new GZIPInputStream(bis);
+      return new BufferedReader(new InputStreamReader((InputStream)is));
+    } catch (IOException ioe) {
+      return ioe.getMessage();
+    }
   }
 
   class FileOpenThread implements Runnable {

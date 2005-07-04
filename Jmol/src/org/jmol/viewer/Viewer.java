@@ -945,6 +945,10 @@ final public class Viewer extends JmolViewer {
     return fileManager.getInputStreamOrErrorMessageFromName(name);
   }
 
+  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
+    return fileManager.getUnzippedBufferedReaderOrErrorMessageFromName(name);
+  }
+
   public void openFile(String name) {
     /*
     System.out.println("openFile(" + name + ") thread:" + Thread.currentThread() +

@@ -155,16 +155,16 @@ public abstract class JmolAdapter {
    * Get the number identifying each atomSet.
    *
    * <p>For a PDB file, this is is the model number. For others it is
-   * a 0-based atomSet number.
+   * a 1-based atomSet number.
    * <p>
    * <i>Note that this is not currently implemented in PdbReader</i>
    * @param clientFile The client file
    * @param atomSetIndex The atom set's index for which to get
    *                     the atom set number
-   * @return The number identifying each atom set, default atomSetIndex
+   * @return The number identifying each atom set, default atomSetIndex+1.
    */
   public int getAtomSetNumber(Object clientFile, int atomSetIndex) {
-    return atomSetIndex;
+    return atomSetIndex + 1;
   }
 
   /**

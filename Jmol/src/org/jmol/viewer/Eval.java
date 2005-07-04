@@ -2464,7 +2464,7 @@ class Eval implements Runnable {
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
    Token.rocket, Token.star,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover, Token.pmesh, Token.polyhedra, Token.surface,
+   Token.hover, Token.pmesh, Token.polyhedra, Token.surface, Token.volumetric,
    Token.prueba,
   };
 

@@ -1721,5 +1721,12 @@ final class Frame {
 
   void loadVolumetricSurfaceData(Object clientFile) {
     System.out.println("loadVolumetricSurfaceData");
+    Object[] volumetricParameters = new Object[3];
+    volumetricParameters[0] = adapter.getVolumetricSurfaceCounts(clientFile);
+    volumetricParameters[1] = adapter.getVolumetricSurfaceVectors(clientFile);
+    volumetricParameters[2] = adapter.getVolumetricSurfaceData(clientFile);
+    setShapeSize(JmolConstants.SHAPE_VOLUMETRIC, 1, null);
+    setShapeProperty(JmolConstants.SHAPE_VOLUMETRIC, "load",
+                     volumetricParameters, null);
   }
 }

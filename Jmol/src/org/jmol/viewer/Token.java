@@ -353,6 +353,7 @@ class Token {
   final static int jmol         = misc | 46;
   final static int relative     = misc | 47;
   final static int absolute     = misc | 48;
+  final static int volumetric   = misc | 49;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -664,6 +665,7 @@ class Token {
     "solid",        new Token(solid,           "solid"),
     "relative",     new Token(relative,        "relative"),
     "absolute",     new Token(absolute,        "absolute"),
+    "volumetric",   new Token(volumetric,      "volumetric"),
   };
 
   static Hashtable map = new Hashtable();

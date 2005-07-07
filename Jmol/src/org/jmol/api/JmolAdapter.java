@@ -258,7 +258,7 @@ public abstract class JmolAdapter {
     return false;
   }
 
-  public int[] getVolumetricSurfaceCounts(Object clientFile) {
+  public float[] getVolumetricOrigin(Object clientFile) {
     return null;
   }
 
@@ -266,7 +266,7 @@ public abstract class JmolAdapter {
     return null;
   }
 
-  public float[] getVolumetricSurfaceData(Object clientFile) {
+  public float[][][] getVolumetricSurfaceData(Object clientFile) {
     return null;
   }
 

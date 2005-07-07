@@ -65,9 +65,9 @@ class AtomSetCollection {
 
   String[] pdbStructureRecords;
 
-  int[] volumetricSurfaceCounts;
+  float[] volumetricOrigin;
   float[][] volumetricSurfaceVectors;
-  float[] volumetricSurfaceData;
+  float[][][] volumetricSurfaceData;
 
   AtomSetCollection(String fileTypeName) {
     this.fileTypeName = fileTypeName;

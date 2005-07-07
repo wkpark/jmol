@@ -46,16 +46,15 @@ class CubeReader extends AtomSetCollectionReader {
   BufferedReader br;
   boolean negativeAtomCount;
   int atomCount;
-  float originX, originY, originZ;
 
   final int[] voxelCounts = new int[3];
+  final float[] origin = new float[3];
   final float[][] voxelVectors = new float[3][];
-  int voxelCount;
-  float[] voxelData;
-
+  float[][][] voxelData;
+  
   AtomSetCollection readAtomSetCollection(BufferedReader br)
     throws Exception {
-
+    
     this.br = br;
     atomSetCollection = new AtomSetCollection("cube");
     try {
@@ -66,7 +65,7 @@ class CubeReader extends AtomSetCollectionReader {
       readAtoms();
       readExtraLine();
       readVoxelData();
-      atomSetCollection.volumetricSurfaceCounts = voxelCounts;
+      atomSetCollection.volumetricOrigin = origin;
       atomSetCollection.volumetricSurfaceVectors = voxelVectors;
       atomSetCollection.volumetricSurfaceData = voxelData;
     } catch (Exception ex) {
@@ -74,7 +73,7 @@ class CubeReader extends AtomSetCollectionReader {
     }
     return atomSetCollection;
   }
-    
+
   void readTitleLines() throws Exception {
     String title;
     title = br.readLine().trim() + " - ";
@@ -85,9 +84,9 @@ class CubeReader extends AtomSetCollectionReader {
   void readAtomCountAndOrigin() throws Exception {
     String line = br.readLine();
     atomCount = parseInt(line);
-    originX = parseFloat(line, ichNextParse);
-    originY = parseFloat(line, ichNextParse);
-    originZ = parseFloat(line, ichNextParse);
+    origin[0] = parseFloat(line, ichNextParse);
+    origin[1] = parseFloat(line, ichNextParse);
+    origin[2] = parseFloat(line, ichNextParse);
     if (atomCount < 0) {
       atomCount = -atomCount;
       negativeAtomCount = true;
@@ -128,16 +127,31 @@ class CubeReader extends AtomSetCollectionReader {
   }
 
   void readVoxelData() throws Exception {
-    voxelCount = voxelCounts[0] * voxelCounts[1] * voxelCounts[2];
-    voxelData = new float[voxelCount];
+    System.out.println("entering readVoxelData");
     String line = null;
-    for (int i = 0; i < voxelCount; ++i) {
-      if ((i % 6) == 0) {
-        line = br.readLine();
-        ichNextParse = 0;
+    int voxelCountX = voxelCounts[0];
+    int voxelCountY = voxelCounts[1];
+    int voxelCountZ = voxelCounts[2];
+    int iVoxel = 0;
+    voxelData = new float[voxelCountX][][];
+    for (int x = 0; x < voxelCountX; ++x) {
+      float[][] plane = new float[voxelCountY][];
+      voxelData[x] = plane;
+      for (int y = 0; y < voxelCountY; ++y) {
+        float[] strip = new float[voxelCountZ];
+        plane[y] = strip;
+        for (int z = 0; z < voxelCountZ; ++z) {
+          if ((iVoxel % 6) == 0) {
+            line = br.readLine();
+            ichNextParse = 0;
+          }
+          ++iVoxel;
+          strip[z] = parseFloat(line, ichNextParse);
+        }
       }
-      voxelData[i] = parseFloat(line, ichNextParse);
     }
-    System.out.println("Successfully read " + voxelCount + " voxels");
+    System.out.println("Successfully read " + voxelCountX +
+                       " x " + voxelCountY +
+                       " x " + voxelCountZ + " voxels");
   }
 }

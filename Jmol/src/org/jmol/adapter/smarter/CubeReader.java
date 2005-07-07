@@ -128,11 +128,11 @@ class CubeReader extends AtomSetCollectionReader {
 
   void readVoxelData() throws Exception {
     System.out.println("entering readVoxelData");
-    String line = null;
+    String line = "";
+    ichNextParse = 0;
     int voxelCountX = voxelCounts[0];
     int voxelCountY = voxelCounts[1];
     int voxelCountZ = voxelCounts[2];
-    int iVoxel = 0;
     voxelData = new float[voxelCountX][][];
     for (int x = 0; x < voxelCountX; ++x) {
       float[][] plane = new float[voxelCountY][];
@@ -141,12 +141,15 @@ class CubeReader extends AtomSetCollectionReader {
         float[] strip = new float[voxelCountZ];
         plane[y] = strip;
         for (int z = 0; z < voxelCountZ; ++z) {
-          if ((iVoxel % 6) == 0) {
+          float voxelValue = parseFloat(line, ichNextParse);
+          if (Float.isNaN(voxelValue)) {
             line = br.readLine();
-            ichNextParse = 0;
+            if (line == null || Float.isNaN(voxelValue = parseFloat(line))) {
+              System.out.println("end of file in CubeReader?");
+              throw new NullPointerException();
+            }
           }
-          ++iVoxel;
-          strip[z] = parseFloat(line, ichNextParse);
+          strip[z] = voxelValue;
         }
       }
     }

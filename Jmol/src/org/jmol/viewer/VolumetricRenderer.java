@@ -24,15 +24,28 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 
 class VolumetricRenderer extends ShapeRenderer {
 
-  void render() {
-    Volumetric volumetric = (Volumetric)shape;
+  final Point3i screenA = new Point3i();
+  final Point3i screenB = new Point3i();
 
+  void render() {
     System.out.println("VolumetricRenderer");
+    Volumetric volumetric = (Volumetric)shape;
+    int pointCount = volumetric.pointCount;
+    Point3f[] points = volumetric.points;
+
+    g3d.setColix(Graphics3D.YELLOW);
+    System.out.println("pointCount=" + pointCount);
+    for (int i = 0; i < pointCount; i += 2) {
+      viewer.transformPoint(points[i], screenA);
+      viewer.transformPoint(points[i + 1], screenB);
+      g3d.drawLine(screenA, screenB);
+    }
   }
 }

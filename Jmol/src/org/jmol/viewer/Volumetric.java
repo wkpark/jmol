@@ -31,11 +31,13 @@ import java.util.Hashtable;
 import java.io.BufferedReader;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Matrix3f;
 
 class Volumetric extends SelectionIndependentShape {
 
   Point3f volumetricOrigin;
   final Vector3f[] volumetricVectors = new Vector3f[3];
+  final Matrix3f volumetricMatrix = new Matrix3f();
   float[][][] volumetricData;
 
   int pointCount = 0;
@@ -53,9 +55,13 @@ class Volumetric extends SelectionIndependentShape {
     if ("load" == propertyName) {
       volumetricOrigin = new Point3f((float[])((Object[])value)[0]);
       float[][] vvectors = (float[][])((Object[])value)[1];
-      for (int i = 0; i < 3; ++i)
+      for (int i = 3; --i >= 0; ) {
         volumetricVectors[i] = new Vector3f(vvectors[i]);
+        volumetricMatrix.setColumn(i, volumetricVectors[i]);
+      }
       volumetricData = (float[][][])((Object[])value)[2];
+      
+      calcVoxelVertexVectors();
       constructTessellatedSurface();
       return;
     }
@@ -69,6 +75,7 @@ class Volumetric extends SelectionIndependentShape {
     int volumetricCountZ = volumetricData[0][0].length;
     float[][] planeLeft = volumetricData[volumetricCountX - 1];
     float[] vertexValues = new float[8];
+    int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     for (int x = volumetricCountX - 1; --x >= 0; ) {
       float[][] planeRight = planeLeft;
       planeLeft = volumetricData[x];
@@ -107,19 +114,19 @@ class Volumetric extends SelectionIndependentShape {
           if (vertexValues[7] > isoCutoff)
             insideMask |= 1 << 7;
 
-          if (insideMask == 0 || insideMask == 0xFF)
+          if (insideMask == 0) {
+            ++outsideCount;
             continue;
+          }
+          if (insideMask == 0xFF) {
+            ++insideCount;
+            continue;
+          }
+
+          ++surfaceCount;
+          calcVoxelOrigin(x, y, z);
 
           int edgeMask = edgeMaskTable[insideMask];
-
-          if (false && x == 25 && y == 2 && z == 7) {
-            System.out.println("found it!");
-            for (int v = 0; v < 8; ++v) {
-              System.out.println("v:" + v + "," + vertexValues[v]);
-            }
-            //System.out.println("edgeMask=" + Integer.toHexString(edgeMask));
-            throw new NullPointerException();
-          }
 
           for (int iEdge = 12; --iEdge >= 0; ) {
             if ((edgeMask & (1 << iEdge)) == 0)
@@ -128,19 +135,23 @@ class Volumetric extends SelectionIndependentShape {
             int vertexB = edgeVertexes[2*iEdge + 1];
             float valueA = vertexValues[vertexA];
             float valueB = vertexValues[vertexB];
-            if (false && x == 25 && y == 2 && z == 7) {
-              System.out.println("cell=" + x + "," + y + "," + z +
-                                 " iEdge=" + iEdge +
-                                 " A:" + vertexA + "," + valueA +
-                                 " B:" + vertexB + "," + valueB);
-            }
-            calcVertexPoints(x, y, z, vertexA, vertexB);
-            calcIntersectionPoint(isoCutoff,
-                                  vertexA, valueA, vertexB, valueB);
+            calcVertexPoints(vertexA, vertexB);
+            addPoint(pointA);
+            addPoint(pointB);
           }
         }
       }
     }
+    System.out.println("volumetric=" +
+                       volumetricCountX + "," +
+                       volumetricCountY + "," +
+                       volumetricCountZ + "," +
+                       " total=" +
+                       (volumetricCountX*volumetricCountY*volumetricCountZ) +
+                       " insideCount=" + insideCount +
+                       " outsideCount=" + outsideCount +
+                       " surfaceCount=" + surfaceCount +
+                       " total=" + (insideCount+outsideCount+surfaceCount));
   }
 
   void calcIntersectionPoint(float isoCutoff,
@@ -169,21 +180,24 @@ class Volumetric extends SelectionIndependentShape {
   final Vector3f edgeVector = new Vector3f();
   final Point3f intersectionPoint = new Point3f();
 
-  void calcVertexPoints(int x, int y, int z, int vertexA, int vertexB) {
+  void calcVertexPoints(int vertexA, int vertexB) {
+    pointA.add(voxelOrigin, voxelVertexVectors[vertexA]);
+    pointB.add(voxelOrigin, voxelVertexVectors[vertexB]);
+  }
+
+  void calcVoxelOrigin(int x, int y, int z) {
     voxelOrigin.scaleAdd(x, volumetricVectors[0], volumetricOrigin);
     voxelOrigin.scaleAdd(y, volumetricVectors[1], voxelOrigin);
     voxelOrigin.scaleAdd(z, volumetricVectors[2], voxelOrigin);
-    pointA.add(voxelOrigin, vertexVectors[vertexA]);
-    pointB.add(voxelOrigin, vertexVectors[vertexA]);
   }
 
   void addPoint(Point3f point) {
     if (pointCount == points.length)
       points = (Point3f[])Util.doubleLength(points);
-    points[pointCount++] = point;
+    points[pointCount++] = new Point3f(point);
   }
 
-  final static Vector3f[] vertexVectors = {
+  final static Vector3f[] cubeVertexVectors = {
     new Vector3f(0,0,0),
     new Vector3f(1,0,0),
     new Vector3f(1,0,1),
@@ -193,6 +207,20 @@ class Volumetric extends SelectionIndependentShape {
     new Vector3f(1,1,1),
     new Vector3f(0,1,1)
   };
+
+  static Vector3f[] voxelVertexVectors = new Vector3f[8];
+
+  void calcVoxelVertexVectors() {
+    for (int i = 8; --i >= 0; )
+      voxelVertexVectors[i] =
+        calcVoxelVertexVector(cubeVertexVectors[i]);
+  }
+
+  Vector3f calcVoxelVertexVector(Vector3f cubeVectors) {
+    Vector3f v = new Vector3f();
+    volumetricMatrix.transform(cubeVectors, v);
+    return v;
+  }
 
   final static byte edgeVertexes[] = {
     0, 1,

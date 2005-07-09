@@ -2,7 +2,8 @@
 <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
         codebase="[codebase]"
         width="350" height="350" mayscript="true">
-  <param name="load"   value="SN1_reaction.cml">
+  <param name="load" value="SN1_reaction.cml"/>
+  <param name="progressbar" value="true"/>
 </applet>
 <form>
   <input type="button" value="rewind"

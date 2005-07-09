@@ -8,6 +8,7 @@
     codebase="[codebase]"
     width="350" height="350" mayscript="true">
   <param name="load" value="conformeren.cml"/>
+  <param name="progressbar" value="true"/>
 </applet>
 <form>
   <input type="button" value="rewind"  onClick="play2('animate rewind')">

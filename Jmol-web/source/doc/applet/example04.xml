@@ -2,6 +2,7 @@
 <applet code="JmolApplet" archive="JmolApplet.jar"
         codebase="[codebase]"
         width="200" height="200" mayscript="true">
+  <param name="progressbar" value="true"/>
   <param name="loadInline" value='
 &lt;molecule id="methanol">
   &lt;atomArray atomID="a1 a2 a3 a4 a5 a6"

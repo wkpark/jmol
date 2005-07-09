@@ -6,5 +6,6 @@
   <param name="bgcolor" value="navy"/>
   <param name="label"   value="symbol"/>
   <param name="wireframeRotation" value="true"/>
+  <param name="progressbar" value="true"/>
 </applet>
 ]]>

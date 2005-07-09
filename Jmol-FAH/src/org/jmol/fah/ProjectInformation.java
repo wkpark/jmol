@@ -1127,7 +1127,9 @@ public class ProjectInformation {
     }
 
     //Check for differences with QD
-    if ((info._qdValue != null) && (!info._qdValue.equals(info._staticValue))) {
+    if ((info._psValue == null) &&
+        (info._qdValue != null) &&
+        (!info._qdValue.equals(info._staticValue))) {
       different = true;
     }
 

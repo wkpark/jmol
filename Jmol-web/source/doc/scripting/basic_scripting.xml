@@ -2,6 +2,7 @@
 <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
         codebase="[codebase]"
         width="200" height="200" mayscript="true">
+  <param name="progressbar" value="true">
   <param name="load" value="caffeine.xyz"/>
 </applet>
 <br>

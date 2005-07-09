@@ -8,6 +8,7 @@ function play(script) {
 <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
         codebase="[codebase]"
         width="350" height="350" mayscript="true">
+  <param name="progressbar" value="true">
   <param name="load"   value="SN1_reaction.xyz">
 </applet>
 <form>

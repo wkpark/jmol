@@ -3,6 +3,7 @@
         codebase="[codebase]"
         width="300" height="100" align="left" mayscript="true">
   <param name="bgcolor" value="teal">
+  <param name="progressbar" value="true">
   <param name="script" value="
   load 'jmol.mol';
   select all; cpk off; wireframe 10; color yellow;

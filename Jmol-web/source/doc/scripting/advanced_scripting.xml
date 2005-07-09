@@ -29,6 +29,7 @@ function br() {
         codebase="[codebase]"
         width="350" height="350" align="left" mayscript="true">
     <param name="bgcolor" value="black">
+    <param name="progressbar" value="true">
 </applet>
 </td>
 <td>

@@ -5,7 +5,7 @@
   <param name="bgcolor" value="teal">
   <param name="progressbar" value="true">
   <param name="script" value="
-  load 'jmol.mol';
+  load jmol.mol;
   select all; cpk off; wireframe 10; color yellow;
   move 0 0 0 400 0 0 0 0 2;
   cpk 10; wireframe  5; delay 0.1;

@@ -37,15 +37,28 @@ class VolumetricRenderer extends ShapeRenderer {
   void render() {
     System.out.println("VolumetricRenderer");
     Volumetric volumetric = (Volumetric)shape;
-    int pointCount = volumetric.pointCount;
-    Point3f[] points = volumetric.points;
 
+    //    renderEdges(volumetric.edgePointCount, volumetric.edgePoints);
+
+    renderSurfacePoints(volumetric.surfacePointCount,
+                        volumetric.surfacePoints);
+  }
+
+  void renderEdges(int edgePointCount, Point3f[] edgePoints) {
     g3d.setColix(Graphics3D.YELLOW);
-    System.out.println("pointCount=" + pointCount);
-    for (int i = 0; i < pointCount; i += 2) {
-      viewer.transformPoint(points[i], screenA);
-      viewer.transformPoint(points[i + 1], screenB);
+    System.out.println("edgePointCount=" + edgePointCount);
+    for (int i = 0; i < edgePointCount; i += 2) {
+      viewer.transformPoint(edgePoints[i], screenA);
+      viewer.transformPoint(edgePoints[i + 1], screenB);
       g3d.drawLine(screenA, screenB);
+    }
+  }
+
+  void renderSurfacePoints(int surfacePointCount, Point3f[] surfacePoints) {
+    System.out.println("surfacePointCount=" + surfacePointCount);
+    for (int i = 0; i < surfacePointCount; ++i) {
+      g3d.fillSphereCentered(Graphics3D.GREEN, 5,
+                             viewer.transformPoint(surfacePoints[i]));
     }
   }
 }

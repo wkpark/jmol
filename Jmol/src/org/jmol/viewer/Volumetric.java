@@ -40,10 +40,13 @@ class Volumetric extends SelectionIndependentShape {
   final Matrix3f volumetricMatrix = new Matrix3f();
   float[][][] volumetricData;
 
-  int pointCount = 0;
-  Point3f[] points = new Point3f[256];
+  int edgePointCount = 0;
+  Point3f[] edgePoints = new Point3f[256];
 
   Hashtable htEdgePoints;
+
+  int surfacePointCount = 0;
+  Point3f[] surfacePoints = new Point3f[256];
 
   void initShape() {
     colix = Graphics3D.ORANGE;
@@ -136,8 +139,10 @@ class Volumetric extends SelectionIndependentShape {
             float valueA = vertexValues[vertexA];
             float valueB = vertexValues[vertexB];
             calcVertexPoints(vertexA, vertexB);
-            addPoint(pointA);
-            addPoint(pointB);
+            addEdgePoint(pointA);
+            addEdgePoint(pointB);
+            calcIntersectionPoint(isoCutoff, valueA, valueB);
+            addSurfacePoint(intersectionPoint);
           }
         }
       }
@@ -154,16 +159,14 @@ class Volumetric extends SelectionIndependentShape {
                        " total=" + (insideCount+outsideCount+surfaceCount));
   }
 
-  void calcIntersectionPoint(float isoCutoff,
-                             int vertexA, float valueA,
-                             int vertexB, float valueB) {
+  void calcIntersectionPoint(float isoCutoff, float valueA, float valueB) {
     float diff = valueB - valueA;
     float fraction = (isoCutoff - valueA) / diff;
     if (Float.isNaN(fraction) || fraction < 0 || fraction >= 1) {
       System.out.println("fraction=" + fraction +
                          " isoCutoff=" + isoCutoff +
-                         " A:" + vertexA + "," + valueA +
-                         " B:" + vertexB + "," + valueB);
+                         " A:" + valueA +
+                         " B:" + valueB);
       throw new IndexOutOfBoundsException();
     }
 
@@ -191,10 +194,16 @@ class Volumetric extends SelectionIndependentShape {
     voxelOrigin.scaleAdd(z, volumetricVectors[2], voxelOrigin);
   }
 
-  void addPoint(Point3f point) {
-    if (pointCount == points.length)
-      points = (Point3f[])Util.doubleLength(points);
-    points[pointCount++] = new Point3f(point);
+  void addEdgePoint(Point3f point) {
+    if (edgePointCount == edgePoints.length)
+      edgePoints = (Point3f[])Util.doubleLength(edgePoints);
+    edgePoints[edgePointCount++] = new Point3f(point);
+  }
+
+  void addSurfacePoint(Point3f point) {
+    if (surfacePointCount == surfacePoints.length)
+      surfacePoints = (Point3f[])Util.doubleLength(surfacePoints);
+    surfacePoints[surfacePointCount++] = new Point3f(point);
   }
 
   final static Vector3f[] cubeVertexVectors = {

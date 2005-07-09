@@ -48,6 +48,9 @@ class Volumetric extends SelectionIndependentShape {
   int surfacePointCount = 0;
   Point3f[] surfacePoints = new Point3f[256];
 
+  int voxelOriginPointCount = 0;
+  Point3f[] voxelOriginPoints = new Point3f[256];
+
   void initShape() {
     colix = Graphics3D.ORANGE;
   }
@@ -128,6 +131,7 @@ class Volumetric extends SelectionIndependentShape {
 
           ++surfaceCount;
           calcVoxelOrigin(x, y, z);
+          addVoxelOriginPoint(voxelOrigin);
 
           int edgeMask = edgeMaskTable[insideMask];
 
@@ -204,6 +208,12 @@ class Volumetric extends SelectionIndependentShape {
     if (surfacePointCount == surfacePoints.length)
       surfacePoints = (Point3f[])Util.doubleLength(surfacePoints);
     surfacePoints[surfacePointCount++] = new Point3f(point);
+  }
+
+  void addVoxelOriginPoint(Point3f point) {
+    if (voxelOriginPointCount == voxelOriginPoints.length)
+      voxelOriginPoints = (Point3f[])Util.doubleLength(voxelOriginPoints);
+    voxelOriginPoints[voxelOriginPointCount++] = new Point3f(point);
   }
 
   final static Vector3f[] cubeVertexVectors = {

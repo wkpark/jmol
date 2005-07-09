@@ -38,10 +38,15 @@ class VolumetricRenderer extends ShapeRenderer {
     System.out.println("VolumetricRenderer");
     Volumetric volumetric = (Volumetric)shape;
 
-    //    renderEdges(volumetric.edgePointCount, volumetric.edgePoints);
+    renderVoxelOriginPoints(volumetric.voxelOriginPointCount,
+                            volumetric.voxelOriginPoints);
+
+    /*
+    renderEdges(volumetric.edgePointCount, volumetric.edgePoints);
 
     renderSurfacePoints(volumetric.surfacePointCount,
                         volumetric.surfacePoints);
+    */
   }
 
   void renderEdges(int edgePointCount, Point3f[] edgePoints) {
@@ -61,4 +66,13 @@ class VolumetricRenderer extends ShapeRenderer {
                              viewer.transformPoint(surfacePoints[i]));
     }
   }
+  void renderVoxelOriginPoints(int voxelOriginPointCount,
+                               Point3f[] voxelOriginPoints) {
+    System.out.println("voxelOriginPointCount=" + voxelOriginPointCount);
+    for (int i = 0; i < voxelOriginPointCount; ++i) {
+      g3d.fillSphereCentered(Graphics3D.RED, 5,
+                             viewer.transformPoint(voxelOriginPoints[i]));
+    }
+  }
+
 }

@@ -51,6 +51,12 @@ class Volumetric extends SelectionIndependentShape {
   int voxelOriginPointCount = 0;
   Point3f[] voxelOriginPoints = new Point3f[256];
 
+  int trianglePointCount = 0;
+  Point3f[] trianglePoints = new Point3f[256];
+
+  int triangleIndexCount = 0;
+  int[] triangleIndexes = new int[3 * 256];
+
   void initShape() {
     colix = Graphics3D.ORANGE;
   }
@@ -73,6 +79,14 @@ class Volumetric extends SelectionIndependentShape {
     }
   }
 
+  final float[] vertexValues = new float[8];
+  final Point3f[] intersectionPoints = new Point3f[12];
+  {
+    for (int i = 12; --i >= 0; )
+      intersectionPoints[i] = new Point3f();
+  }
+  final int[] intersectionPointIndexes = new int[12];
+
   void constructTessellatedSurface() {
     htEdgePoints = new Hashtable();
     float isoCutoff = 0.02f;
@@ -80,7 +94,6 @@ class Volumetric extends SelectionIndependentShape {
     int volumetricCountY = volumetricData[0].length;
     int volumetricCountZ = volumetricData[0][0].length;
     float[][] planeLeft = volumetricData[volumetricCountX - 1];
-    float[] vertexValues = new float[8];
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     for (int x = volumetricCountX - 1; --x >= 0; ) {
       float[][] planeRight = planeLeft;
@@ -145,9 +158,17 @@ class Volumetric extends SelectionIndependentShape {
             calcVertexPoints(vertexA, vertexB);
             addEdgePoint(pointA);
             addEdgePoint(pointB);
-            calcIntersectionPoint(isoCutoff, valueA, valueB);
-            addSurfacePoint(intersectionPoint);
+            calcIntersectionPoint(isoCutoff, valueA, valueB,
+                                  intersectionPoints[iEdge]);
+            intersectionPointIndexes[iEdge] =
+              addSurfacePoint(intersectionPoints[iEdge]);
           }
+
+          byte[] triangles = triangleTable[edgeMask];
+          for (int i = triangles.length; (i -= 3) >= 0; )
+            addSurfaceTriangle(triangles[i],
+                               triangles[i + 1],
+                               triangles[i + 2]);
         }
       }
     }
@@ -163,7 +184,8 @@ class Volumetric extends SelectionIndependentShape {
                        " total=" + (insideCount+outsideCount+surfaceCount));
   }
 
-  void calcIntersectionPoint(float isoCutoff, float valueA, float valueB) {
+  void calcIntersectionPoint(float isoCutoff, float valueA, float valueB,
+                             Point3f intersectionPoint) {
     float diff = valueB - valueA;
     float fraction = (isoCutoff - valueA) / diff;
     if (Float.isNaN(fraction) || fraction < 0 || fraction >= 1) {
@@ -185,7 +207,6 @@ class Volumetric extends SelectionIndependentShape {
   // edgeVector should be a table lookup based upon edge number
   // vectors should be derived from the volumetric vectors in the file
   final Vector3f edgeVector = new Vector3f();
-  final Point3f intersectionPoint = new Point3f();
 
   void calcVertexPoints(int vertexA, int vertexB) {
     pointA.add(voxelOrigin, voxelVertexVectors[vertexA]);
@@ -204,16 +225,35 @@ class Volumetric extends SelectionIndependentShape {
     edgePoints[edgePointCount++] = new Point3f(point);
   }
 
-  void addSurfacePoint(Point3f point) {
+  int addSurfacePoint(Point3f point) {
     if (surfacePointCount == surfacePoints.length)
       surfacePoints = (Point3f[])Util.doubleLength(surfacePoints);
-    surfacePoints[surfacePointCount++] = new Point3f(point);
+    surfacePoints[surfacePointCount] = new Point3f(point);
+    return surfacePointCount++;
+  }
+
+  void addSurfaceTriangle(int indexA, int indexB, int indexC) {
+    addTriangleIndex(intersectionPointIndexes[indexA]);
+    addTriangleIndex(intersectionPointIndexes[indexB]);
+    addTriangleIndex(intersectionPointIndexes[indexC]);
+  }
+
+  void addTriangleIndex(int triangleIndex) {
+    if (triangleIndexCount == triangleIndexes.length)
+      triangleIndexes = Util.doubleLength(triangleIndexes);
+    triangleIndexes[triangleIndexCount++] = triangleIndex;
   }
 
   void addVoxelOriginPoint(Point3f point) {
     if (voxelOriginPointCount == voxelOriginPoints.length)
       voxelOriginPoints = (Point3f[])Util.doubleLength(voxelOriginPoints);
     voxelOriginPoints[voxelOriginPointCount++] = new Point3f(point);
+  }
+
+  void addTrianglePoint(Point3f point) {
+    if (trianglePointCount == trianglePoints.length)
+      trianglePoints = (Point3f[])Util.doubleLength(trianglePoints);
+    trianglePoints[trianglePointCount++] = new Point3f(point);
   }
 
   final static Vector3f[] cubeVertexVectors = {

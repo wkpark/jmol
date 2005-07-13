@@ -3139,6 +3139,9 @@
   <fah_proj number="1417" name="p1417_extended-polyQ44-anhydrous" public="n" file="y"
     server="171.64.122.110" atoms="748" preferred="16" deadline="23"
     credit="72" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1418" name="p1418_extended-polyQ44-anhydrous" public="n"
+    server="171.64.122.110" atoms="748" preferred="16" deadline="23"
+    credit="72" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1475" name="p1475_tet1_03_1" public="y" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
@@ -3158,7 +3161,8 @@
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
   <fah_proj number="1482" name="p1482_tet30_1nm" public="n" file="y"
-    />
+    preferred="90"
+    credit="1942" frames="100" code="G" contact="kasson"/>
 
   <!-- Projects 1500 to 1599 -->
   <fah_proj number="1500" name="p1500_FSnat_273_dd19_lowv" public="y" file="y"
@@ -3431,7 +3435,7 @@
     credit="162" frames="100" code="G" contact="luttmann"/>
   <fah_proj number="2004" name="p2004_A21" public="y"
     server="171.64.122.136" atoms="222" preferred="30" deadline="44"
-    credit="154" frames="100" code="G" contact="luttmann"/>
+    credit="154" frames="1000" code="T" contact="luttmann"/>
   <fah_proj number="2005" name="p2005_BBA5_pfold" public="y"
     server="171.64.122.136" atoms="385" preferred="17" deadline="25"
     credit="83" frames="100" code="G" contact="alexrson"/>
@@ -3468,7 +3472,7 @@
   <fah_proj number="2019" name="p2019_BBA5" public="y"
     server="171.64.122.136" atoms="12200" preferred="23" deadline="34"
     credit="116" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2020" name="p2020_BBA5" public="y"
+  <fah_proj number="2020" name="p2020_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="47" deadline="69"
     credit="246" frames="100" code="G" contact="alexrson"/>
 </fah_projects>

@@ -103,10 +103,10 @@ class Pmesh extends SelectionIndependentShape {
       if (value != null) {
         colix = Graphics3D.getColix(value);
         if (currentMesh != null)
-          currentMesh.meshColix = colix;
+          currentMesh.colix = colix;
         else {
           for (int i = meshCount; --i >= 0; )
-            meshes[i].meshColix = colix;
+            meshes[i].colix = colix;
         }
       }
       return;
@@ -114,19 +114,19 @@ class Pmesh extends SelectionIndependentShape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = ("translucent" == value);
       if (currentMesh != null)
-        currentMesh.meshColix =
-          Graphics3D.setTranslucent(currentMesh.meshColix, isTranslucent);
+        currentMesh.colix = 
+          Graphics3D.setTranslucent(currentMesh.colix, isTranslucent);
       else {
         for (int i = meshCount; --i >= 0; )
-          meshes[i].meshColix = 
-            Graphics3D.setTranslucent(meshes[i].meshColix, isTranslucent);
+          meshes[i].colix = 
+            Graphics3D.setTranslucent(meshes[i].colix, isTranslucent);
       }
     }
   }
   
   void allocMesh(String meshID) {
     meshes = (Mesh[])Util.ensureLength(meshes, meshCount + 1);
-    currentMesh = meshes[meshCount++] = new Mesh(meshID);
+    currentMesh = meshes[meshCount++] = new Mesh(meshID, g3d, colix);
   }
 
   /*
@@ -153,12 +153,11 @@ class Pmesh extends SelectionIndependentShape {
   }
 
   void readVertexCount(BufferedReader br) throws Exception {
-    currentMesh.vertexCount = parseInt(br.readLine());
+    currentMesh.setVertexCount(parseInt(br.readLine()));
   }
 
   void readVertices(BufferedReader br) throws Exception {
     if (currentMesh.vertexCount > 0) {
-      currentMesh.vertices = new Point3f[currentMesh.vertexCount];
       for (int i = 0; i < currentMesh.vertexCount; ++i) {
         String line = br.readLine();
         float x = parseFloat(line);
@@ -170,12 +169,11 @@ class Pmesh extends SelectionIndependentShape {
   }
 
   void readPolygonCount(BufferedReader br) throws Exception {
-    currentMesh.polygonCount = parseInt(br.readLine());
+    currentMesh.setPolygonCount(parseInt(br.readLine()));
   }
 
   void readPolygonIndexes(BufferedReader br) throws Exception {
     if (currentMesh.polygonCount > 0) {
-      currentMesh.polygonIndexes = new int[currentMesh.polygonCount][];
       for (int i = 0; i < currentMesh.polygonCount; ++i)
         currentMesh.polygonIndexes[i] = readPolygon(br);
     }
@@ -327,57 +325,5 @@ class Pmesh extends SelectionIndependentShape {
     return value;
   }
 
-  class Mesh {
-    String meshID;
-    boolean visible;
-    short meshColix;
-    
-    int vertexCount;
-    Point3f[] vertices;
-    short[] normixes;
-    int polygonCount;
-    int[][] polygonIndexes;
-    
-    Mesh(String meshID) {
-      this.meshID = meshID;
-      this.meshColix = colix;
-    }
-
-    void clear() {
-      vertexCount = polygonCount = 0;
-      vertices = null;
-      polygonIndexes = null;
-    }
-
-    void initialize() {
-      Vector3f[] vectorSums = new Vector3f[vertexCount];
-      for (int i = vertexCount; --i >= 0; )
-        vectorSums[i] = new Vector3f();
-      sumVertexNormals(vectorSums);
-      normixes = new short[vertexCount];
-      for (int i = vertexCount; --i >= 0; ) {
-        normixes[i] = g3d.get2SidedNormix(vectorSums[i]);
-        /*
-        System.out.println("vectorSums[" + i + "]=" + vectorSums[i] +
-                           " -> normix:" + normixes[i]);
-        */
-      }
-    }
-
-    void sumVertexNormals(Vector3f[] vectorSums) {
-      final Vector3f vNormalizedNormal = new Vector3f();
-
-      for (int i = polygonCount; --i >= 0; ) {
-        int[] pi = polygonIndexes[i];
-        g3d.calcNormalizedNormal(vertices[pi[0]],
-                                 vertices[pi[1]],
-                                 vertices[pi[2]],
-                                 vNormalizedNormal);
-        for (int j = pi.length; --j >= 0; ) {
-          int k = pi[j];
-          vectorSums[k].add(vNormalizedNormal);
-        }
-      }
-    }
-  }
 }
+

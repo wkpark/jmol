@@ -1083,6 +1083,24 @@ final public class Graphics3D {
                  Xyzd.getX(xyzdC), Xyzd.getY(xyzdC), Xyzd.getZ(xyzdC));
   }
 
+  public void drawTriangle(short colix, Point3i screenA,
+                           Point3i screenB, Point3i screenC) {
+    drawTriangle(colix,
+                 screenA.x, screenA.y, screenA.z,
+                 screenB.x, screenB.y, screenB.z,
+                 screenC.x, screenC.y, screenC.z);
+  }
+
+  public void drawQuadrilateral(short colix,
+                                Point3i screenA, Point3i screenB,
+                                Point3i screenC, Point3i screenD) {
+    setColix(colix);
+    drawLine(screenA, screenB);
+    drawLine(screenB, screenC);
+    drawLine(screenC, screenD);
+    drawLine(screenD, screenA);
+  }
+
   public final static byte ENDCAPS_NONE = 0;
   public final static byte ENDCAPS_OPEN = 1;
   public final static byte ENDCAPS_FLAT = 2;

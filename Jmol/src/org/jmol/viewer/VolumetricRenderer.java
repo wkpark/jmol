@@ -29,12 +29,25 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 
-class VolumetricRenderer extends ShapeRenderer {
+class VolumetricRenderer extends MeshRenderer {
 
   final Point3i screenA = new Point3i();
   final Point3i screenB = new Point3i();
 
   void render() {
+    System.out.println("VolumetricRenderer");
+    Volumetric volumetric = (Volumetric)shape;
+    render1(volumetric.meshPositive);
+    render1(volumetric.meshNegative);
+
+    /*
+    renderVoxelOriginPoints(volumetric.voxelOriginPointCount,
+                            volumetric.voxelOriginPoints);
+    */
+
+  }
+
+  void renderX() {
     System.out.println("VolumetricRenderer");
     Volumetric volumetric = (Volumetric)shape;
 
@@ -59,13 +72,6 @@ class VolumetricRenderer extends ShapeRenderer {
     }
   }
 
-  void renderSurfacePoints(int surfacePointCount, Point3f[] surfacePoints) {
-    System.out.println("surfacePointCount=" + surfacePointCount);
-    for (int i = 0; i < surfacePointCount; ++i) {
-      g3d.fillSphereCentered(Graphics3D.GREEN, 5,
-                             viewer.transformPoint(surfacePoints[i]));
-    }
-  }
   void renderVoxelOriginPoints(int voxelOriginPointCount,
                                Point3f[] voxelOriginPoints) {
     System.out.println("voxelOriginPointCount=" + voxelOriginPointCount);

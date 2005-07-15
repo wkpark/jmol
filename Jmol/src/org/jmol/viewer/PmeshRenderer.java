@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2005  Miguel, Jmol Development
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org, jmol-developers@lists.sourceforge.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -24,51 +24,11 @@
  */
 package org.jmol.viewer;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
-
-class PmeshRenderer extends ShapeRenderer {
+class PmeshRenderer extends MeshRenderer {
 
   void render() {
     Pmesh pmesh = (Pmesh)shape;
     for (int i = pmesh.meshCount; --i >= 0; )
       render1(pmesh.meshes[i]);
-  }
-
-  void render1(Pmesh.Mesh mesh) {
-    if (! mesh.visible)
-      return;
-    int vertexCount = mesh.vertexCount;
-    int[][] polygonIndexes = mesh.polygonIndexes;
-    Point3f[] vertices = mesh.vertices;
-    short[] normixes = mesh.normixes;
-    Point3i[] screens = viewer.allocTempScreens(vertexCount);
-    short colix = mesh.meshColix;
-    g3d.setColix(colix);
-    for(int i = vertexCount; --i >= 0; )
-      viewer.transformPoint(vertices[i], screens[i]);
-    for (int i = mesh.polygonCount; --i >= 0; ) {
-      int[] vertexIndexes = polygonIndexes[i];
-      int iA = vertexIndexes[0];
-      int iB = vertexIndexes[1];
-      int iC = vertexIndexes[2];
-      if (vertexIndexes.length == 3) {
-        g3d.fillTriangle(colix,
-                         screens[iA], normixes[iA],
-                         screens[iB], normixes[iB],
-                         screens[iC], normixes[iC]);
-      } else if (vertexIndexes.length == 4) {
-        int iD = vertexIndexes[3];
-        g3d.fillQuadrilateral(colix,
-                              screens[iA], normixes[iA],
-                              screens[iB], normixes[iB],
-                              screens[iC], normixes[iC],
-                              screens[iD], normixes[iD]);
-      } else {
-        System.out.println("PmeshRenderer: polygon with > 4 sides");
-      }
-    }
-    viewer.freeTempScreens(screens);
   }
 }

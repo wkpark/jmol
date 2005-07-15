@@ -36,7 +36,7 @@ class Pmesh extends SelectionIndependentShape {
   int meshCount;
   Mesh[] meshes = new Mesh[4];
   Mesh currentMesh;
-  
+
   void initShape() {
     colix = Graphics3D.ORANGE;
   }

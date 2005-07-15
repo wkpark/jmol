@@ -37,14 +37,12 @@ class VolumetricRenderer extends MeshRenderer {
   void render() {
     System.out.println("VolumetricRenderer");
     Volumetric volumetric = (Volumetric)shape;
-    render1(volumetric.meshPositive);
-    render1(volumetric.meshNegative);
+    render1(volumetric.mesh);
 
     /*
     renderVoxelOriginPoints(volumetric.voxelOriginPointCount,
                             volumetric.voxelOriginPoints);
     */
-
   }
 
   void renderX() {

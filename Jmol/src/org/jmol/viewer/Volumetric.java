@@ -55,14 +55,11 @@ class Volumetric extends SelectionIndependentShape {
   int triangleIndexCount = 0;
   int[] triangleIndexes = new int[3 * 256];
 
-  Mesh meshPositive;
-  Mesh meshNegative;
-  float isoCutoffPositive = 0.02f;
-  float isoCutoffNegative = -0.02f;
+  Mesh mesh;
+  float isoCutoff = 0.02f;
 
   void initShape() {
-    meshPositive = new Mesh("volumetric", g3d, Graphics3D.BLUE);
-    meshNegative = new Mesh("volumetric", g3d, Graphics3D.RED);
+    mesh = new Mesh("volumetric", g3d, Graphics3D.BLUE);
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -79,8 +76,17 @@ class Volumetric extends SelectionIndependentShape {
       
       calcVoxelVertexVectors();
       constructTessellatedSurface();
-      meshPositive.initialize();
-      meshNegative.initialize();
+      mesh.initialize();
+      return;
+    }
+    if ("color" == propertyName) {
+      if (value != null)
+        mesh.colix = Graphics3D.getColix(value);
+      return;
+    }
+    if ("translucency" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      mesh.colix = Graphics3D.setTranslucent(mesh.colix, isTranslucent);
       return;
     }
   }
@@ -107,24 +113,18 @@ class Volumetric extends SelectionIndependentShape {
                              volumetricData[x][y][z]);
           */
 
-    int insideCountPositive = 0,
-      outsideCountPositive = 0, surfaceCountPositive = 0;
-    int insideCountNegative = 0,
-      outsideCountNegative = 0, surfaceCountNegative = 0;
+    int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     for (int x = volumetricCountX - 1; --x >= 0; ) {
       for (int y = volumetricCountY - 1; --y >= 0; ) {
         for (int z = volumetricCountZ - 1; --z >= 0; ) {
-          int insideMaskPositive = 0;
-          int insideMaskNegative = 0;
+          int insideMask = 0;
           for (int i = 8; --i >= 0; ) {
             Point3i offset = cubeVertexOffsets[i];
             float vertexValue = 
               volumetricData[x + offset.x][y + offset.y][z + offset.z];
             vertexValues[i] = vertexValue;
-            if (vertexValue > isoCutoffPositive)
-              insideMaskPositive |= 1 << i;
-            if (vertexValue < isoCutoffNegative)
-              insideMaskNegative |= 1 << i;
+            if (vertexValue > isoCutoff)
+              insideMask |= 1 << i;
           }
 
           /*
@@ -134,37 +134,19 @@ class Volumetric extends SelectionIndependentShape {
           System.out.println("insideMask=" + Integer.toHexString(insideMask));
           */
 
-          boolean interestingPositive = false;
-          if (insideMaskPositive == 0)
-            ++outsideCountPositive;
-          else if (insideMaskPositive == 0xFF)
-            ++insideCountPositive;
-          else {
-            ++surfaceCountPositive;
-            interestingPositive = true;
-          }
-
-          boolean interestingNegative = false;
-          if (insideMaskNegative == 0)
-            ++outsideCountNegative;
-          else if (insideMaskNegative == 0xFF)
-            ++insideCountNegative;
-          else {
-            ++surfaceCountNegative;
-            interestingNegative = true;
-          }
-
-          if (! interestingPositive && ! interestingNegative)
+          if (insideMask == 0) {
+            ++outsideCount;
             continue;
-
+          }
+          if (insideMask == 0xFF) {
+            ++insideCount;
+            continue;
+          }
+          ++surfaceCount;
           calcVoxelOrigin(x, y, z);
 
-          if (interestingPositive)
-            processOneVoxel(insideMaskPositive,
-                            isoCutoffPositive, meshPositive);
-          if (interestingNegative)
-            processOneVoxel(insideMaskNegative,
-                            isoCutoffNegative, meshNegative);
+          processOneVoxel(insideMask,
+                          isoCutoff, mesh);
         }
       }
     }
@@ -175,19 +157,12 @@ class Volumetric extends SelectionIndependentShape {
                        " total=" +
                        (volumetricCountX*volumetricCountY*volumetricCountZ) +
                        "\n" + 
-                       " insideCountPositive=" + insideCountPositive +
-                       " outsideCountPositive=" + outsideCountPositive +
-                       " surfaceCountPositive=" + surfaceCountPositive +
+                       " insideCount=" + insideCount +
+                       " outsideCount=" + outsideCount +
+                       " surfaceCount=" + surfaceCount +
                        " total=" +
-                       (insideCountPositive+
-                        outsideCountPositive+surfaceCountPositive) +
-                       "\n" + 
-                       " insideCountNegative=" + insideCountNegative +
-                       " outsideCountNegative=" + outsideCountNegative +
-                       " surfaceCountNegative=" + surfaceCountNegative +
-                       " total=" +
-                       (insideCountNegative+
-                        outsideCountNegative+surfaceCountNegative));
+                       (insideCount+
+                        outsideCount+surfaceCount));
   }
 
   void processOneVoxel(int insideMask, float isoCutoff, Mesh mesh) {

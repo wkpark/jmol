@@ -27,7 +27,6 @@ package org.jmol.viewer;
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.io.BufferedReader;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -43,8 +42,6 @@ class Volumetric extends SelectionIndependentShape {
 
   int edgePointCount = 0;
   Point3f[] edgePoints = new Point3f[256];
-
-  Hashtable htEdgePoints;
 
   int voxelOriginPointCount = 0;
   Point3f[] voxelOriginPoints = new Point3f[256];
@@ -92,38 +89,43 @@ class Volumetric extends SelectionIndependentShape {
   }
 
   final float[] vertexValues = new float[8];
-  final Point3f[] intersectionPoints = new Point3f[12];
+  final Point3f[] surfacePoints = new Point3f[12];
   {
     for (int i = 12; --i >= 0; )
-      intersectionPoints[i] = new Point3f();
+      surfacePoints[i] = new Point3f();
   }
-  final int[] intersectionPointIndexes = new int[12];
+  final int[] surfacePointIndexes = new int[12];
+
+  int voxelCountX, voxelCountY, voxelCountZ;
 
   void constructTessellatedSurface() {
-    htEdgePoints = new Hashtable();
-    int volumetricCountX = volumetricData.length;
-    int volumetricCountY = volumetricData[0].length;
-    int volumetricCountZ = volumetricData[0][0].length;
+    voxelCountX = volumetricData.length - 1;
+    voxelCountY = volumetricData[0].length - 1;
+    voxelCountZ = volumetricData[0][0].length - 1;
+
+    int[][] isoPointIndexes = new int[voxelCountY * voxelCountZ][12];
+    for (int i = voxelCountY * voxelCountZ; --i >= 0; )
+      isoPointIndexes[i] = new int[12];
 
           /*
-    for (int x = 0; x < volumetricCountX; ++x)
-      for (int y = 0; y < volumetricCountY; ++y)
-        for (int z = 0; z < volumetricCountZ; ++z)
+    for (int x = 0; x < voxelCountX; ++x)
+      for (int y = 0; y < voxelCountY; ++y)
+        for (int z = 0; z < voxelCountZ; ++z)
           System.out.println("" + x + "," + y + "," + z + " = " +
                              volumetricData[x][y][z]);
           */
 
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
-    for (int x = volumetricCountX - 1; --x >= 0; ) {
-      for (int y = volumetricCountY - 1; --y >= 0; ) {
-        for (int z = volumetricCountZ - 1; --z >= 0; ) {
+    for (int x = voxelCountX; --x >= 0; ) {
+      for (int y = voxelCountY; --y >= 0; ) {
+        for (int z = voxelCountZ; --z >= 0; ) {
           int insideMask = 0;
           for (int i = 8; --i >= 0; ) {
             Point3i offset = cubeVertexOffsets[i];
             float vertexValue = 
               volumetricData[x + offset.x][y + offset.y][z + offset.z];
             vertexValues[i] = vertexValue;
-            if (vertexValue > isoCutoff)
+            if (vertexValue >= isoCutoff)
               insideMask |= 1 << i;
           }
 
@@ -144,18 +146,18 @@ class Volumetric extends SelectionIndependentShape {
           }
           ++surfaceCount;
           calcVoxelOrigin(x, y, z);
-
-          processOneVoxel(insideMask,
-                          isoCutoff, mesh);
+          int[] voxelPointIndexes =
+            propogateNeighborPointIndexes(x, y, z, isoPointIndexes);
+          processOneVoxel(insideMask, isoCutoff, voxelPointIndexes);
         }
       }
     }
     System.out.println("volumetric=" +
-                       volumetricCountX + "," +
-                       volumetricCountY + "," +
-                       volumetricCountZ + "," +
+                       voxelCountX + "," +
+                       voxelCountY + "," +
+                       voxelCountZ + "," +
                        " total=" +
-                       (volumetricCountX*volumetricCountY*volumetricCountZ) +
+                       (voxelCountX*voxelCountY*voxelCountZ) +
                        "\n" + 
                        " insideCount=" + insideCount +
                        " outsideCount=" + outsideCount +
@@ -165,11 +167,71 @@ class Volumetric extends SelectionIndependentShape {
                         outsideCount+surfaceCount));
   }
 
-  void processOneVoxel(int insideMask, float isoCutoff, Mesh mesh) {
+  final int[] nullNeighbor = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+
+  int[] propogateNeighborPointIndexes(int x, int y, int z,
+                                      int[][] isoPointIndexes) {
+    int cellIndex = y * voxelCountZ + z;
+    int[] voxelPointIndexes = isoPointIndexes[cellIndex];
+
+    boolean noXNeighbor = (x == voxelCountX - 1);
+    // the x neighbor is myself from my last pass through here
+    if (noXNeighbor) {
+      voxelPointIndexes[1] = -1;
+      voxelPointIndexes[9] = -1;
+      voxelPointIndexes[5] = -1;
+      voxelPointIndexes[10] = -1;
+    } else {
+      voxelPointIndexes[1] = voxelPointIndexes[3];
+      voxelPointIndexes[9] = voxelPointIndexes[8];
+      voxelPointIndexes[5] = voxelPointIndexes[7];
+      voxelPointIndexes[10] = voxelPointIndexes[11];
+    }
+
+    //from the y neighbor pick up the top
+    boolean noYNeighbor = (y == voxelCountY - 1);
+    int[] yNeighbor =
+      noYNeighbor ? nullNeighbor : isoPointIndexes[cellIndex + voxelCountZ];
+
+    voxelPointIndexes[6] = yNeighbor[2];
+    voxelPointIndexes[7] = yNeighbor[3];
+    voxelPointIndexes[4] = yNeighbor[0];
+    if (noXNeighbor)
+      voxelPointIndexes[5] = yNeighbor[1];
+
+    // from my z neighbor
+    boolean noZNeighbor = (z == voxelCountZ - 1);
+    int[] zNeighbor =
+      noZNeighbor ? nullNeighbor : isoPointIndexes[cellIndex + 1];
+
+    voxelPointIndexes[2] = zNeighbor[0];
+    voxelPointIndexes[11] = zNeighbor[8];
+    if (noYNeighbor)
+      voxelPointIndexes[6] = zNeighbor[4];
+    if (noXNeighbor)
+      voxelPointIndexes[10] = zNeighbor[9];
+
+    // these must always be calculated
+    voxelPointIndexes[0] = -1;
+    voxelPointIndexes[3] = -1;
+    voxelPointIndexes[8] = -1;
+
+    return voxelPointIndexes;
+  }
+
+  void dump(int[] pointIndexes) {
+    for (int i = 0; i < 12; ++i)
+      System.out.println(" " + i + ":" + pointIndexes[i]);
+  }
+
+  void processOneVoxel(int insideMask, float isoCutoff,
+                       int[] voxelPointIndexes) {
     int edgeMask = edgeMaskTable[insideMask];
     for (int iEdge = 12; --iEdge >= 0; ) {
       if ((edgeMask & (1 << iEdge)) == 0)
         continue;
+      if (voxelPointIndexes[iEdge] >= 0)
+        continue; // propogaged from neighbor
       int vertexA = edgeVertexes[2*iEdge];
       int vertexB = edgeVertexes[2*iEdge + 1];
       float valueA = vertexValues[vertexA];
@@ -177,21 +239,20 @@ class Volumetric extends SelectionIndependentShape {
       calcVertexPoints(vertexA, vertexB);
       addEdgePoint(pointA);
       addEdgePoint(pointB);
-      calcIntersectionPoint(isoCutoff, valueA, valueB,
-                            intersectionPoints[iEdge]);
-      intersectionPointIndexes[iEdge] =
-        mesh.addVertexCopy(intersectionPoints[iEdge]);
+      calcSurfacePoint(isoCutoff, valueA, valueB, surfacePoints[iEdge]);
+      voxelPointIndexes[iEdge] =
+        mesh.addVertexCopy(surfacePoints[iEdge]);
     }
     
     byte[] triangles = triangleTable[insideMask];
     for (int i = triangles.length; (i -= 3) >= 0; )
-      mesh.addTriangle(intersectionPointIndexes[triangles[i    ]],
-                       intersectionPointIndexes[triangles[i + 1]],
-                       intersectionPointIndexes[triangles[i + 2]]);
+      mesh.addTriangle(voxelPointIndexes[triangles[i    ]],
+                       voxelPointIndexes[triangles[i + 1]],
+                       voxelPointIndexes[triangles[i + 2]]);
   }
     
-  void calcIntersectionPoint(float isoCutoff, float valueA, float valueB,
-                             Point3f intersectionPoint) {
+  void calcSurfacePoint(float isoCutoff, float valueA, float valueB,
+                             Point3f surfacePoint) {
     float diff = valueB - valueA;
     float fraction = (isoCutoff - valueA) / diff;
     if (Float.isNaN(fraction) || fraction < 0 || fraction > 1) {
@@ -203,7 +264,7 @@ class Volumetric extends SelectionIndependentShape {
     }
 
     edgeVector.sub(pointB, pointA);
-    intersectionPoint.scaleAdd(fraction, edgeVector, pointA);
+    surfacePoint.scaleAdd(fraction, edgeVector, pointA);
   }
 
   final Point3f voxelOrigin = new Point3f();

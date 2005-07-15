@@ -219,7 +219,7 @@ class Volumetric extends SelectionIndependentShape {
                              Point3f intersectionPoint) {
     float diff = valueB - valueA;
     float fraction = (isoCutoff - valueA) / diff;
-    if (Float.isNaN(fraction) || fraction < 0 || fraction >= 1) {
+    if (Float.isNaN(fraction) || fraction < 0 || fraction > 1) {
       System.out.println("fraction=" + fraction +
                          " isoCutoff=" + isoCutoff +
                          " A:" + valueA +

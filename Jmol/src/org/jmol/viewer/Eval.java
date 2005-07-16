@@ -480,6 +480,10 @@ class Eval implements Runnable {
         break;
       case Token.centerAt:
         centerAt();
+        break;
+      case Token.volumetric:
+        volumetric();
+        break;
 
         // not implemented
       case Token.bond:
@@ -520,7 +524,7 @@ class Eval implements Runnable {
       ichEnd = script.length();
     return script.substring(ichBegin, ichEnd);
   }
-
+  
   final StringBuffer strbufLog = new StringBuffer(80);
   void logDebugScript() {
     strbufLog.setLength(0);
@@ -1540,8 +1544,6 @@ class Eval implements Runnable {
   void colorObject(int tokObject, int itoken) throws ScriptException {
     if (itoken >= statementLength)
       badArgumentCount();
-    //boolean isTranslucent = false;
-    //boolean isOpaque = false;
     String translucentOrOpaque = null;
     Object colorvalue = null;
     int shapeType = getShapeType(tokObject);
@@ -3427,6 +3429,38 @@ class Eval implements Runnable {
     float y = floatParameter(3);
     float z = floatParameter(4);
     viewer.setCenter(relative, x, y, z);
+  }
+
+  void volumetric() throws ScriptException {
+    viewer.setShapeSize(JmolConstants.SHAPE_VOLUMETRIC, 1);
+    viewer.setShapeProperty(JmolConstants.SHAPE_VOLUMETRIC, "meshID", null);
+    for (int i = 1; i < statementLength; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (statement[i].tok) {
+      case Token.identifier:
+        propertyName = "meshID";
+        propertyValue = statement[i].value;
+        break;
+      case Token.string:
+        String filename = (String)statement[i].value;
+        Object t =
+          viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
+        if (t instanceof String)
+          fileNotFoundException(filename + ":" + t);
+        propertyName = "bufferedreader";
+        propertyValue = t;
+        break;
+      case Token.on:
+      case Token.off:
+        propertyName = (String)statement[i].value;
+        break;
+      default:
+        invalidArgument();
+      }
+      viewer.setShapeProperty(JmolConstants.SHAPE_VOLUMETRIC,
+                              propertyName, propertyValue);
+    }
   }
 
 }

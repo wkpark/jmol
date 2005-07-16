@@ -35,7 +35,6 @@ abstract class MeshRenderer extends ShapeRenderer {
     if (! mesh.visible)
       return;
     int vertexCount = mesh.vertexCount;
-    System.out.println("vertexCount=" + vertexCount);
     if (vertexCount == 0)
       return;
     Point3f[] vertices = mesh.vertices;
@@ -54,8 +53,9 @@ abstract class MeshRenderer extends ShapeRenderer {
   }
 
   void renderPoints(Mesh mesh, Point3i[] screens, int vertexCount) {
+    short colix = mesh.colix;
     for (int i = vertexCount; --i >= 0; )
-      g3d.fillSphereCentered(Graphics3D.BLUE, 5, screens[i]);
+      g3d.fillSphereCentered(colix, 4, screens[i]);
   }
 
   void renderTriangles(Mesh mesh, Point3i[] screens, boolean fill) {

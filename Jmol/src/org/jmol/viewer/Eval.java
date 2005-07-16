@@ -481,8 +481,8 @@ class Eval implements Runnable {
       case Token.centerAt:
         centerAt();
         break;
-      case Token.volumetric:
-        volumetric();
+      case Token.isosurface:
+        isosurface();
         break;
 
         // not implemented
@@ -2466,7 +2466,7 @@ class Eval implements Runnable {
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
    Token.rocket, Token.star,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover, Token.pmesh, Token.polyhedra, Token.surface, Token.volumetric,
+   Token.hover, Token.pmesh, Token.polyhedra, Token.surface, Token.isosurface,
    Token.prueba,
   };
 
@@ -3336,6 +3336,21 @@ class Eval implements Runnable {
         propertyName = "bufferedreader";
         propertyValue = t;
         break;
+      case Token.dots:
+        propertyValue = Boolean.TRUE;
+      case Token.nodots:
+        propertyName = "dots";
+        break;
+      case Token.mesh:
+        propertyValue = Boolean.TRUE;
+      case Token.nomesh:
+        propertyName = "mesh";
+        break;
+      case Token.fill:
+        propertyValue = Boolean.TRUE;
+      case Token.nofill:
+        propertyName = "fill";
+        break;
       case Token.on:
       case Token.off:
         propertyName = (String)statement[i].value;
@@ -3431,9 +3446,9 @@ class Eval implements Runnable {
     viewer.setCenter(relative, x, y, z);
   }
 
-  void volumetric() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_VOLUMETRIC, 1);
-    viewer.setShapeProperty(JmolConstants.SHAPE_VOLUMETRIC, "meshID", null);
+  void isosurface() throws ScriptException {
+    viewer.setShapeSize(JmolConstants.SHAPE_ISOSURFACE, 1);
+    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "meshID", null);
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -3457,6 +3472,21 @@ class Eval implements Runnable {
         propertyName = "cutoff";
         propertyValue = statement[i].value;
         break;
+      case Token.dots:
+        propertyValue = Boolean.TRUE;
+      case Token.nodots:
+        propertyName = "dots";
+        break;
+      case Token.mesh:
+        propertyValue = Boolean.TRUE;
+      case Token.nomesh:
+        propertyName = "mesh";
+        break;
+      case Token.fill:
+        propertyValue = Boolean.TRUE;
+      case Token.nofill:
+        propertyName = "fill";
+        break;
       case Token.on:
       case Token.off:
         propertyName = (String)statement[i].value;
@@ -3464,7 +3494,7 @@ class Eval implements Runnable {
       default:
         invalidArgument();
       }
-      viewer.setShapeProperty(JmolConstants.SHAPE_VOLUMETRIC,
+      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
                               propertyName, propertyValue);
     }
   }

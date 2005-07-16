@@ -176,7 +176,7 @@ class Token {
   final static int pmesh        = command | 91;
   final static int polyhedra    = command | 92 | embeddedExpression;
   final static int centerAt     = command | 93;
-  final static int volumetric   = command | 94;
+  final static int isosurface   = command | 94;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -354,6 +354,11 @@ class Token {
   final static int jmol         = misc | 46;
   final static int relative     = misc | 47;
   final static int absolute     = misc | 48;
+  final static int nodots       = misc | 49;
+  final static int mesh         = misc | 50;
+  final static int nomesh       = misc | 51;
+  final static int fill         = misc | 52;
+  final static int nofill       = misc | 53;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -483,7 +488,7 @@ class Token {
     "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
     "polyhedra",         new Token(polyhedra,varArgCount, "polyhedra"),
     "centerat",          new Token(centerAt, varArgCount, "centerat"),
-    "volumetric",        new Token(volumetric,varArgCount,"volumetric"),
+    "isosurface",        new Token(isosurface,varArgCount,"isosurface"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),
@@ -666,6 +671,11 @@ class Token {
     "solid",        new Token(solid,           "solid"),
     "relative",     new Token(relative,        "relative"),
     "absolute",     new Token(absolute,        "absolute"),
+    "nodots",       new Token(nodots,          "nodots"),
+    "mesh",         new Token(mesh,            "mesh"),
+    "nomesh",       new Token(nomesh,          "nomesh"),
+    "fill",         new Token(fill,            "fill"),
+    "nofill",       new Token(nofill,          "nofill"),
   };
 
   static Hashtable map = new Hashtable();

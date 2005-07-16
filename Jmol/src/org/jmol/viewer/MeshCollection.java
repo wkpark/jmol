@@ -112,6 +112,36 @@ abstract class MeshCollection extends SelectionIndependentShape {
             Graphics3D.setTranslucent(meshes[i].colix, isTranslucent);
       }
     }
+    if ("dots" == propertyName) {
+      boolean showDots = value == Boolean.TRUE;
+      if (currentMesh != null)
+        currentMesh.showPoints = showDots;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].showPoints = showDots;
+      }
+      return;
+    }
+    if ("mesh" == propertyName) {
+      boolean showMesh = value == Boolean.TRUE;
+      if (currentMesh != null)
+        currentMesh.drawTriangles = showMesh;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].drawTriangles = showMesh;
+      }
+      return;
+    }
+    if ("fill" == propertyName) {
+      boolean showFill = value == Boolean.TRUE;
+      if (currentMesh != null)
+        currentMesh.fillTriangles = showFill;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].fillTriangles = showFill;
+      }
+      return;
+    }
   }
 
   void allocMesh(String meshID) {

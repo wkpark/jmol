@@ -24,11 +24,11 @@
  */
 package org.jmol.viewer;
 
-class VolumetricRenderer extends MeshRenderer {
+class IsosurfaceRenderer extends MeshRenderer {
 
   void render() {
-    Volumetric volumetric = (Volumetric)shape;
-    for (int i = volumetric.meshCount; --i >= 0; )
-      render1(volumetric.meshes[i]);
+    Isosurface Isosurface = (Isosurface)shape;
+    for (int i = Isosurface.meshCount; --i >= 0; )
+      render1(Isosurface.meshes[i]);
   }
 }

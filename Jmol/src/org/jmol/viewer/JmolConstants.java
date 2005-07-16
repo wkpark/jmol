@@ -1687,16 +1687,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   // positive and negative default colors used for
-  // volumetric rendering of .cube files
+  // isosurface rendering of .cube files
 
-  public final static int[] argbsVolumetricPositive = {
+  public final static int[] argbsIsosurfacePositive = {
     0xFF5020A0,
     0xFF7040C0,
     0xFF9060E0,
     0xFFB080FF,
   };
   
-  public final static int[] argbsVolumetricNegative = {
+  public final static int[] argbsIsosurfaceNegative = {
     0xFFA02050,
     0xFFC04070,
     0xFFE06090,
@@ -2153,7 +2153,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_PMESH      = 22;
   public final static int SHAPE_POLYHEDRA  = 23;
   public final static int SHAPE_SURFACE    = 24;
-  public final static int SHAPE_VOLUMETRIC = 25;
+  public final static int SHAPE_ISOSURFACE = 25;
   public final static int SHAPE_PRUEBA     = 26;
   public final static int SHAPE_MAX        = 27;
 
@@ -2166,7 +2166,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Strands", "MeshRibbon", "Ribbons",
     "Rockets", "Stars",
     "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
-    "Pmesh", "Polyhedra", "Surface", "Volumetric",
+    "Pmesh", "Polyhedra", "Surface", "Isosurface",
     "Prueba"
   };
 

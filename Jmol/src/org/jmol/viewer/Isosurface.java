@@ -33,7 +33,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
-class Volumetric extends MeshCollection {
+class Isosurface extends MeshCollection {
 
   final float ANGSTROMS_PER_BOHR = JmolConstants.ANGSTROMS_PER_BOHR;
 
@@ -109,13 +109,13 @@ class Volumetric extends MeshCollection {
     if (cutoff >= 0) {
       indexColorPositive =
         (indexColorPositive %
-         JmolConstants.argbsVolumetricPositive.length);
-      argb = JmolConstants.argbsVolumetricPositive[indexColorPositive++];
+         JmolConstants.argbsIsosurfacePositive.length);
+      argb = JmolConstants.argbsIsosurfacePositive[indexColorPositive++];
     } else {
       indexColorNegative =
         (indexColorNegative %
-         JmolConstants.argbsVolumetricNegative.length);
-      argb = JmolConstants.argbsVolumetricNegative[indexColorNegative++];
+         JmolConstants.argbsIsosurfaceNegative.length);
+      argb = JmolConstants.argbsIsosurfaceNegative[indexColorNegative++];
     }
     return g3d.getColix(argb);
   }

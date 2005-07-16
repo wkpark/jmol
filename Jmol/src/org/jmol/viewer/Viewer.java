@@ -955,7 +955,8 @@ final public class Viewer extends JmolViewer {
                        " priority:" + Thread.currentThread().getPriority());
     */
     clear();
-    forceRefresh();
+    // keep old screen image while new file is being loaded
+    //    forceRefresh();
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name);
     long ms = System.currentTimeMillis() - timeBegin;

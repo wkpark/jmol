@@ -55,7 +55,7 @@ class TransformManager {
   // this matrix only holds rotations ... no translations
   // however, it cannot be a Matrix3f because we need to multiply it by
   // a matrix4f which contains translations
-  final Matrix3f matrixRotate = new Matrix3f();
+  private final Matrix3f matrixRotate = new Matrix3f();
   private final Matrix3f matrixTemp3 = new Matrix3f();
 
   void rotateXYBy(int xDelta, int yDelta) {
@@ -697,7 +697,7 @@ class TransformManager {
     matrixTransform.sub(matrixTemp);
     // now, multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
-    matrixTemp.set(matrixRotate);
+    matrixTemp.set(stereoFrame ? matrixStereo : matrixRotate);
     matrixTransform.mul(matrixTemp, matrixTransform);
     //    matrixTransform.mul(matrixRotate, matrixTransform);
     // we want all z coordinates >= 0, with larger coordinates further away
@@ -1023,4 +1023,34 @@ class TransformManager {
     }
   }
 
+  ////////////////////////////////////////////////////////////////
+  // stereo support
+  ////////////////////////////////////////////////////////////////
+
+  boolean stereoDisplay;
+  void setStereoDisplay(boolean stereoDisplay) {
+    this.stereoDisplay = stereoDisplay;
+  }
+
+  float stereoDegrees = 5;
+  float stereoRadians = 5 * radiansPerDegree;
+  void setStereoDegrees(float stereoDegrees) {
+    this.stereoDegrees = stereoDegrees;
+    this.stereoRadians = stereoDegrees * radiansPerDegree;
+  }
+
+  boolean stereoFrame;
+
+  private final Matrix3f matrixStereo = new Matrix3f();
+
+  synchronized Matrix3f getStereoRotationMatrix(boolean stereoFrame) {
+    this.stereoFrame = stereoFrame;
+    if (stereoFrame) {
+      matrixTemp3.rotY(axesOrientationRasmol ? stereoRadians : -stereoRadians);
+      matrixStereo.mul(matrixTemp3, matrixRotate);
+    } else {
+      matrixStereo.set(matrixRotate);
+    }
+    return matrixStereo;
+  }
 }

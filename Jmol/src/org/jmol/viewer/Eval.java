@@ -484,6 +484,9 @@ class Eval implements Runnable {
       case Token.isosurface:
         isosurface();
         break;
+      case Token.stereo:
+        stereo();
+        break;
 
         // not implemented
       case Token.bond:
@@ -495,7 +498,6 @@ class Eval implements Runnable {
       case Token.print:
       case Token.renumber:
       case Token.save:
-      case Token.stereo:
       case Token.structure:
       case Token.unbond:
       case Token.write:
@@ -3497,5 +3499,23 @@ class Eval implements Runnable {
       viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
                               propertyName, propertyValue);
     }
+  }
+
+  void stereo() throws ScriptException {
+    boolean stereoDisplay = false;
+    switch (statement[1].tok) {
+    case Token.on:
+      stereoDisplay = true;
+    case Token.off:
+      break;
+    case Token.integer:
+    case Token.decimal:
+      viewer.setStereoDegrees(floatParameter(1));
+      stereoDisplay = true;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setStereoDisplay(stereoDisplay);
   }
 }

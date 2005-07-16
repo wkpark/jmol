@@ -470,13 +470,17 @@ final public class Viewer extends JmolViewer {
   public void setScreenDimension(Dimension dim) {
     // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
     // so don't try dim1.equals(dim2)
-    if (dim.width == dimScreen.width && dim.height == dimScreen.height)
+    int height = dim.height;
+    int width = dim.width;
+    if (getStereoDisplay())
+      width = (width + 1) / 2;
+    if (dimScreen.width == width && dimScreen.height == height)
       return;
-    dimScreen.width = dim.width;
-    dimScreen.height = dim.height;
-    transformManager.setScreenDimension(dim.width, dim.height);
+    dimScreen.width = width;
+    dimScreen.height = height;
+    transformManager.setScreenDimension(width, height);
     transformManager.scaleFitToScreen();
-    g3d.setSize(dim, enableFullSceneAntialiasing);
+    g3d.setSize(dimScreen, enableFullSceneAntialiasing);
   }
 
   public int getScreenWidth() {
@@ -487,7 +491,7 @@ final public class Viewer extends JmolViewer {
     return dimScreen.height;
   }
 
-  void setRectClip(Rectangle clip, boolean antialiasThisFrame) {
+  void setRectClip(Rectangle clip) {
     if (clip == null) {
       rectClip.x = rectClip.y = 0;
       rectClip.setSize(dimScreen);
@@ -1512,14 +1516,20 @@ final public class Viewer extends JmolViewer {
     manageScriptTermination();
     if (size != null)
       setScreenDimension(size);
-    boolean antialiasThisFrame = true;
-    setRectClip(clip, antialiasThisFrame);
-    g3d.beginRendering(rectClip, transformManager.matrixRotate,
-                       antialiasThisFrame);
-    /*
-    System.out.println("renderScreenImage() thread:" + Thread.currentThread() +
-                       " priority:" + Thread.currentThread().getPriority());
-    */
+    if (! getStereoDisplay()) {
+      setRectClip(clip);
+      render1(g, transformManager.getStereoRotationMatrix(false), false, 0, 0);
+    } else {
+      render1(g, transformManager.getStereoRotationMatrix(false), false, 0, 0);
+      render1(g, transformManager.getStereoRotationMatrix(true), false,
+              dimScreen.width, 0);
+    }
+    notifyRepainted();
+  }
+
+  void render1(Graphics g, Matrix3f matrixRotate, 
+               boolean antialias, int x, int y) {
+    g3d.beginRendering(rectClip, matrixRotate, antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                           repaintManager.displayModelIndex);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
@@ -1528,19 +1538,18 @@ final public class Viewer extends JmolViewer {
     g3d.endRendering();
     Image img = g3d.getScreenImage();
     try {
-      g.drawImage(img, 0, 0, null);
+      g.drawImage(img, x, y, null);
     } catch (NullPointerException npe) {
       System.out.println("Sun!! ... fix graphics your bugs!");
     }
     g3d.releaseScreenImage();
-    notifyRepainted();
   }
 
   public Image getScreenImage() {
     boolean antialiasThisFrame = true;
-    setRectClip(null, antialiasThisFrame);
-    // FIXME ... rectClip is messed up for FSAA
-    g3d.beginRendering(rectClip, transformManager.matrixRotate,
+    setRectClip(null);
+    g3d.beginRendering(rectClip,
+                       transformManager.getStereoRotationMatrix(false),
                        antialiasThisFrame);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                           repaintManager.displayModelIndex);
@@ -2387,6 +2396,26 @@ final public class Viewer extends JmolViewer {
     return modelManager.getPolymerLeadMidPoints(modelIndex, polymerIndex);
   }
   
+  ////////////////////////////////////////////////////////////////
+  // stereo support
+  ////////////////////////////////////////////////////////////////
+
+  void setStereoDisplay(boolean stereoDisplay) {
+    transformManager.setStereoDisplay(stereoDisplay);
+  }
+
+  boolean getStereoDisplay() {
+    return transformManager.stereoDisplay;
+  }
+
+  float getStereoDegrees() {
+    return transformManager.stereoDegrees;
+  }
+
+  void setStereoDegrees(float degrees) {
+    transformManager.setStereoDegrees(degrees);
+  }
+
   ////////////////////////////////////////////////////////////////
   //
   ////////////////////////////////////////////////////////////////

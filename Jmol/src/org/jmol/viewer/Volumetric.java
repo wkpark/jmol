@@ -35,6 +35,8 @@ import javax.vecmath.Matrix3f;
 
 class Volumetric extends MeshCollection {
 
+  final float ANGSTROMS_PER_BOHR = JmolConstants.ANGSTROMS_PER_BOHR;
+
   final Point3f volumetricOrigin = new Point3f();
   final Vector3f[] volumetricVectors = new Vector3f[3];
   {
@@ -137,6 +139,7 @@ class Volumetric extends MeshCollection {
     volumetricOrigin.x = parseFloat(line, ichNextParse);
     volumetricOrigin.y = parseFloat(line, ichNextParse);
     volumetricOrigin.z = parseFloat(line, ichNextParse);
+    volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
     if (atomCount < 0) {
       atomCount = -atomCount;
       negativeAtomCount = true;
@@ -156,6 +159,7 @@ class Volumetric extends MeshCollection {
     voxelVector.x = parseFloat(line, ichNextParse);
     voxelVector.y = parseFloat(line, ichNextParse);
     voxelVector.z = parseFloat(line, ichNextParse);
+    voxelVector.scale(ANGSTROMS_PER_BOHR);
   }
 
   void readAtoms(BufferedReader br) throws Exception {

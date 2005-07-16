@@ -127,6 +127,9 @@ final public class JmolConstants {
 
   public final static short BOND_ALL_MASK      = (short)0xFFFF;
 
+  /* .cube files need this */
+  final static float ANGSTROMS_PER_BOHR = 0.5291772f;
+
   public final static int[] argbsHbondType =
   {
     0xFFFF69B4, // unused - pink

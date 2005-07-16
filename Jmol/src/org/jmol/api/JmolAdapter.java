@@ -251,27 +251,6 @@ public abstract class JmolAdapter {
   }
 
   /**
-   * whether or not this file has volumetric surface data
-   *
-   */
-  public boolean hasVolumetricSurfaceData(Object clientFile) {
-    return false;
-  }
-
-  public float[] getVolumetricOrigin(Object clientFile) {
-    return null;
-  }
-
-  public float[][] getVolumetricSurfaceVectors(Object clientFile) {
-    return null;
-  }
-
-  public float[][][] getVolumetricSurfaceData(Object clientFile) {
-    return null;
-  }
-
-
-  /**
    * Get an AtomIterator for retrieval of all atoms in the file.
    * 
    * <p>This method may not return <code>null</code>.

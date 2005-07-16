@@ -198,8 +198,6 @@ final class Frame {
     freeze();
     //long msToBuild = System.currentTimeMillis() - timeBegin;
     //    System.out.println("Build a frame:" + msToBuild + " ms");
-    if (adapter.hasVolumetricSurfaceData(clientFile))
-      loadVolumetricSurfaceData(clientFile);
     adapter.finish(clientFile);
     finalizeBuild();
     dumpAtomSetNameDiagnostics(clientFile);
@@ -1717,16 +1715,4 @@ final class Frame {
     mmset.selectSeqcodeRange(seqcodeA, seqcodeB, bs);
   }
 
-  ////////////////////////////////////////////////////////////////
-
-  void loadVolumetricSurfaceData(Object clientFile) {
-    System.out.println("loadVolumetricSurfaceData");
-    Object[] volumetricParameters = new Object[3];
-    volumetricParameters[0] = adapter.getVolumetricOrigin(clientFile);
-    volumetricParameters[1] = adapter.getVolumetricSurfaceVectors(clientFile);
-    volumetricParameters[2] = adapter.getVolumetricSurfaceData(clientFile);
-    setShapeSize(JmolConstants.SHAPE_VOLUMETRIC, 1, null);
-    setShapeProperty(JmolConstants.SHAPE_VOLUMETRIC, "load",
-                     volumetricParameters, null);
-  }
 }

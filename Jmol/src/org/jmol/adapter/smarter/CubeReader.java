@@ -63,11 +63,14 @@ class CubeReader extends AtomSetCollectionReader {
       readAtomCountAndOrigin();
       readVoxelVectors();
       readAtoms();
+      /*
+        volumetric data is no longer read here
       readExtraLine();
       readVoxelData();
       atomSetCollection.volumetricOrigin = origin;
       atomSetCollection.volumetricSurfaceVectors = voxelVectors;
       atomSetCollection.volumetricSurfaceData = voxelData;
+      */
     } catch (Exception ex) {
       atomSetCollection.errorMessage = "Could not read file:" + ex;
     }
@@ -126,6 +129,7 @@ class CubeReader extends AtomSetCollectionReader {
       br.readLine();
   }
 
+  /*
   void readVoxelData() throws Exception {
     System.out.println("entering readVoxelData");
     String line = "";
@@ -157,4 +161,5 @@ class CubeReader extends AtomSetCollectionReader {
                        " x " + voxelCountY +
                        " x " + voxelCountZ + " voxels");
   }
+  */
 }

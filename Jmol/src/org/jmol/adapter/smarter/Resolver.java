@@ -234,7 +234,7 @@ class Resolver {
     "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };
 
   final static String[] gaussianRecords =
-  { "Entering Gaussian System", "1998 Gaussian, Inc." };
+  { "Entering Gaussian System", "Entering Link 1", "1998 Gaussian, Inc." };
 
   final static String[] mopacRecords =
   { "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",

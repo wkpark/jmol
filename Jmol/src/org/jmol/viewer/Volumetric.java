@@ -33,61 +33,185 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
-class Volumetric extends SelectionIndependentShape {
+class Volumetric extends MeshCollection {
 
-  Point3f volumetricOrigin;
+  final Point3f volumetricOrigin = new Point3f();
   final Vector3f[] volumetricVectors = new Vector3f[3];
+  {
+    for (int i = 3; --i >= 0; )
+      volumetricVectors[i] = new Vector3f();
+  }
+  final int[] voxelCounts = new int[3];
   final Matrix3f volumetricMatrix = new Matrix3f();
-  float[][][] volumetricData;
+  float[][][] voxelData;
 
   int edgePointCount = 0;
   Point3f[] edgePoints = new Point3f[256];
 
-  int voxelOriginPointCount = 0;
-  Point3f[] voxelOriginPoints = new Point3f[256];
-
-  int trianglePointCount = 0;
-  Point3f[] trianglePoints = new Point3f[256];
-
-  int triangleIndexCount = 0;
-  int[] triangleIndexes = new int[3 * 256];
-
-  Mesh mesh;
   float isoCutoff = 0.02f;
 
   void initShape() {
-    mesh = new Mesh("volumetric", g3d, Graphics3D.BLUE);
+    colix = Graphics3D.BLUE;
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
+    if ("bufferedreader" == propertyName) {
+      BufferedReader br = (BufferedReader)value;
+      if (currentMesh == null)
+        allocMesh(null);
+      currentMesh.clear();
+      readVolumetricHeader(br);
+      calcVolumetricMatrix();
+      readVolumetricData(br);
+      calcVoxelVertexVectors();
+      constructTessellatedSurface();
+      currentMesh.initialize();
+      currentMesh.checkForDuplicatePoints(.001f);
+      currentMesh.visible = true;
+      return;
+    }
+    super.setProperty(propertyName, value, bs);
+  }
 
+  void calcVolumetricMatrix() {
+    for (int i = 3; --i >= 0; )
+      volumetricMatrix.setColumn(i, volumetricVectors[i]);
+  }
+
+
+  /*
     System.out.println("setProperty(" + propertyName + "," + value + ")");
     if ("load" == propertyName) {
       volumetricOrigin = new Point3f((float[])((Object[])value)[0]);
       float[][] vvectors = (float[][])((Object[])value)[1];
       for (int i = 3; --i >= 0; ) {
         volumetricVectors[i] = new Vector3f(vvectors[i]);
-        volumetricMatrix.setColumn(i, volumetricVectors[i]);
       }
       volumetricData = (float[][][])((Object[])value)[2];
-      
+
       calcVoxelVertexVectors();
       constructTessellatedSurface();
       mesh.initialize();
-      mesh.checkForDuplicatePoints(.01f);
       return;
     }
-    if ("color" == propertyName) {
-      if (value != null)
-        mesh.colix = Graphics3D.getColix(value);
-      return;
-    }
-    if ("translucency" == propertyName) {
-      boolean isTranslucent = ("translucent" == value);
-      mesh.colix = Graphics3D.setTranslucent(mesh.colix, isTranslucent);
-      return;
+  */
+
+  ////////////////////////////////////////////////////////////////
+  // file reading stuff
+  ////////////////////////////////////////////////////////////////
+
+  void readVolumetricHeader(BufferedReader br) {
+    try {
+      readTitleLines(br);
+      readAtomCountAndOrigin(br);
+      readVoxelVectors(br);
+      readAtoms(br);
+      readExtraLine(br);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new NullPointerException();
     }
   }
+
+  void readVolumetricData(BufferedReader br) {
+    try {
+      readVoxelData(br);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new NullPointerException();
+    }
+  }
+
+  void readTitleLines(BufferedReader br) throws Exception {
+    String title;
+    title = br.readLine().trim() + " - ";
+    title += br.readLine().trim();
+  }
+
+  int atomCount;
+  boolean negativeAtomCount;
+
+  void readAtomCountAndOrigin(BufferedReader br) throws Exception {
+    String line = br.readLine();
+    atomCount = parseInt(line);
+    volumetricOrigin.x = parseFloat(line, ichNextParse);
+    volumetricOrigin.y = parseFloat(line, ichNextParse);
+    volumetricOrigin.z = parseFloat(line, ichNextParse);
+    if (atomCount < 0) {
+      atomCount = -atomCount;
+      negativeAtomCount = true;
+    }
+  }
+
+  void readVoxelVectors(BufferedReader br) throws Exception {
+    for (int i = 0; i < 3; ++i)
+      readVoxelVector(br, i);
+  }
+
+  void readVoxelVector(BufferedReader br, int voxelVectorIndex)
+    throws Exception {
+    String line = br.readLine();
+    Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
+    voxelCounts[voxelVectorIndex] = parseInt(line);
+    voxelVector.x = parseFloat(line, ichNextParse);
+    voxelVector.y = parseFloat(line, ichNextParse);
+    voxelVector.z = parseFloat(line, ichNextParse);
+  }
+
+  void readAtoms(BufferedReader br) throws Exception {
+    for (int i = 0; i < atomCount; ++i) {
+      String line = br.readLine();
+      /*
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.elementNumber = (byte)parseInt(line);
+      atom.partialCharge = parseFloat(line, ichNextParse);
+      atom.x = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
+      atom.y = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
+      atom.z = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
+      */
+    }
+  }
+
+  void readExtraLine(BufferedReader br) throws Exception {
+    if (negativeAtomCount)
+      br.readLine();
+  }
+
+  void readVoxelData(BufferedReader br) throws Exception {
+    System.out.println("entering readVoxelData");
+    String line = "";
+    ichNextParse = 0;
+    int voxelCountX = voxelCounts[0];
+    int voxelCountY = voxelCounts[1];
+    int voxelCountZ = voxelCounts[2];
+    voxelData = new float[voxelCountX][][];
+    for (int x = 0; x < voxelCountX; ++x) {
+      float[][] plane = new float[voxelCountY][];
+      voxelData[x] = plane;
+      for (int y = 0; y < voxelCountY; ++y) {
+        float[] strip = new float[voxelCountZ];
+        plane[y] = strip;
+        for (int z = 0; z < voxelCountZ; ++z) {
+          float voxelValue = parseFloat(line, ichNextParse);
+          if (Float.isNaN(voxelValue)) {
+            line = br.readLine();
+            if (line == null || Float.isNaN(voxelValue = parseFloat(line))) {
+              System.out.println("end of file in CubeReader?");
+              throw new NullPointerException();
+            }
+          }
+          strip[z] = voxelValue;
+        }
+      }
+    }
+    System.out.println("Successfully read " + voxelCountX +
+                       " x " + voxelCountY +
+                       " x " + voxelCountZ + " voxels");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // marching cube stuff
+  ////////////////////////////////////////////////////////////////
 
   final float[] vertexValues = new float[8];
   final Point3f[] surfacePoints = new Point3f[12];
@@ -100,9 +224,9 @@ class Volumetric extends SelectionIndependentShape {
   int voxelCountX, voxelCountY, voxelCountZ;
 
   void constructTessellatedSurface() {
-    voxelCountX = volumetricData.length - 1;
-    voxelCountY = volumetricData[0].length - 1;
-    voxelCountZ = volumetricData[0][0].length - 1;
+    voxelCountX = voxelData.length - 1;
+    voxelCountY = voxelData[0].length - 1;
+    voxelCountZ = voxelData[0][0].length - 1;
 
     int[][] isoPointIndexes = new int[voxelCountY * voxelCountZ][12];
     for (int i = voxelCountY * voxelCountZ; --i >= 0; )
@@ -113,7 +237,7 @@ class Volumetric extends SelectionIndependentShape {
       for (int y = 0; y < voxelCountY; ++y)
         for (int z = 0; z < voxelCountZ; ++z)
           System.out.println("" + x + "," + y + "," + z + " = " +
-                             volumetricData[x][y][z]);
+                             voxelData[x][y][z]);
           */
 
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
@@ -124,7 +248,7 @@ class Volumetric extends SelectionIndependentShape {
           for (int i = 8; --i >= 0; ) {
             Point3i offset = cubeVertexOffsets[i];
             float vertexValue = 
-              volumetricData[x + offset.x][y + offset.y][z + offset.z];
+              voxelData[x + offset.x][y + offset.y][z + offset.z];
             vertexValues[i] = vertexValue;
             if (vertexValue >= isoCutoff)
               insideMask |= 1 << i;
@@ -232,7 +356,7 @@ class Volumetric extends SelectionIndependentShape {
       if ((edgeMask & (1 << iEdge)) == 0)
         continue;
       if (voxelPointIndexes[iEdge] >= 0)
-        continue; // propogaged from neighbor
+        continue; // propogated from neighbor
       int vertexA = edgeVertexes[2*iEdge];
       int vertexB = edgeVertexes[2*iEdge + 1];
       float valueA = vertexValues[vertexA];
@@ -242,14 +366,14 @@ class Volumetric extends SelectionIndependentShape {
       addEdgePoint(pointB);
       calcSurfacePoint(isoCutoff, valueA, valueB, surfacePoints[iEdge]);
       voxelPointIndexes[iEdge] =
-        mesh.addVertexCopy(surfacePoints[iEdge]);
+        currentMesh.addVertexCopy(surfacePoints[iEdge]);
     }
     
     byte[] triangles = triangleTable[insideMask];
     for (int i = triangles.length; (i -= 3) >= 0; )
-      mesh.addTriangle(voxelPointIndexes[triangles[i    ]],
-                       voxelPointIndexes[triangles[i + 1]],
-                       voxelPointIndexes[triangles[i + 2]]);
+      currentMesh.addTriangle(voxelPointIndexes[triangles[i    ]],
+                              voxelPointIndexes[triangles[i + 1]],
+                              voxelPointIndexes[triangles[i + 2]]);
   }
     
   void calcSurfacePoint(float isoCutoff, float valueA, float valueB,
@@ -290,7 +414,6 @@ class Volumetric extends SelectionIndependentShape {
     voxelOrigin.scaleAdd(x, volumetricVectors[0], volumetricOrigin);
     voxelOrigin.scaleAdd(y, volumetricVectors[1], voxelOrigin);
     voxelOrigin.scaleAdd(z, volumetricVectors[2], voxelOrigin);
-    addVoxelOriginPoint(voxelOrigin);
     /*
     System.out.println("voxelOrigin=" + voxelOrigin);
     */
@@ -300,24 +423,6 @@ class Volumetric extends SelectionIndependentShape {
     if (edgePointCount == edgePoints.length)
       edgePoints = (Point3f[])Util.doubleLength(edgePoints);
     edgePoints[edgePointCount++] = new Point3f(point);
-  }
-
-  void addTriangleIndex(int triangleIndex) {
-    if (triangleIndexCount == triangleIndexes.length)
-      triangleIndexes = Util.doubleLength(triangleIndexes);
-    triangleIndexes[triangleIndexCount++] = triangleIndex;
-  }
-
-  void addVoxelOriginPoint(Point3f point) {
-    if (voxelOriginPointCount == voxelOriginPoints.length)
-      voxelOriginPoints = (Point3f[])Util.doubleLength(voxelOriginPoints);
-    voxelOriginPoints[voxelOriginPointCount++] = new Point3f(point);
-  }
-
-  void addTrianglePoint(Point3f point) {
-    if (trianglePointCount == trianglePoints.length)
-      trianglePoints = (Point3f[])Util.doubleLength(trianglePoints);
-    trianglePoints[trianglePointCount++] = new Point3f(point);
   }
 
   final static Point3i[] cubeVertexOffsets = {

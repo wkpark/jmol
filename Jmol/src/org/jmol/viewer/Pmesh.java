@@ -34,7 +34,6 @@ import javax.vecmath.Vector3f;
 class Pmesh extends MeshCollection {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-
     if ("bufferedreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
       if (currentMesh == null)

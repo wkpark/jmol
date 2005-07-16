@@ -24,59 +24,11 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.g3d.Graphics3D;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
-
 class VolumetricRenderer extends MeshRenderer {
 
-  final Point3i screenA = new Point3i();
-  final Point3i screenB = new Point3i();
-
   void render() {
-    System.out.println("VolumetricRenderer");
     Volumetric volumetric = (Volumetric)shape;
-    render1(volumetric.mesh);
-
-    /*
-    renderVoxelOriginPoints(volumetric.voxelOriginPointCount,
-                            volumetric.voxelOriginPoints);
-    */
+    for (int i = volumetric.meshCount; --i >= 0; )
+      render1(volumetric.meshes[i]);
   }
-
-  void renderX() {
-    System.out.println("VolumetricRenderer");
-    Volumetric volumetric = (Volumetric)shape;
-
-    renderVoxelOriginPoints(volumetric.voxelOriginPointCount,
-                            volumetric.voxelOriginPoints);
-
-    /*
-    renderEdges(volumetric.edgePointCount, volumetric.edgePoints);
-
-    renderSurfacePoints(volumetric.surfacePointCount,
-                        volumetric.surfacePoints);
-    */
-  }
-
-  void renderEdges(int edgePointCount, Point3f[] edgePoints) {
-    g3d.setColix(Graphics3D.YELLOW);
-    System.out.println("edgePointCount=" + edgePointCount);
-    for (int i = 0; i < edgePointCount; i += 2) {
-      viewer.transformPoint(edgePoints[i], screenA);
-      viewer.transformPoint(edgePoints[i + 1], screenB);
-      g3d.drawLine(screenA, screenB);
-    }
-  }
-
-  void renderVoxelOriginPoints(int voxelOriginPointCount,
-                               Point3f[] voxelOriginPoints) {
-    System.out.println("voxelOriginPointCount=" + voxelOriginPointCount);
-    for (int i = 0; i < voxelOriginPointCount; ++i) {
-      g3d.fillSphereCentered(Graphics3D.RED, 5,
-                             viewer.transformPoint(voxelOriginPoints[i]));
-    }
-  }
-
 }

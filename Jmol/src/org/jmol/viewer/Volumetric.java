@@ -50,7 +50,7 @@ class Volumetric extends MeshCollection {
   int edgePointCount = 0;
   Point3f[] edgePoints = new Point3f[256];
 
-  float isoCutoff = 0.02f;
+  float cutoff = 0.02f;
 
   void initShape() {
     colix = Graphics3D.BLUE;
@@ -71,6 +71,9 @@ class Volumetric extends MeshCollection {
       currentMesh.checkForDuplicatePoints(.001f);
       currentMesh.visible = true;
       return;
+    }
+    if ("cutoff" == propertyName) {
+      cutoff = ((Float)value).floatValue();
     }
     super.setProperty(propertyName, value, bs);
   }
@@ -254,7 +257,8 @@ class Volumetric extends MeshCollection {
             float vertexValue = 
               voxelData[x + offset.x][y + offset.y][z + offset.z];
             vertexValues[i] = vertexValue;
-            if (vertexValue >= isoCutoff)
+            if ((cutoff > 0 && vertexValue >= cutoff) ||
+                (cutoff < 0 && vertexValue <= cutoff))
               insideMask |= 1 << i;
           }
 
@@ -277,7 +281,7 @@ class Volumetric extends MeshCollection {
           calcVoxelOrigin(x, y, z);
           int[] voxelPointIndexes =
             propogateNeighborPointIndexes(x, y, z, isoPointIndexes);
-          processOneVoxel(insideMask, isoCutoff, voxelPointIndexes);
+          processOneVoxel(insideMask, cutoff, voxelPointIndexes);
         }
       }
     }
@@ -353,7 +357,7 @@ class Volumetric extends MeshCollection {
       System.out.println(" " + i + ":" + pointIndexes[i]);
   }
 
-  void processOneVoxel(int insideMask, float isoCutoff,
+  void processOneVoxel(int insideMask, float cutoff,
                        int[] voxelPointIndexes) {
     int edgeMask = edgeMaskTable[insideMask];
     for (int iEdge = 12; --iEdge >= 0; ) {
@@ -368,7 +372,7 @@ class Volumetric extends MeshCollection {
       calcVertexPoints(vertexA, vertexB);
       addEdgePoint(pointA);
       addEdgePoint(pointB);
-      calcSurfacePoint(isoCutoff, valueA, valueB, surfacePoints[iEdge]);
+      calcSurfacePoint(cutoff, valueA, valueB, surfacePoints[iEdge]);
       voxelPointIndexes[iEdge] =
         currentMesh.addVertexCopy(surfacePoints[iEdge]);
     }
@@ -380,13 +384,13 @@ class Volumetric extends MeshCollection {
                               voxelPointIndexes[triangles[i + 2]]);
   }
     
-  void calcSurfacePoint(float isoCutoff, float valueA, float valueB,
+  void calcSurfacePoint(float cutoff, float valueA, float valueB,
                              Point3f surfacePoint) {
     float diff = valueB - valueA;
-    float fraction = (isoCutoff - valueA) / diff;
+    float fraction = (cutoff - valueA) / diff;
     if (Float.isNaN(fraction) || fraction < 0 || fraction > 1) {
       System.out.println("fraction=" + fraction +
-                         " isoCutoff=" + isoCutoff +
+                         " cutoff=" + cutoff +
                          " A:" + valueA +
                          " B:" + valueB);
       throw new IndexOutOfBoundsException();

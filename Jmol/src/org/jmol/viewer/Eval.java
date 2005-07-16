@@ -3451,6 +3451,10 @@ class Eval implements Runnable {
         propertyName = "bufferedreader";
         propertyValue = t;
         break;
+      case Token.decimal:
+        propertyName = "cutoff";
+        propertyValue = statement[i].value;
+        break;
       case Token.on:
       case Token.off:
         propertyName = (String)statement[i].value;
@@ -3462,5 +3466,4 @@ class Eval implements Runnable {
                               propertyName, propertyValue);
     }
   }
-
 }

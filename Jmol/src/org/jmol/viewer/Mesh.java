@@ -121,4 +121,16 @@ class Mesh {
     this.colix = colix;
   }
 
+  void checkForDuplicatePoints(float cutoff) {
+    float cutoff2 = cutoff * cutoff;
+    for (int i = vertexCount; --i >= 0; )
+      for (int j = i; --j >= 0; ) {
+        float dist2 = vertices[i].distanceSquared(vertices[j]);
+        if (dist2 < cutoff2) {
+          System.out.println("Mesh.checkForDuplicates " +
+                             vertices[i] + "<->" + vertices[j] +
+                             " : " + Math.sqrt(dist2));
+        }
+      }
+  }
 }

@@ -74,6 +74,7 @@ class Volumetric extends SelectionIndependentShape {
       calcVoxelVertexVectors();
       constructTessellatedSurface();
       mesh.initialize();
+      mesh.checkForDuplicatePoints(.01f);
       return;
     }
     if ("color" == propertyName) {

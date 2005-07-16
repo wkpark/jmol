@@ -113,7 +113,7 @@ abstract class MeshCollection extends SelectionIndependentShape {
       }
     }
   }
-  
+
   void allocMesh(String meshID) {
     meshes = (Mesh[])Util.ensureLength(meshes, meshCount + 1);
     currentMesh = meshes[meshCount++] = new Mesh(meshID, g3d, colix);

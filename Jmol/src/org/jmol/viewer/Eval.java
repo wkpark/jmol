@@ -3439,8 +3439,10 @@ class Eval implements Runnable {
       Object propertyValue = null;
       switch (statement[i].tok) {
       case Token.identifier:
-        propertyName = "meshID";
         propertyValue = statement[i].value;
+        // fall into
+      case Token.all:
+        propertyName = "meshID";
         break;
       case Token.string:
         String filename = (String)statement[i].value;

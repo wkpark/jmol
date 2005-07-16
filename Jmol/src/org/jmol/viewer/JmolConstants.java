@@ -1686,6 +1686,23 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFFF0000,
   };
 
+  // positive and negative default colors used for
+  // volumetric rendering of .cube files
+
+  public final static int[] argbsVolumetricPositive = {
+    0xFF5020A0,
+    0xFF7040C0,
+    0xFF9060E0,
+    0xFFB080FF,
+  };
+  
+  public final static int[] argbsVolumetricNegative = {
+    0xFFA02050,
+    0xFFC04070,
+    0xFFE06090,
+    0xFFFF80B0,
+  };
+
   public final static String[] specialAtomNames = {
 	
     ////////////////////////////////////////////////////////////////

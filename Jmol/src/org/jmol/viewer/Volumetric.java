@@ -52,10 +52,6 @@ class Volumetric extends MeshCollection {
 
   float cutoff = 0.02f;
 
-  void initShape() {
-    colix = Graphics3D.BLUE;
-  }
-
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("bufferedreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
@@ -67,6 +63,7 @@ class Volumetric extends MeshCollection {
       readVolumetricData(br);
       calcVoxelVertexVectors();
       constructTessellatedSurface();
+      currentMesh.colix = getDefaultColix();
       currentMesh.initialize();
       currentMesh.checkForDuplicatePoints(.001f);
       currentMesh.visible = true;
@@ -100,6 +97,28 @@ class Volumetric extends MeshCollection {
       return;
     }
   */
+
+  ////////////////////////////////////////////////////////////////
+  // default color stuff
+  int indexColorPositive;
+  int indexColorNegative;
+  ////////////////////////////////////////////////////////////////
+
+  short getDefaultColix() {
+    int argb;
+    if (cutoff >= 0) {
+      indexColorPositive =
+        (indexColorPositive %
+         JmolConstants.argbsVolumetricPositive.length);
+      argb = JmolConstants.argbsVolumetricPositive[indexColorPositive++];
+    } else {
+      indexColorNegative =
+        (indexColorNegative %
+         JmolConstants.argbsVolumetricNegative.length);
+      argb = JmolConstants.argbsVolumetricNegative[indexColorNegative++];
+    }
+    return g3d.getColix(argb);
+  }
 
   ////////////////////////////////////////////////////////////////
   // file reading stuff

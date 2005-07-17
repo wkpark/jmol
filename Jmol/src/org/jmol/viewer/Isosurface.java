@@ -23,6 +23,26 @@
  *  02111-1307  USA.
  */
 
+/*
+ * miguel 2005 07 17
+ *
+ *  System and method for the display of surface structures
+ *  contained within the interior region of a solid body
+ * United States Patent Number 4,710,876
+ * Granted: Dec 1, 1987
+ * Inventors:  Cline; Harvey E. (Schenectady, NY);
+ *             Lorensen; William E. (Ballston Lake, NY)
+ * Assignee: General Electric Company (Schenectady, NY)
+ * Appl. No.: 741390
+ * Filed: June 5, 1985
+ *
+ *
+ * Patents issuing prior to June 8, 1995 can last up to 17
+ * years from the date of issuance.
+ *
+ * Dec 1 1987 + 17 yrs = Dec 1 2004
+ */
+
 package org.jmol.viewer;
 import org.jmol.g3d.*;
 

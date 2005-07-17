@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2005 Miguel, Jmol Development
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org,jmol-developers@lists.sourceforge.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public

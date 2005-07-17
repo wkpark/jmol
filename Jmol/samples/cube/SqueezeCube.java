@@ -1,135 +1,265 @@
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2005 Miguel, Jmol Development
+ *
+ * Contact: miguel@jmol.org,jmol-developers@lists.sourceforge.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
+ */
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
 public class SqueezeCube {
   public static void main(String[] argv) {
-    System.err.println("Hello world!");
+    System.err.println("SqueezeCube");
+    new SqueezeCube(new BufferedReader(new InputStreamReader(System.in)),
+                    new BufferedWriter(new OutputStreamWriter(System.out)));
   }
 
   BufferedReader br;
+  BufferedWriter bw;
 
-  String title1;
-  String title2;
+  String titleLine1;
+  String titleLine2;
+  String atomCountAndOriginLine;
+  String[] volumetricVectorLines = new String[3];
+  String[] atomLines;
+  String optionalMolecularOrbitalLine;
+  float[][][] volumetricData;
+
   int atomCount;
   boolean negativeAtomCount;
-  float volumetricOriginX, volumetricOriginY, volumetricOriginZ;
-  final int[] voxelCounts = new int[3];
-  final float[][] voxelVectors = new float[3][];
+  int[] volumetricCounts = new int[3];
+  int countX, countY, countZ;
 
-  
-  SqueezeCube(BufferedReader br) {
+  int count0, count1, countNeg1;
+
+  SqueezeCube(BufferedReader br, BufferedWriter bw) {
     this.br = br;
-    readVolumetricHeader();
-  }
+    this.bw = bw;
 
-  void readVolumetricHeader() {
     try {
       readTitleLines();
-      readAtomCountAndOrigin();
-      readVoxelVectors();
-      readAtoms();
-      readExtraLine();
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new NullPointerException();
-    }
-  }
+      readAtomCountAndOriginLine();
+      readVolumetricVectorLines();
+      readAtomLines();
+      readOptionalMolecularOrbitalLine();
+      readVolumetricData();
+      squeezeVolumetricData(0.001f, 0.1f);
 
-  void readVolumetricData() {
-    try {
-      readVoxelData();
+      writeHeader();
+      writeVolumetricData(3);
     } catch (Exception e) {
       e.printStackTrace();
-      throw new NullPointerException();
     }
   }
 
   void readTitleLines() throws Exception {
-    title1 = br.readLine().trim();
-    title2 = br.readLine().trim();
+    System.err.println("readTitleLines");
+    titleLine1 = br.readLine();
+    titleLine2 = br.readLine();
+    System.err.println(titleLine1 + "\n" + titleLine2);
   }
 
-  void readAtomCountAndOrigin() throws Exception {
-    StringTokenizer st = new StringTokenizer(br.readLine());
-    if (st.countTokens != 4) {
-      System.err.println("atom count + origin line incorrect");
-      throw new IndexOutOfBoundsException();
-    }
+  void readAtomCountAndOriginLine() throws Exception {
+    System.err.println("readAtomCountAndOriginLine");
+    atomCountAndOriginLine = br.readLine();
+    System.err.println(atomCountAndOriginLine);
+    StringTokenizer st = new StringTokenizer(atomCountAndOriginLine);
     atomCount = Integer.parseInt(st.nextToken());
-    volumetricOriginX = Float.parseFloat(st.nextToken());
-    volumetricOriginY = Float.parseFloat(st.nextToken());
-    volumetricOriginZ = Float.parseFloat(st.nextToken());
     if (atomCount < 0) {
       atomCount = -atomCount;
       negativeAtomCount = true;
     }
   }
 
-  void readVoxelVectors() throws Exception {
-    for (int i = 0; i < 3; ++i)
-      readVoxelVector(br, i);
-  }
-
-  void readVoxelVector(int voxelVectorIndex) throws Exception {
-    StringTokenizer st = new StringTokenizer(br.readLine());
-    if (st.countTokens != 4) {
-      System.err.println("voxel vector line incorrect");
-      throw new IndexOutOfBoundsException();
+  void readVolumetricVectorLines() throws Exception {
+    System.err.println("readVolumetricVectorLines");
+    for (int i = 0; i < 3; ++i) {
+      String vv = br.readLine();
+      volumetricVectorLines[i] = vv;
+      System.err.println(vv);
+      StringTokenizer st = new StringTokenizer(vv);
+      volumetricCounts[i] = Integer.parseInt(st.nextToken());
     }
-    float[] voxelVector = new float[3];
-    voxelVectors[voxelVectorIndex] = voxelVector;
-    voxelCounts[voxelVectorIndex] = Integer.parseInt(st.nextToken());
-    voxelVector[0] = Float.parseFloat(st.nextToken());
-    voxelVector[1] = Float.parseFloat(st.nextToken());
-    voxelVector[2] = Float.parseFloat(st.nextToken());
+    countX = volumetricCounts[0];
+    countY = volumetricCounts[1];
+    countZ = volumetricCounts[2];
   }
 
-  void readAtoms() throws Exception {
+  void readAtomLines() throws Exception {
+    System.err.println("readAtomLines");
+    atomLines = new String[atomCount];
     for (int i = 0; i < atomCount; ++i) {
-      String line = br.readLine();
-      /*
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.elementNumber = (byte)parseInt(line);
-      atom.partialCharge = parseFloat(line, ichNextParse);
-      atom.x = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
-      atom.y = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
-      atom.z = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
-      */
+      atomLines[i] = br.readLine();
+      System.err.println(atomLines[i]);
     }
   }
 
-  void readExtraLine() throws Exception {
-    if (negativeAtomCount)
-      br.readLine();
+  void readOptionalMolecularOrbitalLine() throws Exception {
+    if (negativeAtomCount) {
+      System.err.println("readOptionalMolecularOrbitalLine");
+      optionalMolecularOrbitalLine = br.readLine();
+      System.err.println(optionalMolecularOrbitalLine);
+    }
   }
 
-  void readVoxelData() throws Exception {
-    System.out.println("entering readVoxelData");
-    String line = "";
-    ichNextParse = 0;
-    int voxelCountX = voxelCounts[0];
-    int voxelCountY = voxelCounts[1];
-    int voxelCountZ = voxelCounts[2];
-    voxelData = new float[voxelCountX][][];
-    for (int x = 0; x < voxelCountX; ++x) {
-      float[][] plane = new float[voxelCountY][];
-      voxelData[x] = plane;
-      for (int y = 0; y < voxelCountY; ++y) {
-        float[] strip = new float[voxelCountZ];
+  void readVolumetricData() throws Exception {
+    System.err.println("readVolumetricData");
+    StringTokenizer st = new StringTokenizer("");
+    volumetricData = new float[countX][][];
+    for (int x = 0; x < countX; ++x) {
+      float[][] plane = new float[countY][];
+      volumetricData[x] = plane;
+      for (int y = 0; y < countY; ++y) {
+        float[] strip = new float[countZ];
         plane[y] = strip;
-        for (int z = 0; z < voxelCountZ; ++z) {
-          float voxelValue = parseFloat(line, ichNextParse);
-          if (Float.isNaN(voxelValue)) {
-            line = br.readLine();
-            if (line == null || Float.isNaN(voxelValue = parseFloat(line))) {
-              System.out.println("end of file in CubeReader?");
+        for (int z = 0; z < countZ; ++z) {
+          if (! st.hasMoreTokens()) {
+            String line = br.readLine();
+            if (line == null) {
+              System.err.println("end of file in SqueezeCube?");
+              System.err.println("x=" + x + " y=" + y + " z=" + z);
               throw new NullPointerException();
             }
+            st = new StringTokenizer(line);
           }
-          strip[z] = voxelValue;
+          strip[z] = Float.parseFloat(st.nextToken());
         }
       }
     }
-    System.out.println("Successfully read " + voxelCountX +
-                       " x " + voxelCountY +
-                       " x " + voxelCountZ + " voxels");
+    System.err.println("Successfully read " + countX +
+                       " x " + countY +
+                       " x " + countZ + " data points");
+  }
+
+  void squeezeVolumetricData(float minCutoff, float maxCutoff) {
+    for (int x = countX; --x >= 0; ) {
+      for (int y = countY; --y >= 0; ) {
+        for (int z = countZ; --z >= 0; ) {
+          float d = volumetricData[x][y][z];
+          if (d > 0) {
+            if (d < minCutoff) {
+              d = 0;
+              ++count0;
+            } else if (d > maxCutoff) {
+              d = 1;
+              ++count1;
+            }
+          } else {
+            if (-d < minCutoff) {
+              d = 0;
+              ++count0;
+            } else if (-d > maxCutoff) {
+              d = -1;
+              ++countNeg1;
+            }
+          }
+          volumetricData[x][y][z] = d;
+        }
+      }
+    }
+    int totalPoints = countX * countY * countZ;
+    System.err.println("total points   = " + totalPoints);
+    System.err.println("squeezed to  1 = " + count1 + " " +
+                       ((count1 * 100) / totalPoints) + "%");
+    System.err.println("squeezed to  0 = " + count0 + " " +
+                       ((count0 * 100) / totalPoints) + "%");
+    System.err.println("squeezed to -1 = " + countNeg1 + " " +
+                       ((countNeg1 * 100) / totalPoints) + "%");
+    int totalSqueezed = count1 + count0 + countNeg1;
+    System.err.println("total squeezed = " + totalSqueezed + " " +
+                       ((totalSqueezed * 100) / totalPoints) + "%");
+    
+  }
+
+  void writeHeader() throws Exception {
+    bw.write(titleLine1); bw.newLine();
+    bw.write(titleLine2); bw.newLine();
+    bw.write(atomCountAndOriginLine); bw.newLine();
+    for (int i = 0; i < 3; ++i) {
+      bw.write(volumetricVectorLines[i]); bw.newLine();
+    }
+    for (int i = 0; i < atomCount; ++i) {
+      bw.write(atomLines[i]); bw.newLine();
+    }
+    if (negativeAtomCount) {
+      bw.write(optionalMolecularOrbitalLine); bw.newLine();
+    }
+  }
+
+  void writeVolumetricData(int digitsToTheRight) throws Exception {
+    for (int x = 0; x < countX; ++x)
+      for (int y = 0; y < countY; ++y)
+        for (int z = 0; z < countZ; ++z)
+          writeOneDataPoint(format(volumetricData[x][y][z], digitsToTheRight));
+    if (outputLineCount != 0)
+      bw.newLine();
+    System.err.println("total points output=" + totalPointsOutput);
+    bw.flush();
+  }
+
+  int[] scaleFactors = { 1, 10, 100, 1000, 10000, 100000 };
+
+  String format(float d, int digitsToTheRight) {
+    if (d == 0)
+      return "0";
+    if (d == 1)
+      return "1";
+    if (d == -1)
+      return "-1";
+    boolean negative = d < 0;
+    if (negative)
+      d = -d;
+    int scaleFactor = scaleFactors[digitsToTheRight];
+    int round = (int)(d * scaleFactor + 0.5f);
+    if (round >= 1000) {
+      if (negative)
+        return "-" + round;
+      else
+        return "" + round;
+    } else {
+      String withLeadingZeros = ("" + (1000 + round)).substring(1);
+      if (negative)
+        return "-." + withLeadingZeros;
+      else
+        return "." + withLeadingZeros;
+    }
+  }
+
+  int outputLineCount;
+  int totalPointsOutput;
+
+  void writeOneDataPoint(String formattedData) throws Exception {
+    if (outputLineCount == 5) {
+      bw.write(formattedData);
+      bw.newLine();
+      outputLineCount = 0;
+      ++totalPointsOutput;
+    } else {
+      bw.write(formattedData + " ");
+      ++outputLineCount;
+      ++totalPointsOutput;
+    }
+  }
 }

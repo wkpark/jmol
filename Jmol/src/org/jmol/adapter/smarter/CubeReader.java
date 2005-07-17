@@ -29,8 +29,14 @@ import java.io.BufferedReader;
 
 /**
  * Gaussian cube file format
- * http://astronomy.swin.edu.au/~pbourke/geomformats/cube/
+ * 
+ * http://www.cup.uni-muenchen.de/oc/zipse/lv18099/orb_MOLDEN.html
+ * this is good because it is source code
+ * http://ftp.ccl.net/cca/software/SOURCES/C/scarecrow/gcube2plt.c
+ *
  * http://www.nersc.gov/nusers/resources/software/apps/chemistry/gaussian/g98/00000430.htm
+ * this contains some erroneous info
+ * http://astronomy.swin.edu.au/~pbourke/geomformats/cube/
  * Miguel 2005 07 04
  * BUT, the files that I have do not comply with this format
  * because they have a negative atom count and an extra line
@@ -39,6 +45,14 @@ import java.io.BufferedReader;
  *
  * seems that distances are in Bohrs
  *
+ * Miguel 2005 07 17
+ * first two URLs above explain that a negative atom count means
+ * that it is molecular orbital (MO) data
+ * with MO data, the extra line contains the number
+ * of orbitals and the orbital number
+ * we only support # of orbitals == 1
+ * if # of orbitals were > 1 then there would be multiple data
+ * points in each cell
  */
 
 class CubeReader extends AtomSetCollectionReader {

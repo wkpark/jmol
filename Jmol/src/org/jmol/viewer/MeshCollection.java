@@ -142,6 +142,22 @@ abstract class MeshCollection extends SelectionIndependentShape {
       }
       return;
     }
+    if ("delete" == propertyName) {
+      if (currentMesh != null) {
+        int iCurrent;
+        for (iCurrent = meshCount; meshes[--iCurrent] != currentMesh; )
+          {}
+        for (int j = iCurrent + 1; j < meshCount; ++j)
+          meshes[j - 1] = meshes[j];
+        meshes[--meshCount] = null;
+        currentMesh = null;
+      } else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i] = null;
+        meshCount = 0;
+      }
+      return;
+    }
   }
 
   void allocMesh(String meshID) {

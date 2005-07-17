@@ -3357,6 +3357,9 @@ class Eval implements Runnable {
       case Token.off:
         propertyName = (String)statement[i].value;
         break;
+      case Token.delete:
+        propertyName = "delete";
+        break;
       default:
         invalidArgument();
       }
@@ -3492,6 +3495,9 @@ class Eval implements Runnable {
       case Token.on:
       case Token.off:
         propertyName = (String)statement[i].value;
+        break;
+      case Token.delete:
+        propertyName = "delete";
         break;
       default:
         invalidArgument();

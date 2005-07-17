@@ -65,10 +65,11 @@ public class SqueezeCube {
       readAtomLines();
       readOptionalMolecularOrbitalLine();
       readVolumetricData();
-      squeezeVolumetricData(0.0001f, 1f, 4);
+      squeezeVolumetricData(0.001f);
 
       writeHeader();
-      writeVolumetricData(5);
+      writeVolumetricData();
+      bw.flush();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -153,14 +154,13 @@ public class SqueezeCube {
                        " x " + countZ + " data points");
   }
 
-  int[] scaleFactors = { 1, 10, 100, 1000, 10000, 100000 };
+  int[] scaleFactors = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000 };
 
-  void squeezeVolumetricData(float minCutoff, float maxCutoff, int precision) {
-    int scaleFactor = scaleFactors[precision];
+  void squeezeVolumetricData(float minCutoff) {
     for (int x = countX; --x >= 0; )
       for (int y = countY; --y >= 0; )
         for (int z = countZ; --z >= 0; )
-          squeezePoint(x, y, z, minCutoff, maxCutoff, scaleFactor);
+          squeezePoint(x, y, z, minCutoff);
     int totalPoints = countX * countY * countZ;
     System.err.println("total points   = " + totalPoints);
     System.err.println("squeezed to  1 = " + count1 + " " +
@@ -174,36 +174,58 @@ public class SqueezeCube {
                        ((totalSqueezed * 100) / totalPoints) + "%");
   }
 
-  void squeezePoint(int x, int y, int z,
-                    float minCutoff, float maxCutoff, int scaleFactor) {
-    float d = volumetricData[x][y][z];
-    if (d >= 0)
-      d = (int)(d * scaleFactor + 0.5f);
-    else
-      d = (int)(d * scaleFactor - 0.5f);
-    d /= scaleFactor;
-    volumetricData[x][y][z] = d;
-  }
-  /*
-    if (d > 0) {
-      if (d < minCutoff) {
-        d = 0;
-        ++count0;
-      } else if (d > maxCutoff) {
-        d = 1;
-        ++count1;
-      }
-    } else {
-      if (-d < minCutoff) {
-        d = 0;
-        ++count0;
-      } else if (-d > maxCutoff) {
-        d = -1;
-              ++countNeg1;
-      }
+  int[][] offsetsNeighbors =
+  {
+    { 1, 0, 0},
+    {-1, 0, 0},
+    { 0, 1, 0},
+    { 0,-1, 0},
+    { 0, 0, 1},
+    { 0, 0,-1}
+  };
+
+  void squeezePoint(int x, int y, int z, float minCutoff) {
+    if (meAndNeighborsBelowCutoff(x, y, z, minCutoff)) {
+      volumetricData[x][y][z] = 0;
+      ++count0;
+      return;
     }
-    volumetricData[x][y][z] = d;
-  */
+  }
+  
+  boolean meAndNeighborsBelowCutoff(int x, int y, int z, float minCutoff) {
+    if (! isBelowCutoff(x, y, z, minCutoff))
+      return false;
+    for (int i = offsetsNeighbors.length; --i >= 0; ) {
+      int[] offsetsNeighbor = offsetsNeighbors[i];
+      int nX = x + offsetsNeighbor[0];
+      int nY = y + offsetsNeighbor[1];
+      int nZ = z + offsetsNeighbor[2];
+      if (! isInBounds(nX, nY, nZ))
+        continue;
+      if (! isBelowCutoff(nX, nY, nZ, minCutoff))
+        return false;
+    }
+    return true;
+  }
+
+  boolean isInBounds(int x, int y, int z) {
+    if (x < 0 || x == countX)
+      return false;
+    if (y < 0 || y == countY)
+      return false;
+    if (z < 0 || z == countZ)
+      return false;
+    return true;
+  }
+
+  boolean isBelowCutoff(int x, int y, int z, float cutoff) {
+    float d = volumetricData[x][y][z];
+    if (d >= 0 && d < cutoff)
+      return true;
+    if (d < 0 && -d < cutoff)
+      return true;
+    return false;
+  }
 
   void writeHeader() throws Exception {
     bw.write(titleLine1); bw.newLine();
@@ -220,7 +242,7 @@ public class SqueezeCube {
     }
   }
 
-  void writeVolumetricData(int digitsToTheRight) throws Exception {
+  void writeVolumetricData() throws Exception {
     for (int x = 0; x < countX; ++x)
       for (int y = 0; y < countY; ++y)
         for (int z = 0; z < countZ; ++z)
@@ -228,7 +250,6 @@ public class SqueezeCube {
     if (outputLineCount != 0)
       bw.newLine();
     System.err.println("total points output=" + totalPointsOutput);
-    bw.flush();
   }
 
   String format(float d) {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+  Translated from default version (...)_en.xml (v 1.2)
+-->
+<!DOCTYPE somethingOrAnything [
+<!ENTITY javascript_colors SYSTEM "javascript_colors.xml" >
+<!ENTITY netscape_colors   SYSTEM "netscape_colors.xml" >
+]>
+<document>
+  <body>
+    <title>Colores de JavaScript</title>
+
+    <section title="Colores de JavaScript">
+      <script>&javascript_colors;</script>
+    </section>
+
+    <section title="Paleta de colores de 8 bits de Netscape">
+      <script>&netscape_colors;</script>
+    </section>
+  </body>
+</document>

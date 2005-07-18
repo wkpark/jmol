@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+  Translated from default version (...)_en.xml (v 1.1)
+-->
+<section title="Gráficos y representación">
+  
+  <section title="¿Cuál es la diferencia en los gráficos para Jmol v10?">
+    <p>
+      Para Jmol v10 se ha desarrollado un nuevo motor de gráficos tridimensionales,
+      con el fin de admitir correctamente formas intersecadas. Esto es importante
+      para ver los modelos moleculares en representación espacial compacta (esferas).
+    </p>
+    <p>
+      Además, el nuevo motor 3D ha mejorado mucho el rendimiento con las 
+      moléculas más grandes. 
+    </p>
+  </section>
+
+  <section title="Veo imágenes dentadas. ¿Por qué los gráficos no tienen suavizado de bordes?">
+    <p>
+      No se usan llamadas gráficas de java para construir la imagen.
+      La escena completa se construye en memoria y se transfiere a la
+      pantalla en una sola operación drawImage. <br />
+      ¿No eras tú quien se quejaba de la velocidad?
+      <i>(En una versión futura se incluirá suavizado de la escena completa.)</i>
+    </p>
+  </section>
+  
+  <section title="Necesito algunas imágenes de calidad superior">
+    <p>
+      Utiliza la aplicación Jmol (no la miniaplicación) y exporta a PovRay. 
+    </p>
+  </section>
+  
+  <section title="¿Admite Jmol isosuperficies?">
+    <p>
+      Aún no. Es relativamente importante en nuestra lista de prioridades. 
+    </p>
+  </section>
+  
+  <section
+   title="¿Qué formas aporta Jmol para la estructura secundaria de proteínas?">
+    <p>
+      Usando terminología de RasMol/Chime, Jmol actualmente ofrece 
+      <b>esqueleto (<i>backbone</i>)</b>, <b>trazo (<i>trace</i>)</b>, <b>hebras (<i>strands</i>)</b>, 
+      <b>cintas en malla (<i>meshribbons</i>)</b>,
+      <b>cintas (<i>ribbons</i>)</b> y <b>caricaturas (<i>cartoons</i>)</b>.
+    </p>
+  </section>
+</section>

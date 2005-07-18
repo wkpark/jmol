@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+  Translated from default version (...)_en.xml (v 1.1)
+-->
+<document>
+  <body>
+    <title>Documentación de Jmol</title>
+    
+    <header>
+      <p>
+	<i>
+	  Advertencia: parte de esta documentación es aplicable a la versión 9 de Jmol.
+	  Está pendiente de reescritura para la versión 10.
+	</i>
+      </p>
+    </header>
+
+    <section title="Documentación en línea para instrucciones en guiones">
+      <p>
+	Esta documentación interactiva en línea describe el lenguaje de
+	instrucciones en guiones para Jmol/RasMol/Chime. Proporciona excelentes
+	demostraciones y ejemplos.
+      </p>
+      <p>
+	<a href="http://www.stolaf.edu/people/hansonr/jmol/docs">
+	  Jmol Interactive Online Scripting Documentation
+	</a> (en inglés)
+      </p>
+    </section>
+
+    <section title="Guía para desarrolladores de Jmol">
+      <p>
+        Describe los procedimientos de desarrollo de Jmol; 
+        <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>
+	  </p>
+    </section>
+
+    <section title="Guía de Jmol v9">
+      <p>
+	<b>
+	  Advertencia: esta documentación es aplicable a la versión 9 de Jmol.
+	  Está pendiente de reescritura para la versión 10.
+	</b>
+      </p>
+      <p>
+        Describe la aplicación -o programa autónomo- Jmol; 
+        <a href="JmolUserGuide/">Jmol Guide</a>
+      </p>
+    </section>
+
+    <section title="Guía de la miniaplicación Jmol v9">
+      <p>
+	<b>
+	  Advertencia: esta documentación es aplicable a la versión 9 de Jmol.
+	  Está pendiente de reescritura para la versión 10.
+	</b>
+      </p>
+      <p>
+        Describe la miniaplicación Jmol; 
+        <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
+      </p>
+    </section>
+  </body>
+</document>
+

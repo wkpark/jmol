@@ -1,0 +1,100 @@
+<!--
+  Spanish translation 
+  Translated from default version : (...).en.html (v 1.1)
+-->
+<html>
+  <head>
+    <title>Demostración de nanotecnología con JmolApplet</title>
+    <script src="../../jmol/Jmol.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  </head>
+  <body>
+    <script>
+      jmolInitialize("../../jmol");
+      jmolCheckBrowser("popup", "../../browsercheck", "onClick");
+    </script>
+    <form>
+      <table border="1">
+	<tr>
+	  <td>
+	    <h2>Nanotecnología</h2>
+	    <script>
+	      jmolApplet(400, "load fineMotion970116.pdb.gz; cpk off");
+	    </script>
+	  </td>
+
+	  <td>
+	    Estas imágenes son diseños avanzados de nanotecnología tomados de
+	    <a href="http://www.imm.org">http://www.imm.org</a><br />
+	    
+	    <script>
+	      jmolMenu([
+	        ["load diffGear.pdb.gz; cpk off;", "diffGear"],
+		["load fineMotion970116.pdb.gz; cpk off;", "fineMotion", "selected"],
+		["load finalPump96.09.06.pdb.gz; cpk off;", "finalPump"]
+		], -1);
+
+	      jmolHtml("<hr />");
+
+	      jmolCheckbox(
+	      "select *; wireframe",
+	      "select *; wireframe off",
+	      "enlaces como alambres",
+	      "checked");
+	      jmolHtml("<hr />");
+
+	      jmolCheckbox(
+	      "select silicon; cpk on",
+	      "select silicon; cpk off",
+	      "silicio");
+	      jmolBr();
+
+	      jmolCheckbox(
+	      "select phosphorus; cpk on",
+	      "select phosphorus; cpk off",
+	      "fósforo");
+	      jmolBr();
+
+	      jmolCheckbox(
+	      "select oxygen; cpk on",
+	      "select oxygen; cpk off",
+	      "oxígeno");
+	      jmolBr();
+
+	      jmolCheckbox(
+	      "select carbon; cpk on",
+	      "select carbon; cpk off",
+	      "carbono");
+	      jmolBr();
+
+	      jmolCheckbox(
+	      "select nitrogen; cpk on",
+	      "select nitrogen; cpk off",
+	      "nitrógeno");
+	      jmolBr();
+
+	      jmolCheckbox(
+	      "select sulfur; cpk on",
+	      "select sulfur; cpk off",
+	      "azufre");
+	      jmolBr();
+
+	      jmolCheckbox(
+	      "select hydrogen; cpk on",
+	      "select hydrogen; cpk off",
+	      "hidrógeno");
+	      jmolBr();
+
+	    </script>
+	    <hr />
+	    <i>
+	      <script>
+		jmolCheckbox("set spin x 10; set spin y 10; spin on", "spin off", "girando");
+	      </script>
+	    </i>
+	  </td>
+	</tr>
+      </table>
+    </form>
+  </body>
+</html>

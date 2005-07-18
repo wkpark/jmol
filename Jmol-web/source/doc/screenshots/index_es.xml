@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+  Translated from default version (...)_en.xml (v 1.1)
+-->
+<document>
+  <body>
+    <title>Capturas de pantalla</title>
+
+  <section>
+    <screenshots>
+      <screenshot image="screenshot1.jpg">
+        Una representación sombreada de la cafeína.
+      </screenshot>
+      <screenshot image="screenshot2.jpg">
+        Un fotograma de una reacción S<sub>N</sub>2 animada, mostrando la 
+        medida de distancia entre los átomos de cloro y carbono.
+      </screenshot>
+      <screenshot image="screenshot3.jpg">
+        Animación de una vibración del metanol, mostrando los vectores.
+      </screenshot>
+      <screenshot image="screenshot4.jpg">
+        Representación de una estructura cristalina.
+      </screenshot>
+      <screenshot image="screenshot5.jpg">
+        Representación de la caja limitante y los ejes de las coordenadas espaciales.
+        Observa la transparencia del halo amarillo alrededor de los átomos seleccionados.
+      </screenshot>
+      <screenshot image="hemes.jpg">
+        Hemoglobina con trazo de esqueleto coloreado según cadenas y con los hemos en esferas.
+        <i>Esta imagen se tomó con una versión preliminar de Jmol v10.</i>
+      </screenshot>
+      <screenshot image="aceticacid.jpg">
+        Ácido acético usando colores CPK y átomos como esferas.
+        <i>Esta imagen se tomó con una versión preliminar de Jmol v10.</i>
+      </screenshot>
+      <screenshot image="bbdots.jpg">
+        Unos pocos residuos con esqueleto en azul y superficie de Van der Waals punteada. 
+        <i>Esta imagen se tomó con una versión preliminar de Jmol v10.</i>
+      </screenshot>
+    </screenshots>
+  </section>
+
+  </body>
+</document>
+

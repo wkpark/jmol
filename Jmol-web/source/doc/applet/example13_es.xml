@@ -1,0 +1,20 @@
+<![CDATA[
+<script>
+  function play2(script) {
+    document.anim2.script(script);
+  }
+</script>
+<applet name="anim2" code="JmolApplet" archive="JmolApplet.jar"
+    codebase="[codebase]"
+    width="350" height="350" mayscript="true">
+  <param name="load" value="conformeren.cml"/>
+  <param name="progressbar" value="true"/>
+</applet>
+<form>
+  <input type="button" value="|&lt;&lt;"  onClick="play2('animate rewind')">
+  <input type="button" value="|&lt;"    onClick="play2('animate prev')">
+  <input type="button" value="&gt;|"    onClick="play2('animate next')">
+  <input type="button" value="&gt;"    onClick="play2('animate play')">
+  <input type="button" value="&lt;" onClick="play2('animate revplay')">
+</form>
+]]>

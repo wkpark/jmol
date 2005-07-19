@@ -1981,6 +1981,8 @@ final public class Viewer extends JmolViewer {
       return getChainCaseSensitive();
     if (key.equalsIgnoreCase("hideNameInPopup"))
       return getHideNameInPopup();
+    if (key.equalsIgnoreCase("autobond"))
+      return getAutoBond();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -2028,6 +2030,8 @@ final public class Viewer extends JmolViewer {
       { setRibbonBorder(value); return; }
     if (key.equalsIgnoreCase("hideNameInPopup"))
       { setHideNameInPopup(value); return; }
+    if (key.equalsIgnoreCase("autobond"))
+      { setAutoBond(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }

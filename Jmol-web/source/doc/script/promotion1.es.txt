@@ -23,7 +23,7 @@ moveto 1 0 0 0 0 140;
 delay 2;
 moveTo 1 5 345 939 79.5 24 51 57
 
-script script/smallMolecules.en.txt
+script script/smallMolecules.es.txt
 set echo off;
 restrict none;
 set echo off;
@@ -63,7 +63,7 @@ delay 4
 
 set echo off;
 
-script script/proteins.en.txt
+script script/proteins.es.txt
 restrict none;
 set echo off;
 set echo top center; font echo 22; color echo dodgerblue
@@ -82,7 +82,7 @@ echo "Jmol"
 delay 4
 #
 
-script script/dna.en.txt
+script script/dna.es.txt
 set echo off;
 
 set echo top left; font echo 24; color echo khaki
@@ -188,7 +188,7 @@ echo "Jmol"
 delay 4
 #
 
-script script/macromolecules.en.txt
+script script/macromolecules.es.txt
 
 set echo off
 set echo top center; font echo 20; color echo pink

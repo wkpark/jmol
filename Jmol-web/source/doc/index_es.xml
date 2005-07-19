@@ -12,7 +12,7 @@
 	     cellpadding="10">
 	<tr>
 	  <td><script type="text/javascript">
-	    jmolApplet(300, "script script/promotion1.en.txt");
+	    jmolApplet(300, "script script/promotion1.es.txt");
 	  </script></td>
 	  <td>
 	    <p>

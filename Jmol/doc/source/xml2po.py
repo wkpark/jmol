@@ -21,7 +21,7 @@
 # slightlty modified to work on Windows (original changes by TortoiseSVN team)
 
 # xml2po -- translate XML documents
-VERSION = "0.2.0"
+VERSION = "1.28"
 
 # Versioning system (I use this for a long time, so lets explain it to
 # those Linux-versioning-scheme addicts):

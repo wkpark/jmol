@@ -1,5 +1,7 @@
 <project name="Jmol" default="main" basedir=".">
 
+  <import file="build-i18n.xml" />
+
   <!-- pull developer-specific settings from their home directory -->
   <property file="${user.home}/.jmol.build.properties" />
 
@@ -550,7 +552,8 @@ support for assertions (which were introduced in 1.4).
 
   </target>
 
-  <target name="dist" id="dist" depends="doc,main,signed-applet">
+  <target name="dist" id="dist"
+	  depends="doc,main-i18n,main,signed-applet">
     <!-- first build binary distribution -->
     <delete dir="build/dist/jmol-${version}"/>
     <mkdir dir="build/dist/jmol-${version}"/>
@@ -733,7 +736,7 @@ support for assertions (which were introduced in 1.4).
     </delete>
   </target>
 
-  <target name="spotless" id="spotless" depends="clean">
+  <target name="spotless" id="spotless" depends="clean,spotless-i18n">
     <delete dir="build"/>
     <delete dir="${javadoc.dir}"/>
     <delete dir="packaging/rpm/dist"/>

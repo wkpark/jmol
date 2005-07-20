@@ -1149,7 +1149,8 @@ final class Frame {
   ////////////////////////////////////////////////////////////////
   void doAutobond() {
     // perform bonding if necessary
-    if (viewer.getAutoBond()) {
+    if (viewer.getAutoBond() &&
+        getModelSetProperty("noautobond") == null) {
       if ((bondCount == 0) ||
           (modelSetTypeName == "pdb" && (bondCount < (atomCount / 2))))
         rebond(false);

@@ -40,12 +40,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * the file related methods
    * **************************************************************/
 
-  final static int UNKNOWN = -1;
-  final static int XYZ = 0;
-  final static int MOL = 1;
-  final static int JME = 2;
-  final static int PDB = 3;
-  
   public final static String PATH_KEY = ".PATH";
   public final static String PATH_SEPARATOR =
     System.getProperty("path.separator");

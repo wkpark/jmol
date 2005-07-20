@@ -7,10 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-05-31 15:24+0200\n"
-"PO-Revision-Date: 2005-06-02 14:20+0100\n"
-"Last-Translator: Egon Willighagen <e.willighagen@science.ru.nl>\n"
-"POT-Creation-Date: 2005-06-01 02:02+0200\n"
+"POT-Creation-Date: 2005-07-20 13:41-0400\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -808,8 +805,12 @@ msgid "Filename Stem"
 msgstr "Begin Bestandsnaam"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. 'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. "
+"'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
@@ -1158,4 +1159,3 @@ msgstr "Laden..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Wat is nieuw in Jmol"
-

@@ -307,6 +307,13 @@ abstract class MouseManager {
     case CTRL_RIGHT:
       viewer.translateXYBy(deltaX, deltaY);
       break;
+    case CTRL_SHIFT_LEFT:
+      if (viewer.getSlabEnabled())
+        viewer.slabByPixels(deltaY);
+      break;
+    case CTRL_ALT_SHIFT_LEFT:
+      if (viewer.getSlabEnabled())
+        viewer.slabDepthByPixels(deltaY);
     }
   }
 
@@ -316,6 +323,10 @@ abstract class MouseManager {
     case ALT_LEFT:
     case MIDDLE:
       viewer.translateXYBy(deltaX, deltaY);
+      break;
+    case CTRL_SHIFT_LEFT:
+      if (viewer.getSlabEnabled())
+        viewer.depthByPixels(deltaY);
       break;
     }
   }

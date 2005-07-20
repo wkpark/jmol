@@ -335,8 +335,18 @@ final public class Viewer extends JmolViewer {
     return transformManager.slabPercentSetting;
   }
 
-  void slabBy(int pixels) {
-    transformManager.slabBy(pixels);
+  void slabByPixels(int pixels) {
+    transformManager.slabByPercentagePoints(pixels);
+    refresh();
+  }
+
+  void depthByPixels(int pixels) {
+    transformManager.depthByPercentagePoints(pixels);
+    refresh();
+  }
+
+  void slabDepthByPixels(int pixels) {
+    transformManager.slabDepthByPercentagePoints(pixels);
     refresh();
   }
 
@@ -347,11 +357,6 @@ final public class Viewer extends JmolViewer {
 
   void depthToPercent(int percentDepth) {
     transformManager.depthToPercent(percentDepth);
-    refresh();
-  }
-
-  void slabByPercent(int percentSlab) {
-    transformManager.slabByPercent(percentSlab);
     refresh();
   }
 

@@ -461,23 +461,43 @@ class TransformManager {
     return slabPercentSetting;
   }
 
-  void slabBy(int pixels) {
-    int percent = pixels * slabPercentSetting / screenPixelCount;
-    if (percent == 0)
-      percent = (pixels < 0) ? -1 : 1;
-    slabPercentSetting += percent;
+  void slabByPercentagePoints(int percentage) {
+    slabPercentSetting += percentage;
+    if (slabPercentSetting < 1)
+      slabPercentSetting = 1;
+    else if (slabPercentSetting > 100)
+      slabPercentSetting = 100;
+    if (depthPercentSetting >= slabPercentSetting)
+      depthPercentSetting = slabPercentSetting - 1;
+  }
+
+  void depthByPercentagePoints(int percentage) {
+    depthPercentSetting += percentage;
+    if (depthPercentSetting < 0)
+      depthPercentSetting = 0;
+    else if (depthPercentSetting > 99)
+      depthPercentSetting = 99;
+    if (slabPercentSetting <= depthPercentSetting)
+      slabPercentSetting = depthPercentSetting + 1;
+  }
+
+  void slabDepthByPercentagePoints(int percentage) {
+    if (percentage > 0) {
+      if (slabPercentSetting + percentage > 100)
+        percentage = 100 - slabPercentSetting;
+    } else {
+      if (depthPercentSetting + percentage < 0)
+        percentage = 0 - depthPercentSetting;
+    }
+    slabPercentSetting += percentage;
+    depthPercentSetting += percentage;
   }
 
   void slabToPercent(int percentSlab) {
     slabPercentSetting =
-      percentSlab < 0 ? 0 : percentSlab > 100 ? 100 : percentSlab;
-  }
-
-  void slabByPercent(int percentSlab) {
-    int delta = percentSlab * slabPercentSetting / 100;
-    if (delta == 0)
-      delta = (percentSlab < 0) ? -1 : 1;
-    slabPercentSetting += delta;
+      percentSlab < 1 ? 1 : percentSlab > 100 ? 100 : percentSlab;
+    if (depthPercentSetting >= slabPercentSetting)
+      depthPercentSetting = slabPercentSetting - 1;
   }
 
   void setSlabEnabled(boolean slabEnabled) {
@@ -488,7 +508,9 @@ class TransformManager {
   // it represents the 'back' of the slab plane
   void depthToPercent(int percentDepth) {
     depthPercentSetting =
-      percentDepth < 0 ? 0 : percentDepth > 100 ? 100 : percentDepth;
+      percentDepth < 0 ? 0 : percentDepth > 99 ? 99 : percentDepth;
+    if (slabPercentSetting <= depthPercentSetting)
+      slabPercentSetting = depthPercentSetting + 1;
   }
   
   // miguel 24 sep 2004 - as I recall, this slab mode stuff is not implemented

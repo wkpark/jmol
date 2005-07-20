@@ -1,14 +1,14 @@
 <project name="Jmol-doc" default="main" basedir=".">
 
-<!--
-DocumentId $Id$
-Summary	   create and update applet-, developers- and user-guide translation
-
-TODO:
-- should check for existance of xml2po
-- translated XML files have lang="Jmol*Guide.LANG", so we need a workaround to
-  set the correct language in the lang attribute
--->
+  <!--
+      DocumentId  $Id$
+      Summary     create and update applet-, developers- and user-guide
+                    translation
+      Todo        should check for existance of xml2po
+                  translated XML files have lang="Jmol*Guide.LANG", so we need
+                    a workaround to set the correct language in the lang
+                    attribute
+  -->
 
   <!-- our properties section -->
 
@@ -20,7 +20,8 @@ TODO:
   <property name="all.JmolAppletGuide.languages" value="de" />
   <property name="all.JmolDevelopersGuide.languages" value="de" />
   <property name="all.JmolGuide.languages" value="de" />
-  <property name="all.guides" value="JmolAppletGuide,JmolDevelopersGuide,JmolGuide" />
+  <property name="all.guides"
+            value="JmolAppletGuide,JmolDevelopersGuide,JmolGuide" />
 
   <!-- <for list ...> construct needs ant-contrib.jar -->
   <taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -31,7 +32,8 @@ TODO:
   
   <!-- main target creates .pot files, update existing .po files and creates
        translated XML files by default -->
-  <target name="main" id="main" depends="init,create-pot,update-po,update-xml"/>
+  <target name="main" id="main"
+          depends="init,create-pot,update-po,update-xml"/>
   
   <target name="init" id="init">
     <tstamp/>
@@ -40,7 +42,8 @@ TODO:
   <!-- parse list of possible guides and create .pot for every guide -->
   <target name="create-pot" id="create-pot" depends="clean-pot">
     <echo message="Generating gettext PO-template file for all Guides ..."/>
-    <apply os="Linux" executable="xml2po" dir="${src.dir}" dest="${pot.dir}" parallel="false" verbose="true" relative="true">
+    <apply os="Linux" executable="xml2po" dir="${src.dir}" dest="${pot.dir}"
+           parallel="false" verbose="true" relative="true">
       <arg value="-e"/>
       <arg value="-o"/>
       <targetfile/>
@@ -50,7 +53,9 @@ TODO:
       </fileset>
       <mapper type="glob" from="*.docbook.xml" to="${pot.dir}/*.pot"/>
     </apply>
-    <apply os="Windows XP" executable="${src.dir}\xml2po.bat" dir="${src.win.dir}" dest="${pot.win.dir}" parallel="false" verbose="true" relative="true" forwardslash="true">
+    <apply os="Windows XP" executable="${src.dir}\xml2po.bat"
+           dir="${src.win.dir}" dest="${pot.win.dir}" parallel="false"
+           verbose="true" relative="true" forwardslash="true">
       <arg value="${src.win.dir}\xml2po.py"/>
       <arg value="-e"/>
       <arg value="-o"/>
@@ -67,7 +72,8 @@ TODO:
   <target name="update-po" id="update-po">
     <for list="${all.guides}" delimiter="," param="current.guide">
       <sequential>
-        <for list="${all.@{current.guide}.languages}" delimiter="," param="current.language">
+        <for list="${all.@{current.guide}.languages}" delimiter=","
+             param="current.language">
           <sequential>
             <antcall target="update-po-guide-lang">
               <param name="lang_value" value="@{current.language}"/>
@@ -82,10 +88,14 @@ TODO:
   <target name="update-po-guide-lang" id="update-po-guide-lang">
     <echo message="Updating ${guide_value}.${lang_value}.po gettext file ..."/>
     <exec os="Linux" executable="xml2po" dir="${pot.dir}">
-      <arg line="-e -u ${guide_value}.${lang_value}.po ${src.dir}/${guide_value}.docbook.xml"/>
+      <arg line="-e -u ${guide_value}.${lang_value}.po
+                 ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
-    <exec os="Windows XP" executable="${src.win.dir}\xml2po.bat" dir="${pot.win.dir}">
-      <arg line="${src.win.dir}\xml2po.py -e -u ${guide_value}.${lang_value}.po ${src.win.dir}\${guide_value}.docbook.xml"/>
+    <exec os="Windows XP" executable="${src.win.dir}\xml2po.bat"
+          dir="${pot.win.dir}">
+      <arg line="${src.win.dir}\xml2po.py -e
+                 -u ${guide_value}.${lang_value}.po
+                 ${src.win.dir}\${guide_value}.docbook.xml"/>
     </exec>
   </target>
 
@@ -94,7 +104,8 @@ TODO:
   <target name="update-xml" id="update-xml" depends="clean-translation">
     <for list="${all.guides}" delimiter="," param="current.guide">
       <sequential>
-        <for list="${all.@{current.guide}.languages}" delimiter="," param="current.language">
+        <for list="${all.@{current.guide}.languages}" delimiter=","
+             param="current.language">
           <sequential>
             <antcall target="update-xml-guide-lang">
               <param name="lang_value" value="@{current.language}"/>
@@ -110,10 +121,15 @@ TODO:
     <echo message="Merging back translations for ${guide_value}.docbook.xml
     ${line.separator}into ${guide_value}_${lang_value}.docbook.xml file ..."/>
     <exec os="Linux" executable="xml2po" dir="${pot.dir}">
-      <arg line="-e -p ${guide_value}.${lang_value}.po -o ${src.dir}/${guide_value}_${lang_value}.docbook.xml ${src.dir}/${guide_value}.docbook.xml"/>
+      <arg line="-e -p ${guide_value}.${lang_value}.po
+                 -o ${src.dir}/${guide_value}_${lang_value}.docbook.xml
+                 ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
     <exec os="Windows XP" executable="${src.win.dir}\xml2po.bat" dir="${pot.win.dir}">
-      <arg line="${src.win.dir}\xml2po.py -e -p ${guide_value}.${lang_value}.po -o ${src.win.dir}\${guide_value}_${lang_value}.docbook.xml ${src.win.dir}\${guide_value}.docbook.xml"/>
+      <arg line="${src.win.dir}\xml2po.py -e
+                 -p ${guide_value}.${lang_value}.po
+                 -o ${src.win.dir}\${guide_value}_${lang_value}.docbook.xml
+                 ${src.win.dir}\${guide_value}.docbook.xml"/>
     </exec>
   </target>
 

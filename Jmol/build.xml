@@ -205,11 +205,11 @@
     <mkdir dir="${applet.classes.dir}"/>
     <property name="build.compiler" value="javac1.1" />
     <!-- mth 20040713 ... with the Sun Java 1.5 compiler the default
-	 source code version is 1.5. And one cannot generate code for
-	 a 1.1 virtual machine from 1.5 source. Therefore, in order to
-	 compile for the 1.1 jvm, we need to specify that the source
-	 version is 1.3. (Note that we cannot use source=1.4 because
-	 of assertions)
+         source code version is 1.5. And one cannot generate code for
+         a 1.1 virtual machine from 1.5 source. Therefore, in order to
+         compile for the 1.1 jvm, we need to specify that the source
+         version is 1.3. (Note that we cannot use source=1.4 because
+         of assertions)
 
 miguel 20041121
 I do not know recall exactly what I meant by the statement
@@ -292,7 +292,7 @@ support for assertions (which were introduced in 1.4).
                   srcfile="${appjars.dir}"/>
       </and>
     </condition>
-  	
+          
     <uptodate property="libjars.uptodate" targetfile="${appjars.dir}">
       <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
       <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
@@ -481,7 +481,7 @@ support for assertions (which were introduced in 1.4).
     <!-- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -->
     <!-- changes to this must be replicated below for the signed applet -->
     <jar jarfile="JmolApplet0.jar" manifest="manifest/applet0.txt"
-	 index="true" >
+         index="true" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/appletwrapper/*" />
         <include name="JmolApplet*.class" />
@@ -505,32 +505,32 @@ support for assertions (which were introduced in 1.4).
 
   <target name="signed-applet" id="signed-applet" depends="applet-jar">
     <signjar jar="JmolApplet.jar" signedjar="JmolAppletSigned.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <signjar jar="JmolApplet1.jar" signedjar="JmolAppletSigned1.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <signjar jar="JmolApplet2.jar" signedjar="JmolAppletSigned2.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <signjar jar="JmolApplet3.jar" signedjar="JmolAppletSigned3.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <signjar jar="JmolApplet4.jar" signedjar="JmolAppletSigned4.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <signjar jar="JmolApplet5.jar" signedjar="JmolAppletSigned5.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <signjar jar="JmolApplet6.jar" signedjar="JmolAppletSigned6.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
     <!-- this one must be treated specially because of jar indexing
-	 we cannot simply rename the jar file, because the index has
-	 the old name (JmolApplet?.jar) inside it -->
+         we cannot simply rename the jar file, because the index has
+         the old name (JmolApplet?.jar) inside it -->
     <jar jarfile="JmolAppletSigned0.jar" manifest="manifest/applet0.txt"
-	 index="true" >
+         index="true" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/appletwrapper/*" />
         <include name="JmolApplet*.class" />
@@ -547,13 +547,13 @@ support for assertions (which were introduced in 1.4).
       </indexjars>
     </jar>
     <signjar jar="JmolAppletSigned0.jar"
-	     keystore="selfSignedCertificate/selfSignedCertificate.store"
-	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
   </target>
 
   <target name="dist" id="dist"
-	  depends="doc,main-i18n,main,signed-applet">
+          depends="doc,main-i18n,main,signed-applet">
     <!-- first build binary distribution -->
     <delete dir="build/dist/jmol-${version}"/>
     <mkdir dir="build/dist/jmol-${version}"/>
@@ -585,7 +585,7 @@ support for assertions (which were introduced in 1.4).
    <!--
     zip distributions to not retain file permissions
     <zip zipfile="build/dist/jmol-${version}-binary.zip" basedir="build/dist"
-	 includes="jmol-${version}/**" />
+         includes="jmol-${version}/**" />
     -->
 
     <tar tarfile="build/dist/jmol-${version}-binary.tar.gz"
@@ -659,7 +659,7 @@ support for assertions (which were introduced in 1.4).
 <!--
     zip distributions to not retain file permissions
     <zip zipfile="build/dist/jmol-${version}-full.zip" basedir="build/dist"
-	 includes="jmol-${version}/**" />
+         includes="jmol-${version}/**" />
     -->
 
     <tar tarfile="build/dist/jmol-${version}-full.tar.gz"

@@ -177,7 +177,7 @@
   
   
   <!-- clean target: removes nothing by default -->
-  <target name="clean" id="clean"/>
+  <target name="clean-i18n" id="clean-i18n"/>
 
   <!-- spotless target: removes everything -->
   <target name="spotless-i18n" id="spotless-i18n"

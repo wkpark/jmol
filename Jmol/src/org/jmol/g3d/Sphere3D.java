@@ -64,10 +64,10 @@ class Sphere3D {
     int radius = (diameter + 1) >> 1;
     int minX = x - radius, maxX = x + radius;
     int minY = y - radius, maxY = y + radius;
-    int minZ = z - radius;
+    int minZ = z - radius, maxZ = z + radius;
     if (maxX < 0 || minX >= g3d.width ||
         maxY < 0 || minY >= g3d.height ||
-        z < g3d.slab || minZ > g3d.depth)
+        maxZ < g3d.slab || minZ > g3d.depth)
       return;
     int[] ss = getSphereShape(diameter);
     if (minX < 0 || maxX >= g3d.width ||
@@ -208,8 +208,15 @@ class Sphere3D {
         boolean tWestVisible = xWest >= 0 && xWest < width;
         boolean tEastVisible = xEast >= 0 && xEast < width;
         packed = sphereShape[offsetSphere++];
-        int zPixel = z - (packed & 0x7F);
-        boolean isSlabClipped = zPixel < slab;
+        int zPixel;
+        boolean isSlabClipped;
+        if (z < slab) {
+          zPixel = z + (packed & 0x7F);
+          isSlabClipped = zPixel > slab;
+        } else {
+          zPixel = z - (packed & 0x7F);
+          isSlabClipped = zPixel < slab;
+        }
         if (isSlabClipped)
           zPixel = slab;
         if (zPixel >= slab && zPixel <= depth) {
@@ -219,7 +226,7 @@ class Sphere3D {
               zbuf[offsetSE] = (short)zPixel;
               int i = (packed >> 7) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 7) & 0x03);
+                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 7) & 0x07);
               pbuf[offsetSE] = shades[i];
             }
             if (tWestVisible && (!tScreened || (flipflops & 2) != 0) &&
@@ -227,7 +234,7 @@ class Sphere3D {
               zbuf[offsetSW] = (short)zPixel;
               int i = (packed >> 13) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 13) & 0x03);
+                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 13) & 0x07);
               pbuf[offsetSW] = shades[i];
             }
           }
@@ -237,7 +244,7 @@ class Sphere3D {
               zbuf[offsetNE] = (short)zPixel;
               int i = (packed >> 19) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 19) & 0x03);
+                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 19) & 0x07);
               pbuf[offsetNE] = shades[i];
             }
             if (tWestVisible && (!tScreened || (flipflops & 8) != 0) &&
@@ -245,7 +252,7 @@ class Sphere3D {
               zbuf[offsetNW] = (short)zPixel;
               int i = (packed >> 25) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 25) & 0x03);
+                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 25) & 0x07);
               pbuf[offsetNW] = shades[i];
             }
           }
@@ -399,7 +406,7 @@ class Sphere3D {
     int x2Status = (x2 < 0) ? -1 : (x2 < g3d.width) ? 0 : 1;
     int y2 = y + radius * ySign;
     int y2Status = (y2 < 0) ? -1 : (y2 < g3d.height) ? 0 : 1;
-    int z2Status = (z < g3d.slab) ? -1 : ((z - radius) < g3d.slab) ? 1 : 0;
+    int z2Status = ((z + radius) < g3d.slab) ? -1 : ((z - radius) < g3d.slab) ? 1 : 0;
 
     if (xStatus < 0 && x2Status < 0 || xStatus > 0 && x2Status > 0 ||
         yStatus < 0 && y2Status < 0 || yStatus > 0 && y2Status > 0 ||
@@ -514,20 +521,25 @@ class Sphere3D {
         z0 = z - k;
         if (z0 > depth || zbuf[offsetPbuf] <= z0)
           continue;
-        int x8 = ((j * xSign + radius) << 8) / dDivisor;
-        int s = sphereIntensities[(y8 << 8) + x8];
+        int s;
         if (z0 < slab) {
+          if (z < slab) {
+            z0 = z + k;
+            if (z0 < slab)
+              continue;
+          }
           z0 = slab;
-          s = SHADE_SLAB_CLIPPED - 1 + ((randu >> 8) & 0x03);
-          /*
-          s = SHADE_SLAB_CLIPPED - 2 +
-            ((randu >> 8) & 0x01) + ((randu >> 6) & 0x01);
-          */
+          s = SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07);
           randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
+        } else {
+          int x8 = ((j * xSign + radius) << 8) / dDivisor;
+          s = sphereIntensities[(y8 << 8) + x8];
         }
         pbuf[offsetPbuf] = shades[s];
         zbuf[offsetPbuf] = (short) z0;
       }
+      // randu is failing me and generating moire patterns :-(
+      // so throw in a little more salt
       randu = ((randu + xCurrent + yCurrent) | 1) & 0x7FFFFFFF;
     }
   }

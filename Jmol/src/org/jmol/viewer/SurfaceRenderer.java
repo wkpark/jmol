@@ -191,35 +191,35 @@ class SurfaceRenderer extends ShapeRenderer {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
+  final Point3f[][] torusPoints =
+    new Point3f[Surface.INNER_TORUS_STEP_COUNT][];
+  final Point3i[][] torusScreens =
+    new Point3i[Surface.INNER_TORUS_STEP_COUNT][];
+  {
+    for (int i = torusPoints.length; --i >= 0; ) {
+      Point3f[] outerPoints = new Point3f[Surface.OUTER_TORUS_STEP_COUNT];
+      torusPoints[i] = outerPoints;
+      Point3i[] outerScreens = new Point3i[Surface.OUTER_TORUS_STEP_COUNT];
+      torusScreens[i] = outerScreens;
+      for (int j = outerPoints.length; --j >= 0; ) {
+        outerPoints[j] = new Point3f();
+        outerScreens[j] = new Point3i();
+      }
+    }
+  }
+
   void renderTorusHalf(Surface.Torus torus, short colix, boolean renderJHalf) {
     g3d.setColix(colix);
-    int probeMap = torus.probeMap;
+    torus.calcPoints(torusPoints, renderJHalf);
+    torus.calcScreens(torusPoints, torusScreens);
+    int outerPointCount = torus.outerPointCount;
 
-    int torusDotCount1 =
-      (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
-    float stepAngle1 = torus.outerAngle / torusDotCount1;
-    if (renderJHalf)
-      stepAngle1 = -stepAngle1;
-    aaT1.set(torus.tangentVector, 0);
-
-    aaT.set(torus.axisVector, 0);
-    int step = getTorusIncrement();
-    for (int i = 0; probeMap != 0; i += step, probeMap <<= step) {
-      if (probeMap >= 0)
+    for (int i = 0, probeT = torus.probeMap; probeT != 0; ++i, probeT <<= 1) {
+      if (probeT >= 0)
         continue;
-      aaT.angle = i * INNER_TORUS_STEP_ANGLE;
-      matrixT.set(aaT);
-      matrixT.transform(torus.radialVector, pointT);
-      pointT.add(torus.center);
-
-      for (int j = torusDotCount1; --j >= 0; ) {
-        aaT1.angle = j * stepAngle1;
-        matrixT1.set(aaT1);
-        matrixT1.transform(torus.outerRadial, pointT1);
-        matrixT.transform(pointT1);
-        pointT1.add(pointT);
-        g3d.drawPixel(viewer.transformPoint(pointT1));
-      }
+      Point3i[] screens = torusScreens[i];
+      for (int j = outerPointCount; --j >= 0; )
+        g3d.drawPixel(screens[j]);
     }
   }
 

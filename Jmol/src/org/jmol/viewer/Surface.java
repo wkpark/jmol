@@ -497,6 +497,7 @@ class Surface extends Shape {
   final Matrix3f matrixT = new Matrix3f();
   final Matrix3f matrixT1 = new Matrix3f();
   final AxisAngle4f aaT = new AxisAngle4f();
+  final AxisAngle4f aaT1 = new AxisAngle4f();
 
   final AxisAngle4f aaAxis = new AxisAngle4f();
   final Matrix3f matrixAxis = new Matrix3f();
@@ -542,9 +543,11 @@ class Surface extends Shape {
 
   float[] cavityAngles = new float[32];
 
-  private final static int INNER_TORUS_STEP_COUNT = 32;
+  final static int INNER_TORUS_STEP_COUNT = 32;
   final static float INNER_TORUS_STEP_ANGLE =
     (float)(2 * Math.PI / INNER_TORUS_STEP_COUNT);
+  // note that this is the number of steps in 180 degrees, not 360
+  final static int OUTER_TORUS_STEP_COUNT = 64;
 
   class Torus {
     final int ixA, ixB;
@@ -555,7 +558,7 @@ class Surface extends Shape {
     final Vector3f unitRadialVector;
     final Vector3f tangentVector;
     final Vector3f outerRadial;
-    float outerAngle;
+    final float outerAngle;
     int probeMap;
     final AxisAngle4f aaRotate;
     short colixA, colixB;
@@ -667,10 +670,45 @@ class Surface extends Shape {
     void addCavity(Cavity cavity, boolean rightHanded) {
     }
 
-    void calcPoints(Point3f[][] points) {
-      
+    int outerPointCount;
+
+    void calcPoints(Point3f[][] points, boolean renderJHalf) {
+      outerPointCount = (int)(OUTER_TORUS_STEP_COUNT * outerAngle / Math.PI);
+      float stepAngle1 = outerAngle / outerPointCount;
+      if (renderJHalf)
+        stepAngle1 = -stepAngle1;
+      aaT1.set(tangentVector, 0);
+      aaT.set(axisVector, 0);
+      int probeT = probeMap;
+      for (int i = 0; probeT != 0; ++i, probeT <<= 1) {
+        if (probeT >= 0)
+          continue;
+        aaT.angle = i * INNER_TORUS_STEP_ANGLE;
+        matrixT.set(aaT);
+        matrixT.transform(radialVector, pointT);
+        pointT.add(center);
+        
+        for (int j = outerPointCount; --j >= 0; ) {
+          aaT1.angle = j * stepAngle1;
+          matrixT1.set(aaT1);
+          matrixT1.transform(outerRadial, pointT1);
+          matrixT.transform(pointT1);
+          points[i][j].add(pointT1, pointT);
+        }
+      }
     }
 
+    void calcScreens(Point3f[][] points, Point3i[][] screens) {
+      int probeT = probeMap;
+      for (int i = 0; probeT != 0; ++i, probeT <<= 1) {
+        if (probeT >= 0)
+          continue;
+        Point3f[] outerPoints = points[i];
+        Point3i[] outerScreens = screens[i];
+        for (int j = outerPointCount; --j >= 0; )
+          viewer.transformPoint(outerPoints[j], outerScreens[j]);
+      }
+    }
   }
 
   class TorusX {

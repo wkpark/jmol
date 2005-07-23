@@ -9,7 +9,20 @@
   <chapter id="Prerequisites">
     <title>Voraussetzungen</title>
   
-    <itemizedlist><listitem><para>Java 2 JDK 1.4 (<ulink url="http://java.sun.com/"/>)</para></listitem><listitem><para>Apache Ant (<ulink url="http://jakarta.apache.org/ant"/>)</para><para>Ant sollte auf einem Linux/Unix/OSX System möglichst mit Hilfe der Paketverwaltung installiert werden.</para></listitem><listitem><para>CVS - The definitive CVS documentation unter <ulink url="http://cvsbook.red-bean.com/cvsbook.html"/>)</para><para>Für Win32 kann wincvs von <ulink url="http://www.wincvs.org"/> eingesetzt werden.</para><para>Bei Mac OSX befindet sich die CVS-Software auf der Entwickler-CD, welche kostenlos bei Apple heruntergeladen werden kann.</para></listitem></itemizedlist>
+    <itemizedlist>
+      <listitem>
+        <para>Java 2 JDK 1.4 (<ulink url="http://java.sun.com/"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Apache Ant (<ulink url="http://jakarta.apache.org/ant"/>)</para>
+        <para>Ant sollte auf einem  Linux/Unix/OSX System möglichst mit Hilfe der Paketverwaltung installiert werden.</para>
+      </listitem>
+      <listitem>
+        <para>CVS - The definitive CVS documentation unter <ulink url="http://cvsbook.red-bean.com/cvsbook.html"/>)</para>
+        <para>Für Win32 kann wincvs von <ulink url="http://www.wincvs.org"/> eingesetzt werden.</para>
+        <para>Bei Mac OSX befindet sich die CVS-Software auf der Entwickler-CD, welche kostenlos bei Apple heruntergeladen werden kann.</para>
+      </listitem>
+    </itemizedlist>
   </chapter>
   
   <chapter id="CheckingOutJmol">
@@ -40,7 +53,18 @@
   <chapter id="BuildingJmol">
     <title>Jmol übersetzen</title>
     
-    <itemizedlist><para>Voraussetzungen:</para><listitem><para>Java 2 JDK 1.4 (<ulink url="http://java.sun.com/"/>)</para></listitem><listitem><para>Apache Ant (<ulink url="http://jakarta.apache.org/ant"/>)</para></listitem><listitem><para>Jmol Quellcode</para></listitem></itemizedlist>
+    <itemizedlist>
+      <para>Voraussetzungen:</para>
+      <listitem>
+        <para>Java 2 JDK 1.4 (<ulink url="http://java.sun.com/"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Apache Ant (<ulink url="http://jakarta.apache.org/ant"/>)</para>
+      </listitem>
+      <listitem>
+        <para>Jmol Quellcode</para>
+      </listitem>
+    </itemizedlist>
     
     <para>Jmol Quellcode kann entweder als Paket herundergeladen (siehe <ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629"> SourceForge Projekt-Dateien</ulink>) oder per CVS ausgecheckt werden (siehe <ulink url="http://sourceforge.net/cvs/?group_id=23629">SourceForge CVS Zugang</ulink>).</para>
     
@@ -75,7 +99,13 @@
   <chapter id="CodingStandard">
     <title>Coding-Standard</title>
     
-    <itemizedlist><listitem><para>Der gewählte Editor sollte Zeilen automatisch einrücken. Falls er das nicht tut und sich dieses Feature auch nicht aktivieren lässt, sollte ein anderer Editor benutzt werden.</para></listitem><listitem><para>Die Breite der Einrückung (Tabulatorbreite) soll zwei Leerzeichen betragen.</para><programlisting>
+    <itemizedlist>
+      <listitem>
+        <para>Der gewählte Editor sollte Zeilen automatisch einrücken. Falls er das nicht tut und sich dieses Feature auch nicht aktivieren lässt, sollte ein anderer Editor benutzt werden.</para>
+      </listitem>
+      <listitem>
+        <para>Die Breite der Einrückung (Tabulatorbreite) soll zwei Leerzeichen betragen.</para>
+        <programlisting>
   class Foo {
     int someClassVariable;
     
@@ -85,13 +115,33 @@
     
     ...
   }
-        </programlisting></listitem><listitem><para>Statt Tabulatoren sollten Leerzeichen benutzt werden</para></listitem><listitem><para>Zuweisungen und arithmetische Operatoren besitzen i.A. auf beiden Seiten Leerzeichen.</para><programlisting>
+        </programlisting>
+      </listitem>
+      <listitem>
+        <para>Statt Tabulatoren sollten Leerzeichen benutzt werden</para>
+      </listitem>
+      <listitem>
+        <para>Zuweisungen und arithmetische Operatoren besitzen i.A. auf beiden Seiten Leerzeichen.</para>
+        <programlisting>
   a = b + c;
-        </programlisting><para>Es ist erlaubt, die Leerzeichen zwischen Ausdrücken zu entfernen, um die Operator-Priorität zu verdeutlichen.</para><programlisting>
-	  int cSquared = a*a + b*b;
-	</programlisting></listitem><listitem><para>In der Liste der Argumente folgt auf ein Komma ein Leerzeichen.</para><programlisting>
+        </programlisting>
+        <para>Es ist erlaubt, die Leerzeichen zwischen Ausdrücken zu entfernen, um die Operator-Priorität zu verdeutlichen.</para>
+        <programlisting>
+  int cSquared = a*a + b*b;
+        </programlisting>
+      </listitem>
+      <listitem>
+        <para>In der Liste der Argumente folgt auf ein Komma ein Leerzeichen.</para>
+        <programlisting>
   foo(a, 3.14159, "jmol");
-        </programlisting></listitem><listitem><para>Eine Zeile sollte nicht länger als 80 Zeichen sein.</para></listitem><listitem><para>Öffnende Klammern befinden sich in der Zeile, die den Block öffnet. Schließende Klammern werden in eine eigene Zeile geschrieben.</para><programlisting>
+        </programlisting>
+      </listitem>
+      <listitem>
+        <para>Eine Zeile sollte nicht länger als 80 Zeichen sein.</para>
+      </listitem>
+      <listitem>
+        <para>Öffnende Klammern befinden sich in der Zeile, die den Block öffnet. Schließende Klammern werden in eine eigene Zeile geschrieben.</para>
+        <programlisting>
   if (condition) {
     ...
   } else {
@@ -101,7 +151,30 @@
   while (condition)
     ...
   }
-        </programlisting></listitem><listitem><para>Schleifen werden bei 0, nicht bei 1 gestartet.</para></listitem><listitem><para><emphasis>Nur </emphasis><command>&lt;</command> und <command>&gt;=</command> sind valide Vergleichsoperatoren zur Termination von Schleifen ... alles andere ist möglicherweise fehlerhaft. Falls nicht absolute <emphasis>Gewissheit</emphasis> besteht, dass das Gegenteil der Fall ist, sollte in diesen Fällen ein Kommentar im Quellcode hinterlassen.</para></listitem><listitem><para>Variablen- und Methodenbezeichnungen müssen eindeutig und beschreibend sein. Nur keine Hemmungen bei langen Bezeichnungen.</para></listitem><listitem><para>line-by-line Kommentare sind <emphasis>unerwünscht</emphasis> ... in speziellen Fällen kann es Ausnahmen geben. Falls sich viele soclhe Kommentare im Quellcode finden, könnte es passieren, dass sie einfach gelöscht werden.</para></listitem><listitem><para>Falls Kommentare unbedingt notwendig sind, sollten sie als JavaDoc vor der Funktion eingefügt werden</para></listitem><listitem><para>Kommentare sollten nicht in Code eingefügt werden, der gerade verändert wird. <emphasis>Schlechte/veraltete Kommentare sind schlimmer als gar keine Kommentare.</emphasis></para></listitem><listitem><para>Empfehlenswert ist auch ein Blick in <ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">The Elements of Java Style von Vermeulen, et al</ulink>.</para></listitem></itemizedlist>
+        </programlisting>
+      </listitem>
+      <listitem>
+        <para>Schleifen werden bei 0, nicht bei 1 gestartet.</para>
+      </listitem>
+      <listitem>
+        <para><emphasis>Nur </emphasis> <command>&lt;</command> und <command>&gt;=</command> sind valide Vergleichsoperatoren zur Termination von Schleifen ... alles andere ist möglicherweise fehlerhaft. Falls nicht absolute <emphasis>Gewissheit</emphasis> besteht, dass das Gegenteil der Fall ist, sollte in diesen Fällen ein Kommentar im Quellcode hinterlassen.</para>
+      </listitem>
+      <listitem>
+        <para>Variablen- und Methodenbezeichnungen müssen eindeutig und beschreibend sein. Nur keine Hemmungen bei langen Bezeichnungen.</para>
+      </listitem>
+      <listitem>
+        <para>line-by-line Kommentare sind <emphasis>unerwünscht</emphasis> ... in speziellen Fällen kann es Ausnahmen geben. Falls sich viele soclhe Kommentare im Quellcode finden, könnte es passieren, dass sie einfach gelöscht werden.</para>
+      </listitem>
+      <listitem>
+        <para>Falls Kommentare unbedingt notwendig sind, sollten sie als JavaDoc vor der Funktion eingefügt werden</para>
+      </listitem>
+      <listitem>
+        <para>Kommentare sollten nicht in Code eingefügt werden, der gerade verändert wird. <emphasis>Schlechte/veraltete Kommentare sind schlimmer als gar keine Kommentare.</emphasis></para>
+      </listitem>
+      <listitem>
+        <para>Empfehlenswert ist auch ein Blick in <ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">The Elements of Java Style von Vermeulen, et al</ulink>.</para>
+      </listitem>
+    </itemizedlist>
   </chapter>
   
   <chapter id="Releasing">
@@ -117,7 +190,14 @@
     
     <para>Um Distributions-Pakete für Plattformen zu erstellen, muss der Entwickler den Support übernehmen. Dateien, die zum Erstellen der Pakete notwendig sind, werden im CVS innerhalb des Verzeichnisses Jmol/packaging abgelegt. Zur Zeit sind folgenden Pakete erhältlich:</para>
     
-    <itemizedlist><listitem><para>Debian (Daniel Leidert &amp; Egon Willighagen)</para></listitem><listitem><para>RPM (Miguel Howard)</para></listitem></itemizedlist>
+    <itemizedlist>
+      <listitem>
+        <para>Debian (Daniel Leidert &amp; Egon Willighagen)</para>
+      </listitem>
+      <listitem>
+        <para>RPM (Miguel Howard)</para>
+      </listitem>
+    </itemizedlist>
   </chapter>
   
   <chapter id="CVS">
@@ -184,7 +264,7 @@
     <section id="Eclipse_prerequisites">
       <title>Voraussetzungen für Eclipse</title>
     
-      <para>Diese Dokumentation wurde mit Eclipse 3.01 getestet.</para>
+      <para>This documentation has been tested with Eclipse 3.0x and 3.1.</para>
     
       <para>Eclipse muss zuerst korrekt installiert und konfiguriert werden, bevor mit den nächsten Schritten fortgefahren werden kann.</para>
     </section>
@@ -194,7 +274,46 @@
       
       <para>Der Zugang zum Jmol CVS wird unter Eclipse so konfiguriert:</para>
     
-      <itemizedlist><listitem><para>Eclipse starten.</para></listitem><listitem><para>Zur <command>CVS Repository Exploring</command> Perspektive wechseln.</para></listitem><listitem><para>Rechte Maustaste auf <command>CVS Repositories</command> Fenster und dort <command>New</command> / <command>Repository Location...</command> im Kontextmenü auswählen.</para></listitem><listitem><para>Im Fenster <command>Add CVS Repository</command> werden die folgenden Werte eingegeben:</para><itemizedlist><listitem><para>Host: <command>cvs.sourceforge.net</command></para></listitem><listitem><para>Repository path: <command>/cvsroot/jmol</command></para></listitem><listitem><para>Authentication: <command>anonymous</command> für anonymen Zugriff, oder den Login für den Zugang als Entwickler.</para></listitem><listitem><para>Password: leer oder das Passwort für den Zugang als Entwickler.</para></listitem><listitem><para>Connection type: <command>pserver</command> für anonymen Zugriff, <command>extssh</command> für den Zugang als Entwickler.</para></listitem><listitem><para>Dann sind noch die Optionen <command>Use Default Port</command> und <command>Validate Connection on Finish</command> zu aktivieren.</para></listitem><listitem><para>Das Passwort kann mit der Option <command>Save Password</command> wahlweise gespeicht werden.</para></listitem><listitem><para>Zum Schluss die Einstellungen mit <command>Finish</command> bestätigen.</para></listitem></itemizedlist></listitem></itemizedlist>
+      <itemizedlist>
+        <listitem>
+          <para>Eclipse starten.</para>
+        </listitem>
+        <listitem>
+          <para>Zur <command>CVS Repository Exploring</command> Perspektive wechseln.</para>
+        </listitem>
+        <listitem>
+          <para>Rechte Maustaste auf <command>CVS Repositories</command> Fenster und dort <command>New</command> / <command>Repository Location...</command> im Kontextmenü auswählen.</para>
+        </listitem>
+        <listitem>
+          <para>Im Fenster <command>Add CVS Repository</command> werden die folgenden Werte eingegeben:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Host: <command>cvs.sourceforge.net</command></para>
+            </listitem>
+            <listitem>
+              <para>Repository path: <command>/cvsroot/jmol</command></para>
+            </listitem>
+            <listitem>
+              <para>Authentication: <command>anonymous</command> für anonymen Zugriff, oder den Login für den Zugang als Entwickler.</para>
+            </listitem>
+            <listitem>
+              <para>Password: leer oder das Passwort für den Zugang als Entwickler.</para>
+            </listitem>
+            <listitem>
+              <para>Connection type: <command>pserver</command> für anonymen Zugriff, <command>extssh</command> für den Zugang als Entwickler.</para>
+            </listitem>
+            <listitem>
+              <para>Dann sind noch die Optionen <command>Use Default Port</command> und <command>Validate Connection on Finish</command> zu aktivieren.</para>
+            </listitem>
+            <listitem>
+              <para>Das Passwort kann mit der Option <command>Save Password</command> wahlweise gespeicht werden.</para>
+            </listitem>
+            <listitem>
+              <para>Zum Schluss die Einstellungen mit <command>Finish</command> bestätigen.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
     </section>
     
     <section id="Eclipse_CheckingOut">
@@ -202,7 +321,23 @@
       
       <para>Um Jmol aus dem CVS auszuchecken:</para>
       
-      <itemizedlist><listitem><para>Zur <command>CVS Repository Exploring</command> Perspektive wechseln.</para></listitem><listitem><para>Die Adresse des CVS-Repositoriums (siehe vorangegangener Abschnitt) eingeben und <command>HEAD</command> eintragen.</para></listitem><listitem><para>Rechte Maustaste auf <command>Jmol</command> und <command>Check Out As...</command> im Kontextmenü auswählen.</para></listitem><listitem><para>Im Fenster <command>Check Out As</command>, wird die Option <command>Check out as a project in the workspace</command> aktiviert und im Feld <command>Project Name</command> wird <command>Jmol-HEAD</command> eingegeben. Diese Einstellungen müssen noch mit einem Klick auf <command>Finish</command> bestätigt werden.</para></listitem><listitem><para>Falls gewünscht, kann auch Jmol-web ausgecheckt werden. Dazu rechte Maustaste auf <command>Jmol-web</command> und <command>Check out</command> im Kontextmenü auswählen.</para></listitem></itemizedlist>
+      <itemizedlist>
+        <listitem>
+          <para>Zur <command>CVS Repository Exploring</command> Perspektive wechseln.</para>
+        </listitem>
+        <listitem>
+          <para>Die Adresse des CVS-Repositoriums (siehe vorangegangener Abschnitt) eingeben und <command>HEAD</command> eintragen.</para>
+        </listitem>
+        <listitem>
+          <para>Rechte Maustaste auf <command>Jmol</command> und <command>Check Out As...</command> im Kontextmenü auswählen.</para>
+        </listitem>
+        <listitem>
+          <para>Im Fenster <command>Check Out As</command>, wird die Option <command>Check out as a project in the workspace</command> aktiviert und im Feld <command>Project Name</command> wird <command>Jmol-HEAD</command> eingegeben. Diese Einstellungen müssen noch mit einem Klick auf <command>Finish</command> bestätigt werden.</para>
+        </listitem>
+        <listitem>
+          <para>Falls gewünscht, kann auch Jmol-web ausgecheckt werden. Dazu rechte Maustaste auf <command>Jmol-web</command> und <command>Check out</command> im Kontextmenü auswählen.</para>
+        </listitem>
+      </itemizedlist>
     </section>
     
     <section id="Eclipse_Configuring">
@@ -210,7 +345,29 @@
       
       <para>Um Jmol mit Eclipse zu übersetzen:</para>
       
-      <itemizedlist><listitem><para>Zuerst zur <command>Java</command> Perspektive wechseln.</para></listitem><listitem><para>Rechte Maustaste auf <command>Jmol-HEAD</command> und <command>Properties</command> im Kontextmenü auswählen.</para></listitem><listitem><para>Im Fenster <command>Properties for Jmol-HEAD</command> / <command>Java Compiler</command> auswählen.</para></listitem><listitem><para>Die Option <command>Use project settings</command> aktivieren.</para></listitem><listitem><para>Im Tabreiter <command>Style</command> für jede Box <command>Warning</command> ankreuzen. Nur für <command>Unqualified access to instance field</command> und <command>Undocumented empty block</command> kann <command>Ignore</command> aktiviert werden.</para></listitem><listitem><para>Im Tabreiter <command>Advanced</command> für jede Box <command>Warning</command> ankreuzen. Nur für <command>Local variable declaration hides another field or variable</command>, <command>Usage of deprecated API</command> und <command>Usage of non-externalized strings</command> kann <command>Ignore</command> aktiviert werden.</para></listitem><listitem><para>Im Tabreiter <command>Unused code</command> für jede Box <command>Warning</command> ankreuzen. Nur für <command>Parameter is never read</command> und <command>Unnecessary cast or 'instance of' operation</command> kann <command>Ignore</command> aktiviert werden.</para></listitem></itemizedlist>
+      <itemizedlist>
+        <listitem>
+          <para>Zuerst zur <command>Java</command> Perspektive wechseln.</para>
+        </listitem>
+        <listitem>
+          <para>Rechte Maustaste auf <command>Jmol-HEAD</command> und <command>Properties</command> im Kontextmenü auswählen.</para>
+        </listitem>
+        <listitem>
+          <para>In the <command>Properties for Jmol-HEAD</command> window, select <command>Java Compiler</command> (3.0x) or <command>Java Compiler -&gt; Errors/Warnings </command> (3.1).</para>
+        </listitem>
+        <listitem>
+          <para>Check <command>Use project (specific) settings</command>.</para>
+        </listitem>
+        <listitem>
+          <para>In the <command>Style</command> tab, select <command>Warning</command> for every combo-box, except for <command>Unqualified access to instance field</command> and <command>Undocumented empty block</command> where you can select <command>Ignore</command>. For Eclipse 3.1, you will find the necessary options in the <command>Code Style</command> tab.</para>
+        </listitem>
+        <listitem>
+          <para>In the <command>Advanced</command> tab, select <command>Warning</command> for every combo-box, except for <command>Local variable declaration hides another field or variable</command>, <command>Usage of deprecated API</command> and <command>Usage of non-externalized strings</command> where you can select <command>Ignore</command>. For Eclipse 3.1, you will find the necessary options in the <command>Name shadowing and conflicts</command>, <command>Deprectated and restricted API</command> and the <command>Code Style</command> tab.</para>
+        </listitem>
+        <listitem>
+          <para>In the <command>Unused code</command> tab, select <command>Warning</command> for every combo-box, except for <command>Parameter is never read</command> and <command>Unnecessary cast or 'instance of' operation</command> where you can select <command>Ignore</command>. For Eclipse 3.1, you will find the necessary options in the <command>Unnecessary code</command> tab.</para>
+        </listitem>
+      </itemizedlist>
     </section>
     
     <section id="Eclipse_Running">

@@ -30,7 +30,80 @@
 
     <para>JmolApplet wurde mit den folgenden System-Konfigurationen erfolgreich getestet:</para>
     
-    <itemizedlist><listitem><para>Win32 (98/ME/2K/XP)</para><itemizedlist><listitem><para>Microsoft Internet Explorer mit Microsoft JVM</para></listitem><listitem><para>Microsoft Internet Explorer mit Sun Java Plugin &gt;= 1.4</para></listitem><listitem><para>Netscape 4.7/4.8 <emphasis>(sehr langsam)</emphasis></para></listitem><listitem><para>Netscape 7 mit Sun Java Plugin &gt;= 1.4</para></listitem><listitem><para>Mozilla mit Sun Java Plugin &gt;= 1.4</para></listitem><listitem><para>Firefox 1.0 mit Sun Java Plugin &gt;= 1.4</para></listitem><listitem><para>Opera 7.5.4 mit Sun Java Plugin &gt;= 1.4</para></listitem></itemizedlist></listitem><listitem><para>Mac OS X 10.3.3 oder höher</para><para>Mac OS X Versionen vor 10.3.3 unterstützen nicht die LiveConnect-Kommunikation zwischen JavaScript und Java</para><itemizedlist><listitem><para>Safari 1.2 (v125)</para><para>Ältere Versionen von OSX &amp; Safari verursachen erhebliche Probleme. Auch neuere Versionen zeigen sich nicht problemfrei. Es bleibt zu hoffen, dass Apple diese Dinge in den Griff bekommt.</para></listitem><listitem><para>Netscape 7.2 mit installiertem Plugin von javaplugin.sourceforge.net</para></listitem><listitem><para>Mozilla 1.7.3 mit installiertem Plugin von javaplugin.sourceforge.net</para></listitem><listitem><para>Firefox 1.0 mit installiertem Plugin von javaplugin.sourceforge.net</para></listitem><listitem><para>Opera 7.5.4</para><para>Alle Versionen von Opera für OSX bis einschließlich 7.5.4 sind völlig kaputt.</para></listitem></itemizedlist></listitem><listitem><para>Linux/Unix</para><itemizedlist><listitem><para>Mozilla 1.6 + Sun Java &gt;= 1.4</para></listitem><listitem><para>Firefox 1.0 + Sun Java &gt;= 1.4</para></listitem><listitem><para>Konqueror 3.3</para><para>Alle Versionen von Konqueror bis einschließlich 3.3 sind kaputt.</para></listitem></itemizedlist></listitem><listitem><para>Mac OS 9</para><itemizedlist><listitem><para>Netscape 4.7* <emphasis>schlechte Performance mit eingeschränkter Funktionalität</emphasis></para></listitem></itemizedlist></listitem></itemizedlist>
+    <itemizedlist>
+      <listitem>
+        <para>Win32 (98/ME/2K/XP)</para>
+        <itemizedlist>
+          <listitem>
+            <para>Microsoft Internet Explorer mit Microsoft JVM</para>
+          </listitem>
+          <listitem>
+            <para>Microsoft Internet Explorer mit Sun Java Plugin &gt;= 1.4</para>
+          </listitem>
+          <listitem>
+            <para>Netscape 4.7/4.8 <emphasis>(sehr langsam)</emphasis></para>
+          </listitem>
+          <listitem>
+            <para>Netscape 7 mit Sun Java Plugin &gt;= 1.4</para>
+          </listitem>
+          <listitem>
+            <para>Mozilla mit Sun Java Plugin &gt;= 1.4</para>
+          </listitem>
+          <listitem>
+            <para>Firefox 1.0 mit Sun Java Plugin &gt;= 1.4</para>
+          </listitem>
+          <listitem>
+            <para>Opera 7.5.4 mit Sun Java Plugin &gt;= 1.4</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>Mac OS X 10.3.3 oder höher</para>
+        <para>Mac OS X Versionen vor 10.3.3 unterstützen nicht die LiveConnect-Kommunikation zwischen JavaScript und Java</para>
+        <itemizedlist>
+          <listitem>
+            <para>Safari 1.2 (v125)</para>
+            <para>Ältere Versionen von OSX &amp; Safari verursachen erhebliche Probleme. Auch neuere Versionen zeigen sich nicht problemfrei. Es bleibt zu hoffen, dass Apple diese Dinge in den Griff bekommt.</para>
+          </listitem>
+          <listitem>
+            <para>Netscape 7.2 mit installiertem Plugin von javaplugin.sourceforge.net</para>
+          </listitem>
+          <listitem>
+            <para>Mozilla 1.7.3 mit installiertem Plugin von javaplugin.sourceforge.net</para>
+          </listitem>
+          <listitem>
+            <para>Firefox 1.0 mit installiertem Plugin von javaplugin.sourceforge.net</para>
+          </listitem>
+          <listitem>
+            <para>Opera 7.5.4</para>
+            <para>Alle Versionen von Opera für OSX bis einschließlich 7.5.4 sind völlig kaputt.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>Linux/Unix</para>
+        <itemizedlist>
+          <listitem>
+            <para>Mozilla 1.6 + Sun Java &gt;= 1.4</para>
+          </listitem>
+          <listitem>
+            <para>Firefox 1.0 + Sun Java &gt;= 1.4</para>
+          </listitem>
+          <listitem>
+            <para>Konqueror 3.3</para>
+            <para>Alle Versionen von Konqueror bis einschließlich 3.3 sind kaputt.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>Mac OS 9</para>
+        <itemizedlist>
+          <listitem>
+            <para>Netscape 4.7* <emphasis>schlechte Performance mit eingeschränkter Funktionalität</emphasis></para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </itemizedlist>
   </section>
 </chapter>
 
@@ -38,7 +111,9 @@
   <title>Hardware- und Betriebssystem-Voraussetzungen</title>
   <para>Wir empfehlen ein System mit 600 MHz CPU und 256 MB RAM. Damit sollten die meisten in diesem Jahrhundert hergestellten Computer abgedeckt sein.</para>
   <para>Fall Sie eine ältere CPU mit einem neuen/aktuellen Betriebssystem einsetzen (z.B. Mac OSX oder WinXP), dann empfehlen wir Ihnen <emphasis>dringend</emphasis> den Einsatz von <emphasis>mindestens</emphasis> 256 MB RAM ... mehr ist in diesem Fall besser.</para>
-  <para><emphasis>Es wird keine spezielle Graik-/Video-Hardware benötigt.</emphasis></para>
+  <para>
+    <emphasis>Es wird keine spezielle Grafik-/Video-Hardware benötigt.</emphasis>
+  </para>
 </chapter>
 
   <chapter>

@@ -42,8 +42,10 @@
   <!-- parse list of possible guides and create .pot for every guide -->
   <target name="create-pot" id="create-pot" depends="clean-pot">
     <echo message="Generating gettext PO-template file for all Guides ..."/>
-    <apply os="Linux" executable="xml2po" dir="${src.dir}" dest="${pot.dir}"
-           parallel="false" verbose="true" relative="true">
+    <apply os="Linux" executable="${src.dir}/xml2po.sh"
+           dir="${src.dir}" dest="${pot.dir}" parallel="false"
+           verbose="true" relative="true" forwardslash="true">
+      <arg value="${src.dir}/xml2po.py"/>
       <arg value="-e"/>
       <arg value="-o"/>
       <targetfile/>
@@ -53,7 +55,7 @@
       </fileset>
       <mapper type="glob" from="*.docbook.xml" to="${pot.dir}/*.pot"/>
     </apply>
-    <apply os="Windows XP" executable="${src.dir}\xml2po.bat"
+    <apply os="Windows XP" executable="${src.win.dir}\xml2po.bat"
            dir="${src.win.dir}" dest="${pot.win.dir}" parallel="false"
            verbose="true" relative="true" forwardslash="true">
       <arg value="${src.win.dir}\xml2po.py"/>
@@ -87,8 +89,10 @@
   
   <target name="update-po-guide-lang" id="update-po-guide-lang">
     <echo message="Updating ${guide_value}.${lang_value}.po gettext file ..."/>
-    <exec os="Linux" executable="xml2po" dir="${pot.dir}">
-      <arg line="-e -u ${guide_value}.${lang_value}.po
+    <exec os="Linux" executable="${src.dir}/xml2po.sh"
+          dir="${pot.dir}">
+      <arg line="${src.dir}/xml2po.py -e
+                 -u ${guide_value}.${lang_value}.po
                  ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
     <exec os="Windows XP" executable="${src.win.dir}\xml2po.bat"
@@ -120,16 +124,17 @@
   <target name="update-xml-guide-lang" id="update-xml-guide-lang">
     <echo message="Merging back translations for ${guide_value}.docbook.xml
     ${line.separator}into ${guide_value}_${lang_value}.docbook.xml file ..."/>
-    <exec os="Linux" executable="xml2po" dir="${pot.dir}">
-      <arg line="-e -p ${guide_value}.${lang_value}.po
+    <exec os="Linux" executable="${src.dir}/xml2po.sh" dir="${pot.dir}">
+      <arg line="${src.dir}/xml2po.py -e
+                 -p ${guide_value}.${lang_value}.po
                  -o ${src.dir}/${guide_value}_${lang_value}.docbook.xml
-                 ${src.dir}/${guide_value}.docbook.xml"/>
+                 -l ${lang_value} ${src.dir}/${guide_value}.docbook.xml"/>
     </exec>
     <exec os="Windows XP" executable="${src.win.dir}\xml2po.bat" dir="${pot.win.dir}">
       <arg line="${src.win.dir}\xml2po.py -e
                  -p ${guide_value}.${lang_value}.po
                  -o ${src.win.dir}\${guide_value}_${lang_value}.docbook.xml
-                 ${src.win.dir}\${guide_value}.docbook.xml"/>
+                 -l ${lang_value} ${src.win.dir}\${guide_value}.docbook.xml"/>
     </exec>
   </target>
 

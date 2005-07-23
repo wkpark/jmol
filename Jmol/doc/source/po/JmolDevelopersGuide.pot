@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2005-06-25 01:03Westeuropäische Sommerzeit\n"
+"POT-Creation-Date: 2005-07-23 17:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,7 +81,7 @@ msgstr ""
 msgid "\n  cd {some-path}/Jmol-HEAD\n  cvs up -dP\n    "
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:79(title) JmolDevelopersGuide.docbook.xml:633(title) 
+#: JmolDevelopersGuide.docbook.xml:79(title) JmolDevelopersGuide.docbook.xml:641(title) 
 msgid "Building Jmol"
 msgstr ""
 
@@ -342,7 +342,7 @@ msgid "Eclipse prerequisites"
 msgstr ""
 
 #: JmolDevelopersGuide.docbook.xml:424(para) 
-msgid "This documentation has been tested with Eclipse 3.01."
+msgid "This documentation has been tested with Eclipse 3.0x and 3.1."
 msgstr ""
 
 #: JmolDevelopersGuide.docbook.xml:428(para) 
@@ -442,42 +442,42 @@ msgid "Right click on <command>Jmol-HEAD</command> and select <command>Propertie
 msgstr ""
 
 #: JmolDevelopersGuide.docbook.xml:579(para) 
-msgid "In the <command>Properties for Jmol-HEAD</command> window, select <command>Java Compiler</command>."
+msgid "In the <command>Properties for Jmol-HEAD</command> window, select <command>Java Compiler</command> (3.0x) or <command>Java Compiler -&gt; Errors/Warnings </command> (3.1)."
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:585(para) 
-msgid "Check <command>Use project settings</command>."
+#: JmolDevelopersGuide.docbook.xml:586(para) 
+msgid "Check <command>Use project (specific) settings</command>."
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:590(para) 
-msgid "In the <command>Style</command> tab, select <command>Warning</command> for every combo-box, except for <command>Unqualified access to instance field</command> and <command>Undocumented empty block</command> where you can select <command>Ignore</command>."
+#: JmolDevelopersGuide.docbook.xml:591(para) 
+msgid "In the <command>Style</command> tab, select <command>Warning</command> for every combo-box, except for <command>Unqualified access to instance field</command> and <command>Undocumented empty block</command> where you can select <command>Ignore</command>. For Eclipse 3.1, you will find the necessary options in the <command>Code Style</command> tab."
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:599(para) 
-msgid "In the <command>Advanced</command> tab, select <command>Warning</command> for every combo-box, except for <command>Local variable declaration hides another field or variable</command>, <command>Usage of deprecated API</command> and <command>Usage of non-externalized strings</command> where you can select <command>Ignore</command>."
+#: JmolDevelopersGuide.docbook.xml:601(para) 
+msgid "In the <command>Advanced</command> tab, select <command>Warning</command> for every combo-box, except for <command>Local variable declaration hides another field or variable</command>, <command>Usage of deprecated API</command> and <command>Usage of non-externalized strings</command> where you can select <command>Ignore</command>. For Eclipse 3.1, you will find the necessary options in the <command>Name shadowing and conflicts</command>, <command>Deprectated and restricted API</command> and the <command>Code Style</command> tab."
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:609(para) 
-msgid "In the <command>Unused code</command> tab, select <command>Warning</command> for every combo-box, except for <command>Parameter is never read</command> and <command>Unnecessary cast or 'instance of' operation</command> where you can select <command>Ignore</command>."
+#: JmolDevelopersGuide.docbook.xml:615(para) 
+msgid "In the <command>Unused code</command> tab, select <command>Warning</command> for every combo-box, except for <command>Parameter is never read</command> and <command>Unnecessary cast or 'instance of' operation</command> where you can select <command>Ignore</command>. For Eclipse 3.1, you will find the necessary options in the <command>Unnecessary code</command> tab."
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:621(title) 
+#: JmolDevelopersGuide.docbook.xml:629(title) 
 msgid "Running and Debugging Jmol"
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:623(para) 
+#: JmolDevelopersGuide.docbook.xml:631(para) 
 msgid "Eclipse can be used to run and debug Jmol directly in Eclipse."
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:627(para) 
+#: JmolDevelopersGuide.docbook.xml:635(para) 
 msgid "The main class is <command>org.openscience.jmol.app.Jmol</command>."
 msgstr ""
 
-#: JmolDevelopersGuide.docbook.xml:635(para) 
+#: JmolDevelopersGuide.docbook.xml:643(para) 
 msgid "To make a full build of Jmol under Eclipse, just do the following: Right click on <command>build.xml</command> and select <command>Run</command> / <command>Ant Build</command> in the contextual menu."
 msgstr ""
 
-#. Put one translator per line, in the form of NAME <EMAIL>.
+#. Put one translator per line, in the form of NAME <EMAIL>, YEAR1, YEAR2.
 #: JmolDevelopersGuide.docbook.xml:0(None) 
 msgid "translator-credits"
 msgstr ""

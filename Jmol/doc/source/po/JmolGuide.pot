@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2005-06-25 01:03Westeuropäische Sommerzeit\n"
+"POT-Creation-Date: 2005-07-23 17:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2240,7 +2240,7 @@ msgstr ""
 msgid "is an (integer)[5 to 2000]"
 msgstr ""
 
-#. Put one translator per line, in the form of NAME <EMAIL>.
+#. Put one translator per line, in the form of NAME <EMAIL>, YEAR1, YEAR2.
 #: JmolGuide.docbook.xml:0(None) 
 msgid "translator-credits"
 msgstr ""

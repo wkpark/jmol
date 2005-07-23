@@ -94,8 +94,6 @@ class SurfaceRenderer extends ShapeRenderer {
     Surface.Torus[] toruses = surface.toruses;
     for (int i = surface.torusCount; --i >= 0; ) {
       Surface.Torus torus = toruses[i];
-      int ixI = torus.ixI;
-      int ixJ = torus.ixJ;
       /*
       renderToruX(torus,
                   atoms[ixI], convexVertexMaps[ixI],
@@ -103,6 +101,7 @@ class SurfaceRenderer extends ShapeRenderer {
                   colixesConvex,
                   renderingLevel);
       */
+      renderTorus(torus, atoms, colixesConvex, convexVertexMaps);
     }
     Surface.Cavity[] cavities = surface.cavities;
     for (int i = surface.cavityCount; --i >= 0; )
@@ -157,6 +156,75 @@ class SurfaceRenderer extends ShapeRenderer {
       }
     }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // torus rendering
+  void renderTorus(Surface.Torus torus,
+                   Atom[] atoms, short[] colixes, int[][] convexVertexMaps) {
+    if (convexVertexMaps[torus.ixA] != null)
+      renderTorusHalf(torus,
+                      getColix(torus.colixA, colixes, atoms, torus.ixA),
+                      false);
+    if (convexVertexMaps[torus.ixB] != null)
+      renderTorusHalf(torus,
+                      getColix(torus.colixB, colixes, atoms, torus.ixB),
+                      true);
+  }
+
+  short getColix(short colix, short[] colixes, Atom[] atoms, int index) {
+    return Graphics3D.inheritColix(colix, atoms[index].colixAtom);
+  }
+
+  int getTorusOuterDotCount() {
+    return 64;
+  }
+
+  int getTorusIncrement() {
+    return 1;
+  }
+
+  final AxisAngle4f aaT = new AxisAngle4f();
+  final AxisAngle4f aaT1 = new AxisAngle4f();
+  static final float torusStepAngle = 2 * (float)Math.PI / 64;
+  final Matrix3f matrixT = new Matrix3f();
+  final Matrix3f matrixT1 = new Matrix3f();
+  final Point3f pointT = new Point3f();
+  final Point3f pointT1 = new Point3f();
+
+  void renderTorusHalf(Surface.Torus torus, short colix, boolean renderJHalf) {
+    g3d.setColix(colix);
+    long probeMap = torus.probeMap;
+
+    int torusDotCount1 =
+      (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
+    float stepAngle1 = torus.outerAngle / torusDotCount1;
+    if (renderJHalf)
+      stepAngle1 = -stepAngle1;
+    aaT1.set(torus.tangentVector, 0);
+
+    aaT.set(torus.axisVector, 0);
+    int step = getTorusIncrement();
+    for (int i = 0; probeMap != 0; i += step, probeMap <<= step) {
+      if (probeMap >= 0)
+        continue;
+      aaT.angle = i * torusStepAngle;
+      matrixT.set(aaT);
+      matrixT.transform(torus.radialVector, pointT);
+      pointT.add(torus.center);
+
+      for (int j = torusDotCount1; --j >= 0; ) {
+        aaT1.angle = j * stepAngle1;
+        matrixT1.set(aaT1);
+        matrixT1.transform(torus.outerRadial, pointT1);
+        matrixT.transform(pointT1);
+        pointT1.add(pointT);
+        g3d.drawPixel(viewer.transformPoint(pointT1));
+      }
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
+
 
   Vector3f vectorIJ = new Vector3f();
   Vector3f vectorJI = new Vector3f();

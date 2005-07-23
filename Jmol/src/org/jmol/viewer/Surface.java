@@ -476,8 +476,8 @@ class Surface extends Shape {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
-      if (convexVertexMaps[torus.ixI] == null &&
-          convexVertexMaps[torus.ixJ] == null) {
+      if (convexVertexMaps[torus.ixA] == null &&
+          convexVertexMaps[torus.ixB] == null) {
         torusDeleted = true;
         toruses[i] = null;
       }
@@ -517,6 +517,9 @@ class Surface extends Shape {
   final Vector3f vectorPI = new Vector3f();
   final Vector3f vectorPJ = new Vector3f();
 
+  final Vector3f vectorPA = new Vector3f();
+  final Vector3f vectorPB = new Vector3f();
+
   final Vector3f vOrganizeA = new Vector3f();
   final Vector3f vOrganizeB = new Vector3f();
 
@@ -540,28 +543,28 @@ class Surface extends Shape {
   float[] cavityAngles = new float[32];
 
   class Torus {
-    int ixI, ixJ;
-    Point3f center;
-    float radius;
-    Vector3f axisVector;
-    Vector3f radialVector;
-    Vector3f unitRadialVector;
-    Vector3f tangentVector;
-    Vector3f outerRadial;
+    final int ixA, ixB;
+    final Point3f center;
+    final float radius;
+    final Vector3f axisVector;
+    final Vector3f radialVector;
+    final Vector3f unitRadialVector;
+    final Vector3f tangentVector;
+    final Vector3f outerRadial;
     float outerAngle;
     long probeMap;
-    AxisAngle4f aaRotate;
-    short colixI, colixJ;
+    final AxisAngle4f aaRotate;
+    short colixA, colixB;
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
-      this.ixI = indexA;
-      this.ixJ = indexB;
+      this.ixA = indexA;
+      this.ixB = indexB;
       this.center = new Point3f(center);
       this.radius = radius;
 
       axisVector = new Vector3f();
-      axisVector.sub(centerJ, centerI);
+      axisVector.sub(centerB, centerA);
 
       if (axisVector.x == 0)
         unitRadialVector = new Vector3f(1, 0, 0);
@@ -582,20 +585,20 @@ class Surface extends Shape {
 
       pointTorusP.add(center, radialVector);
 
-      vectorPI.sub(centerI, pointTorusP);
-      vectorPI.normalize();
-      vectorPI.scale(radiusP);
+      vectorPA.sub(centerA, pointTorusP);
+      vectorPA.normalize();
+      vectorPA.scale(radiusP);
 
-      vectorPJ.sub(centerJ, pointTorusP);
-      vectorPJ.normalize();
-      vectorPJ.scale(radiusP);
+      vectorPB.sub(centerB, pointTorusP);
+      vectorPB.normalize();
+      vectorPB.scale(radiusP);
 
       outerRadial = new Vector3f();
-      outerRadial.add(vectorPI, vectorPJ);
+      outerRadial.add(vectorPA, vectorPB);
       outerRadial.normalize();
       outerRadial.scale(radiusP);
 
-      outerAngle = vectorPJ.angle(vectorPI) / 2;
+      outerAngle = vectorPB.angle(vectorPA) / 2;
 
       float angle = vectorZ.angle(axisVector);
       if (angle == 0) {
@@ -619,13 +622,39 @@ class Surface extends Shape {
       aaRotate.set(matrixT);
     }
 
+    void calcProbeMap() {
+      long probeMap = ~0;
+      
+      float stepAngle = 2 * (float)Math.PI / 64;
+      aaT.set(axisVector, 0);
+      int iLastNeighbor = 0;
+      for (int a = 64; --a >= 0; ) {
+        aaT.angle = a * stepAngle;
+        matrixT.set(aaT);
+        matrixT.transform(radialVector, pointT);
+        pointT.add(center);
+        int iStart = iLastNeighbor;
+        do {
+          if (neighborAtoms[iLastNeighbor].atomIndex != ixB) {
+            if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
+                < neighborPlusProbeRadii2[iLastNeighbor]) {
+              probeMap &= ~(1L << (63 - a));
+              break;
+            }
+          }
+          iLastNeighbor = (iLastNeighbor + 1) % neighborCount;
+        } while (iLastNeighbor != iStart);
+      }
+      this.probeMap = probeMap;
+    }
+
     void connect() {
-      if (indexI != ixI)
+      if (indexI != ixA)
         throw new NullPointerException();
-      if (indexJ != ixJ)
+      if (indexJ != ixB)
         throw new NullPointerException();
       if (LOG)
-        System.out.println("connect " + ixI + ":" + ixJ);
+        System.out.println("connect " + ixA + ":" + ixB);
     }
 
     void addCavity(Cavity cavity, boolean rightHanded) {
@@ -1114,8 +1143,10 @@ class Surface extends Shape {
       }
       checkFullTorusIJ();
       Torus torusIJ = getTorus(indexI, indexJ);
-      if (torusIJ != null)
+      if (torusIJ != null) {
+        torusIJ.calcProbeMap();
         torusIJ.connect();
+      }
     }
     // check for an isolated atom with no neighbors
     if (neighborCount == 0)

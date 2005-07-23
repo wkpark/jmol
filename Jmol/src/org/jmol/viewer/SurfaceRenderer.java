@@ -188,20 +188,14 @@ class SurfaceRenderer extends ShapeRenderer {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
-  final Point3f[][] torusPoints =
-    new Point3f[Surface.INNER_TORUS_STEP_COUNT][];
-  final Point3i[][] torusScreens =
-    new Point3i[Surface.INNER_TORUS_STEP_COUNT][];
+  final Point3f[] torusPoints = (new Point3f[Surface.INNER_TORUS_STEP_COUNT *
+                                             Surface.OUTER_TORUS_STEP_COUNT]);
+  final Point3i[] torusScreens = (new Point3i[Surface.INNER_TORUS_STEP_COUNT *
+                                              Surface.OUTER_TORUS_STEP_COUNT]);
   {
     for (int i = torusPoints.length; --i >= 0; ) {
-      Point3f[] outerPoints = new Point3f[Surface.OUTER_TORUS_STEP_COUNT];
-      torusPoints[i] = outerPoints;
-      Point3i[] outerScreens = new Point3i[Surface.OUTER_TORUS_STEP_COUNT];
-      torusScreens[i] = outerScreens;
-      for (int j = outerPoints.length; --j >= 0; ) {
-        outerPoints[j] = new Point3f();
-        outerScreens[j] = new Point3i();
-      }
+      torusPoints[i] = new Point3f();
+      torusScreens[i] = new Point3i();
     }
   }
 
@@ -209,14 +203,8 @@ class SurfaceRenderer extends ShapeRenderer {
     g3d.setColix(colix);
     torus.calcPoints(torusPoints);
     torus.calcScreens(torusPoints, torusScreens);
-    int outerPointCount = torus.outerPointCount;
-
-    for (int i = 0, probeT = torus.probeMap; probeT != 0; ++i, probeT <<= 1) {
-      if (probeT >= 0)
-        continue;
-      Point3i[] screens = torusScreens[i];
-      for (int j = outerPointCount; --j >= 0; )
-        g3d.drawPixel(screens[j]);
+    for (int i = torus.totalPointCount; --i >= 0; ) {
+      g3d.drawPixel(torusScreens[i]);
     }
   }
 

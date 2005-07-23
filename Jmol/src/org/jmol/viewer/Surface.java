@@ -560,8 +560,11 @@ class Surface extends Shape {
     final Vector3f outerRadial;
     final float outerAngle;
     int probeMap;
-    final AxisAngle4f aaRotate;
     short colixA, colixB;
+    byte outerPointCount;
+    byte probeCount;
+    short totalPointCount;
+    short[] normixes;
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
@@ -621,10 +624,15 @@ class Surface extends Shape {
         matrixT.mul(matrixT1);
       }
 
-      aaRotate = new AxisAngle4f();
       aaRotate.set(matrixT);
     }
 
+    void calcEverything() {
+      calcProbeMap();
+      calcPointCounts();
+      calcNormixes();
+    }
+    
     void calcProbeMap() {
       // note that this probe map puts step 0 in the sign bit
       // this means that as we shift out the bits we can easily
@@ -654,6 +662,45 @@ class Surface extends Shape {
       this.probeMap = probeMap;
     }
 
+    void calcPointCounts() {
+      int c = (int)(OUTER_TORUS_STEP_COUNT * outerAngle / Math.PI);
+      outerPointCount = (byte)c;
+
+      // count how many bits are in the probeMap;
+      int t = probeMap;
+      t = ((t & 0x55555555) + ((t >> 1) & 0x55555555));
+      t = ((t & 0x33333333) + ((t >> 2) & 0x33333333));
+      t = ((t & 0x0F0F0F0F) + ((t >> 4) & 0x0F0F0F0F));
+      t = ((t & 0x00FF00FF) + ((t >> 8) & 0x00FF00FF));
+      t =  (t & 0x0000FFFF) +  (t >>16);
+      probeCount = (byte)t;
+      totalPointCount = (short)(t * c);
+    }
+
+    void calcNormixes() {
+      short[] normixes = this.normixes = new short[totalPointCount];
+      float stepAngle1 = outerAngle / outerPointCount;
+      aaT1.set(tangentVector, 0);
+      aaT.set(axisVector, 0);
+      int ixP = 0;
+      for (int i = 0, probeT = probeMap; probeT != 0; ++i, probeT <<= 1) {
+        if (probeT >= 0)
+          continue;
+        aaT.angle = i * INNER_TORUS_STEP_ANGLE;
+        matrixT.set(aaT);
+        matrixT.transform(radialVector, pointT);
+        pointT.add(center);
+        
+        for (int j = outerPointCount; --j >= 0; ) {
+          aaT1.angle = j * stepAngle1;
+          matrixT1.set(aaT1);
+          matrixT1.transform(outerRadial, vectorT1);
+          matrixT.transform(vectorT1);
+          normixes[ixP++] = g3d.get2SidedNormix(vectorT1);
+        }
+      }
+    }
+
     void connect() {
       if (indexI != ixA)
         throw new NullPointerException();
@@ -666,15 +713,12 @@ class Surface extends Shape {
     void addCavity(Cavity cavity, boolean rightHanded) {
     }
 
-    int outerPointCount;
-
-    void calcPoints(Point3f[][] points) {
-      outerPointCount = (int)(OUTER_TORUS_STEP_COUNT * outerAngle / Math.PI);
+    void calcPoints(Point3f[] points) {
       float stepAngle1 = outerAngle / outerPointCount;
       aaT1.set(tangentVector, 0);
       aaT.set(axisVector, 0);
-      int probeT = probeMap;
-      for (int i = 0; probeT != 0; ++i, probeT <<= 1) {
+      int ixP = 0;
+      for (int i = 0, probeT = probeMap; probeT != 0; ++i, probeT <<= 1) {
         if (probeT >= 0)
           continue;
         aaT.angle = i * INNER_TORUS_STEP_ANGLE;
@@ -685,22 +729,22 @@ class Surface extends Shape {
         for (int j = outerPointCount; --j >= 0; ) {
           aaT1.angle = j * stepAngle1;
           matrixT1.set(aaT1);
-          matrixT1.transform(outerRadial, pointT1);
-          matrixT.transform(pointT1);
-          points[i][j].add(pointT1, pointT);
+          matrixT1.transform(outerRadial, vectorT1);
+          matrixT.transform(vectorT1);
+          points[ixP++].add(pointT, vectorT1);
         }
       }
     }
 
-    void calcScreens(Point3f[][] points, Point3i[][] screens) {
-      int probeT = probeMap;
-      for (int i = 0; probeT != 0; ++i, probeT <<= 1) {
+    void calcScreens(Point3f[] points, Point3i[] screens) {
+      int ixP = 0;
+      for (int i = 0, probeT = probeMap; probeT != 0; ++i, probeT <<= 1) {
         if (probeT >= 0)
           continue;
-        Point3f[] outerPoints = points[i];
-        Point3i[] outerScreens = screens[i];
-        for (int j = outerPointCount; --j >= 0; )
-          viewer.transformPoint(outerPoints[j], outerScreens[j]);
+        for (int j = outerPointCount; --j >= 0; ) {
+          viewer.transformPoint(points[ixP], screens[ixP]);
+          ++ixP;
+        }
       }
     }
   }
@@ -1186,10 +1230,8 @@ class Surface extends Shape {
       }
       checkFullTorusIJ();
       Torus torusIJ = getTorus(indexI, indexJ);
-      if (torusIJ != null) {
-        torusIJ.calcProbeMap();
-        torusIJ.connect();
-      }
+      if (torusIJ != null)
+        torusIJ.calcEverything();
     }
     // check for an isolated atom with no neighbors
     if (neighborCount == 0)

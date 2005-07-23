@@ -141,6 +141,11 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void selectAll();
   abstract public void clearSelection();
 
+  abstract public void addSelectionListener(JmolSelectionListener listener);
+  abstract public void removeSelectionListener(JmolSelectionListener listener);
+  abstract public void setSelectionSet(BitSet newSelection);
+  abstract public BitSet getSelectionSet();
+
   // get rid of this!
   abstract public void setModeAtomColorProfile(String mode);
 

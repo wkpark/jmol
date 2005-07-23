@@ -888,7 +888,7 @@ final public class Viewer extends JmolViewer {
     refresh();
   }
 
-  void setSelectionSet(BitSet set) {
+  public void setSelectionSet(BitSet set) {
     selectionManager.setSelectionSet(set);
     refresh();
   }
@@ -908,7 +908,7 @@ final public class Viewer extends JmolViewer {
     // only used from a script, so I do not think a refresh() is necessary
   }
 
-  BitSet getSelectionSet() {
+  public BitSet getSelectionSet() {
     return selectionManager.bsSelection;
   }
 
@@ -916,6 +916,14 @@ final public class Viewer extends JmolViewer {
     return selectionManager.getSelectionCount();
   }
 
+  public void addSelectionListener(JmolSelectionListener listener) {
+    selectionManager.addListener(listener);
+  }
+  
+  public void removeSelectionListener(JmolSelectionListener listener) {
+    selectionManager.addListener(listener);
+  }
+  
   /////////////////////////////////////////////////////////////////
   // delegated to MouseManager
   /////////////////////////////////////////////////////////////////

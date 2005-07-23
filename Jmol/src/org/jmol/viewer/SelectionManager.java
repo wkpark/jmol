@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org, jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -24,11 +24,14 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.api.JmolSelectionListener;
 import java.util.BitSet;
 
 class SelectionManager {
 
   Viewer viewer;
+
+  JmolSelectionListener[] listeners = new JmolSelectionListener[4];
 
   SelectionManager(Viewer viewer) {
     this.viewer = viewer;
@@ -44,14 +47,18 @@ class SelectionManager {
 
 
   void addSelection(int atomIndex) {
-    bsSelection.set(atomIndex);
-    empty = FALSE;
+    if (! bsSelection.get(atomIndex)) {
+      bsSelection.set(atomIndex);
+      empty = FALSE;
+      selectionChanged();
+    }
   }
 
   void addSelection(BitSet set) {
     bsSelection.or(set);
     if (empty == TRUE)
       empty = UNKNOWN;
+    selectionChanged();
   }
 
   void toggleSelection(int atomIndex) {
@@ -60,6 +67,7 @@ class SelectionManager {
     else
       bsSelection.set(atomIndex);
     empty = (empty == TRUE) ? FALSE : UNKNOWN;
+    selectionChanged();
   }
 
   boolean isSelected(int atomIndex) {
@@ -83,36 +91,27 @@ class SelectionManager {
     empty = (count == 0) ? TRUE : FALSE;
     for (int i = count; --i >= 0; )
       bsSelection.set(i);
+    selectionChanged();
   }
 
   void clearSelection() {
     bsSelection.and(bsNull);
     empty = TRUE;
-  }
-
-  void delete(int iDeleted) {
-    if (empty == TRUE)
-      return;
-    int numAfterDelete = viewer.getAtomCount() - 1;
-    for (int i = iDeleted; i < numAfterDelete; ++i) {
-      if (bsSelection.get(i + 1))
-        bsSelection.set(i);
-      else
-        bsSelection.clear(i);
-    }
-    empty = UNKNOWN;
+    selectionChanged();
   }
 
   void setSelection(int atomIndex) {
     bsSelection.and(bsNull);
     bsSelection.set(atomIndex);
     empty = FALSE;
+    selectionChanged();
   }
 
   void setSelectionSet(BitSet set) {
     bsSelection.and(bsNull);
     bsSelection.or(set);
     empty = UNKNOWN;
+    selectionChanged();
   }
 
   void toggleSelectionSet(BitSet bs) {
@@ -140,6 +139,7 @@ class SelectionManager {
         }
       } while (--i >= 0);
     }
+    selectionChanged();
   }
 
   void invertSelection() {
@@ -151,6 +151,7 @@ class SelectionManager {
         bsSelection.set(i);
         empty = FALSE;
       }
+    selectionChanged();
   }
 
   void excludeSelectionSet(BitSet setExclude) {
@@ -160,6 +161,7 @@ class SelectionManager {
       if (setExclude.get(i))
         bsSelection.clear(i);
     empty = UNKNOWN;
+    selectionChanged();
   }
 
   int getSelectionCount() {
@@ -177,5 +179,34 @@ class SelectionManager {
     if (count > 0)
       empty = FALSE;
     return count;
+  }
+
+  void addListener(JmolSelectionListener listener) {
+    removeListener(listener);
+    int len = listeners.length;
+    for (int i = len; --i >= 0; ) {
+      if (listeners[i] == null) {
+        listeners[i] = listener;
+        return;
+      }
+    }
+    listeners = (JmolSelectionListener[])Util.doubleLength(listeners);
+    listeners[len] = listener;
+  }
+
+  void removeListener(JmolSelectionListener listener) {
+    for (int i = listeners.length; --i >= 0; )
+      if (listeners[i] == listener) {
+        listeners[i] = null;
+        return;
+      }
+  }
+
+  private void selectionChanged() {
+    for (int i = listeners.length; --i >= 0; ) {
+      JmolSelectionListener listener = listeners[i];
+      if (listener != null)
+        listeners[i].selectionChanged(bsSelection);
+    }
   }
 }

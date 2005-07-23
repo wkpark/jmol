@@ -169,6 +169,8 @@ class Sphere3D {
     } while (--nLines > 0);
   }
 
+  private final static int SHADE_NORMAL = Shade3D.shadeNormal;
+
   void renderShapeClipped(int[] shades, boolean tScreened, int[] sphereShape,
                           int diameter, int x, int y, int z) {
     int[] pbuf = g3d.pbuf;
@@ -182,58 +184,7 @@ class Sphere3D {
     int nLines = (diameter + 1) / 2;
     int ySouth = y;
     int yNorth = y - evenSizeCorrection;
-    if (! tScreened) {
-      do {
-        boolean tSouthVisible = ySouth >= 0 && ySouth < height;
-        boolean tNorthVisible = yNorth >= 0 && yNorth < height;
-        int offsetSE = offsetSouthCenter;
-        int offsetSW = offsetSouthCenter - evenSizeCorrection;
-        int offsetNE = offsetNorthCenter;
-        int offsetNW = offsetNorthCenter - evenSizeCorrection;
-        int packed;
-        int xEast = x;
-        int xWest = x - evenSizeCorrection;
-        do {
-          boolean tWestVisible = xWest >= 0 && xWest < width;
-          boolean tEastVisible = xEast >= 0 && xEast < width;
-          packed = sphereShape[offsetSphere++];
-          int zPixel = z - (packed & 0x7F);
-          if (zPixel >= slab && zPixel <= depth) {
-            if (tSouthVisible) {
-              if (tEastVisible && zPixel < zbuf[offsetSE]) {
-                zbuf[offsetSE] = (short)zPixel;
-                pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
-              }
-              if (tWestVisible && zPixel < zbuf[offsetSW]) {
-                zbuf[offsetSW] = (short)zPixel;
-                pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
-              }
-            }
-            if (tNorthVisible) {
-              if (tEastVisible && zPixel < zbuf[offsetNE]) {
-                zbuf[offsetNE] = (short)zPixel;
-                pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
-              }
-              if (tWestVisible && zPixel < zbuf[offsetNW]) {
-                zbuf[offsetNW] = (short)zPixel;
-                pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
-              }
-            }
-          }
-          ++offsetSE;
-          --offsetSW;
-          ++offsetNE;
-          --offsetNW;
-          ++xEast;
-          --xWest;
-        } while (packed >= 0);
-        offsetSouthCenter += width;
-        offsetNorthCenter -= width;
-        ++ySouth;
-        --yNorth;
-      } while (--nLines > 0);
-      return;
-    }
+    int randu = (x << 16) + (y << 1) ^ 0x33333333;
     int flipflopSouthCenter = (x ^ y) & 1;
     int flipflopNorthCenter = flipflopSouthCenter ^ evenSizeCorrection;
     int flipflopSE = flipflopSouthCenter;
@@ -258,29 +209,44 @@ class Sphere3D {
         boolean tEastVisible = xEast >= 0 && xEast < width;
         packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
+        boolean isSlabClipped = zPixel < slab;
+        if (isSlabClipped)
+          zPixel = slab;
         if (zPixel >= slab && zPixel <= depth) {
           if (tSouthVisible) {
-            if (tEastVisible && (flipflops & 1) != 0 &&
+            if (tEastVisible && (!tScreened || (flipflops & 1) != 0) &&
                 zPixel < zbuf[offsetSE]) {
               zbuf[offsetSE] = (short)zPixel;
-              pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
+              int i = (packed >> 7) & 0x3F;
+              if (isSlabClipped)
+                i = SHADE_NORMAL - 3 + ((randu >> 7) & 0x07);
+              pbuf[offsetSE] = shades[i];
             }
-            if (tWestVisible && (flipflops & 2) != 0 &&
+            if (tWestVisible && (!tScreened || (flipflops & 2) != 0) &&
                 zPixel < zbuf[offsetSW]) {
               zbuf[offsetSW] = (short)zPixel;
-              pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
+              int i = (packed >> 13) & 0x3F;
+              if (isSlabClipped)
+                i = SHADE_NORMAL - 3 + ((randu >> 13) & 0x07);
+              pbuf[offsetSW] = shades[i];
             }
           }
           if (tNorthVisible) {
-            if (tEastVisible && (flipflops & 4) != 0 &&
+            if (tEastVisible && (!tScreened || (flipflops & 4) != 0) &&
                 zPixel < zbuf[offsetNE]) {
               zbuf[offsetNE] = (short)zPixel;
-              pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
+              int i = (packed >> 19) & 0x3F;
+              if (isSlabClipped)
+                i = SHADE_NORMAL - 3 + ((randu >> 19) & 0x07);
+              pbuf[offsetNE] = shades[i];
             }
-            if (tWestVisible && (flipflops & 8) != 0 &&
+            if (tWestVisible && (!tScreened || (flipflops & 8) != 0) &&
                 zPixel < zbuf[offsetNW]) {
               zbuf[offsetNW] = (short)zPixel;
-              pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+              int i = (packed >> 25) & 0x3F;
+              if (isSlabClipped)
+                i = SHADE_NORMAL - 3 + ((randu >> 25) & 0x07);
+              pbuf[offsetNW] = shades[i];
             }
           }
         }
@@ -291,6 +257,8 @@ class Sphere3D {
         ++xEast;
         --xWest;
         flipflops = ~flipflops;
+        if (isSlabClipped)
+          randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
       } while (packed >= 0);
       offsetSouthCenter += width;
       offsetNorthCenter -= width;

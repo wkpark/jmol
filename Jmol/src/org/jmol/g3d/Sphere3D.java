@@ -169,7 +169,7 @@ class Sphere3D {
     } while (--nLines > 0);
   }
 
-  private final static int SHADE_NORMAL = Shade3D.shadeNormal;
+  private final static int SHADE_SLAB_CLIPPED = Shade3D.shadeNormal - 5;
 
   void renderShapeClipped(int[] shades, boolean tScreened, int[] sphereShape,
                           int diameter, int x, int y, int z) {
@@ -219,7 +219,7 @@ class Sphere3D {
               zbuf[offsetSE] = (short)zPixel;
               int i = (packed >> 7) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_NORMAL - 3 + ((randu >> 7) & 0x07);
+                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 7) & 0x03);
               pbuf[offsetSE] = shades[i];
             }
             if (tWestVisible && (!tScreened || (flipflops & 2) != 0) &&
@@ -227,7 +227,7 @@ class Sphere3D {
               zbuf[offsetSW] = (short)zPixel;
               int i = (packed >> 13) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_NORMAL - 3 + ((randu >> 13) & 0x07);
+                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 13) & 0x03);
               pbuf[offsetSW] = shades[i];
             }
           }
@@ -237,7 +237,7 @@ class Sphere3D {
               zbuf[offsetNE] = (short)zPixel;
               int i = (packed >> 19) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_NORMAL - 3 + ((randu >> 19) & 0x07);
+                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 19) & 0x03);
               pbuf[offsetNE] = shades[i];
             }
             if (tWestVisible && (!tScreened || (flipflops & 8) != 0) &&
@@ -245,7 +245,7 @@ class Sphere3D {
               zbuf[offsetNW] = (short)zPixel;
               int i = (packed >> 25) & 0x3F;
               if (isSlabClipped)
-                i = SHADE_NORMAL - 3 + ((randu >> 25) & 0x07);
+                i = SHADE_SLAB_CLIPPED - 1 + ((randu >> 25) & 0x03);
               pbuf[offsetNW] = shades[i];
             }
           }
@@ -382,45 +382,44 @@ class Sphere3D {
                          int x, int y, int z) {
     if (! sphereShadingCalculated)
       calcSphereShading();
-    renderQuadrant(shades, tScreened, diameter, x, y, z, -1, -1);
-    renderQuadrant(shades, tScreened, diameter, x, y, z, -1,  1);
-    renderQuadrant(shades, tScreened, diameter, x, y, z,  1, -1);
-    renderQuadrant(shades, tScreened, diameter, x, y, z,  1,  1);
+    int radius = diameter / 2;
+    renderQuadrant(shades, tScreened, radius, x, y, z, -1, -1);
+    renderQuadrant(shades, tScreened, radius, x, y, z, -1,  1);
+    renderQuadrant(shades, tScreened, radius, x, y, z,  1, -1);
+    renderQuadrant(shades, tScreened, radius, x, y, z,  1,  1);
   }
 
-  void renderQuadrant(int[] shades, boolean tScreened, int diameter,
+  void renderQuadrant(int[] shades, boolean tScreened, int radius,
                       int x, int y, int z,
                       int xSign, int ySign) {
     int xStatus = (x < 0) ? -1 : (x < g3d.width) ? 0 : 1;
     int yStatus = (y < 0) ? -1 : (y < g3d.height) ? 0 : 1;
-    int zStatus = (z < g3d.depth) ? 0 : 1;
-    int r = diameter / 2;
-    int x2 = x + r * xSign;
+    int zStatus = (z < g3d.depth) ? 0 : ((z - radius) < g3d.depth) ? 1 : -1;
+    int x2 = x + radius * xSign;
     int x2Status = (x2 < 0) ? -1 : (x2 < g3d.width) ? 0 : 1;
-    int y2 = y + r * ySign;
+    int y2 = y + radius * ySign;
     int y2Status = (y2 < 0) ? -1 : (y2 < g3d.height) ? 0 : 1;
-    int z2Status = (z < g3d.slab) ? -1 : 0;
-
+    int z2Status = (z < g3d.slab) ? -1 : ((z - radius) < g3d.slab) ? 1 : 0;
 
     if (xStatus < 0 && x2Status < 0 || xStatus > 0 && x2Status > 0 ||
-        yStatus < 0 && y2Status < 0 || yStatus > 0 && y2Status > 0)
-      return;
+        yStatus < 0 && y2Status < 0 || yStatus > 0 && y2Status > 0 ||
+        zStatus < 0 || z2Status < 0)
+     return;
     if (xStatus == 0 && x2Status == 0 &&
         yStatus == 0 && y2Status == 0 &&
         zStatus == 0 && z2Status == 0)
-      renderQuadrantUnclipped(shades, tScreened, diameter,
+      renderQuadrantUnclipped(shades, tScreened, radius,
                               x, y, z, xSign, ySign);
     else
-      renderQuadrantClipped(shades, tScreened, diameter,
+      renderQuadrantClipped(shades, tScreened, radius,
                             x, y, z, xSign, ySign);
   }
 
-  void renderQuadrantUnclipped(int[] shades, boolean tScreened, int diameter,
+  void renderQuadrantUnclipped(int[] shades, boolean tScreened, int radius,
                                int x, int y, int z,
                                int xSign, int ySign) {
-    int r = diameter / 2;
-    int r2 = r * r;
-    int dDivisor = r * 2 + 1;
+    int r2 = radius * radius;
+    int dDivisor = radius * 2 + 1;
 
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
@@ -436,8 +435,8 @@ class Sphere3D {
       int offsetPbuf = (offsetPbufBeginLine += width) - xSign;
       boolean flipflop = (flipflopBeginLine = !flipflopBeginLine);
       int s2 = r2 - i2;
-      int z0 = z - r;
-      int y8 = ((i * ySign + r) << 8) / dDivisor;
+      int z0 = z - radius;
+      int y8 = ((i * ySign + radius) << 8) / dDivisor;
       for (int j = 0, j2 = 0; j2 <= s2;
            j2 += j + j + 1, ++j) {
         offsetPbuf += xSign;
@@ -448,7 +447,7 @@ class Sphere3D {
           z0 = z - k;
           if (zbuf[offsetPbuf] <= z0)
             continue;
-          int x8 = ((j * xSign + r) << 8) / dDivisor;
+          int x8 = ((j * xSign + radius) << 8) / dDivisor;
           pbuf[offsetPbuf] = shades[sphereIntensities[(y8 << 8) + x8]];
           zbuf[offsetPbuf] = (short) z0;
         }
@@ -456,12 +455,11 @@ class Sphere3D {
     }
   }
 
-  void renderQuadrantClipped(int[] shades, boolean tScreened, int diameter,
+  void renderQuadrantClipped(int[] shades, boolean tScreened, int radius,
                              int x, int y, int z,
                              int xSign, int ySign) {
-    int r = diameter / 2;
-    int r2 = r * r;
-    int dDivisor = r * 2 + 1;
+    int r2 = radius * radius;
+    int dDivisor = radius * 2 + 1;
 
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
@@ -471,6 +469,7 @@ class Sphere3D {
     int width = g3d.width;
     int offsetPbufBeginLine = width * y + x;
     int lineIncrement = width;
+    int randu = (x << 16) + (y << 1) ^ 0x33333333;
     if (ySign < 0)
       lineIncrement = -width;
     int yCurrent = y - ySign;
@@ -490,9 +489,10 @@ class Sphere3D {
       }
       int offsetPbuf = offsetPbufBeginLine;
       int s2 = r2 - i2;
-      int z0 = z - r;
+      int z0 = z - radius;
       int xCurrent = x - xSign;
-      int y8 = ((i * ySign + r) << 8) / dDivisor;
+      int y8 = ((i * ySign + radius) << 8) / dDivisor;
+      randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
       for (int j = 0, j2 = 0; j2 <= s2;
            j2 += j + j + 1, ++j, offsetPbuf += xSign) {
         xCurrent += xSign;
@@ -506,18 +506,29 @@ class Sphere3D {
             break;
           continue;
         }
-        if (zbuf[offsetPbuf] <= z0)
+        if (zbuf[offsetPbuf] < z0)
           continue;
         if (tScreened && (((xCurrent ^ yCurrent) & 1) != 0))
           continue;
         int k = (int)Math.sqrt(s2 - j2);
         z0 = z - k;
-        if (z0 < slab || z0 > depth || zbuf[offsetPbuf] <= z0)
+        if (z0 > depth || zbuf[offsetPbuf] <= z0)
           continue;
-        int x8 = ((j * xSign + r) << 8) / dDivisor;
-        pbuf[offsetPbuf] = shades[sphereIntensities[(y8 << 8) + x8]];
+        int x8 = ((j * xSign + radius) << 8) / dDivisor;
+        int s = sphereIntensities[(y8 << 8) + x8];
+        if (z0 < slab) {
+          z0 = slab;
+          s = SHADE_SLAB_CLIPPED - 1 + ((randu >> 8) & 0x03);
+          /*
+          s = SHADE_SLAB_CLIPPED - 2 +
+            ((randu >> 8) & 0x01) + ((randu >> 6) & 0x01);
+          */
+          randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
+        }
+        pbuf[offsetPbuf] = shades[s];
         zbuf[offsetPbuf] = (short) z0;
       }
+      randu = ((randu + xCurrent + yCurrent) | 1) & 0x7FFFFFFF;
     }
   }
 }

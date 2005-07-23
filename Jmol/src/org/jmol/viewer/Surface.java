@@ -587,7 +587,7 @@ class Surface extends Shape {
       radialVector.scale(radius);
 
       tangentVector = new Vector3f();
-      tangentVector.cross(radialVector, axisVector);
+      tangentVector.cross(axisVector, radialVector);
       tangentVector.normalize();
 
       pointTorusP.add(center, radialVector);
@@ -600,12 +600,8 @@ class Surface extends Shape {
       vectorPB.normalize();
       vectorPB.scale(radiusP);
 
-      outerRadial = new Vector3f();
-      outerRadial.add(vectorPA, vectorPB);
-      outerRadial.normalize();
-      outerRadial.scale(radiusP);
-
-      outerAngle = vectorPB.angle(vectorPA) / 2;
+      outerRadial = new Vector3f(vectorPA);
+      outerAngle = vectorPA.angle(vectorPB);
 
       float angle = vectorZ.angle(axisVector);
       if (angle == 0) {
@@ -672,11 +668,9 @@ class Surface extends Shape {
 
     int outerPointCount;
 
-    void calcPoints(Point3f[][] points, boolean renderJHalf) {
+    void calcPoints(Point3f[][] points) {
       outerPointCount = (int)(OUTER_TORUS_STEP_COUNT * outerAngle / Math.PI);
       float stepAngle1 = outerAngle / outerPointCount;
-      if (renderJHalf)
-        stepAngle1 = -stepAngle1;
       aaT1.set(tangentVector, 0);
       aaT.set(axisVector, 0);
       int probeT = probeMap;

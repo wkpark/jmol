@@ -161,14 +161,11 @@ class SurfaceRenderer extends ShapeRenderer {
   // torus rendering
   void renderTorus(Surface.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] convexVertexMaps) {
-    if (convexVertexMaps[torus.ixA] != null)
-      renderTorusHalf(torus,
-                      getColix(torus.colixA, colixes, atoms, torus.ixA),
-                      false);
-    if (convexVertexMaps[torus.ixB] != null)
-      renderTorusHalf(torus,
-                      getColix(torus.colixB, colixes, atoms, torus.ixB),
-                      true);
+    //    if (convexVertexMaps[torus.ixA] != null)
+    //    if (convexVertexMaps[torus.ixB] != null)
+    //getColix(torus.colixB, colixes, atoms, torus.ixB));
+    renderTorus(torus,
+                getColix(torus.colixA, colixes, atoms, torus.ixA));
   }
 
   short getColix(short colix, short[] colixes, Atom[] atoms, int index) {
@@ -208,9 +205,9 @@ class SurfaceRenderer extends ShapeRenderer {
     }
   }
 
-  void renderTorusHalf(Surface.Torus torus, short colix, boolean renderJHalf) {
+  void renderTorus(Surface.Torus torus, short colix) {
     g3d.setColix(colix);
-    torus.calcPoints(torusPoints, renderJHalf);
+    torus.calcPoints(torusPoints);
     torus.calcScreens(torusPoints, torusScreens);
     int outerPointCount = torus.outerPointCount;
 

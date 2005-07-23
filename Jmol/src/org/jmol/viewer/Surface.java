@@ -542,6 +542,10 @@ class Surface extends Shape {
 
   float[] cavityAngles = new float[32];
 
+  private final static int INNER_TORUS_STEP_COUNT = 32;
+  final static float INNER_TORUS_STEP_ANGLE =
+    (float)(2 * Math.PI / INNER_TORUS_STEP_COUNT);
+
   class Torus {
     final int ixA, ixB;
     final Point3f center;
@@ -552,7 +556,7 @@ class Surface extends Shape {
     final Vector3f tangentVector;
     final Vector3f outerRadial;
     float outerAngle;
-    long probeMap;
+    int probeMap;
     final AxisAngle4f aaRotate;
     short colixA, colixB;
 
@@ -623,13 +627,16 @@ class Surface extends Shape {
     }
 
     void calcProbeMap() {
-      long probeMap = ~0;
+      // note that this probe map puts step 0 in the sign bit
+      // this means that as we shift out the bits we can easily
+      // test based upon the sign && we can easily determine
+      // when there are no bits left;
+      int probeMap = (~0 << (32 - INNER_TORUS_STEP_COUNT));
       
-      float stepAngle = 2 * (float)Math.PI / 64;
       aaT.set(axisVector, 0);
       int iLastNeighbor = 0;
-      for (int a = 64; --a >= 0; ) {
-        aaT.angle = a * stepAngle;
+      for (int step = INNER_TORUS_STEP_COUNT; --step >= 0; ) {
+        aaT.angle = step * INNER_TORUS_STEP_ANGLE;
         matrixT.set(aaT);
         matrixT.transform(radialVector, pointT);
         pointT.add(center);
@@ -638,7 +645,7 @@ class Surface extends Shape {
           if (neighborAtoms[iLastNeighbor].atomIndex != ixB) {
             if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
                 < neighborPlusProbeRadii2[iLastNeighbor]) {
-              probeMap &= ~(1L << (63 - a));
+              probeMap &= ~(1 << (31 - step));
               break;
             }
           }
@@ -658,6 +665,10 @@ class Surface extends Shape {
     }
 
     void addCavity(Cavity cavity, boolean rightHanded) {
+    }
+
+    void calcPoints(Point3f[][] points) {
+      
     }
 
   }

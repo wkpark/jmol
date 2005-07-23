@@ -176,7 +176,7 @@ class SurfaceRenderer extends ShapeRenderer {
   }
 
   int getTorusOuterDotCount() {
-    return 64;
+    return 32;
   }
 
   int getTorusIncrement() {
@@ -185,7 +185,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   final AxisAngle4f aaT = new AxisAngle4f();
   final AxisAngle4f aaT1 = new AxisAngle4f();
-  static final float torusStepAngle = 2 * (float)Math.PI / 64;
+  static final float INNER_TORUS_STEP_ANGLE = Surface.INNER_TORUS_STEP_ANGLE;
   final Matrix3f matrixT = new Matrix3f();
   final Matrix3f matrixT1 = new Matrix3f();
   final Point3f pointT = new Point3f();
@@ -193,7 +193,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderTorusHalf(Surface.Torus torus, short colix, boolean renderJHalf) {
     g3d.setColix(colix);
-    long probeMap = torus.probeMap;
+    int probeMap = torus.probeMap;
 
     int torusDotCount1 =
       (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
@@ -207,7 +207,7 @@ class SurfaceRenderer extends ShapeRenderer {
     for (int i = 0; probeMap != 0; i += step, probeMap <<= step) {
       if (probeMap >= 0)
         continue;
-      aaT.angle = i * torusStepAngle;
+      aaT.angle = i * INNER_TORUS_STEP_ANGLE;
       matrixT.set(aaT);
       matrixT.transform(torus.radialVector, pointT);
       pointT.add(torus.center);

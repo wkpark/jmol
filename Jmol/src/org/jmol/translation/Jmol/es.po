@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-06-01 02:02+0200\n"
+"POT-Creation-Date: 2005-07-23 17:20-0400\n"
 "PO-Revision-Date: 2005-07-21 15:56+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: \n"
@@ -809,8 +809,12 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
+"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
@@ -860,7 +864,9 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 #: org/openscience/jmol/app/PovrayDialog.java:235
 #, fuzzy
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
+msgstr ""
+"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
+"calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
@@ -869,7 +875,8 @@ msgstr "Mostrar mientras se está representando"
 #: org/openscience/jmol/app/PovrayDialog.java:246
 #, fuzzy
 msgid "Should povray attempt to display while rendering?"
-msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr ""
+"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:255
 #: org/openscience/jmol/app/PovrayDialog.java:257
@@ -1180,8 +1187,9 @@ msgstr "Novedades en Jmol"
 
 #~ msgid "Select..."
 #~ msgstr "Seleccionar..."
+
 #~ msgid "4/3"
 #~ msgstr "4/3"
+
 #~ msgid "16/9"
 #~ msgstr "16/9"
-

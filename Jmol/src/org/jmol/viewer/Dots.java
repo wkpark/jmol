@@ -195,16 +195,16 @@ class Dots extends Shape {
       short colix = Graphics3D.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = tori[i];
-        if (bs.get(torus.indexII))
+        if (bs.get(torus.ixI))
           torus.colixI =
             ((colix != Graphics3D.UNRECOGNIZED)
              ? colix
-             : viewer.getColixAtomPalette(atoms[torus.indexII],(String)value));
-        if (bs.get(torus.indexJJ))
+             : viewer.getColixAtomPalette(atoms[torus.ixI],(String)value));
+        if (bs.get(torus.ixJ))
           torus.colixJ =
             ((colix != Graphics3D.UNRECOGNIZED)
              ? colix
-             : viewer.getColixAtomPalette(atoms[torus.indexJJ],(String)value));
+             : viewer.getColixAtomPalette(atoms[torus.ixJ],(String)value));
       }
       return;
     }
@@ -364,7 +364,7 @@ class Dots extends Shape {
       torusIJ = getTorus(atomI, atomJ);
       if (torusIJ == null)
         continue;
-      calcTorusProbeMap(torusIJ);
+      torusIJ.calcProbeMap();
       if (torusIJ.probeMap == 0)
         continue;
       if (torusCount == tori.length)
@@ -377,8 +377,8 @@ class Dots extends Shape {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = tori[i];
-      if (dotsConvexMaps[torus.indexII] == null &&
-          dotsConvexMaps[torus.indexJJ] == null) {
+      if (dotsConvexMaps[torus.ixI] == null &&
+          dotsConvexMaps[torus.ixJ] == null) {
         torusDeleted = true;
         tori[i] = null;
       }
@@ -399,32 +399,6 @@ class Dots extends Shape {
   final Matrix3f matrixT1 = new Matrix3f();
   final AxisAngle4f aaT = new AxisAngle4f();
 
-  void calcTorusProbeMap(Torus torus) {
-    long probeMap = ~0;
-
-    float stepAngle = 2 * (float)Math.PI / 64;
-    aaT.set(torus.axisVector, 0);
-    int iLastNeighbor = 0;
-    for (int a = 64; --a >= 0; ) {
-      aaT.angle = a * stepAngle;
-      matrixT.set(aaT);
-      matrixT.transform(torus.radialVector, pointT);
-      pointT.add(torus.center);
-      int iStart = iLastNeighbor;
-      do {
-        if (neighbors[iLastNeighbor].atomIndex != torus.indexJJ) {
-          if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
-              < neighborPlusProbeRadii2[iLastNeighbor]) {
-            probeMap &= ~(1L << (63 - a));
-            break;
-          }
-        }
-        iLastNeighbor = (iLastNeighbor + 1) % neighborCount;
-      } while (iLastNeighbor != iStart);
-    }
-    torus.probeMap = probeMap;
-  }
-
   final Vector3f vectorT = new Vector3f();
   final Vector3f vectorT1 = new Vector3f();
   final Vector3f vectorZ = new Vector3f(0, 0, 1);
@@ -435,7 +409,7 @@ class Dots extends Shape {
   final Vector3f vectorPJ = new Vector3f();
 
   class Torus {
-    int indexII, indexJJ;
+    int ixI, ixJ;
     Point3f center;
     float radius;
     Vector3f axisVector;
@@ -448,15 +422,15 @@ class Dots extends Shape {
     AxisAngle4f aaRotate;
     short colixI, colixJ;
 
-    Torus(Point3f centerI, int indexI, Point3f centerJ, int indexJ,
+    Torus(Point3f centerA, int indexA, Point3f centerB, int indexB,
           Point3f center, float radius) {
-      this.indexII = indexI;
-      this.indexJJ = indexJ;
+      this.ixI = indexA;
+      this.ixJ = indexB;
       this.center = center;
       this.radius = radius;
 
       axisVector = new Vector3f();
-      axisVector.sub(centerJ, centerI);
+      axisVector.sub(centerB, centerA);
 
       if (axisVector.x == 0)
         unitRadialVector = new Vector3f(1, 0, 0);
@@ -477,11 +451,11 @@ class Dots extends Shape {
 
       pointTorusP.add(center, radialVector);
 
-      vectorPI.sub(centerI, pointTorusP);
+      vectorPI.sub(centerA, pointTorusP);
       vectorPI.normalize();
       vectorPI.scale(radiusP);
 
-      vectorPJ.sub(centerJ, pointTorusP);
+      vectorPJ.sub(centerB, pointTorusP);
       vectorPJ.normalize();
       vectorPJ.scale(radiusP);
 
@@ -512,6 +486,32 @@ class Dots extends Shape {
 
       aaRotate = new AxisAngle4f();
       aaRotate.set(matrixT);
+    }
+
+    void calcProbeMap() {
+      long probeMap = ~0;
+      
+      float stepAngle = 2 * (float)Math.PI / 64;
+      aaT.set(axisVector, 0);
+      int iLastNeighbor = 0;
+      for (int a = 64; --a >= 0; ) {
+        aaT.angle = a * stepAngle;
+        matrixT.set(aaT);
+        matrixT.transform(radialVector, pointT);
+        pointT.add(center);
+        int iStart = iLastNeighbor;
+        do {
+          if (neighbors[iLastNeighbor].atomIndex != ixJ) {
+            if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
+                < neighborPlusProbeRadii2[iLastNeighbor]) {
+              probeMap &= ~(1L << (63 - a));
+              break;
+            }
+          }
+          iLastNeighbor = (iLastNeighbor + 1) % neighborCount;
+        } while (iLastNeighbor != iStart);
+      }
+      this.probeMap = probeMap;
     }
   }
 

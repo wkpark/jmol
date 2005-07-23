@@ -543,6 +543,100 @@ class Surface extends Shape {
     int ixI, ixJ;
     Point3f center;
     float radius;
+    Vector3f axisVector;
+    Vector3f radialVector;
+    Vector3f unitRadialVector;
+    Vector3f tangentVector;
+    Vector3f outerRadial;
+    float outerAngle;
+    long probeMap;
+    AxisAngle4f aaRotate;
+    short colixI, colixJ;
+
+    Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
+          Point3f center, float radius, boolean fullTorus) {
+      this.ixI = indexA;
+      this.ixJ = indexB;
+      this.center = new Point3f(center);
+      this.radius = radius;
+
+      axisVector = new Vector3f();
+      axisVector.sub(centerJ, centerI);
+
+      if (axisVector.x == 0)
+        unitRadialVector = new Vector3f(1, 0, 0);
+      else if (axisVector.y == 0)
+        unitRadialVector = new Vector3f(0, 1, 0);
+      else if (axisVector.z == 0)
+        unitRadialVector = new Vector3f(0, 0, 1);
+      else {
+        unitRadialVector = new Vector3f(-axisVector.y, axisVector.x, 0);
+        unitRadialVector.normalize();
+      }
+      radialVector = new Vector3f(unitRadialVector);
+      radialVector.scale(radius);
+
+      tangentVector = new Vector3f();
+      tangentVector.cross(radialVector, axisVector);
+      tangentVector.normalize();
+
+      pointTorusP.add(center, radialVector);
+
+      vectorPI.sub(centerI, pointTorusP);
+      vectorPI.normalize();
+      vectorPI.scale(radiusP);
+
+      vectorPJ.sub(centerJ, pointTorusP);
+      vectorPJ.normalize();
+      vectorPJ.scale(radiusP);
+
+      outerRadial = new Vector3f();
+      outerRadial.add(vectorPI, vectorPJ);
+      outerRadial.normalize();
+      outerRadial.scale(radiusP);
+
+      outerAngle = vectorPJ.angle(vectorPI) / 2;
+
+      float angle = vectorZ.angle(axisVector);
+      if (angle == 0) {
+        matrixT.setIdentity();
+      } else {
+        vectorT.cross(vectorZ, axisVector);
+        aaT.set(vectorT, angle);
+        matrixT.set(aaT);
+      }
+
+      matrixT.transform(unitRadialVector, vectorT);
+      angle = vectorX.angle(vectorT);
+      if (angle != 0) {
+        vectorT.cross(vectorX, vectorT);
+        aaT.set(vectorT, angle);
+        matrixT1.set(aaT);
+        matrixT.mul(matrixT1);
+      }
+
+      aaRotate = new AxisAngle4f();
+      aaRotate.set(matrixT);
+    }
+
+    void connect() {
+      if (indexI != ixI)
+        throw new NullPointerException();
+      if (indexJ != ixJ)
+        throw new NullPointerException();
+      if (LOG)
+        System.out.println("connect " + ixI + ":" + ixJ);
+    }
+
+    void addCavity(Cavity cavity, boolean rightHanded) {
+    }
+
+  }
+
+  class TorusX {
+    int ixI, ixJ;
+    Point3f center;
+    float radius;
     short normixI, normixJ; // the closest points
     //    Vector3f axisVector;
     //    Vector3f radialVector;
@@ -575,7 +669,7 @@ class Surface extends Shape {
     Cavity[] torusCavities = new Cavity[8];
     boolean[] torusCavityOpens = new boolean[8];
 
-    Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
+    TorusX(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
       this.ixI = indexA;
       this.ixJ = indexB;

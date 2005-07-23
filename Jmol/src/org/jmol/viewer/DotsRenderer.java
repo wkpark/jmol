@@ -75,7 +75,7 @@ class DotsRenderer extends ShapeRenderer {
     for (int i = dots.torusCount; --i >= 0; ) {
       Dots.Torus torus = tori[i];
       if (displayModelIndex < 0 ||
-          displayModelIndex == atoms[torus.indexII].modelIndex)
+          displayModelIndex == atoms[torus.ixI].modelIndex)
         renderTorus(torus, atoms, colixesConvex, dotsConvexMaps);
     }
     Dots.Cavity[] cavities = dots.cavities;
@@ -114,13 +114,13 @@ class DotsRenderer extends ShapeRenderer {
 
   void renderTorus(Dots.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
-    if (dotsConvexMaps[torus.indexII] != null)
+    if (dotsConvexMaps[torus.ixI] != null)
       renderTorusHalf(torus,
-                      getColix(torus.colixI, colixes, atoms, torus.indexII),
+                      getColix(torus.colixI, colixes, atoms, torus.ixI),
                       false);
-    if (dotsConvexMaps[torus.indexJJ] != null)
+    if (dotsConvexMaps[torus.ixJ] != null)
       renderTorusHalf(torus,
-                      getColix(torus.colixJ, colixes, atoms, torus.indexJJ),
+                      getColix(torus.colixJ, colixes, atoms, torus.ixJ),
                       true);
   }
 

@@ -96,11 +96,13 @@ class SurfaceRenderer extends ShapeRenderer {
       Surface.Torus torus = toruses[i];
       int ixI = torus.ixI;
       int ixJ = torus.ixJ;
-      renderTorus(torus,
+      /*
+      renderToruX(torus,
                   atoms[ixI], convexVertexMaps[ixI],
                   atoms[ixJ], convexVertexMaps[ixJ],
                   colixesConvex,
                   renderingLevel);
+      */
     }
     Surface.Cavity[] cavities = surface.cavities;
     for (int i = surface.cavityCount; --i >= 0; )
@@ -165,7 +167,8 @@ class SurfaceRenderer extends ShapeRenderer {
 
   boolean SHOW_TORUS_CAVITY_FOO = false;
   
-  void renderTorus(Surface.Torus torus,
+  /*
+  void renderToruX(Surface.Torus torus,
                    Atom atomI, int[] vertexMapI,
                    Atom atomJ, int[] vertexMapJ,
                    short[] colixesSaddle,
@@ -241,6 +244,7 @@ class SurfaceRenderer extends ShapeRenderer {
     }
 
   }
+  */
 
   void renderCavity(Surface.Cavity cavity, Atom[] atoms,
                     short[] colixesCavity,

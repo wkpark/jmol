@@ -182,16 +182,18 @@ class SurfaceRenderer extends ShapeRenderer {
 
   final AxisAngle4f aaT = new AxisAngle4f();
   final AxisAngle4f aaT1 = new AxisAngle4f();
+  static final int INNER_TORUS_STEP_COUNT = Surface.INNER_TORUS_STEP_COUNT;
+  static final int OUTER_TORUS_STEP_COUNT = Surface.OUTER_TORUS_STEP_COUNT;
   static final float INNER_TORUS_STEP_ANGLE = Surface.INNER_TORUS_STEP_ANGLE;
   final Matrix3f matrixT = new Matrix3f();
   final Matrix3f matrixT1 = new Matrix3f();
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
-  final Point3f[] torusPoints = (new Point3f[Surface.INNER_TORUS_STEP_COUNT *
-                                             Surface.OUTER_TORUS_STEP_COUNT]);
-  final Point3i[] torusScreens = (new Point3i[Surface.INNER_TORUS_STEP_COUNT *
-                                              Surface.OUTER_TORUS_STEP_COUNT]);
+  final Point3f[] torusPoints = (new Point3f[INNER_TORUS_STEP_COUNT *
+                                             OUTER_TORUS_STEP_COUNT]);
+  final Point3i[] torusScreens = (new Point3i[INNER_TORUS_STEP_COUNT *
+                                              OUTER_TORUS_STEP_COUNT]);
   {
     for (int i = torusPoints.length; --i >= 0; ) {
       torusPoints[i] = new Point3f();
@@ -202,9 +204,48 @@ class SurfaceRenderer extends ShapeRenderer {
   void renderTorus(Surface.Torus torus, short colix) {
     g3d.setColix(colix);
     torus.calcPoints(torusPoints);
+    Point3i[] screens = torusScreens;
     torus.calcScreens(torusPoints, torusScreens);
-    for (int i = torus.totalPointCount; --i >= 0; ) {
-      g3d.drawPixel(torusScreens[i]);
+    short[] normixes = torus.normixes;
+    final int iLast = INNER_TORUS_STEP_COUNT - 1;
+    int outerPointCount = torus.outerPointCount;
+    int ixP = 0;
+    int ixSibling = 0;
+    int i, probeT;
+    if (false) {
+      g3d.setColix(colix);
+      for (int m = torus.probeCount; --m >= 0; )
+        for (int n = outerPointCount; --n >= 0; )
+          g3d.fillSphereCentered(colix, m + 1, screens[m*outerPointCount + n]);
+    }
+    for (i = 0, probeT = torus.probeMap; probeT != 0; ++i, probeT <<= 1) {
+      if (probeT >= 0)
+        continue;
+      if (i == iLast) {
+        if (torus.probeMap >= 0)
+          break;
+        ixSibling = 0;
+      } else if ((probeT & 0x40000000) == 0) {
+        ixP += outerPointCount;
+        continue;
+      } else {
+        ixSibling = ixP + outerPointCount;
+      }
+                       
+      for (int j = outerPointCount - 1; --j >= 0; ) {
+        g3d.fillQuadrilateral(colix,
+                              screens[ixP],
+                              normixes[ixP],
+                              screens[ixP + 1],
+                              normixes[ixP + 1],
+                              screens[ixSibling + 1],
+                              normixes[ixSibling + 1],
+                              screens[ixSibling],
+                              normixes[ixSibling]);
+        ++ixP;
+        ++ixSibling;
+      }
+      ++ixP;
     }
   }
 

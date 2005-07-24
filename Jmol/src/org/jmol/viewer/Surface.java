@@ -543,11 +543,11 @@ class Surface extends Shape {
 
   float[] cavityAngles = new float[32];
 
-  final static int INNER_TORUS_STEP_COUNT = 32;
+  final static int INNER_TORUS_STEP_COUNT = 12;
   final static float INNER_TORUS_STEP_ANGLE =
     (float)(2 * Math.PI / INNER_TORUS_STEP_COUNT);
   // note that this is the number of steps in 180 degrees, not 360
-  final static int OUTER_TORUS_STEP_COUNT = 64;
+  final static int OUTER_TORUS_STEP_COUNT = 11;
 
   class Torus {
     final int ixA, ixB;
@@ -679,7 +679,8 @@ class Surface extends Shape {
 
     void calcNormixes() {
       short[] normixes = this.normixes = new short[totalPointCount];
-      float stepAngle1 = outerAngle / outerPointCount;
+      float stepAngle1 =
+        (outerPointCount <= 1) ? 0 : outerAngle / (outerPointCount - 1);
       aaT1.set(tangentVector, 0);
       aaT.set(axisVector, 0);
       int ixP = 0;
@@ -714,7 +715,8 @@ class Surface extends Shape {
     }
 
     void calcPoints(Point3f[] points) {
-      float stepAngle1 = outerAngle / outerPointCount;
+      float stepAngle1 =
+        (outerPointCount <= 1) ? 0 : outerAngle / (outerPointCount - 1);
       aaT1.set(tangentVector, 0);
       aaT.set(axisVector, 0);
       int ixP = 0;

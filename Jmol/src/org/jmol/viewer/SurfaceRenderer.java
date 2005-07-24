@@ -186,6 +186,7 @@ class SurfaceRenderer extends ShapeRenderer {
   static final int INNER_TORUS_STEP_COUNT = Surface.INNER_TORUS_STEP_COUNT;
   static final int OUTER_TORUS_STEP_COUNT = Surface.OUTER_TORUS_STEP_COUNT;
   static final float INNER_TORUS_STEP_ANGLE = Surface.INNER_TORUS_STEP_ANGLE;
+  final static int MAX_SEGMENT_COUNT = Surface.MAX_SEGMENT_COUNT;
   final Matrix3f matrixT = new Matrix3f();
   final Matrix3f matrixT1 = new Matrix3f();
   final Point3f pointT = new Point3f();
@@ -201,6 +202,10 @@ class SurfaceRenderer extends ShapeRenderer {
       torusScreens[i] = new Point3i();
     }
   }
+
+  final short[] torusEdgeIndexes = new short[INNER_TORUS_STEP_COUNT];
+
+  final byte[] torusSegmentStarts = new byte[MAX_SEGMENT_COUNT];
 
   void renderTorus(Surface.Torus torus, short[] colixes) {
     torus.calcPoints(torusPoints);
@@ -243,6 +248,17 @@ class SurfaceRenderer extends ShapeRenderer {
         ++ixQ;
       }
     }
+
+    // show torus edges
+    int segmentCount = torus.countContiguousSegments(torusSegmentStarts);
+    System.out.println("segmentCount=" + segmentCount);
+    int countA = torus.extractAtomEdgeIndexes(0, false, torusEdgeIndexes);
+    for (int n = countA; --n >= 0; )
+      g3d.fillSphereCentered(g3d.MAGENTA, 5, screens[torusEdgeIndexes[n]]);
+
+    int countB = torus.extractAtomEdgeIndexes(0, true, torusEdgeIndexes);
+    for (int n = countB; --n >= 0; )
+      g3d.fillSphereCentered(g3d.CYAN, 5, screens[torusEdgeIndexes[n]]);
   }
 
   final short[] torusColixes = new short[OUTER_TORUS_STEP_COUNT];

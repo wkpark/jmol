@@ -551,6 +551,13 @@ class Surface extends Shape {
       outerRadials[i] = new Vector3f();
   }
 
+  final static int ALL_PROBE_BITS_ON = ~((1<<(32-INNER_TORUS_STEP_COUNT))-1);
+  final static int FIRST_AND_LAST_BITS =
+    (0x8000 | (1 << (32 - INNER_TORUS_STEP_COUNT)));
+  final static int MAX_SEGMENT_COUNT = INNER_TORUS_STEP_COUNT / 2;
+
+  final Point3f[] torusPoints = (new Point3f[INNER_TORUS_STEP_COUNT *
+                                             OUTER_TORUS_STEP_COUNT]);
   class Torus {
     final int ixA, ixB;
     final Point3f center;
@@ -633,6 +640,7 @@ class Surface extends Shape {
       calcProbeMap();
       calcPointCounts();
       calcNormixes();
+      connect();
     }
 
     void calcProbeMap() {
@@ -671,12 +679,7 @@ class Surface extends Shape {
         c = OUTER_TORUS_STEP_COUNT;
 
       // count how many bits are in the probeMap;
-      int t = probeMap;
-      t = ((t & 0x55555555) + ((t >> 1) & 0x55555555));
-      t = ((t & 0x33333333) + ((t >> 2) & 0x33333333));
-      t = ((t & 0x0F0F0F0F) + ((t >> 4) & 0x0F0F0F0F));
-      t = ((t & 0x00FF00FF) + ((t >> 8) & 0x00FF00FF));
-      t =  (t & 0x0000FFFF) +  (t >>16);
+      int t = Util.countBits(probeMap);
       probeCount = (byte)t;
       outerPointCount = (byte)c;
       totalPointCount = (short)(t * c);
@@ -751,6 +754,66 @@ class Surface extends Shape {
     void calcScreens(Point3f[] points, Point3i[] screens) {
       for (int i = totalPointCount; --i >= 0; )
         viewer.transformPoint(points[i], screens[i]);
+    }
+
+    int extractAtomEdgeIndexes(int startingPosition, boolean edgeB,
+                               short[] edgeIndexes) {
+      System.out.println("extractAtomEdgeIndexes(" + startingPosition +
+                         "," + edgeB + ",...) -> ");
+      int edgeCount = 0;
+      int probeT = (probeMap << startingPosition);
+      if (probeT < 0) {
+        int outerPointCount = this.outerPointCount;
+        int ixP = 0;
+        if (startingPosition > 0) {
+          // WARNING ... java will not shift an int left 32 bits
+          // it only looks at the bottom 5 bits when working with an int
+          int bitMaskBefore = ~((1 << (32 - startingPosition)) - 1);
+          int probePositionsBefore = Util.countBits(probeMap & bitMaskBefore);
+          ixP = probePositionsBefore * outerPointCount;
+        }
+        if (edgeB)
+          ixP += outerPointCount - 1;
+        do {
+          edgeIndexes[edgeCount++] = (short)ixP;
+          ixP += outerPointCount;
+        } while ((probeT <<= 1) < 0);
+      }
+      System.out.println("" + edgeCount + " : ");
+      for (int i = 0; i < edgeCount; ++i)
+        System.out.print(" " + edgeIndexes[i]);
+      System.out.println("");
+      return edgeCount;
+    }
+
+    int countContiguousSegments(byte[] segmentStarts) {
+      // special case when the last segment wraps around to 0
+      int probeT = probeMap;
+      if (probeT == 0)
+        return 0;
+      if (probeT == ALL_PROBE_BITS_ON) {
+        segmentStarts[0] = 0;
+        return 1;
+      }
+      int segmentCount = 0;
+      byte bitIndex = 0;
+      if ((probeT & FIRST_AND_LAST_BITS) == FIRST_AND_LAST_BITS) {
+        // both the zero bit and the last bit are set
+        // these will be picked up when the last bit wraps around
+        do {
+          ++bitIndex;
+        } while ((probeT <<= 1) < 0);
+      }
+      while (probeT != 0) {
+        if (probeT < 0) {
+          segmentStarts[segmentCount++] = bitIndex;
+          do {
+            ++bitIndex;
+          } while ((probeT <<= 1) < 0);
+        }
+        probeT <<= 1;
+      }
+      return segmentCount;
     }
   }
 

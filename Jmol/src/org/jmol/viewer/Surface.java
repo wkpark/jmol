@@ -1529,15 +1529,11 @@ class Surface extends Shape {
 
       // calc nearest geodesic vertexes 
       vectorT.sub(probeCenter, frame.atoms[ixI].point3f);
-      vertexI = g3d.getNormix(vectorT, geodesicRenderingLevel);
+      vertexI = getVisibleVertex(vectorT, convexVertexMaps[ixI]);
       vectorT.sub(probeCenter, frame.atoms[ixJ].point3f);
-      vertexJ = g3d.getNormix(vectorT, geodesicRenderingLevel);
+      vertexJ = getVisibleVertex(vectorT, convexVertexMaps[ixJ]);
       vectorT.sub(probeCenter, frame.atoms[ixK].point3f);
-      vertexK = g3d.getNormix(vectorT, geodesicRenderingLevel);
-
-      Bmp.setBitGrow(convexVertexMaps[ixI], vertexI);
-      Bmp.setBitGrow(convexVertexMaps[ixJ], vertexJ);
-      Bmp.setBitGrow(convexVertexMaps[ixK], vertexK);
+      vertexK = getVisibleVertex(vectorT, convexVertexMaps[ixK]);
 
       /*
       System.out.println(" vertexI=" + vertexI +
@@ -1550,6 +1546,12 @@ class Surface extends Shape {
       // separately, let's find the geodesics that lie in the cavity
       ////////////////////////////////////////////////////////////////
       calcVertexBitmapCavity(vectorPI, vectorPJ, vectorPK);
+    }
+
+    short getVisibleVertex(Vector3f vector, int[] visibilityBitmap) {
+      short vertex = g3d.getNormix(vector, geodesicRenderingLevel);
+      Bmp.setBitGrow(visibilityBitmap, vertex);
+      return vertex;
     }
 
     void calcVertexBitmapCavity(Vector3f vectorPI, Vector3f vectorPJ,

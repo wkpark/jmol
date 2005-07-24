@@ -407,5 +407,4 @@ class Normix3D {
       throw new IndexOutOfBoundsException();
     return (short)champion;
   }
-
 }

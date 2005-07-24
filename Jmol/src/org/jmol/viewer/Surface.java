@@ -548,6 +548,11 @@ class Surface extends Shape {
     (float)(2 * Math.PI / INNER_TORUS_STEP_COUNT);
   // note that this is the number of steps in 180 degrees, not 360
   final static int OUTER_TORUS_STEP_COUNT = 11;
+  final Vector3f outerRadials[] = new Vector3f[OUTER_TORUS_STEP_COUNT];
+  {
+    for (int i = outerRadials.length; --i >= 0; )
+      outerRadials[i] = new Vector3f();
+  }
 
   class Torus {
     final int ixA, ixB;
@@ -632,7 +637,7 @@ class Surface extends Shape {
       calcPointCounts();
       calcNormixes();
     }
-    
+
     void calcProbeMap() {
       // note that this probe map puts step 0 in the sign bit
       // this means that as we shift out the bits we can easily
@@ -677,27 +682,34 @@ class Surface extends Shape {
       totalPointCount = (short)(t * c);
     }
 
-    void calcNormixes() {
-      short[] normixes = this.normixes = new short[totalPointCount];
+    void transformOuterRadials() {
       float stepAngle1 =
         (outerPointCount <= 1) ? 0 : outerAngle / (outerPointCount - 1);
-      aaT1.set(tangentVector, 0);
+      aaT1.set(tangentVector, stepAngle1 * outerPointCount);
+      for (int i = outerPointCount; --i > 0; ) {
+        aaT1.angle -= stepAngle1;
+        matrixT1.set(aaT1);
+        matrixT1.transform(outerRadial, outerRadials[i]);
+      }
+      outerRadials[0].set(outerRadial);
+    }
+
+    void calcNormixes() {
+      if (probeCount == 0)
+        return;
+      short[] normixes = this.normixes = new short[totalPointCount];
+      transformOuterRadials();
       aaT.set(axisVector, 0);
+      int outerPointCount = this.outerPointCount;
       int ixP = 0;
       for (int i = 0, probeT = probeMap; probeT != 0; ++i, probeT <<= 1) {
         if (probeT >= 0)
           continue;
         aaT.angle = i * INNER_TORUS_STEP_ANGLE;
         matrixT.set(aaT);
-        matrixT.transform(radialVector, pointT);
-        pointT.add(center);
-        
-        for (int j = outerPointCount; --j >= 0; ) {
-          aaT1.angle = j * stepAngle1;
-          matrixT1.set(aaT1);
-          matrixT1.transform(outerRadial, vectorT1);
-          matrixT.transform(vectorT1);
-          normixes[ixP++] = g3d.get2SidedNormix(vectorT1);
+        for (int j = 0; j < outerPointCount; ++j, ++ixP) {
+          matrixT.transform(outerRadials[j], vectorT);
+          normixes[ixP] = g3d.get2SidedNormix(vectorT);
         }
       }
     }
@@ -715,10 +727,11 @@ class Surface extends Shape {
     }
 
     void calcPoints(Point3f[] points) {
-      float stepAngle1 =
-        (outerPointCount <= 1) ? 0 : outerAngle / (outerPointCount - 1);
-      aaT1.set(tangentVector, 0);
+      if (probeCount == 0)
+        return;
+      transformOuterRadials();
       aaT.set(axisVector, 0);
+      int outerPointCount = this.outerPointCount;
       int ixP = 0;
       for (int i = 0, probeT = probeMap; probeT != 0; ++i, probeT <<= 1) {
         if (probeT >= 0)
@@ -728,26 +741,16 @@ class Surface extends Shape {
         matrixT.transform(radialVector, pointT);
         pointT.add(center);
         
-        for (int j = outerPointCount; --j >= 0; ) {
-          aaT1.angle = j * stepAngle1;
-          matrixT1.set(aaT1);
-          matrixT1.transform(outerRadial, vectorT1);
-          matrixT.transform(vectorT1);
-          points[ixP++].add(pointT, vectorT1);
+        for (int j = 0; j < outerPointCount; ++j, ++ixP) {
+          matrixT.transform(outerRadials[j], vectorT);
+          points[ixP].add(pointT, vectorT);
         }
       }
     }
 
     void calcScreens(Point3f[] points, Point3i[] screens) {
-      int ixP = 0;
-      for (int i = 0, probeT = probeMap; probeT != 0; ++i, probeT <<= 1) {
-        if (probeT >= 0)
-          continue;
-        for (int j = outerPointCount; --j >= 0; ) {
-          viewer.transformPoint(points[ixP], screens[ixP]);
-          ++ixP;
-        }
-      }
+      for (int i = totalPointCount; --i >= 0; )
+        viewer.transformPoint(points[i], screens[i]);
     }
   }
 

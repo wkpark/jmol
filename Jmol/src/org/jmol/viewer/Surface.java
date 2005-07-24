@@ -251,13 +251,10 @@ class Surface extends Shape {
       short colix = Graphics3D.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = toruses[i];
-        colix = colix; // try to eliminate eclipse warning
-        /*
-        if (bs.get(torus.ixI))
-          torus.colixI = colix;
-        if (bs.get(torus.ixJ))
-          torus.colixJ = colix;
-        */
+        if (bs.get(torus.ixA))
+          torus.colixA = colix;
+        if (bs.get(torus.ixB))
+          torus.colixB = colix;
       }
       return;
     }
@@ -669,7 +666,9 @@ class Surface extends Shape {
 
     void calcPointCounts() {
       int c = (int)(OUTER_TORUS_STEP_COUNT * outerAngle / Math.PI);
-      outerPointCount = (byte)c;
+      c = (c + 1) & 0xFE;
+      if (c > OUTER_TORUS_STEP_COUNT)
+        c = OUTER_TORUS_STEP_COUNT;
 
       // count how many bits are in the probeMap;
       int t = probeMap;
@@ -679,6 +678,7 @@ class Surface extends Shape {
       t = ((t & 0x00FF00FF) + ((t >> 8) & 0x00FF00FF));
       t =  (t & 0x0000FFFF) +  (t >>16);
       probeCount = (byte)t;
+      outerPointCount = (byte)c;
       totalPointCount = (short)(t * c);
     }
 

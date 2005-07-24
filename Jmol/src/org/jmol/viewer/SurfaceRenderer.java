@@ -160,12 +160,13 @@ class SurfaceRenderer extends ShapeRenderer {
   ////////////////////////////////////////////////////////////////
   // torus rendering
   void renderTorus(Surface.Torus torus,
-                   Atom[] atoms, short[] colixes, int[][] convexVertexMaps) {
+                   Atom[] atoms, short[] convexColixes,
+                   int[][] convexVertexMaps) {
     //    if (convexVertexMaps[torus.ixA] != null)
     //    if (convexVertexMaps[torus.ixB] != null)
     //getColix(torus.colixB, colixes, atoms, torus.ixB));
-    renderTorus(torus,
-                getColix(torus.colixA, colixes, atoms, torus.ixA));
+    prepareTorusColixes(torus, convexColixes, atoms);
+    renderTorus(torus, torusColixes);
   }
 
   short getColix(short colix, short[] colixes, Atom[] atoms, int index) {
@@ -201,8 +202,7 @@ class SurfaceRenderer extends ShapeRenderer {
     }
   }
 
-  void renderTorus(Surface.Torus torus, short colix) {
-    g3d.setColix(colix);
+  void renderTorus(Surface.Torus torus, short[] colixes) {
     torus.calcPoints(torusPoints);
     Point3i[] screens = torusScreens;
     torus.calcScreens(torusPoints, torusScreens);
@@ -210,13 +210,13 @@ class SurfaceRenderer extends ShapeRenderer {
     final int iLast = INNER_TORUS_STEP_COUNT - 1;
     int outerPointCount = torus.outerPointCount;
     int ixP = 0;
-    int ixSibling = 0;
+    int ixQ = 0;
     int i, probeT;
     if (false) {
-      g3d.setColix(colix);
       for (int m = torus.probeCount; --m >= 0; )
         for (int n = outerPointCount; --n >= 0; )
-          g3d.fillSphereCentered(colix, m + 1, screens[m*outerPointCount + n]);
+          g3d.fillSphereCentered(g3d.ORANGE,
+                                 m + 1, screens[m*outerPointCount + n]);
     }
     for (i = 0, probeT = torus.probeMap; probeT != 0; ++i, probeT <<= 1) {
       if (probeT >= 0)
@@ -224,28 +224,52 @@ class SurfaceRenderer extends ShapeRenderer {
       if (i == iLast) {
         if (torus.probeMap >= 0)
           break;
-        ixSibling = 0;
+        ixQ = 0;
       } else if ((probeT & 0x40000000) == 0) {
         ixP += outerPointCount;
         continue;
       } else {
-        ixSibling = ixP + outerPointCount;
+        ixQ = ixP + outerPointCount;
       }
                        
-      for (int j = outerPointCount - 1; --j >= 0; ) {
-        g3d.fillQuadrilateral(colix,
-                              screens[ixP],
-                              normixes[ixP],
-                              screens[ixP + 1],
-                              normixes[ixP + 1],
-                              screens[ixSibling + 1],
-                              normixes[ixSibling + 1],
-                              screens[ixSibling],
-                              normixes[ixSibling]);
-        ++ixP;
-        ++ixSibling;
-      }
       ++ixP;
+      ++ixQ;
+      for (int j = 1; j < outerPointCount; ++j) {
+        g3d.fillQuadrilateral(screens[ixP-1], colixes[j-1], normixes[ixP-1],
+                              screens[ixP  ], colixes[j  ], normixes[ixP  ],
+                              screens[ixQ  ], colixes[j  ], normixes[ixQ  ],
+                              screens[ixQ-1], colixes[j-1], normixes[ixQ-1]);
+        ++ixP;
+        ++ixQ;
+      }
+    }
+  }
+
+  final short[] torusColixes = new short[OUTER_TORUS_STEP_COUNT];
+
+  void prepareTorusColixes(Surface.Torus torus, short[] convexColixes,
+                           Atom[] atoms) {
+    int ixA = torus.ixA;
+    int ixB = torus.ixB;
+    int outerPointCount = torus.outerPointCount;
+    short colixB = torus.colixB;
+    short colixA = Graphics3D.inheritColix(torus.colixA,
+                                           convexColixes[ixA],
+                                           atoms[ixA].colixAtom);
+    colixB = Graphics3D.inheritColix(torus.colixB,
+                                     convexColixes[ixB],
+                                     atoms[ixB].colixAtom);
+    if (colixA == colixB) {
+      for (int i = outerPointCount; --i >= 0; )
+        torusColixes[i] = colixA;
+      return;
+    }
+    int halfRoundedUp = (outerPointCount + 1) / 2;
+    // this will get overwritten if outerPointCount is even
+    torusColixes[outerPointCount / 2] = colixA;
+    for (int i = outerPointCount / 2; --i >= 0; ) {
+      torusColixes[i] = colixA;
+      torusColixes[i + halfRoundedUp] = colixB;
     }
   }
 
@@ -420,8 +444,7 @@ class SurfaceRenderer extends ShapeRenderer {
       g3d.fillSphereCentered(Graphics3D.BLUE, 8, screensK[vertexK]);
     }
 
-    g3d.fillTriangle(false,
-                     screensI[vertexI], colixI, vertexI,
+    g3d.fillTriangle(screensI[vertexI], colixI, vertexI,
                      screensJ[vertexJ], colixJ, vertexJ,
                      screensK[vertexK], colixK, vertexK);
   }

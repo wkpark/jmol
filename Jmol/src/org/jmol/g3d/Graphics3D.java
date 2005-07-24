@@ -838,8 +838,7 @@ final public class Graphics3D {
     }
   }
 
-  public void fillTriangle(boolean translucent,
-                           Point3i screenA, short colixA, short normixA,
+  public void fillTriangle(Point3i screenA, short colixA, short normixA,
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
     int[] t;
@@ -937,6 +936,18 @@ final public class Graphics3D {
                  screenA, normixA,
                  screenC, normixC,
                  screenD, normixD);
+  }
+
+  public void fillQuadrilateral(Point3i screenA, short colixA, short normixA,
+                                Point3i screenB, short colixB, short normixB,
+                                Point3i screenC, short colixC, short normixC,
+                                Point3i screenD, short colixD, short normixD) {
+    fillTriangle(screenA, colixA, normixA,
+                 screenB, colixB, normixB,
+                 screenC, colixC, normixC);
+    fillTriangle(screenA, colixA, normixA,
+                 screenC, colixC, normixC,
+                 screenD, colixD, normixD);
   }
 
   public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
@@ -1825,6 +1836,34 @@ final public class Graphics3D {
       return (short)(parentColix | TRANSLUCENT_MASK);
     case OPAQUE:
       return (short)(parentColix & OPAQUE_MASK);
+    default:
+      return myColix;
+    }
+  }
+
+  public final static short inheritColix(short myColix,
+                                         short parentColix,
+                                         short grandParentColix) {
+    switch (myColix) {
+    case 0:
+      myColix = parentColix;
+      break;
+    case TRANSLUCENT:
+      myColix = (short)(parentColix | TRANSLUCENT_MASK);
+      break;
+    case OPAQUE:
+      myColix = (short)(parentColix & OPAQUE_MASK);
+      break;
+    default:
+      return myColix;
+    }
+    switch (myColix) {
+    case 0:
+      return grandParentColix;
+    case TRANSLUCENT:
+      return (short)(grandParentColix | TRANSLUCENT_MASK);
+    case OPAQUE:
+      return (short)(grandParentColix & OPAQUE_MASK);
     default:
       return myColix;
     }

@@ -252,15 +252,22 @@ class SurfaceRenderer extends ShapeRenderer {
     // show torus edges
     int segmentCount = torus.countContiguousSegments(torusSegmentStarts);
     System.out.println("segmentCount=" + segmentCount);
-    int countA = torus.extractAtomEdgeIndexes(0, false, torusEdgeIndexes);
-    for (int n = countA; --n >= 0; )
-      g3d.fillSphereCentered(g3d.MAGENTA, 5, screens[torusEdgeIndexes[n]]);
-
-    int countB = torus.extractAtomEdgeIndexes(0, true, torusEdgeIndexes);
-    for (int n = countB; --n >= 0; )
-      g3d.fillSphereCentered(g3d.CYAN, 5, screens[torusEdgeIndexes[n]]);
+    for (int m = segmentCount; --m >= 0; ) {
+      int segmentStart = torusSegmentStarts[m];
+      int countA = torus.extractAtomEdgeIndexes(segmentStart,
+                                                false, torusEdgeIndexes);
+      for (int n = countA; --n >= 0; )
+        g3d.fillSphereCentered(g3d.MAGENTA,
+                               5 + (3*m), screens[torusEdgeIndexes[n]]);
+      
+      int countB = torus.extractAtomEdgeIndexes(segmentStart,
+                                                true, torusEdgeIndexes);
+      for (int n = countB; --n >= 0; )
+        g3d.fillSphereCentered(g3d.CYAN,
+                               5 + (3*m), screens[torusEdgeIndexes[n]]);
+    }
   }
-
+    
   final short[] torusColixes = new short[OUTER_TORUS_STEP_COUNT];
 
   void prepareTorusColixes(Surface.Torus torus, short[] convexColixes,

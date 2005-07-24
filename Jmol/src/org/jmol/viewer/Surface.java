@@ -756,19 +756,20 @@ class Surface extends Shape {
         viewer.transformPoint(points[i], screens[i]);
     }
 
-    int extractAtomEdgeIndexes(int startingPosition, boolean edgeB,
+    int extractAtomEdgeIndexes(int segmentStart, boolean edgeB,
                                short[] edgeIndexes) {
-      System.out.println("extractAtomEdgeIndexes(" + startingPosition +
-                         "," + edgeB + ",...) -> ");
+      System.out.println("extractAtomEdgeIndexes(" + segmentStart +
+                         "," + edgeB + ",...)");
       int edgeCount = 0;
-      int probeT = (probeMap << startingPosition);
+      int bitIndex = segmentStart;
+      int probeT = (probeMap << segmentStart);
       if (probeT < 0) {
         int outerPointCount = this.outerPointCount;
         int ixP = 0;
-        if (startingPosition > 0) {
+        if (segmentStart > 0) {
           // WARNING ... java will not shift an int left 32 bits
           // it only looks at the bottom 5 bits when working with an int
-          int bitMaskBefore = ~((1 << (32 - startingPosition)) - 1);
+          int bitMaskBefore = ~((1 << (32 - segmentStart)) - 1);
           int probePositionsBefore = Util.countBits(probeMap & bitMaskBefore);
           ixP = probePositionsBefore * outerPointCount;
         }
@@ -777,16 +778,25 @@ class Surface extends Shape {
         do {
           edgeIndexes[edgeCount++] = (short)ixP;
           ixP += outerPointCount;
+          ++bitIndex;
         } while ((probeT <<= 1) < 0);
+        if (bitIndex == (INNER_TORUS_STEP_COUNT - 1)) {
+          probeT = probeMap;
+          if (probeT < 0) {
+          // wraparound, so pick up the beginning edge indexes
+            ixP = (edgeB) ? outerPointCount - 1 : 0;
+            do {
+              edgeIndexes[edgeCount++] = (short)ixP;
+            } while ((probeT <<= 1) < 0);
+          }
+        }
       }
-      System.out.println("" + edgeCount + " : ");
-      for (int i = 0; i < edgeCount; ++i)
-        System.out.print(" " + edgeIndexes[i]);
-      System.out.println("");
       return edgeCount;
     }
 
     int countContiguousSegments(byte[] segmentStarts) {
+      System.out.println("countContiguousSegments : " +
+                         Integer.toHexString(probeMap));
       // special case when the last segment wraps around to 0
       int probeT = probeMap;
       if (probeT == 0)
@@ -811,8 +821,13 @@ class Surface extends Shape {
             ++bitIndex;
           } while ((probeT <<= 1) < 0);
         }
+        ++bitIndex;
         probeT <<= 1;
       }
+      System.out.println("countContiguousSegments() -> " + segmentCount);
+      for (int i = 0; i < segmentCount; ++i)
+        System.out.print(" " + segmentStarts[i]);
+      System.out.println("");
       return segmentCount;
     }
   }

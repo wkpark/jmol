@@ -1,9 +1,0 @@
-<![CDATA[
-<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="script" value="rotate y 10; loop 1"/>
-  <param name="progressbar" value="true"/>
-</applet>
-]]>

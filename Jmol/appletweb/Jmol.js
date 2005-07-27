@@ -81,12 +81,12 @@ function jmolApplet(size, script, nameSuffix) {
 
 function jmolButton(script, label, id) {
   _jmolInitCheck();
-  var scriptIndex = _jmolAddScript(script);
-  if (label == undefined || label == null)
-    label = script.substring(0, 32);
   if (id == undefined || id == null)
     id = "jmolButton" + _jmol.buttonCount;
+  if (label == undefined || label == null)
+    label = script.substring(0, 32);
   ++_jmol.buttonCount;
+  var scriptIndex = _jmolAddScript(script);
   var t = "<input type='button' name='" + id + "' id='" + id +
           "' value='" + label +
           "' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
@@ -154,10 +154,12 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName) {
   document.write(t);
 }
 
-function jmolLink(script, text, id) {
+function jmolLink(script, label, id) {
   _jmolInitCheck();
   if (id == undefined || id == null)
     id = "jmolLink" + _jmol.linkCount;
+  if (label == undefined || label == null)
+    label = script.substring(0, 32);
   ++_jmol.linkCount;
   var scriptIndex = _jmolAddScript(script);
   var t = "<a name='" + id + "' id='" + id + 
@@ -165,7 +167,7 @@ function jmolLink(script, text, id) {
           _jmol.targetText +
           ");' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true;' onMouseout='_jmolMouseOut()' " +
-          _jmol.linkCssText + ">" + text + "</a>";
+          _jmol.linkCssText + ">" + label + "</a>";
   if (_jmol.debugAlert)
     alert(t);
   document.write(t);
@@ -241,12 +243,25 @@ function jmolSetTarget(targetSuffix) {
 function jmolScript(script, targetSuffix) {
   if (script) {
     _jmolCheckBrowser();
-    var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
-    var applet = _jmolFindApplet(target);
-    if (applet)
-      return applet.script(script);
-    else
-      alert("could not find applet " + target);
+    if (targetSuffix == "all") {
+      with (_jmol) {
+	for (var i = 0; i < appletSuffixes.length; ++i) {
+	  var target = "jmolApplet" + appletSuffixes[i];
+          var applet = _jmolFindApplet(target);
+          if (applet)
+            applet.script(script);
+          else
+            alert("could not find applet " + target);
+        }
+      }
+    } else {
+      var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
+      var applet = _jmolFindApplet(target);
+      if (applet)
+        return applet.script(script);
+      else
+        alert("could not find applet " + target);
+    }
   }
 }
 
@@ -374,6 +389,7 @@ var _jmol = {
   modelbase: ".",
   
   appletCount: 0,
+  appletSuffixes: [],
   
   buttonCount: 0,
   checkboxCount: 0,
@@ -509,6 +525,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
   with (_jmol) {
     if (! nameSuffix)
       nameSuffix = appletCount;
+    appletSuffixes.push(nameSuffix);
     ++appletCount;
     if (! script)
       script = "select *";

@@ -611,10 +611,8 @@ class Token {
 
     "off",          new Token(off, 0, "off"),
     "false",        null,
-    "no",           null,
     "on",           tokenOn,
     "true",         null,
-    "yes",          null,
 
     "dash",         new Token(dash, "dash"),
     "user",         new Token(user, "user"),

@@ -556,8 +556,16 @@ class Surface extends Shape {
     (0x8000 | (1 << (32 - INNER_TORUS_STEP_COUNT)));
   final static int MAX_SEGMENT_COUNT = INNER_TORUS_STEP_COUNT / 2;
 
-  final Point3f[] torusPoints = (new Point3f[INNER_TORUS_STEP_COUNT *
-                                             OUTER_TORUS_STEP_COUNT]);
+  final Point3f[] torusPoints = new Point3f[INNER_TORUS_STEP_COUNT *
+                                            OUTER_TORUS_STEP_COUNT];
+  {
+    for (int i = torusPoints.length; --i >= 0; )
+      torusPoints[i] = new Point3f();
+  }
+  Point3f[] convexEdgePoints;
+  // what is the max size of this thing?
+  short[] edgeVertexes;
+
   class Torus {
     final int ixA, ixB;
     final Point3f center;
@@ -574,6 +582,8 @@ class Surface extends Shape {
     byte probeCount;
     short totalPointCount;
     short[] normixes;
+
+    short[] connectAConvex;
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius, boolean fullTorus) {
@@ -679,7 +689,7 @@ class Surface extends Shape {
         c = OUTER_TORUS_STEP_COUNT;
 
       // count how many bits are in the probeMap;
-      int t = Util.countBits(probeMap);
+      int t = Bmp.countBits(probeMap);
       probeCount = (byte)t;
       outerPointCount = (byte)c;
       totalPointCount = (short)(t * c);
@@ -724,8 +734,68 @@ class Surface extends Shape {
         throw new NullPointerException();
       if (LOG)
         System.out.println("connect " + ixA + ":" + ixB);
+      if (edgeVertexes == null) {
+        edgeVertexes = new short[geodesicVertexCount];
+        convexEdgePoints = new Point3f[geodesicVertexCount];
+        for (int i = convexEdgePoints.length; --i >= 0; )
+          convexEdgePoints[i] = new Point3f();
+      }
+      calcPoints(torusPoints);
+      int edgeCount = calcEdgeVertexes(convexVertexMaps[ixA], edgeVertexes);
+      calcConvexPoints(atomI, edgeCount, edgeVertexes, convexEdgePoints);
+      connect(torusPoints, edgeCount, edgeVertexes, convexEdgePoints);
     }
 
+    void connect(Point3f[] torusPoints,
+                 int convexEdgeCount, short[] convexEdgeVertexes,
+                 Point3f[] convexEdgePoints) {
+
+      short[] torusEdgeIndexes = new short[INNER_TORUS_STEP_COUNT];
+
+      byte[] segmentStarts = new byte[MAX_SEGMENT_COUNT];
+      int segmentCount = countContiguousSegments(segmentStarts);
+      for (int i = segmentCount; --i >= 0; ) {
+        int segmentLength =
+          extractAtomEdgeIndexes(segmentStarts[i], false,
+                                 torusEdgeIndexes);
+        connect(segmentLength, torusEdgeIndexes, torusPoints,
+                convexEdgeCount, convexEdgeVertexes, convexEdgePoints);
+      }
+    }
+
+    void connect(int segmentLength, short[] torusEdgeIndexes,
+                 Point3f[] torusPoints,
+                 int convexEdgeCount, short[] convexEdgeVertexes,
+                 Point3f[] convexEdgePoints) {
+      short[] closestConvex = new short[segmentLength];
+      for (int i = segmentLength; --i >= 0; ) {
+        closestConvex[i] =
+          getClosestEdgeVertex(torusPoints[torusEdgeIndexes[i]],
+                               convexEdgeCount, convexEdgeVertexes,
+                               convexEdgePoints);
+      }
+      if (connectAConvex == null)
+        connectAConvex = closestConvex;
+    }
+
+    short getClosestEdgeVertex(Point3f point, int edgeCount,
+                               short[] edgeIndexes, Point3f[] edgePoints) {
+      // I think this will also work if I minimize the angle
+      int champion = edgeIndexes[0];
+      float championDist2 = point.distanceSquared(edgePoints[champion]);
+      for (int i = edgeCount; --i > 0; ) {
+        int challenger = edgeIndexes[i];
+        float challengerDist2 =
+          point.distanceSquared(edgePoints[challenger]);
+        if (challengerDist2 < championDist2) {
+          championDist2 = challengerDist2;
+          champion = challenger;
+        }
+      }
+      return (short)champion;
+    }
+                              
+    
     void addCavity(Cavity cavity, boolean rightHanded) {
     }
 
@@ -743,7 +813,7 @@ class Surface extends Shape {
         matrixT.set(aaT);
         matrixT.transform(radialVector, pointT);
         pointT.add(center);
-        
+
         for (int j = 0; j < outerPointCount; ++j, ++ixP) {
           matrixT.transform(outerRadials[j], vectorT);
           points[ixP].add(pointT, vectorT);
@@ -758,8 +828,10 @@ class Surface extends Shape {
 
     int extractAtomEdgeIndexes(int segmentStart, boolean edgeB,
                                short[] edgeIndexes) {
+      /*8
       System.out.println("extractAtomEdgeIndexes(" + segmentStart +
                          "," + edgeB + ",...)");
+      */
       int edgeCount = 0;
       int bitIndex = segmentStart;
       int probeT = (probeMap << segmentStart);
@@ -770,7 +842,7 @@ class Surface extends Shape {
           // WARNING ... java will not shift an int left 32 bits
           // it only looks at the bottom 5 bits when working with an int
           int bitMaskBefore = ~((1 << (32 - segmentStart)) - 1);
-          int probePositionsBefore = Util.countBits(probeMap & bitMaskBefore);
+          int probePositionsBefore = Bmp.countBits(probeMap & bitMaskBefore);
           ixP = probePositionsBefore * outerPointCount;
         }
         if (edgeB)
@@ -795,8 +867,10 @@ class Surface extends Shape {
     }
 
     int countContiguousSegments(byte[] segmentStarts) {
+      /*
       System.out.println("countContiguousSegments : " +
                          Integer.toHexString(probeMap));
+      */
       // special case when the last segment wraps around to 0
       int probeT = probeMap;
       if (probeT == 0)
@@ -824,12 +898,15 @@ class Surface extends Shape {
         ++bitIndex;
         probeT <<= 1;
       }
+      /*
       System.out.println("countContiguousSegments() -> " + segmentCount);
       for (int i = 0; i < segmentCount; ++i)
         System.out.print(" " + segmentStarts[i]);
       System.out.println("");
+      */
       return segmentCount;
     }
+
   }
 
   class TorusX {
@@ -1246,7 +1323,7 @@ class Surface extends Shape {
     saveTorus(torus);
     return torus;
   }
-
+  
   void saveTorus(Torus torus) {
     if (toruses == null)
       toruses = new Torus[128];
@@ -1549,8 +1626,16 @@ class Surface extends Shape {
     }
 
     short getVisibleVertex(Vector3f vector, int[] visibilityBitmap) {
-      short vertex = g3d.getNormix(vector, geodesicRenderingLevel);
-      Bmp.setBitGrow(visibilityBitmap, vertex);
+      short vertex;
+      vertex =
+        g3d.getClosestVisibleGeodesicVertexIndex(vector,
+                                                 visibilityBitmap,
+                                                 geodesicRenderingLevel);
+      if (vertex == -1) {
+        //nothing visible ... so make one
+        vertex = g3d.getNormix(vector, geodesicRenderingLevel);
+        Bmp.setBitGrow(visibilityBitmap, vertex);
+      }
       return vertex;
     }
 
@@ -1711,5 +1796,43 @@ class Surface extends Shape {
         Bmp.setBit(edgeVertexes, vertex);
     }
     return edgeVertexes;
+  }
+
+  int calcEdgeVertexes(int[] visibilityBitmap, short[] edgeVertexes) {
+    System.out.println("calcEdgeVertexes(" + visibilityBitmap);
+    for (int i = 0; i < visibilityBitmap.length; ++i)
+      System.out.print(" " + Integer.toHexString(visibilityBitmap[i]));
+    System.out.println("");
+    int edgeCount = 0;
+    if (visibilityBitmap != null) {
+      for (int vertex = Bmp.getMaxMappedBit(visibilityBitmap),
+             neighborIndex = 6 * (vertex - 1);
+           --vertex >= 0;
+           neighborIndex -= 6) {
+        if (! Bmp.getBit(visibilityBitmap, vertex))
+          continue;
+        int i;
+        for (i = (vertex < 12) ? 5 : 6; --i >= 0; ) {
+          int neighbor = geodesicNeighborVertexes[neighborIndex + i];
+          if (! Bmp.getBit(visibilityBitmap, neighbor))
+            break;
+        }
+        if (i >= 0)
+          edgeVertexes[edgeCount++] = (short)vertex;
+      }
+    }
+    System.out.println("edgeCount=" + edgeCount);
+    return edgeCount;
+  }
+
+  void calcConvexPoints(Atom atom, int edgeVertexCount, short[] edgeVertexes,
+                        Point3f[] points) {
+    float radius = atom.getVanderwaalsRadiusFloat();
+    Point3f center = atom.point3f;
+    for (int i = edgeVertexCount; --i >= 0; ) {
+      int v = edgeVertexes[i];
+      vectorT.scale(radius, geodesicVertexVectors[v]);
+      points[i].add(center, vectorT);
+    }
   }
 }

@@ -80,7 +80,7 @@ import java.util.Enumeration;
  *
  ****************************************************************/
 
-class Surface extends Shape {
+class Sasurface extends Shape {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 

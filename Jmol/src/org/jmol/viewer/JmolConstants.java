@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2005 The Jmol Development Team";
-  public final static String version = "10.00.25";
+  public final static String version = "10.00.26";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -2166,7 +2166,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Strands", "MeshRibbon", "Ribbons",
     "Rockets", "Stars",
     "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
-    "Pmesh", "Polyhedra", "Surface", "Isosurface",
+    "Pmesh", "Polyhedra", "Sasurface", "Isosurface",
     "Prueba"
   };
 

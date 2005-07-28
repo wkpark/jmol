@@ -475,8 +475,8 @@ class Eval implements Runnable {
       case Token.polyhedra:
         polyhedra();
         break;
-      case Token.surface:
-        surface();
+      case Token.sasurface:
+        sasurface();
         break;
       case Token.centerAt:
         centerAt();
@@ -2468,7 +2468,8 @@ class Eval implements Runnable {
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
    Token.rocket, Token.star,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover, Token.pmesh, Token.polyhedra, Token.surface, Token.isosurface,
+   Token.hover, Token.pmesh, Token.polyhedra, Token.sasurface,
+   Token.isosurface,
    Token.prueba,
   };
 
@@ -3409,7 +3410,7 @@ class Eval implements Runnable {
                               "expression", null);
   }
 
-  void surface() throws ScriptException {
+  void sasurface() throws ScriptException {
     short mad = -1;
     if (statementLength > 1) {
       switch (statement[1].tok) {

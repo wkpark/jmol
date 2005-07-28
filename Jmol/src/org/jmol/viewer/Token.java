@@ -169,7 +169,7 @@ class Token {
   final static int meshRibbon   = command | 84;
   final static int prueba       = command | 85;
   final static int rocket       = command | 86;
-  final static int surface      = command | predefinedset | 87;
+  final static int sasurface    = command | 87;
   final static int moveto       = command | 88 | negnums;
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
@@ -372,6 +372,7 @@ class Token {
   final static int rna         = predefinedset |  9;
   final static int purine      = predefinedset | 10;
   final static int pyrimidine  = predefinedset | 11;
+  final static int surface     = predefinedset | 12;
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -481,7 +482,7 @@ class Token {
     "prueba",            new Token(prueba,    onDefault1, "prueba"),
     "rocket",            new Token(rocket,    onDefault1, "rocket"),
     "rockets",           null,
-    "surface",           new Token(surface,  varArgCount, "surface"),
+    "sasurface",         new Token(sasurface,varArgCount, "sasurface"),
     "moveto",            new Token(moveto,   varArgCount, "moveto"),
     "bondorder",         new Token(bondorder,          1, "bondorder"),
     "console",           new Token(console,   onDefault1, "console"),
@@ -652,6 +653,7 @@ class Token {
     "rna",          new Token(rna,             "rna"),
     "purine",       new Token(purine,          "purine"),
     "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
+    "surface",      new Token(surface,         "surface"),
 
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),

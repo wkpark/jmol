@@ -31,7 +31,7 @@ import org.jmol.g3d.Graphics3D;
 import javax.vecmath.*;
 
 
-class SurfaceRenderer extends ShapeRenderer {
+class SasurfaceRenderer extends ShapeRenderer {
 
   boolean perspectiveDepth;
   boolean hideSaddles;
@@ -58,7 +58,7 @@ class SurfaceRenderer extends ShapeRenderer {
     scalePixelsPerAngstrom = (int)viewer.getScalePixelsPerAngstrom();
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
 
-    Surface surface = (Surface)shape;
+    Sasurface surface = (Sasurface)shape;
     if (surface == null)
       return;
     hideSaddles = viewer.getTestFlag1();
@@ -91,9 +91,9 @@ class SurfaceRenderer extends ShapeRenderer {
           renderConvex(atom, colixesConvex[i], vertexMap, faceMap);
       }
     }
-    Surface.Torus[] toruses = surface.toruses;
+    Sasurface.Torus[] toruses = surface.toruses;
     for (int i = surface.torusCount; --i >= 0; ) {
-      Surface.Torus torus = toruses[i];
+      Sasurface.Torus torus = toruses[i];
       /*
       renderToruX(torus,
                   atoms[ixI], convexVertexMaps[ixI],
@@ -103,7 +103,7 @@ class SurfaceRenderer extends ShapeRenderer {
       */
       renderTorus(torus, atoms, colixesConvex, convexVertexMaps);
     }
-    Surface.Cavity[] cavities = surface.cavities;
+    Sasurface.Cavity[] cavities = surface.cavities;
     for (int i = surface.cavityCount; --i >= 0; )
       renderCavity(cavities[i], atoms,
                    colixesConvex,
@@ -133,7 +133,7 @@ class SurfaceRenderer extends ShapeRenderer {
     Point3i[] screens = screensCache.lookup(atom, vertexMap);
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     if (CONVEX_DOTS) {
-      int[] edgeVertexes = ((Surface)shape).calcEdgeVertexes(vertexMap);
+      int[] edgeVertexes = ((Sasurface)shape).calcEdgeVertexes(vertexMap);
       for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
         if (Bmp.getBit(edgeVertexes, vertex)) {
           Point3i screen = screens[vertex];
@@ -159,7 +159,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   ////////////////////////////////////////////////////////////////
   // torus rendering
-  void renderTorus(Surface.Torus torus,
+  void renderTorus(Sasurface.Torus torus,
                    Atom[] atoms, short[] convexColixes,
                    int[][] convexVertexMaps) {
     //    if (convexVertexMaps[torus.ixA] != null)
@@ -183,10 +183,10 @@ class SurfaceRenderer extends ShapeRenderer {
 
   final AxisAngle4f aaT = new AxisAngle4f();
   final AxisAngle4f aaT1 = new AxisAngle4f();
-  static final int INNER_TORUS_STEP_COUNT = Surface.INNER_TORUS_STEP_COUNT;
-  static final int OUTER_TORUS_STEP_COUNT = Surface.OUTER_TORUS_STEP_COUNT;
-  static final float INNER_TORUS_STEP_ANGLE = Surface.INNER_TORUS_STEP_ANGLE;
-  final static int MAX_SEGMENT_COUNT = Surface.MAX_SEGMENT_COUNT;
+  static final int INNER_TORUS_STEP_COUNT = Sasurface.INNER_TORUS_STEP_COUNT;
+  static final int OUTER_TORUS_STEP_COUNT = Sasurface.OUTER_TORUS_STEP_COUNT;
+  static final float INNER_TORUS_STEP_ANGLE = Sasurface.INNER_TORUS_STEP_ANGLE;
+  final static int MAX_SEGMENT_COUNT = Sasurface.MAX_SEGMENT_COUNT;
   final Matrix3f matrixT = new Matrix3f();
   final Matrix3f matrixT1 = new Matrix3f();
   final Point3f pointT = new Point3f();
@@ -207,7 +207,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   final byte[] torusSegmentStarts = new byte[MAX_SEGMENT_COUNT];
 
-  void renderTorus(Surface.Torus torus, short[] colixes) {
+  void renderTorus(Sasurface.Torus torus, short[] colixes) {
     torus.calcPoints(torusPoints);
     Point3i[] screens = torusScreens;
     torus.calcScreens(torusPoints, torusScreens);
@@ -254,7 +254,7 @@ class SurfaceRenderer extends ShapeRenderer {
     renderTorusAtomConnections(torus, null);
   }
 
-  void renderTorusEdges(Surface.Torus torus) {
+  void renderTorusEdges(Sasurface.Torus torus) {
     Point3i[] screens = torusScreens;
     // show torus edges
     int segmentCount = torus.countContiguousSegments(torusSegmentStarts);
@@ -275,7 +275,7 @@ class SurfaceRenderer extends ShapeRenderer {
     }
   }
 
-  void renderTorusAtomConnections(Surface.Torus torus,
+  void renderTorusAtomConnections(Sasurface.Torus torus,
                                   Point3i screensConvex) {
     System.out.println("torus.connectAConvex=" +
                        torus.connectAConvex);
@@ -307,7 +307,7 @@ class SurfaceRenderer extends ShapeRenderer {
     
   final short[] torusColixes = new short[OUTER_TORUS_STEP_COUNT];
 
-  void prepareTorusColixes(Surface.Torus torus, short[] convexColixes,
+  void prepareTorusColixes(Sasurface.Torus torus, short[] convexColixes,
                            Atom[] atoms) {
     int ixA = torus.ixA;
     int ixB = torus.ixB;
@@ -345,86 +345,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   boolean SHOW_TORUS_CAVITY_FOO = false;
   
-  /*
-  void renderToruX(Surface.Torus torus,
-                   Atom atomI, int[] vertexMapI,
-                   Atom atomJ, int[] vertexMapJ,
-                   short[] colixesSaddle,
-                   int renderingLevel) {
-    if (hideSaddles)
-      return;
-    if (vertexMapI == null || vertexMapJ == null)
-      return;
-    short colixI = Graphics3D.inheritColix(colixesSaddle[torus.ixI],
-                                           atomI.colixAtom);
-    short colixJ = Graphics3D.inheritColix(colixesSaddle[torus.ixI],
-                                           atomJ.colixAtom);
-
-    Point3i[] screensI = screensCache.lookup(atomI, vertexMapI);
-    Point3i[] screensJ = screensCache.lookup(atomJ, vertexMapJ);
-
-    Point3i screenClosestI = screensI[torus.normixI];
-    Point3i screenClosestJ = screensJ[torus.normixJ];
-
-    if (SHOW_TORUS_CAVITY_FOO) {
-      for (int i = torus.connectionCount; (i -= 2) >= 0; ) {
-        short vertexA = torus.cavityConnections[i];
-        short vertexB = torus.cavityConnections[i + 1];
-        
-        g3d.fillCylinder(Graphics3D.ORANGE, Graphics3D.ENDCAPS_FLAT, 4,
-                         screensI[vertexA],
-                         screensJ[vertexB]);
-      }
-    }
-
-    for (int i = torus.pointspCount; --i >= 0; ) {
-      Point3f torusPoint = torus.pointsp[i];
-      if (torusPoint != null) {
-        Point3i screenP = viewer.transformPoint(torusPoint);
-        if (SHOW_TORUS_PROBE_CENTERS)
-          g3d.fillSphereCentered(Graphics3D.GREEN, 3, screenP);
-        
-        if (SHOW_TORUS_PROBE_CENTER_VERTEX_CONNECTIONS && screenP != null) {
-          g3d.fillCylinder(Graphics3D.YELLOW, Graphics3D.ENDCAPS_FLAT, 4,
-                           screensI[torus.vertexesIP[i]], screenP);
-          
-          g3d.fillCylinder(Graphics3D.CYAN, Graphics3D.ENDCAPS_FLAT, 4,
-                           screensJ[torus.vertexesJP[i]], screenP);
-        }
-      }
-      if (SHOW_TORUS_VERTEX_CONNECTIONS) {
-        g3d.fillCylinder(Graphics3D.MAGENTA, Graphics3D.ENDCAPS_FLAT, 4,
-                         screensI[torus.vertexesIP[i]],
-                         screensJ[torus.vertexesJP[i]]);
-      }
-    }
-
-    for (int i = 0; i < torus.ijTriangleCount; i += 3) {
-      short vertexI1 = torus.ijTriangles[i];
-      short vertexJ1 = torus.ijTriangles[i + 1];
-      short vertexI2 = torus.ijTriangles[i + 2];
-      
-      g3d.fillTriangle(false,
-                       screensI[vertexI1], colixI, vertexI1,
-                       screensJ[vertexJ1], colixJ, vertexJ1,
-                       screensI[vertexI2], colixI, vertexI2);
-    }
-
-    for (int i = 0; i < torus.jiTriangleCount; i += 3) {
-      short vertexJ1 = torus.jiTriangles[i];
-      short vertexI1 = torus.jiTriangles[i + 1];
-      short vertexJ2 = torus.jiTriangles[i + 2];
-      
-      g3d.fillTriangle(false,
-                       screensJ[vertexJ1], colixJ, vertexJ1,
-                       screensI[vertexI1], colixI, vertexI1,
-                       screensJ[vertexJ2], colixJ, vertexJ2);
-    }
-
-  }
-  */
-
-  void renderCavity(Surface.Cavity cavity, Atom[] atoms,
+  void renderCavity(Sasurface.Cavity cavity, Atom[] atoms,
                     short[] colixesCavity,
                     int[][] convexVertexMaps) {
     if (hideCavities)
@@ -458,7 +379,7 @@ class SurfaceRenderer extends ShapeRenderer {
     }
   }
 
-  void renderCavity2(Surface.Cavity cavity, Atom[] atoms,
+  void renderCavity2(Sasurface.Cavity cavity, Atom[] atoms,
                      short[] colixesCavity,
                      int[][] convexVertexMaps) {
     if (hideCavities)

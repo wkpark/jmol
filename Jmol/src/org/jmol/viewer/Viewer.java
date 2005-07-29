@@ -2045,6 +2045,8 @@ final public class Viewer extends JmolViewer {
       { setHideNameInPopup(value); return; }
     if (key.equalsIgnoreCase("autobond"))
       { setAutoBond(value); return; }
+    if (key.equalsIgnoreCase("greyscaleRendering"))
+      { setGreyscaleRendering(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }
@@ -2093,6 +2095,13 @@ final public class Viewer extends JmolViewer {
   void setOversampleStoppedEnabled(boolean value) {
     tOversampleStopped = value;
     checkOversample();
+    refresh();
+  }
+
+  boolean greyscaleRendering;
+  void setGreyscaleRendering(boolean greyscaleRendering) {
+    this.greyscaleRendering = greyscaleRendering;
+    g3d.setGreyscaleMode(greyscaleRendering);
     refresh();
   }
 

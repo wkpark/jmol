@@ -65,6 +65,8 @@ final public class Graphics3D {
   boolean isFullSceneAntialiasingEnabled;
   boolean antialiasThisFrame;
 
+  boolean inGreyscaleMode;
+
   boolean tPaintingInProgress;
 
   int windowWidth, windowHeight;
@@ -174,7 +176,7 @@ final public class Graphics3D {
     platform.setBackground(argbBackground);
 
     colixBackgroundContrast =
-      calcGrayscaleFromRgb(argbBackground) < 128 ? WHITE : BLACK;
+      (calcGreyscaleRgbFromRgb(argbBackground) & 0xFF) < 128 ? WHITE : BLACK;
   }
 
   /**
@@ -187,19 +189,29 @@ final public class Graphics3D {
   }
 
   /**
-   * return a grayscale value 0-FF using NTSC color luminance algorithm
+   * Return a greyscale rgb value 0-FF using NTSC color luminance algorithm
    *<p>
-   * the alpha component is ignored
+   * the alpha component is set to 0xFF. If you want a value in the
+   * range 0-255 then & the result with 0xFF;
    *
    * @param rgb the rgb value
    * @return a grayscale value in the range 0 - 255 decimal
    */
-  public static int calcGrayscaleFromRgb(int rgb) {
-    return ((2989 * (rgb >> 16) & 0xFF) +
-            (5870 * (rgb >> 8) & 0xFF) +
-            (1140 * (rgb & 0xFF)) + 500) / 1000;
+  static int calcGreyscaleRgbFromRgb(int rgb) {
+    int grey = ((2989 * ((rgb >> 16) & 0xFF)) +
+                (5870 * ((rgb >> 8) & 0xFF)) +
+                (1140 * (rgb & 0xFF)) + 5000) / 10000;
+    int greyRgb = (grey << 16) | (grey << 8) | grey | 0xFF000000;
+    return greyRgb;
   }
-  
+
+  /**
+   * controls greyscale rendering
+   */
+  public void setGreyscaleMode(boolean greyscaleMode) {
+    this.inGreyscaleMode = greyscaleMode;
+  }
+
   /**
    * clipping from the front and the back
    *<p>
@@ -1752,9 +1764,21 @@ final public class Graphics3D {
   }
 
   public int getColixArgb(short colix) {
-    return
-      Colix.getRgb(colix >= 0 ? colix :
-                   changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT]);
+    if (colix < 0)
+      colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
+    if (! inGreyscaleMode)
+      return Colix.getRgb(colix);
+    else 
+      return Colix.getRgbGreyscale(colix);
+  }
+
+  public int[] getShades(short colix) {
+    if (colix < 0)
+      colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
+    if (! inGreyscaleMode)
+      return Colix.getShades(colix);
+    else
+      return Colix.getShadesGreyscale(colix);
   }
 
   public final static boolean isColixTranslucent(short colix) {
@@ -1774,12 +1798,6 @@ final public class Graphics3D {
 
   public final static short getOpaqueColix(short colix) {
     return (short)(colix & OPAQUE_MASK);
-  }
-
-  public int[] getShades(short colix) {
-    return
-      Colix.getShades(colix >= 0 ? colix :
-                      changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT]);
   }
 
   public final static short getColix(int argb) {

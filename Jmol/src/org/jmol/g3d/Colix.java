@@ -52,8 +52,10 @@ final class Colix {
 
   private static int colixMax = 1; // skip the null entry
   private static int[] argbs = new int[128];
+  private static int[] argbsGreyscale;
   private static Color[] colors = new Color[128];
   private static int[][] ashades = new int[128][];
+  private static int[][] ashadesGreyscale;
 
   final static short getColix(int argb) {
     if (argb == 0)
@@ -101,21 +103,44 @@ final class Colix {
         return (short)i;
     if (colixMax == argbs.length) {
       int oldSize = argbs.length;
-      int[] t0 = new int[oldSize * 2];
+      int newSize = oldSize * 2;
+      int[] t0 = new int[newSize];
       System.arraycopy(argbs, 0, t0, 0, oldSize);
       argbs = t0;
 
-      Color[] t1 = new Color[oldSize * 2];
+      if (argbsGreyscale != null) {
+        t0 = new int[newSize];
+        System.arraycopy(argbsGreyscale, 0, t0, 0, oldSize);
+        argbsGreyscale = t0;
+      }
+
+      Color[] t1 = new Color[newSize];
       System.arraycopy(colors, 0, t1, 0, oldSize);
       colors = t1;
 
-      int[][] t2 = new int[oldSize * 2][];
+      int[][] t2 = new int[newSize][];
       System.arraycopy(ashades, 0, t2, 0, oldSize);
       ashades = t2;
+
+      if (ashadesGreyscale != null) {
+        t2 = new int[newSize][];
+        System.arraycopy(ashadesGreyscale, 0, t2, 0, oldSize);
+        ashadesGreyscale = t2;
+      }
     }
     argbs[colixMax] = argb;
+    if (argbsGreyscale != null)
+      argbsGreyscale[colixMax] = Graphics3D.calcGreyscaleRgbFromRgb(argb);
     colors[colixMax] = (opaqueColor != null) ? opaqueColor : new Color(argb);
     return colixMax++;
+  }
+
+  private synchronized static void calcArgbsGreyscale() {
+    if (argbsGreyscale == null) {
+      argbsGreyscale = new int[argbs.length];
+      for (int i = argbsGreyscale.length; --i >= 0; )
+        argbsGreyscale[i] = Graphics3D.calcGreyscaleRgbFromRgb(argbs[i]);
+    }
   }
 
   final static Color getColor(short colix) {
@@ -128,6 +153,12 @@ final class Colix {
     return argbs[colix & Graphics3D.OPAQUE_MASK];
   }
 
+  final static int getRgbGreyscale(short colix) {
+    if (argbsGreyscale == null)
+      calcArgbsGreyscale();
+    return argbsGreyscale[colix & Graphics3D.OPAQUE_MASK];
+  }
+
   final static boolean isTranslucent(short colix) {
     return (colix & Graphics3D.TRANSLUCENT_MASK) != 0;
   }
@@ -136,8 +167,19 @@ final class Colix {
     colix &= Graphics3D.OPAQUE_MASK;
     int[] shades = ashades[colix];
     if (shades == null)
-      shades = ashades[colix] = Shade3D.getShades(argbs[colix]);
+      shades = ashades[colix] = Shade3D.getShades(argbs[colix], false);
     return shades;
+  }
+
+  final static int[] getShadesGreyscale(short colix) {
+    colix &= Graphics3D.OPAQUE_MASK;
+    if (ashadesGreyscale == null)
+      ashadesGreyscale = new int[ashades.length][];
+    int[] shadesGreyscale = ashadesGreyscale[colix];
+    if (shadesGreyscale == null)
+      shadesGreyscale = ashadesGreyscale[colix] =
+        Shade3D.getShades(argbs[colix], true);
+    return shadesGreyscale;
   }
 
   final static void flushShades() {

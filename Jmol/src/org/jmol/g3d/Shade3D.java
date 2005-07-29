@@ -75,7 +75,7 @@ final class Shade3D {
   // set ambient 0-100
   static float ambientFraction = 0.45f;
 
-  static int[] getShades(int rgb) {
+  static int[] getShades(int rgb, boolean greyScale) {
     int[] shades = new int[shadeMax];
 
     int red = (rgb >> 16) & 0xFF;
@@ -102,6 +102,9 @@ final class Shade3D {
                                     grn + (int)(grnRange * i / nSteps + 0.5f),
                                     blu + (int)(bluRange * i / nSteps + 0.5f));
     }
+    if (greyScale)
+      for (int i = shadeMax; --i >= 0; )
+        shades[i] = Graphics3D.calcGreyscaleRgbFromRgb(shades[i]);
     return shades;
   }
 

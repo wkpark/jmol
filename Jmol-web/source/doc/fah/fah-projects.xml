@@ -3511,12 +3511,12 @@
   <fah_proj number="2018" name="p2018_BBA5_pfold" public="y"
     server="171.64.122.136" atoms="13691" preferred="20" deadline="30"
     credit="101" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2019" name="p2019_BBA5" public="y"
+  <fah_proj number="2019" name="p2019_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="9" deadline="28"
     credit="95" frames="100" code="DG" contact="alexrson"/>
   <fah_proj number="2020" name="p2020_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="7" deadline="24"
-    credit="14" frames="100" code="DG" contact="alexrson"/>
+    credit="80" frames="100" code="DG" contact="alexrson"/>
   <fah_proj number="2051" name="p2051_abeta_mutant1_4mer" public="y" file="y"
     server="171.64.122.136" atoms="2544" preferred="33" deadline="47"
     credit="167" frames="100" code="G" contact="luttmann"/>

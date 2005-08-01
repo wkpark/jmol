@@ -3520,7 +3520,7 @@
   <fah_proj number="2051" name="p2051_abeta_mutant1_4mer" public="y" file="y"
     server="171.64.122.136" atoms="2544" preferred="33" deadline="47"
     credit="167" frames="100" code="G" contact="luttmann"/>
-  <fah_proj number="2052" name="p2052_abeta_mutant1_4mer" public="y"
+  <fah_proj number="2052" name="p2052_abeta_mutant1_4mer" public="y" file="y"
     server="171.64.122.136" atoms="2544" preferred="32" deadline="47"
     credit="166" frames="100" code="G" contact="luttmann"/>
   <fah_proj number="2053" name="p2053_abeta_mutant_4mer" public="y" file="y"
@@ -3529,7 +3529,7 @@
   <fah_proj number="2055" name="p2055_abeta_mutant2_4mer" public="y" file="y"
     server="171.64.122.136" atoms="2092" preferred="26" deadline="37"
     credit="129" frames="100" code="G" contact="luttmann"/>
-  <fah_proj number="2056" name="p2056_abeta_mutant2_4mer" public="y"
+  <fah_proj number="2056" name="p2056_abeta_mutant2_4mer" public="y" file="y"
     server="171.64.122.136" atoms="2092" preferred="25" deadline="37"
     credit="128" frames="100" code="G" contact="luttmann"/>
   <fah_proj number="2057" name="p2057_abeta_mutant2_4mer" public="y" file="y"

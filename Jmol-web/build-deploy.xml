@@ -13,7 +13,9 @@
   </taskdef>
 
   <property name="from.dir"  value="build/html" />
+  <property name="modif.dir" value="build/modified" />
   <property name="tmp.cache" value="build/cache.properties" />
+  <property name="tgz.file"  value="build/upload.tgz" />
 
   <!-- Copying files to website -->
   <target name="deploy" >
@@ -73,17 +75,39 @@
       file="${tmp.cache}"
       match=":" replace="\\\\:" flags="g"/>
     
-    <!-- Do the copy using scp -->
-    <echo message="Copying all files to Jmol website" level="info"/>
-    <scp
-      todir="${ssh.user}:${ssh.password}@shell.sourceforge.net:/home/groups/j/jm/jmol/htdocs"
-      trust="yes" failonerror="true">
+    <!-- Copy modified files to an other directory -->
+    <echo message="Extracting modified files" level="info"/>
+    <delete dir="${modif.dir}"/>
+    <copy todir="${modif.dir}" includeEmptyDirs="false" overwrite="true">
       <fileset dir="${from.dir}">
         <modified>
           <param name="cache.cachefile" value="${tmp.cache}"/>
         </modified>
       </fileset>
-    </scp>
+    </copy>
+    
+    <!-- Make an archive of modified files -->
+    <echo message="Creating archive with modified files" level="info"/>
+    <delete file="${tgz.file}"/>
+    <tar destfile="${tgz.file}" longfile="fail" compression="gzip">
+      <tarfileset dir="${modif.dir}" mode="664" username="${ssh.user}" group="jmol">
+        <include name="**/*"/>
+      </tarfileset>
+    </tar>
+    
+    <!-- Do the copy using scp -->
+    <echo message="Copying archive of modified files to Jmol website" level="info"/>
+    <scp
+      todir="${ssh.user}:${ssh.password}@shell.sourceforge.net:/home/groups/j/jm/jmol/htdocs"
+      trust="yes" failonerror="true" localfile="${tgz.file}"/>
+    
+    <!-- Extract modified files -->
+    <echo message="Extracting modified files on Jmol website" level="info"/>
+    <sshexec
+      host="shell.sourceforge.net" username="${ssh.user}" password="${ssh.password}"
+      trust="yes" failonerror="true"
+      command="cd /home/groups/j/jm/jmol/htdocs/; tar zxvf upload.tgz; rm upload.tgz">
+    </sshexec>
     
     <!-- Recreate cache.properties -->
     <replaceregexp

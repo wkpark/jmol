@@ -1,22 +1,18 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.2)
+  Translated from default version : index_en.xml (v 1.3)
 -->
-<!DOCTYPE somethingOrAnything [
-<!ENTITY javascript_colors SYSTEM "javascript_colors.xml" >
-<!ENTITY netscape_colors   SYSTEM "netscape_colors.xml" >
-]>
 <document>
   <body>
     <title>Couleurs JavaScript</title>
 
     <section title="Couleurs JavaScript">
-      <script>&javascript_colors;</script>
+      <script src="./jsColorNames.js"></script>
     </section>
 
     <section title="Palette de couleurs Netscape 8 bit">
-      <script>&netscape_colors;</script>
+      <script src="./colors.js"></script>
     </section>
   </body>
 </document>

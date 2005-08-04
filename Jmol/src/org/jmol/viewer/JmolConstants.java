@@ -2099,6 +2099,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Prueba"
   };
 
+  ////////////////////////////////////////////////////////////////
+  // Stereo modes
+  ////////////////////////////////////////////////////////////////
+  public final static int STEREO_NONE    = 0;
+  public final static int STEREO_DOUBLE  = 1;
+  public final static int STEREO_REDBLUE = 2;
+  public final static int STEREO_REDCYAN = 3;
+
   // all of these things are compile-time constants
   // if they are false then the compiler should take them away
   static {

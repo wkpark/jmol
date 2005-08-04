@@ -66,6 +66,7 @@ final public class Graphics3D {
   boolean antialiasThisFrame;
 
   boolean inGreyscaleMode;
+  byte[] blueChannelBytes;
 
   boolean tPaintingInProgress;
 
@@ -719,6 +720,28 @@ final public class Graphics3D {
         downSampleFullSceneAntialiasing();
       platform.notifyEndOfRendering();
       currentlyRendering = false;
+    }
+  }
+
+  public void snapshotBlueChannelBytes() {
+    if (currentlyRendering)
+      throw new NullPointerException();
+    if (blueChannelBytes == null || blueChannelBytes.length != pbuf.length)
+      blueChannelBytes = new byte[pbuf.length];
+    for (int i = pbuf.length; --i >= 0; )
+      blueChannelBytes[i] = (byte)pbuf[i];
+  }
+
+  public void applyBlueAnaglyph() {
+    for (int i = pbuf.length; --i >= 0; )
+      pbuf[i] = pbuf[i] & 0xFFFF0000 | (blueChannelBytes[i] & 0x000000FF);
+  }
+
+  public void applyCyanAnaglyph() {
+    for (int i = pbuf.length; --i >= 0; ) {
+      int blue = blueChannelBytes[i] & 0x000000FF;
+      int cyan = (blue << 8) | blue;
+      pbuf[i] = pbuf[i] & 0xFFFF0000 | cyan;
     }
   }
   

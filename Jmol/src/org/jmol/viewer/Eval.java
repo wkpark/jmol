@@ -3509,20 +3509,33 @@ class Eval implements Runnable {
   }
 
   void stereo() throws ScriptException {
-    boolean stereoDisplay = false;
-    switch (statement[1].tok) {
-    case Token.on:
-      stereoDisplay = true;
-    case Token.off:
-      break;
-    case Token.integer:
-    case Token.decimal:
-      viewer.setStereoDegrees(floatParameter(1));
-      stereoDisplay = true;
-      break;
-    default:
-      booleanOrNumberExpected();
+    int stereoMode = JmolConstants.STEREO_DOUBLE;
+    for (int i = 1; i < statementLength; ++i) {
+      switch (statement[i].tok) {
+      case Token.on:
+        stereoMode = JmolConstants.STEREO_DOUBLE;
+        break;
+      case Token.off:
+        stereoMode = JmolConstants.STEREO_NONE;
+        break;
+      case Token.integer:
+      case Token.decimal:
+        viewer.setStereoDegrees(floatParameter(i));
+        break;
+      case Token.identifier:
+        String id = (String)statement[i].value;
+        if (id.equalsIgnoreCase("redblue")) {
+          stereoMode = JmolConstants.STEREO_REDBLUE;
+          break;
+        }
+        if (id.equalsIgnoreCase("redcyan")) {
+          stereoMode = JmolConstants.STEREO_REDCYAN;
+          break;
+        }
+      default:
+        booleanOrNumberExpected();
+      }
     }
-    viewer.setStereoDisplay(stereoDisplay);
+    viewer.setStereoMode(stereoMode);
   }
 }

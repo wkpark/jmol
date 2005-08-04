@@ -448,7 +448,7 @@ class Token {
     "cpk",               new Token(cpk,      varArgCount, "cpk"),
     "spacefill",         null,
     "ssbonds",           new Token(ssbonds,   onDefault1, "ssbonds"),
-    "stereo",            new Token(stereo,             1, "stereo"),
+    "stereo",            new Token(stereo,   varArgCount, "stereo"),
     "strands",           new Token(strands,   onDefault1, "strands"),
     "structure",         new Token(structure,          0, "structure"),
     "trace",             new Token(trace,     onDefault1, "trace"),

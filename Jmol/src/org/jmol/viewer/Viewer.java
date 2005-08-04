@@ -477,7 +477,7 @@ final public class Viewer extends JmolViewer {
     // so don't try dim1.equals(dim2)
     int height = dim.height;
     int width = dim.width;
-    if (getStereoDisplay())
+    if (getStereoMode() == JmolConstants.STEREO_DOUBLE)
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
       return;
@@ -1529,13 +1529,46 @@ final public class Viewer extends JmolViewer {
     manageScriptTermination();
     if (size != null)
       setScreenDimension(size);
-    if (! getStereoDisplay()) {
+    int stereoMode = getStereoMode();
+    switch (stereoMode) {
+    case JmolConstants.STEREO_NONE:
       setRectClip(clip);
       render1(g, transformManager.getStereoRotationMatrix(false), false, 0, 0);
-    } else {
+      break;
+    case JmolConstants.STEREO_DOUBLE:
+      setRectClip(null);
       render1(g, transformManager.getStereoRotationMatrix(false), false, 0, 0);
       render1(g, transformManager.getStereoRotationMatrix(true), false,
               dimScreen.width, 0);
+      break;
+    case JmolConstants.STEREO_REDBLUE:
+    case JmolConstants.STEREO_REDCYAN:
+      setRectClip(null);
+      g3d.beginRendering(rectClip,
+                         transformManager.getStereoRotationMatrix(true),
+                         false);
+      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+                            repaintManager.displayModelIndex);
+      g3d.endRendering();
+      g3d.snapshotBlueChannelBytes();
+      g3d.beginRendering(rectClip,
+                         transformManager.getStereoRotationMatrix(false),
+                         false);
+      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+                            repaintManager.displayModelIndex);
+      g3d.endRendering();
+      if (stereoMode == JmolConstants.STEREO_REDBLUE)
+        g3d.applyBlueAnaglyph();
+      else 
+        g3d.applyCyanAnaglyph();
+      Image img = g3d.getScreenImage();
+      try {
+        g.drawImage(img, 0, 0, null);
+      } catch (NullPointerException npe) {
+        System.out.println("Sun!! ... fix graphics your bugs!");
+      }
+      g3d.releaseScreenImage();
+      break;
     }
     notifyRepainted();
   }
@@ -2426,12 +2459,12 @@ final public class Viewer extends JmolViewer {
   // stereo support
   ////////////////////////////////////////////////////////////////
 
-  void setStereoDisplay(boolean stereoDisplay) {
-    transformManager.setStereoDisplay(stereoDisplay);
+  void setStereoMode(int stereoMode) {
+    transformManager.setStereoMode(stereoMode);
   }
 
-  boolean getStereoDisplay() {
-    return transformManager.stereoDisplay;
+  int getStereoMode() {
+    return transformManager.stereoMode;
   }
 
   float getStereoDegrees() {

@@ -1049,9 +1049,11 @@ class TransformManager {
   // stereo support
   ////////////////////////////////////////////////////////////////
 
-  boolean stereoDisplay;
-  void setStereoDisplay(boolean stereoDisplay) {
-    this.stereoDisplay = stereoDisplay;
+  int stereoMode;
+  void setStereoMode(int stereoMode) {
+    this.stereoMode = stereoMode;
+    viewer.setGreyscaleRendering(stereoMode == JmolConstants.STEREO_REDBLUE ||
+                                 stereoMode == JmolConstants.STEREO_REDCYAN);
   }
 
   float stereoDegrees = 5;

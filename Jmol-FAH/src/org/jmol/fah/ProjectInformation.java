@@ -1079,16 +1079,17 @@ public class ProjectInformation {
 
     //Check for differences with EM
     if ((info._psPreferred == null) &&
-        (info._emDeadline != null) &&
-        (!info._emDeadline.equals(info._staticPreferred))) {
+        (info._staticPreferred == null) &&
+        (info._emDeadline != null)) {
       different = true;
     }
-    if ((info._emFrames != null) && (!info._emFrames.equals(info._staticFrames))) {
+    if ((info._emFrames != null) &&
+        (!info._emFrames.equals(info._staticFrames))) {
       different = true;
     }
     if ((info._psValue == null) &&
-        (info._emValue != null) &&
-        (!info._emValue.equals(info._staticValue))) {
+        (info._staticValue == null) &&
+        (info._emValue != null)) {
       different = true;
     }
 
@@ -1128,8 +1129,8 @@ public class ProjectInformation {
 
     //Check for differences with QD
     if ((info._psValue == null) &&
-        (info._qdValue != null) &&
-        (!info._qdValue.equals(info._staticValue))) {
+        (info._staticValue == null) &&
+        (info._qdValue != null)) {
       different = true;
     }
 
@@ -1286,8 +1287,8 @@ public class ProjectInformation {
         if (!info._psPreferred.equals(info._staticPreferred)) {
             preferredDifferent = true;
         }
-    } else {
-        if ((info._emDeadline != null) && (!info._emDeadline.equals(info._staticPreferred))) {
+    } else if (info._staticPreferred == null) {
+        if (info._emDeadline != null) {
             preferredDifferent = true;
         }
     }
@@ -1335,9 +1336,9 @@ public class ProjectInformation {
         if (!info._psValue.equals(info._staticValue)) {
             pointsDifferent = true;
         }
-    } else {
-        if (((info._emValue != null) && (!info._emValue.equals(info._staticValue))) ||
-            ((info._qdValue != null) && (!info._qdValue.equals(info._staticValue)))) {
+    } else if (info._staticValue == null) {
+        if ((info._emValue != null) ||
+            (info._qdValue != null)) {
             pointsDifferent = true;
         }
     }

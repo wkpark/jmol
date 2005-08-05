@@ -352,8 +352,8 @@ class Token {
   final static int frontedges   = misc | 45;
   final static int solid        = misc | 45;
   final static int jmol         = misc | 46;
-  final static int relative     = misc | 47;
-  final static int absolute     = misc | 48;
+  final static int absolute     = misc | 47;
+  final static int average      = misc | 48;
   final static int nodots       = misc | 49;
   final static int mesh         = misc | 50;
   final static int nomesh       = misc | 51;
@@ -669,8 +669,8 @@ class Token {
     "noedges",      new Token(noedges,         "noedges"),
     "frontedges",   new Token(frontedges,      "frontedges"),
     "solid",        new Token(solid,           "solid"),
-    "relative",     new Token(relative,        "relative"),
     "absolute",     new Token(absolute,        "absolute"),
+    "average",      new Token(average,         "average"),
     "nodots",       new Token(nodots,          "nodots"),
     "mesh",         new Token(mesh,            "mesh"),
     "nomesh",       new Token(nomesh,          "nomesh"),

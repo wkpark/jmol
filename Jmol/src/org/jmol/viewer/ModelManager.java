@@ -169,12 +169,12 @@ class ModelManager {
       frame.increaseRotationRadius(increaseInAngstroms);
   }
 
-  Point3f getBoundingBoxCenter() {
-    return (frame == null) ? null : frame.getBoundingBoxCenter();
+  Point3f getBoundBoxCenter() {
+    return (frame == null) ? null : frame.getBoundBoxCenter();
   }
 
-  Vector3f getBoundingBoxCornerVector() {
-    return (frame == null) ? null : frame.getBoundingBoxCornerVector();
+  Vector3f getBoundBoxCornerVector() {
+    return (frame == null) ? null : frame.getBoundBoxCornerVector();
   }
 
   int getChainCount() {
@@ -239,12 +239,16 @@ class ModelManager {
     return (frame == null ? null : frame.getRotationCenter());
   }
 
-  void setRotationCenter(boolean relative, float x, float y, float z) {
+  void setRotationCenter(String relativeTo, float x, float y, float z) {
     if (frame == null)
       return;
     pointT.set(x, y, z);
-    if (relative)
+    if (relativeTo == "average")
       pointT.add(frame.getRotationCenterDefault());
+    else if (relativeTo == "boundbox")
+      pointT.add(frame.getBoundBoxCenter());
+    else if (relativeTo != "absolute")
+      pointT.set(frame.getRotationCenterDefault());
     frame.setRotationCenter(pointT);
   }
 

@@ -1149,15 +1149,15 @@ final public class Viewer extends JmolViewer {
     return modelManager.getRotationCenter();
   }
 
-  Point3f getBoundingBoxCenter() {
-    return modelManager.getBoundingBoxCenter();
+  Point3f getBoundBoxCenter() {
+    return modelManager.getBoundBoxCenter();
   }
 
-  Vector3f getBoundingBoxCornerVector() {
-    return modelManager.getBoundingBoxCornerVector();
+  Vector3f getBoundBoxCornerVector() {
+    return modelManager.getBoundBoxCornerVector();
   }
 
-  int getBoundingBoxCenterX() {
+  int getBoundBoxCenterX() {
     // FIXME mth 2003 05 31
     // used by the labelRenderer for rendering labels away from the center
     // for now this is returning the center of the screen
@@ -1165,7 +1165,7 @@ final public class Viewer extends JmolViewer {
     return dimScreen.width / 2;
   }
 
-  int getBoundingBoxCenterY() {
+  int getBoundBoxCenterY() {
     return dimScreen.height / 2;
   }
 
@@ -1250,8 +1250,8 @@ final public class Viewer extends JmolViewer {
     return modelManager.getRotationCenter();
   }
 
-  void setCenter(boolean relative, float x, float y, float z) {
-    modelManager.setRotationCenter(relative, x, y, z);
+  void setCenter(String relativeTo, float x, float y, float z) {
+    modelManager.setRotationCenter(relativeTo, x, y, z);
     scaleFitToScreen();
   }
 
@@ -1999,7 +1999,7 @@ final public class Viewer extends JmolViewer {
       return getPerspectiveDepth();
     if (key.equalsIgnoreCase("showAxes"))
       return getShapeShow(JmolConstants.SHAPE_AXES);
-    if (key.equalsIgnoreCase("showBoundingBox"))
+    if (key.equalsIgnoreCase("showBoundBox"))
       return getShapeShow(JmolConstants.SHAPE_BBCAGE);
     if (key.equalsIgnoreCase("showUnitcell"))
       return getShapeShow(JmolConstants.SHAPE_UCCAGE);
@@ -2042,7 +2042,7 @@ final public class Viewer extends JmolViewer {
       { setPerspectiveDepth(value); return; }
     if (key.equalsIgnoreCase("showAxes"))
       { setShapeShow(JmolConstants.SHAPE_AXES, value); return; }
-    if (key.equalsIgnoreCase("showBoundingBox"))
+    if (key.equalsIgnoreCase("showBoundBox"))
       { setShapeShow(JmolConstants.SHAPE_BBCAGE, value); return; }
     if (key.equalsIgnoreCase("showUnitcell"))
       { setShapeShow(JmolConstants.SHAPE_UCCAGE, value); return; }

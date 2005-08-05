@@ -3156,8 +3156,8 @@ class Eval implements Runnable {
   }
 
   void showBoundbox() {
-    showString("boundbox: " + viewer.getBoundingBoxCenter() +
-               " " + viewer.getBoundingBoxCornerVector());
+    showString("boundbox: " + viewer.getBoundBoxCenter() +
+               " " + viewer.getBoundBoxCornerVector());
   }
 
   AxisAngle4f aaMoveTo;
@@ -3434,22 +3434,31 @@ class Eval implements Runnable {
   }
 
   void centerAt() throws ScriptException {
-    if (statementLength != 5)
+    if (statementLength != 2 && statementLength != 5)
       badArgumentCount();
-    boolean relative = true;
+    String relativeTo = null;
     switch (statement[1].tok) {
-    case Token.relative:
-      break;
     case Token.absolute:
-      relative = false;
+      relativeTo = "absolute";
+      break;
+    case Token.average:
+      relativeTo = "average";
+      break;
+    case Token.boundbox:
+      relativeTo = "boundbox";
       break;
     default:
       unrecognizedSubcommand();
     }
-    float x = floatParameter(2);
-    float y = floatParameter(3);
-    float z = floatParameter(4);
-    viewer.setCenter(relative, x, y, z);
+    float x, y, z;
+    if (statementLength == 2) {
+      x = y = z = 0;
+    } else {
+      x = floatParameter(2);
+      y = floatParameter(3);
+      z = floatParameter(4);
+    }
+    viewer.setCenter(relativeTo, x, y, z);
   }
 
   void isosurface() throws ScriptException {

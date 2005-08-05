@@ -94,8 +94,8 @@ class FrameRenderer {
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
     int xStrCenter, yStrCenter;
-    int xCenter = viewer.getBoundingBoxCenterX();
-    int yCenter = viewer.getBoundingBoxCenterY();
+    int xCenter = viewer.getBoundBoxCenterX();
+    int yCenter = viewer.getBoundBoxCenterY();
     int dx = x - xCenter;
     int dy = y - yCenter;
     if (dx == 0 && dy == 0) {

@@ -1083,8 +1083,9 @@ public class ProjectInformation {
         (info._emDeadline != null)) {
       different = true;
     }
-    if ((info._emFrames != null) &&
-        (!info._emFrames.equals(info._staticFrames))) {
+    if ((info._psFrames == null) &&
+        (info._staticFrames == null) &&
+        (info._emFrames != null)) {
       different = true;
     }
     if ((info._psValue == null) &&
@@ -1365,8 +1366,17 @@ public class ProjectInformation {
     }
 
     //Print frames difference
-    if (((info._emFrames != null) && (!info._emFrames.equals(info._staticFrames))) ||
-        ((info._psFrames != null) && (!info._psFrames.equals(info._staticFrames)))) {
+    boolean framesDifferent = false;
+    if (info._psFrames != null) {
+        if (!info._psFrames.equals(info._staticFrames)) {
+            framesDifferent = true;
+        }
+    } else if (info._staticFrames == null) {
+        if (info._emFrames != null) {
+            framesDifferent = true;
+        }
+    }
+    if (framesDifferent) {
       outputText("  Frames: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticFrames != null) {

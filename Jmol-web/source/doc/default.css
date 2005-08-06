@@ -35,3 +35,21 @@ td.btfah input {
   margin-right: 0;
   width: 3em;
 }
+
+#perTable {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	cursor:default;
+}
+.colorTable {
+	border: solid black;
+	border-width: 0px 2px 1px 1px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+.colorTable td {
+	border: solid black;
+	border-width: 0 0 1px 0;
+}
+.colorTable th {
+	border: solid black;
+	border-width: 1px 0 1px 0;
+}

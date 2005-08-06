@@ -1,7 +1,101 @@
 <?xml version="1.0"?>
 <document>
   <body>
-    <title>JavaScript colors</title>
+    <title>Colors</title>
+
+    <section title="Jmol colors">
+      <script src="./jmol_constants.js" type="text/javascript"></script>
+      <script src="./jmol_colors_layout.js" type="text/javascript"></script>
+      <p>Colors are specified as decimal [RR,GG,BB] and hexadecimal RRGGBB triplets.</p>
+
+      <section title="Atoms ('CPK colors')">
+        <p>commands: <tt>color cpk , set defaultColors jmol , set defaultColors rasmol</tt></p>
+        <h4>Default element colors, by periodic table:</h4>
+        <p align="center"><em>
+          (tooltips appear if you hover over the elements;<br/>
+          clicking on an element may* take you to its position in the list below)<br/>
+          *does not work in IE
+        </em></p>
+        <script type="text/javascript">buildPeriodicTable();</script>
+        <h4>Default element colors, by element number:</h4>
+        <p>“CPKnew” scheme applies only to Rasmol v. 2.7.3 (or later); only differences with classic CPK are shown.</p>
+        <p>Note: CPKnew for unknown atoms is
+          <span style="background-color:#FA1691;">FA1691</span>
+          instead of CPK
+          <span style="background-color:#FF1493;">FF1493</span>,
+          but has been omitted for clarity in the table.
+        </p>
+        <script type="text/javascript">buildElementTable();</script>
+      </section>
+
+      <section title="Secondary structure">
+        <p>command: <tt>color structure</tt></p>
+        <script type="text/javascript">buildStructTable(
+          'Protein',
+          ['alpha helix','beta sheet','(beta) turn','other'],
+          '(same in RasMol)',
+          'Nucleic acid',
+          ['DNA','RNA'],
+          '(same in DRuMS)');
+        </script>
+      </section>
+
+      <section title="Residues">
+        <p>command: <tt>color amino, color shapely</tt></p>
+        <script type="text/javascript">buildResidueTable(
+          'Protein', 'amino', 'Protein', 'shapely', '(same in RasMol)',
+          'Nucleic', 'shapely', '(A,G,C,T same in RasMol)');
+        </script>
+      </section>
+
+      <section title="Chains">
+        <p>command: <tt>color chain</tt></p>
+        <script type="text/javascript">buildChainTable('AAA', 'BBB');
+        </script>
+      </section>
+
+      <section title="Charge">
+        <p>command: <tt>color formalCharge, color partialCharge</tt></p>
+        <script type="text/javascript">buildChargeTable('charge');
+        </script>
+      </section>
+
+      <section title="Red-white-blue gradient">
+        <p>command: <tt>color temperature, color relativeTemperature, color fixedTemperature</tt></p>
+        <script type="text/javascript">buildRwbTable(
+          'highest positional variability',
+          'lowest positional variability');
+        </script>
+      </section>
+
+      <section title="Blue-red rainbow gradient">
+        <script type="text/javascript">buildRainbowTable(
+          'N-terminal or 5-',
+          'C-terminal or 3-');
+        </script>
+      </section>
+
+      <section title="Isosurfaces">
+        <script type="text/javascript">buildIsoSurfaceTables(
+          'Positive', 'Negative');
+        </script>
+      </section>
+      
+      <section title="Sources">
+        <ul>
+          <li><a href="http://cvs.sourceforge.net/viewcvs.py/jmol/Jmol/src/org/jmol/viewer/JmolConstants.java?view=markup">
+            JmolConstants.java</a></li>
+          <li><a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm#cpkcolours">
+            Colors used by Rasmol and Chime</a>
+            (RasMol 2.6&#x03B2;2, Eric Martz, <tt>http://www.umass.edu/microbio/rasmol/</tt>).</li>
+          <li><a href="http://www.bernstein-plus-sons.com/software/RasMol_2.7.3/doc/rasmol.html#cpkcolours">
+            Colors used by Rasmol</a>
+            (official Rasmol 2.7.3 manual, <tt>http://www.bernstein-plus-sons.com/</tt>).</li>
+          <li><a href="http://www.umass.edu/molvis/drums/">DRuMS color scheme</a>
+            (still to be fully incorporated here).</li>
+        </ul>
+      </section>
+    </section>
 
     <section title="JavaScript colors">
       <script src="./jsColorNames.js"></script>
@@ -10,5 +104,6 @@
     <section title="Netscape 8 bit color palette">
       <script src="./colors.js"></script>
     </section>
+
   </body>
 </document>

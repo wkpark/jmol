@@ -1520,17 +1520,40 @@ class Eval implements Runnable {
     case Token.identifier:
 	String str = (String)statement[1].value;
         Color color = getColorOrNoneParam(2);
-	if (str.equalsIgnoreCase("dotsConvex"))
-          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex", color);
-	else if (str.equalsIgnoreCase("dotsConcave"))
-          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave", color);
-	else if (str.equalsIgnoreCase("dotsSaddle"))
-          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle", color);
-        else if (str.equalsIgnoreCase("selectionHalo"))
+	if (str.equalsIgnoreCase("dotsConvex")) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex",
+                                  color);
+          return;
+        }
+	if (str.equalsIgnoreCase("dotsConcave")) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave",
+                                  color);
+          return;
+        }
+	if (str.equalsIgnoreCase("dotsSaddle")) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle",
+                                  color);
+          return;
+        }
+        if (str.equalsIgnoreCase("selectionHalo")) {
           viewer.setColorSelection(color);
-	else
-	    invalidArgument();
-	break;
+          return;
+        }
+        for (int i = JmolConstants.elementNames.length; --i >= 0; ) {
+          if (str.equalsIgnoreCase(JmolConstants.elementNames[i])) {
+            viewer.setElementColor(i, getColorParam(2));
+            return;
+          }
+        }
+        for (int i = JmolConstants.alternateElementNames.length; --i >= 0; ) {
+          if (str.equalsIgnoreCase(JmolConstants.elementNames[i])) {
+            viewer.setElementColor(JmolConstants.alternateElementNumbers[i],
+                                   getColorParam(2));
+            return;
+          }
+        }
+        invalidArgument();
+
     default:
       if (tok == Token.bond) // special hack for bond/bonds confusion
         tok = Token.bonds;

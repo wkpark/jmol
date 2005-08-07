@@ -382,4 +382,10 @@ class ColorManager {
     g3d.setLightsourceZ(dist);
     flushCaches();
   }
+
+  void setElementColor(int elementNumber, Color color) {
+    System.out.println("setElementColor(" + elementNumber + "," + color + ")");
+    if (color != null)
+      JmolConstants.argbsCpk[elementNumber] = color.getRGB() | 0xFF000000;
+  }
 }

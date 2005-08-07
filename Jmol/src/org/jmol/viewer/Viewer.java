@@ -635,6 +635,10 @@ final public class Viewer extends JmolViewer {
     setShapeColorProperty(JmolConstants.SHAPE_LABELS, color);
     refresh();
   }
+
+  void setElementColor(int elementNumber, Color color) {
+    colorManager.setElementColor(elementNumber, color);
+  }
   
   void setColorDotsSaddle(Color color) {
     colorManager.setColorDotsSaddle(color);

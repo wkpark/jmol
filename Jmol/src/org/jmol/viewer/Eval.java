@@ -1518,6 +1518,7 @@ class Eval implements Runnable {
       viewer.setColorBackground(getColorParam(2));
       break;
     case Token.identifier:
+    case Token.hydrogen:
 	String str = (String)statement[1].value;
         Color color = getColorOrNoneParam(2);
 	if (str.equalsIgnoreCase("dotsConvex")) {
@@ -1539,7 +1540,7 @@ class Eval implements Runnable {
           viewer.setColorSelection(color);
           return;
         }
-        for (int i = JmolConstants.elementNames.length; --i >= 0; ) {
+      for (int i = JmolConstants.elementNames.length; --i >= 0; ) {
           if (str.equalsIgnoreCase(JmolConstants.elementNames[i])) {
             viewer.setElementColor(i, getColorParam(2));
             return;

@@ -31,27 +31,13 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2005 The Jmol Development Team";
-  public final static String version = "10.00.26";
+  public final static String version = "10.00.27";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
   public final static boolean officialRelease = false;
 
-  public final static byte LABEL_NONE     = 0;
-  public final static byte LABEL_SYMBOL   = 1;
-  public final static byte LABEL_TYPENAME = 2;
-  public final static byte LABEL_ATOMNO   = 3;
-
   public final static short MAR_DELETED = Short.MIN_VALUE;
-
-  public final static byte STYLE_DELETED   =-1;
-  public final static byte STYLE_NONE      = 0;
-  public final static byte STYLE_WIREFRAME = 1;
-  public final static byte STYLE_SHADED    = 2;
-    
-  public final static byte AXES_NONE = 0;
-  public final static byte AXES_UNIT = 1;
-  public final static byte AXES_BBOX = 2;
 
   public static final int MOUSE_ROTATE = 0;
   public static final int MOUSE_ZOOM = 1;
@@ -90,13 +76,6 @@ final public class JmolConstants {
   public final static String[] pickingModeNames = {
     "off", "ident", "distance", "monitor", "angle", "torsion", "label",
     "center", "coord", "bond", "atom", "group", "chain" };
-
-  /**
-   * listing of model types
-   */
-  public final static int MODEL_TYPE_OTHER = 0;
-  public final static int MODEL_TYPE_PDB = 1;
-  public final static int MODEL_TYPE_XYZ = 2;
 
   /**
    * Extended Bond Definition Types
@@ -373,7 +352,7 @@ final public class JmolConstants {
     "barium",        // 56
     "lanthanum",     // 57
     "cerium",        // 58
-    "praseodymium",  //59
+    "praseodymium",  // 59
     "neodymium",     // 60
     "promethium",    // 61
     "samarium",      // 62

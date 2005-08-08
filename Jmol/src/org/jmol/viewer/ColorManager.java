@@ -32,6 +32,7 @@ class ColorManager {
 
   Viewer viewer;
   Graphics3D g3d;
+
   int[] argbsCpk;
 
   ColorManager(Viewer viewer, Graphics3D g3d) {
@@ -49,16 +50,15 @@ class ColorManager {
       viewer.setColorLabel(Color.white);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else if (colorScheme.equals("rasmol")) {
+      copyArgbsCpk();
       int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
-      argbsCpk = new int[JmolConstants.argbsCpk.length];
-      for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
+      for (int i = argbsCpk.length; --i >= 0; )
         argbsCpk[i] = argb;
       for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0; ) {
         argb = JmolConstants.argbsCpkRasmol[i];
         int atomNo = argb >> 24;
         argb |= 0xFF000000;
         argbsCpk[atomNo] = argb;
-        g3d.changeColixArgb((short)atomNo, argb);
       }
       viewer.setColorBackground(Color.black);
       viewer.setColorMeasurement(Color.white);
@@ -70,6 +70,12 @@ class ColorManager {
     }
     for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
       g3d.changeColixArgb((short)i, argbsCpk[i]);
+  }
+
+  void copyArgbsCpk() {
+    argbsCpk = new int[JmolConstants.argbsCpk.length];
+    for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
+      argbsCpk[i] = JmolConstants.argbsCpk[i];
   }
 
   String paletteDefault = "cpk";
@@ -384,8 +390,16 @@ class ColorManager {
   }
 
   void setElementColor(int elementNumber, Color color) {
-    System.out.println("setElementColor(" + elementNumber + "," + color + ")");
-    if (color != null)
-      JmolConstants.argbsCpk[elementNumber] = color.getRGB() | 0xFF000000;
+    int argb;
+    if (color == null) {
+      if (argbsCpk == JmolConstants.argbsCpk)
+        return;
+      argb = JmolConstants.argbsCpk[elementNumber];
+    } else
+      argb = color.getRGB() | 0xFF000000;
+    if (argbsCpk == JmolConstants.argbsCpk)
+      copyArgbsCpk();
+    argbsCpk[elementNumber] = argb;
+    g3d.changeColixArgb((short)elementNumber, argb);
   }
 }

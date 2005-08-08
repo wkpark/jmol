@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fah_projects>
-  <date>1090427281767</date>
 
   <!-- Projects 100 to 199 -->
   <fah_proj number="100" name="villin" public="y"
@@ -953,7 +952,7 @@
     deadline="0.75"
     credit="0.3"/>
   <fah_proj number="464" name="SideChains" public="y"
-    delete="0.75"
+    deadline="0.75"
     credit="0.6"/>
   <fah_proj number="465" name="SideChains" public="y"
     deadline="0.75"
@@ -1092,7 +1091,7 @@
     server="171.64.122.124" atoms="1050" deadline="3"
     credit="6" frames="100" code="G"/>
   <fah_proj number="510" name="ABLp41" public="y"
-    dealine="5"
+    deadline="5"
     credit="0.8"/>
   <fah_proj number="511" name="p511_RIBOSOMAL PROTEIN S6" public="y"
     server="171.64.122.124" atoms="1050" deadline="3"
@@ -1161,7 +1160,7 @@
     server="171.64.122.123" atoms="12199" deadline="5"
     credit="18" frames="100" code="G"/>
   <fah_proj number="538" name="p538_BBA_ext" public="y" file="y"
-    server="171.67.89.148" toms="12170" preferred="11" deadline="15"
+    server="171.67.89.148" atoms="12170" preferred="11" deadline="15"
     credit="48" frames="100" code="G"/>
   <fah_proj number="539" name="p539_BBA5_N in water" public="y" file="y"
     server="171.64.122.123" atoms="12199" preferred="10" deadline="15"
@@ -2161,7 +2160,7 @@
     server="171.64.122.132" atoms="16549" preferred="18" deadline="27"
     credit="99" frames="100" code="DG" contact="guha"/>
   <fah_proj number="940" name="p940_AK12" public="y" file="y"
-    server="171.67.89.151" atoms="3008" preferred="4" dealdine="10"
+    server="171.67.89.151" atoms="3008" preferred="4" deadline="10"
     credit="12" frames="100" code="G"/>
   <fah_proj number="941" name="p941_AK12PP" public="y" file="y"
     server="171.67.89.151" atoms="11516" preferred="10" deadline="14"

@@ -130,6 +130,9 @@ public class SmilesParser {
       String subSmiles = smiles.substring(index, currentIndex - 1);
       parseSmiles(molecule, subSmiles, currentAtom);
       index = currentIndex;
+      if (index >= smiles.length()) {
+          throw new InvalidSmilesException("Pattern must not end with ')'");
+      }
     }
 
     // Bonds

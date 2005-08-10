@@ -3435,26 +3435,31 @@ class Eval implements Runnable {
   }
 
   void sasurface() throws ScriptException {
-    short mad = -1;
-    if (statementLength > 1) {
-      switch (statement[1].tok) {
+    viewer.setShapeSize(JmolConstants.SHAPE_SASURFACE, 1);
+    viewer.setShapeProperty(JmolConstants.SHAPE_SASURFACE, "surfaceID", null);
+    for (int i = 1; i < statementLength; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (statement[i].tok) {
+      case Token.identifier:
+        propertyValue = statement[i].value;
+        // fall into
+      case Token.all:
+        propertyName = "surfaceID";
+        break;
       case Token.on:
-        break;
       case Token.off:
-        mad = 0;
+        propertyName = (String)statement[i].value;
         break;
-      case Token.integer:
-        int dotsParam = statement[1].intValue;
-        if (dotsParam < 0 || dotsParam > 1000)
-          numberOutOfRange();
-        // I don't know what to do with this thing yet
-        mad = (short)dotsParam;
+      case Token.delete:
+        propertyName = "delete";
         break;
       default:
-        booleanOrNumberExpected();
+        invalidArgument();
       }
+      viewer.setShapeProperty(JmolConstants.SHAPE_SASURFACE,
+                              propertyName, propertyValue);
     }
-    viewer.setShapeSize(JmolConstants.SHAPE_SURFACE, mad);
   }
 
   void centerAt() throws ScriptException {

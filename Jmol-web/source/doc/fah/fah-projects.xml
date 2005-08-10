@@ -1763,6 +1763,12 @@
   <fah_proj number="749" name="p749_vln-pf-wtr-cnf-b5" public="y" file="y"
     server="171.64.122.130" atoms="8218" preferred="13"
     credit="60" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="752" name="p752_vln2.8pbc" public="n"
+    server="171.64.122.68" atoms="19399" preferred="29"
+    credit="149" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="753" name="p753_vln2.8nopbc" public="n"
+    server="171.64.122.68" atoms="6115" preferred="29"
+    credit="149" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -2729,7 +2735,7 @@
   <fah_proj number="1202" name="p1202_Fsnat94_gbsa305K" public="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
-  <fah_proj number="1203" name="p1203_Fsden94_gbsa305K" public="y"
+  <fah_proj number="1203" name="p1203_Fsden94_gbsa305K" public="y" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
   <fah_proj number="1204" name="p1204_A21nat94pp_gbsa305K" public="y"
@@ -2741,7 +2747,7 @@
   <fah_proj number="1206" name="p1206_Fsnat94pp_gbsa305K" public="y" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
-  <fah_proj number="1207" name="p1207_Fsden94pp_gbsa305K" public="y"
+  <fah_proj number="1207" name="p1207_Fsden94pp_gbsa305K" public="y" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
   <fah_proj number="1208" name="p1208_A21natGS_gbsa305K" public="y"
@@ -2762,7 +2768,7 @@
   <fah_proj number="1213" name="p1213_A21den99_gbsa305K" public="y"
     server="171.64.122.111" atoms="222" preferred="13" deadline="19"
     credit="63" frames="500" code="T" contact="esorin"/>
-  <fah_proj number="1214" name="p1214_Fsnat99_gbsa305K" public="y"
+  <fah_proj number="1214" name="p1214_Fsnat99_gbsa305K" public="y" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
   <fah_proj number="1215" name="p1215_Fsden99_gbsa305K" public="y" file="y"
@@ -2786,7 +2792,7 @@
   <fah_proj number="1221" name="p1221_A21den94s_gbsa305K" public="y"
     server="171.64.122.111" atoms="222" preferred="13" deadline="19"
     credit="63" frames="500" code="T" contact="esorin"/>
-  <fah_proj number="1222" name="p1222_Fsnat94s_gbsa305K" public="y"
+  <fah_proj number="1222" name="p1222_Fsnat94s_gbsa305K" public="y" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
   <fah_proj number="1223" name="p1223_Fsden94s_gbsa305K" public="y"
@@ -3555,7 +3561,7 @@
   <fah_proj number="2028" name="p2028_Protein_G" public="n"
     server="171.65.103.150" atoms="21565" preferred="27" deadline="40"
     credit="140" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2029" name="p2029_Protein_A" public="n"
+  <fah_proj number="2029" name="p2029_Protein_A" public="n" file="y"
     server="171.65.103.150" atoms="30271" preferred="37" deadline="55"
     credit="194" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2030" name="p2030_UBIQUITIN" public="n"

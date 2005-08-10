@@ -50,7 +50,7 @@
 
       <section title="Chains">
         <p>command: <tt>color chain</tt></p>
-        <script type="text/javascript">buildChainTable('AAA', 'BBB');
+        <script type="text/javascript">buildChainTable('Chain', 'ID');
         </script>
       </section>
 

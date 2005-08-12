@@ -15,8 +15,8 @@
             value="${basedir}/src/org/jmol/translation/Jmol" />
   <property name="JmolApplet.po.dir"
             value="${basedir}/src/org/jmol/translation/JmolApplet" />
-  <property name="all.Jmol.languages" value="de,es,fr,nl" />
-  <property name="all.JmolApplet.languages" value="de,es,fr" />
+  <property name="all.Jmol.languages" value="de,es,et,fr,nl" />
+  <property name="all.JmolApplet.languages" value="de,es,et,fr" />
   <!-- <property name="all.modules" value="Jmol,JmolApplet" /> -->
 
 

@@ -1,20 +1,22 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Jmol Estonian translation.
+# Copyright (C) 2005
+# This file is distributed under the same license as the Jmol package.
+# Ivo Sarak <ivo@ra.vendomar.ee>, 2005.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-07-27 12:27-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2005-08-12 19:02+0100\n"
+"Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
+"Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Estonian\n"
+"X-Poedit-Country: Estonia\n"
+"X-Poedit-Basepath: ../../../..\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:155
@@ -33,7 +35,7 @@ msgstr "Ei leia url''i \"{0}\"."
 #: org/openscience/jmol/app/PreferencesDialog.java:210
 #: org/openscience/jmol/app/WhatsNewDialog.java:96
 msgid "OK"
-msgstr "Nıus"
+msgstr "N√µus"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:162
 msgid "AtomSetChooser"
@@ -122,16 +124,16 @@ msgstr "Mine kollektsiooni eelmisele {0}"
 #: org/openscience/jmol/app/AtomSetChooser.java:366
 #, java-format
 msgid "Play the whole collection of {0}'s"
-msgstr "M‰ngi terve {0}''de kollektsioon"
+msgstr "Mngi terve {0}''de kollektsioon"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:367
 msgid "Pause playing"
-msgstr "Seiska m‰ngimine"
+msgstr "Seiska mngimine"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:368
 #, java-format
 msgid "Go to next {0} in the collection"
-msgstr "Mine kollektsiooni j‰rgmisele {0}"
+msgstr "Mine kollektsiooni jrgmisele {0}"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:369
 #, java-format
@@ -212,7 +214,7 @@ msgstr "Sulge"
 
 #: org/openscience/jmol/app/GuiMap.java:58
 msgid "Exit"
-msgstr "V‰lju"
+msgstr "Vlju"
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "Recent Files..."
@@ -229,11 +231,11 @@ msgstr "Tee kristall..."
 #: org/openscience/jmol/app/GuiMap.java:62
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "Select All"
-msgstr "Vali kıik"
+msgstr "Vali k√µik"
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Deselect All"
-msgstr "Eemalda kıik valikust"
+msgstr "Eemalda k√µik valikust"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "Preferences..."
@@ -241,7 +243,7 @@ msgstr "Eelistused..."
 
 #: org/openscience/jmol/app/GuiMap.java:67
 msgid "All"
-msgstr "Kıik"
+msgstr "K√µik"
 
 #: org/openscience/jmol/app/GuiMap.java:68
 #: org/openscience/jmol/app/GuiMap.java:81
@@ -257,11 +259,11 @@ msgstr "Vesinik"
 
 #: org/openscience/jmol/app/GuiMap.java:70
 msgid "Carbon"
-msgstr "S¸sinik"
+msgstr "S√ºsinik"
 
 #: org/openscience/jmol/app/GuiMap.java:71
 msgid "Nitrogen"
-msgstr "L‰mmastik"
+msgstr "Lmmastik"
 
 #: org/openscience/jmol/app/GuiMap.java:72
 msgid "Oxygen"
@@ -273,7 +275,7 @@ msgstr "Fosfor"
 
 #: org/openscience/jmol/app/GuiMap.java:74
 msgid "Sulphur"
-msgstr "V‰‰vel"
+msgstr "V√§√§vel"
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "Amino"
@@ -322,7 +324,7 @@ msgstr "Side"
 
 #: org/openscience/jmol/app/GuiMap.java:88
 msgid "Wireframe"
-msgstr "Sırestik"
+msgstr "S√µrestik"
 
 #: org/openscience/jmol/app/GuiMap.java:89
 msgid "0.10 √Ö"
@@ -342,7 +344,7 @@ msgstr "Silt"
 
 #: org/openscience/jmol/app/GuiMap.java:94
 msgid "Symbol"
-msgstr "S¸mbol"
+msgstr "S√ºmbol"
 
 #: org/openscience/jmol/app/GuiMap.java:95
 msgid "Name"
@@ -358,7 +360,7 @@ msgstr "Tsentreeritud"
 
 #: org/openscience/jmol/app/GuiMap.java:98
 msgid "Upper right"
-msgstr "‹lemine parem"
+msgstr "lemine parem"
 
 #: org/openscience/jmol/app/GuiMap.java:101
 msgid "On"
@@ -423,12 +425,12 @@ msgstr "800%"
 #: org/openscience/jmol/app/GuiMap.java:116
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Wireframe Rotation"
-msgstr "Sırestiku keeramine"
+msgstr "S√µrestiku keeramine"
 
 #: org/openscience/jmol/app/GuiMap.java:117
 #: org/openscience/jmol/app/GuiMap.java:162
 msgid "Perspective Depth"
-msgstr "Perspektiivi s¸gavus"
+msgstr "Perspektiivi s√ºgavus"
 
 #: org/openscience/jmol/app/GuiMap.java:118
 #: org/openscience/jmol/app/GuiMap.java:163
@@ -454,7 +456,7 @@ msgstr "Vektorid"
 #: org/openscience/jmol/app/GuiMap.java:160
 #: org/openscience/jmol/app/PreferencesDialog.java:704
 msgid "Measurements"
-msgstr "Mııted"
+msgstr "M√µ√µted"
 
 #: org/openscience/jmol/app/GuiMap.java:123
 msgid "View"
@@ -490,16 +492,16 @@ msgstr "Defineeri keskpaik"
 
 #: org/openscience/jmol/app/GuiMap.java:131
 msgid "Tools"
-msgstr "Tˆˆriistad"
+msgstr "T√∂√∂riistad"
 
 #: org/openscience/jmol/app/GuiMap.java:132
 #: org/openscience/jmol/app/MeasurementTable.java:67
 msgid "Measurements..."
-msgstr "Mııtmised..."
+msgstr "M√µ√µtmised..."
 
 #: org/openscience/jmol/app/GuiMap.java:133
 msgid "Distance Units"
-msgstr "Vahemaa ¸hikud"
+msgstr "Vahemaa √ºhikud"
 
 #: org/openscience/jmol/app/GuiMap.java:134
 msgid "Nanometers 1E-9"
@@ -535,7 +537,7 @@ msgstr "Kristalli omadused"
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "Once"
-msgstr "‹ks kord"
+msgstr "ks kord"
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "Loop"
@@ -557,7 +559,7 @@ msgstr "Keri tagasi esimese kaadrini"
 #: org/openscience/jmol/app/GuiMap.java:147
 #: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to next frame"
-msgstr "Mine j‰rgmise kaadri juurde"
+msgstr "Mine jrgmise kaadri juurde"
 
 #: org/openscience/jmol/app/GuiMap.java:148
 #: org/openscience/jmol/app/GuiMap.java:179
@@ -566,7 +568,7 @@ msgstr "Mine eelmise kaadri juurde"
 
 #: org/openscience/jmol/app/GuiMap.java:149
 msgid "Start vibration"
-msgstr "K‰ivita vibratsioon"
+msgstr "Kivita vibratsioon"
 
 #: org/openscience/jmol/app/GuiMap.java:150
 msgid "Stop vibration"
@@ -578,7 +580,7 @@ msgstr "Esimene sagedus"
 
 #: org/openscience/jmol/app/GuiMap.java:152
 msgid "Next frequency"
-msgstr "J‰rgmine sagedus"
+msgstr "Jrgmine sagedus"
 
 #: org/openscience/jmol/app/GuiMap.java:153
 msgid "Previous frequency"
@@ -604,16 +606,16 @@ msgstr "Jmol konsool"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr "RasMol/Chime ¸hilduvate nurkade suunamine/keeramised "
+msgstr "RasMol/Chime √ºhilduvate nurkade suunamine/keeramised"
 
 #: org/openscience/jmol/app/GuiMap.java:166
 msgid "File Preview (needs restarting Jmol)"
-msgstr "Faili eelvaade (vajab Jmol'i taask‰ivitust)"
+msgstr "Faili eelvaade (vajab Jmol'i taaskivitust)"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168
 msgid "Use Atom Color"
-msgstr "Aatomi v‰rvi kasutamine"
+msgstr "Aatomi vrvi kasutamine"
 
 #: org/openscience/jmol/app/GuiMap.java:169
 msgid "Open a file."
@@ -637,7 +639,7 @@ msgstr "Keera molekuli"
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Select an atom or region."
-msgstr "Vali aatom vıi regioon."
+msgstr "Vali aatom v√µi regioon."
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "View measurement table."
@@ -653,7 +655,7 @@ msgstr "Jmol abi"
 
 #: org/openscience/jmol/app/ImageTyper.java:59
 msgid "Image Type"
-msgstr "Pildi t¸¸p"
+msgstr "Pildi t√º√ºp"
 
 #: org/openscience/jmol/app/ImageTyper.java:84
 msgid "JPEG Quality"
@@ -661,31 +663,31 @@ msgstr "JPEG kvaliteet"
 
 #: org/openscience/jmol/app/Jmol.java:128
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Jmol k‰ivitamise viga: 'user.home' omadus kirjeldamata."
+msgstr "Jmol kivitamise viga: 'user.home' omadus kirjeldamata."
 
 #: org/openscience/jmol/app/Jmol.java:157
 msgid "Initializing 3D display..."
-msgstr "Algv‰‰rtustan 3D ekraani..."
+msgstr "Algv√§√§rtustan 3D ekraani..."
 
 #: org/openscience/jmol/app/Jmol.java:179
 msgid "Initializing Preferences..."
-msgstr "Algv‰‰rtustan eelistusi..."
+msgstr "Algv√§√§rtustan eelistusi..."
 
 #: org/openscience/jmol/app/Jmol.java:181
 msgid "Initializing Recent Files..."
-msgstr "Algv‰‰rtustan hiljutisi faile..."
+msgstr "Algv√§√§rtustan hiljutisi faile..."
 
 #: org/openscience/jmol/app/Jmol.java:183
 msgid "Initializing Script Window..."
-msgstr "Algv‰‰rtustan skripti akent..."
+msgstr "Algv√§√§rtustan skripti akent..."
 
 #: org/openscience/jmol/app/Jmol.java:185
 msgid "Initializing AtomSetChooser Window..."
-msgstr "Algv‰‰rtustan AtomSetChooser akent..."
+msgstr "Algv√§√§rtustan AtomSetChooser akent..."
 
 #: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing Measurements..."
-msgstr "Algv‰‰rtustan m66teid..."
+msgstr "Algv√§√§rtustan m66teid..."
 
 #: org/openscience/jmol/app/Jmol.java:194
 msgid "Loading plugins..."
@@ -697,11 +699,11 @@ msgstr "Koostan Command Hooks..."
 
 #: org/openscience/jmol/app/Jmol.java:220
 msgid "Building Menubar..."
-msgstr "Koostan men¸¸riba..."
+msgstr "Koostan men√º√ºriba..."
 
 #: org/openscience/jmol/app/Jmol.java:236
 msgid "Starting display..."
-msgstr "K‰ivitan ekraani..."
+msgstr "Kivitan ekraani..."
 
 #: org/openscience/jmol/app/Jmol.java:239
 msgid "Setting up File Choosers..."
@@ -713,7 +715,7 @@ msgstr "Seadistan Drag-ja-Drop'i..."
 
 #: org/openscience/jmol/app/Jmol.java:317
 msgid "Launching main frame..."
-msgstr "K‰ivitan pefreimi..."
+msgstr "Kivitan pefreimi..."
 
 #: org/openscience/jmol/app/Jmol.java:326
 msgid "Creating main window..."
@@ -721,11 +723,11 @@ msgstr "Loon peaakna..."
 
 #: org/openscience/jmol/app/Jmol.java:327
 msgid "Initializing Swing..."
-msgstr "Algv‰‰rtustan Swing'i..."
+msgstr "Algv√§√§rtustan Swing'i..."
 
 #: org/openscience/jmol/app/Jmol.java:337
 msgid "Initializing Jmol..."
-msgstr "Algv‰‰rtustan Jmol'i..."
+msgstr "Algv√§√§rtustan Jmol'i..."
 
 #: org/openscience/jmol/app/Jmol.java:355
 msgid "give this help page"
@@ -733,7 +735,7 @@ msgstr "anna see abileht"
 
 #: org/openscience/jmol/app/Jmol.java:363
 msgid "property=value"
-msgstr "omadus=v‰‰rtus"
+msgstr "omadus=v√§√§rtus"
 
 #: org/openscience/jmol/app/Jmol.java:366
 msgid "supported options are given below"
@@ -745,11 +747,11 @@ msgstr "akna suurus 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr "-D valikud on j‰rgnevad (vaikev‰‰rtus on sulgudes):"
+msgstr "-D valikud on j√§rgnevad (vaikev√§√§rtus on sulgudes):"
 
 #: org/openscience/jmol/app/Jmol.java:453
 msgid "Executing script..."
-msgstr "K‰ivitan skripti..."
+msgstr "Kivitan skripti..."
 
 #: org/openscience/jmol/app/Jmol.java:477
 msgid "Could not create ConsoleTextArea: "
@@ -781,15 +783,15 @@ msgstr "Kustuta"
 
 #: org/openscience/jmol/app/MeasurementTable.java:134
 msgid "DeleteAll"
-msgstr "KustutaKıik"
+msgstr "KustutaK√µik"
 
 #: org/openscience/jmol/app/MeasurementTable.java:152
 msgid "Dismiss"
-msgstr "T¸hista"
+msgstr "T√ºhista"
 
 #: org/openscience/jmol/app/MeasurementTable.java:202
 msgid "Value"
-msgstr "V‰‰rtus"
+msgstr "V√§√§rtus"
 
 #: org/openscience/jmol/app/PovrayDialog.java:119
 msgid "Render in POV-Ray"
@@ -801,12 +803,10 @@ msgstr "Jmol'ist POV-Ray muundamine"
 
 #: org/openscience/jmol/app/PovrayDialog.java:161
 msgid "Filename Stem"
-msgstr "Failinime t¸vi"
+msgstr "Failinime t√ºvi"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
@@ -823,11 +823,11 @@ msgstr "POV-Ray Runtime valikud"
 
 #: org/openscience/jmol/app/PovrayDialog.java:200
 msgid "Run POV-Ray directly"
-msgstr "K‰ivita POV-Ray otse"
+msgstr "Kivita POV-Ray otse"
 
 #: org/openscience/jmol/app/PovrayDialog.java:202
 msgid "Launch povray from within Jmol"
-msgstr "K‰ivita povray otse Jmol'ist"
+msgstr "Kivita povray otse Jmol'ist"
 
 #: org/openscience/jmol/app/PovrayDialog.java:211
 msgid "Use .ini file"
@@ -839,11 +839,11 @@ msgstr "Salvesta valikud .ini faili"
 
 #: org/openscience/jmol/app/PovrayDialog.java:222
 msgid "Render all frames"
-msgstr "Renderda kıik kaadrid"
+msgstr "Renderda k√µik kaadrid"
 
 #: org/openscience/jmol/app/PovrayDialog.java:224
 msgid "Render each model (not only the currently displayed one)"
-msgstr "Renderda kıik mudelid (lisaks kuvatule)"
+msgstr "Renderda k√µik mudelid (lisaks kuvatule)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
 msgid "Turn on POV-Ray anti-aliasing"
@@ -876,11 +876,11 @@ msgstr "Pildi laius"
 
 #: org/openscience/jmol/app/PovrayDialog.java:286
 msgid "Height : "
-msgstr "Kırgus : "
+msgstr "K√µrgus : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:288
 msgid "Image height"
-msgstr "Pildi kırgus"
+msgstr "Pildi k√µrgus"
 
 #: org/openscience/jmol/app/PovrayDialog.java:305
 msgid "Fixed ratio : "
@@ -888,11 +888,11 @@ msgstr "Kinnistatud skaala : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:307
 msgid "Use a fixed ratio for width:height"
-msgstr "Kasuta kinnistatus laius:kırgus skaalat"
+msgstr "Kasuta kinnistatus laius:k√µrgus skaalat"
 
 #: org/openscience/jmol/app/PovrayDialog.java:318
 msgid "User defined"
-msgstr "Kasutaja m‰‰ratav"
+msgstr "Kasutaja m√§√§ratav"
 
 #: org/openscience/jmol/app/PovrayDialog.java:320
 msgid "Keep ratio of Jmol window"
@@ -900,11 +900,11 @@ msgstr "Hoia Jmol akna skaalat"
 
 #: org/openscience/jmol/app/PovrayDialog.java:344
 msgid "Output format : "
-msgstr "V‰ljundformaat : "
+msgstr "Vljundformaat : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:346
 msgid "Select the file format of the output file"
-msgstr "Vali v‰ljundfaili formaat"
+msgstr "Vali vljundfaili formaat"
 
 #: org/openscience/jmol/app/PovrayDialog.java:356
 msgid "C - Compressed Targa-24"
@@ -928,7 +928,7 @@ msgstr "Alfa transparentsus"
 
 #: org/openscience/jmol/app/PovrayDialog.java:380
 msgid "Output Alpha transparency data"
-msgstr "V‰ljasta Alfa transparentsuse andmed"
+msgstr "Vljasta Alfa transparentsuse andmed"
 
 #: org/openscience/jmol/app/PovrayDialog.java:393
 msgid "Mosaic preview"
@@ -936,7 +936,7 @@ msgstr "Mosaiik eelvaade"
 
 #: org/openscience/jmol/app/PovrayDialog.java:395
 msgid "Render the image in several passes"
-msgstr "Pildi renderdamine mitmes j‰rgus"
+msgstr "Pildi renderdamine mitmes jrgus"
 
 #: org/openscience/jmol/app/PovrayDialog.java:405
 msgid "Start size : "
@@ -944,15 +944,15 @@ msgstr "Alguse suurus : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:407
 msgid "Inital size of the tiles"
-msgstr "T¸kkidee algsuurus"
+msgstr "T√ºkkidee algsuurus"
 
 #: org/openscience/jmol/app/PovrayDialog.java:423
 msgid "End size : "
-msgstr "Lıppsuurus : "
+msgstr "L√µppsuurus : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:425
 msgid "Final size of the tiles"
-msgstr "T¸kkide lıplik suurus"
+msgstr "T√ºkkide l√µplik suurus"
 
 #: org/openscience/jmol/app/PovrayDialog.java:446
 msgid "POV-Ray Executable Location"
@@ -964,12 +964,12 @@ msgstr "povray programmi asukoht"
 
 #: org/openscience/jmol/app/PovrayDialog.java:467
 msgid "Command Line to Execute"
-msgstr "K‰ivitatav k‰surida"
+msgstr "Kivitatav ksurida"
 
 #: org/openscience/jmol/app/PovrayDialog.java:469
 #: org/openscience/jmol/app/PovrayDialog.java:472
 msgid "The actual command which will be executed"
-msgstr "Tegelik k‰sk, mis k‰ivitatakse"
+msgstr "Tegelik ksk, mis kivitatakse"
 
 #: org/openscience/jmol/app/PovrayDialog.java:482
 #: org/openscience/jmol/app/PovrayDialog.java:754
@@ -978,7 +978,7 @@ msgstr "Mine!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:484
 msgid "Save file and possibly launch povray"
-msgstr "Salvesta see fail ning vıimalusel k‰ivita povray"
+msgstr "Salvesta see fail ning v√µimalusel k√§ivita povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:493
 #: org/openscience/jmol/app/PreferencesDialog.java:202
@@ -996,7 +996,7 @@ msgstr "Salvesta"
 
 #: org/openscience/jmol/app/PovrayDialog.java:817
 msgid "null component string"
-msgstr "t¸hi komponent string"
+msgstr "t√ºhi komponent string"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:167
 msgid "Preferences"
@@ -1013,15 +1013,15 @@ msgstr "Sidemed"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:188
 msgid "Colors"
-msgstr "V‰rvid"
+msgstr "Vrvid"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:194
 msgid "Jmol Defaults"
-msgstr "Jmol vaikev‰‰rtused"
+msgstr "Jmol vaikev√§√§rtused"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:198
 msgid "RasMol Defaults"
-msgstr "RasMol vaikev‰‰rtused"
+msgstr "RasMol vaikev√§√§rtused"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:206
 msgid "Apply"
@@ -1029,11 +1029,11 @@ msgstr "Kehtesta"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:234
 msgid "Show All"
-msgstr "N‰ita kıike"
+msgstr "N√§ita k√µike"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:334
 msgid "Default atom size"
-msgstr "Aatomi suuruse vaikev‰‰rtus"
+msgstr "Aatomi suuruse vaikev√§√§rtus"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:335
 msgid "(percentage of vanDerWaals radius)"
@@ -1049,11 +1049,11 @@ msgstr "Automaatselt"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:390
 msgid "Don't Compute Bonds"
-msgstr "ƒra arvuta sidemeid"
+msgstr "ra arvuta sidemeid"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
 msgid "Default Bond Radius"
-msgstr "Sideme raadiuse vaikev‰‰rtus"
+msgstr "Sideme raadiuse vaikev√§√§rtus"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:418
 #: org/openscience/jmol/app/PreferencesDialog.java:456
@@ -1063,23 +1063,23 @@ msgstr "(Angstromid)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:455
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Sideme tolerants - kahe kovalentse radii summa + see v‰‰rtus"
+msgstr "Sideme tolerants - kahe kovalentse radii summa + see v√§√§rtus"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:506
 msgid "Minimum Bonding Distance"
-msgstr "V‰ikseim sideme kaugus"
+msgstr "Vikseim sideme kaugus"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:563
 msgid "Background"
-msgstr "Tagapıhi"
+msgstr "Tagap√µhi"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:566
 msgid "Set the Background Color"
-msgstr "M‰‰ra taustav‰rv"
+msgstr "M√§√§ra taustav√§rv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:573
 msgid "Background Color"
-msgstr "Taustav‰rv"
+msgstr "Taustavrv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:587
 msgid "Picked Atoms"
@@ -1087,11 +1087,11 @@ msgstr "Valitud aatomid"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:590
 msgid "Set the Color for Picked Atoms"
-msgstr "M‰‰ra valitud aatomite v‰rv"
+msgstr "M√§√§ra valitud aatomite v√§rv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:597
 msgid "Picked Atom Color"
-msgstr "Valitud aatomi v‰rv"
+msgstr "Valitud aatomi vrv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:612
 msgid "Text"
@@ -1099,35 +1099,35 @@ msgstr "Tekst"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:622
 msgid "Set the Color for Text"
-msgstr "M‰‰ra teksti v‰rv"
+msgstr "M√§√§ra teksti v√§rv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:630
 msgid "Text Color"
-msgstr "Teksti v‰rv"
+msgstr "Teksti vrv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:655
 msgid "Set the Color for Bonds"
-msgstr "M‰‰ra sidemete v‰rv"
+msgstr "M√§√§ra sidemete v√§rv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:663
 msgid "Bond Color"
-msgstr "Sideme v‰rv"
+msgstr "Sideme vrv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:681
 msgid "Set the Vector Color"
-msgstr "M‰‰ra vektori v‰rv"
+msgstr "M√§√§ra vektori v√§rv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:688
 msgid "Vector Color"
-msgstr "Vektori v‰rv"
+msgstr "Vektori vrv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:708
 msgid "Color for distance, angle, & torsion measurements"
-msgstr "Kauguse, nurga ja v‰‰nde mııt¸hikute v2rv"
+msgstr "Kauguse, nurga ja v√§√§nde m√µ√µt√ºhikute v2rv"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:715
 msgid "Measurements Color"
-msgstr "Mııt¸hitute v2rv"
+msgstr "M√µ√µt√ºhitute v2rv"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:61
 msgid "Recent Files"
@@ -1139,7 +1139,7 @@ msgstr "Rasmol skriptid"
 
 #: org/openscience/jmol/app/ScriptWindow.java:85
 msgid "Run"
-msgstr "K‰ivita"
+msgstr "Kivita"
 
 #: org/openscience/jmol/app/ScriptWindow.java:89
 msgid "Halt"
@@ -1156,3 +1156,4 @@ msgstr "Laen..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
+

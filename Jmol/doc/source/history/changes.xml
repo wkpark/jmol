@@ -35,6 +35,12 @@
     Dutch, Estonian, Hungarian, Portuguese, Romanian
     translations of Folding@Home webpage.
   </change>
+  <change contributor="AH">
+    Spanish translation of Application, Applet and website.
+  </change>
+  <change contributor="IS">
+    Estonian translation of Application and Applet.
+  </change>
 </changes>
 
 <changes version="jmol-10">

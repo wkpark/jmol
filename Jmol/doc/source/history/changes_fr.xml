@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : changes.xml (v 1.5)
+  Translated from default version : changes.xml (v 1.6)
 -->
 <changes version="jmol-10.??">
   <change contributor="EW">
@@ -42,6 +42,12 @@
   <change contributor="PV,IS,FL,CPN,TIM">
     Traductions hollandaise, estonienne, hongroise, portugaise, roumaine
     de la page Folding@Home.
+  </change>
+  <change contributor="AH">
+    Traduction espagnole de l'Application, de l'Applet et du site web.
+  </change>
+  <change contributor="IS">
+    Traduction estonienne de l'Application et de l'Applet.
   </change>
 </changes>
 

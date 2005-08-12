@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
   <body>
     <title>Colors</title>
@@ -6,22 +6,22 @@
     <section title="Jmol colors">
       <script src="./jmol_constants.js" type="text/javascript"></script>
       <script src="./jmol_colors_layout.js" type="text/javascript"></script>
-      <p>Colors are specified as decimal [RR,GG,BB] and hexadecimal RRGGBB triplets.</p>
+      <p>Colors are specified as decimal [red,green,blue] and hexadecimal RRGGBB triplets.</p>
 
       <section title="Atoms ('CPK colors')">
-        <p>commands: <tt>color cpk , set defaultColors jmol , set defaultColors rasmol</tt></p>
+        <p>Related commands: <tt>color cpk , set defaultColors jmol , set defaultColors rasmol</tt></p>
         <h4>Default element colors, by periodic table:</h4>
-        <p align="center"><em>
+        <div style="text-align:center; font-style:italic;">
           (tooltips appear if you hover over the elements;<br/>
           clicking on an element may* take you to its position in the list below)<br/>
           *does not work in IE
-        </em></p>
+        </div>
         <script type="text/javascript">buildPeriodicTable();</script>
-        <h4>Default element colors, by element number:</h4>
-        <p>“CPKnew” scheme applies only to Rasmol v. 2.7.3 (or later); only differences with classic CPK are shown.</p>
+        <h4>Default element colors, by atomic number:</h4>
+        <p>&#x201C;CPKnew&#x201D; scheme applies only to Rasmol v. 2.7.3 (or later); only differences with classic CPK are shown.</p>
         <p>Note: CPKnew for unknown atoms is
-          <span style="background-color:#FA1691;">FA1691</span>
-          instead of CPK
+          <span style="background-color:#FA1691;">FA1691</span>,
+          slightly different from CPK
           <span style="background-color:#FF1493;">FF1493</span>,
           but has been omitted for clarity in the table.
         </p>
@@ -29,10 +29,10 @@
       </section>
 
       <section title="Secondary structure">
-        <p>command: <tt>color structure</tt></p>
+        <p>Related command: <tt>color structure</tt></p>
         <script type="text/javascript">buildStructTable(
           'Protein',
-          ['alpha helix','beta sheet','(beta) turn','other'],
+          ['&#x03B1;-helix','&#x03B2;-sheet','(&#x03B2;) turn','other'],
           '(same in RasMol)',
           'Nucleic acid',
           ['DNA','RNA'],
@@ -41,27 +41,37 @@
       </section>
 
       <section title="Residues">
-        <p>command: <tt>color amino, color shapely</tt></p>
-        <script type="text/javascript">buildResidueTable(
+        <p>Related commands: <tt>color amino, color shapely</tt></p>
+        <script type="text/javascript">assignLastAa('other');
+		  buildResidueTable(
           'Protein', 'amino', 'Protein', 'shapely', '(same in RasMol)',
           'Nucleic', 'shapely', '(A,G,C,T same in RasMol)');
         </script>
       </section>
 
       <section title="Chains">
-        <p>command: <tt>color chain</tt></p>
-        <script type="text/javascript">buildChainTable('Chain', 'ID');
+        <p>Related command: <tt>color chain</tt></p>
+        <script type="text/javascript">assignLastChain('none/<br/>numeric');
+		buildChainTable('Chain', 'ID');
         </script>
       </section>
 
       <section title="Charge">
-        <p>command: <tt>color formalCharge, color partialCharge</tt></p>
-        <script type="text/javascript">buildChargeTable('charge');
+        <p>Related commands: <tt>color formalCharge, color partialCharge</tt></p>
+        <script type="text/javascript">buildChargeTable('Charge');
+        </script>
+      </section>
+
+      <section title="Hydrogen bonds">
+        <p>Related command: <tt>color hbonds type </tt></p>
+		<script type="text/javascript">buildHbondsTable(
+          'Distance',
+          ['+2', '+3 (turns)', '+4 (&#x03B1;-helix)', '+5', '-3', '-4', 'other (&#x03B2;-sheet)', 'nucleotide']);
         </script>
       </section>
 
       <section title="Red-white-blue gradient">
-        <p>command: <tt>color temperature, color relativeTemperature, color fixedTemperature</tt></p>
+        <p>Related commands: <tt>color temperature, color relativeTemperature, color fixedTemperature</tt></p>
         <script type="text/javascript">buildRwbTable(
           'highest positional variability',
           'lowest positional variability');
@@ -70,8 +80,8 @@
 
       <section title="Blue-red rainbow gradient">
         <script type="text/javascript">buildRainbowTable(
-          'N-terminal or 5-',
-          'C-terminal or 3-');
+          'N-terminal or 5&#8217;-',
+          'C-terminal or 3&#8217;-');
         </script>
       </section>
 
@@ -88,9 +98,9 @@
           <li><a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm#cpkcolours">
             Colors used by Rasmol and Chime</a>
             (RasMol 2.6&#x03B2;2, Eric Martz, <tt>http://www.umass.edu/microbio/rasmol/</tt>).</li>
-          <li><a href="http://www.bernstein-plus-sons.com/software/RasMol_2.7.3/doc/rasmol.html#cpkcolours">
+          <li><a href="http://openrasmol.org/doc/rasmol.html#cpkcolours">
             Colors used by Rasmol</a>
-            (official Rasmol 2.7.3 manual, <tt>http://www.bernstein-plus-sons.com/</tt>).</li>
+            (official Rasmol 2.7.3 manual, <tt>http://openrasmol.org/</tt>).</li>
           <li><a href="http://www.umass.edu/molvis/drums/">DRuMS color scheme</a>
             (still to be fully incorporated here).</li>
         </ul>

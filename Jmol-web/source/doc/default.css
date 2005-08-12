@@ -36,14 +36,18 @@ td.btfah input {
   width: 3em;
 }
 
-#perTable {
+#perTable td {
 	font-family: Georgia, "Times New Roman", Times, serif;
+	text-align:center;
 	cursor:default;
+}
+.symbols {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	text-align:center;
 }
 .colorTable {
 	border: solid black;
 	border-width: 0px 2px 1px 1px;
-	font-family: Georgia, "Times New Roman", Times, serif;
 }
 .colorTable td {
 	border: solid black;

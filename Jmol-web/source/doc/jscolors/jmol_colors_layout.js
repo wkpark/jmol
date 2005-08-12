@@ -1,10 +1,12 @@
-/*	Support file for building jmol_colors.html color tables
-	Do not translate anything in this file
+/*	Support file for building color tables in jscolors/index.html (Jmol's website)
+	-- Do not translate anything in this file --
 	Angel Herráez, 29 july 2005
+	Contributions by Nicolas Vervelle
+	Last updated: 11 august 2005
 */
 
 function sectionMenu()
-{
+{	//this is an utility for the pilot webpage, not used when in Jmol's website (XML format)
 	document.write('<form style="background-color:#F7D0B2; padding:5px; text-align:center;">Sections in this document:')
 	var anclas = ["..choose..", "Atoms", "Secondary", "Residues", "Chains", "Charge","Red_white_blue_gradient","Blue_red_rainbow_gradient","Isosurfaces"]
 	var tx = "<select onChange='location.hash=this.options[selectedIndex].value; this.selectedIndex=0'>"
@@ -17,7 +19,7 @@ function sectionMenu()
 }
 
 function populatePeriodicTable()
-{	// populate periodic table with useful parameters:
+{	// populate periodic table with useful parameters: element color, tooltip, hyperlink
 	var perTableRows = document.getElementById("perTable").rows
 	for (var f=0;f<perTableRows.length;f++)	//every row
 	{	var x=perTableRows[f].cells
@@ -65,10 +67,10 @@ function buildPeriodicTable()
 function buildElementTable()
 {
 	document.writeln("<table border='0' cellspacing='0' cellpadding='4' class='colorTable'>")
-	document.writeln("<tr><th>&nbsp;</th><th>&nbsp;</th><th colspan='3'>Jmol</th><th width='10'>&nbsp;</th><th colspan='2'>Rasmol</th><th width='10'>&nbsp;</th><th colspan='2'>Rasmol<br>&#8220;CPKnew&#8221;</th>")
+	document.writeln("<tr><th>&nbsp;</th><th>&nbsp;</th><th colspan='3'>Jmol</th><th width='10'>&nbsp;</th><th colspan='2'>Rasmol</th><th width='10'>&nbsp;</th><th colspan='2'>Rasmol<br>&#x201C;CPKnew&#x201D;</th>")
 	document.writeln("</tr>")
 	for (i=1;i<elemParams.length;i++)
-	{	document.write("<tr><td><a name='color_" + elemParams[i][0] + "'></a>" + i + "</td><td>" + elemParams[i][0] + "</td><td>")
+	{	document.write("<tr><td><a name='color_" + elemParams[i][0] + "'></a>" + i + "</td><td class='symbols'>" + elemParams[i][0] + "</td><td>")
 		document.write("<tt>" + hexColorToDecColor(elemParams[i][1]) + "</tt></td><td>")
 		document.write(elemParams[i][1] + "</td><td bgcolor='#" + elemParams[i][1] + "'>&nbsp;&nbsp;</td>")
 		document.write("<td>&nbsp;</td><td>" + elemParams[i][2] + "</td><td bgcolor='#" + elemParams[i][2] + "'>&nbsp;&nbsp;</td>")
@@ -81,8 +83,8 @@ function buildElementTable()
 	document.close()
 }
 
-function buildStructTable(titleProt, lbProt, asRasmol, titleNuc, lbNuc, asDrums)
-{
+function buildStructTable(titleProt, lbProt, footerProt, titleNuc, lbNuc, footerNuc)
+{	// a 3-column table that contains the protein and nucleic color tables plus a central separation
 	document.writeln("<table border='0' cellpadding='0'>")
 	document.writeln("<tr valign='top'>")
 	document.writeln("<td>")
@@ -90,15 +92,16 @@ function buildStructTable(titleProt, lbProt, asRasmol, titleNuc, lbNuc, asDrums)
 	document.writeln("<tr><th colspan='4'>" + titleProt + "</th></tr>")
 	buildStructProtTable(lbProt)
 	document.writeln("</table>")
-	document.writeln(asRasmol + "</td>")
+	document.writeln(footerProt + "</td>")
 	document.writeln("<td width='100'>&nbsp;</td>");
 	document.writeln("<td>");
 	document.writeln("<table border='0' cellspacing='0' cellpadding='4' class='colorTable'>")
 	document.writeln("<tr><th colspan='4'>" + titleNuc + "</th></tr>")
 	buildStructNucTable(lbNuc)
-	document.writeln("</table>" + asDrums + "</td>")
+	document.writeln("</table>" + footerNuc + "</td>")
 	document.writeln("</tr>")
 	document.writeln("</table>")
+	document.close()
 }
 
 function buildStructProtTable(lb)
@@ -123,7 +126,7 @@ function buildStructNucTable(lb)
 	document.close()
 }
 
-function buildResidueTable(titleProt1a, titleProt1b, titleProt2a, titleProt2b, asRasmol, titleNuc1a, titleNuc1b, asRasmol2)
+function buildResidueTable(titleProt1a, titleProt1b, titleProt2a, titleProt2b, footerProt, titleNuc1a, titleNuc1b, footerNuc)
 {
 	document.writeln("<table border='0' cellpadding='0'>")
 	document.writeln("<tr valign='top'>")
@@ -135,7 +138,7 @@ function buildResidueTable(titleProt1a, titleProt1b, titleProt2a, titleProt2b, a
 	document.writeln("&#8220;" + titleProt2b + "&#8221;</th></tr>")
 	buildAaTable()
 	document.writeln("</table>")
-	document.writeln(asRasmol)
+	document.writeln(footerProt)
 	document.writeln("</td>")
 	document.writeln("<td width='100'>&nbsp;</td>")
 	document.writeln("<td>");
@@ -144,7 +147,7 @@ function buildResidueTable(titleProt1a, titleProt1b, titleProt2a, titleProt2b, a
 	document.writeln("&#8220;" + titleNuc1b + "&#8221;</th></tr>")
 	buildNtTable()
 	document.writeln("</table>")
-	document.writeln(asRasmol2 + "</td>")
+	document.writeln(footerNuc + "</td>")
 	document.writeln("</tr>")
 	document.writeln("</table>")
 }
@@ -152,7 +155,7 @@ function buildResidueTable(titleProt1a, titleProt1b, titleProt2a, titleProt2b, a
 function buildAaTable()
 {
 	for (i=0;i<aaParams.length;i++)
-	{	document.write("<tr><td>" + aaParams[i][0] + "</td>")
+	{	document.write("<tr><td class='symbols'>" + aaParams[i][0] + "</td>")
 		document.write("<td><tt>" + hexColorToDecColor(aaParams[i][1]) + "</tt></td>")
 		document.write("<td>" + aaParams[i][1] + "</td>")
 		document.write("<td bgcolor='#" + aaParams[i][1] + "'>&nbsp;&nbsp;</td>")
@@ -167,7 +170,7 @@ function buildAaTable()
 function buildNtTable()
 {
 	for (i=0;i<ntParams.length;i++)
-	{	document.write("<tr><td>" + ntParams[i][0] + "</td>")
+	{	document.write("<tr><td class='symbols'>" + ntParams[i][0] + "</td>")
 		document.write("<td><tt>" + hexColorToDecColor(ntParams[i][1]) + "</tt></td>")
 		document.write("<td>" + ntParams[i][1] + "</td>")
 		document.writeln("<td bgcolor='#" + ntParams[i][1] + "'>&nbsp;&nbsp;</td></tr>")
@@ -181,7 +184,7 @@ function buildChainTable(titleChain1a, titleChain1b)
 	document.writeln("<tr><th>" + titleChain1a + "<br>" + titleChain1b + "</th>")
 	document.writeln("<th colspan='3'>ATOM</th><th width='10'>&nbsp;</th><th colspan='3'>HETATM</th></tr>")
 	for (i=0;i<chainParams.length;i++)
-	{	document.write("<tr><td>" + chainParams[i][0] + "</td>")
+	{	document.write("<tr><td class='symbols'>" + chainParams[i][0] + "</td>")
 		document.write("<td><tt>" + hexColorToDecColor(chainParams[i][1]) + "</tt></td>")
 		document.write("<td>" + chainParams[i][1] + "</td>")
 		document.write("<td bgcolor='#" + chainParams[i][1] + "'>&nbsp;&nbsp;</td>")
@@ -203,6 +206,29 @@ function buildChargeTable(titleCharge)
 		document.write("<td><tt>" + hexColorToDecColor(chargeParams[i][1]) + "</tt></td>")
 		document.write("<td>" + chargeParams[i][1] + "</td>")
 		document.writeln("<td bgcolor='#" + chargeParams[i][1] + "'>&nbsp;&nbsp;</td></tr>")
+	}
+	document.writeln("</table>")
+	document.close()
+}
+
+
+function buildStructProtTable(lb)
+{
+	for (i=0;i<structProtParams.length;i++)
+	{	document.write("<tr><td>" + lb[i] + "</td>")
+		document.write("<td><tt>" + hexColorToDecColor(structProtParams[i]) + "</tt></td>")
+		document.write("<td>" + structProtParams[i] + "</td>")
+		document.write("<td bgcolor='#" + structProtParams[i] + "'>&nbsp;&nbsp;</td></tr>")
+	}
+	document.close()
+}
+
+function buildHbondsTable(tit,lb)
+{
+	document.writeln("<table border='0' cellspacing='0' cellpadding='4' class='colorTable'>")
+	document.writeln("<tr><th>" + tit + "</th><th colspan='2'>&nbsp;</th></tr>")
+	for (i=0;i<hBondsParams.length;i++)
+	{	document.writeln("<tr><td>" + lb[i] + "</td><td>" + hBondsParams[i] + "</td><td bgcolor='#" + hBondsParams[i] + "'>&nbsp;&nbsp;</td></tr>")
 	}
 	document.writeln("</table>")
 	document.close()
@@ -273,3 +299,4 @@ function buildIsosurfaceTable(t)
 	document.writeln("</tr>")
 	document.close()
 }
+

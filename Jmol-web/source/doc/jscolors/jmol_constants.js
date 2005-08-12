@@ -1,24 +1,27 @@
 /* Element parameters used by Jmol - mainly colors
 	as defined in   Jmol-HEAD/src/org/jmol/viewer/JmolConstants.java
 	( rev. 1.83,  aprox. Jmol 10.00.24 )
-	Support file for building jmol_colors.html color tables
-	Do not translate anything in this file
+	Support file for building color tables in jscolors/index.html (Jmol's website)
+	-- Do not translate anything in this file --
 	Angel Herráez, 29 july 2005
+	Contributions by Nicolas Vervelle
+	Last updated: 11 august 2005
 */
 
 var elemParams = new Array(110)
 for (i=0;i<elemParams.length;i++) { elemParams[i] = new Array(3) }
-// second is Jmol, third is Rasmol (2.6 to 2.7.3, should be Chime too)
-
-elemParams[1] = ['H','FFFFFF','FFFFFF']
-elemParams[2] = ['He','D9FFFF','FFC0CB']
-elemParams[3] = ['Li','CC80FF','B22222']
-elemParams[4] = ['Be','C2FF00','FF1493']
-elemParams[5] = ['B','FFB5B5','00FF00']
-elemParams[6] = ['C','909090','C8C8C8']
-elemParams[7] = ['N','3050F8','8F8FFF']
-elemParams[8] = ['O','FF0D0D','F00000']
-elemParams[9] = ['F','90E050','DAA520']
+/*	first is element symbol,
+	 second is Jmol's CPK color, third is Rasmol's (2.6 to 2.7.3, should be Chime too)
+*/
+elemParams[1]  = ['H','FFFFFF','FFFFFF']
+elemParams[2]  = ['He','D9FFFF','FFC0CB']
+elemParams[3]  = ['Li','CC80FF','B22222']
+elemParams[4]  = ['Be','C2FF00','FF1493']
+elemParams[5]  = ['B','FFB5B5','00FF00']
+elemParams[6]  = ['C','909090','C8C8C8']
+elemParams[7]  = ['N','3050F8','8F8FFF']
+elemParams[8]  = ['O','FF0D0D','F00000']
+elemParams[9]  = ['F','90E050','DAA520']
 elemParams[10] = ['Ne','B3E3F5','FF1493']
 elemParams[11] = ['Na','AB5CF2','0000FF']
 elemParams[12] = ['Mg','8AFF00','228B22']
@@ -121,7 +124,9 @@ elemParams[108] = ['Hs','E6002E','FF1493']
 elemParams[109] = ['Mt','EB0026','FF1493']
 
 
-//	CPKnew from Rasmol2.7.3
+/*	CPKnew from Rasmol2.7.3
+	documented in http://openrasmol.org/doc/rasmol.html#cpkcolours
+*/
 var elemCPKnew = new Array(elemParams.length)
 for ( i=0;i<elemParams.length;i++ )
 { 
@@ -153,6 +158,9 @@ var structNucParams = ['AE00FE', 'FD0162']
 
 var aaParams = new Array(23)
 for (i=0;i<aaParams.length;i++) { aaParams[i] = new Array(3) }
+/*	Protein coloring patterns.
+	First is amino acid symbol,	second is "amino" color pattern, third is "shapely" color pattern
+*/
 aaParams[0] = ['Ala','C8C8C8','8CFF8C']
 aaParams[1] = ['Arg','145AFF','00007C']
 aaParams[2] = ['Asn','00DCDC','FF7C70']
@@ -177,9 +185,17 @@ aaParams[20] = ['Asx','FF69B4','FF00FF']
 aaParams[21] = ['Glx','FF69B4','FF00FF']
 aaParams[22] = ['other','BEA06E','FF00FF']
 
+function assignLastAa(t)
+{	// allows other language word for last aa (instead of 'other')
+	if (t) aaParams[aaParams.length-1][0] = t
+}
 
 var ntParams = new Array(6)
 for (i=0;i<ntParams.length;i++) { ntParams[i] = new Array(2) }
+/*	Nucleic acid coloring patterns.
+	First is nucleotide (or base) symbol, second is "shapely" color pattern
+	"Amino" color pattern does not recognize nucleic acids, renders them as "other" = [190,160,110]	= BEA06E
+*/
 ntParams[0] = ['A','A0A0FF']
 ntParams[1] = ['G','FF7070']
 ntParams[2] = ['I','80FFFF']
@@ -190,7 +206,9 @@ ntParams[5] = ['U','FF8080']
 
 var chainParams = new Array(27)
 for (i=0;i<chainParams.length;i++) { chainParams[i] = new Array(3) }
-// second is atom, 3rd is hetero
+/*	Default chain coloring pattern
+	First is chain ID, second is color for "atom"s, third for "hetero"s
+*/
 chainParams[0]  = ['A, a','C0D0FF','90A0CF']
 chainParams[1]  = ['B, b','B0FFB0','80CF98']
 chainParams[2]  = ['C, c','FFC0C8','CF90B0']
@@ -219,9 +237,14 @@ chainParams[24] = ['Y, y','B8860B','E8B613']
 chainParams[25] = ['Z, z','B22222','C23232']
 chainParams[26] = ['none/<br>numeric','FFFFFF','FFFFFF']
 
+function assignLastChain(t)
+{	// allows other language word for last chain description (instead of 'none/numeric')
+	if (t) chainParams[chainParams.length-1][0] = t
+}
 
 var chargeParams = new Array(12)
 for (i=0;i<chargeParams.length;i++) { chargeParams[i] = new Array(2) }
+//	First is charge, second is color
 chargeParams[0] = ['-4','FF0000']
 chargeParams[1] = ['-3','FF4040']
 chargeParams[2] = ['-2','FF8080']
@@ -234,6 +257,10 @@ chargeParams[8] = ['4','6C6CFF']
 chargeParams[9] = ['5','4848FF']
 chargeParams[10] = ['6','2424FF']
 chargeParams[11] = ['7','0000FF']
+
+
+var hBondsParams = ['FFFFFF','FF00FF','FF0000','FFA500','00FFFF','00FF00','FFFF00','FF8080']
+//	Explained at http://openrasmol.org/doc/rasmol.html#hbondtypecolours
 
 
 var rwbParams = ['FF0000','FF1010','FF2020','FF3030','FF4040','FF5050','FF6060','FF7070','FF8080','FF9090','FFA0A0','FFB0B0','FFC0C0','FFD0D0','FFE0E0','FFFFFF','E0E0FF','D0D0FF','C0C0FF','B0B0FF','A0A0FF','9090FF','8080FF','7070FF','6060FF','5050FF','4040FF','3030FF','2020FF','1010FF','0000FF']

@@ -1763,6 +1763,9 @@
   <fah_proj number="749" name="p749_vln-pf-wtr-cnf-b5" public="y" file="y"
     server="171.64.122.130" atoms="8218" preferred="13"
     credit="60" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="750" name="p750_groel_half_chamber" public="n" file="y"
+    atoms="305365" preferred="45"
+    />
   <fah_proj number="752" name="p752_vln2.8pbc" public="n"
     server="171.64.122.68" atoms="19399" preferred="29"
     credit="149" frames="100" code="G" contact="vvishal"/>
@@ -2258,7 +2261,7 @@
   <fah_proj number="978" name="p978_fk-fstr-nprotS" public="y" file="y"
     server="171.64.122.132" atoms="14836" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="979" name="p979_fk_boltzimp" public="n"
+  <fah_proj number="979" name="p979_fk_boltzimp" public="y" file="y"
     server="171.64.122.132" atoms="1734" preferred="6" deadline="45"
     credit="168" frames="100" code="DG" contact="guha"/>
   <fah_proj number="997" name="pAla7-2" public="y"
@@ -2715,7 +2718,7 @@
   <fah_proj number="1155" name="p1155_L939_K12M_298K_DT_250ps_clones" public="y" file="y"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1156" name="p1156_L939_K12M_298K_DT_250ps_clones" public="y"
+  <fah_proj number="1156" name="p1156_L939_K12M_298K_DT_250ps_clones" public="y" file="y"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1157" name="p1157_L939_K12M_298K_DT_250ps_clones" public="y"
@@ -3496,19 +3499,19 @@
     server="171.64.122.136" atoms="222" preferred="30" deadline="44"
     credit="154" frames="100" code="GB" contact="luttmann"/>
   <fah_proj number="2005" name="p2005_BBA5_pfold" public="y" file="y"
-    server="171.64.122.136" atoms="385" preferred="17" deadline="25"
+    server="171.64.122.136" atoms="385" preferred="4" deadline="25"
     credit="83" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2006" name="p2006_BBA5_pfold" public="y" file="y"
-    server="171.64.122.136" atoms="385" preferred="17" deadline="25"
+    server="171.64.122.136" atoms="385" preferred="6" deadline="25"
     credit="85" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2007" name="p2007_BBA5_pfold" public="y" file="y"
-    server="171.64.122.136" atoms="385" preferred="16" deadline="24"
+    server="171.64.122.136" atoms="385" preferred="4" deadline="24"
     credit="79" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2008" name="p2008_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="42" deadline="61"
     credit="218" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2009" name="p2009_BBA5" public="y" file="y"
-    server="171.64.122.136" atoms="12200" preferred="12" deadline="45"
+    server="171.64.122.136" atoms="12200" preferred="30" deadline="45"
     credit="157" frames="100" code="DG" contact="alexrson"/>
   <fah_proj number="2010" name="p2010_BBA5_ext" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="27" deadline="39"
@@ -3526,7 +3529,7 @@
     server="171.64.122.136" atoms="12200" preferred="230" deadline="34"
     credit="116" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2015" name="p2015_BBA5" public="y" file="y"
-    server="171.64.122.136" atoms="12200" preferred="44" deadline="65"
+    server="171.64.122.136" atoms="12200" preferred="10" deadline="65"
     credit="231" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2018" name="p2018_BBA5_pfold" public="y"
     server="171.64.122.136" atoms="13691" preferred="20" deadline="30"
@@ -3540,7 +3543,7 @@
   <fah_proj number="2021" name="p2021_ACBP" public="n" file="y"
     server="171.65.103.150" atoms="26523" preferred="34" deadline="50"
     credit="175" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2022" name="p2022_ADAh2" public="n"
+  <fah_proj number="2022" name="p2022_ADAh2" public="n" file="y"
     server="171.65.103.150" atoms="24011" preferred="31" deadline="45"
     credit="159" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2023" name="p2023_CI2" public="n"
@@ -3552,10 +3555,10 @@
   <fah_proj number="2025" name="p2025_IM7" public="n"
     server="171.65.103.150" atoms="27420" preferred="51" deadline="76"
     credit="270" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2026" name="p2026_mAcP" public="n"
+  <fah_proj number="2026" name="p2026_mAcP" public="n" file="y"
     server="171.65.103.150" atoms="24574" preferred="33" deadline="48"
     credit="168" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2027" name="p2027_Lambda_Repressor" public="n"
+  <fah_proj number="2027" name="p2027_Lambda_Repressor" public="n" file="y"
     server="171.65.103.150" atoms="19257" preferred="25" deadline="37"
     credit="127" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2028" name="p2028_Protein_G" public="n"
@@ -3574,9 +3577,9 @@
     server="171.65.103.150" atoms="24240" preferred="31" deadline="46"
     credit="160" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2033" name="p2033_ADAh2" public="n"
-    server="171.65.103.150" atoms="22031" preferred="17" deadline="25"
-    credit="83" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2034" name="p2034_CI2" public="n"
+    server="171.65.103.150" atoms="22031" preferred="28" deadline="41"
+    credit="144" frames="100" code="G" contact="alexrson"/>
+  <fah_proj number="2034" name="p2034_CI2" public="n" file="y"
     server="171.65.103.150" atoms="18584" preferred="24" deadline="35"
     credit="121" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2035" name="p2035_FKBP" public="n"
@@ -3586,11 +3589,11 @@
     server="171.65.103.150" atoms="25176" preferred="17" deadline="25"
     credit="83" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2037" name="p2037_mAcP" public="n"
-    server="171.65.103.150" atoms="22489" preferred="17" deadline="25"
-    credit="83" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2038" name="p2038_Lambda_Repressor" public="n"
-    server="171.65.103.150" atoms="17901" preferred="17" deadline="25"
-    credit="83" frames="100" code="G" contact="alexrson"/>
+    server="171.65.103.150" atoms="22489" preferred="30" deadline="44"
+    credit="152" frames="100" code="G" contact="alexrson"/>
+  <fah_proj number="2038" name="p2038_Lambda_Repressor" public="n" file="y"
+    server="171.65.103.150" atoms="17901" preferred="23" deadline="34"
+    credit="117" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2039" name="p2039_Protein_G" public="n"
     server="171.65.103.150" atoms="19936" preferred="17" deadline="25"
     credit="83" frames="100" code="G" contact="alexrson"/>

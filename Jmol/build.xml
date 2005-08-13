@@ -676,6 +676,52 @@ support for assertions (which were introduced in 1.4).
     </tar>
   </target>
 
+  <target name="apisio-dist" id="apisio-dist"
+          depends="apis-jar,io-jar">
+    <!-- first build binary distribution -->
+    <delete dir="build/dist/jmolapisio-${version}"/>
+    <mkdir dir="build/dist/jmolapisio-${version}"/>
+    <copy todir="build/dist/jmolapisio-${version}" >
+      <fileset dir=".">
+        <include name="jmolApis.jar" />
+        <include name="jmolIO.jar" />
+        <include name="*.txt" />
+      </fileset>
+    </copy>
+
+    <!-- build source distribution -->
+
+    <copy todir="build/dist/jmolapisio-${version}" >
+      <fileset dir=".">
+        <include name="apisio.classes" />
+        <include name="build.xml" />
+        <include name="build-i18n.xml" />
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmolapisio-${version}/src" >
+      <fileset dir="src">
+        <includesfile name="apisio.classes"/>
+        <exclude name="**/CVS"/>
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmolapisio-${version}/${lib.dir}" >
+      <fileset dir="${lib.dir}">
+        <exclude name="**/CVS"/>
+        <include name="vecmath1.2-1.14.jar"/>
+        <include name="netscape.jar"/>
+      </fileset>
+    </copy>
+
+    <tar tarfile="build/dist/jmolapisio-${version}.tar.gz"
+         compression="gzip" >
+      <tarfileset dir="build/dist"
+                  excludes="*/jmol,*/jmol.sh"
+                  includes="jmolapisio-${version}/**" />
+    </tar>
+  </target>
+
   <target name="check.jws" id="check.jws" depends="setup" unless="keystore.present" >
     <echo message="Keystore '${keystore.name}' not found." />
     <echo message="Please set with the argument '-Dkeystore.name=file'." />

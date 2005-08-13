@@ -1766,12 +1766,18 @@
   <fah_proj number="750" name="p750_groel_half_chamber" public="n" file="y"
     atoms="305365" preferred="45"
     />
-  <fah_proj number="752" name="p752_vln2.8pbc" public="n"
-    server="171.64.122.68" atoms="19399" preferred="29"
+  <fah_proj number="752" name="p752_vln2.8pbc" public="n" file="y"
+    server="171.64.122.130" atoms="19399" preferred="29"
     credit="149" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="753" name="p753_vln2.8nopbc" public="n"
-    server="171.64.122.68" atoms="6115" preferred="29"
-    credit="149" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="753" name="p753_vln2.8nopbc" public="n" file="y"
+    server="171.64.122.130" atoms="6115" preferred="10"
+    credit="44" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="754" name="p754_vln2.8-0.2nopbc" public="n" file="y"
+    server="171.64.122.130" atoms="6868" preferred="11"
+    credit="51" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="755" name="p755_vln2.8-0.4nopbc" public="n" file="y"
+    server="171.64.122.130" atoms="5413" preferred="10"
+    credit="41" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -2721,7 +2727,7 @@
   <fah_proj number="1156" name="p1156_L939_K12M_298K_DT_250ps_clones" public="y" file="y"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1157" name="p1157_L939_K12M_298K_DT_250ps_clones" public="y"
+  <fah_proj number="1157" name="p1157_L939_K12M_298K_DT_250ps_clones" public="y" file="y"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1158" name="p1158_L939_K12M_298K_DT_250ps_clones" public="y"
@@ -3461,7 +3467,7 @@
   <fah_proj number="1805" name="p1805_Collagen_POG10_refolding_gamma" public="y" file="y"
     server="171.65.103.158" atoms="1116" preferred="26" deadline="37"
     credit="130" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1806" name="p1806_Collagen_Brodsky_restrained_unfolding" public="n" file="y"
+  <fah_proj number="1806" name="p1806_Collagen_Brodsky_restrained_unfolding" public="y" file="y"
     server="171.65.103.158" atoms="1125" preferred="5" deadline="10"
     credit="19" frames="100" code="A" contact="spark7"/>
 
@@ -3499,13 +3505,13 @@
     server="171.64.122.136" atoms="222" preferred="30" deadline="44"
     credit="154" frames="100" code="GB" contact="luttmann"/>
   <fah_proj number="2005" name="p2005_BBA5_pfold" public="y" file="y"
-    server="171.64.122.136" atoms="385" preferred="4" deadline="25"
+    server="171.64.122.136" atoms="385" preferred="14" deadline="25"
     credit="83" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2006" name="p2006_BBA5_pfold" public="y" file="y"
-    server="171.64.122.136" atoms="385" preferred="6" deadline="25"
+    server="171.64.122.136" atoms="385" preferred="14" deadline="25"
     credit="85" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2007" name="p2007_BBA5_pfold" public="y" file="y"
-    server="171.64.122.136" atoms="385" preferred="4" deadline="24"
+    server="171.64.122.136" atoms="385" preferred="14" deadline="24"
     credit="79" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2008" name="p2008_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="42" deadline="61"
@@ -3576,7 +3582,7 @@
   <fah_proj number="2032" name="p2032_ACBP" public="n" file="y"
     server="171.65.103.150" atoms="24240" preferred="31" deadline="46"
     credit="160" frames="100" code="G" contact="alexrson"/>
-  <fah_proj number="2033" name="p2033_ADAh2" public="n"
+  <fah_proj number="2033" name="p2033_ADAh2" public="n" file="y"
     server="171.65.103.150" atoms="22031" preferred="28" deadline="41"
     credit="144" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2034" name="p2034_CI2" public="n" file="y"

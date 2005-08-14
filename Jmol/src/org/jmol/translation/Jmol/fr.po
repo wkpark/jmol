@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-06-01 02:02+0200\n"
+"POT-Creation-Date: 2005-08-14 16:43+0200\n"
 "PO-Revision-Date: 2005-05-28 18:26+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -159,7 +159,8 @@ msgid "Preview"
 msgstr "Prévisualisation"
 
 #: org/openscience/jmol/app/GuiMap.java:45
-msgid "File"
+#, fuzzy
+msgid "&File"
 msgstr "Fichier"
 
 #: org/openscience/jmol/app/GuiMap.java:46
@@ -167,17 +168,18 @@ msgid "New"
 msgstr "Nouveau"
 
 #: org/openscience/jmol/app/GuiMap.java:47
-#: org/openscience/jmol/app/RecentFilesDialog.java:66
-msgid "Open"
+#, fuzzy
+msgid "&Open"
 msgstr "Ouvrir"
 
 #: org/openscience/jmol/app/GuiMap.java:48
-#: org/openscience/jmol/app/Jmol.java:1108
-msgid "Open URL"
+#, fuzzy
+msgid "Open &URL"
 msgstr "Ouvrir une URL"
 
 #: org/openscience/jmol/app/GuiMap.java:49
-msgid "Script..."
+#, fuzzy
+msgid "Scrip&t..."
 msgstr "Script..."
 
 #: org/openscience/jmol/app/GuiMap.java:50
@@ -185,11 +187,13 @@ msgid "AtomSetChooser..."
 msgstr "Groupes d'atomes"
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Save As..."
+#, fuzzy
+msgid "&Save As..."
 msgstr "Sauver Sous..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
-msgid "Export"
+#, fuzzy
+msgid "&Export"
 msgstr "Exporter"
 
 #: org/openscience/jmol/app/GuiMap.java:53
@@ -205,7 +209,8 @@ msgid "Export PDF..."
 msgstr "Exporter en PDF..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-msgid "Print..."
+#, fuzzy
+msgid "&Print..."
 msgstr "Imprimer..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
@@ -214,7 +219,8 @@ msgid "Close"
 msgstr "Fermer"
 
 #: org/openscience/jmol/app/GuiMap.java:58
-msgid "Exit"
+#, fuzzy
+msgid "E&xit"
 msgstr "Quitter"
 
 #: org/openscience/jmol/app/GuiMap.java:59
@@ -222,7 +228,8 @@ msgid "Recent Files..."
 msgstr "Fichiers récents..."
 
 #: org/openscience/jmol/app/GuiMap.java:60
-msgid "Edit"
+#, fuzzy
+msgid "&Edit"
 msgstr "Edition"
 
 #: org/openscience/jmol/app/GuiMap.java:61
@@ -239,7 +246,8 @@ msgid "Deselect All"
 msgstr "Tout désélectionner"
 
 #: org/openscience/jmol/app/GuiMap.java:64
-msgid "Preferences..."
+#, fuzzy
+msgid "&Preferences..."
 msgstr "Options..."
 
 #: org/openscience/jmol/app/GuiMap.java:67
@@ -295,8 +303,8 @@ msgid "Hetero"
 msgstr "Hétéro"
 
 #: org/openscience/jmol/app/GuiMap.java:79
-#: org/openscience/jmol/app/PreferencesDialog.java:185
-msgid "Display"
+#, fuzzy
+msgid "&Display"
 msgstr "Affichage"
 
 #: org/openscience/jmol/app/GuiMap.java:80
@@ -424,8 +432,8 @@ msgid "800%"
 msgstr "800%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
-#: org/openscience/jmol/app/GuiMap.java:161
-msgid "Wireframe Rotation"
+#, fuzzy
+msgid "Wi&reframe Rotation"
 msgstr "Rotation fil de fer"
 
 #: org/openscience/jmol/app/GuiMap.java:117
@@ -444,23 +452,23 @@ msgid "Bounding Box"
 msgstr "Limite"
 
 #: org/openscience/jmol/app/GuiMap.java:120
-#: org/openscience/jmol/app/GuiMap.java:159
-msgid "Hydrogens"
+#, fuzzy
+msgid "&Hydrogens"
 msgstr "Hydrogènes"
 
 #: org/openscience/jmol/app/GuiMap.java:121
-#: org/openscience/jmol/app/PreferencesDialog.java:678
-msgid "Vectors"
+#, fuzzy
+msgid "&Vectors"
 msgstr "Vecteurs"
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:704
-msgid "Measurements"
+#, fuzzy
+msgid "&Measurements"
 msgstr "Mesures"
 
 #: org/openscience/jmol/app/GuiMap.java:123
-msgid "View"
+#, fuzzy
+msgid "&View"
 msgstr "Vue"
 
 #: org/openscience/jmol/app/GuiMap.java:124
@@ -526,16 +534,17 @@ msgstr "Faire Vibrer..."
 
 #: org/openscience/jmol/app/GuiMap.java:139
 #, fuzzy
-msgid "Graph..."
+msgid "&Graph..."
 msgstr "Graphiquer..."
 
 #: org/openscience/jmol/app/GuiMap.java:140
 #, fuzzy
-msgid "Calculate chemical shifts..."
+msgid "Calculate chemical &shifts..."
 msgstr "Calculer les changements chimiques..."
 
 #: org/openscience/jmol/app/GuiMap.java:141
-msgid "Crystal Properties"
+#, fuzzy
+msgid "&Crystal Properties"
 msgstr "Propriétés du Cristal..."
 
 #: org/openscience/jmol/app/GuiMap.java:142
@@ -591,8 +600,8 @@ msgid "Previous frequency"
 msgstr "Fréquence précédente"
 
 #: org/openscience/jmol/app/GuiMap.java:154
-#: org/openscience/jmol/app/ScriptWindow.java:98
-msgid "Help"
+#, fuzzy
+msgid "&Help"
 msgstr "?"
 
 #: org/openscience/jmol/app/GuiMap.java:156
@@ -607,6 +616,19 @@ msgstr "Les Nouveautés"
 #: org/openscience/jmol/app/Jmol.java:465
 msgid "Jmol Console"
 msgstr "Console Jmol"
+
+#: org/openscience/jmol/app/GuiMap.java:159
+msgid "Hydrogens"
+msgstr "Hydrogènes"
+
+#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/PreferencesDialog.java:704
+msgid "Measurements"
+msgstr "Mesures"
+
+#: org/openscience/jmol/app/GuiMap.java:161
+msgid "Wireframe Rotation"
+msgstr "Rotation fil de fer"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "RasMol/Chime compatible axes orientation/rotations"
@@ -771,6 +793,10 @@ msgstr "Fermeture de Jmol..."
 #: org/openscience/jmol/app/Jmol.java:792
 msgid "Macros"
 msgstr "Macros"
+
+#: org/openscience/jmol/app/Jmol.java:1108
+msgid "Open URL"
+msgstr "Ouvrir une URL"
 
 #: org/openscience/jmol/app/Jmol.java:1109
 msgid "Enter URL of molecular model"
@@ -1017,6 +1043,10 @@ msgstr "Chaîne vide"
 msgid "Preferences"
 msgstr "Préférences"
 
+#: org/openscience/jmol/app/PreferencesDialog.java:185
+msgid "Display"
+msgstr "Affichage"
+
 #: org/openscience/jmol/app/PreferencesDialog.java:186
 msgid "Atoms"
 msgstr "Atomes"
@@ -1128,6 +1158,10 @@ msgstr "Régler la Couleur pour les Liens"
 msgid "Bond Color"
 msgstr "Couleur des Liens"
 
+#: org/openscience/jmol/app/PreferencesDialog.java:678
+msgid "Vectors"
+msgstr "Vecteurs"
+
 #: org/openscience/jmol/app/PreferencesDialog.java:681
 msgid "Set the Vector Color"
 msgstr "Régler la Couleur de Vecteur"
@@ -1148,6 +1182,10 @@ msgstr "Couleur des Mesures"
 msgid "Recent Files"
 msgstr "Fichiers récents"
 
+#: org/openscience/jmol/app/RecentFilesDialog.java:66
+msgid "Open"
+msgstr "Ouvrir"
+
 #: org/openscience/jmol/app/ScriptWindow.java:62
 msgid "Rasmol Scripts"
 msgstr "Scripts Rasmol"
@@ -1163,6 +1201,10 @@ msgstr "Arrêter"
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Effacer"
+
+#: org/openscience/jmol/app/ScriptWindow.java:98
+msgid "Help"
+msgstr "?"
 
 #: org/openscience/jmol/app/Splash.java:46
 msgid "Loading..."

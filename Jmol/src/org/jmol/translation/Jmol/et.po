@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-07-27 12:27-0400\n"
+"POT-Creation-Date: 2005-08-14 16:43+0200\n"
 "PO-Revision-Date: 2005-08-13 10:14+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -158,7 +158,8 @@ msgid "Preview"
 msgstr "Eelvaade"
 
 #: org/openscience/jmol/app/GuiMap.java:45
-msgid "File"
+#, fuzzy
+msgid "&File"
 msgstr "Fail"
 
 #: org/openscience/jmol/app/GuiMap.java:46
@@ -166,17 +167,18 @@ msgid "New"
 msgstr "Uus"
 
 #: org/openscience/jmol/app/GuiMap.java:47
-#: org/openscience/jmol/app/RecentFilesDialog.java:66
-msgid "Open"
+#, fuzzy
+msgid "&Open"
 msgstr "Ava"
 
 #: org/openscience/jmol/app/GuiMap.java:48
-#: org/openscience/jmol/app/Jmol.java:1108
-msgid "Open URL"
+#, fuzzy
+msgid "Open &URL"
 msgstr "Ava URL"
 
 #: org/openscience/jmol/app/GuiMap.java:49
-msgid "Script..."
+#, fuzzy
+msgid "Scrip&t..."
 msgstr "Skript..."
 
 #: org/openscience/jmol/app/GuiMap.java:50
@@ -184,11 +186,13 @@ msgid "AtomSetChooser..."
 msgstr "AtomSetChooser..."
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Save As..."
+#, fuzzy
+msgid "&Save As..."
 msgstr "Salvesta kui..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
-msgid "Export"
+#, fuzzy
+msgid "&Export"
 msgstr "Ekspordi"
 
 #: org/openscience/jmol/app/GuiMap.java:53
@@ -204,7 +208,8 @@ msgid "Export PDF..."
 msgstr "Ekspordi PDF..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-msgid "Print..."
+#, fuzzy
+msgid "&Print..."
 msgstr "Prindi..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
@@ -213,7 +218,8 @@ msgid "Close"
 msgstr "Sulge"
 
 #: org/openscience/jmol/app/GuiMap.java:58
-msgid "Exit"
+#, fuzzy
+msgid "E&xit"
 msgstr "Vlju"
 
 #: org/openscience/jmol/app/GuiMap.java:59
@@ -221,7 +227,8 @@ msgid "Recent Files..."
 msgstr "Hiljutised failid..."
 
 #: org/openscience/jmol/app/GuiMap.java:60
-msgid "Edit"
+#, fuzzy
+msgid "&Edit"
 msgstr "Muuda"
 
 #: org/openscience/jmol/app/GuiMap.java:61
@@ -238,7 +245,8 @@ msgid "Deselect All"
 msgstr "Eemalda kõik valikust"
 
 #: org/openscience/jmol/app/GuiMap.java:64
-msgid "Preferences..."
+#, fuzzy
+msgid "&Preferences..."
 msgstr "Eelistused..."
 
 #: org/openscience/jmol/app/GuiMap.java:67
@@ -294,8 +302,8 @@ msgid "Hetero"
 msgstr "Hetero"
 
 #: org/openscience/jmol/app/GuiMap.java:79
-#: org/openscience/jmol/app/PreferencesDialog.java:185
-msgid "Display"
+#, fuzzy
+msgid "&Display"
 msgstr "Kuva"
 
 #: org/openscience/jmol/app/GuiMap.java:80
@@ -423,8 +431,8 @@ msgid "800%"
 msgstr "800%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
-#: org/openscience/jmol/app/GuiMap.java:161
-msgid "Wireframe Rotation"
+#, fuzzy
+msgid "Wi&reframe Rotation"
 msgstr "Sõrestiku keeramine"
 
 #: org/openscience/jmol/app/GuiMap.java:117
@@ -443,23 +451,23 @@ msgid "Bounding Box"
 msgstr "Bounding Box"
 
 #: org/openscience/jmol/app/GuiMap.java:120
-#: org/openscience/jmol/app/GuiMap.java:159
-msgid "Hydrogens"
+#, fuzzy
+msgid "&Hydrogens"
 msgstr "Vesinikud"
 
 #: org/openscience/jmol/app/GuiMap.java:121
-#: org/openscience/jmol/app/PreferencesDialog.java:678
-msgid "Vectors"
+#, fuzzy
+msgid "&Vectors"
 msgstr "Vektorid"
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:704
-msgid "Measurements"
+#, fuzzy
+msgid "&Measurements"
 msgstr "Mõõted"
 
 #: org/openscience/jmol/app/GuiMap.java:123
-msgid "View"
+#, fuzzy
+msgid "&View"
 msgstr "Vaade"
 
 #: org/openscience/jmol/app/GuiMap.java:124
@@ -524,15 +532,18 @@ msgid "Vibrate..."
 msgstr "Vibreeri..."
 
 #: org/openscience/jmol/app/GuiMap.java:139
-msgid "Graph..."
+#, fuzzy
+msgid "&Graph..."
 msgstr "Joonista..."
 
 #: org/openscience/jmol/app/GuiMap.java:140
-msgid "Calculate chemical shifts..."
+#, fuzzy
+msgid "Calculate chemical &shifts..."
 msgstr "Arvuta keemilised nihked..."
 
 #: org/openscience/jmol/app/GuiMap.java:141
-msgid "Crystal Properties"
+#, fuzzy
+msgid "&Crystal Properties"
 msgstr "Kristalli omadused"
 
 #: org/openscience/jmol/app/GuiMap.java:142
@@ -587,8 +598,8 @@ msgid "Previous frequency"
 msgstr "Eelmine sagedus"
 
 #: org/openscience/jmol/app/GuiMap.java:154
-#: org/openscience/jmol/app/ScriptWindow.java:98
-msgid "Help"
+#, fuzzy
+msgid "&Help"
 msgstr "Abi"
 
 #: org/openscience/jmol/app/GuiMap.java:156
@@ -603,6 +614,19 @@ msgstr "Mida uut"
 #: org/openscience/jmol/app/Jmol.java:465
 msgid "Jmol Console"
 msgstr "Jmol konsool"
+
+#: org/openscience/jmol/app/GuiMap.java:159
+msgid "Hydrogens"
+msgstr "Vesinikud"
+
+#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/PreferencesDialog.java:704
+msgid "Measurements"
+msgstr "Mõõted"
+
+#: org/openscience/jmol/app/GuiMap.java:161
+msgid "Wireframe Rotation"
+msgstr "Sõrestiku keeramine"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "RasMol/Chime compatible axes orientation/rotations"
@@ -765,6 +789,10 @@ msgstr "Jmol sulgemine..."
 msgid "Macros"
 msgstr "Makrod"
 
+#: org/openscience/jmol/app/Jmol.java:1108
+msgid "Open URL"
+msgstr "Ava URL"
+
 #: org/openscience/jmol/app/Jmol.java:1109
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
@@ -806,7 +834,9 @@ msgid "Filename Stem"
 msgstr "Failinime tüvi"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
@@ -851,7 +881,8 @@ msgstr "Rakenda POV-Ray anti-aliasing'ut"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Kasuta povray aeglasemat, aga parema kvaliteediga anti-aliasing reziimi"
+msgstr ""
+"Kasuta povray aeglasemat, aga parema kvaliteediga anti-aliasing reziimi"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
@@ -1002,6 +1033,10 @@ msgstr "tühi komponent string"
 msgid "Preferences"
 msgstr "Eelistused"
 
+#: org/openscience/jmol/app/PreferencesDialog.java:185
+msgid "Display"
+msgstr "Kuva"
+
 #: org/openscience/jmol/app/PreferencesDialog.java:186
 msgid "Atoms"
 msgstr "Aatomid"
@@ -1113,6 +1148,10 @@ msgstr "Määra sidemete värv"
 msgid "Bond Color"
 msgstr "Sideme vrv"
 
+#: org/openscience/jmol/app/PreferencesDialog.java:678
+msgid "Vectors"
+msgstr "Vektorid"
+
 #: org/openscience/jmol/app/PreferencesDialog.java:681
 msgid "Set the Vector Color"
 msgstr "Määra vektori värv"
@@ -1133,6 +1172,10 @@ msgstr "Mõõtühitute värv"
 msgid "Recent Files"
 msgstr "Hiljutised failid"
 
+#: org/openscience/jmol/app/RecentFilesDialog.java:66
+msgid "Open"
+msgstr "Ava"
+
 #: org/openscience/jmol/app/ScriptWindow.java:62
 msgid "Rasmol Scripts"
 msgstr "Rasmol skriptid"
@@ -1149,6 +1192,10 @@ msgstr "Seiska"
 msgid "Clear"
 msgstr "Puhasta"
 
+#: org/openscience/jmol/app/ScriptWindow.java:98
+msgid "Help"
+msgstr "Abi"
+
 #: org/openscience/jmol/app/Splash.java:46
 msgid "Loading..."
 msgstr "Laen..."
@@ -1156,4 +1203,3 @@ msgstr "Laen..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
-

@@ -586,11 +586,6 @@ public class Jmol extends JPanel {
     } else {
       mi = guimap.newJMenuItem(cmd);
     }
-    String mnem = JmolResourceHandler.getStringX(cmd + "Mnemonic");
-    if (mnem != null) {
-      char mn = mnem.charAt(0);
-      mi.setMnemonic(mn);
-    }
     
     ImageIcon f =
       JmolResourceHandler.getIconX(cmd + "Image");
@@ -834,12 +829,6 @@ public class Jmol extends JPanel {
             JMenu m = createMenu(menuKeys[i]);
             if (m != null)
                 menuBar.add(m);
-            String mnem = JmolResourceHandler
-              .getStringX(menuKeys[i] + "Mnemonic");
-            if (mnem != null) {
-                char mn = mnem.charAt(0);
-                m.setMnemonic(mn);
-            }
         }
     }
   }
@@ -849,12 +838,6 @@ public class Jmol extends JPanel {
       JMenu m = createMenu(menuKey);
       if (m != null) {
           menuBar.add(m);
-      }
-      String mnem =
-        JmolResourceHandler.getStringX(menuKey + "Mnemonic");
-      if (mnem != null) {
-          char mn = mnem.charAt(0);
-          m.setMnemonic(mn);
       }
   }
       

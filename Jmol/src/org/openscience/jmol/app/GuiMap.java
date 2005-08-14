@@ -42,26 +42,26 @@ class GuiMap {
   
   private Hashtable setupLabels() {
       Hashtable labels = new Hashtable();
-      labels.put("file", GT._("File"));
+      labels.put("file", GT._("&File"));
       labels.put("newwin", GT._("New"));
-      labels.put("open", GT._("Open"));
-      labels.put("openurl", GT._("Open URL"));
-      labels.put("script", GT._("Script..."));
+      labels.put("open", GT._("&Open"));
+      labels.put("openurl", GT._("Open &URL"));
+      labels.put("script", GT._("Scrip&t..."));
       labels.put("atomsetchooser", GT._("AtomSetChooser..."));
-      labels.put("saveas", GT._("Save As..."));
-      labels.put("exportMenu", GT._("Export"));
+      labels.put("saveas", GT._("&Save As..."));
+      labels.put("exportMenu", GT._("&Export"));
       labels.put("export", GT._("Export Image..."));
       labels.put("povray", GT._("Render in pov-ray..."));
       labels.put("pdf", GT._("Export PDF..."));
-      labels.put("print", GT._("Print..."));
+      labels.put("print", GT._("&Print..."));
       labels.put("close", GT._("Close"));
-      labels.put("exit", GT._("Exit"));
+      labels.put("exit", GT._("E&xit"));
       labels.put("recentFiles", GT._("Recent Files..."));
-      labels.put("edit", GT._("Edit"));
+      labels.put("edit", GT._("&Edit"));
       labels.put("makecrystal", GT._("Make crystal..."));
       labels.put("selectall", GT._("Select All"));
       labels.put("deselectall", GT._("Deselect All"));
-      labels.put("prefs", GT._("Preferences..."));
+      labels.put("prefs", GT._("&Preferences..."));
       labels.put("editSelectAllScript", GT._("Select All"));
       labels.put("selectMenu", GT._("Select"));
       labels.put("selectAllScript", GT._("All"));
@@ -76,7 +76,7 @@ class GuiMap {
       labels.put("selectNucleicScript", GT._("Nucleic"));
       labels.put("selectWaterScript", GT._("Water"));
       labels.put("selectHeteroScript", GT._("Hetero"));
-      labels.put("display", GT._("Display"));
+      labels.put("display", GT._("&Display"));
       labels.put("atomMenu", GT._("Atom"));
       labels.put("atomNoneScript", GT._("None"));
       labels.put("atom15Script", GT._("15% vanderWaals"));
@@ -113,14 +113,14 @@ class GuiMap {
       labels.put("zoom200Script", GT._("200%"));
       labels.put("zoom400Script", GT._("400%"));
       labels.put("zoom800Script", GT._("800%"));
-      labels.put("wireframerotationCheck", GT._("Wireframe Rotation"));
+      labels.put("wireframerotationCheck", GT._("Wi&reframe Rotation"));
       labels.put("perspectiveCheck", GT._("Perspective Depth"));
       labels.put("axesCheck", GT._("Axes"));
       labels.put("boundboxCheck", GT._("Bounding Box"));
-      labels.put("hydrogensCheck", GT._("Hydrogens"));
-      labels.put("vectorsCheck", GT._("Vectors"));
-      labels.put("measurementsCheck", GT._("Measurements"));
-      labels.put("view", GT._("View"));
+      labels.put("hydrogensCheck", GT._("&Hydrogens"));
+      labels.put("vectorsCheck", GT._("&Vectors"));
+      labels.put("measurementsCheck", GT._("&Measurements"));
+      labels.put("view", GT._("&View"));
       labels.put("front", GT._("Front"));
       labels.put("top", GT._("Top"));
       labels.put("bottom", GT._("Bottom"));
@@ -136,9 +136,9 @@ class GuiMap {
       labels.put("distancePicometersScript", GT._("Picometers 1E-12"));
       labels.put("animateMenu", GT._("Animate..."));
       labels.put("vibrateMenu", GT._("Vibrate..."));
-      labels.put("graph", GT._("Graph..."));
-      labels.put("chemicalShifts", GT._("Calculate chemical shifts..."));
-      labels.put("crystprop", GT._("Crystal Properties"));
+      labels.put("graph", GT._("&Graph..."));
+      labels.put("chemicalShifts", GT._("Calculate chemical &shifts..."));
+      labels.put("crystprop", GT._("&Crystal Properties"));
       labels.put("animateOnceScript", GT._("Once"));
       labels.put("animateLoopScript", GT._("Loop"));
       labels.put("animatePalindromeScript", GT._("Palindrome"));
@@ -151,7 +151,7 @@ class GuiMap {
       labels.put("vibrateRewindScript", GT._("First frequency"));
       labels.put("vibrateNextScript", GT._("Next frequency"));
       labels.put("vibratePrevScript", GT._("Previous frequency"));
-      labels.put("help", GT._("Help"));
+      labels.put("help", GT._("&Help"));
       labels.put("about", GT._("About Jmol"));
       labels.put("uguide", GT._("User Guide"));
       labels.put("whatsnew", GT._("What's New"));
@@ -196,20 +196,25 @@ class GuiMap {
   }
 
   JMenu newJMenu(String key) {
-    return new KeyJMenu(key, getLabel(key));
+    String label = getLabel(key);
+    return new KeyJMenu(key, getLabelWithoutMnemonic(label), getMnemonic(label));
   }
-
+  
   JMenuItem newJMenuItem(String key) {
-    return new KeyJMenuItem(key, getLabel(key));
+    String label = getLabel(key);
+    return new KeyJMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
   }
   JCheckBoxMenuItem newJCheckBoxMenuItem(String key, boolean isChecked) {
-    return new KeyJCheckBoxMenuItem(key, getLabel(key), isChecked);
+    String label = getLabel(key);
+    return new KeyJCheckBoxMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label), isChecked);
   }
   JRadioButtonMenuItem newJRadioButtonMenuItem(String key) {
-    return new KeyJRadioButtonMenuItem(key, getLabel(key));
+    String label = getLabel(key);
+    return new KeyJRadioButtonMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
   }
   JCheckBox newJCheckBox(String key, boolean isChecked) {
-    return new KeyJCheckBox(key, getLabel(key), isChecked);
+    String label = getLabel(key);
+    return new KeyJCheckBox(key, getLabelWithoutMnemonic(label), getMnemonic(label), isChecked);
   }
 
   Object get(String key) {
@@ -220,6 +225,29 @@ class GuiMap {
     return (((GetKey)obj).getKey());
   }
 
+  public String getLabelWithoutMnemonic(String label) {
+    if (label == null) {
+      return null;
+    }
+    int index = label.indexOf('&');
+    if (index == -1) {
+      return label;
+    }
+    return label.substring(0, index) +
+      ((index < label.length() - 1) ? label.substring(index + 1) : "");
+  }
+  
+  public char getMnemonic(String label) {
+    if (label == null) {
+      return ' ';
+    }
+    int index = label.indexOf('&');
+    if ((index == -1) || (index == label.length() - 1)){
+      return ' ';
+    }
+    return label.charAt(index + 1);
+  }
+  
   void setSelected(String key, boolean b) {
     ((AbstractButton)get(key)).setSelected(b);
   }
@@ -235,8 +263,11 @@ class GuiMap {
 
   class KeyJMenu extends JMenu implements GetKey {
     String key;
-    KeyJMenu(String key, String label) {
+    KeyJMenu(String key, String label, char mnemonic) {
       super(label);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
       this.key = key;
       map.put(key, this);
     }
@@ -247,8 +278,11 @@ class GuiMap {
 
   class KeyJMenuItem extends JMenuItem implements GetKey {
     String key;
-    KeyJMenuItem(String key, String label) {
+    KeyJMenuItem(String key, String label, char mnemonic) {
       super(label);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
       this.key = key;
       map.put(key, this);
     }
@@ -260,8 +294,11 @@ class GuiMap {
   class KeyJCheckBoxMenuItem
     extends JCheckBoxMenuItem implements GetKey {
     String key;
-    KeyJCheckBoxMenuItem(String key, String label, boolean isChecked) {
+    KeyJCheckBoxMenuItem(String key, String label, char mnemonic, boolean isChecked) {
       super(label, isChecked);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
       this.key = key;
       map.put(key, this);
     }
@@ -273,8 +310,11 @@ class GuiMap {
   class KeyJRadioButtonMenuItem
     extends JRadioButtonMenuItem implements GetKey {
     String key;
-    KeyJRadioButtonMenuItem(String key, String label) {
+    KeyJRadioButtonMenuItem(String key, String label, char mnemonic) {
       super(label);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
       this.key = key;
       map.put(key, this);
     }
@@ -286,8 +326,11 @@ class GuiMap {
   class KeyJCheckBox
     extends JCheckBox implements GetKey {
     String key;
-    KeyJCheckBox(String key, String label, boolean isChecked) {
+    KeyJCheckBox(String key, String label, char mnemonic, boolean isChecked) {
       super(label, isChecked);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
       this.key = key;
       map.put(key, this);
     }

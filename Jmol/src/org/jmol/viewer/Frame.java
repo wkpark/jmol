@@ -763,14 +763,14 @@ final class Frame {
             ? null : shapes[shapeID].getProperty(propertyName, index));
   }
 
-  Point3f averageAtomPoint;
+  final Point3f averageAtomPoint = new Point3f();
 
-  Point3f centerBoundBox;
-  Vector3f boundBoxCornerVector;
-  Point3f minBoundBox;
-  Point3f maxBoundBox;
+  final Point3f centerBoundBox = new Point3f();
+  final Vector3f boundBoxCornerVector = new Vector3f();
+  final Point3f minBoundBox = new Point3f();
+  final Point3f maxBoundBox = new Point3f();
 
-  Point3f centerUnitcell;
+  final Point3f centerUnitcell = new Point3f();
 
   //  float radiusBoundBox;
   Point3f rotationCenter;
@@ -781,6 +781,11 @@ final class Frame {
   Point3f getBoundBoxCenter() {
     findBounds();
     return centerBoundBox;
+  }
+
+  Point3f getAverageAtomPoint() {
+    findBounds();
+    return averageAtomPoint;
   }
 
   Vector3f getBoundBoxCornerVector() {
@@ -834,14 +839,14 @@ final class Frame {
     calcBoundBoxDimensions();
     if (notionalUnitcell != null)
       calcUnitcellDimensions();
-    rotationCenter = rotationCenterDefault =
-      averageAtomPoint;
+    rotationCenter = rotationCenterDefault = centerBoundBox;//averageAtomPoint;
     rotationRadius = rotationRadiusDefault =
       calcRotationRadius(rotationCenterDefault);
   }
 
   private void calcAverageAtomPoint() {
-    Point3f average = this.averageAtomPoint = new Point3f();
+    Point3f average = this.averageAtomPoint;
+    average.set(0,0,0);
     for (int i = atomCount; --i >= 0; )
       average.add(atoms[i].point3f);
     average.scale(1f/atomCount);
@@ -861,16 +866,11 @@ final class Frame {
   final Point3f[] bboxVertices = new Point3f[8];
 
   private void calcBoundBoxDimensions() {
-    minBoundBox = new Point3f();
-    maxBoundBox = new Point3f();
-
     calcAtomsMinMax(minBoundBox, maxBoundBox);
 
-    centerBoundBox = new Point3f(minBoundBox);
-    centerBoundBox.add(maxBoundBox);
+    centerBoundBox.add(minBoundBox, maxBoundBox);
     centerBoundBox.scale(0.5f);
-    boundBoxCornerVector = new Vector3f(maxBoundBox);
-    boundBoxCornerVector.sub(centerBoundBox);
+    boundBoxCornerVector.sub(maxBoundBox, centerBoundBox);
 
     for (int i = 8; --i >= 0; ) {
       Point3f bbcagePoint = bboxVertices[i] = new Point3f(unitBboxPoints[i]);
@@ -900,7 +900,7 @@ final class Frame {
       Point3f vertex = unitcellVertices[i] = new Point3f();
       matrixFractionalToEuclidean.transform(unitCubePoints[i], vertex);
     }
-    centerUnitcell = new Point3f(unitcellVertices[7]);
+    centerUnitcell.set(unitcellVertices[7]);
     centerUnitcell.scale(0.5f);
   }
 

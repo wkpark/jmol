@@ -244,7 +244,7 @@ class ModelManager {
       return;
     pointT.set(x, y, z);
     if (relativeTo == "average")
-      pointT.add(frame.getRotationCenterDefault());
+      pointT.add(frame.getAverageAtomPoint());
     else if (relativeTo == "boundbox")
       pointT.add(frame.getBoundBoxCenter());
     else if (relativeTo != "absolute")

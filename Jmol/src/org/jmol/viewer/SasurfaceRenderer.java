@@ -73,6 +73,8 @@ class SasurfaceRenderer extends ShapeRenderer {
   }
 
   void renderSasurface1(Sasurface1 surface) {
+    if (surface.hide)
+      return;
     int renderingLevel = surface.geodesicRenderingLevel;
     radiusP = surface.radiusP;
     geodesicVertexCount = surface.geodesicVertexCount;
@@ -268,7 +270,7 @@ class SasurfaceRenderer extends ShapeRenderer {
     Point3i[] screens = torusScreens;
     // show torus edges
     int segmentCount = torus.countContiguousSegments(torusSegmentStarts);
-    System.out.println("segmentCount=" + segmentCount);
+    //    System.out.println("segmentCount=" + segmentCount);
     for (int m = segmentCount; --m >= 0; ) {
       int segmentStart = torusSegmentStarts[m];
       int countA = torus.extractAtomEdgeIndexes(segmentStart,
@@ -287,14 +289,16 @@ class SasurfaceRenderer extends ShapeRenderer {
 
   void renderTorusAtomConnections(Sasurface1.Torus torus,
                                   Point3i screensConvex) {
-    System.out.println("torus.connectAConvex=" +
-                       torus.connectAConvex);
+    //    System.out.println("torus.connectAConvex=" +
+    //                       torus.connectAConvex);
     short[] x = torus.connectAConvex;
+    /*
     if (x != null) {
       for (int i = 0; i < x.length; ++i)
         System.out.print(" " + x[i]);
       System.out.println("");
     }
+    */
     /*
     int segmentCount = torus.countCcontiguousSegments(torusSegmentStarts);
     for (int m = segmentCount; --m >= 0; ) {

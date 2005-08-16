@@ -3435,7 +3435,7 @@ class Eval implements Runnable {
   }
 
   void sasurface() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_SASURFACE, 1);
+    viewer.loadShape(JmolConstants.SHAPE_SASURFACE);
     viewer.setShapeProperty(JmolConstants.SHAPE_SASURFACE, "surfaceID", null);
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;

@@ -90,6 +90,8 @@ class Sasurface1 {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
+  boolean hide;
+
   private final static int GEODESIC_CALC_LEVEL = 2;
   int geodesicRenderingLevel = 2;
 
@@ -141,7 +143,7 @@ class Sasurface1 {
 
     frame = viewer.getFrame();
     initShape();
-    setSize(1, bs);
+    generate(bs);
   }
 
   void initShape() {
@@ -154,6 +156,59 @@ class Sasurface1 {
       g3d.getGeodesicFaceVertexes(geodesicRenderingLevel);
     geodesicNeighborVertexes =
       g3d.getGeodesicNeighborVertexes(geodesicRenderingLevel);
+  }
+
+  void clearAll() {
+    surfaceConvexMax = 0;
+    convexVertexMaps = null;
+    convexFaceMaps = null;
+    torusCount = 0;
+    toruses = null;
+    cavityCount = 0;
+    cavities = null;
+    htToruses = null;
+    radiusP = viewer.getCurrentSolventProbeRadius();
+    diameterP = 2 * radiusP;
+    calcProbeVectors();
+  }
+
+  void generate(BitSet bsSelected) {
+    viewer.setSolventOn(true);
+    clearAll();
+    int atomCount = frame.atomCount;
+    convexVertexMaps = new int[atomCount][];
+    convexFaceMaps = new int[atomCount][];
+    colixesConvex = new short[atomCount];
+
+    htToruses = new Hashtable();
+    // now, calculate surface for selected atoms
+    long timeBegin = System.currentTimeMillis();
+    int surfaceAtomCount = 0;
+    for (int i = 0; i < atomCount; ++i) // make this loop count up
+      if (bsSelected.get(i)) {
+        ++surfaceAtomCount;
+        setAtomI(i);
+        getNeighbors(bsSelected);
+        sortNeighborIndexes();
+        calcCavitiesI();
+        if (convexVertexMaps[i] != null)
+          calcVertexBitmapI();
+      }
+    for (int i = atomCount; --i >= 0; ) {
+      int[] vertexMap = convexVertexMaps[i];
+      if (vertexMap != null)
+        convexFaceMaps[i] = calcFaceBitmap(vertexMap);
+    }
+
+    long timeElapsed = System.currentTimeMillis() - timeBegin;
+    System.out.println("surface atom count=" + surfaceAtomCount);
+    System.out.println("Surface construction time = " + timeElapsed + " ms");
+    htToruses = null;
+    // update this count to slightly speed up surfaceRenderer
+    int i;
+    for (i = atomCount; --i >= 0 && convexVertexMaps[i] == null; )
+      {}
+    surfaceConvexMax = i + 1;
   }
 
   void setSize(int size, BitSet bsSelected) {
@@ -236,7 +291,8 @@ class Sasurface1 {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
-      System.out.println("Surface.setProperty('color')");
+      System.out.println("I am surfaceID:" + surfaceID +
+                         " Surface.setProperty(color," + value + ")");
       setProperty("colorConvex", value, bs);
       setProperty("colorConcave", value, bs);
       setProperty("colorSaddle", value, bs);
@@ -323,8 +379,14 @@ class Sasurface1 {
       }
       return;
     }
+
     if ("off" == propertyName) {
-      setSize(0, bs);
+      hide = true;
+      return;
+    }
+
+    if ("on" == propertyName) {
+      hide = false;
       return;
     }
   }
@@ -1142,9 +1204,10 @@ class Sasurface1 {
             torusCavityOpens[i] = torusCavityOpens[j];
             torusCavityOpens[j] = b;
           }
-      for (int i = torusCavityCount; --i >= 0; ) {
-        System.out.println("i=" + i + torusCavityOpens[i]);
-      }
+      if (LOG)
+        for (int i = torusCavityCount; --i >= 0; ) {
+          System.out.println("i=" + i + torusCavityOpens[i]);
+        }
     }
     
     void connect() {
@@ -1653,6 +1716,7 @@ class Sasurface1 {
         g3d.getClosestVisibleGeodesicVertexIndex(vector,
                                                  visibilityBitmap,
                                                  geodesicRenderingLevel);
+      System.out.println("Cavity.getVisibleVertex -> " + vertex);
       if (vertex == -1) {
         //nothing visible ... so make one
         vertex = g3d.getNormix(vector, geodesicRenderingLevel);
@@ -1681,7 +1745,8 @@ class Sasurface1 {
       cavityVertexMap = Bmp.copyMinimalBitmap(tempVertexMap);
       if (cavityVertexMap != null)
         cavityFaceMap = calcFaceBitmap(cavityVertexMap);
-      System.out.println("visibleVertexCount=" + visibleVertexCount);
+      if (LOG)
+        System.out.println("visibleVertexCount=" + visibleVertexCount);
     }
 
     boolean sameSide(Vector3f normal, Vector3f pointA, Vector3f pointB) {
@@ -1821,10 +1886,12 @@ class Sasurface1 {
   }
 
   int calcEdgeVertexes(int[] visibilityBitmap, short[] edgeVertexes) {
-    System.out.println("calcEdgeVertexes(" + visibilityBitmap);
-    for (int i = 0; i < visibilityBitmap.length; ++i)
-      System.out.print(" " + Integer.toHexString(visibilityBitmap[i]));
-    System.out.println("");
+    if (LOG) {
+      System.out.println("calcEdgeVertexes(" + visibilityBitmap);
+      for (int i = 0; i < visibilityBitmap.length; ++i)
+        System.out.print(" " + Integer.toHexString(visibilityBitmap[i]));
+      System.out.println("");
+    }
     int edgeCount = 0;
     if (visibilityBitmap != null) {
       for (int vertex = Bmp.getMaxMappedBit(visibilityBitmap),
@@ -1843,7 +1910,8 @@ class Sasurface1 {
           edgeVertexes[edgeCount++] = (short)vertex;
       }
     }
-    System.out.println("edgeCount=" + edgeCount);
+    if (LOG)
+      System.out.println("edgeCount=" + edgeCount);
     return edgeCount;
   }
 

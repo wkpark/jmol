@@ -39,6 +39,7 @@ class Sasurface extends Shape {
   }
 
   void setSize(int size, BitSet bsSelected) {
+    dumpState("setSize:" + size);
     if (currentSurface != null)
       currentSurface.setSize(size, bsSelected);
     else {
@@ -48,6 +49,9 @@ class Sasurface extends Shape {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
+    System.out.println("Sasurface.setProperty(" + propertyName + "," + value +
+                       ")");
+    dumpState("setProperty:" + propertyName + ":" + value);
     if ("surfaceID" == propertyName) {
       String surfaceID = (String)value;
       System.out.println("surfaceID=" + surfaceID);
@@ -64,6 +68,7 @@ class Sasurface extends Shape {
         }
       }
       allocSurface(surfaceID, bs);
+      dumpState("done");
       return;
     }
 
@@ -100,5 +105,13 @@ class Sasurface extends Shape {
     surfaces = (Sasurface1[])Util.ensureLength(surfaces, surfaceCount + 1);
     currentSurface = surfaces[surfaceCount++] =
       new Sasurface1(surfaceID, viewer, g3d, Graphics3D.YELLOW, bs);
+  }
+
+  void dumpState(String msg) {
+    System.out.println(">>>>>>>>>>>>>>>>>>>>> " + msg);
+    System.out.println("surfaceCount=" + surfaceCount);
+    System.out.println("currentSurface=" +
+                       (currentSurface == null ? "NULL" :
+                        currentSurface.surfaceID));
   }
 }

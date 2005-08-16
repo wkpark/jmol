@@ -312,6 +312,11 @@ class ModelManager {
   int[] shapeSizes = new int[JmolConstants.SHAPE_MAX];
   Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
 
+  void loadShape(int shapeID) {
+    if (frame != null)
+      frame.loadShape(shapeID);
+  }
+  
   void setShapeSize(int shapeType, int size, BitSet bsSelected) {
     shapeSizes[shapeType] = size;
     if (frame != null)

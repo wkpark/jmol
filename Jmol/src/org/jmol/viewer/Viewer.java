@@ -1785,6 +1785,10 @@ final public class Viewer extends JmolViewer {
   boolean getShapeShow(int shapeID) {
     return getShapeSize(shapeID) != 0;
   }
+
+  void loadShape(int shapeID) {
+    modelManager.loadShape(shapeID);
+  }
   
   void setShapeSize(int shapeID, int size) {
     modelManager.setShapeSize(shapeID, size, selectionManager.bsSelection);

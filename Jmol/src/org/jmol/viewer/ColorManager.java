@@ -305,12 +305,19 @@ class ColorManager {
               ? JmolConstants.argbsChainHetero
               : JmolConstants.argbsChainAtom)[chain];
     } else if ("group" == palette) {
+      // viewer.calcSelectedGroupsCount() must be called first ...
+      // before we call getSelectedGroupCountWithinChain()
+      // or getSelectedGropuIndexWithinChain
+      // however, do not call it here because it will get recalculated
+      // for each atom
+      // therefore, we call it in Eval.colorObject();
       index = quantize(0,
                        atom.getSelectedGroupCountWithinChain() - 1,
                        atom.getSelectedGroupIndexWithinChain(),
                        JmolConstants.argbsBlueRedRainbow.length);
       argb = JmolConstants.argbsBlueRedRainbow[index];
     } else if ("monomer" == palette) {
+      // viewer.calcSelectedMonomersCount() must be called first ...
       index = quantize(0,
                        atom.getSelectedMonomerCountWithinPolymer() - 1,
                        atom.getSelectedMonomerIndexWithinPolymer(),

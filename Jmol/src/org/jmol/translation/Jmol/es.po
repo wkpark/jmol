@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-14 16:43+0200\n"
+"POT-Creation-Date: 2005-08-16 12:30-0400\n"
 "PO-Revision-Date: 2005-07-21 15:56+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: \n"
@@ -786,23 +786,23 @@ msgstr "No se pudo crear el área de texto de la consola"
 msgid "Closing Jmol..."
 msgstr "Inicializando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:792
+#: org/openscience/jmol/app/Jmol.java:787
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1108
+#: org/openscience/jmol/app/Jmol.java:1091
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1109
+#: org/openscience/jmol/app/Jmol.java:1092
 msgid "Enter URL of molecular model"
 msgstr "Escribe la URL del modelo molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1196
+#: org/openscience/jmol/app/Jmol.java:1179
 msgid "IO Exception:"
 msgstr "Error de entrada/salida:"
 
-#: org/openscience/jmol/app/Jmol.java:1363
+#: org/openscience/jmol/app/Jmol.java:1346
 msgid "File not loaded"
 msgstr "El archivo no se ha cargado"
 

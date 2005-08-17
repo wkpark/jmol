@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-14 16:43+0200\n"
+"POT-Creation-Date: 2005-08-16 12:30-0400\n"
 "PO-Revision-Date: 2005-05-28 18:26+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -790,23 +790,23 @@ msgstr "Impossible de créer la ConsoleTextArea:"
 msgid "Closing Jmol..."
 msgstr "Fermeture de Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:792
+#: org/openscience/jmol/app/Jmol.java:787
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1108
+#: org/openscience/jmol/app/Jmol.java:1091
 msgid "Open URL"
 msgstr "Ouvrir une URL"
 
-#: org/openscience/jmol/app/Jmol.java:1109
+#: org/openscience/jmol/app/Jmol.java:1092
 msgid "Enter URL of molecular model"
 msgstr "Saisissez l'URL d'un modèle moléculaire"
 
-#: org/openscience/jmol/app/Jmol.java:1196
+#: org/openscience/jmol/app/Jmol.java:1179
 msgid "IO Exception:"
 msgstr "Exception E/S!"
 
-#: org/openscience/jmol/app/Jmol.java:1363
+#: org/openscience/jmol/app/Jmol.java:1346
 msgid "File not loaded"
 msgstr "Fichier non chargé"
 

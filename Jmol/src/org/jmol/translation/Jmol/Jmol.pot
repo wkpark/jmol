@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-14 16:43+0200\n"
+"POT-Creation-Date: 2005-08-16 12:30-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -763,23 +763,23 @@ msgstr ""
 msgid "Closing Jmol..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:792
+#: org/openscience/jmol/app/Jmol.java:787
 msgid "Macros"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1108
+#: org/openscience/jmol/app/Jmol.java:1091
 msgid "Open URL"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1109
+#: org/openscience/jmol/app/Jmol.java:1092
 msgid "Enter URL of molecular model"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1196
+#: org/openscience/jmol/app/Jmol.java:1179
 msgid "IO Exception:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1363
+#: org/openscience/jmol/app/Jmol.java:1346
 msgid "File not loaded"
 msgstr ""
 

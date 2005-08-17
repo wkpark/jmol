@@ -1574,10 +1574,8 @@ class Eval implements Runnable {
     Object colorvalue = null;
     int shapeType = getShapeType(tokObject);
     int tok = statement[itoken].tok;
-    System.out.println("color object " + statement[itoken].value);
     if (tok == Token.translucent || tok == Token.opaque) {
       translucentOrOpaque = (String)(statement[itoken].value);
-      System.out.println("translucentOrOpaque=" + translucentOrOpaque);
       ++itoken;
     }
     if (itoken < statementLength) {
@@ -1595,8 +1593,12 @@ class Eval implements Runnable {
       case Token.type:
       case Token.temperature:
       case Token.fixedtemp:
+        break;
       case Token.group:
+        viewer.calcSelectedGroupsCount();
+        break;
       case Token.monomer:
+        viewer.calcSelectedMonomersCount();
         break;
       case Token.user:
         notImplemented(itoken);

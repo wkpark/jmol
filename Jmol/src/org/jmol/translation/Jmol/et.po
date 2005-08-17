@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-14 16:43+0200\n"
+"POT-Creation-Date: 2005-08-16 12:30-0400\n"
 "PO-Revision-Date: 2005-08-13 10:14+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -785,23 +785,23 @@ msgstr "Ei saa luua ConsoleTextArea: "
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:792
+#: org/openscience/jmol/app/Jmol.java:787
 msgid "Macros"
 msgstr "Makrod"
 
-#: org/openscience/jmol/app/Jmol.java:1108
+#: org/openscience/jmol/app/Jmol.java:1091
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1109
+#: org/openscience/jmol/app/Jmol.java:1092
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/Jmol.java:1196
+#: org/openscience/jmol/app/Jmol.java:1179
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
-#: org/openscience/jmol/app/Jmol.java:1363
+#: org/openscience/jmol/app/Jmol.java:1346
 msgid "File not loaded"
 msgstr "Fail ei ole loetud"
 

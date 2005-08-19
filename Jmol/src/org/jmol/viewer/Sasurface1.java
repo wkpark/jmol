@@ -132,6 +132,8 @@ class Sasurface1 {
   final Point3f outerCenterPoint = new Point3f();
   final Point3f outerSurfacePoint = new Point3f();
 
+  final Vector3f torusCavityAngleVector = new Vector3f();
+
   Vector3f[] probeVertexVectors;
     
   Sasurface1(String surfaceID, Viewer viewer, Graphics3D g3d, short colix,
@@ -198,6 +200,13 @@ class Sasurface1 {
       int[] vertexMap = convexVertexMaps[i];
       if (vertexMap != null)
         convexFaceMaps[i] = calcFaceBitmap(vertexMap);
+    }
+
+    for (int i = torusCount; --i >= 0; ) {
+      Torus torus = toruses[i];
+      torus.checkCavityCorrectness1();
+      torus.calcCavityAnglesAndSort();
+      torus.checkCavityCorrectness2();
     }
 
     long timeElapsed = System.currentTimeMillis() - timeBegin;
@@ -880,7 +889,70 @@ class Sasurface1 {
     }
                               
     
+    int torusCavityCount;
+    TorusCavity[] torusCavities;
+
     void addCavity(Cavity cavity, boolean rightHanded) {
+      if (torusCavities == null)
+        torusCavities = new TorusCavity[4];
+      else if (torusCavityCount == torusCavities.length)
+        torusCavities = (TorusCavity[])Util.doubleLength(torusCavities);
+      torusCavities[torusCavityCount] =
+        new TorusCavity(cavity, rightHanded);
+      ++torusCavityCount;
+    }
+
+    void checkCavityCorrectness1() {
+      if ((torusCavityCount & 1) != 0)
+        throw new NullPointerException();
+      int rightCount = 0;
+      for (int i = torusCavityCount; --i >= 0; )
+        if (torusCavities[i].rightHanded)
+          ++rightCount;
+      if (rightCount != torusCavityCount / 2)
+        throw new NullPointerException();
+    }
+
+    void calcCavityAnglesAndSort() {
+      calcReferenceVectors();
+      for (int i = torusCavityCount; --i >= 0; )
+        torusCavities[i].calcAngle(center, radialVector, radialVector90);
+      sortCavitiesByAngle();
+    }
+
+    void sortCavitiesByAngle() {
+      for (int i = torusCavityCount; --i > 0; ) {
+        TorusCavity champion = torusCavities[i];
+        for (int j = i; --j >= 0; ) {
+          TorusCavity challenger = torusCavities[j];
+          if (challenger.angle > champion.angle) {
+            torusCavities[j] = champion;
+            torusCavities[i] = champion = challenger;
+          }
+        }
+      }
+    }
+      
+    void checkCavityCorrectness2() {
+      for (int i = torusCavityCount; --i > 0; ) {
+        if (torusCavities[i].angle <= torusCavities[i-1].angle) {
+          System.out.println("oops! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+          for (int j = 0; j < torusCavityCount; ++j) {
+            System.out.println("cavity:" + j + " " +
+                               torusCavities[j].angle + " " +
+                               torusCavities[j].rightHanded);
+          }
+          throw new NullPointerException();
+        }
+        if (torusCavities[i].rightHanded == torusCavities[i-1].rightHanded)
+          throw new NullPointerException();
+      }
+    }
+
+    void calcReferenceVectors() {
+      aaRotate.set(axisVector, PI / 2);
+      matrixT.set(aaRotate);
+      matrixT.transform(radialVector, radialVector90);
     }
 
     void calcPoints(Point3f[] points) {
@@ -936,12 +1008,19 @@ class Sasurface1 {
           ixP += outerPointCount;
           ++bitIndex;
         } while ((probeT <<= 1) < 0);
-        if (bitIndex == (INNER_TORUS_STEP_COUNT - 1)) {
+        if (bitIndex == INNER_TORUS_STEP_COUNT) {
           probeT = probeMap;
-          if (probeT < 0) {
-          // wraparound, so pick up the beginning edge indexes
+          if (probeT < 0 && segmentStart > 0) {
+            // wraparound, so pick up the beginning edge indexes
             ixP = (edgeB) ? outerPointCount - 1 : 0;
             do {
+              if (edgeCount == edgeIndexes.length) {
+                System.out.println("extractAtomEdgeIndexes(" + segmentStart +
+                                   "," + edgeB + ",...)");
+                System.out.println("probeMap=" + Integer.toHexString(probeMap));
+                System.out.println("probeT=" +
+                                   Integer.toHexString(probeMap << segmentStart));
+              }
               edgeIndexes[edgeCount++] = (short)ixP;
             } while ((probeT <<= 1) < 0);
           }
@@ -989,6 +1068,27 @@ class Sasurface1 {
       System.out.println("");
       */
       return segmentCount;
+    }
+
+    class TorusCavity {
+      final Cavity cavity;
+      final boolean rightHanded;
+      float angle = 0;
+      
+      TorusCavity(Cavity cavity, boolean rightHanded) {
+        this.cavity = cavity;
+        this.rightHanded = rightHanded;
+      }
+
+      void calcAngle(Point3f center, Vector3f radialVector,
+                     Vector3f radialVector90) {
+        torusCavityAngleVector.sub(cavity.probeCenter, center);
+        angle = torusCavityAngleVector.angle(radialVector);
+        float angleCavity90 = torusCavityAngleVector.angle(radialVector90);
+        if (angleCavity90 <= PI / 2)
+          return;
+        angle = (2 * PI) - angle;
+      }
     }
 
   }
@@ -1176,12 +1276,13 @@ class Sasurface1 {
     float calcCavityAngle(Cavity cavity) {
       cavityProbeVector.sub(cavity.probeCenter, center);
       float angleCavity0 = cavityProbeVector.angle(radialVector);
+      float angle = angleCavity0;
       float angleCavity90 = cavityProbeVector.angle(radialVector90);
       float angleCavity270 = cavityProbeVector.angle(radialVector270);
-      if (angleCavity90 <= angleCavity270)
-        return angleCavity0;
-      else
-        return PI + angleCavity0;
+      if (angleCavity270 > angleCavity90)
+        angle += angleCavity0;
+      System.out.println("angle=" + angle);
+      return angle;
     }
 
     void sortCavitiesByAngle() {
@@ -1456,7 +1557,7 @@ class Sasurface1 {
         continue;
       setNeighborJ(sortedIndexJ);
       // deal with corrupt files that have duplicate atoms
-      if (distanceIJ < 0.1)
+      if (distanceIJ < 0.2)
         continue;
       vectorIJ.sub(centerJ, centerI);
       calcTorusCenter(centerI, radiiIP2, centerJ, radiiJP2, distanceIJ2,
@@ -1716,7 +1817,7 @@ class Sasurface1 {
         g3d.getClosestVisibleGeodesicVertexIndex(vector,
                                                  visibilityBitmap,
                                                  geodesicRenderingLevel);
-      System.out.println("Cavity.getVisibleVertex -> " + vertex);
+      //      System.out.println("Cavity.getVisibleVertex -> " + vertex);
       if (vertex == -1) {
         //nothing visible ... so make one
         vertex = g3d.getNormix(vector, geodesicRenderingLevel);
@@ -1926,3 +2027,4 @@ class Sasurface1 {
     }
   }
 }
+

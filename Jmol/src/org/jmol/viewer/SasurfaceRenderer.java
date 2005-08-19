@@ -261,9 +261,9 @@ class SasurfaceRenderer extends ShapeRenderer {
       }
     }
 
-    renderTorusEdges(torus);
+    //    renderTorusEdges(torus);
     //    Point3i[] convexScreens = screensCache.lookup(atom, vertexMap);
-    renderTorusAtomConnections(torus, null);
+    //    renderTorusAtomConnections(torus, null);
   }
 
   void renderTorusEdges(Sasurface1.Torus torus) {

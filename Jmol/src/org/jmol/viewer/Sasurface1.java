@@ -914,6 +914,8 @@ class Sasurface1 {
     }
 
     void calcCavityAnglesAndSort() {
+      if (torusCavityCount == 0) // full torus
+        return;
       calcReferenceVectors();
       for (int i = torusCavityCount; --i >= 0; )
         torusCavities[i].calcAngle(center, radialVector, radialVector90);
@@ -931,11 +933,22 @@ class Sasurface1 {
           }
         }
       }
+      // if the lowest one is not right-handed then
+      // move it to the end
+      TorusCavity lowest = torusCavities[0];
+      if (! lowest.rightHanded) {
+        for (int i = 1; i < torusCavityCount; ++i)
+          torusCavities[i - 1] = torusCavities[i];
+        torusCavities[torusCavityCount - 1] = lowest;
+      }
     }
       
     void checkCavityCorrectness2() {
+      if ((torusCavityCount & 1) != 0) // ensure even number
+        throw new NullPointerException();
       for (int i = torusCavityCount; --i > 0; ) {
-        if (torusCavities[i].angle <= torusCavities[i-1].angle) {
+        if (torusCavities[i].angle <= torusCavities[i-1].angle &&
+            i != torusCavityCount - 1) {
           System.out.println("oops! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
           for (int j = 0; j < torusCavityCount; ++j) {
             System.out.println("cavity:" + j + " " +
@@ -944,7 +957,7 @@ class Sasurface1 {
           }
           throw new NullPointerException();
         }
-        if (torusCavities[i].rightHanded == torusCavities[i-1].rightHanded)
+        if (((i & 1) == 0) ^ torusCavities[i].rightHanded)
           throw new NullPointerException();
       }
     }

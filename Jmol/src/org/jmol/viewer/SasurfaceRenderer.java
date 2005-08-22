@@ -136,7 +136,7 @@ class SasurfaceRenderer extends ShapeRenderer {
   }
 
   private final static boolean CONVEX_DOTS = false;
-  private final static boolean CAVITY_DOTS = true;
+  private final static boolean CAVITY_DOTS = false;
 
   void renderConvex(Sasurface1 surface, Atom atom,
                     short colix, int[] vertexMap, int[] faceMap) {
@@ -345,6 +345,12 @@ class SasurfaceRenderer extends ShapeRenderer {
 
   boolean SHOW_TORUS_CAVITY_FOO = false;
   
+  final Point3i[] cavityScreens = new Point3i[4];
+  {
+    for (int i = cavityScreens.length; --i >= 0; )
+      cavityScreens[i] = new Point3i();
+  };
+
   void renderCavity(Sasurface1.Cavity cavity, Atom[] atoms,
                     short[] colixesCavity,
                     int[][] convexVertexMaps) {
@@ -361,22 +367,24 @@ class SasurfaceRenderer extends ShapeRenderer {
       screen = viewer.transformPoint(cavity.pointPK);
       g3d.fillSphereCentered(Graphics3D.BLUE, 4, screen);
     }
-    int[] faceMap = cavity.cavityFaceMap;
-    if (faceMap == null)
-      return;
-    calcProbePoints(cavity.probeCenter, cavity.cavityVertexMap, probeScreens);
-    short colix = Graphics3D.GREEN;
-    for (int i = Bmp.getMaxMappedBit(faceMap), j = 3*i - 1; --i >= 0; j -= 3) {
-      if (Bmp.getBit(faceMap, i)) {
-        short vA = geodesicFaceVertexes[j - 2];
-        short vB = geodesicFaceVertexes[j - 1];
-        short vC = geodesicFaceVertexes[j];
-        g3d.fillTriangle(colix,
-                         probeScreens[vA], g3d.getInverseNormix(vA),
-                         probeScreens[vB], g3d.getInverseNormix(vB),
-                         probeScreens[vC], g3d.getInverseNormix(vC));
-      }
-    }
+    viewer.transformPoint(cavity.pointBottom, cavityScreens[0]);
+    viewer.transformPoint(cavity.pointPI, cavityScreens[1]);
+    viewer.transformPoint(cavity.pointPJ, cavityScreens[2]);
+    viewer.transformPoint(cavity.pointPK, cavityScreens[3]);
+    short[] normixes = cavity.normixes;
+    short colix = Graphics3D.YELLOW;
+    renderCavitySegment(colix, cavityScreens, normixes, 0, 1, 2);
+    renderCavitySegment(colix, cavityScreens, normixes, 0, 2, 3);
+    renderCavitySegment(colix, cavityScreens, normixes, 0, 3, 1);
+  }
+
+  void renderCavitySegment(short colix, Point3i[] cavityScreens,
+                           short[] normixes,
+                           int iA, int iB, int iC) {
+    g3d.fillTriangle(colix,
+                     cavityScreens[iA], normixes[iA],
+                     cavityScreens[iB], normixes[iB],
+                     cavityScreens[iC], normixes[iC]);
   }
 
   void renderCavity2(Sasurface1.Cavity cavity, Atom[] atoms,

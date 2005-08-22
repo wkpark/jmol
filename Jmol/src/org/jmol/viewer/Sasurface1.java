@@ -2099,15 +2099,17 @@ class Sasurface1 {
   class Cavity {
     final int ixI, ixJ, ixK;
 
+    final Point3f pointBottom = new Point3f();
     final Point3f pointPI = new Point3f();
     final Point3f pointPJ = new Point3f();
     final Point3f pointPK = new Point3f();
     final short vertexI, vertexJ, vertexK;
     short colixI, colixJ, colixK;
+    final short[] normixes = new short[4];
     final Point3f probeCenter;
     int[] cavityVertexMap;
     int[] cavityFaceMap;
-
+    
     // probeCenter is the center of the probe
     // probeBase is the midpoint between this cavity
     // and its mirror image on the other side
@@ -2129,6 +2131,18 @@ class Sasurface1 {
       vectorPK.normalize();
       vectorPK.scale(radiusP);
       pointPK.add(vectorPK, probeCenter);
+
+      // the bottomPoint;
+
+      vectorT.add(vectorPI, vectorPJ);
+      vectorT.add(vectorPK);
+      vectorT.normalize();
+      pointBottom.scaleAdd(radiusP, vectorT, probeCenter);
+
+      normixes[0] = g3d.getInverseNormix(vectorT);
+      normixes[1] = g3d.getInverseNormix(vectorPI);
+      normixes[2] = g3d.getInverseNormix(vectorPJ);
+      normixes[3] = g3d.getInverseNormix(vectorPK);
 
       // calc nearest geodesic vertexes 
       vectorT.sub(probeCenter, frame.atoms[ixI].point3f);
@@ -2364,6 +2378,107 @@ class Sasurface1 {
       int v = edgeVertexes[i];
       vectorT.scale(radius, geodesicVertexVectors[v]);
       points[i].add(center, vectorT);
+    }
+  }
+
+  class CavityX {
+    final int ixI, ixJ, ixK;
+
+    final Point3f pointPI = new Point3f();
+    final Point3f pointPJ = new Point3f();
+    final Point3f pointPK = new Point3f();
+    final short vertexI, vertexJ, vertexK;
+    short colixI, colixJ, colixK;
+    final Point3f probeCenter;
+    int[] cavityVertexMap;
+    int[] cavityFaceMap;
+
+    // probeCenter is the center of the probe
+    // probeBase is the midpoint between this cavity
+    // and its mirror image on the other side
+    CavityX(Point3f probeCenter, Point3f probeBase) {
+      this.probeCenter = new Point3f(probeCenter);
+      ixI = indexI; ixJ = indexJ; ixK = indexK;
+
+      vectorPI.sub(centerI, probeCenter);
+      vectorPI.normalize();
+      vectorPI.scale(radiusP);
+      pointPI.add(vectorPI, probeCenter);
+
+      vectorPJ.sub(centerJ, probeCenter);
+      vectorPJ.normalize();
+      vectorPJ.scale(radiusP);
+      pointPJ.add(vectorPJ, probeCenter);
+
+      vectorPK.sub(centerK, probeCenter);
+      vectorPK.normalize();
+      vectorPK.scale(radiusP);
+      pointPK.add(vectorPK, probeCenter);
+
+      // calc nearest geodesic vertexes 
+      vectorT.sub(probeCenter, frame.atoms[ixI].point3f);
+      vertexI = getVisibleVertex(vectorT, convexVertexMaps[ixI]);
+      vectorT.sub(probeCenter, frame.atoms[ixJ].point3f);
+      vertexJ = getVisibleVertex(vectorT, convexVertexMaps[ixJ]);
+      vectorT.sub(probeCenter, frame.atoms[ixK].point3f);
+      vertexK = getVisibleVertex(vectorT, convexVertexMaps[ixK]);
+
+      /*
+      System.out.println(" vertexI=" + vertexI +
+                         " vertexJ=" + vertexJ +
+                         " vertexK=" + vertexK);
+
+      */
+
+      ////////////////////////////////////////////////////////////////
+      // separately, let's find the geodesics that lie in the cavity
+      ////////////////////////////////////////////////////////////////
+      calcVertexBitmapCavity(vectorPI, vectorPJ, vectorPK);
+    }
+
+    short getVisibleVertex(Vector3f vector, int[] visibilityBitmap) {
+      short vertex;
+      vertex =
+        g3d.getClosestVisibleGeodesicVertexIndex(vector,
+                                                 visibilityBitmap,
+                                                 geodesicRenderingLevel);
+      //      System.out.println("Cavity.getVisibleVertex -> " + vertex);
+      if (vertex == -1) {
+        //nothing visible ... so make one
+        vertex = g3d.getNormix(vector, geodesicRenderingLevel);
+        Bmp.setBitGrow(visibilityBitmap, vertex);
+      }
+      return vertex;
+    }
+
+    void calcVertexBitmapCavity(Vector3f vectorPI, Vector3f vectorPJ,
+                                Vector3f vectorPK) {
+      int visibleVertexCount = 0;
+      Bmp.clearBitmap(tempVertexMap);
+      vectorCrossIJ.cross(vectorPI, vectorPJ);
+      vectorCrossIK.cross(vectorPI, vectorPK);
+      vectorCrossJK.cross(vectorPJ, vectorPK);
+      for (int i = geodesicVertexCount; --i >= 0; ) {
+        Vector3f probeVertex = probeVertexVectors[i];
+        if (sameSide(vectorCrossIJ, vectorPK, probeVertex) &&
+            sameSide(vectorCrossIK, vectorPJ, probeVertex) &&
+            sameSide(vectorCrossJK, vectorPI, probeVertex)) {
+          ++visibleVertexCount;
+          Bmp.setBit(tempVertexMap, i);
+        }
+      }
+      
+      cavityVertexMap = Bmp.copyMinimalBitmap(tempVertexMap);
+      if (cavityVertexMap != null)
+        cavityFaceMap = calcFaceBitmap(cavityVertexMap);
+      if (LOG)
+        System.out.println("visibleVertexCount=" + visibleVertexCount);
+    }
+
+    boolean sameSide(Vector3f normal, Vector3f pointA, Vector3f pointB) {
+      boolean positivePointA = normal.dot(pointA) >= 0;
+      boolean positivePointB = normal.dot(pointB) >= 0;
+      return ! (positivePointA ^ positivePointB);
     }
   }
 }

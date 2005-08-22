@@ -43,7 +43,7 @@
       <section title="Residues">
         <p>Related commands: <tt>color amino, color shapely</tt></p>
         <script type="text/javascript">assignLastAa('other');
-		  buildResidueTable(
+          buildResidueTable(
           'Protein', 'amino', 'Protein', 'shapely', '(same in RasMol)',
           'Nucleic', 'shapely', '(A,G,C,T same in RasMol)');
         </script>
@@ -52,7 +52,7 @@
       <section title="Chains">
         <p>Related command: <tt>color chain</tt></p>
         <script type="text/javascript">assignLastChain('none/<br/>numeric');
-		buildChainTable('Chain', 'ID');
+          buildChainTable('Chain', 'ID');
         </script>
       </section>
 
@@ -64,7 +64,7 @@
 
       <section title="Hydrogen bonds">
         <p>Related command: <tt>color hbonds type </tt></p>
-		<script type="text/javascript">buildHbondsTable(
+        <script type="text/javascript">buildHbondsTable(
           'Distance',
           ['+2', '+3 (turns)', '+4 (&#x03B1;-helix)', '+5', '-3', '-4', 'other (&#x03B2;-sheet)', 'nucleotide']);
         </script>

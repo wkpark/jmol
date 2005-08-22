@@ -222,50 +222,35 @@ class SasurfaceRenderer extends ShapeRenderer {
   void renderTorus(Sasurface1.Torus torus, short[] colixes) {
     torus.calcPoints(torusPoints);
     Point3i[] screens = torusScreens;
-    torus.calcScreens(torusPoints, torusScreens);
+    torus.calcScreens(torusPoints, screens);
     short[] normixes = torus.normixes;
-    final int iLast = INNER_TORUS_STEP_COUNT - 1;
     int outerPointCount = torus.outerPointCount;
     int ixP = 0;
-    int ixQ = 0;
-    int i, probeT;
-    if (false) {
-      for (int m = torus.probeCount; --m >= 0; )
-        for (int n = outerPointCount; --n >= 0; )
-          g3d.fillSphereCentered(g3d.ORANGE,
-                                 m + 1, screens[m*outerPointCount + n]);
-    }
-    for (i = 0, probeT = torus.probeMap; probeT != 0; ++i, probeT <<= 1) {
-      if (probeT >= 0)
-        continue;
-      if (i == iLast) {
-        if (torus.probeMap >= 0)
-          break;
-        ixQ = 0;
-      } else if ((probeT & 0x40000000) == 0) {
-        ixP += outerPointCount;
-        continue;
-      } else {
-        ixQ = ixP + outerPointCount;
-      }
-                       
-      ++ixP;
-      ++ixQ;
-      for (int j = 1; j < outerPointCount; ++j) {
-        g3d.fillQuadrilateral(screens[ixP-1], colixes[j-1], normixes[ixP-1],
-                              screens[ixP  ], colixes[j  ], normixes[ixP  ],
-                              screens[ixQ  ], colixes[j  ], normixes[ixQ  ],
-                              screens[ixQ-1], colixes[j-1], normixes[ixQ-1]);
+    int torusSegmentCount = torus.torusSegmentCount;
+    for (int i = 0; i < torusSegmentCount; ++i) {
+      int stepCount = torus.torusSegments[i].stepCount;
+      int ixQ = ixP + outerPointCount;
+      for (int j = stepCount; --j > 0; ) { // .GT.
         ++ixP;
         ++ixQ;
+        for (int k = 1; k < outerPointCount; ++k) {
+          g3d.fillQuadrilateral(screens[ixP-1], colixes[k-1], normixes[ixP-1],
+                                screens[ixP  ], colixes[k  ], normixes[ixP  ],
+                                screens[ixQ  ], colixes[k  ], normixes[ixQ  ],
+                                screens[ixQ-1], colixes[k-1], normixes[ixQ-1]);
+          ++ixP;
+          ++ixQ;
+        }
       }
+      ixP = ixQ;
     }
-
+    
     //    renderTorusEdges(torus);
     //    Point3i[] convexScreens = screensCache.lookup(atom, vertexMap);
     //    renderTorusAtomConnections(torus, null);
   }
 
+  /*
   void renderTorusEdges(Sasurface1.Torus torus) {
     Point3i[] screens = torusScreens;
     // show torus edges
@@ -286,6 +271,7 @@ class SasurfaceRenderer extends ShapeRenderer {
                                5 + (3*m), screens[torusEdgeIndexes[n]]);
     }
   }
+  */
 
   void renderTorusAtomConnections(Sasurface1.Torus torus,
                                   Point3i screensConvex) {

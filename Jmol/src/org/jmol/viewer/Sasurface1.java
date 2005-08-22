@@ -207,6 +207,10 @@ class Sasurface1 {
       torus.checkCavityCorrectness1();
       torus.calcCavityAnglesAndSort();
       torus.checkCavityCorrectness2();
+      torus.buildTorusSegments();
+      torus.calcPointCounts();
+      torus.calcNormixes();
+      //      torus.checkTorusSegments();
     }
 
     long timeElapsed = System.currentTimeMillis() - timeBegin;
@@ -345,8 +349,12 @@ class Sasurface1 {
       boolean isTranslucent = ("translucent" == value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = toruses[i];
-        torus = torus;
-        // something
+        if (bs.get(torus.ixA))
+          torus.colixA = Graphics3D.setTranslucent(torus.colixA,
+                                                   isTranslucent);
+        if (bs.get(torus.ixB))
+          torus.colixB = Graphics3D.setTranslucent(torus.colixB,
+                                                   isTranslucent);
       }
       return;
     }
@@ -669,10 +677,9 @@ class Sasurface1 {
     final Vector3f tangentVector;
     final Vector3f outerRadial;
     final float outerAngle;
-    int probeMap;
     short colixA, colixB;
     byte outerPointCount;
-    byte probeCount;
+    byte segmentStripCount;
     short totalPointCount;
     short[] normixes;
 
@@ -739,40 +746,309 @@ class Sasurface1 {
       aaRotate.set(matrixT);
     }
 
+    void calcPointCounts() {
+      int c = (int)(OUTER_TORUS_STEP_COUNT * outerAngle / Math.PI);
+      c = (c + 1) & 0xFE;
+      if (c > OUTER_TORUS_STEP_COUNT)
+        c = OUTER_TORUS_STEP_COUNT;
+
+      int t = 0;
+      for (int i = torusSegmentCount; --i >= 0; )
+        t += torusSegments[i].stepCount;
+      System.out.println("segmentStripCount t=" + t);
+      segmentStripCount = (byte)t;
+      outerPointCount = (byte)c;
+      totalPointCount = (short)(t * c);
+      System.out.println("calcPointCounts: " +
+                         " segmentStripCount=" + segmentStripCount +
+                         " outerPointCount=" + outerPointCount +
+                         " totalPointCount=" + totalPointCount);
+    }
+
+    void transformOuterRadials() {
+      float stepAngle1 =
+        (outerPointCount <= 1) ? 0 : outerAngle / (outerPointCount - 1);
+      aaT1.set(tangentVector, stepAngle1 * outerPointCount);
+      for (int i = outerPointCount; --i > 0; ) {
+        aaT1.angle -= stepAngle1;
+        matrixT1.set(aaT1);
+        matrixT1.transform(outerRadial, outerRadials[i]);
+      }
+      outerRadials[0].set(outerRadial);
+    }
+
+    int torusCavityCount;
+    TorusCavity[] torusCavities;
+
+    void addCavity(Cavity cavity, boolean rightHanded) {
+      if (torusCavities == null)
+        torusCavities = new TorusCavity[4];
+      else if (torusCavityCount == torusCavities.length)
+        torusCavities = (TorusCavity[])Util.doubleLength(torusCavities);
+      torusCavities[torusCavityCount] =
+        new TorusCavity(cavity, rightHanded);
+      ++torusCavityCount;
+    }
+
+    void checkCavityCorrectness1() {
+      if ((torusCavityCount & 1) != 0)
+        throw new NullPointerException();
+      int rightCount = 0;
+      for (int i = torusCavityCount; --i >= 0; )
+        if (torusCavities[i].rightHanded)
+          ++rightCount;
+      if (rightCount != torusCavityCount / 2)
+        throw new NullPointerException();
+    }
+
+    void calcCavityAnglesAndSort() {
+      if (torusCavityCount == 0) // full torus
+        return;
+      calcReferenceVectors();
+      for (int i = torusCavityCount; --i >= 0; )
+        torusCavities[i].calcAngle(center, radialVector, radialVector90);
+      sortCavitiesByAngle();
+    }
+
+    void sortCavitiesByAngle() {
+      for (int i = torusCavityCount; --i > 0; ) {
+        TorusCavity champion = torusCavities[i];
+        for (int j = i; --j >= 0; ) {
+          TorusCavity challenger = torusCavities[j];
+          if (challenger.angle > champion.angle) {
+            torusCavities[j] = champion;
+            torusCavities[i] = champion = challenger;
+          }
+        }
+      }
+      // if the lowest one is not right-handed then
+      // move it to the end
+      TorusCavity lowest = torusCavities[0];
+      if (! lowest.rightHanded) {
+        for (int i = 1; i < torusCavityCount; ++i)
+          torusCavities[i - 1] = torusCavities[i];
+        torusCavities[torusCavityCount - 1] = lowest;
+      }
+    }
+      
+    void checkCavityCorrectness2() {
+      if ((torusCavityCount & 1) != 0) // ensure even number
+        throw new NullPointerException();
+      for (int i = torusCavityCount; --i > 0; ) {
+        if (torusCavities[i].angle <= torusCavities[i-1].angle &&
+            i != torusCavityCount - 1) {
+          System.out.println("oops! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+          for (int j = 0; j < torusCavityCount; ++j) {
+            System.out.println("cavity:" + j + " " +
+                               torusCavities[j].angle + " " +
+                               torusCavities[j].rightHanded);
+          }
+          throw new NullPointerException();
+        }
+        if (((i & 1) == 0) ^ torusCavities[i].rightHanded)
+          throw new NullPointerException();
+      }
+    }
+
+    void buildTorusSegments() {
+      if (torusCavityCount == 0) {
+        addTorusSegment(new TorusSegment(0, 2 * PI));
+      } else {
+        for (int i = 0; i < torusCavityCount; i += 2)
+          addTorusSegment(new TorusSegment(torusCavities[i].angle,
+                                           torusCavities[i+1].angle));
+      }
+    }
+
+    int torusSegmentCount;
+    TorusSegment[] torusSegments;
+
+    void calcReferenceVectors() {
+      aaRotate.set(axisVector, PI / 2);
+      matrixT.set(aaRotate);
+      matrixT.transform(radialVector, radialVector90);
+    }
+
+    void addTorusSegment(TorusSegment torusSegment) {
+      if (torusSegments == null)
+        torusSegments = new TorusSegment[4];
+      if (torusSegmentCount == torusSegments.length)
+        torusSegments = (TorusSegment[])Util.doubleLength(torusSegments);
+      torusSegments[torusSegmentCount++] = torusSegment;
+    }
+
+    void calcNormixes() {
+      transformOuterRadials();
+      short[] normixes = this.normixes = new short[totalPointCount];
+      int ix = 0;
+      for (int i = 0; i < torusSegmentCount; ++i)
+        ix = torusSegments[i].calcNormixes(normixes, ix);
+    }
+    
+    void calcPoints(Point3f[] points) {
+      int indexStart = 0;
+      transformOuterRadials();
+      for (int i = 0; i < torusSegmentCount; ++i)
+        indexStart = torusSegments[i].calcPoints(points, indexStart);
+    }
+    
+    void calcScreens(Point3f[] points, Point3i[] screens) {
+      for (int i = totalPointCount; --i >= 0; )
+        viewer.transformPoint(points[i], screens[i]);
+    }
+
+    class TorusCavity {
+      final Cavity cavity;
+      final boolean rightHanded;
+      float angle = 0;
+      
+      TorusCavity(Cavity cavity, boolean rightHanded) {
+        this.cavity = cavity;
+        this.rightHanded = rightHanded;
+      }
+
+      void calcAngle(Point3f center, Vector3f radialVector,
+                     Vector3f radialVector90) {
+        torusCavityAngleVector.sub(cavity.probeCenter, center);
+        angle = torusCavityAngleVector.angle(radialVector);
+        float angleCavity90 = torusCavityAngleVector.angle(radialVector90);
+        if (angleCavity90 <= PI / 2)
+          return;
+        angle = (2 * PI) - angle;
+      }
+    }
+
+    class TorusSegment {
+      float startAngle;
+      float stepAngle;
+      int stepCount;
+
+      TorusSegment(float startAngle, float endAngle) {
+        this.startAngle = startAngle;
+        float totalSegmentAngle = endAngle - startAngle;
+        //System.out.println(" startAngle=" + startAngle +
+        //                   " endAngle=" + endAngle +
+        //                   " totalSegmentAngle=" + totalSegmentAngle);
+        if (totalSegmentAngle < 0)
+          totalSegmentAngle += 2 * PI;
+        stepCount = (int)(totalSegmentAngle / INNER_TORUS_STEP_ANGLE);
+        stepAngle = totalSegmentAngle / stepCount;
+        ++stepCount; // one more strip than pieces of the segment
+      }
+
+      int calcPoints(Point3f[] points, int ixPoint) {
+        aaT.set(axisVector, startAngle);
+        for (int i = stepCount; --i >= 0; aaT.angle += stepAngle) {
+          matrixT.set(aaT);
+          matrixT.transform(radialVector, pointT);
+          pointT.add(center);
+          for (int j = 0; j < outerPointCount; ++j, ++ixPoint) {
+            matrixT.transform(outerRadials[j], vectorT);
+            points[ixPoint].add(pointT, vectorT);
+          }
+        }
+        return ixPoint;
+      }
+
+      int calcNormixes(short[] normixes, int ix) {
+        aaT.set(axisVector, startAngle);
+        for (int i = stepCount; --i >= 0; aaT.angle += stepAngle) {
+          matrixT.set(aaT);
+          for (int j = 0; j < outerPointCount; ++j, ++ix) {
+            matrixT.transform(outerRadials[j], vectorT);
+            normixes[ix] = g3d.get2SidedNormix(vectorT);
+          }
+        }
+        return ix;
+      }
+    }
+  }
+
+  class TorusY {
+    final int ixA, ixB;
+    final Point3f center;
+    final float radius;
+    final Vector3f axisVector;
+    final Vector3f radialVector;
+    final Vector3f unitRadialVector;
+    final Vector3f tangentVector;
+    final Vector3f outerRadial;
+    final float outerAngle;
+    int probeMap;
+    short colixA, colixB;
+    byte outerPointCount;
+    byte probeCount;
+    short totalPointCount;
+    short[] normixes;
+
+    short[] connectAConvex;
+
+    TorusY(int indexA, Point3f centerA, int indexB, Point3f centerB, 
+          Point3f center, float radius, boolean fullTorus) {
+      this.ixA = indexA;
+      this.ixB = indexB;
+      this.center = new Point3f(center);
+      this.radius = radius;
+
+      axisVector = new Vector3f();
+      axisVector.sub(centerB, centerA);
+
+      if (axisVector.x == 0)
+        unitRadialVector = new Vector3f(1, 0, 0);
+      else if (axisVector.y == 0)
+        unitRadialVector = new Vector3f(0, 1, 0);
+      else if (axisVector.z == 0)
+        unitRadialVector = new Vector3f(0, 0, 1);
+      else {
+        unitRadialVector = new Vector3f(-axisVector.y, axisVector.x, 0);
+        unitRadialVector.normalize();
+      }
+      radialVector = new Vector3f(unitRadialVector);
+      radialVector.scale(radius);
+
+      tangentVector = new Vector3f();
+      tangentVector.cross(axisVector, radialVector);
+      tangentVector.normalize();
+
+      pointTorusP.add(center, radialVector);
+
+      vectorPA.sub(centerA, pointTorusP);
+      vectorPA.normalize();
+      vectorPA.scale(radiusP);
+
+      vectorPB.sub(centerB, pointTorusP);
+      vectorPB.normalize();
+      vectorPB.scale(radiusP);
+
+      outerRadial = new Vector3f(vectorPA);
+      outerAngle = vectorPA.angle(vectorPB);
+
+      float angle = vectorZ.angle(axisVector);
+      if (angle == 0) {
+        matrixT.setIdentity();
+      } else {
+        vectorT.cross(vectorZ, axisVector);
+        aaT.set(vectorT, angle);
+        matrixT.set(aaT);
+      }
+
+      matrixT.transform(unitRadialVector, vectorT);
+      angle = vectorX.angle(vectorT);
+      if (angle != 0) {
+        vectorT.cross(vectorX, vectorT);
+        aaT.set(vectorT, angle);
+        matrixT1.set(aaT);
+        matrixT.mul(matrixT1);
+      }
+
+      aaRotate.set(matrixT);
+    }
+
     void calcEverything() {
-      calcProbeMap();
+      //      calcProbeMap();
       calcPointCounts();
       calcNormixes();
       connect();
-    }
-
-    void calcProbeMap() {
-      // note that this probe map puts step 0 in the sign bit
-      // this means that as we shift out the bits we can easily
-      // test based upon the sign && we can easily determine
-      // when there are no bits left;
-      int probeMap = (~0 << (32 - INNER_TORUS_STEP_COUNT));
-      
-      aaT.set(axisVector, 0);
-      int iLastNeighbor = 0;
-      for (int step = INNER_TORUS_STEP_COUNT; --step >= 0; ) {
-        aaT.angle = step * INNER_TORUS_STEP_ANGLE;
-        matrixT.set(aaT);
-        matrixT.transform(radialVector, pointT);
-        pointT.add(center);
-        int iStart = iLastNeighbor;
-        do {
-          if (neighborAtoms[iLastNeighbor].atomIndex != ixB) {
-            if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
-                < neighborPlusProbeRadii2[iLastNeighbor]) {
-              probeMap &= ~(1 << (31 - step));
-              break;
-            }
-          }
-          iLastNeighbor = (iLastNeighbor + 1) % neighborCount;
-        } while (iLastNeighbor != iStart);
-      }
-      this.probeMap = probeMap;
     }
 
     void calcPointCounts() {
@@ -962,10 +1238,37 @@ class Sasurface1 {
       }
     }
 
+    void buildTorusSegments() {
+      if (torusCavityCount == 0) {
+        addTorusSegment(new TorusSegment(0, 2 * PI));
+      } else {
+        for (int i = 0; i < torusCavityCount; i += 2)
+          addTorusSegment(new TorusSegment(torusCavities[i].angle,
+                                           torusCavities[i+1].angle));
+      }
+    }
+
+    int torusSegmentCount;
+    TorusSegment[] torusSegments;
+
     void calcReferenceVectors() {
       aaRotate.set(axisVector, PI / 2);
       matrixT.set(aaRotate);
       matrixT.transform(radialVector, radialVector90);
+    }
+
+    void addTorusSegment(TorusSegment torusSegment) {
+      if (torusSegments == null)
+        torusSegments = new TorusSegment[4];
+      if (torusSegmentCount == torusSegments.length)
+        torusSegments = (TorusSegment[])Util.doubleLength(torusSegments);
+      torusSegments[torusSegmentCount++] = torusSegment;
+    }
+
+    void calcPointsY(Point3f[] points) {
+      int indexStart = 0;
+      for (int i = 0; i < torusSegmentCount; ++i)
+        indexStart = torusSegments[i].calcPoints(points, indexStart);
     }
 
     void calcPoints(Point3f[] points) {
@@ -1104,6 +1407,33 @@ class Sasurface1 {
       }
     }
 
+    class TorusSegment {
+      float startAngle;
+      float stepAngle;
+      int stepCount;
+
+      TorusSegment(float startAngle, float endAngle) {
+        this.startAngle = startAngle;
+        float totalSegmentAngle = endAngle - startAngle;
+        stepCount = (int)(totalSegmentAngle / INNER_TORUS_STEP_ANGLE);
+        stepAngle = totalSegmentAngle / stepCount;
+      }
+
+      int calcPoints(Point3f[] points, int ixPoint) {
+        transformOuterRadials();
+        aaT.set(axisVector, startAngle);
+        for (int i = stepCount; --i >= 0; aaT.angle += stepAngle) {
+          matrixT.set(aaT);
+          matrixT.transform(radialVector, pointT);
+          pointT.add(center);
+          for (int j = 0; j < outerPointCount; ++j, ++ixPoint) {
+            matrixT.transform(outerRadials[j], vectorT);
+            points[ixPoint].add(pointT, vectorT);
+          }
+        }
+        return ixPoint;
+      }
+    }
   }
 
   class TorusX {
@@ -1588,9 +1918,6 @@ class Sasurface1 {
         getCavitiesIJK();
       }
       checkFullTorusIJ();
-      Torus torusIJ = getTorus(indexI, indexJ);
-      if (torusIJ != null)
-        torusIJ.calcEverything();
     }
     // check for an isolated atom with no neighbors
     if (neighborCount == 0)

@@ -208,6 +208,7 @@ final public class Graphics3D {
 
   /**
    * controls greyscale rendering
+   * @param greyscaleMode Flag for greyscale rendering
    */
   public void setGreyscaleMode(boolean greyscaleMode) {
     this.inGreyscaleMode = greyscaleMode;
@@ -1791,8 +1792,7 @@ final public class Graphics3D {
       colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
       return Colix.getRgb(colix);
-    else 
-      return Colix.getRgbGreyscale(colix);
+    return Colix.getRgbGreyscale(colix);
   }
 
   public int[] getShades(short colix) {
@@ -1800,8 +1800,7 @@ final public class Graphics3D {
       colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
       return Colix.getShades(colix);
-    else
-      return Colix.getShadesGreyscale(colix);
+    return Colix.getShadesGreyscale(colix);
   }
 
   public final static boolean isColixTranslucent(short colix) {

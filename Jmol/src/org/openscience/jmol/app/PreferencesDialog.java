@@ -32,7 +32,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
-import java.awt.Component;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -54,7 +53,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.ButtonGroup;
 import javax.swing.JColorChooser;
 import javax.swing.JButton;
-import javax.swing.AbstractButton;
 import javax.swing.JLabel;
 import javax.swing.Action;
 import javax.swing.JPanel;
@@ -1052,8 +1050,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   ItemListener checkBoxListener = new ItemListener() {
 
-    Component c;
-    AbstractButton b;
+    //Component c;
+    //AbstractButton b;
 
     public void itemStateChanged(ItemEvent e) {
 

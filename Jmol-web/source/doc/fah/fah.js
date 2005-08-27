@@ -238,6 +238,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Double Gromacs";
   } else if (code == "G") {
     document.fahForm.infoCode.value = "Gromacs";
+  } else if (code == "GB") {
+    document.fahForm.infoCode.value = "GB Gromacs";
   } else if (code == "Q") {
     document.fahForm.infoCode.value = "QMD";
   } else if (code == "T") {

@@ -180,11 +180,11 @@ public class Contribution {
    */
   private class HTMLDocumentContribution extends HTMLDocument {
 
-    private Contribution _contrib = null;
+    private Contribution _contrib1 = null;
 
     public HTMLDocumentContribution(Contribution contrib) {
       super();
-      _contrib = contrib;
+      _contrib1 = contrib;
     }
 
     /*
@@ -193,7 +193,7 @@ public class Contribution {
      * @see javax.swing.text.html.HTMLDocument#getReader(int)
      */
     public HTMLEditorKit.ParserCallback getReader(int pos) {
-      return new ContributionReader(pos, _contrib);
+      return new ContributionReader(pos, _contrib1);
     }
 
     /**
@@ -201,14 +201,15 @@ public class Contribution {
      */
     private class ContributionReader extends HTMLDocument.HTMLReader {
 
-      private Contribution _contrib;
+      private Contribution _contrib2;
 
       /**
        * @param offset
+       * @param contrib
        */
       public ContributionReader(int offset, Contribution contrib) {
         super(offset);
-        _contrib = contrib;
+        _contrib2 = contrib;
       }
 
       /*
@@ -270,8 +271,8 @@ public class Contribution {
           }
         }
         if (tag.equals(HTML.Tag.TR)) {
-          if ((this._project != null) && (this._count > 0) && (_contrib != null)) {
-            _contrib.addProjectInformation(this._project, this._count);
+          if ((this._project != null) && (this._count > 0) && (_contrib2 != null)) {
+            _contrib2.addProjectInformation(this._project, this._count);
           }
           this._column = 0;
           this._project = null;

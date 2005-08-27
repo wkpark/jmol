@@ -79,7 +79,7 @@ public class XMLValue {
    * 
    * @param map Group of attributes
    * @param name Name of attribute
-   * @param factor Multiplicative factor
+   * @param mult Multiplicative factor
    * @return Integer value of the attribute
    */
   public static Integer getInteger(NamedNodeMap map, String name, int mult) {

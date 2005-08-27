@@ -111,7 +111,7 @@ public class ProjectInformation {
    * @param projectNum Project number
    * @return Informations for project
    */
-  private Information getInfo(int projectNum) {
+  Information getInfo(int projectNum) {
 
     //Retrieve project information
     Information result = null;
@@ -129,7 +129,7 @@ public class ProjectInformation {
    * @param projectNum Project number
    * @return Informations for project
    */
-  private Information createInfo(int projectNum) {
+  Information createInfo(int projectNum) {
     if (this._projectInfo.size() <= projectNum) {
         this._projectInfo.setSize(projectNum + 1);
       }
@@ -394,7 +394,7 @@ public class ProjectInformation {
   private void addPSInformation() {
     try {
       //Check file existence and time
-      long psDate = System.currentTimeMillis();
+      //long psDate = System.currentTimeMillis();
       if (_local == true) {
         return;
       }

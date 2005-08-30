@@ -128,7 +128,7 @@ class GuiMap {
       labels.put("left", GT._("Left"));
       labels.put("transform", GT._("Transform..."));
       labels.put("definecenter", GT._("Define Center"));
-      labels.put("tools", GT._("Tools"));
+      labels.put("tools", GT._("&Tools"));
       labels.put("viewMeasurementTable", GT._("Measurements..."));
       labels.put("distanceUnitsMenu", GT._("Distance Units"));
       labels.put("distanceNanometersScript", GT._("Nanometers 1E-9"));

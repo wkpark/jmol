@@ -1,0 +1,17 @@
+<project name="JmolEclipseBuild" default="preBuild" basedir=".">
+
+  <property name="sources.dir" value="src" />
+  <property name="classes.dir" value="bin" />
+
+  <target name="preBuild" id="preBuild" depends="copyClasses"
+          description="Pre-build steps for Eclipse" />
+
+  <target name="copyClasses"
+  	      description="Copy precompiled classes to Eclipse build directory">
+    <copy includeemptydirs="false" todir="${classes.dir}">
+      <fileset dir="${sources.dir}" includes="**/*.class">
+      </fileset>
+    </copy>
+  </target>
+
+</project>

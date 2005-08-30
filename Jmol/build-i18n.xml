@@ -150,7 +150,7 @@
           id="update-application-catalog-lang">
     <echo message="Updating messages_${Jmol_lang_value}.class file for Jmol ..."/>
     <exec executable="msgfmt" dir="${Jmol.po.dir}">
-      <arg line="--statistics --java2 -l ${Jmol_lang_value} -d . ${Jmol_lang_value}.po"/>
+      <arg line="--statistics --java2 -l ${Jmol_lang_value} -d ../../../.. -r org.jmol.translation.Jmol.Messages ${Jmol_lang_value}.po"/>
     </exec>
   </target>
 

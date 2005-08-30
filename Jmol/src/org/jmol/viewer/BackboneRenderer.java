@@ -30,10 +30,10 @@ import org.jmol.g3d.*;
 class BackboneRenderer extends MpsRenderer {
 
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
-    renderTraceChain((Backbone.Bbpolymer)mpspolymer);
+    renderBackboneChain((Backbone.Bbpolymer)mpspolymer);
   }
   
-  void renderTraceChain(Backbone.Bbpolymer bbpolymer) {
+  void renderBackboneChain(Backbone.Bbpolymer bbpolymer) {
     render1Chain(bbpolymer.monomerCount,
                  bbpolymer.polymer.getLeadAtomIndices(),
                  bbpolymer.mads, bbpolymer.colixes);
@@ -44,10 +44,13 @@ class BackboneRenderer extends MpsRenderer {
     for (int i = monomerCount - 1; --i >= 0; ) {
       if (mads[i] == 0)
         continue;
+
       Atom atomA = frame.getAtomAt(atomIndices[i]);
+      Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
+      atomA.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+      atomB.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
       int xA = atomA.getScreenX(), yA = atomA.getScreenY(),
         zA = atomA.getScreenZ();
-      Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
       int xB = atomB.getScreenX(), yB = atomB.getScreenY(),
         zB = atomB.getScreenZ(); 
       short colixA = Graphics3D.inheritColix(colixes[i], atomA.colixAtom);

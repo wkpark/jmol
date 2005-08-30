@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-25 00:58+0200\n"
-"PO-Revision-Date: 2005-08-25 01:07+0100\n"
+"POT-Creation-Date: 2005-08-30 23:34+0200\n"
+"PO-Revision-Date: 2005-08-30 23:36+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -50,7 +50,6 @@ msgid "Properties"
 msgstr "Propriétés"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:204
-#, fuzzy
 msgid "Atom Set Collection"
 msgstr "Collection de Groupes d'Atomes"
 
@@ -484,8 +483,8 @@ msgid "Define Center"
 msgstr "Définir le Centre"
 
 #: org/openscience/jmol/app/GuiMap.java:131
-msgid "Tools"
-msgstr "Outils"
+msgid "&Tools"
+msgstr "&Outils"
 
 #: org/openscience/jmol/app/GuiMap.java:132
 #: org/openscience/jmol/app/MeasurementTable.java:67
@@ -537,7 +536,6 @@ msgid "Loop"
 msgstr "En boucle"
 
 #: org/openscience/jmol/app/GuiMap.java:144
-#, fuzzy
 msgid "Palindrome"
 msgstr "Palindrome"
 
@@ -700,7 +698,6 @@ msgid "Loading plugins..."
 msgstr "Chargement des plugins..."
 
 #: org/openscience/jmol/app/Jmol.java:211
-#, fuzzy
 msgid "Building Command Hooks..."
 msgstr "Construction des Commandes..."
 
@@ -750,7 +747,7 @@ msgstr "les options supportées sont données ci-dessous"
 
 #: org/openscience/jmol/app/Jmol.java:370
 msgid "window size 500x500"
-msgstr ""
+msgstr "taille fenêtre 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
@@ -797,7 +794,6 @@ msgid "DeleteAll"
 msgstr "Tout Effacer"
 
 #: org/openscience/jmol/app/MeasurementTable.java:152
-#, fuzzy
 msgid "Dismiss"
 msgstr "Libérer"
 

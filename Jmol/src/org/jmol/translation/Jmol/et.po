@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-16 12:30-0400\n"
+"POT-Creation-Date: 2005-08-30 12:06-0400\n"
 "PO-Revision-Date: 2005-08-13 10:14+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -32,7 +32,7 @@ msgstr "Ei leia url''i \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:106
-#: org/openscience/jmol/app/PreferencesDialog.java:210
+#: org/openscience/jmol/app/PreferencesDialog.java:208
 #: org/openscience/jmol/app/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "Nõus"
@@ -620,7 +620,7 @@ msgid "Hydrogens"
 msgstr "Vesinikud"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:704
+#: org/openscience/jmol/app/PreferencesDialog.java:702
 msgid "Measurements"
 msgstr "Mõõted"
 
@@ -1012,7 +1012,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Salvesta see fail ning võimalusel käivita povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:493
-#: org/openscience/jmol/app/PreferencesDialog.java:202
+#: org/openscience/jmol/app/PreferencesDialog.java:200
 #: org/openscience/jmol/app/RecentFilesDialog.java:70
 msgid "Cancel"
 msgstr "Katkesta"
@@ -1029,142 +1029,142 @@ msgstr "Salvesta"
 msgid "null component string"
 msgstr "tühi komponent string"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:167
+#: org/openscience/jmol/app/PreferencesDialog.java:165
 msgid "Preferences"
 msgstr "Eelistused"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:185
+#: org/openscience/jmol/app/PreferencesDialog.java:183
 msgid "Display"
 msgstr "Kuva"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:186
+#: org/openscience/jmol/app/PreferencesDialog.java:184
 msgid "Atoms"
 msgstr "Aatomid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:187
-#: org/openscience/jmol/app/PreferencesDialog.java:645
+#: org/openscience/jmol/app/PreferencesDialog.java:185
+#: org/openscience/jmol/app/PreferencesDialog.java:643
 msgid "Bonds"
 msgstr "Sidemed"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:188
+#: org/openscience/jmol/app/PreferencesDialog.java:186
 msgid "Colors"
 msgstr "Vrvid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:194
+#: org/openscience/jmol/app/PreferencesDialog.java:192
 msgid "Jmol Defaults"
 msgstr "Jmol vaikeväärtused"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:198
+#: org/openscience/jmol/app/PreferencesDialog.java:196
 msgid "RasMol Defaults"
 msgstr "RasMol vaikeväärtused"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:206
+#: org/openscience/jmol/app/PreferencesDialog.java:204
 msgid "Apply"
 msgstr "Kehtesta"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:234
+#: org/openscience/jmol/app/PreferencesDialog.java:232
 msgid "Show All"
 msgstr "Näita kõike"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:334
+#: org/openscience/jmol/app/PreferencesDialog.java:332
 msgid "Default atom size"
 msgstr "Aatomi suuruse vaikeväärtus"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:335
+#: org/openscience/jmol/app/PreferencesDialog.java:333
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(protsenti vanDerWaals raadiusest)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:387
+#: org/openscience/jmol/app/PreferencesDialog.java:385
 msgid "Compute Bonds"
 msgstr "Arvuta sidemed"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:389
+#: org/openscience/jmol/app/PreferencesDialog.java:387
 msgid "Automatically"
 msgstr "Automaatselt"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:390
+#: org/openscience/jmol/app/PreferencesDialog.java:388
 msgid "Don't Compute Bonds"
 msgstr "ra arvuta sidemeid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:417
+#: org/openscience/jmol/app/PreferencesDialog.java:415
 msgid "Default Bond Radius"
 msgstr "Sideme raadiuse vaikeväärtus"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:418
-#: org/openscience/jmol/app/PreferencesDialog.java:456
-#: org/openscience/jmol/app/PreferencesDialog.java:507
+#: org/openscience/jmol/app/PreferencesDialog.java:416
+#: org/openscience/jmol/app/PreferencesDialog.java:454
+#: org/openscience/jmol/app/PreferencesDialog.java:505
 msgid "(Angstroms)"
 msgstr "(Angstromid)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:455
+#: org/openscience/jmol/app/PreferencesDialog.java:453
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Sideme tolerants - kahe kovalentse radii summa + see väärtus"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:506
+#: org/openscience/jmol/app/PreferencesDialog.java:504
 msgid "Minimum Bonding Distance"
 msgstr "Vikseim sideme kaugus"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:563
+#: org/openscience/jmol/app/PreferencesDialog.java:561
 msgid "Background"
 msgstr "Tagapõhi"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:566
+#: org/openscience/jmol/app/PreferencesDialog.java:564
 msgid "Set the Background Color"
 msgstr "Määra taustavärv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:573
+#: org/openscience/jmol/app/PreferencesDialog.java:571
 msgid "Background Color"
 msgstr "Taustavrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:587
+#: org/openscience/jmol/app/PreferencesDialog.java:585
 msgid "Picked Atoms"
 msgstr "Valitud aatomid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:590
+#: org/openscience/jmol/app/PreferencesDialog.java:588
 msgid "Set the Color for Picked Atoms"
 msgstr "Määra valitud aatomite värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:597
+#: org/openscience/jmol/app/PreferencesDialog.java:595
 msgid "Picked Atom Color"
 msgstr "Valitud aatomi vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:612
+#: org/openscience/jmol/app/PreferencesDialog.java:610
 msgid "Text"
 msgstr "Tekst"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:622
+#: org/openscience/jmol/app/PreferencesDialog.java:620
 msgid "Set the Color for Text"
 msgstr "Määra teksti värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:630
+#: org/openscience/jmol/app/PreferencesDialog.java:628
 msgid "Text Color"
 msgstr "Teksti vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:655
+#: org/openscience/jmol/app/PreferencesDialog.java:653
 msgid "Set the Color for Bonds"
 msgstr "Määra sidemete värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:663
+#: org/openscience/jmol/app/PreferencesDialog.java:661
 msgid "Bond Color"
 msgstr "Sideme vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:678
+#: org/openscience/jmol/app/PreferencesDialog.java:676
 msgid "Vectors"
 msgstr "Vektorid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:681
+#: org/openscience/jmol/app/PreferencesDialog.java:679
 msgid "Set the Vector Color"
 msgstr "Määra vektori värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:688
+#: org/openscience/jmol/app/PreferencesDialog.java:686
 msgid "Vector Color"
 msgstr "Vektori vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:708
+#: org/openscience/jmol/app/PreferencesDialog.java:706
 msgid "Color for distance, angle, & torsion measurements"
 msgstr "Kauguse, nurga ja väände mõõtühikute värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:715
+#: org/openscience/jmol/app/PreferencesDialog.java:713
 msgid "Measurements Color"
 msgstr "Mõõtühitute värv"
 

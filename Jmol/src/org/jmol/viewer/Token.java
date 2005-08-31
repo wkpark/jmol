@@ -461,6 +461,7 @@ class Token {
     // openrasmol commands
     "depth",             new Token(depth,              1, "depth"),
     "star",              new Token(star,     varArgCount, "star"),
+    "stars",             null,
     // chime commands
     "delay",             new Token(delay,     onDefault1, "delay"),
     "loop",              new Token(loop,      onDefault1, "loop"),

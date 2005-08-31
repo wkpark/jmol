@@ -796,8 +796,9 @@ final public class Graphics3D {
 
   public void drawDashedLine(short colix, int run, int rise,
                              Point3i pointA, Point3i pointB) {
-    int argb = getColixArgb(colix);
-    line3d.drawDashedLine(argb, isTranslucent, argb, isTranslucent,
+    setColix(colix);
+    line3d.drawDashedLine(argbCurrent, isTranslucent,
+                          argbCurrent, isTranslucent,
                           run, rise,
                           pointA.x, pointA.y, pointA.z,
                           pointB.x, pointB.y, pointB.z);
@@ -817,8 +818,8 @@ final public class Graphics3D {
 
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = getColixArgb(colix);
-    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+    setColix(colix);
+    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
                     x1, y1, z1, x2, y2, z2);
   }
 

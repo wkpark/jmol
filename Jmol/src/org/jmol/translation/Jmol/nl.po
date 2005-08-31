@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-16 12:30-0400\n"
+"POT-Creation-Date: 2005-08-30 12:06-0400\n"
 "PO-Revision-Date: 2005-05-24 19:50+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -31,7 +31,7 @@ msgstr "Kan de URL \"{0}\" niet vinden."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:106
-#: org/openscience/jmol/app/PreferencesDialog.java:210
+#: org/openscience/jmol/app/PreferencesDialog.java:208
 #: org/openscience/jmol/app/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "OK"
@@ -619,7 +619,7 @@ msgid "Hydrogens"
 msgstr "Waterstoffen"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:704
+#: org/openscience/jmol/app/PreferencesDialog.java:702
 msgid "Measurements"
 msgstr "Metingen"
 
@@ -1012,7 +1012,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Bewaar bestand en start povray indien nodig"
 
 #: org/openscience/jmol/app/PovrayDialog.java:493
-#: org/openscience/jmol/app/PreferencesDialog.java:202
+#: org/openscience/jmol/app/PreferencesDialog.java:200
 #: org/openscience/jmol/app/RecentFilesDialog.java:70
 msgid "Cancel"
 msgstr "Afbreken"
@@ -1029,142 +1029,142 @@ msgstr "Opslaan"
 msgid "null component string"
 msgstr "lege-component-tekst"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:167
+#: org/openscience/jmol/app/PreferencesDialog.java:165
 msgid "Preferences"
 msgstr "Eigenschappen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:185
+#: org/openscience/jmol/app/PreferencesDialog.java:183
 msgid "Display"
 msgstr "Weergave"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:186
+#: org/openscience/jmol/app/PreferencesDialog.java:184
 msgid "Atoms"
 msgstr "Atomen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:187
-#: org/openscience/jmol/app/PreferencesDialog.java:645
+#: org/openscience/jmol/app/PreferencesDialog.java:185
+#: org/openscience/jmol/app/PreferencesDialog.java:643
 msgid "Bonds"
 msgstr "Bindingen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:188
+#: org/openscience/jmol/app/PreferencesDialog.java:186
 msgid "Colors"
 msgstr "Kleuren"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:194
+#: org/openscience/jmol/app/PreferencesDialog.java:192
 msgid "Jmol Defaults"
 msgstr "Standaard Jmol-waarden"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:198
+#: org/openscience/jmol/app/PreferencesDialog.java:196
 msgid "RasMol Defaults"
 msgstr "Rasmol-standaarden"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:206
+#: org/openscience/jmol/app/PreferencesDialog.java:204
 msgid "Apply"
 msgstr "Toepassen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:234
+#: org/openscience/jmol/app/PreferencesDialog.java:232
 msgid "Show All"
 msgstr "Laat alles zien"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:334
+#: org/openscience/jmol/app/PreferencesDialog.java:332
 msgid "Default atom size"
 msgstr "Standaard atoomgrootte"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:335
+#: org/openscience/jmol/app/PreferencesDialog.java:333
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(percentage van de vanderwaals-straal)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:387
+#: org/openscience/jmol/app/PreferencesDialog.java:385
 msgid "Compute Bonds"
 msgstr "Bepaal de Bindingen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:389
+#: org/openscience/jmol/app/PreferencesDialog.java:387
 msgid "Automatically"
 msgstr "Automatisch"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:390
+#: org/openscience/jmol/app/PreferencesDialog.java:388
 msgid "Don't Compute Bonds"
 msgstr "Bepaal geen bindingen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:417
+#: org/openscience/jmol/app/PreferencesDialog.java:415
 msgid "Default Bond Radius"
 msgstr "Standaard bondstraal"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:418
-#: org/openscience/jmol/app/PreferencesDialog.java:456
-#: org/openscience/jmol/app/PreferencesDialog.java:507
+#: org/openscience/jmol/app/PreferencesDialog.java:416
+#: org/openscience/jmol/app/PreferencesDialog.java:454
+#: org/openscience/jmol/app/PreferencesDialog.java:505
 msgid "(Angstroms)"
 msgstr "(Angstroms)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:455
+#: org/openscience/jmol/app/PreferencesDialog.java:453
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Bindingstolerantie - som van de twee covalente stralen + deze waarde"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:506
+#: org/openscience/jmol/app/PreferencesDialog.java:504
 msgid "Minimum Bonding Distance"
 msgstr "Minimum bindingsafstand"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:563
+#: org/openscience/jmol/app/PreferencesDialog.java:561
 msgid "Background"
 msgstr "Achtergrond"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:566
+#: org/openscience/jmol/app/PreferencesDialog.java:564
 msgid "Set the Background Color"
 msgstr "Stel de achtergrondkleur in"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:573
+#: org/openscience/jmol/app/PreferencesDialog.java:571
 msgid "Background Color"
 msgstr "Achtergrondkleur"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:587
+#: org/openscience/jmol/app/PreferencesDialog.java:585
 msgid "Picked Atoms"
 msgstr "Geselecteerde Atomen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:590
+#: org/openscience/jmol/app/PreferencesDialog.java:588
 msgid "Set the Color for Picked Atoms"
 msgstr "Stel de kleur van de gekozen atomen in"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:597
+#: org/openscience/jmol/app/PreferencesDialog.java:595
 msgid "Picked Atom Color"
 msgstr "Gekozen Atoomkleur"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:612
+#: org/openscience/jmol/app/PreferencesDialog.java:610
 msgid "Text"
 msgstr "Tekst"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:622
+#: org/openscience/jmol/app/PreferencesDialog.java:620
 msgid "Set the Color for Text"
 msgstr "Stel de kleur voor de tekst in"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:630
+#: org/openscience/jmol/app/PreferencesDialog.java:628
 msgid "Text Color"
 msgstr "Kleur Tekst"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:655
+#: org/openscience/jmol/app/PreferencesDialog.java:653
 msgid "Set the Color for Bonds"
 msgstr "Stel de kleur voor de bindingen in"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:663
+#: org/openscience/jmol/app/PreferencesDialog.java:661
 msgid "Bond Color"
 msgstr "Kleur Bindingen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:678
+#: org/openscience/jmol/app/PreferencesDialog.java:676
 msgid "Vectors"
 msgstr "Vectoren"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:681
+#: org/openscience/jmol/app/PreferencesDialog.java:679
 msgid "Set the Vector Color"
 msgstr "Stel de kleur van de vectoren in "
 
-#: org/openscience/jmol/app/PreferencesDialog.java:688
+#: org/openscience/jmol/app/PreferencesDialog.java:686
 msgid "Vector Color"
 msgstr "Vectorkleur"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:708
+#: org/openscience/jmol/app/PreferencesDialog.java:706
 msgid "Color for distance, angle, & torsion measurements"
 msgstr "Kleur de afstands-, hoek-, en torsiehoekmetingen."
 
-#: org/openscience/jmol/app/PreferencesDialog.java:715
+#: org/openscience/jmol/app/PreferencesDialog.java:713
 msgid "Measurements Color"
 msgstr "Kleur Metingen"
 

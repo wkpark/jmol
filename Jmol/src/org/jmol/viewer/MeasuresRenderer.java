@@ -105,7 +105,15 @@ class MeasuresRenderer extends ShapeRenderer {
       and sent an email to the list asking why it would have been here
     if (! (atomA.isVisible() && atomB.isVisible()))
       return;
+
+      1 Sep 2005 ... the previous hack was put in to control the
+      display of measurements when there are multiple models.
+      The code below should do a better job ... Miguel
     */
+    if (displayModelIndex >= 0 &&
+        (displayModelIndex != atomA.modelIndex ||
+         displayModelIndex != atomB.modelIndex))
+      return;
     int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
     int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA, atomB.getScreenX(), atomB.getScreenY(), zB,
@@ -133,6 +141,11 @@ class MeasuresRenderer extends ShapeRenderer {
     if (! (atomA.isVisible() && atomB.isVisible() && atomC.isVisible()))
       return;
     */
+    if (displayModelIndex >= 0 &&
+        (displayModelIndex != atomA.modelIndex ||
+         displayModelIndex != atomB.modelIndex ||
+         displayModelIndex != atomC.modelIndex))
+      return;
     g3d.setColix(colix);
     int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
@@ -201,6 +214,12 @@ class MeasuresRenderer extends ShapeRenderer {
            atomC.isVisible() && atomD.isVisible()))
       return;
     */
+    if (displayModelIndex >= 0 &&
+        (displayModelIndex != atomA.modelIndex ||
+         displayModelIndex != atomB.modelIndex ||
+         displayModelIndex != atomC.modelIndex ||
+         displayModelIndex != atomD.modelIndex))
+      return;
     int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
     int zC = atomC.getScreenZ() - atomC.getScreenD() - 10;

@@ -3550,6 +3550,8 @@ class Eval implements Runnable {
 
   void stereo() throws ScriptException {
     int stereoMode = JmolConstants.STEREO_DOUBLE;
+    float degrees = 5;
+    boolean degreesSeen = false;
     for (int i = 1; i < statementLength; ++i) {
       switch (statement[i].tok) {
       case Token.on:
@@ -3560,10 +3562,13 @@ class Eval implements Runnable {
         break;
       case Token.integer:
       case Token.decimal:
-        viewer.setStereoDegrees(floatParameter(i));
+        degrees = floatParameter(i);
+        degreesSeen = true;
         break;
       case Token.identifier:
         String id = (String)statement[i].value;
+        if (! degreesSeen)
+            degrees = 3;
         if (id.equalsIgnoreCase("redblue")) {
           stereoMode = JmolConstants.STEREO_REDBLUE;
           break;
@@ -3572,10 +3577,12 @@ class Eval implements Runnable {
           stereoMode = JmolConstants.STEREO_REDCYAN;
           break;
         }
+        // fall into
       default:
         booleanOrNumberExpected();
       }
     }
+    viewer.setStereoDegrees(degrees);
     viewer.setStereoMode(stereoMode);
   }
 }

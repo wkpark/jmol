@@ -566,9 +566,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color =
-          JColorChooser
-            .showDialog(bButton, GT._("Background Color"), colorBackground);
+        Color color = JColorChooser.showDialog(
+            bButton, GT._("Background Color"), colorBackground);
+        if (color == null) {
+          return;
+        }
         colorBackground = color;
         bButton.setBackground(colorBackground);
         viewer.setColorBackground(colorBackground);
@@ -590,9 +592,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color =
-          JColorChooser
-            .showDialog(pButton, GT._("Picked Atom Color"), colorSelection);
+        Color color = JColorChooser.showDialog(
+            pButton, GT._("Picked Atom Color"), colorSelection);
+        if (color == null) {
+          return;
+        }
         colorSelection = color;
         pButton.setBackground(colorSelection);
         viewer.setColorSelection(colorSelection);
@@ -623,9 +627,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color =
-          JColorChooser
-            .showDialog(tButton, GT._("Text Color"), colorText);
+        Color color = JColorChooser.showDialog(
+            tButton, GT._("Text Color"), colorText);
+        if (color == null) {
+          return;
+        }
         colorText = color;
         tButton.setBackground(colorText);
         viewer.setColorLabel(colorText);
@@ -656,9 +662,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color =
-          JColorChooser
-          .showDialog(eButton, GT._("Bond Color"), colorBond);
+        Color color = JColorChooser.showDialog(
+            eButton, GT._("Bond Color"), colorBond);
+        if (color == null) {
+          return;
+        }
         colorBond = color;
         eButton.setBackground(colorBond);
         viewer.setColorBond(colorBond);
@@ -681,9 +689,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color =
-          JColorChooser
-            .showDialog(vButton, GT._("Vector Color"), colorVector);
+        Color color = JColorChooser.showDialog(
+            vButton, GT._("Vector Color"), colorVector);
+        if (color == null) {
+          return;
+        }
         colorVector = color;
         vButton.setBackground(colorVector);
         viewer.setColorVector(colorVector);
@@ -708,10 +718,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color =
-          JColorChooser
-            .showDialog(measurementColorButton, GT._("Measurements Color"),
-                        colorMeasurement);
+        Color color =JColorChooser.showDialog(
+            measurementColorButton, GT._("Measurements Color"), colorMeasurement);
+        if (color == null) {
+          return;
+        }
         colorMeasurement = color;
         measurementColorButton.setBackground(colorMeasurement);
         viewer.setColorMeasurement(colorMeasurement);

@@ -63,10 +63,14 @@ function createFahPage(select,
   document.writeln("   <table border='0' cellpadding='0' cellspacing='0' width='100%'>");
   document.writeln("    <tr>");
   document.writeln("     <td>");
-  var paramProject = getParameter("project", "");
   var scriptStart = "";
+  var paramStereo = getParameter("stereo", "");
+  if (paramStereo != "") {
+    scriptStart = scriptStart + "stereo " + paramStereo + ";";
+  }
+  var paramProject = getParameter("project", "");
   if (paramProject != "") {
-    scriptStart = "load ../fah/projects/p" + paramProject + ".xyz.gz";
+    scriptStart = scriptStart + "load ../fah/projects/p" + paramProject + ".xyz.gz;";
   }
   jmolApplet(parseInt(getParameter("appletSize", "350")), scriptStart, "Fah");
   document.writeln("     </td>");

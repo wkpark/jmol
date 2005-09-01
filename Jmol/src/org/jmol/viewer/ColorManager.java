@@ -284,7 +284,7 @@ class ColorManager {
       argb = JmolConstants.argbsRwbScale[index];
     } else if ("formalcharge" == palette) {
       index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
-      argb = JmolConstants.argbsCharge[index];
+      argb = JmolConstants.argbsFormalCharge[index];
     } else if ("structure" == palette) {
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
     } else if ("amino" == palette) {

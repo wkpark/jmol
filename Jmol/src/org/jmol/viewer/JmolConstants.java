@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2005 The Jmol Development Team";
-  public final static String version = "10.00.34";
+  public final static String version = "10.00.35";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1473,7 +1473,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFB22222 + 0x00101010, // firebrick
   };
 
-  public final static int[] argbsCharge = {
+  public final static int[] argbsFormalCharge = {
     0xFFFF0000, // -4
     0xFFFF4040, // -3
     0xFFFF8080, // -2
@@ -2099,8 +2099,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         throw new NullPointerException();
       }
     }
-    if (argbsCharge.length != FORMAL_CHARGE_MAX - FORMAL_CHARGE_MIN + 1) {
-      System.out.println("charge color table length");
+    if (argbsFormalCharge.length != FORMAL_CHARGE_MAX-FORMAL_CHARGE_MIN+1) {
+      System.out.println("formal charge color table length");
       throw new NullPointerException();
     }
     if (shapeClassBases.length != SHAPE_MAX) {

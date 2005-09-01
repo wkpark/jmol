@@ -60,6 +60,9 @@
         <exclude name="**/jmol/applet/*.java"/>
       </fileset>
     </apply>
+    <antcall target="remove-pot-creation-date">
+      <param name="remove_pot_file" value="${Jmol.po.dir}/Jmol.pot"/>
+    </antcall>
   </target>
   
   <!-- create JmolApplet.pot -->
@@ -80,6 +83,9 @@
         <include name="org/openscience/jmol/ui/*.java"/>
       </fileset>
     </apply>
+    <antcall target="remove-pot-creation-date">
+      <param name="remove_pot_file" value="${JmolApplet.po.dir}/JmolApplet.pot"/>
+    </antcall>
   </target>
   
   
@@ -207,7 +213,7 @@
       </fileset>
     </delete>
   </target>
-  
+
   <target name="clean-applet-catalogs" id="clean-applet-catalogs">
     <delete>
       <fileset dir="${JmolApplet.po.dir}">
@@ -215,5 +221,12 @@
       </fileset>
     </delete>
   </target>
-  
+
+  <target name="remove-pot-creation-date">
+    <replaceregexp file='${remove_pot_file}'
+                   match='"POT-Creation-Date:(.*)\"'
+                   replace='' flags='g'>
+    </replaceregexp>
+  </target>
+
 </project>

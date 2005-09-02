@@ -3527,7 +3527,7 @@
   <fah_proj number="1807" name="p1807_Collagen_POG10new_restrained_unfolding" public="y" file="y"
     server="171.65.103.158" atoms="1116" preferred="5" deadline="10"
     credit="19" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1808" name="p1808_Collagen_Brodsky_refolding" public="n" file="y"
+  <fah_proj number="1808" name="p1808_Collagen_Brodsky_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1125" preferred="30" deadline="44"
     credit="153" frames="100" code="A" contact="spark7"/>
 

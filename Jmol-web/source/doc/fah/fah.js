@@ -45,6 +45,7 @@ function createFahPage(select,
                        projectDescription, hideSolvent, availableFiles,
                        findMissing, missingProjects, supportJmol) {
   document.writeln("<table border='0' cellpadding='0' cellspacing='0' width='100%'>");
+  var paramDetailLocation = getParameter("detailLocation", "right");
   var paramShowList = getParameter("showList", "dropbox");
   if (paramShowList != "button") {
     document.writeln(" <tr>");
@@ -58,10 +59,20 @@ function createFahPage(select,
     document.writeln("  </td>");
     document.writeln(" </tr>");
   }
+  if (paramDetailLocation == "top") {
+    document.writeln("<tr><td valign='top'>");
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    document.writeln("</td></tr>");
+  }
   document.writeln(" <tr>");
   document.writeln("  <td>");
   document.writeln("   <table border='0' cellpadding='0' cellspacing='0' width='100%'>");
   document.writeln("    <tr>");
+  if (paramDetailLocation == "left") {
+    document.writeln("<td valign='top'>");
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    document.writeln("</td>");
+  }
   document.writeln("     <td>");
   var scriptStart = "";
   var paramStereo = getParameter("stereo", "");
@@ -72,62 +83,19 @@ function createFahPage(select,
   if (paramProject != "") {
     scriptStart = scriptStart + "load ../fah/projects/p" + paramProject + ".xyz.gz;";
   }
-  jmolApplet(parseInt(getParameter("appletSize", "350")), scriptStart, "Fah");
+  var paramAppletSize = getParameter("appletSize", "350");
+  var paramAppletWidth = getParameter("appletWidth", "");
+  if (paramAppletWidth == "") {
+    jmolApplet(paramAppletSize, scriptStart, "Fah");
+  } else {
+    jmolApplet([ paramAppletWidth, paramAppletSize ], scriptStart, "Fah");
+  }
   document.writeln("     </td>");
-  document.writeln("     <td valign='top'>");
-  document.writeln("      <table border='0' cellpadding='0' cellspacing='0' width='100%'>");
-  document.writeln("       <tr>");
-  document.writeln("        <td align='center' colspan='2'>");
-  document.writeln("         <a href='http://folding.stanford.edu'>");
-  document.writeln("          <img src='FAHlogoButton.jpg' alt='fah-logo' border='0'/>");
-  document.writeln("         </a>");
-  document.writeln("        </td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + project + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoNumber' id='infoNumber'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + name + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoName' id='infoName'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + credit + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoCredit' id='infoCredit'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + atoms + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoAtoms' id='infoAtoms'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + preferred + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoPreferred' id='infoPreferred'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + deadline + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoDeadline' id='infoDeadline'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + frames + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoFrames' id='infoFrames'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td><label>" + code + " :</label></td>");
-  document.writeln("        <td><input type='text' name='infoCode' id='infoCode'");
-  document.writeln("                   size='45' readonly='readonly'/></td>");
-  document.writeln("       </tr>");
-  document.writeln("       <tr>");
-  document.writeln("        <td align='center' colspan='2'><br/><small><i>" + supportJmol + "</i></small></td>");
-  document.writeln("       </tr>");
-  document.writeln("      </table>");
-  document.writeln("     </td>");
+  if (paramDetailLocation == "right") {
+    document.writeln("<td valign='top'>");
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    document.writeln("</td>");
+  }
   document.writeln("    </tr>");
   document.writeln("   </table>");
   document.writeln("  </td>");
@@ -145,6 +113,11 @@ function createFahPage(select,
   document.writeln("   <small>" + availableFiles + "</small>");
   document.writeln("  </td>");
   document.writeln(" </tr>");
+  if (paramDetailLocation == "bottom") {
+    document.writeln("<tr><td valign='top'>");
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    document.writeln("</td></tr>");
+  }
   document.writeln(" <tr>");
   document.writeln("  <td align='center'>");
   document.writeln("   <br/>");
@@ -168,6 +141,61 @@ function createFahPage(select,
   createMissingProjects();
   document.writeln("   </small>");
   document.writeln("  </td>");
+  document.writeln(" </tr>");
+  document.writeln("</table>");
+}
+
+function createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol) {
+  document.writeln("<table border='0' cellpadding='0' cellspacing='0' width='100%'>");
+  document.writeln(" <tr>");
+  document.writeln("  <td align='center' colspan='2'>");
+  document.writeln("   <a href='http://folding.stanford.edu'>");
+  document.writeln("    <img src='FAHlogoButton.jpg' alt='fah-logo' border='0'/>");
+  document.writeln("   </a>");
+  document.writeln("  </td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + project + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoNumber' id='infoNumber'");
+  document.writeln("            size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + name + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoName' id='infoName'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + credit + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoCredit' id='infoCredit'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + atoms + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoAtoms' id='infoAtoms'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + preferred + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoPreferred' id='infoPreferred'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + deadline + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoDeadline' id='infoDeadline'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + frames + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoFrames' id='infoFrames'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td><label>" + code + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoCode' id='infoCode'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
+  document.writeln("  <td align='center' colspan='2'><br/><small><i>" + supportJmol + "</i></small></td>");
   document.writeln(" </tr>");
   document.writeln("</table>");
 }

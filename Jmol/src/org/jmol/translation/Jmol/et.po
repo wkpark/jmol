@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-31 17:35-0400\n"
+"POT-Creation-Date: 2005-09-02 20:03+0200\n"
 "PO-Revision-Date: 2005-08-13 10:14+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -621,7 +621,7 @@ msgid "Hydrogens"
 msgstr "Vesinikud"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:702
+#: org/openscience/jmol/app/PreferencesDialog.java:712
 msgid "Measurements"
 msgstr "Mõõted"
 
@@ -1043,7 +1043,7 @@ msgid "Atoms"
 msgstr "Aatomid"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:185
-#: org/openscience/jmol/app/PreferencesDialog.java:643
+#: org/openscience/jmol/app/PreferencesDialog.java:649
 msgid "Bonds"
 msgstr "Sidemed"
 
@@ -1113,59 +1113,59 @@ msgstr "Tagapõhi"
 msgid "Set the Background Color"
 msgstr "Määra taustavärv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:571
+#: org/openscience/jmol/app/PreferencesDialog.java:570
 msgid "Background Color"
 msgstr "Taustavrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:585
+#: org/openscience/jmol/app/PreferencesDialog.java:587
 msgid "Picked Atoms"
 msgstr "Valitud aatomid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:588
+#: org/openscience/jmol/app/PreferencesDialog.java:590
 msgid "Set the Color for Picked Atoms"
 msgstr "Määra valitud aatomite värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:595
+#: org/openscience/jmol/app/PreferencesDialog.java:596
 msgid "Picked Atom Color"
 msgstr "Valitud aatomi vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:610
+#: org/openscience/jmol/app/PreferencesDialog.java:614
 msgid "Text"
 msgstr "Tekst"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:620
+#: org/openscience/jmol/app/PreferencesDialog.java:624
 msgid "Set the Color for Text"
 msgstr "Määra teksti värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:628
+#: org/openscience/jmol/app/PreferencesDialog.java:631
 msgid "Text Color"
 msgstr "Teksti vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:653
+#: org/openscience/jmol/app/PreferencesDialog.java:659
 msgid "Set the Color for Bonds"
 msgstr "Määra sidemete värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:661
+#: org/openscience/jmol/app/PreferencesDialog.java:666
 msgid "Bond Color"
 msgstr "Sideme vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:676
+#: org/openscience/jmol/app/PreferencesDialog.java:684
 msgid "Vectors"
 msgstr "Vektorid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:679
+#: org/openscience/jmol/app/PreferencesDialog.java:687
 msgid "Set the Vector Color"
 msgstr "Määra vektori värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:686
+#: org/openscience/jmol/app/PreferencesDialog.java:693
 msgid "Vector Color"
 msgstr "Vektori vrv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:706
+#: org/openscience/jmol/app/PreferencesDialog.java:716
 msgid "Color for distance, angle, & torsion measurements"
 msgstr "Kauguse, nurga ja väände mõõtühikute värv"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:713
+#: org/openscience/jmol/app/PreferencesDialog.java:722
 msgid "Measurements Color"
 msgstr "Mõõtühitute värv"
 

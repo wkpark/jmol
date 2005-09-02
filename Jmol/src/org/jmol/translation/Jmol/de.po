@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-08-31 17:35-0400\n"
+"POT-Creation-Date: 2005-09-02 20:03+0200\n"
 "PO-Revision-Date: 2005-05-31 21:44+0200\n"
 "Last-Translator: Daniel Leidert <daniel.leidert@wgdd.de>\n"
 "Language-Team: none\n"
@@ -619,7 +619,7 @@ msgid "Hydrogens"
 msgstr "Wasserstoffatome"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:702
+#: org/openscience/jmol/app/PreferencesDialog.java:712
 msgid "Measurements"
 msgstr "Messwerte"
 
@@ -1048,7 +1048,7 @@ msgid "Atoms"
 msgstr "Atome"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:185
-#: org/openscience/jmol/app/PreferencesDialog.java:643
+#: org/openscience/jmol/app/PreferencesDialog.java:649
 msgid "Bonds"
 msgstr "Bindungen"
 
@@ -1118,59 +1118,59 @@ msgstr "Hintergrund"
 msgid "Set the Background Color"
 msgstr "Hintergrundfarbe festlegen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:571
+#: org/openscience/jmol/app/PreferencesDialog.java:570
 msgid "Background Color"
 msgstr "Hintergrundfarbe"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:585
+#: org/openscience/jmol/app/PreferencesDialog.java:587
 msgid "Picked Atoms"
 msgstr "Markierte Atome"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:588
+#: org/openscience/jmol/app/PreferencesDialog.java:590
 msgid "Set the Color for Picked Atoms"
 msgstr "Farbe für markierte Atome festlegen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:595
+#: org/openscience/jmol/app/PreferencesDialog.java:596
 msgid "Picked Atom Color"
 msgstr "Farbe der markierten Atome"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:610
+#: org/openscience/jmol/app/PreferencesDialog.java:614
 msgid "Text"
 msgstr "Text"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:620
+#: org/openscience/jmol/app/PreferencesDialog.java:624
 msgid "Set the Color for Text"
 msgstr "Textfarbe festlegen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:628
+#: org/openscience/jmol/app/PreferencesDialog.java:631
 msgid "Text Color"
 msgstr "Textfarbe"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:653
+#: org/openscience/jmol/app/PreferencesDialog.java:659
 msgid "Set the Color for Bonds"
 msgstr "Farbe der Bindungen festlegen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:661
+#: org/openscience/jmol/app/PreferencesDialog.java:666
 msgid "Bond Color"
 msgstr "Farbe der Bindungen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:676
+#: org/openscience/jmol/app/PreferencesDialog.java:684
 msgid "Vectors"
 msgstr "Vektoren"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:679
+#: org/openscience/jmol/app/PreferencesDialog.java:687
 msgid "Set the Vector Color"
 msgstr "Farbe der Vektoren festlegen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:686
+#: org/openscience/jmol/app/PreferencesDialog.java:693
 msgid "Vector Color"
 msgstr "Farbe der Vektoren"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:706
+#: org/openscience/jmol/app/PreferencesDialog.java:716
 msgid "Color for distance, angle, & torsion measurements"
 msgstr "Farbe der Distanz-, Winkel- und Torsionsmessungen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:713
+#: org/openscience/jmol/app/PreferencesDialog.java:722
 msgid "Measurements Color"
 msgstr "Farbe der Messwerte"
 

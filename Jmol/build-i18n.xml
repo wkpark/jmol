@@ -12,9 +12,9 @@
   <property name="lib.dir" value="jars" />
   <property name="src.dir" value="src" />
   <property name="Jmol.po.dir"
-            value="${basedir}/src/org/jmol/translation/Jmol" />
+            value="src/org/jmol/translation/Jmol" />
   <property name="JmolApplet.po.dir"
-            value="${basedir}/src/org/jmol/translation/JmolApplet" />
+            value="src/org/jmol/translation/JmolApplet" />
   <property name="all.Jmol.languages" value="de,es,et,fr,nl" />
   <property name="all.JmolApplet.languages" value="de,es,et,fr" />
   <!-- <property name="all.modules" value="Jmol,JmolApplet" /> -->
@@ -45,50 +45,107 @@
           depends="create-application-pot,create-applet-pot" />
   
   <!-- create Jmol.pot -->
-  <target name="create-application-pot" id="create-application-pot"
-          depends="clean-application-pot">
+  <target name="create-application-pot" id="create-application-pot">
     <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
+    <!-- generate new Jmol.pot -->
+    <mkdir dir="${Jmol.po.dir}/tmp"/>
     <apply executable="xgettext" dir="${src.dir}" parallel="true"
            verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
       <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
-      <arg value="--output-dir=${Jmol.po.dir}" />
+      <arg value="--output-dir=${basedir}/${Jmol.po.dir}/tmp" />
       <arg value="--output=Jmol.pot" />
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
         <exclude name="**/jmol/applet/*.java"/>
       </fileset>
     </apply>
-    <antcall target="remove-pot-creation-date">
-      <param name="remove_pot_file" value="${Jmol.po.dir}/Jmol.pot"/>
-    </antcall>
+    <if>
+      <available file="${Jmol.po.dir}/Jmol.pot"/>
+      <then>
+        <!-- compare both Jmol.pot files -->
+        <copy file="${Jmol.po.dir}/Jmol.pot"
+              tofile="${Jmol.po.dir}/tmp/Jmol.old.pot"/>
+        <antcall target="shrink-pot-file">
+          <param name="remove_pot_file" value="${Jmol.po.dir}/tmp/Jmol.old.pot"/>
+        </antcall>
+        <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
+              tofile="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
+        <antcall target="shrink-pot-file">
+          <param name="remove_pot_file" value="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
+        </antcall>
+        <if>
+          <not>
+            <filesmatch file1="${Jmol.po.dir}/tmp/Jmol.old.pot"
+                        file2="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
+          </not>
+          <then>
+            <copy file="${Jmol.po.dir}/tmp/Jmol.new.pot"
+                  tofile="${Jmol.po.dir}/tmp/Jmol.pot"/>
+          </then>
+        </if>
+      </then>
+      <else>
+        <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
+              tofile="${Jmol.po.dir}/Jmol.pot"/>
+      </else>
+    </if>
+    <delete dir="${Jmol.po.dir}/tmp"/>
   </target>
   
   <!-- create JmolApplet.pot -->
-  <target name="create-applet-pot" id="create-applet-pot"
-          depends="clean-applet-pot">
-    <echo message="Generating JmolApplet.pot (gettext PO-template) file ..."/>
+  <target name="create-applet-pot" id="create-applet-pot">
+    <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
+    <!-- generate new JmolApplet.pot -->
+    <mkdir dir="${JmolApplet.po.dir}/tmp"/>
     <apply executable="xgettext" dir="${src.dir}" parallel="true"
            verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
       <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
-      <arg value="--output-dir=${JmolApplet.po.dir}" />
+      <arg value="--output-dir=${basedir}/${JmolApplet.po.dir}/tmp" />
       <arg value="--output=JmolApplet.pot" />
-      <fileset dir="${src.dir}">
-        <include name="JmolApplet*.java"/>
-        <include name="org/jmol/**/*.java"/>
-        <exclude name="org/jmol/**/cdk/*.java"/>
-        <include name="org/openscience/jmol/ui/*.java"/>
-      </fileset>
+        <fileset dir="${src.dir}">
+          <include name="JmolApplet*.java"/>
+          <include name="org/jmol/**/*.java"/>
+          <exclude name="org/jmol/**/cdk/*.java"/>
+          <include name="org/openscience/jmol/ui/*.java"/>
+        </fileset>
     </apply>
-    <antcall target="remove-pot-creation-date">
-      <param name="remove_pot_file" value="${JmolApplet.po.dir}/JmolApplet.pot"/>
-    </antcall>
+    <if>
+      <available file="${JmolApplet.po.dir}/JmolApplet.pot"/>
+      <then>
+        <!-- compare both JmolApplet.pot files -->
+        <copy file="${JmolApplet.po.dir}/JmolApplet.pot"
+              tofile="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"/>
+        <antcall target="shrink-pot-file">
+          <param name="remove_pot_file" value="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"/>
+        </antcall>
+        <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
+              tofile="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
+        <antcall target="shrink-pot-file">
+          <param name="remove_pot_file" value="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
+        </antcall>
+        <if>
+          <not>
+            <filesmatch file1="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"
+                        file2="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
+          </not>
+          <then>
+            <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"
+                  tofile="${JmolApplet.po.dir}/tmp/JmolApplet.pot"/>
+          </then>
+        </if>
+      </then>
+      <else>
+        <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
+              tofile="${JmolApplet.po.dir}/JmolApplet.pot"/>
+      </else>
+    </if>
+    <delete dir="${JmolApplet.po.dir}/tmp"/>
   </target>
-  
-  
+
   <!-- update po files using newly created .pot files -->
   
   <target name="update-po" id="update-po"
@@ -222,11 +279,15 @@
     </delete>
   </target>
 
-  <target name="remove-pot-creation-date">
+  <target name="shrink-pot-file">
+    <!-- Remove "POT-Creation-Date -->
     <replaceregexp file='${remove_pot_file}'
-                   match='"POT-Creation-Date:(.*)\"'
-                   replace='' flags='g'>
-    </replaceregexp>
+                   match='"POT-Creation-Date:(.*)"'
+                   replace='' flags='g'/>
+    <!-- Remove source files/lines -->
+    <replaceregexp file='${remove_pot_file}'
+                   match='#:(.*)'
+                   replace='' flags='g'/>
   </target>
 
 </project>

@@ -43,14 +43,18 @@ class SasurfaceRenderer extends ShapeRenderer {
   int geodesicFaceCount;
   short[] geodesicFaceVertexes;
   short[] geodesicFaceNormixes;
-  ScreensCache screensCache;
+  SasCache sasCache;
+  //  ScreensCache screensCache;
   float radiusP;
 
   Vector3f[] transformedProbeVertexes;
   Point3i[] probeScreens;
 
   void initRenderer() {
-    screensCache = new ScreensCache(viewer, 6);
+    int maxVertexCount =
+      g3d.getGeodesicVertexCount(Sasurface.MAX_GEODESIC_RENDERING_LEVEL);
+    sasCache =
+      new SasCache(viewer, 6, maxVertexCount);
   }
 
   void render() {
@@ -78,7 +82,6 @@ class SasurfaceRenderer extends ShapeRenderer {
     int renderingLevel = surface.geodesicRenderingLevel;
     radiusP = surface.radiusP;
     geodesicVertexCount = surface.geodesicVertexCount;
-    screensCache.alloc(geodesicVertexCount);
     geodesicFaceCount =
       g3d.getGeodesicFaceCount(renderingLevel);
     geodesicFaceVertexes =
@@ -119,7 +122,6 @@ class SasurfaceRenderer extends ShapeRenderer {
       renderCavity(cavities[i], atoms,
                    colixesConvex,
                    convexVertexMaps);
-    screensCache.free();
   }
   
   void allocTransformedProbeVertexes() {
@@ -142,7 +144,7 @@ class SasurfaceRenderer extends ShapeRenderer {
                     short colix, int[] vertexMap, int[] faceMap) {
     if (hideConvex)
       return;
-    Point3i[] screens = screensCache.lookup(atom, vertexMap);
+    Point3i[] screens = sasCache.lookupAtomScreens(atom, vertexMap);
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     if (CONVEX_DOTS) {
       int[] edgeVertexes = surface.calcEdgeVertexes(vertexMap);
@@ -421,12 +423,12 @@ class SasurfaceRenderer extends ShapeRenderer {
       screen = viewer.transformPoint(cavity.pointPK);
       g3d.fillSphereCentered(Graphics3D.BLUE, 4, screen);
     }
-    Point3i[] screensI = screensCache.lookup(atomI,
-                                             convexVertexMaps[ixI]);
-    Point3i[] screensJ = screensCache.lookup(atomJ,
-                                             convexVertexMaps[ixJ]);
-    Point3i[] screensK = screensCache.lookup(atomK,
-                                             convexVertexMaps[ixK]);
+    Point3i[] screensI =
+      sasCache.lookupAtomScreens(atomI, convexVertexMaps[ixI]);
+    Point3i[] screensJ =
+      sasCache.lookupAtomScreens(atomJ, convexVertexMaps[ixJ]);
+    Point3i[] screensK =
+      sasCache.lookupAtomScreens(atomK, convexVertexMaps[ixK]);
     if (CAVITY_DOTS) {
       g3d.fillSphereCentered(Graphics3D.RED, 8, screensI[vertexI]);
       g3d.fillSphereCentered(Graphics3D.GREEN, 8, screensJ[vertexJ]);
@@ -451,6 +453,7 @@ class SasurfaceRenderer extends ShapeRenderer {
   }
 }
 
+/*
 class ScreensCache {
 
   final Viewer viewer;
@@ -540,3 +543,4 @@ class ScreensCache {
     }
   }
 }
+*/

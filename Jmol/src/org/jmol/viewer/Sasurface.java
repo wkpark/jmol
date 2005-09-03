@@ -30,6 +30,7 @@ import java.util.BitSet;
 
 class Sasurface extends Shape {
 
+  final static int MAX_GEODESIC_RENDERING_LEVEL = 2;
   int surfaceCount;
   Sasurface1[] surfaces = new Sasurface1[4];
 

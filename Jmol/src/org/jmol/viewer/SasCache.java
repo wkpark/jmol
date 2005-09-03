@@ -35,6 +35,7 @@ class SasCache {
   SasCache(Viewer viewer, int atomCacheSize, int geodesicVertexCount) {
     this.viewer = viewer;
     allocAtomCache(atomCacheSize, geodesicVertexCount);
+    allocTorusCache(atomCacheSize, MAX_TORUS_POINTS);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -56,7 +57,7 @@ class SasCache {
     atomCacheLrus = new int[atomCacheSize];
     this.atomScreensLength = geodesicVertexCount;
     for (int i = atomCacheSize; --i >= 0; ) {
-      atomCacheScreens[i] = viewer.allocTempScreens(atomScreensLength);
+      atomCacheScreens[i] = allocScreens(atomScreensLength);
       atomCacheAtomIndexes[i] = -1;
       atomCacheLrus[i] = -1;
     }
@@ -141,21 +142,21 @@ class SasCache {
   static final int MAX_TORUS_POINTS =
     INNER_TORUS_STEP_COUNT * OUTER_TORUS_STEP_COUNT;
 
-  final Point3f[] torusPointsT = new Point3f[MAX_TORUS_POINTS];
-  final Point3i[] torusScreens = new Point3i[MAX_TORUS_POINTS];
+  Point3f[] torusPointsT;
 
-  void allocTorusCache(int torusCacheSize) {
+  void allocTorusCache(int torusCacheSize, int torusScreensLength) {
     this.torusCacheSize = torusCacheSize;
+    this.torusScreensLength = torusScreensLength;
     torusCacheScreens = new Point3i[torusCacheSize][];
     torusCacheToruses = new Sasurface1.Torus[torusCacheSize];
     torusCacheLrus = new int[torusCacheSize];
-    this.atomScreensLength = MAX_TORUS_POINTS;
     for (int i = torusCacheSize; --i >= 0; ) {
-      torusCacheScreens[i] = viewer.allocTempScreens(torusScreensLength);
+      torusCacheScreens[i] = allocScreens(torusScreensLength);
       torusCacheToruses[i] = null;
       torusCacheLrus[i] = -1;
     }
     torusCacheLruClock = 0;
+    torusPointsT = allocPoints(MAX_TORUS_POINTS);
   }
 
   Point3i[] lookupTorusScreens(Sasurface1.Torus torus) {
@@ -178,6 +179,20 @@ class SasCache {
     torus.calcScreens(torusPointsT, screens);
     torusCacheToruses[iOldest] = torus;
     torusCacheLrus[iOldest] = torusCacheLruClock++;
+    return screens;
+  }
+
+  Point3f[] allocPoints(int count) {
+    Point3f[] points = new Point3f[count];
+    for (int i = count; --i >= 0; )
+      points[i] = new Point3f();
+    return points;
+  }
+
+  Point3i[] allocScreens(int count) {
+    Point3i[] screens = new Point3i[count];
+    for (int i = count; --i >= 0; )
+      screens[i] = new Point3i();
     return screens;
   }
 }

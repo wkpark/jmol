@@ -206,25 +206,12 @@ class SasurfaceRenderer extends ShapeRenderer {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
-  final Point3f[] torusPoints = (new Point3f[INNER_TORUS_STEP_COUNT *
-                                             OUTER_TORUS_STEP_COUNT]);
-  final Point3i[] torusScreens = (new Point3i[INNER_TORUS_STEP_COUNT *
-                                              OUTER_TORUS_STEP_COUNT]);
-  {
-    for (int i = torusPoints.length; --i >= 0; ) {
-      torusPoints[i] = new Point3f();
-      torusScreens[i] = new Point3i();
-    }
-  }
-
   final short[] torusEdgeIndexes = new short[INNER_TORUS_STEP_COUNT];
 
   final byte[] torusSegmentStarts = new byte[MAX_SEGMENT_COUNT];
 
   void renderTorus(Sasurface1.Torus torus, short[] colixes) {
-    torus.calcPoints(torusPoints);
-    Point3i[] screens = torusScreens;
-    torus.calcScreens(torusPoints, screens);
+    Point3i[] screens = sasCache.lookupTorusScreens(torus);
     short[] normixes = torus.normixes;
     int outerPointCount = torus.outerPointCount;
     int ixP = 0;
@@ -362,7 +349,7 @@ class SasurfaceRenderer extends ShapeRenderer {
       Point3i screen;
       screen = viewer.transformPoint(cavity.pointPI);
       g3d.fillSphereCentered(Graphics3D.RED, 4, screen);
-      
+
       screen = viewer.transformPoint(cavity.pointPJ);
       g3d.fillSphereCentered(Graphics3D.GREEN, 4, screen);
       

@@ -157,42 +157,36 @@ msgid "Preview"
 msgstr "Preview"
 
 #: org/openscience/jmol/app/GuiMap.java:45
-#, fuzzy
 msgid "&File"
-msgstr "Bestand"
+msgstr "&Bestand"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 msgid "New"
 msgstr "Nieuw"
 
 #: org/openscience/jmol/app/GuiMap.java:47
-#, fuzzy
 msgid "&Open"
-msgstr "Open"
+msgstr "&Open"
 
 #: org/openscience/jmol/app/GuiMap.java:48
-#, fuzzy
 msgid "Open &URL"
-msgstr "Open URL"
+msgstr "Open &URL"
 
 #: org/openscience/jmol/app/GuiMap.java:49
-#, fuzzy
 msgid "Scrip&t..."
-msgstr "Script..."
+msgstr "Scrip&t..."
 
 #: org/openscience/jmol/app/GuiMap.java:50
 msgid "AtomSetChooser..."
 msgstr "AtoomSetMenu"
 
 #: org/openscience/jmol/app/GuiMap.java:51
-#, fuzzy
 msgid "&Save As..."
-msgstr "Opslaan als..."
+msgstr "Opslaan al&s..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
-#, fuzzy
 msgid "&Export"
-msgstr "Exporteren"
+msgstr "&Exporteren"
 
 #: org/openscience/jmol/app/GuiMap.java:53
 msgid "Export Image..."
@@ -207,9 +201,8 @@ msgid "Export PDF..."
 msgstr "PDF exporteren..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#, fuzzy
 msgid "&Print..."
-msgstr "Printen..."
+msgstr "&Printen..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
 #: org/openscience/jmol/app/ScriptWindow.java:81
@@ -217,18 +210,16 @@ msgid "Close"
 msgstr "Sluiten"
 
 #: org/openscience/jmol/app/GuiMap.java:58
-#, fuzzy
 msgid "E&xit"
-msgstr "Afsluiten"
+msgstr "A&fsluiten"
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "Recent Files..."
 msgstr "Recente Bestanden..."
 
 #: org/openscience/jmol/app/GuiMap.java:60
-#, fuzzy
 msgid "&Edit"
-msgstr "Bewerken"
+msgstr "B&ewerken"
 
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "Make crystal..."
@@ -244,9 +235,8 @@ msgid "Deselect All"
 msgstr "Niets Selecteren"
 
 #: org/openscience/jmol/app/GuiMap.java:64
-#, fuzzy
 msgid "&Preferences..."
-msgstr "Eigenschappen..."
+msgstr "Eigenscha&ppen..."
 
 #: org/openscience/jmol/app/GuiMap.java:67
 msgid "All"
@@ -301,9 +291,8 @@ msgid "Hetero"
 msgstr "Heteroatomen"
 
 #: org/openscience/jmol/app/GuiMap.java:79
-#, fuzzy
 msgid "&Display"
-msgstr "Weergave"
+msgstr "Wee&rgave"
 
 #: org/openscience/jmol/app/GuiMap.java:80
 msgid "Atom"
@@ -430,9 +419,8 @@ msgid "800%"
 msgstr "800%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
-#, fuzzy
 msgid "Wi&reframe Rotation"
-msgstr "Draadmodelrotatie"
+msgstr "D&raadmodelrotatie"
 
 #: org/openscience/jmol/app/GuiMap.java:117
 #: org/openscience/jmol/app/GuiMap.java:162
@@ -450,24 +438,20 @@ msgid "Bounding Box"
 msgstr "Omvattende Doos"
 
 #: org/openscience/jmol/app/GuiMap.java:120
-#, fuzzy
 msgid "&Hydrogens"
-msgstr "Waterstoffen"
+msgstr "Waterst&offen"
 
 #: org/openscience/jmol/app/GuiMap.java:121
-#, fuzzy
 msgid "&Vectors"
-msgstr "Vectoren"
+msgstr "&Vectoren"
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#, fuzzy
 msgid "&Measurements"
-msgstr "Metingen"
+msgstr "&Metingen"
 
 #: org/openscience/jmol/app/GuiMap.java:123
-#, fuzzy
 msgid "&View"
-msgstr "Orientatie"
+msgstr "Orie&ntatie"
 
 #: org/openscience/jmol/app/GuiMap.java:124
 msgid "Front"
@@ -498,9 +482,8 @@ msgid "Define Center"
 msgstr "Definieer centrum"
 
 #: org/openscience/jmol/app/GuiMap.java:131
-#, fuzzy
 msgid "&Tools"
-msgstr "Tools"
+msgstr "&Tools"
 
 #: org/openscience/jmol/app/GuiMap.java:132
 #: org/openscience/jmol/app/MeasurementTable.java:67
@@ -532,19 +515,16 @@ msgid "Vibrate..."
 msgstr "Vibraties..."
 
 #: org/openscience/jmol/app/GuiMap.java:139
-#, fuzzy
 msgid "&Graph..."
-msgstr "Grafiek..."
+msgstr "&Grafiek..."
 
 #: org/openscience/jmol/app/GuiMap.java:140
-#, fuzzy
 msgid "Calculate chemical &shifts..."
-msgstr "Bereken chemische shifts..."
+msgstr "Bereken chemische &shifts..."
 
 #: org/openscience/jmol/app/GuiMap.java:141
-#, fuzzy
 msgid "&Crystal Properties"
-msgstr "Kristaleigenschappen"
+msgstr "&Kristaleigenschappen"
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "Once"
@@ -598,9 +578,8 @@ msgid "Previous frequency"
 msgstr "Vorige frequentie"
 
 #: org/openscience/jmol/app/GuiMap.java:154
-#, fuzzy
 msgid "&Help"
-msgstr "Help"
+msgstr "&Help"
 
 #: org/openscience/jmol/app/GuiMap.java:156
 msgid "User Guide"

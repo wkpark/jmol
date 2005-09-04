@@ -72,6 +72,7 @@ class SasurfaceRenderer extends ShapeRenderer {
     hideSaddles = viewer.getTestFlag1();
     hideCavities = viewer.getTestFlag2();
     hideConvex = viewer.getTestFlag3();
+    sasCache.clear();
     for (int i = surfaceCount; --i >= 0; )
       renderSasurface1(surfaces[i]);
   }
@@ -117,11 +118,6 @@ class SasurfaceRenderer extends ShapeRenderer {
       */
       renderTorus(torus, atoms, colixesConvex, convexVertexMaps);
     }
-    Sasurface1.Cavity[] cavities = surface.cavities;
-    for (int i = surface.cavityCount; --i >= 0; )
-      renderCavity(cavities[i], atoms,
-                   colixesConvex,
-                   convexVertexMaps);
   }
   
   void allocTransformedProbeVertexes() {
@@ -146,6 +142,7 @@ class SasurfaceRenderer extends ShapeRenderer {
       return;
     Point3i[] screens = sasCache.lookupAtomScreens(atom, vertexMap);
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);
+    /*
     if (CONVEX_DOTS) {
       int[] edgeVertexes = surface.calcEdgeVertexes(vertexMap);
       for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
@@ -158,6 +155,7 @@ class SasurfaceRenderer extends ShapeRenderer {
         }
       }
     }
+    */
     for (int i = Bmp.getMaxMappedBit(faceMap), j = 3*i - 1; --i >= 0; j -= 3) {
       if (Bmp.getBit(faceMap, i)) {
         short vA = geodesicFaceVertexes[j - 2];
@@ -321,213 +319,4 @@ class SasurfaceRenderer extends ShapeRenderer {
       torusColixes[i + halfRoundedUp] = colixB;
     }
   }
-
-  ////////////////////////////////////////////////////////////////
-
-
-  Vector3f vectorIJ = new Vector3f();
-  Vector3f vectorJI = new Vector3f();
-
-  boolean SHOW_TORUS_PROBE_CENTERS = false;
-  boolean SHOW_TORUS_PROBE_CENTER_VERTEX_CONNECTIONS = false;
-  boolean SHOW_TORUS_VERTEX_CONNECTIONS = false;
-
-  boolean SHOW_TORUS_CAVITY_FOO = false;
-  
-  final Point3i[] cavityScreens = new Point3i[4];
-  {
-    for (int i = cavityScreens.length; --i >= 0; )
-      cavityScreens[i] = new Point3i();
-  };
-
-  void renderCavity(Sasurface1.Cavity cavity, Atom[] atoms,
-                    short[] colixesCavity,
-                    int[][] convexVertexMaps) {
-    if (hideCavities)
-      return;
-    if (CAVITY_DOTS) {
-      Point3i screen;
-      screen = viewer.transformPoint(cavity.pointPI);
-      g3d.fillSphereCentered(Graphics3D.RED, 4, screen);
-
-      screen = viewer.transformPoint(cavity.pointPJ);
-      g3d.fillSphereCentered(Graphics3D.GREEN, 4, screen);
-      
-      screen = viewer.transformPoint(cavity.pointPK);
-      g3d.fillSphereCentered(Graphics3D.BLUE, 4, screen);
-    }
-    viewer.transformPoint(cavity.pointBottom, cavityScreens[0]);
-    viewer.transformPoint(cavity.pointPI, cavityScreens[1]);
-    viewer.transformPoint(cavity.pointPJ, cavityScreens[2]);
-    viewer.transformPoint(cavity.pointPK, cavityScreens[3]);
-    short[] normixes = cavity.normixes;
-    short colix = Graphics3D.YELLOW;
-    renderCavitySegment(colix, cavityScreens, normixes, 0, 1, 2);
-    renderCavitySegment(colix, cavityScreens, normixes, 0, 2, 3);
-    renderCavitySegment(colix, cavityScreens, normixes, 0, 3, 1);
-  }
-
-  void renderCavitySegment(short colix, Point3i[] cavityScreens,
-                           short[] normixes,
-                           int iA, int iB, int iC) {
-    g3d.fillTriangle(colix,
-                     cavityScreens[iA], normixes[iA],
-                     cavityScreens[iB], normixes[iB],
-                     cavityScreens[iC], normixes[iC]);
-  }
-
-  void renderCavity2(Sasurface1.Cavity cavity, Atom[] atoms,
-                     short[] colixesCavity,
-                     int[][] convexVertexMaps) {
-    if (hideCavities)
-      return;
-    short vertexI = cavity.vertexI; if (vertexI < 0) return;
-    short vertexJ = cavity.vertexJ; if (vertexJ < 0) return;
-    short vertexK = cavity.vertexK; if (vertexK < 0) return;
-    int ixI = cavity.ixI;
-    int ixJ = cavity.ixJ;
-    int ixK = cavity.ixK;
-
-    Atom atomI = atoms[ixI];
-    Atom atomJ = atoms[ixJ];
-    Atom atomK = atoms[ixK];
-    
-    short colixI = Graphics3D.inheritColix(colixesCavity[ixI],
-                                           atomI.colixAtom);
-    short colixJ = Graphics3D.inheritColix(colixesCavity[ixJ],
-                                           atomJ.colixAtom);
-    short colixK = Graphics3D.inheritColix(colixesCavity[ixK],
-                                           atomK.colixAtom);
-
-    if (CAVITY_DOTS) {
-      Point3i screen;
-      screen = viewer.transformPoint(cavity.pointPI);
-      g3d.fillSphereCentered(Graphics3D.RED, 4, screen);
-      
-      screen = viewer.transformPoint(cavity.pointPJ);
-      g3d.fillSphereCentered(Graphics3D.GREEN, 4, screen);
-      
-      screen = viewer.transformPoint(cavity.pointPK);
-      g3d.fillSphereCentered(Graphics3D.BLUE, 4, screen);
-    }
-    Point3i[] screensI =
-      sasCache.lookupAtomScreens(atomI, convexVertexMaps[ixI]);
-    Point3i[] screensJ =
-      sasCache.lookupAtomScreens(atomJ, convexVertexMaps[ixJ]);
-    Point3i[] screensK =
-      sasCache.lookupAtomScreens(atomK, convexVertexMaps[ixK]);
-    if (CAVITY_DOTS) {
-      g3d.fillSphereCentered(Graphics3D.RED, 8, screensI[vertexI]);
-      g3d.fillSphereCentered(Graphics3D.GREEN, 8, screensJ[vertexJ]);
-      g3d.fillSphereCentered(Graphics3D.BLUE, 8, screensK[vertexK]);
-    }
-
-    g3d.fillTriangle(screensI[vertexI], colixI, vertexI,
-                     screensJ[vertexJ], colixJ, vertexJ,
-                     screensK[vertexK], colixK, vertexK);
-  }
-
-  final Point3f probePointT = new Point3f();
-
-  void calcProbePoints(Point3f probeCenter, int[] vertexMap,
-                       Point3i[] screens) {
-    for (int i = Bmp.getMaxMappedBit(vertexMap); --i >= 0; ) {
-      if (! Bmp.getBit(vertexMap, i))
-        continue;
-      probePointT.add(probeCenter, transformedProbeVertexes[i]);
-      screens[i].set(viewer.transformPoint(probePointT));
-    }
-  }
 }
-
-/*
-class ScreensCache {
-
-  final Viewer viewer;
-  final int cacheSize;
-  int screensLength;
-  Point3i[][] cacheScreens;
-  int[] cacheAtomIndexes;
-  int lruClock;
-  int[] cacheLrus;
-
-  Vector3f[] transformedVectors;
-
-  ScreensCache(Viewer viewer, int cacheSize) {
-    this.viewer = viewer;
-    this.cacheSize = cacheSize;
-    cacheScreens = new Point3i[cacheSize][];
-    cacheAtomIndexes = new int[cacheSize];
-    cacheLrus = new int[cacheSize];
-  }
-
-  void alloc(int screensLength) {
-    this.screensLength = screensLength;
-    for (int i = cacheSize; --i >= 0; ) {
-      cacheScreens[i] = viewer.allocTempScreens(screensLength);
-      cacheAtomIndexes[i] = -1;
-      cacheLrus[i] = -1;
-    }
-    lruClock = 0;
-    transformedVectors = viewer.g3d.getTransformedVertexVectors();
-  }
-
-  Point3i[] lookup(Atom atom, int[] vertexMap) {
-    int atomIndex = atom.atomIndex;
-    for (int i = cacheSize; --i >= 0; ) {
-      if (cacheAtomIndexes[i] == atomIndex) {
-        cacheLrus[i] = lruClock++;
-        return cacheScreens[i];
-      }
-    }
-    int iOldest = 0;
-    int lruOldest = cacheLrus[0];
-    for (int i = cacheSize; --i > 0; ) { // only > 0
-      if (cacheLrus[i] < lruOldest) {
-        lruOldest = cacheLrus[i];
-        iOldest = i;
-      }
-    }
-    Point3i[] screens = cacheScreens[iOldest];
-    calcScreenPoints(atom, vertexMap, screens);
-    cacheAtomIndexes[iOldest] = atomIndex;
-    cacheLrus[iOldest] = lruClock++;
-    return screens;
-  }
-
-  void touch(Point3i[] screens) {
-    for (int i = cacheSize; --i >= 0; ) {
-      if (screens == cacheScreens[i]) {
-        cacheLrus[i] = lruClock++;
-        return;
-      }
-    }
-    throw new NullPointerException();
-  }
-
-  void free() {
-    for (int i = cacheSize; --i >= 0; ) {
-      cacheScreens[i] = null;
-      cacheAtomIndexes[i] = -1;
-      cacheLrus[i] = -1;
-    }
-  }
-
-  void calcScreenPoints(Atom atom, int[] vertexMap, Point3i[] screens) {
-    float radius = atom.getVanderwaalsRadiusFloat();
-    int atomX = atom.getScreenX();
-    int atomY = atom.getScreenY();
-    int atomZ = atom.getScreenZ();
-    float scaledRadius = viewer.scaleToScreen(atomZ, radius);
-    for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
-      if (! Bmp.getBit(vertexMap, vertex))
-        continue;
-      Vector3f tv = transformedVectors[vertex];
-      Point3i screen = screens[vertex];
-      screen.x = atomX + (int)(scaledRadius * tv.x);
-      screen.y = atomY - (int)(scaledRadius * tv.y); // y inverted on screen!
-      screen.z = atomZ - (int)(scaledRadius * tv.z); // smaller z comes to me
-    }
-  }
-}
-*/

@@ -205,6 +205,7 @@ class Sasurface1 {
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
       torus.checkCavityCorrectness1();
+      torus.calcVectors();
       torus.calcCavityAnglesAndSort();
       torus.checkCavityCorrectness2();
       torus.buildTorusSegments();
@@ -625,9 +626,9 @@ class Sasurface1 {
   final Vector3f vOrganizeA = new Vector3f();
   final Vector3f vOrganizeB = new Vector3f();
 
-  final Vector3f axisVector = new Vector3f();
-  final Vector3f unitRadialVector = new Vector3f();
-  final Vector3f radialVector = new Vector3f();
+  //  final Vector3f axisVector = new Vector3f();
+  final Vector3f unitRadialVectorT = new Vector3f();
+  //  final Vector3f radialVector = new Vector3f();
   // 90 degrees, although everything is in radians
   final Vector3f radialVector90 = new Vector3f();
   // 270 degrees
@@ -674,12 +675,13 @@ class Sasurface1 {
     final int ixA, ixB;
     final Point3f center;
     final float radius;
-    final Vector3f axisVector;
-    final Vector3f radialVector;
-    final Vector3f unitRadialVector;
-    final Vector3f tangentVector;
-    final Vector3f outerRadial;
-    final float outerAngle;
+    final boolean fullTorus;
+
+    Vector3f axisVector;
+    Vector3f radialVector;
+    Vector3f tangentVector;
+    Vector3f outerRadial;
+    float outerAngle;
     short colixA, colixB;
     byte outerPointCount;
     byte segmentStripCount;
@@ -688,28 +690,34 @@ class Sasurface1 {
 
     short[] connectAConvex;
 
-    Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
-          Point3f center, float radius, boolean fullTorus) {
+    Torus(int indexA, int indexB, Point3f center, float radius,
+          boolean fullTorus) {
       this.ixA = indexA;
       this.ixB = indexB;
       this.center = new Point3f(center);
       this.radius = radius;
+      this.fullTorus = fullTorus;
+    }
+
+    void calcVectors() {
+      Point3f centerA = frame.atoms[ixA].point3f;
+      Point3f centerB = frame.atoms[ixB].point3f;
 
       axisVector = new Vector3f();
       axisVector.sub(centerB, centerA);
 
       if (axisVector.x == 0)
-        unitRadialVector = new Vector3f(1, 0, 0);
+        unitRadialVectorT.set(vectorX);
       else if (axisVector.y == 0)
-        unitRadialVector = new Vector3f(0, 1, 0);
+        unitRadialVectorT.set(vectorY);
       else if (axisVector.z == 0)
-        unitRadialVector = new Vector3f(0, 0, 1);
+        unitRadialVectorT.set(vectorZ);
       else {
-        unitRadialVector = new Vector3f(-axisVector.y, axisVector.x, 0);
-        unitRadialVector.normalize();
+        unitRadialVectorT.set(-axisVector.y, axisVector.x, 0);
+        unitRadialVectorT.normalize();
       }
-      radialVector = new Vector3f(unitRadialVector);
-      radialVector.scale(radius);
+      radialVector = new Vector3f();
+      radialVector.scale(radius, unitRadialVectorT);
 
       tangentVector = new Vector3f();
       tangentVector.cross(axisVector, radialVector);
@@ -717,36 +725,16 @@ class Sasurface1 {
 
       pointTorusP.add(center, radialVector);
 
-      vectorPA.sub(centerA, pointTorusP);
-      vectorPA.normalize();
-      vectorPA.scale(radiusP);
+      outerRadial = new Vector3f();
+      outerRadial.sub(centerA, pointTorusP);
+      outerRadial.normalize();
+      outerRadial.scale(radiusP);
 
       vectorPB.sub(centerB, pointTorusP);
       vectorPB.normalize();
       vectorPB.scale(radiusP);
 
-      outerRadial = new Vector3f(vectorPA);
-      outerAngle = vectorPA.angle(vectorPB);
-
-      float angle = vectorZ.angle(axisVector);
-      if (angle == 0) {
-        matrixT.setIdentity();
-      } else {
-        vectorT.cross(vectorZ, axisVector);
-        aaT.set(vectorT, angle);
-        matrixT.set(aaT);
-      }
-
-      matrixT.transform(unitRadialVector, vectorT);
-      angle = vectorX.angle(vectorT);
-      if (angle != 0) {
-        vectorT.cross(vectorX, vectorT);
-        aaT.set(vectorT, angle);
-        matrixT1.set(aaT);
-        matrixT.mul(matrixT1);
-      }
-
-      aaRotate.set(matrixT);
+      outerAngle = outerRadial.angle(vectorPB);
     }
 
     void calcPointCounts() {
@@ -972,9 +960,8 @@ class Sasurface1 {
       convexVertexMaps[atomIndex] = Bmp.allocateBitmap(geodesicVertexCount);
   }
 
-  Torus createTorus(int indexI, Point3f centerI, int indexJ, Point3f centerJ,
-                    Point3f torusCenterIJ, float torusRadius,
-                    boolean fullTorus) {
+  Torus createTorus(int indexI, int indexJ, Point3f torusCenterIJ,
+                    float torusRadius, boolean fullTorus) {
     if (indexI >= indexJ)
       throw new NullPointerException();
     Long key = new Long(((long)indexI << 32) + indexJ);
@@ -982,8 +969,8 @@ class Sasurface1 {
       throw new NullPointerException();
     allocateConvexVertexBitmap(indexI);
     allocateConvexVertexBitmap(indexJ);
-    Torus torus = new Torus(indexI, centerI, indexJ, centerJ,
-                            torusCenterIJ, torusRadius, fullTorus);
+    Torus torus = new Torus(indexI, indexJ, torusCenterIJ,
+                            torusRadius, fullTorus);
     htToruses.put(key, torus);
     saveTorus(torus);
     return torus;
@@ -1064,16 +1051,15 @@ class Sasurface1 {
   void checkFullTorusIJ() {
     if (getTorus(indexI, indexJ) == null) {
       if (vectorIJ.z == 0)
-        unitRadialVector.set(vectorZ);
+        unitRadialVectorT.set(vectorZ);
       else {
-        unitRadialVector.set(-vectorIJ.y, vectorIJ.x, 0);
-        unitRadialVector.normalize();
+        unitRadialVectorT.set(-vectorIJ.y, vectorIJ.x, 0);
+        unitRadialVectorT.normalize();
       }
       float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
-      pointTorusP.scaleAdd(torusRadiusIJ, unitRadialVector, torusCenterIJ);
+      pointTorusP.scaleAdd(torusRadiusIJ, unitRadialVectorT, torusCenterIJ);
       if (checkProbeNotIJ(pointTorusP))
-        createTorus(indexI, centerI, indexJ, centerJ,
-                    torusCenterIJ, torusRadiusIJ, true);
+        createTorus(indexI, indexJ, torusCenterIJ, torusRadiusIJ, true);
     }
   }
 
@@ -1120,15 +1106,13 @@ class Sasurface1 {
                              " indexJ=" + indexJ +
                              " indexK=" + indexK);
         if (torusIJ == null && (torusIJ = getTorus(indexI, indexJ)) == null)
-          torusIJ = createTorus(indexI, centerI, indexJ, centerJ,
-                                torusCenterIJ,
+          torusIJ = createTorus(indexI, indexJ, torusCenterIJ,
                                 calcTorusRadius(radiusI, radiusJ, distanceIJ2),
                                 false);
         torusIJ.addCavity(cavity, rightHanded);
         
         if (torusIK == null && (torusIK = getTorus(indexI, indexK)) == null)
-          torusIK = createTorus(indexI, centerI, indexK, centerK,
-                                torusCenterIK,
+          torusIK = createTorus(indexI, indexK, torusCenterIK,
                                 calcTorusRadius(radiusI, radiusK, distanceIK2),
                                 false);
         torusIK.addCavity(cavity, !rightHanded);
@@ -1136,8 +1120,7 @@ class Sasurface1 {
         if (torusJK == null && (torusJK = getTorus(indexJ, indexK)) == null) {
           calcTorusCenter(centerJ, radiiJP2, centerK, radiiKP2, distanceJK2,
                           torusCenterJK);
-          torusJK = createTorus(indexJ, centerJ, indexK, centerK,
-                                torusCenterJK,
+          torusJK = createTorus(indexJ, indexK, torusCenterJK,
                                 calcTorusRadius(radiusJ, radiusK, distanceJK2),
                                 false);
         }

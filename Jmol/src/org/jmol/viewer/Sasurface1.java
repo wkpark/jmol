@@ -204,6 +204,7 @@ class Sasurface1 {
 
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
+      torus.checkCavityCorrectness0();
       torus.checkCavityCorrectness1();
       torus.calcVectors();
       torus.calcCavityAnglesAndSort();
@@ -620,14 +621,9 @@ class Sasurface1 {
   final Vector3f vectorPI = new Vector3f();
   final Vector3f vectorPJ = new Vector3f();
 
-  final Vector3f vectorPA = new Vector3f();
-  final Vector3f vectorPB = new Vector3f();
-
-  final Vector3f vOrganizeA = new Vector3f();
-  final Vector3f vOrganizeB = new Vector3f();
-
   //  final Vector3f axisVector = new Vector3f();
   final Vector3f unitRadialVectorT = new Vector3f();
+  final Point3f probePointT = new Point3f();
   //  final Vector3f radialVector = new Vector3f();
   // 90 degrees, although everything is in radians
   final Vector3f radialVector90 = new Vector3f();
@@ -677,10 +673,10 @@ class Sasurface1 {
     final float radius;
     final boolean fullTorus;
 
-    Vector3f axisVector;
-    Vector3f radialVector;
-    Vector3f tangentVector;
-    Vector3f outerRadial;
+    final Vector3f radialVector = new Vector3f();
+    final Vector3f axisVector = new Vector3f();
+    final Vector3f tangentVector = new Vector3f();
+    final Vector3f outerRadial = new Vector3f();
     float outerAngle;
     short colixA, colixB;
     byte outerPointCount;
@@ -702,39 +698,45 @@ class Sasurface1 {
     void calcVectors() {
       Point3f centerA = frame.atoms[ixA].point3f;
       Point3f centerB = frame.atoms[ixB].point3f;
-
-      axisVector = new Vector3f();
       axisVector.sub(centerB, centerA);
 
-      if (axisVector.x == 0)
-        unitRadialVectorT.set(vectorX);
-      else if (axisVector.y == 0)
-        unitRadialVectorT.set(vectorY);
-      else if (axisVector.z == 0)
-        unitRadialVectorT.set(vectorZ);
-      else {
-        unitRadialVectorT.set(-axisVector.y, axisVector.x, 0);
-        unitRadialVectorT.normalize();
+      Point3f referenceProbePoint = null;
+      if (torusCavities != null) {
+        for (int i = torusCavityCount; --i >= 0; ) {
+          TorusCavity torusCavity = torusCavities[i];
+          if (torusCavity.rightHanded) {
+            referenceProbePoint = torusCavity.cavity.probeCenter;
+            break;
+          }
+        }
+      } else {
+        // it is a full torus, so it does not really matter where
+        // we put it;
+        if (axisVector.x == 0)
+          unitRadialVectorT.set(vectorX);
+        else if (axisVector.y == 0)
+          unitRadialVectorT.set(vectorY);
+        else if (axisVector.z == 0)
+          unitRadialVectorT.set(vectorZ);
+        else {
+          unitRadialVectorT.set(-axisVector.y, axisVector.x, 0);
+          unitRadialVectorT.normalize();
+        }
+        referenceProbePoint = probePointT;
+        probePointT.scaleAdd(radius, unitRadialVectorT, center);
       }
-      radialVector = new Vector3f();
-      radialVector.scale(radius, unitRadialVectorT);
 
-      tangentVector = new Vector3f();
+      radialVector.sub(referenceProbePoint, center);
+
       tangentVector.cross(axisVector, radialVector);
       tangentVector.normalize();
 
-      pointTorusP.add(center, radialVector);
-
-      outerRadial = new Vector3f();
-      outerRadial.sub(centerA, pointTorusP);
+      outerRadial.sub(centerA, referenceProbePoint);
       outerRadial.normalize();
       outerRadial.scale(radiusP);
 
-      vectorPB.sub(centerB, pointTorusP);
-      vectorPB.normalize();
-      vectorPB.scale(radiusP);
-
-      outerAngle = outerRadial.angle(vectorPB);
+      vectorT.sub(centerB, referenceProbePoint);
+      outerAngle = outerRadial.angle(vectorT);
     }
 
     void calcPointCounts() {
@@ -779,6 +781,11 @@ class Sasurface1 {
       torusCavities[torusCavityCount] =
         new TorusCavity(cavity, rightHanded);
       ++torusCavityCount;
+    }
+
+    void checkCavityCorrectness0() {
+      if (fullTorus ^ (torusCavityCount == 0))
+        throw new NullPointerException();
     }
 
     void checkCavityCorrectness1() {

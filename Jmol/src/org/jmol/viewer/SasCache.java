@@ -38,6 +38,11 @@ class SasCache {
     allocTorusCache(atomCacheSize, MAX_TORUS_POINTS);
   }
 
+  void clear() {
+    clearAtomCache();
+    clearTorusCache();
+  }
+
   ////////////////////////////////////////////////////////////////
   // atom cache support
   ////////////////////////////////////////////////////////////////
@@ -66,6 +71,19 @@ class SasCache {
       viewer.g3d.getTransformedVertexVectors();
   }
 
+  void clearAtomCache() {
+    for (int i = atomCacheSize; --i >= 0; )
+      atomCacheAtomIndexes[i] = atomCacheLrus[i] = -1;
+  }
+
+  void free() {
+    for (int i = atomCacheSize; --i >= 0; ) {
+      atomCacheScreens[i] = null;
+      atomCacheAtomIndexes[i] = -1;
+      atomCacheLrus[i] = -1;
+    }
+  }
+  
   Point3i[] lookupAtomScreens(Atom atom, int[] vertexMap) {
     int atomIndex = atom.atomIndex;
     for (int i = atomCacheSize; --i >= 0; ) {
@@ -99,14 +117,6 @@ class SasCache {
     throw new NullPointerException();
   }
 
-  void free() {
-    for (int i = atomCacheSize; --i >= 0; ) {
-      atomCacheScreens[i] = null;
-      atomCacheAtomIndexes[i] = -1;
-      atomCacheLrus[i] = -1;
-    }
-  }
-  
   void calcAtomScreens(Atom atom, int[] vertexMap, Point3i[] screens) {
     float radius = atom.getVanderwaalsRadiusFloat();
     int atomX = atom.getScreenX();
@@ -157,6 +167,13 @@ class SasCache {
     }
     torusCacheLruClock = 0;
     torusPointsT = allocPoints(MAX_TORUS_POINTS);
+  }
+
+  void clearTorusCache() {
+    for (int i = torusCacheSize; --i >= 0; ) {
+      torusCacheToruses[i] = null;
+      torusCacheLrus[i] = -1;
+    }
   }
 
   Point3i[] lookupTorusScreens(Sasurface1.Torus torus) {

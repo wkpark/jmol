@@ -206,6 +206,7 @@ class Sasurface1 {
       Torus torus = toruses[i];
       torus.checkCavityCorrectness0();
       torus.checkCavityCorrectness1();
+      torus.electReferenceCavity();
       torus.calcVectors();
       torus.calcCavityAnglesAndSort();
       torus.checkCavityCorrectness2();
@@ -623,15 +624,10 @@ class Sasurface1 {
 
   //  final Vector3f axisVector = new Vector3f();
   final Vector3f unitRadialVectorT = new Vector3f();
-  final Point3f probePointT = new Point3f();
   //  final Vector3f radialVector = new Vector3f();
   // 90 degrees, although everything is in radians
-  final Vector3f radialVector90 = new Vector3f();
-  // 270 degrees
-  final Vector3f radialVector270 = new Vector3f();
-  final Vector3f cavityProbeVector = new Vector3f();
-  final Point3f pointTorusP = new Point3f();
-  final Vector3f vectorTorusP = new Vector3f();
+  final Vector3f radialVector90T = new Vector3f();
+
   final AxisAngle4f aaRotate = new AxisAngle4f();
   Point3f pointAtomI;
   Point3f pointAtomJ;
@@ -695,6 +691,23 @@ class Sasurface1 {
       this.fullTorus = fullTorus;
     }
 
+    void electReferenceCavity() {
+      if (torusCavities == null)
+        return;
+      if (torusCavities[0].rightHanded)
+        return;
+      for (int i = torusCavityCount; --i > 0; ) {
+        TorusCavity torusCavity = torusCavities[i];
+        if (torusCavity.rightHanded) {
+          torusCavities[i] = torusCavities[0];
+          torusCavities[0] = torusCavity;
+          break;
+        }
+      }
+      if (! torusCavities[0].rightHanded)
+        throw new NullPointerException();
+    }
+
     void calcVectors() {
       Point3f centerA = frame.atoms[ixA].point3f;
       Point3f centerB = frame.atoms[ixB].point3f;
@@ -702,13 +715,7 @@ class Sasurface1 {
 
       Point3f referenceProbePoint = null;
       if (torusCavities != null) {
-        for (int i = torusCavityCount; --i >= 0; ) {
-          TorusCavity torusCavity = torusCavities[i];
-          if (torusCavity.rightHanded) {
-            referenceProbePoint = torusCavity.cavity.probeCenter;
-            break;
-          }
-        }
+        referenceProbePoint = torusCavities[0].cavity.probeCenter;
       } else {
         // it is a full torus, so it does not really matter where
         // we put it;
@@ -722,11 +729,15 @@ class Sasurface1 {
           unitRadialVectorT.set(-axisVector.y, axisVector.x, 0);
           unitRadialVectorT.normalize();
         }
-        referenceProbePoint = probePointT;
-        probePointT.scaleAdd(radius, unitRadialVectorT, center);
+        referenceProbePoint = pointT;
+        pointT.scaleAdd(radius, unitRadialVectorT, center);
       }
 
       radialVector.sub(referenceProbePoint, center);
+
+      aaRotate.set(axisVector, PI / 2);
+      matrixT.set(aaRotate);
+      matrixT.transform(radialVector, radialVector90T);
 
       tangentVector.cross(axisVector, radialVector);
       tangentVector.normalize();
@@ -800,18 +811,19 @@ class Sasurface1 {
     }
 
     void calcCavityAnglesAndSort() {
-      if (torusCavityCount == 0) // full torus
+      if (torusCavities == null) // full torus
         return;
-      calcReferenceVectors();
-      for (int i = torusCavityCount; --i >= 0; )
-        torusCavities[i].calcAngle(center, radialVector, radialVector90);
+      // because of previous election, torusCavities[0] has angle 0;
+      for (int i = torusCavityCount; --i > 0; )
+        torusCavities[i].calcAngle(center, radialVector, radialVector90T);
       sortCavitiesByAngle();
     }
 
     void sortCavitiesByAngle() {
-      for (int i = torusCavityCount; --i > 0; ) {
+      // no need to sort entry #0, whose angle (by definition) is zero
+      for (int i = torusCavityCount; --i >= 2; ) {
         TorusCavity champion = torusCavities[i];
-        for (int j = i; --j >= 0; ) {
+        for (int j = i; --j > 0; ) {
           TorusCavity challenger = torusCavities[j];
           if (challenger.angle > champion.angle) {
             torusCavities[j] = champion;
@@ -819,18 +831,14 @@ class Sasurface1 {
           }
         }
       }
-      // if the lowest one is not right-handed then
-      // move it to the end
-      TorusCavity lowest = torusCavities[0];
-      if (! lowest.rightHanded) {
-        for (int i = 1; i < torusCavityCount; ++i)
-          torusCavities[i - 1] = torusCavities[i];
-        torusCavities[torusCavityCount - 1] = lowest;
-      }
     }
       
     void checkCavityCorrectness2() {
+      if (torusCavities == null)
+        return; // full torus
       if ((torusCavityCount & 1) != 0) // ensure even number
+        throw new NullPointerException();
+      if (torusCavities[0].angle != 0)
         throw new NullPointerException();
       for (int i = torusCavityCount; --i > 0; ) {
         if (torusCavities[i].angle <= torusCavities[i-1].angle &&
@@ -860,12 +868,6 @@ class Sasurface1 {
 
     int torusSegmentCount;
     TorusSegment[] torusSegments;
-
-    void calcReferenceVectors() {
-      aaRotate.set(axisVector, PI / 2);
-      matrixT.set(aaRotate);
-      matrixT.transform(radialVector, radialVector90);
-    }
 
     void addTorusSegment(TorusSegment torusSegment) {
       if (torusSegments == null)
@@ -1064,8 +1066,8 @@ class Sasurface1 {
         unitRadialVectorT.normalize();
       }
       float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
-      pointTorusP.scaleAdd(torusRadiusIJ, unitRadialVectorT, torusCenterIJ);
-      if (checkProbeNotIJ(pointTorusP))
+      pointT.scaleAdd(torusRadiusIJ, unitRadialVectorT, torusCenterIJ);
+      if (checkProbeNotIJ(pointT))
         createTorus(indexI, indexJ, torusCenterIJ, torusRadiusIJ, true);
     }
   }

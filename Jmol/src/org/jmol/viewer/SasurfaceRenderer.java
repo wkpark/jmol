@@ -260,38 +260,6 @@ class SasurfaceRenderer extends ShapeRenderer {
   }
   */
 
-  void renderTorusAtomConnections(Sasurface1.Torus torus,
-                                  Point3i screensConvex) {
-    //    System.out.println("torus.connectAConvex=" +
-    //                       torus.connectAConvex);
-    short[] x = torus.connectAConvex;
-    /*
-    if (x != null) {
-      for (int i = 0; i < x.length; ++i)
-        System.out.print(" " + x[i]);
-      System.out.println("");
-    }
-    */
-    /*
-    int segmentCount = torus.countCcontiguousSegments(torusSegmentStarts);
-    for (int m = segmentCount; --m >= 0; ) {
-      renderTorusAtomConnection(torus, torusSegmentStarts[m], 
-    short[] connectAConvex = torus.connectA;
-    if (connectAConvex == null) {
-      System.out.println("connectA == null");
-      return;
-    }
-    int countA = torus.extractAtomEdgeIndexes(segmentStart,
-                                              false, torusEdgeIndexes);
-    
-      short[] torusEdgeIndexes = new short[INNER_TORUS_STEP_COUNT];
-
-    for (int i = connectA.length; --i >= 0; )
-      drawOneConnection(torusScreens[connectA[i]],
-                        screensConvex[
-    */
-  }
-    
   final short[] torusColixes = new short[OUTER_TORUS_STEP_COUNT];
 
   void prepareTorusColixes(Sasurface1.Torus torus, short[] convexColixes,

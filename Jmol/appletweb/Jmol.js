@@ -752,21 +752,11 @@ function _jmolOnloadResetForms() {
   _jmol.previousOnloadHandler = window.onload;
   window.onload =
   function() {
-//    alert("onloadResetForms");
     with (_jmol) {
       if (buttonCount+checkboxCount+menuCount+radioCount+radioGroupCount > 0) {
         var forms = document.forms;
-        if (!forms || forms.length == 0) {
-          alert("<form> tags seem to be missing\n" +
-                "Jmol/HTML input controls must be contained " +
-                "within form tags"
-//                + "\n\n" + forms + " forms.length=" + forms.length +
-//                " typeof=" + (typeof forms)
-                );
-        } else {
-          for (var i = forms.length; --i >= 0; )
-            forms[i].reset();
-        }
+        for (var i = forms.length; --i >= 0; )
+          forms[i].reset();
       }
       if (previousOnloadHandler)
         previousOnloadHandler();

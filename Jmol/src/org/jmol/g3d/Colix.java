@@ -186,4 +186,48 @@ final class Colix {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
   }
+
+  static int mixCacheCount = 0;
+  static int[] mixCacheMixIds = new int[32];
+  static short[] mixCacheColixes = new short[32];
+
+  final static short getColixMix(short colixA, short colixB) {
+    if (colixA == colixB)
+      return colixA;
+    if (colixA <= 0)
+      return colixB;
+    if (colixB <= 0)
+      return colixA;
+    int mixId = ((colixA < colixB)
+                 ? ((colixA << 16) | colixB)
+                 : ((colixB << 16) | colixA));
+    for (int i = 0; i < mixCacheCount; ++i)
+      if (mixId == mixCacheMixIds[i])
+        return mixCacheColixes[i];
+    int argbA = argbs[colixA];
+    int argbB = argbs[colixB];
+    int r = (((argbA & 0x00FF0000) + (argbB & 0x00FF0000)) >> 1) & 0x00FF0000;
+    int g = (((argbA & 0x0000FF00) + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+    int b = (((argbA & 0x000000FF) + (argbB & 0x000000FF)) >> 1);
+    int argbMixed = 0xFF000000 | r | g | b;
+    short mixedColix = getColix(argbMixed);
+    return addMixed(mixId, mixedColix);
+  }
+
+  private synchronized static short addMixed(int mixId, short mixedColix) {
+    if (mixCacheCount == mixCacheMixIds.length) {
+      int[] t1 = new int[2 * mixCacheCount];
+      short[] t2 = new short[2 * mixCacheCount];
+      for (int i = mixCacheCount; --i >= 0; ) {
+        t1[i] = mixCacheMixIds[i];
+        t2[i] = mixCacheColixes[i];
+      }
+      mixCacheMixIds = t1;
+      mixCacheColixes = t2;
+    }
+    mixCacheMixIds[mixCacheCount] = mixId;
+    mixCacheColixes[mixCacheCount] = mixedColix;
+    ++mixCacheCount;
+    return mixedColix;
+  }
 }

@@ -212,6 +212,7 @@ class SasurfaceRenderer extends ShapeRenderer {
     for (int i = 0; i < torusSegmentCount; ++i) {
       if (torusCavities != null)
         renderTorusCavityTriangle(screens, normixes, ixP, outerPointCount,
+                                  colixes,
                                   torusCavities[torusCavityIndex++]);
       int stepCount = torus.torusSegments[i].stepCount;
       int ixQ = ixP + outerPointCount;
@@ -230,6 +231,7 @@ class SasurfaceRenderer extends ShapeRenderer {
       }
       if (torusCavities != null)
         renderTorusCavityTriangle(screens, normixes, ixP, outerPointCount,
+                                  colixes,
                                   torusCavities[torusCavityIndex++]);
       ixP = ixQ;
     }
@@ -242,23 +244,29 @@ class SasurfaceRenderer extends ShapeRenderer {
                                  short[] torusNormixes,
                                  int torusIndex,
                                  int torusPointCount,
+                                 short[] colixes,
                                  Sasurface1.Torus.TorusCavity torusCavity) {
-    Sasurface1.Cavity cavity = torusCavity.cavity;
+        Sasurface1.Cavity cavity = torusCavity.cavity;
     viewer.transformPoint(cavity.pointBottom, screenCavityBottom);
     short normixCavityBottom = cavity.normixBottom;
     Point3i torusScreenLast = torusScreens[torusIndex];
     short torusNormixLast = torusNormixes[torusIndex];
+    short colixLast = colixes[0];
     ++torusIndex;
-    for (int i = torusPointCount; --i > 0; ) { // .GT. 0
+    for (int i = 1; i < torusPointCount; ++i) {
       Point3i torusScreen = torusScreens[torusIndex];
       short torusNormix = torusNormixes[torusIndex];
       ++torusIndex;
-      g3d.fillTriangle(Graphics3D.YELLOW,
-                       torusScreenLast, torusNormixLast,
-                       torusScreen, torusNormix,
-                       screenCavityBottom, normixCavityBottom);
+      short colix = colixes[i];
+      short colixBottom = colix;
+      if (colix != colixLast)
+        colixBottom = g3d.getColixMix(colix, colixLast);
+      g3d.fillTriangle(torusScreenLast, colixLast, torusNormixLast,
+                       torusScreen, colix, torusNormix, 
+                       screenCavityBottom, colixBottom, normixCavityBottom);
       torusScreenLast = torusScreen;
       torusNormixLast = torusNormix;
+      colixLast = colix;
     }
   }
 

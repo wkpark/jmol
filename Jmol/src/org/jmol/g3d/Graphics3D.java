@@ -1831,6 +1831,15 @@ final public class Graphics3D {
     return Colix.getColix(color);
   }
 
+  public final short getColixMix(short colixA, short colixB) {
+    return Colix.getColixMix(colixA >= 0 ? colixA :
+                             changableColixMap[colixA &
+                                               UNMASK_CHANGABLE_TRANSLUCENT],
+                             colixB >= 0 ? colixB :
+                             changableColixMap[colixB &
+                                               UNMASK_CHANGABLE_TRANSLUCENT]);
+  }
+
   public final static short setTranslucent(short colix,
                                            boolean isTranslucent) {
     if (isTranslucent) {

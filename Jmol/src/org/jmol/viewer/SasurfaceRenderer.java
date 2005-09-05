@@ -109,13 +109,6 @@ class SasurfaceRenderer extends ShapeRenderer {
     Sasurface1.Torus[] toruses = surface.toruses;
     for (int i = surface.torusCount; --i >= 0; ) {
       Sasurface1.Torus torus = toruses[i];
-      /*
-      renderToruX(torus,
-                  atoms[ixI], convexVertexMaps[ixI],
-                  atoms[ixJ], convexVertexMaps[ixJ],
-                  colixesConvex,
-                  renderingLevel);
-      */
       renderTorus(torus, atoms, colixesConvex, convexVertexMaps);
     }
   }
@@ -212,12 +205,18 @@ class SasurfaceRenderer extends ShapeRenderer {
     Point3i[] screens = sasCache.lookupTorusScreens(torus);
     short[] normixes = torus.normixes;
     int outerPointCount = torus.outerPointCount;
+    Sasurface1.Torus.TorusCavity[] torusCavities = torus.torusCavities;
+    int torusCavityIndex = 0;
     int ixP = 0;
     int torusSegmentCount = torus.torusSegmentCount;
     for (int i = 0; i < torusSegmentCount; ++i) {
+      if (torusCavities != null)
+        renderTorusCavityTriangle(screens, normixes, ixP, outerPointCount,
+                                  torusCavities[torusCavityIndex++]);
       int stepCount = torus.torusSegments[i].stepCount;
       int ixQ = ixP + outerPointCount;
       for (int j = stepCount; --j > 0; ) { // .GT.
+                                  
         ++ixP;
         ++ixQ;
         for (int k = 1; k < outerPointCount; ++k) {
@@ -229,36 +228,39 @@ class SasurfaceRenderer extends ShapeRenderer {
           ++ixQ;
         }
       }
+      if (torusCavities != null)
+        renderTorusCavityTriangle(screens, normixes, ixP, outerPointCount,
+                                  torusCavities[torusCavityIndex++]);
       ixP = ixQ;
     }
     
-    //    renderTorusEdges(torus);
-    //    Point3i[] convexScreens = screensCache.lookup(atom, vertexMap);
-    //    renderTorusAtomConnections(torus, null);
   }
 
-  /*
-  void renderTorusEdges(Sasurface1.Torus torus) {
-    Point3i[] screens = torusScreens;
-    // show torus edges
-    int segmentCount = torus.countContiguousSegments(torusSegmentStarts);
-    //    System.out.println("segmentCount=" + segmentCount);
-    for (int m = segmentCount; --m >= 0; ) {
-      int segmentStart = torusSegmentStarts[m];
-      int countA = torus.extractAtomEdgeIndexes(segmentStart,
-                                                false, torusEdgeIndexes);
-      for (int n = countA; --n >= 0; )
-        g3d.fillSphereCentered(g3d.MAGENTA,
-                               5 + (3*m), screens[torusEdgeIndexes[n]]);
-      
-      int countB = torus.extractAtomEdgeIndexes(segmentStart,
-                                                true, torusEdgeIndexes);
-      for (int n = countB; --n >= 0; )
-        g3d.fillSphereCentered(g3d.CYAN,
-                               5 + (3*m), screens[torusEdgeIndexes[n]]);
+  final Point3i screenCavityBottom = new Point3i();
+
+  void renderTorusCavityTriangle(Point3i[] torusScreens,
+                                 short[] torusNormixes,
+                                 int torusIndex,
+                                 int torusPointCount,
+                                 Sasurface1.Torus.TorusCavity torusCavity) {
+    Sasurface1.Cavity cavity = torusCavity.cavity;
+    viewer.transformPoint(cavity.pointBottom, screenCavityBottom);
+    short normixCavityBottom = cavity.normixBottom;
+    Point3i torusScreenLast = torusScreens[torusIndex];
+    short torusNormixLast = torusNormixes[torusIndex];
+    ++torusIndex;
+    for (int i = torusPointCount; --i > 0; ) { // .GT. 0
+      Point3i torusScreen = torusScreens[torusIndex];
+      short torusNormix = torusNormixes[torusIndex];
+      ++torusIndex;
+      g3d.fillTriangle(Graphics3D.YELLOW,
+                       torusScreenLast, torusNormixLast,
+                       torusScreen, torusNormix,
+                       screenCavityBottom, normixCavityBottom);
+      torusScreenLast = torusScreen;
+      torusNormixLast = torusNormix;
     }
   }
-  */
 
   final short[] torusColixes = new short[OUTER_TORUS_STEP_COUNT];
 

@@ -121,7 +121,7 @@ class Atom implements Cloneable {
     1 << ('s' - 'a') |
     1 << ('u' - 'a'),
     //   Db Dy
-    1 << ('d' - 'a') |
+    1 << ('b' - 'a') |
     1 << ('y' - 'a'),
     //   Er Es Eu
     1 << ('r' - 'a') |

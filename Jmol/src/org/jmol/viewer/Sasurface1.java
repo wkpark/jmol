@@ -214,6 +214,7 @@ class Sasurface1 {
       torus.calcPointCounts();
       torus.calcNormixes();
       //      torus.checkTorusSegments();
+      torus.connectWithGeodesics();
     }
 
     long timeElapsed = System.currentTimeMillis() - timeBegin;
@@ -659,6 +660,13 @@ class Sasurface1 {
     for (int i = torusPoints.length; --i >= 0; )
       torusPoints[i] = new Point3f();
   }
+
+  final Point3f[] torusEdgePointsT = new Point3f[INNER_TORUS_STEP_COUNT];
+  {
+    for (int i = torusEdgePointsT.length; --i >= 0; )
+      torusEdgePointsT[i] = new Point3f();
+  }
+
   Point3f[] convexEdgePoints;
   // what is the max size of this thing?
   short[] edgeVertexes;
@@ -922,6 +930,7 @@ class Sasurface1 {
       float startAngle;
       float stepAngle;
       int stepCount;
+      short[] geodesicConnections;
 
       TorusSegment(float startAngle, float endAngle) {
         this.startAngle = startAngle;
@@ -961,6 +970,49 @@ class Sasurface1 {
         }
         return ix;
       }
+
+      void calcEdgePoints(Point3f[] edgePoints, boolean edgeA) {
+        int outerRadialIndex;
+        if (edgeA) {
+          transformOuterRadials();
+          outerRadialIndex = 0;
+        } else {
+          outerRadialIndex = outerPointCount - 1;
+        }
+        aaT.set(axisVector, startAngle);
+        for (int i = 0; i < stepCount; aaT.angle += stepAngle, ++i) {
+          matrixT.set(aaT);
+          matrixT.transform(radialVector, pointT);
+          pointT.add(center);
+          matrixT.transform(outerRadials[outerRadialIndex], vectorT);
+          edgePoints[i].add(pointT, vectorT);
+        }
+      }
+
+      void connectWithGeodesic(boolean edgeA) {
+        int connectionIndex;
+        if (edgeA) {
+          geodesicConnections = new short[2 * stepCount];
+          connectionIndex = 0;
+        } else {
+          connectionIndex = stepCount;
+        }
+        calcEdgePoints(torusEdgePointsT, edgeA);
+        Point3f atomCenter = frame.atoms[edgeA ? ixA : ixB].point3f;
+        for (int i = 0; i < stepCount; ++i) {
+          Point3f edgePoint = torusEdgePointsT[i];
+          vectorT.sub(edgePoint, atomCenter);
+          short normix = g3d.getNormix(vectorT, GEODESIC_CALC_LEVEL);
+          System.out.println("connected!");
+          geodesicConnections[connectionIndex++] = normix;
+        }
+      }
+    }
+
+    void connectWithGeodesics() {
+      transformOuterRadials();
+      for (int i = 0; i < torusSegmentCount; ++i)
+        torusSegments[i].connectWithGeodesic(true);
     }
   }
 
@@ -1184,6 +1236,48 @@ class Sasurface1 {
     return true;
   }
   
+  final Vector3f v2v3 = new Vector3f();
+  final Vector3f v3v1 = new Vector3f();
+  final Vector3f v1v2 = new Vector3f();
+
+  boolean intersectPlanes(Vector3f v1, Point3f p1,
+                          Vector3f v2, Point3f p2,
+                          Vector3f v3, Point3f p3,
+                          Point3f intersection) {
+    v2v3.cross(v2, v3);
+    if (Float.isNaN(v2v3.x))
+      return false;
+    v3v1.cross(v3, v1);
+    if (Float.isNaN(v3v1.x))
+      return false;
+    v1v2.cross(v1, v2);
+    if (Float.isNaN(v1v2.x))
+      return false;
+    float denominator = v1.dot(v2v3);
+    if (denominator == 0)
+      return false;
+    vectorT.set(p1);
+    intersection.scale(v1.dot(vectorT), v2v3);
+    vectorT.set(p2);
+    intersection.scaleAdd(v2.dot(vectorT), v3v1, intersection);
+    vectorT.set(p3);
+    intersection.scaleAdd(v3.dot(vectorT), v1v2, intersection);
+    intersection.scale(1 / denominator);
+    if (Float.isNaN(intersection.x))
+      return false;
+    return true;
+  }
+  
+  float calcProbeHeightIJK(Point3f probeBaseIJK) {
+    float hypotenuse2 = radiiIP2;
+    vectorT.sub(probeBaseIJK, centerI);
+    float baseLength2 = vectorT.lengthSquared();
+    float height2 = hypotenuse2 - baseLength2;
+    if (height2 <= 0)
+      return 0;
+    return (float)Math.sqrt(height2);
+  }
+
   void addCavity(Cavity cavity) {
     if (cavityCount == cavities.length)
       cavities = (Cavity[])Util.doubleLength(cavities);
@@ -1234,48 +1328,6 @@ class Sasurface1 {
 
       normixBottom = g3d.getInverseNormix(vectorT);
     }
-  }
-
-  final Vector3f v2v3 = new Vector3f();
-  final Vector3f v3v1 = new Vector3f();
-  final Vector3f v1v2 = new Vector3f();
-
-  boolean intersectPlanes(Vector3f v1, Point3f p1,
-                          Vector3f v2, Point3f p2,
-                          Vector3f v3, Point3f p3,
-                          Point3f intersection) {
-    v2v3.cross(v2, v3);
-    if (Float.isNaN(v2v3.x))
-      return false;
-    v3v1.cross(v3, v1);
-    if (Float.isNaN(v3v1.x))
-      return false;
-    v1v2.cross(v1, v2);
-    if (Float.isNaN(v1v2.x))
-      return false;
-    float denominator = v1.dot(v2v3);
-    if (denominator == 0)
-      return false;
-    vectorT.set(p1);
-    intersection.scale(v1.dot(vectorT), v2v3);
-    vectorT.set(p2);
-    intersection.scaleAdd(v2.dot(vectorT), v3v1, intersection);
-    vectorT.set(p3);
-    intersection.scaleAdd(v3.dot(vectorT), v1v2, intersection);
-    intersection.scale(1 / denominator);
-    if (Float.isNaN(intersection.x))
-      return false;
-    return true;
-  }
-  
-  float calcProbeHeightIJK(Point3f probeBaseIJK) {
-    float hypotenuse2 = radiiIP2;
-    vectorT.sub(probeBaseIJK, centerI);
-    float baseLength2 = vectorT.lengthSquared();
-    float height2 = hypotenuse2 - baseLength2;
-    if (height2 <= 0)
-      return 0;
-    return (float)Math.sqrt(height2);
   }
 
 }

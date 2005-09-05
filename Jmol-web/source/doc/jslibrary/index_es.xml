@@ -424,7 +424,8 @@
 	</p>
 	<p>
 	  Todas las miniaplicaciones JmolApplet generadas por la biblioteca Jmol.js 
-	  tienen identificadores "name" e "id" que comienzan por <code>"jmol-"</code>. 
+	  tienen identificadores "name" e "id" que comienzan por
+	  <code>jmolApplet</code>. 
 	  Por defecto, están numeradas secuencialmente a partir de cero.
 	  Si necesitas aportar tu propio sufijo, hazlo a través de las llamadas
 	  a <code>jmolApplet</code>.

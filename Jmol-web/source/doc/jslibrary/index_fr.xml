@@ -475,7 +475,7 @@
         <p>
           Toutes les JmolApplets g&#x00E9;n&#x00E9;r&#x00E9;es par la
           librairies Jmol.js commencent avec le nom/id
-          <code>"jmol-"</code>. Par d&#x00E9;faut, ils sont
+          <code>jmolApplet</code>. Par d&#x00E9;faut, ils sont
           num&#x00E9;rot&#x00E9;s s&#x00E9;quentiellement en
           commen&#x00E7;ant &#x00E0; 0. Si vous avez besoin/envie de
           fournir votre propre suffixe alors fa&#x00F4;tes la avec vos

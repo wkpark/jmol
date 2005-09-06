@@ -1357,10 +1357,19 @@ class Compiler {
     if (tokenNext().tok != Token.dot)
       return invalidAtomSpecification();
     Token tokenAtomSpec = tokenNext();
-    if (tokenAtomSpec == null || tokenAtomSpec.tok == Token.asterisk)
+    if (tokenAtomSpec == null)
       return true;
-    if (tokenAtomSpec.tok != Token.identifier)
+    switch (tokenAtomSpec.tok) {
+    case Token.asterisk:
+      return true;
+    case Token.x:
+    case Token.y:
+    case Token.z:
+    case Token.identifier:
+      break;
+    default:
       return invalidAtomSpecification();
+    }
     String atomSpec = (String)tokenAtomSpec.value;
     if (tokPeek() == Token.asterisk) {
       tokenNext();

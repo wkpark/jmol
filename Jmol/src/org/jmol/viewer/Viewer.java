@@ -1740,7 +1740,7 @@ final public class Viewer extends JmolViewer {
   int hoverAtomIndex = -1;
   void hoverOn(int atomIndex) {
     if ((eval == null || !eval.isActive()) && atomIndex != hoverAtomIndex) {
-      setShapeSize(JmolConstants.SHAPE_HOVER, 1);
+      loadShape(JmolConstants.SHAPE_HOVER);
       setShapeProperty(JmolConstants.SHAPE_HOVER,
                        "target", new Integer(atomIndex));
       hoverAtomIndex = atomIndex;

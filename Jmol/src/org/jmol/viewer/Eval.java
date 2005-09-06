@@ -1663,6 +1663,7 @@ class Eval implements Runnable {
       strLabel = "%U";
     else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
+    viewer.loadShape(JmolConstants.SHAPE_HOVER);
     viewer.setShapeProperty(JmolConstants.SHAPE_HOVER, "label", strLabel);
   }
 

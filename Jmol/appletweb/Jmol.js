@@ -569,7 +569,7 @@ function _jmolInitCheck() {
   _jmol.initChecked = true;
   if (_jmol.initialized)
     return;
-  alert("jmolInitialize({codebase}, {badBrowseURL}, {badJavaURL})\n" +
+  alert("jmolInitialize({codebase}, {useSignedApplet})\n" +
         "  must be called before any other Jmol.js functions");
 }
 

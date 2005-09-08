@@ -1654,6 +1654,7 @@ class Eval implements Runnable {
         strLabel = "[%n]%r.%a";
     } else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
+    viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setLabel(strLabel);
   }
 
@@ -2749,7 +2750,7 @@ class Eval implements Runnable {
     default:
       keywordExpected();
     }
-    viewer.setShapeSize(JmolConstants.SHAPE_ECHO, 1); // the echo package
+    viewer.loadShape(JmolConstants.SHAPE_ECHO);
     viewer.setShapeProperty(JmolConstants.SHAPE_ECHO,
                             propertyName, propertyValue);
     if (statementLength == 4) {
@@ -2772,6 +2773,7 @@ class Eval implements Runnable {
           rasmolSize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
         numberOutOfRange();
     }
+    viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "fontsize",
                             new Integer(rasmolSize));
   }
@@ -2781,6 +2783,7 @@ class Eval implements Runnable {
     int xOffset = intParameter(2);
     int yOffset = intParameter(3);
     int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
+    viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset",
                             new Integer(offset));
   }
@@ -3347,7 +3350,7 @@ class Eval implements Runnable {
   }
 
   void pmesh() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_PMESH, 1);
+    viewer.loadShape(JmolConstants.SHAPE_PMESH);
     viewer.setShapeProperty(JmolConstants.SHAPE_PMESH, "meshID", null);
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -3397,7 +3400,7 @@ class Eval implements Runnable {
   }
 
   void polyhedra() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_POLYHEDRA, 1);
+    viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     boolean radiusSeen = false, expressionSeen = false;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -3494,7 +3497,7 @@ class Eval implements Runnable {
   }
 
   void isosurface() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_ISOSURFACE, 1);
+    viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
     viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "meshID", null);
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;

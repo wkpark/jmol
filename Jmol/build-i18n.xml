@@ -244,7 +244,8 @@
 
   <!-- spotless target: removes everything -->
   <target name="spotless-i18n" id="spotless-i18n"
-          depends="clean-application-pot,clean-applet-pot,clean-application-catalogs,clean-applet-catalogs" />
+          depends="clean-application-catalogs,clean-applet-catalogs" />
+  <!-- depends="clean-application-pot,clean-applet-pot,clean-application-catalogs,clean-applet-catalogs" /> -->
   
   <!-- the following targets are for special purposes -->
   <target name="clean-application-pot" id="clean-application-pot">

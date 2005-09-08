@@ -25,7 +25,7 @@
   <property name="plugin.dir" value="plugin-jars" />
   <property name="appjars.dir" value="build/appjars" />
   <property name="classes.dir" value="build/classes" />
-  <property name="tests.classes.dir" value="build/classes-tests" />
+  <property name="test-classes.dir" value="build/test-classes" />
   <property name="appletjars.dir" value="build/appletjars" />
   <property name="applet.classes.dir" value="build/applet-classes" />
   <property name="apisio.classes.dir" value="build/apisio-classes" />
@@ -347,7 +347,7 @@ support for assertions (which were introduced in 1.4).
         <include name="**/*.html" />
       </fileset>
     </copy>
-    <jar jarfile="Jmol.jar" manifest="manifest/application.txt">
+    <jar destfile="Jmol.jar" manifest="manifest/application.txt">
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
         <exclude name="**/Test*.class" />
@@ -362,7 +362,7 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="apis-jar" id="apis-jar" depends="init,apisio-classes">
-    <jar jarfile="jmolApis.jar">
+    <jar destfile="jmolApis.jar">
       <fileset dir="${apisio.classes.dir}" >
         <include name="org/jmol/api/**" />
       </fileset>
@@ -373,7 +373,7 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="io-jar" id="io-jar" depends="init,apisio-classes">
-    <jar jarfile="jmolIO.jar">
+    <jar destfile="jmolIO.jar">
       <fileset dir="${apisio.classes.dir}" >
         <include name="org/jmol/adapter/smarter/**" />
       </fileset>
@@ -433,7 +433,7 @@ support for assertions (which were introduced in 1.4).
 
   <target name="applet-jar" id="applet-jar"
           depends="applet-classes,appletjars">
-    <jar jarfile="JmolApplet.jar"
+    <jar destfile="JmolApplet.jar"
          manifest="manifest/application.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
@@ -441,7 +441,7 @@ support for assertions (which were introduced in 1.4).
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
-    <jar jarfile="JmolApplet1.jar" manifest="manifest/applet1.txt" >
+    <jar destfile="JmolApplet1.jar" manifest="manifest/applet1.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/api/**" />
         <exclude name="org/jmol/api/JmolAppletInterface.class" />
@@ -449,24 +449,24 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </jar>
 
-    <jar jarfile="JmolApplet2.jar" manifest="manifest/applet2.txt" >
+    <jar destfile="JmolApplet2.jar" manifest="manifest/applet2.txt" >
       <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
-    <jar jarfile="JmolApplet3.jar" manifest="manifest/applet3.txt" >
+    <jar destfile="JmolApplet3.jar" manifest="manifest/applet3.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/g3d/**" />
       </fileset>
     </jar>
 
-    <jar jarfile="JmolApplet4.jar" manifest="manifest/applet4.txt" >
+    <jar destfile="JmolApplet4.jar" manifest="manifest/applet4.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/smarter/**" />
       </fileset>
     </jar>
 
-    <jar jarfile="JmolApplet5.jar" manifest="manifest/applet5.txt" >
+    <jar destfile="JmolApplet5.jar" manifest="manifest/applet5.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/openscience/jmol/**" />
         <include name="org/jmol/bspt/**" />
@@ -474,7 +474,7 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </jar>
 
-    <jar jarfile="JmolApplet6.jar" manifest="manifest/applet6.txt" >
+    <jar destfile="JmolApplet6.jar" manifest="manifest/applet6.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/viewer/**" />
         <include name="org/jmol/smiles/**" />
@@ -483,7 +483,7 @@ support for assertions (which were introduced in 1.4).
 
     <!-- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -->
     <!-- changes to this must be replicated below for the signed applet -->
-    <jar jarfile="JmolApplet0.jar" manifest="manifest/applet0.txt"
+    <jar destfile="JmolApplet0.jar" manifest="manifest/applet0.txt"
          index="true" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/appletwrapper/*" />
@@ -532,7 +532,7 @@ support for assertions (which were introduced in 1.4).
     <!-- this one must be treated specially because of jar indexing
          we cannot simply rename the jar file, because the index has
          the old name (JmolApplet?.jar) inside it -->
-    <jar jarfile="JmolAppletSigned0.jar" manifest="manifest/applet0.txt"
+    <jar destfile="JmolAppletSigned0.jar" manifest="manifest/applet0.txt"
          index="true" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/appletwrapper/*" />
@@ -773,7 +773,7 @@ support for assertions (which were introduced in 1.4).
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${apisio.classes.dir}"/>
-    <delete dir="${tests.classes.dir}"/>
+    <delete dir="${test-classes.dir}"/>
     <delete dir="${appjars.dir}"/>
     <delete dir="${appletjars.dir}"/>
     <delete dir="build/dist"/>
@@ -942,6 +942,34 @@ support for assertions (which were introduced in 1.4).
       <arg value="../../doc/source/JmolAppletGuide_de.docbook.xml" />
       <arg value="../${docbook-xsl}/html/docbook.xsl" />
     </java>
+  </target>
+
+  <target name="test" id="test" depends="main,compile-tests">
+    <junit printsummary="yes" haltonfailure="yes">
+      <classpath>
+	<pathelement location="./Jmol.jar" />
+	<pathelement location="./Tests.jar" />
+	<pathelement location="./jars/junit.jar" />
+      </classpath>
+      <formatter type="plain" usefile="false" />
+      <batchtest>
+	<fileset dir="test" />
+      </batchtest>
+<!--      <test name="org.jmol.util.TestIntIntHash" /> -->
+    </junit>
+  </target>
+
+  <target name="compile-tests" id="compile-tests" depends="main">
+    <mkdir dir="${test-classes.dir}"/>
+    <javac srcdir="test" destdir="${test-classes.dir}"
+	   debug="on" deprecation="on"
+	   optimize="off" source="1.4">
+      <classpath>
+	<pathelement location="./Jmol.jar" />
+	<pathelement location="./jars/junit.jar" />
+      </classpath>
+    </javac>
+    <jar destfile="Tests.jar" basedir="${test-classes.dir}" />
   </target>
 
 </project>

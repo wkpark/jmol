@@ -26,10 +26,10 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Bmp;
+import org.jmol.util.IntIntHash;
 import org.jmol.g3d.Graphics3D;
 
 import javax.vecmath.*;
-import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Enumeration;
 
@@ -112,7 +112,7 @@ class Sasurface1 {
   int torusCount;
   Torus[] toruses;
 
-  Hashtable htToruses;
+  IntIntHash htToruses;
 
   final private static boolean LOG = false;
 
@@ -182,7 +182,7 @@ class Sasurface1 {
     convexFaceMaps = new int[atomCount][];
     colixesConvex = new short[atomCount];
 
-    htToruses = new Hashtable();
+    htToruses = new IntIntHash();
     // now, calculate surface for selected atoms
     long timeBegin = System.currentTimeMillis();
     int surfaceAtomCount = 0;
@@ -258,7 +258,7 @@ class Sasurface1 {
       }
     deleteUnusedToruses();
 
-    htToruses = new Hashtable();
+    htToruses = new IntIntHash();
     // now, calculate surface for selected atoms
     if (mad != 0) {
       long timeBegin = System.currentTimeMillis();
@@ -1025,14 +1025,13 @@ class Sasurface1 {
                     float torusRadius, boolean fullTorus) {
     if (indexI >= indexJ)
       throw new NullPointerException();
-    Long key = new Long(((long)indexI << 32) + indexJ);
-    if (htToruses.get(key) != null)
+    if (htToruses.get(indexI, indexJ) != null)
       throw new NullPointerException();
     allocateConvexVertexBitmap(indexI);
     allocateConvexVertexBitmap(indexJ);
     Torus torus = new Torus(indexI, indexJ, torusCenterIJ,
                             torusRadius, fullTorus);
-    htToruses.put(key, torus);
+    htToruses.put(indexI, indexJ, torus);
     saveTorus(torus);
     return torus;
   }
@@ -1048,10 +1047,7 @@ class Sasurface1 {
   Torus getTorus(int atomIndexA, int atomIndexB) {
     if (atomIndexA >= atomIndexB)
       throw new NullPointerException();
-    Long key = new Long(((long)atomIndexA << 32) + atomIndexB);
-    return (Torus)htToruses.get(key);
-    //    Object value = htToruses.get(key);
-    //    return (value instanceof Torus) ? (Torus)value : null;
+    return (Torus)htToruses.get(atomIndexA, atomIndexB);
   }
 
   float calcTorusRadius(float radiusA, float radiusB, float distanceAB2) {

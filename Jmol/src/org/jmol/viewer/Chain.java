@@ -142,10 +142,11 @@ final class Chain {
     return i;
   }
 
+  */
+
   int getSelectedGroupCount() {
     return selectedGroupCount;
   }
-  */
 
   int getSelectedGroupIndex(Group group) {
     int selectedGroupIndex = 0;

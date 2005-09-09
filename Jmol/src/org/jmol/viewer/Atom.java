@@ -251,23 +251,23 @@ final class Atom implements Tuple {
 
   void setMadAtom(short madAtom) {
     if (this.madAtom == JmolConstants.MAR_DELETED) return;
-    this.madAtom = convertEncodedMad(this, madAtom);
+    this.madAtom = convertEncodedMad(madAtom);
   }
 
-  static short convertEncodedMad(Atom atom, int size) {
+  short convertEncodedMad(int size) {
     if (size == -1000) { // temperature
-      int diameter = atom.getBfactor100() * 10 * 2;
+      int diameter = getBfactor100() * 10 * 2;
       if (diameter > 4000)
         diameter = 4000;
       size = diameter;
     } else if (size == -1001) // ionic
-      size = (atom.getBondingMar() * 2);
+      size = (getBondingMar() * 2);
     else if (size < 0) {
       size = -size;
       if (size > 200)
         size = 200;
       size = // we are going from a radius to a diameter
-        (size * atom.getVanderwaalsMar() / 50);
+        (size * getVanderwaalsMar() / 50);
     }
     return (short)size;
   }

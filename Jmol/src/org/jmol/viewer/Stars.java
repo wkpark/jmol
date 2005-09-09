@@ -40,7 +40,7 @@ class Stars extends Shape {
       if (bsSelected.get(i)) {
         if (mads == null)
           mads = new short[frame.atomCount];
-        mads[i] = Atom.convertEncodedMad(atoms[i], size);
+        mads[i] = atoms[i].convertEncodedMad(size);
       }
   }
 

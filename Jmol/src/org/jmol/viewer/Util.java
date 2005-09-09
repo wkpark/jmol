@@ -159,4 +159,20 @@ final class Util {
     }
     return t;
   }
+
+  static void swap(short[] array, int indexA, int indexB) {
+    short t = array[indexA];
+    array[indexA] = array[indexB];
+    array[indexB] = t;
+  }
+  static void swap(int[] array, int indexA, int indexB) {
+    int t = array[indexA];
+    array[indexA] = array[indexB];
+    array[indexB] = t;
+  }
+  static void swap(float[] array, int indexA, int indexB) {
+    float t = array[indexA];
+    array[indexA] = array[indexB];
+    array[indexB] = t;
+  }
 }

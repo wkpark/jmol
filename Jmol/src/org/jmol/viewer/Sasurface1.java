@@ -493,30 +493,109 @@ class Sasurface1 {
     Bmp.orInto(convexVertexMaps[indexI], tempVertexMap);
   }
 
-  final Vector3f planeUnitNormal = new Vector3f();
-  final Vector3f centerVector = new Vector3f();
-  final Point3f vertexPoint = new Point3f();
-  final Vector3f vertexVector = new Vector3f();
+  final Vector3f planeUnitNormalT = new Vector3f();
+  final Vector3f centerVectorT = new Vector3f();
+  final Point3f vertexPointT = new Point3f();
+  final Vector3f vertexVectorT = new Vector3f();
+
   void clipGeodesic(Point3f geodesicCenter, float radius,
                     Point3f planePoint, Vector3f planeVector,
                     int[] vertexMap) {
-    planeUnitNormal.normalize(planeVector);
-    centerVector.sub(geodesicCenter, planePoint);
-    float dotCenter = centerVector.dot(planeUnitNormal);
+    planeUnitNormalT.normalize(planeVector);
+    centerVectorT.sub(geodesicCenter, planePoint);
+    float dotCenter = centerVectorT.dot(planeUnitNormalT);
     if (dotCenter >= radius) // all points are visible
       return;
     if (dotCenter < -radius) { // all points are clipped
       Bmp.clearBitmap(vertexMap);
       return;
     }
-    int vertex = -1;
-    while ((vertex = Bmp.nextSetBit(vertexMap, vertex + 1)) >= 0) {
-      vertexPoint.scaleAdd(radius, geodesicVertexVectors[vertex],
-                           geodesicCenter);
-      vertexVector.sub(vertexPoint, planePoint);
-      if (vertexVector.dot(planeUnitNormal) < 0)
-        Bmp.clearBit(vertexMap, vertex);
+    for (int i = -1; (i = Bmp.nextSetBit(vertexMap, i + 1)) >= 0; ) {
+      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
+                            geodesicCenter);
+      vertexVectorT.sub(vertexPointT, planePoint);
+      if (vertexVectorT.dot(planeUnitNormalT) < 0)
+        Bmp.clearBit(vertexMap, i);
     }
+  }
+
+  int[] bmpNotClipped;
+
+  void findClippedGeodesicEdge(Point3f geodesicCenter, float radius,
+                               Point3f planePoint, Vector3f planeVector,
+                               int[] edgeVertexMap) {
+    if (bmpNotClipped == null)
+      bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
+    Bmp.clearBitmap(bmpNotClipped);
+    planeUnitNormalT.normalize(planeVector);
+    for (int i = geodesicVertexCount; --i >= 0; ) {
+      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
+                            geodesicCenter);
+      vertexVectorT.sub(vertexPointT, planePoint);
+      if (vertexVectorT.dot(planeUnitNormalT) >= 0)
+        Bmp.setBit(bmpNotClipped, i);
+    }
+    Bmp.clearBitmap(edgeVertexMap);
+    for (int v = -1; (v = Bmp.nextSetBit(bmpNotClipped, v + 1)) >= 0; ) {
+      int neighborsOffset = v * 6;
+      for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
+        int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
+        if (! Bmp.getBit(bmpNotClipped, neighbor))
+          Bmp.setBit(edgeVertexMap, v);
+      }
+    }
+  }
+
+  int projectedCount;
+  short[] projectedVertexes = new short[64];
+  float[] projectedAngles = new float[64];
+  final Vector3f vector0T = new Vector3f();
+  final Vector3f vector90T = new Vector3f();
+  final Point3f planeCenterT = new Point3f();
+
+  void projectGeodesicPoints(Point3f geodesicCenter, float radius,
+                             Point3f planeZeroPoint, Vector3f planeVector,
+                             int[] edgeVertexMap) {
+    planeUnitNormalT.normalize(planeVector);
+    centerVectorT.sub(geodesicCenter, planeZeroPoint);
+    float dotCenter = centerVectorT.dot(planeUnitNormalT);
+    planeCenterT.scaleAdd(-dotCenter, planeUnitNormalT, geodesicCenter);
+
+    vector0T.sub(planeZeroPoint, planeCenterT);
+    aaRotate.set(planeVector, PI / 2);
+    matrixT.set(aaRotate);
+    matrixT.transform(vector0T, vector90T);
+
+    for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
+      vertexPointT.scaleAdd(radius, geodesicVertexVectors[v], geodesicCenter);
+      vertexVectorT.sub(vertexPointT, planeCenterT);
+      float angle = calcAngleInThePlane(vector0T, vector90T, vertexVectorT);
+      if (projectedCount == projectedVertexes.length) {
+        projectedVertexes = Util.doubleLength(projectedVertexes);
+        projectedAngles = Util.doubleLength(projectedAngles);
+      }
+      projectedVertexes[projectedCount] = (short) v;
+      projectedAngles[projectedCount++] = angle;
+    }
+  }
+  
+  static float calcAngleInThePlane(Vector3f radialVector0,
+                                   Vector3f radialVector90,
+                                   Vector3f vectorInQuestion) {
+    float angle = radialVector0.angle(vectorInQuestion);
+    float angle90 = radialVector90.angle(vectorInQuestion);
+    if (angle90 > PI/2)
+      angle += PI;
+    return angle;
+  }
+
+  void sortProjectedVertices() {
+    for (int i = projectedCount; --i > 0; )
+      for (int j = i - 1; --j >= 0; )
+        if (projectedAngles[j] > projectedAngles[i]) {
+          Util.swap(projectedAngles, i, j);
+          Util.swap(projectedVertexes, i, j);
+        }
   }
 
   int[] calcFaceBitmap(int[] vertexMap) {

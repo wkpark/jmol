@@ -424,11 +424,18 @@ var _jmol = {
   hasGetElementById: !!document.getElementById,
   isJavaEnabled: navigator.javaEnabled(),
   isNetscape47Win: false,
+  isIE6Win: false,
+  useIE6Object: false,
+  useHtml4Object: false,
   
+  windowsClassId: "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93",
+  windowsCabUrl:
+   "http://java.sun.com/update/1.5.0/jinstall-1_5_0_05-windows-i586.cab",
+
   isBrowserCompliant: false,
   isJavaCompliant: false,
   isFullyCompliant: false,
-  
+
   initialized: false,
   initChecked: false,
   
@@ -445,6 +452,7 @@ var _jmol = {
 }
 
 with (_jmol) {
+
   function _jmolTestUA(candidate) {
     var ua = _jmol.ua;
     var index = ua.indexOf(candidate);
@@ -495,7 +503,7 @@ with (_jmol) {
     } else {
       isBrowserCompliant = hasGetElementById &&
         !((browser == "msie") ||
-          (browser == "safari" && browserVersion < 125.1));
+          (browser == "safari" && browserVersion < 125.12));
     }
   } else if (os == "linux" || os == "unix") {
     if (browser == "konqueror" && browserVersion <= 3.3)
@@ -510,6 +518,13 @@ with (_jmol) {
   isJavaCompliant = isJavaEnabled;
 
   isFullyCompliant = isBrowserCompliant && isJavaCompliant;
+
+  isIE6Win = (os == "win" && browser == "msie" && browserVersion >= 6);
+  useIE6Object = isIE6Win;
+  useHtml4Object =
+   (os != "mac" && browser == "mozilla" && browserVersion >= 5) ||
+   (os == "win" && browser == "opera" && browserVersion >= 8) ||
+   (os == "mac" && browser == "safari" && browserVersion >= 412.2);
 }
 
 function _jmolUseSignedApplet(useSignedApplet) {
@@ -530,14 +545,47 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     if (! script)
       script = "select *";
     var sz = _jmolGetAppletSize(size);
-    var t;
-    t = "<applet name='jmolApplet" + nameSuffix +
-      "' id='jmolApplet" + nameSuffix +
-      "' " + appletCssText +
-      " code='JmolApplet'" +
-      " archive='" + archivePath + "' codebase='" + codebase + "'\n" +
-      " width='" + sz[0] + "' height='" + sz[1] +
-      "' mayscript='true'>\n" +
+    var widthAndHeight = " width='" + sz[0] + "' height='" + sz[1] + "' ";
+
+    var tHeader, tFooter;
+
+    if (useIE6Object) { // use MSFT IE6 object tag with .cab file reference
+      var winCodebase = "";
+      if (windowsCabUrl)
+         winCodebase = " codebase='" + windowsCabUrl + "'\n";
+      tHeader = 
+        "<object name='jmolApplet" + nameSuffix +
+        "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
+	" classid='" + windowsClassId + "'\n" +
+        winCodebase + widthAndHeight + ">\n" +
+        "  <param name='code' value='JmolApplet' />\n" +
+        "  <param name='archive' value='" + archivePath + "' />\n" +
+        "  <param name='mayscript' value='true' />\n" +
+        "  <param name='codebase' value='" + codebase + "' />\n";
+      tFooter = "</object>";
+    } else if (useHtml4Object) { // use HTML4 object tag
+      tHeader = 
+        "<object name='jmolApplet" + nameSuffix +
+        "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
+	" classid='java:JmolApplet'\n" +
+        " type='application/x-java-applet'\n" +
+        widthAndHeight + ">\n" +
+        "  <param name='archive' value='" + archivePath + "' />\n" +
+        "  <param name='mayscript' value='true' />\n" +
+        "  <param name='codebase' value='" + codebase + "' />\n";
+      tFooter = "</object>";
+    } else { // use applet tag
+      tHeader = 
+        "<applet name='jmolApplet" + nameSuffix +
+        "' id='jmolApplet" + nameSuffix +
+        "' " + appletCssText +
+        " code='JmolApplet'" +
+        " archive='" + archivePath + "' codebase='" + codebase + "'\n" +
+        " width='" + sz[0] + "' height='" + sz[1] +
+        "' mayscript='true'>\n";
+      tFooter = "</applet>";
+    }
+    var tParams =
       "  <param name='progressbar' value='true' />\n" +
       "  <param name='progresscolor' value='" +
       progresscolor + "' />\n" +
@@ -550,11 +598,36 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
       "  <param name='ReadyCallback' value='_jmolReadyCallback' />\n";
     
     if (inlineModel)
-      t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
+      tParams += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)
-      t += "  <param name='script' value='" +
-           _jmolSterilizeScript(script) + "' />\n";
-    t += "</applet>";
+      tParams += "  <param name='script' value='" +
+                 _jmolSterilizeScript(script) + "' />\n";
+    var visitJava;
+    if (isIE6Win || useHtml4Object) {
+      visitJava =
+        "<p style='background-color:yellow;" +
+        "width:" + sz[0] + ";height:" + sz[1] + ";" + 
+        // why doesn't this vertical-align work?
+	"text-align:center;vertical-align:middle;'>\n" +
+        "You do not have Java applets<br />\n" +
+        "enabled in your web browser.<br />\n" +
+        "Install the Java Runtime Environment<br />\n" +
+        "from <a href='http://www.java.com'>www.java.com</a><br />" +
+        "and/or enable Java applets in<br />\n" +
+        "your web browser preferences." +
+        "</p>";
+    } else {
+      visitJava =
+        "<table bgcolor='yellow' width='" + sz[0] + "'><tr>" +
+        "<td align='center' valign='middle' height='" + sz[1] + "'>\n" +
+        "You do not have the<br />\n" +
+        "Java Runtime Environment<br />\n" +
+        "installed for applet support.<br />\n" +
+        "Visit <a href='http://www.java.com'>www.java.com</a>" +
+        "</td></tr></table>";
+    }
+
+    var t = tHeader + tParams + visitJava + tFooter;
     jmolSetTarget(nameSuffix);
     ready["jmolApplet" + nameSuffix] = false;
     if (_jmol.debugAlert)
@@ -687,7 +760,9 @@ function _jmolSearchFrames(win, target) {
   } else { // look for the applet in this window
     var doc = win.document;
 // getElementById fails on MacOSX Safari & Mozilla	
-    if (doc.applets)
+    if (_jmol.useHtml4Object || _jmol.useIE6Object)
+      applet = doc.getElementById(target);
+    else if (doc.applets)
       applet = doc.applets[target];
     else
       applet = doc[target];

@@ -424,8 +424,8 @@ var _jmol = {
   hasGetElementById: !!document.getElementById,
   isJavaEnabled: navigator.javaEnabled(),
   isNetscape47Win: false,
-  isIE6Win: false,
-  useIE6Object: false,
+  isIEWin: false,
+  useIEObject: false,
   useHtml4Object: false,
   
   windowsClassId: "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93",
@@ -519,8 +519,9 @@ with (_jmol) {
 
   isFullyCompliant = isBrowserCompliant && isJavaCompliant;
 
-  isIE6Win = (os == "win" && browser == "msie" && browserVersion >= 6);
-  useIE6Object = isIE6Win;
+  // IE5.5 works just fine ... but let's push them to Sun Java
+  isIEWin = (os == "win" && browser == "msie" && browserVersion >= 5.5);
+  useIEObject = isIEWin;
   useHtml4Object =
    (os != "mac" && browser == "mozilla" && browserVersion >= 5) ||
    (os == "win" && browser == "opera" && browserVersion >= 8) ||
@@ -549,7 +550,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 
     var tHeader, tFooter;
 
-    if (useIE6Object) { // use MSFT IE6 object tag with .cab file reference
+    if (useIEObject) { // use MSFT IE6 object tag with .cab file reference
       var winCodebase = "";
       if (windowsCabUrl)
          winCodebase = " codebase='" + windowsCabUrl + "'\n";
@@ -603,7 +604,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
       tParams += "  <param name='script' value='" +
                  _jmolSterilizeScript(script) + "' />\n";
     var visitJava;
-    if (isIE6Win || useHtml4Object) {
+    if (isIEWin || useHtml4Object) {
       visitJava =
         "<p style='background-color:yellow;" +
         "width:" + sz[0] + ";height:" + sz[1] + ";" + 
@@ -760,7 +761,7 @@ function _jmolSearchFrames(win, target) {
   } else { // look for the applet in this window
     var doc = win.document;
 // getElementById fails on MacOSX Safari & Mozilla	
-    if (_jmol.useHtml4Object || _jmol.useIE6Object)
+    if (_jmol.useHtml4Object || _jmol.useIEObject)
       applet = doc.getElementById(target);
     else if (doc.applets)
       applet = doc.applets[target];

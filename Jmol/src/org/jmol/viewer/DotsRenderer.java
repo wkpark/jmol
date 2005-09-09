@@ -68,7 +68,7 @@ class DotsRenderer extends ShapeRenderer {
       if (map != null && map != mapNull) {
         Atom atom = atoms[i];
         if (displayModelIndex < 0 || displayModelIndex == atom.modelIndex)
-          renderConvex(atom, colixesConvex[i], map);
+          renderConvex(dots, atom, colixesConvex[i], map);
       }
     }
     Dots.Torus[] tori = dots.tori;
@@ -91,9 +91,9 @@ class DotsRenderer extends ShapeRenderer {
     }
   }
 
-  void renderConvex(Atom atom, short colix, int[] visibilityMap) {
+  void renderConvex(Dots dots, Atom atom, short colix, int[] visibilityMap) {
     geodesic.calcScreenPoints(visibilityMap,
-                              atom.getVanderwaalsRadiusFloat(),
+                              dots.getAppropriateRadius(atom),
                               atom.getScreenX(), atom.getScreenY(),
                               atom.getScreenZ());
     if (geodesic.screenCoordinateCount > 0)

@@ -100,6 +100,8 @@ class Dots extends Shape {
 
   Hashtable htTori;
 
+  boolean useVanderwaalsRadius;
+
   int indexI, indexJ, indexK;
   Atom atomI, atomJ, atomK;
   Point3f centerI, centerJ, centerK;
@@ -123,9 +125,17 @@ class Dots extends Shape {
   }
 
   void setSize(int size, BitSet bsSelected) {
+    // miguel 9 Sep 2005
+    // this is a hack ...
+    // if mad == 0 then turn it off
+    // if mad > 0 then use vdw radius
+    // if mad < 0 then use ionic radius
     short mad = (short)size;
     this.mad = mad;
-    if (radiusP != viewer.getCurrentSolventProbeRadius()) {
+    boolean newUseVanderwaalsRadius = (mad > 0);
+    
+    if (radiusP != viewer.getCurrentSolventProbeRadius() ||
+        (newUseVanderwaalsRadius ^ useVanderwaalsRadius)) {
       dotsConvexMax = 0;
       dotsConvexMaps = null;
       torusCount = 0;
@@ -147,6 +157,7 @@ class Dots extends Shape {
     }
     // now, calculate surface for selected atoms
     if (mad != 0) {
+      useVanderwaalsRadius = (mad > 0);
       if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];
         colixesConvex = new short[atomCount];
@@ -232,11 +243,17 @@ class Dots extends Shape {
     }
   }
 
+  float getAppropriateRadius(Atom atom) {
+    return (useVanderwaalsRadius
+            ? atom.getVanderwaalsRadiusFloat()
+            : atom.getBondingRadiusFloat());
+  }
+
   void setAtomI(int indexI) {
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
-    radiusI = atomI.getVanderwaalsRadiusFloat();
+    radiusI = getAppropriateRadius(atomI);
     radiiIP2 = radiusI + radiusP;
     radiiIP2 *= radiiIP2;
   }
@@ -244,7 +261,7 @@ class Dots extends Shape {
   void setNeighborJ(int indexNeighbor) {
     indexJ = neighborIndices[indexNeighbor];
     atomJ = neighbors[indexNeighbor];
-    radiusJ = atomJ.getVanderwaalsRadiusFloat();
+    radiusJ = getAppropriateRadius(atomJ);
     radiiJP2 = neighborPlusProbeRadii2[indexNeighbor];
     centerJ = neighborCenters[indexNeighbor];
     distanceIJ2 = centerI.distanceSquared(centerJ);
@@ -254,7 +271,7 @@ class Dots extends Shape {
     indexK = neighborIndices[indexNeighbor];
     centerK = neighborCenters[indexNeighbor];
     atomK = neighbors[indexNeighbor];
-    radiusK = atomK.getVanderwaalsRadiusFloat();
+    radiusK = getAppropriateRadius(atomK);
     radiiKP2 = neighborPlusProbeRadii2[indexNeighbor];
   }
 
@@ -318,7 +335,7 @@ class Dots extends Shape {
       // only consider selected neighbors
       if (! bsSelected.get(neighbor.atomIndex))
         continue;
-      float neighborRadius = neighbor.getVanderwaalsRadiusFloat();
+      float neighborRadius = getAppropriateRadius(neighbor);
       if (centerI.distance(neighbor.point3f) >
           radiusI + radiusP + radiusP + neighborRadius)
         continue;

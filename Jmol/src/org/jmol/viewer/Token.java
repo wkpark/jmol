@@ -359,6 +359,8 @@ class Token {
   final static int nomesh       = misc | 51;
   final static int fill         = misc | 52;
   final static int nofill       = misc | 53;
+  final static int vanderwaals  = misc | 54;
+  final static int ionic        = misc | 55;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -678,6 +680,8 @@ class Token {
     "nomesh",       new Token(nomesh,          "nomesh"),
     "fill",         new Token(fill,            "fill"),
     "nofill",       new Token(nofill,          "nofill"),
+    "vanderwaals",  new Token(vanderwaals,     "vanderwaals"),
+    "ionic",        new Token(ionic,           "ionic"),
   };
 
   static Hashtable map = new Hashtable();

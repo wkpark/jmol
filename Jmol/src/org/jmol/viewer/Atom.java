@@ -461,6 +461,10 @@ final class Atom implements Tuple {
                                        formalChargeAndFlags >> 4);
   }
 
+  float getBondingRadiusFloat() {
+    return getBondingMar() / 1000f;
+  }
+
   int getCurrentBondCount() {
     return bonds == null ? 0 : bonds.length;
     /*
@@ -490,10 +494,6 @@ final class Atom implements Tuple {
     //    System.out.println("atom at " + point3f + " suggests discard of " +
     //                       bondLongest + " dist2=" + dist2Longest);
     return bondLongest;
-  }
-
-  float getBondingRadiusFloat() {
-    return getBondingMar() / 1000f;
   }
 
   short getColix() {

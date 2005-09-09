@@ -2005,6 +2005,7 @@ class Eval implements Runnable {
     }
     switch (tok) {
     case Token.on:
+    case Token.vanderwaals:
       mad = -100; // cpk with no args goes to 100%
       break;
     case Token.off:
@@ -2032,13 +2033,9 @@ class Eval implements Runnable {
     case Token.temperature:
       mad = -1000;
       break;
-    case Token.identifier:
-      String t = (String)statement[1].value;
-      if (t.equalsIgnoreCase("ionic")) {
-        mad = -1001;
-        break;
-      }
-
+    case Token.ionic:
+      mad = -1001;
+      break;
     default:
       booleanOrNumberExpected();
     }
@@ -2059,6 +2056,7 @@ class Eval implements Runnable {
     }
     switch (tok) {
     case Token.on:
+    case Token.vanderwaals:
       mad = -100; // cpk with no args goes to 100%
       break;
     case Token.off:
@@ -2086,13 +2084,9 @@ class Eval implements Runnable {
     case Token.temperature:
       mad = -1000;
       break;
-    case Token.identifier:
-      String t = (String)statement[1].value;
-      if (t.equalsIgnoreCase("ionic")) {
-        mad = -1001;
-        break;
-      }
-
+    case Token.ionic:
+      mad = -1001;
+      break;
     default:
       booleanOrNumberExpected();
     }
@@ -2371,6 +2365,10 @@ class Eval implements Runnable {
     short mad = 0;
     switch (statement[1].tok) {
     case Token.on:
+    case Token.vanderwaals:
+      mad = 1;
+      break;
+    case Token.ionic:
       mad = -1;
       break;
     case Token.off:

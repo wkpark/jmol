@@ -240,5 +240,43 @@ public class Bmp {
     }
     return minMapped;
   }
+
+  public final static int nextSetBit(int[] bitmap, int iStart) {
+    if (bitmap == null)
+      return -1;
+    int mapLength = bitmap.length;
+    if (iStart >= mapLength << 5)
+      return -1;
+    int bitmapIndex = iStart >> 5;
+    int bitIndexWithinWord = iStart & 31;
+    int map = bitmap[bitmapIndex] & (0x80000000 >> (31 - bitIndexWithinWord));
+    if ((map & (1 << bitIndexWithinWord)) != 0)
+      return iStart;
+    while (map == 0) {
+      if (++bitmapIndex == mapLength)
+        return -1;
+      map = bitmap[bitmapIndex];
+    }
+    bitIndexWithinWord = 0;
+    if ((map & 0x0000FFFF) == 0) {
+      bitIndexWithinWord += 16;
+      map >>= 16;
+    }
+    if ((map & 0x000000FF) == 0) {
+      bitIndexWithinWord += 8;
+      map >>= 8;
+    }
+    if ((map & 0x0000000F) == 0) {
+      bitIndexWithinWord += 4;
+      map >>= 4;
+    }
+    if ((map & 0x00000003) == 0) {
+      bitIndexWithinWord += 2;
+      map >>= 2;
+    }
+    if ((map & 0x00000001) == 0)
+      ++bitIndexWithinWord;
+    return (bitmapIndex << 5) + bitIndexWithinWord;
+  }
 }
 

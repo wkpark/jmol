@@ -493,6 +493,32 @@ class Sasurface1 {
     Bmp.orInto(convexVertexMaps[indexI], tempVertexMap);
   }
 
+  final Vector3f planeUnitNormal = new Vector3f();
+  final Vector3f centerVector = new Vector3f();
+  final Point3f vertexPoint = new Point3f();
+  final Vector3f vertexVector = new Vector3f();
+  void clipGeodesic(Point3f geodesicCenter, float radius,
+                    Point3f planePoint, Vector3f planeVector,
+                    int[] vertexMap) {
+    planeUnitNormal.normalize(planeVector);
+    centerVector.sub(geodesicCenter, planePoint);
+    float dotCenter = centerVector.dot(planeUnitNormal);
+    if (dotCenter >= radius) // all points are visible
+      return;
+    if (dotCenter < -radius) { // all points are clipped
+      Bmp.clearBitmap(vertexMap);
+      return;
+    }
+    int vertex = -1;
+    while ((vertex = Bmp.nextSetBit(vertexMap, vertex + 1)) >= 0) {
+      vertexPoint.scaleAdd(radius, geodesicVertexVectors[vertex],
+                           geodesicCenter);
+      vertexVector.sub(vertexPoint, planePoint);
+      if (vertexVector.dot(planeUnitNormal) < 0)
+        Bmp.clearBit(vertexMap, vertex);
+    }
+  }
+
   int[] calcFaceBitmap(int[] vertexMap) {
     Bmp.clearBitmap(tempFaceMap);
     for (int i = geodesicFaceCount, j = 3 * (i - 1); --i >= 0; j -= 3) {
@@ -661,7 +687,7 @@ class Sasurface1 {
       torusPoints[i] = new Point3f();
   }
 
-  final Point3f[] torusEdgePointsT = new Point3f[INNER_TORUS_STEP_COUNT];
+  final Point3f[] torusEdgePointsT = new Point3f[INNER_TORUS_STEP_COUNT + 1];
   {
     for (int i = torusEdgePointsT.length; --i >= 0; )
       torusEdgePointsT[i] = new Point3f();

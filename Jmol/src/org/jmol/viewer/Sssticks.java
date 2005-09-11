@@ -47,6 +47,11 @@ class Sssticks extends Sticks {
                    bsSelected);
       return;
     }
+    if ("translucency" == propertyName) {
+      setTranslucencyBond(value == "translucent",
+                          JmolConstants.BOND_SULFUR_MASK, bsSelected);
+      return;
+    }
     /*
       perhaps broken because of elminiation of colorScheme
     if ("colorScheme" == propertyName) {

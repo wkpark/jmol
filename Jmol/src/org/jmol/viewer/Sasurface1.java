@@ -107,6 +107,8 @@ class Sasurface1 {
   int[] tempVertexMap;
   int[] tempFaceMap;
 
+  int[][] convexVertexMaps2;
+
   int cavityCount;
   Cavity[] cavities;
   int torusCount;
@@ -202,6 +204,20 @@ class Sasurface1 {
         convexFaceMaps[i] = calcFaceBitmap(vertexMap);
     }
 
+    // experimenting with using torus clipping
+
+    convexVertexMaps2 = new int[atomCount][];
+    int bmpLength = (geodesicVertexCount + 31) >> 5;
+    for (int i = atomCount; --i >= 0; ) {
+      if (convexVertexMaps[i] != null) {
+        bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
+        convexVertexMaps2[i] = new int[bmpLength];
+        Bmp.setAllBits(convexVertexMaps2[i], geodesicVertexCount);
+      }
+    }
+
+    // end of experiment
+    
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
       torus.checkCavityCorrectness0();
@@ -213,6 +229,9 @@ class Sasurface1 {
       torus.buildTorusSegments();
       torus.calcPointCounts();
       torus.calcNormixes();
+
+      torus.clipVertexMaps2();
+
       //      torus.checkTorusSegments();
       torus.connectWithGeodesics();
     }
@@ -729,6 +748,7 @@ class Sasurface1 {
   final Vector3f vectorPJ = new Vector3f();
 
   //  final Vector3f axisVector = new Vector3f();
+  final Vector3f negativeAxisVectorT = new Vector3f();
   final Vector3f unitRadialVectorT = new Vector3f();
   //  final Vector3f radialVector = new Vector3f();
   // 90 degrees, although everything is in radians
@@ -1112,6 +1132,20 @@ class Sasurface1 {
           geodesicConnections[connectionIndex++] = normix;
         }
       }
+    }
+
+    void clipVertexMaps2() {
+      // put clipping code here!
+      Point3f centerA = frame.atoms[ixA].point3f;
+      negativeAxisVectorT.scale(-1, axisVector);
+      //      clipGeodesic(centerA, radius,
+      //                   points[0], negativeAxisVectorT,
+      //                   convexVertexMaps[ixA]);
+
+      Point3f centerB = frame.atoms[ixB].point3f;
+      //      clipGeodesic(centerB, radius,
+      //                   points[outerPointCount - 1], axisVector, 
+      //                   convexVertexMaps[ixB]);
     }
 
     void connectWithGeodesics() {

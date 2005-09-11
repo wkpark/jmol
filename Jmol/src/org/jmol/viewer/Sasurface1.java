@@ -92,8 +92,9 @@ class Sasurface1 {
 
   boolean hide;
 
-  private final static int GEODESIC_CALC_LEVEL = 2;
-  int geodesicRenderingLevel = 2;
+  private final static int GEODESIC_CALC_LEVEL =
+    Sasurface.MAX_GEODESIC_RENDERING_LEVEL;
+  int geodesicRenderingLevel = GEODESIC_CALC_LEVEL;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
   int[][] convexVertexMaps;
@@ -122,6 +123,7 @@ class Sasurface1 {
 
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
+  final Point3f zeroPointT = new Point3f();
 
   private final static float PI = (float)Math.PI;
 
@@ -232,7 +234,7 @@ class Sasurface1 {
 
       torus.clipVertexMaps2();
 
-      //      torus.checkTorusSegments();
+      // torus.checkTorusSegments();
       torus.connectWithGeodesics();
     }
 
@@ -512,46 +514,63 @@ class Sasurface1 {
     Bmp.orInto(convexVertexMaps[indexI], tempVertexMap);
   }
 
-  final Vector3f planeUnitNormalT = new Vector3f();
+  final Vector3f axisUnitNormalT = new Vector3f();
   final Vector3f centerVectorT = new Vector3f();
   final Point3f vertexPointT = new Point3f();
   final Vector3f vertexVectorT = new Vector3f();
 
   void clipGeodesic(Point3f geodesicCenter, float radius,
-                    Point3f planePoint, Vector3f planeVector,
+                    Point3f planePoint, Vector3f axisUnitVector,
                     int[] vertexMap) {
-    planeUnitNormalT.normalize(planeVector);
+    {
+      float len = axisUnitVector.length();
+      if (len < 0.999 || len > 1.001)
+        throw new NullPointerException();
+    }
+    System.out.println("clipGeodesic(" + geodesicCenter + "," +
+                       radius + "," +
+                       planePoint + "," +
+                       axisUnitVector + ")");
     centerVectorT.sub(geodesicCenter, planePoint);
-    float dotCenter = centerVectorT.dot(planeUnitNormalT);
+    float dotCenter = centerVectorT.dot(axisUnitVector);
+    System.out.println("dotCenter=" + dotCenter);
     if (dotCenter >= radius) // all points are visible
       return;
     if (dotCenter < -radius) { // all points are clipped
       Bmp.clearBitmap(vertexMap);
       return;
     }
+    System.out.println("bit count before=" + Bmp.countBits(vertexMap));
     for (int i = -1; (i = Bmp.nextSetBit(vertexMap, i + 1)) >= 0; ) {
       vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
                             geodesicCenter);
       vertexVectorT.sub(vertexPointT, planePoint);
-      if (vertexVectorT.dot(planeUnitNormalT) < 0)
+      float dot = vertexVectorT.dot(axisUnitVector);
+      if (dot < 0)
         Bmp.clearBit(vertexMap, i);
     }
+    System.out.println("bit count after=" + Bmp.countBits(vertexMap));
   }
 
   int[] bmpNotClipped;
 
   void findClippedGeodesicEdge(Point3f geodesicCenter, float radius,
-                               Point3f planePoint, Vector3f planeVector,
+                               Point3f planePoint, Vector3f axisUnitVector,
                                int[] edgeVertexMap) {
+    {
+      float len = axisUnitVector.length();
+      if (len < 0.999 || len > 1.001)
+        throw new NullPointerException();
+    }
     if (bmpNotClipped == null)
       bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
     Bmp.clearBitmap(bmpNotClipped);
-    planeUnitNormalT.normalize(planeVector);
+    axisUnitNormalT.normalize(axisUnitVector);
     for (int i = geodesicVertexCount; --i >= 0; ) {
       vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
                             geodesicCenter);
       vertexVectorT.sub(vertexPointT, planePoint);
-      if (vertexVectorT.dot(planeUnitNormalT) >= 0)
+      if (vertexVectorT.dot(axisUnitNormalT) >= 0)
         Bmp.setBit(bmpNotClipped, i);
     }
     Bmp.clearBitmap(edgeVertexMap);
@@ -573,15 +592,18 @@ class Sasurface1 {
   final Point3f planeCenterT = new Point3f();
 
   void projectGeodesicPoints(Point3f geodesicCenter, float radius,
-                             Point3f planeZeroPoint, Vector3f planeVector,
+                             Point3f planeZeroPoint, Vector3f axisUnitVector,
                              int[] edgeVertexMap) {
-    planeUnitNormalT.normalize(planeVector);
-    centerVectorT.sub(geodesicCenter, planeZeroPoint);
-    float dotCenter = centerVectorT.dot(planeUnitNormalT);
-    planeCenterT.scaleAdd(-dotCenter, planeUnitNormalT, geodesicCenter);
+    {
+      float len = axisUnitVector.length();
+      if (len < 0.999 || len > 1.001)
+        throw new NullPointerException();
+    }
+    calcClippingPlaneCenter(geodesicCenter, axisUnitVector, planeZeroPoint,
+                            planeCenterT);
 
     vector0T.sub(planeZeroPoint, planeCenterT);
-    aaRotate.set(planeVector, PI / 2);
+    aaRotate.set(axisUnitVector, PI / 2);
     matrixT.set(aaRotate);
     matrixT.transform(vector0T, vector90T);
 
@@ -597,7 +619,20 @@ class Sasurface1 {
       projectedAngles[projectedCount++] = angle;
     }
   }
-  
+
+  void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
+                               Point3f planePoint, Point3f planeCenterPoint) {
+    
+    {
+      float len = axisUnitVector.length();
+      if (len < 0.999 || len > 1.001)
+        throw new NullPointerException();
+    }
+    vectorT.sub(axisPoint, planePoint);
+    float dotCenter = axisUnitVector.dot(vectorT);
+    planeCenterPoint.scaleAdd(-dotCenter, axisUnitVector, axisPoint);
+  }
+
   static float calcAngleInThePlane(Vector3f radialVector0,
                                    Vector3f radialVector90,
                                    Vector3f vectorInQuestion) {
@@ -748,7 +783,7 @@ class Sasurface1 {
   final Vector3f vectorPJ = new Vector3f();
 
   //  final Vector3f axisVector = new Vector3f();
-  final Vector3f negativeAxisVectorT = new Vector3f();
+  final Vector3f negativeAxisUnitVectorT = new Vector3f();
   final Vector3f unitRadialVectorT = new Vector3f();
   //  final Vector3f radialVector = new Vector3f();
   // 90 degrees, although everything is in radians
@@ -803,7 +838,7 @@ class Sasurface1 {
     final boolean fullTorus;
 
     final Vector3f radialVector = new Vector3f();
-    final Vector3f axisVector = new Vector3f();
+    final Vector3f axisUnitVector = new Vector3f();
     final Vector3f tangentVector = new Vector3f();
     final Vector3f outerRadial = new Vector3f();
     float outerAngle;
@@ -844,7 +879,8 @@ class Sasurface1 {
     void calcVectors() {
       Point3f centerA = frame.atoms[ixA].point3f;
       Point3f centerB = frame.atoms[ixB].point3f;
-      axisVector.sub(centerB, centerA);
+      axisUnitVector.sub(centerB, centerA);
+      axisUnitVector.normalize();
 
       Point3f referenceProbePoint = null;
       if (torusCavities != null) {
@@ -852,14 +888,14 @@ class Sasurface1 {
       } else {
         // it is a full torus, so it does not really matter where
         // we put it;
-        if (axisVector.x == 0)
+        if (axisUnitVector.x == 0)
           unitRadialVectorT.set(vectorX);
-        else if (axisVector.y == 0)
+        else if (axisUnitVector.y == 0)
           unitRadialVectorT.set(vectorY);
-        else if (axisVector.z == 0)
+        else if (axisUnitVector.z == 0)
           unitRadialVectorT.set(vectorZ);
         else {
-          unitRadialVectorT.set(-axisVector.y, axisVector.x, 0);
+          unitRadialVectorT.set(-axisUnitVector.y, axisUnitVector.x, 0);
           unitRadialVectorT.normalize();
         }
         referenceProbePoint = pointT;
@@ -868,11 +904,11 @@ class Sasurface1 {
 
       radialVector.sub(referenceProbePoint, center);
 
-      aaRotate.set(axisVector, PI / 2);
+      aaRotate.set(axisUnitVector, PI / 2);
       matrixT.set(aaRotate);
       matrixT.transform(radialVector, radialVector90T);
 
-      tangentVector.cross(axisVector, radialVector);
+      tangentVector.cross(axisUnitVector, radialVector);
       tangentVector.normalize();
 
       outerRadial.sub(centerA, referenceProbePoint);
@@ -1071,7 +1107,7 @@ class Sasurface1 {
       }
 
       int calcPoints(Point3f[] points, int ixPoint) {
-        aaT.set(axisVector, startAngle);
+        aaT.set(axisUnitVector, startAngle);
         for (int i = stepCount; --i >= 0; aaT.angle += stepAngle) {
           matrixT.set(aaT);
           matrixT.transform(radialVector, pointT);
@@ -1085,7 +1121,7 @@ class Sasurface1 {
       }
 
       int calcNormixes(short[] normixes, int ix) {
-        aaT.set(axisVector, startAngle);
+        aaT.set(axisUnitVector, startAngle);
         for (int i = stepCount; --i >= 0; aaT.angle += stepAngle) {
           matrixT.set(aaT);
           for (int j = 0; j < outerPointCount; ++j, ++ix) {
@@ -1104,7 +1140,7 @@ class Sasurface1 {
         } else {
           outerRadialIndex = outerPointCount - 1;
         }
-        aaT.set(axisVector, startAngle);
+        aaT.set(axisUnitVector, startAngle);
         for (int i = 0; i < stepCount; aaT.angle += stepAngle, ++i) {
           matrixT.set(aaT);
           matrixT.transform(radialVector, pointT);
@@ -1135,19 +1171,58 @@ class Sasurface1 {
     }
 
     void clipVertexMaps2() {
-      // put clipping code here!
+      /*
       Point3f centerA = frame.atoms[ixA].point3f;
-      negativeAxisVectorT.scale(-1, axisVector);
-      //      clipGeodesic(centerA, radius,
-      //                   points[0], negativeAxisVectorT,
-      //                   convexVertexMaps[ixA]);
+      clipGeodesic(centerA, radius,
+                   centerA, vectorX,
+                   convexVertexMaps2[ixA]);
 
       Point3f centerB = frame.atoms[ixB].point3f;
-      //      clipGeodesic(centerB, radius,
-      //                   points[outerPointCount - 1], axisVector, 
-      //                   convexVertexMaps[ixB]);
+      clipGeodesic(centerB, radius,
+                   centerB, vectorY,
+                   convexVertexMaps2[ixB]);
+      */
+      Point3f centerA = frame.atoms[ixA].point3f;
+      negativeAxisUnitVectorT.scale(-1, axisUnitVector);
+      calcZeroPoint(true, zeroPointT);
+      clipGeodesic(centerA, radius,
+                   zeroPointT, negativeAxisUnitVectorT,
+                   convexVertexMaps2[ixA]);
+      Point3f centerB = frame.atoms[ixB].point3f;
+      calcZeroPoint(false, zeroPointT);
+      clipGeodesic(centerB, radius,
+                   zeroPointT, axisUnitVector, 
+                   convexVertexMaps2[ixB]);
     }
 
+    void calcZeroPoint(boolean edgeA, Point3f zeroPoint) {
+      Vector3f t;
+      if (edgeA) {
+        t = outerRadial;
+      } else {
+        aaT1.set(tangentVector, outerAngle);
+        matrixT1.set(aaT1);
+        matrixT1.transform(outerRadial, vectorT1);
+        t = vectorT1;
+      }
+      zeroPoint.add(center, radialVector);
+      zeroPoint.add(t);
+    }
+
+    void calcClippingPlaneCenterPoints(Point3f centerPointA,
+                                       Point3f centerPointB) {
+      calcZeroPoint(true, zeroPointT);
+      Point3f centerA = frame.atoms[ixA].point3f;
+      calcClippingPlaneCenter(centerA, axisUnitVector, zeroPointT,
+                              centerPointA);
+
+      negativeAxisUnitVectorT.scale(-1, axisUnitVector);
+      calcZeroPoint(false, zeroPointT);
+      Point3f centerB = frame.atoms[ixB].point3f;
+      calcClippingPlaneCenter(centerB, negativeAxisUnitVectorT, zeroPointT,
+                              centerPointB);
+    }
+    
     void connectWithGeodesics() {
       transformOuterRadials();
       for (int i = 0; i < torusSegmentCount; ++i)

@@ -117,17 +117,26 @@ class SasCache {
     throw new NullPointerException();
   }
 
+  void flushAtomScreens(Atom atom) {
+    int atomIndex = atom.atomIndex;
+    for (int i = atomCacheSize; --i >= 0; ) {
+      if (atomCacheAtomIndexes[i] == atomIndex) {
+        atomCacheAtomIndexes[i] = -1;
+        atomCacheLrus[i] = -1;
+        break;
+      }
+    }
+  }
+
   void calcAtomScreens(Atom atom, int[] vertexMap, Point3i[] screens) {
     float radius = atom.getVanderwaalsRadiusFloat();
     int atomX = atom.getScreenX();
     int atomY = atom.getScreenY();
     int atomZ = atom.getScreenZ();
     float scaledRadius = viewer.scaleToScreen(atomZ, radius);
-    for (int vertex = Bmp.getMaxMappedBit(vertexMap); --vertex >= 0; ) {
-      if (! Bmp.getBit(vertexMap, vertex))
-        continue;
-      Vector3f tv = atomCacheTransformedGeodesicVectors[vertex];
-      Point3i screen = screens[vertex];
+    for (int v = -1; (v = Bmp.nextSetBit(vertexMap, v + 1)) >= 0; ) {
+      Vector3f tv = atomCacheTransformedGeodesicVectors[v];
+      Point3i screen = screens[v];
       screen.x = atomX + (int)(scaledRadius * tv.x);
       screen.y = atomY - (int)(scaledRadius * tv.y); // y inverted on screen!
       screen.z = atomZ - (int)(scaledRadius * tv.z); // smaller z comes to me

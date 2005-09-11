@@ -149,6 +149,17 @@ class SasurfaceRenderer extends ShapeRenderer {
       }
     }
     */
+    for (int i = -1; (i = Bmp.nextSetBit(faceMap, i + 1)) >= 0; ) {
+      int j = 3 * i;
+      short vA = geodesicFaceVertexes[j];
+      short vB = geodesicFaceVertexes[j + 1];
+      short vC = geodesicFaceVertexes[j + 2];
+      g3d.fillTriangle(colix,
+                       screens[vA], vA,
+                       screens[vB], vB,
+                       screens[vC], vC);
+    }
+    /*
     for (int i = Bmp.getMaxMappedBit(faceMap), j = 3*i - 1; --i >= 0; j -= 3) {
       if (Bmp.getBit(faceMap, i)) {
         short vA = geodesicFaceVertexes[j - 2];
@@ -160,6 +171,7 @@ class SasurfaceRenderer extends ShapeRenderer {
                          screens[vC], vC);
       }
     }
+    */
   }
 
   ////////////////////////////////////////////////////////////////

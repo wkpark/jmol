@@ -790,6 +790,13 @@ final public class Graphics3D {
                     pointB.x, pointB.y, pointB.z);
   }
 
+  public void drawLine(short colix, long xyzdA, long xyzdB) {
+    setColix(colix);
+    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
+                    Xyzd.getX(xyzdA), Xyzd.getY(xyzdA), Xyzd.getZ(xyzdA),
+                    Xyzd.getX(xyzdB), Xyzd.getY(xyzdB), Xyzd.getZ(xyzdB));
+  }
+
   public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
     drawDashedLine(colix, 2, 1, pointA, pointB);
   }

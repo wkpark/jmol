@@ -1508,9 +1508,6 @@ class Eval implements Runnable {
     case Token.monomer:
       colorObject(Token.atom, 1);
       break;
-    case Token.label:
-      viewer.setColorLabel(getColorOrNoneParam(2));
-      break;
     case Token.rubberband:
       viewer.setColorRubberband(getColorParam(2));
       break;

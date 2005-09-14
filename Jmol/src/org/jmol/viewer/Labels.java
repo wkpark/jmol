@@ -49,16 +49,20 @@ class Labels extends Shape {
                           BitSet bsSelected) {
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
+      String palette = null;
       short colix = Graphics3D.getColix(value);
+      if (colix == Graphics3D.UNRECOGNIZED)
+        palette = (String)value;
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          //Atom atom = atoms[i];
           if (colixes == null || i >= colixes.length) {
             if (colix == 0)
               continue;
             colixes = Util.ensureLength(colixes, i + 1);
           }
-          colixes[i] = colix;
+          colixes[i] =
+            ((colix != Graphics3D.UNRECOGNIZED) ? colix :
+             viewer.getColixAtomPalette(frame.getAtomAt(i), palette));
         }
     }
     // no translucency

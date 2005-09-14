@@ -52,10 +52,11 @@ class Bond {
     this.colix = colix;
   }
 
-  Bond(Atom atom1, Atom atom2, int order, Viewer viewer) {
+  Bond(Atom atom1, Atom atom2, int order, Frame frame) {
     this(atom1, atom2, order,
-         (order & JmolConstants.BOND_HYDROGEN_MASK) != 0 ? 0 : viewer.getMadBond(),
-         viewer.getColixBond(order));
+         ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0
+          ? 0 : frame.viewer.getMadBond()),
+         frame.viewer.getColixBond(order));
   }
 
   boolean isCovalent() {

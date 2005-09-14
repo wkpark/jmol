@@ -326,7 +326,7 @@ final class Frame {
                                      bondCount + 2 * ATOM_GROWTH_INCREMENT);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
-    Bond bond = atom1.bondMutually(atom2, order, viewer);
+    Bond bond = atom1.bondMutually(atom2, order, this);
     if (bond != null) {
       bonds[bondCount++] = bond;
       if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
@@ -521,6 +521,8 @@ final class Frame {
     if (bondCount < bonds.length)
       bonds = (Bond[])Util.setLength(bonds, bondCount);
 
+    freeBondsCache();
+
     ////////////////////////////////////////////////////////////////
     // see if there are any vectors
     hasVibrationVectors = vibrationVectors != null;
@@ -712,7 +714,7 @@ final class Frame {
 
   void bondAtoms(Atom atom1, Atom atom2,
                              int order) {
-    addBond(atom1.bondMutually(atom2, order, viewer));
+    addBond(atom1.bondMutually(atom2, order, this));
   }
 
   Shape allocateShape(int shapeID) {
@@ -1251,7 +1253,7 @@ final class Frame {
           (formalChargeA > 0 && formalChargeB > 0))
         return;
     }
-    addBond(atomA.bondMutually(atomB, order, viewer));
+    addBond(atomA.bondMutually(atomB, order, this));
   }
 
   float hbondMax = 3.25f;
@@ -1295,7 +1297,7 @@ final class Frame {
         if (atom.isBonded(atomNear))
           continue;
         addBond(atom.bondMutually(atomNear, JmolConstants.BOND_H_REGULAR,
-                                  viewer));
+                                  this));
         System.out.println("adding an hbond between " + atom.atomIndex +
                            " & " + atomNear.atomIndex);
       }
@@ -1714,6 +1716,52 @@ final class Frame {
 
   void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
     mmset.selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  final static int MAX_BONDS_LENGTH_TO_CACHE = 5;
+  final static int MAX_NUM_TO_CACHE = 200;
+  int[] numCached = new int[MAX_BONDS_LENGTH_TO_CACHE];
+  Bond[][][] freeBonds = new Bond[MAX_BONDS_LENGTH_TO_CACHE][][];
+  {
+    for (int i = MAX_BONDS_LENGTH_TO_CACHE; --i > 0; ) // .GT. 0
+      freeBonds[i] = new Bond[MAX_NUM_TO_CACHE][];
+  }
+
+  Bond[] addToBonds(Bond newBond, Bond[] oldBonds) {
+    Bond[] newBonds;
+    if (oldBonds == null) {
+      if (numCached[1] > 0)
+        newBonds = freeBonds[1][--numCached[1]];
+      else
+        newBonds = new Bond[1];
+      newBonds[0] = newBond;
+    } else {
+      int oldLength = oldBonds.length;
+      int newLength = oldLength + 1;
+      if (newLength < MAX_BONDS_LENGTH_TO_CACHE &&
+          numCached[newLength] > 0)
+        newBonds = freeBonds[newLength][--numCached[newLength]];
+      else
+        newBonds = new Bond[newLength];
+      newBonds[oldLength] = newBond;
+      for (int i = oldLength; --i >= 0; )
+        newBonds[i] = oldBonds[i];
+      if (oldLength < MAX_BONDS_LENGTH_TO_CACHE &&
+          numCached[oldLength] < MAX_NUM_TO_CACHE)
+        freeBonds[oldLength][numCached[oldLength]++] = oldBonds;
+    }
+    return newBonds;
+  }
+
+  void freeBondsCache() {
+    for (int i = MAX_BONDS_LENGTH_TO_CACHE; --i > 0; ) { // .GT. 0
+      numCached[i] = 0;
+      Bond[][] bondsCache = freeBonds[i];
+      for (int j = bondsCache.length; --j >= 0; )
+        bondsCache[j] = null;
+    }
   }
 
 }

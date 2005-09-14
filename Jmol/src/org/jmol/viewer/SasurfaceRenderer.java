@@ -68,8 +68,8 @@ class SasurfaceRenderer extends ShapeRenderer {
     if (surfaceCount == 0)
       return;
     Sasurface1[] surfaces = sasurface.surfaces;
-    hideSaddles = !viewer.getTestFlag1();
-    hideConvex = !viewer.getTestFlag2();
+    hideSaddles = viewer.getTestFlag1();
+    hideConvex = viewer.getTestFlag2();
     sasCache.clear();
     for (int i = surfaceCount; --i >= 0; )
       renderSasurface1(surfaces[i]);
@@ -92,15 +92,11 @@ class SasurfaceRenderer extends ShapeRenderer {
       allocTransformedProbeVertexes();
     Atom[] atoms = frame.atoms;
     int[][] convexVertexMaps = surface.convexVertexMaps;
-    int[][] convexVertexMaps2 = surface.convexVertexMaps2;
     int[][] convexFaceMaps = surface.convexFaceMaps;
     short[] colixesConvex = surface.colixesConvex;
     int displayModelIndex = this.displayModelIndex;
     for (int i = surface.surfaceConvexMax; --i >= 0; ) {
       int[] vertexMap;
-
-      vertexMap = convexVertexMaps2[i];
-      renderVertexDots(atoms[i], vertexMap);
 
       vertexMap = convexVertexMaps[i];
       if (vertexMap != null) {
@@ -228,7 +224,6 @@ class SasurfaceRenderer extends ShapeRenderer {
   final byte[] torusSegmentStarts = new byte[MAX_SEGMENT_COUNT];
 
   void renderTorus(Sasurface1.Torus torus, short[] colixes) {
-    renderTorusAxisAndClippingJunk(torus);
     Point3i[] screens = sasCache.lookupTorusScreens(torus);
     short[] normixes = torus.normixes;
     int outerPointCount = torus.outerPointCount;
@@ -261,35 +256,8 @@ class SasurfaceRenderer extends ShapeRenderer {
                                   torusCavities[torusCavityIndex++]);
       ixP = ixQ;
     }
-    
   }
 
-
-  final Point3f centerClipA = new Point3f();
-  final Point3f centerClipB = new Point3f();
-  final Point3i screenCenterA = new Point3i();
-  final Point3i screenCenterB = new Point3i();
-  final Point3f zeroPointA = new Point3f();
-  final Point3i screenZeroA = new Point3i();
-  final Point3f zeroPointB = new Point3f();
-  final Point3i screenZeroB = new Point3i();
-
-  void renderTorusAxisAndClippingJunk(Sasurface1.Torus torus) {
-    //g3d.drawLine(Graphics3D.LIME,
-    //             frame.atoms[torus.ixA].xyzd, frame.atoms[torus.ixB].xyzd);
-    torus.calcClippingPlaneCenterPoints(centerClipA, centerClipB);
-    viewer.transformPoint(centerClipA, screenCenterA);
-    viewer.transformPoint(centerClipB, screenCenterB);
-    g3d.drawLine(Graphics3D.LIME, screenCenterA, screenCenterB);
-    torus.calcZeroPoint(true, zeroPointA);
-    torus.calcZeroPoint(false, zeroPointB);
-    viewer.transformPoint(zeroPointA, screenZeroA);
-    viewer.transformPoint(zeroPointB, screenZeroB);
-    g3d.fillSphereCentered(Graphics3D.PINK, 5, screenZeroA);
-    g3d.fillSphereCentered(Graphics3D.BLUE, 5, screenZeroB);
-
-  }
-  
 
   final Point3i screenCavityBottom = new Point3i();
 

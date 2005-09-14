@@ -108,8 +108,6 @@ class Sasurface1 {
   int[] tempVertexMap;
   int[] tempFaceMap;
 
-  int[][] convexVertexMaps2;
-
   int cavityCount;
   Cavity[] cavities;
   int torusCount;
@@ -190,35 +188,15 @@ class Sasurface1 {
     // now, calculate surface for selected atoms
     long timeBegin = System.currentTimeMillis();
     int surfaceAtomCount = 0;
-    for (int i = 0; i < atomCount; ++i) // make this loop count up
+    for (int i = 0; i < atomCount; ++i) { // make this loop count up
       if (bsSelected.get(i)) {
         ++surfaceAtomCount;
         setAtomI(i);
         getNeighbors(bsSelected);
         sortNeighborIndexes();
         calcCavitiesI();
-        if (convexVertexMaps[i] != null)
-          calcVertexBitmapI();
-      }
-    for (int i = atomCount; --i >= 0; ) {
-      int[] vertexMap = convexVertexMaps[i];
-      if (vertexMap != null)
-        convexFaceMaps[i] = calcFaceBitmap(vertexMap);
-    }
-
-    // experimenting with using torus clipping
-
-    convexVertexMaps2 = new int[atomCount][];
-    int bmpLength = (geodesicVertexCount + 31) >> 5;
-    for (int i = atomCount; --i >= 0; ) {
-      if (convexVertexMaps[i] != null) {
-        bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
-        convexVertexMaps2[i] = new int[bmpLength];
-        Bmp.setAllBits(convexVertexMaps2[i], geodesicVertexCount);
       }
     }
-
-    // end of experiment
     
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
@@ -232,10 +210,16 @@ class Sasurface1 {
       torus.calcPointCounts();
       torus.calcNormixes();
 
-      torus.clipVertexMaps2();
+      torus.clipVertexMaps();
 
       // torus.checkTorusSegments();
       torus.connectWithGeodesics();
+    }
+
+    for (int i = atomCount; --i >= 0; ) {
+      int[] vertexMap = convexVertexMaps[i];
+      if (vertexMap != null)
+        convexFaceMaps[i] = calcFaceBitmap(vertexMap);
     }
 
     long timeElapsed = System.currentTimeMillis() - timeBegin;
@@ -250,6 +234,9 @@ class Sasurface1 {
   }
 
   void setSize(int size, BitSet bsSelected) {
+    System.out.println("Who is calling me?");
+    throw new NullPointerException();
+    /*
     short mad = (short)size;
     this.mad = mad;
     viewer.setSolventOn(true);
@@ -312,6 +299,7 @@ class Sasurface1 {
         {}
       surfaceConvexMax = i + 1;
     }
+    */
   }
 
   void calcProbeVectors() {
@@ -492,18 +480,24 @@ class Sasurface1 {
     distanceJK = (float)Math.sqrt(distanceJK2);
   }
 
+  /*
   void calcVertexBitmapI() {
-    Bmp.setAllBits(tempVertexMap, geodesicVertexCount);
+    int[] vertexMap = convexVertexMaps[indexI];
+    Bmp.setAllBits(vertexMap, geodesicVertexCount);
     if (neighborCount > 0) {
       int iLastUsed = 0;
       for (int iDot = geodesicVertexCount; --iDot >= 0; ) {
-        pointT.set(geodesicVertexVectors[iDot]);
-        pointT.scaleAdd(radiiIP, centerI);
+        pointT.scaleAdd(radiiIP, geodesicVertexVectors[iDot], centerI);
+        pointT1.scaleAdd(radiusI, geodesicVertexVectors[iDot], centerI);
+        if (centerI.x == 0)
+          System.out.println(" --->" +
+                             " vertex[" + iDot + "]" + " radius:" + radiusI +
+                             " pointT1:" + pointT1);
         int iStart = iLastUsed;
         do {
           if (pointT.distanceSquared(neighborCenters[iLastUsed])
               < neighborPlusProbeRadii2[iLastUsed]) {
-            Bmp.clearBit(tempVertexMap, iDot);
+            Bmp.clearBit(vertexMap, iDot);
             break;
           }
           if (++iLastUsed == neighborCount)
@@ -511,8 +505,8 @@ class Sasurface1 {
         } while (iLastUsed != iStart);
       }
     }
-    Bmp.orInto(convexVertexMaps[indexI], tempVertexMap);
   }
+  */
 
   final Vector3f axisUnitNormalT = new Vector3f();
   final Vector3f centerVectorT = new Vector3f();
@@ -522,25 +516,18 @@ class Sasurface1 {
   void clipGeodesic(Point3f geodesicCenter, float radius,
                     Point3f planePoint, Vector3f axisUnitVector,
                     int[] vertexMap) {
-    {
-      float len = axisUnitVector.length();
-      if (len < 0.999 || len > 1.001)
-        throw new NullPointerException();
-    }
-    System.out.println("clipGeodesic(" + geodesicCenter + "," +
-                       radius + "," +
-                       planePoint + "," +
-                       axisUnitVector + ")");
     centerVectorT.sub(geodesicCenter, planePoint);
     float dotCenter = centerVectorT.dot(axisUnitVector);
-    System.out.println("dotCenter=" + dotCenter);
     if (dotCenter >= radius) // all points are visible
       return;
     if (dotCenter < -radius) { // all points are clipped
       Bmp.clearBitmap(vertexMap);
       return;
     }
-    System.out.println("bit count before=" + Bmp.countBits(vertexMap));
+
+    calcClippingPlaneCenter(geodesicCenter, axisUnitVector,
+                            planePoint, planeCenterT);
+
     for (int i = -1; (i = Bmp.nextSetBit(vertexMap, i + 1)) >= 0; ) {
       vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
                             geodesicCenter);
@@ -549,7 +536,6 @@ class Sasurface1 {
       if (dot < 0)
         Bmp.clearBit(vertexMap, i);
     }
-    System.out.println("bit count after=" + Bmp.countBits(vertexMap));
   }
 
   int[] bmpNotClipped;
@@ -557,11 +543,6 @@ class Sasurface1 {
   void findClippedGeodesicEdge(Point3f geodesicCenter, float radius,
                                Point3f planePoint, Vector3f axisUnitVector,
                                int[] edgeVertexMap) {
-    {
-      float len = axisUnitVector.length();
-      if (len < 0.999 || len > 1.001)
-        throw new NullPointerException();
-    }
     if (bmpNotClipped == null)
       bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
     Bmp.clearBitmap(bmpNotClipped);
@@ -594,11 +575,6 @@ class Sasurface1 {
   void projectGeodesicPoints(Point3f geodesicCenter, float radius,
                              Point3f planeZeroPoint, Vector3f axisUnitVector,
                              int[] edgeVertexMap) {
-    {
-      float len = axisUnitVector.length();
-      if (len < 0.999 || len > 1.001)
-        throw new NullPointerException();
-    }
     calcClippingPlaneCenter(geodesicCenter, axisUnitVector, planeZeroPoint,
                             planeCenterT);
 
@@ -622,12 +598,6 @@ class Sasurface1 {
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
                                Point3f planePoint, Point3f planeCenterPoint) {
-    
-    {
-      float len = axisUnitVector.length();
-      if (len < 0.999 || len > 1.001)
-        throw new NullPointerException();
-    }
     vectorT.sub(axisPoint, planePoint);
     float dotCenter = axisUnitVector.dot(vectorT);
     planeCenterPoint.scaleAdd(-dotCenter, axisUnitVector, axisPoint);
@@ -928,14 +898,14 @@ class Sasurface1 {
       int t = 0;
       for (int i = torusSegmentCount; --i >= 0; )
         t += torusSegments[i].stepCount;
-      System.out.println("segmentStripCount t=" + t);
+      //      System.out.println("segmentStripCount t=" + t);
       segmentStripCount = (byte)t;
       outerPointCount = (byte)c;
       totalPointCount = (short)(t * c);
-      System.out.println("calcPointCounts: " +
-                         " segmentStripCount=" + segmentStripCount +
-                         " outerPointCount=" + outerPointCount +
-                         " totalPointCount=" + totalPointCount);
+      //      System.out.println("calcPointCounts: " +
+      //                 " segmentStripCount=" + segmentStripCount +
+      //                 " outerPointCount=" + outerPointCount +
+      //                 " totalPointCount=" + totalPointCount);
     }
 
     void transformOuterRadials() {
@@ -1012,12 +982,12 @@ class Sasurface1 {
       for (int i = torusCavityCount; --i > 0; ) {
         if (torusCavities[i].angle <= torusCavities[i-1].angle &&
             i != torusCavityCount - 1) {
-          System.out.println("oops! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-          for (int j = 0; j < torusCavityCount; ++j) {
-            System.out.println("cavity:" + j + " " +
-                               torusCavities[j].angle + " " +
-                               torusCavities[j].rightHanded);
-          }
+          //System.out.println("oops! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+          //for (int j = 0; j < torusCavityCount; ++j) {
+          //System.out.println("cavity:" + j + " " +
+          //                   torusCavities[j].angle + " " +
+          //                   torusCavities[j].rightHanded);
+          //}
           throw new NullPointerException();
         }
         if (((i & 1) == 0) ^ torusCavities[i].rightHanded)
@@ -1055,6 +1025,8 @@ class Sasurface1 {
     }
     
     void calcPoints(Point3f[] points) {
+      //System.out.println("Sasurface1.Torus.calcPoints " +
+      //                 " torusSegmentCount=" + torusSegmentCount);
       int indexStart = 0;
       transformOuterRadials();
       for (int i = 0; i < torusSegmentCount; ++i)
@@ -1115,6 +1087,8 @@ class Sasurface1 {
           for (int j = 0; j < outerPointCount; ++j, ++ixPoint) {
             matrixT.transform(outerRadials[j], vectorT);
             points[ixPoint].add(pointT, vectorT);
+            //System.out.println("  calcPoints[" + ixPoint + "]=" +
+            //                 points[ixPoint]);
           }
         }
         return ixPoint;
@@ -1164,35 +1138,25 @@ class Sasurface1 {
           Point3f edgePoint = torusEdgePointsT[i];
           vectorT.sub(edgePoint, atomCenter);
           short normix = g3d.getNormix(vectorT, GEODESIC_CALC_LEVEL);
-          System.out.println("connected!");
+          //System.out.println("connected!");
           geodesicConnections[connectionIndex++] = normix;
         }
       }
     }
 
-    void clipVertexMaps2() {
-      /*
-      Point3f centerA = frame.atoms[ixA].point3f;
-      clipGeodesic(centerA, radius,
-                   centerA, vectorX,
-                   convexVertexMaps2[ixA]);
-
-      Point3f centerB = frame.atoms[ixB].point3f;
-      clipGeodesic(centerB, radius,
-                   centerB, vectorY,
-                   convexVertexMaps2[ixB]);
-      */
-      Point3f centerA = frame.atoms[ixA].point3f;
+    void clipVertexMaps() {
+      Atom atomA = frame.atoms[ixA];
+      Atom atomB = frame.atoms[ixB];
       negativeAxisUnitVectorT.scale(-1, axisUnitVector);
       calcZeroPoint(true, zeroPointT);
-      clipGeodesic(centerA, radius,
+      clipGeodesic(atomA.point3f, atomA.getVanderwaalsRadiusFloat(),
                    zeroPointT, negativeAxisUnitVectorT,
-                   convexVertexMaps2[ixA]);
-      Point3f centerB = frame.atoms[ixB].point3f;
+                   convexVertexMaps[ixA]);
+
       calcZeroPoint(false, zeroPointT);
-      clipGeodesic(centerB, radius,
+      clipGeodesic(atomB.point3f, atomB.getVanderwaalsRadiusFloat(),
                    zeroPointT, axisUnitVector, 
-                   convexVertexMaps2[ixB]);
+                   convexVertexMaps[ixB]);
     }
 
     void calcZeroPoint(boolean edgeA, Point3f zeroPoint) {
@@ -1232,7 +1196,8 @@ class Sasurface1 {
 
   void allocateConvexVertexBitmap(int atomIndex) {
     if (convexVertexMaps[atomIndex] == null)
-      convexVertexMaps[atomIndex] = Bmp.allocateBitmap(geodesicVertexCount);
+      convexVertexMaps[atomIndex] =
+        Bmp.allocateSetAllBits(geodesicVertexCount);
   }
 
   Torus createTorus(int indexI, int indexJ, Point3f torusCenterIJ,

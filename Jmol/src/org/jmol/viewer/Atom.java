@@ -151,24 +151,22 @@ final class Atom implements Tuple {
     return false;
   }
 
-  Bond bondMutually(Atom atomOther, int order, Viewer viewer) {
+  Bond bondMutually(Atom atomOther, int order, Frame frame) {
     if (isBonded(atomOther))
       return null;
-    Bond bond = new Bond(this, atomOther, order, viewer);
-    addBond(bond);
-    atomOther.addBond(bond);
+    Bond bond = new Bond(this, atomOther, order, frame);
+    addBond(bond, frame);
+    atomOther.addBond(bond, frame);
     return bond;
   }
 
-  private void addBond(Bond bond) {
-    int i = 0;
+  private void addBond(Bond bond, Frame frame) {
     if (bonds == null) {
       bonds = new Bond[1];
+      bonds[0] = bond;
     } else {
-      i = bonds.length;
-      bonds = (Bond[])Util.setLength(bonds, i + 1);
+      bonds = frame.addToBonds(bond, bonds);
     }
-    bonds[i] = bond;
   }
 
   void deleteBondedAtom(Atom atomToDelete) {

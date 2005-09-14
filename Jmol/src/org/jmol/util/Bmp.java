@@ -38,6 +38,19 @@ public class Bmp {
     return new int[(count + 31) >> 5];
   }
 
+  public final static int[] allocateSetAllBits(int count) {
+    int i = (count + 31) >> 5;
+    int[] bitmap = new int[i];
+    int fractionalBitCount = count & 31;
+    if (fractionalBitCount != 0) {
+      bitmap[--i] =
+        (0x80000000 >> (fractionalBitCount - 1)) >>> (32 - fractionalBitCount);
+    }
+    while (--i >= 0)
+      bitmap[i] = 0xFFFFFFFF;
+    return bitmap;
+  }
+
   public final static int[] growBitmap(int[] bitmap, int count) {
     if (count < 0)
       throw new IndexOutOfBoundsException();

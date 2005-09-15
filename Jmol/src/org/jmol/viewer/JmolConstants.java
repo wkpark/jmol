@@ -1765,6 +1765,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_ALPHA_CARBON    = 2;
   public final static byte ATOMID_CARBONYL_CARBON = 3;
   public final static byte ATOMID_O5_PRIME        = 5;
+  public final static byte ATOMID_C5_PRIME        = 6;
+  public final static byte ATOMID_C3_PRIME        = 8;
   public final static byte ATOMID_O3_PRIME        = 9;
   public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 12;
   public final static byte ATOMID_TERMINATING_OXT = 32;

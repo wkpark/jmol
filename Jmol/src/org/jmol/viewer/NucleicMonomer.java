@@ -63,6 +63,8 @@ class NucleicMonomer extends PhosphorusMonomer {
     ~JmolConstants.ATOMID_H3T_TERMINUS, // 23 H3T terminus
     JmolConstants.ATOMID_O3_PRIME,      // 24 O3' terminus
     ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 25 P phosphorus
+    JmolConstants.ATOMID_C5_PRIME,              // 26 C5'
+    JmolConstants.ATOMID_C3_PRIME,              // 27 C3'
   };
 
   static Monomer
@@ -186,6 +188,14 @@ class NucleicMonomer extends PhosphorusMonomer {
     return getAtomFromOffsetIndex(25);
   }
 
+  Atom getC5PrimeAtom() {
+    return getAtomFromOffsetIndex(26);
+  }
+
+  Atom getC3PrimeAtom() {
+    return getAtomFromOffsetIndex(27);
+  }
+
   void getBaseRing6Points(Point3f[] ring6Points) {
     for (int i = 6; --i >= 0; )
       ring6Points[i] = getAtomPointFromOffsetIndex(i + 3);
@@ -218,6 +228,20 @@ class NucleicMonomer extends PhosphorusMonomer {
 
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
-    // FIXME --- needs to be implemented
+    Viewer viewer = chain.frame.viewer;
+    Atom competitor = closest.atom;
+    Atom phosphorus = getPhosphorusAtom();
+    Atom c5prime = getC5PrimeAtom();
+    Atom c3prime = getC3PrimeAtom();
+    short mar = (short)(madBegin / 2);
+    if (mar < 1600)
+      mar = 1600;
+    int radius = viewer.scaleToScreen(phosphorus.getScreenZ(), mar);
+    if (radius < 4)
+      radius = 4;
+    if (phosphorus.isCursorOnTop(x, y, radius, competitor) ||
+        c5prime.isCursorOnTop(x, y, radius + (radius >> 2), competitor) ||
+        c3prime.isCursorOnTop(x, y, radius, competitor))
+      closest.atom = phosphorus;
   }
 }

@@ -53,6 +53,10 @@ function jmolInitialize(codebaseDirectory, useSignedApplet) {
   _jmol.initialized = true;
 }
 
+function jmolSetDocument(doc) {
+  _jmol.currentDocument = doc;
+}
+
 function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
   _jmolInitCheck();
   _jmol.boxbgcolor = boxbgcolor;
@@ -72,7 +76,7 @@ function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
 
 function jmolApplet(size, script, nameSuffix) {
   _jmolInitCheck();
-  _jmolApplet(size, null, script, nameSuffix);
+  return _jmolApplet(size, null, script, nameSuffix);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -95,7 +99,7 @@ function jmolButton(script, label, id) {
           _jmol.buttonCssText + "/>";
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
@@ -125,7 +129,7 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
           labelHtml;
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName) {
@@ -151,7 +155,7 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName) {
   }
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolLink(script, label, id) {
@@ -170,7 +174,7 @@ function jmolLink(script, label, id) {
           _jmol.linkCssText + ">" + label + "</a>";
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolMenu(arrayOfMenuItems, size, id) {
@@ -211,16 +215,16 @@ function jmolMenu(arrayOfMenuItems, size, id) {
     t += "</select>";
     if (_jmol.debugAlert)
       alert(t);
-    document.write(t);
+    return _jmolDocumentWrite(t);
   }
 }
 
 function jmolHtml(html) {
-  document.write(html);
+  return _jmolDocumentWrite(html);
 }
 
 function jmolBr() {
-  document.write("<br />");
+  return _jmolDocumentWrite("<br />");
 }
 
 ////////////////////////////////////////////////////////////////
@@ -232,7 +236,8 @@ function jmolDebugAlert(enableAlerts) {
 }
 
 function jmolAppletInline(size, inlineModel, script, nameSuffix) {
-  _jmolApplet(size, _jmolSterilizeInline(inlineModel), script, nameSuffix);
+  return _jmolApplet(size, _jmolSterilizeInline(inlineModel),
+                     script, nameSuffix);
 }
 
 function jmolSetTarget(targetSuffix) {
@@ -295,7 +300,7 @@ function jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName) {
   var t = _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName);
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
@@ -318,6 +323,12 @@ function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
   }
   if (typeof nowOrLater == "string" && nowOrLater.toLowerCase() == "now")
     _jmolCheckBrowser();
+}
+
+function _jmolDocumentWrite(text) {
+  if (_jmol.currentDocument)
+    _jmol.currentDocument.write(text);
+  return text;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -377,6 +388,7 @@ for (var i = 1; i <= _jmolLastJar; ++i)
   _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
 
 var _jmol = {
+  currentDocument: document,
 
   debugAlert: false,
   bgcolor: "black",
@@ -633,7 +645,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     ready["jmolApplet" + nameSuffix] = false;
     if (_jmol.debugAlert)
       alert(t);
-    document.write(t);
+    return _jmolDocumentWrite(t);
   }
 }
 

@@ -126,12 +126,8 @@ abstract class Monomer extends Group {
   }
 
   final Point3f getAtomPointFromOffsetIndex(int offsetIndex) {
-    if (offsetIndex > offsets.length)
-      return null;
-    int offset = offsets[offsetIndex] & 0xFF;
-    if (offset == 255)
-      return null;
-    return chain.frame.atoms[firstAtomIndex + offset].point3f;
+    Atom atom = getAtomFromOffsetIndex(offsetIndex);
+    return atom == null ? null : atom.point3f;
   }
 
   final Atom getSpecialAtom(byte[] interestingIDs, byte specialAtomID) {

@@ -196,16 +196,22 @@ class NucleicMonomer extends PhosphorusMonomer {
   }
 
   void getBaseRing6Points(Point3f[] ring6Points) {
-    for (int i = 6; --i >= 0; )
-      ring6Points[i] = getAtomPointFromOffsetIndex(i + 3);
+    for (int i = 6; --i >= 0; ) {
+      Atom atom = getAtomFromOffsetIndex(i + 3);
+      atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+      ring6Points[i] = atom.point3f;
+    }
   }
 
   final static byte[] ring5OffsetIndexes = {3, 10, 11, 12, 8};
 
   boolean maybeGetBaseRing5Points(Point3f[] ring5Points) {
     if (isPurine)
-      for (int i = 5; --i >= 0; )
-        ring5Points[i] = getAtomPointFromOffsetIndex(ring5OffsetIndexes[i]);
+      for (int i = 5; --i >= 0; ) {
+        Atom atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
+        atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+        ring5Points[i] = atom.point3f;
+      }
     return isPurine;
   }
 

@@ -66,7 +66,7 @@ final public class Graphics3D {
   boolean antialiasThisFrame;
 
   boolean inGreyscaleMode;
-  byte[] blueChannelBytes;
+  byte[] anaglyphChannelBytes;
 
   boolean tPaintingInProgress;
 
@@ -724,24 +724,27 @@ final public class Graphics3D {
     }
   }
 
-  public void snapshotBlueChannelBytes() {
+  public void snapshotAnaglyphChannelBytes() {
     if (currentlyRendering)
       throw new NullPointerException();
-    if (blueChannelBytes == null || blueChannelBytes.length != pbuf.length)
-      blueChannelBytes = new byte[pbuf.length];
+    if (anaglyphChannelBytes == null ||
+	anaglyphChannelBytes.length != pbuf.length)
+      anaglyphChannelBytes = new byte[pbuf.length];
     for (int i = pbuf.length; --i >= 0; )
-      blueChannelBytes[i] = (byte)pbuf[i];
+      anaglyphChannelBytes[i] = (byte)pbuf[i];
   }
 
-  public void applyBlueAnaglyph() {
+  public void applyBlueOrGreenAnaglyph(boolean blueChannel) {
+    int shiftCount = blueChannel ? 0 : 8;
     for (int i = pbuf.length; --i >= 0; )
-      pbuf[i] = pbuf[i] & 0xFFFF0000 | (blueChannelBytes[i] & 0x000000FF);
+      pbuf[i] = ((pbuf[i] & 0xFFFF0000) |
+		 ((anaglyphChannelBytes[i] & 0x000000FF) << shiftCount));
   }
 
   public void applyCyanAnaglyph() {
     for (int i = pbuf.length; --i >= 0; ) {
-      int blue = blueChannelBytes[i] & 0x000000FF;
-      int cyan = (blue << 8) | blue;
+      int blueAndGreen = anaglyphChannelBytes[i] & 0x000000FF;
+      int cyan = (blueAndGreen << 8) | blueAndGreen;
       pbuf[i] = pbuf[i] & 0xFFFF0000 | cyan;
     }
   }

@@ -3576,6 +3576,10 @@ class Eval implements Runnable {
           stereoMode = JmolConstants.STEREO_REDCYAN;
           break;
         }
+        if (id.equalsIgnoreCase("redgreen")) {
+          stereoMode = JmolConstants.STEREO_REDGREEN;
+          break;
+        }
         // fall into
       default:
         booleanOrNumberExpected();

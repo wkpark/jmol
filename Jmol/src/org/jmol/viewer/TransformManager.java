@@ -1052,8 +1052,7 @@ class TransformManager {
   int stereoMode;
   void setStereoMode(int stereoMode) {
     this.stereoMode = stereoMode;
-    viewer.setGreyscaleRendering(stereoMode == JmolConstants.STEREO_REDBLUE ||
-                                 stereoMode == JmolConstants.STEREO_REDCYAN);
+    viewer.setGreyscaleRendering(stereoMode >= JmolConstants.STEREO_REDCYAN);
   }
 
   float stereoDegrees = 5;

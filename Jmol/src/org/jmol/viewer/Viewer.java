@@ -1554,17 +1554,17 @@ final public class Viewer extends JmolViewer {
       repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                             repaintManager.displayModelIndex);
       g3d.endRendering();
-      g3d.snapshotBlueChannelBytes();
+      g3d.snapshotAnaglyphChannelBytes();
       g3d.beginRendering(rectClip,
                          transformManager.getStereoRotationMatrix(false),
                          false);
       repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                             repaintManager.displayModelIndex);
       g3d.endRendering();
-      if (stereoMode == JmolConstants.STEREO_REDBLUE)
-        g3d.applyBlueAnaglyph();
+      if (stereoMode == JmolConstants.STEREO_REDCYAN)
+	g3d.applyCyanAnaglyph();
       else 
-        g3d.applyCyanAnaglyph();
+        g3d.applyBlueOrGreenAnaglyph(stereoMode==JmolConstants.STEREO_REDBLUE);
       Image img = g3d.getScreenImage();
       try {
         g.drawImage(img, 0, 0, null);

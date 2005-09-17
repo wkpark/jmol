@@ -482,6 +482,7 @@ class Token {
     "vector",            new Token(vector,   varArgCount, "vector"),
     "vectors",           null,
     "meshribbon",        new Token(meshRibbon,onDefault1, "meshribbon"),
+    "meshribbons",       null,
     "prueba",            new Token(prueba,    onDefault1, "prueba"),
     "rocket",            new Token(rocket,    onDefault1, "rocket"),
     "rockets",           null,

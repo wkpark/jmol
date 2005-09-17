@@ -3539,6 +3539,9 @@ class Eval implements Runnable {
       case Token.delete:
         propertyName = "delete";
         break;
+      case Token.color:
+        propertyName = "test1";
+        break;
       default:
         invalidArgument();
       }

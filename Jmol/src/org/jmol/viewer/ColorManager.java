@@ -264,7 +264,7 @@ class ColorManager {
         Using colors other than these would make the shading
         calculations more difficult
       */
-      index = quantize(-1, 1, atom.getPartialCharge(),
+      index = quantize(atom.getPartialCharge(), -1, 1, 
                        JmolConstants.argbsRwbScale.length);
       argb = JmolConstants.argbsRwbScale[index];
     } else if ("temperature" == palette ||
@@ -278,7 +278,7 @@ class ColorManager {
         lo = 0;
         hi = 100 * 100; // scaled by 100
       }
-      index = quantize(lo, hi, atom.getBfactor100(),
+      index = quantize(atom.getBfactor100(), lo, hi, 
                        JmolConstants.argbsRwbScale.length);
       index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
@@ -311,16 +311,16 @@ class ColorManager {
       // however, do not call it here because it will get recalculated
       // for each atom
       // therefore, we call it in Eval.colorObject();
-      index = quantize(0,
+      index = quantize(atom.getSelectedGroupIndexWithinChain(),
+                       0,
                        atom.getSelectedGroupCountWithinChain() - 1,
-                       atom.getSelectedGroupIndexWithinChain(),
                        JmolConstants.argbsBlueRedRainbow.length);
       argb = JmolConstants.argbsBlueRedRainbow[index];
     } else if ("monomer" == palette) {
       // viewer.calcSelectedMonomersCount() must be called first ...
-      index = quantize(0,
+      index = quantize(atom.getSelectedMonomerIndexWithinPolymer(),
+                       0,
                        atom.getSelectedMonomerCountWithinPolymer() - 1,
-                       atom.getSelectedMonomerIndexWithinPolymer(),
                        JmolConstants.argbsBlueRedRainbow.length);
       argb = JmolConstants.argbsBlueRedRainbow[index];
     } else {
@@ -334,7 +334,7 @@ class ColorManager {
     return Graphics3D.getColix(argb);
   }
 
-  int quantize(float lo, float hi, float val, int segmentCount) {
+  int quantize(float val, float lo, float hi, int segmentCount) {
     float range = hi - lo;
     if (range <= 0 || Float.isNaN(val))
       return segmentCount / 2;
@@ -346,6 +346,14 @@ class ColorManager {
     if (q >= segmentCount)
       q = segmentCount - 1;
     return q;
+  }
+
+  short getColixFromPalette(float val, float lo, float hi, String palette) {
+    if (palette == "rwb") {
+      int index = quantize(val, lo, hi, JmolConstants.argbsRwbScale.length);
+      return Graphics3D.getColix(JmolConstants.argbsRwbScale[index]);
+    }
+    return Graphics3D.PINK;
   }
 
   short getColixHbondType(short order) {

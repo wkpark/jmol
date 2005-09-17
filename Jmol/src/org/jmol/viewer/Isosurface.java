@@ -91,6 +91,7 @@ class Isosurface extends MeshCollection {
     }
     if ("cutoff" == propertyName) {
       cutoff = ((Float)value).floatValue();
+      return;
     }
     super.setProperty(propertyName, value, bs);
   }

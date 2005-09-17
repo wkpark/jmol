@@ -30,9 +30,12 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 class Mesh {
+  Viewer viewer;
+
   String meshID;
   boolean visible = true;
   short colix;
+  short[] vertexColixes;
   Graphics3D g3d;
     
   int vertexCount;
@@ -45,7 +48,8 @@ class Mesh {
   boolean drawTriangles = false;
   boolean fillTriangles = true;
     
-  Mesh(String meshID, Graphics3D g3d, short colix) {
+  Mesh(Viewer viewer, String meshID, Graphics3D g3d, short colix) {
+    this.viewer = viewer;
     this.meshID = meshID;
     this.g3d = g3d;
     this.colix = colix;
@@ -72,6 +76,43 @@ class Mesh {
       */
     }
   }
+
+  void allocVertexColixes() {
+    if (vertexColixes == null) {
+      vertexColixes = new short[vertexCount];
+      for (int i = vertexCount; --i >= 0; )
+        vertexColixes[i] = colix;
+    }
+  }
+
+  void test1() {
+    if (vertexColixes == null)
+      vertexColixes = new short[vertexCount];
+    findXRange();
+    for (int i = vertexCount; --i >= 0; ) {
+      vertexColixes[i] = viewer.getColixFromPalette(vertices[i].x,
+                                                    minX, maxX, "rwb");
+    }
+  }
+
+  float minX;
+  float maxX;
+  void findXRange() {
+    if (vertexCount > 0) {
+      minX = maxX = vertices[0].x;
+      for (int i = vertexCount; --i > 0; ) {
+        float x = vertices[i].x;
+        if (x < minX)
+          minX = x;
+        else if (x > maxX)
+          maxX = x;
+      }
+    } else {
+      minX = maxX = Integer.MIN_VALUE;
+    }
+  }
+  
+
 
   void sumVertexNormals(Vector3f[] vectorSums) {
     final Vector3f vNormalizedNormal = new Vector3f();

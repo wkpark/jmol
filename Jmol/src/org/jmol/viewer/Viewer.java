@@ -819,6 +819,11 @@ final public class Viewer extends JmolViewer {
     return colorManager.colixAxesText;
   }
 
+  short getColixFromPalette(float val, float rangeMin, float rangeMax,
+                            String palette) {
+    return colorManager.getColixFromPalette(val, rangeMin, rangeMax, palette);
+  }
+
   /////////////////////////////////////////////////////////////////
   // delegated to SelectionManager
   /////////////////////////////////////////////////////////////////

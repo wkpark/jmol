@@ -512,6 +512,8 @@ class Sasurface1 {
   final Vector3f centerVectorT = new Vector3f();
   final Point3f vertexPointT = new Point3f();
   final Vector3f vertexVectorT = new Vector3f();
+  final Point3f projectedPointT = new Point3f();
+  final Vector3f projectedVectorT = new Vector3f();
 
   void clipGeodesic(Point3f geodesicCenter, float radius,
                     Point3f planePoint, Vector3f axisUnitVector,
@@ -568,6 +570,7 @@ class Sasurface1 {
   int projectedCount;
   short[] projectedVertexes = new short[64];
   float[] projectedAngles = new float[64];
+  float[] projectedDistances = new float[64];
   final Vector3f vector0T = new Vector3f();
   final Vector3f vector90T = new Vector3f();
   final Point3f planeCenterT = new Point3f();
@@ -575,6 +578,14 @@ class Sasurface1 {
   void projectGeodesicPoints(Point3f geodesicCenter, float radius,
                              Point3f planeZeroPoint, Vector3f axisUnitVector,
                              int[] edgeVertexMap) {
+    Point3f planeCenterT = this.planeCenterT;
+    Vector3f vector0T = this.vector0T;
+    Vector3f vector90T = this.vector90T;
+    Point3f vertexPointT = this.vertexPointT;
+    Vector3f vertexVectorT = this.vertexVectorT;
+    Point3f projectedPointT = this.projectedPointT;
+    Vector3f projectedVectorT = this.projectedVectorT;
+
     calcClippingPlaneCenter(geodesicCenter, axisUnitVector, planeZeroPoint,
                             planeCenterT);
 
@@ -586,21 +597,27 @@ class Sasurface1 {
     for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
       vertexPointT.scaleAdd(radius, geodesicVertexVectors[v], geodesicCenter);
       vertexVectorT.sub(vertexPointT, planeCenterT);
-      float angle = calcAngleInThePlane(vector0T, vector90T, vertexVectorT);
+      float distance = axisUnitVector.dot(vertexVectorT);
+      projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
+      projectedVectorT.sub(projectedPointT, planeCenterT);
+      float angle = calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
       if (projectedCount == projectedVertexes.length) {
         projectedVertexes = Util.doubleLength(projectedVertexes);
         projectedAngles = Util.doubleLength(projectedAngles);
+        projectedDistances = Util.doubleLength(projectedDistances);
       }
       projectedVertexes[projectedCount] = (short) v;
-      projectedAngles[projectedCount++] = angle;
+      projectedAngles[projectedCount] = angle;
+      projectedDistances[projectedCount] = distance;
+      ++projectedCount;
     }
   }
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
                                Point3f planePoint, Point3f planeCenterPoint) {
     vectorT.sub(axisPoint, planePoint);
-    float dotCenter = axisUnitVector.dot(vectorT);
-    planeCenterPoint.scaleAdd(-dotCenter, axisUnitVector, axisPoint);
+    float distance = axisUnitVector.dot(vectorT);
+    planeCenterPoint.scaleAdd(-distance, axisUnitVector, axisPoint);
   }
 
   static float calcAngleInThePlane(Vector3f radialVector0,
@@ -618,9 +635,81 @@ class Sasurface1 {
       for (int j = i - 1; --j >= 0; )
         if (projectedAngles[j] > projectedAngles[i]) {
           Util.swap(projectedAngles, i, j);
+          Util.swap(projectedDistances, i, j);
           Util.swap(projectedVertexes, i, j);
         }
   }
+
+  short[] calcTorusGeodesicStitchStrip(int rightCount,
+                                       float[] rightXs,
+                                       short[] rightIndexes,
+                                       int leftCount,
+                                       float[] leftXs,
+                                       float[] leftYs,
+                                       short[] leftIndexes,
+                                       float sweepDistance) {
+    /*
+      This algorithm is somewhat like a ball pivoting algorithm.
+      However, it is really just for stitching.
+      working in 2d. assume that you are standing on the +y axis, slightly
+      above the origin, looking down the x axes. There are points regularly
+      placed along the x axis ... on the right bank.
+      The left bank is jagged, with points having +X and +Y coordinates.
+      We want to fully triangulate these points, where one point always
+      stays glued to the x axis ... the right bank.
+      the sweepDistance is the maximum distance that you will consider
+      when looking at points on the left bank.
+      sweepDistance is calculated from your current anchor on the
+      right bank.
+    */
+    return null;
+    /*
+
+    if (rightCount == 0 || leftCount == 0)
+      return null;
+    int rightAnchorIndex = 0;
+    int rightCandidateIndex;
+    int leftAnchorIndex = 0;
+    int leftCandidateBase;
+    while ((rightCandidateIndex = rightAnchorIndex + 1) < rightCount &&
+           (leftCandidateBase = leftAnchorIndex + 1) < leftCount) {
+      float rightAnchorX = rightXs[rightAnchorIndex];
+      float candidateMaxX = rightAnchorX + sweepDistance;
+      if (candidateMaxX > rightXs[rightCandidateIndex])
+        candidateMaxX = rightXs[rightCandidateIndex];
+      int leftCandidateMax;
+      for (leftCandidateMax = leftCandidateBase;
+           (leftCandidateMax < leftCount &&
+            leftXs[leftCandidateMax] < candidateMaxX);
+           ++leftCandidateMax)
+        {}
+      if (leftCandidateMax == leftCandidateBase) {
+        System.out.println("abend 12345");
+        return null;
+      }
+      float leftAnchorX = leftXs[leftAnchorIndex];
+      float leftAnchorY = leftYs[leftAnchorIndex];
+      int leftChampion = leftCandidateBase;
+      float championAngle = 0;
+      for (int challenger = leftCandidateBase; challenger < leftCandidateMax;
+           ++challenger) {
+        float
+      int leftChampion = leftCandidateBase;
+      int leftChampionAngle = calcTheAngle(rightAnchorX,
+                                           leftAnchorX, leftAnchorY,
+                                           leftXs[leftCandidateBase],
+                                           leftYs[leftCandidateBase]);
+      for (leftWinner=leftCandidateMax; --leftWinner > leftCandidateBase; ) {
+        
+
+             
+           (leftAnchorIndex + leftCandidateCount < leftCount) &&
+             leftXs[leftAnchorIndex + leftCandidate
+    }
+    */
+  }
+
+  ////////////////////////////////////////////////////////////////
 
   int[] calcFaceBitmap(int[] vertexMap) {
     Bmp.clearBitmap(tempFaceMap);

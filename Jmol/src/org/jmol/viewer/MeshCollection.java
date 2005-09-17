@@ -89,14 +89,27 @@ abstract class MeshCollection extends SelectionIndependentShape {
       }
       return;
     }
+    if ("test1" == propertyName) {
+      if (currentMesh != null)
+        currentMesh.test1();
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].test1();
+      }
+      return;
+    }
     if ("color" == propertyName) {
       if (value != null) {
         colix = Graphics3D.getColix(value);
-        if (currentMesh != null)
+        if (currentMesh != null) {
           currentMesh.colix = colix;
-        else {
-          for (int i = meshCount; --i >= 0; )
-            meshes[i].colix = colix;
+          currentMesh.vertexColixes = null;
+        } else {
+          for (int i = meshCount; --i >= 0; ) {
+            Mesh mesh = meshes[i];
+            mesh.colix = colix;
+            mesh.vertexColixes = null;
+          }
         }
       }
       return;
@@ -162,7 +175,7 @@ abstract class MeshCollection extends SelectionIndependentShape {
 
   void allocMesh(String meshID) {
     meshes = (Mesh[])Util.ensureLength(meshes, meshCount + 1);
-    currentMesh = meshes[meshCount++] = new Mesh(meshID, g3d, colix);
+    currentMesh = meshes[meshCount++] = new Mesh(viewer, meshID, g3d, colix);
   }
 
   int ichNextParse;

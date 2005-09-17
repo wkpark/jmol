@@ -54,38 +54,48 @@ abstract class MeshRenderer extends ShapeRenderer {
 
   void renderPoints(Mesh mesh, Point3i[] screens, int vertexCount) {
     short colix = mesh.colix;
+    short[] vertexColixes = mesh.vertexColixes;
     for (int i = vertexCount; --i >= 0; )
-      g3d.fillSphereCentered(colix, 4, screens[i]);
+      g3d.fillSphereCentered(vertexColixes != null ? vertexColixes[i] : colix,
+                             4, screens[i]);
   }
 
   void renderTriangles(Mesh mesh, Point3i[] screens, boolean fill) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     short[] normixes = mesh.normixes;
     short colix = mesh.colix;
+    short[] vertexColixes = mesh.vertexColixes;
     for (int i = mesh.polygonCount; --i >= 0; ) {
       int[] vertexIndexes = polygonIndexes[i];
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
+      short colixA, colixB, colixC;
+      if (vertexColixes != null) {
+        colixA = vertexColixes[iA];
+        colixB = vertexColixes[iB];
+        colixC = vertexColixes[iC];
+      } else {
+        colixA = colixB = colixC = colix;
+      }
       if (vertexIndexes.length == 3) {
         if (fill)
-          g3d.fillTriangle(colix,
-                           screens[iA], normixes[iA],
-                           screens[iB], normixes[iB],
-                           screens[iC], normixes[iC]);
-        else
-          g3d.drawTriangle(colix, screens[iA], screens[iB], screens[iC]);
+          g3d.fillTriangle(screens[iA], colixA, normixes[iA],
+                           screens[iB], colixB, normixes[iB],
+                           screens[iC], colixC, normixes[iC]);
+        else // FIX ME ... need a drawTriangle routine with multiple colors
+          g3d.drawTriangle(colixA, screens[iA], screens[iB], screens[iC]);
           
       } else if (vertexIndexes.length == 4) {
         int iD = vertexIndexes[3];
+        short colixD = vertexColixes != null ? vertexColixes[iD] : colix;
         if (fill)
-          g3d.fillQuadrilateral(colix,
-                                screens[iA], normixes[iA],
-                                screens[iB], normixes[iB],
-                                screens[iC], normixes[iC],
-                                screens[iD], normixes[iD]);
+          g3d.fillQuadrilateral(screens[iA], colixA, normixes[iA],
+                                screens[iB], colixB, normixes[iB],
+                                screens[iC], colixC, normixes[iC],
+                                screens[iD], colixD, normixes[iD]);
         else
-          g3d.drawQuadrilateral(colix, screens[iA],
+          g3d.drawQuadrilateral(colixA, screens[iA],
                                 screens[iB], screens[iC], screens[iD]);
 
       } else {

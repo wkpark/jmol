@@ -26,7 +26,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Bmp;
-import org.jmol.util.IntIntHash;
+import org.jmol.util.IntInt2ObjHash;
 import org.jmol.g3d.Graphics3D;
 
 import javax.vecmath.*;
@@ -113,7 +113,7 @@ class Sasurface1 {
   int torusCount;
   Torus[] toruses;
 
-  IntIntHash htToruses;
+  IntInt2ObjHash htToruses;
 
   final private static boolean LOG = false;
 
@@ -184,7 +184,7 @@ class Sasurface1 {
     convexFaceMaps = new int[atomCount][];
     colixesConvex = new short[atomCount];
 
-    htToruses = new IntIntHash();
+    htToruses = new IntInt2ObjHash();
     // now, calculate surface for selected atoms
     long timeBegin = System.currentTimeMillis();
     int surfaceAtomCount = 0;
@@ -266,7 +266,7 @@ class Sasurface1 {
       }
     deleteUnusedToruses();
 
-    htToruses = new IntIntHash();
+    htToruses = new IntInt2ObjHash();
     // now, calculate surface for selected atoms
     if (mad != 0) {
       long timeBegin = System.currentTimeMillis();

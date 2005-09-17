@@ -1545,8 +1545,9 @@ final public class Viewer extends JmolViewer {
       render1(g, transformManager.getStereoRotationMatrix(true), false,
               dimScreen.width, 0);
       break;
-    case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDCYAN:
+    case JmolConstants.STEREO_REDBLUE:
+    case JmolConstants.STEREO_REDGREEN:
       setRectClip(null);
       g3d.beginRendering(rectClip,
                          transformManager.getStereoRotationMatrix(true),

@@ -25,6 +25,7 @@
 
 package org.jmol.g3d;
 
+import org.jmol.util.Int2IntHash;
 import java.awt.Color;
 
 /**
@@ -50,47 +51,53 @@ import java.awt.Color;
 final class Colix {
 
 
-  private static int colixMax = 1; // skip the null entry
+  private static int colixMax = Graphics3D.SPECIAL_COLIX_MAX;
   private static int[] argbs = new int[128];
   private static int[] argbsGreyscale;
   private static Color[] colors = new Color[128];
   private static int[][] ashades = new int[128][];
   private static int[][] ashadesGreyscale;
+  private static final Int2IntHash colixHash = new Int2IntHash();
 
   final static short getColix(int argb) {
+      return getColix(argb, null);
+  }
+
+  final static short getColix(Color color) {
+      return color == null ? 0 : getColix(color.getRGB(), color);
+  }
+
+  private final static short getColix(int argb, Color opaqueColor) {
     if (argb == 0)
       return 0;
-    int translucent = 0;
+    int translucentMask = 0;
     if ((argb & 0xFF000000) != 0xFF000000) {
       if ((argb & 0xFF000000) == 0) {
         System.out.println("zero alpha channel + non-zero rgb not supported");
         throw new IndexOutOfBoundsException();
       }
       argb |= 0xFF000000;
-      translucent = Graphics3D.TRANSLUCENT_MASK;
+      translucentMask = Graphics3D.TRANSLUCENT_MASK;
     }
-    for (int i = colixMax; --i >= Graphics3D.SPECIAL_COLIX_MAX; )
-      if (argb == argbs[i])
-        return (short)(i | translucent);
-    return (short)(allocateColix(argb, null) | translucent);
-  }
-
-  final static short getColix(Color color) {
-    if (color == null)
-      return 0;
-    int argb = color.getRGB();
-    if (argb == 0)
-      return 0;
-    int translucent = 0;
-    if ((argb & 0xFF000000) != 0xFF000000) {
-      argb |= 0xFF000000;
-      translucent = Graphics3D.TRANSLUCENT_MASK;
+    //    int c = colixHash.get(argb);
+    //    if (c > 0)
+    //	return (short) (c | translucentMask);
+    int c = colixHash.get(argb);
+    if (c > 0) {
+	/*
+	for (int i = colixMax; --i >= Graphics3D.SPECIAL_COLIX_MAX; )
+	    if (argb == argbs[i]) {
+		if (i != c)
+		    throw new NullPointerException();
+		return (short)(i | translucentMask);
+	    }
+	*/
+	return (short)(c | translucentMask);
     }
-    for (int i = colixMax; --i >= Graphics3D.SPECIAL_COLIX_MAX; )
-      if (argb == argbs[i])
-        return (short)(i | translucent);
-    return (short)(allocateColix(argb, translucent == 0 ? color : null) |
-                   translucent);
+    if (opaqueColor != null &&
+	((opaqueColor.getRGB() & 0xFF000000) != 0xFF000000))
+	opaqueColor = null;
+    return (short)(allocateColix(argb, opaqueColor) | translucentMask);
   }
 
   private synchronized static int allocateColix(int argb, Color opaqueColor) {
@@ -132,6 +139,7 @@ final class Colix {
     if (argbsGreyscale != null)
       argbsGreyscale[colixMax] = Graphics3D.calcGreyscaleRgbFromRgb(argb);
     colors[colixMax] = (opaqueColor != null) ? opaqueColor : new Color(argb);
+    colixHash.put(argb, colixMax);
     return colixMax++;
   }
 

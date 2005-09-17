@@ -1782,8 +1782,6 @@ final public class Graphics3D {
   public final static Color COLOR_TEAL = new Color(0x00, 0x80, 0x80);
 
   static Color[] colorsPredefined = {
-    null, Color.red, Color.green, Color.blue, // the special colixes
-
     Color.black, Color.orange, Color.pink, Color.blue,
     Color.white, Color.cyan, Color.red, new Color(0, 128, 0),
     Color.gray, Color.lightGray, Color.green, new Color(128, 0, 0),
@@ -1794,7 +1792,7 @@ final public class Graphics3D {
 
   static {
     for (int i = 0; i < colorsPredefined.length; ++i)
-      if (Colix.getColix(colorsPredefined[i]) != i)
+      if (Colix.getColix(colorsPredefined[i]) != i + SPECIAL_COLIX_MAX)
         throw new NullPointerException();
   }
 

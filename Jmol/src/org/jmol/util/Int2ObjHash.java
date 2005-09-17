@@ -27,43 +27,41 @@ package org.jmol.util;
 
 import java.util.*;
 
-public class IntIntHash {
+public class Int2ObjHash {
   int entryCount;
   Entry[] entries;
   
 
-  public IntIntHash(int initialCapacity) {
+  public Int2ObjHash(int initialCapacity) {
     entries = new Entry[initialCapacity];
   }
 
-  public IntIntHash() {
+  public Int2ObjHash() {
     this(256);
   }
 
-  public synchronized Object get(int key1, int key2) {
+  public synchronized Object get(int key) {
     Entry[] entries = this.entries;
-    int k = (key1 ^ (key2 >> 1)) & 0x7FFFFFFF;
-    int hash = k % entries.length;
+    int hash = (key & 0x7FFFFFFF) % entries.length;
     for (Entry e = entries[hash]; e != null; e = e.next)
-      if (e.key1 == key1 && e.key2 == key2)
+      if (e.key == key)
         return e.value;
     return null;
   }
 
-  public synchronized void put(int key1, int key2, Object value) {
+  public synchronized void put(int key, Object value) {
     Entry[] entries = this.entries;
-    int k = (key1 ^ (key2 >> 1)) & 0x7FFFFFFF;
-    int hash = k % entries.length;
+    int hash = (key & 0x7FFFFFFF) % entries.length;
     for (Entry e = entries[hash]; e != null; e = e.next)
-      if (e.key1 == key1 && e.key2 == key2) {
+      if (e.key == key) {
         e.value = value;
         return;
       }
     if (entryCount > entries.length)
       rehash();
     entries = this.entries;
-    hash = k % entries.length;
-    entries[hash] = new Entry(key1, key2, value, entries[hash]);
+    hash = (key & 0x7FFFFFFF) % entries.length;
+    entries[hash] = new Entry(key, value, entries[hash]);
     ++entryCount;
   }
 
@@ -71,30 +69,28 @@ public class IntIntHash {
     Entry[] oldEntries = entries;
     int oldSize = oldEntries.length;
     int newSize = oldSize * 2 + 1;
-    Entry[] newEntries = entries = new Entry[newSize];
+    Entry[] newEntries = new Entry[newSize];
 
     for (int i = oldSize; --i >= 0; ) {
       for (Entry e = oldEntries[i]; e != null; ) {
         Entry t = e;
         e = e.next;
 
-        int k = (t.key1 ^ (t.key2 >> 1)) & 0x7FFFFFFF;
-        int hash = k % newSize;
+        int hash = (t.key & 0x7FFFFFFF) % newSize;
         t.next = newEntries[hash];
         newEntries[hash] = t;
       }
     }
+    entries = newEntries;
   }
 
   static class Entry {
-    int key1;
-    int key2;
+    int key;
     Object value;
     Entry next;
     
-    Entry(int key1, int key2, Object value, Entry next) {
-      this.key1 = key1;
-      this.key2 = key2;
+    Entry(int key, Object value, Entry next) {
+      this.key = key;
       this.value = value;
       this.next = next;
     }

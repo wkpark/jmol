@@ -709,6 +709,38 @@ class Sasurface1 {
     */
   }
 
+  float angleABC(float xA, float yA, float xB, float yB, float xC, float yC) {
+    double vxAB = xA - xB;
+    double vyAB = yA - yB;
+    double vxBC = xC - xB;
+    double vyBC = yC - yB;
+    double dot = vxAB * vxBC + vyAB * vyBC;
+    double lenAB = Math.sqrt(vxAB*vxAB + vyAB*vyAB);
+    double lenBC = Math.sqrt(vxBC*vxBC + vyBC*vyBC);
+    return (float)Math.acos(dot / (lenAB * lenBC));
+  }
+
+  float angleABCRight(float xA, float xB, float xC, float yC) {
+    double vxAB = xA - xB;
+    double vxBC = xC - xB;
+    double vyBC = yC;
+    double dot = vxAB * vxBC;
+    double lenAB = Math.abs(vxAB);
+    double lenBC = Math.sqrt(vxBC*vxBC + vyBC*vyBC);
+    return (float)Math.acos(dot / (lenAB * lenBC));
+  }
+
+  float angleABCLeft(float xA, float xB, float yB, float xC, float yC) {
+    double vxAB = xA - xB;
+    double vyAB = 0 - yB;
+    double vxBC = xC - xB;
+    double vyBC = yC - yB;
+    double dot = vxAB * vxBC + vyAB * vyBC;
+    double lenAB = Math.sqrt(vxAB*vxAB + vyAB*vyAB);
+    double lenBC = Math.sqrt(vxBC*vxBC + vyBC*vyBC);
+    return (float)Math.acos(dot / (lenAB * lenBC));
+  }
+
   ////////////////////////////////////////////////////////////////
 
   int[] calcFaceBitmap(int[] vertexMap) {

@@ -24,20 +24,26 @@
 */
 package org.openscience.jmol.app;
 
-import org.openscience.cdk.applications.plugin.CDKEditBus;
-import org.openscience.cdk.*;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.geometry.GeometryTools;
-import org.openscience.cdk.geometry.CrystalGeometryTools;
-import org.openscience.cdk.config.AtomTypeFactory;
-import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
-
-import org.jmol.api.JmolViewer;
-
 import java.io.IOException;
 import java.io.Reader;
 
-import javax.vecmath.*;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+
+import org.jmol.api.JmolViewer;
+import org.openscience.cdk.applications.plugin.CDKEditBus;
+import org.openscience.cdk.config.AtomTypeFactory;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.geometry.CrystalGeometryTools;
+import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.interfaces.Atom;
+import org.openscience.cdk.interfaces.AtomContainer;
+import org.openscience.cdk.interfaces.ChemFile;
+import org.openscience.cdk.interfaces.ChemModel;
+import org.openscience.cdk.interfaces.ChemSequence;
+import org.openscience.cdk.interfaces.Molecule;
+import org.openscience.cdk.interfaces.SetOfMolecules;
+import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 public class JmolEditBus implements CDKEditBus {
     
@@ -102,8 +108,8 @@ public class JmolEditBus implements CDKEditBus {
     }
     
     public void showChemModel(ChemModel model) {
-        ChemFile file = new ChemFile();
-        ChemSequence sequence = new ChemSequence();
+        ChemFile file = new org.openscience.cdk.ChemFile();
+        ChemSequence sequence = new org.openscience.cdk.ChemSequence();
         sequence.addChemModel(model);
         file.addChemSequence(sequence);
         showChemFile(file);
@@ -115,13 +121,13 @@ public class JmolEditBus implements CDKEditBus {
             return null;
         }
         
-        ChemModel model = new ChemModel();
-        SetOfMolecules moleculeSet = new SetOfMolecules();
-        Molecule molecule = new Molecule();
+        ChemModel model = new org.openscience.cdk.ChemModel();
+        SetOfMolecules moleculeSet = new org.openscience.cdk.SetOfMolecules();
+        Molecule molecule = new org.openscience.cdk.Molecule();
         // copy the atoms
         Point3f[] atomPoints = new Point3f[viewer.getAtomCount()];
         for (int i=0; i<viewer.getAtomCount(); i++) {
-            Atom atom = new Atom(viewer.getAtomName(i));
+            Atom atom = new org.openscience.cdk.Atom(viewer.getAtomName(i));
             atomPoints[i] = viewer.getAtomPoint3f(i);
             atom.setPoint3d(new Point3d(atomPoints[i]));
             molecule.addAtom(atom);
@@ -155,10 +161,12 @@ public class JmolEditBus implements CDKEditBus {
     }
     
     public ChemFile getChemFile() {
-        ChemFile file = new ChemFile();
-        ChemSequence sequence = new ChemSequence();
+        ChemFile file = new org.openscience.cdk.ChemFile();
+        ChemSequence sequence = new org.openscience.cdk.ChemSequence();
         sequence.addChemModel(getChemModel()); // better to get all models
         file.addChemSequence(sequence);
         return file;
     }
+
+
 }

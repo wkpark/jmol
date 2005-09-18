@@ -26,19 +26,28 @@
 package org.jmol.adapter.cdk;
 
 // these are standard and should be needed by all adapters
-import org.jmol.api.JmolAdapter;
-
 import java.io.BufferedReader;
+import java.io.IOException;
 
-// client-specific imports
-import org.openscience.cdk.*;
+import org.jmol.api.JmolAdapter;
+import org.openscience.cdk.interfaces.Atom;
+import org.openscience.cdk.interfaces.AtomContainer;
+import org.openscience.cdk.interfaces.Bond;
+import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.ChemFile;
+import org.openscience.cdk.interfaces.ChemModel;
+import org.openscience.cdk.interfaces.ChemObject;
+import org.openscience.cdk.interfaces.ChemSequence;
+import org.openscience.cdk.interfaces.Crystal;
+import org.openscience.cdk.interfaces.SetOfMolecules;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.CrystalGeometryTools;
-import org.openscience.cdk.tools.manipulator.*;
-import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
-import java.io.IOException;
+import org.openscience.cdk.io.ReaderFactory;
+import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
+import org.openscience.cdk.tools.manipulator.ChemModelManipulator;
+import org.openscience.cdk.tools.manipulator.SetOfMoleculesManipulator;
 
 /**
  * Provides an interface to CDK IO and CDK data classes. The
@@ -72,7 +81,7 @@ public class CdkJmolAdapter extends JmolAdapter {
       if (chemObjectReader == null) {
         return "unrecognized input format";
       }
-      chemFile = (ChemFile)chemObjectReader.read(new ChemFile());
+      chemFile = (ChemFile) chemObjectReader.read(new org.openscience.cdk.ChemFile());
     } catch (CDKException ex) {
       return "Error reading input:" + ex;
     }
@@ -146,7 +155,7 @@ public class CdkJmolAdapter extends JmolAdapter {
       ChemFile chemFile = (ChemFile)clientFile;
       ChemSequence chemSequence = chemFile.getChemSequence(0);
       ChemModel[] chemModels = chemSequence.getChemModels();
-      AtomContainer superMolecule = new AtomContainer();
+      AtomContainer superMolecule = new org.openscience.cdk.AtomContainer();
       for (int i=0; i<chemModels.length; i++) {
           ChemModel chemModel = chemModels[i];
           ChemModelManipulator.setAtomProperties(chemModel, ATOM_SET_INDEX, new Integer(i));

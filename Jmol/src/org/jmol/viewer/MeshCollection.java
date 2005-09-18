@@ -24,12 +24,10 @@
  */
 
 package org.jmol.viewer;
+
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
-import java.io.BufferedReader;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 abstract class MeshCollection extends SelectionIndependentShape {
 

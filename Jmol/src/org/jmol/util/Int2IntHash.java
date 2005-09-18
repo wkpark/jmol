@@ -25,8 +25,6 @@
 
 package org.jmol.util;
 
-import java.util.*;
-
 public class Int2IntHash {
   int entryCount;
   Entry[] entries;

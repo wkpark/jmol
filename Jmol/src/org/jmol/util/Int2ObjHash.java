@@ -25,8 +25,6 @@
 
 package org.jmol.util;
 
-import java.util.*;
-
 public class Int2ObjHash {
   int entryCount;
   Entry[] entries;

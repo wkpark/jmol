@@ -25,9 +25,9 @@
 
 package org.jmol.util;
 
-public class TestIntIntHash extends junit.framework.TestCase {
+public class TestIntInt2ObjHash extends junit.framework.TestCase {
 
-  public TestIntIntHash() {
+  public TestIntInt2ObjHash() {
   }
 
   public void setUp() {
@@ -37,7 +37,7 @@ public class TestIntIntHash extends junit.framework.TestCase {
   }
 
   public void testOne() {
-    IntIntHash h = new IntIntHash(10);
+    IntInt2ObjHash h = new IntInt2ObjHash(10);
     for (int i = 0; i < 10; ++i)
       h.put(i, i, new Integer(i));
     for (int i = 0; i < 10; ++i)
@@ -45,7 +45,7 @@ public class TestIntIntHash extends junit.framework.TestCase {
   }
 
   public void test256() {
-    IntIntHash h = new IntIntHash(256);
+    IntInt2ObjHash h = new IntInt2ObjHash(256);
     for (int i = 0; i < 256; ++i)
       h.put(i, i, new Integer(i));
     for (int i = 0; i < 256; ++i)
@@ -53,7 +53,7 @@ public class TestIntIntHash extends junit.framework.TestCase {
   }
 
   public void test257() {
-    IntIntHash h = new IntIntHash(256);
+    IntInt2ObjHash h = new IntInt2ObjHash(256);
     for (int i = 0; i < 257; ++i)
       h.put(i, i, new Integer(i));
     for (int i = 0; i < 257; ++i)
@@ -66,7 +66,7 @@ public class TestIntIntHash extends junit.framework.TestCase {
   }
 
   void tryOne(int count) {
-    IntIntHash h = new IntIntHash(4);
+    IntInt2ObjHash h = new IntInt2ObjHash(4);
     for (int i = 0; i < count; ++i)
       h.put(i, i, new Integer(i));
     //    dumpHash(h);
@@ -74,13 +74,13 @@ public class TestIntIntHash extends junit.framework.TestCase {
       assertEquals(((Integer)h.get(i, i)).intValue(), i);
   }
 
-  void dumpHash(IntIntHash h) {
+  void dumpHash(IntInt2ObjHash h) {
     System.out.println("dumping hash:" + h);
     System.out.println("h.entryCount=" + h.entryCount);
-    IntIntHash.Entry[] entries = h.entries;
+    IntInt2ObjHash.Entry[] entries = h.entries;
     for (int i = 0; i < entries.length; ++i) {
       System.out.print("" + i + ": ");
-      for (IntIntHash.Entry e = entries[i]; e != null; e = e.next) {
+      for (IntInt2ObjHash.Entry e = entries[i]; e != null; e = e.next) {
         System.out.print("" + e.key1 + "," + e.key2 + " ");
       }
       System.out.println("");
@@ -88,7 +88,7 @@ public class TestIntIntHash extends junit.framework.TestCase {
   }
 
   public void test1000() {
-    IntIntHash h = new IntIntHash();
+    IntInt2ObjHash h = new IntInt2ObjHash();
     for (int i = 0; i < 1000; ++i)
       h.put(i, -i, new Integer(i));
     for (int i = 0; i < 1000; ++i)

@@ -308,6 +308,9 @@ public class SmilesParser {
                 index = currentIndex;
               }
             }
+          } else {
+            chiralClass = SmilesAtom.DEFAULT_CHIRALITY;
+            chiralOrder = 1;
           }
         } else {
           chiralClass = SmilesAtom.DEFAULT_CHIRALITY;
@@ -469,128 +472,4 @@ public class SmilesParser {
     }
   }
 
-  /*
-  private static void outputMolecule(SmilesMolecule molecule) {
-    for (int i = 0; i < molecule.getAtomsCount(); i++) {
-      SmilesAtom atom = molecule.getAtom(i);
-      System.out.print("Atom (" + i + "): " + atom.getSymbol());
-      System.out.print("  :");
-      for (int j = 0; j < atom.getBondsCount(); j++) {
-        SmilesBond bond = atom.getBond(j);
-        System.out.print(
-            " " + bond.getAtom1().getNumber() +
-            "-" + bond.getAtom2().getNumber() +
-            "-" + bond.getBondType());
-      }
-      System.out.println();
-    }
-  }
-
-  private static void testMolecule(String smiles) {
-    try {
-        SmilesParser parser = new SmilesParser();
-        SmilesMolecule molecule = parser.parseSmiles(smiles);
-        System.out.println("SMILES: " + smiles);
-        outputMolecule(molecule);
-      } catch (InvalidSmilesException e) {
-        System.out.println("Erreur: " + e);
-      }
-  }
-
-  public static void main(String[] args) {
-    // Chapter 1 of SMILES tutorial
-    testMolecule("[H+]");
-    testMolecule("C");
-    testMolecule("O");
-    testMolecule("[OH3+]");
-    testMolecule("[2H]O[2H]");
-    testMolecule("[Au]");
-    testMolecule("CCO");
-    testMolecule("O=C=O");
-    testMolecule("C#N");
-    testMolecule("CC(=O)O");
-    testMolecule("C1CCCCC1");
-    testMolecule("C1CC2CCCCC2CC1");
-    //testMolecule("c1ccccc1");
-    //testMolecule("[Na+].[O-]c1ccccc1");
-    testMolecule("C/C=C/C");
-    testMolecule("N[C@@H](C)C(=O)O");
-    testMolecule("O[C@H]1CCCC[C@H]1O");
-    
-    // Chapter 2 of SMILES tutorial
-    testMolecule("[S]");
-    testMolecule("[Au]");
-    testMolecule("C");
-    testMolecule("P");
-    testMolecule("S");
-    testMolecule("Cl");
-    testMolecule("[OH-]");
-    testMolecule("[OH-1]");
-    testMolecule("[Fe+2]");
-    testMolecule("[Fe++]");
-    testMolecule("[235U]");
-    testMolecule("[*+2]");
-    
-    // Chapter 3 of SMILES tutorail
-    testMolecule("CC");
-    testMolecule("C-C");
-    testMolecule("[CH3]-[CH3]");
-    testMolecule("C=O");
-    testMolecule("C#N");
-    testMolecule("C=C");
-    //testMolecule("cc");
-    testMolecule("C=CC=C");
-    //testMolecule("cccc");
-    
-    // Chapter 4 of SMILES tutorial
-    testMolecule("CC(C)C(=O)O");
-    testMolecule("FC(F)F");
-    testMolecule("C(F)(F)F");
-    testMolecule("O=Cl(=O)(=O)[O-]");
-    testMolecule("Cl(=O)(=O)(=O)[O-]");
-    testMolecule("CCCC(C(=O)O)CCC");
-    
-    // Chapter 5 of SMILES tutorial
-    testMolecule("C1CCCCC1");
-    testMolecule("C1=CCCCC1");
-    testMolecule("C=1CCCCC1");
-    testMolecule("C1CCCCC=1");
-    testMolecule("C=1CCCCC=1");
-    //testMolecule("c12c(cccc1)cccc2");
-    //testMolecule("c1cc2ccccc2cc1");
-    //testMolecule("c1ccccc1c2ccccc2");
-    //testMolecule("c1ccccc1c1ccccc1");
-    
-    // Chapter 6 of SMILES tutorial
-    testMolecule("[Na+].[Cl-]");
-    //testMolecule("[Na+].[O-]c1ccccc1");
-    //testMolecule("c1cc([O-].[Na+])ccc1");
-    testMolecule("C1.O2.C12");
-    testMolecule("CCO");
-    
-    // Chapter 7 of SMILES tutorial
-    testMolecule("C");
-    testMolecule("[C]");
-    testMolecule("[12C]");
-    testMolecule("[13C]");
-    testMolecule("[13CH4]");
-    testMolecule("F/C=C/F");
-    testMolecule("F\\C=C\\F");
-    testMolecule("F/C=C\\F");
-    testMolecule("F\\C=C/F");
-    testMolecule("F/C=C/C=C/C");
-    testMolecule("F/C=C/C=CC");
-    testMolecule("N[C@@H](C)C(=O)O");
-    testMolecule("N[C@H](C)C(=O)O");
-    testMolecule("O[C@H]1CCCC[C@H]1O");
-    testMolecule("C1C[C@H]2CCCC[C@H]2CC1");
-    testMolecule("OC(Cl)=[C@]=C(C)F");
-    testMolecule("OC(Cl)=[C@AL1]=C(C)F");
-    testMolecule("F[Po@SP1](Cl)(Br)I");
-    testMolecule("O=C[As@](F)(Cl)(Br)S");
-    testMolecule("O=C[Co@](F)(Cl)(Br)(I)S");
-    
-    // Chapter 8 of SMILES tutorial
-  }
-  */
 }

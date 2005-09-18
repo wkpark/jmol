@@ -105,6 +105,8 @@ public class SmilesAtom {
         SmilesBond bond = bonds[i];
         switch (bond.getBondType()) {
         case SmilesBond.TYPE_SINGLE:
+        case SmilesBond.TYPE_DIRECTIONAL_1:
+        case SmilesBond.TYPE_DIRECTIONAL_2:
           count -= 1;
           break;
         case SmilesBond.TYPE_DOUBLE:

@@ -265,6 +265,8 @@ class SasurfaceRenderer extends ShapeRenderer {
   
   void renderSeam(Point3i[] torusScreens, short[] torusNormixes,
                   Point3i[] geodesicScreens, short colix, short[] seam) {
+    if (seam == null)
+      return;
     boolean breakSeam = true;
     short prevTorus = -1;
     short prevGeodesic = -1;

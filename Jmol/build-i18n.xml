@@ -4,7 +4,6 @@
       DocumentId  $Id$
       Summary     Localization support for Jmol and Jmol applet
                   using the gettext suite
-      Todo        should check for existance of gettext
   -->
   
   <!-- our properties section -->
@@ -45,7 +44,8 @@
           depends="create-application-pot,create-applet-pot" />
   
   <!-- create Jmol.pot -->
-  <target name="create-application-pot" id="create-application-pot">
+  <target name="create-application-pot" id="create-application-pot"
+          depends="check-executables" if="exist_xgettext">
     <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
     <!-- generate new Jmol.pot -->
     <mkdir dir="${Jmol.po.dir}/tmp"/>
@@ -95,7 +95,8 @@
   </target>
   
   <!-- create JmolApplet.pot -->
-  <target name="create-applet-pot" id="create-applet-pot">
+  <target name="create-applet-pot" id="create-applet-pot"
+          depends="check-executables" if="exist_xgettext">
     <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
     <!-- generate new JmolApplet.pot -->
     <mkdir dir="${JmolApplet.po.dir}/tmp"/>
@@ -164,7 +165,8 @@
     </for>
   </target>  
   
-  <target name="update-application-po-lang" id="update-application-po-lang">
+  <target name="update-application-po-lang" id="update-application-po-lang"
+          depends="check-executables" if="exist_msgmerge">
     <echo message="Updating ${Jmol_lang_value}.po gettext file for Jmol ..."/>
     <exec executable="msgmerge" dir="${Jmol.po.dir}">
       <arg line="-U ${Jmol_lang_value}.po Jmol.pot"/>
@@ -184,7 +186,8 @@
     </for>
   </target>  
   
-  <target name="update-applet-po-lang" id="update-applet-po-lang">
+  <target name="update-applet-po-lang" id="update-applet-po-lang"
+          depends="check-executables" if="exist_msgmerge">
     <echo message="Updating ${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
     <exec executable="msgmerge" dir="${JmolApplet.po.dir}">
       <arg line="-U ${JmolApplet_lang_value}.po JmolApplet.pot"/>
@@ -210,7 +213,8 @@
   </target>  
   
   <target name="update-application-catalog-lang"
-          id="update-application-catalog-lang">
+          id="update-application-catalog-lang"
+          depends="check-executables" if="exist_msgfmt">
     <echo message="Updating messages_${Jmol_lang_value}.class file for Jmol ..."/>
     <exec executable="msgfmt" dir="${Jmol.po.dir}">
       <arg line="--statistics --java2 -l ${Jmol_lang_value} -d ../../../.. -r org.jmol.translation.Jmol.Messages ${Jmol_lang_value}.po"/>
@@ -231,7 +235,8 @@
     </for>
   </target>  
   
-  <target name="update-applet-catalog-lang" id="update-applet-catalog-lang">
+  <target name="update-applet-catalog-lang" id="update-applet-catalog-lang"
+          depends="check-executables" if="exist_msgfmt">
     <echo message="Updating messages_${JmolApplet_lang_value}.class file for JmolApplet ..."/>
     <exec executable="msgfmt" dir="${JmolApplet.po.dir}">
       <arg line="--statistics --java -l ${JmolApplet_lang_value} -d . ${JmolApplet_lang_value}.po"/>
@@ -278,6 +283,61 @@
         <include name="Messages*.class" />
       </fileset>
     </delete>
+  </target>
+
+  <!-- Check for the presence of the executables -->
+  <target name="check-executables">
+
+    <!-- checking for xgettext -->
+  	<exec executable="xgettext" dir="${src.dir}"
+          failonerror="false" failifexecutionfails="false"
+          outputproperty="ouput_xgettext"
+          resultproperty="result_xgettext">
+      <arg value="--help"/>
+    </exec>
+    <if>
+      <equals arg1="0" arg2="${result_xgettext}"/>
+      <then>
+        <property name="exist_xgettext" value="true"/>
+      </then>
+      <else>
+        <echo message="xgettext is missing" level="error"/>
+      </else>
+    </if>
+
+    <!-- checking for msgmerge -->
+  	<exec executable="msgmerge" dir="${src.dir}"
+          failonerror="false" failifexecutionfails="false"
+          outputproperty="ouput_msgmerge"
+          resultproperty="result_msgmerge">
+      <arg value="--help"/>
+    </exec>
+    <if>
+      <equals arg1="0" arg2="${result_msgmerge}"/>
+      <then>
+        <property name="exist_msgmerge" value="true"/>
+      </then>
+      <else>
+        <echo message="msgmerge is missing" level="error"/>
+      </else>
+    </if>
+
+    <!-- checking for msgfmt -->
+  	<exec executable="msgfmt" dir="${src.dir}"
+          failonerror="false" failifexecutionfails="false"
+          outputproperty="ouput_msgfmt"
+          resultproperty="result_msgfmt">
+      <arg value="--help"/>
+    </exec>
+    <if>
+      <equals arg1="0" arg2="${result_msgfmt}"/>
+      <then>
+        <property name="exist_msgfmt" value="true"/>
+      </then>
+      <else>
+        <echo message="msgfmt is missing" level="error"/>
+      </else>
+    </if>
   </target>
 
   <target name="shrink-pot-file">

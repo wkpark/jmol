@@ -218,32 +218,26 @@ class SasurfaceRenderer extends ShapeRenderer {
     renderEdgeBalls(atomA, edgeVertexesAT);
     renderEdgeBalls(atomB, edgeVertexesBT);
 
-    int torusSegmentCount = torus.torusSegmentCount;
-    Point3i[] screensA = sasCache.lookupAtomScreens(atomA,
-                                                    convexVertexMaps[ixA]);
-    Point3i[] screensB = sasCache.lookupAtomScreens(atomB,
-                                                    convexVertexMaps[ixB]);
     Point3i[] screensTorus = sasCache.lookupTorusScreens(torus);
-    for (int i = torusSegmentCount; --i >= 0; ) {
-      Sasurface1.Torus.TorusSegment torusSegment = torus.torusSegments[i];
-      short[] geodesicStitches = torusSegment.geodesicStitchesA;
-      if (geodesicStitches != null) {
-        for (int j = 0; j < geodesicStitches.length; j += 2) {
-          g3d.drawLine(Graphics3D.RED,
-                       screensTorus[geodesicStitches[j]],
-                       screensA[geodesicStitches[j + 1]]);
-        }
-      }
-      geodesicStitches = torusSegment.geodesicStitchesB;
-      if (geodesicStitches != null) {
-        for (int j = 0; j < geodesicStitches.length; j += 2) {
-          g3d.drawLine(Graphics3D.RED,
-                       screensTorus[geodesicStitches[j]],
-                       screensB[geodesicStitches[j + 1]]);
-        }
-      }
+
+    crossStitch(screensTorus,
+                sasCache.lookupAtomScreens(atomA, convexVertexMaps[ixA]),
+                torus.geodesicStitchesA);
+    crossStitch(screensTorus,
+                sasCache.lookupAtomScreens(atomB, convexVertexMaps[ixB]),
+                torus.geodesicStitchesB);
+  }
+
+  void crossStitch(Point3i[] screensTorus, Point3i[] screensGeodesic,
+                   short[] stitches) {
+    if (stitches != null) {
+      for (int i = stitches.length; (i -= 2) >= 0; )
+        g3d.drawLine(Graphics3D.RED,
+                     screensTorus[stitches[i]],
+                     screensGeodesic[stitches[i + 1]]);
     }
   }
+
 
   void renderEdgeBalls(Atom atom, int[] edgeVertexes) {
     sasCache.flushAtomScreens(atom);

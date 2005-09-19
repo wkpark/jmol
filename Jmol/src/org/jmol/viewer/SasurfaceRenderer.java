@@ -198,6 +198,8 @@ class SasurfaceRenderer extends ShapeRenderer {
     renderTorus(torus, torusColixes);
 
     renderStitchedTorusEdges(torus, convexColixes, convexVertexMaps);
+
+    renderSeams(torus, atoms, convexColixes, convexVertexMaps);
   }
 
   int[] edgeVertexesAT;
@@ -238,6 +240,62 @@ class SasurfaceRenderer extends ShapeRenderer {
     }
   }
 
+  void renderSeams(Sasurface1.Torus torus, Atom[] atoms,
+                   short[] convexColixes,
+                   int[][] convexVertexMaps) {
+    Point3i[] torusScreens = sasCache.lookupTorusScreens(torus);
+    short[] torusNormixes = torus.normixes;
+
+    int ixA = torus.ixA;
+    Atom atomA = atoms[ixA];
+    short colixA =
+      Graphics3D.inheritColix(convexColixes[ixA], atomA.colixAtom);
+    renderSeam(torusScreens, torusNormixes,
+               sasCache.lookupAtomScreens(atomA, convexVertexMaps[ixA]),
+               colixA, torus.seamA);
+
+    int ixB = torus.ixB;
+    Atom atomB = atoms[ixB];
+    short colixB =
+      Graphics3D.inheritColix(convexColixes[ixB], atomB.colixAtom);
+    renderSeam(torusScreens, torusNormixes,
+               sasCache.lookupAtomScreens(atomB, convexVertexMaps[ixB]),
+               colixB, torus.seamB);
+  }
+  
+  void renderSeam(Point3i[] torusScreens, short[] torusNormixes,
+                  Point3i[] geodesicScreens, short colix, short[] seam) {
+    boolean breakSeam = true;
+    short prevTorus = -1;
+    short prevGeodesic = -1;
+    for (int i = 0; i < seam.length; ++i) {
+      if (breakSeam) {
+        prevTorus = seam[i++];
+        prevGeodesic = (short)~seam[i];
+        breakSeam = false;
+        continue;
+      }
+      short v = seam[i];
+      if (v > 0) {
+        g3d.fillTriangle(colix,
+                         torusScreens[prevTorus],
+                         torusNormixes[prevTorus],
+                         torusScreens[v], torusNormixes[v],
+                         geodesicScreens[prevGeodesic], prevGeodesic);
+        prevTorus = v;
+      } else if (v == Short.MIN_VALUE) {
+        breakSeam = true;
+      } else {
+        v = (short)~v;
+        g3d.fillTriangle(colix,
+                         torusScreens[prevTorus],
+                         torusNormixes[prevTorus],
+                         geodesicScreens[v], v,
+                         geodesicScreens[prevGeodesic], prevGeodesic);
+        prevGeodesic = v;
+      }
+    }
+  }
 
   void renderEdgeBalls(Atom atom, int[] edgeVertexes) {
     sasCache.flushAtomScreens(atom);

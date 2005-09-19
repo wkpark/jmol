@@ -114,6 +114,7 @@ class Sasurface1 {
 
   IntInt2ObjHash htToruses;
 
+  int[] edgeVertexesT;
   int[] edgeVertexesAT;
   int[] edgeVertexesBT;
 
@@ -124,6 +125,7 @@ class Sasurface1 {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
   final Point3f zeroPointT = new Point3f();
+  final Point3f centerPointT = new Point3f();
   final Point3f centerPointAT = new Point3f();
   final Point3f centerPointBT = new Point3f();
 
@@ -164,6 +166,7 @@ class Sasurface1 {
     geodesicNeighborVertexes =
       g3d.getGeodesicNeighborVertexes(geodesicRenderingLevel);
 
+    edgeVertexesT = Bmp.allocateBitmap(geodesicVertexCount);
     edgeVertexesAT = Bmp.allocateBitmap(geodesicVertexCount);
     edgeVertexesBT = Bmp.allocateBitmap(geodesicVertexCount);
   }
@@ -218,6 +221,10 @@ class Sasurface1 {
 
       torus.clipVertexMaps();
 
+    }
+
+    for (int i = torusCount; --i >= 0; ) {
+      Torus torus = toruses[i];
       torus.stitchWithGeodesics();
       // torus.checkTorusSegments();
       torus.connectWithGeodesics();
@@ -335,7 +342,6 @@ class Sasurface1 {
       setProperty("translucencySaddle", value, bs);
     }
     if ("colorConvex" == propertyName) {
-      System.out.println("Surface.setProperty('colorConvex')");
       short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
@@ -521,35 +527,6 @@ class Sasurface1 {
   final Point3f projectedPointT = new Point3f();
   final Vector3f projectedVectorT = new Vector3f();
 
-  void clipGeodesic(boolean isEdgeA, Point3f geodesicCenter, float radius,
-                    Point3f planePoint, Vector3f axisUnitVector,
-                    int[] vertexMap) {
-    centerVectorT.sub(geodesicCenter, planePoint);
-    float dotCenter = centerVectorT.dot(axisUnitVector);
-    if (isEdgeA)
-      dotCenter = -dotCenter;
-    if (dotCenter >= radius) // all points are visible
-      return;
-    if (dotCenter < -radius) { // all points are clipped
-      Bmp.clearBitmap(vertexMap);
-      return;
-    }
-
-    calcClippingPlaneCenter(geodesicCenter, axisUnitVector,
-                            planePoint, planeCenterT);
-
-    for (int i = -1; (i = Bmp.nextSetBit(vertexMap, i + 1)) >= 0; ) {
-      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
-                            geodesicCenter);
-      vertexVectorT.sub(vertexPointT, planePoint);
-      float dot = vertexVectorT.dot(axisUnitVector);
-      if (isEdgeA)
-        dot = -dot;
-      if (dot < 0)
-        Bmp.clearBit(vertexMap, i);
-    }
-  }
-
   int[] bmpNotClipped;
 
   void findClippedGeodesicEdge(boolean isEdgeA,
@@ -591,11 +568,13 @@ class Sasurface1 {
         }
       }
     }
+    /*
     System.out.println("findClippedGeodesicEdge is returning edgeVertexMap:");
     for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
       System.out.print("" + v + " ");
     }
     System.out.println("");
+    */
   }
 
   /*
@@ -673,9 +652,11 @@ class Sasurface1 {
   final Vector3f vector90T = new Vector3f();
   final Point3f planeCenterT = new Point3f();
 
-  void projectGeodesicPoints(Point3f geodesicCenter, float radius,
-                             Point3f planeCenter, Vector3f axisUnitVector,
-                             Point3f planeZeroPoint, int[] edgeVertexMap) {
+  void projectAndSortGeodesicPoints(Point3f geodesicCenter, float radius,
+                                    Point3f planeCenter,
+                                    Vector3f axisUnitVector,
+                                    Point3f planeZeroPoint,
+                                    int[] edgeVertexMap) {
     Vector3f vector0T = this.vector0T;
     Vector3f vector90T = this.vector90T;
     Point3f vertexPointT = this.vertexPointT;
@@ -706,6 +687,7 @@ class Sasurface1 {
       projectedDistancesT[projectedCountT] = distance * radiansPerAngstrom;
       ++projectedCountT;
     }
+    sortProjectedVertexes();
   }
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
@@ -725,10 +707,11 @@ class Sasurface1 {
     return angle;
   }
 
-  void sortProjectedVertexes(int projectedCount,
-                             short[] projectedVertexes,
-                             float[] projectedAngles,
-                             float[] projectedDistances) {
+  void sortProjectedVertexes() {
+    int projectedCount = projectedCountT;
+    short[] projectedVertexes = projectedVertexesT;
+    float[] projectedAngles = projectedAnglesT;
+    float[] projectedDistances = projectedDistancesT;
     for (int i = projectedCount; --i > 0; )
       for (int j = i; --j >= 0; )
         if (projectedAngles[j] > projectedAngles[i]) {
@@ -1422,17 +1405,40 @@ class Sasurface1 {
     }
 
     void clipVertexMaps() {
-      clipConvexMap(true);
-      clipConvexMap(false);
+      clipVertexMap(true);
+      clipVertexMap(false);
     }
 
-    void clipConvexMap(boolean isEdgeA) {
+    void clipVertexMap(boolean isEdgeA) {
       int ix = isEdgeA ? ixA : ixB;
       Atom atom = frame.atoms[ix];
       calcZeroPoint(isEdgeA, zeroPointT);
       clipGeodesic(isEdgeA, atom.point3f, atom.getVanderwaalsRadiusFloat(),
-                   zeroPointT, axisUnitVector,
-                   convexVertexMaps[ix]);
+                   zeroPointT, convexVertexMaps[ix]);
+    }
+
+    void clipGeodesic(boolean isEdgeA, Point3f geodesicCenter, float radius,
+                      Point3f planePoint, int[] geodesicVertexMap) {
+      centerVectorT.sub(geodesicCenter, planePoint);
+      float dotCenter = centerVectorT.dot(axisUnitVector);
+      if (isEdgeA)
+        dotCenter = -dotCenter;
+      if (dotCenter >= radius) // all points are visible
+        return;
+      if (dotCenter < -radius) { // all points are clipped
+        Bmp.clearBitmap(geodesicVertexMap);
+        return;
+      }
+      for (int i = -1; (i = Bmp.nextSetBit(geodesicVertexMap, i + 1)) >= 0; ) {
+        vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
+                              geodesicCenter);
+        vertexVectorT.sub(vertexPointT, planePoint);
+        float dot = vertexVectorT.dot(axisUnitVector);
+        if (isEdgeA)
+          dot = -dot;
+        if (dot < 0)
+          Bmp.clearBit(geodesicVertexMap, i);
+      }
     }
 
     void calcZeroPoint(boolean edgeA, Point3f zeroPoint) {
@@ -1447,6 +1453,13 @@ class Sasurface1 {
       }
       zeroPoint.add(center, radialVector);
       zeroPoint.add(t);
+    }
+
+    void calcZeroAndCenterPoints(boolean edgeA, Point3f atomCenter,
+                                 Point3f zeroPoint, Point3f centerPoint) {
+      calcZeroPoint(edgeA, zeroPoint);
+      calcClippingPlaneCenter(atomCenter, axisUnitVector, zeroPoint,
+                              centerPoint);
     }
 
     void calcClippingPlaneCenterPoints(Point3f centerPointA,
@@ -1464,23 +1477,24 @@ class Sasurface1 {
 
     void stitchWithGeodesics() {
       System.out.println("torus.stitchWithGeodesics()");
-      calcClippingPlaneCenterPoints(centerPointAT, centerPointBT);
-      Atom atomA = frame.atoms[ixA];
-      Atom atomB = frame.atoms[ixB];
+      stitchWithGeodesic(true);
+      stitchWithGeodesic(false);
+    }
 
-      findClippedGeodesicEdge(true, atomA.point3f,
-                              atomA.getVanderwaalsRadiusFloat(),
-                              centerPointAT, axisUnitVector,
-                              edgeVertexesAT);
-      Bmp.and(edgeVertexesAT, convexVertexMaps[ixA]);
-      if (Bmp.countBits(edgeVertexesAT) > 0) {
-        calcZeroPoint(true, zeroPointT);
-        projectGeodesicPoints(atomA.point3f, atomA.getVanderwaalsRadiusFloat(),
-                              centerPointAT, axisUnitVector,
-                              zeroPointT,
-                              edgeVertexesAT);
-        sortProjectedVertexes(projectedCountT, projectedVertexesT,
-                              projectedAnglesT, projectedDistancesT);
+    void stitchWithGeodesic(boolean isEdgeA) {
+      int ix = isEdgeA ? ixA : ixB;
+      Atom atom = frame.atoms[ix];
+      float atomRadius = atom.getVanderwaalsRadiusFloat();
+      Point3f atomCenter = atom.point3f;
+      calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
+      findClippedGeodesicEdge(isEdgeA, atomCenter, atomRadius,
+                              centerPointT, axisUnitVector,
+                              edgeVertexesT);
+      Bmp.and(edgeVertexesT, convexVertexMaps[ix]);
+      if (Bmp.countBits(edgeVertexesT) > 0) {
+        projectAndSortGeodesicPoints(atomCenter, atomRadius,
+                                     centerPointT, axisUnitVector, zeroPointT,
+                                     edgeVertexesT);
         for (int i = 0; i < projectedCountT; ++i) {
           System.out.println("" + i + " : " +
                              projectedVertexesT[i] + " : " +
@@ -1491,39 +1505,7 @@ class Sasurface1 {
                                                   projectedVertexesT,
                                                   projectedAnglesT,
                                                   projectedDistancesT,
-                                                  true);
-      }
-
-      findClippedGeodesicEdge(false, atomB.point3f,
-                              atomB.getVanderwaalsRadiusFloat(),
-                              centerPointBT, axisUnitVector,
-                              edgeVertexesBT);
-      Bmp.and(edgeVertexesBT, convexVertexMaps[ixB]);
-      System.out.println("B after the AND edgeVertexMap:");
-      for (int v = -1; (v = Bmp.nextSetBit(edgeVertexesBT, v + 1)) >= 0; ) {
-        System.out.print("" + v + " ");
-      }
-      System.out.println("");
-      if (Bmp.countBits(edgeVertexesBT) > 0) {
-        calcZeroPoint(false, zeroPointT);
-        projectGeodesicPoints(atomB.point3f, atomB.getVanderwaalsRadiusFloat(),
-                              centerPointBT, axisUnitVector,
-                              zeroPointT,
-                              edgeVertexesBT);
-        sortProjectedVertexes(projectedCountT, projectedVertexesT,
-                              projectedAnglesT, projectedDistancesT);
-        System.out.println("the Sorted B's");
-        for (int i = 0; i < projectedCountT; ++i) {
-          System.out.println("" + i + " : " +
-                             projectedVertexesT[i] + " : " +
-                             projectedAnglesT[i] + " @ " +
-                             projectedDistancesT[i]);
-        }
-        stitchSegmentsWithSortedProjectedVertexes(projectedCountT,
-                                                  projectedVertexesT,
-                                                  projectedAnglesT,
-                                                  projectedDistancesT,
-                                                  false);
+                                                  isEdgeA);
       }
     }
 

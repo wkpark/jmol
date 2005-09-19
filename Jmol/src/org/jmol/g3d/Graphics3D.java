@@ -1,3 +1,4 @@
+
 /* $RCSfile$
  * $Author$
  * $Date$
@@ -1902,29 +1903,12 @@ final public class Graphics3D {
   public final static short inheritColix(short myColix,
                                          short parentColix,
                                          short grandParentColix) {
-    switch (myColix) {
-    case 0:
-      myColix = parentColix;
-      break;
-    case TRANSLUCENT:
-      myColix = (short)(parentColix | TRANSLUCENT_MASK);
-      break;
-    case OPAQUE:
-      myColix = (short)(parentColix & OPAQUE_MASK);
-      break;
-    default:
+    if (myColix >= SPECIAL_COLIX_MAX)
       return myColix;
-    }
-    switch (myColix) {
-    case 0:
-      return grandParentColix;
-    case TRANSLUCENT:
-      return (short)(grandParentColix | TRANSLUCENT_MASK);
-    case OPAQUE:
-      return (short)(grandParentColix & OPAQUE_MASK);
-    default:
-      return myColix;
-    }
+    parentColix = inheritColix(parentColix, grandParentColix);
+    if (myColix == 0)
+      return parentColix;
+    return inheritColix(myColix, parentColix);
   }
 
   public Color getColor(short colix) {

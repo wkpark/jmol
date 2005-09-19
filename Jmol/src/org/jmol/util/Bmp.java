@@ -291,5 +291,13 @@ public class Bmp {
       ++bitIndexWithinWord;
     return (bitmapIndex << 5) + bitIndexWithinWord;
   }
+
+  public final static void and(int[] target, int[] other) {
+    if (target == null || other == null)
+      return;
+    int len = (target.length <= other.length) ? target.length : other.length;
+    for (int i = len; --i >= 0; )
+      target[i] &= other[i];
+  }
 }
 

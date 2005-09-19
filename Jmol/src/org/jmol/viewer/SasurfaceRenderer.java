@@ -49,8 +49,10 @@ class SasurfaceRenderer extends ShapeRenderer {
   Vector3f[] transformedProbeVertexes;
   Point3i[] probeScreens;
 
+  int maxVertexCount;
+
   void initRenderer() {
-    int maxVertexCount =
+    maxVertexCount =
       g3d.getGeodesicVertexCount(Sasurface.MAX_GEODESIC_RENDERING_LEVEL);
     sasCache =
       new SasCache(viewer, 6, maxVertexCount);
@@ -194,6 +196,57 @@ class SasurfaceRenderer extends ShapeRenderer {
     //getColix(torus.colixB, colixes, atoms, torus.ixB));
     prepareTorusColixes(torus, convexColixes, atoms);
     renderTorus(torus, torusColixes);
+
+    renderStitchedTorusEdges(torus, convexColixes, convexVertexMaps);
+  }
+
+  int[] edgeVertexesAT;
+  int[] edgeVertexesBT;
+
+  void renderStitchedTorusEdges(Sasurface1.Torus torus,
+                                short[] convexColixes,
+                                int[][] convexVertexMaps) {
+    if (edgeVertexesAT == null) {
+      edgeVertexesAT = Bmp.allocateBitmap(maxVertexCount);
+      edgeVertexesBT = Bmp.allocateBitmap(maxVertexCount);
+    }
+    torus.findClippedEdgeVertexes(edgeVertexesAT, edgeVertexesBT);
+    int ixA = torus.ixA;
+    int ixB = torus.ixB;
+    Atom atomA = frame.atoms[ixA];
+    Atom atomB = frame.atoms[ixB];
+    renderEdgeBalls(atomA, edgeVertexesAT);
+    renderEdgeBalls(atomB, edgeVertexesBT);
+
+    int torusSegmentCount = torus.torusSegmentCount;
+    Point3i[] screensA = sasCache.lookupAtomScreens(atomA,
+                                                    convexVertexMaps[ixA]);
+    Point3i[] screensTorus = sasCache.lookupTorusScreens(torus);
+    for (int i = torusSegmentCount; --i >= 0; ) {
+      Sasurface1.Torus.TorusSegment torusSegment = torus.torusSegments[i];
+      short[] geodesicStitches = torusSegment.geodesicStitches;
+      if (geodesicStitches == null)
+        continue;
+      for (int j = 0; j < geodesicStitches.length; j += 2) {
+        g3d.drawLine(Graphics3D.RED,
+                     screensTorus[geodesicStitches[j]],
+                     screensA[geodesicStitches[j + 1]]);
+      }
+    }
+  }
+
+  void renderEdgeBalls(Atom atom, int[] edgeVertexes) {
+    sasCache.flushAtomScreens(atom);
+    Point3i[] screens = sasCache.lookupAtomScreens(atom, edgeVertexes);
+    g3d.setFontOfSize(11);
+    for (int v = -1; (v = Bmp.nextSetBit(edgeVertexes, v + 1)) >= 0; ) {
+      g3d.fillSphereCentered(Graphics3D.BLUE, 10, screens[v]);
+      g3d.drawString("" + v, Graphics3D.BLUE,
+                     screens[v].x + 10,
+                     screens[v].y + 10,
+                     screens[v].z - 10);
+    }
+    sasCache.flushAtomScreens(atom);
   }
 
   short getColix(short colix, short[] colixes, Atom[] atoms, int index) {
@@ -257,7 +310,6 @@ class SasurfaceRenderer extends ShapeRenderer {
       ixP = ixQ;
     }
   }
-
 
   final Point3i screenCavityBottom = new Point3i();
 

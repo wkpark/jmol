@@ -221,16 +221,26 @@ class SasurfaceRenderer extends ShapeRenderer {
     int torusSegmentCount = torus.torusSegmentCount;
     Point3i[] screensA = sasCache.lookupAtomScreens(atomA,
                                                     convexVertexMaps[ixA]);
+    Point3i[] screensB = sasCache.lookupAtomScreens(atomB,
+                                                    convexVertexMaps[ixB]);
     Point3i[] screensTorus = sasCache.lookupTorusScreens(torus);
     for (int i = torusSegmentCount; --i >= 0; ) {
       Sasurface1.Torus.TorusSegment torusSegment = torus.torusSegments[i];
-      short[] geodesicStitches = torusSegment.geodesicStitches;
-      if (geodesicStitches == null)
-        continue;
-      for (int j = 0; j < geodesicStitches.length; j += 2) {
-        g3d.drawLine(Graphics3D.RED,
-                     screensTorus[geodesicStitches[j]],
-                     screensA[geodesicStitches[j + 1]]);
+      short[] geodesicStitches = torusSegment.geodesicStitchesA;
+      if (geodesicStitches != null) {
+        for (int j = 0; j < geodesicStitches.length; j += 2) {
+          g3d.drawLine(Graphics3D.RED,
+                       screensTorus[geodesicStitches[j]],
+                       screensA[geodesicStitches[j + 1]]);
+        }
+      }
+      geodesicStitches = torusSegment.geodesicStitchesB;
+      if (geodesicStitches != null) {
+        for (int j = 0; j < geodesicStitches.length; j += 2) {
+          g3d.drawLine(Graphics3D.RED,
+                       screensTorus[geodesicStitches[j]],
+                       screensB[geodesicStitches[j + 1]]);
+        }
       }
     }
   }

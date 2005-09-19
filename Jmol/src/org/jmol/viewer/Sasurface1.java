@@ -1391,7 +1391,7 @@ class Sasurface1 {
         fillSegmentVertexAngles(isEdgeA);
         stitchesTCount = 0;
         stitchEm(stepCount, segmentVertexesT, segmentVertexAnglesT,
-                 maxProjectedIndex - minProjectedIndex, minProjectedIndex,
+                 minProjectedIndex, maxProjectedIndex,
                  projectedVertexesT,
                  projectedAnglesT, projectedDistancesT);
         short[] geodesicStitches = new short[stitchesTCount];
@@ -1404,17 +1404,44 @@ class Sasurface1 {
       }
 
       void stitchEm(int torusCount, short[] torusVertexes, float[] torusAngles,
-                    int geodesicCount, int geodesicOffset,
+                    int geodesicMin, int geodesicMax,
                     short[] geodesicVertexes, float[] geodesicAngles,
                     float[] geodesicDistances) {
-        int c = torusCount < geodesicCount ? torusCount : geodesicCount;
-        for (int i = 0; i < c; ++i) {
-          if (stitchesTCount + 1 >= stitchesT.length)
-            stitchesT = Util.doubleLength(stitchesT);
-          stitchesT[stitchesTCount] = torusVertexes[i];
-          stitchesT[stitchesTCount + 1] = geodesicVertexes[geodesicOffset + i];
-          stitchesTCount += 2;
+        if (geodesicMin == geodesicMax)
+          return;
+        int tLast = torusCount - 1;
+        int gLast = geodesicMax - 1;
+        oneStitch(torusVertexes[0], geodesicVertexes[geodesicMin]);
+        int t = 0;
+        int g = geodesicMin;
+        while (t < tLast && g < gLast) {
+          float angleT = angleABC(torusAngles[t], 0,
+                                  torusAngles[t + 1], 0,
+                                  geodesicAngles[g], geodesicDistances[g]);
+          float angleG = angleABC(torusAngles[t], 0,
+                                  geodesicAngles[g+1], geodesicDistances[g+1],
+                                  geodesicAngles[g], geodesicDistances[g]);
+          if (angleT > angleG)
+            ++t;
+          else
+            ++g;
+          oneStitch(torusVertexes[t], geodesicVertexes[g]);
         }
+        while (t < tLast || g < gLast) {
+          if (t < tLast)
+            ++t;
+          else
+            ++g;
+          oneStitch(torusVertexes[t], geodesicVertexes[g]);
+        }
+      }
+
+      void oneStitch(short torusVertex, short geodesicVertex) {
+        if (stitchesTCount + 1 >= stitchesT.length)
+          stitchesT = Util.doubleLength(stitchesT);
+        stitchesT[stitchesTCount] = torusVertex;
+        stitchesT[stitchesTCount + 1] = geodesicVertex;
+        stitchesTCount += 2;
       }
 
       void fillSegmentVertexAngles(boolean isEdgeA) {

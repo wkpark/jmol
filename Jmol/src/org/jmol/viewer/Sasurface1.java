@@ -644,6 +644,11 @@ class Sasurface1 {
     matrixT.transform(vector0, vector90);
   }
 
+  int stitchesTCount;
+  short[] stitchesT = new short[64];
+  float[] segmentVertexAnglesT = new float[INNER_TORUS_STEP_COUNT + 1];
+  short[] segmentVertexesT = new short[INNER_TORUS_STEP_COUNT + 1];
+
   int projectedCountT;
   short[] projectedVertexesT = new short[64];
   float[] projectedAnglesT = new float[64];
@@ -1260,7 +1265,7 @@ class Sasurface1 {
     class TorusSegment {
       float startAngle;
       float stepAngle;
-      int stepCount;
+      int stepCount; // # of vertexes, which is 1 more than the # of strips
       short[] geodesicConnections;
       short[] geodesicStitchesA;
       short[] geodesicStitchesB;
@@ -1369,34 +1374,61 @@ class Sasurface1 {
                            " maxProjectedIndex=" + maxProjectedIndex +
                            " lastAngle=" +
                            projectedAngles[maxProjectedIndex - 1]);
-        int stitchLength = (vertexCount < stepCount) ? vertexCount : stepCount;
-        short[] geodesicStitches = new short[2 * stitchLength];
+        fillSegmentVertexAngles(isEdgeA);
+        stitchesTCount = 0;
+        stitchEm(stepCount, segmentVertexesT, segmentVertexAnglesT,
+                 maxProjectedIndex - minProjectedIndex, minProjectedIndex,
+                 projectedVertexesT,
+                 projectedAnglesT, projectedDistancesT);
+        short[] geodesicStitches = new short[stitchesTCount];
+        for (int i = stitchesTCount; --i >= 0; )
+          geodesicStitches[i] = stitchesT[i];
         if (isEdgeA)
           geodesicStitchesA = geodesicStitches;
         else
           geodesicStitchesB = geodesicStitches;
-        int torusVertex = getSegmentStartingVertex();
-        if (! isEdgeA)
-          torusVertex += outerPointCount - 1;
-        for (int i = 0; i < stitchLength; ++i) {
-          geodesicStitches[2*i] = (short)torusVertex;
-          torusVertex += outerPointCount;
-          geodesicStitches[2*i + 1] = projectedVertexes[minProjectedIndex + i];
-        }
-        for (int i = 0; i < stitchLength; ++i) {
-          System.out.println("stitch : " +
-                             geodesicStitches[2*i] +
-                             " -> " +
-                             geodesicStitches[2*i + 1]);
+      }
+
+      void stitchEm(int torusCount, short[] torusVertexes, float[] torusAngles,
+                    int geodesicCount, int geodesicOffset,
+                    short[] geodesicVertexes, float[] geodesicAngles,
+                    float[] geodesicDistances) {
+        int c = torusCount < geodesicCount ? torusCount : geodesicCount;
+        for (int i = 0; i < c; ++i) {
+          if (stitchesTCount + 1 >= stitchesT.length)
+            stitchesT = Util.doubleLength(stitchesT);
+          stitchesT[stitchesTCount] = torusVertexes[i];
+          stitchesT[stitchesTCount + 1] = geodesicVertexes[geodesicOffset + i];
+          stitchesTCount += 2;
         }
       }
 
-      int getSegmentStartingVertex() {
+      void fillSegmentVertexAngles(boolean isEdgeA) {
+        short segmentVertex = getSegmentStartingVertex(isEdgeA);
+        float angle = startAngle;
+        for (int i = 0; i < stepCount; ++i) {
+          segmentVertexesT[i] = segmentVertex;
+          segmentVertex += outerPointCount;
+          segmentVertexAnglesT[i] = angle;
+          angle += stepAngle;
+        }
+      }
+      
+      short getSegmentStartingVertex(boolean isEdgeA) {
         int totalStepCount = 0;
         for (int i = 0; i < torusSegmentCount; ++i) {
           TorusSegment segment = torusSegments[i];
-          if (segment == this)
-            return totalStepCount * outerPointCount;
+          if (segment == this) {
+            int startingVertex = totalStepCount * outerPointCount;
+            if (! isEdgeA) {
+              System.out.println(" -------- I am not edge A! ---------");
+              System.out.println("   startingVertex=" + startingVertex +
+                                 "   outerPointCount=" + outerPointCount);
+              startingVertex += outerPointCount - 1;
+              System.out.println("   after startingVertex=" + startingVertex);
+            }
+            return (short)startingVertex;
+          }
           totalStepCount += segment.stepCount;
         }
         System.out.println("torus segment not found in torus");

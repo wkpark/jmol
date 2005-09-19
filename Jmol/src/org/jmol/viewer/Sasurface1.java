@@ -671,8 +671,12 @@ class Sasurface1 {
 
     vector0T.sub(planeZeroPoint, planeCenter);
     rotate90(axisUnitVector, vector0T, vector90T);
+    System.out.println(">>>>>>>> .....  after rotate90\n" +
+                       " vector0T=" + vector0T +
+                       "\n vector90T=" + vector90T);
+    
 
-    float radiansPerAngstrom = (float)Math.PI / radius;
+    float radiansPerAngstrom = PI / radius;
     
     projectedCountT = 0;
     for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
@@ -681,6 +685,16 @@ class Sasurface1 {
       float distance = axisUnitVector.dot(vertexVectorT);
       projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
       projectedVectorT.sub(projectedPointT, planeCenter);
+      if (v == 6) {
+        System.out.println("I see 6!" +
+                           "\n projectedVectorT= " + projectedVectorT +
+                           " vector0T=" + vector0T +
+                           " vector90T=" + vector90T +
+                           "\n vector0T.angle(projected)=" +
+                           vector0T.angle(projectedVectorT) +
+                           " vector90T.angle(pr)=" + 
+                           vector90T.angle(projectedVectorT));
+      }
       float angle = calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
       if (projectedCountT == projectedVertexesT.length) {
         projectedVertexesT = Util.doubleLength(projectedVertexesT);
@@ -708,7 +722,7 @@ class Sasurface1 {
     float angle = radialVector0.angle(vectorInQuestion);
     float angle90 = radialVector90.angle(vectorInQuestion);
     if (angle90 > PI/2)
-      angle += PI;
+      angle = 2*PI - angle;
     return angle;
   }
 

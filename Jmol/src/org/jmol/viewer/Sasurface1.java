@@ -540,13 +540,6 @@ class Sasurface1 {
         }
       }
     }
-    /*
-    System.out.println("findClippedGeodesicEdge is returning edgeVertexMap:");
-    for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
-      System.out.print("" + v + " ");
-    }
-    System.out.println("");
-    */
   }
 
   /*
@@ -608,11 +601,12 @@ class Sasurface1 {
     Bmp.setBit(edgeVertexMap, bronzeVertex);
   }
 
-  final AxisAngle4f aaRotate90T = new AxisAngle4f();
-
-  void rotate90(Vector3f axisVector, Vector3f vector0, Vector3f vector90) {
-    aaRotate90T.set(axisVector, PI / 2);
-    matrixT.set(aaRotate90T);
+  void calcVectors0and90(Point3f planeCenter, Vector3f axisVector,
+                         Point3f planeZeroPoint,
+                         Vector3f vector0, Vector3f vector90) {
+    vector0.sub(planeZeroPoint, planeCenter);
+    aaT.set(axisVector, PI / 2);
+    matrixT.set(aaT);
     matrixT.transform(vector0, vector90);
   }
 
@@ -633,7 +627,8 @@ class Sasurface1 {
                                     Point3f planeCenter,
                                     Vector3f axisUnitVector,
                                     Point3f planeZeroPoint,
-                                    int[] edgeVertexMap) {
+                                    int[] edgeVertexMap,
+                                    boolean dump) {
     Vector3f vector0T = this.vector0T;
     Vector3f vector90T = this.vector90T;
     Point3f vertexPointT = this.vertexPointT;
@@ -641,12 +636,8 @@ class Sasurface1 {
     Point3f projectedPointT = this.projectedPointT;
     Vector3f projectedVectorT = this.projectedVectorT;
 
-    vector0T.sub(planeZeroPoint, planeCenter);
-    rotate90(axisUnitVector, vector0T, vector90T);
-    System.out.println(">>>>>>>> .....  after rotate90\n" +
-                       " vector0T=" + vector0T +
-                       "\n vector90T=" + vector90T);
-    
+    calcVectors0and90(planeCenter, axisUnitVector, planeZeroPoint,
+                      vector0T, vector90T);
 
     float radiansPerAngstrom = PI / radius;
     
@@ -658,15 +649,7 @@ class Sasurface1 {
       projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
       projectedVectorT.sub(projectedPointT, planeCenter);
       float angle = calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
-      if (projectedCountT == projectedVertexesT.length) {
-        projectedVertexesT = Util.doubleLength(projectedVertexesT);
-        projectedAnglesT = Util.doubleLength(projectedAnglesT);
-        projectedDistancesT = Util.doubleLength(projectedDistancesT);
-      }
-      projectedVertexesT[projectedCountT] = (short) v;
-      projectedAnglesT[projectedCountT] = angle;
-      projectedDistancesT[projectedCountT] = distance * radiansPerAngstrom;
-      ++projectedCountT;
+      addProjectedPoint((short) v, angle, distance * radiansPerAngstrom);
     }
     sortProjectedVertexes();
   }
@@ -676,6 +659,18 @@ class Sasurface1 {
     vectorT.sub(axisPoint, planePoint);
     float distance = axisUnitVector.dot(vectorT);
     planeCenterPoint.scaleAdd(-distance, axisUnitVector, axisPoint);
+  }
+
+  void addProjectedPoint(short vertex, float angle, float radians) {
+    if (projectedCountT == projectedVertexesT.length) {
+      projectedVertexesT = Util.doubleLength(projectedVertexesT);
+      projectedAnglesT = Util.doubleLength(projectedAnglesT);
+      projectedDistancesT = Util.doubleLength(projectedDistancesT);
+    }
+    projectedVertexesT[projectedCountT] = vertex;
+    projectedAnglesT[projectedCountT] = angle;
+    projectedDistancesT[projectedCountT] = radians;
+    ++projectedCountT;
   }
 
   static float calcAngleInThePlane(Vector3f radialVector0,
@@ -704,15 +699,9 @@ class Sasurface1 {
 
   void duplicateFirstProjectedGeodesicPoint() {
     System.out.println("duplicateFirstProjectedGeodesicPoint");
-    if (projectedCountT == projectedVertexesT.length) {
-      projectedVertexesT = Util.doubleLength(projectedVertexesT);
-      projectedAnglesT = Util.doubleLength(projectedAnglesT);
-      projectedDistancesT = Util.doubleLength(projectedDistancesT);
-    }
-    projectedVertexesT[projectedCountT] = projectedVertexesT[0];
-    projectedAnglesT[projectedCountT] = 2*PI + projectedAnglesT[0];
-    projectedDistancesT[projectedCountT] = projectedDistancesT[0];
-    ++projectedCountT;
+    addProjectedPoint(projectedVertexesT[0],
+                      projectedAnglesT[0] + 2*PI,
+                      projectedDistancesT[0]);
   }
 
   float angleABC(float xA, float yA, float xB, float yB, float xC, float yC) {
@@ -774,8 +763,8 @@ class Sasurface1 {
     short[] seam = new short[countSeamT];
     for (int i = seam.length; --i >= 0; )
       seam[i] = seamT[i];
-    dumpSeam(stitchCount, stitches, seam);
-    decodeSeam(seam);
+    //    dumpSeam(stitchCount, stitches, seam);
+    //    decodeSeam(seam);
     return seam;
   }
 
@@ -1075,9 +1064,8 @@ class Sasurface1 {
         pointT.scaleAdd(radius, unitRadialVectorT, center);
       }
 
-      radialVector.sub(referenceProbePoint, center);
-
-      rotate90(axisUnitVector, radialVector, radialVector90T);
+      calcVectors0and90(center, axisUnitVector, referenceProbePoint,
+                        radialVector, radialVector90T);
 
       tangentVector.cross(axisUnitVector, radialVector);
       tangentVector.normalize();
@@ -1269,19 +1257,23 @@ class Sasurface1 {
         this.startAngle = 0;
         this.stepAngle = TARGET_INNER_TORUS_STEP_ANGLE;
         this.stepCount = MAX_FULL_TORUS_STEP_COUNT;
+        /*
         System.out.println("FullTorus\n" +
                            " startAngle=" + startAngle +
                            " stepAngle=" + stepAngle +
                            " stepCount=" + stepCount +
                            " totalSegmentAngle=" + (stepAngle*(stepCount-1)));
+        */
       }
       
       TorusSegment(float startAngle, float endAngle) {
         this.startAngle = startAngle;
         float totalSegmentAngle = endAngle - startAngle;
+        /*
         System.out.println(" startAngle=" + startAngle +
                            " endAngle=" + endAngle +
                            " totalSegmentAngle=" + totalSegmentAngle);
+        */
         if (totalSegmentAngle < 0)
           totalSegmentAngle += 2 * PI;
         stepCount = (int)(totalSegmentAngle / TARGET_INNER_TORUS_STEP_ANGLE);
@@ -1354,6 +1346,7 @@ class Sasurface1 {
           System.out.println("no vertexes for this torus segment");
           return;
         }
+        /*
         System.out.println(" startAngle=" + startAngle +
                            " endAngle=" + endAngle +
                            " minProjectedIndex=" + minProjectedIndex +
@@ -1361,6 +1354,7 @@ class Sasurface1 {
                            " maxProjectedIndex=" + maxProjectedIndex +
                            " lastAngle=" +
                            projectedAngles[maxProjectedIndex - 1]);
+        */
         fillSegmentVertexAngles(isEdgeA);
         stitchEm(stepCount, segmentVertexesT, segmentVertexAnglesT,
                  minProjectedIndex, maxProjectedIndex,
@@ -1427,11 +1421,15 @@ class Sasurface1 {
           if (segment == this) {
             int startingVertex = totalStepCount * outerPointCount;
             if (! isEdgeA) {
+              /*
               System.out.println(" -------- I am not edge A! ---------");
               System.out.println("   startingVertex=" + startingVertex +
                                  "   outerPointCount=" + outerPointCount);
+              */
               startingVertex += outerPointCount - 1;
+              /*
               System.out.println("   after startingVertex=" + startingVertex);
+              */
             }
             return (short)startingVertex;
           }
@@ -1514,7 +1512,7 @@ class Sasurface1 {
     }
 
     void stitchWithGeodesics() {
-      System.out.println("torus.stitchWithGeodesics()");
+      //      System.out.println("torus.stitchWithGeodesics()");
       stitchWithGeodesic(true);
       stitchWithGeodesic(false);
     }
@@ -1529,17 +1527,20 @@ class Sasurface1 {
                               centerPointT, axisUnitVector,
                               edgeVertexesT);
       Bmp.and(edgeVertexesT, convexVertexMaps[ix]);
+      boolean dump = (ixA == 0 && (ixB == 1 || ixB == 3));
       if (Bmp.countBits(edgeVertexesT) > 0) {
         projectAndSortGeodesicPoints(atomCenter, atomRadius,
                                      centerPointT, axisUnitVector, zeroPointT,
-                                     edgeVertexesT);
+                                     edgeVertexesT, dump);
         if (torusCavities == null) // full torus
           duplicateFirstProjectedGeodesicPoint();
-        for (int i = 0; i < projectedCountT; ++i) {
-          System.out.println("" + i + " : " +
-                             projectedVertexesT[i] + " : " +
-                             projectedAnglesT[i] + " @ " +
-                             projectedDistancesT[i]);
+        if (dump) {
+          for (int i = 0; i < projectedCountT; ++i) {
+            System.out.println("" + i + " : " +
+                               projectedVertexesT[i] + " : " +
+                               projectedAnglesT[i] + " @ " +
+                               projectedDistancesT[i]);
+          }
         }
         stitchSegmentsWithSortedProjectedVertexes(projectedCountT,
                                                   projectedVertexesT,
@@ -1569,6 +1570,8 @@ class Sasurface1 {
       else
         geodesicStitchesB = geodesicStitches;
       short[] seam = createSeam(countStitchesT, stitchesT);
+      if (ixA == 0 && (ixB == 1 || ixB == 3))
+        dumpSeam(countStitchesT, stitchesT, seam);
       if (isEdgeA)
         seamA = seam;
       else

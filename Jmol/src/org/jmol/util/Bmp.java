@@ -292,12 +292,14 @@ public class Bmp {
     return (bitmapIndex << 5) + bitIndexWithinWord;
   }
 
-  public final static void and(int[] target, int[] other) {
-    if (target == null || other == null)
-      return;
-    int len = (target.length <= other.length) ? target.length : other.length;
-    for (int i = len; --i >= 0; )
-      target[i] &= other[i];
+  public final static boolean and(int[] target, int[] other) {
+    int bits = 0;
+    if (target != null && other != null) {
+      int len = (target.length <= other.length) ? target.length : other.length;
+      for (int i = len; --i >= 0; )
+        bits |= (target[i] &= other[i]);
+    }
+    return bits != 0;
   }
 }
 

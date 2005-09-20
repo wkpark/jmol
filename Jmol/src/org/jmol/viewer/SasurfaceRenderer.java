@@ -281,7 +281,7 @@ class SasurfaceRenderer extends ShapeRenderer {
         continue;
       }
       short v = seam[i];
-      if (v > 0) {
+      if (v >= 0) {
         g3d.fillTriangle(colix,
                          torusScreens[prevTorus],
                          torusNormixes[prevTorus],
@@ -299,6 +299,20 @@ class SasurfaceRenderer extends ShapeRenderer {
                          geodesicScreens[prevGeodesic], prevGeodesic);
         prevGeodesic = v;
       }
+    }
+  }
+
+  void dumpSeam(short[] seam) {
+    System.out.println("dumpSeam:");
+    for (int i = 0; i < seam.length; ++i) {
+      short v = seam[i];
+      System.out.print("  " + v + " ");
+      if (v == Short.MIN_VALUE)
+        System.out.println(" -- break");
+      else if (v < 0)
+        System.out.println( "(" + ~v + ")");
+      else
+        System.out.println("");
     }
   }
 

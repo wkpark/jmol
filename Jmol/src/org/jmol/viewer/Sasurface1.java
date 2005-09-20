@@ -561,6 +561,22 @@ class Sasurface1 {
     return edgeVertexCount;
   }
 
+  short findClosestVertex(short normix, int[] edgeVertexMap) {
+    // note that there is some other code in Normix3D.java that
+    // does the same thing. See which algorithm works better.
+    int champion = -1;
+    float championAngle = PI;
+    Vector3f vector = geodesicVertexVectors[normix];
+    for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
+      float angle = vector.angle(geodesicVertexVectors[v]);
+      if (angle < championAngle) {
+        championAngle = angle;
+        champion = v;
+      }
+    }
+    return (short)champion;
+  }
+
   /*
    * only a small piece of the sphere is clipped.
    * That is, none of the vertexes themselves are clipped,
@@ -1601,8 +1617,6 @@ class Sasurface1 {
       else
         geodesicStitchesB = geodesicStitches;
       short[] seam = createSeam(countStitchesT, stitchesT);
-      if (ixA == 0 && (ixB == 1 || ixB == 3))
-        dumpSeam(countStitchesT, stitchesT, seam);
       if (isEdgeA)
         seamA = seam;
       else

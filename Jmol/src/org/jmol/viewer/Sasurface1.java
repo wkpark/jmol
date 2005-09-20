@@ -364,9 +364,15 @@ class Sasurface1 {
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = toruses[i];
         if (bs.get(torus.ixA))
-          torus.colixA = colix;
+          torus.colixA =
+            (colix != Graphics3D.UNRECOGNIZED)
+            ? colix
+            : viewer.getColixAtomPalette(atoms[torus.ixA], (String)value);
         if (bs.get(torus.ixB))
-          torus.colixB = colix;
+          torus.colixB =
+            (colix != Graphics3D.UNRECOGNIZED)
+            ? colix
+            : viewer.getColixAtomPalette(atoms[torus.ixB], (String)value);
       }
       return;
     }

@@ -215,7 +215,7 @@ class SasurfaceRenderer extends ShapeRenderer {
       edgeVertexesAT = Bmp.allocateBitmap(maxVertexCount);
       edgeVertexesBT = Bmp.allocateBitmap(maxVertexCount);
     }
-    torus.findClippedEdgeVertexes(edgeVertexesAT, edgeVertexesBT);
+    torus.findEdgeVertexes(edgeVertexesAT, edgeVertexesBT);
     int ixA = torus.ixA;
     int ixB = torus.ixB;
     Atom atomA = frame.atoms[ixA];

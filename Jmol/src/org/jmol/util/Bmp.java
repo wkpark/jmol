@@ -30,7 +30,7 @@ package org.jmol.util;
  * and static support for BitMaP operations on int[]
  ****************************************************************/
 
-public class Bmp {
+public final class Bmp {
 
   private final static boolean debugDoubleCheck = true;
 

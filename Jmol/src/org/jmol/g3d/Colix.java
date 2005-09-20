@@ -195,9 +195,7 @@ final class Colix {
       ashades[i] = null;
   }
 
-  static int mixCacheCount = 0;
-  static int[] mixCacheMixIds = new int[32];
-  static short[] mixCacheColixes = new short[32];
+  final static Int2IntHash hashMix2 = new Int2IntHash(32);
 
   final static short getColixMix(short colixA, short colixB) {
     if (colixA == colixB)
@@ -212,33 +210,17 @@ final class Colix {
     int mixId = ((colixA < colixB)
                  ? ((colixA << 16) | colixB)
                  : ((colixB << 16) | colixA));
-    for (int i = 0; i < mixCacheCount; ++i)
-      if (mixId == mixCacheMixIds[i])
-        return (short)(mixCacheColixes[i] | translucentMask);
-    int argbA = argbs[colixA];
-    int argbB = argbs[colixB];
-    int r = (((argbA & 0x00FF0000) + (argbB & 0x00FF0000)) >> 1) & 0x00FF0000;
-    int g = (((argbA & 0x0000FF00) + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
-    int b = (((argbA & 0x000000FF) + (argbB & 0x000000FF)) >> 1);
-    int argbMixed = 0xFF000000 | r | g | b;
-    short mixedColix = getColix(argbMixed);
-    return (short)(addMixed(mixId, mixedColix) | translucentMask);
-  }
-
-  private synchronized static short addMixed(int mixId, short mixedColix) {
-    if (mixCacheCount == mixCacheMixIds.length) {
-      int[] t1 = new int[2 * mixCacheCount];
-      short[] t2 = new short[2 * mixCacheCount];
-      for (int i = mixCacheCount; --i >= 0; ) {
-        t1[i] = mixCacheMixIds[i];
-        t2[i] = mixCacheColixes[i];
-      }
-      mixCacheMixIds = t1;
-      mixCacheColixes = t2;
+    int mixed = hashMix2.get(mixId);
+    if (mixed == Integer.MIN_VALUE) {
+      int argbA = argbs[colixA];
+      int argbB = argbs[colixB];
+      int r = (((argbA & 0x00FF0000)+(argbB & 0x00FF0000)) >> 1) & 0x00FF0000;
+      int g = (((argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+      int b = (((argbA & 0x000000FF)+(argbB & 0x000000FF)) >> 1);
+      int argbMixed = 0xFF000000 | r | g | b;
+      mixed = getColix(argbMixed);
+      hashMix2.put(mixId, mixed);
     }
-    mixCacheMixIds[mixCacheCount] = mixId;
-    mixCacheColixes[mixCacheCount] = mixedColix;
-    ++mixCacheCount;
-    return mixedColix;
+    return (short)(mixed | translucentMask);
   }
 }

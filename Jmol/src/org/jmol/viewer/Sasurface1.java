@@ -227,7 +227,7 @@ class Sasurface1 {
       Torus torus = toruses[i];
       torus.stitchWithGeodesics();
       // torus.checkTorusSegments();
-      torus.connectWithGeodesics();
+      //      torus.connectWithGeodesics();
     }
 
     for (int i = atomCount; --i >= 0; ) {
@@ -493,34 +493,6 @@ class Sasurface1 {
     distanceJK = (float)Math.sqrt(distanceJK2);
   }
 
-  /*
-  void calcVertexBitmapI() {
-    int[] vertexMap = convexVertexMaps[indexI];
-    Bmp.setAllBits(vertexMap, geodesicVertexCount);
-    if (neighborCount > 0) {
-      int iLastUsed = 0;
-      for (int iDot = geodesicVertexCount; --iDot >= 0; ) {
-        pointT.scaleAdd(radiiIP, geodesicVertexVectors[iDot], centerI);
-        pointT1.scaleAdd(radiusI, geodesicVertexVectors[iDot], centerI);
-        if (centerI.x == 0)
-          System.out.println(" --->" +
-                             " vertex[" + iDot + "]" + " radius:" + radiusI +
-                             " pointT1:" + pointT1);
-        int iStart = iLastUsed;
-        do {
-          if (pointT.distanceSquared(neighborCenters[iLastUsed])
-              < neighborPlusProbeRadii2[iLastUsed]) {
-            Bmp.clearBit(vertexMap, iDot);
-            break;
-          }
-          if (++iLastUsed == neighborCount)
-            iLastUsed = 0;
-        } while (iLastUsed != iStart);
-      }
-    }
-  }
-  */
-
   final Vector3f centerVectorT = new Vector3f();
   final Point3f vertexPointT = new Point3f();
   final Vector3f vertexVectorT = new Vector3f();
@@ -646,8 +618,8 @@ class Sasurface1 {
 
   int countStitchesT;
   short[] stitchesT = new short[64];
-  float[] segmentVertexAnglesT = new float[INNER_TORUS_STEP_COUNT + 1];
-  short[] segmentVertexesT = new short[INNER_TORUS_STEP_COUNT + 1];
+  float[] segmentVertexAnglesT = new float[MAX_FULL_TORUS_STEP_COUNT];
+  short[] segmentVertexesT = new short[MAX_FULL_TORUS_STEP_COUNT];
 
   int projectedCountT;
   short[] projectedVertexesT = new short[64];
@@ -685,16 +657,6 @@ class Sasurface1 {
       float distance = axisUnitVector.dot(vertexVectorT);
       projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
       projectedVectorT.sub(projectedPointT, planeCenter);
-      if (v == 6) {
-        System.out.println("I see 6!" +
-                           "\n projectedVectorT= " + projectedVectorT +
-                           " vector0T=" + vector0T +
-                           " vector90T=" + vector90T +
-                           "\n vector0T.angle(projected)=" +
-                           vector0T.angle(projectedVectorT) +
-                           " vector90T.angle(pr)=" + 
-                           vector90T.angle(projectedVectorT));
-      }
       float angle = calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
       if (projectedCountT == projectedVertexesT.length) {
         projectedVertexesT = Util.doubleLength(projectedVertexesT);
@@ -740,73 +702,17 @@ class Sasurface1 {
         }
   }
 
-  short[] calcTorusGeodesicStitchStrip(int rightCount,
-                                       float[] rightXs,
-                                       short[] rightIndexes,
-                                       int leftCount,
-                                       float[] leftXs,
-                                       float[] leftYs,
-                                       short[] leftIndexes,
-                                       float sweepDistance) {
-    /*
-      This algorithm is somewhat like a ball pivoting algorithm.
-      However, it is really just for stitching.
-      working in 2d. assume that you are standing on the +y axis, slightly
-      above the origin, looking down the x axes. There are points regularly
-      placed along the x axis ... on the right bank.
-      The left bank is jagged, with points having +X and +Y coordinates.
-      We want to fully triangulate these points, where one point always
-      stays glued to the x axis ... the right bank.
-      the sweepDistance is the maximum distance that you will consider
-      when looking at points on the left bank.
-      sweepDistance is calculated from your current anchor on the
-      right bank.
-    */
-    return null;
-    /*
-
-    if (rightCount == 0 || leftCount == 0)
-      return null;
-    int rightAnchorIndex = 0;
-    int rightCandidateIndex;
-    int leftAnchorIndex = 0;
-    int leftCandidateBase;
-    while ((rightCandidateIndex = rightAnchorIndex + 1) < rightCount &&
-           (leftCandidateBase = leftAnchorIndex + 1) < leftCount) {
-      float rightAnchorX = rightXs[rightAnchorIndex];
-      float candidateMaxX = rightAnchorX + sweepDistance;
-      if (candidateMaxX > rightXs[rightCandidateIndex])
-        candidateMaxX = rightXs[rightCandidateIndex];
-      int leftCandidateMax;
-      for (leftCandidateMax = leftCandidateBase;
-           (leftCandidateMax < leftCount &&
-            leftXs[leftCandidateMax] < candidateMaxX);
-           ++leftCandidateMax)
-        {}
-      if (leftCandidateMax == leftCandidateBase) {
-        System.out.println("abend 12345");
-        return null;
-      }
-      float leftAnchorX = leftXs[leftAnchorIndex];
-      float leftAnchorY = leftYs[leftAnchorIndex];
-      int leftChampion = leftCandidateBase;
-      float championAngle = 0;
-      for (int challenger = leftCandidateBase; challenger < leftCandidateMax;
-           ++challenger) {
-        float
-      int leftChampion = leftCandidateBase;
-      int leftChampionAngle = calcTheAngle(rightAnchorX,
-                                           leftAnchorX, leftAnchorY,
-                                           leftXs[leftCandidateBase],
-                                           leftYs[leftCandidateBase]);
-      for (leftWinner=leftCandidateMax; --leftWinner > leftCandidateBase; ) {
-        
-
-             
-           (leftAnchorIndex + leftCandidateCount < leftCount) &&
-             leftXs[leftAnchorIndex + leftCandidate
+  void duplicateFirstProjectedGeodesicPoint() {
+    System.out.println("duplicateFirstProjectedGeodesicPoint");
+    if (projectedCountT == projectedVertexesT.length) {
+      projectedVertexesT = Util.doubleLength(projectedVertexesT);
+      projectedAnglesT = Util.doubleLength(projectedAnglesT);
+      projectedDistancesT = Util.doubleLength(projectedDistancesT);
     }
-    */
+    projectedVertexesT[projectedCountT] = projectedVertexesT[0];
+    projectedAnglesT[projectedCountT] = 2*PI + projectedAnglesT[0];
+    projectedDistancesT[projectedCountT] = projectedDistancesT[0];
+    ++projectedCountT;
   }
 
   float angleABC(float xA, float yA, float xB, float yB, float xC, float yC) {
@@ -1071,10 +977,14 @@ class Sasurface1 {
 
   float[] cavityAngles = new float[32];
 
-  final static int INNER_TORUS_STEP_COUNT = 12;
-  final static float INNER_TORUS_STEP_ANGLE =
-    (float)(2 * Math.PI / INNER_TORUS_STEP_COUNT);
-  // note that this is the number of steps in 180 degrees, not 360
+  // note that when there is a full torus
+  // the 0 point will be repeated as 2*PI
+  private final static  int MAX_FULL_TORUS_STEP_COUNT = 13;
+  private final static float TARGET_INNER_TORUS_STEP_ANGLE =
+    (float)(2 * Math.PI / (MAX_FULL_TORUS_STEP_COUNT - 1));
+
+  // note that the outer torus is at most 180 degrees
+  // so this step count is over 180 degrees, not 360
   final static int OUTER_TORUS_STEP_COUNT = 11;
   final Vector3f outerRadials[] = new Vector3f[OUTER_TORUS_STEP_COUNT];
   {
@@ -1082,23 +992,8 @@ class Sasurface1 {
       outerRadials[i] = new Vector3f();
   }
 
-  final static int ALL_PROBE_BITS_ON = ~((1<<(32-INNER_TORUS_STEP_COUNT))-1);
-  final static int FIRST_AND_LAST_BITS =
-    (0x8000 | (1 << (32 - INNER_TORUS_STEP_COUNT)));
-  final static int MAX_SEGMENT_COUNT = INNER_TORUS_STEP_COUNT / 2;
-
-  final Point3f[] torusPoints = new Point3f[INNER_TORUS_STEP_COUNT *
-                                            OUTER_TORUS_STEP_COUNT];
-  {
-    for (int i = torusPoints.length; --i >= 0; )
-      torusPoints[i] = new Point3f();
-  }
-
-  final Point3f[] torusEdgePointsT = new Point3f[INNER_TORUS_STEP_COUNT + 1];
-  {
-    for (int i = torusEdgePointsT.length; --i >= 0; )
-      torusEdgePointsT[i] = new Point3f();
-  }
+  final static int MAX_TORUS_POINTS =
+    MAX_FULL_TORUS_STEP_COUNT * OUTER_TORUS_STEP_COUNT;
 
   Point3f[] convexEdgePoints;
   // what is the max size of this thing?
@@ -1303,7 +1198,7 @@ class Sasurface1 {
 
     void buildTorusSegments() {
       if (torusCavityCount == 0) {
-        addTorusSegment(new TorusSegment(0, 2 * PI));
+        addTorusSegment(new TorusSegment());
       } else {
         for (int i = 0; i < torusCavityCount; i += 2)
           addTorusSegment(new TorusSegment(torusCavities[i].angle,
@@ -1369,17 +1264,27 @@ class Sasurface1 {
       float startAngle;
       float stepAngle;
       int stepCount; // # of vertexes, which is 1 more than the # of strips
-      short[] geodesicConnections;
 
+      TorusSegment() { // for a full torus
+        this.startAngle = 0;
+        this.stepAngle = TARGET_INNER_TORUS_STEP_ANGLE;
+        this.stepCount = MAX_FULL_TORUS_STEP_COUNT;
+        System.out.println("FullTorus\n" +
+                           " startAngle=" + startAngle +
+                           " stepAngle=" + stepAngle +
+                           " stepCount=" + stepCount +
+                           " totalSegmentAngle=" + (stepAngle*(stepCount-1)));
+      }
+      
       TorusSegment(float startAngle, float endAngle) {
         this.startAngle = startAngle;
         float totalSegmentAngle = endAngle - startAngle;
-        //System.out.println(" startAngle=" + startAngle +
-        //                   " endAngle=" + endAngle +
-        //                   " totalSegmentAngle=" + totalSegmentAngle);
+        System.out.println(" startAngle=" + startAngle +
+                           " endAngle=" + endAngle +
+                           " totalSegmentAngle=" + totalSegmentAngle);
         if (totalSegmentAngle < 0)
           totalSegmentAngle += 2 * PI;
-        stepCount = (int)(totalSegmentAngle / INNER_TORUS_STEP_ANGLE);
+        stepCount = (int)(totalSegmentAngle / TARGET_INNER_TORUS_STEP_ANGLE);
         stepAngle = totalSegmentAngle / stepCount;
         ++stepCount; // one more strip than pieces of the segment
       }
@@ -1430,25 +1335,6 @@ class Sasurface1 {
         }
       }
 
-      void connectWithGeodesic(boolean edgeA) {
-        int connectionIndex;
-        if (edgeA) {
-          geodesicConnections = new short[2 * stepCount];
-          connectionIndex = 0;
-        } else {
-          connectionIndex = stepCount;
-        }
-        calcEdgePoints(torusEdgePointsT, edgeA);
-        Point3f atomCenter = frame.atoms[edgeA ? ixA : ixB].point3f;
-        for (int i = 0; i < stepCount; ++i) {
-          Point3f edgePoint = torusEdgePointsT[i];
-          vectorT.sub(edgePoint, atomCenter);
-          short normix = g3d.getNormix(vectorT, GEODESIC_CALC_LEVEL);
-          //System.out.println("connected!");
-          geodesicConnections[connectionIndex++] = normix;
-        }
-      }
-      
       void stitchWithSortedProjectedVertexes(int projectedCount,
                                              short[] projectedVertexes,
                                              float[] projectedAngles,
@@ -1647,6 +1533,8 @@ class Sasurface1 {
         projectAndSortGeodesicPoints(atomCenter, atomRadius,
                                      centerPointT, axisUnitVector, zeroPointT,
                                      edgeVertexesT);
+        if (torusCavities == null) // full torus
+          duplicateFirstProjectedGeodesicPoint();
         for (int i = 0; i < projectedCountT; ++i) {
           System.out.println("" + i + " : " +
                              projectedVertexesT[i] + " : " +
@@ -1685,12 +1573,6 @@ class Sasurface1 {
         seamA = seam;
       else
         seamB = seam;
-    }
-
-    void connectWithGeodesics() {
-      transformOuterRadials();
-      for (int i = 0; i < torusSegmentCount; ++i)
-        torusSegments[i].connectWithGeodesic(true);
     }
 
     void findClippedEdgeVertexes(int[] edgeVertexesA, int[] edgeVertexesB) {

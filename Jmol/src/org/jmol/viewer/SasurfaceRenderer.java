@@ -36,6 +36,7 @@ class SasurfaceRenderer extends ShapeRenderer {
   boolean perspectiveDepth;
   boolean hideSaddles;
   boolean hideConvex;
+  boolean showGeodesicEdgeNumbers;
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
   int geodesicVertexCount;
@@ -72,6 +73,7 @@ class SasurfaceRenderer extends ShapeRenderer {
     Sasurface1[] surfaces = sasurface.surfaces;
     hideSaddles = viewer.getTestFlag1();
     hideConvex = viewer.getTestFlag2();
+    showGeodesicEdgeNumbers = viewer.getTestFlag3();
     sasCache.clear();
     for (int i = surfaceCount; --i >= 0; )
       renderSasurface1(surfaces[i]);
@@ -197,7 +199,8 @@ class SasurfaceRenderer extends ShapeRenderer {
     prepareTorusColixes(torus, convexColixes, atoms);
     renderTorus(torus, torusColixes);
 
-    renderStitchedTorusEdges(torus, convexColixes, convexVertexMaps);
+    if (showGeodesicEdgeNumbers)
+      renderStitchedTorusEdges(torus, convexColixes, convexVertexMaps);
 
     renderSeams(torus, atoms, convexColixes, convexVertexMaps);
   }
@@ -325,20 +328,14 @@ class SasurfaceRenderer extends ShapeRenderer {
     return 1;
   }
 
+  static final int OUTER_TORUS_STEP_COUNT = Sasurface1.OUTER_TORUS_STEP_COUNT;
+
   final AxisAngle4f aaT = new AxisAngle4f();
   final AxisAngle4f aaT1 = new AxisAngle4f();
-  static final int INNER_TORUS_STEP_COUNT = Sasurface1.INNER_TORUS_STEP_COUNT;
-  static final int OUTER_TORUS_STEP_COUNT = Sasurface1.OUTER_TORUS_STEP_COUNT;
-  static final float INNER_TORUS_STEP_ANGLE=Sasurface1.INNER_TORUS_STEP_ANGLE;
-  final static int MAX_SEGMENT_COUNT = Sasurface1.MAX_SEGMENT_COUNT;
   final Matrix3f matrixT = new Matrix3f();
   final Matrix3f matrixT1 = new Matrix3f();
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
-
-  final short[] torusEdgeIndexes = new short[INNER_TORUS_STEP_COUNT];
-
-  final byte[] torusSegmentStarts = new byte[MAX_SEGMENT_COUNT];
 
   void renderTorus(Sasurface1.Torus torus, short[] colixes) {
     Point3i[] screens = sasCache.lookupTorusScreens(torus);

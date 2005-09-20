@@ -1712,6 +1712,13 @@ class Sasurface1 {
       // deal with corrupt files that have duplicate atoms
       if (distanceIJ < 0.2)
         continue;
+      // deal with one atom contained inside another
+      // as with a hydrogen in 1D68.pdb
+      if (radiusI + distanceIJ < radiusJ ||
+          radiusJ + distanceIJ < radiusI) {
+        System.out.println("embedded atom:" + indexI + "<->" + indexJ);
+        continue;
+      }
       vectorIJ.sub(centerJ, centerI);
       calcTorusCenter(centerI, radiiIP2, centerJ, radiiJP2, distanceIJ2,
                       torusCenterIJ);

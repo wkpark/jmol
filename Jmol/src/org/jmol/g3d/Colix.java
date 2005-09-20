@@ -206,12 +206,15 @@ final class Colix {
       return colixB;
     if (colixB <= 0)
       return colixA;
+    int translucentMask = colixA & colixB & Graphics3D.TRANSLUCENT_MASK;
+    colixA &= ~Graphics3D.TRANSLUCENT_MASK;
+    colixB &= ~Graphics3D.TRANSLUCENT_MASK;
     int mixId = ((colixA < colixB)
                  ? ((colixA << 16) | colixB)
                  : ((colixB << 16) | colixA));
     for (int i = 0; i < mixCacheCount; ++i)
       if (mixId == mixCacheMixIds[i])
-        return mixCacheColixes[i];
+        return (short)(mixCacheColixes[i] | translucentMask);
     int argbA = argbs[colixA];
     int argbB = argbs[colixB];
     int r = (((argbA & 0x00FF0000) + (argbB & 0x00FF0000)) >> 1) & 0x00FF0000;
@@ -219,7 +222,7 @@ final class Colix {
     int b = (((argbA & 0x000000FF) + (argbB & 0x000000FF)) >> 1);
     int argbMixed = 0xFF000000 | r | g | b;
     short mixedColix = getColix(argbMixed);
-    return addMixed(mixId, mixedColix);
+    return (short)(addMixed(mixId, mixedColix) | translucentMask);
   }
 
   private synchronized static short addMixed(int mixId, short mixedColix) {

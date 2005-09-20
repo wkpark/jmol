@@ -35,7 +35,10 @@ class SasCache {
   SasCache(Viewer viewer, int atomCacheSize, int geodesicVertexCount) {
     this.viewer = viewer;
     allocAtomCache(atomCacheSize, geodesicVertexCount);
-    allocTorusCache(atomCacheSize, MAX_TORUS_POINTS);
+    // now that I am rendering in a different way, it is not clear
+    // to me that this needs to be anything other than 1 ...
+    // ... I think I only use 1 torus at a time
+    allocTorusCache(2, MAX_TORUS_POINTS);
   }
 
   void clear() {

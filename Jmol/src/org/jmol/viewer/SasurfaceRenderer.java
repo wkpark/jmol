@@ -79,6 +79,8 @@ class SasurfaceRenderer extends ShapeRenderer {
       renderSasurface1(surfaces[i]);
   }
 
+  int[] atomsToRender;
+
   void renderSasurface1(Sasurface1 surface) {
     if (surface.hide)
       return;
@@ -99,25 +101,45 @@ class SasurfaceRenderer extends ShapeRenderer {
     int[][] convexFaceMaps = surface.convexFaceMaps;
     short[] colixesConvex = surface.colixesConvex;
     int displayModelIndex = this.displayModelIndex;
-    for (int i = surface.surfaceConvexMax; --i >= 0; ) {
-      int[] vertexMap;
+    int convexCount = surface.surfaceConvexMax;
 
-      vertexMap = convexVertexMaps[i];
+    int[] atomsToRender =
+      this.atomsToRender = Bmp.growBitmap(this.atomsToRender, convexCount);
+    Bmp.setAllBits(atomsToRender, convexCount);
+
+    Sasurface1.Torus[] toruses = surface.toruses;
+    for (int i = surface.torusCount; --i >= 0; ) {
+      Sasurface1.Torus torus = toruses[i];
+      renderTorus(torus, atoms, colixesConvex, convexVertexMaps);
+      int ixA = torus.ixA;
+      if (Bmp.getBit(atomsToRender, ixA)) {
+        Bmp.clearBit(atomsToRender,ixA);
+        int[] vertexMap = convexVertexMaps[ixA];
+        if (vertexMap != null)
+          renderConvex(surface, atoms[ixA], colixesConvex[ixA],
+                       vertexMap, convexFaceMaps[ixA]);
+      }
+      int ixB = torus.ixB;
+      if (Bmp.getBit(atomsToRender, ixB)) {
+        Bmp.clearBit(atomsToRender,ixB);
+        int[] vertexMap = convexVertexMaps[ixB];
+        if (vertexMap != null)
+          renderConvex(surface, atoms[ixB], colixesConvex[ixB],
+                       vertexMap, convexFaceMaps[ixB]);
+      }
+    }
+
+    for (int i = -1; (i = Bmp.nextSetBit(atomsToRender, i + 1)) >= 0; ) {
+      int[] vertexMap = convexVertexMaps[i];
       if (vertexMap != null) {
         int[] faceMap = convexFaceMaps[i];
         Atom atom = atoms[i];
         if (displayModelIndex < 0 || displayModelIndex == atom.modelIndex)
           renderConvex(surface, atom, colixesConvex[i], vertexMap, faceMap);
       }
-
-    }
-    Sasurface1.Torus[] toruses = surface.toruses;
-    for (int i = surface.torusCount; --i >= 0; ) {
-      Sasurface1.Torus torus = toruses[i];
-      renderTorus(torus, atoms, colixesConvex, convexVertexMaps);
     }
   }
-  
+
   void allocTransformedProbeVertexes() {
     transformedProbeVertexes = new Vector3f[geodesicVertexCount];
     probeScreens = new Point3i[geodesicVertexCount];
@@ -138,7 +160,6 @@ class SasurfaceRenderer extends ShapeRenderer {
                     short colix, int[] vertexMap, int[] faceMap) {
     if (hideConvex)
       return;
-    sasCache.flushAtomScreens(atom);
     Point3i[] screens = sasCache.lookupAtomScreens(atom, vertexMap);
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     /*
@@ -181,7 +202,6 @@ class SasurfaceRenderer extends ShapeRenderer {
   }
 
   void renderVertexDots(Atom atom, int[] vertexMap) {
-    sasCache.flushAtomScreens(atom);
     Point3i[] screens = sasCache.lookupAtomScreens(atom, vertexMap);
     for (int v = -1; (v = Bmp.nextSetBit(vertexMap, v + 1)) >= 0; )
       g3d.fillSphereCentered(Graphics3D.LIME, 5, screens[v]);
@@ -317,7 +337,6 @@ class SasurfaceRenderer extends ShapeRenderer {
   }
 
   void renderEdgeBalls(Atom atom, int[] edgeVertexes) {
-    sasCache.flushAtomScreens(atom);
     Point3i[] screens = sasCache.lookupAtomScreens(atom, edgeVertexes);
     g3d.setFontOfSize(11);
     for (int v = -1; (v = Bmp.nextSetBit(edgeVertexes, v + 1)) >= 0; ) {
@@ -327,7 +346,6 @@ class SasurfaceRenderer extends ShapeRenderer {
                      screens[v].y + 10,
                      screens[v].z - 10);
     }
-    sasCache.flushAtomScreens(atom);
   }
 
   short getColix(short colix, short[] colixes, Atom[] atoms, int index) {

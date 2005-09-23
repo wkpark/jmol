@@ -716,6 +716,324 @@ class Sasurface1 {
   // what is the max size of this thing?
   short[] edgeVertexes;
 
+  void allocateConvexVertexBitmap(int atomIndex) {
+    if (convexVertexMaps[atomIndex] == null)
+      convexVertexMaps[atomIndex] =
+        Bmp.allocateSetAllBits(geodesicVertexCount);
+  }
+
+  Torus createTorus(int indexI, int indexJ, Point3f torusCenterIJ,
+                    float torusRadius, boolean fullTorus) {
+    if (indexI >= indexJ)
+      throw new NullPointerException();
+    if (htToruses.get(indexI, indexJ) != null)
+      throw new NullPointerException();
+    allocateConvexVertexBitmap(indexI);
+    allocateConvexVertexBitmap(indexJ);
+    Torus torus = new Torus(indexI, indexJ, torusCenterIJ,
+                            torusRadius, fullTorus);
+    htToruses.put(indexI, indexJ, torus);
+    saveTorus(torus);
+    return torus;
+  }
+  
+  void saveTorus(Torus torus) {
+    if (toruses == null)
+      toruses = new Torus[128];
+    else if (torusCount == toruses.length)
+      toruses = (Torus[])Util.doubleLength(toruses);
+    toruses[torusCount++] = torus;
+  }
+
+  Torus getTorus(int atomIndexA, int atomIndexB) {
+    if (atomIndexA >= atomIndexB)
+      throw new NullPointerException();
+    return (Torus)htToruses.get(atomIndexA, atomIndexB);
+  }
+
+  float calcTorusRadius(float radiusA, float radiusB, float distanceAB2) {
+    float t1 = radiusA + radiusB + diameterP;
+    float t2 = t1*t1 - distanceAB2;
+    float diff = radiusA - radiusB;
+    float t3 = distanceAB2 - diff*diff;
+    if (t2 <= 0 || t3 <= 0 || distanceAB2 == 0) {
+      System.out.println("calcTorusRadius\n" +
+                         " radiusA=" + radiusA + " radiusB=" + radiusB +
+                         " distanceAB2=" + distanceAB2);
+      System.out.println("distanceAB=" + Math.sqrt(distanceAB2) +
+                         " t1=" + t1 + " t2=" + t2 +
+                         " diff=" + diff + " t3=" + t3);
+      throw new NullPointerException();
+    }
+    return (float)(0.5*Math.sqrt(t2)*Math.sqrt(t3)/Math.sqrt(distanceAB2));
+  }
+
+  void calcCavitiesI() {
+    if (radiusP == 0)
+      return;
+    if (cavities == null) {
+      cavities = new Cavity[32];
+      cavityCount = 0;
+    }
+    for (int iJ = neighborCount; --iJ >= 0; ) {
+      int sortedIndexJ = sortedNeighborIndexes[iJ];
+      if (neighborIndexes[sortedIndexJ] <= indexI)
+        continue;
+      setNeighborJ(sortedIndexJ);
+      // deal with corrupt files that have duplicate atoms
+      if (distanceIJ < 0.2)
+        continue;
+      // deal with one atom contained inside another
+      // as with a hydrogen in 1D68.pdb
+      if (radiusI + distanceIJ < radiusJ ||
+          radiusJ + distanceIJ < radiusI) {
+        System.out.println("embedded atom:" + indexI + "<->" + indexJ);
+        continue;
+      }
+      vectorIJ.sub(centerJ, centerI);
+      calcTorusCenter(centerI, radiiIP2, centerJ, radiiJP2, distanceIJ2,
+                      torusCenterIJ);
+      for (int iK = neighborCount; --iK >= 0; ) {
+        int sortedIndexK = sortedNeighborIndexes[iK];
+        if (neighborIndexes[sortedIndexK] <= indexJ)
+          continue;
+        setNeighborK(sortedIndexK);
+        // deal with corrupt files that have duplicate atoms
+        if (distanceIK < 0.1 || distanceJK < 0.1)
+          continue;
+        if (distanceJK >= radiiJP + radiiKP)
+          continue;
+        getCavitiesIJK();
+      }
+      checkFullTorusIJ();
+    }
+    // check for an isolated atom with no neighbors
+    if (neighborCount == 0)
+      allocateConvexVertexBitmap(indexI);
+  }
+
+  // check for a full torus with no cavities between I & J
+  void checkFullTorusIJ() {
+    if (getTorus(indexI, indexJ) == null) {
+      if (vectorIJ.z == 0)
+        unitRadialVectorT.set(vectorZ);
+      else {
+        unitRadialVectorT.set(-vectorIJ.y, vectorIJ.x, 0);
+        unitRadialVectorT.normalize();
+      }
+      float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
+      pointT.scaleAdd(torusRadiusIJ, unitRadialVectorT, torusCenterIJ);
+      if (checkProbeNotIJ(pointT))
+        createTorus(indexI, indexJ, torusCenterIJ, torusRadiusIJ, true);
+    }
+  }
+
+  private final Vector3f vectorIJ = new Vector3f();
+  private final Vector3f vectorIK = new Vector3f();
+  private final Vector3f normalIJK = new Vector3f();
+  private final Point3f torusCenterIJ = new Point3f();
+  private final Point3f torusCenterIK = new Point3f();
+  private final Point3f torusCenterJK = new Point3f();
+  private final Point3f probeBaseIJK = new Point3f();
+  private final Point3f cavityProbe = new Point3f();
+
+  void getCavitiesIJK() {
+    if (LOG)
+      System.out.println("getCavitiesIJK:" + indexI + "," + indexJ + "," +
+                         indexK);
+    vectorIK.sub(centerK, centerI);
+    normalIJK.cross(vectorIJ, vectorIK);
+    if (Float.isNaN(normalIJK.x))
+      return;
+    normalIJK.normalize();
+    calcTorusCenter(centerI, radiiIP2, centerK, radiiKP2, distanceIK2,
+                    torusCenterIK);
+    if (! intersectPlanes(vectorIJ, torusCenterIJ,
+                          vectorIK, torusCenterIK,
+                          normalIJK, centerI,
+                          probeBaseIJK))
+      return;
+    float probeHeight = calcProbeHeightIJK(probeBaseIJK);
+    if (probeHeight <= 0)
+      return;
+    Torus torusIJ = null, torusIK = null, torusJK = null;
+    for (int i = -1; i <= 1; i += 2) {
+      cavityProbe.scaleAdd(i * probeHeight, normalIJK, probeBaseIJK);
+      if (checkProbeAgainstNeighborsIJK(cavityProbe)) {
+        boolean rightHanded = (i == 1);
+        allocateConvexVertexBitmap(indexI);
+        allocateConvexVertexBitmap(indexJ);
+        allocateConvexVertexBitmap(indexK);
+        Cavity cavity = new Cavity(cavityProbe, probeBaseIJK);
+        addCavity(cavity);
+        if (LOG)
+          System.out.println(" indexI=" + indexI +
+                             " indexJ=" + indexJ +
+                             " indexK=" + indexK);
+        if (torusIJ == null && (torusIJ = getTorus(indexI, indexJ)) == null)
+          torusIJ = createTorus(indexI, indexJ, torusCenterIJ,
+                                calcTorusRadius(radiusI, radiusJ, distanceIJ2),
+                                false);
+        torusIJ.addCavity(cavity, rightHanded);
+        
+        if (torusIK == null && (torusIK = getTorus(indexI, indexK)) == null)
+          torusIK = createTorus(indexI, indexK, torusCenterIK,
+                                calcTorusRadius(radiusI, radiusK, distanceIK2),
+                                false);
+        torusIK.addCavity(cavity, !rightHanded);
+
+        if (torusJK == null && (torusJK = getTorus(indexJ, indexK)) == null) {
+          calcTorusCenter(centerJ, radiiJP2, centerK, radiiKP2, distanceJK2,
+                          torusCenterJK);
+          torusJK = createTorus(indexJ, indexK, torusCenterJK,
+                                calcTorusRadius(radiusJ, radiusK, distanceJK2),
+                                false);
+        }
+        torusJK.addCavity(cavity, rightHanded);
+      }
+    }
+  }
+
+
+  void calcTorusCenter(Point3f centerA, float radiiAP2,
+                       Point3f centerB, float radiiBP2, float distanceAB2,
+                       Point3f torusCenter) {
+    /*
+    System.out.println("calcTorusCenter(" + centerA + "," + radiiAP2 + "," +
+                       centerB + "," + radiiBP2 + "," +
+                       distanceAB2 + "," + ")");
+    */
+    torusCenter.sub(centerB, centerA);
+    torusCenter.scale((radiiAP2-radiiBP2) / distanceAB2);
+    torusCenter.add(centerA);
+    torusCenter.add(centerB);
+    torusCenter.scale(0.5f);
+    /*
+    System.out.println("torusCenter=" + torusCenter);
+    */
+  }
+
+  boolean checkProbeNotIJ(Point3f probeCenter) {
+    for (int i = neighborCount; --i >= 0; ) {
+      int neighborIndex = neighborIndexes[i];
+      if (neighborIndex == indexI ||
+          neighborIndex == indexJ)
+        continue;
+      if (probeCenter.distanceSquared(neighborCenters[i]) <
+          neighborPlusProbeRadii2[i])
+        return false;
+    }
+    return true;
+  }
+
+  boolean checkProbeAgainstNeighborsIJK(Point3f cavityProbe) {
+    for (int i = neighborCount; --i >= 0; ) {
+      int neighborIndex = neighborIndexes[i];
+      if (neighborIndex == indexI ||
+          neighborIndex == indexJ ||
+          neighborIndex == indexK)
+        continue;
+      if (cavityProbe.distanceSquared(neighborCenters[i]) <
+          neighborPlusProbeRadii2[i])
+        return false;
+    }
+    return true;
+  }
+  
+  final Vector3f v2v3 = new Vector3f();
+  final Vector3f v3v1 = new Vector3f();
+  final Vector3f v1v2 = new Vector3f();
+
+  boolean intersectPlanes(Vector3f v1, Point3f p1,
+                          Vector3f v2, Point3f p2,
+                          Vector3f v3, Point3f p3,
+                          Point3f intersection) {
+    v2v3.cross(v2, v3);
+    if (Float.isNaN(v2v3.x))
+      return false;
+    v3v1.cross(v3, v1);
+    if (Float.isNaN(v3v1.x))
+      return false;
+    v1v2.cross(v1, v2);
+    if (Float.isNaN(v1v2.x))
+      return false;
+    float denominator = v1.dot(v2v3);
+    if (denominator == 0)
+      return false;
+    vectorT.set(p1);
+    intersection.scale(v1.dot(vectorT), v2v3);
+    vectorT.set(p2);
+    intersection.scaleAdd(v2.dot(vectorT), v3v1, intersection);
+    vectorT.set(p3);
+    intersection.scaleAdd(v3.dot(vectorT), v1v2, intersection);
+    intersection.scale(1 / denominator);
+    if (Float.isNaN(intersection.x))
+      return false;
+    return true;
+  }
+  
+  float calcProbeHeightIJK(Point3f probeBaseIJK) {
+    float hypotenuse2 = radiiIP2;
+    vectorT.sub(probeBaseIJK, centerI);
+    float baseLength2 = vectorT.lengthSquared();
+    float height2 = hypotenuse2 - baseLength2;
+    if (height2 <= 0)
+      return 0;
+    return (float)Math.sqrt(height2);
+  }
+
+  void addCavity(Cavity cavity) {
+    if (cavityCount == cavities.length)
+      cavities = (Cavity[])Util.doubleLength(cavities);
+    cavities[cavityCount++] = cavity;
+  }
+
+  final Vector3f uIJK = new Vector3f();
+  final Vector3f p1 = new Vector3f();
+  final Vector3f p2 = new Vector3f();
+  final Vector3f p3 = new Vector3f();
+
+  // plus use vectorPI and vectorPJ from above;
+  final Vector3f vectorPK = new Vector3f();
+  final Vector3f vectorCrossIJ = new Vector3f();
+  final Vector3f vectorCrossIK = new Vector3f();
+  final Vector3f vectorCrossJK = new Vector3f();
+
+  class Cavity {
+
+    final Point3f probeCenter;
+    final Point3f pointBottom = new Point3f();
+    final short normixBottom;
+    
+    // probeCenter is the center of the probe
+    // probeBase is the midpoint between this cavity
+    // and its mirror image on the other side
+    Cavity(Point3f probeCenter, Point3f probeBase) {
+      this.probeCenter = new Point3f(probeCenter);
+
+      vectorPI.sub(centerI, probeCenter);
+      vectorPI.normalize();
+      vectorPI.scale(radiusP);
+
+      vectorPJ.sub(centerJ, probeCenter);
+      vectorPJ.normalize();
+      vectorPJ.scale(radiusP);
+
+      vectorPK.sub(centerK, probeCenter);
+      vectorPK.normalize();
+      vectorPK.scale(radiusP);
+
+      // the bottomPoint;
+
+      vectorT.add(vectorPI, vectorPJ);
+      vectorT.add(vectorPK);
+      vectorT.normalize();
+      pointBottom.scaleAdd(radiusP, vectorT, probeCenter);
+
+      normixBottom = g3d.getInverseNormix(vectorT);
+    }
+  }
+
   class Torus {
     final int ixA, ixB;
     final Point3f center;
@@ -968,27 +1286,6 @@ class Sasurface1 {
     void calcScreens(Point3f[] points, Point3i[] screens) {
       for (int i = totalPointCount; --i >= 0; )
         viewer.transformPoint(points[i], screens[i]);
-    }
-
-    class TorusCavity {
-      final Cavity cavity;
-      final boolean rightHanded;
-      float angle = 0;
-      
-      TorusCavity(Cavity cavity, boolean rightHanded) {
-        this.cavity = cavity;
-        this.rightHanded = rightHanded;
-      }
-
-      void calcAngle(Point3f center, Vector3f radialVector,
-                     Vector3f radialVector90) {
-        torusCavityAngleVector.sub(cavity.probeCenter, center);
-        angle = torusCavityAngleVector.angle(radialVector);
-        float angleCavity90 = torusCavityAngleVector.angle(radialVector90);
-        if (angleCavity90 <= PI / 2)
-          return;
-        angle = (2 * PI) - angle;
-      }
     }
 
     class TorusSegment {
@@ -1332,323 +1629,26 @@ class Sasurface1 {
     }
   }
 
-  void allocateConvexVertexBitmap(int atomIndex) {
-    if (convexVertexMaps[atomIndex] == null)
-      convexVertexMaps[atomIndex] =
-        Bmp.allocateSetAllBits(geodesicVertexCount);
-  }
 
-  Torus createTorus(int indexI, int indexJ, Point3f torusCenterIJ,
-                    float torusRadius, boolean fullTorus) {
-    if (indexI >= indexJ)
-      throw new NullPointerException();
-    if (htToruses.get(indexI, indexJ) != null)
-      throw new NullPointerException();
-    allocateConvexVertexBitmap(indexI);
-    allocateConvexVertexBitmap(indexJ);
-    Torus torus = new Torus(indexI, indexJ, torusCenterIJ,
-                            torusRadius, fullTorus);
-    htToruses.put(indexI, indexJ, torus);
-    saveTorus(torus);
-    return torus;
-  }
-  
-  void saveTorus(Torus torus) {
-    if (toruses == null)
-      toruses = new Torus[128];
-    else if (torusCount == toruses.length)
-      toruses = (Torus[])Util.doubleLength(toruses);
-    toruses[torusCount++] = torus;
-  }
-
-  Torus getTorus(int atomIndexA, int atomIndexB) {
-    if (atomIndexA >= atomIndexB)
-      throw new NullPointerException();
-    return (Torus)htToruses.get(atomIndexA, atomIndexB);
-  }
-
-  float calcTorusRadius(float radiusA, float radiusB, float distanceAB2) {
-    float t1 = radiusA + radiusB + diameterP;
-    float t2 = t1*t1 - distanceAB2;
-    float diff = radiusA - radiusB;
-    float t3 = distanceAB2 - diff*diff;
-    if (t2 <= 0 || t3 <= 0 || distanceAB2 == 0) {
-      System.out.println("calcTorusRadius\n" +
-                         " radiusA=" + radiusA + " radiusB=" + radiusB +
-                         " distanceAB2=" + distanceAB2);
-      System.out.println("distanceAB=" + Math.sqrt(distanceAB2) +
-                         " t1=" + t1 + " t2=" + t2 +
-                         " diff=" + diff + " t3=" + t3);
-      throw new NullPointerException();
-    }
-    return (float)(0.5*Math.sqrt(t2)*Math.sqrt(t3)/Math.sqrt(distanceAB2));
-  }
-
-  void calcCavitiesI() {
-    if (radiusP == 0)
-      return;
-    if (cavities == null) {
-      cavities = new Cavity[32];
-      cavityCount = 0;
-    }
-    for (int iJ = neighborCount; --iJ >= 0; ) {
-      int sortedIndexJ = sortedNeighborIndexes[iJ];
-      if (neighborIndexes[sortedIndexJ] <= indexI)
-        continue;
-      setNeighborJ(sortedIndexJ);
-      // deal with corrupt files that have duplicate atoms
-      if (distanceIJ < 0.2)
-        continue;
-      // deal with one atom contained inside another
-      // as with a hydrogen in 1D68.pdb
-      if (radiusI + distanceIJ < radiusJ ||
-          radiusJ + distanceIJ < radiusI) {
-        System.out.println("embedded atom:" + indexI + "<->" + indexJ);
-        continue;
-      }
-      vectorIJ.sub(centerJ, centerI);
-      calcTorusCenter(centerI, radiiIP2, centerJ, radiiJP2, distanceIJ2,
-                      torusCenterIJ);
-      for (int iK = neighborCount; --iK >= 0; ) {
-        int sortedIndexK = sortedNeighborIndexes[iK];
-        if (neighborIndexes[sortedIndexK] <= indexJ)
-          continue;
-        setNeighborK(sortedIndexK);
-        // deal with corrupt files that have duplicate atoms
-        if (distanceIK < 0.1 || distanceJK < 0.1)
-          continue;
-        if (distanceJK >= radiiJP + radiiKP)
-          continue;
-        getCavitiesIJK();
-      }
-      checkFullTorusIJ();
-    }
-    // check for an isolated atom with no neighbors
-    if (neighborCount == 0)
-      allocateConvexVertexBitmap(indexI);
-  }
-
-  // check for a full torus with no cavities between I & J
-  void checkFullTorusIJ() {
-    if (getTorus(indexI, indexJ) == null) {
-      if (vectorIJ.z == 0)
-        unitRadialVectorT.set(vectorZ);
-      else {
-        unitRadialVectorT.set(-vectorIJ.y, vectorIJ.x, 0);
-        unitRadialVectorT.normalize();
-      }
-      float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
-      pointT.scaleAdd(torusRadiusIJ, unitRadialVectorT, torusCenterIJ);
-      if (checkProbeNotIJ(pointT))
-        createTorus(indexI, indexJ, torusCenterIJ, torusRadiusIJ, true);
-    }
-  }
-
-  private final Vector3f vectorIJ = new Vector3f();
-  private final Vector3f vectorIK = new Vector3f();
-  private final Vector3f normalIJK = new Vector3f();
-  private final Point3f torusCenterIJ = new Point3f();
-  private final Point3f torusCenterIK = new Point3f();
-  private final Point3f torusCenterJK = new Point3f();
-  private final Point3f probeBaseIJK = new Point3f();
-  private final Point3f cavityProbe = new Point3f();
-
-  void getCavitiesIJK() {
-    if (LOG)
-      System.out.println("getCavitiesIJK:" + indexI + "," + indexJ + "," +
-                         indexK);
-    vectorIK.sub(centerK, centerI);
-    normalIJK.cross(vectorIJ, vectorIK);
-    if (Float.isNaN(normalIJK.x))
-      return;
-    normalIJK.normalize();
-    calcTorusCenter(centerI, radiiIP2, centerK, radiiKP2, distanceIK2,
-                    torusCenterIK);
-    if (! intersectPlanes(vectorIJ, torusCenterIJ,
-                          vectorIK, torusCenterIK,
-                          normalIJK, centerI,
-                          probeBaseIJK))
-      return;
-    float probeHeight = calcProbeHeightIJK(probeBaseIJK);
-    if (probeHeight <= 0)
-      return;
-    Torus torusIJ = null, torusIK = null, torusJK = null;
-    for (int i = -1; i <= 1; i += 2) {
-      cavityProbe.scaleAdd(i * probeHeight, normalIJK, probeBaseIJK);
-      if (checkProbeAgainstNeighborsIJK(cavityProbe)) {
-        boolean rightHanded = (i == 1);
-        allocateConvexVertexBitmap(indexI);
-        allocateConvexVertexBitmap(indexJ);
-        allocateConvexVertexBitmap(indexK);
-        Cavity cavity = new Cavity(cavityProbe, probeBaseIJK);
-        addCavity(cavity);
-        if (LOG)
-          System.out.println(" indexI=" + indexI +
-                             " indexJ=" + indexJ +
-                             " indexK=" + indexK);
-        if (torusIJ == null && (torusIJ = getTorus(indexI, indexJ)) == null)
-          torusIJ = createTorus(indexI, indexJ, torusCenterIJ,
-                                calcTorusRadius(radiusI, radiusJ, distanceIJ2),
-                                false);
-        torusIJ.addCavity(cavity, rightHanded);
-        
-        if (torusIK == null && (torusIK = getTorus(indexI, indexK)) == null)
-          torusIK = createTorus(indexI, indexK, torusCenterIK,
-                                calcTorusRadius(radiusI, radiusK, distanceIK2),
-                                false);
-        torusIK.addCavity(cavity, !rightHanded);
-
-        if (torusJK == null && (torusJK = getTorus(indexJ, indexK)) == null) {
-          calcTorusCenter(centerJ, radiiJP2, centerK, radiiKP2, distanceJK2,
-                          torusCenterJK);
-          torusJK = createTorus(indexJ, indexK, torusCenterJK,
-                                calcTorusRadius(radiusJ, radiusK, distanceJK2),
-                                false);
-        }
-        torusJK.addCavity(cavity, rightHanded);
-      }
-    }
-  }
-
-
-  void calcTorusCenter(Point3f centerA, float radiiAP2,
-                       Point3f centerB, float radiiBP2, float distanceAB2,
-                       Point3f torusCenter) {
-    /*
-    System.out.println("calcTorusCenter(" + centerA + "," + radiiAP2 + "," +
-                       centerB + "," + radiiBP2 + "," +
-                       distanceAB2 + "," + ")");
-    */
-    torusCenter.sub(centerB, centerA);
-    torusCenter.scale((radiiAP2-radiiBP2) / distanceAB2);
-    torusCenter.add(centerA);
-    torusCenter.add(centerB);
-    torusCenter.scale(0.5f);
-    /*
-    System.out.println("torusCenter=" + torusCenter);
-    */
-  }
-
-  boolean checkProbeNotIJ(Point3f probeCenter) {
-    for (int i = neighborCount; --i >= 0; ) {
-      int neighborIndex = neighborIndexes[i];
-      if (neighborIndex == indexI ||
-          neighborIndex == indexJ)
-        continue;
-      if (probeCenter.distanceSquared(neighborCenters[i]) <
-          neighborPlusProbeRadii2[i])
-        return false;
-    }
-    return true;
-  }
-
-  boolean checkProbeAgainstNeighborsIJK(Point3f cavityProbe) {
-    for (int i = neighborCount; --i >= 0; ) {
-      int neighborIndex = neighborIndexes[i];
-      if (neighborIndex == indexI ||
-          neighborIndex == indexJ ||
-          neighborIndex == indexK)
-        continue;
-      if (cavityProbe.distanceSquared(neighborCenters[i]) <
-          neighborPlusProbeRadii2[i])
-        return false;
-    }
-    return true;
-  }
-  
-  final Vector3f v2v3 = new Vector3f();
-  final Vector3f v3v1 = new Vector3f();
-  final Vector3f v1v2 = new Vector3f();
-
-  boolean intersectPlanes(Vector3f v1, Point3f p1,
-                          Vector3f v2, Point3f p2,
-                          Vector3f v3, Point3f p3,
-                          Point3f intersection) {
-    v2v3.cross(v2, v3);
-    if (Float.isNaN(v2v3.x))
-      return false;
-    v3v1.cross(v3, v1);
-    if (Float.isNaN(v3v1.x))
-      return false;
-    v1v2.cross(v1, v2);
-    if (Float.isNaN(v1v2.x))
-      return false;
-    float denominator = v1.dot(v2v3);
-    if (denominator == 0)
-      return false;
-    vectorT.set(p1);
-    intersection.scale(v1.dot(vectorT), v2v3);
-    vectorT.set(p2);
-    intersection.scaleAdd(v2.dot(vectorT), v3v1, intersection);
-    vectorT.set(p3);
-    intersection.scaleAdd(v3.dot(vectorT), v1v2, intersection);
-    intersection.scale(1 / denominator);
-    if (Float.isNaN(intersection.x))
-      return false;
-    return true;
-  }
-  
-  float calcProbeHeightIJK(Point3f probeBaseIJK) {
-    float hypotenuse2 = radiiIP2;
-    vectorT.sub(probeBaseIJK, centerI);
-    float baseLength2 = vectorT.lengthSquared();
-    float height2 = hypotenuse2 - baseLength2;
-    if (height2 <= 0)
-      return 0;
-    return (float)Math.sqrt(height2);
-  }
-
-  void addCavity(Cavity cavity) {
-    if (cavityCount == cavities.length)
-      cavities = (Cavity[])Util.doubleLength(cavities);
-    cavities[cavityCount++] = cavity;
-  }
-
-  final Vector3f uIJK = new Vector3f();
-  final Vector3f p1 = new Vector3f();
-  final Vector3f p2 = new Vector3f();
-  final Vector3f p3 = new Vector3f();
-
-  // plus use vectorPI and vectorPJ from above;
-  final Vector3f vectorPK = new Vector3f();
-  final Vector3f vectorCrossIJ = new Vector3f();
-  final Vector3f vectorCrossIK = new Vector3f();
-  final Vector3f vectorCrossJK = new Vector3f();
-
-  class Cavity {
-
-    final Point3f probeCenter;
-    final Point3f pointBottom = new Point3f();
-    final short normixBottom;
+  class TorusCavity {
+    final Cavity cavity;
+    final boolean rightHanded;
+    float angle = 0;
     
-    // probeCenter is the center of the probe
-    // probeBase is the midpoint between this cavity
-    // and its mirror image on the other side
-    Cavity(Point3f probeCenter, Point3f probeBase) {
-      this.probeCenter = new Point3f(probeCenter);
-
-      vectorPI.sub(centerI, probeCenter);
-      vectorPI.normalize();
-      vectorPI.scale(radiusP);
-
-      vectorPJ.sub(centerJ, probeCenter);
-      vectorPJ.normalize();
-      vectorPJ.scale(radiusP);
-
-      vectorPK.sub(centerK, probeCenter);
-      vectorPK.normalize();
-      vectorPK.scale(radiusP);
-
-      // the bottomPoint;
-
-      vectorT.add(vectorPI, vectorPJ);
-      vectorT.add(vectorPK);
-      vectorT.normalize();
-      pointBottom.scaleAdd(radiusP, vectorT, probeCenter);
-
-      normixBottom = g3d.getInverseNormix(vectorT);
+    TorusCavity(Cavity cavity, boolean rightHanded) {
+      this.cavity = cavity;
+      this.rightHanded = rightHanded;
+    }
+    
+    void calcAngle(Point3f center, Vector3f radialVector,
+                   Vector3f radialVector90) {
+      torusCavityAngleVector.sub(cavity.probeCenter, center);
+      angle = torusCavityAngleVector.angle(radialVector);
+      float angleCavity90 = torusCavityAngleVector.angle(radialVector90);
+      if (angleCavity90 <= PI / 2)
+        return;
+      angle = (2 * PI) - angle;
     }
   }
-
 }
 

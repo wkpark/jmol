@@ -373,7 +373,7 @@ class SasurfaceRenderer extends ShapeRenderer {
     Point3i[] screens = sasCache.lookupTorusScreens(torus);
     short[] normixes = torus.normixes;
     int outerPointCount = torus.outerPointCount;
-    Sasurface1.Torus.TorusCavity[] torusCavities = torus.torusCavities;
+    Sasurface1.TorusCavity[] torusCavities = torus.torusCavities;
     int torusCavityIndex = 0;
     int ixP = 0;
     int torusSegmentCount = torus.torusSegmentCount;
@@ -411,7 +411,7 @@ class SasurfaceRenderer extends ShapeRenderer {
                                  int torusIndex,
                                  int torusPointCount,
                                  short[] colixes,
-                                 Sasurface1.Torus.TorusCavity torusCavity) {
+                                 Sasurface1.TorusCavity torusCavity) {
         Sasurface1.Cavity cavity = torusCavity.cavity;
     viewer.transformPoint(cavity.pointBottom, screenCavityBottom);
     short normixCavityBottom = cavity.normixBottom;

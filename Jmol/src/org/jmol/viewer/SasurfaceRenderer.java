@@ -360,7 +360,7 @@ class SasurfaceRenderer extends ShapeRenderer {
     return 1;
   }
 
-  static final int OUTER_TORUS_STEP_COUNT = Sasurface1.OUTER_TORUS_STEP_COUNT;
+  static final int OUTER_TORUS_STEP_COUNT = Sasurface.OUTER_TORUS_STEP_COUNT;
 
   final AxisAngle4f aaT = new AxisAngle4f();
   final AxisAngle4f aaT1 = new AxisAngle4f();

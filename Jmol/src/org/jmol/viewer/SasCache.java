@@ -158,7 +158,7 @@ class SasCache {
   int[] torusCacheLrus;
   Vector3f[] torusCacheTransformedGeodesicVectors;
 
-  static final int MAX_TORUS_POINTS = Sasurface1.MAX_TORUS_POINTS;
+  static final int MAX_TORUS_POINTS = Sasurface.MAX_TORUS_POINTS;
 
   Point3f[] torusPointsT;
 

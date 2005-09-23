@@ -92,8 +92,13 @@ class Sasurface1 {
 
   boolean hide;
 
-  private final static int GEODESIC_CALC_LEVEL =
-    Sasurface.MAX_GEODESIC_RENDERING_LEVEL;
+  private int GEODESIC_CALC_LEVEL = Sasurface.MAX_GEODESIC_RENDERING_LEVEL;
+  private int MAX_FULL_TORUS_STEP_COUNT = Sasurface.MAX_FULL_TORUS_STEP_COUNT;
+  private int OUTER_TORUS_STEP_COUNT = Sasurface.OUTER_TORUS_STEP_COUNT;
+
+  private float TARGET_INNER_TORUS_STEP_ANGLE =
+    (float)(2 * Math.PI / (MAX_FULL_TORUS_STEP_COUNT - 1));
+
   int geodesicRenderingLevel = GEODESIC_CALC_LEVEL;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
@@ -117,6 +122,8 @@ class Sasurface1 {
   int[] edgeVertexesT;
   int[] edgeVertexesAT;
   int[] edgeVertexesBT;
+
+  SasGem gem;
 
   final private static boolean LOG = false;
 
@@ -169,6 +176,8 @@ class Sasurface1 {
     edgeVertexesT = Bmp.allocateBitmap(geodesicVertexCount);
     edgeVertexesAT = Bmp.allocateBitmap(geodesicVertexCount);
     edgeVertexesBT = Bmp.allocateBitmap(geodesicVertexCount);
+
+    gem = new SasGem(viewer, g3d, frame, GEODESIC_CALC_LEVEL);
   }
 
   void clearAll() {
@@ -499,149 +508,6 @@ class Sasurface1 {
     distanceJK = (float)Math.sqrt(distanceJK2);
   }
 
-  final Vector3f centerVectorT = new Vector3f();
-  final Point3f vertexPointT = new Point3f();
-  final Vector3f vertexVectorT = new Vector3f();
-  final Point3f projectedPointT = new Point3f();
-  final Vector3f projectedVectorT = new Vector3f();
-
-  int[] bmpNotClipped;
-
-  void findClippedGeodesicEdge(boolean isEdgeA,
-                               Point3f geodesicCenter, float radius,
-                               Point3f planeCenter, Vector3f unitNormal,
-                               int[] visibleVertexMap,
-                               int[] edgeVertexMap) {
-    if (bmpNotClipped == null)
-      bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
-    else
-      Bmp.clearBitmap(bmpNotClipped);
-    Bmp.clearBitmap(edgeVertexMap);
-    int unclippedCount = 0;
-    for (int i = -1; (i = Bmp.nextSetBit(visibleVertexMap, i + 1)) >= 0; ) {
-      //    for (int i = geodesicVertexCount; --i >= 0; ) {
-      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
-                            geodesicCenter);
-      vertexVectorT.sub(vertexPointT, planeCenter);
-      float dot = vertexVectorT.dot(unitNormal);
-      if (isEdgeA)
-        dot = -dot;
-      if (dot >= 0) {
-        ++unclippedCount;
-        Bmp.setBit(bmpNotClipped, i);
-      }
-    }
-    if (unclippedCount == 0)
-      return; // everything is clipped ... inside another atom
-    if (unclippedCount == geodesicVertexCount) {
-      findClippedFaceVertexes(isEdgeA, geodesicCenter, radius,
-                              planeCenter, unitNormal, edgeVertexMap);
-      return;
-    }
-    for (int v = -1; (v = Bmp.nextSetBit(bmpNotClipped, v + 1)) >= 0; ) {
-      int neighborsOffset = v * 6;
-      for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
-        int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
-        if (! Bmp.getBit(bmpNotClipped, neighbor)) {
-          Bmp.setBit(edgeVertexMap, v);
-          break;
-        }
-      }
-    }
-  }
-  
-  int findGeodesicEdge(int[] visibleVertexMap, int[] edgeVertexMap) {
-    int edgeVertexCount = 0;
-    Bmp.clearBitmap(edgeVertexMap);
-    for (int v = -1; (v = Bmp.nextSetBit(visibleVertexMap, v + 1)) >= 0; ) {
-      int neighborsOffset = v * 6;
-      for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
-        int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
-        if (! Bmp.getBit(visibleVertexMap, neighbor)) {
-          Bmp.setBit(edgeVertexMap, v);
-          ++edgeVertexCount;
-          break;
-        }
-      }
-    }
-    return edgeVertexCount;
-  }
-
-  short findClosestVertex(short normix, int[] edgeVertexMap) {
-    // note that there is some other code in Normix3D.java that
-    // does the same thing. See which algorithm works better.
-    int champion = -1;
-    float championAngle = PI;
-    Vector3f vector = geodesicVertexVectors[normix];
-    for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
-      float angle = vector.angle(geodesicVertexVectors[v]);
-      if (angle < championAngle) {
-        championAngle = angle;
-        champion = v;
-      }
-    }
-    return (short)champion;
-  }
-
-  /*
-   * only a small piece of the sphere is clipped.
-   * That is, none of the vertexes themselves are clipped,
-   * but only a piece that is in within a face.
-   * So, find the three vertexes that define the face in
-   * which the clipped portion of the sphere exists.
-   *
-   * not working well ... cases are more pathological
-   * just disable this.
-   */
-  void findClippedFaceVertexes(boolean isEdgeA,
-                               Point3f geodesicCenter, float radius,
-                               Point3f planeCenter, Vector3f unitNormal,
-                               int[] edgeVertexMap) {
-    if (true)
-      return; // works poorly;
-    // isEdgeA is not accounted for in this old code below
-    float goldLength, silverLength, bronzeLength;
-    goldLength = silverLength = bronzeLength = Float.MAX_VALUE;
-    short goldVertex, silverVertex, bronzeVertex;
-    goldVertex = silverVertex = bronzeVertex = -1;
-    for (int i = geodesicVertexCount; --i >= 0; ) {
-      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
-                            geodesicCenter);
-      vertexVectorT.sub(vertexPointT, planeCenter);
-      float challengerLength = vertexVectorT.length();
-      if (challengerLength < goldLength) {
-        bronzeLength = challengerLength;
-        bronzeVertex = (short)i;
-      }
-      if (challengerLength < silverLength) {
-        bronzeLength = silverLength;
-        bronzeVertex = silverVertex;
-        silverLength = challengerLength;
-        silverVertex = (short)i;
-      }
-      if (challengerLength < goldLength) {
-        silverLength = goldLength;
-        silverVertex = goldVertex;
-        goldLength = challengerLength;
-        goldVertex = (short)i;
-      }
-    }
-    // now, confirm that the 3 closest vertexes are actually neighbors
-    // that form a face;
-    if (! g3d.isNeighborVertex(goldVertex, silverVertex,
-                               geodesicRenderingLevel) ||
-        ! g3d.isNeighborVertex(goldVertex, bronzeVertex,
-                               geodesicRenderingLevel) ||
-        ! g3d.isNeighborVertex(silverVertex, bronzeVertex,
-                               geodesicRenderingLevel)) {
-      System.out.println("Strange condition 0xFACE");
-      return;
-    }
-    Bmp.setBit(edgeVertexMap, goldVertex);
-    Bmp.setBit(edgeVertexMap, silverVertex);
-    Bmp.setBit(edgeVertexMap, bronzeVertex);
-  }
-
   void calcVectors0and90(Point3f planeCenter, Vector3f axisVector,
                          Point3f planeZeroPoint,
                          Vector3f vector0, Vector3f vector90) {
@@ -651,67 +517,30 @@ class Sasurface1 {
     matrixT.transform(vector0, vector90);
   }
 
+  ////////////////////////////////////////////////////////////////
+
+  final Vector3f centerVectorT = new Vector3f();
+  final Point3f vertexPointT = new Point3f();
+  final Vector3f vertexVectorT = new Vector3f();
+  final Point3f projectedPointT = new Point3f();
+  final Vector3f projectedVectorT = new Vector3f();
+
+  int[] bmpNotClipped;
+
   int countStitchesT;
   short[] stitchesT = new short[64];
   float[] segmentVertexAnglesT = new float[MAX_FULL_TORUS_STEP_COUNT];
   short[] segmentVertexesT = new short[MAX_FULL_TORUS_STEP_COUNT];
 
-  int projectedCountT;
-  short[] projectedVertexesT = new short[64];
-  float[] projectedAnglesT = new float[64];
-  float[] projectedDistancesT = new float[64];
   final Vector3f vector0T = new Vector3f();
   final Vector3f vector90T = new Vector3f();
   final Point3f planeCenterT = new Point3f();
-
-  void projectAndSortGeodesicPoints(Point3f geodesicCenter, float radius,
-                                    Point3f planeCenter,
-                                    Vector3f axisUnitVector,
-                                    Point3f planeZeroPoint,
-                                    int[] edgeVertexMap,
-                                    boolean dump) {
-    Vector3f vector0T = this.vector0T;
-    Vector3f vector90T = this.vector90T;
-    Point3f vertexPointT = this.vertexPointT;
-    Vector3f vertexVectorT = this.vertexVectorT;
-    Point3f projectedPointT = this.projectedPointT;
-    Vector3f projectedVectorT = this.projectedVectorT;
-
-    calcVectors0and90(planeCenter, axisUnitVector, planeZeroPoint,
-                      vector0T, vector90T);
-
-    float radiansPerAngstrom = PI / radius;
-    
-    projectedCountT = 0;
-    for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
-      vertexPointT.scaleAdd(radius, geodesicVertexVectors[v], geodesicCenter);
-      vertexVectorT.sub(vertexPointT, planeCenter);
-      float distance = axisUnitVector.dot(vertexVectorT);
-      projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
-      projectedVectorT.sub(projectedPointT, planeCenter);
-      float angle = calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
-      addProjectedPoint((short) v, angle, distance * radiansPerAngstrom);
-    }
-    sortProjectedVertexes();
-  }
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
                                Point3f planePoint, Point3f planeCenterPoint) {
     vectorT.sub(axisPoint, planePoint);
     float distance = axisUnitVector.dot(vectorT);
     planeCenterPoint.scaleAdd(-distance, axisUnitVector, axisPoint);
-  }
-
-  void addProjectedPoint(short vertex, float angle, float radians) {
-    if (projectedCountT == projectedVertexesT.length) {
-      projectedVertexesT = Util.doubleLength(projectedVertexesT);
-      projectedAnglesT = Util.doubleLength(projectedAnglesT);
-      projectedDistancesT = Util.doubleLength(projectedDistancesT);
-    }
-    projectedVertexesT[projectedCountT] = vertex;
-    projectedAnglesT[projectedCountT] = angle;
-    projectedDistancesT[projectedCountT] = radians;
-    ++projectedCountT;
   }
 
   static float calcAngleInThePlane(Vector3f radialVector0,
@@ -722,27 +551,6 @@ class Sasurface1 {
     if (angle90 > PI/2)
       angle = 2*PI - angle;
     return angle;
-  }
-
-  void sortProjectedVertexes() {
-    int projectedCount = projectedCountT;
-    short[] projectedVertexes = projectedVertexesT;
-    float[] projectedAngles = projectedAnglesT;
-    float[] projectedDistances = projectedDistancesT;
-    for (int i = projectedCount; --i > 0; )
-      for (int j = i; --j >= 0; )
-        if (projectedAngles[j] > projectedAngles[i]) {
-          Util.swap(projectedAngles, i, j);
-          Util.swap(projectedDistances, i, j);
-          Util.swap(projectedVertexes, i, j);
-        }
-  }
-
-  void duplicateFirstProjectedGeodesicPoint() {
-    System.out.println("duplicateFirstProjectedGeodesicPoint");
-    addProjectedPoint(projectedVertexesT[0],
-                      projectedAnglesT[0] + 2*PI,
-                      projectedDistancesT[0]);
   }
 
   float angleABC(float xA, float yA, float xB, float yB, float xC, float yC) {
@@ -1007,23 +815,11 @@ class Sasurface1 {
 
   float[] cavityAngles = new float[32];
 
-  // note that when there is a full torus
-  // the 0 point will be repeated as 2*PI
-  private final static  int MAX_FULL_TORUS_STEP_COUNT = 13;
-  private final static float TARGET_INNER_TORUS_STEP_ANGLE =
-    (float)(2 * Math.PI / (MAX_FULL_TORUS_STEP_COUNT - 1));
-
-  // note that the outer torus is at most 180 degrees
-  // so this step count is over 180 degrees, not 360
-  final static int OUTER_TORUS_STEP_COUNT = 11;
   final Vector3f outerRadials[] = new Vector3f[OUTER_TORUS_STEP_COUNT];
   {
     for (int i = outerRadials.length; --i >= 0; )
       outerRadials[i] = new Vector3f();
   }
-
-  final static int MAX_TORUS_POINTS =
-    MAX_FULL_TORUS_STEP_COUNT * OUTER_TORUS_STEP_COUNT;
 
   Point3f[] convexEdgePoints;
   // what is the max size of this thing?
@@ -1414,8 +1210,8 @@ class Sasurface1 {
         fillSegmentVertexAngles(isEdgeA);
         stitchEm(stepCount, segmentVertexesT, segmentVertexAnglesT,
                  minProjectedIndex, maxProjectedIndex,
-                 projectedVertexesT,
-                 projectedAnglesT, projectedDistancesT);
+                 projectedVertexes,
+                 projectedAngles, projectedDistances);
       }
 
       void stitchEm(int torusCount, short[] torusVertexes, float[] torusAngles,
@@ -1579,26 +1375,20 @@ class Sasurface1 {
       float atomRadius = atom.getVanderwaalsRadiusFloat();
       Point3f atomCenter = atom.point3f;
       boolean dump = (ixA == 0 && (ixB == 1 || ixB == 3));
-      int edgeCount = findGeodesicEdge(convexVertexMaps[ix], edgeVertexesT);
+      int edgeCount =
+        gem.findGeodesicEdge(convexVertexMaps[ix], edgeVertexesT);
       if (edgeCount > 0) {
         calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
-        projectAndSortGeodesicPoints(atomCenter, atomRadius,
-                                     centerPointT, axisUnitVector, zeroPointT,
-                                     edgeVertexesT, dump);
+        gem.projectAndSortGeodesicPoints(atomCenter, atomRadius,
+                                         centerPointT, axisUnitVector,
+                                         zeroPointT,
+                                         edgeVertexesT, dump);
         if (torusCavities == null) // full torus
-          duplicateFirstProjectedGeodesicPoint();
-        if (dump) {
-          for (int i = 0; i < projectedCountT; ++i) {
-            System.out.println("" + i + " : " +
-                               projectedVertexesT[i] + " : " +
-                               projectedAnglesT[i] + " @ " +
-                               projectedDistancesT[i]);
-          }
-        }
-        stitchSegmentsWithSortedProjectedVertexes(projectedCountT,
-                                                  projectedVertexesT,
-                                                  projectedAnglesT,
-                                                  projectedDistancesT,
+          gem.duplicateFirstProjectedGeodesicPoint();
+        stitchSegmentsWithSortedProjectedVertexes(gem.projectedCount,
+                                                  gem.projectedVertexes,
+                                                  gem.projectedAngles,
+                                                  gem.projectedDistances,
                                                   isEdgeA);
       }
     }
@@ -1633,21 +1423,21 @@ class Sasurface1 {
       calcClippingPlaneCenterPoints(centerPointAT, centerPointBT);
       Atom atomA = frame.atoms[ixA];
       Atom atomB = frame.atoms[ixB];
-      findClippedGeodesicEdge(true, atomA.point3f,
-                              atomA.getVanderwaalsRadiusFloat(),
-                              centerPointAT, axisUnitVector,
-                              convexVertexMaps[ixA],
-                              edgeVertexesA);
-      findClippedGeodesicEdge(false, atomB.point3f,
-                              atomB.getVanderwaalsRadiusFloat(),
-                              centerPointBT, axisUnitVector,
-                              convexVertexMaps[ixA],
-                              edgeVertexesB);
+      gem.findClippedGeodesicEdge(true, atomA.point3f,
+                                  atomA.getVanderwaalsRadiusFloat(),
+                                  centerPointAT, axisUnitVector,
+                                  convexVertexMaps[ixA],
+                                  edgeVertexesA);
+      gem.findClippedGeodesicEdge(false, atomB.point3f,
+                                  atomB.getVanderwaalsRadiusFloat(),
+                                  centerPointBT, axisUnitVector,
+                                  convexVertexMaps[ixA],
+                                  edgeVertexesB);
     }
 
     void findEdgeVertexes(int[] edgeVertexesA, int[] edgeVertexesB) {
-      findGeodesicEdge(convexVertexMaps[ixA], edgeVertexesA);
-      findGeodesicEdge(convexVertexMaps[ixB], edgeVertexesB);
+      gem.findGeodesicEdge(convexVertexMaps[ixA], edgeVertexesA);
+      gem.findGeodesicEdge(convexVertexMaps[ixB], edgeVertexesB);
     }
   }
 

@@ -30,7 +30,20 @@ import java.util.BitSet;
 
 class Sasurface extends Shape {
 
-  final static int MAX_GEODESIC_RENDERING_LEVEL = 2;
+  static int MAX_GEODESIC_RENDERING_LEVEL = 2;
+
+  // note that when there is a full torus
+  // the 0 point will be repeated as 2*PI
+  static int MAX_FULL_TORUS_STEP_COUNT = 13;
+
+  // note that the outer torus is at most 180 degrees
+  // so this step count is over 180 degrees, not 360
+  static int OUTER_TORUS_STEP_COUNT = 11;
+
+  final static int MAX_TORUS_POINTS =
+    MAX_FULL_TORUS_STEP_COUNT * OUTER_TORUS_STEP_COUNT;
+
+
   int surfaceCount;
   Sasurface1[] surfaces = new Sasurface1[4];
 

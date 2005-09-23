@@ -1778,7 +1778,7 @@
   <fah_proj number="755" name="p755_vln2.8-0.4nopbc" public="y" file="y"
     server="171.64.122.130" atoms="5413" preferred="10"
     credit="41" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="756" name="p756_groel-halfch-10" public="n" file="y"
+  <fah_proj number="756" name="p756_groel-halfch-10" public="y" file="y"
     server="171.64.122.68" atoms="267831" preferred="28" deadline="41"
     credit="284" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
@@ -3605,10 +3605,10 @@
   <fah_proj number="1808" name="p1808_Collagen_Brodsky_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1125" preferred="30" deadline="44"
     credit="153" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1809" name="p1809_Collagen_POG10new_refolding" public="n" file="y"
+  <fah_proj number="1809" name="p1809_Collagen_POG10new_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1116" preferred="30" deadline="44"
     credit="153" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1850" name="p1850_Myosin6_PT_US" public="n"
+  <fah_proj number="1850" name="p1850_Myosin6_PT_US" public="y" file="y"
     server="171.65.103.158" atoms="1205" preferred="35" deadline="52"
     credit="182" frames="100" code="A" contact="spark7"/>
 
@@ -3819,16 +3819,19 @@
   <fah_proj number="2062" name="p2062_BBA5_pfold" public="y" file="y"
     server="171.64.122.136" atoms="385" preferred="36" deadline="53"
     credit="187" frames="100" code="GB" contact="luttmann"/>
-  <fah_proj number="2063" name="p2063_abeta_agbnp" public="n" file="y"
+  <fah_proj number="2063" name="p2063_abeta_agbnp" public="y" file="y"
     server="171.64.122.70" atoms="2544" preferred="27" deadline="39"
     credit="136" frames="100" code="GB" contact="luttmann"/>
-  <fah_proj number="2064" name="p2064_abeta_4mer_agbnp" public="n" file="y"
+  <fah_proj number="2064" name="p2064_abeta_4mer_agbnp" public="y" file="y"
     server="171.64.122.70" atoms="2092" preferred="23" deadline="34"
     credit="118" frames="100" code="GB" contact="luttmann"/>
-  <fah_proj number="2065" name="p2065_A21_helix_in_OPLSAA" public="n" file="y"
+  <fah_proj number="2065" name="p2065_A21_helix_in_OPLSAA" public="y" file="y"
     server="171.64.122.70" atoms="222" preferred="24" deadline="35"
     credit="120" frames="100" code="GB" contact="luttmann"/>
-  <fah_proj number="2066" name="p2066_A21_agbnp_amber99" public="n" file="y"
+  <fah_proj number="2066" name="p2066_A21_agbnp_amber99" public="y" file="y"
     server="171.64.122.70" atoms="222" preferred="23" deadline="34"
     credit="117" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2067" name="p2067_A21_agbnp_amber99" public="n" file="y"
+    server="171.64.122.70" atoms="222" preferred="43" deadline="63"
+    credit="225" frames="100" code="GB" contact="luttmann"/>
 </fah_projects>

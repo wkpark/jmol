@@ -34,14 +34,17 @@ import java.util.BitSet;
 import java.util.Enumeration;
 
 class SasNeighborFinder {
-  Frame frame;
-  Atom[] atoms;
-  Sasurface1 sas1;
+  final Frame frame;
+  final Sasurface1 sas1;
+  final Graphics3D g3d;
+
+  final Atom[] atoms;
   private final static boolean LOG = false;
 
-  SasNeighborFinder(Frame frame, Sasurface1 sas1) {
+  SasNeighborFinder(Frame frame, Sasurface1 sas1, Graphics3D g3d) {
     this.sas1 = sas1;
     this.frame = frame;
+    this.g3d = g3d;
     atoms = frame.atoms;
     maxVanderwaalsRadius = frame.getMaxVanderwaalsRadius();
   }
@@ -188,6 +191,10 @@ class SasNeighborFinder {
   private final Point3f torusCenterJK = new Point3f();
   private final Point3f probeBaseIJK = new Point3f();
   private final Point3f probeCenter = new Point3f();
+
+  private final Vector3f vectorPI = new Vector3f();
+  private final Vector3f vectorPJ = new Vector3f();
+  private final Vector3f vectorPK = new Vector3f();
 
   void calcCavitiesI() {
     if (radiusP == 0)
@@ -340,18 +347,11 @@ class SasNeighborFinder {
     for (int i = -1; i <= 1; i += 2) {
       probeCenter.scaleAdd(i * probeHeight, normalIJK, probeBaseIJK);
       if (checkProbeAgainstNeighborsIJK(probeCenter)) {
-        Sasurface1.Cavity cavity =
-          sas1.createCavity(indexI, indexJ, indexK,
-                            centerI, centerJ, centerK,
-                            probeCenter, radiusP, probeBaseIJK);
-        /*
-        sas1.allocateConvexVertexBitmap(indexI);
-        sas1.allocateConvexVertexBitmap(indexJ);
-        sas1.allocateConvexVertexBitmap(indexK);
-        Sasurface1.Cavity cavity =
-          new Sasurface1.Cavity(probeCenter, probeBaseIJK);
-        addCavity(cavity);
-        */
+        SasCavity cavity =
+          new SasCavity(centerI, centerJ, centerK,
+                        probeCenter, radiusP, probeBaseIJK,
+                        vectorPI, vectorPJ, vectorPK, vectorT, g3d);
+        sas1.addCavity(indexI, indexJ, indexK, cavity);
         boolean rightHanded = (i == 1);
         if (LOG)
           System.out.println(" indexI=" + indexI +

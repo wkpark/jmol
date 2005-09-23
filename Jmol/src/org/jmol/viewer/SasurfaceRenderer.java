@@ -412,7 +412,7 @@ class SasurfaceRenderer extends ShapeRenderer {
                                  int torusPointCount,
                                  short[] colixes,
                                  Sasurface1.TorusCavity torusCavity) {
-        Sasurface1.Cavity cavity = torusCavity.cavity;
+    SasCavity cavity = torusCavity.cavity;
     viewer.transformPoint(cavity.pointBottom, screenCavityBottom);
     short normixCavityBottom = cavity.normixBottom;
     Point3i torusScreenLast = torusScreens[torusIndex];

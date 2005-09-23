@@ -110,7 +110,6 @@ class Sasurface1 {
   int geodesicFaceCount;
   short[] geodesicFaceVertexes;
   short[] geodesicNeighborVertexes;
-  int[] tempFaceMap;
 
   int cavityCount;
   Cavity[] cavities;
@@ -154,7 +153,6 @@ class Sasurface1 {
     geodesicVertexVectors = g3d.getGeodesicVertexVectors();
     geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_CALC_LEVEL);
     geodesicFaceCount = g3d.getGeodesicFaceCount(geodesicRenderingLevel);
-    tempFaceMap = Bmp.allocateBitmap(geodesicFaceCount);
     geodesicFaceVertexes =
       g3d.getGeodesicFaceVertexes(geodesicRenderingLevel);
     geodesicNeighborVertexes =
@@ -221,14 +219,12 @@ class Sasurface1 {
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
       torus.stitchWithGeodesics();
-      // torus.checkTorusSegments();
-      //      torus.connectWithGeodesics();
     }
 
     for (int i = atomCount; --i >= 0; ) {
       int[] vertexMap = convexVertexMaps[i];
       if (vertexMap != null)
-        convexFaceMaps[i] = calcFaceBitmap(vertexMap);
+        convexFaceMaps[i] = gem.calcFaceBitmap(vertexMap);
     }
 
     long timeElapsed = System.currentTimeMillis() - timeBegin;
@@ -576,17 +572,6 @@ class Sasurface1 {
   }
   
   ////////////////////////////////////////////////////////////////
-
-  int[] calcFaceBitmap(int[] vertexMap) {
-    Bmp.clearBitmap(tempFaceMap);
-    for (int i = geodesicFaceCount, j = 3 * (i - 1); --i >= 0; j -= 3) {
-      if (Bmp.getBit(vertexMap, geodesicFaceVertexes[j]) &&
-          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 1]) &&
-          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 2]))
-        Bmp.setBit(tempFaceMap, i);
-    }
-    return Bmp.copyMinimalBitmap(tempFaceMap);
-  }
 
   // I have no idea what this number should be
   int neighborCount;

@@ -114,7 +114,7 @@ public final class Bmp {
       bmDestination[i] |= bmSource[i];
   }
 
-  public final static int[] copyMinimalBitmap(int[] bitmap) {
+  public final static int[] allocMinimalCopy(int[] bitmap) {
     int indexLast;
     for (indexLast = bitmap.length;
          --indexLast >= 0 && bitmap[indexLast] == 0; )

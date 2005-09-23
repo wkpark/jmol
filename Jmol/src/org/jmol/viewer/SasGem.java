@@ -60,6 +60,7 @@ class SasGem {
   final Vector3f projectedVectorT = new Vector3f();
 
   final int[] bmpNotClipped;
+  final int[] faceMapT;
 
   private final static float PI = (float)Math.PI;
   private final static int MAX_FULL_TORUS_STEP_COUNT =
@@ -78,6 +79,7 @@ class SasGem {
     geodesicNeighborVertexes = g3d.getGeodesicNeighborVertexes(geodesicLevel);
 
     bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
+    faceMapT = Bmp.allocateBitmap(geodesicFaceCount);
   }
 
 
@@ -456,6 +458,17 @@ class SasGem {
       if (dot < 0)
         Bmp.clearBit(geodesicVertexMap, i);
     }
+  }
+
+  int[] calcFaceBitmap(int[] vertexMap) {
+    Bmp.clearBitmap(faceMapT);
+    for (int i = geodesicFaceCount, j = 3 * (i - 1); --i >= 0; j -= 3) {
+      if (Bmp.getBit(vertexMap, geodesicFaceVertexes[j]) &&
+          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 1]) &&
+          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 2]))
+        Bmp.setBit(faceMapT, i);
+    }
+    return Bmp.allocMinimalCopy(faceMapT);
   }
 }
 

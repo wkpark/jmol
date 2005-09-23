@@ -125,16 +125,14 @@ class Sasurface1 {
 
   SasGem gem;
 
-  final private static boolean LOG = false;
+  private final static boolean LOG = false;
 
-  private final static short[] torusStepCounts = {20,40,40,80};
-
-  final Point3f pointT = new Point3f();
-  final Point3f pointT1 = new Point3f();
-  final Point3f zeroPointT = new Point3f();
-  final Point3f centerPointT = new Point3f();
-  final Point3f centerPointAT = new Point3f();
-  final Point3f centerPointBT = new Point3f();
+  private final Point3f pointT = new Point3f();
+  private final Point3f pointT1 = new Point3f();
+  private final Point3f zeroPointT = new Point3f();
+  private final Point3f centerPointT = new Point3f();
+  private final Point3f centerPointAT = new Point3f();
+  private final Point3f centerPointBT = new Point3f();
 
   private final static float PI = (float)Math.PI;
 
@@ -247,70 +245,6 @@ class Sasurface1 {
   void setSize(int size, BitSet bsSelected) {
     System.out.println("Who is calling me?");
     throw new NullPointerException();
-    /*
-    short mad = (short)size;
-    this.mad = mad;
-    viewer.setSolventOn(true);
-    if (radiusP != viewer.getCurrentSolventProbeRadius()) {
-      surfaceConvexMax = 0;
-      convexVertexMaps = null;
-      convexFaceMaps = null;
-      torusCount = 0;
-      toruses = null;
-      cavityCount = 0;
-      cavities = null;
-      radiusP = viewer.getCurrentSolventProbeRadius();
-      diameterP = 2 * radiusP;
-      calcProbeVectors();
-    }
-    int atomCount = frame.atomCount;
-    if (convexVertexMaps == null) {
-      convexVertexMaps = new int[atomCount][];
-      convexFaceMaps = new int[atomCount][];
-      colixesConvex = new short[atomCount];
-    }
-    // always delete old surfaces for selected atoms
-    for (int i = atomCount; --i >= 0; )
-      if (bsSelected.get(i)) {
-        convexVertexMaps[i] = null;
-        convexFaceMaps[i] = null;
-      }
-    deleteUnusedToruses();
-
-    htToruses = new IntInt2ObjHash();
-    // now, calculate surface for selected atoms
-    if (mad != 0) {
-      long timeBegin = System.currentTimeMillis();
-      for (int i = 0; i < atomCount; ++i) // make this loop count up
-        if (bsSelected.get(i)) {
-          setAtomI(i);
-          getNeighbors(bsSelected);
-          sortNeighborIndexes();
-          calcCavitiesI();
-          if (convexVertexMaps[i] != null)
-            calcVertexBitmapI();
-        }
-      for (int i = atomCount; --i >= 0; ) {
-        int[] vertexMap = convexVertexMaps[i];
-        if (vertexMap != null)
-            convexFaceMaps[i] = calcFaceBitmap(vertexMap);
-      }
-
-      long timeElapsed = System.currentTimeMillis() - timeBegin;
-      System.out.println("atomCount=" + atomCount);
-      System.out.println("Surface construction time = " + timeElapsed + " ms");
-    }
-    htToruses = null;
-    if (convexVertexMaps == null)
-      surfaceConvexMax = 0;
-    else {
-      // update this count to speed up surfaceRenderer
-      int i;
-      for (i = atomCount; --i >= 0 && convexVertexMaps[i] == null; )
-        {}
-      surfaceConvexMax = i + 1;
-    }
-    */
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -497,22 +431,16 @@ class Sasurface1 {
 
   ////////////////////////////////////////////////////////////////
 
-  final Vector3f centerVectorT = new Vector3f();
-  final Point3f vertexPointT = new Point3f();
-  final Vector3f vertexVectorT = new Vector3f();
-  final Point3f projectedPointT = new Point3f();
-  final Vector3f projectedVectorT = new Vector3f();
+  private final Vector3f centerVectorT = new Vector3f();
+  private final Point3f vertexPointT = new Point3f();
+  private final Vector3f vertexVectorT = new Vector3f();
 
-  int[] bmpNotClipped;
+  private int[] bmpNotClipped;
 
-  int countStitchesT;
-  short[] stitchesT = new short[64];
-  float[] segmentVertexAnglesT = new float[MAX_FULL_TORUS_STEP_COUNT];
-  short[] segmentVertexesT = new short[MAX_FULL_TORUS_STEP_COUNT];
-
-  final Vector3f vector0T = new Vector3f();
-  final Vector3f vector90T = new Vector3f();
-  final Point3f planeCenterT = new Point3f();
+  private int countStitchesT;
+  private short[] stitchesT = new short[64];
+  private float[] segmentVertexAnglesT = new float[MAX_FULL_TORUS_STEP_COUNT];
+  private short[] segmentVertexesT = new short[MAX_FULL_TORUS_STEP_COUNT];
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
                                Point3f planePoint, Point3f planeCenterPoint) {
@@ -990,7 +918,7 @@ class Sasurface1 {
         }
       }
     }
-      
+
     void checkCavityCorrectness2() {
       if (torusCavities == null)
         return; // full torus

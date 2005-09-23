@@ -1489,32 +1489,8 @@ class Sasurface1 {
       int ix = isEdgeA ? ixA : ixB;
       Atom atom = frame.atoms[ix];
       calcZeroPoint(isEdgeA, zeroPointT);
-      clipGeodesic(isEdgeA, atom.point3f, atom.getVanderwaalsRadiusFloat(),
-                   zeroPointT, convexVertexMaps[ix]);
-    }
-
-    void clipGeodesic(boolean isEdgeA, Point3f geodesicCenter, float radius,
-                      Point3f planePoint, int[] geodesicVertexMap) {
-      centerVectorT.sub(geodesicCenter, planePoint);
-      float dotCenter = centerVectorT.dot(axisUnitVector);
-      if (isEdgeA)
-        dotCenter = -dotCenter;
-      if (dotCenter >= radius) // all points are visible
-        return;
-      if (dotCenter < -radius) { // all points are clipped
-        Bmp.clearBitmap(geodesicVertexMap);
-        return;
-      }
-      for (int i = -1; (i = Bmp.nextSetBit(geodesicVertexMap, i + 1)) >= 0; ) {
-        vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
-                              geodesicCenter);
-        vertexVectorT.sub(vertexPointT, planePoint);
-        float dot = vertexVectorT.dot(axisUnitVector);
-        if (isEdgeA)
-          dot = -dot;
-        if (dot < 0)
-          Bmp.clearBit(geodesicVertexMap, i);
-      }
+      gem.clipGeodesic(isEdgeA, atom.point3f, atom.getVanderwaalsRadiusFloat(),
+                       zeroPointT, axisUnitVector, convexVertexMaps[ix]);
     }
 
     void calcZeroPoint(boolean edgeA, Point3f zeroPoint) {

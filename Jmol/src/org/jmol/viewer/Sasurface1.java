@@ -138,19 +138,8 @@ class Sasurface1 {
 
   private final static float PI = (float)Math.PI;
 
-  final static int segmentsPerFullCircle = 50;
-  final static float radiansPerSegment = 2 * PI / segmentsPerFullCircle;
-
-  final Point3f[] pointStripT = new Point3f[segmentsPerFullCircle];
-  final Vector3f stripSurfaceVector = new Vector3f();
-  final Vector3f outerSurfaceVector = new Vector3f();
-  final Point3f outerCenterPoint = new Point3f();
-  final Point3f outerSurfacePoint = new Point3f();
-
   final Vector3f torusCavityAngleVector = new Vector3f();
 
-  Vector3f[] probeVertexVectors;
-    
   Sasurface1(String surfaceID, Viewer viewer, Graphics3D g3d, short colix,
              BitSet bs) {
     this.surfaceID = surfaceID;
@@ -191,7 +180,6 @@ class Sasurface1 {
     htToruses = null;
     radiusP = viewer.getCurrentSolventProbeRadius();
     diameterP = 2 * radiusP;
-    calcProbeVectors();
   }
 
   void generate(BitSet bsSelected) {
@@ -323,16 +311,6 @@ class Sasurface1 {
       surfaceConvexMax = i + 1;
     }
     */
-  }
-
-  void calcProbeVectors() {
-    // calculate a canonical probe that is the geodesic
-    // vectors scaled to the probe radius
-    probeVertexVectors = new Vector3f[geodesicVertexCount];
-    for (int i = geodesicVertexCount; --i >= 0; ) {
-      probeVertexVectors[i] = new Vector3f();
-      probeVertexVectors[i].scale(radiusP, geodesicVertexVectors[i]);
-    }
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {

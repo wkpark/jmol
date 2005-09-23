@@ -53,14 +53,14 @@
     <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
     <!-- generate new Jmol.pot -->
     <mkdir dir="${Jmol.po.dir}/tmp"/>
-    <apply executable="xgettext" dir="${src.dir}" parallel="true"
+    <apply executable="xgettext" dir="${basedir}/${src.dir}" parallel="true"
            verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
       <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
       <arg value="--output-dir=${basedir}/${Jmol.po.dir}/tmp" />
       <arg value="--output=Jmol.pot" />
-      <fileset dir="${src.dir}">
+      <fileset dir="${basedir}/${src.dir}">
         <include name="**/*.java"/>
         <exclude name="**/jmol/applet/*.java"/>
       </fileset>
@@ -112,14 +112,14 @@
     <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
     <!-- generate new JmolApplet.pot -->
     <mkdir dir="${JmolApplet.po.dir}/tmp"/>
-    <apply executable="xgettext" dir="${src.dir}" parallel="true"
+    <apply executable="xgettext" dir="${basedir}/${src.dir}" parallel="true"
            verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
       <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
       <arg value="--output-dir=${basedir}/${JmolApplet.po.dir}/tmp" />
       <arg value="--output=JmolApplet.pot" />
-        <fileset dir="${src.dir}">
+        <fileset dir="${basedir}/${src.dir}">
           <include name="JmolApplet*.java"/>
           <include name="org/jmol/**/*.java"/>
           <exclude name="org/jmol/**/cdk/*.java"/>
@@ -188,7 +188,7 @@
   <target name="update-application-po-lang" id="update-application-po-lang"
           depends="check-executables" if="exist_msgmerge">
     <echo message="Updating ${Jmol_lang_value}.po gettext file for Jmol ..."/>
-    <exec executable="msgmerge" dir="${Jmol.po.dir}">
+    <exec executable="msgmerge" dir="${basedir}/${Jmol.po.dir}">
       <arg line="-U ${Jmol_lang_value}.po Jmol.pot"/>
     </exec>
   </target>
@@ -209,7 +209,7 @@
   <target name="update-applet-po-lang" id="update-applet-po-lang"
           depends="check-executables" if="exist_msgmerge">
     <echo message="Updating ${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
-    <exec executable="msgmerge" dir="${JmolApplet.po.dir}">
+    <exec executable="msgmerge" dir="${basedir}/${JmolApplet.po.dir}">
       <arg line="-U ${JmolApplet_lang_value}.po JmolApplet.pot"/>
     </exec>
   </target>
@@ -236,7 +236,7 @@
           id="update-application-catalog-lang"
           depends="check-executables" if="exist_msgfmt">
     <echo message="Updating messages_${Jmol_lang_value}.class file for Jmol ..."/>
-    <exec executable="msgfmt" dir="${Jmol.po.dir}">
+    <exec executable="msgfmt" dir="${basedir}/${Jmol.po.dir}">
       <arg value="--statistics"/>
       <arg value="--java2"/>
       <arg value="-l"/>
@@ -266,7 +266,7 @@
   <target name="update-applet-catalog-lang" id="update-applet-catalog-lang"
           depends="check-executables" if="exist_msgfmt">
     <echo message="Updating messages_${JmolApplet_lang_value}.class file for JmolApplet ..."/>
-    <exec executable="msgfmt" dir="${JmolApplet.po.dir}">
+    <exec executable="msgfmt" dir="${basedir}/${JmolApplet.po.dir}">
       <arg value="--statistics"/>
       <arg value="--java2"/>
       <arg value="-l"/>
@@ -327,7 +327,7 @@
   </target>
 
   <!-- Check for the presence of the executables -->
-  <target name="check-executables">
+  <target name="check-executables" unless="exist_executable">
 
     <!-- checking for xgettext -->
   	<exec executable="xgettext" dir="${src.dir}"
@@ -377,6 +377,21 @@
       </then>
       <else>
         <echo message="msgfmt is missing" level="error"/>
+      </else>
+    </if>
+
+    <!-- global checking -->
+    <if>
+      <and>
+        <equals arg1="${exist_xgettext}" arg2="true"/>
+        <equals arg1="${exist_msgmerge}" arg2="true"/>
+        <equals arg1="${exist_msgfmt}"   arg2="true"/>
+      </and>
+      <then>
+        <property name="exist_executable" value="true"/>
+      </then>
+      <else>
+        <property name="exist_executable" value="false"/>
       </else>
     </if>
   </target>

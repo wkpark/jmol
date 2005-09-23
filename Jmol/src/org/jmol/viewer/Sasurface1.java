@@ -123,6 +123,7 @@ class Sasurface1 {
   int[] edgeVertexesBT;
 
   SasGem gem;
+  SasNeighborFinder neighborFinder;
 
   private final static boolean LOG = false;
 
@@ -145,6 +146,8 @@ class Sasurface1 {
     this.colix = colix;
 
     frame = viewer.getFrame();
+    gem = new SasGem(viewer, g3d, frame, GEODESIC_CALC_LEVEL);
+    neighborFinder = new SasNeighborFinder(frame, this);
     initShape();
     generate(bs);
   }
@@ -161,8 +164,6 @@ class Sasurface1 {
     edgeVertexesT = Bmp.allocateBitmap(geodesicVertexCount);
     edgeVertexesAT = Bmp.allocateBitmap(geodesicVertexCount);
     edgeVertexesBT = Bmp.allocateBitmap(geodesicVertexCount);
-
-    gem = new SasGem(viewer, g3d, frame, GEODESIC_CALC_LEVEL);
   }
 
   void clearAll() {
@@ -176,6 +177,7 @@ class Sasurface1 {
     htToruses = null;
     radiusP = viewer.getCurrentSolventProbeRadius();
     diameterP = 2 * radiusP;
+    neighborFinder.setProbeRadius(radiusP);
   }
 
   void generate(BitSet bsSelected) {
@@ -193,10 +195,7 @@ class Sasurface1 {
     for (int i = 0; i < atomCount; ++i) { // make this loop count up
       if (bsSelected.get(i)) {
         ++surfaceAtomCount;
-        setAtomI(i);
-        getNeighbors(bsSelected);
-        sortNeighborIndexes();
-        calcCavitiesI();
+        neighborFinder.findAbuttingNeighbors(i, bsSelected);
       }
     }
     
@@ -983,10 +982,28 @@ class Sasurface1 {
   }
 
   void addCavity(Cavity cavity) {
-    if (cavityCount == cavities.length)
+    if (cavities == null)
+      cavities = new Cavity[32];
+    else if (cavityCount == cavities.length)
       cavities = (Cavity[])Util.doubleLength(cavities);
     cavities[cavityCount++] = cavity;
   }
+
+  Cavity createCavity(int indexI, int indexJ, int indexK,
+                      Point3f centerI, Point3f centerJ, Point3f centerK,
+                      Point3f probeCenter, float probeRadius,
+                      Point3f probeBaseIJK) {
+    System.out.println("createCavity(" + indexI + "," + indexJ + "," + indexK +
+                       "," + probeCenter + "," + probeBaseIJK + ")");
+    allocateConvexVertexBitmap(indexI);
+    allocateConvexVertexBitmap(indexJ);
+    allocateConvexVertexBitmap(indexK);
+    Cavity cavity = new Cavity(centerI, centerJ, centerK,
+                               probeCenter, probeRadius, probeBaseIJK);
+    addCavity(cavity);
+    return cavity;
+  }
+
 
   final Vector3f uIJK = new Vector3f();
   final Vector3f p1 = new Vector3f();
@@ -1005,10 +1022,16 @@ class Sasurface1 {
     final Point3f pointBottom = new Point3f();
     final short normixBottom;
     
+    Cavity(Point3f probeCenter, Point3f probeBase) {
+      probeCenter = null;
+      normixBottom = 0;
+      throw new NullPointerException();
+    }
     // probeCenter is the center of the probe
     // probeBase is the midpoint between this cavity
     // and its mirror image on the other side
-    Cavity(Point3f probeCenter, Point3f probeBase) {
+    Cavity(Point3f centerI, Point3f centerJ, Point3f centerK,
+           Point3f probeCenter, float radiusP, Point3f probeBase) {
       this.probeCenter = new Point3f(probeCenter);
 
       vectorPI.sub(centerI, probeCenter);

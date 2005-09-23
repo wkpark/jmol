@@ -66,7 +66,10 @@
       </fileset>
     </apply>
     <if>
-      <available file="${Jmol.po.dir}/Jmol.pot"/>
+      <and>
+        <available file="${Jmol.po.dir}/Jmol.pot"/>
+        <available file="${Jmol.po.dir}/tmp/Jmol.pot"/>
+      </and>
       <then>
         <!-- compare both Jmol.pot files -->
         <copy file="${Jmol.po.dir}/Jmol.pot"
@@ -91,8 +94,13 @@
         </if>
       </then>
       <else>
-        <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
-              tofile="${Jmol.po.dir}/Jmol.pot"/>
+        <if>
+          <available file="${Jmol.po.dir}/tmp/Jmol.pot"/>
+          <then>
+            <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
+                  tofile="${Jmol.po.dir}/Jmol.pot"/>
+          </then>
+        </if>
       </else>
     </if>
     <delete dir="${Jmol.po.dir}/tmp"/>
@@ -119,7 +127,10 @@
         </fileset>
     </apply>
     <if>
-      <available file="${JmolApplet.po.dir}/JmolApplet.pot"/>
+      <and>
+        <available file="${JmolApplet.po.dir}/JmolApplet.pot"/>
+        <available file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"/>
+      </and>
       <then>
         <!-- compare both JmolApplet.pot files -->
         <copy file="${JmolApplet.po.dir}/JmolApplet.pot"
@@ -144,8 +155,13 @@
         </if>
       </then>
       <else>
-        <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
-              tofile="${JmolApplet.po.dir}/JmolApplet.pot"/>
+        <if>
+          <available file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"/>
+          <then>
+            <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
+                  tofile="${JmolApplet.po.dir}/JmolApplet.pot"/>
+          </then>
+        </if>
       </else>
     </if>
     <delete dir="${JmolApplet.po.dir}/tmp"/>

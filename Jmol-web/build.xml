@@ -53,6 +53,36 @@
   	<copy todir="${build.html}/fah" overwrite="yes"
   		  file="${doc.dir}/fah/fah-projects.xml" />
 
+    <!-- Deal with _index.html files -->
+    <echo message="Copying _index.html files"/>
+    <for param="current.dir">
+      <dirset dir="${build.html}"/>
+      <sequential>
+        <if>
+          <available file="@{current.dir}/_index.html"/>
+          <then>
+            <for list="${all.languages}" delimiter="," param="current.language">
+              <sequential>
+                <if>
+                  <available file="@{current.dir}/messages.@{current.language}.js"/>
+                  <then>
+                    <copy todir="@{current.dir}" overwrite="yes">
+                      <fileset dir="@{current.dir}" includes="_index.html"/>
+                      <mapper type="glob" from="_index.html" to="index.@{current.language}.html"/>
+                    </copy>
+                    <replace dir="@{current.dir}" includes="index.@{current.language}.html">
+                      <replacefilter token="$$CURRENT_LANGUAGE$$" value="@{current.language}"/>
+                    </replace>
+                  </then>
+                </if>
+              </sequential>
+            </for>
+            <delete file="@{current.dir}/_index.html"/>
+          </then>
+        </if>
+      </sequential>
+    </for>
+
     <!-- Copy files from Jmol docs -->
   	<copy todir="${build.html}/docs" overwrite="yes">
       <fileset dir="${jmol-doc-dir}/build/doc" includes="**/*"/>

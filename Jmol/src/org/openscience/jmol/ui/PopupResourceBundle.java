@@ -29,22 +29,15 @@ import java.util.MissingResourceException;
 
 class PopupResourceBundle {
 
-  ResourceBundle rbStructure;
   ResourceBundle rbWords;
 
   PopupResourceBundle() {
-    rbStructure = ResourceBundle.getBundle("org.openscience.jmol.ui." +
-                                           "JmolPopupStructure");
     rbWords = ResourceBundle.getBundle("org.openscience.jmol.ui." +
                                        "JmolPopupWords");
   }
 
   String getStructure(String key) {
-    try {
-      return rbStructure.getString(key);
-    } catch (MissingResourceException e) {
-      return null;
-    }
+    return JmolPopupStructure.getString(key);
   }
 
   String getWord(String key) {

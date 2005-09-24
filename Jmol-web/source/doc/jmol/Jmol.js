@@ -53,6 +53,10 @@ function jmolInitialize(codebaseDirectory, useSignedApplet) {
   _jmol.initialized = true;
 }
 
+function jmolSetDocument(doc) {
+  _jmol.currentDocument = doc;
+}
+
 function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
   _jmolInitCheck();
   _jmol.boxbgcolor = boxbgcolor;
@@ -72,7 +76,7 @@ function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
 
 function jmolApplet(size, script, nameSuffix) {
   _jmolInitCheck();
-  _jmolApplet(size, null, script, nameSuffix);
+  return _jmolApplet(size, null, script, nameSuffix);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -95,7 +99,7 @@ function jmolButton(script, label, id) {
           _jmol.buttonCssText + "/>";
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
@@ -125,7 +129,7 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
           labelHtml;
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName) {
@@ -151,7 +155,7 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName) {
   }
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolLink(script, label, id) {
@@ -170,7 +174,7 @@ function jmolLink(script, label, id) {
           _jmol.linkCssText + ">" + label + "</a>";
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolMenu(arrayOfMenuItems, size, id) {
@@ -211,16 +215,16 @@ function jmolMenu(arrayOfMenuItems, size, id) {
     t += "</select>";
     if (_jmol.debugAlert)
       alert(t);
-    document.write(t);
+    return _jmolDocumentWrite(t);
   }
 }
 
 function jmolHtml(html) {
-  document.write(html);
+  return _jmolDocumentWrite(html);
 }
 
 function jmolBr() {
-  document.write("<br />");
+  return _jmolDocumentWrite("<br />");
 }
 
 ////////////////////////////////////////////////////////////////
@@ -232,7 +236,8 @@ function jmolDebugAlert(enableAlerts) {
 }
 
 function jmolAppletInline(size, inlineModel, script, nameSuffix) {
-  _jmolApplet(size, _jmolSterilizeInline(inlineModel), script, nameSuffix);
+  return _jmolApplet(size, _jmolSterilizeInline(inlineModel),
+                     script, nameSuffix);
 }
 
 function jmolSetTarget(targetSuffix) {
@@ -295,7 +300,7 @@ function jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName) {
   var t = _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName);
   if (_jmol.debugAlert)
     alert(t);
-  document.write(t);
+  return _jmolDocumentWrite(t);
 }
 
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
@@ -318,6 +323,12 @@ function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
   }
   if (typeof nowOrLater == "string" && nowOrLater.toLowerCase() == "now")
     _jmolCheckBrowser();
+}
+
+function _jmolDocumentWrite(text) {
+  if (_jmol.currentDocument)
+    _jmol.currentDocument.write(text);
+  return text;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -377,6 +388,7 @@ for (var i = 1; i <= _jmolLastJar; ++i)
   _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
 
 var _jmol = {
+  currentDocument: document,
 
   debugAlert: false,
   bgcolor: "black",
@@ -424,11 +436,18 @@ var _jmol = {
   hasGetElementById: !!document.getElementById,
   isJavaEnabled: navigator.javaEnabled(),
   isNetscape47Win: false,
+  isIEWin: false,
+  useIEObject: false,
+  useHtml4Object: false,
   
+  windowsClassId: "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93",
+  windowsCabUrl:
+   "http://java.sun.com/update/1.5.0/jinstall-1_5_0_05-windows-i586.cab",
+
   isBrowserCompliant: false,
   isJavaCompliant: false,
   isFullyCompliant: false,
-  
+
   initialized: false,
   initChecked: false,
   
@@ -445,6 +464,7 @@ var _jmol = {
 }
 
 with (_jmol) {
+
   function _jmolTestUA(candidate) {
     var ua = _jmol.ua;
     var index = ua.indexOf(candidate);
@@ -495,7 +515,7 @@ with (_jmol) {
     } else {
       isBrowserCompliant = hasGetElementById &&
         !((browser == "msie") ||
-          (browser == "safari" && browserVersion < 125.1));
+          (browser == "safari" && browserVersion < 125.12));
     }
   } else if (os == "linux" || os == "unix") {
     if (browser == "konqueror" && browserVersion <= 3.3)
@@ -510,6 +530,14 @@ with (_jmol) {
   isJavaCompliant = isJavaEnabled;
 
   isFullyCompliant = isBrowserCompliant && isJavaCompliant;
+
+  // IE5.5 works just fine ... but let's push them to Sun Java
+  isIEWin = (os == "win" && browser == "msie" && browserVersion >= 5.5);
+  useIEObject = isIEWin;
+  useHtml4Object =
+   (os != "mac" && browser == "mozilla" && browserVersion >= 5) ||
+   (os == "win" && browser == "opera" && browserVersion >= 8) ||
+   (os == "mac" && browser == "safari" && browserVersion >= 412.2);
 }
 
 function _jmolUseSignedApplet(useSignedApplet) {
@@ -530,14 +558,47 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     if (! script)
       script = "select *";
     var sz = _jmolGetAppletSize(size);
-    var t;
-    t = "<applet name='jmolApplet" + nameSuffix +
-      "' id='jmolApplet" + nameSuffix +
-      "' " + appletCssText +
-      " code='JmolApplet'" +
-      " archive='" + archivePath + "' codebase='" + codebase + "'\n" +
-      " width='" + sz[0] + "' height='" + sz[1] +
-      "' mayscript='true'>\n" +
+    var widthAndHeight = " width='" + sz[0] + "' height='" + sz[1] + "' ";
+
+    var tHeader, tFooter;
+
+    if (useIEObject) { // use MSFT IE6 object tag with .cab file reference
+      var winCodebase = "";
+      if (windowsCabUrl)
+         winCodebase = " codebase='" + windowsCabUrl + "'\n";
+      tHeader = 
+        "<object name='jmolApplet" + nameSuffix +
+        "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
+	" classid='" + windowsClassId + "'\n" +
+        winCodebase + widthAndHeight + ">\n" +
+        "  <param name='code' value='JmolApplet' />\n" +
+        "  <param name='archive' value='" + archivePath + "' />\n" +
+        "  <param name='mayscript' value='true' />\n" +
+        "  <param name='codebase' value='" + codebase + "' />\n";
+      tFooter = "</object>";
+    } else if (useHtml4Object) { // use HTML4 object tag
+      tHeader = 
+        "<object name='jmolApplet" + nameSuffix +
+        "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
+	" classid='java:JmolApplet'\n" +
+        " type='application/x-java-applet'\n" +
+        widthAndHeight + ">\n" +
+        "  <param name='archive' value='" + archivePath + "' />\n" +
+        "  <param name='mayscript' value='true' />\n" +
+        "  <param name='codebase' value='" + codebase + "' />\n";
+      tFooter = "</object>";
+    } else { // use applet tag
+      tHeader = 
+        "<applet name='jmolApplet" + nameSuffix +
+        "' id='jmolApplet" + nameSuffix +
+        "' " + appletCssText +
+        " code='JmolApplet'" +
+        " archive='" + archivePath + "' codebase='" + codebase + "'\n" +
+        " width='" + sz[0] + "' height='" + sz[1] +
+        "' mayscript='true'>\n";
+      tFooter = "</applet>";
+    }
+    var tParams =
       "  <param name='progressbar' value='true' />\n" +
       "  <param name='progresscolor' value='" +
       progresscolor + "' />\n" +
@@ -550,16 +611,41 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
       "  <param name='ReadyCallback' value='_jmolReadyCallback' />\n";
     
     if (inlineModel)
-      t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
+      tParams += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)
-      t += "  <param name='script' value='" +
-           _jmolSterilizeScript(script) + "' />\n";
-    t += "</applet>";
+      tParams += "  <param name='script' value='" +
+                 _jmolSterilizeScript(script) + "' />\n";
+    var visitJava;
+    if (isIEWin || useHtml4Object) {
+      visitJava =
+        "<p style='background-color:yellow;" +
+        "width:" + sz[0] + ";height:" + sz[1] + ";" + 
+        // why doesn't this vertical-align work?
+	"text-align:center;vertical-align:middle;'>\n" +
+        "You do not have Java applets<br />\n" +
+        "enabled in your web browser.<br />\n" +
+        "Install the Java Runtime Environment<br />\n" +
+        "from <a href='http://www.java.com'>www.java.com</a><br />" +
+        "and/or enable Java applets in<br />\n" +
+        "your web browser preferences." +
+        "</p>";
+    } else {
+      visitJava =
+        "<table bgcolor='yellow' width='" + sz[0] + "'><tr>" +
+        "<td align='center' valign='middle' height='" + sz[1] + "'>\n" +
+        "You do not have the<br />\n" +
+        "Java Runtime Environment<br />\n" +
+        "installed for applet support.<br />\n" +
+        "Visit <a href='http://www.java.com'>www.java.com</a>" +
+        "</td></tr></table>";
+    }
+
+    var t = tHeader + tParams + visitJava + tFooter;
     jmolSetTarget(nameSuffix);
     ready["jmolApplet" + nameSuffix] = false;
     if (_jmol.debugAlert)
       alert(t);
-    document.write(t);
+    return _jmolDocumentWrite(t);
   }
 }
 
@@ -569,7 +655,7 @@ function _jmolInitCheck() {
   _jmol.initChecked = true;
   if (_jmol.initialized)
     return;
-  alert("jmolInitialize({codebase}, {badBrowseURL}, {badJavaURL})\n" +
+  alert("jmolInitialize({codebase}, {useSignedApplet})\n" +
         "  must be called before any other Jmol.js functions");
 }
 
@@ -687,7 +773,9 @@ function _jmolSearchFrames(win, target) {
   } else { // look for the applet in this window
     var doc = win.document;
 // getElementById fails on MacOSX Safari & Mozilla	
-    if (doc.applets)
+    if (_jmol.useHtml4Object || _jmol.useIEObject)
+      applet = doc.getElementById(target);
+    else if (doc.applets)
       applet = doc.applets[target];
     else
       applet = doc[target];
@@ -752,21 +840,11 @@ function _jmolOnloadResetForms() {
   _jmol.previousOnloadHandler = window.onload;
   window.onload =
   function() {
-//    alert("onloadResetForms");
     with (_jmol) {
       if (buttonCount+checkboxCount+menuCount+radioCount+radioGroupCount > 0) {
         var forms = document.forms;
-        if (!forms || forms.length == 0) {
-          alert("<form> tags seem to be missing\n" +
-                "Jmol/HTML input controls must be contained " +
-                "within form tags"
-//                + "\n\n" + forms + " forms.length=" + forms.length +
-//                " typeof=" + (typeof forms)
-                );
-        } else {
-          for (var i = forms.length; --i >= 0; )
-            forms[i].reset();
-        }
+        for (var i = forms.length; --i >= 0; )
+          forms[i].reset();
       }
       if (previousOnloadHandler)
         previousOnloadHandler();

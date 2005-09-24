@@ -38,11 +38,12 @@ class SasFlattenedPointList {
   void generateTorusSegment(short startingVertex, short vertexIncrement,
                             float startingAngle, float angleIncrement,
                             int segmentCount) {
-    if (count < segmentCount) {
+    if (vertexes.length < segmentCount) {
       vertexes = Util.ensureLength(vertexes, segmentCount);
       angles = Util.ensureLength(angles, segmentCount);
       distances = Util.ensureLength(distances, segmentCount);
     }
+    count = segmentCount;
     short vertex = startingVertex;
     float angle = startingAngle;
     for (int i = 0; i < segmentCount; ++i) {

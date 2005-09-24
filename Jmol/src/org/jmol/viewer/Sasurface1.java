@@ -973,7 +973,9 @@ class Sasurface1 {
                            " lastAngle=" +
                            projectedAngles[maxProjectedIndex - 1]);
         */
-        generateFlattenedPointList(isEdgeA, torusSegmentFpl);
+        torusSegmentFpl.generateTorusSegment(getSegmentStartingVertex(isEdgeA),
+                                             outerPointCount,
+                                             startAngle, stepAngle, stepCount);
         stitchEm(torusSegmentFpl,
                  minProjectedIndex, maxProjectedIndex, geodesicFpl);
       }
@@ -1020,18 +1022,6 @@ class Sasurface1 {
         countStitchesT += 2;
       }
 
-      void generateFlattenedPointList(boolean isEdgeA,
-                                      SasFlattenedPointList segmentFpl) {
-        short segmentVertex = getSegmentStartingVertex(isEdgeA);
-        segmentFpl.reset();
-        float angle = startAngle;
-        for (int i = 0; i < stepCount; ++i) {
-          segmentFpl.add(segmentVertex, angle, 0);
-          segmentVertex += outerPointCount;
-          angle += stepAngle;
-        }
-      }
-      
       short getSegmentStartingVertex(boolean isEdgeA) {
         int totalStepCount = 0;
         for (int i = 0; i < torusSegmentCount; ++i) {

@@ -118,6 +118,7 @@ class Sasurface1 {
 
   SasGem gem;
   SasNeighborFinder neighborFinder;
+  final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
 
   private final static boolean LOG = false;
 
@@ -364,8 +365,6 @@ class Sasurface1 {
 
   private int countStitchesT;
   private short[] stitchesT = new short[64];
-  private float[] segmentVertexAnglesT = new float[MAX_FULL_TORUS_STEP_COUNT];
-  private short[] segmentVertexesT = new short[MAX_FULL_TORUS_STEP_COUNT];
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
                                Point3f planePoint, Point3f planeCenterPoint) {
@@ -974,43 +973,42 @@ class Sasurface1 {
                            " lastAngle=" +
                            projectedAngles[maxProjectedIndex - 1]);
         */
-        fillSegmentVertexAngles(isEdgeA);
-        stitchEm(stepCount, segmentVertexesT, segmentVertexAnglesT,
+        generateFlattenedPointList(isEdgeA, torusSegmentFpl);
+        stitchEm(torusSegmentFpl,
                  minProjectedIndex, maxProjectedIndex, geodesicFpl);
       }
 
-      void stitchEm(int torusCount, short[] torusVertexes, float[] torusAngles,
+      void stitchEm(SasFlattenedPointList segmentFpl,
                     int geodesicMin, int geodesicMax,
                     SasFlattenedPointList geodesicFpl) {
         if (geodesicMin == geodesicMax)
           return;
-        short[] geodesicVertexes = geodesicFpl.vertexes;
-        float[] geodesicAngles = geodesicFpl.angles;
-        float[] geodesicDistances = geodesicFpl.distances;
-        int tLast = torusCount - 1;
+        int tLast = segmentFpl.count - 1;
         int gLast = geodesicMax - 1;
-        oneStitch(torusVertexes[0], geodesicVertexes[geodesicMin]);
+        oneStitch(segmentFpl.vertexes[0], geodesicFpl.vertexes[geodesicMin]);
         int t = 0;
         int g = geodesicMin;
         while (t < tLast && g < gLast) {
-          float angleT = angleABC(torusAngles[t], 0,
-                                  torusAngles[t + 1], 0,
-                                  geodesicAngles[g], geodesicDistances[g]);
-          float angleG = angleABC(torusAngles[t], 0,
-                                  geodesicAngles[g+1], geodesicDistances[g+1],
-                                  geodesicAngles[g], geodesicDistances[g]);
+          float angleT =
+            angleABC(segmentFpl.angles[t], 0,
+                     segmentFpl.angles[t + 1], 0,
+                     geodesicFpl.angles[g], geodesicFpl.distances[g]);
+          float angleG =
+            angleABC(segmentFpl.angles[t], 0,
+                     geodesicFpl.angles[g+1], geodesicFpl.distances[g+1],
+                     geodesicFpl.angles[g], geodesicFpl.distances[g]);
           if (angleT > angleG)
             ++t;
           else
             ++g;
-          oneStitch(torusVertexes[t], geodesicVertexes[g]);
+          oneStitch(segmentFpl.vertexes[t], geodesicFpl.vertexes[g]);
         }
         while (t < tLast || g < gLast) {
           if (t < tLast)
             ++t;
           else
             ++g;
-          oneStitch(torusVertexes[t], geodesicVertexes[g]);
+          oneStitch(segmentFpl.vertexes[t], geodesicFpl.vertexes[g]);
         }
       }
 
@@ -1022,13 +1020,14 @@ class Sasurface1 {
         countStitchesT += 2;
       }
 
-      void fillSegmentVertexAngles(boolean isEdgeA) {
+      void generateFlattenedPointList(boolean isEdgeA,
+                                      SasFlattenedPointList segmentFpl) {
         short segmentVertex = getSegmentStartingVertex(isEdgeA);
+        segmentFpl.reset();
         float angle = startAngle;
         for (int i = 0; i < stepCount; ++i) {
-          segmentVertexesT[i] = segmentVertex;
+          segmentFpl.add(segmentVertex, angle, 0);
           segmentVertex += outerPointCount;
-          segmentVertexAnglesT[i] = angle;
           angle += stepAngle;
         }
       }

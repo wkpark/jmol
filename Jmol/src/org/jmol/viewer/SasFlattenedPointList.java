@@ -35,6 +35,25 @@ class SasFlattenedPointList {
     count = 0;
   }
   
+  void generateTorusSegment(short startingVertex, short vertexIncrement,
+                            float startingAngle, float angleIncrement,
+                            int segmentCount) {
+    if (count < segmentCount) {
+      vertexes = Util.ensureLength(vertexes, segmentCount);
+      angles = Util.ensureLength(angles, segmentCount);
+      distances = Util.ensureLength(distances, segmentCount);
+    }
+    short vertex = startingVertex;
+    float angle = startingAngle;
+    for (int i = 0; i < segmentCount; ++i) {
+      vertexes[i] = vertex;
+      vertex += vertexIncrement;
+      angles[i] = angle;
+      angle += angleIncrement;
+      distances[i] = 0;
+    }
+  }
+
   void add(short vertex, float angle, float distance) {
     if (count == vertexes.length) {
       vertexes = Util.doubleLength(vertexes);

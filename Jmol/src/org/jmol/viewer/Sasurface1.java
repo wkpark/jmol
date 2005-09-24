@@ -955,20 +955,11 @@ class Sasurface1 {
         }
       }
 
-      void stitchWithSortedProjectedVertexes(int projectedCount,
-                                             short[] projectedVertexes,
-                                             float[] projectedAngles,
-                                             float[] projectedDistances,
+      void stitchWithSortedProjectedVertexes(SasFlattenedPointList geodesicFpl,
                                              boolean isEdgeA) {
-        int minProjectedIndex = 0;
-        while (minProjectedIndex < projectedCount &&
-               projectedAngles[minProjectedIndex] < startAngle)
-          ++minProjectedIndex;
+        int minProjectedIndex = geodesicFpl.findGE(startAngle);
         float endAngle = startAngle + (stepAngle * stepCount);
-        int maxProjectedIndex = minProjectedIndex;
-        while (maxProjectedIndex < projectedCount &&
-               projectedAngles[maxProjectedIndex] <= endAngle)
-          ++maxProjectedIndex;
+        int maxProjectedIndex = geodesicFpl.findGT(endAngle);
         int vertexCount = maxProjectedIndex - minProjectedIndex;
         if (vertexCount == 0) {
           System.out.println("no vertexes for this torus segment");
@@ -985,17 +976,17 @@ class Sasurface1 {
         */
         fillSegmentVertexAngles(isEdgeA);
         stitchEm(stepCount, segmentVertexesT, segmentVertexAnglesT,
-                 minProjectedIndex, maxProjectedIndex,
-                 projectedVertexes,
-                 projectedAngles, projectedDistances);
+                 minProjectedIndex, maxProjectedIndex, geodesicFpl);
       }
 
       void stitchEm(int torusCount, short[] torusVertexes, float[] torusAngles,
                     int geodesicMin, int geodesicMax,
-                    short[] geodesicVertexes, float[] geodesicAngles,
-                    float[] geodesicDistances) {
+                    SasFlattenedPointList geodesicFpl) {
         if (geodesicMin == geodesicMax)
           return;
+        short[] geodesicVertexes = geodesicFpl.vertexes;
+        float[] geodesicAngles = geodesicFpl.angles;
+        float[] geodesicDistances = geodesicFpl.distances;
         int tLast = torusCount - 1;
         int gLast = geodesicMax - 1;
         oneStitch(torusVertexes[0], geodesicVertexes[geodesicMin]);
@@ -1126,7 +1117,6 @@ class Sasurface1 {
       Atom atom = frame.atoms[ix];
       float atomRadius = atom.getVanderwaalsRadiusFloat();
       Point3f atomCenter = atom.point3f;
-      boolean dump = (ixA == 0 && (ixB == 1 || ixB == 3));
       int edgeCount =
         gem.findGeodesicEdge(convexVertexMaps[ix], edgeVertexesT);
       if (edgeCount > 0) {
@@ -1135,27 +1125,17 @@ class Sasurface1 {
                                          atomCenter, atomRadius,
                                          centerPointT, axisUnitVector,
                                          zeroPointT, (torusCavities == null),
-                                         edgeVertexesT, dump);
-        stitchSegmentsWithSortedProjectedVertexes(gem.projectedCount,
-                                                  gem.projectedVertexes,
-                                                  gem.projectedAngles,
-                                                  gem.projectedDistances,
-                                                  isEdgeA);
+                                         edgeVertexesT, false);
+        SasFlattenedPointList geodesicFpl = gem.getFlattenedPointList();
+        stitchSegmentsWithSortedProjectedVertexes(geodesicFpl, isEdgeA);
       }
     }
 
-    void stitchSegmentsWithSortedProjectedVertexes(int projectedCount,
-                                                   short[] projectedVertexes,
-                                                   float[] projectedAngles,
-                                                   float[] projectedDistances,
+    void stitchSegmentsWithSortedProjectedVertexes(SasFlattenedPointList gfpl,
                                                    boolean isEdgeA) {
       countStitchesT = 0;
       for (int i = torusSegmentCount; --i >= 0; )
-        torusSegments[i].stitchWithSortedProjectedVertexes(projectedCount,
-                                                           projectedVertexes,
-                                                           projectedAngles,
-                                                           projectedDistances,
-                                                           isEdgeA);
+        torusSegments[i].stitchWithSortedProjectedVertexes(gfpl, isEdgeA);
       short[] geodesicStitches = new short[countStitchesT];
       for (int i = countStitchesT; --i >= 0; )
         geodesicStitches[i] = stitchesT[i];

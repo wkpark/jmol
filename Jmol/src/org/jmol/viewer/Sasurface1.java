@@ -105,11 +105,7 @@ class Sasurface1 {
   int[][] convexVertexMaps;
   int[][] convexFaceMaps;
   short[] colixesConvex;
-  Vector3f[] geodesicVertexVectors;
   int geodesicVertexCount;
-  int geodesicFaceCount;
-  short[] geodesicFaceVertexes;
-  short[] geodesicNeighborVertexes;
 
   int cavityCount;
   SasCavity[] cavities;
@@ -118,9 +114,7 @@ class Sasurface1 {
 
   IntInt2ObjHash htToruses;
 
-  int[] edgeVertexesT;
-  int[] edgeVertexesAT;
-  int[] edgeVertexesBT;
+  final int[] edgeVertexesT;
 
   SasGem gem;
   SasNeighborFinder neighborFinder;
@@ -148,22 +142,9 @@ class Sasurface1 {
     frame = viewer.getFrame();
     gem = new SasGem(viewer, g3d, frame, GEODESIC_CALC_LEVEL);
     neighborFinder = new SasNeighborFinder(frame, this, g3d);
-    initShape();
-    generate(bs);
-  }
-
-  void initShape() {
-    geodesicVertexVectors = g3d.getGeodesicVertexVectors();
     geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_CALC_LEVEL);
-    geodesicFaceCount = g3d.getGeodesicFaceCount(geodesicRenderingLevel);
-    geodesicFaceVertexes =
-      g3d.getGeodesicFaceVertexes(geodesicRenderingLevel);
-    geodesicNeighborVertexes =
-      g3d.getGeodesicNeighborVertexes(geodesicRenderingLevel);
-
     edgeVertexesT = Bmp.allocateBitmap(geodesicVertexCount);
-    edgeVertexesAT = Bmp.allocateBitmap(geodesicVertexCount);
-    edgeVertexesBT = Bmp.allocateBitmap(geodesicVertexCount);
+    generate(bs);
   }
 
   void clearAll() {

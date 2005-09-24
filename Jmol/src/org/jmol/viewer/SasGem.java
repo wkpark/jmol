@@ -42,6 +42,8 @@ class SasGem {
   final Frame frame;
   final int geodesicLevel;
 
+  FlattenedPointList fpl = new FlattenedPointList();
+
   int projectedCount = 0;
   short[] projectedVertexes = new short[64];
   float[] projectedAngles = new float[64];
@@ -60,6 +62,7 @@ class SasGem {
   final Vector3f projectedVectorT = new Vector3f();
 
   final int[] bmpNotClipped;
+  final int[] visiblePerfectMap;
   final int[] faceMapT;
 
   private final static float PI = (float)Math.PI;
@@ -67,7 +70,8 @@ class SasGem {
     Sasurface.MAX_FULL_TORUS_STEP_COUNT;
 
   private final static int EXPOSED_EDGE_METHOD = 0;
-  private int method = EXPOSED_EDGE_METHOD;
+  private final static int PERFECT_EDGE_METHOD = 1;
+  private int method = PERFECT_EDGE_METHOD;
 
   SasGem(Viewer viewer, Graphics3D g3d, Frame frame, int geodesicLevel) {
     this.g3d = g3d;
@@ -82,6 +86,7 @@ class SasGem {
     geodesicNeighborVertexes = g3d.getGeodesicNeighborVertexes(geodesicLevel);
 
     bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
+    visiblePerfectMap = Bmp.allocateBitmap(geodesicVertexCount);
     faceMapT = Bmp.allocateBitmap(geodesicFaceCount);
   }
 
@@ -94,8 +99,8 @@ class SasGem {
     Bmp.clearBitmap(bmpNotClipped);
     Bmp.clearBitmap(edgeVertexMap);
     int unclippedCount = 0;
-    for (int i = -1; (i = Bmp.nextSetBit(visibleVertexMap, i + 1)) >= 0; ) {
-      //    for (int i = geodesicVertexCount; --i >= 0; ) {
+    for (int i = geodesicVertexCount; --i >= 0; ) {
+      //for (int i = -1; (i = Bmp.nextSetBit(visibleVertexMap, i + 1)) >= 0; ) {
       vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
                             geodesicCenter);
       vertexVectorT.sub(vertexPointT, planeCenter);
@@ -124,6 +129,7 @@ class SasGem {
         }
       }
     }
+    Bmp.and(edgeVertexMap, visibleVertexMap);
   }
   
   int findGeodesicEdge(int[] visibleVertexMap, int[] edgeVertexMap) {
@@ -241,7 +247,8 @@ class SasGem {
   final Vector3f vector90T = new Vector3f();
   final Point3f planeCenterT = new Point3f();
 
-  void projectAndSortGeodesicPoints(Point3f geodesicCenter, float radius,
+  void projectAndSortGeodesicPoints(boolean isEdgeA,
+                                    Point3f geodesicCenter, float radius,
                                     Point3f planeCenter,
                                     Vector3f axisUnitVector,
                                     Point3f planeZeroPoint,
@@ -261,24 +268,49 @@ class SasGem {
     float radiansPerAngstrom = PI / radius;
     
     projectedCount = 0;
+    fpl.reset();
+    int[] theEdgeMap = null;
     switch (method) {
     case EXPOSED_EDGE_METHOD:
-      for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
-        vertexPointT.scaleAdd(radius,geodesicVertexVectors[v],geodesicCenter);
-        vertexVectorT.sub(vertexPointT, planeCenter);
-        float distance = axisUnitVector.dot(vertexVectorT);
-        projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
-        projectedVectorT.sub(projectedPointT, planeCenter);
-        float angle =
-          calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
-        addProjectedPoint((short) v, angle, distance * radiansPerAngstrom);
-      }
+      theEdgeMap = edgeVertexMap;
+      break;
+    case PERFECT_EDGE_METHOD:
+      findClippedGeodesicEdge(isEdgeA, geodesicCenter, radius,
+                              planeCenter, axisUnitVector, edgeVertexMap,
+                              visiblePerfectMap);
+      theEdgeMap = visiblePerfectMap;
       break;
     }
     
+    for (int v = -1; (v = Bmp.nextSetBit(theEdgeMap, v + 1)) >= 0; ) {
+      vertexPointT.scaleAdd(radius,geodesicVertexVectors[v],geodesicCenter);
+      vertexVectorT.sub(vertexPointT, planeCenter);
+      float distance = axisUnitVector.dot(vertexVectorT);
+      projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
+      projectedVectorT.sub(projectedPointT, planeCenter);
+      float angle =
+        calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
+      fpl.add((short)v, angle, distance * radiansPerAngstrom);
+      addProjectedPoint((short) v, angle, distance * radiansPerAngstrom);
+    }
+    fpl.sort();
     sortProjectedVertexes();
-    if (fullTorus)
+    if (fullTorus) {
+      fpl.duplicateFirstPointPlus2Pi();
       duplicateFirstProjectedGeodesicPoint();
+    }
+    checkFpl();
+  }
+
+  void checkFpl() {
+    if (fpl.count != projectedCount)
+      throw new NullPointerException();
+    for (int i = fpl.count; --i >= 0; ) {
+      if (fpl.angles[i] != projectedAngles[i] ||
+          fpl.distances[i] != projectedDistances[i] ||
+          fpl.vertexes[i] != projectedVertexes[i])
+        throw new NullPointerException();
+    }
   }
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
@@ -481,6 +513,65 @@ class SasGem {
         Bmp.setBit(faceMapT, i);
     }
     return Bmp.allocMinimalCopy(faceMapT);
+  }
+
+  static class FlattenedPointList {
+    int count;
+    short[] vertexes = new short[32];
+    float[] angles = new float[32];
+    float[] distances = new float[32];
+
+    void reset() {
+      count = 0;
+    }
+
+    void add(short vertex, float angle, float distance) {
+      if (count == vertexes.length) {
+        vertexes = Util.doubleLength(vertexes);
+        angles = Util.doubleLength(angles);
+        distances = Util.doubleLength(distances);
+      }
+      vertexes[count] = vertex;
+      angles[count] = angle;
+      distances[count] = distance;
+      ++count;
+    }
+
+    void duplicateFirstPointPlus2Pi() {
+      add(vertexes[0], angles[0] + 2*PI, distances[0]);
+    }
+
+    void sort() {
+      for (int i = count; --i > 0; )
+        for (int j = i; --j >= 0; )
+          if (angles[j] > angles[i]) {
+            Util.swap(angles, i, j);
+            Util.swap(distances, i, j);
+            Util.swap(vertexes, i, j);
+          }
+    }
+
+    int find(float angle) {
+      int i;
+      for (i = 0; i < count; ++i)
+        if (angles[i] >= angle)
+          return i;
+      return -1;
+    }
+
+    int find2(float angle) {
+      int min = 0;
+      int max = count;
+      while (min != max) {
+        int mid = (min + max) / 2;
+        float midAngle = angles[mid];
+        if (midAngle < angle)
+          min = mid + 1;
+        else
+          max = mid;
+      }
+      return (min == count) ? -1 : min;
+    }
   }
 }
 

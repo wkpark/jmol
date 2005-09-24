@@ -1131,7 +1131,8 @@ class Sasurface1 {
         gem.findGeodesicEdge(convexVertexMaps[ix], edgeVertexesT);
       if (edgeCount > 0) {
         calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
-        gem.projectAndSortGeodesicPoints(atomCenter, atomRadius,
+        gem.projectAndSortGeodesicPoints(isEdgeA,
+                                         atomCenter, atomRadius,
                                          centerPointT, axisUnitVector,
                                          zeroPointT, (torusCavities == null),
                                          edgeVertexesT, dump);

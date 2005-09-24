@@ -66,6 +66,9 @@ class SasGem {
   private final static int MAX_FULL_TORUS_STEP_COUNT =
     Sasurface.MAX_FULL_TORUS_STEP_COUNT;
 
+  private final static int EXPOSED_EDGE_METHOD = 0;
+  private int method = EXPOSED_EDGE_METHOD;
+
   SasGem(Viewer viewer, Graphics3D g3d, Frame frame, int geodesicLevel) {
     this.g3d = g3d;
     this.viewer = viewer;
@@ -242,6 +245,7 @@ class SasGem {
                                     Point3f planeCenter,
                                     Vector3f axisUnitVector,
                                     Point3f planeZeroPoint,
+                                    boolean fullTorus,
                                     int[] edgeVertexMap,
                                     boolean dump) {
     Vector3f vector0T = this.vector0T;
@@ -257,16 +261,24 @@ class SasGem {
     float radiansPerAngstrom = PI / radius;
     
     projectedCount = 0;
-    for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
-      vertexPointT.scaleAdd(radius, geodesicVertexVectors[v], geodesicCenter);
-      vertexVectorT.sub(vertexPointT, planeCenter);
-      float distance = axisUnitVector.dot(vertexVectorT);
-      projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
-      projectedVectorT.sub(projectedPointT, planeCenter);
-      float angle = calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
-      addProjectedPoint((short) v, angle, distance * radiansPerAngstrom);
+    switch (method) {
+    case EXPOSED_EDGE_METHOD:
+      for (int v = -1; (v = Bmp.nextSetBit(edgeVertexMap, v + 1)) >= 0; ) {
+        vertexPointT.scaleAdd(radius,geodesicVertexVectors[v],geodesicCenter);
+        vertexVectorT.sub(vertexPointT, planeCenter);
+        float distance = axisUnitVector.dot(vertexVectorT);
+        projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
+        projectedVectorT.sub(projectedPointT, planeCenter);
+        float angle =
+          calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
+        addProjectedPoint((short) v, angle, distance * radiansPerAngstrom);
+      }
+      break;
     }
+    
     sortProjectedVertexes();
+    if (fullTorus)
+      duplicateFirstProjectedGeodesicPoint();
   }
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,

@@ -1133,10 +1133,8 @@ class Sasurface1 {
         calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
         gem.projectAndSortGeodesicPoints(atomCenter, atomRadius,
                                          centerPointT, axisUnitVector,
-                                         zeroPointT,
+                                         zeroPointT, (torusCavities == null),
                                          edgeVertexesT, dump);
-        if (torusCavities == null) // full torus
-          gem.duplicateFirstProjectedGeodesicPoint();
         stitchSegmentsWithSortedProjectedVertexes(gem.projectedCount,
                                                   gem.projectedVertexes,
                                                   gem.projectedAngles,

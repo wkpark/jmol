@@ -95,7 +95,8 @@ public final class Bmp {
     if (bitmap.length != i) {
       if (bitmap.length < i)
         throw new IndexOutOfBoundsException();
-      for (int j = bitmap.length; --j > i; )
+      // zero out all the bits above
+      for (int j = bitmap.length; --j >= i; )
         bitmap[j] = 0;
     }
     int fractionalBitCount = count & 31;

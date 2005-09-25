@@ -124,4 +124,28 @@ public class TestBmp extends junit.framework.TestCase {
       assertEquals(Bmp.nextSetBit(bmp, i), nextOn);
     }
   }
+
+  public void testSetAllWithLargerBmp() {
+    int[] bmp = Bmp.allocateBitmap(65);
+    Bmp.setAllBits(bmp, 0);
+    for (int i = 0; i < 96; ++i)
+      assertFalse(Bmp.getBit(bmp, i));
+    Bmp.setAllBits(bmp, 10);
+    for (int i = 0; i < 10; ++i)
+      assertTrue(Bmp.getBit(bmp, i));
+    for (int i = 10; i < 96; ++i)
+      assertFalse(Bmp.getBit(bmp, i));
+
+    Bmp.setAllBits(bmp, 65);
+    Bmp.setAllBits(bmp, 0);
+    for (int i = 0; i < 96; ++i)
+      assertFalse(Bmp.getBit(bmp, i));
+
+    Bmp.setAllBits(bmp, 65);
+    Bmp.setAllBits(bmp, 10);
+    for (int i = 0; i < 10; ++i)
+      assertTrue(Bmp.getBit(bmp, i));
+    for (int i = 10; i < 96; ++i)
+      assertFalse(Bmp.getBit(bmp, i));
+  }
 }

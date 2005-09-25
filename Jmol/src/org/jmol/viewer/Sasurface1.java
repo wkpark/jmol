@@ -31,7 +31,6 @@ import org.jmol.g3d.Graphics3D;
 
 import javax.vecmath.*;
 import java.util.BitSet;
-import java.util.Enumeration;
 
 /****************************************************************
  * The Dots and DotsRenderer classes implement vanderWaals and Connolly
@@ -112,16 +111,16 @@ class Sasurface1 {
   int torusCount;
   Torus[] toruses;
 
-  IntInt2ObjHash htToruses;
+  private IntInt2ObjHash htToruses;
 
-  SasGem gem;
-  SasNeighborFinder neighborFinder;
-  final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
+  private final SasGem gem;
+  private final SasNeighborFinder neighborFinder;
 
   private final static boolean LOG = false;
 
+  ////////////////////////////////////////////////////////////////
+  
   private final Point3f pointT = new Point3f();
-  private final Point3f pointT1 = new Point3f();
   private final Point3f zeroPointT = new Point3f();
   private final Point3f centerPointT = new Point3f();
   private final Point3f centerPointAT = new Point3f();
@@ -129,7 +128,32 @@ class Sasurface1 {
 
   private final static float PI = (float)Math.PI;
 
-  final Vector3f torusCavityAngleVector = new Vector3f();
+  private final Vector3f torusCavityAngleVectorT = new Vector3f();
+  private final Matrix3f matrixT = new Matrix3f();
+  private final AxisAngle4f aaT = new AxisAngle4f();
+
+  static final Vector3f vectorX = new Vector3f(1, 0, 0);
+  static final Vector3f vectorY = new Vector3f(0, 1, 0);
+  static final Vector3f vectorZ = new Vector3f(0, 0, 1);
+
+  private final Vector3f unitRadialVectorT = new Vector3f();
+  // 90 degrees, although everything is in radians
+  private final Vector3f radialVector90T = new Vector3f();
+
+  private final Vector3f vectorT = new Vector3f();
+
+  private final Vector3f outerRadials[] = new Vector3f[OUTER_TORUS_STEP_COUNT];
+  {
+    for (int i = outerRadials.length; --i >= 0; )
+      outerRadials[i] = new Vector3f();
+  }
+
+  /*
+   * radius and diameter of the probe. 0 == no probe
+   */
+  float radiusP, diameterP;
+
+  ////////////////////////////////////////////////////////////////
 
   Sasurface1(String surfaceID, Viewer viewer, Graphics3D g3d, short colix,
              BitSet bs) {
@@ -338,11 +362,6 @@ class Sasurface1 {
     }
   }
 
-  /*
-   * radius and diameter of the probe. 0 == no probe
-   */
-  float radiusP, diameterP;
-
   void calcVectors0and90(Point3f planeCenter, Vector3f axisVector,
                          Point3f planeZeroPoint,
                          Vector3f vector0, Vector3f vector90) {
@@ -354,67 +373,11 @@ class Sasurface1 {
 
   ////////////////////////////////////////////////////////////////
 
-  private final Vector3f centerVectorT = new Vector3f();
-  private final Point3f vertexPointT = new Point3f();
-  private final Vector3f vertexVectorT = new Vector3f();
-
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
                                Point3f planePoint, Point3f planeCenterPoint) {
     vectorT.sub(axisPoint, planePoint);
     float distance = axisUnitVector.dot(vectorT);
     planeCenterPoint.scaleAdd(-distance, axisUnitVector, axisPoint);
-  }
-
-  static float calcAngleInThePlane(Vector3f radialVector0,
-                                   Vector3f radialVector90,
-                                   Vector3f vectorInQuestion) {
-    float angle = radialVector0.angle(vectorInQuestion);
-    float angle90 = radialVector90.angle(vectorInQuestion);
-    if (angle90 > PI/2)
-      angle = 2*PI - angle;
-    return angle;
-  }
-
-  final Matrix3f matrixT = new Matrix3f();
-  final Matrix3f matrixT1 = new Matrix3f();
-  final AxisAngle4f aaT = new AxisAngle4f();
-  final AxisAngle4f aaT1 = new AxisAngle4f();
-
-  final AxisAngle4f aaAxis = new AxisAngle4f();
-  final Matrix3f matrixAxis = new Matrix3f();
-  final AxisAngle4f aaOuterTangent = new AxisAngle4f();
-  final Matrix3f matrixOuterTangent = new Matrix3f();
-
-  static final Vector3f vectorNull = new Vector3f();
-  static final Vector3f vectorX = new Vector3f(1, 0, 0);
-  static final Vector3f vectorY = new Vector3f(0, 1, 0);
-  static final Vector3f vectorZ = new Vector3f(0, 0, 1);
-
-  final Vector3f vectorT = new Vector3f();
-  final Vector3f vectorT1 = new Vector3f();
-
-  final Vector3f vectorTorusT = new Vector3f();
-  final Vector3f vectorTorusTangentT = new Vector3f();
-
-  final Vector3f vectorPI = new Vector3f();
-  final Vector3f vectorPJ = new Vector3f();
-
-  final Vector3f unitRadialVectorT = new Vector3f();
-  // 90 degrees, although everything is in radians
-  final Vector3f radialVector90T = new Vector3f();
-
-  Point3f pointAtomI;
-  Point3f pointAtomJ;
-
-  final Vector3f vectorIP = new Vector3f();
-  final Vector3f vectorJP = new Vector3f();
-
-  float[] cavityAngles = new float[32];
-
-  final Vector3f outerRadials[] = new Vector3f[OUTER_TORUS_STEP_COUNT];
-  {
-    for (int i = outerRadials.length; --i >= 0; )
-      outerRadials[i] = new Vector3f();
   }
 
   Point3f[] convexEdgePoints;
@@ -484,18 +447,6 @@ class Sasurface1 {
     allocateConvexVertexBitmap(indexJ);
     allocateConvexVertexBitmap(indexK);
   }
-
-  final Vector3f uIJK = new Vector3f();
-  final Vector3f p1 = new Vector3f();
-  final Vector3f p2 = new Vector3f();
-  final Vector3f p3 = new Vector3f();
-
-  // plus use vectorPI and vectorPJ from above;
-  final Vector3f vectorPK = new Vector3f();
-  final Vector3f vectorCrossIJ = new Vector3f();
-  final Vector3f vectorCrossIK = new Vector3f();
-  final Vector3f vectorCrossJK = new Vector3f();
-
 
   class Torus {
     final int ixA, ixB;
@@ -622,11 +573,11 @@ class Sasurface1 {
     void transformOuterRadials() {
       float stepAngle1 =
         (outerPointCount <= 1) ? 0 : outerAngle / (outerPointCount - 1);
-      aaT1.set(tangentVector, stepAngle1 * outerPointCount);
+      aaT.set(tangentVector, stepAngle1 * outerPointCount);
       for (int i = outerPointCount; --i > 0; ) {
-        aaT1.angle -= stepAngle1;
-        matrixT1.set(aaT1);
-        matrixT1.transform(outerRadial, outerRadials[i]);
+        aaT.angle -= stepAngle1;
+        matrixT.set(aaT);
+        matrixT.transform(outerRadial, outerRadials[i]);
       }
       outerRadials[0].set(outerRadial);
     }
@@ -878,10 +829,10 @@ class Sasurface1 {
       if (edgeA) {
         t = outerRadial;
       } else {
-        aaT1.set(tangentVector, outerAngle);
-        matrixT1.set(aaT1);
-        matrixT1.transform(outerRadial, vectorT1);
-        t = vectorT1;
+        aaT.set(tangentVector, outerAngle);
+        matrixT.set(aaT);
+        matrixT.transform(outerRadial, vectorT);
+        t = vectorT;
       }
       zeroPoint.add(center, radialVector);
       zeroPoint.add(t);
@@ -957,7 +908,6 @@ class Sasurface1 {
     }
   }
 
-
   class TorusCavity {
     final SasCavity cavity;
     final boolean rightHanded;
@@ -970,13 +920,12 @@ class Sasurface1 {
     
     void calcAngle(Point3f center, Vector3f radialVector,
                    Vector3f radialVector90) {
-      torusCavityAngleVector.sub(cavity.probeCenter, center);
-      angle = torusCavityAngleVector.angle(radialVector);
-      float angleCavity90 = torusCavityAngleVector.angle(radialVector90);
+      torusCavityAngleVectorT.sub(cavity.probeCenter, center);
+      angle = torusCavityAngleVectorT.angle(radialVector);
+      float angleCavity90 = torusCavityAngleVectorT.angle(radialVector90);
       if (angleCavity90 <= PI / 2)
         return;
       angle = (2 * PI) - angle;
     }
   }
 }
-

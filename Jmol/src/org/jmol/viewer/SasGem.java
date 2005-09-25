@@ -44,11 +44,6 @@ class SasGem {
 
   SasFlattenedPointList fpl = new SasFlattenedPointList();
 
-  int projectedCount = 0;
-  short[] projectedVertexes = new short[64];
-  float[] projectedAngles = new float[64];
-  float[] projectedDistances = new float[64];
-
   final Vector3f[] geodesicVertexVectors;
   final int geodesicVertexCount;
   final int geodesicFaceCount;
@@ -273,7 +268,6 @@ class SasGem {
 
     float radiansPerAngstrom = PI / radius;
     
-    projectedCount = 0;
     fpl.reset();
     int[] theEdgeMap = null;
     switch (method) {
@@ -294,27 +288,11 @@ class SasGem {
       float angle =
         calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
       fpl.add((short)v, angle, distance * radiansPerAngstrom);
-      addProjectedPoint((short) v, angle, distance * radiansPerAngstrom);
     }
     fpl.sort();
-    sortProjectedVertexes();
-    if (fullTorus) {
+    if (fullTorus)
       fpl.duplicateFirstPointPlus2Pi();
-      duplicateFirstProjectedGeodesicPoint();
-    }
-    checkFpl();
     return true;
-  }
-
-  void checkFpl() {
-    if (fpl.count != projectedCount)
-      throw new NullPointerException();
-    for (int i = fpl.count; --i >= 0; ) {
-      if (fpl.angles[i] != projectedAngles[i] ||
-          fpl.distances[i] != projectedDistances[i] ||
-          fpl.vertexes[i] != projectedVertexes[i])
-        throw new NullPointerException();
-    }
   }
 
   void calcClippingPlaneCenter(Point3f axisPoint, Vector3f axisUnitVector,
@@ -322,18 +300,6 @@ class SasGem {
     vectorT.sub(axisPoint, planePoint);
     float distance = axisUnitVector.dot(vectorT);
     planeCenterPoint.scaleAdd(-distance, axisUnitVector, axisPoint);
-  }
-
-  void addProjectedPoint(short vertex, float angle, float radians) {
-    if (projectedCount == projectedVertexes.length) {
-      projectedVertexes = Util.doubleLength(projectedVertexes);
-      projectedAngles = Util.doubleLength(projectedAngles);
-      projectedDistances = Util.doubleLength(projectedDistances);
-    }
-    projectedVertexes[projectedCount] = vertex;
-    projectedAngles[projectedCount] = angle;
-    projectedDistances[projectedCount] = radians;
-    ++projectedCount;
   }
 
   static float calcAngleInThePlane(Vector3f radialVector0,
@@ -344,27 +310,6 @@ class SasGem {
     if (angle90 > PI/2)
       angle = 2*PI - angle;
     return angle;
-  }
-
-  void sortProjectedVertexes() {
-    int projectedCount = this.projectedCount;
-    short[] projectedVertexes = this.projectedVertexes;
-    float[] projectedAngles = this.projectedAngles;
-    float[] projectedDistances = this.projectedDistances;
-    for (int i = projectedCount; --i > 0; )
-      for (int j = i; --j >= 0; )
-        if (projectedAngles[j] > projectedAngles[i]) {
-          Util.swap(projectedAngles, i, j);
-          Util.swap(projectedDistances, i, j);
-          Util.swap(projectedVertexes, i, j);
-        }
-  }
-
-  void duplicateFirstProjectedGeodesicPoint() {
-    System.out.println("duplicateFirstProjectedGeodesicPoint");
-    addProjectedPoint(projectedVertexes[0],
-                      projectedAngles[0] + 2*PI,
-                      projectedDistances[0]);
   }
 
   float angleABC(float xA, float yA, float xB, float yB, float xC, float yC) {

@@ -138,7 +138,7 @@ class SasGem {
     Bmp.and(edgeVertexMap, visibleVertexMap);
   }
   
-  int findActualEdge(int[] visibleVertexMap) {
+  boolean findActualEdge(int[] visibleVertexMap) {
     int edgeVertexCount = 0;
     Bmp.clearBitmap(actualEdgeMap);
     for (int v = -1; (v = Bmp.nextSetBit(visibleVertexMap, v + 1)) >= 0; ) {
@@ -152,7 +152,7 @@ class SasGem {
         }
       }
     }
-    return edgeVertexCount;
+    return edgeVertexCount > 0;
   }
 
   short findClosestVertex(short normix, int[] edgeVertexMap) {
@@ -254,19 +254,15 @@ class SasGem {
   final Vector3f vector90T = new Vector3f();
   final Point3f planeCenterT = new Point3f();
 
-  void projectAndSortGeodesicPoints(boolean isEdgeA,
-                                    Point3f geodesicCenter, float radius,
-                                    Point3f planeCenter,
-                                    Vector3f axisUnitVector,
-                                    Point3f planeZeroPoint,
-                                    boolean fullTorus) {
-    Vector3f vector0T = this.vector0T;
-    Vector3f vector90T = this.vector90T;
-    Point3f vertexPointT = this.vertexPointT;
-    Vector3f vertexVectorT = this.vertexVectorT;
-    Point3f projectedPointT = this.projectedPointT;
-    Vector3f projectedVectorT = this.projectedVectorT;
-
+  boolean projectAndSortGeodesicPoints(boolean isEdgeA,
+                                       Point3f geodesicCenter, float radius,
+                                       Point3f planeCenter,
+                                       Vector3f axisUnitVector,
+                                       Point3f planeZeroPoint,
+                                       boolean fullTorus,
+                                       int[] convexVertexMap) {
+    if (! findActualEdge(convexVertexMap))
+      return false;
     calcVectors0and90(planeCenter, axisUnitVector, planeZeroPoint,
                       vector0T, vector90T);
 
@@ -305,6 +301,7 @@ class SasGem {
       duplicateFirstProjectedGeodesicPoint();
     }
     checkFpl();
+    return true;
   }
 
   void checkFpl() {

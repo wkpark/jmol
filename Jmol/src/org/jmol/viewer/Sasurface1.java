@@ -875,14 +875,12 @@ class Sasurface1 {
       Point3f atomCenter = atom.point3f;
       gem.reset();
       calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
-      int edgeCount = gem.findActualEdge(convexVertexMaps[ix]);
-      if (edgeCount > 0) {
-        gem.projectAndSortGeodesicPoints(isEdgeA,
-                                         atomCenter, atomRadius,
-                                         centerPointT, axisUnitVector,
-                                         zeroPointT, fullTorus);
+      if (gem.projectAndSortGeodesicPoints(isEdgeA,
+                                           atomCenter, atomRadius,
+                                           centerPointT, axisUnitVector,
+                                           zeroPointT, fullTorus,
+                                           convexVertexMaps[ix]))
         stitchSegmentsWithSortedProjectedVertexes(isEdgeA);
-      }
     }
 
     void stitchSegmentsWithSortedProjectedVertexes(boolean isEdgeA) {

@@ -114,8 +114,6 @@ class Sasurface1 {
 
   IntInt2ObjHash htToruses;
 
-  final int[] edgeVertexesT;
-
   SasGem gem;
   SasNeighborFinder neighborFinder;
   final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
@@ -144,7 +142,6 @@ class Sasurface1 {
     gem = new SasGem(viewer, g3d, frame, GEODESIC_CALC_LEVEL);
     neighborFinder = new SasNeighborFinder(frame, this, g3d);
     geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_CALC_LEVEL);
-    edgeVertexesT = Bmp.allocateBitmap(geodesicVertexCount);
     generate(bs);
   }
 
@@ -921,21 +918,19 @@ class Sasurface1 {
       Atom atom = frame.atoms[ix];
       float atomRadius = atom.getVanderwaalsRadiusFloat();
       Point3f atomCenter = atom.point3f;
-      int edgeCount =
-        gem.findGeodesicEdge(convexVertexMaps[ix], edgeVertexesT);
+      gem.reset();
+      int edgeCount = gem.findGeodesicEdge(convexVertexMaps[ix]);
       if (edgeCount > 0) {
         calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
         gem.projectAndSortGeodesicPoints(isEdgeA,
                                          atomCenter, atomRadius,
                                          centerPointT, axisUnitVector,
-                                         zeroPointT, (torusCavities == null),
-                                         edgeVertexesT, false);
+                                         zeroPointT, (torusCavities == null));
         stitchSegmentsWithSortedProjectedVertexes(isEdgeA);
       }
     }
 
     void stitchSegmentsWithSortedProjectedVertexes(boolean isEdgeA) {
-      gem.resetStitches();
       for (int i = torusSegmentCount; --i >= 0; )
         torusSegments[i].stitchWithSortedProjectedVertexes(isEdgeA);
       short[] seam = gem.createSeam();
@@ -959,11 +954,6 @@ class Sasurface1 {
                                   centerPointBT, axisUnitVector,
                                   convexVertexMaps[ixA],
                                   edgeVertexesB);
-    }
-
-    void findEdgeVertexes(int[] edgeVertexesA, int[] edgeVertexesB) {
-      gem.findGeodesicEdge(convexVertexMaps[ixA], edgeVertexesA);
-      gem.findGeodesicEdge(convexVertexMaps[ixB], edgeVertexesB);
     }
   }
 

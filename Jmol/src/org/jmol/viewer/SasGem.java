@@ -63,6 +63,7 @@ class SasGem {
 
   final int[] bmpNotClipped;
   final int[] visiblePerfectMap;
+  final int[] visibleEdgeMap;
   final int[] faceMapT;
 
   private final static float PI = (float)Math.PI;
@@ -87,7 +88,12 @@ class SasGem {
 
     bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
     visiblePerfectMap = Bmp.allocateBitmap(geodesicVertexCount);
+    visibleEdgeMap = Bmp.allocateBitmap(geodesicVertexCount);
     faceMapT = Bmp.allocateBitmap(geodesicFaceCount);
+  }
+
+  void reset() {
+    countStitchesT = 0;
   }
 
 
@@ -132,15 +138,15 @@ class SasGem {
     Bmp.and(edgeVertexMap, visibleVertexMap);
   }
   
-  int findGeodesicEdge(int[] visibleVertexMap, int[] edgeVertexMap) {
+  int findGeodesicEdge(int[] visibleVertexMap) {
     int edgeVertexCount = 0;
-    Bmp.clearBitmap(edgeVertexMap);
+    Bmp.clearBitmap(visibleEdgeMap);
     for (int v = -1; (v = Bmp.nextSetBit(visibleVertexMap, v + 1)) >= 0; ) {
       int neighborsOffset = v * 6;
       for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
         int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
         if (! Bmp.getBit(visibleVertexMap, neighbor)) {
-          Bmp.setBit(edgeVertexMap, v);
+          Bmp.setBit(visibleEdgeMap, v);
           ++edgeVertexCount;
           break;
         }
@@ -252,9 +258,7 @@ class SasGem {
                                     Point3f planeCenter,
                                     Vector3f axisUnitVector,
                                     Point3f planeZeroPoint,
-                                    boolean fullTorus,
-                                    int[] edgeVertexMap,
-                                    boolean dump) {
+                                    boolean fullTorus) {
     Vector3f vector0T = this.vector0T;
     Vector3f vector90T = this.vector90T;
     Point3f vertexPointT = this.vertexPointT;
@@ -272,11 +276,11 @@ class SasGem {
     int[] theEdgeMap = null;
     switch (method) {
     case EXPOSED_EDGE_METHOD:
-      theEdgeMap = edgeVertexMap;
+      theEdgeMap = visibleEdgeMap;
       break;
     case PERFECT_EDGE_METHOD:
       findClippedGeodesicEdge(isEdgeA, geodesicCenter, radius,
-                              planeCenter, axisUnitVector, edgeVertexMap,
+                              planeCenter, axisUnitVector, visibleEdgeMap,
                               visiblePerfectMap);
       theEdgeMap = visiblePerfectMap;
       break;
@@ -545,10 +549,6 @@ class SasGem {
              minProjectedIndex,
              maxProjectedIndex,
              getFlattenedPointList());
-  }
-
-  void resetStitches() {
-    countStitchesT = 0;
   }
 
   void stitchEm(SasFlattenedPointList segmentFpl,

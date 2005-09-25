@@ -231,6 +231,7 @@ class SasurfaceRenderer extends ShapeRenderer {
   void renderStitchedTorusEdges(Sasurface1.Torus torus,
                                 short[] convexColixes,
                                 int[][] convexVertexMaps) {
+    /*
     if (edgeVertexesAT == null) {
       edgeVertexesAT = Bmp.allocateBitmap(maxVertexCount);
       edgeVertexesBT = Bmp.allocateBitmap(maxVertexCount);
@@ -245,7 +246,6 @@ class SasurfaceRenderer extends ShapeRenderer {
 
     Point3i[] screensTorus = sasCache.lookupTorusScreens(torus);
 
-    /*
     crossStitch(screensTorus,
                 sasCache.lookupAtomScreens(atomA, convexVertexMaps[ixA]),
                 torus.geodesicStitchesA);

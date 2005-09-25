@@ -64,6 +64,7 @@ class SasGem {
   final int[] bmpNotClipped;
   final int[] idealEdgeMap;
   final int[] actualEdgeMap;
+  final int[] visibleIdealEdgeMap;
   final int[] faceMapT;
 
   private final static float PI = (float)Math.PI;
@@ -89,6 +90,7 @@ class SasGem {
     bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
     idealEdgeMap = Bmp.allocateBitmap(geodesicVertexCount);
     actualEdgeMap = Bmp.allocateBitmap(geodesicVertexCount);
+    visibleIdealEdgeMap = Bmp.allocateBitmap(geodesicVertexCount);
     faceMapT = Bmp.allocateBitmap(geodesicFaceCount);
   }
 
@@ -100,7 +102,6 @@ class SasGem {
   boolean findIdealEdge(boolean isEdgeA,
                         Point3f geodesicCenter, float radius,
                         Point3f planeCenter, Vector3f unitNormal,
-                        int[] visibleVertexMap,
                         int[] idealEdgeMap) {
     Bmp.clearBitmap(bmpNotClipped);
     Bmp.clearBitmap(idealEdgeMap);
@@ -133,7 +134,6 @@ class SasGem {
         }
       }
     }
-    Bmp.and(idealEdgeMap, visibleVertexMap);
     return true;
   }
   
@@ -263,9 +263,10 @@ class SasGem {
     if (! findActualEdge(convexVertexMap))
       return false;
     if (! findIdealEdge(isEdgeA, geodesicCenter, radius,
-                        planeCenter, axisUnitVector, actualEdgeMap,
-                        idealEdgeMap))
+                        planeCenter, axisUnitVector, idealEdgeMap))
       return false;
+
+    Bmp.and(visibleIdealEdgeMap, idealEdgeMap, actualEdgeMap);
 
     calcVectors0and90(planeCenter, axisUnitVector, planeZeroPoint,
                       vector0T, vector90T);
@@ -280,7 +281,7 @@ class SasGem {
       theEdgeMap = actualEdgeMap;
       break;
     case PERFECT_EDGE_METHOD:
-      theEdgeMap = idealEdgeMap;
+      theEdgeMap = visibleIdealEdgeMap;
       break;
     }
     

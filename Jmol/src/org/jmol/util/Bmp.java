@@ -302,5 +302,16 @@ public final class Bmp {
     }
     return bits != 0;
   }
+
+  public final static boolean and(int[] target, int[] bmpA, int[] bmpB) {
+    int len = Math.min(bmpA == null ? 0 : bmpA.length,
+                       bmpB == null ? 0 : bmpB.length);
+    for (int i = target.length; --i >= len; )
+      target[i] = 0;
+    int bits = 0;
+    for (int i = len; --i >= 0; )
+      bits |= (target[i] = bmpA[i] & bmpB[i]);
+    return bits != 0;
+  }
 }
 

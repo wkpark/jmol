@@ -97,18 +97,16 @@ class SasGem {
   }
 
 
-  void findClippedGeodesicEdge(boolean isEdgeA,
-                               Point3f geodesicCenter, float radius,
-                               Point3f planeCenter, Vector3f unitNormal,
-                               int[] visibleVertexMap,
-                               int[] edgeVertexMap) {
+  boolean findIdealEdge(boolean isEdgeA,
+                        Point3f geodesicCenter, float radius,
+                        Point3f planeCenter, Vector3f unitNormal,
+                        int[] visibleVertexMap,
+                        int[] idealEdgeMap) {
     Bmp.clearBitmap(bmpNotClipped);
-    Bmp.clearBitmap(edgeVertexMap);
+    Bmp.clearBitmap(idealEdgeMap);
     int unclippedCount = 0;
     for (int i = geodesicVertexCount; --i >= 0; ) {
-      //for (int i = -1; (i = Bmp.nextSetBit(visibleVertexMap, i + 1)) >= 0; ) {
-      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i],
-                            geodesicCenter);
+      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i], geodesicCenter);
       vertexVectorT.sub(vertexPointT, planeCenter);
       float dot = vertexVectorT.dot(unitNormal);
       if (isEdgeA)
@@ -119,23 +117,24 @@ class SasGem {
       }
     }
     if (unclippedCount == 0)
-      return; // everything is clipped ... inside another atom
+      return false; // everything is clipped ... inside another atom
     if (unclippedCount == geodesicVertexCount) {
       findClippedFaceVertexes(isEdgeA, geodesicCenter, radius,
-                              planeCenter, unitNormal, edgeVertexMap);
-      return;
+                              planeCenter, unitNormal, idealEdgeMap);
+      return false;
     }
     for (int v = -1; (v = Bmp.nextSetBit(bmpNotClipped, v + 1)) >= 0; ) {
       int neighborsOffset = v * 6;
       for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
         int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
         if (! Bmp.getBit(bmpNotClipped, neighbor)) {
-          Bmp.setBit(edgeVertexMap, v);
+          Bmp.setBit(idealEdgeMap, v);
           break;
         }
       }
     }
-    Bmp.and(edgeVertexMap, visibleVertexMap);
+    Bmp.and(idealEdgeMap, visibleVertexMap);
+    return true;
   }
   
   boolean findActualEdge(int[] visibleVertexMap) {
@@ -263,6 +262,11 @@ class SasGem {
                                        int[] convexVertexMap) {
     if (! findActualEdge(convexVertexMap))
       return false;
+    if (! findIdealEdge(isEdgeA, geodesicCenter, radius,
+                        planeCenter, axisUnitVector, actualEdgeMap,
+                        idealEdgeMap))
+      return false;
+
     calcVectors0and90(planeCenter, axisUnitVector, planeZeroPoint,
                       vector0T, vector90T);
 
@@ -276,9 +280,6 @@ class SasGem {
       theEdgeMap = actualEdgeMap;
       break;
     case PERFECT_EDGE_METHOD:
-      findClippedGeodesicEdge(isEdgeA, geodesicCenter, radius,
-                              planeCenter, axisUnitVector, actualEdgeMap,
-                              idealEdgeMap);
       theEdgeMap = idealEdgeMap;
       break;
     }

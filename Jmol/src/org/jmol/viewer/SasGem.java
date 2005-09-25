@@ -395,6 +395,10 @@ class SasGem {
     return (float)Math.acos(dot / (lenAB * lenBC));
   }
 
+  short[] createSeam() {
+    return createSeam(countStitchesT, stitchesT);
+  }
+
   int countSeamT;
   short[] seamT = new short[64];
   short[] createSeam(int stitchCount, short[] stitches) {

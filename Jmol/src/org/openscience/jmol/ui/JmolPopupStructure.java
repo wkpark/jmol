@@ -193,10 +193,11 @@ public class JmolPopupStructure {
     { "vectorScale2", "vector scale 2" },
     { "vectorScale5", "vector scale 5" },
 
-    { "stereoMenu", "stereoNone stereoRedCyan stereoRedBlue stereoCrossEyed stereoWallEyed" },
+    { "stereoMenu", "stereoNone stereoRedCyan stereoRedBlue stereoRedGreen stereoCrossEyed stereoWallEyed" },
     { "stereoNone", "stereo off" },
     { "stereoRedCyan", "stereo redcyan 3" },
     { "stereoRedBlue", "stereo redblue 3" },
+    { "stereoRedGreen", "stereo redgreen 3" },
     { "stereoCrossEyed", "stereo 5" },
     { "stereoWallEyed", "stereo -5" },
 
@@ -479,7 +480,7 @@ public class JmolPopupStructure {
     { "zoom100", "zoom 100" },
     { "zoom150", "zoom 150" },
     { "zoom200", "zoom 200" },
-    { "zoom400", "zoom 300" },
+    { "zoom400", "zoom 400" },
     { "zoom800", "zoom 800" },
     { "zoomIn", "move 0 0 0 40 0 0 0 0 1" },
     { "zoomOut", "move 0 0 0 -40 0 0 0 0 1" },

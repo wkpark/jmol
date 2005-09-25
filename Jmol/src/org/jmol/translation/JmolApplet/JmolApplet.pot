@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-09-08 21:54-0400\n"
+"POT-Creation-Date: 2005-09-25 09:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,4 +32,955 @@ msgstr ""
 
 #: org/jmol/applet/Jmol.java:536
 msgid "Jmol script completed"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:48
+msgid "No atoms loaded"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:49
+msgid "Name hidden"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:51
+msgid "Select"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:52
+msgid "Element"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:53
+#: org/openscience/jmol/ui/JmolPopupWords.java:57
+#: org/openscience/jmol/ui/JmolPopupWords.java:68
+#: org/openscience/jmol/ui/JmolPopupWords.java:83
+msgid "All"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:54
+#: org/openscience/jmol/ui/JmolPopupWords.java:178
+#: org/openscience/jmol/ui/JmolPopupWords.java:187
+msgid "None"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:56
+msgid "Protein"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:58
+#: org/openscience/jmol/ui/JmolPopupWords.java:71
+#: org/openscience/jmol/ui/JmolPopupWords.java:116
+#: org/openscience/jmol/ui/JmolPopupWords.java:160
+msgid "Backbone"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:59
+msgid "Side Chains"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:60
+msgid "Polar Residues"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:61
+msgid "Nonpolar Residues"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:62
+msgid "Basic Residues (+)"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:63
+msgid "Acidic Residues (-)"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:64
+msgid "Uncharged Residues"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:65
+msgid "By Residue Name"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:67
+msgid "Nucleic"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:69
+msgid "DNA"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:70
+msgid "ARN"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:72
+msgid "Bases"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:73
+msgid "AT pairs"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:74
+msgid "GC pairs"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:75
+msgid "AU pairs"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:82
+msgid "hetero"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:84
+msgid "Solvent"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:85
+msgid "Water"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:86
+msgid "Except Solvent"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:87
+msgid "Except Water"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:88
+msgid "Ligand"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:90
+#: org/openscience/jmol/ui/JmolPopupWords.java:93
+msgid "Other"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:91
+msgid "Carbohydrate"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:92
+msgid "Lipid"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:95
+msgid "Model"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:96
+msgid "All Models"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:98
+msgid "Frame"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:99
+msgid "All Frames"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:101
+msgid "Invert Selection"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:103
+msgid "Display Selected Only"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:105
+msgid "Set Select Mode"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:106
+msgid "Replace Selection"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:107
+msgid "Add to Selection (OR)"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:108
+msgid "Narrow Selection (AND)"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:110
+msgid "Render"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:111
+msgid "Scheme"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:112
+msgid "CPK Spacefill"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:113
+msgid "Ball and Stick"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:114
+msgid "Sticks"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:115
+msgid "Wireframe"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:118
+#: org/openscience/jmol/ui/JmolPopupWords.java:200
+msgid "Atoms"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:119
+#: org/openscience/jmol/ui/JmolPopupWords.java:128
+#: org/openscience/jmol/ui/JmolPopupWords.java:137
+#: org/openscience/jmol/ui/JmolPopupWords.java:148
+#: org/openscience/jmol/ui/JmolPopupWords.java:159
+#: org/openscience/jmol/ui/JmolPopupWords.java:166
+#: org/openscience/jmol/ui/JmolPopupWords.java:422
+msgid "Off"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:120
+msgid "15% vanderWaals"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:121
+msgid "20% vanderWaals"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:122
+msgid "25% vanderWaals"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:123
+msgid "50% vanderWaals"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:124
+msgid "75% vanderWaals"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:125
+msgid "100% vanderWaals"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:127
+#: org/openscience/jmol/ui/JmolPopupWords.java:249
+msgid "Bonds"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:129
+#: org/openscience/jmol/ui/JmolPopupWords.java:138
+#: org/openscience/jmol/ui/JmolPopupWords.java:149
+#: org/openscience/jmol/ui/JmolPopupWords.java:167
+#: org/openscience/jmol/ui/JmolPopupWords.java:421
+msgid "On"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:136
+#: org/openscience/jmol/ui/JmolPopupWords.java:262
+msgid "Hydrogen Bonds"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:139
+msgid "Set H-Bonds Side Chain"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:140
+msgid "Set H-Bonds Backbone"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:147
+#: org/openscience/jmol/ui/JmolPopupWords.java:275
+msgid "Disulfide Bonds"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:150
+msgid "Set SS-Bonds Side Chain"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:151
+msgid "Set SS-Bonds Backbone"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:158
+msgid "Structures"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:161
+#: org/openscience/jmol/ui/JmolPopupWords.java:309
+msgid "Trace"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:162
+#: org/openscience/jmol/ui/JmolPopupWords.java:330
+msgid "Cartoon"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:163
+#: org/openscience/jmol/ui/JmolPopupWords.java:351
+msgid "Ribbons"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:165
+#: org/openscience/jmol/ui/JmolPopupWords.java:397
+msgid "Vectors"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:168
+msgid "3 pixels"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:171
+msgid "Scale 0.2"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:172
+msgid "Scale 0.5"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:173
+msgid "Scale 1"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:174
+msgid "Scale 2"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:175
+msgid "Scale 5"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:179
+msgid "Red+Cyan glasses"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:180
+msgid "Red+Blue glasses"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:181
+msgid "Red+Green glasses"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:182
+msgid "Cross-eyed viewing"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:183
+msgid "Wall-eyed viewing"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:185
+#: org/openscience/jmol/ui/JmolPopupWords.java:372
+msgid "Labels"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:188
+msgid "With Element Symbol"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:189
+msgid "With Atom Name"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:190
+msgid "With Atom Number"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:192
+msgid "Position Label on Atom"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:193
+msgid "Centered"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:194
+msgid "Upper Right"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:195
+msgid "Lower Right"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:196
+msgid "Upper Left"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:197
+msgid "Lower Left"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:199
+#: org/openscience/jmol/ui/JmolPopupWords.java:500
+#: org/openscience/jmol/ui/JmolPopupWords.java:523
+#: org/openscience/jmol/ui/JmolPopupWords.java:546
+msgid "Color"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:202
+#: org/openscience/jmol/ui/JmolPopupWords.java:291
+#: org/openscience/jmol/ui/JmolPopupWords.java:312
+#: org/openscience/jmol/ui/JmolPopupWords.java:333
+#: org/openscience/jmol/ui/JmolPopupWords.java:354
+msgid "By Scheme"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:203
+#: org/openscience/jmol/ui/JmolPopupWords.java:292
+#: org/openscience/jmol/ui/JmolPopupWords.java:313
+#: org/openscience/jmol/ui/JmolPopupWords.java:334
+#: org/openscience/jmol/ui/JmolPopupWords.java:355
+msgid "Element (CPK)"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:204
+#: org/openscience/jmol/ui/JmolPopupWords.java:293
+#: org/openscience/jmol/ui/JmolPopupWords.java:314
+#: org/openscience/jmol/ui/JmolPopupWords.java:335
+#: org/openscience/jmol/ui/JmolPopupWords.java:356
+msgid "Amino"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:205
+#: org/openscience/jmol/ui/JmolPopupWords.java:294
+#: org/openscience/jmol/ui/JmolPopupWords.java:315
+#: org/openscience/jmol/ui/JmolPopupWords.java:336
+#: org/openscience/jmol/ui/JmolPopupWords.java:357
+msgid "Secondary Structure"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:206
+#: org/openscience/jmol/ui/JmolPopupWords.java:295
+#: org/openscience/jmol/ui/JmolPopupWords.java:316
+#: org/openscience/jmol/ui/JmolPopupWords.java:337
+#: org/openscience/jmol/ui/JmolPopupWords.java:358
+msgid "Chain"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:207
+msgid "Formal Charge"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:208
+msgid "Partial Charge"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:210
+#: org/openscience/jmol/ui/JmolPopupWords.java:258
+#: org/openscience/jmol/ui/JmolPopupWords.java:271
+#: org/openscience/jmol/ui/JmolPopupWords.java:284
+#: org/openscience/jmol/ui/JmolPopupWords.java:298
+#: org/openscience/jmol/ui/JmolPopupWords.java:319
+#: org/openscience/jmol/ui/JmolPopupWords.java:340
+#: org/openscience/jmol/ui/JmolPopupWords.java:361
+#: org/openscience/jmol/ui/JmolPopupWords.java:374
+#: org/openscience/jmol/ui/JmolPopupWords.java:386
+#: org/openscience/jmol/ui/JmolPopupWords.java:399
+msgid "Black"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:211
+#: org/openscience/jmol/ui/JmolPopupWords.java:259
+#: org/openscience/jmol/ui/JmolPopupWords.java:272
+#: org/openscience/jmol/ui/JmolPopupWords.java:285
+#: org/openscience/jmol/ui/JmolPopupWords.java:299
+#: org/openscience/jmol/ui/JmolPopupWords.java:320
+#: org/openscience/jmol/ui/JmolPopupWords.java:341
+#: org/openscience/jmol/ui/JmolPopupWords.java:362
+#: org/openscience/jmol/ui/JmolPopupWords.java:375
+#: org/openscience/jmol/ui/JmolPopupWords.java:387
+#: org/openscience/jmol/ui/JmolPopupWords.java:400
+msgid "White"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:213
+#: org/openscience/jmol/ui/JmolPopupWords.java:214
+#: org/openscience/jmol/ui/JmolPopupWords.java:251
+#: org/openscience/jmol/ui/JmolPopupWords.java:264
+#: org/openscience/jmol/ui/JmolPopupWords.java:277
+#: org/openscience/jmol/ui/JmolPopupWords.java:300
+#: org/openscience/jmol/ui/JmolPopupWords.java:321
+#: org/openscience/jmol/ui/JmolPopupWords.java:342
+#: org/openscience/jmol/ui/JmolPopupWords.java:363
+#: org/openscience/jmol/ui/JmolPopupWords.java:376
+#: org/openscience/jmol/ui/JmolPopupWords.java:388
+#: org/openscience/jmol/ui/JmolPopupWords.java:401
+msgid "Red"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:215
+msgid "Crimson"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:216
+msgid "Dark Red"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:217
+msgid "Firebrick"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:218
+msgid "Indian Red"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:219
+msgid "Dark Magenta"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:220
+msgid "Dark Salmon"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:221
+msgid "Light Salmon"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:222
+msgid "Deep Pink"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:223
+msgid "Light Pink"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:225
+#: org/openscience/jmol/ui/JmolPopupWords.java:226
+#: org/openscience/jmol/ui/JmolPopupWords.java:253
+#: org/openscience/jmol/ui/JmolPopupWords.java:266
+#: org/openscience/jmol/ui/JmolPopupWords.java:279
+#: org/openscience/jmol/ui/JmolPopupWords.java:302
+#: org/openscience/jmol/ui/JmolPopupWords.java:323
+#: org/openscience/jmol/ui/JmolPopupWords.java:344
+#: org/openscience/jmol/ui/JmolPopupWords.java:365
+#: org/openscience/jmol/ui/JmolPopupWords.java:378
+#: org/openscience/jmol/ui/JmolPopupWords.java:390
+#: org/openscience/jmol/ui/JmolPopupWords.java:403
+msgid "Yellow"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:227
+#: org/openscience/jmol/ui/JmolPopupWords.java:503
+msgid "Gold"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:228
+msgid "Goldenrod"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:229
+msgid "Lemon Chiffon"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:230
+msgid "Yellow-Green"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:232
+#: org/openscience/jmol/ui/JmolPopupWords.java:233
+#: org/openscience/jmol/ui/JmolPopupWords.java:254
+#: org/openscience/jmol/ui/JmolPopupWords.java:267
+#: org/openscience/jmol/ui/JmolPopupWords.java:280
+#: org/openscience/jmol/ui/JmolPopupWords.java:303
+#: org/openscience/jmol/ui/JmolPopupWords.java:324
+#: org/openscience/jmol/ui/JmolPopupWords.java:345
+#: org/openscience/jmol/ui/JmolPopupWords.java:366
+#: org/openscience/jmol/ui/JmolPopupWords.java:379
+#: org/openscience/jmol/ui/JmolPopupWords.java:391
+#: org/openscience/jmol/ui/JmolPopupWords.java:404
+msgid "Green"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:234
+msgid "Lime"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:235
+msgid "Seagreen"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:236
+msgid "Green-Blue"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:237
+msgid "Spring Green"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:239
+#: org/openscience/jmol/ui/JmolPopupWords.java:240
+#: org/openscience/jmol/ui/JmolPopupWords.java:255
+#: org/openscience/jmol/ui/JmolPopupWords.java:268
+#: org/openscience/jmol/ui/JmolPopupWords.java:281
+#: org/openscience/jmol/ui/JmolPopupWords.java:304
+#: org/openscience/jmol/ui/JmolPopupWords.java:325
+#: org/openscience/jmol/ui/JmolPopupWords.java:346
+#: org/openscience/jmol/ui/JmolPopupWords.java:367
+#: org/openscience/jmol/ui/JmolPopupWords.java:380
+#: org/openscience/jmol/ui/JmolPopupWords.java:392
+#: org/openscience/jmol/ui/JmolPopupWords.java:405
+msgid "Blue"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:241
+msgid "Aqua"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:242
+msgid "Azure"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:243
+msgid "Carolina Blue"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:244
+msgid "Cadet Blue"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:245
+msgid "Cornflower"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:246
+msgid "Dark Slate Blue"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:247
+msgid "Light Steel Blue"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:250
+#: org/openscience/jmol/ui/JmolPopupWords.java:263
+#: org/openscience/jmol/ui/JmolPopupWords.java:276
+#: org/openscience/jmol/ui/JmolPopupWords.java:289
+#: org/openscience/jmol/ui/JmolPopupWords.java:310
+#: org/openscience/jmol/ui/JmolPopupWords.java:331
+#: org/openscience/jmol/ui/JmolPopupWords.java:352
+#: org/openscience/jmol/ui/JmolPopupWords.java:373
+#: org/openscience/jmol/ui/JmolPopupWords.java:398
+msgid "Inherit"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:252
+#: org/openscience/jmol/ui/JmolPopupWords.java:265
+#: org/openscience/jmol/ui/JmolPopupWords.java:278
+#: org/openscience/jmol/ui/JmolPopupWords.java:301
+#: org/openscience/jmol/ui/JmolPopupWords.java:322
+#: org/openscience/jmol/ui/JmolPopupWords.java:343
+#: org/openscience/jmol/ui/JmolPopupWords.java:364
+#: org/openscience/jmol/ui/JmolPopupWords.java:377
+#: org/openscience/jmol/ui/JmolPopupWords.java:389
+#: org/openscience/jmol/ui/JmolPopupWords.java:402
+msgid "Orange"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:256
+#: org/openscience/jmol/ui/JmolPopupWords.java:269
+#: org/openscience/jmol/ui/JmolPopupWords.java:282
+#: org/openscience/jmol/ui/JmolPopupWords.java:305
+#: org/openscience/jmol/ui/JmolPopupWords.java:326
+#: org/openscience/jmol/ui/JmolPopupWords.java:347
+#: org/openscience/jmol/ui/JmolPopupWords.java:368
+#: org/openscience/jmol/ui/JmolPopupWords.java:381
+#: org/openscience/jmol/ui/JmolPopupWords.java:393
+#: org/openscience/jmol/ui/JmolPopupWords.java:406
+msgid "Indigo"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:257
+#: org/openscience/jmol/ui/JmolPopupWords.java:270
+#: org/openscience/jmol/ui/JmolPopupWords.java:283
+#: org/openscience/jmol/ui/JmolPopupWords.java:306
+#: org/openscience/jmol/ui/JmolPopupWords.java:327
+#: org/openscience/jmol/ui/JmolPopupWords.java:348
+#: org/openscience/jmol/ui/JmolPopupWords.java:369
+#: org/openscience/jmol/ui/JmolPopupWords.java:382
+#: org/openscience/jmol/ui/JmolPopupWords.java:394
+#: org/openscience/jmol/ui/JmolPopupWords.java:407
+msgid "Violet"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:260
+#: org/openscience/jmol/ui/JmolPopupWords.java:273
+#: org/openscience/jmol/ui/JmolPopupWords.java:286
+#: org/openscience/jmol/ui/JmolPopupWords.java:307
+#: org/openscience/jmol/ui/JmolPopupWords.java:328
+#: org/openscience/jmol/ui/JmolPopupWords.java:349
+#: org/openscience/jmol/ui/JmolPopupWords.java:370
+#: org/openscience/jmol/ui/JmolPopupWords.java:383
+#: org/openscience/jmol/ui/JmolPopupWords.java:395
+#: org/openscience/jmol/ui/JmolPopupWords.java:408
+msgid "Cyan"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:296
+#: org/openscience/jmol/ui/JmolPopupWords.java:317
+#: org/openscience/jmol/ui/JmolPopupWords.java:338
+#: org/openscience/jmol/ui/JmolPopupWords.java:359
+msgid "Charge"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:385
+msgid "Background"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:410
+msgid "Zoom"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:417
+msgid "Zoom In"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:418
+msgid "Zoom Out"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:420
+msgid "Spin"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:424
+msgid "Set X Rate"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:433
+msgid "Set Y Rate"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:442
+msgid "Set Z Rate"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:451
+#: org/openscience/jmol/ui/JmolPopupWords.java:469
+msgid "Set FPS"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:458
+msgid "Animate"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:459
+msgid "Animation Mode"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:460
+msgid "Play Once"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:461
+msgid "Palindrome"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:462
+msgid "Loop"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:463
+msgid "Play"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:464
+msgid "Stop"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:465
+msgid "Next Frame"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:466
+msgid "Previous Frame"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:467
+msgid "Rewind"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:468
+msgid "Reverse Play"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:476
+msgid "Measurements"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:477
+msgid "Nanometers"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:478
+msgid "Angstroms"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:479
+msgid "Picometers"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:481
+msgid "Crystal"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:483
+msgid "Axes"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:484
+#: org/openscience/jmol/ui/JmolPopupWords.java:507
+#: org/openscience/jmol/ui/JmolPopupWords.java:530
+msgid "Hide"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:485
+#: org/openscience/jmol/ui/JmolPopupWords.java:508
+#: org/openscience/jmol/ui/JmolPopupWords.java:531
+msgid "Dotted"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:487
+#: org/openscience/jmol/ui/JmolPopupWords.java:533
+msgid "Pixel Width"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:488
+#: org/openscience/jmol/ui/JmolPopupWords.java:511
+#: org/openscience/jmol/ui/JmolPopupWords.java:534
+msgid "1 px"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:489
+#: org/openscience/jmol/ui/JmolPopupWords.java:512
+#: org/openscience/jmol/ui/JmolPopupWords.java:535
+msgid "3 px"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:490
+#: org/openscience/jmol/ui/JmolPopupWords.java:513
+#: org/openscience/jmol/ui/JmolPopupWords.java:536
+msgid "5 px"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:491
+#: org/openscience/jmol/ui/JmolPopupWords.java:514
+#: org/openscience/jmol/ui/JmolPopupWords.java:537
+msgid "10 px"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:501
+#: org/openscience/jmol/ui/JmolPopupWords.java:524
+#: org/openscience/jmol/ui/JmolPopupWords.java:547
+msgid "Gray"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:502
+msgid "Slate Blue"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:504
+msgid "Orchid"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:506
+msgid "Boundbox"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:516
+msgid "Angstrom Width"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:525
+msgid "Salmon"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:526
+msgid "Olive"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:527
+msgid "Maroon"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:529
+msgid "Unitcell"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:548
+msgid "Aquamarine"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:549
+msgid "Forest Green"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:550
+msgid "Hot Pink"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:552
+msgid "Options"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:553
+msgid "Show Selection Halos"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:554
+msgid "Show Hydrogens"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:555
+msgid "Show Measurements"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:556
+msgid "Perspective Depth"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:557
+msgid "RasMol/Chime Compatibility"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:558
+msgid "RasMol Colors"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:559
+msgid "Jmol Colors"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:560
+msgid "Axes RasMol/Chime"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:561
+msgid "Zero Based Xyz Rasmol"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:562
+msgid "Wireframe Rotation"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:564
+msgid "Console..."
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:565
+msgid "Open"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:566
+msgid "Close"
+msgstr ""
+
+#: org/openscience/jmol/ui/JmolPopupWords.java:568
+msgid "About Jmol"
 msgstr ""

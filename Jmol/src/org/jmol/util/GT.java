@@ -29,65 +29,97 @@ import java.util.*;
 
 public class GT {
     
-    private static GT getTextWrapper = new GT();
-    private ResourceBundle translationResources;
+  private static GT getTextWrapper = new GT();
+  private ResourceBundle translationResources;
+  private ResourceBundle appletTranslationResources;
 
-    private GT() {
-        System.out.println("Instantiating gettext wrapper...");
-        try {
-            translationResources = ResourceBundle.getBundle(
-                    "org.jmol.translation.Jmol.Messages");
-        } catch (MissingResourceException mre) {
-            System.out.println("Translations do not seem to have been installed!");
-            System.out.println(mre.getMessage());
-            //mre.printStackTrace();
-            translationResources = null;
-        } catch (Exception exception) {
-            System.out.println("Some exception occured!");
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
-            translationResources = null;
-        }
+  private GT() {
+    System.out.println("Instantiating gettext wrapper...");
+    try {
+      translationResources = ResourceBundle.getBundle(
+          "org.jmol.translation.Jmol.Messages");
+    } catch (MissingResourceException mre) {
+      System.out.println("Translations do not seem to have been installed!");
+      System.out.println(mre.getMessage());
+      translationResources = null;
+    } catch (Exception exception) {
+      System.out.println("Some exception occured!");
+      System.out.println(exception.getMessage());
+      exception.printStackTrace();
+      translationResources = null;
     }
-    
-    public static String _(String string) {
-        return getTextWrapper.getString(string);
+    try {
+     appletTranslationResources = ResourceBundle.getBundle(
+         "org.jmol.translation.JmolApplet.Messages");
+    } catch (MissingResourceException mre) {
+      System.out.println("Applet translations do not seem to have been installed!");
+      System.out.println(mre.getMessage());
+      appletTranslationResources = null;
+    } catch (Exception exception) {
+      System.out.println("Some exception occured!");
+      System.out.println(exception.getMessage());
+      exception.printStackTrace();
+      appletTranslationResources = null;
     }
-    
-    public static String _(String string, Object[] objects) {
-        return getTextWrapper.getString(string, objects);
-    }
-    
-    private String getString(String string) {
-        if (translationResources != null) {
-            try {
-                String trans = translationResources.getString(string);
-                //System.out.println("trans: " + string  + " ->" + trans);
-                return trans;
-            } catch (MissingResourceException mre) {
-                System.out.println("No trans, using default: " + string);
-                return string;
-            }
-        }
-        System.out.println("No trans, using default: " + string);
-        return string;
-    }
+  }
 
-    private String getString(String string, Object[] objects) {
-        String trans = string;
-        if (translationResources != null) {
-            try {
-                trans = MessageFormat.format(translationResources.getString(string), objects);
-                //System.out.println("trans: " + string  + " ->" + trans);
-            } catch (MissingResourceException mre) {
-                trans = MessageFormat.format(string, objects);
-                System.out.println("No trans, using default: " + trans);
-            }
-        } else {
-            trans = MessageFormat.format(string, objects);
-            System.out.println("No trans, using default: " + trans);
-        }
+  public static String _(String string) {
+    return getTextWrapper.getString(string);
+  }
+
+  public static String _(String string, Object[] objects) {
+    return getTextWrapper.getString(string, objects);
+  }
+
+  private String getString(String string) {
+    if (translationResources != null) {
+      try {
+        String trans = translationResources.getString(string);
+        //System.out.println("trans: " + string  + " ->" + trans);
         return trans;
+      } catch (MissingResourceException mre) {
+        //System.out.println("No trans, using default: " + string);
+        //return string;
+      }
     }
-}
+    if (appletTranslationResources != null) {
+      try {
+        String trans = appletTranslationResources.getString(string);
+        //System.out.println("trans: " + string  + " ->" + trans);
+        return trans;
+      } catch (MissingResourceException mre) {
+        //System.out.println("No trans, using default: " + string);
+        //return string;
+      }
+    }
+    System.out.println("No trans, using default: " + string);
+    return string;
+  }
 
+  private String getString(String string, Object[] objects) {
+    String trans = string;
+    if (translationResources != null) {
+      try {
+        trans = MessageFormat.format(translationResources.getString(string), objects);
+        //System.out.println("trans: " + string  + " ->" + trans);
+        return trans;
+      } catch (MissingResourceException mre) {
+        //trans = MessageFormat.format(string, objects);
+        //System.out.println("No trans, using default: " + trans);
+      }
+    }
+    if (appletTranslationResources != null) {
+      try {
+        trans = MessageFormat.format(appletTranslationResources.getString(string), objects);
+        //System.out.println("trans: " + string  + " ->" + trans);
+        return trans;
+      } catch (MissingResourceException mre) {
+        //trans = MessageFormat.format(string, objects);
+        //System.out.println("No trans, using default: " + trans);
+      }
+    }
+    trans = MessageFormat.format(string, objects);
+    System.out.println("No trans, using default: " + trans);
+    return trans;
+  }
+}

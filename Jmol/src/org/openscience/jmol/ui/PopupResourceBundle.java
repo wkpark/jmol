@@ -24,16 +24,10 @@
  */
 package org.openscience.jmol.ui;
 
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-
 class PopupResourceBundle {
 
-  ResourceBundle rbWords;
-
   PopupResourceBundle() {
-    rbWords = ResourceBundle.getBundle("org.openscience.jmol.ui." +
-                                       "JmolPopupWords");
+    // Nothing
   }
 
   String getStructure(String key) {
@@ -41,10 +35,9 @@ class PopupResourceBundle {
   }
 
   String getWord(String key) {
-    String str = key;
-    try {
-      str = rbWords.getString(key);
-    } catch (MissingResourceException e) {
+    String str = JmolPopupWords.getString(key);
+    if (str == null) {
+      str = key;
     }
     return str;
   }

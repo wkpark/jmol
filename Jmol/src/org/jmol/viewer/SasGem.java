@@ -519,5 +519,73 @@ class SasGem {
     return fpl;
   }
 
-}
+  final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
+  int minProjectedIndex;
+  int maxProjectedIndex;
 
+  void stitchWithTorusSegment(short startingVertex, short vertexIncrement,
+                              float startingAngle, float angleIncrement,
+                              int stepCount) {
+    minProjectedIndex = fpl.findGE(startingAngle);
+    float endAngle = startingAngle + (angleIncrement * stepCount);
+    maxProjectedIndex = fpl.findGT(endAngle);
+    int vertexCount = maxProjectedIndex - minProjectedIndex;
+    if (vertexCount == 0) {
+      System.out.println("no vertexes for this torus segment");
+      return;
+    }
+    torusSegmentFpl.generateTorusSegment(startingVertex, vertexIncrement,
+                                         startingAngle, angleIncrement,
+                                         stepCount);
+    stitchEm(torusSegmentFpl,
+             minProjectedIndex,
+             maxProjectedIndex,
+             getFlattenedPointList());
+  }
+
+  void resetStitches() {
+    countStitchesT = 0;
+  }
+
+  void stitchEm(SasFlattenedPointList segmentFpl,
+                int geodesicMin, int geodesicMax,
+                SasFlattenedPointList geodesicFpl) {
+    if (geodesicMin == geodesicMax)
+      return;
+    int tLast = segmentFpl.count - 1;
+    int gLast = geodesicMax - 1;
+    oneStitch(segmentFpl.vertexes[0], geodesicFpl.vertexes[geodesicMin]);
+    int t = 0;
+    int g = geodesicMin;
+    while (t < tLast && g < gLast) {
+      float angleT =
+        angleABC(segmentFpl.angles[t], 0,
+                 segmentFpl.angles[t + 1], 0,
+                 geodesicFpl.angles[g], geodesicFpl.distances[g]);
+      float angleG =
+        angleABC(segmentFpl.angles[t], 0,
+                 geodesicFpl.angles[g+1], geodesicFpl.distances[g+1],
+                 geodesicFpl.angles[g], geodesicFpl.distances[g]);
+      if (angleT > angleG)
+        ++t;
+      else
+        ++g;
+      oneStitch(segmentFpl.vertexes[t], geodesicFpl.vertexes[g]);
+    }
+    while (t < tLast || g < gLast) {
+      if (t < tLast)
+        ++t;
+      else
+        ++g;
+      oneStitch(segmentFpl.vertexes[t], geodesicFpl.vertexes[g]);
+    }
+  }
+  
+  void oneStitch(short torusVertex, short geodesicVertex) {
+    if (countStitchesT + 1 >= stitchesT.length)
+      stitchesT = Util.doubleLength(stitchesT);
+    stitchesT[countStitchesT] = torusVertex;
+    stitchesT[countStitchesT + 1] = geodesicVertex;
+    countStitchesT += 2;
+  }
+}

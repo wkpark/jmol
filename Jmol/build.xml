@@ -237,8 +237,12 @@ support for assertions (which were introduced in 1.4).
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="src">
-        <include name="**/ui/*.properties" />
         <include name="jmol75x29x8.gif" />
+      </fileset>
+    </copy>
+    <copy todir="${applet.classes.dir}" >
+      <fileset dir="${classes.dir}">
+        <include name="**/JmolApplet/*.class" />
       </fileset>
     </copy>
   </target>

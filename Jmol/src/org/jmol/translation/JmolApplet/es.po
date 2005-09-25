@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-09-25 09:18+0200\n"
-"PO-Revision-Date: 2005-09-25 09:54+0100\n"
-"Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
+"PO-Revision-Date: 2005-09-25 16:41+0100\n"
+"Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -32,7 +32,7 @@ msgstr "Ningún átomo cargado"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:49
 msgid "Name hidden"
-msgstr ""
+msgstr "Nombre oculto"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:51
 msgid "Select"
@@ -100,11 +100,11 @@ msgstr "Nucleicos"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:69
 msgid "DNA"
-msgstr ""
+msgstr "ADN"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:70
 msgid "ARN"
-msgstr ""
+msgstr "ARN"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:72
 msgid "Bases"
@@ -185,19 +185,19 @@ msgstr "Mostrar sólo lo seleccionado"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:105
 msgid "Set Select Mode"
-msgstr ""
+msgstr "Establecer modo de selección"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:106
 msgid "Replace Selection"
-msgstr ""
+msgstr "Reemplazar selección"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:107
 msgid "Add to Selection (OR)"
-msgstr ""
+msgstr "Añadir a la selección (O)"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:108
 msgid "Narrow Selection (AND)"
-msgstr ""
+msgstr "Restringir la selección (Y)"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:110
 msgid "Render"
@@ -351,23 +351,23 @@ msgstr "Escala 5"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:179
 msgid "Red+Cyan glasses"
-msgstr ""
+msgstr "Gafas rojo+celeste"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:180
 msgid "Red+Blue glasses"
-msgstr ""
+msgstr "Gafas rojo+azul"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:181
 msgid "Red+Green glasses"
-msgstr ""
+msgstr "Gafas rojo+verde"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:182
 msgid "Cross-eyed viewing"
-msgstr ""
+msgstr "Visión bizca (\"crossed-eyed\")"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:183
 msgid "Wall-eyed viewing"
-msgstr ""
+msgstr "Visión paralela (\"wall-eyed\")"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:185
 #: org/openscience/jmol/ui/JmolPopupWords.java:372

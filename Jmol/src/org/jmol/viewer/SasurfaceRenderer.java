@@ -445,13 +445,12 @@ class SasurfaceRenderer extends ShapeRenderer {
     int ixA = torus.ixA;
     int ixB = torus.ixB;
     int outerPointCount = torus.outerPointCount;
-    short colixB = torus.colixB;
     short colixA = Graphics3D.inheritColix(torus.colixA,
                                            convexColixes[ixA],
                                            atoms[ixA].colixAtom);
-    colixB = Graphics3D.inheritColix(torus.colixB,
-                                     convexColixes[ixB],
-                                     atoms[ixB].colixAtom);
+    short colixB = Graphics3D.inheritColix(torus.colixB,
+                                           convexColixes[ixB],
+                                           atoms[ixB].colixAtom);
     if (colixA == colixB) {
       for (int i = outerPointCount; --i >= 0; )
         torusColixes[i] = colixA;

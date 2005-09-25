@@ -452,7 +452,6 @@ class Sasurface1 {
     final int ixA, ixB;
     final Point3f center;
     final float radius;
-    final boolean fullTorus;
 
     final Vector3f radialVector = new Vector3f();
     final Vector3f axisUnitVector = new Vector3f();
@@ -460,15 +459,21 @@ class Sasurface1 {
     final Vector3f outerRadial = new Vector3f();
     float outerAngle;
     short colixA, colixB;
+
     byte outerPointCount;
     byte segmentStripCount;
     short totalPointCount;
+
     short[] normixes;
 
     short[] connectAConvex;
-
+    
     short[] seamA;
     short[] seamB;
+
+    final boolean fullTorus;
+    short torusCavityCount;
+    TorusCavity[] torusCavities;
 
     Torus(int indexA, int indexB, Point3f center, float radius,
           boolean fullTorus) {
@@ -480,7 +485,7 @@ class Sasurface1 {
     }
 
     void electReferenceCavity() {
-      if (torusCavities == null)
+      if (fullTorus)
         return;
       if (torusCavities[0].rightHanded)
         return;
@@ -582,12 +587,11 @@ class Sasurface1 {
       outerRadials[0].set(outerRadial);
     }
 
-    int torusCavityCount;
-    TorusCavity[] torusCavities;
-
     void addCavity(SasCavity cavity, boolean rightHanded) {
+      if (fullTorus)
+        throw new NullPointerException();
       if (torusCavities == null)
-        torusCavities = new TorusCavity[4];
+        torusCavities = new TorusCavity[2];
       else if (torusCavityCount == torusCavities.length)
         torusCavities = (TorusCavity[])Util.doubleLength(torusCavities);
       torusCavities[torusCavityCount] =
@@ -612,7 +616,7 @@ class Sasurface1 {
     }
 
     void calcCavityAnglesAndSort() {
-      if (torusCavities == null) // full torus
+      if (fullTorus)
         return;
       // because of previous election, torusCavities[0] has angle 0;
       for (int i = torusCavityCount; --i > 0; )
@@ -635,8 +639,8 @@ class Sasurface1 {
     }
 
     void checkCavityCorrectness2() {
-      if (torusCavities == null)
-        return; // full torus
+      if (fullTorus)
+        return;
       if ((torusCavityCount & 1) != 0) // ensure even number
         throw new NullPointerException();
       if (torusCavities[0].angle != 0)
@@ -876,7 +880,7 @@ class Sasurface1 {
         gem.projectAndSortGeodesicPoints(isEdgeA,
                                          atomCenter, atomRadius,
                                          centerPointT, axisUnitVector,
-                                         zeroPointT, (torusCavities == null));
+                                         zeroPointT, fullTorus);
         stitchSegmentsWithSortedProjectedVertexes(isEdgeA);
       }
     }
@@ -889,22 +893,6 @@ class Sasurface1 {
         seamA = seam;
       else
         seamB = seam;
-    }
-
-    void findClippedEdgeVertexes(int[] edgeVertexesA, int[] edgeVertexesB) {
-      calcClippingPlaneCenterPoints(centerPointAT, centerPointBT);
-      Atom atomA = frame.atoms[ixA];
-      Atom atomB = frame.atoms[ixB];
-      gem.findClippedGeodesicEdge(true, atomA.point3f,
-                                  atomA.getVanderwaalsRadiusFloat(),
-                                  centerPointAT, axisUnitVector,
-                                  convexVertexMaps[ixA],
-                                  edgeVertexesA);
-      gem.findClippedGeodesicEdge(false, atomB.point3f,
-                                  atomB.getVanderwaalsRadiusFloat(),
-                                  centerPointBT, axisUnitVector,
-                                  convexVertexMaps[ixA],
-                                  edgeVertexesB);
     }
   }
 

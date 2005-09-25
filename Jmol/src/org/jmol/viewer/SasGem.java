@@ -62,8 +62,8 @@ class SasGem {
   final Vector3f projectedVectorT = new Vector3f();
 
   final int[] bmpNotClipped;
-  final int[] visiblePerfectMap;
-  final int[] visibleEdgeMap;
+  final int[] idealEdgeMap;
+  final int[] actualEdgeMap;
   final int[] faceMapT;
 
   private final static float PI = (float)Math.PI;
@@ -87,13 +87,13 @@ class SasGem {
     geodesicNeighborVertexes = g3d.getGeodesicNeighborVertexes(geodesicLevel);
 
     bmpNotClipped = Bmp.allocateBitmap(geodesicVertexCount);
-    visiblePerfectMap = Bmp.allocateBitmap(geodesicVertexCount);
-    visibleEdgeMap = Bmp.allocateBitmap(geodesicVertexCount);
+    idealEdgeMap = Bmp.allocateBitmap(geodesicVertexCount);
+    actualEdgeMap = Bmp.allocateBitmap(geodesicVertexCount);
     faceMapT = Bmp.allocateBitmap(geodesicFaceCount);
   }
 
   void reset() {
-    countStitchesT = 0;
+    stitchesCount = 0;
   }
 
 
@@ -138,15 +138,15 @@ class SasGem {
     Bmp.and(edgeVertexMap, visibleVertexMap);
   }
   
-  int findGeodesicEdge(int[] visibleVertexMap) {
+  int findActualEdge(int[] visibleVertexMap) {
     int edgeVertexCount = 0;
-    Bmp.clearBitmap(visibleEdgeMap);
+    Bmp.clearBitmap(actualEdgeMap);
     for (int v = -1; (v = Bmp.nextSetBit(visibleVertexMap, v + 1)) >= 0; ) {
       int neighborsOffset = v * 6;
       for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
         int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
         if (! Bmp.getBit(visibleVertexMap, neighbor)) {
-          Bmp.setBit(visibleEdgeMap, v);
+          Bmp.setBit(actualEdgeMap, v);
           ++edgeVertexCount;
           break;
         }
@@ -244,8 +244,9 @@ class SasGem {
     matrixT.transform(vector0, vector90);
   }
 
-  int countStitchesT;
-  short[] stitchesT = new short[64];
+  int stitchesCount;
+  short[] stitches = new short[64];
+
   float[] segmentVertexAngles = new float[MAX_FULL_TORUS_STEP_COUNT];
   short[] segmentVertexes = new short[MAX_FULL_TORUS_STEP_COUNT];
 
@@ -276,13 +277,13 @@ class SasGem {
     int[] theEdgeMap = null;
     switch (method) {
     case EXPOSED_EDGE_METHOD:
-      theEdgeMap = visibleEdgeMap;
+      theEdgeMap = actualEdgeMap;
       break;
     case PERFECT_EDGE_METHOD:
       findClippedGeodesicEdge(isEdgeA, geodesicCenter, radius,
-                              planeCenter, axisUnitVector, visibleEdgeMap,
-                              visiblePerfectMap);
-      theEdgeMap = visiblePerfectMap;
+                              planeCenter, axisUnitVector, actualEdgeMap,
+                              idealEdgeMap);
+      theEdgeMap = idealEdgeMap;
       break;
     }
     
@@ -399,94 +400,6 @@ class SasGem {
     return (float)Math.acos(dot / (lenAB * lenBC));
   }
 
-  short[] createSeam() {
-    return createSeam(countStitchesT, stitchesT);
-  }
-
-  int countSeamT;
-  short[] seamT = new short[64];
-  short[] createSeam(int stitchCount, short[] stitches) {
-    countSeamT = 0;
-    short lastTorusVertex = -1;
-    short lastGeodesicVertex = -1;
-    for (int i = 0; i < stitchCount; i += 2) {
-      short torusVertex = stitches[i];
-      short geodesicVertex = stitches[i + 1];
-      if (torusVertex != lastTorusVertex) {
-        if (geodesicVertex != lastGeodesicVertex) {
-          if (countSeamT > 0)
-            addToSeam(Short.MIN_VALUE);
-          addToSeam(torusVertex);
-          addToSeam((short)~geodesicVertex);
-        } else {
-          addToSeam(torusVertex);
-        }
-      }else {
-        addToSeam((short)~geodesicVertex);
-      }
-      lastTorusVertex = torusVertex;
-      lastGeodesicVertex = geodesicVertex;
-    }
-    short[] seam = new short[countSeamT];
-    for (int i = seam.length; --i >= 0; )
-      seam[i] = seamT[i];
-    //    dumpSeam(stitchCount, stitches, seam);
-    //    decodeSeam(seam);
-    return seam;
-  }
-
-  void addToSeam(short vertex) {
-    if (countSeamT == seamT.length)
-      seamT = Util.doubleLength(seamT);
-    seamT[countSeamT++] = vertex;
-  }
-
-  void dumpSeam(int stitchCount, short[] stitches, short[] seam) {
-    System.out.println("dumpSeam:");
-    for (int i = 0; i < stitchCount; i += 2)
-      System.out.println("  " + stitches[i] + "->" + stitches[i+1]);
-    System.out.println(" --");
-    for (int i = 0; i < seam.length; ++i) {
-      short v = seam[i];
-      System.out.print("  " + v + " ");
-      if (v == Short.MIN_VALUE)
-        System.out.println(" -- break");
-      else if (v < 0)
-        System.out.println( "(" + ~v + ")");
-      else
-        System.out.println("");
-    }
-  }
-
-  void decodeSeam(short[] seam) {
-    System.out.println("-----\ndecodeSeam\n-----");
-    boolean breakSeam = true;
-    int lastTorusVertex = -1;
-    int lastGeodesicVertex = -1;
-    for (int i = 0; i < seam.length; ++i) {
-      if (breakSeam) {
-        lastTorusVertex = seam[i++];
-        lastGeodesicVertex = ~seam[i];
-        System.out.println("--break--");
-        breakSeam = false;
-        continue;
-      }
-      int v = seam[i];
-      if (v > 0) {
-        System.out.println(" " + lastTorusVertex + " -> " +
-                           v + " -> " +
-                           "(" + lastGeodesicVertex + ")");
-        lastTorusVertex = v;
-      } else {
-        v = ~v;
-        System.out.println(" " + lastTorusVertex + " -> " +
-                           "(" + v + ") -> " +
-                           "(" + lastGeodesicVertex + ")");
-        lastGeodesicVertex = v;
-      }
-    }
-  }
-
   void clipGeodesic(boolean isEdgeA, Point3f geodesicCenter, float radius,
                     Point3f planePoint, Vector3f axisUnitVector,
                     int[] geodesicVertexMap) {
@@ -586,10 +499,104 @@ class SasGem {
   }
   
   void oneStitch(short torusVertex, short geodesicVertex) {
-    if (countStitchesT + 1 >= stitchesT.length)
-      stitchesT = Util.doubleLength(stitchesT);
-    stitchesT[countStitchesT] = torusVertex;
-    stitchesT[countStitchesT + 1] = geodesicVertex;
-    countStitchesT += 2;
+    if (stitchesCount + 1 >= stitches.length)
+      stitches = Util.doubleLength(stitches);
+    stitches[stitchesCount] = torusVertex;
+    stitches[stitchesCount + 1] = geodesicVertex;
+    stitchesCount += 2;
   }
+
+  ////////////////////////////////////////////////////////////////
+  // seam stuff
+  ////////////////////////////////////////////////////////////////
+  
+  short[] createSeam() {
+    return createSeam(stitchesCount, stitches);
+  }
+
+  int seamCount;
+  short[] seam = new short[64];
+  
+  short[] createSeam(int stitchCount, short[] stitches) {
+    seamCount = 0;
+    short lastTorusVertex = -1;
+    short lastGeodesicVertex = -1;
+    for (int i = 0; i < stitchCount; i += 2) {
+      short torusVertex = stitches[i];
+      short geodesicVertex = stitches[i + 1];
+      if (torusVertex != lastTorusVertex) {
+        if (geodesicVertex != lastGeodesicVertex) {
+          if (seamCount > 0)
+            addToSeam(Short.MIN_VALUE);
+          addToSeam(torusVertex);
+          addToSeam((short)~geodesicVertex);
+        } else {
+          addToSeam(torusVertex);
+        }
+      }else {
+        addToSeam((short)~geodesicVertex);
+      }
+      lastTorusVertex = torusVertex;
+      lastGeodesicVertex = geodesicVertex;
+    }
+    short[] newSeam = new short[seamCount];
+    for (int i = newSeam.length; --i >= 0; )
+      newSeam[i] = seam[i];
+    //    dumpSeam(stitchCount, stitches, seam);
+    //    decodeSeam(seam);
+    return newSeam;
+  }
+
+  void addToSeam(short vertex) {
+    if (seamCount == seam.length)
+      seam = Util.doubleLength(seam);
+    seam[seamCount++] = vertex;
+  }
+
+  void dumpSeam(int stitchCount, short[] stitches, short[] seam) {
+    System.out.println("dumpSeam:");
+    for (int i = 0; i < stitchCount; i += 2)
+      System.out.println("  " + stitches[i] + "->" + stitches[i+1]);
+    System.out.println(" --");
+    for (int i = 0; i < seam.length; ++i) {
+      short v = seam[i];
+      System.out.print("  " + v + " ");
+      if (v == Short.MIN_VALUE)
+        System.out.println(" -- break");
+      else if (v < 0)
+        System.out.println( "(" + ~v + ")");
+      else
+        System.out.println("");
+    }
+  }
+
+  void decodeSeam(short[] seam) {
+    System.out.println("-----\ndecodeSeam\n-----");
+    boolean breakSeam = true;
+    int lastTorusVertex = -1;
+    int lastGeodesicVertex = -1;
+    for (int i = 0; i < seam.length; ++i) {
+      if (breakSeam) {
+        lastTorusVertex = seam[i++];
+        lastGeodesicVertex = ~seam[i];
+        System.out.println("--break--");
+        breakSeam = false;
+        continue;
+      }
+      int v = seam[i];
+      if (v > 0) {
+        System.out.println(" " + lastTorusVertex + " -> " +
+                           v + " -> " +
+                           "(" + lastGeodesicVertex + ")");
+        lastTorusVertex = v;
+      } else {
+        v = ~v;
+        System.out.println(" " + lastTorusVertex + " -> " +
+                           "(" + v + ") -> " +
+                           "(" + lastGeodesicVertex + ")");
+        lastGeodesicVertex = v;
+      }
+    }
+  }
+
 }

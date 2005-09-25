@@ -874,9 +874,9 @@ class Sasurface1 {
       float atomRadius = atom.getVanderwaalsRadiusFloat();
       Point3f atomCenter = atom.point3f;
       gem.reset();
-      int edgeCount = gem.findGeodesicEdge(convexVertexMaps[ix]);
+      calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
+      int edgeCount = gem.findActualEdge(convexVertexMaps[ix]);
       if (edgeCount > 0) {
-        calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
         gem.projectAndSortGeodesicPoints(isEdgeA,
                                          atomCenter, atomRadius,
                                          centerPointT, axisUnitVector,

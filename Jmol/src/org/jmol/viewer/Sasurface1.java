@@ -954,8 +954,8 @@ class Sasurface1 {
         }
       }
 
-      void stitchWithSortedProjectedVertexes(SasFlattenedPointList geodesicFpl,
-                                             boolean isEdgeA) {
+      void stitchWithSortedProjectedVertexes(boolean isEdgeA) {
+        SasFlattenedPointList geodesicFpl = gem.getFlattenedPointList();
         int minProjectedIndex = geodesicFpl.findGE(startAngle);
         float endAngle = startAngle + (stepAngle * stepCount);
         int maxProjectedIndex = geodesicFpl.findGT(endAngle);
@@ -1115,16 +1115,14 @@ class Sasurface1 {
                                          centerPointT, axisUnitVector,
                                          zeroPointT, (torusCavities == null),
                                          edgeVertexesT, false);
-        SasFlattenedPointList geodesicFpl = gem.getFlattenedPointList();
-        stitchSegmentsWithSortedProjectedVertexes(geodesicFpl, isEdgeA);
+        stitchSegmentsWithSortedProjectedVertexes(isEdgeA);
       }
     }
 
-    void stitchSegmentsWithSortedProjectedVertexes(SasFlattenedPointList gfpl,
-                                                   boolean isEdgeA) {
+    void stitchSegmentsWithSortedProjectedVertexes(boolean isEdgeA) {
       countStitchesT = 0;
       for (int i = torusSegmentCount; --i >= 0; )
-        torusSegments[i].stitchWithSortedProjectedVertexes(gfpl, isEdgeA);
+        torusSegments[i].stitchWithSortedProjectedVertexes(isEdgeA);
       short[] geodesicStitches = new short[countStitchesT];
       for (int i = countStitchesT; --i >= 0; )
         geodesicStitches[i] = stitchesT[i];

@@ -519,8 +519,6 @@ class Sasurface1 {
 
     short[] connectAConvex;
 
-    short[] geodesicStitchesA;
-    short[] geodesicStitchesB;
     short[] seamA;
     short[] seamB;
 
@@ -940,13 +938,6 @@ class Sasurface1 {
       gem.resetStitches();
       for (int i = torusSegmentCount; --i >= 0; )
         torusSegments[i].stitchWithSortedProjectedVertexes(isEdgeA);
-      short[] geodesicStitches = new short[gem.countStitchesT];
-      for (int i = gem.countStitchesT; --i >= 0; )
-        geodesicStitches[i] = gem.stitchesT[i];
-      if (isEdgeA)
-        geodesicStitchesA = geodesicStitches;
-      else
-        geodesicStitchesB = geodesicStitches;
       short[] seam = gem.createSeam();
       if (isEdgeA)
         seamA = seam;

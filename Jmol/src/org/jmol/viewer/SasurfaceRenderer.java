@@ -245,12 +245,14 @@ class SasurfaceRenderer extends ShapeRenderer {
 
     Point3i[] screensTorus = sasCache.lookupTorusScreens(torus);
 
+    /*
     crossStitch(screensTorus,
                 sasCache.lookupAtomScreens(atomA, convexVertexMaps[ixA]),
                 torus.geodesicStitchesA);
     crossStitch(screensTorus,
                 sasCache.lookupAtomScreens(atomB, convexVertexMaps[ixB]),
                 torus.geodesicStitchesB);
+    */
   }
 
   void crossStitch(Point3i[] screensTorus, Point3i[] screensGeodesic,

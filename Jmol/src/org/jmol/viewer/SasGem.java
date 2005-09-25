@@ -42,7 +42,12 @@ class SasGem {
   final Frame frame;
   final int geodesicLevel;
 
-  SasFlattenedPointList fpl = new SasFlattenedPointList();
+  final SasFlattenedPointList fplIdeal = new SasFlattenedPointList();
+  final SasFlattenedPointList fplActual = new SasFlattenedPointList();
+  final SasFlattenedPointList fplVisibleIdeal = new SasFlattenedPointList();
+  final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
+
+  SasFlattenedPointList fplCurrent;
 
   final Vector3f[] geodesicVertexVectors;
   final int geodesicVertexCount;
@@ -61,10 +66,13 @@ class SasGem {
   final int[] actualEdgeMapT;
   final int[] visibleIdealEdgeMapT;
   final int[] faceMapT;
-
+  
   private final static float PI = (float)Math.PI;
   private final static int MAX_FULL_TORUS_STEP_COUNT =
     Sasurface.MAX_FULL_TORUS_STEP_COUNT;
+
+  int minProjectedIndex;
+  int maxProjectedIndex;
 
   private final static int EXPOSED_EDGE_METHOD = 0;
   private final static int PERFECT_EDGE_METHOD = 1;
@@ -266,32 +274,36 @@ class SasGem {
     calcVectors0and90(planeCenter, axisUnitVector, planeZeroPoint,
                       vector0T, vector90T);
 
-    float radiansPerAngstrom = PI / radius;
+    fplActual.setGeodesicEdge(geodesicCenter, radius,
+                              planeCenter, axisUnitVector,
+                              planeZeroPoint, fullTorus,
+                              vector0T, vector90T,
+                              geodesicVertexVectors,
+                              actualEdgeMapT);
+
+    fplIdeal.setGeodesicEdge(geodesicCenter, radius,
+                             planeCenter, axisUnitVector,
+                             planeZeroPoint, fullTorus,
+                             vector0T, vector90T,
+                             geodesicVertexVectors,
+                             idealEdgeMapT);
+
+    fplVisibleIdeal.setGeodesicEdge(geodesicCenter, radius,
+                                    planeCenter, axisUnitVector,
+                                    planeZeroPoint, fullTorus,
+                                    vector0T, vector90T,
+                                    geodesicVertexVectors,
+                                    visibleIdealEdgeMapT);
+
     
-    fpl.reset();
-    int[] theEdgeMap = null;
     switch (method) {
     case EXPOSED_EDGE_METHOD:
-      theEdgeMap = actualEdgeMapT;
+      fplCurrent = fplActual;
       break;
     case PERFECT_EDGE_METHOD:
-      theEdgeMap = visibleIdealEdgeMapT;
+      fplCurrent = fplVisibleIdeal;
       break;
     }
-    
-    for (int v = -1; (v = Bmp.nextSetBit(theEdgeMap, v + 1)) >= 0; ) {
-      vertexPointT.scaleAdd(radius,geodesicVertexVectors[v],geodesicCenter);
-      vertexVectorT.sub(vertexPointT, planeCenter);
-      float distance = axisUnitVector.dot(vertexVectorT);
-      projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
-      projectedVectorT.sub(projectedPointT, planeCenter);
-      float angle =
-        calcAngleInThePlane(vector0T, vector90T, projectedVectorT);
-      fpl.add((short)v, angle, distance * radiansPerAngstrom);
-    }
-    fpl.sort();
-    if (fullTorus)
-      fpl.duplicateFirstPointPlus2Pi();
     return true;
   }
 
@@ -380,20 +392,12 @@ class SasGem {
     return Bmp.allocMinimalCopy(faceMapT);
   }
 
-  SasFlattenedPointList getFlattenedPointList() {
-    return fpl;
-  }
-
-  final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
-  int minProjectedIndex;
-  int maxProjectedIndex;
-
   void stitchWithTorusSegment(short startingVertex, short vertexIncrement,
                               float startingAngle, float angleIncrement,
                               int stepCount) {
-    minProjectedIndex = fpl.findGE(startingAngle);
+    minProjectedIndex = fplCurrent.findGE(startingAngle);
     float endAngle = startingAngle + (angleIncrement * stepCount);
-    maxProjectedIndex = fpl.findGT(endAngle);
+    maxProjectedIndex = fplCurrent.findGT(endAngle);
     int vertexCount = maxProjectedIndex - minProjectedIndex;
     if (vertexCount == 0) {
       System.out.println("no vertexes for this torus segment");
@@ -405,7 +409,7 @@ class SasGem {
     stitchEm(torusSegmentFpl,
              minProjectedIndex,
              maxProjectedIndex,
-             getFlattenedPointList());
+             fplCurrent);
   }
 
   void stitchEm(SasFlattenedPointList segmentFpl,

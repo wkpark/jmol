@@ -25,11 +25,16 @@
 
 package org.jmol.viewer;
 
+import org.jmol.util.Bmp;
+import javax.vecmath.*;
+
 class SasFlattenedPointList {
   int count;
   short[] vertexes = new short[32];
   float[] angles = new float[32];
   float[] distances = new float[32];
+
+  private final static float PI = (float)Math.PI;
   
   void reset() {
     count = 0;
@@ -68,7 +73,7 @@ class SasFlattenedPointList {
   }
   
   void duplicateFirstPointPlus2Pi() {
-    add(vertexes[0], angles[0] + (float)(2*Math.PI), distances[0]);
+    add(vertexes[0], angles[0] + 2*PI, distances[0]);
   }
   
   void sort() {
@@ -116,4 +121,44 @@ class SasFlattenedPointList {
     }
     return min;
   }
+
+  final Point3f vertexPointT = new Point3f();
+  final Vector3f vertexVectorT = new Vector3f();
+  final Point3f projectedPointT = new Point3f();
+  final Vector3f projectedVectorT = new Vector3f();
+
+  void setGeodesicEdge(Point3f geodesicCenter, float geodesicRadius,
+                       Point3f planeCenter, Vector3f axisUnitVector,
+                       Point3f planeZeroPoint, boolean fullTorus,
+                       Vector3f vector0, Vector3f vector90,
+                       Vector3f[] geodesicVertexVectors,
+                       int[] edgeMap) {
+    float radiansPerAngstrom = PI / geodesicRadius;
+    count = 0;
+    for (int v = -1; (v = Bmp.nextSetBit(edgeMap, v + 1)) >= 0; ) {
+      vertexPointT.scaleAdd(geodesicRadius, geodesicVertexVectors[v],
+                            geodesicCenter);
+      vertexVectorT.sub(vertexPointT, planeCenter);
+      float distance = axisUnitVector.dot(vertexVectorT);
+      projectedPointT.scaleAdd(-distance, axisUnitVector, vertexPointT);
+      projectedVectorT.sub(projectedPointT, planeCenter);
+      float angle =
+        calcAngleInThePlane(vector0, vector90, projectedVectorT);
+      add((short)v, angle, distance * radiansPerAngstrom);
+    }
+    sort();
+    if (fullTorus)
+      duplicateFirstPointPlus2Pi();
+  }
+
+  static float calcAngleInThePlane(Vector3f radialVector0,
+                                   Vector3f radialVector90,
+                                   Vector3f vectorInQuestion) {
+    float angle = radialVector0.angle(vectorInQuestion);
+    float angle90 = radialVector90.angle(vectorInQuestion);
+    if (angle90 > PI/2)
+      angle = 2*PI - angle;
+    return angle;
+  }
+
 }

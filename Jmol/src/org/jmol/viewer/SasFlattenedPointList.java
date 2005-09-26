@@ -161,4 +161,17 @@ class SasFlattenedPointList {
     return angle;
   }
 
+  void buildForStitching(float startingAngle, float endingAngle,
+                         SasFlattenedPointList fplIdeal,
+                         SasFlattenedPointList fplActual,
+                         SasFlattenedPointList fplVisibleIdeal) {
+    int minProjectedIndex = fplVisibleIdeal.findGE(startingAngle);
+    int maxProjectedIndex = fplVisibleIdeal.findGT(endingAngle);
+    count = 0;
+    for (int i = minProjectedIndex; i < maxProjectedIndex; ++i) {
+      add(fplVisibleIdeal.vertexes[i],
+          fplVisibleIdeal.angles[i],
+          fplVisibleIdeal.distances[i]);
+    }
+  }
 }

@@ -45,9 +45,8 @@ class SasGem {
   final SasFlattenedPointList fplIdeal = new SasFlattenedPointList();
   final SasFlattenedPointList fplActual = new SasFlattenedPointList();
   final SasFlattenedPointList fplVisibleIdeal = new SasFlattenedPointList();
-  final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
+  final SasFlattenedPointList fplTorusSegment = new SasFlattenedPointList();
   final SasFlattenedPointList fplForStitching = new SasFlattenedPointList();
-  SasFlattenedPointList fplCurrent;
 
   final Vector3f[] geodesicVertexVectors;
   final int geodesicVertexCount;
@@ -70,13 +69,6 @@ class SasGem {
   private final static float PI = (float)Math.PI;
   private final static int MAX_FULL_TORUS_STEP_COUNT =
     Sasurface.MAX_FULL_TORUS_STEP_COUNT;
-
-  int minProjectedIndex;
-  int maxProjectedIndex;
-
-  private final static int EXPOSED_EDGE_METHOD = 0;
-  private final static int PERFECT_EDGE_METHOD = 1;
-  private int method = PERFECT_EDGE_METHOD;
 
   SasGem(Viewer viewer, Graphics3D g3d, Frame frame, int geodesicLevel) {
     this.g3d = g3d;
@@ -294,14 +286,6 @@ class SasGem {
                                     vector0T, vector90T,
                                     geodesicVertexVectors,
                                     visibleIdealEdgeMapT);
-    switch (method) {
-    case EXPOSED_EDGE_METHOD:
-      fplCurrent = fplActual;
-      break;
-    case PERFECT_EDGE_METHOD:
-      fplCurrent = fplVisibleIdeal;
-      break;
-    }
     return true;
   }
 
@@ -393,33 +377,24 @@ class SasGem {
   void stitchWithTorusSegment(short startingVertex, short vertexIncrement,
                               float startingAngle, float angleIncrement,
                               int stepCount) {
-    minProjectedIndex = fplCurrent.findGE(startingAngle);
     float endingAngle = startingAngle + (angleIncrement * stepCount);
-    maxProjectedIndex = fplCurrent.findGT(endingAngle);
-    int vertexCount = maxProjectedIndex - minProjectedIndex;
-    if (vertexCount == 0) {
-      System.out.println("no vertexes for this torus segment");
-      return;
-    }
-    torusSegmentFpl.generateTorusSegment(startingVertex, vertexIncrement,
+    fplForStitching.buildForStitching(startingAngle, endingAngle,
+                                      fplIdeal, fplActual, fplVisibleIdeal);
+    fplTorusSegment.generateTorusSegment(startingVertex, vertexIncrement,
                                          startingAngle, angleIncrement,
                                          stepCount);
-    stitchEm(torusSegmentFpl,
-             minProjectedIndex,
-             maxProjectedIndex,
-             fplCurrent);
+    stitchEm(fplTorusSegment, fplForStitching);
   }
 
   void stitchEm(SasFlattenedPointList segmentFpl,
-                int geodesicMin, int geodesicMax,
                 SasFlattenedPointList geodesicFpl) {
-    if (geodesicMin == geodesicMax)
+    if (geodesicFpl.count == 0)
       return;
     int tLast = segmentFpl.count - 1;
-    int gLast = geodesicMax - 1;
-    oneStitch(segmentFpl.vertexes[0], geodesicFpl.vertexes[geodesicMin]);
+    int gLast = geodesicFpl.count - 1;
+    oneStitch(segmentFpl.vertexes[0], geodesicFpl.vertexes[0]);
     int t = 0;
-    int g = geodesicMin;
+    int g = 0;
     while (t < tLast && g < gLast) {
       float angleT =
         angleABC(segmentFpl.angles[t], 0,

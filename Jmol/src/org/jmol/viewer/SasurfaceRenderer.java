@@ -502,14 +502,35 @@ class SasurfaceRenderer extends ShapeRenderer {
        (unmaskedA < JmolConstants.FORMAL_CHARGE_COLIX_WHITE &&
         unmaskedB > JmolConstants.FORMAL_CHARGE_COLIX_WHITE));
     if (! crossesZero) {
-      for (int i = 0; i < outerPointCount; ++i) {
+      for (int i = outerPointCount; --i >= 0; ) {
         // use colixA because the translucent bit may be set
         torusColixes[i] = (short)(colixA + (i * delta / denominator));
       }
       return;
     }
-    for (int i = outerPointCount; --i >= 0; ) {
-      torusColixes[i] = Graphics3D.WHITE;
+    final short whiteColix = JmolConstants.FORMAL_CHARGE_COLIX_WHITE;
+
+    for (int i = outerPointCount; --i >= 0; )
+      torusColixes[i] = Graphics3D.GREEN;
+
+    int deltaA = whiteColix - unmaskedA;
+    int indexWhiteA = (deltaA * outerPointCount / delta) - 1;
+    //    if (indexWhiteA < 0)
+    //      indexWhiteA = 0;
+    // HACK ... cheating on colix representation ... will come back to bite me
+    torusColixes[indexWhiteA] = (short)(whiteColix | (colixA & 0xC000));
+    for (int i = indexWhiteA; --i >= 0; )
+      torusColixes[i] = (short)(colixA + (i * deltaA / indexWhiteA));
+
+    int indexWhiteB = indexWhiteA + 1;
+    if (indexWhiteB < outerPointCount) {
+      int deltaB = unmaskedB - whiteColix;
+      int whiteB = whiteColix | (colixB & 0xC000);
+      int denomB = outerPointCount - indexWhiteB - 1;
+      torusColixes[indexWhiteB] = (short)whiteB;
+      for (int i = outerPointCount; --i > indexWhiteB; ) // .GT.
+        torusColixes[i] =
+          (short)(whiteB + ((i - indexWhiteB) * deltaB / denomB));
     }
   }
 }

@@ -46,7 +46,7 @@ class SasGem {
   final SasFlattenedPointList fplActual = new SasFlattenedPointList();
   final SasFlattenedPointList fplVisibleIdeal = new SasFlattenedPointList();
   final SasFlattenedPointList torusSegmentFpl = new SasFlattenedPointList();
-
+  final SasFlattenedPointList fplForStitching = new SasFlattenedPointList();
   SasFlattenedPointList fplCurrent;
 
   final Vector3f[] geodesicVertexVectors;
@@ -294,8 +294,6 @@ class SasGem {
                                     vector0T, vector90T,
                                     geodesicVertexVectors,
                                     visibleIdealEdgeMapT);
-
-    
     switch (method) {
     case EXPOSED_EDGE_METHOD:
       fplCurrent = fplActual;
@@ -396,8 +394,8 @@ class SasGem {
                               float startingAngle, float angleIncrement,
                               int stepCount) {
     minProjectedIndex = fplCurrent.findGE(startingAngle);
-    float endAngle = startingAngle + (angleIncrement * stepCount);
-    maxProjectedIndex = fplCurrent.findGT(endAngle);
+    float endingAngle = startingAngle + (angleIncrement * stepCount);
+    maxProjectedIndex = fplCurrent.findGT(endingAngle);
     int vertexCount = maxProjectedIndex - minProjectedIndex;
     if (vertexCount == 0) {
       System.out.println("no vertexes for this torus segment");

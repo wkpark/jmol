@@ -26,13 +26,22 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Bmp;
+import org.jmol.g3d.Graphics3D;
 import javax.vecmath.*;
 
 class SasFlattenedPointList {
+  Graphics3D g3d;
+  int geodesicLevel;
+
   int count;
   short[] vertexes = new short[32];
   float[] angles = new float[32];
   float[] distances = new float[32];
+
+  SasFlattenedPointList(Graphics3D g3d, int geodesicLevel) {
+    this.g3d = g3d;
+    this.geodesicLevel = geodesicLevel;
+  }
 
   private final static float PI = (float)Math.PI;
   
@@ -165,13 +174,43 @@ class SasFlattenedPointList {
                          SasFlattenedPointList fplIdeal,
                          SasFlattenedPointList fplActual,
                          SasFlattenedPointList fplVisibleIdeal) {
-    int minProjectedIndex = fplVisibleIdeal.findGE(startingAngle);
-    int maxProjectedIndex = fplVisibleIdeal.findGT(endingAngle);
+    int minVisibleIdeal = fplVisibleIdeal.findGE(startingAngle);
+    int maxVisibleIdeal = fplVisibleIdeal.findGT(endingAngle);
     count = 0;
-    for (int i = minProjectedIndex; i < maxProjectedIndex; ++i) {
+    if (minVisibleIdeal == maxVisibleIdeal)
+      return;
+    short minVisibleIdealVertex = fplVisibleIdeal.vertexes[minVisibleIdeal];
+    float minVisibleIdealAngle = fplVisibleIdeal.angles[minVisibleIdeal];
+
+    int minActual = fplActual.findGE(startingAngle);
+    int maxActual = fplActual.findGE(minVisibleIdealAngle);
+    for (int i = minActual; i < maxActual; ++i) {
+      short vertex = fplActual.vertexes[i];
+      if (g3d.isNeighborVertex(vertex, minVisibleIdealVertex, geodesicLevel)) {
+        add(vertex, fplActual.angles[i], fplActual.distances[i]);
+        break;
+      }
+    }
+
+    for (int i = minVisibleIdeal; i < maxVisibleIdeal; ++i) {
       add(fplVisibleIdeal.vertexes[i],
           fplVisibleIdeal.angles[i],
           fplVisibleIdeal.distances[i]);
+    }
+
+    short lastVisibleIdealVertex =
+      fplVisibleIdeal.vertexes[maxVisibleIdeal - 1];
+    float lastVisibleIdealAngle =
+      fplVisibleIdeal.angles[maxVisibleIdeal - 1];
+    
+    maxActual = fplActual.findGT(endingAngle);
+    minActual = fplActual.findGT(lastVisibleIdealAngle);
+    for (int i = maxActual; --i >= minActual; ) {
+      short vertex = fplActual.vertexes[i];
+      if (g3d.isNeighborVertex(vertex,lastVisibleIdealVertex,geodesicLevel)) {
+        add(vertex, fplActual.angles[i], fplActual.distances[i]);
+        break;
+      }
     }
   }
 }

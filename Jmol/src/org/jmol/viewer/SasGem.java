@@ -42,11 +42,11 @@ class SasGem {
   final Frame frame;
   final int geodesicLevel;
 
-  final SasFlattenedPointList fplIdeal = new SasFlattenedPointList();
-  final SasFlattenedPointList fplActual = new SasFlattenedPointList();
-  final SasFlattenedPointList fplVisibleIdeal = new SasFlattenedPointList();
-  final SasFlattenedPointList fplTorusSegment = new SasFlattenedPointList();
-  final SasFlattenedPointList fplForStitching = new SasFlattenedPointList();
+  final SasFlattenedPointList fplIdeal;
+  final SasFlattenedPointList fplActual;
+  final SasFlattenedPointList fplVisibleIdeal;
+  final SasFlattenedPointList fplTorusSegment;
+  final SasFlattenedPointList fplForStitching;
 
   final Vector3f[] geodesicVertexVectors;
   final int geodesicVertexCount;
@@ -87,6 +87,12 @@ class SasGem {
     actualEdgeMapT = Bmp.allocateBitmap(geodesicVertexCount);
     visibleIdealEdgeMapT = Bmp.allocateBitmap(geodesicVertexCount);
     faceMapT = Bmp.allocateBitmap(geodesicFaceCount);
+
+    fplIdeal = new SasFlattenedPointList(g3d, geodesicLevel);
+    fplActual = new SasFlattenedPointList(g3d, geodesicLevel);
+    fplVisibleIdeal = new SasFlattenedPointList(g3d, geodesicLevel);
+    fplTorusSegment = new SasFlattenedPointList(g3d, geodesicLevel);
+    fplForStitching = new SasFlattenedPointList(g3d, geodesicLevel);
   }
 
   void reset() {

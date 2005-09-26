@@ -256,17 +256,19 @@ class ColorManager {
       return g3d.getChangableColix(id, argbsCpk[id]);
     }
     if ("partialcharge" == palette) {
-      /*
-        This code assumes that the range of partial charges is
-        [-1, 1].
-        It also explicitly constructs colors red (negative) and
-        blue (positive)
-        Using colors other than these would make the shading
-        calculations more difficult
-      */
-      index = quantize(atom.getPartialCharge(), -1, 1, 
-                       JmolConstants.argbsRwbScale.length);
-      argb = JmolConstants.argbsRwbScale[index];
+      // This code assumes that the range of partial charges is [-1, 1].
+      index = quantize(atom.getPartialCharge(), -1, 1,
+                       JmolConstants.PARTIAL_CHARGE_RANGE_SIZE);
+      return
+        g3d.getChangableColix((short)(JmolConstants.PARTIAL_CHARGE_COLIX_RED +
+                                      index),
+                              JmolConstants.argbsRwbScale[index]);
+    } else if ("formalcharge" == palette) {
+      index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
+      return
+        g3d.getChangableColix((short)(JmolConstants.FORMAL_CHARGE_COLIX_RED +
+                                      index),
+                              JmolConstants.argbsFormalCharge[index]);
     } else if ("temperature" == palette ||
                "fixedtemperature" == palette) {
       float lo,hi;
@@ -282,9 +284,6 @@ class ColorManager {
                        JmolConstants.argbsRwbScale.length);
       index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
-    } else if ("formalcharge" == palette) {
-      index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
-      argb = JmolConstants.argbsFormalCharge[index];
     } else if ("structure" == palette) {
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
     } else if ("amino" == palette) {

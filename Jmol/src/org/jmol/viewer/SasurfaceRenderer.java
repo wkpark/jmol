@@ -51,12 +51,25 @@ class SasurfaceRenderer extends ShapeRenderer {
   Point3i[] probeScreens;
 
   int maxVertexCount;
+  short formalChargeColixWhite;
 
   void initRenderer() {
     maxVertexCount =
       g3d.getGeodesicVertexCount(Sasurface.MAX_GEODESIC_RENDERING_LEVEL);
     sasCache =
       new SasCache(viewer, 6, maxVertexCount);
+    formalChargeColixWhite =
+      g3d.getChangableColix(JmolConstants.FORMAL_CHARGE_COLIX_WHITE,
+                            JmolConstants.
+                            argbsFormalCharge[JmolConstants.
+                                              FORMAL_CHARGE_INDEX_WHITE]);
+    System.out.println(" formalChargeColixWhite=" +
+                       Integer.toHexString(formalChargeColixWhite));
+
+    // hack ... this goes somewhere else
+    for (int i = JmolConstants.argbsFormalCharge.length; --i >= 0; )
+      g3d.getChangableColix((short)(JmolConstants.FORMAL_CHARGE_COLIX_RED + i),
+                            JmolConstants.argbsFormalCharge[i]);
   }
 
   void render() {
@@ -456,12 +469,47 @@ class SasurfaceRenderer extends ShapeRenderer {
         torusColixes[i] = colixA;
       return;
     }
+    if (colixA < 0 && colixB < 0) {
+      short unmaskedA = Graphics3D.getChangableColixIndex(colixA);
+      short unmaskedB = Graphics3D.getChangableColixIndex(colixB);
+      if (unmaskedA >= JmolConstants.FORMAL_CHARGE_COLIX_RED &&
+          unmaskedA <= JmolConstants.FORMAL_CHARGE_COLIX_BLUE &&
+          unmaskedB >= JmolConstants.FORMAL_CHARGE_COLIX_RED &&
+          unmaskedB <= JmolConstants.FORMAL_CHARGE_COLIX_BLUE) {
+        prepareFormalChargeTorusColixes(colixA, unmaskedA, colixB, unmaskedB,
+                                        outerPointCount);
+        return;
+      }
+    }
+        
     int halfRoundedUp = (outerPointCount + 1) / 2;
     // this will get overwritten if outerPointCount is even
     torusColixes[outerPointCount / 2] = colixA;
     for (int i = outerPointCount / 2; --i >= 0; ) {
       torusColixes[i] = colixA;
       torusColixes[i + halfRoundedUp] = colixB;
+    }
+  }
+
+  void prepareFormalChargeTorusColixes(short colixA, short unmaskedA,
+                                       short colixB, short unmaskedB,
+                                       int outerPointCount) {
+    int delta = unmaskedB - unmaskedA;
+    int denominator = outerPointCount - 1;
+    boolean crossesZero =
+      ((unmaskedA > JmolConstants.FORMAL_CHARGE_COLIX_WHITE &&
+        unmaskedB < JmolConstants.FORMAL_CHARGE_COLIX_WHITE) ||
+       (unmaskedA < JmolConstants.FORMAL_CHARGE_COLIX_WHITE &&
+        unmaskedB > JmolConstants.FORMAL_CHARGE_COLIX_WHITE));
+    if (! crossesZero) {
+      for (int i = 0; i < outerPointCount; ++i) {
+        // use colixA because the translucent bit may be set
+        torusColixes[i] = (short)(colixA + (i * delta / denominator));
+      }
+      return;
+    }
+    for (int i = outerPointCount; --i >= 0; ) {
+      torusColixes[i] = Graphics3D.WHITE;
     }
   }
 }

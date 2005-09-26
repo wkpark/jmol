@@ -1813,6 +1813,12 @@ final public class Graphics3D {
     return Colix.getShadesGreyscale(colix);
   }
 
+  public final static short getChangableColixIndex(short colix) {
+    if (colix >= 0)
+      return -1;
+    return (short)(colix & UNMASK_CHANGABLE_TRANSLUCENT);
+  }
+
   public final static boolean isColixTranslucent(short colix) {
     return (colix & TRANSLUCENT_MASK) != 0;
   }

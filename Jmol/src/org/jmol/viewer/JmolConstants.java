@@ -1496,6 +1496,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF0000FF, // 7
   };
 
+  public final static int FORMAL_CHARGE_INDEX_WHITE = 4;
+  public final static int FORMAL_CHARGE_INDEX_MAX = argbsFormalCharge.length;
+
   public final static short PARTIAL_CHARGE_COLIX_RED =
     (short)(FORMAL_CHARGE_COLIX_BLUE + 1);
   public final static short PARTIAL_CHARGE_COLIX_WHITE =

@@ -92,6 +92,9 @@ class SasurfaceRenderer extends ShapeRenderer {
     hideSaddles = viewer.getTestFlag2();
     hideSeams = viewer.getTestFlag3();
     showEdgeNumbers = viewer.getTestFlag4();
+    if (showEdgeNumbers)
+      g3d.setFontOfSize(12);
+
     
     sasCache.clear();
     for (int i = surfaceCount; --i >= 0; )
@@ -136,6 +139,7 @@ class SasurfaceRenderer extends ShapeRenderer {
     for (int i = surface.torusCount; --i >= 0; ) {
       Sasurface1.Torus torus = toruses[i];
       renderTorus(torus, atoms, colixesConvex, convexVertexMaps);
+      renderSeams(torus, atoms, colixesConvex, convexVertexMaps);
       int ixA = torus.ixA;
       if (Bmp.getBit(atomsToRender, ixA)) {
         Bmp.clearBit(atomsToRender,ixA);
@@ -264,12 +268,9 @@ class SasurfaceRenderer extends ShapeRenderer {
 
     if (showEdgeNumbers)
       renderTorusEdgeNumbers(torus);
-
-    renderSeams(torus, atoms, convexColixes, convexVertexMaps);
   }
 
   void renderTorusEdgeNumbers(Sasurface1.Torus torus) {
-    g3d.setFontOfSize(11);
     Point3i[] screens = sasCache.lookupTorusScreens(torus);
     int outerPointCount = torus.outerPointCount;
     int totalPointCount = torus.totalPointCount;
@@ -345,6 +346,51 @@ class SasurfaceRenderer extends ShapeRenderer {
         prevGeodesic = v;
       }
     }
+    if (showEdgeNumbers) {
+      renderSeamEdgeNumbers(torusScreens, geodesicScreens, seam);
+    }
+  }
+
+  void renderSeamEdgeNumbers(Point3i[] torusScreens,
+                             Point3i[] geodesicScreens, short[] seam) {
+    if (seam == null)
+      return;
+    boolean breakSeam = true;
+    short prevTorus = -1;
+    short prevGeodesic = -1;
+    for (int i = 0; i < seam.length; ++i) {
+      if (breakSeam) {
+        prevTorus = seam[i++];
+        g3d.drawString("" + prevTorus, Graphics3D.WHITE,
+                       torusScreens[prevTorus].x,
+                       torusScreens[prevTorus].y,
+                       torusScreens[prevTorus].z - 21);
+        prevGeodesic = (short)~seam[i];
+        g3d.drawString("" + prevGeodesic, Graphics3D.WHITE,
+                       geodesicScreens[prevGeodesic].x,
+                       geodesicScreens[prevGeodesic].y,
+                       geodesicScreens[prevGeodesic].z - 21);
+        breakSeam = false;
+        continue;
+      }
+      short v = seam[i];
+      if (v >= 0) {
+        g3d.drawString("" + v, Graphics3D.WHITE,
+                       torusScreens[v].x,
+                       torusScreens[v].y,
+                       torusScreens[v].z - 21);
+        prevTorus = v;
+      } else if (v == Short.MIN_VALUE) {
+        breakSeam = true;
+      } else {
+        v = (short)~v;
+        g3d.drawString("" + v, Graphics3D.WHITE,
+                       geodesicScreens[v].x,
+                       geodesicScreens[v].y,
+                       geodesicScreens[v].z - 21);
+        prevGeodesic = v;
+      }
+    }
   }
 
   void dumpSeam(short[] seam) {
@@ -363,7 +409,6 @@ class SasurfaceRenderer extends ShapeRenderer {
 
   void renderEdgeBalls(Atom atom, int[] edgeVertexes) {
     Point3i[] screens = sasCache.lookupAtomScreens(atom, edgeVertexes);
-    g3d.setFontOfSize(11);
     for (int v = -1; (v = Bmp.nextSetBit(edgeVertexes, v + 1)) >= 0; ) {
       g3d.fillSphereCentered(Graphics3D.BLUE, 10, screens[v]);
       g3d.drawString("" + v, Graphics3D.BLUE,

@@ -866,6 +866,15 @@ class Sasurface1 {
       //      System.out.println("torus.stitchWithGeodesics()");
       stitchWithGeodesic(true);
       stitchWithGeodesic(false);
+      if (true) {
+        System.out.println("seam ixA=" + ixA + " ixB=" + ixB);
+        System.out.println(" seamA:");
+        if (seamA != null)
+          gem.decodeSeam(seamA);
+        System.out.println(" seamB:");
+        if (seamA != null)
+          gem.decodeSeam(seamB);
+      }
     }
 
     void stitchWithGeodesic(boolean isEdgeA) {

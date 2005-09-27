@@ -65,12 +65,44 @@ import java.util.Hashtable;
    * The vertices
    * are stored so that when spheres are small they can choose to display
    * only the first n bits where n is one of the above vertex counts.
+   *<code>
+   * Faces + Vertices = Edges + 2
+   *   Faces: 20, 80, 320, 1280, 5120, 20480
+   *     start with 20 faces ... at each level multiply by 4
+   *   Edges: 30, 120, 480, 1920, 7680, 30720
+   *     start with 30 edges ... also multipy by 4 ... strange, but true
+   *   Vertices: 12, 42, 162, 642, 2562, 10242
+   *     start with 12 vertices and 30 edges.
+   *     when you subdivide, each edge contributes one vertex
+   *     12 + 30 = 42 vertices at the next level
+   *     80 faces + 42 vertices - 2 = 120 edges at the next level
+   *</code>
    *<p>
    * The vertices of the 'one true canonical sphere' are rotated to the
    * current molecular rotation at the beginning of the repaint cycle.
    * That way,
    * individual atoms only need to scale the unit vector to the vdw
    * radius for that atom.
+   *<p>
+   *
+   * Notes 27 Sep 2005 </br>
+   * If I were to switch the representation to staring with
+   * a tetrahedron instead of an icosohedron we would get:
+   *<code>
+   * Faces: 4, 16, 64, 256, 1024
+   * Edges: 6, 24, 96, 384, 1536
+   * Vertices: 4, 10, 34, 130, 514
+   *</code>
+   * If I switched to face-centered normixes then I could efficiently
+   * Regardless, I think that face-centered normixes would also reduce
+   * ambiguity and would speed up the normal to normix process.
+   *
+   * I could also start with an octahedron that placed one triangle
+   * in each 3D cartesian octant. That would push to 512 faces instead
+   * of 256 faces, leaving me with shorts. But, it would be easier to quantize
+   * at the first level because it would be based upon sign. And perhaps
+   * it would be easier to take advantage of symmetry in the process of
+   * converting from normal to normix.
    */
 
 class Geodesic3D {

@@ -2037,6 +2037,8 @@ final public class Viewer extends JmolViewer {
       return getTestFlag2();
     if (key.equalsIgnoreCase("testFlag3"))
       return getTestFlag3();
+    if (key.equalsIgnoreCase("testFlag4"))
+      return getTestFlag4();
     if (key.equalsIgnoreCase("chainCaseSensitive"))
       return getChainCaseSensitive();
     if (key.equalsIgnoreCase("hideNameInPopup"))
@@ -2084,6 +2086,8 @@ final public class Viewer extends JmolViewer {
       { setTestFlag2(value); return; }
     if (key.equalsIgnoreCase("testFlag3"))
       { setTestFlag3(value); return; }
+    if (key.equalsIgnoreCase("testFlag4"))
+      { setTestFlag4(value); return; }
     if (key.equalsIgnoreCase("chainCaseSensitive"))
       { setChainCaseSensitive(value); return; }
     if (key.equalsIgnoreCase("ribbonBorder"))
@@ -2101,6 +2105,7 @@ final public class Viewer extends JmolViewer {
   boolean testFlag1;
   boolean testFlag2;
   boolean testFlag3;
+  boolean testFlag4;
   void setTestFlag1(boolean value) {
     testFlag1 = value;
   }
@@ -2118,6 +2123,12 @@ final public class Viewer extends JmolViewer {
   }
   boolean getTestFlag3() {
     return testFlag3;
+  }
+  void setTestFlag4(boolean value) {
+    testFlag4 = value;
+  }
+  boolean getTestFlag4() {
+    return testFlag4;
   }
 
   /****************************************************************

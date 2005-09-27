@@ -36,13 +36,15 @@ class SasurfaceRenderer extends ShapeRenderer {
   boolean perspectiveDepth;
   boolean hideSaddles;
   boolean hideConvex;
-  boolean showGeodesicEdgeNumbers;
+  boolean hideSeams;
+  boolean showEdgeNumbers;
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
   int geodesicVertexCount;
   int geodesicFaceCount;
   short[] geodesicFaceVertexes;
   short[] geodesicFaceNormixes;
+  short[] geodesicNeighborVertexes;
   SasCache sasCache;
   //  ScreensCache screensCache;
   float radiusP;
@@ -52,6 +54,8 @@ class SasurfaceRenderer extends ShapeRenderer {
 
   int maxVertexCount;
   short formalChargeColixWhite;
+
+  int[] bmpEdge;
 
   void initRenderer() {
     maxVertexCount =
@@ -84,9 +88,11 @@ class SasurfaceRenderer extends ShapeRenderer {
     if (surfaceCount == 0)
       return;
     Sasurface1[] surfaces = sasurface.surfaces;
-    hideSaddles = viewer.getTestFlag1();
-    hideConvex = viewer.getTestFlag2();
-    showGeodesicEdgeNumbers = viewer.getTestFlag3();
+    hideConvex = viewer.getTestFlag1();
+    hideSaddles = viewer.getTestFlag2();
+    hideSeams = viewer.getTestFlag3();
+    showEdgeNumbers = viewer.getTestFlag4();
+    
     sasCache.clear();
     for (int i = surfaceCount; --i >= 0; )
       renderSasurface1(surfaces[i]);
@@ -106,6 +112,8 @@ class SasurfaceRenderer extends ShapeRenderer {
       g3d.getGeodesicFaceVertexes(renderingLevel);
     geodesicFaceNormixes =
       g3d.getGeodesicFaceNormixes(renderingLevel);
+    geodesicNeighborVertexes =
+      g3d.getGeodesicNeighborVertexes(renderingLevel);
     if (transformedProbeVertexes == null ||
         transformedProbeVertexes.length < geodesicVertexCount)
       allocTransformedProbeVertexes();
@@ -115,6 +123,10 @@ class SasurfaceRenderer extends ShapeRenderer {
     short[] colixesConvex = surface.colixesConvex;
     int displayModelIndex = this.displayModelIndex;
     int convexCount = surface.surfaceConvexMax;
+    if (bmpEdge == null)
+      bmpEdge = Bmp.allocateBitmap(geodesicVertexCount);
+    else
+      bmpEdge = Bmp.growBitmap(bmpEdge, geodesicVertexCount);
 
     int[] atomsToRender =
       this.atomsToRender = Bmp.growBitmap(this.atomsToRender, convexCount);
@@ -199,19 +211,37 @@ class SasurfaceRenderer extends ShapeRenderer {
                        screens[vB], vB,
                        screens[vC], vC);
     }
-    /*
-    for (int i = Bmp.getMaxMappedBit(faceMap), j = 3*i - 1; --i >= 0; j -= 3) {
-      if (Bmp.getBit(faceMap, i)) {
-        short vA = geodesicFaceVertexes[j - 2];
-        short vB = geodesicFaceVertexes[j - 1];
-        short vC = geodesicFaceVertexes[j];
-        g3d.fillTriangle(colix,
-                         screens[vA], vA,
-                         screens[vB], vB,
-                         screens[vC], vC);
+
+    if (showEdgeNumbers)
+      renderGeodesicEdgeNumbers(atom, vertexMap);
+  }
+
+  void renderGeodesicEdgeNumbers(Atom atom, int[] vertexMap) {
+    Point3i[] screens = sasCache.lookupAtomScreens(atom, vertexMap);
+    findActualEdge(vertexMap, bmpEdge);
+    for (int v = -1; (v = Bmp.nextSetBit(bmpEdge, v + 1)) >= 0; ) {
+      g3d.drawString("" + v, Graphics3D.CYAN,
+                     screens[v].x,
+                     screens[v].y,
+                     screens[v].z - 20);
+    }
+  }
+
+  boolean findActualEdge(int[] visibleVertexMap, int[] actualEdgeMap) { 
+    int edgeVertexCount = 0;
+    Bmp.clearBitmap(actualEdgeMap);
+    for (int v = -1; (v = Bmp.nextSetBit(visibleVertexMap, v + 1)) >= 0; ) {
+      int neighborsOffset = v * 6;
+      for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
+        int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
+        if (! Bmp.getBit(visibleVertexMap, neighbor)) {
+          Bmp.setBit(actualEdgeMap, v);
+          ++edgeVertexCount;
+          break;
+        }
       }
     }
-    */
+    return edgeVertexCount > 0;
   }
 
   void renderVertexDots(Atom atom, int[] vertexMap) {
@@ -232,55 +262,35 @@ class SasurfaceRenderer extends ShapeRenderer {
     prepareTorusColixes(torus, convexColixes, atoms);
     renderTorus(torus, torusColixes);
 
-    if (showGeodesicEdgeNumbers)
-      renderStitchedTorusEdges(torus, convexColixes, convexVertexMaps);
+    if (showEdgeNumbers)
+      renderTorusEdgeNumbers(torus);
 
     renderSeams(torus, atoms, convexColixes, convexVertexMaps);
   }
 
-  int[] edgeVertexesAT;
-  int[] edgeVertexesBT;
-
-  void renderStitchedTorusEdges(Sasurface1.Torus torus,
-                                short[] convexColixes,
-                                int[][] convexVertexMaps) {
-    /*
-    if (edgeVertexesAT == null) {
-      edgeVertexesAT = Bmp.allocateBitmap(maxVertexCount);
-      edgeVertexesBT = Bmp.allocateBitmap(maxVertexCount);
-    }
-    torus.findEdgeVertexes(edgeVertexesAT, edgeVertexesBT);
-    int ixA = torus.ixA;
-    int ixB = torus.ixB;
-    Atom atomA = frame.atoms[ixA];
-    Atom atomB = frame.atoms[ixB];
-    renderEdgeBalls(atomA, edgeVertexesAT);
-    renderEdgeBalls(atomB, edgeVertexesBT);
-
-    Point3i[] screensTorus = sasCache.lookupTorusScreens(torus);
-
-    crossStitch(screensTorus,
-                sasCache.lookupAtomScreens(atomA, convexVertexMaps[ixA]),
-                torus.geodesicStitchesA);
-    crossStitch(screensTorus,
-                sasCache.lookupAtomScreens(atomB, convexVertexMaps[ixB]),
-                torus.geodesicStitchesB);
-    */
-  }
-
-  void crossStitch(Point3i[] screensTorus, Point3i[] screensGeodesic,
-                   short[] stitches) {
-    if (stitches != null) {
-      for (int i = stitches.length; (i -= 2) >= 0; )
-        g3d.drawLine(Graphics3D.RED,
-                     screensTorus[stitches[i]],
-                     screensGeodesic[stitches[i + 1]]);
+  void renderTorusEdgeNumbers(Sasurface1.Torus torus) {
+    g3d.setFontOfSize(11);
+    Point3i[] screens = sasCache.lookupTorusScreens(torus);
+    int outerPointCount = torus.outerPointCount;
+    int totalPointCount = torus.totalPointCount;
+    for (int i = 0; i < totalPointCount; i += outerPointCount) {
+      g3d.drawString("" + i, Graphics3D.RED,
+                     screens[i].x,
+                     screens[i].y,
+                     screens[i].z - 20);
+      int j = i + outerPointCount - 1;
+      g3d.drawString("" + j, Graphics3D.MAGENTA,
+                     screens[j].x,
+                     screens[j].y,
+                     screens[j].z - 20);
     }
   }
-
+    
   void renderSeams(Sasurface1.Torus torus, Atom[] atoms,
                    short[] convexColixes,
                    int[][] convexVertexMaps) {
+    if (hideSeams)
+      return;
     Point3i[] torusScreens = sasCache.lookupTorusScreens(torus);
     short[] torusNormixes = torus.normixes;
 

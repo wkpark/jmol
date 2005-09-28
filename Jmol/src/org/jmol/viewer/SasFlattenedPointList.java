@@ -182,6 +182,7 @@ class SasFlattenedPointList {
     short minVisibleIdealVertex = fplVisibleIdeal.vertexes[minVisibleIdeal];
     float minVisibleIdealAngle = fplVisibleIdeal.angles[minVisibleIdeal];
 
+    /*
     int minActual = fplActual.findGE(startingAngle);
     int maxActual = fplActual.findGE(minVisibleIdealAngle);
     for (int i = minActual; i < maxActual; ++i) {
@@ -191,6 +192,7 @@ class SasFlattenedPointList {
         break;
       }
     }
+    */
 
     for (int i = minVisibleIdeal; i < maxVisibleIdeal; ++i) {
       add(fplVisibleIdeal.vertexes[i],
@@ -198,6 +200,7 @@ class SasFlattenedPointList {
           fplVisibleIdeal.distances[i]);
     }
 
+    /*
     short lastVisibleIdealVertex =
       fplVisibleIdeal.vertexes[maxVisibleIdeal - 1];
     float lastVisibleIdealAngle =
@@ -212,5 +215,6 @@ class SasFlattenedPointList {
         break;
       }
     }
+    */
   }
 }

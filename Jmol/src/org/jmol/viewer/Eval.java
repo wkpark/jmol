@@ -2123,10 +2123,12 @@ class Eval implements Runnable {
   }
 
   void ssbonds() throws ScriptException {
+    viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
     viewer.setShapeSize(JmolConstants.SHAPE_SSSTICKS, getMadParameter());
   }
 
   void hbonds() throws ScriptException {
+    viewer.loadShape(JmolConstants.SHAPE_HSTICKS);
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
   }
 

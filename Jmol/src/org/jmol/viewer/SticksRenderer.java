@@ -97,9 +97,14 @@ class SticksRenderer extends ShapeRenderer {
       return;
     int order = bond.order;
     Atom atomA = bond.atom1;
-    atomA.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     Atom atomB = bond.atom2;
+    if (!showHydrogens && (atomA.elementNumber == 1 ||
+                           atomB.elementNumber == 1))
+      return;
+    atomA.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     atomB.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+    colixA = Graphics3D.inheritColix(bond.colix, atomA.colixAtom);
+    colixB = Graphics3D.inheritColix(bond.colix, atomB.colixAtom);
     if (bondsBackbone) {
       if (ssbondsBackbone &&
           (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
@@ -118,9 +123,6 @@ class SticksRenderer extends ShapeRenderer {
         atomB = getBackboneAtom(atomB);
       }
     }
-    if (!showHydrogens && (atomA.elementNumber == 1 ||
-                           atomB.elementNumber == 1))
-      return;
     render(bond, atomA, atomB);
   }
 
@@ -134,8 +136,6 @@ class SticksRenderer extends ShapeRenderer {
     dx = xB - xA;
     dy = yB - yA;
     width = viewer.scaleToScreen((zA + zB)/2, bond.mad);
-    colixA = Graphics3D.inheritColix(bond.colix, atomA.colixAtom);
-    colixB = Graphics3D.inheritColix(bond.colix, atomB.colixAtom);
     bondOrder = getRenderBondOrder(bond.order);
     switch(bondOrder) {
     case 1:

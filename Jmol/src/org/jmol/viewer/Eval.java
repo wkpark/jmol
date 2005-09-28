@@ -1606,6 +1606,7 @@ class Eval implements Runnable {
       default:
         invalidArgument();
       }
+      viewer.loadShape(shapeType);
       viewer.setShapeProperty(shapeType, "color", colorvalue);
     }
     if (translucentOrOpaque != null)
@@ -2901,6 +2902,7 @@ class Eval implements Runnable {
   void setSsbonds() throws ScriptException {
     checkLength3();
     boolean ssbondsBackbone = false;
+    viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
     switch(statement[2].tok) {
     case Token.backbone:
       ssbondsBackbone = true;

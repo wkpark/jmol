@@ -34,6 +34,16 @@ public class GT {
   private ResourceBundle appletTranslationResources;
 
   private GT() {
+    Locale locale = Locale.getDefault();
+    if ((locale != null) &&
+        (locale.getLanguage() != null)) {
+      String language = locale.getLanguage();
+      if ((language.equals("")) ||
+          (language.equals(Locale.ENGLISH.getLanguage()))) {
+        System.out.println("English: no need for gettext wrapper");
+        return;
+      }
+    }
     System.out.println("Instantiating gettext wrapper...");
     try {
       translationResources = ResourceBundle.getBundle(
@@ -92,7 +102,10 @@ public class GT {
         //return string;
       }
     }
-    System.out.println("No trans, using default: " + string);
+    if ((translationResources != null) ||
+        (appletTranslationResources != null)) {
+      System.out.println("No trans, using default: " + string);
+    }
     return string;
   }
 
@@ -119,7 +132,10 @@ public class GT {
       }
     }
     trans = MessageFormat.format(string, objects);
-    System.out.println("No trans, using default: " + trans);
+    if ((translationResources != null) ||
+        (appletTranslationResources != null)) {
+      System.out.println("No trans, using default: " + trans);
+    }
     return trans;
   }
 }

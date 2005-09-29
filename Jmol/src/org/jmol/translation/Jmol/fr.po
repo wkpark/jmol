@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-09-02 20:03+0200\n"
-"PO-Revision-Date: 2005-08-30 23:36+0100\n"
+"PO-Revision-Date: 2005-09-29 17:58+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgstr "OK"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:162
 msgid "AtomSetChooser"
-msgstr ""
+msgstr "AtomSetChooser"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:167
 msgid "No AtomSets"
@@ -667,8 +667,7 @@ msgstr "Qualité JPEG"
 
 #: org/openscience/jmol/app/Jmol.java:128
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr ""
-"Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
+msgstr "Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
 
 #: org/openscience/jmol/app/Jmol.java:157
 msgid "Initializing 3D display..."
@@ -752,8 +751,7 @@ msgstr "taille fenêtre 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
-"Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
+msgstr "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
 #: org/openscience/jmol/app/Jmol.java:453
 msgid "Executing script..."
@@ -816,12 +814,8 @@ msgid "Filename Stem"
 msgstr "Racine du nom de fichier"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
@@ -857,9 +851,7 @@ msgstr "Calculer toutes les images"
 
 #: org/openscience/jmol/app/PovrayDialog.java:224
 msgid "Render each model (not only the currently displayed one)"
-msgstr ""
-"Crée une image pour chaque modèle (pas seulement pour celui actuellement "
-"affiché)"
+msgstr "Crée une image pour chaque modèle (pas seulement pour celui actuellement affiché)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:233
 msgid "Turn on POV-Ray anti-aliasing"
@@ -867,8 +859,7 @@ msgstr "Activer l'anti-aliasing de POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
+msgstr "Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
@@ -1189,3 +1180,4 @@ msgstr "Chargement..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
+

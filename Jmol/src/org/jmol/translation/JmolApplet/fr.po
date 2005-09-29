@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-09-25 09:18+0200\n"
-"PO-Revision-Date: 2005-09-25 09:22+0100\n"
+"PO-Revision-Date: 2005-09-29 17:59+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -243,7 +243,6 @@ msgstr "Atomes"
 #: org/openscience/jmol/ui/JmolPopupWords.java:159
 #: org/openscience/jmol/ui/JmolPopupWords.java:166
 #: org/openscience/jmol/ui/JmolPopupWords.java:422
-#, fuzzy
 msgid "Off"
 msgstr "Off"
 
@@ -281,7 +280,6 @@ msgstr "Liens"
 #: org/openscience/jmol/ui/JmolPopupWords.java:149
 #: org/openscience/jmol/ui/JmolPopupWords.java:167
 #: org/openscience/jmol/ui/JmolPopupWords.java:421
-#, fuzzy
 msgid "On"
 msgstr "On"
 
@@ -291,14 +289,12 @@ msgid "Hydrogen Bonds"
 msgstr "Liens Hydrogène"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:139
-#, fuzzy
 msgid "Set H-Bonds Side Chain"
-msgstr "Set H-Bonds Side Chain"
+msgstr "Liens H sur la chaîne latérale"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:140
-#, fuzzy
 msgid "Set H-Bonds Backbone"
-msgstr "Set H-Bonds Backbone"
+msgstr "Liens H sur le squelette"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:147
 #: org/openscience/jmol/ui/JmolPopupWords.java:275
@@ -306,14 +302,12 @@ msgid "Disulfide Bonds"
 msgstr "Liens disulfure"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:150
-#, fuzzy
 msgid "Set SS-Bonds Side Chain"
-msgstr "Set SS-Bonds Side Chain"
+msgstr "Liens SS sur la chaîne latérale"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:151
-#, fuzzy
 msgid "Set SS-Bonds Backbone"
-msgstr "Set SS-Bonds Backbone"
+msgstr "Liens SS sur le squelette"
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:158
 msgid "Structures"

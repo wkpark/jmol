@@ -946,7 +946,7 @@ final public class Viewer extends JmolViewer {
   }
 
   void popupMenu(int x, int y) {
-    if (jmolStatusListener != null)
+    if (! disablePopupMenu && jmolStatusListener != null)
       jmolStatusListener.handlePopupMenu(x, y);
   }
 
@@ -2045,6 +2045,10 @@ final public class Viewer extends JmolViewer {
       return getHideNameInPopup();
     if (key.equalsIgnoreCase("autobond"))
       return getAutoBond();
+    if (key.equalsIgnoreCase("greyscaleRendering"))
+      return getGreyscaleRendering();
+    if (key.equalsIgnoreCase("disablePopupMenu"))
+      return getDisablePopupMenu();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -2098,6 +2102,8 @@ final public class Viewer extends JmolViewer {
       { setAutoBond(value); return; }
     if (key.equalsIgnoreCase("greyscaleRendering"))
       { setGreyscaleRendering(value); return; }
+    if (key.equalsIgnoreCase("disablePopupMenu"))
+      { setDisablePopupMenu(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }
@@ -2161,6 +2167,17 @@ final public class Viewer extends JmolViewer {
     this.greyscaleRendering = greyscaleRendering;
     g3d.setGreyscaleMode(greyscaleRendering);
     refresh();
+  }
+  boolean getGreyscaleRendering() {
+    return greyscaleRendering;
+  }
+
+  boolean disablePopupMenu;
+  void setDisablePopupMenu(boolean disablePopupMenu) {
+    this.disablePopupMenu = disablePopupMenu;
+  }
+  boolean getDisablePopupMenu() {
+    return disablePopupMenu;
   }
 
   /////////////////////////////////////////////////////////////////

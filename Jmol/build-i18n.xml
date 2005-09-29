@@ -18,7 +18,16 @@
   <property name="JmolApplet.classes.dir" value="build/classes/org/jmol/translation/JmolApplet" />
   <property name="all.Jmol.languages" value="de,es,et,fr,nl" />
   <property name="all.JmolApplet.languages" value="de,es,et,fr,nl" />
-  <!-- <property name="all.modules" value="Jmol,JmolApplet" /> -->
+
+  <!-- NOTE:
+       gettext.path can be used if gettext tools are not in the path
+       or if Ant can't find them (potential problem on MacOSX + Eclipse)
+       Set if by running Ant with -Dgettext.path=<path ending with />
+  -->
+  <property name="gettext.path" value="" />
+  <property name="gettext.xgettext" value="${gettext.path}xgettext" />
+  <property name="gettext.msgmerge" value="${gettext.path}msgmerge" />
+  <property name="gettext.msgfmt"   value="${gettext.path}msgfmt" />
 
 
   <!-- <for list ...> construct needs ant-contrib.jar -->
@@ -53,7 +62,7 @@
     <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
     <!-- generate new Jmol.pot -->
     <mkdir dir="${Jmol.po.dir}/tmp"/>
-    <apply executable="xgettext" dir="${basedir}/${src.dir}" parallel="true"
+    <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
            verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
@@ -113,7 +122,7 @@
     <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
     <!-- generate new JmolApplet.pot -->
     <mkdir dir="${JmolApplet.po.dir}/tmp"/>
-    <apply executable="xgettext" dir="${basedir}/${src.dir}" parallel="true"
+    <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
            verbose="true" relative="true" forwardslash="true">
       <arg value="-kGT._" />
       <arg value="--language=Java" />
@@ -189,7 +198,7 @@
   <target name="update-application-po-lang" id="update-application-po-lang"
           depends="check-executables" if="exist_msgmerge">
     <echo message="Updating ${Jmol_lang_value}.po gettext file for Jmol ..."/>
-    <exec executable="msgmerge" dir="${basedir}/${Jmol.po.dir}">
+    <exec executable="${gettext.msgmerge}" dir="${basedir}/${Jmol.po.dir}">
       <arg line="-U ${Jmol_lang_value}.po Jmol.pot"/>
     </exec>
   </target>
@@ -210,7 +219,7 @@
   <target name="update-applet-po-lang" id="update-applet-po-lang"
           depends="check-executables" if="exist_msgmerge">
     <echo message="Updating ${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
-    <exec executable="msgmerge" dir="${basedir}/${JmolApplet.po.dir}">
+    <exec executable="${gettext.msgmerge}" dir="${basedir}/${JmolApplet.po.dir}">
       <arg line="-U ${JmolApplet_lang_value}.po JmolApplet.pot"/>
     </exec>
   </target>
@@ -237,7 +246,7 @@
           id="update-application-catalog-lang"
           depends="check-executables" if="exist_msgfmt">
     <echo message="Updating messages_${Jmol_lang_value}.class file for Jmol ..."/>
-    <exec executable="msgfmt" dir="${basedir}/${Jmol.po.dir}">
+    <exec executable="${gettext.msgfmt}" dir="${basedir}/${Jmol.po.dir}">
       <arg value="--statistics"/>
       <arg value="--java2"/>
       <arg value="-l"/>
@@ -267,7 +276,7 @@
   <target name="update-applet-catalog-lang" id="update-applet-catalog-lang"
           depends="check-executables" if="exist_msgfmt">
     <echo message="Updating messages_${JmolApplet_lang_value}.class file for JmolApplet ..."/>
-    <exec executable="msgfmt" dir="${basedir}/${JmolApplet.po.dir}">
+    <exec executable="${gettext.msgfmt}" dir="${basedir}/${JmolApplet.po.dir}">
       <arg value="--statistics"/>
       <arg value="--java2"/>
       <arg value="-l"/>
@@ -331,7 +340,7 @@
   <target name="check-executables" unless="exist_executable">
 
     <!-- checking for xgettext -->
-  	<exec executable="xgettext" dir="${src.dir}"
+  	<exec executable="${gettext.xgettext}" dir="${src.dir}"
           failonerror="false" failifexecutionfails="false"
           outputproperty="ouput_xgettext"
           resultproperty="result_xgettext">
@@ -342,13 +351,10 @@
       <then>
         <property name="exist_xgettext" value="true"/>
       </then>
-      <else>
-        <echo message="xgettext is missing" level="error"/>
-      </else>
     </if>
 
     <!-- checking for msgmerge -->
-  	<exec executable="msgmerge" dir="${src.dir}"
+  	<exec executable="${gettext.msgmerge}" dir="${src.dir}"
           failonerror="false" failifexecutionfails="false"
           outputproperty="ouput_msgmerge"
           resultproperty="result_msgmerge">
@@ -359,13 +365,10 @@
       <then>
         <property name="exist_msgmerge" value="true"/>
       </then>
-      <else>
-        <echo message="msgmerge is missing" level="error"/>
-      </else>
     </if>
 
     <!-- checking for msgfmt -->
-  	<exec executable="msgfmt" dir="${src.dir}"
+  	<exec executable="${gettext.msgfmt}" dir="${src.dir}"
           failonerror="false" failifexecutionfails="false"
           outputproperty="ouput_msgfmt"
           resultproperty="result_msgfmt">
@@ -376,9 +379,6 @@
       <then>
         <property name="exist_msgfmt" value="true"/>
       </then>
-      <else>
-        <echo message="msgfmt is missing" level="error"/>
-      </else>
     </if>
 
     <!-- global checking -->
@@ -393,6 +393,13 @@
       </then>
       <else>
         <property name="exist_executable" value="false"/>
+        <echo level="warning">
+          The gettext tools are not available.
+          They are needed if you want to build a version of Jmol with translations in other languages.
+          Otherwise, you dont need them.
+          ----------------------------------------------
+          Homepage: http://www.gnu.org/software/gettext/
+        </echo>
       </else>
     </if>
   </target>

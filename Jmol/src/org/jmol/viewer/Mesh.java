@@ -85,34 +85,13 @@ class Mesh {
     }
   }
 
-  void test1() {
-    if (vertexColixes == null)
-      vertexColixes = new short[vertexCount];
-    findXRange();
-    for (int i = vertexCount; --i >= 0; ) {
-      vertexColixes[i] = viewer.getColixFromPalette(vertices[i].x,
-                                                    minX, maxX, "rwb");
-    }
+  void setTranslucent(boolean isTranslucent) {
+    colix = Graphics3D.setTranslucent(colix, isTranslucent);
+    if (vertexColixes != null)
+      for (int i = vertexCount; --i >= 0; )
+        vertexColixes[i] =
+          Graphics3D.setTranslucent(vertexColixes[i], isTranslucent);
   }
-
-  float minX;
-  float maxX;
-  void findXRange() {
-    if (vertexCount > 0) {
-      minX = maxX = vertices[0].x;
-      for (int i = vertexCount; --i > 0; ) {
-        float x = vertices[i].x;
-        if (x < minX)
-          minX = x;
-        else if (x > maxX)
-          maxX = x;
-      }
-    } else {
-      minX = maxX = Integer.MIN_VALUE;
-    }
-  }
-  
-
 
   void sumVertexNormals(Vector3f[] vectorSums) {
     final Vector3f vNormalizedNormal = new Vector3f();

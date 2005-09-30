@@ -78,6 +78,8 @@ class Isosurface extends MeshCollection {
   Point3f[] edgePoints;
 
   float cutoff = 0.02f;
+  boolean rangeDefined = false;
+  float minRange, maxRange;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("bufferedreader" == propertyName) {
@@ -101,17 +103,32 @@ class Isosurface extends MeshCollection {
       cutoff = ((Float)value).floatValue();
       return;
     }
+    if ("rangeMin" == propertyName) {
+      minRange = ((Float)value).floatValue();
+      return;
+    }
+    if ("rangeMax" == propertyName) {
+      maxRange = ((Float)value).floatValue();
+      rangeDefined = true;
+      return;
+    }
+    if ("removeRange" == propertyName) {
+      rangeDefined = false;
+      return;
+    }
     if ("colorreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
       System.out.println("colorreader seen!");
       readVolumetricHeader(br);
       calcVolumetricMatrix();
       readVolumetricData(br);
-      float minMappedValue = getMinMappedValue();
-      float maxMappedValue = getMaxMappedValue();
-      System.out.println(" minMappedValue=" + minMappedValue +
-                         " maxMappedValue=" + maxMappedValue);
-      applyColorScale(minMappedValue, maxMappedValue, "roygb");
+      if (! rangeDefined) {
+        minRange = getMinMappedValue();
+        maxRange = getMaxMappedValue();
+      }
+      System.out.println(" minRange=" + minRange +
+                         " maxRange=" + maxRange);
+      applyColorScale(minRange, maxRange, "roygb");
       discardTempData();
       return;
     }
@@ -984,7 +1001,6 @@ class Isosurface extends MeshCollection {
                      (((zUp == zDown) ? 0 : 1) << 2));
     switch (differentMask) {
     case 0:
-      System.out.println("" + valueDown);
       return valueDown;
     case 1:
       delta = x - xDown;
@@ -1000,7 +1016,6 @@ class Isosurface extends MeshCollection {
       // just stick it in the middle
       delta = 0.5f;
     }
-    System.out.println("" + (valueDown + delta * valueDelta));
     return valueDown + delta * valueDelta;
   }
 }

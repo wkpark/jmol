@@ -313,15 +313,17 @@ class ColorManager {
       index = quantize(atom.getSelectedGroupIndexWithinChain(),
                        0,
                        atom.getSelectedGroupCountWithinChain() - 1,
-                       JmolConstants.argbsBlueRedRainbow.length);
-      argb = JmolConstants.argbsBlueRedRainbow[index];
+                       JmolConstants.argbsRoygbScale.length);
+      index = JmolConstants.argbsRoygbScale.length - 1 - index;
+      argb = JmolConstants.argbsRoygbScale[index];
     } else if ("monomer" == palette) {
       // viewer.calcSelectedMonomersCount() must be called first ...
       index = quantize(atom.getSelectedMonomerIndexWithinPolymer(),
                        0,
                        atom.getSelectedMonomerCountWithinPolymer() - 1,
-                       JmolConstants.argbsBlueRedRainbow.length);
-      argb = JmolConstants.argbsBlueRedRainbow[index];
+                       JmolConstants.argbsRoygbScale.length);
+      index = JmolConstants.argbsRoygbScale.length - 1 - index;
+      argb = JmolConstants.argbsRoygbScale[index];
     } else {
       System.out.println("ColorManager.getColixAtomPalette:" +
                          " unrecognized color palette:" + palette);
@@ -353,10 +355,8 @@ class ColorManager {
       return Graphics3D.getColix(JmolConstants.argbsRwbScale[index]);
     }
     if (palette == "roygb") {
-      int index = quantize(val, lo, hi,
-                           JmolConstants.argbsBlueRedRainbow.length);
-      index = JmolConstants.argbsBlueRedRainbow.length - 1 - index;
-      return Graphics3D.getColix(JmolConstants.argbsBlueRedRainbow[index]);
+      int index = quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length);
+      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
     }
     return Graphics3D.HOTPINK;
   }

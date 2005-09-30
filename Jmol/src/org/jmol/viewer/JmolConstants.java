@@ -1541,6 +1541,50 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF0000FF, // blue
   };
 
+  public final static int[] argbsRoygbScale = {
+    0xFFFF0000,
+    0xFFFF2000,
+    0xFFFF4000,
+    0xFFFF6000,
+    0xFFFF8000,
+    0xFFFFA000,
+    0xFFFFC000,
+    0xFFFFE000,
+
+    0xFFFFF000, // yellow gets compressed, so give it an extra boost
+
+    0xFFFFFF00,
+    0xFFF0F000, // yellow gets compressed, so give it a little boost
+    0xFFE0FF00,
+    0xFFC0FF00,
+    0xFFA0FF00,
+    0xFF80FF00,
+    0xFF60FF00,
+    0xFF40FF00,
+    0xFF20FF00,
+
+    0xFF00FF00,
+    0xFF00FF20,
+    0xFF00FF40,
+    0xFF00FF60,
+    0xFF00FF80,
+    0xFF00FFA0,
+    0xFF00FFC0,
+    0xFF00FFE0,
+
+    0xFF00FFFF,
+    0xFF00E0FF,
+    0xFF00C0FF,
+    0xFF00A0FF,
+    0xFF0080FF,
+    0xFF0060FF,
+    0xFF0040FF,
+    0xFF0020FF,
+
+    0xFF0000FF,
+  };
+
+  /*
   public final static int[] argbsBlueRedRainbow = {
     0xFF0000FF,
     //0xFF0010FF,
@@ -1612,6 +1656,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     0xFFFF0000,
   };
+  */
 
   // positive and negative default colors used for
   // isosurface rendering of .cube files

@@ -87,15 +87,6 @@ abstract class MeshCollection extends SelectionIndependentShape {
       }
       return;
     }
-    if ("test1" == propertyName) {
-      if (currentMesh != null)
-        currentMesh.test1();
-      else {
-        for (int i = meshCount; --i >= 0; )
-          meshes[i].test1();
-      }
-      return;
-    }
     if ("color" == propertyName) {
       if (value != null) {
         colix = Graphics3D.getColix(value);
@@ -115,12 +106,10 @@ abstract class MeshCollection extends SelectionIndependentShape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = ("translucent" == value);
       if (currentMesh != null)
-        currentMesh.colix = 
-          Graphics3D.setTranslucent(currentMesh.colix, isTranslucent);
+        currentMesh.setTranslucent(isTranslucent);
       else {
         for (int i = meshCount; --i >= 0; )
-          meshes[i].colix = 
-            Graphics3D.setTranslucent(meshes[i].colix, isTranslucent);
+          meshes[i].setTranslucent(isTranslucent);
       }
     }
     if ("dots" == propertyName) {

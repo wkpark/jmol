@@ -3499,6 +3499,7 @@ class Eval implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
     viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "meshID", null);
     boolean colorSeen = false;
+    int colorRangeStage = 0;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -3517,10 +3518,22 @@ class Eval implements Runnable {
           fileNotFoundException(filename + ":" + t);
         propertyName = colorSeen ? "colorreader" : "bufferedreader";
         propertyValue = t;
+        if (colorSeen && colorRangeStage != 0 && colorRangeStage != 3)
+          invalidArgument();
         break;
       case Token.decimal:
-        propertyName = "cutoff";
-        propertyValue = statement[i].value;
+        if (colorRangeStage == 0) {
+          propertyName = "cutoff";
+          propertyValue = statement[i].value;
+          break;
+        }
+        // fall into
+      case Token.integer:
+        if (colorRangeStage == 0 || colorRangeStage >= 3)
+          invalidArgument();
+        propertyName = colorRangeStage == 1 ? "rangeMin" : "rangeMax";
+        propertyValue = new Float(floatParameter(i));
+        ++colorRangeStage;
         break;
       case Token.dots:
         propertyValue = Boolean.TRUE;
@@ -3546,6 +3559,10 @@ class Eval implements Runnable {
         break;
       case Token.color:
         colorSeen = true;
+        propertyName = "removeRange";
+        break;
+      case Token.absolute:
+        colorRangeStage = 1;
         break;
       default:
         invalidArgument();

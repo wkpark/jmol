@@ -943,8 +943,6 @@ class Isosurface extends MeshCollection {
   }
 
   int indexDown(float value, int voxelVectorIndex) {
-    if (value < 0)
-      return 0;
     int floor = (int) value;
     float delta = value - floor;
     if (delta > 0.9f)
@@ -962,16 +960,19 @@ class Isosurface extends MeshCollection {
     float delta = ceil - value;
     if (delta > 0.9f)
       --ceil;
+    int lastValue = voxelCounts[voxelVectorIndex] - 1;
+    if (ceil > lastValue)
+      ceil = lastValue;
     return ceil;
   }
 
   float getInterpolatedValue(float x, float y, float z) {
     int xDown = indexDown(x, 0);
     int xUp = indexUp(x, 0);
-    int yDown = indexDown(x, 1);
-    int yUp = indexUp(x, 1);
-    int zDown = indexDown(x, 2);
-    int zUp = indexUp(x, 2);
+    int yDown = indexDown(y, 1);
+    int yUp = indexUp(y, 1);
+    int zDown = indexDown(z, 2);
+    int zUp = indexUp(z, 2);
 
     float valueDown = voxelData[xDown][yDown][zDown];
     float valueUp = voxelData[xUp][yUp][zUp];
@@ -983,6 +984,7 @@ class Isosurface extends MeshCollection {
                      (((zUp == zDown) ? 0 : 1) << 2));
     switch (differentMask) {
     case 0:
+      System.out.println("" + valueDown);
       return valueDown;
     case 1:
       delta = x - xDown;
@@ -998,6 +1000,7 @@ class Isosurface extends MeshCollection {
       // just stick it in the middle
       delta = 0.5f;
     }
+    System.out.println("" + (valueDown + delta * valueDelta));
     return valueDown + delta * valueDelta;
   }
 }

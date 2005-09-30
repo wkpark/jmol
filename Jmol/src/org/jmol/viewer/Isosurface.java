@@ -63,6 +63,13 @@ class Isosurface extends MeshCollection {
     for (int i = 3; --i >= 0; )
       volumetricVectors[i] = new Vector3f();
   }
+  final Vector3f[] unitVolumetricVectors = new Vector3f[3];
+  {
+    for (int i = 3; --i >= 0; )
+      unitVolumetricVectors[i] = new Vector3f();
+  }
+  final float[] volumetricVectorLengths = new float[3];
+
   final int[] voxelCounts = new int[3];
   final Matrix3f volumetricMatrix = new Matrix3f();
   float[][][] voxelData;
@@ -100,7 +107,11 @@ class Isosurface extends MeshCollection {
       readVolumetricHeader(br);
       calcVolumetricMatrix();
       readVolumetricData(br);
-      applyRwbColorScale(-1, 1);
+      float minMappedValue = getMinMappedValue();
+      float maxMappedValue = getMaxMappedValue();
+      System.out.println(" minMappedValue=" + minMappedValue +
+                         " maxMappedValue=" + maxMappedValue);
+      applyColorScale(minMappedValue, maxMappedValue, "roygb");
       discardTempData();
       return;
     }
@@ -219,6 +230,8 @@ class Isosurface extends MeshCollection {
     voxelVector.y = parseFloat(line, ichNextParse);
     voxelVector.z = parseFloat(line, ichNextParse);
     voxelVector.scale(ANGSTROMS_PER_BOHR);
+    volumetricVectorLengths[voxelVectorIndex] = voxelVector.length();
+    unitVolumetricVectors[voxelVectorIndex].normalize(voxelVector);
   }
 
   void readAtoms(BufferedReader br) throws Exception {
@@ -844,16 +857,40 @@ class Isosurface extends MeshCollection {
   // color scale stuff
   ////////////////////////////////////////////////////////////////
 
-  void applyRwbColorScale(float min, float max) {
+  void applyColorScale(float min, float max, String scaleName) {
     if (currentMesh != null)
-      applyRwbColorScale(currentMesh, min, max);
+      applyColorScale(currentMesh, min, max, scaleName);
     else {
       for (int i = meshCount; --i >= 0; )
-        applyRwbColorScale(meshes[i], min, max);
+        applyColorScale(meshes[i], min, max, scaleName);
     }
   }
-  
-  void applyRwbColorScale(Mesh mesh, float min, float max) {
+
+  float getMinMappedValue() {
+    if (currentMesh != null)
+      return getMinMappedValue(currentMesh);
+    float min = Float.MAX_VALUE;
+    for (int i = meshCount; --i >= 0; ) {
+      float challenger = getMinMappedValue(meshes[i]);
+      if (challenger < min)
+        min = challenger;
+    }
+    return min;
+  }
+
+  float getMaxMappedValue() {
+    if (currentMesh != null)
+      return getMaxMappedValue(currentMesh);
+    float max = Float.MIN_VALUE;
+    for (int i = meshCount; --i >= 0; ) {
+      float challenger = getMaxMappedValue(meshes[i]);
+      if (challenger > max)
+        max = challenger;
+    }
+    return max;
+  }
+
+  void applyColorScale(Mesh mesh, float min, float max, String scaleName) {
     int vertexCount = mesh.vertexCount;
     Point3f[] vertexes = mesh.vertices;
     short[] colixes = mesh.vertexColixes;
@@ -861,13 +898,106 @@ class Isosurface extends MeshCollection {
       mesh.vertexColixes = colixes = new short[vertexCount];
     for (int i = vertexCount; --i >= 0; ) {
       float value = lookupInterpolatedVoxelValue(vertexes[i]);
-      colixes[i] = viewer.getColixFromPalette(value, min, max, "rwb");
+      colixes[i] = viewer.getColixFromPalette(value, min, max, scaleName);
     }
   }
 
+  float getMinMappedValue(Mesh mesh) {
+    int vertexCount = mesh.vertexCount;
+    Point3f[] vertexes = mesh.vertices;
+    float min = Float.MAX_VALUE;
+    for (int i = vertexCount; --i >= 0; ) {
+      float challenger = lookupInterpolatedVoxelValue(vertexes[i]);
+      if (challenger < min)
+        min = challenger;
+    }
+    return min;
+  }
+
+  float getMaxMappedValue(Mesh mesh) {
+    int vertexCount = mesh.vertexCount;
+    Point3f[] vertexes = mesh.vertices;
+    float max = Float.MIN_VALUE;
+    for (int i = vertexCount; --i >= 0; ) {
+      float challenger = lookupInterpolatedVoxelValue(vertexes[i]);
+      if (challenger > max)
+        max = challenger;
+    }
+    return max;
+  }
+
   int i;
+  final Vector3f pointVector = new Vector3f();
+  final Point3f cubeLocation = new Point3f();
   float lookupInterpolatedVoxelValue(Point3f point) {
-    i = (i + 1) & 0x0F;
-    return i / 16f;
+    pointVector.sub(point, volumetricOrigin);
+    float x = scaleByVoxelVector(pointVector, 0);
+    float y = scaleByVoxelVector(pointVector, 1);
+    float z = scaleByVoxelVector(pointVector, 2);
+    return getInterpolatedValue(x, y, z);
+  }
+
+  float scaleByVoxelVector(Vector3f vector, int voxelVectorIndex) {
+    return (vector.dot(unitVolumetricVectors[voxelVectorIndex]) /
+            volumetricVectorLengths[voxelVectorIndex]);
+  }
+
+  int indexDown(float value, int voxelVectorIndex) {
+    if (value < 0)
+      return 0;
+    int floor = (int) value;
+    float delta = value - floor;
+    if (delta > 0.9f)
+      ++floor;
+    int lastValue = voxelCounts[voxelVectorIndex] - 1;
+    if (floor > lastValue)
+      floor = lastValue;
+    return floor;
+  }
+
+  int indexUp(float value, int voxelVectorIndex) {
+    if (value < 0)
+      return 0;
+    int ceil = ((int) value) + 1;
+    float delta = ceil - value;
+    if (delta > 0.9f)
+      --ceil;
+    return ceil;
+  }
+
+  float getInterpolatedValue(float x, float y, float z) {
+    int xDown = indexDown(x, 0);
+    int xUp = indexUp(x, 0);
+    int yDown = indexDown(x, 1);
+    int yUp = indexUp(x, 1);
+    int zDown = indexDown(x, 2);
+    int zUp = indexUp(x, 2);
+
+    float valueDown = voxelData[xDown][yDown][zDown];
+    float valueUp = voxelData[xUp][yUp][zUp];
+    float valueDelta = valueUp - valueDown;
+    float delta;
+    int differentMask;
+    differentMask = ((((xUp == xDown) ? 0 : 1) << 0) |
+                     (((yUp == yDown) ? 0 : 1) << 1) |
+                     (((zUp == zDown) ? 0 : 1) << 2));
+    switch (differentMask) {
+    case 0:
+      return valueDown;
+    case 1:
+      delta = x - xDown;
+      break;
+    case 2:
+      delta = y - yDown;
+      break;
+    case 4:
+      delta = z - zDown;
+      break;
+    default:
+      // I don't feel like dealing with all the cases
+      // just stick it in the middle
+      delta = 0.5f;
+    }
+    return valueDown + delta * valueDelta;
   }
 }

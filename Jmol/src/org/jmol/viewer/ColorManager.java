@@ -352,7 +352,13 @@ class ColorManager {
       int index = quantize(val, lo, hi, JmolConstants.argbsRwbScale.length);
       return Graphics3D.getColix(JmolConstants.argbsRwbScale[index]);
     }
-    return Graphics3D.PINK;
+    if (palette == "roygb") {
+      int index = quantize(val, lo, hi,
+                           JmolConstants.argbsBlueRedRainbow.length);
+      index = JmolConstants.argbsBlueRedRainbow.length - 1 - index;
+      return Graphics3D.getColix(JmolConstants.argbsBlueRedRainbow[index]);
+    }
+    return Graphics3D.HOTPINK;
   }
 
   short getColixHbondType(short order) {

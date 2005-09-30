@@ -68,7 +68,7 @@ class Isosurface extends MeshCollection {
   float[][][] voxelData;
 
   int edgePointCount = 0;
-  Point3f[] edgePoints = new Point3f[256];
+  Point3f[] edgePoints;
 
   float cutoff = 0.02f;
 
@@ -87,6 +87,7 @@ class Isosurface extends MeshCollection {
       currentMesh.initialize();
       currentMesh.checkForDuplicatePoints(.001f);
       currentMesh.visible = true;
+      discardTempData();
       return;
     }
     if ("cutoff" == propertyName) {
@@ -96,6 +97,11 @@ class Isosurface extends MeshCollection {
     if ("colorreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
       System.out.println("colorreader seen!");
+      readVolumetricHeader(br);
+      calcVolumetricMatrix();
+      readVolumetricData(br);
+      applyRwbColorScale(-1, 1);
+      discardTempData();
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -106,6 +112,11 @@ class Isosurface extends MeshCollection {
       volumetricMatrix.setColumn(i, volumetricVectors[i]);
   }
 
+  void discardTempData() {
+    edgePointCount = 0;
+    edgePoints = null;
+    voxelData = null;
+  }
 
   /*
     System.out.println("setProperty(" + propertyName + "," + value + ")");
@@ -473,7 +484,9 @@ class Isosurface extends MeshCollection {
   }
 
   void addEdgePoint(Point3f point) {
-    if (edgePointCount == edgePoints.length)
+    if (edgePoints == null)
+      edgePoints = new Point3f[256];
+    else if (edgePointCount == edgePoints.length)
       edgePoints = (Point3f[])Util.doubleLength(edgePoints);
     edgePoints[edgePointCount++] = new Point3f(point);
   }
@@ -826,5 +839,27 @@ class Isosurface extends MeshCollection {
     {0, 3, 8},
     null
   };
+
+  ////////////////////////////////////////////////////////////////
+  // color scale stuff
+  ////////////////////////////////////////////////////////////////
+
+  void applyRwbColorScale(float min, float max) {
+    if (currentMesh != null)
+      applyRwbColorScale(currentMesh, min, max);
+    else {
+      for (int i = meshCount; --i >= 0; )
+        applyRwbColorScale(meshes[i], min, max);
+    }
+  }
+  
+  void applyRwbColorScale(Mesh mesh, float min, float max) {
+    if (mesh.vertexColixes == null)
+      mesh.vertexColixes = new short[mesh.vertexCount];
+    for (int i = mesh.vertexCount; --i >= 0; ) {
+      mesh.vertexColixes[i] = viewer.getColixFromPalette(i % 31,
+                                                         0, 31, "rwb");
+    }
+  }
 }
 

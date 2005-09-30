@@ -3498,6 +3498,7 @@ class Eval implements Runnable {
   void isosurface() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
     viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "meshID", null);
+    boolean colorSeen = false;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -3514,7 +3515,7 @@ class Eval implements Runnable {
           viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
-        propertyName = "bufferedreader";
+        propertyName = colorSeen ? "colorreader" : "bufferedreader";
         propertyValue = t;
         break;
       case Token.decimal:
@@ -3544,13 +3545,14 @@ class Eval implements Runnable {
         propertyName = "delete";
         break;
       case Token.color:
-        propertyName = "test1";
+        colorSeen = true;
         break;
       default:
         invalidArgument();
       }
-      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
-                              propertyName, propertyValue);
+      if (propertyName != null)
+        viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+                                propertyName, propertyValue);
     }
   }
 

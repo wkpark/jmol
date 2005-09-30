@@ -93,9 +93,14 @@ class Isosurface extends MeshCollection {
       cutoff = ((Float)value).floatValue();
       return;
     }
+    if ("colorreader" == propertyName) {
+      BufferedReader br = (BufferedReader)value;
+      System.out.println("colorreader seen!");
+      return;
+    }
     super.setProperty(propertyName, value, bs);
   }
-
+  
   void calcVolumetricMatrix() {
     for (int i = 3; --i >= 0; )
       volumetricMatrix.setColumn(i, volumetricVectors[i]);

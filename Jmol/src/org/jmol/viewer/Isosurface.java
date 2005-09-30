@@ -854,12 +854,20 @@ class Isosurface extends MeshCollection {
   }
   
   void applyRwbColorScale(Mesh mesh, float min, float max) {
-    if (mesh.vertexColixes == null)
-      mesh.vertexColixes = new short[mesh.vertexCount];
-    for (int i = mesh.vertexCount; --i >= 0; ) {
-      mesh.vertexColixes[i] = viewer.getColixFromPalette(i % 31,
-                                                         0, 31, "rwb");
+    int vertexCount = mesh.vertexCount;
+    Point3f[] vertexes = mesh.vertices;
+    short[] colixes = mesh.vertexColixes;
+    if (colixes == null)
+      mesh.vertexColixes = colixes = new short[vertexCount];
+    for (int i = vertexCount; --i >= 0; ) {
+      float value = lookupInterpolatedVoxelValue(vertexes[i]);
+      colixes[i] = viewer.getColixFromPalette(value, min, max, "rwb");
     }
   }
-}
 
+  int i;
+  float lookupInterpolatedVoxelValue(Point3f point) {
+    i = (i + 1) & 0x0F;
+    return i / 16f;
+  }
+}

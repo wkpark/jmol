@@ -42,22 +42,19 @@
   
   
   <!-- the main target -->
-  
+
   <target name="main-i18n" id="main-i18n"
-          depends="init-i18n,update-pot,update-po,update-catalog,copy-i18n-classes"/>
-  
+          depends="init-i18n,update-pot,update-po,update-catalog"/>
+
   <target name="init-i18n" id="init-i18n">
     <tstamp/>
   </target>
-  
-  <target name="copy-i18n-classes" depends="update-catalog">
-  </target>
-  
+
   <!-- create initial gettext po-template files -->
-  
+
   <target name="update-pot" id="update-pot"
           depends="create-application-pot,create-applet-pot" />
-  
+
   <!-- create Jmol.pot -->
   <target name="create-application-pot" id="create-application-pot"
           depends="check-executables" if="exist_xgettext">
@@ -186,7 +183,7 @@
   
   <!-- update Jmol po files using newly created Jmol.pot file -->
   <target name="update-application-po" id="update-application-po"
-          depends="create-application-pot">
+          depends="check-executables" if="exist_msgmerge">
     <for list="${all.Jmol.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -196,17 +193,27 @@
       </sequential>
     </for>
   </target>  
-  
+
+  <target name="check-uptodate-application-po">
+    <condition property="uptodate-application-po-${Jmol_lang_value}">
+      <uptodate srcfile="${Jmol.po.dir}/Jmol.pot"
+                targetfile="${Jmol.po.dir}/${Jmol_lang_value}.po"/>
+    </condition>
+  </target>
+
   <target name="update-application-po-lang" id="update-application-po-lang"
-          depends="check-executables" if="exist_msgmerge">
+          depends="check-uptodate-application-po"
+          if="exist_msgmerge" unless="uptodate-application-po-${Jmol_lang_value}">
     <echo message="Updating ${Jmol_lang_value}.po gettext file for Jmol ..."/>
     <exec executable="${gettext.msgmerge}" dir="${basedir}/${Jmol.po.dir}">
       <arg line="-U ${Jmol_lang_value}.po Jmol.pot"/>
     </exec>
+    <touch file="${Jmol.po.dir}/${Jmol_lang_value}.po"/>
   </target>
   
   <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
-  <target name="update-applet-po" id="update-applet-po" depends="create-applet-pot">
+  <target name="update-applet-po" id="update-applet-po"
+          depends="check-executables" if="exist_msgmerge">
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.JmolApplet.language">
       <sequential>
@@ -218,12 +225,21 @@
     </for>
   </target>  
   
+  <target name="check-uptodate-applet-po">
+    <condition property="uptodate-applet-po-${JmolApplet_lang_value}">
+      <uptodate srcfile="${JmolApplet.po.dir}/JmolApplet.pot"
+                targetfile="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po"/>
+    </condition>
+  </target>
+
   <target name="update-applet-po-lang" id="update-applet-po-lang"
-          depends="check-executables" if="exist_msgmerge">
+          depends="check-uptodate-applet-po"
+          if="exist_msgmerge" unless="uptodate-applet-po-${JmolApplet_lang_value}">
     <echo message="Updating ${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
     <exec executable="${gettext.msgmerge}" dir="${basedir}/${JmolApplet.po.dir}">
       <arg line="-U ${JmolApplet_lang_value}.po JmolApplet.pot"/>
     </exec>
+    <touch file="${JmolApplet.po.dir}/${Jmol_lang_value}.po"/>
   </target>
   
   <!-- Update message cataloges and create messages_LANG.class files -->
@@ -231,9 +247,9 @@
   <target name="update-catalog" id="update-catalog"
           depends="update-application-catalog,update-applet-catalog" />
 
-  <!-- update Jmol po files using newly created Jmol.pot file -->
+  <!-- update Jmol messages_LANG.class files using newly created Jmol po files -->
   <target name="update-application-catalog" id="update-application-catalog"
-          depends="clean-application-catalogs">
+          depends="check-executables" if="exist_msgfmt">
     <for list="${all.Jmol.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -243,10 +259,18 @@
       </sequential>
     </for>
   </target>  
-  
+
+  <target name="check-uptodate-application-catalog">
+    <condition property="uptodate-application-catalog-${Jmol_lang_value}">
+      <uptodate srcfile="${Jmol.po.dir}/${Jmol_lang_value}.po"
+                targetfile="${classes.dir}/org/jmol/translation/Jmol/Messages_${Jmol_lang_value}.class"/>
+    </condition>
+  </target>
+
   <target name="update-application-catalog-lang"
           id="update-application-catalog-lang"
-          depends="check-executables" if="exist_msgfmt">
+          depends="check-uptodate-application-catalog"
+          if="exist_msgfmt" unless="uptodate-application-catalog-${Jmol_lang_value}">
     <echo message="Updating messages_${Jmol_lang_value}.class file for Jmol ..."/>
     <exec executable="${gettext.msgfmt}" dir="${basedir}/${Jmol.po.dir}">
       <arg value="--statistics"/>
@@ -261,9 +285,9 @@
     </exec>
   </target>
 
-  <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
+  <!-- update JmolApplet messages_LANG.class files using newly created JmolApplet po files -->
   <target name="update-applet-catalog" id="update-applet-catalog"
-          depends="clean-applet-catalogs">
+          depends="check-executables" if="exist_msgfmt">
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.JmolApplet.language">
       <sequential>
@@ -273,10 +297,18 @@
         </antcall>
       </sequential>
     </for>
-  </target>  
-  
+  </target>
+
+  <target name="check-uptodate-applet-catalog">
+    <condition property="uptodate-applet-catalog-${JmolApplet_lang_value}">
+      <uptodate srcfile="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po"
+                targetfile="${classes.dir}/org/jmol/translation/JmolApplet/Messages_${JmolApplet_lang_value}.class"/>
+    </condition>
+  </target>
+
   <target name="update-applet-catalog-lang" id="update-applet-catalog-lang"
-          depends="check-executables" if="exist_msgfmt">
+          depends="check-uptodate-applet-catalog"
+          if="exist_msgfmt" unless="uptodate-applet-catalog-${JmolApplet_lang_value}">
     <echo message="Updating messages_${JmolApplet_lang_value}.class file for JmolApplet ..."/>
     <exec executable="${gettext.msgfmt}" dir="${basedir}/${JmolApplet.po.dir}">
       <arg value="--statistics"/>

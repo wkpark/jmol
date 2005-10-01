@@ -4,21 +4,30 @@
 
     <xsl:output method="xml" omit-xml-declaration="yes"/>
 
-    <xsl:template match="br">
-        <xsl:text>; </xsl:text>
+    <xsl:template match="document">
+        <xsl:comment><xsl:text> Last updated: </xsl:text> <xsl:value-of select="./@lastupdated"/><xsl:text> </xsl:text></xsl:comment>
+        <xsl:text>
+</xsl:text>
+        <xsl:comment><xsl:text> Automatically created from documentation on http://www.stolaf.edu/people/hansonr/jmol/docs/?xml
+     as described in the README in the JmolScriptDocumentation module in CVS. </xsl:text></xsl:comment>
+        <xsl:apply-templates select="cmdlist"/>
     </xsl:template>
-    
+
     <xsl:template match="jmolcmd">
-        <section>
+        <xsl:element name="section">
+            <xsl:attribute name="id"><xsl:value-of select="cmdname/a/@id"/></xsl:attribute>
+            <xsl:attribute name="xreflabel"><xsl:value-of select="cmdname/a"/></xsl:attribute>
             <title>
-                <xsl:value-of select="cmdname"/>
+                <xsl:value-of select="cmdname/a"/>
             </title>
             <para>
                 <xsl:value-of select="cmddescription"/>
             </para>
             <xsl:apply-templates select="cmdexamples"/>
             <xsl:apply-templates select="cmddefinitions"/>
-        </section>
+            <xsl:apply-templates select="cmdxref"/>
+            <xsl:apply-templates select="cmdscriptlist"/>
+        </xsl:element>
     </xsl:template>
 						
     <xsl:template match="cmdexamples">
@@ -65,6 +74,26 @@
                 </varlistentry>
             </xsl:for-each>
         </variablelist>
+    </xsl:template>
+
+    <xsl:template match="cmdxref">
+      <xsl:text>See also: </xsl:text>
+      <xsl:for-each select="seealso/a">
+        <xsl:element name="xref">
+          <xsl:attribute name="linkend"><xsl:value-of select="substring(@href,2)"/></xsl:attribute>
+        </xsl:element>
+        <xsl:text>, </xsl:text>
+      </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="cmdscriptlist">
+        <para>Examples:</para>
+        <programlisting>
+          <xsl:for-each select="cmdscript">
+            <xsl:value-of select="normalize-space(.)"/><xsl:text>
+</xsl:text>
+          </xsl:for-each>
+        </programlisting>
     </xsl:template>
 
 </xsl:stylesheet>

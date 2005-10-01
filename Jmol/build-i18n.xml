@@ -22,7 +22,9 @@
   <!-- NOTE:
        gettext.path can be used if gettext tools are not in the path
        or if Ant can't find them (potential problem on MacOSX + Eclipse)
-       Set if by running Ant with -Dgettext.path=<path ending with />
+       Set it by running Ant with -Dgettext.path=<path ending with />
+       
+       MacOSX+Eclipse: https://bugs.eclipse.org/bugs/show_bug.cgi?id=111193
   -->
   <property name="gettext.path" value="" />
   <property name="gettext.xgettext" value="${gettext.path}xgettext" />
@@ -399,6 +401,7 @@
           Otherwise, you dont need them.
           ----------------------------------------------
           Homepage: http://www.gnu.org/software/gettext/
+          Win32: http://gnuwin32.sourceforge.net/packages/gettext.htm
         </echo>
       </else>
     </if>

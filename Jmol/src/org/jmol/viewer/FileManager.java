@@ -283,7 +283,7 @@ class FileManager {
       if (countRead == 4 &&
           abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B)
         is = new GZIPInputStream(bis);
-      return new BufferedReader(new InputStreamReader((InputStream)is));
+      return new BufferedReader(new InputStreamReader(is));
     } catch (IOException ioe) {
       return ioe.getMessage();
     }
@@ -325,7 +325,7 @@ class FileManager {
       terminated = true;
     }
 
-    byte[] abMagic = new byte[4];
+    byte[] abMagicF = new byte[4];
     private void openInputStream(String fullPathName, String fileName,
                                  InputStream istream) {
       BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
@@ -333,10 +333,10 @@ class FileManager {
       bistream.mark(5);
       int countRead = 0;
       try {
-        countRead = bistream.read(abMagic, 0, 4);
+        countRead = bistream.read(abMagicF, 0, 4);
         bistream.reset();
         if (countRead == 4) {
-          if (abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B) {
+          if (abMagicF[0] == (byte)0x1F && abMagicF[1] == (byte)0x8B) {
             istreamToRead = new GZIPInputStream(bistream);
           }
         }

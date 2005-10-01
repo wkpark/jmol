@@ -3,8 +3,6 @@
       DocumentId  $Id$
   -->
 
-  <import file="build-i18n.xml" />
-
   <!-- pull developer-specific settings from their home directory -->
   <property file="${user.home}/.jmol.build.properties" />
 
@@ -968,6 +966,14 @@ support for assertions (which were introduced in 1.4).
       </classpath>
     </javac>
     <jar destfile="Tests.jar" basedir="${test-classes.dir}" />
+  </target>
+
+  <!-- i18n stuff -->
+  <target name="main-i18n">
+    <ant antfile="build-i18n.xml" target="main-i18n"/>
+  </target>
+  <target name="spotless-i18n">
+    <ant antfile="build-i18n.xml" target="spotless-i18n"/>
   </target>
 
 </project>

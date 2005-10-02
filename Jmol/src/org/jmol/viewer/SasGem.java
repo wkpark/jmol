@@ -65,6 +65,9 @@ class SasGem {
   final int[] actualEdgeMapT;
   final int[] visibleIdealEdgeMapT;
   final int[] faceMapT;
+
+  short firstStitchedGeodesicVertex;
+  short lastStitchedGeodesicVertex;
   
   private final static float PI = (float)Math.PI;
   private final static int MAX_FULL_TORUS_STEP_COUNT =
@@ -101,16 +104,17 @@ class SasGem {
 
 
   boolean findIdealEdge(boolean isEdgeA,
-                        Point3f geodesicCenter, float radius,
-                        Point3f planeCenter, Vector3f unitNormal,
+                        Point3f geodesicCenter, float geodesicRadius,
+                        Point3f planeCenter, Vector3f planeUnitNormal,
                         int[] idealEdgeMap) {
     Bmp.clearBitmap(bmpNotClippedT);
     Bmp.clearBitmap(idealEdgeMap);
     int unclippedCount = 0;
     for (int i = geodesicVertexCount; --i >= 0; ) {
-      vertexPointT.scaleAdd(radius, geodesicVertexVectors[i], geodesicCenter);
+      vertexPointT.scaleAdd(geodesicRadius, geodesicVertexVectors[i],
+                            geodesicCenter);
       vertexVectorT.sub(vertexPointT, planeCenter);
-      float dot = vertexVectorT.dot(unitNormal);
+      float dot = vertexVectorT.dot(planeUnitNormal);
       if (isEdgeA)
         dot = -dot;
       if (dot >= 0) {
@@ -121,8 +125,8 @@ class SasGem {
     if (unclippedCount == 0)
       return false; // everything is clipped ... inside another atom
     if (unclippedCount == geodesicVertexCount) {
-      findClippedFaceVertexes(isEdgeA, geodesicCenter, radius,
-                              planeCenter, unitNormal, idealEdgeMap);
+      findClippedFaceVertexes(isEdgeA, geodesicCenter, geodesicRadius,
+                              planeCenter, planeUnitNormal, idealEdgeMap);
       return false;
     }
     for (int v = -1; (v = Bmp.nextSetBit(bmpNotClippedT, v + 1)) >= 0; ) {
@@ -183,7 +187,7 @@ class SasGem {
    */
   void findClippedFaceVertexes(boolean isEdgeA,
                                Point3f geodesicCenter, float radius,
-                               Point3f planeCenter, Vector3f unitNormal,
+                               Point3f planeCenter, Vector3f planeUnitNormal,
                                int[] edgeVertexMap) {
     return; // works poorly;
     /*
@@ -255,15 +259,17 @@ class SasGem {
   final Point3f planeCenterT = new Point3f();
 
   boolean projectAndSortGeodesicPoints(boolean isEdgeA,
-                                       Point3f geodesicCenter, float radius,
+                                       Point3f geodesicCenter,
+                                       float geodesicRadius,
                                        Point3f planeCenter,
                                        Vector3f axisUnitVector,
                                        Point3f planeZeroPoint,
                                        boolean fullTorus,
-                                       int[] convexVertexMap) {
+                                       int[] convexVertexMap,
+                                       boolean dump) {
     if (! findActualEdge(convexVertexMap, actualEdgeMapT))
       return false;
-    if (! findIdealEdge(isEdgeA, geodesicCenter, radius,
+    if (! findIdealEdge(isEdgeA, geodesicCenter, geodesicRadius,
                         planeCenter, axisUnitVector, idealEdgeMapT))
       return false;
 
@@ -272,26 +278,36 @@ class SasGem {
     calcVectors0and90(planeCenter, axisUnitVector, planeZeroPoint,
                       vector0T, vector90T);
 
-    fplActual.setGeodesicEdge(geodesicCenter, radius,
+    fplActual.setGeodesicEdge(geodesicCenter, geodesicRadius,
                               planeCenter, axisUnitVector,
                               planeZeroPoint, fullTorus,
                               vector0T, vector90T,
                               geodesicVertexVectors,
                               actualEdgeMapT);
 
-    fplIdeal.setGeodesicEdge(geodesicCenter, radius,
+    fplIdeal.setGeodesicEdge(geodesicCenter, geodesicRadius,
                              planeCenter, axisUnitVector,
                              planeZeroPoint, fullTorus,
                              vector0T, vector90T,
                              geodesicVertexVectors,
                              idealEdgeMapT);
 
-    fplVisibleIdeal.setGeodesicEdge(geodesicCenter, radius,
+    fplVisibleIdeal.setGeodesicEdge(geodesicCenter, geodesicRadius,
                                     planeCenter, axisUnitVector,
                                     planeZeroPoint, fullTorus,
                                     vector0T, vector90T,
                                     geodesicVertexVectors,
                                     visibleIdealEdgeMapT);
+    if (dump) {
+      System.out.println("++++++++++++++++ projectAndSort isEdgeA:" + isEdgeA);
+      System.out.println("fplActual=");
+      fplActual.dump();
+      System.out.println("fplIdeal=");
+      fplIdeal.dump();
+      System.out.println("fplVisibleIdeal=");
+      fplVisibleIdeal.dump();
+      System.out.println("---------------- projectAndSort");
+    }
     return true;
   }
 
@@ -312,6 +328,9 @@ class SasGem {
     return angle;
   }
 
+  final Vector3f vectorBA = new Vector3f();
+  final Vector3f vectorBC = new Vector3f();
+
   float angleABC(float xA, float yA, float xB, float yB, float xC, float yC) {
     double vxAB = xA - xB;
     double vyAB = yA - yB;
@@ -320,7 +339,8 @@ class SasGem {
     double dot = vxAB * vxBC + vyAB * vyBC;
     double lenAB = Math.sqrt(vxAB*vxAB + vyAB*vyAB);
     double lenBC = Math.sqrt(vxBC*vxBC + vyBC*vyBC);
-    return (float)Math.acos(dot / (lenAB * lenBC));
+    float angle = (float)Math.acos(dot / (lenAB * lenBC));
+    return angle;
   }
 
   float angleABCRight(float xA, float xB, float xC, float yC) {
@@ -382,55 +402,88 @@ class SasGem {
 
   void stitchWithTorusSegment(short startingVertex, short vertexIncrement,
                               float startingAngle, float angleIncrement,
-                              int stepCount) {
-    float endingAngle = startingAngle + (angleIncrement * stepCount);
+                              int stepCount, boolean dump) {
+    float endingAngle = startingAngle + (angleIncrement * (stepCount - 1));
     fplForStitching.buildForStitching(startingAngle, endingAngle,
-                                      fplIdeal, fplActual, fplVisibleIdeal);
+                                      fplIdeal, fplActual, fplVisibleIdeal,
+                                      dump);
     fplTorusSegment.generateTorusSegment(startingVertex, vertexIncrement,
                                          startingAngle, angleIncrement,
                                          stepCount);
-    stitchEm(fplTorusSegment, fplForStitching);
+    stitchEm(fplTorusSegment, fplForStitching, dump);
+    if (dump) {
+      dumpStitches();
+    }
   }
 
-  void stitchEm(SasFlattenedPointList segmentFpl,
-                SasFlattenedPointList geodesicFpl) {
-    if (geodesicFpl.count == 0)
+  void stitchEm(SasFlattenedPointList torusFpl,
+                SasFlattenedPointList geodesicFpl, boolean dump) {
+    if (geodesicFpl.count == 0) {
+      firstStitchedGeodesicVertex = lastStitchedGeodesicVertex = -1;
       return;
-    int tLast = segmentFpl.count - 1;
+    }
+    int tLast = torusFpl.count - 1;
     int gLast = geodesicFpl.count - 1;
-    oneStitch(segmentFpl.vertexes[0], geodesicFpl.vertexes[0]);
+    firstStitchedGeodesicVertex = geodesicFpl.vertexes[0];
+    oneStitch(torusFpl.vertexes[0], firstStitchedGeodesicVertex);
     int t = 0;
     int g = 0;
     while (t < tLast && g < gLast) {
+      float d1 = geodesicFpl.angles[g + 1] - torusFpl.angles[t];
+      float d2 = torusFpl.angles[t + 1] - geodesicFpl.angles[g];
+      if (d1 < d2)
+        ++g;
+      else
+        ++t;
+      /*
       float angleT =
-        angleABC(segmentFpl.angles[t], 0,
-                 segmentFpl.angles[t + 1], 0,
+        angleABC(torusFpl.angles[t], 0,
+                 torusFpl.angles[t + 1], 0,
                  geodesicFpl.angles[g], geodesicFpl.distances[g]);
+      System.out.println("angleT=" + angleT + " : " +
+                         torusFpl.vertexes[t] + "->" +
+                         torusFpl.vertexes[t + 1] + "->" +
+                         "(" + geodesicFpl.vertexes[g] + ")");
       float angleG =
-        angleABC(segmentFpl.angles[t], 0,
+        angleABC(torusFpl.angles[t], 0,
                  geodesicFpl.angles[g+1], geodesicFpl.distances[g+1],
                  geodesicFpl.angles[g], geodesicFpl.distances[g]);
+      System.out.println("angleG=" + angleG + " : " +
+                         torusFpl.vertexes[t] + "->" +
+                         "(" + geodesicFpl.vertexes[g + 1] + ")->" +
+                         "(" + geodesicFpl.vertexes[g] + ")");
       if (angleT > angleG)
         ++t;
       else
         ++g;
-      oneStitch(segmentFpl.vertexes[t], geodesicFpl.vertexes[g]);
+      */
+      oneStitch(torusFpl.vertexes[t], geodesicFpl.vertexes[g]);
     }
     while (t < tLast || g < gLast) {
       if (t < tLast)
         ++t;
       else
         ++g;
-      oneStitch(segmentFpl.vertexes[t], geodesicFpl.vertexes[g]);
+      oneStitch(torusFpl.vertexes[t], geodesicFpl.vertexes[g]);
     }
+    lastStitchedGeodesicVertex = geodesicFpl.vertexes[gLast];
   }
   
   void oneStitch(short torusVertex, short geodesicVertex) {
+    //System.out.println("oneStitch("+torusVertex+","+geodesicVertex+")");
     if (stitchesCount + 1 >= stitches.length)
       stitches = Util.doubleLength(stitches);
     stitches[stitchesCount] = torusVertex;
     stitches[stitchesCount + 1] = geodesicVertex;
     stitchesCount += 2;
+  }
+
+  void dumpStitches() {
+    System.out.println("    >> stitches stitchesCount=" + stitchesCount);
+    for (int i = 0; i < stitchesCount; i += 2) {
+      System.out.println("    " + stitches[i] + "->(" +
+                         stitches[i + 1] + ")");
+    }
   }
 
   ////////////////////////////////////////////////////////////////

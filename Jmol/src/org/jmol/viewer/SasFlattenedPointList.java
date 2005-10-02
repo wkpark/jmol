@@ -173,9 +173,18 @@ class SasFlattenedPointList {
   void buildForStitching(float startingAngle, float endingAngle,
                          SasFlattenedPointList fplIdeal,
                          SasFlattenedPointList fplActual,
-                         SasFlattenedPointList fplVisibleIdeal) {
+                         SasFlattenedPointList fplVisibleIdeal,
+                         boolean dump) {
     int minVisibleIdeal = fplVisibleIdeal.findGE(startingAngle);
     int maxVisibleIdeal = fplVisibleIdeal.findGT(endingAngle);
+    if (dump) {
+      System.out.println("buildForStitching(" + startingAngle + ","
+                         + endingAngle + ",...)");
+      System.out.println("fplVisibleIdeal=");
+      fplVisibleIdeal.dump();
+      System.out.println("minVisibleIdeal=" + minVisibleIdeal);
+      System.out.println("maxVisibleIdeal=" + maxVisibleIdeal);
+    }
     count = 0;
     if (minVisibleIdeal == maxVisibleIdeal)
       return;
@@ -216,5 +225,21 @@ class SasFlattenedPointList {
       }
     }
     */
+    /*
+    System.out.println("buildForStitching(" + startingAngle + ","
+                       + endingAngle + ",...)");
+    System.out.println("dumping fplIdeal:");
+    fplIdeal.dump();
+    System.out.println("dumping fplVisibleIdeal:");
+    fplVisibleIdeal.dump();
+    */
+  }
+
+  void dump() {
+    System.out.println(" SasFlattenedPointList.dump() count=" + count);
+    for (int i = 0; i < count; ++i) {
+      System.out.println(" " + i + ":" + angles[i] + "," + vertexes[i] +
+                         "," + distances[i]);
+    }
   }
 }

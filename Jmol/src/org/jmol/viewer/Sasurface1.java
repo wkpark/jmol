@@ -223,6 +223,12 @@ class Sasurface1 {
       torus.stitchWithGeodesics();
     }
 
+    /*
+    for (int i = 0; i < torusCount; ++i) {
+      toruses[i].dumpTorusSegmentStuff();
+    }
+    */
+
     for (int i = atomCount; --i >= 0; ) {
       int[] vertexMap = convexVertexMaps[i];
       if (vertexMap != null)
@@ -484,6 +490,12 @@ class Sasurface1 {
       this.fullTorus = fullTorus;
     }
 
+    void dumpTorusSegmentStuff() {
+      for (int i = 0; i < torusSegmentCount; ++i) {
+        torusSegments[i].dumpStuff();
+      }
+    }
+
     void electReferenceCavity() {
       if (fullTorus)
         return;
@@ -621,10 +633,10 @@ class Sasurface1 {
       // because of previous election, torusCavities[0] has angle 0;
       for (int i = torusCavityCount; --i > 0; )
         torusCavities[i].calcAngle(center, radialVector, radialVector90T);
-      sortCavitiesByAngle();
+      sortTorusCavitiesByAngle();
     }
 
-    void sortCavitiesByAngle() {
+    void sortTorusCavitiesByAngle() {
       // no need to sort entry #0, whose angle (by definition) is zero
       for (int i = torusCavityCount; --i >= 2; ) {
         TorusCavity champion = torusCavities[i];
@@ -666,8 +678,8 @@ class Sasurface1 {
         addTorusSegment(new TorusSegment());
       } else {
         for (int i = 0; i < torusCavityCount; i += 2)
-          addTorusSegment(new TorusSegment(torusCavities[i].angle,
-                                           torusCavities[i+1].angle));
+          addTorusSegment(new TorusSegment(torusCavities[i],
+                                           torusCavities[i+1]));
       }
     }
 
@@ -704,12 +716,25 @@ class Sasurface1 {
         viewer.transformPoint(points[i], screens[i]);
     }
 
+    int getTorusAndGeodesicIndexes(SasCavity cavity, boolean isEdgeA) {
+      for (int i = torusCavityCount; --i >= 0; ) {
+        if (torusCavities[i].cavity == cavity) {
+          return torusSegments[i / 2].getTorusAndGeodesicIndexes((i & 1) == 0,
+                                                                 isEdgeA);
+        }
+      }
+      throw new NullPointerException();
+    }
+
     class TorusSegment {
+      final TorusCavity startCavity;
+      final TorusCavity endCavity;
       float startAngle;
       float stepAngle;
       int stepCount; // # of vertexes, which is 1 more than the # of strips
 
       TorusSegment() { // for a full torus
+        startCavity = endCavity = null;
         this.startAngle = 0;
         this.stepAngle = TARGET_INNER_TORUS_STEP_ANGLE;
         this.stepCount = MAX_FULL_TORUS_STEP_COUNT;
@@ -722,9 +747,11 @@ class Sasurface1 {
         */
       }
       
-      TorusSegment(float startAngle, float endAngle) {
-        this.startAngle = startAngle;
-        float totalSegmentAngle = endAngle - startAngle;
+      TorusSegment(TorusCavity startCavity, TorusCavity endCavity) {
+        this.startCavity = startCavity;
+        this.endCavity = endCavity;
+        this.startAngle = startCavity.angle;
+        float totalSegmentAngle = endCavity.angle - startAngle;
         /*
         System.out.println(" startAngle=" + startAngle +
                            " endAngle=" + endAngle +
@@ -735,6 +762,13 @@ class Sasurface1 {
         stepCount = (int)(totalSegmentAngle / TARGET_INNER_TORUS_STEP_ANGLE);
         stepAngle = totalSegmentAngle / stepCount;
         ++stepCount; // one more strip than pieces of the segment
+      }
+
+      void dumpStuff() {
+        System.out.print(" start ixA=" + ixA + " ixB=" + ixB);
+        startCavity.dumpStuff();
+        System.out.print("   end ixA=" + ixA + " ixB=" + ixB);
+        endCavity.dumpStuff();
       }
 
       int calcPoints(Point3f[] points, int ixPoint) {
@@ -783,10 +817,31 @@ class Sasurface1 {
         }
       }
 
-      void stitchWithSortedProjectedVertexes(boolean isEdgeA) {
+      void stitchWithSortedProjectedVertexes(boolean isEdgeA, boolean dump) {
+        if (dump) {
+          System.out.println("stitchWithSortedProjectedVertexes(isEdgeA " +
+                             isEdgeA + ")");
+          System.out.println("startCavity.angle=" +
+                             startCavity.angle +
+                             " endCavity.angle=" + endCavity.angle);
+          System.out.println("startAngle=" + startAngle +
+                             " stepAngle=" + stepAngle +
+                             " stepCount=" + stepCount);
+          System.out.println("totalArc=" + (stepAngle * stepCount));
+          System.out.println("totalArc2=" + (stepAngle * (stepCount - 1)));
+        }
         gem.stitchWithTorusSegment(getSegmentStartingVertex(isEdgeA),
                                    outerPointCount,
-                                   startAngle, stepAngle, stepCount);
+                                   startAngle, stepAngle, stepCount, dump);
+        if (startCavity != null) {
+          if (isEdgeA) {
+            startCavity.geodesicVertexA = gem.firstStitchedGeodesicVertex;
+            endCavity.geodesicVertexA = gem.lastStitchedGeodesicVertex;
+          } else {
+            startCavity.geodesicVertexB = gem.firstStitchedGeodesicVertex;
+            endCavity.geodesicVertexB = gem.lastStitchedGeodesicVertex;
+          }
+        }
       }
 
       short getSegmentStartingVertex(boolean isEdgeA) {
@@ -813,13 +868,21 @@ class Sasurface1 {
         System.out.println("torus segment not found in torus");
         throw new NullPointerException();
       }
+      
+      int getTorusAndGeodesicIndexes(boolean isBeginning, boolean isEdgeA) {
+        short torusVertex = getSegmentStartingVertex(isEdgeA);
+        if (! isBeginning)
+          torusVertex += (stepCount - 1) * outerPointCount;
+        short geodesicVertex = 0;
+        return (torusVertex << 16) | geodesicVertex;
+      }
     }
-
+    
     void clipVertexMaps() {
       clipVertexMap(true);
       clipVertexMap(false);
     }
-
+    
     void clipVertexMap(boolean isEdgeA) {
       int ix = isEdgeA ? ixA : ixB;
       Atom atom = frame.atoms[ix];
@@ -866,7 +929,8 @@ class Sasurface1 {
       //      System.out.println("torus.stitchWithGeodesics()");
       stitchWithGeodesic(true);
       stitchWithGeodesic(false);
-      if (true) {
+      /*
+      if (ixA == 0 && ixB == 1) {
         System.out.println("seam ixA=" + ixA + " ixB=" + ixB);
         System.out.println(" seamA:");
         if (seamA != null)
@@ -875,6 +939,7 @@ class Sasurface1 {
         if (seamA != null)
           gem.decodeSeam(seamB);
       }
+      */
     }
 
     void stitchWithGeodesic(boolean isEdgeA) {
@@ -884,17 +949,21 @@ class Sasurface1 {
       Point3f atomCenter = atom.point3f;
       gem.reset();
       calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
+      boolean dump = false;
+      //      dump = (ixA == 0 && ixB == 1);
       if (gem.projectAndSortGeodesicPoints(isEdgeA,
                                            atomCenter, atomRadius,
                                            centerPointT, axisUnitVector,
                                            zeroPointT, fullTorus,
-                                           convexVertexMaps[ix]))
+                                           convexVertexMaps[ix], dump))
         stitchSegmentsWithSortedProjectedVertexes(isEdgeA);
     }
 
     void stitchSegmentsWithSortedProjectedVertexes(boolean isEdgeA) {
+      boolean dump = false;
+      //      dump = (ixA == 0 && ixB == 1);
       for (int i = torusSegmentCount; --i >= 0; )
-        torusSegments[i].stitchWithSortedProjectedVertexes(isEdgeA);
+        torusSegments[i].stitchWithSortedProjectedVertexes(isEdgeA, dump);
       short[] seam = gem.createSeam();
       if (isEdgeA)
         seamA = seam;
@@ -907,10 +976,17 @@ class Sasurface1 {
     final SasCavity cavity;
     final boolean rightHanded;
     float angle = 0;
+    short geodesicVertexA = -1;
+    short geodesicVertexB = -1;
     
     TorusCavity(SasCavity cavity, boolean rightHanded) {
       this.cavity = cavity;
       this.rightHanded = rightHanded;
+    }
+
+    void dumpStuff() {
+      System.out.println(" geodesicVertexA=" + geodesicVertexA +
+                         " geodesicVertexB=" + geodesicVertexB);
     }
     
     void calcAngle(Point3f center, Vector3f radialVector,

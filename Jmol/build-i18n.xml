@@ -32,6 +32,19 @@
   <property name="gettext.msgfmt"   value="${gettext.path}msgfmt" />
 
 
+  <!-- Filesets for the rest of the build -->
+  <fileset id="Jmol.java.files" dir="${basedir}/${src.dir}">
+    <include name="**/*.java"/>
+    <exclude name="**/jmol/applet/*.java"/>
+    <exclude name="org/openscience/jmol/ui/*.java"/>
+  </fileset>
+  <fileset id="JmolApplet.java.files" dir="${basedir}/${src.dir}">
+    <include name="JmolApplet*.java"/>
+    <include name="org/jmol/**/*.java"/>
+    <exclude name="org/jmol/**/cdk/*.java"/>
+    <include name="org/openscience/jmol/ui/*.java"/>
+  </fileset>
+
   <!-- <for list ...> construct needs ant-contrib.jar -->
   
   <taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -56,9 +69,19 @@
           depends="create-application-pot,create-applet-pot" />
 
   <!-- create Jmol.pot -->
+  <target name="check-uptodate-application-pot">
+    <condition property="uptodate-application-pot">
+      <uptodate targetfile="${Jmol.po.dir}/tstamp.Jmol.pot">
+        <srcfiles refid="Jmol.java.files"/>
+      </uptodate>
+    </condition>
+  </target>
+
   <target name="create-application-pot" id="create-application-pot"
-          depends="check-executables" if="exist_xgettext">
+          depends="check-executables,check-uptodate-application-pot"
+          if="exist_xgettext" unless="uptodate-application-pot">
     <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
+    <delete file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
     <!-- generate new Jmol.pot -->
     <mkdir dir="${Jmol.po.dir}/tmp"/>
     <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
@@ -68,11 +91,7 @@
       <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
       <arg value="--output-dir=${basedir}/${Jmol.po.dir}/tmp" />
       <arg value="--output=Jmol.pot" />
-      <fileset dir="${basedir}/${src.dir}">
-        <include name="**/*.java"/>
-        <exclude name="**/jmol/applet/*.java"/>
-        <exclude name="org/openscience/jmol/ui/*.java"/>
-      </fileset>
+      <fileset refid="Jmol.java.files" />
     </apply>
     <if>
       <and>
@@ -112,13 +131,24 @@
         </if>
       </else>
     </if>
+    <touch file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
     <delete dir="${Jmol.po.dir}/tmp"/>
   </target>
   
   <!-- create JmolApplet.pot -->
+  <target name="check-uptodate-applet-pot">
+    <condition property="uptodate-applet-pot">
+      <uptodate targetfile="${JmolApplet.po.dir}/tstamp.JmolApplet.pot">
+        <srcfiles refid="JmolApplet.java.files"/>
+      </uptodate>
+    </condition>
+  </target>
+
   <target name="create-applet-pot" id="create-applet-pot"
-          depends="check-executables" if="exist_xgettext">
+          depends="check-executables,check-uptodate-applet-pot"
+          if="exist_xgettext" unless="uptodate-applet-pot">
     <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
+    <delete file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
     <!-- generate new JmolApplet.pot -->
     <mkdir dir="${JmolApplet.po.dir}/tmp"/>
     <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
@@ -173,6 +203,7 @@
         </if>
       </else>
     </if>
+    <touch file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
     <delete dir="${JmolApplet.po.dir}/tmp"/>
   </target>
 
@@ -197,7 +228,7 @@
   <target name="check-uptodate-application-po">
     <condition property="uptodate-application-po-${Jmol_lang_value}">
       <uptodate srcfile="${Jmol.po.dir}/Jmol.pot"
-                targetfile="${Jmol.po.dir}/${Jmol_lang_value}.po"/>
+                targetfile="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po"/>
     </condition>
   </target>
 
@@ -205,10 +236,11 @@
           depends="check-uptodate-application-po"
           if="exist_msgmerge" unless="uptodate-application-po-${Jmol_lang_value}">
     <echo message="Updating ${Jmol_lang_value}.po gettext file for Jmol ..."/>
+    <delete file="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po"/>
     <exec executable="${gettext.msgmerge}" dir="${basedir}/${Jmol.po.dir}">
       <arg line="-U ${Jmol_lang_value}.po Jmol.pot"/>
     </exec>
-    <touch file="${Jmol.po.dir}/${Jmol_lang_value}.po"/>
+    <touch file="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po"/>
   </target>
   
   <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
@@ -228,7 +260,7 @@
   <target name="check-uptodate-applet-po">
     <condition property="uptodate-applet-po-${JmolApplet_lang_value}">
       <uptodate srcfile="${JmolApplet.po.dir}/JmolApplet.pot"
-                targetfile="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po"/>
+                targetfile="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po"/>
     </condition>
   </target>
 
@@ -236,10 +268,11 @@
           depends="check-uptodate-applet-po"
           if="exist_msgmerge" unless="uptodate-applet-po-${JmolApplet_lang_value}">
     <echo message="Updating ${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
+    <delete file="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po"/>
     <exec executable="${gettext.msgmerge}" dir="${basedir}/${JmolApplet.po.dir}">
       <arg line="-U ${JmolApplet_lang_value}.po JmolApplet.pot"/>
     </exec>
-    <touch file="${JmolApplet.po.dir}/${Jmol_lang_value}.po"/>
+    <touch file="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po"/>
   </target>
   
   <!-- Update message cataloges and create messages_LANG.class files -->

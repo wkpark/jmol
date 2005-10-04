@@ -40,8 +40,8 @@ import java.util.Vector;
  *</p>
  *<p>
  * for some useful background info about hermite curves check out
- * <a href='http://www.cubic.org/~submissive/sourcerer/hermite.htm'>
- * http://www.cubic.org/~submissive/sourcerer/hermite.htm
+ * <a href='http://www.cubic.org/docs/hermite.htm'>
+ * http://www.cubic.org/docs/hermite.htm
  * </a>
  *</p>
  *

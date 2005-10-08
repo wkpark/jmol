@@ -73,6 +73,7 @@
     <condition property="uptodate-application-pot">
       <uptodate targetfile="${Jmol.po.dir}/tstamp.Jmol.pot">
         <srcfiles refid="Jmol.java.files"/>
+        <srcfiles file="${Jmol.po.dir}/Jmol.pot"/>
       </uptodate>
     </condition>
   </target>
@@ -140,6 +141,7 @@
     <condition property="uptodate-applet-pot">
       <uptodate targetfile="${JmolApplet.po.dir}/tstamp.JmolApplet.pot">
         <srcfiles refid="JmolApplet.java.files"/>
+        <srcfiles file="${JmolApplet.po.dir}/JmolApplet.pot"/>
       </uptodate>
     </condition>
   </target>
@@ -227,8 +229,10 @@
 
   <target name="check-uptodate-application-po">
     <condition property="uptodate-application-po-${Jmol_lang_value}">
-      <uptodate srcfile="${Jmol.po.dir}/Jmol.pot"
-                targetfile="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po"/>
+      <uptodate targetfile="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po">
+        <srcfiles file="${Jmol.po.dir}/Jmol.pot"/>
+        <srcfiles file="${Jmol.po.dir}/${Jmol_lang_value}.po"/>
+      </uptodate>
     </condition>
   </target>
 
@@ -259,8 +263,10 @@
   
   <target name="check-uptodate-applet-po">
     <condition property="uptodate-applet-po-${JmolApplet_lang_value}">
-      <uptodate srcfile="${JmolApplet.po.dir}/JmolApplet.pot"
-                targetfile="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po"/>
+      <uptodate targetfile="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po">
+        <srcfiles file="${JmolApplet.po.dir}/JmolApplet.pot"/>
+        <srcfiles file="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po"/>
+      </uptodate>
     </condition>
   </target>
 

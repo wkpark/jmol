@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-09-08 21:54-0400\n"
+"POT-Creation-Date: 2005-10-08 19:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -298,19 +298,11 @@ msgid "Atom"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:82
-msgid "15% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:83
-msgid "20% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:84
-msgid "25% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:85
-msgid "100% vanderWaals"
+#, java-format
+msgid "{0}% vanderWaals"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:86
@@ -322,15 +314,12 @@ msgid "Wireframe"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:89
-msgid "0.10 Å"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:90
-msgid "0.15 Å"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:91
-msgid "0.20 Å"
+#: org/openscience/jmol/app/GuiMap.java:103
+#: org/openscience/jmol/app/GuiMap.java:104
+#, java-format
+msgid "{0} Å"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:92
@@ -362,35 +351,17 @@ msgid "On"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:102
-msgid "3 pixels"
-msgstr ""
-
-#: org/openscience/jmol/app/GuiMap.java:103
-msgid "0.05 Å"
-msgstr ""
-
-#: org/openscience/jmol/app/GuiMap.java:104
-msgid "0.1 Å"
+#, java-format
+msgid "{0} pixels"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:105
-msgid "Scale 0.2"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:106
-msgid "Scale 0.5"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:107
-msgid "Scale 1"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:108
-msgid "Scale 2"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:109
-msgid "Scale 5"
+#, java-format
+msgid "Scale {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:110
@@ -398,23 +369,12 @@ msgid "Zoom"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:111
-msgid "100%"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:112
-msgid "150%"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:113
-msgid "200%"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:114
-msgid "400%"
-msgstr ""
-
 #: org/openscience/jmol/app/GuiMap.java:115
-msgid "800%"
+#, java-format
+msgid "{0}%"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:116

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-09-25 09:18+0200\n"
+"POT-Creation-Date: 2005-10-08 19:27+0200\n"
 "PO-Revision-Date: 2005-08-12 19:18+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -251,27 +251,13 @@ msgid "Off"
 msgstr ""
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:120
-msgid "15% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:121
-msgid "20% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:122
-msgid "25% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:123
-msgid "50% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:124
-msgid "75% vanderWaals"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:125
-msgid "100% vanderWaals"
+#, java-format
+msgid "{0}% vanderWaals"
 msgstr ""
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:127
@@ -338,27 +324,17 @@ msgid "Vectors"
 msgstr ""
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:168
-msgid "3 pixels"
+#, java-format
+msgid "{0} pixels"
 msgstr ""
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:171
-msgid "Scale 0.2"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:172
-msgid "Scale 0.5"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:173
-msgid "Scale 1"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:174
-msgid "Scale 2"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:175
-msgid "Scale 5"
+#, java-format
+msgid "Scale {0}"
 msgstr ""
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:179
@@ -856,27 +832,19 @@ msgid "Pixel Width"
 msgstr ""
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:488
-#: org/openscience/jmol/ui/JmolPopupWords.java:511
-#: org/openscience/jmol/ui/JmolPopupWords.java:534
-msgid "1 px"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:489
-#: org/openscience/jmol/ui/JmolPopupWords.java:512
-#: org/openscience/jmol/ui/JmolPopupWords.java:535
-msgid "3 px"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:490
-#: org/openscience/jmol/ui/JmolPopupWords.java:513
-#: org/openscience/jmol/ui/JmolPopupWords.java:536
-msgid "5 px"
-msgstr ""
-
 #: org/openscience/jmol/ui/JmolPopupWords.java:491
+#: org/openscience/jmol/ui/JmolPopupWords.java:511
+#: org/openscience/jmol/ui/JmolPopupWords.java:512
+#: org/openscience/jmol/ui/JmolPopupWords.java:513
 #: org/openscience/jmol/ui/JmolPopupWords.java:514
+#: org/openscience/jmol/ui/JmolPopupWords.java:534
+#: org/openscience/jmol/ui/JmolPopupWords.java:535
+#: org/openscience/jmol/ui/JmolPopupWords.java:536
 #: org/openscience/jmol/ui/JmolPopupWords.java:537
-msgid "10 px"
+#, java-format
+msgid "{0} px"
 msgstr ""
 
 #: org/openscience/jmol/ui/JmolPopupWords.java:501

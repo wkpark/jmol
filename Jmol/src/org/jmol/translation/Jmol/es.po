@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-09-02 20:03+0200\n"
-"PO-Revision-Date: 2005-09-18 22:26+0100\n"
+"POT-Creation-Date: 2005-10-08 19:27+0200\n"
+"PO-Revision-Date: 2005-10-08 19:35+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -298,20 +298,12 @@ msgid "Atom"
 msgstr "Atomo"
 
 #: org/openscience/jmol/app/GuiMap.java:82
-msgid "15% vanderWaals"
-msgstr "15% Van der Waals"
-
 #: org/openscience/jmol/app/GuiMap.java:83
-msgid "20% vanderWaals"
-msgstr "20% Van der Waals"
-
 #: org/openscience/jmol/app/GuiMap.java:84
-msgid "25% vanderWaals"
-msgstr "25% Van der Waals"
-
 #: org/openscience/jmol/app/GuiMap.java:85
-msgid "100% vanderWaals"
-msgstr "100% Van der Waals"
+#, java-format
+msgid "{0}% vanderWaals"
+msgstr "{0}% Van der Waals"
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Bond"
@@ -322,16 +314,13 @@ msgid "Wireframe"
 msgstr "Alambres"
 
 #: org/openscience/jmol/app/GuiMap.java:89
-msgid "0.10 Å"
-msgstr "0,10 Å"
-
 #: org/openscience/jmol/app/GuiMap.java:90
-msgid "0.15 Å"
-msgstr "0,15 Å"
-
 #: org/openscience/jmol/app/GuiMap.java:91
-msgid "0.20 Å"
-msgstr "0,20 Å"
+#: org/openscience/jmol/app/GuiMap.java:103
+#: org/openscience/jmol/app/GuiMap.java:104
+#, java-format
+msgid "{0} Å"
+msgstr "{0} Å"
 
 #: org/openscience/jmol/app/GuiMap.java:92
 msgid "Label"
@@ -362,60 +351,31 @@ msgid "On"
 msgstr "Activo"
 
 #: org/openscience/jmol/app/GuiMap.java:102
-msgid "3 pixels"
-msgstr "3 píxeles"
-
-#: org/openscience/jmol/app/GuiMap.java:103
-msgid "0.05 Å"
-msgstr "0,05 Å"
-
-#: org/openscience/jmol/app/GuiMap.java:104
-msgid "0.1 Å"
-msgstr "0,1 Å"
+#, java-format
+msgid "{0} pixels"
+msgstr "{0} píxeles"
 
 #: org/openscience/jmol/app/GuiMap.java:105
-msgid "Scale 0.2"
-msgstr "Escala 0,2"
-
 #: org/openscience/jmol/app/GuiMap.java:106
-msgid "Scale 0.5"
-msgstr "Escala 0,5"
-
 #: org/openscience/jmol/app/GuiMap.java:107
-msgid "Scale 1"
-msgstr "Escala 1"
-
 #: org/openscience/jmol/app/GuiMap.java:108
-msgid "Scale 2"
-msgstr "Escala 2"
-
 #: org/openscience/jmol/app/GuiMap.java:109
-msgid "Scale 5"
-msgstr "Escala 5"
+#, java-format
+msgid "Scale {0}"
+msgstr "Escala {0}"
 
 #: org/openscience/jmol/app/GuiMap.java:110
 msgid "Zoom"
 msgstr "Tamaño"
 
 #: org/openscience/jmol/app/GuiMap.java:111
-msgid "100%"
-msgstr "100%"
-
 #: org/openscience/jmol/app/GuiMap.java:112
-msgid "150%"
-msgstr "150%"
-
 #: org/openscience/jmol/app/GuiMap.java:113
-msgid "200%"
-msgstr "200%"
-
 #: org/openscience/jmol/app/GuiMap.java:114
-msgid "400%"
-msgstr "400%"
-
 #: org/openscience/jmol/app/GuiMap.java:115
-msgid "800%"
-msgstr "800%"
+#, java-format
+msgid "{0}%"
+msgstr "{0}%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
 msgid "Wi&reframe Rotation"

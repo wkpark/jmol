@@ -231,8 +231,11 @@ class Sasurface1 {
 
     for (int i = atomCount; --i >= 0; ) {
       int[] vertexMap = convexVertexMaps[i];
-      if (vertexMap != null)
+      if (vertexMap != null) {
         convexFaceMaps[i] = gem.calcFaceBitmap(vertexMap);
+        // temp hack
+        convexVertexMaps[i] = gem.calcFaceVertexBitmap(convexFaceMaps[i]);
+      }
     }
 
     long timeElapsed = System.currentTimeMillis() - timeBegin;

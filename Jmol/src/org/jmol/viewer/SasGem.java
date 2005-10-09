@@ -61,10 +61,12 @@ class SasGem {
   final Vector3f projectedVectorT = new Vector3f();
 
   final int[] bmpNotClippedT;
+  final int[] bmpClippedT;
   final int[] idealEdgeMapT;
   final int[] actualEdgeMapT;
   final int[] visibleIdealEdgeMapT;
   final int[] faceMapT;
+  final int[] vertexMapT;
 
   short firstStitchedGeodesicVertex;
   short lastStitchedGeodesicVertex;
@@ -86,10 +88,12 @@ class SasGem {
     geodesicNeighborVertexes = g3d.getGeodesicNeighborVertexes(geodesicLevel);
 
     bmpNotClippedT = Bmp.allocateBitmap(geodesicVertexCount);
+    bmpClippedT = Bmp.allocateBitmap(geodesicVertexCount);
     idealEdgeMapT = Bmp.allocateBitmap(geodesicVertexCount);
     actualEdgeMapT = Bmp.allocateBitmap(geodesicVertexCount);
     visibleIdealEdgeMapT = Bmp.allocateBitmap(geodesicVertexCount);
     faceMapT = Bmp.allocateBitmap(geodesicFaceCount);
+    vertexMapT = Bmp.allocateBitmap(geodesicFaceCount);
 
     fplIdeal = new SasFlattenedPointList(g3d, geodesicLevel);
     fplActual = new SasFlattenedPointList(g3d, geodesicLevel);
@@ -135,6 +139,42 @@ class SasGem {
         int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
         if (! Bmp.getBit(bmpNotClippedT, neighbor)) {
           Bmp.setBit(idealEdgeMap, v);
+          break;
+        }
+      }
+    }
+    return true;
+  }
+  
+  boolean findIdealInsideEdge(boolean isEdgeA,
+                              Point3f geodesicCenter, float geodesicRadius,
+                              Point3f planeCenter, Vector3f planeUnitNormal,
+                              int[] idealInsideEdgeMap) {
+    Bmp.clearBitmap(bmpClippedT);
+    Bmp.clearBitmap(idealInsideEdgeMap);
+    int clippedCount = 0;
+    for (int i = geodesicVertexCount; --i >= 0; ) {
+      vertexPointT.scaleAdd(geodesicRadius, geodesicVertexVectors[i],
+                            geodesicCenter);
+      vertexVectorT.sub(vertexPointT, planeCenter);
+      float dot = vertexVectorT.dot(planeUnitNormal);
+      if (isEdgeA)
+        dot = -dot;
+      if (dot <= 0) {
+        ++clippedCount;
+        Bmp.setBit(bmpClippedT, i);
+      }
+    }
+    if (clippedCount == 0)
+      return false; // nothing is clipped ... 
+    if (clippedCount == geodesicVertexCount)
+      return false; // everything is clipped ... buried inside another atom
+    for (int v = -1; (v = Bmp.nextSetBit(bmpClippedT, v + 1)) >= 0; ) {
+      int neighborsOffset = v * 6;
+      for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
+        int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
+        if (! Bmp.getBit(bmpClippedT, neighbor)) {
+          Bmp.setBit(idealInsideEdgeMap, v);
           break;
         }
       }
@@ -392,14 +432,25 @@ class SasGem {
   int[] calcFaceBitmap(int[] vertexMap) {
     Bmp.clearBitmap(faceMapT);
     for (int i = geodesicFaceCount, j = 3 * (i - 1); --i >= 0; j -= 3) {
-      if (Bmp.getBit(vertexMap, geodesicFaceVertexes[j]) &&
-          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 1]) &&
+      if (Bmp.getBit(vertexMap, geodesicFaceVertexes[j]) ||
+          Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 1]) ||
           Bmp.getBit(vertexMap, geodesicFaceVertexes[j + 2]))
         Bmp.setBit(faceMapT, i);
     }
     return Bmp.allocMinimalCopy(faceMapT);
   }
 
+  int[] calcFaceVertexBitmap(int[] faceMap) {
+    Bmp.clearBitmap(vertexMapT);
+    for (int i = -1; (i = Bmp.nextSetBit(faceMap, i + 1)) >= 0; ) {
+      int j = i * 3;
+      Bmp.setBit(vertexMapT, geodesicFaceVertexes[j]);
+      Bmp.setBit(vertexMapT, geodesicFaceVertexes[j + 1]);
+      Bmp.setBit(vertexMapT, geodesicFaceVertexes[j + 2]);
+    }
+    return Bmp.allocMinimalCopy(vertexMapT);
+  }
+  
   void stitchWithTorusSegment(short startingVertex, short vertexIncrement,
                               float startingAngle, float angleIncrement,
                               int stepCount, boolean dump) {

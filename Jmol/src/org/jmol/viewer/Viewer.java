@@ -2540,4 +2540,8 @@ final public class Viewer extends JmolViewer {
   public boolean showModelSetDownload() {
     return true;
   }
+
+  String formatDecimal(float value, int decimalDigits) {
+    return styleManager.formatDecimal(value, decimalDigits);
+  }
 }

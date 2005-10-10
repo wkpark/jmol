@@ -361,7 +361,8 @@ class SasNeighborFinder {
             sas1.createTorus(indexI, indexJ, torusCenterIJ,
                              calcTorusRadius(radiusI, radiusJ, distanceIJ2),
                              false);
-        torusIJ.addCavity(cavity, rightHanded);
+        if (torusIJ != null)
+          torusIJ.addCavity(cavity, rightHanded);
         
         if (torusIK == null &&
             (torusIK = sas1.getTorus(indexI, indexK)) == null)
@@ -369,7 +370,8 @@ class SasNeighborFinder {
             sas1.createTorus(indexI, indexK, torusCenterIK,
                              calcTorusRadius(radiusI, radiusK, distanceIK2),
                              false);
-        torusIK.addCavity(cavity, !rightHanded);
+        if (torusIK != null)
+          torusIK.addCavity(cavity, !rightHanded);
 
         if (torusJK == null &&
             (torusJK = sas1.getTorus(indexJ, indexK)) == null) {
@@ -380,7 +382,8 @@ class SasNeighborFinder {
                              calcTorusRadius(radiusJ, radiusK, distanceJK2),
                              false);
         }
-        torusJK.addCavity(cavity, rightHanded);
+        if (torusJK != null)
+          torusJK.addCavity(cavity, rightHanded);
       }
     }
   }

@@ -24,6 +24,8 @@
  */
 package org.jmol.viewer;
 
+import java.text.DecimalFormat;
+
 class StyleManager {
 
   Viewer viewer;
@@ -172,4 +174,24 @@ class StyleManager {
     labelOffsetY = offsetY;
   }
 
+  static String[] formattingStrings = {
+    "0", "0.0", "0.00", "0.000", "0.0000", "0.00000",
+    "0.000000", "0.0000000", "0.00000000", "0.000000000"
+  };
+
+  DecimalFormat[] formatters;
+
+  String formatDecimal(float value, int decimalDigits) {
+    if (decimalDigits < 0)
+      return "" + value;
+    if (formatters == null)
+      formatters = new DecimalFormat[formattingStrings.length];
+    if (decimalDigits >= formattingStrings.length)
+      decimalDigits = formattingStrings.length - 1;
+    DecimalFormat formatter = formatters[decimalDigits];
+    if (formatter == null)
+      formatter = formatters[decimalDigits] =
+        new DecimalFormat(formattingStrings[decimalDigits]);
+    return formatter.format(value);
+  }
 }

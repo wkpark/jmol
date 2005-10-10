@@ -401,6 +401,8 @@ class Sasurface1 {
 
   Torus createTorus(int indexI, int indexJ, Point3f torusCenterIJ,
                     float torusRadius, boolean fullTorus) {
+    if (torusRadius < radiusP)
+      return null;
     if (indexI >= indexJ)
       throw new NullPointerException();
     if (htToruses.get(indexI, indexJ) != null)

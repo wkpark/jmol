@@ -715,101 +715,164 @@ final class Atom implements Tuple {
       if (ich != ichPercent)
         strLabel += strFormat.substring(ich, ichPercent);
       ich = ichPercent + 1;
-      if (ich == cch) {
-        --ich; // a percent sign at the end of the string
-        break;
-      }
-      String strT = "";
-      char ch = strFormat.charAt(ich++);
-      switch (ch) {
-      case 'i':
-        strT = "" + getAtomNumber();
-        break;
-      case 'a':
-        strT = getAtomName();
-        break;
-      case 'e':
-        strT = JmolConstants.elementSymbols[elementNumber];
-        break;
-      case 'x':
-        strT = "" + point3f.x;
-        break;
-      case 'y':
-        strT = "" + point3f.y;
-        break;
-      case 'z':
-        strT = "" + point3f.z;
-        break;
-      case 'X':
-        strT = "" + atomIndex;
-        break;
-      case 'C':
-        int formalCharge = getFormalCharge();
-        if (formalCharge > 0)
-          strT = "" + formalCharge + "+";
-        else if (formalCharge < 0)
-          strT = "" + -formalCharge + "-";
-        else
-          strT = "0";
-        break;
-      case 'P':
-        strT = "" + getPartialCharge();
-        break;
-      case 'V':
-        strT = "" + getVanderwaalsRadiusFloat();
-        break;
-      case 'I':
-        strT = "" + getBondingRadiusFloat();
-        break;
-      case 'b': // these two are the same
-      case 't':
-        strT = "" + (getBfactor100() / 100.0);
-        break;
-      case 'q':
-        strT = "" + getOccupancy();
-        break;
-      case 'c': // these two are the same
-      case 's':
-        strT = "" + getChainID();
-        break;
-      case 'L':
-        strT = "" + getPolymerLength();
-        break;
-      case 'M':
-        strT = "/" + getModelTag();
-        break;
-      case 'm':
-        strT = "<X>";
-        break;
-      case 'n':
-        strT = getGroup3();
-        break;
-      case 'r':
-        strT = getSeqcodeString();
-        break;
-      case 'U':
-        strT = getIdentity();
-        break;
-      case '{': // client property name
-        int ichCloseBracket = strFormat.indexOf('}', ich);
-        if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
-          String propertyName = strFormat.substring(ich, ichCloseBracket);
-          String value = getClientAtomStringProperty(propertyName);
-          if (value != null)
-            strT = value;
-          ich = ichCloseBracket + 1;
-          break;
+      try {
+        String strT = "";
+        float floatT = 0;
+        boolean floatIsSet = false;
+        boolean alignLeft = false;
+        if (strFormat.charAt(ich) == '-') {
+          alignLeft = true;
+          ++ich;
         }
-        // malformed will fall into
-      default:
-        strT = "%" + ch;
+        boolean zeroPad = false;
+        if (strFormat.charAt(ich) == '0') {
+          zeroPad = true;
+          ++ich;
+        }
+        char ch;
+        int width = 0;
+        while ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {
+          width = (10 * width) + (ch - '0');
+          ++ich;
+        }
+        int precision = -1;
+        if (strFormat.charAt(ich) == '.') {
+          ++ich;
+          if ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {
+            precision = ch - '0';
+            ++ich;
+          }
+        }
+        switch (ch = strFormat.charAt(ich++)) {
+        case 'i':
+          strT = "" + getAtomNumber();
+          break;
+        case 'a':
+          strT = getAtomName();
+          break;
+        case 'e':
+          strT = JmolConstants.elementSymbols[elementNumber];
+          break;
+        case 'x':
+          floatT = point3f.x;
+          floatIsSet = true;
+          break;
+        case 'y':
+          floatT = point3f.y;
+          floatIsSet = true;
+          break;
+        case 'z':
+          floatT = point3f.z;
+          floatIsSet = true;
+          break;
+        case 'X':
+          strT = "" + atomIndex;
+          break;
+        case 'C':
+          int formalCharge = getFormalCharge();
+          if (formalCharge > 0)
+            strT = "" + formalCharge + "+";
+          else if (formalCharge < 0)
+            strT = "" + -formalCharge + "-";
+          else
+            strT = "0";
+          break;
+        case 'P':
+          floatT = getPartialCharge();
+          floatIsSet = true;
+          break;
+        case 'V':
+          floatT = getVanderwaalsRadiusFloat();
+          floatIsSet = true;
+          break;
+        case 'I':
+          floatT = getBondingRadiusFloat();
+          floatIsSet = true;
+          break;
+        case 'b': // these two are the same
+        case 't':
+          floatT = getBfactor100() / 100f;
+          floatIsSet = true;
+          break;
+        case 'q':
+          strT = "" + getOccupancy();
+          break;
+        case 'c': // these two are the same
+        case 's':
+          strT = "" + getChainID();
+          break;
+        case 'L':
+          strT = "" + getPolymerLength();
+          break;
+        case 'M':
+          strT = "/" + getModelTag();
+          break;
+        case 'm':
+          strT = "<X>";
+          break;
+        case 'n':
+          strT = getGroup3();
+          break;
+        case 'r':
+          strT = getSeqcodeString();
+          break;
+        case 'U':
+          strT = getIdentity();
+          break;
+        case '%':
+          strT = "%";
+          break;
+        case '{': // client property name
+          int ichCloseBracket = strFormat.indexOf('}', ich);
+          if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
+            String propertyName = strFormat.substring(ich, ichCloseBracket);
+            String value = getClientAtomStringProperty(propertyName);
+            if (value != null)
+              strT = value;
+            ich = ichCloseBracket + 1;
+            break;
+          }
+          // malformed will fall into
+        default:
+          strT = "%" + ch;
+        }
+        if (floatIsSet) {
+          strLabel += format(floatT, width, precision, alignLeft);
+        } else {
+          strLabel += format(strT, width, precision, alignLeft);
+        }
+      } catch (IndexOutOfBoundsException ioobe) {
+        ich = ichPercent;
+        break;
       }
-      strLabel += strT;
     }
     strLabel += strFormat.substring(ich);
     if (strLabel.length() == 0)
       return null;
     return strLabel.intern();
+  }
+
+  String format(float value, int width, int precision,
+                       boolean alignLeft) {
+    return format(group.chain.frame.viewer.formatDecimal(value, precision),
+                  width, 0, alignLeft);
+  }
+
+  static String format(String value, int width, int precision,
+                       boolean alignLeft) {
+      if (precision > value.length())
+      value = value.substring(0, precision);
+    int padLength = width - value.length();
+    if (padLength <= 0)
+      return value;
+    StringBuffer sb = new StringBuffer();
+    if (alignLeft)
+      sb.append(value);
+    for (int i = padLength; --i >= 0; )
+      sb.append(' ');
+    if (! alignLeft)
+      sb.append(value);
+    return "" + sb;
   }
 
   String getInfo() {

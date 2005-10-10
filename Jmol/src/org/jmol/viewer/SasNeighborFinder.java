@@ -416,9 +416,11 @@ class SasNeighborFinder {
         unitRadialVectorT.normalize();
       }
       float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
-      pointT.scaleAdd(torusRadiusIJ, unitRadialVectorT, torusCenterIJ);
-      if (checkProbeNotIJ(pointT))
-        sas1.createTorus(indexI, indexJ, torusCenterIJ, torusRadiusIJ, true);
+      if (torusRadiusIJ > radiusP) {
+        pointT.scaleAdd(torusRadiusIJ, unitRadialVectorT, torusCenterIJ);
+        if (checkProbeNotIJ(pointT))
+          sas1.createTorus(indexI, indexJ, torusCenterIJ, torusRadiusIJ, true);
+      }
     }
   }
 

@@ -44,7 +44,7 @@ class AminoPolymer extends AlphaPolymer {
 
   boolean hbondsAlreadyCalculated;
 
-  final static boolean debugHbonds = false;
+  final static boolean debugHbonds = true;
 
   void calcHydrogenBonds() {
     if (! hbondsAlreadyCalculated) {
@@ -252,50 +252,42 @@ class AminoPolymer extends AlphaPolymer {
     char[] structureTags = new char[monomerCount];
 
     findHelixes(structureTags);
-    int iStart = 0;
-    while (iStart < monomerCount) {
-      if (structureTags[iStart] == 0) {
-        ++iStart;
-        continue;
+    for (int iStart = 0; iStart < monomerCount; ++iStart) {
+      if (structureTags[iStart] != '\0') {
+        int iMax;
+        for (iMax = iStart + 1;
+             iMax < monomerCount && structureTags[iMax] != '\0';
+             ++iMax)
+          {}
+        int iLast = iMax - 1;
+        addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
+                              iStart, iLast);
+        iStart = iLast;
       }
-      int iMax;
-      for (iMax = iStart + 1;
-           iMax < monomerCount && structureTags[iMax] != 0;
-           ++iMax)
-        { }
-      addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
-                            iStart, iMax - 1);
-      iStart = iMax;
     }
 
-    for (int i = monomerCount; --i >= 0; )
-      structureTags[i] = 0;
+    // do not reset structureTags
+    //    for (int i = monomerCount; --i >= 0; )
+    //      structureTags[i] = '\0';
 
     findSheets(structureTags);
-
+    
     if (debugHbonds)
       for (int i = 0; i < monomerCount; ++i)
         System.out.println("" + i + ":" + structureTags[i] +
                            " " + min1Indexes[i] + " " + min2Indexes[i]);
-    iStart = 0;
-
-    while (iStart < monomerCount) {
-      if (structureTags[iStart] == 0) {
-        ++iStart;
-        continue;
-      }
-      int iMax;
-      for (iMax = iStart + 1;
-           (iMax < monomerCount && structureTags[iMax] != 0 ||
-            iMax < monomerCount - 1 && structureTags[iMax + 1] != 0);
-           ++iMax)
-        { }
-      if (debugHbonds)
-        System.out.println("I found a string of " + (iMax - iStart));
-      if (iMax - iStart >= 3)
+    for (int iStart = 0; iStart < monomerCount; ++iStart) {
+      if (structureTags[iStart] != '\0') {
+        int iMax;
+        for (iMax = iStart + 1;
+             iMax < monomerCount && structureTags[iMax] != '\0';
+             ++iMax)
+          {}
+        int iLast = iMax - 1;
         addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET,
-                              iStart, iMax - 1);
-      iStart = iMax;
+                              iStart, iLast);
+        iStart = iLast;
+      }
     }
   }
 
@@ -321,23 +313,39 @@ class AminoPolymer extends AlphaPolymer {
   }
 
   void findSheets(char[] structureTags) {
-    for (int a = 0; a < monomerCount; ++a)
+    if (debugHbonds)
+      System.out.println("findSheets(...)");
+    for (int a = 0; a < monomerCount; ++a) {
+      if (structureTags[a] == '4')
+        continue;
       for (int b = 0; b < monomerCount; ++b) {
-        if (isHbonded(a+1, b) && isHbonded(b, a-1)) {
+        if (structureTags[b] == '4')
+          continue;
+        if (isHbonded(a-1, b-1) && isHbonded(a+1, b+1)) {
           if (debugHbonds)
-            System.out.println("parallel found");
-          structureTags[a+1] = structureTags[b] = structureTags[a-1] = 'p';
-        } else if (isHbonded(a, b) && isHbonded(b, a)) {
+            System.out.println("parallel found a=" + a + " b=" + b);
+          for (int i = -1; i <= 1; ++i)
+            structureTags[a+i] = structureTags[b+i] = 'p';
+          /*
+            } else if (isHbonded(a, b) && isHbonded(b, a)) {
+            // miguel 2005 10 11
+          // Tim says that this case can never happen
+          // he will investigate
+          //
+          // miguel ... later that day
+          // this is causing problems with 1CRN ... eliminate it
           if (debugHbonds)
-            System.out.println("antiparallel found");
+            System.out.println("antiparallel found a=" + a + " b=" + b);
           structureTags[a] = structureTags[b] = 'a';
+          */
         } else if (isHbonded(a+1, b-1) && isHbonded(b+1, a-1)) {
           if (debugHbonds)
-            System.out.println("Antiparallel found");
-          structureTags[a+1] = structureTags[b-1] =
-            structureTags[b+1] = structureTags[a-1] = 'A';
+            System.out.println("Antiparallel found a=" + a + " b=" + b);
+          for (int i = -1; i <= 1; ++i)
+            structureTags[a+i] = structureTags[b+i] = 'A';
         }
       }
+    }
   }
 
   boolean isHbonded(int indexDonor, int indexAcceptor) {

@@ -266,9 +266,11 @@ class AminoPolymer extends AlphaPolymer {
       }
     }
 
-    // do not reset structureTags
-    //    for (int i = monomerCount; --i >= 0; )
-    //      structureTags[i] = '\0';
+    // reset structureTags
+    // for some reason if these are not reset, all helices are classified
+    // as sheets. - tim 2205 10 12
+        for (int i = monomerCount; --i >= 0; )
+          structureTags[i] = '\0';
 
     findSheets(structureTags);
     
@@ -316,17 +318,48 @@ class AminoPolymer extends AlphaPolymer {
     if (debugHbonds)
       System.out.println("findSheets(...)");
     for (int a = 0; a < monomerCount; ++a) {
-      if (structureTags[a] == '4')
-        continue;
+      //if (structureTags[a] == '4')
+       //continue;
       for (int b = 0; b < monomerCount; ++b) {
-        if (structureTags[b] == '4')
-          continue;
+        //if (structureTags[b] == '4')
+          //continue;
+        // tim 2005 10 11
+        // changed tests to reflect actual hbonding patterns in 
+        // beta sheets.
+        if ( ( isHbonded(a, b) && isHbonded(b+2, a) ) || 
+           ( isHbonded(b, a) && isHbonded(a, b+2) ) )  {
+          if (debugHbonds)
+            System.out.println("parallel found a=" + a + " b=" + b);
+          structureTags[a] = structureTags[b] = 
+          structureTags[a+1] = structureTags[b+1] = 
+          structureTags[a+2] = structureTags[b+2] = 'p';
+         } else if (isHbonded(a, b) && isHbonded(b, a)) {
+          if (debugHbonds)
+            System.out.println("antiparallel found a=" + a + " b=" + b);
+          structureTags[a] = structureTags[b] = 'a';
+          // tim 2005 10 11
+          // gap-filling feature: if n is sheet, and n+2 or n-2 are sheet, 
+          // make n-1 and n+1 sheet as well.
+          if ( (a+2 < monomerCount) && (b-2 > 0) && 
+             (structureTags[a+2] == 'a') && (structureTags[b-2] == 'a') ) 
+            structureTags[a+1] = structureTags[b-1] = 'a';
+          if ( (b+2 < monomerCount) && (a-2 > 0) && 
+             (structureTags[a-2] == 'a') && (structureTags[b+2] == 'a') ) 
+            structureTags[a-1] = structureTags[b+1] = 'a';
+        } 
+        else if ( (isHbonded(a, b+1) && isHbonded(b, a+1) ) || 
+                ( isHbonded(b+1, a) && isHbonded(a+1, b) ) ) {
+          if (debugHbonds)
+            System.out.println("antiparallel found a=" + a + " b=" + b);
+          structureTags[a] = structureTags[a+1] =
+          structureTags[b] = structureTags[b+1] = 'A';
+        }
+        /*
         if (isHbonded(a-1, b-1) && isHbonded(a+1, b+1)) {
           if (debugHbonds)
             System.out.println("parallel found a=" + a + " b=" + b);
           for (int i = -1; i <= 1; ++i)
             structureTags[a+i] = structureTags[b+i] = 'p';
-          /*
             } else if (isHbonded(a, b) && isHbonded(b, a)) {
             // miguel 2005 10 11
           // Tim says that this case can never happen
@@ -337,13 +370,13 @@ class AminoPolymer extends AlphaPolymer {
           if (debugHbonds)
             System.out.println("antiparallel found a=" + a + " b=" + b);
           structureTags[a] = structureTags[b] = 'a';
-          */
         } else if (isHbonded(a+1, b-1) && isHbonded(b+1, a-1)) {
           if (debugHbonds)
             System.out.println("Antiparallel found a=" + a + " b=" + b);
           for (int i = -1; i <= 1; ++i)
             structureTags[a+i] = structureTags[b+i] = 'A';
         }
+        */
       }
     }
   }

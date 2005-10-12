@@ -635,8 +635,10 @@ public class JmolPopupStructure {
     { "consoleOn", "console" },
     { "consoleOff", "console off" },
 
-    { "aboutMenu", "jmolUrl" },
+    { "aboutMenu", "jmolUrl mouseManualUrl translatingUrl" },
     { "jmolUrl", "http://www.jmol.org" },
+    { "mouseManualUrl", "http://wiki.jmol.org/MouseManual" },
+    { "translatingUrl", "http://wiki.jmol.org/JmolInternationalisation" },
   };
 
   // Initialize properties

@@ -566,7 +566,9 @@ public class JmolPopupWords {
     { "consoleOff", GT._("Close") },
 
     { "aboutMenu", GT._("About Jmol") },
-    { "jmolUrl", "http://www.jmol.org" },
+    { "jmolUrl", "www.jmol.org" },
+    { "mouseManualUrl", GT._("Mouse Manual") },
+    { "translatingUrl", GT._("Translations") },
   };
 
   // Initialize properties

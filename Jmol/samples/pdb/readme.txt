@@ -25,3 +25,10 @@
 3OVO - ?
 5CRO - ?
 fullRhinovirus.pdb.gz - rather large: almost 400K atoms ... 392520 atoms
+
+
+modified files for testing Jmol secondary structure predictions:
+1CRN_noSS - 1CRN with secondary structure records removed.
+1NE6_noSS - 1NE6 with secondary structure records removed.
+3DFR_noSS - 3DFR with secondary structure records removed.
+

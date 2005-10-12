@@ -2504,6 +2504,9 @@ final public class Graphics3D {
     return normix3d.getFaceNormixes(level);
   }
 
+  public final static int GEODESIC_START_VERTEX_COUNT = 12;
+  public final static int GEODESIC_START_NEIGHBOR_COUNT = 5;
+
   public short[] getGeodesicNeighborVertexes(int level) {
     return Geodesic3D.getNeighborVertexes(level);
   }

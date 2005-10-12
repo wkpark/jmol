@@ -245,7 +245,9 @@ class SasurfaceRenderer extends ShapeRenderer {
     Bmp.clearBitmap(actualEdgeMap);
     for (int v = -1; (v = Bmp.nextSetBit(visibleVertexMap, v + 1)) >= 0; ) {
       int neighborsOffset = v * 6;
-      for (int j = (v < 12) ? 5 : 6; --j >= 0; ) {
+      for (int j = (v < Graphics3D.GEODESIC_START_VERTEX_COUNT)
+             ? Graphics3D.GEODESIC_START_NEIGHBOR_COUNT : 6;
+           --j >= 0; ) {
         int neighbor = geodesicNeighborVertexes[neighborsOffset + j];
         if (! Bmp.getBit(visibleVertexMap, neighbor)) {
           Bmp.setBit(actualEdgeMap, v);

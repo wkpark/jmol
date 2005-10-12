@@ -30,7 +30,7 @@ import java.util.BitSet;
 
 class Sasurface extends Shape {
 
-  static int MAX_GEODESIC_RENDERING_LEVEL = 1;
+  static int MAX_GEODESIC_RENDERING_LEVEL = 2;
 
   // note that when there is a full torus
   // the 0 point will be repeated as 2*PI

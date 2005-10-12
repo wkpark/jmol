@@ -1403,7 +1403,6 @@ public class Jmol extends JPanel {
     }
 
     public void showUrl(String url) {
-      System.out.println("Here");
     }
 
     public void showConsole(boolean showConsole) {

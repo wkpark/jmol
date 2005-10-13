@@ -261,12 +261,12 @@ class AminoPolymer extends AlphaPolymer {
     calcHydrogenBonds();
     char[] structureTags = new char[monomerCount];
 
+    float[] phi_psi = new float[2];
     for (int i = 0; i < monomerCount-1; ++i) {
-      float[] phi_psi = new float[2];
       AminoMonomer leadingResidue = (AminoMonomer)monomers[i];
       AminoMonomer trailingResidue = (AminoMonomer)monomers[i+1];
-      phi_psi = calcPhiPsiAngles(leadingResidue, trailingResidue);
-      if ( isHelix(phi_psi, 4) ) {
+      calcPhiPsiAngles(leadingResidue, trailingResidue, phi_psi);
+      if ( isHelix(phi_psi) ) {
         structureTags[i] = '4';
         //structureTags[i+1] = '4';
       } else if (isSheet(phi_psi)) {
@@ -336,9 +336,8 @@ class AminoPolymer extends AlphaPolymer {
   }
   
   
-  float[] calcPhiPsiAngles(AminoMonomer leadingResidue, AminoMonomer trailingResidue) {
-    float[] phi_psi = new float[2];
-
+  void calcPhiPsiAngles(AminoMonomer leadingResidue,
+                        AminoMonomer trailingResidue, float[] phi_psi) {
     Point3f nitrogen1 = leadingResidue.getNitrogenAtomPoint();
     Point3f alphacarbon1 = leadingResidue.getLeadAtomPoint();
     Point3f carbon1 = leadingResidue.getCarbonylCarbonAtomPoint();
@@ -346,40 +345,32 @@ class AminoPolymer extends AlphaPolymer {
     Point3f alphacarbon2 = trailingResidue.getLeadAtomPoint();
     Point3f carbon2 = trailingResidue.getCarbonylCarbonAtomPoint();
 
-    phi_psi[0] = Measurement.computeTorsion(carbon1, nitrogen2, alphacarbon2, carbon2);
-    phi_psi[1] = Measurement.computeTorsion(nitrogen1, alphacarbon1, carbon1, nitrogen2);
-
-    return phi_psi;
+    phi_psi[0] = Measurement.computeTorsion(carbon1, nitrogen2,
+                                            alphacarbon2, carbon2);
+    phi_psi[1] = Measurement.computeTorsion(nitrogen1, alphacarbon1,
+                                            carbon1, nitrogen2);
   }
   
   
-  boolean isHelix(float[] phi_psi, int pitch) {
+  boolean isHelix(float[] phi_psi) {
     float phi = phi_psi[0];
     float psi = phi_psi[1];
-    if ( (phi >= -160) && (phi <= 0) && (psi >= -100) && (psi <= 45) ) 
-      return true;
-    else 
-      return false;
+    return (phi >= -160) && (phi <= 0) && (psi >= -100) && (psi <= 45);
   }
 
   boolean isSheet(float[] phi_psi) {
     float phi = phi_psi[0];
     float psi = phi_psi[1];
-    if ( ( (phi >= -180) && (phi <= -10) && (psi >= 70) && (psi <= 180) ) || 
-         ( (phi >= -180) && (phi <= -45) && (psi >= -180) && (psi <= -130) ) ||
-         ( (phi >= 140) && (phi <= 180) && (psi >= 90) && (psi <= 180) ) ) 
-      return true;
-    else 
-      return false;
+    return
+      ( (phi >= -180) && (phi <= -10) && (psi >= 70) && (psi <= 180) ) || 
+      ( (phi >= -180) && (phi <= -45) && (psi >= -180) && (psi <= -130) ) ||
+      ( (phi >= 140) && (phi <= 180) && (psi >= 90) && (psi <= 180) );
   }
 
   boolean isTurn(float[] phi_psi) {
     float phi = phi_psi[0];
     float psi = phi_psi[1];
-    if ( (phi >= 30) && (phi <= 90) && (psi >= -15) && (psi <= 95) ) 
-      return true;
-    else 
-      return false;
+    return (phi >= 30) && (phi <= 90) && (psi >= -15) && (psi <= 95);
   }
 
 

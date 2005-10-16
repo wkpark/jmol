@@ -278,13 +278,13 @@ public class ProjectInformation {
           String line1 = null;
           int count = 0;
           while ((line1 = file.readLine()) != null) {
-            String line2 = file.readLine();
-            String line3 = file.readLine();
-            String line4 = file.readLine();
+            String line2 = (line1 != null) ? file.readLine() : null;
+            String line3 = (line2 != null) ? file.readLine() : null;
+            String line4 = (line3 != null) ? file.readLine() : null;
             count++;
             if ((count > 1) &&
                 (line1 != null) && (line2 != null) &&
-			    (line3 != null) && (line4 != null)) {
+                (line3 != null) && (line4 != null)) {
               if (line1.length() > 2) {
                 int posBegin = line1.indexOf("\"", 0); //$NON-NLS-1$
                 int posEnd = line1.indexOf("\"", posBegin + 1); //$NON-NLS-1$

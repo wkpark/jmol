@@ -422,7 +422,8 @@
       <title>Eclipse prerequisites</title>
     
       <para>
-        This documentation has been tested with Eclipse 3.0x and 3.1.
+        This documentation has been tested with Eclipse 3.0.x and 3.1.
+        We recommend Eclipse 3.1.x.
       </para>
     
       <para>
@@ -560,9 +561,14 @@
       <title>Configuring Eclipse to build Jmol</title>
       
       <para>
-        To configure Eclipse to build Jmol, you can do the following:
+        To configure Eclipse 3.1 to build Jmol, you don't need to do anything.
+        The project is automatically configured when you check out Jmol.
       </para>
-      
+
+      <para>
+        To configure Eclipse 3.0.x to build Jmol, you can do the following:
+      </para>
+
       <itemizedlist>
         <listitem>
           <para>
@@ -578,8 +584,7 @@
         <listitem>
           <para>
             In the <command>Properties for Jmol-HEAD</command> window, select
-            <command>Java Compiler</command> (3.0x) or
-            <command>Java Compiler -> Errors/Warnings </command> (3.1).
+            <command>Java Compiler</command>.
           </para>
         </listitem>
         <listitem>
@@ -593,8 +598,7 @@
             <command>Warning</command> for every combo-box, except for
             <command>Unqualified access to instance field</command> and
             <command>Undocumented empty block</command> where you can select
-            <command>Ignore</command>. For Eclipse 3.1, you will find the
-            necessary options in the <command>Code Style</command> tab.
+            <command>Ignore</command>.
           </para>
         </listitem>
         <listitem>
@@ -604,11 +608,7 @@
             <command>Local variable declaration hides another field or
             variable</command>, <command>Usage of deprecated API</command> and
             <command>Usage of non-externalized strings</command> where you can
-            select <command>Ignore</command>. For Eclipse 3.1, you will find
-            the necessary options in the
-            <command>Name shadowing and conflicts</command>,
-            <command>Deprectated and restricted API</command> and the
-            <command>Code Style</command> tab.
+            select <command>Ignore</command>.
           </para>
         </listitem>
         <listitem>
@@ -617,9 +617,7 @@
             <command>Warning</command> for every combo-box, except for
             <command>Parameter is never read</command> and
             <command>Unnecessary cast or 'instance of' operation</command>
-            where you can select <command>Ignore</command>.  For Eclipse 3.1,
-            you will find the necessary options in the
-            <command>Unnecessary code</command> tab.
+            where you can select <command>Ignore</command>.
           </para>
         </listitem>
       </itemizedlist>

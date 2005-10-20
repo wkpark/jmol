@@ -365,7 +365,7 @@ public class ProjectInformation {
           reader = new FileReader("psummary.html"); //$NON-NLS-1$
         } else {
           StringBuffer urlName = new StringBuffer();
-          urlName.append("http://vspx27.stanford.edu/"); //$NON-NLS-1$
+          urlName.append("http://fah-web.stanford.edu/"); //$NON-NLS-1$
           urlName.append("psummaryC.html"); //$NON-NLS-1$
           try {
             URL url = new URL(urlName.toString());

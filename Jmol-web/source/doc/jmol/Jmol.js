@@ -386,6 +386,7 @@ var _jmolArchivePath = "JmolApplet0.jar";
 var _jmolLastJar = 6;
 for (var i = 1; i <= _jmolLastJar; ++i)
   _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
+_jmolArchivePath = _jmolArchivePath + ",JmolApplet_i18n.jar";
 
 var _jmol = {
   currentDocument: document,
@@ -546,6 +547,7 @@ function _jmolUseSignedApplet(useSignedApplet) {
     archivePath = baseAppletName + "0.jar";
     for (var i = 1; i <= lastJar; ++i)
       archivePath = archivePath + "," + baseAppletName + i + ".jar";
+    archivePath = archivePath + ",JmolAppletSigned_i18n.jar";
   }
 }
 

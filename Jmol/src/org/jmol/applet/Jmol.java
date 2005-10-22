@@ -98,6 +98,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
    * Therefore, do *not* call System.out.println("" + jsoWindow);
    */
   JSObject jsoWindow;
+  JSObject jsoDocument;
 
   boolean mayScript;
   String animFrameCallback;
@@ -158,7 +159,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       try {
         jsoWindow = JSObject.getWindow(appletWrapper);
         if (jsoWindow == null)
-          System.out.println("jsoWindow return null ... no JavaScript callbacks :-(");
+          System.out.println("jsoWindow returned null ... no JavaScript callbacks :-(");
+        jsoDocument = (JSObject) jsoWindow.getMember("document");
+        if (jsoDocument == null)
+          System.out.println("jsoDocument returned null ... no DOM manipulations :-(");
       } catch (Exception e) {
         System.out.println("" + e);
       }
@@ -259,6 +263,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       viewer.setColorBackground(bgcolor);
       
       loadInline(getValue("loadInline", null));
+      loadNodeId(getValue("loadNodeId", null));
+
       viewer.setFrankOn(true);
 
       animFrameCallback = getValue("AnimFrameCallback", null);
@@ -468,6 +474,44 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       myStatusListener.setStatusMessage(viewer.getOpenFileError());
     }
   }
+
+  public void loadDOMNode(JSObject DOMNode) {
+      // This should provide a route to pass in a browser DOM node
+      // directly as a JSObject. Unfortunately does not seem to work with
+      // current browsers
+      viewer.openDOM(DOMNode);
+      myStatusListener.setStatusMessage(viewer.getOpenFileError());
+  } 
+
+  public void loadNodeId(String nodeId) {
+    if (nodeId != null) {
+      // Retrieve Node ...
+      // First try to find by ID
+      Object[] idArgs = { nodeId };
+      JSObject tryNode = (JSObject) jsoDocument.call("getElementById",idArgs);
+
+      // But that relies on a well-formed CML DTD specifying ID search.
+      // Otherwise, search all cml:cml nodes.
+     if (tryNode == null) {
+        Object[] searchArgs = { "http://www.xml-cml.org/schema/cml2/core", "cml" };
+        JSObject tryNodeList = (JSObject) jsoDocument.call("getElementsByTagNameNS", searchArgs);
+        if (tryNodeList != null) {
+          for (int i = 0; i < ((Number) tryNodeList.getMember("length")).intValue(); i++ ) {
+	    tryNode = (JSObject) tryNodeList.getSlot(i);
+	    Object[] idArg = { "id" };
+            String idValue = (String) tryNode.call("getAttribute", idArg);
+	    if (nodeId.equals(idValue))
+                break;
+	  }
+	}
+      }
+      if (tryNode != null) {
+        viewer.openDOM(tryNode);
+        myStatusListener.setStatusMessage(viewer.getOpenFileError());
+      }
+    } 
+  }
+
 
   void loadPopupMenuAsBackgroundTask() {
     // no popup on MacOS 9 NetScape

@@ -990,9 +990,18 @@ final public class Viewer extends JmolViewer {
   }
 
   public void openStringInline(String strModel) {
+     clear();
+     fileManager.openStringInline(strModel);
+     getOpenFileError();
+   }
+
+  public void openDOM(Object DOMNode) {
     clear();
-    fileManager.openStringInline(strModel);
-    /*return*/ getOpenFileError();
+    long timeBegin = System.currentTimeMillis();
+    fileManager.openDOM(DOMNode);
+    long ms = System.currentTimeMillis() - timeBegin;
+    System.out.println("openDOM " + ms + " ms");
+    getOpenFileError();
   }
 
   /**

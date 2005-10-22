@@ -30,22 +30,43 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.*;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
+import java.util.HashMap;
+
+import netscape.javascript.JSObject;
 
 import org.jmol.api.JmolAdapter;
 
 /**
- * A CML2 Reader, it does not support the old CML1 architecture.
+ * A CML2 Reader - 
+ * If passed a bufferedReader (from a file or inline string), we
+ * generate a SAX parser and use callbacks to construct an
+ * AtomSetCollection.
+ * If passed a JSObject (from LiveConnect) we treat it as a JS DOM
+ * tree, and walk the tree, (using the same processing as the SAX
+ * parser) to construct the AtomSetCollection.
  */
+
+/**
+ * NB Note that the processing routines are shared between SAX 
+ * and DOM processors. This means that attributes must be
+ * transformed from either Attributes (SAX) or JSObjects (DOM)
+ * to HashMap name:value pairs. 
+ * This is done in startElement (SAX) or walkDOMTree (DOM)
+ */
+
 class CmlReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
     throws Exception {
-      return readAtomSetCollectionXml(reader, (new CmlHandler()),"cml");
+    System.out.println("readAtomSetCollection");
+      return readAtomSetCollectionSax(reader, (new CmlHandler()),"cml");
   }
 
-    AtomSetCollection readAtomSetCollectionXml(BufferedReader reader, Object handler, String name)
+  AtomSetCollection readAtomSetCollectionSax(BufferedReader reader, Object handler, String name)
     throws Exception {
     atomSetCollection = new AtomSetCollection(name);
+
+    System.out.println("readAtomSetCollectionSax");
     
     XMLReader xmlr = getXmlReader();
     if (xmlr == null) {
@@ -53,16 +74,16 @@ class CmlReader extends AtomSetCollectionReader {
       atomSetCollection.errorMessage = "No XML reader found";
       return atomSetCollection;
     }
-    //    System.out.println("opening InputSource");
+    // System.out.println("opening InputSource");
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");
-    //    System.out.println("setting features");
+    // System.out.println("setting features");
     xmlr.setFeature("http://xml.org/sax/features/validation", false);
     xmlr.setFeature("http://xml.org/sax/features/namespaces", true);
     xmlr.setEntityResolver((CmlHandler)handler);
     xmlr.setContentHandler((CmlHandler)handler);
     xmlr.setErrorHandler((CmlHandler)handler);
-    
+
     xmlr.parse(is);
     
     if (atomSetCollection.atomCount == 0) {
@@ -70,7 +91,27 @@ class CmlReader extends AtomSetCollectionReader {
     }
     return atomSetCollection;
   }
-  
+
+
+  AtomSetCollection readAtomSetCollectionFromDOM(Object Node)
+    throws Exception {
+    JSObject DOMNode = (JSObject) Node;
+    atomSetCollection = new AtomSetCollection("cml");
+    System.out.println("CmlReader.readAtomSetCollectionfromDOM\n");
+
+    checkFirstNode(DOMNode);
+
+    walkDOMTree(DOMNode);
+
+    // System.out.println("atom count:");
+    // System.out.println(atomSetCollection.atomCount);
+
+    if (atomSetCollection.atomCount == 0) {
+      atomSetCollection.errorMessage = "No atoms in file";
+    }
+    return atomSetCollection;
+  }
+
   XMLReader getXmlReader() {
   XMLReader xmlr = null;
   // JAXP is preferred (comes with Sun JVM 1.4.0 and higher)
@@ -111,9 +152,8 @@ class CmlReader extends AtomSetCollectionReader {
     return xmlr;
   }
 
-  class CmlHandler extends DefaultHandler implements ErrorHandler {
-    
-    ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+// Main body of class; variablaes & functiopns shared by DOM & SAX alike.
 
     Atom atom;
     float[] notionalUnitcell;
@@ -164,7 +204,6 @@ class CmlReader extends AtomSetCollectionReader {
     }
     
     int parseBondToken(String str) {
-      // System.out.println("reading bond: " + str);
       if (str.length() == 1) {
         switch (str.charAt(0)) {
         case 'S':
@@ -179,17 +218,8 @@ class CmlReader extends AtomSetCollectionReader {
         return parseInt(str);
       }
       float floatOrder = parseFloat(str);
-      if (Float.isNaN(floatOrder)) {
-          if (str.equals("partial01")) {
-              return JmolAdapter.ORDER_PARTIAL01;
-          } else if (str.equals("partial12")) {
-              return JmolAdapter.ORDER_PARTIAL12;
-          } else if (str.equals("hbond")) {
-              return JmolAdapter.ORDER_HBOND;
-          }
-      }
       if (floatOrder == 1.5)
-        return JmolAdapter.ORDER_PARTIAL12;
+        return JmolAdapter.ORDER_AROMATIC;
       if (floatOrder == 2)
         return 2;
       if (floatOrder == 3)
@@ -221,7 +251,7 @@ class CmlReader extends AtomSetCollectionReader {
     
     void checkBondArrayLength(int newBondCount) {
       if (bondCount == 0) {
-        if (newBondCount > bondArray.length)
+	if (newBondCount > bondArray.length) 
           bondArray = new Bond[newBondCount];
         for (int i = newBondCount; --i >= 0; )
           bondArray[i] = new Bond();
@@ -233,116 +263,174 @@ class CmlReader extends AtomSetCollectionReader {
 
     ////////////////////////////////////////////////////////////////
 
+    void checkFirstNode(JSObject DOMNode) {
+	// System.out.println("checkFirstNode");
+      if (DOMNode == null)
+	throw new RuntimeException("Not a node");
+      String namespaceURI = (String) DOMNode.getMember("namespaceURI");
+      String localName = (String) DOMNode.getMember("localName");
 
-    public void startDocument() {
-      //      System.out.println("model: " + model);
+      if (("http://www.xml-cml.org/schema/cml2/core"!=namespaceURI)||
+	  ("cml"!=localName))
+        new RuntimeException("Not a cml:cml node");
+    }
+	  
+
+    // walk dom tree given by JSObject. For every element, call
+    // startElement with the appropriate strings etc., and then
+    // endElement when the element is closed.
+
+    void walkDOMTree(JSObject DOMNode) {
+
+      String namespaceURI = (String) DOMNode.getMember("namespaceURI");
+      String localName = (String) DOMNode.getMember("localName");
+      String qName = (String) DOMNode.getMember("nodeName");
+      JSObject attributes = (JSObject) DOMNode.getMember("attributes");
+
+      HashMap atts;
+      if (attributes!=null) // in case this is a text or other weird sort of node.
+        atts = attributesToHashMap(attributes);
+      else
+        atts = new HashMap(0);
+
+      // put the attributes all into a name:value HashMap for processing.
+      // This should be as easy as the code snippet below.
+      // Unfortunately, Opera 8.5 doesn't work properly with that, so
+      // we have to use attributesToHashMap.
+      //HashMap atts = new HashMap(numAtts);
+      //for (int i = 0; i < numAtts; i++) {
+      //  String attLocalName = (String) ((JSObject) attributes.getSlot(i)).getMember("localName");
+      //  String attValue = (String) ((JSObject) attributes.getSlot(i)).getMember("value");
+      //  atts.put(attLocalName, attValue);
+      //}
+     
+
+      //if ("http://www.xml-cml.org/schema/cml2/core"!=namespaceURI)
+      //	  return;
+      
+      processStartElement(namespaceURI, localName, qName, atts);
+      if (((Boolean) DOMNode.call("hasChildNodes", (Object[]) null)).booleanValue()) {
+        for (JSObject nextNode =  (JSObject) DOMNode.getMember("firstChild"); 
+	     nextNode != (JSObject) null; 
+	     nextNode =  (JSObject) nextNode.getMember("nextSibling"))
+	    walkDOMTree(nextNode);
+      }
+      processEndElement(namespaceURI, localName, qName);
+    }
+
+    HashMap attributesToHashMap(JSObject attributes) {
+      // list of all attributes we might be interested in:
+      Object[] interestingAtts = 
+	  { "title", "id", "x3", "y3", "z3", "x2", "y2",
+	    "elementType", "formalCharge", "atomId",
+	    "atomRefs2", "order", "atomRef1", "atomRef2",
+	    "dictRef" };
+
+      int numAtts =  ((Number) attributes.getMember("length")).intValue();
+      HashMap atts = new HashMap(numAtts);
+      for (int i = interestingAtts.length; --i >= 0; ) {
+	Object[] attArgs = { interestingAtts[i] };
+	JSObject attNode = (JSObject) attributes.call("getNamedItem", attArgs);
+	if (attNode != null) {
+	  String attLocalName = (String) attNode.getMember("name");
+	  String attValue = (String) attNode.getMember("value");
+	  atts.put(attLocalName, attValue);
+	}
+      }
+      return atts;
     }
 
     int moleculeNesting = 0;
 
-    public void startElement(String namespaceURI, String localName,
-                             String qName, Attributes atts) {
-      processStartElement(namespaceURI, localName, qName, atts);
-    }
-
-    public void processStartElement(String namespaceURI, String localName,
-                             String qName, Attributes atts) {
-	/*
-        System.out.println("startElement(" + namespaceURI + "," + localName +
-        "," + qName + "," + atts +  ")");
-      /* */
+    void processStartElement(String namespaceURI, String localName,
+                             String qName, HashMap atts) {
+      
       if ("molecule".equals(localName)) {
+	  //  System.out.println("found molecule");
         if (++moleculeNesting > 1)
           return;
         atomSetCollection.newAtomSet();
         String collectionName = null;
-        for (int i = atts.getLength(); --i >= 0; ) {
-          String attLocalName = atts.getLocalName(i);
-          String attValue = atts.getValue(i);
-          if ("title".equals(attLocalName)) {
-            collectionName = attValue;
-          } else if ("id".equals(attLocalName)) {
-            if (collectionName == null) {
-              collectionName = attValue;
-            } // else: don't overwrite title!
-          }
-        }
+        if (atts.containsKey("title"))
+	  collectionName = (String) atts.get("title");
+	else if (atts.containsKey("id")) 
+	  collectionName = (String) atts.get("id");
         if (collectionName != null) {
           atomSetCollection.setAtomSetName(collectionName);
         }
         return;
       }
       if ("atom".equals(localName)) {
+	  //System.out.println("found atom");
         elementContext = ATOM;
         atom = new Atom();
         boolean coords3D = false;
-        for (int i = atts.getLength(); --i >= 0; ) {
-          String attLocalName = atts.getLocalName(i);
-          String attValue = atts.getValue(i);
-          if ("id".equals(attLocalName)) {
-            atom.atomName = attValue;
-          } else if ("x3".equals(attLocalName)) {
-            coords3D = true;
-            atom.x = parseFloat(attValue);
-          } else if ("y3".equals(attLocalName)) {
-            atom.y = parseFloat(attValue);
-          } else if ("z3".equals(attLocalName)) {
-            atom.z = parseFloat(attValue);
-          } else if ("x2".equals(attLocalName)) {
-            if (Float.isNaN(atom.x))
-              atom.x = parseFloat(attValue);
-          } else if ("y2".equals(attLocalName)) {
-            if (Float.isNaN(atom.y))
-              atom.y = parseFloat(attValue);
-          } else if ("elementType".equals(attLocalName)) {
-            atom.elementSymbol = attValue;
-          } else if ("formalCharge".equals(attLocalName)) {
-            atom.formalCharge = parseInt(attValue);
-          }
-        }
-        if (! coords3D)
+        atom.atomName = (String) atts.get("id");
+	if (atts.containsKey("x3")) {
+	  coords3D = true;
+	  atom.x = parseFloat((String) atts.get("x3"));
+	  atom.y = parseFloat((String) atts.get("y3"));
+	  atom.z = parseFloat((String) atts.get("z3"));
+	}
+	if (atts.containsKey("x2")) {
+	  if (Float.isNaN(atom.x))
+	      atom.x = parseFloat((String) atts.get("x2"));
+	}
+	if (atts.containsKey("y2")) {
+	  if (Float.isNaN(atom.y))
+	      atom.y = parseFloat((String) atts.get("y2"));
+	}
+        if (atts.containsKey("elementType"))
+	  atom.elementSymbol = (String) atts.get("elementType");
+        if (atts.containsKey("formalCharge"))
+	  atom.formalCharge = parseInt((String) atts.get("formalCharge"));
+        if (! coords3D) {
           atom.z = 0;
+	}
         return;
       }
       if ("atomArray".equals(localName)) {
+	  //  System.out.println("found atomArray");
         atomCount = 0;
         boolean coords3D = false;
-        for (int i = atts.getLength(); --i >= 0; ) {
-          String attLocalName = atts.getLocalName(i);
-          String attValue = atts.getValue(i);
-          if ("atomID".equals(attLocalName)) {
-            breakOutAtomTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              atomArray[j].atomName = tokens[j];
-          } else if ("x3".equals(attLocalName)) {
-            coords3D = true;
-            breakOutAtomTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              atomArray[j].x = parseFloat(tokens[j]);
-          } else if ("y3".equals(attLocalName)) {
-            breakOutAtomTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              atomArray[j].y = parseFloat(tokens[j]);
-          } else if ("z3".equals(attLocalName)) {
-            breakOutAtomTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              atomArray[j].z = parseFloat(tokens[j]);
-          } else if ("x2".equals(attLocalName)) {
-            breakOutAtomTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              atomArray[j].z = parseFloat(tokens[j]);
-          } else if ("y2".equals(attLocalName)) {
-            breakOutAtomTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              atomArray[j].z = parseFloat(tokens[j]);
-          } else if ("elementType".equals(attLocalName)) {
-            breakOutAtomTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              atomArray[j].elementSymbol = tokens[j];
-          }
+	if (atts.containsKey("atomID")) {
+	    breakOutAtomTokens((String) atts.get("atomID"));
+          for (int i = tokenCount; --i >= 0; )
+            atomArray[i].atomName = tokens[i];
+	}
+	if (atts.containsKey("x3")) {
+	  coords3D = true;
+	  breakOutAtomTokens((String) atts.get("x3"));
+	  for (int i = tokenCount; --i >= 0; )
+	    atomArray[i].x = parseFloat(tokens[i]);
         }
-        for (int j = atomCount; --j >= 0; ) {
-          Atom atom = atomArray[j];
+        if (atts.containsKey("y3")) {
+	    breakOutAtomTokens((String) atts.get("y3"));
+	  for (int i = tokenCount; --i >= 0; )
+	    atomArray[i].y = parseFloat(tokens[i]);
+	}
+        if (atts.containsKey("z3")) {
+	    breakOutAtomTokens((String) atts.get("z3"));
+	  for (int i = tokenCount; --i >= 0; )
+	    atomArray[i].z = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("x2")) {
+	    breakOutAtomTokens((String) atts.get("x2"));
+	  for (int i = tokenCount; --i >= 0; )
+	    atomArray[i].x = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("y2")) {
+	    breakOutAtomTokens((String) atts.get("y2"));
+	  for (int i = tokenCount; --i >= 0; )
+	    atomArray[i].y = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("elementType")) {
+	    breakOutAtomTokens((String) atts.get("elementType"));
+	  for (int i = tokenCount; --i >= 0; )
+	    atomArray[i].elementSymbol = tokens[i];
+        }
+        for (int i = atomCount; --i >= 0; ) {
+          Atom atom = atomArray[i];
           if (! coords3D)
             atom.z = 0;
         }
@@ -351,42 +439,30 @@ class CmlReader extends AtomSetCollectionReader {
       if ("bond".equals(localName)) {
         //  <bond atomRefs2="a20 a21" id="b41" order="2"/>
         int order = -1;
-        for (int i = atts.getLength(); --i >= 0; ) {
-          String attLocalName = atts.getLocalName(i);
-          String attValue = atts.getValue(i);
-          if ("atomRefs2".equals(attLocalName)) {
-            breakOutTokens(attValue);
-          } else if ("order".equals(attLocalName)) {
-            order = parseBondToken(attValue);
-            // System.out.println("Bond order read: " + order);
-          }
-        }
-        /*
-        System.out.println("trying to add a new bond tokenCount:" +
-                           tokenCount + " order:" + order);
-        */
-        if (tokenCount == 2 && order > 0)
-          atomSetCollection.addNewBond(tokens[0], tokens[1], order);
+	if (atts.containsKey("atomRefs2"))
+	  breakOutTokens((String) atts.get("atomRefs2"));
+	if (atts.containsKey("order"))
+	  order = parseBondToken((String) atts.get("order"));
+        if (tokenCount == 2 && order > 0) {
+          atomSetCollection.addNewBond(tokens[0], tokens[1], order); }
         return;
       }
       if ("bondArray".equals(localName)) {
         bondCount = 0;
-        for (int i = atts.getLength(); --i >= 0; ) {
-          String attLocalName = atts.getLocalName(i);
-          String attValue = atts.getValue(i);
-          if ("order".equals(attLocalName)) {
-            breakOutBondTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              bondArray[j].order = parseBondToken(tokens[j]);
-          } else if ("atomRef1".equals(attLocalName)) {
-            breakOutBondTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              bondArray[j].atomIndex1 = atomSetCollection.getAtomNameIndex(tokens[j]);
-          } else if ("atomRef2".equals(attLocalName)) {
-            breakOutBondTokens(attValue);
-            for (int j = tokenCount; --j >= 0; )
-              bondArray[j].atomIndex2 = atomSetCollection.getAtomNameIndex(tokens[j]);
-          }
+	if (atts.containsKey("order")) {
+          breakOutBondTokens((String) atts.get("order"));
+	  for (int i = tokenCount; --i >= 0; )
+	    bondArray[i].order = parseBondToken(tokens[i]);
+        }
+	if (atts.containsKey("atomRef1")) {
+          breakOutBondTokens((String) atts.get("atomRef1"));
+	  for (int i = tokenCount; --i >= 0; )
+	    bondArray[i].atomIndex1 = atomSetCollection.getAtomNameIndex(tokens[i]);
+        }
+	if (atts.containsKey("atomRef2")) {
+          breakOutBondTokens((String) atts.get("atomRef2"));
+	  for (int i = tokenCount; --i >= 0; )
+	    bondArray[i].atomIndex2 = atomSetCollection.getAtomNameIndex(tokens[i]);
         }
         return;
       }
@@ -398,32 +474,13 @@ class CmlReader extends AtomSetCollectionReader {
         return;
       }
       if ("scalar".equals(localName)) {
-        for (int i = atts.getLength(); --i >= 0; ) {
-          String attLocalName = atts.getLocalName(i);
-          String attValue = atts.getValue(i);
-          if ("title".equals(attLocalName)) {
-            title = attValue;
-          } else if ("dictRef".equals(attLocalName)) {
-            dictRef = attValue;
-          }
-        }
+        title = (String) atts.get("title");
+        dictRef = (String) atts.get("dictRef");
         keepChars = true;
         return;
       }
     }
     
-    public void endElement(String uri, String localName, String qName)  {
-      /*
-        System.out.println("endElement(" + uri + "," + localName +
-        "," + qName + ")");
-      /* */
-      processEndElement(uri, localName, qName);
-      keepChars = false;
-      title = null;
-      dictRef = null;
-      chars = null;
-    }
-
     void processEndElement(String uri, String localName, String qName)  {
       if ("molecule".equals(localName)) {
         --moleculeNesting;
@@ -433,11 +490,11 @@ class CmlReader extends AtomSetCollectionReader {
         if (atom.elementSymbol != null &&
             ! Float.isNaN(atom.z)) {
           atomSetCollection.addAtomWithMappedName(atom);
-          /*
-          System.out.println(" I just added an atom of type "
+          
+	  /*  System.out.println(" I just added an atom of type "
                              + atom.elementSymbol +
-                             " @ " + atom.x + "," + atom.y + "," + atom.z);
-          */
+                             " @ " + atom.x + "," + atom.y + "," + atom.z); */
+         
         }
         atom = null;
         elementContext = UNSET;
@@ -484,7 +541,7 @@ class CmlReader extends AtomSetCollectionReader {
         return;
       }
       if ("atomArray".equals(localName)) {
-        //        System.out.println("adding atomArray:" + atomCount);
+            //    System.out.println("adding atomArray:" + atomCount);
         for (int i = 0; i < atomCount; ++i) {
           Atom atom = atomArray[i];
           if (atom.elementSymbol != null &&
@@ -499,48 +556,81 @@ class CmlReader extends AtomSetCollectionReader {
           atomSetCollection.addBond(bondArray[i]);
         return;
       }
+
+      keepChars = false;
+      title = null;
+      dictRef = null;
+      chars = null;
     }
+
+    class CmlHandler extends DefaultHandler implements ErrorHandler {
+     
+      public void startDocument() {
+      }
+
+      public void startElement(String namespaceURI, String localName,
+				 String qName, Attributes attributes) {
+        
+        /* System.out.println("startElement(" + namespaceURI + "," + localName +
+        "," + qName + ")"); */
+        HashMap atts = new HashMap(attributes.getLength());
+	for (int i = attributes.getLength(); --i >= 0; )
+          atts.put(attributes.getLocalName(i), attributes.getValue(i));
+
+        processStartElement(namespaceURI, localName, qName, atts);
+      }
+
+       public void endElement(String uri, String localName, String qName)  {
+      
+        /* System.out.println("endElement(" + uri + "," + localName +
+        "," + qName + ")"); */
+        processEndElement(uri, localName, qName);
+        keepChars = false;
+        title = null;
+        dictRef = null;
+        chars = null;
+      }
+
+      public void characters(char[] ch, int start, int length) {
+         //System.out.println("End chars: " + new String(ch, start, length));
+        if (keepChars) {
+          if (chars == null) {
+	    chars = new String(ch, start, length);
+	  } else {
+	    chars += new String(ch, start, length);
+	  }
+	}
+      }  
+
+      // Methods for entity resolving, e.g. getting a DTD resolved
     
-    public void characters(char[] ch, int start, int length) {
-      //System.out.println("End chars: " + new String(ch, start, length));
-      if (keepChars) {
-        if (chars == null) {
-          chars = new String(ch, start, length);
-        } else {
-          chars += new String(ch, start, length);
-        }
+      public InputSource resolveEntity(String name, String publicId,
+                                     String baseURI, String systemId) {
+        System.out.println("Not resolving this:");
+        System.out.println("      name: " + name);
+        System.out.println("  systemID: " + systemId);
+        System.out.println("  publicID: " + publicId);
+        System.out.println("   baseURI: " + baseURI);
+        return null;
+      }
+    
+      public InputSource resolveEntity (String publicId, String systemId) {
+        System.out.println("Not resolving this:");
+        System.out.println("  publicID: " + publicId);
+        System.out.println("  systemID: " + systemId);
+        return null;
+      }
+    
+      public void error (SAXParseException exception)  {
+        System.out.println("SAX ERROR:" + exception.getMessage());
+      }
+    
+      public void fatalError (SAXParseException exception)  {
+        System.out.println("SAX FATAL:" + exception.getMessage());
+      }
+    
+      public void warning (SAXParseException exception)  {
+        System.out.println("SAX WARNING:" + exception.getMessage());
       }
     }
-    
-    // Methods for entity resolving, e.g. getting a DTD resolved
-    
-    public InputSource resolveEntity(String name, String publicId,
-                                     String baseURI, String systemId) {
-      System.out.println("Not resolving this:");
-      System.out.println("      name: " + name);
-      System.out.println("  systemID: " + systemId);
-      System.out.println("  publicID: " + publicId);
-      System.out.println("   baseURI: " + baseURI);
-      return null;
-    }
-    
-    public InputSource resolveEntity (String publicId, String systemId) {
-      System.out.println("Not resolving this:");
-      System.out.println("  publicID: " + publicId);
-      System.out.println("  systemID: " + systemId);
-      return null;
-    }
-    
-    public void error (SAXParseException exception)  {
-      System.out.println("SAX ERROR:" + exception.getMessage());
-    }
-    
-    public void fatalError (SAXParseException exception)  {
-      System.out.println("SAX FATAL:" + exception.getMessage());
-    }
-    
-    public void warning (SAXParseException exception)  {
-      System.out.println("SAX WARNING:" + exception.getMessage());
-    }
-  }
 }

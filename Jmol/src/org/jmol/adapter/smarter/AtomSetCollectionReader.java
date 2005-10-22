@@ -43,6 +43,11 @@ abstract class AtomSetCollectionReader {
   abstract AtomSetCollection readAtomSetCollection(BufferedReader reader)
     throws Exception;
 
+  AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode)
+    throws Exception {
+    return null;
+  }
+
   int ichNextParse;
 
   float parseFloat(String str) {

@@ -71,6 +71,26 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
+  public Object openDOMReader(Object DOMNode) {
+    try {
+      Object atomSetCollectionOrErrorMessage = 
+        Resolver.DOMResolve(DOMNode, logger);
+      if (atomSetCollectionOrErrorMessage instanceof String)
+        return atomSetCollectionOrErrorMessage;
+      if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
+        AtomSetCollection atomSetCollection =
+          (AtomSetCollection)atomSetCollectionOrErrorMessage;
+        if (atomSetCollection.errorMessage != null)
+          return atomSetCollection.errorMessage;
+        return atomSetCollection;
+      }
+      return "unknown DOM reader error";
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "" + e;
+    }
+  }
+
   public String getFileTypeName(Object clientFile) {
     return ((AtomSetCollection)clientFile).fileTypeName;
   }

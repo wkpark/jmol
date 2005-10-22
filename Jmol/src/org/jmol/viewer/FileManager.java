@@ -69,6 +69,7 @@ class FileManager {
   private File file;
 
   private FileOpenThread fileOpenThread;
+  private DOMOpenThread aDOMOpenThread;
 
 
   FileManager(Viewer viewer, JmolAdapter modelAdapter) {
@@ -95,6 +96,13 @@ class FileManager {
     fileOpenThread = new FileOpenThread(fullPathName,
                                         new StringReader(strModel));
     fileOpenThread.run();
+  }
+
+  void openDOM(Object DOMNode) {
+    openErrorMessage = null;
+    fullPathName = fileName = "JSNode";
+    aDOMOpenThread = new DOMOpenThread(DOMNode);
+    aDOMOpenThread.run();
   }
 
   void openReader(String fullPathName, String name, Reader reader) {
@@ -143,6 +151,14 @@ class FileManager {
       else if (clientFile == null)
         openErrorMessage = "Client file is null loading:" + nameAsGiven;
       fileOpenThread = null;
+    }
+    else if (aDOMOpenThread != null) {
+      clientFile = aDOMOpenThread.clientFile;
+      if (aDOMOpenThread.errorMessage != null)
+        openErrorMessage = aDOMOpenThread.errorMessage;
+      else if (clientFile == null)
+        openErrorMessage = "Client file is null loading:" + nameAsGiven;
+      aDOMOpenThread = null;
     }
     if (openErrorMessage != null)
       return openErrorMessage;
@@ -286,6 +302,23 @@ class FileManager {
       return new BufferedReader(new InputStreamReader(is));
     } catch (IOException ioe) {
       return ioe.getMessage();
+    }
+  }
+
+  class DOMOpenThread implements Runnable {
+    boolean terminated;
+    String errorMessage;
+    Object aDOMNode;
+    Object clientFile;
+	        
+    DOMOpenThread(Object DOMNode) {
+      this.aDOMNode = DOMNode;
+    }
+
+    public void run() {
+      clientFile = modelAdapter.openDOMReader(aDOMNode);
+      errorMessage = null;
+      terminated = true;
     }
   }
 

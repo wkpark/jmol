@@ -1,4 +1,7 @@
 <changes version="jmol-10.??">
+  <change contributor="TOHW">
+    Altered CmlReader.java adapter to allow cml input to applet by reading DOM nodes from the browser.
+  </change>
   <change contributor="EW">
     Completed much of the CdkJmolAdapter: PDB properties are now supported, and 
     ChemSequence/ChemModel is mapped to AtomSetCollection/AtomSet.

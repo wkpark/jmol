@@ -49,6 +49,7 @@ abstract public class JmolSimpleViewer {
   abstract public String evalString(String strScript);
 
   abstract public void openStringInline(String strModel);
+  abstract public void openDOM(Object DOMNode);
   abstract public void openFile(String name);
   abstract public String getOpenFileError();
 }

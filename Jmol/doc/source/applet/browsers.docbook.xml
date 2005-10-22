@@ -152,4 +152,20 @@
       </listitem>
     </itemizedlist>
   </section>
+  <section>
+    <title>XHTML support</title>
+    <para>
+      It is possible to use the JmolApplet within an XML/XHTML environment. This is entirely irrelevant for most people's purposes - if you don't know that you need this capability, then you don't.
+    </para>
+    <para> 
+      It requires a browser capable of dealing properly with XHTML documents. At the time of writing, this was limited solely to recent versions of Mozilla-based browsers and of Opera. Note in particular that Internet Explorer will not support this mode of operation within the foreseeable future. It also requires that your documents validate entirely correctly against the appropriate schemata.
+    </para>
+    <para>
+      In addition, the standard Jmol.js Javascript library will not work under properly compliant XML browsers. An alternative, largely similar, but entirely unsupported library is available ... insert address here ...
+    </para>
+    <section>
+      <para>That all said, the XHTML features of JmolApplet have been successfully tested on the following OS/browser/JVM combinations.
+      </para>
+    </section>
+  </section>
 </chapter>

@@ -24,6 +24,7 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.util.HashMap;
 
 import org.xml.sax.Attributes;
 
@@ -34,7 +35,7 @@ class MolproReader extends CmlReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
     throws Exception {
-      return readAtomSetCollectionXml(reader, (new MolproHandler()),"molpro");
+      return readAtomSetCollectionSax(reader, (new MolproHandler()),"molpro");
   }
 
   class MolproHandler extends CmlHandler {
@@ -48,7 +49,12 @@ class MolproReader extends CmlReader {
       //logger.log("startElement(" + namespaceURI + "," + localName +
       //"," + qName + "," + atts +  ")");
       // the CML stuff
-      processStartElement(namespaceURI, localName, qName, atts);
+
+      HashMap hashAtts = new HashMap(atts.getLength());
+      for (int i = atts.getLength(); --i >= 0; )
+        hashAtts.put(atts.getLocalName(i), atts.getValue(i));
+
+      processStartElement(namespaceURI, localName, qName, hashAtts);
       // the extra Molpro stuff
       molproStartElement(namespaceURI, localName, qName, atts);
     }

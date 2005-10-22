@@ -109,6 +109,14 @@ public abstract class JmolAdapter {
     return null;
   }
 
+  public Object openDOMReader(Object DOMNode) {
+    return openDOMReader(DOMNode, null);
+  }
+
+  public Object openDOMReader(Object DOMNode, Logger logger) {
+    return null;
+  }
+
   public void finish(Object clientFile) {}
 
   /**

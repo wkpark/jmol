@@ -40,5 +40,7 @@ public interface WrappedApplet {
                            String script, String buttonCallback);
   public void script(String script);
   public void loadInline(String strModel);
+  public void loadNodeId(String nodeId);
+  public void loadDOMNode(JSObject DOMNode);
 
 }

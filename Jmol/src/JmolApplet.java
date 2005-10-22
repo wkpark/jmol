@@ -72,6 +72,16 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
       ((JmolAppletInterface)wrappedApplet).loadInline(strModel);
   }
 
+  public void loadNodeId(String nodeId) {
+    if (wrappedApplet != null)
+      ((JmolAppletInterface)wrappedApplet).loadNodeId(nodeId);
+  }
+
+  public void loadDOMNode(JSObject DOMNode) {
+    if (wrappedApplet != null)
+      ((JmolAppletInterface)wrappedApplet).loadDOMNode(DOMNode);
+  }
+
   public void scriptButton(JSObject buttonWindow, String buttonName,
                            String script, String buttonCallback) {
     if (wrappedApplet != null)

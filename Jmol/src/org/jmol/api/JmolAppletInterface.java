@@ -37,6 +37,10 @@ public interface JmolAppletInterface {
 
   public void loadInline(String strModel);
 
+  public void loadNodeId(String nodeId);
+
+  public void loadDOMNode(JSObject DOMNode);
+
   /**
    * @deprecated
    * @param buttonWindow

@@ -67,6 +67,36 @@ class Resolver {
     return atomSetCollection;
   }
 
+  static Object DOMResolve(Object DOMNode, JmolAdapter.Logger logger) throws Exception {
+    AtomSetCollectionReader atomSetCollectionReader;
+    String atomSetCollectionReaderName = "Cml";
+    logger.log("DOM Resolver thinks", atomSetCollectionReaderName);
+    String className =
+      "org.jmol.adapter.smarter." + atomSetCollectionReaderName + "Reader";
+
+    try {
+      Class atomSetCollectionReaderClass = Class.forName(className);
+      atomSetCollectionReader =
+        (AtomSetCollectionReader)atomSetCollectionReaderClass.newInstance();
+    } catch (Exception e) {
+      String err = "Could not instantiate:" + className;
+      logger.log(err);
+      return err;
+    }
+
+    atomSetCollectionReader.setLogger(logger);
+    atomSetCollectionReader.initialize();
+
+    AtomSetCollection atomSetCollection =
+      atomSetCollectionReader.readAtomSetCollectionFromDOM(DOMNode);
+    atomSetCollection.freeze();
+    if (atomSetCollection.errorMessage != null)
+      return atomSetCollection.errorMessage;
+    if (atomSetCollection.atomCount == 0)
+      return "No atoms in file";
+    return atomSetCollection;
+  }
+
   static String determineAtomSetCollectionReader(BufferedReader bufferedReader,
                                                  JmolAdapter.Logger logger)
     throws Exception {

@@ -1,22 +1,21 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2005-10-14 18:06+0200\n"
-"PO-Revision-Date: 2005-10-12 21:42+0100\n"
+"PO-Revision-Date: 2005-10-23 23:08+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
-"Language-Team: \n"
+"Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: SPAIN\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #: org/jmol/applet/Jmol.java:118
-msgid ""
-"Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
-"more information"
-msgstr ""
-"Applet Jmol. Parte del proyecto OpenScience. Para más información, vea "
-"http://www.jmol.org"
+msgid "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for more information"
+msgstr "Miniaplicación Jmol, parte del proyecto OpenScience; para más información, vea http://www.jmol.org"
 
 #: org/jmol/applet/Jmol.java:450
 msgid "Jmol executing script ..."
@@ -100,7 +99,7 @@ msgstr "Por nombre de residuo"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:672
 msgid "Nucleic"
-msgstr "Nucleicos"
+msgstr "Ac. nucleicos"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:674
 msgid "DNA"
@@ -230,7 +229,7 @@ msgstr "Alambre"
 #: org/openscience/jmol/ui/PopupResourceBundle.java:723
 #: org/openscience/jmol/ui/PopupResourceBundle.java:805
 msgid "Atoms"
-msgstr "Átomos"
+msgstr "Atomos"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:724
 #: org/openscience/jmol/ui/PopupResourceBundle.java:733
@@ -268,7 +267,7 @@ msgstr "Sí"
 #: org/openscience/jmol/ui/PopupResourceBundle.java:741
 #: org/openscience/jmol/ui/PopupResourceBundle.java:867
 msgid "Hydrogen Bonds"
-msgstr "Enlaces de Hidrógeno"
+msgstr "Enlaces de hidrógeno"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:744
 msgid "Set H-Bonds Side Chain"
@@ -303,7 +302,7 @@ msgstr "Trazo"
 #: org/openscience/jmol/ui/PopupResourceBundle.java:767
 #: org/openscience/jmol/ui/PopupResourceBundle.java:935
 msgid "Cartoon"
-msgstr "Caricatura"
+msgstr "Esquemático"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:768
 #: org/openscience/jmol/ui/PopupResourceBundle.java:956
@@ -419,7 +418,7 @@ msgstr "Por elemento (CPK)"
 #: org/openscience/jmol/ui/PopupResourceBundle.java:940
 #: org/openscience/jmol/ui/PopupResourceBundle.java:961
 msgid "Amino"
-msgstr "Por amino ácido"
+msgstr "Por aminoácido"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:810
 #: org/openscience/jmol/ui/PopupResourceBundle.java:899
@@ -899,7 +898,7 @@ msgstr "Mostrar halos de selección"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:1159
 msgid "Show Hydrogens"
-msgstr "Mostrar Hidrógenos"
+msgstr "Mostrar hidrógenos"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:1160
 msgid "Show Measurements"
@@ -911,7 +910,7 @@ msgstr "Perspectiva"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:1162
 msgid "RasMol/Chime Compatibility"
-msgstr "Compatibilidad Rasmol/Chime"
+msgstr "Compatible Rasmol/Chime"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:1163
 msgid "RasMol Colors"
@@ -951,8 +950,9 @@ msgstr "Acerca de Jmol"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:1175
 msgid "Mouse Manual"
-msgstr ""
+msgstr "Manual del ratón"
 
 #: org/openscience/jmol/ui/PopupResourceBundle.java:1176
 msgid "Translations"
-msgstr ""
+msgstr "Traducciones"
+

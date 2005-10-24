@@ -71,6 +71,36 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
+  public Object openBufferedReaders(String[] name,
+                                    BufferedReader[] bufferedReader) {
+    int size = Math.min(name.length, bufferedReader.length);
+    AtomSetCollection[] atomSetCollections = new AtomSetCollection[size];
+    for (int i = 0; i < size; i++) {
+      try {
+        Object atomSetCollectionOrErrorMessage =
+          Resolver.resolve(name[i], bufferedReader[i], logger);
+        if (atomSetCollectionOrErrorMessage instanceof String)
+          return atomSetCollectionOrErrorMessage;
+        if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
+          atomSetCollections[i] =
+            (AtomSetCollection)atomSetCollectionOrErrorMessage;
+          if (atomSetCollections[i].errorMessage != null)
+            return atomSetCollections[i].errorMessage;
+        } else {
+          return "unknown reader error";
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        return "" + e;
+      }
+    }
+    AtomSetCollection result = new AtomSetCollection(atomSetCollections);
+    if (result.errorMessage != null) {
+      return result.errorMessage;
+    }
+    return result; 
+  }
+
   public Object openDOMReader(Object DOMNode) {
     try {
       Object atomSetCollectionOrErrorMessage = 

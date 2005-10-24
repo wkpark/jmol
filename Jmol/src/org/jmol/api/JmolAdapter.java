@@ -109,6 +109,45 @@ public abstract class JmolAdapter {
     return null;
   }
 
+  /**
+   * Associate a clientFile object with an array of BufferedReader.
+   * 
+   * <p>Given the array of BufferedReader, return an object which represents
+   * the concatenation of every file contents. The parameter <code>name</code>
+   * is assumed to be the  file names or URL which are the source of each
+   * reader. Note that each of this 'file' may have been automatically
+   * decompressed. Also note that the name may be 'String',
+   * representing a string constant. Therefore, few
+   * assumptions should be made about the <code>name</code> parameter.
+   *
+   * The return value is an object which represents a <code>clientFile</code>.
+   * This <code>clientFile</code> will be passed back in to other methods.
+   * If the return value is <code>instanceof String</code> then it is
+   * considered an error condition and the returned String is the error
+   * message. 
+   *
+   * @param name File names, String or URL acting as the source of each reader
+   * @param bufferedReader The array of BufferedReader
+   * @return The clientFile or String with an error message
+   */
+  public Object openBufferedReaders(String[] name,
+                                    BufferedReader[] bufferedReader) {
+    return openBufferedReaders(name, bufferedReader, null);
+  }
+
+  /**
+   * @param name File names, String or URL acting as the source of each reader
+   * @param bufferedReader The array of BufferedReader
+   * @param logger The logger
+   * @return The clientFile or String with an error message
+   * @see #openBufferedReaders(String[], BufferedReader[])
+   */
+  public Object openBufferedReaders(String[] name,
+                                    BufferedReader[] bufferedReader,
+                                    Logger logger) {
+    return null;
+  }
+
   public Object openDOMReader(Object DOMNode) {
     return openDOMReader(DOMNode, null);
   }

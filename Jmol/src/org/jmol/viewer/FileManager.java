@@ -69,6 +69,7 @@ class FileManager {
   private File file;
 
   private FileOpenThread fileOpenThread;
+  private FilesOpenThread filesOpenThread;
   private DOMOpenThread aDOMOpenThread;
 
 
@@ -85,9 +86,26 @@ class FileManager {
     if (openErrorMessage != null) {
       System.out.println("openErrorMessage=" + openErrorMessage);
       return;
-      }
+    }
     fileOpenThread = new FileOpenThread(fullPathName, name);
     fileOpenThread.run();
+  }
+
+  void openFiles(String modelName, String[] names) {
+    String[] fullPathNames = new String[names.length];
+    for (int i = 0; i < names.length; i++) {
+      nameAsGiven = names[i];
+      openErrorMessage = fullPathName = fileName = null;
+      classifyName(names[i]);
+      if (openErrorMessage != null) {
+        System.out.println("openErrorMessage=" + openErrorMessage);
+        return;
+      }
+      fullPathNames[i] = fullPathName;
+    }
+    fullPathName = fileName = nameAsGiven = modelName;
+    filesOpenThread = new FilesOpenThread(fullPathNames, names);
+    filesOpenThread.run();
   }
 
   void openStringInline(String strModel) {
@@ -151,8 +169,13 @@ class FileManager {
       else if (clientFile == null)
         openErrorMessage = "Client file is null loading:" + nameAsGiven;
       fileOpenThread = null;
-    }
-    else if (aDOMOpenThread != null) {
+    } else if (filesOpenThread != null) {
+      clientFile = filesOpenThread.clientFile;
+      if (filesOpenThread.errorMessage != null)
+        openErrorMessage = filesOpenThread.errorMessage;
+      else if (clientFile == null)
+        openErrorMessage = "Client file is null loading:" + nameAsGiven;
+    } else if (aDOMOpenThread != null) {
       clientFile = aDOMOpenThread.clientFile;
       if (aDOMOpenThread.errorMessage != null)
         openErrorMessage = aDOMOpenThread.errorMessage;
@@ -383,6 +406,88 @@ class FileManager {
       Object clientFile =
         modelAdapter.openBufferedReader(fullPathNameInThread,
                                         new BufferedReader(reader));
+      if (clientFile instanceof String)
+        errorMessage = (String)clientFile;
+      else
+        this.clientFile = clientFile;
+    }
+  }
+
+  class FilesOpenThread implements Runnable {
+    boolean terminated;
+    String errorMessage;
+    String[] fullPathNameInThread;
+    String[] nameAsGivenInThread;
+    Object clientFile;
+    Reader[] reader;
+
+    FilesOpenThread(String[] fullPathName, String[] nameAsGiven) {
+      this.fullPathNameInThread = fullPathName;
+      this.nameAsGivenInThread = nameAsGiven;
+    }
+
+    FilesOpenThread(String[] name, Reader[] reader) {
+      nameAsGivenInThread = fullPathNameInThread = name;
+      this.reader = reader;
+    }
+
+    public void run() {
+      if (reader != null) {
+        openReader(reader);
+      } else {
+        InputStream[] istream = new InputStream[nameAsGivenInThread.length];
+        for (int i = 0; i < nameAsGivenInThread.length; i++) {
+          Object t = getInputStreamOrErrorMessageFromName(nameAsGivenInThread[i]);
+          if (! (t instanceof InputStream)) {
+            errorMessage = (t == null
+                            ? "error opening:" + nameAsGivenInThread
+                            : (String)t);
+            terminated = true;
+            return;
+          }
+          istream[i] = (InputStream) t;
+        }
+        openInputStream(fullPathNameInThread, istream);
+      }
+      if (errorMessage != null)
+        System.out.println("error opening " + fullPathNameInThread + "\n" + errorMessage);
+      terminated = true;
+    }
+
+    byte[] abMagicF = new byte[4];
+    private void openInputStream(String[] fullPathName,
+                                 InputStream[] istream) {
+      InputStreamReader[] zistream = new InputStreamReader[istream.length];
+      for (int i = 0; i < istream.length; i++) {
+        BufferedInputStream bistream = new BufferedInputStream(istream[i], 8192);
+        InputStream istreamToRead = bistream;
+        bistream.mark(5);
+        int countRead = 0;
+        try {
+          countRead = bistream.read(abMagicF, 0, 4);
+          bistream.reset();
+          if (countRead == 4) {
+            if (abMagicF[0] == (byte)0x1F && abMagicF[1] == (byte)0x8B) {
+              istreamToRead = new GZIPInputStream(bistream);
+            }
+          }
+          zistream[i] = new InputStreamReader(istreamToRead);
+        } catch (IOException ioe) {
+          errorMessage = ioe.getMessage();
+          return;
+        }
+      }
+      openReader(zistream);
+    }
+
+    private void openReader(Reader[] reader) {
+      BufferedReader[] buffered = new BufferedReader[reader.length];
+      for (int i = 0; i < reader.length; i++) {
+        buffered[i] = new BufferedReader(reader[i]);
+      }
+      Object clientFile =
+        modelAdapter.openBufferedReaders(fullPathNameInThread,
+                                         buffered);
       if (clientFile instanceof String)
         errorMessage = (String)clientFile;
       else

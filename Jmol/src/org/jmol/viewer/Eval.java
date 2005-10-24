@@ -1673,11 +1673,20 @@ class Eval implements Runnable {
       ++i;
     if (statement[i].tok != Token.string)
       filenameExpected();
-    if (statementLength != i + 1)
-      badArgumentCount();
     //long timeBegin = System.currentTimeMillis();
-    String filename = (String)statement[i].value;
-    viewer.openFile(filename);
+    if (statementLength == i + 1) {
+      String filename = (String)statement[i].value;
+      viewer.openFile(filename);
+    } else {
+      String modelName = (String)statement[i].value;
+      i++;
+      String[] filenames = new String[statementLength - i];
+      while (i < statementLength) {
+        filenames[filenames.length - statementLength + i] = (String)statement[i].value;
+        i++;
+      }
+      viewer.openFiles(modelName, filenames);
+    }
     String errMsg = viewer.getOpenFileError();
     //int millis = (int)(System.currentTimeMillis() - timeBegin);
     //    System.out.println("!!!!!!!!! took " + millis + " ms");

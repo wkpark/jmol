@@ -74,6 +74,36 @@ class AtomSetCollection {
                                     SmarterJmolAdapter.PATH_SEPARATOR);
   }
 
+  /**
+   * Creates an AtomSetCollection based on an array of AtomSetCollection
+   * 
+   * @param array Array of AtomSetCollection
+   */
+  AtomSetCollection(AtomSetCollection[] array) {
+    this("Array");
+    for (int i = 0; i < array.length; i++) {
+      appendAtomSetCollection(array[i]);
+    }
+  }
+
+  /**
+   * Appends an AtomSetCollection
+   * 
+   * @param collection AtomSetCollection to append
+   */
+  protected void appendAtomSetCollection(AtomSetCollection collection) {
+    // Clone each AtomSet
+    int clonedAtoms = 0;
+    for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
+      newAtomSet();
+      setAtomSetName(collection.atomSetNames[atomSetNum]);
+      for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
+        newCloneAtom(collection.atoms[clonedAtoms]);
+        clonedAtoms++;
+      }
+    }
+  }
+
   protected void finalize() {
     //    System.out.println("Model.finalize() called");
       try{super.finalize();}catch(Throwable t){}

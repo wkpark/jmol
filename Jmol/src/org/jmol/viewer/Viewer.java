@@ -989,6 +989,16 @@ final public class Viewer extends JmolViewer {
     System.out.println("openFile(" + name + ") " + ms + " ms");
   }
 
+  public void openFiles(String modelName, String[] names) {
+    clear();
+    // keep old screen image while new file is being loaded
+    //    forceRefresh();
+    long timeBegin = System.currentTimeMillis();
+    fileManager.openFiles(modelName, names);
+    long ms = System.currentTimeMillis() - timeBegin;
+    System.out.println("openFiles() " + ms + " ms");
+  }
+
   public void openStringInline(String strModel) {
      clear();
      fileManager.openStringInline(strModel);

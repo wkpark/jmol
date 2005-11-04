@@ -1781,16 +1781,16 @@
   <fah_proj number="756" name="p756_groel-halfch-10" public="y" file="y"
     server="171.64.122.68" atoms="267831" preferred="28" deadline="41"
     credit="284" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="757" name="p757_vln3.8pbc" public="n" file="y"
+  <fah_proj number="757" name="p757_vln3.8pbc" public="y" file="y"
     server="171.64.122.130" atoms="47413" preferred="22"
     credit="119" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="758" name="p758_vln3.8nopbc" public="n" file="y"
+  <fah_proj number="758" name="p758_vln3.8nopbc" public="y" file="y"
     server="171.64.122.130" atoms="17185" preferred="7"
     credit="35" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="759" name="p759_vln3.8-0.2nopbc" public="n" file="y"
+  <fah_proj number="759" name="p759_vln3.8-0.2nopbc" public="y" file="y"
     server="171.64.122.130" atoms="18766" preferred="8"
     credit="40" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="760" name="p760_vln3.8-0.4nopbc" public="n" file="y"
+  <fah_proj number="760" name="p760_vln3.8-0.4nopbc" public="y" file="y"
     server="171.64.122.130" atoms="15787" preferred="6"
     credit="32" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home

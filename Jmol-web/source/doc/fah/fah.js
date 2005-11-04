@@ -8,7 +8,7 @@ function clearStatus() {
 }
 
 function showProjectDescription() {
-  window.open("http://vspx27.stanford.edu/cgi-bin/allprojects#" + document.fahForm.infoNumber.value);
+  window.open("http://fah-web.stanford.edu/cgi-bin/allprojects#" + document.fahForm.infoNumber.value);
 }
 
 function hideSolvent() {
@@ -104,7 +104,7 @@ function createFahPage(select,
   document.writeln("  <td align='left'>");
   document.writeln("   <input type='button' value='" + projectDescription + "'");
   document.writeln("          onclick='showProjectDescription()'");
-  document.writeln("          onMouseOver='window.status=\"http://vspx27.stanford.edu/cgi-bin/allprojects\"'");
+  document.writeln("          onMouseOver='window.status=\"http://fah-web.stanford.edu/cgi-bin/allprojects\"'");
   document.writeln("          onMouseout='window.status=\" \"'/>");
   document.writeln("   <input type='button' value='" + hideSolvent + "'");
   document.writeln("          onclick='hideSolvent()'/>");

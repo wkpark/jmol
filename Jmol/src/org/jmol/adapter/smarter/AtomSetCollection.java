@@ -92,6 +92,9 @@ class AtomSetCollection {
    * @param collection AtomSetCollection to append
    */
   protected void appendAtomSetCollection(AtomSetCollection collection) {
+    // Initialisations
+    int existingAtomsCount = atomCount;
+
     // Clone each AtomSet
     int clonedAtoms = 0;
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
@@ -101,6 +104,15 @@ class AtomSetCollection {
         newCloneAtom(collection.atoms[clonedAtoms]);
         clonedAtoms++;
       }
+    }
+
+    // Clone bonds
+    for (int bondNum = 0; bondNum < collection.bondCount; bondNum++) {
+      Bond bond = collection.bonds[bondNum];
+      addNewBond(
+          bond.atomIndex1 + existingAtomsCount,
+          bond.atomIndex2 + existingAtomsCount,
+          bond.order);
     }
   }
 

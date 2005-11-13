@@ -13,7 +13,7 @@
       > worden de a, b, c, enz. waarden weergegeven met een 'extra' decimaal
       > plaatst de 10pre8 applet a=10.436999 terwijl de
       > CRYST1 record van het pdb bestand een waarde van 10.437 geeft. Dit betekent
-      > dat er zich een afrondingsfout bij het berekenen van de celco?rdinaten voordoet.
+      > dat er zich een afrondingsfout bij het berekenen van de celco&#x00F6;rdinaten voordoet.
     </pre>
     Eigenlijk is deze situatie vrij subtiel. Het was niet echt een afrondingsprobleem,
     omdat er geen berekeningen werden uitgevoerd op de nummers.

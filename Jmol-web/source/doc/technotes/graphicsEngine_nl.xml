@@ -20,7 +20,7 @@
   </p>
   <p>
     Tijdens de herteken cyclus wordt de gehele scene getekend in de pixelBuffer.
-    Dan wordt de gehele scene getekend als ??n afbeelding met een enkele
+    Dan wordt de gehele scene getekend als &#x00E9;&#x00E9;n afbeelding met een enkele
     Graphics.drawImage(...) bewerking.
   </p>
   <p>

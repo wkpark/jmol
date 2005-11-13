@@ -57,7 +57,7 @@
     Ontwerp en implementatie org.jmol.viewer kerndata structuren
   </change>
   <change contributor="MTH">
-    Ontwerp en implementatie ondersteuning voor secundaire prote?nestructuren
+    Ontwerp en implementatie ondersteuning voor secundaire prote&#x00EF;nestructuren
   </change>
   <change contributor="MTH">
     Herontwerp en herimplementatie bestands-IO systeem
@@ -440,7 +440,7 @@
     Jmol console om stdout en stderr vast te kunnen leggen
   </change>
   <change contributor="BS">
-    DisplaySettings in ??n enkele klasse ondergebracht
+    DisplaySettings in &#x00E9;&#x00E9;n enkele klasse ondergebracht
   </change>
   <change contributor="BS">
     Splitsing van AtomType functie naar BaseAtomType
@@ -566,14 +566,14 @@
     Het Build proces gebruikt nu een Makefile.
   </change>
   <change contributor="HG">
-    De Makefile heeft de mogelijkheid om javadocs te cre?ren van de broncode.
+    De Makefile heeft de mogelijkheid om javadocs te cre&#x00EB;ren van de broncode.
   </change>
 </changes>
 
 <changes version="jmol-0.1.1">
   <change contributor="DG">
     Verwijdering van de extra dubbele-buffer, voortkomende uit de verwarring dat Swing
-    componenten automatisch dubbel-bufferen. Dit leidde tot substanti?le prestatieverbeteringen.
+    componenten automatisch dubbel-bufferen. Dit leidde tot substanti&#x00EB;le prestatieverbeteringen.
   </change>
   <change contributor="DG">
     Herstel van enkele vreemde diepteverschijnselen in de te tekenen atomen.
@@ -617,7 +617,7 @@
   </change>
   <change contributor="DG">
     Er is nu een "Vooraanzicht" item in het Beeld menu. De Beeld menuknoppen zijn nog niet
-    intu?tief ingesteld. Ze zullen wijzigen in een volgende versie.
+    intu&#x00EF;tief ingesteld. Ze zullen wijzigen in een volgende versie.
   </change>
   <change contributor="DG">
     Er is een nieuwe "fast forward" knop in het Animatie dialoogvenster die de animatie
@@ -625,7 +625,7 @@
   </change>
   <change contributor="DG">
     De Rewind, FastForward, Next, en Previous knoppen in het Animatie dialoogvenster stoppen
-    de animatie nu wanneer ??n van de knoppen wordt ingedrukt.
+    de animatie nu wanneer &#x00E9;&#x00E9;n van de knoppen wordt ingedrukt.
   </change>
   <change>
     Swing versie 1.1

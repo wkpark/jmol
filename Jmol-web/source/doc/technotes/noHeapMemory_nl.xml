@@ -27,7 +27,7 @@
 
   <p>
     Om Ribbons te tekenen had Dave 2 arrays van Point3i objecten nodig om de
-    schermco�rdinaten te kunnen bewaren van de hoeken van de 'ribbons'.
+    schermco&#x00F6;rdinaten te kunnen bewaren van de hoeken van de 'ribbons'.
     Hij wijst de arrays toe en vult ze op met nieuwe Point3i objecten.
     Daarna volgt een berekening, de dingen worden uitgetekend, en mooi ogende
     ribbons verschijnen op het scherm.
@@ -75,7 +75,7 @@
   <p>
     Er zijn andere delen van het susteem waar deze techniek niet van toepassing is.
     Bijvoorbeeld, bij IO operaties zijn we vrij om alles toe te wijzen of weg te gooien
-    alsof het rommel is. Tijdens IO wordt er veel tekst ontleed. Deze ontleding cre?rt vele
+    alsof het rommel is. Tijdens IO wordt er veel tekst ontleed. Deze ontleding cre&#x00EB;rt vele
     tijdelijke strings die een zeer korte levensduur hebben. Maar dit vormt geen probleem
     aangezien we geen bestanden veelvuldig lezen omdat dit een vrij trage handeling vormt.
   </p>

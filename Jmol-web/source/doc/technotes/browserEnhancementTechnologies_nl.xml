@@ -2,7 +2,7 @@
   Dutch translation 
   Translated from default version : browserEnhancementTechnologies_en.xml (v 1.1)
 -->
-<section title="Browser Uitbreiding Technologie?n">
+<section title="Browser Uitbreiding Technologie&#x00EB;n">
   <p>
     Ik zal proberen een korte samenvatting te geven van 4 verschillende technieken die kunnen
     worden gebruikt om functionaliteit toe te voegen aan de browser. Het is belangrijk dat
@@ -15,7 +15,7 @@
   <h3>Helper Applicatie</h3>
   <p>
     Een helper applicatie is een applicatie die automatisch start wanneer de browser een bestand
-    ontvangt waarmee het niet weet wat ermee aan te vangen. Het bestandstype wordt ge?dentificeerd
+    ontvangt waarmee het niet weet wat ermee aan te vangen. Het bestandstype wordt ge&#x00EF;dentificeerd
     door de 'MIME-type'.
   </p>
   <p>
@@ -74,7 +74,7 @@
   <p>
     Vooraleer dit type van applet uitgevoerd wordt vraagt de browser expliciet om permissie voor
     het uitvoeren van de applet. Door op ja te klikken geeft de gebruiker permissie aan de software
-    om ge?nstalleerd te worden op de lokale harde schijf.
+    om ge&#x00EF;nstalleerd te worden op de lokale harde schijf.
   </p>
   <p>
     Om alle leden te beschermen wordt een Trusted Applet *gesigneerd* met een digitale handtekening,
@@ -89,7 +89,7 @@
     Vandaag bestaat er geen 'getekende' JmolApplet. In de toekomst stap ik naar een
     'certificeringsauthoriteit' en bewijs ik aan hen dat ik een lid ben van het Jmol project.
     Zij geven mij dan een digitale sleutelset. Ik gebruikt deze set dan om een
-    SignedJmolApplet te cre?ren.
+    SignedJmolApplet te cre&#x00EB;ren.
   </p>
   <p>
     Wanneer een gebruiker naar een website gaat waarop deze SignedJmolApplet staat,
@@ -97,7 +97,7 @@
     klikken en de sessie gaat verder.
   </p>
   <p>
-    De SignedJmolApplet dat wordt ge?nstalleerd op de harde schijf kan nu bestanden
+    De SignedJmolApplet dat wordt ge&#x00EF;nstalleerd op de harde schijf kan nu bestanden
     lezen/schrijven op de harde schijf. Het kan ook data lezen/schrijven van/naar locaties op het web.
   </p>
   <p>
@@ -148,18 +148,18 @@
     eenmaal en maken er zich daarna nooit meer zorgen om.
   </p>
   <p>
-    Eens een plug-in ge?nstalleerd kan het doen wat het maar wil ... zoals een stuk
-    ge?installeerde software.
+    Eens een plug-in ge&#x00EF;nstalleerd kan het doen wat het maar wil ... zoals een stuk
+    ge&#x00EF;installeerde software.
   </p>
   <p>
     Het ontwikkelen en onderhouden van plug-ins is zeer duur en tijdrovend. Hoewel Netscape
     een plug-in API bezit, blijft het dynamisch gedrag van elke browser op elk platform verschillend.
     En vele browsers 'implementeren/ondersteunen' de Netscape Plug-in API, maar er is wel een
     verschil in implementaties, zodat ze allen een verschillend gedrag hebben. Het fundamenteel
-    probleem is dat je probeert ??n stuk van de ingewikkelde software (je mooie plug-in) in te
+    probleem is dat je probeert &#x00E9;&#x00E9;n stuk van de ingewikkelde software (je mooie plug-in) in te
     passen in een ander stuk ingewikkelde software (de browser), naast andere plug-ins.
     En, in het algemeen, deel je hetzelfde geheugen en sommige datastructuren. Dit vormt de reden
-    waarom er iets grondig verkeerd gaat wanneer ??n persoon een fout maakt.
+    waarom er iets grondig verkeerd gaat wanneer &#x00E9;&#x00E9;n persoon een fout maakt.
   </p>
   <p>
     Terwijl ik dit schrijf, wordt het duidelijk dat zelfde een Jmol Plug-in nooit zal bestaan.

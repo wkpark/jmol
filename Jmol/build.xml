@@ -113,6 +113,10 @@
           <srcfiles dir="doc/source"
                     includes="JmolHistory_fr.xml,JmolHistoryToHtml.xsl,history/changes_fr.xml" />
         </uptodate>
+        <uptodate targetfile="build/doc/JmolHistory/ChangeLog_nl.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolHistory_nl.xml,JmolHistoryToHtml.xsl,history/changes_nl.xml" />
+        </uptodate>
       </and>
     </condition>
     
@@ -886,6 +890,16 @@ support for assertions (which were introduced in 1.4).
       <arg value="../../../doc/source/JmolHistory_fr.xml" />
       <arg value="../../../doc/source/JmolHistoryToHtml.xsl" />
       <arg value="lang=fr" />
+    </java>
+    <echo message="Generating history of changes (nl)" />
+    <java fork="true" dir="build/doc/JmolHistory"
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="ChangeLog_nl.html" />
+      <arg value="../../../doc/source/JmolHistory_nl.xml" />
+      <arg value="../../../doc/source/JmolHistoryToHtml.xsl" />
+      <arg value="lang=nl" />
     </java>
   </target>
 

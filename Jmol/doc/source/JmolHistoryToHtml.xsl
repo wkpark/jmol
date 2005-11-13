@@ -8,6 +8,7 @@
  <head><title>
   <xsl:choose>
    <xsl:when test='$lang="fr"'>Historique Jmol</xsl:when>
+   <xsl:when test='$lang="nl"'>Jmol Changes</xsl:when>
    <xsl:otherwise>Jmol History</xsl:otherwise>
   </xsl:choose>
  </title></head>
@@ -16,11 +17,13 @@
 
   <h2><xsl:choose>
    <xsl:when test='$lang="fr"'>Liste des modifications de Jmol:</xsl:when>
+   <xsl:when test='$lang="nl"'>Veranderingen:</xsl:when>
    <xsl:otherwise>List of changes to Jmol:</xsl:otherwise>
   </xsl:choose></h2>
 
   <p><xsl:choose>
    <xsl:when test='$lang="fr"'>Participants:</xsl:when>
+   <xsl:when test='$lang="nl"'>Medewerkers:</xsl:when>
    <xsl:otherwise>Contributors:</xsl:otherwise>
   </xsl:choose></p>
   <blockquote>

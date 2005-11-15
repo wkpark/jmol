@@ -1793,6 +1793,9 @@
   <fah_proj number="760" name="p760_vln3.8-0.4nopbc" public="y" file="y"
     server="171.64.122.130" atoms="15787" preferred="6"
     credit="32" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="761" name="p761_vln3.3pbc" public="n" file="y"
+    server="171.64.122.138"
+    frames="100" code="G"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -3903,7 +3906,7 @@
   <fah_proj number="2304" name="p2304_BBA5_ext" public="y" file="y"
     server="171.64.122.70" atoms="12200" preferred="11" deadline="15"
     credit="48" frames="100" code="DG" contact="alexrson"/>
-  <fah_proj number="2305" name="p2305_BBA5_Mutant" public="n" file="y"
+  <fah_proj number="2305" name="p2305_BBA5_Mutant" public="y" file="y"
     server="171.64.122.139" atoms="12285" preferred="10" deadline="15"
     credit="46" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2321" name="p2321_IM7" public="y" file="y"

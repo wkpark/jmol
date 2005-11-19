@@ -10,7 +10,7 @@
     <section title="Het ontstaan van Jmol">
 
       <p>
-        Jmol was oorspronkelijk opgezet om een volledige funtionele
+        Jmol was oorspronkelijk opgezet om een volledige functionele
         vervanger van XMol te worden. XMol was een moleculair weergave
         programma, ontwikkeld aan het Minnesota Supercomputer Center.
         Hoewel het programma werd gedistribueerd, werd de broncode nooit
@@ -70,7 +70,7 @@
       </p>
       <p>
         In de eerste maanden heeft Miguel bijgedragen door een Spaanse
-        vertaling en een initiïle authentificatie te schrijven voor de
+        vertaling en een initi&#x00EB;le authentificatie te schrijven voor de
         RasMol/Chime scriptlezer. Hij heeft daarna nog enkele
         prestatieverbeteringen doorgevoerd en begon de software aan te
         passen om beter en sneller te werken.
@@ -109,7 +109,7 @@
       </p>
     </section>
 
-    <section title="Jmol Literature">
+    <section title="Jmol Literatuur">
       <p>
         Een up-to-date lijst van literatuur die Jmol beschijft kan
         gevonden worden op

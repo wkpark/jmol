@@ -3882,6 +3882,9 @@
   <fah_proj number="2075" name="p2075_BBA5" public="y" file="y"
     server="171.64.122.70" atoms="12200" preferred="11" deadline="15"
     credit="48" frames="100" code="DG" contact="alexrson"/>
+  <fah_proj number="2076" name="p2076_A21_agbnp_amber99" public="y"
+    server="171.64.122.136" atoms="222" preferred="32" deadline="47"
+    credit="166" frames="100" code="GB" contact="luttmann"/>
 
   <!-- Projects 2100 to 2199 -->
 
@@ -3988,8 +3991,8 @@
     server="171.65.103.150" atoms="20386" preferred="34" deadline="50"
     credit="127" frames="100" code="G" contact="alexrson"/>
   <fah_proj number="2351" name="p2351_IM7" public="n" file="y"
-    server="171.65.103.150" atoms="29073" preferred="35" deadline="51"
-    credit="181" frames="100" code="DG" contact="alexrson"/>
+    server="171.65.103.150" atoms="29073" preferred="120" deadline="200"
+    credit="788" frames="100" code="DG" contact="alexrson"/>
   <fah_proj number="2352" name="p2352_FKBP" public="n" file="y"
     server="171.65.103.150" atoms="25507" preferred="46" deadline="69"
     credit="162" frames="100" code="DG" contact="alexrson"/>
@@ -4030,6 +4033,6 @@
     server="171.65.103.150" atoms="22153" preferred="37" deadline="55"
     credit="136" frames="100" code="DG" contact="alexrson"/>
   <fah_proj number="2365" name="p2365_Protein_A_mutant_Sosnick" public="n" file="y"
-    server="171.65.103.150" atoms="22153" preferred="37" deadline="55"
-    credit="136" frames="100" code="DG" contact="alexrson"/>
+    server="171.65.103.150" atoms="22153" preferred="120" deadline="200"
+    credit="589" frames="100" code="DG" contact="alexrson"/>
 </fah_projects>

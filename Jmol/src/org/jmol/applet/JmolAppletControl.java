@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2002-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,6 @@ package org.jmol.applet;
 
 import java.applet.*;
 import java.awt.*;
-import java.awt.Event;
 import java.util.*;
 import org.jmol.g3d.Graphics3D;
 
@@ -244,7 +243,7 @@ public class JmolAppletControl extends Applet {
       System.out.println(typeName + " with name" + myName + " has no target?");
       return;
     }
-    appletRegistry.scriptButton(targetName, scriptToRun, buttonCallback);
+    appletRegistry.scriptCallback(targetName, scriptToRun, buttonCallback);
   }
 }
 

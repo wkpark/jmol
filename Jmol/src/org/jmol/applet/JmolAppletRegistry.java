@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2002-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -101,23 +101,27 @@ public class JmolAppletRegistry {
     return jsoTop;
   }
   
-  public void scriptButton(String targetName, String script,
-                           String buttonCallback) {
+  public void script(String targetName, String script) {
+    scriptCallback(targetName, script, null);
+  }
+
+  public void scriptCallback(String targetName, String script,
+                             String callbackJavaScript) {
     if (targetName == null || targetName.length() == 0) {
       System.out.println("no targetName specified");
       return;
     }
-    if (tryDirect(targetName, script, buttonCallback))
+    if (tryDirect(targetName, script, callbackJavaScript))
       return;
     /*
-    if (tryJavaScript(targetName, script, buttonCallback))
+    if (tryJavaScript(targetName, script, callbackJavaScript))
       return;
     */
     System.out.println("unable to find target:" + targetName);
   }
 
   private boolean tryDirect(String targetName, String script,
-                            String buttonCallback) {
+                            String callbackJavaScript) {
     System.out.println("tryDirect trying appletContext");
     Object target = appletContext.getApplet(targetName);
     if (target == null) {
@@ -133,15 +137,15 @@ public class JmolAppletRegistry {
       return true;
     }
     JmolAppletInterface targetJmolApplet = (JmolAppletInterface)target;
-    targetJmolApplet.scriptButton((buttonCallback == null
+    targetJmolApplet.scriptButton((callbackJavaScript == null
                                    ? null : getJsoWindow()),
-                                  name, script, buttonCallback);
+                                  name, script, callbackJavaScript);
     return true;
   }
 
   /*
   private boolean tryJavaScript(String targetName, String script,
-                                   String buttonCallback) {
+                                   String callbackJavaScript) {
     if (mayScript) {
       JSObject jsoTop = getJsoTop();
       if (jsoTop != null) {
@@ -149,7 +153,7 @@ public class JmolAppletRegistry {
           jsoTop.eval(functionRunJmolAppletScript);
           jsoTop.call("runJmolAppletScript",
                       new Object[] { targetName, getJsoWindow(), name,
-                                     script, buttonCallback });
+                                     script, callbackJavaScript });
           return true;
         } catch (Exception e) {
           System.out.println("exception calling JavaScript");

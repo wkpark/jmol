@@ -35,8 +35,10 @@
 import org.jmol.api.JmolAppletInterface;
 import netscape.javascript.JSObject;
 
-public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
-
+public class JmolApplet
+  extends org.jmol.appletwrapper.AppletWrapper
+  implements JmolAppletInterface {
+  
   public JmolApplet() {
     super("org.jmol.applet.Jmol",
           "jmol75x29x8.gif",

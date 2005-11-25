@@ -1,0 +1,56 @@
+<html>
+<head><title>jmol controls demo</title>
+</head>
+<body>
+<table border="1">
+<tr>
+<td>
+<h2>caffeine</h2>
+<applet name="jmol" code="JmolApplet" archive="./JmolApplet.jar"
+        width="400" height="400" mayscript="true" >
+	<param name="progressbar"   value="true" />
+	<param name="progresscolor" value="blue" />
+	<param name="boxmessage"    value="Downloading JmolApplet ..." />
+	<param name="boxbgcolor"    value="black" />
+	<param name="boxfgcolor"    value="white" />
+
+        <param name="script"      value="load caffeine.xyz.gz" />
+</applet>
+</td>
+
+<td>
+<hr />
+<applet code="JmolAwtButtonControl" archive="./JmolApplet.jar"
+  height="20" width="100" >
+  <param name="label"  value="awtButton" />
+  <param name="target" value="jmol" />
+  <param name="script" value="spacefill on" />
+</applet> <br />
+<hr />
+<applet code="JmolSwingButtonControl" archive="./JmolApplet.jar"
+  height="25" width="150" >
+  <param name="label"  value="swingButton" />
+  <param name="target" value="jmol" />
+  <param name="script" value="spacefill off" />
+</applet> <br />
+<hr />
+<applet code="JmolSwingTextFieldControl" archive="./JmolApplet.jar"
+  height="25" width="200" >
+  <param name="target" value="jmol" />
+</applet> <br />
+<hr />
+<applet code="JmolSwingTextAreaControl" archive="./JmolApplet.jar"
+  height="200" width="200" >
+  <param name="target" value="jmol" />
+</applet> <br />
+<hr />
+<applet code="JmolSwingSliderControl" archive="./JmolApplet.jar"
+  height="75" width="200" >
+  <param name="target" value="jmol" />
+</applet> <br />
+</td>
+
+</tr>
+</table>
+</body>
+</html>

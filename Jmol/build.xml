@@ -444,6 +444,8 @@ support for assertions (which were introduced in 1.4).
     <jar destfile="JmolApplet1.jar" manifest="manifest/applet1.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/api/**" />
+	<!-- note that this class is included in JmolApplet0.jar -->
+        <exclude name="org/jmol/api/JmolAppletInterface.class" />
         <include name="org/jmol/applet/**" />
       </fileset>
     </jar>
@@ -538,6 +540,7 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
+    <!-- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -->
     <!-- this one must be treated specially because of jar indexing
          we cannot simply rename the jar file, because the index has
          the old name (JmolApplet?.jar) inside it -->
@@ -562,7 +565,7 @@ support for assertions (which were introduced in 1.4).
     <signjar jar="JmolAppletSigned0.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
-
+    <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
   </target>
 
   <target name="dist" id="dist"

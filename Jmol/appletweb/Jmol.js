@@ -382,12 +382,6 @@ function jmolSetMenuCssClass(menuCssClass) {
 // use at your own risk ... you have been WARNED!
 ////////////////////////////////////////////////////////////////
 
-var _jmolArchivePath = "JmolApplet0.jar";
-var _jmolLastJar = 6;
-for (var i = 1; i <= _jmolLastJar; ++i)
-  _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
-_jmolArchivePath = _jmolArchivePath + ",JmolApplet_i18n.jar";
-
 var _jmol = {
   currentDocument: document,
 
@@ -456,9 +450,7 @@ var _jmol = {
   checkBrowserAction: "alert",
   checkBrowserUrlOrMessage: null,
 
-  lastJar: 6, // jars are numbered 0 through lastJar
-  baseAppletName: null, // JmolApplet OR JmolAppletSigned
-  archivePath: null,
+  archivePath: null, // JmolApplet0.jar OR JmolAppletSigned0.jar
 
   previousOnloadHandler: null,
   ready: {}
@@ -501,7 +493,7 @@ with (_jmol) {
                      browserVersion >= 4.78 && browserVersion <= 4.8);
 
   if (os == "win") {
-    isBrowserCompliant = hasGetElementById || isNetscape47Win;
+    isBrowserCompliant = hasGetElementById;
   } else if (os == "mac") { // mac is the problem child :-(
     if (browser == "mozilla" && browserVersion >= 5) {
       // miguel 2004 11 17
@@ -542,13 +534,8 @@ with (_jmol) {
 }
 
 function _jmolUseSignedApplet(useSignedApplet) {
-  with (_jmol) {
-    baseAppletName = useSignedApplet ? "JmolAppletSigned" : "JmolApplet";
-    archivePath = baseAppletName + "0.jar";
-    for (var i = 1; i <= lastJar; ++i)
-      archivePath = archivePath + "," + baseAppletName + i + ".jar";
-    archivePath = archivePath + ",JmolAppletSigned_i18n.jar";
-  }
+  _jmol.archivePath =
+    (useSignedApplet ? "JmolAppletSigned" : "JmolApplet") + "0.jar";
 }
 
 function _jmolApplet(size, inlineModel, script, nameSuffix) {
@@ -574,7 +561,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 	" classid='" + windowsClassId + "'\n" +
         winCodebase + widthAndHeight + ">\n" +
         "  <param name='code' value='JmolApplet' />\n" +
-        "  <param name='archive' value='" + archivePath + "' />\n" +
+        "  <param name='archive' value='" + baseAppletName + "' />\n" +
         "  <param name='mayscript' value='true' />\n" +
         "  <param name='codebase' value='" + codebase + "' />\n";
       tFooter = "</object>";

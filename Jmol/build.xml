@@ -444,7 +444,6 @@ support for assertions (which were introduced in 1.4).
     <jar destfile="JmolApplet1.jar" manifest="manifest/applet1.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/api/**" />
-        <exclude name="org/jmol/api/JmolAppletInterface.class" />
         <include name="org/jmol/applet/**" />
       </fileset>
     </jar>

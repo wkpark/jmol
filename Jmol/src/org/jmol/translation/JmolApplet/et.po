@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-10-14 18:06+0200\n"
+"POT-Creation-Date: 2005-11-27 15:53-0500\n"
 "PO-Revision-Date: 2005-08-12 19:18+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -26,941 +26,941 @@ msgstr ""
 "Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www.jmol."
 "org"
 
-#: org/jmol/applet/Jmol.java:450
+#: org/jmol/applet/Jmol.java:455
 msgid "Jmol executing script ..."
 msgstr "Jmol käivitab skripti ..."
 
-#: org/jmol/applet/Jmol.java:507
+#: org/jmol/applet/Jmol.java:550
 msgid "File Error:"
 msgstr "Faili viga:"
 
-#: org/jmol/applet/Jmol.java:536
+#: org/jmol/applet/Jmol.java:579
 msgid "Jmol script completed"
 msgstr "Jmol skript sai täidetud"
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:652
 msgid "No atoms loaded"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:654
+#: org/jmol/popup/PopupResourceBundle.java:653
 msgid "Name hidden"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:656
+#: org/jmol/popup/PopupResourceBundle.java:655
 msgid "Select"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:657
+#: org/jmol/popup/PopupResourceBundle.java:656
 msgid "Element"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:658
-#: org/openscience/jmol/ui/PopupResourceBundle.java:662
-#: org/openscience/jmol/ui/PopupResourceBundle.java:673
-#: org/openscience/jmol/ui/PopupResourceBundle.java:688
+#: org/jmol/popup/PopupResourceBundle.java:657
+#: org/jmol/popup/PopupResourceBundle.java:661
+#: org/jmol/popup/PopupResourceBundle.java:672
+#: org/jmol/popup/PopupResourceBundle.java:687
 msgid "All"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:659
-#: org/openscience/jmol/ui/PopupResourceBundle.java:783
-#: org/openscience/jmol/ui/PopupResourceBundle.java:792
+#: org/jmol/popup/PopupResourceBundle.java:658
+#: org/jmol/popup/PopupResourceBundle.java:782
+#: org/jmol/popup/PopupResourceBundle.java:791
 msgid "None"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:661
+#: org/jmol/popup/PopupResourceBundle.java:660
 msgid "Protein"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:663
-#: org/openscience/jmol/ui/PopupResourceBundle.java:676
-#: org/openscience/jmol/ui/PopupResourceBundle.java:721
-#: org/openscience/jmol/ui/PopupResourceBundle.java:765
+#: org/jmol/popup/PopupResourceBundle.java:662
+#: org/jmol/popup/PopupResourceBundle.java:675
+#: org/jmol/popup/PopupResourceBundle.java:720
+#: org/jmol/popup/PopupResourceBundle.java:764
 msgid "Backbone"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:664
+#: org/jmol/popup/PopupResourceBundle.java:663
 msgid "Side Chains"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:665
+#: org/jmol/popup/PopupResourceBundle.java:664
 msgid "Polar Residues"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:666
+#: org/jmol/popup/PopupResourceBundle.java:665
 msgid "Nonpolar Residues"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:667
+#: org/jmol/popup/PopupResourceBundle.java:666
 msgid "Basic Residues (+)"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:668
+#: org/jmol/popup/PopupResourceBundle.java:667
 msgid "Acidic Residues (-)"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:669
+#: org/jmol/popup/PopupResourceBundle.java:668
 msgid "Uncharged Residues"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:670
+#: org/jmol/popup/PopupResourceBundle.java:669
 msgid "By Residue Name"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:672
+#: org/jmol/popup/PopupResourceBundle.java:671
 msgid "Nucleic"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:674
+#: org/jmol/popup/PopupResourceBundle.java:673
 msgid "DNA"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:675
+#: org/jmol/popup/PopupResourceBundle.java:674
 msgid "ARN"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:677
+#: org/jmol/popup/PopupResourceBundle.java:676
 msgid "Bases"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:678
+#: org/jmol/popup/PopupResourceBundle.java:677
 msgid "AT pairs"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:679
+#: org/jmol/popup/PopupResourceBundle.java:678
 msgid "GC pairs"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:680
+#: org/jmol/popup/PopupResourceBundle.java:679
 msgid "AU pairs"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:687
+#: org/jmol/popup/PopupResourceBundle.java:686
 msgid "hetero"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:689
+#: org/jmol/popup/PopupResourceBundle.java:688
 msgid "Solvent"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:690
+#: org/jmol/popup/PopupResourceBundle.java:689
 msgid "Water"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:691
+#: org/jmol/popup/PopupResourceBundle.java:690
 msgid "Except Solvent"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:692
+#: org/jmol/popup/PopupResourceBundle.java:691
 msgid "Except Water"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:693
+#: org/jmol/popup/PopupResourceBundle.java:692
 msgid "Ligand"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:695
-#: org/openscience/jmol/ui/PopupResourceBundle.java:698
+#: org/jmol/popup/PopupResourceBundle.java:694
+#: org/jmol/popup/PopupResourceBundle.java:697
 msgid "Other"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:696
+#: org/jmol/popup/PopupResourceBundle.java:695
 msgid "Carbohydrate"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:697
+#: org/jmol/popup/PopupResourceBundle.java:696
 msgid "Lipid"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:700
+#: org/jmol/popup/PopupResourceBundle.java:699
 msgid "Model"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:701
+#: org/jmol/popup/PopupResourceBundle.java:700
 msgid "All Models"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:703
+#: org/jmol/popup/PopupResourceBundle.java:702
 msgid "Frame"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:704
+#: org/jmol/popup/PopupResourceBundle.java:703
 msgid "All Frames"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:706
+#: org/jmol/popup/PopupResourceBundle.java:705
 msgid "Invert Selection"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:708
+#: org/jmol/popup/PopupResourceBundle.java:707
 msgid "Display Selected Only"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:710
+#: org/jmol/popup/PopupResourceBundle.java:709
 msgid "Set Select Mode"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:711
+#: org/jmol/popup/PopupResourceBundle.java:710
 msgid "Replace Selection"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:712
+#: org/jmol/popup/PopupResourceBundle.java:711
 msgid "Add to Selection (OR)"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:713
+#: org/jmol/popup/PopupResourceBundle.java:712
 msgid "Narrow Selection (AND)"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:715
+#: org/jmol/popup/PopupResourceBundle.java:714
 msgid "Render"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:716
+#: org/jmol/popup/PopupResourceBundle.java:715
 msgid "Scheme"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:717
+#: org/jmol/popup/PopupResourceBundle.java:716
 msgid "CPK Spacefill"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:718
+#: org/jmol/popup/PopupResourceBundle.java:717
 msgid "Ball and Stick"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:719
+#: org/jmol/popup/PopupResourceBundle.java:718
 msgid "Sticks"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:720
+#: org/jmol/popup/PopupResourceBundle.java:719
 msgid "Wireframe"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:723
-#: org/openscience/jmol/ui/PopupResourceBundle.java:805
+#: org/jmol/popup/PopupResourceBundle.java:722
+#: org/jmol/popup/PopupResourceBundle.java:804
 msgid "Atoms"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:724
-#: org/openscience/jmol/ui/PopupResourceBundle.java:733
-#: org/openscience/jmol/ui/PopupResourceBundle.java:742
-#: org/openscience/jmol/ui/PopupResourceBundle.java:753
-#: org/openscience/jmol/ui/PopupResourceBundle.java:764
-#: org/openscience/jmol/ui/PopupResourceBundle.java:771
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1027
+#: org/jmol/popup/PopupResourceBundle.java:723
+#: org/jmol/popup/PopupResourceBundle.java:732
+#: org/jmol/popup/PopupResourceBundle.java:741
+#: org/jmol/popup/PopupResourceBundle.java:752
+#: org/jmol/popup/PopupResourceBundle.java:763
+#: org/jmol/popup/PopupResourceBundle.java:770
+#: org/jmol/popup/PopupResourceBundle.java:1026
 msgid "Off"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:725
-#: org/openscience/jmol/ui/PopupResourceBundle.java:726
-#: org/openscience/jmol/ui/PopupResourceBundle.java:727
-#: org/openscience/jmol/ui/PopupResourceBundle.java:728
-#: org/openscience/jmol/ui/PopupResourceBundle.java:729
-#: org/openscience/jmol/ui/PopupResourceBundle.java:730
+#: org/jmol/popup/PopupResourceBundle.java:724
+#: org/jmol/popup/PopupResourceBundle.java:725
+#: org/jmol/popup/PopupResourceBundle.java:726
+#: org/jmol/popup/PopupResourceBundle.java:727
+#: org/jmol/popup/PopupResourceBundle.java:728
+#: org/jmol/popup/PopupResourceBundle.java:729
 #, java-format
 msgid "{0}% vanderWaals"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:732
-#: org/openscience/jmol/ui/PopupResourceBundle.java:854
+#: org/jmol/popup/PopupResourceBundle.java:731
+#: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Bonds"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:734
-#: org/openscience/jmol/ui/PopupResourceBundle.java:743
-#: org/openscience/jmol/ui/PopupResourceBundle.java:754
-#: org/openscience/jmol/ui/PopupResourceBundle.java:772
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1026
+#: org/jmol/popup/PopupResourceBundle.java:733
+#: org/jmol/popup/PopupResourceBundle.java:742
+#: org/jmol/popup/PopupResourceBundle.java:753
+#: org/jmol/popup/PopupResourceBundle.java:771
+#: org/jmol/popup/PopupResourceBundle.java:1025
 msgid "On"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:741
-#: org/openscience/jmol/ui/PopupResourceBundle.java:867
+#: org/jmol/popup/PopupResourceBundle.java:740
+#: org/jmol/popup/PopupResourceBundle.java:866
 msgid "Hydrogen Bonds"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:744
+#: org/jmol/popup/PopupResourceBundle.java:743
 msgid "Set H-Bonds Side Chain"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:745
+#: org/jmol/popup/PopupResourceBundle.java:744
 msgid "Set H-Bonds Backbone"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:752
-#: org/openscience/jmol/ui/PopupResourceBundle.java:880
+#: org/jmol/popup/PopupResourceBundle.java:751
+#: org/jmol/popup/PopupResourceBundle.java:879
 msgid "Disulfide Bonds"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:755
+#: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Set SS-Bonds Side Chain"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:756
+#: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Set SS-Bonds Backbone"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:763
+#: org/jmol/popup/PopupResourceBundle.java:762
 msgid "Structures"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:766
-#: org/openscience/jmol/ui/PopupResourceBundle.java:914
+#: org/jmol/popup/PopupResourceBundle.java:765
+#: org/jmol/popup/PopupResourceBundle.java:913
 msgid "Trace"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:767
-#: org/openscience/jmol/ui/PopupResourceBundle.java:935
+#: org/jmol/popup/PopupResourceBundle.java:766
+#: org/jmol/popup/PopupResourceBundle.java:934
 msgid "Cartoon"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:768
-#: org/openscience/jmol/ui/PopupResourceBundle.java:956
+#: org/jmol/popup/PopupResourceBundle.java:767
+#: org/jmol/popup/PopupResourceBundle.java:955
 msgid "Ribbons"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:770
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1002
+#: org/jmol/popup/PopupResourceBundle.java:769
+#: org/jmol/popup/PopupResourceBundle.java:1001
 msgid "Vectors"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:773
+#: org/jmol/popup/PopupResourceBundle.java:772
 #, java-format
 msgid "{0} pixels"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:776
-#: org/openscience/jmol/ui/PopupResourceBundle.java:777
-#: org/openscience/jmol/ui/PopupResourceBundle.java:778
-#: org/openscience/jmol/ui/PopupResourceBundle.java:779
-#: org/openscience/jmol/ui/PopupResourceBundle.java:780
+#: org/jmol/popup/PopupResourceBundle.java:775
+#: org/jmol/popup/PopupResourceBundle.java:776
+#: org/jmol/popup/PopupResourceBundle.java:777
+#: org/jmol/popup/PopupResourceBundle.java:778
+#: org/jmol/popup/PopupResourceBundle.java:779
 #, java-format
 msgid "Scale {0}"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:784
+#: org/jmol/popup/PopupResourceBundle.java:783
 msgid "Red+Cyan glasses"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:785
+#: org/jmol/popup/PopupResourceBundle.java:784
 msgid "Red+Blue glasses"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:786
+#: org/jmol/popup/PopupResourceBundle.java:785
 msgid "Red+Green glasses"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:787
+#: org/jmol/popup/PopupResourceBundle.java:786
 msgid "Cross-eyed viewing"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:788
+#: org/jmol/popup/PopupResourceBundle.java:787
 msgid "Wall-eyed viewing"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:790
-#: org/openscience/jmol/ui/PopupResourceBundle.java:977
+#: org/jmol/popup/PopupResourceBundle.java:789
+#: org/jmol/popup/PopupResourceBundle.java:976
 msgid "Labels"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:793
+#: org/jmol/popup/PopupResourceBundle.java:792
 msgid "With Element Symbol"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:794
+#: org/jmol/popup/PopupResourceBundle.java:793
 msgid "With Atom Name"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:795
+#: org/jmol/popup/PopupResourceBundle.java:794
 msgid "With Atom Number"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:797
+#: org/jmol/popup/PopupResourceBundle.java:796
 msgid "Position Label on Atom"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:798
+#: org/jmol/popup/PopupResourceBundle.java:797
 msgid "Centered"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:799
+#: org/jmol/popup/PopupResourceBundle.java:798
 msgid "Upper Right"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:800
+#: org/jmol/popup/PopupResourceBundle.java:799
 msgid "Lower Right"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:801
+#: org/jmol/popup/PopupResourceBundle.java:800
 msgid "Upper Left"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:802
+#: org/jmol/popup/PopupResourceBundle.java:801
 msgid "Lower Left"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:804
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1105
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1128
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1151
+#: org/jmol/popup/PopupResourceBundle.java:803
+#: org/jmol/popup/PopupResourceBundle.java:1104
+#: org/jmol/popup/PopupResourceBundle.java:1127
+#: org/jmol/popup/PopupResourceBundle.java:1150
 msgid "Color"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:807
-#: org/openscience/jmol/ui/PopupResourceBundle.java:896
-#: org/openscience/jmol/ui/PopupResourceBundle.java:917
-#: org/openscience/jmol/ui/PopupResourceBundle.java:938
-#: org/openscience/jmol/ui/PopupResourceBundle.java:959
+#: org/jmol/popup/PopupResourceBundle.java:806
+#: org/jmol/popup/PopupResourceBundle.java:895
+#: org/jmol/popup/PopupResourceBundle.java:916
+#: org/jmol/popup/PopupResourceBundle.java:937
+#: org/jmol/popup/PopupResourceBundle.java:958
 msgid "By Scheme"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:808
-#: org/openscience/jmol/ui/PopupResourceBundle.java:897
-#: org/openscience/jmol/ui/PopupResourceBundle.java:918
-#: org/openscience/jmol/ui/PopupResourceBundle.java:939
-#: org/openscience/jmol/ui/PopupResourceBundle.java:960
+#: org/jmol/popup/PopupResourceBundle.java:807
+#: org/jmol/popup/PopupResourceBundle.java:896
+#: org/jmol/popup/PopupResourceBundle.java:917
+#: org/jmol/popup/PopupResourceBundle.java:938
+#: org/jmol/popup/PopupResourceBundle.java:959
 msgid "Element (CPK)"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:809
-#: org/openscience/jmol/ui/PopupResourceBundle.java:898
-#: org/openscience/jmol/ui/PopupResourceBundle.java:919
-#: org/openscience/jmol/ui/PopupResourceBundle.java:940
-#: org/openscience/jmol/ui/PopupResourceBundle.java:961
+#: org/jmol/popup/PopupResourceBundle.java:808
+#: org/jmol/popup/PopupResourceBundle.java:897
+#: org/jmol/popup/PopupResourceBundle.java:918
+#: org/jmol/popup/PopupResourceBundle.java:939
+#: org/jmol/popup/PopupResourceBundle.java:960
 msgid "Amino"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:810
-#: org/openscience/jmol/ui/PopupResourceBundle.java:899
-#: org/openscience/jmol/ui/PopupResourceBundle.java:920
-#: org/openscience/jmol/ui/PopupResourceBundle.java:941
-#: org/openscience/jmol/ui/PopupResourceBundle.java:962
+#: org/jmol/popup/PopupResourceBundle.java:809
+#: org/jmol/popup/PopupResourceBundle.java:898
+#: org/jmol/popup/PopupResourceBundle.java:919
+#: org/jmol/popup/PopupResourceBundle.java:940
+#: org/jmol/popup/PopupResourceBundle.java:961
 msgid "Secondary Structure"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:811
-#: org/openscience/jmol/ui/PopupResourceBundle.java:900
-#: org/openscience/jmol/ui/PopupResourceBundle.java:921
-#: org/openscience/jmol/ui/PopupResourceBundle.java:942
-#: org/openscience/jmol/ui/PopupResourceBundle.java:963
+#: org/jmol/popup/PopupResourceBundle.java:810
+#: org/jmol/popup/PopupResourceBundle.java:899
+#: org/jmol/popup/PopupResourceBundle.java:920
+#: org/jmol/popup/PopupResourceBundle.java:941
+#: org/jmol/popup/PopupResourceBundle.java:962
 msgid "Chain"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:812
+#: org/jmol/popup/PopupResourceBundle.java:811
 msgid "Formal Charge"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:813
+#: org/jmol/popup/PopupResourceBundle.java:812
 msgid "Partial Charge"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:815
-#: org/openscience/jmol/ui/PopupResourceBundle.java:863
-#: org/openscience/jmol/ui/PopupResourceBundle.java:876
-#: org/openscience/jmol/ui/PopupResourceBundle.java:889
-#: org/openscience/jmol/ui/PopupResourceBundle.java:903
-#: org/openscience/jmol/ui/PopupResourceBundle.java:924
-#: org/openscience/jmol/ui/PopupResourceBundle.java:945
-#: org/openscience/jmol/ui/PopupResourceBundle.java:966
-#: org/openscience/jmol/ui/PopupResourceBundle.java:979
-#: org/openscience/jmol/ui/PopupResourceBundle.java:991
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1004
+#: org/jmol/popup/PopupResourceBundle.java:814
+#: org/jmol/popup/PopupResourceBundle.java:862
+#: org/jmol/popup/PopupResourceBundle.java:875
+#: org/jmol/popup/PopupResourceBundle.java:888
+#: org/jmol/popup/PopupResourceBundle.java:902
+#: org/jmol/popup/PopupResourceBundle.java:923
+#: org/jmol/popup/PopupResourceBundle.java:944
+#: org/jmol/popup/PopupResourceBundle.java:965
+#: org/jmol/popup/PopupResourceBundle.java:978
+#: org/jmol/popup/PopupResourceBundle.java:990
+#: org/jmol/popup/PopupResourceBundle.java:1003
 msgid "Black"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:816
-#: org/openscience/jmol/ui/PopupResourceBundle.java:864
-#: org/openscience/jmol/ui/PopupResourceBundle.java:877
-#: org/openscience/jmol/ui/PopupResourceBundle.java:890
-#: org/openscience/jmol/ui/PopupResourceBundle.java:904
-#: org/openscience/jmol/ui/PopupResourceBundle.java:925
-#: org/openscience/jmol/ui/PopupResourceBundle.java:946
-#: org/openscience/jmol/ui/PopupResourceBundle.java:967
-#: org/openscience/jmol/ui/PopupResourceBundle.java:980
-#: org/openscience/jmol/ui/PopupResourceBundle.java:992
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1005
+#: org/jmol/popup/PopupResourceBundle.java:815
+#: org/jmol/popup/PopupResourceBundle.java:863
+#: org/jmol/popup/PopupResourceBundle.java:876
+#: org/jmol/popup/PopupResourceBundle.java:889
+#: org/jmol/popup/PopupResourceBundle.java:903
+#: org/jmol/popup/PopupResourceBundle.java:924
+#: org/jmol/popup/PopupResourceBundle.java:945
+#: org/jmol/popup/PopupResourceBundle.java:966
+#: org/jmol/popup/PopupResourceBundle.java:979
+#: org/jmol/popup/PopupResourceBundle.java:991
+#: org/jmol/popup/PopupResourceBundle.java:1004
 msgid "White"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:818
-#: org/openscience/jmol/ui/PopupResourceBundle.java:819
-#: org/openscience/jmol/ui/PopupResourceBundle.java:856
-#: org/openscience/jmol/ui/PopupResourceBundle.java:869
-#: org/openscience/jmol/ui/PopupResourceBundle.java:882
-#: org/openscience/jmol/ui/PopupResourceBundle.java:905
-#: org/openscience/jmol/ui/PopupResourceBundle.java:926
-#: org/openscience/jmol/ui/PopupResourceBundle.java:947
-#: org/openscience/jmol/ui/PopupResourceBundle.java:968
-#: org/openscience/jmol/ui/PopupResourceBundle.java:981
-#: org/openscience/jmol/ui/PopupResourceBundle.java:993
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1006
+#: org/jmol/popup/PopupResourceBundle.java:817
+#: org/jmol/popup/PopupResourceBundle.java:818
+#: org/jmol/popup/PopupResourceBundle.java:855
+#: org/jmol/popup/PopupResourceBundle.java:868
+#: org/jmol/popup/PopupResourceBundle.java:881
+#: org/jmol/popup/PopupResourceBundle.java:904
+#: org/jmol/popup/PopupResourceBundle.java:925
+#: org/jmol/popup/PopupResourceBundle.java:946
+#: org/jmol/popup/PopupResourceBundle.java:967
+#: org/jmol/popup/PopupResourceBundle.java:980
+#: org/jmol/popup/PopupResourceBundle.java:992
+#: org/jmol/popup/PopupResourceBundle.java:1005
 msgid "Red"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:820
+#: org/jmol/popup/PopupResourceBundle.java:819
 msgid "Crimson"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:821
+#: org/jmol/popup/PopupResourceBundle.java:820
 msgid "Dark Red"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:822
+#: org/jmol/popup/PopupResourceBundle.java:821
 msgid "Firebrick"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:823
+#: org/jmol/popup/PopupResourceBundle.java:822
 msgid "Indian Red"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:824
+#: org/jmol/popup/PopupResourceBundle.java:823
 msgid "Dark Magenta"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:825
+#: org/jmol/popup/PopupResourceBundle.java:824
 msgid "Dark Salmon"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:826
+#: org/jmol/popup/PopupResourceBundle.java:825
 msgid "Light Salmon"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:827
+#: org/jmol/popup/PopupResourceBundle.java:826
 msgid "Deep Pink"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:828
+#: org/jmol/popup/PopupResourceBundle.java:827
 msgid "Light Pink"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:830
-#: org/openscience/jmol/ui/PopupResourceBundle.java:831
-#: org/openscience/jmol/ui/PopupResourceBundle.java:858
-#: org/openscience/jmol/ui/PopupResourceBundle.java:871
-#: org/openscience/jmol/ui/PopupResourceBundle.java:884
-#: org/openscience/jmol/ui/PopupResourceBundle.java:907
-#: org/openscience/jmol/ui/PopupResourceBundle.java:928
-#: org/openscience/jmol/ui/PopupResourceBundle.java:949
-#: org/openscience/jmol/ui/PopupResourceBundle.java:970
-#: org/openscience/jmol/ui/PopupResourceBundle.java:983
-#: org/openscience/jmol/ui/PopupResourceBundle.java:995
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1008
+#: org/jmol/popup/PopupResourceBundle.java:829
+#: org/jmol/popup/PopupResourceBundle.java:830
+#: org/jmol/popup/PopupResourceBundle.java:857
+#: org/jmol/popup/PopupResourceBundle.java:870
+#: org/jmol/popup/PopupResourceBundle.java:883
+#: org/jmol/popup/PopupResourceBundle.java:906
+#: org/jmol/popup/PopupResourceBundle.java:927
+#: org/jmol/popup/PopupResourceBundle.java:948
+#: org/jmol/popup/PopupResourceBundle.java:969
+#: org/jmol/popup/PopupResourceBundle.java:982
+#: org/jmol/popup/PopupResourceBundle.java:994
+#: org/jmol/popup/PopupResourceBundle.java:1007
 msgid "Yellow"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:832
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1108
+#: org/jmol/popup/PopupResourceBundle.java:831
+#: org/jmol/popup/PopupResourceBundle.java:1107
 msgid "Gold"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:833
+#: org/jmol/popup/PopupResourceBundle.java:832
 msgid "Goldenrod"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:834
+#: org/jmol/popup/PopupResourceBundle.java:833
 msgid "Lemon Chiffon"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:835
+#: org/jmol/popup/PopupResourceBundle.java:834
 msgid "Yellow-Green"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:837
-#: org/openscience/jmol/ui/PopupResourceBundle.java:838
-#: org/openscience/jmol/ui/PopupResourceBundle.java:859
-#: org/openscience/jmol/ui/PopupResourceBundle.java:872
-#: org/openscience/jmol/ui/PopupResourceBundle.java:885
-#: org/openscience/jmol/ui/PopupResourceBundle.java:908
-#: org/openscience/jmol/ui/PopupResourceBundle.java:929
-#: org/openscience/jmol/ui/PopupResourceBundle.java:950
-#: org/openscience/jmol/ui/PopupResourceBundle.java:971
-#: org/openscience/jmol/ui/PopupResourceBundle.java:984
-#: org/openscience/jmol/ui/PopupResourceBundle.java:996
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1009
+#: org/jmol/popup/PopupResourceBundle.java:836
+#: org/jmol/popup/PopupResourceBundle.java:837
+#: org/jmol/popup/PopupResourceBundle.java:858
+#: org/jmol/popup/PopupResourceBundle.java:871
+#: org/jmol/popup/PopupResourceBundle.java:884
+#: org/jmol/popup/PopupResourceBundle.java:907
+#: org/jmol/popup/PopupResourceBundle.java:928
+#: org/jmol/popup/PopupResourceBundle.java:949
+#: org/jmol/popup/PopupResourceBundle.java:970
+#: org/jmol/popup/PopupResourceBundle.java:983
+#: org/jmol/popup/PopupResourceBundle.java:995
+#: org/jmol/popup/PopupResourceBundle.java:1008
 msgid "Green"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:839
+#: org/jmol/popup/PopupResourceBundle.java:838
 msgid "Lime"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:840
+#: org/jmol/popup/PopupResourceBundle.java:839
 msgid "Seagreen"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:841
+#: org/jmol/popup/PopupResourceBundle.java:840
 msgid "Green-Blue"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:842
+#: org/jmol/popup/PopupResourceBundle.java:841
 msgid "Spring Green"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:844
-#: org/openscience/jmol/ui/PopupResourceBundle.java:845
-#: org/openscience/jmol/ui/PopupResourceBundle.java:860
-#: org/openscience/jmol/ui/PopupResourceBundle.java:873
-#: org/openscience/jmol/ui/PopupResourceBundle.java:886
-#: org/openscience/jmol/ui/PopupResourceBundle.java:909
-#: org/openscience/jmol/ui/PopupResourceBundle.java:930
-#: org/openscience/jmol/ui/PopupResourceBundle.java:951
-#: org/openscience/jmol/ui/PopupResourceBundle.java:972
-#: org/openscience/jmol/ui/PopupResourceBundle.java:985
-#: org/openscience/jmol/ui/PopupResourceBundle.java:997
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1010
+#: org/jmol/popup/PopupResourceBundle.java:843
+#: org/jmol/popup/PopupResourceBundle.java:844
+#: org/jmol/popup/PopupResourceBundle.java:859
+#: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:885
+#: org/jmol/popup/PopupResourceBundle.java:908
+#: org/jmol/popup/PopupResourceBundle.java:929
+#: org/jmol/popup/PopupResourceBundle.java:950
+#: org/jmol/popup/PopupResourceBundle.java:971
+#: org/jmol/popup/PopupResourceBundle.java:984
+#: org/jmol/popup/PopupResourceBundle.java:996
+#: org/jmol/popup/PopupResourceBundle.java:1009
 msgid "Blue"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:846
+#: org/jmol/popup/PopupResourceBundle.java:845
 msgid "Aqua"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:847
+#: org/jmol/popup/PopupResourceBundle.java:846
 msgid "Azure"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:848
+#: org/jmol/popup/PopupResourceBundle.java:847
 msgid "Carolina Blue"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:849
+#: org/jmol/popup/PopupResourceBundle.java:848
 msgid "Cadet Blue"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:850
+#: org/jmol/popup/PopupResourceBundle.java:849
 msgid "Cornflower"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:851
+#: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Dark Slate Blue"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:852
+#: org/jmol/popup/PopupResourceBundle.java:851
 msgid "Light Steel Blue"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:855
-#: org/openscience/jmol/ui/PopupResourceBundle.java:868
-#: org/openscience/jmol/ui/PopupResourceBundle.java:881
-#: org/openscience/jmol/ui/PopupResourceBundle.java:894
-#: org/openscience/jmol/ui/PopupResourceBundle.java:915
-#: org/openscience/jmol/ui/PopupResourceBundle.java:936
-#: org/openscience/jmol/ui/PopupResourceBundle.java:957
-#: org/openscience/jmol/ui/PopupResourceBundle.java:978
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1003
+#: org/jmol/popup/PopupResourceBundle.java:854
+#: org/jmol/popup/PopupResourceBundle.java:867
+#: org/jmol/popup/PopupResourceBundle.java:880
+#: org/jmol/popup/PopupResourceBundle.java:893
+#: org/jmol/popup/PopupResourceBundle.java:914
+#: org/jmol/popup/PopupResourceBundle.java:935
+#: org/jmol/popup/PopupResourceBundle.java:956
+#: org/jmol/popup/PopupResourceBundle.java:977
+#: org/jmol/popup/PopupResourceBundle.java:1002
 msgid "Inherit"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:857
-#: org/openscience/jmol/ui/PopupResourceBundle.java:870
-#: org/openscience/jmol/ui/PopupResourceBundle.java:883
-#: org/openscience/jmol/ui/PopupResourceBundle.java:906
-#: org/openscience/jmol/ui/PopupResourceBundle.java:927
-#: org/openscience/jmol/ui/PopupResourceBundle.java:948
-#: org/openscience/jmol/ui/PopupResourceBundle.java:969
-#: org/openscience/jmol/ui/PopupResourceBundle.java:982
-#: org/openscience/jmol/ui/PopupResourceBundle.java:994
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1007
+#: org/jmol/popup/PopupResourceBundle.java:856
+#: org/jmol/popup/PopupResourceBundle.java:869
+#: org/jmol/popup/PopupResourceBundle.java:882
+#: org/jmol/popup/PopupResourceBundle.java:905
+#: org/jmol/popup/PopupResourceBundle.java:926
+#: org/jmol/popup/PopupResourceBundle.java:947
+#: org/jmol/popup/PopupResourceBundle.java:968
+#: org/jmol/popup/PopupResourceBundle.java:981
+#: org/jmol/popup/PopupResourceBundle.java:993
+#: org/jmol/popup/PopupResourceBundle.java:1006
 msgid "Orange"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:861
-#: org/openscience/jmol/ui/PopupResourceBundle.java:874
-#: org/openscience/jmol/ui/PopupResourceBundle.java:887
-#: org/openscience/jmol/ui/PopupResourceBundle.java:910
-#: org/openscience/jmol/ui/PopupResourceBundle.java:931
-#: org/openscience/jmol/ui/PopupResourceBundle.java:952
-#: org/openscience/jmol/ui/PopupResourceBundle.java:973
-#: org/openscience/jmol/ui/PopupResourceBundle.java:986
-#: org/openscience/jmol/ui/PopupResourceBundle.java:998
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1011
+#: org/jmol/popup/PopupResourceBundle.java:860
+#: org/jmol/popup/PopupResourceBundle.java:873
+#: org/jmol/popup/PopupResourceBundle.java:886
+#: org/jmol/popup/PopupResourceBundle.java:909
+#: org/jmol/popup/PopupResourceBundle.java:930
+#: org/jmol/popup/PopupResourceBundle.java:951
+#: org/jmol/popup/PopupResourceBundle.java:972
+#: org/jmol/popup/PopupResourceBundle.java:985
+#: org/jmol/popup/PopupResourceBundle.java:997
+#: org/jmol/popup/PopupResourceBundle.java:1010
 msgid "Indigo"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:862
-#: org/openscience/jmol/ui/PopupResourceBundle.java:875
-#: org/openscience/jmol/ui/PopupResourceBundle.java:888
-#: org/openscience/jmol/ui/PopupResourceBundle.java:911
-#: org/openscience/jmol/ui/PopupResourceBundle.java:932
-#: org/openscience/jmol/ui/PopupResourceBundle.java:953
-#: org/openscience/jmol/ui/PopupResourceBundle.java:974
-#: org/openscience/jmol/ui/PopupResourceBundle.java:987
-#: org/openscience/jmol/ui/PopupResourceBundle.java:999
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1012
+#: org/jmol/popup/PopupResourceBundle.java:861
+#: org/jmol/popup/PopupResourceBundle.java:874
+#: org/jmol/popup/PopupResourceBundle.java:887
+#: org/jmol/popup/PopupResourceBundle.java:910
+#: org/jmol/popup/PopupResourceBundle.java:931
+#: org/jmol/popup/PopupResourceBundle.java:952
+#: org/jmol/popup/PopupResourceBundle.java:973
+#: org/jmol/popup/PopupResourceBundle.java:986
+#: org/jmol/popup/PopupResourceBundle.java:998
+#: org/jmol/popup/PopupResourceBundle.java:1011
 msgid "Violet"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:865
-#: org/openscience/jmol/ui/PopupResourceBundle.java:878
-#: org/openscience/jmol/ui/PopupResourceBundle.java:891
-#: org/openscience/jmol/ui/PopupResourceBundle.java:912
-#: org/openscience/jmol/ui/PopupResourceBundle.java:933
-#: org/openscience/jmol/ui/PopupResourceBundle.java:954
-#: org/openscience/jmol/ui/PopupResourceBundle.java:975
-#: org/openscience/jmol/ui/PopupResourceBundle.java:988
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1000
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1013
+#: org/jmol/popup/PopupResourceBundle.java:864
+#: org/jmol/popup/PopupResourceBundle.java:877
+#: org/jmol/popup/PopupResourceBundle.java:890
+#: org/jmol/popup/PopupResourceBundle.java:911
+#: org/jmol/popup/PopupResourceBundle.java:932
+#: org/jmol/popup/PopupResourceBundle.java:953
+#: org/jmol/popup/PopupResourceBundle.java:974
+#: org/jmol/popup/PopupResourceBundle.java:987
+#: org/jmol/popup/PopupResourceBundle.java:999
+#: org/jmol/popup/PopupResourceBundle.java:1012
 msgid "Cyan"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:901
-#: org/openscience/jmol/ui/PopupResourceBundle.java:922
-#: org/openscience/jmol/ui/PopupResourceBundle.java:943
-#: org/openscience/jmol/ui/PopupResourceBundle.java:964
+#: org/jmol/popup/PopupResourceBundle.java:900
+#: org/jmol/popup/PopupResourceBundle.java:921
+#: org/jmol/popup/PopupResourceBundle.java:942
+#: org/jmol/popup/PopupResourceBundle.java:963
 msgid "Charge"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:990
+#: org/jmol/popup/PopupResourceBundle.java:989
 msgid "Background"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1015
+#: org/jmol/popup/PopupResourceBundle.java:1014
 msgid "Zoom"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1022
+#: org/jmol/popup/PopupResourceBundle.java:1021
 msgid "Zoom In"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1023
+#: org/jmol/popup/PopupResourceBundle.java:1022
 msgid "Zoom Out"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1025
+#: org/jmol/popup/PopupResourceBundle.java:1024
 msgid "Spin"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1029
+#: org/jmol/popup/PopupResourceBundle.java:1028
 msgid "Set X Rate"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1038
+#: org/jmol/popup/PopupResourceBundle.java:1037
 msgid "Set Y Rate"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1047
+#: org/jmol/popup/PopupResourceBundle.java:1046
 msgid "Set Z Rate"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1056
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1074
+#: org/jmol/popup/PopupResourceBundle.java:1055
+#: org/jmol/popup/PopupResourceBundle.java:1073
 msgid "Set FPS"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1063
+#: org/jmol/popup/PopupResourceBundle.java:1062
 msgid "Animate"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1064
+#: org/jmol/popup/PopupResourceBundle.java:1063
 msgid "Animation Mode"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1065
+#: org/jmol/popup/PopupResourceBundle.java:1064
 msgid "Play Once"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1066
+#: org/jmol/popup/PopupResourceBundle.java:1065
 msgid "Palindrome"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1067
+#: org/jmol/popup/PopupResourceBundle.java:1066
 msgid "Loop"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1068
+#: org/jmol/popup/PopupResourceBundle.java:1067
 msgid "Play"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1069
+#: org/jmol/popup/PopupResourceBundle.java:1068
 msgid "Stop"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1070
+#: org/jmol/popup/PopupResourceBundle.java:1069
 msgid "Next Frame"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1071
+#: org/jmol/popup/PopupResourceBundle.java:1070
 msgid "Previous Frame"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1072
+#: org/jmol/popup/PopupResourceBundle.java:1071
 msgid "Rewind"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1073
+#: org/jmol/popup/PopupResourceBundle.java:1072
 msgid "Reverse Play"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1081
+#: org/jmol/popup/PopupResourceBundle.java:1080
 msgid "Measurements"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1082
+#: org/jmol/popup/PopupResourceBundle.java:1081
 msgid "Nanometers"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1083
+#: org/jmol/popup/PopupResourceBundle.java:1082
 msgid "Angstroms"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1084
+#: org/jmol/popup/PopupResourceBundle.java:1083
 msgid "Picometers"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1086
+#: org/jmol/popup/PopupResourceBundle.java:1085
 msgid "Crystal"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1088
+#: org/jmol/popup/PopupResourceBundle.java:1087
 msgid "Axes"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1089
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1112
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1135
+#: org/jmol/popup/PopupResourceBundle.java:1088
+#: org/jmol/popup/PopupResourceBundle.java:1111
+#: org/jmol/popup/PopupResourceBundle.java:1134
 msgid "Hide"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1090
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1113
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1136
+#: org/jmol/popup/PopupResourceBundle.java:1089
+#: org/jmol/popup/PopupResourceBundle.java:1112
+#: org/jmol/popup/PopupResourceBundle.java:1135
 msgid "Dotted"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1092
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1138
+#: org/jmol/popup/PopupResourceBundle.java:1091
+#: org/jmol/popup/PopupResourceBundle.java:1137
 msgid "Pixel Width"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1093
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1094
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1095
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1096
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1116
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1117
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1118
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1119
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1139
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1140
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1141
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1142
+#: org/jmol/popup/PopupResourceBundle.java:1092
+#: org/jmol/popup/PopupResourceBundle.java:1093
+#: org/jmol/popup/PopupResourceBundle.java:1094
+#: org/jmol/popup/PopupResourceBundle.java:1095
+#: org/jmol/popup/PopupResourceBundle.java:1115
+#: org/jmol/popup/PopupResourceBundle.java:1116
+#: org/jmol/popup/PopupResourceBundle.java:1117
+#: org/jmol/popup/PopupResourceBundle.java:1118
+#: org/jmol/popup/PopupResourceBundle.java:1138
+#: org/jmol/popup/PopupResourceBundle.java:1139
+#: org/jmol/popup/PopupResourceBundle.java:1140
+#: org/jmol/popup/PopupResourceBundle.java:1141
 #, java-format
 msgid "{0} px"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1106
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1129
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1152
+#: org/jmol/popup/PopupResourceBundle.java:1105
+#: org/jmol/popup/PopupResourceBundle.java:1128
+#: org/jmol/popup/PopupResourceBundle.java:1151
 msgid "Gray"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1107
+#: org/jmol/popup/PopupResourceBundle.java:1106
 msgid "Slate Blue"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1109
+#: org/jmol/popup/PopupResourceBundle.java:1108
 msgid "Orchid"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1111
+#: org/jmol/popup/PopupResourceBundle.java:1110
 msgid "Boundbox"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1121
+#: org/jmol/popup/PopupResourceBundle.java:1120
 msgid "Angstrom Width"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1130
+#: org/jmol/popup/PopupResourceBundle.java:1129
 msgid "Salmon"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1131
+#: org/jmol/popup/PopupResourceBundle.java:1130
 msgid "Olive"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1132
+#: org/jmol/popup/PopupResourceBundle.java:1131
 msgid "Maroon"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1134
+#: org/jmol/popup/PopupResourceBundle.java:1133
 msgid "Unitcell"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1153
+#: org/jmol/popup/PopupResourceBundle.java:1152
 msgid "Aquamarine"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1154
+#: org/jmol/popup/PopupResourceBundle.java:1153
 msgid "Forest Green"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1155
+#: org/jmol/popup/PopupResourceBundle.java:1154
 msgid "Hot Pink"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1157
+#: org/jmol/popup/PopupResourceBundle.java:1156
 msgid "Options"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1158
+#: org/jmol/popup/PopupResourceBundle.java:1157
 msgid "Show Selection Halos"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1159
+#: org/jmol/popup/PopupResourceBundle.java:1158
 msgid "Show Hydrogens"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1160
+#: org/jmol/popup/PopupResourceBundle.java:1159
 msgid "Show Measurements"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1161
+#: org/jmol/popup/PopupResourceBundle.java:1160
 msgid "Perspective Depth"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1162
+#: org/jmol/popup/PopupResourceBundle.java:1161
 msgid "RasMol/Chime Compatibility"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1163
+#: org/jmol/popup/PopupResourceBundle.java:1162
 msgid "RasMol Colors"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1164
+#: org/jmol/popup/PopupResourceBundle.java:1163
 msgid "Jmol Colors"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1165
+#: org/jmol/popup/PopupResourceBundle.java:1164
 msgid "Axes RasMol/Chime"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1166
+#: org/jmol/popup/PopupResourceBundle.java:1165
 msgid "Zero Based Xyz Rasmol"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1167
+#: org/jmol/popup/PopupResourceBundle.java:1166
 msgid "Wireframe Rotation"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1169
+#: org/jmol/popup/PopupResourceBundle.java:1168
 msgid "Console..."
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1170
+#: org/jmol/popup/PopupResourceBundle.java:1169
 msgid "Open"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1171
+#: org/jmol/popup/PopupResourceBundle.java:1170
 msgid "Close"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1173
+#: org/jmol/popup/PopupResourceBundle.java:1172
 msgid "About Jmol"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1175
+#: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Mouse Manual"
 msgstr ""
 
-#: org/openscience/jmol/ui/PopupResourceBundle.java:1176
+#: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
 msgstr ""

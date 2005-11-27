@@ -21,7 +21,8 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openscience.jmol.ui;
+package org.jmol.popup;
+
 import org.jmol.api.*;
 import org.jmol.viewer.JmolConstants;
 import java.awt.Component;

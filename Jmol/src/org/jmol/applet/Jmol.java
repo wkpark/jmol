@@ -28,7 +28,7 @@ import org.jmol.api.*;
 import org.jmol.appletwrapper.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 //import org.openscience.jmol.adapters.CdkJmolAdapter;
-import org.openscience.jmol.ui.JmolPopup;
+import org.jmol.popup.JmolPopup;
 import org.jmol.util.GT;
 
 import netscape.javascript.JSObject;

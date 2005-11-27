@@ -229,13 +229,6 @@ support for assertions (which were introduced in 1.4).
            source="1.3" target="1.1"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
-    <!-- mth tried to use exclude and excludefiles, but it did not work -->
-    <delete includeEmptyDirs="true">
-      <fileset dir="${applet.classes.dir}/org/openscience/jmol">
-        <include name="*.class" />
-      </fileset>
-    </delete>
-    
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="src">

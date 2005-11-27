@@ -26,10 +26,10 @@ package org.openscience.jmol.app;
 import org.jmol.api.*;
 import org.jmol.adapter.cdk.CdkJmolAdapter;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.popup.JmolPopup;
 import org.jmol.util.GT;
 
 import org.openscience.cdk.applications.plugin.CDKPluginManager;
-import org.openscience.jmol.ui.JmolPopup;
 import Acme.JPM.Encoders.PpmEncoder;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;

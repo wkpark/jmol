@@ -561,7 +561,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 	" classid='" + windowsClassId + "'\n" +
         winCodebase + widthAndHeight + ">\n" +
         "  <param name='code' value='JmolApplet' />\n" +
-        "  <param name='archive' value='" + baseAppletName + "' />\n" +
+        "  <param name='archive' value='" + archivePath + "' />\n" +
         "  <param name='mayscript' value='true' />\n" +
         "  <param name='codebase' value='" + codebase + "' />\n";
       tFooter = "</object>";

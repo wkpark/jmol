@@ -60,6 +60,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean isJvm12orGreater();
   abstract public String getOperatingSystemName();
   abstract public String getJavaVersion();
+  abstract public String getJavaVendor();
 
   abstract public boolean haveFrame();
 

@@ -2547,6 +2547,10 @@ final public class Viewer extends JmolViewer {
     return strOSName;
   }
 
+  public String getJavaVendor() {
+    return strJavaVendor;
+  }
+
   public String getJavaVersion() {
     return strJavaVersion;
   }

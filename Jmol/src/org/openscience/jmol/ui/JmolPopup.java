@@ -132,6 +132,9 @@ abstract public class JmolPopup {
       addMenuSeparator(aboutMenu);
       addMenuItem(aboutMenu, "Jmol " + JmolConstants.version);
       addMenuItem(aboutMenu, JmolConstants.date);
+      addMenuItem(aboutMenu, viewer.getOperatingSystemName());
+      addMenuItem(aboutMenu, viewer.getJavaVendor());
+      addMenuItem(aboutMenu, viewer.getJavaVersion());
     }
   }
 

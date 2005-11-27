@@ -31,7 +31,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBox;
 
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 class GuiMap {
 

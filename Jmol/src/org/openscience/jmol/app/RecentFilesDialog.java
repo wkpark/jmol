@@ -34,7 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 /**
  * Manages a list of recently opened files.

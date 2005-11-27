@@ -24,7 +24,7 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;

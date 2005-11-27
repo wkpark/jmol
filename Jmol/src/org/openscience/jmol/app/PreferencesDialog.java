@@ -24,7 +24,7 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Dimension;

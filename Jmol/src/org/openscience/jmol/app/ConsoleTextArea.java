@@ -31,7 +31,7 @@ import java.io.IOException;
 import javax.swing.JTextArea;
 import javax.swing.JOptionPane;
 import javax.swing.text.Document;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 public class ConsoleTextArea extends JTextArea {
 

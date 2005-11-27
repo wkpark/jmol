@@ -39,7 +39,7 @@ import javax.swing.JPanel;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 /**
  * File previsualisation before opening

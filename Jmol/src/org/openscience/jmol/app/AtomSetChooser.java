@@ -44,7 +44,7 @@ import java.awt.event.*;
 import java.util.Properties;
 import java.util.Enumeration;
 
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 /**
  * A JFrame that allows for choosing an Atomset to view.

@@ -34,7 +34,7 @@ import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 public class Splash extends Window {
 

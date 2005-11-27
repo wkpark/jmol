@@ -29,7 +29,7 @@ import org.jmol.appletwrapper.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 //import org.openscience.jmol.adapters.CdkJmolAdapter;
 import org.jmol.popup.JmolPopup;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 import netscape.javascript.JSObject;
 

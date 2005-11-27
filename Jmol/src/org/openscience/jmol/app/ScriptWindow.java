@@ -44,7 +44,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
 
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 public final class ScriptWindow extends JDialog
     implements ActionListener, EnterListener{

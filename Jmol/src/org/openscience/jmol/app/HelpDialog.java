@@ -44,7 +44,7 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 public class HelpDialog extends JDialog implements HyperlinkListener {
 

@@ -50,7 +50,7 @@ public class JmolApplet
     "javax.vecmath.Point3f+",
     "org.jmol.g3d.Graphics3D",
     "org.jmol.adapter.smarter.SmarterJmolAdapter",
-    "org.openscience.jmol.ui.JmolPopup",
+    "org.jmol.popup.JmolPopup",
 
     "javax.vecmath.Vector3f+",
     ".Matrix3f+", ".Point3i+",

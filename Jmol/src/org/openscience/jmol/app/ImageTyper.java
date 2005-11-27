@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 public class ImageTyper extends JPanel {
 

@@ -25,7 +25,7 @@ package org.jmol.popup;
 
 import java.util.Properties;
 
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 
 class PopupResourceBundle {
 

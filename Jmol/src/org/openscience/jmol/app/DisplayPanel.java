@@ -25,7 +25,7 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.util.GT;
+import org.jmol.i18n.GT;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.*;

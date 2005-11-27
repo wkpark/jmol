@@ -1896,10 +1896,13 @@ class Eval implements Runnable {
     }
     viewer.requestRepaintAndWait();
     millis -= System.currentTimeMillis() - timeBegin;
-    if (millis > 0)
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
+    if (millis > 0) {
+      viewer.popHoldRepaint();
+      try {
+        Thread.sleep(millis);
+      } catch (InterruptedException e) {
+      }
+      viewer.pushHoldRepaint();
     }
   }
 

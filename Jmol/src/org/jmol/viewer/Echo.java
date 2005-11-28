@@ -199,7 +199,7 @@ class Echo extends Shape {
       else
         y = g3d.getRenderHeight() - descent - 1;
 
-      g3d.drawString(text, font3d, colix, x, y, 0);
+      g3d.drawStringNoSlab(text, font3d, colix, (short)0, x, y, 0);
     }
   }
 }

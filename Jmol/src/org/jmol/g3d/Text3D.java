@@ -268,8 +268,9 @@ class Text3D {
           offset += skip;
         } else {
           if (shiftregister < 0 || argbBackground != 0)
-            g3d.plotPixelClipped(shiftregister < 0 ? argb : argbBackground,
-                                 x + j, y + i, z);
+            g3d.plotPixelClippedNoSlab(shiftregister < 0
+                                       ? argb : argbBackground,
+                                       x + j, y + i, z);
           shiftregister <<= 1;
           ++offset;
           ++j;

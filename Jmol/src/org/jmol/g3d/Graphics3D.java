@@ -1304,6 +1304,16 @@ final public class Graphics3D {
     }
   }
 
+  void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
+    if (x < 0 || x >= width || y < 0 || y >= height)
+      return;
+    int offset = y * width + x;
+    if (z < zbuf[offset]) {
+      zbuf[offset] = (short)z;
+      pbuf[offset] = argb;
+    }
+  }
+
   void plotPixelClipped(int argb, boolean isTranslucent, int x, int y, int z) {
     if (x < 0 || x >= width || y < 0 || y >= height || z < slab || z > depth)
       return;

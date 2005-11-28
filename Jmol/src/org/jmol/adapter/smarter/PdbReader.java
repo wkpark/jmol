@@ -423,7 +423,8 @@ class PdbReader extends AtomSetCollectionReader {
     int ichLeftParen = formula.indexOf('(');
     if (ichLeftParen >= 0) {
       int ichRightParen = formula.indexOf(')');
-      if (ichRightParen < 0 || ichLeftParen >= ichRightParen)
+      if (ichRightParen < 0 || ichLeftParen >= ichRightParen ||
+          ichLeftParen + 1 == ichRightParen ) // pick up () case in 1SOM.pdb
         return; // invalid formula;
       formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
     }

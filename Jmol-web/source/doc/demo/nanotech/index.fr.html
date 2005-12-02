@@ -1,11 +1,12 @@
 <!--
   French translation 
-  Translated from default version : index.en.html (v 1.1)
+  Translated from default version : index.en.html (v 1.2)
 -->
 <html>
   <head>
     <title>D&#x00E9;monstration applet jmol nanotech</title>
     <script src="../../jmol/Jmol.js"></script>
+    <script src="./nanotech.js"></script>
   </head>
   <body>
     <script>
@@ -28,63 +29,15 @@
             <a href="http://www.imm.org">http://www.imm.org</a><br />
 
             <script>
-              jmolMenu([
-                ["load diffGear.pdb.gz; cpk off;", "diffGear"],
-                ["load fineMotion970116.pdb.gz; cpk off;", "fineMotion", "selected"],
-                ["load finalPump96.09.06.pdb.gz; cpk off;", "finalPump"]
-                ], -1);
-
-              jmolHtml("<hr />");
-
-              jmolCheckbox(
-                "select *; wireframe",
-                "select *; wireframe off",
+              createControls(
                 "liens fil de fer",
-                "checked");
-              jmolHtml("<hr />");
-
-              jmolCheckbox(
-                "select silicon; cpk on",
-                "select silicon; cpk off",
-                "silicium");
-              jmolBr();
-
-              jmolCheckbox(
-                "select phosphorus; cpk on",
-                "select phosphorus; cpk off",
-                "phosphore");
-              jmolBr();
-
-              jmolCheckbox(
-                "select oxygen; cpk on",
-                "select oxygen; cpk off",
-                "oxyg&#x00E8;ne");
-              jmolBr();
-
-              jmolCheckbox(
-                "select carbon; cpk on",
-                "select carbon; cpk off",
-                "carbone");
-              jmolBr();
-
-              jmolCheckbox(
-                "select nitrogen; cpk on",
-                "select nitrogen; cpk off",
-                "azote");
-              jmolBr();
-
-              jmolCheckbox(
-                "select sulfur; cpk on",
-                "select sulfur; cpk off",
-                "soufre");
-              jmolBr();
-
-              jmolCheckbox(
-                "select hydrogen; cpk on",
-                "select hydrogen; cpk off",
+                "silicium",
+                "phosphore",
+                "oxyg&#x00E8;ne",
+                "carbone",
+                "azote",
+                "soufre",
                 "hydrog&#x00E8;ne");
-              jmolBr();
-
             </script>
             <hr />
             <i>

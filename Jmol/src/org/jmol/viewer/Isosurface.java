@@ -43,6 +43,7 @@
  */
 
 package org.jmol.viewer;
+
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
@@ -181,7 +182,7 @@ class Isosurface extends MeshCollection {
          JmolConstants.argbsIsosurfaceNegative.length);
       argb = JmolConstants.argbsIsosurfaceNegative[indexColorNegative++];
     }
-    return g3d.getColix(argb);
+    return Graphics3D.getColix(argb);
   }
 
   ////////////////////////////////////////////////////////////////

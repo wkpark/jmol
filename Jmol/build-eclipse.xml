@@ -14,7 +14,7 @@
 
   <target name="copyClasses"
   	      description="Copy precompiled classes to Eclipse build directory">
-    <copy includeemptydirs="false" todir="${classes.eclipse.dir}">
+    <copy includeemptydirs="false" todir="${classes.eclipse.dir}" failonerror="false">
       <fileset dir="${classes.dir}" includes="org/jmol/translation/**/*.class">
       </fileset>
     </copy>

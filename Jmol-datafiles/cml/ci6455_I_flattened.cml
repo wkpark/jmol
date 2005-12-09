@@ -1,0 +1,292 @@
+<molecule id="ci6455_I_flattened">
+<atomArray>
+<atom id="Fe1" xFract="1.0" yFract="0.0" zFract="1.0" occupancy="1.0" elementType="Fe" x3="8.609574" y3="6.434058E-16" z3="8.444386" x2="-2.220446E-16" y2="0.0"></atom>
+
+<atom id="N1" xFract="0.7619" yFract="0.0548" zFract="0.9299" occupancy="1.0" elementType="N" x3="6.559634" y3="0.484706" z3="8.142506" x2="-1.4265847" y2="-0.4635255"></atom>
+
+<atom id="N2" xFract="0.9403" yFract="0.0738" zFract="1.1769" occupancy="1.0" elementType="N" x3="8.095582" y3="0.652761" z3="10.346715" x2="0.0" y2="1.5"></atom>
+
+<atom id="C1" xFract="0.7029" yFract="0.1426" zFract="1.015" occupancy="1.0" elementType="C" x3="6.0516696" y3="1.261297" z3="9.109928" spinMultiplicity="2" x2="-2.3082626" y2="0.75"></atom>
+
+<atom id="C5" xFract="0.6679" yFract="0.0167" zFract="0.8124" occupancy="1.0" elementType="C" x3="5.7503343" y3="0.1477115" z3="7.109715" x2="-1.8978475" y2="-1.7770736"></atom>
+
+<atom id="H2A" xFract="0.9139" yFract="-0.0058" zFract="1.2228" occupancy="1.0" elementType="H" x3="7.8682895" y3="-0.051301" z3="10.859146" x2="1.4917828" y2="1.3432074"></atom>
+
+<atom id="H2B" xFract="1.0221" yFract="0.1201" zFract="1.2283" occupancy="1.0" elementType="H" x3="8.799846" y3="1.0622845" z3="10.728267" x2="0.31186754" y2="2.9672215"></atom>
+
+<atom id="C6" xFract="0.8075" yFract="0.1806" zFract="1.1455" occupancy="1.0" elementType="C" x3="6.952231" y3="1.597407" z3="10.2566395" x2="-1.4265847" y2="1.9635255"></atom>
+
+<atom id="C2" xFract="0.5534" yFract="0.1961" zFract="0.9837" occupancy="1.0" elementType="C" x3="4.7645383" y3="1.7345045" z3="9.049705" x2="-3.8000455" y2="0.5932073"></atom>
+
+<atom id="C4" xFract="0.5146" yFract="0.0636" zFract="0.7771" occupancy="1.0" elementType="C" x3="4.4304867" y3="0.562542" z3="7.0153685" x2="-3.5284727" y2="-1.9906363"></atom>
+
+<atom id="H5" xFract="0.708" yFract="-0.0438" zFract="0.7526" occupancy="1.0" elementType="H" x3="6.095578" y3="-0.387411" z3="6.432252" x2="-1.1550119" y2="-3.0473692"></atom>
+
+<atom id="H6A" xFract="0.8467" yFract="0.2827" zFract="1.1412" occupancy="1.0" elementType="H" x3="7.2897263" y3="2.5004816" z3="10.145221" x2="-0.8164798" y2="3.3338437"></atom>
+
+<atom id="H6B" xFract="0.7486" yFract="0.1773" zFract="1.2167" occupancy="1.0" elementType="H" x3="6.445127" y3="1.5682185" z3="11.082512" x2="-2.725623" y2="2.7135255"></atom>
+
+<atom id="H2" xFract="0.5167" yFract="0.2591" zFract="1.0438" occupancy="1.0" elementType="H" x3="4.448567" y3="2.2917395" z3="9.724348" x2="-4.6817236" y2="1.8067328"></atom>
+
+<atom id="C3" xFract="0.4583" yFract="0.1584" zFract="0.8661" occupancy="1.0" elementType="C" x3="3.9457679" y3="1.401048" z3="8.017796" x2="-4.4101505" y2="-0.7771109"></atom>
+
+<atom id="H4" xFract="0.4517" yFract="0.033" zFract="0.697" occupancy="1.0" elementType="H" x3="3.8889446" y3="0.291885" z3="6.3092756" x2="-4.1385775" y2="-3.3609545"></atom>
+
+<atom id="H3" xFract="0.3572" yFract="0.1952" zFract="0.8454" occupancy="1.0" elementType="H" x3="3.0753398" y3="1.726544" z3="7.981817" x2="-5.901933" y2="-0.9339036"></atom>
+
+<atom id="N1_3_757" xFract="1.2381" yFract="-0.0548" zFract="1.0701" occupancy="1.0" elementType="N" x3="10.659513" y3="-0.484706" z3="8.746266" x2="-2.220446E-16" y2="-1.5">
+<scalar dictRef="cryst:origAtomRef">N1
+</scalar>
+<scalar dictRef="cryst:symOp">N1
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="N2_3_757" xFract="1.0597" yFract="-0.0738" zFract="0.8231" occupancy="1.0" elementType="N" x3="9.123566" y3="-0.652761" z3="6.542057" x2="1.4265847" y2="0.4635255">
+<scalar dictRef="cryst:origAtomRef">N2
+</scalar>
+<scalar dictRef="cryst:symOp">N2
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="C1_3_757" xFract="1.2971" yFract="-0.1426" zFract="0.985" occupancy="1.0" elementType="C" x3="11.167479" y3="-1.261297" z3="7.778844" spinMultiplicity="2" x2="1.4265847" y2="-1.9635255">
+<scalar dictRef="cryst:origAtomRef">C1
+</scalar>
+<scalar dictRef="cryst:symOp">C1
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="C5_3_757" xFract="1.3321" yFract="-0.0167" zFract="1.1876" occupancy="1.0" elementType="C" x3="11.468814" y3="-0.1477115" z3="9.779057" x2="-1.0980868" y2="-2.2793114">
+<scalar dictRef="cryst:origAtomRef">C5
+</scalar>
+<scalar dictRef="cryst:symOp">C5
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H2A_3_757" xFract="1.0861" yFract="0.0058" zFract="0.7772" occupancy="1.0" elementType="H" x3="9.350859" y3="0.051301" z3="6.0296254" x2="2.725623" y2="1.2135255">
+<scalar dictRef="cryst:origAtomRef">H2A
+</scalar>
+<scalar dictRef="cryst:symOp">H2A
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H2B_3_757" xFract="0.9779" yFract="-0.1201" zFract="0.7717" occupancy="1.0" elementType="H" x3="8.419302" y3="-1.0622845" z3="6.160505" x2="0.8164798" y2="1.8338437">
+<scalar dictRef="cryst:origAtomRef">H2B
+</scalar>
+<scalar dictRef="cryst:symOp">H2B
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="C6_3_757" xFract="1.1925" yFract="-0.1806" zFract="0.8545" occupancy="1.0" elementType="C" x3="10.266917" y3="-1.597407" z3="6.632132" x2="2.3082626" y2="-0.75">
+<scalar dictRef="cryst:origAtomRef">C6
+</scalar>
+<scalar dictRef="cryst:symOp">C6
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="C2_3_757" xFract="1.4466" yFract="-0.1961" zFract="1.0163" occupancy="1.0" elementType="C" x3="12.45461" y3="-1.7345045" z3="7.8390675" x2="1.7384523" y2="-3.4307468">
+<scalar dictRef="cryst:origAtomRef">C2
+</scalar>
+<scalar dictRef="cryst:symOp">C2
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="C4_3_757" xFract="1.4854" yFract="-0.0636" zFract="1.2229" occupancy="1.0" elementType="C" x3="12.788661" y3="-0.562542" z3="9.873404" x2="-0.8028497" y2="-3.9709172">
+<scalar dictRef="cryst:origAtomRef">C4
+</scalar>
+<scalar dictRef="cryst:symOp">C4
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H5_3_757" xFract="1.292" yFract="0.0438" zFract="1.2474" occupancy="1.0" elementType="H" x3="11.1235695" y3="0.387411" z3="10.45652" x2="-2.610723" y2="-2.0685554">
+<scalar dictRef="cryst:origAtomRef">H5
+</scalar>
+<scalar dictRef="cryst:symOp">H5
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H6A_3_757" xFract="1.1533" yFract="-0.2827" zFract="0.8588" occupancy="1.0" elementType="H" x3="9.929421" y3="-2.5004816" z3="6.743551" x2="3.4229798" y2="-1.753696">
+<scalar dictRef="cryst:origAtomRef">H6A
+</scalar>
+<scalar dictRef="cryst:symOp">H6A
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H6B_3_757" xFract="1.2514" yFract="-0.1773" zFract="0.7833" occupancy="1.0" elementType="H" x3="10.774021" y3="-1.5682185" z3="5.806259" x2="3.4229798" y2="0.2536959">
+<scalar dictRef="cryst:origAtomRef">H6B
+</scalar>
+<scalar dictRef="cryst:symOp">H6B
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H2_3_757" xFract="1.4833" yFract="-0.2591" zFract="0.9562" occupancy="1.0" elementType="H" x3="12.770581" y3="-2.2917395" z3="7.1644235" x2="3.1650372" y2="-3.8942723">
+<scalar dictRef="cryst:origAtomRef">H2
+</scalar>
+<scalar dictRef="cryst:symOp">H2
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="C3_3_757" xFract="1.5417" yFract="-0.1584" zFract="1.1339" occupancy="1.0" elementType="C" x3="13.27338" y3="-1.401048" z3="8.8709755" x2="0.6237351" y2="-4.434443">
+<scalar dictRef="cryst:origAtomRef">C3
+</scalar>
+<scalar dictRef="cryst:symOp">C3
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H4_3_757" xFract="1.5483" yFract="-0.033" zFract="1.303" occupancy="1.0" elementType="H" x3="13.330203" y3="-0.291885" z3="10.579496" x2="-1.9175669" y2="-4.974613">
+<scalar dictRef="cryst:origAtomRef">H4
+</scalar>
+<scalar dictRef="cryst:symOp">H4
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="H3_3_757" xFract="1.6428" yFract="-0.1952" zFract="1.1546" occupancy="1.0" elementType="H" x3="14.143808" y3="-1.726544" z3="8.906955" x2="0.9356026" y2="-5.9016643">
+<scalar dictRef="cryst:origAtomRef">H3
+</scalar>
+<scalar dictRef="cryst:symOp">H3
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="O1" xFract="1.0647" yFract="0.2371" zFract="0.937" occupancy="1.0" elementType="O" x3="9.166614" y3="2.0971496" z3="7.6919007" spinMultiplicity="2" x2="0.0" y2="0.0"></atom>
+
+<atom id="N3" xFract="1.1413" yFract="0.3346" zFract="1.0144" occupancy="1.0" elementType="N" x3="9.826107" y3="2.959537" z3="8.346878" x2="1.299038" y2="-0.75"></atom>
+
+<atom id="O2" xFract="1.2" yFract="0.4427" zFract="0.9643" occupancy="1.0" elementType="O" x3="10.331489" y3="3.9156816" z3="7.7359586" spinMultiplicity="2" x2="2.598076" y2="-9.992007E-16"></atom>
+
+<atom id="O3" xFract="1.1535" yFract="0.3236" zFract="1.1364" occupancy="1.0" elementType="O" x3="9.931144" y3="2.862242" z3="9.566675" spinMultiplicity="2" x2="1.299038" y2="-2.25"></atom>
+
+<atom id="O1_3_757" xFract="0.9353" yFract="-0.2371" zFract="1.063" occupancy="1.0" elementType="O" x3="8.052534" y3="-2.0971496" z3="9.196871" spinMultiplicity="2" x2="0.0" y2="0.0">
+<scalar dictRef="cryst:origAtomRef">O1
+</scalar>
+<scalar dictRef="cryst:symOp">O1
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="N3_3_757" xFract="0.8587" yFract="-0.3346" zFract="0.9856" occupancy="1.0" elementType="N" x3="7.393041" y3="-2.959537" z3="8.541894" x2="1.299038" y2="-0.75">
+<scalar dictRef="cryst:origAtomRef">N3
+</scalar>
+<scalar dictRef="cryst:symOp">N3
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="O2_3_757" xFract="0.8" yFract="-0.4427" zFract="1.0357" occupancy="1.0" elementType="O" x3="6.887659" y3="-3.9156816" z3="9.152813" spinMultiplicity="2" x2="2.598076" y2="-9.992007E-16">
+<scalar dictRef="cryst:origAtomRef">O2
+</scalar>
+<scalar dictRef="cryst:symOp">O2
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+<atom id="O3_3_757" xFract="0.8465" yFract="-0.3236" zFract="0.8636" occupancy="1.0" elementType="O" x3="7.2880044" y3="-2.862242" z3="7.322097" spinMultiplicity="2" x2="1.299038" y2="-2.25">
+<scalar dictRef="cryst:origAtomRef">O3
+</scalar>
+<scalar dictRef="cryst:symOp">O3
+</scalar>
+<array dictRef="cryst:translate">2 0 2
+</array></atom>
+
+</atomArray>
+<bondArray>
+<bond atomRefs2="Fe1 N1" id="Fe1_N1" order="S"></bond>
+
+<bond atomRefs2="Fe1 N2" id="Fe1_N2" order="S"></bond>
+
+<bond atomRefs2="N1 C1" id="N1_C1" order="S"></bond>
+
+<bond atomRefs2="N1 C5" id="N1_C5" order="S"></bond>
+
+<bond atomRefs2="N2 H2A" id="N2_H2A" order="S"></bond>
+
+<bond atomRefs2="N2 H2B" id="N2_H2B" order="S"></bond>
+
+<bond atomRefs2="N2 C6" id="N2_C6" order="S"></bond>
+
+<bond atomRefs2="C1 C2" id="C1_C2" order="S"></bond>
+
+<bond atomRefs2="C1 C6" id="C1_C6" order="S"></bond>
+
+<bond atomRefs2="C4 C5" id="C4_C5" order="D"></bond>
+
+<bond atomRefs2="C5 H5" id="C5_H5" order="S"></bond>
+
+<bond atomRefs2="C6 H6A" id="C6_H6A" order="S"></bond>
+
+<bond atomRefs2="C6 H6B" id="C6_H6B" order="S"></bond>
+
+<bond atomRefs2="C2 H2" id="C2_H2" order="S"></bond>
+
+<bond atomRefs2="C2 C3" id="C2_C3" order="D"></bond>
+
+<bond atomRefs2="C3 C4" id="C3_C4" order="S"></bond>
+
+<bond atomRefs2="C4 H4" id="C4_H4" order="S"></bond>
+
+<bond atomRefs2="C3 H3" id="C3_H3" order="S"></bond>
+
+<bond atomRefs2="Fe1 N1_3_757" id="Fe1_N1_3_757" order="S"></bond>
+
+<bond atomRefs2="Fe1 N2_3_757" id="Fe1_N2_3_757" order="S"></bond>
+
+<bond atomRefs2="N1_3_757 C1_3_757" id="N1_C1_3_757" order="S"></bond>
+
+<bond atomRefs2="N1_3_757 C5_3_757" id="N1_C5_3_757" order="S"></bond>
+
+<bond atomRefs2="N2_3_757 H2A_3_757" id="N2_H2A_3_757" order="S"></bond>
+
+<bond atomRefs2="N2_3_757 H2B_3_757" id="N2_H2B_3_757" order="S"></bond>
+
+<bond atomRefs2="N2_3_757 C6_3_757" id="N2_C6_3_757" order="S"></bond>
+
+<bond atomRefs2="C1_3_757 C2_3_757" id="C1_C2_3_757" order="S"></bond>
+
+<bond atomRefs2="C1_3_757 C6_3_757" id="C1_C6_3_757" order="S"></bond>
+
+<bond atomRefs2="C4_3_757 C5_3_757" id="C4_C5_3_757" order="D"></bond>
+
+<bond atomRefs2="C5_3_757 H5_3_757" id="C5_H5_3_757" order="S"></bond>
+
+<bond atomRefs2="C6_3_757 H6A_3_757" id="C6_H6A_3_757" order="S"></bond>
+
+<bond atomRefs2="C6_3_757 H6B_3_757" id="C6_H6B_3_757" order="S"></bond>
+
+<bond atomRefs2="C2_3_757 H2_3_757" id="C2_H2_3_757" order="S"></bond>
+
+<bond atomRefs2="C2_3_757 C3_3_757" id="C2_C3_3_757" order="D"></bond>
+
+<bond atomRefs2="C3_3_757 C4_3_757" id="C3_C4_3_757" order="S"></bond>
+
+<bond atomRefs2="C4_3_757 H4_3_757" id="C4_H4_3_757" order="S"></bond>
+
+<bond atomRefs2="C3_3_757 H3_3_757" id="C3_H3_3_757" order="S"></bond>
+
+<bond atomRefs2="O1 N3" id="O1_N3" order="S"></bond>
+
+<bond atomRefs2="O2 N3" id="O2_N3" order="S"></bond>
+
+<bond atomRefs2="O3 N3" id="O3_N3" order="S"></bond>
+
+<bond atomRefs2="O1_3_757 N3_3_757" id="O1_N3_3_757" order="S"></bond>
+
+<bond atomRefs2="O2_3_757 N3_3_757" id="O2_N3_3_757" order="S"></bond>
+
+<bond atomRefs2="O3_3_757 N3_3_757" id="O3_N3_3_757" order="S"></bond>
+
+</bondArray>
+</molecule>

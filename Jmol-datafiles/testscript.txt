@@ -1,0 +1,235 @@
+echo loading 1CRN.cif.gz from the web
+load http://www.rcsb.org/pdb/cgi/export.cgi/1CRN.cif.gz?format=mmCIF&pdbId=1CRN&compression=gz
+move 0 0 360 0 0 0 0 0 1
+echo load samples/1crn.pdb
+trace 0.5
+color trace structure
+move 360 0 0 0 0 0 0 0 1
+
+load samples/1crn.pdb
+move 0 0 360 0 0 0 0 0 1
+backbone 0.5
+color amino
+move 360 0 0 0 0 0 0 0 1
+
+#echo load samples/4-cyanophenylnitrene-Benzazirine-TS.g94.out
+#load samples/4-cyanophenylnitrene-Benzazirine-TS.g94.out
+#move 0 360 0 0 0 0 0 0 1
+#echo load samples/ammonia.adf.out
+#load samples/ammonia.adf.out
+#move 360 0 0 0 0 0 0 0 1
+echo load samples/aspirina.mol
+load samples/aspirina.mol
+cpk on
+move 0 0 360 0 0 0 0 0 1
+
+echo load samples/azt.xyz
+load samples/azt.xyz
+move 0 360 0 0 0 0 0 0 1
+
+#echo load samples/bulk_Si.in
+#load samples/bulk_Si.in
+#move 360 0 0 0 0 0 0 0 1
+
+echo load samples/caffeine.xyz
+load samples/caffeine.xyz
+move 0 0 360 200 0 0 0 0 1
+
+echo load samples/CdSe_nanocrystal.xyz
+load samples/CdSe_nanocrystal.xyz
+move 0 360 0 0 0 0 0 0 1
+
+echo load samples/cefixime_syn.mol
+load samples/cefixime_syn.mol
+cpk off
+wireframe 0.25
+background black
+move 360 0 0 0 0 0 0 0 1
+
+#echo load samples/ch3oh_ace.out
+#load samples/ch3oh_ace.out
+#move 0 0 360 0 0 0 0 0 1
+#echo load samples/ch3oh_g94.out
+#load samples/ch3oh_g94.out
+#move 0 360 0 0 0 0 0 0 1
+#echo load samples/ch3oh_gam.out
+#load samples/ch3oh_gam.out
+#move 360 0 0 0 0 0 0 0 1
+#echo load samples/ch4-opt.out
+#load samples/ch4-opt.out
+#move 0 0 360 0 0 0 0 0 1
+echo load samples/cholesterol.xyz
+load samples/cholesterol.xyz
+move 0 360 0 0 0 0 0 0 1
+#echo load samples/Cl2O.log
+#load samples/Cl2O.log
+#move 360 0 0 0 0 0 0 0 1
+#echo load samples/conformeren.cml
+#load samples/conformeren.cml
+#move 0 0 360 0 0 0 0 0 1
+#echo load samples/crystal.cml
+#load samples/crystal.cml
+#move 0 360 0 0 0 0 0 0 1
+
+echo load samples/cs2.xyz
+load samples/cs2.xyz
+move 360 0 0 0 0 0 0 0 1
+
+echo load samples/cyclohexane_chair.xyz
+load samples/cyclohexane_chair.xyz
+move 0 0 360 0 0 0 0 0 1
+echo load samples/cyclohexane_movie.xyz
+load samples/cyclohexane_movie.xyz
+move 0 360 0 0 0 0 0 0 1
+echo load samples/ddt.xyz
+load samples/ddt.xyz
+set solvent on
+dots on
+
+echo load samples/diels-alder_movie.xyz
+load samples/diels-alder_movie.xyz
+move 0 0 360 0 0 0 0 0 1
+
+echo load samples/dna.xyz
+load samples/dna.xyz
+rotate x 90
+delay 0.5
+spacefill
+delay 0.5
+move 0 360 0 200 0 0 0 0 2
+
+echo load samples/estron.cml
+load samples/estron.cml
+move 360 0 0 0 0 0 0 0 1
+
+echo load samples/ethanol.xyz
+load samples/ethanol.xyz
+move 0 0 360 0 0 0 0 0 1
+
+#echo load samples/ethene.mm1gp
+#load samples/ethene.mm1gp
+#move 0 360 0 0 0 0 0 0 1
+
+echo load samples/frame_1.res
+load samples/frame_1.res
+move 360 0 0 0 0 0 0 0 1
+
+#echo load samples/g98.out
+#load samples/g98.out
+#move 0 0 360 0 0 0 0 0 1
+
+echo load samples/glycine-crystal.cml
+load samples/glycine-crystal.cml
+move 0 360 0 0 0 0 0 0 1
+
+#echo load samples/h2o_b3lyp_IR.out
+#load samples/h2o_b3lyp_IR.out
+#move 360 0 0 0 0 0 0 0 1
+
+echo load samples/h2o.g03.log
+load samples/h2o.g03.log
+move 0 0 360 0 0 0 0 0 1
+
+echo load samples/hemoglobin.pdb
+load samples/hemoglobin.pdb
+select hetero and ! hoh
+cpk
+select !hetero
+color atoms chain
+move 0 360 0 0 0 0 0 0 1
+
+echo load samples/hemoglobin.pdb.gz
+load samples/hemoglobin.pdb.gz
+move 360 0 0 0 0 0 0 0 1
+
+#echo load samples/HfO2_mol_opt.in
+#load samples/HfO2_mol_opt.in
+#move 0 0 360 0 0 0 0 0 1
+
+#echo load samples/HfO2_on_Si_relax.in
+#load samples/HfO2_on_Si_relax.in
+#move 0 360 0 0 0 0 0 0 1
+
+echo load samples/jmol.mol
+load samples/jmol.mol
+move 360 0 0 0 0 0 0 0 1
+
+#echo load samples/LiMoS2_optimisation_ISIF3.vasp
+#load samples/LiMoS2_optimisation_ISIF3.vasp
+#move 0 0 360 0 0 0 0 0 1
+
+echo load samples/met-enkaphalin_movie.xyz
+load samples/met-enkaphalin_movie.xyz
+move 0 360 0 0 0 0 0 0 1
+
+#echo load samples/methanol1.cml
+#load samples/methanol1.cml
+#move 360 0 0 0 0 0 0 0 1
+
+#echo load samples/methanol2.cml
+#load samples/methanol2.cml
+#move 0 0 360 0 0 0 0 0 1
+
+#echo load samples/methanol3.cml
+#load samples/methanol3.cml
+#move 0 360 0 0 0 0 0 0 1
+
+#echo load samples/phenol-without-para-H.g98.out
+#load samples/phenol-without-para-H.g98.out
+#move 0 0 360 0 0 0 0 0 1
+#echo load samples/phenylnitrene.g92.out
+#load samples/phenylnitrene.g92.out
+#move 0 360 0 0 0 0 0 0 1
+#echo load samples/phenylnitrene.g94.out
+#load samples/phenylnitrene.g94.out
+#move 360 0 0 0 0 0 0 0 1
+#echo load samples/slab_7Si_3Vac_2x.in
+#load samples/slab_7Si_3Vac_2x.in
+#move 360 0 0 0 0 0 0 0 1
+#echo load samples/slab_7Si_3Vac_2x_relax_2x1.out
+#load samples/slab_7Si_3Vac_2x_relax_2x1.out
+#move 0 0 360 0 0 0 0 0 1
+#echo load samples/SN1_reaction.cml
+#load samples/SN1_reaction.cml
+#move 0 360 0 0 0 0 0 0 1
+echo load samples/SN1_reaction.xyz
+load samples/SN1_reaction.xyz
+move 360 0 0 0 0 0 0 0 1
+echo load samples/SN2_reaction.xyz
+load samples/SN2_reaction.xyz
+move 0 0 360 0 0 0 0 0 1
+#echo load samples/t13.abinit.out
+#load samples/t13.abinit.out
+#move 360 0 0 0 0 0 0 0 1
+#echo load samples/t54.in
+#load samples/t54.in
+#move 0 0 360 0 0 0 0 0 1
+echo load samples/taxol.xyz
+load samples/taxol.xyz
+move 0 360 0 0 0 0 0 0 1
+
+echo load samples/test.mol
+load samples/test.mol
+move 360 0 0 0 0 0 0 0 1
+
+#echo load samples/tms.log
+#load samples/tms.log
+#move 0 0 360 0 0 0 0 0 1
+
+echo load samples/toluene.pdb
+load samples/toluene.pdb
+move 0 360 0 0 0 0 0 0 1
+echo load samples/viagra.xyz
+load samples/viagra.xyz
+move 360 0 0 0 0 0 0 0 1
+#echo load samples/zeolite_AFI.out
+#load samples/zeolite_AFI.out
+#move 0 0 360 0 0 0 0 0 1
+echo load samples/zoloft.xyz
+load samples/zoloft.xyz
+move 0 360 0 0 0 0 0 0 1
+zap
+echo load samples/jmol.mol
+load samples/jmol.mol
+background green
+

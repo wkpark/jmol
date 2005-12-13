@@ -340,7 +340,7 @@ support for assertions (which were introduced in 1.4).
         <include name="**/*.html" />
       </fileset>
     </copy>
-    <jar destfile="Jmol.jar" manifest="manifest/application.txt">
+    <jar destfile="JmolUnsigned.jar" manifest="manifest/application.txt">
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
         <exclude name="**/Test*.class" />
@@ -352,6 +352,11 @@ support for assertions (which were introduced in 1.4).
       <fileset dir="${appjars.dir}" includes="**/*"/>
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
     </jar>
+    <signjar jar="JmolUnsigned.jar" signedjar="Jmol.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
+    <delete file="JmolUnsigned.jar"/>
   </target>
 
   <target name="apis-jar" id="apis-jar" depends="init,apisio-classes">

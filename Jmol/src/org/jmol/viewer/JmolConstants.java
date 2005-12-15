@@ -1071,25 +1071,6 @@ final public class JmolConstants {
     return (short)covalentMars[elementNumber];
   }
 
-  public static boolean isValidFormalCharge(int elementNumber, int charge) {
-    if (charge == 0)
-      return true;
-    if (charge < FORMAL_CHARGE_MIN || charge > FORMAL_CHARGE_MAX)
-      return false;
-    short ionic = (short)((elementNumber << 4)+(charge + 4));
-    int iMin = 0, iMax = ionicLookupTable.length;
-    while (iMin != iMax) {
-      int iMid = (iMin + iMax) / 2;
-      if (ionic < ionicLookupTable[iMid])
-        iMax = iMid;
-      else if (ionic > ionicLookupTable[iMid])
-        iMin = iMid + 1;
-      else
-        return true;
-    }
-    return false;
-  }
-
   // maximum number of bonds that an atom can have when
   // autoBonding
   // All bonding is done by distances

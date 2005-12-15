@@ -69,9 +69,7 @@ final class Atom implements Tuple {
     this.modelIndex = (short)modelIndex;
     this.atomIndex = atomIndex;
     this.elementNumber = elementNumber;
-    if (! JmolConstants.isValidFormalCharge(elementNumber, formalCharge))
-      formalCharge = 0;
-    this.formalChargeAndFlags = (byte)(formalCharge << 4);
+    this.formalChargeAndFlags = (byte)(formalCharge << 3);
     this.colixAtom = viewer.getColixAtom(this);
     this.alternateLocationID = (byte)alternateLocationID;
     setMadAtom(viewer.getMadAtom());
@@ -411,7 +409,7 @@ final class Atom implements Tuple {
   }
 
   int getFormalCharge() {
-    return formalChargeAndFlags >> 4;
+    return formalChargeAndFlags >> 3;
   }
 
   boolean isVisible() {
@@ -455,7 +453,7 @@ final class Atom implements Tuple {
 
   short getBondingMar() {
     return JmolConstants.getBondingMar(elementNumber,
-                                       formalChargeAndFlags >> 4);
+                                       formalChargeAndFlags >> 3);
   }
 
   float getBondingRadiusFloat() {

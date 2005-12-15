@@ -996,7 +996,7 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <!-- i18n stuff -->
-  <target name="main-i18n">
+  <target name="main-i18n" depends="classes">
     <ant antfile="build-i18n.xml" target="main-i18n"/>
   </target>
   <target name="spotless-i18n">

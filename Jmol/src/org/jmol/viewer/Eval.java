@@ -1569,7 +1569,13 @@ class Eval implements Runnable {
     String translucentOrOpaque = null;
     Object colorvalue = null;
     int shapeType = getShapeType(tokObject);
+    String colorOrBgcolor = "color";
     int tok = statement[itoken].tok;
+    if (tok == Token.background) {
+      colorOrBgcolor = "bgcolor";
+      ++itoken;
+      tok = statement[itoken].tok;
+    }
     if (tok == Token.translucent || tok == Token.opaque) {
       translucentOrOpaque = (String)(statement[itoken].value);
       ++itoken;
@@ -1606,7 +1612,7 @@ class Eval implements Runnable {
         invalidArgument();
       }
       viewer.loadShape(shapeType);
-      viewer.setShapeProperty(shapeType, "color", colorvalue);
+      viewer.setShapeProperty(shapeType, colorOrBgcolor, colorvalue);
     }
     if (translucentOrOpaque != null)
       viewer.setShapeProperty(shapeType, "translucency", translucentOrOpaque);

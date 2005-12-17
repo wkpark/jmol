@@ -1486,7 +1486,7 @@ class Eval implements Runnable {
   }
 
   void color() throws ScriptException {
-    if (statementLength > 4 || statementLength < 2)
+    if (statementLength > 5 || statementLength < 2)
       badArgumentCount();
     int tok = statement[1].tok;
     outer:

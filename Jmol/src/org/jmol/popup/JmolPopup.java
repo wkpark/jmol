@@ -121,13 +121,14 @@ abstract public class JmolPopup {
     addMenuItem(modelSetInfoMenu, "chains:" + viewer.getChainCount());
     addMenuItem(modelSetInfoMenu, "polymers:" + viewer.getPolymerCount());
     addMenuItem(modelSetInfoMenu, "models:" + viewer.getModelCount());
-    if (viewer.showModelSetDownload()) {
+    if (viewer.showModelSetDownload() &&
+        !viewer.getBooleanProperty("hideNameInPopup")) {
       addMenuSeparator(modelSetInfoMenu);
       addMenuItem(modelSetInfoMenu,
                   viewer.getModelSetFileName(), viewer.getModelSetPathName());
     }
   }
-  
+
   private void addVersionAndDate(Object popupMenu) {
     if (aboutMenu != null) {
       addMenuSeparator(aboutMenu);

@@ -16,8 +16,8 @@
             value="src/org/jmol/translation/JmolApplet" />
   <property name="classes.dir" value="build/classes" />
   <property name="JmolApplet.classes.dir" value="build/classes/org/jmol/translation/JmolApplet" />
-  <property name="all.Jmol.languages" value="de,es,et,fr,nl" />
-  <property name="all.JmolApplet.languages" value="de,es,et,fr,nl" />
+  <property name="all.Jmol.languages" value="de,es,et,fr,nl,pt" />
+  <property name="all.JmolApplet.languages" value="de,es,et,fr,nl,pt" />
 
   <!-- NOTE:
        gettext.path can be used if gettext tools are not in the path

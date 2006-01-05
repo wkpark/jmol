@@ -2022,15 +2022,15 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // nucleic, dna, rna, purine, pyrimidine are hard-wired
     //
-    "@c nucleic & within(group,_a=74)",
-    "@g nucleic & within(group,_a=75)",
+    "@c nucleic & within(group,_a=74)", // ATOMID_N4
+    "@g nucleic & within(group,_a=75)", // ATOMID_N2
     "@cg c,g",
-    "@a nucleic & within(group,_a=76)",
-    "@t nucleic & within(group,_a=77)",
+    "@a nucleic & within(group,_a=76)", // ATOMID_N6
+    "@t nucleic & within(group,_a=77)", // ATOMID_C5M
     "@at a,t",
-    "@i nucleic & within(group,_a=78) & !g",
-    "@u nucleic & within(group,_a=79) & !t",
-    "@tu nucleic & within(group,_a=80)",
+    "@i nucleic & within(group,_a=78) & !g", // ATOMID_O6
+    "@u nucleic & within(group,_a=79) & !t", // ATOMID_O4
+    "@tu nucleic & within(group,_a=80)", // ATOMID_S4
 
     //
     // solvent

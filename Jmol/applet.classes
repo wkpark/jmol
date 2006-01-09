@@ -9,6 +9,7 @@ org/jmol/i18n/*.java
 org/jmol/bspt/*.java
 org/jmol/adapter/smarter/*.java
 org/jmol/smiles/*.java
+org/jmol/jcamp/*.java
 
 
 

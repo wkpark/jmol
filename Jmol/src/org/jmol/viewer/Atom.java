@@ -611,7 +611,7 @@ final class Atom implements Tuple {
     try {
       return Integer.parseInt(group.chain.model.modelTag);
     } catch (NumberFormatException nfe) {
-      return 0;
+      return modelIndex + 1;
     }
   }
   

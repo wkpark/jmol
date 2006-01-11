@@ -24,12 +24,12 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
-import org.jmol.adapter.cdk.CdkJmolAdapter;
+//import org.jmol.adapter.cdk.CdkJmolAdapter;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 
-import org.openscience.cdk.applications.plugin.CDKPluginManager;
+//import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import Acme.JPM.Encoders.PpmEncoder;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -77,7 +77,7 @@ public class Jmol extends JPanel {
   private FileTyper fileTyper;
   JFileChooser exportChooser;
   JmolPopup jmolpopup;
-  private CDKPluginManager pluginManager;
+  // private CDKPluginManager pluginManager;
 
   private GuiMap guimap = new GuiMap();
   
@@ -164,8 +164,9 @@ public class Jmol extends JPanel {
       System.out.println("using Smarter Model Adapter");
       modelAdapter = new SmarterJmolAdapter(null);
     } else if (adapter.equals("cdk")) {
-      System.out.println("using CDK Model Adapter");
-      modelAdapter = new CdkJmolAdapter(null);
+      System.out.println("the CDK Model Adapter is currently no longer supported. Check out http://bioclipse.net/. -- using Smarter");
+      // modelAdapter = new CdkJmolAdapter(null);
+      modelAdapter = new SmarterJmolAdapter(null);
     } else {
       System.out.println("unrecognized model adapter:" + adapter +
                          " -- using Smarter");
@@ -190,21 +191,21 @@ public class Jmol extends JPanel {
     measurementTable = new MeasurementTable(viewer, frame);
 
     // Setup Plugin system
-    say(GT._("Loading plugins..."));
-    pluginManager = new CDKPluginManager(
-        System.getProperty("user.home") + System.getProperty("file.separator")
-        + ".jmol", new JmolEditBus(viewer)
-    );
-    pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
-    pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DadmlBrowserPlugin");
-    pluginManager.loadPlugins(
-        System.getProperty("user.home") + System.getProperty("file.separator")
-        + ".jmol/plugins"
-    );
+    // say(GT._("Loading plugins..."));
+    // pluginManager = new CDKPluginManager(
+    //     System.getProperty("user.home") + System.getProperty("file.separator")
+    //     + ".jmol", new JmolEditBus(viewer)
+    // );
+    // pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
+    // pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DadmlBrowserPlugin");
+    // pluginManager.loadPlugins(
+    //     System.getProperty("user.home") + System.getProperty("file.separator")
+    //     + ".jmol/plugins"
+    // );
     // feature to allow for globally installed plugins
-    if (System.getProperty("plugin.dir") != null) {
-        pluginManager.loadPlugins(System.getProperty("plugin.dir"));
-    }
+    // if (System.getProperty("plugin.dir") != null) {
+    //     pluginManager.loadPlugins(System.getProperty("plugin.dir"));
+    // }
 
     // install the command table
     say(GT._("Building Command Hooks..."));
@@ -548,7 +549,7 @@ public class Jmol extends JPanel {
       numWindows--;
       if (numWindows <= 1) {
           System.out.println(GT._("Closing Jmol..."));
-          pluginManager.closePlugins();
+          // pluginManager.closePlugins();
           System.exit(0);
       } else {
           this.frame.dispose();
@@ -772,9 +773,9 @@ public class Jmol extends JPanel {
     // The Macros Menu
     addMacrosMenuBar(mb);
     // The Plugin Menu
-    if (pluginManager != null) {
-        mb.add(pluginManager.getMenu());
-    }
+    // if (pluginManager != null) {
+    //     mb.add(pluginManager.getMenu());
+    // }
     // The Help menu, right aligned
     mb.add(Box.createHorizontalGlue());
     addHelpMenuBar(mb);

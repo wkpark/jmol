@@ -40,14 +40,14 @@
   <path id="project.class.path">
     <fileset dir="${lib.dir}">
       <include name="*.jar" />
-      <exclude name="jmolappletcdk.jar"/>
+      <!-- exclude name="jmolappletcdk.jar"/ -->
     </fileset>
   </path>
   
   <path id="applet-project.class.path">
     <fileset dir="${lib.dir}">
       <include name="*.jar" />
-      <exclude name="jmol2cdk.jar"/>
+      <!-- exclude name="jmol2cdk.jar"/ -->
     </fileset>
   </path>
   
@@ -182,8 +182,10 @@
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}" source="1.4">
       <classpath refid="project.class.path" />
-      <!-- removed until all base classes are CDK based -->
+      <!-- removed all CDK based code, use BioClipse instead -->
+      <exclude name="org/openscience/jmol/app/JmolEditBus.java"/>
       <exclude name="org/openscience/jmol/io/ShelXReader.java"/>
+      <exclude name="org/jmol/adapter/cdk/CdkJmolAdapter.java"/>
     </javac>
     <copy todir="${classes.dir}" >
       <fileset dir="src">
@@ -295,9 +297,9 @@ support for assertions (which were introduced in 1.4).
       </and>
     </condition>
   </target>
-  
-  <target name="appjars" id="appjars" depends="libjars, cdkjars, pluginjars"/>
-  
+
+  <!-- target name="appjars" id="appjars" depends="libjars, cdkjars, pluginjars"/>
+
   <target name="cdkjars" id="cdkjars" depends="check.cdkjars" unless="cdkjars.uptodate">
     <delete file="build/cdkjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
@@ -311,7 +313,7 @@ support for assertions (which were introduced in 1.4).
     <unjar dest="${appjars.dir}" src="${plugin.dir}/dirbrowser.jar"/>
     <unjar dest="${appjars.dir}" src="${plugin.dir}/dadmlbrowser.jar"/>
     <touch file="build/pluginjars.timestamp"/>
-  </target>
+  </target -->
 
   <target name="libjars" id="libjars" depends="check.libjars" unless="libjars.uptodate">
     <delete file="build/libjars.timestamp"/>
@@ -324,7 +326,7 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="jar" id="jar"
-          depends="init,classes,jmolGuide,jmolHistory,jmolDevelopersGuide,appjars,main-i18n">
+          depends="init,classes,jmolGuide,jmolHistory,jmolDevelopersGuide,libjars,main-i18n">
     <copy todir="${classes.dir}/org/openscience/jmol/Data/guide" >
       <fileset dir="build/doc/JmolUserGuide">
         <include name="**/*.html" />

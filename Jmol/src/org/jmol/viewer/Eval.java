@@ -96,6 +96,10 @@ class Eval implements Runnable {
     }
   }
 
+  boolean isScriptExecuting() {
+    return myThread != null;
+  }
+
   synchronized void clearMyThread() {
     myThread = null;
   }

@@ -1684,6 +1684,10 @@ final public class Viewer extends JmolViewer {
     return null;
   }
 
+  public boolean isScriptExecuting() {
+    return eval.isScriptExecuting();
+  }
+
   public void haltScriptExecution() {
     if (eval != null)
       eval.haltExecution();

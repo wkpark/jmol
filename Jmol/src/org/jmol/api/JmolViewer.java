@@ -108,6 +108,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setAnimationFps(int framesPerSecond);
 
   abstract public String evalStringQuiet(String script);
+  abstract public boolean isScriptExecuting();
 
   abstract public void setVectorScale(float vectorScaleValue);
   abstract public void setVibrationScale(float vibrationScaleValue);

@@ -836,10 +836,12 @@ public class ProjectInformation {
           }
         }
         this._atoms = null;
+        this._contact = null;
         this._core = null;
         this._deadline = null;
         this._frames = null;
         this._name = null;
+        this._preferred = null;
         this._project = -1;
         this._server = null;
         this._value = null;
@@ -1003,7 +1005,7 @@ public class ProjectInformation {
           if (!separator) {
             outputText("Active missing beta projects: ");
           }
-          outputInfo("", "" + ii, separator);
+          outputInfo("", "p" + ii, separator);
           separator = true;
         }
       }

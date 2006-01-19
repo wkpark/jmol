@@ -25,5 +25,6 @@ package org.jmol.viewer;
 
 interface BondIterator {
   boolean hasNext();
+  int nextIndex();
   Bond next();
 }

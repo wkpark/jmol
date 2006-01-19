@@ -1006,6 +1006,10 @@ final class Frame {
       return false;
     }
 
+    public int nextIndex() {
+      return iBond;
+    }
+
     public Bond next() {
       return bonds[iBond++];
     }
@@ -1332,10 +1336,23 @@ final class Frame {
     }
   }
 
+  void deleteBonds(BitSet bs) {
+    int iSrc = 0;
+    int iDst = 0;
+    for ( ; iSrc < bondCount; ++iSrc)
+      if (! bs.get(iSrc))
+        bonds[iDst++] = bonds[iSrc];
+    for (int i = bondCount; --i >= iDst; )
+      bonds[i] = null;
+    bondCount = iDst;
+  }
+
   void deleteCovalentBonds() {
     int indexNoncovalent = 0;
     for (int i = 0; i < bondCount; ++i) {
       Bond bond = bonds[i];
+      if (bond == null)
+        continue;
       if (! bond.isCovalent()) {
         if (i != indexNoncovalent) {
           bonds[indexNoncovalent++] = bond;

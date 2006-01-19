@@ -2140,17 +2140,25 @@ class Eval implements Runnable {
   }
 
   void wireframe() throws ScriptException {
-    if (statement[1].tok != Token.identifier)
+    switch(statement[1].tok) {
+    case Token.identifier:
+      String cmd = ((String)statement[1].value).toLowerCase();
+      if (cmd.equals("single") ||
+          cmd.equals("double") ||
+          cmd.equals("triple") ||
+          cmd.equals("aromatic") ||
+          cmd.equals("hydrogen"))
+        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", cmd);
+      else
+        unrecognizedSubcommand();
+      break;
+    case Token.delete:
+      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "delete", null);
+      break;
+    default:
       viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
-    String cmd = ((String)statement[1].value).toLowerCase();
-    if (cmd.equals("single") ||
-        cmd.equals("double") ||
-        cmd.equals("triple") ||
-        cmd.equals("aromatic") ||
-        cmd.equals("hydrogen"))
-      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", cmd);
-    else
-      unrecognizedSubcommand();
+      break;
+    }
   }
 
   void ssbonds() throws ScriptException {

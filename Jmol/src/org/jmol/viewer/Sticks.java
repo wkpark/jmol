@@ -64,6 +64,10 @@ class Sticks extends Shape {
       }
       return;
     }
+
+    if ("delete" == propertyName) {
+      deleteSelectedBonds(bsSelected);
+    }
   }
 
   void setMadBond(short mad, short bondTypeMask, BitSet bs) {
@@ -95,5 +99,15 @@ class Sticks extends Shape {
     BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
     while (iter.hasNext())
       iter.next().setOrder(order);
+  }
+
+  void deleteSelectedBonds(BitSet bs) {
+    BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
+    BitSet bsDelete = new BitSet();
+    while (iter.hasNext()) {
+      bsDelete.set(iter.nextIndex());
+      iter.next();
+    }
+    frame.deleteBonds(bsDelete);
   }
 }

@@ -2225,6 +2225,7 @@ final public class Viewer extends JmolViewer {
   
   static class NullBondIterator implements BondIterator {
     public boolean hasNext() { return false; }
+    public int nextIndex() { return -1; }
     public Bond next() { return null; }
   }
 

@@ -105,6 +105,15 @@ final public class JmolConstants {
 
   public final static short BOND_ALL_MASK      = (short)0xFFFF;
 
+  final static String[] bondOrderNames = {
+    "single", "double", "triple", "aromatic", "hydrogen",
+  };
+
+  final static short[] bondOrderValues = {
+    BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE,
+    BOND_AROMATIC, BOND_H_REGULAR,
+  };
+
   /* .cube files need this */
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 

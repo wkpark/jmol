@@ -56,6 +56,12 @@ class Sticks extends Shape {
         short order = ((Short)value).shortValue();
         setOrderBond(order, bsSelected);
       }
+      if (value instanceof String) {
+        String str = (String)value;
+        for (int i = JmolConstants.bondOrderNames.length; --i >= 0; )
+          if (str.equals(JmolConstants.bondOrderNames[i]))
+            setOrderBond(JmolConstants.bondOrderValues[i], bsSelected);
+      }
       return;
     }
   }

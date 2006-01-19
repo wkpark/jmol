@@ -447,11 +447,11 @@ class Eval implements Runnable {
       case Token.spin:
         spin();
         break;
-      case Token.ssbonds:
-        ssbonds();
+      case Token.ssbond:
+        ssbond();
         break;
-      case Token.hbonds:
-        hbonds();
+      case Token.hbond:
+        hbond();
         break;
       case Token.show:
         show();
@@ -490,11 +490,13 @@ class Eval implements Runnable {
       case Token.stereo:
         stereo();
         break;
+      case Token.connect:
+        connect();
+        break;
 
         // not implemented
       case Token.bond:
       case Token.clipboard:
-      case Token.connect:
       case Token.help:
       case Token.molecule:
       case Token.pause:
@@ -2142,12 +2144,13 @@ class Eval implements Runnable {
   void wireframe() throws ScriptException {
     switch(statement[1].tok) {
     case Token.identifier:
+    case Token.hbond:
       String cmd = ((String)statement[1].value).toLowerCase();
       if (cmd.equals("single") ||
           cmd.equals("double") ||
           cmd.equals("triple") ||
           cmd.equals("aromatic") ||
-          cmd.equals("hydrogen"))
+          cmd.equals("hbond"))
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", cmd);
       else
         unrecognizedSubcommand();
@@ -2161,12 +2164,12 @@ class Eval implements Runnable {
     }
   }
 
-  void ssbonds() throws ScriptException {
+  void ssbond() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
     viewer.setShapeSize(JmolConstants.SHAPE_SSSTICKS, getMadParameter());
   }
 
-  void hbonds() throws ScriptException {
+  void hbond() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_HSTICKS);
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
   }
@@ -2527,7 +2530,7 @@ class Eval implements Runnable {
   // SHAPE_* constants in JmolConstants
   
   private final static int[] shapeToks =
-  {Token.atom, Token.bonds, Token.hbonds, Token.ssbonds,
+  {Token.atom, Token.bonds, Token.hbond, Token.ssbond,
    Token.label, Token.vector,
    Token.monitor, Token.dots, Token.backbone,
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
@@ -2663,11 +2666,11 @@ class Eval implements Runnable {
     case Token.spin:
       setSpin();
       break;
-    case Token.ssbonds:
-      setSsbonds();
+    case Token.ssbond:
+      setSsbond();
       break;
-    case Token.hbonds:
-      setHbonds();
+    case Token.hbond:
+      setHbond();
       break;
     case Token.scale3d:
       setScale3d();
@@ -2940,7 +2943,7 @@ class Eval implements Runnable {
     }
   }
 
-  void setSsbonds() throws ScriptException {
+  void setSsbond() throws ScriptException {
     checkLength3();
     boolean ssbondsBackbone = false;
     viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
@@ -2956,7 +2959,7 @@ class Eval implements Runnable {
     viewer.setSsbondsBackbone(ssbondsBackbone);
   }
 
-  void setHbonds() throws ScriptException {
+  void setHbond() throws ScriptException {
     checkLength3();
     boolean bool = false;
     switch(statement[2].tok) {
@@ -3353,7 +3356,7 @@ class Eval implements Runnable {
       if (order < 0 || order > 3)
         invalidArgument();
       break;
-    case Token.hbonds:
+    case Token.hbond:
       order = JmolConstants.BOND_H_REGULAR;
       break;
     case Token.decimal:
@@ -3652,5 +3655,38 @@ class Eval implements Runnable {
     }
     viewer.setStereoDegrees(degrees);
     viewer.setStereoMode(stereoMode);
+  }
+
+  void connect() throws ScriptException {
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+                            "maxDistance", new Float(100000000f));
+    for (int i = 1; i < statementLength; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (statement[i].tok) {
+      case Token.on:
+      case Token.off:
+        notImplemented(i);
+        break;
+      case Token.integer:
+        propertyName = "maxDistance";
+        propertyValue = new Float(statement[i].intValue);
+        break;
+      case Token.decimal:
+        propertyName = "maxDistance";
+        propertyValue = statement[i].value;
+        break;
+      case Token.expressionBegin:
+        propertyName = "targetSet";
+        propertyValue = expression(statement, i);
+        // hack for now;
+        i = statement.length;
+        break;
+      default:
+        invalidArgument();
+      }
+      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+                              propertyName, propertyValue);
+    }
   }
 }

@@ -325,7 +325,7 @@ final class Frame {
                                      bondCount + 2 * ATOM_GROWTH_INCREMENT);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
-    Bond bond = atom1.bondMutually(atom2, order, this);
+    Bond bond = atom1.bondMutually(atom2, (short)order, this);
     if (bond != null) {
       bonds[bondCount++] = bond;
       if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
@@ -711,8 +711,7 @@ final class Frame {
     bonds[bondCount++] = bond;
   }
 
-  void bondAtoms(Atom atom1, Atom atom2,
-                             int order) {
+  void bondAtoms(Atom atom1, Atom atom2, short order) {
     addBond(atom1.bondMutually(atom2, order, this));
   }
 
@@ -1203,9 +1202,9 @@ final class Frame {
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
         if (atomNear != atom) {
-          int order = getBondOrder(atom, myBondingRadius,
-                                   atomNear, atomNear.getBondingRadiusFloat(),
-                                   iter.foundDistance2());
+          short order = getBondOrder(atom, myBondingRadius, atomNear,
+                                     atomNear.getBondingRadiusFloat(),
+                                     iter.foundDistance2());
           if (order > 0)
             checkValencesAndBond(atom, atomNear, order);
         }
@@ -1219,9 +1218,9 @@ final class Frame {
     }
   }
 
-  private int getBondOrder(Atom atomA, float bondingRadiusA,
-                           Atom atomB, float bondingRadiusB,
-                           float distance2) {
+  private short getBondOrder(Atom atomA, float bondingRadiusA,
+                             Atom atomB, float bondingRadiusB,
+                             float distance2) {
     //            System.out.println(" radiusA=" + bondingRadiusA +
     //                               " radiusB=" + bondingRadiusB +
     //                         " distance2=" + distance2 +
@@ -1241,7 +1240,7 @@ final class Frame {
     return 0;
   }
 
-  void checkValencesAndBond(Atom atomA, Atom atomB, int order) {
+  void checkValencesAndBond(Atom atomA, Atom atomB, short order) {
     //    System.out.println("checkValencesAndBond(" +
     //                       atomA.point3f + "," + atomB.point3f + ")");
     if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT ||
@@ -1339,9 +1338,13 @@ final class Frame {
   void deleteBonds(BitSet bs) {
     int iSrc = 0;
     int iDst = 0;
-    for ( ; iSrc < bondCount; ++iSrc)
+    for ( ; iSrc < bondCount; ++iSrc) {
+      Bond bond = bonds[iSrc];
       if (! bs.get(iSrc))
-        bonds[iDst++] = bonds[iSrc];
+        bonds[iDst++] = bond;
+      else
+        bond.deleteAtomReferences();
+    }
     for (int i = bondCount; --i >= iDst; )
       bonds[i] = null;
     bondCount = iDst;

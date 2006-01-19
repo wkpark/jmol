@@ -26,10 +26,13 @@ package org.jmol.viewer;
 
 
 import java.util.BitSet;
+import javax.vecmath.Point3f;
 
 import org.jmol.g3d.Graphics3D;
 
 class Sticks extends Shape {
+
+  float maxBondingDistance;
 
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
@@ -64,9 +67,18 @@ class Sticks extends Shape {
       }
       return;
     }
-
     if ("delete" == propertyName) {
       deleteSelectedBonds(bsSelected);
+      return;
+    }
+    if ("maxDistance" == propertyName) {
+      maxBondingDistance = ((Float)value).floatValue();
+      return;
+    }
+    if ("targetSet" == propertyName) {
+      BitSet bsTarget = (BitSet)value;
+      addBonds(maxBondingDistance, bsSelected, bsTarget);
+      return;
     }
   }
 
@@ -109,5 +121,30 @@ class Sticks extends Shape {
       iter.next();
     }
     frame.deleteBonds(bsDelete);
+  }
+
+  void addBonds(float maxDistance, BitSet bsA, BitSet bsB) {
+    System.out.println("addBonds was called with maxDistance=" + maxDistance +
+                       "\nbsA=" + bsA + " bsB=" + bsB);
+    int atomCount = frame.atomCount;
+    Atom[] atoms = frame.atoms;
+    float maxDistanceSquared = maxDistance * maxDistance;
+    for (int iA = atomCount; --iA >= 0; ) {
+      if (! bsA.get(iA))
+        continue;
+      Atom atomA = atoms[iA];
+      Point3f pointA = atomA.point3f;
+      for (int iB = atomCount; --iB >= 0; ) {
+        if (! bsB.get(iB))
+          continue;
+        if (iB == iA ||
+            (iB < iA && bsA.get(iB) && bsB.get(iA)))
+          continue;
+        Atom atomB = atoms[iB];
+        float distanceSquared = pointA.distanceSquared(atomB.point3f);
+        if (distanceSquared <= maxDistanceSquared)
+          frame.bondAtoms(atomA, atomB, JmolConstants.BOND_COVALENT_SINGLE);
+      }
+    }
   }
 }

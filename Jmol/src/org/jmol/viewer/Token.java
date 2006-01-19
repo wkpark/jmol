@@ -109,12 +109,12 @@ class Token {
   final static int center       = command |  4 | showparam | expressionCommand;
   final static int clipboard    = command |  5;
   final static int color        = command |  6 | colorparam | setparam;
-  final static int connect      = command |  7 | bool;
+  final static int connect      = command |  7 | embeddedExpression;
   final static int define       = command |  9 | expressionCommand;
   final static int dots         = command | 10 | bool;
   final static int echo         = command | 11 | setparam | specialstring;
   final static int exit         = command | 12;
-  final static int hbonds       = command | 13 | setparam | bool;
+  final static int hbond        = command | 13 | setparam | bool;
   final static int help         = command | 14;
   final static int label        = command | 15 | specialstring;
   final static int load         = command | 16 | specialstring;
@@ -136,7 +136,7 @@ class Token {
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
   final static int cpk          = command | 35 | setparam | bool | negnums;
-  final static int ssbonds      = command | 36 | setparam | bool;
+  final static int ssbond       = command | 36 | setparam | bool;
   final static int stereo       = command | 38 | setspecial | bool | negnums;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
@@ -415,8 +415,8 @@ class Token {
     "dots",              new Token(dots,      onDefault1, "dots"),
     "echo",              new Token(echo,     varArgCount, "echo"),
     "exit",              new Token(exit,               0, "exit"),
-    "hbonds",            new Token(hbonds,    onDefault1, "hbonds"),
-    "hbond",             null,
+    "hbond",             new Token(hbond,     onDefault1, "hbond"),
+    "hbonds",            null,
     "help",              new Token(help,     varArgCount, "help"),
     "label",             new Token(label,     onDefault1, "label"),
     "labels",            null,
@@ -448,7 +448,8 @@ class Token {
     "slab",              new Token(slab,      onDefault1, "slab"),
     "cpk",               new Token(cpk,      varArgCount, "cpk"),
     "spacefill",         null,
-    "ssbonds",           new Token(ssbonds,   onDefault1, "ssbonds"),
+    "ssbond",            new Token(ssbond,    onDefault1, "ssbond"),
+    "ssbonds",           null,
     "stereo",            new Token(stereo,   varArgCount, "stereo"),
     "strands",           new Token(strands,   onDefault1, "strands"),
     "structure",         new Token(structure,          0, "structure"),

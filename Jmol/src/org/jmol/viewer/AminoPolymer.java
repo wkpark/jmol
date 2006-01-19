@@ -197,7 +197,7 @@ class AminoPolymer extends AlphaPolymer {
 
   void createResidueHydrogenBond(int indexAminoGroup,
                                  int indexCarbonylGroup) {
-    int order;
+    short order;
     int aminoBackboneHbondOffset = indexAminoGroup - indexCarbonylGroup;
     if (debugHbonds) 
       System.out.println("aminoBackboneHbondOffset=" +

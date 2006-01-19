@@ -148,7 +148,7 @@ final class Atom implements Tuple {
     return false;
   }
 
-  Bond bondMutually(Atom atomOther, int order, Frame frame) {
+  Bond bondMutually(Atom atomOther, short order, Frame frame) {
     if (isBonded(atomOther))
       return null;
     Bond bond = new Bond(this, atomOther, order, frame);

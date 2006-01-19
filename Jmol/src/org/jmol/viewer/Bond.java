@@ -34,7 +34,7 @@ class Bond {
   short mad;
   short colix;
 
-  Bond(Atom atom1, Atom atom2, int order,
+  Bond(Atom atom1, Atom atom2, short order,
               short mad, short colix) {
     if (atom1 == null)
       throw new NullPointerException();
@@ -46,12 +46,12 @@ class Bond {
       order |= JmolConstants.BOND_SULFUR_MASK;
     if (order == JmolConstants.BOND_AROMATIC_MASK)
       order = JmolConstants.BOND_AROMATIC;
-    this.order = (short)order;
+    this.order = order;
     this.mad = mad;
     this.colix = colix;
   }
 
-  Bond(Atom atom1, Atom atom2, int order, Frame frame) {
+  Bond(Atom atom1, Atom atom2, short order, Frame frame) {
     this(atom1, atom2, order,
          ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0
           ? 0 : frame.viewer.getMadBond()),

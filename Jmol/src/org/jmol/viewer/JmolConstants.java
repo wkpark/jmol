@@ -30,7 +30,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2005 The Jmol Development Team";
-  public final static String version = "10.00.46";
+  public final static String version = "10.00.47";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -106,7 +106,7 @@ final public class JmolConstants {
   public final static short BOND_ALL_MASK      = (short)0xFFFF;
 
   final static String[] bondOrderNames = {
-    "single", "double", "triple", "aromatic", "hydrogen",
+    "single", "double", "triple", "aromatic", "hbond",
   };
 
   final static short[] bondOrderValues = {

@@ -3660,14 +3660,18 @@ class Eval implements Runnable {
   void connect() throws ScriptException {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "maxDistance", new Float(100000000f));
+    if (statementLength == 1) {
+      viewer.rebond();
+      return;
+    }
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       switch (statement[i].tok) {
       case Token.on:
       case Token.off:
-        notImplemented(i);
-        break;
+        viewer.rebond();
+        return;
       case Token.integer:
         propertyName = "maxDistance";
         propertyValue = new Float(statement[i].intValue);

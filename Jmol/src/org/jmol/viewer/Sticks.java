@@ -124,8 +124,6 @@ class Sticks extends Shape {
   }
 
   void addBonds(float maxDistance, BitSet bsA, BitSet bsB) {
-    System.out.println("addBonds was called with maxDistance=" + maxDistance +
-                       "\nbsA=" + bsA + " bsB=" + bsB);
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     float maxDistanceSquared = maxDistance * maxDistance;

@@ -433,7 +433,10 @@ class CifReader extends AtomSetCollectionReader {
 
     for (; line != null &&
            (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#';
+           line.charAt(0) != '#' &&
+           line.charAt(0) != '_' &&
+           !line.startsWith("loop_") &&
+           !line.startsWith("data_");
          line = reader.readLine()) {
       tokenizer.setString(line);
       int atomIndex1 = -1;

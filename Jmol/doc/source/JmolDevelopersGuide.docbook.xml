@@ -642,7 +642,7 @@
         To make a full build of Jmol under Eclipse, just do the following:
         Right click on <command>build.xml</command> and select
         <command>Run</command> / <command>Ant Build</command> in the contextual
-        menu.
+        menu..
       </para>
     </section>
     

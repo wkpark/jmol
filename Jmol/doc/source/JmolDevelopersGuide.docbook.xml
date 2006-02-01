@@ -19,7 +19,7 @@
       </listitem>
       <listitem>
         <para>
-          Apache Ant (<ulink url="http://jakarta.apache.org/ant" />)
+          Apache Ant (<ulink url="http://jakarta.apache.org/ant" />, not necessary if you are using Eclipse with a Windows PC -- see below.)
         </para>
         <para>
           On Linux/Unix/OSX try to install ant using a package installer
@@ -31,8 +31,10 @@
           <ulink url="http://cvsbook.red-bean.com/cvsbook.html" />.
         </para>
         <para>
-          On Win32 you can use wincvs from
-          <ulink url="http://www.wincvs.org" />.
+          On Win32 you can use WinCVS from
+          <ulink url="http://www.wincvs.org" />,
+          but a far more sophisticated and much easier to use and install alternative is Eclipse from
+          <ulink url="http://www.eclipse.org/downloads" />. (See the section below that covers Eclipse use.)
         </para>
         <para>
           On Mac OSX the cvs software comes on the Developer's CD,
@@ -46,6 +48,10 @@
     <title>Checking Out Jmol from CVS</title>
     
     <para>
+      If you are using Eclipse, see <xref linkend="Eclipse" />.
+    </para>
+ 
+    <para>
       For anonymous checkout from SourceForge cvs:
     </para>
     <programlisting>
@@ -56,27 +62,31 @@
       Press the <command>Enter</command> key when prompted for the password:
     </para>
     <programlisting>
-  cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol co -d Jmol-HEAD Jmol
+  cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol co -d Jmol Jmol
     </programlisting>
     
     <para>
-      We work from the directory called <command>Jmol-HEAD</command>.
+      We work from the directory called <command>Jmol</command>.
     </para>
     <programlisting>
-  cd Jmol-HEAD
+  cd Jmol
     </programlisting>
 
     <para>
       Later, to get updates ...
     </para>
     <programlisting>
-  cd {some-path}/Jmol-HEAD
+  cd {some-path}/Jmol
   cvs up -dP
     </programlisting>
   </chapter>
   
   <chapter id="BuildingJmol">
     <title>Building Jmol</title>
+
+    <para>
+      If you are using Eclipse, see <xref linkend="Eclipse" />.
+    </para>
     
     <itemizedlist>
       <para>
@@ -116,36 +126,46 @@
       On Linux/Unix/OSX:
     </para>
     <programlisting>
-  <prompt>[~/jmol/Jmol-HEAD]$</prompt> <command>ant</command>
+  <prompt>[~/jmol/Jmol]$</prompt> <command>ant</command>
     </programlisting>
     
     <para>
-      On Windows:
+      On Windows (not using Eclipse):
     </para>
     <programlisting>
-  <prompt>C:\jmol\Jmol-HEAD&gt;</prompt> <command>ant</command>
+  <prompt>C:\jmol\Jmol&gt;</prompt> <command>ant</command>
     </programlisting>
   </chapter>
   
   <chapter id="RunningJmol">
     <title>Running Jmol</title>
     <para>
-      The development version of Jmol is normally run by simply executing the
-      jmol script in the Jmol development directory.
+      The development version of the Jmol application is normally run by simply executing the
+      jmol script in the Jmol development directory. 
     </para>
     
+    <para>
+      The development version of the Jmol applet is normally run by copying the built .jar
+      files into a test directory and then running a web page that accesses them. 
+    </para>
+ 
+    <para>
+      If you are using Eclipse on a PC, you can run the app or the applet from within Eclipse. This allows for simpler debugging. 
+      See <xref linkend="Eclipse" />.
+    </para>
+
     <para>
       On Linux/Unix/OSX:
     </para>
     <programlisting>
-  <prompt>[~/jmol/Jmol-HEAD]$</prompt><command>./jmol</command>
+  <prompt>[~/jmol/Jmol]$</prompt><command>./jmol</command>
     </programlisting>
     
     <para>
-      On Windows:
+      On Windows (not using Eclipse):
     </para>
     <programlisting>
-  <prompt>C:\jmol\Jmol-HEAD&gt;</prompt><command>jmol</command>
+  <prompt>C:\jmol\Jmol&gt;</prompt><command>jmol</command>
     </programlisting>
   </chapter>
   
@@ -161,7 +181,7 @@
       </listitem>
       <listitem>
         <para>
-          Indentation level should be two spaces
+          Indentation level should be two spaces.
         </para>
         <programlisting>
   class Foo {
@@ -177,7 +197,7 @@
       </listitem>
       <listitem>
         <para>
-          Space characters should be used, not tabs
+          Space characters should be used, not tabs.
         </para>
       </listitem>
       <listitem>
@@ -189,8 +209,8 @@
   a = b + c;
         </programlisting>
         <para>
-          you are allowed to eliminate the spaces within expressions in order
-          to make operator precedence more clear
+          You are allowed to eliminate the spaces within expressions in order
+          to make operator precedence more clear.
         </para>
         <programlisting>
   int cSquared = a*a + b*b;
@@ -198,7 +218,7 @@
       </listitem>
       <listitem>
         <para>
-          spaces follow commas in argument lists
+          Spaces follow commas in argument lists.
         </para>
         <programlisting>
   foo(a, 3.14159, "jmol");
@@ -206,7 +226,7 @@
       </listitem>
       <listitem>
         <para>
-          Lines should be no more than 80 characters wide
+          Lines should be no more than 80 characters wide.
         </para>
       </listitem>
       <listitem>
@@ -248,7 +268,7 @@
       </listitem>
       <listitem>
         <para>
-          line-by-line comments within the code are
+          Line-by-line comments within the code are
           <emphasis>discouraged</emphasis> ... except in very special
           circumstances. If you put in lots of comments like this then you may
           find them deleted.
@@ -256,8 +276,8 @@
       </listitem>
       <listitem>
         <para>
-          if you feel obligated to insert comments put them as javadoc before
-          the function body
+          If you feel obligated to insert comments put them as javadoc before
+          the function body.
         </para>
       </listitem>
       <listitem>
@@ -270,7 +290,7 @@
         <para>
           You may want to look
           at <ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">The
-          Elements of Java Style by Vermeulen, et al</ulink>
+          Elements of Java Style by Vermeulen, et al</ulink>.
         </para>
       </listitem>
     </itemizedlist>
@@ -395,7 +415,7 @@
           example, a session might look like:
         </para>
         <programlisting>
-  &gt; cd ~/data/SF/Jmol/Jmol-HEAD
+  &gt; cd ~/data/SF/Jmol/Jmol
   &gt; cvs update -j b6
   &gt; cd ~/data/SF/Jmol/Jmol-6
   &gt; cvs tag b6-merged-20030725
@@ -406,7 +426,7 @@
           HEAD with:
         </para>
         <programlisting>
-  &gt; cd ~/data/SF/Jmol/Jmol-HEAD
+  &gt; cd ~/data/SF/Jmol/Jmol
   &gt; cvs update -j b6-merged-20030725 -j b6
   &gt; cd ~/data/SF/Jmol/Jmol-6
   &gt; cvs tag b6-merged-20031011
@@ -418,13 +438,24 @@
   <chapter id="Eclipse">
     <title>Using Eclipse</title>
     
+    
+    
     <section id="Eclipse_prerequisites">
       <title>Eclipse prerequisites</title>
     
-      <para>
-        This documentation has been tested with Eclipse 3.0.x and 3.1.
-        We recommend Eclipse 3.1.x.
-      </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          Java 2 JDK 1.4 (<ulink url="http://java.sun.com/" />)
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Eclipse SDK 3.1 (<ulink url="http://www.eclipse.org/downloads" />)
+        </para>
+      </listitem>
+    </itemizedlist>
+    
     
       <para>
         Eclipse must be installed and correctly configured before following
@@ -447,15 +478,14 @@
         </listitem>
         <listitem>
           <para>
-            Switch to the <command>CVS Repository Exploring</command>
-            perspective.
+            Using the menu system, navigate to <command>Window | Open Perspective | Other... | CVS Repository Exploring</command>
           </para>
         </listitem>
         <listitem>
           <para>
             Right click in the <command>CVS Repositories</command> windows and
             select <command>New</command>
-            / <command>Repository Location...</command> in the contextual menu.
+             <command>Repository Location...</command> in the contextual menu.
           </para>
         </listitem>
         <listitem>
@@ -477,7 +507,7 @@
             <listitem>
               <para>
                 Authentication: <command>anonymous</command> for anonymous
-                access, or your login for developer access.
+                access, or your login id for developer access.
               </para>
             </listitem>
             <listitem>
@@ -529,22 +559,16 @@
         </listitem>
         <listitem>
           <para>
-            Deploy the repository location you added in the previous section
-            and deploy <command>HEAD</command>.
+            Click on the repository location you added in the previous section.
+            and then click on <command>HEAD</command>. 
+            You should see a message on the status line indicating that Eclipse is connecting to the server.
           </para>
         </listitem>
         <listitem>
           <para>
             Right click on <command>Jmol</command> and select <command>Check
-            Out As...</command> in the contextual menu.
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            In the <command>Check Out As</command> window, check the
-            <command>Check out as a project in the workspace</command> and type
-            <command>Jmol-HEAD</command> in the <command>Project Name</command>
-            field. Click on <command>Finish</command>.
+            Out</command> in the contextual menu. The files should start transferring. 
+            If you do not want to wait, you can indicate that you want the transfer to occur in the background. 
           </para>
         </listitem>
         <listitem>
@@ -561,77 +585,46 @@
       <title>Configuring Eclipse to build Jmol</title>
       
       <para>
-        To configure Eclipse 3.1 to build Jmol, you don't need to do anything.
-        The project is automatically configured when you check out Jmol.
-      </para>
-
-      <para>
-        To configure Eclipse 3.0.x to build Jmol, you can do the following:
+        To configure Eclipse 3.1 to build Jmol, you need to make sure 
+        (a) the location of the Java compiler executable (javac.exe) is identified, and 
+        (b) Eclipse is using the same version of the Java compiler as the Java Runtime Environment. 
       </para>
 
       <itemizedlist>
         <listitem>
           <para>
-            Switch to the <command>Java</command> perspective.
+          (a) Identifying the Java compiler. Ant needs to know where to find javac.exe. 
+          From <command>Window | Preferences...| Ant |Runtime</command> click on <command>global entries</command>, then select <command>Add External JARs</command>. 
+          Navigate to the directory containing tools.jar, probably something like c:\j2sdk1.4.2_10\lib, and select tools.jar.
           </para>
         </listitem>
         <listitem>
           <para>
-            Right click on <command>Jmol-HEAD</command> and select
-            <command>Properties</command> in the contextual menu.
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            In the <command>Properties for Jmol-HEAD</command> window, select
-            <command>Java Compiler</command>.
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            Check <command>Use project (specific) settings</command>.
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            In the <command>Style</command> tab, select
-            <command>Warning</command> for every combo-box, except for
-            <command>Unqualified access to instance field</command> and
-            <command>Undocumented empty block</command> where you can select
-            <command>Ignore</command>.
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            In the <command>Advanced</command> tab, select 
-            <command>Warning</command> for every combo-box, except for
-            <command>Local variable declaration hides another field or
-            variable</command>, <command>Usage of deprecated API</command> and
-            <command>Usage of non-externalized strings</command> where you can
-            select <command>Ignore</command>.
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            In the <command>Unused code</command> tab, select
-            <command>Warning</command> for every combo-box, except for
-            <command>Parameter is never read</command> and
-            <command>Unnecessary cast or 'instance of' operation</command>
-            where you can select <command>Ignore</command>.
+          (b) Matching the Java compiler to the Java Runtime Environment. 
+          From <command>Window | Preferences...</command> select <command>Java</command>. 
+          Compare the version listed for the compiler with that for the selected <command>installed JREs</command>. 
+          If they are not the same, use the <command>search</command> facility to find more installed JREs. Then select the JRE that matches the compiler. 
           </para>
         </listitem>
       </itemizedlist>
+
     </section>
     
     <section id="Eclipse_Running">
       <title>Running and Debugging Jmol</title>
       
       <para>
-        Eclipse can be used to run and debug Jmol directly in Eclipse.
+        You can run and debug Jmol directly within Eclipse. 
       </para>
       
       <para>
-        The main class is <command>org.openscience.jmol.app.Jmol</command>.
+        From <command>Window | Open Perspective </command> open a Java Perspective (using <command>Other...</command> if necessary).
+      </para>
+
+      <para>
+        To run either the application or the applet
+        right-click <command>Jmol</command> under the Projects tab, select <command>Run As</command>, and then select
+        your choice, Java Applet or Java Application. The main class is <command>org.openscience.jmol.app.Jmol</command>. 
       </para>
     </section>
     
@@ -639,10 +632,16 @@
       <title>Building Jmol</title>
     
       <para>
+        If not already done, from <command>Window | Open Perspective </command> open a Java Perspective (using <command>Other...</command> if necessary).
+      </para>
+
+      <para>
         To make a full build of Jmol under Eclipse, just do the following:
-        Right click on <command>build.xml</command> and select
-        <command>Run</command> / <command>Ant Build</command> in the contextual
-        menu.
+        Under the Jmol [cvs.sourceforge.net] entry, find <command>build.xml</command> and right-click it.
+        Select <command>Run As | Ant Build</command> in the contextual menu. If the build fails, look carefully at
+        the message, and if you can't figure it out, send a copy of it in an email message to jmol-developers@sourceforge.net. 
+        Problems might include Ant not being able to find the Java compiler ("JAVA_HOME not in CLASSPATH?") or a difference in 
+        Java compiler and runtime environment versions ("wrong version...").
       </para>
     </section>
     

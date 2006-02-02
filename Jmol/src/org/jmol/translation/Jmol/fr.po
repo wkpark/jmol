@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-12-15 21:15+0100\n"
+"POT-Creation-Date: 2006-02-02 18:20+0100\n"
 "PO-Revision-Date: 2005-10-08 19:30+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -551,7 +551,7 @@ msgid "What's New"
 msgstr "Les Nouveautés"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/Jmol.java:464
+#: org/openscience/jmol/app/Jmol.java:465
 msgid "Jmol Console"
 msgstr "Console Jmol"
 
@@ -634,116 +634,112 @@ msgstr ""
 msgid "Initializing 3D display..."
 msgstr "Initialisation de l'affichage 3D..."
 
-#: org/openscience/jmol/app/Jmol.java:178
+#: org/openscience/jmol/app/Jmol.java:179
 msgid "Initializing Preferences..."
 msgstr "Initialisation des Options..."
 
-#: org/openscience/jmol/app/Jmol.java:180
+#: org/openscience/jmol/app/Jmol.java:181
 msgid "Initializing Recent Files..."
 msgstr "Initialisation des fichiers récents..."
 
-#: org/openscience/jmol/app/Jmol.java:182
+#: org/openscience/jmol/app/Jmol.java:183
 msgid "Initializing Script Window..."
 msgstr "Initialisation de la fenêtre de script..."
 
-#: org/openscience/jmol/app/Jmol.java:184
+#: org/openscience/jmol/app/Jmol.java:185
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Initialisation de la fenêtre AtomSetChooser..."
 
-#: org/openscience/jmol/app/Jmol.java:189
+#: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing Measurements..."
 msgstr "Initialisation des mesures..."
 
-#: org/openscience/jmol/app/Jmol.java:193
-msgid "Loading plugins..."
-msgstr "Chargement des plugins..."
-
-#: org/openscience/jmol/app/Jmol.java:210
+#: org/openscience/jmol/app/Jmol.java:211
 msgid "Building Command Hooks..."
 msgstr "Construction des Commandes..."
 
-#: org/openscience/jmol/app/Jmol.java:219
+#: org/openscience/jmol/app/Jmol.java:220
 msgid "Building Menubar..."
 msgstr "Construction du Menu..."
 
-#: org/openscience/jmol/app/Jmol.java:235
+#: org/openscience/jmol/app/Jmol.java:236
 msgid "Starting display..."
 msgstr "Début de l'affichage..."
 
-#: org/openscience/jmol/app/Jmol.java:238
+#: org/openscience/jmol/app/Jmol.java:239
 msgid "Setting up File Choosers..."
 msgstr "Installation des Sélecteurs de fichier..."
 
-#: org/openscience/jmol/app/Jmol.java:290
+#: org/openscience/jmol/app/Jmol.java:291
 msgid "Setting up Drag-and-Drop..."
 msgstr "Initialisation du Glisser-Déplacer"
 
-#: org/openscience/jmol/app/Jmol.java:316
+#: org/openscience/jmol/app/Jmol.java:317
 msgid "Launching main frame..."
 msgstr "Affichage de la frame principale..."
 
-#: org/openscience/jmol/app/Jmol.java:325
+#: org/openscience/jmol/app/Jmol.java:326
 msgid "Creating main window..."
 msgstr "Création de la fenêtre principale..."
 
-#: org/openscience/jmol/app/Jmol.java:326
+#: org/openscience/jmol/app/Jmol.java:327
 msgid "Initializing Swing..."
 msgstr "Initialisation de Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:336
+#: org/openscience/jmol/app/Jmol.java:337
 msgid "Initializing Jmol..."
 msgstr "Initialisation de Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:354
+#: org/openscience/jmol/app/Jmol.java:355
 msgid "give this help page"
 msgstr "affiche cette page d'aide"
 
-#: org/openscience/jmol/app/Jmol.java:362
+#: org/openscience/jmol/app/Jmol.java:363
 msgid "property=value"
 msgstr "propriété=valeur"
 
-#: org/openscience/jmol/app/Jmol.java:365
+#: org/openscience/jmol/app/Jmol.java:366
 msgid "supported options are given below"
 msgstr "les options supportées sont données ci-dessous"
 
-#: org/openscience/jmol/app/Jmol.java:369
+#: org/openscience/jmol/app/Jmol.java:370
 msgid "window size 500x500"
 msgstr "taille fenêtre 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:388
+#: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
-#: org/openscience/jmol/app/Jmol.java:452
+#: org/openscience/jmol/app/Jmol.java:453
 msgid "Executing script..."
 msgstr "Exécution du script..."
 
-#: org/openscience/jmol/app/Jmol.java:476
+#: org/openscience/jmol/app/Jmol.java:477
 msgid "Could not create ConsoleTextArea: "
 msgstr "Impossible de créer la ConsoleTextArea:"
 
-#: org/openscience/jmol/app/Jmol.java:550
+#: org/openscience/jmol/app/Jmol.java:551
 msgid "Closing Jmol..."
 msgstr "Fermeture de Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:786
+#: org/openscience/jmol/app/Jmol.java:787
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1090
+#: org/openscience/jmol/app/Jmol.java:1091
 msgid "Open URL"
 msgstr "Ouvrir une URL"
 
-#: org/openscience/jmol/app/Jmol.java:1091
+#: org/openscience/jmol/app/Jmol.java:1092
 msgid "Enter URL of molecular model"
 msgstr "Saisissez l'URL d'un modèle moléculaire"
 
-#: org/openscience/jmol/app/Jmol.java:1178
+#: org/openscience/jmol/app/Jmol.java:1179
 msgid "IO Exception:"
 msgstr "Exception E/S!"
 
-#: org/openscience/jmol/app/Jmol.java:1345
+#: org/openscience/jmol/app/Jmol.java:1346
 msgid "File not loaded"
 msgstr "Fichier non chargé"
 
@@ -1149,3 +1145,6 @@ msgstr "Chargement..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
+
+#~ msgid "Loading plugins..."
+#~ msgstr "Chargement des plugins..."

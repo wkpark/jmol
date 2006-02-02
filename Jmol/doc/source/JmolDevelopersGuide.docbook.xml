@@ -688,7 +688,7 @@
 		</para>
 		<para>
 			To make a full build of Jmol under Eclipse, just do the following:
-			Find the <command>build.xml</command> in the <guilabel>Package Explorer</guilabel>
+			Find the <filename>build.xml</filename> in the <guilabel>Package Explorer</guilabel>
 			window and <mousebutton>right</mousebutton> click on it. Then select <menuchoice>
 				<guisubmenu>Run As</guisubmenu>
 				<guimenuitem>Ant Build</guimenuitem>

@@ -641,7 +641,7 @@
         Select <command>Run As | Ant Build</command> in the contextual menu. If the build fails, look carefully at
         the message, and if you can't figure it out, send a copy of it in an email message to jmol-developers@sourceforge.net. 
         Problems might include Ant not being able to find the Java compiler ("JAVA_HOME not in CLASSPATH?") or a difference in 
-        Java compiler and runtime environment versions ("wrong version...").
+        Java compiler and runtime environment versions ("class file has wrong version 49.0, should be 48.0").
       </para>
     </section>
     

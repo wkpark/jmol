@@ -59,7 +59,7 @@
     </programlisting>
 
     <para>
-      Press the <command>Enter</command> key when prompted for the password:
+      Press the <emphasis>Enter</emphasis> key when prompted for the password:
     </para>
     <programlisting>
   cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol co -d Jmol Jmol
@@ -305,6 +305,11 @@
     </para>
     
     <para>
+      For release, we are generating JAR files using Java 1.1. This is to provide 
+      compatibility with the Microsoft Java Runtime Environment.
+    </para>
+
+    <para>
       In the <filename class="directory">samples/</filename> directory a number
       of test files are located for the input filters. All files below that
       subdirectory should be checked prior to a release.
@@ -478,14 +483,24 @@
         </listitem>
         <listitem>
           <para>
-            Using the menu system, navigate to <command>Window | Open Perspective | Other... | CVS Repository Exploring</command>
+            Using the menu system at the top of the application, navigate to 
+            <menuchoice>
+            <guimenu>Window </guimenu>
+            <guimenuitem> Open Perspective </guimenuitem>
+            <guimenuitem> Other... </guimenuitem>
+            <guimenuitem> CVS Repository Exploring</guimenuitem>
+            </menuchoice>.
           </para>
         </listitem>
         <listitem>
           <para>
             Right click in the <command>CVS Repositories</command> windows and
-            select <command>New</command>
-             <command>Repository Location...</command> in the contextual menu.
+            select 
+            <menuchoice>
+            <guimenu>New</guimenu>
+            <guimenuitem>Repository Location...</guimenuitem>
+            </menuchoice>
+             in the contextual menu.
           </para>
         </listitem>
         <listitem>
@@ -553,8 +568,14 @@
       <itemizedlist>
         <listitem>
           <para>
-            Switch to the <command>CVS Repository Exploring</command>
-            perspective.
+            Switch to the <command>CVS Repository Exploring perspective</command>
+            using 
+            <menuchoice>
+            <guimenu>Window</guimenu>
+            <guimenuitem> Open Perspective </guimenuitem>
+            <guimenuitem> Other... </guimenuitem>
+            <guimenuitem> CVS Repository Exploring</guimenuitem>
+            </menuchoice>.
           </para>
         </listitem>
         <listitem>
@@ -566,15 +587,21 @@
         </listitem>
         <listitem>
           <para>
-            Right click on <command>Jmol</command> and select <command>Check
-            Out</command> in the contextual menu. The files should start transferring. 
+            Right click on <command>Jmol</command> and select 
+            <menuchoice>
+            <guimenu>Check Out</guimenu>
+            </menuchoice>
+            in the contextual menu. The files should start transferring. 
             If you do not want to wait, you can indicate that you want the transfer to occur in the background. 
           </para>
         </listitem>
         <listitem>
           <para>
             If you want, you can also check out Jmol-web: Right click on
-            <command>Jmol-web</command> and select <command>Check out</command>
+            <command>Jmol-web</command> and select 
+            <menuchoice>
+            <guimenu>Check out</guimenu>
+            </menuchoice>
             in the contextual menu.
           </para>
         </listitem>
@@ -586,24 +613,63 @@
       
       <para>
         To configure Eclipse 3.1 to build Jmol, you need to make sure 
-        (a) the location of the Java compiler executable (javac.exe) is identified, and 
-        (b) Eclipse is using the same version of the Java compiler as the Java Runtime Environment. 
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+           (a) the location of the Java executables (javac.exe and jarsigner.exe) is identified,
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+           (b) the location of the Java library (tools.jar) is identified, and 
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+           (c) Eclipse is using the same version of the Java compiler as the Java Runtime Environment. 
+          </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        Specifically: 
       </para>
 
       <itemizedlist>
         <listitem>
           <para>
-          (a) Identifying the Java compiler. Ant needs to know where to find javac.exe. 
-          From <command>Window | Preferences...| Ant |Runtime</command> click on <command>global entries</command>, then select <command>Add External JARs</command>. 
-          Navigate to the directory containing tools.jar, probably something like c:\j2sdk1.4.2_10\lib, and select tools.jar.
+            (a) Identifying the location of the Java executables. Ant needs to know where to find javac.exe and jarsigner.exe. 
+            This simply requires adding the Java SDK bin directory to the Windows PATH. To do this, you need to 
+            open the Windows "System" Control Panel. On the <command>Advanced</command> tab, select <command>Environment Variables</command>. 
+            Scroll down to the PATH system variable and append to it a semicolon (;) followed by the path to the Java SDK binaries, something like ";c:\j2sdk1.4.2_10\bin".
           </para>
         </listitem>
         <listitem>
           <para>
-          (b) Matching the Java compiler to the Java Runtime Environment. 
-          From <command>Window | Preferences...</command> select <command>Java</command>. 
-          Compare the version listed for the compiler with that for the selected <command>installed JREs</command>. 
-          If they are not the same, use the <command>search</command> facility to find more installed JREs. Then select the JRE that matches the compiler. 
+            (b) Identifying the location of the Java library. Ant needs to know where to find tools.jar. 
+            From 
+            <menuchoice>
+            <guimenu>Window</guimenu>
+            <guimenuitem> Preferences...</guimenuitem>
+            <guimenuitem> Ant </guimenuitem>
+            <guimenuitem>Runtime</guimenuitem>
+            </menuchoice>
+            click on <command>global entries</command>, 
+            then select <command>Add External JARs</command>. 
+            Navigate to the directory containing tools.jar, probably something like c:\j2sdk1.4.2_10\lib, and select tools.jar.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            (c) Matching the Java compiler to the Java Runtime Environment. 
+            From 
+            <menuchoice>
+            <guimenu>Window</guimenu>
+            <guimenuitem> Preferences...</guimenuitem>
+            </menuchoice>
+             select <command>Java</command>. 
+            Compare the version listed for the compiler with that for the selected <command>installed JREs</command>. 
+            If they are not the same, use the <command>search</command> facility to find more installed JREs. Then select the JRE that matches the compiler. 
           </para>
         </listitem>
       </itemizedlist>
@@ -618,13 +684,28 @@
       </para>
       
       <para>
-        From <command>Window | Open Perspective </command> open a Java Perspective (using <command>Other...</command> if necessary).
-      </para>
+        Open a Java Perspective using
+        <menuchoice>
+        <guimenu>Window </guimenu>
+        <guimenuitem> Open Perspective </guimenuitem>
+        <guimenuitem>Other...</guimenuitem>
+        <guimenuitem>Java</guimenuitem>
+        </menuchoice>.
+       </para>
 
       <para>
         To run either the application or the applet
-        right-click <command>Jmol</command> under the Projects tab, select <command>Run As</command>, and then select
-        your choice, Java Applet or Java Application. The main class is <command>org.openscience.jmol.app.Jmol</command>. 
+        right-click <command>Jmol</command> under the Projects tab, select 
+        <menuchoice>
+        <guimenu>Run As</guimenu>
+        <guimenuitem>Java Applet</guimenuitem>
+        </menuchoice>
+        or
+        <menuchoice>
+        <guimenu>Run As</guimenu>
+        <guimenuitem>Java Application</guimenuitem>
+        </menuchoice>.
+        The main class for the application is <command>org.openscience.jmol.app.Jmol</command>. 
       </para>
     </section>
     
@@ -632,13 +713,25 @@
       <title>Building Jmol</title>
     
       <para>
-        If not already done, from <command>Window | Open Perspective </command> open a Java Perspective (using <command>Other...</command> if necessary).
+        If not already done, open a Java Perspective using
+        <menuchoice>
+        <guimenu>Window </guimenu>
+        <guimenuitem> Open Perspective </guimenuitem>
+        <guimenuitem>Other...</guimenuitem>
+        <guimenuitem>Java</guimenuitem>
+        </menuchoice>.
       </para>
 
       <para>
         To make a full build of Jmol under Eclipse, just do the following:
         Under the Jmol [cvs.sourceforge.net] entry, find <command>build.xml</command> and right-click it.
-        Select <command>Run As | Ant Build</command> in the contextual menu. If the build fails, look carefully at
+        Select 
+        <menuchoice>
+        <guimenu>Run As </guimenu>
+        <guimenuitem> Ant Build</guimenuitem>
+        </menuchoice>
+        in the contextual menu. 
+        If the build fails, look carefully at
         the message, and if you can't figure it out, send a copy of it in an email message to jmol-developers@sourceforge.net. 
         Problems might include Ant not being able to find the Java compiler ("JAVA_HOME not in CLASSPATH?") or a difference in 
         Java compiler and runtime environment versions ("class file has wrong version 49.0, should be 48.0").

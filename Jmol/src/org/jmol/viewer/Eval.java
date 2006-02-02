@@ -2142,26 +2142,7 @@ class Eval implements Runnable {
   }
 
   void wireframe() throws ScriptException {
-    switch(statement[1].tok) {
-    case Token.identifier:
-    case Token.hbond:
-      String cmd = ((String)statement[1].value).toLowerCase();
-      if (cmd.equals("single") ||
-          cmd.equals("double") ||
-          cmd.equals("triple") ||
-          cmd.equals("aromatic") ||
-          cmd.equals("hbond"))
-        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", cmd);
-      else
-        unrecognizedSubcommand();
-      break;
-    case Token.delete:
-      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "delete", null);
-      break;
-    default:
-      viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
-      break;
-    }
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
   }
 
   void ssbond() throws ScriptException {
@@ -3685,6 +3666,23 @@ class Eval implements Runnable {
         propertyValue = expression(statement, i);
         // hack for now;
         i = statement.length;
+        break;
+      case Token.identifier:
+      case Token.hbond:
+        String cmd = ((String)statement[i].value).toLowerCase();
+        if (cmd.equals("single") ||
+            cmd.equals("double") ||
+            cmd.equals("triple") ||
+            cmd.equals("aromatic") ||
+            cmd.equals("hbond")) {
+          propertyName = "bondOrder";
+          propertyValue = cmd;
+        } else {
+          unrecognizedSubcommand();
+        }
+        break;
+      case Token.delete:
+        propertyName = "delete";
         break;
       default:
         invalidArgument();

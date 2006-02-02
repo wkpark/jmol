@@ -601,18 +601,19 @@ support for assertions (which were introduced in 1.4).
     </copy>
 
    <!--
-    zip distributions to not retain file permissions
+    zip distributions to not retain file permissions ...
+    miguel 2 feb 2006 but there have been requests for them anyway -->
+
     <zip zipfile="build/dist/jmol-${version}-binary.zip" basedir="build/dist"
          includes="jmol-${version}/**" />
-    -->
 
     <tar tarfile="build/dist/jmol-${version}-binary.tar.gz"
          compression="gzip" >
       <tarfileset dir="build/dist"
-                  excludes="*/jmol,*/jmol.sh"
-                  includes="jmol-${version}/**" />
+		  excludes="*/jmol,*/jmol.sh"
+		  includes="jmol-${version}/**" />
       <tarfileset dir="build/dist"
-                  mode="755"
+		  mode="755"
                   includes="*/jmol,*/jmol.sh" />
     </tar>
 

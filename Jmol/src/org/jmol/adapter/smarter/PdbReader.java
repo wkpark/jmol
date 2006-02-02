@@ -312,16 +312,26 @@ class PdbReader extends AtomSetCollectionReader {
     } else
       return;
 
+    if (lineLength < endIndex + 4)
+      return;
+
     char startChainID = line.charAt(startChainIDIndex);
     int startSequenceNumber = parseInt(line, startIndex, startIndex + 4);
     char startInsertionCode = line.charAt(startIndex + 4);
     char endChainID = line.charAt(endChainIDIndex);
     int endSequenceNumber = parseInt(line, endIndex, endIndex + 4);
-    char endInsertionCode = line.charAt(endIndex + 4);
+    // some files are chopped to remove trailing whitespace
+    char endInsertionCode = ' ';
+    if (lineLength > endIndex + 4)
+      endInsertionCode = line.charAt(endIndex + 4);
 
-    atomSetCollection.addStructure(new Structure(structureType, startChainID,
-                                     startSequenceNumber, startInsertionCode,
-                                     endChainID, endSequenceNumber, endInsertionCode));
+    // this should probably call Structure.validateAndAllocate
+    // in order to check validity of parameters
+    Structure structure = new Structure(structureType, startChainID,
+                                        startSequenceNumber,
+                                        startInsertionCode, endChainID,
+                                        endSequenceNumber, endInsertionCode);
+    atomSetCollection.addStructure(structure);
   }
   
   void model() {

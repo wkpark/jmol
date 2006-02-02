@@ -1,6 +1,6 @@
 //
-// Boîte de dialogue élémentaire
-// avec étiquette, champ de texte,
+// Boite de dialogue elementaire
+// avec etiquette, champ de texte,
 // boutons Ok et Annuler
 //	      (3me version)
 package org.jmol.jcamp;

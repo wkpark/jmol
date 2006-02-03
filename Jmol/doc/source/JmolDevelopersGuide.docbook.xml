@@ -72,7 +72,7 @@
 		If you are using Eclipse, see <xref linkend="Eclipse"/>.
 	</para>
 	<para>
-		For anonymous checkout from SourceForge cvs, use the following command and hit
+		For anonymous checkout from SourceForge cvs, use the following command and press
 		the <keycap>Enter</keycap> key when prompted for the password:
 		<screen><prompt>~/workspace$</prompt> cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol login</screen>
 	</para>
@@ -440,7 +440,7 @@
 						<guisubmenu>Open Perspective</guisubmenu>
 						<guimenuitem>Other...</guimenuitem>
 					</menuchoice> and choose <guimenuitem>CVS Repository Exploring</guimenuitem>.
-					Then hit the <guibutton>[OK]</guibutton> button.
+					Then click on the <guibutton>[OK]</guibutton> button.
 				</para>
 			</listitem>
 			<listitem>
@@ -521,7 +521,7 @@
 					</variablelist>
 				</para>
 				<para>
-					The hit the <guibutton>[Finish]</guibutton> button and you are done.
+					Click on the <guibutton>[Finish]</guibutton> button, and you are done.
 				</para>
 			</listitem>
 		</itemizedlist>
@@ -539,7 +539,7 @@
 						<guisubmenu>Open Perspective</guisubmenu>
 						<guimenuitem>Other...</guimenuitem>
 					</menuchoice> and choose <guimenuitem>CVS Repository Exploring</guimenuitem>.
-					Then hit the <guibutton>[OK]</guibutton> button.
+					Click on the <guibutton>[OK]</guibutton> button.
 				</para>
 			</listitem>
 			<listitem>
@@ -626,12 +626,12 @@
 				</menuchoice>. In the <guilabel>Preferences</guilabel> Window go to <menuchoice>
 					<guisubmenu>Ant</guisubmenu>
 					<guimenuitem>Runtime</guimenuitem>
-				</menuchoice> and select <guimenuitem>Global Entries</guimenuitem> and hit
-				the <guibutton>[Add External JARs]</guibutton>. Navigate to the directory
+				</menuchoice> and select <guimenuitem>Global Entries</guimenuitem> and click on
+				the <guibutton>[Add External JARs]</guibutton> button. Navigate to the directory
 				containing <filename>tools.jar</filename> (probably something
 				like <filename class="directory">c:\j2sdk1.4.2_10\lib</filename>),
 				select <filename class="libraryfile">tools.jar</filename> and
-				hit <guibutton>[OK]</guibutton>.
+				click on <guibutton>[OK]</guibutton>.
 			</para>
 		</sect2>
 
@@ -694,7 +694,7 @@
 				<guimenuitem>Ant Build</guimenuitem>
 			</menuchoice> in the contextual menu. If the build fails, look carefully at
 			the message, and if you can't figure it out, send a copy of it in an email message
-			to <email>jmol-developers@sourceforge.net</email>. Problems might include Ant not
+			to <email>jmol-developers@lists.sourceforge.net</email>. Problems might include Ant not
 			being able to find the Java compiler (<errortext>"JAVA_HOME not in CLASSPATH?"</errortext>)
 			or a difference in Java compiler and runtime environment versions (<errortext>"class
 			file has wrong version 49.0, should be 48.0"</errortext>).

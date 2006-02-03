@@ -460,7 +460,7 @@
 						<varlistentry>
 							<term><parameter>Host:</parameter></term>
 							<listitem>
-								<para><emphasis>cvs.sourceforge.net</emphasis></para>
+								<para><userinput>cvs.sourceforge.net</userinput></para>
 							</listitem>
 						</varlistentry>
 						<varlistentry>

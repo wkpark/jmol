@@ -1467,6 +1467,14 @@ final public class Viewer extends JmolViewer {
       refresh();
   }
 
+  void setAnimationOn(boolean animationOn,int framePointer) {
+    boolean wasAnimating = repaintManager.animationOn;
+    System.out.println(" setAnimationOn "+wasAnimating+" "+animationOn+" "+framePointer);
+    repaintManager.setAnimationOn(animationOn, framePointer);
+    if (animationOn != wasAnimating)
+      refresh();
+  }
+
   boolean isAnimationOn() {
     return repaintManager.animationOn;
   }

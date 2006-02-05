@@ -243,7 +243,11 @@ class RepaintManager {
 
   boolean animationOn = false;
   AnimationThread animationThread;
+
   void setAnimationOn(boolean animationOn) {
+    setAnimationOn(animationOn,-1); 
+  }
+  void setAnimationOn(boolean animationOn,int framePointer) {
     if (! animationOn || ! viewer.haveFrame()) {
       if (animationThread != null) {
         animationThread.interrupt();
@@ -258,14 +262,14 @@ class RepaintManager {
       return;
     }
     currentDirection = animationDirection;
-    setDisplayModelIndex(animationDirection == 1 ? 0 : modelCount - 1);
+    setDisplayModelIndex(framePointer>=0?framePointer:animationDirection == 1 ? 0 : modelCount - 1);
     if (animationThread == null) {
       animationThread = new AnimationThread(modelCount);
       animationThread.start();
     }
     this.animationOn = true;
   }
-
+  
   class AnimationThread extends Thread implements Runnable {
     final int modelCount;
     final int lastModelIndex;

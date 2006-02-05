@@ -2499,6 +2499,10 @@ class Eval implements Runnable {
         viewer.setAnimationPrevious();
         return;
       }
+      if (ident.equalsIgnoreCase("play")) {
+        viewer.setAnimationOn(true,viewer.getDisplayModelIndex());
+        return;
+      }
       break;
     default:
       invalidArgument();

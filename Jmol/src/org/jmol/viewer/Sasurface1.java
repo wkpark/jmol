@@ -91,10 +91,10 @@ class Sasurface1 {
   boolean hide;
 
   private int GEODESIC_CALC_LEVEL = Sasurface.MAX_GEODESIC_RENDERING_LEVEL;
-  private int MAX_FULL_TORUS_STEP_COUNT = Sasurface.MAX_FULL_TORUS_STEP_COUNT;
-  private int OUTER_TORUS_STEP_COUNT = Sasurface.OUTER_TORUS_STEP_COUNT;
+  int MAX_FULL_TORUS_STEP_COUNT = Sasurface.MAX_FULL_TORUS_STEP_COUNT;
+  int OUTER_TORUS_STEP_COUNT = Sasurface.OUTER_TORUS_STEP_COUNT;
 
-  private float TARGET_INNER_TORUS_STEP_ANGLE =
+  float TARGET_INNER_TORUS_STEP_ANGLE =
     (float)(2 * Math.PI / (MAX_FULL_TORUS_STEP_COUNT - 1));
 
   int geodesicRenderingLevel = GEODESIC_CALC_LEVEL;
@@ -112,36 +112,36 @@ class Sasurface1 {
 
   private IntInt2ObjHash htToruses;
 
-  private final SasGem gem;
+  final SasGem gem;
   private final SasNeighborFinder neighborFinder;
 
   private final static boolean LOG = false;
 
   ////////////////////////////////////////////////////////////////
   
-  private final Point3f pointT = new Point3f();
-  private final Point3f zeroPointT = new Point3f();
-  private final Point3f centerPointT = new Point3f();
+  final Point3f pointT = new Point3f();
+  final Point3f zeroPointT = new Point3f();
+  final Point3f centerPointT = new Point3f();
   private final Point3f centerPointAT = new Point3f();
   private final Point3f centerPointBT = new Point3f();
 
   private final static float PI = (float)Math.PI;
 
-  private final Vector3f torusCavityAngleVectorT = new Vector3f();
-  private final Matrix3f matrixT = new Matrix3f();
-  private final AxisAngle4f aaT = new AxisAngle4f();
+  final Vector3f torusCavityAngleVectorT = new Vector3f();
+  final Matrix3f matrixT = new Matrix3f();
+  final AxisAngle4f aaT = new AxisAngle4f();
 
   static final Vector3f vectorX = new Vector3f(1, 0, 0);
   static final Vector3f vectorY = new Vector3f(0, 1, 0);
   static final Vector3f vectorZ = new Vector3f(0, 0, 1);
 
-  private final Vector3f unitRadialVectorT = new Vector3f();
+  final Vector3f unitRadialVectorT = new Vector3f();
   // 90 degrees, although everything is in radians
-  private final Vector3f radialVector90T = new Vector3f();
+  final Vector3f radialVector90T = new Vector3f();
 
-  private final Vector3f vectorT = new Vector3f();
+  final Vector3f vectorT = new Vector3f();
 
-  private final Vector3f outerRadials[] = new Vector3f[OUTER_TORUS_STEP_COUNT];
+  final Vector3f outerRadials[] = new Vector3f[OUTER_TORUS_STEP_COUNT];
   {
     for (int i = outerRadials.length; --i >= 0; )
       outerRadials[i] = new Vector3f();

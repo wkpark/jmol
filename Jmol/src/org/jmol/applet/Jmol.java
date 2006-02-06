@@ -32,6 +32,7 @@ import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 
 import netscape.javascript.JSObject;
+import org.jmol.viewer.JmolConstants;
 
 import java.awt.*;
 import java.net.URL;
@@ -103,17 +104,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   String animFrameCallback;
   String loadStructCallback;
   String messageCallback;
-  String pauseCallback;
+  //??? String pauseCallback;
   String pickCallback;
 
   final static boolean REQUIRE_PROGRESSBAR = true;
   boolean hasProgressBar;
   int paintCounter;
 
+/* see below
   public String getAppletInfo() {
     return appletInfo;
   }
-
+*/
   static String appletInfo =
     GT._("Jmol Applet.  Part of the OpenScience project. " +
          "See http://www.jmol.org for more information");
@@ -124,11 +126,14 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   
   public void init() {
     htmlName = getParameter("name");
+    
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (! ms.equalsIgnoreCase("false"));
     appletRegistry =
       new JmolAppletRegistry(htmlName, mayScript, appletWrapper);
-
+    
+    System.out.println("Applet name=" + htmlName);
+    
     initWindows();
     initApplication();
   }
@@ -261,7 +266,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       bgcolor = getValue("bgcolor", bgcolor);
       viewer.setColorBackground(bgcolor);
       
-      loadInline(getValue("loadInline", null));
+      //loadInline(getValue("loadInline", null));
       loadNodeId(getValue("loadNodeId", null));
 
       viewer.setFrankOn(true);
@@ -269,13 +274,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
       messageCallback = getValue("MessageCallback", null);
-      pauseCallback = getValue("PauseCallback", null);
+      //pauseCallback = getValue("PauseCallback", null);
       pickCallback = getValue("PickCallback", null);
+      System.out.println("animFrameCallback=" + animFrameCallback);
+      System.out.println("loadStructCallback=" + loadStructCallback);
+      System.out.println("messageCallback=" + messageCallback);
+      //System.out.println("pauseCallback=" + pauseCallback);
+      System.out.println("pickCallback=" + pickCallback);
       if (! mayScript &&
           (animFrameCallback != null ||
            loadStructCallback != null ||
            messageCallback != null ||
-           pauseCallback != null ||
+           //pauseCallback != null ||
            pickCallback != null))
         System.out.println("WARNING!! MAYSCRIPT not found");
       
@@ -456,9 +466,38 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     myStatusListener.setStatusMessage(strError);
   }
 
+  public String getAppletInfo() {
+    return GT._("Jmol Applet. Version " + JmolConstants.version + " " + JmolConstants.date +"  Part of the OpenScience project. " +
+         "See http://www.jmol.org for more information");
+  }
+
+  public String getAppletInfo(String infoType) {
+
+    System.out.println("getAppletInfo(\"" + infoType+"\")");
+    
+    if(infoType.equalsIgnoreCase("fileContents"))
+        return viewer.getCurrentFileAsString();
+    return "getAppletInfo ERROR\n\nOptions include\n"
+    + "\n getAppletInfo(\"fileContents\")";
+  }
+
+  public String getAppletInfo(String infoType, String paramInfo) {
+
+    System.out.println("getAppletInfo(\"" + infoType+"\", \"" + paramInfo + "\")");
+    
+    if(infoType.equalsIgnoreCase("fileContents")) {
+      if(paramInfo.length() > 0){
+        return viewer.getFileAsString(paramInfo);
+      }
+    }
+    return "getAppletInfo ERROR\n\nOptions include "
+    + "\n getAppletInfo(\"fileContents\",\"<pathname>\")";
+  }
+
   char inlineNewlineChar = '|';
 
   public void loadInline(String strModel) {
+
     if (strModel != null) {
       if (inlineNewlineChar != 0) {
         int len = strModel.length();
@@ -552,7 +591,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       }
       if (fullPathName != null)
         if (loadStructCallback != null && jsoWindow != null)
-          jsoWindow.call(loadStructCallback, new Object[] {htmlName});
+          jsoWindow.call(loadStructCallback, new Object[] {htmlName, fullPathName});
       if (jmolpopup != null)
         jmolpopup.updateComputedMenus();
     }

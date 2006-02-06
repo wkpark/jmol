@@ -1051,14 +1051,14 @@ final public class Viewer extends JmolViewer {
     return null;
   }
 
-  String getCurrentFileAsString() {
+  public String getCurrentFileAsString() {
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
     return fileManager.getFileAsString(pathName);
   }
 
-  String getFileAsString(String pathName) {
+  public String getFileAsString(String pathName) {
     return fileManager.getFileAsString(pathName);
   }
 

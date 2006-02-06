@@ -29,7 +29,6 @@ public interface JmolStatusListener {
                                String errorMessage);
 
   public void setStatusMessage(String statusMessage);
-  public void setStatusMessage(String statusMessage, String additionalInfo);
   
   public void scriptEcho(String strEcho);
 

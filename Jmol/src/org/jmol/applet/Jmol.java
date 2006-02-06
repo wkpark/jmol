@@ -115,11 +115,11 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   public String getAppletInfo() {
     return appletInfo;
   }
-*/
+
   static String appletInfo =
     GT._("Jmol Applet.  Part of the OpenScience project. " +
          "See http://www.jmol.org for more information");
-
+*/
   public void setAppletWrapper(AppletWrapper appletWrapper) {
     this.appletWrapper = appletWrapper;
   }

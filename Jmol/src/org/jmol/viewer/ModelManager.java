@@ -497,4 +497,37 @@ String getAtomInfoChime(int i) {
     Polymer polymer = frame.getPolymerAt(modelIndex, polymerIndex);
     return polymer.getLeadMidpoints();
   }
+
+  public String getJSONAtomInfoFromBitSet(BitSet bs) {
+    String strJSON = "";
+    String sep ="";
+    int atomCount = frame.atomCount;
+    for (int i = 0; i < atomCount; i++) {
+      if (bs.get(i)) {
+        strJSON = strJSON + sep + getAtomInfoJSON(i);
+        sep = ",";
+      }
+    }
+    strJSON = "[" + strJSON + "]";
+    return strJSON;
+  }
+
+  String getAtomInfoJSON(int i) {
+    String  strJSON = "{";
+    strJSON = strJSON + "\"ipt\":" + i;
+    strJSON = strJSON + ",\"number\":" + getAtomNumber(i);
+    strJSON = strJSON + ",\"sym\":\"" + getElementSymbol(i) + "\"";
+    strJSON = strJSON + ",\"atno\":" + getElementNumber(i);
+    strJSON = strJSON + ",\"x\":" + getAtomX(i);
+    strJSON = strJSON + ",\"y\":" + getAtomY(i);
+    strJSON = strJSON + ",\"z\":" + getAtomZ(i);
+    strJSON = strJSON + ",\"name\":\"" + getAtomName(i) + "\"";
+    strJSON = strJSON + ",\"model\":" + getAtomModelIndex(i);
+    strJSON = strJSON + ",\"info\":\"" + getAtomInfo(i) + "\"";
+//    strJSON = strJSON + ",\"chain\":\"" + getAtomChain(i) + "\"";
+//    strJSON = strJSON + ",\"seq\":\"" + getAtomSequenceCode(i) + "\"";
+    strJSON = strJSON + "}";
+    return strJSON;
+  }  
 }
+

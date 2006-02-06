@@ -958,10 +958,17 @@ final public class Viewer extends JmolViewer {
         str = str.substring(1,str.length()-1);
         return str;
       }
+    }    
+    if(infoType.equalsIgnoreCase("atomDetail")) {
+      if(paramInfo.length() > 0){
+        String str = getAtomBitSetDetail(paramInfo);
+        return str;
+      }
     }
     return "getProperty ERROR\n\nOptions include "
     + "\n getProperty(\"fileContents\",\"<pathname>\")"
-    + "\n getProperty(\"atomList\",\"<atom selection>\")";
+    + "\n getProperty(\"atomList\",\"<atom selection>\")"
+    + "\n getProperty(\"atomDetail\",\"<atom selection>\")";
   }
 
 
@@ -2571,6 +2578,11 @@ final public class Viewer extends JmolViewer {
 
   public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex) {
     return modelManager.getPolymerLeadMidPoints(modelIndex, polymerIndex);
+  }
+  
+  public String getAtomBitSetDetail(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getJSONAtomInfoFromBitSet(bs);
   }
   
   ////////////////////////////////////////////////////////////////

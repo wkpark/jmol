@@ -63,16 +63,12 @@ public class JmolApplet
 
   };
 
-  public String getAppletInfo() {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getAppletInfo());
+  public String getProperty(String infoType) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(infoType));
   }
 
-  public String getAppletInfo(String infoType) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getAppletInfo(infoType));
-  }
-
-  public String getAppletInfo(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getAppletInfo(infoType,paramInfo));
+  public String getProperty(String infoType, String paramInfo) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(infoType,paramInfo));
   }
 
   public void script(String script) {

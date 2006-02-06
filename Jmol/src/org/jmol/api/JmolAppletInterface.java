@@ -33,8 +33,8 @@ import netscape.javascript.JSObject;
 public interface JmolAppletInterface {
 
   public String getAppletInfo();
-  public String getAppletInfo(String infoType);
-  public String getAppletInfo(String infoType, String paramInfo);
+  public String getProperty(String infoType);
+  public String getProperty(String infoType, String paramInfo);
   public void script(String script);
   public void loadInline(String strModel);
   public void loadNodeId(String nodeId);

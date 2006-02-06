@@ -31,8 +31,8 @@ public interface WrappedApplet {
   public void setAppletWrapper(AppletWrapper appletWrapper);
   public void init();
   public String getAppletInfo();
-  public String getAppletInfo(String infoType);
-  public String getAppletInfo(String infoType, String paramInfo);
+  public String getProperty(String infoType);
+  public String getProperty(String infoType, String paramInfo);
   public void update(Graphics g);
   public void paint(Graphics g);
   public boolean handleEvent(Event e);

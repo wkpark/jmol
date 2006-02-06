@@ -471,19 +471,19 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         new Object[] { JmolConstants.version, JmolConstants.date });
   }
 
-  public String getAppletInfo(String infoType) {
+  public String getProperty(String infoType) {
 
-    System.out.println("getAppletInfo(\"" + infoType+"\")");
+    System.out.println("getProperty(\"" + infoType+"\")");
     
     if(infoType.equalsIgnoreCase("fileContents"))
         return viewer.getCurrentFileAsString();
-    return "getAppletInfo ERROR\n\nOptions include\n"
-    + "\n getAppletInfo(\"fileContents\")";
+    return "getProperty ERROR\n\nOptions include\n"
+    + "\n getProperty(\"fileContents\")";
   }
 
-  public String getAppletInfo(String infoType, String paramInfo) {
+  public String getProperty(String infoType, String paramInfo) {
 
-    System.out.println("getAppletInfo(\"" + infoType+"\", \"" + paramInfo + "\")");
+    System.out.println("getProperty(\"" + infoType+"\", \"" + paramInfo + "\")");
     
     if(infoType.equalsIgnoreCase("fileContents")) {
       if(paramInfo.length() > 0){
@@ -497,9 +497,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         return str;
       }
     }
-    return "getAppletInfo ERROR\n\nOptions include "
-    + "\n getAppletInfo(\"fileContents\",\"<pathname>\")"
-    + "\n getAppletInfo(\"atomList\",\"<atom selection>\")";
+    return "getProperty ERROR\n\nOptions include "
+    + "\n getProperty(\"fileContents\",\"<pathname>\")"
+    + "\n getProperty(\"atomList\",\"<atom selection>\")";
   }
 
   char inlineNewlineChar = '|';

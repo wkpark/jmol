@@ -83,11 +83,9 @@ public class AppletWrapper extends Applet {
     needToCompleteInitialization = true;
   }
 
-/* moved to Jmol.java  BH 2/5/06
   public String getAppletInfo() {
     return (wrappedApplet != null ? wrappedApplet.getAppletInfo() : null);
   }
-*/
 
   public void init() {
     startTime = System.currentTimeMillis();

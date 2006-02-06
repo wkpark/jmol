@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2005-11-27 15:53-0500\n"
+"POT-Creation-Date: 2006-02-06 22:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,21 +16,25 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: org/jmol/applet/Jmol.java:118
-msgid ""
-"Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
-"more information"
-msgstr ""
-
-#: org/jmol/applet/Jmol.java:455
+#: org/jmol/applet/Jmol.java:465
 msgid "Jmol executing script ..."
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:550
+#: org/jmol/applet/Jmol.java:470
+#, java-format
+msgid ""
+"Jmol Applet version {0} {1}.\n"
+"\n"
+"An OpenScience project.\n"
+"\n"
+"See http://www.jmol.org for more information"
+msgstr ""
+
+#: org/jmol/applet/Jmol.java:574
 msgid "File Error:"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:579
+#: org/jmol/applet/Jmol.java:611
 msgid "Jmol script completed"
 msgstr ""
 

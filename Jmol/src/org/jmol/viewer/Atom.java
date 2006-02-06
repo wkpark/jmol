@@ -706,7 +706,7 @@ final class Atom implements Tuple {
     if (strFormat == null || strFormat.equals(""))
       return null;
     String strLabel = "";
-    int cch = strFormat.length();
+    //int cch = strFormat.length();
     int ich, ichPercent;
     for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1; ) {
       if (ich != ichPercent)
@@ -834,9 +834,9 @@ final class Atom implements Tuple {
           strT = "%" + ch;
         }
         if (floatIsSet) {
-          strLabel += format(floatT, width, precision, alignLeft);
+          strLabel += format(floatT, width, precision, alignLeft, zeroPad);
         } else {
-          strLabel += format(strT, width, precision, alignLeft);
+          strLabel += format(strT, width, precision, alignLeft, zeroPad);
         }
       } catch (IndexOutOfBoundsException ioobe) {
         ich = ichPercent;
@@ -850,14 +850,14 @@ final class Atom implements Tuple {
   }
 
   String format(float value, int width, int precision,
-                       boolean alignLeft) {
+                boolean alignLeft, boolean zeroPad) {
     return format(group.chain.frame.viewer.formatDecimal(value, precision),
-                  width, 0, alignLeft);
+                  width, 0, alignLeft, zeroPad);
   }
 
   static String format(String value, int width, int precision,
-                       boolean alignLeft) {
-      if (precision > value.length())
+                       boolean alignLeft, boolean zeroPad) {
+    if (precision > value.length())
       value = value.substring(0, precision);
     int padLength = width - value.length();
     if (padLength <= 0)
@@ -866,7 +866,7 @@ final class Atom implements Tuple {
     if (alignLeft)
       sb.append(value);
     for (int i = padLength; --i >= 0; )
-      sb.append(' ');
+      sb.append((!alignLeft && zeroPad) ? '0' : ' ');
     if (! alignLeft)
       sb.append(value);
     return "" + sb;

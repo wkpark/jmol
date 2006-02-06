@@ -62,9 +62,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getJavaVersion();
   abstract public String getJavaVendor();
 
-  abstract public String getCurrentFileAsString();
-  abstract public String getFileAsString(String pathName);
-  abstract public BitSet getAtomBitSet(String atomExpression);
+  abstract public String getProperty(String infoType, String paramInfo);
+  abstract public String getProperty(String infoType);
   
   abstract public boolean haveFrame();
 

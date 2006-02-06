@@ -933,6 +933,38 @@ final public class Viewer extends JmolViewer {
     return bs;  
   }
   
+  public String getProperty(String infoType) {
+
+    System.out.println("viewer.getProperty(\"" + infoType+"\")");
+      
+    if(infoType.equalsIgnoreCase("fileContents"))
+        return getCurrentFileAsString();
+    return "getProperty ERROR\n\nOptions include\n"
+    + "\n getProperty(\"fileContents\")";
+  }
+
+  public String getProperty(String infoType, String paramInfo) {
+
+    System.out.println("viewer.getProperty(\"" + infoType+"\", \"" + paramInfo + "\")");
+    
+    if(infoType.equalsIgnoreCase("fileContents")) {
+      if(paramInfo.length() > 0){
+        return getFileAsString(paramInfo);
+      }
+    }
+    if(infoType.equalsIgnoreCase("atomList")) {
+      if(paramInfo.length() > 0){
+        String str = getAtomBitSet(paramInfo).toString();
+        str = str.substring(1,str.length()-1);
+        return str;
+      }
+    }
+    return "getProperty ERROR\n\nOptions include "
+    + "\n getProperty(\"fileContents\",\"<pathname>\")"
+    + "\n getProperty(\"atomList\",\"<atom selection>\")";
+  }
+
+
   int getSelectionCount() {
     return selectionManager.getSelectionCount();
   }
@@ -2592,4 +2624,5 @@ final public class Viewer extends JmolViewer {
   String formatDecimal(float value, int decimalDigits) {
     return styleManager.formatDecimal(value, decimalDigits);
   }
+
 }

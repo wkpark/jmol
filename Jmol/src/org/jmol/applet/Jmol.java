@@ -472,36 +472,13 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public String getProperty(String infoType) {
-
-    System.out.println("getProperty(\"" + infoType+"\")");
-    
-    if(infoType.equalsIgnoreCase("fileContents"))
-        return viewer.getCurrentFileAsString();
-    return "getProperty ERROR\n\nOptions include\n"
-    + "\n getProperty(\"fileContents\")";
+    return viewer.getProperty(infoType);
   }
 
   public String getProperty(String infoType, String paramInfo) {
-
-    System.out.println("getProperty(\"" + infoType+"\", \"" + paramInfo + "\")");
-    
-    if(infoType.equalsIgnoreCase("fileContents")) {
-      if(paramInfo.length() > 0){
-        return viewer.getFileAsString(paramInfo);
-      }
-    }
-    if(infoType.equalsIgnoreCase("atomList")) {
-      if(paramInfo.length() > 0){
-        String str = viewer.getAtomBitSet(paramInfo).toString();
-        str = str.substring(1,str.length()-1);
-        return str;
-      }
-    }
-    return "getProperty ERROR\n\nOptions include "
-    + "\n getProperty(\"fileContents\",\"<pathname>\")"
-    + "\n getProperty(\"atomList\",\"<atom selection>\")";
+    return viewer.getProperty(infoType, paramInfo);
   }
-
+  
   char inlineNewlineChar = '|';
 
   public void loadInline(String strModel) {

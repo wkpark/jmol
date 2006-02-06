@@ -64,7 +64,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public String getCurrentFileAsString();
   abstract public String getFileAsString(String pathName);
-
+  abstract public BitSet getAtomBitSet(String atomExpression);
+  
   abstract public boolean haveFrame();
 
   abstract public void pushHoldRepaint();

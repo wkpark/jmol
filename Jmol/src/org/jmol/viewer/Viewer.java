@@ -920,6 +920,19 @@ final public class Viewer extends JmolViewer {
     return selectionManager.bsSelection;
   }
 
+  public BitSet getAtomBitSet(String atomExpression) {
+    Eval e = new Eval(this);
+    BitSet bs = new BitSet();
+    System.out.println("getAtomBitSet " + atomExpression);
+    try {
+      bs = e.getAtomBitSet(atomExpression);
+    } catch (Exception ex) {
+      System.out.println(ex);
+      return bs;
+    }
+    return bs;  
+  }
+  
   int getSelectionCount() {
     return selectionManager.getSelectionCount();
   }

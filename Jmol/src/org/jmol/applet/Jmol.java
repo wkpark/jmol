@@ -463,7 +463,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     String strError = viewer.evalString(script);
     if (strError == null)
       strError = GT._("Jmol executing script ...");
-    myStatusListener.setStatusMessage(strError);
+    myStatusListener.setStatusMessage(strError, script);
   }
 
   public String getAppletInfo() {
@@ -490,8 +490,16 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         return viewer.getFileAsString(paramInfo);
       }
     }
+    if(infoType.equalsIgnoreCase("atomList")) {
+      if(paramInfo.length() > 0){
+        String str = viewer.getAtomBitSet(paramInfo).toString();
+        str = str.substring(1,str.length()-1);
+        return str;
+      }
+    }
     return "getAppletInfo ERROR\n\nOptions include "
-    + "\n getAppletInfo(\"fileContents\",\"<pathname>\")";
+    + "\n getAppletInfo(\"fileContents\",\"<pathname>\")"
+    + "\n getAppletInfo(\"atomList\",\"<atom selection>\")";
   }
 
   char inlineNewlineChar = '|';
@@ -601,6 +609,14 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         return;
       if (messageCallback != null && jsoWindow != null)
         jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage});
+      showStatusAndConsole(statusMessage);
+    }
+
+    public void setStatusMessage(String statusMessage, String additionalInfo) {
+      if (statusMessage == null)
+        return;
+      if (messageCallback != null && jsoWindow != null)
+        jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage, additionalInfo});
       showStatusAndConsole(statusMessage);
     }
 

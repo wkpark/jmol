@@ -212,7 +212,7 @@ class Eval implements Runnable {
       Token[] atoken = aatoken[i];
       for (int j = 0; j < atoken.length; ++j) {
         str.append(' ');
-	str.append(atoken[j]);
+        str.append(atoken[j]);
       }
       str.append("\n");
     }
@@ -826,6 +826,13 @@ class Eval implements Runnable {
     return copy;
   }
 
+  public BitSet getAtomBitSet(String atomExpression) throws ScriptException {
+    BitSet bs = new BitSet();
+    if(!loadScript(null, "select (" + atomExpression + ")")) return bs;
+    bs = expression(aatoken[0],1);
+    return bs;
+  }
+  
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
     int numberOfAtoms = viewer.getAtomCount();
     BitSet bs;

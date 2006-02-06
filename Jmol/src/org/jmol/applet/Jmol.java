@@ -467,8 +467,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public String getAppletInfo() {
-    return GT._("Jmol Applet. Version " + JmolConstants.version + " " + JmolConstants.date +"  Part of the OpenScience project. " +
-         "See http://www.jmol.org for more information");
+    return GT._("Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
+        new Object[] { JmolConstants.version, JmolConstants.date });
   }
 
   public String getAppletInfo(String infoType) {

@@ -33,6 +33,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -2588,11 +2589,21 @@ final public class Viewer extends JmolViewer {
       
     if(infoType.equalsIgnoreCase("fileContents"))
       return getCurrentFileAsString();
+    if(infoType.equalsIgnoreCase("fileHeader"))
+      return getFileHeader();      
+    if(infoType.equalsIgnoreCase("fileName"))
+      return fileManager.getFullPathName();
     if(infoType.equalsIgnoreCase("orientationInfo"))
       return "{\"orientationInfo\": " + getJSONOrientationInfo() + "}";      
+    if(infoType.equalsIgnoreCase("modelInfo"))
+      return "{\"modelInfo\": " + getModelInfoJSON() + "}";      
     return "getProperty ERROR\n\nOptions include\n"
+    + "\n getProperty(\"fileName\")"
     + "\n getProperty(\"fileContents\")"
-    + "\n getProperty(\"orientationInfo\")";
+    + "\n getProperty(\"fileHeader\")"
+    + "\n getProperty(\"orientationInfo\")"
+    + "\n getProperty(\"modelInfo\")"
+    + "";
   }
 
   public String getProperty(String infoType, String paramInfo) {
@@ -2611,16 +2622,17 @@ final public class Viewer extends JmolViewer {
         return "{\"atomList\": " + str + "}";
       }
     }    
-    if(infoType.equalsIgnoreCase("atomDetail")) {
+    if(infoType.equalsIgnoreCase("atomInfo")) {
       if(paramInfo.length() > 0){
         String str = getJSONAtomBitSetDetail(paramInfo);
-        return "{\"atomDetail\":" + str + "}";
+        return "{\"atomInfo\":" + str + "}";
       }
     }
     return "getProperty ERROR\n\nOptions include "
     + "\n getProperty(\"fileContents\",\"<pathname>\")"
     + "\n getProperty(\"atomList\",\"<atom selection>\")"
-    + "\n getProperty(\"atomDetail\",\"<atom selection>\")";
+    + "\n getProperty(\"atomInfo\",\"<atom selection>\")"
+    + "";
   }
 
   public BitSet getAtomBitSet(String atomExpression) {
@@ -2645,6 +2657,112 @@ final public class Viewer extends JmolViewer {
     return transformManager.getJSONOrientation();
   }
 
-}
+  String getFileHeader() {
+    String info = "no header information found";
+    if ("pdb" == getModelSetTypeName()) {
+      info = getPDBHeader();
+    }
+    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) {
+      info = getModelName(0);
+    }
+    // options here for other file formats?
+   return info;
+  }
+  
+  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
+    "MODEL ", "SCALE",  "HETATM", "SEQRES",
+    "DBREF ", };
 
+  String getPDBHeader() {
+    if ("pdb" != getModelSetTypeName()) {
+      return "!Not a pdb file!";
+    }
+    String modelFile = getCurrentFileAsString();
+    int ichMin = modelFile.length();
+    for (int i = pdbRecords.length; --i >= 0; ) {
+      int ichFound = -1;
+      String strRecord = pdbRecords[i];
+      if (modelFile.startsWith(strRecord))
+        ichFound = 0;
+      else {
+        String strSearch = "\n" + strRecord;
+        ichFound = modelFile.indexOf(strSearch);
+        if (ichFound >= 0)
+          ++ichFound;
+      }
+      if (ichFound >= 0 && ichFound < ichMin)
+        ichMin = ichFound;
+    }
+    return modelFile.substring(0, ichMin);
+  }
+
+  String getModelInfo() {
+    int modelCount = getModelCount();
+    String str =  "model count = " + modelCount +
+                 "\nmodelSetHasVibrationVectors:" +
+                 modelSetHasVibrationVectors();
+    Properties props = getModelSetProperties();
+    str = str.concat(listProperties(props));
+    for (int i = 0; i < modelCount; ++i) {
+      str = str.concat("\n" + i + ":" + getModelNumber(i) +
+                 ":" + getModelName(i) +
+                 "\nmodelHasVibrationVectors:" +
+                 modelHasVibrationVectors(i));
+      str = str.concat(listProperties(getModelProperties(i)));
+    }
+    return str;
+  }
+  String getModelInfoJSON() {
+    String sep = "";
+    int modelCount = getModelCount();
+    String str = "\"modelCount\": " + modelCount +
+                 ",\"modelSetHasVibrationVectors\": " +
+                 modelSetHasVibrationVectors();
+    Properties props = getModelSetProperties();
+    str = str.concat(listPropertiesJSON(props));
+    str = str.concat(",\"models\":[");
+    for (int i = 0; i < modelCount; ++i) {
+      str = str.concat(sep + "{\"ipt\":" + i + ",\"num\":" + getModelNumber(i) +
+                 ",\"name\":\"" + getModelName(i).replaceAll("\"","'") + "\"" +
+                 ",\"vibrationVectors\":" +
+                 modelHasVibrationVectors(i) + "}");
+      sep = ",";
+      str = str.concat(listPropertiesJSON(getModelProperties(i)));
+    }
+    str = str.concat("]");
+    return "{" + str + "}";
+  }
+
+  String listProperties(Properties props) {
+    String str = "";
+    if (props == null) {
+      str = str.concat("\nProperties: null");
+    } else {
+      Enumeration e = props.propertyNames();
+      str = str.concat("\nProperties:");
+      while (e.hasMoreElements()) {
+        String propertyName = (String)e.nextElement();
+        str = str.concat("\n " + propertyName + "=" +
+                   props.getProperty(propertyName));
+      }
+    }
+    return str;
+  }
+  
+  String listPropertiesJSON(Properties props) {
+    String str = "";
+    String sep = ",";
+    if (props == null) {
+      return "";
+    }
+    Enumeration e = props.propertyNames();
+    while (e.hasMoreElements()) {
+      String propertyName = (String)e.nextElement();
+      str = str.concat(sep + "\"" + propertyName + "\":\"" +
+                 props.getProperty(propertyName) + "\"");
+    }    
+    return str;
+  }
+  
+}
 

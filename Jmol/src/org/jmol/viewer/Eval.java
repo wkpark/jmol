@@ -3122,48 +3122,12 @@ class Eval implements Runnable {
     viewer.scriptStatus(str);
   }
 
-  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
-                                       "MODEL ", "SCALE",  "HETATM", "SEQRES",
-                                       "DBREF ", };
-
   void showPdbHeader() {
-    if ("pdb" != viewer.getModelSetTypeName()) {
-      showString("!Not a pdb file!");
-      return;
-    }
-    String modelFile = viewer.getCurrentFileAsString();
-    int ichMin = modelFile.length();
-    for (int i = pdbRecords.length; --i >= 0; ) {
-      int ichFound = -1;
-      String strRecord = pdbRecords[i];
-      if (modelFile.startsWith(strRecord))
-        ichFound = 0;
-      else {
-        String strSearch = "\n" + strRecord;
-        ichFound = modelFile.indexOf(strSearch);
-        if (ichFound >= 0)
-          ++ichFound;
-      }
-      if (ichFound >= 0 && ichFound < ichMin)
-        ichMin = ichFound;
-    }
-    showString(modelFile.substring(0, ichMin));
+    showString(viewer.getPDBHeader());
   }
 
   void showModel() {
-    int modelCount = viewer.getModelCount();
-    showString("model count = " + modelCount +
-               "\nmodelSetHasVibrationVectors:" +
-               viewer.modelSetHasVibrationVectors());
-    Properties props = viewer.getModelSetProperties();
-    printProperties(props);
-    for (int i = 0; i < modelCount; ++i) {
-      showString("" + i + ":" + viewer.getModelNumber(i) +
-                 ":" + viewer.getModelName(i) +
-                 "\nmodelHasVibrationVectors:" +
-                 viewer.modelHasVibrationVectors(i));
-      printProperties(viewer.getModelProperties(i));
-    }
+    showString(viewer.getModelInfo());
   }
 
   void showFile() throws ScriptException {
@@ -3179,21 +3143,6 @@ class Eval implements Runnable {
       return;
     }
     invalidArgument();
-  }
-
-  void printProperties(Properties props) {
-    if (props == null) {
-      showString("Properties: null");
-    } else {
-      Enumeration e = props.propertyNames();
-      showString("Properties:");
-      while (e.hasMoreElements()) {
-        String propertyName = (String)e.nextElement();
-        showString(" " + propertyName + "=" +
-                   props.getProperty(propertyName));
-      }
-    }
-    System.out.println("");
   }
 
   void showAnimation() {

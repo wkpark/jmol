@@ -920,59 +920,7 @@ final public class Viewer extends JmolViewer {
     return selectionManager.bsSelection;
   }
 
-  public BitSet getAtomBitSet(String atomExpression) {
-    Eval e = new Eval(this);
-    BitSet bs = new BitSet();
-    System.out.println("getAtomBitSet " + atomExpression);
-    try {
-      bs = e.getAtomBitSet(atomExpression);
-    } catch (Exception ex) {
-      System.out.println(ex);
-      return bs;
-    }
-    return bs;  
-  }
-  
-  public String getProperty(String infoType) {
-
-    System.out.println("viewer.getProperty(\"" + infoType+"\")");
-      
-    if(infoType.equalsIgnoreCase("fileContents"))
-        return getCurrentFileAsString();
-    return "getProperty ERROR\n\nOptions include\n"
-    + "\n getProperty(\"fileContents\")";
-  }
-
-  public String getProperty(String infoType, String paramInfo) {
-
-    System.out.println("viewer.getProperty(\"" + infoType+"\", \"" + paramInfo + "\")");
-    
-    if(infoType.equalsIgnoreCase("fileContents")) {
-      if(paramInfo.length() > 0){
-        return getFileAsString(paramInfo);
-      }
-    }
-    if(infoType.equalsIgnoreCase("atomList")) {
-      if(paramInfo.length() > 0){
-        String str = getAtomBitSet(paramInfo).toString();
-        str = str.substring(1,str.length()-1);
-        return str;
-      }
-    }    
-    if(infoType.equalsIgnoreCase("atomDetail")) {
-      if(paramInfo.length() > 0){
-        String str = getAtomBitSetDetail(paramInfo);
-        return str;
-      }
-    }
-    return "getProperty ERROR\n\nOptions include "
-    + "\n getProperty(\"fileContents\",\"<pathname>\")"
-    + "\n getProperty(\"atomList\",\"<atom selection>\")"
-    + "\n getProperty(\"atomDetail\",\"<atom selection>\")";
-  }
-
-
-  int getSelectionCount() {
+    int getSelectionCount() {
     return selectionManager.getSelectionCount();
   }
 
@@ -2580,11 +2528,6 @@ final public class Viewer extends JmolViewer {
     return modelManager.getPolymerLeadMidPoints(modelIndex, polymerIndex);
   }
   
-  public String getAtomBitSetDetail(String atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getJSONAtomInfoFromBitSet(bs);
-  }
-  
   ////////////////////////////////////////////////////////////////
   // stereo support
   ////////////////////////////////////////////////////////////////
@@ -2637,4 +2580,71 @@ final public class Viewer extends JmolViewer {
     return styleManager.formatDecimal(value, decimalDigits);
   }
 
+/////////////////getProperty/////////////
+
+  public String getProperty(String infoType) {
+
+    System.out.println("viewer.getProperty(\"" + infoType+"\")");
+      
+    if(infoType.equalsIgnoreCase("fileContents"))
+      return getCurrentFileAsString();
+    if(infoType.equalsIgnoreCase("orientationInfo"))
+      return "{\"orientationInfo\": " + getJSONOrientationInfo() + "}";      
+    return "getProperty ERROR\n\nOptions include\n"
+    + "\n getProperty(\"fileContents\")"
+    + "\n getProperty(\"orientationInfo\")";
+  }
+
+  public String getProperty(String infoType, String paramInfo) {
+
+    System.out.println("viewer.getProperty(\"" + infoType+"\", \"" + paramInfo + "\")");
+    
+    if(infoType.equalsIgnoreCase("fileContents")) {
+      if(paramInfo.length() > 0){
+        return getFileAsString(paramInfo);
+      }
+    }
+    if(infoType.equalsIgnoreCase("atomList")) {
+      if(paramInfo.length() > 0){
+        String str = getAtomBitSet(paramInfo).toString();
+        str = "[" + str.substring(1,str.length()-1) + "]";
+        return "{\"atomList\": " + str + "}";
+      }
+    }    
+    if(infoType.equalsIgnoreCase("atomDetail")) {
+      if(paramInfo.length() > 0){
+        String str = getJSONAtomBitSetDetail(paramInfo);
+        return "{\"atomDetail\":" + str + "}";
+      }
+    }
+    return "getProperty ERROR\n\nOptions include "
+    + "\n getProperty(\"fileContents\",\"<pathname>\")"
+    + "\n getProperty(\"atomList\",\"<atom selection>\")"
+    + "\n getProperty(\"atomDetail\",\"<atom selection>\")";
+  }
+
+  public BitSet getAtomBitSet(String atomExpression) {
+    Eval e = new Eval(this);
+    BitSet bs = new BitSet();
+    System.out.println("getAtomBitSet " + atomExpression);
+    try {
+      bs = e.getAtomBitSet(atomExpression);
+    } catch (Exception ex) {
+      System.out.println(ex);
+      return bs;
+    }
+    return bs;  
+  }
+
+  public String getJSONAtomBitSetDetail(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getJSONAtomInfoFromBitSet(bs);
+  }
+
+  String getJSONOrientationInfo() {
+    return transformManager.getJSONOrientation();
+  }
+
 }
+
+

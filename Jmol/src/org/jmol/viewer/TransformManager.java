@@ -178,7 +178,14 @@ class TransformManager {
   final Vector3f vectorT = new Vector3f();
 
   String getOrientationText() {
-    return getMoveToText() + "\nOR\n" + getRotateZyzText();
+    return getMoveToText() + "\nOR\n" + getRotateZyzText(true);
+  }
+
+  String getJSONOrientation() {
+    return "{\"moveTo\":\"" + getMoveToText() + "\""
+    + ", \"rotateZYZ\":\"" + getRotateZyzText(false) + "\""
+    + ", \"rotateXYZ\":\"" + getRotateXyzText() + "\""
+    + "}";
   }
 
   String getMoveToText() {
@@ -213,7 +220,7 @@ class TransformManager {
     return "" + sb + ";";
   }
 
-  /*
+  
   String getRotateXyzText() {
     StringBuffer sb = new StringBuffer();
     float m20 = matrixRotate.m20;
@@ -249,13 +256,13 @@ class TransformManager {
       sb.append(zoom);
       sb.append(";");
     }
-    int tX = getTranslationXPercent();
+    float tX = getTranslationXPercent();
     if (tX != 0) {
       sb.append(" translate x ");
       sb.append(tX);
       sb.append(";");
     }
-    int tY = getTranslationYPercent();
+    float tY = getTranslationYPercent();
     if (tY != 0) {
       sb.append(" translate y ");
       sb.append(tY);
@@ -263,9 +270,9 @@ class TransformManager {
     }
     return "" + sb;
   }
-  */
+  
 
-  String getRotateZyzText() {
+  String getRotateZyzText(boolean iAddComment) {
     StringBuffer sb = new StringBuffer();
     float m22 = matrixRotate.m22;
     float rY = (float)Math.acos(m22) * degreesPerRadian;
@@ -280,7 +287,7 @@ class TransformManager {
       rZ2 = (float)Math.atan2(matrixRotate.m12, matrixRotate.m02) *
         degreesPerRadian;
     }
-    if (rZ1 != 0 && rY != 0 && rZ2 != 0)
+    if (rZ1 != 0 && rY != 0 && rZ2 != 0 && iAddComment)
       sb.append("#Follows Z-Y-Z convention for Euler angles\n");
     sb.append("reset");
     if (rZ1 != 0) {

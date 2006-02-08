@@ -37,6 +37,7 @@ public interface JmolAppletInterface {
   public String getProperty(String infoType, String paramInfo);
   public void script(String script);
   public void loadInline(String strModel);
+  public void loadInline(String strModel, String script);
   public void loadNodeId(String nodeId);
   public void loadDOMNode(JSObject DOMNode);
 

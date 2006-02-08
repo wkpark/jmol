@@ -498,6 +498,11 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
   }
 
+  public void loadInline(String strModel, String script) {
+    loadInline(strModel);
+    script(script);
+  }
+
   public void loadDOMNode(JSObject DOMNode) {
       // This should provide a route to pass in a browser DOM node
       // directly as a JSObject. Unfortunately does not seem to work with

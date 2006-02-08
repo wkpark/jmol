@@ -2581,7 +2581,85 @@ final public class Viewer extends JmolViewer {
     return styleManager.formatDecimal(value, decimalDigits);
   }
 
-/////////////////getProperty/////////////
+///////////////// general methods needed for getProperty and/or Eval
+  
+  public BitSet getAtomBitSet(String atomExpression) {
+    Eval e = new Eval(this);
+    BitSet bs = new BitSet();
+    try {
+      bs = e.getAtomBitSet(atomExpression);
+    } catch (Exception ex) {
+      System.out.println("getAtomBitSet " + atomExpression);
+      System.out.println(ex);
+      return bs;
+    }
+    return bs;  
+  }
+
+  String getFileHeader() {
+    String info = "no header information found";
+    if ("pdb" == getModelSetTypeName()) {
+      info = getPDBHeader();
+    }
+    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) {
+      info = getModelName(0);
+    }
+    // options here for other file formats?
+   return info;
+  }
+  
+  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
+    "MODEL ", "SCALE",  "HETATM", "SEQRES",
+    "DBREF ", };
+
+  String getPDBHeader() {
+    if ("pdb" != getModelSetTypeName()) {
+      return "!Not a pdb file!";
+    }
+    String modelFile = getCurrentFileAsString();
+    int ichMin = modelFile.length();
+    for (int i = pdbRecords.length; --i >= 0; ) {
+      int ichFound = -1;
+      String strRecord = pdbRecords[i];
+      if (modelFile.startsWith(strRecord))
+        ichFound = 0;
+      else {
+        String strSearch = "\n" + strRecord;
+        ichFound = modelFile.indexOf(strSearch);
+        if (ichFound >= 0)
+          ++ichFound;
+      }
+      if (ichFound >= 0 && ichFound < ichMin)
+        ichMin = ichFound;
+    }
+    return modelFile.substring(0, ichMin);
+  }
+
+  String listProperties(Properties props) {
+    String str = "";
+    if (props == null) {
+      str = str.concat("\nProperties: null");
+    } else {
+      Enumeration e = props.propertyNames();
+      str = str.concat("\nProperties:");
+      while (e.hasMoreElements()) {
+        String propertyName = (String)e.nextElement();
+        str = str.concat("\n " + propertyName + "=" +
+                   props.getProperty(propertyName));
+      }
+    }
+    return str;
+  }
+  
+  String getModelExtract(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return fileManager.getFullPathName() 
+        + "\nEXTRACT: " + bs + "\nJmol\n"
+        + modelManager.getModelExtractFromBitSet(bs);
+  }
+
+
+///////////////// getProperty and JSON support /////////////
 
   public String getProperty(String infoType) {
 
@@ -2641,72 +2719,39 @@ final public class Viewer extends JmolViewer {
         return "{\"atomInfo\":" + str + "}";
       }
     }
+    if(infoType.equalsIgnoreCase("bondInfo")) {
+      if(paramInfo.length() > 0){
+        String str = getJSONBondDetail(paramInfo);
+        return "{\"bondInfo\":" + str + "}";
+      }
+    }
+    if(infoType.equalsIgnoreCase("extractModel")) {
+      if(paramInfo.length() > 0){
+        String str = getModelExtract(paramInfo);
+        return str;
+      }
+    }
     return "getProperty ERROR\n\nOptions include "
     + "\n getProperty(\"fileContents\",\"<pathname>\")"
     + "\n getProperty(\"atomList\",\"<atom selection>\")"
     + "\n getProperty(\"atomInfo\",\"<atom selection>\")"
+    + "\n getProperty(\"bondInfo\",\"<atom selection>\")"
+    + "\n getProperty(\"extractModel\",\"<atom selection>\")"
     + "";
   }
 
-  public BitSet getAtomBitSet(String atomExpression) {
-    Eval e = new Eval(this);
-    BitSet bs = new BitSet();
-    System.out.println("getAtomBitSet " + atomExpression);
-    try {
-      bs = e.getAtomBitSet(atomExpression);
-    } catch (Exception ex) {
-      System.out.println(ex);
-      return bs;
-    }
-    return bs;  
-  }
-
-  public String getJSONAtomBitSetDetail(String atomExpression) {
+  String getJSONAtomBitSetDetail(String atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getJSONAtomInfoFromBitSet(bs);
+  }
+  
+  String getJSONBondDetail(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getJSONBondInfoFromBitSet(bs);
   }
 
   String getJSONOrientationInfo() {
     return transformManager.getJSONOrientation();
-  }
-
-  String getFileHeader() {
-    String info = "no header information found";
-    if ("pdb" == getModelSetTypeName()) {
-      info = getPDBHeader();
-    }
-    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) {
-      info = getModelName(0);
-    }
-    // options here for other file formats?
-   return info;
-  }
-  
-  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
-    "MODEL ", "SCALE",  "HETATM", "SEQRES",
-    "DBREF ", };
-
-  String getPDBHeader() {
-    if ("pdb" != getModelSetTypeName()) {
-      return "!Not a pdb file!";
-    }
-    String modelFile = getCurrentFileAsString();
-    int ichMin = modelFile.length();
-    for (int i = pdbRecords.length; --i >= 0; ) {
-      int ichFound = -1;
-      String strRecord = pdbRecords[i];
-      if (modelFile.startsWith(strRecord))
-        ichFound = 0;
-      else {
-        String strSearch = "\n" + strRecord;
-        ichFound = modelFile.indexOf(strSearch);
-        if (ichFound >= 0)
-          ++ichFound;
-      }
-      if (ichFound >= 0 && ichFound < ichMin)
-        ichMin = ichFound;
-    }
-    return modelFile.substring(0, ichMin);
   }
 
   String getModelInfo() {
@@ -2725,6 +2770,7 @@ final public class Viewer extends JmolViewer {
     }
     return str;
   }
+  
   String getModelInfoJSON() {
     String sep = "";
     int modelCount = getModelCount();
@@ -2746,22 +2792,6 @@ final public class Viewer extends JmolViewer {
     return "{" + str + "}";
   }
 
-  String listProperties(Properties props) {
-    String str = "";
-    if (props == null) {
-      str = str.concat("\nProperties: null");
-    } else {
-      Enumeration e = props.propertyNames();
-      str = str.concat("\nProperties:");
-      while (e.hasMoreElements()) {
-        String propertyName = (String)e.nextElement();
-        str = str.concat("\n " + propertyName + "=" +
-                   props.getProperty(propertyName));
-      }
-    }
-    return str;
-  }
-  
   String listPropertiesJSON(Properties props) {
     String str = "";
     String sep = ",";

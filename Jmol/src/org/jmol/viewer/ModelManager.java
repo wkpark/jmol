@@ -473,6 +473,14 @@ String getAtomInfoChime(int i) {
     return frame.getBondAt(i).getOrder();
   }
 
+  Atom getBondAtom1(int i) {
+    return frame.getBondAt(i).getAtom1();
+  }
+
+  Atom getBondAtom2(int i) {
+    return frame.getBondAt(i).getAtom2();
+  }
+  
   short getBondColix1(int i) {
     return frame.getBondAt(i).getColix1();
   }
@@ -498,10 +506,63 @@ String getAtomInfoChime(int i) {
     return polymer.getLeadMidpoints();
   }
 
+  String getModelExtractFromBitSet(BitSet bs) {
+    String str = "";
+    int atomCount = getAtomCount();
+    int bondCount = getBondCount();
+    int nAtoms = 0;
+    int nBonds = 0;
+    int[] atomMap = new int[atomCount];
+    
+    for (int i = 0; i < atomCount; i++) {
+      if (bs.get(i)) {
+        atomMap[i] = ++nAtoms;
+        str = str + getAtomRecordMOL(i);
+      }
+    }
+    for (int i = 0; i < bondCount; i++) {
+      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) {
+        int order = getBondOrder(i);
+        if (order >= 1 && order < 3) {
+          str = str + getBondRecordMOL(i,atomMap);
+          nBonds++;
+        }
+      }
+    }
+    if(nAtoms > 999 || nBonds > 999) {
+      System.out.println("ModelManager.java::getModelExtractFromBitSet: ERROR atom/bond overflow");
+      return "";
+    }
+    // 21 21  0  0  0
+    return rFill("   ",""+nAtoms) + rFill("   ",""+nBonds) + "  0  0  0\n" + str;
+  }
+  
+  String getAtomRecordMOL(int i){
+    // -2.2240   -1.4442   -0.4577 C 
+    return rFill("          " ,(getAtomX(i)+"         ").substring(0,9))
+      + rFill("          " ,(getAtomY(i)+"         ").substring(0,9))
+      + rFill("          " ,(getAtomZ(i)+"         ").substring(0,9))
+      + " " + (getElementSymbol(i) + "  ").substring(0,2) + "\n";
+  }
+
+  String getBondRecordMOL(int i,int[] atomMap){
+  //  1  2  1
+    Bond b = frame.getBondAt(i);
+    return rFill("   ","" + atomMap[b.getAtom1().atomIndex])
+      + rFill("   ","" + atomMap[b.getAtom2().atomIndex])
+      + "  " + getBondOrder(i) + "\n"; 
+  }
+  
+  private String rFill(String s1, String s2) {
+    return s1.substring(0, s1.length() - s2.length()) + s2;
+  }
+  
+  ////////////////// JSON support /////////////////////
+  
   public String getJSONAtomInfoFromBitSet(BitSet bs) {
     String strJSON = "";
     String sep ="";
-    int atomCount = frame.atomCount;
+    int atomCount = getAtomCount();
     for (int i = 0; i < atomCount; i++) {
       if (bs.get(i)) {
         strJSON = strJSON + sep + getAtomInfoJSON(i);
@@ -529,5 +590,29 @@ String getAtomInfoChime(int i) {
     strJSON = strJSON + "}";
     return strJSON;
   }  
-}
 
+  public String getJSONBondInfoFromBitSet(BitSet bs) {
+    String strJSON = "";
+    String sep ="";
+    int bondCount = getBondCount();
+    for (int i = 0; i < bondCount; i++) {
+      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) {
+        strJSON = strJSON + sep + getBondInfoJSON(i);
+        sep = ",";
+      }
+    }
+    strJSON = "[" + strJSON + "]";
+    return strJSON;
+  }
+
+  String getBondInfoJSON(int i) {
+    String  strJSON = "{";
+    strJSON = strJSON + "\"ipt\":" + i;
+    strJSON = strJSON + ",\"atom1\":" + getBondAtom1(i).atomIndex;
+    strJSON = strJSON + ",\"atom2\":" + getBondAtom2(i).atomIndex;
+    strJSON = strJSON + ",\"order\":" + getBondOrder(i);
+    strJSON = strJSON + "}";
+    return strJSON;
+  }  
+  
+}

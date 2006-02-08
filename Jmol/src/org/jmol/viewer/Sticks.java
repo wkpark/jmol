@@ -35,7 +35,8 @@ class Sticks extends Shape {
   float maxBondingDistance;
   float minBondingDistance;
   short order;
-
+  boolean isConnectStatic;
+  
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     setMadBond(mad, JmolConstants.BOND_COVALENT_MASK, bsSelected);
@@ -67,6 +68,17 @@ class Sticks extends Shape {
           if (str.equals(JmolConstants.bondOrderNames[i]))
             setOrderBond(JmolConstants.bondOrderValues[i], bsSelected);
       }
+      return;
+    }
+
+    //sorry; I couldn't figure out the type-casting business! -BH
+    if ("connectStatic" == propertyName) {
+      isConnectStatic = true;
+      return;
+    }
+
+    if ("connectDynamic" == propertyName) {
+      isConnectStatic = false;
       return;
     }
 
@@ -110,7 +122,7 @@ class Sticks extends Shape {
       BitSet bsTarget = (BitSet)value;
       if(minBondingDistance < 0.0F) 
         minBondingDistance = 0.0F;
-      addBonds(minBondingDistance, maxBondingDistance, bsSelected, bsTarget, order);
+      makeConnections(minBondingDistance, maxBondingDistance, bsSelected, bsTarget, order, isConnectStatic);
       return;
     }
   }
@@ -156,33 +168,7 @@ class Sticks extends Shape {
     frame.deleteBonds(bsDelete);
   }
 
-/*
-  void addBonds(float maxDistance, BitSet bsA, BitSet bsB) {
-    int atomCount = frame.atomCount;
-    Atom[] atoms = frame.atoms;
-    float maxDistanceSquared = maxDistance * maxDistance;
-    for (int iA = atomCount; --iA >= 0; ) {
-      if (! bsA.get(iA))
-        continue;
-      Atom atomA = atoms[iA];
-      Point3f pointA = atomA.point3f;
-      for (int iB = atomCount; --iB >= 0; ) {
-        if (! bsB.get(iB))
-          continue;
-        if (iB == iA ||
-            (iB < iA && bsA.get(iB) && bsB.get(iA)))
-          continue;
-        Atom atomB = atoms[iB];
-        float distanceSquared = pointA.distanceSquared(atomB.point3f);
-        if (distanceSquared <= maxDistanceSquared)
-          frame.bondAtoms(atomA, atomB, JmolConstants.BOND_COVALENT_SINGLE);
-      }
-    }
-  }
-
-*/
-  
-  void addBonds(float minDistance, float maxDistance, BitSet bsA, BitSet bsB, short order) {
+  void makeConnections(float minDistance, float maxDistance, BitSet bsA, BitSet bsB, short order, boolean isStatic) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     int nbonds = 0;
@@ -191,7 +177,7 @@ class Sticks extends Shape {
     
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
-    System.out.println("distances "+minDistance+" "+maxDistance);
+    //System.out.println("distances "+minDistance+" "+maxDistance);
     for (int iA = atomCount; --iA >= 0; ) {
       if (! bsA.get(iA))
         continue;
@@ -200,11 +186,14 @@ class Sticks extends Shape {
       for (int iB = atomCount; --iB >= 0; ) {
         if (! bsB.get(iB))
           continue;
+        //System.out.println(iA+" "+iB+" "+atomA.isBonded(atoms[iB]));
         if (   iB == iA
             || (frame.getAtomAt(iA).getModelIndex() != frame.getAtomAt(iB).getModelIndex())
             || (iB < iA && bsA.get(iB) && bsB.get(iA))
+            || (isStatic && !atomA.isBonded(atoms[iB]))
            )
           continue;
+        //System.out.println(iA+" "+iB+" continuing");
         Atom atomB = atoms[iB];
         float distanceSquared = pointA.distanceSquared(atomB.point3f);
         if (distanceSquared > minDistanceSquared && distanceSquared <= maxDistanceSquared) {
@@ -215,14 +204,14 @@ class Sticks extends Shape {
           if (order == 0){
             deleteSelectedBonds(bsTwoAtoms);
           } else {
-            if (!frame.bondAtomsByNumber(iA, iB, (int)order))
+            if (!frame.bondAtomsByNumber(iA, iB, (int)order)) {
               setOrderBond(order, bsTwoAtoms);
+            }
           }
         }
       }
     }
-    System.out.println("Sticks.java::addBond: " + nbonds + " bonds " + (order == 0 ? " deleted":" formed or modified"));
+    System.out.println("Sticks.java::makeConnections: " + nbonds + " bonds " + (order == 0 ? " deleted":" formed or modified"));
     viewer.setBondSelectionModeOr(bondmode);
   }
-
 }

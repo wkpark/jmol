@@ -3603,6 +3603,10 @@ class Eval implements Runnable {
         "minDistance", new Float(-0.0001));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
         "connectBondOrder", new Float(1.0));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+        "connectDynamic", new Float(1.0));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+        "connectDynamic", new Float(1.0));
 
     if (statementLength == 1) {
       viewer.rebond();
@@ -3640,6 +3644,9 @@ class Eval implements Runnable {
             cmd.equals("hbond")) {
           propertyName = "connectBondOrder";
           propertyValue = cmd;
+        } else if (cmd.equals("static")) {
+          propertyName = "connectStatic";
+          propertyValue = new Boolean(true);
         } else {
           unrecognizedSubcommand();
         }

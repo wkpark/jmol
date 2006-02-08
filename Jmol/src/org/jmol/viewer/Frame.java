@@ -310,27 +310,44 @@ final class Frame {
   }
 
   void bondAtoms(Object atomUid1, Object atomUid2, int order) {
-    Atom atom1 = (Atom)htAtomMap.get(atomUid1);
+    Atom atom1 = (Atom) htAtomMap.get(atomUid1);
     if (atom1 == null) {
-      System.out.println("bondAtoms cannot find atomUid1?");
+      System.out.println("bondAtoms cannot find atomUid1?:" + atomUid1);
       return;
     }
-    Atom atom2 = (Atom)htAtomMap.get(atomUid2);
+    Atom atom2 = (Atom) htAtomMap.get(atomUid2);
     if (atom2 == null) {
-      System.out.println("bondAtoms cannot find atomUid2?");
+      System.out.println("bondAtoms cannot find atomUid2?:" + atomUid2);
       return;
     }
-    if (bondCount == bonds.length)
-      bonds = (Bond[])Util.setLength(bonds,
-                                     bondCount + 2 * ATOM_GROWTH_INCREMENT);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
-    Bond bond = atom1.bondMutually(atom2, (short)order, this);
-    if (bond != null) {
-      bonds[bondCount++] = bond;
-      if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-        fileHasHbonds = true;
+    Bond bond = atom1.bondMutually(atom2, (short) order, this);
+    if (bond == null)
+      return;
+    if (bondCount == bonds.length)
+      bonds = (Bond[]) Util.setLength(bonds, bondCount + 2
+          * ATOM_GROWTH_INCREMENT);
+    bonds[bondCount++] = bond;
+    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      fileHasHbonds = true;
+}
+
+  boolean bondAtomsByNumber(int iA, int iB, int order) {
+    Atom atom1 = atoms[iA];
+    Atom atom2 = atoms[iB];
+
+    Bond bond = atom1.bondMutually(atom2, (short) order, this);
+    if (bond == null) {
+      return false;
     }
+    if (bondCount == bonds.length)
+      bonds = (Bond[]) Util.setLength(bonds, bondCount + 2
+          * ATOM_GROWTH_INCREMENT);
+    bonds[bondCount++] = bond;
+    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      fileHasHbonds = true;
+    return true;  
   }
 
   void growAtomArrays() {

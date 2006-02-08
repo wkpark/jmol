@@ -33,6 +33,8 @@ import org.jmol.g3d.Graphics3D;
 class Sticks extends Shape {
 
   float maxBondingDistance;
+  float minBondingDistance;
+  short order;
 
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
@@ -56,7 +58,7 @@ class Sticks extends Shape {
     }
     if ("bondOrder" == propertyName) {
       if (value instanceof Short) {
-        short order = ((Short)value).shortValue();
+        order = ((Short)value).shortValue();
         setOrderBond(order, bsSelected);
       }
       if (value instanceof String) {
@@ -67,6 +69,26 @@ class Sticks extends Shape {
       }
       return;
     }
+
+    if ("connectBondOrder" == propertyName) {
+      if (value instanceof Short) {
+        order = ((Short)value).shortValue();
+      }
+      if (value instanceof Float) {
+        order = ((Float)value).shortValue();
+      }
+      if (value instanceof String) {
+        String str = (String)value;
+        for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
+          if (str.equals(JmolConstants.bondOrderNames[i])) {
+            order = JmolConstants.bondOrderValues[i];
+            break;
+          }
+        }
+      }
+      return;
+    }
+
     if ("delete" == propertyName) {
       deleteSelectedBonds(bsSelected);
       return;
@@ -75,9 +97,20 @@ class Sticks extends Shape {
       maxBondingDistance = ((Float)value).floatValue();
       return;
     }
+    if ("connectDistance" == propertyName) {
+      if(maxBondingDistance >  100000.0) {
+        maxBondingDistance = ((Float)value).floatValue();
+      } else {
+        minBondingDistance = maxBondingDistance;
+        maxBondingDistance = ((Float)value).floatValue();
+      }
+      return;
+    }
     if ("targetSet" == propertyName) {
       BitSet bsTarget = (BitSet)value;
-      addBonds(maxBondingDistance, bsSelected, bsTarget);
+      if(minBondingDistance < 0.0F) 
+        minBondingDistance = 0.0F;
+      addBonds(minBondingDistance, maxBondingDistance, bsSelected, bsTarget, order);
       return;
     }
   }
@@ -123,6 +156,7 @@ class Sticks extends Shape {
     frame.deleteBonds(bsDelete);
   }
 
+/*
   void addBonds(float maxDistance, BitSet bsA, BitSet bsB) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
@@ -145,4 +179,50 @@ class Sticks extends Shape {
       }
     }
   }
+
+*/
+  
+  void addBonds(float minDistance, float maxDistance, BitSet bsA, BitSet bsB, short order) {
+    int atomCount = frame.atomCount;
+    Atom[] atoms = frame.atoms;
+    int nbonds = 0;
+    boolean bondmode = viewer.getBondSelectionModeOr();
+    viewer.setBondSelectionModeOr(false);
+    
+    float minDistanceSquared = minDistance * minDistance;
+    float maxDistanceSquared = maxDistance * maxDistance;
+    System.out.println("distances "+minDistance+" "+maxDistance);
+    for (int iA = atomCount; --iA >= 0; ) {
+      if (! bsA.get(iA))
+        continue;
+      Atom atomA = atoms[iA];
+      Point3f pointA = atomA.point3f;
+      for (int iB = atomCount; --iB >= 0; ) {
+        if (! bsB.get(iB))
+          continue;
+        if (   iB == iA
+            || (frame.getAtomAt(iA).getModelIndex() != frame.getAtomAt(iB).getModelIndex())
+            || (iB < iA && bsA.get(iB) && bsB.get(iA))
+           )
+          continue;
+        Atom atomB = atoms[iB];
+        float distanceSquared = pointA.distanceSquared(atomB.point3f);
+        if (distanceSquared > minDistanceSquared && distanceSquared <= maxDistanceSquared) {
+          BitSet bsTwoAtoms=new BitSet();
+          bsTwoAtoms.set(iA);
+          bsTwoAtoms.set(iB);
+          nbonds++;
+          if (order == 0){
+            deleteSelectedBonds(bsTwoAtoms);
+          } else {
+            if (!frame.bondAtomsByNumber(iA, iB, (int)order))
+              setOrderBond(order, bsTwoAtoms);
+          }
+        }
+      }
+    }
+    System.out.println("Sticks.java::addBond: " + nbonds + " bonds " + (order == 0 ? " deleted":" formed or modified"));
+    viewer.setBondSelectionModeOr(bondmode);
+  }
+
 }

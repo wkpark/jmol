@@ -2597,12 +2597,25 @@ final public class Viewer extends JmolViewer {
       return "{\"orientationInfo\": " + getJSONOrientationInfo() + "}";      
     if(infoType.equalsIgnoreCase("modelInfo"))
       return "{\"modelInfo\": " + getModelInfoJSON() + "}";      
+    if(infoType.equalsIgnoreCase("transformInfo"))
+      return "{\"transformInfo\": " + toJSON(getTransformText()) + "}";      
+    if(infoType.equalsIgnoreCase("centerInfo"))
+      return "{\"centerInfo\": " + toJSON(getCenter().toString()) + "}";      
+    if(infoType.equalsIgnoreCase("boundboxInfo"))
+      return "{\"boundboxInfo\": {\"center\":" + toJSON(getBoundBoxCenter().toString())
+      +  ",\"edge\":" + toJSON(getBoundBoxCornerVector().toString()) + "}}";
+    if(infoType.equalsIgnoreCase("zoomInfo"))
+      return "{\"zoomInfo\":" + (getZoomEnabled() ? getZoomPercentSetting()+"" : "\"off\"") + "}";
     return "getProperty ERROR\n\nOptions include\n"
     + "\n getProperty(\"fileName\")"
-    + "\n getProperty(\"fileContents\")"
     + "\n getProperty(\"fileHeader\")"
+    + "\n getProperty(\"fileContents\")"
+    + "\n\n getProperty(\"modelInfo\")"
+    + "\n\n getProperty(\"boundboxInfo\")"
+    + "\n getProperty(\"centerInfo\")"
     + "\n getProperty(\"orientationInfo\")"
-    + "\n getProperty(\"modelInfo\")"
+    + "\n getProperty(\"transformInfo\")"
+    + "\n getProperty(\"zoomInfo\")"
     + "";
   }
 
@@ -2764,5 +2777,14 @@ final public class Viewer extends JmolViewer {
     return str;
   }
   
+  String toJSON(String info){
+    System.out.println(info);
+    String str = info.replaceAll("\\(","[");
+    str = str.replaceAll("\\)","]");
+    str = str.replaceAll("\\t",",");
+    str = str.replaceAll("\\]\\s*\\[","],[");
+    System.out.println(str);
+    return str;
+  }
 }
 

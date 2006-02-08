@@ -348,7 +348,7 @@ class TransformManager {
   }
 
   String getTransformText() {
-    return "matrixRotate=\n" + matrixRotate;
+    return matrixRotate.toString();
   }
 
   void setRotation(Matrix3f matrixRotation) {

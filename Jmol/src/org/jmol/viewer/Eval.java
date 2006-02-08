@@ -3601,6 +3601,11 @@ class Eval implements Runnable {
   void connect() throws ScriptException {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "maxDistance", new Float(100000000f));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+        "minDistance", new Float(-0.0001));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+        "connectBondOrder", new Float(1.0));
+
     if (statementLength == 1) {
       viewer.rebond();
       return;
@@ -3614,11 +3619,11 @@ class Eval implements Runnable {
         viewer.rebond();
         return;
       case Token.integer:
-        propertyName = "maxDistance";
+        propertyName = "connectDistance";
         propertyValue = new Float(statement[i].intValue);
         break;
       case Token.decimal:
-        propertyName = "maxDistance";
+        propertyName = "connectDistance";
         propertyValue = statement[i].value;
         break;
       case Token.expressionBegin:
@@ -3635,14 +3640,15 @@ class Eval implements Runnable {
             cmd.equals("triple") ||
             cmd.equals("aromatic") ||
             cmd.equals("hbond")) {
-          propertyName = "bondOrder";
+          propertyName = "connectBondOrder";
           propertyValue = cmd;
         } else {
           unrecognizedSubcommand();
         }
         break;
       case Token.delete:
-        propertyName = "delete";
+        propertyName = "connectBondOrder";
+        propertyValue = new Float(0.0);
         break;
       default:
         invalidArgument();

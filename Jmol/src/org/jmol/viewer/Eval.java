@@ -30,8 +30,6 @@ import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Properties;
-import java.util.Enumeration;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 

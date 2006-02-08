@@ -2778,12 +2778,10 @@ final public class Viewer extends JmolViewer {
   }
   
   String toJSON(String info){
-    System.out.println(info);
     String str = info.replaceAll("\\(","[");
     str = str.replaceAll("\\)","]");
     str = str.replaceAll("\\t",",");
     str = str.replaceAll("\\]\\s*\\[","],[");
-    System.out.println(str);
     return str;
   }
 }

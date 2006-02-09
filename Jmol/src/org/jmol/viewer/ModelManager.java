@@ -559,34 +559,48 @@ String getAtomInfoChime(int i) {
   
   ////////////////// JSON support /////////////////////
   
-  public String getJSONAtomInfoFromBitSet(BitSet bs) {
+  public String getJSONAtomInfoFromBitSet(BitSet bs, boolean isPDB) {
     String strJSON = "";
     String sep ="";
     int atomCount = getAtomCount();
     for (int i = 0; i < atomCount; i++) {
       if (bs.get(i)) {
-        strJSON = strJSON + sep + getAtomInfoJSON(i);
+        strJSON = strJSON + sep + getAtomInfoJSON(i, isPDB);
         sep = ",";
       }
     }
     strJSON = "[" + strJSON + "]";
     return strJSON;
   }
-
-  String getAtomInfoJSON(int i) {
+          
+  String getAtomInfoJSON(int i, boolean isPDB) {
+    Atom atom = frame.getAtomAt(i);
     String  strJSON = "{";
-    strJSON = strJSON + "\"ipt\":" + i;
-    strJSON = strJSON + ",\"number\":" + getAtomNumber(i);
+    strJSON = strJSON + "\"_ipt\":" + i;
+    strJSON = strJSON + ",\"atomno\":" + atom.getAtomNumber();
     strJSON = strJSON + ",\"sym\":\"" + getElementSymbol(i) + "\"";
-    strJSON = strJSON + ",\"atno\":" + getElementNumber(i);
+    strJSON = strJSON + ",\"elemno\":" + atom.getElementNumber();
     strJSON = strJSON + ",\"x\":" + getAtomX(i);
     strJSON = strJSON + ",\"y\":" + getAtomY(i);
     strJSON = strJSON + ",\"z\":" + getAtomZ(i);
-    strJSON = strJSON + ",\"name\":\"" + getAtomName(i) + "\"";
-    strJSON = strJSON + ",\"model\":" + getAtomModelIndex(i);
+    strJSON = strJSON + ",\"model\":" + atom.getModelTagNumber();
+    strJSON = strJSON + ",\"bondCount\":" + atom.getCovalentBondCount();
+    strJSON = strJSON + ",\"radius\":" + (atom.getRasMolRadius()/120);
     strJSON = strJSON + ",\"info\":\"" + getAtomInfo(i) + "\"";
-//    strJSON = strJSON + ",\"chain\":\"" + getAtomChain(i) + "\"";
-//    strJSON = strJSON + ",\"seq\":\"" + getAtomSequenceCode(i) + "\"";
+    if (isPDB) {
+      strJSON = strJSON + ",\"resname\":\"" + atom.getGroup3() + "\"";
+      strJSON = strJSON + ",\"resno\":\"" + atom.getSeqcodeString() + "\"";
+      char chainID = atom.getChainID();
+      strJSON = strJSON + ",\"name\":\"" + getAtomName(i) + "\"";
+      strJSON = strJSON + ",\"chain\":\"" + (chainID == '\0' ? "" : "" + chainID ) + "\"";
+      strJSON = strJSON + ",\"atomID\":" + atom.getSpecialAtomID();
+      strJSON = strJSON + ",\"groupID\":" + atom.getGroupID();
+      strJSON = strJSON + ",\"structure\":" + atom.getProteinStructureType();
+      strJSON = strJSON + ",\"polymerLength\":" + atom.getPolymerLength();
+      strJSON = strJSON + ",\"occupancy\":" + atom.getOccupancy();
+      int temp = atom.getBfactor100();
+      strJSON = strJSON + ",\"temp\":" + (temp<0 ? 0 : temp/100);
+    }
     strJSON = strJSON + "}";
     return strJSON;
   }  

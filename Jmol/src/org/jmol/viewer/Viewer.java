@@ -2742,7 +2742,7 @@ final public class Viewer extends JmolViewer {
 
   String getJSONAtomBitSetDetail(String atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getJSONAtomInfoFromBitSet(bs);
+    return modelManager.getJSONAtomInfoFromBitSet(bs,("pdb" == getModelSetTypeName()));
   }
   
   String getJSONBondDetail(String atomExpression) {

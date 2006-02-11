@@ -29,18 +29,40 @@ package org.jmol.smiles;
  */
 public class InvalidSmilesException extends Exception {
 
+  /**
+   * Constructs a <code>InvalideSmilesException</code> without any detail.
+   */
   public InvalidSmilesException() {
     super();
   }
 
+  /**
+   * Constructs a <code>InvalidSmilesException</code> with a detail message.
+   * 
+   * @param message The detail message.
+   */
   public InvalidSmilesException(String message) {
     super(message);
   }
 
+  /**
+   * Contructs a <code>InvalidSmilesException</code> with the specified cause and
+   * a detail message of <code>(cause == null ? null : cause.toString())</code>
+   * (which typically contains the class and detail message of <code>cause</code>
+   * 
+   * @param cause The cause.
+   */
   public InvalidSmilesException(Throwable cause) {
     super(cause);
   }
 
+  /**
+   * Construcst a <code>InvalidSmilesException</code> with the specified detail
+   * message and cause.
+   * 
+   * @param message The detail message.
+   * @param cause The cause.
+   */
   public InvalidSmilesException(String message, Throwable cause) {
     super(message, cause);
   }

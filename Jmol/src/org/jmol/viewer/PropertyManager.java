@@ -38,89 +38,80 @@ class PropertyManager {
   PropertyManager(Viewer viewer) {
     this.viewer = viewer;
   }
+  
+  public Object getProperty(String returnType, String infoType, String paramInfo) {
+    Object info = getPropertyAsObject(infoType, paramInfo);
+    if (returnType == "String") return info.toString();
+    if (returnType == "JSON")return "{" + toJSON(infoType, info) + "}";
+    return info;
+  }
+  
+  private Object getPropertyAsObject(String infoType, String paramInfo) {
+    //System.out.println("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
+    boolean iHaveParameter = (paramInfo.length() > 0);
+    String myParam = paramInfo;
 
-  public String getStringProperty(String infoType) {
-    return (String)getProperty(infoType);
-  }
-  
-  public String getJSONProperty(String infoType) {
-    return  "{" + toJSON(infoType, getProperty(infoType)) + "}";
-  }
-  
-  public String getStringProperty(String infoType, String paramInfo) {
-    return (String)getProperty(infoType);
-  }
-  
-  public String getJSONProperty(String infoType, String paramInfo) {
-    return "{" + toJSON(infoType, getProperty(infoType,paramInfo)) + "}";
-  }
-  
-  public Object getProperty(String infoType) {
-    if(infoType.equalsIgnoreCase("fileContents"))
+    if(infoType.equalsIgnoreCase("fileContents")) {
+      if(myParam.length() > 0)
+        return viewer.getFileAsString(myParam);
       return viewer.getCurrentFileAsString();
+    }
+
     if(infoType.equalsIgnoreCase("fileHeader"))
       return viewer.getFileHeader();      
+
     if(infoType.equalsIgnoreCase("fileName"))
-      return viewer.fileManager.getFullPathName();      
+      return viewer.getFullPathName();      
+    
+    if(myParam.length() == 0) myParam = "all";
+
+    if(infoType.equalsIgnoreCase("atomList")) 
+      return viewer.getAtomBitSetVector(myParam);
+    
+    if(infoType.equalsIgnoreCase("atomInfo")) 
+      return viewer.getAtomBitSetDetail(myParam);
+    
+    if(infoType.equalsIgnoreCase("bondInfo")) 
+      return viewer.getBondDetail(myParam);
+    
+    if(infoType.equalsIgnoreCase("extractModel")) 
+      return viewer.getModelExtract(myParam);
+    
+    if(infoType.equalsIgnoreCase("callbackStatus")) 
+       return viewer.getStatusChanged(myParam);
+
     if(infoType.equalsIgnoreCase("orientationInfo"))
-      return viewer.transformManager.getOrientationInfo();       
+      return viewer.getOrientationInfo();       
+
     if(infoType.equalsIgnoreCase("modelInfo"))
-      return getModelInfoObject();      
+      return viewer.getModelInfoObject();      
+
     if(infoType.equalsIgnoreCase("transformInfo"))
-      return viewer.transformManager.getMatrixRotate();      
+      return viewer.getMatrixRotate();      
+
     if(infoType.equalsIgnoreCase("centerInfo"))
       return viewer.getCenter();      
+
     if(infoType.equalsIgnoreCase("boundboxInfo"))
-      return viewer.modelManager.getBoundBoxInfo();
+      return viewer.getBoundBoxInfo();
+
     if(infoType.equalsIgnoreCase("zoomInfo")) {
       if (viewer.getZoomEnabled()) 
         return (new Integer(viewer.getZoomPercentSetting()));
       return "off";
     }
+
     return "getProperty ERROR\n\nOptions include\n"
     + "\n getProperty(\"fileName\")"
     + "\n getProperty(\"fileHeader\")"
     + "\n getProperty(\"fileContents\")"
+    + "\n getProperty(\"fileContents\",\"<pathname>\")"
     + "\n\n getProperty(\"modelInfo\")"
     + "\n\n getProperty(\"boundboxInfo\")"
     + "\n getProperty(\"centerInfo\")"
     + "\n getProperty(\"orientationInfo\")"
     + "\n getProperty(\"transformInfo\")"
     + "\n getProperty(\"zoomInfo\")"
-    + "";
-  }
-
-  public Object getProperty(String infoType, String paramInfo) {
-
-    //System.out.println("viewer.getProperty(\"" + infoType+"\", \"" + paramInfo + "\")");
-    
-    if(infoType.equalsIgnoreCase("fileContents")) {
-      if(paramInfo.length() > 0)
-        return viewer.getFileAsString(paramInfo);
-    }
-
-    if(infoType.equalsIgnoreCase("atomList")) {
-      if(paramInfo.length() > 0){
-        return viewer.selectionManager.getAtomBitSetVector(paramInfo);
-      }
-    }    
-    if(infoType.equalsIgnoreCase("atomInfo")) {
-      if(paramInfo.length() > 0)
-        return getAtomBitSetDetail(paramInfo);
-    }
-    if(infoType.equalsIgnoreCase("bondInfo")) {
-      if(paramInfo.length() > 0)
-        return getBondDetail(paramInfo);
-    }
-    if(infoType.equalsIgnoreCase("extractModel")) {
-      if(paramInfo.length() > 0)
-        return getModelExtract(paramInfo);
-    }
-
-    if(infoType.equalsIgnoreCase("callbackStatus")) 
-       return viewer.statusManager.getStatusChanged(paramInfo);
-    return "getProperty ERROR\n\nOptions include "
-    + "\n getProperty(\"fileContents\",\"<pathname>\")"
     + "\n getProperty(\"atomList\",\"<atom selection>\")"
     + "\n getProperty(\"atomInfo\",\"<atom selection>\")"
     + "\n getProperty(\"bondInfo\",\"<atom selection>\")"
@@ -128,38 +119,7 @@ class PropertyManager {
     + "\n getProperty(\"callbackStatus\",\"CallbackNameList\")"
     + "";
   }
-  Hashtable getModelInfoObject() {
-    Hashtable info = new Hashtable();
-    int modelCount = viewer.getModelCount();
-    info.put("modelCount",new Integer(modelCount));
-    info.put("modelSetHasVibrationVectors", 
-        new Boolean(viewer.modelSetHasVibrationVectors()));
-    //Properties props = viewer.getModelSetProperties();
-    //str = str.concat(listPropertiesJSON(props));
-    Vector models = new Vector();
-    for (int i = 0; i < modelCount; ++i) {
-      Hashtable model = new Hashtable();
-      model.put("_ipt",new Integer(i));
-      model.put("num",new Integer(viewer.getModelNumber(i)));
-      model.put("name",viewer.getModelName(i));
-      model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
-      models.add(model);
-    }
-    info.put("models",models);
-    return info;
-  }
-
-/*  String listPropertiesJSON(Properties props) {
-    String str = "";
-    String sep = ",";
-    if (props == null) {
-      return "";
-    }
-    return str;
-  }
-  
- */
- 
+   
   String packageJSON (String infoType, String info) {
     if (infoType == null) return info;
     return "\"" + infoType + "\": " + info;
@@ -210,125 +170,6 @@ class PropertyManager {
     return packageJSON (infoType, info.toString());
   }
   
-  Vector getAtomBitSetDetail(String atomExpression) {
-    BitSet bs = viewer.getAtomBitSet(atomExpression);
-    return getAtomInfoFromBitSet(bs,("pdb" == viewer.getModelSetTypeName()));
-  }
-  
-  Vector getBondDetail(String atomExpression) {
-    BitSet bs = viewer.getAtomBitSet(atomExpression);
-    return getBondInfoFromBitSet(bs);
-  }
-
-  Vector getAtomInfoFromBitSet(BitSet bs, boolean isPDB) {
-    Vector V = new Vector();
-    int atomCount = viewer.modelManager.getAtomCount();
-    for (int i = 0; i < atomCount; i++) 
-      if (bs.get(i)) 
-        V.add(getAtomInfo(i, isPDB));
-    return V;
-  }
-          
-  Hashtable getAtomInfo(int i, boolean isPDB) {
-    Atom atom = viewer.modelManager.frame.getAtomAt(i);
-    Hashtable info = new Hashtable();
-    info.put("_ipt", new Integer(i));
-    info.put("atomno", new Integer(atom.getAtomNumber()));
-    info.put("sym", viewer.modelManager.getElementSymbol(i));
-    info.put("elemno", new Integer(atom.getElementNumber()));
-    info.put("x", new Float(viewer.modelManager.getAtomX(i)));
-    info.put("y", new Float(viewer.modelManager.getAtomY(i)));
-    info.put("z", new Float(viewer.modelManager.getAtomZ(i)));
-    info.put("model", new Integer(atom.getModelTagNumber()));
-    info.put("bondCount", new Integer(atom.getCovalentBondCount()));
-    info.put("radius", new Float((atom.getRasMolRadius()/120)));
-    info.put("info", viewer.modelManager.getAtomInfo(i));
-    if (isPDB) {
-      info.put("resname", atom.getGroup3());
-      info.put("resno", atom.getSeqcodeString());
-      char chainID = atom.getChainID();
-      info.put("name", viewer.modelManager.getAtomName(i));
-      info.put("chain", (chainID == '\0' ? "" : "" + chainID ));
-      info.put("atomID", new Integer(atom.getSpecialAtomID()));
-      info.put("groupID", new Integer(atom.getGroupID()));
-      info.put("structure", new Integer(atom.getProteinStructureType()));
-      info.put("polymerLength", new Integer(atom.getPolymerLength()));
-      info.put("occupancy", new Integer(atom.getOccupancy()));
-      int temp = atom.getBfactor100();
-      info.put("temp", new Integer((temp<0 ? 0 : temp/100)));
-    }
-    return info;
-  }  
-
-  Vector getBondInfoFromBitSet(BitSet bs) {
-    Frame frame = viewer.modelManager.frame;
-    Vector V = new Vector();
-    int bondCount = viewer.getBondCount();
-    for (int i = 0; i < bondCount; i++)
-      if (bs.get(viewer.modelManager.frame.getBondAt(i).getAtom1().atomIndex) && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) 
-        V.add(getBondInfo(i));
-    return V;
-  }
-
-  Hashtable getBondInfo(int i) {
-    Hashtable info = new Hashtable();
-    info.put("_bpt", new Integer(i));
-    info.put("_apt1", new Integer(viewer.modelManager.getBondAtom1(i).atomIndex));
-    info.put("_apt2", new Integer(viewer.modelManager.getBondAtom2(i).atomIndex));
-    info.put("order", new Integer(viewer.modelManager.getBondOrder(i)));
-    return info;
-  }  
-  
-  String getModelExtract(String atomExpression) {
-    BitSet bs = viewer.selectionManager.getAtomBitSet(atomExpression);
-    return viewer.fileManager.getFullPathName() 
-        + "\nEXTRACT: " + bs + "\nJmol\n"
-        + viewer.modelManager.getModelExtractFromBitSet(bs);
-  }
-
-  String listProperties(Properties props) {
-    String str = "";
-    if (props == null) {
-      str = str.concat("\nProperties: null");
-    } else {
-      Enumeration e = props.propertyNames();
-      str = str.concat("\nProperties:");
-      while (e.hasMoreElements()) {
-        String propertyName = (String)e.nextElement();
-        str = str.concat("\n " + propertyName + "=" +
-                   props.getProperty(propertyName));
-      }
-    }
-    return str;
-  }
-  
-  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
-    "MODEL ", "SCALE",  "HETATM", "SEQRES",
-    "DBREF ", };
-
-  String getPDBHeader() {
-    if ("pdb" != viewer.getModelSetTypeName()) {
-      return "!Not a pdb file!";
-    }
-    String modelFile = viewer.getCurrentFileAsString();
-    int ichMin = modelFile.length();
-    for (int i = pdbRecords.length; --i >= 0; ) {
-      int ichFound = -1;
-      String strRecord = pdbRecords[i];
-      if (modelFile.startsWith(strRecord))
-        ichFound = 0;
-      else {
-        String strSearch = "\n" + strRecord;
-        ichFound = modelFile.indexOf(strSearch);
-        if (ichFound >= 0)
-          ++ichFound;
-      }
-      if (ichFound >= 0 && ichFound < ichMin)
-        ichMin = ichFound;
-    }
-    return modelFile.substring(0, ichMin);
-  }
-
   String simpleReplace(String str, String strFrom, String strTo) {
      String sout = "";
      int ipt;

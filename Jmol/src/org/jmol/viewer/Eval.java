@@ -3121,7 +3121,7 @@ class Eval implements Runnable {
   }
 
   void showPdbHeader() {
-    showString(viewer.propertyManager.getPDBHeader());
+    showString(viewer.getPDBHeader());
   }
 
   void showModel() {

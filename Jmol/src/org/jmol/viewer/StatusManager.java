@@ -172,7 +172,7 @@ class StatusManager {
 
   void setStatusChanged(String statusName,
       int intInfo, Object statusInfo, boolean isReplace) {
-    if (callbackList.indexOf(statusName) < 0)
+    if (callbackList != "all" && callbackList.indexOf(statusName) < 0)
       return;
     callbackptr++;
     Vector statusRecordSet;

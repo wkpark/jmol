@@ -26,8 +26,11 @@ package org.jmol.viewer;
 import org.jmol.api.JmolAdapter;
 
 import java.util.BitSet;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Vector;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
@@ -151,6 +154,26 @@ class ModelManager {
     return str;
   }
   
+  Hashtable getModelInfoObject() {
+    Hashtable info = new Hashtable();
+    int modelCount = viewer.getModelCount();
+    info.put("modelCount",new Integer(modelCount));
+    info.put("modelSetHasVibrationVectors", 
+        new Boolean(viewer.modelSetHasVibrationVectors()));
+    //Properties props = viewer.getModelSetProperties();
+    //str = str.concat(listPropertiesJSON(props));
+    Vector models = new Vector();
+    for (int i = 0; i < modelCount; ++i) {
+      Hashtable model = new Hashtable();
+      model.put("_ipt",new Integer(i));
+      model.put("num",new Integer(viewer.getModelNumber(i)));
+      model.put("name",viewer.getModelName(i));
+      model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
+      models.add(model);
+    }
+    info.put("models",models);
+    return info;
+  }
 
   String getModelName(int modelIndex) {
     return (frame == null) ? null : frame.getModelName(modelIndex);
@@ -582,11 +605,112 @@ String getAtomInfoChime(int i) {
     return s1.substring(0, s1.length() - s2.length()) + s2;
   }
   
+  Vector getAtomInfoFromBitSet(BitSet bs) {
+    boolean isPDB = ("pdb" == viewer.getModelSetTypeName());
+    Vector V = new Vector();
+    int atomCount = viewer.getAtomCount();
+    for (int i = 0; i < atomCount; i++) 
+      if (bs.get(i)) 
+        V.add(getAtomInfo(i, isPDB));
+    return V;
+  }
+   
+  Hashtable getAtomInfo(int i, boolean isPDB) {
+    Atom atom = frame.getAtomAt(i);
+    Hashtable info = new Hashtable();
+    info.put("_ipt", new Integer(i));
+    info.put("atomno", new Integer(atom.getAtomNumber()));
+    info.put("sym", getElementSymbol(i));
+    info.put("elemno", new Integer(atom.getElementNumber()));
+    info.put("x", new Float(getAtomX(i)));
+    info.put("y", new Float(getAtomY(i)));
+    info.put("z", new Float(getAtomZ(i)));
+    info.put("model", new Integer(atom.getModelTagNumber()));
+    info.put("bondCount", new Integer(atom.getCovalentBondCount()));
+    info.put("radius", new Float((atom.getRasMolRadius()/120)));
+    info.put("info", getAtomInfo(i));
+    if (isPDB) {
+      info.put("resname", atom.getGroup3());
+      info.put("resno", atom.getSeqcodeString());
+      char chainID = atom.getChainID();
+      info.put("name", getAtomName(i));
+      info.put("chain", (chainID == '\0' ? "" : "" + chainID ));
+      info.put("atomID", new Integer(atom.getSpecialAtomID()));
+      info.put("groupID", new Integer(atom.getGroupID()));
+      info.put("structure", new Integer(atom.getProteinStructureType()));
+      info.put("polymerLength", new Integer(atom.getPolymerLength()));
+      info.put("occupancy", new Integer(atom.getOccupancy()));
+      int temp = atom.getBfactor100();
+      info.put("temp", new Integer((temp<0 ? 0 : temp/100)));
+    }
+    return info;
+  }  
+
+  Vector getBondInfoFromBitSet(BitSet bs) {
+    Vector V = new Vector();
+    int bondCount = viewer.getBondCount();
+    for (int i = 0; i < bondCount; i++)
+      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) 
+        V.add(getBondInfo(i));
+    return V;
+  }
+
+  Hashtable getBondInfo(int i) {
+    Hashtable info = new Hashtable();
+    info.put("_bpt", new Integer(i));
+    info.put("_apt1", new Integer(getBondAtom1(i).atomIndex));
+    info.put("_apt2", new Integer(getBondAtom2(i).atomIndex));
+    info.put("order", new Integer(getBondOrder(i)));
+    return info;
+  }  
+  
+  String listProperties(Properties props) {
+    String str = "";
+    if (props == null) {
+      str = str.concat("\nProperties: null");
+    } else {
+      Enumeration e = props.propertyNames();
+      str = str.concat("\nProperties:");
+      while (e.hasMoreElements()) {
+        String propertyName = (String)e.nextElement();
+        str = str.concat("\n " + propertyName + "=" +
+                   props.getProperty(propertyName));
+      }
+    }
+    return str;
+  }
+  
+  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
+    "MODEL ", "SCALE",  "HETATM", "SEQRES",
+    "DBREF ", };
+
+  String getPDBHeader() {
+    if ("pdb" != viewer.getModelSetTypeName()) {
+      return "!Not a pdb file!\n" + getFileHeader();
+    }
+    String modelFile = viewer.getCurrentFileAsString();
+    int ichMin = modelFile.length();
+    for (int i = pdbRecords.length; --i >= 0; ) {
+      int ichFound = -1;
+      String strRecord = pdbRecords[i];
+      if (modelFile.startsWith(strRecord))
+        ichFound = 0;
+      else {
+        String strSearch = "\n" + strRecord;
+        ichFound = modelFile.indexOf(strSearch);
+        if (ichFound >= 0)
+          ++ichFound;
+      }
+      if (ichFound >= 0 && ichFound < ichMin)
+        ichMin = ichFound;
+    }
+    return modelFile.substring(0, ichMin);
+  }
+
   String getFileHeader() {
-    
     String info = "no header information found";
     if ("pdb" == getModelSetTypeName()) {
-      info = viewer.propertyManager.getPDBHeader();
+      info = getPDBHeader();
     }
     if ("xyz" == getModelSetTypeName() && getModelCount() == 1) {
       info = getModelName(0);
@@ -594,6 +718,7 @@ String getAtomInfoChime(int i) {
     // options here for other file formats?
    return info;
   }
+
 
 }
 

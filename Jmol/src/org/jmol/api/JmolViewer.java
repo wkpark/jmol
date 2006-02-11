@@ -246,12 +246,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   
   abstract public void setStatusChanged(String statusName, int intInfo, Object statusInfo, boolean isReplace);
 
-  abstract public String getStringProperty(String infoType, String paramInfo);
-  abstract public String getStringProperty(String infoType);
-  abstract public String getJSONProperty(String infoType, String paramInfo);
-  abstract public String getJSONProperty(String infoType);
-  abstract public Object getProperty(String infoType, String paramInfo);
-  abstract public Object getProperty(String infoType);
+  abstract public Object getProperty(String returnType, String infoType, String paramInfo);
   
 
 

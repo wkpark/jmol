@@ -36,10 +36,10 @@ import netscape.javascript.JSObject;
 public interface JmolAppletInterface {
 
   public String getAppletInfo();
-  public String getStringProperty(String infoType);
-  public String getStringProperty(String infoType, String paramInfo);
-  public String getJSONProperty(String infoType);
-  public String getJSONProperty(String infoType, String paramInfo);
+  public String getPropertyAsString(String infoType);
+  public String getPropertyAsString(String infoType, String paramInfo);
+  public String getPropertyAsJSON(String infoType);
+  public String getPropertyAsJSON(String infoType, String paramInfo);
   public Object getProperty(String infoType);
   public Object getProperty(String infoType, String paramInfo);
   public void script(String script);

@@ -63,20 +63,20 @@ public class JmolApplet
 
   };
 
-  public String getStringProperty(String infoType) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getStringProperty(infoType));
+  public String getPropertyAsString(String infoType) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsString(infoType));
   }
 
-  public String getStringProperty(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getStringProperty(infoType, paramInfo));
+  public String getPropertyAsString(String infoType, String paramInfo) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsString(infoType, paramInfo));
   }
 
-  public String getJSONProperty(String infoType) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getJSONProperty(infoType));
+  public String getPropertyAsJSON(String infoType) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsJSON(infoType));
   }
 
-  public String getJSONProperty(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getJSONProperty(infoType, paramInfo));
+  public String getPropertyAsJSON(String infoType, String paramInfo) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsJSON(infoType, paramInfo));
   }
 
   public Object getProperty(String infoType) {

@@ -447,26 +447,26 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public Object getProperty(String infoType) {
-    return viewer.getProperty(infoType);
+    return viewer.getProperty(null, infoType, "");
   }
 
   public Object getProperty(String infoType, String paramInfo) {
-    return viewer.getProperty(infoType, paramInfo);
+    return viewer.getProperty(null, infoType, paramInfo);
   }
 
-  public String getStringProperty(String infoType) {
-    return viewer.getStringProperty(infoType);
+  public String getPropertyAsString(String infoType) {
+    return viewer.getProperty("String", infoType, "").toString();
   }
-  public String getStringProperty(String infoType, String paramInfo) {
-    return viewer.getStringProperty(infoType, paramInfo);
-  }
-
-  public String getJSONProperty(String infoType) {
-    return viewer.getJSONProperty(infoType);
+  public String getPropertyAsString(String infoType, String paramInfo) {
+    return viewer.getProperty("String",infoType, paramInfo).toString();
   }
 
-  public String getJSONProperty(String infoType, String paramInfo) {
-    return viewer.getJSONProperty(infoType, paramInfo);
+  public String getPropertyAsJSON(String infoType) {
+    return viewer.getProperty("JSON", infoType, "").toString();
+  }
+
+  public String getPropertyAsJSON(String infoType, String paramInfo) {
+    return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 
   public void loadInline(String strModel) {

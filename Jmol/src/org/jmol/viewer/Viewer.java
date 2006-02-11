@@ -579,6 +579,14 @@ final public class Viewer extends JmolViewer {
     return transformManager.getOrientationText();
   }
 
+  Hashtable getOrientationInfo() {
+    return transformManager.getOrientationInfo();       
+  }
+
+  Matrix3f getMatrixRotate() {
+    return transformManager.getMatrixRotate();
+  }
+  
   void getAxisAngle(AxisAngle4f axisAngle) {
     transformManager.getAxisAngle(axisAngle);
   }
@@ -936,6 +944,14 @@ final public class Viewer extends JmolViewer {
     selectionManager.addListener(listener);
   }
   
+  BitSet getAtomBitSet(String atomExpression) {
+    return selectionManager.getAtomBitSet(atomExpression);
+  }
+
+  Vector getAtomBitSetVector(String atomExpression) {
+    return selectionManager.getAtomBitSetVector(atomExpression);
+  }
+  
   /////////////////////////////////////////////////////////////////
   // delegated to MouseManager
   /////////////////////////////////////////////////////////////////
@@ -1052,7 +1068,7 @@ final public class Viewer extends JmolViewer {
   }
 
   String getOpenFileError1() {
-    String fullPathName = fileManager.getFullPathName();
+    String fullPathName = getFullPathName();
     String fileName = fileManager.getFileName();
     Object clientFile = fileManager.waitForClientFileOrErrorMessage();
     if (clientFile instanceof String || clientFile == null) {
@@ -1076,6 +1092,11 @@ final public class Viewer extends JmolViewer {
   public String getFileAsString(String pathName) {
     return fileManager.getFileAsString(pathName);
   }
+
+  String getFullPathName() {
+    return fileManager.getFullPathName();
+  }
+  
 
    /////////////////////////////////////////////////////////////////
    // delegated to ModelManager
@@ -1197,6 +1218,10 @@ final public class Viewer extends JmolViewer {
 
   Vector3f getBoundBoxCornerVector() {
     return modelManager.getBoundBoxCornerVector();
+  }
+
+  Hashtable getBoundBoxInfo() {
+    return modelManager.getBoundBoxInfo();
   }
 
   int getBoundBoxCenterX() {
@@ -1393,6 +1418,29 @@ final public class Viewer extends JmolViewer {
   void calcSelectedMonomersCount() {
     modelManager.calcSelectedMonomersCount(selectionManager.bsSelection);
   }
+
+  String getFileHeader() {
+    return modelManager.getFileHeader();
+  }  
+
+  String getPDBHeader() {
+    return modelManager.getPDBHeader();
+  }  
+
+  Hashtable getModelInfoObject() {
+    return modelManager.getModelInfoObject();
+  }
+  
+  Vector getAtomBitSetDetail(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getAtomInfoFromBitSet(bs);
+  }
+
+  Vector getBondDetail(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getBondInfoFromBitSet(bs);
+  }
+
 
   /****************************************************************
    * delegated to MeasurementManager
@@ -1989,6 +2037,10 @@ final public class Viewer extends JmolViewer {
   }
 
 ////////////////status manager dispatch//////////////
+  
+  Vector getStatusChanged(String statusNameList) {
+    return statusManager.getStatusChanged(statusNameList);
+  }
   
   public void setStatusChanged(String statusName, int intInfo, Object statusInfo, boolean isReplace) {
     statusManager.setStatusChanged(statusName, intInfo, statusInfo, isReplace);
@@ -2617,44 +2669,19 @@ final public class Viewer extends JmolViewer {
   String formatDecimal(float value, int decimalDigits) {
     return styleManager.formatDecimal(value, decimalDigits);
   }
-
-///////////////// general methods needed for getProperty and/or Eval
-  
-  BitSet getAtomBitSet(String atomExpression) {
-    return selectionManager.getAtomBitSet(atomExpression);
-  }
-
-  Vector getAtomBitSetVector(String atomExpression) {
-    return selectionManager.getAtomBitSetVector(atomExpression);
-  }
-
-  String getFileHeader() {
-    return modelManager.getFileHeader();
-  }  
   
 ///////////////// getProperty  /////////////
 
-  public Object getProperty(String infoType) {
-    return propertyManager.getProperty(infoType);
-  }
-  
-  public Object getProperty(String infoType, String paramInfo) {
-    return propertyManager.getProperty(infoType, paramInfo);
+  public Object getProperty(String returnType, String infoType, String paramInfo) {
+    return propertyManager.getProperty(returnType, infoType, paramInfo);
   }
 
-  public String getStringProperty(String infoType) {
-    return propertyManager.getStringProperty(infoType);
-  }
-  
-  public String getStringProperty(String infoType, String paramInfo) {
-    return propertyManager.getStringProperty(infoType, paramInfo);
+  String getModelExtract(String atomExpression) {
+    BitSet bs = selectionManager.getAtomBitSet(atomExpression);
+    return fileManager.getFullPathName() 
+        + "\nEXTRACT: " + bs + "\nJmol\n"
+        + modelManager.getModelExtractFromBitSet(bs);
   }
 
-  public String getJSONProperty(String infoType) {
-    return propertyManager.getJSONProperty(infoType);
-  }
-  
-  public String getJSONProperty(String infoType, String paramInfo) {
-    return propertyManager.getJSONProperty(infoType, paramInfo);
-  }
-}
+
+ }

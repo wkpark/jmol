@@ -211,7 +211,7 @@ class SelectionManager {
   }
   
   BitSet getAtomBitSet(String atomExpression) {
-    Eval e = new Eval(viewer);;
+    Eval e = new Eval(viewer);
     
     BitSet bs = new BitSet();
     try {

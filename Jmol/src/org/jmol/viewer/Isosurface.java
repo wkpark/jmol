@@ -253,7 +253,7 @@ class Isosurface extends MeshCollection {
 
   void readAtoms(BufferedReader br) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
-      String line = br.readLine();
+      /*String line = */br.readLine();
       /*
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (byte)parseInt(line);

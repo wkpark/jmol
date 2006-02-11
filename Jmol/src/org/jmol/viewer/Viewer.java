@@ -34,7 +34,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;

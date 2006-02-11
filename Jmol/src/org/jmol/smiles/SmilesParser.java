@@ -25,13 +25,14 @@
 package org.jmol.smiles;
 
 /**
- * Parses a SMILES String to create a SmilesMolecule.
- * The SMILES specification has been found at http://www.daylight.com/smiles/.
+ * Parses a SMILES String to create a <code>SmilesMolecule</code>.
+ * The SMILES specification has been found at the
+ * <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>. <br>
  * 
- * Currently this parser supports only parts of the SMILES specification.
+ * Currently this parser supports only parts of the SMILES specification. <br>
  * 
  * An example on how to use it:
- * <pre>
+ * <pre><code>
  * try {
  *   SmilesParser sp = new SmilesParser();
  *   SmilesMolecule sm = sp.parseSmiles("CC(C)C(=O)O");
@@ -39,7 +40,7 @@ package org.jmol.smiles;
  * } catch (InvalidSmilesException e) {
  *   // Exception management
  * }
- * </pre>
+ * </code></pre>
  * 
  * @see <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>
  */
@@ -48,17 +49,17 @@ public class SmilesParser {
   private SmilesBond[] ringBonds;
   
   /**
-   * SmilesParser constructor 
+   * Constructs a <code>SmilesParser</code>.
    */
   public SmilesParser() {
     ringBonds = null;
   }
 
   /**
-   * Parse a SMILES String
+   * Parses a SMILES String
    * 
    * @param smiles SMILES String
-   * @return Molecule corresponding to smiles
+   * @return Molecule corresponding to <code>smiles</code>
    * @throws InvalidSmilesException
    */
   public SmilesMolecule parseSmiles(String smiles) throws InvalidSmilesException {
@@ -89,7 +90,7 @@ public class SmilesParser {
   }
 
   /**
-   * Parse a part of a SMILES String
+   * Parses a part of a SMILES String
    *
    * @param molecule Resulting molecule 
    * @param smiles SMILES String

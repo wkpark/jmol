@@ -47,8 +47,8 @@ public class InvalidSmilesException extends Exception {
 
   /**
    * Contructs a <code>InvalidSmilesException</code> with the specified cause and
-   * a detail message of <code>(cause == null ? null : cause.toString())</code>
-   * (which typically contains the class and detail message of <code>cause</code>
+   * a detail message of <tt>(cause == null ? null : cause.toString())</tt>
+   * (which typically contains the class and detail message of <tt>cause</tt>).
    * 
    * @param cause The cause.
    */

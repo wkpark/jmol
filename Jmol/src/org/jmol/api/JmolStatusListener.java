@@ -29,6 +29,7 @@ public interface JmolStatusListener {
                                String errorMessage);
 
   public void setStatusMessage(String statusMessage);
+  public void setStatusMessage(String statusMessage, String additionalInfo);
   
   public void scriptEcho(String strEcho);
 
@@ -38,7 +39,9 @@ public interface JmolStatusListener {
 
   public void handlePopupMenu(int x, int y);
 
-  public void notifyMeasurementsChanged();
+  public void notifyMeasurementsChanged(int count, String strInfo);
+
+  public void notifyMeasureSelection(int iatom, String strMeasure);
 
   public void notifyFrameChanged(int frameNo);
 

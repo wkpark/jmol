@@ -31,8 +31,10 @@ public interface WrappedApplet {
   public void setAppletWrapper(AppletWrapper appletWrapper);
   public void init();
   public String getAppletInfo();
-  public String getProperty(String infoType);
-  public String getProperty(String infoType, String paramInfo);
+  public String getStringProperty(String infoType);
+  public String getStringProperty(String infoType, String paramInfo);
+  public String getJSONProperty(String infoType);
+  public String getJSONProperty(String infoType, String paramInfo);
   public void update(Graphics g);
   public void paint(Graphics g);
   public boolean handleEvent(Event e);

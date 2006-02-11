@@ -43,6 +43,7 @@ class PickingManager {
   }
 
   void atomPicked(int atomIndex, boolean shiftKey) {
+    String value;
     if (atomIndex == -1)
       return;
     Frame frame = viewer.getFrame();
@@ -60,11 +61,12 @@ class PickingManager {
         break;
       float distance = frame.getDistance(queuedAtomIndexes[0],
                                          atomIndex);
-      viewer.scriptStatus("Distance " +
-                          viewer.getAtomInfo(queuedAtomIndexes[0]) +
-                          " - " +
-                          viewer.getAtomInfo(queuedAtomIndexes[1]) +
-                          " : " + distance);
+      value = "Distance "
+      + viewer.getAtomInfo(queuedAtomIndexes[0])
+      +  " - "
+      + viewer.getAtomInfo(queuedAtomIndexes[1])
+      + " : " + distance;
+    viewer.notifyMeasureSelection(2,value);
       break;
     case JmolConstants.PICKING_ANGLE:
       if (queuedAtomCount >= 3)
@@ -75,13 +77,14 @@ class PickingManager {
       float angle = frame.getAngle(queuedAtomIndexes[0],
                                    queuedAtomIndexes[1],
                                    atomIndex);
-      viewer.scriptStatus("Angle " +
-                          viewer.getAtomInfo(queuedAtomIndexes[0]) +
-                          " - " +
-                          viewer.getAtomInfo(queuedAtomIndexes[1]) +
-                          " - " +
-                          viewer.getAtomInfo(queuedAtomIndexes[2]) +
-                          " : " + angle);
+      value = "Angle " +
+      viewer.getAtomInfo(queuedAtomIndexes[0]) +
+      " - " +
+      viewer.getAtomInfo(queuedAtomIndexes[1]) +
+      " - " +
+      viewer.getAtomInfo(queuedAtomIndexes[2]) +
+      " : " + angle;
+      viewer.notifyMeasureSelection(3,value);
       break;
     case JmolConstants.PICKING_TORSION:
       if (queuedAtomCount >= 4)
@@ -93,15 +96,16 @@ class PickingManager {
                                        queuedAtomIndexes[1],
                                        queuedAtomIndexes[2],
                                        atomIndex);
-      viewer.scriptStatus("Torsion " +
-                          viewer.getAtomInfo(queuedAtomIndexes[0]) +
-                          " - " +
-                          viewer.getAtomInfo(queuedAtomIndexes[1]) +
-                          " - " +
-                          viewer.getAtomInfo(queuedAtomIndexes[2]) +
-                          " - " + 
-                          viewer.getAtomInfo(queuedAtomIndexes[3]) +
-                          " : " + torsion);
+      value = "Torsion " +
+      viewer.getAtomInfo(queuedAtomIndexes[0]) +
+      " - " +
+      viewer.getAtomInfo(queuedAtomIndexes[1]) +
+      " - " +
+      viewer.getAtomInfo(queuedAtomIndexes[2]) +
+      " - " + 
+      viewer.getAtomInfo(queuedAtomIndexes[3]) +
+      " : " + torsion;
+      viewer.notifyMeasureSelection(4, value);
       break;
     case JmolConstants.PICKING_MONITOR:
       if (queuedAtomCount >= 2)

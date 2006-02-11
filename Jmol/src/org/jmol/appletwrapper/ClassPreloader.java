@@ -36,7 +36,7 @@ class ClassPreloader extends Thread {
     String className;
     setPriority(getPriority() - 1);
     while ((className = appletWrapper.getNextPreloadClassName()) != null) {
-      //      System.out.println("preloading " + className);
+            System.out.println("preloading " + className);
       try {
         int lastCharIndex = className.length() - 1;
         boolean constructOne = className.charAt(lastCharIndex) == '+';

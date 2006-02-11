@@ -28,13 +28,20 @@ import netscape.javascript.JSObject;
 /**
  * This is the API of methods that are available to JavaScript
  * via LiveConnect to the Jmol applet.
+ * 
+ * DONT FORGET TO ADD THESE FUNCTIONS TO src/JmolApplet.java !!!
+ * 
  */
 
 public interface JmolAppletInterface {
 
   public String getAppletInfo();
-  public String getProperty(String infoType);
-  public String getProperty(String infoType, String paramInfo);
+  public String getStringProperty(String infoType);
+  public String getStringProperty(String infoType, String paramInfo);
+  public String getJSONProperty(String infoType);
+  public String getJSONProperty(String infoType, String paramInfo);
+  public Object getProperty(String infoType);
+  public Object getProperty(String infoType, String paramInfo);
   public void script(String script);
   public void loadInline(String strModel);
   public void loadInline(String strModel, String script);

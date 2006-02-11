@@ -27,7 +27,7 @@ package org.jmol.applet;
 import org.jmol.api.*;
 import org.jmol.appletwrapper.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-//import org.openscience.jmol.adapters.CdkJmolAdapter;
+// import org.openscience.jmol.adapters.CdkJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 
@@ -39,47 +39,45 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 /*
-  these are *required*
-
-   [param name="progressbar" value="true" /]
-   [param name="progresscolor" value="blue" /]
-   [param name="boxmessage" value="your-favorite-message" /]
-   [param name="boxbgcolor" value="#112233" /]
-   [param name="boxfgcolor" value="#778899" /]  
-
-   [param name="loadInline" value="
-| do
-| it
-| this
-| way
-" /]
-
-   [param name="script"             value="your-script" /]
-
-   // this one flips the orientation and uses RasMol/Chime colors
-   [param name="emulate"    value="chime" /]
-
-   // this is *required* if you want the applet to be able to
-   // call your callbacks
-
-   mayscript="true" is required as an applet tag
-
-   [param name="AnimFrameCallback"  value="yourJavaScriptMethodName" /]
-   [param name="LoadStructCallback" value="yourJavaScriptMethodName" /]
-   [param name="MessageCallback"    value="yourJavaScriptMethodName" /]
-   [param name="PauseCallback"      value="yourJavaScriptMethodName" /]
-   [param name="PickCallback"       value="yourJavaScriptMethodName" /]
-
-*/
+ * these are *required*
+ * 
+ * [param name="progressbar" value="true" /] [param name="progresscolor"
+ * value="blue" /] [param name="boxmessage" value="your-favorite-message" /]
+ * [param name="boxbgcolor" value="#112233" /] [param name="boxfgcolor"
+ * value="#778899" /]
+ * 
+ * [param name="loadInline" value=" | do | it | this | way " /]
+ * 
+ * [param name="script" value="your-script" /]
+ *  // this one flips the orientation and uses RasMol/Chime colors [param
+ * name="emulate" value="chime" /]
+ *  // this is *required* if you want the applet to be able to // call your
+ * callbacks
+ * 
+ * mayscript="true" is required as an applet tag
+ * 
+ * [param name="AnimFrameCallback" value="yourJavaScriptMethodName" /] [param
+ * name="LoadStructCallback" value="yourJavaScriptMethodName" /] [param
+ * name="MessageCallback" value="yourJavaScriptMethodName" /] [param
+ * name="PauseCallback" value="yourJavaScriptMethodName" /] [param
+ * name="PickCallback" value="yourJavaScriptMethodName" /]
+ * 
+ */
 
 public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   JmolViewer viewer;
+
   boolean jvm12orGreater;
+
   String emulate;
+
   Jvm12 jvm12;
+
   JmolPopup jmolpopup;
+
   String htmlName;
+
   JmolAppletRegistry appletRegistry;
 
   MyStatusListener myStatusListener;
@@ -88,52 +86,55 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   /*
    * miguel 2004 11 29
-   *
+   * 
    * WARNING! DANGER!
-   *
-   * I have discovered that if you call JSObject.getWindow().toString()
-   * on Safari v125.1 / Java 1.4.2_03 then it breaks or kills Safari
-   * I filed Apple bug report #3897879
-   *
+   * 
+   * I have discovered that if you call JSObject.getWindow().toString() on
+   * Safari v125.1 / Java 1.4.2_03 then it breaks or kills Safari I filed Apple
+   * bug report #3897879
+   * 
    * Therefore, do *not* call System.out.println("" + jsoWindow);
    */
   JSObject jsoWindow;
+
   JSObject jsoDocument;
 
   boolean mayScript;
+
   String animFrameCallback;
+
   String loadStructCallback;
+
   String messageCallback;
-  //??? String pauseCallback;
+
+  // ??? String pauseCallback;
   String pickCallback;
 
   final static boolean REQUIRE_PROGRESSBAR = true;
+
   boolean hasProgressBar;
+
   int paintCounter;
 
-/* see below
-  public String getAppletInfo() {
-    return appletInfo;
-  }
-
-  static String appletInfo =
-    GT._("Jmol Applet.  Part of the OpenScience project. " +
-         "See http://www.jmol.org for more information");
-*/
+  /*
+   * see below public String getAppletInfo() { return appletInfo; }
+   * 
+   * static String appletInfo = GT._("Jmol Applet. Part of the OpenScience
+   * project. " + "See http://www.jmol.org for more information");
+   */
   public void setAppletWrapper(AppletWrapper appletWrapper) {
     this.appletWrapper = appletWrapper;
   }
-  
+
   public void init() {
     htmlName = getParameter("name");
-    
+
     String ms = getParameter("mayscript");
-    mayScript = (ms != null) && (! ms.equalsIgnoreCase("false"));
-    appletRegistry =
-      new JmolAppletRegistry(htmlName, mayScript, appletWrapper);
-    
+    mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
+    appletRegistry = new JmolAppletRegistry(htmlName, mayScript, appletWrapper);
+
     System.out.println("Applet name=" + htmlName);
-    
+
     initWindows();
     initApplication();
   }
@@ -141,19 +142,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   String getParameter(String paramName) {
     return appletWrapper.getParameter(paramName);
   }
-  
+
   public void initWindows() {
 
     // to enable CDK
-    //    viewer = new JmolViewer(this, new CdkJmolAdapter(null));
-    viewer =
-      JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter(null));
+    // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
+    viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter(
+        null));
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
 
-    viewer.setAppletContext(appletWrapper.getDocumentBase(),
-                            appletWrapper.getCodeBase(),
-                            getValue("JmolAppletProxy", null));
+    viewer.setAppletContext(appletWrapper.getDocumentBase(), appletWrapper
+        .getCodeBase(), getValue("JmolAppletProxy", null));
 
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
@@ -163,10 +163,12 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       try {
         jsoWindow = JSObject.getWindow(appletWrapper);
         if (jsoWindow == null)
-          System.out.println("jsoWindow returned null ... no JavaScript callbacks :-(");
+          System.out
+              .println("jsoWindow returned null ... no JavaScript callbacks :-(");
         jsoDocument = (JSObject) jsoWindow.getMember("document");
         if (jsoDocument == null)
-          System.out.println("jsoDocument returned null ... no DOM manipulations :-(");
+          System.out
+              .println("jsoDocument returned null ... no DOM manipulations :-(");
       } catch (Exception e) {
         System.out.println("" + e);
       }
@@ -174,25 +176,19 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   /*
-  PropertyResourceBundle appletProperties = null;
-
-  private void loadProperties() {
-    URL codeBase = getCodeBase();
-    try {
-      URL urlProperties = new URL(codeBase, "JmolApplet.properties");
-      appletProperties =
-        new PropertyResourceBundle(urlProperties.openStream());
-    } catch (Exception ex) {
-      System.out.println("JmolApplet.loadProperties() -> " + ex);
-    }
-  }
-  */
+   * PropertyResourceBundle appletProperties = null;
+   * 
+   * private void loadProperties() { URL codeBase = getCodeBase(); try { URL
+   * urlProperties = new URL(codeBase, "JmolApplet.properties");
+   * appletProperties = new PropertyResourceBundle(urlProperties.openStream()); }
+   * catch (Exception ex) { System.out.println("JmolApplet.loadProperties() -> " +
+   * ex); } }
+   */
 
   boolean getBooleanValue(String propertyName, boolean defaultValue) {
     String value = getValue(propertyName, defaultValue ? "true" : "");
-    return (value.equalsIgnoreCase("true") ||
-            value.equalsIgnoreCase("on") ||
-            value.equalsIgnoreCase("yes"));
+    return (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on") || value
+        .equalsIgnoreCase("yes"));
   }
 
   String getValue(String propertyName, String defaultValue) {
@@ -200,41 +196,26 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     if (stringValue != null)
       return stringValue;
     /*
-    if (appletProperties != null) {
-      try {
-        stringValue = appletProperties.getString(propertyName);
-        return stringValue;
-      } catch (MissingResourceException ex) {
-      }
-    }
-    */
+     * if (appletProperties != null) { try { stringValue =
+     * appletProperties.getString(propertyName); return stringValue; } catch
+     * (MissingResourceException ex) { } }
+     */
     return defaultValue;
   }
+
   /*
-  private int getValue(String propertyName, int defaultValue) {
-    String stringValue = getValue(propertyName, null);
-    if (stringValue != null)
-      try {
-        return Integer.parseInt(stringValue);
-      } catch (NumberFormatException ex) {
-        System.out.println(propertyName + ":" +
-                           stringValue + " is not an integer");
-      }
-    return defaultValue;
-  }
-  
-  private double getValue(String propertyName, double defaultValue) {
-    String stringValue = getValue(propertyName, null);
-    if (stringValue != null)
-      try {
-        return (new Double(stringValue)).doubleValue();
-      } catch (NumberFormatException ex) {
-        System.out.println(propertyName + ":" +
-                           stringValue + " is not a double");
-      }
-    return defaultValue;
-  }
-  */
+   * private int getValue(String propertyName, int defaultValue) { String
+   * stringValue = getValue(propertyName, null); if (stringValue != null) try {
+   * return Integer.parseInt(stringValue); } catch (NumberFormatException ex) {
+   * System.out.println(propertyName + ":" + stringValue + " is not an
+   * integer"); } return defaultValue; }
+   * 
+   * private double getValue(String propertyName, double defaultValue) { String
+   * stringValue = getValue(propertyName, null); if (stringValue != null) try {
+   * return (new Double(stringValue)).doubleValue(); } catch
+   * (NumberFormatException ex) { System.out.println(propertyName + ":" +
+   * stringValue + " is not a double"); } return defaultValue; }
+   */
   String getValueLowerCase(String paramName, String defaultValue) {
     String value = getValue(paramName, defaultValue);
     if (value != null) {
@@ -244,7 +225,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
     return value;
   }
-  
+
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
@@ -265,8 +246,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       String bgcolor = getValue("boxbgcolor", "black");
       bgcolor = getValue("bgcolor", bgcolor);
       viewer.setColorBackground(bgcolor);
-      
-      //loadInline(getValue("loadInline", null));
+
+      // loadInline(getValue("loadInline", null));
       loadNodeId(getValue("loadNodeId", null));
 
       viewer.setFrankOn(true);
@@ -274,21 +255,20 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
       messageCallback = getValue("MessageCallback", null);
-      //pauseCallback = getValue("PauseCallback", null);
+      // pauseCallback = getValue("PauseCallback", null);
       pickCallback = getValue("PickCallback", null);
       System.out.println("animFrameCallback=" + animFrameCallback);
       System.out.println("loadStructCallback=" + loadStructCallback);
       System.out.println("messageCallback=" + messageCallback);
-      //System.out.println("pauseCallback=" + pauseCallback);
+      // System.out.println("pauseCallback=" + pauseCallback);
       System.out.println("pickCallback=" + pickCallback);
-      if (! mayScript &&
-          (animFrameCallback != null ||
-           loadStructCallback != null ||
-           messageCallback != null ||
-           //pauseCallback != null ||
-           pickCallback != null))
+      if (!mayScript
+          && (animFrameCallback != null || loadStructCallback != null
+              || messageCallback != null ||
+          // pauseCallback != null ||
+          pickCallback != null))
         System.out.println("WARNING!! MAYSCRIPT not found");
-      
+
       String scriptParam = getValue("script", "");
       String loadParam = getValue("load", null);
       if (loadParam != null)
@@ -309,20 +289,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public void update(Graphics g) {
-    //    System.out.println("update called");
+    // System.out.println("applet.jmol.update called");
     if (viewer == null) // it seems that this can happen at startup sometimes
       return;
     if (showPaintTime)
       startPaintClock();
     Dimension size = jvm12orGreater ? jvm12.getSize() : appletWrapper.size();
     viewer.setScreenDimension(size);
-    Rectangle rectClip =
-      jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
+    Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g
+        .getClipRect();
     ++paintCounter;
-    if (REQUIRE_PROGRESSBAR &&
-        !hasProgressBar &&
-        paintCounter < 30 &&
-        (paintCounter & 1) == 0) {
+    if (REQUIRE_PROGRESSBAR && !hasProgressBar && paintCounter < 30
+        && (paintCounter & 1) == 0) {
       printProgressbarMessage(g);
       viewer.notifyRepainted();
     } else {
@@ -335,21 +313,15 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
   }
 
-  final static String[] progressbarMsgs = {
-    "Jmol developer alert!",
-    "",
-    "progressbar is REQUIRED ... otherwise users",
-    "will have no indicate that the applet is loading",
-    "",
-    "<applet code='JmolApplet' ... >",
-    "  <param name='progressbar' value='true' />",
-    "  <param name='progresscolor' value='blue' />",
-    "  <param name='boxmessage' value='your-favorite-message' />",
-    "  <param name='boxbgcolor' value='#112233' />",
-    "  <param name='boxfgcolor' value='#778899' />",
-    "   ...",
-    "</applet>",
-  };
+  final static String[] progressbarMsgs = { "Jmol developer alert!", "",
+      "progressbar is REQUIRED ... otherwise users",
+      "will have no indicate that the applet is loading", "",
+      "<applet code='JmolApplet' ... >",
+      "  <param name='progressbar' value='true' />",
+      "  <param name='progresscolor' value='blue' />",
+      "  <param name='boxmessage' value='your-favorite-message' />",
+      "  <param name='boxbgcolor' value='#112233' />",
+      "  <param name='boxfgcolor' value='#778899' />", "   ...", "</applet>", };
 
   void printProgressbarMessage(Graphics g) {
     g.setColor(Color.yellow);
@@ -363,7 +335,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   public boolean showPaintTime = false;
 
   public void paint(Graphics g) {
-    //    System.out.println("paint called");
+    // System.out.println("paint called");
     update(g);
   }
 
@@ -377,7 +349,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   // last and average of all the previous times are shown in the status window
 
   static int timeLast = 0;
+
   static int timeCount;
+
   static int timeTotal;
 
   void resetTimes() {
@@ -394,6 +368,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   long timeBegin;
+
   int lastMotionEventNumber;
 
   void startPaintClock() {
@@ -406,7 +381,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   void stopPaintClock() {
-    int time = (int)(System.currentTimeMillis() - timeBegin);
+    int time = (int) (System.currentTimeMillis() - timeBegin);
     recordTime(time);
   }
 
@@ -421,27 +396,28 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   void showTimes(int x, int y, Graphics g) {
-    int timeAverage =
-      (timeCount == 0)
-      ? -1
-      : (timeTotal + timeCount/2) / timeCount; // round, don't truncate
+    int timeAverage = (timeCount == 0) ? -1 : (timeTotal + timeCount / 2)
+        / timeCount; // round, don't truncate
     g.setColor(Color.green);
     g.drawString(fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms", x, y);
   }
 
-  final Object[] buttonCallbackBefore = { null, new Boolean(false)};
-  final Object[] buttonCallbackAfter = { null, new Boolean(true)};
+  final Object[] buttonCallbackBefore = { null, new Boolean(false) };
+
+  final Object[] buttonCallbackAfter = { null, new Boolean(true) };
 
   boolean buttonCallbackNotificationPending;
+
   String buttonCallback;
+
   String buttonName;
+
   JSObject buttonWindow;
 
   public void scriptButton(JSObject buttonWindow, String buttonName,
-                           String script, String buttonCallback) {
-    System.out.println(htmlName +" JmolApplet.scriptButton(" +
-                       buttonWindow + "," + buttonName + "," +
-                       script + "," + buttonCallback);
+      String script, String buttonCallback) {
+    System.out.println(htmlName + " JmolApplet.scriptButton(" + buttonWindow
+        + "," + buttonName + "," + script + "," + buttonCallback);
     if (buttonWindow != null && buttonCallback != null) {
       System.out.println("!!!! calling back " + buttonCallback);
       buttonCallbackBefore[0] = buttonName;
@@ -460,91 +436,89 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public void script(String script) {
-    String strError = viewer.evalString(script);
-    if (strError == null)
-      strError = GT._("Jmol executing script ...");
-    myStatusListener.setStatusMessage(strError, script);
-  }
-
+    viewer.script(script);
+  }   
+  
   public String getAppletInfo() {
-    return GT._("Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
-        new Object[] { JmolConstants.version, JmolConstants.date });
+    return GT
+        ._(
+            "Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
+            new Object[] { JmolConstants.version, JmolConstants.date });
   }
 
-  public String getProperty(String infoType) {
+  public Object getProperty(String infoType) {
     return viewer.getProperty(infoType);
   }
 
-  public String getProperty(String infoType, String paramInfo) {
+  public Object getProperty(String infoType, String paramInfo) {
     return viewer.getProperty(infoType, paramInfo);
   }
-  
-  char inlineNewlineChar = '|';
 
-  public void loadInline(String strModel) {
-
-    if (strModel != null) {
-      if (inlineNewlineChar != 0) {
-        int len = strModel.length();
-        int i;
-        for (i = 0; i < len && strModel.charAt(0) == ' '; ++i) {
-        }
-        if (i < len && strModel.charAt(i) == inlineNewlineChar)
-          strModel = strModel.substring(i + 1);
-        strModel = strModel.replace(inlineNewlineChar, '\n');
-      }
-      viewer.openStringInline(strModel);
-      myStatusListener.setStatusMessage(viewer.getOpenFileError());
-    }
+  public String getStringProperty(String infoType) {
+    return viewer.getStringProperty(infoType);
+  }
+  public String getStringProperty(String infoType, String paramInfo) {
+    return viewer.getStringProperty(infoType, paramInfo);
   }
 
+  public String getJSONProperty(String infoType) {
+    return viewer.getJSONProperty(infoType);
+  }
+
+  public String getJSONProperty(String infoType, String paramInfo) {
+    return viewer.getJSONProperty(infoType, paramInfo);
+  }
+
+  public void loadInline(String strModel) {
+    viewer.loadInline(strModel);
+  }
+  
   public void loadInline(String strModel, String script) {
     loadInline(strModel);
     script(script);
   }
 
   public void loadDOMNode(JSObject DOMNode) {
-      // This should provide a route to pass in a browser DOM node
-      // directly as a JSObject. Unfortunately does not seem to work with
-      // current browsers
-      viewer.openDOM(DOMNode);
-      myStatusListener.setStatusMessage(viewer.getOpenFileError());
-  } 
+    // This should provide a route to pass in a browser DOM node
+    // directly as a JSObject. Unfortunately does not seem to work with
+    // current browsers
+    viewer.openDOM(DOMNode);
+  }
 
   public void loadNodeId(String nodeId) {
     if (nodeId != null) {
       // Retrieve Node ...
       // First try to find by ID
       Object[] idArgs = { nodeId };
-      JSObject tryNode = (JSObject) jsoDocument.call("getElementById",idArgs);
+      JSObject tryNode = (JSObject) jsoDocument.call("getElementById", idArgs);
 
       // But that relies on a well-formed CML DTD specifying ID search.
       // Otherwise, search all cml:cml nodes.
-     if (tryNode == null) {
-        Object[] searchArgs = { "http://www.xml-cml.org/schema/cml2/core", "cml" };
-        JSObject tryNodeList = (JSObject) jsoDocument.call("getElementsByTagNameNS", searchArgs);
+      if (tryNode == null) {
+        Object[] searchArgs = { "http://www.xml-cml.org/schema/cml2/core",
+            "cml" };
+        JSObject tryNodeList = (JSObject) jsoDocument.call(
+            "getElementsByTagNameNS", searchArgs);
         if (tryNodeList != null) {
-          for (int i = 0; i < ((Number) tryNodeList.getMember("length")).intValue(); i++ ) {
-	    tryNode = (JSObject) tryNodeList.getSlot(i);
-	    Object[] idArg = { "id" };
+          for (int i = 0; i < ((Number) tryNodeList.getMember("length"))
+              .intValue(); i++) {
+            tryNode = (JSObject) tryNodeList.getSlot(i);
+            Object[] idArg = { "id" };
             String idValue = (String) tryNode.call("getAttribute", idArg);
-	    if (nodeId.equals(idValue))
-                break;
-	  }
-	}
+            if (nodeId.equals(idValue))
+              break;
+          }
+        }
       }
-      if (tryNode != null) {
-        viewer.openDOM(tryNode);
-        myStatusListener.setStatusMessage(viewer.getOpenFileError());
-      }
-    } 
+      if (tryNode != null)
+        loadDOMNode(tryNode);
+    }
   }
-
 
   void loadPopupMenuAsBackgroundTask() {
     // no popup on MacOS 9 NetScape
-    if (viewer.getOperatingSystemName().equals("Mac OS") &&
-        viewer.getJavaVersion().equals("1.1.5"))
+    if (viewer.getOperatingSystemName().equals("Mac OS")
+        && viewer.getJavaVersion().equals("1.1.5"))
       return;
     new Thread(new LoadPopupThread()).start();
   }
@@ -572,25 +546,25 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   class MyStatusListener implements JmolStatusListener {
+
     public void notifyFileLoaded(String fullPathName, String fileName,
-                                 String modelName, Object clientFile,
-                                 String errorMsg) {
+        String modelName, Object clientFile, String errorMsg) {
       if (errorMsg != null) {
         showStatusAndConsole(GT._("File Error:") + errorMsg);
         return;
       }
       if (fullPathName != null)
         if (loadStructCallback != null && jsoWindow != null)
-          jsoWindow.call(loadStructCallback, new Object[] {htmlName, fullPathName});
+          jsoWindow.call(loadStructCallback, new Object[] { htmlName,
+              fullPathName });
       if (jmolpopup != null)
         jmolpopup.updateComputedMenus();
     }
 
     public void setStatusMessage(String statusMessage) {
-      if (statusMessage == null)
-        return;
       if (messageCallback != null && jsoWindow != null)
-        jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage});
+        jsoWindow.call(messageCallback,
+            new Object[] { htmlName, statusMessage });
       showStatusAndConsole(statusMessage);
     }
 
@@ -598,17 +572,33 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       if (statusMessage == null)
         return;
       if (messageCallback != null && jsoWindow != null)
-        jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage, additionalInfo});
+        jsoWindow.call(messageCallback, new Object[] { htmlName, statusMessage,
+            additionalInfo });
       showStatusAndConsole(statusMessage);
     }
 
-    public void scriptEcho(String strEcho) {
-      scriptStatus(strEcho);
+    public void notifyMeasureSelection(int iatom, String strMeasure) {
+    }
+
+    public void notifyMeasurementsChanged(int count, String strInfo) {
+    }
+
+    public void notifyFrameChanged(int frameNo) {
+      if (animFrameCallback != null && jsoWindow != null)
+        jsoWindow.call(animFrameCallback, new Object[] { htmlName,
+            new Integer(frameNo) });
+    }
+
+    public void notifyAtomPicked(int atomIndex, String strInfo) {
+      showStatusAndConsole(strInfo);
+      if (pickCallback != null && jsoWindow != null)
+        jsoWindow.call(pickCallback, new Object[] { htmlName, strInfo,
+            new Integer(atomIndex) });
     }
 
     public void scriptStatus(String strStatus) {
-      if (strStatus != null && messageCallback != null && jsoWindow != null)
-        jsoWindow.call(messageCallback, new Object[] {htmlName, strStatus});
+      if (messageCallback != null && jsoWindow != null)
+        jsoWindow.call(messageCallback, new Object[] { htmlName, strStatus });
       consoleMessage(strStatus);
     }
 
@@ -621,30 +611,12 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       }
     }
 
+    public void scriptEcho(String strEcho) {
+    }
+
     public void handlePopupMenu(int x, int y) {
       if (jmolpopup != null)
         jmolpopup.show(x, y);
-    }
-
-    public void measureSelection(int atomIndex) {
-    }
-
-    public void notifyMeasurementsChanged() {
-    }
-
-    public void notifyFrameChanged(int frameNo) {
-      //System.out.println("notifyFrameChanged(" + frameNo +")");
-      if (animFrameCallback != null && jsoWindow != null)
-        jsoWindow.call(animFrameCallback,
-                       new Object[] {htmlName, new Integer(frameNo)});
-    }
-
-    public void notifyAtomPicked(int atomIndex, String strInfo) {
-      //System.out.println("notifyAtomPicked(" + atomIndex + "," + strInfo +")");
-      showStatusAndConsole(strInfo);
-      if (pickCallback != null && jsoWindow != null)
-        jsoWindow.call(pickCallback,
-                       new Object[] {htmlName, strInfo, new Integer(atomIndex)});
     }
 
     public void showUrl(String urlString) {
@@ -664,6 +636,5 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       if (jvm12 != null)
         jvm12.showConsole(showConsole);
     }
-
   }
 }

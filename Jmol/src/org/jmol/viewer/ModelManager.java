@@ -134,6 +134,24 @@ class ModelManager {
     return (frame == null) ? 0 : frame.getModelCount();
   }
 
+  String getModelInfo() {
+    int modelCount = getModelCount();
+    String str =  "model count = " + modelCount +
+                 "\nmodelSetHasVibrationVectors:" +
+                 modelSetHasVibrationVectors();
+    //Properties props = getModelSetProperties();
+    //str = str.concat(listProperties(props));
+    for (int i = 0; i < modelCount; ++i) {
+      str = str.concat("\n" + i + ":" + getModelNumber(i) +
+                 ":" + getModelName(i) +
+                 "\nmodelHasVibrationVectors:" +
+                 modelHasVibrationVectors(i));
+      //str = str.concat(listProperties(getModelProperties(i)));
+    }
+    return str;
+  }
+  
+
   String getModelName(int modelIndex) {
     return (frame == null) ? null : frame.getModelName(modelIndex);
   }
@@ -174,6 +192,13 @@ class ModelManager {
 
   Vector3f getBoundBoxCornerVector() {
     return (frame == null) ? null : frame.getBoundBoxCornerVector();
+  }
+
+  Hashtable getBoundBoxInfo() {
+    Hashtable info = new Hashtable();
+    info.put("center", getBoundBoxCenter());
+    info.put("edge", getBoundBoxCornerVector());
+    return info;
   }
 
   int getChainCount() {
@@ -557,76 +582,18 @@ String getAtomInfoChime(int i) {
     return s1.substring(0, s1.length() - s2.length()) + s2;
   }
   
-  ////////////////// JSON support /////////////////////
-  
-  public String getJSONAtomInfoFromBitSet(BitSet bs, boolean isPDB) {
-    String strJSON = "";
-    String sep ="";
-    int atomCount = getAtomCount();
-    for (int i = 0; i < atomCount; i++) {
-      if (bs.get(i)) {
-        strJSON = strJSON + sep + getAtomInfoJSON(i, isPDB);
-        sep = ",";
-      }
+  String getFileHeader() {
+    
+    String info = "no header information found";
+    if ("pdb" == getModelSetTypeName()) {
+      info = viewer.propertyManager.getPDBHeader();
     }
-    strJSON = "[" + strJSON + "]";
-    return strJSON;
-  }
-          
-  String getAtomInfoJSON(int i, boolean isPDB) {
-    Atom atom = frame.getAtomAt(i);
-    String  strJSON = "{";
-    strJSON = strJSON + "\"_ipt\":" + i;
-    strJSON = strJSON + ",\"atomno\":" + atom.getAtomNumber();
-    strJSON = strJSON + ",\"sym\":\"" + getElementSymbol(i) + "\"";
-    strJSON = strJSON + ",\"elemno\":" + atom.getElementNumber();
-    strJSON = strJSON + ",\"x\":" + getAtomX(i);
-    strJSON = strJSON + ",\"y\":" + getAtomY(i);
-    strJSON = strJSON + ",\"z\":" + getAtomZ(i);
-    strJSON = strJSON + ",\"model\":" + atom.getModelTagNumber();
-    strJSON = strJSON + ",\"bondCount\":" + atom.getCovalentBondCount();
-    strJSON = strJSON + ",\"radius\":" + (atom.getRasMolRadius()/120);
-    strJSON = strJSON + ",\"info\":\"" + getAtomInfo(i) + "\"";
-    if (isPDB) {
-      strJSON = strJSON + ",\"resname\":\"" + atom.getGroup3() + "\"";
-      strJSON = strJSON + ",\"resno\":\"" + atom.getSeqcodeString() + "\"";
-      char chainID = atom.getChainID();
-      strJSON = strJSON + ",\"name\":\"" + getAtomName(i) + "\"";
-      strJSON = strJSON + ",\"chain\":\"" + (chainID == '\0' ? "" : "" + chainID ) + "\"";
-      strJSON = strJSON + ",\"atomID\":" + atom.getSpecialAtomID();
-      strJSON = strJSON + ",\"groupID\":" + atom.getGroupID();
-      strJSON = strJSON + ",\"structure\":" + atom.getProteinStructureType();
-      strJSON = strJSON + ",\"polymerLength\":" + atom.getPolymerLength();
-      strJSON = strJSON + ",\"occupancy\":" + atom.getOccupancy();
-      int temp = atom.getBfactor100();
-      strJSON = strJSON + ",\"temp\":" + (temp<0 ? 0 : temp/100);
+    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) {
+      info = getModelName(0);
     }
-    strJSON = strJSON + "}";
-    return strJSON;
-  }  
-
-  public String getJSONBondInfoFromBitSet(BitSet bs) {
-    String strJSON = "";
-    String sep ="";
-    int bondCount = getBondCount();
-    for (int i = 0; i < bondCount; i++) {
-      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) {
-        strJSON = strJSON + sep + getBondInfoJSON(i);
-        sep = ",";
-      }
-    }
-    strJSON = "[" + strJSON + "]";
-    return strJSON;
+    // options here for other file formats?
+   return info;
   }
 
-  String getBondInfoJSON(int i) {
-    String  strJSON = "{";
-    strJSON = strJSON + "\"ipt\":" + i;
-    strJSON = strJSON + ",\"atom1\":" + getBondAtom1(i).atomIndex;
-    strJSON = strJSON + ",\"atom2\":" + getBondAtom2(i).atomIndex;
-    strJSON = strJSON + ",\"order\":" + getBondOrder(i);
-    strJSON = strJSON + "}";
-    return strJSON;
-  }  
-  
 }
+

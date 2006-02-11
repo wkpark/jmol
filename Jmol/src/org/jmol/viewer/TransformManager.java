@@ -29,6 +29,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
+import java.util.Hashtable;
 
 class TransformManager {
 
@@ -181,11 +182,12 @@ class TransformManager {
     return getMoveToText() + "\nOR\n" + getRotateZyzText(true);
   }
 
-  String getJSONOrientation() {
-    return "{\"moveTo\":\"" + getMoveToText() + "\""
-    + ", \"rotateZYZ\":\"" + getRotateZyzText(false) + "\""
-    + ", \"rotateXYZ\":\"" + getRotateXyzText() + "\""
-    + "}";
+  Hashtable getOrientationInfo() {
+    Hashtable info = new Hashtable();
+    info.put("moveTo", getMoveToText());
+    info.put("rotateZYZ", getRotateZyzText(false));
+    info.put("rotateXYZ", getRotateXyzText());
+    return info;    
   }
 
   String getMoveToText() {
@@ -349,6 +351,10 @@ class TransformManager {
 
   String getTransformText() {
     return matrixRotate.toString();
+  }
+
+  Matrix3f getMatrixRotate() {
+    return matrixRotate;
   }
 
   void setRotation(Matrix3f matrixRotation) {

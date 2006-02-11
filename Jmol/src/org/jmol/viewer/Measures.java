@@ -64,10 +64,12 @@ class Measures extends Shape {
     if (isDefined(atomCountPlusIndices))
       return;
     Measurement measureNew = new Measurement(frame, atomCountPlusIndices);
-    if (measurementCount == measurements.length)
+    if (measurementCount == measurements.length) {
       measurements =(Measurement[])Util.setLength(measurements,
                                                   measurementCount +
                                                   measurementGrowthIncrement);
+    }
+    viewer.notifyMeasurementsChanged("measure" , measurementCount, measureNew.strMeasurement);
     measurements[measurementCount++] = measureNew;
   }
   
@@ -108,6 +110,8 @@ class Measures extends Shape {
 
   void pending(int[] countPlusIndices) {
     pendingMeasurement.setCountPlusIndices(countPlusIndices);
+    if (pendingMeasurement.count > 1)
+      viewer.notifyMeasurementsChanged("pending" , pendingMeasurement.count, pendingMeasurement.strMeasurement);
   }
 
   void setSize(int size, BitSet bsSelected) {
@@ -117,7 +121,8 @@ class Measures extends Shape {
   }
 
   void setProperty(String propertyName, Object value,
-                          BitSet bsSelected){ 
+                          BitSet bsSelected){
+    
     if ("color".equals(propertyName))
       {
         System.out.println("Measures.color set to:" + value);
@@ -140,7 +145,6 @@ class Measures extends Shape {
       { reformatDistances(); }
     else
       return;
-    viewer.notifyMeasurementsChanged();
   }
 
   Object getProperty(String property, int index) {

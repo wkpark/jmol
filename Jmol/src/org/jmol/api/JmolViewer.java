@@ -62,9 +62,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getJavaVersion();
   abstract public String getJavaVendor();
 
-  abstract public String getProperty(String infoType, String paramInfo);
-  abstract public String getProperty(String infoType);
-  
   abstract public boolean haveFrame();
 
   abstract public void pushHoldRepaint();
@@ -109,6 +106,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public int getAnimationFps();
   abstract public void setAnimationFps(int framesPerSecond);
+
+  abstract public void script(String script);
+  abstract public void loadInline(String strModel);
 
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();
@@ -243,4 +243,17 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setBooleanProperty(String propertyName, boolean value);
 
   abstract public boolean showModelSetDownload();
+  
+  abstract public void setStatusChanged(String statusName, int intInfo, Object statusInfo, boolean isReplace);
+
+  abstract public String getStringProperty(String infoType, String paramInfo);
+  abstract public String getStringProperty(String infoType);
+  abstract public String getJSONProperty(String infoType, String paramInfo);
+  abstract public String getJSONProperty(String infoType);
+  abstract public Object getProperty(String infoType, String paramInfo);
+  abstract public Object getProperty(String infoType);
+  
+
+
 }
+

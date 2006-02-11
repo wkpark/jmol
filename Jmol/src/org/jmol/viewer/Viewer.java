@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
+import org.jmol.i18n.GT;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -37,6 +38,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
+import java.util.Vector;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
@@ -63,6 +65,8 @@ final public class Viewer extends JmolViewer {
 
   Component awtComponent;
   ColorManager colorManager;
+  PropertyManager propertyManager;
+  StatusManager statusManager;
   TransformManager transformManager;
   SelectionManager selectionManager;
   MouseManager mouseManager;
@@ -83,8 +87,6 @@ final public class Viewer extends JmolViewer {
   boolean jvm11orGreater = false;
   boolean jvm12orGreater = false;
   boolean jvm14orGreater = false;
-
-  JmolStatusListener jmolStatusListener;
 
   Viewer(Component awtComponent,
          JmolAdapter modelAdapter) {
@@ -111,6 +113,7 @@ final public class Viewer extends JmolViewer {
                        "\nos.name:" + strOSName);
 
     g3d = new Graphics3D(awtComponent);
+    statusManager = new StatusManager(this);
     colorManager = new ColorManager(this, g3d);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
@@ -124,6 +127,7 @@ final public class Viewer extends JmolViewer {
     repaintManager = new RepaintManager(this);
     modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
+    propertyManager = new PropertyManager(this);
     tempManager = new TempManager(this);
     pickingManager = new PickingManager(this);
   }
@@ -945,11 +949,6 @@ final public class Viewer extends JmolViewer {
     return mouseManager.getRubberBand();
   }
 
-  void popupMenu(int x, int y) {
-    if (! disablePopupMenu && jmolStatusListener != null)
-      jmolStatusListener.handlePopupMenu(x, y);
-  }
-
   int getCursorX() {
     return mouseManager.xCurrent;
   }
@@ -1002,8 +1001,24 @@ final public class Viewer extends JmolViewer {
   public void openStringInline(String strModel) {
      clear();
      fileManager.openStringInline(strModel);
-     getOpenFileError();
+     setStatusMessage(getOpenFileError());
    }
+
+  public void loadInline(String strModel) {
+    char inlineNewlineChar = '|';
+    if (strModel != null) {
+      if (inlineNewlineChar != 0) {
+        int len = strModel.length();
+        int i;
+        for (i = 0; i < len && strModel.charAt(0) == ' '; ++i) {
+        }
+        if (i < len && strModel.charAt(i) == inlineNewlineChar)
+          strModel = strModel.substring(i + 1);
+        strModel = strModel.replace(inlineNewlineChar, '\n');
+      }
+      openStringInline(strModel);
+    }
+  }
 
   public void openDOM(Object DOMNode) {
     clear();
@@ -1011,7 +1026,7 @@ final public class Viewer extends JmolViewer {
     fileManager.openDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     System.out.println("openDOM " + ms + " ms");
-    getOpenFileError();
+    setStatusMessage(getOpenFileError());
   }
 
   /**
@@ -1199,6 +1214,10 @@ final public class Viewer extends JmolViewer {
 
   public int getModelCount() {
     return modelManager.getModelCount();
+  }
+
+  public String getModelInfo() {
+    return modelManager.getModelInfo();
   }
 
   public Properties getModelSetProperties() {
@@ -1391,13 +1410,15 @@ final public class Viewer extends JmolViewer {
   }
 
   public String getMeasurementStringValue(int i) {
-    return
-      "" + getShapeProperty(JmolConstants.SHAPE_MEASURES, "stringValue", i);
+    String str = "" + getShapeProperty(JmolConstants.SHAPE_MEASURES, "stringValue", i);
+    System.out.println("getMeasurementStringValue" + i+ " "+str);
+    return str;
   }
 
   public int[] getMeasurementCountPlusIndices(int i) {
-    return (int[])
-      getShapeProperty(JmolConstants.SHAPE_MEASURES, "countPlusIndices", i);
+    int[]List = (int[])getShapeProperty(JmolConstants.SHAPE_MEASURES, "countPlusIndices", i);
+    System.out.println(List);    
+    return List;
   }
 
   void setPendingMeasurement(int[] atomCountPlusIndices) {
@@ -1545,12 +1566,16 @@ final public class Viewer extends JmolViewer {
     repaintManager.popHoldRepaint();
   }
 
+  /*
   void forceRefresh() {
+    System.out.println("viewer.forceRefresh");
     repaintManager.forceRefresh();
   }
-
+  */
+  
   public void refresh() {
     repaintManager.refresh();
+    setStatusChanged("viewerRefresh", 0, "", true);
   }
 
   void requestRepaintAndWait() {
@@ -1691,6 +1716,16 @@ final public class Viewer extends JmolViewer {
       eval.start();
     }
     return null;
+  }
+
+  int iscript = 0;
+  public void script(String script) {  
+    iscript++;
+    String strError = evalString(script);
+    if (strError == null)
+      strError = GT._("Jmol executing script ...");
+    setStatusMessage(strError, script);
+    setStatusChanged("scriptStart", iscript, script, false);
   }
 
   public boolean isScriptExecuting() {
@@ -1930,67 +1965,12 @@ final public class Viewer extends JmolViewer {
     return rasmolHeteroSetting;
   }
 
-  public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
-    this.jmolStatusListener = jmolStatusListener;
-  }
-
-  void notifyFrameChanged(int frameNo) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyFrameChanged(frameNo);
-  }
-
-  void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName, Object clientFile) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyFileLoaded(fullPathName, fileName,
-                                          modelName, clientFile, null);
-  }
-
-  void notifyFileNotLoaded(String fullPathName, String errorMsg) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyFileLoaded(fullPathName, null, null, null,
-                                          errorMsg);
-  }
-
-  private void manageScriptTermination() {
-    if (eval != null && eval.hasTerminationNotification()) {
-      String strErrorMessage = eval.getErrorMessage();
-      int msWalltime = eval.getExecutionWalltime();
-      eval.resetTerminationNotification();
-      if (jmolStatusListener != null)
-        jmolStatusListener.notifyScriptTermination(strErrorMessage,
-                                                   msWalltime);
-    }
-  }
-
-  void scriptEcho(String strEcho) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.scriptEcho(strEcho);
-  }
-
   boolean debugScript = false;
   boolean getDebugScript() {
     return debugScript;
   }
   public void setDebugScript(boolean debugScript) {
     this.debugScript = debugScript;
-  }
-
-  void scriptStatus(String strStatus) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.scriptStatus(strStatus);
-  }
-
-  /*
-  void measureSelection(int iatom) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.measureSelection(iatom);
-  }
-  */
-
-  void notifyMeasurementsChanged() {
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyMeasurementsChanged();
   }
 
   void atomPicked(int atomIndex, boolean shiftKey) {
@@ -2001,28 +1981,86 @@ final public class Viewer extends JmolViewer {
     mouseManager.clearClickCount();
   }
 
-  void notifyAtomPicked(int atomIndex) {
-    if (atomIndex != -1 && jmolStatusListener != null)
-      jmolStatusListener.notifyAtomPicked(atomIndex,
-                                          modelManager.getAtomInfo(atomIndex));
-  }
-
-  public void showUrl(String urlString) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.showUrl(urlString);
-  }
-
-  public void showConsole(boolean showConsole) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.showConsole(showConsole);
-  }
-
   void setPickingMode(int pickingMode) {
     pickingManager.setPickingMode(pickingMode);
   }
 
   String getAtomInfo(int atomIndex) {
     return modelManager.getAtomInfo(atomIndex);
+  }
+
+////////////////status manager dispatch//////////////
+  
+  public void setStatusChanged(String statusName, int intInfo, Object statusInfo, boolean isReplace) {
+    statusManager.setStatusChanged(statusName, intInfo, statusInfo, isReplace);
+  }    
+
+  void popupMenu(int x, int y) {
+    if (!disablePopupMenu) return;
+    statusManager.popupMenu(x,y);
+  }
+
+  public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
+    statusManager.setJmolStatusListener(jmolStatusListener);
+  }
+
+  void notifyFrameChanged(int frameNo) {
+    statusManager.notifyFrameChanged(frameNo);
+  }
+
+  void notifyFileLoaded(String fullPathName, String fileName,
+                               String modelName, Object clientFile) {
+    statusManager.notifyFileLoaded(fullPathName, fileName,
+                                          modelName, clientFile, null);
+  }
+
+  void notifyFileNotLoaded(String fullPathName, String errorMsg) {
+    statusManager.notifyFileLoaded(fullPathName, null, null, null, errorMsg);
+  }
+
+  private void manageScriptTermination() {
+    if (eval != null && eval.hasTerminationNotification()) {
+      String strErrorMessage = eval.getErrorMessage();
+      int msWalltime = eval.getExecutionWalltime();
+      eval.resetTerminationNotification();
+      statusManager.notifyScriptTermination(strErrorMessage, msWalltime);
+    }
+  }
+
+  void scriptEcho(String strEcho) {
+    statusManager.scriptEcho(strEcho);
+  }
+
+  void scriptStatus(String strStatus) {
+    statusManager.scriptStatus(strStatus);
+  }
+  
+  void notifyMeasureSelection(int iatom, String strMeasure) {
+    statusManager.notifyMeasureSelection(iatom, strMeasure);
+  }
+  
+  void notifyMeasurementsChanged(String status, int count, String strMeasure) {
+    statusManager.notifyMeasurementsChanged(status, count, strMeasure);
+  }
+
+  void notifyAtomPicked(int atomIndex) {
+    statusManager.notifyAtomPicked(atomIndex, modelManager.getAtomInfo(atomIndex));
+  }
+
+  void setStatusMessage(String statusMessage) {
+    statusManager.setStatusMessage(statusMessage);
+  }
+
+  void setStatusMessage(String statusMessage, String additionalInfo) {
+    statusManager.setStatusMessage(statusMessage, additionalInfo);
+  }
+
+  public void showUrl(String urlString) {
+    statusManager.showUrl(urlString);
+  }
+
+  public void showConsole(boolean showConsole) {
+    statusManager.showConsole(showConsole);
   }
 
   /****************************************************************
@@ -2583,236 +2621,41 @@ final public class Viewer extends JmolViewer {
 
 ///////////////// general methods needed for getProperty and/or Eval
   
-  public BitSet getAtomBitSet(String atomExpression) {
-    Eval e = new Eval(this);
-    BitSet bs = new BitSet();
-    try {
-      bs = e.getAtomBitSet(atomExpression);
-    } catch (Exception ex) {
-      System.out.println("getAtomBitSet " + atomExpression);
-      System.out.println(ex);
-      return bs;
-    }
-    return bs;  
+  BitSet getAtomBitSet(String atomExpression) {
+    return selectionManager.getAtomBitSet(atomExpression);
+  }
+
+  Vector getAtomBitSetVector(String atomExpression) {
+    return selectionManager.getAtomBitSetVector(atomExpression);
   }
 
   String getFileHeader() {
-    String info = "no header information found";
-    if ("pdb" == getModelSetTypeName()) {
-      info = getPDBHeader();
-    }
-    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) {
-      info = getModelName(0);
-    }
-    // options here for other file formats?
-   return info;
+    return modelManager.getFileHeader();
+  }  
+  
+///////////////// getProperty  /////////////
+
+  public Object getProperty(String infoType) {
+    return propertyManager.getProperty(infoType);
   }
   
-  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
-    "MODEL ", "SCALE",  "HETATM", "SEQRES",
-    "DBREF ", };
-
-  String getPDBHeader() {
-    if ("pdb" != getModelSetTypeName()) {
-      return "!Not a pdb file!";
-    }
-    String modelFile = getCurrentFileAsString();
-    int ichMin = modelFile.length();
-    for (int i = pdbRecords.length; --i >= 0; ) {
-      int ichFound = -1;
-      String strRecord = pdbRecords[i];
-      if (modelFile.startsWith(strRecord))
-        ichFound = 0;
-      else {
-        String strSearch = "\n" + strRecord;
-        ichFound = modelFile.indexOf(strSearch);
-        if (ichFound >= 0)
-          ++ichFound;
-      }
-      if (ichFound >= 0 && ichFound < ichMin)
-        ichMin = ichFound;
-    }
-    return modelFile.substring(0, ichMin);
+  public Object getProperty(String infoType, String paramInfo) {
+    return propertyManager.getProperty(infoType, paramInfo);
   }
 
-  String listProperties(Properties props) {
-    String str = "";
-    if (props == null) {
-      str = str.concat("\nProperties: null");
-    } else {
-      Enumeration e = props.propertyNames();
-      str = str.concat("\nProperties:");
-      while (e.hasMoreElements()) {
-        String propertyName = (String)e.nextElement();
-        str = str.concat("\n " + propertyName + "=" +
-                   props.getProperty(propertyName));
-      }
-    }
-    return str;
+  public String getStringProperty(String infoType) {
+    return propertyManager.getStringProperty(infoType);
   }
   
-  String getModelExtract(String atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return fileManager.getFullPathName() 
-        + "\nEXTRACT: " + bs + "\nJmol\n"
-        + modelManager.getModelExtractFromBitSet(bs);
+  public String getStringProperty(String infoType, String paramInfo) {
+    return propertyManager.getStringProperty(infoType, paramInfo);
   }
 
-
-///////////////// getProperty and JSON support /////////////
-
-  public String getProperty(String infoType) {
-
-    System.out.println("viewer.getProperty(\"" + infoType+"\")");
-      
-    if(infoType.equalsIgnoreCase("fileContents"))
-      return getCurrentFileAsString();
-    if(infoType.equalsIgnoreCase("fileHeader"))
-      return getFileHeader();      
-    if(infoType.equalsIgnoreCase("fileName"))
-      return fileManager.getFullPathName();
-    if(infoType.equalsIgnoreCase("orientationInfo"))
-      return "{\"orientationInfo\": " + getJSONOrientationInfo() + "}";      
-    if(infoType.equalsIgnoreCase("modelInfo"))
-      return "{\"modelInfo\": " + getModelInfoJSON() + "}";      
-    if(infoType.equalsIgnoreCase("transformInfo"))
-      return "{\"transformInfo\": " + toJSON(getTransformText()) + "}";      
-    if(infoType.equalsIgnoreCase("centerInfo"))
-      return "{\"centerInfo\": " + toJSON(getCenter().toString()) + "}";      
-    if(infoType.equalsIgnoreCase("boundboxInfo"))
-      return "{\"boundboxInfo\": {\"center\":" + toJSON(getBoundBoxCenter().toString())
-      +  ",\"edge\":" + toJSON(getBoundBoxCornerVector().toString()) + "}}";
-    if(infoType.equalsIgnoreCase("zoomInfo"))
-      return "{\"zoomInfo\":" + (getZoomEnabled() ? getZoomPercentSetting()+"" : "\"off\"") + "}";
-    return "getProperty ERROR\n\nOptions include\n"
-    + "\n getProperty(\"fileName\")"
-    + "\n getProperty(\"fileHeader\")"
-    + "\n getProperty(\"fileContents\")"
-    + "\n\n getProperty(\"modelInfo\")"
-    + "\n\n getProperty(\"boundboxInfo\")"
-    + "\n getProperty(\"centerInfo\")"
-    + "\n getProperty(\"orientationInfo\")"
-    + "\n getProperty(\"transformInfo\")"
-    + "\n getProperty(\"zoomInfo\")"
-    + "";
-  }
-
-  public String getProperty(String infoType, String paramInfo) {
-
-    System.out.println("viewer.getProperty(\"" + infoType+"\", \"" + paramInfo + "\")");
-    
-    if(infoType.equalsIgnoreCase("fileContents")) {
-      if(paramInfo.length() > 0){
-        return getFileAsString(paramInfo);
-      }
-    }
-    if(infoType.equalsIgnoreCase("atomList")) {
-      if(paramInfo.length() > 0){
-        String str = getAtomBitSet(paramInfo).toString();
-        str = "[" + str.substring(1,str.length()-1) + "]";
-        return "{\"atomList\": " + str + "}";
-      }
-    }    
-    if(infoType.equalsIgnoreCase("atomInfo")) {
-      if(paramInfo.length() > 0){
-        String str = getJSONAtomBitSetDetail(paramInfo);
-        return "{\"atomInfo\":" + str + "}";
-      }
-    }
-    if(infoType.equalsIgnoreCase("bondInfo")) {
-      if(paramInfo.length() > 0){
-        String str = getJSONBondDetail(paramInfo);
-        return "{\"bondInfo\":" + str + "}";
-      }
-    }
-    if(infoType.equalsIgnoreCase("extractModel")) {
-      if(paramInfo.length() > 0){
-        String str = getModelExtract(paramInfo);
-        return str;
-      }
-    }
-    return "getProperty ERROR\n\nOptions include "
-    + "\n getProperty(\"fileContents\",\"<pathname>\")"
-    + "\n getProperty(\"atomList\",\"<atom selection>\")"
-    + "\n getProperty(\"atomInfo\",\"<atom selection>\")"
-    + "\n getProperty(\"bondInfo\",\"<atom selection>\")"
-    + "\n getProperty(\"extractModel\",\"<atom selection>\")"
-    + "";
-  }
-
-  String getJSONAtomBitSetDetail(String atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getJSONAtomInfoFromBitSet(bs,("pdb" == getModelSetTypeName()));
+  public String getJSONProperty(String infoType) {
+    return propertyManager.getJSONProperty(infoType);
   }
   
-  String getJSONBondDetail(String atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getJSONBondInfoFromBitSet(bs);
-  }
-
-  String getJSONOrientationInfo() {
-    return transformManager.getJSONOrientation();
-  }
-
-  String getModelInfo() {
-    int modelCount = getModelCount();
-    String str =  "model count = " + modelCount +
-                 "\nmodelSetHasVibrationVectors:" +
-                 modelSetHasVibrationVectors();
-    Properties props = getModelSetProperties();
-    str = str.concat(listProperties(props));
-    for (int i = 0; i < modelCount; ++i) {
-      str = str.concat("\n" + i + ":" + getModelNumber(i) +
-                 ":" + getModelName(i) +
-                 "\nmodelHasVibrationVectors:" +
-                 modelHasVibrationVectors(i));
-      str = str.concat(listProperties(getModelProperties(i)));
-    }
-    return str;
-  }
-  
-  String getModelInfoJSON() {
-    String sep = "";
-    int modelCount = getModelCount();
-    String str = "\"modelCount\": " + modelCount +
-                 ",\"modelSetHasVibrationVectors\": " +
-                 modelSetHasVibrationVectors();
-    Properties props = getModelSetProperties();
-    str = str.concat(listPropertiesJSON(props));
-    str = str.concat(",\"models\":[");
-    for (int i = 0; i < modelCount; ++i) {
-      str = str.concat(sep + "{\"ipt\":" + i + ",\"num\":" + getModelNumber(i) +
-                 ",\"name\":\"" + getModelName(i).replaceAll("\"","'") + "\"" +
-                 ",\"vibrationVectors\":" +
-                 modelHasVibrationVectors(i) + "}");
-      sep = ",";
-      str = str.concat(listPropertiesJSON(getModelProperties(i)));
-    }
-    str = str.concat("]");
-    return "{" + str + "}";
-  }
-
-  String listPropertiesJSON(Properties props) {
-    String str = "";
-    String sep = ",";
-    if (props == null) {
-      return "";
-    }
-    Enumeration e = props.propertyNames();
-    while (e.hasMoreElements()) {
-      String propertyName = (String)e.nextElement();
-      str = str.concat(sep + "\"" + propertyName + "\":\"" +
-                 props.getProperty(propertyName) + "\"");
-    }    
-    return str;
-  }
-  
-  String toJSON(String info){
-    String str = info.replaceAll("\\(","[");
-    str = str.replaceAll("\\)","]");
-    str = str.replaceAll("\\t",",");
-    str = str.replaceAll("\\]\\s*\\[","],[");
-    return str;
+  public String getJSONProperty(String infoType, String paramInfo) {
+    return propertyManager.getJSONProperty(infoType, paramInfo);
   }
 }
-

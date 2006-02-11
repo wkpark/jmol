@@ -185,12 +185,16 @@ class RepaintManager {
     }
   }
 
+  /*
   void forceRefresh() {
+    System.out.println("repaintManager.forceRefresh");
     repaintPending = true;
     viewer.awtComponent.repaint();
   }
+  */
 
   void refresh() {
+    //System.out.println("repaintManager.refresh");
     if (repaintPending)
       return;
     repaintPending = true;
@@ -209,6 +213,7 @@ class RepaintManager {
 
   synchronized void notifyRepainted() {
     repaintPending = false;
+    //System.out.println("RepaintManager.NotifyRepainted");
     notify();
   }
 

@@ -185,7 +185,9 @@ public class Jmol extends JPanel {
     say(GT._("Initializing AtomSetChooser Window..."));
     atomSetChooser = new AtomSetChooser(viewer, frame);
 
-    viewer.setJmolStatusListener(new MyJmolStatusListener());
+    MyStatusListener myStatusListener;
+    myStatusListener = new MyStatusListener();
+    viewer.setJmolStatusListener(myStatusListener);
 
     say(GT._("Initializing Measurements..."));
     measurementTable = new MeasurementTable(viewer, frame);
@@ -1336,7 +1338,8 @@ public class Jmol extends JPanel {
     }
   }
 
-  class MyJmolStatusListener implements JmolStatusListener {
+  class MyStatusListener implements JmolStatusListener {
+    
     public void notifyFileLoaded(String fullPathName, String fileName,
                                  String modelName, Object clientFile,
                                  String errorMsg) {
@@ -1372,6 +1375,10 @@ public class Jmol extends JPanel {
       System.out.println("setStatusMessage:" + statusMessage);
     }
 
+    public void setStatusMessage(String statusMessage, String additionalInfo) {
+      System.out.println("setStatusMessage:" + statusMessage + " :: " + additionalInfo);
+    }
+    
     public void scriptEcho(String strEcho) {
       if (scriptWindow != null)
         scriptWindow.scriptEcho(strEcho);
@@ -1391,7 +1398,11 @@ public class Jmol extends JPanel {
       jmolpopup.show(x, y);
     }
 
-    public void notifyMeasurementsChanged() {
+    public void notifyMeasureSelection(int iatom, String strMeasure) {
+      
+    }
+
+    public void notifyMeasurementsChanged(int count, String strInfo) {
       measurementTable.updateTables();
     }
 
@@ -1411,6 +1422,7 @@ public class Jmol extends JPanel {
       else
         scriptWindow.hide();
     }
+    
   }
 
   class ExecuteScriptAction extends AbstractAction {

@@ -63,11 +63,27 @@ public class JmolApplet
 
   };
 
-  public String getProperty(String infoType) {
+  public String getStringProperty(String infoType) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getStringProperty(infoType));
+  }
+
+  public String getStringProperty(String infoType, String paramInfo) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getStringProperty(infoType, paramInfo));
+  }
+
+  public String getJSONProperty(String infoType) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getJSONProperty(infoType));
+  }
+
+  public String getJSONProperty(String infoType, String paramInfo) {
+    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getJSONProperty(infoType, paramInfo));
+  }
+
+  public Object getProperty(String infoType) {
     return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(infoType));
   }
 
-  public String getProperty(String infoType, String paramInfo) {
+  public Object getProperty(String infoType, String paramInfo) {
     return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(infoType, paramInfo));
   }
 

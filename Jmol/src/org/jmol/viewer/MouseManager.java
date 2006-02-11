@@ -436,6 +436,7 @@ mol is a collaboratively developed visualization an    return ROTATE;
   void mouseWheel(long time, int rotation, int modifiers) {
     hoverOff();
     timeCurrent = time;
+    //System.out.println("mouseWheel time:" + time + " rotation:" + rotation + " modifiers:" + modifiers);
     if (rotation == 0)
       return;
     if ((modifiers & BUTTON_MODIFIER_MASK) == 0) {

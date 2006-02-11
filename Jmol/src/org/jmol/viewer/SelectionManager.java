@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.api.JmolSelectionListener;
 import java.util.BitSet;
+import java.util.Vector;
 
 class SelectionManager {
 
@@ -207,5 +208,28 @@ class SelectionManager {
       if (listener != null)
         listeners[i].selectionChanged(bsSelection);
     }
+  }
+  
+  BitSet getAtomBitSet(String atomExpression) {
+    Eval e = new Eval(viewer);;
+    
+    BitSet bs = new BitSet();
+    try {
+      bs = e.getAtomBitSet(atomExpression);
+    } catch (Exception ex) {
+      System.out.println("getAtomBitSet " + atomExpression);
+      System.out.println(ex);
+      return bs;
+    }
+    return bs;  
+  }
+
+  Vector getAtomBitSetVector(String atomExpression) {
+    Vector V = new Vector();
+    BitSet bs = getAtomBitSet(atomExpression);
+    int atomCount = viewer.getAtomCount();
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i)) V.add(new Integer(i));
+    return V;
   }
 }

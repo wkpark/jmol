@@ -1,4 +1,4 @@
-/* $RCSfile$
+  /* $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
@@ -27,7 +27,7 @@
  * JmolApplet in applet tags without having to give a full package
  * specification
  *
- * see org.jmol.applet.JmolApplet
+ * see org.jmol.applet.Jmol
  *
  */
 

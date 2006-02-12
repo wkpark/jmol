@@ -182,7 +182,7 @@ class StatusManager {
       int intInfo, Object statusInfo, boolean isReplace) {
     if (callbackList != "all" && callbackList.indexOf(statusName) < 0)
       return;
-    System.out.println(statusName +"----"+ callbackList);
+    //System.out.println(statusName +"----"+ callbackList);
     callbackptr++;
     Vector statusRecordSet;
     Vector msgRecord = new Vector();

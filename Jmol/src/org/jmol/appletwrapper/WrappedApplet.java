@@ -31,10 +31,6 @@ public interface WrappedApplet {
   public void setAppletWrapper(AppletWrapper appletWrapper);
   public void init();
   public String getAppletInfo();
-  public String getPropertyAsString(String infoType);
-  public String getPropertyAsString(String infoType, String paramInfo);
-  public String getPropertyAsJSON(String infoType);
-  public String getPropertyAsJSON(String infoType, String paramInfo);
   public void update(Graphics g);
   public void paint(Graphics g);
   public boolean handleEvent(Event e);
@@ -46,5 +42,11 @@ public interface WrappedApplet {
   public void loadInline(String strModel, String script);
   public void loadNodeId(String nodeId);
   public void loadDOMNode(JSObject DOMNode);
+  public Object getProperty(String infoType);
+  public Object getProperty(String infoType, String paramInfo);
+  public String getPropertyAsString(String infoType);
+  public String getPropertyAsString(String infoType, String paramInfo);
+  public String getPropertyAsJSON(String infoType);
+  public String getPropertyAsJSON(String infoType, String paramInfo);
 
 }

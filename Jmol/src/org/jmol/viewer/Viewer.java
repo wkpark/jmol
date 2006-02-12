@@ -25,7 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
-import org.jmol.i18n.GT;
 
 import java.awt.Graphics;
 import java.awt.Image;

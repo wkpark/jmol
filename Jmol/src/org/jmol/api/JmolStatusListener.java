@@ -25,9 +25,8 @@
 package org.jmol.api;
 
 public interface JmolStatusListener {
-/**
- * 
- * These methods specoifically provide notification from 
+/*
+ * These methods specifically provide notification from 
  * Viewer.StatusManager to the two main classes, applet or app.
  * so that they can handle them slightly differently. This might be
  * a callback for the applet, for example, but not for the app.

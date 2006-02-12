@@ -928,11 +928,11 @@ final public class Viewer extends JmolViewer {
     // only used from a script, so I do not think a refresh() is necessary
   }
 
-  public BitSet getSelectionSet() {
+  BitSet getSelectionSet() {
     return selectionManager.bsSelection;
   }
 
-    int getSelectionCount() {
+  int getSelectionCount() {
     return selectionManager.getSelectionCount();
   }
 
@@ -1083,14 +1083,14 @@ final public class Viewer extends JmolViewer {
     return null;
   }
 
-  public String getCurrentFileAsString() {
+  String getCurrentFileAsString() {
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
     return fileManager.getFileAsString(pathName);
   }
 
-  public String getFileAsString(String pathName) {
+  String getFileAsString(String pathName) {
     return fileManager.getFileAsString(pathName);
   }
 
@@ -1241,7 +1241,7 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelCount();
   }
 
-  public String getModelInfo() {
+  String getModelInfo() {
     return modelManager.getModelInfo();
   }
 
@@ -2100,7 +2100,7 @@ final public class Viewer extends JmolViewer {
     statusManager.showUrl(urlString);
   }
 
-  public void showConsole(boolean showConsole) {
+  void showConsole(boolean showConsole) {
     statusManager.showConsole(showConsole);
   }
 

@@ -824,7 +824,7 @@ class Eval implements Runnable {
     return copy;
   }
 
-  public BitSet getAtomBitSet(String atomExpression) throws ScriptException {
+  BitSet getAtomBitSet(String atomExpression) throws ScriptException {
     BitSet bs = new BitSet();
     if(!loadScript(null, "select (" + atomExpression + ")")) return bs;
     bs = expression(aatoken[0],1);

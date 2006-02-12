@@ -43,7 +43,7 @@ class PatternMatcher {
   /**
    * @param viewer
    */
-  public PatternMatcher(Viewer viewer) {
+  PatternMatcher(Viewer viewer) {
     this.frame = viewer.getFrame();
     this.atomCount = viewer.getAtomCount(); 
   }
@@ -53,7 +53,7 @@ class PatternMatcher {
    * @return BitSet indicating which atoms match the pattern
    * @throws InvalidSmilesException
    */
-  public BitSet getSubstructureSet(String smiles) throws InvalidSmilesException {
+  BitSet getSubstructureSet(String smiles) throws InvalidSmilesException {
     SmilesParser parser = new SmilesParser();
     SmilesMolecule pattern = parser.parseSmiles(smiles);
     return getSubstructureSet(pattern);
@@ -63,7 +63,7 @@ class PatternMatcher {
    * @param pattern SMILES pattern
    * @return BitSet indicating which atoms match the pattern
    */
-  public BitSet getSubstructureSet(SmilesMolecule pattern) {
+  BitSet getSubstructureSet(SmilesMolecule pattern) {
     BitSet bsSubstructure = new BitSet();
     searchMatch(bsSubstructure, pattern, 0);
     return bsSubstructure;

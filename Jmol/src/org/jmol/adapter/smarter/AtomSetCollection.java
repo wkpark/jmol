@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -98,7 +99,15 @@ class AtomSetCollection {
     int clonedAtoms = 0;
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
-      setAtomSetName(collection.atomSetNames[atomSetNum]);
+      setAtomSetName(collection.getAtomSetName(atomSetNum));
+      Properties properties = collection.getAtomSetProperties(atomSetNum);
+      if (properties != null) {
+        Enumeration props = properties.keys();
+        while ((props != null) && (props.hasMoreElements())) {
+          String key = (String) props.nextElement();
+          setAtomSetProperty(key, properties.getProperty(key));
+        }
+      }
       for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
         newCloneAtom(collection.atoms[clonedAtoms]);
         clonedAtoms++;

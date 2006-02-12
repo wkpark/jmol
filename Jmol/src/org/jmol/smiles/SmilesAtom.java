@@ -25,7 +25,7 @@
 package org.jmol.smiles;
 
 /**
- * Atom in a SmilesMolecule
+ * This class represents an atom in a <code>SmilesMolecule</code>.
  */
 public class SmilesAtom {
 
@@ -43,17 +43,35 @@ public class SmilesAtom {
 
   private final static int INITIAL_BONDS = 4;
 
+  /**
+   * Constant used for default chirality.
+   */
   public final static String DEFAULT_CHIRALITY = "";
+  /**
+   * Constant used for Allene chirality.
+   */
   public final static String CHIRALITY_ALLENE = "AL";
+  /**
+   * Constant used for Octahedral chirality.
+   */
   public final static String CHIRALITY_OCTAHEDRAL = "OH";
+  /**
+   * Constant used for Square Planar chirality.
+   */
   public final static String CHIRALITY_SQUARE_PLANAR = "SP";
+  /**
+   * Constant used for Tetrahedral chirality.
+   */
   public final static String CHIRALITY_TETRAHEDRAL = "TH";
+  /**
+   * Constant used for Trigonal Bipyramidal chirality.
+   */
   public final static String CHIRALITY_TRIGONAL_BIPYRAMIDAL = "TB";
 
   /**
-   * SmilesAtom constructor
+   * Constructs a <code>SmilesAtom</code>.
    * 
-   * @param number Atom number in the molecule 
+   * @param number Atom number in the molecule. 
    */
   public SmilesAtom(int number) {
     this.number = number;
@@ -69,9 +87,9 @@ public class SmilesAtom {
   }
 
   /**
-   * Creates missing hydrogen
+   * Creates missing hydrogen atoms in a <code>SmilesMolecule</code>.
    * 
-   * @param molecule Molecule containing the atom
+   * @param molecule Molecule containing the atom.
    */
   public void createMissingHydrogen(SmilesMolecule molecule) {
   	// Determing max count
@@ -128,70 +146,160 @@ public class SmilesAtom {
     }
   }
 
+  /**
+   * Returns the atom number of the atom.
+   * 
+   * @return Atom number.
+   */
   public int getNumber() {
     return number;
   }
 
+  /**
+   * Returns the symbol of the atom.
+   * 
+   * @return Atom symbol.
+   */
   public String getSymbol() {
     return symbol;
   }
 
+  /**
+   * Sets the symbol of the atm.
+   * 
+   * @param symbol Atom symbol.
+   */
   public void setSymbol(String symbol) {
     this.symbol = (symbol != null) ? symbol.intern() : null;
   }
 
+  /**
+   * Returns the atomic mass of the atom.
+   * 
+   * @return Atomic mass.
+   */
   public int getAtomicMass() {
     return atomicMass;
   }
 
+  /**
+   * Sets the atomic mass of the atom.
+   * 
+   * @param mass Atomic mass.
+   */
   public void setAtomicMass(int mass) {
     this.atomicMass = mass;
   }
 
+  /**
+   * Returns the charge of the atom.
+   * 
+   * @return Charge.
+   */
   public int getCharge() {
     return charge;
   }
 
+  /**
+   * Sets the charge of the atom.
+   * 
+   * @param charge Charge.
+   */
   public void setCharge(int charge) {
     this.charge = charge;
   }
 
+  /**
+   * Returns the number of a matching atom in a molecule.
+   * This value is temporary, it is used during the pattern matching algorithm.
+   * 
+   * @return matching atom.
+   */
   public int getMatchingAtom() {
     return matchingAtom;
   }
 
+  /**
+   * Sets the number of a matching atom in a molecule.
+   * This value is temporary, it is used during the pattern matching algorithm.
+   * 
+   * @param atom Temporary: number of a matching atom in a molecule.
+   */
   public void setMatchingAtom(int atom) {
     this.matchingAtom = atom;
   }
 
+  /**
+   * Returns the chiral class of the atom.
+   * (see <code>CHIRALITY_...</code> constants)
+   * 
+   * @return Chiral class.
+   */
   public String getChiralClass() {
     return chiralClass;
   }
 
+  /**
+   * Sets the chiral class of the atom.
+   * (see <code>CHIRALITY_...</code> constants)
+   * 
+   * @param chiralClass Chiral class.
+   */
   public void setChiralClass(String chiralClass) {
     this.chiralClass = (chiralClass != null) ? chiralClass.intern() : null;
   }
 
+  /**
+   * Returns the chiral order of the atom.
+   * 
+   * @return Chiral order.
+   */
   public int getChiralOrder() {
     return chiralOrder;
   }
 
+  /**
+   * Sets the chiral order of the atom.
+   * 
+   * @param chiralOrder Chiral order.
+   */
   public void setChiralOrder(int chiralOrder) {
     this.chiralOrder = chiralOrder;
   }
 
+  /**
+   * Returns the number of hydrogen atoms bonded with this atom.
+   * 
+   * @return Number of hydrogen atoms.
+   */
   public int getHydrogenCount() {
     return hydrogenCount;
   }
 
+  /**
+   * Sets the number of hydrogen atoms bonded with this atom.
+   * 
+   * @param count Number of hydrogen atoms.
+   */
   public void setHydrogenCount(int count) {
     this.hydrogenCount = count;
   }
 
+  /**
+   * Returns the number of bonds of this atom.
+   * 
+   * @return Number of bonds.
+   */
   public int getBondsCount() {
     return bondsCount;
   }
 
+  /**
+   * Returns the bond at index <code>number</code>.
+   * 
+   * @param number Bond number.
+   * @return Bond.
+   */
   public SmilesBond getBond(int number) {
     if ((number >= 0) && (number < bondsCount)) {
       return bonds[number];
@@ -199,6 +307,11 @@ public class SmilesAtom {
     return null;
   }
   
+  /**
+   * Add a bond to the atom.
+   * 
+   * @param bond Bond to add.
+   */
   public void addBond(SmilesBond bond) {
     if (bondsCount >= bonds.length) {
       SmilesBond[] tmp = new SmilesBond[bonds.length * 2];

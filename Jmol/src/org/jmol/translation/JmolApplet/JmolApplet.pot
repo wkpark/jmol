@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-06 22:45+0100\n"
+"POT-Creation-Date: 2006-02-12 14:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,11 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: org/jmol/applet/Jmol.java:465
-msgid "Jmol executing script ..."
-msgstr ""
-
-#: org/jmol/applet/Jmol.java:470
+#: org/jmol/applet/Jmol.java:447
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -30,11 +26,11 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:574
+#: org/jmol/applet/Jmol.java:555
 msgid "File Error:"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:611
+#: org/jmol/applet/Jmol.java:593
 msgid "Jmol script completed"
 msgstr ""
 
@@ -963,4 +959,8 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
+msgstr ""
+
+#: org/jmol/viewer/StatusManager.java:126
+msgid "Jmol executing script ..."
 msgstr ""

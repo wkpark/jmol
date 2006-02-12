@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-06 22:45+0100\n"
+"POT-Creation-Date: 2006-02-12 14:59+0100\n"
 "PO-Revision-Date: 2005-12-20 07:44-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -17,11 +17,7 @@ msgstr ""
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:465
-msgid "Jmol executing script ..."
-msgstr "Jmol está a executar o script..."
-
-#: org/jmol/applet/Jmol.java:470
+#: org/jmol/applet/Jmol.java:447
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -33,11 +29,11 @@ msgstr ""
 "Jmol Applet. Parte do projecto OpenScience. Visite http://www.jmol.org para "
 "mais informação"
 
-#: org/jmol/applet/Jmol.java:574
+#: org/jmol/applet/Jmol.java:555
 msgid "File Error:"
 msgstr "Erro no ficheiro..."
 
-#: org/jmol/applet/Jmol.java:611
+#: org/jmol/applet/Jmol.java:593
 msgid "Jmol script completed"
 msgstr "Script Jmol completo"
 
@@ -967,6 +963,10 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
 msgstr ""
+
+#: org/jmol/viewer/StatusManager.java:126
+msgid "Jmol executing script ..."
+msgstr "Jmol está a executar o script..."
 
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "

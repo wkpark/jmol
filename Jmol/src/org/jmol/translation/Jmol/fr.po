@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-02 18:20+0100\n"
-"PO-Revision-Date: 2005-10-08 19:30+0100\n"
+"POT-Creation-Date: 2006-02-12 14:59+0100\n"
+"PO-Revision-Date: 2006-02-12 15:02+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,10 @@ msgstr ""
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Basepath: ../../../..\n"
+
+#: org/jmol/viewer/StatusManager.java:126
+msgid "Jmol executing script ..."
+msgstr "Exécution du script par Jmol..."
 
 #: org/openscience/jmol/app/AboutDialog.java:56
 #: org/openscience/jmol/app/GuiMap.java:154
@@ -551,7 +555,7 @@ msgid "What's New"
 msgstr "Les Nouveautés"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/Jmol.java:465
+#: org/openscience/jmol/app/Jmol.java:467
 msgid "Jmol Console"
 msgstr "Console Jmol"
 
@@ -627,8 +631,7 @@ msgstr "Qualité JPEG"
 
 #: org/openscience/jmol/app/Jmol.java:127
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr ""
-"Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
+msgstr "Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
 
 #: org/openscience/jmol/app/Jmol.java:156
 msgid "Initializing 3D display..."
@@ -650,96 +653,95 @@ msgstr "Initialisation de la fenêtre de script..."
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Initialisation de la fenêtre AtomSetChooser..."
 
-#: org/openscience/jmol/app/Jmol.java:190
+#: org/openscience/jmol/app/Jmol.java:192
 msgid "Initializing Measurements..."
 msgstr "Initialisation des mesures..."
 
-#: org/openscience/jmol/app/Jmol.java:211
+#: org/openscience/jmol/app/Jmol.java:213
 msgid "Building Command Hooks..."
 msgstr "Construction des Commandes..."
 
-#: org/openscience/jmol/app/Jmol.java:220
+#: org/openscience/jmol/app/Jmol.java:222
 msgid "Building Menubar..."
 msgstr "Construction du Menu..."
 
-#: org/openscience/jmol/app/Jmol.java:236
+#: org/openscience/jmol/app/Jmol.java:238
 msgid "Starting display..."
 msgstr "Début de l'affichage..."
 
-#: org/openscience/jmol/app/Jmol.java:239
+#: org/openscience/jmol/app/Jmol.java:241
 msgid "Setting up File Choosers..."
 msgstr "Installation des Sélecteurs de fichier..."
 
-#: org/openscience/jmol/app/Jmol.java:291
+#: org/openscience/jmol/app/Jmol.java:293
 msgid "Setting up Drag-and-Drop..."
 msgstr "Initialisation du Glisser-Déplacer"
 
-#: org/openscience/jmol/app/Jmol.java:317
+#: org/openscience/jmol/app/Jmol.java:319
 msgid "Launching main frame..."
 msgstr "Affichage de la frame principale..."
 
-#: org/openscience/jmol/app/Jmol.java:326
+#: org/openscience/jmol/app/Jmol.java:328
 msgid "Creating main window..."
 msgstr "Création de la fenêtre principale..."
 
-#: org/openscience/jmol/app/Jmol.java:327
+#: org/openscience/jmol/app/Jmol.java:329
 msgid "Initializing Swing..."
 msgstr "Initialisation de Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:337
+#: org/openscience/jmol/app/Jmol.java:339
 msgid "Initializing Jmol..."
 msgstr "Initialisation de Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:355
+#: org/openscience/jmol/app/Jmol.java:357
 msgid "give this help page"
 msgstr "affiche cette page d'aide"
 
-#: org/openscience/jmol/app/Jmol.java:363
+#: org/openscience/jmol/app/Jmol.java:365
 msgid "property=value"
 msgstr "propriété=valeur"
 
-#: org/openscience/jmol/app/Jmol.java:366
+#: org/openscience/jmol/app/Jmol.java:368
 msgid "supported options are given below"
 msgstr "les options supportées sont données ci-dessous"
 
-#: org/openscience/jmol/app/Jmol.java:370
+#: org/openscience/jmol/app/Jmol.java:372
 msgid "window size 500x500"
 msgstr "taille fenêtre 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:389
+#: org/openscience/jmol/app/Jmol.java:391
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
-"Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
+msgstr "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
-#: org/openscience/jmol/app/Jmol.java:453
+#: org/openscience/jmol/app/Jmol.java:455
 msgid "Executing script..."
 msgstr "Exécution du script..."
 
-#: org/openscience/jmol/app/Jmol.java:477
+#: org/openscience/jmol/app/Jmol.java:479
 msgid "Could not create ConsoleTextArea: "
 msgstr "Impossible de créer la ConsoleTextArea:"
 
-#: org/openscience/jmol/app/Jmol.java:551
+#: org/openscience/jmol/app/Jmol.java:553
 msgid "Closing Jmol..."
 msgstr "Fermeture de Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:787
+#: org/openscience/jmol/app/Jmol.java:789
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1091
+#: org/openscience/jmol/app/Jmol.java:1093
 msgid "Open URL"
 msgstr "Ouvrir une URL"
 
-#: org/openscience/jmol/app/Jmol.java:1092
+#: org/openscience/jmol/app/Jmol.java:1094
 msgid "Enter URL of molecular model"
 msgstr "Saisissez l'URL d'un modèle moléculaire"
 
-#: org/openscience/jmol/app/Jmol.java:1179
+#: org/openscience/jmol/app/Jmol.java:1181
 msgid "IO Exception:"
 msgstr "Exception E/S!"
 
-#: org/openscience/jmol/app/Jmol.java:1346
+#: org/openscience/jmol/app/Jmol.java:1349
 msgid "File not loaded"
 msgstr "Fichier non chargé"
 
@@ -772,12 +774,8 @@ msgid "Filename Stem"
 msgstr "Racine du nom de fichier"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -813,9 +811,7 @@ msgstr "Calculer toutes les images"
 
 #: org/openscience/jmol/app/PovrayDialog.java:223
 msgid "Render each model (not only the currently displayed one)"
-msgstr ""
-"Crée une image pour chaque modèle (pas seulement pour celui actuellement "
-"affiché)"
+msgstr "Crée une image pour chaque modèle (pas seulement pour celui actuellement affiché)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:232
 msgid "Turn on POV-Ray anti-aliasing"
@@ -823,8 +819,7 @@ msgstr "Activer l'anti-aliasing de POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
+msgstr "Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -1148,3 +1143,4 @@ msgstr "Les nouveautés de Jmol"
 
 #~ msgid "Loading plugins..."
 #~ msgstr "Chargement des plugins..."
+

@@ -49,7 +49,7 @@ class RepaintManager {
     else
       displayModelIndex = modelIndex;
     this.displayModelIndex = modelIndex;
-    viewer.notifyFrameChanged(modelIndex);
+    viewer.setStatusFrameChanged(modelIndex);
     return true;
   }
 
@@ -211,9 +211,9 @@ class RepaintManager {
     }
   }
 
-  synchronized void notifyRepainted() {
+  synchronized void repaintView() {
     repaintPending = false;
-    //System.out.println("RepaintManager.NotifyRepainted");
+    //System.out.println("RepaintManager.repaintView");
     notify();
   }
 

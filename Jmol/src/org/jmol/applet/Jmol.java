@@ -54,7 +54,9 @@ import java.net.MalformedURLException;
  *  // this is *required* if you want the applet to be able to // call your
  * callbacks
  * 
- * mayscript="true" is required as an applet tag
+ * mayscript="true" is required as an applet tag (for true callbacks only)
+ * but this is being taken over by setTimeout() polling using getPropertyAsString()
+ * and getPropertyAsJSON() [JavaScript Object Notation]
  * 
  * [param name="AnimFrameCallback" value="yourJavaScriptMethodName" /] [param
  * name="LoadStructCallback" value="yourJavaScriptMethodName" /] [param
@@ -302,7 +304,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     if (REQUIRE_PROGRESSBAR && !hasProgressBar && paintCounter < 30
         && (paintCounter & 1) == 0) {
       printProgressbarMessage(g);
-      viewer.notifyRepainted();
+      viewer.repaintView();
     } else {
       viewer.renderScreenImage(g, size, rectClip);
     }
@@ -561,26 +563,17 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         jmolpopup.updateComputedMenus();
     }
 
-    public void setStatusMessage(String statusMessage) {
-      if (messageCallback != null && jsoWindow != null)
-        jsoWindow.call(messageCallback,
-            new Object[] { htmlName, statusMessage });
-      showStatusAndConsole(statusMessage);
-    }
-
-    public void setStatusMessage(String statusMessage, String additionalInfo) {
-      if (statusMessage == null)
-        return;
+    public void notifyScriptStart(String statusMessage, String additionalInfo) {
       if (messageCallback != null && jsoWindow != null)
         jsoWindow.call(messageCallback, new Object[] { htmlName, statusMessage,
             additionalInfo });
       showStatusAndConsole(statusMessage);
     }
 
-    public void notifyMeasureSelection(int iatom, String strMeasure) {
+    public void notifyNewPickingModeMeasurement(int iatom, String strMeasure) {
     }
 
-    public void notifyMeasurementsChanged(int count, String strInfo) {
+    public void notityNewDefaultModeMeasurement(int count, String strInfo) {
     }
 
     public void notifyFrameChanged(int frameNo) {
@@ -596,12 +589,6 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
             new Integer(atomIndex) });
     }
 
-    public void scriptStatus(String strStatus) {
-      if (messageCallback != null && jsoWindow != null)
-        jsoWindow.call(messageCallback, new Object[] { htmlName, strStatus });
-      consoleMessage(strStatus);
-    }
-
     public void notifyScriptTermination(String errorMessage, int msWalltime) {
       showStatusAndConsole(GT._("Jmol script completed"));
       if (buttonCallbackNotificationPending) {
@@ -611,7 +598,14 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       }
     }
 
-    public void scriptEcho(String strEcho) {
+    public void sendConsoleEcho(String strEcho) {
+      sendConsoleMessage(strEcho);
+    }
+
+    public void sendConsoleMessage(String strMsg) {
+      if (messageCallback != null && jsoWindow != null)
+        jsoWindow.call(messageCallback, new Object[] { htmlName, strMsg });
+      consoleMessage(strMsg);
     }
 
     public void handlePopupMenu(int x, int y) {

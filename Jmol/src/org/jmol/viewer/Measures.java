@@ -69,7 +69,7 @@ class Measures extends Shape {
                                                   measurementCount +
                                                   measurementGrowthIncrement);
     }
-    viewer.notifyMeasurementsChanged("measure" , measurementCount, measureNew.strMeasurement);
+    viewer.setStatusNewDefaultModeMeasurement("measureCompleted" , measurementCount, measureNew.strMeasurement);
     measurements[measurementCount++] = measureNew;
   }
   
@@ -111,7 +111,7 @@ class Measures extends Shape {
   void pending(int[] countPlusIndices) {
     pendingMeasurement.setCountPlusIndices(countPlusIndices);
     if (pendingMeasurement.count > 1)
-      viewer.notifyMeasurementsChanged("pending" , pendingMeasurement.count, pendingMeasurement.strMeasurement);
+      viewer.setStatusNewDefaultModeMeasurement("measurePending" , pendingMeasurement.count, pendingMeasurement.strMeasurement);
   }
 
   void setSize(int size, BitSet bsSelected) {

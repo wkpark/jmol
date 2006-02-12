@@ -99,13 +99,13 @@ public final class ScriptWindow extends JDialog
     buttonPanel.add(helpButton);
   }
 
-  public void scriptEcho(String strEcho) {
+  public void sendConsoleEcho(String strEcho) {
     if (strEcho != null) {
       console.outputEcho(strEcho);
     }
   }
 
-  public void scriptStatus(String strStatus) {
+  public void sendConsoleMessage(String strStatus) {
     if (strStatus != null) {
       console.outputStatus(strStatus);
     }

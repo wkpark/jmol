@@ -21,31 +21,41 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 package org.jmol.api;
 
 public interface JmolStatusListener {
-  public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName, Object clientFile,
-                               String errorMessage);
-
-  public void setStatusMessage(String statusMessage);
-  public void setStatusMessage(String statusMessage, String additionalInfo);
-  
-  public void scriptEcho(String strEcho);
-
-  public void scriptStatus(String strStatus);
-
-  public void notifyScriptTermination(String statusMessage, int msWalltime);
-
+/**
+ * 
+ * These methods specoifically provide notification from 
+ * Viewer.StatusManager to the two main classes, applet or app.
+ * so that they can handle them slightly differently. This might be
+ * a callback for the applet, for example, but not for the app.
+ * ALL viewer-type processing, including status queue writing
+ * has been done PRIOR to these functions being called.   Bob Hanson
+ * 
+ */
   public void handlePopupMenu(int x, int y);
 
-  public void notifyMeasurementsChanged(int count, String strInfo);
+  public void notifyAtomPicked(int atomIndex, String strInfo);
 
-  public void notifyMeasureSelection(int iatom, String strMeasure);
+  public void notifyFileLoaded(String fullPathName, String fileName,
+      String modelName, Object clientFile,
+      String errorMessage);
 
   public void notifyFrameChanged(int frameNo);
 
-  public void notifyAtomPicked(int atomIndex, String strInfo);
+  public void notityNewDefaultModeMeasurement(int count, String strInfo);
+
+  public void notifyNewPickingModeMeasurement(int iatom, String strMeasure);
+
+  public void notifyScriptStart(String statusMessage, String additionalInfo);
+  
+  public void notifyScriptTermination(String statusMessage, int msWalltime);
+
+  public void sendConsoleEcho(String strEcho);
+
+  public void sendConsoleMessage(String strStatus);
 
   public void showUrl(String url);
 

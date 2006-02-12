@@ -23,13 +23,19 @@
  */
 package org.jmol.viewer;
 
-import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.Vector;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+
+/**
+ * 
+ * The PropertyManager handles all operations relating to delivery of
+ * properties with the getProperty() method, or its specifically cast 
+ * forms getPropertyString() or getPropertyJSON().
+ *
+ */
 
 class PropertyManager {
 
@@ -52,33 +58,20 @@ class PropertyManager {
     String myParam = paramInfo;
 
     if(infoType.equalsIgnoreCase("fileContents")) {
-      if(myParam.length() > 0)
-        return viewer.getFileAsString(myParam);
+      if(iHaveParameter) return viewer.getFileAsString(myParam);
       return viewer.getCurrentFileAsString();
     }
 
+    // no second parameter here
+    
     if(infoType.equalsIgnoreCase("fileHeader"))
       return viewer.getFileHeader();      
 
     if(infoType.equalsIgnoreCase("fileName"))
       return viewer.getFullPathName();      
     
-    if(myParam.length() == 0) myParam = "all";
-
-    if(infoType.equalsIgnoreCase("atomList")) 
-      return viewer.getAtomBitSetVector(myParam);
-    
-    if(infoType.equalsIgnoreCase("atomInfo")) 
-      return viewer.getAtomBitSetDetail(myParam);
-    
-    if(infoType.equalsIgnoreCase("bondInfo")) 
-      return viewer.getBondDetail(myParam);
-    
-    if(infoType.equalsIgnoreCase("extractModel")) 
-      return viewer.getModelExtract(myParam);
-    
     if(infoType.equalsIgnoreCase("callbackStatus")) 
-       return viewer.getStatusChanged(myParam);
+      return viewer.getStatusChanged(myParam);
 
     if(infoType.equalsIgnoreCase("orientationInfo"))
       return viewer.getOrientationInfo();       
@@ -101,6 +94,21 @@ class PropertyManager {
       return "off";
     }
 
+
+    if(iHaveParameter) myParam = "all";
+
+    if(infoType.equalsIgnoreCase("atomList")) 
+      return viewer.getAtomBitSetVector(myParam);
+    
+    if(infoType.equalsIgnoreCase("atomInfo")) 
+      return viewer.getAtomBitSetDetail(myParam);
+    
+    if(infoType.equalsIgnoreCase("bondInfo")) 
+      return viewer.getBondDetail(myParam);
+    
+    if(infoType.equalsIgnoreCase("extractModel")) 
+      return viewer.getModelExtract(myParam);
+    
     return "getProperty ERROR\n\nOptions include\n"
     + "\n getProperty(\"fileName\")"
     + "\n getProperty(\"fileHeader\")"
@@ -130,9 +138,12 @@ class PropertyManager {
   }
   
   String toJSON (String infoType, Object info){
+
+    //System.out.println(infoType+" -- "+info);
+
     String str = "";
     String sep = "";
-    if (info instanceof String) 
+    if (info == null || info instanceof String) 
       return packageJSON (infoType, "\"" + fixString((String)info) + "\"");
     if (info instanceof Vector) {
       str = "[";
@@ -175,7 +186,7 @@ class PropertyManager {
      int ipt;
      int ipt0 = 0;
      int lfrom = strFrom.length();
-     if (lfrom == 0) return str;
+     if (str == null || lfrom == 0) return str;
      
      while ((ipt = str.indexOf(strFrom, ipt0)) >=0) {
        sout = str.substring(ipt0,ipt) + strTo;

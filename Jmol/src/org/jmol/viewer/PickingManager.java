@@ -51,7 +51,7 @@ class PickingManager {
     case JmolConstants.PICKING_OFF:
       break;
     case JmolConstants.PICKING_IDENT:
-      viewer.notifyAtomPicked(atomIndex);
+      viewer.setStatusAtomPicked(atomIndex, viewer.getAtomInfo(atomIndex));
       break;
     case JmolConstants.PICKING_DISTANCE:
       if (queuedAtomCount >= 2)
@@ -66,7 +66,7 @@ class PickingManager {
       +  " - "
       + viewer.getAtomInfo(queuedAtomIndexes[1])
       + " : " + distance;
-    viewer.notifyMeasureSelection(2,value);
+    viewer.setStatusNewPickingModeMeasurement(2,value);
       break;
     case JmolConstants.PICKING_ANGLE:
       if (queuedAtomCount >= 3)
@@ -84,7 +84,7 @@ class PickingManager {
       " - " +
       viewer.getAtomInfo(queuedAtomIndexes[2]) +
       " : " + angle;
-      viewer.notifyMeasureSelection(3,value);
+      viewer.setStatusNewPickingModeMeasurement(3,value);
       break;
     case JmolConstants.PICKING_TORSION:
       if (queuedAtomCount >= 4)
@@ -105,7 +105,7 @@ class PickingManager {
       " - " + 
       viewer.getAtomInfo(queuedAtomIndexes[3]) +
       " : " + torsion;
-      viewer.notifyMeasureSelection(4, value);
+      viewer.setStatusNewPickingModeMeasurement(4, value);
       break;
     case JmolConstants.PICKING_MONITOR:
       if (queuedAtomCount >= 2)
@@ -166,7 +166,7 @@ class PickingManager {
 
   void queueAtom(int atomIndex) {
     queuedAtomIndexes[queuedAtomCount++] = atomIndex;
-    viewer.scriptStatus("Atom #" + queuedAtomCount + ":" +
+    viewer.setStatusAtomPicked(atomIndex, "Atom #" + queuedAtomCount + ":" +
                         viewer.getAtomInfo(atomIndex));
   }
 }

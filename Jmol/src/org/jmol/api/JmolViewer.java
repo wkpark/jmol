@@ -21,6 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 package org.jmol.api;
 
 import java.awt.Component;
@@ -80,9 +81,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public Image getScreenImage();
   abstract public void releaseScreenImage();
-
-
-  abstract public void notifyRepainted();
 
   abstract public boolean handleOldJvm10Event(Event e);
 
@@ -244,11 +242,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public boolean showModelSetDownload();
   
-  abstract public void setStatusChanged(String statusName, int intInfo, Object statusInfo, boolean isReplace);
+  abstract public void repaintView();
 
   abstract public Object getProperty(String returnType, String infoType, String paramInfo);
   
-
-
 }
 

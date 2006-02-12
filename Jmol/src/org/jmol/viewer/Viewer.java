@@ -1016,23 +1016,23 @@ final public class Viewer extends JmolViewer {
   public void openStringInline(String strModel) {
      clear();
      fileManager.openStringInline(strModel);
-     setStatusMessage(getOpenFileError());
+     setStatusFileLoaded("inline", "",
+         modelManager.getModelSetName(), null, getOpenFileError());
    }
 
+  char inlineNewlineChar = '|';
   public void loadInline(String strModel) {
-    char inlineNewlineChar = '|';
-    if (strModel != null) {
-      if (inlineNewlineChar != 0) {
-        int len = strModel.length();
-        int i;
-        for (i = 0; i < len && strModel.charAt(0) == ' '; ++i) {
-        }
-        if (i < len && strModel.charAt(i) == inlineNewlineChar)
-          strModel = strModel.substring(i + 1);
-        strModel = strModel.replace(inlineNewlineChar, '\n');
+    if (strModel == null) return;
+    if (inlineNewlineChar != 0) {
+      int len = strModel.length();
+      int i;
+      for (i = 0; i < len && strModel.charAt(0) == ' '; ++i) {
       }
-      openStringInline(strModel);
+      if (i < len && strModel.charAt(i) == inlineNewlineChar)
+        strModel = strModel.substring(i + 1);
+      strModel = strModel.replace(inlineNewlineChar, '\n');
     }
+    openStringInline(strModel);    
   }
 
   public void openDOM(Object DOMNode) {
@@ -1041,7 +1041,8 @@ final public class Viewer extends JmolViewer {
     fileManager.openDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     System.out.println("openDOM " + ms + " ms");
-    setStatusMessage(getOpenFileError());
+    setStatusFileLoaded("openDOM", "",
+        modelManager.getModelSetName(), null, getOpenFileError());
   }
 
   /**
@@ -1073,12 +1074,12 @@ final public class Viewer extends JmolViewer {
     Object clientFile = fileManager.waitForClientFileOrErrorMessage();
     if (clientFile instanceof String || clientFile == null) {
       String errorMsg = (String) clientFile;
-      notifyFileNotLoaded(fullPathName, errorMsg);
+      setStatusFileNotLoaded(fullPathName, errorMsg);
       return errorMsg;
     }
     openClientFile(fullPathName, fileName, clientFile);
-    notifyFileLoaded(fullPathName, fileName,
-                     modelManager.getModelSetName(), clientFile);
+    setStatusFileLoaded(fullPathName, fileName,
+                     modelManager.getModelSetName(), clientFile, null);
     return null;
   }
 
@@ -1127,7 +1128,7 @@ final public class Viewer extends JmolViewer {
     modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
     clearMeasurements();
-    notifyFileLoaded(null, null, null, null);
+    setStatusFileLoaded(null, null, null, null, null);
     refresh();
   }
 
@@ -1622,15 +1623,15 @@ final public class Viewer extends JmolViewer {
   
   public void refresh() {
     repaintManager.refresh();
-    setStatusChanged("viewerRefresh", 0, "", true);
+    statusManager.setStatusViewerRefreshed();
   }
 
   void requestRepaintAndWait() {
     repaintManager.requestRepaintAndWait();
   }
 
-  public void notifyRepainted() {
-    repaintManager.notifyRepainted();
+  public void repaintView() {
+    repaintManager.repaintView();
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
@@ -1667,7 +1668,7 @@ final public class Viewer extends JmolViewer {
                             repaintManager.displayModelIndex);
       g3d.endRendering();
       if (stereoMode == JmolConstants.STEREO_REDCYAN)
-	g3d.applyCyanAnaglyph();
+        g3d.applyCyanAnaglyph();
       else 
         g3d.applyBlueOrGreenAnaglyph(stereoMode==JmolConstants.STEREO_REDBLUE);
       Image img = g3d.getScreenImage();
@@ -1679,7 +1680,7 @@ final public class Viewer extends JmolViewer {
       g3d.releaseScreenImage();
       break;
     }
-    notifyRepainted();
+    repaintView();
   }
 
   void render1(Graphics g, Matrix3f matrixRotate, 
@@ -1769,10 +1770,7 @@ final public class Viewer extends JmolViewer {
   public void script(String script) {  
     iscript++;
     String strError = evalString(script);
-    if (strError == null)
-      strError = GT._("Jmol executing script ...");
-    setStatusMessage(strError, script);
-    setStatusChanged("scriptStart", iscript, script, false);
+    setStatusScriptStarted(iscript, script, strError);
   }
 
   public boolean isScriptExecuting() {
@@ -2038,14 +2036,26 @@ final public class Viewer extends JmolViewer {
 
 ////////////////status manager dispatch//////////////
   
+  void setStatusAtomPicked(int atomIndex, String info) {
+    statusManager.setStatusAtomPicked(atomIndex, info);
+  }
+
+  void setStatusNewPickingModeMeasurement(int iatom, String strMeasure) {
+    statusManager.setStatusNewPickingModeMeasurement(iatom, strMeasure);
+  }
+  
+  void setStatusNewDefaultModeMeasurement(String status, int count, String strMeasure) {
+    statusManager.setStatusNewDefaultModeMeasurement(status, count, strMeasure);
+  }
+
+  void setStatusScriptStarted(int iscript, String script, String strError) {
+    statusManager.setStatusScriptStarted(iscript, script, strError);
+  }
+  
   Vector getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
   
-  public void setStatusChanged(String statusName, int intInfo, Object statusInfo, boolean isReplace) {
-    statusManager.setStatusChanged(statusName, intInfo, statusInfo, isReplace);
-  }    
-
   void popupMenu(int x, int y) {
     if (!disablePopupMenu) return;
     statusManager.popupMenu(x,y);
@@ -2055,18 +2065,18 @@ final public class Viewer extends JmolViewer {
     statusManager.setJmolStatusListener(jmolStatusListener);
   }
 
-  void notifyFrameChanged(int frameNo) {
-    statusManager.notifyFrameChanged(frameNo);
+  void setStatusFrameChanged(int frameNo) {
+    statusManager.setStatusFrameChanged(frameNo);
   }
 
-  void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName, Object clientFile) {
-    statusManager.notifyFileLoaded(fullPathName, fileName,
-                                          modelName, clientFile, null);
+  void setStatusFileLoaded(String fullPathName, String fileName,
+                               String modelName, Object clientFile, String strError) {
+    statusManager.setStatusFileLoaded(fullPathName, fileName,
+                                          modelName, clientFile, strError);
   }
 
-  void notifyFileNotLoaded(String fullPathName, String errorMsg) {
-    statusManager.notifyFileLoaded(fullPathName, null, null, null, errorMsg);
+  void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
+    statusManager.setStatusFileLoaded(fullPathName, null, null, null, errorMsg);
   }
 
   private void manageScriptTermination() {
@@ -2074,38 +2084,18 @@ final public class Viewer extends JmolViewer {
       String strErrorMessage = eval.getErrorMessage();
       int msWalltime = eval.getExecutionWalltime();
       eval.resetTerminationNotification();
-      statusManager.notifyScriptTermination(strErrorMessage, msWalltime);
+      statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
     }
   }
 
   void scriptEcho(String strEcho) {
-    statusManager.scriptEcho(strEcho);
+    statusManager.setScriptEcho(strEcho);
   }
 
   void scriptStatus(String strStatus) {
-    statusManager.scriptStatus(strStatus);
+    statusManager.setScriptStatus(strStatus);
   }
   
-  void notifyMeasureSelection(int iatom, String strMeasure) {
-    statusManager.notifyMeasureSelection(iatom, strMeasure);
-  }
-  
-  void notifyMeasurementsChanged(String status, int count, String strMeasure) {
-    statusManager.notifyMeasurementsChanged(status, count, strMeasure);
-  }
-
-  void notifyAtomPicked(int atomIndex) {
-    statusManager.notifyAtomPicked(atomIndex, modelManager.getAtomInfo(atomIndex));
-  }
-
-  void setStatusMessage(String statusMessage) {
-    statusManager.setStatusMessage(statusMessage);
-  }
-
-  void setStatusMessage(String statusMessage, String additionalInfo) {
-    statusManager.setStatusMessage(statusMessage, additionalInfo);
-  }
-
   public void showUrl(String urlString) {
     statusManager.showUrl(urlString);
   }

@@ -437,7 +437,7 @@ var _jmol = {
   
   windowsClassId: "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93",
   windowsCabUrl:
-   "http://java.sun.com/update/1.5.0/jinstall-1_5_0_05-windows-i586.cab",
+   "http://java.sun.com/update/1.5.0/jinstall-1_5_0_07-windows-i586.cab",
 
   isBrowserCompliant: false,
   isJavaCompliant: false,

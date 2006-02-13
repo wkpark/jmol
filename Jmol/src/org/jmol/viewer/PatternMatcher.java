@@ -33,7 +33,24 @@ import org.jmol.smiles.SmilesMolecule;
 import org.jmol.smiles.SmilesParser;
 
 /**
- * Pattern matching class for comparing Jmol molecule with SMILES pattern 
+ * A class to match a SMILES pattern with a Jmol molecule.
+ * <p>
+ * The SMILES specification can been found at the
+ * <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>.
+ * <p>
+ * An example on how to use it:
+ * <pre><code>
+ * PatternMatcher matcher = new PatternMatcher(jmolViewer);
+ * try {
+ *   BitSet bitSet = matcher.getSubstructureSet(smilesString);
+ *   // Use bitSet...
+ * } catch (InvalidSmilesException e) {
+ *   // Exception management
+ * }
+ * </code></pre>
+ * 
+ * @author Nicolas Vervelle
+ * @see org.jmol.smiles.SmilesMolecule
  */
 class PatternMatcher {
 
@@ -41,7 +58,9 @@ class PatternMatcher {
   private Frame frame = null;
 
   /**
-   * @param viewer
+   * Constructs a <code>PatternMatcher</code>.
+   * 
+   * @param viewer Jmol viewer.
    */
   PatternMatcher(Viewer viewer) {
     this.frame = viewer.getFrame();
@@ -49,9 +68,11 @@ class PatternMatcher {
   }
 
   /**
-   * @param smiles SMILES pattern
-   * @return BitSet indicating which atoms match the pattern
-   * @throws InvalidSmilesException
+   * Returns a vector of bits indicating which atoms match the pattern.
+   * 
+   * @param smiles SMILES pattern.
+   * @return BitSet Array indicating which atoms match the pattern.
+   * @throws InvalidSmilesException Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
   BitSet getSubstructureSet(String smiles) throws InvalidSmilesException {
     SmilesParser parser = new SmilesParser();
@@ -60,8 +81,10 @@ class PatternMatcher {
   }
 
   /**
-   * @param pattern SMILES pattern
-   * @return BitSet indicating which atoms match the pattern
+   * Returns a vector of bits indicating which atoms match the pattern.
+   * 
+   * @param pattern SMILES pattern.
+   * @return BitSet Array indicating which atoms match the pattern.
    */
   BitSet getSubstructureSet(SmilesMolecule pattern) {
     BitSet bsSubstructure = new BitSet();
@@ -70,11 +93,11 @@ class PatternMatcher {
   }
 
   /**
-   * Recursively search matches
+   * Recursively search matches.
    * 
-   * @param bs Resulting BitSet (each atom in a structure is set to 1)
-   * @param pattern SMILES pattern
-   * @param atomNum Current atom of the pattern
+   * @param bs Resulting BitSet (each atom in a structure is set to 1).
+   * @param pattern SMILES pattern.
+   * @param atomNum Current atom of the pattern.
    */
   private void searchMatch(BitSet bs, SmilesMolecule pattern, int atomNum) {
     //System.out.println("Begin match:" + atomNum);
@@ -104,6 +127,15 @@ class PatternMatcher {
     //System.out.println("End match:" + atomNum);
   }
   
+  /**
+   * Recursively search matches.
+   * 
+   * @param bs Resulting BitSet (each atom in a structure is set to 1).
+   * @param pattern SMILES pattern.
+   * @param patternAtom Atom of the pattern that is currently tested.
+   * @param atomNum Current atom of the pattern.
+   * @param i Atom number of the atom that is currently tested to match <code>patternAtom</code>.
+   */
   private void searchMatch(BitSet bs, SmilesMolecule pattern, SmilesAtom patternAtom, int atomNum, int i) {
     // Check that an atom is not used twice
     for (int j = 0; j < atomNum; j++) {

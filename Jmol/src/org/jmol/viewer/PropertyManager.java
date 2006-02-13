@@ -94,8 +94,7 @@ class PropertyManager {
       return "off";
     }
 
-
-    if(iHaveParameter) myParam = "all";
+    if(! iHaveParameter) myParam = "all";
 
     if(infoType.equalsIgnoreCase("atomList")) 
       return viewer.getAtomBitSetVector(myParam);

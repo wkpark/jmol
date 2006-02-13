@@ -698,7 +698,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         viewer.setColorVector(colorVector);
         currentProperties.put("colorVector",
             Integer.toString(colorVector.getRGB()));
-        viewer.refresh();
+        viewer.refresh(0, "PreferencesDialog:actionPerformed()");
       }
     };
     vButton.addActionListener(startVectorChooser);
@@ -727,7 +727,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         viewer.setColorMeasurement(colorMeasurement);
         currentProperties.put("colorMeasurement",
             Integer.toString(colorMeasurement.getRGB()));
-        viewer.refresh();
+        viewer.refresh(0, "PreferencesDialog:actionPerformed()");
       }
     };
     measurementColorButton.addActionListener(startMeasurementColorChooser);
@@ -941,7 +941,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     } catch (Exception e) {
       System.out.println("Error saving preferences" + e);
     }
-    viewer.refresh();
+    viewer.refresh(0, "PreferencesDialog:save()");
   }
 
   void initializeProperties() {
@@ -967,7 +967,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put(overrides[i], overrides[i+1]);
     }
     initVariables();
-    viewer.refresh();
+    viewer.refresh(0, "PreferencesDialog:resetDefaults()");
     updateComponents();
   }
 

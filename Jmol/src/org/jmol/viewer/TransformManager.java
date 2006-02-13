@@ -187,6 +187,7 @@ class TransformManager {
     info.put("moveTo", getMoveToText());
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
+    info.put("zoom",new Integer(zoomPercent));
     return info;    
   }
 
@@ -992,7 +993,7 @@ class TransformManager {
         int sleepTime = targetTime - currentTime;
         if (sleepTime > 0) {
           if (refreshNeeded)
-            viewer.refresh();
+            viewer.refresh(0, "TransformationManager:SpinThread:run()");
           try {
             Thread.sleep(sleepTime);
           } catch (InterruptedException e) {
@@ -1050,7 +1051,7 @@ class TransformManager {
           elapsed = (int)(currentTime - startTime);
           float t = (float)(elapsed % vibrationPeriodMs) / vibrationPeriodMs;
           setVibrationT(t);
-          viewer.refresh();
+          viewer.refresh(0, "TransformationManager:VibrationThread:run()");
         } while (! isInterrupted());
       } catch (InterruptedException ie) {
       }

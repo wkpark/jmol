@@ -130,6 +130,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   public void init() {
     htmlName = getParameter("name");
+    if(htmlName == null)htmlName = getParameter("id");
 
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
@@ -437,7 +438,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     script(script);
   }
 
-  public void script(String script) {
+  synchronized public void script(String script) {
     viewer.script(script);
   }   
   
@@ -448,26 +449,26 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
             new Object[] { JmolConstants.version, JmolConstants.date });
   }
 
-  public Object getProperty(String infoType) {
+  synchronized public Object getProperty(String infoType) {
     return viewer.getProperty(null, infoType, "");
   }
 
-  public Object getProperty(String infoType, String paramInfo) {
+  synchronized public Object getProperty(String infoType, String paramInfo) {
     return viewer.getProperty(null, infoType, paramInfo);
   }
 
-  public String getPropertyAsString(String infoType) {
+  synchronized public String getPropertyAsString(String infoType) {
     return viewer.getProperty("String", infoType, "").toString();
   }
-  public String getPropertyAsString(String infoType, String paramInfo) {
+  synchronized public String getPropertyAsString(String infoType, String paramInfo) {
     return viewer.getProperty("String",infoType, paramInfo).toString();
   }
 
-  public String getPropertyAsJSON(String infoType) {
+  synchronized public String getPropertyAsJSON(String infoType) {
     return viewer.getProperty("JSON", infoType, "").toString();
   }
 
-  public String getPropertyAsJSON(String infoType, String paramInfo) {
+  synchronized public String getPropertyAsJSON(String infoType, String paramInfo) {
     return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 

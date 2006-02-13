@@ -45,14 +45,14 @@ class PropertyManager {
     this.viewer = viewer;
   }
   
-  public Object getProperty(String returnType, String infoType, String paramInfo) {
+  synchronized public Object getProperty(String returnType, String infoType, String paramInfo) {
     Object info = getPropertyAsObject(infoType, paramInfo);
     if (returnType == "String") return info.toString();
     if (returnType == "JSON")return "{" + toJSON(infoType, info) + "}";
     return info;
   }
   
-  private Object getPropertyAsObject(String infoType, String paramInfo) {
+  synchronized private Object getPropertyAsObject(String infoType, String paramInfo) {
     //System.out.println("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
     boolean iHaveParameter = (paramInfo.length() > 0);
     String myParam = paramInfo;
@@ -70,7 +70,7 @@ class PropertyManager {
     if(infoType.equalsIgnoreCase("fileName"))
       return viewer.getFullPathName();      
     
-    if(infoType.equalsIgnoreCase("callbackStatus")) 
+    if(infoType.equalsIgnoreCase("jmolStatus")) 
       return viewer.getStatusChanged(myParam);
 
     if(infoType.equalsIgnoreCase("orientationInfo"))

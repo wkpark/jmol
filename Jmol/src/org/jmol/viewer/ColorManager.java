@@ -371,7 +371,7 @@ class ColorManager {
 
   private void flushCaches() {
     g3d.flushShadesAndImageCaches();
-    viewer.refresh();
+    viewer.refresh(0, "ColorManager:flushCaches()");
   }
 
   void setSpecular(boolean specular) {

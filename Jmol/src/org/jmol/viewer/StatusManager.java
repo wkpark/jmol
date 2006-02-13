@@ -49,39 +49,39 @@ class StatusManager {
 
   JmolStatusListener jmolStatusListener;
 
-  String callbackList = "";
+  String statusList = "";
   
-  Hashtable callbackStatus = new Hashtable();
+  Hashtable messageQueue = new Hashtable();
 
-  int callbackptr = 0;
+  int statusPtr = 0;
 
   StatusManager(Viewer viewer) {
     this.viewer = viewer;
   }
 
-  void resetCallbackStatus(String callbackList) {
-    callbackStatus = new Hashtable();
-    callbackptr = 0;
-    this.callbackList = callbackList;
+  synchronized void resetCallbackStatus(String statusList) {
+    messageQueue = new Hashtable();
+    statusPtr = 0;
+    this.statusList = statusList;
   }
 
-  void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
+  synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
     this.jmolStatusListener = jmolStatusListener;
   }
   
-  boolean setCallbackList(String callbackList) {
-    //System.out.println(this.callbackList+"\n setting "+callbackList);
+  synchronized boolean setCallbackList(String statusList) {
+    //System.out.println(this.statusList+"\n setting "+statusList);
     
-    if (this.callbackList.equals(callbackList))
+    if (this.statusList.equals(statusList))
       return false;
     //System.out.println("true -- resetting");
        
-    System.out.println("Setting callback list: "+callbackList);
-    resetCallbackStatus(callbackList);
+    System.out.println("Setting status list: "+statusList);
+    resetCallbackStatus(statusList);
     return true;
   }
   
-  void setStatusAtomPicked(int atomIndex, String strInfo){
+  synchronized void setStatusAtomPicked(int atomIndex, String strInfo){
     if (atomIndex < 0) return;
     System.out.println("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
@@ -89,7 +89,7 @@ class StatusManager {
       jmolStatusListener.notifyAtomPicked(atomIndex, strInfo);
   }
 
-  void setStatusFileLoaded(String fullPathName, String fileName,
+  synchronized void setStatusFileLoaded(String fullPathName, String fileName,
       String modelName, Object clientFile, String errorMsg) {
     setStatusChanged("fileLoaded", 0, fullPathName, true);
     if (errorMsg != null)
@@ -99,21 +99,21 @@ class StatusManager {
              modelName, clientFile, errorMsg);
   }
 
-  void setStatusFrameChanged(int frameNo) {
-    setStatusChanged("frameChanged", frameNo, "", true);
+  synchronized void setStatusFrameChanged(int frameNo) {
+    setStatusChanged("frameChanged", frameNo, "", false);
     //System.out.println("setStatusFrameChanged(" + frameNo +")");
     if (jmolStatusListener != null)
       jmolStatusListener.notifyFrameChanged(frameNo);
   }
 
-  void setStatusNewPickingModeMeasurement(int iatom, String strMeasure) {
+  synchronized void setStatusNewPickingModeMeasurement(int iatom, String strMeasure) {
     setStatusChanged("measurePicked", iatom, strMeasure, false);
     System.out.println("measurePicked " + iatom + " " + strMeasure);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyNewPickingModeMeasurement(iatom, strMeasure);
   }
   
-  void setStatusNewDefaultModeMeasurement(String status, int count, String strMeasure) {
+  synchronized void setStatusNewDefaultModeMeasurement(String status, int count, String strMeasure) {
     setStatusChanged(status, count, strMeasure, false);
     if(status == "measureCompleted") 
       System.out.println("measurement["+count+"] = "+strMeasure);
@@ -121,7 +121,7 @@ class StatusManager {
       jmolStatusListener.notityNewDefaultModeMeasurement(count, status + ": " + strMeasure);
   }
   
-  void setStatusScriptStarted(int iscript, String script, String strError) {
+  synchronized void setStatusScriptStarted(int iscript, String script, String strError) {
     if (strError == null)
       strError = GT._("Jmol executing script ...");
     setStatusChanged("scriptStarted", iscript, script, false);   
@@ -131,7 +131,7 @@ class StatusManager {
     
   }
 
-  void setStatusScriptTermination(String statusMessage, int msWalltime){
+  synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
     if(statusMessage == null) 
       statusMessage = "Jmol script completed";
     setStatusChanged("scriptTerminated", msWalltime, statusMessage, false);
@@ -140,78 +140,84 @@ class StatusManager {
     jmolStatusListener.notifyScriptTermination(statusMessage, msWalltime);
   }
 
-  void setStatusViewerRefreshed() {
-    setStatusChanged("viewerRefreshed", 0, "", true);   
-  }
-  
-  void popupMenu(int x, int y) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.handlePopupMenu(x, y);
+  synchronized void setStatusUserAction(String strInfo){
+    System.out.println("userAction(" + strInfo + ")");
+    setStatusChanged("userAction", 0, strInfo, false);
   }
 
-  void setScriptEcho(String strEcho) {
+  synchronized void setStatusViewerRefreshed(int isOrientationChange, String strWhy) {
+    if(isOrientationChange == 1){
+      setStatusChanged("newOrientation", 0, strWhy, true);   
+    } else {
+      setStatusChanged("viewerRefreshed", 0, strWhy, false);   
+    }
+  }
+
+  synchronized void setScriptEcho(String strEcho) {
     if (strEcho == null) return; 
     setStatusChanged("scriptEcho", 0, strEcho, false);
-    // System.out.println("scriptEcho " + strEcho);
     if (jmolStatusListener != null)
       jmolStatusListener.sendConsoleEcho(strEcho);
   }
 
-  void setScriptStatus(String strStatus) {
+  synchronized void setScriptStatus(String strStatus) {
     if (strStatus == null) return; 
     setStatusChanged("scriptStatus", 0, strStatus, false);
-    // System.out.println("sendConsoleMessage " + strStatus);
     if (jmolStatusListener != null)
       jmolStatusListener.sendConsoleMessage(strStatus);
   }
   
-  void showUrl(String urlString) {
+  synchronized void popupMenu(int x, int y) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.handlePopupMenu(x, y);
+  }
+
+  synchronized void showUrl(String urlString) {
     if (jmolStatusListener != null)
       jmolStatusListener.showUrl(urlString);
   }
 
-  void showConsole(boolean showConsole) {
+  synchronized void showConsole(boolean showConsole) {
     if (jmolStatusListener != null)
       jmolStatusListener.showConsole(showConsole);
   }
 
+////////////////////Jmol status //////////////
 
-////////////////////callback status //////////////
-
-  void setStatusChanged(String statusName,
+  synchronized void setStatusChanged(String statusName,
       int intInfo, Object statusInfo, boolean isReplace) {
-    if (callbackList != "all" && callbackList.indexOf(statusName) < 0)
+    if (statusList != "all" && statusList.indexOf(statusName) < 0)
       return;
-    //System.out.println(statusName +"----"+ callbackList);
-    callbackptr++;
+    //System.out.println(statusName +"----"+ statusList);
+    statusPtr++;
     Vector statusRecordSet;
     Vector msgRecord = new Vector();
-    msgRecord.add(new Integer(callbackptr));
+    msgRecord.add(new Integer(statusPtr));
     msgRecord.add(statusName);
     msgRecord.add(new Integer(intInfo));
     msgRecord.add(statusInfo);
-    if (isReplace && callbackStatus.containsKey(statusName)) {
-      callbackStatus.remove(statusName);
+    if (isReplace && messageQueue.containsKey(statusName)) {
+      messageQueue.remove(statusName);
     }
-    if (callbackStatus.containsKey(statusName)) {
-      statusRecordSet = (Vector)callbackStatus.remove(statusName);
+    if (messageQueue.containsKey(statusName)) {
+      statusRecordSet = (Vector)messageQueue.remove(statusName);
     } else {
       statusRecordSet = new Vector();
     }
     statusRecordSet.add(msgRecord);
-    callbackStatus.put(statusName, statusRecordSet);
+    messageQueue.put(statusName, statusRecordSet);
 
-    //System.out.println(callbackStatus);
+    //System.out.println(messageQueue);
   }
   
-  Vector getStatusChanged(String statusNameList) {
+  synchronized Vector getStatusChanged(String statusNameList) {
     Vector msgList = new Vector();
     if (setCallbackList(statusNameList)) return msgList;
-    Enumeration e = callbackStatus.keys();
+    Enumeration e = messageQueue.keys();
     int n = 0;
     while (e.hasMoreElements()) {
       String statusName = (String)e.nextElement();
-      msgList.add(callbackStatus.remove(statusName));
+      msgList.add(messageQueue.remove(statusName));
       n++;
     }
     //System.out.println("done with " + n + ": " + msgList);

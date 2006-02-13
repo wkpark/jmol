@@ -69,7 +69,7 @@ class Measures extends Shape {
                                                   measurementCount +
                                                   measurementGrowthIncrement);
     }
-    viewer.setStatusNewDefaultModeMeasurement("measureCompleted" , measurementCount, measureNew.strMeasurement);
+    viewer.setStatusNewDefaultModeMeasurement("measureCompleted" , measurementCount, measureNew.toVector().toString());
     measurements[measurementCount++] = measureNew;
   }
   

@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
+import java.util.Vector;
 
 class Measurement {
 
@@ -206,6 +207,13 @@ class Measurement {
 
   static float toDegrees(float angrad) {
     return angrad * 180 / (float)Math.PI;
+  }
+
+  Vector toVector() {
+    Vector V = new Vector();
+    for (int i = 0; i < count + 1; i++ ) V.add(new Integer(countPlusIndices[i]));
+    V.add(strMeasurement);
+    return V;  
   }
 }
 

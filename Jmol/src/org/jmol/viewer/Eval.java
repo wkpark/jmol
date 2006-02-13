@@ -176,10 +176,10 @@ class Eval implements Runnable {
         if (command == null)
           break;
         script.append(command);
-	script.append("\n");
+  script.append("\n");
       }
     } catch (IOException e) {
-	try{reader.close();}catch(IOException ioe){}
+  try{reader.close();}catch(IOException ioe){}
       return ioError(filename);
     }
     try{reader.close();}catch(IOException ioe){}
@@ -3396,6 +3396,7 @@ class Eval implements Runnable {
         propertyName = (String)statement[i].value;
         break;
       case Token.decimal:
+
         radiusSeen = true;
         propertyName = "radius";
         propertyValue = statement[i].value;

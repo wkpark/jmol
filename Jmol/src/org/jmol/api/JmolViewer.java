@@ -235,7 +235,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public Color getColorMeasurement();
   abstract public void setColorMeasurement(Color colorMeasurement);
 
-  abstract public void refresh();
+  abstract public void refresh(int isOrientationChange, String strWhy);
 
   abstract public boolean getBooleanProperty(String propertyName);
   abstract public void setBooleanProperty(String propertyName, boolean value);

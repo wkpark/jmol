@@ -1766,11 +1766,29 @@ final public class Viewer extends JmolViewer {
     return null;
   }
 
+  public String evalStringWait(String strScript) {
+    if (strScript == null) return null;
+    String str = (String)getProperty("String", "jmolStatus", "all");    
+    if (! getEval().loadScriptString(strScript, false))
+      return eval.getErrorMessage();
+    eval.run();
+    str = (String)getProperty("JSON", "jmolStatus", "all");    
+    String sJunk = (String)getProperty("String", "jmolStatus", "none");    
+    return str;
+  }
+
   int iscript = 0;
-  public void script(String script) {  
+  public String script(String script) {  
     iscript++;
     String strError = evalString(script);
     setStatusScriptStarted(iscript, script, strError);
+    return strError;
+  }
+
+  public String scriptWait(String script) {  
+    iscript++;
+    String strInfo = evalStringWait(script);
+    return strInfo;
   }
 
   public boolean isScriptExecuting() {
@@ -2035,6 +2053,14 @@ final public class Viewer extends JmolViewer {
   }
 
 ////////////////status manager dispatch//////////////
+  
+  public Hashtable getMessageQueue() {
+    return statusManager.messageQueue;
+  }
+  
+  Viewer getViewer() {
+    return this;
+  }
   
   void setStatusAtomPicked(int atomIndex, String info) {
     statusManager.setStatusAtomPicked(atomIndex, info);

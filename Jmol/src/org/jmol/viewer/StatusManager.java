@@ -46,20 +46,17 @@ import org.jmol.i18n.GT;
 class StatusManager {
 
   Viewer viewer;
-
   JmolStatusListener jmolStatusListener;
-
   String statusList = "";
-  
   Hashtable messageQueue = new Hashtable();
-
   int statusPtr = 0;
-
+  static int MAXIMUM_QUEUE_LENGTH = 16;
+  
   StatusManager(Viewer viewer) {
     this.viewer = viewer;
   }
 
-  synchronized void resetCallbackStatus(String statusList) {
+  synchronized void resetMessageQueue(String statusList) {
     messageQueue = new Hashtable();
     statusPtr = 0;
     this.statusList = statusList;
@@ -69,7 +66,7 @@ class StatusManager {
     this.jmolStatusListener = jmolStatusListener;
   }
   
-  synchronized boolean setCallbackList(String statusList) {
+  synchronized boolean setStatusList(String statusList) {
     //System.out.println(this.statusList+"\n setting "+statusList);
     
     if (this.statusList.equals(statusList))
@@ -77,7 +74,7 @@ class StatusManager {
     //System.out.println("true -- resetting");
        
     System.out.println("Setting status list: "+statusList);
-    resetCallbackStatus(statusList);
+    resetMessageQueue(statusList);
     return true;
   }
   
@@ -204,6 +201,9 @@ class StatusManager {
     } else {
       statusRecordSet = new Vector();
     }
+    if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
+      statusRecordSet.remove(0);
+    
     statusRecordSet.add(msgRecord);
     messageQueue.put(statusName, statusRecordSet);
 
@@ -212,7 +212,7 @@ class StatusManager {
   
   synchronized Vector getStatusChanged(String statusNameList) {
     Vector msgList = new Vector();
-    if (setCallbackList(statusNameList)) return msgList;
+    if (setStatusList(statusNameList)) return msgList;
     Enumeration e = messageQueue.keys();
     int n = 0;
     while (e.hasMoreElements()) {

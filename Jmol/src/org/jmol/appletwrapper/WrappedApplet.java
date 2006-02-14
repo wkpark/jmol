@@ -37,7 +37,8 @@ public interface WrappedApplet {
 
   public void scriptButton(JSObject buttonWindow, String buttonName,
                            String script, String buttonCallback);
-  public void script(String script);
+  public String script(String script);
+  public String scriptWait(String script);
   public void loadInline(String strModel);
   public void loadInline(String strModel, String script);
   public void loadNodeId(String nodeId);

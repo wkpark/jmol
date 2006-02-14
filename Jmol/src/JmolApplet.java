@@ -87,9 +87,16 @@ public class JmolApplet
     return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(infoType, paramInfo));
   }
 
-  public void script(String script) {
+  public String script(String script) {
     if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).script(script);
+      return ((JmolAppletInterface)wrappedApplet).script(script);
+    return null;
+  }
+  
+  public String scriptWait(String script) {
+    if (wrappedApplet != null)
+      return ((JmolAppletInterface)wrappedApplet).scriptWait(script);
+    return null;
   }
   
   public void loadInline(String strModel) {

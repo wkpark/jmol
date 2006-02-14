@@ -276,7 +276,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       String loadParam = getValue("load", null);
       if (loadParam != null)
         scriptParam = "load " + loadParam + ";" + scriptParam;
-      script(scriptParam);
+      String str = script(scriptParam);
     }
     viewer.popHoldRepaint();
   }
@@ -435,11 +435,15 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     } else {
       buttonCallbackNotificationPending = false;
     }
-    script(script);
+    String str = script(script);
   }
 
-  synchronized public void script(String script) {
-    viewer.script(script);
+  synchronized public String script(String script) {
+    return viewer.script(script);
+  }   
+  
+  synchronized public String scriptWait(String script) {
+    return viewer.scriptWait(script);
   }   
   
   public String getAppletInfo() {
@@ -478,7 +482,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   
   public void loadInline(String strModel, String script) {
     loadInline(strModel);
-    script(script);
+    String str = script(script);
   }
 
   public void loadDOMNode(JSObject DOMNode) {

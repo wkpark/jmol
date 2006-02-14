@@ -64,6 +64,12 @@ class PropertyManager {
 
     // no second parameter here
     
+    if(infoType.equalsIgnoreCase("messageQueue"))
+      return viewer.getMessageQueue();      
+
+    if(infoType.equalsIgnoreCase("jmolViewer"))
+      return viewer.getViewer();      
+
     if(infoType.equalsIgnoreCase("fileHeader"))
       return viewer.getFileHeader();      
 

@@ -46,6 +46,7 @@ final class Frame {
   // therefore, we can do == comparisions against string constants
   // if (modelSetTypeName == "xyz")
   final String modelSetTypeName;
+  final boolean isPDB;
   final Mmset mmset;
   final Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
@@ -106,6 +107,7 @@ final class Frame {
     // therefore, we can do == comparisions against string constants
     // if (modelSetTypeName == "xyz") { }
     this.modelSetTypeName = fileTypeName.toLowerCase().intern();
+    this.isPDB = (this.modelSetTypeName == "pdb");
     mmset = new Mmset(this);
     this.frameRenderer = viewer.getFrameRenderer();
     this.g3d = viewer.getGraphics3D();
@@ -1173,7 +1175,7 @@ final class Frame {
     if (viewer.getAutoBond() &&
         getModelSetProperty("noautobond") == null) {
       if ((bondCount == 0) ||
-          (modelSetTypeName == "pdb" && (bondCount < (atomCount / 2))))
+          (isPDB && (bondCount < (atomCount / 2))))
         rebond(false);
     }
   }

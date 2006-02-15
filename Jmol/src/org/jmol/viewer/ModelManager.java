@@ -133,6 +133,10 @@ class ModelManager {
     return frame == null ? null : frame.getModelSetTypeName();
   }
 
+  boolean isPDB() {
+    return frame == null ? false : frame.isPDB;
+  }
+
   int getModelCount() {
     return (frame == null) ? 0 : frame.getModelCount();
   }
@@ -606,7 +610,7 @@ String getAtomInfoChime(int i) {
   }
   
   Vector getAtomInfoFromBitSet(BitSet bs) {
-    boolean isPDB = ("pdb" == viewer.getModelSetTypeName());
+    boolean isPDB = frame.isPDB;
     Vector V = new Vector();
     int atomCount = viewer.getAtomCount();
     for (int i = 0; i < atomCount; i++) 
@@ -660,6 +664,8 @@ String getAtomInfoChime(int i) {
     info.put("_bpt", new Integer(i));
     info.put("_apt1", new Integer(getBondAtom1(i).atomIndex));
     info.put("_apt2", new Integer(getBondAtom2(i).atomIndex));
+    info.put("atomno1", new Integer(getBondAtom1(i).getAtomNumber()));
+    info.put("atomno2", new Integer(getBondAtom2(i).getAtomNumber()));
     info.put("order", new Integer(getBondOrder(i)));
     return info;
   }  
@@ -685,7 +691,7 @@ String getAtomInfoChime(int i) {
     "DBREF ", };
 
   String getPDBHeader() {
-    if ("pdb" != viewer.getModelSetTypeName()) {
+    if (! frame.isPDB) {
       return "!Not a pdb file!\n" + getFileHeader();
     }
     String modelFile = viewer.getCurrentFileAsString();
@@ -709,12 +715,10 @@ String getAtomInfoChime(int i) {
 
   String getFileHeader() {
     String info = "no header information found";
-    if ("pdb" == getModelSetTypeName()) {
-      info = getPDBHeader();
-    }
-    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) {
-      info = getModelName(0);
-    }
+    if (frame.isPDB) 
+      return getPDBHeader();
+    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) 
+      return getModelName(0);
     // options here for other file formats?
    return info;
   }

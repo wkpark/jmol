@@ -571,6 +571,10 @@ final class Atom implements Tuple {
     return modelIndex;
   }
   
+  int getModelNumber() {
+    return modelIndex + 1;
+  }
+  
   String getClientAtomStringProperty(String propertyName) {
     Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
     return
@@ -608,11 +612,12 @@ final class Atom implements Tuple {
   }
 
   int getModelTagNumber() {
-    try {
-      return Integer.parseInt(group.chain.model.modelTag);
-    } catch (NumberFormatException nfe) {
-      return modelIndex + 1;
-    }
+    if (group.chain.frame.isPDB) {
+      try {
+        return Integer.parseInt(group.chain.model.modelTag);
+      } finally {}
+    }  
+    return getModelNumber();
   }
   
   byte getSpecialAtomID() {
@@ -802,7 +807,7 @@ final class Atom implements Tuple {
           strT = "" + getPolymerLength();
           break;
         case 'M':
-          strT = "/" + getModelTag();
+          strT = "/" + getModelTagNumber();
           break;
         case 'm':
           strT = "<X>";
@@ -905,7 +910,7 @@ final class Atom implements Tuple {
     }
     if (group.chain.frame.getModelCount() > 1) {
       info.append("/");
-      info.append(getModelTag());
+      info.append(getModelTagNumber());
     }
     info.append(" #");
     info.append(getAtomNumber());

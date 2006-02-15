@@ -45,7 +45,7 @@ class PropertyManager {
     this.viewer = viewer;
   }
   
-  synchronized public Object getProperty(String returnType, String infoType, String paramInfo) {
+  synchronized Object getProperty(String returnType, String infoType, String paramInfo) {
     Object info = getPropertyAsObject(infoType, paramInfo);
     if (returnType == "String") return info.toString();
     if (returnType == "JSON")return "{" + toJSON(infoType, info) + "}";
@@ -185,20 +185,21 @@ class PropertyManager {
     }
     return packageJSON (infoType, info.toString());
   }
-  
+
   String simpleReplace(String str, String strFrom, String strTo) {
-     String sout = "";
-     int ipt;
-     int ipt0 = 0;
-     int lfrom = strFrom.length();
-     if (str == null || lfrom == 0) return str;
-     
-     while ((ipt = str.indexOf(strFrom, ipt0)) >=0) {
-       sout = str.substring(ipt0,ipt) + strTo;
-       ipt0 = ipt + lfrom;
-     }
-     sout = sout + str.substring(ipt0,str.length());
-     return sout;
+    int fromLength = strFrom.length();
+    if (str == null || fromLength == 0)
+      return str;
+    int ipt;
+    int ipt0 = 0;
+    String sout = "";
+    while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
+      sout += str.substring(ipt0, ipt) + strTo;
+      ipt0 = ipt + fromLength;
+    }
+    sout += str.substring(ipt0, str.length());
+    return sout;
   }
+
 
 }

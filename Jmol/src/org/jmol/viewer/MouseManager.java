@@ -120,8 +120,6 @@ abstract class MouseManager {
   void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
 
-    viewer.setStatusUserAction("mousePressed: " + modifiers);
-
     if (previousPressedX == x && previousPressedY == y &&
         previousPressedModifiers == modifiers && 
         (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
@@ -142,6 +140,8 @@ abstract class MouseManager {
 
     modifiersWhenPressed = modifiers;
     wasDragged = false;
+
+    viewer.setStatusUserAction("mousePressed: " + modifiers);
 
     switch (modifiers & BUTTON_MODIFIER_MASK) {
       /****************************************************************

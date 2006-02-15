@@ -57,6 +57,15 @@ import java.io.Reader;
  * of a z-buffer. It does not use Java3D and does not use Graphics2D
  * from Java 1.2. Therefore, it is well suited to building web browser
  * applets that will run on a wide variety of system configurations.
+ * 
+ * public here is a test for applet-applet and JS-applet communication
+ * the idea being that applet.getProperty("jmolViewer") returns this
+ * Viewer object, allowing direct inter-process access to public methods.
+ *  
+ *  e.g. 
+ *  
+ *  applet.getProperty("jmolApplet").getFullPathName()
+ *  
  ****************************************************************/
 
 final public class Viewer extends JmolViewer {
@@ -69,12 +78,12 @@ final public class Viewer extends JmolViewer {
   SelectionManager selectionManager;
   MouseManager mouseManager;
   FileManager fileManager;
-  ModelManager modelManager;
+  public ModelManager modelManager;
   RepaintManager repaintManager;
   StyleManager styleManager;
   TempManager tempManager;
   PickingManager pickingManager;
-  Eval eval;
+  public Eval eval;
   Graphics3D g3d;
 
   JmolAdapter modelAdapter;
@@ -1016,10 +1025,14 @@ final public class Viewer extends JmolViewer {
   public void openStringInline(String strModel) {
      clear();
      fileManager.openStringInline(strModel);
-     setStatusFileLoaded("inline", "",
+     setStatusFileLoaded("string", "",
          modelManager.getModelSetName(), null, getOpenFileError());
-   }
+  }
 
+  public String getInlineData(){
+    return fileManager.inlineData;
+  }
+  
   char inlineNewlineChar = '|';
   public void loadInline(String strModel) {
     if (strModel == null) return;
@@ -1041,7 +1054,7 @@ final public class Viewer extends JmolViewer {
     fileManager.openDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     System.out.println("openDOM " + ms + " ms");
-    setStatusFileLoaded("openDOM", "",
+    setStatusFileLoaded("JSNode", "",
         modelManager.getModelSetName(), null, getOpenFileError());
   }
 
@@ -1083,18 +1096,24 @@ final public class Viewer extends JmolViewer {
     return null;
   }
 
-  String getCurrentFileAsString() {
+  public String getCurrentFileAsString() {
+    if(getFullPathName() == "string" ) {
+      return fileManager.inlineData;
+    }
+    if(getFullPathName() == "JSNode" ) {
+      return "<DOM NODE>";
+    }
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
     return fileManager.getFileAsString(pathName);
   }
 
-  String getFileAsString(String pathName) {
+  public String getFileAsString(String pathName) {
     return fileManager.getFileAsString(pathName);
   }
 
-  String getFullPathName() {
+  public String getFullPathName() {
     return fileManager.getFullPathName();
   }
   
@@ -1144,7 +1163,7 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelSetPathName();
   }
 
-  String getModelSetTypeName() {
+  public String getModelSetTypeName() {
     return modelManager.getModelSetTypeName();
   }
 
@@ -2087,7 +2106,7 @@ final public class Viewer extends JmolViewer {
   }
   
   void popupMenu(int x, int y) {
-    if (!disablePopupMenu) return;
+    if (disablePopupMenu) return;
     statusManager.popupMenu(x, y);
   }
 

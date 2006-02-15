@@ -65,6 +65,10 @@ class FileManager {
   private String nameAsGiven;
   private String fullPathName;
   String fileName;
+  String inlineData;
+  boolean isInline;
+  boolean isDOM;
+  
   private File file;
 
   private FileOpenThread fileOpenThread;
@@ -103,6 +107,9 @@ class FileManager {
       fullPathNames[i] = fullPathName;
     }
     fullPathName = fileName = nameAsGiven = modelName;
+    inlineData = "";
+    isInline = false;
+    isDOM = false;
     filesOpenThread = new FilesOpenThread(fullPathNames, names);
     filesOpenThread.run();
   }
@@ -110,6 +117,10 @@ class FileManager {
   void openStringInline(String strModel) {
     openErrorMessage = null;
     fullPathName = fileName = "string";
+    inlineData = strModel;
+    isInline = true;
+    isDOM = false;
+    
     fileOpenThread = new FileOpenThread(fullPathName,
                                         new StringReader(strModel));
     fileOpenThread.run();
@@ -118,6 +129,9 @@ class FileManager {
   void openDOM(Object DOMNode) {
     openErrorMessage = null;
     fullPathName = fileName = "JSNode";
+    inlineData = "";
+    isInline = false;
+    isDOM = true;
     aDOMOpenThread = new DOMOpenThread(DOMNode);
     aDOMOpenThread.run();
   }

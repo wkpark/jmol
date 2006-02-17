@@ -31,6 +31,7 @@ class MouseManager10 extends MouseManager {
 
   MouseManager10(Component component, Viewer viewer) {
     super(component, viewer);
+    System.out.println("MouseManager10 implemented");
   }
 
   private int applyLeftMouse(int modifiers) {

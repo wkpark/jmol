@@ -53,7 +53,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
 
-  abstract public void setAppletContext(URL documentBase, URL codeBase,
+  abstract public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
                                String appletProxy);
 
   abstract public void haltScriptExecution();

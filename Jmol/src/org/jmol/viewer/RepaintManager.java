@@ -27,6 +27,7 @@ import org.jmol.g3d.*;
 
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.util.Hashtable;
 
 class RepaintManager {
 
@@ -47,7 +48,8 @@ class RepaintManager {
       displayModelIndex = -1;
     else
       displayModelIndex = modelIndex;
-    this.displayModelIndex = modelIndex;
+    //this.displayModelIndex = modelIndex;
+
     viewer.setStatusFrameChanged(modelIndex);
     return true;
   }
@@ -145,11 +147,52 @@ class RepaintManager {
    * Animation support
    ****************************************************************/
   
+  int firstModelIndex;
+  int lastModelIndex;
+  int frameStep;
+  int modelCount;
+  void initializePointers(int frameStep) {
+    firstModelIndex = 0;
+    modelCount = viewer.getModelCount();
+    lastModelIndex = modelCount - 1;
+    this.frameStep = frameStep;      
+  }
+
+  void clearAnimation() {
+    setAnimationOn(false);
+    setDisplayModelIndex(0);
+    setAnimationDirection(1);
+    setAnimationFps(10);
+    setAnimationReplayMode(0, 0, 0);
+    initializePointers(0);
+  }
+
+  Hashtable getAnimationInfo(){
+    if(frameStep == 0) 
+      initializePointers(1);
+    Hashtable info = new Hashtable();
+    info.put("firstModelIndex", new Integer(firstModelIndex));
+    info.put("lastModelIndex", new Integer(lastModelIndex));
+    info.put("animationDirection", new Integer(animationDirection));
+    info.put("currentDirection", new Integer(currentDirection));
+    info.put("displayModelIndex", new Integer(displayModelIndex));
+    info.put("displayModelNumber", new Integer(displayModelIndex >=0 ? viewer.getModelNumber(displayModelIndex) : 0));
+    info.put("displayModelName", (displayModelIndex >=0 ? viewer.getModelName(displayModelIndex) : ""));
+    info.put("animationFps", new Integer(animationFps));
+    info.put("animationReplayMode", new Integer(animationReplayMode));
+    info.put("firstFrameDelay", new Float(firstFrameDelay));
+    info.put("lastFrameDelay", new Float(lastFrameDelay));
+    info.put("animationOn", new Boolean(animationOn));
+    info.put("animationPaused", new Boolean(animationPaused));
+    return info;
+  }
+  
   int animationDirection = 1;
   int currentDirection = 1;
   void setAnimationDirection(int animationDirection) {
     if (animationDirection == 1 || animationDirection == -1) {
-      this.animationDirection = currentDirection = animationDirection;
+      this.animationDirection = animationDirection;
+      currentDirection = 1;
     }
     else
       System.out.println("invalid animationDirection:" + animationDirection);
@@ -193,6 +236,9 @@ class RepaintManager {
     firstModelIndex = framePointer;
     lastModelIndex = framePointer2;
     currentDirection = 1;
+    
+    setDisplayModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
+    //System.out.println("setting in range displayModelIndex: " + displayModelIndex);
     //System.out.println("setAnimationRange first=" + firstModelIndex + " last=" + lastModelIndex +" currentDirection="+currentDirection);
   }
 
@@ -203,20 +249,19 @@ class RepaintManager {
       setAnimationOff(false);
       return;
     }
+    viewer.refresh(0, "Viewer:setAnimationOn");
     setAnimationRange(-1, -1);
-
-    //System.out.println("setAnimationOn first=" + firstModelIndex + " last=" + lastModelIndex +" currentDirection="+currentDirection);
-    
-    setDisplayModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
     resumeAnimation();
   }
 
   void setAnimationOff(boolean isPaused) {
+    System.out.println("setAnimationOff");
     if (animationThread != null) {
       animationThread.interrupt();
       animationThread = null;
     }
     animationPaused = isPaused;
+    viewer.refresh(0, "Viewer:setAnimationOff");
     animationOn = false;
   }
 
@@ -224,40 +269,48 @@ class RepaintManager {
     setAnimationOff(true);
   }
   
-  
-  int modelCount;
+  int intAnimThread = 0;
   void resumeAnimation() {
-    if(frameStep == 0) {
-      firstModelIndex = 0;
-      lastModelIndex = modelCount = viewer.getModelCount();
-      frameStep = 1;      
-    }
+    //System.out.println("resumeAnimation");
+    if(displayModelIndex < 0)
+      setAnimationRange(firstModelIndex, lastModelIndex);
+    if(frameStep == 0) 
+      initializePointers(1);
     if (modelCount <= 1) {
       animationOn = false;
       return;
     }
     //System.out.println("resumeAnimation " + firstModelIndex+" "+lastModelIndex+" "+frameStep+" "+displayModelIndex);
-    if (animationThread == null) {
-      animationThread = new AnimationThread(firstModelIndex, lastModelIndex);
-      animationThread.start();
-    }
+    System.out.println("setting animationOn");
     animationOn = true;
     animationPaused = false;
+    if (animationThread == null) {
+      intAnimThread++;
+      animationThread = new AnimationThread(firstModelIndex, lastModelIndex, intAnimThread);
+      animationThread.start();
+    }
   }
   
   boolean setAnimationNext() {
     return setAnimationRelative(animationDirection);
   }
 
+  void rewindAnimation() {
+    setDisplayModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
+    currentDirection = 1;
+  }
+  
   boolean setAnimationPrevious() {
     return setAnimationRelative(-animationDirection);
   }
 
   boolean setAnimationRelative(int direction) {
-    boolean isDone = (displayModelIndex == (currentDirection == 1? lastModelIndex : firstModelIndex));
     int frameStep = this.frameStep * direction * currentDirection;
     int modelIndexNext = displayModelIndex + frameStep;
+    boolean isDone = (modelIndexNext > firstModelIndex && modelIndexNext > lastModelIndex 
+                      || modelIndexNext < firstModelIndex && modelIndexNext < lastModelIndex);
 
+    
     /*
      System.out.println("setAnimationRelative: " +
                        " firstModelIndex=" + firstModelIndex +
@@ -285,39 +338,27 @@ class RepaintManager {
     }
     //System.out.println("next="+modelIndexNext+" dir="+currentDirection+" isDone="+isDone);
     if (modelIndexNext < 0 || modelIndexNext >= modelCount)
-      return false; 
+      return false;
     setDisplayModelIndex(modelIndexNext);
     return true;
-  }
-
-  int firstModelIndex;
-  int lastModelIndex;
-  int frameStep;
-  
-  void clearAnimation() {
-    setAnimationOn(false);
-    setDisplayModelIndex(0);
-    setAnimationDirection(1);
-    setAnimationFps(10);
-    setAnimationReplayMode(0, 0, 0);
-    firstModelIndex = -1;
-    lastModelIndex = -1;
-    frameStep = 0;
   }
 
   class AnimationThread extends Thread implements Runnable {
     final int framePointer;
     final int framePointer2;
-    
-    AnimationThread(int framePointer, int framePointer2) {
+    int intThread;
+
+    AnimationThread(int framePointer, int framePointer2, int intAnimThread) {
       this.framePointer = framePointer;
       this.framePointer2 = framePointer2;
+      intThread = intAnimThread;
     }
 
     public void run() {
       long timeBegin = System.currentTimeMillis();
       int targetTime = 0;
       int sleepTime;
+      System.out.println("animation thread " + intThread + " running");            
       requestRepaintAndWait();
       try {
         sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
@@ -339,7 +380,8 @@ class RepaintManager {
               Thread.sleep(sleepTime);
           }
           if (! setAnimationNext()) {
-            setAnimationOn(false);
+            System.out.println("animation thread " + intThread + " exiting");            
+            setAnimationOff(false);
             return;
           }
           targetTime += (1000 / animationFps);
@@ -354,7 +396,8 @@ class RepaintManager {
             Thread.sleep(sleepTime);
         }
       } catch (InterruptedException ie) {
-        System.out.println("animation interrupted!");
+        System.out.println("animation thread interrupted!");
+        setAnimationOn(false);
       }
     }
   }

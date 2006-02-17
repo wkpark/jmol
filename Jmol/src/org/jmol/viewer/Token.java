@@ -361,7 +361,14 @@ class Token {
   final static int vanderwaals  = misc | 54;
   final static int ionic        = misc | 55;
   final static int resume       = misc | 56;
-
+  final static int play         = misc | 57;
+  final static int next         = misc | 58;
+  final static int prev         = misc | 59;
+  final static int rewind       = misc | 60;
+  final static int playrev      = misc | 61;
+  final static int range        = misc | 62;
+  
+ 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
   final static int hydrogen    = predefinedset |  2 | setparam;
@@ -437,7 +444,6 @@ class Token {
     "renumber",          new Token(renumber,  onDefault1, "renumber"),
     "reset",             new Token(reset,              0, "reset"),
     "restrict",          new Token(restrict, varArgCount, "restrict"),
-    "resume",             new Token(resume,              0, "resume"),
     "ribbon",            new Token(ribbon,    onDefault1, "ribbon"),
     "ribbons",           null,
     "rotate",            new Token(rotate,   varArgCount, "rotate"),
@@ -685,6 +691,15 @@ class Token {
     "nofill",       new Token(nofill,          "nofill"),
     "vanderwaals",  new Token(vanderwaals,     "vanderwaals"),
     "ionic",        new Token(ionic,           "ionic"),
+    "resume",       new Token(resume,          "resume"),
+    "next",         new Token(next,            "next"),
+    "prev",         new Token(prev,            "previous"),
+    "previous",     null,
+    "rewind",       new Token(rewind,          "rewind"),
+    "playrev",      new Token(playrev,         "playrev"),
+    "play",         new Token(play,            "play"),
+    "range",        new Token(range,           "range"),
+    
   };
 
   static Hashtable map = new Hashtable();

@@ -130,13 +130,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   public void init() {
     htmlName = getParameter("name");
-    if(htmlName == null)htmlName = getParameter("id");
-
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
     appletRegistry = new JmolAppletRegistry(htmlName, mayScript, appletWrapper);
-
-    System.out.println("Applet name=" + htmlName);
 
     initWindows();
     initApplication();
@@ -155,7 +151,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
 
-    viewer.setAppletContext(appletWrapper.getDocumentBase(), appletWrapper
+    viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(), appletWrapper
         .getCodeBase(), getValue("JmolAppletProxy", null));
 
     jvm12orGreater = viewer.isJvm12orGreater();
@@ -276,7 +272,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       String loadParam = getValue("load", null);
       if (loadParam != null)
         scriptParam = "load " + loadParam + ";" + scriptParam;
-      String str = script(scriptParam);
+      script(scriptParam);
     }
     viewer.popHoldRepaint();
   }

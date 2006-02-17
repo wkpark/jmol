@@ -108,6 +108,10 @@ final public class Viewer extends JmolViewer {
 
   String strOSName;
 
+  Hashtable appletInfo;
+
+  String htmlName="";
+  
   boolean jvm11orGreater = false;
 
   boolean jvm12orGreater = false;
@@ -133,6 +137,9 @@ final public class Viewer extends JmolViewer {
         + JmolConstants.version + "  " + JmolConstants.date + "\njava.vendor:"
         + strJavaVendor + "\njava.version:" + strJavaVersion + "\nos.name:"
         + strOSName);
+    System.out.println(htmlName + " jvm11orGreater=" + jvm11orGreater 
+        + "\njvm12orGreater=" + jvm12orGreater 
+        + "\njvm14orGreater=" + jvm14orGreater);
 
     g3d = new Graphics3D(awtComponent);
     statusManager = new StatusManager(this);
@@ -183,7 +190,17 @@ final public class Viewer extends JmolViewer {
   void logError(String strMsg) {
     System.out.println(strMsg);
   }
-
+ 
+  Hashtable getAppletInfo() {
+    Hashtable info = new Hashtable();
+    info.put("htmlName", htmlName);
+    info.put("version", JmolConstants.version);
+    info.put("date", JmolConstants.date);
+    info.put("javaVendor", strJavaVendor);
+    info.put("javaVersion", strJavaVersion);
+    info.put("operatingSystem", strOSName);
+    return info;
+  }
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
@@ -1013,8 +1030,9 @@ final public class Viewer extends JmolViewer {
   // delegated to FileManager
   // ///////////////////////////////////////////////////////////////
 
-  public void setAppletContext(URL documentBase, URL codeBase,
+  public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
       String appletProxy) {
+    this.htmlName = htmlName;
     fileManager.setAppletContext(documentBase, codeBase, appletProxy);
   }
 
@@ -1552,6 +1570,10 @@ final public class Viewer extends JmolViewer {
     return repaintManager.animationDirection;
   }
 
+  Hashtable getAnimationInfo() {
+    return repaintManager.getAnimationInfo();
+  }
+
   public void setAnimationFps(int fps) {
     repaintManager.setAnimationFps(fps);
   }
@@ -1578,12 +1600,13 @@ final public class Viewer extends JmolViewer {
     if (animationOn == wasAnimating)
       return;
     repaintManager.setAnimationOn(animationOn);
-    refresh(0, "Viewer:setAnimationOn(" + animationOn + ")");
   }
 
   void resumeAnimation() {
-    if (repaintManager.animationOn)
+    if (repaintManager.animationOn) {
+      System.out.println("animation is ON in resumeAnimation");
       return;
+    }
     repaintManager.resumeAnimation();
     refresh(0, "Viewer:resumeAnimation()");
   }
@@ -1612,6 +1635,11 @@ final public class Viewer extends JmolViewer {
   void setAnimationPrevious() {
     if (repaintManager.setAnimationPrevious())
       refresh(0, "Viewer:setAnimationPrevious()");
+  }
+
+  void rewindAnimation() {
+    repaintManager.rewindAnimation();
+    refresh(0, "Viewer:rewindAnimation()");
   }
 
   boolean setDisplayModelIndex(int modelIndex) {

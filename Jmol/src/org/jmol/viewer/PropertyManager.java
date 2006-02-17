@@ -57,6 +57,12 @@ class PropertyManager {
     boolean iHaveParameter = (paramInfo.length() > 0);
     String myParam = paramInfo;
 
+    if(infoType.equalsIgnoreCase("appletInfo"))
+      return viewer.getAppletInfo();
+
+    if(infoType.equalsIgnoreCase("animationInfo"))
+      return viewer.getAnimationInfo();
+
     if(infoType.equalsIgnoreCase("fileContents")) {
       if(iHaveParameter) return viewer.getFileAsString(myParam);
       return viewer.getCurrentFileAsString();
@@ -115,6 +121,7 @@ class PropertyManager {
       return viewer.getModelExtract(myParam);
     
     return "getProperty ERROR\n\nOptions include\n"
+    + "\n getProperty(\"appletInfo\")"
     + "\n getProperty(\"fileName\")"
     + "\n getProperty(\"fileHeader\")"
     + "\n getProperty(\"fileContents\")"
@@ -139,7 +146,9 @@ class PropertyManager {
   }
   
   String fixString(String s) {
-   return simpleReplace(s,"\"","\\\"");  
+   s = simpleReplace(s,"\"","\\\"");
+   s = simpleReplace(s,"\n"," | ");
+   return s;  
   }
   
   String toJSON (String infoType, Object info){

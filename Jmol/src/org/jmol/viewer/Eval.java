@@ -1246,7 +1246,7 @@ class Eval implements Runnable {
   }
 
   BitSet getSpecAlternate(String alternateSpec) {
-    System.out.println("getSpecAlternate(" + alternateSpec + ")");
+    //System.out.println("getSpecAlternate(" + alternateSpec + ")");
     Frame frame = viewer.getFrame();
     BitSet bs = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
@@ -2203,43 +2203,6 @@ class Eval implements Runnable {
     viewer.setVectorScale(scale);
   }
 
-  void animation() throws ScriptException {
-    if (statementLength < 2)
-      subcommandExpected();
-    int tok = statement[1].tok;
-    boolean animate = false;
-    switch(tok) {
-    case Token.on:
-      animate = true;
-    case Token.off:
-      viewer.setAnimationOn(animate);
-      break;
-    case Token.pause:
-      viewer.pauseAnimation();
-      return;
-    case Token.resume:
-      viewer.resumeAnimation();
-      return;
-    case Token.information:
-      showAnimation();
-      break;
-    case Token.frame:
-      frame(2);
-      break;
-    case Token.mode:
-      animationMode();
-      break;
-    case Token.direction:
-      animationDirection();
-      break;
-    case Token.fps:
-      viewer.setAnimationFps(getSetInteger());
-      break;
-    default:
-      unrecognizedSubcommand();
-    }
-  }
-
   void animationMode() throws ScriptException {
     float startDelay = 1, endDelay = 1;
     if (statementLength < 3 || statementLength > 5)
@@ -2321,80 +2284,6 @@ class Eval implements Runnable {
     viewer.setAnimationDirection(direction);
   }
 
-
-  /*
-  void animate() throws ScriptException {
-    if (statement.length < 2 || statement[1].tok != Token.identifier)
-      unrecognizedSubcommand();
-    String cmd = (String)statement[1].value;
-    if (cmd.equalsIgnoreCase("frame")) {
-      if (statement.length != 3 || statement[2].tok != Token.integer)
-        integerExpected();
-      int frame = statement[2].intValue;
-      if (frame < 0 || frame >= viewer.getNumberOfFrames()) 
-       numberOutOfRange();
-      viewer.setFrame(frame);
-    } else if (cmd.equalsIgnoreCase("next")) {
-      int frame = viewer.getCurrentFrameNumber() + 1;
-      if (frame < viewer.getNumberOfFrames())
-        viewer.setFrame(frame);
-    } else if (cmd.equalsIgnoreCase("prev")) {
-      int frame = viewer.getCurrentFrameNumber() - 1;
-      if (frame >= 0)
-        viewer.setFrame(frame);
-    } else if (cmd.equalsIgnoreCase("nextwrap")) {
-      int frame = viewer.getCurrentFrameNumber() + 1;
-      if (frame >= viewer.getNumberOfFrames())
-        frame = 0;
-      viewer.setFrame(frame);
-    } else if (cmd.equalsIgnoreCase("prevwrap")) {
-      int frame = viewer.getCurrentFrameNumber() - 1;
-      if (frame < 0)
-        frame = viewer.getNumberOfFrames() - 1;
-      viewer.setFrame(frame);
-    } else if (cmd.equalsIgnoreCase("play")) {
-      animatePlay(true);
-    } else if (cmd.equalsIgnoreCase("revplay")) {
-      animatePlay(false);
-    } else if (cmd.equalsIgnoreCase("rewind")) {
-      viewer.setFrame(0);
-    } else {
-      unrecognizedSubcommand();
-    }
-  }
-
-  void animatePlay(boolean forward) {
-    int nframes = viewer.getNumberOfFrames();
-    long timeBegin = System.currentTimeMillis();
-    long targetTime = timeBegin;
-    int frameTimeMillis = 100;
-    int frameBegin, frameEnd, frameDelta;
-    if (forward) {
-      frameBegin = 0;
-      frameEnd = nframes;
-      frameDelta = 1;
-    } else {
-      frameBegin = nframes - 1;
-      frameEnd = -1;
-      frameDelta = -1;
-    }
-    viewer.setInMotion(true);
-    for (int frame = frameBegin; frame != frameEnd; frame += frameDelta) {
-      viewer.setFrame(frame);
-      refresh();
-      targetTime += frameTimeMillis;
-      long sleepTime = targetTime - System.currentTimeMillis();
-      if (sleepTime > 0) {
-        try {
-          Thread.sleep(sleepTime);
-        } catch (InterruptedException ie) {
-        }
-      }
-    }
-    viewer.setInMotion(false);
-  }
-  */
-
   void dots() throws ScriptException {
     short mad = 0;
     switch (statement[1].tok) {
@@ -2472,6 +2361,37 @@ class Eval implements Runnable {
     viewer.setSpinOn(spinOn);
   }
       
+  void animation() throws ScriptException {
+    if (statementLength < 2)
+      subcommandExpected();
+    int tok = statement[1].tok;
+    boolean animate = false;
+    switch(tok) {
+    case Token.on:
+      animate = true;
+    case Token.off:
+      viewer.setAnimationOn(animate);
+      break;
+    case Token.information:
+      showAnimation();
+      break;
+    case Token.frame:
+      frame(2);
+      break;
+    case Token.mode:
+      animationMode();
+      break;
+    case Token.direction:
+      animationDirection();
+      break;
+    case Token.fps:
+      viewer.setAnimationFps(getSetInteger());
+      break;
+    default:
+      frameControl(tok, true); 
+    }
+  }
+
   void frame() throws ScriptException {
     frame(1);
   }
@@ -2488,12 +2408,13 @@ class Eval implements Runnable {
       viewer.setAnimationPrevious();
       return;
     }
-    //if (statementLength != offset + 1) badArgumentCount();
     int modelNumber = -1;
     int modelNumber2 = -1;
     boolean isPlay = false;
+    boolean isRange = false;
     while (offset < statementLength) {
-      switch(statement[offset].tok) {
+      int token = statement[offset].tok;
+      switch(token) {
       case Token.all:
       case Token.asterisk:
         break;
@@ -2506,45 +2427,70 @@ class Eval implements Runnable {
           modelNumber2 = statement[offset].intValue;        
         }
         break;
-      case Token.pause:
-        viewer.pauseAnimation();
-        return;
-      case Token.resume:
-        viewer.resumeAnimation();
-        return;
-      case Token.identifier:
-        String ident = (String)statement[offset].value;
-        if (ident.equalsIgnoreCase("next")) {
-          viewer.setAnimationNext();
-          return;
-        }
-        if (ident.equalsIgnoreCase("prev")) {
-          viewer.setAnimationPrevious();
-          return;
-        }
-        if (ident.equalsIgnoreCase("play")) {
-          isPlay = true;
-        }
+      case Token.play:
+        //System.out.println("play");
+        isPlay = true;
+        break;
+      case Token.range:
+        //System.out.println("play");
+        isRange = true;
         break;
       default:
-        invalidArgument();
+        frameControl(token, false);
+        return;
       }
+      
       if (offset == statementLength - 1) {
         int modelIndex = viewer.getModelNumberIndex(modelNumber);
-        if(! isPlay || modelIndex >= 0) {
+        if(! isPlay  && ! isRange || modelIndex >= 0) {
           viewer.setDisplayModelIndex(modelIndex);
         }
-        if(isPlay) {
-          if (modelNumber2 >=0) {
+        if(isPlay || isRange) {
+          if (isRange || modelNumber2 >=0) {
             int modelIndex2 = viewer.getModelNumberIndex(modelNumber2);
+            //System.out.println("isPlay " + modelIndex +" "+ modelIndex2);
+
+            viewer.setAnimationDirection(1);
             viewer.setAnimationRange(modelIndex, modelIndex2);
           } 
-          viewer.resumeAnimation();
+          if (! isRange)
+            viewer.resumeAnimation();
         }
       }
       offset++;
     }
   }
+ 
+  void frameControl(int token, boolean isSubCmd) throws ScriptException  {
+    switch (token) {
+    case Token.playrev:
+      viewer.setAnimationDirection(-viewer.getAnimationDirection());      
+    case Token.play:
+    case Token.resume:
+      viewer.resumeAnimation();
+      return;
+    case Token.pause:
+      viewer.pauseAnimation();
+      return;
+    case Token.next:
+      viewer.setAnimationNext();
+      return;
+    case Token.prev:
+      viewer.setAnimationPrevious();
+      return;
+    case Token.rewind:
+      viewer.rewindAnimation();
+      return;
+    default:
+      if (isSubCmd) {
+        unrecognizedSubcommand();
+      } else {
+        invalidArgument();
+      }
+    }
+  }
+  
+  
   // note that this array *MUST* be in the same sequence as the
   // SHAPE_* constants in JmolConstants
   

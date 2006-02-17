@@ -360,6 +360,7 @@ class Token {
   final static int nofill       = misc | 53;
   final static int vanderwaals  = misc | 54;
   final static int ionic        = misc | 55;
+  final static int resume       = misc | 56;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -436,6 +437,7 @@ class Token {
     "renumber",          new Token(renumber,  onDefault1, "renumber"),
     "reset",             new Token(reset,              0, "reset"),
     "restrict",          new Token(restrict, varArgCount, "restrict"),
+    "resume",             new Token(resume,              0, "resume"),
     "ribbon",            new Token(ribbon,    onDefault1, "ribbon"),
     "ribbons",           null,
     "rotate",            new Token(rotate,   varArgCount, "rotate"),

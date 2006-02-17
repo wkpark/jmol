@@ -2214,6 +2214,12 @@ class Eval implements Runnable {
     case Token.off:
       viewer.setAnimationOn(animate);
       break;
+    case Token.pause:
+      viewer.pauseAnimation();
+      return;
+    case Token.resume:
+      viewer.resumeAnimation();
+      return;
     case Token.information:
       showAnimation();
       break;
@@ -2482,40 +2488,63 @@ class Eval implements Runnable {
       viewer.setAnimationPrevious();
       return;
     }
-    if (statementLength != offset + 1)
-      badArgumentCount();
+    //if (statementLength != offset + 1) badArgumentCount();
     int modelNumber = -1;
-    switch(statement[offset].tok) {
-    case Token.all:
-    case Token.asterisk:
-      break;
-    case Token.none:
-      break;
-    case Token.integer:
-      modelNumber = statement[offset].intValue;
-      break;
-    case Token.identifier:
-      String ident = (String)statement[offset].value;
-      if (ident.equalsIgnoreCase("next")) {
-        viewer.setAnimationNext();
+    int modelNumber2 = -1;
+    boolean isPlay = false;
+    while (offset < statementLength) {
+      switch(statement[offset].tok) {
+      case Token.all:
+      case Token.asterisk:
+        break;
+      case Token.none:
+        break;
+      case Token.integer:
+        if(modelNumber == -1) {
+          modelNumber = statement[offset].intValue;
+        } else {
+          modelNumber2 = statement[offset].intValue;        
+        }
+        break;
+      case Token.pause:
+        viewer.pauseAnimation();
         return;
-      }
-      if (ident.equalsIgnoreCase("prev")) {
-        viewer.setAnimationPrevious();
+      case Token.resume:
+        viewer.resumeAnimation();
         return;
+      case Token.identifier:
+        String ident = (String)statement[offset].value;
+        if (ident.equalsIgnoreCase("next")) {
+          viewer.setAnimationNext();
+          return;
+        }
+        if (ident.equalsIgnoreCase("prev")) {
+          viewer.setAnimationPrevious();
+          return;
+        }
+        if (ident.equalsIgnoreCase("play")) {
+          isPlay = true;
+        }
+        break;
+      default:
+        invalidArgument();
       }
-      if (ident.equalsIgnoreCase("play")) {
-        viewer.setAnimationOn(true,viewer.getDisplayModelIndex());
-        return;
+      if (offset == statementLength - 1) {
+        int modelIndex = viewer.getModelNumberIndex(modelNumber);
+        if(! isPlay || modelIndex >= 0) {
+          viewer.setDisplayModelIndex(modelIndex);
+        }
+        if(isPlay) {
+          if (modelNumber2 >=0) {
+            int modelIndex2 = viewer.getModelNumberIndex(modelNumber2);
+            viewer.setAnimationRange(modelIndex, modelIndex2);
+          } 
+          viewer.resumeAnimation();
+        }
       }
-      break;
-    default:
-      invalidArgument();
+      offset++;
     }
-    int modelIndex = viewer.getModelNumberIndex(modelNumber);
-    viewer.setDisplayModelIndex(modelIndex);
   }
-
   // note that this array *MUST* be in the same sequence as the
   // SHAPE_* constants in JmolConstants
   

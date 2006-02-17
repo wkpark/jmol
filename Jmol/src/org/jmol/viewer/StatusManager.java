@@ -97,7 +97,7 @@ class StatusManager {
   }
 
   synchronized void setStatusFrameChanged(int frameNo) {
-    setStatusChanged("frameChanged", frameNo, "", false);
+    setStatusChanged("frameChanged", frameNo, (frameNo >=0 ? viewer.getModelName(frameNo) : ""), false);
     //System.out.println("setStatusFrameChanged(" + frameNo +")");
     if (jmolStatusListener != null)
       jmolStatusListener.notifyFrameChanged(frameNo);

@@ -119,8 +119,8 @@ class Token {
   final static int label        = command | 15 | specialstring;
   final static int load         = command | 16 | specialstring;
   final static int molecule     = command | 17;
-  final static int monitor      = command | 18 | setparam | bool;
-  final static int pause        = command | 19;
+  final static int monitor      = command | 18 | setparam | bool | embeddedExpression;
+  final static int pause        = command | 19 | misc;
   final static int print        = command | 20;
   final static int quit         = command | 21;
   final static int refresh      = command | 22;

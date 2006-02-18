@@ -664,7 +664,10 @@ class Eval implements Runnable {
   }
 
   void invalidArgument() throws ScriptException {
-    evalError("invalid argument");
+    String str = "invalid argument";
+    for (int i = 0; i < statement.length ; i++)
+      str += "\n" + statement[i].toString();
+    evalError(str);
   }
 
   void unrecognizedSetParameter() throws ScriptException {
@@ -831,11 +834,20 @@ class Eval implements Runnable {
     return bs;
   }
   
+  int firstAtomOf(BitSet bs) {
+    int numberOfAtoms = viewer.getAtomCount();
+    for (int i = numberOfAtoms; --i >= 0; )
+      if(bs.get(i)) { return i; }
+    return -1;
+  }
+  
+  int endOfExpression;
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
     int numberOfAtoms = viewer.getAtomCount();
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
+    endOfExpression = 1000;
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
     expression_loop:
@@ -847,6 +859,7 @@ class Eval implements Runnable {
       case Token.expressionBegin:
         break; 
      case Token.expressionEnd:
+       endOfExpression = pc;
         break expression_loop;
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
@@ -1728,28 +1741,49 @@ class Eval implements Runnable {
         booleanExpected();
       return;
     }
+    /*
     if (statementLength < 3 || statementLength > 5)
       badArgumentCount();
     for (int i = 1; i < statementLength; ++i) {
       if (statement[i].tok != Token.integer)
         integerExpected();
     }
-    int argCount = monitorArgs[0] = statementLength - 1;
+    */
+    monitorArgs[0] = 0;
+    int argCount = statementLength - 1;
+    int atomIndex = 0;
+    int atomNumber = 0;
     //int numAtoms = viewer.getAtomCount();
     for (int i = 0; i < argCount; ++i) {
       Token token = statement[i + 1];
-      if (token.tok != Token.integer)
+      //System.out.println(i+" "+token.toString());
+      switch (token.tok) {
+      case Token.integer:
+        atomNumber = token.intValue;
+        atomIndex = viewer.getAtomIndexFromAtomNumber(atomNumber);
+        break;
+      case Token.expressionBegin:
+        //in principle, this could be an atom set, in which case we would
+        //be calculating a centroid. UNHEARD-OF-COOL!
+        atomIndex = firstAtomOf(expression(statement, i + 1));
+        //System.out.println("expressionBegin "+atomIndex);
+        i = endOfExpression - 1;
+        break;
+      default:
         integerExpected();
-      int atomNumber = token.intValue;
-      int atomIndex = viewer.getAtomIndexFromAtomNumber(atomNumber);
+      }
+      
       if (atomIndex == -1)
         badAtomNumber();
-      monitorArgs[i + 1] = atomIndex;
+      if (monitorArgs[0] == 4)
+        badArgumentCount();
+      System.out.println("monitor() adding " + atomIndex);
+      monitorArgs[++monitorArgs[0]] = atomIndex;
     }
     viewer.toggleMeasurement(monitorArgs);
   }
 
-  void refresh() {
+  void refresh() { 
     viewer.requestRepaintAndWait();
   }
 
@@ -3583,6 +3617,8 @@ class Eval implements Runnable {
         "connectDynamic", new Float(1.0));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
         "connectDynamic", new Float(1.0));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+        "sourceSet", null);
 
     if (statementLength == 1) {
       viewer.rebond();
@@ -3605,10 +3641,10 @@ class Eval implements Runnable {
         propertyValue = statement[i].value;
         break;
       case Token.expressionBegin:
-        propertyName = "targetSet";
+        //System.out.println(i + " " + propertyName + " " + statement.length);
         propertyValue = expression(statement, i);
-        // hack for now;
-        i = statement.length;
+        i = endOfExpression;
+        propertyName = (i == statement.length - 1 ? "targetSet" : "sourceSet");
         break;
       case Token.identifier:
       case Token.hbond:

@@ -36,6 +36,7 @@ class Sticks extends Shape {
   float minBondingDistance;
   short order;
   boolean isConnectStatic;
+  BitSet bsSource;
   
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
@@ -118,11 +119,15 @@ class Sticks extends Shape {
       }
       return;
     }
+    if ("sourceSet" == propertyName) {
+      bsSource = (BitSet)value;
+      return;
+    }
     if ("targetSet" == propertyName) {
       BitSet bsTarget = (BitSet)value;
       if(minBondingDistance < 0.0F) 
         minBondingDistance = 0.0F;
-      makeConnections(minBondingDistance, maxBondingDistance, bsSelected, bsTarget, order, isConnectStatic);
+      makeConnections(minBondingDistance, maxBondingDistance, (bsSource != null ? bsSource : bsSelected), bsTarget, order, isConnectStatic);
       return;
     }
   }

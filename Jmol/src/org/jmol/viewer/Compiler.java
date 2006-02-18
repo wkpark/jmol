@@ -668,6 +668,9 @@ class Compiler {
   private boolean endOfExpressionExpected() {
     return compileError("end of expression expected");
   }
+  private boolean nonSequentialExpressions() {
+    return compileError("embedded expression not followed directly by another embedded expression");
+  }
   private boolean leftParenthesisExpected() {
     return compileError("left parenthesis expected");
   }
@@ -834,18 +837,32 @@ class Compiler {
 
   private boolean compileExpression() {
     int i = 1;
+    boolean isMultipleOK = false;
     int tokCommand = atokenCommand[0].tok;
     if (tokCommand == Token.define)
       i = 2;
     else if ((tokCommand & Token.embeddedExpression) != 0) {
       // look for the open parenthesis
+      isMultipleOK = true;
       while (i < atokenCommand.length &&
              atokenCommand[i].tok != Token.leftparen)
         ++i;
     }
     if (i >= atokenCommand.length)
       return true;
-    return compileExpression(i);
+    int expPtr=i;
+    // 0 here means OK; -1 means error; > 0 means pointer to the next expression 
+    while (expPtr > 0) {
+     // System.out.println("next expression at " + expPtr);
+      expPtr = compileExpression(expPtr);
+      if (expPtr > 0 && ! isMultipleOK)
+        return endOfExpressionExpected();
+      if (expPtr <= 0) return (expPtr == 0);
+      if (atokenCommand[expPtr].tok != Token.leftparen)
+        return nonSequentialExpressions();
+    }
+    //really cannot get here
+    return true;
   }
 
   Vector ltokenPostfix = null;
@@ -857,7 +874,8 @@ class Compiler {
     return true;
   }
 
-  boolean compileExpression(int itoken) {
+  int compileExpression(int itoken) {
+    int expPtr = 0;
     ltokenPostfix = new Vector();
     for (int i = 0; i < itoken; ++i)
       addTokenToPostfix(atokenCommand[i]);
@@ -866,21 +884,23 @@ class Compiler {
 
     addTokenToPostfix(Token.tokenExpressionBegin);
     if (! clauseOr())
-      return false;
+      return -1;
     addTokenToPostfix(Token.tokenExpressionEnd);
     if (itokenInfix != atokenInfix.length) {
       /*
       System.out.println("itokenInfix=" + itokenInfix + " atokenInfix.length="
                          + atokenInfix.length);
-      for (int i = 0; i < atokenInfix.length; ++i) {
+      for (int i = 0; i < atokenInfix.length; ++i) 
         System.out.println("" + i + ":" + atokenInfix[i]);
-      }
       */
-      return endOfExpressionExpected();
+      //not a problem! 
+      expPtr = ltokenPostfix.size();
+      for (int i = itokenInfix; i < atokenInfix.length; ++i)
+        addTokenToPostfix(atokenCommand[i]);
     }
     atokenCommand = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenCommand);
-    return true;
+    return expPtr;
   }
 
   Token tokenNext() {

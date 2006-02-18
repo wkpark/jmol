@@ -36,6 +36,7 @@ class ScriptException extends Exception {
     this.line = line;
     this.filename = filename;
     this.linenumber = linenumber;
+    System.out.println(toString());
   }
 
   public String toString() {

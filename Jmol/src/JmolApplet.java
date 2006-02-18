@@ -37,12 +37,13 @@ import netscape.javascript.JSObject;
 public class JmolApplet
   extends org.jmol.appletwrapper.AppletWrapper
   implements JmolAppletInterface {
-  
+ 
   public JmolApplet() {
     super("org.jmol.applet.Jmol",
           "jmol75x29x8.gif",
           "Loading Jmol applet ...",
           3, preloadClasses);
+    //BH focus test: this.setFocusable(false);
   }
 
   private final static String[] preloadClasses = {

@@ -106,7 +106,7 @@ class Compiler {
     Vector ltoken = new Vector();
     //Token tokenCommand = null;
     int tokCommand = Token.nada;
-
+    boolean isDefine = false;
     for ( ; true; ichToken += cchToken) {
       if (lookingAtLeadingWhitespace())
         continue;
@@ -200,6 +200,17 @@ class Compiler {
         } else {
           ident = ident.toLowerCase();
           token = (Token) Token.map.get(ident);
+          if (isDefine && token != null && token.tok != Token.identifier) { 
+            if ((token.tok & Token.predefinedset) != Token.predefinedset) {
+              System.out.println("WARNING: redefining " + ident + " " + token);
+              token.tok = Token.identifier;
+              Token.map.put(ident, token);
+              System.out.println("WARNING: not all commands may continue to be functional");
+            } else {
+              System.out.println("WARNING: predefined term '" + ident + "' has been redefined by the user for the life of the applet.");
+            }
+          }
+          isDefine = false;
         }
         if (token == null)
           token = new Token(Token.identifier, ident);
@@ -211,6 +222,7 @@ class Compiler {
           tokCommand = tok;
           if ((tokCommand & Token.command) == 0)
             return commandExpected();
+          isDefine = (tokCommand == Token.define);
           break;
         case Token.set:
           if (ltoken.size() == 1) {

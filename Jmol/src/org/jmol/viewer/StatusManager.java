@@ -57,9 +57,19 @@ class StatusManager {
   }
 
   synchronized void resetMessageQueue(String statusList) {
-    messageQueue = new Hashtable();
-    statusPtr = 0;
-    this.statusList = statusList;
+    boolean isRemove = (statusList.charAt(0) == '-');
+    boolean isAdd = (statusList.charAt(0) == '+');
+    if (isRemove) {
+      this.statusList = viewer.simpleReplace(this.statusList, statusList.substring(1,statusList.length()), "");
+      return;
+    }
+    if (! isAdd) {
+      messageQueue = new Hashtable();
+      statusPtr = 0;
+      this.statusList = "";
+    }
+    this.statusList += viewer.simpleReplace(statusList, "+", "");
+    System.out.println("messageQueue = " + this.statusList);
   }
 
   synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
@@ -124,8 +134,7 @@ class StatusManager {
     setStatusChanged("scriptStarted", iscript, script, false);   
     setStatusChanged("scriptMessage", 0, strError, false);
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyScriptStart(strError, script);
-    
+      jmolStatusListener.notifyScriptStart(strError, script); 
   }
 
   synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
@@ -224,3 +233,4 @@ class StatusManager {
     return msgList;
   }
 }
+

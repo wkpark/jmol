@@ -158,27 +158,6 @@ class ModelManager {
     return str;
   }
   
-  Hashtable getModelInfoObject() {
-    Hashtable info = new Hashtable();
-    int modelCount = viewer.getModelCount();
-    info.put("modelCount",new Integer(modelCount));
-    info.put("modelSetHasVibrationVectors", 
-        new Boolean(viewer.modelSetHasVibrationVectors()));
-    //Properties props = viewer.getModelSetProperties();
-    //str = str.concat(listPropertiesJSON(props));
-    Vector models = new Vector();
-    for (int i = 0; i < modelCount; ++i) {
-      Hashtable model = new Hashtable();
-      model.put("_ipt",new Integer(i));
-      model.put("num",new Integer(viewer.getModelNumber(i)));
-      model.put("name",viewer.getModelName(i));
-      model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
-      models.add(model);
-    }
-    info.put("models",models);
-    return info;
-  }
-
   String getModelName(int modelIndex) {
     return (frame == null) ? null : frame.getModelName(modelIndex);
   }
@@ -609,7 +588,28 @@ String getAtomInfoChime(int i) {
     return s1.substring(0, s1.length() - s2.length()) + s2;
   }
   
-  Vector getAtomInfoFromBitSet(BitSet bs) {
+  Hashtable getModelInfoObject() {
+    Hashtable info = new Hashtable();
+    int modelCount = viewer.getModelCount();
+    info.put("modelCount",new Integer(modelCount));
+    info.put("modelSetHasVibrationVectors", 
+        new Boolean(viewer.modelSetHasVibrationVectors()));
+    //Properties props = viewer.getModelSetProperties();
+    //str = str.concat(listPropertiesJSON(props));
+    Vector models = new Vector();
+    for (int i = 0; i < modelCount; ++i) {
+      Hashtable model = new Hashtable();
+      model.put("_ipt",new Integer(i));
+      model.put("num",new Integer(viewer.getModelNumber(i)));
+      model.put("name",viewer.getModelName(i));
+      model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
+      models.add(model);
+    }
+    info.put("models",models);
+    return info;
+  }
+
+  Vector getAllAtomInfo(BitSet bs) {
     boolean isPDB = frame.isPDB;
     Vector V = new Vector();
     int atomCount = viewer.getAtomCount();
@@ -618,7 +618,7 @@ String getAtomInfoChime(int i) {
         V.add(getAtomInfo(i, isPDB));
     return V;
   }
-   
+
   Hashtable getAtomInfo(int i, boolean isPDB) {
     Atom atom = frame.getAtomAt(i);
     Hashtable info = new Hashtable();
@@ -629,10 +629,17 @@ String getAtomInfoChime(int i) {
     info.put("x", new Float(getAtomX(i)));
     info.put("y", new Float(getAtomY(i)));
     info.put("z", new Float(getAtomZ(i)));
+    if (frame.vibrationVectors != null && frame.vibrationVectors[i] != null) {
+      info.put("vibVector", new Vector3f(frame.vibrationVectors[i]));
+    }
     info.put("model", new Integer(atom.getModelTagNumber()));
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius()/120)));
     info.put("info", getAtomInfo(i));
+
+    info.put("formalCharge", new Integer(atom.getFormalCharge()));
+    info.put("partialCharge", new Float(atom.getPartialCharge()));
+
     if (isPDB) {
       info.put("resname", atom.getGroup3());
       info.put("resno", atom.getSeqcodeString());
@@ -641,6 +648,8 @@ String getAtomInfoChime(int i) {
       info.put("chain", (chainID == '\0' ? "" : "" + chainID ));
       info.put("atomID", new Integer(atom.getSpecialAtomID()));
       info.put("groupID", new Integer(atom.getGroupID()));
+      info.put("altLocation", new String(""+atom.alternateLocationID));
+      
       info.put("structure", new Integer(atom.getProteinStructureType()));
       info.put("polymerLength", new Integer(atom.getPolymerLength()));
       info.put("occupancy", new Integer(atom.getOccupancy()));

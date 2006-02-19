@@ -1492,9 +1492,9 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelInfoObject();
   }
 
-  Vector getAtomBitSetDetail(String atomExpression) {
+  Vector getAllAtomInfo(String atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getAtomInfoFromBitSet(bs);
+    return modelManager.getAllAtomInfo(bs);
   }
 
   Vector getBondDetail(String atomExpression) {
@@ -2853,6 +2853,21 @@ final public class Viewer extends JmolViewer {
     BitSet bs = selectionManager.getAtomBitSet(atomExpression);
     return fileManager.getFullPathName() + "\nEXTRACT: " + bs + "\nJmol\n"
         + modelManager.getModelExtractFromBitSet(bs);
+  }
+
+  String simpleReplace(String str, String strFrom, String strTo) {
+    int fromLength = strFrom.length();
+    if (str == null || fromLength == 0)
+      return str;
+    int ipt;
+    int ipt0 = 0;
+    String sout = "";
+    while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
+      sout += str.substring(ipt0, ipt) + strTo;
+      ipt0 = ipt + fromLength;
+    }
+    sout += str.substring(ipt0, str.length());
+    return sout;
   }
 
 }

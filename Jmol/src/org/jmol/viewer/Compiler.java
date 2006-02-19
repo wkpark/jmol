@@ -39,6 +39,7 @@ class Compiler {
   boolean error;
   String errorMessage;
   String errorLine;
+  boolean preDefining;
   
   static final boolean logMessages = false;
 
@@ -53,6 +54,7 @@ class Compiler {
     lineNumbers = lineIndices = null;
     aatokenCompiled = null;
     errorMessage = errorLine = null;
+    preDefining = (filename == "#predefine");
     if (compile0())
       return true;
     int icharEnd;
@@ -200,7 +202,7 @@ class Compiler {
         } else {
           ident = ident.toLowerCase();
           token = (Token) Token.map.get(ident);
-          if (isDefine && token != null && token.tok != Token.identifier) { 
+          if (!preDefining && isDefine && token != null && token.tok != Token.identifier) { 
             if ((token.tok & Token.predefinedset) != Token.predefinedset) {
               System.out.println("WARNING: redefining " + ident + " " + token);
               token.tok = Token.identifier;

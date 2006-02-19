@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * 
@@ -112,7 +113,7 @@ class PropertyManager {
       return viewer.getAtomBitSetVector(myParam);
     
     if(infoType.equalsIgnoreCase("atomInfo")) 
-      return viewer.getAtomBitSetDetail(myParam);
+      return viewer.getAllAtomInfo(myParam);
     
     if(infoType.equalsIgnoreCase("bondInfo")) 
       return viewer.getBondDetail(myParam);
@@ -146,8 +147,8 @@ class PropertyManager {
   }
   
   String fixString(String s) {
-   s = simpleReplace(s,"\"","\\\"");
-   s = simpleReplace(s,"\n"," | ");
+   s = viewer.simpleReplace(s,"\"","\\\"");
+   s = viewer.simpleReplace(s,"\n"," | ");
    return s;  
   }
   
@@ -181,6 +182,10 @@ class PropertyManager {
       str = str + "[" + ((Point3f)info).x + ","  + ((Point3f)info).y + ","  + ((Point3f)info).z + "]";
       return packageJSON (infoType, str);
     }
+    if (info instanceof Vector3f) {
+      str = str + "[" + ((Vector3f)info).x + ","  + ((Vector3f)info).y + ","  + ((Vector3f)info).z + "]";
+      return packageJSON (infoType, str);
+    }
     if (info instanceof Hashtable) {
       str = "{";
       Enumeration e = ((Hashtable)info).keys();
@@ -194,21 +199,5 @@ class PropertyManager {
     }
     return packageJSON (infoType, info.toString());
   }
-
-  String simpleReplace(String str, String strFrom, String strTo) {
-    int fromLength = strFrom.length();
-    if (str == null || fromLength == 0)
-      return str;
-    int ipt;
-    int ipt0 = 0;
-    String sout = "";
-    while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
-      sout += str.substring(ipt0, ipt) + strTo;
-      ipt0 = ipt + fromLength;
-    }
-    sout += str.substring(ipt0, str.length());
-    return sout;
-  }
-
 
 }

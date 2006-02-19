@@ -153,7 +153,7 @@ class RepaintManager {
   int modelCount;
   void initializePointers(int frameStep) {
     firstModelIndex = 0;
-    modelCount = viewer.getModelCount();
+    modelCount = (frameStep == 0 ? 0 : viewer.getModelCount());
     lastModelIndex = modelCount - 1;
     this.frameStep = frameStep;      
   }

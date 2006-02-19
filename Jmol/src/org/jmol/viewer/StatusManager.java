@@ -56,22 +56,28 @@ class StatusManager {
     this.viewer = viewer;
   }
 
-  synchronized void resetMessageQueue(String statusList) {
+  synchronized boolean resetMessageQueue(String statusList) {
     boolean isRemove = (statusList.charAt(0) == '-');
     boolean isAdd = (statusList.charAt(0) == '+');
+    String oldList = this.statusList;
     if (isRemove) {
-      this.statusList = viewer.simpleReplace(this.statusList, statusList.substring(1,statusList.length()), "");
-      return;
+      this.statusList = viewer.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
+      messageQueue = new Hashtable();
+      statusPtr = 0;
+      return true;
     }
+    statusList = viewer.simpleReplace(statusList, "+", "");
+    if(oldList.equals(statusList) 
+        || isAdd && oldList.indexOf(statusList) >= 0)
+      return false;
     if (! isAdd) {
       messageQueue = new Hashtable();
       statusPtr = 0;
       this.statusList = "";
     }
-    statusList = viewer.simpleReplace(statusList, "+", "");
-    if(this.statusList.indexOf(statusList) < 0)
-      this.statusList += statusList;
-    System.out.println("messageQueue = " + this.statusList);
+    this.statusList += statusList;
+    System.out.println(oldList + "\nmessageQueue = " + this.statusList);
+    return true;
   }
 
   synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
@@ -79,15 +85,7 @@ class StatusManager {
   }
   
   synchronized boolean setStatusList(String statusList) {
-    //System.out.println(this.statusList+"\n setting "+statusList);
-    
-    if (this.statusList.equals(statusList))
-      return false;
-    //System.out.println("true -- resetting");
-       
-    System.out.println("Setting status list: "+statusList);
-    resetMessageQueue(statusList);
-    return true;
+    return resetMessageQueue(statusList);
   }
   
   synchronized void setStatusAtomPicked(int atomIndex, String strInfo){

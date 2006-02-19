@@ -33,14 +33,22 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 /**
- * This class is used to transfer an image into the clipboard.
+ * This class is used to transfer an {@link Image} into the clipboard.
  * 
  * @author Nicolas Vervelle
  */
 public class ImageSelection implements Transferable {
 
+  /**
+   * The image to transfer into the clipboard.
+   */
   private Image image;
   
+  /**
+   * Transers <code>image</code> into the clipboard.
+   * 
+   * @param image Image to transfer into the clipboard.
+   */
   public static void setClipboard(Image image) {
     ImageSelection sel = new ImageSelection(image);
     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);

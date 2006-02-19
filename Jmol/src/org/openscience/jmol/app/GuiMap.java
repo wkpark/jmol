@@ -60,6 +60,7 @@ class GuiMap {
       labels.put("makecrystal", GT._("Make crystal..."));
       labels.put("selectall", GT._("Select All"));
       labels.put("deselectall", GT._("Deselect All"));
+      labels.put("copyImage", GT._("Copy Image"));
       labels.put("prefs", GT._("&Preferences..."));
       labels.put("editSelectAllScript", GT._("Select All"));
       labels.put("selectMenu", GT._("Select"));

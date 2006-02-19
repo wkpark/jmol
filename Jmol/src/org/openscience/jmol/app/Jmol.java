@@ -930,6 +930,7 @@ public class Jmol extends JPanel {
   private static final String pdfActionProperty = "pdf";
   private static final String scriptAction = "script";
   private static final String atomsetchooserAction = "atomsetchooser";
+  private static final String copyImageActionProperty = "copyImage";
 
 
   // --- action implementations -----------------------------------
@@ -938,6 +939,7 @@ public class Jmol extends JPanel {
   private PovrayAction povrayAction = new PovrayAction();
   private PdfAction pdfAction = new PdfAction();
   private PrintAction printAction = new PrintAction();
+  private CopyImageAction copyImageAction = new CopyImageAction();
   private ViewMeasurementTableAction viewMeasurementTableAction
     = new ViewMeasurementTableAction();
 
@@ -948,8 +950,8 @@ public class Jmol extends JPanel {
   private Action[] defaultActions = {
     new NewAction(), new NewwinAction(), new OpenAction(),
     new OpenUrlAction(), printAction, exportAction,
-    new CloseAction(), new ExitAction(), new AboutAction(),
-    new WhatsNewAction(),
+    new CloseAction(), new ExitAction(), copyImageAction,
+    new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
     new RecentFilesAction(), povrayAction, pdfAction,
     new ScriptWindowAction(), new AtomSetChooserAction(),
@@ -1028,6 +1030,20 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
       HelpDialog hd = new HelpDialog(frame);
       hd.show();
+    }
+  }
+
+  /**
+   * An Action to copy the current image into the clipboard. 
+   */
+  class CopyImageAction extends AbstractAction {
+
+    public CopyImageAction() {
+      super(copyImageActionProperty);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      ImageSelection.setClipboard(viewer.getScreenImage());
     }
   }
 

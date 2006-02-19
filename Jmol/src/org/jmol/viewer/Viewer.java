@@ -1468,6 +1468,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.getElementsPresentBitSet();
   }
 
+  BitSet getVisibleSet() {
+    return modelManager.getVisibleSet();
+  }
+
   public BitSet getGroupsPresentBitSet() {
     return modelManager.getGroupsPresentBitSet();
   }

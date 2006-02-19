@@ -1656,6 +1656,14 @@ final class Frame {
     return bfactor100Hi;
   }
 
+  BitSet getVisibleSet() {
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0; )
+      if(atoms[i].isVisible())
+        bs.set(i);
+    return bs;
+  }
+
   ////////////////////////////////////////////////////////////////
   // measurements
   ////////////////////////////////////////////////////////////////

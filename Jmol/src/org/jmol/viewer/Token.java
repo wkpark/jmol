@@ -382,6 +382,7 @@ class Token {
   final static int purine      = predefinedset | 10;
   final static int pyrimidine  = predefinedset | 11;
   final static int surface     = predefinedset | 12;
+  final static int visible     = predefinedset | 13;
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -665,6 +666,7 @@ class Token {
     "purine",       new Token(purine,          "purine"),
     "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
     "surface",      new Token(surface,         "surface"),
+    "visible",      new Token(visible,        "visible"),
 
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),

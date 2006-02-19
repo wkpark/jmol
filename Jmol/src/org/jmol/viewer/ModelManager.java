@@ -406,6 +406,10 @@ class ModelManager {
     return (frame == null) ? null : frame.getGroupsPresentBitSet();
   }
 
+  BitSet getVisibleSet() {
+    return (frame == null) ? null : frame.getVisibleSet();
+  }
+
   void calcSelectedGroupsCount(BitSet bsSelected) {
     if (frame != null)
       frame.calcSelectedGroupsCount(bsSelected);
@@ -448,6 +452,9 @@ String getAtomInfoChime(int i) {
     return frame.getAtomAt(i).getAtomName();
   }
 
+  boolean getAtomVisibility(int i) {
+    return frame.getAtomAt(i).isVisible();
+  }
   int getAtomNumber(int i) {
     return frame.getAtomAt(i).getAtomNumber();
   }
@@ -636,10 +643,11 @@ String getAtomInfoChime(int i) {
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius()/120)));
     info.put("info", getAtomInfo(i));
+    info.put("visible", new Boolean(getAtomVisibility(i)));
 
     info.put("formalCharge", new Integer(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));
-
+    
     if (isPDB) {
       info.put("resname", atom.getGroup3());
       info.put("resno", atom.getSeqcodeString());

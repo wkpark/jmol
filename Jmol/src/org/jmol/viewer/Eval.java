@@ -892,6 +892,9 @@ class Eval implements Runnable {
       case Token.selected:
         stack[sp++] = copyBitSet(viewer.getSelectionSet());
         break;
+      case Token.visible:
+        stack[sp++] = copyBitSet(viewer.getVisibleSet());
+        break;
       case Token.hetero:
         stack[sp++] = getHeteroSet();
         break;

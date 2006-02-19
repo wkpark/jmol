@@ -1186,7 +1186,7 @@ final public class Viewer extends JmolViewer {
     if (modelManager.hasVibrationVectors())
       setShapeSize(JmolConstants.SHAPE_VECTORS, 1);
     setFrankOn(styleManager.frankOn);
-
+    repaintManager.initializePointers(1);
     popHoldRepaint();
   }
 

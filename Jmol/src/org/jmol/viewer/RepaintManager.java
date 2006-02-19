@@ -168,8 +168,6 @@ class RepaintManager {
   }
 
   Hashtable getAnimationInfo(){
-    if(frameStep == 0) 
-      initializePointers(1);
     Hashtable info = new Hashtable();
     info.put("firstModelIndex", new Integer(firstModelIndex));
     info.put("lastModelIndex", new Integer(lastModelIndex));
@@ -274,8 +272,6 @@ class RepaintManager {
     //System.out.println("resumeAnimation");
     if(displayModelIndex < 0)
       setAnimationRange(firstModelIndex, lastModelIndex);
-    if(frameStep == 0) 
-      initializePointers(1);
     if (modelCount <= 1) {
       animationOn = false;
       return;

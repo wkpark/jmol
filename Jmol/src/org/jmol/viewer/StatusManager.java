@@ -68,7 +68,9 @@ class StatusManager {
       statusPtr = 0;
       this.statusList = "";
     }
-    this.statusList += viewer.simpleReplace(statusList, "+", "");
+    statusList = viewer.simpleReplace(statusList, "+", "");
+    if(this.statusList.indexOf(statusList) < 0)
+      this.statusList += statusList;
     System.out.println("messageQueue = " + this.statusList);
   }
 

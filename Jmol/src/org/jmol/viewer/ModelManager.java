@@ -641,10 +641,12 @@ String getAtomInfoChime(int i) {
     }
     info.put("model", new Integer(atom.getModelTagNumber()));
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
-    info.put("radius", new Float((atom.getRasMolRadius()/120)));
+    info.put("radius", new Float((atom.getRasMolRadius()/120.0)));
     info.put("info", getAtomInfo(i));
     info.put("visible", new Boolean(getAtomVisibility(i)));
-
+    info.put("spacefill", new Integer(atom.madAtom >> 3));
+    info.put("color", viewer.getHexColorFromIndex(atom.colixAtom));
+    info.put("translucent", new Boolean(atom.isTranslucent()));
     info.put("formalCharge", new Integer(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));
     

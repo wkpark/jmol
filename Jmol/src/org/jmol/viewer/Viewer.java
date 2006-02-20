@@ -2874,4 +2874,8 @@ final public class Viewer extends JmolViewer {
     return sout;
   }
 
+  String getHexColorFromIndex(short colix) {
+    return g3d.getHexColorFromIndex(colix);
+  }
+
 }

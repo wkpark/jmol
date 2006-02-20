@@ -1932,6 +1932,11 @@ final public class Graphics3D {
                      changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT]);
   }
 
+  public String getHexColorFromIndex(short colix) {
+    String str = getColor(colix).toString();
+    return str.substring(15,str.length()-1);
+  }
+
   /****************************************************************
    * changable colixes
    * give me a short ID and a color, and I will give you a colix

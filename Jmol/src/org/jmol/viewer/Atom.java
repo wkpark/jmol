@@ -297,6 +297,10 @@ final class Atom implements Tuple {
     colixAtom = Graphics3D.setTranslucent(colixAtom, isTranslucent);
   }
 
+  boolean isTranslucent() {
+    return Graphics3D.isColixTranslucent(colixAtom);
+  }
+  
   Vector3f getVibrationVector() {
     Vector3f[] vibrationVectors = group.chain.frame.vibrationVectors;
     return vibrationVectors == null ? null : vibrationVectors[atomIndex];

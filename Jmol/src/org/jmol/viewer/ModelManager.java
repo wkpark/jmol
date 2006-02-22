@@ -687,6 +687,7 @@ String getAtomInfoChime(int i) {
     info.put("atomno1", new Integer(getBondAtom1(i).getAtomNumber()));
     info.put("atomno2", new Integer(getBondAtom2(i).getAtomNumber()));
     info.put("order", new Integer(getBondOrder(i)));
+    info.put("radius", new Float(frame.getBondAt(i).mad/2000.));
     return info;
   }  
   

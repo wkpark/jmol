@@ -2168,16 +2168,10 @@ class Eval implements Runnable {
       mad = 0;
       break;
     case Token.integer:
-      int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol > 750)
-        numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * 2);
+      mad = getMadInteger(statement[1].intValue);
       break;
     case Token.decimal:
-      float angstroms = floatParameter(1);
-      if (angstroms > 3)
-        numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
+      mad = getMadFloat(floatParameter(1));
       break;
     default:
       booleanOrNumberExpected();
@@ -2185,6 +2179,18 @@ class Eval implements Runnable {
     return mad;
   }
 
+  short getMadInteger(int radiusRasMol) throws ScriptException {    
+    if (radiusRasMol > 750)
+      numberOutOfRange();
+    return (short)(radiusRasMol * 4 * 2);
+  }
+
+  short getMadFloat(float angstroms) throws ScriptException {
+    if (angstroms > 3)
+      numberOutOfRange();
+    return (short)(angstroms * 1000 * 2);
+  }
+  
   void wireframe() throws ScriptException {
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
   }
@@ -2195,9 +2201,14 @@ class Eval implements Runnable {
   }
 
   void hbond() throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_HSTICKS);
-    viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
+    setHbonds(getMadParameter());
   }
+  
+  void setHbonds(short mad){
+    viewer.loadShape(JmolConstants.SHAPE_HSTICKS);
+    viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, mad);
+  }
+
 
   void vector() throws ScriptException {
     short mad = 1;
@@ -3612,7 +3623,9 @@ class Eval implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
         "minDistance", new Float(-0.0001));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-        "connectBondOrder", new Float(1.0));
+        "connectBondOrder", new Short((short)1));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+        "connectMad", new Short((short)-1));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
         "connectExistant", new Boolean(true));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
@@ -3624,21 +3637,34 @@ class Eval implements Runnable {
       viewer.rebond();
       return;
     }
+    String propertyName = null;
+    Object propertyValue = null;
+    int nNumeric = 0;
     for (int i = 1; i < statementLength; ++i) {
-      String propertyName = null;
-      Object propertyValue = null;
+      propertyName = null;
+      propertyValue = null;
       switch (statement[i].tok) {
       case Token.on:
       case Token.off:
         viewer.rebond();
         return;
       case Token.integer:
-        propertyName = "connectDistance";
-        propertyValue = new Float(statement[i].intValue);
+        if (++nNumeric > 2) {
+          propertyName = "connectMad";
+          propertyValue = new Short(getMadInteger(statement[i].intValue));
+        } else {
+          propertyName = "connectDistance";
+          propertyValue = new Float(statement[i].intValue);
+        }
         break;
       case Token.decimal:
-        propertyName = "connectDistance";
-        propertyValue = statement[i].value;
+        if (++nNumeric > 2) {
+          propertyName = "connectMad";
+          propertyValue = new Short(getMadFloat(floatParameter(i)));
+        } else {
+          propertyName = "connectDistance";
+          propertyValue = statement[i].value;
+        }
         break;
       case Token.expressionBegin:
         //System.out.println(i + " " + propertyName + " " + statement.length);
@@ -3656,6 +3682,7 @@ class Eval implements Runnable {
             cmd.equals("hbond")) {
           propertyName = "connectBondOrder";
           propertyValue = cmd;
+          nNumeric = 2;
         } else if (cmd.equals("exists")) {
           propertyName = "connectNew";
           propertyValue = new Boolean(false);
@@ -3668,7 +3695,7 @@ class Eval implements Runnable {
         break;
       case Token.delete:
         propertyName = "connectBondOrder";
-        propertyValue = new Float(0.0);
+        propertyValue = new Short((short)0);
         break;
       default:
         invalidArgument();

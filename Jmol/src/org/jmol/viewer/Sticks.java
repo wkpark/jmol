@@ -35,6 +35,7 @@ class Sticks extends Shape {
   float maxBondingDistance;
   float minBondingDistance;
   short order;
+  short connectMad;
   boolean iConnectNew;
   boolean iConnectExistant;
   BitSet bsSource;
@@ -62,13 +63,13 @@ class Sticks extends Shape {
     if ("bondOrder" == propertyName) {
       if (value instanceof Short) {
         order = ((Short)value).shortValue();
-        setOrderBond(order, bsSelected);
+        setOrderBond(order, bsSelected, (short)-1);
       }
       if (value instanceof String) {
         String str = (String)value;
         for (int i = JmolConstants.bondOrderNames.length; --i >= 0; )
           if (str.equals(JmolConstants.bondOrderNames[i]))
-            setOrderBond(JmolConstants.bondOrderValues[i], bsSelected);
+            setOrderBond(JmolConstants.bondOrderValues[i], bsSelected, (short)-1);
       }
       return;
     }
@@ -82,14 +83,15 @@ class Sticks extends Shape {
       return;
     }
 
+    if ("connectMad" == propertyName) {
+      connectMad = ((Short)value).shortValue();
+      return;
+    }
+
     if ("connectBondOrder" == propertyName) {
       if (value instanceof Short) {
         order = ((Short)value).shortValue();
-      }
-      if (value instanceof Float) {
-        order = ((Float)value).shortValue();
-      }
-      if (value instanceof String) {
+      } else if (value instanceof String) {
         String str = (String)value;
         for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
           if (str.equals(JmolConstants.bondOrderNames[i])) {
@@ -126,7 +128,7 @@ class Sticks extends Shape {
       BitSet bsTarget = (BitSet)value;
       if(minBondingDistance < 0.0F) 
         minBondingDistance = 0.0F;
-      makeConnections(minBondingDistance, maxBondingDistance, (bsSource != null ? bsSource : bsSelected), bsTarget, order, iConnectExistant, iConnectNew);
+      makeConnections(minBondingDistance, maxBondingDistance, (bsSource != null ? bsSource : bsSelected), bsTarget, order, iConnectExistant, iConnectNew, connectMad);
       return;
     }
   }
@@ -156,10 +158,15 @@ class Sticks extends Shape {
       iter.next().setTranslucent(isTranslucent);
   }
 
-  void setOrderBond(short order, BitSet bs) {
+  void setOrderBond(short order, BitSet bs, short mad) {
     BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
-    while (iter.hasNext())
-      iter.next().setOrder(order);
+    //boolean isHbond = (order == JmolConstants.BOND_H_REGULAR);
+    Bond bond; 
+    while (iter.hasNext()) {
+      bond = iter.next();
+      bond.setOrder(order);
+      if(mad >= 0)bond.setMad(mad);
+    }
   }
 
   void deleteSelectedBonds(BitSet bs) {
@@ -172,7 +179,7 @@ class Sticks extends Shape {
     frame.deleteBonds(bsDelete);
   }
 
-  void makeConnections(float minDistance, float maxDistance, BitSet bsA, BitSet bsB, short order, boolean iConnectExistant, boolean iConnectNew) {
+  void makeConnections(float minDistance, float maxDistance, BitSet bsA, BitSet bsB, short order, boolean iConnectExistant, boolean iConnectNew, short mad) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     int nbonds = 0;
@@ -212,8 +219,8 @@ class Sticks extends Shape {
           if (order == 0){
             deleteSelectedBonds(bsTwoAtoms);
           } else {
-            if (!frame.bondAtomsByNumber(iA, iB, (int)order)) {
-              setOrderBond(order, bsTwoAtoms);
+            if (!frame.bondAtomsByNumber(iA, iB, (int)order, mad)) {
+              setOrderBond(order, bsTwoAtoms, mad);
             }
           }
         }

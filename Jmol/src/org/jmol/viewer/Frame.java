@@ -335,7 +335,7 @@ final class Frame {
       fileHasHbonds = true;
 }
 
-  boolean bondAtomsByNumber(int iA, int iB, int order) {
+  boolean bondAtomsByNumber(int iA, int iB, int order, short mad) {
     Atom atom1 = atoms[iA];
     Atom atom2 = atoms[iB];
 
@@ -343,6 +343,7 @@ final class Frame {
     if (bond == null) {
       return false;
     }
+    if (mad >=0) bond.mad = mad;
     if (bondCount == bonds.length)
       bonds = (Bond[]) Util.setLength(bonds, bondCount + 2
           * ATOM_GROWTH_INCREMENT);

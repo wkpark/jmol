@@ -51,6 +51,7 @@ class StatusManager {
   Hashtable messageQueue = new Hashtable();
   int statusPtr = 0;
   static int MAXIMUM_QUEUE_LENGTH = 16;
+  String compileError;
   
   StatusManager(Viewer viewer) {
     this.viewer = viewer;
@@ -128,18 +129,18 @@ class StatusManager {
       jmolStatusListener.notityNewDefaultModeMeasurement(count, status + ": " + strMeasure);
   }
   
-  synchronized void setStatusScriptStarted(int iscript, String script, String strError) {
-    if (strError == null)
-      strError = GT._("Jmol executing script ...");
+  synchronized void setStatusScriptStarted(int iscript, String script, String compileError) {
+    this.compileError = compileError;
+    if (compileError == null)
+      compileError = GT._("Jmol executing script ...");
     setStatusChanged("scriptStarted", iscript, script, false);   
-    setStatusChanged("scriptMessage", 0, strError, false);
+    setStatusChanged("scriptMessage", 0, compileError, false);
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyScriptStart(strError, script); 
+      jmolStatusListener.notifyScriptStart(compileError, script); 
   }
 
   synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
-    if(statusMessage == null) 
-      statusMessage = "Jmol script completed";
+    statusMessage = "Jmol script completed" + (compileError == null ? "" : ": " + compileError);
     setStatusChanged("scriptTerminated", msWalltime, statusMessage, false);
     if (jmolStatusListener == null)
       return;

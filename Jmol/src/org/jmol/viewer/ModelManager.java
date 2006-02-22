@@ -646,6 +646,7 @@ String getAtomInfoChime(int i) {
     info.put("visible", new Boolean(getAtomVisibility(i)));
     info.put("spacefill", new Integer(atom.madAtom >> 3));
     info.put("color", viewer.getHexColorFromIndex(atom.colixAtom));
+    info.put("colix", new Integer(atom.colixAtom));
     info.put("translucent", new Boolean(atom.isTranslucent()));
     info.put("formalCharge", new Integer(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));

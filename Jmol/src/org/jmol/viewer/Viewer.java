@@ -1851,13 +1851,11 @@ final public class Viewer extends JmolViewer {
   public String evalStringWait(String strScript) {
     if (strScript == null)
       return null;
-    getProperty("String", "jmolStatus", "all");
-    if (!getEval().loadScriptString(strScript, false))
-      return eval.getErrorMessage();
-    eval.run();
-    String str = (String) getProperty("JSON", "jmolStatus", "all");
-    getProperty("String", "jmolStatus", "none");
-    return str;
+    String statusList = statusManager.statusList;
+    getProperty("String", "jmolStatus", statusList);
+    if (getEval().loadScriptString(strScript, false))
+      eval.run();
+    return (String) getProperty("JSON", "jmolStatus", statusList);
   }
 
   int iscript = 0;
@@ -1866,6 +1864,12 @@ final public class Viewer extends JmolViewer {
     iscript++;
     String strError = evalString(script);
     setStatusScriptStarted(iscript, script, strError);
+    return strError;
+  }
+
+  public String scriptCheck(String script) {
+    iscript++;
+    String strError = evalString(script);
     return strError;
   }
 
@@ -2012,7 +2016,7 @@ final public class Viewer extends JmolViewer {
 
   void setShapeSize(int shapeID, int size) {
     modelManager.setShapeSize(shapeID, size, selectionManager.bsSelection);
-    refresh(0, "Viewer:setShapeSize()");
+    refresh(0, "Viewer:setShapeSize(" +shapeID + "," + size + ")");
   }
 
   int getShapeSize(int shapeID) {

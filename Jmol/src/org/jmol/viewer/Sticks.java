@@ -35,7 +35,8 @@ class Sticks extends Shape {
   float maxBondingDistance;
   float minBondingDistance;
   short order;
-  boolean isConnectStatic;
+  boolean iConnectNew;
+  boolean iConnectExistant;
   BitSet bsSource;
   
   void setSize(int size, BitSet bsSelected) {
@@ -71,15 +72,13 @@ class Sticks extends Shape {
       }
       return;
     }
-
-    //sorry; I couldn't figure out the type-casting business! -BH
-    if ("connectStatic" == propertyName) {
-      isConnectStatic = true;
+    if ("connectNew" == propertyName) {
+      iConnectNew = ((Boolean)value).booleanValue();
       return;
     }
 
-    if ("connectDynamic" == propertyName) {
-      isConnectStatic = false;
+    if ("connectExistant" == propertyName) {
+      iConnectExistant = ((Boolean)value).booleanValue();
       return;
     }
 
@@ -127,7 +126,7 @@ class Sticks extends Shape {
       BitSet bsTarget = (BitSet)value;
       if(minBondingDistance < 0.0F) 
         minBondingDistance = 0.0F;
-      makeConnections(minBondingDistance, maxBondingDistance, (bsSource != null ? bsSource : bsSelected), bsTarget, order, isConnectStatic);
+      makeConnections(minBondingDistance, maxBondingDistance, (bsSource != null ? bsSource : bsSelected), bsTarget, order, iConnectExistant, iConnectNew);
       return;
     }
   }
@@ -151,7 +150,7 @@ class Sticks extends Shape {
 
   void setTranslucencyBond(boolean isTranslucent,
                            short bondTypeMask, BitSet bs) {
-    System.out.println("setTranslucencyBond " + isTranslucent);
+    //System.out.println("setTranslucencyBond " + isTranslucent);
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext())
       iter.next().setTranslucent(isTranslucent);
@@ -173,13 +172,13 @@ class Sticks extends Shape {
     frame.deleteBonds(bsDelete);
   }
 
-  void makeConnections(float minDistance, float maxDistance, BitSet bsA, BitSet bsB, short order, boolean isStatic) {
+  void makeConnections(float minDistance, float maxDistance, BitSet bsA, BitSet bsB, short order, boolean iConnectExistant, boolean iConnectNew) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     int nbonds = 0;
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(false);
-    
+    //System.out.println(iConnectNew + "," + iConnectExistant);
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
     //System.out.println("distances "+minDistance+" "+maxDistance);
@@ -195,11 +194,15 @@ class Sticks extends Shape {
         if (   iB == iA
             || (frame.getAtomAt(iA).getModelIndex() != frame.getAtomAt(iB).getModelIndex())
             || (iB < iA && bsA.get(iB) && bsB.get(iA))
-            || (isStatic && !atomA.isBonded(atoms[iB]))
-           )
+            )
+          continue;
+        Atom atomB = atoms[iB];
+        boolean isBonded = atomA.isBonded(atomB);
+        if (isBonded && !iConnectExistant 
+            || !isBonded && !iConnectNew
+            )
           continue;
         //System.out.println(iA+" "+iB+" continuing");
-        Atom atomB = atoms[iB];
         float distanceSquared = pointA.distanceSquared(atomB.point3f);
         if (distanceSquared > minDistanceSquared && distanceSquared <= maxDistanceSquared) {
           BitSet bsTwoAtoms=new BitSet();
@@ -216,7 +219,7 @@ class Sticks extends Shape {
         }
       }
     }
-    System.out.println("Sticks.java::makeConnections: " + nbonds + " bonds " + (order == 0 ? " deleted":" formed or modified"));
+    viewer.scriptStatus(nbonds + " bonds " + (order == 0 ? " deleted":" formed or modified"));
     viewer.setBondSelectionModeOr(bondmode);
   }
 }

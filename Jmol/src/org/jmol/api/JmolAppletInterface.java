@@ -42,7 +42,9 @@ public interface JmolAppletInterface {
   public String getPropertyAsJSON(String infoType, String paramInfo);
   public Object getProperty(String infoType);
   public Object getProperty(String infoType, String paramInfo);
-  public String script(String script);
+  public void script(String script);
+  public String scriptNoWait(String script);
+  public String scriptCheck(String script);
   public String scriptWait(String script);
   public void loadInline(String strModel);
   public void loadInline(String strModel, String script);

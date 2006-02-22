@@ -455,8 +455,10 @@ class Eval implements Runnable {
         show();
         break;
       case Token.frame:
+        frame(1, false);
+        break;
       case Token.model:
-        frame();
+        frame(1, true);
         break;
       case Token.font:
         font();
@@ -2413,7 +2415,7 @@ class Eval implements Runnable {
       showAnimation();
       break;
     case Token.frame:
-      frame(2);
+      frame(2, false);
       break;
     case Token.mode:
       animationMode();
@@ -2429,11 +2431,8 @@ class Eval implements Runnable {
     }
   }
 
-  void frame() throws ScriptException {
-    frame(1);
-  }
-
-  void frame(int offset) throws ScriptException {
+  void frame(int offset, boolean useModelNumber) throws ScriptException {
+    useModelNumber = true; //for now -- as before -- remove to implement frame/model difference 
     if (statementLength <= offset)
       badArgumentCount();
     if (statement[offset].tok == Token.hyphen) {
@@ -2445,8 +2444,8 @@ class Eval implements Runnable {
       viewer.setAnimationPrevious();
       return;
     }
-    int modelNumber = -1;
-    int modelNumber2 = -1;
+    int frameNumber = -1;
+    int frameNumber2 = -1;
     boolean isPlay = false;
     boolean isRange = false;
     while (offset < statementLength) {
@@ -2458,18 +2457,16 @@ class Eval implements Runnable {
       case Token.none:
         break;
       case Token.integer:
-        if(modelNumber == -1) {
-          modelNumber = statement[offset].intValue;
+        if(frameNumber == -1) {
+          frameNumber = statement[offset].intValue;
         } else {
-          modelNumber2 = statement[offset].intValue;        
+          frameNumber2 = statement[offset].intValue;        
         }
         break;
       case Token.play:
-        //System.out.println("play");
         isPlay = true;
         break;
       case Token.range:
-        //System.out.println("play");
         isRange = true;
         break;
       default:
@@ -2478,19 +2475,19 @@ class Eval implements Runnable {
       }
       
       if (offset == statementLength - 1) {
-        int modelIndex = viewer.getModelNumberIndex(modelNumber);
+        int modelIndex = (useModelNumber ? viewer.getModelNumberIndex(frameNumber) : frameNumber - 1);
         if(! isPlay  && ! isRange || modelIndex >= 0) {
           viewer.setDisplayModelIndex(modelIndex);
         }
         if(isPlay || isRange) {
-          if (isRange || modelNumber2 >=0) {
-            int modelIndex2 = viewer.getModelNumberIndex(modelNumber2);
+          if (isRange || frameNumber2 >=0) {
+            int modelIndex2 = (useModelNumber ? viewer.getModelNumberIndex(frameNumber2) : frameNumber2 - 1);
             //System.out.println("isPlay " + modelIndex +" "+ modelIndex2);
 
             viewer.setAnimationDirection(1);
             viewer.setAnimationRange(modelIndex, modelIndex2);
           } 
-          if (! isRange)
+          if (isPlay)
             viewer.resumeAnimation();
         }
       }
@@ -3617,9 +3614,9 @@ class Eval implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
         "connectBondOrder", new Float(1.0));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-        "connectDynamic", new Float(1.0));
+        "connectExistant", new Boolean(true));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-        "connectDynamic", new Float(1.0));
+        "connectNew", new Boolean(true));
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
         "sourceSet", null);
 
@@ -3659,9 +3656,12 @@ class Eval implements Runnable {
             cmd.equals("hbond")) {
           propertyName = "connectBondOrder";
           propertyValue = cmd;
-        } else if (cmd.equals("static")) {
-          propertyName = "connectStatic";
-          propertyValue = new Boolean(true);
+        } else if (cmd.equals("exists")) {
+          propertyName = "connectNew";
+          propertyValue = new Boolean(false);
+        } else if (cmd.equals("new")) {
+          propertyName = "connectExistant";
+          propertyValue = new Boolean(false);
         } else {
           unrecognizedSubcommand();
         }

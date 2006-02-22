@@ -431,10 +431,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     } else {
       buttonCallbackNotificationPending = false;
     }
-    String str = script(script);
+    script(script);
   }
 
-  synchronized public String script(String script) {
+  synchronized public void script(String script) {
+    viewer.script(script);
+  }   
+  
+  synchronized public String scriptCheck(String script) {
+    return viewer.scriptCheck(script);
+  }   
+  
+  synchronized public String scriptNoWait(String script) {
     return viewer.script(script);
   }   
   
@@ -478,7 +486,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   
   public void loadInline(String strModel, String script) {
     loadInline(strModel);
-    String str = script(script);
+    script(script);
   }
 
   public void loadDOMNode(JSObject DOMNode) {
@@ -591,7 +599,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void notifyScriptTermination(String errorMessage, int msWalltime) {
-      showStatusAndConsole(GT._("Jmol script completed"));
+      showStatusAndConsole(GT._(errorMessage));
       if (buttonCallbackNotificationPending) {
         System.out.println("!!!! calling back " + buttonCallback);
         buttonCallbackAfter[0] = buttonName;

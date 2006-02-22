@@ -106,6 +106,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setAnimationFps(int framesPerSecond);
 
   abstract public String script(String script);
+  abstract public String scriptCheck(String script);
   abstract public String scriptWait(String script);
   abstract public void loadInline(String strModel);
 

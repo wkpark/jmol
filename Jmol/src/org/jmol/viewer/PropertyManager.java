@@ -123,11 +123,13 @@ class PropertyManager {
     
     return "getProperty ERROR\n\nOptions include\n"
     + "\n getProperty(\"appletInfo\")"
+    + "\n getProperty(\"animationInfo\")"
     + "\n getProperty(\"fileName\")"
     + "\n getProperty(\"fileHeader\")"
     + "\n getProperty(\"fileContents\")"
     + "\n getProperty(\"fileContents\",\"<pathname>\")"
     + "\n\n getProperty(\"modelInfo\")"
+    + "\n getProperty(\"chainInfo\")"
     + "\n\n getProperty(\"boundboxInfo\")"
     + "\n getProperty(\"centerInfo\")"
     + "\n getProperty(\"orientationInfo\")"

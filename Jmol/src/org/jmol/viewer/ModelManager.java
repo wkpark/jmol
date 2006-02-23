@@ -597,6 +597,7 @@ String getAtomInfoChime(int i) {
   
   Hashtable getModelInfoObject() {
     Hashtable info = new Hashtable();
+    boolean isPDB = frame.isPDB;
     int modelCount = viewer.getModelCount();
     info.put("modelCount",new Integer(modelCount));
     info.put("modelSetHasVibrationVectors", 
@@ -610,6 +611,8 @@ String getAtomInfoChime(int i) {
       model.put("num",new Integer(viewer.getModelNumber(i)));
       model.put("name",viewer.getModelName(i));
       model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
+      if(isPDB)
+        addChainInfo(i, model);
       models.add(model);
     }
     info.put("models",models);
@@ -744,6 +747,30 @@ String getAtomInfoChime(int i) {
    return info;
   }
 
+  void addChainInfo(int modelIndex, Hashtable modelInfo) {
+    Model model = frame.mmset.getModel(modelIndex);
+    int nChains = model.getChainCount();
+    Vector infoChains = new Vector();    
+    for(int i = 0; i < nChains; i++) {
+      Chain chain = model.getChain(i);
+      Vector infoChain = new Vector();
+      int nGroups = chain.getGroupCount();
+      for (int igroup = 0; igroup < nGroups; igroup++) {
+        Group group = chain.getGroup(igroup);
+        Hashtable infoGroup = new Hashtable();
+        infoGroup.put("groupID", new Short(group.getGroupID()));
+        infoGroup.put("seqCode", group.getSeqcodeString());
+        infoGroup.put("_apt1", new Integer(group.firstAtomIndex));
+        infoGroup.put("_apt2", new Integer(group.lastAtomIndex));
+        infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex));
+        infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex));
+        infoChain.add(infoGroup);
+      }
+      infoChains.add(infoChain);
+    }
+    modelInfo.put("chains",infoChains);
+  }  
+  
 
 }
 

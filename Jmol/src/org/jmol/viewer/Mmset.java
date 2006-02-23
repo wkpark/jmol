@@ -184,6 +184,10 @@ final class Mmset {
     return models[modelIndex].getPolymerCount();
   }
   
+  int getChainCountInModel(int modelIndex) {
+    return models[modelIndex].getChainCount();
+  }
+  
   Polymer getPolymerAt(int modelIndex, int polymerIndex) {
     return models[modelIndex].getPolymer(polymerIndex);
   }

@@ -34,7 +34,6 @@ class Group {
   int firstAtomIndex = -1;
   int lastAtomIndex;
 
-
   Group(Chain chain, String group3, int seqcode,
         int firstAtomIndex, int lastAtomIndex) {
     this.chain = chain;
@@ -111,6 +110,10 @@ class Group {
 
   byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;
+  }
+
+  Hashtable getMyInfo() {
+    return null;
   }
 
   boolean isProtein() { return false; }

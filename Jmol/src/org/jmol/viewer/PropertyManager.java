@@ -71,6 +71,9 @@ class PropertyManager {
 
     // no second parameter here
     
+    if(infoType.equalsIgnoreCase("polymerInfo"))
+      return viewer.getPolymerInfo();      
+
     if(infoType.equalsIgnoreCase("messageQueue"))
       return viewer.getMessageQueue();      
 
@@ -129,6 +132,7 @@ class PropertyManager {
     + "\n getProperty(\"fileContents\")"
     + "\n getProperty(\"fileContents\",\"<pathname>\")"
     + "\n\n getProperty(\"modelInfo\")"
+    + "\n\n getProperty(\"polymerInfo\")"
     + "\n getProperty(\"chainInfo\")"
     + "\n\n getProperty(\"boundboxInfo\")"
     + "\n getProperty(\"centerInfo\")"

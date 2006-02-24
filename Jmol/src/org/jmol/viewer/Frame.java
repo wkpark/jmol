@@ -595,6 +595,7 @@ final class Frame {
                           endChainID, endSequenceNumber, endInsertionCode);
   }
 
+  
   int getAtomIndexFromAtomNumber(int atomNumber) {
     for (int i = atomCount; --i >= 0; ) {
       if (atoms[i].getAtomNumber() == atomNumber)

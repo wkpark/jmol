@@ -200,13 +200,6 @@ class ModelManager {
     return (frame == null) ? null : frame.getBoundBoxCornerVector();
   }
 
-  Hashtable getBoundBoxInfo() {
-    Hashtable info = new Hashtable();
-    info.put("center", getBoundBoxCenter());
-    info.put("edge", getBoundBoxCornerVector());
-    return info;
-  }
-
   int getChainCount() {
     return (frame == null) ? 0 : frame.getChainCount();
   }
@@ -595,6 +588,44 @@ String getAtomInfoChime(int i) {
     return s1.substring(0, s1.length() - s2.length()) + s2;
   }
   
+  
+  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
+    "MODEL ", "SCALE",  "HETATM", "SEQRES",
+    "DBREF ", };
+
+  String getPDBHeader() {
+    if (! frame.isPDB) {
+      return "!Not a pdb file!\n" + getFileHeader();
+    }
+    String modelFile = viewer.getCurrentFileAsString();
+    int ichMin = modelFile.length();
+    for (int i = pdbRecords.length; --i >= 0; ) {
+      int ichFound = -1;
+      String strRecord = pdbRecords[i];
+      if (modelFile.startsWith(strRecord))
+        ichFound = 0;
+      else {
+        String strSearch = "\n" + strRecord;
+        ichFound = modelFile.indexOf(strSearch);
+        if (ichFound >= 0)
+          ++ichFound;
+      }
+      if (ichFound >= 0 && ichFound < ichMin)
+        ichMin = ichFound;
+    }
+    return modelFile.substring(0, ichMin);
+  }
+
+  String getFileHeader() {
+    String info = "no header information found";
+    if (frame.isPDB) 
+      return getPDBHeader();
+    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) 
+      return getModelName(0);
+    // options here for other file formats?
+   return info;
+  }
+
   Hashtable getModelInfoObject() {
     Hashtable info = new Hashtable();
     boolean isPDB = frame.isPDB;
@@ -612,7 +643,7 @@ String getAtomInfoChime(int i) {
       model.put("name",viewer.getModelName(i));
       model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
       if(isPDB)
-        addChainInfo(i, model);
+        model.put("chains", getChainInfo(i));
       models.add(model);
     }
     info.put("models",models);
@@ -709,45 +740,8 @@ String getAtomInfoChime(int i) {
     }
     return str;
   }
-  
-  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
-    "MODEL ", "SCALE",  "HETATM", "SEQRES",
-    "DBREF ", };
 
-  String getPDBHeader() {
-    if (! frame.isPDB) {
-      return "!Not a pdb file!\n" + getFileHeader();
-    }
-    String modelFile = viewer.getCurrentFileAsString();
-    int ichMin = modelFile.length();
-    for (int i = pdbRecords.length; --i >= 0; ) {
-      int ichFound = -1;
-      String strRecord = pdbRecords[i];
-      if (modelFile.startsWith(strRecord))
-        ichFound = 0;
-      else {
-        String strSearch = "\n" + strRecord;
-        ichFound = modelFile.indexOf(strSearch);
-        if (ichFound >= 0)
-          ++ichFound;
-      }
-      if (ichFound >= 0 && ichFound < ichMin)
-        ichMin = ichFound;
-    }
-    return modelFile.substring(0, ichMin);
-  }
-
-  String getFileHeader() {
-    String info = "no header information found";
-    if (frame.isPDB) 
-      return getPDBHeader();
-    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) 
-      return getModelName(0);
-    // options here for other file formats?
-   return info;
-  }
-
-  void addChainInfo(int modelIndex, Hashtable modelInfo) {
+  Vector getChainInfo(int modelIndex) {
     Model model = frame.mmset.getModel(modelIndex);
     int nChains = model.getChainCount();
     Vector infoChains = new Vector();    
@@ -755,6 +749,7 @@ String getAtomInfoChime(int i) {
       Chain chain = model.getChain(i);
       Vector infoChain = new Vector();
       int nGroups = chain.getGroupCount();
+      Hashtable arrayName = new Hashtable();
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
         Hashtable infoGroup = new Hashtable();
@@ -766,11 +761,49 @@ String getAtomInfoChime(int i) {
         infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex));
         infoChain.add(infoGroup);
       }
-      infoChains.add(infoChain);
+      arrayName.put("residues",infoChain);
+      infoChains.add(arrayName);
     }
-    modelInfo.put("chains",infoChains);
+    return infoChains;
   }  
   
+  Hashtable getPolymerInfoAll() {
+    Hashtable finalInfo = new Hashtable();
+    Hashtable modelInfo;
+    Vector modelVector = new Vector();
+    Vector info;
+    int modelCount = getModelCount();
+    for (int i = 0; i < modelCount; ++i) {
+      modelInfo = new Hashtable();
+      info = new Vector();
+      int polymerCount = getPolymerCountInModel(i);
+      for (int ip = 0; ip < polymerCount; ip++)
+        info.add(getPolymerInfo(i, ip));
+      modelInfo.put("polymers",info);
+      modelVector.add(modelInfo);
+    }
+    finalInfo.put("models",modelVector);
+    return finalInfo;
+  }
+
+  Hashtable getPolymerInfo(int iModel, int iPolymer) {
+    Hashtable returnInfo = new Hashtable();
+    Vector info = new Vector();
+    Polymer polymer = frame.mmset.getModel(iModel).getPolymer(iPolymer) ;
+    int monomerCount = polymer.monomerCount;
+    for(int i = 0; i < monomerCount; i++)
+      info.add(polymer.monomers[i].getMyInfo());
+    returnInfo.put("monomers",info);
+    return returnInfo;
+  }
+  
+  
+  Hashtable getBoundBoxInfo() {
+    Hashtable info = new Hashtable();
+    info.put("center", getBoundBoxCenter());
+    info.put("edge", getBoundBoxCornerVector());
+    return info;
+  }
 
 }
 

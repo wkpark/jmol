@@ -1305,6 +1305,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelInfo();
   }
 
+  public Hashtable getPolymerInfo() {
+    return modelManager.getPolymerInfoAll();
+  }
+  
   public Properties getModelSetProperties() {
     return modelManager.getModelSetProperties();
   }

@@ -31,8 +31,10 @@ class Helix extends ProteinStructure {
   Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
     super(apolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX,
           monomerIndex, monomerCount);
-    //    System.out.println("new Helix('" + polymer.chain.chainID + "'," +
-    //                       polymerIndex + "," + monomerCount + ")");
+        /*
+           System.out.println("new Helix('" + apolymer + "'," +
+                           monomerIndex + "," + monomerCount + ")");
+        */
   }
 
   // copied from sheet -- not correct

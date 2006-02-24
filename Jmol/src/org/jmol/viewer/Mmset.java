@@ -23,8 +23,10 @@
  */
 package org.jmol.viewer;
 
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.BitSet;
+import java.util.Vector;
 
 // Mmset == Molecular Model set
 
@@ -243,5 +245,24 @@ final class Mmset {
       else
         type = JmolConstants.PROTEIN_STRUCTURE_NONE;
     }
+
+    Hashtable toHashtable() {
+      Hashtable info = new Hashtable();
+      info.put("type",typeName);
+      info.put("startChainID",startChainID+"");
+      info.put("startSeqcode",new Integer(startSeqcode));
+      info.put("endChainID",endChainID+"");
+      info.put("endSeqcode",new Integer(endSeqcode));
+      return info;
+    }
+
   }
+  
+  Vector getStructureInfo() {
+    Vector info = new Vector();
+    for(int i = 0; i < structureCount; i++) 
+      info.add(structures[i].toHashtable());
+    return info;
+  }
+  
 }

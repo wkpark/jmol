@@ -27,7 +27,9 @@ class PmeshRenderer extends MeshRenderer {
 
   void render() {
     Pmesh pmesh = (Pmesh)shape;
+    if (!pmesh.isValid)
+      return;
     for (int i = pmesh.meshCount; --i >= 0; )
-      render1(pmesh.meshes[i]);
+        render1(pmesh.meshes[i]);
   }
 }

@@ -319,8 +319,12 @@ class FileManager {
     return errorMessage;
   }
 
-  final byte[] abMagic = new byte[4];
+  Object getBufferedReaderForString(String string) {
+    return new BufferedReader(new StringReader(string));
+  }
 
+  final byte[] abMagic = new byte[4];
+  
   Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
     Object t = getInputStreamOrErrorMessageFromName(name);
     if (t instanceof String)

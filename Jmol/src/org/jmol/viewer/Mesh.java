@@ -36,6 +36,7 @@ class Mesh {
   short colix;
   short[] vertexColixes;
   Graphics3D g3d;
+  
     
   int vertexCount;
   Point3f[] vertices;
@@ -95,15 +96,19 @@ class Mesh {
   void sumVertexNormals(Vector3f[] vectorSums) {
     final Vector3f vNormalizedNormal = new Vector3f();
 
+    //FIXME uncaught exception! null pi;
+
     for (int i = polygonCount; --i >= 0; ) {
       int[] pi = polygonIndexes[i];
-      g3d.calcNormalizedNormal(vertices[pi[0]],
-                               vertices[pi[1]],
-                               vertices[pi[2]],
-                               vNormalizedNormal);
-      for (int j = pi.length; --j >= 0; ) {
-        int k = pi[j];
-        vectorSums[k].add(vNormalizedNormal);
+      if(pi != null) {
+        g3d.calcNormalizedNormal(vertices[pi[0]],
+                                 vertices[pi[1]],
+                                 vertices[pi[2]],
+                                 vNormalizedNormal);
+        for (int j = pi.length; --j >= 0; ) {
+          int k = pi[j];
+          vectorSums[k].add(vNormalizedNormal);
+        }
       }
     }
   }

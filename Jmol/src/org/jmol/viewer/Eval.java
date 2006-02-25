@@ -132,7 +132,7 @@ class Eval implements Runnable {
     if (! compiler.compile(filename, script)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
-      viewer.scriptStatus(errorMessage);
+      viewer.scriptStatus("script compiler ERROR: " + errorMessage);
       return false;
     }
     pc = 0;
@@ -258,7 +258,7 @@ class Eval implements Runnable {
     if (compiler.compile("#predefine", script)) {
       Token [][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
-        viewer.scriptStatus("predefinition does not have exactly 1 command:"
+        viewer.scriptStatus("JmolConstants.java ERROR: predefinition does not have exactly 1 command:"
                             + script);
         return;
       }
@@ -270,13 +270,13 @@ class Eval implements Runnable {
           String variable = (String)statement[1].value;
           variables.put(variable, statement);
         } else {
-          viewer.scriptStatus("invalid variable name:" + script);
+          viewer.scriptStatus("JmolConstants.java ERROR: invalid variable name:" + script);
         }
       } else {
-        viewer.scriptStatus("bad predefinition length:" + script);
+        viewer.scriptStatus("JmolConstants.java ERROR: bad predefinition length:" + script);
       }
     } else {
-      viewer.scriptStatus("predefined set compile error:" + script +
+      viewer.scriptStatus("JmolConstants.java ERROR: predefined set compile error:" + script +
                           "\ncompile error:" + compiler.getErrorMessage());
     }
   }
@@ -293,13 +293,13 @@ class Eval implements Runnable {
     } catch (ScriptException e) {
       error = true;
       errorMessage = "" + e;
-      viewer.scriptStatus(errorMessage);
+      viewer.scriptStatus("script ERROR: " + errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && interruptExecution)
       errorMessage = "execution interrupted";
     if (errorMessage != null)
-      viewer.scriptStatus(errorMessage);
+      viewer.scriptStatus("script ERROR: " + errorMessage);
     else if (! tQuiet)
       viewer.scriptStatus("Script completed");
     clearMyThread();
@@ -510,7 +510,7 @@ class Eval implements Runnable {
       case Token.view:
       case Token.list:
       case Token.display3d:
-        viewer.scriptStatus("Script command not implemented:" + token.value);
+        viewer.scriptStatus("script ERROR: command not implemented:" + token.value);
         break;
       default:
         unrecognizedCommand(token);
@@ -633,6 +633,10 @@ class Eval implements Runnable {
     evalError("number expected");
   }
 
+  void stringExpected() throws ScriptException {
+    evalError("string expected");
+  }
+
   void propertyNameExpected() throws ScriptException {
     evalError("property name expected");
   }
@@ -709,7 +713,7 @@ class Eval implements Runnable {
   }
 
   void notImplemented(Token token) {
-    viewer.scriptStatus("" + token.value +
+    viewer.scriptStatus("script ERROR: " + token.value +
                        " not implemented in command:" + statement[0].value);
   }
 
@@ -3353,6 +3357,7 @@ class Eval implements Runnable {
   void pmesh() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_PMESH);
     viewer.setShapeProperty(JmolConstants.SHAPE_PMESH, "meshID", null);
+    Object t;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -3363,10 +3368,22 @@ class Eval implements Runnable {
         break;
       case Token.string:
         String filename = (String)statement[i].value;
-        Object t =
-          viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
-        if (t instanceof String)
-          fileNotFoundException(filename + ":" + t);
+        if (filename.equalsIgnoreCase("inline")) {
+          if (i + 1 < statementLength && statement[i].tok == Token.string) {
+            String data = viewer.simpleReplace((String)statement[i + 1].value,"|","\n");
+            System.out.println("pmesh inline data:\n" + data);
+            t = viewer.getBufferedReaderForString(data);
+            i++;
+          } else {
+            stringExpected();
+            break;
+          }
+        } else {
+          t =
+            viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
+          if (t instanceof String)
+            fileNotFoundException(filename + ":" + t);
+        }
         propertyName = "bufferedreader";
         propertyValue = t;
         break;

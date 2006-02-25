@@ -789,7 +789,8 @@ class TransformManager {
     int z = (int)point3fScreenTemp.z;
     if (z < cameraDistance) {
       if (Float.isNaN(point3fScreenTemp.z)) {
-        System.out.println("NaN seen in TransformPoint");
+        //removed for extending pmesh to points and lines  BH 2/25/06 
+        //System.out.println("NaN seen in TransformPoint");
         z = 1;
       } else {
         System.out.println("need to back up the camera");

@@ -169,7 +169,7 @@ class StatusManager {
 
   synchronized void setScriptStatus(String strStatus) {
     if (strStatus == null) return; 
-    setStatusChanged("scriptStatus", 0, strStatus, false);
+    setStatusChanged((strStatus.indexOf("ERROR:") >= 0 ? "scriptError" : "scriptStatus"), 0, strStatus, false);
     if (jmolStatusListener != null)
       jmolStatusListener.sendConsoleMessage(strStatus);
   }

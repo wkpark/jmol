@@ -33,6 +33,7 @@ abstract class MeshCollection extends SelectionIndependentShape {
   int meshCount;
   Mesh[] meshes = new Mesh[4];
   Mesh currentMesh;
+  boolean isValid = false;
 
   void initShape() {
     colix = Graphics3D.ORANGE;

@@ -36,10 +36,11 @@ class Pmesh extends MeshCollection {
       if (currentMesh == null)
         allocMesh(null);
       currentMesh.clear();
-      readPmesh(br);
-      currentMesh.initialize();
-      currentMesh.visible = true;
-      return;
+      isValid = readPmesh(br);
+      if(isValid) {
+        currentMesh.initialize();
+        currentMesh.visible = true;
+      }
     }
     super.setProperty(propertyName, value, bs);
   }
@@ -51,7 +52,7 @@ class Pmesh extends MeshCollection {
    *
    */
 
-  void readPmesh(BufferedReader br) {
+  boolean readPmesh(BufferedReader br) {
     //    System.out.println("Pmesh.readPmesh(" + br + ")");
     try {
       readVertexCount(br);
@@ -63,8 +64,11 @@ class Pmesh extends MeshCollection {
       readPolygonIndexes(br);
       //      System.out.println("polygonIndexes read");
     } catch (Exception e) {
-      System.out.println("Pmesh.readPmesh exception:" + e);
+//      System.out.println("Pmesh.readPmesh exception:" + e);
+      viewer.scriptStatus("pmesh ERROR: read exception: " + e);
+      return false;
     }
+    return true;
   }
 
   void readVertexCount(BufferedReader br) throws Exception {
@@ -96,15 +100,23 @@ class Pmesh extends MeshCollection {
 
   int[] readPolygon(BufferedReader br) throws Exception {
     int vertexIndexCount = parseInt(br.readLine());
-    if (vertexIndexCount < 4)
+    if (vertexIndexCount < 2) {
+      viewer.scriptStatus("pmesh ERROR: each polygon must have at least two verticies indicated");
+      isValid = false;
       return null;
+    }
     int vertexCount = vertexIndexCount - 1;
-    int[] vertices = new int[vertexCount];
+    int nVertex = (vertexCount < 3 ? 3 : vertexCount);
+    int[] vertices = new int[nVertex];
     for (int i = 0; i < vertexCount; ++i)
       vertices[i] = parseInt(br.readLine());
+    for (int i = vertexCount; i < nVertex; ++i)
+      vertices[i] = vertices[i - 1];
     int extraVertex = parseInt(br.readLine());
     if (extraVertex != vertices[0]) {
-      System.out.println("?Que? polygon is not complete");
+//      System.out.println("?Que? polygon is not complete");
+      viewer.scriptStatus("pmesh Error: last polygon point reference (" + extraVertex + ") is not the same as the first (" + vertices[0] + ")");
+      isValid = false;
       throw new NullPointerException();
     }
     return vertices;

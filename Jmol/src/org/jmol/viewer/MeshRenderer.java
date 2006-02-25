@@ -64,39 +64,41 @@ abstract class MeshRenderer extends ShapeRenderer {
     short[] vertexColixes = mesh.vertexColixes;
     for (int i = mesh.polygonCount; --i >= 0; ) {
       int[] vertexIndexes = polygonIndexes[i];
-      int iA = vertexIndexes[0];
-      int iB = vertexIndexes[1];
-      int iC = vertexIndexes[2];
-      short colixA, colixB, colixC;
-      if (vertexColixes != null) {
-        colixA = vertexColixes[iA];
-        colixB = vertexColixes[iB];
-        colixC = vertexColixes[iC];
-      } else {
-        colixA = colixB = colixC = colix;
-      }
-      if (vertexIndexes.length == 3) {
-        if (fill)
-          g3d.fillTriangle(screens[iA], colixA, normixes[iA],
-                           screens[iB], colixB, normixes[iB],
-                           screens[iC], colixC, normixes[iC]);
-        else // FIX ME ... need a drawTriangle routine with multiple colors
-          g3d.drawTriangle(colixA, screens[iA], screens[iB], screens[iC]);
-          
-      } else if (vertexIndexes.length == 4) {
-        int iD = vertexIndexes[3];
-        short colixD = vertexColixes != null ? vertexColixes[iD] : colix;
-        if (fill)
-          g3d.fillQuadrilateral(screens[iA], colixA, normixes[iA],
-                                screens[iB], colixB, normixes[iB],
-                                screens[iC], colixC, normixes[iC],
-                                screens[iD], colixD, normixes[iD]);
-        else
-          g3d.drawQuadrilateral(colixA, screens[iA],
-                                screens[iB], screens[iC], screens[iD]);
-
-      } else {
-        System.out.println("PmeshRenderer: polygon with > 4 sides");
+      if (vertexIndexes != null) {
+        int iA = vertexIndexes[0];
+        int iB = vertexIndexes[1];
+        int iC = vertexIndexes[2];
+        short colixA, colixB, colixC;
+        if (vertexColixes != null) {
+          colixA = vertexColixes[iA];
+          colixB = vertexColixes[iB];
+          colixC = vertexColixes[iC];
+        } else {
+          colixA = colixB = colixC = colix;
+        }
+        if (vertexIndexes.length == 3) {
+          if (fill)
+            g3d.fillTriangle(screens[iA], colixA, normixes[iA],
+                             screens[iB], colixB, normixes[iB],
+                             screens[iC], colixC, normixes[iC]);
+          else // FIX ME ... need a drawTriangle routine with multiple colors
+            g3d.drawTriangle(colixA, screens[iA], screens[iB], screens[iC]);
+            
+        } else if (vertexIndexes.length == 4) {
+          int iD = vertexIndexes[3];
+          short colixD = vertexColixes != null ? vertexColixes[iD] : colix;
+          if (fill)
+            g3d.fillQuadrilateral(screens[iA], colixA, normixes[iA],
+                                  screens[iB], colixB, normixes[iB],
+                                  screens[iC], colixC, normixes[iC],
+                                  screens[iD], colixD, normixes[iD]);
+          else
+            g3d.drawQuadrilateral(colixA, screens[iA],
+                                  screens[iB], screens[iC], screens[iD]);
+  
+        } else {
+          System.out.println("PmeshRenderer: polygon with > 4 sides");
+        }
       }
     }
   }

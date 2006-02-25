@@ -146,8 +146,8 @@ class ModelManager {
     String str =  "model count = " + modelCount +
                  "\nmodelSetHasVibrationVectors:" +
                  modelSetHasVibrationVectors();
-    //Properties props = getModelSetProperties();
-    //str = str.concat(listProperties(props));
+    Properties props = getModelSetProperties();
+    str = str.concat(listProperties(props));
     for (int i = 0; i < modelCount; ++i) {
       str = str.concat("\n" + i + ":" + getModelNumber(i) +
                  ":" + getModelName(i) +
@@ -633,8 +633,8 @@ String getAtomInfoChime(int i) {
     info.put("modelCount",new Integer(modelCount));
     info.put("modelSetHasVibrationVectors", 
         new Boolean(viewer.modelSetHasVibrationVectors()));
-    //Properties props = viewer.getModelSetProperties();
-    //str = str.concat(listPropertiesJSON(props));
+    Properties props = viewer.getModelSetProperties();
+    info.put("modelSetProperties",listPropertiesAsObject(props));
     Vector models = new Vector();
     for (int i = 0; i < modelCount; ++i) {
       Hashtable model = new Hashtable();
@@ -739,6 +739,18 @@ String getAtomInfoChime(int i) {
       }
     }
     return str;
+  }
+
+  Hashtable listPropertiesAsObject(Properties props) {
+    Hashtable info = new Hashtable();
+    if (props == null)
+      return info;
+    Enumeration e = props.propertyNames();
+    while (e.hasMoreElements()) {
+      String propertyName = (String)e.nextElement();
+      info.put(propertyName,props.getProperty(propertyName));
+    }
+    return info;
   }
 
   Vector getChainInfo(int modelIndex) {

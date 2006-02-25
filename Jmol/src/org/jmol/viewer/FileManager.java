@@ -106,6 +106,7 @@ class FileManager {
       }
       fullPathNames[i] = fullPathName;
     }
+    
     fullPathName = fileName = nameAsGiven = modelName;
     inlineData = "";
     isInline = false;

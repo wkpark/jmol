@@ -107,7 +107,8 @@ final class Frame {
     // therefore, we can do == comparisions against string constants
     // if (modelSetTypeName == "xyz") { }
     this.modelSetTypeName = fileTypeName.toLowerCase().intern();
-    this.isPDB = (this.modelSetTypeName == "pdb");
+    this.isPDB = (this.modelSetTypeName == "pdb")||(this.modelSetTypeName == "array");
+    
     mmset = new Mmset(this);
     this.frameRenderer = viewer.getFrameRenderer();
     this.g3d = viewer.getGraphics3D();
@@ -1174,6 +1175,7 @@ final class Frame {
   ////////////////////////////////////////////////////////////////
   void doAutobond() {
     // perform bonding if necessary
+
     if (viewer.getAutoBond() &&
         getModelSetProperty("noautobond") == null) {
       if ((bondCount == 0) ||

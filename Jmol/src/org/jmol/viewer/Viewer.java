@@ -1060,6 +1060,8 @@ final public class Viewer extends JmolViewer {
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name);
     long ms = System.currentTimeMillis() - timeBegin;
+    setStatusFileLoaded(1, name, "", modelManager.getModelSetName(),
+        null, null);
     System.out.println("openFile(" + name + ") " + ms + " ms");
   }
 
@@ -1070,13 +1072,17 @@ final public class Viewer extends JmolViewer {
     long timeBegin = System.currentTimeMillis();
     fileManager.openFiles(modelName, names);
     long ms = System.currentTimeMillis() - timeBegin;
-    System.out.println("openFiles() " + ms + " ms");
+    for(int i = 0; i < names.length ; i++) {
+      setStatusFileLoaded(1, names[i], "", modelManager.getModelSetName(),
+          null, null);
+    }
+    System.out.println("openFiles("+names.length+") " + ms + " ms");
   }
 
   public void openStringInline(String strModel) {
     clear();
     fileManager.openStringInline(strModel);
-    setStatusFileLoaded("string", "", modelManager.getModelSetName(), null,
+    setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(), null,
         getOpenFileError());
   }
 
@@ -1107,7 +1113,7 @@ final public class Viewer extends JmolViewer {
     fileManager.openDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     System.out.println("openDOM " + ms + " ms");
-    setStatusFileLoaded("JSNode", "", modelManager.getModelSetName(), null,
+    setStatusFileLoaded(1, "JSNode", "", modelManager.getModelSetName(), null,
         getOpenFileError());
   }
 
@@ -1145,7 +1151,7 @@ final public class Viewer extends JmolViewer {
       return errorMsg;
     }
     openClientFile(fullPathName, fileName, clientFile);
-    setStatusFileLoaded(fullPathName, fileName, modelManager.getModelSetName(),
+    setStatusFileLoaded(3, fullPathName,fileName, modelManager.getModelSetName(),
         clientFile, null);
     return null;
   }
@@ -1180,6 +1186,7 @@ final public class Viewer extends JmolViewer {
     // maybe there needs to be a call to clear()
     // or something like that here
     // for when CdkEditBus calls this directly
+    
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
@@ -1192,6 +1199,8 @@ final public class Viewer extends JmolViewer {
     setFrankOn(styleManager.frankOn);
     repaintManager.initializePointers(1);
     popHoldRepaint();
+    setStatusFileLoaded(2, fullPathName, fileName, modelManager.getModelSetName(),
+        clientFile, null);
   }
 
   void clear() {
@@ -1200,7 +1209,7 @@ final public class Viewer extends JmolViewer {
     modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
     clearMeasurements();
-    setStatusFileLoaded(null, null, null, null, null);
+    setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");
   }
 
@@ -1210,6 +1219,10 @@ final public class Viewer extends JmolViewer {
 
   public String getModelSetFileName() {
     return modelManager.getModelSetFileName();
+  }
+
+  public String getModelSetProperty(String strProp) {
+    return modelManager.getModelSetProperty(strProp);
   }
 
   public String getModelSetPathName() {
@@ -2200,14 +2213,14 @@ final public class Viewer extends JmolViewer {
     statusManager.setStatusFrameChanged(frameNo);
   }
 
-  void setStatusFileLoaded(String fullPathName, String fileName,
-      String modelName, Object clientFile, String strError) {
+  void setStatusFileLoaded(int ptLoad, String fullPathName, String fileName,
+    String modelName, Object clientFile, String strError) {
     statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
-        clientFile, strError);
+        clientFile, strError, ptLoad);
   }
 
   void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
-    statusManager.setStatusFileLoaded(fullPathName, null, null, null, errorMsg);
+    setStatusFileLoaded(-1, fullPathName, null, null, null, errorMsg);
   }
 
   private void manageScriptTermination() {

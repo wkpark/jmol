@@ -82,7 +82,7 @@ class Isosurface extends MeshCollection {
   float minRange, maxRange;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("bufferedreader" == propertyName) {
+    if ("bufferedReader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
       if (currentMesh == null)
         allocMesh(null);
@@ -116,9 +116,9 @@ class Isosurface extends MeshCollection {
       rangeDefined = false;
       return;
     }
-    if ("colorreader" == propertyName) {
+    if ("colorReader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
-      System.out.println("colorreader seen!");
+      System.out.println("colorReader seen!");
       readVolumetricHeader(br);
       calcVolumetricMatrix();
       readVolumetricData(br);

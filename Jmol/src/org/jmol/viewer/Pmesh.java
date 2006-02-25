@@ -30,8 +30,14 @@ import javax.vecmath.Point3f;
 
 class Pmesh extends MeshCollection {
 
+  boolean isOnePerLine = false;
+  
   void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("bufferedreader" == propertyName) {
+    if ("bufferedReaderOnePerLine" == propertyName) {
+      propertyName = "bufferedReader";
+      isOnePerLine = true;
+    }  
+    if ("bufferedReader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
       if (currentMesh == null)
         allocMesh(null);
@@ -76,7 +82,16 @@ class Pmesh extends MeshCollection {
   }
 
   void readVertices(BufferedReader br) throws Exception {
-    if (currentMesh.vertexCount > 0) {
+    if (currentMesh.vertexCount <= 0)
+      return;
+    if (isOnePerLine) {
+      for (int i = 0; i < currentMesh.vertexCount; ++i) {
+        float x = parseFloat(br.readLine());
+        float y = parseFloat(br.readLine());
+        float z = parseFloat(br.readLine());
+        currentMesh.vertices[i] = new Point3f(x, y, z);
+      }
+    } else {
       for (int i = 0; i < currentMesh.vertexCount; ++i) {
         String line = br.readLine();
         float x = parseFloat(line);

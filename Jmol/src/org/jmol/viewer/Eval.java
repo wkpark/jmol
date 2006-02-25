@@ -126,6 +126,14 @@ class Eval implements Runnable {
     return (int)(timeEndExecution - timeBeginExecution);
   }
 
+  void runScript(String script) throws ScriptException {
+    System.out.println("runScript"+script);
+    pushContext();
+    if (loadScript(null, script))
+      instructionDispatchLoop();
+    popContext();
+  }
+
   boolean loadScript(String filename, String script) {
     this.filename = filename;
     this.script = script;
@@ -176,7 +184,7 @@ class Eval implements Runnable {
         if (command == null)
           break;
         script.append(command);
-  script.append("\n");
+        script.append("\n");
       }
     } catch (IOException e) {
   try{reader.close();}catch(IOException ioe){}
@@ -1707,13 +1715,14 @@ class Eval implements Runnable {
   void load() throws ScriptException {
     int i = 1;
     // ignore optional file format
+    String filename = "fileset";
     if (statement[i].tok == Token.identifier)
       ++i;
     if (statement[i].tok != Token.string)
       filenameExpected();
     //long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
-      String filename = (String)statement[i].value;
+      filename = (String)statement[i].value;
       viewer.openFile(filename);
     } else {
       String modelName = (String)statement[i].value;
@@ -1732,6 +1741,9 @@ class Eval implements Runnable {
       evalError(errMsg);
     if (logMessages)
       viewer.scriptStatus("Successfully loaded:" + filename);
+    String script = viewer.getModelSetProperty("jmolscript");
+    if (script != null)
+      runScript(script);  
   }
 
   int[] monitorArgs = new int[5];
@@ -3368,12 +3380,19 @@ class Eval implements Runnable {
         break;
       case Token.string:
         String filename = (String)statement[i].value;
+        propertyName = "bufferedReader";
         if (filename.equalsIgnoreCase("inline")) {
           if (i + 1 < statementLength && statement[i].tok == Token.string) {
-            String data = viewer.simpleReplace((String)statement[i + 1].value,"|","\n");
+            String data = (String)statement[++i].value;
+            if(data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
+              //space separates -- so set isOnePerLine
+              data = viewer.simpleReplace(data," ","\n");
+              propertyName = "bufferedReaderOnePerLine";
+            }
+            data = viewer.simpleReplace(data,"|","\n");
+            data = viewer.simpleReplace(data,"\n\n","\n");
             System.out.println("pmesh inline data:\n" + data);
             t = viewer.getBufferedReaderForString(data);
-            i++;
           } else {
             stringExpected();
             break;
@@ -3384,7 +3403,6 @@ class Eval implements Runnable {
           if (t instanceof String)
             fileNotFoundException(filename + ":" + t);
         }
-        propertyName = "bufferedreader";
         propertyValue = t;
         break;
       case Token.dots:
@@ -3536,7 +3554,7 @@ class Eval implements Runnable {
           viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
-        propertyName = colorSeen ? "colorreader" : "bufferedreader";
+        propertyName = colorSeen ? "colorReader" : "bufferedReader";
         propertyValue = t;
         if (colorSeen && colorRangeStage != 0 && colorRangeStage != 3)
           invalidArgument();

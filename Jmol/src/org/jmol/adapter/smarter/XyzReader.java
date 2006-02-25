@@ -66,6 +66,12 @@ class XyzReader extends AtomSetCollectionReader {
       name = name.substring(0, name.lastIndexOf('#')).trim();
       atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
     }
+    int pt = name.indexOf("#jmolscript:");
+    if (pt >= 0) {
+      String script = name.substring(pt + 12, name.length());
+        atomSetCollection.setAtomSetCollectionProperty("jmolscript", script);
+        name = name.substring(0, pt).trim();    
+    }
     atomSetCollection.setAtomSetName(name);
   }
 

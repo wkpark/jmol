@@ -58,8 +58,8 @@ class StatusManager {
   }
 
   synchronized boolean resetMessageQueue(String statusList) {
-    boolean isRemove = (statusList.charAt(0) == '-');
-    boolean isAdd = (statusList.charAt(0) == '+');
+    boolean isRemove = (statusList.length() > 0 && statusList.charAt(0) == '-');
+    boolean isAdd = (statusList.length() > 0 && statusList.charAt(0) == '+');
     String oldList = this.statusList;
     if (isRemove) {
       this.statusList = viewer.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
@@ -98,10 +98,10 @@ class StatusManager {
   }
 
   synchronized void setStatusFileLoaded(String fullPathName, String fileName,
-      String modelName, Object clientFile, String errorMsg) {
-    setStatusChanged("fileLoaded", 0, fullPathName, true);
+      String modelName, Object clientFile, String errorMsg, int ptLoad) {
+    setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)
-      setStatusChanged("fileLoadError", 0, errorMsg, true);
+      setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyFileLoaded(fullPathName, fileName,
              modelName, clientFile, errorMsg);

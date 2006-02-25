@@ -238,10 +238,9 @@ abstract class MouseManager {
         viewer.popupMenu(x, y);
         return;
       }
+      viewer.atomPicked(nearestAtomIndex, false);
       if (measurementMode) {
         addToMeasurement(nearestAtomIndex, false);
-      } else {
-        viewer.atomPicked(nearestAtomIndex, false);
       }
       break;
     case SHIFT_LEFT:

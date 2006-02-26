@@ -170,6 +170,17 @@ class TransformManager {
     return 0;
   }
 
+  String getTranslationScript() {
+    String info = "";
+    float f = getTranslationXPercent();
+    if(f != 0.0) 
+      info += "translate x " + f + ";";
+    f = getTranslationYPercent();
+    if(f != 0.0) 
+      info += "translate y " + f + ";";
+    return info;
+  }
+  
   void translateCenterTo(int x, int y) {
     xTranslation = x;
     yTranslation = y;
@@ -187,6 +198,8 @@ class TransformManager {
     info.put("moveTo", getMoveToText());
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
+    info.put("transXPercent", new Float(getTranslationXPercent()));
+    info.put("transYPercent", new Float(getTranslationYPercent()));
     info.put("zoom",new Integer(zoomPercent));
     return info;    
   }

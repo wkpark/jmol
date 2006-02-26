@@ -332,6 +332,10 @@ final public class Viewer extends JmolViewer {
     return transformManager.getTranslationZPercent();
   }
 
+  String getTranslationScript() {
+    return transformManager.getTranslationScript();    
+  }
+  
   void translateByXPercent(float percent) {
     translateToXPercent(getTranslationXPercent() + percent);
   }
@@ -1151,8 +1155,6 @@ final public class Viewer extends JmolViewer {
       return errorMsg;
     }
     openClientFile(fullPathName, fileName, clientFile);
-    setStatusFileLoaded(3, fullPathName,fileName, modelManager.getModelSetName(),
-        clientFile, null);
     return null;
   }
 
@@ -1187,6 +1189,8 @@ final public class Viewer extends JmolViewer {
     // or something like that here
     // for when CdkEditBus calls this directly
     
+    setStatusFileLoaded(2, fullPathName,fileName, modelManager.getModelSetName(),
+        clientFile, null);
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
@@ -1199,7 +1203,7 @@ final public class Viewer extends JmolViewer {
     setFrankOn(styleManager.frankOn);
     repaintManager.initializePointers(1);
     popHoldRepaint();
-    setStatusFileLoaded(2, fullPathName, fileName, modelManager.getModelSetName(),
+    setStatusFileLoaded(3, fullPathName, fileName, modelManager.getModelSetName(),
         clientFile, null);
   }
 

@@ -140,7 +140,7 @@ class StatusManager {
   }
 
   synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
-    statusMessage = "Jmol script completed" + (compileError == null ? "" : ": " + compileError);
+    statusMessage = "Jmol script terminated" + (compileError == null ? "" : ": " + compileError);
     setStatusChanged("scriptTerminated", msWalltime, statusMessage, false);
     if (jmolStatusListener == null)
       return;

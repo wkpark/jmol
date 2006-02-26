@@ -58,51 +58,46 @@ class PropertyManager {
     boolean iHaveParameter = (paramInfo.length() > 0);
     String myParam = paramInfo;
 
+    // status
+    
+    if(infoType.equalsIgnoreCase("jmolStatus")) 
+      return viewer.getStatusChanged(myParam);
+
+    // general information
+    
     if(infoType.equalsIgnoreCase("appletInfo"))
       return viewer.getAppletInfo();
 
-    if(infoType.equalsIgnoreCase("animationInfo"))
-      return viewer.getAnimationInfo();
+    if(infoType.equalsIgnoreCase("fileName"))
+      return viewer.getFullPathName();      
+    
+    if(infoType.equalsIgnoreCase("fileHeader"))
+      return viewer.getFileHeader();      
 
     if(infoType.equalsIgnoreCase("fileContents")) {
       if(iHaveParameter) return viewer.getFileAsString(myParam);
       return viewer.getCurrentFileAsString();
     }
 
-    // no second parameter here
-    
-    if(infoType.equalsIgnoreCase("polymerInfo"))
-      return viewer.getPolymerInfo();      
-
-    if(infoType.equalsIgnoreCase("messageQueue"))
-      return viewer.getMessageQueue();      
-
-    if(infoType.equalsIgnoreCase("jmolViewer"))
-      return viewer.getViewer();      
-
-    if(infoType.equalsIgnoreCase("fileHeader"))
-      return viewer.getFileHeader();      
-
-    if(infoType.equalsIgnoreCase("fileName"))
-      return viewer.getFullPathName();      
-    
-    if(infoType.equalsIgnoreCase("jmolStatus")) 
-      return viewer.getStatusChanged(myParam);
-
-    if(infoType.equalsIgnoreCase("orientationInfo"))
-      return viewer.getOrientationInfo();       
+    if(infoType.equalsIgnoreCase("animationInfo"))
+      return viewer.getAnimationInfo();
 
     if(infoType.equalsIgnoreCase("modelInfo"))
-      return viewer.getModelInfoObject();      
+      return viewer.getModelInfo();      
 
-    if(infoType.equalsIgnoreCase("transformInfo"))
-      return viewer.getMatrixRotate();      
+    // orientation stuff
+    
+    if(infoType.equalsIgnoreCase("boundboxInfo"))
+      return viewer.getBoundBoxInfo();
 
     if(infoType.equalsIgnoreCase("centerInfo"))
       return viewer.getCenter();      
 
-    if(infoType.equalsIgnoreCase("boundboxInfo"))
-      return viewer.getBoundBoxInfo();
+    if(infoType.equalsIgnoreCase("orientationInfo"))
+      return viewer.getOrientationInfo();       
+
+    if(infoType.equalsIgnoreCase("transformInfo"))
+      return viewer.getMatrixRotate();      
 
     if(infoType.equalsIgnoreCase("zoomInfo")) {
       if (viewer.getZoomEnabled()) 
@@ -110,6 +105,8 @@ class PropertyManager {
       return "off";
     }
 
+    // atom-bond stuff
+    
     if(! iHaveParameter) myParam = "all";
 
     if(infoType.equalsIgnoreCase("atomList")) 
@@ -121,29 +118,50 @@ class PropertyManager {
     if(infoType.equalsIgnoreCase("bondInfo")) 
       return viewer.getBondDetail(myParam);
     
+    if(infoType.equalsIgnoreCase("polymerInfo"))
+      return viewer.getPolymerInfo();      
+
+    if(infoType.equalsIgnoreCase("chainInfo"))
+      return viewer.getChainInfo();      
+
     if(infoType.equalsIgnoreCase("extractModel")) 
       return viewer.getModelExtract(myParam);
     
+    // public objects
+    
+    if(infoType.equalsIgnoreCase("jmolViewer"))
+      return viewer.getViewer();      
+
+    if(infoType.equalsIgnoreCase("messageQueue"))
+      return viewer.getMessageQueue();      
+
     return "getProperty ERROR\n\nOptions include\n"
     + "\n getProperty(\"appletInfo\")"
-    + "\n getProperty(\"animationInfo\")"
+
     + "\n getProperty(\"fileName\")"
     + "\n getProperty(\"fileHeader\")"
     + "\n getProperty(\"fileContents\")"
     + "\n getProperty(\"fileContents\",\"<pathname>\")"
+
+    + "\n getProperty(\"animationInfo\")"
     + "\n\n getProperty(\"modelInfo\")"
     + "\n\n getProperty(\"polymerInfo\")"
     + "\n getProperty(\"chainInfo\")"
+    
     + "\n\n getProperty(\"boundboxInfo\")"
     + "\n getProperty(\"centerInfo\")"
     + "\n getProperty(\"orientationInfo\")"
     + "\n getProperty(\"transformInfo\")"
     + "\n getProperty(\"zoomInfo\")"
+
     + "\n getProperty(\"atomList\",\"<atom selection>\")"
     + "\n getProperty(\"atomInfo\",\"<atom selection>\")"
     + "\n getProperty(\"bondInfo\",\"<atom selection>\")"
     + "\n getProperty(\"extractModel\",\"<atom selection>\")"
-    + "\n getProperty(\"callbackStatus\",\"CallbackNameList\")"
+    
+    + "\n getProperty(\"jmolStatus\",\"statusNameList\")"
+    + "\n getProperty(\"jmolViewer\")"
+    + "\n getProperty(\"messageQueue\")"
     + "";
   }
    

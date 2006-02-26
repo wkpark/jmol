@@ -1322,8 +1322,8 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelCount();
   }
 
-  String getModelInfo() {
-    return modelManager.getModelInfo();
+  String getModelInfoAsString() {
+    return modelManager.getModelInfoAsString();
   }
 
   public Hashtable getPolymerInfo() {
@@ -1517,8 +1517,12 @@ final public class Viewer extends JmolViewer {
     return modelManager.getPDBHeader();
   }
 
-  Hashtable getModelInfoObject() {
-    return modelManager.getModelInfoObject();
+  public Hashtable getModelInfo() {
+    return modelManager.getModelInfo();
+  }
+
+  public Hashtable getChainInfo() {
+    return modelManager.getChainInfo();
   }
 
   Vector getAllAtomInfo(String atomExpression) {

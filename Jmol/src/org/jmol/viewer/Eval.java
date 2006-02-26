@@ -3162,7 +3162,7 @@ class Eval implements Runnable {
   }
 
   void showModel() {
-    showString(viewer.getModelInfo());
+    showString(viewer.getModelInfoAsString());
   }
 
   void showFile() throws ScriptException {

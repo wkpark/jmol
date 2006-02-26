@@ -56,16 +56,20 @@ class MolReader extends AtomSetCollectionReader {
   }
 
   void processMolSdHeader(BufferedReader reader, String firstLine)
-    throws Exception {
+                          throws Exception {
+    
+    String header = firstLine+"\n";
     atomSetCollection.setCollectionName(firstLine);
     String name = reader.readLine();
+    header += name + "\n";
     int pt = name.indexOf("#jmolscript:");
     if (pt >= 0) {
       String script = name.substring(pt + 12, name.length());
         atomSetCollection.setAtomSetCollectionProperty("jmolscript", script);
         name = name.substring(0, pt).trim();    
     }
-    reader.readLine();
+    header += reader.readLine() + "\n";
+    atomSetCollection.setAtomSetCollectionProperty("fileHeader", header);
   }
 
   void processRgHeader(BufferedReader reader, String firstLine)

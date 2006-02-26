@@ -141,7 +141,7 @@ class ModelManager {
     return (frame == null) ? 0 : frame.getModelCount();
   }
 
-  String getModelInfo() {
+  String getModelInfoAsString() {
     int modelCount = getModelCount();
     String str =  "model count = " + modelCount +
                  "\nmodelSetHasVibrationVectors:" +
@@ -617,19 +617,20 @@ String getAtomInfoChime(int i) {
   }
 
   String getFileHeader() {
-    String info = "no header information found";
+    String info = getModelSetProperty("fileHeader");
+    if (info == null)
+      info = getModelSetName();
+    if (info != null) return info;
     if (frame.isPDB) 
       return getPDBHeader();
-    if ("xyz" == getModelSetTypeName() && getModelCount() == 1) 
-      return getModelName(0);
-    // options here for other file formats?
-   return info;
+    return "no header information found";
   }
 
-  Hashtable getModelInfoObject() {
+  Hashtable getModelInfo() {
     Hashtable info = new Hashtable();
     boolean isPDB = frame.isPDB;
     int modelCount = viewer.getModelCount();
+    info.put("modelSetName",getModelSetName());
     info.put("modelCount",new Integer(modelCount));
     info.put("modelSetHasVibrationVectors", 
         new Boolean(viewer.modelSetHasVibrationVectors()));
@@ -642,7 +643,19 @@ String getAtomInfoChime(int i) {
       model.put("num",new Integer(viewer.getModelNumber(i)));
       model.put("name",viewer.getModelName(i));
       model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
-      if(isPDB)
+      models.add(model);
+    }
+    info.put("models",models);
+    return info;
+  }
+
+  Hashtable getChainInfo() {
+    Hashtable info = new Hashtable();
+    int modelCount = viewer.getModelCount();
+    info.put("modelCount",new Integer(modelCount));
+    Vector models = new Vector();
+    for (int i = 0; i < modelCount; ++i) {
+      Hashtable model = new Hashtable();
         model.put("chains", getChainInfo(i));
       models.add(model);
     }

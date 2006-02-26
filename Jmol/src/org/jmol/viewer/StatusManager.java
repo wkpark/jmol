@@ -38,7 +38,30 @@ import org.jmol.i18n.GT;
  * 2) sending messages off to the console, and
  * 3) delivering messages back to the main Jmol.java class in app or applet
  *    to handle differences in capabilities, including true callbacks.
- *   
+
+atomPicked
+
+fileLoaded
+fileLoadError
+frameChanged
+
+measureCompleted
+measurePending
+measurePicked
+
+newOrientation
+
+scriptEcho
+scriptError
+scriptMessage
+scriptStarted
+scriptStatus
+scriptTerminated
+
+userAction
+viewerRefreshed
+
+   
  * Bob Hanson hansonr@stolaf.edu  2/2006
  * 
  */

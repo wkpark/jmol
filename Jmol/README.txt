@@ -5,7 +5,7 @@
 
 Jmol is an open-source molecule viewer and editor written in Java.
 
-Please check out www.jmol.org
+Please check out http://www.jmol.org/.
 
 Usage questions/comments should be posted to jmol-users@lists.sourceforge.net
 

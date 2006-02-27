@@ -45,23 +45,27 @@ class BallsRenderer extends ShapeRenderer {
 
     Atom[] atoms = frame.atoms;
     int displayModelIndex = this.displayModelIndex;
+    boolean isOneFrame = (displayModelIndex >= 0); 
+ /*
+  *unnecessary 
     if (displayModelIndex < 0) {
-      for (int i = frame.atomCount; --i >= 0; ) {
+       for (int i = frame.atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
         atom.transform(viewer);
         render(atom);
       }
     } else {
+*/
       for (int i = frame.atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
-        if (atom.modelIndex != displayModelIndex) {
+        if (isOneFrame && atom.modelIndex != displayModelIndex) {
           atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
           continue;
         }
         atom.transform(viewer);
         render(atom);
       }
-    }
+ //   }
   }
 
   void render(Atom atom) {

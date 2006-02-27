@@ -48,8 +48,7 @@ class RepaintManager {
       displayModelIndex = -1;
     else
       displayModelIndex = modelIndex;
-    //this.displayModelIndex = modelIndex;
-
+  
     viewer.setStatusFrameChanged(modelIndex);
     return true;
   }

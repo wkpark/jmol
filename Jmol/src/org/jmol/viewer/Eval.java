@@ -328,6 +328,7 @@ class Eval implements Runnable {
       if (viewer.getDebugScript())
         logDebugScript();
       Token token = statement[0];
+      System.out.println("Eval:"+token);
       switch (token.tok) {
       case Token.backbone:
         proteinShape(JmolConstants.SHAPE_BACKBONE);
@@ -861,6 +862,7 @@ class Eval implements Runnable {
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
+    boolean refreshed = false;
     endOfExpression = 1000;
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
@@ -907,6 +909,9 @@ class Eval implements Runnable {
         stack[sp++] = copyBitSet(viewer.getSelectionSet());
         break;
       case Token.visible:
+        if(! refreshed)
+          refresh();
+        refreshed = true;
         stack[sp++] = copyBitSet(viewer.getVisibleSet());
         break;
       case Token.hetero:

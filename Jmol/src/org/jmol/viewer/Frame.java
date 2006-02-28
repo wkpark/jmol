@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -968,6 +969,7 @@ final class Frame {
         shapes[i].findNearestAtomIndex(x, y, closest);
         if (closest.atom != null)
           break;
+        
       }
     }
     int closestIndex = (closest.atom == null ? -1 : closest.atom.atomIndex);
@@ -1662,9 +1664,14 @@ final class Frame {
 
   BitSet getVisibleSet() {
     BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0; )
-      if(atoms[i].isVisible())
+    int n=0;
+    for (int i = atomCount; --i >= 0; ) {
+      if(atoms[i].isVisible()) {
         bs.set(i);
+        n++;
+      }
+    }
+    System.out.println("Frame.getVisibleSet: " + n + " size:" + bs.size() + " length:" + bs.length() + " cardinality:" + bs.cardinality());
     return bs;
   }
 

@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -46,8 +47,7 @@ class BackboneRenderer extends MpsRenderer {
 
       Atom atomA = frame.getAtomAt(atomIndices[i]);
       Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
-      atomA.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
-      atomB.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+
       int xA = atomA.getScreenX(), yA = atomA.getScreenY(),
         zA = atomA.getScreenZ();
       int xB = atomB.getScreenX(), yB = atomB.getScreenY(),

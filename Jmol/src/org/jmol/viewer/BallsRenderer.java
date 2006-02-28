@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -30,7 +31,6 @@ class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY;
   boolean wireframeRotating;
-  boolean showHydrogens;
   short colixSelection;
 
   void render() {
@@ -41,60 +41,37 @@ class BallsRenderer extends ShapeRenderer {
 
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
-    showHydrogens = viewer.getShowHydrogens();
-
     Atom[] atoms = frame.atoms;
-    int displayModelIndex = this.displayModelIndex;
-    boolean isOneFrame = (displayModelIndex >= 0); 
- /*
-  *unnecessary 
-    if (displayModelIndex < 0) {
-       for (int i = frame.atomCount; --i >= 0; ) {
-        Atom atom = atoms[i];
-        atom.transform(viewer);
-        render(atom);
-      }
-    } else {
-*/
-      for (int i = frame.atomCount; --i >= 0; ) {
-        Atom atom = atoms[i];
-        if (isOneFrame && atom.modelIndex != displayModelIndex) {
-          atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
-          continue;
-        }
-        atom.transform(viewer);
-        render(atom);
-      }
- //   }
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      if ((atom.visibilityFlags & JmolConstants.VISIBLE_MODEL) == 0)
+        continue;
+      atom.transform(viewer);
+      if ((atom.visibilityFlags & JmolConstants.VISIBLE_BALL) != 0)
+        renderBall(atom);     
+      if ((atom.visibilityFlags & JmolConstants.VISIBLE_HALO) != 0)
+        renderHalo(atom);     
+    }
   }
 
-  void render(Atom atom) {
-    if (!showHydrogens && atom.elementNumber == 1)
-      return;
+  void renderBall(Atom atom) {
     long xyzd = atom.xyzd;
-    int diameter = Xyzd.getD(xyzd);
-    boolean hasHalo = viewer.hasSelectionHalo(atom.atomIndex);
-    if (diameter == 0 && !hasHalo) {
-      atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
-      return;
-    }
-    // mth 2004 04 02 ... hmmm ... I don't like this here ... looks ugly
-    atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
-
     if (!wireframeRotating)
       g3d.fillSphereCentered(atom.colixAtom, xyzd);
     else
       g3d.drawCircleCentered(atom.colixAtom, xyzd);
+  }
 
-    if (hasHalo) {
-      int halowidth = diameter / 4;
-      if (halowidth < 4) halowidth = 4;
-      if (halowidth > 10) halowidth = 10;
-      int haloDiameter = diameter + 2 * halowidth;
-      g3d.fillScreenedCircleCentered(colixSelection,
+  void renderHalo(Atom atom) {
+    long xyzd = atom.xyzd;
+    int diameter = Xyzd.getD(xyzd);
+    int halowidth = diameter / 4;
+    if (halowidth < 4) halowidth = 4;
+    if (halowidth > 10) halowidth = 10;
+    int haloDiameter = diameter + 2 * halowidth;
+    g3d.fillScreenedCircleCentered(colixSelection,
                                      haloDiameter,
                                      Xyzd.getX(xyzd), Xyzd.getY(xyzd),
                                      Xyzd.getZ(xyzd));
-    }
   }
 }

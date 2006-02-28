@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -87,5 +88,26 @@ class Balls extends Shape {
       }
     }
     closest.atom = champion;
+  }
+
+  void setModelVisibility() {
+    Atom[] atoms = frame.atoms;
+    int displayModelIndex = viewer.getDisplayModelIndex();
+    boolean isOneFrame = (displayModelIndex >= 0); 
+    boolean showHydrogens = viewer.getShowHydrogens();
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      atom.visibilityFlags = 0;  
+      if (atom.madAtom == JmolConstants.MAR_DELETED
+          || ! showHydrogens && atom.elementNumber == 1)
+        continue;
+      if (! isOneFrame || atom.modelIndex == displayModelIndex) { 
+        atom.visibilityFlags = JmolConstants.VISIBLE_MODEL;
+        if (atom.madAtom != 0) 
+            atom.visibilityFlags |= JmolConstants.VISIBLE_BALL;
+        if(viewer.hasSelectionHalo(atom.atomIndex)) 
+            atom.visibilityFlags |= JmolConstants.VISIBLE_HALO;
+      }      
+    }
   }
 }

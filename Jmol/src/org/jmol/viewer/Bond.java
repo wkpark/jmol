@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -33,6 +34,7 @@ class Bond {
   short order;
   short mad;
   short colix;
+  int visibilityFlags;
 
   Bond(Atom atom1, Atom atom2, short order,
               short mad, short colix) {
@@ -118,4 +120,3 @@ class Bond {
     return Graphics3D.inheritColix(colix, atom2.colixAtom);
   }
 }
-

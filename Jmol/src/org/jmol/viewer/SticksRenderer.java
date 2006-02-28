@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -69,7 +70,6 @@ class SticksRenderer extends ShapeRenderer {
     colixSelection = viewer.getColixSelection();
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
-    showHydrogens = viewer.getShowHydrogens();
 
     ssbondsBackbone = viewer.getSsbondsBackbone();
     hbondsBackbone = viewer.getHbondsBackbone();
@@ -77,31 +77,18 @@ class SticksRenderer extends ShapeRenderer {
     hbondsSolid = viewer.getHbondsSolid();
 
     Bond[] bonds = frame.bonds;
-    int displayModelIndex = this.displayModelIndex;
-    if (displayModelIndex < 0) {
-      for (int i = frame.bondCount; --i >= 0; )
-        render(bonds[i]);
-    } else {
-      for (int i = frame.bondCount; --i >= 0; ) {
-        Bond bond = bonds[i];
-        if (bond.atom1.modelIndex != displayModelIndex)
-          continue;
+    for (int i = frame.bondCount; --i >= 0; ) {
+      Bond bond = bonds[i];
+      if ((bond.visibilityFlags & JmolConstants.VISIBLE_STICK) != 0) 
         render(bond);
-      }
     }
   }
 
   void render(Bond bond) {
-    if ((madBond = bond.mad) == 0)
-      return;
+    madBond = bond.mad;
     int order = bond.order;
     Atom atomA = bond.atom1;
     Atom atomB = bond.atom2;
-    if (!showHydrogens && (atomA.elementNumber == 1 ||
-                           atomB.elementNumber == 1))
-      return;
-    atomA.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
-    atomB.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     colixA = Graphics3D.inheritColix(bond.colix, atomA.colixAtom);
     colixB = Graphics3D.inheritColix(bond.colix, atomB.colixAtom);
     if (bondsBackbone) {

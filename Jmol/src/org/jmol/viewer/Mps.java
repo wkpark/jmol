@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -93,6 +94,11 @@ abstract class Mps extends Shape {
       mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
   }
 
+  void setModelVisibility() {
+    for (int i = mpsmodels.length; --i >= 0; )
+      mpsmodels[i].setModelVisibility();
+  }
+
   class Mpsmodel {
     Mpspolymer[] mpspolymers;
     int modelIndex;
@@ -140,8 +146,15 @@ abstract class Mps extends Shape {
       for (int i = mpspolymers.length; --i >= 0; )
         mpspolymers[i].findNearestAtomIndex(xMouse, yMouse, closest);
     }
+
+    void setModelVisibility() {
+      for (int i = mpspolymers.length; --i >= 0; )
+        mpspolymers[i].setModelVisibility();
+    }
+    
   }
 
+  
   abstract class Mpspolymer {
     Polymer polymer;
     short madOn;
@@ -351,6 +364,19 @@ abstract class Mps extends Shape {
     void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
       polymer.findNearestAtomIndex(xMouse, yMouse, closest, mads);
     }
+
+    void setModelVisibility() {
+      if (wingVectors == null)
+        return;
+      boolean isNucleicPolymer = polymer instanceof NucleicPolymer;
+      if (! isNucleicPolymer)
+        return;
+      for (int i = monomerCount; --i >= 0; ) {
+        if (mads[i] <= 0) 
+          continue;
+        NucleicMonomer group = (NucleicMonomer) monomers[i];
+        group.setModelVisibility();        
+      }
+    }
   }
 }
-

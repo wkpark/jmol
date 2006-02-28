@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -67,6 +68,19 @@ class Stars extends Shape {
           colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
         }
       return;
+    }
+  }
+
+  void setModelVisibility() {
+    if (mads == null)
+      return;
+    Atom[] atoms = frame.atoms;
+    int displayModelIndex = viewer.getDisplayModelIndex();
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      if ((displayModelIndex < 0 || atom.modelIndex == displayModelIndex)
+          && mads[i] > 0) 
+        atom.visibilityFlags |= JmolConstants.VISIBLE_STAR;
     }
   }
 }

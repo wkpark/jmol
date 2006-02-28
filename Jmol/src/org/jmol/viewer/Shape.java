@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -66,4 +67,6 @@ abstract class Shape {
   void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
   }
 
+  void setModelVisibility() {
+  }
 }

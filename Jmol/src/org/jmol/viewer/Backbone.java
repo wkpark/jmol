@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -54,5 +55,18 @@ class Backbone extends Mps {
           mads[i] = mad;
       }
     }
+
+    void setModelVisibility() {
+      for (int i = monomerCount - 1; --i >= 0; ) {
+        if (mads[i] == 0)
+          continue;
+        int[] atomIndices = polymer.getLeadAtomIndices();
+        Atom atomA = frame.getAtomAt(atomIndices[i]);
+        Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
+        atomA.visibilityFlags |= JmolConstants.VISIBLE_BACKBONE;
+        atomB.visibilityFlags |= JmolConstants.VISIBLE_BACKBONE;
+      }
+    }
   }
+  
 }

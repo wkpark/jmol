@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -228,5 +229,28 @@ class Sticks extends Shape {
     }
     viewer.scriptStatus(nbonds + " bonds " + (order == 0 ? " deleted":" formed or modified"));
     viewer.setBondSelectionModeOr(bondmode);
+  }
+
+  void setModelVisibility() {
+    Bond[] bonds = frame.bonds;
+    int displayModelIndex = viewer.getDisplayModelIndex();
+    boolean isOneFrame = (displayModelIndex >= 0);
+    boolean showHydrogens = viewer.getShowHydrogens();
+    for (int i = frame.bondCount; --i >= 0; ) {
+      Bond bond = bonds[i];
+      bond.visibilityFlags = 0;
+      if (!isOneFrame || bond.atom1.modelIndex == displayModelIndex) {
+        if (bond.mad == 0)
+          continue;
+        Atom atomA = bond.atom1;
+        Atom atomB = bond.atom2;
+        if (showHydrogens 
+            || atomA.elementNumber != 1 && atomB.elementNumber != 1) {
+          atomA.visibilityFlags |= JmolConstants.VISIBLE_STICK;
+          atomB.visibilityFlags |= JmolConstants.VISIBLE_STICK;
+          bond.visibilityFlags |= JmolConstants.VISIBLE_STICK;
+        }
+      }
+    }
   }
 }

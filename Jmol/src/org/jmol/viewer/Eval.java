@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -312,6 +313,7 @@ class Eval implements Runnable {
       viewer.scriptStatus("Script completed");
     clearMyThread();
     terminationNotification = true;
+    viewer.setTainted(true);
     viewer.popHoldRepaint();
   }
 
@@ -910,7 +912,7 @@ class Eval implements Runnable {
         break;
       case Token.visible:
         if(! refreshed)
-          refresh();
+          viewer.setModelVisibility();
         refreshed = true;
         stack[sp++] = copyBitSet(viewer.getVisibleSet());
         break;

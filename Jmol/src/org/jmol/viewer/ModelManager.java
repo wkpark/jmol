@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -485,7 +486,7 @@ String getAtomInfoChime(int i) {
   }
 
   int getAtomModelIndex(int i) {
-  	return frame.getAtomAt(i).getModelIndex();
+    return frame.getAtomAt(i).getModelIndex();
   }
   
   Point3f getBondPoint3f1(int i) {
@@ -521,15 +522,15 @@ String getAtomInfoChime(int i) {
   }
   
   int getBondModelIndex(int i) {
-  	Atom atom = frame.getBondAt(i).getAtom1();
-  	if (atom != null) {
-  	  return atom.getModelIndex();
-  	}
-  	atom = frame.getBondAt(i).getAtom2();
-  	if (atom != null) {
-  	  return atom.getModelIndex();
-  	}
-  	return 0;
+    Atom atom = frame.getBondAt(i).getAtom1();
+    if (atom != null) {
+      return atom.getModelIndex();
+    }
+    atom = frame.getBondAt(i).getAtom2();
+    if (atom != null) {
+      return atom.getModelIndex();
+    }
+    return 0;
   }
 
   public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex) {
@@ -830,5 +831,16 @@ String getAtomInfoChime(int i) {
     return info;
   }
 
+  
+  void setModelVisibility() {
+    if (frame == null)
+      return;
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = frame.shapes[i];
+      if (shape != null) {
+        System.out.println("modelManager-setModelVis "+JmolConstants.shapeClassBases[i]);
+        shape.setModelVisibility();
+      }
+    }
+  }   
 }
-

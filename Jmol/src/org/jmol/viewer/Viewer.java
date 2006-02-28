@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -1750,6 +1751,8 @@ final public class Viewer extends JmolViewer {
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     manageScriptTermination();
+    if(isTainted)setModelVisibility();
+    isTainted = false;
     if (size != null)
       setScreenDimension(size);
     int stereoMode = getStereoMode();
@@ -2911,4 +2914,13 @@ final public class Viewer extends JmolViewer {
     return g3d.getHexColorFromIndex(colix);
   }
 
+  void setModelVisibility(){
+    modelManager.setModelVisibility();
+  }
+
+  boolean isTainted = true;
+  void setTainted(boolean TF) {
+    isTainted = TF;
+  }
+  
 }

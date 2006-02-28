@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -36,7 +37,6 @@ import javax.vecmath.Point3i;
 
 final class Atom implements Tuple {
 
-  final static byte VISIBLE_FLAG = 0x01;
   final static byte VIBRATION_VECTOR_FLAG = 0x02;
   final static byte IS_HETERO_FLAG = 0x04;
 
@@ -48,6 +48,7 @@ final class Atom implements Tuple {
   byte elementNumber;
   byte formalChargeAndFlags;
   byte alternateLocationID;
+  int visibilityFlags;
   short madAtom;
   short colixAtom;
   Bond[] bonds;
@@ -73,6 +74,7 @@ final class Atom implements Tuple {
     this.colixAtom = viewer.getColixAtom(this);
     this.alternateLocationID = (byte)alternateLocationID;
     setMadAtom(viewer.getMadAtom());
+    
     this.point3f = new Point3f(x, y, z);
     if (isHetero)
       formalChargeAndFlags |= IS_HETERO_FLAG;
@@ -314,8 +316,6 @@ final class Atom implements Tuple {
   final static int MAX_Z = 14383;
 
   void transform(Viewer viewer) {
-    if (madAtom == JmolConstants.MAR_DELETED)
-      return;
     Point3i screen;
     Vector3f[] vibrationVectors;
     if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
@@ -323,7 +323,6 @@ final class Atom implements Tuple {
       screen = viewer.transformPoint(point3f);
     else 
       screen = viewer.transformPoint(point3f, vibrationVectors[atomIndex]);
-
     int z = screen.z;
     z = ((z < MIN_Z)
          ? MIN_Z
@@ -417,7 +416,7 @@ final class Atom implements Tuple {
   }
 
   boolean isVisible() {
-    return (formalChargeAndFlags & VISIBLE_FLAG) != 0;
+    return (visibilityFlags > JmolConstants.VISIBLE_MODEL);
   }
 
   float getPartialCharge() {
@@ -443,8 +442,8 @@ final class Atom implements Tuple {
 
   public float getDimensionValue(int dimension) {
     return (dimension == 0
-		   ? point3f.x
-		   : (dimension == 1 ? point3f.y : point3f.z));
+       ? point3f.x
+       : (dimension == 1 ? point3f.y : point3f.z));
   }
 
   short getVanderwaalsMar() {
@@ -923,7 +922,7 @@ final class Atom implements Tuple {
 
   boolean isCursorOnTopOfVisibleAtom(int xCursor, int yCursor,
                                      int minRadius, Atom competitor) {
-    return (((formalChargeAndFlags & VISIBLE_FLAG) != 0) &&
+    return (isVisible() &&
             isCursorOnTop(xCursor, yCursor, minRadius, competitor));
   }
 

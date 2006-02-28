@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -33,16 +34,12 @@ class StarsRenderer extends ShapeRenderer {
     if (stars.mads == null)
       return;
     Atom[] atoms = frame.atoms;
-    int displayModelIndex = this.displayModelIndex;
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      if (displayModelIndex >= 0 && atom.modelIndex != displayModelIndex)
-        continue;
-      short mad = stars.mads[i];
-      if (mad == 0)
-        continue;
-      short colix = stars.colixes == null ? 0 : stars.colixes[i];
-      render1(atom, mad, colix);
+      if ((atom.visibilityFlags & JmolConstants.VISIBLE_STAR) !=0) {
+        short colix = stars.colixes == null ? 0 : stars.colixes[i];
+        render1(atom, stars.mads[i], colix);
+      }
     }
   }
 
@@ -52,40 +49,11 @@ class StarsRenderer extends ShapeRenderer {
     int y = Xyzd.getY(xyzd);
     int z = Xyzd.getZ(xyzd);
     int d = viewer.scaleToScreen(z, mad);
-    // make available for hover/click/measure
-    atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     d -= (d & 1) ^ 1; // round down to odd value
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     int r = d / 2;
     g3d.drawLine(colix, x - r, y, z, x - r + d, y, z);
     g3d.drawLine(colix, x, y - r, z, x, y - r + d, z);
-    /*
-    long xyzd = atom.xyzd;
-    int diameter = Xyzd.getD(xyzd);
-    boolean hasHalo = viewer.hasSelectionHalo(atom.atomIndex);
-    if (diameter == 0 && !hasHalo) {
-      atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
-      return;
-    }
-    // mth 2004 04 02 ... hmmm ... I don't like this here ... looks ugly
-    atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
-
-    if (!wireframeRotating)
-      g3d.fillSphereCentered(atom.colixAtom, xyzd);
-    else
-      g3d.drawCircleCentered(atom.colixAtom, xyzd);
-
-    if (hasHalo) {
-      int halowidth = diameter / 4;
-      if (halowidth < 4) halowidth = 4;
-      if (halowidth > 10) halowidth = 10;
-      int haloDiameter = diameter + 2 * halowidth;
-      g3d.fillScreenedCircleCentered(colixSelection,
-                                     haloDiameter,
-                                     Xyzd.getX(xyzd), Xyzd.getY(xyzd),
-                                     Xyzd.getZ(xyzd));
-    }
-    */
   }
 
 }

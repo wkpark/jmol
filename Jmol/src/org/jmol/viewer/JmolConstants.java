@@ -2,6 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
+
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -27,6 +28,16 @@ import java.util.Hashtable;
 
 final public class JmolConstants {
 
+  
+  public final static int VISIBLE_MODEL     = 1;
+  public final static int VISIBLE_BALL      = 2;
+  public final static int VISIBLE_STICK     = 4;
+  public final static int VISIBLE_BACKBONE  = 8;
+  public final static int VISIBLE_CARTOON   = 16;
+  public final static int VISIBLE_STAR      = 32;
+  public final static int VISIBLE_HALO      = 64;
+
+  
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
@@ -1665,7 +1676,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   public final static String[] specialAtomNames = {
-	
+  
     ////////////////////////////////////////////////////////////////
     // The ordering of these entries can be changed ... BUT ...
     // the offsets must be kept consistent with the ATOMID definitions

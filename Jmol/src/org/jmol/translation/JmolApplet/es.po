@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-12 14:59+0100\n"
+"POT-Creation-Date: 2006-02-28 19:44+0100\n"
 "PO-Revision-Date: 2005-12-17 12:46+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: org/jmol/applet/Jmol.java:447
+#: org/jmol/applet/Jmol.java:456
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -25,13 +25,9 @@ msgstr ""
 "Miniaplicación Jmol, parte del proyecto OpenScience; para más información, "
 "vea http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:555
+#: org/jmol/applet/Jmol.java:564
 msgid "File Error:"
 msgstr "Error de archivo:"
-
-#: org/jmol/applet/Jmol.java:593
-msgid "Jmol script completed"
-msgstr "Guión de Jmol completado"
 
 #: org/jmol/popup/PopupResourceBundle.java:652
 msgid "No atoms loaded"
@@ -960,9 +956,12 @@ msgstr "Manual del ratón"
 msgid "Translations"
 msgstr "Traducciones"
 
-#: org/jmol/viewer/StatusManager.java:126
+#: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."
 msgstr "Jmol ejecutando un guión..."
+
+#~ msgid "Jmol script completed"
+#~ msgstr "Guión de Jmol completado"
 
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "

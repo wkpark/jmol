@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-12 14:59+0100\n"
+"POT-Creation-Date: 2006-02-28 19:44+0100\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
 
-#: org/jmol/applet/Jmol.java:447
+#: org/jmol/applet/Jmol.java:456
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -28,13 +28,9 @@ msgstr ""
 "Miniaplicació Jmol. Part del projecte OpenScience. Consulteu http://www.jmol."
 "org per a més informació"
 
-#: org/jmol/applet/Jmol.java:555
+#: org/jmol/applet/Jmol.java:564
 msgid "File Error:"
 msgstr "Error de fitxer:"
-
-#: org/jmol/applet/Jmol.java:593
-msgid "Jmol script completed"
-msgstr "La seqüència de Jmol s'ha completat"
 
 #: org/jmol/popup/PopupResourceBundle.java:652
 msgid "No atoms loaded"
@@ -963,9 +959,12 @@ msgstr "Manual del ratolí"
 msgid "Translations"
 msgstr "Traduccions"
 
-#: org/jmol/viewer/StatusManager.java:126
+#: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."
 msgstr "El Jmol està executant la seqüència..."
+
+#~ msgid "Jmol script completed"
+#~ msgstr "La seqüència de Jmol s'ha completat"
 
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "

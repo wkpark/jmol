@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-12 14:59+0100\n"
+"POT-Creation-Date: 2006-02-28 19:44+0100\n"
 "PO-Revision-Date: 2005-08-12 19:18+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:447
+#: org/jmol/applet/Jmol.java:456
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -30,13 +30,9 @@ msgstr ""
 "Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www.jmol."
 "org"
 
-#: org/jmol/applet/Jmol.java:555
+#: org/jmol/applet/Jmol.java:564
 msgid "File Error:"
 msgstr "Faili viga:"
-
-#: org/jmol/applet/Jmol.java:593
-msgid "Jmol script completed"
-msgstr "Jmol skript sai täidetud"
 
 #: org/jmol/popup/PopupResourceBundle.java:652
 msgid "No atoms loaded"
@@ -965,9 +961,12 @@ msgstr ""
 msgid "Translations"
 msgstr ""
 
-#: org/jmol/viewer/StatusManager.java:126
+#: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."
 msgstr "Jmol käivitab skripti ..."
+
+#~ msgid "Jmol script completed"
+#~ msgstr "Jmol skript sai täidetud"
 
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "

@@ -629,7 +629,6 @@ String getAtomInfoChime(int i) {
 
   Hashtable getModelInfo() {
     Hashtable info = new Hashtable();
-    boolean isPDB = frame.isPDB;
     int modelCount = viewer.getModelCount();
     info.put("modelSetName",getModelSetName());
     info.put("modelCount",new Integer(modelCount));
@@ -692,6 +691,8 @@ String getAtomInfoChime(int i) {
     info.put("radius", new Float((atom.getRasMolRadius()/120.0)));
     info.put("info", getAtomInfo(i));
     info.put("visible", new Boolean(getAtomVisibility(i)));
+    info.put("visibilityFlags", new Integer(atom.visibilityFlags));
+    info.put("shapeVisibilityFlags", new Integer(atom.shapeVisibilityFlags));
     info.put("spacefill", new Integer(atom.madAtom >> 3));
     info.put("color", viewer.getHexColorFromIndex(atom.colixAtom));
     info.put("colix", new Integer(atom.colixAtom));
@@ -785,6 +786,7 @@ String getAtomInfoChime(int i) {
         infoGroup.put("_apt2", new Integer(group.lastAtomIndex));
         infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex));
         infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex));
+        infoGroup.put("shapeVisibility", new Integer(frame.atoms[group.firstAtomIndex].shapeVisibilityFlags));
         infoChain.add(infoGroup);
       }
       arrayName.put("residues",infoChain);
@@ -830,7 +832,6 @@ String getAtomInfoChime(int i) {
     info.put("edge", getBoundBoxCornerVector());
     return info;
   }
-
   
   void setModelVisibility() {
     if (frame == null)
@@ -842,5 +843,23 @@ String getAtomInfoChime(int i) {
         shape.setModelVisibility();
       }
     }
+  }
+  
+  
+  Hashtable getShapeInfo() {
+    Hashtable info = new Hashtable();
+    if (frame == null)
+      return info;
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = frame.shapes[i];
+      if (shape != null) {
+        Hashtable shapeinfo = new Hashtable();
+        shapeinfo.put("index",new Integer(i));
+        shapeinfo.put("myVisibilityFlag",new Integer(shape.myVisibilityFlag));
+        info.put(JmolConstants.shapeClassBases[i],shapeinfo);
+      }
+    }
+    return info;
   }   
+
 }

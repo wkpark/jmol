@@ -29,20 +29,23 @@ import org.jmol.g3d.*;
 
 class BackboneRenderer extends MpsRenderer {
 
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  int myVisibilityFlag;
+  
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
+    this.myVisibilityFlag = myVisibilityFlag;
     renderBackboneChain((Backbone.Bbpolymer)mpspolymer);
   }
   
   void renderBackboneChain(Backbone.Bbpolymer bbpolymer) {
-    render1Chain(bbpolymer.monomerCount,
+    render1Chain(bbpolymer.monomerCount, bbpolymer.monomers,
                  bbpolymer.polymer.getLeadAtomIndices(),
                  bbpolymer.mads, bbpolymer.colixes);
   }
 
-  void render1Chain(int monomerCount, int[] atomIndices,
-                    short[] mads, short[] colixes) {
+  void render1Chain(int monomerCount, Monomer[] monomers, 
+                    int[] atomIndices, short[] mads, short[] colixes) {
     for (int i = monomerCount - 1; --i >= 0; ) {
-      if (mads[i] == 0)
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
         continue;
 
       Atom atomA = frame.getAtomAt(atomIndices[i]);

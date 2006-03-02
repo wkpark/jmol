@@ -126,7 +126,12 @@ class PropertyManager {
 
     if(infoType.equalsIgnoreCase("extractModel")) 
       return viewer.getModelExtract(myParam);
+
+    // misc
     
+    if(infoType.equalsIgnoreCase("shapeInfo"))
+      return viewer.getShapeInfo();      
+
     // public objects
     
     if(infoType.equalsIgnoreCase("jmolViewer"))
@@ -135,7 +140,7 @@ class PropertyManager {
     if(infoType.equalsIgnoreCase("messageQueue"))
       return viewer.getMessageQueue();      
 
-    return "getProperty ERROR\n\nOptions include\n"
+    return "getProperty ERROR\n"+ infoType +"?\nOptions include\n"
     + "\n getProperty(\"appletInfo\")"
 
     + "\n getProperty(\"fileName\")"
@@ -147,6 +152,7 @@ class PropertyManager {
     + "\n\n getProperty(\"modelInfo\")"
     + "\n\n getProperty(\"polymerInfo\")"
     + "\n getProperty(\"chainInfo\")"
+    + "\n getProperty(\"shapeInfo\")"
     
     + "\n\n getProperty(\"boundboxInfo\")"
     + "\n getProperty(\"centerInfo\")"

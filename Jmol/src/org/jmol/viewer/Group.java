@@ -33,6 +33,7 @@ class Group {
   short groupID;
   int firstAtomIndex = -1;
   int lastAtomIndex;
+  int shapeVisibilityFlags = 0;
 
   Group(Chain chain, String group3, int seqcode,
         int firstAtomIndex, int lastAtomIndex) {
@@ -44,6 +45,14 @@ class Group {
     this.firstAtomIndex = firstAtomIndex;
     this.lastAtomIndex = lastAtomIndex;
   }
+
+  final void setShapeVisibility(int visFlag, boolean isVisible) {
+    if(isVisible) {
+      shapeVisibilityFlags |= visFlag;        
+    } else {
+      shapeVisibilityFlags &=~visFlag;
+    }
+}
 
   final boolean isGroup3(String group3) {
     return group3Names[groupID].equalsIgnoreCase(group3);

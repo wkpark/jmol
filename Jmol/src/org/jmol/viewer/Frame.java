@@ -746,6 +746,7 @@ final class Frame {
     try {
       Class shapeClass = Class.forName(className);
       Shape shape = (Shape)shapeClass.newInstance();
+      shape.setVisibilityInfo(shapeID);
       shape.setViewerG3dFrame(viewer, g3d, this);
       return shape;
     } catch (Exception e) {

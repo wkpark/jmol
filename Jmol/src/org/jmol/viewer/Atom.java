@@ -49,6 +49,7 @@ final class Atom implements Tuple {
   byte formalChargeAndFlags;
   byte alternateLocationID;
   int visibilityFlags;
+  int shapeVisibilityFlags;
   short madAtom;
   short colixAtom;
   Bond[] bonds;
@@ -135,6 +136,14 @@ final class Atom implements Tuple {
     }
   }
 
+  final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
+    if(isVisible) {
+      shapeVisibilityFlags |= shapeVisibilityFlag;        
+    } else {
+      shapeVisibilityFlags &=~shapeVisibilityFlag;
+    }
+  }
+  
   void setGroup(Group group) {
     this.group = group;
   }
@@ -416,7 +425,11 @@ final class Atom implements Tuple {
   }
 
   boolean isVisible() {
-    return (visibilityFlags > JmolConstants.VISIBLE_MODEL);
+    return ((visibilityFlags & JmolConstants.VISIBLE_ATOM) != 0);
+  }
+
+  boolean isShapeVisible(int shapeID) {
+    return ((shapeVisibilityFlags & (1 << shapeID)) != 0);
   }
 
   float getPartialCharge() {

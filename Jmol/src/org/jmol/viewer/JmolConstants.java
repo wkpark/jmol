@@ -30,13 +30,22 @@ final public class JmolConstants {
 
   
   public final static int VISIBLE_MODEL     = 1;
-  public final static int VISIBLE_BALL      = 2;
-  public final static int VISIBLE_STICK     = 4;
-  public final static int VISIBLE_BACKBONE  = 8;
-  public final static int VISIBLE_CARTOON   = 16;
-  public final static int VISIBLE_STAR      = 32;
-  public final static int VISIBLE_HALO      = 64;
-
+  public final static int VISIBLE_BALL      = 1 << 1;
+  public final static int VISIBLE_STICK     = 1 << 2;
+  public final static int VISIBLE_BACKBONE  = 1 << 3;
+  public final static int VISIBLE_CARTOON   = 1 << 4;
+  public final static int VISIBLE_STAR      = 1 << 5;
+  public final static int VISIBLE_HALO      = 1 << 6;
+  public final static int VISIBLE_DOTS      = 1 << 7;
+  // VISIBLE_ATOM might be modified to include other shapes,
+  public final static int VISIBLE_ATOM      = 
+      VISIBLE_BALL
+    | VISIBLE_STICK
+    | VISIBLE_BACKBONE
+    | VISIBLE_CARTOON
+    | VISIBLE_STAR
+    | VISIBLE_HALO
+    | VISIBLE_DOTS;
   
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(

@@ -35,13 +35,20 @@ class Stars extends Shape {
   short[] colixes;
 
   void setSize(int size, BitSet bsSelected) {
+    
+    
     Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; )
+    boolean isVisible = (size != 0);
+    int bsLength = bsSelected.length();
+    if (mads == null && bsLength > 0)
+      mads = new short[frame.atomCount];
+    for (int i = bsLength; --i >= 0; ) {
       if (bsSelected.get(i)) {
-        if (mads == null)
-          mads = new short[frame.atomCount];
-        mads[i] = atoms[i].convertEncodedMad(size);
+        Atom atom = atoms[i];
+        atom.setShapeVisibility(myVisibilityFlag,isVisible);
+        mads[i] = atom.convertEncodedMad(size);
       }
+    }
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {

@@ -45,14 +45,17 @@ class Backbone extends Mps {
       // note that i is initialized to monomerCount - 1
       // in order to skip the last atom
       // but it is picked up within the loop by looking at i+1
+      boolean isVisible = (mad != 0);
       for (int i = monomerCount - 1; --i >= 0; ) {
         if ((bsSelected.get(atomIndices[i]) &&
              bsSelected.get(atomIndices[i + 1]))
             ||
             (bondSelectionModeOr &&
              (bsSelected.get(atomIndices[i]) ||
-              bsSelected.get(atomIndices[i + 1]))))
+              bsSelected.get(atomIndices[i + 1])))) {
+          monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           mads[i] = mad;
+        }
       }
     }
 

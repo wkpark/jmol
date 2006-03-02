@@ -57,10 +57,12 @@ class StrandsRenderer extends MpsRenderer {
   float baseOffset;
 
   boolean isNucleicPolymer;
-
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  int myVisibilityFlag;
+  
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
     Strands.Schain schain = (Strands.Schain)mpspolymer;
 
+    this.myVisibilityFlag = myVisibilityFlag;
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
@@ -103,9 +105,10 @@ class StrandsRenderer extends MpsRenderer {
   void render1Strand(int monomerCount, Monomer[] monomers, short[] mads,
                      short[] colixes, Point3i[] screens) {
     for (int i = monomerCount; --i >= 0; )
-      if (mads[i] > 0)
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) != 0) {
         render1StrandSegment(monomerCount,
                              monomers[i], colixes[i], mads, screens, i);
+      }
   }
 
 

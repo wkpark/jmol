@@ -33,9 +33,15 @@ class Balls extends Shape {
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; )
-      if (bsSelected.get(i))
-        atoms[i].setMadAtom(mad);
+    boolean isVisible = (mad != 0);
+    int bsLength = bsSelected.length();
+    for (int i = bsLength; --i >= 0; ) {
+      if (bsSelected.get(i)) {
+        Atom atom = atoms[i];
+        atom.setShapeVisibility(myVisibilityFlag,isVisible);
+        atom.setMadAtom(mad);
+      }
+    }
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {

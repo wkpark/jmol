@@ -1526,6 +1526,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.getChainInfo();
   }
 
+  public Hashtable getShapeInfo() {
+    return modelManager.getShapeInfo();
+  }
+
   Vector getAllAtomInfo(String atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getAllAtomInfo(bs);

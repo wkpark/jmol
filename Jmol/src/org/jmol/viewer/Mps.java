@@ -170,6 +170,7 @@ abstract class Mps extends Shape {
     Point3f[] leadMidpoints;
     Vector3f[] wingVectors;
 
+
     Mpspolymer(Polymer polymer, int madOn,
               int madHelixSheet, int madTurnRandom, int madDnaRna) {
       this.polymer = polymer;
@@ -262,10 +263,15 @@ abstract class Mps extends Shape {
     }
 
     void setMad(short mad, BitSet bsSelected) {
-      int[] atomIndices = polymer.getLeadAtomIndices();
+      int[] leadAtomIndices = polymer.getLeadAtomIndices();
+      boolean isVisible = (mad != 0);
       for (int i = monomerCount; --i >= 0; ) {
-        if (bsSelected.get(atomIndices[i]))
+        int leadAtomIndex = leadAtomIndices[i];
+        if (bsSelected.get(leadAtomIndex)) { 
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
+          monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
+          frame.atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
+        }
       }
       if (monomerCount > 1)
         mads[monomerCount] = mads[monomerCount - 1];

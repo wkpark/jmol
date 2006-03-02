@@ -31,8 +31,10 @@ import javax.vecmath.Point3i;
 class TraceRenderer extends MpsRenderer {
 
   boolean isNucleicPolymer;
-
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  int myVisibilityFlag;
+  
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
+    this.myVisibilityFlag = myVisibilityFlag;
     Trace.Tchain tchain = (Trace.Tchain)mpspolymer;
     isNucleicPolymer = tchain.polymer instanceof NucleicPolymer;
     monomerCount = tchain.monomerCount;
@@ -54,7 +56,7 @@ class TraceRenderer extends MpsRenderer {
 
   void render1Chain(short[] mads, short[] colixes) {
     for (int i = monomerCount; --i >= 0; ) {
-      if (mads[i] == 0)
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
         continue;
       short colix =
         Graphics3D.inheritColix(colixes[i],

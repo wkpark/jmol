@@ -35,7 +35,7 @@ abstract class MpsRenderer extends ShapeRenderer {
     Mps mcps = (Mps)shape;
     for (int m = mcps.getMpsmodelCount(); --m >= 0; ) {
       Mps.Mpsmodel mcpsmodel = mcps.getMpsmodel(m);
-      if (displayModelIndex >= 0 && displayModelIndex != mcpsmodel.modelIndex)
+      if ((mcpsmodel.modelVisibilityFlags & shape.myVisibilityFlag) == 0)
         continue;
       for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0; ) {
         Mps.Mpspolymer mpspolymer = mcpsmodel.getMpspolymer(c);

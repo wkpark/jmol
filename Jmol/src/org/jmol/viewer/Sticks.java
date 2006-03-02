@@ -233,13 +233,11 @@ class Sticks extends Shape {
 
   void setModelVisibility() {
     Bond[] bonds = frame.bonds;
-    int displayModelIndex = viewer.getDisplayModelIndex();
-    boolean isOneFrame = (displayModelIndex >= 0);
     boolean showHydrogens = viewer.getShowHydrogens();
-    for (int i = frame.bondCount; --i >= 0; ) {
+      for (int i = frame.bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
       bond.visibilityFlags = 0;
-      if (!isOneFrame || bond.atom1.modelIndex == displayModelIndex) {
+      if ((bond.atom1.visibilityFlags & JmolConstants.VISIBLE_MODEL) != 0) {
         if (bond.mad == 0)
           continue;
         Atom atomA = bond.atom1;
@@ -249,6 +247,8 @@ class Sticks extends Shape {
           atomA.visibilityFlags |= JmolConstants.VISIBLE_STICK;
           atomB.visibilityFlags |= JmolConstants.VISIBLE_STICK;
           bond.visibilityFlags |= JmolConstants.VISIBLE_STICK;
+          atomA.setShapeVisibility(myVisibilityFlag, true);
+          atomB.setShapeVisibility(myVisibilityFlag, true);
         }
       }
     }

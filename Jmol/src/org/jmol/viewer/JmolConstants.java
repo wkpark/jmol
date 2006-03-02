@@ -28,25 +28,42 @@ import java.util.Hashtable;
 
 final public class JmolConstants {
 
+  // this atom flag simply associates an atom with the current model
+  // but doesn't necessarily mean it is visible
+
+  // and must be reset with setModelVisibility() prior to rendering
   
-  public final static int VISIBLE_MODEL     = 1;
-  public final static int VISIBLE_BALL      = 1 << 1;
-  public final static int VISIBLE_STICK     = 1 << 2;
-  public final static int VISIBLE_BACKBONE  = 1 << 3;
-  public final static int VISIBLE_CARTOON   = 1 << 4;
-  public final static int VISIBLE_STAR      = 1 << 5;
-  public final static int VISIBLE_HALO      = 1 << 6;
-  public final static int VISIBLE_DOTS      = 1 << 7;
-  public final static int VISIBLE_VECTOR    = 1 << 8;
+  final static int VISIBLE_MODEL     = 1;
+
+  // these atom flags get tainted with scripts and frame changes
+  // and must be reset with setModelVisibility() prior to rendering
+ 
+  final static int VISIBLE_BALL      = 1 << 1;
+  final static int VISIBLE_STICK     = 1 << 2;
+  final static int VISIBLE_STAR      = 1 << 3;
+  final static int VISIBLE_HALO      = 1 << 4;
+  final static int VISIBLE_DOTS      = 1 << 5;
+  final static int VISIBLE_VECTOR    = 1 << 6;
+  final static int VISIBLE_LABEL     = 1 << 7;
+
+  // these two do NOT drive display, but are for Atom.isVisible() only
+  
+  final static int VISIBLE_BACKBONE  = 1 << 8;
+  final static int VISIBLE_CARTOON   = 1 << 9;
+
   // VISIBLE_ATOM might be modified to include other shapes,
-  public final static int VISIBLE_ATOM      = 
+  // for example, the phosphorus backbone in a cartoon of DNA is clickable
+  // but not actually "visible". 
+  
+  final static int VISIBLE_ATOM      = 
       VISIBLE_BALL
     | VISIBLE_STICK
     | VISIBLE_BACKBONE
     | VISIBLE_CARTOON
     | VISIBLE_STAR
     | VISIBLE_HALO
-    | VISIBLE_DOTS;
+    | VISIBLE_DOTS  
+    | VISIBLE_LABEL;
   
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(

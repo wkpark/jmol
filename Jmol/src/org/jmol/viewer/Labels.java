@@ -81,15 +81,14 @@ class Labels extends Shape {
     
     if ("label" == propertyName) {
       String strLabel = (String)value;
-      for (int i = frame.atomCount; --i >= 0; )
+      int bsLength = bsSelected.length();
+      for (int i = bsLength; --i >= 0; )
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
           String label = atom.formatLabel(strLabel);
-          if (strings == null || i >= strings.length) {
-            if (label == null)
-              continue;
+          atom.setShapeVisibility(myVisibilityFlag, label != null);
+          if (strings == null || i >= strings.length)
             strings = Util.ensureLength(strings, i + 1);
-          }
           strings[i] = label;
         }
       return;
@@ -129,8 +128,8 @@ class Labels extends Shape {
       else if (offset == ((JmolConstants.LABEL_DEFAULT_X_OFFSET << 8) |
                           JmolConstants.LABEL_DEFAULT_Y_OFFSET))
         offset = 0;
-      for (int i = frame.atomCount; --i >= 0; )
-        if (bsSelected.get(i)) {
+        int bsLength = bsSelected.length();
+        for (int i = bsLength; --i >= 0; ) {
           if (offsets == null || i >= offsets.length) {
             if (offset == 0)
               continue;
@@ -149,20 +148,23 @@ class Labels extends Shape {
           strings[atomIndex] != null) {
         strings[atomIndex] = null;
       } else {
-        String strLabel;
-        if (viewer.getModelCount() > 1)
-          strLabel = "[%n]%r:%c.%a/%M";
-        else if (viewer.getChainCount() > 1)
-          strLabel = "[%n]%r:%c.%a";
-        else if (viewer.getGroupCount() <= 1)
-          strLabel = "%e%i";
-        else
-          strLabel = "[%n]%r.%a";
+        String strLabel = viewer.getStandardLabelFormat();
         Atom atom = atoms[atomIndex];
         strings = Util.ensureLength(strings, atomIndex + 1);
         strings[atomIndex] = atom.formatLabel(strLabel);
       }
       return;
+    }
+  }
+
+  void setModelVisibility() {
+    for (int i = strings.length; --i >= 0; ) {
+      String label = strings[i];
+      if (label == null)
+        continue;
+      Atom atom = frame.atoms[i];
+      if ((atom.visibilityFlags & JmolConstants.VISIBLE_MODEL) != 0)
+        atom.visibilityFlags |= JmolConstants.VISIBLE_LABEL;
     }
   }
 }

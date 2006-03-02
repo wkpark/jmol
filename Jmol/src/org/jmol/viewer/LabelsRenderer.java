@@ -50,14 +50,11 @@ class LabelsRenderer extends ShapeRenderer {
     if (labelStrings == null)
       return;
     Atom[] atoms = frame.atoms;
-    int displayModelIndex = this.displayModelIndex;
     for (int i = labelStrings.length; --i >= 0; ) {
-      String label = labelStrings[i];
-      if (label == null)
-        continue;
       Atom atom = atoms[i];
-      if (displayModelIndex >= 0 && displayModelIndex != atom.modelIndex)
+      if ((atom.visibilityFlags & JmolConstants.VISIBLE_LABEL) == 0)
         continue;
+      String label = labelStrings[i];
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
       short bgcolix =
         (bgcolixes == null || i >= bgcolixes.length) ? 0 : bgcolixes[i];

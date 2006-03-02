@@ -68,6 +68,8 @@ class Backbone extends Mps {
         Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
         atomA.visibilityFlags |= JmolConstants.VISIBLE_BACKBONE;
         atomB.visibilityFlags |= JmolConstants.VISIBLE_BACKBONE;
+        atomA.setShapeVisibility(myVisibilityFlag, true);
+        atomB.setShapeVisibility(myVisibilityFlag, true);
       }
     }
   }

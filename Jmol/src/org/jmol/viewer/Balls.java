@@ -103,7 +103,7 @@ class Balls extends Shape {
     boolean showHydrogens = viewer.getShowHydrogens();
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      atom.visibilityFlags = 0;  
+      atom.resetVisibility();
       if (atom.madAtom == JmolConstants.MAR_DELETED
           || ! showHydrogens && atom.elementNumber == 1)
         continue;

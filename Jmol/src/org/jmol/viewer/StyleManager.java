@@ -193,4 +193,22 @@ class StyleManager {
         new DecimalFormat(formattingStrings[decimalDigits]);
     return formatter.format(value);
   }
+  
+  String getStandardLabelFormat() {
+    // from the RasMol 2.6b2 manual: RasMol uses the label
+    // "%n%r:%c.%a" if the molecule contains more than one chain:
+    // "%e%i" if the molecule has only a single residue (a small molecule) and
+    // "%n%r.%a" otherwise.
+    String strLabel;
+    int modelCount = viewer.getModelCount();
+    if (viewer.getChainCount() > modelCount)
+      strLabel = "[%n]%r:%c.%a";
+    else if (viewer.getGroupCount() <= modelCount)
+      strLabel = "%e%i";
+    else
+      strLabel = "[%n]%r.%a";
+    if (viewer.getModelCount() > 1)
+      strLabel += "/%M";
+    return strLabel;
+  }
 }

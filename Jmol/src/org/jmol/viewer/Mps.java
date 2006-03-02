@@ -102,6 +102,7 @@ abstract class Mps extends Shape {
   class Mpsmodel {
     Mpspolymer[] mpspolymers;
     int modelIndex;
+    int modelVisibilityFlags = 0;
     
     Mpsmodel(Model model) {
       mpspolymers = new Mpspolymer[model.getPolymerCount()];
@@ -148,6 +149,10 @@ abstract class Mps extends Shape {
     }
 
     void setModelVisibility() {
+      int displayModelIndex = viewer.getDisplayModelIndex();
+      modelVisibilityFlags = 
+        (displayModelIndex >= 0 && displayModelIndex != modelIndex
+            ? 0 : myVisibilityFlag);
       for (int i = mpspolymers.length; --i >= 0; )
         mpspolymers[i].setModelVisibility();
     }

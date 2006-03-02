@@ -111,8 +111,8 @@ final public class Viewer extends JmolViewer {
 
   Hashtable appletInfo;
 
-  String htmlName="";
-  
+  String htmlName = "";
+
   boolean jvm11orGreater = false;
 
   boolean jvm12orGreater = false;
@@ -138,9 +138,9 @@ final public class Viewer extends JmolViewer {
         + JmolConstants.version + "  " + JmolConstants.date + "\njava.vendor:"
         + strJavaVendor + "\njava.version:" + strJavaVersion + "\nos.name:"
         + strOSName);
-    System.out.println(htmlName + " jvm11orGreater=" + jvm11orGreater 
-        + "\njvm12orGreater=" + jvm12orGreater 
-        + "\njvm14orGreater=" + jvm14orGreater);
+    System.out.println(htmlName + " jvm11orGreater=" + jvm11orGreater
+        + "\njvm12orGreater=" + jvm12orGreater + "\njvm14orGreater="
+        + jvm14orGreater);
 
     g3d = new Graphics3D(awtComponent);
     statusManager = new StatusManager(this);
@@ -191,7 +191,7 @@ final public class Viewer extends JmolViewer {
   void logError(String strMsg) {
     System.out.println(strMsg);
   }
- 
+
   Hashtable getAppletInfo() {
     Hashtable info = new Hashtable();
     info.put("htmlName", htmlName);
@@ -202,6 +202,7 @@ final public class Viewer extends JmolViewer {
     info.put("operatingSystem", strOSName);
     return info;
   }
+
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
@@ -334,9 +335,9 @@ final public class Viewer extends JmolViewer {
   }
 
   String getTranslationScript() {
-    return transformManager.getTranslationScript();    
+    return transformManager.getTranslationScript();
   }
-  
+
   void translateByXPercent(float percent) {
     translateToXPercent(getTranslationXPercent() + percent);
   }
@@ -1065,8 +1066,7 @@ final public class Viewer extends JmolViewer {
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name);
     long ms = System.currentTimeMillis() - timeBegin;
-    setStatusFileLoaded(1, name, "", modelManager.getModelSetName(),
-        null, null);
+    setStatusFileLoaded(1, name, "", modelManager.getModelSetName(), null, null);
     System.out.println("openFile(" + name + ") " + ms + " ms");
   }
 
@@ -1077,11 +1077,11 @@ final public class Viewer extends JmolViewer {
     long timeBegin = System.currentTimeMillis();
     fileManager.openFiles(modelName, names);
     long ms = System.currentTimeMillis() - timeBegin;
-    for(int i = 0; i < names.length ; i++) {
+    for (int i = 0; i < names.length; i++) {
       setStatusFileLoaded(1, names[i], "", modelManager.getModelSetName(),
           null, null);
     }
-    System.out.println("openFiles("+names.length+") " + ms + " ms");
+    System.out.println("openFiles(" + names.length + ") " + ms + " ms");
   }
 
   public void openStringInline(String strModel) {
@@ -1189,9 +1189,9 @@ final public class Viewer extends JmolViewer {
     // maybe there needs to be a call to clear()
     // or something like that here
     // for when CdkEditBus calls this directly
-    
-    setStatusFileLoaded(2, fullPathName,fileName, modelManager.getModelSetName(),
-        clientFile, null);
+
+    setStatusFileLoaded(2, fullPathName, fileName, modelManager
+        .getModelSetName(), clientFile, null);
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
@@ -1204,8 +1204,8 @@ final public class Viewer extends JmolViewer {
     setFrankOn(styleManager.frankOn);
     repaintManager.initializePointers(1);
     popHoldRepaint();
-    setStatusFileLoaded(3, fullPathName, fileName, modelManager.getModelSetName(),
-        clientFile, null);
+    setStatusFileLoaded(3, fullPathName, fileName, modelManager
+        .getModelSetName(), clientFile, null);
   }
 
   void clear() {
@@ -1330,7 +1330,7 @@ final public class Viewer extends JmolViewer {
   public Hashtable getPolymerInfo() {
     return modelManager.getPolymerInfoAll();
   }
-  
+
   public Properties getModelSetProperties() {
     return modelManager.getModelSetProperties();
   }
@@ -1755,7 +1755,8 @@ final public class Viewer extends JmolViewer {
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     manageScriptTermination();
-    if(isTainted)setModelVisibility();
+    if (isTainted)
+      setModelVisibility();
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
@@ -1975,6 +1976,10 @@ final public class Viewer extends JmolViewer {
     styleManager.setSsbondsBackbone(ssbondsBackbone);
   }
 
+  String getStandardLabelFormat() {
+    return styleManager.getStandardLabelFormat();
+  }
+
   boolean getSsbondsBackbone() {
     return styleManager.ssbondsBackbone;
   }
@@ -2052,7 +2057,7 @@ final public class Viewer extends JmolViewer {
 
   void setShapeSize(int shapeID, int size) {
     modelManager.setShapeSize(shapeID, size, selectionManager.bsSelection);
-    refresh(0, "Viewer:setShapeSize(" +shapeID + "," + size + ")");
+    refresh(0, "Viewer:setShapeSize(" + shapeID + "," + size + ")");
   }
 
   int getShapeSize(int shapeID) {
@@ -2229,7 +2234,7 @@ final public class Viewer extends JmolViewer {
   }
 
   void setStatusFileLoaded(int ptLoad, String fullPathName, String fileName,
-    String modelName, Object clientFile, String strError) {
+      String modelName, Object clientFile, String strError) {
     statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
         clientFile, strError, ptLoad);
   }
@@ -2918,13 +2923,14 @@ final public class Viewer extends JmolViewer {
     return g3d.getHexColorFromIndex(colix);
   }
 
-  void setModelVisibility(){
+  void setModelVisibility() {
     modelManager.setModelVisibility();
   }
 
   boolean isTainted = true;
+
   void setTainted(boolean TF) {
     isTainted = TF;
   }
-  
+
 }

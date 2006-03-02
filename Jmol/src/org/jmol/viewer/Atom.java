@@ -136,6 +136,15 @@ final class Atom implements Tuple {
     }
   }
 
+  final void resetVisibility() {
+    //it is not feasible to follow the state exactly 
+    //when individual bonds or backbone connections are broken
+    //so instead we clear them each time and reset them.
+    visibilityFlags = 0;
+    shapeVisibilityFlags &= 
+      ~((1<<JmolConstants.SHAPE_BACKBONE | (1<<JmolConstants.SHAPE_STICKS)));    
+  }
+  
   final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
     if(isVisible) {
       shapeVisibilityFlags |= shapeVisibilityFlag;        
@@ -823,7 +832,7 @@ final class Atom implements Tuple {
           strT = "" + getPolymerLength();
           break;
         case 'M':
-          strT = "/" + getModelTagNumber();
+          strT = "" + getModelTagNumber();
           break;
         case 'm':
           strT = "<X>";
@@ -856,7 +865,7 @@ final class Atom implements Tuple {
         }
         if (floatIsSet) {
           strLabel += format(floatT, width, precision, alignLeft, zeroPad);
-        } else {
+        } else if (strT != null) {
           strLabel += format(strT, width, precision, alignLeft, zeroPad);
         }
       } catch (IndexOutOfBoundsException ioobe) {
@@ -878,6 +887,8 @@ final class Atom implements Tuple {
 
   static String format(String value, int width, int precision,
                        boolean alignLeft, boolean zeroPad) {
+    if (value == null)
+      return "";
     if (precision > value.length())
       value = value.substring(0, precision);
     int padLength = width - value.length();

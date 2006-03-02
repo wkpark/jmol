@@ -818,12 +818,11 @@ class Dots extends Shape {
     if (dotsConvexMaps == null)
       return;
     Atom[] atoms = frame.atoms;
-    int displayModelIndex = viewer.getDisplayModelIndex();
     for (int i = dotsConvexMax; --i >= 0; ) {
       int[] map = dotsConvexMaps[i];
       if (map != null && map != mapNull) {
         Atom atom = atoms[i];
-        if (displayModelIndex < 0 || displayModelIndex == atom.modelIndex)
+        if ((atom.visibilityFlags & JmolConstants.VISIBLE_MODEL) != 0)
           atom.visibilityFlags |= JmolConstants.VISIBLE_DOTS;
       }
     }

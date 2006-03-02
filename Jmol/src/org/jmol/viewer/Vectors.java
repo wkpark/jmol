@@ -63,4 +63,18 @@ class Vectors extends Shape {
       }
     } 
   }
+  
+  void setModelVisibility() {
+    if (mads == null)
+      return;
+    Atom[] atoms = frame.atoms;
+    int displayModelIndex = viewer.getDisplayModelIndex();
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      if ((displayModelIndex < 0 || atom.modelIndex == displayModelIndex)
+          && mads[i] > 0) 
+        atom.visibilityFlags |= JmolConstants.VISIBLE_VECTOR;
+    }
+  }
+
 }

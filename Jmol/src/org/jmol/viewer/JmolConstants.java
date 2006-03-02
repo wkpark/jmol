@@ -37,6 +37,7 @@ final public class JmolConstants {
   public final static int VISIBLE_STAR      = 1 << 5;
   public final static int VISIBLE_HALO      = 1 << 6;
   public final static int VISIBLE_DOTS      = 1 << 7;
+  public final static int VISIBLE_VECTOR    = 1 << 8;
   // VISIBLE_ATOM might be modified to include other shapes,
   public final static int VISIBLE_ATOM      = 
       VISIBLE_BALL

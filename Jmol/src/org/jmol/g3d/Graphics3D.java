@@ -1933,6 +1933,9 @@ final public class Graphics3D {
   }
 
   public String getHexColorFromIndex(short colix) {
+    Color color = getColor(colix);
+    if (color == null)
+      return null;
     String str = getColor(colix).toString();
     return str.substring(15,str.length()-1);
   }

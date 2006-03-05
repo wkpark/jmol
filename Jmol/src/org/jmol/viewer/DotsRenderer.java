@@ -61,12 +61,11 @@ class DotsRenderer extends ShapeRenderer {
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     short[] colixesConvex = dots.colixesConvex;
+    int myVisibilityFlag = dots.myVisibilityFlag;
     for (int i = dots.dotsConvexMax; --i >= 0; ) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
-          && (atom.shapeVisibilityFlags & dots.myVisibilityFlag) != 0) {
-          renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i]);
-      }
+      if (atom.isShapeVisible(myVisibilityFlag)) 
+        renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i]);
     }
     Dots.Torus[] tori = dots.tori;
     for (int i = dots.torusCount; --i >= 0; ) {

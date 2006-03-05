@@ -814,16 +814,12 @@ class Dots extends Shape {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
   }
-  void setModelVisibility() {
-    if (dotsConvexMaps == null)
-      return;
-    Atom[] atoms = frame.atoms;
-    for (int i = dotsConvexMax; --i >= 0; ) {
-      int[] map = dotsConvexMaps[i];
-      if (map != null && map != mapNull) {
-        Atom atom = atoms[i];
-        atom.clickabilityFlags |= JmolConstants.CLICKABLE_DOTS;
-      }
+
+  void setModelClickability() {
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = frame.atoms[i];
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
+        atom.clickabilityFlags |= myVisibilityFlag;
     }
   }
 }

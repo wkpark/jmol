@@ -34,10 +34,10 @@ class StarsRenderer extends ShapeRenderer {
     if (stars.mads == null)
       return;
     Atom[] atoms = frame.atoms;
+    int myVisibilityFlag = stars.myVisibilityFlag;
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
-          && (atom.shapeVisibilityFlags & stars.myVisibilityFlag) != 0) {
+      if (atom.isShapeVisible(myVisibilityFlag)) {
         short colix = stars.colixes == null ? 0 : stars.colixes[i];
         render1(atom, stars.mads[i], colix);
       }

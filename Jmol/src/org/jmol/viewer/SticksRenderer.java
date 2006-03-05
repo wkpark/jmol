@@ -79,7 +79,9 @@ class SticksRenderer extends ShapeRenderer {
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
-      if (bond.visibilityFlags != 0) 
+      if (bond.shapeVisibilityFlags != 0
+          && bond.atom1.isModelVisible()
+          && bond.atom2.isModelVisible()) 
         render(bond);
     }
   }

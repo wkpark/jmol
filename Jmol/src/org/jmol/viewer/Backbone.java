@@ -57,24 +57,20 @@ class Backbone extends Mps {
           mads[i] = mad;
           Atom atomA = frame.getAtomAt(index1);
           Atom atomB = frame.getAtomAt(index2);
-          atomA.addDisplayedBackbone(mad != 0, myVisibilityFlag);
-          atomB.addDisplayedBackbone(mad != 0, myVisibilityFlag);    
+          atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
+          atomB.addDisplayedBackbone(myVisibilityFlag, isVisible);    
         }
       }
     }
 
-    void setModelVisibility() {
-      for (int i = monomerCount - 1; --i >= 0; ) {
-        if (mads[i] == 0)
-          continue;
-        int[] atomIndices = polymer.getLeadAtomIndices();
-        Atom atomA = frame.getAtomAt(atomIndices[i]);
-        Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
-        atomA.clickabilityFlags |= JmolConstants.CLICKABLE_BACKBONE;
-        atomB.clickabilityFlags |= JmolConstants.CLICKABLE_BACKBONE;
+    void setModelClickability() {
+      int[] atomIndices = polymer.getLeadAtomIndices();
+      for (int i = monomerCount; --i >= 0; ) {
+        Atom atom = frame.getAtomAt(atomIndices[i]);
+        if (atom.nBackbonesDisplayed > 0)
+          atom.clickabilityFlags |= myVisibilityFlag;
       }
     }
-    
   }
   
 }

@@ -39,30 +39,6 @@ final public class JmolConstants {
  
   public final static int ATOM_IN_MODEL    = 1;
 
-  final static int CLICKABLE_BALL      = 1 << 1;
-  final static int CLICKABLE_STICK     = 1 << 2;
-  final static int CLICKABLE_STAR      = 1 << 3;
-  final static int CLICKABLE_HALO      = 1 << 4;
-  final static int CLICKABLE_DOTS      = 1 << 5;
-  final static int CLICKABLE_VECTOR    = 1 << 6;
-  final static int CLICKABLE_LABEL     = 1 << 7;
-  final static int CLICKABLE_BACKBONE  = 1 << 8;
-  final static int CLICKABLE_CARTOON   = 1 << 9;
-
-  // CLICKABLE_ATOM might be modified to include other shapes,
-  // for example, the phosphorus backbone in a cartoon of DNA is clickable
-  // but not actually "visible". 
-  
-  final static int CLICKABLE_ATOM      = 
-      CLICKABLE_BALL
-    | CLICKABLE_STICK
-    | CLICKABLE_BACKBONE
-    | CLICKABLE_CARTOON
-    | CLICKABLE_STAR
-    | CLICKABLE_HALO
-    | CLICKABLE_DOTS  
-    | CLICKABLE_LABEL;
-  
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";

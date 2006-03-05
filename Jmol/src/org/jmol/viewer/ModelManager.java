@@ -694,9 +694,13 @@ String getAtomInfoChime(int i) {
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("shapeVisibilityFlags", new Integer(atom.shapeVisibilityFlags));
     info.put("spacefill", new Integer(atom.madAtom >> 3));
-    info.put("color", viewer.getHexColorFromIndex(atom.colixAtom));
+    String strColor = viewer.getHexColorFromIndex(atom.colixAtom);
+    if(strColor != null) 
+      info.put("color", strColor);
     info.put("colix", new Integer(atom.colixAtom));
-    info.put("translucent", new Boolean(atom.isTranslucent()));
+    boolean isTranslucent = atom.isTranslucent();
+    if (isTranslucent)
+      info.put("translucent", new Boolean(isTranslucent));
     info.put("formalCharge", new Integer(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));
     
@@ -729,15 +733,26 @@ String getAtomInfoChime(int i) {
   }
 
   Hashtable getBondInfo(int i) {
+    Bond bond = frame.getBondAt(i);
+    Atom atom1 = getBondAtom1(i);
+    Atom atom2 = getBondAtom2(i);
     Hashtable info = new Hashtable();
     info.put("_bpt", new Integer(i));
-    info.put("_apt1", new Integer(getBondAtom1(i).atomIndex));
-    info.put("_apt2", new Integer(getBondAtom2(i).atomIndex));
-    info.put("atomno1", new Integer(getBondAtom1(i).getAtomNumber()));
-    info.put("atomno2", new Integer(getBondAtom2(i).getAtomNumber()));
+    info.put("_apt1", new Integer(atom1.atomIndex));
+    info.put("_apt2", new Integer(atom2.atomIndex));
+    info.put("atomno1", new Integer(atom1.getAtomNumber()));
+    info.put("atomno2", new Integer(atom2.getAtomNumber()));
     info.put("order", new Integer(getBondOrder(i)));
-    info.put("radius", new Float(frame.getBondAt(i).mad/2000.));
-    return info;
+    info.put("radius", new Float(bond.mad/2000.));
+    info.put("visible", new Boolean(bond.shapeVisibilityFlags != 0));
+    String strColor = viewer.getHexColorFromIndex(bond.colix);
+    if (strColor != null) 
+      info.put("color", strColor);
+    info.put("colix", new Integer(bond.colix));
+    boolean isTranslucent = bond.isTranslucent();
+    if (isTranslucent)
+      info.put("translucent", new Boolean(isTranslucent));
+   return info;
   }  
   
   String listProperties(Properties props) {
@@ -825,7 +840,6 @@ String getAtomInfoChime(int i) {
     return returnInfo;
   }
   
-  
   Hashtable getBoundBoxInfo() {
     Hashtable info = new Hashtable();
     info.put("center", getBoundBoxCenter());
@@ -836,15 +850,41 @@ String getAtomInfoChime(int i) {
   void setModelVisibility() {
     if (frame == null)
       return;
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
-      if (shape != null) {
-        System.out.println("modelManager-setModelVis "+JmolConstants.shapeClassBases[i]);
-        shape.setModelVisibility();
+    Atom[] atoms = frame.atoms;
+    int displayModelIndex = viewer.getDisplayModelIndex();
+    boolean isOneFrame = (displayModelIndex >= 0); 
+    boolean showHydrogens = viewer.getShowHydrogens();
+    int ballVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);
+    int haloVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      atom.shapeVisibilityFlags &= (
+          ~JmolConstants.ATOM_IN_MODEL
+          & ~ballVisibilityFlag
+          & ~haloVisibilityFlag);
+      if (atom.madAtom == JmolConstants.MAR_DELETED
+          || ! showHydrogens && atom.elementNumber == 1)
+        continue;
+      if (! isOneFrame || atom.modelIndex == displayModelIndex) { 
+        atom.shapeVisibilityFlags |= JmolConstants.ATOM_IN_MODEL;
+        if (atom.madAtom != 0)
+          atom.shapeVisibilityFlags |= ballVisibilityFlag;
+        if(viewer.hasSelectionHalo(atom.atomIndex))
+          atom.shapeVisibilityFlags |= haloVisibilityFlag;
       }
     }
   }
   
+  void setModelClickability() {
+    if (frame == null)
+      return;
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = frame.shapes[i];
+      if (shape != null) {
+        shape.setModelClickability();
+      }
+    }
+  }
   
   Hashtable getShapeInfo() {
     Hashtable info = new Hashtable();
@@ -859,7 +899,12 @@ String getAtomInfoChime(int i) {
         info.put(JmolConstants.shapeClassBases[i],shapeinfo);
       }
     }
+    if (viewer.selectionHaloEnabled) {
+      Hashtable shapeinfo = new Hashtable();
+      shapeinfo.put("index",new Integer(JmolConstants.SHAPE_HALO));
+      shapeinfo.put("myVisibilityFlag",new Integer(viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO)));
+      info.put("halo",shapeinfo);
+    }
     return info;
-  }   
-
+  }
 }

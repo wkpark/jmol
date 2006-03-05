@@ -239,18 +239,13 @@ class Sticks extends Shape {
     viewer.setBondSelectionModeOr(bondmode);
   }
 
-  void setModelVisibility() {
+  void setModelClickability() {
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
-      bond.visibilityFlags = 0;
-      if ((bond.atom1.shapeVisibilityFlags & bond.atom2.shapeVisibilityFlags
-          & JmolConstants.ATOM_IN_MODEL) != 0) {
-        if (bond.mad == 0)
-          continue;
-        bond.atom1.clickabilityFlags |= JmolConstants.CLICKABLE_STICK;
-        bond.atom2.clickabilityFlags |= JmolConstants.CLICKABLE_STICK;
-        bond.visibilityFlags |= myVisibilityFlag;
+      if(bond.shapeVisibilityFlags != 0) {
+        bond.atom1.clickabilityFlags |= myVisibilityFlag;
+        bond.atom2.clickabilityFlags |= myVisibilityFlag;
       }
     }
   }

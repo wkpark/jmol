@@ -94,9 +94,9 @@ abstract class Mps extends Shape {
       mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
   }
 
-  void setModelVisibility() {
+  void setModelClickability() {
     for (int i = mpsmodels.length; --i >= 0; )
-      mpsmodels[i].setModelVisibility();
+      mpsmodels[i].setModelClickability();
   }
 
   class Mpsmodel {
@@ -148,13 +148,13 @@ abstract class Mps extends Shape {
         mpspolymers[i].findNearestAtomIndex(xMouse, yMouse, closest);
     }
 
-    void setModelVisibility() {
+    void setModelClickability() {
       int displayModelIndex = viewer.getDisplayModelIndex();
       modelVisibilityFlags = 
         (displayModelIndex >= 0 && displayModelIndex != modelIndex
             ? 0 : myVisibilityFlag);
       for (int i = mpspolymers.length; --i >= 0; )
-        mpspolymers[i].setModelVisibility();
+        mpspolymers[i].setModelClickability();
     }
     
   }
@@ -373,10 +373,10 @@ abstract class Mps extends Shape {
     }
 
     void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
-      polymer.findNearestAtomIndex(xMouse, yMouse, closest, mads);
+      polymer.findNearestAtomIndex(xMouse, yMouse, closest, mads, myVisibilityFlag);
     }
 
-    void setModelVisibility() {
+    void setModelClickability() {
       if (wingVectors == null)
         return;
       boolean isNucleicPolymer = polymer instanceof NucleicPolymer;
@@ -386,7 +386,7 @@ abstract class Mps extends Shape {
         if (mads[i] <= 0) 
           continue;
         NucleicMonomer group = (NucleicMonomer) monomers[i];
-        group.setModelVisibility();        
+        group.setModelClickability();        
       }
     }
   }

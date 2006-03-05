@@ -746,8 +746,8 @@ final class Frame {
     try {
       Class shapeClass = Class.forName(className);
       Shape shape = (Shape)shapeClass.newInstance();
-      shape.setVisibilityInfo(shapeID);
       shape.setViewerG3dFrame(viewer, g3d, this);
+      shape.setVisibilityInfo(shapeID);
       return shape;
     } catch (Exception e) {
       System.out.println("Could not instantiate shape:" + classBase +
@@ -958,25 +958,56 @@ final class Frame {
     return frankShape.wasClicked(x, y);
   }
 
-  final static int minimumPixelSelectionRadius = 4;
-
   final Closest closest = new Closest();
 
   int findNearestAtomIndex(int x, int y) {
+    if (atomCount == 0)
+      return -1;
     closest.atom = null;
+    findNearestAtomIndex(x, y, closest);
+
     for (int i = 0; i < shapes.length; ++i) {
+      if (closest.atom != null)
+        break;
       Shape shape = shapes[i];
-      if (shape != null) {
-        shapes[i].findNearestAtomIndex(x, y, closest);
-        if (closest.atom != null)
-          break;
-        
-      }
+      if (shape != null)
+        shape.findNearestAtomIndex(x, y, closest);
     }
     int closestIndex = (closest.atom == null ? -1 : closest.atom.atomIndex);
     closest.atom = null;
     return closestIndex;
   }
+
+  final static int minimumPixelSelectionRadius = 6;
+
+  /*
+   * generalized; not just balls
+   * 
+   * This algorithm assumes that atoms are circles at the z-depth
+   * of their center point. Therefore, it probably has some flaws
+   * around the edges when dealing with intersecting spheres that
+   * are at approximately the same z-depth.
+   * But it is much easier to deal with than trying to actually
+   * calculate which atom was clicked
+   *
+   * A more general algorithm of recording which object drew
+   * which pixel would be very expensive and not worth the trouble
+   */
+  void findNearestAtomIndex(int x, int y, Closest closest) {
+    Atom champion = null;
+    //int championIndex = -1;
+    for (int i = atomCount; --i >= 0; ) {
+      Atom contender = atoms[i];
+      if (contender.isCursorOnTopOfClickableAtom(x, y,
+                                               minimumPixelSelectionRadius,
+                                               champion)) {
+        champion = contender;
+        //championIndex = i;
+      }
+    }
+    closest.atom = champion;
+  }
+
 
   // jvm < 1.4 does not have a BitSet.clear();
   // so in order to clear you "and" with an empty bitset.

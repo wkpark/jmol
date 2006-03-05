@@ -203,6 +203,10 @@ final public class Viewer extends JmolViewer {
     return info;
   }
 
+  int getShapeVisibilityFlag(int shapeID) {
+    return (2 << shapeID);
+  }
+  
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
@@ -1755,8 +1759,10 @@ final public class Viewer extends JmolViewer {
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     manageScriptTermination();
-    if (isTainted)
+    if (isTainted) {
       setModelVisibility();
+      modelManager.setModelClickability();
+    }
     isTainted = false;
     if (size != null)
       setScreenDimension(size);

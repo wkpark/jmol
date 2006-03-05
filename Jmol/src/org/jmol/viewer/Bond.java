@@ -34,7 +34,7 @@ class Bond {
   short order;
   short mad;
   short colix;
-  int visibilityFlags;
+  int shapeVisibilityFlags;
 
   Bond(Atom atom1, Atom atom2, short order,
               short mad, short colix) {
@@ -49,8 +49,8 @@ class Bond {
     if (order == JmolConstants.BOND_AROMATIC_MASK)
       order = JmolConstants.BOND_AROMATIC;
     this.order = order;
-    this.mad = mad;
     this.colix = colix;
+    setMad(mad, 1);
   }
 
   Bond(Atom atom1, Atom atom2, short order, Frame frame) {
@@ -62,6 +62,10 @@ class Bond {
 
   boolean isCovalent() {
     return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
+  }
+
+  boolean isHydrogen() {
+    return (order & JmolConstants.BOND_HYDROGEN_MASK) != 0;
   }
 
   boolean isStereo() {
@@ -82,16 +86,30 @@ class Bond {
 
   void setMad(short mad, int stickVisibilityFlag) {
     this.mad = mad;
-    atom1.addDisplayedBond(mad != 0, stickVisibilityFlag);
-    atom2.addDisplayedBond(mad != 0, stickVisibilityFlag);    
+    boolean isVisible = (mad != 0);
+    atom1.addDisplayedBond(stickVisibilityFlag, isVisible);
+    atom2.addDisplayedBond(stickVisibilityFlag, isVisible);    
+    setShapeVisibility(1, isVisible);
   }
 
+  final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
+    if(isVisible) {
+      shapeVisibilityFlags |= shapeVisibilityFlag;        
+    } else {
+      shapeVisibilityFlags &=~shapeVisibilityFlag;
+    }
+  }
+      
   void setColix(short colix) {
     this.colix = colix;
   }
 
   void setTranslucent(boolean isTranslucent) {
     colix = Graphics3D.setTranslucent(colix, isTranslucent);
+  }
+  
+  boolean isTranslucent() {
+    return Graphics3D.isColixTranslucent(colix);
   }
 
   void setOrder(short order) {

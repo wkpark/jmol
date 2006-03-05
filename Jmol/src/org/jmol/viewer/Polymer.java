@@ -341,8 +341,10 @@ abstract class Polymer {
   private final Vector3f unitVectorX = new Vector3f(1, 0, 0);
 
   void findNearestAtomIndex(int xMouse, int yMouse,
-                            Closest closest, short[] mads) {
+                            Closest closest, short[] mads, int myVisibilityFlag) {
     for (int i = monomerCount; --i >= 0; ) {
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
+        continue;  
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest,
                                          mads[i], mads[i + 1]);

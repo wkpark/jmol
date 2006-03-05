@@ -67,16 +67,14 @@ class Vectors extends Shape {
     } 
   }
   
-  void setModelVisibility() {
+  void setModelClickability() {
     if (mads == null)
       return;
     Atom[] atoms = frame.atoms;
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
-          && mads[i] > 0) {
-        atom.clickabilityFlags |= JmolConstants.CLICKABLE_VECTOR;
-      }
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
+        atom.clickabilityFlags |= myVisibilityFlag;
     }
   }
 

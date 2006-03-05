@@ -102,7 +102,7 @@ class MeasuresRenderer extends ShapeRenderer {
     /*
       Miguel commented this out on 31 Aug 2005
       and sent an email to the list asking why it would have been here
-    if (! (atomA.isVisible() && atomB.isVisible()))
+    if (! (atomA.isClickable() && atomB.isClickable()))
       return;
 
       1 Sep 2005 ... the previous hack was put in to control the
@@ -137,7 +137,7 @@ class MeasuresRenderer extends ShapeRenderer {
   void renderAngle(Atom atomA, Atom atomB, Atom atomC,
                    short colix, boolean renderArcs) {
     /*
-    if (! (atomA.isVisible() && atomB.isVisible() && atomC.isVisible()))
+    if (! (atomA.isClickable() && atomB.isClickable() && atomC.isClickable()))
       return;
     */
     if (displayModelIndex >= 0 &&
@@ -209,8 +209,8 @@ class MeasuresRenderer extends ShapeRenderer {
   void renderTorsion(Atom atomA, Atom atomB, Atom atomC, Atom atomD,
                      short colix, boolean renderArcs) {
     /*
-    if (! (atomA.isVisible() && atomB.isVisible() &&
-           atomC.isVisible() && atomD.isVisible()))
+    if (! (atomA.isClickable() && atomB.isClickable() &&
+           atomC.isClickable() && atomD.isClickable()))
       return;
     */
     if (displayModelIndex >= 0 &&

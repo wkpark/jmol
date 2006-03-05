@@ -47,14 +47,18 @@ class Backbone extends Mps {
       // but it is picked up within the loop by looking at i+1
       boolean isVisible = (mad != 0);
       for (int i = monomerCount - 1; --i >= 0; ) {
-        if ((bsSelected.get(atomIndices[i]) &&
-             bsSelected.get(atomIndices[i + 1]))
-            ||
-            (bondSelectionModeOr &&
-             (bsSelected.get(atomIndices[i]) ||
-              bsSelected.get(atomIndices[i + 1])))) {
+        int index1 = atomIndices[i];
+        int index2 = atomIndices[i + 1];
+        boolean isAtom1 = bsSelected.get(index1);
+        boolean isAtom2 = bsSelected.get(index2);
+        if ( isAtom1 && isAtom2 
+            || bondSelectionModeOr && (isAtom1 || isAtom2)) {
           monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           mads[i] = mad;
+          Atom atomA = frame.getAtomAt(index1);
+          Atom atomB = frame.getAtomAt(index2);
+          atomA.addDisplayedBackbone(mad != 0, myVisibilityFlag);
+          atomB.addDisplayedBackbone(mad != 0, myVisibilityFlag);    
         }
       }
     }
@@ -66,12 +70,11 @@ class Backbone extends Mps {
         int[] atomIndices = polymer.getLeadAtomIndices();
         Atom atomA = frame.getAtomAt(atomIndices[i]);
         Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
-        atomA.visibilityFlags |= JmolConstants.VISIBLE_BACKBONE;
-        atomB.visibilityFlags |= JmolConstants.VISIBLE_BACKBONE;
-        atomA.setShapeVisibility(myVisibilityFlag, true);
-        atomB.setShapeVisibility(myVisibilityFlag, true);
+        atomA.clickabilityFlags |= JmolConstants.CLICKABLE_BACKBONE;
+        atomB.clickabilityFlags |= JmolConstants.CLICKABLE_BACKBONE;
       }
     }
+    
   }
   
 }

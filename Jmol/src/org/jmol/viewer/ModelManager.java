@@ -691,7 +691,7 @@ String getAtomInfoChime(int i) {
     info.put("radius", new Float((atom.getRasMolRadius()/120.0)));
     info.put("info", getAtomInfo(i));
     info.put("visible", new Boolean(getAtomVisibility(i)));
-    info.put("visibilityFlags", new Integer(atom.visibilityFlags));
+    info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("shapeVisibilityFlags", new Integer(atom.shapeVisibilityFlags));
     info.put("spacefill", new Integer(atom.madAtom >> 3));
     info.put("color", viewer.getHexColorFromIndex(atom.colixAtom));

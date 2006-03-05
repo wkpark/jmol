@@ -101,19 +101,30 @@ class Balls extends Shape {
     int displayModelIndex = viewer.getDisplayModelIndex();
     boolean isOneFrame = (displayModelIndex >= 0); 
     boolean showHydrogens = viewer.getShowHydrogens();
+    int ballVisibilityFlag = 2 << JmolConstants.SHAPE_BALLS;
+    int haloVisibilityFlag = 2 << JmolConstants.SHAPE_HALO;    
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      atom.resetVisibility();
+      atom.clickabilityFlags = 0;
+      atom.shapeVisibilityFlags &= (
+          ~JmolConstants.ATOM_IN_MODEL
+          & ~ballVisibilityFlag
+          & ~haloVisibilityFlag);
       if (atom.madAtom == JmolConstants.MAR_DELETED
           || ! showHydrogens && atom.elementNumber == 1)
         continue;
       if (! isOneFrame || atom.modelIndex == displayModelIndex) { 
-        atom.visibilityFlags = JmolConstants.VISIBLE_MODEL;
-        if (atom.madAtom != 0) 
-            atom.visibilityFlags |= JmolConstants.VISIBLE_BALL;
-        if(viewer.hasSelectionHalo(atom.atomIndex)) 
-            atom.visibilityFlags |= JmolConstants.VISIBLE_HALO;
-      }      
+        atom.clickabilityFlags = JmolConstants.ATOM_IN_MODEL;
+        atom.shapeVisibilityFlags |= JmolConstants.ATOM_IN_MODEL;
+        if (atom.madAtom != 0) {
+          atom.clickabilityFlags |= JmolConstants.CLICKABLE_BALL;
+          atom.shapeVisibilityFlags |= ballVisibilityFlag;
+        }
+        if(viewer.hasSelectionHalo(atom.atomIndex)) { 
+          atom.clickabilityFlags |= JmolConstants.CLICKABLE_HALO;
+          atom.shapeVisibilityFlags |= haloVisibilityFlag;
+        }
+      }
     }
   }
 }

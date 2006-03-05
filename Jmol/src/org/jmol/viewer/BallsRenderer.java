@@ -41,15 +41,17 @@ class BallsRenderer extends ShapeRenderer {
 
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
+    int ballVisibilityFlag = 2 << JmolConstants.SHAPE_BALLS;
+    int haloVisibilityFlag = 2 << JmolConstants.SHAPE_HALO;    
     Atom[] atoms = frame.atoms;
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      if ((atom.visibilityFlags & JmolConstants.VISIBLE_MODEL) == 0)
+      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0)
         continue;
       atom.transform(viewer);
-      if ((atom.visibilityFlags & JmolConstants.VISIBLE_BALL) != 0)
+      if ((atom.shapeVisibilityFlags & ballVisibilityFlag) != 0)
         renderBall(atom);     
-      if ((atom.visibilityFlags & JmolConstants.VISIBLE_HALO) != 0)
+      if ((atom.shapeVisibilityFlags & haloVisibilityFlag) != 0)
         renderHalo(atom);     
     }
   }

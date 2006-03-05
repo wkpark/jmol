@@ -48,11 +48,13 @@ final class Atom implements Tuple {
   byte elementNumber;
   byte formalChargeAndFlags;
   byte alternateLocationID;
-  int visibilityFlags;
-  int shapeVisibilityFlags;
   short madAtom;
   short colixAtom;
   Bond[] bonds;
+  int nBondsDisplayed = 0;
+  int nBackbonesDisplayed = 0;
+  int clickabilityFlags;
+  int shapeVisibilityFlags;
 
   Atom(Viewer viewer,
        Frame frame,
@@ -136,15 +138,6 @@ final class Atom implements Tuple {
     }
   }
 
-  final void resetVisibility() {
-    //it is not feasible to follow the state exactly 
-    //when individual bonds or backbone connections are broken
-    //so instead we clear them each time and reset them.
-    visibilityFlags = 0;
-    shapeVisibilityFlags &= 
-      ~((1<<JmolConstants.SHAPE_BACKBONE | (1<<JmolConstants.SHAPE_STICKS)));    
-  }
-  
   final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
     if(isVisible) {
       shapeVisibilityFlags |= shapeVisibilityFlag;        
@@ -168,6 +161,18 @@ final class Atom implements Tuple {
     return false;
   }
 
+  Bond getBondToAtom(Atom atomOther) {
+    if (bonds != null) {
+      for (int i = bonds.length; --i >= 0; ) {
+          Bond bond = bonds[i];
+          if ((bond.atom1 == atomOther) ||
+              (bond.atom2 == atomOther))
+            return bond;
+      }
+    }
+    return null;
+  }
+
   Bond bondMutually(Atom atomOther, short order, Frame frame) {
     if (isBonded(atomOther))
       return null;
@@ -186,6 +191,22 @@ final class Atom implements Tuple {
     }
   }
 
+  void addDisplayedBond(boolean isVisible, int stickVisibilityFlag){
+    int n = nBondsDisplayed;
+    nBondsDisplayed+=(isVisible ? 1 : -1);
+    if (n != 0 && nBondsDisplayed != 0)
+      return;
+    setShapeVisibility(stickVisibilityFlag, isVisible);
+  } 
+  
+  void addDisplayedBackbone(boolean isVisible, int backboneVisibilityFlag){
+    int n= nBackbonesDisplayed;
+    nBackbonesDisplayed+=(isVisible ? 1 : -1);
+    if (n != 0 && nBackbonesDisplayed != 0)
+      return;
+    setShapeVisibility(backboneVisibilityFlag, isVisible);
+  }
+  
   void deleteBondedAtom(Atom atomToDelete) {
     if (bonds == null)
       return;
@@ -433,12 +454,19 @@ final class Atom implements Tuple {
     return formalChargeAndFlags >> 3;
   }
 
+  boolean isClickable() {
+    return ((clickabilityFlags & JmolConstants.CLICKABLE_ATOM) != 0);
+  }
+
   boolean isVisible() {
-    return ((visibilityFlags & JmolConstants.VISIBLE_ATOM) != 0);
+    // in model AND something to show for it or it's group is visible
+    return ((shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
+        && ((shapeVisibilityFlags & ~JmolConstants.ATOM_IN_MODEL) != 0 
+            || group != null && group.shapeVisibilityFlags != 0));
   }
 
   boolean isShapeVisible(int shapeID) {
-    return ((shapeVisibilityFlags & (1 << shapeID)) != 0);
+    return ((shapeVisibilityFlags & (2 << shapeID)) != 0);
   }
 
   float getPartialCharge() {
@@ -946,7 +974,7 @@ final class Atom implements Tuple {
 
   boolean isCursorOnTopOfVisibleAtom(int xCursor, int yCursor,
                                      int minRadius, Atom competitor) {
-    return (isVisible() &&
+    return (isClickable() &&
             isCursorOnTop(xCursor, yCursor, minRadius, competitor));
   }
 

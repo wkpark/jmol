@@ -33,37 +33,35 @@ final public class JmolConstants {
 
   // and must be reset with setModelVisibility() prior to rendering
   
-  final static int VISIBLE_MODEL     = 1;
 
   // these atom flags get tainted with scripts and frame changes
   // and must be reset with setModelVisibility() prior to rendering
  
-  final static int VISIBLE_BALL      = 1 << 1;
-  final static int VISIBLE_STICK     = 1 << 2;
-  final static int VISIBLE_STAR      = 1 << 3;
-  final static int VISIBLE_HALO      = 1 << 4;
-  final static int VISIBLE_DOTS      = 1 << 5;
-  final static int VISIBLE_VECTOR    = 1 << 6;
-  final static int VISIBLE_LABEL     = 1 << 7;
+  public final static int ATOM_IN_MODEL    = 1;
 
-  // these two do NOT drive display, but are for Atom.isVisible() only
-  
-  final static int VISIBLE_BACKBONE  = 1 << 8;
-  final static int VISIBLE_CARTOON   = 1 << 9;
+  final static int CLICKABLE_BALL      = 1 << 1;
+  final static int CLICKABLE_STICK     = 1 << 2;
+  final static int CLICKABLE_STAR      = 1 << 3;
+  final static int CLICKABLE_HALO      = 1 << 4;
+  final static int CLICKABLE_DOTS      = 1 << 5;
+  final static int CLICKABLE_VECTOR    = 1 << 6;
+  final static int CLICKABLE_LABEL     = 1 << 7;
+  final static int CLICKABLE_BACKBONE  = 1 << 8;
+  final static int CLICKABLE_CARTOON   = 1 << 9;
 
-  // VISIBLE_ATOM might be modified to include other shapes,
+  // CLICKABLE_ATOM might be modified to include other shapes,
   // for example, the phosphorus backbone in a cartoon of DNA is clickable
   // but not actually "visible". 
   
-  final static int VISIBLE_ATOM      = 
-      VISIBLE_BALL
-    | VISIBLE_STICK
-    | VISIBLE_BACKBONE
-    | VISIBLE_CARTOON
-    | VISIBLE_STAR
-    | VISIBLE_HALO
-    | VISIBLE_DOTS  
-    | VISIBLE_LABEL;
+  final static int CLICKABLE_ATOM      = 
+      CLICKABLE_BALL
+    | CLICKABLE_STICK
+    | CLICKABLE_BACKBONE
+    | CLICKABLE_CARTOON
+    | CLICKABLE_STAR
+    | CLICKABLE_HALO
+    | CLICKABLE_DOTS  
+    | CLICKABLE_LABEL;
   
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
@@ -2157,6 +2155,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_ISOSURFACE = 25;
   public final static int SHAPE_PRUEBA     = 26;
   public final static int SHAPE_MAX        = 27;
+  
+  //handled in Balls.java:
+  public final static int SHAPE_HALO       = SHAPE_MAX;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks",

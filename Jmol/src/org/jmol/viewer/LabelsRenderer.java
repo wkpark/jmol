@@ -52,7 +52,8 @@ class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = frame.atoms;
     for (int i = labelStrings.length; --i >= 0; ) {
       Atom atom = atoms[i];
-      if ((atom.visibilityFlags & JmolConstants.VISIBLE_LABEL) == 0)
+      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0
+          || (atom.shapeVisibilityFlags & labels.myVisibilityFlag) == 0)
         continue;
       String label = labelStrings[i];
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];

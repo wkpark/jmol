@@ -50,7 +50,8 @@ class BackboneRenderer extends MpsRenderer {
 
       Atom atomA = frame.getAtomAt(atomIndices[i]);
       Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
-
+      if (atomA.nBackbonesDisplayed == 0 || atomB.nBackbonesDisplayed == 0)
+        continue;
       int xA = atomA.getScreenX(), yA = atomA.getScreenY(),
         zA = atomA.getScreenZ();
       int xB = atomB.getScreenX(), yB = atomB.getScreenY(),

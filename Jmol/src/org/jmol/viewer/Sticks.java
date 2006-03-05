@@ -61,6 +61,9 @@ class Sticks extends Shape {
                           JmolConstants.BOND_COVALENT_MASK, bsSelected);
       return;
     }
+    /*
+     * retired 3/4/06; never documented
+     * 
     if ("bondOrder" == propertyName) {
       if (value instanceof Short) {
         order = ((Short)value).shortValue();
@@ -74,6 +77,8 @@ class Sticks extends Shape {
       }
       return;
     }
+    */
+    
     if ("connectNew" == propertyName) {
       iConnectNew = ((Boolean)value).booleanValue();
       return;
@@ -137,7 +142,7 @@ class Sticks extends Shape {
   void setMadBond(short mad, short bondTypeMask, BitSet bs) {
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext())
-      iter.next().setMad(mad);
+      iter.next().setMad(mad, myVisibilityFlag);
   }
 
   void setColixBond(short colix, String palette,
@@ -166,7 +171,7 @@ class Sticks extends Shape {
     while (iter.hasNext()) {
       bond = iter.next();
       bond.setOrder(order);
-      if(mad >= 0)bond.setMad(mad);
+      if(mad >= 0)bond.setMad(mad, myVisibilityFlag);
     }
   }
 
@@ -213,16 +218,19 @@ class Sticks extends Shape {
         //System.out.println(iA+" "+iB+" continuing");
         float distanceSquared = pointA.distanceSquared(atomB.point3f);
         if (distanceSquared > minDistanceSquared && distanceSquared <= maxDistanceSquared) {
-          BitSet bsTwoAtoms=new BitSet();
-          bsTwoAtoms.set(iA);
-          bsTwoAtoms.set(iB);
-          nbonds++;
+          Bond bond = atomA.getBondToAtom(atomB);
           if (order == 0){
-            deleteSelectedBonds(bsTwoAtoms);
-          } else {
-            if (!frame.bondAtomsByNumber(iA, iB, (int)order, mad)) {
-              setOrderBond(order, bsTwoAtoms, mad);
+            if(bond != null) {
+              frame.deleteBond(bond);
+              nbonds++;
             }
+          } else if (bond == null) {
+            frame.bondAtomsByNumber(iA, iB, (int)order, mad);
+            nbonds++;
+          } else if (bond.getOrder() != order) {
+            bond.setOrder(order);
+            if(mad >= 0)bond.setMad(mad, myVisibilityFlag);
+            nbonds++;
           }
         }
       }
@@ -233,24 +241,19 @@ class Sticks extends Shape {
 
   void setModelVisibility() {
     Bond[] bonds = frame.bonds;
-    boolean showHydrogens = viewer.getShowHydrogens();
-      for (int i = frame.bondCount; --i >= 0; ) {
+    for (int i = frame.bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
       bond.visibilityFlags = 0;
-      if ((bond.atom1.visibilityFlags & JmolConstants.VISIBLE_MODEL) != 0) {
+      if ((bond.atom1.shapeVisibilityFlags & bond.atom2.shapeVisibilityFlags
+          & JmolConstants.ATOM_IN_MODEL) != 0) {
         if (bond.mad == 0)
           continue;
-        Atom atomA = bond.atom1;
-        Atom atomB = bond.atom2;
-        if (showHydrogens 
-            || atomA.elementNumber != 1 && atomB.elementNumber != 1) {
-          atomA.visibilityFlags |= JmolConstants.VISIBLE_STICK;
-          atomB.visibilityFlags |= JmolConstants.VISIBLE_STICK;
-          bond.visibilityFlags |= JmolConstants.VISIBLE_STICK;
-          atomA.setShapeVisibility(myVisibilityFlag, true);
-          atomB.setShapeVisibility(myVisibilityFlag, true);
-        }
+        bond.atom1.clickabilityFlags |= JmolConstants.CLICKABLE_STICK;
+        bond.atom2.clickabilityFlags |= JmolConstants.CLICKABLE_STICK;
+        bond.visibilityFlags |= myVisibilityFlag;
       }
     }
   }
+  
+ 
 }

@@ -160,11 +160,8 @@ class Labels extends Shape {
   void setModelVisibility() {
     for (int i = strings.length; --i >= 0; ) {
       String label = strings[i];
-      if (label == null)
-        continue;
-      Atom atom = frame.atoms[i];
-      if ((atom.visibilityFlags & JmolConstants.VISIBLE_MODEL) != 0)
-        atom.visibilityFlags |= JmolConstants.VISIBLE_LABEL;
+      if (label != null)
+        frame.atoms[i].clickabilityFlags |= JmolConstants.CLICKABLE_LABEL;
     }
   }
 }

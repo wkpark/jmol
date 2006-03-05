@@ -77,16 +77,4 @@ class Stars extends Shape {
       return;
     }
   }
-
-  void setModelVisibility() {
-    if (mads == null)
-      return;
-    Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      if ((atom.visibilityFlags & JmolConstants.VISIBLE_MODEL) != 0
-          && mads[i] > 0) 
-        atom.visibilityFlags |= JmolConstants.VISIBLE_STAR;
-    }
-  }
 }

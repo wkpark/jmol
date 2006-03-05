@@ -822,8 +822,7 @@ class Dots extends Shape {
       int[] map = dotsConvexMaps[i];
       if (map != null && map != mapNull) {
         Atom atom = atoms[i];
-        if ((atom.visibilityFlags & JmolConstants.VISIBLE_MODEL) != 0)
-          atom.visibilityFlags |= JmolConstants.VISIBLE_DOTS;
+        atom.clickabilityFlags |= JmolConstants.CLICKABLE_DOTS;
       }
     }
   }

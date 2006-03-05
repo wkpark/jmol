@@ -45,9 +45,12 @@ class Vectors extends Shape {
     if (frame.hasVibrationVectors) {
       short mad = (short)size;
       //Atom[] atoms = frame.atoms;
-      for (int i = frame.atomCount; --i >= 0; )
-        if (bsSelected.get(i))
+      for (int i = frame.atomCount; --i >= 0; ) {
+        if (bsSelected.get(i)) {
           mads[i] = mad;
+          frame.atoms[i].setShapeVisibility(myVisibilityFlag, (mad != 0));
+        }
+      }
     }
   }
 
@@ -68,12 +71,12 @@ class Vectors extends Shape {
     if (mads == null)
       return;
     Atom[] atoms = frame.atoms;
-    int displayModelIndex = viewer.getDisplayModelIndex();
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      if ((displayModelIndex < 0 || atom.modelIndex == displayModelIndex)
-          && mads[i] > 0) 
-        atom.visibilityFlags |= JmolConstants.VISIBLE_VECTOR;
+      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
+          && mads[i] > 0) {
+        atom.clickabilityFlags |= JmolConstants.CLICKABLE_VECTOR;
+      }
     }
   }
 

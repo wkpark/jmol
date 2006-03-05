@@ -79,7 +79,7 @@ class SticksRenderer extends ShapeRenderer {
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
-      if ((bond.visibilityFlags & JmolConstants.VISIBLE_STICK) != 0) 
+      if (bond.visibilityFlags != 0) 
         render(bond);
     }
   }

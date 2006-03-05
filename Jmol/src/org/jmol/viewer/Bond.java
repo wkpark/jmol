@@ -80,8 +80,10 @@ class Bond {
     atom1 = atom2 = null;
   }
 
-  void setMad(short mad) {
+  void setMad(short mad, int stickVisibilityFlag) {
     this.mad = mad;
+    atom1.addDisplayedBond(mad != 0, stickVisibilityFlag);
+    atom2.addDisplayedBond(mad != 0, stickVisibilityFlag);    
   }
 
   void setColix(short colix) {

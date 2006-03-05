@@ -40,7 +40,7 @@ abstract class Shape {
   
   final void setVisibilityInfo(int shapeID) {
     this.shapeID = shapeID;
-    this.myVisibilityFlag = (1 << shapeID);
+    this.myVisibilityFlag = (2 << shapeID);
     this.shapeVisibilityFlags = 0; 
   }
     

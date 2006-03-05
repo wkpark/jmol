@@ -252,12 +252,12 @@ class NucleicMonomer extends PhosphorusMonomer {
     Atom atom;
     for (int i = 6; --i >= 0; ) {
       atom = getAtomFromOffsetIndex(i + 3);
-      atom.visibilityFlags |= JmolConstants.VISIBLE_CARTOON;
+      atom.clickabilityFlags |= JmolConstants.CLICKABLE_CARTOON;
     }
     if (isPurine)
       for (int i = 5; --i >= 0; ) {
         atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
-        atom.visibilityFlags |= JmolConstants.VISIBLE_CARTOON;
+        atom.clickabilityFlags |= JmolConstants.CLICKABLE_CARTOON;
     }
   }
 }

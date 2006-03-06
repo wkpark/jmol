@@ -66,6 +66,12 @@ class Group {
     return group3Names[groupID];
   }
 
+  final String getGroup1() {
+    if (groupID >= JmolConstants.predefinedGroup1Names.length)
+      return "?";
+    return JmolConstants.predefinedGroup1Names[groupID];
+  }
+
   final int getSeqcode() {
     return seqcode;
   }
@@ -140,12 +146,14 @@ class Group {
 
   static String[] group3Names = new String[128];
   static short group3NameCount = 0;
-
+  
   static {
-    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i)
+    int i;
+    for (i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i) {
       addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
+    }
   }
-
+  
   synchronized static short addGroup3Name(String group3) {
     if (group3NameCount == group3Names.length)
       group3Names = Util.doubleLength(group3Names);

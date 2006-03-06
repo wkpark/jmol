@@ -2000,6 +2000,44 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
 
+  public final static String[] predefinedGroup1Names = {
+    /* rmh
+     * 
+     * G   Glycine   Gly                   P   Proline   Pro
+     * A   Alanine   Ala                   V   Valine    Val
+     * L   Leucine   Leu                   I   Isoleucine    Ile
+     * M   Methionine    Met               C   Cysteine    Cys
+     * F   Phenylalanine   Phe             Y   Tyrosine    Tyr
+     * W   Tryptophan    Trp               H   Histidine   His
+     * K   Lysine    Lys                   R   Arginine    Arg
+     * Q   Glutamine   Gln                 N   Asparagine    Asn
+     * E   Glutamic Acid   Glu             D   Aspartic Acid   Asp
+     * S   Serine    Ser                   T   Threonine   Thr
+     */
+    "", //  0 this is the null group
+    
+    "A", // 1
+    "R",
+    "N",
+    "D",
+    "C",
+    "Q",
+    "E",
+    "G",
+    "H",
+    "I",
+    "L",
+    "K",
+    "M",
+    "F",
+    "P", // 15 Proline
+    "S",
+    "T",
+    "W",
+    "Y",
+    "V",
+    };
+
   ////////////////////////////////////////////////////////////////
   // predefined sets
   ////////////////////////////////////////////////////////////////

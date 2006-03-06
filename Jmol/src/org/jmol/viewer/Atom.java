@@ -410,6 +410,12 @@ final class Atom implements Tuple {
     return group.getGroup3();
   }
 
+  String getGroup1() {
+    if (group == null)
+      return null;
+    return group.getGroup1();
+  }
+
   boolean isGroup3(String group3) {
     if (group == null)
       return false;
@@ -928,7 +934,7 @@ final class Atom implements Tuple {
           strT = "" + getModelTagNumber();
           break;
         case 'm':
-          strT = "<X>";
+          strT = getGroup1();
           break;
         case 'n':
           strT = getGroup3();

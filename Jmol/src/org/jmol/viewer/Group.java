@@ -148,8 +148,7 @@ class Group {
   static short group3NameCount = 0;
   
   static {
-    int i;
-    for (i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i) {
+    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i) {
       addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
     }
   }

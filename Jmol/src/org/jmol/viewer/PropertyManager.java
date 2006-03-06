@@ -107,7 +107,7 @@ class PropertyManager {
 
     // atom-bond stuff
     
-    if(! iHaveParameter) myParam = "all";
+    if(! iHaveParameter) myParam = "visible";
 
     if(infoType.equalsIgnoreCase("atomList")) 
       return viewer.getAtomBitSetVector(myParam);
@@ -116,13 +116,16 @@ class PropertyManager {
       return viewer.getAllAtomInfo(myParam);
     
     if(infoType.equalsIgnoreCase("bondInfo")) 
-      return viewer.getBondDetail(myParam);
+      return viewer.getAllBondInfo(myParam);
     
     if(infoType.equalsIgnoreCase("polymerInfo"))
-      return viewer.getPolymerInfo();      
+      return viewer.getAllPolymerInfo(myParam);      
 
     if(infoType.equalsIgnoreCase("chainInfo"))
-      return viewer.getChainInfo();      
+      return viewer.getAllChainInfo(myParam);      
+
+    if(infoType.equalsIgnoreCase("stateInfo")) 
+      return viewer.getAllStateInfo(myParam);
 
     if(infoType.equalsIgnoreCase("extractModel")) 
       return viewer.getModelExtract(myParam);
@@ -143,15 +146,13 @@ class PropertyManager {
     return "getProperty ERROR\n"+ infoType +"?\nOptions include\n"
     + "\n getProperty(\"appletInfo\")"
 
-    + "\n getProperty(\"fileName\")"
+    + "\n\n getProperty(\"fileName\")"
     + "\n getProperty(\"fileHeader\")"
     + "\n getProperty(\"fileContents\")"
     + "\n getProperty(\"fileContents\",\"<pathname>\")"
 
-    + "\n getProperty(\"animationInfo\")"
-    + "\n\n getProperty(\"modelInfo\")"
-    + "\n\n getProperty(\"polymerInfo\")"
-    + "\n getProperty(\"chainInfo\")"
+    + "\n\n getProperty(\"animationInfo\")"
+    + "\n getProperty(\"modelInfo\")"
     + "\n getProperty(\"shapeInfo\")"
     
     + "\n\n getProperty(\"boundboxInfo\")"
@@ -160,12 +161,15 @@ class PropertyManager {
     + "\n getProperty(\"transformInfo\")"
     + "\n getProperty(\"zoomInfo\")"
 
-    + "\n getProperty(\"atomList\",\"<atom selection>\")"
+    + "\n\n getProperty(\"atomList\",\"<atom selection>\")"
     + "\n getProperty(\"atomInfo\",\"<atom selection>\")"
     + "\n getProperty(\"bondInfo\",\"<atom selection>\")"
+    + "\n getProperty(\"polymerInfo\",\"<atom selection>\")"
+    + "\n getProperty(\"chainInfo\",\"<atom selection>\")"
+    + "\n getProperty(\"stateInfo\",\"<atom selection>\")"
     + "\n getProperty(\"extractModel\",\"<atom selection>\")"
     
-    + "\n getProperty(\"jmolStatus\",\"statusNameList\")"
+    + "\n\n getProperty(\"jmolStatus\",\"statusNameList\")"
     + "\n getProperty(\"jmolViewer\")"
     + "\n getProperty(\"messageQueue\")"
     + "";

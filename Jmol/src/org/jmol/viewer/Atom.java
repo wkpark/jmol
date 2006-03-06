@@ -332,8 +332,6 @@ final class Atom implements Tuple {
 
   void setColixAtom(short colixAtom) {
     if (colixAtom == 0)
-      if (group == null)
-        return;
       colixAtom = group.chain.frame.viewer.getColixAtomPalette(this, "cpk");
     this.colixAtom = colixAtom;
   }

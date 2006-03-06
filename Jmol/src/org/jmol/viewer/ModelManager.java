@@ -538,7 +538,7 @@ String getAtomInfoChime(int i) {
     return polymer.getLeadMidpoints();
   }
 
-  String getModelExtractFromBitSet(BitSet bs) {
+  String getModelExtract(BitSet bs) {
     String str = "";
     int atomCount = getAtomCount();
     int bondCount = getBondCount();
@@ -553,7 +553,8 @@ String getAtomInfoChime(int i) {
       }
     }
     for (int i = 0; i < bondCount; i++) {
-      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) {
+      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) 
+          && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) {
         int order = getBondOrder(i);
         if (order >= 1 && order < 3) {
           str = str + getBondRecordMOL(i,atomMap);
@@ -562,7 +563,7 @@ String getAtomInfoChime(int i) {
       }
     }
     if(nAtoms > 999 || nBonds > 999) {
-      System.out.println("ModelManager.java::getModelExtractFromBitSet: ERROR atom/bond overflow");
+      System.out.println("ModelManager.java::getModel: ERROR atom/bond overflow");
       return "";
     }
     // 21 21  0  0  0
@@ -649,20 +650,6 @@ String getAtomInfoChime(int i) {
     return info;
   }
 
-  Hashtable getChainInfo() {
-    Hashtable info = new Hashtable();
-    int modelCount = viewer.getModelCount();
-    info.put("modelCount",new Integer(modelCount));
-    Vector models = new Vector();
-    for (int i = 0; i < modelCount; ++i) {
-      Hashtable model = new Hashtable();
-        model.put("chains", getChainInfo(i));
-      models.add(model);
-    }
-    info.put("models",models);
-    return info;
-  }
-
   Vector getAllAtomInfo(BitSet bs) {
     boolean isPDB = frame.isPDB;
     Vector V = new Vector();
@@ -692,7 +679,7 @@ String getAtomInfoChime(int i) {
     info.put("info", getAtomInfo(i));
     info.put("visible", new Boolean(getAtomVisibility(i)));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
-    info.put("shapeVisibilityFlags", new Integer(atom.shapeVisibilityFlags));
+    info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
     info.put("spacefill", new Integer(atom.madAtom >> 3));
     String strColor = viewer.getHexColorFromIndex(atom.colixAtom);
     if(strColor != null) 
@@ -723,11 +710,12 @@ String getAtomInfoChime(int i) {
     return info;
   }  
 
-  Vector getBondInfoFromBitSet(BitSet bs) {
+  Vector getAllBondInfo(BitSet bs) {
     Vector V = new Vector();
     int bondCount = viewer.getBondCount();
     for (int i = 0; i < bondCount; i++)
-      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) 
+      if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) 
+          && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) 
         V.add(getBondInfo(i));
     return V;
   }
@@ -783,7 +771,24 @@ String getAtomInfoChime(int i) {
     return info;
   }
 
-  Vector getChainInfo(int modelIndex) {
+  Hashtable getAllChainInfo(BitSet bs) {
+    Hashtable finalInfo = new Hashtable();
+    Vector modelVector = new Vector();
+    int modelCount = getModelCount();
+    for (int i = 0; i < modelCount; ++i) {
+      Hashtable modelInfo = new Hashtable();
+      Vector info = getChainInfo(i, bs);
+      if (info.size() > 0) {
+        modelInfo.put("modelIndex",new Integer(i));
+        modelInfo.put("chains",info);
+        modelVector.add(modelInfo);
+      }
+    }
+    finalInfo.put("models",modelVector);
+    return finalInfo;
+  }
+
+  Vector getChainInfo(int modelIndex, BitSet bs) {
     Model model = frame.mmset.getModel(modelIndex);
     int nChains = model.getChainCount();
     Vector infoChains = new Vector();    
@@ -794,50 +799,180 @@ String getAtomInfoChime(int i) {
       Hashtable arrayName = new Hashtable();
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
+        if (! bs.get(group.firstAtomIndex)) 
+          continue;
         Hashtable infoGroup = new Hashtable();
+        infoGroup.put("groupIndex", new Integer(igroup));
         infoGroup.put("groupID", new Short(group.getGroupID()));
         infoGroup.put("seqCode", group.getSeqcodeString());
         infoGroup.put("_apt1", new Integer(group.firstAtomIndex));
         infoGroup.put("_apt2", new Integer(group.lastAtomIndex));
         infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex));
         infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex));
-        infoGroup.put("shapeVisibility", new Integer(frame.atoms[group.firstAtomIndex].shapeVisibilityFlags));
+        infoGroup.put("visibilityFlags", new Integer(group.shapeVisibilityFlags));
         infoChain.add(infoGroup);
       }
-      arrayName.put("residues",infoChain);
-      infoChains.add(arrayName);
+      if (! infoChain.isEmpty()) { 
+        arrayName.put("residues",infoChain);
+        infoChains.add(arrayName);
+      }
     }
     return infoChains;
   }  
   
-  Hashtable getPolymerInfoAll() {
+  Hashtable getAllPolymerInfo(BitSet bs) {
     Hashtable finalInfo = new Hashtable();
-    Hashtable modelInfo;
     Vector modelVector = new Vector();
-    Vector info;
     int modelCount = getModelCount();
     for (int i = 0; i < modelCount; ++i) {
-      modelInfo = new Hashtable();
-      info = new Vector();
+      Hashtable modelInfo = new Hashtable();
+      Vector info = new Vector();
       int polymerCount = getPolymerCountInModel(i);
-      for (int ip = 0; ip < polymerCount; ip++)
-        info.add(getPolymerInfo(i, ip));
-      modelInfo.put("polymers",info);
-      modelVector.add(modelInfo);
+      for (int ip = 0; ip < polymerCount; ip++) {
+        Hashtable polyInfo = getPolymerInfo(i, ip, bs); 
+        if (! polyInfo.isEmpty())
+          info.add(polyInfo);
+      }
+      if (info.size() > 0) {
+        modelInfo.put("modelIndex",new Integer(i));
+        modelInfo.put("polymers",info);
+        modelVector.add(modelInfo);
+      }
     }
     finalInfo.put("models",modelVector);
     return finalInfo;
   }
 
-  Hashtable getPolymerInfo(int iModel, int iPolymer) {
+  Hashtable getPolymerInfo(int iModel, int iPolymer, BitSet bs) {
     Hashtable returnInfo = new Hashtable();
     Vector info = new Vector();
     Polymer polymer = frame.mmset.getModel(iModel).getPolymer(iPolymer) ;
     int monomerCount = polymer.monomerCount;
-    for(int i = 0; i < monomerCount; i++)
-      info.add(polymer.monomers[i].getMyInfo());
-    returnInfo.put("monomers",info);
+    for(int i = 0; i < monomerCount; i++) {
+      if (bs.get(polymer.monomers[i].getLeadAtomIndex())) {
+        Hashtable monomerInfo = polymer.monomers[i].getMyInfo();
+        monomerInfo.put("monomerIndex",new Integer(i));
+        info.add(monomerInfo);
+      }
+    }
+    if (info.size() > 0)
+      returnInfo.put("monomers",info);
     return returnInfo;
+  }
+  
+  Hashtable getAllStateInfo(BitSet bs) {
+    
+    /*
+     * The idea here is to create a running list that only shows
+     * differences between atoms and bonds, taken sequentially.
+     * This isn't perfect -- but it might be OK.
+     * 
+     * The visibility flags give detailed information 
+     * 
+     */
+    Hashtable stateInfo = new Hashtable();
+    Vector V = new Vector();
+    int atomCount = viewer.getAtomCount();
+    short colix = -1;
+    short lastColix = -1;
+    int shapeVisibilityFlags = 0;
+    int lastVisibilityFlags = -1;
+    int mad = 0;
+    int lastMad = -1;
+    int defaultMadCode = viewer.getMadAtom();
+    boolean isFirst = true;
+    Hashtable elementInfo = new Hashtable();
+    for (int i = 0; i < atomCount; i++) {
+      if (! bs.get(i)) 
+        continue;
+      boolean isChanged = false;
+      Hashtable info = new Hashtable();
+      Atom atom = frame.getAtomAt(i);
+      String element = getElementSymbol(i); 
+      if (!elementInfo.containsKey(element)) {
+        Hashtable Htable = new Hashtable();
+        Htable.put("mad","" + atom.convertEncodedMad(defaultMadCode));  
+        elementInfo.put(element, Htable);
+      }  
+      Hashtable thisElementInfo = (Hashtable)elementInfo.get(element);
+      String value;
+      String str;
+      
+      str = "" + atom.madAtom;
+      value = (String)thisElementInfo.get("mad");
+      if (! str.equals(value)) {
+        thisElementInfo.put("mad",str);
+        info.put("mad", new Integer(atom.madAtom));
+        isChanged = true;
+      }
+      
+      if (atom.colixAtom >= 0) {
+        str = "" + atom.colixAtom;
+        value = (String)thisElementInfo.get("colix");
+        if (! str.equals(value)) {
+          thisElementInfo.put("colix",str);
+          info.put("colix", new Integer(atom.colixAtom));
+          String strColor = viewer.getHexColorFromIndex(atom.colixAtom);
+          if(strColor != null) 
+            info.put("color", strColor);
+          isChanged = true;
+        }
+      }
+
+      shapeVisibilityFlags = atom.shapeVisibilityFlags;
+      if (isFirst || shapeVisibilityFlags != lastVisibilityFlags)
+        info.put("visibilityFlags", new Integer(shapeVisibilityFlags));
+
+      if (!info.isEmpty()) {
+        info.put("element", element);
+        info.put("_ipt", new Integer(i));
+        V.add(info);
+      }
+
+      lastVisibilityFlags = shapeVisibilityFlags;
+      isFirst = false;
+      if (isChanged) {
+        elementInfo.put(element, thisElementInfo);
+      }
+    }
+    stateInfo.put("atomState",V);
+    
+    isFirst = true;
+    V = new Vector();
+    int bondCount = viewer.getBondCount();
+    for (int i = 0; i < bondCount; i++) {
+      if (! bs.get(frame.getBondAt(i).getAtom1().atomIndex) 
+          || bs.get(frame.getBondAt(i).getAtom2().atomIndex))
+        continue;
+      Bond bond = frame.getBondAt(i);
+      Hashtable info = new Hashtable();
+      mad = bond.mad;
+      if (isFirst || mad != lastMad)
+        info.put("mad", new Integer(mad));
+      colix = bond.colix;
+      if (isFirst || colix >= 0 && colix != lastColix) {
+        info.put("colix", new Integer(bond.colix));
+        String strColor = viewer.getHexColorFromIndex(bond.colix);
+        if(strColor != null) 
+          info.put("color", strColor);
+      }
+      if (!info.isEmpty()) {
+        info.put("_ipt", new Integer(i));
+        V.add(info);
+      }
+
+      //not taking into account possible connection changes here
+      
+      lastMad = mad;
+      lastColix = colix;
+      isFirst = false;
+    }
+    stateInfo.put("bondState", V);
+    stateInfo.put("shapeInfo", getShapeInfo());
+    stateInfo.put("modelInfo", getModelInfo());
+    stateInfo.put("animationInfo", viewer.getAnimationInfo());
+    stateInfo.put("polymerInfo",getAllPolymerInfo(bs));
+    return stateInfo;
   }
   
   Hashtable getBoundBoxInfo() {

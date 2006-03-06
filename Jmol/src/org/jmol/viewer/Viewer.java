@@ -1331,10 +1331,6 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelInfoAsString();
   }
 
-  public Hashtable getPolymerInfo() {
-    return modelManager.getPolymerInfoAll();
-  }
-
   public Properties getModelSetProperties() {
     return modelManager.getModelSetProperties();
   }
@@ -1526,10 +1522,6 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelInfo();
   }
 
-  public Hashtable getChainInfo() {
-    return modelManager.getChainInfo();
-  }
-
   public Hashtable getShapeInfo() {
     return modelManager.getShapeInfo();
   }
@@ -1539,9 +1531,24 @@ final public class Viewer extends JmolViewer {
     return modelManager.getAllAtomInfo(bs);
   }
 
-  Vector getBondDetail(String atomExpression) {
+  Vector getAllBondInfo(String atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getBondInfoFromBitSet(bs);
+    return modelManager.getAllBondInfo(bs);
+  }
+
+  public Hashtable getAllChainInfo(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getAllChainInfo(bs);
+  }
+
+  public Hashtable getAllPolymerInfo(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getAllPolymerInfo(bs);
+  }
+
+  public Hashtable getAllStateInfo(String atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
+    return modelManager.getAllStateInfo(bs);
   }
 
   /*****************************************************************************
@@ -2907,7 +2914,7 @@ final public class Viewer extends JmolViewer {
   String getModelExtract(String atomExpression) {
     BitSet bs = selectionManager.getAtomBitSet(atomExpression);
     return fileManager.getFullPathName() + "\nEXTRACT: " + bs + "\nJmol\n"
-        + modelManager.getModelExtractFromBitSet(bs);
+        + modelManager.getModelExtract(bs);
   }
 
   String simpleReplace(String str, String strFrom, String strTo) {

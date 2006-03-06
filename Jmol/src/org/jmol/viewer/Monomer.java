@@ -213,8 +213,10 @@ abstract class Monomer extends Group {
   Hashtable getMyInfo() {
     Hashtable info = new Hashtable();
     info.put("seqcode",getSeqcodeString());
-    info.put("firstAtom", chain.frame.atoms[firstAtomIndex].getInfo());
-    info.put("lastAtom", chain.frame.atoms[lastAtomIndex].getInfo());
+    info.put("atomInfo1", chain.frame.atoms[firstAtomIndex].getInfo());
+    info.put("atomInfo2", chain.frame.atoms[lastAtomIndex].getInfo());
+    info.put("_apt1", new Integer(firstAtomIndex));
+    info.put("_apt2", new Integer(lastAtomIndex));
     info.put("shapeVisibilityFlags", new Integer(shapeVisibilityFlags));
     ProteinStructure structure = getProteinStructure();
     if(structure != null)info.put("structure", getStructureTypeName(structure.type));

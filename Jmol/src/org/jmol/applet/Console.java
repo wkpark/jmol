@@ -122,7 +122,7 @@ class Console implements ActionListener, WindowListener {
     String strCommand = input.getText();
     input.setText(null);
     output(strCommand, attributesCommand);
-    String strErrorMessage = viewer.evalString(strCommand);
+    String strErrorMessage = viewer.script(strCommand);
     if (strErrorMessage != null)
       output(strErrorMessage);
     input.requestFocus();

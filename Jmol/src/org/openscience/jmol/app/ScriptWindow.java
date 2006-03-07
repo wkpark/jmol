@@ -129,7 +129,7 @@ public final class ScriptWindow extends JDialog
     console.appendNewline();
     console.setPrompt();
     if (strCommand.length() > 0) {
-      String strErrorMessage = viewer.evalString(strCommand);
+      String strErrorMessage = viewer.script(strCommand);
       if (strErrorMessage != null)
         console.outputError(strErrorMessage);
       else {

@@ -160,7 +160,7 @@ class Labels extends Shape {
   void setModelClickability() {
     for (int i = strings.length; --i >= 0; ) {
       String label = strings[i];
-      if (label != null)
+      if (label != null && frame.atoms.length > i)
         frame.atoms[i].clickabilityFlags |= myVisibilityFlag;
     }
   }

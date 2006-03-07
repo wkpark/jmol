@@ -1598,6 +1598,11 @@ final public class Viewer extends JmolViewer {
         atomCountPlusIndices);
   }
 
+  void toggleMeasurement(Vector monitorExpressions) {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggleVector",
+        monitorExpressions);
+  }
+
   void toggleMeasurement(int[] atomCountPlusIndices) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggle",
         atomCountPlusIndices);

@@ -27,6 +27,7 @@ package org.jmol.viewer;
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 class Measures extends Shape {
 
@@ -108,6 +109,51 @@ class Measures extends Shape {
       define(atomCountPlusIndices);
   }
 
+  void toggle(Vector monitorExpressions) {
+  /*
+   * 
+   *(1) run through first expression, choosing model
+   *(2) for each item of next bs, iterate over next bitset, etc.
+   *(3) for each last bitset, trigger toggle(int[])
+   *
+   *simple!
+   *
+   */
+  
+    int nPoints = monitorExpressions.size();
+    if (nPoints == 0)
+      return;
+    int[] atomCountPlusIndices = new int[5];
+    atomCountPlusIndices[0] = nPoints;
+    nextMeasure(0, nPoints, monitorExpressions, atomCountPlusIndices, 0);
+  }
+
+  void nextMeasure(int thispt, int nPoints, Vector monitorExpressions, 
+                   int[] atomCountPlusIndices, int thisModel) {
+    BitSet bs = (BitSet)monitorExpressions.get(thispt);
+    int i = -1;
+    //System.out.println("nextMeasure"+thispt+" acpi:"+atomCountPlusIndices);
+    //System.out.println("bs "+ bs);
+    for (int iBit = bs.cardinality(); --iBit >= 0;) {
+      i = bs.nextSetBit(i + 1);
+      int modelIndex = frame.atoms[i].getModelIndex();
+      //System.out.println("nextMeasure i"+i+" modelIndex:"+modelIndex);
+      if (thispt == 0) {
+        thisModel = modelIndex;
+      } else if (thisModel != modelIndex) {
+        continue;
+      }
+      atomCountPlusIndices[thispt + 1] = i;
+      if (thispt == nPoints - 1) {
+        //System.out.println("toggling");
+        toggle(atomCountPlusIndices);
+      } else {
+        nextMeasure(thispt+1, nPoints, monitorExpressions, 
+            atomCountPlusIndices, thisModel);
+      }
+    }
+  }
+  
   void pending(int[] countPlusIndices) {
     pendingMeasurement.setCountPlusIndices(countPlusIndices);
     if (pendingMeasurement.count > 1)
@@ -134,7 +180,9 @@ class Measures extends Shape {
     else if ("delete".equals(propertyName))
       { delete(value); }
     else if ("toggle".equals(propertyName))
-      { toggle((int[])value); }
+    { toggle((int[])value); }
+    else if ("toggleVector".equals(propertyName))
+    { toggle((Vector)value); }
     else if ("pending".equals(propertyName))
       { pending((int[])value); }
     else if ("clear".equals(propertyName))

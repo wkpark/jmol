@@ -30,6 +30,7 @@ import org.jmol.smiles.InvalidSmilesException;
 import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
+import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -1768,13 +1769,21 @@ class Eval implements Runnable {
     */
     monitorArgs[0] = 0;
     int argCount = statementLength - 1;
-    int atomIndex = 0;
+    int atomIndex = -1;
     int atomNumber = 0;
+    boolean isAll = false;
+    Vector monitorExpressions = new Vector();
+    BitSet bs= new BitSet();
+    
     //int numAtoms = viewer.getAtomCount();
     for (int i = 0; i < argCount; ++i) {
       Token token = statement[i + 1];
       //System.out.println(i+" "+token.toString());
       switch (token.tok) {
+      case Token.all:
+        atomIndex = -1;
+        isAll = true;
+        break;
       case Token.integer:
         atomNumber = token.intValue;
         atomIndex = viewer.getAtomIndexFromAtomNumber(atomNumber);
@@ -1782,22 +1791,32 @@ class Eval implements Runnable {
       case Token.expressionBegin:
         //in principle, this could be an atom set, in which case we would
         //be calculating a centroid. UNHEARD-OF-COOL!
-        atomIndex = firstAtomOf(expression(statement, i + 1));
+        bs = expression(statement, i + 1);
+        atomIndex = firstAtomOf(bs);
         //System.out.println("expressionBegin "+atomIndex);
         i = endOfExpression - 1;
         break;
       default:
         integerExpected();
       }
-      
-      if (atomIndex == -1)
+      System.out.println("eval monitor"+isAll + " " +atomIndex + " " + bs);
+      if (atomIndex == -1 && ! isAll)
         badAtomNumber();
       if (monitorArgs[0] == 4)
         badArgumentCount();
-      System.out.println("monitor() adding " + atomIndex);
-      monitorArgs[++monitorArgs[0]] = atomIndex;
+      //System.out.println("monitor() adding " + atomIndex);
+      if (isAll) {
+        if (atomIndex >= 0)
+          monitorExpressions.add(bs);
+      }else {
+        monitorArgs[++monitorArgs[0]] = atomIndex;
+      }
     }
-    viewer.toggleMeasurement(monitorArgs);
+    if (isAll) {
+      viewer.toggleMeasurement(monitorExpressions);
+    } else {
+      viewer.toggleMeasurement(monitorArgs);
+    }
   }
 
   void refresh() { 

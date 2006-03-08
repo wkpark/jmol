@@ -49,7 +49,7 @@ class MeasuresRenderer extends ShapeRenderer {
     measurementMad = measures.mad;
     font3d = measures.font3d;
     showMeasurementNumbers = measures.showMeasurementNumbers;
-    System.out.println(measures.measurementCount);
+    //System.out.println(measures.measurementCount);
     
     for (int i = measures.measurementCount; --i >= 0; ) {
       renderMeasurement(measures.measurements[i], colix);

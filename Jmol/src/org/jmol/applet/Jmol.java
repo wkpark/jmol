@@ -80,7 +80,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   String htmlName;
 
-  JmolAppletRegistry appletRegistry;
+  public JmolAppletRegistry appletRegistry;
 
   MyStatusListener myStatusListener;
 
@@ -154,6 +154,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(), appletWrapper
         .getCodeBase(), getValue("JmolAppletProxy", null));
 
+    viewer.setApplet(this);
+    
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(appletWrapper, viewer);
@@ -567,7 +569,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       if (fullPathName != null)
         if (loadStructCallback != null && jsoWindow != null)
           jsoWindow.call(loadStructCallback, new Object[] { htmlName,
-              fullPathName });
+               fullPathName });
       if (jmolpopup != null)
         jmolpopup.updateComputedMenus();
     }

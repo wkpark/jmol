@@ -48,6 +48,8 @@ class AminoPolymer extends AlphaPolymer {
   void calcHydrogenBonds() {
     if (! hbondsAlreadyCalculated) {
       allocateHbondDataStructures();
+      Frame frame = model.mmset.frame;
+      hbondMax2 = frame.hbondMax * frame.hbondMax;
       calcProteinMainchainHydrogenBonds();
       hbondsAlreadyCalculated = true;
 
@@ -106,6 +108,8 @@ class AminoPolymer extends AlphaPolymer {
     }
   }
 
+  private float hbondMax2;
+
   private final static float maxHbondAlphaDistance = 9;
   private final static float maxHbondAlphaDistance2 =
     maxHbondAlphaDistance * maxHbondAlphaDistance;
@@ -130,7 +134,7 @@ class AminoPolymer extends AlphaPolymer {
         continue;
       int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
       if (debugHbonds)
-        System.out.println("HbondEnergy=" + energy);
+        System.out.println("HbondEnergy=" + energy + " dist2="+dist2+" max^2="+maxHbondAlphaDistance2);
       if (energy < energyMin1) {
         energyMin2 = energyMin1;
         indexMin2 = indexMin1;
@@ -157,7 +161,16 @@ class AminoPolymer extends AlphaPolymer {
   int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
                       AminoMonomer target) {
     Point3f targetOxygenPoint = target.getCarbonylOxygenAtomPoint();
-    float distOH2 = targetOxygenPoint.distanceSquared(hydrogenPoint);
+
+    float distON2 = targetOxygenPoint.distanceSquared(nitrogenPoint);
+    if (distON2 < minimumHbondDistance2)
+      return -9900;
+
+    //why would this not have been in here? RMH 03/8/06
+    if (distON2 > hbondMax2)
+       return 0;
+
+   float distOH2 = targetOxygenPoint.distanceSquared(hydrogenPoint);
     if (distOH2 < minimumHbondDistance2)
       return -9900;
 
@@ -168,10 +181,6 @@ class AminoPolymer extends AlphaPolymer {
 
     float distCN2 = targetCarbonPoint.distanceSquared(nitrogenPoint);
     if (distCN2 < minimumHbondDistance2)
-      return -9900;
-
-    float distON2 = targetOxygenPoint.distanceSquared(nitrogenPoint);
-    if (distON2 < minimumHbondDistance2)
       return -9900;
 
     double distOH = Math.sqrt(distOH2);
@@ -235,8 +244,7 @@ class AminoPolymer extends AlphaPolymer {
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
     Atom oxygen = recipient.getCarbonylOxygenAtom();
-    Frame frame = model.mmset.frame;
-    frame.bondAtoms(nitrogen, oxygen, order);
+    model.mmset.frame.bondAtoms(nitrogen, oxygen, order);
   }
 
   /*

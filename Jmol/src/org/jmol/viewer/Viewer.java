@@ -24,8 +24,12 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.applet.Jmol;
+
 import org.jmol.api.*;
 import org.jmol.g3d.*;
+
+import java.util.Enumeration;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -96,7 +100,7 @@ final public class Viewer extends JmolViewer {
   TempManager tempManager;
 
   PickingManager pickingManager;
-
+ 
   public Eval eval;
 
   Graphics3D g3d;
@@ -2957,4 +2961,20 @@ final public class Viewer extends JmolViewer {
     isTainted = TF;
   }
 
+  //// testing only BH: /////
+  
+  public Jmol applet = null;
+  
+  public void setApplet(Jmol applet) {
+     this.applet = applet;
+  }
+  
+  public void test2() {
+    Enumeration e = applet.appletRegistry.applets();
+    while(e.hasMoreElements()) {
+      Object anObject = e.nextElement();
+        System.out.println(anObject + " is " + anObject.getClass().getName());
+    }
+  }
+  
 }

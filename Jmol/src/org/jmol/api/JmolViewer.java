@@ -24,6 +24,8 @@
 
 package org.jmol.api;
 
+import org.jmol.applet.Jmol;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Event;
@@ -247,6 +249,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void repaintView();
 
   abstract public Object getProperty(String returnType, String infoType, String paramInfo);
-  
+
+  abstract public void setApplet(Jmol applet);
 }
 

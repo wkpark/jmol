@@ -1743,9 +1743,10 @@ class Eval implements Runnable {
       runScript(script);  
   }
 
-  int[] monitorArgs = new int[5];
 
   void monitor() throws ScriptException {
+    int[] monitorArgs = new int[5];
+    float[] rangeMinMax = new float[2];
     if (statementLength == 1) {
       viewer.setShowMeasurements(true);
       return;
@@ -1759,20 +1760,16 @@ class Eval implements Runnable {
         booleanExpected();
       return;
     }
-    /*
-    if (statementLength < 3 || statementLength > 5)
-      badArgumentCount();
-    for (int i = 1; i < statementLength; ++i) {
-      if (statement[i].tok != Token.integer)
-        integerExpected();
-    }
-    */
     monitorArgs[0] = 0;
     int argCount = statementLength - 1;
     int atomIndex = -1;
     int atomNumber = 0;
+    int ptFloat = -1;
+    rangeMinMax[0] = -1.0F;
+    rangeMinMax[1] = -1.0F;
     boolean isAll = false;
     Vector monitorExpressions = new Vector();
+    
     BitSet bs= new BitSet();
     
     //int numAtoms = viewer.getAtomCount();
@@ -1784,9 +1781,16 @@ class Eval implements Runnable {
         atomIndex = -1;
         isAll = true;
         break;
+      case Token.decimal:
+        isAll = true;
+        ptFloat = (ptFloat + 1) % 2;
+        rangeMinMax[ptFloat] = ((Float)token.value).floatValue();
+        break;
       case Token.integer:
         atomNumber = token.intValue;
         atomIndex = viewer.getAtomIndexFromAtomNumber(atomNumber);
+        ptFloat = (ptFloat + 1) % 2;
+        rangeMinMax[ptFloat] = atomNumber;
         break;
       case Token.expressionBegin:
         //in principle, this could be an atom set, in which case we would
@@ -1799,7 +1803,7 @@ class Eval implements Runnable {
       default:
         integerExpected();
       }
-      System.out.println("eval monitor"+isAll + " " +atomIndex + " " + bs);
+      //System.out.println("eval monitor"+isAll + " " +atomIndex + " " + bs);
       if (atomIndex == -1 && ! isAll)
         badAtomNumber();
       if (monitorArgs[0] == 4)
@@ -1813,7 +1817,11 @@ class Eval implements Runnable {
       }
     }
     if (isAll) {
-      viewer.toggleMeasurement(monitorExpressions);
+      if (rangeMinMax[1] < rangeMinMax[0]){
+        rangeMinMax[1] = rangeMinMax[0];
+        rangeMinMax[0] = (rangeMinMax[1] < 0.0F ? -1.0F : 0.0F);
+      }
+      viewer.defineMeasurement(monitorExpressions, rangeMinMax);
     } else {
       viewer.toggleMeasurement(monitorArgs);
     }

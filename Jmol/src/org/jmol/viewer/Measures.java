@@ -28,6 +28,7 @@ import org.jmol.g3d.*;
 
 import java.util.BitSet;
 import java.util.Vector;
+import java.util.Hashtable;
 
 class Measures extends Shape {
 
@@ -40,7 +41,8 @@ class Measures extends Shape {
   short colix; // default to none in order to contrast with background
   boolean showMeasurementNumbers = true;
   Font3D font3d;
-
+  float[] rangeMinMax = {-1.0F, -1.0F};
+  
   void initShape() {
     pendingMeasurement = new PendingMeasurement(frame);
     font3d = g3d.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
@@ -64,7 +66,15 @@ class Measures extends Shape {
   void define(int[] atomCountPlusIndices) {
     if (isDefined(atomCountPlusIndices))
       return;
-    Measurement measureNew = new Measurement(frame, atomCountPlusIndices);
+    float value = -1.0F;
+    if (rangeMinMax[0] >= 0) {
+      value = frame.getMeasurement(atomCountPlusIndices);
+      //System.out.println("value,maxmin "+value+" "+rangeMinMax[0]+" "+rangeMinMax[1]);
+      if (value < rangeMinMax[0] || value > rangeMinMax[1])
+        return;
+    }
+    //System.out.println("define " + rangeMinMax[0] + "-" + rangeMinMax[1] + ";" + value);
+    Measurement measureNew = new Measurement(frame, atomCountPlusIndices, value);
     if (measurementCount == measurements.length) {
       measurements =(Measurement[])Util.setLength(measurements,
                                                   measurementCount +
@@ -102,14 +112,21 @@ class Measures extends Shape {
     return false;
   }
   
+  void setRange(float[] rangeMinMax) {
+    this.rangeMinMax[0] = rangeMinMax[0];
+    this.rangeMinMax[1] = rangeMinMax[1];
+  }
+  
   void toggle(int[] atomCountPlusIndices) {
     if (isDefined(atomCountPlusIndices))
       delete(atomCountPlusIndices);
-    else
+    else {
+      rangeMinMax[0] = -1;
       define(atomCountPlusIndices);
+    }
   }
 
-  void toggle(Vector monitorExpressions) {
+  void define(Vector monitorExpressions) {
   /*
    * 
    *(1) run through first expression, choosing model
@@ -121,7 +138,7 @@ class Measures extends Shape {
    */
   
     int nPoints = monitorExpressions.size();
-    if (nPoints == 0)
+    if (nPoints < 2)
       return;
     int[] atomCountPlusIndices = new int[5];
     atomCountPlusIndices[0] = nPoints;
@@ -136,6 +153,8 @@ class Measures extends Shape {
     //System.out.println("bs "+ bs);
     for (int iBit = bs.cardinality(); --iBit >= 0;) {
       i = bs.nextSetBit(i + 1);
+      if (thispt > 0 && i == atomCountPlusIndices[thispt])
+        continue;
       int modelIndex = frame.atoms[i].getModelIndex();
       //System.out.println("nextMeasure i"+i+" modelIndex:"+modelIndex);
       if (thispt == 0) {
@@ -145,8 +164,8 @@ class Measures extends Shape {
       }
       atomCountPlusIndices[thispt + 1] = i;
       if (thispt == nPoints - 1) {
-        //System.out.println("toggling");
-        toggle(atomCountPlusIndices);
+        if (! isDefined(atomCountPlusIndices))
+          define(atomCountPlusIndices);
       } else {
         nextMeasure(thispt+1, nPoints, monitorExpressions, 
             atomCountPlusIndices, thisModel);
@@ -181,8 +200,10 @@ class Measures extends Shape {
       { delete(value); }
     else if ("toggle".equals(propertyName))
     { toggle((int[])value); }
-    else if ("toggleVector".equals(propertyName))
-    { toggle((Vector)value); }
+    else if ("defineVector".equals(propertyName))
+    { define((Vector)value); }
+    else if ("setRange".equals(propertyName))
+    { setRange((float[])value); }
     else if ("pending".equals(propertyName))
       { pending((int[])value); }
     else if ("clear".equals(propertyName))
@@ -208,9 +229,40 @@ class Measures extends Shape {
       return index < measurementCount
         ? measurements[index].strMeasurement : null;
     }
+    if ("info".equals(property)) {
+      return getAllInfo();
+    }
     return null;
   }
 
+  Vector getAllInfo() {
+    Vector info = new Vector();
+    for (int i = 0; i< measurementCount; i++) {
+      info.add(getInfo(i));
+    }
+    return info;
+  }
+  
+  Hashtable getInfo(int index) {
+    Hashtable info = new Hashtable();
+    info.put("index",new Integer(index));
+    info.put("strMeasurement",measurements[index].strMeasurement);
+    int count = measurements[index].count;
+    info.put("count",new Integer(count));
+    info.put("value",new Float(measurements[index].value));
+    Vector atomsInfo = new Vector();
+    for (int i = 0; i < count; i++) {
+      Hashtable atomInfo = new Hashtable();
+      Atom atom = frame.atoms[measurements[index].countPlusIndices[i + 1]];
+      atomInfo.put("_ipt", new Integer(atom.atomIndex));
+      atomInfo.put("atomno", new Integer(atom.getAtomNumber()));
+      atomInfo.put("info", atom.getInfo());
+      atomsInfo.add(atomInfo);
+    }
+    info.put("atoms", atomsInfo);
+    return info;  
+  }
+  
   void reformatDistances() {
     for (int i = measurementCount; --i >= 0; )
       measurements[i].reformatDistanceIfSelected();

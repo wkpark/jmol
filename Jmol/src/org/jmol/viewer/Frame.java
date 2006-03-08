@@ -1711,6 +1711,42 @@ final class Frame {
   // measurements
   ////////////////////////////////////////////////////////////////
 
+
+  float getMeasurement(int[] countPlusIndices) {
+    float value = -1.0F;
+    if (countPlusIndices == null)
+      return value;
+    int count = countPlusIndices[0];
+    if (count < 2)
+      return value;
+    for (int i = count; --i >= 0; )
+      if (countPlusIndices[i+1] < 0) {
+        return value;
+      }
+    switch (count) {
+    case 2:
+      value = getDistance(countPlusIndices[1],
+                                         countPlusIndices[2]);
+      break;
+    case 3:
+      value = getAngle(countPlusIndices[1],
+                                     countPlusIndices[2],
+                                     countPlusIndices[3]);
+      break;
+    case 4:
+      value = getTorsion(countPlusIndices[1],
+                                       countPlusIndices[2],
+                                       countPlusIndices[3],
+                                       countPlusIndices[4]);
+      break;
+    default:
+      System.out.println("Invalid count in measurement calculation:" + count);
+      throw new IndexOutOfBoundsException();
+    }
+    
+    return value;
+  }
+
   float getDistance(int atomIndexA, int atomIndexB) {
     return atoms[atomIndexA].point3f.distance(atoms[atomIndexB].point3f);
   }

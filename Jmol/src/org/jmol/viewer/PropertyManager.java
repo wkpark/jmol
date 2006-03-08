@@ -135,6 +135,9 @@ class PropertyManager {
     if(infoType.equalsIgnoreCase("shapeInfo"))
       return viewer.getShapeInfo();      
 
+    if(infoType.equalsIgnoreCase("measurementInfo")) 
+      return viewer.getMeasurementInfo();
+
     // public objects
     
     if(infoType.equalsIgnoreCase("jmolViewer"))
@@ -154,6 +157,7 @@ class PropertyManager {
     + "\n\n getProperty(\"animationInfo\")"
     + "\n getProperty(\"modelInfo\")"
     + "\n getProperty(\"shapeInfo\")"
+    + "\n getProperty(\"measurementInfo\")"
     
     + "\n\n getProperty(\"boundboxInfo\")"
     + "\n getProperty(\"centerInfo\")"

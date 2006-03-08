@@ -87,9 +87,11 @@ class StyleManager {
   boolean setMeasureDistanceUnits(String units) {
     if (units.equalsIgnoreCase("angstroms"))
       measureDistanceUnits = "angstroms";
-    else if (units.equalsIgnoreCase("nanometers"))
+    else if (units.equalsIgnoreCase("nanometers") ||
+        units.equalsIgnoreCase("nm"))
       measureDistanceUnits = "nanometers";
-    else if (units.equalsIgnoreCase("picometers"))
+    else if (units.equalsIgnoreCase("picometers") ||
+        units.equalsIgnoreCase("pm"))
       measureDistanceUnits = "picometers";
     else
       return false;

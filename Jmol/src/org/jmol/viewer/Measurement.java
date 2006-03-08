@@ -34,11 +34,22 @@ class Measurement {
   int count;
   int[] countPlusIndices;
   String strMeasurement;
+  float value;
 
   AxisAngle4f aa;
   Point3f pointArc;
   
+
+
   Measurement(Frame frame, int[] atomCountPlusIndices) {
+    setInfo(frame, atomCountPlusIndices, -1.0F);
+  }
+
+  Measurement(Frame frame, int[] atomCountPlusIndices, float value) {
+    setInfo(frame, atomCountPlusIndices, value);
+  }   
+
+  void setInfo(Frame frame, int[] atomCountPlusIndices, float value) {
     this.frame = frame;
     if (atomCountPlusIndices == null)
       count = 0;
@@ -47,17 +58,18 @@ class Measurement {
       this.countPlusIndices = new int[count + 1];
       System.arraycopy(atomCountPlusIndices, 0, countPlusIndices, 0, count+1);
     }
+    if (countPlusIndices != null && value < 0) 
+      value = frame.getMeasurement(countPlusIndices);
+    this.value = value;
     formatMeasurement();
   }
 
   void formatMeasurement() {
-    for (int i = count; --i >= 0; )
-      if (countPlusIndices[i+1] < 0) {
-        strMeasurement = null;
-        return;
-      }
-    if (count < 2)
+    strMeasurement = null;
+    if (value < 0) {
+      strMeasurement = null;
       return;
+    }
     switch (count) {
     case 2:
       float distance = frame.getDistance(countPlusIndices[1],

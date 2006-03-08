@@ -1572,6 +1572,10 @@ final public class Viewer extends JmolViewer {
     return str;
   }
 
+  Vector getMeasurementInfo() {
+    return (Vector)getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
+  }
+
   public int[] getMeasurementCountPlusIndices(int i) {
     int[] List = (int[]) getShapeProperty(JmolConstants.SHAPE_MEASURES,
         "countPlusIndices", i);
@@ -1589,6 +1593,13 @@ final public class Viewer extends JmolViewer {
         atomCountPlusIndices);
   }
 
+  void defineMeasurement(Vector monitorExpressions, float[] rangeMinMax) {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setRange",
+        rangeMinMax);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "defineVector",
+        monitorExpressions);
+  }
+
   public void deleteMeasurement(int i) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
   }
@@ -1596,11 +1607,6 @@ final public class Viewer extends JmolViewer {
   void deleteMeasurement(int[] atomCountPlusIndices) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete",
         atomCountPlusIndices);
-  }
-
-  void toggleMeasurement(Vector monitorExpressions) {
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggleVector",
-        monitorExpressions);
   }
 
   void toggleMeasurement(int[] atomCountPlusIndices) {

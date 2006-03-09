@@ -78,8 +78,14 @@ abstract class Monomer extends Group {
         offset = 255;
       else {
         offset = atomIndex - firstAtomIndex;
-        if (offset < 0 || offset > 254)
-          throw new NullPointerException();
+        if (offset < 0 || offset > 254) {
+          System.out.println("scanForOffsets i="+i+" atomID="+atomID+" atomIndex:"+atomIndex+" firstAtomIndex:"+firstAtomIndex+" offset out of 0-254 range. Groups aren't organized correctly. Is this really a protein?: "+offset);
+          if (atomID < 0) {
+            offset = 255; //it was optional anyway RMH
+          } else {
+            //throw new NullPointerException();
+          }
+        }
       }
       offsets[i] = (byte)offset;
     }

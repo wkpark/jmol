@@ -1,5 +1,4 @@
-/* $RCSfile$
- * $Author$
+ /* $Author$
  * $Date$
  * $Revision$
  *
@@ -923,6 +922,11 @@ class Compiler {
     return atokenInfix[itokenInfix++];
   }
 
+  boolean tokenNext(int tok) {
+    Token token = tokenNext();
+    return (token != null && token.tok == tok);
+  }
+  
   Object valuePeek() {
     if (itokenInfix == atokenInfix.length)
       return null;
@@ -1000,7 +1004,7 @@ class Compiler {
       tokenNext();
       if (! clauseOr())
           return false;
-      if (tokenNext().tok != Token.rightparen)
+      if (! tokenNext(Token.rightparen))
         return rightParenthesisExpected();
       return true;
     }
@@ -1027,10 +1031,12 @@ class Compiler {
 
   boolean clauseWithin() {
     tokenNext();                             // WITHIN
-    if (tokenNext().tok != Token.leftparen)  // (
+    if (! tokenNext(Token.leftparen))  // (
       return leftParenthesisExpected();
     Object distance;
     Token tokenDistance = tokenNext();       // distance
+    if (tokenDistance == null)
+      return numberOrKeywordExpected();
     switch(tokenDistance.tok) {
     case Token.integer:
       distance = new Float((tokenDistance.intValue * 4) / 1000f);
@@ -1044,23 +1050,23 @@ class Compiler {
     default:
       return numberOrKeywordExpected();
     }
-    if (tokenNext().tok != Token.opOr)       // ,
+    if (! tokenNext(Token.opOr))       // ,
       return commaExpected();
     if (! clauseOr())                        // *expression*
       return false;
-    if (tokenNext().tok != Token.rightparen) // )T
+    if (! tokenNext(Token.rightparen)) // )T
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.within, distance));
   }
 
   boolean clauseSubstructure() {
     tokenNext();                             // substructure
-    if (tokenNext().tok != Token.leftparen)  // (
+    if (! tokenNext(Token.leftparen))  // (
       return leftParenthesisExpected();
     Token tokenSmiles = tokenNext();         // "smiles"
-    if (tokenSmiles.tok != Token.string)
+    if (tokenSmiles == null || tokenSmiles.tok != Token.string)
       return stringExpected();
-    if (tokenNext().tok != Token.rightparen) // )
+    if (! tokenNext(Token.rightparen)) // )
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.substructure, tokenSmiles.value));
   }
@@ -1149,26 +1155,36 @@ class Compiler {
       return true;
     }
     Token tokenT = tokenNext();
+    if (tokenT == null) 
+      return false;
     if (tokenT.tok == Token.leftsquare) {
       log("I see a left square bracket");
       // FIXME mth -- maybe need to deal with asterisks here too
-      tokenT = tokenNext(); if (tokenT == null) return false;
+      tokenT = tokenNext(); 
+      if (tokenT == null) 
+        return false;
       String strSpec = "";
       if (tokenT.tok == Token.plus) {
         strSpec = "+";
         tokenT = tokenNext();
+        if (tokenT == null) 
+          return false;
       }
       // what a hack :-(
       int tok = tokenT.tok;
       if (tok == Token.integer) {
         strSpec += tokenT.value;
-        tokenT = tokenNext(); if (tokenT == null) return false;
+        tokenT = tokenNext();
+        if (tokenT == null) 
+          return false;
         tok = tokenT.tok;
       }
       if (tok == Token.identifier || tok == Token.set ||
           tok == Token.x || tok == Token.y || tok == Token.z) {
         strSpec += tokenT.value;
-        tokenT = tokenNext(); if (tokenT == null) return false;
+        tokenT = tokenNext();
+        if (tokenT == null) 
+          return false;
         tok = tokenT.tok;
       }
       if (strSpec == "")
@@ -1371,6 +1387,8 @@ class Compiler {
       return true;
     }
     Token tokenModel = tokenNext();
+    if (tokenModel == null)
+      return invalidModelSpecification();
     switch (tokenModel.tok) {
     case Token.string:
     case Token.integer:
@@ -1387,7 +1405,7 @@ class Compiler {
   }
 
   boolean clauseAtomSpec() {
-    if (tokenNext().tok != Token.dot)
+    if (! tokenNext(Token.dot))
       return invalidAtomSpecification();
     Token tokenAtomSpec = tokenNext();
     if (tokenAtomSpec == null)

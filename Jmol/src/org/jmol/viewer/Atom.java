@@ -89,6 +89,7 @@ final class Atom implements Tuple {
     }
 
     byte specialAtomID = lookupSpecialAtomID(atomName);
+    //System.out.println("atom - "+atomName+" specialAtomID=" + specialAtomID);
     if (specialAtomID != 0) {
       if (frame.specialAtomIDs == null)
         frame.specialAtomIDs = new byte[frame.atoms.length];

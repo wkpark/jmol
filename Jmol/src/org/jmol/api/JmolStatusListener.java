@@ -56,8 +56,10 @@ public interface JmolStatusListener {
 
   public void sendConsoleMessage(String strStatus);
 
+  public void sendSyncScript(String script, String appletName);
+
   public void showUrl(String url);
 
   public void showConsole(boolean showConsole);
-
+  
 }

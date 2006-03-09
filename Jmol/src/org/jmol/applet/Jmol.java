@@ -37,6 +37,9 @@ import org.jmol.viewer.JmolConstants;
 import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 
 /*
  * these are *required*
@@ -154,8 +157,6 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(), appletWrapper
         .getCodeBase(), getValue("JmolAppletProxy", null));
 
-    viewer.setApplet(this);
-    
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(appletWrapper, viewer);
@@ -440,6 +441,30 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     viewer.script(script);
   }   
   
+  synchronized public void syncScript(String script) {
+    if (script.equalsIgnoreCase("on")) {
+      myStatusListener.sendSyncScript("SLAVE",null);
+      viewer.setSyncDriver(1);
+      return;
+    }
+    if (script.equalsIgnoreCase("off")) {
+      viewer.setSyncDriver(0);
+      return;
+    }
+    if (script.equalsIgnoreCase("slave")) {
+      viewer.setSyncDriver(-1);
+      return;
+    }
+    if (script.equalsIgnoreCase("sync")) {
+      viewer.setSyncDriver(2);
+      return;
+    }
+    if (viewer.getSyncMode() != 0)
+      return;
+    System.out.println(htmlName + " syncing with script: " + script);
+    script(script);
+  }
+  
   synchronized public String scriptCheck(String script) {
     return viewer.scriptCheck(script);
   }   
@@ -641,5 +666,27 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       if (jvm12 != null)
         jvm12.showConsole(showConsole);
     }
+  
+    public void sendSyncScript(String script, String appletName) {
+      //how to get rid of this warning? - RMH
+      Hashtable h = appletRegistry.htRegistry;
+      Enumeration keys = h.keys();
+      while (keys.hasMoreElements()) {
+        String theApplet = (String)keys.nextElement();
+        if (! theApplet.equals(htmlName) &&
+            (appletName == null || appletName == theApplet)) {
+          System.out.println("sendSyncScript class "+h.get(theApplet).getClass().getName());
+          JmolAppletInterface app = (JmolAppletInterface)(h.get(theApplet));
+          try {
+            System.out.println(htmlName + " sending " + script + " to " + theApplet);
+            app.syncScript(script);
+          } catch (Exception e) {
+            System.out.println(htmlName + " couldn't send " + script + " to " + theApplet + ": " + e);
+          }
+        }
+      }
+    }
+    
   }
+
 }

@@ -204,11 +204,11 @@ class TransformManager {
     return info;    
   }
 
-  String getMoveToText() {
+  String getMoveToText(float timespan) {
     axisangleT.set(matrixRotate);
     float degrees = axisangleT.angle * degreesPerRadian;
     StringBuffer sb = new StringBuffer();
-    sb.append("moveto 1");
+    sb.append("moveto " + timespan);
     if (degrees < 0.01f) {
       sb.append(" 0 0 0 0");
     } else {
@@ -234,6 +234,10 @@ class TransformManager {
       }
     }
     return "" + sb + ";";
+  }
+  
+  String getMoveToText() {
+    return getMoveToText(1);
   }
 
   

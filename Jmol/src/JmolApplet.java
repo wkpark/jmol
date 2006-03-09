@@ -93,6 +93,11 @@ public class JmolApplet
       ((JmolAppletInterface)wrappedApplet).script(script);
   }
   
+  public void syncScript(String script) {
+    if (wrappedApplet != null)
+      ((JmolAppletInterface)wrappedApplet).syncScript(script);
+  }
+  
   public String scriptNoWait(String script) {
     if (wrappedApplet != null)
       return ((JmolAppletInterface)wrappedApplet).scriptNoWait(script);

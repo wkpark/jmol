@@ -24,12 +24,8 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.applet.Jmol;
-
 import org.jmol.api.*;
 import org.jmol.g3d.*;
-
-import java.util.Enumeration;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -50,7 +46,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.Reader;
-
 /*******************************************************************************
  * The JmolViewer can be used to render client molecules. Clients implement the
  * JmolAdapter. JmolViewer uses this interface to extract information from the
@@ -215,6 +210,10 @@ final public class Viewer extends JmolViewer {
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
 
+  String getMoveToText(float timespan) {
+    return transformManager.getMoveToText(timespan);
+  }
+  
   void rotateXYBy(int xDelta, int yDelta) {
     transformManager.rotateXYBy(xDelta, yDelta);
     refresh(1, "Viewer:rotateXYBy()");
@@ -2961,20 +2960,13 @@ final public class Viewer extends JmolViewer {
     isTainted = TF;
   }
 
-  //// testing only BH: /////
-  
-  public Jmol applet = null;
-  
-  public void setApplet(Jmol applet) {
-     this.applet = applet;
+  public void setSyncDriver(int syncMode) {
+    System.out.println(htmlName + " viewer setting sync driver " + syncMode);
+    statusManager.setSyncDriver(syncMode);
   }
-  
-  public void test2() {
-    Enumeration e = applet.appletRegistry.applets();
-    while(e.hasMoreElements()) {
-      Object anObject = e.nextElement();
-        System.out.println(anObject + " is " + anObject.getClass().getName());
-    }
+
+  public int getSyncMode() {
+    return statusManager.getSyncMode();
   }
-  
-}
+
+ }

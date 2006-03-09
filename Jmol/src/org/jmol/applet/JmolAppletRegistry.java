@@ -66,7 +66,7 @@ public class JmolAppletRegistry {
     return htRegistry.elements();
   }
 
-  private static Hashtable htRegistry = new Hashtable();
+  public static Hashtable htRegistry = new Hashtable();
 
   void checkIn(String name, Applet applet) {
     System.out.println("AppletRegistry.checkIn(" + name + ")");

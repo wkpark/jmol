@@ -429,11 +429,13 @@ final class Frame {
   void distinguishAndPropogateGroup(int groupIndex,
                                     Chain chain, String group3, int seqcode,
                                     int firstAtomIndex, int maxAtomIndex) {
-    //    System.out.println("distinguish & propogate group:" +
-    //                       " group3:" + group3 +
-    //                       " seqcode:" + Group.getSeqcodeString(seqcode) +
-    //                       " firstAtomIndex:" + firstAtomIndex +
-    //                       " maxAtomIndex:" + maxAtomIndex);
+    /* 
+         System.out.println("distinguish & propogate group:" +
+                           " group3:" + group3 +
+                           " seqcode:" + Group.getSeqcodeString(seqcode) +
+                           " firstAtomIndex:" + firstAtomIndex +
+                           " maxAtomIndex:" + maxAtomIndex);
+     */
     int distinguishingBits = 0;
     // clear previous specialAtomIndexes
     for (int i = JmolConstants.ATOMID_MAX; --i >= 0; )

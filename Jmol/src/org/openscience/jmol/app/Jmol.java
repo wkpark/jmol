@@ -1425,6 +1425,9 @@ public class Jmol extends JPanel {
       }
     }
 
+    public void sendSyncScript(String script, String appletName) {  
+    }
+    
     public void showUrl(String url) {
     }
 

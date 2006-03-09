@@ -172,17 +172,12 @@ class StatusManager {
 
   synchronized void setStatusUserAction(String strInfo){
     System.out.println("userAction(" + strInfo + ")");
+    if(isSynced)
+      syncSend("SLAVE", null);
+    drivingSync = true;
     setStatusChanged("userAction", 0, strInfo, false);
   }
-
-  synchronized void setStatusViewerRefreshed(int isOrientationChange, String strWhy) {
-    if(isOrientationChange == 1){
-      setStatusChanged("newOrientation", 0, strWhy, true);   
-    } else {
-      setStatusChanged("viewerRefreshed", 0, strWhy, false);   
-    }
-  }
-
+  
   synchronized void setScriptEcho(String strEcho) {
     if (strEcho == null) return; 
     setStatusChanged("scriptEcho", 0, strEcho, false);
@@ -197,11 +192,57 @@ class StatusManager {
       jmolStatusListener.sendConsoleMessage(strStatus);
   }
   
+  int minSyncRepeatMs = 100;
+  int lastSyncTimeMs = 0;
+  synchronized void setStatusViewerRefreshed(int isOrientationChange, String strWhy) {
+    if(isOrientationChange == 1){
+      setStatusChanged("newOrientation", 0, strWhy, true);
+      if(isSynced && drivingSync) {
+        int time = (int) System.currentTimeMillis();
+        System.out.println(" syncing" + time + " " + lastSyncTimeMs + " " + minSyncRepeatMs );
+        if (lastSyncTimeMs == 0 || time - lastSyncTimeMs >= minSyncRepeatMs) {
+          lastSyncTimeMs = time;
+          System.out.println("sending sync");
+          syncSend(viewer.getMoveToText(minSyncRepeatMs/1000), null);
+        }
+      }
+    } else {
+      setStatusChanged("viewerRefreshed", 0, strWhy, false);   
+    }
+  }
+
   synchronized void popupMenu(int x, int y) {
     if (jmolStatusListener != null)
       jmolStatusListener.handlePopupMenu(x, y);
   }
 
+  boolean drivingSync = false;
+  boolean isSynced = false;
+  public void setSyncDriver(int syncMode) {
+ 
+    // -1 slave   turn off driving, but not syncing
+    //  0 off
+    //  1 driving on as driver
+  
+    //  2 sync    turn on, but set as slave  
+    
+    drivingSync = (syncMode == 1 ? true : false);
+    isSynced = (syncMode > 0 || 
+        isSynced && syncMode < 0? true : false);
+    System.out.println(viewer.htmlName + " " + syncMode + " synced? " + isSynced + " driving?" + drivingSync);
+  }
+
+  public void syncSend(String script, String appletName) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.sendSyncScript(script, appletName);
+  }
+  
+  public int getSyncMode() {
+    if (! isSynced)
+      return 0;
+    return (drivingSync ? 1 : -1);
+  }
+  
   synchronized void showUrl(String urlString) {
     if (jmolStatusListener != null)
       jmolStatusListener.showUrl(urlString);
@@ -256,5 +297,6 @@ class StatusManager {
     //System.out.println("done with " + n + ": " + msgList);
     return msgList;
   }
+  
 }
 

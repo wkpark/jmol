@@ -42,15 +42,16 @@ public interface JmolAppletInterface {
   public String getPropertyAsJSON(String infoType, String paramInfo);
   public Object getProperty(String infoType);
   public Object getProperty(String infoType, String paramInfo);
-  public void script(String script);
-  public String scriptNoWait(String script);
-  public String scriptCheck(String script);
-  public String scriptWait(String script);
   public void loadInline(String strModel);
   public void loadInline(String strModel, String script);
   public void loadNodeId(String nodeId);
   public void loadDOMNode(JSObject DOMNode);
-
+  public void script(String script);
+  public String scriptNoWait(String script);
+  public String scriptCheck(String script);
+  public String scriptWait(String script);
+  public void syncScript(String script);
+  
   /**
    * @deprecated
    * @param buttonWindow

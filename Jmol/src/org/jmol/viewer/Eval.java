@@ -34,13 +34,19 @@ import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3f;
 
 class Context {
   String filename;
+
   String script;
+
   short[] linenumbers;
+
   short[] lineIndices;
+
   Token[][] aatoken;
+
   int pc;
 }
 
@@ -49,28 +55,43 @@ class Eval implements Runnable {
   Compiler compiler;
 
   final static int scriptLevelMax = 10;
+
   int scriptLevel;
 
   Context[] stack = new Context[scriptLevelMax];
 
   String filename;
+
   String script;
+
   short[] linenumbers;
+
   short[] lineIndices;
+
   Token[][] aatoken;
+
   int pc; // program counter
 
   long timeBeginExecution;
+
   long timeEndExecution;
+
   boolean error;
+
   String errorMessage;
 
   Token[] statement;
+
   int statementLength;
+
   Viewer viewer;
+
   Thread myThread;
+
   boolean terminationNotification;
+
   boolean interruptExecution;
+
   boolean tQuiet;
 
   final static boolean logMessages = false;
@@ -125,11 +146,11 @@ class Eval implements Runnable {
   }
 
   int getExecutionWalltime() {
-    return (int)(timeEndExecution - timeBeginExecution);
+    return (int) (timeEndExecution - timeBeginExecution);
   }
 
   void runScript(String script) throws ScriptException {
-    System.out.println("runScript"+script);
+    //System.out.println("runScript" + script);
     pushContext();
     if (loadScript(null, script))
       instructionDispatchLoop();
@@ -139,7 +160,7 @@ class Eval implements Runnable {
   boolean loadScript(String filename, String script) {
     this.filename = filename;
     this.script = script;
-    if (! compiler.compile(filename, script)) {
+    if (!compiler.compile(filename, script)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
       viewer.scriptStatus("script compiler ERROR: " + errorMessage);
@@ -153,7 +174,7 @@ class Eval implements Runnable {
   }
 
   void clearState(boolean tQuiet) {
-    for (int i = scriptLevelMax; --i >= 0; )
+    for (int i = scriptLevelMax; --i >= 0;)
       stack[i] = null;
     scriptLevel = 0;
     error = false;
@@ -175,10 +196,10 @@ class Eval implements Runnable {
 
   boolean loadScriptFileInternal(String filename) {
     Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
-    if (! (t instanceof InputStream))
+    if (!(t instanceof InputStream))
       return loadError((String) t);
-    BufferedReader reader =
-      new BufferedReader(new InputStreamReader((InputStream) t));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(
+        (InputStream) t));
     StringBuffer script = new StringBuffer();
     try {
       while (true) {
@@ -189,10 +210,16 @@ class Eval implements Runnable {
         script.append("\n");
       }
     } catch (IOException e) {
-  try{reader.close();}catch(IOException ioe){}
+      try {
+        reader.close();
+      } catch (IOException ioe) {
+      }
       return ioError(filename);
     }
-    try{reader.close();}catch(IOException ioe){}
+    try {
+      reader.close();
+    } catch (IOException ioe) {
+    }
     return loadScript(filename, script.toString());
   }
 
@@ -211,10 +238,12 @@ class Eval implements Runnable {
   }
 
   public String toString() {
-    StringBuffer str=new StringBuffer();
+    StringBuffer str = new StringBuffer();
     str.append("Eval\n pc:");
-    str.append(pc); str.append("\n");
-    str.append(aatoken.length); str.append(" statements\n");
+    str.append(pc);
+    str.append("\n");
+    str.append(aatoken.length);
+    str.append(" statements\n");
     for (int i = 0; i < aatoken.length; ++i) {
       str.append(" |");
       Token[] atoken = aatoken[i];
@@ -236,65 +265,70 @@ class Eval implements Runnable {
       predefine(JmolConstants.predefinedSets[iPredef]);
     // Now, define all the elements as predefined sets
     // hydrogen is handled specially, so don't define it
-    for (int i = JmolConstants.elementNames.length; --i > 1; ) {
+    for (int i = JmolConstants.elementNames.length; --i > 1;) {
       String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
       predefine(definition);
     }
-    for (int j = JmolConstants.alternateElementNumbers.length; --j >= 0; ) {
-      String definition =
-        "@" + JmolConstants.alternateElementNames[j] +
-        " _e=" + JmolConstants.alternateElementNumbers[j];
+    for (int j = JmolConstants.alternateElementNumbers.length; --j >= 0;) {
+      String definition = "@" + JmolConstants.alternateElementNames[j] + " _e="
+          + JmolConstants.alternateElementNumbers[j];
       predefine(definition);
     }
   }
 
   void predefineElements() {
     // the name 'hydrogen' handled specially
-    for (int i = JmolConstants.elementNames.length; --i > 1; ) {
+    for (int i = JmolConstants.elementNames.length; --i > 1;) {
       String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
-      if (! compiler.compile("#element", definition)) {
+      if (!compiler.compile("#element", definition)) {
         System.out.println("element definition error:" + definition);
         continue;
       }
-      Token [][] aatoken = compiler.getAatokenCompiled();
+      Token[][] aatoken = compiler.getAatokenCompiled();
       Token[] statement = aatoken[0];
-      //int tok = statement[1].tok;
-      String variable = (String)statement[1].value;
+      // int tok = statement[1].tok;
+      String variable = (String) statement[1].value;
       variables.put(variable, statement);
     }
   }
 
   void predefine(String script) {
     if (compiler.compile("#predefine", script)) {
-      Token [][] aatoken = compiler.getAatokenCompiled();
+      Token[][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
-        viewer.scriptStatus("JmolConstants.java ERROR: predefinition does not have exactly 1 command:"
-                            + script);
+        viewer
+            .scriptStatus("JmolConstants.java ERROR: predefinition does not have exactly 1 command:"
+                + script);
         return;
       }
       Token[] statement = aatoken[0];
       if (statement.length > 2) {
         int tok = statement[1].tok;
-        if (tok == Token.identifier ||
-            (tok & Token.predefinedset) == Token.predefinedset) {
-          String variable = (String)statement[1].value;
+        if (tok == Token.identifier
+            || (tok & Token.predefinedset) == Token.predefinedset) {
+          String variable = (String) statement[1].value;
           variables.put(variable, statement);
         } else {
-          viewer.scriptStatus("JmolConstants.java ERROR: invalid variable name:" + script);
+          viewer
+              .scriptStatus("JmolConstants.java ERROR: invalid variable name:"
+                  + script);
         }
       } else {
-        viewer.scriptStatus("JmolConstants.java ERROR: bad predefinition length:" + script);
+        viewer
+            .scriptStatus("JmolConstants.java ERROR: bad predefinition length:"
+                + script);
       }
     } else {
-      viewer.scriptStatus("JmolConstants.java ERROR: predefined set compile error:" + script +
-                          "\ncompile error:" + compiler.getErrorMessage());
+      viewer
+          .scriptStatus("JmolConstants.java ERROR: predefined set compile error:"
+              + script + "\ncompile error:" + compiler.getErrorMessage());
     }
   }
 
   public void run() {
     // this refresh is here to ensure that the screen has been painted ...
     // since it could be a problem when an applet is loaded with a script
-    // ready to run. 
+    // ready to run.
     refresh();
     timeBeginExecution = System.currentTimeMillis();
     viewer.pushHoldRepaint();
@@ -310,7 +344,7 @@ class Eval implements Runnable {
       errorMessage = "execution interrupted";
     if (errorMessage != null)
       viewer.scriptStatus("script ERROR: " + errorMessage);
-    else if (! tQuiet)
+    else if (!tQuiet)
       viewer.scriptStatus("Script completed");
     clearMyThread();
     terminationNotification = true;
@@ -331,7 +365,6 @@ class Eval implements Runnable {
       if (viewer.getDebugScript())
         logDebugScript();
       Token token = statement[0];
-      System.out.println("Eval:"+token);
       switch (token.tok) {
       case Token.backbone:
         proteinShape(JmolConstants.SHAPE_BACKBONE);
@@ -395,7 +428,7 @@ class Eval implements Runnable {
         break;
       case Token.loop:
         delay(); // a loop is just a delay followed by ...
-        pc = 0;  // ... resetting the program counter
+        pc = 0; // ... resetting the program counter
         break;
       case Token.move:
         move();
@@ -487,6 +520,9 @@ class Eval implements Runnable {
       case Token.pmesh:
         pmesh();
         break;
+      case Token.draw:
+        draw();
+        break;
       case Token.polyhedra:
         polyhedra();
         break;
@@ -506,7 +542,7 @@ class Eval implements Runnable {
         connect();
         break;
 
-        // not implemented
+      // not implemented
       case Token.bond:
       case Token.clipboard:
       case Token.help:
@@ -518,11 +554,12 @@ class Eval implements Runnable {
       case Token.structure:
       case Token.unbond:
       case Token.write:
-        // chime extended commands
+      // chime extended commands
       case Token.view:
       case Token.list:
       case Token.display3d:
-        viewer.scriptStatus("script ERROR: command not implemented:" + token.value);
+        viewer.scriptStatus("script ERROR: command not implemented:"
+            + token.value);
         break;
       default:
         unrecognizedCommand(token);
@@ -538,13 +575,14 @@ class Eval implements Runnable {
   String getLine() {
     int ichBegin = lineIndices[pc];
     int ichEnd;
-    if ((ichEnd = script.indexOf('\r', ichBegin)) == -1 &&
-        (ichEnd = script.indexOf('\n', ichBegin)) == -1)
+    if ((ichEnd = script.indexOf('\r', ichBegin)) == -1
+        && (ichEnd = script.indexOf('\n', ichBegin)) == -1)
       ichEnd = script.length();
     return script.substring(ichBegin, ichEnd);
   }
-  
+
   final StringBuffer strbufLog = new StringBuffer(80);
+
   void logDebugScript() {
     strbufLog.setLength(0);
     strbufLog.append(statement[0].value.toString());
@@ -560,7 +598,7 @@ class Eval implements Runnable {
         continue;
       case Token.spec_chain:
         strbufLog.append(':');
-        strbufLog.append((char)token.intValue);
+        strbufLog.append((char) token.intValue);
         continue;
       case Token.spec_alternate:
         strbufLog.append("%");
@@ -572,7 +610,7 @@ class Eval implements Runnable {
         break;
       case Token.spec_resid:
         strbufLog.append('[');
-        strbufLog.append(Group.getGroup3((short)token.intValue));
+        strbufLog.append(Group.getGroup3((short) token.intValue));
         strbufLog.append(']');
         continue;
       case Token.spec_name_pattern:
@@ -586,7 +624,8 @@ class Eval implements Runnable {
       case Token.spec_seqcode_range:
         strbufLog.append(Group.getSeqcodeString(token.intValue));
         strbufLog.append('-');
-        strbufLog.append(Group.getSeqcodeString(((Integer)token.value).intValue()));
+        strbufLog.append(Group.getSeqcodeString(((Integer) token.value)
+            .intValue()));
         break;
       case Token.within:
         strbufLog.append("within ");
@@ -637,6 +676,10 @@ class Eval implements Runnable {
     evalError("boolean or number expected");
   }
 
+  void expressionOrDecimalExpected() throws ScriptException {
+    evalError("(atom expression) or decimal number expected");
+  }
+
   void integerExpected() throws ScriptException {
     evalError("integer expected");
   }
@@ -683,7 +726,7 @@ class Eval implements Runnable {
 
   void invalidArgument() throws ScriptException {
     String str = "invalid argument";
-    for (int i = 0; i < statement.length ; i++)
+    for (int i = 0; i < statement.length; i++)
       str += "\n" + statement[i].toString();
     evalError(str);
   }
@@ -725,8 +768,8 @@ class Eval implements Runnable {
   }
 
   void notImplemented(Token token) {
-    viewer.scriptStatus("script ERROR: " + token.value +
-                       " not implemented in command:" + statement[0].value);
+    viewer.scriptStatus("script ERROR: " + token.value
+        + " not implemented in command:" + statement[0].value);
   }
 
   // gets a boolean value from the 2nd parameter to the command
@@ -753,7 +796,7 @@ class Eval implements Runnable {
   void checkLength4() throws ScriptException {
     checkStatementLength(4);
   }
-  
+
   int intParameter(int index) throws ScriptException {
     if (statement[index].tok != Token.integer)
       integerExpected();
@@ -769,7 +812,7 @@ class Eval implements Runnable {
       floatValue = statement[index].intValue;
       break;
     case Token.decimal:
-      floatValue = ((Float)statement[index].value).floatValue();
+      floatValue = ((Float) statement[index].value).floatValue();
       break;
     default:
       numberExpected();
@@ -784,7 +827,7 @@ class Eval implements Runnable {
     case Token.integer:
       return token.intValue / 250f;
     case Token.decimal:
-      return ((Float)token.value).floatValue();
+      return ((Float) token.value).floatValue();
     default:
       numberExpected();
     }
@@ -817,13 +860,13 @@ class Eval implements Runnable {
       int diameterPixels = statement[2].intValue;
       if (diameterPixels >= 20)
         numberOutOfRange();
-      mad = (short)diameterPixels;
+      mad = (short) diameterPixels;
       break;
     case Token.decimal:
       float angstroms = floatParameter(2);
       if (angstroms >= 2)
         numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
+      mad = (short) (angstroms * 1000 * 2);
       break;
     case Token.dotted:
       mad = -1;
@@ -847,19 +890,23 @@ class Eval implements Runnable {
 
   BitSet getAtomBitSet(String atomExpression) throws ScriptException {
     BitSet bs = new BitSet();
-    if(!loadScript(null, "select (" + atomExpression + ")")) return bs;
-    bs = expression(aatoken[0],1);
+    if (!loadScript(null, "select (" + atomExpression + ")"))
+      return bs;
+    bs = expression(aatoken[0], 1);
     return bs;
   }
-  
+
   int firstAtomOf(BitSet bs) {
     int numberOfAtoms = viewer.getAtomCount();
-    for (int i = numberOfAtoms; --i >= 0; )
-      if(bs.get(i)) { return i; }
+    for (int i = numberOfAtoms; --i >= 0;)
+      if (bs.get(i)) {
+        return i;
+      }
     return -1;
   }
-  
+
   int endOfExpression;
+
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
     int numberOfAtoms = viewer.getAtomCount();
     BitSet bs;
@@ -869,20 +916,19 @@ class Eval implements Runnable {
     endOfExpression = 1000;
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
-    expression_loop:
-    for (int pc = pcStart; ; ++pc) {
+    expression_loop: for (int pc = pcStart;; ++pc) {
       Token instruction = code[pc];
       if (logMessages)
         viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.expressionBegin:
-        break; 
-     case Token.expressionEnd:
-       endOfExpression = pc;
+        break;
+      case Token.expressionEnd:
+        endOfExpression = pc;
         break expression_loop;
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
-        for (int i = numberOfAtoms; --i >= 0; )
+        for (int i = numberOfAtoms; --i >= 0;)
           bs.set(i);
         break;
       case Token.none:
@@ -890,11 +936,11 @@ class Eval implements Runnable {
         break;
       case Token.opOr:
         bs = stack[--sp];
-        stack[sp-1].or(bs);
+        stack[sp - 1].or(bs);
         break;
       case Token.opAnd:
         bs = stack[--sp];
-        stack[sp-1].and(bs);
+        stack[sp - 1].and(bs);
         break;
       case Token.opNot:
         bs = stack[sp - 1];
@@ -906,13 +952,13 @@ class Eval implements Runnable {
         withinInstruction(instruction, bs, stack[sp - 1]);
         break;
       case Token.substructure:
-        stack[sp++] = getSubstructureSet((String)instruction.value);
+        stack[sp++] = getSubstructureSet((String) instruction.value);
         break;
       case Token.selected:
         stack[sp++] = copyBitSet(viewer.getSelectionSet());
         break;
       case Token.visible:
-        if(! refreshed)
+        if (!refreshed)
           viewer.setModelVisibility();
         refreshed = true;
         stack[sp++] = copyBitSet(viewer.getVisibleSet());
@@ -924,7 +970,7 @@ class Eval implements Runnable {
         stack[sp++] = getHydrogenSet();
         break;
       case Token.spec_name_pattern:
-        stack[sp++] = getSpecName((String)instruction.value);
+        stack[sp++] = getSpecName((String) instruction.value);
         break;
       case Token.spec_resid:
         stack[sp++] = getSpecResid(instruction.intValue);
@@ -934,20 +980,20 @@ class Eval implements Runnable {
         break;
       case Token.spec_seqcode_range:
         int seqcodeA = instruction.intValue;
-        int seqcodeB = ((Integer)instruction.value).intValue();
+        int seqcodeB = ((Integer) instruction.value).intValue();
         stack[sp++] = getSpecSeqcodeRange(seqcodeA, seqcodeB);
         break;
       case Token.spec_chain:
-        stack[sp++] = getSpecChain((char)instruction.intValue);
+        stack[sp++] = getSpecChain((char) instruction.intValue);
         break;
       case Token.spec_atom:
-        stack[sp++] = getSpecAtom((String)instruction.value);
+        stack[sp++] = getSpecAtom((String) instruction.value);
         break;
       case Token.spec_alternate:
-        stack[sp++] = getSpecAlternate((String)instruction.value);
+        stack[sp++] = getSpecAlternate((String) instruction.value);
         break;
       case Token.spec_model:
-        stack[sp++] = getSpecModel((String)instruction.value);
+        stack[sp++] = getSpecModel((String) instruction.value);
         break;
       case Token.protein:
         stack[sp++] = getProteinSet();
@@ -974,7 +1020,7 @@ class Eval implements Runnable {
       case Token.identifier:
       case Token.sidechain:
       case Token.surface:
-        stack[sp++] = lookupIdentifierValue((String)instruction.value);
+        stack[sp++] = lookupIdentifierValue((String) instruction.value);
         break;
       case Token.opLT:
       case Token.opLE:
@@ -996,11 +1042,13 @@ class Eval implements Runnable {
 
   BitSet lookupIdentifierValue(String identifier) throws ScriptException {
     // identifiers must be handled as a hack
-    // the expression 'select c1a' might be [c]1:a or might be a 'define c1a ...'
+    // the expression 'select c1a' might be [c]1:a or might be a 'define c1a
+    // ...'
     BitSet bsDefinedSet = lookupValue(identifier, false);
     if (bsDefinedSet != null)
-      return copyBitSet(bsDefinedSet); // identifier had been previously defined
-    //    System.out.println("undefined & trying specname with:" + identifier);
+      return copyBitSet(bsDefinedSet); // identifier had been previously
+                                        // defined
+    // System.out.println("undefined & trying specname with:" + identifier);
     // determine number of leading alpha characters
     int alphaLen = 0;
     int len = identifier.length();
@@ -1009,8 +1057,8 @@ class Eval implements Runnable {
     if (alphaLen > 3)
       undefinedVariable();
     String potentialGroupName = identifier.substring(0, alphaLen);
-    //    System.out.println("potentialGroupName=" + potentialGroupName);
-    //          undefinedVariable();
+    // System.out.println("potentialGroupName=" + potentialGroupName);
+    // undefinedVariable();
     BitSet bsName = lookupPotentialGroupName(potentialGroupName);
     if (bsName == null)
       undefinedVariable();
@@ -1036,10 +1084,10 @@ class Eval implements Runnable {
         evalError("invalid insertion code");
       insertionCode = identifier.charAt(seqcodeEnd++);
     }
-    //    System.out.println("sequence number=" + seqNumber +
-    //                       " insertionCode=" + insertionCode);
+    // System.out.println("sequence number=" + seqNumber +
+    // " insertionCode=" + insertionCode);
     int seqcode = Group.getSeqcode(seqNumber, insertionCode);
-    //    System.out.println("seqcode=" + seqcode);
+    // System.out.println("seqcode=" + seqcode);
     BitSet bsSequence = getSpecSeqcode(seqcode);
     BitSet bsNameSequence = bsName;
     bsNameSequence.and(bsSequence);
@@ -1051,7 +1099,7 @@ class Eval implements Runnable {
     char chainID = identifier.charAt(seqcodeEnd);
     if (++seqcodeEnd != len)
       undefinedVariable();
-    //    System.out.println("chainID=" + chainID);
+    // System.out.println("chainID=" + chainID);
     BitSet bsChain = getSpecChain(chainID);
     BitSet bsNameSequenceChain = bsNameSequence;
     bsNameSequenceChain.and(bsChain);
@@ -1060,9 +1108,9 @@ class Eval implements Runnable {
 
   BitSet lookupPotentialGroupName(String potentialGroupName) {
     BitSet bsResult = null;
-    //    System.out.println("lookupPotentialGroupName:" + potentialGroupName);
+    // System.out.println("lookupPotentialGroupName:" + potentialGroupName);
     Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (atom.isGroup3(potentialGroupName)) {
         if (bsResult == null)
@@ -1074,7 +1122,7 @@ class Eval implements Runnable {
   }
 
   void notSet(BitSet bs) {
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       if (bs.get(i))
         bs.clear(i);
       else
@@ -1085,7 +1133,7 @@ class Eval implements Runnable {
   BitSet getHeteroSet() {
     Frame frame = viewer.getFrame();
     BitSet bsHetero = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).isHetero())
         bsHetero.set(i);
     return bsHetero;
@@ -1096,7 +1144,7 @@ class Eval implements Runnable {
       viewer.scriptStatus("getHydrogenSet()");
     Frame frame = viewer.getFrame();
     BitSet bsHydrogen = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (atom.getElementNumber() == 1)
         bsHydrogen.set(i);
@@ -1107,7 +1155,7 @@ class Eval implements Runnable {
   BitSet getProteinSet() {
     Frame frame = viewer.getFrame();
     BitSet bsProtein = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).isProtein())
         bsProtein.set(i);
     return bsProtein;
@@ -1116,7 +1164,7 @@ class Eval implements Runnable {
   BitSet getNucleicSet() {
     Frame frame = viewer.getFrame();
     BitSet bsNucleic = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).isNucleic())
         bsNucleic.set(i);
     return bsNucleic;
@@ -1125,7 +1173,7 @@ class Eval implements Runnable {
   BitSet getDnaSet() {
     Frame frame = viewer.getFrame();
     BitSet bsDna = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).isDna())
         bsDna.set(i);
     return bsDna;
@@ -1134,7 +1182,7 @@ class Eval implements Runnable {
   BitSet getRnaSet() {
     Frame frame = viewer.getFrame();
     BitSet bsRna = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).isRna())
         bsRna.set(i);
     return bsRna;
@@ -1143,7 +1191,7 @@ class Eval implements Runnable {
   BitSet getPurineSet() {
     Frame frame = viewer.getFrame();
     BitSet bsPurine = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).isPurine())
         bsPurine.set(i);
     return bsPurine;
@@ -1152,30 +1200,25 @@ class Eval implements Runnable {
   BitSet getPyrimidineSet() {
     Frame frame = viewer.getFrame();
     BitSet bsPyrimidine = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).isPyrimidine())
         bsPyrimidine.set(i);
     return bsPyrimidine;
   }
 
   /*
-  BitSet getResidueSet(String strResidue) {
-    Frame frame = viewer.getFrame();
-    BitSet bsResidue = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom != null && pdbatom.isResidue(strResidue))
-        bsResidue.set(i);
-    }
-    return bsResidue;
-  }
-  */
+   * BitSet getResidueSet(String strResidue) { Frame frame = viewer.getFrame();
+   * BitSet bsResidue = new BitSet(); for (int i = viewer.getAtomCount(); --i >=
+   * 0; ) { PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom(); if (pdbatom !=
+   * null && pdbatom.isResidue(strResidue)) bsResidue.set(i); } return
+   * bsResidue; }
+   */
 
   BitSet getSpecName(String resNameSpec) {
     BitSet bsRes = new BitSet();
-    //    System.out.println("getSpecName:" + resNameSpec);
+    // System.out.println("getSpecName:" + resNameSpec);
     Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (atom.isGroup3Match(resNameSpec))
         bsRes.set(i);
@@ -1186,7 +1229,7 @@ class Eval implements Runnable {
   BitSet getSpecResid(int resid) {
     BitSet bsRes = new BitSet();
     Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (atom.getGroupID() == resid)
         bsRes.set(i);
@@ -1197,7 +1240,7 @@ class Eval implements Runnable {
   BitSet getSpecSeqcode(int seqcode) {
     Frame frame = viewer.getFrame();
     BitSet bsResno = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (seqcode == atom.getSeqcode())
         bsResno.set(i);
@@ -1214,13 +1257,13 @@ class Eval implements Runnable {
 
   BitSet getSpecChain(char chain) {
     boolean caseSensitive = viewer.getChainCaseSensitive();
-    if (! caseSensitive)
+    if (!caseSensitive)
       chain = Character.toUpperCase(chain);
     Frame frame = viewer.getFrame();
     BitSet bsChain = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       char ch = frame.getAtomAt(i).getChainID();
-      if (! caseSensitive)
+      if (!caseSensitive)
         ch = Character.toUpperCase(ch);
       if (chain == ch)
         bsChain.set(i);
@@ -1231,7 +1274,7 @@ class Eval implements Runnable {
   BitSet getSpecAtom(String atomSpec) {
     Frame frame = viewer.getFrame();
     BitSet bsAtom = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (atom.isAtomNameMatch(atomSpec))
         bsAtom.set(i);
@@ -1242,8 +1285,8 @@ class Eval implements Runnable {
   BitSet getResidueWildcard(String strWildcard) {
     Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
-    //    System.out.println("getResidueWildcard:" + strWildcard);
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    // System.out.println("getResidueWildcard:" + strWildcard);
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (atom.isGroup3Match(strWildcard))
         bsResidue.set(i);
@@ -1257,10 +1300,10 @@ class Eval implements Runnable {
     Object value = variables.get(variable);
     if (value != null) {
       if (value instanceof Token[]) {
-        value = expression((Token[])value, 2);
+        value = expression((Token[]) value, 2);
         variables.put(variable, value);
       }
-      return (BitSet)value;
+      return (BitSet) value;
     }
     if (plurals)
       return null;
@@ -1270,24 +1313,24 @@ class Eval implements Runnable {
     if (variable.charAt(len - 1) != 's')
       return null;
     if (variable.endsWith("ies"))
-      variable = variable.substring(0, len-3) + 'y';
+      variable = variable.substring(0, len - 3) + 'y';
     else
-      variable = variable.substring(0, len-1);
+      variable = variable.substring(0, len - 1);
     return lookupValue(variable, true);
   }
 
   void selectModelIndexAtoms(int modelIndex, BitSet bsResult) {
     Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0; )
+    for (int i = viewer.getAtomCount(); --i >= 0;)
       if (frame.getAtomAt(i).getModelIndex() == modelIndex)
         bsResult.set(i);
   }
 
   BitSet getSpecAlternate(String alternateSpec) {
-    //System.out.println("getSpecAlternate(" + alternateSpec + ")");
+    // System.out.println("getSpecAlternate(" + alternateSpec + ")");
     Frame frame = viewer.getFrame();
     BitSet bs = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       if (atom.isAlternateLocationMatch(alternateSpec))
         bs.set(i);
@@ -1301,18 +1344,18 @@ class Eval implements Runnable {
       modelNumber = Integer.parseInt(modelTag);
     } catch (NumberFormatException nfe) {
     }
-    
+
     BitSet bsModel = new BitSet(viewer.getAtomCount());
     selectModelIndexAtoms(viewer.getModelNumberIndex(modelNumber), bsModel);
     return bsModel;
   }
 
   void comparatorInstruction(Token instruction, BitSet bs)
-    throws ScriptException {
+      throws ScriptException {
     int comparator = instruction.tok;
     int property = instruction.intValue;
     float propertyValue = 0; // just for temperature
-    int comparisonValue = ((Integer)instruction.value).intValue();
+    int comparisonValue = ((Integer) instruction.value).intValue();
     int numberOfAtoms = viewer.getAtomCount();
     Frame frame = viewer.getFrame();
     for (int i = 0; i < numberOfAtoms; ++i) {
@@ -1394,16 +1437,15 @@ class Eval implements Runnable {
     }
   }
 
-
   void withinInstruction(Token instruction, BitSet bs, BitSet bsResult)
-    throws ScriptException {
+      throws ScriptException {
     Object withinSpec = instruction.value;
     if (withinSpec instanceof Float) {
-      withinDistance(((Float)withinSpec).floatValue(), bs, bsResult);
+      withinDistance(((Float) withinSpec).floatValue(), bs, bsResult);
       return;
     }
     if (withinSpec instanceof String) {
-      String withinStr = (String)withinSpec;
+      String withinStr = (String) withinSpec;
       if (withinStr.equals("group")) {
         withinGroup(bs, bsResult);
         return;
@@ -1422,23 +1464,23 @@ class Eval implements Runnable {
 
   void withinDistance(float distance, BitSet bs, BitSet bsResult) {
     Frame frame = viewer.getFrame();
-    for (int i = frame.getAtomCount(); --i >= 0; ) {
+    for (int i = frame.getAtomCount(); --i >= 0;) {
       if (bs.get(i)) {
         Atom atom = frame.getAtomAt(i);
-        AtomIterator iterWithin =
-          frame.getWithinAnyModelIterator(atom, distance);
+        AtomIterator iterWithin = frame.getWithinAnyModelIterator(atom,
+            distance);
         while (iterWithin.hasNext())
           bsResult.set(iterWithin.next().getAtomIndex());
       }
     }
   }
-  
+
   void withinGroup(BitSet bs, BitSet bsResult) {
-    //    System.out.println("withinGroup");
+    // System.out.println("withinGroup");
     Frame frame = viewer.getFrame();
     Group groupLast = null;
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      if (! bs.get(i))
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
+      if (!bs.get(i))
         continue;
       Atom atom = frame.getAtomAt(i);
       Group group = atom.getGroup();
@@ -1452,8 +1494,8 @@ class Eval implements Runnable {
   void withinChain(BitSet bs, BitSet bsResult) {
     Frame frame = viewer.getFrame();
     Chain chainLast = null;
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      if (! bs.get(i))
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
+      if (!bs.get(i))
         continue;
       Atom atom = frame.getAtomAt(i);
       Chain chain = atom.getChain();
@@ -1467,7 +1509,7 @@ class Eval implements Runnable {
   void withinModel(BitSet bs, BitSet bsResult) {
     Frame frame = viewer.getFrame();
     int modelIndexLast = -1;
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
       if (bs.get(i)) {
         int modelIndex = frame.getAtomAt(i).getModelIndex();
         if (modelIndex != modelIndexLast) {
@@ -1492,7 +1534,6 @@ class Eval implements Runnable {
     return atom.getProteinStructureType();
   }
 
-
   // note that text color names are mapped to color argb values at compile time
   Color getColorParam(int itoken) throws ScriptException {
     if (itoken >= statementLength)
@@ -1516,30 +1557,28 @@ class Eval implements Runnable {
     if (statementLength < 2 || statementLength > 3)
       badArgumentCount();
     int tok = statement[1].tok;
-    if (tok == Token.colorRGB) 
+    if (tok == Token.colorRGB)
       viewer.setColorBackground(getColorParam(1));
     else
-      viewer.setShapeProperty(getShapeType(tok),
-                              "bgcolor", getColorOrNoneParam(2));
+      viewer.setShapeProperty(getShapeType(tok), "bgcolor",
+          getColorOrNoneParam(2));
   }
 
   // mth - 2003 01
   // the doc for RasMol says that they use the center of gravity
   // this is currently only using the geometric center
   // but someplace in the rasmol doc it makes reference to the geometric
-  // center as the default for rotations. who knows. 
+  // center as the default for rotations. who knows.
   void center() throws ScriptException {
-    viewer.setCenterBitSet(statementLength == 1
-                           ? null
-                           : expression(statement, 1));
+    viewer.setCenterBitSet(statementLength == 1 ? null : expression(statement,
+        1));
   }
 
   void color() throws ScriptException {
     if (statementLength > 5 || statementLength < 2)
       badArgumentCount();
     int tok = statement[1].tok;
-    outer:
-    switch (tok) {
+    outer: switch (tok) {
     case Token.colorRGB:
     case Token.none:
     case Token.cpk:
@@ -1564,42 +1603,40 @@ class Eval implements Runnable {
       break;
     case Token.identifier:
     case Token.hydrogen:
-      String str = (String)statement[1].value;
+      String str = (String) statement[1].value;
       Color color = getColorOrNoneParam(2);
       if (str.equalsIgnoreCase("dotsConvex")) {
-        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex",
-                                color);
+        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex", color);
         return;
       }
       if (str.equalsIgnoreCase("dotsConcave")) {
-        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave",
-                                color);
+        viewer
+            .setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave", color);
         return;
       }
       if (str.equalsIgnoreCase("dotsSaddle")) {
-        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle",
-                                color);
+        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle", color);
         return;
       }
       if (str.equalsIgnoreCase("selectionHalo")) {
         viewer.setColorSelection(color);
         return;
       }
-      for (int i = JmolConstants.elementNames.length; --i >= 0; ) {
+      for (int i = JmolConstants.elementNames.length; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.elementNames[i])) {
           viewer.setElementColor(i, getColorParam(2));
           return;
         }
       }
-      for (int i = JmolConstants.alternateElementNames.length; --i >= 0; ) {
+      for (int i = JmolConstants.alternateElementNames.length; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.alternateElementNames[i])) {
           viewer.setElementColor(JmolConstants.alternateElementNumbers[i],
-                                 getColorParam(2));
+              getColorParam(2));
           return;
         }
       }
       invalidArgument();
-      
+
     default:
       if (tok == Token.bond) // special hack for bond/bonds confusion
         tok = Token.bonds;
@@ -1626,7 +1663,7 @@ class Eval implements Runnable {
       tok = statement[itoken].tok;
     }
     if (tok == Token.translucent || tok == Token.opaque) {
-      translucentOrOpaque = (String)(statement[itoken].value);
+      translucentOrOpaque = (String) (statement[itoken].value);
       ++itoken;
     }
     if (itoken < statementLength) {
@@ -1668,13 +1705,14 @@ class Eval implements Runnable {
   }
 
   Hashtable variables = new Hashtable();
+
   void define() throws ScriptException {
-    String variable = (String)statement[1].value;
+    String variable = (String) statement[1].value;
     variables.put(variable, (expression(statement, 2)));
   }
 
   void predefine(Token[] statement) {
-    String variable = (String)statement[1].value;
+    String variable = (String) statement[1].value;
     variables.put(variable, statement);
   }
 
@@ -1683,14 +1721,14 @@ class Eval implements Runnable {
   void echo() {
     String text = "";
     if (statementLength == 2 && statement[1].tok == Token.string)
-      text = (String)statement[1].value;
+      text = (String) statement[1].value;
     if (echoShapeActive)
       viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "echo", text);
     viewer.scriptEcho(text);
   }
 
   void label() {
-    String strLabel = (String)statement[1].value;
+    String strLabel = (String) statement[1].value;
     if (strLabel.equalsIgnoreCase("on")) {
       strLabel = viewer.getStandardLabelFormat();
     } else if (strLabel.equalsIgnoreCase("off"))
@@ -1700,7 +1738,7 @@ class Eval implements Runnable {
   }
 
   void hover() {
-    String strLabel = (String)statement[1].value;
+    String strLabel = (String) statement[1].value;
     if (strLabel.equalsIgnoreCase("on"))
       strLabel = "%U";
     else if (strLabel.equalsIgnoreCase("off"))
@@ -1717,32 +1755,31 @@ class Eval implements Runnable {
       ++i;
     if (statement[i].tok != Token.string)
       filenameExpected();
-    //long timeBegin = System.currentTimeMillis();
+    // long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
-      filename = (String)statement[i].value;
+      filename = (String) statement[i].value;
       viewer.openFile(filename);
     } else {
-      String modelName = (String)statement[i].value;
+      String modelName = (String) statement[i].value;
       i++;
       String[] filenames = new String[statementLength - i];
       while (i < statementLength) {
-        filenames[filenames.length - statementLength + i] = (String)statement[i].value;
+        filenames[filenames.length - statementLength + i] = (String) statement[i].value;
         i++;
       }
       viewer.openFiles(modelName, filenames);
     }
     String errMsg = viewer.getOpenFileError();
-    //int millis = (int)(System.currentTimeMillis() - timeBegin);
-    //    System.out.println("!!!!!!!!! took " + millis + " ms");
+    // int millis = (int)(System.currentTimeMillis() - timeBegin);
+    // System.out.println("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null)
       evalError(errMsg);
     if (logMessages)
       viewer.scriptStatus("Successfully loaded:" + filename);
     String script = viewer.getModelSetProperty("jmolscript");
     if (script != null)
-      runScript(script);  
+      runScript(script);
   }
-
 
   void monitor() throws ScriptException {
     int[] monitorArgs = new int[5];
@@ -1769,10 +1806,10 @@ class Eval implements Runnable {
     rangeMinMax[1] = -1.0F;
     boolean isAll = false;
     Vector monitorExpressions = new Vector();
-    
-    BitSet bs= new BitSet();
-    
-    //int numAtoms = viewer.getAtomCount();
+
+    BitSet bs = new BitSet();
+
+    // int numAtoms = viewer.getAtomCount();
     for (int i = 0; i < argCount; ++i) {
       Token token = statement[i + 1];
       //System.out.println(i+" "+token.toString());
@@ -1784,7 +1821,7 @@ class Eval implements Runnable {
       case Token.decimal:
         isAll = true;
         ptFloat = (ptFloat + 1) % 2;
-        rangeMinMax[ptFloat] = ((Float)token.value).floatValue();
+        rangeMinMax[ptFloat] = ((Float) token.value).floatValue();
         break;
       case Token.integer:
         atomNumber = token.intValue;
@@ -1793,31 +1830,29 @@ class Eval implements Runnable {
         rangeMinMax[ptFloat] = atomNumber;
         break;
       case Token.expressionBegin:
-        //in principle, this could be an atom set, in which case we would
-        //be calculating a centroid. UNHEARD-OF-COOL!
         bs = expression(statement, i + 1);
         atomIndex = firstAtomOf(bs);
-        //System.out.println("expressionBegin "+atomIndex);
+        // System.out.println("expressionBegin "+atomIndex);
         i = endOfExpression - 1;
         break;
       default:
         integerExpected();
       }
-      //System.out.println("eval monitor"+isAll + " " +atomIndex + " " + bs);
-      if (atomIndex == -1 && ! isAll)
+      // System.out.println("eval monitor"+isAll + " " +atomIndex + " " + bs);
+      if (atomIndex == -1 && !isAll)
         badAtomNumber();
       if (monitorArgs[0] == 4)
         badArgumentCount();
-      //System.out.println("monitor() adding " + atomIndex);
+      // System.out.println("monitor() adding " + atomIndex);
       if (isAll) {
         if (atomIndex >= 0)
           monitorExpressions.add(bs);
-      }else {
+      } else {
         monitorArgs[++monitorArgs[0]] = atomIndex;
       }
     }
     if (isAll) {
-      if (rangeMinMax[1] < rangeMinMax[0]){
+      if (rangeMinMax[1] < rangeMinMax[0]) {
         rangeMinMax[1] = rangeMinMax[0];
         rangeMinMax[0] = (rangeMinMax[1] < 0.0F ? -1.0F : 0.0F);
       }
@@ -1827,7 +1862,7 @@ class Eval implements Runnable {
     }
   }
 
-  void refresh() { 
+  void refresh() {
     viewer.requestRepaintAndWait();
   }
 
@@ -1843,8 +1878,7 @@ class Eval implements Runnable {
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0);
 
     // also need to turn off backbones, ribbons, strands, cartoons
-    for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT;
-         --shapeType >= 0; )
+    for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT; --shapeType >= 0;)
       viewer.setShapeSize(shapeType, 0);
 
     viewer.setLabel(null);
@@ -1854,13 +1888,10 @@ class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
-    if (statement.length > 3 &&
-        statement[1].tok == Token.axisangle) {
+    if (statement.length > 3 && statement[1].tok == Token.axisangle) {
       checkStatementLength(6);
-      viewer.rotateAxisAngle(floatParameter(2),
-                             floatParameter(3),
-                             floatParameter(4),
-                             floatParameter(5));
+      viewer.rotateAxisAngle(floatParameter(2), floatParameter(3),
+          floatParameter(4), floatParameter(5));
       return;
     }
     checkLength3();
@@ -1905,12 +1936,13 @@ class Eval implements Runnable {
     aatoken = context.aatoken;
     pc = context.pc;
   }
+
   void script() throws ScriptException {
     if (statement[1].tok != Token.string)
       filenameExpected();
     pushContext();
-    String filename = (String)statement[1].value;
-    if (! loadScriptFileInternal(filename))
+    String filename = (String) statement[1].value;
+    if (!loadScriptFileInternal(filename))
       errorLoadingScript(errorMessage);
     instructionDispatchLoop();
     popContext();
@@ -1985,10 +2017,10 @@ class Eval implements Runnable {
       millis = token.intValue * 1000;
       break;
     case Token.decimal:
-      millis = (long)(((Float)token.value).floatValue() * 1000);
+      millis = (long) (((Float) token.value).floatValue() * 1000);
       break;
     default:
-      numberExpected(); 
+      numberExpected();
     }
     viewer.requestRepaintAndWait();
     millis -= System.currentTimeMillis() - timeBegin;
@@ -2014,11 +2046,11 @@ class Eval implements Runnable {
     int dTransZ = intParameter(7);
     int dSlab = intParameter(8);
     float floatSecondsTotal = floatParameter(9);
-    int fps = 30/*, maxAccel = 5*/;
+    int fps = 30/* , maxAccel = 5 */;
     if (statementLength > 10) {
       fps = statement[10].intValue;
       if (statementLength > 11) {
-        //maxAccel = statement[11].intValue;
+        // maxAccel = statement[11].intValue;
       }
     }
 
@@ -2030,8 +2062,8 @@ class Eval implements Runnable {
 
     long timeBegin = System.currentTimeMillis();
     int timePerStep = 1000 / fps;
-    int totalSteps = (int)(fps * floatSecondsTotal);
-    float radiansPerDegreePerStep = (float)Math.PI / 180 / totalSteps;
+    int totalSteps = (int) (fps * floatSecondsTotal);
+    float radiansPerDegreePerStep = (float) Math.PI / 180 / totalSteps;
     float radiansXStep = radiansPerDegreePerStep * dRotX;
     float radiansYStep = radiansPerDegreePerStep * dRotY;
     float radiansZStep = radiansPerDegreePerStep * dRotZ;
@@ -2055,11 +2087,11 @@ class Eval implements Runnable {
         viewer.translateToZPercent(transZ + dTransZ * i / totalSteps);
       if (dSlab != 0)
         viewer.slabToPercent(slab + dSlab * i / totalSteps);
-      int timeSpent = (int)(System.currentTimeMillis() - timeBegin);
+      int timeSpent = (int) (System.currentTimeMillis() - timeBegin);
       int timeAllowed = i * timePerStep;
       if (timeSpent < timeAllowed) {
         viewer.requestRepaintAndWait();
-        timeSpent = (int)(System.currentTimeMillis() - timeBegin);
+        timeSpent = (int) (System.currentTimeMillis() - timeBegin);
         int timeToSleep = timeAllowed - timeSpent;
         if (timeToSleep > 0) {
           try {
@@ -2101,10 +2133,8 @@ class Eval implements Runnable {
     int tok = Token.on;
     if (statementLength > 1) {
       tok = statement[1].tok;
-      if (! ((statementLength == 2) ||
-             (statementLength == 3 &&
-              tok == Token.integer &&
-              statement[2].tok == Token.percent))) {
+      if (!((statementLength == 2) || (statementLength == 3
+          && tok == Token.integer && statement[2].tok == Token.percent))) {
         badArgumentCount();
       }
     }
@@ -2120,20 +2150,20 @@ class Eval implements Runnable {
       if (statementLength == 2) {
         if (radiusRasMol >= 750 || radiusRasMol < -100)
           numberOutOfRange();
-        mad = (short)radiusRasMol;
+        mad = (short) radiusRasMol;
         if (radiusRasMol > 0)
           mad *= 4 * 2;
       } else {
         if (radiusRasMol < 0 || radiusRasMol > 100)
           numberOutOfRange();
-        mad = (short)-radiusRasMol; // use a negative number to specify %vdw
+        mad = (short) -radiusRasMol; // use a negative number to specify %vdw
       }
       break;
     case Token.decimal:
       float angstroms = floatParameter(1);
       if (angstroms > 3)
         numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
+      mad = (short) (angstroms * 1000 * 2);
       break;
     case Token.temperature:
       mad = -1000;
@@ -2152,10 +2182,8 @@ class Eval implements Runnable {
     int tok = Token.on;
     if (statementLength > 1) {
       tok = statement[1].tok;
-      if (! ((statementLength == 2) ||
-             (statementLength == 3 &&
-              tok == Token.integer &&
-              statement[2].tok == Token.percent))) {
+      if (!((statementLength == 2) || (statementLength == 3
+          && tok == Token.integer && statement[2].tok == Token.percent))) {
         badArgumentCount();
       }
     }
@@ -2171,20 +2199,20 @@ class Eval implements Runnable {
       if (statementLength == 2) {
         if (radiusRasMol >= 750 || radiusRasMol < -200)
           numberOutOfRange();
-        mad = (short)radiusRasMol;
+        mad = (short) radiusRasMol;
         if (radiusRasMol > 0)
           mad *= 4 * 2;
       } else {
         if (radiusRasMol < 0 || radiusRasMol > 200)
           numberOutOfRange();
-        mad = (short)-radiusRasMol; // use a negative number to specify %vdw
+        mad = (short) -radiusRasMol; // use a negative number to specify %vdw
       }
       break;
     case Token.decimal:
       float angstroms = floatParameter(1);
       if (angstroms > 3)
         numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
+      mad = (short) (angstroms * 1000 * 2);
       break;
     case Token.temperature:
       mad = -1000;
@@ -2219,18 +2247,18 @@ class Eval implements Runnable {
     return mad;
   }
 
-  short getMadInteger(int radiusRasMol) throws ScriptException {    
+  short getMadInteger(int radiusRasMol) throws ScriptException {
     if (radiusRasMol > 750)
       numberOutOfRange();
-    return (short)(radiusRasMol * 4 * 2);
+    return (short) (radiusRasMol * 4 * 2);
   }
 
   short getMadFloat(float angstroms) throws ScriptException {
     if (angstroms > 3)
       numberOutOfRange();
-    return (short)(angstroms * 1000 * 2);
+    return (short) (angstroms * 1000 * 2);
   }
-  
+
   void wireframe() throws ScriptException {
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
   }
@@ -2243,12 +2271,11 @@ class Eval implements Runnable {
   void hbond() throws ScriptException {
     setHbonds(getMadParameter());
   }
-  
-  void setHbonds(short mad){
+
+  void setHbonds(short mad) {
     viewer.loadShape(JmolConstants.SHAPE_HSTICKS);
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, mad);
   }
-
 
   void vector() throws ScriptException {
     short mad = 1;
@@ -2263,17 +2290,17 @@ class Eval implements Runnable {
         int diameterPixels = statement[1].intValue;
         if (diameterPixels >= 20)
           numberOutOfRange();
-        mad = (short)diameterPixels;
+        mad = (short) diameterPixels;
         break;
       case Token.decimal:
         float angstroms = floatParameter(1);
         if (angstroms > 3)
           numberOutOfRange();
-        mad = (short)(angstroms * 1000 * 2);
+        mad = (short) (angstroms * 1000 * 2);
         break;
       case Token.identifier:
-        String cmd = (String)statement[1].value;
-        if (! cmd.equalsIgnoreCase("scale"))
+        String cmd = (String) statement[1].value;
+        if (!cmd.equalsIgnoreCase("scale"))
           unrecognizedSubcommand();
         vectorScale();
         return;
@@ -2303,7 +2330,7 @@ class Eval implements Runnable {
       ++animationMode;
       break;
     case Token.identifier:
-      String cmd = (String)statement[2].value;
+      String cmd = (String) statement[2].value;
       if (cmd.equalsIgnoreCase("once")) {
         startDelay = endDelay = 0;
         break;
@@ -2327,7 +2354,7 @@ class Eval implements Runnable {
       subcommandExpected();
     Token token = statement[1];
     float period = 0;
-    switch(token.tok) {
+    switch (token.tok) {
     case Token.off:
     case Token.on:
     case Token.integer:
@@ -2337,7 +2364,7 @@ class Eval implements Runnable {
       period = floatParameter(1);
       break;
     case Token.identifier:
-      String cmd = (String)statement[1].value;
+      String cmd = (String) statement[1].value;
       if (cmd.equalsIgnoreCase("scale")) {
         vibrationScale();
         return;
@@ -2391,7 +2418,7 @@ class Eval implements Runnable {
       if (dotsParam < 0 || dotsParam > 1000)
         numberOutOfRange();
       // I don't know what to do with this thing yet
-      mad = (short)dotsParam;
+      mad = (short) dotsParam;
       break;
     default:
       booleanOrNumberExpected();
@@ -2412,11 +2439,11 @@ class Eval implements Runnable {
       mad = -2;
       break;
     case Token.temperature:
-      // MTH 2004 03 15
-      // Let temperature return the mean positional displacement
-      // see what people think
-      //      mad = -3;
-      //      break;
+    // MTH 2004 03 15
+    // Let temperature return the mean positional displacement
+    // see what people think
+    // mad = -3;
+    // break;
     case Token.displacement:
       mad = -4;
       break;
@@ -2424,13 +2451,13 @@ class Eval implements Runnable {
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * 2);
+      mad = (short) (radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
+      float angstroms = ((Float) statement[1].value).floatValue();
       if (angstroms > 4)
         numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
+      mad = (short) (angstroms * 1000 * 2);
       break;
     default:
       booleanOrNumberExpected();
@@ -2450,13 +2477,13 @@ class Eval implements Runnable {
     }
     viewer.setSpinOn(spinOn);
   }
-      
+
   void animation() throws ScriptException {
     if (statementLength < 2)
       subcommandExpected();
     int tok = statement[1].tok;
     boolean animate = false;
-    switch(tok) {
+    switch (tok) {
     case Token.on:
       animate = true;
     case Token.off:
@@ -2478,19 +2505,20 @@ class Eval implements Runnable {
       viewer.setAnimationFps(getSetInteger());
       break;
     default:
-      frameControl(tok, true); 
+      frameControl(tok, true);
     }
   }
 
   void frame(int offset, boolean useModelNumber) throws ScriptException {
-    useModelNumber = true; //for now -- as before -- remove to implement frame/model difference 
+    useModelNumber = true; // for now -- as before -- remove to implement
+                            // frame/model difference
     if (statementLength <= offset)
       badArgumentCount();
     if (statement[offset].tok == Token.hyphen) {
       ++offset;
       checkStatementLength(offset + 1);
-      if (statement[offset].tok != Token.integer ||
-          statement[offset].intValue != 1)
+      if (statement[offset].tok != Token.integer
+          || statement[offset].intValue != 1)
         invalidArgument();
       viewer.setAnimationPrevious();
       return;
@@ -2501,17 +2529,17 @@ class Eval implements Runnable {
     boolean isRange = false;
     while (offset < statementLength) {
       int token = statement[offset].tok;
-      switch(token) {
+      switch (token) {
       case Token.all:
       case Token.asterisk:
         break;
       case Token.none:
         break;
       case Token.integer:
-        if(frameNumber == -1) {
+        if (frameNumber == -1) {
           frameNumber = statement[offset].intValue;
         } else {
-          frameNumber2 = statement[offset].intValue;        
+          frameNumber2 = statement[offset].intValue;
         }
         break;
       case Token.play:
@@ -2524,20 +2552,22 @@ class Eval implements Runnable {
         frameControl(token, false);
         return;
       }
-      
+
       if (offset == statementLength - 1) {
-        int modelIndex = (useModelNumber ? viewer.getModelNumberIndex(frameNumber) : frameNumber - 1);
-        if(! isPlay  && ! isRange || modelIndex >= 0) {
+        int modelIndex = (useModelNumber ? viewer
+            .getModelNumberIndex(frameNumber) : frameNumber - 1);
+        if (!isPlay && !isRange || modelIndex >= 0) {
           viewer.setDisplayModelIndex(modelIndex);
         }
-        if(isPlay || isRange) {
-          if (isRange || frameNumber2 >=0) {
-            int modelIndex2 = (useModelNumber ? viewer.getModelNumberIndex(frameNumber2) : frameNumber2 - 1);
-            //System.out.println("isPlay " + modelIndex +" "+ modelIndex2);
+        if (isPlay || isRange) {
+          if (isRange || frameNumber2 >= 0) {
+            int modelIndex2 = (useModelNumber ? viewer
+                .getModelNumberIndex(frameNumber2) : frameNumber2 - 1);
+            // System.out.println("isPlay " + modelIndex +" "+ modelIndex2);
 
             viewer.setAnimationDirection(1);
             viewer.setAnimationRange(modelIndex, modelIndex2);
-          } 
+          }
           if (isPlay)
             viewer.resumeAnimation();
         }
@@ -2545,11 +2575,11 @@ class Eval implements Runnable {
       offset++;
     }
   }
- 
-  void frameControl(int token, boolean isSubCmd) throws ScriptException  {
+
+  void frameControl(int token, boolean isSubCmd) throws ScriptException {
     switch (token) {
     case Token.playrev:
-      viewer.setAnimationDirection(-viewer.getAnimationDirection());      
+      viewer.setAnimationDirection(-viewer.getAnimationDirection());
     case Token.play:
     case Token.resume:
       viewer.resumeAnimation();
@@ -2574,22 +2604,17 @@ class Eval implements Runnable {
       }
     }
   }
-  
-  
+
   // note that this array *MUST* be in the same sequence as the
   // SHAPE_* constants in JmolConstants
-  
-  private final static int[] shapeToks =
-  {Token.atom, Token.bonds, Token.hbond, Token.ssbond,
-   Token.label, Token.vector,
-   Token.monitor, Token.dots, Token.backbone,
-   Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
-   Token.rocket, Token.star,
-   Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover, Token.pmesh, Token.polyhedra, Token.sasurface,
-   Token.isosurface,
-   Token.prueba,
-  };
+
+  private final static int[] shapeToks = { Token.atom, Token.bonds,
+      Token.hbond, Token.ssbond, Token.label, Token.vector, Token.monitor,
+      Token.dots, Token.backbone, Token.trace, Token.cartoon, Token.strands,
+      Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, Token.axes,
+      Token.boundbox, Token.unitcell, Token.frank, Token.echo, Token.hover,
+      Token.pmesh, Token.polyhedra, Token.sasurface, Token.isosurface,
+      Token.prueba, Token.draw};
 
   static {
     if (shapeToks.length != JmolConstants.SHAPE_MAX) {
@@ -2599,7 +2624,7 @@ class Eval implements Runnable {
   }
 
   int getShapeType(int tok) throws ScriptException {
-    for (int i = shapeToks.length; --i >= 0; )
+    for (int i = shapeToks.length; --i >= 0;)
       if (tok == shapeToks[i])
         return i;
     unrecognizedColorObject();
@@ -2615,11 +2640,11 @@ class Eval implements Runnable {
     case 5:
       if (statement[4].tok != Token.identifier)
         keywordExpected();
-      fontstyle = (String)statement[4].value;
+      fontstyle = (String) statement[4].value;
     case 4:
       if (statement[3].tok != Token.identifier)
         keywordExpected();
-      fontface = (String)statement[3].value;
+      fontface = (String) statement[3].value;
     case 3:
       if (statement[2].tok != Token.integer)
         integerExpected();
@@ -2630,20 +2655,22 @@ class Eval implements Runnable {
       badArgumentCount();
     }
     /*
-    System.out.println("font <obj> fontsize=" + fontsize);
-    System.out.println("fontface=" + fontface + " fontstyle=" + fontstyle);
-    */
+     * System.out.println("font <obj> fontsize=" + fontsize);
+     * System.out.println("fontface=" + fontface + " fontstyle=" + fontstyle);
+     */
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     viewer.setShapeProperty(shapeType, "font", font3d);
   }
 
-  /*==============================================================*
-   * SET implementations
-   *==============================================================*/
+  /*****************************************************************************
+   * ============================================================== SET
+   * implementations
+   * ==============================================================
+   */
 
   void set() throws ScriptException {
     System.out.println("setting:" + statement[1].value);
-    switch(statement[1].tok) {
+    switch (statement[1].tok) {
     case Token.axes:
       setAxes();
       break;
@@ -2658,7 +2685,7 @@ class Eval implements Runnable {
       break;
     case Token.color:
       System.out.println("WARNING! use 'set defaultColors' not 'set color'");
-      // fall into
+    // fall into
     case Token.defaultColors:
       setDefaultColors();
       break;
@@ -2731,7 +2758,7 @@ class Eval implements Runnable {
     case Token.picking:
       setPicking();
       break;
-      // not implemented
+    // not implemented
     case Token.backfade:
     case Token.cartoon:
     case Token.hourglass:
@@ -2747,7 +2774,7 @@ class Eval implements Runnable {
       notImplemented(1);
       break;
     case Token.identifier:
-      viewer.setBooleanProperty((String)statement[1].value, getSetBoolean());
+      viewer.setBooleanProperty((String) statement[1].value, getSetBoolean());
       break;
     case Token.background:
     case Token.stereo:
@@ -2758,31 +2785,27 @@ class Eval implements Runnable {
   }
 
   void setAxes() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_AXES,
-                        getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_AXES, getSetAxesTypeMad());
   }
 
   void setBoundbox() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_BBCAGE,
-                        getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_BBCAGE, getSetAxesTypeMad());
   }
 
   void setUnitcell() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE,
-                        getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE, getSetAxesTypeMad());
   }
 
   void setFrank() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_FRANK,
-                        getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_FRANK, getSetAxesTypeMad());
   }
 
   void setDefaultColors() throws ScriptException {
     checkLength3();
-    switch(statement[2].tok) {
+    switch (statement[2].tok) {
     case Token.rasmol:
     case Token.jmol:
-      viewer.setDefaultColors((String)statement[2].value);
+      viewer.setDefaultColors((String) statement[2].value);
       break;
     default:
       invalidArgument();
@@ -2792,7 +2815,7 @@ class Eval implements Runnable {
   void setBondmode() throws ScriptException {
     checkLength3();
     boolean bondmodeOr = false;
-    switch(statement[2].tok) {
+    switch (statement[2].tok) {
     case Token.opAnd:
       break;
     case Token.opOr:
@@ -2835,37 +2858,37 @@ class Eval implements Runnable {
     case Token.none:
       echoShapeActive = false;
     case Token.identifier:
-      propertyValue=(String)statement[2].value;
+      propertyValue = (String) statement[2].value;
       break;
     default:
       keywordExpected();
     }
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
-    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO,
-                            propertyName, propertyValue);
+    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName,
+        propertyValue);
     if (statementLength == 4) {
       int tok = statement[3].tok;
       if (tok != Token.identifier && tok != Token.center)
         keywordExpected();
-      viewer.setShapeProperty(JmolConstants.SHAPE_ECHO,
-                              "align", (String)statement[3].value);
+      viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "align",
+          (String) statement[3].value);
     }
   }
-  
+
   void setFontsize() throws ScriptException {
     int rasmolSize = 8;
     if (statementLength == 3) {
-      rasmolSize=getSetInteger();
+      rasmolSize = getSetInteger();
       // this is a kludge/hack to be somewhat compatible with RasMol
       rasmolSize += 5;
-      
-      if (rasmolSize < JmolConstants.LABEL_MINIMUM_FONTSIZE ||
-          rasmolSize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
+
+      if (rasmolSize < JmolConstants.LABEL_MINIMUM_FONTSIZE
+          || rasmolSize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
         numberOutOfRange();
     }
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "fontsize",
-                            new Integer(rasmolSize));
+        new Integer(rasmolSize));
   }
 
   void setLabelOffset() throws ScriptException {
@@ -2874,8 +2897,8 @@ class Eval implements Runnable {
     int yOffset = intParameter(3);
     int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset",
-                            new Integer(offset));
+    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset", new Integer(
+        offset));
   }
 
   void setHetero() throws ScriptException {
@@ -2894,13 +2917,11 @@ class Eval implements Runnable {
       showMeasurementNumbers = true;
     case Token.off:
       viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES,
-                              "showMeasurementNumbers",
-                              showMeasurementNumbers
-                              ? Boolean.TRUE
-                              : Boolean.FALSE);
+          "showMeasurementNumbers", showMeasurementNumbers ? Boolean.TRUE
+              : Boolean.FALSE);
       return;
     case Token.identifier:
-      if (! viewer.setMeasureDistanceUnits((String)statement[2].value))
+      if (!viewer.setMeasureDistanceUnits((String) statement[2].value))
         unrecognizedSetParameter();
       return;
     }
@@ -2915,7 +2936,7 @@ class Eval implements Runnable {
     checkLength4();
     if (statement[2].tok != Token.identifier)
       propertyNameExpected();
-    String propertyName = (String)statement[2].value;
+    String propertyName = (String) statement[2].value;
     switch (statement[3].tok) {
     case Token.on:
       viewer.setBooleanProperty(propertyName, true);
@@ -2997,7 +3018,7 @@ class Eval implements Runnable {
     checkLength3();
     boolean ssbondsBackbone = false;
     viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
-    switch(statement[2].tok) {
+    switch (statement[2].tok) {
     case Token.backbone:
       ssbondsBackbone = true;
       break;
@@ -3012,16 +3033,16 @@ class Eval implements Runnable {
   void setHbond() throws ScriptException {
     checkLength3();
     boolean bool = false;
-    switch(statement[2].tok) {
+    switch (statement[2].tok) {
     case Token.backbone:
       bool = true;
-      // fall into
+    // fall into
     case Token.sidechain:
       viewer.setHbondsBackbone(bool);
       break;
     case Token.solid:
       bool = true;
-      // falll into
+    // falll into
     case Token.dotted:
       viewer.setHbondsSolid(bool);
       break;
@@ -3035,7 +3056,7 @@ class Eval implements Runnable {
     float angstromsPerInch = 0;
     switch (statement[2].tok) {
     case Token.decimal:
-      angstromsPerInch = ((Float)statement[2].value).floatValue();
+      angstromsPerInch = ((Float) statement[2].value).floatValue();
       break;
     case Token.integer:
       angstromsPerInch = statement[2].intValue;
@@ -3053,7 +3074,7 @@ class Eval implements Runnable {
       case Token.none:
       case Token.off:
         pickingMode = JmolConstants.PICKING_OFF;
-        //fall into
+      // fall into
       case Token.on:
         break;
       case Token.ident:
@@ -3098,7 +3119,7 @@ class Eval implements Runnable {
           switch (statement[3].tok) {
           case Token.chain:
             pickingMode = JmolConstants.PICKING_SELECT_CHAIN;
-            // fall into
+          // fall into
           case Token.atom:
             break;
           case Token.group:
@@ -3116,12 +3137,14 @@ class Eval implements Runnable {
     viewer.setPickingMode(pickingMode);
   }
 
-  /*==============================================================*
-   * SHOW implementations
-   *==============================================================*/
+  /*****************************************************************************
+   * ============================================================== SHOW
+   * implementations
+   * ==============================================================
+   */
 
   void show() throws ScriptException {
-    switch(statement[1].tok) {
+    switch (statement[1].tok) {
     case Token.pdbheader:
       showPdbHeader();
       break;
@@ -3150,7 +3173,7 @@ class Eval implements Runnable {
       showZoom();
       break;
 
-      // not implemented
+    // not implemented
     case Token.spin:
     case Token.list:
     case Token.mlp:
@@ -3195,7 +3218,7 @@ class Eval implements Runnable {
       return;
     }
     if (statementLength == 3 && statement[2].tok == Token.string) {
-      String fileName = (String)statement[2].value;
+      String fileName = (String) statement[2].value;
       System.out.println("fileName=" + fileName);
       showString(viewer.getFileAsString(fileName));
       return;
@@ -3220,22 +3243,28 @@ class Eval implements Runnable {
   }
 
   void showZoom() {
-    showString("zoom " + (viewer.getZoomEnabled()
-                           ? ("" + viewer.getZoomPercentSetting())
-                           : "off"));
+    showString("zoom "
+        + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentSetting())
+            : "off"));
   }
 
   void showBoundbox() {
-    showString("boundbox: " + viewer.getBoundBoxCenter() +
-               " " + viewer.getBoundBoxCornerVector());
+    showString("boundbox: " + viewer.getBoundBoxCenter() + " "
+        + viewer.getBoundBoxCornerVector());
   }
 
   AxisAngle4f aaMoveTo;
+
   AxisAngle4f aaStep;
+
   AxisAngle4f aaTotal;
+
   Matrix3f matrixStart;
+
   Matrix3f matrixInverse;
+
   Matrix3f matrixStep;
+
   Matrix3f matrixEnd;
 
   void moveto() throws ScriptException {
@@ -3264,7 +3293,7 @@ class Eval implements Runnable {
     } else {
       if (axisX == 0 && axisY == 0 && axisZ == 0) {
         // invalid ... no rotation
-        int sleepTime = (int)(floatSecondsTotal * 1000) - 30;
+        int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
         if (sleepTime > 0) {
           try {
             Thread.sleep(sleepTime);
@@ -3273,7 +3302,7 @@ class Eval implements Runnable {
         }
         return;
       }
-      aaMoveTo.set(axisX, axisY, axisZ, degrees * (float)Math.PI / 180);
+      aaMoveTo.set(axisX, axisY, axisZ, degrees * (float) Math.PI / 180);
       matrixEnd.set(aaMoveTo);
     }
     viewer.getRotation(matrixStart);
@@ -3283,14 +3312,13 @@ class Eval implements Runnable {
     aaTotal.set(matrixStep);
 
     /*
-    System.out.println("\nmatrixStart=\n" + matrixStart +
-                       "\nmatrixInverse=\n" + matrixInverse +
-                       "\nmatrixStep=\n" + matrixStep +
-                       "\naaStep=\n" + aaStep);
-    */
+     * System.out.println("\nmatrixStart=\n" + matrixStart +
+     * "\nmatrixInverse=\n" + matrixInverse + "\nmatrixStep=\n" + matrixStep +
+     * "\naaStep=\n" + aaStep);
+     */
 
     int fps = 30;
-    int totalSteps = (int)(floatSecondsTotal * fps);
+    int totalSteps = (int) (floatSecondsTotal * fps);
     if (totalSteps > 1) {
       aaStep.angle /= totalSteps;
       int frameTimeMillis = 1000 / fps;
@@ -3316,13 +3344,15 @@ class Eval implements Runnable {
           matrixStep.set(aaStep);
         matrixStep.mul(matrixStart);
         viewer.zoomToPercent(zoomStart + (zoomDelta * i / totalSteps));
-        viewer.translateToXPercent(xTransStart + (xTransDelta*i/totalSteps));
-        viewer.translateToYPercent(yTransStart + (yTransDelta*i/totalSteps));
+        viewer
+            .translateToXPercent(xTransStart + (xTransDelta * i / totalSteps));
+        viewer
+            .translateToYPercent(yTransStart + (yTransDelta * i / totalSteps));
         viewer.setRotation(matrixStep);
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {
           viewer.requestRepaintAndWait();
-          int sleepTime = (int)(targetTime - System.currentTimeMillis());
+          int sleepTime = (int) (targetTime - System.currentTimeMillis());
           if (sleepTime > 0) {
             try {
               Thread.sleep(sleepTime);
@@ -3332,7 +3362,7 @@ class Eval implements Runnable {
         }
       }
     } else {
-      int sleepTime = (int)(floatSecondsTotal * 1000) - 30;
+      int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
       if (sleepTime > 0) {
         try {
           Thread.sleep(sleepTime);
@@ -3351,7 +3381,7 @@ class Eval implements Runnable {
     short order = 0;
     switch (tokenArg.tok) {
     case Token.integer:
-      order = (short)tokenArg.intValue;
+      order = (short) tokenArg.intValue;
       if (order < 0 || order > 3)
         invalidArgument();
       break;
@@ -3359,9 +3389,9 @@ class Eval implements Runnable {
       order = JmolConstants.BOND_H_REGULAR;
       break;
     case Token.decimal:
-      float f = ((Float)tokenArg.value).floatValue();
-      if (f == (short)f) {
-        order = (short)f;
+      float f = ((Float) tokenArg.value).floatValue();
+      if (f == (short) f) {
+        order = (short) f;
         if (order < 0 || order > 3)
           invalidArgument();
       } else if (f == 0.5f)
@@ -3372,17 +3402,16 @@ class Eval implements Runnable {
         invalidArgument();
       break;
     case Token.identifier:
-      if ("aromatic".equalsIgnoreCase((String)tokenArg.value)) {
+      if ("aromatic".equalsIgnoreCase((String) tokenArg.value)) {
         order = JmolConstants.BOND_AROMATIC;
         break;
       }
-      // fall into
+    // fall into
     default:
       invalidArgument();
     }
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-                            "bondOrder",
-                            new Short(order));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", new Short(
+        order));
   }
 
   void console() {
@@ -3402,20 +3431,20 @@ class Eval implements Runnable {
         propertyValue = statement[i].value;
         break;
       case Token.string:
-        String filename = (String)statement[i].value;
+        String filename = (String) statement[i].value;
         propertyName = "bufferedReader";
         if (filename.equalsIgnoreCase("inline")) {
           if (i + 1 < statementLength && statement[i].tok == Token.string) {
-            String data = (String)statement[++i].value;
-            if(data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
-              //space separates -- so set isOnePerLine
-              data = viewer.simpleReplace(data," ","\n");
+            String data = (String) statement[++i].value;
+            if (data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
+              // space separates -- so set isOnePerLine
+              data = viewer.simpleReplace(data, " ", "\n");
               propertyName = "bufferedReaderOnePerLine";
             }
-            data = viewer.simpleReplace(data,"|","\n");
-            data = viewer.simpleReplace(data,"\n\n","\n");
-            data = viewer.simpleReplace(data,"\n\n","\n");
-            data = viewer.simpleReplace(data,"\n\n","\n");
+            data = viewer.simpleReplace(data, "|", "\n");
+            data = viewer.simpleReplace(data, "\n\n", "\n");
+            data = viewer.simpleReplace(data, "\n\n", "\n");
+            data = viewer.simpleReplace(data, "\n\n", "\n");
             System.out.println("pmesh inline data:\n" + data);
             t = viewer.getBufferedReaderForString(data);
           } else {
@@ -3423,8 +3452,7 @@ class Eval implements Runnable {
             break;
           }
         } else {
-          t =
-            viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
+          t = viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
           if (t instanceof String)
             fileNotFoundException(filename + ":" + t);
         }
@@ -3460,13 +3488,95 @@ class Eval implements Runnable {
     }
   }
 
+  void draw() throws ScriptException {
+    viewer.loadShape(JmolConstants.SHAPE_DRAW);
+    viewer.setShapeProperty(JmolConstants.SHAPE_DRAW, "meshID", null);
+    int nCoord = 0;
+    boolean havePoints = false;
+    boolean isInitialized = false;
+    int intScale = 0;
+    BitSet bs = null;
+    for (int i = 1; i < statementLength; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      Token token = statement[i];
+      //System.out.println("draw: "+statement[i]);
+      switch (token.tok) {
+      case Token.integer:
+        intScale = token.intValue;
+        continue;
+      case Token.decimal:
+        propertyName = "coord";
+        propertyValue = token.value;
+        nCoord++;
+        havePoints = true;
+        break;
+      case Token.expressionBegin:
+        propertyName = "atomSet";
+        bs = expression(statement, i + 1);
+        i = endOfExpression;
+        havePoints = true;
+        propertyValue = new Point3f(viewer.getAtomSetCenter(bs));        
+        nCoord += 3;
+        break;
+      case Token.identifier:
+        propertyName = "meshID";
+        propertyValue = token.value;
+        break;
+      case Token.dots:
+        propertyValue = Boolean.TRUE;
+      case Token.nodots:
+        propertyName = "dots";
+        break;
+      case Token.mesh:
+        propertyValue = Boolean.TRUE;
+      case Token.nomesh:
+        propertyName = "mesh";
+        break;
+      case Token.fill:
+        propertyValue = Boolean.TRUE;
+      case Token.nofill:
+        propertyName = "fill";
+        break;
+      case Token.on:
+      case Token.off:
+        propertyName = (String)token.value;
+        break;
+      case Token.delete:
+        propertyName = "delete";
+        break;
+      default:
+        invalidArgument();
+      }
+      if (havePoints && ! isInitialized) {
+        viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
+            "init", null);
+        viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
+            "scale", new Integer(intScale));        
+        isInitialized = true;
+      }
+      viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
+                              propertyName, propertyValue);
+    }
+    if (nCoord % 3 != 0) {
+      expressionOrDecimalExpected();
+    }
+    if (nCoord > 0) {
+      viewer.setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
+    } else if (intScale != 0) {
+      viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
+          "scale", new Integer(intScale));
+    }
+  }
+
   void polyhedra() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     boolean radiusSeen = false, expressionSeen = false;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
-      switch (statement[i].tok) {
+      Token token = statement[i];
+      switch (token.tok) {
       case Token.bonds:
       case Token.on:
       case Token.off:
@@ -3474,13 +3584,13 @@ class Eval implements Runnable {
       case Token.edges:
       case Token.noedges:
       case Token.frontedges:
-        propertyName = (String)statement[i].value;
+        propertyName = (String)token.value;
         break;
       case Token.decimal:
 
         radiusSeen = true;
         propertyName = "radius";
-        propertyValue = statement[i].value;
+        propertyValue = token.value;
         break;
       case Token.expressionBegin:
         if (! radiusSeen)
@@ -3508,16 +3618,17 @@ class Eval implements Runnable {
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
-      switch (statement[i].tok) {
+      Token token = statement[i];
+      switch (token.tok) {
       case Token.identifier:
-        propertyValue = statement[i].value;
+        propertyValue = token.value;
         // fall into
       case Token.all:
         propertyName = "surfaceID";
         break;
       case Token.on:
       case Token.off:
-        propertyName = (String)statement[i].value;
+        propertyName = (String)token.value;
         break;
       case Token.delete:
         propertyName = "delete";
@@ -3566,15 +3677,16 @@ class Eval implements Runnable {
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
-      switch (statement[i].tok) {
+      Token token = statement[i];
+      switch (token.tok) {
       case Token.identifier:
-        propertyValue = statement[i].value;
+        propertyValue = token.value;
         // fall into
       case Token.all:
         propertyName = "meshID";
         break;
       case Token.string:
-        String filename = (String)statement[i].value;
+        String filename = (String)token.value;
         Object t =
           viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
         if (t instanceof String)
@@ -3587,7 +3699,7 @@ class Eval implements Runnable {
       case Token.decimal:
         if (colorRangeStage == 0) {
           propertyName = "cutoff";
-          propertyValue = statement[i].value;
+          propertyValue = token.value;
           break;
         }
         // fall into
@@ -3615,7 +3727,7 @@ class Eval implements Runnable {
         break;
       case Token.on:
       case Token.off:
-        propertyName = (String)statement[i].value;
+        propertyName = (String)token.value;
         break;
       case Token.delete:
         propertyName = "delete";
@@ -3704,7 +3816,8 @@ class Eval implements Runnable {
     for (int i = 1; i < statementLength; ++i) {
       propertyName = null;
       propertyValue = null;
-      switch (statement[i].tok) {
+      Token token = statement[i];
+      switch (token.tok) {
       case Token.on:
       case Token.off:
         viewer.rebond();
@@ -3712,10 +3825,10 @@ class Eval implements Runnable {
       case Token.integer:
         if (++nNumeric > 2) {
           propertyName = "connectMad";
-          propertyValue = new Short(getMadInteger(statement[i].intValue));
+          propertyValue = new Short(getMadInteger(token.intValue));
         } else {
           propertyName = "connectDistance";
-          propertyValue = new Float(statement[i].intValue);
+          propertyValue = new Float(token.intValue);
         }
         break;
       case Token.decimal:
@@ -3724,7 +3837,7 @@ class Eval implements Runnable {
           propertyValue = new Short(getMadFloat(floatParameter(i)));
         } else {
           propertyName = "connectDistance";
-          propertyValue = statement[i].value;
+          propertyValue = token.value;
         }
         break;
       case Token.expressionBegin:
@@ -3735,7 +3848,7 @@ class Eval implements Runnable {
         break;
       case Token.identifier:
       case Token.hbond:
-        String cmd = ((String)statement[i].value).toLowerCase();
+        String cmd = ((String)token.value).toLowerCase();
         if (cmd.equals("single") ||
             cmd.equals("double") ||
             cmd.equals("triple") ||

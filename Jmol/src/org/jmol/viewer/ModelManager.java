@@ -201,6 +201,10 @@ class ModelManager {
     return (frame == null) ? null : frame.getBoundBoxCornerVector();
   }
 
+  Point3f getAtomSetCenter(BitSet bs) {
+    return (frame == null) ? null : frame.getAtomSetCenter(bs);
+  }
+
   int getChainCount() {
     return (frame == null) ? 0 : frame.getChainCount();
   }

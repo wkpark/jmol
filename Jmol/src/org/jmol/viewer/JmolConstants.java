@@ -2168,7 +2168,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_SASURFACE  = 24;
   public final static int SHAPE_ISOSURFACE = 25;
   public final static int SHAPE_PRUEBA     = 26;
-  public final static int SHAPE_MAX        = 27;
+  public final static int SHAPE_DRAW       = 27;
+  public final static int SHAPE_MAX        = 28;
   
   //handled in Balls.java:
   public final static int SHAPE_HALO       = SHAPE_MAX;
@@ -2183,7 +2184,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Rockets", "Stars",
     "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
     "Pmesh", "Polyhedra", "Sasurface", "Isosurface",
-    "Prueba"
+    "Prueba", "Draw"
   };
 
   ////////////////////////////////////////////////////////////////

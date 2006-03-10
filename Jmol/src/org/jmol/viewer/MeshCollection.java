@@ -56,7 +56,6 @@ abstract class MeshCollection extends SelectionIndependentShape {
     */
     if ("meshID" == propertyName) {
       String meshID = (String)value;
-      //      System.out.println("meshID=" + meshID);
       if (meshID == null) {
         currentMesh = null;
         return;

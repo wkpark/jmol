@@ -1622,6 +1622,20 @@ final class Frame {
     pointMax.set(maxX, maxY, maxZ);
   }
 
+  Point3f getAtomSetCenter(BitSet bs) {
+    Point3f ptCenter = new Point3f(0,0,0);
+    int atomIndex = -1;
+    int nPoints =  bs.cardinality();
+    if (nPoints == 0)
+      return ptCenter;
+    for (int i = nPoints; --i >= 0;) {
+      atomIndex = bs.nextSetBit(atomIndex + 1);
+      ptCenter.add(atoms[atomIndex].point3f);
+    }
+    ptCenter.scale(1.0F/nPoints);
+    return ptCenter;
+  }
+  
   void setLabel(String label, int atomIndex) {
   }
 

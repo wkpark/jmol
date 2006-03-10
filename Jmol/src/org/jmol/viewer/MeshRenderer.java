@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import org.jmol.g3d.Graphics3D;
 
 abstract class MeshRenderer extends ShapeRenderer {
 
@@ -35,9 +36,12 @@ abstract class MeshRenderer extends ShapeRenderer {
     if (vertexCount == 0)
       return;
     Point3f[] vertices = mesh.vertices;
+
     Point3i[] screens = viewer.allocTempScreens(vertexCount);
-    for(int i = vertexCount; --i >= 0; )
+    
+    for(int i = vertexCount; --i >= 0; ) {
       viewer.transformPoint(vertices[i], screens[i]);
+    }
 
     if (mesh.showPoints)
       renderPoints(mesh, screens, vertexCount);
@@ -76,7 +80,11 @@ abstract class MeshRenderer extends ShapeRenderer {
         } else {
           colixA = colixB = colixC = colix;
         }
-        if (vertexIndexes.length == 3) {
+        
+        if (iB == iC) {
+          g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, 2,
+              screens[iA], screens[iB]);
+        } else if (vertexIndexes.length == 3) {
           if (fill)
             g3d.fillTriangle(screens[iA], colixA, normixes[iA],
                              screens[iB], colixB, normixes[iB],

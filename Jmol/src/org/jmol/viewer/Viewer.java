@@ -1015,6 +1015,10 @@ final public class Viewer extends JmolViewer {
     return selectionManager.getAtomBitSet(atomExpression);
   }
 
+  Point3f getAtomSetCenter(BitSet bs) {
+    return modelManager.getAtomSetCenter(bs);
+  }
+
   Vector getAtomBitSetVector(String atomExpression) {
     return selectionManager.getAtomBitSetVector(atomExpression);
   }

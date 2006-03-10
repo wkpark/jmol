@@ -176,6 +176,7 @@ class Token {
   final static int polyhedra    = command | 92 | embeddedExpression;
   final static int centerAt     = command | 93;
   final static int isosurface   = command | 94;
+  final static int draw         = command | 95 | embeddedExpression;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -500,6 +501,7 @@ class Token {
     "bondorder",         new Token(bondorder,          1, "bondorder"),
     "console",           new Token(console,   onDefault1, "console"),
     "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
+    "draw",              new Token(draw,     varArgCount, "draw"),
     "polyhedra",         new Token(polyhedra,varArgCount, "polyhedra"),
     "centerat",          new Token(centerAt, varArgCount, "centerat"),
     "isosurface",        new Token(isosurface,varArgCount,"isosurface"),

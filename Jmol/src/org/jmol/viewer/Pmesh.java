@@ -33,6 +33,7 @@ class Pmesh extends MeshCollection {
   boolean isOnePerLine = false;
   
   void setProperty(String propertyName, Object value, BitSet bs) {
+    isOnePerLine = false;
     if ("bufferedReaderOnePerLine" == propertyName) {
       propertyName = "bufferedReader";
       isOnePerLine = true;
@@ -78,7 +79,9 @@ class Pmesh extends MeshCollection {
   }
 
   void readVertexCount(BufferedReader br) throws Exception {
-    currentMesh.setVertexCount(parseInt(br.readLine()));
+    currentMesh.setVertexCount(0);
+    int n = parseInt(br.readLine());
+    currentMesh.setVertexCount(n);
   }
 
   void readVertices(BufferedReader br) throws Exception {

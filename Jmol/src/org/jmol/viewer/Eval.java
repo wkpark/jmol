@@ -3550,9 +3550,7 @@ class Eval implements Runnable {
       }
       if (havePoints && ! isInitialized) {
         viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
-            "init", null);
-        viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
-            "scale", new Integer(intScale));        
+            "points", new Integer(intScale));
         isInitialized = true;
       }
       viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,

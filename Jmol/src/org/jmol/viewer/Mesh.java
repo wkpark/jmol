@@ -43,7 +43,9 @@ class Mesh {
   short[] normixes;
   int polygonCount;
   int[][] polygonIndexes;
-
+  
+  float scale = 1;
+  
   boolean showPoints = false;
   boolean drawTriangles = false;
   boolean fillTriangles = true;
@@ -58,6 +60,7 @@ class Mesh {
 
   void clear() {
     vertexCount = polygonCount = 0;
+    scale = 1;
     vertices = null;
     polygonIndexes = null;
   }

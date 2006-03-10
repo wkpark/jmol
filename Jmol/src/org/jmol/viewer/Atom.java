@@ -432,9 +432,15 @@ final class Atom implements Tuple {
   int getSeqcode() {
     if (group == null)
       return -1;
-    return group.seqcode;
+    return group.getSeqcode();
   }
 
+  int getResno() {
+    if (group == null)
+      return -1;
+    return group.getResno();   
+  }
+  
   boolean isAtomNameMatch(String strPattern) {
     String atomName = getAtomNameOrNull();
     int cchAtomName = atomName == null ? 0 : atomName.length();

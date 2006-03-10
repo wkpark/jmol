@@ -39,6 +39,7 @@ class Group {
         int firstAtomIndex, int lastAtomIndex) {
     this.chain = chain;
     this.seqcode = seqcode;
+    
     if (group3 == null)
       group3 = "";
     this.groupID = getGroupID(group3);
@@ -70,14 +71,6 @@ class Group {
     if (groupID >= JmolConstants.predefinedGroup1Names.length)
       return "?";
     return JmolConstants.predefinedGroup1Names[groupID];
-  }
-
-  final int getSeqcode() {
-    return seqcode;
-  }
-
-  final String getSeqcodeString() {
-    return getSeqcodeString(seqcode);
   }
 
   final short getGroupID() {
@@ -181,6 +174,18 @@ class Group {
   ////////////////////////////////////////////////////////////////
   // seqcode stuff
   ////////////////////////////////////////////////////////////////
+
+  final int getResno() {
+    return seqcode >> 8; 
+  }
+
+  final int getSeqcode() {
+    return seqcode;
+  }
+
+  final String getSeqcodeString() {
+    return getSeqcodeString(seqcode);
+  }
 
   static int getSeqcode(int sequenceNumber, char insertionCode) {
     if (sequenceNumber == Integer.MIN_VALUE)

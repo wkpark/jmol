@@ -631,6 +631,7 @@ class Compiler {
     case '<':
     case '=':
     case '>':
+      System.out.println("compiler < " + ichT + " " + cchScript + " "+script.substring(0,ichT+1));
       if (ichT < cchScript &&
           ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>'))
         ++ichT;

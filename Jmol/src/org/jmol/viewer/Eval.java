@@ -914,6 +914,7 @@ class Eval implements Runnable {
     int sp = 0;
     boolean refreshed = false;
     endOfExpression = 1000;
+    
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart;; ++pc) {
@@ -1086,6 +1087,7 @@ class Eval implements Runnable {
     }
     // System.out.println("sequence number=" + seqNumber +
     // " insertionCode=" + insertionCode);
+    // resno << 8 + insertionCode
     int seqcode = Group.getSeqcode(seqNumber, insertionCode);
     // System.out.println("seqcode=" + seqcode);
     BitSet bsSequence = getSpecSeqcode(seqcode);
@@ -1380,7 +1382,7 @@ class Eval implements Runnable {
         propertyValue = atom.getPolymerLength();
         break;
       case Token.resno:
-        propertyValue = atom.getSeqcode();
+        propertyValue = atom.getResno();
         if (propertyValue == -1)
           continue;
         break;

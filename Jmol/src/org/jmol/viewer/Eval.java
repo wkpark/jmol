@@ -3443,6 +3443,10 @@ class Eval implements Runnable {
               data = viewer.simpleReplace(data, " ", "\n");
               propertyName = "bufferedReaderOnePerLine";
             }
+
+            data = viewer.simpleReplace(data, "[", " ");
+            data = viewer.simpleReplace(data, ",", " ");
+            data = viewer.simpleReplace(data, "]", " ");
             data = viewer.simpleReplace(data, "|", "\n");
             data = viewer.simpleReplace(data, "\n\n", "\n");
             data = viewer.simpleReplace(data, "\n\n", "\n");
@@ -3504,6 +3508,17 @@ class Eval implements Runnable {
       Token token = statement[i];
       //System.out.println("draw: "+statement[i]);
       switch (token.tok) {
+      case Token.leftsquare:
+        if (i + 1 < statementLength && 
+            statement[i + 1].tok == Token.identifier) {
+          propertyValue = (String) statement[++i].value;
+          propertyName = "identifier";
+          havePoints = true;
+          break;
+        }
+      case Token.rightsquare:
+      case Token.opOr:
+        continue;
       case Token.integer:
         intScale = token.intValue;
         continue;

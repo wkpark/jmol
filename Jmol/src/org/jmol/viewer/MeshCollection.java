@@ -60,10 +60,10 @@ abstract class MeshCollection extends SelectionIndependentShape {
         currentMesh = null;
         return;
       }
-      for (int i = meshCount; --i >= 0; ) {
-        currentMesh = meshes[i];
-        if (meshID.equals(currentMesh.meshID))
-          return;
+      int meshIndex = getMeshIndex(meshID);
+      if (meshIndex >= 0) {
+        currentMesh = meshes[meshIndex];
+        return;        
       }
       allocMesh(meshID);
       return;
@@ -159,6 +159,14 @@ abstract class MeshCollection extends SelectionIndependentShape {
     }
   }
 
+  int getMeshIndex(String meshID) {
+    for (int i = meshCount; --i >= 0; ) {
+      if (meshes[i] != null && meshID.equals(meshes[i].meshID))
+        return i;
+    }
+    return -1; 
+  }
+  
   void allocMesh(String meshID) {
     meshes = (Mesh[])Util.ensureLength(meshes, meshCount + 1);
     currentMesh = meshes[meshCount++] = new Mesh(viewer, meshID, g3d, colix);

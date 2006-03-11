@@ -42,7 +42,7 @@ class Pmesh extends MeshCollection {
       BufferedReader br = (BufferedReader)value;
       if (currentMesh == null)
         allocMesh(null);
-      currentMesh.clear();
+      currentMesh.clear("pmesh");
       isValid = readPmesh(br);
       if(isValid) {
         currentMesh.initialize();

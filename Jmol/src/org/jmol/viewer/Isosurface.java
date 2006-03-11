@@ -86,7 +86,7 @@ class Isosurface extends MeshCollection {
       BufferedReader br = (BufferedReader)value;
       if (currentMesh == null)
         allocMesh(null);
-      currentMesh.clear();
+      currentMesh.clear("isosurface");
       readVolumetricHeader(br);
       calcVolumetricMatrix();
       readVolumetricData(br);

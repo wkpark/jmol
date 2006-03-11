@@ -45,6 +45,8 @@ class Mesh {
   int[][] polygonIndexes;
   
   float scale = 1;
+  Point3f ptCenter = new Point3f(0,0,0);
+  String meshType = null;
   
   boolean showPoints = false;
   boolean drawTriangles = false;
@@ -58,11 +60,12 @@ class Mesh {
   }
 
 
-  void clear() {
+  void clear(String meshType) {
     vertexCount = polygonCount = 0;
     scale = 1;
     vertices = null;
     polygonIndexes = null;
+    this.meshType = meshType;
   }
 
   void initialize() {

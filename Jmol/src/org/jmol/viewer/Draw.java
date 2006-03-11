@@ -42,6 +42,8 @@ class Draw extends MeshCollection {
     if ("points" == propertyName) {
       ipt = npoints = 0;
       newScale = ((Integer)value).floatValue()/100;
+      if (newScale == 0)
+        newScale = 1;
       return;
     }
     
@@ -57,6 +59,20 @@ class Draw extends MeshCollection {
       return;
     }
     
+    if ("identifier" == propertyName) {
+      int meshIndex = getMeshIndex((String)value);
+      if (meshIndex >= 0) {
+        System.out.println(npoints+" lt? " + ptList.length);
+        System.out.println(meshIndex+" lt? " + meshes.length);
+        ptList[npoints++] = new Point3f(meshes[meshIndex].ptCenter);
+        System.out.println("OK");
+        System.out.println(npoints + " " + ptList[npoints-1]);
+      } else {
+        System.out.println("draw identifier " + value + " not found");
+      }
+      return;
+    }
+    
     if ("coord" == propertyName) {
       float x = ((Float)value).floatValue();
       if (ipt == 0) {
@@ -66,12 +82,14 @@ class Draw extends MeshCollection {
       } else if (ipt == 2) {
         xyz.z = x; 
         ptList[npoints++] = new Point3f(xyz);
-      }
+        System.out.println(npoints + " " + ptList[npoints-1]);
+          }
       ipt = (ipt + 1) % 3;
       return;
     }
     if ("atomSet" == propertyName) {
       ptList[npoints++] = new Point3f((Point3f)value);
+      System.out.println(npoints + " " + ptList[npoints-1]);
       return;
     } 
     if ("set" == propertyName) {
@@ -93,13 +111,14 @@ class Draw extends MeshCollection {
   boolean setDrawing() {
     if (currentMesh == null)
       allocMesh(null);
-    currentMesh.clear();
+    currentMesh.clear("draw");
     if (npoints == 0)
       return false;
     for (int i = 0; i < npoints; i++)
       currentMesh.addVertexCopy(ptList[i]);
     currentMesh.setPolygonCount(1);
     int n = currentMesh.vertexCount;
+    currentMesh.ptCenter = centerOf(currentMesh.vertices, n);    
     int nPoints = n;
     if (n < 3)
       n = 3;
@@ -110,18 +129,17 @@ class Draw extends MeshCollection {
   }
 
   void scaleDrawing() {
-    if (currentMesh == null || 
+    if (currentMesh == null || newScale == 0 || 
         currentMesh.vertexCount == 0 || currentMesh.scale == newScale)
       return;
     Vector3f diff = new Vector3f();
     float f = newScale / currentMesh.scale;
     System.out.println("scaledrawing " +f);    
     currentMesh.scale = newScale;
-    Point3f center = centerOf(currentMesh.vertices, currentMesh.vertexCount);
     for (int i = currentMesh.vertexCount; --i >= 0;) {
-      diff.sub(currentMesh.vertices[i], center);
+      diff.sub(currentMesh.vertices[i], currentMesh.ptCenter);
       diff.scale(f);
-      diff.add(center);
+      diff.add(currentMesh.ptCenter);
       currentMesh.vertices[i].set(diff);
     }
   }

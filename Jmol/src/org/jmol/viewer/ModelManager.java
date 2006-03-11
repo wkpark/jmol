@@ -209,10 +209,18 @@ class ModelManager {
     return (frame == null) ? 0 : frame.getChainCount();
   }
 
+  int getChainCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : frame.getChainCountInModel(modelIndex);
+  }
+  
   int getGroupCount() {
     return (frame == null) ? 0 : frame.getGroupCount();
   }
 
+  int getGroupCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : frame.getGroupCountInModel(modelIndex);
+  }
+  
   int getPolymerCount() {
     return (frame == null) ? 0 : frame.getPolymerCount();
   }
@@ -227,6 +235,14 @@ class ModelManager {
 
   int getBondCount() {
     return (frame == null) ? 0 : frame.getBondCount();
+  }
+
+  int getAtomCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : frame.getAtomCountInModel(modelIndex);
+  }
+
+  int getBondCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : frame.getBondCountInModel(modelIndex);
   }
 
   private final Point3f pointT = new Point3f();
@@ -509,6 +525,10 @@ String getAtomInfoChime(int i) {
     return frame.getBondAt(i).getOrder();
   }
 
+  float getBondLength(int i) {
+    return getBondAtom1(i).point3f.distance(getBondAtom2(i).point3f);
+  }
+  
   Atom getBondAtom1(int i) {
     return frame.getBondAt(i).getAtom1();
   }
@@ -648,6 +668,12 @@ String getAtomInfoChime(int i) {
       model.put("num",new Integer(viewer.getModelNumber(i)));
       model.put("name",viewer.getModelName(i));
       model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
+      model.put("atomCount",new Integer(getAtomCountInModel(i)));
+      model.put("bondCount",new Integer(getBondCountInModel(i)));
+      model.put("groupCount",new Integer(getGroupCountInModel(i)));
+      model.put("polymerCount",new Integer(getPolymerCountInModel(i)));
+      model.put("chainCount",new Integer(getChainCountInModel(i)));
+      
       models.add(model);
     }
     info.put("models",models);
@@ -664,12 +690,17 @@ String getAtomInfoChime(int i) {
     return V;
   }
 
+  void getAtomIdentityInfo(int i, Hashtable info) {
+    info.put("_ipt", new Integer(i));
+    info.put("atomno", new Integer(getAtomNumber(i)));
+    info.put("info", getAtomInfo(i));
+    info.put("sym", getElementSymbol(i));
+  }
+  
   Hashtable getAtomInfo(int i, boolean isPDB) {
     Atom atom = frame.getAtomAt(i);
     Hashtable info = new Hashtable();
-    info.put("_ipt", new Integer(i));
-    info.put("atomno", new Integer(atom.getAtomNumber()));
-    info.put("sym", getElementSymbol(i));
+    getAtomIdentityInfo(i, info);
     info.put("elemno", new Integer(atom.getElementNumber()));
     info.put("x", new Float(getAtomX(i)));
     info.put("y", new Float(getAtomY(i)));
@@ -677,10 +708,9 @@ String getAtomInfoChime(int i) {
     if (frame.vibrationVectors != null && frame.vibrationVectors[i] != null) {
       info.put("vibVector", new Vector3f(frame.vibrationVectors[i]));
     }
-    info.put("model", new Integer(atom.getModelTagNumber()));
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius()/120.0)));
-    info.put("info", getAtomInfo(i));
+    info.put("model", new Integer(atom.getModelTagNumber()));
     info.put("visible", new Boolean(getAtomVisibility(i)));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
@@ -730,12 +760,15 @@ String getAtomInfoChime(int i) {
     Atom atom2 = getBondAtom2(i);
     Hashtable info = new Hashtable();
     info.put("_bpt", new Integer(i));
-    info.put("_apt1", new Integer(atom1.atomIndex));
-    info.put("_apt2", new Integer(atom2.atomIndex));
-    info.put("atomno1", new Integer(atom1.getAtomNumber()));
-    info.put("atomno2", new Integer(atom2.getAtomNumber()));
+    Hashtable infoA = new Hashtable();
+    getAtomIdentityInfo(atom1.atomIndex, infoA);
+    Hashtable infoB = new Hashtable();
+    getAtomIdentityInfo(atom2.atomIndex, infoB);
+    info.put("atom1",infoA);
+    info.put("atom2",infoB);
     info.put("order", new Integer(getBondOrder(i)));
     info.put("radius", new Float(bond.mad/2000.));
+    info.put("length_Ang",new Float(getBondLength(i)));
     info.put("visible", new Boolean(bond.shapeVisibilityFlags != 0));
     String strColor = viewer.getHexColorFromIndex(bond.colix);
     if (strColor != null) 
@@ -1032,10 +1065,13 @@ String getAtomInfoChime(int i) {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape != null) {
+        String shapeType = JmolConstants.shapeClassBases[i];
         Hashtable shapeinfo = new Hashtable();
         shapeinfo.put("index",new Integer(i));
         shapeinfo.put("myVisibilityFlag",new Integer(shape.myVisibilityFlag));
-        info.put(JmolConstants.shapeClassBases[i],shapeinfo);
+        if(shapeType == "Draw")
+          shapeinfo.put("obj",shape.getShapeDetail());
+        info.put(shapeType,shapeinfo);
       }
     }
     if (viewer.selectionHaloEnabled) {

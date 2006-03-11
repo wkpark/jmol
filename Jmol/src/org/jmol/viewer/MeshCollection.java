@@ -27,6 +27,8 @@ package org.jmol.viewer;
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
+import java.util.Vector;
+import java.util.Hashtable;
 
 abstract class MeshCollection extends SelectionIndependentShape {
 
@@ -301,5 +303,26 @@ abstract class MeshCollection extends SelectionIndependentShape {
     ichNextParse = ich;
     return value;
   }
+
+  Vector getShapeDetail() {
+    Vector V=new Vector();
+    for (int i = 0; i < meshCount; i++) {
+      Hashtable info = new Hashtable();
+      Mesh mesh = meshes[i];
+      info.put("ID", mesh.meshID);
+      info.put("vertexCount", new Integer(mesh.vertexCount));
+      if (mesh.vertexCount == 2)
+        info.put("length_Ang", new Float(mesh.vertices[0].distance(mesh.vertices[1])));
+      info.put("scale", new Float(mesh.scale));
+      info.put("center", mesh.ptCenter);
+      Vector v = new Vector();
+      for (int j = 0; j < mesh.vertexCount; j++)
+        v.add(mesh.vertices[j]);
+      info.put("vertices",v);
+      V.add(info);
+    }   
+    return V;
+  }
+
 }
 

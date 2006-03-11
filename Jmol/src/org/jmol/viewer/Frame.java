@@ -692,6 +692,10 @@ final class Frame {
     return mmset.getPolymerCount();
   }
 
+  int getChainCountInModel(int modelIndex) {
+    return mmset.getChainCountInModel(modelIndex);
+  }
+  
   int getPolymerCountInModel(int modelIndex) {
     return mmset.getPolymerCountInModel(modelIndex);
   }
@@ -704,9 +708,22 @@ final class Frame {
     return mmset.getGroupCount();
   }
 
+  int getGroupCountInModel(int modelIndex) {
+    return mmset.getGroupCountInModel(modelIndex);
+  }
+
   int getAtomCount() {
     return atomCount;
   }
+
+  int getAtomCountInModel(int modelIndex) {
+    int n = 0;
+    for (int i = atoms.length; --i >= 0;)
+      if (atoms[i].modelIndex == modelIndex)
+        n++;
+    return n;
+  }
+
 
   Atom[] getAtoms() {
     return atoms;
@@ -722,6 +739,14 @@ final class Frame {
 
   int getBondCount() {
     return bondCount;
+  }
+
+  int getBondCountInModel(int modelIndex) {
+    int n = 0;
+    for (int i = bonds.length; --i >= 0;)
+      if (bonds[i].atom1.modelIndex == modelIndex)
+        n++;
+    return n;
   }
 
   Bond getBondAt(int bondIndex) {

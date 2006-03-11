@@ -201,6 +201,10 @@ final class Mmset {
     return groupCount;
   }
 
+  int getGroupCountInModel(int modelIndex) {
+    return models[modelIndex].getGroupCount();
+  }
+
   void calcSelectedGroupsCount(BitSet bsSelected) {
     for (int i = modelCount; --i >= 0; )
       models[i].calcSelectedGroupsCount(bsSelected);

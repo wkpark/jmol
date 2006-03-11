@@ -82,8 +82,12 @@ abstract class MeshRenderer extends ShapeRenderer {
         }
         
         if (iB == iC) {
-          g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, 2,
-              screens[iA], screens[iB]);
+          if (iA == iB) {
+            g3d.fillSphereCentered(colixA, 16, screens[iA].x, screens[iA].y, screens[iA].z);
+          } else {
+            g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, 2,
+                screens[iA], screens[iB]);
+          }
         } else if (vertexIndexes.length == 3) {
           if (fill)
             g3d.fillTriangle(screens[iA], colixA, normixes[iA],

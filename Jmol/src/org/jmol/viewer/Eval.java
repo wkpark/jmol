@@ -3449,8 +3449,6 @@ class Eval implements Runnable {
             data = viewer.simpleReplace(data, "]", " ");
             data = viewer.simpleReplace(data, "|", "\n");
             data = viewer.simpleReplace(data, "\n\n", "\n");
-            data = viewer.simpleReplace(data, "\n\n", "\n");
-            data = viewer.simpleReplace(data, "\n\n", "\n");
             System.out.println("pmesh inline data:\n" + data);
             t = viewer.getBufferedReaderForString(data);
           } else {

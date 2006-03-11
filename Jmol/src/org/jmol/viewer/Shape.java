@@ -28,6 +28,7 @@ import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
 import java.util.BitSet;
+import java.util.Vector;
 
 abstract class Shape {
 
@@ -75,5 +76,9 @@ abstract class Shape {
   }
 
   void setModelClickability() {
+  }
+
+  Vector getShapeDetail() {
+    return null;
   }
 }

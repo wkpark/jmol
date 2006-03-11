@@ -23,6 +23,8 @@
  */
 
 package org.jmol.viewer;
+import java.util.Hashtable;
+
 import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
@@ -162,5 +164,9 @@ class Mesh {
                              " : " + Math.sqrt(dist2));
         }
       }
+  }
+  
+  Hashtable getShapeDetail() {
+    return null;
   }
 }

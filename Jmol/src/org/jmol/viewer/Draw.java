@@ -24,7 +24,9 @@
 
 package org.jmol.viewer;
 
+import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Vector;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -153,4 +155,5 @@ class Draw extends MeshCollection {
     center.scale(1.0F / nPoints);
     return center;
   }
+  
 }

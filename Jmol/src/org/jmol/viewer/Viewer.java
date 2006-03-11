@@ -2937,17 +2937,22 @@ final public class Viewer extends JmolViewer {
 
   String simpleReplace(String str, String strFrom, String strTo) {
     int fromLength = strFrom.length();
+    boolean isOnce = (strTo.indexOf(strFrom) >= 0);
     if (str == null || fromLength == 0)
       return str;
     int ipt;
-    int ipt0 = 0;
-    String sout = "";
-    while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
-      sout += str.substring(ipt0, ipt) + strTo;
-      ipt0 = ipt + fromLength;
+    String stemp = "";
+    while (str.indexOf(strFrom) >= 0) {
+      int ipt0 = 0;
+      while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
+        stemp += str.substring(ipt0, ipt) + strTo;
+        ipt0 = ipt + fromLength;
+      }
+      str = stemp + str.substring(ipt0, str.length());
+      if(isOnce)
+        break;
     }
-    sout += str.substring(ipt0, str.length());
-    return sout;
+    return str;
   }
 
   String getHexColorFromIndex(short colix) {

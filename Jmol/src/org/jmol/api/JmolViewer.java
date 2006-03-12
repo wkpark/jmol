@@ -194,14 +194,14 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public float getAtomRadius(int atomIndex);
   abstract public Point3f getAtomPoint3f(int atomIndex);
-  abstract public Color getAtomColor(int atomIndex);
+  abstract public int getAtomArgb(int atomIndex);
   abstract public int getAtomModelIndex(int atomIndex);
 
   abstract public float getBondRadius(int bondIndex);
   abstract public Point3f getBondPoint3f1(int bondIndex);
   abstract public Point3f getBondPoint3f2(int bondIndex);
-  abstract public Color getBondColor1(int bondIndex);
-  abstract public Color getBondColor2(int bondIndex);
+  abstract public int getBondArgb1(int bondIndex);
+  abstract public int getBondArgb2(int bondIndex);
   abstract public short getBondOrder(int bondIndex);
   abstract public int getBondModelIndex(int bondIndex);
 

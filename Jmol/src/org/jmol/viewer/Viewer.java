@@ -2844,8 +2844,8 @@ final public class Viewer extends JmolViewer {
     return modelManager.getAtomRadius(i);
   }
 
-  public Color getAtomColor(int i) {
-    return g3d.getColor(modelManager.getAtomColix(i));
+  public int getAtomArgb(int i) {
+    return g3d.getColixArgb(modelManager.getAtomColix(i));
   }
 
   String getAtomChain(int i) {
@@ -2876,16 +2876,16 @@ final public class Viewer extends JmolViewer {
     return modelManager.getBondOrder(i);
   }
 
-  public Color getBondColor1(int i) {
-    return g3d.getColor(modelManager.getBondColix1(i));
+  public int getBondArgb1(int i) {
+    return g3d.getColixArgb(modelManager.getBondColix1(i));
   }
 
   public int getBondModelIndex(int i) {
     return modelManager.getBondModelIndex(i);
   }
 
-  public Color getBondColor2(int i) {
-    return g3d.getColor(modelManager.getBondColix2(i));
+  public int getBondArgb2(int i) {
+    return g3d.getColixArgb(modelManager.getBondColix2(i));
   }
 
   public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex) {

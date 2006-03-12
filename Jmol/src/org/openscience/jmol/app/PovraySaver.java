@@ -222,9 +222,9 @@ public class PovraySaver {
    */
   protected String povrayColor(int argb) {
     return "rgb<" +
-      ((argb >> 16) & 0xFF) / 255f + "," +
-      ((argb >> 8) & 0xFF) / 255f + "," +
-      (argb & 0xFF) / 255f + ">";
+      getRed(argb) + "," +
+      getGrn(argb) + "," +
+      getBlu(argb) + ">";
   }
 
   void writeMacros() throws IOException {
@@ -525,10 +525,10 @@ public class PovraySaver {
     float x = (float)point1.x;
     float y = (float)point1.y;
     float z = (float)point1.z;
-    Color color = viewer.getAtomColor(i);
-    float r = color.getRed() / 255f;
-    float g = color.getGreen() / 255f;
-    float b = color.getBlue() / 255f;
+    int argb = viewer.getAtomArgb(i);
+    float r = getRed(argb);
+    float g = getGrn(argb);
+    float b = getBlu(argb);
     out("atom("+x+","+y+","+z+","+radius+","+r+","+g+","+b+")\n");
   }
 
@@ -548,11 +548,11 @@ public class PovraySaver {
     float x2 = (float)point2.x;
     float y2 = (float)point2.y;
     float z2 = (float)point2.z;
-    Color color1 = viewer.getBondColor1(i);
-    Color color2 = viewer.getBondColor2(i);
-    float r1 = color1.getRed() / 255f;
-    float g1 = color1.getGreen() / 255f;
-    float b1 = color1.getBlue() / 255f;
+    int argb1 = viewer.getBondArgb1(i);
+    int argb2 = viewer.getBondArgb2(i);
+    float r1 = getRed(argb1);
+    float g1 = getGrn(argb1);
+    float b1 = getBlu(argb1);
     int order = viewer.getBondOrder(i);
     
     switch (order) {
@@ -583,16 +583,16 @@ public class PovraySaver {
       }
     }
 
-    out(color1.equals(color2) ? "1" : "2");
+    out(argb1 == argb2 ? "1" : "2");
     out("(");
     out(x1 + "," + y1 + "," + z1 + ",");
     out(x2 + "," + y2 + "," + z2 + ",");
     out(radius + ",");
     out(r1 + "," + g1 + "," + b1);
-    if (!color1.equals(color2)) {
-      float r2 = color2.getRed() / 255f;
-      float g2 = color2.getGreen() / 255f;
-      float b2 = color2.getBlue() / 255f;
+    if (argb1 != argb2) {
+      float r2 = getRed(argb2);
+      float g2 = getGrn(argb2);
+      float b2 = getBlu(argb2);
       out("," + r2 + "," + g2 + "," + b2);
     }
     out(")\n");
@@ -790,5 +790,17 @@ public class PovraySaver {
   	  }
   	}
   	return controls;
+  }
+
+  float getRed(int argb) {
+    return ((argb >> 16) & 0xFF) / 255f;
+  }
+
+  float getGrn(int argb) {
+    return ((argb >> 8) & 0xFF) / 255f;
+  }
+
+  float getBlu(int argb) {
+    return (argb & 0xFF) / 255f;
   }
 }

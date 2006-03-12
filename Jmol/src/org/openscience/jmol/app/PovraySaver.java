@@ -53,7 +53,7 @@ public class PovraySaver {
           boolean allModels, int width, int height) {
     this.bw = new BufferedWriter(new OutputStreamWriter(out), 8192);
     this.viewer = viewer;
-    this.allModels = allModels;
+    this.allModels = allModels || (viewer.getDisplayModelIndex() == -1);
     this.screenWidth = width;
     this.screenHeight = height;
   }
@@ -216,7 +216,7 @@ public class PovraySaver {
    * Takes a java colour and returns a String representing the
    * colour in povray eg 'rgb<1.0,0.0,0.0>'
    *
-   * @param color The color to convert
+   * @param argb The color to convert
    *
    * @return A string representaion of the color in povray rgb format.
    */

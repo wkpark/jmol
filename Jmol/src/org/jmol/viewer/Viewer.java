@@ -687,14 +687,16 @@ final public class Viewer extends JmolViewer {
     colorManager.setDefaultColors(colorScheme);
   }
 
-  public void setColorSelection(Color c) {
-    colorManager.setColorSelection(c);
-    refresh(0, "Viewer:setColorSelection()");
+  public void setSelectionArgb(int argb) {
+    colorManager.setSelectionArgb(argb);
+    refresh(0, "Viewer:setSelectionArgb()");
   }
 
+  /*
   Color getColorSelection() {
     return colorManager.getColorSelection();
   }
+  */
 
   short getColixSelection() {
     return colorManager.getColixSelection();

@@ -227,7 +227,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public float getMinBondDistance();
   abstract public void setMinBondDistance(float minBondDistance);
 
-  abstract public void setColorSelection(Color colorSelection);
+  abstract public void setSelectionArgb(int argbSelection);
   abstract public Color getColorLabel();
   abstract public void setColorLabel(Color colorBond);
   abstract public Color getColorBond();

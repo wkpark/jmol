@@ -598,7 +598,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         }
         colorSelection = color;
         pButton.setBackground(colorSelection);
-        viewer.setColorSelection(colorSelection);
+        viewer.setSelectionArgb(colorSelection.getRGB());
         currentProperties.put("colorSelection",
             Integer.toString(colorSelection.getRGB()));
       }
@@ -1009,7 +1009,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         new Double(currentProperties.getProperty("VibrateVectorScale")).doubleValue();
     */
     //    viewer.setColorOutline(colorOutline);
-    viewer.setColorSelection(colorSelection);
+    viewer.setSelectionArgb(colorSelection == null ? 0 :
+                            colorSelection.getRGB());
     viewer.setColorLabel(isLabelAtomColor ? null : colorText);
     viewer.setColorBond(isBondAtomColor ? null : colorBond);
     viewer.setPercentVdwAtom(percentVdwAtom);

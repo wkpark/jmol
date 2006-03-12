@@ -1621,7 +1621,7 @@ class Eval implements Runnable {
         return;
       }
       if (str.equalsIgnoreCase("selectionHalo")) {
-        viewer.setColorSelection(color);
+        viewer.setSelectionArgb(color == null ? 0 : color.getRGB());
         return;
       }
       for (int i = JmolConstants.elementNames.length; --i >= 0;) {

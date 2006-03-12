@@ -89,22 +89,19 @@ class ColorManager {
   }
   */
 
-  final static Color colorSelectionDefault = Graphics3D.COLOR_GOLD;
   final static short colixSelectionDefault = Graphics3D.GOLD;
 
-  Color colorSelection = colorSelectionDefault;
   short colixSelection = colixSelectionDefault;
-
-  void setColorSelection(Color c) {
-    if (c == null)
-      c = colorSelectionDefault;
-    colorSelection = c;
-    colixSelection = Graphics3D.getColix(c);
+  void setSelectionArgb(int argb) {
+    colixSelection =
+      (argb == 0 ? colixSelectionDefault : Graphics3D.getColix(argb));
   }
 
+  /*
   Color getColorSelection() {
     return colorSelection;
   }
+  */
 
   short getColixSelection() {
     return colixSelection;

@@ -116,7 +116,7 @@ public class PovraySaver {
     out("\n");
 
     out("background { color " +
-            povrayColor(viewer.getColorBackground()) + " }\n");
+            povrayColor(viewer.getBackgroundArgb()) + " }\n");
     out("\n");
 
     out("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
@@ -220,11 +220,11 @@ public class PovraySaver {
    *
    * @return A string representaion of the color in povray rgb format.
    */
-  protected String povrayColor(Color color) {
+  protected String povrayColor(int argb) {
     return "rgb<" +
-      color.getRed() / 255f + "," +
-      color.getGreen() / 255f + "," +
-      color.getBlue() / 255f + ">";
+      ((argb >> 16) & 0xFF) / 255f + "," +
+      ((argb >> 8) & 0xFF) / 255f + "," +
+      (argb & 0xFF) / 255f + ">";
   }
 
   void writeMacros() throws IOException {

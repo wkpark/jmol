@@ -200,14 +200,9 @@ class ColorManager {
     colixDistance = colixAngle = colixTorsion = Graphics3D.getColix(c);
   }
 
-  Color colorBackground = Color.white;
-  short colixBackground = Graphics3D.WHITE;
-  void setColorBackground(Color bg) {
-    if (bg == null)
-      colorBackground = Color.getColor("colorBackground");
-    else
-      colorBackground = bg;
-    colixBackground = Graphics3D.getColix(colorBackground);
+  short colixBackground = Graphics3D.BLACK;
+  void setBackgroundArgb(int argb) {
+    colixBackground = Graphics3D.getColix(argb | 0xFF000000);
     g3d.setBackground(colixBackground);
   }
 
@@ -238,7 +233,7 @@ class ColorManager {
 
   void setColorBackground(String colorName) {
     if (colorName != null && colorName.length() > 0)
-      setColorBackground(viewer.getColorFromString(colorName));
+      setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
   }
 
   short getColixAtom(Atom atom) {

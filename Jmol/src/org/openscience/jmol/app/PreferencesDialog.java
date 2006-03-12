@@ -572,9 +572,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         }
         colorBackground = color;
         bButton.setBackground(colorBackground);
-        viewer.setColorBackground(colorBackground);
-        currentProperties.put("colorBackground",
-            Integer.toString(colorBackground.getRGB()));
+        int argbBackground = colorBackground.getRGB();
+        viewer.setBackgroundArgb(argbBackground);
+        currentProperties.put("colorBackground", "" + argbBackground);
       }
     };
     bButton.addActionListener(startBackgroundChooser);
@@ -1017,7 +1017,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setMarBond(marBond);
     viewer.setColorVector(colorVector);
     viewer.setColorMeasurement(colorMeasurement);
-    viewer.setColorBackground(colorBackground);
+    viewer.setBackgroundArgb(colorBackground == null ? 0 :
+                             colorBackground.getRGB());
     viewer.setMinBondDistance(minBondDistance);
     viewer.setBondTolerance(bondTolerance);
     viewer.setAutoBond(autoBond);

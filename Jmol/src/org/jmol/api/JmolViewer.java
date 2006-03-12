@@ -188,8 +188,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getZoomPercent();
   abstract public Matrix4f getUnscaledTransformMatrix();
 
-  abstract public Color getColorBackground();
-  abstract public void setColorBackground(Color colorBackground);
+  abstract public int getBackgroundArgb();
+  abstract public void setBackgroundArgb(int argbBackground);
   abstract public void setColorBackground(String colorName);
 
   abstract public float getAtomRadius(int atomIndex);

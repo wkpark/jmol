@@ -830,13 +830,22 @@ final public class Viewer extends JmolViewer {
     return transformManager.vibrationScale;
   }
 
+  public void setBackgroundArgb(int argb) {
+    colorManager.setBackgroundArgb(argb);
+    refresh(0, "Viewer:setBackgroundArgb()");
+  }
+
+  public int getBackgroundArgb() {
+    return g3d.getColixArgb(colorManager.colixBackground);
+  }
+
   public void setColorBackground(Color bg) {
-    colorManager.setColorBackground(bg);
+    setBackgroundArgb(bg == null ? 0 : bg.getRGB());
     refresh(0, "Viewer:setCOlorBackground()");
   }
 
   public Color getColorBackground() {
-    return colorManager.colorBackground;
+    return new Color(getBackgroundArgb());
   }
 
   public void setColorBackground(String colorName) {
@@ -846,6 +855,10 @@ final public class Viewer extends JmolViewer {
 
   Color getColorFromString(String colorName) {
     return Graphics3D.getColorFromString(colorName);
+  }
+
+  int getArgbFromString(String colorName) {
+    return Graphics3D.getArgbFromString(colorName);
   }
 
   void setSpecular(boolean specular) {

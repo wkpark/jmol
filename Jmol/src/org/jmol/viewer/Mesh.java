@@ -38,17 +38,18 @@ class Mesh {
   short colix;
   short[] vertexColixes;
   Graphics3D g3d;
-  
     
   int vertexCount;
   Point3f[] vertices;
   short[] normixes;
   int polygonCount;
-  int[][] polygonIndexes;
+  int[][] polygonIndexes = null;
   
   float scale = 1;
   Point3f ptCenter = new Point3f(0,0,0);
+  Point3f ptCenters[];
   String meshType = null;
+  int[] visibilityFlags = null;
   
   boolean showPoints = false;
   boolean drawTriangles = false;
@@ -60,7 +61,6 @@ class Mesh {
     this.g3d = g3d;
     this.colix = colix;
   }
-
 
   void clear(String meshType) {
     vertexCount = polygonCount = 0;
@@ -128,7 +128,8 @@ class Mesh {
 
   void setPolygonCount(int polygonCount) {
     this.polygonCount = polygonCount;
-    polygonIndexes = new int[polygonCount][];
+    if (polygonIndexes == null || polygonCount > polygonIndexes.length)
+      polygonIndexes = new int[polygonCount][];
   }
 
   int addVertexCopy(Point3f vertex) {
@@ -169,4 +170,89 @@ class Mesh {
   Hashtable getShapeDetail() {
     return null;
   }
+  
+  boolean isPolygonDisplayable(int index) {
+    return (visibilityFlags == null ||
+        visibilityFlags[index] != 0); 
+  }
+  
+  int setPolygon(Point3f[] ptList, int nVertices, int nPoly) {
+    /*
+     * designed for Draw 
+     * 
+     * for now, just add all new vertices. It's simpler this way
+     * though a bit redundant. We could reuse the fixed ones -- no matter
+     * 
+     */
+    if (nVertices == 0) return nPoly;
+    int nVertices0 = vertexCount;
+    for (int i = 0; i < nVertices; i++) {
+      addVertexCopy(ptList[i]);
+    }
+    int npoints = (nVertices < 3 ? 3 : nVertices);
+    setPolygonCount(nPoly + 1);
+    polygonIndexes[nPoly] = new int[npoints];
+    for (int i = 0; i < npoints; i++) {
+      polygonIndexes[nPoly][i] = nVertices0 + (i < nVertices ? i : nVertices - 1);
+    }
+    return nPoly + 1;
+  }
+  
+  void scaleDrawing(float newScale) {
+    /*
+     * allows for Draw to scale object
+     * have to watch out for double-listed vertices
+     * 
+     */
+    if (newScale == 0 || vertexCount == 0 || scale == newScale)
+      return;
+    Vector3f diff = new Vector3f();
+    float f = newScale / scale;
+    scale = newScale;
+    int iptlast = -1;
+    int ipt = 0;
+    for (int i = polygonCount; --i >= 0;) {
+      Point3f center = (ptCenters == null ? ptCenter : ptCenters[i]);
+      iptlast = -1;
+      for (int iV = polygonIndexes[i].length; --iV >= 0;) {
+        ipt = polygonIndexes[i][iV];
+        if (ipt == iptlast)
+          continue;
+        iptlast = ipt;
+        diff.sub(vertices[ipt], center);
+        diff.scale(f);
+        diff.add(center);
+        vertices[ipt].set(diff);
+      }
+    }
+  }
+  
+  void setCenter(int iModel) {
+    Point3f center = new Point3f(0, 0, 0);
+    int iptlast = -1;
+    int ipt = 0;
+    int n = 0;
+    for (int i = polygonCount; --i >= 0;) {
+      if (iModel >=0 && i != iModel)
+        continue;
+      iptlast = -1;
+      for (int iV = polygonIndexes[i].length; --iV >= 0;) {
+        ipt = polygonIndexes[i][iV];
+        if (ipt == iptlast)
+          continue;
+        iptlast = ipt;
+        center.add(vertices[ipt]);
+        n++;
+      }
+      if (i == iModel || i == 0) {
+        center.scale(1.0f / n);
+        break;
+      }
+    }
+    if (iModel < 0){
+      ptCenter = center;
+    } else {
+      ptCenters[iModel] = center;
+    }
+  }    
 }

@@ -67,6 +67,8 @@ abstract class MeshRenderer extends ShapeRenderer {
     short colix = mesh.colix;
     short[] vertexColixes = mesh.vertexColixes;
     for (int i = mesh.polygonCount; --i >= 0; ) {
+      if (! mesh.isPolygonDisplayable(i))
+        continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes != null) {
         int iA = vertexIndexes[0];
@@ -82,12 +84,8 @@ abstract class MeshRenderer extends ShapeRenderer {
         }
         
         if (iB == iC) {
-          if (iA == iB) {
-            g3d.fillSphereCentered(colixA, 16, screens[iA].x, screens[iA].y, screens[iA].z);
-          } else {
-            g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, 2,
-                screens[iA], screens[iB]);
-          }
+          g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, 
+              (iA == iB ? 6 : 2), screens[iA], screens[iB]);
         } else if (vertexIndexes.length == 3) {
           if (fill)
             g3d.fillTriangle(screens[iA], colixA, normixes[iA],

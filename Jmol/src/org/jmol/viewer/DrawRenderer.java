@@ -26,6 +26,12 @@ package org.jmol.viewer;
 class DrawRenderer extends MeshRenderer {
 
   void render() {
+    /*
+     * Each drawn object, draw.meshes[i], may consist of several 
+     * polygons, one for each MODEL FRAME. Or, it may be "fixed"
+     * and only contain one single polygon.
+     * 
+     */
     Draw draw = (Draw)shape;
     if (!draw.isValid)
       return;

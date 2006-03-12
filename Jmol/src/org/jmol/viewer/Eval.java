@@ -3443,7 +3443,6 @@ class Eval implements Runnable {
               data = viewer.simpleReplace(data, " ", "\n");
               propertyName = "bufferedReaderOnePerLine";
             }
-
             data = viewer.simpleReplace(data, "[", " ");
             data = viewer.simpleReplace(data, ",", " ");
             data = viewer.simpleReplace(data, "]", " ");
@@ -3499,7 +3498,7 @@ class Eval implements Runnable {
     boolean havePoints = false;
     boolean isInitialized = false;
     int intScale = 0;
-    BitSet bs = null;
+    boolean isFixed = false;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -3528,15 +3527,18 @@ class Eval implements Runnable {
         break;
       case Token.expressionBegin:
         propertyName = "atomSet";
-        bs = expression(statement, i + 1);
+        propertyValue = expression(statement, i + 1);
         i = endOfExpression;
         havePoints = true;
-        propertyValue = new Point3f(viewer.getAtomSetCenter(bs));        
         nCoord += 3;
         break;
       case Token.identifier:
         propertyName = "meshID";
         propertyValue = token.value;
+        if (((String)propertyValue).equalsIgnoreCase("FIXED")) {
+          isFixed = true;
+          continue;
+        } 
         break;
       case Token.dots:
         propertyValue = Boolean.TRUE;
@@ -3566,6 +3568,9 @@ class Eval implements Runnable {
       if (havePoints && ! isInitialized) {
         viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
             "points", new Integer(intScale));
+        if (isFixed || viewer.getModelCount() == 1)
+          viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,
+            "fixed", new Boolean(true));
         isInitialized = true;
       }
       viewer.setShapeProperty(JmolConstants.SHAPE_DRAW,

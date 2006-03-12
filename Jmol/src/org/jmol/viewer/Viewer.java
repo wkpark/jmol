@@ -1253,6 +1253,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.frame != null;
   }
 
+  BitSet getModelAtomBitSet(int modelIndex) {
+    return modelManager.getModelAtomBitSet(modelIndex);
+  }
+
   Object getClientFile() {
     // DEPRECATED - use getExportJmolAdapter()
     return null;
@@ -1688,6 +1692,10 @@ final public class Viewer extends JmolViewer {
 
   void setAnimationRange(int modelIndex1, int modelIndex2) {
     repaintManager.setAnimationRange(modelIndex1, modelIndex2);
+  }
+  
+  BitSet getVisibleFramesBitSet() {
+    return repaintManager.getVisibleFramesBitSet();
   }
 
   boolean isAnimationOn() {

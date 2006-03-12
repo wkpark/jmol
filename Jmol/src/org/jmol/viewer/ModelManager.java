@@ -424,6 +424,16 @@ class ModelManager {
     return (frame == null) ? null : frame.getVisibleSet();
   }
 
+  BitSet getModelAtomBitSet(int modelIndex) {
+    BitSet bs = new BitSet();
+    int atomCount = getAtomCount();
+    Atom[] atoms = frame.atoms;
+    for (int i = 0; i < atomCount; i++)
+      if (atoms[i].modelIndex == modelIndex)
+        bs.set(i);
+    return bs;
+  }
+  
   void calcSelectedGroupsCount(BitSet bsSelected) {
     if (frame != null)
       frame.calcSelectedGroupsCount(bsSelected);
@@ -1028,6 +1038,10 @@ String getAtomInfoChime(int i) {
     boolean showHydrogens = viewer.getShowHydrogens();
     int ballVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);
     int haloVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);
+    BitSet bs = viewer.getVisibleFramesBitSet();
+    Draw draw = (Draw) frame.shapes[JmolConstants.SHAPE_DRAW];
+    if (draw != null)
+      draw.setVisibilityFlags(bs);
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       atom.shapeVisibilityFlags &= (

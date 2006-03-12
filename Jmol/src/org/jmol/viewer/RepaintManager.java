@@ -28,17 +28,19 @@ import org.jmol.g3d.*;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Hashtable;
+import java.util.BitSet;
 
 class RepaintManager {
 
   Viewer viewer;
   FrameRenderer frameRenderer;
-
+  
   RepaintManager(Viewer viewer) {
     this.viewer = viewer;
     frameRenderer = new FrameRenderer(viewer);
   }
 
+  BitSet bsVisibleFrames = null;
   int displayModelIndex = 0;
   boolean setDisplayModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
@@ -50,7 +52,24 @@ class RepaintManager {
       displayModelIndex = modelIndex;
     viewer.setTainted(true);
     viewer.setStatusFrameChanged(modelIndex);
+    bsVisibleFrames = getAnimationRangeVisible(); 
     return true;
+  }
+
+  BitSet getVisibleFramesBitSet() {
+    return bsVisibleFrames;
+  }
+  
+  BitSet getAnimationRangeVisible() {
+    BitSet bs = new BitSet();
+    if (displayModelIndex >= 0) {
+      bs.set(displayModelIndex);
+      return bs;
+    }
+    for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
+      bs.set(i);
+    bs.set(lastModelIndex);
+    return bs;
   }
 
   AnimationThread animationThread;

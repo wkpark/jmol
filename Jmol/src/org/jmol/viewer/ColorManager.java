@@ -45,7 +45,7 @@ class ColorManager {
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;
       viewer.setColorBackground(Color.black);
-      viewer.setColorMeasurement(null);
+      viewer.setMeasurementArgb(0);
       setLabelColix(Graphics3D.WHITE);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else if (colorScheme.equals("rasmol")) {
@@ -60,7 +60,7 @@ class ColorManager {
         argbsCpk[atomNo] = argb;
       }
       viewer.setColorBackground(Color.black);
-      viewer.setColorMeasurement(Color.white);
+      setMeasurementColix(Graphics3D.WHITE);
       setLabelColix(Graphics3D.NULL_COLIX);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else {
@@ -171,30 +171,13 @@ class ColorManager {
     colixDotsSaddle = Graphics3D.getColix(color);
   }
 
-  Color colorDistance = Color.white;
-  short colixDistance = Graphics3D.WHITE;
-  void setColorDistance(Color c) {
-    colorDistance = c;
-    colixDistance = Graphics3D.getColix(c);
+  short colixMeasurement = 0;
+  void setMeasurementArgb(int argb) {
+    colixMeasurement = Graphics3D.getColix(argb);
   }
 
-  Color colorAngle = Color.white;
-  short colixAngle = Graphics3D.WHITE;
-  void setColorAngle(Color c) {
-    colorAngle = c;
-    colixAngle = Graphics3D.getColix(c);
-  }
-
-  Color colorTorsion = Color.white;
-  short colixTorsion = Graphics3D.WHITE;
-  void setColorTorsion(Color c) {
-    colorTorsion = c;
-    colixTorsion = Graphics3D.getColix(c);
-  }
-
-  void setColorMeasurement(Color c) {
-    colorDistance = colorAngle = colorTorsion = c;
-    colixDistance = colixAngle = colixTorsion = Graphics3D.getColix(c);
+  void setMeasurementColix(short colix) {
+    colixMeasurement = colix;
   }
 
   short colixBackground = Graphics3D.BLACK;

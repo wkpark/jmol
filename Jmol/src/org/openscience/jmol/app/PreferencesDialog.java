@@ -26,7 +26,6 @@ package org.openscience.jmol.app;
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
 import java.awt.GridLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
@@ -50,7 +49,6 @@ import javax.swing.JCheckBox;
 import javax.swing.Box;
 import javax.swing.JTabbedPane;
 import javax.swing.ButtonGroup;
-import javax.swing.JColorChooser;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.Action;
@@ -65,45 +63,25 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private boolean autoBond;
   boolean showHydrogens;
-  //private boolean showVectors;
   boolean showMeasurements;
-  boolean wireframeRotation;
   boolean perspectiveDepth;
   boolean showAxes;
   boolean showBoundingBox;
   boolean axesOrientationRasmol;
   boolean openFilePreview;
-  boolean isLabelAtomColor;
-  boolean isBondAtomColor;
-  Color colorBackground;
-  Color colorSelection;
-  Color colorText;
-  Color colorBond;
-  Color colorVector;
-  Color colorMeasurement;
-  //private byte modeAtomColorProfile;
   float minBondDistance;
   float bondTolerance;
   short marBond;
   int percentVdwAtom;
-  //  private double VibrateAmplitudeScale;
-  //  private double VibrateVectorScale;
-  //  private int VibrationFrames;
   JButton bButton, pButton, tButton, eButton, vButton;
-  JButton measurementColorButton;
   private JRadioButton /*pYes, pNo, */abYes, abNo;
-  //private JComboBox aProps, cRender;
   private JSlider vdwPercentSlider;
   private JSlider bdSlider, bwSlider, btSlider;
-  //private JSlider vasSlider;
-  //private JSlider vvsSlider;
-  //private JSlider vfSlider;
   private JCheckBox cH, cM;
-  private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
+  private JCheckBox cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbAxesOrientationRasmol;
   private JCheckBox cbOpenFilePreview;
-  private JCheckBox cbIsLabelAtomColor, cbIsBondAtomColor;
   private Properties originalSystemProperties;
   private Properties jmolDefaultProperties;
   Properties currentProperties;
@@ -115,9 +93,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   final static String[] jmolDefaults  = {
     "showHydrogens",                  "true",
-    "showVectors",                    "true",
     "showMeasurements",               "true",
-    "wireframeRotation",              "false",
     "perspectiveDepth",               "true",
     "showAxes",                       "false",
     "showBoundingBox",                "false",
@@ -128,22 +104,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "marBond",                        "150",
     "minBondDistance",                "0.40",
     "bondTolerance",                  "0.45",
-    "colorSelection",                 "16762880",
-    "colorBackground",                "0",
-    "isLabelAtomColor",               "false",
-    "colorVector",                    "16777215",
-    "isBondAtomColor",                "true",
-    "colorBond",                      "0",
-    "colorVector",                    "16777215",
-    "colorMeasurement",               "16777215",
-    //    "VibrateAmplitudeScale",          "0.7",
-    //    "VibrateVectorScale",             "1.0",
-    //    "VibrationFrames",                "20",
   };
 
   final static String[] rasmolOverrides = {
-    "colorBackground",                "0",
-    "isLabelAtomColor",               "true",
     "percentVdwAtom",                 "0",
     "marBond",                        "1",
     "axesOrientationRasmol",          "true",
@@ -177,13 +140,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel disp = buildDispPanel();
     JPanel atoms = buildAtomsPanel();
     JPanel bonds = buildBondPanel();
-    JPanel colors = buildColorsPanel();
     //    JPanel vibrate = buildVibratePanel();
     tabs.addTab(GT._("Display"), null, disp);
     tabs.addTab(GT._("Atoms"), null, atoms);
     tabs.addTab(GT._("Bonds"), null, bonds);
-    tabs.addTab(GT._("Colors"), null, colors);
-    //    tabs.addTab(GT._("Vibrate"), null, vibrate);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -247,12 +207,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel fooPanel = new JPanel();
     fooPanel.setBorder(new TitledBorder(""));
     fooPanel.setLayout(new GridLayout(2, 1));
-
-    cbWireframeRotation =
-      guimap.newJCheckBox("Prefs.wireframeRotation",
-                          viewer.getWireframeRotation());
-    cbWireframeRotation.addItemListener(checkBoxListener);
-    fooPanel.add(cbWireframeRotation);
 
     cbPerspectiveDepth =
       guimap.newJCheckBox("Prefs.perspectiveDepth",
@@ -550,320 +504,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     return bondPanel;
   }
 
-  public JPanel buildColorsPanel() {
-
-    JPanel colorPanel = new JPanel();
-    colorPanel.setLayout(new GridLayout(0, 2));
-
-    JPanel backgroundPanel = new JPanel();
-    backgroundPanel.setLayout(new BorderLayout());
-    backgroundPanel.setBorder(new TitledBorder(GT._("Background")));
-    bButton = new JButton();
-    bButton.setBackground(colorBackground);
-    bButton.setToolTipText(GT._("Set the Background Color"));
-    ActionListener startBackgroundChooser = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Color color = JColorChooser.showDialog(
-            bButton, GT._("Background Color"), colorBackground);
-        if (color == null) {
-          return;
-        }
-        colorBackground = color;
-        bButton.setBackground(colorBackground);
-        int argbBackground = colorBackground.getRGB();
-        viewer.setBackgroundArgb(argbBackground);
-        currentProperties.put("colorBackground", "" + argbBackground);
-      }
-    };
-    bButton.addActionListener(startBackgroundChooser);
-    backgroundPanel.add(bButton, BorderLayout.CENTER);
-    colorPanel.add(backgroundPanel);
-
-    JPanel pickedPanel = new JPanel();
-    pickedPanel.setLayout(new BorderLayout());
-    pickedPanel.setBorder(new TitledBorder(GT._("Picked Atoms")));
-    pButton = new JButton();
-    pButton.setBackground(colorSelection);
-    pButton.setToolTipText(GT._("Set the Color for Picked Atoms"));
-    ActionListener startPickedChooser = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Color color = JColorChooser.showDialog(
-            pButton, GT._("Picked Atom Color"), colorSelection);
-        if (color == null) {
-          return;
-        }
-        colorSelection = color;
-        pButton.setBackground(colorSelection);
-        viewer.setSelectionArgb(colorSelection.getRGB());
-        currentProperties.put("colorSelection",
-            Integer.toString(colorSelection.getRGB()));
-      }
-    };
-    pButton.addActionListener(startPickedChooser);
-    pickedPanel.add(pButton, BorderLayout.CENTER);
-    colorPanel.add(pickedPanel);
-
-    // text color panel
-    JPanel textPanel = new JPanel();
-    textPanel.setLayout(new BorderLayout());
-    textPanel.setBorder(new TitledBorder(GT._("Text")));
-
-    isLabelAtomColor = viewer.getLabelArgb() == 0;
-    cbIsLabelAtomColor = guimap.newJCheckBox("Prefs.isLabelAtomColor",
-                                             isLabelAtomColor);
-    cbIsLabelAtomColor.addItemListener(checkBoxListener);
-    textPanel.add(cbIsLabelAtomColor, BorderLayout.NORTH);
-
-    tButton = new JButton();
-    tButton.setBackground(colorText);
-    tButton.setToolTipText(GT._("Set the Color for Text"));
-    tButton.setEnabled(!isLabelAtomColor);
-    ActionListener startTextChooser = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Color color = JColorChooser.showDialog(
-            tButton, GT._("Text Color"), colorText);
-        if (color == null) {
-          return;
-        }
-        colorText = color;
-        tButton.setBackground(colorText);
-        int argb = colorText.getRGB();
-        viewer.setLabelArgb(argb);
-        currentProperties.put("colorText", Integer.toString(argb));
-      }
-    };
-    tButton.addActionListener(startTextChooser);
-    textPanel.add(tButton, BorderLayout.CENTER);
-    colorPanel.add(textPanel);
-
-    // bond color panel
-    JPanel bondPanel = new JPanel();
-    bondPanel.setLayout(new BorderLayout());
-    bondPanel.setBorder(new TitledBorder(GT._("Bonds")));
-
-    isBondAtomColor = viewer.getBondArgb() == 0;
-    cbIsBondAtomColor = guimap.newJCheckBox("Prefs.isBondAtomColor",
-                                            isBondAtomColor);
-    cbIsBondAtomColor.addItemListener(checkBoxListener);
-    bondPanel.add(cbIsBondAtomColor, BorderLayout.NORTH);
-
-    eButton = new JButton();
-    eButton.setBackground(colorBond);
-    eButton.setToolTipText(GT._("Set the Color for Bonds"));
-    eButton.setEnabled(!isBondAtomColor);
-    ActionListener startBondChooser = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Color color = JColorChooser.showDialog(
-            eButton, GT._("Bond Color"), colorBond);
-        if (color == null) {
-          return;
-        }
-        colorBond = color;
-        eButton.setBackground(colorBond);
-        viewer.setBondArgb(colorBond.getRGB());
-        // should this be Integer.toString(colorBind.getRGB()) ?
-        currentProperties.put("colorBond", "" + colorBond.getRGB());
-      }
-    };
-    eButton.addActionListener(startBondChooser);
-    bondPanel.add(eButton, BorderLayout.CENTER);
-    colorPanel.add(bondPanel);
-
-    // vector color panel
-    JPanel vectorPanel = new JPanel();
-    vectorPanel.setLayout(new BorderLayout());
-    vectorPanel.setBorder(new TitledBorder(GT._("Vectors")));
-    vButton = new JButton();
-    vButton.setBackground(colorVector);
-    vButton.setToolTipText(GT._("Set the Vector Color"));
-    ActionListener startVectorChooser = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Color color = JColorChooser.showDialog(
-            vButton, GT._("Vector Color"), colorVector);
-        if (color == null) {
-          return;
-        }
-        colorVector = color;
-        vButton.setBackground(colorVector);
-        int argb = colorVector.getRGB();
-        viewer.setVectorArgb(argb);
-        currentProperties.put("colorVector", Integer.toString(argb));
-        viewer.refresh(0, "PreferencesDialog:actionPerformed()");
-      }
-    };
-    vButton.addActionListener(startVectorChooser);
-    vectorPanel.add(vButton, BorderLayout.CENTER);
-    colorPanel.add(vectorPanel);
-
-    // measurement color panel
-    JPanel measurementColorPanel = new JPanel();
-    measurementColorPanel.setLayout(new BorderLayout());
-    measurementColorPanel.setBorder(new TitledBorder(GT._("Measurements")));
-    measurementColorButton = new JButton();
-    measurementColorButton.setBackground(colorVector);
-    measurementColorButton
-      .setToolTipText(GT._("Color for distance, angle, & torsion measurements"));
-    ActionListener startMeasurementColorChooser = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Color color =JColorChooser.showDialog(
-            measurementColorButton, GT._("Measurements Color"), colorMeasurement);
-        if (color == null) {
-          return;
-        }
-        colorMeasurement = color;
-        measurementColorButton.setBackground(colorMeasurement);
-        viewer.setColorMeasurement(colorMeasurement);
-        currentProperties.put("colorMeasurement",
-            Integer.toString(colorMeasurement.getRGB()));
-        viewer.refresh(0, "PreferencesDialog:actionPerformed()");
-      }
-    };
-    measurementColorButton.addActionListener(startMeasurementColorChooser);
-    measurementColorPanel.add(measurementColorButton, BorderLayout.CENTER);
-    colorPanel.add(measurementColorPanel);
-
-    return colorPanel;
-  }
-
-  /*
-  public JPanel buildVibratePanel() {
-
-    JPanel vibratePanel = new JPanel();
-    vibratePanel.setLayout(new GridLayout(0, 1));
-
-    JPanel notePanel = new JPanel();
-    notePanel.setLayout(new BorderLayout());
-    notePanel.setBorder(new EtchedBorder());
-    JLabel noteLabel = new JLabel(
-      GT._("Note: settings will only be seen after selecting a new vibration."));
-    notePanel.add(noteLabel, BorderLayout.CENTER);
-    vibratePanel.add(notePanel);
-
-    JPanel vasPanel = new JPanel();
-    vasPanel.setLayout(new BorderLayout());
-    vasPanel.setBorder(new TitledBorder(GT._("Amplitude Scale")));
-    vasSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0 * Vibrate.getAmplitudeScale()));
-    vasSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    vasSlider.setPaintTicks(true);
-    vasSlider.setMajorTickSpacing(40);
-    vasSlider.setPaintLabels(true);
-    vasSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
-    vasSlider.setLabelTable(vasSlider.getLabelTable());
-    vasSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", JLabel.CENTER));
-    vasSlider.setLabelTable(vasSlider.getLabelTable());
-    vasSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", JLabel.CENTER));
-    vasSlider.setLabelTable(vasSlider.getLabelTable());
-    vasSlider.getLabelTable().put(new Integer(120),
-        new JLabel("1.2", JLabel.CENTER));
-    vasSlider.setLabelTable(vasSlider.getLabelTable());
-    vasSlider.getLabelTable().put(new Integer(160),
-        new JLabel("1.6", JLabel.CENTER));
-    vasSlider.setLabelTable(vasSlider.getLabelTable());
-    vasSlider.getLabelTable().put(new Integer(200),
-        new JLabel("2.0", JLabel.CENTER));
-    vasSlider.setLabelTable(vasSlider.getLabelTable());
-
-    vasSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        VibrateAmplitudeScale = source.getValue() / 100.0;
-        Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
-        currentProperties.put("VibrateAmplitudeScale",
-            Double.toString(VibrateAmplitudeScale));
-      }
-    });
-    vasPanel.add(vasSlider, BorderLayout.SOUTH);
-    vibratePanel.add(vasPanel);
-
-    JPanel vvsPanel = new JPanel();
-    vvsPanel.setLayout(new BorderLayout());
-    vvsPanel.setBorder(new TitledBorder(GT._("Vector Scale")));
-    vvsSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0 * Vibrate.getVectorScale()));
-    vvsSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    vvsSlider.setPaintTicks(true);
-    vvsSlider.setMajorTickSpacing(40);
-    vvsSlider.setPaintLabels(true);
-    vvsSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
-    vvsSlider.setLabelTable(vvsSlider.getLabelTable());
-    vvsSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", JLabel.CENTER));
-    vvsSlider.setLabelTable(vvsSlider.getLabelTable());
-    vvsSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", JLabel.CENTER));
-    vvsSlider.setLabelTable(vvsSlider.getLabelTable());
-    vvsSlider.getLabelTable().put(new Integer(120),
-        new JLabel("1.2", JLabel.CENTER));
-    vvsSlider.setLabelTable(vvsSlider.getLabelTable());
-    vvsSlider.getLabelTable().put(new Integer(160),
-        new JLabel("1.6", JLabel.CENTER));
-    vvsSlider.setLabelTable(vvsSlider.getLabelTable());
-    vvsSlider.getLabelTable().put(new Integer(200),
-        new JLabel("2.0", JLabel.CENTER));
-    vvsSlider.setLabelTable(vvsSlider.getLabelTable());
-
-    vvsSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        VibrateVectorScale = source.getValue() / 100.0;
-        Vibrate.setVectorScale(VibrateVectorScale);
-        currentProperties.put("VibrateVectorScale",
-            Double.toString(VibrateVectorScale));
-      }
-    });
-    vvsPanel.add(vvsSlider, BorderLayout.SOUTH);
-    vibratePanel.add(vvsPanel);
-
-    JPanel vfPanel = new JPanel();
-    vfPanel.setLayout(new BorderLayout());
-    vfPanel.setBorder(new TitledBorder(GT._("Number of Frames")));
-
-    vfSlider = new JSlider(JSlider.HORIZONTAL, 0, 50,
-        Vibrate.getNumberFrames());
-    vfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    vfSlider.setPaintTicks(true);
-    vfSlider.setMajorTickSpacing(5);
-    vfSlider.setPaintLabels(true);
-    vfSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        VibrationFrames = source.getValue();
-        Vibrate.setNumberFrames(VibrationFrames);
-        currentProperties.put("VibrationFrames",
-            Integer.toString(VibrationFrames));
-      }
-    });
-
-    vfPanel.add(vfSlider, BorderLayout.SOUTH);
-    vibratePanel.add(vfPanel);
-
-    return vibratePanel;
-  }
-  */
-
   protected void centerDialog() {
 
     Dimension screenSize = this.getToolkit().getScreenSize();
@@ -892,8 +532,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cH.setSelected(viewer.getShowHydrogens());
     cM.setSelected(viewer.getShowMeasurements());
 
-    cbWireframeRotation.setSelected(viewer.getWireframeRotation());
-
     cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
     cbShowAxes.setSelected(viewer.getShowAxes());
     cbShowBoundingBox.setSelected(viewer.getShowBbcage());
@@ -910,25 +548,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bwSlider.setValue(viewer.getMadBond()/2);
     bdSlider.setValue((int) (100 * viewer.getMinBondDistance()));
     btSlider.setValue((int) (100 * viewer.getBondTolerance()));
-
-    // Color panel controls:
-    bButton.setBackground(colorBackground);
-    pButton.setBackground(colorSelection);
-    cbIsLabelAtomColor.setSelected(isLabelAtomColor);
-    tButton.setBackground(colorText);
-    tButton.setEnabled(!isLabelAtomColor);
-    cbIsBondAtomColor.setSelected(isBondAtomColor);
-    eButton.setBackground(colorBond);
-    eButton.setEnabled(!isBondAtomColor);
-    vButton.setBackground(colorVector);
-    measurementColorButton.setBackground(colorMeasurement);
-
-    /*
-    // Vibrate panel controls
-    vasSlider.setValue((int) (100.0 * Vibrate.getAmplitudeScale()));
-    vvsSlider.setValue((int) (100.0 * Vibrate.getVectorScale()));
-    vfSlider.setValue(Vibrate.getNumberFrames());
-    */
 
   }
 
@@ -977,23 +596,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showHydrogens = Boolean.getBoolean("showHydrogens");
     //showVectors = Boolean.getBoolean("showVectors");
     showMeasurements = Boolean.getBoolean("showMeasurements");
-    wireframeRotation = Boolean.getBoolean("wireframeRotation");
     perspectiveDepth = Boolean.getBoolean("perspectiveDepth");
     showAxes = Boolean.getBoolean("showAxes");
     showBoundingBox = Boolean.getBoolean("showBoundingBox");
     axesOrientationRasmol = Boolean.getBoolean("axesOrientationRasmol");
     openFilePreview = Boolean.valueOf(System.getProperty("openFilePreview", "true")).booleanValue();
-    colorBackground = Color.getColor("colorBackground");
-    colorSelection = Color.getColor("colorSelection");
-    isLabelAtomColor = Boolean.getBoolean("isLabelAtomColor");
-    colorText = Color.getColor("colorText");
-    isBondAtomColor = Boolean.getBoolean("isBondAtomColor");
-    colorBond = Color.getColor("colorBond");
-    colorVector = Color.getColor("colorVector");
-    colorMeasurement = Color.getColor("colorMeasurement");
-    /*
-    VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
-    */
 
     minBondDistance =
       new Float(currentProperties.getProperty("minBondDistance")).floatValue();
@@ -1008,26 +615,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     VibrateVectorScale =
         new Double(currentProperties.getProperty("VibrateVectorScale")).doubleValue();
     */
-    //    viewer.setColorOutline(colorOutline);
-    viewer.setSelectionArgb(colorSelection == null ? 0 :
-                            colorSelection.getRGB());
-    viewer.setLabelArgb(isLabelAtomColor || colorText == null
-                        ? 0 : colorText.getRGB());
-    viewer.setBondArgb(isBondAtomColor || colorBond == null
-                       ? 0 : colorBond.getRGB());
     viewer.setPercentVdwAtom(percentVdwAtom);
     //viewer.setPropertyStyleString(AtomPropsMode);
     viewer.setMarBond(marBond);
-    viewer.setVectorArgb(colorVector == null ? 0 : colorVector.getRGB());
-    viewer.setColorMeasurement(colorMeasurement);
-    viewer.setBackgroundArgb(colorBackground == null ? 0 :
-                             colorBackground.getRGB());
     viewer.setMinBondDistance(minBondDistance);
     viewer.setBondTolerance(bondTolerance);
     viewer.setAutoBond(autoBond);
     viewer.setShowHydrogens(showHydrogens);
     viewer.setShowMeasurements(showMeasurements);
-    viewer.setWireframeRotation(wireframeRotation);
     viewer.setPerspectiveDepth(perspectiveDepth);
     viewer.setShowAxes(showAxes);
     viewer.setShowBbcage(showBoundingBox);
@@ -1081,22 +676,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         showMeasurements = isSelected;
         viewer.setShowMeasurements(showMeasurements);
         currentProperties.put("showMeasurements", strSelected);
-      } else if (key.equals("Prefs.isLabelAtomColor")) {
-        isLabelAtomColor = isSelected;
-        viewer.setLabelArgb(isLabelAtomColor || colorText == null
-                            ? 0 : colorText.getRGB());
-        currentProperties.put("isLabelAtomColor", strSelected);
-        tButton.setEnabled(!isLabelAtomColor);
-      } else if (key.equals("Prefs.isBondAtomColor")) {
-        isBondAtomColor = isSelected;
-        viewer.setBondArgb(isBondAtomColor || colorBond == null
-                           ? 0 : colorBond.getRGB());
-        currentProperties.put("isBondAtomColor", strSelected);
-        eButton.setEnabled(!isBondAtomColor);
-      } else if (key.equals("Prefs.wireframeRotation")) {
-        wireframeRotation = isSelected;
-        viewer.setWireframeRotation(wireframeRotation);
-        currentProperties.put("wireframeRotation", strSelected);
       } else if (key.equals("Prefs.perspectiveDepth")) {
         perspectiveDepth = isSelected;
         viewer.setPerspectiveDepth(perspectiveDepth);

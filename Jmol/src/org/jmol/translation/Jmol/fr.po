@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-19 16:52+0100\n"
+"POT-Creation-Date: 2006-03-12 20:34-0500\n"
 "PO-Revision-Date: 2006-02-19 17:18+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/viewer/StatusManager.java:135
+#: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."
 msgstr "Exécution du script par Jmol..."
 
@@ -36,7 +36,7 @@ msgstr "Impossible de trouver l''url \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:207
+#: org/openscience/jmol/app/PreferencesDialog.java:167
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr "OK"
@@ -568,7 +568,6 @@ msgid "Hydrogens"
 msgstr "Hydrogènes"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:711
 msgid "Measurements"
 msgstr "Mesures"
 
@@ -635,7 +634,8 @@ msgstr "Qualité JPEG"
 
 #: org/openscience/jmol/app/Jmol.java:127
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
+msgstr ""
+"Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
 
 #: org/openscience/jmol/app/Jmol.java:156
 msgid "Initializing 3D display..."
@@ -715,7 +715,8 @@ msgstr "taille fenêtre 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:391
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
+msgstr ""
+"Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
 #: org/openscience/jmol/app/Jmol.java:455
 msgid "Executing script..."
@@ -778,8 +779,12 @@ msgid "Filename Stem"
 msgstr "Racine du nom de fichier"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -815,7 +820,9 @@ msgstr "Calculer toutes les images"
 
 #: org/openscience/jmol/app/PovrayDialog.java:223
 msgid "Render each model (not only the currently displayed one)"
-msgstr "Crée une image pour chaque modèle (pas seulement pour celui actuellement affiché)"
+msgstr ""
+"Crée une image pour chaque modèle (pas seulement pour celui actuellement "
+"affiché)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:232
 msgid "Turn on POV-Ray anti-aliasing"
@@ -823,7 +830,8 @@ msgstr "Activer l'anti-aliasing de POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
+msgstr ""
+"Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -953,7 +961,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Sauver le fichier et lancer povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:199
+#: org/openscience/jmol/app/PreferencesDialog.java:159
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Annuler"
@@ -970,144 +978,75 @@ msgstr "Sauver"
 msgid "null component string"
 msgstr "Chaîne vide"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:164
+#: org/openscience/jmol/app/PreferencesDialog.java:127
 msgid "Preferences"
 msgstr "Préférences"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:182
+#: org/openscience/jmol/app/PreferencesDialog.java:144
 msgid "Display"
 msgstr "Affichage"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:183
+#: org/openscience/jmol/app/PreferencesDialog.java:145
 msgid "Atoms"
 msgstr "Atomes"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:184
-#: org/openscience/jmol/app/PreferencesDialog.java:648
+#: org/openscience/jmol/app/PreferencesDialog.java:146
 msgid "Bonds"
 msgstr "Liens"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:185
-msgid "Colors"
-msgstr "Couleurs"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:191
+#: org/openscience/jmol/app/PreferencesDialog.java:151
 msgid "Jmol Defaults"
 msgstr "Défaut Jmol"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:195
+#: org/openscience/jmol/app/PreferencesDialog.java:155
 msgid "RasMol Defaults"
 msgstr "Défaut RasMol"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:203
+#: org/openscience/jmol/app/PreferencesDialog.java:163
 msgid "Apply"
 msgstr "Appliquer"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:231
+#: org/openscience/jmol/app/PreferencesDialog.java:191
 msgid "Show All"
 msgstr "Tout afficher"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:331
+#: org/openscience/jmol/app/PreferencesDialog.java:285
 msgid "Default atom size"
 msgstr "Taille par défaut des atomes"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:332
+#: org/openscience/jmol/app/PreferencesDialog.java:286
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(pourcentage du rayon de vanDerWaals)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:384
+#: org/openscience/jmol/app/PreferencesDialog.java:338
 msgid "Compute Bonds"
 msgstr "Calculer les Liens"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:386
+#: org/openscience/jmol/app/PreferencesDialog.java:340
 msgid "Automatically"
 msgstr "Automatiquement"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:387
+#: org/openscience/jmol/app/PreferencesDialog.java:341
 msgid "Don't Compute Bonds"
 msgstr "Ne pas Calculer les Liens"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:414
+#: org/openscience/jmol/app/PreferencesDialog.java:368
 msgid "Default Bond Radius"
 msgstr "Rayon des Liens par Défaut"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:415
-#: org/openscience/jmol/app/PreferencesDialog.java:453
-#: org/openscience/jmol/app/PreferencesDialog.java:504
+#: org/openscience/jmol/app/PreferencesDialog.java:369
+#: org/openscience/jmol/app/PreferencesDialog.java:407
+#: org/openscience/jmol/app/PreferencesDialog.java:458
 msgid "(Angstroms)"
 msgstr "(Angstroms 1E-10)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:452
+#: org/openscience/jmol/app/PreferencesDialog.java:406
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Tolérance des Liens - somme de deux rayons covalents + cette valeur"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:503
+#: org/openscience/jmol/app/PreferencesDialog.java:457
 msgid "Minimum Bonding Distance"
 msgstr "Distance Minimun pour les Liens"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:560
-msgid "Background"
-msgstr "Arrière-plan"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:563
-msgid "Set the Background Color"
-msgstr "Régler la couleur d'Arrière-plan"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:569
-msgid "Background Color"
-msgstr "Couleur d'Arrière-plan"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:586
-msgid "Picked Atoms"
-msgstr "Atomes Choisis"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:589
-msgid "Set the Color for Picked Atoms"
-msgstr "Régler la Couleur pour les Atomes Choisis"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:595
-msgid "Picked Atom Color"
-msgstr "Couleur de l'Atome Choisi"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:613
-msgid "Text"
-msgstr "Texte"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:623
-msgid "Set the Color for Text"
-msgstr "Régler la Couleur pour le Texte"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:630
-msgid "Text Color"
-msgstr "Couleur du Texte"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:658
-msgid "Set the Color for Bonds"
-msgstr "Régler la Couleur pour les Liens"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:665
-msgid "Bond Color"
-msgstr "Couleur des Liens"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:683
-msgid "Vectors"
-msgstr "Vecteurs"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:686
-msgid "Set the Vector Color"
-msgstr "Régler la Couleur de Vecteur"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:692
-msgid "Vector Color"
-msgstr "Couleur de Vecteur"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:715
-msgid "Color for distance, angle, & torsion measurements"
-msgstr "Couleur pour les mesures de distance, angle & torsion"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:721
-msgid "Measurements Color"
-msgstr "Couleur des Mesures"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60
 msgid "Recent Files"
@@ -1145,6 +1084,56 @@ msgstr "Chargement..."
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
 
+#~ msgid "Colors"
+#~ msgstr "Couleurs"
+
+#~ msgid "Background"
+#~ msgstr "Arrière-plan"
+
+#~ msgid "Set the Background Color"
+#~ msgstr "Régler la couleur d'Arrière-plan"
+
+#~ msgid "Background Color"
+#~ msgstr "Couleur d'Arrière-plan"
+
+#~ msgid "Picked Atoms"
+#~ msgstr "Atomes Choisis"
+
+#~ msgid "Set the Color for Picked Atoms"
+#~ msgstr "Régler la Couleur pour les Atomes Choisis"
+
+#~ msgid "Picked Atom Color"
+#~ msgstr "Couleur de l'Atome Choisi"
+
+#~ msgid "Text"
+#~ msgstr "Texte"
+
+#~ msgid "Set the Color for Text"
+#~ msgstr "Régler la Couleur pour le Texte"
+
+#~ msgid "Text Color"
+#~ msgstr "Couleur du Texte"
+
+#~ msgid "Set the Color for Bonds"
+#~ msgstr "Régler la Couleur pour les Liens"
+
+#~ msgid "Bond Color"
+#~ msgstr "Couleur des Liens"
+
+#~ msgid "Vectors"
+#~ msgstr "Vecteurs"
+
+#~ msgid "Set the Vector Color"
+#~ msgstr "Régler la Couleur de Vecteur"
+
+#~ msgid "Vector Color"
+#~ msgstr "Couleur de Vecteur"
+
+#~ msgid "Color for distance, angle, & torsion measurements"
+#~ msgstr "Couleur pour les mesures de distance, angle & torsion"
+
+#~ msgid "Measurements Color"
+#~ msgstr "Couleur des Mesures"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Chargement des plugins..."
-

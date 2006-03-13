@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-19 16:52+0100\n"
+"POT-Creation-Date: 2006-03-12 20:34-0500\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
 
-#: org/jmol/viewer/StatusManager.java:135
+#: org/jmol/viewer/StatusManager.java:158
 #, fuzzy
 msgid "Jmol executing script ..."
 msgstr "S'està executant la seqüència..."
@@ -36,7 +36,7 @@ msgstr "No s''ha pogut trobar l''url \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:207
+#: org/openscience/jmol/app/PreferencesDialog.java:167
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr "D'acord"
@@ -568,7 +568,6 @@ msgid "Hydrogens"
 msgstr "Hidrògens"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:711
 msgid "Measurements"
 msgstr "Mesures"
 
@@ -961,7 +960,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Desa el fitxer i possiblement executa el POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:199
+#: org/openscience/jmol/app/PreferencesDialog.java:159
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Cancel·la"
@@ -978,144 +977,75 @@ msgstr "Desa"
 msgid "null component string"
 msgstr "cadena de component nul"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:164
+#: org/openscience/jmol/app/PreferencesDialog.java:127
 msgid "Preferences"
 msgstr "Preferències"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:182
+#: org/openscience/jmol/app/PreferencesDialog.java:144
 msgid "Display"
 msgstr "Visualització"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:183
+#: org/openscience/jmol/app/PreferencesDialog.java:145
 msgid "Atoms"
 msgstr "Àtoms"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:184
-#: org/openscience/jmol/app/PreferencesDialog.java:648
+#: org/openscience/jmol/app/PreferencesDialog.java:146
 msgid "Bonds"
 msgstr "Enllaços"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:185
-msgid "Colors"
-msgstr "Colors"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:191
+#: org/openscience/jmol/app/PreferencesDialog.java:151
 msgid "Jmol Defaults"
 msgstr "Paràmetres per defecte del Jmol"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:195
+#: org/openscience/jmol/app/PreferencesDialog.java:155
 msgid "RasMol Defaults"
 msgstr "Paràmetres per defecte del RasMol"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:203
+#: org/openscience/jmol/app/PreferencesDialog.java:163
 msgid "Apply"
 msgstr "Aplica"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:231
+#: org/openscience/jmol/app/PreferencesDialog.java:191
 msgid "Show All"
 msgstr "Mostra-ho tot"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:331
+#: org/openscience/jmol/app/PreferencesDialog.java:285
 msgid "Default atom size"
 msgstr "Mida per defecte de l'atom"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:332
+#: org/openscience/jmol/app/PreferencesDialog.java:286
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(percentatge de radi de Van der Waals)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:384
+#: org/openscience/jmol/app/PreferencesDialog.java:338
 msgid "Compute Bonds"
 msgstr "Computa els enllaços"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:386
+#: org/openscience/jmol/app/PreferencesDialog.java:340
 msgid "Automatically"
 msgstr "Automàticament"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:387
+#: org/openscience/jmol/app/PreferencesDialog.java:341
 msgid "Don't Compute Bonds"
 msgstr "No computis els enllaços"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:414
+#: org/openscience/jmol/app/PreferencesDialog.java:368
 msgid "Default Bond Radius"
 msgstr "Radi per defecte de l'enllaç"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:415
-#: org/openscience/jmol/app/PreferencesDialog.java:453
-#: org/openscience/jmol/app/PreferencesDialog.java:504
+#: org/openscience/jmol/app/PreferencesDialog.java:369
+#: org/openscience/jmol/app/PreferencesDialog.java:407
+#: org/openscience/jmol/app/PreferencesDialog.java:458
 msgid "(Angstroms)"
 msgstr "(Àmstrongs)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:452
+#: org/openscience/jmol/app/PreferencesDialog.java:406
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Tolerància d'enllaç - suma de dos radis covalents + aquest valor"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:503
+#: org/openscience/jmol/app/PreferencesDialog.java:457
 msgid "Minimum Bonding Distance"
 msgstr "Distància mínima d'enllaç"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:560
-msgid "Background"
-msgstr "Fons"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:563
-msgid "Set the Background Color"
-msgstr "Defineix el color de fons"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:569
-msgid "Background Color"
-msgstr "Color de fons"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:586
-msgid "Picked Atoms"
-msgstr "Àtoms triats"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:589
-msgid "Set the Color for Picked Atoms"
-msgstr "Defineix el color per als àtoms triats"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:595
-msgid "Picked Atom Color"
-msgstr "Color dels àtoms triats"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:613
-msgid "Text"
-msgstr "Text"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:623
-msgid "Set the Color for Text"
-msgstr "Defineix el color per al text"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:630
-msgid "Text Color"
-msgstr "Color del text"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:658
-msgid "Set the Color for Bonds"
-msgstr "Defineix el color dels enllaços"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:665
-msgid "Bond Color"
-msgstr "Color dels enllaços"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:683
-msgid "Vectors"
-msgstr "Vectors"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:686
-msgid "Set the Vector Color"
-msgstr "Defineix el color dels vectors"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:692
-msgid "Vector Color"
-msgstr "Color dels vectors"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:715
-msgid "Color for distance, angle, & torsion measurements"
-msgstr "Color per a les mesures de distància, angle i torsió"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:721
-msgid "Measurements Color"
-msgstr "Color de les mesures"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60
 msgid "Recent Files"
@@ -1152,6 +1082,57 @@ msgstr "S'està carregant..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
+
+#~ msgid "Colors"
+#~ msgstr "Colors"
+
+#~ msgid "Background"
+#~ msgstr "Fons"
+
+#~ msgid "Set the Background Color"
+#~ msgstr "Defineix el color de fons"
+
+#~ msgid "Background Color"
+#~ msgstr "Color de fons"
+
+#~ msgid "Picked Atoms"
+#~ msgstr "Àtoms triats"
+
+#~ msgid "Set the Color for Picked Atoms"
+#~ msgstr "Defineix el color per als àtoms triats"
+
+#~ msgid "Picked Atom Color"
+#~ msgstr "Color dels àtoms triats"
+
+#~ msgid "Text"
+#~ msgstr "Text"
+
+#~ msgid "Set the Color for Text"
+#~ msgstr "Defineix el color per al text"
+
+#~ msgid "Text Color"
+#~ msgstr "Color del text"
+
+#~ msgid "Set the Color for Bonds"
+#~ msgstr "Defineix el color dels enllaços"
+
+#~ msgid "Bond Color"
+#~ msgstr "Color dels enllaços"
+
+#~ msgid "Vectors"
+#~ msgstr "Vectors"
+
+#~ msgid "Set the Vector Color"
+#~ msgstr "Defineix el color dels vectors"
+
+#~ msgid "Vector Color"
+#~ msgstr "Color dels vectors"
+
+#~ msgid "Color for distance, angle, & torsion measurements"
+#~ msgstr "Color per a les mesures de distància, angle i torsió"
+
+#~ msgid "Measurements Color"
+#~ msgstr "Color de les mesures"
 
 #~ msgid "Loading plugins..."
 #~ msgstr "S'estan carregant els connectors..."

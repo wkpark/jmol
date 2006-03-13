@@ -153,8 +153,6 @@ public class DisplayPanel extends JPanel
     new MeasurementsAction();
   private SelectallAction selectallAction = new SelectallAction();
   private DeselectallAction deselectallAction = new DeselectallAction();
-  private WireFrameRotationAction wireframerotationAction =
-    new WireFrameRotationAction();
   private PerspectiveAction perspectiveAction = new PerspectiveAction();
   private AxesAction axesAction = new AxesAction();
   private BoundboxAction boundboxAction = new BoundboxAction();
@@ -396,19 +394,6 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class WireFrameRotationAction extends AbstractAction {
-
-    public WireFrameRotationAction() {
-      super("wireframerotationCheck");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setWireframeRotation(cbmi.isSelected());
-    }
-  }
-
   class PerspectiveAction extends AbstractAction {
 
     public PerspectiveAction() {
@@ -466,8 +451,6 @@ public class DisplayPanel extends JPanel
   }
 
   void setDisplayMenuState() {
-    //    guimap.setSelected("wireframerotationCheck",
-    //                       viewer.getWireframeRotation());
     guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
     guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
     guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
@@ -483,7 +466,7 @@ public class DisplayPanel extends JPanel
       defineCenterAction,
       hydrogensAction, measurementsAction,
       selectallAction, deselectallAction,
-      homeAction, wireframerotationAction, perspectiveAction,
+      homeAction, perspectiveAction,
       axesAction, boundboxAction,
       acchargeAction, actypeAction,
     };

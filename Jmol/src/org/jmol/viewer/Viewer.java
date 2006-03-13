@@ -755,52 +755,13 @@ final public class Viewer extends JmolViewer {
     return colorManager.colixLabel;
   }
 
-  public void setColorMeasurement(Color c) {
-    colorManager.setColorMeasurement(c);
-    refresh(0, "Viewer:setColorMeasurement()");
+  public void setMeasurementArgb(int argb) {
+    colorManager.setMeasurementArgb(argb);
+    refresh(0, "Viewer:setMeasurementArgb()");
   }
 
-  public Color getColorMeasurement() {
-    return colorManager.colorDistance;
-  }
-
-  void setColorDistance(Color c) {
-    colorManager.setColorDistance(c);
-    refresh(0, "Viewer:setColorDistance()");
-  }
-
-  Color getColorDistance() {
-    return colorManager.colorDistance;
-  }
-
-  short getColixDistance() {
-    return colorManager.colixDistance;
-  }
-
-  void setColorAngle(Color c) {
-    colorManager.setColorAngle(c);
-    refresh(0, "Viewer:setColorAngle()");
-  }
-
-  Color getColorAngle() {
-    return colorManager.colorAngle;
-  }
-
-  short getColixAngle() {
-    return colorManager.colixAngle;
-  }
-
-  void setColorTorsion(Color c) {
-    colorManager.setColorTorsion(c);
-    refresh(0, "Viewer:setCOlorTorsion()");
-  }
-
-  Color getColorTorsion() {
-    return colorManager.colorTorsion;
-  }
-
-  short getColixTorsion() {
-    return colorManager.colixTorsion;
+  public int getMeasurementArgb() {
+    return g3d.getColixArgb(colorManager.colixMeasurement);
   }
 
   public void setVectorArgb(int argb) {

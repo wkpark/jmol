@@ -27,7 +27,6 @@ package org.jmol.api;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Event;
-import java.awt.Color;
 import java.awt.Image;
 import java.net.URL;
 import java.util.BitSet;
@@ -166,8 +165,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public BitSet getGroupsPresentBitSet();
 
-  //deprecated
-  abstract public void setWireframeRotation(boolean wireframeRotation);
   abstract public void setPerspectiveDepth(boolean perspectiveDepth);
 
   abstract public boolean getPerspectiveDepth();
@@ -189,7 +186,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public Matrix4f getUnscaledTransformMatrix();
 
   abstract public int getBackgroundArgb();
-  abstract public void setBackgroundArgb(int argbBackground);
   abstract public void setColorBackground(String colorName);
 
   abstract public float getAtomRadius(int atomIndex);
@@ -226,16 +222,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public float getMinBondDistance();
   abstract public void setMinBondDistance(float minBondDistance);
-
-  abstract public void setSelectionArgb(int argbSelection);
-  abstract public void setLabelArgb(int argbLabel);
-  abstract public int getLabelArgb();
-  abstract public void setBondArgb(int argbBond);
-  abstract public int getBondArgb();
-  abstract public void setVectorArgb(int argbVector);
-  abstract public int getVectorArgb();
-  abstract public Color getColorMeasurement();
-  abstract public void setColorMeasurement(Color colorMeasurement);
 
   abstract public void refresh(int isOrientationChange, String strWhy);
 

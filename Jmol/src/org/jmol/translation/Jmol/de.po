@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-19 16:52+0100\n"
+"POT-Creation-Date: 2006-03-12 20:34-0500\n"
 "PO-Revision-Date: 2005-12-21 19:44+0100\n"
 "Last-Translator: Daniel Leidert <dleidert@users.sourceforge.net>\n"
 "Language-Team: none\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: org/jmol/viewer/StatusManager.java:135
+#: org/jmol/viewer/StatusManager.java:158
 #, fuzzy
 msgid "Jmol executing script ..."
 msgstr "Skript ausführen..."
@@ -35,7 +35,7 @@ msgstr "URL \"{0}\" wird nicht gefunden."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:207
+#: org/openscience/jmol/app/PreferencesDialog.java:167
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr "OK"
@@ -567,7 +567,6 @@ msgid "Hydrogens"
 msgstr "Wasserstoffatome"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#: org/openscience/jmol/app/PreferencesDialog.java:711
 msgid "Measurements"
 msgstr "Messwerte"
 
@@ -962,7 +961,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Datei speichern und wenn möglich POV-Ray starten"
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:199
+#: org/openscience/jmol/app/PreferencesDialog.java:159
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -979,144 +978,75 @@ msgstr "Speichern"
 msgid "null component string"
 msgstr "String ohne Komponenten."
 
-#: org/openscience/jmol/app/PreferencesDialog.java:164
+#: org/openscience/jmol/app/PreferencesDialog.java:127
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:182
+#: org/openscience/jmol/app/PreferencesDialog.java:144
 msgid "Display"
 msgstr "Anzeige"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:183
+#: org/openscience/jmol/app/PreferencesDialog.java:145
 msgid "Atoms"
 msgstr "Atome"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:184
-#: org/openscience/jmol/app/PreferencesDialog.java:648
+#: org/openscience/jmol/app/PreferencesDialog.java:146
 msgid "Bonds"
 msgstr "Bindungen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:185
-msgid "Colors"
-msgstr "Farben"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:191
+#: org/openscience/jmol/app/PreferencesDialog.java:151
 msgid "Jmol Defaults"
 msgstr "Jmol-Standards"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:195
+#: org/openscience/jmol/app/PreferencesDialog.java:155
 msgid "RasMol Defaults"
 msgstr "RasMol-Standards"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:203
+#: org/openscience/jmol/app/PreferencesDialog.java:163
 msgid "Apply"
 msgstr "Anwenden"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:231
+#: org/openscience/jmol/app/PreferencesDialog.java:191
 msgid "Show All"
 msgstr "Alle zeigen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:331
+#: org/openscience/jmol/app/PreferencesDialog.java:285
 msgid "Default atom size"
 msgstr "Standard Atomgröße"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:332
+#: org/openscience/jmol/app/PreferencesDialog.java:286
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(in Prozent des van-der-WAALS-Radius)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:384
+#: org/openscience/jmol/app/PreferencesDialog.java:338
 msgid "Compute Bonds"
 msgstr "Bindungen berechnen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:386
+#: org/openscience/jmol/app/PreferencesDialog.java:340
 msgid "Automatically"
 msgstr "Automatisch"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:387
+#: org/openscience/jmol/app/PreferencesDialog.java:341
 msgid "Don't Compute Bonds"
 msgstr "Bindungen nicht berechnen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:414
+#: org/openscience/jmol/app/PreferencesDialog.java:368
 msgid "Default Bond Radius"
 msgstr "Standard Bindungsradius"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:415
-#: org/openscience/jmol/app/PreferencesDialog.java:453
-#: org/openscience/jmol/app/PreferencesDialog.java:504
+#: org/openscience/jmol/app/PreferencesDialog.java:369
+#: org/openscience/jmol/app/PreferencesDialog.java:407
+#: org/openscience/jmol/app/PreferencesDialog.java:458
 msgid "(Angstroms)"
 msgstr "(in Angstrom)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:452
+#: org/openscience/jmol/app/PreferencesDialog.java:406
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Toleranz der Bindung - Summe zweier kovalenter Radien + dieser Wert"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:503
+#: org/openscience/jmol/app/PreferencesDialog.java:457
 msgid "Minimum Bonding Distance"
 msgstr "Minimaler Bindungsabstand"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:560
-msgid "Background"
-msgstr "Hintergrund"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:563
-msgid "Set the Background Color"
-msgstr "Hintergrundfarbe festlegen"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:569
-msgid "Background Color"
-msgstr "Hintergrundfarbe"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:586
-msgid "Picked Atoms"
-msgstr "Markierte Atome"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:589
-msgid "Set the Color for Picked Atoms"
-msgstr "Farbe für markierte Atome festlegen"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:595
-msgid "Picked Atom Color"
-msgstr "Farbe der markierten Atome"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:613
-msgid "Text"
-msgstr "Text"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:623
-msgid "Set the Color for Text"
-msgstr "Textfarbe festlegen"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:630
-msgid "Text Color"
-msgstr "Textfarbe"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:658
-msgid "Set the Color for Bonds"
-msgstr "Farbe der Bindungen festlegen"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:665
-msgid "Bond Color"
-msgstr "Farbe der Bindungen"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:683
-msgid "Vectors"
-msgstr "Vektoren"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:686
-msgid "Set the Vector Color"
-msgstr "Farbe der Vektoren festlegen"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:692
-msgid "Vector Color"
-msgstr "Farbe der Vektoren"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:715
-msgid "Color for distance, angle, & torsion measurements"
-msgstr "Farbe der Distanz-, Winkel- und Torsionsmessungen"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:721
-msgid "Measurements Color"
-msgstr "Farbe der Messwerte"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60
 msgid "Recent Files"
@@ -1153,6 +1083,57 @@ msgstr "Lade..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Neuigkeiten"
+
+#~ msgid "Colors"
+#~ msgstr "Farben"
+
+#~ msgid "Background"
+#~ msgstr "Hintergrund"
+
+#~ msgid "Set the Background Color"
+#~ msgstr "Hintergrundfarbe festlegen"
+
+#~ msgid "Background Color"
+#~ msgstr "Hintergrundfarbe"
+
+#~ msgid "Picked Atoms"
+#~ msgstr "Markierte Atome"
+
+#~ msgid "Set the Color for Picked Atoms"
+#~ msgstr "Farbe für markierte Atome festlegen"
+
+#~ msgid "Picked Atom Color"
+#~ msgstr "Farbe der markierten Atome"
+
+#~ msgid "Text"
+#~ msgstr "Text"
+
+#~ msgid "Set the Color for Text"
+#~ msgstr "Textfarbe festlegen"
+
+#~ msgid "Text Color"
+#~ msgstr "Textfarbe"
+
+#~ msgid "Set the Color for Bonds"
+#~ msgstr "Farbe der Bindungen festlegen"
+
+#~ msgid "Bond Color"
+#~ msgstr "Farbe der Bindungen"
+
+#~ msgid "Vectors"
+#~ msgstr "Vektoren"
+
+#~ msgid "Set the Vector Color"
+#~ msgstr "Farbe der Vektoren festlegen"
+
+#~ msgid "Vector Color"
+#~ msgstr "Farbe der Vektoren"
+
+#~ msgid "Color for distance, angle, & torsion measurements"
+#~ msgstr "Farbe der Distanz-, Winkel- und Torsionsmessungen"
+
+#~ msgid "Measurements Color"
+#~ msgstr "Farbe der Messwerte"
 
 #~ msgid "Loading plugins..."
 #~ msgstr "Lade Plugins..."

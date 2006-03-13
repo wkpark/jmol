@@ -71,51 +71,28 @@ import java.io.Reader;
 final public class Viewer extends JmolViewer {
 
   Component awtComponent;
-
   ColorManager colorManager;
-
   PropertyManager propertyManager;
-
   StatusManager statusManager;
-
   TransformManager transformManager;
-
   SelectionManager selectionManager;
-
   MouseManager mouseManager;
-
   FileManager fileManager;
-
-  public ModelManager modelManager;
-
+  ModelManager modelManager;
   RepaintManager repaintManager;
-
   StyleManager styleManager;
-
   TempManager tempManager;
-
   PickingManager pickingManager;
- 
-  public Eval eval;
-
+  Eval eval;
   Graphics3D g3d;
-
   JmolAdapter modelAdapter;
-
   String strJavaVendor;
-
   String strJavaVersion;
-
   String strOSName;
-
   Hashtable appletInfo;
-
   String htmlName = "";
-
   boolean jvm11orGreater = false;
-
   boolean jvm12orGreater = false;
-
   boolean jvm14orGreater = false;
 
   Viewer(Component awtComponent, JmolAdapter modelAdapter) {

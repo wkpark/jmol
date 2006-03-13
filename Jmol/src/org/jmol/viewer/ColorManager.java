@@ -96,20 +96,6 @@ class ColorManager {
     g3d.setBackground(colixBackground);
   }
 
-  Color colorAxes = new Color(128, 128, 0);
-  short colixAxes = Graphics3D.OLIVE;
-  void setColorAxes(Color color) {
-    colorAxes = color;
-    colixAxes = Graphics3D.getColix(color);
-  }
-
-  Color colorAxesText = colorAxes;
-  short colixAxesText = Graphics3D.OLIVE;
-  void setColorAxesText(Color color) {
-    colorAxesText = color;
-    colixAxesText = Graphics3D.getColix(color);
-  }
-
   void setColorBackground(String colorName) {
     if (colorName != null && colorName.length() > 0)
       setBackgroundArgb(Graphics3D.getArgbFromString(colorName));

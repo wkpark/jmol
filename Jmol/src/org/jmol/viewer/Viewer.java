@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
+ * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
  * Contact: miguel@jmol.org
  *
@@ -102,10 +102,12 @@ final public class Viewer extends JmolViewer {
     strJavaVendor = System.getProperty("java.vendor");
     strOSName = System.getProperty("os.name");
     strJavaVersion = System.getProperty("java.version");
-    jvm11orGreater = (strJavaVersion.compareTo("1.1") >= 0 &&
-    // Netscape on MacOS does not implement 1.1 event model
-    !(strJavaVendor.startsWith("Netscape")
-        && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
+    jvm11orGreater =
+      (strJavaVersion.compareTo("1.1") >= 0 &&
+       // Netscape on MacOS does not implement 1.1 event model
+       !(strJavaVendor.startsWith("Netscape") &&
+         strJavaVersion.compareTo("1.1.5") <= 0 &&
+         "Mac OS".equals(strOSName)));
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
 
@@ -138,7 +140,7 @@ final public class Viewer extends JmolViewer {
   }
 
   public static JmolViewer allocateViewer(Component awtComponent,
-      JmolAdapter modelAdapter) {
+                                          JmolAdapter modelAdapter) {
     return new Viewer(awtComponent, modelAdapter);
   }
 
@@ -749,14 +751,6 @@ final public class Viewer extends JmolViewer {
 
   short getColixHbondType(short order) {
     return colorManager.getColixHbondType(order);
-  }
-
-  short getColixAxes() {
-    return colorManager.colixAxes;
-  }
-
-  short getColixAxesText() {
-    return colorManager.colixAxesText;
   }
 
   short getColixFromPalette(float val, float rangeMin, float rangeMax,

@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3i;
 import java.text.NumberFormat;
+import org.jmol.g3d.Graphics3D;
 
 class UccageRenderer extends ShapeRenderer {
 
@@ -45,9 +46,11 @@ class UccageRenderer extends ShapeRenderer {
   void render() {
     Uccage uccage = (Uccage)shape;
     short mad = uccage.mad;
-    short colix = uccage.colix;
     if (mad == 0 || ! uccage.hasUnitcell)
       return;
+    short colix = uccage.colix;
+    if (colix == 0)
+      colix = Graphics3D.OLIVE;
     BbcageRenderer.render(viewer, g3d, mad, colix, frame.unitcellVertices,
                           screens);
     /*

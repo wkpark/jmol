@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -53,6 +53,8 @@ class AxesRenderer extends ShapeRenderer {
     if (mad >= 20)
       widthPixels = viewer.scaleToScreen(originScreen.z, mad);
     short colix = axes.colix;
+    if (colix == 0)
+      colix = Graphics3D.OLIVE;
     for (int i = 6; --i >= 0; ) {
       if (mad < 0)
         g3d.drawDottedLine(colix, originScreen, axisScreens[i]);

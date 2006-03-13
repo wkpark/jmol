@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,10 @@ class BbcageRenderer extends ShapeRenderer {
     short mad = bbcage.mad;
     if (mad == 0)
       return;
-    render(viewer, g3d, mad, bbcage.colix, frame.bboxVertices, screens);
+    short colix = bbcage.colix;
+    if (colix == 0)
+      colix = Graphics3D.OLIVE;
+    render(viewer, g3d, mad, colix, frame.bboxVertices, screens);
   }
 
   static void render(Viewer viewer, Graphics3D g3d,

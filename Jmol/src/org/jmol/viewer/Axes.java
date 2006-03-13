@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -58,8 +58,6 @@ class Axes extends SelectionIndependentShape {
       axisPoint.y *= corner.y;
       axisPoint.z *= corner.z;
       axisPoint.add(originPoint);
-
-      colix = viewer.getColixAxes();
 
       font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     }

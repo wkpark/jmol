@@ -1078,6 +1078,7 @@ final public class Viewer extends JmolViewer {
   void clear() {
     repaintManager.clearAnimation();
     transformManager.clearVibration();
+    transformManager.clearSpin();
     modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
     clearMeasurements();
@@ -2803,6 +2804,23 @@ final public class Viewer extends JmolViewer {
 
   public int getSyncMode() {
     return statusManager.getSyncMode();
+  }
+
+  public void setSpinAxis(String axisID, int degrees) {
+    Point3f rotCenter = modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
+    Vector3f rotAxis = modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
+    if (rotCenter == null || rotAxis == null) return;
+    setSpinCenter(rotCenter);
+    System.out.println("setSpinAxis " + axisID + " " + rotAxis + " " + degrees);
+    setSpin(rotAxis, degrees);
+  }
+
+  void setSpinCenter(Point3f center) {
+    transformManager.setSpinCenter(center);
+  }
+
+  void setSpin(Vector3f axis, int degrees) {
+    transformManager.setSpin(axis, degrees);
   }
 
  }

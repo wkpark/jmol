@@ -34,7 +34,7 @@ import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
+
 
 class Context {
   String filename;
@@ -3014,6 +3014,12 @@ class Eval implements Runnable {
   }
 
   void setSpin() throws ScriptException {
+    if (statement[2].tok == Token.leftsquare && statement[3].tok == Token.identifier) {
+      checkStatementLength(6); //set spin [ id ] N
+      String axisID = (String)statement[3].value;
+      viewer.setSpinAxis(axisID, intParameter(5));
+      return;
+    }
     checkLength4();
     int value = intParameter(3);
     switch (statement[2].tok) {
@@ -3914,4 +3920,5 @@ class Eval implements Runnable {
                               propertyName, propertyValue);
     }
   }
+  
 }

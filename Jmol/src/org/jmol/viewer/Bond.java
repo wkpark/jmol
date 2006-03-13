@@ -56,8 +56,7 @@ class Bond {
   Bond(Atom atom1, Atom atom2, short order, Frame frame) {
     this(atom1, atom2, order,
          ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0
-          ? 0 : frame.viewer.getMadBond()),
-         frame.viewer.getColixBond(order));
+          ? 0 : frame.viewer.getMadBond()), (short)0);
   }
 
   boolean isCovalent() {

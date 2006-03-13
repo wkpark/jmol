@@ -146,8 +146,6 @@ public class DisplayPanel extends JPanel
   private RightAction rightAction = new RightAction();
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
-  private aChargeColorAction acchargeAction = new aChargeColorAction();
-  private aAtomTypeColorAction actypeAction = new aAtomTypeColorAction();
   private HydrogensAction hydrogensAction = new HydrogensAction();
   private MeasurementsAction measurementsAction =
     new MeasurementsAction();
@@ -210,30 +208,6 @@ public class DisplayPanel extends JPanel
       if (viewer.haveFrame()) {
         viewer.clearSelection();
       }
-    }
-  }
-
-  class aChargeColorAction extends AbstractAction {
-
-    public aChargeColorAction() {
-      super("accharge");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile("formalcharge");
-    }
-  }
-
-  class aAtomTypeColorAction extends AbstractAction {
-
-    public aAtomTypeColorAction() {
-      super("actype");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile("cpk");
     }
   }
 
@@ -468,7 +442,6 @@ public class DisplayPanel extends JPanel
       selectallAction, deselectallAction,
       homeAction, perspectiveAction,
       axesAction, boundboxAction,
-      acchargeAction, actypeAction,
     };
     return defaultActions;
   }

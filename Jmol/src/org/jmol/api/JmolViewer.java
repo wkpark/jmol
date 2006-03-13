@@ -149,9 +149,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setSelectionSet(BitSet newSelection);
 //BH 2/2006  abstract public BitSet getSelectionSet();
 
-  // get rid of this!
-  abstract public void setModeAtomColorProfile(String mode);
-
   abstract public void homePosition();
   abstract public void rotateFront();
   abstract public void rotateToX(int degrees);

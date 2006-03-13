@@ -651,15 +651,6 @@ final public class Viewer extends JmolViewer {
   // delegated to ColorManager
   // ///////////////////////////////////////////////////////////////
 
-  public void setModeAtomColorProfile(String palette) {
-    colorManager.setPaletteDefault(palette);
-    refresh(0, "Viewer:setModeAtomColorProfile()");
-  }
-
-  String getModeAtomColorProfile() {
-    return colorManager.paletteDefault;
-  }
-
   void setDefaultColors(String colorScheme) {
     colorManager.setDefaultColors(colorScheme);
   }
@@ -668,12 +659,6 @@ final public class Viewer extends JmolViewer {
     colorManager.setSelectionArgb(argb);
     refresh(0, "Viewer:setSelectionArgb()");
   }
-
-  /*
-  Color getColorSelection() {
-    return colorManager.getColorSelection();
-  }
-  */
 
   short getColixSelection() {
     return colorManager.getColixSelection();
@@ -716,42 +701,6 @@ final public class Viewer extends JmolViewer {
 
   short getColixDotsConcave() {
     return colorManager.colixDotsConcave;
-  }
-
-  public void setLabelArgb(int argb) {
-    colorManager.setLabelArgb(argb);
-    setShapeColorProperty(JmolConstants.SHAPE_LABELS, argb);
-    refresh(0, "Viewer:setLabelArgb()");
-  }
-
-  public int getLabelArgb() {
-    return g3d.getColixArgb(colorManager.colixLabel);
-  }
-
-  short getColixLabel() {
-    return colorManager.colixLabel;
-  }
-
-  public void setMeasurementArgb(int argb) {
-    colorManager.setMeasurementArgb(argb);
-    refresh(0, "Viewer:setMeasurementArgb()");
-  }
-
-  public int getMeasurementArgb() {
-    return g3d.getColixArgb(colorManager.colixMeasurement);
-  }
-
-  public void setVectorArgb(int argb) {
-    colorManager.setVectorArgb(argb);
-    refresh(0, "Viewer:setVectorArgb()");
-  }
-
-  public int getVectorArgb() {
-    return g3d.getColixArgb(colorManager.colixVector);
-  }
-
-  short getColixVector() {
-    return colorManager.colixVector;
   }
 
   float getVectorScale() {
@@ -879,11 +828,6 @@ final public class Viewer extends JmolViewer {
     selectionManager.setSelection(atomIndex);
     refresh(0, "Viewer:setSelection()");
   }
-
-  /*
-   * boolean isSelected(Atom atom) { return
-   * selectionManager.isSelected(atom.atomIndex); }
-   */
 
   boolean isSelected(int atomIndex) {
     return selectionManager.isSelected(atomIndex);
@@ -1725,11 +1669,6 @@ final public class Viewer extends JmolViewer {
     repaintManager.popHoldRepaint();
   }
 
-  /*
-   * void forceRefresh() { System.out.println("viewer.forceRefresh");
-   * repaintManager.forceRefresh(); }
-   */
-
   public void refresh(int isOrientationChange, String strWhy) {
     repaintManager.refresh();
     statusManager.setStatusViewerRefreshed(isOrientationChange, strWhy);
@@ -1945,23 +1884,6 @@ final public class Viewer extends JmolViewer {
 
   void setHideNameInPopup(boolean hideNameInPopup) {
     this.hideNameInPopup = hideNameInPopup;
-  }
-
-  public void setBondArgb(int argb) {
-    colorManager.setBondArgb(argb);
-    setShapeColorProperty(JmolConstants.SHAPE_STICKS, argb);
-  }
-
-  public int getBondArgb() {
-    return g3d.getColixArgb(colorManager.colixBond);
-  }
-
-  short getColixBond(int order) {
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      return colorManager.colixHbond;
-    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
-      return colorManager.colixSsbond;
-    return colorManager.colixBond;
   }
 
   void setSsbondsBackbone(boolean ssbondsBackbone) {

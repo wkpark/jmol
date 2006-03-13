@@ -45,8 +45,6 @@ class ColorManager {
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;
       viewer.setColorBackground(Color.black);
-      viewer.setMeasurementArgb(0);
-      setLabelColix(Graphics3D.WHITE);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else if (colorScheme.equals("rasmol")) {
       copyArgbsCpk();
@@ -61,7 +59,6 @@ class ColorManager {
       }
       viewer.setColorBackground(Color.black);
       setMeasurementColix(Graphics3D.WHITE);
-      setLabelColix(Graphics3D.NULL_COLIX);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else {
       System.out.println("unrecognized color scheme");
@@ -77,18 +74,6 @@ class ColorManager {
       argbsCpk[i] = JmolConstants.argbsCpk[i];
   }
 
-  String paletteDefault = "cpk";
-
-  void setPaletteDefault(String palette) {
-    paletteDefault = palette.intern();
-  }
-
-  /*
-  byte getPaletteDefault() {
-    return paletteDefault;
-  }
-  */
-
   final static short colixSelectionDefault = Graphics3D.GOLD;
 
   short colixSelection = colixSelectionDefault;
@@ -97,65 +82,17 @@ class ColorManager {
       (argb == 0 ? colixSelectionDefault : Graphics3D.getColix(argb));
   }
 
-  /*
-  Color getColorSelection() {
-    return colorSelection;
-  }
-  */
-
   short getColixSelection() {
     return colixSelection;
   }
 
-  Color colorRubberband = Color.pink;
   short colixRubberband = Graphics3D.HOTPINK;
-  Color getColorRubberband() {
-    return colorRubberband;
-  }
-
-  short getColixRubberband() {
-    return colixRubberband;
-  }
 
   void setColorRubberband(Color color) {
     if (color == null)
       color = Color.pink;
-    colorRubberband = color;
     colixRubberband = Graphics3D.getColix(color);
   }
-
-  boolean isBondAtomColor = true;
-  void setIsBondAtomColor(boolean isBondAtomColor) {
-    this.isBondAtomColor = isBondAtomColor;
-  }
-
-  short colixBond = 0;
-  void setBondArgb(int argb) {
-    colixBond = Graphics3D.getColix(argb);
-  }
-
-  Color colorHbond = null;
-  short colixHbond = 0;
-  void setColorHbond(Color c) {
-    colorHbond = c;
-    colixHbond = Graphics3D.getColix(c);
-  }
-
-  Color colorSsbond = null;
-  short colixSsbond = 0;
-  void setColorSsbond(Color c) {
-    colorSsbond = c;
-    colixSsbond = Graphics3D.getColix(c);
-  }
-
-  short colixLabel = Graphics3D.BLACK;
-  void setLabelColix(short colix) {
-    colixLabel = colix;
-  }
-  void setLabelArgb(int argb) {
-    colixLabel = Graphics3D.getColix(argb);
-  }
-
 
   short colixDotsConvex = 0;
   short colixDotsConcave = 0;
@@ -200,18 +137,13 @@ class ColorManager {
     colixAxesText = Graphics3D.getColix(color);
   }
 
-  short colixVector = 0;
-  void setVectorArgb(int argb) {
-    colixVector = Graphics3D.getColix(argb);
-  }
-
   void setColorBackground(String colorName) {
     if (colorName != null && colorName.length() > 0)
       setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
   }
 
   short getColixAtom(Atom atom) {
-    return getColixAtomPalette(atom, paletteDefault);
+    return getColixAtomPalette(atom, "cpk");
   }
 
   short getColixAtomPalette(Atom atom, String palette) {

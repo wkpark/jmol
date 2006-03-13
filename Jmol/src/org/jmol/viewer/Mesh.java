@@ -45,10 +45,15 @@ class Mesh {
   int polygonCount;
   int[][] polygonIndexes = null;
   
+  int drawVertexCount;
   float scale = 1;
   Point3f ptCenter = new Point3f(0,0,0);
   Point3f ptCenters[];
+  Vector3f axis = new Vector3f(1,0,0);
+  Vector3f axes[];
   String meshType = null;
+  String drawType = null;
+  
   int[] visibilityFlags = null;
   
   boolean showPoints = false;
@@ -171,12 +176,12 @@ class Mesh {
     return null;
   }
   
-  boolean isPolygonDisplayable(int index) {
+ final  boolean isPolygonDisplayable(int index) {
     return (visibilityFlags == null ||
         visibilityFlags[index] != 0); 
   }
   
-  int setPolygon(Point3f[] ptList, int nVertices, int nPoly) {
+  final int setPolygon(Point3f[] ptList, int nVertices, int nPoly) {
     /*
      * designed for Draw 
      * 
@@ -184,8 +189,25 @@ class Mesh {
      * though a bit redundant. We could reuse the fixed ones -- no matter
      * 
      */
+
+    if (nVertices > 4)
+      nVertices = 4;    // for now
+
+    switch (nVertices) {
+    case 1:
+      drawType = "Point";
+      break;
+    case 2:
+      drawType = "Line";
+      break;
+    default:
+      drawType = "Plane";
+    }
+    drawVertexCount = nVertices;
+    
     if (nVertices == 0) return nPoly;
     int nVertices0 = vertexCount;
+    
     for (int i = 0; i < nVertices; i++) {
       addVertexCopy(ptList[i]);
     }
@@ -198,7 +220,7 @@ class Mesh {
     return nPoly + 1;
   }
   
-  void scaleDrawing(float newScale) {
+  final void scaleDrawing(float newScale) {
     /*
      * allows for Draw to scale object
      * have to watch out for double-listed vertices
@@ -227,7 +249,7 @@ class Mesh {
     }
   }
   
-  void setCenter(int iModel) {
+  final void setCenter(int iModel) {
     Point3f center = new Point3f(0, 0, 0);
     int iptlast = -1;
     int ipt = 0;
@@ -254,5 +276,37 @@ class Mesh {
     } else {
       ptCenters[iModel] = center;
     }
-  }    
+  }
+
+  final Point3f getSpinCenter(int modelIndex) {
+    if (vertices == null)
+      return null;
+    return (ptCenters == null || modelIndex < 0 ? ptCenter : ptCenters[modelIndex]);
+  }
+  
+  final Vector3f getSpinAxis(int modelIndex) {
+    if (vertices == null)
+      return null;
+    return (ptCenters == null || modelIndex < 0 ? axis : axes[modelIndex]);
+  }
+  
+  final void setAxes() {
+    axis = new Vector3f(0, 0, 0);
+    axes = new Vector3f[polygonCount];
+    if (vertices == null)
+      return;
+    for (int i = polygonCount; --i >= 0;) {
+      axes[i] = new Vector3f();
+      if(drawVertexCount == 2) {
+        axes[i].sub(vertices[polygonIndexes[i][0]], vertices[polygonIndexes[i][1]]);
+      } else {      
+        g3d.calcNormalizedNormal(vertices[polygonIndexes[i][0]],
+                                 vertices[polygonIndexes[i][1]],
+                                 vertices[polygonIndexes[i][2]],
+                                 axes[i]);
+      }
+      axis.add(axes[i]);
+    }
+  }
+
 }

@@ -188,6 +188,28 @@ class ModelManager {
     return (frame == null) ? 1 : frame.getRotationRadius();
   }
 
+  Point3f getSpinCenter(String axisID, int modelIndex) {
+    Draw draw = (Draw) frame.shapes[JmolConstants.SHAPE_DRAW];
+    if (draw == null) 
+      return null;
+    int meshIndex = draw.getMeshIndex(axisID);
+    if (meshIndex < 0) {
+      return null;
+    }
+    return draw.meshes[meshIndex].getSpinCenter(modelIndex);
+   }
+   
+  Vector3f getSpinAxis(String axisID, int modelIndex) {
+    Draw draw = (Draw) frame.shapes[JmolConstants.SHAPE_DRAW];
+    if (draw == null) 
+      return null;
+    int meshIndex = draw.getMeshIndex(axisID);
+    if (meshIndex < 0) {
+      return null;
+    }
+    return draw.meshes[meshIndex].getSpinAxis(modelIndex);
+   }
+   
   void increaseRotationRadius(float increaseInAngstroms) {
     if (frame != null)
       frame.increaseRotationRadius(increaseInAngstroms);
@@ -1096,4 +1118,6 @@ String getAtomInfoChime(int i) {
     }
     return info;
   }
+  
+  
 }

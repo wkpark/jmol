@@ -158,6 +158,10 @@ class Normix3D {
     return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL);
   }
 
+  Vector3f getVector(short normix) {
+    return Geodesic3D.vertexVectors[normix];
+  }
+  
   short getNormix(double x, double y, double z, int geodesicLevel) {
     short champion;
     double t;

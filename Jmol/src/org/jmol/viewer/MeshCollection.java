@@ -310,11 +310,13 @@ abstract class MeshCollection extends SelectionIndependentShape {
       Hashtable info = new Hashtable();
       Mesh mesh = meshes[i];
       info.put("ID", mesh.meshID);
-      info.put("vertexCount", new Integer(mesh.vertexCount));
-      if (mesh.vertexCount == 2)
+      info.put("drawType",mesh.drawType);
+      info.put("drawVertexCount",new Integer(mesh.drawVertexCount));
+      if (mesh.drawType == "Line")
         info.put("length_Ang", new Float(mesh.vertices[0].distance(mesh.vertices[1])));
       info.put("scale", new Float(mesh.scale));
       info.put("center", mesh.ptCenter);
+      info.put("axis", mesh.axis);
       Vector v = new Vector();
       for (int j = 0; j < mesh.vertexCount; j++)
         v.add(mesh.vertices[j]);

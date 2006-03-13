@@ -2509,6 +2509,10 @@ final public class Graphics3D {
     return normix3d.getTransformedVectors();
   }
 
+  public Vector3f getNormixVector(short normix) {
+    return normix3d.getVector(normix);
+  }
+
   public int getGeodesicFaceCount(int level) {
     return Geodesic3D.getFaceCount(level);
   }

@@ -27,7 +27,6 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 class Draw extends MeshCollection {
 
@@ -111,6 +110,7 @@ class Draw extends MeshCollection {
       if(isValid) {
         currentMesh.scaleDrawing(newScale);
         currentMesh.initialize();
+        currentMesh.setAxes();
         currentMesh.visible = true;
       }
       npoints = -1; //for later scaling
@@ -198,10 +198,8 @@ class Draw extends MeshCollection {
     for (int i = meshCount; --i >= 0; ) {
       if (meshes[i].visibilityFlags == null)
         continue;
-      for (int iModel = modelCount; --iModel >= 0; ) {
+      for (int iModel = modelCount; --iModel >= 0; )
         meshes[i].visibilityFlags[iModel] = (bs.get(iModel) ? 1 : 0); 
-      }
     }
-  }
-    
+  } 
 }

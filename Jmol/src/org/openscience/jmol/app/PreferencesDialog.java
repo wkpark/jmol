@@ -647,7 +647,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bondPanel.setLayout(new BorderLayout());
     bondPanel.setBorder(new TitledBorder(GT._("Bonds")));
 
-    isBondAtomColor = viewer.getColorBond() == null;
+    isBondAtomColor = viewer.getBondArgb() == 0;
     cbIsBondAtomColor = guimap.newJCheckBox("Prefs.isBondAtomColor",
                                             isBondAtomColor);
     cbIsBondAtomColor.addItemListener(checkBoxListener);
@@ -668,7 +668,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         }
         colorBond = color;
         eButton.setBackground(colorBond);
-        viewer.setColorBond(colorBond);
+        viewer.setBondArgb(colorBond.getRGB());
         // should this be Integer.toString(colorBind.getRGB()) ?
         currentProperties.put("colorBond", "" + colorBond.getRGB());
       }
@@ -1013,7 +1013,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
                             colorSelection.getRGB());
     viewer.setLabelArgb(isLabelAtomColor || colorText == null
                         ? 0 : colorText.getRGB());
-    viewer.setColorBond(isBondAtomColor ? null : colorBond);
+    viewer.setBondArgb(isBondAtomColor || colorBond == null
+                       ? 0 : colorBond.getRGB());
     viewer.setPercentVdwAtom(percentVdwAtom);
     //viewer.setPropertyStyleString(AtomPropsMode);
     viewer.setMarBond(marBond);
@@ -1088,7 +1089,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         tButton.setEnabled(!isLabelAtomColor);
       } else if (key.equals("Prefs.isBondAtomColor")) {
         isBondAtomColor = isSelected;
-        viewer.setColorBond(isBondAtomColor ? null : colorBond);
+        viewer.setBondArgb(isBondAtomColor || colorBond == null
+                           ? 0 : colorBond.getRGB());
         currentProperties.put("isBondAtomColor", strSelected);
         eButton.setEnabled(!isBondAtomColor);
       } else if (key.equals("Prefs.wireframeRotation")) {

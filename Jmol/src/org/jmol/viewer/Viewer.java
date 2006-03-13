@@ -2009,13 +2009,13 @@ final public class Viewer extends JmolViewer {
     this.hideNameInPopup = hideNameInPopup;
   }
 
-  public void setColorBond(Color color) {
-    colorManager.setColorBond(color);
-    setShapeColorProperty(JmolConstants.SHAPE_STICKS, color);
+  public void setBondArgb(int argb) {
+    colorManager.setBondArgb(argb);
+    setShapeColorProperty(JmolConstants.SHAPE_STICKS, argb);
   }
 
-  public Color getColorBond() {
-    return colorManager.colorBond;
+  public int getBondArgb() {
+    return g3d.getColixArgb(colorManager.colixBond);
   }
 
   short getColixBond(int order) {

@@ -129,11 +129,9 @@ class ColorManager {
     this.isBondAtomColor = isBondAtomColor;
   }
 
-  Color colorBond = null;
   short colixBond = 0;
-  void setColorBond(Color c) {
-    colorBond = c;
-    colixBond = Graphics3D.getColix(c);
+  void setBondArgb(int argb) {
+    colixBond = Graphics3D.getColix(argb);
   }
 
   Color colorHbond = null;

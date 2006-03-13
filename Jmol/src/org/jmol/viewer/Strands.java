@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.viewer;
+import java.util.BitSet;
 
 class Strands extends Mps {
 
@@ -32,8 +33,26 @@ class Strands extends Mps {
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    *==============================================================*/
 
+  int strandCount = 5;
+
   Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
     return new Schain(polymer);
+  }
+
+  void setProperty(String propertyName, Object value, BitSet bs) {
+    initialize();
+    if ("strandCount" == propertyName) {
+      if (value instanceof Integer) {
+        int count = ((Integer)value).intValue();
+        if (count < 0)
+          count = 0;
+        else if (count > 20)
+          count = 20;
+        strandCount = count;
+        return;
+      }
+    }
+    super.setProperty(propertyName, value, bs);
   }
 
   class Schain extends Mps.Mpspolymer {

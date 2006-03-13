@@ -65,7 +65,9 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
     this.myVisibilityFlag = myVisibilityFlag;
     MeshRibbon.Schain strandsChain = (MeshRibbon.Schain)mpspolymer;
 
-    strandCount = viewer.getStrandsCount();
+    // no way to do this now that strandCount is part of the strands object
+    // strandCount = viewer.getStrandsCount();
+    strandCount = 7;
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;

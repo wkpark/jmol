@@ -1983,20 +1983,6 @@ final public class Viewer extends JmolViewer {
     return Graphics3D.getColix(object);
   }
 
-  int strandsCount = 5;
-
-  void setStrandsCount(int strandsCount) {
-    if (strandsCount < 0)
-      strandsCount = 0;
-    if (strandsCount > 20)
-      strandsCount = 20;
-    this.strandsCount = strandsCount;
-  }
-
-  int getStrandsCount() {
-    return strandsCount;
-  }
-
   boolean rasmolHydrogenSetting = true;
 
   void setRasmolHydrogenSetting(boolean b) {

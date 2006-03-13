@@ -2,11 +2,10 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -3007,7 +3006,8 @@ class Eval implements Runnable {
       if (strandCount < 0 || strandCount > 20)
         numberOutOfRange();
     }
-    viewer.setStrandsCount(strandCount);
+    viewer.setShapeProperty(JmolConstants.SHAPE_STRANDS,
+                            "strandCount", new Integer(strandCount));
   }
 
   void setSpecular() throws ScriptException {

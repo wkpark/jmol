@@ -44,8 +44,8 @@ class ColorManager {
     System.out.println("setting color scheme to:" + colorScheme);
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;
-      viewer.setColorBackground(Color.black);
-      viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
+      viewer.setColorBackground("black");
+      viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, 0);
     } else if (colorScheme.equals("rasmol")) {
       copyArgbsCpk();
       int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
@@ -57,9 +57,8 @@ class ColorManager {
         argb |= 0xFF000000;
         argbsCpk[atomNo] = argb;
       }
-      viewer.setColorBackground(Color.black);
-      setMeasurementColix(Graphics3D.WHITE);
-      viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
+      viewer.setColorBackground("black");
+      viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, 0);
     } else {
       System.out.println("unrecognized color scheme");
       return;
@@ -87,20 +86,8 @@ class ColorManager {
   }
 
   short colixRubberband = Graphics3D.HOTPINK;
-
-  void setColorRubberband(Color color) {
-    if (color == null)
-      color = Color.pink;
-    colixRubberband = Graphics3D.getColix(color);
-  }
-
-  short colixMeasurement = 0;
-  void setMeasurementArgb(int argb) {
-    colixMeasurement = Graphics3D.getColix(argb);
-  }
-
-  void setMeasurementColix(short colix) {
-    colixMeasurement = colix;
+  void setRubberbandArgb(int argb) {
+    colixRubberband = (argb == 0 ? 0 : Graphics3D.getColix(argb));
   }
 
   short colixBackground = Graphics3D.BLACK;
@@ -297,14 +284,13 @@ class ColorManager {
     flushCaches();
   }
 
-  void setElementColor(int elementNumber, Color color) {
-    int argb;
-    if (color == null) {
+  void setElementArgb(int elementNumber, int argb) {
+    if (argb == 0) {
       if (argbsCpk == JmolConstants.argbsCpk)
         return;
       argb = JmolConstants.argbsCpk[elementNumber];
     } else
-      argb = color.getRGB() | 0xFF000000;
+      argb |= 0xFF000000;
     if (argbsCpk == JmolConstants.argbsCpk)
       copyArgbsCpk();
     argbsCpk[elementNumber] = argb;

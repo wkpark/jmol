@@ -663,16 +663,16 @@ final public class Viewer extends JmolViewer {
     return colorManager.getColixSelection();
   }
 
-  void setColorRubberband(Color color) {
-    colorManager.setColorRubberband(color);
+  void setRubberbandArgb(int argb) {
+    colorManager.setRubberbandArgb(argb);
   }
 
   short getColixRubberband() {
     return colorManager.colixRubberband;
   }
 
-  void setElementColor(int elementNumber, Color color) {
-    colorManager.setElementColor(elementNumber, color);
+  void setElementArgb(int elementNumber, int argb) {
+    colorManager.setElementArgb(elementNumber, argb);
   }
 
   float getVectorScale() {
@@ -700,22 +700,9 @@ final public class Viewer extends JmolViewer {
     return g3d.getColixArgb(colorManager.colixBackground);
   }
 
-  public void setColorBackground(Color bg) {
-    setBackgroundArgb(bg == null ? 0 : bg.getRGB());
-    refresh(0, "Viewer:setCOlorBackground()");
-  }
-
-  public Color getColorBackground() {
-    return new Color(getBackgroundArgb());
-  }
-
   public void setColorBackground(String colorName) {
     colorManager.setColorBackground(colorName);
     refresh(0, "Viewer:setColorBackground()");
-  }
-
-  Color getColorFromString(String colorName) {
-    return Graphics3D.getColorFromString(colorName);
   }
 
   int getArgbFromString(String colorName) {
@@ -1962,10 +1949,6 @@ final public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setShapeProperty()");
   }
 
-  void setShapeColorProperty(int shapeType, Color color) {
-    setShapeProperty(shapeType, "color", color);
-  }
-
   void setShapeColorProperty(int shapeType, int argb) {
     setShapeProperty(shapeType, "color",
                      argb == 0 ? null : new Color(argb|0xFF000000));
@@ -1980,22 +1963,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.getShapeProperty(shapeType, propertyName, index);
   }
 
-  Color getShapePropertyAsColor(int shapeID, String propertyName) {
-    return (Color) getShapeProperty(shapeID, propertyName);
-  }
-
   int getShapePropertyAsInt(int shapeID, String propertyName) {
     Object value = getShapeProperty(shapeID, propertyName);
     return value == null || !(value instanceof Integer) ? Integer.MIN_VALUE
         : ((Integer) value).intValue();
-  }
-
-  Color getColorShape(int shapeID) {
-    return (Color) getShapeProperty(shapeID, "color");
-  }
-
-  short getColixShape(int shapeID) {
-    return Graphics3D.getColix(getColorShape(shapeID));
   }
 
   int getShapeID(String shapeName) {
@@ -2005,10 +1976,6 @@ final public class Viewer extends JmolViewer {
     String msg = "Unrecognized shape name:" + shapeName;
     System.out.println(msg);
     throw new NullPointerException(msg);
-  }
-
-  short getColix(Color color) {
-    return Graphics3D.getColix(color);
   }
 
   short getColix(Object object) {

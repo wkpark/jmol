@@ -1545,6 +1545,14 @@ class Eval implements Runnable {
     return new Color(statement[itoken].intValue);
   }
 
+  int getArgbParam(int itoken) throws ScriptException {
+    if (itoken >= statementLength)
+      colorExpected();
+    if (statement[itoken].tok != Token.colorRGB)
+      colorExpected();
+    return statement[itoken].intValue;
+  }
+
   Color getColorOrNoneParam(int itoken) throws ScriptException {
     if (itoken >= statementLength)
       colorExpected();
@@ -1555,12 +1563,22 @@ class Eval implements Runnable {
     return null;
   }
 
+  int getArgbOrNoneParam(int itoken) throws ScriptException {
+    if (itoken >= statementLength)
+      colorExpected();
+    if (statement[itoken].tok == Token.colorRGB)
+      return statement[itoken].intValue;
+    if (statement[itoken].tok != Token.none)
+      colorExpected();
+    return 0;
+  }
+
   void background() throws ScriptException {
     if (statementLength < 2 || statementLength > 3)
       badArgumentCount();
     int tok = statement[1].tok;
     if (tok == Token.colorRGB)
-      viewer.setColorBackground(getColorParam(1));
+      viewer.setBackgroundArgb(getArgbParam(1));
     else
       viewer.setShapeProperty(getShapeType(tok), "bgcolor",
           getColorOrNoneParam(2));
@@ -1598,10 +1616,10 @@ class Eval implements Runnable {
       colorObject(Token.atom, 1);
       break;
     case Token.rubberband:
-      viewer.setColorRubberband(getColorParam(2));
+      viewer.setRubberbandArgb(getArgbParam(2));
       break;
     case Token.background:
-      viewer.setColorBackground(getColorParam(2));
+      viewer.setBackgroundArgb(getArgbParam(2));
       break;
     case Token.identifier:
     case Token.hydrogen:
@@ -1626,14 +1644,14 @@ class Eval implements Runnable {
       }
       for (int i = JmolConstants.elementNames.length; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.elementNames[i])) {
-          viewer.setElementColor(i, getColorParam(2));
+          viewer.setElementArgb(i, getArgbParam(2));
           return;
         }
       }
       for (int i = JmolConstants.alternateElementNames.length; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.alternateElementNames[i])) {
-          viewer.setElementColor(JmolConstants.alternateElementNumbers[i],
-              getColorParam(2));
+          viewer.setElementArgb(JmolConstants.alternateElementNumbers[i],
+              getArgbParam(2));
           return;
         }
       }

@@ -669,7 +669,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   
     public void sendSyncScript(String script, String appletName) {
       //how to get rid of this warning? - RMH
-      Hashtable h = appletRegistry.htRegistry;
+      Hashtable h = JmolAppletRegistry.htRegistry;
       Enumeration keys = h.keys();
       while (keys.hasMoreElements()) {
         String theApplet = (String)keys.nextElement();

@@ -144,7 +144,7 @@ class Draw extends MeshCollection {
       currentMesh.ptCenters = new Point3f[modelCount];
       currentMesh.visibilityFlags = new int[modelCount];
       for (int iModel = 0; iModel < modelCount; iModel++) {
-        int n0 = currentMesh.vertexCount;
+        //int n0 = currentMesh.vertexCount;
         nPoly = setVerticesAndPolygons(iModel, nPoly);
         currentMesh.setCenter(iModel);
       }

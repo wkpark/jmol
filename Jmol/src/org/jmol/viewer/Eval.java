@@ -1590,6 +1590,17 @@ class Eval implements Runnable {
   // but someplace in the rasmol doc it makes reference to the geometric
   // center as the default for rotations. who knows.
   void center() throws ScriptException {
+    //System.out.println("center"+statement[1]);
+    //System.out.println(statement[2]);
+    
+    if (statement[2].tok == Token.keyword) {
+     //center [ id ]
+      String axisID = (String)statement[2].value;
+      //System.out.println("center"+axisID);
+      viewer.setDrawCenter(axisID);
+      return;
+    }
+
     viewer.setCenterBitSet(statementLength == 1 ? null : expression(statement,
         1));
   }
@@ -1912,6 +1923,12 @@ class Eval implements Runnable {
       checkStatementLength(6);
       viewer.rotateAxisAngle(floatParameter(2), floatParameter(3),
           floatParameter(4), floatParameter(5));
+      return;
+    }
+    if (statement[1].tok == Token.leftsquare && statement[2].tok == Token.identifier) {
+      checkStatementLength(5); //rotate [ id ] N
+      String axisID = (String)statement[2].value;
+      viewer.rotateAxis(axisID, intParameter(4));
       return;
     }
     checkLength3();
@@ -2682,7 +2699,7 @@ class Eval implements Runnable {
     viewer.setShapeProperty(shapeType, "font", font3d);
   }
 
-  /* ***************************************************************************
+  /* ****************************************************************************
    * ============================================================== SET
    * implementations
    * ==============================================================
@@ -3163,7 +3180,7 @@ class Eval implements Runnable {
     viewer.setPickingMode(pickingMode);
   }
 
-  /* ***************************************************************************
+  /* ****************************************************************************
    * ============================================================== SHOW
    * implementations
    * ==============================================================

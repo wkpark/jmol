@@ -39,17 +39,23 @@ class Draw extends MeshCollection {
   int nbitsets = 0;
   int ncoord = 0;
   int nidentifiers = 0;
-  boolean isFixed = false;
   float newScale;
+  boolean isFixed = false;
+  boolean isVisible = true;
+  
   
   void setProperty(String propertyName, Object value, BitSet bs) {
-    System.out.println("draw "+propertyName+" "+value);
+    //System.out.println("draw "+propertyName+" "+value);
 
     if ("fixed" == propertyName) {
       isFixed = ((Boolean)value).booleanValue();
       return;
     }
     
+    if ("off" == propertyName) {
+      isVisible = false;
+    }
+  
     if ("points" == propertyName) {
       ipt = npoints = ncoord = nbitsets = nidentifiers = 0;
       newScale = ((Integer)value).floatValue()/100;
@@ -111,7 +117,7 @@ class Draw extends MeshCollection {
         currentMesh.scaleDrawing(newScale);
         currentMesh.initialize();
         currentMesh.setAxes();
-        currentMesh.visible = true;
+        currentMesh.visible = isVisible;
       }
       npoints = -1; //for later scaling
       return;
@@ -119,6 +125,7 @@ class Draw extends MeshCollection {
     if ("meshID" == propertyName) {
       npoints = -1;
       isFixed = false;
+      isVisible = true;
     }
       
     super.setProperty(propertyName, value, bs);

@@ -84,7 +84,7 @@ class TransformManager {
   synchronized void rotateXRadians(float angleRadians) {
     matrixTemp3.rotX(angleRadians);
     matrixRotate.mul(matrixTemp3, matrixRotate);
-    //    System.out.println("rotateXRadius matrixRotate=\n" + matrixRotate);
+    //System.out.println("rotateXRadius matrixRotate=\n" + matrixRotate);
   }
   synchronized void rotateYRadians(float angleRadians) {
     if (axesOrientationRasmol)
@@ -107,37 +107,58 @@ class TransformManager {
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
-  void rotate(AxisAngle4f axisAngle) {
+  synchronized void rotate(AxisAngle4f axisAngle) {
     matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
+  void rotateAxisInternal(Vector3f axis, int degrees) {
+    AxisAngle4f rot = new AxisAngle4f();
+    float radians = degrees * radiansPerDegree;
+    rot.set(axis, 0);
+    rotateAxisAngleRadiansInternal(rot, radians);
+  }
+  
   synchronized void rotateAxisAngleRadiansInternal(AxisAngle4f axisAngle, float radians) {
     AxisAngle4f currentRotation = new AxisAngle4f();
     currentRotation.set(matrixRotate);
 
+  //System.out.println("new0: "+matrixRotate);
+  //System.out.println("currentRotation:"+currentRotation);
+
     //check for no rotation
-    if (Float.isNaN(currentRotation.angle)) {
+    if (Float.isNaN(currentRotation.angle) ||
+        currentRotation.x == 0.0f &&
+        currentRotation.x == 0.0f &&
+        currentRotation.x == 0.0f) {
       matrixRotate.setIdentity();
       currentRotation.set(1, 0, 0, 0);      
     }    
     
+    //System.out.println("currentRotation:"+currentRotation);
+    
     //undo current rotation
     matrixRotate.setIdentity();
 
+    //System.out.println("rotateAxisAngleRadiansInternal"+axisAngle+" "+matrixTemp3+"\n"+matrixRotate+radians);
     //apply internal rotation
     axisangleT.set(axisAngle.x,
         axisAngle.y, 
         axisAngle.z, radians);
+    //System.out.println(axisangleT);
     matrixTemp3.setIdentity();
     matrixTemp3.set(axisangleT);
     matrixRotate.mul(matrixTemp3, matrixRotate);
-
+    //System.out.println("new1: "+matrixRotate);
     //rerotation to old rotation
     matrixTemp3.set(currentRotation);
+    //System.out.println("currentRotation"+currentRotation);
+    //System.out.println("new2: "+matrixRotate);
     matrixRotate.mul(matrixTemp3, matrixRotate);
-  }
+
+    //System.out.println("new3: "+matrixRotate);
+ }
 
   void rotateAxisAngle(float x, float y, float z, float degrees) {
     axisangleT.set(x, y, z, degrees * radiansPerDegree);
@@ -769,21 +790,22 @@ class TransformManager {
   
 
   void setSpinTranslation() {
-    System.out.println("\n\nsetSpinTransl xyTrans:" +xSpinTranslation+" "+ySpinTranslation + "\nxyCenter:"+xSpinCenter + " "+ySpinCenter);
-    System.out.println(spinOn +", "+iHaveSpinTranslation + " and "+iHaveSpinCenter);
+    //System.out.println("\n\nsetSpinTransl xyTrans:" +xSpinTranslation+" "+ySpinTranslation + "\nxyCenter:"+xSpinCenter + " "+ySpinCenter);
+    //System.out.println(spinOn +", "+iHaveSpinTranslation + " and "+iHaveSpinCenter);
     
-    System.out.println(spinCenter);
+    //System.out.println(spinCenter);
     
     if (spinAxis == null)
       return;
     xSpinTranslation = 0;
     ySpinTranslation = 0;
     transformPoint(spinCenter);
+      
     if (!iHaveSpinCenter) {
       // get the basis x,y position
       xSpinCenter = newXPt;
       ySpinCenter = newYPt;
-      System.out.println("basis:"+xSpinCenter+" "+ySpinCenter);
+      //System.out.println("basis:"+xSpinCenter+" "+ySpinCenter);
       iHaveSpinCenter = true;
       return;
     }
@@ -791,7 +813,7 @@ class TransformManager {
     xSpinTranslation = xSpinCenter - newXPt;
     ySpinTranslation = ySpinCenter - newYPt;
     iHaveSpinTranslation = true;    
-    System.out.println("setSpinTrans: "+xSpinTranslation+" "+ySpinTranslation+"\n\n");    
+    //System.out.println("setSpinTrans: "+xSpinTranslation+" "+ySpinTranslation+"\n\n");    
   }
   
   boolean increaseRotationRadius;
@@ -825,7 +847,7 @@ class TransformManager {
     matrixTemp.set(stereoFrame ? matrixStereo : matrixRotate);
     matrixTransform.mul(matrixTemp, matrixTransform);
 
-    //System.out.println("transformPoint3 " + matrixTransform);
+    //System.out.println("stereoFrame? transformPoint3 " + stereoFrame+ " "+matrixRotate+" "+matrixStereo);
 
 
     //    matrixTransform.mul(matrixRotate, matrixTransform);
@@ -919,6 +941,16 @@ class TransformManager {
     
     newXPt = point3fScreenTemp.x + xTranslation + xSpinTranslation;
     newYPt = point3fScreenTemp.y + yTranslation + ySpinTranslation;
+    
+    if (Float.isNaN(newXPt)) {
+      //System.out.println("point3fScreenTemp.x xTranslation xSpinTranslation\n"+point3fScreenTemp.x +" "+xTranslation +" "+xSpinTranslation);
+      
+      System.out.println("NaN found in transformPoint ");
+      //System.out.println("Point3fScreenTemp"+point3fScreenTemp);
+      //System.out.println("MatrixTransform"+matrixTransform);
+    }
+
+    
     point3iScreenTemp.x = (int)(newXPt);
     point3iScreenTemp.y = (int)(newYPt);
     //System.out.println("transforming"+pointAngstroms + "\nto " + point3iScreenTemp+"\nusing "+xSpinTranslation + " " + ySpinTranslation);
@@ -942,11 +974,11 @@ class TransformManager {
     screen.z = z;
     if (perspectiveDepth) {
       float perspectiveFactor = cameraDistanceFloat / z;
-      screen.x = screen.x * perspectiveFactor + xTranslation;
-      screen.y = screen.y * perspectiveFactor + yTranslation;
+      screen.x = screen.x * perspectiveFactor + xSpinTranslation + xTranslation;
+      screen.y = screen.y * perspectiveFactor + ySpinTranslation + yTranslation;
     } else {
-      screen.x += xTranslation;
-      screen.y += yTranslation;
+      screen.x += xSpinTranslation + xTranslation;
+      screen.y += ySpinTranslation + yTranslation;
     }
   }
 
@@ -977,8 +1009,8 @@ class TransformManager {
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }
-    point3iScreenTemp.x = (int)(point3fScreenTemp.x + xTranslation);
-    point3iScreenTemp.y = (int)(point3fScreenTemp.y + yTranslation);
+    point3iScreenTemp.x = (int)(point3fScreenTemp.x + xSpinTranslation + xTranslation);
+    point3iScreenTemp.y = (int)(point3fScreenTemp.y + ySpinTranslation + yTranslation);
     return point3iScreenTemp;
   }
 
@@ -1050,17 +1082,17 @@ class TransformManager {
   void setSpinX(int degrees) {
     spinX = degrees;
     spinAxis = null;
-    //    System.out.println("spinX=" + spinX);
+    //System.out.println("spinX=" + spinX);
   }
   void setSpinY(int degrees) {
     spinY = degrees;
     spinAxis = null;
-    //    System.out.println("spinY=" + spinY);
+    //System.out.println("spinY=" + spinY);
   }
   void setSpinZ(int degrees) {
     spinZ = degrees;
     spinAxis = null;
-    //    System.out.println("spinZ=" + spinZ);
+    //System.out.println("spinZ=" + spinZ);
   }
   void setSpinFps(int value) {
     if (value <= 0)
@@ -1068,7 +1100,7 @@ class TransformManager {
     else if (value > 50)
       value = 50;
     spinFps = value;
-    //    System.out.println("spinFps=" + spinFps);
+    //System.out.println("spinFps=" + spinFps);
   }
   
   void clearSpin() {
@@ -1096,7 +1128,7 @@ class TransformManager {
         ySpinTranslation = 0;
       }
     }
-    //    System.out.println("spinOn=" + spinOn);
+    //System.out.println("spinOn=" + spinOn);
   }
 
   class SpinThread extends Thread implements Runnable {
@@ -1139,7 +1171,7 @@ class TransformManager {
           try {
             Thread.sleep(sleepTime);
           } catch (InterruptedException e) {
-            //            System.out.println("interrupt caught!");
+                        System.out.println("interrupt caught!");
             break;
           }
         }

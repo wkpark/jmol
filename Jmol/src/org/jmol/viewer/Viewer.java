@@ -2815,6 +2815,20 @@ final public class Viewer extends JmolViewer {
     setSpin(rotAxis, degrees);
   }
 
+  public void rotateAxis(String axisID, int degrees) {
+    Point3f rotCenter = modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
+    Vector3f rotAxis = modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
+    if (rotCenter == null || rotAxis == null) return;
+    setCenter(rotCenter);
+    transformManager.rotateAxisInternal(rotAxis, degrees);
+  }
+
+  public void setDrawCenter(String axisID) {
+    Point3f rotCenter = modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
+    if (rotCenter == null) return;
+    setCenter(rotCenter);
+  }
+  
   void setSpinCenter(Point3f center) {
     transformManager.setSpinCenter(center);
   }

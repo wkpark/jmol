@@ -27,13 +27,11 @@ import org.jmol.g3d.Font3D;
 import org.jmol.smiles.InvalidSmilesException;
 
 import java.io.*;
-import java.awt.Color;
 import java.util.BitSet;
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
-
 
 class Context {
   String filename;
@@ -1535,31 +1533,12 @@ class Eval implements Runnable {
     return atom.getProteinStructureType();
   }
 
-  // note that text color names are mapped to color argb values at compile time
-  Color getColorParam(int itoken) throws ScriptException {
-    if (itoken >= statementLength)
-      colorExpected();
-    if (statement[itoken].tok != Token.colorRGB)
-      colorExpected();
-    return new Color(statement[itoken].intValue);
-  }
-
   int getArgbParam(int itoken) throws ScriptException {
     if (itoken >= statementLength)
       colorExpected();
     if (statement[itoken].tok != Token.colorRGB)
       colorExpected();
     return statement[itoken].intValue;
-  }
-
-  Color getColorOrNoneParam(int itoken) throws ScriptException {
-    if (itoken >= statementLength)
-      colorExpected();
-    if (statement[itoken].tok == Token.colorRGB)
-      return new Color(statement[itoken].intValue);
-    if (statement[itoken].tok != Token.none)
-      colorExpected();
-    return null;
   }
 
   int getArgbOrNoneParam(int itoken) throws ScriptException {
@@ -1579,8 +1558,8 @@ class Eval implements Runnable {
     if (tok == Token.colorRGB)
       viewer.setBackgroundArgb(getArgbParam(1));
     else
-      viewer.setShapeProperty(getShapeType(tok), "bgcolor",
-          getColorOrNoneParam(2));
+      viewer.setShapePropertyArgb(getShapeType(tok), "bgcolor",
+                                  getArgbOrNoneParam(2));
   }
 
   // mth - 2003 01
@@ -1634,22 +1613,24 @@ class Eval implements Runnable {
     case Token.identifier:
     case Token.hydrogen:
       String str = (String) statement[1].value;
-      Color color = getColorOrNoneParam(2);
+      int argb = getArgbOrNoneParam(2);
       if (str.equalsIgnoreCase("dotsConvex")) {
-        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex", color);
+        viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS,
+                                    "colorConvex", argb);
         return;
       }
       if (str.equalsIgnoreCase("dotsConcave")) {
-        viewer
-            .setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave", color);
+        viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS,
+                                    "colorConcave", argb);
         return;
       }
       if (str.equalsIgnoreCase("dotsSaddle")) {
-        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle", color);
+        viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS,
+                                    "colorSaddle", argb);
         return;
       }
       if (str.equalsIgnoreCase("selectionHalo")) {
-        viewer.setSelectionArgb(color == null ? 0 : color.getRGB());
+        viewer.setSelectionArgb(argb);
         return;
       }
       for (int i = JmolConstants.elementNames.length; --i >= 0;) {
@@ -1722,7 +1703,8 @@ class Eval implements Runnable {
         notImplemented(itoken);
         return;
       case Token.colorRGB:
-        colorvalue = getColorParam(itoken);
+        int argb = getArgbParam(itoken);
+        colorvalue = argb == 0 ? null : new Integer(argb);
         break;
       default:
         invalidArgument();

@@ -25,8 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.*;
 
-import java.awt.Color;
-
 class ColorManager {
 
   Viewer viewer;

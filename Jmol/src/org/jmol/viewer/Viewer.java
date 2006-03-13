@@ -28,7 +28,6 @@ import org.jmol.g3d.*;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
@@ -1944,9 +1943,17 @@ final public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setShapeProperty()");
   }
 
+  void setShapeProperty(int shapeID, String propertyName, int value) {
+    setShapeProperty(shapeID, propertyName, new Integer(value));
+  }
+
+  void setShapePropertyArgb(int shapeID, String propertyName, int argb) {
+    setShapeProperty(shapeID, propertyName,
+                     argb == 0 ? null : new Integer(argb|0xFF000000));
+  }
+
   void setShapeColorProperty(int shapeType, int argb) {
-    setShapeProperty(shapeType, "color",
-                     argb == 0 ? null : new Color(argb|0xFF000000));
+    setShapePropertyArgb(shapeType, "color", argb);
   }
 
   Object getShapeProperty(int shapeType, String propertyName) {

@@ -130,8 +130,8 @@ class TransformManager {
     //check for no rotation
     if (Float.isNaN(currentRotation.angle) ||
         currentRotation.x == 0.0f &&
-        currentRotation.x == 0.0f &&
-        currentRotation.x == 0.0f) {
+        currentRotation.y == 0.0f &&
+        currentRotation.z == 0.0f) {
       matrixRotate.setIdentity();
       currentRotation.set(1, 0, 0, 0);      
     }    

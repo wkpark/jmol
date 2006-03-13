@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -92,20 +92,6 @@ class ColorManager {
     if (color == null)
       color = Color.pink;
     colixRubberband = Graphics3D.getColix(color);
-  }
-
-  short colixDotsConvex = 0;
-  short colixDotsConcave = 0;
-  short colixDotsSaddle = 0;
-
-  void setColorDotsConvex(Color color) {
-    colixDotsConvex = Graphics3D.getColix(color);
-  }
-  void setColorDotsConcave(Color color) {
-    colixDotsConcave = Graphics3D.getColix(color);
-  }
-  void setColorDotsSaddle(Color color) {
-    colixDotsSaddle = Graphics3D.getColix(color);
   }
 
   short colixMeasurement = 0;

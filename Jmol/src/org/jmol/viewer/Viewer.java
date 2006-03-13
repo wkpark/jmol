@@ -2,9 +2,8 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
- * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
+ * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
  * Contact: miguel@jmol.org
  *
@@ -674,33 +673,6 @@ final public class Viewer extends JmolViewer {
 
   void setElementColor(int elementNumber, Color color) {
     colorManager.setElementColor(elementNumber, color);
-  }
-
-  void setColorDotsSaddle(Color color) {
-    colorManager.setColorDotsSaddle(color);
-    setShapeProperty(JmolConstants.SHAPE_DOTS, "dotssaddle", color);
-  }
-
-  short getColixDotsSaddle() {
-    return colorManager.colixDotsSaddle;
-  }
-
-  void setColorDotsConvex(Color color) {
-    colorManager.setColorDotsConvex(color);
-    setShapeProperty(JmolConstants.SHAPE_DOTS, "dotsconvex", color);
-  }
-
-  short getColixDotsConvex() {
-    return colorManager.colixDotsConvex;
-  }
-
-  void setColorDotsConcave(Color color) {
-    colorManager.setColorDotsConcave(color);
-    setShapeProperty(JmolConstants.SHAPE_DOTS, "dotsconcave", color);
-  }
-
-  short getColixDotsConcave() {
-    return colorManager.colixDotsConcave;
   }
 
   float getVectorScale() {

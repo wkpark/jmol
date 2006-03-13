@@ -46,7 +46,7 @@ class ColorManager {
       argbsCpk = JmolConstants.argbsCpk;
       viewer.setColorBackground(Color.black);
       viewer.setColorMeasurement(null);
-      viewer.setColorLabel(Color.white);
+      setLabelColix(Graphics3D.WHITE);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else if (colorScheme.equals("rasmol")) {
       copyArgbsCpk();
@@ -61,7 +61,7 @@ class ColorManager {
       }
       viewer.setColorBackground(Color.black);
       viewer.setColorMeasurement(Color.white);
-      viewer.setColorLabel(null);
+      setLabelColix(Graphics3D.NULL_COLIX);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else {
       System.out.println("unrecognized color scheme");
@@ -150,12 +150,14 @@ class ColorManager {
     colixSsbond = Graphics3D.getColix(c);
   }
 
-  Color colorLabel = Color.black;
   short colixLabel = Graphics3D.BLACK;
-  void setColorLabel(Color color) {
-    colorLabel = color;
-    colixLabel = Graphics3D.getColix(color);
+  void setLabelColix(short colix) {
+    colixLabel = colix;
   }
+  void setLabelArgb(int argb) {
+    colixLabel = Graphics3D.getColix(argb);
+  }
+
 
   short colixDotsConvex = 0;
   short colixDotsConcave = 0;

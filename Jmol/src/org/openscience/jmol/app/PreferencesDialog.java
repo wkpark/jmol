@@ -612,7 +612,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     textPanel.setLayout(new BorderLayout());
     textPanel.setBorder(new TitledBorder(GT._("Text")));
 
-    isLabelAtomColor = viewer.getColorLabel() == null;
+    isLabelAtomColor = viewer.getLabelArgb() == 0;
     cbIsLabelAtomColor = guimap.newJCheckBox("Prefs.isLabelAtomColor",
                                              isLabelAtomColor);
     cbIsLabelAtomColor.addItemListener(checkBoxListener);
@@ -633,9 +633,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         }
         colorText = color;
         tButton.setBackground(colorText);
-        viewer.setColorLabel(colorText);
-        currentProperties.put("colorText",
-            Integer.toString(colorText.getRGB()));
+        int argb = colorText.getRGB();
+        viewer.setLabelArgb(argb);
+        currentProperties.put("colorText", Integer.toString(argb));
       }
     };
     tButton.addActionListener(startTextChooser);
@@ -1011,7 +1011,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     //    viewer.setColorOutline(colorOutline);
     viewer.setSelectionArgb(colorSelection == null ? 0 :
                             colorSelection.getRGB());
-    viewer.setColorLabel(isLabelAtomColor ? null : colorText);
+    viewer.setLabelArgb(isLabelAtomColor || colorText == null
+                        ? 0 : colorText.getRGB());
     viewer.setColorBond(isBondAtomColor ? null : colorBond);
     viewer.setPercentVdwAtom(percentVdwAtom);
     //viewer.setPropertyStyleString(AtomPropsMode);
@@ -1081,7 +1082,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put("showMeasurements", strSelected);
       } else if (key.equals("Prefs.isLabelAtomColor")) {
         isLabelAtomColor = isSelected;
-        viewer.setColorLabel(isLabelAtomColor ? null : colorText);
+        viewer.setLabelArgb(isLabelAtomColor || colorText == null
+                            ? 0 : colorText.getRGB());
         currentProperties.put("isLabelAtomColor", strSelected);
         tButton.setEnabled(!isLabelAtomColor);
       } else if (key.equals("Prefs.isBondAtomColor")) {

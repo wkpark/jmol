@@ -710,12 +710,6 @@ final public class Viewer extends JmolViewer {
     return colorManager.colixRubberband;
   }
 
-  public void setColorLabel(Color color) {
-    colorManager.setColorLabel(color);
-    setShapeColorProperty(JmolConstants.SHAPE_LABELS, color);
-    refresh(0, "Viewer:setCOlorLabel()");
-  }
-
   void setElementColor(int elementNumber, Color color) {
     colorManager.setElementColor(elementNumber, color);
   }
@@ -747,8 +741,14 @@ final public class Viewer extends JmolViewer {
     return colorManager.colixDotsConcave;
   }
 
-  public Color getColorLabel() {
-    return colorManager.colorLabel;
+  public void setLabelArgb(int argb) {
+    colorManager.setLabelArgb(argb);
+    setShapeColorProperty(JmolConstants.SHAPE_LABELS, argb);
+    refresh(0, "Viewer:setLabelArgb()");
+  }
+
+  public int getLabelArgb() {
+    return g3d.getColixArgb(colorManager.colixLabel);
   }
 
   short getColixLabel() {
@@ -2132,6 +2132,11 @@ final public class Viewer extends JmolViewer {
 
   void setShapeColorProperty(int shapeType, Color color) {
     setShapeProperty(shapeType, "color", color);
+  }
+
+  void setShapeColorProperty(int shapeType, int argb) {
+    setShapeProperty(shapeType, "color",
+                     argb == 0 ? null : new Color(argb|0xFF000000));
   }
 
   Object getShapeProperty(int shapeType, String propertyName) {

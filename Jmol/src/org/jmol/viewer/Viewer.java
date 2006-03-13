@@ -1638,7 +1638,6 @@ final public class Viewer extends JmolViewer {
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     manageScriptTermination();
-    System.out.println("render screen image");
     if (isTainted) {
       setModelVisibility();
       modelManager.setModelClickability();

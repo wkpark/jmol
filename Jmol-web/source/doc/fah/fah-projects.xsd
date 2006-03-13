@@ -14,7 +14,7 @@
 </xs:complexType>
 
 <xs:complexType name="typeFahProj">
-  <xs:attribute name="number" type="typeNumber" use="require"/>
+  <xs:attribute name="number" type="typeNumber" use="required"/>
   <xs:attribute name="name" type="typeName"/>
   <xs:attribute name="public" type="typePublic"/>
   <xs:attribute name="file" type="typeFile"/>
@@ -88,6 +88,7 @@
 <xs:simpleType name="typeCode">
   <xs:restriction base="xs:string">
     <xs:enumeration value="A"/>
+    <xs:enumeration value="A0"/>
     <xs:enumeration value="DG"/>
     <xs:enumeration value="G"/>
     <xs:enumeration value="GB"/>

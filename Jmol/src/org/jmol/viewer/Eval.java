@@ -538,6 +538,9 @@ class Eval implements Runnable {
       case Token.connect:
         connect();
         break;
+      case Token.getproperty:
+        getProperty();
+        break;
 
       // not implemented
       case Token.bond:
@@ -2687,7 +2690,6 @@ class Eval implements Runnable {
    */
 
   void set() throws ScriptException {
-    System.out.println("setting:" + statement[1].value);
     switch (statement[1].tok) {
     case Token.axes:
       setAxes();
@@ -3920,4 +3922,11 @@ class Eval implements Runnable {
     }
   }
   
+  void getProperty() {
+    String retValue = "";
+    String property =  (statement.length < 2 ? "" : (String)statement[1].value);
+    String param = (statement.length < 3 ? "" : (String)statement[2].value);
+    retValue = (String)viewer.getProperty("String", property, param);
+    viewer.scriptEcho(retValue);
+  }
 }

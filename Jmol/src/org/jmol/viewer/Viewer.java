@@ -1063,6 +1063,7 @@ final public class Viewer extends JmolViewer {
       setShapeSize(JmolConstants.SHAPE_VECTORS, 1);
     setFrankOn(styleManager.frankOn);
     repaintManager.initializePointers(1);
+    setTainted(true);
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager
         .getModelSetName(), clientFile, null);
@@ -1637,6 +1638,7 @@ final public class Viewer extends JmolViewer {
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     manageScriptTermination();
+    System.out.println("render screen image");
     if (isTainted) {
       setModelVisibility();
       modelManager.setModelClickability();
@@ -2192,10 +2194,6 @@ final public class Viewer extends JmolViewer {
     }
     if (key.equalsIgnoreCase("showUnitcell")) {
       setShapeShow(JmolConstants.SHAPE_UCCAGE, value);
-      return;
-    }
-    if (key.equalsIgnoreCase("showHydrogens")) {
-      setShowHydrogens(value);
       return;
     }
     if (key.equalsIgnoreCase("showHydrogens")) {

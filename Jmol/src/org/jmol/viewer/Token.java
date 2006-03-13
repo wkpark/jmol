@@ -177,6 +177,7 @@ class Token {
   final static int centerAt     = command | 93;
   final static int isosurface   = command | 94;
   final static int draw         = command | 95 | embeddedExpression;
+  final static int getproperty  = command | 96;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -505,6 +506,7 @@ class Token {
     "polyhedra",         new Token(polyhedra,varArgCount, "polyhedra"),
     "centerat",          new Token(centerAt, varArgCount, "centerat"),
     "isosurface",        new Token(isosurface,varArgCount,"isosurface"),
+    "getproperty",       new Token(getproperty,varArgCount, "getproperty"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

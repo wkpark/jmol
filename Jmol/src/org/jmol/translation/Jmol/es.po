@@ -1,6 +1,6 @@
 # Spanish translation of the Jmol application
 # Copyright (C) 2005 by the Jmol Development Team
-# 
+#
 # This file is distributed under the same license as the Jmol package.
 # Angel Herraez <angel.herraez@uah.es>, 2005.
 #
@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-03-12 20:34-0500\n"
-"PO-Revision-Date: 2005-10-23 23:08+0100\n"
-"Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
+"PO-Revision-Date: 2006-03-13 21:44+0100\n"
+"Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,9 +20,8 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 
 #: org/jmol/viewer/StatusManager.java:158
-#, fuzzy
 msgid "Jmol executing script ..."
-msgstr "Ejecutando guión..."
+msgstr "Jmol ejecutando guión..."
 
 #: org/openscience/jmol/app/AboutDialog.java:56
 #: org/openscience/jmol/app/GuiMap.java:155
@@ -243,7 +242,7 @@ msgstr "Seleccionar nada"
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Copy Image"
-msgstr ""
+msgstr "Copiar imagen"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "&Preferences..."
@@ -779,12 +778,8 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
-"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -828,9 +823,7 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
-"calidad"
+msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -838,8 +831,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:245
 msgid "Should povray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:254
 #: org/openscience/jmol/app/PovrayDialog.java:256
@@ -1086,54 +1078,38 @@ msgstr "Novedades en Jmol"
 
 #~ msgid "Colors"
 #~ msgstr "Colores"
-
 #~ msgid "Background"
 #~ msgstr "Fondo"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
-
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
-
 #~ msgid "Text"
 #~ msgstr "Texto"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
-
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
-
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
-
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
+

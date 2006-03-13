@@ -217,15 +217,9 @@ class ColorManager {
     colixAxesText = Graphics3D.getColix(color);
   }
 
-  // FIXME NEEDSWORK -- arrow vector stuff
-  Color colorVector = Color.black;
-  short colixVector = Graphics3D.BLACK;
-  void setColorVector(Color c) {
-    colorVector = c;
-    colixVector = Graphics3D.getColix(c);
-  }
-  Color getColorVector() {
-    return colorVector;
+  short colixVector = 0;
+  void setVectorArgb(int argb) {
+    colixVector = Graphics3D.getColix(argb);
   }
 
   void setColorBackground(String colorName) {

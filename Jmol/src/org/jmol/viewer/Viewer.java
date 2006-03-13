@@ -803,13 +803,13 @@ final public class Viewer extends JmolViewer {
     return colorManager.colixTorsion;
   }
 
-  public void setColorVector(Color c) {
-    colorManager.setColorVector(c);
-    refresh(0, "Viewer:setColorVector()");
+  public void setVectorArgb(int argb) {
+    colorManager.setVectorArgb(argb);
+    refresh(0, "Viewer:setVectorArgb()");
   }
 
-  public Color getColorVector() {
-    return colorManager.colorVector;
+  public int getVectorArgb() {
+    return g3d.getColixArgb(colorManager.colixVector);
   }
 
   short getColixVector() {

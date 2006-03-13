@@ -232,8 +232,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getLabelArgb();
   abstract public void setBondArgb(int argbBond);
   abstract public int getBondArgb();
-  abstract public Color getColorVector();
-  abstract public void setColorVector(Color colorVector);
+  abstract public void setVectorArgb(int argbVector);
+  abstract public int getVectorArgb();
   abstract public Color getColorMeasurement();
   abstract public void setColorMeasurement(Color colorMeasurement);
 

@@ -695,9 +695,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         }
         colorVector = color;
         vButton.setBackground(colorVector);
-        viewer.setColorVector(colorVector);
-        currentProperties.put("colorVector",
-            Integer.toString(colorVector.getRGB()));
+        int argb = colorVector.getRGB();
+        viewer.setVectorArgb(argb);
+        currentProperties.put("colorVector", Integer.toString(argb));
         viewer.refresh(0, "PreferencesDialog:actionPerformed()");
       }
     };
@@ -1018,7 +1018,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setPercentVdwAtom(percentVdwAtom);
     //viewer.setPropertyStyleString(AtomPropsMode);
     viewer.setMarBond(marBond);
-    viewer.setColorVector(colorVector);
+    viewer.setVectorArgb(colorVector == null ? 0 : colorVector.getRGB());
     viewer.setColorMeasurement(colorMeasurement);
     viewer.setBackgroundArgb(colorBackground == null ? 0 :
                              colorBackground.getRGB());

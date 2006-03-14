@@ -25,7 +25,6 @@
 package org.jmol.g3d;
 
 import java.awt.Component;
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.awt.FontMetrics;
@@ -1336,14 +1335,6 @@ final public class Graphics3D {
     }
   }
 
-  void forcePixel(Color co, int x, int y) {
-    if (x < 0 || x >= width || y < 0 || y >= height)
-      return;
-    int offset = y * width + x;
-    zbuf[offset] = 0;
-    pbuf[offset] = co.getRGB();
-  }
-
   void plotPixelUnclipped(int x, int y, int z) {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
@@ -1768,13 +1759,11 @@ final public class Graphics3D {
   public final static short PINK        = 6;
   public final static short BLUE        = 7;
   public final static short WHITE       = 8;
-  public final static short AQUA        = 9;
-  public final static short CYAN        = AQUA;
+  public final static short CYAN        = 9;
   public final static short RED         = 10;
   public final static short GREEN       = 11;
   public final static short GRAY        = 12;
   public final static short SILVER      = 13;
-  public final static short LIGHTGRAY   = SILVER;
   public final static short LIME        = 14;
   public final static short MAROON      = 15;
   public final static short NAVY        = 16;
@@ -1782,27 +1771,36 @@ final public class Graphics3D {
   public final static short PURPLE      = 18;
   public final static short TEAL        = 19;
   public final static short MAGENTA     = 20;
-  public final static short FUCHSIA     = MAGENTA;
   public final static short YELLOW      = 21;
   public final static short HOTPINK     = 22;
   public final static short GOLD        = 23;
 
-  public final static Color COLOR_GOLD = new Color(0xFF, 0xD7, 0x00);
-  public final static Color COLOR_HOTPINK = new Color(0xFF, 0x69, 0xB4);
-  public final static Color COLOR_TEAL = new Color(0x00, 0x80, 0x80);
-
-  static Color[] colorsPredefined = {
-    Color.black, Color.orange, Color.pink, Color.blue,
-    Color.white, Color.cyan, Color.red, new Color(0, 128, 0),
-    Color.gray, Color.lightGray, Color.green, new Color(128, 0, 0),
-    new Color(0, 0, 128), new Color(128, 128, 0), new Color(128, 0, 128),
-    COLOR_TEAL, Color.magenta, Color.yellow,
-    COLOR_HOTPINK, COLOR_GOLD,
+  static int[] predefinedArgbs = {
+    0xFF000000, // black
+    0xFFFFA500, // orange
+    0xFFFFC0CB, // pink
+    0xFF0000FF, // blue
+    0xFFFFFFFF, // white
+    0xFF00FFFF, // cyan
+    0xFFFF0000, // red
+    0xFF008000, // green
+    0xFF808080, // gray
+    0xFFC0C0C0, // silver
+    0xFF00FF00, // lime
+    0xFF800000, // maroon
+    0xFF000080, // navy
+    0xFF808000, // olive
+    0xFF800080, // purple
+    0xFF008080, // teal
+    0xFFFF00FF, // magenta
+    0xFFFFFF00, // yellow
+    0xFFFF69B4, // hotpink
+    0xFFFFD700, // gold
   };
 
   static {
-    for (int i = 0; i < colorsPredefined.length; ++i)
-      if (Colix.getColix(colorsPredefined[i]) != i + SPECIAL_COLIX_MAX)
+    for (int i = 0; i < predefinedArgbs.length; ++i)
+      if (Colix.getColix(predefinedArgbs[i]) != i + SPECIAL_COLIX_MAX)
         throw new NullPointerException();
   }
 
@@ -1851,10 +1849,6 @@ final public class Graphics3D {
     return Colix.getColix(argb);
   }
 
-  public final static short getColix(Color color) {
-    return Colix.getColix(color);
-  }
-
   public final short getColixMix(short colixA, short colixB) {
     return Colix.getColixMix(colixA >= 0 ? colixA :
                              changableColixMap[colixA &
@@ -1877,14 +1871,14 @@ final public class Graphics3D {
   }
 
   public final static short getColix(String colorName) {
-    Color color = getColorFromString(colorName);
-    if (color != null)
-      return getColix(color);
-    if (colorName == "none")
+    int argb = getArgbFromString(colorName);
+    if (argb != 0)
+      return getColix(argb);
+    if ("none".equalsIgnoreCase(colorName))
       return 0;
-    if (colorName == "translucent")
+    if ("translucent".equalsIgnoreCase(colorName))
       return TRANSLUCENT;
-    if (colorName == "opaque")
+    if ("opaque".equalsIgnoreCase(colorName))
       return OPAQUE;
     return UNRECOGNIZED;
   }
@@ -1892,8 +1886,6 @@ final public class Graphics3D {
   public final static short getColix(Object obj) {
     if (obj == null)
       return 0;
-    if (obj instanceof Color)
-      return getColix((Color)obj);
     if (obj instanceof Integer)
       return getColix(((Integer)obj).intValue());
     if (obj instanceof String)
@@ -1926,18 +1918,14 @@ final public class Graphics3D {
     return inheritColix(myColix, parentColix);
   }
 
-  public Color getColor(short colix) {
-    return
-      Colix.getColor(colix >= 0 ? colix :
-                     changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT]);
-  }
-
   public String getHexColorFromIndex(short colix) {
-    Color color = getColor(colix);
-    if (color == null)
+    int argb = getColixArgb(colix);
+    if (argb == 0)
       return null;
-    String str = getColor(colix).toString();
-    return str.substring(15,str.length()-1);
+    String r  = Integer.toHexString((argb >> 16) & 0xFF);
+    String g  = Integer.toHexString((argb >> 8) & 0xFF);
+    String b  = Integer.toHexString(argb & 0xFF);
+    return "#" + r + g + b;
   }
 
   /****************************************************************
@@ -2398,7 +2386,7 @@ final public class Graphics3D {
   private static final Hashtable mapJavaScriptColors = new Hashtable();
   static {
     for (int i = colorNames.length; --i >= 0; )
-      mapJavaScriptColors.put(colorNames[i], new Color(colorArgbs[i]));
+      mapJavaScriptColors.put(colorNames[i], new Integer(colorArgbs[i]));
   }
 
   public static int getArgbFromString(String strColor) {
@@ -2418,31 +2406,13 @@ final public class Graphics3D {
         } catch (NumberFormatException e) {
         }
       } else {
-        Color color = (Color)mapJavaScriptColors.get(strColor.toLowerCase());
-        if (color != null)
-          return color.getRGB();
+        Integer boxedArgb =
+          (Integer)mapJavaScriptColors.get(strColor.toLowerCase());
+        if (boxedArgb != null)
+          return boxedArgb.intValue();
       }
     }
     return 0;
-  }
-
-  public static Color getColorFromString(String strColor) {
-    if (strColor != null) {
-      if (strColor.length() == 7 && strColor.charAt(0) == '#') {
-        try {
-          int red = Integer.parseInt(strColor.substring(1, 3), 16);
-          int grn = Integer.parseInt(strColor.substring(3, 5), 16);
-          int blu = Integer.parseInt(strColor.substring(5, 7), 16);
-          return new Color(red, grn, blu);
-        } catch (NumberFormatException e) {
-        }
-      } else {
-        Color color = (Color)mapJavaScriptColors.get(strColor.toLowerCase());
-        if (color != null)
-          return color;
-      }
-    }
-    return null;
   }
 
   final Vector3f vAB = new Vector3f();

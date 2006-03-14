@@ -130,13 +130,13 @@ public class JmolAppletControl extends Applet {
     }
     String colorName;
     colorName = getParam("bgcolor");
-    setBackground(colorName == null
-                  ? Color.white
-                  : Graphics3D.getColorFromString(colorName));
+    int argbBg = Graphics3D.getArgbFromString(colorName);
+    setBackground(argbBg == 0 ? Color.white : new Color(argbBg));
+
     colorName = getParam("fgcolor");
-    setForeground(colorName == null
-                  ? Color.black
-                  : Graphics3D.getColorFromString(colorName));
+    int argbFg = Graphics3D.getArgbFromString(colorName);
+    setForeground(argbFg == 0 ? Color.black : new Color(argbFg));
+
     buttonCallback = getParam("buttoncallback");
 
     setLayout(new GridLayout(1, 1));

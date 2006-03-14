@@ -76,9 +76,8 @@ final public class Graphics3D {
   int[] pbuf;
   short[] zbuf;
 
-  short colixBackground;
-  int argbBackground;
-  short colixBackgroundContrast;
+  short colixBackground = BLACK;
+  short colixBackgroundContrast = WHITE;
   private final Rectangle rectClip = new Rectangle();
 
   short colixCurrent;
@@ -172,7 +171,7 @@ final public class Graphics3D {
    */
   public void setBackground(short colix) {
     colixBackground = colix;
-    argbBackground = getColixArgb(colix);
+    int argbBackground = getColixArgb(colix);
     platform.setBackground(argbBackground);
 
     colixBackgroundContrast =

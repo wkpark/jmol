@@ -92,6 +92,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private Hashtable commands;
 
   final static String[] jmolDefaults  = {
+    "jmolDefaults",                   "true",
     "showHydrogens",                  "true",
     "showMeasurements",               "true",
     "perspectiveDepth",               "true",
@@ -107,6 +108,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   };
 
   final static String[] rasmolOverrides = {
+    "jmolDefaults",                   "false",
     "percentVdwAtom",                 "0",
     "marBond",                        "1",
     "axesOrientationRasmol",          "true",
@@ -609,14 +611,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));
-    /*
-    VibrateAmplitudeScale =
-        new Double(currentProperties.getProperty("VibrateAmplitudeScale")).doubleValue();
-    VibrateVectorScale =
-        new Double(currentProperties.getProperty("VibrateVectorScale")).doubleValue();
-    */
+
+    if (Boolean.getBoolean("jmolDefaults"))
+      viewer.setJmolDefaults();
+    else
+      viewer.setRasmolDefaults();
+
     viewer.setPercentVdwAtom(percentVdwAtom);
-    //viewer.setPropertyStyleString(AtomPropsMode);
     viewer.setMarBond(marBond);
     viewer.setMinBondDistance(minBondDistance);
     viewer.setBondTolerance(bondTolerance);
@@ -627,11 +628,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setShowAxes(showAxes);
     viewer.setShowBbcage(showBoundingBox);
     viewer.setAxesOrientationRasmol(axesOrientationRasmol);
-    /*
-    Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
-    Vibrate.setVectorScale(VibrateVectorScale);
-    Vibrate.setNumberFrames(VibrationFrames);
-    */
   }
 
   class PrefsAction extends AbstractAction {

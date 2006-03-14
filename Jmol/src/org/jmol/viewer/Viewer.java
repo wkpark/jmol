@@ -1263,6 +1263,7 @@ final public class Viewer extends JmolViewer {
 
   void setCenter(Point3f center) {
     modelManager.setRotationCenter(center);
+    transformManager.setExternalRotationCenter(null);
     refresh(0, "Viewer:setCenter()");
   }
 
@@ -1273,23 +1274,23 @@ final public class Viewer extends JmolViewer {
   void setCenter(String relativeTo, float x, float y, float z) {
     modelManager.setRotationCenter(relativeTo, x, y, z);
     scaleFitToScreen();
+    transformManager.setExternalRotationCenter(null);
+    refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
 
   void setCenterBitSet(BitSet bsCenter) {
     modelManager.setCenterBitSet(bsCenter);
-    if (!friedaSwitch)
-      scaleFitToScreen();
+    transformManager.setExternalRotationCenter(null);
     refresh(0, "Viewer:setCenterBitSet()");
   }
 
-  boolean friedaSwitch = false;
-
-  boolean getFriedaSwitch() {
-    return friedaSwitch;
+  boolean windowCenteredFlag = true;
+  boolean isWindowCentered() {
+    return windowCenteredFlag;
   }
 
-  void setFriedaSwitch(boolean friedaSwitch) {
-    this.friedaSwitch = friedaSwitch;
+  void setWindowCentered(boolean TF) {
+    windowCenteredFlag = TF;
   }
 
   public void setCenterSelected() {
@@ -1676,7 +1677,7 @@ final public class Viewer extends JmolViewer {
         g3d.applyCyanAnaglyph();
       else
         g3d
-          .applyBlueOrGreenAnaglyph(stereoMode==JmolConstants.STEREO_REDBLUE);
+            .applyBlueOrGreenAnaglyph(stereoMode == JmolConstants.STEREO_REDBLUE);
       Image img = g3d.getScreenImage();
       try {
         g.drawImage(img, 0, 0, null);
@@ -2223,8 +2224,8 @@ final public class Viewer extends JmolViewer {
       setZeroBasedXyzRasmol(value);
       return;
     }
-    if (key.equalsIgnoreCase("frieda")) {
-      setFriedaSwitch(value);
+    if (key.equalsIgnoreCase("windowCentered")) {
+      setWindowCentered(value);
       return;
     }
     if (key.equalsIgnoreCase("testFlag1")) {
@@ -2687,6 +2688,7 @@ final public class Viewer extends JmolViewer {
   // stereo support
   // //////////////////////////////////////////////////////////////
 
+
   void setStereoMode(int stereoMode) {
     transformManager.setStereoMode(stereoMode);
   }
@@ -2793,18 +2795,18 @@ final public class Viewer extends JmolViewer {
   public void setSpinAxis(String axisID, int degrees) {
     Point3f rotCenter = modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
     Vector3f rotAxis = modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
-    if (rotCenter == null || rotAxis == null) return;
-    setSpinCenter(rotCenter);
-    System.out.println("setSpinAxis " + axisID + " " + rotAxis + " " + degrees);
-    setSpin(rotAxis, degrees);
+    if (rotCenter == null || rotAxis == null) 
+      return;
+    transformManager.setSpin(rotCenter, rotAxis, degrees);
   }
 
   public void rotateAxis(String axisID, int degrees) {
     Point3f rotCenter = modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
     Vector3f rotAxis = modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
-    if (rotCenter == null || rotAxis == null) return;
-    setCenter(rotCenter);
-    transformManager.rotateAxisInternal(rotAxis, degrees);
+    if (rotCenter == null || rotAxis == null) 
+      return;
+    transformManager.rotateAxisInternal(rotCenter, rotAxis, degrees);
+    refresh(1, "Viewer:rotateAxisInternal()");
   }
 
   public void setDrawCenter(String axisID) {
@@ -2813,12 +2815,4 @@ final public class Viewer extends JmolViewer {
     setCenter(rotCenter);
   }
   
-  void setSpinCenter(Point3f center) {
-    transformManager.setSpinCenter(center);
-  }
-
-  void setSpin(Vector3f axis, int degrees) {
-    transformManager.setSpin(axis, degrees);
-  }
-
  }

@@ -437,6 +437,7 @@ public class Jmol extends JPanel {
       if (args.length > 0) {
           modelFilename = args[0];
       }
+      //modelFilename = "caffeine.xyz"; //Eclipse TESTING ONLY
       if (line.hasOption("s")) {
           scriptFilename = line.getOptionValue("s");
       }

@@ -287,13 +287,18 @@ class ModelManager {
       else
         center = null;
     }
-    if (viewer.getFriedaSwitch()) {
-      if (center == null)
-        center = frame.getRotationCenterDefault();
+    
+    if (center == null)
+      center = frame.getRotationCenterDefault();
+    if (viewer.isWindowCentered()) {
+      viewer.translateCenterTo(0, 0);
+      frame.setRotationCenter(center);
+      viewer.scaleFitToScreen();
+    } else {
       Point3i newCenterScreen = viewer.transformPoint(center);
       viewer.translateCenterTo(newCenterScreen.x, newCenterScreen.y);
+      frame.setRotationCenter(center);
     }
-    frame.setRotationCenter(center);
   }
 
   void setRotationCenter(Point3f center) {

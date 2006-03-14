@@ -45,6 +45,7 @@ class Axes extends SelectionIndependentShape {
       axisPoints[i] = new Point3f();
   }
 
+  final static float MIN_AXIS_LEN = 1.5f;
   void initShape() {
     originPoint.set(viewer.getBoundBoxCenter());
     Vector3f corner = viewer.getBoundBoxCornerVector();
@@ -54,6 +55,13 @@ class Axes extends SelectionIndependentShape {
       // we have just set the axisPoint to be a unit on a single axis
       // therefore only one of these values (x, y, or z) will be nonzero
       // it will have value 1 or -1
+      if (corner.x < MIN_AXIS_LEN)
+        corner.x = MIN_AXIS_LEN;
+      if (corner.y < MIN_AXIS_LEN)
+        corner.y = MIN_AXIS_LEN;
+      if (corner.z < MIN_AXIS_LEN)
+        corner.z = MIN_AXIS_LEN;
+      
       axisPoint.x *= corner.x;
       axisPoint.y *= corner.y;
       axisPoint.z *= corner.z;

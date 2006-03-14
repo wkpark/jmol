@@ -866,7 +866,7 @@ final class Frame {
   void setRotationCenter(Point3f newCenterOfRotation) {
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
-      if (! viewer.getFriedaSwitch())
+      if (viewer.isWindowCentered())
         rotationRadius = calcRotationRadius(rotationCenter);
     } else {
       rotationCenter = rotationCenterDefault;
@@ -882,10 +882,6 @@ final class Frame {
   private void findBounds() {
     if ((rotationCenter != null) || (atomCount <= 0))
       return;
-    calcRotationSphere();
-  }
-
-  private void calcRotationSphere() {
     calcAverageAtomPoint();
     calcBoundBoxDimensions();
     if (notionalUnitcell != null)

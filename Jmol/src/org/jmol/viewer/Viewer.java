@@ -1676,7 +1676,7 @@ final public class Viewer extends JmolViewer {
         g3d.applyCyanAnaglyph();
       else
         g3d
-            .applyBlueOrGreenAnaglyph(stereoMode == JmolConstants.STEREO_REDBLUE);
+          .applyBlueOrGreenAnaglyph(stereoMode==JmolConstants.STEREO_REDBLUE);
       Image img = g3d.getScreenImage();
       try {
         g.drawImage(img, 0, 0, null);

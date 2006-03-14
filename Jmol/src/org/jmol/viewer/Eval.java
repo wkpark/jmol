@@ -3793,7 +3793,8 @@ class Eval implements Runnable {
 
   void stereo() throws ScriptException {
     int stereoMode = JmolConstants.STEREO_DOUBLE;
-    float degrees = 5;
+    // see www.usm.maine.edu/~rhodes/0Help/StereoViewing.html
+    float degrees = -5;
     boolean degreesSeen = false;
     for (int i = 1; i < statementLength; ++i) {
       switch (statement[i].tok) {

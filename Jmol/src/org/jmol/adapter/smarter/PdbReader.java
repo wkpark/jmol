@@ -430,6 +430,9 @@ class PdbReader extends AtomSetCollectionReader {
   void formul() {
     String groupName = parseToken(line, 12, 15);
     String formula = parseTrimmed(line, 19, 70);
+    if (formula == null) {
+      return;
+    }
     int ichLeftParen = formula.indexOf('(');
     if (ichLeftParen >= 0) {
       int ichRightParen = formula.indexOf(')');

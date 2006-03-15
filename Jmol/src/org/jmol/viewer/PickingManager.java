@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import java.util.BitSet;
+import org.jmol.i18n.GT;
 
 class PickingManager {
 
@@ -149,11 +150,22 @@ class PickingManager {
       viewer.clearClickCount();
       reportSelection();
       break;
+    case JmolConstants.PICKING_ROTATE:
+      if (queuedAtomCount >= 2)
+        queuedAtomCount = 0;
+      queueAtom(atomIndex);
+      if (queuedAtomCount < 2) {
+        viewer.scriptStatus(GT._("pick " 
+            + (queuedAtomCount == 1 ? "one more" : "two ") 
+            + " atoms in order to rotate the model around an axis"));
+        break;
+      }
+      viewer.rotateAbout(queuedAtomIndexes[0], atomIndex);
     }
   }
 
   void reportSelection() {
-    viewer.scriptStatus("" + viewer.getSelectionCount() + " atoms selected");
+    viewer.scriptStatus("" + viewer.getSelectionCount() + " " + GT._("atoms selected"));
   }
 
   void setPickingMode(int pickingMode) {

@@ -1124,5 +1124,12 @@ String getAtomInfoChime(int i) {
     return info;
   }
   
+  Point3f getAveragePosition(int atomIndex1, int atomIndex2) {
+    return frame.getAveragePosition(atomIndex1, atomIndex2);
+  }
+
+  Vector3f getAtomVector(int atomIndex1, int atomIndex2) {
+    return frame.getAtomVector(atomIndex1, atomIndex2);
+  }
   
 }

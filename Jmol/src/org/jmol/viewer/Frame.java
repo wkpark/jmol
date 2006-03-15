@@ -1924,4 +1924,20 @@ final class Frame {
     }
   }
 
+  Point3f getAveragePosition(int atomIndex1, int atomIndex2) {
+    Atom atom1 = atoms[atomIndex1];
+    Atom atom2 = atoms[atomIndex2];
+    return new Point3f(
+        (atom1.point3f.x + atom2.point3f.x) / 2,  
+        (atom1.point3f.y + atom2.point3f.y) / 2,  
+        (atom1.point3f.z + atom2.point3f.z) / 2  
+            ); 
+  }
+
+  Vector3f getAtomVector(int atomIndex1, int atomIndex2) {
+    Vector3f V = new Vector3f(atoms[atomIndex1].point3f);
+    V.sub(atoms[atomIndex2].point3f);
+    return V;
+  }
+
 }

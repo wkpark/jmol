@@ -3140,6 +3140,14 @@ class Eval implements Runnable {
       case Token.chain:
         pickingMode = JmolConstants.PICKING_SELECT_CHAIN;
         break;
+      case Token.rotate:
+        pickingMode = JmolConstants.PICKING_ROTATE;
+        int rate = 10;
+        if (statementLength == 4) {
+            rate = intParameter(3);
+        }
+        viewer.setPickingRotationSpeed(rate);
+        break;
       case Token.select:
         pickingMode = JmolConstants.PICKING_SELECT_ATOM;
         if (statementLength == 4) {

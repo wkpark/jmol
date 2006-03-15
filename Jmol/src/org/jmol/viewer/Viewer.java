@@ -2814,6 +2814,23 @@ final public class Viewer extends JmolViewer {
     if (rotCenter == null) return;
     setCenter(rotCenter);
   }
+
+  int pickingRotationSpeed = 10;
+  void setPickingRotationSpeed(int rate) {
+    if (rate < 1) rate = 1;
+    pickingRotationSpeed = rate;
+  }
+  
+  void rotateAbout(int atomIndex1, int atomIndex2) {
+    if (atomIndex1 == atomIndex2) {
+      setSpinOn(false);
+      return;
+    }
+    Point3f rotCenter = modelManager.getAveragePosition(atomIndex1, atomIndex2);
+    Vector3f rotAxis = modelManager.getAtomVector(atomIndex1, atomIndex2);
+    transformManager.setSpin(rotCenter, rotAxis, pickingRotationSpeed);
+    setSpinOn(true);
+  }
   
   int cardinalityOf(BitSet bs) {
     int nbitset = 0;

@@ -1,4 +1,4 @@
-#Sun Oct 02 15:32:29 CEST 2005
+#Wed Mar 15 10:52:55 CST 2006
 eclipse.preferences.version=1
 org.eclipse.jdt.core.builder.cleanOutputFolder=clean
 org.eclipse.jdt.core.builder.duplicateResourceTask=warning
@@ -71,7 +71,7 @@ org.eclipse.jdt.core.formatter.alignment_for_enum_constants=0
 org.eclipse.jdt.core.formatter.alignment_for_expressions_in_array_initializer=16
 org.eclipse.jdt.core.formatter.alignment_for_multiple_fields=16
 org.eclipse.jdt.core.formatter.alignment_for_parameters_in_constructor_declaration=16
-org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration=16
+org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration=18
 org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation=16
 org.eclipse.jdt.core.formatter.alignment_for_superclass_in_type_declaration=16
 org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_enum_declaration=16
@@ -80,7 +80,7 @@ org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_constructor_declar
 org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration=16
 org.eclipse.jdt.core.formatter.blank_lines_after_imports=1
 org.eclipse.jdt.core.formatter.blank_lines_after_package=1
-org.eclipse.jdt.core.formatter.blank_lines_before_field=1
+org.eclipse.jdt.core.formatter.blank_lines_before_field=0
 org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration=0
 org.eclipse.jdt.core.formatter.blank_lines_before_imports=1
 org.eclipse.jdt.core.formatter.blank_lines_before_member_type=1

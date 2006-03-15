@@ -44,7 +44,8 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.Reader;
-/****************************************************************************
+
+/*******************************************************************************
  * The JmolViewer can be used to render client molecules. Clients implement the
  * JmolAdapter. JmolViewer uses this interface to extract information from the
  * client data structures and render the molecule to the supplied
@@ -64,7 +65,7 @@ import java.io.Reader;
  * 
  * applet.getProperty("jmolApplet").getFullPathName()
  * 
- ***************************************************************************/
+ ******************************************************************************/
 
 final public class Viewer extends JmolViewer {
 
@@ -101,23 +102,19 @@ final public class Viewer extends JmolViewer {
     strJavaVendor = System.getProperty("java.vendor");
     strOSName = System.getProperty("os.name");
     strJavaVersion = System.getProperty("java.version");
-    jvm11orGreater =
-      (strJavaVersion.compareTo("1.1") >= 0 &&
-       // Netscape on MacOS does not implement 1.1 event model
-       !(strJavaVendor.startsWith("Netscape") &&
-         strJavaVersion.compareTo("1.1.5") <= 0 &&
-         "Mac OS".equals(strOSName)));
+    // Netscape on MacOS does not implement 1.1 event model
+    jvm11orGreater = (strJavaVersion.compareTo("1.1") >= 0 && !(strJavaVendor
+        .startsWith("Netscape")
+        && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
 
-    System.out.println(JmolConstants.copyright + "\nJmol Version " +
-                       JmolConstants.version + "  " + JmolConstants.date +
-                       "\njava.vendor:" + strJavaVendor +
-                       "\njava.version:" + strJavaVersion + "\nos.name:"
-                       + strOSName);
-    System.out.println(htmlName + " jvm11orGreater=" + jvm11orGreater +
-                       "\njvm12orGreater=" + jvm12orGreater +
-                       "\njvm14orGreater=" + jvm14orGreater);
+    System.out.println(JmolConstants.copyright + "\nJmol Version "
+        + getJmolVersion() + "\njava.vendor:" + strJavaVendor
+        + "\njava.version:" + strJavaVersion + "\nos.name:" + strOSName);
+    System.out.println(htmlName + " jvm11orGreater=" + jvm11orGreater
+        + "\njvm12orGreater=" + jvm12orGreater + "\njvm14orGreater="
+        + jvm14orGreater);
 
     g3d = new Graphics3D(awtComponent);
     statusManager = new StatusManager(this);
@@ -183,7 +180,11 @@ final public class Viewer extends JmolViewer {
   int getShapeVisibilityFlag(int shapeID) {
     return (2 << shapeID);
   }
-  
+
+  String getJmolVersion() {
+    return JmolConstants.version + "  " + JmolConstants.date;
+  }
+
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
@@ -191,7 +192,7 @@ final public class Viewer extends JmolViewer {
   String getMoveToText(float timespan) {
     return transformManager.getMoveToText(timespan);
   }
-  
+
   void rotateXYBy(int xDelta, int yDelta) {
     transformManager.rotateXYBy(xDelta, yDelta);
     refresh(1, "Viewer:rotateXYBy()");
@@ -439,7 +440,7 @@ final public class Viewer extends JmolViewer {
   void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
                       Point3i pointScreen) {
     transformManager.transformPoint(pointAngstroms, vibrationVector,
-                                    pointScreen);
+        pointScreen);
   }
 
   void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
@@ -452,7 +453,7 @@ final public class Viewer extends JmolViewer {
 
   void transformPoints(Point3f[] pointsAngstroms, Point3i[] pointsScreens) {
     transformManager.transformPoints(pointsAngstroms.length, pointsAngstroms,
-                                     pointsScreens);
+        pointsScreens);
   }
 
   void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
@@ -508,7 +509,7 @@ final public class Viewer extends JmolViewer {
   void checkCameraDistance() {
     if (transformManager.increaseRotationRadius)
       modelManager.increaseRotationRadius(transformManager
-                                          .getRotationRadiusIncrease());
+          .getRotationRadiusIncrease());
   }
 
   final Dimension dimScreen = new Dimension();
@@ -788,7 +789,7 @@ final public class Viewer extends JmolViewer {
 
   boolean hasSelectionHalo(int atomIndex) {
     return selectionHaloEnabled && !repaintManager.wireframeRotating
-      && selectionManager.isSelected(atomIndex);
+        && selectionManager.isSelected(atomIndex);
   }
 
   boolean selectionHaloEnabled = false;
@@ -897,8 +898,8 @@ final public class Viewer extends JmolViewer {
   // delegated to FileManager
   // ///////////////////////////////////////////////////////////////
 
-  public void setAppletContext(String htmlName, URL documentBase,
-                               URL codeBase, String appletProxy) {
+  public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
+                               String appletProxy) {
     this.htmlName = htmlName;
     fileManager.setAppletContext(documentBase, codeBase, appletProxy);
   }
@@ -927,8 +928,7 @@ final public class Viewer extends JmolViewer {
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name);
     long ms = System.currentTimeMillis() - timeBegin;
-    setStatusFileLoaded(1, name, "",
-                        modelManager.getModelSetName(), null, null);
+    setStatusFileLoaded(1, name, "", modelManager.getModelSetName(), null, null);
     System.out.println("openFile(" + name + ") " + ms + " ms");
   }
 
@@ -941,7 +941,7 @@ final public class Viewer extends JmolViewer {
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
       setStatusFileLoaded(1, names[i], "", modelManager.getModelSetName(),
-                          null, null);
+          null, null);
     }
     System.out.println("openFiles(" + names.length + ") " + ms + " ms");
   }
@@ -949,8 +949,8 @@ final public class Viewer extends JmolViewer {
   public void openStringInline(String strModel) {
     clear();
     fileManager.openStringInline(strModel);
-    setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(),
-                        null, getOpenFileError());
+    setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(), null,
+        getOpenFileError());
   }
 
   public String getInlineData() {
@@ -980,8 +980,8 @@ final public class Viewer extends JmolViewer {
     fileManager.openDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     System.out.println("openDOM " + ms + " ms");
-    setStatusFileLoaded(1, "JSNode", "", modelManager.getModelSetName(),
-                        null, getOpenFileError());
+    setStatusFileLoaded(1, "JSNode", "", modelManager.getModelSetName(), null,
+        getOpenFileError());
   }
 
   /**
@@ -1053,7 +1053,7 @@ final public class Viewer extends JmolViewer {
     // for when CdkEditBus calls this directly
 
     setStatusFileLoaded(2, fullPathName, fileName, modelManager
-                        .getModelSetName(), clientFile, null);
+        .getModelSetName(), clientFile, null);
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
@@ -1068,7 +1068,7 @@ final public class Viewer extends JmolViewer {
     setTainted(true);
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager
-                        .getModelSetName(), clientFile, null);
+        .getModelSetName(), clientFile, null);
   }
 
   void clear() {
@@ -1118,10 +1118,10 @@ final public class Viewer extends JmolViewer {
   String getClientAtomStringProperty(Object clientAtomReference,
                                      String propertyName) {
     return modelManager.getClientAtomStringProperty(clientAtomReference,
-                                                    propertyName);
+        propertyName);
   }
 
-  /*************************************************************************
+  /*****************************************************************************
    * This is the method that should be used to extract the model data from Jmol.
    * Note that the API provided by JmolAdapter is used to import data into Jmol
    * and to export data out of Jmol.
@@ -1145,7 +1145,7 @@ final public class Viewer extends JmolViewer {
    * post questions to jmol-developers@lists.sf.net
    * 
    * @return A JmolAdapter
-   ************************************************************************/
+   ****************************************************************************/
 
   JmolAdapter getExportJmolAdapter() {
     return modelManager.getExportJmolAdapter();
@@ -1287,6 +1287,7 @@ final public class Viewer extends JmolViewer {
   }
 
   boolean windowCenteredFlag = true;
+
   boolean isWindowCentered() {
     return windowCenteredFlag;
   }
@@ -1416,9 +1417,9 @@ final public class Viewer extends JmolViewer {
     return modelManager.getAllStateInfo(bs);
   }
 
-  /*************************************************************************
+  /*****************************************************************************
    * delegated to MeasurementManager
-   ************************************************************************/
+   ****************************************************************************/
 
   public void clearMeasurements() {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "clear", null);
@@ -1432,37 +1433,36 @@ final public class Viewer extends JmolViewer {
 
   public String getMeasurementStringValue(int i) {
     String str = ""
-      + getShapeProperty(JmolConstants.SHAPE_MEASURES, "stringValue", i);
+        + getShapeProperty(JmolConstants.SHAPE_MEASURES, "stringValue", i);
     System.out.println("getMeasurementStringValue" + i + " " + str);
     return str;
   }
 
   Vector getMeasurementInfo() {
-    return (Vector)getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
+    return (Vector) getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
   }
 
   public int[] getMeasurementCountPlusIndices(int i) {
     int[] List = (int[]) getShapeProperty(JmolConstants.SHAPE_MEASURES,
-                                          "countPlusIndices", i);
+        "countPlusIndices", i);
     System.out.println(List);
     return List;
   }
 
   void setPendingMeasurement(int[] atomCountPlusIndices) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "pending",
-                     atomCountPlusIndices);
+        atomCountPlusIndices);
   }
 
   void defineMeasurement(int[] atomCountPlusIndices) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "define",
-                     atomCountPlusIndices);
+        atomCountPlusIndices);
   }
 
   void defineMeasurement(Vector monitorExpressions, float[] rangeMinMax) {
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setRange",
-                     rangeMinMax);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setRange", rangeMinMax);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "defineVector",
-                     monitorExpressions);
+        monitorExpressions);
   }
 
   public void deleteMeasurement(int i) {
@@ -1471,12 +1471,12 @@ final public class Viewer extends JmolViewer {
 
   void deleteMeasurement(int[] atomCountPlusIndices) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete",
-                     atomCountPlusIndices);
+        atomCountPlusIndices);
   }
 
   void toggleMeasurement(int[] atomCountPlusIndices) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggle",
-                     atomCountPlusIndices);
+        atomCountPlusIndices);
   }
 
   void clearAllMeasurements() {
@@ -1513,7 +1513,7 @@ final public class Viewer extends JmolViewer {
     // 1 means loop
     // 2 means palindrome
     repaintManager.setAnimationReplayMode(replay, firstFrameDelay,
-                                          lastFrameDelay);
+        lastFrameDelay);
   }
 
   int getAnimationReplayMode() {
@@ -1547,7 +1547,7 @@ final public class Viewer extends JmolViewer {
   void setAnimationRange(int modelIndex1, int modelIndex2) {
     repaintManager.setAnimationRange(modelIndex1, modelIndex2);
   }
-  
+
   BitSet getVisibleFramesBitSet() {
     return repaintManager.getVisibleFramesBitSet();
   }
@@ -1658,31 +1658,30 @@ final public class Viewer extends JmolViewer {
       setRectClip(null);
       render1(g, transformManager.getStereoRotationMatrix(false), false, 0, 0);
       render1(g, transformManager.getStereoRotationMatrix(true), false,
-              dimScreen.width, 0);
+          dimScreen.width, 0);
       break;
     case JmolConstants.STEREO_REDCYAN:
     case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDGREEN:
       setRectClip(null);
-      g3d.beginRendering(rectClip.x, rectClip.y,
-                         rectClip.width, rectClip.height,
-                         transformManager.getStereoRotationMatrix(true),
-                         false);
+      g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
+          rectClip.height, transformManager.getStereoRotationMatrix(true),
+          false);
       repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-                            repaintManager.displayModelIndex);
+          repaintManager.displayModelIndex);
       g3d.endRendering();
       g3d.snapshotAnaglyphChannelBytes();
-      g3d.beginRendering(rectClip.x, rectClip.y,
-                         rectClip.width, rectClip.height,
-                         transformManager.getStereoRotationMatrix(false),
-                         false);
+      g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
+          rectClip.height, transformManager.getStereoRotationMatrix(false),
+          false);
       repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-                            repaintManager.displayModelIndex);
+          repaintManager.displayModelIndex);
       g3d.endRendering();
       if (stereoMode == JmolConstants.STEREO_REDCYAN)
         g3d.applyCyanAnaglyph();
       else
-        g3d.applyBlueOrGreenAnaglyph(stereoMode==JmolConstants.STEREO_REDBLUE);
+        g3d
+            .applyBlueOrGreenAnaglyph(stereoMode == JmolConstants.STEREO_REDBLUE);
       Image img = g3d.getScreenImage();
       try {
         g.drawImage(img, 0, 0, null);
@@ -1697,11 +1696,10 @@ final public class Viewer extends JmolViewer {
 
   void render1(Graphics g, Matrix3f matrixRotate, boolean antialias, int x,
                int y) {
-    g3d.beginRendering(rectClip.x, rectClip.y,
-                       rectClip.width, rectClip.height,
-                       matrixRotate, antialias);
+    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+        matrixRotate, antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-                          repaintManager.displayModelIndex);
+        repaintManager.displayModelIndex);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -1718,12 +1716,10 @@ final public class Viewer extends JmolViewer {
   public Image getScreenImage() {
     boolean antialiasThisFrame = true;
     setRectClip(null);
-    g3d.beginRendering(rectClip.x, rectClip.y,
-                       rectClip.width, rectClip.height, 
-                       transformManager.getStereoRotationMatrix(false),
-                       antialiasThisFrame);
+    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+        transformManager.getStereoRotationMatrix(false), antialiasThisFrame);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-                          repaintManager.displayModelIndex);
+        repaintManager.displayModelIndex);
     g3d.endRendering();
     return g3d.getScreenImage();
   }
@@ -1733,8 +1729,7 @@ final public class Viewer extends JmolViewer {
   }
 
   void checkOversample() {
-    boolean tOversample =
-      (tOversampleAlways | (!repaintManager.inMotion & tOversampleStopped));
+    boolean tOversample = (tOversampleAlways | (!repaintManager.inMotion & tOversampleStopped));
     repaintManager.setOversample(tOversample);
     transformManager.setOversample(tOversample);
   }
@@ -1890,7 +1885,7 @@ final public class Viewer extends JmolViewer {
     if ((eval == null || !eval.isActive()) && atomIndex != hoverAtomIndex) {
       loadShape(JmolConstants.SHAPE_HOVER);
       setShapeProperty(JmolConstants.SHAPE_HOVER, "target", new Integer(
-                                                                        atomIndex));
+          atomIndex));
       hoverAtomIndex = atomIndex;
     }
   }
@@ -1911,10 +1906,9 @@ final public class Viewer extends JmolViewer {
   void togglePickingLabel(int atomIndex) {
     if (atomIndex != -1) {
       // hack to force it to load
-      setShapeSize(JmolConstants.SHAPE_LABELS,
-                   styleManager.pointsLabelFontSize);
+      setShapeSize(JmolConstants.SHAPE_LABELS, styleManager.pointsLabelFontSize);
       modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "pickingLabel",
-                                    new Integer(atomIndex), null);
+          new Integer(atomIndex), null);
       refresh(0, "Viewer:");
     }
   }
@@ -1948,11 +1942,11 @@ final public class Viewer extends JmolViewer {
 
     /*
      * System.out.println("JmolViewer.setShapeProperty("+
-     * JmolConstants.shapeClassBases[shapeID]+ "," + propertyName + "," +
-     * value + ")");
+     * JmolConstants.shapeClassBases[shapeID]+ "," + propertyName + "," + value +
+     * ")");
      */
     modelManager.setShapeProperty(shapeID, propertyName, value,
-                                  selectionManager.bsSelection);
+        selectionManager.bsSelection);
     refresh(0, "Viewer:setShapeProperty()");
   }
 
@@ -1961,8 +1955,8 @@ final public class Viewer extends JmolViewer {
   }
 
   void setShapePropertyArgb(int shapeID, String propertyName, int argb) {
-    setShapeProperty(shapeID, propertyName,
-                     argb == 0 ? null : new Integer(argb|0xFF000000));
+    setShapeProperty(shapeID, propertyName, argb == 0 ? null : new Integer(
+        argb | 0xFF000000));
   }
 
   void setShapeColorProperty(int shapeType, int argb) {
@@ -1971,7 +1965,7 @@ final public class Viewer extends JmolViewer {
 
   Object getShapeProperty(int shapeType, String propertyName) {
     return modelManager.getShapeProperty(shapeType, propertyName,
-                                         Integer.MIN_VALUE);
+        Integer.MIN_VALUE);
   }
 
   Object getShapeProperty(int shapeType, String propertyName, int index) {
@@ -1981,7 +1975,7 @@ final public class Viewer extends JmolViewer {
   int getShapePropertyAsInt(int shapeID, String propertyName) {
     Object value = getShapeProperty(shapeID, propertyName);
     return value == null || !(value instanceof Integer) ? Integer.MIN_VALUE
-      : ((Integer) value).intValue();
+        : ((Integer) value).intValue();
   }
 
   int getShapeID(String shapeName) {
@@ -2063,7 +2057,7 @@ final public class Viewer extends JmolViewer {
 
   void setStatusNewDefaultModeMeasurement(String status, int count,
                                           String strMeasure) {
-    statusManager.setStatusNewDefaultModeMeasurement(status,count,strMeasure);
+    statusManager.setStatusNewDefaultModeMeasurement(status, count, strMeasure);
   }
 
   void setStatusScriptStarted(int iscript, String script, String strError) {
@@ -2093,10 +2087,9 @@ final public class Viewer extends JmolViewer {
   }
 
   void setStatusFileLoaded(int ptLoad, String fullPathName, String fileName,
-                           String modelName, Object clientFile,
-                           String strError) {
+                           String modelName, Object clientFile, String strError) {
     statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
-                                      clientFile, strError, ptLoad);
+        clientFile, strError, ptLoad);
   }
 
   void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
@@ -2128,7 +2121,7 @@ final public class Viewer extends JmolViewer {
     statusManager.showConsole(showConsole);
   }
 
-  /*************************************************************************
+  /*****************************************************************************
    * mth 2003 05 31 - needs more work this should be implemented using
    * properties or as a hashtable using boxed/wrapped values so that the values
    * could be shared
@@ -2137,7 +2130,7 @@ final public class Viewer extends JmolViewer {
    * @return the boolean property mth 2005 06 24 and/or these property names
    *         should be interned strings so that we can just do == comparisions
    *         between strings
-   ************************************************************************/
+   ****************************************************************************/
 
   public boolean getBooleanProperty(String key) {
     if (key.equalsIgnoreCase("wireframeRotation"))
@@ -2281,7 +2274,7 @@ final public class Viewer extends JmolViewer {
       return;
     }
     System.out.println("viewer.setBooleanProperty(" + key + "," + value
-                       + ") - unrecognized");
+        + ") - unrecognized");
   }
 
   boolean testFlag1;
@@ -2324,9 +2317,9 @@ final public class Viewer extends JmolViewer {
     return testFlag4;
   }
 
-  ////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////
   // Graphics3D
-  ////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////
 
   boolean tOversampleStopped;
 
@@ -2417,8 +2410,7 @@ final public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   /*
-   * for rasmol compatibility with continued menu operation:
-   * - if it is from the
+   * for rasmol compatibility with continued menu operation: - if it is from the
    * menu & nothing selected * set the setting * apply to all - if it is from
    * the menu and something is selected * apply to selection - if it is from a
    * script * apply to selection * possibly set the setting for some things
@@ -2602,7 +2594,7 @@ final public class Viewer extends JmolViewer {
   // //////////////////////////////////////////////////////////////
   Font3D getFont3D(int fontSize) {
     return g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
-                         JmolConstants.DEFAULT_FONTSTYLE, fontSize);
+        JmolConstants.DEFAULT_FONTSTYLE, fontSize);
   }
 
   Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
@@ -2701,7 +2693,6 @@ final public class Viewer extends JmolViewer {
   // stereo support
   // //////////////////////////////////////////////////////////////
 
-
   void setStereoMode(int stereoMode) {
     transformManager.setStereoMode(stereoMode);
   }
@@ -2758,8 +2749,9 @@ final public class Viewer extends JmolViewer {
 
   String getModelExtract(String atomExpression) {
     BitSet bs = selectionManager.getAtomBitSet(atomExpression);
-    return fileManager.getFullPathName() + "\nEXTRACT: " + bs + "\nJmol\n"
-      + modelManager.getModelExtract(bs);
+    return fileManager.getFullPathName() + "\nJmol version " + getJmolVersion()
+        + "\nEXTRACT: " + atomExpression + "\n"
+        + modelManager.getModelExtract(bs);
   }
 
   String simpleReplace(String str, String strFrom, String strTo) {
@@ -2776,7 +2768,7 @@ final public class Viewer extends JmolViewer {
         ipt0 = ipt + fromLength;
       }
       str = stemp + str.substring(ipt0, str.length());
-      if(isOnce)
+      if (isOnce)
         break;
     }
     return str;
@@ -2806,46 +2798,48 @@ final public class Viewer extends JmolViewer {
   }
 
   public void setSpinAxis(String axisID, int degrees) {
-    Point3f rotCenter =
-      modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
-    Vector3f rotAxis =
-      modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
-    if (rotCenter == null || rotAxis == null) 
+    Point3f rotCenter = modelManager.getSpinCenter(axisID,
+        repaintManager.displayModelIndex);
+    Vector3f rotAxis = modelManager.getSpinAxis(axisID,
+        repaintManager.displayModelIndex);
+    if (rotCenter == null || rotAxis == null)
       return;
     transformManager.setSpin(rotCenter, rotAxis, degrees);
   }
 
   public void rotateAxis(String axisID, int degrees) {
-    Point3f rotCenter =
-      modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
-    Vector3f rotAxis =
-      modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
-    if (rotCenter == null || rotAxis == null) 
+    Point3f rotCenter = modelManager.getSpinCenter(axisID,
+        repaintManager.displayModelIndex);
+    Vector3f rotAxis = modelManager.getSpinAxis(axisID,
+        repaintManager.displayModelIndex);
+    if (rotCenter == null || rotAxis == null)
       return;
     transformManager.rotateAxisInternal(rotCenter, rotAxis, degrees);
     refresh(1, "Viewer:rotateAxisInternal()");
   }
 
   public void setDrawCenter(String axisID) {
-    Point3f rotCenter =
-      modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
-    if (rotCenter == null) return;
+    Point3f rotCenter = modelManager.getSpinCenter(axisID,
+        repaintManager.displayModelIndex);
+    if (rotCenter == null)
+      return;
     setCenter(rotCenter);
   }
 
   int pickingRotationSpeed = 10;
+
   void setPickingRotationSpeed(int rate) {
-    if (rate < 1) rate = 1;
+    if (rate < 1)
+      rate = 1;
     pickingRotationSpeed = rate;
   }
-  
+
   void rotateAbout(int atomIndex1, int atomIndex2) {
     if (atomIndex1 == atomIndex2) {
       setSpinOn(false);
       return;
     }
-    Point3f rotCenter =
-      modelManager.getAveragePosition(atomIndex1, atomIndex2);
+    Point3f rotCenter = modelManager.getAveragePosition(atomIndex1, atomIndex2);
     Vector3f rotAxis = modelManager.getAtomVector(atomIndex1, atomIndex2);
     transformManager.setSpin(rotCenter, rotAxis, pickingRotationSpeed);
     setSpinOn(true);
@@ -2861,16 +2855,16 @@ final public class Viewer extends JmolViewer {
     rotCenter.scale(0.5f);
     Vector3f rotAxis = new Vector3f(pt1);
     rotAxis.sub(pt2);
-    if (isClockwise) 
+    if (isClockwise)
       rotAxis.scale(-1f);
     transformManager.setSpin(rotCenter, rotAxis, pickingRotationSpeed);
-    setSpinOn(true);    
+    setSpinOn(true);
   }
 
   void checkObjectClicked(int x, int y, boolean isShiftDown) {
     modelManager.checkObjectClicked(x, y, isShiftDown);
   }
-  
+
   int cardinalityOf(BitSet bs) {
     int nbitset = 0;
     for (int i = bs.size(); --i >= 0;)

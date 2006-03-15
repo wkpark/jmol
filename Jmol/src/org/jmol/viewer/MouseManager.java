@@ -241,10 +241,13 @@ abstract class MouseManager {
       viewer.atomPicked(nearestAtomIndex, false);
       if (measurementMode) {
         addToMeasurement(nearestAtomIndex, false);
-      }
+      } else if (nearestAtomIndex == -1) 
+        viewer.checkObjectClicked(x, y, false);
       break;
     case SHIFT_LEFT:
       viewer.atomPicked(nearestAtomIndex, true);
+      if (nearestAtomIndex == -1)
+        viewer.checkObjectClicked(x, y, true);
       break;
     }
   }

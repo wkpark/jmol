@@ -1098,7 +1098,18 @@ String getAtomInfoChime(int i) {
       }
     }
   }
-  
+ 
+  void checkObjectClicked(int x, int y, boolean isShiftDown) {
+    if (frame == null)
+      return;
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = frame.shapes[i];
+      if (shape != null) {
+        shape.checkObjectClicked(x, y, isShiftDown);
+      }
+    }
+  }
+ 
   Hashtable getShapeInfo() {
     Hashtable info = new Hashtable();
     if (frame == null)

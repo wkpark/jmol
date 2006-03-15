@@ -78,6 +78,9 @@ abstract class Shape {
   void setModelClickability() {
   }
 
+  void checkObjectClicked(int x, int y, boolean isShiftDown) {
+  }
+
   Vector getShapeDetail() {
     return null;
   }

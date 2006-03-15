@@ -27,6 +27,8 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 class Draw extends MeshCollection {
 
@@ -98,7 +100,7 @@ class Draw extends MeshCollection {
         xyz.z = x; 
         ptList[ncoord++] = new Point3f(xyz);
         npoints++;
-        System.out.println(npoints + " " + ptList[ncoord-1]);
+        //System.out.println(npoints + " " + ptList[ncoord-1]);
       }
       ipt = (ipt + 1) % 3;
       return;
@@ -108,7 +110,7 @@ class Draw extends MeshCollection {
         return;
       ptBitSets[nbitsets++] = (BitSet)value;
       npoints++;
-      System.out.println(npoints + " " + ptBitSets[nbitsets-1]);
+      //System.out.println(npoints + " " + ptBitSets[nbitsets-1]);
       return;
     } 
     if ("set" == propertyName) {
@@ -208,5 +210,54 @@ class Draw extends MeshCollection {
       for (int iModel = modelCount; --iModel >= 0; )
         meshes[i].visibilityFlags[iModel] = (bs.get(iModel) ? 1 : 0); 
     }
-  } 
+  }
+  
+  final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 5 * 5;
+  void checkObjectClicked(int x, int y, boolean isShiftDown) {
+    int modelCount = viewer.getModelCount();
+    int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
+    int nearestModel = 0;
+    int nearestVertex = 0;
+    Mesh mesh = null;
+    Mesh pickedMesh = null;
+    for (int i = meshCount; --i >= 0; ) {
+      mesh = meshes[i];
+      if (mesh.drawVertexCount == 2) {
+        for (int iModel = modelCount; --iModel >= 0; ) {
+          if (mesh.visibilityFlags != null && mesh.visibilityFlags[iModel] == 0)
+            continue;
+          for (int iVertex = mesh.polygonIndexes[iModel].length; --iVertex >= 0; ) {
+            int d2 = coordinateInRange(x, y, mesh.vertices[mesh.polygonIndexes[iModel][iVertex]], dmin2);
+            if (d2 >= 0) {
+              pickedMesh = mesh;
+              dmin2 = d2;
+              nearestModel = iModel;
+              nearestVertex = iVertex;              
+            }
+          }
+        }
+      }
+    }
+    if (pickedMesh != null) {
+      if (nearestVertex == 0) {
+        viewer.setSpinningAxis(
+            pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][0]],
+            pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][1]]
+            , isShiftDown);
+      } else {
+        viewer.setSpinningAxis(
+            pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][1]],
+            pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][0]]
+            , isShiftDown);
+      }
+      return;
+    }
+  }
+  
+  int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
+         int d2 = dmin2;
+         Point3i ptXY = viewer.transformPoint(vertex);
+         d2 = (x - ptXY.x) * (x - ptXY.x)  + (y - ptXY.y)  * (y - ptXY.y);
+         return (d2 < dmin2 ? d2 : -1);
+  }
 }

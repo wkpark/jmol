@@ -2831,6 +2831,26 @@ final public class Viewer extends JmolViewer {
     transformManager.setSpin(rotCenter, rotAxis, pickingRotationSpeed);
     setSpinOn(true);
   }
+
+  void setSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise) {
+    if (getSpinOn()) {
+      setSpinOn(false);
+      return;
+    }
+    Point3f rotCenter = new Point3f(pt1);
+    rotCenter.add(pt2);
+    rotCenter.scale(0.5f);
+    Vector3f rotAxis = new Vector3f(pt1);
+    rotAxis.sub(pt2);
+    if (isClockwise) 
+      rotAxis.scale(-1f);
+    transformManager.setSpin(rotCenter, rotAxis, pickingRotationSpeed);
+    setSpinOn(true);    
+  }
+
+  void checkObjectClicked(int x, int y, boolean isShiftDown) {
+    modelManager.checkObjectClicked(x, y, isShiftDown);
+  }
   
   int cardinalityOf(BitSet bs) {
     int nbitset = 0;
@@ -2839,4 +2859,5 @@ final public class Viewer extends JmolViewer {
         nbitset++;
     return nbitset;
   }
+  
  }

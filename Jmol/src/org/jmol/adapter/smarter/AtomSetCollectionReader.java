@@ -377,4 +377,20 @@ abstract class AtomSetCollectionReader {
       elementNumber = 0;
     return JmolConstants.elementSymbols[elementNumber];
   }
+
+  String checkLineForScript(String line){    
+    int pt = line.indexOf("#jmolscript:");
+    if (pt >= 0) {
+      String script = line.substring(pt + 12, line.length());
+      String previousScript = (String) atomSetCollection.getAtomSetCollectionProperty("jmolscript");
+      if (previousScript == null)
+        previousScript = "";
+      else
+        previousScript += ";";
+      atomSetCollection.setAtomSetCollectionProperty("jmolscript", previousScript + script);
+      line = line.substring(0, pt).trim();    
+    }
+    return line;
+  }
+
 }

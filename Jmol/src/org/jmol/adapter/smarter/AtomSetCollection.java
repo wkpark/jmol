@@ -315,6 +315,10 @@ class AtomSetCollection {
     atomSetCollectionProperties.put(key, value);
   }
   
+  Object getAtomSetCollectionProperty(String key) {
+    return atomSetCollectionProperties.get(key);
+  }
+  
   ////////////////////////////////////////////////////////////////
   // atomSet stuff
   ////////////////////////////////////////////////////////////////

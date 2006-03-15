@@ -57,23 +57,65 @@ class MolReader extends AtomSetCollectionReader {
 
   void processMolSdHeader(BufferedReader reader, String firstLine)
                           throws Exception {
+    /* 
+     * obviously we aren't being this strict, but for the record:
+     *  
+     * from ctfile.pdf (October 2003):
+     * 
+     * Line 1: Molecule name. This line is unformatted, but like all 
+     * other lines in a molfile may not extend beyond column 80. 
+     * If no name is available, a blank line must be present.
+     * Caution: This line must not contain any of the reserved 
+     * tags that identify any of the other CTAB file types 
+     * such as $MDL (RGfile), $$$$ (SDfile record separator), 
+     * $RXN (rxnfile), or $RDFILE (RDfile headers). 
+     * 
+     * Line 2: This line has the format:
+     * IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
+     * (FORTRAN: A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6-> )
+     * User's first and last initials (l), program name (P), 
+     * date/time (M/D/Y,H:m), dimensional codes (d), scaling factors (S, s), 
+     * energy (E) if modeling program input, internal 
+     * registry number (R) if input through MDL form. A blank line can be 
+     * substituted for line 2. If the internal registry number is more than 
+     * 6 digits long, it is stored in an M REG line (described in Chapter 3). 
+     * 
+     * Line 3: A line for comments. If no comment is entered, a blank line 
+     * must be present.
+     */
     
     String header = firstLine+"\n";
     atomSetCollection.setCollectionName(firstLine);
-    String name = reader.readLine();
-    header += name + "\n";
-    int pt = name.indexOf("#jmolscript:");
-    if (pt >= 0) {
-      String script = name.substring(pt + 12, name.length());
-        atomSetCollection.setAtomSetCollectionProperty("jmolscript", script);
-        name = name.substring(0, pt).trim();    
-    }
     header += reader.readLine() + "\n";
+    //line 3:
+    String comment = reader.readLine();
+    header += comment + "\n";
+    checkLineForScript(comment);
     atomSetCollection.setAtomSetCollectionProperty("fileHeader", header);
   }
 
   void processRgHeader(BufferedReader reader, String firstLine)
     throws Exception {
+    /*
+     * from ctfile.pdf:
+     * 
+     * $MDL REV 1 date/time
+     * $MOL
+     * $HDR
+     * [Molfile Header Block (see Chapter 4) = name, pgm info, comment]
+     * $END HDR
+     * $CTAB
+     * [Ctab Block (see Chapter 2) = count + atoms + bonds + lists + props]
+     * $END CTAB
+     * $RGP
+     * rrr [where rrr = Rgroup number]
+     * $CTAB
+     * [Ctab Block]
+     * $END CTAB
+     * $END RGP
+     * $END MOL
+     */
+    
     String line;
     while ((line = reader.readLine()) != null &&
            !line.startsWith("$HDR"))

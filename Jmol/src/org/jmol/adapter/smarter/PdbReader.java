@@ -94,6 +94,10 @@ class PdbReader extends AtomSetCollectionReader {
         formul();
         continue;
       }
+      if (line.startsWith("REMARK")) {
+        checkLineForScript(line);
+        continue;
+      }
       if (line.startsWith("HEADER") && lineLength >= 66) {
         atomSetCollection.setCollectionName(line.substring(62, 66));
         continue;

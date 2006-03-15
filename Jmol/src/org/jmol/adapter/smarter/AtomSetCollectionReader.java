@@ -35,15 +35,18 @@ abstract class AtomSetCollectionReader {
 
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
-  void setLogger(JmolAdapter.Logger logger) { this.logger = logger; }
+  void setLogger(JmolAdapter.Logger logger) {
+    this.logger = logger;
+  }
 
-  void initialize() { }
+  void initialize() {
+  }
 
   abstract AtomSetCollection readAtomSetCollection(BufferedReader reader)
-    throws Exception;
+      throws Exception;
 
   AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode)
-    throws Exception {
+      throws Exception {
     return null;
   }
 
@@ -69,10 +72,9 @@ abstract class AtomSetCollectionReader {
     return parseFloatChecked(str, ichStart, ichMax);
   }
 
-  final static float[] decimalScale =
-  {0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f, 0.000001f, 0.0000001f, 0.00000001f};
-  final static float[] tensScale =
-  {10, 100, 1000, 10000, 100000, 1000000};
+  final static float[] decimalScale = { 0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f,
+      0.000001f, 0.0000001f, 0.00000001f };
+  final static float[] tensScale = { 10, 100, 1000, 10000, 100000, 1000000 };
 
   float parseFloatChecked(String str, int ichStart, int ichMax) {
     boolean digitSeen = false;
@@ -101,7 +103,7 @@ abstract class AtomSetCollectionReader {
         digitSeen = true;
       }
     }
-    if (! digitSeen)
+    if (!digitSeen)
       value = Float.NaN;
     else if (negative)
       value = -value;
@@ -115,21 +117,19 @@ abstract class AtomSetCollectionReader {
       if (exponent == Integer.MIN_VALUE)
         return Float.NaN;
       if (exponent > 0)
-        value *= ((exponent < tensScale.length)
-                  ? tensScale[exponent - 1]
-                  : Math.pow(10, exponent));
+        value *= ((exponent < tensScale.length) ? tensScale[exponent - 1]
+            : Math.pow(10, exponent));
       else if (exponent < 0)
-        value *= ((-exponent < decimalScale.length)
-                  ? decimalScale[-exponent - 1]
-                  : Math.pow(10, exponent));
+        value *= ((-exponent < decimalScale.length) ? decimalScale[-exponent - 1]
+            : Math.pow(10, exponent));
     } else {
       ichNextParse = ich; // the exponent code finds its own ichNextParse
     }
-    //    System.out.println("parseFloat(" + str + "," + ichStart + "," +
-    //                       ichMax + ") -> " + value);
+    // System.out.println("parseFloat(" + str + "," + ichStart + "," +
+    // ichMax + ") -> " + value);
     return value;
   }
-  
+
   int parseInt(String str) {
     return parseIntChecked(str, 0, str.length());
   }
@@ -167,12 +167,12 @@ abstract class AtomSetCollectionReader {
       digitSeen = true;
       ++ich;
     }
-    if (! digitSeen)
+    if (!digitSeen)
       value = Integer.MIN_VALUE;
     else if (negative)
       value = -value;
-    //    System.out.println("parseInt(" + str + "," + ichStart + "," +
-    //                       ichMax + ") -> " + value);
+    // System.out.println("parseInt(" + str + "," + ichStart + "," +
+    // ichMax + ") -> " + value);
     ichNextParse = ich;
     return value;
   }
@@ -193,10 +193,9 @@ abstract class AtomSetCollectionReader {
     for (int i = 0; i < tokenCount; ++i)
       tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
     /*
-    System.out.println("-----------\nline:" + line);
-    for (int i = 0; i < tokenCount; ++i)
-      System.out.println("token[" + i + "]=" + tokens[i]);
-    */
+     * System.out.println("-----------\nline:" + line); for (int i = 0; i <
+     * tokenCount; ++i) System.out.println("token[" + i + "]=" + tokens[i]);
+     */
     return tokens;
   }
 
@@ -213,8 +212,7 @@ abstract class AtomSetCollectionReader {
         ++tokenCount;
         do {
           ++ich;
-        } while (ich < ichMax &&
-                 ((ch = line.charAt(ich)) != ' ' && ch != '\t'));
+        } while (ich < ichMax && ((ch = line.charAt(ich)) != ' ' && ch != '\t'));
       }
     }
     return tokenCount;
@@ -301,11 +299,11 @@ abstract class AtomSetCollectionReader {
   }
 
   static Object setLength(Object array, int newLength) {
-    Object t =
-      Array.newInstance(array.getClass().getComponentType(), newLength);
+    Object t = Array
+        .newInstance(array.getClass().getComponentType(), newLength);
     int oldLength = Array.getLength(array);
-    System.arraycopy(array, 0, t, 0,
-                     oldLength < newLength ? oldLength : newLength);
+    System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+        : newLength);
     return t;
   }
 
@@ -313,8 +311,8 @@ abstract class AtomSetCollectionReader {
     String[] t = new String[newLength];
     if (array != null) {
       int oldLength = array.length;
-      System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
+      System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+          : newLength);
     }
     return t;
   }
@@ -322,73 +320,77 @@ abstract class AtomSetCollectionReader {
   static int[] setLength(int[] array, int newLength) {
     int oldLength = array.length;
     int[] t = new int[newLength];
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
+    System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+        : newLength);
     return t;
   }
 
   static float[] setLength(float[] array, int newLength) {
     int oldLength = array.length;
     float[] t = new float[newLength];
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
+    System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+        : newLength);
     return t;
   }
 
   void discardLines(BufferedReader reader, int nLines) throws Exception {
-    for (int i = nLines; --i >= 0; )
+    for (int i = nLines; --i >= 0;)
       reader.readLine();
   }
 
   String discardLinesUntilStartsWith(BufferedReader reader, String startsWith)
-    throws Exception {
+      throws Exception {
     String line;
-    while ((line = reader.readLine()) != null &&
-           !line.startsWith(startsWith))
-      {}
+    while ((line = reader.readLine()) != null && !line.startsWith(startsWith)) {
+    }
     return line;
   }
 
   String discardLinesUntilContains(BufferedReader reader, String containsMatch)
-    throws Exception {
+      throws Exception {
     String line;
-    while ((line = reader.readLine()) != null &&
-           line.indexOf(containsMatch) < 0)
-      {}
+    while ((line = reader.readLine()) != null
+        && line.indexOf(containsMatch) < 0) {
+    }
     return line;
   }
 
   void discardLinesUntilBlank(BufferedReader reader) throws Exception {
     String line;
-    while ((line = reader.readLine()) != null && line.length() != 0)
-      {}
+    while ((line = reader.readLine()) != null && line.length() != 0) {
+    }
   }
 
   String discardLinesUntilNonBlank(BufferedReader reader) throws Exception {
     String line;
-    while ((line = reader.readLine()) != null && line.length() == 0)
-      {}
+    while ((line = reader.readLine()) != null && line.length() == 0) {
+    }
     return line;
   }
 
   static String getElementSymbol(int elementNumber) {
-    if (elementNumber < 0 ||
-        elementNumber >= JmolConstants.elementSymbols.length)
+    if (elementNumber < 0
+        || elementNumber >= JmolConstants.elementSymbols.length)
       elementNumber = 0;
     return JmolConstants.elementSymbols[elementNumber];
   }
 
-  String checkLineForScript(String line){    
+  String checkLineForScript(String line) {
     int pt = line.indexOf("#jmolscript:");
     if (pt >= 0) {
       String script = line.substring(pt + 12, line.length());
-      String previousScript = (String) atomSetCollection.getAtomSetCollectionProperty("jmolscript");
+      if (script.indexOf("#") >= 0) {
+        script = script.substring(0, script.indexOf("#"));
+      }
+      String previousScript = (String) atomSetCollection
+          .getAtomSetCollectionProperty("jmolscript");
       if (previousScript == null)
         previousScript = "";
       else
         previousScript += ";";
-      atomSetCollection.setAtomSetCollectionProperty("jmolscript", previousScript + script);
-      line = line.substring(0, pt).trim();    
+      atomSetCollection.setAtomSetCollectionProperty("jmolscript",
+          previousScript + script);
+      line = line.substring(0, pt).trim();
     }
     return line;
   }

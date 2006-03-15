@@ -28,17 +28,16 @@ import java.io.BufferedReader;
 
 class SpartanSmolReader extends AtomSetCollectionReader {
     
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)
+      throws Exception {
 
     atomSetCollection = new AtomSetCollection("spartan .smol");
 
     try {
-      discardLinesUntilStartsWith(reader, "BEGINOUTPUT");
-      if (discardLinesUntilContains(reader, "Standard Nuclear Orientation (Ang") !=
-          null)
+      discardLinesUntilStartsWith(reader, "BEGINARCHIVE");
+      if (discardLinesUntilContains(reader, "GEOMETRY") != null)
         readAtoms(reader);
-      if (discardLinesUntilContains(reader, "VIBRATIONAL FREQUENCIES") !=
-          null)
+      if (discardLinesUntilContains(reader, "VIBRATIONAL FREQUENCIES") != null)
         readFrequencies(reader);
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -52,21 +51,29 @@ class SpartanSmolReader extends AtomSetCollectionReader {
   }
 
   void readAtoms(BufferedReader reader) throws Exception {
-    discardLines(reader, 2);
+    //no need to discard after GEOMETRY
+    //discardLines(reader, 2);
     String line;
-    System.out.println("Reading atoms...");
+    int atomNum;
+    System.out.println("Reading SMOL atoms...");
     while ((line = reader.readLine()) != null &&
-           (/*atomNum = */parseInt(line, 0, 5)) > 0) {
+           (atomNum = parseInt(line, 0, 5)) > 0) {
       System.out.println("atom: " + line);
+  /*
+      was for OUTPUT section  
       String elementSymbol = parseToken(line, 10, 12);
       float x = parseFloat(line, 17, 30);
       float y = parseFloat(line, 31, 43);
       float z = parseFloat(line, 44, 58);
+  */
+      float x = parseFloat(line, 6, 19);
+      float y = parseFloat(line, 20, 33);
+      float z = parseFloat(line, 34, 47);
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = elementSymbol;
-      atom.x = x;
-      atom.y = y;
-      atom.z = z;
+      atom.elementSymbol = getElementSymbol(atomNum);
+      atom.x = x * ANGSTROMS_PER_BOHR;
+      atom.y = y * ANGSTROMS_PER_BOHR;
+      atom.z = z * ANGSTROMS_PER_BOHR;
     }
   }
 

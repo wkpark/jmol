@@ -27,15 +27,15 @@ class DrawRenderer extends MeshRenderer {
 
   void render() {
     /*
-     * Each drawn object, draw.meshes[i], may consist of several 
-     * polygons, one for each MODEL FRAME. Or, it may be "fixed"
-     * and only contain one single polygon.
+     * Each drawn object, draw.meshes[i], may consist of several polygons, one
+     * for each MODEL FRAME. Or, it may be "fixed" and only contain one single
+     * polygon.
      * 
      */
-    Draw draw = (Draw)shape;
+    Draw draw = (Draw) shape;
     if (!draw.isValid)
       return;
-    for (int i = draw.meshCount; --i >= 0; ) {
+    for (int i = draw.meshCount; --i >= 0;) {
       render1(draw.meshes[i]);
     }
   }

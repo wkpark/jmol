@@ -1644,16 +1644,15 @@ final class Frame {
   }
 
   Point3f getAtomSetCenter(BitSet bs) {
-    Point3f ptCenter = new Point3f(0,0,0);
-    int atomIndex = -1;
-    int nPoints =  bs.cardinality();
+    Point3f ptCenter = new Point3f(0, 0, 0);
+    int nPoints =  viewer.cardinalityOf(bs);
     if (nPoints == 0)
       return ptCenter;
-    for (int i = nPoints; --i >= 0;) {
-      atomIndex = bs.nextSetBit(atomIndex + 1);
-      ptCenter.add(atoms[atomIndex].point3f);
+    for (int i = atomCount; --i >= 0;) {
+      if (bs.get(i))
+        ptCenter.add(atoms[i].point3f);
     }
-    ptCenter.scale(1.0F/nPoints);
+    ptCenter.scale(1.0f / nPoints);
     return ptCenter;
   }
   
@@ -1740,7 +1739,6 @@ final class Frame {
         n++;
       }
     }
-    System.out.println("Frame.getVisibleSet: " + n + " size:" + bs.size() + " length:" + bs.length() + " cardinality:" + bs.cardinality());
     return bs;
   }
 

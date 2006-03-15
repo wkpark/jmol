@@ -81,8 +81,7 @@ class Labels extends Shape {
     
     if ("label" == propertyName) {
       String strLabel = (String)value;
-      int bsLength = bsSelected.length();
-      for (int i = bsLength; --i >= 0; )
+      for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
           String label = atom.formatLabel(strLabel);
@@ -128,7 +127,7 @@ class Labels extends Shape {
       else if (offset == ((JmolConstants.LABEL_DEFAULT_X_OFFSET << 8) |
                           JmolConstants.LABEL_DEFAULT_Y_OFFSET))
         offset = 0;
-        int bsLength = bsSelected.length();
+        int bsLength = bsSelected.size();
         for (int i = bsLength; --i >= 0; ) {
           if (offsets == null || i >= offsets.length) {
             if (offset == 0)

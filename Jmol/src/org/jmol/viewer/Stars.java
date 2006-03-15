@@ -39,10 +39,10 @@ class Stars extends Shape {
     
     Atom[] atoms = frame.atoms;
     boolean isVisible = (size != 0);
-    int bsLength = bsSelected.length();
+    int bsLength = bsSelected.size();
     if (mads == null && bsLength > 0)
       mads = new short[frame.atomCount];
-    for (int i = bsLength; --i >= 0; ) {
+    for (int i = frame.atomCount; --i >= 0; ) {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];
         atom.setShapeVisibility(myVisibilityFlag,isVisible);

@@ -147,10 +147,9 @@ class Dots extends Shape {
     }
     int atomCount = frame.atomCount;
     boolean isVisible = (mad != 0);
-    int bsLength = bsSelected.length();
     // always delete old surfaces for selected atoms
     if (dotsConvexMaps != null) {
-      for (int i = bsLength; --i >= 0; )
+      for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
           dotsConvexMaps[i] = null;
       deleteUnnecessaryTori();
@@ -163,7 +162,7 @@ class Dots extends Shape {
         dotsConvexMaps = new int[atomCount][];
         colixesConvex = new short[atomCount];
       }
-      for (int i = bsLength; --i >= 0; ) {
+      for (int i = atomCount; --i >= 0; ) {
         if (bsSelected.get(i)) {
           setAtomI(i, isVisible);
           getNeighbors(bsSelected);

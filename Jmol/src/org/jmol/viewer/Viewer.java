@@ -2815,4 +2815,11 @@ final public class Viewer extends JmolViewer {
     setCenter(rotCenter);
   }
   
+  int cardinalityOf(BitSet bs) {
+    int nbitset = 0;
+    for (int i = bs.size(); --i >= 0;)
+      if (bs.get(i))
+        nbitset++;
+    return nbitset;
+  }
  }

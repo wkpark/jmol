@@ -104,7 +104,7 @@ class Draw extends MeshCollection {
       return;
     }
     if ("atomSet" == propertyName) {
-      if (((BitSet)value).cardinality() == 0)
+      if (viewer.cardinalityOf((BitSet)value) == 0)
         return;
       ptBitSets[nbitsets++] = (BitSet)value;
       npoints++;
@@ -187,7 +187,7 @@ class Draw extends MeshCollection {
       for (int i = 0; i < nbitsets; i++) {
         BitSet bs = (BitSet)ptBitSets[i].clone();
         bs.and(bsModel);
-        if (bs.cardinality() > 0) {
+        if (viewer.cardinalityOf(bs) > 0) {
           ptList[nPoints++] = viewer.getAtomSetCenter(bs);
         }
       }

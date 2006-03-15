@@ -128,6 +128,7 @@ class Measures extends Shape {
 
   void define(Vector monitorExpressions) {
   /*
+   * sets up measures based on an array of atom selection expressions -RMH 3/06
    * 
    *(1) run through first expression, choosing model
    *(2) for each item of next bs, iterate over next bitset, etc.
@@ -148,27 +149,27 @@ class Measures extends Shape {
   void nextMeasure(int thispt, int nPoints, Vector monitorExpressions, 
                    int[] atomCountPlusIndices, int thisModel) {
     BitSet bs = (BitSet)monitorExpressions.get(thispt);
-    int i = -1;
     //System.out.println("nextMeasure"+thispt+" acpi:"+atomCountPlusIndices);
     //System.out.println("bs "+ bs);
-    for (int iBit = bs.cardinality(); --iBit >= 0;) {
-      i = bs.nextSetBit(i + 1);
-      if (thispt > 0 && i == atomCountPlusIndices[thispt])
-        continue;
-      int modelIndex = frame.atoms[i].getModelIndex();
-      //System.out.println("nextMeasure i"+i+" modelIndex:"+modelIndex);
-      if (thispt == 0) {
-        thisModel = modelIndex;
-      } else if (thisModel != modelIndex) {
-        continue;
-      }
-      atomCountPlusIndices[thispt + 1] = i;
-      if (thispt == nPoints - 1) {
-        if (! isDefined(atomCountPlusIndices))
-          define(atomCountPlusIndices);
-      } else {
-        nextMeasure(thispt+1, nPoints, monitorExpressions, 
-            atomCountPlusIndices, thisModel);
+    for (int i = bs.size(); --i >= 0;) {
+      if (bs.get(i)) {
+        if (thispt > 0 && i == atomCountPlusIndices[thispt])
+          continue;
+        int modelIndex = frame.atoms[i].getModelIndex();
+        //System.out.println("nextMeasure i"+i+" modelIndex:"+modelIndex);
+        if (thispt == 0) {
+          thisModel = modelIndex;
+        } else if (thisModel != modelIndex) {
+          continue;
+        }
+        atomCountPlusIndices[thispt + 1] = i;
+        if (thispt == nPoints - 1) {
+          if (! isDefined(atomCountPlusIndices))
+            define(atomCountPlusIndices);
+        } else {
+          nextMeasure(thispt+1, nPoints, monitorExpressions, 
+              atomCountPlusIndices, thisModel);
+        }
       }
     }
   }

@@ -28,7 +28,6 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.awt.FontMetrics;
-import java.awt.Rectangle;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
@@ -77,7 +76,11 @@ final public class Graphics3D {
 
   short colixBackground = BLACK;
   short colixBackgroundContrast = WHITE;
-  private final Rectangle rectClip = new Rectangle();
+
+  int clipX;
+  int clipY;
+  int clipWidth;
+  int clipHeight;
 
   short colixCurrent;
   int[] shadesCurrent;
@@ -655,36 +658,31 @@ final public class Graphics3D {
 
   boolean currentlyRendering;
 
-  private void setRectClip(Rectangle clip) {
-    if (clip == null) {
-      rectClip.x = rectClip.y = 0;
-      rectClip.width = width;
-      rectClip.height = height;
-    } else {
-      rectClip.setBounds(clip);
-      // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
-      // that is wider than the current window during window resize
-      if (rectClip.x < 0)
-        rectClip.x = 0;
-      if (rectClip.y < 0)
-        rectClip.y = 0;
-      if (rectClip.x + rectClip.width > windowWidth)
-        rectClip.width = windowWidth - rectClip.x;
-      if (rectClip.y + rectClip.height > windowHeight)
-        rectClip.height = windowHeight - rectClip.y;
-
-      if (antialiasThisFrame) {
-        rectClip.x *= 2;
-        rectClip.y *= 2;
-        rectClip.width *= 2;
-        rectClip.height *= 2;
-      }
+  private void setRectClip(int x, int y, int width, int height) {
+    if (x < 0)
+      x = 0;
+    if (y < 0)
+      y = 0;
+    if (x + width > windowWidth)
+      width = windowWidth - x;
+    if (y + height > windowHeight)
+      height = windowHeight - y;
+    clipX = x;
+    clipY = y;
+    clipWidth = width;
+    clipHeight = height;
+    if (antialiasThisFrame) {
+      clipX *= 2;
+      clipY *= 2;
+      clipWidth *= 2;
+      clipHeight *= 2;
     }
   }
 
 
   // 3D specific routines
-  public void beginRendering(Rectangle rectClip,
+  public void beginRendering(int clipX, int clipY,
+                             int clipWidth, int clipHeight,
                              Matrix3f rotationMatrix,
                              boolean antialiasThisFrame) {
     if (currentlyRendering)
@@ -711,7 +709,7 @@ final public class Graphics3D {
     }
     xLast = width - 1;
     yLast = height - 1;
-    setRectClip(rectClip);
+    setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
   }
 

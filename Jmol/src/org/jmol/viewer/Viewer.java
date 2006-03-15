@@ -1664,14 +1664,18 @@ final public class Viewer extends JmolViewer {
     case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDGREEN:
       setRectClip(null);
-      g3d.beginRendering(rectClip, transformManager
-                         .getStereoRotationMatrix(true), false);
+      g3d.beginRendering(rectClip.x, rectClip.y,
+                         rectClip.width, rectClip.height,
+                         transformManager.getStereoRotationMatrix(true),
+                         false);
       repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                             repaintManager.displayModelIndex);
       g3d.endRendering();
       g3d.snapshotAnaglyphChannelBytes();
-      g3d.beginRendering(rectClip, transformManager
-                         .getStereoRotationMatrix(false), false);
+      g3d.beginRendering(rectClip.x, rectClip.y,
+                         rectClip.width, rectClip.height,
+                         transformManager.getStereoRotationMatrix(false),
+                         false);
       repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                             repaintManager.displayModelIndex);
       g3d.endRendering();
@@ -1693,7 +1697,9 @@ final public class Viewer extends JmolViewer {
 
   void render1(Graphics g, Matrix3f matrixRotate, boolean antialias, int x,
                int y) {
-    g3d.beginRendering(rectClip, matrixRotate, antialias);
+    g3d.beginRendering(rectClip.x, rectClip.y,
+                       rectClip.width, rectClip.height,
+                       matrixRotate, antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                           repaintManager.displayModelIndex);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
@@ -1712,8 +1718,10 @@ final public class Viewer extends JmolViewer {
   public Image getScreenImage() {
     boolean antialiasThisFrame = true;
     setRectClip(null);
-    g3d.beginRendering(rectClip, transformManager
-                       .getStereoRotationMatrix(false), antialiasThisFrame);
+    g3d.beginRendering(rectClip.x, rectClip.y,
+                       rectClip.width, rectClip.height, 
+                       transformManager.getStereoRotationMatrix(false),
+                       antialiasThisFrame);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
                           repaintManager.displayModelIndex);
     g3d.endRendering();

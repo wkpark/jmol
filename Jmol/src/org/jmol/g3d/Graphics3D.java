@@ -1,10 +1,9 @@
-
 /* $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
+ * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
  * Contact: miguel@jmol.org
  *
@@ -26,7 +25,6 @@ package org.jmol.g3d;
 
 import java.awt.Component;
 import java.awt.Image;
-import java.awt.image.PixelGrabber;
 import java.awt.FontMetrics;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
@@ -315,43 +313,6 @@ final public class Graphics3D {
   }
 
   int[] imageBuf = new int[0];
-
-  /**
-   * draws a flat image whose upper left corner is at x,y,z
-   *
-   * @param image the image
-   * @param x x
-   * @param y y
-   * @param z z
-   */
-  public void drawImage(Image image, int x, int y, int z) {
-    int imageWidth = image.getWidth(null);
-    int imageHeight = image.getHeight(null);
-    int imageSize = imageWidth * imageHeight;
-    if (imageSize > imageBuf.length)
-      imageBuf = new int[imageSize];
-    PixelGrabber pg = new PixelGrabber(image, 0, 0, imageWidth, imageHeight,
-                                       imageBuf, 0, imageWidth);
-    try {
-      pg.grabPixels();
-    } catch (InterruptedException e) {
-      System.out.println("pg.grabPixels Interrupted");
-    }
-    int offsetSrc = 0;
-    if (x >= 0 && y >= 0 && x+imageWidth <= width && y+imageHeight <= height) {
-      do {
-        plotPixelsUnclipped(imageBuf, offsetSrc, imageWidth, x, y, z);
-        offsetSrc += imageWidth;
-        ++y;
-      } while (--imageHeight > 0);
-    } else {
-      do {
-        plotPixelsClipped(imageBuf, offsetSrc, imageWidth, x, y, z);
-        offsetSrc += imageWidth;
-        ++y;
-      } while (--imageHeight > 0);
-    }
-  }
 
   /**
    * draws a circle of the specified color at the specified location

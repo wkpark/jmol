@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-28 19:44+0100\n"
+"POT-Creation-Date: 2006-03-15 11:06-0500\n"
 "PO-Revision-Date: 2005-12-21 19:44+0100\n"
 "Last-Translator: Daniel Leidert <dleidert@users.sourceforge.net>\n"
 "Language-Team: none\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: org/jmol/applet/Jmol.java:456
+#: org/jmol/applet/Jmol.java:483
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -28,7 +28,7 @@ msgstr ""
 "Jmol-Applet - Teil des OpenScience-Projekts. Mehr Informationen unter http://"
 "www.jmol.org."
 
-#: org/jmol/applet/Jmol.java:564
+#: org/jmol/applet/Jmol.java:591
 msgid "File Error:"
 msgstr "Datei-Fehler:"
 
@@ -958,6 +958,19 @@ msgstr "Maus-Handbuch"
 #: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
 msgstr "Übersetzungen"
+
+#: org/jmol/viewer/PickingManager.java:158
+msgid "pick "
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:160
+msgid " atoms in order to rotate the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:168
+#, fuzzy
+msgid "atoms selected"
+msgstr "Keine Atome geladen."
 
 #: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."

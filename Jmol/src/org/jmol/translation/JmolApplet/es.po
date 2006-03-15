@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-28 19:44+0100\n"
+"POT-Creation-Date: 2006-03-15 11:06-0500\n"
 "PO-Revision-Date: 2006-03-13 21:42+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: org/jmol/applet/Jmol.java:456
+#: org/jmol/applet/Jmol.java:483
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Un proyecto OpenScience.\n"
 "Para más información, vea http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:564
+#: org/jmol/applet/Jmol.java:591
 msgid "File Error:"
 msgstr "Error de archivo:"
 
@@ -958,16 +958,29 @@ msgstr "Manual del ratón"
 msgid "Translations"
 msgstr "Traducciones"
 
+#: org/jmol/viewer/PickingManager.java:158
+msgid "pick "
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:160
+msgid " atoms in order to rotate the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:168
+#, fuzzy
+msgid "atoms selected"
+msgstr "Ningún átomo cargado"
+
 #: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."
 msgstr "Jmol ejecutando un guión..."
 
 #~ msgid "Jmol script completed"
 #~ msgstr "Guión de Jmol completado"
+
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
-

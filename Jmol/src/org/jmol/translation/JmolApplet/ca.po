@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-28 19:44+0100\n"
+"POT-Creation-Date: 2006-03-15 11:06-0500\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
 
-#: org/jmol/applet/Jmol.java:456
+#: org/jmol/applet/Jmol.java:483
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -28,7 +28,7 @@ msgstr ""
 "Miniaplicació Jmol. Part del projecte OpenScience. Consulteu http://www.jmol."
 "org per a més informació"
 
-#: org/jmol/applet/Jmol.java:564
+#: org/jmol/applet/Jmol.java:591
 msgid "File Error:"
 msgstr "Error de fitxer:"
 
@@ -958,6 +958,19 @@ msgstr "Manual del ratolí"
 #: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
 msgstr "Traduccions"
+
+#: org/jmol/viewer/PickingManager.java:158
+msgid "pick "
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:160
+msgid " atoms in order to rotate the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:168
+#, fuzzy
+msgid "atoms selected"
+msgstr "No s'ha carregat cap àtom"
 
 #: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."

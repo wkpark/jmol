@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-02-28 19:44+0100\n"
+"POT-Creation-Date: 2006-03-15 11:06-0500\n"
 "PO-Revision-Date: 2005-08-12 19:18+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:456
+#: org/jmol/applet/Jmol.java:483
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www.jmol."
 "org"
 
-#: org/jmol/applet/Jmol.java:564
+#: org/jmol/applet/Jmol.java:591
 msgid "File Error:"
 msgstr "Faili viga:"
 
@@ -959,6 +959,18 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:158
+msgid "pick "
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:160
+msgid " atoms in order to rotate the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:168
+msgid "atoms selected"
 msgstr ""
 
 #: org/jmol/viewer/StatusManager.java:158

@@ -8,13 +8,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-12 20:34-0500\n"
+"POT-Creation-Date: 2006-03-15 11:06-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: org/jmol/viewer/PickingManager.java:158
+msgid "pick "
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:160
+msgid " atoms in order to rotate the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:168
+msgid "atoms selected"
+msgstr ""
 
 #: org/jmol/viewer/StatusManager.java:158
 msgid "Jmol executing script ..."
@@ -34,7 +46,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:167
+#: org/openscience/jmol/app/PreferencesDialog.java:169
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr ""
@@ -147,11 +159,11 @@ msgstr ""
 msgid "Error reading from BufferedReader: {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/DisplayPanel.java:252
+#: org/openscience/jmol/app/DisplayPanel.java:224
 msgid "Select Atoms"
 msgstr ""
 
-#: org/openscience/jmol/app/DisplayPanel.java:266
+#: org/openscience/jmol/app/DisplayPanel.java:238
 msgid "Delete Atoms"
 msgstr ""
 
@@ -557,7 +569,7 @@ msgid "What's New"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:467
+#: org/openscience/jmol/app/Jmol.java:468
 msgid "Jmol Console"
 msgstr ""
 
@@ -714,35 +726,35 @@ msgstr ""
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:455
+#: org/openscience/jmol/app/Jmol.java:456
 msgid "Executing script..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:480
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:553
+#: org/openscience/jmol/app/Jmol.java:554
 msgid "Closing Jmol..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:789
+#: org/openscience/jmol/app/Jmol.java:790
 msgid "Macros"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1109
+#: org/openscience/jmol/app/Jmol.java:1110
 msgid "Open URL"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1110
+#: org/openscience/jmol/app/Jmol.java:1111
 msgid "Enter URL of molecular model"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1197
+#: org/openscience/jmol/app/Jmol.java:1198
 msgid "IO Exception:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1365
+#: org/openscience/jmol/app/Jmol.java:1366
 msgid "File not loaded"
 msgstr ""
 
@@ -952,7 +964,7 @@ msgid "Save file and possibly launch povray"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:159
+#: org/openscience/jmol/app/PreferencesDialog.java:161
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr ""
@@ -969,73 +981,73 @@ msgstr ""
 msgid "null component string"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:127
+#: org/openscience/jmol/app/PreferencesDialog.java:129
 msgid "Preferences"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:144
+#: org/openscience/jmol/app/PreferencesDialog.java:146
 msgid "Display"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:145
+#: org/openscience/jmol/app/PreferencesDialog.java:147
 msgid "Atoms"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:146
+#: org/openscience/jmol/app/PreferencesDialog.java:148
 msgid "Bonds"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:151
+#: org/openscience/jmol/app/PreferencesDialog.java:153
 msgid "Jmol Defaults"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:155
+#: org/openscience/jmol/app/PreferencesDialog.java:157
 msgid "RasMol Defaults"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:163
+#: org/openscience/jmol/app/PreferencesDialog.java:165
 msgid "Apply"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:191
+#: org/openscience/jmol/app/PreferencesDialog.java:193
 msgid "Show All"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:285
+#: org/openscience/jmol/app/PreferencesDialog.java:287
 msgid "Default atom size"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:286
+#: org/openscience/jmol/app/PreferencesDialog.java:288
 msgid "(percentage of vanDerWaals radius)"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:338
+#: org/openscience/jmol/app/PreferencesDialog.java:340
 msgid "Compute Bonds"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:340
+#: org/openscience/jmol/app/PreferencesDialog.java:342
 msgid "Automatically"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:341
+#: org/openscience/jmol/app/PreferencesDialog.java:343
 msgid "Don't Compute Bonds"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:368
+#: org/openscience/jmol/app/PreferencesDialog.java:370
 msgid "Default Bond Radius"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:369
-#: org/openscience/jmol/app/PreferencesDialog.java:407
-#: org/openscience/jmol/app/PreferencesDialog.java:458
+#: org/openscience/jmol/app/PreferencesDialog.java:371
+#: org/openscience/jmol/app/PreferencesDialog.java:409
+#: org/openscience/jmol/app/PreferencesDialog.java:460
 msgid "(Angstroms)"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:406
+#: org/openscience/jmol/app/PreferencesDialog.java:408
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:457
+#: org/openscience/jmol/app/PreferencesDialog.java:459
 msgid "Minimum Bonding Distance"
 msgstr ""
 

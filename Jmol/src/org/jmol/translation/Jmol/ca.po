@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-12 20:34-0500\n"
+"POT-Creation-Date: 2006-03-15 11:06-0500\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -16,6 +16,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
+
+#: org/jmol/viewer/PickingManager.java:158
+msgid "pick "
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:160
+msgid " atoms in order to rotate the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:168
+#, fuzzy
+msgid "atoms selected"
+msgstr "conjunt d'àtoms"
 
 #: org/jmol/viewer/StatusManager.java:158
 #, fuzzy
@@ -36,7 +49,7 @@ msgstr "No s''ha pogut trobar l''url \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:167
+#: org/openscience/jmol/app/PreferencesDialog.java:169
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr "D'acord"
@@ -149,11 +162,11 @@ msgstr "Salta al darrer {0} de la col·lecció"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "S'ha produït un error en llegir del «BufferedReader»: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:252
+#: org/openscience/jmol/app/DisplayPanel.java:224
 msgid "Select Atoms"
 msgstr "Selecciona els àtoms"
 
-#: org/openscience/jmol/app/DisplayPanel.java:266
+#: org/openscience/jmol/app/DisplayPanel.java:238
 msgid "Delete Atoms"
 msgstr "Suprimeix els àtoms"
 
@@ -559,7 +572,7 @@ msgid "What's New"
 msgstr "Novetats"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:467
+#: org/openscience/jmol/app/Jmol.java:468
 msgid "Jmol Console"
 msgstr "Consola del Jmol"
 
@@ -720,35 +733,35 @@ msgstr ""
 "Les opcions són -D són com es descriu a continuació (paràmetres per defecte "
 "en parèntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:455
+#: org/openscience/jmol/app/Jmol.java:456
 msgid "Executing script..."
 msgstr "S'està executant la seqüència..."
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:480
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola:"
 
-#: org/openscience/jmol/app/Jmol.java:553
+#: org/openscience/jmol/app/Jmol.java:554
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:789
+#: org/openscience/jmol/app/Jmol.java:790
 msgid "Macros"
 msgstr "Macroinstruccions"
 
-#: org/openscience/jmol/app/Jmol.java:1109
+#: org/openscience/jmol/app/Jmol.java:1110
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/Jmol.java:1110
+#: org/openscience/jmol/app/Jmol.java:1111
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1197
+#: org/openscience/jmol/app/Jmol.java:1198
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 
-#: org/openscience/jmol/app/Jmol.java:1365
+#: org/openscience/jmol/app/Jmol.java:1366
 msgid "File not loaded"
 msgstr "No s'ha carregat el fitxer"
 
@@ -960,7 +973,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Desa el fitxer i possiblement executa el POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:159
+#: org/openscience/jmol/app/PreferencesDialog.java:161
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Cancel·la"
@@ -977,73 +990,73 @@ msgstr "Desa"
 msgid "null component string"
 msgstr "cadena de component nul"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:127
+#: org/openscience/jmol/app/PreferencesDialog.java:129
 msgid "Preferences"
 msgstr "Preferències"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:144
+#: org/openscience/jmol/app/PreferencesDialog.java:146
 msgid "Display"
 msgstr "Visualització"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:145
+#: org/openscience/jmol/app/PreferencesDialog.java:147
 msgid "Atoms"
 msgstr "Àtoms"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:146
+#: org/openscience/jmol/app/PreferencesDialog.java:148
 msgid "Bonds"
 msgstr "Enllaços"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:151
+#: org/openscience/jmol/app/PreferencesDialog.java:153
 msgid "Jmol Defaults"
 msgstr "Paràmetres per defecte del Jmol"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:155
+#: org/openscience/jmol/app/PreferencesDialog.java:157
 msgid "RasMol Defaults"
 msgstr "Paràmetres per defecte del RasMol"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:163
+#: org/openscience/jmol/app/PreferencesDialog.java:165
 msgid "Apply"
 msgstr "Aplica"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:191
+#: org/openscience/jmol/app/PreferencesDialog.java:193
 msgid "Show All"
 msgstr "Mostra-ho tot"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:285
+#: org/openscience/jmol/app/PreferencesDialog.java:287
 msgid "Default atom size"
 msgstr "Mida per defecte de l'atom"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:286
+#: org/openscience/jmol/app/PreferencesDialog.java:288
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(percentatge de radi de Van der Waals)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:338
+#: org/openscience/jmol/app/PreferencesDialog.java:340
 msgid "Compute Bonds"
 msgstr "Computa els enllaços"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:340
+#: org/openscience/jmol/app/PreferencesDialog.java:342
 msgid "Automatically"
 msgstr "Automàticament"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:341
+#: org/openscience/jmol/app/PreferencesDialog.java:343
 msgid "Don't Compute Bonds"
 msgstr "No computis els enllaços"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:368
+#: org/openscience/jmol/app/PreferencesDialog.java:370
 msgid "Default Bond Radius"
 msgstr "Radi per defecte de l'enllaç"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:369
-#: org/openscience/jmol/app/PreferencesDialog.java:407
-#: org/openscience/jmol/app/PreferencesDialog.java:458
+#: org/openscience/jmol/app/PreferencesDialog.java:371
+#: org/openscience/jmol/app/PreferencesDialog.java:409
+#: org/openscience/jmol/app/PreferencesDialog.java:460
 msgid "(Angstroms)"
 msgstr "(Àmstrongs)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:406
+#: org/openscience/jmol/app/PreferencesDialog.java:408
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Tolerància d'enllaç - suma de dos radis covalents + aquest valor"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:457
+#: org/openscience/jmol/app/PreferencesDialog.java:459
 msgid "Minimum Bonding Distance"
 msgstr "Distància mínima d'enllaç"
 

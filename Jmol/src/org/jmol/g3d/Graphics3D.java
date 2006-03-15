@@ -28,7 +28,6 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.awt.FontMetrics;
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
@@ -110,17 +109,20 @@ final public class Graphics3D {
   }
   
   /**
-   * sets the image size
+   * Sets the window size. This will be smaller than the
+   * rendering size if FullSceneAntialiasing is enabled
    *
    * @param dim java.awt.Dimension with width and height
    * @param enableFullSceneAntialiasing currently not in production
    */
-  public void setSize(Dimension dim, boolean enableFullSceneAntialiasing) {
-    if (dim.width == windowWidth && dim.height == windowHeight &&
+  public void setWindowSize(int windowWidth, int windowHeight,
+                            boolean enableFullSceneAntialiasing) {
+    if (this.windowWidth == windowWidth &&
+        this.windowHeight == windowHeight &&
         enableFullSceneAntialiasing == isFullSceneAntialiasingEnabled)
       return;
-    windowWidth = dim.width;
-    windowHeight = dim.height;
+    this.windowWidth = windowWidth;
+    this.windowHeight = windowHeight;
     isFullSceneAntialiasingEnabled = enableFullSceneAntialiasing;
     width = -1; height = -1;
     pbuf = null;

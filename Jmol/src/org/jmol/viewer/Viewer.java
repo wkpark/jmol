@@ -530,7 +530,7 @@ final public class Viewer extends JmolViewer {
     dimScreen.height = height;
     transformManager.setScreenDimension(width, height);
     transformManager.scaleFitToScreen();
-    g3d.setSize(dimScreen, enableFullSceneAntialiasing);
+    g3d.setWindowSize(width, height, enableFullSceneAntialiasing);
   }
 
   public int getScreenWidth() {

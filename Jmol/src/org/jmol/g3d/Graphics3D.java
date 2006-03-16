@@ -113,7 +113,8 @@ final public class Graphics3D {
    * Sets the window size. This will be smaller than the
    * rendering size if FullSceneAntialiasing is enabled
    *
-   * @param dim java.awt.Dimension with width and height
+   * @param windowWidth Window width
+   * @param windowHeight Window height
    * @param enableFullSceneAntialiasing currently not in production
    */
   public void setWindowSize(int windowWidth, int windowHeight,

@@ -191,10 +191,11 @@ abstract class AtomSetCollectionReader {
     String[] tokens = new String[tokenCount];
     ichNextParse = ich;
     for (int i = 0; i < tokenCount; ++i)
-      tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
+            tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
     /*
-     * System.out.println("-----------\nline:" + line); for (int i = 0; i <
-     * tokenCount; ++i) System.out.println("token[" + i + "]=" + tokens[i]);
+     System.out.println("-----------\nline:" + line);
+     for (int i = 0; i < tokenCount; ++i) 
+     System.out.println("token[" + i + "]=" + tokens[i]);
      */
     return tokens;
   }
@@ -382,7 +383,7 @@ abstract class AtomSetCollectionReader {
       if (script.indexOf("#") >= 0) {
         script = script.substring(0, script.indexOf("#"));
       }
-      String previousScript = (String) atomSetCollection
+      String previousScript = atomSetCollection
           .getAtomSetCollectionProperty("jmolscript");
       if (previousScript == null)
         previousScript = "";

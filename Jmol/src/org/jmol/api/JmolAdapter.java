@@ -26,6 +26,7 @@ package org.jmol.api;
 
 import java.io.BufferedReader;
 import java.util.Properties;
+import java.util.Hashtable;
 
 /****************************************************************
  * The JmolAdapter interface defines the API used by the JmolViewer to
@@ -188,6 +189,18 @@ public abstract class JmolAdapter {
   }
 
   /**
+   * Get the auxiliary information for this atomSetCollection.
+   *
+   * <p>Via the smarterJmolAdapter
+   * @param clientFile The client file
+   * @return The auxiliaryInfo Hashtable that may be available for particular
+   * filetypes for this atomSetCollection or <code>null</code>
+   */
+  public Hashtable getAtomSetCollectionAuxiliaryInfo(Object clientFile) {
+    return null;
+  }
+  
+  /**
    * Get number of atomSets in the file.
    *
    * <p>NOTE WARNING:
@@ -236,6 +249,19 @@ public abstract class JmolAdapter {
     return null;
   }
   
+  /**
+   * Get the auxiliary information for a particular atomSet.
+   *
+   * <p>Via the smarterJmolAdapter
+   * @param clientFile The client file
+   * @param atomSetIndex The atom set index
+   * @return The auxiliaryInfo Hashtable that may be available for particular
+   * filetypes for this atomSet or <code>null</code>
+   */
+  public Hashtable getAtomSetAuxiliaryInfo(Object clientFile, int atomSetIndex) {
+    return null;
+  }
+
   /**
    * Get the estimated number of atoms contained in the file.
    *

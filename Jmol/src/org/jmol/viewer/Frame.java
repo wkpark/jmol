@@ -128,6 +128,7 @@ final class Frame {
     setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
 
     setModelSetProperties(adapter.getAtomSetCollectionProperties(clientFile));
+    setModelSetAuxiliaryInfo(adapter.getAtomSetCollectionAuxiliaryInfo(clientFile));
 
     currentModelIndex = -1;
     int modelCount = adapter.getAtomSetCount(clientFile);
@@ -138,8 +139,9 @@ final class Frame {
       if (modelName == null)
         modelName = "" + modelNumber;
       Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
+      Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(clientFile, i);
       setModelNameNumberProperties(i, modelName, modelNumber,
-                                         modelProperties);
+                                         modelProperties, modelAuxiliaryInfo);
     }
 
     for (JmolAdapter.AtomIterator iterAtom =
@@ -616,6 +618,14 @@ final class Frame {
     return mmset.getModelSetProperty(propertyName);
   }
 
+  Hashtable getModelSetAuxiliaryInfo() {
+    return mmset.getModelSetAuxiliaryInfo();
+  }
+
+  Object getModelSetAuxiliaryInfo(String keyName) {
+    return mmset.getModelSetAuxiliaryInfo(keyName);
+  }
+
   boolean modelSetHasVibrationVectors() {
     return hasVibrationVectors;
   }
@@ -657,6 +667,14 @@ final class Frame {
     return mmset.getModelProperty(modelIndex, propertyName);
   }
 
+  Hashtable getModelAuxiliaryInfo(int modelIndex) {
+    return mmset.getModelAuxiliaryInfo(modelIndex);
+  }
+
+  Object getModelAuxiliaryInfo(int modelIndex, String keyName) {
+    return mmset.getModelAuxiliaryInfo(modelIndex, keyName);
+  }
+
   Model getModel(int modelIndex) {
     return mmset.getModel(modelIndex);
   }
@@ -675,11 +693,16 @@ final class Frame {
     mmset.setModelSetProperties(modelSetProperties);
   }
   
-  void setModelNameNumberProperties(int modelIndex,
-                                    String modelName, int modelNumber,
-                                    Properties modelProperties) {
+  void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
+    mmset.setModelSetAuxiliaryInfo(modelSetAuxiliaryInfo);
+  }
+  
+  void setModelNameNumberProperties(int modelIndex, String modelName,
+                                    int modelNumber,
+                                    Properties modelProperties,
+                                    Hashtable modelAuxiliaryInfo) {
     mmset.setModelNameNumberProperties(modelIndex, modelName, modelNumber,
-                                       modelProperties);
+        modelProperties, modelAuxiliaryInfo);
   }
 
   ////////////////////////////////////////////////////////////////

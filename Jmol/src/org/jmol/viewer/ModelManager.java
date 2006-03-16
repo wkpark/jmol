@@ -122,6 +122,14 @@ class ModelManager {
     return frame == null ? null : frame.getModelSetProperty(propertyName);
   }
 
+  Hashtable getModelSetAuxiliaryInfo() {
+    return frame == null ? null : frame.getModelSetAuxiliaryInfo();
+  }
+
+  Object getModelSetAuxiliaryInfo(String keyName) {
+    return frame == null ? null : frame.getModelSetAuxiliaryInfo(keyName);
+  }
+
   boolean modelSetHasVibrationVectors() {
     return frame == null ? false : frame.modelSetHasVibrationVectors();
   }
@@ -174,6 +182,15 @@ class ModelManager {
   String getModelProperty(int modelIndex, String propertyName) {
     return frame == null ? null : frame.getModelProperty(modelIndex,
                                                          propertyName);
+  }
+
+  Hashtable getModelAuxiliaryInfo(int modelIndex) {
+    return frame == null ? null : frame.getModelAuxiliaryInfo(modelIndex);
+  }
+
+  Object getModelAuxiliaryInfo(int modelIndex, String keyName) {
+    return frame == null ? null : frame.getModelAuxiliaryInfo(modelIndex,
+        keyName);
   }
 
   int getModelNumberIndex(int modelNumber) {

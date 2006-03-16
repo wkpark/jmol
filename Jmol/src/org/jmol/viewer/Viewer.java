@@ -1094,6 +1094,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelSetProperty(strProp);
   }
 
+  public Object getModelSetAuxiliaryInfo(String strKey) {
+    return modelManager.getModelSetAuxiliaryInfo(strKey);
+  }
+
   public String getModelSetPathName() {
     return modelManager.getModelSetPathName();
   }
@@ -1199,6 +1203,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.getModelSetProperties();
   }
 
+  public Hashtable getModelSetAuxiliaryInfo() {
+    return modelManager.getModelSetAuxiliaryInfo();
+  }
+
   public int getModelNumber(int modelIndex) {
     return modelManager.getModelNumber(modelIndex);
   }
@@ -1213,6 +1221,14 @@ final public class Viewer extends JmolViewer {
 
   public String getModelProperty(int modelIndex, String propertyName) {
     return modelManager.getModelProperty(modelIndex, propertyName);
+  }
+
+  public Hashtable getModelAuxiliaryInfo(int modelIndex) {
+    return modelManager.getModelAuxiliaryInfo(modelIndex);
+  }
+
+  public Object getModelAuxiliaryInfo(int modelIndex, String keyName) {
+    return modelManager.getModelAuxiliaryInfo(modelIndex, keyName);
   }
 
   int getModelNumberIndex(int modelNumber) {

@@ -42,6 +42,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import java.util.Properties;
+import java.util.Hashtable;
 import java.util.Enumeration;
 
 import org.jmol.i18n.GT;
@@ -421,6 +422,7 @@ ActionListener, ChangeListener, Runnable {
       viewer.evalStringQuiet("frame " + viewer.getModelNumber(atomSetIndex));
       infoLabel.setText(viewer.getModelName(atomSetIndex));
       showProperties(viewer.getModelProperties(atomSetIndex));
+      showAuxiliaryInfo(viewer.getModelAuxiliaryInfo(atomSetIndex));
     } catch (Exception e) {
       // if this fails, ignore it.
     }
@@ -600,6 +602,29 @@ ActionListener, ChangeListener, Runnable {
         propertiesTextArea.append((needLF?"\n ":" ") 
             + propertyName + "=" + properties.getProperty(propertyName));
         needLF = true;
+      }
+    }
+  }
+  
+  /**
+   * Shows the auxiliary information in the propertiesPane of the
+   * AtomSetChooser window
+   * @param auxiliaryInfo Hashtable to be shown.
+   */
+  protected void showAuxiliaryInfo(Hashtable auxiliaryInfo) {
+    String separator = " ";
+    //propertiesTextArea.setText(""); AFTER properties
+    if (auxiliaryInfo != null) {
+      Enumeration e = auxiliaryInfo.keys();
+      while (e.hasMoreElements()) {
+        String keyName = (String) e.nextElement();
+        if (keyName.startsWith("."))
+          continue; // skip the 'hidden' ones
+        //won't show objects properly, of course
+        //equivalent in JavaScript is in Jmol-new.js
+        propertiesTextArea.append(separator + keyName + "="
+            + auxiliaryInfo.get(keyName));
+        separator = "\n ";
       }
     }
   }

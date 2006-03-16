@@ -31,6 +31,7 @@ import java.awt.Image;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
+import java.util.Hashtable;
 import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -120,10 +121,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getModelSetFileName();
   abstract public String getModelSetPathName();
   abstract public Properties getModelSetProperties();
+  abstract public Hashtable getModelSetAuxiliaryInfo();
   abstract public int getModelNumber(int atomSetIndex);
   abstract public String getModelName(int atomSetIndex);
   abstract public Properties getModelProperties(int atomSetIndex);
   abstract public String getModelProperty(int atomSetIndex, String propertyName);
+  abstract public Hashtable getModelAuxiliaryInfo(int atomSetIndex);
+  abstract public Object getModelAuxiliaryInfo(int atomSetIndex, String keyName);
   abstract public boolean modelHasVibrationVectors(int atomSetIndex);
 
   abstract public int getModelCount();

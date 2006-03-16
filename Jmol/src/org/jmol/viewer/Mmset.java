@@ -34,11 +34,13 @@ final class Mmset {
   Frame frame;
 
   Properties modelSetProperties;
+  Hashtable modelSetAuxiliaryInfo;
 
   private int modelCount = 0;
   private String[] modelNames = new String[1];
   private int[] modelNumbers = new int[1];
   private Properties[] modelProperties = new Properties[1];
+  private Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
   private Model[] models = new Model[1];
 
   private int structureCount = 0;
@@ -90,13 +92,26 @@ final class Mmset {
     this.modelSetProperties = modelSetProperties;
   }
 
+  void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
+    this.modelSetAuxiliaryInfo = modelSetAuxiliaryInfo;
+  }
+
   Properties getModelSetProperties() {
     return modelSetProperties;
+  }
+
+  Hashtable getModelSetAuxiliaryInfo() {
+    return modelSetAuxiliaryInfo;
   }
 
   String getModelSetProperty(String propertyName) {
     return (modelSetProperties == null
             ? null : modelSetProperties.getProperty(propertyName));
+  }
+
+  Object getModelSetAuxiliaryInfo(String keyName) {
+    return (modelSetAuxiliaryInfo == null
+            ? null : modelSetAuxiliaryInfo.get(keyName));
   }
 
   void setModelCount(int modelCount) {
@@ -108,7 +123,9 @@ final class Mmset {
     modelNames = Util.setLength(modelNames, modelCount);
     modelNumbers = Util.setLength(modelNumbers, modelCount);
     modelProperties = (Properties[])Util.setLength(modelProperties,
-                                                   modelCount);
+        modelCount);
+    modelAuxiliaryInfo = (Hashtable[])Util.setLength(modelAuxiliaryInfo,
+        modelCount);
   }
 
   String getModelName(int modelIndex) {
@@ -128,6 +145,15 @@ final class Mmset {
     return props == null ? null : props.getProperty(property);
   }
 
+  Hashtable getModelAuxiliaryInfo(int modelIndex) {
+    return modelAuxiliaryInfo[modelIndex];
+  }
+
+  Object getModelAuxiliaryInfo(int modelIndex, String key) {
+    Hashtable info = modelAuxiliaryInfo[modelIndex];
+    return info == null ? null : info.get(key);
+  }
+
   Model getModel(int modelIndex) {
     return models[modelIndex];
   }
@@ -142,10 +168,12 @@ final class Mmset {
 
   void setModelNameNumberProperties(int modelIndex, String modelName,
                                     int modelNumber,
-                                    Properties modelProperties) {
+                                    Properties modelProperties, 
+                                    Hashtable modelAuxiliaryInfo) {
     modelNames[modelIndex] = modelName;
     modelNumbers[modelIndex] = modelNumber;
     this.modelProperties[modelIndex] = modelProperties;
+    this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
     models[modelIndex] = new Model(this, modelIndex, modelName);
   }
 

@@ -28,6 +28,7 @@ import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 import java.util.Properties;
+import java.util.Hashtable;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
@@ -132,6 +133,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return ((AtomSetCollection)clientFile).atomSetCollectionProperties;
   }
 
+  public Hashtable getAtomSetCollectionAuxiliaryInfo(Object clientFile) {
+    return ((AtomSetCollection)clientFile).atomSetCollectionAuxiliaryInfo;
+  }
+
   public int getAtomSetCount(Object clientFile) {
     return ((AtomSetCollection)clientFile).atomSetCount;
   }
@@ -148,6 +153,12 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return ((AtomSetCollection)clientFile).getAtomSetProperties(atomSetIndex);
   }
   
+  public Hashtable getAtomSetAuxiliaryInfo(Object clientFile, int atomSetIndex) {
+    return ((AtomSetCollection) clientFile)
+        .getAtomSetAuxiliaryInfo(atomSetIndex);
+  }
+
+
   /* **************************************************************
    * The frame related methods
    * **************************************************************/
@@ -179,6 +190,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public String getClientAtomStringProperty(Object clientAtom,
                                             String propertyName) {
     return null;
+    
+    "Property" is not the right class for this; numeric data are involved. RMH 
   }
 */
 

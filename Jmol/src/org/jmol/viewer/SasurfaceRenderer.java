@@ -182,8 +182,8 @@ class SasurfaceRenderer extends ShapeRenderer {
     }
   }
 
-  private final static boolean CONVEX_DOTS = false;
-  private final static boolean CAVITY_DOTS = false;
+  //private final static boolean CONVEX_DOTS = false;
+  //private final static boolean CAVITY_DOTS = false;
 
   void renderConvex(Sasurface1 surface, Atom atom,
                     short colix, int[] vertexMap, int[] faceMap) {

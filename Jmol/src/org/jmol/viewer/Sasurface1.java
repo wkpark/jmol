@@ -115,15 +115,15 @@ class Sasurface1 {
   final SasGem gem;
   private final SasNeighborFinder neighborFinder;
 
-  private final static boolean LOG = false;
+  //private final static boolean LOG = false;
 
   ////////////////////////////////////////////////////////////////
   
   final Point3f pointT = new Point3f();
   final Point3f zeroPointT = new Point3f();
   final Point3f centerPointT = new Point3f();
-  private final Point3f centerPointAT = new Point3f();
-  private final Point3f centerPointBT = new Point3f();
+  //private final Point3f centerPointAT = new Point3f();
+  //private final Point3f centerPointBT = new Point3f();
 
   private final static float PI = (float)Math.PI;
 
@@ -317,8 +317,8 @@ class Sasurface1 {
       return;
     }
     if ("colorConcave" == propertyName) {
-      short colix = Graphics3D.getColix(value);
       /*
+      short colix = Graphics3D.getColix(value);
       for (int i = cavityCount; --i >= 0; ) {
         Cavity cavity = cavities[i];
         if (bs.get(cavity.ixI))
@@ -341,8 +341,8 @@ class Sasurface1 {
       return;
     }
     if ("translucencyConcave" == propertyName) {
-      boolean isTranslucent = ("translucent" == value);
       /*
+      boolean isTranslucent = ("translucent" == value);
       for (int i = cavityCount; --i >= 0; ) {
         Cavity cavity = cavities[i];
         if (bs.get(cavity.ixI))

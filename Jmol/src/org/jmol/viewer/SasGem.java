@@ -25,7 +25,6 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Bmp;
-import org.jmol.util.IntInt2ObjHash;
 import org.jmol.g3d.Graphics3D;
 
 import javax.vecmath.*;

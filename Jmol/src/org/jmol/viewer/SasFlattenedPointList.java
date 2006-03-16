@@ -187,10 +187,10 @@ class SasFlattenedPointList {
     count = 0;
     if (minVisibleIdeal == maxVisibleIdeal)
       return;
+    /*
     short minVisibleIdealVertex = fplVisibleIdeal.vertexes[minVisibleIdeal];
     float minVisibleIdealAngle = fplVisibleIdeal.angles[minVisibleIdeal];
 
-    /*
     int minActual = fplActual.findGE(startingAngle);
     int maxActual = fplActual.findGE(minVisibleIdealAngle);
     for (int i = minActual; i < maxActual; ++i) {

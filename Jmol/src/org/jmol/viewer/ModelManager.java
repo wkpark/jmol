@@ -714,7 +714,11 @@ String getAtomInfoChime(int i) {
     info.put("modelSetHasVibrationVectors", 
         new Boolean(viewer.modelSetHasVibrationVectors()));
     Properties props = viewer.getModelSetProperties();
-    info.put("modelSetProperties",listPropertiesAsObject(props));
+    if(props != null)
+      info.put("modelSetProperties",props);
+    Hashtable auxInfo = viewer.getModelSetAuxiliaryInfo();
+    if (auxInfo != null)
+      info.put("modelSetAuxiliaryInfo",auxInfo);
     Vector models = new Vector();
     for (int i = 0; i < modelCount; ++i) {
       Hashtable model = new Hashtable();
@@ -726,8 +730,13 @@ String getAtomInfoChime(int i) {
       model.put("bondCount",new Integer(getBondCountInModel(i)));
       model.put("groupCount",new Integer(getGroupCountInModel(i)));
       model.put("polymerCount",new Integer(getPolymerCountInModel(i)));
-      model.put("chainCount",new Integer(getChainCountInModel(i)));
-      
+      model.put("chainCount",new Integer(getChainCountInModel(i)));      
+      props = viewer.getModelProperties(i);
+      if (props != null)
+        model.put("modelProperties", props);
+      auxInfo = viewer.getModelAuxiliaryInfo(i);
+      if (auxInfo != null)
+         model.put("modelAuxiliaryInfo",auxInfo);
       models.add(model);
     }
     info.put("models",models);

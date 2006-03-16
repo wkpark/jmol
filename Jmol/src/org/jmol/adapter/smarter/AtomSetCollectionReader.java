@@ -395,5 +395,22 @@ abstract class AtomSetCollectionReader {
     }
     return line;
   }
-
+ 
+  String concatTokens(String[] tokens, int iFirst, int iEnd) {
+    String str = "";
+    String sep = "";
+    for (int i = iFirst; i < iEnd; i++) {
+      if (i < tokens.length) {
+        str += sep + tokens[i];
+        sep = " ";
+      }
+    }
+    return str;
+  }
+  
+  String getString(String line, String strQuote) {
+    int i = line.indexOf(strQuote);
+    int j = line.lastIndexOf(strQuote);
+    return (j == i ? "" : line.substring(i + 1, j));
+  }
 }

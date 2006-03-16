@@ -206,7 +206,8 @@ class CifReader extends AtomSetCollectionReader {
   final static byte SEQ_ID      = 13;
   final static byte INS_CODE    = 14;
   final static byte ALT_ID      = 15;
-  final static byte ATOM_PROPERTY_MAX = 16;
+  final static byte GROUP_PDB   = 16;
+  final static byte ATOM_PROPERTY_MAX = 17;
   
 
   final static String[] atomFields = {
@@ -219,6 +220,7 @@ class CifReader extends AtomSetCollectionReader {
     "_atom_site.label_comp_id", "_atom_site.label_asym_id",
     "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
     "_atom_site.label_alt_id",
+    "_atom_site.group_PDB",
   };
 
   final static byte[] atomFieldMap = {
@@ -228,7 +230,7 @@ class CifReader extends AtomSetCollectionReader {
     CARTN_X, CARTN_Y, CARTN_Z,
     OCCUPANCY, B_ISO,
     COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
-    ALT_ID,
+    ALT_ID, GROUP_PDB,
   };
 
   static {
@@ -353,6 +355,10 @@ class CifReader extends AtomSetCollectionReader {
           char alternateLocationID = field.charAt(0);
           if (alternateLocationID != '?' && alternateLocationID != '.')
             atom.alternateLocationID = alternateLocationID;
+          break;
+        case GROUP_PDB:
+          if ("HETATM".equals(field))
+            atom.isHetero = true;
           break;
         }
       }

@@ -3285,12 +3285,12 @@
   <fah_proj number="1482" name="p1482_tet30_1nm" public="n" file="y"
     preferred="90"
     credit="1942" frames="100" code="G" contact="kasson"/>
-  <fah_proj number="1485" name="p1485_rxnsemi300" public="n" file="y"
+  <fah_proj number="1485" name="p1485_rxnsemi300" public="y" file="y"
     server="171.65.103.68" atoms="18429" preferred="25" deadline="47"
-    credit="331" frames="100" code="A0" contact="kasson"/>
-  <fah_proj number="1486" name="p1486_hafp_fus" public="n" file="y"
+    credit="166" frames="100" code="A0" contact="kasson"/>
+  <fah_proj number="1486" name="p1486_hafp_fus" public="y" file="y"
     server="171.65.103.68" atoms="33209" preferred="50" deadline="200"
-    credit="600" frames="100" code="A0" contact="kasson"/>
+    credit="300" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="1490" name="p1490_Membrane" public="n" file="y"
     server="171.65.103.68" deadline="4"
     credit="12" frames="100" code="A0" contact="kasson"/>
@@ -3966,6 +3966,9 @@
   <fah_proj number="2079" name="p2079_Ab Initio Protein Random Structure" public="y" file="y"
     server="171.64.122.136" atoms="292" preferred="44" deadline="64"
     credit="229" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2080" name="p2080_Abeta_4mer" public="n" file="y"
+    server="171.64.122.136" atoms="2564" preferred="34" deadline="63"
+    credit="226" frames="100" code="GB" contact="luttmann"/>
   <fah_proj number="2081" name="p2081_p53_in_AGBNP" public="y" file="y"
     server="171.65.103.157" atoms="1048" preferred="48" deadline="71"
     credit="255" frames="100" code="GB" contact="luttmann"/>
@@ -4005,18 +4008,24 @@
   <fah_proj number="2093" name="p2093_BBA5_pfold" public="n" file="y"
     server="171.64.122.136" atoms="385" preferred="45" deadline="66"
     credit="235" frames="100" code="GB" contact="luttmann"/>
-  <fah_proj number="2094" name="p2094_A21_agbnp_amber99" public="n"
+  <fah_proj number="2094" name="p2094_A21_agbnp_amber99" public="n" file="y"
     server="171.64.122.136" atoms="222" preferred="27" deadline="40"
     credit="139" frames="100" code="GB" contact="luttmann"/>
   <fah_proj number="2095" name="p2095_Protein" public="n" file="y"
     server="171.64.122.136" atoms="264" preferred="33" deadline="49"
     credit="172" frames="100" code="GB" contact="luttmann"/>
-  <fah_proj number="2096" name="p2096_A21_agbnp_amber99" public="n"
+  <fah_proj number="2096" name="p2096_A21_agbnp_amber99" public="n" file="y"
     server="171.64.122.136" atoms="222" preferred="34" deadline="50"
     credit="178" frames="100" code="GB" contact="luttmann"/>
-  <fah_proj number="2097" name="p2097_A21_agbnp_amber99" public="n"
+  <fah_proj number="2097" name="p2097_A21_agbnp_amber99" public="n" file="y"
     server="171.64.122.136" atoms="222" preferred="33" deadline="48"
     credit="169" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2098" name="p2098_abeta_agbnp" public="n" file="y"
+    server="171.64.122.136" atoms="2544" preferred="34" deadline="63"
+    credit="226" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2099" name="p2099_abeta_4mer_agbnp" public="n" file="y"
+    server="171.64.122.136" atoms="2092" preferred="34" deadline="63"
+    credit="226" frames="100" code="GB" contact="luttmann"/>
 
   <!-- Projects 2100 to 2199 -->
   <fah_proj number="2100" name="p2100_dk_villin_run0" public="y" file="y"
@@ -4040,9 +4049,9 @@
   <fah_proj number="2107" name="p2107_lambda_5way_melt_4_10011" public="y" file="y"
     server="171.64.122.141" atoms="1258" preferred="78" deadline="114"
     credit="404" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2108" name="p2108_dk_villin_ddsa_aybabtu_run0" public="n" file="y"
-    server="171.64.122.141" atoms="596" preferred="71" deadline="106"
-    credit="381" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2108" name="p2108_dk_villin_ddsa_aybabtu_run0" public="y" file="y"
+    server="171.64.122.141" atoms="596" preferred="84" deadline="125"
+    credit="449" frames="100" code="G" contact="densign"/>
 
   <!-- Projects 2200 to 2299 -->
   <fah_proj number="2200" name="p2200_ProteinA" public="y" file="y"

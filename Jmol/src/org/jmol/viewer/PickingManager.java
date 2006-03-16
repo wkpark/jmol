@@ -123,7 +123,9 @@ class PickingManager {
       viewer.togglePickingLabel(atomIndex);
       break;
     case JmolConstants.PICKING_CENTER:
-      viewer.setCenter(frame.getAtomPoint3f(atomIndex));
+      BitSet bs = new BitSet();
+      bs.set(atomIndex);
+      viewer.setCenterBitSet(bs, false);
       break;
     case JmolConstants.PICKING_SELECT_ATOM:
       if (shiftKey | chimeStylePicking)
@@ -150,11 +152,16 @@ class PickingManager {
       viewer.clearClickCount();
       reportSelection();
       break;
-    case JmolConstants.PICKING_ROTATE:
+    case JmolConstants.PICKING_SPIN:
+      if (viewer.getSpinOn()) {
+        viewer.setSpinOn(false);
+        break;
+      }
       if (queuedAtomCount >= 2)
         queuedAtomCount = 0;
       queueAtom(atomIndex);
       if (queuedAtomCount < 2) {
+        viewer.setSpinOn(false);
         viewer.scriptStatus(GT._("pick " 
             + (queuedAtomCount == 1 ? "one more" : "two ") 
             + " atoms in order to rotate the model around an axis"));

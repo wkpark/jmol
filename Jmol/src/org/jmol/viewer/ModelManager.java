@@ -35,7 +35,6 @@ import java.util.Vector;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
-import javax.vecmath.Point3i;
 
 class ModelManager {
 
@@ -285,7 +284,7 @@ class ModelManager {
   }
 
   private final Point3f pointT = new Point3f();
-  void setCenterBitSet(BitSet bsCenter) {
+  void setCenterBitSet(BitSet bsCenter, boolean doScale) {
     if (frame == null)
       return;
     Point3f center = null;
@@ -309,18 +308,17 @@ class ModelManager {
       center = frame.getRotationCenterDefault();
     if (viewer.isWindowCentered()) {
       viewer.translateCenterTo(0, 0);
-      frame.setRotationCenter(center);
-      viewer.scaleFitToScreen();
+      frame.setRotationCenter(center, true);
+      if (doScale)
+        viewer.scaleFitToScreen();
     } else {
-      Point3i newCenterScreen = viewer.transformPoint(center);
-      viewer.translateCenterTo(newCenterScreen.x, newCenterScreen.y);
-      frame.setRotationCenter(center);
+      viewer.moveRotationCenter(center);
     }
   }
 
-  void setRotationCenter(Point3f center) {
+  void setRotationCenter(Point3f center, boolean andRadius) {
     if (frame != null)
-      frame.setRotationCenter(center);
+      frame.setRotationCenter(center, andRadius);
   }
 
   Point3f getRotationCenter() {
@@ -337,7 +335,7 @@ class ModelManager {
       pointT.add(frame.getBoundBoxCenter());
     else if (relativeTo != "absolute")
       pointT.set(frame.getRotationCenterDefault());
-    frame.setRotationCenter(pointT);
+    frame.setRotationCenter(pointT, true);
   }
 
   boolean autoBond = true;

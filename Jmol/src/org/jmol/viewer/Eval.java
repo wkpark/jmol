@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 
 class Context {
@@ -718,8 +719,8 @@ class Eval implements Runnable {
     evalError("runtime unrecognized expression");
   }
 
-  void undefinedVariable() throws ScriptException {
-    evalError("variable undefined");
+  void undefinedVariable(String varName) throws ScriptException {
+    evalError("variable undefined:" + varName);
   }
 
   void badArgumentCount() throws ScriptException {
@@ -728,7 +729,7 @@ class Eval implements Runnable {
 
   void invalidArgument() throws ScriptException {
     String str = "invalid argument";
-    for (int i = 0; i < statement.length; i++)
+    for (int i = 0; i < statementLength; i++)
       str += "\n" + statement[i].toString();
     evalError(str);
   }
@@ -763,6 +764,14 @@ class Eval implements Runnable {
 
   void fileNotFoundException(String filename) throws ScriptException {
     evalError("file not found : " + filename);
+  }
+
+  void drawObjectNotDefined(String drawID) throws ScriptException {
+    evalError("draw object not defined:" + drawID);
+  }
+
+  void drawObjectOrCoordinateExpected() throws ScriptException {
+    evalError("draw object or three decimals required after '['");
   }
 
   void notImplemented(int itoken) {
@@ -837,6 +846,8 @@ class Eval implements Runnable {
   }
 
   boolean getSetBoolean() throws ScriptException {
+    if (statementLength == 2)
+      return true;
     checkLength3();
     switch (statement[2].tok) {
     case Token.on:
@@ -1058,13 +1069,13 @@ class Eval implements Runnable {
     while (alphaLen < len && Compiler.isAlphabetic(identifier.charAt(alphaLen)))
       ++alphaLen;
     if (alphaLen > 3)
-      undefinedVariable();
+      undefinedVariable(identifier);
     String potentialGroupName = identifier.substring(0, alphaLen);
     // System.out.println("potentialGroupName=" + potentialGroupName);
     // undefinedVariable();
     BitSet bsName = lookupPotentialGroupName(potentialGroupName);
     if (bsName == null)
-      undefinedVariable();
+      undefinedVariable(identifier);
     if (alphaLen == len)
       return bsName;
     //
@@ -1102,7 +1113,7 @@ class Eval implements Runnable {
     //
     char chainID = identifier.charAt(seqcodeEnd);
     if (++seqcodeEnd != len)
-      undefinedVariable();
+      undefinedVariable(identifier);
     // System.out.println("chainID=" + chainID);
     BitSet bsChain = getSpecChain(chainID);
     BitSet bsNameSequenceChain = bsNameSequence;
@@ -1576,7 +1587,10 @@ class Eval implements Runnable {
     //System.out.println("center"+statement[1]);
     //System.out.println(statement[2]);
     
-    if (statement[2].tok == Token.keyword) {
+    // ok, here I don't see how to get [n,n,n] working
+    //-- have to add coordFlag to compiler? -RMH
+    
+    if (statementLength > 1 && statement[2].tok == Token.keyword) {
      //center [ id ]
       String axisID = (String)statement[2].value;
       //System.out.println("center"+axisID);
@@ -1585,7 +1599,7 @@ class Eval implements Runnable {
     }
 
     viewer.setCenterBitSet(statementLength == 1 ? null : expression(statement,
-        1));
+        1), true);
   }
 
   void color() throws ScriptException {
@@ -1905,88 +1919,144 @@ class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
-    // rotate axisangle x y z degrees
-    if (statement.length > 3 && statement[1].tok == Token.axisangle) {
-      checkStatementLength(6);
-      viewer.rotateAxisAngle(floatParameter(2), floatParameter(3),
-          floatParameter(4), floatParameter(5));
-      return;
-    }
-    // rotate [drawObject] degrees
-    if (statement[1].tok == Token.leftsquare 
-        && statement[2].tok == Token.identifier) {
-      checkStatementLength(5); //rotate [ id ] N
-      String axisID = (String)statement[2].value;
-      viewer.rotateAxis(axisID, intParameter(4));
-      return;
-    }
-    if (statement[1].tok == Token.identifier 
-        && ((String) statement[1].value).equalsIgnoreCase("internal")) {
-      int iDegrees = 10;
-      if (statement[2].tok == Token.integer) {
-        iDegrees = intParameter(2);
-        rotateInternal(3, iDegrees);        
-      } else {
-        rotateInternal(2, iDegrees);
-      }
-      return;
-    }
-    // rotate INTERNAL degrees [coord]/(atom expression) 
-    checkLength3();
-    float degrees = floatParameter(2);
-    switch (statement[1].tok) {
-    case Token.x:
-      viewer.rotateXDegrees(degrees);
-      break;
-    case Token.y:
-      viewer.rotateYDegrees(degrees);
-      break;
-    case Token.z:
-      viewer.rotateZDegreesScript(degrees);
-      break;
-    default:
-      axisExpected();
-    }
-  }
-
-  void rotateInternal(int ipt, int nDegrees) throws ScriptException {
+    int degrees = 10;
     int nCoord = 0;
     int nPoints = 0;
+    boolean isAxisAngle = false;
+    boolean isInternal = false;
+    boolean isInBrackets = false;
     //rotate INTERNAL nDegrees (coord/atom expression) (coord/atomexpression)
     float[] coords = new float[6];
-    Point3f[] points = new Point3f[2];
-    for (int i = ipt; i < statementLength; ++i) {
+    Point3f[] points = new Point3f[3];
+    Point3f rotCenter = null;
+    Vector3f rotAxis = new Vector3f(0, 1, 0);
+    String axisID;
+    int direction = 1;
+    boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
+    
+    for (int i = 0; i < 3; ++i)
+      points[i] = new Point3f(0, 0, 0);
+    for (int i = 1; i < statementLength; ++i) {
       Token token = statement[i];
-      //System.out.println("draw: "+statement[i]);
+      //System.out.println("rotate: "+statement[i]);
       switch (token.tok) {
+      case Token.hyphen:
+        direction = -1;
+        break;
+      case Token.x:
+        rotAxis.set(direction, 0, 0);
+        break;
+      case Token.y:
+        if (axesOrientationRasmol) 
+          direction = -direction;
+        rotAxis.set(0, direction, 0);
+        break;
+      case Token.z:
+        rotAxis.set(0, 0, direction);
+        break;
+      case Token.axisangle:
+        isAxisAngle = true;
+        break;
+      case Token.identifier:
+        if (((String) statement[i].value).equalsIgnoreCase("internal"))
+          isInternal = true;
+        break;
       case Token.leftsquare:
+        // [drawObject] or [x y z]
+        if (checkDrawObjectOrCoordinate(i)) {
+          axisID = (String) statement[++i].value;
+          rotCenter = viewer.getDrawObjectCenter(axisID);
+          rotAxis = viewer.getDrawObjectAxis(axisID);
+          if (rotCenter == null)
+            drawObjectNotDefined(axisID);
+          points[nPoints++].set(rotCenter);
+          ++i;
+        } else {
+          isInBrackets = true;
+        }
+        break;
       case Token.rightsquare:
+        isInBrackets = false;
       case Token.opOr:
+        break;
       case Token.integer:
-        continue;
+        if (!isInBrackets) {
+          degrees = token.intValue;
+          break;
+        }
+        token.value = new Float(token.intValue);
       case Token.decimal:
         coords[nCoord++] = ((Float) token.value).floatValue();
         if (nCoord == 3) {
-          points[nPoints++].set(coords[nCoord - 3],
-              coords[nCoord - 2], coords[nCoord - 1]);
+          if (isAxisAngle) {
+            if (axesOrientationRasmol) 
+              coords[i] = -coords[i];
+            rotAxis.set(coords[0], coords[1], coords[2]);
+            isAxisAngle = false;
+          } else {
+            points[nPoints++].set(coords[0], coords[1], coords[2]);
+          }
           nCoord = 0;
         }
         break;
       case Token.expressionBegin:
         BitSet bs = expression(statement, i + 1);
-        points[nPoints++].set(viewer.getAtomSetCenter(bs));
+        rotCenter = viewer.getAtomSetCenter(bs);
+        points[nPoints++].set(rotCenter);
         i = endOfExpression;
         break;
       default:
         invalidArgument();
       }
-      if (nPoints == 2) break;
+      if (nPoints >= 3) //only 2 allowed for rotation
+        expressionOrDecimalExpected();
     }
-    if (nPoints != 2)
-      expressionOrDecimalExpected();
+    if (nPoints < 2) {
+      if (isInternal) {
+        points[1].set(points[0]);
+        points[1].sub(rotAxis);
+      } else {
+        if (rotCenter != null) {
+          // rotate x 10 (atoms)
+          // rotate x 10 [point]
+          
+          viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees);
+        } else {
+          // could be rotate x  10
+          // or rotate axisangle [0 1 0] 10
+          viewer.rotateAxisAngle(rotAxis, degrees);
+        }
+        return;
+      }
+    }
+    //internal by default now
     if (points[0].distance(points[1]) == 0)
       expressionOrDecimalExpected();
-    viewer.rotateAboutPoints(points[0], points[1], nDegrees);
+    if (isAxisAngle) {
+      //rotate axisangle 10 [0 1 0] (points)
+      viewer.rotateAxisAngle(rotAxis, degrees);
+      return;
+    }
+    //rotate (atom1) (atom2)
+    //rotate INTERNAL (atom1)
+    //System.out.println("rotating about "+points[0]+points[1]);
+    viewer.rotateAboutPointsInternal(points[0], points[1], degrees);
+  }
+  
+  boolean checkDrawObjectOrCoordinate(int i) throws ScriptException{
+    boolean isOK = false;
+    boolean isObject = false;
+    if (i + 2 >= statementLength) {       
+    } else if (statement[i + 2].tok == Token.rightsquare) {
+      isOK = (statement[i + 1].tok == Token.identifier);
+      isObject = isOK;
+    } else if (i + 4 >= statementLength) {
+    } else if (statement[i + 4].tok == Token.rightsquare) {
+      isOK = true;
+    }
+    if (!isOK)
+      drawObjectOrCoordinateExpected();
+    return isObject;
   }
   
   void pushContext() throws ScriptException {
@@ -3197,13 +3267,13 @@ class Eval implements Runnable {
       case Token.chain:
         pickingMode = JmolConstants.PICKING_SELECT_CHAIN;
         break;
-      case Token.rotate:
-        pickingMode = JmolConstants.PICKING_ROTATE;
+      case Token.spin:
+        pickingMode = JmolConstants.PICKING_SPIN;
         int rate = 10;
         if (statementLength == 4) {
             rate = intParameter(3);
         }
-        viewer.setPickingRotationSpeed(rate);
+        viewer.setPickingSpinRate(rate);
         break;
       case Token.select:
         pickingMode = JmolConstants.PICKING_SELECT_ATOM;
@@ -3589,26 +3659,33 @@ class Eval implements Runnable {
     boolean isInitialized = false;
     int intScale = 0;
     boolean isFixed = false;
+    boolean isInBrackets = false;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       Token token = statement[i];
-      //System.out.println("draw: "+statement[i]);
+      System.out.println("draw: "+statement[i]);
       switch (token.tok) {
       case Token.leftsquare:
-        if (i + 1 < statementLength && 
-            statement[i + 1].tok == Token.identifier) {
+        if (checkDrawObjectOrCoordinate(i)) { 
           propertyValue = (String) statement[++i].value;
           propertyName = "identifier";
           havePoints = true;
+          ++i;
           break;
         }
+        isInBrackets = true;
+        continue;
       case Token.rightsquare:
+        isInBrackets = false;
       case Token.opOr:
         continue;
       case Token.integer:
-        intScale = token.intValue;
-        continue;
+        if (!isInBrackets) {
+          intScale = token.intValue;
+          continue;
+        }
+        token.value = new Float(token.intValue);
       case Token.decimal:
         propertyName = "coord";
         propertyValue = token.value;
@@ -3707,7 +3784,7 @@ class Eval implements Runnable {
         propertyName = "expression";
         propertyValue = expression(statement, i);
         // hack for now;
-        i = statement.length;
+        i = statementLength;
         break;
       default:
         invalidArgument();
@@ -3950,10 +4027,10 @@ class Eval implements Runnable {
         }
         break;
       case Token.expressionBegin:
-        //System.out.println(i + " " + propertyName + " " + statement.length);
+        //System.out.println(i + " " + propertyName + " " + statementLength);
         propertyValue = expression(statement, i);
         i = endOfExpression;
-        propertyName = (i == statement.length - 1 ? "targetSet" : "sourceSet");
+        propertyName = (i == statementLength - 1 ? "targetSet" : "sourceSet");
         break;
       case Token.identifier:
       case Token.hbond:
@@ -3990,8 +4067,8 @@ class Eval implements Runnable {
   
   void getProperty() {
     String retValue = "";
-    String property =  (statement.length < 2 ? "" : (String)statement[1].value);
-    String param = (statement.length < 3 ? "" : (String)statement[2].value);
+    String property =  (statementLength < 2 ? "" : (String)statement[1].value);
+    String param = (statementLength < 3 ? "" : (String)statement[2].value);
     retValue = (String)viewer.getProperty("String", property, param);
     viewer.scriptEcho(retValue);
   }

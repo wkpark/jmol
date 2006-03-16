@@ -886,10 +886,10 @@ final class Frame {
     return rotationRadius;
   }
 
-  void setRotationCenter(Point3f newCenterOfRotation) {
+  void setRotationCenter(Point3f newCenterOfRotation, boolean andRadius) {
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
-      if (viewer.isWindowCentered())
+      if (andRadius && viewer.isWindowCentered())
         rotationRadius = calcRotationRadius(rotationCenter);
     } else {
       rotationCenter = rotationCenterDefault;

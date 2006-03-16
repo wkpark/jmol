@@ -276,10 +276,17 @@ final public class Viewer extends JmolViewer {
     refresh(1, "Viewer:rotate()");
   }
 
-  void rotateAxisAngle(float x, float y, float z, float degrees) {
-    transformManager.rotateAxisAngle(x, y, z, degrees);
+  void rotateAxisAngle(Vector3f rotAxis, int degrees) {
+    transformManager.rotateAxisAngle(rotAxis, degrees);
   }
 
+  void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis, int degrees) {
+    //System.out.println("rotateAxisAngleAtCenter" + rotCenter);
+    moveRotationCenter(rotCenter);
+    rotateAxisAngle(rotAxis, degrees);
+    transformManager.setExternalRotationCenter(null);
+  }
+  
   void rotateTo(float xAxis, float yAxis, float zAxis, float degrees) {
     transformManager.rotateTo(xAxis, yAxis, zAxis, degrees);
   }
@@ -1078,6 +1085,8 @@ final public class Viewer extends JmolViewer {
     modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
     clearMeasurements();
+    setWindowCentered(true);
+    transformManager.setExternalRotationCenter(null);
     setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");
   }
@@ -1280,9 +1289,14 @@ final public class Viewer extends JmolViewer {
   }
 
   void setCenter(Point3f center) {
-    modelManager.setRotationCenter(center);
+    modelManager.setRotationCenter(center, true);
     transformManager.setExternalRotationCenter(null);
     refresh(0, "Viewer:setCenter()");
+  }
+
+  void setCenterNoRefresh(Point3f center) {
+    modelManager.setRotationCenter(center, false);
+    transformManager.setExternalRotationCenter(null);
   }
 
   Point3f getCenter() {
@@ -1296,8 +1310,14 @@ final public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
 
-  void setCenterBitSet(BitSet bsCenter) {
-    modelManager.setCenterBitSet(bsCenter);
+  void moveRotationCenter(Point3f center) {
+    Point3i newCenterScreen = transformPoint(center);
+    translateCenterTo(newCenterScreen.x, newCenterScreen.y);
+    modelManager.setRotationCenter(center, false);
+  }
+  
+  void setCenterBitSet(BitSet bsCenter, boolean doScale) {
+    modelManager.setCenterBitSet(bsCenter, doScale);
     transformManager.setExternalRotationCenter(null);
     refresh(0, "Viewer:setCenterBitSet()");
   }
@@ -1313,7 +1333,7 @@ final public class Viewer extends JmolViewer {
   }
 
   public void setCenterSelected() {
-    setCenterBitSet(selectionManager.bsSelection);
+    setCenterBitSet(selectionManager.bsSelection, true);
   }
 
   public void rebond() {
@@ -2823,31 +2843,40 @@ final public class Viewer extends JmolViewer {
     transformManager.setSpin(rotCenter, rotAxis, degrees);
   }
 
-  public void rotateAxis(String axisID, int degrees) {
-    Point3f rotCenter = modelManager.getSpinCenter(axisID,
+  Point3f getDrawObjectCenter(String axisID) {
+     return modelManager.getSpinCenter(axisID,
         repaintManager.displayModelIndex);
-    Vector3f rotAxis = modelManager.getSpinAxis(axisID,
+  }
+
+  Vector3f getDrawObjectAxis(String axisID) {
+    return modelManager.getSpinAxis(axisID,
         repaintManager.displayModelIndex);
-    if (rotCenter == null || rotAxis == null)
+  }
+
+  public void rotateAboutAxisInternal(String axisID, int degrees) {
+    Point3f center = getDrawObjectCenter(axisID);
+    Vector3f axis = getDrawObjectAxis(axisID);
+    if (center == null)
       return;
-    transformManager.rotateAxisInternal(rotCenter, rotAxis, degrees);
+    if (axis == null)
+      axis = new Vector3f(0, (getAxesOrientationRasmol() ? -1 : 1), 0);
+    transformManager.rotateAboutAxisInternal(center, axis, degrees);
     refresh(1, "Viewer:rotateAxisInternal()");
   }
 
   public void setDrawCenter(String axisID) {
-    Point3f rotCenter = modelManager.getSpinCenter(axisID,
-        repaintManager.displayModelIndex);
-    if (rotCenter == null)
+    Point3f center = getDrawObjectCenter(axisID);
+    if (center == null)
       return;
-    setCenter(rotCenter);
+    setCenter(center);
   }
 
-  int pickingRotationSpeed = 10;
+  int pickingSpinRate = 10;
 
-  void setPickingRotationSpeed(int rate) {
+  void setPickingSpinRate(int rate) {
     if (rate < 1)
       rate = 1;
-    pickingRotationSpeed = rate;
+    pickingSpinRate = rate;
   }
 
   void rotateAbout(int atomIndex1, int atomIndex2) {
@@ -2857,12 +2886,12 @@ final public class Viewer extends JmolViewer {
     }
     Point3f rotCenter = modelManager.getAveragePosition(atomIndex1, atomIndex2);
     Vector3f rotAxis = modelManager.getAtomVector(atomIndex1, atomIndex2);
-    transformManager.setSpin(rotCenter, rotAxis, pickingRotationSpeed);
+    transformManager.setSpin(rotCenter, rotAxis, pickingSpinRate);
     setSpinOn(true);
   }
 
-  void rotateAboutPoints(Point3f point1, Point3f point2, int nDegrees) {
-    transformManager.rotateAboutPoints(point1, point2, nDegrees);
+  void rotateAboutPointsInternal(Point3f point1, Point3f point2, int nDegrees) {
+    transformManager.rotateAboutPointsInternal(point1, point2, nDegrees);
     refresh(1, "Viewer:rotateAboutPoints()");
   }
 
@@ -2878,7 +2907,7 @@ final public class Viewer extends JmolViewer {
     rotAxis.sub(pt2);
     if (isClockwise)
       rotAxis.scale(-1f);
-    transformManager.setSpin(rotCenter, rotAxis, pickingRotationSpeed);
+    transformManager.setSpin(rotCenter, rotAxis, pickingSpinRate);
     setSpinOn(true);
   }
 

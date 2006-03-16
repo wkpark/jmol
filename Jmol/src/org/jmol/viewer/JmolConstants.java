@@ -83,7 +83,7 @@ final public class JmolConstants {
   public final static int PICKING_SELECT_ATOM =  10;
   public final static int PICKING_SELECT_GROUP = 11;
   public final static int PICKING_SELECT_CHAIN = 12;
-  public final static int PICKING_ROTATE =       13;
+  public final static int PICKING_SPIN =         13;
 
   public final static String[] pickingModeNames = {
     "off", "ident", "distance", "monitor", "angle", "torsion", "label",

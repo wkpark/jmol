@@ -120,30 +120,26 @@ class TransformManager {
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
-  void rotateAxisAngle(float x, float y, float z, float degrees) {
-    axisangleT.set(x, y, z, degrees * radiansPerDegree);
+  void rotateAxisAngle(Vector3f rotAxis, int degrees) {
+    axisangleT.set(rotAxis, degrees * radiansPerDegree);
     rotate(axisangleT);
   }
 
   boolean pleaseUnsetInternalRotationAxis = false;
 
-  void rotateAxisInternal(Point3f center, Vector3f axis, int degrees) {
-    setSpin(center, axis, degrees);
-    axisangleT.set(axis, internalRotationAngle);
-    rotateAxisAngleRadiansInternal(axisangleT, internalRotationAngle);
+  void rotateAboutAxisInternal(Point3f center, Vector3f axis, int degrees) {
+    float angle = setSpin(center, axis, degrees);
+    axisangleT.set(axis, angle);
+    rotateAxisAngleRadiansInternal(axisangleT, angle);
     pleaseUnsetInternalRotationAxis = true;
   }
   
-  void rotateAboutPoints(Point3f point1, Point3f point2, int degrees) {
-    Point3f center = new Point3f(
-        (point1.x + point2.x)/2,
-        (point1.y + point2.y)/2,
-        (point1.z + point2.z)/2);
+  void rotateAboutPointsInternal(Point3f point1, Point3f point2, int degrees) {
     Vector3f axis = new Vector3f(point1);        
     axis.sub(point2);
-    setSpin(center, axis, degrees);
-    axisangleT.set(axis, internalRotationAngle);
-    rotateAxisAngleRadiansInternal(axisangleT, internalRotationAngle);
+    float angle = setSpin(point1, axis, degrees);
+    axisangleT.set(axis, angle);
+    rotateAxisAngleRadiansInternal(axisangleT, angle);
     pleaseUnsetInternalRotationAxis = true;    
   }
 
@@ -272,6 +268,7 @@ class TransformManager {
   void translateCenterTo(int x, int y) {
     xExternalTranslation = x;
     yExternalTranslation = y;
+    //System.out.println("tranformman translateCenterTo" + x + " " + y);
   }
 
   String getOrientationText() {
@@ -1070,12 +1067,18 @@ class TransformManager {
     }
   }
   
-  void setSpin(Point3f center, Vector3f axis, int degrees) {
+  Point3f getExternalRotationCenter() {
+    return externalRotationCenter;    
+  }
+  
+  
+  float setSpin(Point3f center, Vector3f axis, int degrees) {
     internalRotationCenter.set(center);  
     internalRotationAngle = degrees * radiansPerDegree;
     if (internalRotationAxis == null)
       internalRotationAxis = new AxisAngle4f();
     internalRotationAxis.set(axis, internalRotationAngle);
+    return internalRotationAngle;
   }
 
   void setSpinX(int degrees) {

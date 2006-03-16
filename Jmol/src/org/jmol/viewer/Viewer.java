@@ -2861,6 +2861,11 @@ final public class Viewer extends JmolViewer {
     setSpinOn(true);
   }
 
+  void rotateAboutPoints(Point3f point1, Point3f point2, int nDegrees) {
+    transformManager.rotateAboutPoints(point1, point2, nDegrees);
+    refresh(1, "Viewer:rotateAboutPoints()");
+  }
+
   void setSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise) {
     if (getSpinOn()) {
       setSpinOn(false);

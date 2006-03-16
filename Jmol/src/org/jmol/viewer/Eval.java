@@ -32,6 +32,8 @@ import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3f;
+
 
 class Context {
   String filename;
@@ -1903,18 +1905,33 @@ class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
+    // rotate axisangle x y z degrees
     if (statement.length > 3 && statement[1].tok == Token.axisangle) {
       checkStatementLength(6);
       viewer.rotateAxisAngle(floatParameter(2), floatParameter(3),
           floatParameter(4), floatParameter(5));
       return;
     }
-    if (statement[1].tok == Token.leftsquare && statement[2].tok == Token.identifier) {
+    // rotate [drawObject] degrees
+    if (statement[1].tok == Token.leftsquare 
+        && statement[2].tok == Token.identifier) {
       checkStatementLength(5); //rotate [ id ] N
       String axisID = (String)statement[2].value;
       viewer.rotateAxis(axisID, intParameter(4));
       return;
     }
+    if (statement[1].tok == Token.identifier 
+        && ((String) statement[1].value).equalsIgnoreCase("internal")) {
+      int iDegrees = 10;
+      if (statement[2].tok == Token.integer) {
+        iDegrees = intParameter(2);
+        rotateInternal(3, iDegrees);        
+      } else {
+        rotateInternal(2, iDegrees);
+      }
+      return;
+    }
+    // rotate INTERNAL degrees [coord]/(atom expression) 
     checkLength3();
     float degrees = floatParameter(2);
     switch (statement[1].tok) {
@@ -1932,6 +1949,46 @@ class Eval implements Runnable {
     }
   }
 
+  void rotateInternal(int ipt, int nDegrees) throws ScriptException {
+    int nCoord = 0;
+    int nPoints = 0;
+    //rotate INTERNAL nDegrees (coord/atom expression) (coord/atomexpression)
+    float[] coords = new float[6];
+    Point3f[] points = new Point3f[2];
+    for (int i = ipt; i < statementLength; ++i) {
+      Token token = statement[i];
+      //System.out.println("draw: "+statement[i]);
+      switch (token.tok) {
+      case Token.leftsquare:
+      case Token.rightsquare:
+      case Token.opOr:
+      case Token.integer:
+        continue;
+      case Token.decimal:
+        coords[nCoord++] = ((Float) token.value).floatValue();
+        if (nCoord == 3) {
+          points[nPoints++].set(coords[nCoord - 3],
+              coords[nCoord - 2], coords[nCoord - 1]);
+          nCoord = 0;
+        }
+        break;
+      case Token.expressionBegin:
+        BitSet bs = expression(statement, i + 1);
+        points[nPoints++].set(viewer.getAtomSetCenter(bs));
+        i = endOfExpression;
+        break;
+      default:
+        invalidArgument();
+      }
+      if (nPoints == 2) break;
+    }
+    if (nPoints != 2)
+      expressionOrDecimalExpected();
+    if (points[0].distance(points[1]) == 0)
+      expressionOrDecimalExpected();
+    viewer.rotateAboutPoints(points[0], points[1], nDegrees);
+  }
+  
   void pushContext() throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       evalError("too many script levels");

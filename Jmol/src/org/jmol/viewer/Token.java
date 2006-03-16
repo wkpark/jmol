@@ -128,7 +128,7 @@ class Token {
   final static int reset        = command | 24;
   final static int restrict     = command | 25 | expressionCommand;
   final static int ribbon       = command | 26 | bool;
-  final static int rotate       = command | 27 | bool | negnums;
+  final static int rotate       = command | 27 | bool | negnums | embeddedExpression;
   final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expressionCommand;

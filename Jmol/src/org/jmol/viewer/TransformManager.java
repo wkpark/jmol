@@ -134,6 +134,19 @@ class TransformManager {
     pleaseUnsetInternalRotationAxis = true;
   }
   
+  void rotateAboutPoints(Point3f point1, Point3f point2, int degrees) {
+    Point3f center = new Point3f(
+        (point1.x + point2.x)/2,
+        (point1.y + point2.y)/2,
+        (point1.z + point2.z)/2);
+    Vector3f axis = new Vector3f(point1);        
+    axis.sub(point2);
+    setSpin(center, axis, degrees);
+    axisangleT.set(axis, internalRotationAngle);
+    rotateAxisAngleRadiansInternal(axisangleT, internalRotationAngle);
+    pleaseUnsetInternalRotationAxis = true;    
+  }
+
   synchronized void rotateAxisAngleRadiansInternal(AxisAngle4f axisAngle, float radians) {
  
     // trick is to apply the current rotation to the internal rotation axis

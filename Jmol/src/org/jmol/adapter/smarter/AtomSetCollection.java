@@ -343,6 +343,8 @@ class AtomSetCollection {
         AtomSetCollectionReader.doubleLength(atomSetAtomCounts);
       atomSetProperties = 
         (Properties[]) AtomSetCollectionReader.doubleLength(atomSetProperties);
+      atomSetAuxiliaryInfo =
+        (Hashtable[]) AtomSetCollectionReader.doubleLength(atomSetAuxiliaryInfo);
     }
     atomSetNumbers[currentAtomSetIndex] = atomSetCount;
   }

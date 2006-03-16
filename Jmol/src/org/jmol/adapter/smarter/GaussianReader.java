@@ -347,6 +347,7 @@ class GaussianReader extends AtomSetCollectionReader {
       discardLinesUntilStartsWith(reader, " Atom AN");
       
       // read the displacement vectors for every atom and frequency
+      float x, y, z;
       for (int i = 0; i < atomCount; ++i) {
         tokens = getTokens(reader.readLine());
         int atomCenterNumber = parseInt(tokens[0]);
@@ -354,9 +355,10 @@ class GaussianReader extends AtomSetCollectionReader {
         j < frequencyCount; ++j) {
           int atomOffset = firstModelAtom+j*atomCount + atomCenterNumber - 1 ;
           Atom atom = atomSetCollection.atoms[atomOffset];
-          atom.vectorX = parseFloat(tokens[offset++]);
-          atom.vectorY = parseFloat(tokens[offset++]);
-          atom.vectorZ = parseFloat(tokens[offset++]);
+          x = parseFloat(tokens[offset++]);
+          y = parseFloat(tokens[offset++]);
+          z = parseFloat(tokens[offset++]);
+          atom.addVibrationVector(x, y, z);
         }
       }
     }

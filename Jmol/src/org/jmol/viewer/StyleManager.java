@@ -68,6 +68,11 @@ class StyleManager {
     this.showHydrogens = showHydrogens;
   }
 
+  int defaultVectorMad = 0;
+  void setDefaultVectorMad(int mad) {
+    this.defaultVectorMad = mad;
+  }
+
   boolean showVectors = true;
   void setShowVectors(boolean showVectors) {
     this.showVectors = showVectors;

@@ -139,7 +139,7 @@ class AtomSetCollection {
   }
 
   void freeze() {
-    System.out.println("AtomSetCollection.freeze called");
+    System.out.println("AtomSetCollection.freeze; atomCount = " + atomCount);
     if (hasAlternateLocations())
       hackAlternateLocationDamage();
   }

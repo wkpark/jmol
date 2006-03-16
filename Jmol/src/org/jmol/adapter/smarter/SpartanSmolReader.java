@@ -30,9 +30,12 @@ import java.util.Hashtable;
 
 class SpartanSmolReader extends AtomSetCollectionReader {
 
+  final boolean logging = false;
+
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
 
+    
     atomSetCollection = new AtomSetCollection("spartan .smol");
 
     try {
@@ -156,6 +159,8 @@ class SpartanSmolReader extends AtomSetCollectionReader {
     Vector freqs = new Vector();
     System.out.println("reading VIBFREQ vibration records: freqCount = "
         + freqCount);
+    for (int i = 1; i < freqCount; i++)
+      atomSetCollection.cloneFirstAtomSet();
     for (int i = 0; i < freqCount; i++) {
       line = reader.readLine();
       Hashtable info = new Hashtable();
@@ -182,10 +187,9 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         atomInfo[i % nValues] = f;
         vibatom.add(new Float(f));
         if ((i + 1) % nValues == 0) {
-          //System.out.println(ifreq + " atom "+iatom +"/"+atomCount+" vectors: " + atomInfo[0] + " "+atomInfo[1] + " " + atomInfo[2]);
-          atoms[iatom].vectorX = atomInfo[0];
-          atoms[iatom].vectorY = atomInfo[1];
-          atoms[iatom].vectorZ = atomInfo[2];
+          if (logging) 
+            System.out.println(ifreq + " atom "+iatom +"/"+atomCount+" vectors: " + atomInfo[0] + " "+atomInfo[1] + " " + atomInfo[2]);
+          atoms[iatom].addVibrationVector(atomInfo[0],atomInfo[1],atomInfo[2]);
           vib.add(vibatom);
           vibatom = new Vector();
           ++iatom;
@@ -195,8 +199,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         vibrations.add(vib);
         vib = new Vector();
         if (++ifreq == freqCount)
-          break;
-        atomSetCollection.cloneFirstAtomSet();
+          break; ///loop exit
       }
     }
     atomSetCollection

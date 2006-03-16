@@ -1069,9 +1069,10 @@ final public class Viewer extends JmolViewer {
       eval.clearDefinitionsAndLoadPredefined();
     // there probably needs to be a better startup mechanism for shapes
     if (modelManager.hasVibrationVectors())
-      setShapeSize(JmolConstants.SHAPE_VECTORS, 1);
+      setShapeSize(JmolConstants.SHAPE_VECTORS, styleManager.defaultVectorMad);
     setFrankOn(styleManager.frankOn);
     repaintManager.initializePointers(1);
+    setDisplayModelIndex(0);
     setTainted(true);
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager

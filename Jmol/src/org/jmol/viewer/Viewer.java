@@ -194,104 +194,111 @@ final public class Viewer extends JmolViewer {
   }
 
   void rotateXYBy(int xDelta, int yDelta) {
+    //mouse
     transformManager.rotateXYBy(xDelta, yDelta);
     refresh(1, "Viewer:rotateXYBy()");
   }
 
   void rotateZBy(int zDelta) {
+    //mouse
     transformManager.rotateZBy(zDelta);
     refresh(1, "Viewer:rotateZBy()");
   }
 
   public void rotateFront() {
+    //appdisplaypanel
     transformManager.rotateFront();
     refresh(1, "Viewer:rotateFront()");
   }
 
   public void rotateToX(float angleRadians) {
+    //JmolViewer
     transformManager.rotateToX(angleRadians);
     refresh(1, "Viewer:rotateToX()");
   }
 
   public void rotateToY(float angleRadians) {
+    //JmolViewer
     transformManager.rotateToY(angleRadians);
     refresh(1, "Viewer:rotateToY()");
   }
 
   public void rotateToZ(float angleRadians) {
+    //JmolViewer
     transformManager.rotateToZ(angleRadians);
     refresh(1, "Viewer:rotateToZ()");
   }
 
   public void rotateToX(int angleDegrees) {
+    //appdisplaypanel
     rotateToX(angleDegrees * radiansPerDegree);
   }
 
   public void rotateToY(int angleDegrees) {
+    //appdisplaypanel
     rotateToY(angleDegrees * radiansPerDegree);
   }
 
   void rotateToZ(int angleDegrees) {
+    //appdisplaypanel
     rotateToZ(angleDegrees * radiansPerDegree);
   }
 
   void rotateXRadians(float angleRadians) {
+    //eval move
     transformManager.rotateXRadians(angleRadians);
     refresh(1, "Viewer:rotateXRadians()");
   }
 
   void rotateYRadians(float angleRadians) {
+    //eval move
     transformManager.rotateYRadians(angleRadians);
     refresh(1, "Viewer:rotateYRadians()");
   }
 
   void rotateZRadians(float angleRadians) {
+    //eval move
     transformManager.rotateZRadians(angleRadians);
     refresh(1, "Viewer:rotateZRadians()");
   }
 
   void rotateXDegrees(float angleDegrees) {
+    //deprecated
     rotateXRadians(angleDegrees * radiansPerDegree);
   }
 
   void rotateYDegrees(float angleDegrees) {
-    rotateYRadians(angleDegrees * radiansPerDegree);
+    //deprecated
+     rotateYRadians(angleDegrees * radiansPerDegree);
   }
 
   void rotateZDegrees(float angleDegrees) {
+    //deprecated
     rotateZRadians(angleDegrees * radiansPerDegree);
   }
 
   void rotateZDegreesScript(float angleDegrees) {
+    //deprecated
     transformManager.rotateZRadiansScript(angleDegrees * radiansPerDegree);
     refresh(1, "Viewer:rotateZDegreesScript()");
   }
 
   final static float radiansPerDegree = (float) (2 * Math.PI / 360);
-
   final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
 
   void rotate(AxisAngle4f axisAngle) {
+    //unused
     transformManager.rotate(axisAngle);
     refresh(1, "Viewer:rotate()");
   }
 
-  void rotateAxisAngle(Vector3f rotAxis, int degrees) {
-    transformManager.rotateAxisAngle(rotAxis, degrees);
-  }
-
-  void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis, int degrees) {
-    //System.out.println("rotateAxisAngleAtCenter" + rotCenter);
-    moveRotationCenter(rotCenter);
-    rotateAxisAngle(rotAxis, degrees);
-    transformManager.setExternalRotationCenter(null);
-  }
-  
   void rotateTo(float xAxis, float yAxis, float zAxis, float degrees) {
+    //unused
     transformManager.rotateTo(xAxis, yAxis, zAxis, degrees);
   }
 
   void rotateTo(AxisAngle4f axisAngle) {
+    //unused
     transformManager.rotateTo(axisAngle);
   }
 
@@ -2855,6 +2862,100 @@ final public class Viewer extends JmolViewer {
     return statusManager.getSyncMode();
   }
 
+  /* *******************************************************
+   * 
+   * methods for spinning and rotating
+   * 
+   * ********************************************************/
+  
+  int pickingSpinRate = 10;
+
+  void setPickingSpinRate(int rate) {
+    if (rate < 1)
+      rate = 1;
+    pickingSpinRate = rate;
+  }
+
+  void rotateAbout(int atomIndex1, int atomIndex2) {
+    // picking manager
+    if (atomIndex1 == atomIndex2) {
+      setSpinOn(false);
+      return;
+    }
+    Point3f rotCenter = modelManager.getAveragePosition(atomIndex1, atomIndex2);
+    Vector3f rotAxis = modelManager.getAtomVector(atomIndex1, atomIndex2);
+    transformManager.setSpin(rotCenter, rotAxis, pickingSpinRate);
+    setSpinOn(true);
+  }
+
+  void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis, 
+                               int degrees, boolean isSpin) {
+    //Eval rotate
+    //System.out.println("rotateAxisAngleAtCenter" + rotCenter);
+    if (isSpin) {
+      //TODO
+    } else {
+      moveRotationCenter(rotCenter);
+      rotateAxisAngle(rotAxis, degrees, isSpin);
+      transformManager.setExternalRotationCenter(null);
+    }
+  }
+
+  void rotateAxisAngle(Vector3f rotAxis, int degrees, boolean isSpin) {
+    //Eval rotate
+    if (isSpin) {
+        //TODO
+    } else {
+      transformManager.rotateAxisAngle(rotAxis, degrees);
+    }
+  }
+
+  void rotateAboutPointsInternal(Point3f point1, Point3f point2, 
+                                 int nDegrees, boolean isSpin) {
+    //eval rotate INTERNAL
+    if (isSpin) {
+      setSpinningAxis(point1, point2, false, nDegrees);
+      setSpinOn(true);
+    } else {
+      transformManager.rotateAboutPointsInternal(point1, point2, nDegrees);
+    }
+  }
+
+  
+  public void rotateAboutAxisInternal(String axisID, int degrees) {
+    //not used or tested
+    Point3f center = getDrawObjectCenter(axisID);
+    Vector3f axis = getDrawObjectAxis(axisID);
+    if (center == null)
+      return;
+    if (axis == null)
+      axis = new Vector3f(0, (getAxesOrientationRasmol() ? -1 : 1), 0);
+    transformManager.rotateAboutAxisInternal(center, axis, degrees);
+  }
+
+  void startSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise) {
+    //from draw object click
+    if (getSpinOn()) {
+      setSpinOn(false);
+      return;
+    }
+    setSpinningAxis(pt1, pt2, isClockwise, pickingSpinRate);
+    setSpinOn(true);
+  }
+
+  
+  void setSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise,
+                       int spinRate) {
+    Point3f rotCenter = new Point3f(pt1);
+    rotCenter.add(pt2);
+    rotCenter.scale(0.5f);
+    Vector3f rotAxis = new Vector3f(pt1);
+    rotAxis.sub(pt2);
+    if (isClockwise)
+      rotAxis.scale(-1f);
+    transformManager.setSpin(rotCenter, rotAxis, spinRate);
+  }
+
   public void setSpinAxis(String axisID, int degrees) {
     Point3f rotCenter = modelManager.getSpinCenter(axisID,
         repaintManager.displayModelIndex);
@@ -2878,62 +2979,11 @@ final public class Viewer extends JmolViewer {
         repaintManager.displayModelIndex);
   }
 
-  public void rotateAboutAxisInternal(String axisID, int degrees) {
-    Point3f center = getDrawObjectCenter(axisID);
-    Vector3f axis = getDrawObjectAxis(axisID);
-    if (center == null)
-      return;
-    if (axis == null)
-      axis = new Vector3f(0, (getAxesOrientationRasmol() ? -1 : 1), 0);
-    transformManager.rotateAboutAxisInternal(center, axis, degrees);
-    refresh(1, "Viewer:rotateAxisInternal()");
-  }
-
   public void setDrawCenter(String axisID) {
     Point3f center = getDrawObjectCenter(axisID);
     if (center == null)
       return;
     setCenter(center);
-  }
-
-  int pickingSpinRate = 10;
-
-  void setPickingSpinRate(int rate) {
-    if (rate < 1)
-      rate = 1;
-    pickingSpinRate = rate;
-  }
-
-  void rotateAbout(int atomIndex1, int atomIndex2) {
-    if (atomIndex1 == atomIndex2) {
-      setSpinOn(false);
-      return;
-    }
-    Point3f rotCenter = modelManager.getAveragePosition(atomIndex1, atomIndex2);
-    Vector3f rotAxis = modelManager.getAtomVector(atomIndex1, atomIndex2);
-    transformManager.setSpin(rotCenter, rotAxis, pickingSpinRate);
-    setSpinOn(true);
-  }
-
-  void rotateAboutPointsInternal(Point3f point1, Point3f point2, int nDegrees) {
-    transformManager.rotateAboutPointsInternal(point1, point2, nDegrees);
-    refresh(1, "Viewer:rotateAboutPoints()");
-  }
-
-  void setSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise) {
-    if (getSpinOn()) {
-      setSpinOn(false);
-      return;
-    }
-    Point3f rotCenter = new Point3f(pt1);
-    rotCenter.add(pt2);
-    rotCenter.scale(0.5f);
-    Vector3f rotAxis = new Vector3f(pt1);
-    rotAxis.sub(pt2);
-    if (isClockwise)
-      rotAxis.scale(-1f);
-    transformManager.setSpin(rotCenter, rotAxis, pickingSpinRate);
-    setSpinOn(true);
   }
 
   void checkObjectClicked(int x, int y, boolean isShiftDown) {

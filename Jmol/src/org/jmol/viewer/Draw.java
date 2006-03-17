@@ -239,12 +239,12 @@ class Draw extends MeshCollection {
     }
     if (pickedMesh != null) {
       if (nearestVertex == 0) {
-        viewer.setSpinningAxis(
+        viewer.startSpinningAxis(
             pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][0]],
             pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][1]],
             isShiftDown);
       } else {
-        viewer.setSpinningAxis(
+        viewer.startSpinningAxis(
             pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][1]],
             pickedMesh.vertices[pickedMesh.polygonIndexes[nearestModel][0]],
             isShiftDown);

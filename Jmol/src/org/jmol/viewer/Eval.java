@@ -406,7 +406,7 @@ class Eval implements Runnable {
         reset();
         break;
       case Token.rotate:
-        rotate();
+        rotate(false);
         break;
       case Token.script:
         script();
@@ -1921,7 +1921,7 @@ class Eval implements Runnable {
     viewer.invertSelection();
   }
 
-  void rotate() throws ScriptException {
+  void rotate(boolean isSpin) throws ScriptException {
     int degrees = 10;
     int nCoord = 0;
     int nPoints = 0;
@@ -2023,11 +2023,11 @@ class Eval implements Runnable {
           // rotate x 10 (atoms)
           // rotate x 10 [point]
           
-          viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees);
+          viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees, isSpin);
         } else {
           // could be rotate x  10
           // or rotate axisangle [0 1 0] 10
-          viewer.rotateAxisAngle(rotAxis, degrees);
+          viewer.rotateAxisAngle(rotAxis, degrees, isSpin);
         }
         return;
       }
@@ -2037,13 +2037,13 @@ class Eval implements Runnable {
       expressionOrDecimalExpected();
     if (isAxisAngle) {
       //rotate axisangle 10 [0 1 0] (points)
-      viewer.rotateAxisAngle(rotAxis, degrees);
+      viewer.rotateAxisAngle(rotAxis, degrees, isSpin);
       return;
     }
     //rotate (atom1) (atom2)
     //rotate INTERNAL (atom1)
     //System.out.println("rotating about "+points[0]+points[1]);
-    viewer.rotateAboutPointsInternal(points[0], points[1], degrees);
+    viewer.rotateAboutPointsInternal(points[0], points[1], degrees, isSpin);
   }
   
   boolean checkDrawObjectOrCoordinate(int i) throws ScriptException{
@@ -2622,11 +2622,11 @@ class Eval implements Runnable {
     case Token.on:
       spinOn = true;
     case Token.off:
+      viewer.setSpinOn(spinOn);
       break;
     default:
-      booleanExpected();
+      rotate(true);
     }
-    viewer.setSpinOn(spinOn);
   }
 
   void animation() throws ScriptException {

@@ -162,6 +162,7 @@ class TransformManager {
  }
 
   void rotateTo(float x, float y, float z, float degrees) {
+    //unused
     if (degrees < .01 && degrees > -.01) {
       matrixRotate.setIdentity();
     } else {
@@ -171,6 +172,7 @@ class TransformManager {
   }
 
   void rotateTo(AxisAngle4f axisAngle) {
+    //unused
     if (axisAngle.angle < .01 && axisAngle.angle > -.01)
       matrixRotate.setIdentity();
     else

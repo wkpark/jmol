@@ -25,8 +25,6 @@ public class TestSmarterJmolAdapter extends TestCase {
    */
   public void testBaseDir() {
     //checkOpenFile(".", "ammonia.adf.out");
-    //checkOpenFile(".", "bulk_Si.in");
-    //checkOpenFile(".", "ch2chfme_reagent.inp");
     //checkOpenFile(".", "ch2chfme_reagent.out");
     //checkOpenFile(".", "ch3oh_ace.out");
     checkOpenFile(".", "ch3oh_gam.out");
@@ -36,17 +34,12 @@ public class TestSmarterJmolAdapter extends TestCase {
     //checkOpenFile(".", "f1.cephalo");
     checkOpenFile(".", "frame_1.res");
     //checkOpenFile(".", "h2o_b3lyp_IR.out");
-    //checkOpenFile(".", "HfO2_mol_opt.in");
-    //checkOpenFile(".", "Hf02_on_Si_relax.in");
     //checkOpenFile(".", "LiMoS2_optimisation_ISIF3.vasp");
-    //checkOpenFile(".", "pei2h2o.in");
     //checkOpenFile(".", "pei2h2o.out");
     //checkOpenFile(".", "Si_eband.out");
-    //checkOpenFile(".", "slab_7Si_3Vac_2x.in");
     //checkOpenFile(".", "slab_7Si_3Vac_2x_relax_2x1.out");
     //checkOpenFile(".", "t12.abinit.out");
     //checkOpenFile(".", "t13.abinit.out");
-    //checkOpenFile(".", "t54.in");
     //checkOpenFile(".", "tms.log");
     //checkOpenFile(".", "zeolite_AFI.out");
   }
@@ -235,14 +228,11 @@ public class TestSmarterJmolAdapter extends TestCase {
     checkOpenFile("gaussian", "ch3oh_g94.out");
     checkOpenFile("gaussian", "g98.out");
     checkOpenFile("gaussian", "h2o.g03.log");
-    //checkOpenFile("gaussian", "H2O.in");
     checkOpenFile("gaussian", "H2O.out");
-    //checkOpenFile("gaussian", "H2O_3.in");
     checkOpenFile("gaussian", "H2O_3.log");
     checkOpenFile("gaussian", "H2O_G03.log");
     checkOpenFile("gaussian", "H2O_G03_opt.log");
     checkOpenFile("gaussian", "H2O_G03_zopt.log");
-    //checkOpenFile("gaussian", "H2O_NoSymm.in");
     checkOpenFile("gaussian", "H2O_NoSymm.out");
     checkOpenFile("gaussian", "H2O_NoSymm_G03.log");
     checkOpenFile("gaussian", "H2O_NoSymm_G03_opt.log");

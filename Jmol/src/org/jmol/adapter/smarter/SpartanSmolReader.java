@@ -82,6 +82,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
       atom.y = y * ANGSTROMS_PER_BOHR;
       atom.z = z * ANGSTROMS_PER_BOHR;
     }
+    atomSetCollection.setAtomSetName("Geometry");
   }
 
   void readProperties(BufferedReader reader) throws Exception {
@@ -170,6 +171,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         info.put("label", label);
       freqs.add(info);
       atomSetCollection.setAtomSetName(label + " " + freq+" cm^-1");
+      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,"Frequencies");
     }
     // System.out.print(freqs);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
@@ -178,7 +180,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
     Vector vib = new Vector();
     Vector vibatom = new Vector();
     int ifreq = 0;
-    int iatom = 0;
+    int iatom = atomCount; // add vibrations starting at second atomset
     int nValues = 3;
     float[] atomInfo = new float[3];
     while ((line = reader.readLine()) != null) {

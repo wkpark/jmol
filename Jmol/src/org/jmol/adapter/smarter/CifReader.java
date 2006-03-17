@@ -207,7 +207,8 @@ class CifReader extends AtomSetCollectionReader {
   final static byte INS_CODE    = 14;
   final static byte ALT_ID      = 15;
   final static byte GROUP_PDB   = 16;
-  final static byte ATOM_PROPERTY_MAX = 17;
+  final static byte MODEL_NO    = 17;
+  final static byte ATOM_PROPERTY_MAX = 18;
   
 
   final static String[] atomFields = {
@@ -221,6 +222,7 @@ class CifReader extends AtomSetCollectionReader {
     "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
     "_atom_site.label_alt_id",
     "_atom_site.group_PDB",
+    "_atom_site.pdbx_PDB_model_num",
   };
 
   final static byte[] atomFieldMap = {
@@ -230,7 +232,7 @@ class CifReader extends AtomSetCollectionReader {
     CARTN_X, CARTN_Y, CARTN_Z,
     OCCUPANCY, B_ISO,
     COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
-    ALT_ID, GROUP_PDB,
+    ALT_ID, GROUP_PDB, MODEL_NO,
   };
 
   static {
@@ -240,6 +242,7 @@ class CifReader extends AtomSetCollectionReader {
 
   void processAtomSiteLoopBlock() throws Exception {
     //    logger.log("processAtomSiteLoopBlock()-------------------------");
+    int currentModelNO = -1;
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
     int fieldCount = parseLoopParameters(atomFields,
@@ -359,6 +362,13 @@ class CifReader extends AtomSetCollectionReader {
         case GROUP_PDB:
           if ("HETATM".equals(field))
             atom.isHetero = true;
+          break;
+        case MODEL_NO:
+          int modelNO = parseInt(field);
+          if (modelNO != currentModelNO) {
+            atomSetCollection.newAtomSet();
+            currentModelNO = modelNO;
+          }
           break;
         }
       }

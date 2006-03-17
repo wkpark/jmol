@@ -47,7 +47,11 @@ class Axes extends SelectionIndependentShape {
 
   final static float MIN_AXIS_LEN = 1.5f;
   void initShape() {
-    originPoint.set(viewer.getBoundBoxCenter());
+    if (viewer.getAxesModeInternal()) {
+      originPoint.set(0, 0, 0);
+    } else {
+      originPoint.set(viewer.getBoundBoxCenter());
+    }
     Vector3f corner = viewer.getBoundBoxCornerVector();
     for (int i = 6; --i >= 0; ) {
       Point3f axisPoint = axisPoints[i];

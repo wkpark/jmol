@@ -1584,20 +1584,23 @@ class Eval implements Runnable {
   // but someplace in the rasmol doc it makes reference to the geometric
   // center as the default for rotations. who knows.
   void center() throws ScriptException {
-    //System.out.println("center"+statement[1]);
-    //System.out.println(statement[2]);
     
-    // ok, here I don't see how to get [n,n,n] working
-    //-- have to add coordFlag to compiler? -RMH
-    
-    if (statementLength > 1 && statement[2].tok == Token.keyword) {
+    //for(int i=0;i<statementLength;i++)
+      //System.out.println(statement[i]);
+
+    if (statementLength == 4 && statement[2].tok == Token.keyword) {
      //center [ id ]
       String axisID = (String)statement[2].value;
-      //System.out.println("center"+axisID);
       viewer.setDrawCenter(axisID);
       return;
     }
 
+    if (statementLength == 6 && statement[3].tok == Token.point3f) {
+      //center expBegin [ xyz ] expEnd
+       viewer.setCenter((Point3f) statement[3].value);
+       return;
+     }
+    
     viewer.setCenterBitSet(statementLength == 1 ? null : expression(statement,
         1), true);
   }
@@ -3664,7 +3667,7 @@ class Eval implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       Token token = statement[i];
-      System.out.println("draw: "+statement[i]);
+      //System.out.println("draw: "+statement[i]);
       switch (token.tok) {
       case Token.leftsquare:
         if (checkDrawObjectOrCoordinate(i)) { 

@@ -154,21 +154,22 @@ class SpartanSmolReader extends AtomSetCollectionReader {
   void readVibFreqs(BufferedReader reader) throws Exception {
     String line = reader.readLine();
     String label = "";
-    int freqCount = parseInt(line);
+    int frequencyCount = parseInt(line);
     Vector vibrations = new Vector();
     Vector freqs = new Vector();
-    System.out.println("reading VIBFREQ vibration records: freqCount = "
-        + freqCount);
-    for (int i = 1; i < freqCount; i++)
-      atomSetCollection.cloneFirstAtomSet();
-    for (int i = 0; i < freqCount; i++) {
+    System.out.println("reading VIBFREQ vibration records: frequencyCount = "
+        + frequencyCount);
+    for (int i = 0; i < frequencyCount; ++i) {
+      atomSetCollection.cloneLastAtomSet();
       line = reader.readLine();
       Hashtable info = new Hashtable();
-      info.put("freq", new Float(parseFloat(line)));
+      float freq = parseFloat(line);
+      info.put("freq", new Float(freq));
       if (line.length() > 15
           && !(label = line.substring(15, line.length())).equals("???"))
         info.put("label", label);
       freqs.add(info);
+      atomSetCollection.setAtomSetName(label + " " + freq+" cm^-1");
     }
     // System.out.print(freqs);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
@@ -198,7 +199,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
       if (iatom % atomCount == 0) {
         vibrations.add(vib);
         vib = new Vector();
-        if (++ifreq == freqCount)
+        if (++ifreq == frequencyCount)
           break; ///loop exit
       }
     }
@@ -206,49 +207,4 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         .setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
-  void readFrequencies(BufferedReader reader) throws Exception {
-
-    // deprecated 3/15/06 RMH in favor of the ARCHIVE reader.
-
-    discardLinesUntilBlank(reader);
-
-    int totalFrequencyCount = 0;
-    while (true) {
-      String line = discardLinesUntilNonBlank(reader);
-      int lineBaseFreqCount = totalFrequencyCount;
-      //      System.out.println("lineBaseFreqCount=" + lineBaseFreqCount);
-      ichNextParse = 16;
-      int lineFreqCount;
-      line = line.substring(13); // skip the " Frequency:"
-      for (lineFreqCount = 0; lineFreqCount < 3; ++lineFreqCount) {
-        float frequency = parseFloat(line, ichNextParse);
-        //        System.out.println("frequency=" + frequency);
-        if (Float.isNaN(frequency))
-          break; //////////////// loop exit is here
-        ++totalFrequencyCount;
-        if (totalFrequencyCount > 1)
-          atomSetCollection.cloneFirstAtomSet();
-      }
-      if (lineFreqCount == 0)
-        return;
-      Atom[] atoms = atomSetCollection.atoms;
-      discardLines(reader, 2);
-      int firstAtomSetAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
-      for (int i = 0; i < firstAtomSetAtomCount; ++i) {
-        line = reader.readLine();
-        for (int j = 0; j < lineFreqCount; ++j) {
-          int ichCoords = j * 23 + 10;
-          float x = parseFloat(line, ichCoords, ichCoords + 7);
-          float y = parseFloat(line, ichCoords + 7, ichCoords + 14);
-          float z = parseFloat(line, ichCoords + 14, ichCoords + 21);
-          int atomIndex = (lineBaseFreqCount + j) * firstAtomSetAtomCount + i;
-          Atom atom = atoms[atomIndex];
-          atom.vectorX = x;
-          atom.vectorY = y;
-          atom.vectorZ = z;
-          //          System.out.println("x=" + x + " y=" + y + " z=" + z);
-        }
-      }
-    }
-  }
 }

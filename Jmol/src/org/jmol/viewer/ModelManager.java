@@ -1085,7 +1085,6 @@ String getAtomInfoChime(int i) {
       return;
     Atom[] atoms = frame.atoms;
     int displayModelIndex = viewer.getDisplayModelIndex();
-    System.out.println("setModelVisi"+displayModelIndex);
     boolean isOneFrame = (displayModelIndex >= 0); 
     boolean showHydrogens = viewer.getShowHydrogens();
     int ballVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);

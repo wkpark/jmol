@@ -44,7 +44,9 @@ class AxesRenderer extends ShapeRenderer {
     short mad = axes.mad;
     if (mad == 0)
       return;
-
+    if (viewer.areAxesTainted())
+      axes.initShape();
+    
     viewer.transformPoint(axes.originPoint, originScreen);
     for (int i = 6; --i >= 0; )
       viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);

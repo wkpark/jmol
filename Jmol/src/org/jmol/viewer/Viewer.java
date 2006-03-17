@@ -501,6 +501,23 @@ final public class Viewer extends JmolViewer {
     return transformManager.axesOrientationRasmol;
   }
 
+  boolean axesModeInternal = false;
+  boolean axesAreTainted = false;
+  void setAxesModeInternal(boolean TF) {
+    axesModeInternal = TF;
+    axesAreTainted = true;
+  }
+
+  boolean areAxesTainted() {
+    boolean TF = axesAreTainted;
+    axesAreTainted = false;
+    return TF;
+  }
+  
+  boolean getAxesModeInternal() {
+    return axesModeInternal;  
+  }
+
   public boolean getPerspectiveDepth() {
     return transformManager.perspectiveDepth;
   }
@@ -2270,6 +2287,10 @@ final public class Viewer extends JmolViewer {
       setWindowCentered(value);
       return;
     }
+    if (key.equalsIgnoreCase("axesInternal")) {
+      setAxesModeInternal(value);
+      return;
+    }
     if (key.equalsIgnoreCase("testFlag1")) {
       setTestFlag1(value);
       return;
@@ -2841,6 +2862,9 @@ final public class Viewer extends JmolViewer {
         repaintManager.displayModelIndex);
     if (rotCenter == null || rotAxis == null)
       return;
+    System.out.println("setSPinAxis"+rotCenter + rotAxis);
+    if (rotAxis.length() == 0)
+      rotAxis.set(0, (getAxesOrientationRasmol()? -1 : 1), 0);
     transformManager.setSpin(rotCenter, rotAxis, degrees);
   }
 

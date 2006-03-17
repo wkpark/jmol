@@ -25,6 +25,7 @@ package org.jmol.viewer;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.Vector;
+import javax.vecmath.Point3f;
 
 class Compiler {
 
@@ -329,17 +330,17 @@ class Compiler {
   }
 
   boolean lookingAtLeadingWhitespace() {
-    log("lookingAtLeadingWhitespace");
+    //log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
     cchToken = ichT - ichToken;
-    log("leadingWhitespace cchScript=" + cchScript + " cchToken=" + cchToken);
+    //log("leadingWhitespace cchScript=" + cchScript + " cchToken=" + cchToken);
     return cchToken > 0;
   }
 
   boolean lookingAtComment() {
-    log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
+    //log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
     // first, find the end of the statement and scan for # (sharp) signs
     char ch;
     int ichEnd = ichToken;
@@ -403,7 +404,7 @@ class Compiler {
   }
 
   boolean lookingAtEndOfLine() {
-    log("lookingAtEndOfLine");
+    //log("lookingAtEndOfLine");
     if (ichToken == cchScript)
       return true;
     int ichT = ichToken;
@@ -680,9 +681,6 @@ class Compiler {
   private boolean endOfExpressionExpected() {
     return compileError("end of expression expected");
   }
-  private boolean nonSequentialExpressions() {
-    return compileError("embedded expression not followed directly by another embedded expression");
-  }
   private boolean leftParenthesisExpected() {
     return compileError("left parenthesis expected");
   }
@@ -849,33 +847,25 @@ class Compiler {
   */
 
   private boolean compileExpression() {
-    int i = 1;
-    boolean isMultipleOK = false;
     int tokCommand = atokenCommand[0].tok;
+    boolean isMultipleOK = ((tokCommand & Token.embeddedExpression) != 0);
+    int expPtr = 1;
     if (tokCommand == Token.define)
-      i = 2;
-    else if ((tokCommand & Token.embeddedExpression) != 0) {
-      // look for the open parenthesis
-      isMultipleOK = true;
-      while (i < atokenCommand.length &&
-             atokenCommand[i].tok != Token.leftparen)
-        ++i;
-    }
-    if (i >= atokenCommand.length)
-      return true;
-    int expPtr=i;
-    // 0 here means OK; -1 means error; > 0 means pointer to the next expression 
-    while (expPtr > 0) {
-     // System.out.println("next expression at " + expPtr);
-      expPtr = compileExpression(expPtr);
-      if (expPtr > 0 && ! isMultipleOK)
+      expPtr = 2;
+    while (expPtr > 0 && expPtr < atokenCommand.length) {
+      if (isMultipleOK)
+        while (expPtr < atokenCommand.length &&
+            atokenCommand[expPtr].tok != Token.leftparen)
+          ++expPtr;
+      // 0 here means OK; -1 means error;
+      // > 0 means pointer to the next expression
+      if (expPtr >= atokenCommand.length 
+          || (expPtr = compileExpression(expPtr)) <= 0)
+        break;
+      if (! isMultipleOK)
         return endOfExpressionExpected();
-      if (expPtr <= 0) return (expPtr == 0);
-      if (atokenCommand[expPtr].tok != Token.leftparen)
-        return nonSequentialExpressions();
     }
-    //really cannot get here
-    return true;
+    return (expPtr == atokenCommand.length || expPtr == 0);
   }
 
   Vector ltokenPostfix = null;
@@ -883,6 +873,8 @@ class Compiler {
   int itokenInfix;
                   
   boolean addTokenToPostfix(Token token) {
+    if (logMessages)
+      log("addTokenToPostfix" + token);
     ltokenPostfix.addElement(token);
     return true;
   }
@@ -916,6 +908,15 @@ class Compiler {
     return expPtr;
   }
 
+  int savedPtr;
+  void savePtr() {
+    savedPtr = itokenInfix;
+  }
+  
+  void restorePtr() {
+    itokenInfix = savedPtr;
+  }
+  
   Token tokenNext() {
     if (itokenInfix == atokenInfix.length)
       return null;
@@ -990,7 +991,11 @@ class Compiler {
     case Token.y:
     case Token.z:
     case Token.colon:
-      return clauseResidueSpec();
+      savePtr();
+      if (clauseResidueSpec())
+        return true;
+      restorePtr();
+      return drawObjectOrCoordinate();
     default:
       if ((tok & Token.atomproperty) == Token.atomproperty)
         return clauseComparator();
@@ -1009,6 +1014,52 @@ class Compiler {
       return true;
     }
     return unrecognizedExpressionToken();
+  }
+
+  boolean drawObjectOrCoordinate() {
+    System.out.println("drawObjectOrCoord" + tokPeek());
+    Point3f pt = new Point3f();
+    Token token = tokenNext();
+    if (token.tok != Token.leftsquare)
+      return false;
+    addTokenToPostfix(token);  // [
+    token = tokenNext();
+    if (token.tok != Token.integer && token.tok != Token.decimal ) {
+      if (token.tok == Token.identifier) {
+        addTokenToPostfix(token); 
+        if ((token = tokenNext()).tok == Token.rightsquare) {
+          addTokenToPostfix(token); 
+          return true;
+        }
+      }
+      return false;
+    }
+    pt.x = floatValue(token);
+    if ((token = tokenNext()).tok == Token.opOr)
+      token = tokenNext();
+    if (token.tok != Token.integer && token.tok != Token.decimal )
+      return false;
+    pt.y = floatValue(token);
+    if ((token = tokenNext()).tok == Token.opOr)
+      token = tokenNext();
+    if (token.tok != Token.integer && token.tok != Token.decimal )
+      return false;
+    pt.z = floatValue(token);
+    addTokenToPostfix(new Token(Token.point3f, pt));
+    if ((token = tokenNext()).tok != Token.rightsquare)
+      return false;
+    addTokenToPostfix(token);  // ]
+    return true;
+  }
+  
+  float floatValue(Token token) {
+    switch (token.tok) {
+    case Token.integer:
+      return token.intValue;
+    case Token.decimal:
+      return  ((Float) token.value).floatValue();
+    }
+    return 0;
   }
 
   boolean clauseComparator() {
@@ -1187,6 +1238,8 @@ class Compiler {
           return false;
         tok = tokenT.tok;
       }
+      if (tok != Token.rightsquare)
+        return false;
       if (strSpec == "")
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
@@ -1195,7 +1248,7 @@ class Compiler {
         generateResidueSpecCode(new Token(Token.spec_resid, groupID, strSpec));
       else
         generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
-      return tok == Token.rightsquare;
+      return true;
     }
     return processIdentifier(tokenT);
   }

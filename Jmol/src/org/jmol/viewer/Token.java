@@ -369,6 +369,7 @@ class Token {
   final static int rewind       = misc | 60;
   final static int playrev      = misc | 61;
   final static int range        = misc | 62;
+  final static int point3f      = misc | 63;
   
  
   final static int amino       = predefinedset |  0;
@@ -705,6 +706,7 @@ class Token {
     "playrev",      new Token(playrev,         "playrev"),
     "play",         new Token(play,            "play"),
     "range",        new Token(range,           "range"),
+    "point3f",      new Token(point3f,         "point3f"),
     
   };
 

@@ -21,6 +21,37 @@ public class TestSmarterJmolAdapter extends TestCase {
   }
 
   /**
+   * Test for reading files in / 
+   */
+  public void testBaseDir() {
+    //checkOpenFile(".", "ammonia.adf.out");
+    //checkOpenFile(".", "bulk_Si.in");
+    //checkOpenFile(".", "ch2chfme_reagent.inp");
+    //checkOpenFile(".", "ch2chfme_reagent.out");
+    //checkOpenFile(".", "ch3oh_ace.out");
+    checkOpenFile(".", "ch3oh_gam.out");
+    //checkOpenFile(".", "ch4-opt.out");
+    checkOpenFile(".", "Cl2O.log");
+    checkOpenFile(".", "ethene.mm1gp");
+    //checkOpenFile(".", "f1.cephalo");
+    checkOpenFile(".", "frame_1.res");
+    //checkOpenFile(".", "h2o_b3lyp_IR.out");
+    //checkOpenFile(".", "HfO2_mol_opt.in");
+    //checkOpenFile(".", "Hf02_on_Si_relax.in");
+    //checkOpenFile(".", "LiMoS2_optimisation_ISIF3.vasp");
+    //checkOpenFile(".", "pei2h2o.in");
+    //checkOpenFile(".", "pei2h2o.out");
+    //checkOpenFile(".", "Si_eband.out");
+    //checkOpenFile(".", "slab_7Si_3Vac_2x.in");
+    //checkOpenFile(".", "slab_7Si_3Vac_2x_relax_2x1.out");
+    //checkOpenFile(".", "t12.abinit.out");
+    //checkOpenFile(".", "t13.abinit.out");
+    //checkOpenFile(".", "t54.in");
+    //checkOpenFile(".", "tms.log");
+    //checkOpenFile(".", "zeolite_AFI.out");
+  }
+
+  /**
    * Test for reading files in aces2/
    */
   public void testAces2() {

@@ -50,6 +50,7 @@ public interface JmolAppletInterface {
   public String scriptNoWait(String script);
   public String scriptCheck(String script);
   public String scriptWait(String script);
+  public String scriptWait(String script, String statusParams);
   public void syncScript(String script);
   
   /**

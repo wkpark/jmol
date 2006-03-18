@@ -115,7 +115,13 @@ public class JmolApplet
       return ((JmolAppletInterface)wrappedApplet).scriptWait(script);
     return null;
   }
-  
+ 
+  public String scriptWait(String script, String statusParams) {
+    if (wrappedApplet != null)
+      return ((JmolAppletInterface)wrappedApplet).scriptWait(script, statusParams);
+    return null;
+  }
+ 
   public void loadInline(String strModel) {
     if (wrappedApplet != null)
       ((JmolAppletInterface)wrappedApplet).loadInline(strModel);

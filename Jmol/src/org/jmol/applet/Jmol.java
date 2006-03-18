@@ -477,6 +477,11 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     return viewer.scriptWait(script);
   }   
   
+  synchronized public String scriptWait(String script, String statusParams) {
+    viewer.getProperty(null, "jmolStatus", statusParams);
+    return viewer.scriptWait(script);
+  }   
+  
   public String getAppletInfo() {
     return GT
         ._(

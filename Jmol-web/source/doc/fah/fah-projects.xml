@@ -4293,4 +4293,9 @@
   <fah_proj number="2395" name="p2395_Protein_A_mutant" public="y" file="y"
     server="171.65.103.150" atoms="20386" preferred="94" deadline="141"
     credit="510" frames="100" code="DG" contact="alexrson"/>
+
+  <!-- Projects 2400 to 2499 -->
+  <fah_proj number="2401" name="p2401_Ribo_indole" public="n" file="y"
+    server="171.64.122.142" atoms="87991" preferred="27"
+    credit="135" frames="100" code="G" contact="ppetrone"/>
 </fah_projects>

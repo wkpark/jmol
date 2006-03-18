@@ -283,10 +283,14 @@ class ModelManager {
     return (frame == null) ? 0 : frame.getBondCountInModel(modelIndex);
   }
 
+  Point3f getRotationCenter() {
+    return (frame == null ? null : frame.getRotationCenter());
+  }
+
   private final Point3f pointT = new Point3f();
-  void setCenterBitSet(BitSet bsCenter, boolean doScale) {
+  Point3f setCenterBitSet(BitSet bsCenter, boolean doScale) {
     if (frame == null)
-      return;
+      return new Point3f(0, 0, 0);
     Point3f center = null;
     if (bsCenter != null) {
       int countSelected = 0;
@@ -308,26 +312,24 @@ class ModelManager {
       center = frame.getRotationCenterDefault();
     if (viewer.isWindowCentered()) {
       viewer.translateCenterTo(0, 0);
-      frame.setRotationCenter(center, true);
+      frame.setRotationCenterAndRadiusXYZ(center, true);
       if (doScale)
         viewer.scaleFitToScreen();
     } else {
       viewer.moveRotationCenter(center);
     }
+    return center;
   }
 
-  void setRotationCenter(Point3f center, boolean andRadius) {
-    if (frame != null)
-      frame.setRotationCenter(center, andRadius);
-  }
-
-  Point3f getRotationCenter() {
-    return (frame == null ? null : frame.getRotationCenter());
-  }
-
-  void setRotationCenter(String relativeTo, float x, float y, float z) {
+  Point3f setRotationCenterAndRadiusXYZ(Point3f center, boolean andRadius) {
     if (frame == null)
-      return;
+      return null;
+    return frame.setRotationCenterAndRadiusXYZ(center, andRadius);
+  }
+
+  Point3f setRotationCenterAndRadiusXYZ(String relativeTo, float x, float y, float z) {
+    if (frame == null)
+      return new Point3f(0, 0, 0);
     pointT.set(x, y, z);
     if (relativeTo == "average")
       pointT.add(frame.getAverageAtomPoint());
@@ -335,7 +337,8 @@ class ModelManager {
       pointT.add(frame.getBoundBoxCenter());
     else if (relativeTo != "absolute")
       pointT.set(frame.getRotationCenterDefault());
-    frame.setRotationCenter(pointT, true);
+    frame.setRotationCenterAndRadiusXYZ(pointT, true);
+    return pointT;
   }
 
   boolean autoBond = true;

@@ -39,8 +39,14 @@ class TransformManager {
     this.viewer = viewer;
   }
 
+  /* ***************************************************************
+   * GENERAL METHODS
+   ***************************************************************/
+
   void homePosition() {
-    matrixRotate.setIdentity();         // no rotations
+    // reset
+    translateCenterTo(0, 0);
+    matrixRotate.setIdentity(); // no rotations
     //    setSlabEnabled(false);              // no slabbing
     //    slabToPercent(100);
     setZoomEnabled(true);
@@ -48,29 +54,93 @@ class TransformManager {
     scaleFitToScreen();
   }
 
-  /****************************************************************
-   ROTATIONS
-  ****************************************************************/
+  final static float twoPI = (float) (2 * Math.PI);
+  int spinX, spinY = 30, spinZ, spinW, spinFps = 30;
+  Point3f fixedRotationCenter = new Point3f(0, 0, 0);
+  AxisAngle4f fixedRotationAxis;
+  float fixedRotationAngle = 0;
+  float fixedRotationAngleFramed = 0;
+  boolean haveNotified = false;
+  boolean isInternal = false;
+  boolean isFixed = true;
+  AxisAngle4f internalRotationAxis;
+  Point3f internalRotationCenter = new Point3f(0, 0, 0);
+  float internalRotationAngle = 0;
+
+  /* ***************************************************************
+   * ROTATIONS
+   ***************************************************************/
 
   // this matrix only holds rotations ... no translations
   // however, it cannot be a Matrix3f because we need to multiply it by
   // a matrix4f which contains translations
   private final Matrix3f matrixRotate = new Matrix3f();
   private final Matrix3f matrixTemp3 = new Matrix3f();
-  private final Matrix4f matrixTemp4 = new Matrix4f();  
+  private final Matrix4f matrixTemp4 = new Matrix4f();
   final AxisAngle4f axisangleT = new AxisAngle4f();
   final Vector3f vectorT = new Vector3f();
   final Vector3f vectorT2 = new Vector3f();
   final Point3f pointT = new Point3f();
   final Point3f pointT2 = new Point3f();
-   
+  final static float radiansPerDegree = (float) (2 * Math.PI / 360);
+  final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
+
+  void setFixedRotationCenter(Point3f rotationCenter) {
+    fixedRotationCenter = new Point3f();
+    fixedRotationCenter.set(rotationCenter);
+    // System.out.println("setFixedRotationCenter" + fixedRotationCenter);
+  }
+
+  void checkFixedRotationCenter() {
+    // System.out.println("\n\ncheckFixed"+fixedRotationCenter);
+    
+    fixedRotationCenter = new Point3f();
+    Point3f pt = viewer.getRotationCenter();
+    if (pt == null)
+      fixedRotationCenter.set(0, 0, 0);
+    else
+      fixedRotationCenter.set(pt);
+    // System.out.println("checkFixed"+fixedRotationCenter);
+  }
+
+  void setRotationPointXY(Point3f center) {
+    Point3i newCenterScreen = transformPoint(center);
+    // System.out.println("setRotationPointXY" + center + newCenterScreen);
+    translateCenterTo(newCenterScreen.x, newCenterScreen.y);
+  }
+
+  float setRotateInternal(Point3f center, Vector3f axis, int degrees) {
+    isInternal = true;
+    checkFixedRotationCenter();
+    internalRotationCenter.set(center);
+    if (internalRotationAxis == null)
+      internalRotationAxis = new AxisAngle4f();
+    float radians = degrees * radiansPerDegree;
+    internalRotationAxis.set(axis, radians);
+    return radians;
+  }
+
+  float setRotateFixed(Point3f center, Vector3f axis, int degrees) {
+    spinW = degrees; //turns off old-stype spinX, spinY, spinZ
+    spinX = spinY = spinZ = 0;
+    isFixed = true;
+    if (center != null)
+      fixedRotationCenter.set(center);
+    if (fixedRotationAxis == null)
+      fixedRotationAxis = new AxisAngle4f();
+    float radians = degrees * radiansPerDegree;
+    fixedRotationAxis.set(axis, radians);
+    // System.out.println("fixedRotationAxis " + fixedRotationAxis);
+    return radians;
+  }
+
   void rotateXYBy(int xDelta, int yDelta) {
     rotateXRadians(yDelta * radiansPerDegree);
     rotateYRadians(xDelta * radiansPerDegree);
   }
 
   void rotateZBy(int zDelta) {
-    rotateZRadians((float)Math.PI * zDelta / 180);
+    rotateZRadians((float) Math.PI * zDelta / 180);
   }
 
   void rotateFront() {
@@ -80,9 +150,11 @@ class TransformManager {
   void rotateToX(float angleRadians) {
     matrixRotate.rotX(angleRadians);
   }
+
   void rotateToY(float angleRadians) {
     matrixRotate.rotY(angleRadians);
   }
+
   void rotateToZ(float angleRadians) {
     matrixRotate.rotZ(angleRadians);
   }
@@ -98,7 +170,7 @@ class TransformManager {
     matrixTemp3.rotY(angleRadians);
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
-  
+
   synchronized void rotateZRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
@@ -106,60 +178,16 @@ class TransformManager {
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
-  final static float radiansPerDegree = (float)(2 * Math.PI / 360);
-  final static float degreesPerRadian = (float)(360 / (2 * Math.PI));
-
-  void rotateZRadiansScript(float angleRadians) {
-    matrixTemp3.rotZ(angleRadians);
-    matrixRotate.mul(matrixTemp3, matrixRotate);
+  void rotateAxisAngle(Vector3f rotAxis, int degrees) {
+    axisangleT.set(rotAxis, degrees * radiansPerDegree);
+    rotateAxisAngle(axisangleT);
   }
 
-  synchronized void rotate(AxisAngle4f axisAngle) {
+  synchronized void rotateAxisAngle(AxisAngle4f axisAngle) {
     matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
-
-  void rotateAxisAngle(Vector3f rotAxis, int degrees) {
-    axisangleT.set(rotAxis, degrees * radiansPerDegree);
-    rotate(axisangleT);
-  }
-
-  boolean pleaseUnsetInternalRotationAxis = false;
-
-  void rotateAboutAxisInternal(Point3f center, Vector3f axis, int degrees) {
-    float angle = setSpin(center, axis, degrees);
-    axisangleT.set(axis, angle);
-    rotateAxisAngleRadiansInternal(axisangleT, angle);
-    pleaseUnsetInternalRotationAxis = true;
-  }
-  
-  void rotateAboutPointsInternal(Point3f point1, Point3f point2, int degrees) {
-    Vector3f axis = new Vector3f(point1);        
-    axis.sub(point2);
-    float angle = setSpin(point1, axis, degrees);
-    axisangleT.set(axis, angle);
-    rotateAxisAngleRadiansInternal(axisangleT, angle);
-    pleaseUnsetInternalRotationAxis = true;    
-  }
-
-  synchronized void rotateAxisAngleRadiansInternal(AxisAngle4f axisAngle, float radians) {
- 
-    // trick is to apply the current rotation to the internal rotation axis
-
-    vectorT.set(axisAngle.x, axisAngle.y, axisAngle.z);    
-    matrixRotate.transform(vectorT, vectorT2);
-    axisangleT.set(vectorT2, radians);
-
-    // NOW apply that rotation  
-    
-    matrixTemp3.set(axisangleT);
-    matrixRotate.mul(matrixTemp3, matrixRotate);
-    
-    // for setting next external rotation point in getNewExternalRotationCenter():
-    
-    internalRotationAngleFramed = radians;
- }
 
   void rotateTo(float x, float y, float z, float degrees) {
     //unused
@@ -179,11 +207,79 @@ class TransformManager {
       matrixRotate.set(axisAngle);
   }
 
- /****************************************************************
-   INTERNAL ROTATIONS
- ****************************************************************/
+  /* ***************************************************************
+   * *THE* TWO VIEWER INTERFACE METHODS
+   ****************************************************************/
 
-  void getNewExternalRotationCenter() {
+  void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
+                               int degrees, boolean isSpin) {
+
+    //*THE* Viewer FIXED frame rotation/spinning entry point
+
+    if (rotCenter != null) {
+      setRotationPointXY(rotCenter);
+    }
+    float angle = setRotateFixed(rotCenter, rotAxis, degrees);
+    if (isSpin) {
+      setSpinOn(true);
+      return;
+    }
+    rotateAxisAngleRadiansFixed(angle);
+  }
+
+  synchronized void rotateAxisAngleRadiansFixed(float angleRadians) {
+    // for spinning -- reduced number of radians
+    fixedRotationAngle = angleRadians;
+    axisangleT.set(fixedRotationAxis);
+    axisangleT.angle = angleRadians;
+    rotateAxisAngle(axisangleT);
+  }
+
+  /* ***************************************************************
+   * INTERNAL ROTATIONS
+   ****************************************************************/
+
+  void rotateAboutPointsInternal(Point3f point1, Point3f point2, int degrees,
+                                 boolean isClockwise, boolean isSpin) {
+
+    // *THE* Viewer INTERNAL frame rotation entry point
+
+    Vector3f axis = new Vector3f(point1);
+    axis.sub(point2);
+    if (isClockwise)
+      axis.scale(-1f);
+    float angle = setRotateInternal(point1, axis, degrees);
+
+    if (isSpin) {
+      setSpinOn(true);
+      return;
+    }
+    rotateAxisAngleRadiansInternal(angle);
+  }
+
+  synchronized void rotateAxisAngleRadiansInternal(float radians) {
+
+    // final matrix rotation when spinning or just rotating
+
+    // trick is to apply the current rotation to the internal rotation axis
+    // and then save the angle for generating a new fixed point later
+
+    internalRotationAngle = radians;
+    // System.out.println("rotate RadiansInternal " + internalRotationAngle);
+
+    vectorT.set(internalRotationAxis.x, internalRotationAxis.y,
+        internalRotationAxis.z);
+    matrixRotate.transform(vectorT, vectorT2);
+    axisangleT.set(vectorT2, radians);
+
+    // NOW apply that rotation  
+
+    matrixTemp3.set(axisangleT);
+    matrixRotate.mul(matrixTemp3, matrixRotate);
+
+  }
+
+  void getNewFixedRotationCenter() {
 
     /*
      * (1) determine vector offset VectorT () 
@@ -198,46 +294,52 @@ class TransformManager {
      */
 
     // fractional OPPOSITE of angle of rotation
-    
     axisangleT.set(internalRotationAxis);
-    axisangleT.angle = -internalRotationAngleFramed;
+    axisangleT.angle = -internalRotationAngle;
+    //this is a fraction of the original for spinning
     matrixTemp4.set(axisangleT);
 
-    // apply this to the external center point in the internal frame
-    
+    // apply this to the fixed center point in the internal frame
+
+    // System.out.println("getNewf: " + fixedRotationCenter);
+    // System.out.println("getNewi: " + internalRotationCenter);
+    // System.out.println("getNewi: " + internalRotationAxis
+    //    + (internalRotationAngle / radiansPerDegree));
     vectorT.set(internalRotationCenter);
-    pointT2.set(externalRotationCenter);
+    pointT2.set(fixedRotationCenter);
     pointT2.sub(vectorT);
     matrixTemp4.transform(pointT2, pointT);
-    
-    // return this point to the external frame
-    
-    pointT.add(vectorT);
-    
-    // it is the new external rotation center!
-    
-    externalRotationCenter.set(pointT);
-  }
-  
- /****************************************************************
-   TRANSLATIONS
-  ****************************************************************/
-  float xExternalTranslation;
-  float yExternalTranslation;
 
+    // System.out.println("vectorT pointT2 pointT" + vectorT + pointT2 + pointT);
+    // return this point to the fixed frame
+
+    pointT.add(vectorT);
+
+    // it is the new fixed rotation center!
+
+    fixedRotationCenter.set(pointT);
+    // System.out.println("getNew Now: " + fixedRotationCenter);
+    viewer.setCenterFromInternalRotation(fixedRotationCenter);
+  }
+
+  /* ***************************************************************
+   * TRANSLATIONS
+   ****************************************************************/
+  float xFixedTranslation;
+  float yFixedTranslation;
 
   void translateXYBy(int xDelta, int yDelta) {
-    xExternalTranslation += xDelta;
-    yExternalTranslation += yDelta;
+    xFixedTranslation += xDelta;
+    yFixedTranslation += yDelta;
   }
 
   void translateToXPercent(float percent) {
     // FIXME -- what is the proper RasMol interpretation of this with zooming?
-    xExternalTranslation = (width/2) + width * percent / 100;
+    xFixedTranslation = (width / 2) + width * percent / 100;
   }
 
   void translateToYPercent(float percent) {
-    yExternalTranslation = (height/2) + height * percent / 100;
+    yFixedTranslation = (height / 2) + height * percent / 100;
   }
 
   void translateToZPercent(float percent) {
@@ -245,11 +347,11 @@ class TransformManager {
   }
 
   float getTranslationXPercent() {
-    return (xExternalTranslation - width/2) * 100 / width;
+    return (xFixedTranslation - width / 2) * 100 / width;
   }
 
   float getTranslationYPercent() {
-    return (yExternalTranslation - height/2) * 100 / height;
+    return (yFixedTranslation - height / 2) * 100 / height;
   }
 
   float getTranslationZPercent() {
@@ -259,17 +361,17 @@ class TransformManager {
   String getTranslationScript() {
     String info = "";
     float f = getTranslationXPercent();
-    if(f != 0.0) 
+    if (f != 0.0)
       info += "translate x " + f + ";";
     f = getTranslationYPercent();
-    if(f != 0.0) 
+    if (f != 0.0)
       info += "translate y " + f + ";";
     return info;
   }
-  
+
   void translateCenterTo(int x, int y) {
-    xExternalTranslation = x;
-    yExternalTranslation = y;
+    xFixedTranslation = x;
+    yFixedTranslation = y;
     //System.out.println("tranformman translateCenterTo" + x + " " + y);
   }
 
@@ -284,8 +386,8 @@ class TransformManager {
     info.put("rotateXYZ", getRotateXyzText());
     info.put("transXPercent", new Float(getTranslationXPercent()));
     info.put("transYPercent", new Float(getTranslationYPercent()));
-    info.put("zoom",new Integer(zoomPercent));
-    return info;    
+    info.put("zoom", new Integer(zoomPercent));
+    return info;
   }
 
   String getMoveToText(float timespan) {
@@ -305,8 +407,8 @@ class TransformManager {
       truncate1(sb, degrees);
     }
     int zoom = getZoomPercent();
-    int tX = (int)getTranslationXPercent();
-    int tY = (int)getTranslationYPercent();
+    int tX = (int) getTranslationXPercent();
+    int tY = (int) getTranslationYPercent();
     if (zoom != 100 || tX != 0 || tY != 0) {
       sb.append(" ");
       sb.append(zoom);
@@ -319,26 +421,25 @@ class TransformManager {
     }
     return "" + sb + ";";
   }
-  
+
   String getMoveToText() {
     return getMoveToText(1);
   }
 
-  
   String getRotateXyzText() {
     StringBuffer sb = new StringBuffer();
     float m20 = matrixRotate.m20;
-    float rY = -(float)Math.asin(m20) * degreesPerRadian;
+    float rY = -(float) Math.asin(m20) * degreesPerRadian;
     float rX, rZ;
     if (m20 > .999f || m20 < -.999f) {
-      rX = -(float)Math.atan2(matrixRotate.m12, matrixRotate.m11) *
-        degreesPerRadian;
+      rX = -(float) Math.atan2(matrixRotate.m12, matrixRotate.m11)
+          * degreesPerRadian;
       rZ = 0;
     } else {
-      rX = (float)Math.atan2(matrixRotate.m21, matrixRotate.m22) *
-        degreesPerRadian;
-      rZ = (float)Math.atan2(matrixRotate.m10, matrixRotate.m00) *
-        degreesPerRadian;
+      rX = (float) Math.atan2(matrixRotate.m21, matrixRotate.m22)
+          * degreesPerRadian;
+      rZ = (float) Math.atan2(matrixRotate.m10, matrixRotate.m00)
+          * degreesPerRadian;
     }
     sb.append("reset");
     if (rX != 0) {
@@ -374,22 +475,21 @@ class TransformManager {
     }
     return "" + sb;
   }
-  
 
   String getRotateZyzText(boolean iAddComment) {
     StringBuffer sb = new StringBuffer();
     float m22 = matrixRotate.m22;
-    float rY = (float)Math.acos(m22) * degreesPerRadian;
+    float rY = (float) Math.acos(m22) * degreesPerRadian;
     float rZ1, rZ2;
     if (m22 > .999f || m22 < -.999f) {
-      rZ1 = (float)Math.atan2(matrixRotate.m10, matrixRotate.m11) *
-        degreesPerRadian;
+      rZ1 = (float) Math.atan2(matrixRotate.m10, matrixRotate.m11)
+          * degreesPerRadian;
       rZ2 = 0;
     } else {
-      rZ1 = (float)Math.atan2(matrixRotate.m21, -matrixRotate.m20) *
-        degreesPerRadian;
-      rZ2 = (float)Math.atan2(matrixRotate.m12, matrixRotate.m02) *
-        degreesPerRadian;
+      rZ1 = (float) Math.atan2(matrixRotate.m21, -matrixRotate.m20)
+          * degreesPerRadian;
+      rZ2 = (float) Math.atan2(matrixRotate.m12, matrixRotate.m02)
+          * degreesPerRadian;
     }
     if (rZ1 != 0 && rY != 0 && rZ2 != 0 && iAddComment)
       sb.append("#Follows Z-Y-Z convention for Euler angles\n");
@@ -411,12 +511,12 @@ class TransformManager {
       sb.append("; zoom ");
       sb.append(zoom);
     }
-    int tX = (int)getTranslationXPercent();
+    int tX = (int) getTranslationXPercent();
     if (tX != 0) {
       sb.append("; translate x ");
       sb.append(tX);
     }
-    int tY = (int)getTranslationYPercent();
+    int tY = (int) getTranslationYPercent();
     if (tY != 0) {
       sb.append("; translate y ");
       sb.append(tY);
@@ -436,16 +536,16 @@ class TransformManager {
   }
 
   /*
-  static void truncate2(StringBuffer sb, float val) {
-    sb.append(" ");
-    sb.append(Math.round(val * 100) / 100f);
-  }
+   static void truncate2(StringBuffer sb, float val) {
+   sb.append(" ");
+   sb.append(Math.round(val * 100) / 100f);
+   }
 
-  static void truncate3(StringBuffer sb, float val) {
-    sb.append(" ");
-    sb.append(Math.round(val * 1000) / 1000f);
-  }
-  */
+   static void truncate3(StringBuffer sb, float val) {
+   sb.append(" ");
+   sb.append(Math.round(val * 1000) / 1000f);
+   }
+   */
 
   void getAxisAngle(AxisAngle4f axisAngle) {
     axisAngle.set(matrixRotate);
@@ -469,9 +569,9 @@ class TransformManager {
     matrixRotation.set(matrixRotate);
   }
 
-  /****************************************************************
-   ZOOM
-  ****************************************************************/
+  /* ***************************************************************
+   * ZOOM
+   ****************************************************************/
   boolean zoomEnabled = true;
   // zoomPercent is the current displayed zoom value
   int zoomPercent = 100;
@@ -518,8 +618,7 @@ class TransformManager {
     if (zoomPercentSetting > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
       zoomPercentSetting = Viewer.MAXIMUM_ZOOM_PERCENTAGE;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
-    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom *
-      zoomPercent / 100;
+    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100;
   }
 
   void setZoomEnabled(boolean zoomEnabled) {
@@ -530,34 +629,34 @@ class TransformManager {
   }
 
   void setScaleAngstromsPerInch(float angstromsPerInch) {
-    scalePixelsPerAngstrom =
-      scaleDefaultPixelsPerAngstrom = 72 / angstromsPerInch;
+    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom = 72 / angstromsPerInch;
   }
 
-  /****************************************************************
-   SLAB
-  ****************************************************************/
-  /*
-    slab is a term defined and used in rasmol.
-    it is a z-axis clipping plane. only atoms behind the slab get rendered.
-    100% means:
-      - the slab is set to z==0
-      - 100% of the molecule will be shown
-    50% means:
-      - the slab is set to the center of rotation of the molecule
-      - only the atoms behind the center of rotation are shown
-    0% means:
-      - the slab is set behind the molecule
-      - 0% (nothing, nada, nil, null) gets shown
-  */
+  /* ***************************************************************
+   * SLAB
+   ****************************************************************/
 
   /*
-  final static int SLABREJECT = 0;
-  final static int SLABHALF = 1;
-  final static int SLABHOLLOW = 2;
-  final static int SLABSOLID = 3;
-  final static int SLABSECTION = 4;
-  */
+   slab is a term defined and used in rasmol.
+   it is a z-axis clipping plane. only atoms behind the slab get rendered.
+   100% means:
+   - the slab is set to z==0
+   - 100% of the molecule will be shown
+   50% means:
+   - the slab is set to the center of rotation of the molecule
+   - only the atoms behind the center of rotation are shown
+   0% means:
+   - the slab is set behind the molecule
+   - 0% (nothing, nada, nil, null) gets shown
+   */
+
+  /*
+   final static int SLABREJECT = 0;
+   final static int SLABHALF = 1;
+   final static int SLABHOLLOW = 2;
+   final static int SLABSOLID = 3;
+   final static int SLABSECTION = 4;
+   */
 
   boolean slabEnabled = false;
   int modeSlab;
@@ -608,8 +707,8 @@ class TransformManager {
   }
 
   void slabToPercent(int percentSlab) {
-    slabPercentSetting =
-      percentSlab < 1 ? 1 : percentSlab > 100 ? 100 : percentSlab;
+    slabPercentSetting = percentSlab < 1 ? 1 : percentSlab > 100 ? 100
+        : percentSlab;
     if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
   }
@@ -621,12 +720,12 @@ class TransformManager {
   // depth is an extension added by OpenRasMol
   // it represents the 'back' of the slab plane
   void depthToPercent(int percentDepth) {
-    depthPercentSetting =
-      percentDepth < 0 ? 0 : percentDepth > 99 ? 99 : percentDepth;
+    depthPercentSetting = percentDepth < 0 ? 0 : percentDepth > 99 ? 99
+        : percentDepth;
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
   }
-  
+
   // miguel 24 sep 2004 - as I recall, this slab mode stuff is not implemented
   void setModeSlab(int modeSlab) {
     this.modeSlab = modeSlab;
@@ -647,21 +746,20 @@ class TransformManager {
       // all transformed z coordinates are negative
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
-      int radius =
-        (int)(viewer.getRotationRadius() * scalePixelsPerAngstrom);
-      slabValue =
-        ((100-slabPercentSetting) * 2 * radius / 100) + cameraDistance;
-      depthValue =
-        ((100-depthPercentSetting) * 2 * radius / 100) + cameraDistance;
+      int radius = (int) (viewer.getRotationRadius() * scalePixelsPerAngstrom);
+      slabValue = ((100 - slabPercentSetting) * 2 * radius / 100)
+          + cameraDistance;
+      depthValue = ((100 - depthPercentSetting) * 2 * radius / 100)
+          + cameraDistance;
     }
   }
 
-  /****************************************************************
-   PERSPECTIVE
-  ****************************************************************/
+  /* ***************************************************************
+   * PERSPECTIVE
+   ****************************************************************/
   boolean perspectiveDepth = true;
   float cameraDepth = 3;
-  int cameraDistance = 1000;        // prevent divide by zero on startup
+  int cameraDistance = 1000; // prevent divide by zero on startup
   float cameraDistanceFloat = 1000; // prevent divide by zero on startup
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -681,11 +779,11 @@ class TransformManager {
     return cameraDepth;
   }
 
-  /****************************************************************
-   SCREEN SCALING
-  ****************************************************************/
+  /* ***************************************************************
+   * SCREEN SCALING
+   ****************************************************************/
   boolean tOversample;
-  int width,height;
+  int width, height;
   int width1, height1, width4, height4;
   int screenPixelCount;
   float scalePixelsPerAngstrom;
@@ -716,8 +814,8 @@ class TransformManager {
     if (width == 0 || height == 0 || !viewer.haveFrame())
       return;
     // translate to the middle of the screen
-    xExternalTranslation = width / 2;
-    yExternalTranslation = height / 2;
+    xFixedTranslation = width / 2;
+    yFixedTranslation = height / 2;
     // 2005 02 22
     // switch to finding larger screen dimension
     // find smaller screen dimension
@@ -731,13 +829,13 @@ class TransformManager {
     // leave a very small margin - only 1 on top and 1 on bottom
     if (screenPixelCount > 2)
       screenPixelCount -= 2;
-    scaleDefaultPixelsPerAngstrom =
-      screenPixelCount / 2 / viewer.getRotationRadius();
+    scaleDefaultPixelsPerAngstrom = screenPixelCount / 2
+        / viewer.getRotationRadius();
     if (perspectiveDepth) {
-      cameraDistance = (int)(cameraDepth * screenPixelCount);
+      cameraDistance = (int) (cameraDepth * screenPixelCount);
       cameraDistanceFloat = cameraDistance;
-      float scaleFactor = (cameraDistance + screenPixelCount/2) /
-        cameraDistanceFloat;
+      float scaleFactor = (cameraDistance + screenPixelCount / 2)
+          / cameraDistanceFloat;
       // mth - for some reason, I can make the scaleFactor bigger in this
       // case. I do not know why, but there is extra space around the edges.
       // I have looked at it three times and still cannot figure it out
@@ -748,10 +846,6 @@ class TransformManager {
     calcZoom();
   }
 
-  /*==============================================================*
-   * scalings
-   *==============================================================*/
-
   float scaleToScreen(int z, float sizeAngstroms) {
     // all z's are >= 0
     // so the more positive z is, the smaller the screen scale
@@ -761,27 +855,27 @@ class TransformManager {
     return pixelSize;
   }
 
-  float scaleToPerspective(int z, float sizeAngstroms) {
-    return (perspectiveDepth
-            // mth 2004 04 02 ... what the hell is this ... must be a bug
-            ? (sizeAngstroms * cameraDistance) / + z // <-- ??
-            : sizeAngstroms);
-  }
-
   short scaleToScreen(int z, int milliAngstroms) {
     if (milliAngstroms == 0)
       return 0;
-    int pixelSize = (int)(milliAngstroms * scalePixelsPerAngstrom / 1000);
+    int pixelSize = (int) (milliAngstroms * scalePixelsPerAngstrom / 1000);
     if (perspectiveDepth)
       pixelSize = (pixelSize * cameraDistance) / z;
     if (pixelSize == 0)
       return 1;
-    return (short)pixelSize;
+    return (short) pixelSize;
   }
 
-  /****************************************************************
-   TRANSFORMATIONS
-  ****************************************************************/
+  float scaleToPerspective(int z, float sizeAngstroms) {
+    return (perspectiveDepth
+    // mth 2004 04 02 ... what the hell is this ... must be a bug
+        ? (sizeAngstroms * cameraDistance) / +z // <-- ??
+        : sizeAngstroms);
+  }
+
+  /* ***************************************************************
+   * TRANSFORMATIONS
+   ****************************************************************/
 
   final Matrix4f matrixTransform = new Matrix4f();
   private final Point3f point3fVibrationTemp = new Point3f();
@@ -789,43 +883,36 @@ class TransformManager {
   private final Point3i point3iScreenTemp = new Point3i();
   private final Matrix4f matrixTemp = new Matrix4f();
   private final Vector3f vectorTemp = new Vector3f();
-  
 
-
-  /****************************************************************
+  /* ***************************************************************
    * RasMol has the +Y axis pointing down
    * And rotations about the y axis are left-handed
    * setting this flag makes Jmol mimic this behavior
    ****************************************************************/
   boolean axesOrientationRasmol = false;
+
   void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
     this.axesOrientationRasmol = axesOrientationRasmol;
   }
 
-  void calcTransformMatrices() {
-    if (externalRotationCenter == null) {
-      //System.out.println("null ext center in calcTransformMatrices");
-      externalRotationCenter = new Point3f();
-      externalRotationCenter.set(viewer.getRotationCenter());
-    }
-    if (internalRotationAxis != null) {
-      //System.out.println("non null internal rotation axis in calcTransformMatrices");
-      getNewExternalRotationCenter();
-      if(pleaseUnsetInternalRotationAxis)
-        internalRotationAxis = null;
+  boolean increaseRotationRadius;
+  int minimumZ;
+
+  synchronized void finalizeTransformParameters() {
+    //from frame renderer just before all transformPoint() calls
+    if (isInternal) {
+      getNewFixedRotationCenter();
+      isInternal = spinOn; //one pass if not spinning
     }
     calcTransformMatrix();
     calcSlabAndDepthValues();
     viewer.setSlabAndDepthValues(slabValue, depthValue);
     increaseRotationRadius = false;
     minimumZ = Integer.MAX_VALUE;
+    haveNotified = false;
+    //System.out.println("\n\nfinalizeTransform");
+    //for testing: transformPoint(fixedRotationCenter);
   }
-
-  float newXPt = 0;
-  float newYPt = 0;
-
-  boolean increaseRotationRadius;
-  int minimumZ;
 
   float getRotationRadiusIncrease() {
     //System.out.println("TransformManager.getRotationRadiusIncrease()");
@@ -842,8 +929,8 @@ class TransformManager {
     matrixTransform.setIdentity();
 
     // first, translate the coordinates back to the center
-    
-    vectorTemp.set(externalRotationCenter);
+
+    vectorTemp.set(fixedRotationCenter);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixTransform.sub(matrixTemp);
@@ -856,8 +943,8 @@ class TransformManager {
     // so first, translate an make all z coordinates negative
     vectorTemp.x = 0;
     vectorTemp.y = 0;
-    vectorTemp.z = viewer.getRotationRadius() +
-      cameraDistanceFloat / scalePixelsPerAngstrom;
+    vectorTemp.z = viewer.getRotationRadius() + cameraDistanceFloat
+        / scalePixelsPerAngstrom;
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     if (axesOrientationRasmol)
@@ -867,7 +954,7 @@ class TransformManager {
     // now scale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
-    if (! axesOrientationRasmol) {
+    if (!axesOrientationRasmol) {
       // negate y (for screen) and z (for zbuf)
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
     }
@@ -881,11 +968,11 @@ class TransformManager {
     //for povray only
     Matrix4f unscaled = new Matrix4f();
     unscaled.setIdentity();
-    if (externalRotationCenter == null) {
-      externalRotationCenter = new Point3f();
-      externalRotationCenter.set(viewer.getRotationCenter());
+    if (fixedRotationCenter == null) {
+      fixedRotationCenter = new Point3f();
+      fixedRotationCenter.set(viewer.getRotationCenter());
     }
-    vectorTemp.set(externalRotationCenter);
+    vectorTemp.set(fixedRotationCenter);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     unscaled.sub(matrixTemp);
@@ -895,7 +982,7 @@ class TransformManager {
   }
 
   void transformPoints(int count, Point3f[] angstroms, Point3i[] screens) {
-    for (int i = count; --i >= 0; )
+    for (int i = count; --i >= 0;)
       screens[i].set(transformPoint(angstroms[i]));
   }
 
@@ -905,23 +992,29 @@ class TransformManager {
 
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
-    int z = (int)point3fScreenTemp.z;
+    int z = (int) point3fScreenTemp.z;
     if (z < cameraDistance) {
       if (Float.isNaN(point3fScreenTemp.z)) {
         //removed for extending pmesh to points and lines  BH 2/25/06 
         //System.out.println("NaN seen in TransformPoint");
         z = 1;
       } else {
-        System.out.println("need to back up the camera");
-        System.out.println("point3fScreenTemp.z=" + point3fScreenTemp.z +
-                           " -> z=" + z);
+        if (!spinOn) {
+          System.out.println("need to back up the camera");
+          System.out.println("point3fScreenTemp.z=" + point3fScreenTemp.z
+              + " -> z=" + z);
+          haveNotified = true;
+        }
         increaseRotationRadius = true;
         if (z < minimumZ)
           minimumZ = z;
         if (z <= 0) {
-          System.out.println("WARNING! DANGER! z <= 0! transformPoint()" +
-                             " point=" + pointAngstroms + 
-                             "  ->  " + point3fScreenTemp);
+          if (!spinOn) {
+            System.out.println("WARNING! DANGER! z <= 0! transformPoint()"
+                + " point=" + pointAngstroms + "  ->  " + point3fScreenTemp);
+            haveNotified = true;
+
+          }
           z = 1;
         }
       }
@@ -932,17 +1025,19 @@ class TransformManager {
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }
-    
+
     //higher resolution here for spin control. 
-    
-    newXPt = point3fScreenTemp.x + xExternalTranslation;
-    newYPt = point3fScreenTemp.y + yExternalTranslation;
+
+    float newXPt = point3fScreenTemp.x + xFixedTranslation;
+    float newYPt = point3fScreenTemp.y + yFixedTranslation;
     if (Float.isNaN(newXPt)) {
       System.out.println("NaN found in transformPoint ");
+      haveNotified = true;
     }
 
-    point3iScreenTemp.x = (int)(newXPt);
-    point3iScreenTemp.y = (int)(newYPt);
+    point3iScreenTemp.x = (int) (newXPt);
+    point3iScreenTemp.y = (int) (newYPt);
+  // system.out.println(pointAngstroms + " " + point3iScreenTemp);
     return point3iScreenTemp;
   }
 
@@ -951,44 +1046,47 @@ class TransformManager {
 
     float z = screen.z;
     if (z < cameraDistance) {
-      System.out.println("need to back up the camera");
+      if (!spinOn)
+        System.out.println("need to back up the camera");
       increaseRotationRadius = true;
       if (z < minimumZ)
-        minimumZ = (int)z;
+        minimumZ = (int) z;
       if (z <= 0) {
-        System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
+        if (!spinOn)
+          System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
         z = 1;
       }
     }
     screen.z = z;
     if (perspectiveDepth) {
       float perspectiveFactor = cameraDistanceFloat / z;
-      screen.x = screen.x * perspectiveFactor + xExternalTranslation;
-      screen.y = screen.y * perspectiveFactor + yExternalTranslation;
+      screen.x = screen.x * perspectiveFactor + xFixedTranslation;
+      screen.y = screen.y * perspectiveFactor + yFixedTranslation;
     } else {
-      screen.x += xExternalTranslation;
-      screen.y += yExternalTranslation;
+      screen.x += xFixedTranslation;
+      screen.y += yFixedTranslation;
     }
   }
 
-  Point3i transformPoint(Point3f pointAngstroms,
-                                Vector3f vibrationVector) {
-    if (! vibrationOn || vibrationVector == null)
+  Point3i transformPoint(Point3f pointAngstroms, Vector3f vibrationVector) {
+    if (!vibrationOn || vibrationVector == null)
       matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     else {
       point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
-                                    pointAngstroms);
+          pointAngstroms);
       matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
     }
-    
-    int z = (int)point3fScreenTemp.z;
+
+    int z = (int) point3fScreenTemp.z;
     if (z < cameraDistance) {
-      System.out.println("need to back up the camera");
+      if (! spinOn)
+        System.out.println("need to back up the camera");
       increaseRotationRadius = true;
       if (z < minimumZ)
         minimumZ = z;
       if (z <= 0) {
-        System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
+        if (! spinOn)
+          System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
         z = 1;
       }
     }
@@ -998,103 +1096,45 @@ class TransformManager {
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }
-    point3iScreenTemp.x = (int)(point3fScreenTemp.x + xExternalTranslation);
-    point3iScreenTemp.y = (int)(point3fScreenTemp.y + yExternalTranslation);
+    point3iScreenTemp.x = (int) (point3fScreenTemp.x + xFixedTranslation);
+    point3iScreenTemp.y = (int) (point3fScreenTemp.y + yFixedTranslation);
     return point3iScreenTemp;
   }
 
   void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
-                             Point3i pointScreen) {
+                      Point3i pointScreen) {
     pointScreen.set(transformPoint(pointAngstroms, vibrationVector));
   }
 
-  void transformVector(Vector3f vectorAngstroms,
-                              Vector3f vectorTransformed) {
+  void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
     matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
-  ////////////////////////////////////////////////////////////////
-
-  boolean vibrationOn;
-  float vibrationPeriod;
-  int vibrationPeriodMs;
-  float vibrationAmplitude;
-  float vibrationRadians;
-  
-  void setVibrationPeriod(float period) {
-    if (period <= 0) {
-      this.vibrationPeriod = 0;
-      this.vibrationPeriodMs = 0;
-      clearVibration();
-    } else {
-      this.vibrationPeriod = period;
-      this.vibrationPeriodMs = (int)(period * 1000);
-      setVibrationOn(true);
-    }
-  }
-
-  void setVibrationT(float t) {
-    vibrationRadians = t * twoPI;
-    vibrationAmplitude = (float)Math.cos(vibrationRadians) * vibrationScale;
-  }
-
-  float vectorScale = 1f;
-  void setVectorScale(float scale) {
-    if (scale >= -10 && scale <= 10)
-      vectorScale = scale;
-  }
-
-  float vibrationScale = 1f;
-  void setVibrationScale(float scale) {
-    if (scale >= -10 && scale <= 10)
-      vibrationScale = scale;
-  }
-  
-  final static float twoPI = (float)(2 * Math.PI);
-  int spinX, spinY = 30, spinZ, spinFps = 30;
-  Point3f externalRotationCenter;
-
-  AxisAngle4f internalRotationAxis;
-  Point3f internalRotationCenter = new Point3f(0, 0, 0);
-  float internalRotationAngle = 0;
-  float internalRotationAngleFramed = 0;
- 
-  void setExternalRotationCenter(Point3f rotationCenter) {
-    if (rotationCenter == null) {
-      externalRotationCenter = null;
-      System.out.println("setExternalRotationCenter is null");
-    } else {
-      externalRotationCenter = new Point3f();
-      externalRotationCenter.set(rotationCenter);
-    }
-  }
-  
-  Point3f getExternalRotationCenter() {
-    return externalRotationCenter;    
-  }
-  
-  
-  float setSpin(Point3f center, Vector3f axis, int degrees) {
-    internalRotationCenter.set(center);  
-    internalRotationAngle = degrees * radiansPerDegree;
-    if (internalRotationAxis == null)
-      internalRotationAxis = new AxisAngle4f();
-    internalRotationAxis.set(axis, internalRotationAngle);
-    return internalRotationAngle;
-  }
+  /* ***************************************************************
+   * Spin support
+   ****************************************************************/
 
   void setSpinX(int degrees) {
     spinX = degrees;
-    internalRotationAxis = null;
+    spinW = 0;
+    if (isInternal)
+      setSpinOn(false);
   }
+
   void setSpinY(int degrees) {
     spinY = degrees;
-    internalRotationAxis = null;
+    spinW = 0;
+    if (isInternal)
+      setSpinOn(false);
   }
+
   void setSpinZ(int degrees) {
     spinZ = degrees;
-    internalRotationAxis = null;
+    spinW = 0;
+    if (isInternal)
+      setSpinOn(false);
   }
+
   void setSpinFps(int value) {
     if (value <= 0)
       value = 1;
@@ -1102,18 +1142,19 @@ class TransformManager {
       value = 50;
     spinFps = value;
   }
-  
+
   void clearSpin() {
     setSpinOn(false);
   }
-  
+
   boolean spinOn;
   SpinThread spinThread;
+
   void setSpinOn(boolean spinOn) {
     this.spinOn = spinOn;
+    System.out.println("setSpinOn " + spinOn);
     if (spinOn) {
       if (spinThread == null) {
-        pleaseUnsetInternalRotationAxis = false;
         spinThread = new SpinThread();
         spinThread.start();
       }
@@ -1121,8 +1162,7 @@ class TransformManager {
       if (spinThread != null) {
         spinThread.interrupt();
         spinThread = null;
-        //causes a jump -- not sure how to avoid that
-        internalRotationAxis = null;
+        isInternal = isFixed = false;
       }
     }
     //System.out.println("spinOn=" + spinOn);
@@ -1133,29 +1173,28 @@ class TransformManager {
       int myFps = spinFps;
       int i = 0;
       long timeBegin = System.currentTimeMillis();
-      // System.out.println("spin thread run started");
-      while (! isInterrupted()) {
+      System.out.println("spin thread run started");
+      while (!isInterrupted()) {
         if (myFps != spinFps) {
           myFps = spinFps;
           i = 0;
           timeBegin = System.currentTimeMillis();
         }
-        boolean refreshNeeded = false;
-        if (internalRotationAxis == null) {
-          if (spinX  != 0 || spinY != 0 || spinZ != 0) {
-            refreshNeeded = true;
-          }
-        } else if (internalRotationAxis.angle != 0){
-          refreshNeeded = true;
-        }
+        boolean refreshNeeded = (isInternal && internalRotationAxis.angle != 0
+            || isFixed && fixedRotationAxis.angle != 0 || !isFixed
+            && !isInternal && (spinX + spinY + spinZ != 0));
         ++i;
         int targetTime = i * 1000 / myFps;
-        int currentTime = (int)(System.currentTimeMillis() - timeBegin);
+        int currentTime = (int) (System.currentTimeMillis() - timeBegin);
         int sleepTime = targetTime - currentTime;
         if (sleepTime > 0) {
           if (refreshNeeded && spinOn) {
-           
-            if (internalRotationAxis == null) {
+
+            if (isInternal) {
+              rotateAxisAngleRadiansInternal(internalRotationAxis.angle / myFps);
+            } else if (isFixed) {
+              rotateAxisAngleRadiansFixed(fixedRotationAxis.angle / myFps);
+            } else { // old way: Rx * Ry * Rz
               if (spinX != 0) {
                 rotateXRadians(spinX * radiansPerDegree / myFps);
               }
@@ -1165,15 +1204,14 @@ class TransformManager {
               if (spinZ != 0) {
                 rotateZRadians(spinZ * radiansPerDegree / myFps);
               }
-            } else {
-              rotateAxisAngleRadiansInternal(internalRotationAxis, internalRotationAxis.angle / myFps); 
-            }     
-            viewer.refresh(0, "TransformationManager:SpinThread:run()");
+            }
+
+            viewer.refresh(1, "TransformationManager:SpinThread:run()");
           }
           try {
             Thread.sleep(sleepTime);
           } catch (InterruptedException e) {
-               // System.out.println("interrupt caught!");
+            // System.out.println("interrupt caught!");
             break;
           }
         }
@@ -1182,17 +1220,51 @@ class TransformManager {
     }
   }
 
-  /****************************************************************
+  /* ***************************************************************
    * Vibration support
    ****************************************************************/
-                                                                 
-  void clearVibration() {
-    setVibrationOn(false);
+
+  boolean vibrationOn;
+  float vibrationPeriod;
+  int vibrationPeriodMs;
+  float vibrationAmplitude;
+  float vibrationRadians;
+
+  void setVibrationPeriod(float period) {
+    if (period <= 0) {
+      this.vibrationPeriod = 0;
+      this.vibrationPeriodMs = 0;
+      clearVibration();
+    } else {
+      this.vibrationPeriod = period;
+      this.vibrationPeriodMs = (int) (period * 1000);
+      setVibrationOn(true);
+    }
+  }
+
+  void setVibrationT(float t) {
+    vibrationRadians = t * twoPI;
+    vibrationAmplitude = (float) Math.cos(vibrationRadians) * vibrationScale;
+  }
+
+  float vectorScale = 1f;
+
+  void setVectorScale(float scale) {
+    if (scale >= -10 && scale <= 10)
+      vectorScale = scale;
+  }
+
+  float vibrationScale = 1f;
+
+  void setVibrationScale(float scale) {
+    if (scale >= -10 && scale <= 10)
+      vibrationScale = scale;
   }
 
   VibrationThread vibrationThread;
+
   private void setVibrationOn(boolean vibrationOn) {
-    if (! vibrationOn || ! viewer.haveFrame()) {
+    if (!vibrationOn || !viewer.haveFrame()) {
       if (vibrationThread != null) {
         vibrationThread.interrupt();
         vibrationThread = null;
@@ -1211,6 +1283,10 @@ class TransformManager {
     this.vibrationOn = true;
   }
 
+  void clearVibration() {
+    setVibrationOn(false);
+  }
+
   class VibrationThread extends Thread implements Runnable {
 
     public void run() {
@@ -1219,17 +1295,17 @@ class TransformManager {
       try {
         do {
           long currentTime = System.currentTimeMillis();
-          int elapsed = (int)(currentTime - lastRepaintTime);
+          int elapsed = (int) (currentTime - lastRepaintTime);
           int sleepTime = 33 - elapsed;
           if (sleepTime > 0)
             Thread.sleep(sleepTime);
           //
           lastRepaintTime = currentTime = System.currentTimeMillis();
-          elapsed = (int)(currentTime - startTime);
-          float t = (float)(elapsed % vibrationPeriodMs) / vibrationPeriodMs;
+          elapsed = (int) (currentTime - startTime);
+          float t = (float) (elapsed % vibrationPeriodMs) / vibrationPeriodMs;
           setVibrationT(t);
           viewer.refresh(0, "TransformationManager:VibrationThread:run()");
-        } while (! isInterrupted());
+        } while (!isInterrupted());
       } catch (InterruptedException ie) {
       }
     }
@@ -1240,6 +1316,7 @@ class TransformManager {
   ////////////////////////////////////////////////////////////////
 
   int stereoMode;
+
   void setStereoMode(int stereoMode) {
     this.stereoMode = stereoMode;
     viewer.setGreyscaleRendering(stereoMode >= JmolConstants.STEREO_REDCYAN);
@@ -1247,6 +1324,7 @@ class TransformManager {
 
   float stereoDegrees = 5;
   float stereoRadians = 5 * radiansPerDegree;
+
   void setStereoDegrees(float stereoDegrees) {
     this.stereoDegrees = stereoDegrees;
     this.stereoRadians = stereoDegrees * radiansPerDegree;

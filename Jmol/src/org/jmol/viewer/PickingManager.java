@@ -164,10 +164,10 @@ class PickingManager {
         viewer.setSpinOn(false);
         viewer.scriptStatus(GT._("pick " 
             + (queuedAtomCount == 1 ? "one more" : "two ") 
-            + " atoms in order to rotate the model around an axis"));
+            + " atoms in order to spin the model around an axis"));
         break;
       }
-      viewer.rotateAbout(queuedAtomIndexes[0], atomIndex);
+      viewer.startSpinningAxis(queuedAtomIndexes[0], atomIndex, false/*isClockwise*/);
     }
   }
 

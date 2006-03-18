@@ -683,6 +683,10 @@ class Eval implements Runnable {
     evalError("(atom expression) or decimal number expected");
   }
 
+  void rotationPointsIdentical() throws ScriptException {
+    evalError("rotation points cannot be identical");
+  }
+
   void integerExpected() throws ScriptException {
     evalError("integer expected");
   }
@@ -772,6 +776,10 @@ class Eval implements Runnable {
 
   void drawObjectOrCoordinateExpected() throws ScriptException {
     evalError("draw object or three decimals required after '['");
+  }
+
+  void tooManyRotationPoints() throws ScriptException {
+    evalError("too many rotation points were specified");
   }
 
   void notImplemented(int itoken) {
@@ -1922,6 +1930,54 @@ class Eval implements Runnable {
   }
 
   void rotate(boolean isSpin) throws ScriptException {
+    
+    /*
+     * 
+     * spin and rotate are now consolidated here.
+     * The old "spin x, spin y, spin z" is still there, but 
+     * pretty much deprecated because it is not that useful.
+     * spin on and spin off still work as well -- and are important
+     * 
+     * far simpler is
+     * 
+     *  spin x 10
+     *  spin y 10
+     *  
+     *  these are pure x or y spins or
+     *  
+     *  spin axisangle [1 1 0] 10
+     *  
+     *  this is the same as the old "spin x 10; spin y 10" -- or is it?
+     *  anyway, it's better!
+     *  
+     *  note that there are many defaults
+     *  
+     *  spin
+     *  spin 10
+     *  spin x
+     *  
+     *  and several new options
+     *  
+     *  spin -x
+     *  spin axisangle [1 1 0] 10
+     *  spin 10 (atomno=1)(atomno=2)
+     *  spin 20 [0 0 0] [1 1 1]
+     *  
+     *  The INTERNAL keyword indicates that spins or rotations are to be
+     *  carried out in the internal molecular coordinate frame, not the
+     *  fixed room frame. 
+     *  
+     *  In association with this, TransformManager and associated functions
+     *  are TOTALLY REWRITTEN and consolideated. It is VERY clean now - just
+     *  two methods here -- one fixed and one internal, two in Viewer, and 
+     *  two in TransformManager. All the centering stuff has been carefully
+     *  inspected are reorganized as well. 
+     *  
+     *  Bob Hanson
+     *
+     *
+     */
+    
     int degrees = 10;
     int nCoord = 0;
     int nPoints = 0;
@@ -1941,7 +1997,17 @@ class Eval implements Runnable {
       points[i] = new Point3f(0, 0, 0);
     for (int i = 1; i < statementLength; ++i) {
       Token token = statement[i];
-      //System.out.println("rotate: "+statement[i]);
+      /*
+        
+      */
+      System.out.println("\n\nrotate: "+statement[i]);
+      System.out.println("points[0]="+points[0]);
+      System.out.println("points[1]="+points[1]);
+      System.out.println("nPoints="+nPoints);
+      System.out.println("rotCenter="+rotCenter);
+      System.out.println("rotAxis="+rotAxis);
+       
+      /**/
       switch (token.tok) {
       case Token.hyphen:
         direction = -1;
@@ -2011,38 +2077,42 @@ class Eval implements Runnable {
       default:
         invalidArgument();
       }
-      if (nPoints >= 3) //only 2 allowed for rotation
-        expressionOrDecimalExpected();
+      if (nPoints >= 3) //only 2 allowed for rotation -- for now
+        tooManyRotationPoints();
     }
-    if (nPoints < 2) {
-      if (isInternal) {
-        points[1].set(points[0]);
-        points[1].sub(rotAxis);
-      } else {
-        if (rotCenter != null) {
-          // rotate x 10 (atoms)
-          // rotate x 10 [point]
-          
-          viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees, isSpin);
-        } else {
-          // could be rotate x  10
-          // or rotate axisangle [0 1 0] 10
-          viewer.rotateAxisAngle(rotAxis, degrees, isSpin);
-        }
-        return;
-      }
-    }
-    //internal by default now
-    if (points[0].distance(points[1]) == 0)
-      expressionOrDecimalExpected();
-    if (isAxisAngle) {
-      //rotate axisangle 10 [0 1 0] (points)
-      viewer.rotateAxisAngle(rotAxis, degrees, isSpin);
+    if (nPoints < 2 && !isInternal) {
+      // simple, standard fixed-frame rotation
+      // rotate x  10
+      // rotate axisangle [0 1 0] 10
+
+      if (nPoints == 1)
+        rotCenter = new Point3f(points[0]);
+        
+      // point-centered rotation, but not internal -- "frieda"
+      // rotate x 10 (atoms)
+      // rotate x 10 [point/line/plane]
+      // rotate x 10 [x y z]
+      System.out.println("rotating externally: "+rotCenter+rotAxis);
+      viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees, isSpin);
       return;
     }
-    //rotate (atom1) (atom2)
-    //rotate INTERNAL (atom1)
-    //System.out.println("rotating about "+points[0]+points[1]);
+    if (nPoints < 2) {
+      // rotate INTERNAL
+      // rotate INTERNAL (atom1)
+      // rotate INTERNAL x 10 (atom1)
+      // rotate axisangle INTERNAL (atom1)
+      points[1].set(points[0]);
+      points[1].sub(rotAxis);
+    } else {
+      // rotate 10 (atom1) (atom2)
+      // rotate 10 [x y z] [x y z]
+      // rotate 10 (atom1) [x y z]
+    }
+      
+    if (points[0].distance(points[1]) == 0)
+      rotationPointsIdentical();
+
+    System.out.println("rotating internally: "+points[0]+points[1]);
     viewer.rotateAboutPointsInternal(points[0], points[1], degrees, isSpin);
   }
   
@@ -2618,6 +2688,10 @@ class Eval implements Runnable {
 
   void spin() throws ScriptException {
     boolean spinOn = false;
+    if (statementLength == 1) {
+      rotate(true);
+      return;
+    }
     switch (statement[1].tok) {
     case Token.on:
       spinOn = true;
@@ -3145,12 +3219,14 @@ class Eval implements Runnable {
   }
 
   void setSpin() throws ScriptException {
+    /*
     if (statement[2].tok == Token.leftsquare && statement[3].tok == Token.identifier) {
       checkStatementLength(6); //set spin [ id ] N
       String axisID = (String)statement[3].value;
       viewer.setSpinAxis(axisID, intParameter(5));
       return;
     }
+     */
     checkLength4();
     int value = intParameter(3);
     switch (statement[2].tok) {

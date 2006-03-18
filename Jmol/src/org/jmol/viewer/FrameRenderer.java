@@ -46,7 +46,7 @@ class FrameRenderer {
     if (frame == null || frame.atomCount <= 0)
       return;
 
-    viewer.calcTransformMatrices();
+    viewer.finalizeTransformParameters();
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];

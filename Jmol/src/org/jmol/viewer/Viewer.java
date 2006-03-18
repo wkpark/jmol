@@ -208,26 +208,25 @@ final public class Viewer extends JmolViewer {
   public void rotateFront() {
     //appdisplaypanel
     transformManager.rotateFront();
-    refresh(1, "Viewer:rotateFront()");
   }
 
   public void rotateToX(float angleRadians) {
     //JmolViewer
     transformManager.rotateToX(angleRadians);
-    refresh(1, "Viewer:rotateToX()");
   }
 
   public void rotateToY(float angleRadians) {
     //JmolViewer
     transformManager.rotateToY(angleRadians);
-    refresh(1, "Viewer:rotateToY()");
   }
 
   public void rotateToZ(float angleRadians) {
     //JmolViewer
     transformManager.rotateToZ(angleRadians);
-    refresh(1, "Viewer:rotateToZ()");
   }
+
+  final static float radiansPerDegree = (float) (2 * Math.PI / 360);
+  final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
 
   public void rotateToX(int angleDegrees) {
     //appdisplaypanel
@@ -277,19 +276,9 @@ final public class Viewer extends JmolViewer {
     rotateZRadians(angleDegrees * radiansPerDegree);
   }
 
-  void rotateZDegreesScript(float angleDegrees) {
-    //deprecated
-    transformManager.rotateZRadiansScript(angleDegrees * radiansPerDegree);
-    refresh(1, "Viewer:rotateZDegreesScript()");
-  }
-
-  final static float radiansPerDegree = (float) (2 * Math.PI / 360);
-  final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
-
   void rotate(AxisAngle4f axisAngle) {
     //unused
-    transformManager.rotate(axisAngle);
-    refresh(1, "Viewer:rotate()");
+    transformManager.rotateAxisAngle(axisAngle);
   }
 
   void rotateTo(float xAxis, float yAxis, float zAxis, float degrees) {
@@ -439,8 +428,8 @@ final public class Viewer extends JmolViewer {
     return transformManager.getUnscaledTransformMatrix();
   }
 
-  void calcTransformMatrices() {
-    transformManager.calcTransformMatrices();
+  void finalizeTransformParameters() {
+    transformManager.finalizeTransformParameters();
   }
 
   Point3i transformPoint(Point3f pointAngstroms) {
@@ -1089,6 +1078,7 @@ final public class Viewer extends JmolViewer {
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
     selectAll();
+    setCenter(getRotationCenter());
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();
     // there probably needs to be a better startup mechanism for shapes
@@ -1111,7 +1101,7 @@ final public class Viewer extends JmolViewer {
     selectionManager.clearSelection();
     clearMeasurements();
     setWindowCentered(true);
-    transformManager.setExternalRotationCenter(null);
+    transformManager.setFixedRotationCenter(new Point3f(0, 0, 0));
     setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");
   }
@@ -1313,37 +1303,39 @@ final public class Viewer extends JmolViewer {
     return modelManager.findAtomsInRectangle(rectRubberBand);
   }
 
-  void setCenter(Point3f center) {
-    modelManager.setRotationCenter(center, true);
-    transformManager.setExternalRotationCenter(null);
-    refresh(0, "Viewer:setCenter()");
-  }
-
-  void setCenterNoRefresh(Point3f center) {
-    modelManager.setRotationCenter(center, false);
-    transformManager.setExternalRotationCenter(null);
-  }
-
   Point3f getCenter() {
     return modelManager.getRotationCenter();
   }
 
+  void setCenterFromInternalRotation(Point3f center) {
+    modelManager.setRotationCenterAndRadiusXYZ(center, false);
+  }
+
+  void setCenter(Point3f center) {
+    center = modelManager.setRotationCenterAndRadiusXYZ(center, true);
+    if (center != null) 
+      transformManager.setFixedRotationCenter(center);
+    refresh(0, "Viewer:setCenter()");
+  }
+
   void setCenter(String relativeTo, float x, float y, float z) {
-    modelManager.setRotationCenter(relativeTo, x, y, z);
+    Point3f center = modelManager.setRotationCenterAndRadiusXYZ(relativeTo, x,
+        y, z);
     scaleFitToScreen();
-    transformManager.setExternalRotationCenter(null);
+    if (center != null) 
+      transformManager.setFixedRotationCenter(center);
     refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
 
   void moveRotationCenter(Point3f center) {
-    Point3i newCenterScreen = transformPoint(center);
-    translateCenterTo(newCenterScreen.x, newCenterScreen.y);
-    modelManager.setRotationCenter(center, false);
+    center = modelManager.setRotationCenterAndRadiusXYZ(center, false);
+    transformManager.setFixedRotationCenter(center);
+    transformManager.setRotationPointXY(center);
   }
   
   void setCenterBitSet(BitSet bsCenter, boolean doScale) {
-    modelManager.setCenterBitSet(bsCenter, doScale);
-    transformManager.setExternalRotationCenter(null);
+    Point3f center = modelManager.setCenterBitSet(bsCenter, doScale);
+    transformManager.setFixedRotationCenter(center);
     refresh(0, "Viewer:setCenterBitSet()");
   }
 
@@ -2862,11 +2854,39 @@ final public class Viewer extends JmolViewer {
     return statusManager.getSyncMode();
   }
 
+  void checkObjectClicked(int x, int y, boolean isShiftDown) {
+    modelManager.checkObjectClicked(x, y, isShiftDown);
+  }
+
+  int cardinalityOf(BitSet bs) {
+    int nbitset = 0;
+    for (int i = bs.size(); --i >= 0;)
+      if (bs.get(i))
+        nbitset++;
+    return nbitset;
+  }
+
   /* *******************************************************
    * 
    * methods for spinning and rotating
    * 
    * ********************************************************/
+
+  void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
+                               int degrees, boolean isSpin) {
+    // Eval: rotate FIXED
+    if (rotCenter != null)
+      moveRotationCenter(rotCenter);
+
+    transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
+        isSpin);
+  }
+  
+  void rotateAboutPointsInternal(Point3f point1, Point3f point2, 
+                                 int nDegrees, boolean isSpin) {
+    // Eval: rotate INTERNAL
+    transformManager.rotateAboutPointsInternal(point1, point2, nDegrees, false, isSpin);
+  }
   
   int pickingSpinRate = 10;
 
@@ -2876,61 +2896,11 @@ final public class Viewer extends JmolViewer {
     pickingSpinRate = rate;
   }
 
-  void rotateAbout(int atomIndex1, int atomIndex2) {
-    // picking manager
-    if (atomIndex1 == atomIndex2) {
-      setSpinOn(false);
-      return;
-    }
-    Point3f rotCenter = modelManager.getAveragePosition(atomIndex1, atomIndex2);
-    Vector3f rotAxis = modelManager.getAtomVector(atomIndex1, atomIndex2);
-    transformManager.setSpin(rotCenter, rotAxis, pickingSpinRate);
-    setSpinOn(true);
-  }
-
-  void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis, 
-                               int degrees, boolean isSpin) {
-    //Eval rotate
-    //System.out.println("rotateAxisAngleAtCenter" + rotCenter);
-    if (isSpin) {
-      //TODO
-    } else {
-      moveRotationCenter(rotCenter);
-      rotateAxisAngle(rotAxis, degrees, isSpin);
-      transformManager.setExternalRotationCenter(null);
-    }
-  }
-
-  void rotateAxisAngle(Vector3f rotAxis, int degrees, boolean isSpin) {
-    //Eval rotate
-    if (isSpin) {
-        //TODO
-    } else {
-      transformManager.rotateAxisAngle(rotAxis, degrees);
-    }
-  }
-
-  void rotateAboutPointsInternal(Point3f point1, Point3f point2, 
-                                 int nDegrees, boolean isSpin) {
-    //eval rotate INTERNAL
-    if (isSpin) {
-      setSpinningAxis(point1, point2, false, nDegrees);
-      setSpinOn(true);
-    } else {
-      transformManager.rotateAboutPointsInternal(point1, point2, nDegrees);
-    }
-  }
-
-  
-  public void rotateAboutAxisInternal(String axisID, int degrees) {
-    //not used or tested
-    Point3f center = getDrawObjectCenter(axisID);
-    Vector3f axis = getDrawObjectAxis(axisID);
-    if (center == null)
-      return;
-    if (axis == null)
-      axis = new Vector3f(0, (getAxesOrientationRasmol() ? -1 : 1), 0);
-    transformManager.rotateAboutAxisInternal(center, axis, degrees);
+  void startSpinningAxis(int atomIndex1, int atomIndex2, boolean isClockwise) {
+    // picking manager set picking SPIN
+    Point3f pt1 = modelManager.getAtomPoint3f(atomIndex1);
+    Point3f pt2 = modelManager.getAtomPoint3f(atomIndex2);
+    startSpinningAxis(pt1, pt2, isClockwise);
   }
 
   void startSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise) {
@@ -2939,34 +2909,7 @@ final public class Viewer extends JmolViewer {
       setSpinOn(false);
       return;
     }
-    setSpinningAxis(pt1, pt2, isClockwise, pickingSpinRate);
-    setSpinOn(true);
-  }
-
-  
-  void setSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise,
-                       int spinRate) {
-    Point3f rotCenter = new Point3f(pt1);
-    rotCenter.add(pt2);
-    rotCenter.scale(0.5f);
-    Vector3f rotAxis = new Vector3f(pt1);
-    rotAxis.sub(pt2);
-    if (isClockwise)
-      rotAxis.scale(-1f);
-    transformManager.setSpin(rotCenter, rotAxis, spinRate);
-  }
-
-  public void setSpinAxis(String axisID, int degrees) {
-    Point3f rotCenter = modelManager.getSpinCenter(axisID,
-        repaintManager.displayModelIndex);
-    Vector3f rotAxis = modelManager.getSpinAxis(axisID,
-        repaintManager.displayModelIndex);
-    if (rotCenter == null || rotAxis == null)
-      return;
-    System.out.println("setSPinAxis"+rotCenter + rotAxis);
-    if (rotAxis.length() == 0)
-      rotAxis.set(0, (getAxesOrientationRasmol()? -1 : 1), 0);
-    transformManager.setSpin(rotCenter, rotAxis, degrees);
+    transformManager.rotateAboutPointsInternal(pt1, pt2, pickingSpinRate, isClockwise, true);
   }
 
   Point3f getDrawObjectCenter(String axisID) {
@@ -2980,21 +2923,11 @@ final public class Viewer extends JmolViewer {
   }
 
   public void setDrawCenter(String axisID) {
+    //for center [line1]
     Point3f center = getDrawObjectCenter(axisID);
     if (center == null)
       return;
     setCenter(center);
   }
 
-  void checkObjectClicked(int x, int y, boolean isShiftDown) {
-    modelManager.checkObjectClicked(x, y, isShiftDown);
-  }
-
-  int cardinalityOf(BitSet bs) {
-    int nbitset = 0;
-    for (int i = bs.size(); --i >= 0;)
-      if (bs.get(i))
-        nbitset++;
-    return nbitset;
-  }
 }

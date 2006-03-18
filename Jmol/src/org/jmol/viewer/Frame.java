@@ -874,6 +874,7 @@ final class Frame {
 
   Point3f getRotationCenterDefault() {
     findBounds();
+    System.out.println("getRotationCenterDefault"+rotationCenterDefault);
     return rotationCenterDefault;
   }
 
@@ -886,7 +887,7 @@ final class Frame {
     return rotationRadius;
   }
 
-  void setRotationCenter(Point3f newCenterOfRotation, boolean andRadius) {
+  Point3f setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation, boolean andRadius) {
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
       if (andRadius && viewer.isWindowCentered())
@@ -895,6 +896,8 @@ final class Frame {
       rotationCenter = rotationCenterDefault;
       rotationRadius = rotationRadiusDefault;
     }
+    System.out.println("frame setRotationCenter"+rotationCenter);
+    return rotationCenter;
   }
 
   void clearBounds() {
@@ -912,6 +915,7 @@ final class Frame {
     rotationCenter = rotationCenterDefault = centerBoundBox;//averageAtomPoint;
     rotationRadius = rotationRadiusDefault =
       calcRotationRadius(rotationCenterDefault);
+    System.out.println("findBounds"+rotationCenter);
   }
 
   private void calcAverageAtomPoint() {

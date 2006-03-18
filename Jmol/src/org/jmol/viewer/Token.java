@@ -155,7 +155,7 @@ class Token {
   final static int loop         = command | 61;
   final static int move         = command | 62 | negnums;
   final static int view         = command | 63;
-  final static int spin         = command | 64 | setparam | showparam | bool;
+  final static int spin         = command | 64 | setparam | showparam | bool | negnums | embeddedExpression;
   final static int list         = command | 65 | showparam;
   final static int display3d    = command | 66;
   final static int animation    = command | 67;
@@ -481,7 +481,7 @@ class Token {
     "loop",              new Token(loop,      onDefault1, "loop"),
     "move",              new Token(move,     varArgCount, "move"),
     "view",              new Token(view,     varArgCount, "view"),
-    "spin",              new Token(spin,      onDefault1, "spin"),
+    "spin",              new Token(spin,     varArgCount, "spin"),
     "list",              new Token(list,     varArgCount, "list"),
     "display3d",         new Token(display3d,  "display3d"),
     "animation",         new Token(animation,  "animation"),

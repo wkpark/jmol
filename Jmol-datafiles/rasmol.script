@@ -1,3 +1,0 @@
-load cml samples/methanol1.cml
-set shadows true
-echo This is printed to STDOUT.

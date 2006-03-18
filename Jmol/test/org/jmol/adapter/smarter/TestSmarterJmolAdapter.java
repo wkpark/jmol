@@ -24,31 +24,28 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in / 
    */
   public void testBaseDir() {
-    //checkOpenFile(".", "ammonia.adf.out");
-    //checkOpenFile(".", "ch2chfme_reagent.out");
-    //checkOpenFile(".", "ch3oh_ace.out");
-    checkOpenFile(".", "ch3oh_gam.out");
-    //checkOpenFile(".", "ch4-opt.out");
-    checkOpenFile(".", "Cl2O.log");
-    checkOpenFile(".", "ethene.mm1gp");
+    //checkOpenFile(".", "ammonia.adf.out"); // ADF
     //checkOpenFile(".", "f1.cephalo");
-    checkOpenFile(".", "frame_1.res");
-    //checkOpenFile(".", "h2o_b3lyp_IR.out");
-    //checkOpenFile(".", "LiMoS2_optimisation_ISIF3.vasp");
-    //checkOpenFile(".", "pei2h2o.out");
-    //checkOpenFile(".", "Si_eband.out");
-    //checkOpenFile(".", "slab_7Si_3Vac_2x_relax_2x1.out");
-    //checkOpenFile(".", "t12.abinit.out");
-    //checkOpenFile(".", "t13.abinit.out");
-    //checkOpenFile(".", "tms.log");
-    //checkOpenFile(".", "zeolite_AFI.out");
+    //checkOpenFile(".", "LiMoS2_optimisation_ISIF3.vasp"); //VASP
   }
 
+  /**
+   * Test for reading files in abint 
+   */
+  public void testAbint() {
+    //checkOpenFile("abint", "pei2h2o.out");
+    //checkOpenFile("abint", "Si_eband.out");
+    //checkOpenFile("abint", "slab_7Si_3Vac_2x_relax_2x1.out");
+    //checkOpenFile("abint", "t12.abinit.out");
+    //checkOpenFile("abint", "t13.abinit.out");
+    //checkOpenFile("abint", "zeolite_AFI.out");
+  }
   /**
    * Test for reading files in aces2/
    */
   public void testAces2() {
     //checkOpenFile("aces2", "ch3oh_ace.out");
+    //checkOpenFile("aces2", "output.dat");
   }
   
   /**
@@ -216,6 +213,8 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in gamess/
    */
   public void testGamess() {
+    checkOpenFile("gamess", "Cl2O.log");
+    checkOpenFile("gamess", "ch3oh_gam.out");
     checkOpenFile("gamess", "substrate.log");
     checkOpenFile("gamess", "water.out");
   }
@@ -224,6 +223,8 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in gaussian/
    */
   public void testGaussian() {
+    //checkOpenFile("gaussian", "ch2chfme_reagent.out");
+    //checkOpenFile("gaussian", "tms.log");
     checkOpenFile("gaussian", "4-cyanophenylnitrene-Benzazirine-TS.g94.out");
     checkOpenFile("gaussian", "ch3oh_g94.out");
     checkOpenFile("gaussian", "g98.out");
@@ -269,6 +270,8 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in jaguar/
    */
   public void testJaguar() {
+    //checkOpenFile("jaguar", "ch4-opt.out");
+    //checkOpenFile("jaguar", "h2o_b3lyp_IR.out");
     checkOpenFile("jaguar", "CH4_no_sym_ir.out");
     checkOpenFile("jaguar", "CH4_with_sym_ir.out");
   }
@@ -409,6 +412,7 @@ public class TestSmarterJmolAdapter extends TestCase {
   public void testShelx() {
     checkOpenFile("shelx", "6063.res");
     checkOpenFile("shelx", "complexSFAC.res");
+    checkOpenFile("shelx", "frame_1.res");
     checkOpenFile("shelx", "k04041.res");
     checkOpenFile("shelx", "vmdtest.res");
   }

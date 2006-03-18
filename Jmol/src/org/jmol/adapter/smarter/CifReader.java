@@ -213,13 +213,13 @@ class CifReader extends AtomSetCollectionReader {
 
   final static String[] atomFields = {
     "_atom_site_type_symbol",
-    "_atom_site_label", "_atom_site_label_atom_id",
+    "_atom_site_label", "_atom_site_auth_atom_id",
     "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
     "_atom_site.Cartn_x", "_atom_site.Cartn_y", "_atom_site.Cartn_z",
     "_atom_site_occupancy",
     "_atom_site.b_iso_or_equiv",
-    "_atom_site.label_comp_id", "_atom_site.label_asym_id",
-    "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
+    "_atom_site.auth_comp_id", "_atom_site.auth_asym_id",
+    "_atom_site.auth_seq_id", "_atom_site.pdbx_PDB_ins_code",
     "_atom_site.label_alt_id",
     "_atom_site.group_PDB",
     "_atom_site.pdbx_PDB_model_num",
@@ -505,12 +505,12 @@ class CifReader extends AtomSetCollectionReader {
   final static String[] structConfFields = {
     "_struct_conf.conf_type_id",
 
-    "_struct_conf.beg_label_asym_id",
-    "_struct_conf.beg_label_seq_id",
+    "_struct_conf.beg_auth_asym_id",
+    "_struct_conf.beg_auth_seq_id",
     "_struct_conf.pdbx_beg_PDB_ins_code",
     
-    "_struct_conf.end_label_asym_id",
-    "_struct_conf.end_label_seq_id",
+    "_struct_conf.end_auth_asym_id",
+    "_struct_conf.end_auth_seq_id",
     "_struct_conf.pdbx_end_PDB_ins_code",
   };
 

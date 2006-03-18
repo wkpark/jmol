@@ -21,15 +21,6 @@ public class TestSmarterJmolAdapter extends TestCase {
   }
 
   /**
-   * Test for reading files in / 
-   */
-  public void testBaseDir() {
-    //checkOpenFile(".", "ammonia.adf.out"); // ADF
-    //checkOpenFile(".", "f1.cephalo");
-    //checkOpenFile(".", "LiMoS2_optimisation_ISIF3.vasp"); //VASP
-  }
-
-  /**
    * Test for reading files in abint 
    */
   public void testAbint() {
@@ -270,8 +261,6 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in jaguar/
    */
   public void testJaguar() {
-    //checkOpenFile("jaguar", "ch4-opt.out");
-    //checkOpenFile("jaguar", "h2o_b3lyp_IR.out");
     checkOpenFile("jaguar", "CH4_no_sym_ir.out");
     checkOpenFile("jaguar", "CH4_with_sym_ir.out");
   }
@@ -392,11 +381,7 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in pmesh/ 
    */
   public void testPmesh() {
-    //checkOpenFile("pmesh", "10x10.pmesh");
-    //checkOpenFile("pmesh", "10x10a.pmesh");
-    //checkOpenFile("pmesh", "cylinder.pmesh");
-    //checkOpenFile("pmesh", "plane.pmesh");
-    //checkOpenFile("pmesh", "wave.pmesh");
+    // pmesh files are not molecular data files
   }
 
   /**

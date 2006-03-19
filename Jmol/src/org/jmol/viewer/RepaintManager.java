@@ -277,7 +277,8 @@ class RepaintManager {
       animationThread = null;
     }
     animationPaused = isPaused;
-    viewer.refresh(0, "Viewer:setAnimationOff");
+    System.out.println("ok");
+    //viewer.refresh(0, "Viewer:setAnimationOff");
     animationOn = false;
   }
 

@@ -47,7 +47,10 @@ class Polyhedra extends SelectionIndependentShape {
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("bonds" == propertyName) {
       deletePolyhedra(bs);
-      buildBondsPolyhedra(bs);
+      if(value instanceof Integer)
+        buildBondsPolyhedra(bs, ((Integer)value).intValue());
+      else
+        buildBondsPolyhedra(bs);
       return;
     }
     if ("delete" == propertyName) {
@@ -156,9 +159,13 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   void buildBondsPolyhedra(BitSet bs) {
+    buildBondsPolyhedra(bs, -1);
+  }
+
+  void buildBondsPolyhedra(BitSet bs, int nBonds) {
     for (int i = frame.atomCount; --i >= 0; ) {
       if (bs.get(i)) {
-        Polyhedron p = constructBondsPolyhedron(i);
+        Polyhedron p = constructBondsPolyhedron(i, nBonds);
         if (p != null)
           savePolyhedron(p);
       }
@@ -169,14 +176,15 @@ class Polyhedra extends SelectionIndependentShape {
 
   final static boolean CHECK_ELEMENT = false;
 
-  Polyhedron constructBondsPolyhedron(int atomIndex) {
+  Polyhedron constructBondsPolyhedron(int atomIndex, int nBonds) {
     Atom atom = frame.getAtomAt(atomIndex);
     Bond[] bonds = atom.bonds;
     byte bondedElementNumber = -1;
     if (bonds == null)
       return null;
     int bondCount = bonds.length;
-    if (bondCount == 4 || bondCount == 6) {
+    if ((bondCount == 4 || bondCount == 6) 
+        && (nBonds < 0 || nBonds == bondCount)) {
       for (int i = bondCount; --i >= 0; ) {
         Bond bond = bonds[i];
         Atom otherAtom = bond.atom1 == atom ? bond.atom2 : bond.atom1;

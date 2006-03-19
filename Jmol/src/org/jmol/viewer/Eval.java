@@ -3900,6 +3900,11 @@ class Eval implements Runnable {
       Token token = statement[i];
       switch (token.tok) {
       case Token.bonds:
+        propertyName = (String)token.value;
+        if (i + 1 < statementLength && statement[i + 1].intValue > 0) {
+          propertyValue = new Integer(statement[++i].intValue);
+        }
+        break;
       case Token.on:
       case Token.off:
       case Token.delete:
@@ -3909,7 +3914,6 @@ class Eval implements Runnable {
         propertyName = (String)token.value;
         break;
       case Token.decimal:
-
         radiusSeen = true;
         propertyName = "radius";
         propertyValue = token.value;

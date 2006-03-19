@@ -898,7 +898,7 @@ class Isosurface extends MeshCollection {
   float getMaxMappedValue() {
     if (currentMesh != null)
       return getMaxMappedValue(currentMesh);
-    float max = Float.MIN_VALUE;
+    float max = -Float.MAX_VALUE;
     for (int i = meshCount; --i >= 0; ) {
       float challenger = getMaxMappedValue(meshes[i]);
       if (challenger > max)
@@ -934,7 +934,7 @@ class Isosurface extends MeshCollection {
   float getMaxMappedValue(Mesh mesh) {
     int vertexCount = mesh.vertexCount;
     Point3f[] vertexes = mesh.vertices;
-    float max = Float.MIN_VALUE;
+    float max = -Float.MAX_VALUE;
     for (int i = vertexCount; --i >= 0; ) {
       float challenger = lookupInterpolatedVoxelValue(vertexes[i]);
       if (challenger > max)

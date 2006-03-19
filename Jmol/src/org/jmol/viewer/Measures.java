@@ -41,7 +41,7 @@ class Measures extends Shape {
   short colix; // default to none in order to contrast with background
   boolean showMeasurementNumbers = true;
   Font3D font3d;
-  float[] rangeMinMax = {-1.0F, -1.0F};
+  float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
   
   void initShape() {
     pendingMeasurement = new PendingMeasurement(frame);
@@ -64,12 +64,13 @@ class Measures extends Shape {
   }
 
   void define(int[] atomCountPlusIndices) {
+    
     if (isDefined(atomCountPlusIndices))
       return;
-    float value = -1.0F;
-    if (rangeMinMax[0] >= 0) {
-      value = frame.getMeasurement(atomCountPlusIndices);
-      //System.out.println("value,maxmin "+value+" "+rangeMinMax[0]+" "+rangeMinMax[1]);
+    float value = frame.getMeasurement(atomCountPlusIndices);
+    //System.out.println("measures define value,maxmin "+value+" "+rangeMinMax[0]+" "+rangeMinMax[1]);
+    
+    if (rangeMinMax[0] != Float.MAX_VALUE) {
       if (value < rangeMinMax[0] || value > rangeMinMax[1])
         return;
     }
@@ -113,6 +114,7 @@ class Measures extends Shape {
   }
   
   void setRange(float[] rangeMinMax) {
+    //System.out.println("setRange"+rangeMinMax[0]+rangeMinMax[1]);
     this.rangeMinMax[0] = rangeMinMax[0];
     this.rangeMinMax[1] = rangeMinMax[1];
   }
@@ -121,7 +123,7 @@ class Measures extends Shape {
     if (isDefined(atomCountPlusIndices))
       delete(atomCountPlusIndices);
     else {
-      rangeMinMax[0] = -1;
+      rangeMinMax[0] = Float.MAX_VALUE;
       define(atomCountPlusIndices);
     }
   }
@@ -182,8 +184,6 @@ class Measures extends Shape {
 
   void setSize(int size, BitSet bsSelected) {
     mad = (short)size;
-    System.out.println("Measures.setSize(" + size + ")");
-    //    throw new NullPointerException();
   }
 
   void setProperty(String propertyName, Object value,
@@ -191,7 +191,7 @@ class Measures extends Shape {
     
     if ("color".equals(propertyName))
       {
-        System.out.println("Measures.color set to:" + value);
+        //System.out.println("Measures.color set to:" + value);
         colix = value == null ? 0 : Graphics3D.getColix(value); return; }
     else if ("font".equals(propertyName))
       { font3d = (Font3D)value; return; }

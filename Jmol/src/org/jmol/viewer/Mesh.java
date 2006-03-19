@@ -181,7 +181,8 @@ class Mesh {
         visibilityFlags[index] != 0); 
   }
   
-  final int setPolygon(Point3f[] ptList, int nVertices, int nPoly) {
+  final int setPolygon(Point3f[] ptList, int nVertices, int nPoly,
+                       boolean isPlane, boolean isPerpendicular) {
     /*
      * designed for Draw 
      * 
@@ -190,8 +191,53 @@ class Mesh {
      * 
      */
 
+    //System.out.println("setPolygon"+ nVertices + " " + isPlane + " " + isPerpendicular);
+    if (nVertices == 3 && isPlane && !isPerpendicular) {
+      Point3f pt = new Point3f(ptList[1]);
+      pt.sub(ptList[0]);
+      pt.scale(0.5f);
+      ptList[3] = new Point3f(ptList[2]);
+      ptList[2].add(pt);
+      ptList[3].sub(pt);
+      nVertices = 4;
+    } else if (nVertices == 3 && isPerpendicular) {
+      Vector3f normal = new Vector3f();
+      g3d.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal);
+      Point3f center = new Point3f(ptList[0]);
+      center.add(ptList[1]);
+      center.add(ptList[2]);
+      center.scale(1 / 3f);
+      ptList[0].set(center);
+      ptList[1].set(center);
+      ptList[1].add(normal);
+      nVertices = 2;
+    } else if (nVertices == 2 && !isPlane && isPerpendicular) {
+      Point3f center = new Point3f(ptList[0]);
+      center.add(ptList[1]);
+      center.scale(1 / 2f);
+      if (ptList[0].x == ptList[1].x && ptList[0].z == ptList[1].z) {
+        Point3f pt = new Point3f(ptList[0].distance(ptList[1]) / 2, 0, 0);
+        ptList[0].set(center);
+        ptList[1].set(center);
+        ptList[0].sub(pt);
+        ptList[1].add(pt);
+      } else {
+        Point3f pt = new Point3f(center);
+        pt.sub(ptList[1]);
+        pt.z = pt.x;
+        pt.x = pt.y;
+        pt.y = pt.z;
+        pt.z = 0;
+        ptList[0].set(center);
+        ptList[1].set(center);
+        ptList[0].sub(pt);
+        ptList[1].add(pt);
+      }
+    } else if (nVertices == 2 && isPlane && isPerpendicular) {
+        System.out.println (" don't know how to draw a plane perpendicular to a line right now");
+    }
     if (nVertices > 4)
-      nVertices = 4;    // for now
+      nVertices = 4; // for now
 
     switch (nVertices) {
     case 1:
@@ -204,10 +250,11 @@ class Mesh {
       drawType = "Plane";
     }
     drawVertexCount = nVertices;
-    
-    if (nVertices == 0) return nPoly;
+
+    if (nVertices == 0)
+      return nPoly;
     int nVertices0 = vertexCount;
-    
+
     for (int i = 0; i < nVertices; i++) {
       addVertexCopy(ptList[i]);
     }
@@ -215,7 +262,8 @@ class Mesh {
     setPolygonCount(nPoly + 1);
     polygonIndexes[nPoly] = new int[npoints];
     for (int i = 0; i < npoints; i++) {
-      polygonIndexes[nPoly][i] = nVertices0 + (i < nVertices ? i : nVertices - 1);
+      polygonIndexes[nPoly][i] = nVertices0
+          + (i < nVertices ? i : nVertices - 1);
     }
     return nPoly + 1;
   }

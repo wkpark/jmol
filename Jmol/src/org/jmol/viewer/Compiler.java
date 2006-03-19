@@ -256,6 +256,10 @@ class Compiler {
           }
           break;
         case Token.center:
+          if (tok != Token.identifier && tok != Token.dollarsign 
+              && (tok & (Token.expression | Token.coordinate)) == 0)
+            return invalidExpressionToken(ident);
+          break;
         case Token.restrict:
         case Token.select:
           if (tok != Token.identifier && (tok & Token.expression) == 0)
@@ -616,6 +620,9 @@ class Compiler {
     case ',':
     case '*':
     case '-':
+    case '{':
+    case '}':
+    case '$':
     case '[':
     case ']':
     case '+':
@@ -753,11 +760,11 @@ class Compiler {
     Token tokenCommand = (Token)ltoken.firstElement();
     //System.out.println(tokenCommand + script);
     int tokCommand = tokenCommand.tok;
+    int size = ltoken.size();
     if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1 &&
-        ltoken.size() == 1)
+        size == 1)
       ltoken.addElement(Token.tokenOn);
     if (tokCommand == Token.set) {
-      int size = ltoken.size();
       if (size < 2)
         return badArgumentCount();
       /*
@@ -769,6 +776,13 @@ class Compiler {
     }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
+    int tok = (size == 1 ? Token.nada : atokenCommand[1].tok);
+    if (logMessages) {
+      for (int i = 0; i < atokenCommand.length; i++)
+        System.out.println(i+": "+atokenCommand[i]);
+    }
+    if (tok == Token.leftbrace || tok == Token.dollarsign) 
+      return true;    // $ or { at beginning disallow expression checking
     if ((tokCommand & (Token.expressionCommand|Token.embeddedExpression)) != 0
         && !compileExpression())
       return false;
@@ -991,11 +1005,8 @@ class Compiler {
     case Token.y:
     case Token.z:
     case Token.colon:
-      savePtr();
       if (clauseResidueSpec())
         return true;
-      restorePtr();
-      return drawObjectOrCoordinate();
     default:
       if ((tok & Token.atomproperty) == Token.atomproperty)
         return clauseComparator();

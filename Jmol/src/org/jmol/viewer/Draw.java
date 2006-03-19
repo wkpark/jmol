@@ -42,17 +42,40 @@ class Draw extends MeshCollection {
   float newScale;
   boolean isFixed = false;
   boolean isVisible = true;
+  boolean isPerpendicular = false;
+  boolean isVertices = false;
+  boolean isPlane = false;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     // System.out.println("draw "+propertyName+" "+value);
 
+    if ("meshID" == propertyName) {
+      npoints = -1;
+      isFixed = false;
+      isPlane = false;
+      isVertices = false;
+      isPerpendicular = false;
+      isVisible = true;
+      //let pass through
+    }
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
       return;
     }
 
-    if ("off" == propertyName) {
-      isVisible = false;
+    if ("perp" == propertyName) {
+      isPerpendicular = true;
+      return;
+    }
+
+    if ("plane" == propertyName) {
+      isPlane = true;
+      return;
+    }
+
+    if ("vertices" == propertyName) {
+      isVertices = true;
+      return;
     }
 
     if ("points" == propertyName) {
@@ -88,18 +111,8 @@ class Draw extends MeshCollection {
     }
 
     if ("coord" == propertyName) {
-      float x = ((Float) value).floatValue();
-      if (ipt == 0) {
-        xyz.x = x;
-      } else if (ipt == 1) {
-        xyz.y = x;
-      } else if (ipt == 2) {
-        xyz.z = x;
-        ptList[ncoord++] = new Point3f(xyz);
-        npoints++;
-        // System.out.println(npoints + " " + ptList[ncoord-1]);
-      }
-      ipt = (ipt + 1) % 3;
+      ptList[ncoord++] = new Point3f((Point3f) value);
+      npoints++;
       return;
     }
     if ("atomSet" == propertyName) {
@@ -121,11 +134,11 @@ class Draw extends MeshCollection {
       npoints = -1; // for later scaling
       return;
     }
-    if ("meshID" == propertyName) {
-      npoints = -1;
-      isFixed = false;
-      isVisible = true;
+    if ("off" == propertyName) {
+      isVisible = false; 
+      //let pass through
     }
+
 
     super.setProperty(propertyName, value, bs);
   }
@@ -144,14 +157,14 @@ class Draw extends MeshCollection {
       currentMesh.setPolygonCount(1);
       currentMesh.ptCenters = null;
       currentMesh.visibilityFlags = null;
-      nPoly = setVerticesAndPolygons(-1, nPoly);
+      nPoly = setVerticesAndPolygons(-1, nPoly, isPlane, isPerpendicular);
     } else {
       currentMesh.setPolygonCount(modelCount);
       currentMesh.ptCenters = new Point3f[modelCount];
       currentMesh.visibilityFlags = new int[modelCount];
       for (int iModel = 0; iModel < modelCount; iModel++) {
         // int n0 = currentMesh.vertexCount;
-        nPoly = setVerticesAndPolygons(iModel, nPoly);
+        nPoly = setVerticesAndPolygons(iModel, nPoly, isPlane, isPerpendicular);
         currentMesh.setCenter(iModel);
       }
     }
@@ -159,13 +172,21 @@ class Draw extends MeshCollection {
     return true;
   }
 
-  int setVerticesAndPolygons(int iModel, int nPoly) {
+  int setVerticesAndPolygons(int iModel, int nPoly, boolean isPlane,
+                             boolean isPerpendicular) {
     int nPoints = ncoord;
     // [x,y,z] points are already defined in ptList
     if (iModel < 0) {
       // add in [drawID] references as overall centers
-      for (int i = 0; i < nidentifiers; i++)
-        ptList[nPoints++] = meshes[ptIdentifiers[i]].ptCenter;
+      for (int i = 0; i < nidentifiers; i++) {
+        Mesh m = meshes[ptIdentifiers[i]];
+        if (isPlane || isPerpendicular || isVertices) {
+          for (ipt = 0; ipt < m.drawVertexCount; ipt++)
+            ptList[nPoints++].set(m.vertices[ipt]);
+        } else {
+          ptList[nPoints++] = m.ptCenter;
+        }
+      }
       // add in (atom set) references as overall centers
       for (int i = 0; i < nbitsets; i++)
         ptList[nPoints++] = viewer.getAtomSetCenter(ptBitSets[i]);
@@ -191,7 +212,7 @@ class Draw extends MeshCollection {
         }
       }
     }
-    return currentMesh.setPolygon(ptList, nPoints, nPoly);
+    return currentMesh.setPolygon(ptList, nPoints, nPoly, isPlane, isPerpendicular);
   }
 
   void setVisibilityFlags(BitSet bs) {

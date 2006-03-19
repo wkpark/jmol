@@ -2286,6 +2286,10 @@ final public class Viewer extends JmolViewer {
       setWindowCentered(value);
       return;
     }
+    if (key.equalsIgnoreCase("debugScript")) {
+      setDebugScript(value);
+      return;
+    }
     if (key.equalsIgnoreCase("axesInternal")) {
       setAxesModeInternal(value);
       return;

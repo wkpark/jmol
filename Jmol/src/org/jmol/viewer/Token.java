@@ -92,6 +92,8 @@ class Token {
   // so, just delete the set command from the token list
   // but not for hbonds nor ssbonds
   final static int setspecial        = (1 << 22);
+  final static int coordinate        = (1 << 23);
+  final static int objectid          = (1 << 24);
 
   // These are unrelated
   final static int varArgCount       = (1 << 4);
@@ -275,6 +277,10 @@ class Token {
   final static int colon        = expression | 14;
   final static int slash        = expression | 15;
   final static int substructure = expression | 16;
+  final static int leftbrace    = coordinate | 17;
+  final static int rightbrace   = coordinate | 18;
+  final static int dollarsign   = objectid   | 19;
+  
 
   // miguel 2005 01 01
   // these are used to demark the beginning and end of expressions
@@ -608,6 +614,9 @@ class Token {
     ".",            new Token(dot, "."),
     "[",            new Token(leftsquare,  "["),
     "]",            new Token(rightsquare, "]"),
+    "{",            new Token(leftbrace,  "{"),
+    "}",            new Token(rightbrace, "}"),
+    "$",            new Token(dollarsign, "$"),
     ":",            new Token(colon, ":"),
     "/",            new Token(slash, "/"),
     "substructure", new Token(substructure, "substructure"),

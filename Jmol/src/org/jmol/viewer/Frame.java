@@ -874,7 +874,7 @@ final class Frame {
 
   Point3f getRotationCenterDefault() {
     findBounds();
-    System.out.println("getRotationCenterDefault"+rotationCenterDefault);
+    //System.out.println("getRotationCenterDefault"+rotationCenterDefault);
     return rotationCenterDefault;
   }
 
@@ -896,7 +896,7 @@ final class Frame {
       rotationCenter = rotationCenterDefault;
       rotationRadius = rotationRadiusDefault;
     }
-    System.out.println("frame setRotationCenter"+rotationCenter);
+    //System.out.println("frame setRotationCenter"+rotationCenter);
     return rotationCenter;
   }
 
@@ -915,7 +915,7 @@ final class Frame {
     rotationCenter = rotationCenterDefault = centerBoundBox;//averageAtomPoint;
     rotationRadius = rotationRadiusDefault =
       calcRotationRadius(rotationCenterDefault);
-    System.out.println("findBounds"+rotationCenter);
+    //System.out.println("findBounds"+rotationCenter);
   }
 
   private void calcAverageAtomPoint() {
@@ -1775,7 +1775,7 @@ final class Frame {
 
 
   float getMeasurement(int[] countPlusIndices) {
-    float value = -1.0F;
+    float value = Float.MAX_VALUE;
     if (countPlusIndices == null)
       return value;
     int count = countPlusIndices[0];

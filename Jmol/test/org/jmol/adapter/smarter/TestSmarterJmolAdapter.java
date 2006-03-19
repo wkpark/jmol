@@ -214,8 +214,8 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in gaussian/
    */
   public void testGaussian() {
-    //checkOpenFile("gaussian", "ch2chfme_reagent.out");
-    //checkOpenFile("gaussian", "tms.log");
+    checkOpenFile("gaussian", "ch2chfme_reagent.out");
+    checkOpenFile("gaussian", "tms.log");
     checkOpenFile("gaussian", "4-cyanophenylnitrene-Benzazirine-TS.g94.out");
     checkOpenFile("gaussian", "ch3oh_g94.out");
     checkOpenFile("gaussian", "g98.out");

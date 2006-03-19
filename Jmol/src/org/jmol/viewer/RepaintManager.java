@@ -66,6 +66,8 @@ class RepaintManager {
       bs.set(displayModelIndex);
       return bs;
     }
+    if (frameStep == 0)
+      return bs;
     for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
       bs.set(i);
     bs.set(lastModelIndex);
@@ -248,9 +250,9 @@ class RepaintManager {
     if (framePointer2 < 0) framePointer2 = modelCount;
     if (framePointer >= modelCount) framePointer = modelCount - 1;
     if (framePointer2 >= modelCount) framePointer2 = modelCount - 1;
-    frameStep = (framePointer2 < framePointer ? -1 : 1);
     firstModelIndex = framePointer;
     lastModelIndex = framePointer2;
+    frameStep = (framePointer2 < framePointer ? -1 : 1);
     currentDirection = 1;
     
     setDisplayModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
@@ -271,14 +273,12 @@ class RepaintManager {
   }
 
   void setAnimationOff(boolean isPaused) {
-    System.out.println("setAnimationOff");
     if (animationThread != null) {
       animationThread.interrupt();
       animationThread = null;
     }
     animationPaused = isPaused;
-    System.out.println("ok");
-    //viewer.refresh(0, "Viewer:setAnimationOff");
+    viewer.refresh(0, "Viewer:setAnimationOff");
     animationOn = false;
   }
 

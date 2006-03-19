@@ -29,35 +29,47 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 class Draw extends MeshCollection {
-
-  Point3f[] ptList = new Point3f[8];
-  int[] ptIdentifiers = new int[8];
-  BitSet[] ptBitSets = new BitSet[8];
+ 
+  final static int MAX_POINTS = 256; // a few extras here
+  Point3f[] ptList = new Point3f[MAX_POINTS];
+  int[] ptIdentifiers = new int[MAX_POINTS];
+  boolean[] reversePoints = new boolean[MAX_POINTS];
+  boolean[] useVertices = new boolean[MAX_POINTS];
+  BitSet[] ptBitSets = new BitSet[MAX_POINTS];
   Point3f xyz = new Point3f();
   int ipt;
-  int npoints = -1;
+  int nPoints = -1;
   int nbitsets = 0;
   int ncoord = 0;
   int nidentifiers = 0;
   float newScale;
+  float length = Float.MAX_VALUE;
   boolean isFixed = false;
   boolean isVisible = true;
   boolean isPerpendicular = false;
   boolean isVertices = false;
   boolean isPlane = false;
+  boolean isReversed = false;
+  boolean isRotated45 = false;
+  boolean isCrossed = false;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     // System.out.println("draw "+propertyName+" "+value);
 
     if ("meshID" == propertyName) {
-      npoints = -1;
-      isFixed = false;
-      isPlane = false;
-      isVertices = false;
-      isPerpendicular = false;
+      nPoints = -1;
+      isFixed = isReversed = isRotated45 = isCrossed = false;
+      isPlane = isVertices = isPerpendicular = false;
       isVisible = true;
+      length = Float.MAX_VALUE;
       //let pass through
     }
+
+    if ("length" == propertyName) {
+      length = ((Float) value).floatValue();
+      return;
+    }
+
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
       return;
@@ -78,8 +90,23 @@ class Draw extends MeshCollection {
       return;
     }
 
+    if ("reverse" == propertyName) {
+      isReversed = true;
+      return;
+    }
+
+    if ("rotate45" == propertyName) {
+      isRotated45 = true;
+      return;
+    }
+
+    if ("crossed" == propertyName) {
+      isCrossed = true;
+      return;
+    }
+
     if ("points" == propertyName) {
-      ipt = npoints = ncoord = nbitsets = nidentifiers = 0;
+      ipt = nPoints = ncoord = nbitsets = nidentifiers = 0;
       newScale = ((Integer) value).floatValue() / 100;
       if (newScale == 0)
         newScale = 1;
@@ -102,8 +129,12 @@ class Draw extends MeshCollection {
       String meshID = (String) value;
       int meshIndex = getMeshIndex(meshID);
       if (meshIndex >= 0) {
-        ptIdentifiers[nidentifiers++] = meshIndex;
-        npoints++;
+        reversePoints[nidentifiers] = isReversed;
+        useVertices[nidentifiers] = isVertices;
+        ptIdentifiers[nidentifiers] = meshIndex;
+        nidentifiers++;
+        nPoints++;
+        isReversed = isVertices = false;
       } else {
         System.out.println("draw identifier " + value + " not found");
       }
@@ -112,15 +143,15 @@ class Draw extends MeshCollection {
 
     if ("coord" == propertyName) {
       ptList[ncoord++] = new Point3f((Point3f) value);
-      npoints++;
+      nPoints++;
       return;
     }
     if ("atomSet" == propertyName) {
       if (viewer.cardinalityOf((BitSet) value) == 0)
         return;
       ptBitSets[nbitsets++] = (BitSet) value;
-      npoints++;
-      // System.out.println(npoints + " " + ptBitSets[nbitsets-1]);
+      nPoints++;
+      // System.out.println(nPoints + " " + ptBitSets[nbitsets-1]);
       return;
     }
     if ("set" == propertyName) {
@@ -131,7 +162,7 @@ class Draw extends MeshCollection {
         currentMesh.setAxes();
         currentMesh.visible = isVisible;
       }
-      npoints = -1; // for later scaling
+      nPoints = -1; // for later scaling
       return;
     }
     if ("off" == propertyName) {
@@ -147,7 +178,7 @@ class Draw extends MeshCollection {
     if (currentMesh == null)
       allocMesh(null);
     currentMesh.clear("draw");
-    if (npoints == 0)
+    if (nPoints == 0)
       return false;
     int nPoly = 0;
     int modelCount = viewer.getModelCount();
@@ -157,14 +188,14 @@ class Draw extends MeshCollection {
       currentMesh.setPolygonCount(1);
       currentMesh.ptCenters = null;
       currentMesh.visibilityFlags = null;
-      nPoly = setVerticesAndPolygons(-1, nPoly, isPlane, isPerpendicular);
+      nPoly = setVerticesAndPolygons(-1, nPoly);
     } else {
       currentMesh.setPolygonCount(modelCount);
       currentMesh.ptCenters = new Point3f[modelCount];
       currentMesh.visibilityFlags = new int[modelCount];
       for (int iModel = 0; iModel < modelCount; iModel++) {
         // int n0 = currentMesh.vertexCount;
-        nPoly = setVerticesAndPolygons(iModel, nPoly, isPlane, isPerpendicular);
+        nPoly = setVerticesAndPolygons(iModel, nPoly);
         currentMesh.setCenter(iModel);
       }
     }
@@ -172,32 +203,39 @@ class Draw extends MeshCollection {
     return true;
   }
 
-  int setVerticesAndPolygons(int iModel, int nPoly, boolean isPlane,
-                             boolean isPerpendicular) {
-    int nPoints = ncoord;
+  private int setVerticesAndPolygons(int iModel, int nPoly) {
+    nPoints = ncoord;
     // [x,y,z] points are already defined in ptList
     if (iModel < 0) {
       // add in [drawID] references as overall centers
       for (int i = 0; i < nidentifiers; i++) {
         Mesh m = meshes[ptIdentifiers[i]];
-        if (isPlane || isPerpendicular || isVertices) {
-          for (ipt = 0; ipt < m.drawVertexCount; ipt++)
-            ptList[nPoints++].set(m.vertices[ipt]);
+        if (isPlane || isPerpendicular || useVertices[i]) {
+          if (reversePoints[i]) {
+            for (ipt = m.drawVertexCount; --ipt >= 0;)
+              addPoint(m.vertices[ipt]);
+          } else {
+            for (ipt = 0; ipt < m.drawVertexCount; ipt++) {
+              System.out.println(nPoints +" "+m.meshID+ " count="+m.drawVertexCount + " length=" + m.vertices.length);
+              addPoint(m.vertices[ipt]);
+
+            }
+          }
         } else {
-          ptList[nPoints++] = m.ptCenter;
+          addPoint(m.ptCenter);
         }
       }
       // add in (atom set) references as overall centers
       for (int i = 0; i < nbitsets; i++)
-        ptList[nPoints++] = viewer.getAtomSetCenter(ptBitSets[i]);
+        addPoint(viewer.getAtomSetCenter(ptBitSets[i]));
     } else {
       // [drawID] references may be fixed or not
       for (int i = 0; i < nidentifiers; i++) {
         if (meshes[ptIdentifiers[i]].ptCenters == null
             || meshes[ptIdentifiers[i]].ptCenters[iModel] == null) {
-          ptList[nPoints++] = meshes[ptIdentifiers[i]].ptCenter;
+          addPoint(meshes[ptIdentifiers[i]].ptCenter);
         } else {
-          ptList[nPoints++] = meshes[ptIdentifiers[i]].ptCenters[iModel];
+          addPoint(meshes[ptIdentifiers[i]].ptCenters[iModel]);
         }
       }
       // (atom set) references must be filtered for relevant model
@@ -208,13 +246,26 @@ class Draw extends MeshCollection {
         BitSet bs = (BitSet) ptBitSets[i].clone();
         bs.and(bsModel);
         if (viewer.cardinalityOf(bs) > 0) {
-          ptList[nPoints++] = viewer.getAtomSetCenter(bs);
+          addPoint(viewer.getAtomSetCenter(bs));
         }
       }
     }
-    return currentMesh.setPolygon(ptList, nPoints, nPoly, isPlane, isPerpendicular);
+    if (nPoints ==4 && isCrossed) {
+      Point3f pt = new Point3f(ptList[1]);
+      ptList[1].set(ptList[2]);
+      ptList[2].set(pt);
+    }
+
+    return currentMesh.setPolygon(ptList, nPoints, nPoly, isPlane,
+        isPerpendicular, isRotated45, length);
   }
 
+  void addPoint(Point3f newPt) {
+    ptList[nPoints++] = new Point3f(newPt); 
+    if (nPoints > MAX_POINTS)
+      nPoints = MAX_POINTS;
+  }
+  
   void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed note

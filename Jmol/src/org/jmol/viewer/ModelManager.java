@@ -453,6 +453,16 @@ class ModelManager {
     return value;
   }
 
+  int getShapeIdFromObjectName(String objectName) {
+    for (int i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; 
+        i < JmolConstants.SHAPE_MAX; ++i) {
+      MeshCollection shape = (MeshCollection) frame.shapes[i];
+      if (shape != null && shape.getMeshIndex(objectName) >= 0)
+        return i;
+    }
+    return -1;
+  }
+
   int getAtomIndexFromAtomNumber(int atomNumber) {
     return (frame == null) ? -1 : frame.getAtomIndexFromAtomNumber(atomNumber);
   }

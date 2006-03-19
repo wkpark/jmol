@@ -268,7 +268,7 @@ final public class Viewer extends JmolViewer {
 
   void rotateYDegrees(float angleDegrees) {
     //deprecated
-     rotateYRadians(angleDegrees * radiansPerDegree);
+    rotateYRadians(angleDegrees * radiansPerDegree);
   }
 
   void rotateZDegrees(float angleDegrees) {
@@ -499,6 +499,7 @@ final public class Viewer extends JmolViewer {
 
   boolean axesModeInternal = false;
   boolean axesAreTainted = false;
+
   void setAxesModeInternal(boolean TF) {
     axesModeInternal = TF;
     axesAreTainted = true;
@@ -509,9 +510,9 @@ final public class Viewer extends JmolViewer {
     axesAreTainted = false;
     return TF;
   }
-  
+
   boolean getAxesModeInternal() {
-    return axesModeInternal;  
+    return axesModeInternal;
   }
 
   public boolean getPerspectiveDepth() {
@@ -942,10 +943,12 @@ final public class Viewer extends JmolViewer {
      * Thread.currentThread() + " priority:" +
      * Thread.currentThread().getPriority());
      */
+    
     clear();
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
+    //System.out.println("openFile3(" + name + ")");
     fileManager.openFile(name);
     long ms = System.currentTimeMillis() - timeBegin;
     setStatusFileLoaded(1, name, "", modelManager.getModelSetName(), null, null);
@@ -1071,7 +1074,6 @@ final public class Viewer extends JmolViewer {
     // maybe there needs to be a call to clear()
     // or something like that here
     // for when CdkEditBus calls this directly
-
     setStatusFileLoaded(2, fullPathName, fileName, modelManager
         .getModelSetName(), clientFile, null);
     pushHoldRepaint();
@@ -1313,7 +1315,7 @@ final public class Viewer extends JmolViewer {
 
   void setCenter(Point3f center) {
     center = modelManager.setRotationCenterAndRadiusXYZ(center, true);
-    if (center != null) 
+    if (center != null)
       transformManager.setFixedRotationCenter(center);
     refresh(0, "Viewer:setCenter()");
   }
@@ -1322,7 +1324,7 @@ final public class Viewer extends JmolViewer {
     Point3f center = modelManager.setRotationCenterAndRadiusXYZ(relativeTo, x,
         y, z);
     scaleFitToScreen();
-    if (center != null) 
+    if (center != null)
       transformManager.setFixedRotationCenter(center);
     refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
@@ -1332,7 +1334,7 @@ final public class Viewer extends JmolViewer {
     transformManager.setFixedRotationCenter(center);
     transformManager.setRotationPointXY(center);
   }
-  
+
   void setCenterBitSet(BitSet bsCenter, boolean doScale) {
     Point3f center = modelManager.setCenterBitSet(bsCenter, doScale);
     transformManager.setFixedRotationCenter(center);
@@ -1444,7 +1446,11 @@ final public class Viewer extends JmolViewer {
   public Hashtable getShapeInfo() {
     return modelManager.getShapeInfo();
   }
-
+  
+  int getShapeIdFromObjectName(String objectName) {
+    return modelManager.getShapeIdFromObjectName(objectName);
+  }
+  
   Vector getAllAtomInfo(String atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getAllAtomInfo(bs);
@@ -1812,6 +1818,7 @@ final public class Viewer extends JmolViewer {
   }
 
   public String evalString(String strScript) {
+    //System.out.println(strScript+" loading script");
     if (strScript != null) {
       if (!getEval().loadScriptString(strScript, false))
         return eval.getErrorMessage();
@@ -2284,10 +2291,6 @@ final public class Viewer extends JmolViewer {
     }
     if (key.equalsIgnoreCase("windowCentered")) {
       setWindowCentered(value);
-      return;
-    }
-    if (key.equalsIgnoreCase("debugScript")) {
-      setDebugScript(value);
       return;
     }
     if (key.equalsIgnoreCase("axesInternal")) {
@@ -2885,13 +2888,14 @@ final public class Viewer extends JmolViewer {
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
         isSpin);
   }
-  
-  void rotateAboutPointsInternal(Point3f point1, Point3f point2, 
-                                 int nDegrees, boolean isSpin) {
+
+  void rotateAboutPointsInternal(Point3f point1, Point3f point2, int nDegrees,
+                                 boolean isSpin) {
     // Eval: rotate INTERNAL
-    transformManager.rotateAboutPointsInternal(point1, point2, nDegrees, false, isSpin);
+    transformManager.rotateAboutPointsInternal(point1, point2, nDegrees, false,
+        isSpin);
   }
-  
+
   int pickingSpinRate = 10;
 
   void setPickingSpinRate(int rate) {
@@ -2913,17 +2917,16 @@ final public class Viewer extends JmolViewer {
       setSpinOn(false);
       return;
     }
-    transformManager.rotateAboutPointsInternal(pt1, pt2, pickingSpinRate, isClockwise, true);
+    transformManager.rotateAboutPointsInternal(pt1, pt2, pickingSpinRate,
+        isClockwise, true);
   }
 
   Point3f getDrawObjectCenter(String axisID) {
-     return modelManager.getSpinCenter(axisID,
-        repaintManager.displayModelIndex);
+    return modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
   }
 
   Vector3f getDrawObjectAxis(String axisID) {
-    return modelManager.getSpinAxis(axisID,
-        repaintManager.displayModelIndex);
+    return modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
   }
 
   public void setDrawCenter(String axisID) {

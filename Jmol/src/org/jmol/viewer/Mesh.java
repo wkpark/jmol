@@ -182,7 +182,8 @@ class Mesh {
   }
   
   final int setPolygon(Point3f[] ptList, int nVertices, int nPoly,
-                       boolean isPlane, boolean isPerpendicular) {
+                       boolean isPlane, boolean isPerpendicular,
+                       boolean isRotated45, float length) {
     /*
      * designed for Draw 
      * 
@@ -192,49 +193,91 @@ class Mesh {
      */
 
     //System.out.println("setPolygon"+ nVertices + " " + isPlane + " " + isPerpendicular);
+    Point3f pt;
+    Point3f center = new Point3f();
+    Vector3f normal = new Vector3f();
+    float dist;
     if (nVertices == 3 && isPlane && !isPerpendicular) {
-      Point3f pt = new Point3f(ptList[1]);
+      // three points define a plane
+      pt = new Point3f(ptList[1]);
       pt.sub(ptList[0]);
       pt.scale(0.5f);
       ptList[3] = new Point3f(ptList[2]);
       ptList[2].add(pt);
       ptList[3].sub(pt);
       nVertices = 4;
-    } else if (nVertices == 3 && isPerpendicular) {
-      Vector3f normal = new Vector3f();
+    } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
+      // normal to plane
       g3d.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal);
-      Point3f center = new Point3f(ptList[0]);
-      center.add(ptList[1]);
-      center.add(ptList[2]);
-      center.scale(1 / 3f);
+      center = new Point3f(ptList[0]);
+      for (int i = 1; i < nVertices; i++) 
+        center.add(ptList[i]);
+      center.scale(1f / nVertices);
+      dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
+      normal.scale(dist);
       ptList[0].set(center);
       ptList[1].set(center);
       ptList[1].add(normal);
       nVertices = 2;
-    } else if (nVertices == 2 && !isPlane && isPerpendicular) {
-      Point3f center = new Point3f(ptList[0]);
-      center.add(ptList[1]);
-      center.scale(1 / 2f);
-      if (ptList[0].x == ptList[1].x && ptList[0].z == ptList[1].z) {
-        Point3f pt = new Point3f(ptList[0].distance(ptList[1]) / 2, 0, 0);
-        ptList[0].set(center);
+    } else if (nVertices == 2 && isPerpendicular) {
+      // perpendicular line to line or plane to line
+      g3d.calcAveragePoint(ptList[0], ptList[1], center);
+      dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
+      if (isPlane && length != Float.MAX_VALUE)
+        dist /= 2f;
+      if (isPlane && isRotated45)
+        dist *= 1.4142f;
+      g3d.calcXYNormalToLine(ptList[0], ptList[1], normal);
+      normal.scale(dist);
+      if (isPlane) {
+        ptList[2] = new Point3f(center);
+        ptList[2].sub(normal);
+        pt = new Point3f(center);
+        pt.add(normal);
+        //          pt
+        //          |
+        //  0-------+--------1
+        //          |
+        //          2
+        g3d.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal);
+        normal.scale(dist); 
+        ptList[3] = new Point3f(center);
+        ptList[3].add(normal);
         ptList[1].set(center);
-        ptList[0].sub(pt);
-        ptList[1].add(pt);
+        ptList[1].sub(normal);
+        ptList[0].set(pt);
+        //             
+        //       pt,0 1
+        //          |/
+        //   -------+--------
+        //         /|
+        //        3 2
+        
+        
+        //for (int i = 0 ; i < 4; i++)System.out.println(ptList[i]);
+        if (isRotated45) {
+          g3d.calcAveragePoint(ptList[0], ptList[1], ptList[0]);
+          g3d.calcAveragePoint(ptList[1], ptList[2], ptList[1]);
+          g3d.calcAveragePoint(ptList[2], ptList[3], ptList[2]);
+          g3d.calcAveragePoint(ptList[3], pt, ptList[3]);
+        }
+        //for (int i = 0 ; i < 4; i++)System.out.println(ptList[i]);
+        nVertices = 4;
       } else {
-        Point3f pt = new Point3f(center);
-        pt.sub(ptList[1]);
-        pt.z = pt.x;
-        pt.x = pt.y;
-        pt.y = pt.z;
-        pt.z = 0;
         ptList[0].set(center);
         ptList[1].set(center);
-        ptList[0].sub(pt);
-        ptList[1].add(pt);
+        ptList[0].sub(normal);
+        ptList[1].add(normal);
       }
-    } else if (nVertices == 2 && isPlane && isPerpendicular) {
-        System.out.println (" don't know how to draw a plane perpendicular to a line right now");
+    } else if (nVertices == 2 && length != Float.MAX_VALUE) {
+      g3d.calcAveragePoint(ptList[0], ptList[1], center);
+      normal.set(ptList[1]);
+      normal.sub(center);
+      normal.scale(0.5f / normal.length() * length);
+      ptList[0].set(center);
+      ptList[1].set(center);
+      ptList[0].sub(normal);
+      ptList[1].add(normal);
     }
     if (nVertices > 4)
       nVertices = 4; // for now

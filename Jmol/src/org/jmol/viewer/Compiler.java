@@ -781,12 +781,12 @@ class Compiler {
       for (int i = 0; i < atokenCommand.length; i++)
         System.out.println(i+": "+atokenCommand[i]);
     }
+    if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
+      return false;
     if (tok == Token.leftbrace || tok == Token.dollarsign) 
       return true;    // $ or { at beginning disallow expression checking
     if ((tokCommand & (Token.expressionCommand|Token.embeddedExpression)) != 0
         && !compileExpression())
-      return false;
-    if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;
     if ((tokenCommand.intValue & Token.varArgCount) == 0 &&
         (tokenCommand.intValue & 0x0F) + 1 != atokenCommand.length)
@@ -1504,6 +1504,8 @@ class Compiler {
           return false;
         atokenCommand = atokenNew;
         break;
+      } else if (token.tok == Token.dollarsign) {
+        i++; // skip identifier
       } else if (token.tok == Token.identifier) {
         String id = (String)token.value;
         int argb = Graphics3D.getArgbFromString(id);

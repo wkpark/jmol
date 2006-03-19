@@ -2387,6 +2387,29 @@ final public class Graphics3D {
     vNormNorm.normalize();
   }
 
+  public void calcXYNormalToLine(Point3f pointA, Point3f pointB,
+                                   Vector3f vNormNorm) {
+    // vector in xy plane perpendicular to a line between two points RMH
+    Vector3f axis = new Vector3f(pointA);
+    axis.sub(pointB);
+    float phi = axis.angle(new Vector3f(0, 1, 0));
+    if (phi == 0) {
+      vNormNorm.set(1, 0, 0);
+    } else {
+      vNormNorm.cross(axis, new Vector3f(0, 1, 0));
+      vNormNorm.normalize();
+    }
+  }
+  
+  public void calcAveragePoint(Point3f pointA, Point3f pointB,
+                                   Point3f pointC) {
+   Vector3f v = new Vector3f(pointB);
+   v.sub(pointA);
+   v.scale(1/2f);
+   pointC.set(pointA);
+   pointC.add(v);
+  }
+  
   public short getNormix(Vector3f vector) {
     return normix3d.getNormix(vector.x, vector.y, vector.z,
                               Normix3D.NORMIX_GEODESIC_LEVEL);

@@ -700,7 +700,7 @@ class Eval implements Runnable {
   }
 
   void stringExpected() throws ScriptException {
-    evalError("string expected");
+    evalError("string or identifier expected");
   }
 
   void propertyNameExpected() throws ScriptException {
@@ -778,8 +778,8 @@ class Eval implements Runnable {
     evalError("draw object not defined:" + drawID);
   }
 
-  void drawObjectExpected() throws ScriptException {
-    evalError("draw object expected after '$'");
+  void objectNameExpected() throws ScriptException {
+    evalError("object name expected after '$'");
   }
 
   void coordinateExpected() throws ScriptException {
@@ -845,6 +845,12 @@ class Eval implements Runnable {
       numberExpected();
     }
     return floatValue;
+  }
+
+  String objectNameParameter(int index) throws ScriptException {
+    if (index >= statementLength || statement[index].tok != Token.identifier)
+      objectNameExpected();
+    return (String) statement[index].value;
   }
 
   float getSetAngstroms() throws ScriptException {
@@ -1600,59 +1606,64 @@ class Eval implements Runnable {
   // but someplace in the rasmol doc it makes reference to the geometric
   // center as the default for rotations. who knows.
   void center() throws ScriptException {
-    
-    //for(int i=0;i<statementLength;i++)
-      //System.out.println(statement[i]);
 
-    if (statementLength >= 3 && statement[1].tok == Token.dollarsign) {
+    if (statementLength == 1) {
+      viewer.setCenterBitSet(null, true);
+      return;
+    }
+
+    if (statement[1].tok == Token.dollarsign) {
       //center $ id
-       String axisID = (String)statement[2].value;
-       viewer.setDrawCenter(axisID);
-       return;
-     }
+      String axisID = objectNameParameter(2);
+      viewer.setDrawCenter(axisID);
+      return;
+    }
 
-    if (statementLength >= 6 && statement[1].tok == Token.leftbrace) {
+    if (statement[1].tok == Token.leftbrace) {
       //center { x y z } 
       Point3f pt = getCoordinate(1);
-      if (pt == null)
-        coordinateExpected();
       viewer.setCenter(pt);
       return;
     }
-     
-    viewer.setCenterBitSet(statementLength == 1 ? null : expression(statement,
-        1), true);
+
+    viewer.setCenterBitSet(expression(statement, 1), true);
   }
 
-  Point3f getCoordinate(int i) {
+  Point3f getCoordinate(int i) throws ScriptException {
     Token token = statement[i++];
     Point3f pt = new Point3f();
+    while (true) {
     if (token.tok != Token.leftbrace)
-      return null;
+      break;
+    
     token = statement[i++];
     if (token.tok != Token.integer && token.tok != Token.decimal)
-      return null;
+      break;
     pt.x = floatValue(token);
 
     token = statement[i++];
     if (token.tok == Token.opOr)
       token = statement[i++];
     if (token.tok != Token.integer && token.tok != Token.decimal)
-      return null;
+      break;
     pt.y = floatValue(token);
 
     token = statement[i++];
     if (token.tok == Token.opOr)
       token = statement[i++];
     if (token.tok != Token.integer && token.tok != Token.decimal)
-      return null;
+      break;
     pt.z = floatValue(token);
+    
     token = statement[i];
     if (token.tok != Token.rightbrace)
-      return null;
+      break;
     endOfExpression = i;
     System.out.println("getCoord"+pt+" "+i);
     return pt;
+    }
+    coordinateExpected();
+    return null; //can't get here
   }
 
   float floatValue(Token token) {
@@ -1670,6 +1681,9 @@ class Eval implements Runnable {
       badArgumentCount();
     int tok = statement[1].tok;
     outer: switch (tok) {
+    case Token.dollarsign:
+      colorIdentifiedObject(2);
+      return;
     case Token.colorRGB:
     case Token.none:
     case Token.cpk:
@@ -1685,13 +1699,13 @@ class Eval implements Runnable {
     case Token.user:
     case Token.monomer:
       colorObject(Token.atom, 1);
-      break;
+      return;
     case Token.rubberband:
       viewer.setRubberbandArgb(getArgbParam(2));
-      break;
+      return;
     case Token.background:
       viewer.setBackgroundArgb(getArgbParam(2));
-      break;
+      return;
     case Token.identifier:
     case Token.hydrogen:
       String str = (String) statement[1].value;
@@ -1742,12 +1756,27 @@ class Eval implements Runnable {
     }
   }
 
+  void colorIdentifiedObject(int index) throws ScriptException{
+    // color $ whatever green
+    String objectName = objectNameParameter(index);
+    int shapeType = viewer.getShapeIdFromObjectName(objectName);
+    System.out.println("colorIdentifiedObject"+index+" "+shapeType+" "+objectName);
+    if (shapeType < 0)
+      objectNameExpected();
+    viewer.setShapeProperty(shapeType, "meshID", objectName);
+    colorShape(shapeType, index + 1);
+  }
+  
   void colorObject(int tokObject, int itoken) throws ScriptException {
-    if (itoken >= statementLength)
+    int shapeType = getShapeType(tokObject);
+    colorShape(shapeType, itoken);
+  }
+
+  void colorShape(int shapeType, int itoken) throws ScriptException {
+   if (itoken >= statementLength)
       badArgumentCount();
     String translucentOrOpaque = null;
     Object colorvalue = null;
-    int shapeType = getShapeType(tokObject);
     String colorOrBgcolor = "color";
     int tok = statement[itoken].tok;
     if (tok == Token.background) {
@@ -2093,14 +2122,12 @@ class Eval implements Runnable {
         break;
       case Token.dollarsign:
         // $drawObject
-        if (i + 1 >= statementLength || statement[i + 1].tok != Token.identifier) 
-          drawObjectExpected();
-          axisID = (String) statement[++i].value;
-          rotCenter = viewer.getDrawObjectCenter(axisID);
-          rotAxis = viewer.getDrawObjectAxis(axisID);
-          if (rotCenter == null)
-            drawObjectNotDefined(axisID);
-          points[nPoints++].set(rotCenter);
+        axisID = objectNameParameter(++i);
+        rotCenter = viewer.getDrawObjectCenter(axisID);
+        rotAxis = viewer.getDrawObjectAxis(axisID);
+        if (rotCenter == null)
+          drawObjectNotDefined(axisID);
+        points[nPoints++].set(rotCenter);
         break;
       case Token.opOr:
         break;
@@ -3732,7 +3759,7 @@ class Eval implements Runnable {
         break;
       case Token.on:
       case Token.off:
-        propertyName = (String)statement[i].value;
+        propertyName = (String) statement[i].value;
         break;
       case Token.delete:
         propertyName = "delete";
@@ -3770,8 +3797,17 @@ class Eval implements Runnable {
         if (((String) propertyValue).equalsIgnoreCase("PLANE")) {
           propertyName = "plane";  
         }
+        if (((String) propertyValue).equalsIgnoreCase("CROSSED")) {
+          propertyName = "crossed";  
+        }
         if (((String) propertyValue).equalsIgnoreCase("VERTICES")) {
           propertyName = "vertices";
+        }
+        if (((String) propertyValue).equalsIgnoreCase("REVERSE")) {
+          propertyName = "reverse";  
+        }
+        if (((String) propertyValue).equalsIgnoreCase("ROTATE45")) {
+          propertyName = "rotate45";  
         }
         if (((String) propertyValue).equalsIgnoreCase("PERP") ||
             ((String) propertyValue).equalsIgnoreCase("PERPENDICULAR")) {
@@ -3780,12 +3816,14 @@ class Eval implements Runnable {
         break;
       case Token.dollarsign:
         // $drawObject
-        if (i + 1 >= statementLength
-            || statement[i + 1].tok != Token.identifier)
-          drawObjectExpected();
-        propertyValue = (String) statement[++i].value;
+        propertyValue = objectNameParameter(++i);
         propertyName = "identifier";
         havePoints = true;
+        break;
+      case Token.decimal:
+        // $drawObject
+        propertyValue = new Float(floatParameter(i));
+        propertyName = "length";
         break;
       case Token.opOr:
         break;
@@ -4051,7 +4089,7 @@ class Eval implements Runnable {
         degreesSeen = true;
         break;
       case Token.identifier:
-        String id = (String)statement[i].value;
+        String id = (String) statement[i].value;
         if (! degreesSeen)
             degrees = 3;
         if (id.equalsIgnoreCase("redblue")) {
@@ -4166,8 +4204,8 @@ class Eval implements Runnable {
   
   void getProperty() {
     String retValue = "";
-    String property =  (statementLength < 2 ? "" : (String)statement[1].value);
-    String param = (statementLength < 3 ? "" : (String)statement[2].value);
+    String property =  (statementLength < 2 ? "" : (String) statement[1].value);
+    String param = (statementLength < 3 ? "" : (String) statement[2].value);
     retValue = (String)viewer.getProperty("String", property, param);
     viewer.scriptEcho(retValue);
   }

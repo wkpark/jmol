@@ -2888,8 +2888,8 @@ class Eval implements Runnable {
       Token.dots, Token.backbone, Token.trace, Token.cartoon, Token.strands,
       Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, Token.axes,
       Token.boundbox, Token.unitcell, Token.frank, Token.echo, Token.hover,
-      Token.pmesh, Token.polyhedra, Token.sasurface, Token.isosurface,
-      Token.prueba, Token.draw};
+      Token.polyhedra, Token.prueba, 
+      Token.pmesh,  Token.sasurface, Token.isosurface, Token.draw};
 
   static {
     if (shapeToks.length != JmolConstants.SHAPE_MAX) {
@@ -3899,6 +3899,12 @@ class Eval implements Runnable {
       Object propertyValue = null;
       Token token = statement[i];
       switch (token.tok) {
+      case Token.identifier:
+        propertyName = (String)token.value;
+        if (i + 1 < statementLength && statement[i + 1].intValue > 0) {
+          propertyValue = new Integer(statement[++i].intValue);
+        }
+        break;
       case Token.bonds:
         propertyName = (String)token.value;
         if (i + 1 < statementLength && statement[i + 1].intValue > 0) {

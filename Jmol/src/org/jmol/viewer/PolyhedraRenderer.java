@@ -44,23 +44,28 @@ class PolyhedraRenderer extends ShapeRenderer {
                                           p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
     byte[] faces;
-    switch(vertices.length) {
-    case 6:
-      faces = Polyhedra.octahedronFaces;
-      break;
-    case 4:
-      faces = Polyhedra.tetrahedronFaces;
-      break;
-    default:
-      System.out.println("?Que? vertices.length=" + vertices.length);
-      return;
+    if (p.iHaveFaces) { //nBondOption or facets
+      faces = p.faces;
+    } else {
+      switch (vertices.length) {
+      case 6:
+        faces = Polyhedra.octahedronFaces;
+        break;
+      case 4:
+        faces = Polyhedra.tetrahedronFaces;
+        break;
+      default:
+        System.out.println("?Que? vertices.length=" + vertices.length);
+        return;
+      }
     }
 
-    for (int i = 0, j = 0; j < faces.length; )
+    for (int i = 0, j = 0; j < faces.length; ) {
       drawFace(colix, p.normixes[i++],
                vertices[faces[j++]],
                vertices[faces[j++]],
                vertices[faces[j++]]);
+    }
     for (int i = 0, j = 0; j < faces.length; )
       fillFace(colix, p.normixes[i++],
                vertices[faces[j++]],

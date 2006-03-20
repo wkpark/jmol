@@ -36,15 +36,41 @@ class Polyhedra extends SelectionIndependentShape {
   Polyhedron[] polyhedrons = new Polyhedron[32];
   float radius;
   int drawEdges;
-
+  
   final static int EDGES_NONE = 0;
   final static int EDGES_ALL = 1;
   final static int EDGES_FRONT = 2;
 
+  boolean nBondOption = false;
+  boolean doFacets = false;
+  
   void initShape() {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
+    
+    if (propertyName.equalsIgnoreCase("nbonds")) {
+      nBondOption = true;
+      deletePolyhedra(bs);
+      if(value instanceof Integer)
+        buildBondsPolyhedra(bs, ((Integer)value).intValue());
+      else
+        buildBondsPolyhedra(bs);
+      nBondOption = false;
+      return;
+    }
+
+    if (propertyName.equalsIgnoreCase("facets")) {
+      doFacets = true;
+      deletePolyhedra(bs);
+      if(value instanceof Integer)
+        buildBondsPolyhedra(bs, ((Integer)value).intValue());
+      else
+        buildBondsPolyhedra(bs);
+      doFacets = false;
+      return;
+    }
+
     if ("bonds" == propertyName) {
       deletePolyhedra(bs);
       if(value instanceof Integer)
@@ -53,6 +79,7 @@ class Polyhedra extends SelectionIndependentShape {
         buildBondsPolyhedra(bs);
       return;
     }
+
     if ("delete" == propertyName) {
       deletePolyhedra(bs);
       return;
@@ -79,7 +106,8 @@ class Polyhedra extends SelectionIndependentShape {
     }
     if ("color" == propertyName) {
       colix = Graphics3D.getColix(value);
-      //      System.out.println("color polyhedra:" + colix);
+      // System.out.println("color polyhedra:" + colix);
+      
       setColix(colix,
                (colix != Graphics3D.UNRECOGNIZED) ? null : (String) value,
                bs);
@@ -133,11 +161,12 @@ class Polyhedra extends SelectionIndependentShape {
       if (p == null)
         continue;
       int atomIndex = p.centralAtom.atomIndex;
-      if (bs.get(atomIndex))
+      if (bs.get(atomIndex)) {
         p.polyhedronColix =
           ((colix != Graphics3D.UNRECOGNIZED)
            ? colix
            : viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette));
+      }
     }
   }
 
@@ -183,7 +212,7 @@ class Polyhedra extends SelectionIndependentShape {
     if (bonds == null)
       return null;
     int bondCount = bonds.length;
-    if ((bondCount == 4 || bondCount == 6) 
+    if ((doFacets || nBondOption || bondCount == 4 || bondCount == 6) 
         && (nBonds < 0 || nBonds == bondCount)) {
       for (int i = bondCount; --i >= 0; ) {
         Bond bond = bonds[i];
@@ -196,11 +225,113 @@ class Polyhedra extends SelectionIndependentShape {
         }
         otherAtoms[i] = otherAtom;
       }
+      if (nBondOption) 
+        return validatePolyhedronNew(atom, bondCount, otherAtoms);
+  
+      if (doFacets) 
+        return validatePolyhedronFacets(atom, bondCount, otherAtoms);
+  
       return validatePolyhedron(atom, bondCount, otherAtoms);
     }
     return null;
   }
 
+/////////////start of nBondOption/////////  
+
+  short[] normixesT = new short[85];
+  byte[] facesT = new byte[255];
+  final static int FACE_COUNT_MAX = 85;
+  Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
+                                Atom[] otherAtoms) {
+    int faceCount = 0;
+    int facetCount = 0;
+    int nOthers = vertexCount;
+    Point3f[] points = new Point3f[vertexCount];
+    Vector3f normal = new Vector3f();
+    Point3f pointCentral = centralAtom.point3f;
+    float distMax = 0;
+    float dist = 0;
+    for (int i = 0; i < nOthers; i++) {
+      points[i] = otherAtoms[i].point3f;
+      if ((dist = pointCentral.distance(points[i])) > distMax)
+        distMax = dist;  
+    }
+    //simply define a face to be when all three distances are < 1.5 * longest central
+    distMax *= 1.5;
+    out:
+    for (int i = 0; i < nOthers - 2; i++)
+        for (int j = i + 1; j < nOthers - 1; j++)
+          if (points[i].distance(points[j]) < distMax)
+        for (int k = j + 1; k < nOthers; k++)
+          if (points[i].distance(points[k]) < distMax
+               && points[j].distance(points[k]) < distMax) {
+            if(faceCount == FACE_COUNT_MAX)
+              break out;
+            facesT[facetCount++] = (byte)i;
+            facesT[facetCount++] = (byte)j;
+            facesT[facetCount++] = (byte)k;
+            g3d.calcNormalizedNormal(points[i], points[j], points[k], normal);
+            normixesT[faceCount++] = g3d.getNormix(normal);
+          }
+    
+    return new Polyhedron(centralAtom, vertexCount, faceCount,
+                          otherAtoms, normixesT, facesT);
+  }
+  
+  Polyhedron validatePolyhedronFacets(Atom centralAtom, int vertexCount,
+                                   Atom[] otherAtoms) {
+       int faceCount = 0;
+       int facetCount = 0;
+       int nOthers = vertexCount;
+       Point3f[] points = new Point3f[nOthers + 1];
+       
+       Vector3f normal = new Vector3f();
+       Point3f pointCentral = centralAtom.point3f;
+       float distMax = 0;
+       float dist = 0;
+       points[nOthers] = new Point3f(pointCentral);
+       for (int i = 0; i < nOthers; i++) {
+         points[i] = otherAtoms[i].point3f;
+         if ((dist = pointCentral.distance(points[i])) > distMax)
+           distMax = dist;  
+       }
+       System.out.println("distMax " + distMax);
+       //simply define a face to be when all three distances are < 1.5 * longest central
+       distMax *= 1.5;
+       out:
+       for (int i = 0; i < nOthers - 2; i++)
+           for (int j = i + 1; j < nOthers - 1; j++)
+             if (points[i].distance(points[j]) < distMax)
+           for (int k = j + 1; k < nOthers; k++)
+             if (points[i].distance(points[k]) < distMax
+                  && points[j].distance(points[k]) < distMax) {
+               if(faceCount == FACE_COUNT_MAX)
+                 break out;
+               facesT[facetCount++] = (byte)nOthers;
+               facesT[facetCount++] = (byte)j;
+               facesT[facetCount++] = (byte)k;
+               g3d.calcNormalizedNormal(points[nOthers], points[j], points[k], normal);
+               normixesT[faceCount++] = g3d.getNormix(normal);
+
+               facesT[facetCount++] = (byte)i;
+               facesT[facetCount++] = (byte)nOthers;
+               facesT[facetCount++] = (byte)k;
+               g3d.calcNormalizedNormal(points[i], points[nOthers], points[k], normal);
+               normixesT[faceCount++] = g3d.getNormix(normal);
+
+               facesT[facetCount++] = (byte)i;
+               facesT[facetCount++] = (byte)j;
+               facesT[facetCount++] = (byte)nOthers;
+               g3d.calcNormalizedNormal(points[i], points[j], points[nOthers], normal);
+               normixesT[faceCount++] = g3d.getNormix(normal);
+             }
+       
+       return new Polyhedron(centralAtom, vertexCount, faceCount,
+                             otherAtoms, normixesT, facesT);
+     }
+/////////////end of nBondOption/////////  
+  
+  
   void buildRadiusPolyhedra(BitSet bs, float radius, BitSet bsVertices) {
     for (int i = frame.atomCount; --i >= 0; ) {
       if (bs.get(i)) {
@@ -380,6 +511,9 @@ class Polyhedra extends SelectionIndependentShape {
     boolean visible;
     final short[] normixes;
     short polyhedronColix;
+    byte[] faces;
+    int faceCount;
+    boolean iHaveFaces = false;
 
     Polyhedron(Atom centralAtom, int vertexCount, int faceCount,
                Atom[] otherAtoms, short[] normixes) {
@@ -393,5 +527,27 @@ class Polyhedra extends SelectionIndependentShape {
       for (int i = faceCount; --i >= 0; )
         this.normixes[i] = normixes[i];
     }
+    
+    Polyhedron(Atom centralAtom, int vertexCount, int faceCount,
+        Atom[] otherAtoms, short[] normixes, byte[] faces) {
+      this.centralAtom = centralAtom;
+      boolean iNeedCentral = (faces[0] == vertexCount);
+      this.vertices = new Atom[vertexCount + (iNeedCentral? 1 : 0)];
+      this.visible = true;
+      this.polyhedronColix = colix;
+      this.normixes = new short[faceCount];
+      this.faceCount = faceCount;
+      this.faces = new byte[faceCount * 3];
+      for (int i = vertexCount; --i >= 0;)
+        vertices[i] = otherAtoms[i];
+      if (iNeedCentral)
+        vertices[vertexCount] = centralAtom;
+      for (int i = faceCount; --i >= 0;)
+        this.normixes[i] = normixes[i];
+      for (int i = faceCount * 3; --i >= 0;)
+        this.faces[i] = faces[i];
+      iHaveFaces = true;
+    }
+   
   }
 }

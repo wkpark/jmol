@@ -50,12 +50,12 @@ class GaussianReader extends AtomSetCollectionReader {
    */
   private int firstCoordinateOffset = 3;
   
-  /** Calculated SCF energy with units. */
-  private String scfEnergy = "";
+  /** Calculated energy with units (if possible). */
+  private String energyString = "";
   /**
-   * Key of the type of SCF energy calculated, e.g., E(RB+HF-PW91).
+   * Type of energy calculated, e.g., E(RB+HF-PW91).
    */
-  private String scfKey = "";
+  private String energyKey = "";
   
   /** The number of the calculation being interpreted. */
   private int calculationNumber = 1;
@@ -126,7 +126,10 @@ class GaussianReader extends AtomSetCollectionReader {
         } else if (line.indexOf("Standard orientation:") >= 0) {
           ++equivalentAtomSets;
           readAtoms(reader, line);
-        } else if (line.startsWith(" SCF Done:")) {
+        } else if (line.startsWith(" Energy=")){
+          setEnergy(line);
+        }
+        else if (line.startsWith(" SCF Done:")) {
           readSCFDone(reader,line);
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
@@ -161,7 +164,7 @@ class GaussianReader extends AtomSetCollectionReader {
   /**
    * Interprets the SCF Done: section.
    *
-   * <p>The scfKey and scfEnergy will be set for further AtomSets that have
+   * <p>The energyKey and energyString will be set for further AtomSets that have
    * the same molecular geometry (e.g., frequencies).
    * The energy, convergence, -V/T and S**2 values will be set as properties
    * for the atomSet.
@@ -172,17 +175,29 @@ class GaussianReader extends AtomSetCollectionReader {
    **/
   private void readSCFDone(BufferedReader reader, String line) throws Exception {
     String tokens[] = getTokens(line,11);
-    scfKey = tokens[0];
-    scfEnergy = tokens[2]+" "+tokens[3];
+    energyKey = tokens[0];
+    energyString = tokens[2]+" "+tokens[3];
     // now set the names for the last equivalentAtomSets
-    atomSetCollection.setAtomSetNames(scfKey+" = " + scfEnergy, equivalentAtomSets);
+    atomSetCollection.setAtomSetNames(energyKey+" = " + energyString, equivalentAtomSets);
     // also set the properties for them
-    atomSetCollection.setAtomSetProperties(scfKey, scfEnergy, equivalentAtomSets);
+    atomSetCollection.setAtomSetProperties(energyKey, energyString, equivalentAtomSets);
     tokens = getTokens(reader.readLine());
     atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
     atomSetCollection.setAtomSetProperties(tokens[3], tokens[5], equivalentAtomSets);
     tokens = getTokens(reader.readLine());
     atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
+  }
+  
+  /**
+   * Interpret the Energy= line for non SCF type energy output
+   *
+   * @param line The input line containing Energy=
+   */
+  private void setEnergy(String line) {
+    String tokens[] = getTokens(line);
+    energyKey = "Energy";
+    energyString = tokens[1];
+    atomSetCollection.setAtomSetNames("Energy = "+tokens[1], equivalentAtomSets);
   }
   
   /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
@@ -324,10 +339,10 @@ class GaussianReader extends AtomSetCollectionReader {
             symmetries[i] + " "
             + frequencies[i]+" cm**-1"
 //            + ", Inten = " + intensities[i] + " KM/Mole "
-//            + scfKey + " = " + scfEnergy
+//            + energyKey + " = " + energyString
         );
         // set the properties
-        atomSetCollection.setAtomSetProperty(scfKey, scfEnergy);
+        atomSetCollection.setAtomSetProperty(energyKey, energyString);
         atomSetCollection.setAtomSetProperty("Frequency",
             frequencies[i]+" cm**-1");
         atomSetCollection.setAtomSetProperty("Reduced Mass",

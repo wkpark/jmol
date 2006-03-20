@@ -218,6 +218,7 @@ public class TestSmarterJmolAdapter extends TestCase {
     checkOpenFile("gaussian", "tms.log");
     checkOpenFile("gaussian", "4-cyanophenylnitrene-Benzazirine-TS.g94.out");
     checkOpenFile("gaussian", "ch3oh_g94.out");
+    checkOpenFile("gaussian", "cyanine_PM3.out");
     checkOpenFile("gaussian", "g98.out");
     checkOpenFile("gaussian", "h2o.g03.log");
     checkOpenFile("gaussian", "H2O.out");

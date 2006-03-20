@@ -1387,6 +1387,14 @@ final public class Viewer extends JmolViewer {
     return modelManager.autoBond;
   }
 
+  void within(String withinWhat, BitSet bs, BitSet bsResult) {
+    modelManager.within(withinWhat, bs, bsResult);
+  }
+  
+  void withinDistance(float distance, BitSet bs, BitSet bsResult) {
+    modelManager.withinDistance(distance, bs, bsResult);
+  }
+
   void setSolventProbeRadius(float radius) {
     modelManager.setSolventProbeRadius(radius);
   }

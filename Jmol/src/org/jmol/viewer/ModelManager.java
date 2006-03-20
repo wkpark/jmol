@@ -627,6 +627,82 @@ String getAtomInfoChime(int i) {
     return polymer.getLeadMidpoints();
   }
 
+  void within(String withinWhat, BitSet bs, BitSet bsResult) {
+    if (withinWhat.equals("group")) {
+      withinGroup(bs, bsResult);
+      return;
+    }
+    if (withinWhat.equals("chain")) {
+      withinChain(bs, bsResult);
+      return;
+    }
+    if (withinWhat.equals("model")) {
+      withinModel(bs, bsResult);
+      return;
+    }
+  }
+
+  void withinGroup(BitSet bs, BitSet bsResult) {
+    // System.out.println("withinGroup");
+    Group groupLast = null;
+    for (int i = getAtomCount(); --i >= 0;) {
+      if (!bs.get(i))
+        continue;
+      Atom atom = frame.getAtomAt(i);
+      Group group = atom.getGroup();
+      if (group != groupLast) {
+        group.selectAtoms(bsResult);
+        groupLast = group;
+      }
+    }
+  }
+
+  void withinChain(BitSet bs, BitSet bsResult) {
+    Chain chainLast = null;
+    for (int i = getAtomCount(); --i >= 0;) {
+      if (!bs.get(i))
+        continue;
+      Atom atom = frame.getAtomAt(i);
+      Chain chain = atom.getChain();
+      if (chain != chainLast) {
+        chain.selectAtoms(bsResult);
+        chainLast = chain;
+      }
+    }
+  }
+
+  void withinModel(BitSet bs, BitSet bsResult) {
+    int modelIndexLast = -1;
+    for (int i = getAtomCount(); --i >= 0;) {
+      if (bs.get(i)) {
+        int modelIndex = frame.getAtomAt(i).getModelIndex();
+        if (modelIndex != modelIndexLast) {
+          selectModelIndexAtoms(modelIndex, bsResult);
+          modelIndexLast = modelIndex;
+        }
+      }
+    }
+  }
+
+  void selectModelIndexAtoms(int modelIndex, BitSet bsResult) {
+    Frame frame = viewer.getFrame();
+    for (int i = viewer.getAtomCount(); --i >= 0;)
+      if (frame.getAtomAt(i).getModelIndex() == modelIndex)
+        bsResult.set(i);
+  }
+
+  void withinDistance(float distance, BitSet bs, BitSet bsResult) {
+    for (int i = frame.getAtomCount(); --i >= 0;) {
+      if (bs.get(i)) {
+        Atom atom = frame.getAtomAt(i);
+        AtomIterator iterWithin = frame.getWithinAnyModelIterator(atom,
+            distance);
+        while (iterWithin.hasNext())
+          bsResult.set(iterWithin.next().getAtomIndex());
+      }
+    }
+  }
+
   String getModelExtract(BitSet bs) {
     String str = "";
     int atomCount = getAtomCount();

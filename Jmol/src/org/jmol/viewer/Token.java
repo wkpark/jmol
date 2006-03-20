@@ -280,6 +280,7 @@ class Token {
   final static int leftbrace    = coordinate | 17;
   final static int rightbrace   = coordinate | 18;
   final static int dollarsign   = objectid   | 19;
+  final static int connected    = expression | 20;
   
 
   // miguel 2005 01 01
@@ -620,6 +621,7 @@ class Token {
     ":",            new Token(colon, ":"),
     "/",            new Token(slash, "/"),
     "substructure", new Token(substructure, "substructure"),
+    "connected",    new Token(connected, "connected"),
 
     "atomno",       new Token(atomno, "atomno"),
     "elemno",       tokenElemno,

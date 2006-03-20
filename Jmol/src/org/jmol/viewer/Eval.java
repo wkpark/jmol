@@ -637,6 +637,9 @@ class Eval implements Runnable {
       case Token.within:
         strbufLog.append("within ");
         break;
+      case Token.connected:
+        strbufLog.append("connected ");
+        break;
       case Token.substructure:
         strbufLog.append("substructure ");
         break;
@@ -986,6 +989,11 @@ class Eval implements Runnable {
         bs = stack[sp - 1];
         stack[sp - 1] = new BitSet();
         withinInstruction(instruction, bs, stack[sp - 1]);
+        break;
+      case Token.connected:
+        bs = stack[sp - 1];
+        stack[sp - 1] = new BitSet();
+        connectedInstruction(instruction, bs, stack[sp - 1]);
         break;
       case Token.substructure:
         stack[sp++] = getSubstructureSet((String) instruction.value);
@@ -1356,13 +1364,6 @@ class Eval implements Runnable {
     return lookupValue(variable, true);
   }
 
-  void selectModelIndexAtoms(int modelIndex, BitSet bsResult) {
-    Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).getModelIndex() == modelIndex)
-        bsResult.set(i);
-  }
-
   BitSet getSpecAlternate(String alternateSpec) {
     // System.out.println("getSpecAlternate(" + alternateSpec + ")");
     Frame frame = viewer.getFrame();
@@ -1381,10 +1382,7 @@ class Eval implements Runnable {
       modelNumber = Integer.parseInt(modelTag);
     } catch (NumberFormatException nfe) {
     }
-
-    BitSet bsModel = new BitSet(viewer.getAtomCount());
-    selectModelIndexAtoms(viewer.getModelNumberIndex(modelNumber), bsModel);
-    return bsModel;
+    return viewer.getModelAtomBitSet(viewer.getModelNumberIndex(modelNumber));
   }
 
   void comparatorInstruction(Token instruction, BitSet bs)
@@ -1478,83 +1476,30 @@ class Eval implements Runnable {
       throws ScriptException {
     Object withinSpec = instruction.value;
     if (withinSpec instanceof Float) {
-      withinDistance(((Float) withinSpec).floatValue(), bs, bsResult);
+      viewer.withinDistance(((Float) withinSpec).floatValue(), bs, bsResult);
       return;
     }
     if (withinSpec instanceof String) {
       String withinStr = (String) withinSpec;
       if (withinStr.equals("group")) {
-        withinGroup(bs, bsResult);
+        viewer.within("group", bs, bsResult);
         return;
       }
       if (withinStr.equals("chain")) {
-        withinChain(bs, bsResult);
+        viewer.within("chain", bs, bsResult);
         return;
       }
       if (withinStr.equals("model")) {
-        withinModel(bs, bsResult);
+        viewer.within("model", bs, bsResult);
         return;
       }
     }
     evalError("Unrecognized within parameter:" + withinSpec);
   }
 
-  void withinDistance(float distance, BitSet bs, BitSet bsResult) {
-    Frame frame = viewer.getFrame();
-    for (int i = frame.getAtomCount(); --i >= 0;) {
-      if (bs.get(i)) {
-        Atom atom = frame.getAtomAt(i);
-        AtomIterator iterWithin = frame.getWithinAnyModelIterator(atom,
-            distance);
-        while (iterWithin.hasNext())
-          bsResult.set(iterWithin.next().getAtomIndex());
-      }
-    }
-  }
-
-  void withinGroup(BitSet bs, BitSet bsResult) {
-    // System.out.println("withinGroup");
-    Frame frame = viewer.getFrame();
-    Group groupLast = null;
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      if (!bs.get(i))
-        continue;
-      Atom atom = frame.getAtomAt(i);
-      Group group = atom.getGroup();
-      if (group != groupLast) {
-        group.selectAtoms(bsResult);
-        groupLast = group;
-      }
-    }
-  }
-
-  void withinChain(BitSet bs, BitSet bsResult) {
-    Frame frame = viewer.getFrame();
-    Chain chainLast = null;
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      if (!bs.get(i))
-        continue;
-      Atom atom = frame.getAtomAt(i);
-      Chain chain = atom.getChain();
-      if (chain != chainLast) {
-        chain.selectAtoms(bsResult);
-        chainLast = chain;
-      }
-    }
-  }
-
-  void withinModel(BitSet bs, BitSet bsResult) {
-    Frame frame = viewer.getFrame();
-    int modelIndexLast = -1;
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      if (bs.get(i)) {
-        int modelIndex = frame.getAtomAt(i).getModelIndex();
-        if (modelIndex != modelIndexLast) {
-          selectModelIndexAtoms(modelIndex, bsResult);
-          modelIndexLast = modelIndex;
-        }
-      }
-    }
+  void connectedInstruction(Token instruction, BitSet bs, BitSet bsResult) {
+    int min = instruction.intValue;
+    int max = ((Integer) instruction.value).intValue();
   }
 
   BitSet getSubstructureSet(String smiles) throws ScriptException {

@@ -40,7 +40,8 @@ class Polyhedra extends SelectionIndependentShape {
   final static int EDGES_NONE = 0;
   final static int EDGES_ALL = 1;
   final static int EDGES_FRONT = 2;
-
+  final static float MAX_FACTOR = 1.85f;
+  
   boolean nBondOption = false;
   boolean doFacets = false;
   
@@ -242,7 +243,7 @@ class Polyhedra extends SelectionIndependentShape {
   byte[] facesT = new byte[255];
   final static int FACE_COUNT_MAX = 85;
   Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
-                                Atom[] otherAtoms) {
+                                   Atom[] otherAtoms) {
     int faceCount = 0;
     int facetCount = 0;
     int nOthers = vertexCount;
@@ -254,28 +255,29 @@ class Polyhedra extends SelectionIndependentShape {
     for (int i = 0; i < nOthers; i++) {
       points[i] = otherAtoms[i].point3f;
       if ((dist = pointCentral.distance(points[i])) > distMax)
-        distMax = dist;  
+        distMax = dist;
     }
-    //simply define a face to be when all three distances are < 1.5 * longest central
-    distMax *= 1.5;
-    out:
-    for (int i = 0; i < nOthers - 2; i++)
-        for (int j = i + 1; j < nOthers - 1; j++)
-          if (points[i].distance(points[j]) < distMax)
-        for (int k = j + 1; k < nOthers; k++)
-          if (points[i].distance(points[k]) < distMax
-               && points[j].distance(points[k]) < distMax) {
-            if(faceCount == FACE_COUNT_MAX)
-              break out;
-            facesT[facetCount++] = (byte)i;
-            facesT[facetCount++] = (byte)j;
-            facesT[facetCount++] = (byte)k;
-            g3d.calcNormalizedNormal(points[i], points[j], points[k], normal);
-            normixesT[faceCount++] = g3d.getNormix(normal);
-          }
-    
-    return new Polyhedron(centralAtom, vertexCount, faceCount,
-                          otherAtoms, normixesT, facesT);
+    //simply define a face to be when all three distances are < MAX_FACTOR * longest central
+    distMax *= MAX_FACTOR;
+    out: for (int i = 0; i < nOthers - 2; i++) {
+      for (int j = i + 1; j < nOthers - 1; j++) {
+        if (points[i].distance(points[j]) < distMax)
+          for (int k = j + 1; k < nOthers; k++)
+            if (points[i].distance(points[k]) < distMax
+                && points[j].distance(points[k]) < distMax) {
+              if (faceCount == FACE_COUNT_MAX)
+                break out;
+              facesT[facetCount++] = (byte) i;
+              facesT[facetCount++] = (byte) j;
+              facesT[facetCount++] = (byte) k;
+              g3d.calcNormalizedNormal(points[i], points[j], points[k], normal);
+              normixesT[faceCount++] = g3d.getNormix(normal);
+            }
+      }
+    }
+
+    return new Polyhedron(centralAtom, vertexCount, faceCount, otherAtoms,
+        normixesT, facesT);
   }
   
   Polyhedron validatePolyhedronFacets(Atom centralAtom, int vertexCount,
@@ -283,46 +285,47 @@ class Polyhedra extends SelectionIndependentShape {
        int faceCount = 0;
        int facetCount = 0;
        int nOthers = vertexCount;
+       int ptCenter = nOthers;
        Point3f[] points = new Point3f[nOthers + 1];
        
        Vector3f normal = new Vector3f();
        Point3f pointCentral = centralAtom.point3f;
        float distMax = 0;
        float dist = 0;
-       points[nOthers] = new Point3f(pointCentral);
-       for (int i = 0; i < nOthers; i++) {
+       points[ptCenter] = new Point3f(pointCentral);
+       for (int i = 0; i < ptCenter; i++) {
          points[i] = otherAtoms[i].point3f;
          if ((dist = pointCentral.distance(points[i])) > distMax)
            distMax = dist;  
        }
        System.out.println("distMax " + distMax);
-       //simply define a face to be when all three distances are < 1.5 * longest central
-       distMax *= 1.5;
+       //simply define a face to be when all three distances are < MAX_FACTOR * longest central
+       distMax *= MAX_FACTOR;
        out:
-       for (int i = 0; i < nOthers - 2; i++)
-           for (int j = i + 1; j < nOthers - 1; j++)
+       for (int i = 0; i < ptCenter - 2; i++)
+           for (int j = i + 1; j < ptCenter - 1; j++)
              if (points[i].distance(points[j]) < distMax)
-           for (int k = j + 1; k < nOthers; k++)
+           for (int k = j + 1; k < ptCenter; k++)
              if (points[i].distance(points[k]) < distMax
                   && points[j].distance(points[k]) < distMax) {
                if(faceCount == FACE_COUNT_MAX)
                  break out;
-               facesT[facetCount++] = (byte)nOthers;
+               facesT[facetCount++] = (byte)ptCenter;
                facesT[facetCount++] = (byte)j;
                facesT[facetCount++] = (byte)k;
-               g3d.calcNormalizedNormal(points[nOthers], points[j], points[k], normal);
+               g3d.calcNormalizedNormal(points[ptCenter], points[j], points[k], normal);
                normixesT[faceCount++] = g3d.getNormix(normal);
 
                facesT[facetCount++] = (byte)i;
-               facesT[facetCount++] = (byte)nOthers;
+               facesT[facetCount++] = (byte)ptCenter;
                facesT[facetCount++] = (byte)k;
-               g3d.calcNormalizedNormal(points[i], points[nOthers], points[k], normal);
+               g3d.calcNormalizedNormal(points[i], points[ptCenter], points[k], normal);
                normixesT[faceCount++] = g3d.getNormix(normal);
 
                facesT[facetCount++] = (byte)i;
                facesT[facetCount++] = (byte)j;
-               facesT[facetCount++] = (byte)nOthers;
-               g3d.calcNormalizedNormal(points[i], points[j], points[nOthers], normal);
+               facesT[facetCount++] = (byte)ptCenter;
+               g3d.calcNormalizedNormal(points[i], points[j], points[ptCenter], normal);
                normixesT[faceCount++] = g3d.getNormix(normal);
              }
        

@@ -44,7 +44,7 @@ class PolyhedraRenderer extends ShapeRenderer {
                                           p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
     byte[] faces;
-    if (p.iHaveFaces) { //nBondOption or facets
+    if (p.iHaveFaces) { //nBondOption or facets 
       faces = p.faces;
     } else {
       switch (vertices.length) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-15 11:06-0500\n"
+"POT-Creation-Date: 2006-03-19 08:44-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: org/jmol/viewer/PickingManager.java:158
+#: org/jmol/viewer/PickingManager.java:165
 msgid "pick "
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:160
-msgid " atoms in order to rotate the model around an axis"
+#: org/jmol/viewer/PickingManager.java:167
+msgid " atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:168
+#: org/jmol/viewer/PickingManager.java:175
 msgid "atoms selected"
 msgstr ""
 
@@ -51,31 +51,31 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:161
+#: org/openscience/jmol/app/AtomSetChooser.java:162
 msgid "AtomSetChooser"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:166
+#: org/openscience/jmol/app/AtomSetChooser.java:167
 msgid "No AtomSets"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:195
+#: org/openscience/jmol/app/AtomSetChooser.java:196
 msgid "Properties"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:203
+#: org/openscience/jmol/app/AtomSetChooser.java:204
 msgid "Atom Set Collection"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:223
+#: org/openscience/jmol/app/AtomSetChooser.java:224
 msgid "Collection"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:228
+#: org/openscience/jmol/app/AtomSetChooser.java:229
 msgid "Info"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:235
+#: org/openscience/jmol/app/AtomSetChooser.java:236
 #: org/openscience/jmol/app/GuiMap.java:66
 #: org/openscience/jmol/app/PovrayDialog.java:180
 #: org/openscience/jmol/app/PovrayDialog.java:453
@@ -84,72 +84,72 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:250
+#: org/openscience/jmol/app/AtomSetChooser.java:251
 msgid "Repeat"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:262
+#: org/openscience/jmol/app/AtomSetChooser.java:263
 msgid "FPS"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:278
+#: org/openscience/jmol/app/AtomSetChooser.java:279
 #: org/openscience/jmol/app/GuiMap.java:99
 msgid "Vector"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:285
+#: org/openscience/jmol/app/AtomSetChooser.java:286
 msgid "Radius"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:298
+#: org/openscience/jmol/app/AtomSetChooser.java:299
 msgid "Scale"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:312
+#: org/openscience/jmol/app/AtomSetChooser.java:313
 msgid "Amplitude"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:322
+#: org/openscience/jmol/app/AtomSetChooser.java:323
 msgid "Period"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:351
+#: org/openscience/jmol/app/AtomSetChooser.java:352
 msgid "Controller"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:358
+#: org/openscience/jmol/app/AtomSetChooser.java:359
 msgid "atom set"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:360
+#: org/openscience/jmol/app/AtomSetChooser.java:361
 msgid "vector"
-msgstr ""
-
-#: org/openscience/jmol/app/AtomSetChooser.java:363
-#, java-format
-msgid "Go to first {0} in the collection"
 msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:364
 #, java-format
-msgid "Go to previous {0} in the collection"
+msgid "Go to first {0} in the collection"
 msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:365
 #, java-format
-msgid "Play the whole collection of {0}'s"
+msgid "Go to previous {0} in the collection"
 msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:366
-msgid "Pause playing"
+#, java-format
+msgid "Play the whole collection of {0}'s"
 msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:367
+msgid "Pause playing"
+msgstr ""
+
+#: org/openscience/jmol/app/AtomSetChooser.java:368
 #, java-format
 msgid "Go to next {0} in the collection"
 msgstr ""
 
-#: org/openscience/jmol/app/AtomSetChooser.java:368
+#: org/openscience/jmol/app/AtomSetChooser.java:369
 #, java-format
 msgid "Jump to last {0} in the collection"
 msgstr ""

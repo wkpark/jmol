@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-15 11:06-0500\n"
+"POT-Creation-Date: 2006-03-19 08:44-0500\n"
 "PO-Revision-Date: 2005-10-08 19:41+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Nederlands <kde-i18n-nl@kde.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 "X-Generator: KBabel 1.10\n"
 
-#: org/jmol/applet/Jmol.java:483
+#: org/jmol/applet/Jmol.java:488
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -31,7 +31,7 @@ msgstr ""
 "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol.org "
 "voor meer informatie."
 
-#: org/jmol/applet/Jmol.java:591
+#: org/jmol/applet/Jmol.java:596
 msgid "File Error:"
 msgstr "Bestandsfout:"
 
@@ -962,15 +962,15 @@ msgstr ""
 msgid "Translations"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:158
+#: org/jmol/viewer/PickingManager.java:165
 msgid "pick "
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:160
-msgid " atoms in order to rotate the model around an axis"
+#: org/jmol/viewer/PickingManager.java:167
+msgid " atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:168
+#: org/jmol/viewer/PickingManager.java:175
 #, fuzzy
 msgid "atoms selected"
 msgstr "Geen atomen geladen"

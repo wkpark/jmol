@@ -31,7 +31,6 @@ import javax.vecmath.Point3i;
 
 class StrandsRenderer extends MpsRenderer {
 
-  Strands strands;
   Point3f pointT = new Point3f();
 
   Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
@@ -61,6 +60,7 @@ class StrandsRenderer extends MpsRenderer {
   
   void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
     Strands.Schain schain = (Strands.Schain)mpspolymer;
+    Strands strands = (Strands)shape;
 
     this.myVisibilityFlag = myVisibilityFlag;
     strandCount = strands.strandCount;

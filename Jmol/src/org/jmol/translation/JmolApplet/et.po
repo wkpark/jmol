@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-15 11:06-0500\n"
+"POT-Creation-Date: 2006-03-19 08:44-0500\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:483
+#: org/jmol/applet/Jmol.java:488
 #, fuzzy, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -29,7 +29,7 @@ msgstr ""
 "Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www.jmol."
 "org"
 
-#: org/jmol/applet/Jmol.java:591
+#: org/jmol/applet/Jmol.java:596
 msgid "File Error:"
 msgstr "Faili viga:"
 
@@ -960,15 +960,15 @@ msgstr "Hiire Õpetus"
 msgid "Translations"
 msgstr "Tõlked"
 
-#: org/jmol/viewer/PickingManager.java:158
+#: org/jmol/viewer/PickingManager.java:165
 msgid "pick "
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:160
-msgid " atoms in order to rotate the model around an axis"
+#: org/jmol/viewer/PickingManager.java:167
+msgid " atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:168
+#: org/jmol/viewer/PickingManager.java:175
 #, fuzzy
 msgid "atoms selected"
 msgstr "Ei ühtegi aatomit"

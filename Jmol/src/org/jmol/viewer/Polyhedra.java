@@ -36,8 +36,10 @@ class Polyhedra extends SelectionIndependentShape {
   Polyhedron[] polyhedrons = new Polyhedron[32];
   float radius;
   int drawEdges;
-  float facetCenterOffset = 0.2f;
-  float maxFactor = 1.85f;
+  float facetCenterOffset;
+  float maxFactor;
+  final static float DEFAULT_MAX_FACTOR = 1.85f;
+  final static float DEFAULT_FACET_CENTER_OFFSET = 0.25f;
   final static int EDGES_NONE = 0;
   final static int EDGES_ALL = 1;
   final static int EDGES_FRONT = 2;
@@ -49,7 +51,12 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    
+
+    if (propertyName.equalsIgnoreCase("init")) {
+      facetCenterOffset = DEFAULT_FACET_CENTER_OFFSET;
+      maxFactor = DEFAULT_MAX_FACTOR;
+    }
+      
     if (propertyName.equalsIgnoreCase("nbonds")) {
       nBondOption = true;
       deletePolyhedra(bs);
@@ -294,14 +301,27 @@ class Polyhedra extends SelectionIndependentShape {
   Point3f ptT = new Point3f();
   Point3f ptT2 = new Point3f();
   Vector3f getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
-                            Point3f ptC, boolean isOpaque) {
+                            Point3f ptC, boolean isSolid) {
     Vector3f normal = new Vector3f();
     g3d.calcNormalizedNormal(ptA, ptB, ptC, normal);
     //but which way is it? add N to A and see who is closer to Center, A or N. 
     ptT.set(ptA);
-    ptT.add(normal);
-    if (isOpaque && ptCenter.distance(ptT) < ptCenter.distance(ptA)
-        || !isOpaque && ptCenter.distance(ptA) < ptCenter.distance(ptT))
+    ptT.add(ptB);
+    ptT.add(ptC);
+    ptT.scale(1/3f);
+    ptT2.set(normal);
+    ptT2.scale(0.1f);
+    ptT2.add(ptT);
+    //              A      C
+    //                \   /
+    //                 \ / 
+    //                  x pT is center of ABC; ptT2 is offset a bit from that
+    //                  |    either closer to x (ok if not opaque) or further
+    //                  |    from x (ok if opaque)
+    //                  B
+    // in the case of facet ABx, the "center" is really the OTHER point, C.
+    if (isSolid && ptCenter.distance(ptT2) < ptCenter.distance(ptT)
+        || !isSolid && ptCenter.distance(ptT) < ptCenter.distance(ptT2))
       normal.scale(-1f);
     return normal;
   }
@@ -312,7 +332,7 @@ class Polyhedra extends SelectionIndependentShape {
     int facetCount = 0;
     int nOthers = vertexCount;
     int ptCenter = nOthers;
-    Point3f[] points = new Point3f[nOthers * 3];
+    Point3f[] points = new Point3f[256];
 
     Point3f pointCentral = centralAtom.point3f;
     float distMax = 0;
@@ -572,7 +592,7 @@ class Polyhedra extends SelectionIndependentShape {
     }
     
     Polyhedron(Atom centralAtom, int nOthers, int faceCount,
-        Atom[] otherAtoms, short[] normixes, byte[] faces, boolean isOpaque) {
+        Atom[] otherAtoms, short[] normixes, byte[] faces, boolean isSolid) {
       this.centralAtom = centralAtom;
       this.vertices = new Atom[nOthers];
       this.visible = true;

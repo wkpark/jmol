@@ -3829,6 +3829,8 @@ class Eval implements Runnable {
   void polyhedra() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     boolean radiusSeen = false, expressionSeen = false;
+    viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
+        "init", null);
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;

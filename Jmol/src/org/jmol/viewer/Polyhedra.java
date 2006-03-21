@@ -52,7 +52,7 @@ class Polyhedra extends SelectionIndependentShape {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (propertyName.equalsIgnoreCase("init")) {
+    if (propertyName.equalsIgnoreCase("init")) { 
       facetCenterOffset = DEFAULT_FACET_CENTER_OFFSET;
       maxFactor = DEFAULT_MAX_FACTOR;
     }

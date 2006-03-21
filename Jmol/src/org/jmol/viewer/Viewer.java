@@ -45,7 +45,8 @@ import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.Reader;
 
-/*******************************************************************************
+/*
+ * ****************************************************************
  * The JmolViewer can be used to render client molecules. Clients implement the
  * JmolAdapter. JmolViewer uses this interface to extract information from the
  * client data structures and render the molecule to the supplied
@@ -65,7 +66,8 @@ import java.io.Reader;
  * 
  * applet.getProperty("jmolApplet").getFullPathName()
  * 
- ******************************************************************************/
+ * ****************************************************************
+ */
 
 final public class Viewer extends JmolViewer {
 

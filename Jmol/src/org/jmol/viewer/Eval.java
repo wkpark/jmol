@@ -3836,8 +3836,12 @@ class Eval implements Runnable {
       switch (token.tok) {
       case Token.identifier:
         propertyName = (String)token.value;
-        if (i + 1 < statementLength && statement[i + 1].intValue > 0) {
-          propertyValue = new Integer(statement[++i].intValue);
+        if (i + 1 < statementLength) {
+          if (statement[i + 1].tok == Token.integer 
+              && statement[i + 1].intValue > 0) 
+            propertyValue = new Integer(statement[++i].intValue);
+          else if (statement[i + 1].tok == Token.decimal)
+            propertyValue = statement[++i].value;
         }
         break;
       case Token.bonds:

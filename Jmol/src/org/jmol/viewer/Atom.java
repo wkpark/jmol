@@ -55,7 +55,18 @@ final class Atom implements Tuple {
   int nBackbonesDisplayed = 0;
   int clickabilityFlags;
   int shapeVisibilityFlags;
+  boolean isSimple = false;
 
+  Atom(Point3f pt) { 
+    //just a point, but with an xyzd -- just enough to determine a position
+    isSimple = true;
+    point3f = new Point3f(pt);
+    //must be transformed later -- Polyhedra;
+    xyzd = -1;
+    formalChargeAndFlags = 0;
+    madAtom = 0;
+  }
+  
   Atom(Viewer viewer,
        Frame frame,
        int modelIndex,

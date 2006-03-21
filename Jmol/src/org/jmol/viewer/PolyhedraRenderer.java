@@ -46,6 +46,10 @@ class PolyhedraRenderer extends ShapeRenderer {
     byte[] faces;
     if (p.iHaveFaces) { //nBondOption or facets 
       faces = p.faces;
+      for (int i = vertices.length; --i >= 0;) {
+        if (vertices[i].isSimple)
+          vertices[i].transform(viewer); // creates xyzd        
+      }
     } else {
       switch (vertices.length) {
       case 6:

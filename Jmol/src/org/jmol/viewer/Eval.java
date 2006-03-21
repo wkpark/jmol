@@ -690,6 +690,10 @@ class Eval implements Runnable {
     evalError("(atom expression) or decimal number expected");
   }
 
+  void expressionExpected() throws ScriptException {
+    evalError("(atom expression) expected");
+  }
+
   void rotationPointsIdentical() throws ScriptException {
     evalError("rotation points cannot be identical");
   }
@@ -3827,30 +3831,49 @@ class Eval implements Runnable {
   }
 
   void polyhedra() throws ScriptException {
+    boolean isChange = false;
+    boolean iHaveVertexExpression = false;
+    boolean iHaveCenterExpression = false;
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
-    boolean radiusSeen = false, expressionSeen = false;
-    viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
-        "init", null);
+    viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       Token token = statement[i];
       switch (token.tok) {
-      case Token.identifier:
-        propertyName = (String)token.value;
-        if (i + 1 < statementLength) {
-          if (statement[i + 1].tok == Token.integer 
-              && statement[i + 1].intValue > 0) 
-            propertyValue = new Integer(statement[++i].intValue);
-          else if (statement[i + 1].tok == Token.decimal)
-            propertyValue = statement[++i].value;
+      case Token.bonds:
+      case Token.identifier: //generic passed on
+        // includes collapsed, to, maxFactor, faceCenterOffset
+        propertyName = (String) token.value;
+        if (propertyName.equalsIgnoreCase("collapsed")) {
+          isChange = true;
+        } else if (propertyName.equalsIgnoreCase("maxFactor")
+            || propertyName.equalsIgnoreCase("faceCenterOffset")) {
+          isChange = true;
+          if (++i == statementLength)
+            numberExpected();
+          if (statement[i].tok == Token.integer)
+            propertyValue = new Float(statement[i].intValue);
+          else if (statement[i].tok == Token.decimal)
+            propertyValue = statement[i].value;
+        } else if (propertyName.equalsIgnoreCase("to")) {
+          isChange = true;
+          iHaveVertexExpression = true;
+          if (++i == statementLength || statement[i].tok != Token.expressionBegin)
+            expressionExpected();
+          propertyValue = expression(statement, ++i);
+          i = endOfExpression;
         }
         break;
-      case Token.bonds:
-        propertyName = (String)token.value;
-        if (i + 1 < statementLength && statement[i + 1].intValue > 0) {
-          propertyValue = new Integer(statement[++i].intValue);
-        }
+      case Token.integer:
+        propertyName = "nBonds";
+        propertyValue = new Integer(token.intValue);
+        isChange = true;
+        break;
+      case Token.decimal:
+        propertyName = "radius";
+        propertyValue = token.value;
+        isChange = true;
         break;
       case Token.on:
       case Token.off:
@@ -3858,31 +3881,28 @@ class Eval implements Runnable {
       case Token.edges:
       case Token.noedges:
       case Token.frontedges:
-        propertyName = (String)token.value;
-        break;
-      case Token.decimal:
-        radiusSeen = true;
-        propertyName = "radius";
-        propertyValue = token.value;
+        propertyName = (String) token.value;
         break;
       case Token.expressionBegin:
-        if (! radiusSeen)
-          evalError("radius expected");
-        expressionSeen = true;
-        propertyName = "expression";
-        propertyValue = expression(statement, i);
-        // hack for now;
-        i = statementLength;
+        if (iHaveVertexExpression || ! iHaveCenterExpression) { 
+          propertyName = "centers";
+          iHaveCenterExpression = true;
+        } else { 
+          propertyName = "to";
+          iHaveVertexExpression = true;
+        }
+        propertyValue = expression(statement, ++i);
+        i = endOfExpression;
+        isChange = true;
         break;
       default:
         invalidArgument();
       }
-      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
-                              propertyName, propertyValue);
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
+          propertyValue);
     }
-    if (radiusSeen && !expressionSeen)
-      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
-                              "expression", null);
+    if (isChange)
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
   }
 
   void sasurface() throws ScriptException {

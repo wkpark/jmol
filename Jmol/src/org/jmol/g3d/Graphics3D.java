@@ -1101,11 +1101,31 @@ final public class Graphics3D {
     drawLine(xB, yB, zB, xC, yC, zC);
   }
 
+  public void drawCylinderTriangle(short colix,
+                           int xA, int yA, int zA,
+                           int xB, int yB, int zB,
+                           int xC, int yC, int zC, int diameter) {   
+    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
+        xA, yA, zA, xB, yB, zB);
+    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
+        xA, yA, zA, xC, yC, zC);
+    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
+        xB, yB, zB, xC, yC, zC);
+  }
+
   public void drawTriangle(short colix, long xyzdA, long xyzdB, long xyzdC) {
     drawTriangle(colix,
                  Xyzd.getX(xyzdA), Xyzd.getY(xyzdA), Xyzd.getZ(xyzdA),
                  Xyzd.getX(xyzdB), Xyzd.getY(xyzdB), Xyzd.getZ(xyzdB),
                  Xyzd.getX(xyzdC), Xyzd.getY(xyzdC), Xyzd.getZ(xyzdC));
+  }
+
+  public void drawCylinderTriangle(short colix, long xyzdA, long xyzdB,
+                                   long xyzdC, int diameter) {
+    drawCylinderTriangle(colix, 
+        Xyzd.getX(xyzdA), Xyzd.getY(xyzdA), Xyzd.getZ(xyzdA),
+        Xyzd.getX(xyzdB), Xyzd.getY(xyzdB), Xyzd.getZ(xyzdB),
+        Xyzd.getX(xyzdC), Xyzd.getY(xyzdC), Xyzd.getZ(xyzdC), diameter);
   }
 
   public void drawTriangle(short colix, Point3i screenA,

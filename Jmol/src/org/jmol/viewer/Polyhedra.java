@@ -390,7 +390,6 @@ class Polyhedra extends SelectionIndependentShape {
     short polyhedronColix;
     byte[] planes;
     int planeCount;
-    boolean iHaveFaces = false;
 
     Polyhedron(Atom centralAtom, int nPoints, int planeCount,
         Atom[] otherAtoms, short[] normixes, byte[] planes) {
@@ -407,7 +406,6 @@ class Polyhedra extends SelectionIndependentShape {
         this.normixes[i] = normixes[i];
       for (int i = planeCount * 3; --i >= 0;)
         this.planes[i] = planes[i];
-      iHaveFaces = true;
     }   
   }
 }

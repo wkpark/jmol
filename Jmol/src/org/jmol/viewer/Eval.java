@@ -987,13 +987,11 @@ class Eval implements Runnable {
         break;
       case Token.within:
         bs = stack[sp - 1];
-        stack[sp - 1] = new BitSet();
-        withinInstruction(instruction, bs, stack[sp - 1]);
+        stack[sp - 1] = within(instruction, bs);
         break;
       case Token.connected:
         bs = stack[sp - 1];
-        stack[sp - 1] = new BitSet();
-        connectedInstruction(instruction, bs, stack[sp - 1]);
+        stack[sp - 1] = connected(instruction, bs);
         break;
       case Token.substructure:
         stack[sp++] = getSubstructureSet((String) instruction.value);
@@ -1472,34 +1470,26 @@ class Eval implements Runnable {
     }
   }
 
-  void withinInstruction(Token instruction, BitSet bs, BitSet bsResult)
+  BitSet within(Token instruction, BitSet bs)
       throws ScriptException {
     Object withinSpec = instruction.value;
-    if (withinSpec instanceof Float) {
-      viewer.withinDistance(((Float) withinSpec).floatValue(), bs, bsResult);
-      return;
-    }
+    if (withinSpec instanceof Float)
+      return viewer.getAtomsWithin(((Float) withinSpec).floatValue(), bs);
     if (withinSpec instanceof String) {
       String withinStr = (String) withinSpec;
-      if (withinStr.equals("group")) {
-        viewer.within("group", bs, bsResult);
-        return;
-      }
-      if (withinStr.equals("chain")) {
-        viewer.within("chain", bs, bsResult);
-        return;
-      }
-      if (withinStr.equals("model")) {
-        viewer.within("model", bs, bsResult);
-        return;
-      }
+      if (withinStr.equals("group")
+        || withinStr.equals("chain")
+        || withinStr.equals("model"))
+          return viewer.getAtomsWithin(withinStr, bs);
     }
     evalError("Unrecognized within parameter:" + withinSpec);
+    return null; //can't get here
   }
 
-  void connectedInstruction(Token instruction, BitSet bs, BitSet bsResult) {
+  BitSet connected(Token instruction, BitSet bs) {
     int min = instruction.intValue;
     int max = ((Integer) instruction.value).intValue();
+    return viewer.getAtomsConnected(min, max, bs);
   }
 
   BitSet getSubstructureSet(String smiles) throws ScriptException {

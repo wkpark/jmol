@@ -627,24 +627,20 @@ String getAtomInfoChime(int i) {
     return polymer.getLeadMidpoints();
   }
 
-  void within(String withinWhat, BitSet bs, BitSet bsResult) {
-    if (withinWhat.equals("group")) {
-      withinGroup(bs, bsResult);
-      return;
-    }
-    if (withinWhat.equals("chain")) {
-      withinChain(bs, bsResult);
-      return;
-    }
-    if (withinWhat.equals("model")) {
-      withinModel(bs, bsResult);
-      return;
-    }
+  BitSet getAtomsWithin(String withinWhat, BitSet bs) {
+    if (withinWhat.equals("group"))
+      return withinGroup(bs);
+    if (withinWhat.equals("chain"))
+      return withinChain(bs);
+    if (withinWhat.equals("model"))
+      return withinModel(bs);
+    return null;
   }
 
-  void withinGroup(BitSet bs, BitSet bsResult) {
+  BitSet withinGroup(BitSet bs) {
     // System.out.println("withinGroup");
     Group groupLast = null;
+    BitSet bsResult = new BitSet();
     for (int i = getAtomCount(); --i >= 0;) {
       if (!bs.get(i))
         continue;
@@ -655,10 +651,12 @@ String getAtomInfoChime(int i) {
         groupLast = group;
       }
     }
+    return bsResult;
   }
 
-  void withinChain(BitSet bs, BitSet bsResult) {
+  BitSet withinChain(BitSet bs) {
     Chain chainLast = null;
+    BitSet bsResult = new BitSet();
     for (int i = getAtomCount(); --i >= 0;) {
       if (!bs.get(i))
         continue;
@@ -669,10 +667,12 @@ String getAtomInfoChime(int i) {
         chainLast = chain;
       }
     }
+    return bsResult;
   }
 
-  void withinModel(BitSet bs, BitSet bsResult) {
+  BitSet withinModel(BitSet bs) {
     int modelIndexLast = -1;
+    BitSet bsResult = new BitSet();
     for (int i = getAtomCount(); --i >= 0;) {
       if (bs.get(i)) {
         int modelIndex = frame.getAtomAt(i).getModelIndex();
@@ -682,6 +682,7 @@ String getAtomInfoChime(int i) {
         }
       }
     }
+    return bsResult;
   }
 
   void selectModelIndexAtoms(int modelIndex, BitSet bsResult) {
@@ -691,7 +692,8 @@ String getAtomInfoChime(int i) {
         bsResult.set(i);
   }
 
-  void withinDistance(float distance, BitSet bs, BitSet bsResult) {
+  BitSet getAtomsWithin(float distance, BitSet bs) {
+    BitSet bsResult = new BitSet();
     for (int i = frame.getAtomCount(); --i >= 0;) {
       if (bs.get(i)) {
         Atom atom = frame.getAtomAt(i);
@@ -701,6 +703,27 @@ String getAtomInfoChime(int i) {
           bsResult.set(iterWithin.next().getAtomIndex());
       }
     }
+    return bsResult;
+  }
+
+  BitSet getAtomsConnected(float min, float max, BitSet bs) {
+    BitSet bsResult = new BitSet();
+    int atomCount = getAtomCount();
+    int[] nBonded = new int[atomCount];
+    int bondCount = getBondCount();
+    for (int ibond = 0; ibond < bondCount; ibond++) {
+      Bond bond = frame.bonds[ibond];
+      if (bond.order > 0) {
+        if (bs.get(bond.atom1.atomIndex))
+          nBonded[bond.atom2.atomIndex]++;
+        if (bs.get(bond.atom2.atomIndex))
+          nBonded[bond.atom1.atomIndex]++;
+      }
+    }
+    for (int i = atomCount; --i >= 0;)
+      if (nBonded[i] >= min && nBonded[i] <= max)
+        bsResult.set(i);
+    return bsResult;
   }
 
   String getModelExtract(BitSet bs) {

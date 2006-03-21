@@ -45,6 +45,8 @@ import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.Reader;
 
+// svn + CIA commit test -- delete me
+
 /*
  * ****************************************************************
  * The JmolViewer can be used to render client molecules. Clients implement the

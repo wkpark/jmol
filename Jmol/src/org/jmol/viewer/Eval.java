@@ -738,6 +738,10 @@ class Eval implements Runnable {
     evalError("variable undefined:" + varName);
   }
 
+  void endOfStatementUnexpected() throws ScriptException {
+    evalError("unexpected end of script command");
+  }
+
   void badArgumentCount() throws ScriptException {
     evalError("bad argument count");
   }
@@ -1769,6 +1773,8 @@ class Eval implements Runnable {
   Hashtable variables = new Hashtable();
 
   void define() throws ScriptException {
+    if (statementLength == 1)
+      keywordExpected();
     String variable = (String) statement[1].value;
     variables.put(variable, (expression(statement, 2)));
   }
@@ -1813,6 +1819,8 @@ class Eval implements Runnable {
     int i = 1;
     // ignore optional file format
     String filename = "fileset";
+    if (statementLength == 1)
+      filenameExpected();      
     if (statement[i].tok == Token.identifier)
       ++i;
     if (statement[i].tok != Token.string)
@@ -2148,6 +2156,8 @@ class Eval implements Runnable {
   }
 
   void script() throws ScriptException {
+    if (statementLength == 1)
+      endOfStatementUnexpected();
     if (statement[1].tok != Token.string)
       filenameExpected();
     pushContext();
@@ -2173,6 +2183,8 @@ class Eval implements Runnable {
   }
 
   void translate() throws ScriptException {
+    if (statementLength <3)
+      endOfStatementUnexpected();
     if (statement[2].tok != Token.integer)
       integerExpected();
     int percent = statement[2].intValue;
@@ -2198,6 +2210,8 @@ class Eval implements Runnable {
   }
 
   void zoom() throws ScriptException {
+    if (statementLength == 1)
+      endOfStatementUnexpected();
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 5 || percent > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
@@ -2220,6 +2234,8 @@ class Eval implements Runnable {
   void delay() throws ScriptException {
     long timeBegin = System.currentTimeMillis();
     long millis = 0;
+    if (statementLength == 1)
+      endOfStatementUnexpected();
     Token token = statement[1];
     switch (token.tok) {
     case Token.integer:
@@ -2315,6 +2331,8 @@ class Eval implements Runnable {
   }
 
   void slab() throws ScriptException {
+    if (statementLength == 1)
+      endOfStatementUnexpected();
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 0 || percent > 100)
@@ -2612,6 +2630,8 @@ class Eval implements Runnable {
   }
 
   void dots() throws ScriptException {
+    if (statementLength == 1)
+      endOfStatementUnexpected();
     short mad = 0;
     switch (statement[1].tok) {
     case Token.on:
@@ -2638,6 +2658,9 @@ class Eval implements Runnable {
 
   void proteinShape(int shapeType) throws ScriptException {
     short mad = 0;
+    if (statementLength == 1)
+      endOfStatementUnexpected();
+
     int tok = statement[1].tok;
     switch (tok) {
     case Token.on:
@@ -2883,6 +2906,8 @@ class Eval implements Runnable {
    */
 
   void set() throws ScriptException {
+    if (statementLength == 1)
+      endOfStatementUnexpected();
     switch (statement[1].tok) {
     case Token.axes:
       setAxes();

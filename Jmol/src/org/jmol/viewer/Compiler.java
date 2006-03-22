@@ -1597,9 +1597,11 @@ class Compiler {
         atoken[i+4].tok == Token.opOr       &&
         atoken[i+5].tok == Token.integer    &&
         atoken[i+6].tok == Token.rightsquare) {
-      int rgb = atoken[i+1].intValue << 16 | atoken[i+3].intValue << 8 |
-        atoken[i+5].intValue;
-      atokenNew[i] = new Token(Token.colorRGB, rgb, "[R,G,B]");
+      int argb = (0xFF000000 |
+                  atoken[i+1].intValue << 16 |
+                  atoken[i+3].intValue << 8 |
+                  atoken[i+5].intValue);
+      atokenNew[i] = new Token(Token.colorRGB, argb, "[R,G,B]");
       return true;
     }
     // chime also accepts [xRRGGBB]
@@ -1611,8 +1613,8 @@ class Compiler {
       if (hex.length() == 7 &&
           hex.charAt(0) == 'x') {
         try {
-          int rgb = Integer.parseInt(hex.substring(1), 16);
-          atokenNew[i] = new Token(Token.colorRGB, rgb, "[xRRGGBB]");
+          int argb = 0xFF000000 | Integer.parseInt(hex.substring(1), 16);
+          atokenNew[i] = new Token(Token.colorRGB, argb, "[xRRGGBB]");
           return true;
         } catch (NumberFormatException e) {
         }
@@ -1620,5 +1622,4 @@ class Compiler {
     }
     return badRGBColor();
   }
-
 }

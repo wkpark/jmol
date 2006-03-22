@@ -103,6 +103,8 @@ class Resolver {
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     for (int i = 0; i < lines.length; ++i)
       lines[i] = llr.readLineWithNewline();
+    if (checkV3000(lines))
+      return "V3000";
     if (checkMol(lines))
       return "Mol";
     if (checkXyz(lines))
@@ -142,12 +144,20 @@ class Resolver {
   // file types that need special treatment
   ////////////////////////////////////////////////////////////////
 
+  static boolean checkV3000(String[] lines) {
+    if (lines[3].length() >= 6) {
+      String line4trimmed = lines[3].trim();
+      if (line4trimmed.endsWith("V3000"))
+        return true;
+    }
+    return false;
+  }
+
   static boolean checkMol(String[] lines) {
     if (lines[3].length() >= 6) {
       String line4trimmed = lines[3].trim();
       if (line4trimmed.endsWith("V2000") ||
-          line4trimmed.endsWith("v2000") ||
-          line4trimmed.endsWith("V3000"))
+          line4trimmed.endsWith("v2000"))
         return true;
       try {
         Integer.parseInt(lines[3].substring(0, 3).trim());

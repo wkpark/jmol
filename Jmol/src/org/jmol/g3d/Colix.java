@@ -121,11 +121,11 @@ final class Colix {
     }
   }
 
-  final static int getRgb(short colix) {
+  final static int getArgb(short colix) {
     return argbs[colix & Graphics3D.OPAQUE_MASK];
   }
 
-  final static int getRgbGreyscale(short colix) {
+  final static int getArgbGreyscale(short colix) {
     if (argbsGreyscale == null)
       calcArgbsGreyscale();
     return argbsGreyscale[colix & Graphics3D.OPAQUE_MASK];

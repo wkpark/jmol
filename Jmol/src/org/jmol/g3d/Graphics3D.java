@@ -1789,8 +1789,8 @@ final public class Graphics3D {
     if (colix < 0)
       colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
-      return Colix.getRgb(colix);
-    return Colix.getRgbGreyscale(colix);
+      return Colix.getArgb(colix);
+    return Colix.getArgbGreyscale(colix);
   }
 
   public int[] getShades(short colix) {

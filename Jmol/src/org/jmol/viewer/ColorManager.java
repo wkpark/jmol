@@ -88,15 +88,29 @@ class ColorManager {
     colixRubberband = (argb == 0 ? 0 : Graphics3D.getColix(argb));
   }
 
-  short colixBackground = Graphics3D.BLACK;
+  int argbBackground;
+  short colixBackgroundContrast;
   void setBackgroundArgb(int argb) {
+    argbBackground = argb;
     g3d.setBackgroundArgb(argb);
-    colixBackground = Graphics3D.getColix(argb);
+    colixBackgroundContrast =
+      ((Graphics3D.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128
+       ? Graphics3D.WHITE : Graphics3D.BLACK);
   }
 
   void setColorBackground(String colorName) {
     if (colorName != null && colorName.length() > 0)
       setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
+  }
+
+
+  /**
+   * black or white, whichever contrasts more with the current background
+   *
+   * @return black or white colix value
+   */
+  public short getColixBackgroundContrast() {
+    return colixBackgroundContrast;
   }
 
   short getColixAtom(Atom atom) {

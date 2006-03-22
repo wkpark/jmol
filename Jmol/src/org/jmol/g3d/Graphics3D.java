@@ -72,8 +72,6 @@ final public class Graphics3D {
   int[] pbuf;
   short[] zbuf;
 
-  short colixBackgroundContrast = WHITE;
-
   int clipX;
   int clipY;
   int clipWidth;
@@ -173,18 +171,6 @@ final public class Graphics3D {
    */
   public void setBackgroundArgb(int argb) {
     platform.setBackground(argb);
-
-    colixBackgroundContrast =
-      (calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? WHITE : BLACK;
-  }
-
-  /**
-   * black or white, whichever contrasts more with the current background
-   *
-   * @return black or white colix value
-   */
-  public short getColixBackgroundContrast() {
-    return colixBackgroundContrast;
   }
 
   /**
@@ -196,7 +182,7 @@ final public class Graphics3D {
    * @param rgb the rgb value
    * @return a grayscale value in the range 0 - 255 decimal
    */
-  static int calcGreyscaleRgbFromRgb(int rgb) {
+  public static int calcGreyscaleRgbFromRgb(int rgb) {
     int grey = ((2989 * ((rgb >> 16) & 0xFF)) +
                 (5870 * ((rgb >> 8) & 0xFF)) +
                 (1140 * (rgb & 0xFF)) + 5000) / 10000;

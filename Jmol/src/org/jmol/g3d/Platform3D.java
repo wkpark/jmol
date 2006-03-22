@@ -132,8 +132,6 @@ abstract class Platform3D {
   }
 
   void clearScreenBuffer(int argbBackground) {
-    System.out.println("clearingScreenBuffer: 0x" +
-                       Integer.toHexString(argbBackground));
     for (int i = bufferSize; --i >= 0; ) {
       zBuffer[i] = ZBUFFER_BACKGROUND;
       pBuffer[i] = argbBackground;

@@ -725,12 +725,16 @@ final public class Viewer extends JmolViewer {
   }
 
   public int getBackgroundArgb() {
-    return g3d.getColixArgb(colorManager.colixBackground);
+    return colorManager.argbBackground;
   }
 
   public void setColorBackground(String colorName) {
     colorManager.setColorBackground(colorName);
     refresh(0, "Viewer:setColorBackground()");
+  }
+
+  short getColixBackgroundContrast() {
+    return colorManager.colixBackgroundContrast;
   }
 
   int getArgbFromString(String colorName) {

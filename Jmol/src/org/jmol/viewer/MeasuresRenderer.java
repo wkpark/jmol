@@ -45,7 +45,7 @@ class MeasuresRenderer extends ShapeRenderer {
 
     colix = measures.colix;
     if (colix == 0)
-      colix = g3d.getColixBackgroundContrast();
+      colix = viewer.getColixBackgroundContrast();
     measurementMad = measures.mad;
     font3d = measures.font3d;
     showMeasurementNumbers = measures.showMeasurementNumbers;

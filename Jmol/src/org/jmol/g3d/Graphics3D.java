@@ -72,7 +72,6 @@ final public class Graphics3D {
   int[] pbuf;
   short[] zbuf;
 
-  short colixBackground = BLACK;
   short colixBackgroundContrast = WHITE;
 
   int clipX;
@@ -168,18 +167,15 @@ final public class Graphics3D {
   }
 
   /**
-   * sets background color using colix color index
+   * sets background color to the specified argb value
    *
-   * @param colix a color index represented as a short
-   * @see Colix
+   * @param argb an argb value with alpha channel
    */
-  public void setBackground(short colix) {
-    colixBackground = colix;
-    int argbBackground = getColixArgb(colix);
-    platform.setBackground(argbBackground);
+  public void setBackgroundArgb(int argb) {
+    platform.setBackground(argb);
 
     colixBackgroundContrast =
-      (calcGreyscaleRgbFromRgb(argbBackground) & 0xFF) < 128 ? WHITE : BLACK;
+      (calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? WHITE : BLACK;
   }
 
   /**

@@ -90,8 +90,8 @@ class ColorManager {
 
   short colixBackground = Graphics3D.BLACK;
   void setBackgroundArgb(int argb) {
-    colixBackground = Graphics3D.getColix(argb | 0xFF000000);
-    g3d.setBackground(colixBackground);
+    g3d.setBackgroundArgb(argb);
+    colixBackground = Graphics3D.getColix(argb);
   }
 
   void setColorBackground(String colorName) {

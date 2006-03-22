@@ -28,7 +28,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Image;
-import java.awt.image.DirectColorModel;
+import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -55,11 +55,10 @@ import java.awt.image.SinglePixelPackedSampleModel;
   
 final class Swing3D extends Platform3D {
 
-  final static DirectColorModel rgbColorModel =
-    new DirectColorModel(24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
+  final static ColorModel rgbColorModel = ColorModel.getRGBdefault();
 
   final static int[] sampleModelBitMasks =
-  { 0x00FF0000, 0x0000FF00, 0x000000FF };
+  { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 };
   
   Image allocateImage() {
     SinglePixelPackedSampleModel sppsm =

@@ -1532,8 +1532,8 @@ class Eval implements Runnable {
     if (statementLength < 2 || statementLength > 3)
       badArgumentCount();
     int tok = statement[1].tok;
-    if (tok == Token.colorRGB)
-      viewer.setBackgroundArgb(getArgbParam(1));
+    if (tok == Token.colorRGB || tok == Token.none)
+      viewer.setBackgroundArgb(getArgbOrNoneParam(1));
     else
       viewer.setShapePropertyArgb(getShapeType(tok), "bgcolor",
                                   getArgbOrNoneParam(2));
@@ -1643,7 +1643,7 @@ class Eval implements Runnable {
       viewer.setRubberbandArgb(getArgbParam(2));
       return;
     case Token.background:
-      viewer.setBackgroundArgb(getArgbParam(2));
+      viewer.setBackgroundArgb(getArgbOrNoneParam(2));
       return;
     case Token.identifier:
     case Token.hydrogen:

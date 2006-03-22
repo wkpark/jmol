@@ -132,20 +132,12 @@ abstract class Platform3D {
   }
 
   void clearScreenBuffer(int argbBackground) {
+    System.out.println("clearingScreenBuffer: 0x" +
+                       Integer.toHexString(argbBackground));
     for (int i = bufferSize; --i >= 0; ) {
       zBuffer[i] = ZBUFFER_BACKGROUND;
       pBuffer[i] = argbBackground;
     }
-    /*
-    for (int i = width; --i >= 0; ) {
-      zBuffer[i] = ZBUFFER_BACKGROUND;
-      pBuffer[i] = argbBackground;
-    }
-    for (int i = height, offset = size; --i > 0; ) {
-      System.arraycopy(pBuffer, 0, pBuffer, offset -= width, width);
-      System.arraycopy(zBuffer, 0, zBuffer, offset, width);
-    }
-    */
   }
   
   final void obtainScreenBuffer() {

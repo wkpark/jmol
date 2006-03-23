@@ -1927,8 +1927,7 @@ class Eval implements Runnable {
   }
 
   void script() throws ScriptException {
-    if (statementLength == 1)
-      endOfStatementUnexpected();
+    // token allows for only 1 parameter
     if (statement[1].tok != Token.string)
       filenameExpected();
     pushContext();
@@ -1946,7 +1945,7 @@ class Eval implements Runnable {
 
   void translate() throws ScriptException {
     if (statementLength <3)
-      endOfStatementUnexpected();
+      badArgumentCount();
     if (statement[2].tok != Token.integer)
       integerExpected();
     int percent = statement[2].intValue;
@@ -1972,8 +1971,7 @@ class Eval implements Runnable {
   }
 
   void zoom() throws ScriptException {
-    if (statementLength == 1)
-      endOfStatementUnexpected();
+    // token has ondefault1
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 5 || percent > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
@@ -1996,8 +1994,7 @@ class Eval implements Runnable {
   void delay() throws ScriptException {
     long timeBegin = System.currentTimeMillis();
     long millis = 0;
-    if (statementLength == 1)
-      endOfStatementUnexpected();
+    //token has ondefault1
     Token token = statement[1];
     switch (token.tok) {
     case Token.integer:
@@ -2041,8 +2038,7 @@ class Eval implements Runnable {
   }
 
   void slab() throws ScriptException {
-    if (statementLength == 1)
-      endOfStatementUnexpected();
+    //token has ondefault1
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 0 || percent > 100)
@@ -2340,8 +2336,7 @@ class Eval implements Runnable {
   }
 
   void dots() throws ScriptException {
-    if (statementLength == 1)
-      endOfStatementUnexpected();
+    // token has onDefault1
     short mad = 0;
     switch (statement[1].tok) {
     case Token.on:
@@ -2368,9 +2363,7 @@ class Eval implements Runnable {
 
   void proteinShape(int shapeType) throws ScriptException {
     short mad = 0;
-    if (statementLength == 1)
-      endOfStatementUnexpected();
-
+    //token has ondefault1
     int tok = statement[1].tok;
     switch (tok) {
     case Token.on:
@@ -2616,8 +2609,6 @@ class Eval implements Runnable {
    */
 
   void set() throws ScriptException {
-    if (statementLength == 1)
-      endOfStatementUnexpected();
     switch (statement[1].tok) {
     case Token.axes:
       setAxes();

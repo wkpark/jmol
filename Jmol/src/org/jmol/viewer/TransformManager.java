@@ -739,6 +739,10 @@ class TransformManager {
   }
 
   boolean increaseRotationRadius;
+  boolean getIncreaseRotationRadius() {
+    return increaseRotationRadius;
+  }
+  
   int minimumZ;
 
   synchronized void finalizeTransformParameters() {

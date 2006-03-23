@@ -531,7 +531,7 @@ final public class Viewer extends JmolViewer {
   }
 
   public boolean getPerspectiveDepth() {
-    return transformManager.perspectiveDepth;
+    return transformManager.getPerspectiveDepth();
   }
 
   void setCameraDepth(float depth) {
@@ -539,11 +539,11 @@ final public class Viewer extends JmolViewer {
   }
 
   float getCameraDepth() {
-    return transformManager.cameraDepth;
+    return transformManager.getCameraDepth();
   }
 
   void checkCameraDistance() {
-    if (transformManager.increaseRotationRadius)
+    if (transformManager.getIncreaseRotationRadius())
       modelManager.increaseRotationRadius(transformManager
           .getRotationRadiusIncrease());
   }

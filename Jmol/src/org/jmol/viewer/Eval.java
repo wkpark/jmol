@@ -1045,7 +1045,7 @@ class Eval implements Runnable {
       case Token.identifier:
       case Token.sidechain:
       case Token.surface:
-        stack[sp++] = viewer.getAtomBits("IdentifierValue", (String) instruction.value);
+        stack[sp++] = lookupIdentifierValue((String) instruction.value);
         break;
       case Token.opLT:
       case Token.opLE:

@@ -1333,14 +1333,14 @@ class Eval implements Runnable {
     if (statement[1].tok == Token.dollarsign) {
       //center $ id
       String axisID = objectNameParameter(2);
-      viewer.setDrawCenter(axisID);
+      viewer.setNewRotationCenter(axisID);
       return;
     }
 
     if (statement[1].tok == Token.leftbrace) {
       //center { x y z } 
       Point3f pt = getCoordinate(1);
-      viewer.setCenter(pt);
+      viewer.setNewRotationCenter(pt);
       return;
     }
 
@@ -3811,3 +3811,4 @@ class Eval implements Runnable {
     viewer.scriptEcho(retValue);
   }
 }
+

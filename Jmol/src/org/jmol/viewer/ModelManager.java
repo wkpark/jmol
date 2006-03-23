@@ -332,6 +332,13 @@ class ModelManager {
     
     if (center == null)
       center = frame.getRotationCenterDefault();
+    setNewRotationCenter(center, doScale);
+    return center;
+  }
+
+  void setNewRotationCenter(Point3f center, boolean doScale) {
+    // once we have the center, we need to optionally move it to 
+    // the proper XY position and possibly scale
     if (viewer.isWindowCentered()) {
       viewer.translateCenterTo(0, 0);
       frame.setRotationCenterAndRadiusXYZ(center, true);
@@ -339,10 +346,9 @@ class ModelManager {
         viewer.scaleFitToScreen();
     } else {
       viewer.moveRotationCenter(center);
-    }
-    return center;
+    }  
   }
-
+  
   Point3f setRotationCenterAndRadiusXYZ(Point3f center, boolean andRadius) {
     if (frame == null)
       return null;

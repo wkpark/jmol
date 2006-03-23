@@ -1356,16 +1356,30 @@ final public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
 
-  void moveRotationCenter(Point3f center) {
-    center = modelManager.setRotationCenterAndRadiusXYZ(center, false);
-    transformManager.setFixedRotationCenter(center);
-    transformManager.setRotationPointXY(center);
-  }
-
   void setCenterBitSet(BitSet bsCenter, boolean doScale) {
     Point3f center = modelManager.setCenterBitSet(bsCenter, doScale);
     transformManager.setFixedRotationCenter(center);
     refresh(0, "Viewer:setCenterBitSet()");
+  }
+
+  public void setNewRotationCenter(String axisID) {
+    //for center [line1]
+    Point3f center = getDrawObjectCenter(axisID);
+    if (center == null)
+      return;
+    setNewRotationCenter(center);
+  }
+
+  public void setNewRotationCenter(Point3f center) {
+    modelManager.setNewRotationCenter(center, true);
+    transformManager.setFixedRotationCenter(center);
+    refresh(0, "Viewer:setCenterBitSet()");
+  }
+
+  void moveRotationCenter(Point3f center) {
+    center = modelManager.setRotationCenterAndRadiusXYZ(center, false);
+    transformManager.setFixedRotationCenter(center);
+    transformManager.setRotationPointXY(center);
   }
 
   boolean windowCenteredFlag = true;
@@ -2982,14 +2996,6 @@ final public class Viewer extends JmolViewer {
 
   Vector3f getDrawObjectAxis(String axisID) {
     return modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
-  }
-
-  public void setDrawCenter(String axisID) {
-    //for center [line1]
-    Point3f center = getDrawObjectCenter(axisID);
-    if (center == null)
-      return;
-    setCenter(center);
   }
 
 }

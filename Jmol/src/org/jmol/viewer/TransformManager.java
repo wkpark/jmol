@@ -1319,7 +1319,7 @@ class TransformManager {
 
   void setSpinOn(boolean spinOn) {
     this.spinOn = spinOn;
-    System.out.println("setSpinOn " + spinOn);
+    //System.out.println("setSpinOn " + spinOn);
     if (spinOn) {
       if (spinThread == null) {
         spinThread = new SpinThread();
@@ -1340,7 +1340,7 @@ class TransformManager {
       int myFps = spinFps;
       int i = 0;
       long timeBegin = System.currentTimeMillis();
-      System.out.println("spin thread run started");
+      //System.out.println("spin thread run started");
       while (!isInterrupted()) {
         if (myFps != spinFps) {
           myFps = spinFps;

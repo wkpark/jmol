@@ -44,36 +44,43 @@ class V3000Reader extends AtomSetCollectionReader {
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
     throws Exception {
     atomSetCollection = new AtomSetCollection("v3000");
-    processCtab(reader);
+    boolean startNewAtomSet = false;
+    String line;
+    while (true) {
+      line = processCtab(reader, startNewAtomSet);
+      if (line == null)
+        break;
+      if (line.equals("$$$$"))
+        startNewAtomSet = true;
+    } 
     return atomSetCollection;
   }
 
-  void processCtab(BufferedReader reader) throws Exception {
+  String processCtab(BufferedReader reader,
+                     boolean startNewAtomSet) throws Exception {
+    System.out.println("processCtab(" + startNewAtomSet + ")");
     String line;
-    do {
-      line = reader.readLine();
-      if (line == null)
-        return;
-    } while (! line.startsWith("M  V30 BEGIN CTAB"));
     line = reader.readLine();
-    while (line != null && ! line.startsWith("M  END")) {
-      if (line.startsWith("M  V30 COUNTS")) {
-        processCounts(line);
-        line = reader.readLine();
-        continue;
-      }
+    while (line != null &&
+           ! line.equals("$$$$") &&
+           ! line.startsWith("M  END")) {
       if (line.startsWith("M  V30 BEGIN ATOM")) {
         line = processAtomBlock(reader);
         continue;
       }
-      /*
       if (line.startsWith("M  V30 BEGIN BOND")) {
-        line = processBond(reader);
+        line = processBondBlock(reader);
         continue;
       }
-      */
+      if (line.startsWith("M  V30 BEGIN CTAB")) {
+        if (startNewAtomSet)
+          atomSetCollection.newAtomSet();
+      } else if (line.startsWith("M  V30 COUNTS")) {
+        processCounts(line);
+      }
       line = reader.readLine();
     }
+    return line;
   }
   
   void processCounts(String line) {
@@ -86,7 +93,7 @@ class V3000Reader extends AtomSetCollectionReader {
       String line = readLineWithContinuation(reader);
       if (line == null || (! line.startsWith("M  V30 ")))
         throw new Exception("unrecognized atom");
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = new Atom();
       atom.atomSerial = parseInt(line, 7);
       atom.elementSymbol = parseToken(line, ichNextParse);
       atom.x = parseFloat(line, ichNextParse);
@@ -100,10 +107,30 @@ class V3000Reader extends AtomSetCollectionReader {
         if (option.startsWith("CHG="))
           atom.formalCharge = parseInt(option, 4);
       }
+      atomSetCollection.addAtomWithMappedSerialNumber(atom);
     }
     String line = reader.readLine();
     if (line == null || ! line.startsWith("M  V30 END ATOM"))
       throw new Exception("M  V30 END ATOM not found");
+    return line;
+  }
+
+  String processBondBlock(BufferedReader reader) throws Exception {
+    for (int i = headerBondCount; --i >= 0; ) {
+      String line = readLineWithContinuation(reader);
+      if (line == null || (! line.startsWith("M  V30 ")))
+        throw new Exception("unrecognized bond");
+      int bondSerial = parseInt(line, 7); // currently unused
+      int order = parseInt(line, ichNextParse);
+      int atomSerial1 = parseInt(line, ichNextParse);
+      int atomSerial2 = parseInt(line, ichNextParse);
+      atomSetCollection.addNewBondWithMappedSerialNumbers(atomSerial1,
+                                                          atomSerial2,
+                                                          order);
+    }
+    String line = reader.readLine();
+    if (line == null || ! line.startsWith("M  V30 END BOND"))
+      throw new Exception("M  V30 END BOND not found");
     return line;
   }
 

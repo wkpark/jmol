@@ -148,7 +148,7 @@ class AtomSetCollection {
     for (int i = atomCount; --i >= 0; )
       atoms[i] = null;
     atomCount = 0;
-    atomNameMap.clear();
+    atomSymbolicMap.clear();
     atomSetCount = 0;
     currentAtomSetIndex = -1;
     for (int i = atomSetNumbers.length; --i >= 0; ) {
@@ -231,6 +231,11 @@ class AtomSetCollection {
     mapMostRecentAtomName();
   }
 
+  void addAtomWithMappedSerialNumber(Atom atom) {
+    addAtom(atom);
+    mapMostRecentAtomSerialNumber();
+  }
+
   Bond addNewBond(int atomIndex1, int atomIndex2) {
     return addNewBond(atomIndex1, atomIndex2, 1);
   }
@@ -240,6 +245,9 @@ class AtomSetCollection {
   }
 
   Bond addNewBond(int atomIndex1, int atomIndex2, int order) {
+    if (atomIndex1 < 0 || atomIndex1 >= atomCount ||
+        atomIndex2 < 0 || atomIndex2 >= atomCount)
+      return null;
     Bond bond = new Bond(atomIndex1, atomIndex2, order);
     addBond(bond);
     return bond;
@@ -248,6 +256,13 @@ class AtomSetCollection {
   Bond addNewBond(String atomName1, String atomName2, int order) {
     return addNewBond(getAtomNameIndex(atomName1),
                       getAtomNameIndex(atomName2),
+                      order);
+  }
+
+  Bond addNewBondWithMappedSerialNumbers(int atomSerial1, int atomSerial2,
+                                         int order) {
+    return addNewBond(getAtomSerialNumberIndex(atomSerial1),
+                      getAtomSerialNumberIndex(atomSerial2),
                       order);
   }
 
@@ -285,24 +300,41 @@ class AtomSetCollection {
     }
   }
 
-  Hashtable atomNameMap = new Hashtable();
+  Hashtable atomSymbolicMap = new Hashtable();
 
   void mapMostRecentAtomName() {
     if (atomCount > 0) {
       int index = atomCount - 1;
       String atomName = atoms[index].atomName;
       if (atomName != null)
-        atomNameMap.put(atomName, new Integer(atomCount - 1));
+        atomSymbolicMap.put(atomName, new Integer(index));
+    }
+  }
+
+  void mapMostRecentAtomSerialNumber() {
+    if (atomCount > 0) {
+      int index = atomCount - 1;
+      int atomSerial = atoms[index].atomSerial;
+      if (atomSerial != Integer.MIN_VALUE)
+        atomSymbolicMap.put(new Integer(atomSerial), new Integer(index));
     }
   }
 
   void mapAtomName(String atomName, int atomIndex) {
-    atomNameMap.put(atomName, new Integer(atomIndex));
+    atomSymbolicMap.put(atomName, new Integer(atomIndex));
   }
-  
+
   int getAtomNameIndex(String atomName) {
     int index = -1;
-    Object value = atomNameMap.get(atomName);
+    Object value = atomSymbolicMap.get(atomName);
+    if (value != null)
+      index = ((Integer)value).intValue();
+    return index;
+  }
+
+  int getAtomSerialNumberIndex(int serialNumber) {
+    int index = -1;
+    Object value = atomSymbolicMap.get(new Integer(serialNumber));
     if (value != null)
       index = ((Integer)value).intValue();
     return index;
@@ -334,7 +366,6 @@ class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
 
   void newAtomSet() {
-    //    System.out.println("newAtomSet()");
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
       atomSetNumbers = AtomSetCollectionReader.doubleLength(atomSetNumbers);
@@ -347,6 +378,11 @@ class AtomSetCollection {
         (Hashtable[]) AtomSetCollectionReader.doubleLength(atomSetAuxiliaryInfo);
     }
     atomSetNumbers[currentAtomSetIndex] = atomSetCount;
+    // miguel 2006 03 22
+    // added this clearing of the atomSymbolicMap to support V3000
+    // seems that it should have been here all along, but apparently
+    // noone else needed it
+    atomSymbolicMap.clear();
   }
 
   /**

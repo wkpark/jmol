@@ -243,6 +243,28 @@ class ModelManager {
     return (frame == null) ? null : frame.getAtomSetCenter(bs);
   }
 
+  int firstAtomOf(BitSet bs) {
+    return (frame == null) ? -1 : frame.firstAtomOf(bs);
+  }
+
+  BitSet getAtomBits(String setType) {
+    return (frame == null) ? null : frame.getAtomBits(setType);
+  }
+
+  BitSet getAtomBits(String setType, String specInfo) {
+    return (frame == null) ? null : frame.getAtomBits(setType, specInfo);
+  }
+
+  BitSet getAtomBits(String setType, int specInfo) {
+    return (frame == null) ? null : frame.getAtomBits(setType, specInfo);
+  }
+
+  BitSet getAtomBits(String setType, int specInfoA, int specInfoB) {
+    return (frame == null) ? null : frame.getAtomBits(setType, specInfoA,
+        specInfoB);
+  }
+
+
   int getChainCount() {
     return (frame == null) ? 0 : frame.getChainCount();
   }
@@ -327,18 +349,10 @@ class ModelManager {
     return frame.setRotationCenterAndRadiusXYZ(center, andRadius);
   }
 
-  Point3f setRotationCenterAndRadiusXYZ(String relativeTo, float x, float y, float z) {
+  Point3f setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
     if (frame == null)
       return new Point3f(0, 0, 0);
-    pointT.set(x, y, z);
-    if (relativeTo == "average")
-      pointT.add(frame.getAverageAtomPoint());
-    else if (relativeTo == "boundbox")
-      pointT.add(frame.getBoundBoxCenter());
-    else if (relativeTo != "absolute")
-      pointT.set(frame.getRotationCenterDefault());
-    frame.setRotationCenterAndRadiusXYZ(pointT, true);
-    return pointT;
+    return frame.setRotationCenterAndRadiusXYZ(relativeTo, pt);
   }
 
   boolean autoBond = true;
@@ -480,15 +494,9 @@ class ModelManager {
   }
 
   BitSet getModelAtomBitSet(int modelIndex) {
-    BitSet bs = new BitSet();
-    int atomCount = getAtomCount();
-    Atom[] atoms = frame.atoms;
-    for (int i = 0; i < atomCount; i++)
-      if (atoms[i].modelIndex == modelIndex)
-        bs.set(i);
-    return bs;
+    return (frame == null) ? null : frame.getModelAtomBitSet(modelIndex);
   }
-  
+
   void calcSelectedGroupsCount(BitSet bsSelected) {
     if (frame != null)
       frame.calcSelectedGroupsCount(bsSelected);

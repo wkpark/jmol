@@ -30,8 +30,6 @@ import java.io.*;
 import java.util.BitSet;
 import java.util.Vector;
 import java.util.Hashtable;
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -942,15 +940,6 @@ class Eval implements Runnable {
     return bs;
   }
 
-  int firstAtomOf(BitSet bs) {
-    int numberOfAtoms = viewer.getAtomCount();
-    for (int i = numberOfAtoms; --i >= 0;)
-      if (bs.get(i)) {
-        return i;
-      }
-    return -1;
-  }
-
   int endOfExpression;
 
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
@@ -1014,54 +1003,40 @@ class Eval implements Runnable {
         stack[sp++] = copyBitSet(viewer.getVisibleSet());
         break;
       case Token.hetero:
-        stack[sp++] = getHeteroSet();
-        break;
       case Token.hydrogen:
-        stack[sp++] = getHydrogenSet();
+      case Token.protein:
+      case Token.nucleic:
+      case Token.dna:
+      case Token.rna:
+      case Token.purine:
+      case Token.pyrimidine:
+        stack[sp++] = viewer.getAtomBits((String) instruction.value);
         break;
       case Token.spec_name_pattern:
-        stack[sp++] = getSpecName((String) instruction.value);
+        stack[sp++] = viewer.getAtomBits("SpecName", (String) instruction.value);
         break;
       case Token.spec_resid:
-        stack[sp++] = getSpecResid(instruction.intValue);
+        stack[sp++] = viewer.getAtomBits("SpecResid", instruction.intValue);
         break;
       case Token.spec_seqcode:
-        stack[sp++] = getSpecSeqcode(instruction.intValue);
+        stack[sp++] = viewer.getAtomBits("SpecSeqcode",instruction.intValue);
         break;
       case Token.spec_seqcode_range:
         int seqcodeA = instruction.intValue;
         int seqcodeB = ((Integer) instruction.value).intValue();
-        stack[sp++] = getSpecSeqcodeRange(seqcodeA, seqcodeB);
+        stack[sp++] = viewer.getAtomBits("SpecSeqcodeRange", seqcodeA, seqcodeB);
         break;
       case Token.spec_chain:
-        stack[sp++] = getSpecChain((char) instruction.intValue);
+        stack[sp++] = viewer.getAtomBits("SpecChain", instruction.intValue);
         break;
       case Token.spec_atom:
-        stack[sp++] = getSpecAtom((String) instruction.value);
+        stack[sp++] = viewer.getAtomBits("SpecAtom", (String) instruction.value);
         break;
       case Token.spec_alternate:
-        stack[sp++] = getSpecAlternate((String) instruction.value);
+        stack[sp++] = viewer.getAtomBits("SpecAlternate", (String) instruction.value);
         break;
       case Token.spec_model:
-        stack[sp++] = getSpecModel((String) instruction.value);
-        break;
-      case Token.protein:
-        stack[sp++] = getProteinSet();
-        break;
-      case Token.nucleic:
-        stack[sp++] = getNucleicSet();
-        break;
-      case Token.dna:
-        stack[sp++] = getDnaSet();
-        break;
-      case Token.rna:
-        stack[sp++] = getRnaSet();
-        break;
-      case Token.purine:
-        stack[sp++] = getPurineSet();
-        break;
-      case Token.pyrimidine:
-        stack[sp++] = getPyrimidineSet();
+        stack[sp++] = viewer.getAtomBits("SpecModel", (String) instruction.value);
         break;
       case Token.y:
       case Token.amino:
@@ -1070,7 +1045,7 @@ class Eval implements Runnable {
       case Token.identifier:
       case Token.sidechain:
       case Token.surface:
-        stack[sp++] = lookupIdentifierValue((String) instruction.value);
+        stack[sp++] = viewer.getAtomBits("IdentifierValue", (String) instruction.value);
         break;
       case Token.opLT:
       case Token.opLE:
@@ -1088,6 +1063,15 @@ class Eval implements Runnable {
     if (sp != 1)
       evalError("atom expression compiler error - stack over/underflow");
     return stack[0];
+  }
+
+  void notSet(BitSet bs) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
+      if (bs.get(i))
+        bs.clear(i);
+      else
+        bs.set(i);
+    }
   }
 
   BitSet lookupIdentifierValue(String identifier) throws ScriptException {
@@ -1109,7 +1093,7 @@ class Eval implements Runnable {
     String potentialGroupName = identifier.substring(0, alphaLen);
     // System.out.println("potentialGroupName=" + potentialGroupName);
     // undefinedVariable();
-    BitSet bsName = lookupPotentialGroupName(potentialGroupName);
+    BitSet bsName = viewer.getAtomBits("PotentialGroupName", potentialGroupName);
     if (bsName == null)
       undefinedVariable(identifier);
     if (alphaLen == len)
@@ -1139,7 +1123,7 @@ class Eval implements Runnable {
     // resno << 8 + insertionCode
     int seqcode = Group.getSeqcode(seqNumber, insertionCode);
     // System.out.println("seqcode=" + seqcode);
-    BitSet bsSequence = getSpecSeqcode(seqcode);
+    BitSet bsSequence = viewer.getAtomBits("SpecSeqcode", seqcode);
     BitSet bsNameSequence = bsName;
     bsNameSequence.and(bsSequence);
     if (seqcodeEnd == len)
@@ -1151,198 +1135,10 @@ class Eval implements Runnable {
     if (++seqcodeEnd != len)
       undefinedVariable(identifier);
     // System.out.println("chainID=" + chainID);
-    BitSet bsChain = getSpecChain(chainID);
+    BitSet bsChain = viewer.getAtomBits("SpecChain", (int) chainID);
     BitSet bsNameSequenceChain = bsNameSequence;
     bsNameSequenceChain.and(bsChain);
     return bsNameSequenceChain;
-  }
-
-  BitSet lookupPotentialGroupName(String potentialGroupName) {
-    BitSet bsResult = null;
-    // System.out.println("lookupPotentialGroupName:" + potentialGroupName);
-    Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (atom.isGroup3(potentialGroupName)) {
-        if (bsResult == null)
-          bsResult = new BitSet(i + 1);
-        bsResult.set(i);
-      }
-    }
-    return bsResult;
-  }
-
-  void notSet(BitSet bs) {
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      if (bs.get(i))
-        bs.clear(i);
-      else
-        bs.set(i);
-    }
-  }
-
-  BitSet getHeteroSet() {
-    Frame frame = viewer.getFrame();
-    BitSet bsHetero = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).isHetero())
-        bsHetero.set(i);
-    return bsHetero;
-  }
-
-  BitSet getHydrogenSet() {
-    if (logMessages)
-      viewer.scriptStatus("getHydrogenSet()");
-    Frame frame = viewer.getFrame();
-    BitSet bsHydrogen = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (atom.getElementNumber() == 1)
-        bsHydrogen.set(i);
-    }
-    return bsHydrogen;
-  }
-
-  BitSet getProteinSet() {
-    Frame frame = viewer.getFrame();
-    BitSet bsProtein = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).isProtein())
-        bsProtein.set(i);
-    return bsProtein;
-  }
-
-  BitSet getNucleicSet() {
-    Frame frame = viewer.getFrame();
-    BitSet bsNucleic = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).isNucleic())
-        bsNucleic.set(i);
-    return bsNucleic;
-  }
-
-  BitSet getDnaSet() {
-    Frame frame = viewer.getFrame();
-    BitSet bsDna = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).isDna())
-        bsDna.set(i);
-    return bsDna;
-  }
-
-  BitSet getRnaSet() {
-    Frame frame = viewer.getFrame();
-    BitSet bsRna = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).isRna())
-        bsRna.set(i);
-    return bsRna;
-  }
-
-  BitSet getPurineSet() {
-    Frame frame = viewer.getFrame();
-    BitSet bsPurine = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).isPurine())
-        bsPurine.set(i);
-    return bsPurine;
-  }
-
-  BitSet getPyrimidineSet() {
-    Frame frame = viewer.getFrame();
-    BitSet bsPyrimidine = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (frame.getAtomAt(i).isPyrimidine())
-        bsPyrimidine.set(i);
-    return bsPyrimidine;
-  }
-
-  /*
-   * BitSet getResidueSet(String strResidue) { Frame frame = viewer.getFrame();
-   * BitSet bsResidue = new BitSet(); for (int i = viewer.getAtomCount(); --i >=
-   * 0; ) { PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom(); if (pdbatom !=
-   * null && pdbatom.isResidue(strResidue)) bsResidue.set(i); } return
-   * bsResidue; }
-   */
-
-  BitSet getSpecName(String resNameSpec) {
-    BitSet bsRes = new BitSet();
-    // System.out.println("getSpecName:" + resNameSpec);
-    Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (atom.isGroup3Match(resNameSpec))
-        bsRes.set(i);
-    }
-    return bsRes;
-  }
-
-  BitSet getSpecResid(int resid) {
-    BitSet bsRes = new BitSet();
-    Frame frame = viewer.getFrame();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (atom.getGroupID() == resid)
-        bsRes.set(i);
-    }
-    return bsRes;
-  }
-
-  BitSet getSpecSeqcode(int seqcode) {
-    Frame frame = viewer.getFrame();
-    BitSet bsResno = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (seqcode == atom.getSeqcode())
-        bsResno.set(i);
-    }
-    return bsResno;
-  }
-
-  BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB) {
-    Frame frame = viewer.getFrame();
-    BitSet bsResidue = new BitSet();
-    frame.selectSeqcodeRange(seqcodeA, seqcodeB, bsResidue);
-    return bsResidue;
-  }
-
-  BitSet getSpecChain(char chain) {
-    boolean caseSensitive = viewer.getChainCaseSensitive();
-    if (!caseSensitive)
-      chain = Character.toUpperCase(chain);
-    Frame frame = viewer.getFrame();
-    BitSet bsChain = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      char ch = frame.getAtomAt(i).getChainID();
-      if (!caseSensitive)
-        ch = Character.toUpperCase(ch);
-      if (chain == ch)
-        bsChain.set(i);
-    }
-    return bsChain;
-  }
-
-  BitSet getSpecAtom(String atomSpec) {
-    Frame frame = viewer.getFrame();
-    BitSet bsAtom = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (atom.isAtomNameMatch(atomSpec))
-        bsAtom.set(i);
-    }
-    return bsAtom;
-  }
-
-  BitSet getResidueWildcard(String strWildcard) {
-    Frame frame = viewer.getFrame();
-    BitSet bsResidue = new BitSet();
-    // System.out.println("getResidueWildcard:" + strWildcard);
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (atom.isGroup3Match(strWildcard))
-        bsResidue.set(i);
-    }
-    return bsResidue;
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
@@ -1368,27 +1164,6 @@ class Eval implements Runnable {
     else
       variable = variable.substring(0, len - 1);
     return lookupValue(variable, true);
-  }
-
-  BitSet getSpecAlternate(String alternateSpec) {
-    // System.out.println("getSpecAlternate(" + alternateSpec + ")");
-    Frame frame = viewer.getFrame();
-    BitSet bs = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      if (atom.isAlternateLocationMatch(alternateSpec))
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  BitSet getSpecModel(String modelTag) {
-    int modelNumber = -1;
-    try {
-      modelNumber = Integer.parseInt(modelTag);
-    } catch (NumberFormatException nfe) {
-    }
-    return viewer.getModelAtomBitSet(viewer.getModelNumberIndex(modelNumber));
   }
 
   void comparatorInstruction(Token instruction, BitSet bs)
@@ -1602,7 +1377,6 @@ class Eval implements Runnable {
     if (token.tok != Token.rightbrace)
       break;
     endOfExpression = i;
-    System.out.println("getCoord"+pt+" "+i);
     return pt;
     }
     coordinateExpected();
@@ -1901,8 +1675,7 @@ class Eval implements Runnable {
         break;
       case Token.expressionBegin:
         bs = expression(statement, i + 1);
-        atomIndex = firstAtomOf(bs);
-        // System.out.println("expressionBegin "+atomIndex);
+        atomIndex = viewer.firstAtomOf(bs);
         i = endOfExpression - 1;
         break;
       default:
@@ -2055,8 +1828,6 @@ class Eval implements Runnable {
       case Token.leftbrace:
         // {X, Y, Z}
         Point3f pt = getCoordinate(i);
-        if (pt == null) 
-          coordinateExpected();
         i = endOfExpression;
         if (isAxisAngle) {
             if (axesOrientationRasmol)
@@ -2170,16 +1941,7 @@ class Eval implements Runnable {
 
   void select() throws ScriptException {
     // NOTE this is called by restrict()
-    if (statementLength == 1) {
-      viewer.selectAll();
-      if (!viewer.getRasmolHydrogenSetting())
-        viewer.excludeSelectionSet(getHydrogenSet());
-      if (!viewer.getRasmolHeteroSetting())
-        viewer.excludeSelectionSet(getHeteroSet());
-    } else {
-      viewer.setSelectionSet(expression(statement, 1));
-    }
-    viewer.scriptStatus("" + viewer.getSelectionCount() + " atoms selected");
+    viewer.select(statementLength == 1? null : expression(statement, 1));
   }
 
   void translate() throws ScriptException {
@@ -2263,13 +2025,9 @@ class Eval implements Runnable {
   void move() throws ScriptException {
     if (statementLength < 10 || statementLength > 12)
       badArgumentCount();
-    float dRotX = floatParameter(1);
-    float dRotY = floatParameter(2);
-    float dRotZ = floatParameter(3);
+    Vector3f dRot = new Vector3f(floatParameter(1), floatParameter(2), floatParameter(3));
     int dZoom = intParameter(4);
-    int dTransX = intParameter(5);
-    int dTransY = intParameter(6);
-    int dTransZ = intParameter(7);
+    Vector3f dTrans = new Vector3f(intParameter(5), intParameter(6), intParameter(7));
     int dSlab = intParameter(8);
     float floatSecondsTotal = floatParameter(9);
     int fps = 30/* , maxAccel = 5 */;
@@ -2279,55 +2037,7 @@ class Eval implements Runnable {
         // maxAccel = statement[11].intValue;
       }
     }
-
-    int zoom = viewer.getZoomPercent();
-    int slab = viewer.getSlabPercentSetting();
-    float transX = viewer.getTranslationXPercent();
-    float transY = viewer.getTranslationYPercent();
-    float transZ = viewer.getTranslationZPercent();
-
-    long timeBegin = System.currentTimeMillis();
-    int timePerStep = 1000 / fps;
-    int totalSteps = (int) (fps * floatSecondsTotal);
-    float radiansPerDegreePerStep = (float) Math.PI / 180 / totalSteps;
-    float radiansXStep = radiansPerDegreePerStep * dRotX;
-    float radiansYStep = radiansPerDegreePerStep * dRotY;
-    float radiansZStep = radiansPerDegreePerStep * dRotZ;
-    viewer.setInMotion(true);
-    if (totalSteps == 0)
-      totalSteps = 1; // to catch a zero secondsTotal parameter
-    for (int i = 1; i <= totalSteps && !interruptExecution; ++i) {
-      if (dRotX != 0)
-        viewer.rotateXRadians(radiansXStep);
-      if (dRotY != 0)
-        viewer.rotateYRadians(radiansYStep);
-      if (dRotZ != 0)
-        viewer.rotateZRadians(radiansZStep);
-      if (dZoom != 0)
-        viewer.zoomToPercent(zoom + dZoom * i / totalSteps);
-      if (dTransX != 0)
-        viewer.translateToXPercent(transX + dTransX * i / totalSteps);
-      if (dTransY != 0)
-        viewer.translateToYPercent(transY + dTransY * i / totalSteps);
-      if (dTransZ != 0)
-        viewer.translateToZPercent(transZ + dTransZ * i / totalSteps);
-      if (dSlab != 0)
-        viewer.slabToPercent(slab + dSlab * i / totalSteps);
-      int timeSpent = (int) (System.currentTimeMillis() - timeBegin);
-      int timeAllowed = i * timePerStep;
-      if (timeSpent < timeAllowed) {
-        viewer.requestRepaintAndWait();
-        timeSpent = (int) (System.currentTimeMillis() - timeBegin);
-        int timeToSleep = timeAllowed - timeSpent;
-        if (timeToSleep > 0) {
-          try {
-            Thread.sleep(timeToSleep);
-          } catch (InterruptedException e) {
-          }
-        }
-      }
-    }
-    viewer.setInMotion(false);
+    viewer.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
   }
 
   void slab() throws ScriptException {
@@ -3500,129 +3210,34 @@ class Eval implements Runnable {
         + viewer.getBoundBoxCornerVector());
   }
 
-  AxisAngle4f aaMoveTo;
-
-  AxisAngle4f aaStep;
-
-  AxisAngle4f aaTotal;
-
-  Matrix3f matrixStart;
-
-  Matrix3f matrixInverse;
-
-  Matrix3f matrixStep;
-
-  Matrix3f matrixEnd;
-
   void moveto() throws ScriptException {
-    if (statementLength < 6 || statementLength > 9)
+    //moveto time { x y z } zoom xTrans yTrans
+    if (statementLength < 6)
       badArgumentCount();
     float floatSecondsTotal = floatParameter(1);
-    float axisX = floatParameter(2);
-    float axisY = floatParameter(3);
-    float axisZ = floatParameter(4);
-    float degrees = floatParameter(5);
-    int zoom = statementLength >= 7 ? intParameter(6) : 100;
-    int xTrans = statementLength >= 8 ? intParameter(7) : 0;
-    int yTrans = statementLength >= 9 ? intParameter(8) : 0;
-
-    if (aaMoveTo == null) {
-      aaMoveTo = new AxisAngle4f();
-      aaStep = new AxisAngle4f();
-      aaTotal = new AxisAngle4f();
-      matrixStart = new Matrix3f();
-      matrixEnd = new Matrix3f();
-      matrixStep = new Matrix3f();
-      matrixInverse = new Matrix3f();
-    }
-    if (degrees < 0.01f && degrees > -0.01f) {
-      matrixEnd.setIdentity();
+    Point3f pt;
+    int zoom = 100;
+    int xTrans = 0;
+    int yTrans = 0;
+    int i = 2;
+    if (statement[2].tok == Token.leftbrace) {
+      // {X, Y, Z}
+      pt = getCoordinate(2);
+      i = endOfExpression + 1;
     } else {
-      if (axisX == 0 && axisY == 0 && axisZ == 0) {
-        // invalid ... no rotation
-        int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
-        if (sleepTime > 0) {
-          try {
-            Thread.sleep(sleepTime);
-          } catch (InterruptedException ie) {
-          }
-        }
-        return;
-      }
-      aaMoveTo.set(axisX, axisY, axisZ, degrees * (float) Math.PI / 180);
-      matrixEnd.set(aaMoveTo);
+      pt = new Point3f(floatParameter(i++), floatParameter(i++),
+          floatParameter(i++));
     }
-    viewer.getRotation(matrixStart);
-    matrixInverse.invert(matrixStart);
-
-    matrixStep.mul(matrixEnd, matrixInverse);
-    aaTotal.set(matrixStep);
-
-    /*
-     * System.out.println("\nmatrixStart=\n" + matrixStart +
-     * "\nmatrixInverse=\n" + matrixInverse + "\nmatrixStep=\n" + matrixStep +
-     * "\naaStep=\n" + aaStep);
-     */
-
-    int fps = 30;
-    int totalSteps = (int) (floatSecondsTotal * fps);
-    if (totalSteps > 1) {
-      aaStep.angle /= totalSteps;
-      int frameTimeMillis = 1000 / fps;
-      long targetTime = System.currentTimeMillis();
-      int zoomStart = viewer.getZoomPercent();
-      int zoomDelta = zoom - zoomStart;
-      float xTransStart = viewer.getTranslationXPercent();
-      float xTransDelta = xTrans - xTransStart;
-      float yTransStart = viewer.getTranslationYPercent();
-      float yTransDelta = yTrans - yTransStart;
-      for (int i = 1; i < totalSteps; ++i) {
-
-        viewer.getRotation(matrixStart);
-        matrixInverse.invert(matrixStart);
-        matrixStep.mul(matrixEnd, matrixInverse);
-        aaTotal.set(matrixStep);
-
-        aaStep.set(aaTotal);
-        aaStep.angle /= (totalSteps - i + 1);
-        if (aaStep.angle == 0)
-          matrixStep.setIdentity();
-        else
-          matrixStep.set(aaStep);
-        matrixStep.mul(matrixStart);
-        viewer.zoomToPercent(zoomStart + (zoomDelta * i / totalSteps));
-        viewer
-            .translateToXPercent(xTransStart + (xTransDelta * i / totalSteps));
-        viewer
-            .translateToYPercent(yTransStart + (yTransDelta * i / totalSteps));
-        viewer.setRotation(matrixStep);
-        targetTime += frameTimeMillis;
-        if (System.currentTimeMillis() < targetTime) {
-          viewer.requestRepaintAndWait();
-          int sleepTime = (int) (targetTime - System.currentTimeMillis());
-          if (sleepTime > 0) {
-            try {
-              Thread.sleep(sleepTime);
-            } catch (InterruptedException ie) {
-            }
-          }
-        }
-      }
-    } else {
-      int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
-      if (sleepTime > 0) {
-        try {
-          Thread.sleep(sleepTime);
-        } catch (InterruptedException ie) {
-        }
-      }
-    }
-    viewer.zoomToPercent(zoom);
-    viewer.translateToXPercent(xTrans);
-    viewer.translateToYPercent(yTrans);
-    viewer.setRotation(matrixEnd);
+    float degrees = floatParameter(i++);
+    if (i != statementLength)
+      zoom = intParameter(i++);
+    if (i != statementLength)
+      xTrans = intParameter(i++);
+    if (i != statementLength)
+      yTrans = intParameter(i++);
+    viewer.moveTo(floatSecondsTotal, pt, degrees, zoom, xTrans, yTrans);
   }
-
+  
   void bondorder() throws ScriptException {
     Token tokenArg = statement[1];
     short order = 0;
@@ -3797,8 +3412,6 @@ class Eval implements Runnable {
       case Token.leftbrace:
         // {X, Y, Z}
         Point3f pt = getCoordinate(i);
-        if (pt == null)
-          coordinateExpected();
         i = endOfExpression;
         propertyName = "coord";
         propertyValue = pt;
@@ -3960,7 +3573,7 @@ class Eval implements Runnable {
   }
 
   void centerAt() throws ScriptException {
-    if (statementLength != 2 && statementLength != 5)
+    if (statementLength < 2)
       badArgumentCount();
     String relativeTo = null;
     switch (statement[1].tok) {
@@ -3976,15 +3589,16 @@ class Eval implements Runnable {
     default:
       unrecognizedSubcommand();
     }
-    float x, y, z;
-    if (statementLength == 2) {
-      x = y = z = 0;
-    } else {
-      x = floatParameter(2);
-      y = floatParameter(3);
-      z = floatParameter(4);
+    Point3f pt = new Point3f(0, 0, 0);
+    if (statementLength == 5) {
+      // centerAt xxx x y z
+      pt.x = floatParameter(2);
+      pt.y = floatParameter(3);
+      pt.z = floatParameter(4);
+    } else if (statement[2].tok == Token.leftbrace) {
+      pt = getCoordinate(2);
     }
-    viewer.setCenter(relativeTo, x, y, z);
+    viewer.setCenter(relativeTo, pt);
   }
 
   void isosurface() throws ScriptException {

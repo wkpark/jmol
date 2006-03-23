@@ -193,6 +193,17 @@ final public class Viewer extends JmolViewer {
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
 
+  void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
+            float floatSecondsTotal, int fps) {
+    transformManager.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
+  }
+
+  public void moveTo(float floatSecondsTotal, Point3f pt, float degrees,
+                     int zoom, int xTrans, int yTrans) {
+    transformManager.moveTo(floatSecondsTotal, pt, degrees, zoom, xTrans,
+        yTrans);
+  }
+  
   String getMoveToText(float timespan) {
     return transformManager.getMoveToText(timespan);
   }
@@ -792,6 +803,11 @@ final public class Viewer extends JmolViewer {
   // delegated to SelectionManager
   // ///////////////////////////////////////////////////////////////
 
+  void select(BitSet bs) {
+    selectionManager.select(bs);
+    scriptStatus("" + getSelectionCount() + " atoms selected");
+  }
+
   void addSelection(int atomIndex) {
     selectionManager.addSelection(atomIndex);
     refresh(0, "Viewer:addSelection()");
@@ -893,6 +909,10 @@ final public class Viewer extends JmolViewer {
 
   BitSet getAtomBitSet(String atomExpression) {
     return selectionManager.getAtomBitSet(atomExpression);
+  }
+
+  int firstAtomOf(BitSet bs) {
+    return modelManager.firstAtomOf(bs);
   }
 
   Point3f getAtomSetCenter(BitSet bs) {
@@ -1328,9 +1348,8 @@ final public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setCenter()");
   }
 
-  void setCenter(String relativeTo, float x, float y, float z) {
-    Point3f center = modelManager.setRotationCenterAndRadiusXYZ(relativeTo, x,
-        y, z);
+  void setCenter(String relativeTo, Point3f pt) {
+    Point3f center = modelManager.setRotationCenterAndRadiusXYZ(relativeTo, pt);
     scaleFitToScreen();
     if (center != null)
       transformManager.setFixedRotationCenter(center);
@@ -1393,6 +1412,22 @@ final public class Viewer extends JmolViewer {
 
   public boolean getAutoBond() {
     return modelManager.autoBond;
+  }
+
+  BitSet getAtomBits(String setType) {
+    return modelManager.getAtomBits(setType);
+  }
+
+  BitSet getAtomBits(String setType, String specInfo) {
+    return modelManager.getAtomBits(setType, specInfo);
+  }
+
+  BitSet getAtomBits(String setType, int specInfo) {
+    return modelManager.getAtomBits(setType, specInfo);
+  }
+
+  BitSet getAtomBits(String setType, int specInfoA, int specInfoB) {
+    return modelManager.getAtomBits(setType, specInfoA, specInfoB);
   }
 
   BitSet getAtomsWithin(String withinWhat, BitSet bs) {

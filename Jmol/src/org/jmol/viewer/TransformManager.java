@@ -390,163 +390,6 @@ class TransformManager {
     return info;
   }
 
-  String getMoveToText(float timespan) {
-    axisangleT.set(matrixRotate);
-    float degrees = axisangleT.angle * degreesPerRadian;
-    StringBuffer sb = new StringBuffer();
-    sb.append("moveto " + timespan);
-    if (degrees < 0.01f) {
-      sb.append(" 0 0 0 0");
-    } else {
-      vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
-      vectorT.normalize();
-      vectorT.scale(1000);
-      truncate0(sb, vectorT.x);
-      truncate0(sb, vectorT.y);
-      truncate0(sb, vectorT.z);
-      truncate1(sb, degrees);
-    }
-    int zoom = getZoomPercent();
-    int tX = (int) getTranslationXPercent();
-    int tY = (int) getTranslationYPercent();
-    if (zoom != 100 || tX != 0 || tY != 0) {
-      sb.append(" ");
-      sb.append(zoom);
-      if (tX != 0 || tY != 0) {
-        sb.append(" ");
-        sb.append(tX);
-        sb.append(" ");
-        sb.append(tY);
-      }
-    }
-    return "" + sb + ";";
-  }
-
-  String getMoveToText() {
-    return getMoveToText(1);
-  }
-
-  String getRotateXyzText() {
-    StringBuffer sb = new StringBuffer();
-    float m20 = matrixRotate.m20;
-    float rY = -(float) Math.asin(m20) * degreesPerRadian;
-    float rX, rZ;
-    if (m20 > .999f || m20 < -.999f) {
-      rX = -(float) Math.atan2(matrixRotate.m12, matrixRotate.m11)
-          * degreesPerRadian;
-      rZ = 0;
-    } else {
-      rX = (float) Math.atan2(matrixRotate.m21, matrixRotate.m22)
-          * degreesPerRadian;
-      rZ = (float) Math.atan2(matrixRotate.m10, matrixRotate.m00)
-          * degreesPerRadian;
-    }
-    sb.append("reset");
-    if (rX != 0) {
-      sb.append("; rotate x");
-      truncate1(sb, rX);
-    }
-    if (rY != 0) {
-      sb.append("; rotate y");
-      truncate1(sb, rY);
-    }
-    if (rZ != 0) {
-      sb.append("; rotate z");
-      truncate1(sb, rZ);
-    }
-    sb.append(";");
-    int zoom = getZoomPercent();
-    if (zoom != 100) {
-      sb.append(" zoom ");
-      sb.append(zoom);
-      sb.append(";");
-    }
-    float tX = getTranslationXPercent();
-    if (tX != 0) {
-      sb.append(" translate x ");
-      sb.append(tX);
-      sb.append(";");
-    }
-    float tY = getTranslationYPercent();
-    if (tY != 0) {
-      sb.append(" translate y ");
-      sb.append(tY);
-      sb.append(";");
-    }
-    return "" + sb;
-  }
-
-  String getRotateZyzText(boolean iAddComment) {
-    StringBuffer sb = new StringBuffer();
-    float m22 = matrixRotate.m22;
-    float rY = (float) Math.acos(m22) * degreesPerRadian;
-    float rZ1, rZ2;
-    if (m22 > .999f || m22 < -.999f) {
-      rZ1 = (float) Math.atan2(matrixRotate.m10, matrixRotate.m11)
-          * degreesPerRadian;
-      rZ2 = 0;
-    } else {
-      rZ1 = (float) Math.atan2(matrixRotate.m21, -matrixRotate.m20)
-          * degreesPerRadian;
-      rZ2 = (float) Math.atan2(matrixRotate.m12, matrixRotate.m02)
-          * degreesPerRadian;
-    }
-    if (rZ1 != 0 && rY != 0 && rZ2 != 0 && iAddComment)
-      sb.append("#Follows Z-Y-Z convention for Euler angles\n");
-    sb.append("reset");
-    if (rZ1 != 0) {
-      sb.append("; rotate z");
-      truncate1(sb, rZ1);
-    }
-    if (rY != 0) {
-      sb.append("; rotate y");
-      truncate1(sb, rY);
-    }
-    if (rZ2 != 0) {
-      sb.append("; rotate z");
-      truncate1(sb, rZ2);
-    }
-    int zoom = getZoomPercent();
-    if (zoom != 100) {
-      sb.append("; zoom ");
-      sb.append(zoom);
-    }
-    int tX = (int) getTranslationXPercent();
-    if (tX != 0) {
-      sb.append("; translate x ");
-      sb.append(tX);
-    }
-    int tY = (int) getTranslationYPercent();
-    if (tY != 0) {
-      sb.append("; translate y ");
-      sb.append(tY);
-    }
-    sb.append(';');
-    return "" + sb;
-  }
-
-  static void truncate0(StringBuffer sb, float val) {
-    sb.append(' ');
-    sb.append(Math.round(val));
-  }
-
-  static void truncate1(StringBuffer sb, float val) {
-    sb.append(' ');
-    sb.append(Math.round(val * 10) / 10f);
-  }
-
-  /*
-   static void truncate2(StringBuffer sb, float val) {
-   sb.append(" ");
-   sb.append(Math.round(val * 100) / 100f);
-   }
-
-   static void truncate3(StringBuffer sb, float val) {
-   sb.append(" ");
-   sb.append(Math.round(val * 1000) / 1000f);
-   }
-   */
-
   void getAxisAngle(AxisAngle4f axisAngle) {
     axisAngle.set(matrixRotate);
   }
@@ -1109,6 +952,330 @@ class TransformManager {
   void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
     matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
+
+  /* ***************************************************************
+   * move/moveTo support
+   ****************************************************************/
+
+  void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
+            float floatSecondsTotal, int fps) {
+    int zoom = getZoomPercent();
+    int slab = getSlabPercentSetting();
+    float transX = getTranslationXPercent();
+    float transY = getTranslationYPercent();
+    float transZ = getTranslationZPercent();
+
+    long timeBegin = System.currentTimeMillis();
+    int timePerStep = 1000 / fps;
+    int totalSteps = (int) (fps * floatSecondsTotal);
+    float radiansPerDegreePerStep = (float) Math.PI / 180 / totalSteps;
+    float radiansXStep = radiansPerDegreePerStep * dRot.x;
+    float radiansYStep = radiansPerDegreePerStep * dRot.y;
+    float radiansZStep = radiansPerDegreePerStep * dRot.z;
+    viewer.setInMotion(true);
+    if (totalSteps == 0)
+      totalSteps = 1; // to catch a zero secondsTotal parameter
+    for (int i = 1; i <= totalSteps; ++i) {
+      if (dRot.x != 0)
+        rotateXRadians(radiansXStep);
+      if (dRot.y != 0)
+        rotateYRadians(radiansYStep);
+      if (dRot.z != 0)
+        rotateZRadians(radiansZStep);
+      if (dZoom != 0)
+        zoomToPercent(zoom + dZoom * i / totalSteps);
+      if (dTrans.x != 0)
+        translateToXPercent(transX + dTrans.x * i / totalSteps);
+      if (dTrans.y != 0)
+        translateToYPercent(transY + dTrans.y * i / totalSteps);
+      if (dTrans.z != 0)
+        translateToZPercent(transZ + dTrans.z * i / totalSteps);
+      if (dSlab != 0)
+        slabToPercent(slab + dSlab * i / totalSteps);
+      int timeSpent = (int) (System.currentTimeMillis() - timeBegin);
+      int timeAllowed = i * timePerStep;
+      if (timeSpent < timeAllowed) {
+        viewer.requestRepaintAndWait();
+        timeSpent = (int) (System.currentTimeMillis() - timeBegin);
+        int timeToSleep = timeAllowed - timeSpent;
+        if (timeToSleep > 0) {
+          try {
+            Thread.sleep(timeToSleep);
+          } catch (InterruptedException e) {
+          }
+        }
+      }
+    }
+    viewer.setInMotion(false);
+  }
+
+  AxisAngle4f aaMoveTo;
+  AxisAngle4f aaStep;
+  AxisAngle4f aaTotal;
+  Matrix3f matrixStart;
+  Matrix3f matrixInverse;
+  Matrix3f matrixStep;
+  Matrix3f matrixEnd;
+
+  void moveTo(float floatSecondsTotal, Point3f pt, float degrees, int zoom,
+              int xTrans, int yTrans) {
+
+    Vector3f axis = new Vector3f(pt);
+
+    if (aaMoveTo == null) {
+      aaMoveTo = new AxisAngle4f();
+      aaStep = new AxisAngle4f();
+      aaTotal = new AxisAngle4f();
+      matrixStart = new Matrix3f();
+      matrixEnd = new Matrix3f();
+      matrixStep = new Matrix3f();
+      matrixInverse = new Matrix3f();
+    }
+    if (degrees < 0.01f && degrees > -0.01f) {
+      matrixEnd.setIdentity();
+    } else {
+      if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
+        // invalid ... no rotation
+        int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
+        if (sleepTime > 0) {
+          try {
+            Thread.sleep(sleepTime);
+          } catch (InterruptedException ie) {
+          }
+        }
+        return;
+      }
+      aaMoveTo.set(axis, degrees * (float) Math.PI / 180);
+      matrixEnd.set(aaMoveTo);
+    }
+    getRotation(matrixStart);
+    matrixInverse.invert(matrixStart);
+
+    matrixStep.mul(matrixEnd, matrixInverse);
+    aaTotal.set(matrixStep);
+
+    /*
+     * System.out.println("\nmatrixStart=\n" + matrixStart +
+     * "\nmatrixInverse=\n" + matrixInverse + "\nmatrixStep=\n" + matrixStep +
+     * "\naaStep=\n" + aaStep);
+     */
+
+    int fps = 30;
+    int totalSteps = (int) (floatSecondsTotal * fps);
+    if (totalSteps > 1) {
+      aaStep.angle /= totalSteps;
+      int frameTimeMillis = 1000 / fps;
+      long targetTime = System.currentTimeMillis();
+      int zoomStart = getZoomPercent();
+      int zoomDelta = zoom - zoomStart;
+      float xTransStart = getTranslationXPercent();
+      float xTransDelta = xTrans - xTransStart;
+      float yTransStart = getTranslationYPercent();
+      float yTransDelta = yTrans - yTransStart;
+      for (int iStep = 1; iStep < totalSteps; ++iStep) {
+
+        getRotation(matrixStart);
+        matrixInverse.invert(matrixStart);
+        matrixStep.mul(matrixEnd, matrixInverse);
+        aaTotal.set(matrixStep);
+
+        aaStep.set(aaTotal);
+        aaStep.angle /= (totalSteps - iStep + 1);
+        if (aaStep.angle == 0)
+          matrixStep.setIdentity();
+        else
+          matrixStep.set(aaStep);
+        matrixStep.mul(matrixStart);
+        zoomToPercent(zoomStart + (zoomDelta * iStep / totalSteps));
+        translateToXPercent(xTransStart
+            + (xTransDelta * iStep / totalSteps));
+        translateToYPercent(yTransStart
+            + (yTransDelta * iStep / totalSteps));
+        setRotation(matrixStep);
+        targetTime += frameTimeMillis;
+        if (System.currentTimeMillis() < targetTime) {
+          viewer.requestRepaintAndWait();
+          int sleepTime = (int) (targetTime - System.currentTimeMillis());
+          if (sleepTime > 0) {
+            try {
+              Thread.sleep(sleepTime);
+            } catch (InterruptedException ie) {
+            }
+          }
+        }
+      }
+    } else {
+      int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
+      if (sleepTime > 0) {
+        try {
+          Thread.sleep(sleepTime);
+        } catch (InterruptedException ie) {
+        }
+      }
+    }
+    zoomToPercent(zoom);
+    translateToXPercent(xTrans);
+    translateToYPercent(yTrans);
+    setRotation(matrixEnd);
+  }
+  
+  String getMoveToText(float timespan) {
+    axisangleT.set(matrixRotate);
+    float degrees = axisangleT.angle * degreesPerRadian;
+    StringBuffer sb = new StringBuffer();
+    sb.append("moveto " + timespan);
+    if (degrees < 0.01f) {
+      sb.append(" 0 0 0 0");
+    } else {
+      vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
+      vectorT.normalize();
+      vectorT.scale(1000);
+      truncate0(sb, vectorT.x);
+      truncate0(sb, vectorT.y);
+      truncate0(sb, vectorT.z);
+      truncate1(sb, degrees);
+    }
+    int zoom = getZoomPercent();
+    int tX = (int) getTranslationXPercent();
+    int tY = (int) getTranslationYPercent();
+    if (zoom != 100 || tX != 0 || tY != 0) {
+      sb.append(" ");
+      sb.append(zoom);
+      if (tX != 0 || tY != 0) {
+        sb.append(" ");
+        sb.append(tX);
+        sb.append(" ");
+        sb.append(tY);
+      }
+    }
+    return "" + sb + ";";
+  }
+
+  String getMoveToText() {
+    return getMoveToText(1);
+  }
+
+  String getRotateXyzText() {
+    StringBuffer sb = new StringBuffer();
+    float m20 = matrixRotate.m20;
+    float rY = -(float) Math.asin(m20) * degreesPerRadian;
+    float rX, rZ;
+    if (m20 > .999f || m20 < -.999f) {
+      rX = -(float) Math.atan2(matrixRotate.m12, matrixRotate.m11)
+          * degreesPerRadian;
+      rZ = 0;
+    } else {
+      rX = (float) Math.atan2(matrixRotate.m21, matrixRotate.m22)
+          * degreesPerRadian;
+      rZ = (float) Math.atan2(matrixRotate.m10, matrixRotate.m00)
+          * degreesPerRadian;
+    }
+    sb.append("reset");
+    if (rX != 0) {
+      sb.append("; rotate x");
+      truncate1(sb, rX);
+    }
+    if (rY != 0) {
+      sb.append("; rotate y");
+      truncate1(sb, rY);
+    }
+    if (rZ != 0) {
+      sb.append("; rotate z");
+      truncate1(sb, rZ);
+    }
+    sb.append(";");
+    int zoom = getZoomPercent();
+    if (zoom != 100) {
+      sb.append(" zoom ");
+      sb.append(zoom);
+      sb.append(";");
+    }
+    float tX = getTranslationXPercent();
+    if (tX != 0) {
+      sb.append(" translate x ");
+      sb.append(tX);
+      sb.append(";");
+    }
+    float tY = getTranslationYPercent();
+    if (tY != 0) {
+      sb.append(" translate y ");
+      sb.append(tY);
+      sb.append(";");
+    }
+    return "" + sb;
+  }
+
+  String getRotateZyzText(boolean iAddComment) {
+    StringBuffer sb = new StringBuffer();
+    float m22 = matrixRotate.m22;
+    float rY = (float) Math.acos(m22) * degreesPerRadian;
+    float rZ1, rZ2;
+    if (m22 > .999f || m22 < -.999f) {
+      rZ1 = (float) Math.atan2(matrixRotate.m10, matrixRotate.m11)
+          * degreesPerRadian;
+      rZ2 = 0;
+    } else {
+      rZ1 = (float) Math.atan2(matrixRotate.m21, -matrixRotate.m20)
+          * degreesPerRadian;
+      rZ2 = (float) Math.atan2(matrixRotate.m12, matrixRotate.m02)
+          * degreesPerRadian;
+    }
+    if (rZ1 != 0 && rY != 0 && rZ2 != 0 && iAddComment)
+      sb.append("#Follows Z-Y-Z convention for Euler angles\n");
+    sb.append("reset");
+    if (rZ1 != 0) {
+      sb.append("; rotate z");
+      truncate1(sb, rZ1);
+    }
+    if (rY != 0) {
+      sb.append("; rotate y");
+      truncate1(sb, rY);
+    }
+    if (rZ2 != 0) {
+      sb.append("; rotate z");
+      truncate1(sb, rZ2);
+    }
+    int zoom = getZoomPercent();
+    if (zoom != 100) {
+      sb.append("; zoom ");
+      sb.append(zoom);
+    }
+    int tX = (int) getTranslationXPercent();
+    if (tX != 0) {
+      sb.append("; translate x ");
+      sb.append(tX);
+    }
+    int tY = (int) getTranslationYPercent();
+    if (tY != 0) {
+      sb.append("; translate y ");
+      sb.append(tY);
+    }
+    sb.append(';');
+    return "" + sb;
+  }
+
+  static void truncate0(StringBuffer sb, float val) {
+    sb.append(' ');
+    sb.append(Math.round(val));
+  }
+
+  static void truncate1(StringBuffer sb, float val) {
+    sb.append(' ');
+    sb.append(Math.round(val * 10) / 10f);
+  }
+
+  /*
+   static void truncate2(StringBuffer sb, float val) {
+   sb.append(" ");
+   sb.append(Math.round(val * 100) / 100f);
+   }
+
+   static void truncate3(StringBuffer sb, float val) {
+   sb.append(" ");
+   sb.append(Math.round(val * 1000) / 1000f);
+   }
+   */
+
 
   /* ***************************************************************
    * Spin support

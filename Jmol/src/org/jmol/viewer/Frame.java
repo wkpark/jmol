@@ -790,7 +790,7 @@ final class Frame {
 
   Shape allocateShape(int shapeID) {
     String classBase = JmolConstants.shapeClassBases[shapeID];
-    //    System.out.println("Frame.allocateShape(" + classBase + ")");
+    //    System.out.println("frame.allocateShape(" + classBase + ")");
     String className = "org.jmol.viewer." + classBase;
 
     try {
@@ -898,6 +898,18 @@ final class Frame {
     }
     //System.out.println("frame setRotationCenter"+rotationCenter);
     return rotationCenter;
+  }
+
+  Point3f setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
+    Point3f pointT = new Point3f(pt);
+    if (relativeTo == "average")
+      pointT.add(getAverageAtomPoint());
+    else if (relativeTo == "boundbox")
+      pointT.add(getBoundBoxCenter());
+    else if (relativeTo != "absolute")
+      pointT.set(getRotationCenterDefault());
+    setRotationCenterAndRadiusXYZ(pointT, true);
+    return pointT;
   }
 
   void clearBounds() {
@@ -1681,6 +1693,241 @@ final class Frame {
     }
     ptCenter.scale(1.0f / nPoints);
     return ptCenter;
+  }
+  
+  int firstAtomOf(BitSet bs) {
+    for (int i = atomCount; --i >= 0;)
+      if (bs.get(i)) {
+        return i;
+      }
+    return -1;
+  }
+
+  
+  BitSet getAtomBits(String setType) {
+    System.out.println("getAtomBits" + setType);
+    if (setType.equals("hetero"))
+      return getHeteroSet();
+    if (setType.equals("hydrogen"))
+      return getHydrogenSet();
+    if (setType.equals("protein"))
+      return getProteinSet();
+    if (setType.equals("nucleic"))
+      return getNucleicSet();
+    if (setType.equals("dna"))
+      return getDnaSet();
+    if (setType.equals("rna"))
+      return getRnaSet();
+    if (setType.equals("purine"))
+      return getPurineSet();
+    if (setType.equals("pyrimidine"))
+      return getPyrimidineSet();
+    return null;
+ }
+  
+  BitSet getAtomBits(String setType, String specInfo) {
+    System.out.println("getAtomBits" + setType + ":" + specInfo);
+    if (setType.equals("SpecAtom"))
+      return getSpecAtom(specInfo);
+    if (setType.equals("SpecName"))
+      return getSpecName(specInfo);
+    if (setType.equals("SpecResidueWildcard")) //never called?
+      return getResidueWildcard(specInfo);
+    if (setType.equals("SpecAlternate"))
+      return getSpecAlternate(specInfo);
+    if (setType.equals("SpecModel"))
+      return getSpecModel(specInfo);
+    if (setType.equals("PotentialGroupName"))
+      return lookupPotentialGroupName(specInfo);
+    return null;
+  }
+
+  BitSet getAtomBits(String setType, int specInfoA, int specInfoB) {
+    System.out.println("getAtomBits" + setType + ":" + specInfoA+" "+specInfoB);
+    if (setType.equals("SpecSeqcodeRange"))
+      return getSpecSeqcodeRange(specInfoA, specInfoB);
+    return null;
+  }
+  
+  BitSet getHeteroSet() {
+    BitSet bsHetero = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isHetero())
+        bsHetero.set(i);
+    return bsHetero;
+  }
+
+  BitSet getHydrogenSet() {
+    BitSet bsHydrogen = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].getElementNumber() == 1)
+        bsHydrogen.set(i);
+    }
+    return bsHydrogen;
+  }
+
+  BitSet getProteinSet() {
+    BitSet bsProtein = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isProtein())
+        bsProtein.set(i);
+    return bsProtein;
+  }
+
+  BitSet getNucleicSet() {
+    BitSet bsNucleic = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isNucleic())
+        bsNucleic.set(i);
+    return bsNucleic;
+  }
+
+  BitSet getDnaSet() {
+    BitSet bsDna = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isDna())
+        bsDna.set(i);
+    return bsDna;
+  }
+
+  BitSet getRnaSet() {
+    BitSet bsRna = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isRna())
+        bsRna.set(i);
+    return bsRna;
+  }
+
+  BitSet getPurineSet() {
+    BitSet bsPurine = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isPurine())
+        bsPurine.set(i);
+    return bsPurine;
+  }
+
+  BitSet getPyrimidineSet() {
+    BitSet bsPyrimidine = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isPyrimidine())
+        bsPyrimidine.set(i);
+    return bsPyrimidine;
+  }
+  
+  BitSet getAtomBits(String setType, int specInfo) {
+    if (setType.equals("SpecResid"))
+      return getSpecResid(specInfo);
+    if (setType.equals("SpecSeqcode"))
+      return getSpecSeqcode(specInfo);
+    if (setType.equals("SpecChain"))
+      return getSpecSeqcode((char) specInfo);
+    return null;
+  }
+  
+  BitSet getSpecName(String resNameSpec) {
+    BitSet bsRes = new BitSet();
+    // System.out.println("getSpecName:" + resNameSpec);
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].isGroup3Match(resNameSpec))
+        bsRes.set(i);
+    }
+    return bsRes;
+  }
+
+  BitSet getSpecResid(int resid) {
+    BitSet bsRes = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].getGroupID() == resid)
+        bsRes.set(i);
+    }
+    return bsRes;
+  }
+  
+  BitSet getSpecSeqcode(int seqcode) {
+    BitSet bsResno = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (seqcode == atoms[i].getSeqcode())
+        bsResno.set(i);
+    }
+    return bsResno;
+  }
+
+  BitSet getSpecChain(char chain) {
+    boolean caseSensitive = viewer.getChainCaseSensitive();
+    if (!caseSensitive)
+      chain = Character.toUpperCase(chain);
+    BitSet bsChain = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      char ch = atoms[i].getChainID();
+      if (!caseSensitive)
+        ch = Character.toUpperCase(ch);
+      if (chain == ch)
+        bsChain.set(i);
+    }
+    return bsChain;
+  }
+
+  BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB) {
+    BitSet bsResidue = new BitSet();
+    selectSeqcodeRange(seqcodeA, seqcodeB, bsResidue);
+    return bsResidue;
+  }
+
+  BitSet getSpecAtom(String atomSpec) {
+    BitSet bsAtom = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].isAtomNameMatch(atomSpec))
+        bsAtom.set(i);
+    }
+    return bsAtom;
+  }
+
+  BitSet getResidueWildcard(String strWildcard) {
+    BitSet bsResidue = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].isGroup3Match(strWildcard))
+        bsResidue.set(i);
+    }
+    return bsResidue;
+  }
+
+  BitSet getSpecAlternate(String alternateSpec) {
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].isAlternateLocationMatch(alternateSpec))
+        bs.set(i);
+    }
+    return bs;
+  }
+
+  BitSet getSpecModel(String modelTag) {
+    int modelNumber = -1;
+    try {
+      modelNumber = Integer.parseInt(modelTag);
+    } catch (NumberFormatException nfe) {
+    }
+    return getModelAtomBitSet(getModelNumberIndex(modelNumber));
+  }
+
+  BitSet lookupPotentialGroupName(String potentialGroupName) {
+    BitSet bsResult = null;
+    // System.out.println("lookupPotentialGroupName:" + potentialGroupName);
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].isGroup3(potentialGroupName)) {
+        if (bsResult == null)
+          bsResult = new BitSet(i + 1);
+        bsResult.set(i);
+      }
+    }
+    return bsResult;
+  }
+
+  BitSet getModelAtomBitSet(int modelIndex) {
+    BitSet bs = new BitSet();
+    for (int i = 0; i < atomCount; i++)
+      if (atoms[i].modelIndex == modelIndex)
+        bs.set(i);
+    return bs;
   }
   
   void setLabel(String label, int atomIndex) {

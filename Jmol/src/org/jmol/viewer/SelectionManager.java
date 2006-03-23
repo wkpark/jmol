@@ -86,6 +86,18 @@ class SelectionManager {
     return true;
   }
 
+  void select(BitSet bs) {    
+    if (bs == null) {
+      if (!viewer.getRasmolHydrogenSetting())
+        excludeSelectionSet(viewer.getAtomBits("hydrogen"));
+      if (!viewer.getRasmolHeteroSetting())
+        excludeSelectionSet(viewer.getAtomBits("hetero"));
+
+    } else {
+      setSelectionSet(bs);
+    }
+  }
+  
   void selectAll() {
     int count = viewer.getAtomCount();
     empty = (count == 0) ? TRUE : FALSE;

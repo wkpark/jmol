@@ -159,6 +159,8 @@ class PickingManager {
       }
       if (queuedAtomCount >= 2)
         queuedAtomCount = 0;
+      if (queuedAtomCount == 1 && queuedAtomIndexes[0] == atomIndex)
+        break;
       queueAtom(atomIndex);
       if (queuedAtomCount < 2) {
         viewer.setSpinOn(false);

@@ -879,7 +879,10 @@ final class Frame {
   }
 
   void increaseRotationRadius(float increaseInAngstroms) {
-    rotationRadius += increaseInAngstroms;
+    if (viewer.isWindowCentered())
+      rotationRadius += increaseInAngstroms;
+    System.out.println("Frame.increaeRotationRadius by " + increaseInAngstroms
+        + " to " + rotationRadius);
   }
 
   float getRotationRadius() {
@@ -887,7 +890,9 @@ final class Frame {
     return rotationRadius;
   }
 
-  Point3f setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation, boolean andRadius) {
+  Point3f setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
+                                        boolean andRadius) {
+    float oldRadius = rotationRadius;
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
       if (andRadius && viewer.isWindowCentered())
@@ -896,7 +901,10 @@ final class Frame {
       rotationCenter = rotationCenterDefault;
       rotationRadius = rotationRadiusDefault;
     }
-    //System.out.println("frame setRotationCenter"+rotationCenter);
+    if (rotationRadius != oldRadius)
+      System.out
+          .println("Frame.setRotationCenterAndRadiusXYZ: rotationRadius to "
+              + rotationRadius);
     return rotationCenter;
   }
 
@@ -913,11 +921,13 @@ final class Frame {
   }
 
   void clearBounds() {
+    // not referenced in project
     rotationCenter = null;
     rotationRadius = 0;
   }
 
   private void findBounds() {
+    //set ONCE 
     if ((rotationCenter != null) || (atomCount <= 0))
       return;
     calcAverageAtomPoint();
@@ -925,9 +935,10 @@ final class Frame {
     if (notionalUnitcell != null)
       calcUnitcellDimensions();
     rotationCenter = rotationCenterDefault = centerBoundBox;//averageAtomPoint;
-    rotationRadius = rotationRadiusDefault =
-      calcRotationRadius(rotationCenterDefault);
-    //System.out.println("findBounds"+rotationCenter);
+    rotationRadius = rotationRadiusDefault = 
+        calcRotationRadius(rotationCenterDefault);
+    System.out.println("Frame.findBounds setting rotationRadius to "
+        + rotationRadius);
   }
 
   private void calcAverageAtomPoint() {

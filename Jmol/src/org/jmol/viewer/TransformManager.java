@@ -60,7 +60,8 @@ class TransformManager {
   AxisAngle4f fixedRotationAxis;
   float fixedRotationAngle = 0;
   float fixedRotationAngleFramed = 0;
-  boolean haveNotified = false;
+  boolean haveNotifiedNaN = false;
+  boolean haveNotifiedCamera = false;
   boolean isInternal = false;
   boolean isFixed = true;
   AxisAngle4f internalRotationAxis;
@@ -672,6 +673,20 @@ class TransformManager {
     // leave a very small margin - only 1 on top and 1 on bottom
     if (screenPixelCount > 2)
       screenPixelCount -= 2;
+    
+    /* 
+     * 
+     * the presumption here is that the rotation center is at pixel
+     * (150,150) of a 300x300 window. Frame.getRotationRadius() returns
+     * a rough estimate of the furthest distance from the center of rotation
+     * (but not including pmesh, special lines, planes, etc. -- just atoms)
+     * 
+     * also that we do not want it to be possible for the model to rotate
+     * out of bounds of the applet. For internal spinning I had to turn
+     * of any calculation that would change the rotation radius.  hansonr
+     * 
+     */
+    
     scaleDefaultPixelsPerAngstrom = screenPixelCount / 2
         / viewer.getRotationRadius();
     if (perspectiveDepth) {
@@ -756,7 +771,8 @@ class TransformManager {
     viewer.setSlabAndDepthValues(slabValue, depthValue);
     increaseRotationRadius = false;
     minimumZ = Integer.MAX_VALUE;
-    haveNotified = false;
+    haveNotifiedNaN = false;
+    haveNotifiedCamera = false;    
     //System.out.println("\n\nfinalizeTransform");
     //for testing: transformPoint(fixedRotationCenter);
   }
@@ -843,24 +859,25 @@ class TransformManager {
     if (z < cameraDistance) {
       if (Float.isNaN(point3fScreenTemp.z)) {
         //removed for extending pmesh to points and lines  BH 2/25/06 
-        //System.out.println("NaN seen in TransformPoint");
+        if (!haveNotifiedNaN)
+          System.out.println("NaN seen in TransformPoint");
+        haveNotifiedNaN = true;
         z = 1;
       } else {
-        if (!spinOn) {
+        if (!spinOn && !haveNotifiedCamera) {
           System.out.println("need to back up the camera");
           System.out.println("point3fScreenTemp.z=" + point3fScreenTemp.z
               + " -> z=" + z);
-          haveNotified = true;
+          haveNotifiedCamera = true;
         }
         increaseRotationRadius = true;
         if (z < minimumZ)
           minimumZ = z;
         if (z <= 0) {
-          if (!spinOn) {
+          if (!spinOn && !haveNotifiedCamera) {
             System.out.println("WARNING! DANGER! z <= 0! transformPoint()"
                 + " point=" + pointAngstroms + "  ->  " + point3fScreenTemp);
-            haveNotified = true;
-
+            haveNotifiedCamera = true;
           }
           z = 1;
         }
@@ -877,9 +894,9 @@ class TransformManager {
 
     float newXPt = point3fScreenTemp.x + xFixedTranslation;
     float newYPt = point3fScreenTemp.y + yFixedTranslation;
-    if (Float.isNaN(newXPt)) {
+    if (Float.isNaN(newXPt) && !haveNotifiedNaN) {
       System.out.println("NaN found in transformPoint ");
-      haveNotified = true;
+      haveNotifiedNaN = true;
     }
 
     point3iScreenTemp.x = (int) (newXPt);

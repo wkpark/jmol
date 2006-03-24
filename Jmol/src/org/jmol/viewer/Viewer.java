@@ -543,6 +543,8 @@ final public class Viewer extends JmolViewer {
   }
 
   void checkCameraDistance() {
+    if (!allowCameraMove())
+      return;
     if (transformManager.getIncreaseRotationRadius())
       modelManager.increaseRotationRadius(transformManager
           .getRotationRadiusIncrease());
@@ -1390,6 +1392,16 @@ final public class Viewer extends JmolViewer {
 
   void setWindowCentered(boolean TF) {
     windowCenteredFlag = TF;
+  }
+
+  boolean allowCameraMoveFlag = true;
+  
+  boolean allowCameraMove() {
+    return allowCameraMoveFlag;
+  }
+
+  void setAllowCameraMove(boolean TF) {
+    allowCameraMoveFlag = TF;
   }
 
   public void setCenterSelected() {
@@ -2360,6 +2372,10 @@ final public class Viewer extends JmolViewer {
     }
     if (key.equalsIgnoreCase("windowCentered")) {
       setWindowCentered(value);
+      return;
+    }
+    if (key.equalsIgnoreCase("cameraMove")) {
+      setAllowCameraMove(value);
       return;
     }
     if (key.equalsIgnoreCase("axesInternal")) {

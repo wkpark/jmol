@@ -61,6 +61,35 @@ public class Xyzd {
 
   public final static long NaN = Long.MIN_VALUE;
 
+  /* layout:
+   * 
+   *    6         5         4         3         2         1         0
+   * 3210987654321098765432109876543210987654321098765432109876543210
+   * !o------d-------!o------z-------!o------y-------!o------x-------
+   *    
+   *    ! is the "guard bit"; o is the "overflow bit"
+   *    
+   *    Note that the capacity for each is 0x3fff, (2^15)-1 = 32767
+   *    which, because of the zero offset of 2000, becomes -2000 to 30767.
+   *    
+   *    if z-capacity is an issue, we could consider dropping a bit from
+   *    both x and y, and adding one to z:
+   *    
+   *    6         5         4         3         2         1         0
+   * 3210987654321098765432109876543210987654321098765432109876543210
+   * !o------d-------!o-------z--------!o------y------!o------x------
+   *    
+   *    Now we have -2000 to 14383 in x and y, but -2000 to 129071 in z,
+   *    and we could also set the zero offset for z to be substantially
+   *    larger, perhaps -30000, so that we have -30000 to 101071 for z.
+   *    
+   *    The limitation to "an applet that is 14000 x 14000" seems minimal
+   *    to me.
+   *    
+   *     - hansonr
+   *    
+   */
+  
   /*
   public final static void main(String[] argv) {
     System.out.println("Hello world!");
@@ -130,7 +159,7 @@ public class Xyzd {
 
   final static void setPoint3i(long xyzd, Point3i p) {
     p.x = (((int)xyzd) & MASK) - ZO;
-    p.y = (((int)xyzd>>16)&MASK)-ZO;
-    p.z = ((int)(xyzd>>32)&MASK)-ZO;
+    p.y = (((int)xyzd >> 16) & MASK) - ZO;
+    p.z = ((int)(xyzd >> 32) & MASK) - ZO;
   }
 }

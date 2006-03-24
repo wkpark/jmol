@@ -45,6 +45,10 @@ class V3000Reader extends AtomSetCollectionReader {
     throws Exception {
     atomSetCollection = new AtomSetCollection("v3000");
     boolean startNewAtomSet = false;
+    /*
+      remove code for processing more than one molecular model in
+      a .sdf file as multiple models.
+      we are just going to read the first model
     String line;
     while (true) {
       line = processCtab(reader, startNewAtomSet);
@@ -52,13 +56,14 @@ class V3000Reader extends AtomSetCollectionReader {
         break;
       if (line.equals("$$$$"))
         startNewAtomSet = true;
-    } 
+    }
+    */
+    processCtab(reader, startNewAtomSet);
     return atomSetCollection;
   }
 
   String processCtab(BufferedReader reader,
                      boolean startNewAtomSet) throws Exception {
-    System.out.println("processCtab(" + startNewAtomSet + ")");
     String line;
     line = reader.readLine();
     while (line != null &&

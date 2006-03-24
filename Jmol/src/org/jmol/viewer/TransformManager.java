@@ -617,6 +617,7 @@ class TransformManager {
 
   void setCameraDepth(float depth) {
     cameraDepth = depth;
+    System.out.println("setCameraDepth: " + depth);
   }
 
   float getCameraDepth() {
@@ -690,6 +691,29 @@ class TransformManager {
     scaleDefaultPixelsPerAngstrom = screenPixelCount / 2
         / viewer.getRotationRadius();
     if (perspectiveDepth) {
+      /*
+       *  Say you have a 300x300 applet. Then we really think of it as a
+       *  300x300x300 cube and define the camera distance as some multiple
+       *  (cameraDepth) of this 300 pixel "screen depth".
+       *  If the camera is far, far away from the model, then there won't 
+       *  be much perspective setting, and we don't need a scaling factor. 
+       *  But if the camera is close in, then perspective will drive XY points
+       *  near the camera outside the applet window unless we scale them down. 
+       *  Note that the calculation below reduces to:
+       *  
+       *  scaleFactor = (cameraDepth + 0.5) / cameraDepth 
+       *   
+       *  or, simply
+       *  
+       *  scaleFactor = 1 + (0.5 / cameraDepth)
+       *  
+       *  I can find nothing anywhere in any code that sets cameraDepth other
+       *  than its default value of 3, so I think scaleFactor is always 1.167
+       *  prior to adding 0.02 "for luck".
+       *    
+       *  hansonr
+       */
+      
       cameraDistance = (int) (cameraDepth * screenPixelCount);
       cameraDistanceFloat = cameraDistance;
       float scaleFactor = (cameraDistance + screenPixelCount / 2)
@@ -699,6 +723,7 @@ class TransformManager {
       // I have looked at it three times and still cannot figure it out
       // so just bump it up a bit.
       scaleFactor += 0.02;
+
       scaleDefaultPixelsPerAngstrom *= scaleFactor;
     }
     calcZoom();

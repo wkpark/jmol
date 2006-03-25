@@ -301,17 +301,6 @@ final public class Graphics3D {
    * draws a circle of the specified color at the specified location
    *
    * @param colix the color index
-   * @param xyzd a long holding x, y, z, and d
-   */
-  public void drawCircleCentered(short colix, long xyzd) {
-    drawCircleCentered(colix, Xyzd.getD(xyzd),
-                       Xyzd.getX(xyzd), Xyzd.getY(xyzd), Xyzd.getZ(xyzd));
-  }
-
-  /**
-   * draws a circle of the specified color at the specified location
-   *
-   * @param colix the color index
    * @param diameter pixel diameter
    * @param x center x
    * @param y center y
@@ -401,25 +390,6 @@ final public class Graphics3D {
     }
   }
 
-
-  /**
-   * fills a solid sphere
-   *
-   * @param colix the color index
-   * @param xyzd x,y,z,diameter
-   */
-  public void fillSphereCentered(short colix, long xyzd) {
-    int diameter = Xyzd.getD(xyzd);
-    int x = Xyzd.getX(xyzd);
-    int y = Xyzd.getY(xyzd);
-    int z = Xyzd.getZ(xyzd);
-    if (diameter <= 1) {
-      plotPixelClipped(colix, x, y, z);
-    } else {
-      sphere3d.render(getShades(colix), ((colix & TRANSLUCENT_MASK) != 0),
-                      diameter, x, y, z);
-    }
-  }
 
   /**
    * fills a solid sphere
@@ -735,13 +705,6 @@ final public class Graphics3D {
                     pointB.x, pointB.y, pointB.z);
   }
 
-  public void drawLine(short colix, long xyzdA, long xyzdB) {
-    setColix(colix);
-    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
-                    Xyzd.getX(xyzdA), Xyzd.getY(xyzdA), Xyzd.getZ(xyzdA),
-                    Xyzd.getX(xyzdB), Xyzd.getY(xyzdB), Xyzd.getZ(xyzdB));
-  }
-
   public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
     drawDashedLine(colix, 2, 1, pointA, pointB);
   }
@@ -872,33 +835,6 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false);
   }
 
-  public void fillTriangle(short colix, long xyzdA, long xyzdB, long xyzdC) {
-    calcSurfaceShade(colix, xyzdA, xyzdB, xyzdC);
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = Xyzd.getX(xyzdA); t[1] = Xyzd.getX(xyzdB); t[2] = Xyzd.getX(xyzdC);
-    t = triangle3d.ay;
-    t[0] = Xyzd.getY(xyzdA); t[1] = Xyzd.getY(xyzdB); t[2] = Xyzd.getY(xyzdC);
-    t = triangle3d.az;
-    t[0] = Xyzd.getZ(xyzdA); t[1] = Xyzd.getZ(xyzdB); t[2] = Xyzd.getZ(xyzdC);
-
-    triangle3d.fillTriangle(false);
-  }
-
-  public void fillTriangle(short colix, short normix,
-                           long xyzdA, long xyzdB, long xyzdC) {
-    setColorNoisy(colix, normix3d.getIntensity(normix));
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = Xyzd.getX(xyzdA); t[1] = Xyzd.getX(xyzdB); t[2] = Xyzd.getX(xyzdC);
-    t = triangle3d.ay;
-    t[0] = Xyzd.getY(xyzdA); t[1] = Xyzd.getY(xyzdB); t[2] = Xyzd.getY(xyzdC);
-    t = triangle3d.az;
-    t[0] = Xyzd.getZ(xyzdA); t[1] = Xyzd.getZ(xyzdB); t[2] = Xyzd.getZ(xyzdC);
-
-    triangle3d.fillTriangle(false);
-  }
-
   public void fillTriangle(short colix, short normix,
                            int xScreenA, int yScreenA, int zScreenA,
                            int xScreenB, int yScreenB, int zScreenB,
@@ -985,18 +921,6 @@ final public class Graphics3D {
     v.x = s1.x - s2.x;
     v.y = s1.y - s2.y;
     v.z = s1.z - s2.z;
-  }
-
-  final static Point3i tmpScreenA = new Point3i();
-  final static Point3i tmpScreenB = new Point3i();
-  final static Point3i tmpScreenC = new Point3i();
-
-  public void calcSurfaceShade(short colix,
-                               long xyzdA, long xyzdB, long xyzdC) {
-    Xyzd.setPoint3i(xyzdA, tmpScreenA);
-    Xyzd.setPoint3i(xyzdB, tmpScreenB);
-    Xyzd.setPoint3i(xyzdC, tmpScreenC);
-    calcSurfaceShade(colix, tmpScreenA, tmpScreenB, tmpScreenC);
   }
 
   public void calcSurfaceShade(short colix, Point3i screenA,
@@ -1108,21 +1032,6 @@ final public class Graphics3D {
         xA, yA, zA, xC, yC, zC);
     fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
         xB, yB, zB, xC, yC, zC);
-  }
-
-  public void drawTriangle(short colix, long xyzdA, long xyzdB, long xyzdC) {
-    drawTriangle(colix,
-                 Xyzd.getX(xyzdA), Xyzd.getY(xyzdA), Xyzd.getZ(xyzdA),
-                 Xyzd.getX(xyzdB), Xyzd.getY(xyzdB), Xyzd.getZ(xyzdB),
-                 Xyzd.getX(xyzdC), Xyzd.getY(xyzdC), Xyzd.getZ(xyzdC));
-  }
-
-  public void drawCylinderTriangle(short colix, long xyzdA, long xyzdB,
-                                   long xyzdC, int diameter) {
-    drawCylinderTriangle(colix, 
-        Xyzd.getX(xyzdA), Xyzd.getY(xyzdA), Xyzd.getZ(xyzdA),
-        Xyzd.getX(xyzdB), Xyzd.getY(xyzdB), Xyzd.getZ(xyzdB),
-        Xyzd.getX(xyzdC), Xyzd.getY(xyzdC), Xyzd.getZ(xyzdC), diameter);
   }
 
   public void drawTriangle(short colix, Point3i screenA,

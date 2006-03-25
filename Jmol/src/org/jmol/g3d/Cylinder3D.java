@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
+ * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
  * Contact: miguel@jmol.org
  *
@@ -65,15 +65,17 @@ class Cylinder3D {
   //private float[] samples = new float[32];
 
   void render(short colixA, short colixB, byte endcaps, int diameter,
-                     int xA, int yA, int zA,
-                     int dxB, int dyB, int dzB) {
-    this.diameter = diameter;
+              int xA, int yA, int zA, int xB, int yB, int zB) {
+    if (isFullyClipped(diameter, xA, yA, zA, xB, yB, zB))
+      return;
     if (diameter <= 1) {
       g3d.plotLineDelta(colixA, colixB, xA, yA, zA, dxB, dyB, dzB);
       return;
     }
+    this.diameter = diameter;
     this.xA = xA; this.yA = yA; this.zA = zA;
-    this.dxB = dxB; this.dyB = dyB; this.dzB = dzB;
+    this.dxB = xB - xA; this.dyB = yB - yA; this.dzB = zB - zA;
+
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);
     this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
@@ -120,6 +122,38 @@ class Cylinder3D {
     rasterCount = 3;
     interpolate(0, 1);
     interpolate(1, 2);
+  }
+
+  boolean isFullyClipped(int diameter,
+                         int xA, int yA, int zA,
+                         int xB, int yB, int zB) {
+    // miguel 2006 03 25
+    // probably this should use the Cohen-Sutherland line clipping
+    // in Line3D
+    // but right now it seems too difficult to me to figure out
+    // where all the edges are on the bonds
+    int slab = g3d.slab;
+    int depth = g3d.depth;
+    int width = g3d.width;
+    int height = g3d.height;
+
+    int r = diameter / 2 + 1;
+    int xMinA = xA - r, xMaxA = xA + r;
+    int xMinB = xB - r, xMaxB = xB + r;
+    if (xMaxA < 0 && xMaxB < 0 ||
+        xMinA >= width && xMinB >= width)
+      return true;
+    int yMinA = yA - r, yMaxA = yA + r;
+    int yMinB = yB - r, yMaxB = yB + r;
+    if (yMaxA < 0 && yMaxB < 0 ||
+        yMinA >= height && yMinB >= height)
+      return true;
+    int zMinA = zA - r, zMaxA = zA + r;
+    int zMinB = zB - r, zMaxB = zB + r;
+    if (zMaxA < slab && zMaxB < slab ||
+        zMinA >= depth && zMinB >= depth)
+      return true;
+    return false;
   }
     
   void interpolate(int iLower, int iUpper) {

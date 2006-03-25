@@ -1061,22 +1061,21 @@ final public class Graphics3D {
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
     cylinder3d.render(colixA, colixB, endcaps, diameter,
-                      xA, yA, zA, xB - xA, yB - yA, zB - zA);
+                      xA, yA, zA, xB, yB, zB);
   }
 
   public void fillCylinder(short colix, byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
     cylinder3d.render(colix, colix, endcaps, diameter,
-                      xA, yA, zA, xB - xA, yB - yA, zB - zA);
+                      xA, yA, zA, xB, yB, zB);
   }
 
   public void fillCylinder(short colix, byte endcaps, int diameter,
                            Point3i screenA, Point3i screenB) {
     cylinder3d.render(colix, colix, endcaps, diameter,
                       screenA.x, screenA.y, screenA.z,
-                      screenB.x - screenA.x, screenB.y - screenA.y,
-                      screenB.z - screenA.z);
+                      screenB.x, screenB.y, screenB.z);
   }
 
   public void fillCone(short colix, byte endcap, int diameter,
@@ -1084,7 +1083,6 @@ final public class Graphics3D {
                        int xTip, int yTip, int zTip) {
     cylinder3d.renderCone(colix, endcap, diameter,
                       xBase, yBase, zBase, xTip, yTip, zTip);
-
   }
 
   public void fillCone(short colix, byte endcap, int diameter,
@@ -1092,13 +1090,13 @@ final public class Graphics3D {
     cylinder3d.renderCone(colix, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z);
-
   }
 
   public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    hermite3d.render(true, colix, tension, diameterBeg, diameterMid, diameterEnd,
+    hermite3d.render(true, colix, tension,
+                     diameterBeg, diameterMid, diameterEnd,
                      s0, s1, s2, s3);
   }
   

@@ -54,10 +54,6 @@ class Sphere3D {
 
   void render(int[] shades, boolean tScreened, int diameter,
               int x, int y, int z) {
-    if (diameter >= maxSphereCache) {
-      renderLargeSphere(shades, tScreened, diameter, x, y, z);
-      return;
-    }
     if (diameter > maxOddSizeSphere)
       diameter &= ~1;
     int radius = (diameter + 1) >> 1;
@@ -68,6 +64,10 @@ class Sphere3D {
         maxY < 0 || minY >= g3d.height ||
         maxZ < g3d.slab || minZ > g3d.depth)
       return;
+    if (diameter >= maxSphereCache) {
+      renderLargeSphere(shades, tScreened, diameter, x, y, z);
+      return;
+    }
     int[] ss = getSphereShape(diameter);
     if (minX < 0 || maxX >= g3d.width ||
         minY < 0 || maxY >= g3d.height ||

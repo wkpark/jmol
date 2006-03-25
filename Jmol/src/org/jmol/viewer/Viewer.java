@@ -369,7 +369,8 @@ final public class Viewer extends JmolViewer {
     return transformManager.zoomPercentSetting;
   }
 
-  public static int MAXIMUM_ZOOM_PERCENTAGE = 5000;
+  public final static int MAXIMUM_ZOOM = 200;
+  public final static int MAXIMUM_ZOOM_PERCENTAGE = MAXIMUM_ZOOM * 100;
 
   void zoomToPercent(int percent) {
     transformManager.zoomToPercent(percent);

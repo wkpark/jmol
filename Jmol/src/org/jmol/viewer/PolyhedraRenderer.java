@@ -48,7 +48,7 @@ class PolyhedraRenderer extends ShapeRenderer {
     planes = p.planes;
     for (int i = vertices.length; --i >= 0;) {
       if (vertices[i].isSimple)
-        vertices[i].transform(viewer); // creates xyzd        
+        vertices[i].transform(viewer);
     }
 
     for (int i = 0, j = 0; j < planes.length; ) {
@@ -71,12 +71,18 @@ class PolyhedraRenderer extends ShapeRenderer {
         (drawEdges == Polyhedra.EDGES_FRONT &&
          g3d.isDirectedTowardsCamera(normix))) {
       g3d.drawCylinderTriangle(Graphics3D.getOpaqueColix(colix),
-                       atomA.xyzd, atomB.xyzd, atomC.xyzd, 3);
+                               atomA.screenX, atomA.screenY, atomA.screenZ,
+                               atomB.screenX, atomB.screenY, atomB.screenZ,
+                               atomC.screenX, atomC.screenY, atomC.screenZ,
+                               3);
     }
   }
 
   void fillFace(short colix, short normix,
                   Atom atomA, Atom atomB, Atom atomC) {
-    g3d.fillTriangle(colix, normix, atomA.xyzd, atomB.xyzd, atomC.xyzd);
+    g3d.fillTriangle(colix, normix,
+                     atomA.screenX, atomA.screenY, atomA.screenZ,
+                     atomB.screenX, atomB.screenY, atomB.screenZ,
+                     atomC.screenX, atomC.screenY, atomC.screenZ);
   }
 }

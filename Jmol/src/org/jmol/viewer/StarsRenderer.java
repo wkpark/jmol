@@ -45,10 +45,9 @@ class StarsRenderer extends ShapeRenderer {
   }
 
   void render1(Atom atom, short mad, short colix) {
-    long xyzd = atom.xyzd;
-    int x = Xyzd.getX(xyzd);
-    int y = Xyzd.getY(xyzd);
-    int z = Xyzd.getZ(xyzd);
+    int x = atom.screenX;
+    int y = atom.screenY;
+    int z = atom.screenZ;
     int d = viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);

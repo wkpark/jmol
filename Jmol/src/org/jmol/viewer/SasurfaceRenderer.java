@@ -26,7 +26,6 @@ package org.jmol.viewer;
 
 import org.jmol.util.Bmp;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Xyzd;
 
 import javax.vecmath.*;
 
@@ -190,11 +189,10 @@ class SasurfaceRenderer extends ShapeRenderer {
     if (hideConvex)
       return;
     if (false) {
-      long xyzd = atom.xyzd;
       short madAtom = (short)(atom.getVanderwaalsMar() * 2);
-      int diameter = viewer.scaleToScreen(Xyzd.getZ(xyzd), madAtom);
+      int diameter = viewer.scaleToScreen(atom.screenZ, madAtom);
       g3d.fillSphereCentered(atom.colixAtom, diameter,
-                             Xyzd.getX(xyzd),Xyzd.getY(xyzd),Xyzd.getZ(xyzd));
+                             atom.screenX, atom.screenY, atom.screenZ);
       return;
     }
     Point3i[] screens = sasCache.lookupAtomScreens(atom, vertexMap);

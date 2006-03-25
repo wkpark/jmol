@@ -57,23 +57,21 @@ class BallsRenderer extends ShapeRenderer {
   }
 
   void renderBall(Atom atom) {
-    long xyzd = atom.xyzd;
     if (!wireframeRotating)
-      g3d.fillSphereCentered(atom.colixAtom, xyzd);
+      g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
+                             atom.screenX, atom.screenY, atom.screenZ);
     else
-      g3d.drawCircleCentered(atom.colixAtom, xyzd);
+      g3d.drawCircleCentered(atom.colixAtom, atom.screenDiameter,
+                             atom.screenX, atom.screenY, atom.screenZ);
   }
 
   void renderHalo(Atom atom) {
-    long xyzd = atom.xyzd;
-    int diameter = Xyzd.getD(xyzd);
+    int diameter = atom.screenDiameter;
     int halowidth = diameter / 4;
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int haloDiameter = diameter + 2 * halowidth;
-    g3d.fillScreenedCircleCentered(colixSelection,
-                                     haloDiameter,
-                                     Xyzd.getX(xyzd), Xyzd.getY(xyzd),
-                                     Xyzd.getZ(xyzd));
+    g3d.fillScreenedCircleCentered(colixSelection, haloDiameter,
+                                   atom.screenX, atom.screenY, atom.screenZ);
   }
 }

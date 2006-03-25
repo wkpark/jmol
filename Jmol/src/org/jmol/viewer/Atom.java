@@ -26,7 +26,6 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Xyzd;
 import org.jmol.bspt.Tuple;
 
 import java.util.Hashtable;
@@ -43,7 +42,10 @@ final class Atom implements Tuple {
   Group group;
   int atomIndex;
   Point3f point3f;
-  long xyzd;
+  int screenX;
+  int screenY;
+  int screenZ;
+  short screenDiameter;
   short modelIndex; // we want this here for the BallsRenderer
   byte elementNumber;
   byte formalChargeAndFlags;
@@ -57,12 +59,15 @@ final class Atom implements Tuple {
   int shapeVisibilityFlags;
   boolean isSimple = false;
 
+  // miguel 2006 03 25
+  // we should talk about this. if you need simple "points" for your shapes
+  // then we should consider splitting out the 'pointness' from the
+  // atom and have atom inherit from point
   Atom(Point3f pt) { 
-    //just a point, but with an xyzd -- just enough to determine a position
+    //just a point -- just enough to determine a position
     isSimple = true;
     point3f = new Point3f(pt);
     //must be transformed later -- Polyhedra;
-    xyzd = -1;
     formalChargeAndFlags = 0;
     madAtom = 0;
   }
@@ -369,8 +374,19 @@ final class Atom implements Tuple {
     group.chain.frame.setLabel(strLabel, atomIndex);
   }
 
-  final static int MIN_Z = 100;
-  final static int MAX_Z = 14383;
+  // miguel 2006 03 25
+  // not sure what we should do here
+  // current implementation of g3d uses a short for the zbuffer coordinate
+  // we could consider turning that into an int, but that would have
+  // significant implications
+  //
+  // actually, I think that it might work out just fine. we should use
+  // an int in this world, but let g3d deal with the problem of
+  // something having a depth that is more than 32K ... in the same
+  // sense that g3d will clip if something is not on the screen
+
+  //  final static int MIN_Z = 100;
+  //  final static int MAX_Z = 32766;
 
   void transform(Viewer viewer) {
     Point3i screen;
@@ -380,14 +396,10 @@ final class Atom implements Tuple {
       screen = viewer.transformPoint(point3f);
     else 
       screen = viewer.transformPoint(point3f, vibrationVectors[atomIndex]);
-    int z = screen.z;
-    z = ((z < MIN_Z)
-         ? MIN_Z
-         : ((z > MAX_Z)
-            ? MAX_Z
-            : z));
-    int diameter = viewer.scaleToScreen(z, madAtom);
-    xyzd = Xyzd.getXyzd(screen.x, screen.y, z, diameter);
+    screenX = screen.x;
+    screenY = screen.y;
+    screenZ = screen.z;
+    screenDiameter = viewer.scaleToScreen(screenZ, madAtom);
   }
 
   byte getElementNumber() {
@@ -407,8 +419,8 @@ final class Atom implements Tuple {
 
   String getAtomName() {
     String atomName = getAtomNameOrNull();
-    return
-      atomName != null ? atomName : JmolConstants.elementSymbols[elementNumber];
+    return (atomName != null
+            ? atomName : JmolConstants.elementSymbols[elementNumber]);
   }
   
   String getPdbAtomName4() {
@@ -720,7 +732,6 @@ final class Atom implements Tuple {
   void markDeleted() {
     deleteAllBonds();
     madAtom = JmolConstants.MAR_DELETED;
-    xyzd = Xyzd.NaN;
   }
 
   byte getProteinStructureType() {
@@ -1069,29 +1080,29 @@ final class Atom implements Tuple {
 
   boolean isCursorOnTop(int xCursor, int yCursor,
                         int minRadius, Atom competitor) {
-    int r = Xyzd.getD(xyzd) / 2;
+    int r = screenDiameter / 2;
     if (r < minRadius)
       r = minRadius;
     int r2 = r * r;
-    int dx = Xyzd.getX(xyzd) - xCursor;
+    int dx = screenX - xCursor;
     int dx2 = dx * dx;
     if (dx2 > r2)
       return false;
-    int dy = Xyzd.getY(xyzd) - yCursor;
+    int dy = screenY - yCursor;
     int dy2 = dy * dy;
     int dz2 = r2 - (dx2 + dy2);
     if (dz2 < 0)
       return false;
     if (competitor == null)
       return true;
-    int z = Xyzd.getZ(xyzd);
-    int zCompetitor = Xyzd.getZ(competitor.xyzd);
-    int rCompetitor = Xyzd.getD(competitor.xyzd) / 2;
+    int z = screenZ;
+    int zCompetitor = competitor.screenZ;
+    int rCompetitor = competitor.screenDiameter / 2;
     if (z < zCompetitor - rCompetitor)
       return true;
-    int dxCompetitor = Xyzd.getX(competitor.xyzd) - xCursor;
+    int dxCompetitor = competitor.screenX - xCursor;
     int dx2Competitor = dxCompetitor * dxCompetitor;
-    int dyCompetitor = Xyzd.getY(competitor.xyzd) - yCursor;
+    int dyCompetitor = competitor.screenY - yCursor;
     int dy2Competitor = dyCompetitor * dyCompetitor;
     int r2Competitor = rCompetitor * rCompetitor;
     int dz2Competitor = r2Competitor - (dx2Competitor + dy2Competitor);
@@ -1099,10 +1110,10 @@ final class Atom implements Tuple {
   }
 
   ////////////////////////////////////////////////////////////////
-  int getScreenX() { return Xyzd.getX(xyzd); }
-  int getScreenY() { return Xyzd.getY(xyzd); }
-  int getScreenZ() { return Xyzd.getZ(xyzd); }
-  int getScreenD() { return Xyzd.getD(xyzd); }
+  int getScreenX() { return screenX; }
+  int getScreenY() { return screenY; }
+  int getScreenZ() { return screenZ; }
+  int getScreenD() { return screenDiameter; }
 
   ////////////////////////////////////////////////////////////////
 

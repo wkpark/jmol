@@ -116,11 +116,9 @@ class SticksRenderer extends ShapeRenderer {
 
   void render(Bond bond, Atom atomA, Atom atomB) {
     this.atomA = atomA;
-    long xyzd = atomA.xyzd;
-    xA = Xyzd.getX(xyzd); yA = Xyzd.getY(xyzd); zA = Xyzd.getZ(xyzd);
+    xA = atomA.screenX; yA = atomA.screenY; zA = atomA.screenZ;
     this.atomB = atomB;
-    xyzd = atomB.xyzd;
-    xB = Xyzd.getX(xyzd); yB = Xyzd.getY(xyzd); zB = Xyzd.getZ(xyzd);
+    xB = atomB.screenX; yB = atomB.screenY; zB = atomB.screenZ;
     dx = xB - xA;
     dy = yB - yA;
     width = viewer.scaleToScreen((zA + zB)/2, bond.mad);

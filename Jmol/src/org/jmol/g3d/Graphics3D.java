@@ -70,7 +70,7 @@ final public class Graphics3D {
   int slab, depth;
   int xLast, yLast;
   int[] pbuf;
-  short[] zbuf;
+  int[] zbuf;
 
   int clipX;
   int clipY;
@@ -1164,7 +1164,7 @@ final public class Graphics3D {
       return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argbCurrent;
     }
   }
@@ -1175,7 +1175,7 @@ final public class Graphics3D {
     int z = screen.z; if (z < slab || z > depth) return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argbCurrent;
     }
   }
@@ -1185,7 +1185,7 @@ final public class Graphics3D {
       return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argb;
     }
   }
@@ -1195,7 +1195,7 @@ final public class Graphics3D {
       return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argb;
     }
   }
@@ -1207,7 +1207,7 @@ final public class Graphics3D {
       return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argb;
     }
   }
@@ -1217,7 +1217,7 @@ final public class Graphics3D {
       return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = getColixArgb(colix);
     }
   }
@@ -1225,7 +1225,7 @@ final public class Graphics3D {
   void plotPixelUnclipped(int x, int y, int z) {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argbCurrent;
     }
   }
@@ -1233,7 +1233,7 @@ final public class Graphics3D {
   void plotPixelUnclipped(int argb, int x, int y, int z) {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argb;
     }
   }
@@ -1260,7 +1260,7 @@ final public class Graphics3D {
     }
     do {
       if (z < zbuf[offsetPbuf]) {
-        zbuf[offsetPbuf] = (short)z;
+        zbuf[offsetPbuf] = z;
         pbuf[offsetPbuf] = argbCurrent;
       }
       offsetPbuf += step;
@@ -1305,7 +1305,7 @@ final public class Graphics3D {
         if (! isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z >= slab && z <= depth && z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = (short)z;
+            zbuf[offsetPbuf] = z;
             seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
             int bits = (seed >> 16) & 0x07;
             pbuf[offsetPbuf] = (bits == 0
@@ -1327,7 +1327,7 @@ final public class Graphics3D {
         if (! isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z >= slab && z <= depth && z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = (short)z;
+            zbuf[offsetPbuf] = z;
             pbuf[offsetPbuf] = (0xFF000000 |
                                 (rScaled & 0xFF0000) |
                                 (gScaled & 0xFF00) |
@@ -1365,7 +1365,7 @@ final public class Graphics3D {
         while (--count >= 0) {
           int z = zScaled >> 10;
           if (z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = (short)z;
+            zbuf[offsetPbuf] = z;
             seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
             int bits = (seed >> 16) & 0x07;
             pbuf[offsetPbuf] = (bits == 0
@@ -1382,7 +1382,7 @@ final public class Graphics3D {
           if (flipflop) {
             int z = zScaled >> 10;
             if (z < zbuf[offsetPbuf]) {
-              zbuf[offsetPbuf] = (short)z;
+              zbuf[offsetPbuf] = z;
               seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
               int bits = (seed >> 16) & 0x07;
               pbuf[offsetPbuf] = (bits == 0
@@ -1446,7 +1446,7 @@ final public class Graphics3D {
         if (! isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = (short)z;
+            zbuf[offsetPbuf] = z;
             pbuf[offsetPbuf] = (0xFF000000 |
                                 (rScaled & 0xFF0000) |
                                 (gScaled & 0xFF00) |
@@ -1467,7 +1467,7 @@ final public class Graphics3D {
     if (! isTranslucent) {
       while (--count >= 0) {
         if (z < zbuf[offsetPbuf]) {
-          zbuf[offsetPbuf] = (short)z;
+          zbuf[offsetPbuf] = z;
           pbuf[offsetPbuf] = argbCurrent;
         }
         ++offsetPbuf;
@@ -1479,7 +1479,7 @@ final public class Graphics3D {
           return;
       do {
         if (z < zbuf[offsetPbuf]) {
-          zbuf[offsetPbuf] = (short)z;
+          zbuf[offsetPbuf] = z;
           pbuf[offsetPbuf] = argbCurrent;
         }
         offsetPbuf += 2;
@@ -1506,7 +1506,7 @@ final public class Graphics3D {
       int alpha = pixel & 0xFF000000;
       if (alpha >= 0x80000000) {
         if (z < zbuf[offsetPbuf]) {
-          zbuf[offsetPbuf] = (short)z;
+          zbuf[offsetPbuf] = z;
           pbuf[offsetPbuf] = pixel;
           }
       }
@@ -1522,7 +1522,7 @@ final public class Graphics3D {
       int alpha = pixel & 0xFF000000;
       if ((alpha & 0x80000000) != 0) {
         if (z < zbuf[offsetPbuf]) {
-          zbuf[offsetPbuf] = (short)z;
+          zbuf[offsetPbuf] = z;
           pbuf[offsetPbuf] = pixel;
         }
       }
@@ -1592,7 +1592,7 @@ final public class Graphics3D {
         continue;
       int offset = y * width + x;
       if (z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
+        zbuf[offset] = z;
         pbuf[offset] = argb;
       }
     }
@@ -1609,7 +1609,7 @@ final public class Graphics3D {
         continue;
       int offset = y * width + x;
       if (z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
+        zbuf[offset] = z;
         //        pbuf[offset] = getColixArgb(colix);
         pbuf[offset] = shades[intensities[j]];
       }

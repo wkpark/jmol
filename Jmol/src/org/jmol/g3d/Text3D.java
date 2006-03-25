@@ -218,7 +218,7 @@ class Text3D {
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     int[] pbuf = g3d.pbuf;
     int screenWidth = g3d.width;
     int pbufOffset = y * screenWidth + x;
@@ -234,7 +234,7 @@ class Text3D {
         } else {
           if (shiftregister < 0 || argbBackground != 0) {
             if (z < zbuf[pbufOffset]) {
-              zbuf[pbufOffset] = (short)z;
+              zbuf[pbufOffset] = z;
               pbuf[pbufOffset] = shiftregister < 0 ? argb : argbBackground;
             }
           }

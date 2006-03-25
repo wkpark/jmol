@@ -74,7 +74,7 @@ final class Line3D {
   		h = -h;
   	}
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     if (y < 0) {
     	h += y;
     	y = 0;
@@ -86,7 +86,7 @@ final class Line3D {
     if (! tScreened) {
       for (int i = 0; i <= h; i++) {
     	if (z < zbuf[offset]) {
-          zbuf[offset] = (short)z;
+          zbuf[offset] = z;
           pbuf[offset] = argb;
     	}
     	offset += width;
@@ -96,7 +96,7 @@ final class Line3D {
     boolean flipflop = ((x ^ y) & 1) != 0;
     for (int i = 0; i <= h; i++) {
       if ((flipflop = !flipflop) && z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
+        zbuf[offset] = z;
         pbuf[offset] = argb;
       }
       offset += width;
@@ -120,7 +120,7 @@ final class Line3D {
   		w = -w;
   	}
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     if (x < 0) {
     	w += x;
     	x = 0;
@@ -132,7 +132,7 @@ final class Line3D {
     if (! tScreened) {
       for (int i = 0; i <= w; i++) {
     	if (z < zbuf[offset]) {
-          zbuf[offset] = (short)z;
+          zbuf[offset] = z;
           pbuf[offset] = argb;
     	}
     	offset++;
@@ -142,7 +142,7 @@ final class Line3D {
     boolean flipflop = ((x ^ y) & 1) != 0;
     for (int i = 0; i <= w; i++) {
       if ((flipflop = !flipflop) && z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
+        zbuf[offset] = z;
         pbuf[offset] = argb;
       }
       offset++;
@@ -278,11 +278,11 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     }
     int runIndex = 0;
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argb1;
     }
     if (dx == 0 && dy == 0)
@@ -325,7 +325,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         }
         int zCurrent = zCurrentScaled >> 10;
         if (runIndex < rise  && zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
+          zbuf[offset] = zCurrent;
           pbuf[offset] = n > nMid ? argb1 : argb2;
         }
         ++runIndex;
@@ -349,7 +349,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         }
         int zCurrent = zCurrentScaled >> 10;
         if (runIndex < rise && zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
+          zbuf[offset] = zCurrent;
           pbuf[offset] = n > nMid ? argb1 : argb2;
         }
         ++runIndex;
@@ -371,7 +371,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     }
     int runIndex = 0;
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     int width = g3d.width, height = g3d.height;
     int slab = g3d.slab, depth = g3d.depth;
     int offset = y * width + x;
@@ -379,7 +379,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         y >= 0 && y < height &&
         z >= slab && z <= depth &&
         z < zbuf[offset]) {
-      zbuf[offset] = (short)z;
+      zbuf[offset] = z;
       pbuf[offset] = argb1;
     }
     if (dx == 0 && dy == 0)
@@ -427,7 +427,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
           if (zCurrent >= slab &&
               zCurrent <= depth &&
               zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
+            zbuf[offset] = zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
         }
@@ -457,7 +457,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
           if (zCurrent >= slab &&
               zCurrent <= depth &&
               zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
+            zbuf[offset] = zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
         }
@@ -606,7 +606,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
                               int fp8Intensity,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int offset = y1 * width + x1;
     int intensity = fp8Intensity >> 8;
@@ -625,7 +625,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     boolean flipflop = ((x1 ^ y1) & 1) != 0;
     if (!tScreened || (flipflop = !flipflop)) {
       if (z1 < zbuf[offset]) {
-        zbuf[offset] = (short)z1;
+        zbuf[offset] = z1;
         pbuf[offset] = argb1;
       }
     }
@@ -686,7 +686,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         if (!tScreened || (flipflop = !flipflop)) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
+            zbuf[offset] = zCurrent;
             int rand8 = Shade3D.nextRandom8Bit();
             pbuf[offset] =
               rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb);
@@ -723,7 +723,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         if (!tScreened || (flipflop = !flipflop)) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
+            zbuf[offset] = zCurrent;
             int rand8 = Shade3D.nextRandom8Bit();
             pbuf[offset] =
               rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb);
@@ -738,7 +738,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
                               int argb2, boolean tScreened2,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int offset = y1 * width + x1;
     boolean flipflop = ((x1 ^ y1) & 1) != 0;
@@ -746,7 +746,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb = argb1;
     if (!tScreened || (flipflop = !flipflop)) {
       if (z1 < zbuf[offset]) {
-        zbuf[offset] = (short)z1;
+        zbuf[offset] = z1;
         pbuf[offset] = argb1;
       }
     }
@@ -796,7 +796,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         if (!tScreened || (flipflop = !flipflop)) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
+            zbuf[offset] = zCurrent;
             pbuf[offset] = argb;
           }
         }
@@ -824,7 +824,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
         if (!tScreened || (flipflop = !flipflop)) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = (short)zCurrent;
+            zbuf[offset] = zCurrent;
             pbuf[offset] = argb;
           }
         }
@@ -836,7 +836,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
                             int argb2, boolean tScreened2,
                             int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     int width = g3d.width, height = g3d.height;
     int slab = g3d.slab, depth = g3d.depth;
     int offset = y1 * width + x1;
@@ -845,7 +845,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
           y1 >= 0 && y1 < height &&
           z1 >= slab && z1 <= depth &&
           z1 < zbuf[offset]) {
-        zbuf[offset] = (short)z1;
+        zbuf[offset] = z1;
         pbuf[offset] = argb1;
       }
     }
@@ -932,7 +932,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
             if (zCurrent >= slab &&
                 zCurrent <= depth &&
                 zCurrent < zbuf[offset]) {
-              zbuf[offset] = (short)zCurrent;
+              zbuf[offset] = zCurrent;
               pbuf[offset] = argb;
             }
           }
@@ -949,7 +949,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb1 = shades1[intensity];
     int argb2 = shades2[intensity];
     int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
+    int[] zbuf = g3d.zbuf;
     int width = g3d.width, height = g3d.height;
     int slab = g3d.slab, depth = g3d.depth;
     int offset = y1 * width + x1;
@@ -958,7 +958,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
           y1 >= 0 && y1 < height &&
           z1 >= slab && z1 <= depth &&
           z1 < zbuf[offset]) {
-        zbuf[offset] = (short)z1;
+        zbuf[offset] = z1;
         pbuf[offset] = argb1;
       }
     }
@@ -1013,7 +1013,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
             if (zCurrent >= slab &&
                 zCurrent <= depth &&
                 zCurrent < zbuf[offset]) {
-              zbuf[offset] = (short)zCurrent;
+              zbuf[offset] = zCurrent;
               pbuf[offset] = argb;
             }
           }
@@ -1045,7 +1045,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
             if (zCurrent >= slab &&
                 zCurrent <= depth &&
                 zCurrent < zbuf[offset]) {
-              zbuf[offset] = (short)zCurrent;
+              zbuf[offset] = zCurrent;
               pbuf[offset] = argb;
             }
           }

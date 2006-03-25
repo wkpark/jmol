@@ -42,8 +42,9 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "10.00.48";
-  public final static String cvsDate = "$Date$";
+  public final static String version = "10.00.49";
+  public final static String cvsDate =
+    "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
   public final static boolean officialRelease = false;

@@ -899,6 +899,21 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false);
   }
 
+  public void fillTriangle(short colix, short normix,
+                           int xScreenA, int yScreenA, int zScreenA,
+                           int xScreenB, int yScreenB, int zScreenB,
+                           int xScreenC, int yScreenC, int zScreenC) {
+    setColorNoisy(colix, normix3d.getIntensity(normix));
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = xScreenA; t[1] = xScreenB; t[2] = xScreenC;
+    t = triangle3d.ay;
+    t[0] = yScreenA; t[1] = yScreenB; t[2] = yScreenC;
+    t = triangle3d.az;
+    t[0] = zScreenA; t[1] = zScreenB; t[2] = zScreenC;
+    triangle3d.fillTriangle(false);
+  }
+
   public void fillTriangle(short colix, Point3f screenA,
                            Point3f screenB, Point3f screenC) {
     setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));

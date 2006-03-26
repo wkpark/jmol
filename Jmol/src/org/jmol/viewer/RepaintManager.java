@@ -76,19 +76,11 @@ class RepaintManager {
 
   AnimationThread animationThread;
 
-  boolean wireframeRotating = false;
-  void setWireframeRotating(boolean wireframeRotating) {
-    this.wireframeRotating = wireframeRotating;
-  }
-
   boolean inMotion = false;
   void setInMotion(boolean inMotion) {
-    if (this.inMotion != inMotion && viewer.getWireframeRotation()) {
-      setWireframeRotating(inMotion);
-      if (!inMotion)
-        refresh();
-    }
     this.inMotion = inMotion;
+    if (! inMotion)
+      refresh();
   }
 
   Image takeSnapshot() {
@@ -113,14 +105,6 @@ class RepaintManager {
       viewer.awtComponent.repaint();
     }
   }
-
-  /*
-  void forceRefresh() {
-    System.out.println("repaintManager.forceRefresh");
-    repaintPending = true;
-    viewer.awtComponent.repaint();
-  }
-  */
 
   void refresh() {
     //System.out.println("repaintManager.refresh");

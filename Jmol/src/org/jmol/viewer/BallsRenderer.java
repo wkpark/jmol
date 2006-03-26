@@ -28,7 +28,6 @@ package org.jmol.viewer;
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY;
-  boolean wireframeRotating;
   short colixSelection;
 
   void render() {
@@ -37,7 +36,6 @@ class BallsRenderer extends ShapeRenderer {
     minY = rectClip.y;
     maxY = minY + rectClip.height;
 
-    wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     int ballVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);
     int haloVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);    
@@ -55,12 +53,8 @@ class BallsRenderer extends ShapeRenderer {
   }
 
   void renderBall(Atom atom) {
-    if (!wireframeRotating)
-      g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
-                             atom.screenX, atom.screenY, atom.screenZ);
-    else
-      g3d.drawCircleCentered(atom.colixAtom, atom.screenDiameter,
-                             atom.screenX, atom.screenY, atom.screenZ);
+    g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
+                           atom.screenX, atom.screenY, atom.screenZ);
   }
 
   void renderHalo(Atom atom) {

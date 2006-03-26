@@ -31,7 +31,6 @@ import java.awt.Rectangle;
 
 class SticksRenderer extends ShapeRenderer {
 
-  boolean wireframeRotating;
   short colixSelection;
   boolean showMultipleBonds;
   byte modeMultipleBond;
@@ -66,7 +65,6 @@ class SticksRenderer extends ShapeRenderer {
 
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
 
-    wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
@@ -178,7 +176,7 @@ class SticksRenderer extends ShapeRenderer {
   }
 
   private void renderCylinder(int dottedMask) {
-    boolean lineBond = (wireframeRotating || width <= 1);
+    boolean lineBond = (width <= 1);
     if (dx == 0 && dy == 0) {
       // end-on view
       if (! lineBond) {
@@ -412,7 +410,7 @@ class SticksRenderer extends ShapeRenderer {
   }
 
   void renderHbondDashed() {
-    boolean lineBond = (wireframeRotating || width <= 1);
+    boolean lineBond = (width <= 1);
    int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;

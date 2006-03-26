@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-19 08:44-0500\n"
+"POT-Creation-Date: 2006-03-26 13:35-0500\n"
 "PO-Revision-Date: 2005-12-20 07:33-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/viewer/PickingManager.java:165
+#: org/jmol/viewer/PickingManager.java:167
 msgid "pick "
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:167
+#: org/jmol/viewer/PickingManager.java:169
 msgid " atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:175
+#: org/jmol/viewer/PickingManager.java:177
 #, fuzzy
 msgid "atoms selected"
 msgstr "Grupo de átomos"
@@ -36,7 +36,7 @@ msgid "Jmol executing script ..."
 msgstr "Executando um script..."
 
 #: org/openscience/jmol/app/AboutDialog.java:56
-#: org/openscience/jmol/app/GuiMap.java:155
+#: org/openscience/jmol/app/GuiMap.java:154
 msgid "About Jmol"
 msgstr "Acerca do Jmol"
 
@@ -401,235 +401,227 @@ msgid "{0}%"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:116
-msgid "Wi&reframe Rotation"
-msgstr "Rotação de FrameLi&gado"
-
-#: org/openscience/jmol/app/GuiMap.java:117
-#: org/openscience/jmol/app/GuiMap.java:162
+#: org/openscience/jmol/app/GuiMap.java:160
 msgid "Perspective Depth"
 msgstr "Profundidade da perpectiva"
 
-#: org/openscience/jmol/app/GuiMap.java:118
-#: org/openscience/jmol/app/GuiMap.java:163
+#: org/openscience/jmol/app/GuiMap.java:117
+#: org/openscience/jmol/app/GuiMap.java:161
 msgid "Axes"
 msgstr "Eixos"
 
-#: org/openscience/jmol/app/GuiMap.java:119
-#: org/openscience/jmol/app/GuiMap.java:164
+#: org/openscience/jmol/app/GuiMap.java:118
+#: org/openscience/jmol/app/GuiMap.java:162
 msgid "Bounding Box"
 msgstr "Caixa de ligação"
 
-#: org/openscience/jmol/app/GuiMap.java:120
+#: org/openscience/jmol/app/GuiMap.java:119
 msgid "&Hydrogens"
 msgstr "&Hidrogénios"
 
-#: org/openscience/jmol/app/GuiMap.java:121
+#: org/openscience/jmol/app/GuiMap.java:120
 msgid "&Vectors"
 msgstr "&Vectores"
 
-#: org/openscience/jmol/app/GuiMap.java:122
+#: org/openscience/jmol/app/GuiMap.java:121
 msgid "&Measurements"
 msgstr "&Medições"
 
-#: org/openscience/jmol/app/GuiMap.java:123
+#: org/openscience/jmol/app/GuiMap.java:122
 msgid "&View"
 msgstr "&Ver"
 
-#: org/openscience/jmol/app/GuiMap.java:124
+#: org/openscience/jmol/app/GuiMap.java:123
 msgid "Front"
 msgstr "Frente"
 
-#: org/openscience/jmol/app/GuiMap.java:125
+#: org/openscience/jmol/app/GuiMap.java:124
 msgid "Top"
 msgstr "Topo"
 
-#: org/openscience/jmol/app/GuiMap.java:126
+#: org/openscience/jmol/app/GuiMap.java:125
 msgid "Bottom"
 msgstr "Fundo"
 
-#: org/openscience/jmol/app/GuiMap.java:127
+#: org/openscience/jmol/app/GuiMap.java:126
 msgid "Right"
 msgstr "Direita"
 
-#: org/openscience/jmol/app/GuiMap.java:128
+#: org/openscience/jmol/app/GuiMap.java:127
 msgid "Left"
 msgstr "Esquerda"
 
-#: org/openscience/jmol/app/GuiMap.java:129
+#: org/openscience/jmol/app/GuiMap.java:128
 msgid "Transform..."
 msgstr "Transformar..."
 
-#: org/openscience/jmol/app/GuiMap.java:130
+#: org/openscience/jmol/app/GuiMap.java:129
 msgid "Define Center"
 msgstr "Definir centro"
 
-#: org/openscience/jmol/app/GuiMap.java:131
+#: org/openscience/jmol/app/GuiMap.java:130
 msgid "&Tools"
 msgstr "&Ferramentas"
 
-#: org/openscience/jmol/app/GuiMap.java:132
+#: org/openscience/jmol/app/GuiMap.java:131
 #: org/openscience/jmol/app/MeasurementTable.java:66
 msgid "Measurements..."
 msgstr "Medições..."
 
-#: org/openscience/jmol/app/GuiMap.java:133
+#: org/openscience/jmol/app/GuiMap.java:132
 msgid "Distance Units"
 msgstr "Unidades de distância"
 
-#: org/openscience/jmol/app/GuiMap.java:134
+#: org/openscience/jmol/app/GuiMap.java:133
 msgid "Nanometers 1E-9"
 msgstr "Nanometros 1E-9"
 
-#: org/openscience/jmol/app/GuiMap.java:135
+#: org/openscience/jmol/app/GuiMap.java:134
 msgid "Angstroms 1E-10"
 msgstr "Angstroms 1E-10"
 
-#: org/openscience/jmol/app/GuiMap.java:136
+#: org/openscience/jmol/app/GuiMap.java:135
 msgid "Picometers 1E-12"
 msgstr "Picometros 1E-12"
 
-#: org/openscience/jmol/app/GuiMap.java:137
+#: org/openscience/jmol/app/GuiMap.java:136
 msgid "Animate..."
 msgstr "Animar..."
 
-#: org/openscience/jmol/app/GuiMap.java:138
+#: org/openscience/jmol/app/GuiMap.java:137
 msgid "Vibrate..."
 msgstr "Vibrar..."
 
-#: org/openscience/jmol/app/GuiMap.java:139
+#: org/openscience/jmol/app/GuiMap.java:138
 msgid "&Graph..."
 msgstr "&Gráfico"
 
-#: org/openscience/jmol/app/GuiMap.java:140
+#: org/openscience/jmol/app/GuiMap.java:139
 msgid "Calculate chemical &shifts..."
 msgstr "Calcular &shifts químicos"
 
-#: org/openscience/jmol/app/GuiMap.java:141
+#: org/openscience/jmol/app/GuiMap.java:140
 msgid "&Crystal Properties"
 msgstr "&Propriedades do Cristal"
 
-#: org/openscience/jmol/app/GuiMap.java:142
+#: org/openscience/jmol/app/GuiMap.java:141
 msgid "Once"
 msgstr "Uma vez"
 
-#: org/openscience/jmol/app/GuiMap.java:143
+#: org/openscience/jmol/app/GuiMap.java:142
 msgid "Loop"
 msgstr "Curva"
 
-#: org/openscience/jmol/app/GuiMap.java:144
+#: org/openscience/jmol/app/GuiMap.java:143
 msgid "Palindrome"
 msgstr "Palindroma"
 
-#: org/openscience/jmol/app/GuiMap.java:145
+#: org/openscience/jmol/app/GuiMap.java:144
 msgid "Stop animation"
 msgstr "Parar a animação"
 
-#: org/openscience/jmol/app/GuiMap.java:146
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:145
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "Rewind to first frame"
 msgstr "Rebobinar para o primeiro frame"
 
-#: org/openscience/jmol/app/GuiMap.java:147
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:146
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Go to next frame"
 msgstr "Ir para o próximo frame"
 
-#: org/openscience/jmol/app/GuiMap.java:148
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:147
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Go to previous frame"
 msgstr "Ir para o frame anterior"
 
-#: org/openscience/jmol/app/GuiMap.java:149
+#: org/openscience/jmol/app/GuiMap.java:148
 msgid "Start vibration"
 msgstr "Iniciar a vibração"
 
-#: org/openscience/jmol/app/GuiMap.java:150
+#: org/openscience/jmol/app/GuiMap.java:149
 msgid "Stop vibration"
 msgstr "Parar a vibração"
 
-#: org/openscience/jmol/app/GuiMap.java:151
+#: org/openscience/jmol/app/GuiMap.java:150
 msgid "First frequency"
 msgstr "Primeira frequência"
 
-#: org/openscience/jmol/app/GuiMap.java:152
+#: org/openscience/jmol/app/GuiMap.java:151
 msgid "Next frequency"
 msgstr "Próxima freqência"
 
-#: org/openscience/jmol/app/GuiMap.java:153
+#: org/openscience/jmol/app/GuiMap.java:152
 msgid "Previous frequency"
 msgstr "Frequência anterior"
 
-#: org/openscience/jmol/app/GuiMap.java:154
+#: org/openscience/jmol/app/GuiMap.java:153
 msgid "&Help"
 msgstr "&Ajuda"
 
-#: org/openscience/jmol/app/GuiMap.java:156
+#: org/openscience/jmol/app/GuiMap.java:155
 msgid "User Guide"
 msgstr "Manual"
 
-#: org/openscience/jmol/app/GuiMap.java:157
+#: org/openscience/jmol/app/GuiMap.java:156
 msgid "What's New"
 msgstr "O que há de novo"
 
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:157
 #: org/openscience/jmol/app/Jmol.java:468
 msgid "Jmol Console"
 msgstr "Consola Jmol"
 
-#: org/openscience/jmol/app/GuiMap.java:159
+#: org/openscience/jmol/app/GuiMap.java:158
 msgid "Hydrogens"
 msgstr "Hidrogénios"
 
-#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/GuiMap.java:159
 msgid "Measurements"
 msgstr "Medições"
 
-#: org/openscience/jmol/app/GuiMap.java:161
-msgid "Wireframe Rotation"
-msgstr "Rotação de frame"
-
-#: org/openscience/jmol/app/GuiMap.java:165
+#: org/openscience/jmol/app/GuiMap.java:163
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "Eixos compatíveis RasMol/Chimeorientação/rotação"
 
-#: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:164
 msgid "File Preview (needs restarting Jmol)"
 msgstr "Pré-visualização do ficheiro (requer reiniciação do Jmol)"
 
-#: org/openscience/jmol/app/GuiMap.java:167
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:165
+#: org/openscience/jmol/app/GuiMap.java:166
 msgid "Use Atom Color"
 msgstr "Usar cor do átomo"
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:167
 msgid "Open a file."
 msgstr "Abrir ficheiro"
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:168
 msgid "Export view to an image file."
 msgstr "Exportar para um ficheiro de imagem"
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:169
 msgid "Render in pov-ray."
 msgstr "Renderizar em \"pov-ray\""
 
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:170
 msgid "Print view."
 msgstr "Visualização de impressão"
 
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:171
 msgid "Rotate molecule."
 msgstr "Rodar molécula"
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "Select an atom or region."
 msgstr "Escolher átomo ou região"
 
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "View measurement table."
 msgstr "Ver tabela de medições"
 
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "Return molecule to home position."
 msgstr "Recolocar a molécula na posição inicial"
 
@@ -1092,6 +1084,12 @@ msgstr "Carregando..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "O que há de novo no Jmol"
+
+#~ msgid "Wi&reframe Rotation"
+#~ msgstr "Rotação de FrameLi&gado"
+
+#~ msgid "Wireframe Rotation"
+#~ msgstr "Rotação de frame"
 
 #~ msgid "Colors"
 #~ msgstr "Cores"

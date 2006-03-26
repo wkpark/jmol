@@ -25,8 +25,6 @@
 
 package org.jmol.viewer;
 
-import org.jmol.g3d.*;
-
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY;

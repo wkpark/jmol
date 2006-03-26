@@ -24,8 +24,6 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.JmolAdapter;
-
 import java.io.BufferedReader;
 
 /**
@@ -125,7 +123,7 @@ class V3000Reader extends AtomSetCollectionReader {
       String line = readLineWithContinuation(reader);
       if (line == null || (! line.startsWith("M  V30 ")))
         throw new Exception("unrecognized bond");
-      int bondSerial = parseInt(line, 7); // currently unused
+      /*int bondSerial = */parseInt(line, 7); // currently unused
       int order = parseInt(line, ichNextParse);
       int atomSerial1 = parseInt(line, ichNextParse);
       int atomSerial2 = parseInt(line, ichNextParse);

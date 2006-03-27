@@ -1739,7 +1739,6 @@ final public class Viewer extends JmolViewer {
       if (inMotion)
         ++motionEventNumber;
       repaintManager.setInMotion(inMotion);
-      checkOversample();
       wasInMotion = inMotion;
     }
   }
@@ -1860,17 +1859,6 @@ final public class Viewer extends JmolViewer {
 
   public void releaseScreenImage() {
     g3d.releaseScreenImage();
-  }
-
-  void checkOversample() {
-    boolean tOversample = (tOversampleAlways | (!repaintManager.inMotion & tOversampleStopped));
-    repaintManager.setOversample(tOversample);
-    transformManager.setOversample(tOversample);
-  }
-
-  void setOversample(boolean tOversample) {
-    transformManager.setOversample(tOversample);
-    repaintManager.setOversample(tOversample);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -2282,10 +2270,6 @@ final public class Viewer extends JmolViewer {
       return getShowMeasurements();
     if (key.equalsIgnoreCase("showSelections"))
       return getSelectionHaloEnabled();
-    if (key.equalsIgnoreCase("oversampleAlways"))
-      return getOversampleAlwaysEnabled();
-    if (key.equalsIgnoreCase("oversampleStopped"))
-      return getOversampleStoppedEnabled();
     if (key.equalsIgnoreCase("axesOrientationRasmol"))
       return getAxesOrientationRasmol();
     if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
@@ -2340,14 +2324,6 @@ final public class Viewer extends JmolViewer {
     }
     if (key.equalsIgnoreCase("showSelections")) {
       setSelectionHaloEnabled(value);
-      return;
-    }
-    if (key.equalsIgnoreCase("oversampleAlways")) {
-      setOversampleAlwaysEnabled(value);
-      return;
-    }
-    if (key.equalsIgnoreCase("oversampleStopped")) {
-      setOversampleStoppedEnabled(value);
       return;
     }
     if (key.equalsIgnoreCase("axesOrientationRasmol")) {
@@ -2457,30 +2433,6 @@ final public class Viewer extends JmolViewer {
   // //////////////////////////////////////////////////////////////
   // Graphics3D
   // //////////////////////////////////////////////////////////////
-
-  boolean tOversampleStopped;
-
-  boolean getOversampleStoppedEnabled() {
-    return tOversampleStopped;
-  }
-
-  boolean tOversampleAlways;
-
-  boolean getOversampleAlwaysEnabled() {
-    return tOversampleAlways;
-  }
-
-  void setOversampleAlwaysEnabled(boolean value) {
-    tOversampleAlways = value;
-    checkOversample();
-    refresh(0, "Viewer:setOversampleAlwaysEnabled()");
-  }
-
-  void setOversampleStoppedEnabled(boolean value) {
-    tOversampleStopped = value;
-    checkOversample();
-    refresh(0, "Viewer:setOversampleStoppedEnabled()");
-  }
 
   boolean greyscaleRendering;
 

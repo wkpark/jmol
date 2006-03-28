@@ -47,9 +47,11 @@
 		</listitem>
 		<listitem>
 			<para>
-				CVS - The definitive CVS documentation is at
-				<ulink url="http://cvsbook.red-bean.com/cvsbook.html"/>.
+				<package>Subversion</package>
+				- The definitive svn documentation is at
+				<ulink url="http://svnbook.red-bean.com/"/>.
 			</para>
+<!--
 			<para>
 				On Win32 you can use <package>WinCVS</package>
 				from <ulink url="http://www.wincvs.org"/>, but a far more sophisticated
@@ -62,44 +64,65 @@
 				On Mac OSX the cvs software comes on the Developer's CD,
 				which can be freely downloaded from Apple.
 			</para>
+			-->
 		</listitem>
 	</itemizedlist>
 </chapter>
   
 <chapter id="CheckingOutJmol">
-	<title>Checking Out Jmol from CVS</title>
+	<title>Checking Out Jmol from SVN</title>
 	<para>
 		If you are using Eclipse, see <xref linkend="Eclipse"/>.
 	</para>
 	<para>
-		For anonymous checkout from SourceForge cvs, use the following command and press
-		the <keycap>Enter</keycap> key when prompted for the password:
-		<screen><prompt>~/workspace$</prompt> cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol login</screen>
+		In February 2006 Jmol converted to the <command>subversion</command> version control
+		system for our source code repository, frequently referred to as
+		<command>svn</command>. The <command>svn</command> repository is still hosted by SourceForge. 
 	</para>
 	<para>
-		Then check out the source:
-		<screen><prompt>~/workspace$</prompt> cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol co -P Jmol</screen>
+		The current development version of the Jmol source code can be checked out using:
+		<screen>
+			<prompt>~/workspace$</prompt>
+			svn checkout https://svn.sourceforge.net/svnroot/jmol/trunk/Jmol
+		</screen>
 	</para>
 	<para>
 		This creates a directory called <filename class="directory">Jmol</filename>
-		(fitting the name of the CVS module). If you want to check out the sources
-		into another directory use:
-		<screen><prompt>~/workspace$</prompt> cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/jmol co -P -d <replaceable>directory</replaceable> Jmol</screen>
-	</para>
-	<para>
-		We work from the checked out directory (in the first case, this
-		is <filename class="directory">Jmol</filename>):
+		where we work on the source code:
 		<screen><prompt>~/workspace$</prompt> cd Jmol</screen>
 	</para>
 	<para>
-		To update your soucres, go into the checked out directory (see above) and then type:
-		<screen><prompt>~/workspace/Jmol$</prompt> cvs update -dP</screen>
+		To know the status of your workspace relative to the current
+		repository you can say:
+		<screen><prompt>~/workspace/Jmol$</prompt> svn status</screen>
+	</para>
+	<para>
+		To update your workspace to the current repository revision
+		use the update command
+		<screen><prompt>~/workspace/Jmol$</prompt> svn update</screen>
+	</para>
+	<para>
+		After modifying local files for testing, you can throw away
+		your local changes and revert your changes back to your
+		checkout revision:
+		<screen><prompt>~/workspace/Jmol$</prompt> svn revert</screen>
+	</para>
+	<para>
+		After developing, compiling, and testing changes locally,
+		you can commit your changes by saying:
+		<screen><prompt>~/workspace/Jmol$</prompt> svn commit</screen>
 	</para>
 	<para>
 		<orgname>Sourceforge.net</orgname> provides basic instructions how to use
-		CVS. Please refer to their <ulink
-		url="http://sourceforge.net/docman/?group_id=1">documentation
-		section</ulink>.
+		<command>svn</command> at this page <ulink
+		url="http://sourceforge.net/docman/display_doc.php?docid=31070&amp;group_id=1" />
+	</para>
+	<para>
+		The definitive documentation for <command>subversion</command> is at
+		<ulink url="http://svnbook.red-bean.com/"/>
+	</para>
+	<para>
+		The home page for subversion is at <ulink url="http://subversion.tigris.org/"/>.
 	</para>
 </chapter>
 
@@ -109,11 +132,8 @@
 		If you are using Eclipse, see <xref linkend="Eclipse"/>. Otherwise read this
 		section carefully. In additon to the prerequisites mentioned
 		in <xref linkend="Prerequisites"/> you will of course need the Jmol source
-		code. It can be either downloaded from the <ulink
-		url="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge
-		project files</ulink> section or checked out from the <ulink
-		url="http://sourceforge.net/cvs/?group_id=23629">SourceForge
-		CVS repository</ulink> section.
+		code. It can be checked out from the <command>subversion</command>
+		repository as described above.
 	</para>
 	<para>
 		Once you have all the prerequisites, Jmol can be built from the top source
@@ -312,7 +332,10 @@
 </chapter>
   
 <chapter id="CVS">
-	<title>Working with Jmol's CVS</title>
+	<title>DEPRECATED - Working with Jmol's CVS</title>
+	<para>
+		This section is deprecated since Jmol has moved to <command>svn</command>.
+	</para>
 	<para>
 		This section gives information on how to work with Jmol's CVS at
 		SourceForge.
@@ -404,6 +427,9 @@
 	
 	<sect1 id="Eclipse_prerequisites">
 		<title>Eclipse prerequisites</title>
+		<para>
+			This section must be updated for <command>svn</command>.
+		</para>
 		<itemizedlist>
 			<listitem>
 				<para>

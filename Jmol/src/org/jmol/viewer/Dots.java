@@ -192,6 +192,8 @@ class Dots extends Shape {
     }
     // no translucency for dots
     if ("colorConvex" == propertyName) {
+      if(colixesConvex == null) 
+        return;
       System.out.println("Dots.setProperty('colorConvex')");
       short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )

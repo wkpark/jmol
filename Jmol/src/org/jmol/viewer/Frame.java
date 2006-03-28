@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -47,7 +46,6 @@ final class Frame {
   // therefore, we can do == comparisions against string constants
   // if (modelSetTypeName == "xyz")
   final String modelSetTypeName;
-  final boolean isPDB;
   final Mmset mmset;
   final Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
@@ -108,8 +106,6 @@ final class Frame {
     // therefore, we can do == comparisions against string constants
     // if (modelSetTypeName == "xyz") { }
     this.modelSetTypeName = fileTypeName.toLowerCase().intern();
-    this.isPDB = (this.modelSetTypeName == "pdb")||(this.modelSetTypeName == "array");
-    
     mmset = new Mmset(this);
     this.frameRenderer = viewer.getFrameRenderer();
     this.g3d = viewer.getGraphics3D();
@@ -128,7 +124,6 @@ final class Frame {
     setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
 
     setModelSetProperties(adapter.getAtomSetCollectionProperties(clientFile));
-    setModelSetAuxiliaryInfo(adapter.getAtomSetCollectionAuxiliaryInfo(clientFile));
 
     currentModelIndex = -1;
     int modelCount = adapter.getAtomSetCount(clientFile);
@@ -139,9 +134,8 @@ final class Frame {
       if (modelName == null)
         modelName = "" + modelNumber;
       Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
-      Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(clientFile, i);
       setModelNameNumberProperties(i, modelName, modelNumber,
-                                         modelProperties, modelAuxiliaryInfo);
+                                         modelProperties);
     }
 
     for (JmolAdapter.AtomIterator iterAtom =
@@ -316,45 +310,27 @@ final class Frame {
   }
 
   void bondAtoms(Object atomUid1, Object atomUid2, int order) {
-    Atom atom1 = (Atom) htAtomMap.get(atomUid1);
+    Atom atom1 = (Atom)htAtomMap.get(atomUid1);
     if (atom1 == null) {
-      System.out.println("bondAtoms cannot find atomUid1?:" + atomUid1);
+      System.out.println("bondAtoms cannot find atomUid1?");
       return;
     }
-    Atom atom2 = (Atom) htAtomMap.get(atomUid2);
+    Atom atom2 = (Atom)htAtomMap.get(atomUid2);
     if (atom2 == null) {
-      System.out.println("bondAtoms cannot find atomUid2?:" + atomUid2);
+      System.out.println("bondAtoms cannot find atomUid2?");
       return;
     }
+    if (bondCount == bonds.length)
+      bonds = (Bond[])Util.setLength(bonds,
+                                     bondCount + 2 * ATOM_GROWTH_INCREMENT);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
-    Bond bond = atom1.bondMutually(atom2, (short) order, this);
-    if (bond == null)
-      return;
-    if (bondCount == bonds.length)
-      bonds = (Bond[]) Util.setLength(bonds, bondCount + 2
-          * ATOM_GROWTH_INCREMENT);
-    bonds[bondCount++] = bond;
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      fileHasHbonds = true;
-}
-
-  boolean bondAtomsByNumber(int iA, int iB, int order, short mad) {
-    Atom atom1 = atoms[iA];
-    Atom atom2 = atoms[iB];
-
-    Bond bond = atom1.bondMutually(atom2, (short) order, this);
-    if (bond == null) {
-      return false;
+    Bond bond = atom1.bondMutually(atom2, (short)order, this);
+    if (bond != null) {
+      bonds[bondCount++] = bond;
+      if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+        fileHasHbonds = true;
     }
-    if (mad >=0) bond.mad = mad;
-    if (bondCount == bonds.length)
-      bonds = (Bond[]) Util.setLength(bonds, bondCount + 2
-          * ATOM_GROWTH_INCREMENT);
-    bonds[bondCount++] = bond;
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      fileHasHbonds = true;
-    return true;  
   }
 
   void growAtomArrays() {
@@ -431,13 +407,11 @@ final class Frame {
   void distinguishAndPropogateGroup(int groupIndex,
                                     Chain chain, String group3, int seqcode,
                                     int firstAtomIndex, int maxAtomIndex) {
-    /* 
-         System.out.println("distinguish & propogate group:" +
-                           " group3:" + group3 +
-                           " seqcode:" + Group.getSeqcodeString(seqcode) +
-                           " firstAtomIndex:" + firstAtomIndex +
-                           " maxAtomIndex:" + maxAtomIndex);
-     */
+    //    System.out.println("distinguish & propogate group:" +
+    //                       " group3:" + group3 +
+    //                       " seqcode:" + Group.getSeqcodeString(seqcode) +
+    //                       " firstAtomIndex:" + firstAtomIndex +
+    //                       " maxAtomIndex:" + maxAtomIndex);
     int distinguishingBits = 0;
     // clear previous specialAtomIndexes
     for (int i = JmolConstants.ATOMID_MAX; --i >= 0; )
@@ -601,7 +575,6 @@ final class Frame {
                           endChainID, endSequenceNumber, endInsertionCode);
   }
 
-  
   int getAtomIndexFromAtomNumber(int atomNumber) {
     for (int i = atomCount; --i >= 0; ) {
       if (atoms[i].getAtomNumber() == atomNumber)
@@ -616,14 +589,6 @@ final class Frame {
 
   String getModelSetProperty(String propertyName) {
     return mmset.getModelSetProperty(propertyName);
-  }
-
-  Hashtable getModelSetAuxiliaryInfo() {
-    return mmset.getModelSetAuxiliaryInfo();
-  }
-
-  Object getModelSetAuxiliaryInfo(String keyName) {
-    return mmset.getModelSetAuxiliaryInfo(keyName);
   }
 
   boolean modelSetHasVibrationVectors() {
@@ -667,14 +632,6 @@ final class Frame {
     return mmset.getModelProperty(modelIndex, propertyName);
   }
 
-  Hashtable getModelAuxiliaryInfo(int modelIndex) {
-    return mmset.getModelAuxiliaryInfo(modelIndex);
-  }
-
-  Object getModelAuxiliaryInfo(int modelIndex, String keyName) {
-    return mmset.getModelAuxiliaryInfo(modelIndex, keyName);
-  }
-
   Model getModel(int modelIndex) {
     return mmset.getModel(modelIndex);
   }
@@ -693,16 +650,11 @@ final class Frame {
     mmset.setModelSetProperties(modelSetProperties);
   }
   
-  void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
-    mmset.setModelSetAuxiliaryInfo(modelSetAuxiliaryInfo);
-  }
-  
-  void setModelNameNumberProperties(int modelIndex, String modelName,
-                                    int modelNumber,
-                                    Properties modelProperties,
-                                    Hashtable modelAuxiliaryInfo) {
+  void setModelNameNumberProperties(int modelIndex,
+                                    String modelName, int modelNumber,
+                                    Properties modelProperties) {
     mmset.setModelNameNumberProperties(modelIndex, modelName, modelNumber,
-        modelProperties, modelAuxiliaryInfo);
+                                       modelProperties);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -715,10 +667,6 @@ final class Frame {
     return mmset.getPolymerCount();
   }
 
-  int getChainCountInModel(int modelIndex) {
-    return mmset.getChainCountInModel(modelIndex);
-  }
-  
   int getPolymerCountInModel(int modelIndex) {
     return mmset.getPolymerCountInModel(modelIndex);
   }
@@ -731,22 +679,9 @@ final class Frame {
     return mmset.getGroupCount();
   }
 
-  int getGroupCountInModel(int modelIndex) {
-    return mmset.getGroupCountInModel(modelIndex);
-  }
-
   int getAtomCount() {
     return atomCount;
   }
-
-  int getAtomCountInModel(int modelIndex) {
-    int n = 0;
-    for (int i = atoms.length; --i >= 0;)
-      if (atoms[i].modelIndex == modelIndex)
-        n++;
-    return n;
-  }
-
 
   Atom[] getAtoms() {
     return atoms;
@@ -762,14 +697,6 @@ final class Frame {
 
   int getBondCount() {
     return bondCount;
-  }
-
-  int getBondCountInModel(int modelIndex) {
-    int n = 0;
-    for (int i = bonds.length; --i >= 0;)
-      if (bonds[i].atom1.modelIndex == modelIndex)
-        n++;
-    return n;
   }
 
   Bond getBondAt(int bondIndex) {
@@ -790,14 +717,13 @@ final class Frame {
 
   Shape allocateShape(int shapeID) {
     String classBase = JmolConstants.shapeClassBases[shapeID];
-    //    System.out.println("frame.allocateShape(" + classBase + ")");
+    //    System.out.println("Frame.allocateShape(" + classBase + ")");
     String className = "org.jmol.viewer." + classBase;
 
     try {
       Class shapeClass = Class.forName(className);
       Shape shape = (Shape)shapeClass.newInstance();
       shape.setViewerG3dFrame(viewer, g3d, this);
-      shape.setVisibilityInfo(shapeID);
       return shape;
     } catch (Exception e) {
       System.out.println("Could not instantiate shape:" + classBase +
@@ -874,15 +800,11 @@ final class Frame {
 
   Point3f getRotationCenterDefault() {
     findBounds();
-    //System.out.println("getRotationCenterDefault"+rotationCenterDefault);
     return rotationCenterDefault;
   }
 
   void increaseRotationRadius(float increaseInAngstroms) {
-    if (viewer.isWindowCentered())
-      rotationRadius += increaseInAngstroms;
-    System.out.println("Frame.increaeRotationRadius by " + increaseInAngstroms
-        + " to " + rotationRadius);
+    rotationRadius += increaseInAngstroms;
   }
 
   float getRotationRadius() {
@@ -890,55 +812,36 @@ final class Frame {
     return rotationRadius;
   }
 
-  Point3f setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
-                                        boolean andRadius) {
-    float oldRadius = rotationRadius;
+  void setRotationCenter(Point3f newCenterOfRotation) {
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
-      if (andRadius && viewer.isWindowCentered())
+      if (! viewer.getFriedaSwitch())
         rotationRadius = calcRotationRadius(rotationCenter);
     } else {
       rotationCenter = rotationCenterDefault;
       rotationRadius = rotationRadiusDefault;
     }
-    if (rotationRadius != oldRadius)
-      System.out
-          .println("Frame.setRotationCenterAndRadiusXYZ: rotationRadius to "
-              + rotationRadius);
-    return rotationCenter;
-  }
-
-  Point3f setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
-    Point3f pointT = new Point3f(pt);
-    if (relativeTo == "average")
-      pointT.add(getAverageAtomPoint());
-    else if (relativeTo == "boundbox")
-      pointT.add(getBoundBoxCenter());
-    else if (relativeTo != "absolute")
-      pointT.set(getRotationCenterDefault());
-    setRotationCenterAndRadiusXYZ(pointT, true);
-    return pointT;
   }
 
   void clearBounds() {
-    // not referenced in project
     rotationCenter = null;
     rotationRadius = 0;
   }
 
   private void findBounds() {
-    //set ONCE 
     if ((rotationCenter != null) || (atomCount <= 0))
       return;
+    calcRotationSphere();
+  }
+
+  private void calcRotationSphere() {
     calcAverageAtomPoint();
     calcBoundBoxDimensions();
     if (notionalUnitcell != null)
       calcUnitcellDimensions();
     rotationCenter = rotationCenterDefault = centerBoundBox;//averageAtomPoint;
-    rotationRadius = rotationRadiusDefault = 
-        calcRotationRadius(rotationCenterDefault);
-    System.out.println("Frame.findBounds setting rotationRadius to "
-        + rotationRadius);
+    rotationRadius = rotationRadiusDefault =
+      calcRotationRadius(rotationCenterDefault);
   }
 
   private void calcAverageAtomPoint() {
@@ -1031,56 +934,24 @@ final class Frame {
     return frankShape.wasClicked(x, y);
   }
 
+  final static int minimumPixelSelectionRadius = 4;
+
   final Closest closest = new Closest();
 
   int findNearestAtomIndex(int x, int y) {
-    if (atomCount == 0)
-      return -1;
     closest.atom = null;
-    findNearestAtomIndex(x, y, closest);
-
     for (int i = 0; i < shapes.length; ++i) {
-      if (closest.atom != null)
-        break;
       Shape shape = shapes[i];
-      if (shape != null)
-        shape.findNearestAtomIndex(x, y, closest);
+      if (shape != null) {
+        shapes[i].findNearestAtomIndex(x, y, closest);
+        if (closest.atom != null)
+          break;
+      }
     }
     int closestIndex = (closest.atom == null ? -1 : closest.atom.atomIndex);
     closest.atom = null;
     return closestIndex;
   }
-
-  final static int minimumPixelSelectionRadius = 6;
-
-  /*
-   * generalized; not just balls
-   * 
-   * This algorithm assumes that atoms are circles at the z-depth
-   * of their center point. Therefore, it probably has some flaws
-   * around the edges when dealing with intersecting spheres that
-   * are at approximately the same z-depth.
-   * But it is much easier to deal with than trying to actually
-   * calculate which atom was clicked
-   *
-   * A more general algorithm of recording which object drew
-   * which pixel would be very expensive and not worth the trouble
-   */
-  void findNearestAtomIndex(int x, int y, Closest closest) {
-    Atom champion = null;
-    //int championIndex = -1;
-    for (int i = atomCount; --i >= 0; ) {
-      Atom contender = atoms[i];
-      if (contender.isCursorOnTopOfClickableAtom(x, y,
-                                               minimumPixelSelectionRadius,
-                                               champion)) {
-        champion = contender;
-        //championIndex = i;
-      }
-    }
-    closest.atom = champion;
-  }
-
 
   // jvm < 1.4 does not have a BitSet.clear();
   // so in order to clear you "and" with an empty bitset.
@@ -1282,11 +1153,10 @@ final class Frame {
   ////////////////////////////////////////////////////////////////
   void doAutobond() {
     // perform bonding if necessary
-
     if (viewer.getAutoBond() &&
         getModelSetProperty("noautobond") == null) {
       if ((bondCount == 0) ||
-          (isPDB && (bondCount < (atomCount / 2))))
+          (modelSetTypeName == "pdb" && (bondCount < (atomCount / 2))))
         rebond(false);
     }
   }
@@ -1693,254 +1563,6 @@ final class Frame {
     pointMax.set(maxX, maxY, maxZ);
   }
 
-  Point3f getAtomSetCenter(BitSet bs) {
-    Point3f ptCenter = new Point3f(0, 0, 0);
-    int nPoints =  viewer.cardinalityOf(bs);
-    if (nPoints == 0)
-      return ptCenter;
-    for (int i = atomCount; --i >= 0;) {
-      if (bs.get(i))
-        ptCenter.add(atoms[i].point3f);
-    }
-    ptCenter.scale(1.0f / nPoints);
-    return ptCenter;
-  }
-  
-  int firstAtomOf(BitSet bs) {
-    for (int i = atomCount; --i >= 0;)
-      if (bs.get(i)) {
-        return i;
-      }
-    return -1;
-  }
-
-  
-  BitSet getAtomBits(String setType) {
-    System.out.println("getAtomBits" + setType);
-    if (setType.equals("hetero"))
-      return getHeteroSet();
-    if (setType.equals("hydrogen"))
-      return getHydrogenSet();
-    if (setType.equals("protein"))
-      return getProteinSet();
-    if (setType.equals("nucleic"))
-      return getNucleicSet();
-    if (setType.equals("dna"))
-      return getDnaSet();
-    if (setType.equals("rna"))
-      return getRnaSet();
-    if (setType.equals("purine"))
-      return getPurineSet();
-    if (setType.equals("pyrimidine"))
-      return getPyrimidineSet();
-    return null;
- }
-  
-  BitSet getAtomBits(String setType, String specInfo) {
-    System.out.println("getAtomBits" + setType + ":" + specInfo);
-    if (setType.equals("SpecAtom"))
-      return getSpecAtom(specInfo);
-    if (setType.equals("SpecName"))
-      return getSpecName(specInfo);
-    if (setType.equals("SpecResidueWildcard")) //never called?
-      return getResidueWildcard(specInfo);
-    if (setType.equals("SpecAlternate"))
-      return getSpecAlternate(specInfo);
-    if (setType.equals("SpecModel"))
-      return getSpecModel(specInfo);
-    if (setType.equals("PotentialGroupName"))
-      return lookupPotentialGroupName(specInfo);
-    return null;
-  }
-
-  BitSet getAtomBits(String setType, int specInfoA, int specInfoB) {
-    System.out.println("getAtomBits" + setType + ":" + specInfoA+" "+specInfoB);
-    if (setType.equals("SpecSeqcodeRange"))
-      return getSpecSeqcodeRange(specInfoA, specInfoB);
-    return null;
-  }
-  
-  BitSet getHeteroSet() {
-    BitSet bsHetero = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isHetero())
-        bsHetero.set(i);
-    return bsHetero;
-  }
-
-  BitSet getHydrogenSet() {
-    BitSet bsHydrogen = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getElementNumber() == 1)
-        bsHydrogen.set(i);
-    }
-    return bsHydrogen;
-  }
-
-  BitSet getProteinSet() {
-    BitSet bsProtein = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isProtein())
-        bsProtein.set(i);
-    return bsProtein;
-  }
-
-  BitSet getNucleicSet() {
-    BitSet bsNucleic = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isNucleic())
-        bsNucleic.set(i);
-    return bsNucleic;
-  }
-
-  BitSet getDnaSet() {
-    BitSet bsDna = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isDna())
-        bsDna.set(i);
-    return bsDna;
-  }
-
-  BitSet getRnaSet() {
-    BitSet bsRna = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isRna())
-        bsRna.set(i);
-    return bsRna;
-  }
-
-  BitSet getPurineSet() {
-    BitSet bsPurine = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isPurine())
-        bsPurine.set(i);
-    return bsPurine;
-  }
-
-  BitSet getPyrimidineSet() {
-    BitSet bsPyrimidine = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isPyrimidine())
-        bsPyrimidine.set(i);
-    return bsPyrimidine;
-  }
-  
-  BitSet getAtomBits(String setType, int specInfo) {
-    if (setType.equals("SpecResid"))
-      return getSpecResid(specInfo);
-    if (setType.equals("SpecSeqcode"))
-      return getSpecSeqcode(specInfo);
-    if (setType.equals("SpecChain"))
-      return getSpecSeqcode((char) specInfo);
-    return null;
-  }
-  
-  BitSet getSpecName(String resNameSpec) {
-    BitSet bsRes = new BitSet();
-    // System.out.println("getSpecName:" + resNameSpec);
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isGroup3Match(resNameSpec))
-        bsRes.set(i);
-    }
-    return bsRes;
-  }
-
-  BitSet getSpecResid(int resid) {
-    BitSet bsRes = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getGroupID() == resid)
-        bsRes.set(i);
-    }
-    return bsRes;
-  }
-  
-  BitSet getSpecSeqcode(int seqcode) {
-    BitSet bsResno = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (seqcode == atoms[i].getSeqcode())
-        bsResno.set(i);
-    }
-    return bsResno;
-  }
-
-  BitSet getSpecChain(char chain) {
-    boolean caseSensitive = viewer.getChainCaseSensitive();
-    if (!caseSensitive)
-      chain = Character.toUpperCase(chain);
-    BitSet bsChain = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      char ch = atoms[i].getChainID();
-      if (!caseSensitive)
-        ch = Character.toUpperCase(ch);
-      if (chain == ch)
-        bsChain.set(i);
-    }
-    return bsChain;
-  }
-
-  BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB) {
-    BitSet bsResidue = new BitSet();
-    selectSeqcodeRange(seqcodeA, seqcodeB, bsResidue);
-    return bsResidue;
-  }
-
-  BitSet getSpecAtom(String atomSpec) {
-    BitSet bsAtom = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isAtomNameMatch(atomSpec))
-        bsAtom.set(i);
-    }
-    return bsAtom;
-  }
-
-  BitSet getResidueWildcard(String strWildcard) {
-    BitSet bsResidue = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isGroup3Match(strWildcard))
-        bsResidue.set(i);
-    }
-    return bsResidue;
-  }
-
-  BitSet getSpecAlternate(String alternateSpec) {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isAlternateLocationMatch(alternateSpec))
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  BitSet getSpecModel(String modelTag) {
-    int modelNumber = -1;
-    try {
-      modelNumber = Integer.parseInt(modelTag);
-    } catch (NumberFormatException nfe) {
-    }
-    return getModelAtomBitSet(getModelNumberIndex(modelNumber));
-  }
-
-  BitSet lookupPotentialGroupName(String potentialGroupName) {
-    BitSet bsResult = null;
-    // System.out.println("lookupPotentialGroupName:" + potentialGroupName);
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isGroup3(potentialGroupName)) {
-        if (bsResult == null)
-          bsResult = new BitSet(i + 1);
-        bsResult.set(i);
-      }
-    }
-    return bsResult;
-  }
-
-  BitSet getModelAtomBitSet(int modelIndex) {
-    BitSet bs = new BitSet();
-    for (int i = 0; i < atomCount; i++)
-      if (atoms[i].modelIndex == modelIndex)
-        bs.set(i);
-    return bs;
-  }
-  
   void setLabel(String label, int atomIndex) {
   }
 
@@ -2015,57 +1637,9 @@ final class Frame {
     return bfactor100Hi;
   }
 
-  BitSet getVisibleSet() {
-    BitSet bs = new BitSet();
-    int n=0;
-    for (int i = atomCount; --i >= 0; ) {
-      if(atoms[i].isVisible()) {
-        bs.set(i);
-        n++;
-      }
-    }
-    return bs;
-  }
-
   ////////////////////////////////////////////////////////////////
   // measurements
   ////////////////////////////////////////////////////////////////
-
-
-  float getMeasurement(int[] countPlusIndices) {
-    float value = Float.MAX_VALUE;
-    if (countPlusIndices == null)
-      return value;
-    int count = countPlusIndices[0];
-    if (count < 2)
-      return value;
-    for (int i = count; --i >= 0; )
-      if (countPlusIndices[i+1] < 0) {
-        return value;
-      }
-    switch (count) {
-    case 2:
-      value = getDistance(countPlusIndices[1],
-                                         countPlusIndices[2]);
-      break;
-    case 3:
-      value = getAngle(countPlusIndices[1],
-                                     countPlusIndices[2],
-                                     countPlusIndices[3]);
-      break;
-    case 4:
-      value = getTorsion(countPlusIndices[1],
-                                       countPlusIndices[2],
-                                       countPlusIndices[3],
-                                       countPlusIndices[4]);
-      break;
-    default:
-      System.out.println("Invalid count in measurement calculation:" + count);
-      throw new IndexOutOfBoundsException();
-    }
-    
-    return value;
-  }
 
   float getDistance(int atomIndexA, int atomIndexB) {
     return atoms[atomIndexA].point3f.distance(atoms[atomIndexB].point3f);
@@ -2207,22 +1781,6 @@ final class Frame {
       for (int j = bondsCache.length; --j >= 0; )
         bondsCache[j] = null;
     }
-  }
-
-  Point3f getAveragePosition(int atomIndex1, int atomIndex2) {
-    Atom atom1 = atoms[atomIndex1];
-    Atom atom2 = atoms[atomIndex2];
-    return new Point3f(
-        (atom1.point3f.x + atom2.point3f.x) / 2,  
-        (atom1.point3f.y + atom2.point3f.y) / 2,  
-        (atom1.point3f.z + atom2.point3f.z) / 2  
-            ); 
-  }
-
-  Vector3f getAtomVector(int atomIndex1, int atomIndex2) {
-    Vector3f V = new Vector3f(atoms[atomIndex1].point3f);
-    V.sub(atoms[atomIndex2].point3f);
-    return V;
   }
 
 }

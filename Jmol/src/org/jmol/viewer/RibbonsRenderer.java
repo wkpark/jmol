@@ -64,10 +64,8 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
 
   boolean isNucleic;
   boolean ribbonBorder = false;
-  int myVisibilityFlag;
-  
-  void renderMpspolymer( Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
+
+  void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     Ribbons.Schain strandsChain = (Ribbons.Schain)mpspolymer;
     if (strandsChain.wingVectors != null) {
       // note that we are not treating a PhosphorusPolymer
@@ -108,7 +106,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
                      Point3i[] ribbonTopScreens,
                      Point3i[] ribbonBottomScreens) {
     for (int i = monomerCount; --i >= 0; )
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) != 0)
+      if (mads[i] > 0)
         render2StrandSegment(monomerCount,
                              monomers[i], colixes[i], mads,
                              ribbonTopScreens, ribbonBottomScreens, i);

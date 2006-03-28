@@ -21,7 +21,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package org.jmol.api;
 
 import java.awt.Component;
@@ -31,7 +30,6 @@ import java.awt.Image;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
-import java.util.Hashtable;
 import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -53,7 +51,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
 
-  abstract public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
+  abstract public void setAppletContext(URL documentBase, URL codeBase,
                                String appletProxy);
 
   abstract public void haltScriptExecution();
@@ -82,6 +80,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public Image getScreenImage();
   abstract public void releaseScreenImage();
 
+
+  abstract public void notifyRepainted();
+
   abstract public boolean handleOldJvm10Event(Event e);
 
   abstract public int getMotionEventNumber();
@@ -105,11 +106,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getAnimationFps();
   abstract public void setAnimationFps(int framesPerSecond);
 
-  abstract public String script(String script);
-  abstract public String scriptCheck(String script);
-  abstract public String scriptWait(String script);
-  abstract public void loadInline(String strModel);
-
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();
 
@@ -121,13 +117,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getModelSetFileName();
   abstract public String getModelSetPathName();
   abstract public Properties getModelSetProperties();
-  abstract public Hashtable getModelSetAuxiliaryInfo();
   abstract public int getModelNumber(int atomSetIndex);
   abstract public String getModelName(int atomSetIndex);
   abstract public Properties getModelProperties(int atomSetIndex);
   abstract public String getModelProperty(int atomSetIndex, String propertyName);
-  abstract public Hashtable getModelAuxiliaryInfo(int atomSetIndex);
-  abstract public Object getModelAuxiliaryInfo(int atomSetIndex, String keyName);
   abstract public boolean modelHasVibrationVectors(int atomSetIndex);
 
   abstract public int getModelCount();
@@ -151,7 +144,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void addSelectionListener(JmolSelectionListener listener);
   abstract public void removeSelectionListener(JmolSelectionListener listener);
   abstract public void setSelectionSet(BitSet newSelection);
-//BH 2/2006  abstract public BitSet getSelectionSet();
+  abstract public BitSet getSelectionSet();
 
   abstract public void homePosition();
   abstract public void rotateFront();
@@ -169,6 +162,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setPerspectiveDepth(boolean perspectiveDepth);
 
   abstract public boolean getPerspectiveDepth();
+  abstract public boolean getWireframeRotation();
   abstract public boolean getShowHydrogens();
   abstract public boolean getShowMeasurements();
 
@@ -223,20 +217,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public float getMinBondDistance();
   abstract public void setMinBondDistance(float minBondDistance);
 
-  abstract public void refresh(int isOrientationChange, String strWhy);
+  abstract public void refresh();
 
   abstract public boolean getBooleanProperty(String propertyName);
   abstract public void setBooleanProperty(String propertyName, boolean value);
 
   abstract public boolean showModelSetDownload();
-  
-  abstract public void repaintView();
-
-  abstract public Object getProperty(String returnType, String infoType, String paramInfo);
-
-  abstract public void setSyncDriver(int syncMode);
-  
-  abstract public int getSyncMode();
-  
 }
-

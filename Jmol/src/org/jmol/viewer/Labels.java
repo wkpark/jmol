@@ -85,9 +85,11 @@ class Labels extends Shape {
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
           String label = atom.formatLabel(strLabel);
-          atom.setShapeVisibility(myVisibilityFlag, label != null);
-          if (strings == null || i >= strings.length)
+          if (strings == null || i >= strings.length) {
+            if (label == null)
+              continue;
             strings = Util.ensureLength(strings, i + 1);
+          }
           strings[i] = label;
         }
       return;
@@ -127,8 +129,8 @@ class Labels extends Shape {
       else if (offset == ((JmolConstants.LABEL_DEFAULT_X_OFFSET << 8) |
                           JmolConstants.LABEL_DEFAULT_Y_OFFSET))
         offset = 0;
-        int bsLength = bsSelected.size();
-        for (int i = bsLength; --i >= 0; ) {
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i)) {
           if (offsets == null || i >= offsets.length) {
             if (offset == 0)
               continue;
@@ -147,20 +149,20 @@ class Labels extends Shape {
           strings[atomIndex] != null) {
         strings[atomIndex] = null;
       } else {
-        String strLabel = viewer.getStandardLabelFormat();
+        String strLabel;
+        if (viewer.getModelCount() > 1)
+          strLabel = "[%n]%r:%c.%a/%M";
+        else if (viewer.getChainCount() > 1)
+          strLabel = "[%n]%r:%c.%a";
+        else if (viewer.getGroupCount() <= 1)
+          strLabel = "%e%i";
+        else
+          strLabel = "[%n]%r.%a";
         Atom atom = atoms[atomIndex];
         strings = Util.ensureLength(strings, atomIndex + 1);
         strings[atomIndex] = atom.formatLabel(strLabel);
       }
       return;
-    }
-  }
-
-  void setModelClickability() {
-    for (int i = strings.length; --i >= 0; ) {
-      String label = strings[i];
-      if (label != null && frame.atoms.length > i)
-        frame.atoms[i].clickabilityFlags |= myVisibilityFlag;
     }
   }
 }

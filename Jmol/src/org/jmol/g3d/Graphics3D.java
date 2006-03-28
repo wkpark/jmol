@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: migueljmol $
+ * $Date: 2006-03-25 13:27:02 -0500 (Sat, 25 Mar 2006) $
+ * $Revision: 4700 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *

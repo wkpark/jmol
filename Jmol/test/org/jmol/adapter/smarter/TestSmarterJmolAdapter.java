@@ -214,8 +214,8 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in gaussian/
    */
   public void testGaussian() {
-    checkOpenFile("gaussian", "ch2chfme_reagent.out");
-    checkOpenFile("gaussian", "tms.log");
+    //checkOpenFile("gaussian", "ch2chfme_reagent.out");
+    //checkOpenFile("gaussian", "tms.log");
     checkOpenFile("gaussian", "4-cyanophenylnitrene-Benzazirine-TS.g94.out");
     checkOpenFile("gaussian", "ch3oh_g94.out");
     checkOpenFile("gaussian", "cyanine_PM3.out");
@@ -421,13 +421,6 @@ public class TestSmarterJmolAdapter extends TestCase {
     checkOpenFile("spartan", "spartan01.txt");
     checkOpenFile("spartan", "sulfur hexafluoride.smol");
     checkOpenFile("spartan", "water.smol");
-  }
-
-  /**
-   * Test for reading files in v3000/ 
-   */
-  public void testV3000() {
-    checkOpenFile("v3000", "WO0119816T.sdf");
   }
 
   /**

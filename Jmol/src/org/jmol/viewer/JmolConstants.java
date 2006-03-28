@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -27,17 +26,6 @@ package org.jmol.viewer;
 import java.util.Hashtable;
 
 final public class JmolConstants {
-
-  // this atom flag simply associates an atom with the current model
-  // but doesn't necessarily mean it is visible
-
-  // and must be reset with setModelVisibility() prior to rendering
-  
-
-  // these atom flags get tainted with scripts and frame changes
-  // and must be reset with setModelVisibility() prior to rendering
- 
-  public final static int ATOM_IN_MODEL    = 1;
 
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
@@ -84,11 +72,10 @@ final public class JmolConstants {
   public final static int PICKING_SELECT_ATOM =  10;
   public final static int PICKING_SELECT_GROUP = 11;
   public final static int PICKING_SELECT_CHAIN = 12;
-  public final static int PICKING_SPIN =         13;
 
   public final static String[] pickingModeNames = {
     "off", "ident", "distance", "monitor", "angle", "torsion", "label",
-    "center", "coord", "bond", "atom", "group", "chain","rotate" };
+    "center", "coord", "bond", "atom", "group", "chain" };
 
   /**
    * Extended Bond Definition Types
@@ -1679,7 +1666,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   public final static String[] specialAtomNames = {
-  
+	
     ////////////////////////////////////////////////////////////////
     // The ordering of these entries can be changed ... BUT ...
     // the offsets must be kept consistent with the ATOMID definitions
@@ -2165,17 +2152,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_FRANK      = 19;
   public final static int SHAPE_ECHO       = 20;
   public final static int SHAPE_HOVER      = 21;
-  public final static int SHAPE_POLYHEDRA  = 22;
-  public final static int SHAPE_PRUEBA     = 23;
-  public final static int SHAPE_MIN_MESH_COLLECTION = 24; ///////////////
-  public final static int SHAPE_PMESH      = 24;
-  public final static int SHAPE_SASURFACE  = 25;
-  public final static int SHAPE_ISOSURFACE = 26;
-  public final static int SHAPE_DRAW       = 27;
-  public final static int SHAPE_MAX        = 28;
-  
-  //handled in Balls.java: (It's ok that this is SHAPE_MAX)
-  public final static int SHAPE_HALO       = SHAPE_MAX;
+  public final static int SHAPE_PMESH      = 22;
+  public final static int SHAPE_POLYHEDRA  = 23;
+  public final static int SHAPE_SASURFACE  = 24;
+  public final static int SHAPE_ISOSURFACE = 25;
+  public final static int SHAPE_PRUEBA     = 26;
+  public final static int SHAPE_MAX        = 27;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks",
@@ -2185,8 +2167,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Cartoon",
     "Strands", "MeshRibbon", "Ribbons",
     "Rockets", "Stars",
-    "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover", "Polyhedra", 
-    "Prueba", "Pmesh", "Sasurface", "Isosurface", "Draw"
+    "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
+    "Pmesh", "Polyhedra", "Sasurface", "Isosurface",
+    "Prueba"
   };
 
   ////////////////////////////////////////////////////////////////

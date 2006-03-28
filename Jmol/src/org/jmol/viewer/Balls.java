@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -33,13 +32,9 @@ class Balls extends Shape {
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     Atom[] atoms = frame.atoms;
-    int bsLength = bsSelected.length();
-    for (int i = bsLength; --i >= 0; ) {
-      if (bsSelected.get(i)) {
-        Atom atom = atoms[i];
-        atom.setMadAtom(mad);
-      }
-    }
+    for (int i = frame.atomCount; --i >= 0; )
+      if (bsSelected.get(i))
+        atoms[i].setMadAtom(mad);
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -64,16 +59,33 @@ class Balls extends Shape {
     }
   }
 
-  void setModelClickability() {
-    Atom[] atoms = frame.atoms;
-    int haloVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);
+  final static int minimumPixelSelectionRadius = 6;
+
+  /*
+   * This algorithm assumes that atoms are circles at the z-depth
+   * of their center point. Therefore, it probably has some flaws
+   * around the edges when dealing with intersecting spheres that
+   * are at approximately the same z-depth.
+   * But it is much easier to deal with than trying to actually
+   * calculate which atom was clicked
+   *
+   * A more general algorithm of recording which object drew
+   * which pixel would be very expensive and not worth the trouble
+   */
+  void findNearestAtomIndex(int x, int y, Closest closest) {
+    if (frame.atomCount == 0)
+      return;
+    Atom champion = null;
+    //int championIndex = -1;
     for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      atom.clickabilityFlags = 0;
-      if((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
-      if((atom.shapeVisibilityFlags & haloVisibilityFlag) != 0)
-        atom.clickabilityFlags |= haloVisibilityFlag;
+      Atom contender = frame.atoms[i];
+      if (contender.isCursorOnTopOfVisibleAtom(x, y,
+                                               minimumPixelSelectionRadius,
+                                               champion)) {
+        champion = contender;
+        //championIndex = i;
+      }
     }
+    closest.atom = champion;
   }
 }

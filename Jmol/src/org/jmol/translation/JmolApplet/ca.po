@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-26 13:35-0500\n"
+"POT-Creation-Date: 2006-03-27 22:58-0500\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -16,21 +16,21 @@ msgstr ""
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
 
-#: org/jmol/applet/Jmol.java:488
-#, fuzzy, java-format
-msgid ""
-"Jmol Applet version {0} {1}.\n"
-"\n"
-"An OpenScience project.\n"
-"\n"
-"See http://www.jmol.org for more information"
+#: org/jmol/applet/Jmol.java:118
+msgid "Jmol Molecular Visualization http://www.jmol.org"
 msgstr ""
-"Miniaplicació Jmol. Part del projecte OpenScience. Consulteu http://www.jmol."
-"org per a més informació"
 
-#: org/jmol/applet/Jmol.java:596
+#: org/jmol/applet/Jmol.java:454
+msgid "Jmol executing script ..."
+msgstr "El Jmol està executant la seqüència..."
+
+#: org/jmol/applet/Jmol.java:549
 msgid "File Error:"
 msgstr "Error de fitxer:"
+
+#: org/jmol/applet/Jmol.java:578
+msgid "Jmol script completed"
+msgstr "La seqüència de Jmol s'ha completat"
 
 #: org/jmol/popup/PopupResourceBundle.java:652
 msgid "No atoms loaded"
@@ -931,52 +931,48 @@ msgstr "Eixos del RasMol/Chime"
 msgid "Zero Based Xyz Rasmol"
 msgstr "Coordenades en zero del RasMol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1167
+#: org/jmol/popup/PopupResourceBundle.java:1166
+msgid "Wireframe Rotation"
+msgstr "Rotació en mode filferro"
+
+#: org/jmol/popup/PopupResourceBundle.java:1168
 msgid "Console..."
 msgstr "Consola..."
 
-#: org/jmol/popup/PopupResourceBundle.java:1168
+#: org/jmol/popup/PopupResourceBundle.java:1169
 msgid "Open"
 msgstr "Obre"
 
-#: org/jmol/popup/PopupResourceBundle.java:1169
+#: org/jmol/popup/PopupResourceBundle.java:1170
 msgid "Close"
 msgstr "Tanca"
 
-#: org/jmol/popup/PopupResourceBundle.java:1171
+#: org/jmol/popup/PopupResourceBundle.java:1172
 msgid "About Jmol"
 msgstr "Quant al Jmol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1173
+#: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Mouse Manual"
 msgstr "Manual del ratolí"
 
-#: org/jmol/popup/PopupResourceBundle.java:1174
+#: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
 msgstr "Traduccions"
 
-#: org/jmol/viewer/PickingManager.java:167
-msgid "pick "
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:169
-msgid " atoms in order to spin the model around an axis"
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:177
 #, fuzzy
-msgid "atoms selected"
-msgstr "No s'ha carregat cap àtom"
+#~ msgid ""
+#~ "Jmol Applet version {0} {1}.\n"
+#~ "\n"
+#~ "An OpenScience project.\n"
+#~ "\n"
+#~ "See http://www.jmol.org for more information"
+#~ msgstr ""
+#~ "Miniaplicació Jmol. Part del projecte OpenScience. Consulteu http://www."
+#~ "jmol.org per a més informació"
 
-#: org/jmol/viewer/StatusManager.java:158
-msgid "Jmol executing script ..."
-msgstr "El Jmol està executant la seqüència..."
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotació en mode filferro"
-
-#~ msgid "Jmol script completed"
-#~ msgstr "La seqüència de Jmol s'ha completat"
+#, fuzzy
+#~ msgid "atoms selected"
+#~ msgstr "No s'ha carregat cap àtom"
 
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "

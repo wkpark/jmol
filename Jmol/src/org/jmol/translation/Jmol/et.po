@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-26 13:35-0500\n"
+"POT-Creation-Date: 2006-03-27 22:58-0500\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -17,26 +17,8 @@ msgstr ""
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/viewer/PickingManager.java:167
-msgid "pick "
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:169
-msgid " atoms in order to spin the model around an axis"
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:177
-#, fuzzy
-msgid "atoms selected"
-msgstr "atom set"
-
-#: org/jmol/viewer/StatusManager.java:158
-#, fuzzy
-msgid "Jmol executing script ..."
-msgstr "Käivitan skripti ..."
-
 #: org/openscience/jmol/app/AboutDialog.java:56
-#: org/openscience/jmol/app/GuiMap.java:154
+#: org/openscience/jmol/app/GuiMap.java:155
 msgid "About Jmol"
 msgstr "Jmol'ist"
 
@@ -54,31 +36,31 @@ msgstr "Ei leia url'i \"{0}\"."
 msgid "OK"
 msgstr "Nõus"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:162
+#: org/openscience/jmol/app/AtomSetChooser.java:161
 msgid "AtomSetChooser"
 msgstr "AtomSetChooser"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:167
+#: org/openscience/jmol/app/AtomSetChooser.java:166
 msgid "No AtomSets"
 msgstr "Ei ole AtomSets'e"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:196
+#: org/openscience/jmol/app/AtomSetChooser.java:195
 msgid "Properties"
 msgstr "Omadused"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:204
+#: org/openscience/jmol/app/AtomSetChooser.java:203
 msgid "Atom Set Collection"
 msgstr "Atom Set Kollektsioon"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:224
+#: org/openscience/jmol/app/AtomSetChooser.java:223
 msgid "Collection"
 msgstr "Kollektsioon"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:229
+#: org/openscience/jmol/app/AtomSetChooser.java:228
 msgid "Info"
 msgstr "Info"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:236
+#: org/openscience/jmol/app/AtomSetChooser.java:235
 #: org/openscience/jmol/app/GuiMap.java:66
 #: org/openscience/jmol/app/PovrayDialog.java:180
 #: org/openscience/jmol/app/PovrayDialog.java:453
@@ -87,72 +69,72 @@ msgstr "Info"
 msgid "Select"
 msgstr "Vali"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:251
+#: org/openscience/jmol/app/AtomSetChooser.java:250
 msgid "Repeat"
 msgstr "Korda"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:263
+#: org/openscience/jmol/app/AtomSetChooser.java:262
 msgid "FPS"
 msgstr "FPS"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:279
+#: org/openscience/jmol/app/AtomSetChooser.java:278
 #: org/openscience/jmol/app/GuiMap.java:99
 msgid "Vector"
 msgstr "Vektor"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:286
+#: org/openscience/jmol/app/AtomSetChooser.java:285
 msgid "Radius"
 msgstr "Raadius"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:299
+#: org/openscience/jmol/app/AtomSetChooser.java:298
 msgid "Scale"
 msgstr "Ulatus"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:313
+#: org/openscience/jmol/app/AtomSetChooser.java:312
 msgid "Amplitude"
 msgstr "Amplituud"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:323
+#: org/openscience/jmol/app/AtomSetChooser.java:322
 msgid "Period"
 msgstr "Periood"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:352
+#: org/openscience/jmol/app/AtomSetChooser.java:351
 msgid "Controller"
 msgstr "Kontroller"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:359
+#: org/openscience/jmol/app/AtomSetChooser.java:358
 msgid "atom set"
 msgstr "atom set"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:361
+#: org/openscience/jmol/app/AtomSetChooser.java:360
 msgid "vector"
 msgstr "vektor"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:364
+#: org/openscience/jmol/app/AtomSetChooser.java:363
 #, java-format
 msgid "Go to first {0} in the collection"
 msgstr "Mine kollektsiooni esimesele {0}"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:365
+#: org/openscience/jmol/app/AtomSetChooser.java:364
 #, java-format
 msgid "Go to previous {0} in the collection"
 msgstr "Mine kollektsiooni eelmisele {0}"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:366
+#: org/openscience/jmol/app/AtomSetChooser.java:365
 #, java-format
 msgid "Play the whole collection of {0}'s"
 msgstr "Mängi terve {0}'de kollektsioon"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:367
+#: org/openscience/jmol/app/AtomSetChooser.java:366
 msgid "Pause playing"
 msgstr "Seiska mängimine"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:368
+#: org/openscience/jmol/app/AtomSetChooser.java:367
 #, java-format
 msgid "Go to next {0} in the collection"
 msgstr "Mine kollektsiooni järgmisele {0}"
 
-#: org/openscience/jmol/app/AtomSetChooser.java:369
+#: org/openscience/jmol/app/AtomSetChooser.java:368
 #, java-format
 msgid "Jump to last {0} in the collection"
 msgstr "Mine kollektsiooni viimasele {0}"
@@ -401,227 +383,235 @@ msgid "{0}%"
 msgstr "{0}%"
 
 #: org/openscience/jmol/app/GuiMap.java:116
-#: org/openscience/jmol/app/GuiMap.java:160
+msgid "Wi&reframe Rotation"
+msgstr "&Sõrestiku keeramine"
+
+#: org/openscience/jmol/app/GuiMap.java:117
+#: org/openscience/jmol/app/GuiMap.java:162
 msgid "Perspective Depth"
 msgstr "Perspektiivi sügavus"
 
-#: org/openscience/jmol/app/GuiMap.java:117
-#: org/openscience/jmol/app/GuiMap.java:161
+#: org/openscience/jmol/app/GuiMap.java:118
+#: org/openscience/jmol/app/GuiMap.java:163
 msgid "Axes"
 msgstr "Teljed"
 
-#: org/openscience/jmol/app/GuiMap.java:118
-#: org/openscience/jmol/app/GuiMap.java:162
+#: org/openscience/jmol/app/GuiMap.java:119
+#: org/openscience/jmol/app/GuiMap.java:164
 msgid "Bounding Box"
 msgstr "Bounding Box"
 
-#: org/openscience/jmol/app/GuiMap.java:119
+#: org/openscience/jmol/app/GuiMap.java:120
 msgid "&Hydrogens"
 msgstr "&Vesinikud"
 
-#: org/openscience/jmol/app/GuiMap.java:120
+#: org/openscience/jmol/app/GuiMap.java:121
 msgid "&Vectors"
 msgstr "&Vektorid"
 
-#: org/openscience/jmol/app/GuiMap.java:121
+#: org/openscience/jmol/app/GuiMap.java:122
 msgid "&Measurements"
 msgstr "&Mõõted"
 
-#: org/openscience/jmol/app/GuiMap.java:122
+#: org/openscience/jmol/app/GuiMap.java:123
 msgid "&View"
 msgstr "&Vaade"
 
-#: org/openscience/jmol/app/GuiMap.java:123
+#: org/openscience/jmol/app/GuiMap.java:124
 msgid "Front"
 msgstr "Ees"
 
-#: org/openscience/jmol/app/GuiMap.java:124
+#: org/openscience/jmol/app/GuiMap.java:125
 msgid "Top"
 msgstr "Peal"
 
-#: org/openscience/jmol/app/GuiMap.java:125
+#: org/openscience/jmol/app/GuiMap.java:126
 msgid "Bottom"
 msgstr "All"
 
-#: org/openscience/jmol/app/GuiMap.java:126
+#: org/openscience/jmol/app/GuiMap.java:127
 msgid "Right"
 msgstr "Parem"
 
-#: org/openscience/jmol/app/GuiMap.java:127
+#: org/openscience/jmol/app/GuiMap.java:128
 msgid "Left"
 msgstr "Vasak"
 
-#: org/openscience/jmol/app/GuiMap.java:128
+#: org/openscience/jmol/app/GuiMap.java:129
 msgid "Transform..."
 msgstr "Muudan..."
 
-#: org/openscience/jmol/app/GuiMap.java:129
+#: org/openscience/jmol/app/GuiMap.java:130
 msgid "Define Center"
 msgstr "Defineeri keskpaik"
 
-#: org/openscience/jmol/app/GuiMap.java:130
+#: org/openscience/jmol/app/GuiMap.java:131
 msgid "&Tools"
 msgstr "&Tööriistad"
 
-#: org/openscience/jmol/app/GuiMap.java:131
+#: org/openscience/jmol/app/GuiMap.java:132
 #: org/openscience/jmol/app/MeasurementTable.java:66
 msgid "Measurements..."
 msgstr "Mõõted..."
 
-#: org/openscience/jmol/app/GuiMap.java:132
+#: org/openscience/jmol/app/GuiMap.java:133
 msgid "Distance Units"
 msgstr "Vahemaa ühikud"
 
-#: org/openscience/jmol/app/GuiMap.java:133
+#: org/openscience/jmol/app/GuiMap.java:134
 msgid "Nanometers 1E-9"
 msgstr "Nanomeetrid 1E-9"
 
-#: org/openscience/jmol/app/GuiMap.java:134
+#: org/openscience/jmol/app/GuiMap.java:135
 msgid "Angstroms 1E-10"
 msgstr "Angstromid 1E-10"
 
-#: org/openscience/jmol/app/GuiMap.java:135
+#: org/openscience/jmol/app/GuiMap.java:136
 msgid "Picometers 1E-12"
 msgstr "Picomeetrid 1E-12"
 
-#: org/openscience/jmol/app/GuiMap.java:136
+#: org/openscience/jmol/app/GuiMap.java:137
 msgid "Animate..."
 msgstr "Animeeri..."
 
-#: org/openscience/jmol/app/GuiMap.java:137
+#: org/openscience/jmol/app/GuiMap.java:138
 msgid "Vibrate..."
 msgstr "Vibreeri..."
 
-#: org/openscience/jmol/app/GuiMap.java:138
+#: org/openscience/jmol/app/GuiMap.java:139
 msgid "&Graph..."
 msgstr "&Joonista..."
 
-#: org/openscience/jmol/app/GuiMap.java:139
+#: org/openscience/jmol/app/GuiMap.java:140
 msgid "Calculate chemical &shifts..."
 msgstr "Arvuta keemilised &nihked..."
 
-#: org/openscience/jmol/app/GuiMap.java:140
+#: org/openscience/jmol/app/GuiMap.java:141
 msgid "&Crystal Properties"
 msgstr "&Kristalli omadused"
 
-#: org/openscience/jmol/app/GuiMap.java:141
+#: org/openscience/jmol/app/GuiMap.java:142
 msgid "Once"
 msgstr "Üks kord"
 
-#: org/openscience/jmol/app/GuiMap.java:142
+#: org/openscience/jmol/app/GuiMap.java:143
 msgid "Loop"
 msgstr "Tagasiside"
 
-#: org/openscience/jmol/app/GuiMap.java:143
+#: org/openscience/jmol/app/GuiMap.java:144
 msgid "Palindrome"
 msgstr "Palindroom"
 
-#: org/openscience/jmol/app/GuiMap.java:144
+#: org/openscience/jmol/app/GuiMap.java:145
 msgid "Stop animation"
 msgstr "Seiska animatsioon"
 
-#: org/openscience/jmol/app/GuiMap.java:145
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:146
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Rewind to first frame"
 msgstr "Keri tagasi esimese kaadrini"
 
-#: org/openscience/jmol/app/GuiMap.java:146
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:147
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to next frame"
 msgstr "Mine järgmise kaadri juurde"
 
-#: org/openscience/jmol/app/GuiMap.java:147
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:148
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Go to previous frame"
 msgstr "Mine eelmise kaadri juurde"
 
-#: org/openscience/jmol/app/GuiMap.java:148
+#: org/openscience/jmol/app/GuiMap.java:149
 msgid "Start vibration"
 msgstr "Käivita vibratsioon"
 
-#: org/openscience/jmol/app/GuiMap.java:149
+#: org/openscience/jmol/app/GuiMap.java:150
 msgid "Stop vibration"
 msgstr "Seiska vibratsioon"
 
-#: org/openscience/jmol/app/GuiMap.java:150
+#: org/openscience/jmol/app/GuiMap.java:151
 msgid "First frequency"
 msgstr "Esimene sagedus"
 
-#: org/openscience/jmol/app/GuiMap.java:151
+#: org/openscience/jmol/app/GuiMap.java:152
 msgid "Next frequency"
 msgstr "Järgmine sagedus"
 
-#: org/openscience/jmol/app/GuiMap.java:152
+#: org/openscience/jmol/app/GuiMap.java:153
 msgid "Previous frequency"
 msgstr "Eelmine sagedus"
 
-#: org/openscience/jmol/app/GuiMap.java:153
+#: org/openscience/jmol/app/GuiMap.java:154
 msgid "&Help"
 msgstr "&Abi"
 
-#: org/openscience/jmol/app/GuiMap.java:155
+#: org/openscience/jmol/app/GuiMap.java:156
 msgid "User Guide"
 msgstr "Kasutusjuhend"
 
-#: org/openscience/jmol/app/GuiMap.java:156
+#: org/openscience/jmol/app/GuiMap.java:157
 msgid "What's New"
 msgstr "Mida on uut?"
 
-#: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/Jmol.java:468
+#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/Jmol.java:465
 msgid "Jmol Console"
 msgstr "Jmol konsool"
 
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
 msgstr "Vesinikud"
 
-#: org/openscience/jmol/app/GuiMap.java:159
+#: org/openscience/jmol/app/GuiMap.java:160
 msgid "Measurements"
 msgstr "Mõõted"
 
-#: org/openscience/jmol/app/GuiMap.java:163
+#: org/openscience/jmol/app/GuiMap.java:161
+msgid "Wireframe Rotation"
+msgstr "Sõrestiku keeramine"
+
+#: org/openscience/jmol/app/GuiMap.java:165
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime ühilduvate telgede suund/pöörded"
 
-#: org/openscience/jmol/app/GuiMap.java:164
+#: org/openscience/jmol/app/GuiMap.java:166
 msgid "File Preview (needs restarting Jmol)"
 msgstr "Faili eelvaade (vajab Jmol'i taaskäivitust)"
 
-#: org/openscience/jmol/app/GuiMap.java:165
-#: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:168
 msgid "Use Atom Color"
 msgstr "Aatomi värvi kasutamine"
 
-#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:169
 msgid "Open a file."
 msgstr "Faili avamine."
 
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:170
 msgid "Export view to an image file."
 msgstr "Ekspordi vaade pildi faili."
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:171
 msgid "Render in pov-ray."
 msgstr "Renderda pov-ray's."
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "Print view."
 msgstr "Prindi vaade."
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "Rotate molecule."
 msgstr "Keera molekuli"
 
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "Select an atom or region."
 msgstr "Vali aatom või regioon."
 
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "View measurement table."
 msgstr "Vaata mõõtetabelit."
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Return molecule to home position."
 msgstr "Taasta molekuli lähtepositsioon."
 
@@ -661,95 +651,95 @@ msgstr "Algväärtustan skripti akent..."
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Algväärtustan AtomSetChooser akent..."
 
-#: org/openscience/jmol/app/Jmol.java:192
+#: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing Measurements..."
 msgstr "Algväärtustan mõõted..."
 
-#: org/openscience/jmol/app/Jmol.java:213
+#: org/openscience/jmol/app/Jmol.java:211
 msgid "Building Command Hooks..."
 msgstr "Koostan Command Hooks..."
 
-#: org/openscience/jmol/app/Jmol.java:222
+#: org/openscience/jmol/app/Jmol.java:220
 msgid "Building Menubar..."
 msgstr "Koostan menüüriba..."
 
-#: org/openscience/jmol/app/Jmol.java:238
+#: org/openscience/jmol/app/Jmol.java:236
 msgid "Starting display..."
 msgstr "Käivitan ekraani..."
 
-#: org/openscience/jmol/app/Jmol.java:241
+#: org/openscience/jmol/app/Jmol.java:239
 msgid "Setting up File Choosers..."
 msgstr "Seadistan failivalijat..."
 
-#: org/openscience/jmol/app/Jmol.java:293
+#: org/openscience/jmol/app/Jmol.java:291
 msgid "Setting up Drag-and-Drop..."
 msgstr "Seadistan Drag-ja-Drop'i..."
 
-#: org/openscience/jmol/app/Jmol.java:319
+#: org/openscience/jmol/app/Jmol.java:317
 msgid "Launching main frame..."
 msgstr "Käivitan peafreimi..."
 
-#: org/openscience/jmol/app/Jmol.java:328
+#: org/openscience/jmol/app/Jmol.java:326
 msgid "Creating main window..."
 msgstr "Loon peaakna..."
 
-#: org/openscience/jmol/app/Jmol.java:329
+#: org/openscience/jmol/app/Jmol.java:327
 msgid "Initializing Swing..."
 msgstr "Algväärtustan Swing'i..."
 
-#: org/openscience/jmol/app/Jmol.java:339
+#: org/openscience/jmol/app/Jmol.java:337
 msgid "Initializing Jmol..."
 msgstr "Algväärtustan Jmol'i..."
 
-#: org/openscience/jmol/app/Jmol.java:357
+#: org/openscience/jmol/app/Jmol.java:355
 msgid "give this help page"
 msgstr "anna see abileht"
 
-#: org/openscience/jmol/app/Jmol.java:365
+#: org/openscience/jmol/app/Jmol.java:363
 msgid "property=value"
 msgstr "omadus=väärtus"
 
-#: org/openscience/jmol/app/Jmol.java:368
+#: org/openscience/jmol/app/Jmol.java:366
 msgid "supported options are given below"
 msgstr "lubatud valikud on eespool"
 
-#: org/openscience/jmol/app/Jmol.java:372
+#: org/openscience/jmol/app/Jmol.java:370
 msgid "window size 500x500"
 msgstr "akna suurus 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:391
+#: org/openscience/jmol/app/Jmol.java:389
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 
-#: org/openscience/jmol/app/Jmol.java:456
+#: org/openscience/jmol/app/Jmol.java:453
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
-#: org/openscience/jmol/app/Jmol.java:480
+#: org/openscience/jmol/app/Jmol.java:477
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:554
+#: org/openscience/jmol/app/Jmol.java:551
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:790
+#: org/openscience/jmol/app/Jmol.java:787
 msgid "Macros"
 msgstr "Makrod"
 
-#: org/openscience/jmol/app/Jmol.java:1110
+#: org/openscience/jmol/app/Jmol.java:1107
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1111
+#: org/openscience/jmol/app/Jmol.java:1108
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/Jmol.java:1198
+#: org/openscience/jmol/app/Jmol.java:1195
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
-#: org/openscience/jmol/app/Jmol.java:1366
+#: org/openscience/jmol/app/Jmol.java:1362
 msgid "File not loaded"
 msgstr "Fail ei ole loetud"
 
@@ -1083,11 +1073,13 @@ msgstr "Laen..."
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
 
-#~ msgid "Wi&reframe Rotation"
-#~ msgstr "&Sõrestiku keeramine"
+#, fuzzy
+#~ msgid "atoms selected"
+#~ msgstr "atom set"
 
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Sõrestiku keeramine"
+#, fuzzy
+#~ msgid "Jmol executing script ..."
+#~ msgstr "Käivitan skripti ..."
 
 #~ msgid "Colors"
 #~ msgstr "Värvid"

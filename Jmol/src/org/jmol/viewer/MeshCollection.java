@@ -27,15 +27,12 @@ package org.jmol.viewer;
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
-import java.util.Vector;
-import java.util.Hashtable;
 
 abstract class MeshCollection extends SelectionIndependentShape {
 
   int meshCount;
   Mesh[] meshes = new Mesh[4];
   Mesh currentMesh;
-  boolean isValid = false;
 
   void initShape() {
     colix = Graphics3D.ORANGE;
@@ -58,14 +55,15 @@ abstract class MeshCollection extends SelectionIndependentShape {
     */
     if ("meshID" == propertyName) {
       String meshID = (String)value;
+      //      System.out.println("meshID=" + meshID);
       if (meshID == null) {
         currentMesh = null;
         return;
       }
-      int meshIndex = getMeshIndex(meshID);
-      if (meshIndex >= 0) {
-        currentMesh = meshes[meshIndex];
-        return;        
+      for (int i = meshCount; --i >= 0; ) {
+        currentMesh = meshes[i];
+        if (meshID.equals(currentMesh.meshID))
+          return;
       }
       allocMesh(meshID);
       return;
@@ -161,14 +159,6 @@ abstract class MeshCollection extends SelectionIndependentShape {
     }
   }
 
-  int getMeshIndex(String meshID) {
-    for (int i = meshCount; --i >= 0; ) {
-      if (meshes[i] != null && meshID.equals(meshes[i].meshID))
-        return i;
-    }
-    return -1; 
-  }
-  
   void allocMesh(String meshID) {
     meshes = (Mesh[])Util.ensureLength(meshes, meshCount + 1);
     currentMesh = meshes[meshCount++] = new Mesh(viewer, meshID, g3d, colix);
@@ -303,28 +293,5 @@ abstract class MeshCollection extends SelectionIndependentShape {
     ichNextParse = ich;
     return value;
   }
-
-  Vector getShapeDetail() {
-    Vector V=new Vector();
-    for (int i = 0; i < meshCount; i++) {
-      Hashtable info = new Hashtable();
-      Mesh mesh = meshes[i];
-      info.put("ID", mesh.meshID);
-      info.put("drawType",mesh.drawType);
-      info.put("drawVertexCount",new Integer(mesh.drawVertexCount));
-      if (mesh.drawType == "Line")
-        info.put("length_Ang", new Float(mesh.vertices[0].distance(mesh.vertices[1])));
-      info.put("scale", new Float(mesh.scale));
-      info.put("center", mesh.ptCenter);
-      info.put("axis", mesh.axis);
-      Vector v = new Vector();
-      for (int j = 0; j < mesh.vertexCount; j++)
-        v.add(mesh.vertices[j]);
-      info.put("vertices",v);
-      V.add(info);
-    }   
-    return V;
-  }
-
 }
 

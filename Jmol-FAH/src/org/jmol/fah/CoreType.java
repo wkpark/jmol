@@ -38,9 +38,6 @@ public class CoreType {
    */
   static public CoreType getFromCode(String code) {
     if (code != null) {
-      if (code.equalsIgnoreCase(A0GROMACS._code)) {
-        return A0GROMACS;
-      }
       if (code.equalsIgnoreCase(AMBER._code)) {
        return AMBER;
       }
@@ -71,9 +68,6 @@ public class CoreType {
    */
   static public CoreType getFromName(String name) {
     if (name != null) {
-      if (name.equalsIgnoreCase(A0GROMACS._name)) {
-        return A0GROMACS;
-      }
       if (name.equalsIgnoreCase(AMBER._name)) {
         return AMBER;
       }
@@ -112,7 +106,6 @@ public class CoreType {
 
   // Cores
   static public final CoreType UNKNOWN   = new CoreType(null, null);
-  static public final CoreType A0GROMACS = new CoreType("Gromacs33", "A0"); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType AMBER     = new CoreType("Amber", "A"); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType DGROMACS  = new CoreType("DGromacs", "DG"); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GBGROMACS = new CoreType("GBGromacs", "GB"); //$NON-NLS-1$ //$NON-NLS-2$

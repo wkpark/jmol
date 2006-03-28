@@ -23,10 +23,8 @@
  */
 package org.jmol.viewer;
 
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.BitSet;
-import java.util.Vector;
 
 // Mmset == Molecular Model set
 
@@ -34,13 +32,11 @@ final class Mmset {
   Frame frame;
 
   Properties modelSetProperties;
-  Hashtable modelSetAuxiliaryInfo;
 
   private int modelCount = 0;
   private String[] modelNames = new String[1];
   private int[] modelNumbers = new int[1];
   private Properties[] modelProperties = new Properties[1];
-  private Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
   private Model[] models = new Model[1];
 
   private int structureCount = 0;
@@ -92,26 +88,13 @@ final class Mmset {
     this.modelSetProperties = modelSetProperties;
   }
 
-  void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
-    this.modelSetAuxiliaryInfo = modelSetAuxiliaryInfo;
-  }
-
   Properties getModelSetProperties() {
     return modelSetProperties;
-  }
-
-  Hashtable getModelSetAuxiliaryInfo() {
-    return modelSetAuxiliaryInfo;
   }
 
   String getModelSetProperty(String propertyName) {
     return (modelSetProperties == null
             ? null : modelSetProperties.getProperty(propertyName));
-  }
-
-  Object getModelSetAuxiliaryInfo(String keyName) {
-    return (modelSetAuxiliaryInfo == null
-            ? null : modelSetAuxiliaryInfo.get(keyName));
   }
 
   void setModelCount(int modelCount) {
@@ -123,9 +106,7 @@ final class Mmset {
     modelNames = Util.setLength(modelNames, modelCount);
     modelNumbers = Util.setLength(modelNumbers, modelCount);
     modelProperties = (Properties[])Util.setLength(modelProperties,
-        modelCount);
-    modelAuxiliaryInfo = (Hashtable[])Util.setLength(modelAuxiliaryInfo,
-        modelCount);
+                                                   modelCount);
   }
 
   String getModelName(int modelIndex) {
@@ -145,15 +126,6 @@ final class Mmset {
     return props == null ? null : props.getProperty(property);
   }
 
-  Hashtable getModelAuxiliaryInfo(int modelIndex) {
-    return modelAuxiliaryInfo[modelIndex];
-  }
-
-  Object getModelAuxiliaryInfo(int modelIndex, String key) {
-    Hashtable info = modelAuxiliaryInfo[modelIndex];
-    return info == null ? null : info.get(key);
-  }
-
   Model getModel(int modelIndex) {
     return models[modelIndex];
   }
@@ -168,12 +140,10 @@ final class Mmset {
 
   void setModelNameNumberProperties(int modelIndex, String modelName,
                                     int modelNumber,
-                                    Properties modelProperties, 
-                                    Hashtable modelAuxiliaryInfo) {
+                                    Properties modelProperties) {
     modelNames[modelIndex] = modelName;
     modelNumbers[modelIndex] = modelNumber;
     this.modelProperties[modelIndex] = modelProperties;
-    this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
     models[modelIndex] = new Model(this, modelIndex, modelName);
   }
 
@@ -214,10 +184,6 @@ final class Mmset {
     return models[modelIndex].getPolymerCount();
   }
   
-  int getChainCountInModel(int modelIndex) {
-    return models[modelIndex].getChainCount();
-  }
-  
   Polymer getPolymerAt(int modelIndex, int polymerIndex) {
     return models[modelIndex].getPolymer(polymerIndex);
   }
@@ -227,10 +193,6 @@ final class Mmset {
     for (int i = modelCount; --i >= 0; )
       groupCount += models[i].getGroupCount();
     return groupCount;
-  }
-
-  int getGroupCountInModel(int modelIndex) {
-    return models[modelIndex].getGroupCount();
   }
 
   void calcSelectedGroupsCount(BitSet bsSelected) {
@@ -277,24 +239,5 @@ final class Mmset {
       else
         type = JmolConstants.PROTEIN_STRUCTURE_NONE;
     }
-
-    Hashtable toHashtable() {
-      Hashtable info = new Hashtable();
-      info.put("type",typeName);
-      info.put("startChainID",startChainID+"");
-      info.put("startSeqcode",new Integer(startSeqcode));
-      info.put("endChainID",endChainID+"");
-      info.put("endSeqcode",new Integer(endSeqcode));
-      return info;
-    }
-
   }
-  
-  Vector getStructureInfo() {
-    Vector info = new Vector();
-    for(int i = 0; i < structureCount; i++) 
-      info.add(structures[i].toHashtable());
-    return info;
-  }
-  
 }

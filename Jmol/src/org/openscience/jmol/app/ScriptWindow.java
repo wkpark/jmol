@@ -99,13 +99,13 @@ public final class ScriptWindow extends JDialog
     buttonPanel.add(helpButton);
   }
 
-  public void sendConsoleEcho(String strEcho) {
+  public void scriptEcho(String strEcho) {
     if (strEcho != null) {
       console.outputEcho(strEcho);
     }
   }
 
-  public void sendConsoleMessage(String strStatus) {
+  public void scriptStatus(String strStatus) {
     if (strStatus != null) {
       console.outputStatus(strStatus);
     }
@@ -129,7 +129,7 @@ public final class ScriptWindow extends JDialog
     console.appendNewline();
     console.setPrompt();
     if (strCommand.length() > 0) {
-      String strErrorMessage = viewer.script(strCommand);
+      String strErrorMessage = viewer.evalString(strCommand);
       if (strErrorMessage != null)
         console.outputError(strErrorMessage);
       else {

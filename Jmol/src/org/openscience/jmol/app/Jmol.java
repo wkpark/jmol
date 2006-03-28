@@ -185,9 +185,7 @@ public class Jmol extends JPanel {
     say(GT._("Initializing AtomSetChooser Window..."));
     atomSetChooser = new AtomSetChooser(viewer, frame);
 
-    MyStatusListener myStatusListener;
-    myStatusListener = new MyStatusListener();
-    viewer.setJmolStatusListener(myStatusListener);
+    viewer.setJmolStatusListener(new MyJmolStatusListener());
 
     say(GT._("Initializing Measurements..."));
     measurementTable = new MeasurementTable(viewer, frame);
@@ -437,7 +435,6 @@ public class Jmol extends JPanel {
       if (args.length > 0) {
           modelFilename = args[0];
       }
-      //modelFilename = "caffeine.xyz"; //Eclipse TESTING ONLY
       if (line.hasOption("s")) {
           scriptFilename = line.getOptionValue("s");
       }
@@ -1355,8 +1352,7 @@ public class Jmol extends JPanel {
     }
   }
 
-  class MyStatusListener implements JmolStatusListener {
-    
+  class MyJmolStatusListener implements JmolStatusListener {
     public void notifyFileLoaded(String fullPathName, String fileName,
                                  String modelName, Object clientFile,
                                  String errorMsg) {
@@ -1388,18 +1384,18 @@ public class Jmol extends JPanel {
         // don't do anything
     }
 
-    public void notifyScriptStart(String statusMessage, String additionalInfo) {
-      System.out.println("notifyScriptStart:" + statusMessage + (additionalInfo == "" ? "" : additionalInfo));
-    }
-    
-    public void sendConsoleEcho(String strEcho) {
-      if (scriptWindow != null)
-        scriptWindow.sendConsoleEcho(strEcho);
+    public void setStatusMessage(String statusMessage) {
+      System.out.println("setStatusMessage:" + statusMessage);
     }
 
-    public void sendConsoleMessage(String strStatus) {
+    public void scriptEcho(String strEcho) {
       if (scriptWindow != null)
-        scriptWindow.sendConsoleMessage(strStatus);
+        scriptWindow.scriptEcho(strEcho);
+    }
+
+    public void scriptStatus(String strStatus) {
+      if (scriptWindow != null)
+        scriptWindow.scriptStatus(strStatus);
     }
 
     public void notifyScriptTermination(String strStatus, int msWalltime) {
@@ -1411,24 +1407,17 @@ public class Jmol extends JPanel {
       jmolpopup.show(x, y);
     }
 
-    public void notifyNewPickingModeMeasurement(int iatom, String strMeasure) {
-      
-    }
-
-    public void notityNewDefaultModeMeasurement(int count, String strInfo) {
+    public void notifyMeasurementsChanged() {
       measurementTable.updateTables();
     }
 
     public void notifyAtomPicked(int atomIndex, String strInfo) {
       if (scriptWindow != null) {
-        scriptWindow.sendConsoleMessage(strInfo);
-        scriptWindow.sendConsoleMessage("\n");
+        scriptWindow.scriptStatus(strInfo);
+        scriptWindow.scriptStatus("\n");
       }
     }
 
-    public void sendSyncScript(String script, String appletName) {  
-    }
-    
     public void showUrl(String url) {
     }
 
@@ -1438,7 +1427,6 @@ public class Jmol extends JPanel {
       else
         scriptWindow.hide();
     }
-    
   }
 
   class ExecuteScriptAction extends AbstractAction {

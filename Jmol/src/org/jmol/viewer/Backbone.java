@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -45,32 +44,15 @@ class Backbone extends Mps {
       // note that i is initialized to monomerCount - 1
       // in order to skip the last atom
       // but it is picked up within the loop by looking at i+1
-      boolean isVisible = (mad != 0);
       for (int i = monomerCount - 1; --i >= 0; ) {
-        int index1 = atomIndices[i];
-        int index2 = atomIndices[i + 1];
-        boolean isAtom1 = bsSelected.get(index1);
-        boolean isAtom2 = bsSelected.get(index2);
-        if ( isAtom1 && isAtom2 
-            || bondSelectionModeOr && (isAtom1 || isAtom2)) {
-          monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
+        if ((bsSelected.get(atomIndices[i]) &&
+             bsSelected.get(atomIndices[i + 1]))
+            ||
+            (bondSelectionModeOr &&
+             (bsSelected.get(atomIndices[i]) ||
+              bsSelected.get(atomIndices[i + 1]))))
           mads[i] = mad;
-          Atom atomA = frame.getAtomAt(index1);
-          Atom atomB = frame.getAtomAt(index2);
-          atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
-          atomB.addDisplayedBackbone(myVisibilityFlag, isVisible);    
-        }
-      }
-    }
-
-    void setModelClickability() {
-      int[] atomIndices = polymer.getLeadAtomIndices();
-      for (int i = monomerCount; --i >= 0; ) {
-        Atom atom = frame.getAtomAt(atomIndices[i]);
-        if (atom.nBackbonesDisplayed > 0)
-          atom.clickabilityFlags |= myVisibilityFlag;
       }
     }
   }
-  
 }

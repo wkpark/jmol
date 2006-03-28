@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -25,9 +24,13 @@
 
 package org.jmol.viewer;
 
+import org.jmol.g3d.*;
+
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY;
+  boolean wireframeRotating;
+  boolean showHydrogens;
   short colixSelection;
 
   void render() {
@@ -36,34 +39,57 @@ class BallsRenderer extends ShapeRenderer {
     minY = rectClip.y;
     maxY = minY + rectClip.height;
 
+    wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
-    int ballVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);
-    int haloVisibilityFlag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);    
+    showHydrogens = viewer.getShowHydrogens();
+
     Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0)
-        continue;
-      atom.transform(viewer);
-      if ((atom.shapeVisibilityFlags & ballVisibilityFlag) != 0)
-        renderBall(atom);     
-      if ((atom.shapeVisibilityFlags & haloVisibilityFlag) != 0)
-        renderHalo(atom);     
+    int displayModelIndex = this.displayModelIndex;
+    if (displayModelIndex < 0) {
+      for (int i = frame.atomCount; --i >= 0; ) {
+        Atom atom = atoms[i];
+        atom.transform(viewer);
+        render(atom);
+      }
+    } else {
+      for (int i = frame.atomCount; --i >= 0; ) {
+        Atom atom = atoms[i];
+        if (atom.modelIndex != displayModelIndex) {
+          atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
+          continue;
+        }
+        atom.transform(viewer);
+        render(atom);
+      }
     }
   }
 
-  void renderBall(Atom atom) {
-    g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
-                           atom.screenX, atom.screenY, atom.screenZ);
-  }
-
-  void renderHalo(Atom atom) {
+  void render(Atom atom) {
+    if (!showHydrogens && atom.elementNumber == 1)
+      return;
     int diameter = atom.screenDiameter;
-    int halowidth = diameter / 4;
-    if (halowidth < 4) halowidth = 4;
-    if (halowidth > 10) halowidth = 10;
-    int haloDiameter = diameter + 2 * halowidth;
-    g3d.fillScreenedCircleCentered(colixSelection, haloDiameter,
-                                   atom.screenX, atom.screenY, atom.screenZ);
+    boolean hasHalo = viewer.hasSelectionHalo(atom.atomIndex);
+    if (diameter == 0 && !hasHalo) {
+      atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
+      return;
+    }
+    // mth 2004 04 02 ... hmmm ... I don't like this here ... looks ugly
+    atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+
+    if (!wireframeRotating)
+      g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
+                             atom.screenX, atom.screenY, atom.screenZ);
+    else
+      g3d.drawCircleCentered(atom.colixAtom, atom.screenDiameter,
+                             atom.screenX, atom.screenY, atom.screenZ);
+
+    if (hasHalo) {
+      int halowidth = diameter / 4;
+      if (halowidth < 4) halowidth = 4;
+      if (halowidth > 10) halowidth = 10;
+      int haloDiameter = diameter + 2 * halowidth;
+      g3d.fillScreenedCircleCentered(colixSelection, haloDiameter,
+                                     atom.screenX, atom.screenY, atom.screenZ);
+    }
   }
 }

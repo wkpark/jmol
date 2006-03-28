@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: egonw $
+ * $Date: 2005-11-10 10:52:44 -0500 (Thu, 10 Nov 2005) $
+ * $Revision: 4255 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *

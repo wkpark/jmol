@@ -46,11 +46,10 @@ class FrameRenderer {
     if (frame == null || frame.atomCount <= 0)
       return;
 
-    viewer.finalizeTransformParameters();
+    viewer.calcTransformMatrices();
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
-      
       if (shape == null)
         continue;
       getRenderer(i, g3d).render(g3d, rectClip, frame,
@@ -68,6 +67,7 @@ class FrameRenderer {
     String classBase =
       JmolConstants.shapeClassBases[refShape] + "Renderer";
     String className = "org.jmol.viewer." + classBase;
+
     try {
       Class shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer)shapeClass.newInstance();

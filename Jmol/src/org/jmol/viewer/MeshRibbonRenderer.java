@@ -59,10 +59,8 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
   float baseOffset;
 
   boolean isNucleicPolymer;
-  int myVisibilityFlag;
-  
-  void renderMpspolymer( Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
+
+  void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     MeshRibbon.Schain strandsChain = (MeshRibbon.Schain)mpspolymer;
 
     // no way to do this now that strandCount is part of the strands object
@@ -121,10 +119,11 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
   void render1Strand(int monomerCount, Monomer[] monomers, short[] mads,
                      short[] colixes, Point3i[] screens) {
     for (int i = monomerCount; --i >= 0; )
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) != 0)
+      if (mads[i] > 0)
         render1StrandSegment(monomerCount,
                              monomers[i], colixes[i], mads, screens, i);
   }
+  
   
   void render1StrandSegment(int monomerCount, Monomer monomer, short colix,
                             short[] mads, Point3i[] screens, int i) {

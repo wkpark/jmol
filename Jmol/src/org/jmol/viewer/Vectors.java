@@ -45,12 +45,9 @@ class Vectors extends Shape {
     if (frame.hasVibrationVectors) {
       short mad = (short)size;
       //Atom[] atoms = frame.atoms;
-      for (int i = frame.atomCount; --i >= 0; ) {
-        if (bsSelected.get(i)) {
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i))
           mads[i] = mad;
-          frame.atoms[i].setShapeVisibility(myVisibilityFlag, (mad != 0));
-        }
-      }
     }
   }
 
@@ -66,16 +63,4 @@ class Vectors extends Shape {
       }
     } 
   }
-  
-  void setModelClickability() {
-    if (mads == null)
-      return;
-    Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
-    }
-  }
-
 }

@@ -48,8 +48,6 @@ class AminoPolymer extends AlphaPolymer {
   void calcHydrogenBonds() {
     if (! hbondsAlreadyCalculated) {
       allocateHbondDataStructures();
-      //Frame frame = model.mmset.frame;
-      //hbondMax2 = frame.hbondMax * frame.hbondMax;
       calcProteinMainchainHydrogenBonds();
       hbondsAlreadyCalculated = true;
 
@@ -105,16 +103,13 @@ class AminoPolymer extends AlphaPolymer {
       carbonPoint = residue.getCarbonylCarbonAtomPoint();
       oxygenPoint = residue.getCarbonylOxygenAtomPoint();
       vectorPreviousOC.sub(carbonPoint, oxygenPoint);
-      vectorPreviousOC.scale(1/vectorPreviousOC.length());
     }
   }
-
-//  private float hbondMax2;
 
   private final static float maxHbondAlphaDistance = 9;
   private final static float maxHbondAlphaDistance2 =
     maxHbondAlphaDistance * maxHbondAlphaDistance;
-  private final static float minimumHbondDistance2 = 0.5f; // note: RasMol is 1/2 this. RMH
+  private final static float minimumHbondDistance2 = 0.5f;
   private final static double QConst = -332 * 0.42 * 0.2 * 1000;
 
   void bondAminoHydrogen(int indexDonor, Point3f hydrogenPoint) {
@@ -135,7 +130,7 @@ class AminoPolymer extends AlphaPolymer {
         continue;
       int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
       if (debugHbonds)
-        System.out.println("HbondEnergy=" + energy + " dist2="+dist2+" max^2="+maxHbondAlphaDistance2);
+        System.out.println("HbondEnergy=" + energy);
       if (energy < energyMin1) {
         energyMin2 = energyMin1;
         indexMin2 = indexMin1;
@@ -162,19 +157,6 @@ class AminoPolymer extends AlphaPolymer {
   int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
                       AminoMonomer target) {
     Point3f targetOxygenPoint = target.getCarbonylOxygenAtomPoint();
-
-    float distON2 = targetOxygenPoint.distanceSquared(nitrogenPoint);
-    if (distON2 < minimumHbondDistance2)
-      return -9900;
-
-    //why would this not have been in here? RMH 03/8/06
-    //   if (distON2 > hbondMax2)
-    //      return 0;
-    //nevermind! :)
-    
-    if (debugHbonds)
-      System.out.println("calchbondenergy: "+hydrogenPoint.x+","+hydrogenPoint.y+","+hydrogenPoint.z);
-
     float distOH2 = targetOxygenPoint.distanceSquared(hydrogenPoint);
     if (distOH2 < minimumHbondDistance2)
       return -9900;
@@ -186,6 +168,10 @@ class AminoPolymer extends AlphaPolymer {
 
     float distCN2 = targetCarbonPoint.distanceSquared(nitrogenPoint);
     if (distCN2 < minimumHbondDistance2)
+      return -9900;
+
+    float distON2 = targetOxygenPoint.distanceSquared(nitrogenPoint);
+    if (distON2 < minimumHbondDistance2)
       return -9900;
 
     double distOH = Math.sqrt(distOH2);
@@ -249,7 +235,8 @@ class AminoPolymer extends AlphaPolymer {
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
     Atom oxygen = recipient.getCarbonylOxygenAtom();
-    model.mmset.frame.bondAtoms(nitrogen, oxygen, order);
+    Frame frame = model.mmset.frame;
+    frame.bondAtoms(nitrogen, oxygen, order);
   }
 
   /*

@@ -106,10 +106,6 @@ final class Model {
     return null;
   }
 
-  Chain getChain(int i) {
-    return (i < chainCount ? chains[i] : null);
-  }
-
   Chain getOrAllocateChain(char chainID) {
     //    System.out.println("chainID=" + chainID + " -> " + (chainID + 0));
     Chain chain = getChain(chainID);

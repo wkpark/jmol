@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -28,16 +27,13 @@ import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
 import java.util.BitSet;
-import java.util.Vector;
 
 abstract class Shape {
 
   Viewer viewer;
   Frame frame;
   Graphics3D g3d;
-  int shapeID;
-  int myVisibilityFlag;
-  
+
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame) {
     this.viewer = viewer;
     this.g3d = g3d;
@@ -45,11 +41,6 @@ abstract class Shape {
     initShape();
   }
 
-  final void setVisibilityInfo(int shapeID) {
-    this.shapeID = shapeID;
-    this.myVisibilityFlag = viewer.getShapeVisibilityFlag(shapeID);
-  }
-    
   void initShape() {
   }
 
@@ -75,13 +66,4 @@ abstract class Shape {
   void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
   }
 
-  void setModelClickability() {
-  }
-
-  void checkObjectClicked(int x, int y, boolean isShiftDown) {
-  }
-
-  Vector getShapeDetail() {
-    return null;
-  }
 }

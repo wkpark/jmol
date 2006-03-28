@@ -1,4 +1,5 @@
- /* $Author$
+/* $RCSfile$
+ * $Author$
  * $Date$
  * $Revision$
  *
@@ -25,7 +26,6 @@ package org.jmol.viewer;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.Vector;
-import javax.vecmath.Point3f;
 
 class Compiler {
 
@@ -39,7 +39,6 @@ class Compiler {
   boolean error;
   String errorMessage;
   String errorLine;
-  boolean preDefining;
   
   static final boolean logMessages = false;
 
@@ -54,7 +53,6 @@ class Compiler {
     lineNumbers = lineIndices = null;
     aatokenCompiled = null;
     errorMessage = errorLine = null;
-    preDefining = (filename == "#predefine");
     if (compile0())
       return true;
     int icharEnd;
@@ -108,6 +106,7 @@ class Compiler {
     Vector ltoken = new Vector();
     //Token tokenCommand = null;
     int tokCommand = Token.nada;
+
     for ( ; true; ichToken += cchToken) {
       if (lookingAtLeadingWhitespace())
         continue;
@@ -233,18 +232,6 @@ class Compiler {
         case Token.define:
           if (ltoken.size() == 1) {
             // we are looking at the variable name
-            
-            if (!preDefining &&  tok != Token.identifier) { 
-              if ((tok & Token.predefinedset) != Token.predefinedset) {
-                System.out.println("WARNING: redefining " + ident + "; was " + token);
-                tok = token.tok = Token.identifier;
-                Token.map.put(ident, token);
-                System.out.println("WARNING: not all commands may continue to be functional for the life of the applet!");
-              } else {
-                System.out.println("WARNING: predefined term '" + ident + "' has been redefined by the user until the next file load.");
-              }
-            }
-
             if (tok != Token.identifier &&
                 (tok & Token.predefinedset) != Token.predefinedset)
               return invalidExpressionToken(ident);
@@ -256,10 +243,6 @@ class Compiler {
           }
           break;
         case Token.center:
-          if (tok != Token.identifier && tok != Token.dollarsign 
-              && (tok & (Token.expression | Token.coordinate)) == 0)
-            return invalidExpressionToken(ident);
-          break;
         case Token.restrict:
         case Token.select:
           if (tok != Token.identifier && (tok & Token.expression) == 0)
@@ -334,17 +317,17 @@ class Compiler {
   }
 
   boolean lookingAtLeadingWhitespace() {
-    //log("lookingAtLeadingWhitespace");
+    log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
     cchToken = ichT - ichToken;
-    //log("leadingWhitespace cchScript=" + cchScript + " cchToken=" + cchToken);
+    log("leadingWhitespace cchScript=" + cchScript + " cchToken=" + cchToken);
     return cchToken > 0;
   }
 
   boolean lookingAtComment() {
-    //log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
+    log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
     // first, find the end of the statement and scan for # (sharp) signs
     char ch;
     int ichEnd = ichToken;
@@ -408,7 +391,7 @@ class Compiler {
   }
 
   boolean lookingAtEndOfLine() {
-    //log("lookingAtEndOfLine");
+    log("lookingAtEndOfLine");
     if (ichToken == cchScript)
       return true;
     int ichT = ichToken;
@@ -620,9 +603,6 @@ class Compiler {
     case ',':
     case '*':
     case '-':
-    case '{':
-    case '}':
-    case '$':
     case '[':
     case ']':
     case '+':
@@ -697,9 +677,6 @@ class Compiler {
   private boolean commaExpected() {
     return compileError("comma expected");
   }
-  private boolean commaOrCloseExpected() {
-    return compileError("comma or right parenthesis expected");
-  }
   private boolean stringExpected() {
     return compileError("string expected");
   }
@@ -717,11 +694,6 @@ class Compiler {
   private boolean integerExpected() {
     return compileError("integer expected");
   }
-
-  private boolean nonnegativeIntegerExpected() {
-    return compileError("nonnegative integer expected");
-  }
-
   /*
   private boolean numberExpected() {
     return compileError("number expected");
@@ -766,13 +738,12 @@ class Compiler {
 
   private boolean compileCommand(Vector ltoken) {
     Token tokenCommand = (Token)ltoken.firstElement();
-    //System.out.println(tokenCommand + script);
     int tokCommand = tokenCommand.tok;
-    int size = ltoken.size();
     if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1 &&
-        size == 1)
+        ltoken.size() == 1)
       ltoken.addElement(Token.tokenOn);
     if (tokCommand == Token.set) {
+      int size = ltoken.size();
       if (size < 2)
         return badArgumentCount();
       /*
@@ -784,17 +755,10 @@ class Compiler {
     }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
-    int tok = (size == 1 ? Token.nada : atokenCommand[1].tok);
-    if (logMessages) {
-      for (int i = 0; i < atokenCommand.length; i++)
-        System.out.println(i+": "+atokenCommand[i]);
-    }
-    if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
-      return false;
-    if (tok == Token.leftbrace || tok == Token.dollarsign) 
-      return true;    // $ or { at beginning disallow expression checking
     if ((tokCommand & (Token.expressionCommand|Token.embeddedExpression)) != 0
         && !compileExpression())
+      return false;
+    if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;
     if ((tokenCommand.intValue & Token.varArgCount) == 0 &&
         (tokenCommand.intValue & 0x0F) + 1 != atokenCommand.length)
@@ -823,7 +787,6 @@ class Compiler {
 
     clausePrimitive  ::= clauseComparator |
                          clauseWithin |
-                         clauseConnected |  // RMH 3/06
                          clauseResidueSpec |
                          none | all |
                          ( clauseOr )
@@ -834,13 +797,6 @@ class Compiler {
 
     clauseDistance   ::= integer | decimal
 
-    clauseConnected  ::= CONNECTED ( integer , integer , expression ) |
-                         CONNECTED ( integer , expression ) |
-                         CONNECTED ( integer , integer ) |
-                         CONNECTED ( expression ) |
-                         CONNECTED ( integer ) |
-                         CONNECTED 
-    
     clauseResidueSpec::= { clauseResNameSpec }
                          { clauseResNumSpec }
                          { clauseChainSpec }
@@ -877,25 +833,19 @@ class Compiler {
   */
 
   private boolean compileExpression() {
+    int i = 1;
     int tokCommand = atokenCommand[0].tok;
-    boolean isMultipleOK = ((tokCommand & Token.embeddedExpression) != 0);
-    int expPtr = 1;
     if (tokCommand == Token.define)
-      expPtr = 2;
-    while (expPtr > 0 && expPtr < atokenCommand.length) {
-      if (isMultipleOK)
-        while (expPtr < atokenCommand.length &&
-            atokenCommand[expPtr].tok != Token.leftparen)
-          ++expPtr;
-      // 0 here means OK; -1 means error;
-      // > 0 means pointer to the next expression
-      if (expPtr >= atokenCommand.length 
-          || (expPtr = compileExpression(expPtr)) <= 0)
-        break;
-      if (! isMultipleOK)
-        return endOfExpressionExpected();
+      i = 2;
+    else if ((tokCommand & Token.embeddedExpression) != 0) {
+      // look for the open parenthesis
+      while (i < atokenCommand.length &&
+             atokenCommand[i].tok != Token.leftparen)
+        ++i;
     }
-    return (expPtr == atokenCommand.length || expPtr == 0);
+    if (i >= atokenCommand.length)
+      return true;
+    return compileExpression(i);
   }
 
   Vector ltokenPostfix = null;
@@ -903,14 +853,11 @@ class Compiler {
   int itokenInfix;
                   
   boolean addTokenToPostfix(Token token) {
-    if (logMessages)
-      log("addTokenToPostfix" + token);
     ltokenPostfix.addElement(token);
     return true;
   }
 
-  int compileExpression(int itoken) {
-    int expPtr = 0;
+  boolean compileExpression(int itoken) {
     ltokenPostfix = new Vector();
     for (int i = 0; i < itoken; ++i)
       addTokenToPostfix(atokenCommand[i]);
@@ -919,41 +866,30 @@ class Compiler {
 
     addTokenToPostfix(Token.tokenExpressionBegin);
     if (! clauseOr())
-      return -1;
+      return false;
     addTokenToPostfix(Token.tokenExpressionEnd);
     if (itokenInfix != atokenInfix.length) {
       /*
       System.out.println("itokenInfix=" + itokenInfix + " atokenInfix.length="
                          + atokenInfix.length);
-      for (int i = 0; i < atokenInfix.length; ++i) 
+      for (int i = 0; i < atokenInfix.length; ++i) {
         System.out.println("" + i + ":" + atokenInfix[i]);
+      }
       */
-      //not a problem! 
-      expPtr = ltokenPostfix.size();
-      for (int i = itokenInfix; i < atokenInfix.length; ++i)
-        addTokenToPostfix(atokenCommand[i]);
+      return endOfExpressionExpected();
     }
     atokenCommand = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenCommand);
-    return expPtr;
+    return true;
   }
 
-  int savedPtr;
-  void savePtr() {
-    savedPtr = itokenInfix;
-  }
-  
-  void restorePtr() {
-    itokenInfix = savedPtr;
-  }
-  
   Token tokenNext() {
     if (itokenInfix == atokenInfix.length)
       return null;
     return atokenInfix[itokenInfix++];
   }
 
-  boolean tokenNext(int tok) {
+  boolean isNextToken(int tok) {
     Token token = tokenNext();
     return (token != null && token.tok == tok);
   }
@@ -1009,8 +945,6 @@ class Compiler {
     switch (tok) {
     case Token.within:
       return clauseWithin();
-    case Token.connected:
-      return clauseConnected();
     case Token.substructure:
       return clauseSubstructure();
     case Token.hyphen: // selecting a negative residue spec
@@ -1023,8 +957,7 @@ class Compiler {
     case Token.y:
     case Token.z:
     case Token.colon:
-      if (clauseResidueSpec())
-        return true;
+      return clauseResidueSpec();
     default:
       if ((tok & Token.atomproperty) == Token.atomproperty)
         return clauseComparator();
@@ -1038,57 +971,11 @@ class Compiler {
       tokenNext();
       if (! clauseOr())
           return false;
-      if (! tokenNext(Token.rightparen))
+      if (! isNextToken(Token.rightparen))
         return rightParenthesisExpected();
       return true;
     }
     return unrecognizedExpressionToken();
-  }
-
-  boolean drawObjectOrCoordinate() {
-    System.out.println("drawObjectOrCoord" + tokPeek());
-    Point3f pt = new Point3f();
-    Token token = tokenNext();
-    if (token.tok != Token.leftsquare)
-      return false;
-    addTokenToPostfix(token);  // [
-    token = tokenNext();
-    if (token.tok != Token.integer && token.tok != Token.decimal ) {
-      if (token.tok == Token.identifier) {
-        addTokenToPostfix(token); 
-        if ((token = tokenNext()).tok == Token.rightsquare) {
-          addTokenToPostfix(token); 
-          return true;
-        }
-      }
-      return false;
-    }
-    pt.x = floatValue(token);
-    if ((token = tokenNext()).tok == Token.opOr)
-      token = tokenNext();
-    if (token.tok != Token.integer && token.tok != Token.decimal )
-      return false;
-    pt.y = floatValue(token);
-    if ((token = tokenNext()).tok == Token.opOr)
-      token = tokenNext();
-    if (token.tok != Token.integer && token.tok != Token.decimal )
-      return false;
-    pt.z = floatValue(token);
-    addTokenToPostfix(new Token(Token.point3f, pt));
-    if ((token = tokenNext()).tok != Token.rightsquare)
-      return false;
-    addTokenToPostfix(token);  // ]
-    return true;
-  }
-  
-  float floatValue(Token token) {
-    switch (token.tok) {
-    case Token.integer:
-      return token.intValue;
-    case Token.decimal:
-      return  ((Float) token.value).floatValue();
-    }
-    return 0;
   }
 
   boolean clauseComparator() {
@@ -1111,7 +998,7 @@ class Compiler {
 
   boolean clauseWithin() {
     tokenNext();                             // WITHIN
-    if (! tokenNext(Token.leftparen))  // (
+    if (! isNextToken(Token.leftparen))  // (
       return leftParenthesisExpected();
     Object distance;
     Token tokenDistance = tokenNext();       // distance
@@ -1130,75 +1017,23 @@ class Compiler {
     default:
       return numberOrKeywordExpected();
     }
-    if (! tokenNext(Token.opOr))       // ,
+    if (! isNextToken(Token.opOr))       // ,
       return commaExpected();
     if (! clauseOr())                        // *expression*
       return false;
-    if (! tokenNext(Token.rightparen)) // )T
+    if (! isNextToken(Token.rightparen)) // )T
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.within, distance));
   }
 
-  boolean clauseConnected() {
-    int min = 1;
-    int max = 100;
-    int tok;
-    boolean iHaveExpression = false;
-    Token token;
-    tokenNext();                     // Connected
-    while (!iHaveExpression) {
-      if (tokPeek() != Token.leftparen)
-        break;      
-      tokenNext();                     // (
-      tok = tokPeek();
-      if (tok == Token.integer) {
-        token = tokenNext();             // minimum # of bonds (optional)
-        if (token.intValue < 0)
-          nonnegativeIntegerExpected();
-        min = token.intValue;
-        token = tokenNext();
-        tok = token.tok;
-        if (tok == Token.rightparen) // )
-          break;
-        if (tok != Token.opOr)   // ,
-          commaOrCloseExpected();
-        tok = tokPeek();
-      }
-      if (tok == Token.integer) {
-        token = tokenNext();             // maximum # of bonds (optional)
-        if (token.intValue < 0)
-          nonnegativeIntegerExpected();
-        max = token.intValue;
-        token = tokenNext();
-        tok = token.tok;
-        if (tok == Token.rightparen) // )
-          break;
-        if (tok != Token.opOr)   // ,
-          return commaOrCloseExpected();
-        tok = tokPeek();
-      }
-      if (tok == Token.rightparen) // )
-        break;
-      if (!clauseOr()) // *expression*
-        return false;
-      if (!tokenNext(Token.rightparen)) // )T
-        return rightParenthesisExpected();
-      iHaveExpression = true;
-    }
-    if (! iHaveExpression)
-      addTokenToPostfix(new Token(Token.all));
-    return addTokenToPostfix(new Token(Token.connected, min,
-        new Integer(max)));
-  }
-
   boolean clauseSubstructure() {
     tokenNext();                             // substructure
-    if (! tokenNext(Token.leftparen))  // (
+    if (! isNextToken(Token.leftparen))  // (
       return leftParenthesisExpected();
     Token tokenSmiles = tokenNext();         // "smiles"
     if (tokenSmiles == null || tokenSmiles.tok != Token.string)
       return stringExpected();
-    if (! tokenNext(Token.rightparen)) // )
+    if (! isNextToken(Token.rightparen)) // )
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.substructure, tokenSmiles.value));
   }
@@ -1319,8 +1154,6 @@ class Compiler {
           return false;
         tok = tokenT.tok;
       }
-      if (tok != Token.rightsquare)
-        return false;
       if (strSpec == "")
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
@@ -1329,7 +1162,7 @@ class Compiler {
         generateResidueSpecCode(new Token(Token.spec_resid, groupID, strSpec));
       else
         generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
-      return true;
+      return tok == Token.rightsquare;
     }
     return processIdentifier(tokenT);
   }
@@ -1539,7 +1372,7 @@ class Compiler {
   }
 
   boolean clauseAtomSpec() {
-    if (! tokenNext(Token.dot))
+    if (! isNextToken(Token.dot))
       return invalidAtomSpecification();
     Token tokenAtomSpec = tokenNext();
     if (tokenAtomSpec == null)
@@ -1574,8 +1407,6 @@ class Compiler {
           return false;
         atokenCommand = atokenNew;
         break;
-      } else if (token.tok == Token.dollarsign) {
-        i++; // skip identifier
       } else if (token.tok == Token.identifier) {
         String id = (String)token.value;
         int argb = Graphics3D.getArgbFromString(id);

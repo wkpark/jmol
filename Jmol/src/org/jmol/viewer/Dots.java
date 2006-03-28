@@ -146,7 +146,6 @@ class Dots extends Shape {
       diameterP = 2 * radiusP;
     }
     int atomCount = frame.atomCount;
-    boolean isVisible = (mad != 0);
     // always delete old surfaces for selected atoms
     if (dotsConvexMaps != null) {
       for (int i = atomCount; --i >= 0; )
@@ -162,15 +161,14 @@ class Dots extends Shape {
         dotsConvexMaps = new int[atomCount][];
         colixesConvex = new short[atomCount];
       }
-      for (int i = atomCount; --i >= 0; ) {
+      for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          setAtomI(i, isVisible);
+          setAtomI(i);
           getNeighbors(bsSelected);
           calcConvexMap();
           calcTori();
           calcCavities();
         }
-      }
     }
     if (dotsConvexMaps == null)
       dotsConvexMax = 0;
@@ -194,8 +192,6 @@ class Dots extends Shape {
     }
     // no translucency for dots
     if ("colorConvex" == propertyName) {
-      if(colixesConvex == null) 
-        return;
       System.out.println("Dots.setProperty('colorConvex')");
       short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0; )
@@ -252,10 +248,9 @@ class Dots extends Shape {
             : atom.getBondingRadiusFloat());
   }
 
-  void setAtomI(int indexI, boolean isVisible) {
+  void setAtomI(int indexI) {
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
-    atomI.setShapeVisibility(myVisibilityFlag,isVisible);
     centerI = atomI.point3f;
     radiusI = getAppropriateRadius(atomI);
     radiiIP2 = radiusI + radiusP;
@@ -812,13 +807,5 @@ class Dots extends Shape {
   final static void clearBitmap(int[] bitmap) {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
-  }
-
-  void setModelClickability() {
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = frame.atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
-    }
   }
 }

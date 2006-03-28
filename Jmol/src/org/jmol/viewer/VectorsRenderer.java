@@ -39,11 +39,11 @@ class VectorsRenderer extends ShapeRenderer {
     if (mads == null)
       return;
     short[] colixes = vectors.colixes;
+    int displayModelIndex = this.displayModelIndex;
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      System.out.println("vector render"+atom.shapeVisibilityFlags + " " + vectors.myVisibilityFlag);
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) ==0
-          || (atom.shapeVisibilityFlags & vectors.myVisibilityFlag) ==0)
+      if (mads[i] == 0 ||
+          (displayModelIndex >= 0 && atom.modelIndex != displayModelIndex))
         continue;
       Vector3f vibrationVector = atom.getVibrationVector();
       if (vibrationVector == null)

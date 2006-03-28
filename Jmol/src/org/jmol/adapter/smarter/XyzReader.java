@@ -61,13 +61,12 @@ class XyzReader extends AtomSetCollectionReader {
   }
 
   void readAtomSetName(BufferedReader reader) throws Exception {
-    String firstline = reader.readLine().trim();
-    if (firstline.endsWith("#noautobond")) {
-      firstline = firstline.substring(0, firstline.lastIndexOf('#')).trim();
+    String name = reader.readLine().trim();
+    if (name.endsWith("#noautobond")) {
+      name = name.substring(0, name.lastIndexOf('#')).trim();
       atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
     }
-    firstline = checkLineForScript(firstline);
-    atomSetCollection.setAtomSetName(firstline);
+    atomSetCollection.setAtomSetName(name);
   }
 
   final float[] chargeAndOrVector = new float[4];

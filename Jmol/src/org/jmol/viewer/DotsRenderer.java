@@ -61,18 +61,20 @@ class DotsRenderer extends ShapeRenderer {
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     short[] colixesConvex = dots.colixesConvex;
-    int myVisibilityFlag = dots.myVisibilityFlag;
+    int displayModelIndex = this.displayModelIndex;
     for (int i = dots.dotsConvexMax; --i >= 0; ) {
-      Atom atom = atoms[i];
-      if (atom.isShapeVisible(myVisibilityFlag)) 
-        renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i]);
+      int[] map = dotsConvexMaps[i];
+      if (map != null && map != mapNull) {
+        Atom atom = atoms[i];
+        if (displayModelIndex < 0 || displayModelIndex == atom.modelIndex)
+          renderConvex(dots, atom, colixesConvex[i], map);
+      }
     }
     Dots.Torus[] tori = dots.tori;
     for (int i = dots.torusCount; --i >= 0; ) {
       Dots.Torus torus = tori[i];
-      Atom atom = atoms[torus.ixI];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
-          && (atom.shapeVisibilityFlags & dots.myVisibilityFlag) != 0)
+      if (displayModelIndex < 0 ||
+          displayModelIndex == atoms[torus.ixI].modelIndex)
         renderTorus(torus, atoms, colixesConvex, dotsConvexMaps);
     }
     Dots.Cavity[] cavities = dots.cavities;
@@ -82,9 +84,8 @@ class DotsRenderer extends ShapeRenderer {
     }
     for (int i = dots.cavityCount; --i >= 0; ) {
       Dots.Cavity cavity = cavities[i];
-      Atom atom = atoms[cavity.ixI];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
-          && (atom.shapeVisibilityFlags & dots.myVisibilityFlag) != 0)
+      if (displayModelIndex < 0 ||
+          displayModelIndex == atoms[cavity.ixI].modelIndex)
         renderCavity(cavities[i], atoms, colixesConvex, dotsConvexMaps);
     }
   }

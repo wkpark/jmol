@@ -119,7 +119,6 @@ abstract class MouseManager {
 
   void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
-
     if (previousPressedX == x && previousPressedY == y &&
         previousPressedModifiers == modifiers && 
         (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
@@ -140,8 +139,6 @@ abstract class MouseManager {
 
     modifiersWhenPressed = modifiers;
     wasDragged = false;
-
-    viewer.setStatusUserAction("mousePressed: " + modifiers);
 
     switch (modifiers & BUTTON_MODIFIER_MASK) {
       /****************************************************************
@@ -199,7 +196,6 @@ abstract class MouseManager {
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
     // clickCount is not reliable on some platforms
     // so we will just deal with it ourselves
-    //viewer.setStatusUserAction("mouseClicked: " + modifiers);
     clickCount = 1;
     if (previousClickX == x && previousClickY == y &&
         previousClickModifiers == modifiers && 
@@ -228,7 +224,6 @@ abstract class MouseManager {
   }
 
   void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
-    //viewer.setStatusUserAction("mouseSingleClick: " + modifiers);
     if (logMouseEvents)
       System.out.println("mouseSingleClick("+x+","+y+","+modifiers+
                          " nearestAtom=" + nearestAtomIndex);
@@ -238,22 +233,19 @@ abstract class MouseManager {
         viewer.popupMenu(x, y);
         return;
       }
-      viewer.atomPicked(nearestAtomIndex, false);
       if (measurementMode) {
         addToMeasurement(nearestAtomIndex, false);
-      } else if (nearestAtomIndex == -1) 
-        viewer.checkObjectClicked(x, y, false);
+      } else {
+        viewer.atomPicked(nearestAtomIndex, false);
+      }
       break;
     case SHIFT_LEFT:
       viewer.atomPicked(nearestAtomIndex, true);
-      if (nearestAtomIndex == -1)
-        viewer.checkObjectClicked(x, y, true);
       break;
     }
   }
 
   void mouseDoubleClick(int x, int y, int modifiers, int nearestAtomIndex) {
-    //viewer.setStatusUserAction("mouseDoubleClick: " + modifiers);
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       if (measurementMode) {
@@ -290,7 +282,6 @@ abstract class MouseManager {
   }
 
   void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
-    //viewer.setStatusUserAction("mouseSinglePressDrag: " + modifiers);
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       viewer.rotateXYBy(deltaX, deltaY);
@@ -326,7 +317,6 @@ abstract class MouseManager {
   }
 
   void mouseDoublePressDrag(int deltaX, int deltaY, int modifiers) {
-    //viewer.setStatusUserAction("mouseDoublePressDrag: " + modifiers);
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case SHIFT_LEFT:
     case ALT_LEFT:
@@ -446,7 +436,6 @@ mol is a collaboratively developed visualization an    return ROTATE;
   void mouseWheel(long time, int rotation, int modifiers) {
     hoverOff();
     timeCurrent = time;
-    //System.out.println("mouseWheel time:" + time + " rotation:" + rotation + " modifiers:" + modifiers);
     if (rotation == 0)
       return;
     if ((modifiers & BUTTON_MODIFIER_MASK) == 0) {
@@ -477,12 +466,12 @@ mol is a collaboratively developed visualization an    return ROTATE;
   void setAttractiveMeasurementTarget(int atomIndex) {
     if (measurementCountPlusIndices[0] == measurementCount + 1 &&
         measurementCountPlusIndices[measurementCount + 1] == atomIndex) {
-      viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("+atomIndex+")");
+      viewer.refresh();
       return;
     }
     for (int i = measurementCount; i > 0; --i)
       if (measurementCountPlusIndices[i] == atomIndex) {
-        viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("+atomIndex+")");
+        viewer.refresh();
         return;
       }
     int attractiveCount = measurementCount + 1;

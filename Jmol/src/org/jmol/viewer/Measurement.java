@@ -26,7 +26,6 @@ package org.jmol.viewer;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
-import java.util.Vector;
 
 class Measurement {
 
@@ -34,22 +33,12 @@ class Measurement {
   int count;
   int[] countPlusIndices;
   String strMeasurement;
-  float value;
 
   AxisAngle4f aa;
   Point3f pointArc;
   
   Measurement(Frame frame, int[] atomCountPlusIndices) {
     this.frame = frame;
-    setInfo(frame, atomCountPlusIndices, Float.MAX_VALUE);
-  }
-
-  Measurement(Frame frame, int[] atomCountPlusIndices, float value) {
-    this.frame = frame;
-    setInfo(frame, atomCountPlusIndices, value);
-  }   
-
-  void setInfo(Frame frame, int[] atomCountPlusIndices, float value) {
     if (atomCountPlusIndices == null)
       count = 0;
     else {
@@ -57,25 +46,30 @@ class Measurement {
       this.countPlusIndices = new int[count + 1];
       System.arraycopy(atomCountPlusIndices, 0, countPlusIndices, 0, count+1);
     }
-    if (countPlusIndices != null && value == Float.MAX_VALUE) 
-      value = frame.getMeasurement(countPlusIndices);
-    
-    this.value = value;
     formatMeasurement();
   }
 
   void formatMeasurement() {
-    strMeasurement = null;
-    if (value == Float.MAX_VALUE || count == 0) {
-      strMeasurement = null;
+    for (int i = count; --i >= 0; )
+      if (countPlusIndices[i+1] < 0) {
+        strMeasurement = null;
+        return;
+      }
+    if (count < 2)
       return;
-    }
     switch (count) {
     case 2:
-      strMeasurement = formatDistance(value);
+      float distance = frame.getDistance(countPlusIndices[1],
+                                         countPlusIndices[2]);
+      strMeasurement = formatDistance(distance);
       break;
     case 3:
-      if (value == 180) {
+      float degrees = frame.getAngle(countPlusIndices[1],
+                                     countPlusIndices[2],
+                                     countPlusIndices[3]);
+      strMeasurement = formatAngle(degrees);
+
+      if (degrees == 180) {
         aa = null;
         pointArc = null;
       } else {
@@ -97,8 +91,15 @@ class Measurement {
         vectorBA.scale(0.5f);
         pointArc = new Point3f(vectorBA);
       }
+
+      break;
     case 4:
-      strMeasurement = formatAngle(value);
+      float torsion = frame.getTorsion(countPlusIndices[1],
+                                       countPlusIndices[2],
+                                       countPlusIndices[3],
+                                       countPlusIndices[4]);
+
+      strMeasurement = formatAngle(torsion);
       break;
     default:
       System.out.println("Invalid count to measurement shape:" + count);
@@ -148,7 +149,7 @@ class Measurement {
               ((atomCountPlusIndices[1] == this.countPlusIndices[1] &&
                 atomCountPlusIndices[3] == this.countPlusIndices[3]) ||
                (atomCountPlusIndices[1] == this.countPlusIndices[3] &&
-                atomCountPlusIndices[3] == this.countPlusIndices[1])));    
+                atomCountPlusIndices[3] == this.countPlusIndices[1])));
     return ((atomCountPlusIndices[1] == this.countPlusIndices[1] &&
              atomCountPlusIndices[2] == this.countPlusIndices[2] &&
              atomCountPlusIndices[3] == this.countPlusIndices[3] &&
@@ -205,13 +206,6 @@ class Measurement {
 
   static float toDegrees(float angrad) {
     return angrad * 180 / (float)Math.PI;
-  }
-
-  Vector toVector() {
-    Vector V = new Vector();
-    for (int i = 0; i < count + 1; i++ ) V.add(new Integer(countPlusIndices[i]));
-    V.add(strMeasurement);
-    return V;  
   }
 }
 

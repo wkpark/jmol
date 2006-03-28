@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -35,20 +34,13 @@ class Stars extends Shape {
   short[] colixes;
 
   void setSize(int size, BitSet bsSelected) {
-    
-    
     Atom[] atoms = frame.atoms;
-    boolean isVisible = (size != 0);
-    int bsLength = bsSelected.size();
-    if (mads == null && bsLength > 0)
-      mads = new short[frame.atomCount];
-    for (int i = frame.atomCount; --i >= 0; ) {
+    for (int i = frame.atomCount; --i >= 0; )
       if (bsSelected.get(i)) {
-        Atom atom = atoms[i];
-        atom.setShapeVisibility(myVisibilityFlag,isVisible);
-        mads[i] = atom.convertEncodedMad(size);
+        if (mads == null)
+          mads = new short[frame.atomCount];
+        mads[i] = atoms[i].convertEncodedMad(size);
       }
-    }
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -77,15 +69,4 @@ class Stars extends Shape {
       return;
     }
   }
-  
-  void setModelClickability() {
-    if (mads == null)
-      return;
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = frame.atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
-    }
-  }
-  
 }

@@ -62,7 +62,7 @@ class PatternMatcher {
    * 
    * @param viewer Jmol viewer.
    */
-  PatternMatcher(Viewer viewer) {
+  public PatternMatcher(Viewer viewer) {
     this.frame = viewer.getFrame();
     this.atomCount = viewer.getAtomCount(); 
   }
@@ -74,7 +74,7 @@ class PatternMatcher {
    * @return BitSet Array indicating which atoms match the pattern.
    * @throws InvalidSmilesException Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
-  BitSet getSubstructureSet(String smiles) throws InvalidSmilesException {
+  public BitSet getSubstructureSet(String smiles) throws InvalidSmilesException {
     SmilesParser parser = new SmilesParser();
     SmilesMolecule pattern = parser.parseSmiles(smiles);
     return getSubstructureSet(pattern);
@@ -86,7 +86,7 @@ class PatternMatcher {
    * @param pattern SMILES pattern.
    * @return BitSet Array indicating which atoms match the pattern.
    */
-  BitSet getSubstructureSet(SmilesMolecule pattern) {
+  public BitSet getSubstructureSet(SmilesMolecule pattern) {
     BitSet bsSubstructure = new BitSet();
     searchMatch(bsSubstructure, pattern, 0);
     return bsSubstructure;

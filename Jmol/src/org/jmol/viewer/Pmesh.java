@@ -30,24 +30,16 @@ import javax.vecmath.Point3f;
 
 class Pmesh extends MeshCollection {
 
-  boolean isOnePerLine = false;
-  
   void setProperty(String propertyName, Object value, BitSet bs) {
-    isOnePerLine = false;
-    if ("bufferedReaderOnePerLine" == propertyName) {
-      propertyName = "bufferedReader";
-      isOnePerLine = true;
-    }  
-    if ("bufferedReader" == propertyName) {
+    if ("bufferedreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
       if (currentMesh == null)
         allocMesh(null);
-      currentMesh.clear("pmesh");
-      isValid = readPmesh(br);
-      if(isValid) {
-        currentMesh.initialize();
-        currentMesh.visible = true;
-      }
+      currentMesh.clear();
+      readPmesh(br);
+      currentMesh.initialize();
+      currentMesh.visible = true;
+      return;
     }
     super.setProperty(propertyName, value, bs);
   }
@@ -59,7 +51,7 @@ class Pmesh extends MeshCollection {
    *
    */
 
-  boolean readPmesh(BufferedReader br) {
+  void readPmesh(BufferedReader br) {
     //    System.out.println("Pmesh.readPmesh(" + br + ")");
     try {
       readVertexCount(br);
@@ -71,30 +63,16 @@ class Pmesh extends MeshCollection {
       readPolygonIndexes(br);
       //      System.out.println("polygonIndexes read");
     } catch (Exception e) {
-//      System.out.println("Pmesh.readPmesh exception:" + e);
-      viewer.scriptStatus("pmesh ERROR: read exception: " + e);
-      return false;
+      System.out.println("Pmesh.readPmesh exception:" + e);
     }
-    return true;
   }
 
   void readVertexCount(BufferedReader br) throws Exception {
-    currentMesh.setVertexCount(0);
-    int n = parseInt(br.readLine());
-    currentMesh.setVertexCount(n);
+    currentMesh.setVertexCount(parseInt(br.readLine()));
   }
 
   void readVertices(BufferedReader br) throws Exception {
-    if (currentMesh.vertexCount <= 0)
-      return;
-    if (isOnePerLine) {
-      for (int i = 0; i < currentMesh.vertexCount; ++i) {
-        float x = parseFloat(br.readLine());
-        float y = parseFloat(br.readLine());
-        float z = parseFloat(br.readLine());
-        currentMesh.vertices[i] = new Point3f(x, y, z);
-      }
-    } else {
+    if (currentMesh.vertexCount > 0) {
       for (int i = 0; i < currentMesh.vertexCount; ++i) {
         String line = br.readLine();
         float x = parseFloat(line);
@@ -118,23 +96,15 @@ class Pmesh extends MeshCollection {
 
   int[] readPolygon(BufferedReader br) throws Exception {
     int vertexIndexCount = parseInt(br.readLine());
-    if (vertexIndexCount < 2) {
-      viewer.scriptStatus("pmesh ERROR: each polygon must have at least two verticies indicated");
-      isValid = false;
+    if (vertexIndexCount < 4)
       return null;
-    }
     int vertexCount = vertexIndexCount - 1;
-    int nVertex = (vertexCount < 3 ? 3 : vertexCount);
-    int[] vertices = new int[nVertex];
+    int[] vertices = new int[vertexCount];
     for (int i = 0; i < vertexCount; ++i)
       vertices[i] = parseInt(br.readLine());
-    for (int i = vertexCount; i < nVertex; ++i)
-      vertices[i] = vertices[i - 1];
     int extraVertex = parseInt(br.readLine());
     if (extraVertex != vertices[0]) {
-//      System.out.println("?Que? polygon is not complete");
-      viewer.scriptStatus("pmesh Error: last polygon point reference (" + extraVertex + ") is not the same as the first (" + vertices[0] + ")");
-      isValid = false;
+      System.out.println("?Que? polygon is not complete");
       throw new NullPointerException();
     }
     return vertices;

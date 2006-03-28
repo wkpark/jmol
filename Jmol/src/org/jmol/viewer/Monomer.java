@@ -23,8 +23,6 @@
  */
 package org.jmol.viewer;
 
-import java.util.Hashtable;
-
 import javax.vecmath.Point3f;
 
 abstract class Monomer extends Group {
@@ -215,35 +213,4 @@ abstract class Monomer extends Group {
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
   }
-
-  Hashtable getMyInfo() {
-    Hashtable info = new Hashtable();
-    info.put("seqcode",getSeqcodeString());
-    info.put("atomInfo1", chain.frame.atoms[firstAtomIndex].getInfo());
-    info.put("atomInfo2", chain.frame.atoms[lastAtomIndex].getInfo());
-    info.put("_apt1", new Integer(firstAtomIndex));
-    info.put("_apt2", new Integer(lastAtomIndex));
-    info.put("shapeVisibilityFlags", new Integer(shapeVisibilityFlags));
-    ProteinStructure structure = getProteinStructure();
-    if(structure != null)info.put("structure", getStructureTypeName(structure.type));
-    return info;
-  }
-  
-  String getStructureTypeName(byte type) {
-    switch(type) {
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-      return "helix";
-    case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-      return "sheet";
-    case JmolConstants.PROTEIN_STRUCTURE_TURN:
-      return "turn";
-    case JmolConstants.PROTEIN_STRUCTURE_DNA:
-      return "DNA";
-    case JmolConstants.PROTEIN_STRUCTURE_RNA:
-      return "RNA";
-    default:
-      return type+"?";
-    }
-  }
-  
 }

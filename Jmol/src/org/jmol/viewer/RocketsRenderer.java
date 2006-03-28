@@ -38,10 +38,8 @@ class RocketsRenderer extends MpsRenderer {
   int diameterBeg, diameterMid, diameterEnd;
 
   Rockets cartoon;
-  int myVisibilityFlag;
-  
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
+
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
     render1Chain(cchain.polymer, cchain.mads, cchain.colixes);
   }
@@ -52,7 +50,7 @@ class RocketsRenderer extends MpsRenderer {
     initializeChain((AminoPolymer)polymer);
     clearPending();
     for (int i = 0; i < monomerCount; ++i) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
+      if (mads[i] == 0)
         continue;
       Monomer monomer = monomers[i];
       short colix = Graphics3D.inheritColix(colixes[i],

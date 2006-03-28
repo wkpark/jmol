@@ -68,11 +68,6 @@ class StyleManager {
     this.showHydrogens = showHydrogens;
   }
 
-  int defaultVectorMad = 0;
-  void setDefaultVectorMad(int mad) {
-    this.defaultVectorMad = mad;
-  }
-
   boolean showVectors = true;
   void setShowVectors(boolean showVectors) {
     this.showVectors = showVectors;
@@ -92,11 +87,9 @@ class StyleManager {
   boolean setMeasureDistanceUnits(String units) {
     if (units.equalsIgnoreCase("angstroms"))
       measureDistanceUnits = "angstroms";
-    else if (units.equalsIgnoreCase("nanometers") ||
-        units.equalsIgnoreCase("nm"))
+    else if (units.equalsIgnoreCase("nanometers"))
       measureDistanceUnits = "nanometers";
-    else if (units.equalsIgnoreCase("picometers") ||
-        units.equalsIgnoreCase("pm"))
+    else if (units.equalsIgnoreCase("picometers"))
       measureDistanceUnits = "picometers";
     else
       return false;
@@ -108,6 +101,11 @@ class StyleManager {
     propertyStyleString = s;
   }
 
+  boolean wireframeRotation = false;
+  void setWireframeRotation(boolean wireframeRotation) {
+    this.wireframeRotation = wireframeRotation;
+  }
+
   boolean zeroBasedXyzRasmol = false;
   void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
     this.zeroBasedXyzRasmol = zeroBasedXyzRasmol;
@@ -116,6 +114,7 @@ class StyleManager {
   void setCommonDefaults() {
     viewer.zoomToPercent(100);
     viewer.setPercentVdwAtom(20);
+    viewer.setWireframeRotation(false);
     viewer.setPerspectiveDepth(true);
     viewer.setBondTolerance(0.45f);
     viewer.setMinBondDistance(0.40f);
@@ -193,23 +192,5 @@ class StyleManager {
       formatter = formatters[decimalDigits] =
         new DecimalFormat(formattingStrings[decimalDigits]);
     return formatter.format(value);
-  }
-  
-  String getStandardLabelFormat() {
-    // from the RasMol 2.6b2 manual: RasMol uses the label
-    // "%n%r:%c.%a" if the molecule contains more than one chain:
-    // "%e%i" if the molecule has only a single residue (a small molecule) and
-    // "%n%r.%a" otherwise.
-    String strLabel;
-    int modelCount = viewer.getModelCount();
-    if (viewer.getChainCount() > modelCount)
-      strLabel = "[%n]%r:%c.%a";
-    else if (viewer.getGroupCount() <= modelCount)
-      strLabel = "%e%i";
-    else
-      strLabel = "[%n]%r.%a";
-    if (viewer.getModelCount() > 1)
-      strLabel += "/%M";
-    return strLabel;
   }
 }

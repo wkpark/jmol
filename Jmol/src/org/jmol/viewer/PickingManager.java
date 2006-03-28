@@ -24,7 +24,6 @@
 package org.jmol.viewer;
 
 import java.util.BitSet;
-import org.jmol.i18n.GT;
 
 class PickingManager {
 
@@ -44,7 +43,6 @@ class PickingManager {
   }
 
   void atomPicked(int atomIndex, boolean shiftKey) {
-    String value;
     if (atomIndex == -1)
       return;
     Frame frame = viewer.getFrame();
@@ -52,7 +50,7 @@ class PickingManager {
     case JmolConstants.PICKING_OFF:
       break;
     case JmolConstants.PICKING_IDENT:
-      viewer.setStatusAtomPicked(atomIndex, viewer.getAtomInfo(atomIndex));
+      viewer.notifyAtomPicked(atomIndex);
       break;
     case JmolConstants.PICKING_DISTANCE:
       if (queuedAtomCount >= 2)
@@ -62,12 +60,11 @@ class PickingManager {
         break;
       float distance = frame.getDistance(queuedAtomIndexes[0],
                                          atomIndex);
-      value = "Distance "
-      + viewer.getAtomInfo(queuedAtomIndexes[0])
-      +  " - "
-      + viewer.getAtomInfo(queuedAtomIndexes[1])
-      + " : " + distance;
-    viewer.setStatusNewPickingModeMeasurement(2,value);
+      viewer.scriptStatus("Distance " +
+                          viewer.getAtomInfo(queuedAtomIndexes[0]) +
+                          " - " +
+                          viewer.getAtomInfo(queuedAtomIndexes[1]) +
+                          " : " + distance);
       break;
     case JmolConstants.PICKING_ANGLE:
       if (queuedAtomCount >= 3)
@@ -78,14 +75,13 @@ class PickingManager {
       float angle = frame.getAngle(queuedAtomIndexes[0],
                                    queuedAtomIndexes[1],
                                    atomIndex);
-      value = "Angle " +
-      viewer.getAtomInfo(queuedAtomIndexes[0]) +
-      " - " +
-      viewer.getAtomInfo(queuedAtomIndexes[1]) +
-      " - " +
-      viewer.getAtomInfo(queuedAtomIndexes[2]) +
-      " : " + angle;
-      viewer.setStatusNewPickingModeMeasurement(3,value);
+      viewer.scriptStatus("Angle " +
+                          viewer.getAtomInfo(queuedAtomIndexes[0]) +
+                          " - " +
+                          viewer.getAtomInfo(queuedAtomIndexes[1]) +
+                          " - " +
+                          viewer.getAtomInfo(queuedAtomIndexes[2]) +
+                          " : " + angle);
       break;
     case JmolConstants.PICKING_TORSION:
       if (queuedAtomCount >= 4)
@@ -97,16 +93,15 @@ class PickingManager {
                                        queuedAtomIndexes[1],
                                        queuedAtomIndexes[2],
                                        atomIndex);
-      value = "Torsion " +
-      viewer.getAtomInfo(queuedAtomIndexes[0]) +
-      " - " +
-      viewer.getAtomInfo(queuedAtomIndexes[1]) +
-      " - " +
-      viewer.getAtomInfo(queuedAtomIndexes[2]) +
-      " - " + 
-      viewer.getAtomInfo(queuedAtomIndexes[3]) +
-      " : " + torsion;
-      viewer.setStatusNewPickingModeMeasurement(4, value);
+      viewer.scriptStatus("Torsion " +
+                          viewer.getAtomInfo(queuedAtomIndexes[0]) +
+                          " - " +
+                          viewer.getAtomInfo(queuedAtomIndexes[1]) +
+                          " - " +
+                          viewer.getAtomInfo(queuedAtomIndexes[2]) +
+                          " - " + 
+                          viewer.getAtomInfo(queuedAtomIndexes[3]) +
+                          " : " + torsion);
       break;
     case JmolConstants.PICKING_MONITOR:
       if (queuedAtomCount >= 2)
@@ -123,9 +118,7 @@ class PickingManager {
       viewer.togglePickingLabel(atomIndex);
       break;
     case JmolConstants.PICKING_CENTER:
-      BitSet bs = new BitSet();
-      bs.set(atomIndex);
-      viewer.setCenterBitSet(bs, false);
+      viewer.setCenter(frame.getAtomPoint3f(atomIndex));
       break;
     case JmolConstants.PICKING_SELECT_ATOM:
       if (shiftKey | chimeStylePicking)
@@ -152,29 +145,11 @@ class PickingManager {
       viewer.clearClickCount();
       reportSelection();
       break;
-    case JmolConstants.PICKING_SPIN:
-      if (viewer.getSpinOn()) {
-        viewer.setSpinOn(false);
-        break;
-      }
-      if (queuedAtomCount >= 2)
-        queuedAtomCount = 0;
-      if (queuedAtomCount == 1 && queuedAtomIndexes[0] == atomIndex)
-        break;
-      queueAtom(atomIndex);
-      if (queuedAtomCount < 2) {
-        viewer.setSpinOn(false);
-        viewer.scriptStatus(GT._("pick " 
-            + (queuedAtomCount == 1 ? "one more" : "two ") 
-            + " atoms in order to spin the model around an axis"));
-        break;
-      }
-      viewer.startSpinningAxis(queuedAtomIndexes[0], atomIndex, false/*isClockwise*/);
     }
   }
 
   void reportSelection() {
-    viewer.scriptStatus("" + viewer.getSelectionCount() + " " + GT._("atoms selected"));
+    viewer.scriptStatus("" + viewer.getSelectionCount() + " atoms selected");
   }
 
   void setPickingMode(int pickingMode) {
@@ -187,7 +162,7 @@ class PickingManager {
 
   void queueAtom(int atomIndex) {
     queuedAtomIndexes[queuedAtomCount++] = atomIndex;
-    viewer.setStatusAtomPicked(atomIndex, "Atom #" + queuedAtomCount + ":" +
+    viewer.scriptStatus("Atom #" + queuedAtomCount + ":" +
                         viewer.getAtomInfo(atomIndex));
   }
 }

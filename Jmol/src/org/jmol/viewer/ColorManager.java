@@ -159,18 +159,16 @@ class ColorManager {
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
     } else if ("amino" == palette) {
       index = atom.getGroupID();
-      if (index < 0 || index >= JmolConstants.GROUPID_AMINO_MAX)
+      if (index >= JmolConstants.GROUPID_AMINO_MAX)
         index = 0;
       argb = JmolConstants.argbsAmino[index];
     } else if ("shapely" == palette) {
       index = atom.getGroupID();
-      if (index < 0 || index >= JmolConstants.GROUPID_SHAPELY_MAX)
+      if (index >= JmolConstants.GROUPID_SHAPELY_MAX)
         index = 0;
       argb = JmolConstants.argbsShapely[index];
     } else if ("chain" == palette) {
       int chain = atom.getChainID() & 0x1F;
-      if (chain < 0)
-        chain = 0;
       if (chain >= JmolConstants.argbsChainAtom.length)
         chain = chain % JmolConstants.argbsChainAtom.length;
       argb = (atom.isHetero()
@@ -245,7 +243,7 @@ class ColorManager {
 
   private void flushCaches() {
     g3d.flushShadesAndImageCaches();
-    viewer.refresh(0, "ColorManager:flushCaches()");
+    viewer.refresh();
   }
 
   void setSpecular(boolean specular) {

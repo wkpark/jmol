@@ -92,8 +92,6 @@ class Token {
   // so, just delete the set command from the token list
   // but not for hbonds nor ssbonds
   final static int setspecial        = (1 << 22);
-  final static int coordinate        = (1 << 23);
-  final static int objectid          = (1 << 24);
 
   // These are unrelated
   final static int varArgCount       = (1 << 4);
@@ -121,8 +119,8 @@ class Token {
   final static int label        = command | 15 | specialstring;
   final static int load         = command | 16 | specialstring;
   final static int molecule     = command | 17;
-  final static int monitor      = command | 18 | setparam | bool | embeddedExpression;
-  final static int pause        = command | 19 | misc;
+  final static int monitor      = command | 18 | setparam | bool;
+  final static int pause        = command | 19;
   final static int print        = command | 20;
   final static int quit         = command | 21;
   final static int refresh      = command | 22;
@@ -130,7 +128,7 @@ class Token {
   final static int reset        = command | 24;
   final static int restrict     = command | 25 | expressionCommand;
   final static int ribbon       = command | 26 | bool;
-  final static int rotate       = command | 27 | bool | negnums | embeddedExpression;
+  final static int rotate       = command | 27 | bool | negnums;
   final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expressionCommand;
@@ -157,7 +155,7 @@ class Token {
   final static int loop         = command | 61;
   final static int move         = command | 62 | negnums;
   final static int view         = command | 63;
-  final static int spin         = command | 64 | setparam | showparam | bool | negnums | embeddedExpression;
+  final static int spin         = command | 64 | setparam | showparam | bool;
   final static int list         = command | 65 | showparam;
   final static int display3d    = command | 66;
   final static int animation    = command | 67;
@@ -178,8 +176,6 @@ class Token {
   final static int polyhedra    = command | 92 | embeddedExpression;
   final static int centerAt     = command | 93;
   final static int isosurface   = command | 94;
-  final static int draw         = command | 95 | embeddedExpression;
-  final static int getproperty  = command | 96;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -277,11 +273,6 @@ class Token {
   final static int colon        = expression | 14;
   final static int slash        = expression | 15;
   final static int substructure = expression | 16;
-  final static int leftbrace    = coordinate | 17;
-  final static int rightbrace   = coordinate | 18;
-  final static int dollarsign   = objectid   | 19;
-  final static int connected    = expression | 20;
-  
 
   // miguel 2005 01 01
   // these are used to demark the beginning and end of expressions
@@ -369,16 +360,7 @@ class Token {
   final static int nofill       = misc | 53;
   final static int vanderwaals  = misc | 54;
   final static int ionic        = misc | 55;
-  final static int resume       = misc | 56;
-  final static int play         = misc | 57;
-  final static int next         = misc | 58;
-  final static int prev         = misc | 59;
-  final static int rewind       = misc | 60;
-  final static int playrev      = misc | 61;
-  final static int range        = misc | 62;
-  final static int point3f      = misc | 63;
-  
- 
+
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
   final static int hydrogen    = predefinedset |  2 | setparam;
@@ -392,7 +374,6 @@ class Token {
   final static int purine      = predefinedset | 10;
   final static int pyrimidine  = predefinedset | 11;
   final static int surface     = predefinedset | 12;
-  final static int visible     = predefinedset | 13;
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -488,7 +469,7 @@ class Token {
     "loop",              new Token(loop,      onDefault1, "loop"),
     "move",              new Token(move,     varArgCount, "move"),
     "view",              new Token(view,     varArgCount, "view"),
-    "spin",              new Token(spin,     varArgCount, "spin"),
+    "spin",              new Token(spin,      onDefault1, "spin"),
     "list",              new Token(list,     varArgCount, "list"),
     "display3d",         new Token(display3d,  "display3d"),
     "animation",         new Token(animation,  "animation"),
@@ -510,11 +491,9 @@ class Token {
     "bondorder",         new Token(bondorder,          1, "bondorder"),
     "console",           new Token(console,   onDefault1, "console"),
     "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
-    "draw",              new Token(draw,     varArgCount, "draw"),
     "polyhedra",         new Token(polyhedra,varArgCount, "polyhedra"),
     "centerat",          new Token(centerAt, varArgCount, "centerat"),
     "isosurface",        new Token(isosurface,varArgCount,"isosurface"),
-    "getproperty",       new Token(getproperty,varArgCount, "getproperty"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),
@@ -615,13 +594,9 @@ class Token {
     ".",            new Token(dot, "."),
     "[",            new Token(leftsquare,  "["),
     "]",            new Token(rightsquare, "]"),
-    "{",            new Token(leftbrace,  "{"),
-    "}",            new Token(rightbrace, "}"),
-    "$",            new Token(dollarsign, "$"),
     ":",            new Token(colon, ":"),
     "/",            new Token(slash, "/"),
     "substructure", new Token(substructure, "substructure"),
-    "connected",    new Token(connected, "connected"),
 
     "atomno",       new Token(atomno, "atomno"),
     "elemno",       tokenElemno,
@@ -682,7 +657,6 @@ class Token {
     "purine",       new Token(purine,          "purine"),
     "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
     "surface",      new Token(surface,         "surface"),
-    "visible",      new Token(visible,        "visible"),
 
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),
@@ -709,16 +683,6 @@ class Token {
     "nofill",       new Token(nofill,          "nofill"),
     "vanderwaals",  new Token(vanderwaals,     "vanderwaals"),
     "ionic",        new Token(ionic,           "ionic"),
-    "resume",       new Token(resume,          "resume"),
-    "next",         new Token(next,            "next"),
-    "prev",         new Token(prev,            "previous"),
-    "previous",     null,
-    "rewind",       new Token(rewind,          "rewind"),
-    "playrev",      new Token(playrev,         "playrev"),
-    "play",         new Token(play,            "play"),
-    "range",        new Token(range,           "range"),
-    "point3f",      new Token(point3f,         "point3f"),
-    
   };
 
   static Hashtable map = new Hashtable();

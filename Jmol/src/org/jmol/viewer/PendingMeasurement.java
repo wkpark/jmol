@@ -33,20 +33,15 @@ class PendingMeasurement extends Measurement {
   }
 
   void setCountPlusIndices(int[] countPlusIndices) {
-    
     if (countPlusIndices == null) {
       count = 0;
       isActive = false;
     } else {
       count = countPlusIndices[0];
-      this.countPlusIndices = new int[count + 1];
       System.arraycopy(countPlusIndices, 0, this.countPlusIndices, 0,
                        count + 1);
       isActive = true;
     }
-
-    if (this.countPlusIndices != null) 
-      this.value = frame.getMeasurement(this.countPlusIndices);
     formatMeasurement();
   }
 }

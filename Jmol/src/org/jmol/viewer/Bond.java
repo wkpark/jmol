@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -26,7 +25,6 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
-import java.util.Hashtable;
 
 class Bond {
 
@@ -35,7 +33,6 @@ class Bond {
   short order;
   short mad;
   short colix;
-  int shapeVisibilityFlags;
 
   Bond(Atom atom1, Atom atom2, short order,
               short mad, short colix) {
@@ -50,8 +47,8 @@ class Bond {
     if (order == JmolConstants.BOND_AROMATIC_MASK)
       order = JmolConstants.BOND_AROMATIC;
     this.order = order;
+    this.mad = mad;
     this.colix = colix;
-    setMad(mad, 1);
   }
 
   Bond(Atom atom1, Atom atom2, short order, Frame frame) {
@@ -62,10 +59,6 @@ class Bond {
 
   boolean isCovalent() {
     return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
-  }
-
-  boolean isHydrogen() {
-    return (order & JmolConstants.BOND_HYDROGEN_MASK) != 0;
   }
 
   boolean isStereo() {
@@ -84,32 +77,16 @@ class Bond {
     atom1 = atom2 = null;
   }
 
-  void setMad(short mad, int stickVisibilityFlag) {
+  void setMad(short mad) {
     this.mad = mad;
-    boolean isVisible = (mad != 0);
-    atom1.addDisplayedBond(stickVisibilityFlag, isVisible);
-    atom2.addDisplayedBond(stickVisibilityFlag, isVisible);    
-    setShapeVisibility(1, isVisible);
   }
 
-  final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
-    if(isVisible) {
-      shapeVisibilityFlags |= shapeVisibilityFlag;        
-    } else {
-      shapeVisibilityFlags &=~shapeVisibilityFlag;
-    }
-  }
-      
   void setColix(short colix) {
     this.colix = colix;
   }
 
   void setTranslucent(boolean isTranslucent) {
     colix = Graphics3D.setTranslucent(colix, isTranslucent);
-  }
-  
-  boolean isTranslucent() {
-    return Graphics3D.isColixTranslucent(colix);
   }
 
   void setOrder(short order) {
@@ -132,55 +109,12 @@ class Bond {
     return order;
   }
 
-  String getOrderName() {
-    switch (order) {
-    case 1:
-      return "single";
-    case 2:
-      return "double";
-    case 3:
-      return "triple";
-    case 4:
-      return "aromatic";
-    }
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      return "hbond";
-    return "unknown";
-  }
-
   short getColix1() {
     return Graphics3D.inheritColix(colix, atom1.colixAtom);
-  }
-
-  int getArgb1() {
-    return atom1.group.chain.frame.viewer.getColixArgb(getColix1());
   }
 
   short getColix2() {
     return Graphics3D.inheritColix(colix, atom2.colixAtom);
   }
-
-  int getArgb2() {
-    return atom1.group.chain.frame.viewer.getColixArgb(getColix2());
-  }
-
-  ////////////////////////////////////////////////////////////////
-  
-  Hashtable getPublicProperties() {
-    Hashtable ht = new Hashtable();
-    ht.put("atomIndexA", new Integer(atom1.atomIndex));
-    ht.put("atomIndexB", new Integer(atom2.atomIndex));
-    ht.put("argbA", new Integer(getArgb1()));
-    ht.put("argbB", new Integer(getArgb2()));
-    ht.put("order", getOrderName());
-    ht.put("radius", new Double(getRadius()));
-    ht.put("modelIndex", new Integer(atom1.modelIndex));
-    ht.put("xA", new Double(atom1.point3f.x));
-    ht.put("yA", new Double(atom1.point3f.y));
-    ht.put("zA", new Double(atom1.point3f.z));
-    ht.put("xB", new Double(atom2.point3f.x));
-    ht.put("yB", new Double(atom2.point3f.y));
-    ht.put("zB", new Double(atom2.point3f.z));
-    return ht;
-  }
 }
+

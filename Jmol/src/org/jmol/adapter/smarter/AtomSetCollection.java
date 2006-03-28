@@ -31,8 +31,7 @@ class AtomSetCollection {
   String fileTypeName;
   String collectionName;
   Properties atomSetCollectionProperties = new Properties();
-  Hashtable atomSetCollectionAuxiliaryInfo = new Hashtable();
-  
+
   final static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
 
@@ -54,7 +53,6 @@ class AtomSetCollection {
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
   Properties[] atomSetProperties = new Properties[16];
-  Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
 
   String errorMessage;
 
@@ -139,7 +137,7 @@ class AtomSetCollection {
   }
 
   void freeze() {
-    System.out.println("AtomSetCollection.freeze; atomCount = " + atomCount);
+    System.out.println("AtomSetCollection.freeze called");
     if (hasAlternateLocations())
       hackAlternateLocationDamage();
   }
@@ -349,18 +347,6 @@ class AtomSetCollection {
     atomSetCollectionProperties.put(key, value);
   }
   
-  String getAtomSetCollectionProperty(String key) {
-    return (String) atomSetCollectionProperties.get(key);
-  }
-  
-  void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
-    atomSetCollectionAuxiliaryInfo.put(key, value);
-  }
-  
-  Object getAtomSetCollectionAuxiliaryInfo(String key) {
-    return atomSetCollectionAuxiliaryInfo.get(key);
-  }
-  
   ////////////////////////////////////////////////////////////////
   // atomSet stuff
   ////////////////////////////////////////////////////////////////
@@ -374,8 +360,6 @@ class AtomSetCollection {
         AtomSetCollectionReader.doubleLength(atomSetAtomCounts);
       atomSetProperties = 
         (Properties[]) AtomSetCollectionReader.doubleLength(atomSetProperties);
-      atomSetAuxiliaryInfo =
-        (Hashtable[]) AtomSetCollectionReader.doubleLength(atomSetAuxiliaryInfo);
     }
     atomSetNumbers[currentAtomSetIndex] = atomSetCount;
     // miguel 2006 03 22
@@ -433,17 +417,6 @@ class AtomSetCollection {
     setAtomSetProperty(key, value, currentAtomSetIndex);
   }
 
-  
-  /**
-  * Sets auxiliary information for the AtomSet
-  *
-  * @param key The key for the property
-  * @param value The value to be associated with the key
-  */
-  void setAtomSetAuxiliaryInfo(String key, Object value) {
-    setAtomSetAuxiliaryInfo(key, value, currentAtomSetIndex);
-  }
-
   /**
   * Sets the a property for the an AtomSet
   *
@@ -457,20 +430,6 @@ class AtomSetCollection {
       atomSetProperties[atomSetIndex] = new Properties();
     atomSetProperties[atomSetIndex].put(key, value);
   }
-
-  /**
-   * Sets auxiliary information for the an AtomSet
-   *
-   * @param key The key for the property
-   * @param value The value for the property
-   * @param atomSetIndex The index of the AtomSet to get the property
-   */
-   void setAtomSetAuxiliaryInfo(String key, Object value, int atomSetIndex) {
-     // lazy instantiation of the Properties object
-     if (atomSetAuxiliaryInfo[atomSetIndex] == null)
-       atomSetAuxiliaryInfo[atomSetIndex] = new Hashtable();
-     atomSetAuxiliaryInfo[atomSetIndex].put(key, value);
-   }
 
   /**
    * Sets the same properties for the last n atomSets.
@@ -519,10 +478,6 @@ class AtomSetCollection {
   
   Properties getAtomSetProperties(int atomSetIndex) {
     return atomSetProperties[atomSetIndex];
-  }
-
-  Hashtable getAtomSetAuxiliaryInfo(int atomSetIndex) {
-    return atomSetAuxiliaryInfo[atomSetIndex];
   }
 
   ////////////////////////////////////////////////////////////////

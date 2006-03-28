@@ -82,13 +82,6 @@ class Atom implements Cloneable {
     return elementSymbol;
   }
 
-  void addVibrationVector(float vectorX, float vectorY, float vectorZ) {
-    this.vectorX = vectorX;
-    this.vectorY = vectorY;
-    this.vectorZ = vectorZ;
-  }
-  
- 
   /**
    * Bits which indicate whether or not an element symbol is valid.
    *<p>

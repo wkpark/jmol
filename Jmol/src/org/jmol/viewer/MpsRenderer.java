@@ -35,17 +35,17 @@ abstract class MpsRenderer extends ShapeRenderer {
     Mps mcps = (Mps)shape;
     for (int m = mcps.getMpsmodelCount(); --m >= 0; ) {
       Mps.Mpsmodel mcpsmodel = mcps.getMpsmodel(m);
-      if ((mcpsmodel.modelVisibilityFlags & shape.myVisibilityFlag) == 0)
+      if (displayModelIndex >= 0 && displayModelIndex != mcpsmodel.modelIndex)
         continue;
       for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0; ) {
         Mps.Mpspolymer mpspolymer = mcpsmodel.getMpspolymer(c);
         if (mpspolymer.monomerCount >= 2)
-          renderMpspolymer(mpspolymer, shape.myVisibilityFlag);
+          renderMpspolymer(mpspolymer);
       }
     }
   }
 
-  abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag);
+  abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer);
 
   ////////////////////////////////////////////////////////////////
   // some utilities

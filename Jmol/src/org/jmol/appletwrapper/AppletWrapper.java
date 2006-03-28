@@ -49,6 +49,7 @@ public class AppletWrapper extends Applet {
 
   private Color bgcolor;
   private Color textColor;
+
   public WrappedApplet wrappedApplet;
 
   private long startTime;

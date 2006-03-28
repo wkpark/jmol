@@ -27,8 +27,6 @@ package org.jmol.viewer;
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
-import java.util.Vector;
-import java.util.Hashtable;
 
 class Measures extends Shape {
 
@@ -41,8 +39,7 @@ class Measures extends Shape {
   short colix; // default to none in order to contrast with background
   boolean showMeasurementNumbers = true;
   Font3D font3d;
-  float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
-  
+
   void initShape() {
     pendingMeasurement = new PendingMeasurement(frame);
     font3d = g3d.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
@@ -64,24 +61,13 @@ class Measures extends Shape {
   }
 
   void define(int[] atomCountPlusIndices) {
-    
     if (isDefined(atomCountPlusIndices))
       return;
-    float value = frame.getMeasurement(atomCountPlusIndices);
-    //System.out.println("measures define value,maxmin "+value+" "+rangeMinMax[0]+" "+rangeMinMax[1]);
-    
-    if (rangeMinMax[0] != Float.MAX_VALUE) {
-      if (value < rangeMinMax[0] || value > rangeMinMax[1])
-        return;
-    }
-    //System.out.println("define " + rangeMinMax[0] + "-" + rangeMinMax[1] + ";" + value);
-    Measurement measureNew = new Measurement(frame, atomCountPlusIndices, value);
-    if (measurementCount == measurements.length) {
+    Measurement measureNew = new Measurement(frame, atomCountPlusIndices);
+    if (measurementCount == measurements.length)
       measurements =(Measurement[])Util.setLength(measurements,
                                                   measurementCount +
                                                   measurementGrowthIncrement);
-    }
-    viewer.setStatusNewDefaultModeMeasurement("measureCompleted" , measurementCount, measureNew.toVector().toString());
     measurements[measurementCount++] = measureNew;
   }
   
@@ -113,85 +99,28 @@ class Measures extends Shape {
     return false;
   }
   
-  void setRange(float[] rangeMinMax) {
-    //System.out.println("setRange"+rangeMinMax[0]+rangeMinMax[1]);
-    this.rangeMinMax[0] = rangeMinMax[0];
-    this.rangeMinMax[1] = rangeMinMax[1];
-  }
-  
   void toggle(int[] atomCountPlusIndices) {
     if (isDefined(atomCountPlusIndices))
       delete(atomCountPlusIndices);
-    else {
-      rangeMinMax[0] = Float.MAX_VALUE;
+    else
       define(atomCountPlusIndices);
-    }
   }
 
-  void define(Vector monitorExpressions) {
-  /*
-   * sets up measures based on an array of atom selection expressions -RMH 3/06
-   * 
-   *(1) run through first expression, choosing model
-   *(2) for each item of next bs, iterate over next bitset, etc.
-   *(3) for each last bitset, trigger toggle(int[])
-   *
-   *simple!
-   *
-   */
-  
-    int nPoints = monitorExpressions.size();
-    if (nPoints < 2)
-      return;
-    int[] atomCountPlusIndices = new int[5];
-    atomCountPlusIndices[0] = nPoints;
-    nextMeasure(0, nPoints, monitorExpressions, atomCountPlusIndices, 0);
-  }
-
-  void nextMeasure(int thispt, int nPoints, Vector monitorExpressions, 
-                   int[] atomCountPlusIndices, int thisModel) {
-    BitSet bs = (BitSet)monitorExpressions.get(thispt);
-    //System.out.println("nextMeasure"+thispt+" acpi:"+atomCountPlusIndices);
-    //System.out.println("bs "+ bs);
-    for (int i = bs.size(); --i >= 0;) {
-      if (bs.get(i)) {
-        if (thispt > 0 && i == atomCountPlusIndices[thispt])
-          continue;
-        int modelIndex = frame.atoms[i].getModelIndex();
-        //System.out.println("nextMeasure i"+i+" modelIndex:"+modelIndex);
-        if (thispt == 0) {
-          thisModel = modelIndex;
-        } else if (thisModel != modelIndex) {
-          continue;
-        }
-        atomCountPlusIndices[thispt + 1] = i;
-        if (thispt == nPoints - 1) {
-          if (! isDefined(atomCountPlusIndices))
-            define(atomCountPlusIndices);
-        } else {
-          nextMeasure(thispt+1, nPoints, monitorExpressions, 
-              atomCountPlusIndices, thisModel);
-        }
-      }
-    }
-  }
-  
   void pending(int[] countPlusIndices) {
     pendingMeasurement.setCountPlusIndices(countPlusIndices);
-    if (pendingMeasurement.count > 1)
-      viewer.setStatusNewDefaultModeMeasurement("measurePending" , pendingMeasurement.count, pendingMeasurement.strMeasurement);
   }
 
   void setSize(int size, BitSet bsSelected) {
     mad = (short)size;
+    System.out.println("Measures.setSize(" + size + ")");
+    //    throw new NullPointerException();
   }
 
   void setProperty(String propertyName, Object value,
-                          BitSet bsSelected){
-    
+                          BitSet bsSelected){ 
     if ("color".equals(propertyName))
       {
-        //System.out.println("Measures.color set to:" + value);
+        System.out.println("Measures.color set to:" + value);
         colix = value == null ? 0 : Graphics3D.getColix(value); return; }
     else if ("font".equals(propertyName))
       { font3d = (Font3D)value; return; }
@@ -200,11 +129,7 @@ class Measures extends Shape {
     else if ("delete".equals(propertyName))
       { delete(value); }
     else if ("toggle".equals(propertyName))
-    { toggle((int[])value); }
-    else if ("defineVector".equals(propertyName))
-    { define((Vector)value); }
-    else if ("setRange".equals(propertyName))
-    { setRange((float[])value); }
+      { toggle((int[])value); }
     else if ("pending".equals(propertyName))
       { pending((int[])value); }
     else if ("clear".equals(propertyName))
@@ -215,6 +140,7 @@ class Measures extends Shape {
       { reformatDistances(); }
     else
       return;
+    viewer.notifyMeasurementsChanged();
   }
 
   Object getProperty(String property, int index) {
@@ -230,40 +156,9 @@ class Measures extends Shape {
       return index < measurementCount
         ? measurements[index].strMeasurement : null;
     }
-    if ("info".equals(property)) {
-      return getAllInfo();
-    }
     return null;
   }
 
-  Vector getAllInfo() {
-    Vector info = new Vector();
-    for (int i = 0; i< measurementCount; i++) {
-      info.add(getInfo(i));
-    }
-    return info;
-  }
-  
-  Hashtable getInfo(int index) {
-    Hashtable info = new Hashtable();
-    info.put("index",new Integer(index));
-    info.put("strMeasurement",measurements[index].strMeasurement);
-    int count = measurements[index].count;
-    info.put("count",new Integer(count));
-    info.put("value",new Float(measurements[index].value));
-    Vector atomsInfo = new Vector();
-    for (int i = 0; i < count; i++) {
-      Hashtable atomInfo = new Hashtable();
-      Atom atom = frame.atoms[measurements[index].countPlusIndices[i + 1]];
-      atomInfo.put("_ipt", new Integer(atom.atomIndex));
-      atomInfo.put("atomno", new Integer(atom.getAtomNumber()));
-      atomInfo.put("info", atom.getInfo());
-      atomsInfo.add(atomInfo);
-    }
-    info.put("atoms", atomsInfo);
-    return info;  
-  }
-  
   void reformatDistances() {
     for (int i = measurementCount; --i >= 0; )
       measurements[i].reformatDistanceIfSelected();

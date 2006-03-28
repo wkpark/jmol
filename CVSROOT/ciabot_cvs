@@ -42,12 +42,10 @@ use vars qw ($project $from_email $dest_email $rpc_uri $sendmail $sync_delay
 ### Configuration
 
 # Project name (as known to CIA).
-#$project = 'cdk';
-$project = 'jmol';
+$project = 'cdk';
 
 # The from address in generated mails.
-#$from_email = 'cdk-devel@lists.sf.net';
-$from_email = 'repository@jmol.org';
+$from_email = 'cdk-devel@lists.sf.net';
 
 # Mail all reports to this address.
 $dest_email = 'cia@cia.navi.cx';

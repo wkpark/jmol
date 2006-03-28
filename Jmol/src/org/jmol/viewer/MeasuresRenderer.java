@@ -49,12 +49,9 @@ class MeasuresRenderer extends ShapeRenderer {
     measurementMad = measures.mad;
     font3d = measures.font3d;
     showMeasurementNumbers = measures.showMeasurementNumbers;
-    //System.out.println(measures.measurementCount);
     
-    for (int i = measures.measurementCount; --i >= 0; ) {
+    for (int i = measures.measurementCount; --i >= 0; )
       renderMeasurement(measures.measurements[i], colix);
-      
-    }
 
     renderPendingMeasurement(measures.pendingMeasurement);
   }
@@ -105,7 +102,7 @@ class MeasuresRenderer extends ShapeRenderer {
     /*
       Miguel commented this out on 31 Aug 2005
       and sent an email to the list asking why it would have been here
-    if (! (atomA.isClickable() && atomB.isClickable()))
+    if (! (atomA.isVisible() && atomB.isVisible()))
       return;
 
       1 Sep 2005 ... the previous hack was put in to control the
@@ -140,7 +137,7 @@ class MeasuresRenderer extends ShapeRenderer {
   void renderAngle(Atom atomA, Atom atomB, Atom atomC,
                    short colix, boolean renderArcs) {
     /*
-    if (! (atomA.isClickable() && atomB.isClickable() && atomC.isClickable()))
+    if (! (atomA.isVisible() && atomB.isVisible() && atomC.isVisible()))
       return;
     */
     if (displayModelIndex >= 0 &&
@@ -212,8 +209,8 @@ class MeasuresRenderer extends ShapeRenderer {
   void renderTorsion(Atom atomA, Atom atomB, Atom atomC, Atom atomD,
                      short colix, boolean renderArcs) {
     /*
-    if (! (atomA.isClickable() && atomB.isClickable() &&
-           atomC.isClickable() && atomD.isClickable()))
+    if (! (atomA.isVisible() && atomB.isVisible() &&
+           atomC.isVisible() && atomD.isVisible()))
       return;
     */
     if (displayModelIndex >= 0 &&

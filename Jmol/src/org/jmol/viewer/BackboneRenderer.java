@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -29,29 +28,26 @@ import org.jmol.g3d.*;
 
 class BackboneRenderer extends MpsRenderer {
 
-  int myVisibilityFlag;
-  
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     renderBackboneChain((Backbone.Bbpolymer)mpspolymer);
   }
   
   void renderBackboneChain(Backbone.Bbpolymer bbpolymer) {
-    render1Chain(bbpolymer.monomerCount, bbpolymer.monomers,
+    render1Chain(bbpolymer.monomerCount,
                  bbpolymer.polymer.getLeadAtomIndices(),
                  bbpolymer.mads, bbpolymer.colixes);
   }
 
-  void render1Chain(int monomerCount, Monomer[] monomers, 
-                    int[] atomIndices, short[] mads, short[] colixes) {
+  void render1Chain(int monomerCount, int[] atomIndices,
+                    short[] mads, short[] colixes) {
     for (int i = monomerCount - 1; --i >= 0; ) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
+      if (mads[i] == 0)
         continue;
 
       Atom atomA = frame.getAtomAt(atomIndices[i]);
       Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
-      if (atomA.nBackbonesDisplayed == 0 || atomB.nBackbonesDisplayed == 0)
-        continue;
+      atomA.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
+      atomB.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
       int xA = atomA.getScreenX(), yA = atomA.getScreenY(),
         zA = atomA.getScreenZ();
       int xB = atomB.getScreenX(), yB = atomB.getScreenY(),

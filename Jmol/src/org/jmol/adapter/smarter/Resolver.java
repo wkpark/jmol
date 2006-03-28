@@ -99,7 +99,7 @@ class Resolver {
   static String determineAtomSetCollectionReader(BufferedReader bufferedReader,
                                                  JmolAdapter.Logger logger)
     throws Exception {
-    String[] lines = new String[16];
+    String[] lines = new String[4];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     for (int i = 0; i < lines.length; ++i)
       lines[i] = llr.readLineWithNewline();

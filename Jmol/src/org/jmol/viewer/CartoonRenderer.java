@@ -86,11 +86,8 @@ class CartoonRenderer extends MpsRenderer {
   Point3i[] ribbonTopScreens;
   Point3i[] ribbonBottomScreens;
 
-  int myVisibilityFlag;
-  
-  void renderMpspolymer( Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
+  void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     Cartoon.Cchain strandsChain = (Cartoon.Cchain)mpspolymer;
-    this.myVisibilityFlag = myVisibilityFlag;
     if (strandsChain.wingVectors != null) {
       monomerCount = strandsChain.monomerCount;
       monomers = strandsChain.monomers;
@@ -114,9 +111,9 @@ class CartoonRenderer extends MpsRenderer {
     ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
                                 isNucleicPolymer ? 0f : -0.5f / 1000);
     boolean lastWasSpecial = false;
-    for (int i = monomerCount; --i >= 0; ) {
-      Monomer group = monomers[i];
-      if ((group.shapeVisibilityFlags & myVisibilityFlag) != 0) {
+    for (int i = monomerCount; --i >= 0; )
+      if (mads[i] > 0) {
+        Monomer group = monomers[i];
         short colix = Graphics3D.inheritColix(colixes[i],
                                               group.getLeadAtom().colixAtom);
         boolean isSpecial = isSpecials[i];
@@ -142,7 +139,6 @@ class CartoonRenderer extends MpsRenderer {
         // for the next segment
         lastWasSpecial = false;
       }
-    }
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
     viewer.freeTempScreens(leadMidpointScreens);

@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -198,6 +197,7 @@ class NucleicMonomer extends PhosphorusMonomer {
   void getBaseRing6Points(Point3f[] ring6Points) {
     for (int i = 6; --i >= 0; ) {
       Atom atom = getAtomFromOffsetIndex(i + 3);
+      atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
       ring6Points[i] = atom.point3f;
     }
   }
@@ -208,6 +208,7 @@ class NucleicMonomer extends PhosphorusMonomer {
     if (isPurine)
       for (int i = 5; --i >= 0; ) {
         Atom atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
+        atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
         ring5Points[i] = atom.point3f;
       }
     return isPurine;
@@ -244,24 +245,7 @@ class NucleicMonomer extends PhosphorusMonomer {
       radius = 4;
     if (lead.isCursorOnTop(x, y, radius, competitor) ||
         o5prime.isCursorOnTop(x, y, radius, competitor) ||
-        c3prime.isCursorOnTop(x, y, radius, competitor)) {
+        c3prime.isCursorOnTop(x, y, radius, competitor))
       closest.atom = lead;
-    }
-  }
-  
-  void setModelClickability() {
-    Viewer viewer = chain.frame.viewer;
-    Atom atom;
-    atom = getLeadAtom();
-    int cartoonflag = viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_CARTOON);
-    for (int i = 6; --i >= 0; ) {
-      atom = getAtomFromOffsetIndex(i + 3);
-      atom.clickabilityFlags |= cartoonflag;
-    }
-    if (isPurine)
-      for (int i = 5; --i >= 0; ) {
-        atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
-        atom.clickabilityFlags |= cartoonflag;
-    }
   }
 }

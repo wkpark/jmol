@@ -82,11 +82,11 @@ class Isosurface extends MeshCollection {
   float minRange, maxRange;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("bufferedReader" == propertyName) {
+    if ("bufferedreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
       if (currentMesh == null)
         allocMesh(null);
-      currentMesh.clear("isosurface");
+      currentMesh.clear();
       readVolumetricHeader(br);
       calcVolumetricMatrix();
       readVolumetricData(br);
@@ -116,9 +116,9 @@ class Isosurface extends MeshCollection {
       rangeDefined = false;
       return;
     }
-    if ("colorReader" == propertyName) {
+    if ("colorreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
-      System.out.println("colorReader seen!");
+      System.out.println("colorreader seen!");
       readVolumetricHeader(br);
       calcVolumetricMatrix();
       readVolumetricData(br);
@@ -253,7 +253,7 @@ class Isosurface extends MeshCollection {
 
   void readAtoms(BufferedReader br) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
-      /*String line = */br.readLine();
+      /*String line = */ br.readLine();
       /*
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (byte)parseInt(line);
@@ -898,7 +898,7 @@ class Isosurface extends MeshCollection {
   float getMaxMappedValue() {
     if (currentMesh != null)
       return getMaxMappedValue(currentMesh);
-    float max = -Float.MAX_VALUE;
+    float max = Float.MIN_VALUE;
     for (int i = meshCount; --i >= 0; ) {
       float challenger = getMaxMappedValue(meshes[i]);
       if (challenger > max)
@@ -934,7 +934,7 @@ class Isosurface extends MeshCollection {
   float getMaxMappedValue(Mesh mesh) {
     int vertexCount = mesh.vertexCount;
     Point3f[] vertexes = mesh.vertices;
-    float max = -Float.MAX_VALUE;
+    float max = Float.MIN_VALUE;
     for (int i = vertexCount; --i >= 0; ) {
       float challenger = lookupInterpolatedVoxelValue(vertexes[i]);
       if (challenger > max)

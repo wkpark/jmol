@@ -198,7 +198,7 @@ abstract public class JmolPopup {
         viewer.showUrl(script);
         return;
       }
-      viewer.script(script);  
+      viewer.evalStringQuiet(script);
     }
   }
 

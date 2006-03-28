@@ -1,4 +1,4 @@
-  /* $RCSfile$
+/* $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
@@ -27,7 +27,7 @@
  * JmolApplet in applet tags without having to give a full package
  * specification
  *
- * see org.jmol.applet.Jmol
+ * see org.jmol.applet.JmolApplet
  *
  */
 
@@ -37,13 +37,12 @@ import netscape.javascript.JSObject;
 public class JmolApplet
   extends org.jmol.appletwrapper.AppletWrapper
   implements JmolAppletInterface {
- 
+  
   public JmolApplet() {
     super("org.jmol.applet.Jmol",
           "jmol75x29x8.gif",
           "Loading Jmol applet ...",
           3, preloadClasses);
-    //BH focus test: this.setFocusable(false);
   }
 
   private final static String[] preloadClasses = {
@@ -64,72 +63,14 @@ public class JmolApplet
 
   };
 
-  public String getPropertyAsString(String infoType) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsString(infoType));
-  }
-
-  public String getPropertyAsString(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsString(infoType, paramInfo));
-  }
-
-  public String getPropertyAsJSON(String infoType) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsJSON(infoType));
-  }
-
-  public String getPropertyAsJSON(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getPropertyAsJSON(infoType, paramInfo));
-  }
-
-  public Object getProperty(String infoType) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(infoType));
-  }
-
-  public Object getProperty(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(infoType, paramInfo));
-  }
-
   public void script(String script) {
     if (wrappedApplet != null)
       ((JmolAppletInterface)wrappedApplet).script(script);
   }
   
-  public void syncScript(String script) {
-    if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).syncScript(script);
-  }
-  
-  public String scriptNoWait(String script) {
-    if (wrappedApplet != null)
-      return ((JmolAppletInterface)wrappedApplet).scriptNoWait(script);
-    return null;
-  }
-    
-  public String scriptCheck(String script) {
-    if (wrappedApplet != null)
-      return ((JmolAppletInterface)wrappedApplet).scriptCheck(script);
-    return null;
-  }
-  
-  public String scriptWait(String script) {
-    if (wrappedApplet != null)
-      return ((JmolAppletInterface)wrappedApplet).scriptWait(script);
-    return null;
-  }
- 
-  public String scriptWait(String script, String statusParams) {
-    if (wrappedApplet != null)
-      return ((JmolAppletInterface)wrappedApplet).scriptWait(script, statusParams);
-    return null;
-  }
- 
   public void loadInline(String strModel) {
     if (wrappedApplet != null)
       ((JmolAppletInterface)wrappedApplet).loadInline(strModel);
-  }
-
-  public void loadInline(String strModel, String script) {
-    if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).loadInline(strModel, script);
   }
 
   public void loadNodeId(String nodeId) {

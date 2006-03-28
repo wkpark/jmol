@@ -21,45 +21,31 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package org.jmol.api;
 
 public interface JmolStatusListener {
-/*
- * These methods specifically provide notification from 
- * Viewer.StatusManager to the two main classes, applet or app.
- * so that they can handle them slightly differently. This might be
- * a callback for the applet, for example, but not for the app.
- * ALL viewer-type processing, including status queue writing
- * has been done PRIOR to these functions being called.   Bob Hanson
- * 
- */
+  public void notifyFileLoaded(String fullPathName, String fileName,
+                               String modelName, Object clientFile,
+                               String errorMessage);
+
+  public void setStatusMessage(String statusMessage);
+
+  public void scriptEcho(String strEcho);
+
+  public void scriptStatus(String strStatus);
+
+  public void notifyScriptTermination(String statusMessage, int msWalltime);
+
   public void handlePopupMenu(int x, int y);
 
-  public void notifyAtomPicked(int atomIndex, String strInfo);
-
-  public void notifyFileLoaded(String fullPathName, String fileName,
-      String modelName, Object clientFile,
-      String errorMessage);
+  public void notifyMeasurementsChanged();
 
   public void notifyFrameChanged(int frameNo);
 
-  public void notityNewDefaultModeMeasurement(int count, String strInfo);
-
-  public void notifyNewPickingModeMeasurement(int iatom, String strMeasure);
-
-  public void notifyScriptStart(String statusMessage, String additionalInfo);
-  
-  public void notifyScriptTermination(String statusMessage, int msWalltime);
-
-  public void sendConsoleEcho(String strEcho);
-
-  public void sendConsoleMessage(String strStatus);
-
-  public void sendSyncScript(String script, String appletName);
+  public void notifyAtomPicked(int atomIndex, String strInfo);
 
   public void showUrl(String url);
 
   public void showConsole(boolean showConsole);
-  
+
 }

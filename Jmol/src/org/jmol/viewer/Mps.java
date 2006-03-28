@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -94,15 +93,9 @@ abstract class Mps extends Shape {
       mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
   }
 
-  void setModelClickability() {
-    for (int i = mpsmodels.length; --i >= 0; )
-      mpsmodels[i].setModelClickability();
-  }
-
   class Mpsmodel {
     Mpspolymer[] mpspolymers;
     int modelIndex;
-    int modelVisibilityFlags = 0;
     
     Mpsmodel(Model model) {
       mpspolymers = new Mpspolymer[model.getPolymerCount()];
@@ -147,19 +140,8 @@ abstract class Mps extends Shape {
       for (int i = mpspolymers.length; --i >= 0; )
         mpspolymers[i].findNearestAtomIndex(xMouse, yMouse, closest);
     }
-
-    void setModelClickability() {
-      int displayModelIndex = viewer.getDisplayModelIndex();
-      modelVisibilityFlags = 
-        (displayModelIndex >= 0 && displayModelIndex != modelIndex
-            ? 0 : myVisibilityFlag);
-      for (int i = mpspolymers.length; --i >= 0; )
-        mpspolymers[i].setModelClickability();
-    }
-    
   }
 
-  
   abstract class Mpspolymer {
     Polymer polymer;
     short madOn;
@@ -174,7 +156,6 @@ abstract class Mps extends Shape {
     
     Point3f[] leadMidpoints;
     Vector3f[] wingVectors;
-
 
     Mpspolymer(Polymer polymer, int madOn,
               int madHelixSheet, int madTurnRandom, int madDnaRna) {
@@ -268,15 +249,10 @@ abstract class Mps extends Shape {
     }
 
     void setMad(short mad, BitSet bsSelected) {
-      int[] leadAtomIndices = polymer.getLeadAtomIndices();
-      boolean isVisible = (mad != 0);
+      int[] atomIndices = polymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
-        int leadAtomIndex = leadAtomIndices[i];
-        if (bsSelected.get(leadAtomIndex)) { 
+        if (bsSelected.get(atomIndices[i]))
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
-          monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
-          frame.atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
-        }
       }
       if (monomerCount > 1)
         mads[monomerCount] = mads[monomerCount - 1];
@@ -373,21 +349,8 @@ abstract class Mps extends Shape {
     }
 
     void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
-      polymer.findNearestAtomIndex(xMouse, yMouse, closest, mads, myVisibilityFlag);
-    }
-
-    void setModelClickability() {
-      if (wingVectors == null)
-        return;
-      boolean isNucleicPolymer = polymer instanceof NucleicPolymer;
-      if (! isNucleicPolymer)
-        return;
-      for (int i = monomerCount; --i >= 0; ) {
-        if (mads[i] <= 0) 
-          continue;
-        NucleicMonomer group = (NucleicMonomer) monomers[i];
-        group.setModelClickability();        
-      }
+      polymer.findNearestAtomIndex(xMouse, yMouse, closest, mads);
     }
   }
 }
+

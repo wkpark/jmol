@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-26 13:35-0500\n"
+"POT-Creation-Date: 2006-03-27 22:58-0500\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -17,21 +17,21 @@ msgstr ""
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:488
-#, fuzzy, java-format
-msgid ""
-"Jmol Applet version {0} {1}.\n"
-"\n"
-"An OpenScience project.\n"
-"\n"
-"See http://www.jmol.org for more information"
+#: org/jmol/applet/Jmol.java:118
+msgid "Jmol Molecular Visualization http://www.jmol.org"
 msgstr ""
-"Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www.jmol."
-"org"
 
-#: org/jmol/applet/Jmol.java:596
+#: org/jmol/applet/Jmol.java:454
+msgid "Jmol executing script ..."
+msgstr "Jmol käivitab skripti ..."
+
+#: org/jmol/applet/Jmol.java:549
 msgid "File Error:"
 msgstr "Faili viga:"
+
+#: org/jmol/applet/Jmol.java:578
+msgid "Jmol script completed"
+msgstr "Jmol skript sai täidetud"
 
 #: org/jmol/popup/PopupResourceBundle.java:652
 msgid "No atoms loaded"
@@ -932,52 +932,48 @@ msgstr "Teljed RasMol/Chime"
 msgid "Zero Based Xyz Rasmol"
 msgstr "Zero Based Xyz Rasmol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1167
+#: org/jmol/popup/PopupResourceBundle.java:1166
+msgid "Wireframe Rotation"
+msgstr "Sõrestiku Keeramine"
+
+#: org/jmol/popup/PopupResourceBundle.java:1168
 msgid "Console..."
 msgstr "Konsool..."
 
-#: org/jmol/popup/PopupResourceBundle.java:1168
+#: org/jmol/popup/PopupResourceBundle.java:1169
 msgid "Open"
 msgstr "Ava"
 
-#: org/jmol/popup/PopupResourceBundle.java:1169
+#: org/jmol/popup/PopupResourceBundle.java:1170
 msgid "Close"
 msgstr "Sulge"
 
-#: org/jmol/popup/PopupResourceBundle.java:1171
+#: org/jmol/popup/PopupResourceBundle.java:1172
 msgid "About Jmol"
 msgstr "Jmol'ist"
 
-#: org/jmol/popup/PopupResourceBundle.java:1173
+#: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Mouse Manual"
 msgstr "Hiire Õpetus"
 
-#: org/jmol/popup/PopupResourceBundle.java:1174
+#: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Translations"
 msgstr "Tõlked"
 
-#: org/jmol/viewer/PickingManager.java:167
-msgid "pick "
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:169
-msgid " atoms in order to spin the model around an axis"
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:177
 #, fuzzy
-msgid "atoms selected"
-msgstr "Ei ühtegi aatomit"
+#~ msgid ""
+#~ "Jmol Applet version {0} {1}.\n"
+#~ "\n"
+#~ "An OpenScience project.\n"
+#~ "\n"
+#~ "See http://www.jmol.org for more information"
+#~ msgstr ""
+#~ "Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www."
+#~ "jmol.org"
 
-#: org/jmol/viewer/StatusManager.java:158
-msgid "Jmol executing script ..."
-msgstr "Jmol käivitab skripti ..."
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Sõrestiku Keeramine"
-
-#~ msgid "Jmol script completed"
-#~ msgstr "Jmol skript sai täidetud"
+#, fuzzy
+#~ msgid "atoms selected"
+#~ msgstr "Ei ühtegi aatomit"
 
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "

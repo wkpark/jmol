@@ -113,6 +113,7 @@ class GuiMap {
       labels.put("zoom200Script", GT._("{0}%", new Object[]{ "200" }));
       labels.put("zoom400Script", GT._("{0}%", new Object[]{ "400" }));
       labels.put("zoom800Script", GT._("{0}%", new Object[]{ "800" }));
+      labels.put("wireframerotationCheck", GT._("Wi&reframe Rotation"));
       labels.put("perspectiveCheck", GT._("Perspective Depth"));
       labels.put("axesCheck", GT._("Axes"));
       labels.put("boundboxCheck", GT._("Bounding Box"));
@@ -157,6 +158,7 @@ class GuiMap {
       labels.put("console", GT._("Jmol Console"));
       labels.put("Prefs.showHydrogens", GT._("Hydrogens"));
       labels.put("Prefs.showMeasurements", GT._("Measurements"));
+      labels.put("Prefs.wireframeRotation", GT._("Wireframe Rotation"));
       labels.put("Prefs.perspectiveDepth", GT._("Perspective Depth"));
       labels.put("Prefs.showAxes", GT._("Axes"));
       labels.put("Prefs.showBoundingBox", GT._("Bounding Box"));

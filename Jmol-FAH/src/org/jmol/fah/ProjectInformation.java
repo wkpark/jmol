@@ -1025,7 +1025,7 @@ public class ProjectInformation {
           if (!separator) {
             outputText("Active missing public projects: ");
           }
-          outputInfo("", "p" + ii, separator);
+          outputInfo("", "" + ii, separator);
           separator = true;
         }
       }

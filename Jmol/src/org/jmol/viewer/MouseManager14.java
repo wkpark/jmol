@@ -34,7 +34,6 @@ class MouseManager14 extends MouseManager11
 
   MouseManager14(Component component, Viewer viewer) {
     super(component, viewer);
-    System.out.println("MouseManager14 implemented");
     component.addMouseWheelListener(this);
   }
   

@@ -27,21 +27,19 @@ import org.jmol.g3d.*;
 
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.util.Hashtable;
-import java.util.BitSet;
 
 class RepaintManager {
 
   Viewer viewer;
   FrameRenderer frameRenderer;
-  
+
   RepaintManager(Viewer viewer) {
     this.viewer = viewer;
     frameRenderer = new FrameRenderer(viewer);
   }
 
-  BitSet bsVisibleFrames = null;
   int displayModelIndex = 0;
+
   boolean setDisplayModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
     if (frame == null ||
@@ -50,37 +48,117 @@ class RepaintManager {
       displayModelIndex = -1;
     else
       displayModelIndex = modelIndex;
-    viewer.setTainted(true);
-    viewer.setStatusFrameChanged(modelIndex);
-    bsVisibleFrames = getAnimationRangeVisible(); 
+    this.displayModelIndex = modelIndex;
+    viewer.notifyFrameChanged(modelIndex);
     return true;
   }
 
-  BitSet getVisibleFramesBitSet() {
-    return bsVisibleFrames;
-  }
-  
-  BitSet getAnimationRangeVisible() {
-    BitSet bs = new BitSet();
-    if (displayModelIndex >= 0) {
-      bs.set(displayModelIndex);
-      return bs;
+  int animationDirection = 1;
+  int currentDirection = 1;
+  void setAnimationDirection(int animationDirection) {
+    if (animationDirection == 1 || animationDirection == -1) {
+      this.animationDirection = currentDirection = animationDirection;
     }
-    if (frameStep == 0)
-      return bs;
-    for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
-      bs.set(i);
-    bs.set(lastModelIndex);
-    return bs;
+    else
+      System.out.println("invalid animationDirection:" + animationDirection);
   }
 
-  AnimationThread animationThread;
+  int animationFps = 10;
+  void setAnimationFps(int animationFps) {
+    if (animationFps >= 1 && animationFps <= 50)
+      this.animationFps = animationFps;
+    else
+      System.out.println("invalid animationFps:" + animationFps);
+  }
+
+  // 0 = once
+  // 1 = loop
+  // 2 = palindrome
+  int animationReplayMode = 0;
+  float firstFrameDelay, lastFrameDelay;
+  int firstFrameDelayMs, lastFrameDelayMs;
+
+  void setAnimationReplayMode(int animationReplayMode,
+                                     float firstFrameDelay,
+                                     float lastFrameDelay) {
+    //System.out.println("animationReplayMode=" + animationReplayMode);
+    this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;
+    firstFrameDelayMs = (int)(this.firstFrameDelay * 1000);
+    this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
+    lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
+    if (animationReplayMode >= 0 && animationReplayMode <= 2)
+      this.animationReplayMode = animationReplayMode;
+    else
+      System.out.println("invalid animationReplayMode:" + animationReplayMode);
+  }
+
+  boolean setAnimationRelative(int direction) {
+    if (displayModelIndex < 0)
+      return false;
+    int modelIndexNext = displayModelIndex + (direction * currentDirection);
+    int modelCount = viewer.getModelCount();
+
+    /*
+    System.out.println("setAnimationRelative: displayModelID=" +
+                       displayModelID +
+                       " displayModelIndex=" + displayModelIndex +
+                       " currentDirection=" + currentDirection +
+                       " direction=" + direction +
+                       " modelIndexNext=" + modelIndexNext +
+                       " modelCount=" + modelCount +
+                       " animationReplayMode=" + animationReplayMode +
+                       " animationDirection=" + animationDirection);
+    */
+
+    if (modelIndexNext == modelCount) {
+      switch (animationReplayMode) {
+      case 0:
+        return false;
+      case 1:
+        modelIndexNext = 0;
+        break;
+      case 2:
+        currentDirection = -1;
+        modelIndexNext = modelCount - 2;
+      }
+    } else if (modelIndexNext < 0) {
+      switch (animationReplayMode) {
+      case 0:
+        return false;
+      case 1:
+        modelIndexNext = modelCount -1;
+        break;
+      case 2:
+        currentDirection = 1;
+        modelIndexNext = 1;
+      }
+    }
+    setDisplayModelIndex(modelIndexNext);
+    return true;
+  }
+
+  boolean setAnimationNext() {
+    return setAnimationRelative(animationDirection);
+  }
+
+  boolean setAnimationPrevious() {
+    return setAnimationRelative(-animationDirection);
+  }
+
+  boolean wireframeRotating = false;
+  void setWireframeRotating(boolean wireframeRotating) {
+    this.wireframeRotating = wireframeRotating;
+  }
 
   boolean inMotion = false;
+
   void setInMotion(boolean inMotion) {
+    if (this.inMotion != inMotion && viewer.getWireframeRotation()) {
+      setWireframeRotating(inMotion);
+      if (!inMotion)
+        refresh();
+    }
     this.inMotion = inMotion;
-    if (! inMotion)
-      refresh();
   }
 
   Image takeSnapshot() {
@@ -90,24 +168,29 @@ class RepaintManager {
 
   int holdRepaint = 0;
   boolean repaintPending;
+
   void pushHoldRepaint() {
     ++holdRepaint;
-    //System.out.println("pushHoldRepaint:" + holdRepaint);
+    //    System.out.println("pushHoldRepaint:" + holdRepaint);
   }
 
   void popHoldRepaint() {
     --holdRepaint;
-    //System.out.println("popHoldRepaint:" + holdRepaint);
+    //    System.out.println("popHoldRepaint:" + holdRepaint);
     if (holdRepaint <= 0) {
       holdRepaint = 0;
       repaintPending = true;
-      //System.out.println("popHoldRepaint called awtComponent.repaint()");
+      // System.out.println("popHoldRepaint called awtComponent.repaint()");
       viewer.awtComponent.repaint();
     }
   }
 
+  void forceRefresh() {
+    repaintPending = true;
+    viewer.awtComponent.repaint();
+  }
+
   void refresh() {
-    //System.out.println("repaintManager.refresh");
     if (repaintPending)
       return;
     repaintPending = true;
@@ -124,9 +207,8 @@ class RepaintManager {
     }
   }
 
-  synchronized void repaintView() {
+  synchronized void notifyRepainted() {
     repaintPending = false;
-    //System.out.println("RepaintManager.repaintView");
     notify();
   }
 
@@ -151,227 +233,69 @@ class RepaintManager {
    * Animation support
    ****************************************************************/
   
-  int firstModelIndex;
-  int lastModelIndex;
-  int frameStep;
-  int modelCount;
-  void initializePointers(int frameStep) {
-    firstModelIndex = 0;
-    modelCount = (frameStep == 0 ? 0 : viewer.getModelCount());
-    lastModelIndex = modelCount - 1;
-    this.frameStep = frameStep;      
-  }
-
   void clearAnimation() {
     setAnimationOn(false);
     setDisplayModelIndex(0);
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(0, 0, 0);
-    initializePointers(0);
-  }
-
-  Hashtable getAnimationInfo(){
-    Hashtable info = new Hashtable();
-    info.put("firstModelIndex", new Integer(firstModelIndex));
-    info.put("lastModelIndex", new Integer(lastModelIndex));
-    info.put("animationDirection", new Integer(animationDirection));
-    info.put("currentDirection", new Integer(currentDirection));
-    info.put("displayModelIndex", new Integer(displayModelIndex));
-    info.put("displayModelNumber", new Integer(displayModelIndex >=0 ? viewer.getModelNumber(displayModelIndex) : 0));
-    info.put("displayModelName", (displayModelIndex >=0 ? viewer.getModelName(displayModelIndex) : ""));
-    info.put("animationFps", new Integer(animationFps));
-    info.put("animationReplayMode", new Integer(animationReplayMode));
-    info.put("firstFrameDelay", new Float(firstFrameDelay));
-    info.put("lastFrameDelay", new Float(lastFrameDelay));
-    info.put("animationOn", new Boolean(animationOn));
-    info.put("animationPaused", new Boolean(animationPaused));
-    return info;
-  }
-  
-  int animationDirection = 1;
-  int currentDirection = 1;
-  void setAnimationDirection(int animationDirection) {
-    if (animationDirection == 1 || animationDirection == -1) {
-      this.animationDirection = animationDirection;
-      currentDirection = 1;
-    }
-    else
-      System.out.println("invalid animationDirection:" + animationDirection);
-  }
-
-  int animationFps = 10;
-  void setAnimationFps(int animationFps) {
-    if (animationFps >= 1 && animationFps <= 50)
-      this.animationFps = animationFps;
-    else
-      System.out.println("invalid animationFps:" + animationFps);
-  }
-
-  // 0 = once
-  // 1 = loop
-  // 2 = palindrome
-  int animationReplayMode = 0;
-  float firstFrameDelay, lastFrameDelay;
-  int firstFrameDelayMs, lastFrameDelayMs;
-  void setAnimationReplayMode(int animationReplayMode,
-                                     float firstFrameDelay,
-                                     float lastFrameDelay) {
-    //System.out.println("animationReplayMode=" + animationReplayMode);
-    this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;
-    firstFrameDelayMs = (int)(this.firstFrameDelay * 1000);
-    this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
-    lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
-    if (animationReplayMode >= 0 && animationReplayMode <= 2)
-      this.animationReplayMode = animationReplayMode;
-    else
-      System.out.println("invalid animationReplayMode:" + animationReplayMode);
-  }
-
-  void setAnimationRange(int framePointer, int framePointer2) {
-    modelCount = viewer.getModelCount();
-    if (framePointer < 0) framePointer = 0;
-    if (framePointer2 < 0) framePointer2 = modelCount;
-    if (framePointer >= modelCount) framePointer = modelCount - 1;
-    if (framePointer2 >= modelCount) framePointer2 = modelCount - 1;
-    firstModelIndex = framePointer;
-    lastModelIndex = framePointer2;
-    frameStep = (framePointer2 < framePointer ? -1 : 1);
-    currentDirection = 1;
-    
-    setDisplayModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
-    //System.out.println("setting in range displayModelIndex: " + displayModelIndex);
-    //System.out.println("setAnimationRange first=" + firstModelIndex + " last=" + lastModelIndex +" currentDirection="+currentDirection);
   }
 
   boolean animationOn = false;
-  boolean animationPaused = false;
+  AnimationThread animationThread;
+
   void setAnimationOn(boolean animationOn) {
+    setAnimationOn(animationOn,-1); 
+  }
+  void setAnimationOn(boolean animationOn,int framePointer) {
     if (! animationOn || ! viewer.haveFrame()) {
-      setAnimationOff(false);
+      if (animationThread != null) {
+        animationThread.interrupt();
+        animationThread = null;
+      }
+      this.animationOn = false;
       return;
     }
-    viewer.refresh(0, "Viewer:setAnimationOn");
-    setAnimationRange(-1, -1);
-    resumeAnimation();
-  }
-
-  void setAnimationOff(boolean isPaused) {
-    if (animationThread != null) {
-      animationThread.interrupt();
-      animationThread = null;
-    }
-    animationPaused = isPaused;
-    viewer.refresh(0, "Viewer:setAnimationOff");
-    animationOn = false;
-  }
-
-  void pauseAnimation() {
-    setAnimationOff(true);
-  }
-  
-  int intAnimThread = 0;
-  void resumeAnimation() {
-    //System.out.println("resumeAnimation");
-    if(displayModelIndex < 0)
-      setAnimationRange(firstModelIndex, lastModelIndex);
+    int modelCount = viewer.getModelCount();
     if (modelCount <= 1) {
-      animationOn = false;
+      this.animationOn = false;
       return;
     }
-    //System.out.println("resumeAnimation " + firstModelIndex+" "+lastModelIndex+" "+frameStep+" "+displayModelIndex);
-    System.out.println("setting animationOn");
-    animationOn = true;
-    animationPaused = false;
+    currentDirection = animationDirection;
+    setDisplayModelIndex(framePointer>=0?framePointer:animationDirection == 1 ? 0 : modelCount - 1);
     if (animationThread == null) {
-      intAnimThread++;
-      animationThread = new AnimationThread(firstModelIndex, lastModelIndex, intAnimThread);
+      animationThread = new AnimationThread(modelCount);
       animationThread.start();
     }
+    this.animationOn = true;
   }
   
-  boolean setAnimationNext() {
-    return setAnimationRelative(animationDirection);
-  }
-
-  void rewindAnimation() {
-    setDisplayModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
-    currentDirection = 1;
-  }
-  
-  boolean setAnimationPrevious() {
-    return setAnimationRelative(-animationDirection);
-  }
-
-  boolean setAnimationRelative(int direction) {
-    int frameStep = this.frameStep * direction * currentDirection;
-    int modelIndexNext = displayModelIndex + frameStep;
-    boolean isDone = (modelIndexNext > firstModelIndex && modelIndexNext > lastModelIndex 
-                      || modelIndexNext < firstModelIndex && modelIndexNext < lastModelIndex);
-
-    
-    /*
-     System.out.println("setAnimationRelative: " +
-                       " firstModelIndex=" + firstModelIndex +
-                       " displayModelIndex=" + displayModelIndex +
-                       " lastModelIndex=" + lastModelIndex +
-                       " currentDirection=" + currentDirection +
-                       " direction=" + direction +
-                       " isDone="+isDone +
-                       " modelIndexNext=" + modelIndexNext +
-                       " modelCount=" + modelCount +
-                       " animationReplayMode=" + animationReplayMode +
-                       " animationDirection=" + animationDirection);
-   */
-    if (isDone) {
-      switch (animationReplayMode) {
-      case 0:  //once through
-        return false;
-      case 1:  //repeat
-        modelIndexNext = firstModelIndex;
-        break;
-      case 2:  //palindrome
-        currentDirection = -currentDirection;
-        modelIndexNext -= 2 * frameStep;
-      }
-    }
-    //System.out.println("next="+modelIndexNext+" dir="+currentDirection+" isDone="+isDone);
-    if (modelIndexNext < 0 || modelIndexNext >= modelCount)
-      return false;
-    setDisplayModelIndex(modelIndexNext);
-    return true;
-  }
-
   class AnimationThread extends Thread implements Runnable {
-    final int framePointer;
-    final int framePointer2;
-    int intThread;
-
-    AnimationThread(int framePointer, int framePointer2, int intAnimThread) {
-      this.framePointer = framePointer;
-      this.framePointer2 = framePointer2;
-      intThread = intAnimThread;
+    final int modelCount;
+    final int lastModelIndex;
+    AnimationThread(int modelCount) {
+      this.modelCount = modelCount;
+      lastModelIndex = modelCount - 1;
     }
 
     public void run() {
       long timeBegin = System.currentTimeMillis();
       int targetTime = 0;
       int sleepTime;
-      System.out.println("animation thread " + intThread + " running");            
       requestRepaintAndWait();
       try {
         sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
         if (sleepTime > 0)
           Thread.sleep(sleepTime);
         while (! isInterrupted()) {
-          if (displayModelIndex == framePointer) {
+          if (displayModelIndex == 0) {
             targetTime += firstFrameDelayMs;
             sleepTime =
               targetTime - (int)(System.currentTimeMillis() - timeBegin);
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          if (displayModelIndex == framePointer2) {
+          if (displayModelIndex == lastModelIndex) {
             targetTime += lastFrameDelayMs;
             sleepTime =
               targetTime - (int)(System.currentTimeMillis() - timeBegin);
@@ -379,8 +303,7 @@ class RepaintManager {
               Thread.sleep(sleepTime);
           }
           if (! setAnimationNext()) {
-            System.out.println("animation thread " + intThread + " exiting");            
-            setAnimationOff(false);
+            setAnimationOn(false);
             return;
           }
           targetTime += (1000 / animationFps);
@@ -395,8 +318,7 @@ class RepaintManager {
             Thread.sleep(sleepTime);
         }
       } catch (InterruptedException ie) {
-        System.out.println("animation thread interrupted!");
-        setAnimationOn(false);
+        System.out.println("animation interrupted!");
       }
     }
   }

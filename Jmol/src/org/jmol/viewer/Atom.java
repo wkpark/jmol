@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
-
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -36,6 +35,7 @@ import javax.vecmath.Point3i;
 
 final class Atom implements Tuple {
 
+  final static byte VISIBLE_FLAG = 0x01;
   final static byte VIBRATION_VECTOR_FLAG = 0x02;
   final static byte IS_HETERO_FLAG = 0x04;
 
@@ -53,25 +53,7 @@ final class Atom implements Tuple {
   short madAtom;
   short colixAtom;
   Bond[] bonds;
-  int nBondsDisplayed = 0;
-  int nBackbonesDisplayed = 0;
-  int clickabilityFlags;
-  int shapeVisibilityFlags;
-  boolean isSimple = false;
 
-  // miguel 2006 03 25
-  // we should talk about this. if you need simple "points" for your shapes
-  // then we should consider splitting out the 'pointness' from the
-  // atom and have atom inherit from point
-  Atom(Point3f pt) { 
-    //just a point -- just enough to determine a position
-    isSimple = true;
-    point3f = new Point3f(pt);
-    //must be transformed later -- Polyhedra;
-    formalChargeAndFlags = 0;
-    madAtom = 0;
-  }
-  
   Atom(Viewer viewer,
        Frame frame,
        int modelIndex,
@@ -93,7 +75,6 @@ final class Atom implements Tuple {
     this.colixAtom = viewer.getColixAtom(this);
     this.alternateLocationID = (byte)alternateLocationID;
     setMadAtom(viewer.getMadAtom());
-    
     this.point3f = new Point3f(x, y, z);
     if (isHetero)
       formalChargeAndFlags |= IS_HETERO_FLAG;
@@ -105,7 +86,6 @@ final class Atom implements Tuple {
     }
 
     byte specialAtomID = lookupSpecialAtomID(atomName);
-    //System.out.println("atom - "+atomName+" specialAtomID=" + specialAtomID);
     if (specialAtomID != 0) {
       if (frame.specialAtomIDs == null)
         frame.specialAtomIDs = new byte[frame.atoms.length];
@@ -155,14 +135,6 @@ final class Atom implements Tuple {
     }
   }
 
-  final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
-    if(isVisible) {
-      shapeVisibilityFlags |= shapeVisibilityFlag;        
-    } else {
-      shapeVisibilityFlags &=~shapeVisibilityFlag;
-    }
-  }
-  
   void setGroup(Group group) {
     this.group = group;
   }
@@ -176,18 +148,6 @@ final class Atom implements Tuple {
           return true;
       }
     return false;
-  }
-
-  Bond getBondToAtom(Atom atomOther) {
-    if (bonds != null) {
-      for (int i = bonds.length; --i >= 0; ) {
-          Bond bond = bonds[i];
-          if ((bond.atom1 == atomOther) ||
-              (bond.atom2 == atomOther))
-            return bond;
-      }
-    }
-    return null;
   }
 
   Bond bondMutually(Atom atomOther, short order, Frame frame) {
@@ -208,22 +168,6 @@ final class Atom implements Tuple {
     }
   }
 
-  void addDisplayedBond(int stickVisibilityFlag, boolean isVisible){
-    int n = nBondsDisplayed;
-    nBondsDisplayed+=(isVisible ? 1 : -1);
-    if (n != 0 && nBondsDisplayed != 0)
-      return;
-    setShapeVisibility(stickVisibilityFlag, isVisible);
-  } 
-  
-  void addDisplayedBackbone(int backboneVisibilityFlag, boolean isVisible){
-    int n= nBackbonesDisplayed;
-    nBackbonesDisplayed+=(isVisible ? 1 : -1);
-    if (n != 0 && nBackbonesDisplayed != 0)
-      return;
-    setShapeVisibility(backboneVisibilityFlag, isVisible);
-  }
-  
   void deleteBondedAtom(Atom atomToDelete) {
     if (bonds == null)
       return;
@@ -240,8 +184,6 @@ final class Atom implements Tuple {
 
   void deleteAllBonds() {
     if (bonds == null)
-      return;
-    if (group == null)
       return;
     for (int i = bonds.length; --i >= 0; )
       group.chain.frame.deleteBond(bonds[i]);
@@ -357,20 +299,12 @@ final class Atom implements Tuple {
     colixAtom = Graphics3D.setTranslucent(colixAtom, isTranslucent);
   }
 
-  boolean isTranslucent() {
-    return Graphics3D.isColixTranslucent(colixAtom);
-  }
-  
   Vector3f getVibrationVector() {
-    if (group == null)
-      return null;
     Vector3f[] vibrationVectors = group.chain.frame.vibrationVectors;
     return vibrationVectors == null ? null : vibrationVectors[atomIndex];
   }
 
   void setLabel(String strLabel) {
-    if (group == null)
-      return;
     group.chain.frame.setLabel(strLabel, atomIndex);
   }
 
@@ -389,6 +323,8 @@ final class Atom implements Tuple {
   //  final static int MAX_Z = 32766;
 
   void transform(Viewer viewer) {
+    if (madAtom == JmolConstants.MAR_DELETED)
+      return;
     Point3i screen;
     Vector3f[] vibrationVectors;
     if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
@@ -411,8 +347,6 @@ final class Atom implements Tuple {
   }
 
   String getAtomNameOrNull() {
-    if (group == null)
-      return null;
     String[] atomNames = group.chain.frame.atomNames;
     return atomNames == null ? null : atomNames[atomIndex];
   }
@@ -429,8 +363,6 @@ final class Atom implements Tuple {
   }
 
   String getGroup3() {
-    if (group == null)
-      return null;
     return group.getGroup3();
   }
 
@@ -441,21 +373,17 @@ final class Atom implements Tuple {
   }
 
   boolean isGroup3(String group3) {
-    if (group == null)
-      return false;
     return group.isGroup3(group3);
   }
 
   boolean isGroup3Match(String strWildcard) {
-    if (group == null)
-      return false;
     return group.isGroup3Match(strWildcard);
   }
 
   int getSeqcode() {
     if (group == null)
       return -1;
-    return group.getSeqcode();
+    return group.seqcode;
   }
 
   int getResno() {
@@ -463,7 +391,7 @@ final class Atom implements Tuple {
       return -1;
     return group.getResno();   
   }
-  
+
   boolean isAtomNameMatch(String strPattern) {
     String atomName = getAtomNameOrNull();
     int cchAtomName = atomName == null ? 0 : atomName.length();
@@ -489,8 +417,6 @@ final class Atom implements Tuple {
   }
 
   int getAtomNumber() {
-    if (group == null)
-      return 1;
     int[] atomSerials = group.chain.frame.atomSerials;
     if (atomSerials != null)
       return atomSerials[atomIndex];
@@ -508,35 +434,11 @@ final class Atom implements Tuple {
     return formalChargeAndFlags >> 3;
   }
 
-  boolean isClickable() {
-    if (!isModelVisible())
-      return false;
-    int flags = shapeVisibilityFlags;
-    if (group != null) flags |= group.shapeVisibilityFlags;
-    return ((flags & clickabilityFlags) != 0);
-  }
-
   boolean isVisible() {
-    if (!isModelVisible())
-      return false;
-    int flags = shapeVisibilityFlags;
-    if (group != null) flags |= group.shapeVisibilityFlags;
-    // in model AND something to show for it or its group is visible
-    return ((flags & ~JmolConstants.ATOM_IN_MODEL) != 0);
-  }
-
-  boolean isModelVisible() {
-    return ((shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0);
-  }
-
-  boolean isShapeVisible(int shapeVisibilityFlag) {
-    return (isModelVisible() 
-        && (shapeVisibilityFlags & shapeVisibilityFlag) != 0);
+    return (formalChargeAndFlags & VISIBLE_FLAG) != 0;
   }
 
   float getPartialCharge() {
-    if (group == null)
-      return 0;
     float[] partialCharges = group.chain.frame.partialCharges;
     return partialCharges == null ? 0 : partialCharges[atomIndex];
   }
@@ -559,8 +461,8 @@ final class Atom implements Tuple {
 
   public float getDimensionValue(int dimension) {
     return (dimension == 0
-       ? point3f.x
-       : (dimension == 1 ? point3f.y : point3f.z));
+		   ? point3f.x
+		   : (dimension == 1 ? point3f.y : point3f.z));
   }
 
   short getVanderwaalsMar() {
@@ -615,10 +517,6 @@ final class Atom implements Tuple {
     return colixAtom;
   }
 
-  int getArgb() {
-    return group.chain.frame.viewer.getColixArgb(colixAtom);
-  }
-
   float getRadius() {
     if (madAtom == JmolConstants.MAR_DELETED)
       return 0;
@@ -626,15 +524,11 @@ final class Atom implements Tuple {
   }
 
   char getChainID() {
-    if (group == null)
-      return 0;
     return group.chain.chainID;
   }
 
   // a percentage value in the range 0-100
   int getOccupancy() {
-    if (group == null)
-      return 100;
     byte[] occupancies = group.chain.frame.occupancies;
     return occupancies == null ? 100 : occupancies[atomIndex];
   }
@@ -642,8 +536,6 @@ final class Atom implements Tuple {
   // This is called bfactor100 because it is stored as an integer
   // 100 times the bfactor(temperature) value
   int getBfactor100() {
-    if (group == null)
-      return 0;
     short[] bfactor100s = group.chain.frame.bfactor100s;
     if (bfactor100s == null)
       return 0;
@@ -655,26 +547,18 @@ final class Atom implements Tuple {
   }
 
   int getPolymerLength() {
-    if (group == null)
-      return 0;
     return group.getPolymerLength();
   }
 
   int getPolymerIndex() {
-    if (group == null)
-      return -1;
     return group.getPolymerIndex();
   }
 
   int getSelectedGroupCountWithinChain() {
-    if (group == null)
-      return 0;
     return group.chain.getSelectedGroupCount();
   }
 
   int getSelectedGroupIndexWithinChain() {
-    if (group == null)
-      return -1;
     return group.chain.getSelectedGroupIndex(group);
   }
 
@@ -698,14 +582,10 @@ final class Atom implements Tuple {
   }
 
   Chain getChain() {
-    if (group == null)
-      return null;
     return group.chain;
   }
 
   Model getModel() {
-    if (group == null)
-      return null;
     return group.chain.model;
   }
 
@@ -713,13 +593,7 @@ final class Atom implements Tuple {
     return modelIndex;
   }
   
-  int getModelNumber() {
-    return modelIndex + 1;
-  }
-  
   String getClientAtomStringProperty(String propertyName) {
-    if (group == null)
-      return null;
     Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
     return
       ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
@@ -739,50 +613,35 @@ final class Atom implements Tuple {
   }
 
   byte getProteinStructureType() {
-    if (group == null)
-      return 0;
     return group.getProteinStructureType();
   }
 
   short getGroupID() {
-    if (group == null)
-      return -1;
     return group.groupID;
   }
 
   String getSeqcodeString() {
-    if (group == null)
-      return null;
     return group.getSeqcodeString();
   }
 
   String getModelTag() {
-    if (group == null)
-      return null;
     return group.chain.model.modelTag;
   }
 
   int getModelTagNumber() {
-    if (group == null)
-      return 0;
-    if (group.chain.frame.isPDB) {
-      try {
-        return Integer.parseInt(group.chain.model.modelTag);
-      } finally {}
-    }  
-    return getModelNumber();
+    try {
+      return Integer.parseInt(group.chain.model.modelTag);
+    } catch (NumberFormatException nfe) {
+      return modelIndex + 1;
+    }
   }
   
   byte getSpecialAtomID() {
-    if (group == null)
-      return 0;
     byte[] specialAtomIDs = group.chain.frame.specialAtomIDs;
     return specialAtomIDs == null ? 0 : specialAtomIDs[atomIndex];
   }
 
   void demoteSpecialAtomImposter() {
-    if (group == null)
-      return;
     group.chain.frame.specialAtomIDs[atomIndex] = 0;
   }
   
@@ -964,7 +823,7 @@ final class Atom implements Tuple {
           strT = "" + getPolymerLength();
           break;
         case 'M':
-          strT = "" + getModelTagNumber();
+          strT = "/" + getModelTag();
           break;
         case 'm':
           strT = getGroup1();
@@ -997,7 +856,7 @@ final class Atom implements Tuple {
         }
         if (floatIsSet) {
           strLabel += format(floatT, width, precision, alignLeft, zeroPad);
-        } else if (strT != null) {
+        } else {
           strLabel += format(strT, width, precision, alignLeft, zeroPad);
         }
       } catch (IndexOutOfBoundsException ioobe) {
@@ -1019,8 +878,6 @@ final class Atom implements Tuple {
 
   static String format(String value, int width, int precision,
                        boolean alignLeft, boolean zeroPad) {
-    if (value == null)
-      return "";
     if (precision > value.length())
       value = value.substring(0, precision);
     int padLength = width - value.length();
@@ -1069,16 +926,16 @@ final class Atom implements Tuple {
     }
     if (group.chain.frame.getModelCount() > 1) {
       info.append("/");
-      info.append(getModelTagNumber());
+      info.append(getModelTag());
     }
     info.append(" #");
     info.append(getAtomNumber());
     return "" + info;
   }
 
-  boolean isCursorOnTopOfClickableAtom(int xCursor, int yCursor,
+  boolean isCursorOnTopOfVisibleAtom(int xCursor, int yCursor,
                                      int minRadius, Atom competitor) {
-    return (isClickable() &&
+    return (((formalChargeAndFlags & VISIBLE_FLAG) != 0) &&
             isCursorOnTop(xCursor, yCursor, minRadius, competitor));
   }
 
@@ -1143,21 +1000,5 @@ final class Atom implements Tuple {
 
   boolean isPyrimidine() {
     return group.isPyrimidine();
-  }
-
-  ////////////////////////////////////////////////////////////////
-
-  Hashtable getPublicProperties() {
-    Hashtable ht = new Hashtable();
-    ht.put("element", getElementSymbol());
-    ht.put("x", new Double(point3f.x));
-    ht.put("y", new Double(point3f.y));
-    ht.put("z", new Double(point3f.z));
-    ht.put("atomIndex", new Integer(atomIndex));
-    ht.put("modelIndex", new Integer(modelIndex));
-    ht.put("argb", new Integer(getArgb()));
-    ht.put("radius", new Double(getRadius()));
-    ht.put("atomNumber", new Integer(getAtomNumber()));
-    return ht;
   }
 }

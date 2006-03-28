@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Screenshots</title>
+
+  <section>
+    <screenshots>
+      <screenshot image="screenshot1.jpg">
+        A shaded rendering of caffeine.
+      </screenshot>
+      <screenshot image="screenshot2.jpg">
+        A frame of an S<sub>N</sub>2 reaction animation with the distance
+        measured between the chlorine and carbon atoms
+      </screenshot>
+      <screenshot image="screenshot3.jpg">
+        Vibration animation of methanol with vectors displayed.
+      </screenshot>
+      <screenshot image="screenshot4.jpg">
+        Display of a crystal structure.
+      </screenshot>
+      <screenshot image="screenshot5.jpg">
+        Display of bounding box and axes of coordinates space.
+        Note the transparency of the yellow halo around selected atoms.
+      </screenshot>
+      <screenshot image="hemes.jpg">
+        Hemoglobin with backbone trace colored by chain and spacefilled hemes.
+        <i>This image taken from the pre-release development version
+        of Jmol v10.</i>
+      </screenshot>
+      <screenshot image="aceticacid.jpg">
+        Acetic acid using CPK colors and spacefilled atoms.
+        <i>This image taken from the pre-release development version
+        of Jmol v10.</i>
+      </screenshot>
+      <screenshot image="bbdots.jpg">
+        A few residues with backbone in blue and vdw dots surface. 
+        <i>This image taken from the pre-release development version
+        of Jmol v10.</i>
+      </screenshot>
+    </screenshots>
+  </section>
+
+  </body>
+</document>
+

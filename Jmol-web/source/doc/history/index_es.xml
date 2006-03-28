@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+  Translated from default version : index_en.xml (v 1.1)
+-->
+<document>
+  <body>
+    <title>Historia</title>
+    
+    <section title="Orígenes de Jmol">
+
+      <p>
+        Jmol se concibió originalmente como un sustituto plenamente funcional de
+        XMol, que era un programa de visualización molecular desarrollado en el 
+        Centro de Supercomputación de Minnesota. Aunque se distribuyeron los programas ejecutables,
+        el código fuente no estaba disponible para los usuarios y, puesto que el 
+        programa no se ha mantenido, las versiones binarias gratuitas se han vuelto 
+        obsoletas. Por ejemplo, la versión de XMol para SGI no funciona en IRIX 6.x
+        debido a que IRIX ha cambiado a un nuevo formato ejecutable.
+      </p>
+      
+      <p>
+        El abandono de XMol dejó una necesidad de una herramienta similar. Dan Gezelter, el
+        creador de Jmol, optó por evitar los mismos problemas haciendo 
+        Jmol código abierto. Aunque no ha cumplido por completo el objetivo de 
+		reemplazar funcionalmente a XMol, Jmol reproduce muchas de
+        sus prestaciones más útiles y, de algún modo, ha superado la funcionalidad de XMol.
+        Se esperaba que Jmol incluyera con el tiempo prestaciones incluso más avanzadas.
+      </p>
+
+      <p>
+        Jmol comenzó como un proyecto de OpenScience, que se dedica a escribir
+        y ofrecer software científico gratuito y de código abierto.
+		Puede conseguir más información acerca del proyecto OpenScience en
+        <url>http://www.openscience.org/</url>
+      </p>
+    </section>
+
+    <section title="Jmol crece">
+      
+      <p>
+        Más tarde, Bradley A. Smith se hizo cargo del proyecto y trabajó mucho 
+        haciendo más eficiente el proyecto y el software. Bajo su liderazgo
+        aparecieron nuevas versiones disponibles para el conjunto de usuarios y se añadieron
+        muchas prestaciones nuevas, algunas de ellas aportadas por los propios usuarios.
+      </p>
+      
+      <p>
+	A finales de 2002, Egon Willighagen se convirtió en el nuevo líder del proyecto
+	y se comenzó a integrar Jmol con
+	<a href="http://cdk.sf.net/">The Chemical Development Kit</a>,
+	algo que ya había sido planeado en septiembre de 2000 por Dan, Egon
+	y Christoph Steinbeck. 
+      </p>
+    </section>
+
+    <section title="Jmol: un sustituto de código abierto para el conector Chime">
+
+      <p>
+	Miguel se unió al proyecto a finales de 2002, con el propósito explícito
+	de ayudar a convertir Jmol en un sustituto viable para el conector
+	Chime (<a href="http://www.mdlchime.com">www.mdlchime.com</a>).
+      </p>
+      <p>
+	En los primeros meses, Miguel aportó la traducción al español 
+	e hizo una transferencia inicial hacia el intérprete de instrucciones de RasMol/Chime.
+	Luego hizo algunas mejoras de eficiencia y comenzó a trabajar en el rendimiento de la
+	representación gráfica y en la rapidez.
+      </p>
+      <p>
+	Pronto fue evidente que los gráficos Java2D no proporcionaban 
+	la eficiencia y funcionalidad necesarias.
+	Además, quedó claro que el núcleo de clases de Jmol 
+	no admitiría la eficiencia y los requerimientos de espacio para
+	trabajar con macromoléculas que contienen decenas de miles de átomos.
+      </p>
+      <p>
+	En la primavera de 2003 Miguel comenzó a diseñar e implementar
+	un motor gráfico de elevada eficiencia basado en software. Para poder 
+	asegurar la utilización en la web de la miniaplicación Jmol era importante
+	que el motor corriera en la versión 1.1 de las máquinas virtuales de Java y que 
+	no se necesitara un hardware de gráficos especializado.
+      </p>
+      <p>
+	Miguel reescribió también el núcleo de clases para poder admitir 
+	moléculas mucho más grandes. Además, separó el acceso a archivos 
+	del núcleo de Jmol, haciendo mucho más sencilla la incorporación 
+	de nuevos tipos de archivo.
+      </p>
+      <p>
+	A finales de 2003 comenzó un prolongado periodo de pruebas.
+	Durante 2004, un pequeño grupo de usuarios de todo el mundo
+	contribuyó al desarrollo de Jmol
+	probándolo, explicando conceptos químicos
+	y explicando los comportamientos de las instrucciones de RasMol y Chime.
+      </p>
+      <p>
+	La versión 10 de Jmol, un sustituto de código abierto para el conector Chime,
+	estuvo disponible en diciembre de 2004.
+      </p>
+    </section>
+    <section title="Bibliografía de Jmol">
+      <p>
+        Se puede encontrar una lista actualizada de publicaciones que describen Jmol en
+        <a href="http://wiki.jmol.org/JmolLiterature">http://wiki.jmol.org/JmolLiterature</a>
+      </p>
+    </section>
+  </body>
+</document>
+
+

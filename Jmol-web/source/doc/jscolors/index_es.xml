@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+-->
+<document>
+  <body>
+    <title>Colores</title>
+
+    <section title="Colores usados por Jmol">
+      <script src="./jmol_constants.js" type="text/javascript"></script>
+      <script src="./jmol_colors_layout.js" type="text/javascript"></script>
+      <p>Los colores se especifican en forma de tripletes decimales [rojo,verde,azul] y hexadecimales RRVVAA.</p>
+
+      <section title="Átomos ('colores CPK')">
+        <p>Instrucciones relacionadas: <tt>color cpk , set defaultColors jmol , set defaultColors rasmol</tt></p>
+        <h4>Colores predeterminados para los elementos, según tabla periódica:</h4>
+        <div style="text-align:center; font-style:italic;">
+          (aparecen pistas al poner el puntero del ratón sobre cada elemento;<br/>
+           al hacer clic sobre un elemento avanzarás posiblemente* hasta su posición en la lista siguiente)<br/>
+          *no funciona en IE
+        </div>
+        <script type="text/javascript">buildPeriodicTable();</script>
+        <h4>Colores predeterminados para los elementos, según número atómico:</h4>
+        <p>El esquema &#x201C;CPKnew&#x201D; sólo es aplicable a Rasmol v. 2.7.3 (o posterior); sólo se muestran las diferencias con el CPK clásico.</p>
+        <p>Nota: CPKnew para átomos desconocidos es
+          <span style="background-color:#FA1691;">FA1691</span>,
+          ligeramente diferente del CPK
+          <span style="background-color:#FF1493;">FF1493</span>,
+          pero se ha omitido en la tabla por claridad.
+        </p>
+        <script type="text/javascript">buildElementTable();</script>
+      </section>
+
+      <section title="Estructura secundaria">
+        <p>Instrucción relacionada: <tt>color structure</tt></p>
+        <script type="text/javascript">buildStructTable(
+          'Proteína',
+          ['hélice &#x03B1;','lámina &#x03B2;','giro (&#x03B2;)','otra'],
+          '(igual en RasMol)',
+          'Ácido nucleico',
+          ['DNA','RNA'],
+          '(igual en DRuMS)');
+        </script>
+      </section>
+
+      <section title="Residuos">
+        <p>Instrucciones relacionadas: <tt>color amino, color shapely</tt></p>
+        <script type="text/javascript">assignLastAa('otro');
+		  buildResidueTable(
+          'Proteína', 'amino', 'Proteína', 'shapely', '(igual en RasMol)',
+          'Nucleico', 'shapely', '(A,G,C,T igual en RasMol)');
+        </script>
+      </section>
+
+      <section title="Cadenas">
+        <p>Instrucción relacionada: <tt>color chain</tt></p>
+        <script type="text/javascript">assignLastChain('ninguno/<br/>numérico');
+		buildChainTable('Identificador', 'de cadena');
+        </script>
+      </section>
+
+      <section title="Carga">
+        <p>Instrucciones relacionadas: <tt>color formalCharge, color partialCharge</tt></p>
+        <script type="text/javascript">buildChargeTable('Carga');
+        </script>
+      </section>
+
+      <section title="Enlaces de hidrógeno">
+        <p>Instrucción relacionada: <tt>color hbonds type </tt></p>
+		<script type="text/javascript">buildHbondsTable(
+          'Distancia',
+          ['+2', '+3 (giros)', '+4 (hélice &#x03B1;)', '+5', '-3', '-4', 'otra (lámina &#x03B2;)', 'nucleótido']);
+        </script>
+      </section>
+
+      <section title="Gradiente rojo-blanco-azul">
+        <p>Instrucciones relacionadas: <tt>color temperature, color relativeTemperature, color fixedTemperature</tt></p>
+        <script type="text/javascript">buildRwbTable(
+          'mayor variabilidad posicional',
+          'menor variabilidad posicional');
+        </script>
+      </section>
+
+      <section title="Gradiente arco iris azul-rojo">
+        <script type="text/javascript">buildRainbowTable(
+          'N-terminal o 5&#8217;-',
+          'C-terminal o 3&#8217;-');
+        </script>
+      </section>
+
+      <section title="Isosuperficies">
+        <script type="text/javascript">buildIsoSurfaceTables(
+          'Positivas', 'Negativas');
+        </script>
+      </section>
+      
+      <section title="Fuentes">
+        <ul>
+          <li><a href="http://cvs.sourceforge.net/viewcvs.py/jmol/Jmol/src/org/jmol/viewer/JmolConstants.java?view=markup">
+            JmolConstants.java</a></li>
+          <li><a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm#cpkcolours">
+            Colores usados por Rasmol y Chime</a>
+            (RasMol 2.6&#x03B2;2, Eric Martz, <tt>http://www.umass.edu/microbio/rasmol/</tt>).</li>
+          <li><a href="http://openrasmol.org/doc/rasmol.html#cpkcolours">
+            Colores usados por Rasmol</a>
+            (manual oficial de Rasmol, <tt>http://openrasmol.org/</tt>).</li>
+          <li><a href="http://www.umass.edu/molvis/drums/">Esquema de colores DRuMS</a>
+            (pendiente de ser incorporado aquí al completo).</li>
+        </ul>
+      </section>
+    </section>
+
+    <section title="Colores de JavaScript">
+      <script src="./jsColorNames.js"></script>
+    </section>
+
+    <section title="Paleta de colores de 8 bits de Netscape">
+      <script src="./colors.js"></script>
+    </section>
+
+  </body>
+</document>

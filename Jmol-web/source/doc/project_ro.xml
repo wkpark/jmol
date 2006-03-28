@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Romanian translation 
+  Translated from default version : project_en.xml (v 1.5)
+-->
+<!DOCTYPE somethingOrAnything [
+<!ENTITY language SYSTEM "language.xml" >
+]>
+<project name="Jmol">
+
+  <title>Jmol</title>
+
+  <links>
+    <table width="100%">
+      <tr>
+        <td align="left" valign="middle">
+          <a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
+          &language;
+        </td>
+        <td align="right" valign="middle">
+          <font size="2">
+            <a href="[root]/">Acasa</a> |
+            <a href="[root]/websites/">Pagini</a> |
+            <a href="[root]/history/">Istorie</a> |
+            <a href="[root]/changes/">Modificari</a> |
+            <a href="[root]/technotes/">Note tehnice</a> |
+            <a href="[root]/faqs/">Intrebari Frecvente</a>
+            <br/>
+            <a href="http://wiki.jmol.org">Wiki</a> |
+            <a href="[root]/docs/">Documentatie</a> |
+            <a href="http://www.stolaf.edu/people/hansonr/jmol/docs"
+              target="_blank" >
+              Document Interactiv Scripting
+            </a> |
+            <a href="[root]/browsercheck/">Verifica Browser</a>
+            <br/>
+            <a href="[root]/demo/">Pagina demonstratii</a> |
+            <a href="[root]/jslibrary/">Libraria JavaScript</a> |
+            <a href="[root]/plugins/">Pluginuri</a> |
+            <a href="[root]/jscolors/">Culori</a>
+            <br/>
+            <a href="[root]/download/">Descarca</a> |
+            <a href="[root]/lists/">Liste email</a> |
+            <a href="http://sourceforge.net/projects/jmol">
+              Pagina proiectului la SourceForge
+            </a> |
+            <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">
+              Baza de date a bugurilor
+            </a>
+          </font>
+        </td>
+      </tr>
+    </table>
+  </links>
+
+  <notice>
+    <p><small>
+      Gazduit de
+      <a href="http://www.sf.net/projects/jmol/">
+        <img src="http://www.sf.net/sflogo.php?group_id=23629" border="0" 
+          alt="SourceForge Logo" align="middle"/>
+      </a>
+    </small></p>
+  </notice>
+
+</project>

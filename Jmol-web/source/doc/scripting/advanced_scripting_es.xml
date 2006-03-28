@@ -1,0 +1,105 @@
+<![CDATA[
+<script>
+function run(script) {
+  document.jmol2.script(script);
+}
+
+function addToScript(script) {
+  fullscript = document.area.script.value;
+  fullscript += script + '\n';
+  document.area.script.value = fullscript;
+}
+  
+function linkScript(script) {
+  document.write('<a href="javascript:addToScript(');
+  document.write("'" + script + "'");
+  document.write(')\">');
+  document.write(script);
+  document.writeln('</a>&nbsp;&nbsp');
+}
+
+function br() {
+  document.write("<br>");
+}
+
+</script>
+<table border=1>
+<tr><td width=350 align=right>
+<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
+        width="350" height="350" align="left" mayscript="true">
+    <param name="bgcolor" value="black">
+    <param name="progressbar" value="true">
+</applet>
+</td>
+<td>
+Escribe aqu&iacute; tu gui&oacute;n de RasMol/Chime:
+<form name="area">
+<textarea name="script" cols=40 rows=10></textarea><br>
+<input type="reset"  value="Borrar">
+<input type="button" value="Ejecutar"
+  onClick="run(document.area.script.value)">
+</form>
+<br>
+Escribe aqu&iacute; instrucciones de RasMol/Chime en una sola l&iacute;nea:
+<form name="line" onSubmit=
+ "run(document.line.script.value);document.line.script.select();return false;">
+<input name="script" onFocus="document.line.script.select()" size=50 type=text>
+</form>
+</td></tr></table>
+
+<script>
+linkScript('load aspirina.mol');
+linkScript('load caffeine.xyz');
+linkScript('load dna.xyz');
+linkScript('load estron.cml');
+br();
+linkScript('set display selected');
+linkScript('set display normal');
+linkScript('set bondmode or');
+linkScript('set bondmode and');
+br();
+linkScript('color atoms purple');
+linkScript('color bonds green');
+linkScript('color yellow');
+linkScript('color atoms [100, 150, 200]');
+br();
+linkScript('select all');
+linkScript('select none');
+linkScript('select atomno=1,atomno=2');
+linkScript('select elemno=1');
+linkScript('select hydrogens');
+linkScript('select carbons');
+br();
+linkScript('delay .1');
+linkScript('delay .5');
+linkScript('delay');
+linkScript('delay 5');
+linkScript('refresh');
+br();
+linkScript('reset');
+linkScript('rotate x 15');
+linkScript('rotate y 15');
+linkScript('rotate z 15');
+linkScript('move 360 0 0 0 0 0 0 0 4');
+linkScript('move 0 360 0 0 0 0 0 0 4');
+linkScript('move 0 0 360 0 0 0 0 0 4');
+br();
+linkScript('translate x 50');
+linkScript('translate x 0');
+linkScript('translate x -50');
+linkScript('move 0 0 0 0 50 -50 0 0 4');
+linkScript('move 0 0 0 0 -50 50 0 0 4');
+br();
+linkScript('zoom 50');
+linkScript('zoom 200');
+linkScript('move 0 0 0 100 0 0 0 0 4');
+br();
+linkScript('set boundbox on');
+linkScript('set boundbox off');
+linkScript('set axes on');
+linkScript('set axes off');
+br();
+linkScript('monitor 1 4');
+</script>
+]]>

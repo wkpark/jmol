@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE history
+[
+<!ENTITY contributors SYSTEM "contributors.xml">
+<!ENTITY changes      SYSTEM "changes.xml">
+]
+>
+<document>
+  <body>
+    <title>Jmol Changes</title>
+      <section title="Contributors">
+        &contributors;
+      </section>
+      <section title="Changes">
+        &changes;
+    </section>
+  </body>
+</document>

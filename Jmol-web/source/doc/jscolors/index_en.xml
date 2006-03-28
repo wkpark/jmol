@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Colors</title>
+
+    <section title="Jmol colors">
+      <script src="./jmol_constants.js" type="text/javascript"></script>
+      <script src="./jmol_colors_layout.js" type="text/javascript"></script>
+      <p>Objects can be custom colored in Jmol using the color (or colour) command:<br/>
+<tt>color [object] [color or color scheme]</tt></p>
+	  <ul>
+	  	<li><tt>[color]</tt> is specified as decimal [red,green,blue] or hexadecimal [#RRGGBB] triplets. (For the default colors and color values used in Jmol, see table below.) </li>
+		<li><tt>[color scheme]</tt> is specified using pre-defined terms detailed on this page.</li> 
+		<li><tt>[object]</tt> can be atoms, bonds, backbone, cartoon, stars, rockets, ribbon, dots, label, echo, hbonds, ssbonds, axes, boundbox, measures, polyhedra, isosurfaces, pmesh, unitcell.</li>
+	  	<li>if the object is omitted, <tt>atoms</tt> is assumed</li>
+	  </ul>
+	  <p>Information on RasMol colors is included for those who are adapting RasMol and Chime-based materials for use in Jmol.</p>
+	  <br/>
+
+      <section title="Atoms ('CPK' colors, default element colors)">
+        <p>Related commands: <br/><tt>color [object] cpk , set defaultColors jmol , set defaultColors rasmol</tt>
+		<blockquote>Applies color to each atom of the object according to element, as shown in the tables below. Backbone displays such as ribbons, cartoons, etc. are rendered in the color of alpha carbons for proteins, phosphorus for nucleic acids. 
+		</blockquote>
+		</p>
+
+        <h4>Default element colors, by periodic table:</h4>
+        <div style="font-style:italic;">
+        <blockquote>Hover over any element to see more information.<br/>
+          Click* on an element to move to the same information in the Atomic Numbers table below.<br/>
+          *does not work in Internet Explorer.
+        </blockquote>
+        </div>
+        <script type="text/javascript">buildPeriodicTable();</script>
+        <br/>
+        <h4>Default element colors, by atomic number:</h4>
+        <blockquote>&#x201C;CPKnew&#x201D; scheme applies only to Rasmol v. 2.7.3 (or later); only differences with classic CPK are shown. Note: CPKnew for unknown atoms is
+          <span style="background-color:#FA1691;">FA1691</span>,
+          slightly different from CPK
+          <span style="background-color:#FF1493;">FF1493</span>,
+          but has been omitted for clarity in the table.
+		</blockquote>
+        <script type="text/javascript">buildElementTable();</script>
+        <br/><br/>
+      </section>
+
+      <section title="Chains">
+        <p>Related command: <tt>color [object] chain</tt>
+        <blockquote>Renders each chain in the structure in a different color. This color scheme is particularly useful for distinguishing the parts of a multimeric structure or the individual DNA strands of a double helix.
+		</blockquote>
+		</p>
+        <script type="text/javascript">assignLastChain('none/<br/>numeric');
+          buildChainTable('Chain', 'ID');
+        </script>
+        <br/><br/>
+      </section>
+
+      <section title="Chain Direction">
+		<p>Related commands: <tt>color [object] group, color [object] monomer</tt>
+		<blockquote><b>'Group'</b> uses a reverse rainbow spectrum (blue -> green -> yellow -> orange -> red) to color the specified groups (for example, residues or nucleotides) according to position along a chain of groups. The spectrum is applied only across the specified or selected groups in the chain. For proteins, the N terminus is blue and the C terminus is red. For nucleic acids, the 5' terminus is blue, and the 3' terminus is red. If any atom in a group is selected then the group is considered selected. <br/><br/>
+		The color group command
+		<ul>
+		<li>operates within every chain independently,</li>
+		<li>operates on the selected or specified set of groups, not the entire chain, and</li>
+		<li>uses the group index within the chain, not the number assigned to the group in the model file.</li>
+		</ul>
+		<br/>
+		<b>'Monomer'</b> is a variation on 'group', relating to "monomers" in a "polymer" rather than "groups" in a "chain". A "polymer" is a series of connected "monomers" (at least for these purposes). Thus, if chain "A" has a break in it, color monomer recognizes the 2 pieces of chain "A" as separate polymers, coloring each from red to blue independently, despite the fact that both parts are designated as chain "A" in the coordinate file. HETERO groups may participate in a polymer, depending upon how the pdb/mmCIF file is marked up, and as long as they have a backbone pattern that Jmol can recognize as a sequence of individual units.
+		</blockquote>
+		</p>
+        <script type="text/javascript">buildRainbowTable(
+          'N-terminal or 5&#8217;-',
+          'C-terminal or 3&#8217;-');
+        </script>
+        <p><b>RasMol/Chime note</b>: The group index is relative to the groups of the chain that are currently selected. This differs from RasMol/Chime where group index is relative to the full chain. In addition, the "set hetero" command is not implemented. If you want to exclude "hetero" groups, then do not select them.
+		</p>
+        <br/><br/>
+      </section>
+
+      <section title="Charge">
+        <p>Related commands: <tt>color [object] formalCharge, color [object] partialCharge</tt>
+        <blockquote>Distinguishes atoms based on charge. Uses a series of shades of reds for negatively charged (electron-rich) groups and shades of blue for positively charged (electron-poor) groups. The greater the degree of charge, the deeper the color. Uncharged groups are white. The range of values for formal charge is -4 through +7; the range for partial charge is -1 to +1. 
+		</blockquote>
+		</p>
+        <script type="text/javascript">buildChargeTable('Charge');
+        </script>
+        <br/><br/>
+      </section>
+
+      <section title="Hydrogen bonds">
+        <p>Related command: <tt>color hbonds type </tt>
+        <blockquote>Colors hydrogen bonds in a protein based on the number of residues between the atoms participating in the bond. A different color is used for hydrogen bonds in nucleic acids. 
+		</blockquote>
+		</p>
+        <script type="text/javascript">buildHbondsTable(
+          'Distance',
+          ['+2', '+3 (turns)', '+4 (&#x03B1;-helix)', '+5', '-3', '-4', 'other (&#x03B2;-sheet)', 'nucleotide']);
+        </script>
+        <br/><br/>
+      </section>
+
+      <section title="Isosurfaces">
+        <script type="text/javascript">buildIsoSurfaceTables(
+          'Positive', 'Negative');
+        </script>
+        <br/><br/>
+      </section>
+      
+      <section title="Positional Variability">
+        <p>Related commands: <tt>color [object] relativeTemperature, color [object] fixedTemperature</tt>
+		<blockquote>Color codes each atom according to the temperature-factor (B-factor, or Debye-Waller factor) value stored in the PDB or mmCIF file. Typically this gives a measure of the mobility or uncertainty of a given atom's position. A high crystallographic B-factor may indicate an incorrect structure. <br/><br/>
+		Higher B-factor values (higher positional variability) are colored in warmer (red) colors and lower values in colder (blue) colors. For 'fixedTemperature', the index is relative to an absolute scale of 0 to 100; for 'relativeTemperature', the color is relative to the lowest and highest B-factor values within the file.<br/><br/>
+		Note: The temperature-factor fields in a PDB file can be used by the file creator to indicate any characteristic of the atoms of the model. For example, sometimes the fields are used to associate a "scale" value (such as amino acid variability in viral mutants) with each atom in a PDB file.  
+		</blockquote>
+		</p>
+        <script type="text/javascript">buildRwbTable(
+          'highest positional variability',
+          'lowest positional variability');
+        </script>
+        <p><b>Rasmol/Chime note</b>: <tt>temperature</tt> can be used in place of <tt>relativeTemperature</tt>.</p>
+
+        <br/><br/>
+      </section>
+
+      <section title="Residues, Nucleotides">
+        <p>Related commands: <tt>color [object] amino, color [object] shapely</tt>
+        <blockquote>
+		<b>'Amino'</b> renders each of the 20 standard amino acid residues (as well as ASX and GLX) in a different color, for a total of 22 colors for amino acids, along with one additional color for anything that is not a standard amino acid residue, AGX, or GLX (including nucleotides, solvents, and non-amino ligands). 
+		<br/><br/>
+		<b>'Shapely'</b> differentially colors nucleotides as well as protein residues, and uses a different set of colors than does 'amino'.
+		</blockquote>
+		</p>
+        <script type="text/javascript">assignLastAa('other');
+          buildResidueTable(
+          'Protein', 'amino', 'Protein', 'shapely', '(same in RasMol)',
+          'Nucleic', 'shapely', '(A,G,C,T same in RasMol)');
+        </script>
+        <br/><br/>
+      </section>
+
+      <section title="Secondary structure">
+        <p>Related command: <tt>color [object] structure</tt>
+        <blockquote>Uses six different colors to distinguish four protein secondary structures (alpha helices, beta sheets, turns, and loops) and DNA vs. RNA. The secondary structure is either read from the PDB file (HELIX and SHEET records), if available, or determined using an algorithm. 
+		</blockquote>
+		</p>
+        <script type="text/javascript">buildStructTable(
+          'Protein',
+          ['&#x03B1;-helix','&#x03B2;-sheet','(&#x03B2;) turn','other'],
+          '(same in RasMol)',
+          'Nucleic acid',
+          ['DNA','RNA'],
+          '(same in DRuMS)');
+        </script>
+        <br/><br/>
+      </section>
+    </section>
+    
+      <section title="Sources">
+        <ul>
+          <li><a href="http://cvs.sourceforge.net/viewcvs.py/jmol/Jmol/src/org/jmol/viewer/JmolConstants.java?view=markup">
+            JmolConstants.java</a></li>
+          <li><a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm#cpkcolours">
+            Colors used by Rasmol and Chime</a>
+            (RasMol 2.6&#x03B2;2, Eric Martz, <tt>http://www.umass.edu/microbio/rasmol/</tt>).</li>
+          <li><a href="http://openrasmol.org/doc/rasmol.html#cpkcolours">
+            Colors used by Rasmol</a>
+            (official Rasmol 2.7.3 manual, <tt>http://openrasmol.org/</tt>).</li>
+          <li><a href="http://www.umass.edu/molvis/drums/">DRuMS color scheme</a>
+            (still to be fully incorporated here).</li>
+        </ul>
+      </section>
+
+    <section title="JavaScript colors">
+      <script src="./jsColorNames.js"></script>
+    </section>
+
+    <section title="Netscape 8 bit color palette">
+      <script src="./colors.js"></script>
+    </section>
+
+  </body>
+</document>

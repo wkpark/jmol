@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE history
+[
+<!ENTITY contributors SYSTEM "contributors.xml">
+<!ENTITY changes      SYSTEM "changes_nl.xml">
+]
+>
+<!--
+  Dutch translation 
+  Translated from default version : index_en.xml (v 1.2)
+-->
+<document>
+  <body>
+    <title>Jmol Changes</title>
+      <section title="Medewerkers">
+        &contributors;
+      </section>
+      <section title="Veranderingen">
+        &changes;
+    </section>
+  </body>
+</document>

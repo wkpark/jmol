@@ -1,0 +1,30 @@
+<![CDATA[
+<script>
+function play(script) {
+  document.anim.script(script);
+}
+</script>
+
+<applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
+        width="350" height="350" mayscript="true">
+  <param name="progressbar" value="true">
+  <param name="load"   value="SN1_reaction.xyz">
+</applet>
+<form>
+  <input type="button" value="|&lt;&lt;"  onClick="play('animate rewind')">
+  <input type="button" value="|&lt;"    onClick="play('animate prev')">
+  <input type="button" value="&gt;|"    onClick="play('animate next')">
+  <input type="button" value="&gt;"    onClick="play('animate play')">
+  <input type="button" value="&lt;" onClick="play('animate revplay')">
+  <br>
+  <input type="button" value="repetir tras 2 segundos"
+         onClick="play('animate play; loop 2')">
+  <br>
+  <input type="button" value="repetir inmediatamente"
+         onClick="play('animate play; loop 0')">
+  <br>
+  <input type="button" value="adelante y atras"
+         onClick="play('animate play; animate revplay; loop 0')">
+</form>
+]]>

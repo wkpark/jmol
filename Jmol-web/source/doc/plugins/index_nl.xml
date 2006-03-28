@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Dutch translation 
+  Translated from default version : index_en.xml (v 1.1)
+-->
+<document>
+  <body>
+    <title>Plugins voor de Jmol Applicaties</title>
+    
+    <section title="Wat zijn plugins?">
+      <p>
+        Plugins zijn kleine jar bestanden die de functionaliteit van het hoofdprogramma
+        Jmol uitbreiden. Een volledige lijst van plugins kan je vinden op de
+        <a href="http://www.woc.science.ru.nl/cdk/">CDK Plugins</a>
+        website, die tevens aanduidt waar deze plugins worden ge&#x00EF;nstalleerd.
+      </p>
+      <p>
+        Zowel Jmol $VERSION$ en Jmol 10 ondersteunen plugins. Versie 9 kan echter niet
+        alle plugins draaien, bvb. de DirBrowser plugin werkt niet.
+        De RSSViewer plugin werkt in beide versies.
+      </p>
+    </section>
+    
+    <section title="Standaard Plugin">
+      <p>
+         Jmol v10 heeft standaard de DirBrowser plugin.
+      </p>
+    </section>
+    
+  </body>
+</document>
+
+
+
+
+
+
+
+
+

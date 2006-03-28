@@ -1,0 +1,306 @@
+<?xml version="1.0"?>
+<!--
+  French translation 
+  Translated from default version : index_en.xml (v 1.4)
+-->
+<document>
+  <body>
+    <title>Jmol</title>
+    <header>
+      <table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
+        <tr>
+          <td><script type="text/javascript">
+            jmolApplet(300, "script script/promotion1.fr.txt");
+          </script></td>
+          <td>
+            <p>
+              Il s'agit d'une applet Jmol en action.
+            </p>
+            <p>
+              Elle ex&#x00E9;cute un script &#x00E9;crit dans le langage
+              de script Jmol/Rasmol/Chime.
+            </p>
+            <p>
+              Ce n'est <i>pas</i> un film, un diaporama ou un fichier image anim&#x00E9; ...
+              Jmol est une applet interactive pour navigateur web.
+            </p>
+          </td>
+        </tr>
+      </table>
+      <p>
+        <i>Regardez les</i> <a href="./demo/">pages de d&#x00E9;monstration</a>
+        <i>pour voir les boutons et les menus en action</i>
+      </p>
+      <hr />
+    </header>
+    
+    <section title="Vue d'ensemble">
+      <p>
+        Jmol est un outil de visualisation de mol&#x00E9;cules gratuit, open source
+        pour les &#x00E9;tudiants, les &#x00E9;ducateurs et les chercheurs en chimie
+        et en biochimie. Il est multi-plateformes, fonctionnant sous Windows,
+        Mac OS X et les syst&#x00E8;mes Linux/Unix.
+        <ul>
+          <li>
+            JmolApplet est une applet pour navigateur web qui peut &#x00EA;tre
+            int&#x00E9;gr&#x00E9;e dans des pages web.
+          </li>
+          <li>
+            L'application Jmol est une application Java ind&#x00E9;pendante qui
+            fonctionne sur le bureau.
+          </li>
+          <li>
+            JmolViewer est un kit de d&#x00E9;veloppement qui peut &#x00EA;tre
+            int&#x00E9;gr&#x00E9; dans d'autres applications Java.
+          </li>
+        </ul>
+      </p>
+    </section>
+
+    <section title="Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9;">
+      <p>
+        Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9; le Vendredi
+        17 D&#x00E9;cembre 2004.
+      </p>
+      <p>
+        Jmol v10 est une refonte et une r&#x00E9;&#x00E9;criture
+        compl&#x00E8;te de Jmol, entreprise au Printemps 2003, avec le
+        but pr&#x00E9;cis de d&#x00E9;velopper Jmol en un remplacement
+        pour le Plug-in Chime.
+      </p>
+      <p>
+        Jmol v10 conserve la plupart des caract&#x00E9;ristiques et des
+        fonctions des versions pr&#x00E9;c&#x00E9;dentes tout en offrant
+        des am&#x00E9;liorations significatives dans les domaines suivants:
+        <ul>
+          <li>
+            v&#x00E9;ritable moteur graphique 3D qui ne n&#x00E9;cessite
+            pas de mat&#x00E9;riel particulier
+          </li>
+          <li>
+            couleurs 24 bits avec &#x00E9;clairage et ombres exactes
+          </li>
+          <li>
+            performances de dessins nettement sup&#x00E9;rieures
+          </li>
+          <li>
+            g&#x00E8;re de grandes macromol&#x00E9;cules avec
+            d'excellentes performances
+          </li>
+          <li>
+            dessin des structures secondaires des
+            prot&#x00E9;ines/acides nucl&#x00E9;iques
+          </li>
+          <li>
+            compatibilit&#x00E9; des scripts RasMol/Chime
+          </li>
+        </ul>
+      </p>
+    </section>
+
+    <section title="Ce que disent les critiques">
+      <i>
+        Jmol v10: Je ne peux pas croire que c'est du Java!<br />
+        Mais c'est aussi open-source, il n'y a donc pas de question
+        &#x00E0; ce propos.<br />
+        Obtenez votre copie maintenant, avant qu'ils ne soient
+        &#x00E0; court des ces trucs machine virtuelle Java.<br />
+        C'est juste &#x00E0; temps (JIT) pour Noel, d'apr&#x00E8;s
+        ce que j'entends!
+      </i>
+      <blockquote>
+        Warren L. DeLano, shell-shocked C/Python developer<br />
+        Principal Scientist, <a href="http://www.delanoscientific.com">
+        DeLano Scientific</a>,
+        Auteur de <a href="http://pymol.sourceforge.net">PyMOL</a><br />
+        D&#x00E9;cembre 2004.
+      </blockquote>
+    </section>
+    
+    <section title="Caract&#x00E9;ristiques de Jmol v10">
+      <ul>
+        <li>
+          Logiciel gratuit, open-source sous licence
+          <a href="http://www.gnu.org/licenses/licenses.html#LGPL">
+            GNU Lesser General Public License
+          </a>
+        </li>
+        <li>
+          Applet, Application et Int&#x00E9;gration Syst&#x00E8;me de Composant
+          <ul>
+            <li>
+              JmolApplet est une applet de navigateur web qui peut &#x00EA;tre
+              int&#x00E9;gr&#x00E9;e dans des pages web. Elle est id&#x00E9;ale
+              pour le d&#x00E9;veloppement de cours sur le web et de bases de
+              donn&#x00E9;es chimiques accessibles sur le web. JmolApplet fournit
+              un moyen de mise &#x00E0; jour pour les utilisateurs du plug-in
+              <a href="httm://www.mdli.com">Chime</a>.
+            </li>
+            <li>
+              L'application Jmol est une application Java ind&#x00E9;pendante qui
+              fonctionne sur le bureau.
+            </li>
+            <li>
+              JmolViewer peut &#x00EA;tre int&#x00E9;gr&#x00E9; en tant que
+              composant dans d'autres applications Java.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Multi-plateformes
+          <ul>
+            <li>Windows</li>
+            <li>Mac OS X</li>
+            <li>Linux/Unix</li>
+          </ul>
+        </li>
+        <li>
+          Supporte tous les navigateurs web majeurs
+          <ul>
+            <li>Internet Explorer (Win32)</li>
+            <li>Mozilla/Firefox (Win32, OSX, *nix)</li>
+            <li>Safari (Mac OS X)</li>
+            <li>Opera 7.5.4 (Win32 seulement)</li>
+          </ul>
+        </li>
+        <li>
+          Dessin 3D haute-performance sans n&#x00E9;cessit&#x00E9; de
+          mat&#x00E9;riel particulier
+        </li>
+        <li>
+          Formats de fichier
+          <ul>
+            <li>
+              <a href="http://journals.iucr.org/c/services/cifguide.html">
+                CIF/mmCIF
+              </a>
+              - standard de l'Union Internationale de Cristallographie
+            </li>
+            <li>
+              <a href="http://www.xml-cml.org">CML</a>
+              - Chemical Markup Language
+            </li>
+            <li>
+              <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">GAMESS</a>
+              - Gordon Research Group, Iowa State University
+            </li>
+            <li>
+              <a href="http://www.gaussian.com/">Gaussian 94/98/03</a>
+              - Gaussian, Inc.
+            </li>
+            <li>
+              <a href="http://www.bioinformatics.org/ghemical/">Ghemical</a>
+            </li>
+            <li>
+              <a href="http://www.hyper.com/">HIN</a>
+              - HyperChem from Hypercube, Inc.
+            </li>
+            <li>
+              <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a>
+              - Schrodinger, LLC
+            </li>
+            <li>
+              <a href="http://www.mdli.com/">MOL/SDF</a>
+              - MDL Information Systems, Inc.
+            </li>
+            <li>
+              <a href="http://www.schrodinger.com/Products/mopac.html">
+                MOPAC 93/97/2002
+              </a>
+              - Schrodinger, LLC
+            </li>
+            <li>
+              <a href="http://www.rcsb.org/pdb/">PDB</a>
+              - Protein Data Bank
+            </li>
+            <li>
+              <a href="http://www.q-chem.com/">Q-Chem</a>
+              - Q-Chem, Inc.
+            </li>
+            <li>
+              <a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a>
+            </li>
+            <li>
+              <a href="http://www.wavefun.com">Spartan</a>
+              - Wavefunction, Inc.
+            </li>
+            <li>
+              <a href="http://www.uku.fi/~thassine/ghemical/">Ghemical</a>
+            </li>
+            <li>
+              <a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWChem</a>
+            </li>
+            <li>XYZ</li>
+          </ul>
+          <i>
+            * Les fichiers compress&#x00E9;s avec gzip sont
+            automatiquement d&#x00E9;compress&#x00E9;s
+          </i>
+        </li>
+        <li>
+          Animations
+        </li>
+        <li>
+          Vibrations
+        </li>
+        <li>
+          Support basique de la cellulaire unitaire
+        </li>
+        <li>
+          Formes sch&#x00E9;matiques pour les structures secondaires
+        </li>
+        <li>
+          Mesures
+          <ul>
+            <li>distance</li>
+            <li>angle</li>
+            <li>angle de torsion</li>
+          </ul>
+        </li>
+        <li>
+          Support du langage de script RasMol/Chime
+        </li>
+        <li>
+          Librairie de support JavaScript
+        </li>
+        <li>
+          Export en .jpg, .pdf et PovRay
+        </li>
+      </ul>
+    </section>
+
+    <section title="Listes de diffusion">
+      <p>
+        Les personnes int&#x00E9;ress&#x00E9;es par la visualisation
+        mol&#x00E9;culaire, en particulier les communaut&#x00E9;s de
+        l'&#x00E9;ducation et de la recherche, sont encourag&#x00E9;es &#x00E0;
+        rejoindre la
+        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
+          liste de diffusion mail jmol-users
+        </a>
+        o&#x00F9; vous pourrez partager des id&#x00E9;es et des exp&#x00E9;riences,
+        demander de l'aide et nous faire un retour.
+        Les
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
+          archives de jmol-user
+        </a>
+        peuvent &#x00EA;tre une r&#x00E9;f&#x00E9;rence utile.
+      </p>
+      
+      <p>
+        Les personnes s&#x00E9;rieusement int&#x00E9;ress&#x00E9;es pour participer
+        devraient rejoindre la
+        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
+          liste de diffusion mail jmol-developers
+        </a>
+        o&#x00F9; vous pourrez demander de nouvelles fonctions ou modifications,
+        discuter de l'impl&#x00E9;mentation, soumettre des patches, ou contribuer
+        avec du code.
+        Vous pouvez aussi parcourir les
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">
+          archives jmol-developers
+        </a>.
+      </p>
+    </section>
+  </body>
+</document>

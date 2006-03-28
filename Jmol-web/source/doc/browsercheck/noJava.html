@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html>
+  <head>
+    <title>No Java Detected</title>
+    <script src="../jmol/Jmol.js"></script>
+  </head>
+  <body>
+    <h1>
+      Java not found
+    </h1>
+    <p>
+      It seems that Java is not available to your web browser.
+      Either you do not have Java installed, or you have it disabled, or
+      it is not accessible through JavaScript. 
+    </p>
+    <p>
+      To install Java please go to
+      <a href="http://www.java.com/en/download">
+      www.java.com/en/download
+      </a>
+    </p>
+    <p>
+      If you have technical information that leads you to believe
+      that this browser should function properly with JavaScript,
+      Java applets, and LiveConnect communications between
+      JavaScript and Java applets, then please contact
+      <code>jmol-developers@lists.sf.net</code>
+    </p>
+    <script>
+      document.write(
+      "<pre>\n" +
+      "  browser: " + _jmol.browser +
+      "  version: " + _jmol.browserVersion +
+      "  os: " + _jmol.os + "\n\n" +
+      "  userAgent: " + _jmol.ua + "\n\n" +
+      "  window.javaEnabled(): " + navigator.javaEnabled() + "\n" +
+      "</pre>\n");
+    </script>
+  </body>
+</html>

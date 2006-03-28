@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!DOCTYPE somethingOrAnything [
+<!ENTITY eye_candy          SYSTEM "eye_candy.xml" >
+<!ENTITY basic_scripting    SYSTEM "basic_scripting.xml" >
+<!ENTITY advanced_scripting SYSTEM "advanced_scripting.xml" >
+<!ENTITY showing_animations SYSTEM "showing_animations.xml" >
+]>
+<document>
+  <body>
+    <title>Jmol Scripting</title>
+    
+    <header>
+      <p>
+        Both the application and the applet support scripting.
+        The examples below use the applet, but the scripts can be used
+	in the Jmol application too. We recommend testing and debugging
+	long scripts within the context of the Jmol application because
+	you can receive diagnostic error messages. 
+      </p>
+      <p>
+        Jmol implements a large subset of the RasMol/Chime molecular
+	visualization scripting language. A full description of the
+	RasMol scripting language is available in the RasMol manual
+	on the Open RasMol web site at
+	<a href="http://www.openrasmol.org/">http://www.openrasmol.org</a>.
+	A description of the scripting language extensions for the
+	MDL Chime plug-in are available at
+	<a href="http://www.mdlchime.com/">http://www.mdlchime.com</a>.
+      </p>
+      <p>
+        A description of the Jmol implementation of the scripting language
+	is available as part of the <a href="../docs/JmolUserGuide">Jmol User Guide</a>. 
+      </p>
+      <p>
+        For smaller scripts and small molecules the transition from
+	Chime to Jmol should be straightforward. 
+	With larger, more
+	complicated Chime web applications you may have challenges
+	because the button/event mechanism is different. 
+	With larger molecules Jmol currently has performance problems.
+	In addition, most protein-specific visualization commands/options
+	are not yet implemented in Jmol (cartoons, strands, etc). 
+      </p>
+      <p>
+        Simple scripts which are executed at applet load time can be
+	executed using the "script" parameter as part of your applet
+	definition in HTML. These scripts will execute 
+	on browser platforms which do not support JavaScript or the
+	LiveConnect interface between JavaScript and Java applets.
+      </p>
+      <p>
+        To develop more flexible web applications using the Jmol applet,
+	you write JavaScript code which passes text strings using the
+	"script" method of the applet. 
+      </p>
+      <p>
+        For additional examples and documentation on Jmol applet scripting
+	see the <a href="../applet">Applet web page</a>.
+      </p>
+    </header>
+
+    <section title="Eye Candy Without JavaScript">
+      <p>This example demonstrates how scripting can be used without
+      JavaScript. Browsers that do not support LiveConnect communication
+      between JavaScript and Java applets will still run this type
+      of script.
+
+      <table border="1"><tr><td>
+        <appletExample>&eye_candy;</appletExample>
+      </td></tr></table>
+      </p>
+      <br/>
+    </section>
+
+    <section title="Basic Scripting">
+      <p>
+        This example shows some of the scripting available.
+        <appletExample>&basic_scripting;</appletExample>
+      </p>
+    </section>
+
+    <section title="Advanced Scripting">
+      <p>
+        This examples shows more advanced interaction of a HTML page with
+        the applet.
+        <appletExample>&advanced_scripting;</appletExample>
+      </p>
+    </section>
+    
+    <section title="Showing Animations">
+      <p>
+        <appletExample>&showing_animations;</appletExample>
+      </p>
+    </section>
+    
+  </body>
+</document>

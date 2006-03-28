@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE somethingOrAnything [
+<!ENTITY eye_candy          SYSTEM "eye_candy.xml" >
+<!ENTITY basic_scripting    SYSTEM "basic_scripting.xml" >
+<!ENTITY advanced_scripting SYSTEM "advanced_scripting.xml" >
+<!ENTITY showing_animations SYSTEM "showing_animations.xml" >
+]>
+<!--
+  French translation 
+  Translated from default version : index_en.xml (v 1.2)
+-->
+<document>
+  <body>
+    <title>Langage de Script Jmol</title>
+    
+    <header>
+      <p>
+        L'application et l'applet supportent toutes les deux un langage
+        de script. Les exemples ci-dessous utilisent l'applet, mais les
+        scripts peuvent aussi &#x00EA;tre utilis&#x00E9;s dans
+        l'application Jmol. Nous recommandons de tester et de
+        d&#x00E9;buguer les grands scripts dans le contexte de
+        l'application Jmol car vous pouvez recevoir des messages de
+        diagnostic d'erreur.
+      </p>
+      <p>
+        Jmol impl&#x00E9;mente un grand sous-ensemble du langage de
+        script de visualisation mol&#x00E9;culaire RasMol/Chime. Une
+        description compl&#x00E8;te du langage de script RasMol est
+        disponible dans le manuel RasMol sur le site web Open RasMol
+        &#x00E0;
+        <a href="http://www.openrasmol.org/">
+          http://www.openrasmol.org
+        </a>.
+        Une description des extensions du langage de script pour le
+        plug-in MDL Chime est disponible &#x00E0;
+        <a href="http://www.mdlchime.com/">http://www.mdlchime.com</a>.
+      </p>
+      <p>
+        Une description de l'impl&#x00E9;mentation Jmol du langage de
+        script est disponible dans le
+        <a href="../docs/JmolUserGuide">Guide Utilisateur Jmol</a>. 
+      </p>
+      <p>
+        Pour les petits scripts et les petites mol&#x00E9;cules la
+        transition de Chime &#x00E0; Jmol devrait &#x00EA;tre
+        imm&#x00E9;diate. Avec des application web Chime plus grosses,
+        plus compliqu&#x00E9;es vous risquez d'avoir des difficult&#x00E9;s
+        car le m&#x00E9;canisme de bouton/&#x00E9;v&#x00E9;nement est
+        diff&#x00E9;rent.
+        Avec des mol&#x00E9;cules plus grosses, Jmol a actuellement des
+        probl&#x00E8;mes de performance. De plus, la plupart des
+        commandes/options de visualisation sp&#x00E9;cifiques aux
+        prot&#x00E9;ines ne sont pas encore impl&#x00E9;ment&#x00E9;es
+        dans Jmol (cartoons, strands, etc).
+      </p>
+      <p>
+        Les scripts simples qui sont ex&#x00E9;cut&#x00E9;s au chargement
+        de l'applet peuvent &#x00EA;tre ex&#x00E9;cut&#x00E9;s en
+        utilisant le param&#x00E8;tre "script" dans votre d&#x00E9;finition
+        HTML de votre applet. Ces scripts s'ex&#x00E9;cuteront sur les
+        plateformes de navigateurs qui ne supportent pas JavaScript ou
+        l'interface LiveConnect entre JavaScript et les applets Java.
+      </p>
+      <p>
+        Pour d&#x00E9;velopper des applications web plus flexibles en
+        utilisant l'applet Jmol, vous &#x00E9;crivez du code JavaScript
+        qui passe des cha&#x00EE;nes de caract&#x00E8;res en utilisant
+        la m&#x00E9;thode "script" de l'applet.
+      </p>
+      <p>
+        Pour des exemples suppl&#x00E9;mentaires et de la documentation
+        sur le langage de script Jmol, se reporter &#x00E0;
+        <a href="../applet">page web de l'Applet</a>.
+      </p>
+    </header>
+
+    <section title="Eye Candy Sans JavaScript">
+      <p>
+        Cet exemple d&#x00E9;montre comment le langage de script peut
+        &#x00EA;tre utilis&#x00E9; sans JavaScript. Les navigateurs qui
+        ne supportent pas la communication LiveConnect entre JavaScript
+        et les applets Java fonctionneront quand m&#x00EA;me avec ce
+        type de script.
+
+        <table border="1"><tr><td>
+          <appletExample>&eye_candy;</appletExample>
+        </td></tr></table>
+      </p>
+      <br/>
+    </section>
+
+    <section title="Langage de Script Basique">
+      <p>
+        Cet exemple montre une partie du langage de script disponible.
+        <appletExample>&basic_scripting;</appletExample>
+      </p>
+    </section>
+
+    <section title="Langage de Script Avanc&#x00E9;">
+      <p>
+        Cet exemple montre des interactions plus avanc&#x00E9;es d'une
+        page HTML avec l'applet.
+        <appletExample>&advanced_scripting;</appletExample>
+      </p>
+    </section>
+    
+    <section title="Afficher des Animations">
+      <p>
+        <appletExample>&showing_animations;</appletExample>
+      </p>
+    </section>
+    
+  </body>
+</document>

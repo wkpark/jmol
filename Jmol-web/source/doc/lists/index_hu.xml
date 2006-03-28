@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--
+  Hungarian translation 
+  Translated from default version : index_en.xml (v 1.1)
+-->
+<document>
+  <body>
+    <title>Jmol lezelez&#x00F5;list&#x00E1;k</title>
+
+    <section title="A jmol-users levelz&#x00F5;lista">
+      <p>
+        A <code>jmol-users@lists.sf.net</code> levelez&#x00F5;lista a Jmol-lal kapcsolatos
+        dolgok megbesz&#x00E9;l&#x00E9;s&#x00E9;re alakult. A t&#x00E9;m&#x00E1;khoz kiz&#x00E1;r&#x00F3;lag tagok sz&#x00F3;lhatnak hozz&#x00E1;.
+      </p>
+      <p>
+        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
+          Kattints ide
+        </a>
+        a <code>jmol-users@lists.sf.net</code> list&#x00E1;ra val&#x00F3; feliratkoz&#x00E1;shoz 
+        vagy az onnan t&#x00F6;rt&#x00E9;n&#x00F5; leiratkoz&#x00E1;shoz 
+      </p>
+      <p>
+        Ha k&#x00ED;v&#x00E1;ncsi vagy a r&#x00E9;gebbi hozz&#x00E1;sz&#x00F3;l&#x00E1;sokra n&#x00E9;zd &#x00E1;t a 
+        <code>jmol-users@lists.sf.net</code>
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
+          levlista-arch&#x00ED;vumot.
+        </a>
+      </p>
+    </section>
+
+    <section title="A jmol-developers levelez&#x00F5;lista">
+      <p>
+        A <code>jmol-developers@lists.sf.net</code> levelez&#x00F5;lista a Jmol szoftverrel
+        kapcsolatos fejleszt&#x00E9;sek megbesz&#x00E9;l&#x00E9;s&#x00E9;re alakult.
+      </p>
+      <p>
+        Felt&#x00E9;telezz&#x00FC;k, hogy mindenki, aki jelentkezik a jmol-developers 
+        (fejleszt&#x00F5;) list&#x00E1;ra feliratkozik a jmol-users (felhaszn&#x00E1;l&#x00F3;k)
+        list&#x00E1;ra is, &#x00ED;gy azt&#x00E1;n szeretn&#x00E9;nk, ha nem k&#x00FC;lden&#x00E9;tek el ugyanazt 
+        a levelet <code>jmol-developers</code>-re &#x00E9;s a <code>jmol-users</code>-re is.
+      </p>
+      <p>
+        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
+          Kattints ide
+        </a>
+        a <code>jmol-developers@lists.sf.net</code> list&#x00E1;ra val&#x00F3; feliratkoz&#x00E1;shoz 
+        vagy az onnan t&#x00F6;rt&#x00E9;n&#x00F5; leiratkoz&#x00E1;shoz 
+      </p>
+      <p>
+        Ha k&#x00ED;v&#x00E1;ncsi vagy a r&#x00E9;gebbi hozz&#x00E1;sz&#x00F3;l&#x00E1;sokra n&#x00E9;zd &#x00E1;t a  
+        <code>jmol-developers@lists.sf.net</code>
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">
+          levlista-arch&#x00ED;vumot.
+        </a>
+      </p>
+    </section>
+
+  </body>
+</document>

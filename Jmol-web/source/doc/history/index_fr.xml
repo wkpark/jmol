@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  French translation 
+  Translated from default version : index_en.xml (v 1.1)
+-->
+<document>
+  <body>
+    <title>Historique</title>
+    
+    <section title="Les origines de Jmol">
+
+      <p>
+        Jmol &#x00E9;tait initiallement pr&#x00E9;vu pour &#x00EA;tre
+        remplacement complet pour XMol qui &#x00E9;tait un programme de
+        visualisation mol&#x00E9;culaire d&#x00E9;velopp&#x00E9; au
+        Minnesota Supercomputer Center. Bien que les ex&#x00E9;cutables
+        du programme &#x00E9;taient distribu&#x00E9;s, le code source
+        n'&#x00E9;tait pas disponible pour les utilisateurs, et puisque
+        le programme n'a pas &#x00E9;t&#x00E9; maintenu, les versions
+        binaires gratuites sont devenues obsol&#x00E8;tes. Par exemple,
+        la version SGI de XMol ne marche pas sous IRIX car IRIX a
+        chang&#x00E9; de format d'ex&#x00E9;cutable.
+      </p>
+      
+      <p>
+        L'abandon de XMol a laiss&#x00E9; un besoin pour un outil
+        similaire. Dan Gezelter, &#x00E0; l'origine de Jmol, a choisi
+        d'&#x00E9;viter le m&#x00EA;me probl&#x00E8;me en mettant Jmol
+        open source. Bien qu'il n'ait pas compl&#x00E8;tement rempli le
+        but de remplacer fonctionnellement XMol, Jmol reprend beaucoup
+        des caract&#x00E9;ristiques utiles, et dans certains domaines, a
+        surpass&#x00E9; la fonction de XMol. Avec le temps, il &#x00E9;tait
+        esp&#x00E9;r&#x00E9; qui Jmol inclut encore plus de fonctions
+        avanc&#x00E9;es.
+      </p>
+
+      <p>
+        Jmol a commenc&#x00E9; en tant que projet OpenScience qui est
+        d&#x00E9;di&#x00E9; &#x00E0; l'&#x00E9;criture et la livraison
+        de logiciels scientiques gratuits et open source.
+        Pour de plus amples informations sur le projet OpenScience, se
+        reporter &#x00E0;
+        <url>http://www.openscience.org/</url>.
+      </p>
+    </section>
+
+    <section title="La croissance de Jmol">
+      
+      <p>
+        Plus tard, Bradley A. Smith a repris le projet et a fait beaucoup
+        de travail pour am&#x00E9;liorer le projet ainsi que le logiciel.
+        Sous sa conduite, les nouvelles versions ont trouv&#x00E9; leur
+        place aupr&#x00E8;s de la base des utilisateurs, et beaucoup de
+        nouvelles fonctions ont &#x00E9;t&#x00E9; ajout&#x00E9;es,
+        certaines contribu&#x00E9;es par des utilisateurs.
+      </p>
+      
+      <p>
+        A la fin de 2002, Egon Willighagen est devenu le nouveau
+        responsable du projet et a commenc&#x00E9; &#x00E0; int&#x00E9;grer
+        Jmol avec
+        <a href="http://cdk.sf.net/">The Chemical Development Kit</a>,
+        quelque chose qui &#x00E9;tait d&#x00E9;j&#x00E0; pr&#x00E9;vu en
+        Septembre 2000 par Dan, Egon et Christoph Steinbeck.
+      </p>
+    </section>
+
+    <section
+      title="Jmol - un remplacement open source pour le plugin Chime">
+
+      <p>
+        Miguel a rejoint le projet &#x00E0; la fin de 2002, avec le but
+        explicite d'aider &#x00E0; transformer Jmol en un remplacement
+        viable pour le plugin Chime
+        (<a href="http://www.mdlchime.com">www.mdlchime.com</a>)
+      </p>
+      <p>
+        Dans les premiers mois Miguel a contribu&#x00E9; &#x00E0; la
+        traduction initiale et a fait une premi&#x00E8;re passe sur
+        l'interpr&#x00E9;teur de script de RasMol/Chime. Il a ensuite fait
+        des am&#x00E9;liorations de performances et a commenc&#x00E9;
+        &#x00E0; travailler sur la performance de dessin et la vitesse.
+      </p>
+      <p>
+        Il est rapidement devenu &#x00E9;vident que les graphiques Java2D
+        n'apportaient pas les performances et les fonctions
+        n&#x00E9;cessaires. De plus, il est devenue &#x00E9;vident que
+        les classes du noyau de Jmol ne supporteraient pas les besoins de
+        performance et d'espace requises pour travailler avec des
+        macromol&#x00E9;cules de dizaines de milliers d'atomes.
+      </p>
+      <p>
+        Au printemps 2003, Miguel a commenc&#x00E9; &#x00E0; concevoir et
+        impl&#x00E9;menter un moteur graphique logiciel &#x00E0; hautes
+        performances. Pour s'assurer du d&#x00E9;ploiement web de l'applet
+        Jmol, il &#x00E9;tait important que le moteur fonctionne sur des
+        Machines Virtuelles Java 1.1 et qu'aucun mat&#x00E9;riel graphique
+        sp&#x00E9;cialis&#x00E9; ne soit n&#x00E9;cessaire.
+      </p>
+      <p>
+        Miguel a aussi r&#x00E9;&#x00E9;crit les classes du noyau pour
+        supporter de beaucoup plus grosses mol&#x00E9;cules. De plus, il
+        a s&#x00E9;par&#x00E9; toutes les E/S fichier du noyau Jmol,
+        rendant le support de nouveaux types de fichiers plus ais&#x00E9;.
+      </p>
+      <p>
+        Une p&#x00E9;riode de test &#x00E9;tendue a commenc&#x00E9;
+        &#x00E0; la fin de 2004. Pendant l'ann&#x00E9;e 2004, un petit
+        groupe d'utilisateurs dans le monde a contribu&#x00E9; au
+        d&#x00E9;veloppement en testant Jmol, en expliquant les concepts
+        chimiques, et en expliquant le comportement du langage de script
+        de RasMol et Chime.
+      </p>
+      <p>
+        Jmol version 10, un remplacement open source pour le plugin Chime,
+        a &#x00E9;t&#x00E9; livr&#x00E9; en D&#x00E9;cembre 2004.
+      </p>
+    </section>
+    <section title="Litt&#x00E9;rature Jmol">
+      <p>
+        Un liste &#x00E0; jour de la litt&#x00E9;rature d&#x00E9;crivant
+        Jmol peut &#x00EA;tre trouv&#x00E9; &#x00E0;
+        <a href="http://wiki.jmol.org/JmolLiterature">
+          http://wiki.jmol.org/JmolLiterature
+        </a>.
+      </p>
+    </section>
+  </body>
+</document>

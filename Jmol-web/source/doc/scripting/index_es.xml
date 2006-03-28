@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+  Translated from default version (...)_en.xml (v 1.2)
+-->
+<!DOCTYPE somethingOrAnything [
+<!ENTITY eye_candy          SYSTEM "eye_candy.xml" >
+<!ENTITY basic_scripting    SYSTEM "basic_scripting_es.xml" >
+<!ENTITY advanced_scripting SYSTEM "advanced_scripting_es.xml" >
+<!ENTITY showing_animations SYSTEM "showing_animations_es.xml" >
+]>
+<document>
+  <body>
+    <title>Guiones para Jmol</title>
+    
+    <header>
+      <p>
+        Tanto la aplicación como la miniaplicación admiten guiones, 
+        o conjuntos de instrucciones (<i>scripts</i>).
+        Los siguientes ejemplos usan la miniaplicación, pero los
+        guiones se pueden usar también en la aplicación.
+	Recomendamos probar y depurar los guiones largos dentro de la
+	aplicación Jmol, pues allí puedes recibir mensajes de error y de 
+	diagnóstico. 
+      </p>
+      <p>
+        Jmol implementa una buena parte del lenguaje de instrucciones 
+    de RasMol/Chime para la visualización molecular.
+	Se puede consultar una descripción completa de dicho lenguaje 
+	en el manual de RasMol, en la sede web de Open RasMol:
+	<a href="http://www.openrasmol.org/">http://www.openrasmol.org</a>.
+	También se puede consultar la ampliación del lenguaje para el conector
+	MDL Chime en
+	<a href="http://www.mdlchime.com/">http://www.mdlchime.com</a>.
+      </p>
+      <p>
+        Por último, hay una descripción de la implementación de este lenguaje 
+        en Jmol incluida en la <a href="../docs/JmolUserGuide">guía de usuario de Jmol</a>. 
+      </p>
+      <p>
+        Para los guiones simples y para moléculas pequeñas, 
+    la transición desde Chime a Jmol debería ser sencilla. 
+	Para aplicaciones Chime mayores y más complejas, es posible que haya 
+	cierta dificultad debido a que el mecanismo de botón y evento
+	es diferente. 
+	Con las moléculas muy grandes Jmol tiene actualmente problemas de rendimiento.
+	Además, muchas de las instrucciones y opciones específicas para la
+	visualización de proteínas aún no están implementadas en Jmol
+	(caricaturas, cintas, etc.). 
+      </p>
+      <p>
+        Los guiones sencillos que se ejecutan al tiempo de cargar la 
+    miniaplicación se pueden ejecutar mediante el parámetro "script" como
+    parte de la definición de la etiqueta APPLET en HTML.
+	Esos guiones se ejecutarán correctamente en los navegadores que no admiten
+	JavaScript o la interfaz LiveConnect de comunicación entre JavaScript y Java.
+      </p>
+      <p>
+        Para desarrollar aplicaciones web más flexibles utilizando la 
+    miniaplicación Jmol, debes escribir código javascript que pase cadenas de texto
+    utilizando el método "script" de la miniaplicación.
+      </p>
+      <p>
+        Hay ejemplos adicionales y documentación sobre los guiones para Jmol 
+	en la <a href="../applet">página de la miniaplicación</a>.
+      </p>
+    </header>
+
+    <section title="Vistoso sin javascript">
+      <p>Este ejemplo demuestra cómo es posible usar instrucciones sin necesidad
+      de javascript. Los navegadores que no admiten la comunicación mediante
+      LiveConnect entre JavaScript y Java también podrán ejecutar este tipo de 
+      guión.
+
+      <table border="1"><tr><td>
+        <appletExample>&eye_candy;</appletExample>
+      </td></tr></table>
+      </p>
+      <br/>
+    </section>
+
+    <section title="Instrucciones básicas">
+      <p>
+        Este ejemplo muestra algunas de las instrucciones disponibles.
+        <appletExample>&basic_scripting;</appletExample>
+      </p>
+    </section>
+
+    <section title="Instrucciones avanzadas">
+      <p>
+        Este ejemplo muestra una interacción más avanzada entre una página HTML 
+        y la miniaplicación.
+        <appletExample>&advanced_scripting;</appletExample>
+      </p>
+    </section>
+    
+    <section title="Cómo mostrar animaciones">
+      <p>
+        <appletExample>&showing_animations;</appletExample>
+      </p>
+    </section>
+    
+  </body>
+</document>

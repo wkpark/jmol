@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Plugins for the Jmol Applications</title>
+    
+    <section title="What are plugins?">
+      <p>
+        Plugins are small jar files which extend the functionality of
+        the core Jmol program.
+        A full list of plugins can be found at the 
+        <a href="http://www.woc.science.ru.nl/cdk/">CDK Plugins</a>
+        website, which also explains where these plugins are installed.
+      </p>
+      <p>
+        Both Jmol $VERSION$ and Jmol 10 support plugins. Version 9 cannot run
+        all plugins though, e.g. the DirBrowser plugin does not work.
+        The RSSViewer plugin does work in both versions.
+      </p>
+    </section>
+    
+    <section title="Default Plugins">
+      <p>
+        Jmol v10 by default includes the DirBrowser plugin.
+      </p>
+    </section>
+    
+  </body>
+</document>
+
+
+
+
+
+
+
+
+

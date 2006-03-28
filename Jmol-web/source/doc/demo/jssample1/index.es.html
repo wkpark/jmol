@@ -1,0 +1,52 @@
+<!--
+  Spanish translation 
+  Translated from default version : (...).en.html (v 1.1)
+-->
+<html>
+  <head>
+    <title>Ejemplo con controles para el usuario</title>
+    <script src="../../jmol/Jmol.js"></script> <!-- REQUIRED -->
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  </head>
+  <body>
+    <form> <!-- form tags should always be used around UI controls -->
+      <script>
+        jmolInitialize("../../jmol");
+        jmolCheckBrowser("popup", "../../browsercheck", "onClick");
+
+        jmolSetAppletColor("skyblue"); // if you don't want black
+
+	// 200x200 & file from another directory
+	jmolApplet(200, "load ../jssample0/caffeine.xyz");
+	jmolBr();
+	// a radio group
+	jmolHtml("átomos ");
+	jmolRadioGroup([
+          ["spacefill off",  "ocultos"],
+	  ["spacefill 20%",  "20%", "checked"],
+	  ["spacefill 100%", "100%"]
+	]);
+	jmolBr();
+	// a button
+	jmolButton("reset", "Restaurar la orientación original");
+	jmolBr();
+	// a checkbox
+	jmolCheckbox("spin on", "spin off", "girar");
+	jmolBr();
+	// a link
+	jmolLink("move 360 0 0 0 0 0 0 0 2", "Rotar una vez alrededor del eje X");
+	jmolBr();
+	// a menu
+	jmolMenu([
+	"background white",
+	["background skyblue", null, "selected"],
+	"background yellow",
+	"background salmon",
+	"background palegreen",
+	"background black"
+	]);
+      </script>
+    </form>
+  </body>
+</html>
+

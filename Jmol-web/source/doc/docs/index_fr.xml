@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+  French translation 
+  Translated from default version : index_en.xml (v 1.1)
+-->
+<document>
+  <body>
+    <title>Documentation Jmol</title>
+    
+    <header>
+      <p>
+        <i>
+          Notez qu'une partie de cette documentation s'applique &#x00E0; Jmol
+          version 9. Elle est en cours de r&#x00E9;&#x00E9;criture pour Jmol
+          version 10.
+        </i>
+      </p>
+    </header>
+
+    <section title="Documentation Interactive en Ligne du Langage de Script">
+      <p>
+        Cette documentation interactive en ligne d&#x00E9;crit le langage de script
+        Jmol/RasMol/Chime. Elle fournit d'excellentes d&#x00E9;monstrations et
+        exemples.
+      </p>
+      <p>
+        <a href="http://www.stolaf.edu/people/hansonr/jmol/docs">
+          Documentation Interactive en Ligne du Langage de Script Jmol
+        </a>
+      </p>
+    </section>
+
+    <section title="Le Guide des D&#x00E9;veloppeurs Jmol">
+      <p>
+        Le <a href="JmolDevelopersGuide_fr.html">Guide des D&#x00E9;veloppeurs Jmol</a>
+        d&#x00E9;crit les proc&#x00E9;dure de d&#x00E9;veloppement de Jmol.
+      </p>
+    </section>
+
+    <section title="Le Guide de Jmol v9">
+      <p>
+        <b>
+          Notez que cette documentation s'applique &#x00E0; Jmol version 9.
+          Elle est en cours de r&#x00E9;&#x00E9;criture pour Jmol version 10.
+        </b>
+      </p>
+      <p>
+        Le <a href="JmolUserGuide_fr/">Guide Jmol</a>
+        d&#x00E9;crit l'application Jmol.
+      </p>
+    </section>
+
+    <section title="Le Guide de l'Applet Jmol v9">
+      <p>
+        <b>
+          Notez que cette documentation s'applique &#x00E0; Jmol version 9.
+          Elle est en cours de r&#x00E9;&#x00E9;criture pour Jmol version 10.
+        </b>
+      </p>
+      <p>
+        Le <a href="JmolAppletGuide_fr.html">Guide de l'Applet Jmol</a>
+        d&#x00E9;crit l'applet Jmol.
+      </p>
+    </section>
+
+  </body>
+</document>

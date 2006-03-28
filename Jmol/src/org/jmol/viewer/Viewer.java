@@ -735,10 +735,7 @@ final public class Viewer extends JmolViewer {
   }
 
   boolean hasSelectionHalo(int atomIndex) {
-    return
-      selectionHaloEnabled &&
-      !repaintManager.wireframeRotating &&
-      selectionManager.isSelected(atomIndex);
+    return selectionHaloEnabled && selectionManager.isSelected(atomIndex);
   }
 
   boolean selectionHaloEnabled = false;
@@ -1378,14 +1375,6 @@ final public class Viewer extends JmolViewer {
     return repaintManager.frameRenderer;
   }
 
-  void setWireframeRotating(boolean wireframeRotating) {
-    repaintManager.setWireframeRotating(wireframeRotating);
-  }
-
-  boolean getWireframeRotating() {
-    return repaintManager.wireframeRotating;
-  }
-
   int motionEventNumber;
 
   public int getMotionEventNumber() {
@@ -1881,8 +1870,6 @@ final public class Viewer extends JmolViewer {
    ****************************************************************/
 
   public boolean getBooleanProperty(String key) {
-    if (key.equalsIgnoreCase("wireframeRotation"))
-      return getWireframeRotation();
     if (key.equalsIgnoreCase("perspectiveDepth"))
       return getPerspectiveDepth();
     if (key.equalsIgnoreCase("showAxes"))
@@ -1930,8 +1917,6 @@ final public class Viewer extends JmolViewer {
 
   public void setBooleanProperty(String key, boolean value) {
     refresh();
-    if (key.equalsIgnoreCase("wireframeRotation"))
-      { setWireframeRotation(value); return; }
     if (key.equalsIgnoreCase("perspectiveDepth"))
       { setPerspectiveDepth(value); return; }
     if (key.equalsIgnoreCase("showAxes"))
@@ -2199,15 +2184,6 @@ final public class Viewer extends JmolViewer {
 
   String getMeasureDistanceUnits() {
     return styleManager.measureDistanceUnits;
-  }
-
-  public void setWireframeRotation(boolean wireframeRotation) {
-    styleManager.setWireframeRotation(wireframeRotation);
-    // no need to refresh since we are not currently rotating
-  }
-
-  public boolean getWireframeRotation() {
-    return styleManager.wireframeRotation;
   }
 
   public void setJmolDefaults() {

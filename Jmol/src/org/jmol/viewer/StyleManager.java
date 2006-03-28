@@ -101,11 +101,6 @@ class StyleManager {
     propertyStyleString = s;
   }
 
-  boolean wireframeRotation = false;
-  void setWireframeRotation(boolean wireframeRotation) {
-    this.wireframeRotation = wireframeRotation;
-  }
-
   boolean zeroBasedXyzRasmol = false;
   void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
     this.zeroBasedXyzRasmol = zeroBasedXyzRasmol;
@@ -114,7 +109,6 @@ class StyleManager {
   void setCommonDefaults() {
     viewer.zoomToPercent(100);
     viewer.setPercentVdwAtom(20);
-    viewer.setWireframeRotation(false);
     viewer.setPerspectiveDepth(true);
     viewer.setBondTolerance(0.45f);
     viewer.setMinBondDistance(0.40f);

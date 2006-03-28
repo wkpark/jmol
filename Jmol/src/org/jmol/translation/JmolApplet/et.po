@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-27 22:58-0500\n"
+"POT-Creation-Date: 2006-03-28 07:28-0500\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -932,33 +932,32 @@ msgstr "Teljed RasMol/Chime"
 msgid "Zero Based Xyz Rasmol"
 msgstr "Zero Based Xyz Rasmol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1166
-msgid "Wireframe Rotation"
-msgstr "Sõrestiku Keeramine"
-
-#: org/jmol/popup/PopupResourceBundle.java:1168
+#: org/jmol/popup/PopupResourceBundle.java:1167
 msgid "Console..."
 msgstr "Konsool..."
 
-#: org/jmol/popup/PopupResourceBundle.java:1169
+#: org/jmol/popup/PopupResourceBundle.java:1168
 msgid "Open"
 msgstr "Ava"
 
-#: org/jmol/popup/PopupResourceBundle.java:1170
+#: org/jmol/popup/PopupResourceBundle.java:1169
 msgid "Close"
 msgstr "Sulge"
 
-#: org/jmol/popup/PopupResourceBundle.java:1172
+#: org/jmol/popup/PopupResourceBundle.java:1171
 msgid "About Jmol"
 msgstr "Jmol'ist"
 
-#: org/jmol/popup/PopupResourceBundle.java:1174
+#: org/jmol/popup/PopupResourceBundle.java:1173
 msgid "Mouse Manual"
 msgstr "Hiire Õpetus"
 
-#: org/jmol/popup/PopupResourceBundle.java:1175
+#: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Translations"
 msgstr "Tõlked"
+
+#~ msgid "Wireframe Rotation"
+#~ msgstr "Sõrestiku Keeramine"
 
 #, fuzzy
 #~ msgid ""

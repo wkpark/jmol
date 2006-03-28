@@ -1163,7 +1163,6 @@ class PopupResourceBundle {
     { "jmolColors", GT._("Jmol Colors") },
     { "axesOrientationRasmolCheckbox", GT._("Axes RasMol/Chime") },
     { "zeroBasedXyzRasmolCheckbox", GT._("Zero Based Xyz Rasmol") },
-    { "wireframeRotationCheckbox", GT._("Wireframe Rotation") },
 
     { "consoleMenu", GT._("Console...") },
     { "consoleOn", GT._("Open") },

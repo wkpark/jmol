@@ -145,20 +145,12 @@ class RepaintManager {
     return setAnimationRelative(-animationDirection);
   }
 
-  boolean wireframeRotating = false;
-  void setWireframeRotating(boolean wireframeRotating) {
-    this.wireframeRotating = wireframeRotating;
-  }
-
   boolean inMotion = false;
 
   void setInMotion(boolean inMotion) {
-    if (this.inMotion != inMotion && viewer.getWireframeRotation()) {
-      setWireframeRotating(inMotion);
-      if (!inMotion)
-        refresh();
-    }
     this.inMotion = inMotion;
+    if (! inMotion)
+      refresh();
   }
 
   Image takeSnapshot() {

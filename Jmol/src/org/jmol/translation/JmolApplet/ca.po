@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-27 22:58-0500\n"
+"POT-Creation-Date: 2006-03-28 07:28-0500\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -931,33 +931,32 @@ msgstr "Eixos del RasMol/Chime"
 msgid "Zero Based Xyz Rasmol"
 msgstr "Coordenades en zero del RasMol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1166
-msgid "Wireframe Rotation"
-msgstr "Rotació en mode filferro"
-
-#: org/jmol/popup/PopupResourceBundle.java:1168
+#: org/jmol/popup/PopupResourceBundle.java:1167
 msgid "Console..."
 msgstr "Consola..."
 
-#: org/jmol/popup/PopupResourceBundle.java:1169
+#: org/jmol/popup/PopupResourceBundle.java:1168
 msgid "Open"
 msgstr "Obre"
 
-#: org/jmol/popup/PopupResourceBundle.java:1170
+#: org/jmol/popup/PopupResourceBundle.java:1169
 msgid "Close"
 msgstr "Tanca"
 
-#: org/jmol/popup/PopupResourceBundle.java:1172
+#: org/jmol/popup/PopupResourceBundle.java:1171
 msgid "About Jmol"
 msgstr "Quant al Jmol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1174
+#: org/jmol/popup/PopupResourceBundle.java:1173
 msgid "Mouse Manual"
 msgstr "Manual del ratolí"
 
-#: org/jmol/popup/PopupResourceBundle.java:1175
+#: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Translations"
 msgstr "Traduccions"
+
+#~ msgid "Wireframe Rotation"
+#~ msgstr "Rotació en mode filferro"
 
 #, fuzzy
 #~ msgid ""

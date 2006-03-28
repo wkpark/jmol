@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-27 22:58-0500\n"
+"POT-Creation-Date: 2006-03-28 07:28-0500\n"
 "PO-Revision-Date: 2006-03-24 20:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -928,33 +928,32 @@ msgstr "Orientación de ejes Rasmol"
 msgid "Zero Based Xyz Rasmol"
 msgstr "Origen XYZ Rasmol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1166
-msgid "Wireframe Rotation"
-msgstr "Rotación como alambres"
-
-#: org/jmol/popup/PopupResourceBundle.java:1168
+#: org/jmol/popup/PopupResourceBundle.java:1167
 msgid "Console..."
 msgstr "Consola..."
 
-#: org/jmol/popup/PopupResourceBundle.java:1169
+#: org/jmol/popup/PopupResourceBundle.java:1168
 msgid "Open"
 msgstr "Abrir"
 
-#: org/jmol/popup/PopupResourceBundle.java:1170
+#: org/jmol/popup/PopupResourceBundle.java:1169
 msgid "Close"
 msgstr "Cerrar"
 
-#: org/jmol/popup/PopupResourceBundle.java:1172
+#: org/jmol/popup/PopupResourceBundle.java:1171
 msgid "About Jmol"
 msgstr "Acerca de Jmol"
 
-#: org/jmol/popup/PopupResourceBundle.java:1174
+#: org/jmol/popup/PopupResourceBundle.java:1173
 msgid "Mouse Manual"
 msgstr "Manual del ratón"
 
-#: org/jmol/popup/PopupResourceBundle.java:1175
+#: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Translations"
 msgstr "Traducciones"
+
+#~ msgid "Wireframe Rotation"
+#~ msgstr "Rotación como alambres"
 
 #~ msgid ""
 #~ "Jmol Applet version {0} {1}.\n"

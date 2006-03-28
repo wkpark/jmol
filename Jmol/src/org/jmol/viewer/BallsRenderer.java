@@ -27,7 +27,6 @@ package org.jmol.viewer;
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY;
-  boolean wireframeRotating;
   boolean showHydrogens;
   short colixSelection;
 
@@ -37,7 +36,6 @@ class BallsRenderer extends ShapeRenderer {
     minY = rectClip.y;
     maxY = minY + rectClip.height;
 
-    wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showHydrogens = viewer.getShowHydrogens();
 
@@ -74,12 +72,8 @@ class BallsRenderer extends ShapeRenderer {
     // mth 2004 04 02 ... hmmm ... I don't like this here ... looks ugly
     atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
 
-    if (!wireframeRotating)
-      g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
-                             atom.screenX, atom.screenY, atom.screenZ);
-    else
-      g3d.drawCircleCentered(atom.colixAtom, atom.screenDiameter,
-                             atom.screenX, atom.screenY, atom.screenZ);
+    g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
+                           atom.screenX, atom.screenY, atom.screenZ);
 
     if (hasHalo) {
       int halowidth = diameter / 4;

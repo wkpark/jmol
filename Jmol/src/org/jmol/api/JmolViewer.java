@@ -162,7 +162,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setPerspectiveDepth(boolean perspectiveDepth);
 
   abstract public boolean getPerspectiveDepth();
-  abstract public boolean getWireframeRotation();
   abstract public boolean getShowHydrogens();
   abstract public boolean getShowMeasurements();
 

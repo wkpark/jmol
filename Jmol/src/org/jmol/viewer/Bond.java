@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
+import java.util.Hashtable;
 
 class Bond {
 
@@ -109,12 +110,56 @@ class Bond {
     return order;
   }
 
+  String getOrderName() {
+    switch (order) {
+    case 1:
+      return "single";
+    case 2:
+      return "double";
+    case 3:
+      return "triple";
+    case 4:
+      return "aromatic";
+    }
+    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      return "hbond";
+    return "unknown";
+  }
+
   short getColix1() {
     return Graphics3D.inheritColix(colix, atom1.colixAtom);
   }
 
+  int getArgb1() {
+    return atom1.group.chain.frame.viewer.getColixArgb(getColix1());
+  }
+
   short getColix2() {
     return Graphics3D.inheritColix(colix, atom2.colixAtom);
+  }
+
+  int getArgb2() {
+    return atom1.group.chain.frame.viewer.getColixArgb(getColix2());
+  }
+
+  ////////////////////////////////////////////////////////////////
+  
+  Hashtable getPublicProperties() {
+    Hashtable ht = new Hashtable();
+    ht.put("atomIndexA", new Integer(atom1.atomIndex));
+    ht.put("atomIndexB", new Integer(atom2.atomIndex));
+    ht.put("argbA", new Integer(getArgb1()));
+    ht.put("argbB", new Integer(getArgb2()));
+    ht.put("order", getOrderName());
+    ht.put("radius", new Double(getRadius()));
+    ht.put("modelIndex", new Integer(atom1.modelIndex));
+    ht.put("xA", new Double(atom1.point3f.x));
+    ht.put("yA", new Double(atom1.point3f.y));
+    ht.put("zA", new Double(atom1.point3f.z));
+    ht.put("xB", new Double(atom2.point3f.x));
+    ht.put("yB", new Double(atom2.point3f.y));
+    ht.put("zB", new Double(atom2.point3f.z));
+    return ht;
   }
 }
 

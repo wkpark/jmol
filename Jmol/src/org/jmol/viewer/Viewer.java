@@ -605,6 +605,10 @@ final public class Viewer extends JmolViewer {
     refresh();
   }
 
+  int getColixArgb(short colix) {
+    return g3d.getColixArgb(colix);
+  }
+
   short getColixSelection() {
     return colorManager.getColixSelection();
   }

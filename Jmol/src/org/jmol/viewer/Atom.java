@@ -517,6 +517,10 @@ final class Atom implements Tuple {
     return colixAtom;
   }
 
+  int getArgb() {
+    return group.chain.frame.viewer.getColixArgb(colixAtom);
+  }
+
   float getRadius() {
     if (madAtom == JmolConstants.MAR_DELETED)
       return 0;
@@ -1000,5 +1004,21 @@ final class Atom implements Tuple {
 
   boolean isPyrimidine() {
     return group.isPyrimidine();
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  Hashtable getPublicProperties() {
+    Hashtable ht = new Hashtable();
+    ht.put("element", getElementSymbol());
+    ht.put("x", new Double(point3f.x));
+    ht.put("y", new Double(point3f.y));
+    ht.put("z", new Double(point3f.z));
+    ht.put("atomIndex", new Integer(atomIndex));
+    ht.put("modelIndex", new Integer(modelIndex));
+    ht.put("argb", new Integer(getArgb()));
+    ht.put("radius", new Double(getRadius()));
+    ht.put("atomNumber", new Integer(getAtomNumber()));
+    return ht;
   }
 }

@@ -71,7 +71,7 @@ public class Jmol extends JPanel {
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
-  private static File currentDir;
+  protected static File currentDir;
   FileChooser openChooser;
   private JFileChooser saveChooser;
   private FileTyper fileTyper;

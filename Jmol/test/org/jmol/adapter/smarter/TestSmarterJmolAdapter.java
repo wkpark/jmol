@@ -424,6 +424,13 @@ public class TestSmarterJmolAdapter extends TestCase {
   }
 
   /**
+   * Test for reading files in v3000/ 
+   */
+  public void testV3000() {
+    checkOpenFile("v3000", "WO0119816T.sdf");
+  }
+
+  /**
    * Test for reading files in xyz/
    */
   public void testXyz() {

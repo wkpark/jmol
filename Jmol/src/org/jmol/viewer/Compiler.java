@@ -665,6 +665,9 @@ class Compiler {
   private boolean badArgumentCount() {
     return compileError("bad argument count");
   }
+  private boolean expressionExpected() {
+    return compileError("expression expected");
+  }
   private boolean endOfExpressionExpected() {
     return compileError("end of expression expected");
   }
@@ -755,9 +758,16 @@ class Compiler {
     }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
-    if ((tokCommand & (Token.expressionCommand|Token.embeddedExpression)) != 0
-        && !compileExpression())
-      return false;
+    if ((tokCommand & Token.expressionCommand) != 0) {
+      if (! compileExpression())
+        return false;
+    }
+    else if ((tokCommand & Token.embeddedExpressions) != 0) {
+      int embeddedExpressionCount = compileEmbeddedExpressions();
+      if (embeddedExpressionCount < 0)
+        return false;
+      System.out.println("embeddedExpressionCount=" + embeddedExpressionCount);
+    }
     if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;
     if ((tokenCommand.intValue & Token.varArgCount) == 0 &&
@@ -832,24 +842,34 @@ class Compiler {
 
   */
 
-  private boolean compileExpression() {
+  boolean compileExpression() {
+    int itokenStart = atokenCommand[0].tok == Token.define ? 2 : 1;
+    int itokenEnd = compileExpression(itokenStart);
+    if (itokenEnd < 0)
+      return false;
+    if (itokenEnd != atokenCommand.length)
+      return endOfExpressionExpected();
+    return true;
+  }
+  
+  // -1 == error, >= 0 is count of embedded expressions
+  int compileEmbeddedExpressions() {
+    int expressionCount = 0;
     int i = 1;
-    int tokCommand = atokenCommand[0].tok;
-    if (tokCommand == Token.define)
-      i = 2;
-    else if ((tokCommand & Token.embeddedExpression) != 0) {
-      // look for the open parenthesis
-      while (i < atokenCommand.length &&
-             atokenCommand[i].tok != Token.leftparen)
+    while (i < atokenCommand.length) {
+      if (atokenCommand[i].tok != Token.leftparen) {
         ++i;
+      } else {
+        i = compileExpression(i);
+        if (i < 0) // error
+          return -1;
+        ++expressionCount;
+      }
     }
-    if (i >= atokenCommand.length)
-      return true;
-    return compileExpression(i);
+    return expressionCount;
   }
 
   Vector ltokenPostfix = null;
-  Token[] atokenInfix;
   int itokenInfix;
                   
   boolean addTokenToPostfix(Token token) {
@@ -857,36 +877,35 @@ class Compiler {
     return true;
   }
 
-  boolean compileExpression(int itoken) {
+  // -1 == error, + == next token index;
+  int compileExpression(int itoken) {
     ltokenPostfix = new Vector();
+    if (itoken >= atokenCommand.length) {
+      expressionExpected();
+      return -1;
+    }
     for (int i = 0; i < itoken; ++i)
       addTokenToPostfix(atokenCommand[i]);
-    atokenInfix = atokenCommand;
     itokenInfix = itoken;
 
     addTokenToPostfix(Token.tokenExpressionBegin);
     if (! clauseOr())
-      return false;
+      return -1;
     addTokenToPostfix(Token.tokenExpressionEnd);
-    if (itokenInfix != atokenInfix.length) {
-      /*
-      System.out.println("itokenInfix=" + itokenInfix + " atokenInfix.length="
-                         + atokenInfix.length);
-      for (int i = 0; i < atokenInfix.length; ++i) {
-        System.out.println("" + i + ":" + atokenInfix[i]);
-      }
-      */
-      return endOfExpressionExpected();
-    }
+    int returnIndex = ltokenPostfix.size();
+    // preserve any tokens after this compiled expression
+    for (Token nextToken = null; (nextToken = tokenNext()) != null; )
+      addTokenToPostfix(nextToken);
     atokenCommand = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenCommand);
-    return true;
+    ltokenPostfix = null;
+    return returnIndex;
   }
 
   Token tokenNext() {
-    if (itokenInfix == atokenInfix.length)
+    if (itokenInfix == atokenCommand.length)
       return null;
-    return atokenInfix[itokenInfix++];
+    return atokenCommand[itokenInfix++];
   }
 
   boolean isNextToken(int tok) {
@@ -895,15 +914,15 @@ class Compiler {
   }
   
   Object valuePeek() {
-    if (itokenInfix == atokenInfix.length)
+    if (itokenInfix == atokenCommand.length)
       return null;
-    return atokenInfix[itokenInfix].value;
+    return atokenCommand[itokenInfix].value;
   }
 
   int tokPeek() {
-    if (itokenInfix == atokenInfix.length)
+    if (itokenInfix == atokenCommand.length)
       return 0;
-    return atokenInfix[itokenInfix].tok;
+    return atokenCommand[itokenInfix].tok;
   }
 
   boolean clauseOr() {

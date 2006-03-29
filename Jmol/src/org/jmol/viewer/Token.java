@@ -72,7 +72,7 @@ class Token {
 
   final static int command           = (1 <<  8);
   final static int expressionCommand = (1 <<  9); // expression command
-  final static int embeddedExpression= (1 << 10); // embedded expression
+  final static int embeddedExpressions= (1 << 10); // embedded expressions
   final static int setparam          = (1 << 11); // parameter to set command
   final static int showparam         = (1 << 12); // parameter to show command
   final static int bool              = (1 << 13);
@@ -109,7 +109,7 @@ class Token {
   final static int center       = command |  4 | showparam | expressionCommand;
   final static int clipboard    = command |  5;
   final static int color        = command |  6 | colorparam | setparam;
-  final static int connect      = command |  7 | embeddedExpression;
+  final static int connect      = command |  7 | embeddedExpressions;
   final static int define       = command |  9 | expressionCommand;
   final static int dots         = command | 10 | bool;
   final static int echo         = command | 11 | setparam | specialstring;
@@ -173,7 +173,7 @@ class Token {
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
   final static int pmesh        = command | 91;
-  final static int polyhedra    = command | 92 | embeddedExpression;
+  final static int polyhedra    = command | 92 | embeddedExpressions;
   final static int centerAt     = command | 93;
   final static int isosurface   = command | 94;
 

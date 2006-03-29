@@ -54,10 +54,10 @@ class SpartanSmolReader extends AtomSetCollectionReader {
   void readAtoms(BufferedReader reader) throws Exception {
     discardLines(reader, 2);
     String line;
-    System.out.println("Reading atoms...");
+    //System.out.println("Reading atoms...");
     while ((line = reader.readLine()) != null &&
            (/*atomNum = */parseInt(line, 0, 5)) > 0) {
-      System.out.println("atom: " + line);
+      //System.out.println("atom: " + line);
       String elementSymbol = parseToken(line, 10, 12);
       float x = parseFloat(line, 17, 30);
       float y = parseFloat(line, 31, 43);

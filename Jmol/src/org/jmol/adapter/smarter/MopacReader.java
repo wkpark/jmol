@@ -110,8 +110,8 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       atom.elementSymbol = parseToken(line, ichNextParse);
       atom.partialCharge = parseFloat(line, ichNextParse);
     }
-    System.out.println("#atoms" + atomSetCollection.atomCount);
-    System.out.println("#models" + atomSetCollection.atomSetCount);
+    System.out.println("#atoms " + atomSetCollection.atomCount);
+    System.out.println("#models " + atomSetCollection.atomSetCount);
     chargesFound = true;
   }
     
@@ -146,10 +146,10 @@ void processAtomicCharges(BufferedReader input) throws Exception {
     discardLines(input, 3);
     int expectedAtomNumber = 0;
 
-    System.out.println("chargesFound: " + chargesFound);
+    //System.out.println("chargesFound: " + chargesFound);
     
     if (!chargesFound) {
-      System.out.println("No model created yet, so doing so now...");
+      //System.out.println("No model created yet, so doing so now...");
       atomSetCollection.newAtomSet();
       baseAtomIndex = atomSetCollection.atomCount;
     } else {
@@ -158,7 +158,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
 
     String line;
     while ((line = input.readLine()) != null) {
-      System.out.println("Processing line: " + line);
+      //System.out.println("Processing line: " + line);
       int atomNumber = parseInt(line);
       if (atomNumber == Integer.MIN_VALUE) // blank line
         break;
@@ -169,7 +169,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
 
       Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
       if (atom == null) {
-          System.out.println("No atom defined yet, creating one now...");
+          //System.out.println("No atom defined yet, creating one now...");
           atom = atomSetCollection.addNewAtom(); // if no charges were found first
       }
       atom.atomSerial = atomNumber;
@@ -177,10 +177,10 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       atom.x = parseFloat(line, ichNextParse);
       atom.y = parseFloat(line, ichNextParse);
       atom.z = parseFloat(line, ichNextParse);
-      System.out.println(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
+      //System.out.println(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
     }
-    System.out.println("#atoms" + atomSetCollection.atomCount);
-    System.out.println("#models" + atomSetCollection.atomSetCount);
+    System.out.println("#atoms " + atomSetCollection.atomCount);
+    System.out.println("#models " + atomSetCollection.atomSetCount);
     System.out.println("chargesFound: " + chargesFound);
     System.out.println("processCoordinates(END)");
   }

@@ -825,6 +825,7 @@ class Eval implements Runnable {
     return copy;
   }
 
+  int pcLastExpressionInstruction;
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
     int numberOfAtoms = viewer.getAtomCount();
     BitSet bs;
@@ -840,8 +841,9 @@ class Eval implements Runnable {
       switch (instruction.tok) {
       case Token.expressionBegin:
         break; 
-     case Token.expressionEnd:
-        break expression_loop;
+      case Token.expressionEnd:
+        pcLastExpressionInstruction = pc;
+          break expression_loop;
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
         for (int i = numberOfAtoms; --i >= 0; )
@@ -3334,41 +3336,45 @@ class Eval implements Runnable {
 
   void bondorder() throws ScriptException {
     Token tokenArg = statement[1];
-    short order = 0;
+    int intOrder = 0;
+    String stringOrder = null;
+    switch_tag:
     switch (tokenArg.tok) {
     case Token.integer:
-      order = (short)tokenArg.intValue;
-      if (order < 0 || order > 3)
+      intOrder = (int)tokenArg.intValue;
+      if (intOrder < 0 || intOrder > 3)
         invalidArgument();
-      break;
-    case Token.hbond:
-      order = JmolConstants.BOND_H_REGULAR;
+      stringOrder = JmolConstants.bondOrderNames[intOrder];
       break;
     case Token.decimal:
       float f = ((Float)tokenArg.value).floatValue();
-      if (f == (short)f) {
-        order = (short)f;
-        if (order < 0 || order > 3)
+      if (f == (int)f) {
+        intOrder = (int)f;
+        if (intOrder < 0 || intOrder > 3)
           invalidArgument();
+        stringOrder = JmolConstants.bondOrderNames[intOrder];
       } else if (f == 0.5f)
-        order = JmolConstants.BOND_H_REGULAR;
+        stringOrder = "hbond";
       else if (f == 1.5f)
-        order = JmolConstants.BOND_AROMATIC;
+        stringOrder = "aromatic";
       else
         invalidArgument();
       break;
+    case Token.none:
+    case Token.hbond:
     case Token.identifier:
-      if ("aromatic".equalsIgnoreCase((String)tokenArg.value)) {
-        order = JmolConstants.BOND_AROMATIC;
-        break;
-      }
+      String str = (String)tokenArg.value;
+      for (int i = JmolConstants.bondOrderNames.length; --i >= 0; )
+        if (str.equalsIgnoreCase(JmolConstants.bondOrderNames[i])) {
+          stringOrder = JmolConstants.bondOrderNames[i];
+          break switch_tag;
+        }
       // fall into
     default:
       invalidArgument();
     }
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-                            "bondOrder",
-                            new Short(order));
+                            "bondOrder", stringOrder);
   }
 
   void console() {
@@ -3645,7 +3651,7 @@ class Eval implements Runnable {
 
   void connect() throws ScriptException {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-                            "maxDistance", new Float(100000000f));
+                            "resetConnectParameters", null);
     if (statementLength == 1) {
       viewer.rebond();
       return;
@@ -3653,41 +3659,53 @@ class Eval implements Runnable {
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
+      switch_tag:
       switch (statement[i].tok) {
       case Token.on:
       case Token.off:
         viewer.rebond();
         return;
       case Token.integer:
-        propertyName = "maxDistance";
+        propertyName = "connectDistance";
         propertyValue = new Float(statement[i].intValue);
         break;
       case Token.decimal:
-        propertyName = "maxDistance";
+        propertyName = "connectDistance";
         propertyValue = statement[i].value;
+        System.out.println("Token.decimal " +
+                           propertyName + ":" + statement[i].value);
         break;
       case Token.expressionBegin:
-        propertyName = "targetSet";
+        propertyName = "connectSet";
         propertyValue = expression(statement, i);
-        // hack for now;
-        i = statement.length;
+        i = pcLastExpressionInstruction; // the for loop will increment i
         break;
       case Token.identifier:
       case Token.hbond:
-        String cmd = ((String)statement[i].value).toLowerCase();
-        if (cmd.equals("single") ||
-            cmd.equals("double") ||
-            cmd.equals("triple") ||
-            cmd.equals("aromatic") ||
-            cmd.equals("hbond")) {
-          propertyName = "bondOrder";
-          propertyValue = cmd;
-        } else {
-          unrecognizedSubcommand();
+        String cmd = (String)statement[i].value;
+        for (int j =  JmolConstants.bondOrderNames.length; --j >= 0; ) {
+          if (cmd.equalsIgnoreCase(JmolConstants.bondOrderNames[j])) {
+            cmd = JmolConstants.bondOrderNames[j];
+            propertyName = "connectBondOrder";
+            propertyValue = cmd;
+            break switch_tag;
+          }
         }
+        // we need to come up with a word better than 'static'
+        if ("formOnly".equalsIgnoreCase(cmd))
+          propertyValue = "formOnly";
+        else if ("modifyOnly".equalsIgnoreCase(cmd))
+          propertyValue = "modifyOnly";
+        else if ("formAndModify".equalsIgnoreCase(cmd))
+          propertyValue = "formAndModify";
+        else
+          unrecognizedSubcommand();
+        propertyName = "connectOperation";
         break;
+      case Token.none:
       case Token.delete:
-        propertyName = "delete";
+        propertyName = "connectOperation";
+        propertyValue = "delete";
         break;
       default:
         invalidArgument();
@@ -3695,5 +3713,7 @@ class Eval implements Runnable {
       viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                               propertyName, propertyValue);
     }
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+                            "applyConnectParameters", null);
   }
 }

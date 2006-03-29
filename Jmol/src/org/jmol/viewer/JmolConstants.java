@@ -107,11 +107,11 @@ final public class JmolConstants {
   public final static short BOND_ALL_MASK      = (short)0xFFFF;
 
   final static String[] bondOrderNames = {
-    "single", "double", "triple", "aromatic", "hbond",
+    "none", "single", "double", "triple", "aromatic", "hbond",
   };
 
   final static short[] bondOrderValues = {
-    BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE,
+    0, BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE,
     BOND_AROMATIC, BOND_H_REGULAR,
   };
 

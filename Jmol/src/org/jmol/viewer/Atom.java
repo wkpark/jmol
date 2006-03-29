@@ -140,14 +140,18 @@ final class Atom implements Tuple {
   }
 
   boolean isBonded(Atom atomOther) {
+    return getBond(atomOther) != null;
+  }
+
+  Bond getBond(Atom atomOther) {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
         Bond bond = bonds[i];
         if ((bond.atom1 == atomOther) ||
             (bond.atom2 == atomOther))
-          return true;
+          return bond;
       }
-    return false;
+    return null;
   }
 
   Bond bondMutually(Atom atomOther, short order, Frame frame) {

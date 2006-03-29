@@ -32,8 +32,19 @@ import org.jmol.g3d.Graphics3D;
 
 class Sticks extends Shape {
 
-  float maxBondingDistance;
+  final float[] connectDistances = new float[2];
+  int connectDistanceCount;
+  final BitSet[] connectSets = new BitSet[2];
+  int connectSetCount;
+  // initialized to -1;
+  // for delete this means 'delete all'
+  // for connect this gets turned into 'single'
+  short connectBondOrder;
+  int connectOperation;
 
+  private final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
+  private final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
+  
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     setMadBond(mad, JmolConstants.BOND_COVALENT_MASK, bsSelected);
@@ -55,31 +66,64 @@ class Sticks extends Shape {
       return;
     }
     if ("bondOrder" == propertyName) {
-      if (value instanceof Short) {
-        short order = ((Short)value).shortValue();
-        setOrderBond(order, bsSelected);
+      short bondorder = bondOrderFromString((String)value);
+      if (bondorder == 0)
+        deleteBonds(bsSelected);
+      else if (bondorder > 0)
+        setOrderBond(bondorder, bsSelected);
+      else
+        System.out.println("unrecognized bond order name:" + value);
+      return;
+    }
+    if ("resetConnectParameters" == propertyName) {
+      connectDistanceCount = 0;
+      connectSetCount = 0;
+      connectBondOrder = -1;
+      connectOperation = FORM_AND_MODIFY;
+      return;
+    }
+    if ("connectDistance" == propertyName) {
+      if (connectDistanceCount < connectDistances.length)
+        connectDistances[connectDistanceCount++] = ((Float)value).floatValue();
+      else
+        System.out.println("too many connect distances specified");
+      return;
+    }
+    if ("connectSet" == propertyName) {
+      if (connectSetCount < connectSets.length)
+        connectSets[connectSetCount++] = (BitSet)value;
+      else
+        System.out.println("too many connect sets specified");
+      return;
+    }
+    if ("connectBondOrder" == propertyName) {
+      connectBondOrder = bondOrderFromString((String)value);
+      return;
+    }
+    if ("connectOperation" == propertyName) {
+      connectOperation = connectOperationFromString((String)value);
+      return;
+    }
+    if ("applyConnectParameters" == propertyName) {
+      if (connectDistanceCount < 2) {
+        if (connectDistanceCount == 0)
+          connectDistances[0] = DEFAULT_MAX_CONNECT_DISTANCE;
+        connectDistances[1] = connectDistances[0];
+        connectDistances[0] = DEFAULT_MIN_CONNECT_DISTANCE;
       }
-      if (value instanceof String) {
-        String str = (String)value;
-        for (int i = JmolConstants.bondOrderNames.length; --i >= 0; )
-          if (str.equals(JmolConstants.bondOrderNames[i]))
-            setOrderBond(JmolConstants.bondOrderValues[i], bsSelected);
+      if (connectSetCount < 2) {
+        if (connectSetCount == 0)
+          connectSets[0] = bsSelected;
+        connectSets[1] = connectSets[0];
+        connectSets[0] = bsSelected;
       }
+      if (connectOperation >= 0)
+        makeConnections(connectDistances[0], connectDistances[1],
+                        connectBondOrder, connectOperation,
+                        connectSets[0], connectSets[1]);
       return;
     }
-    if ("delete" == propertyName) {
-      deleteSelectedBonds(bsSelected);
-      return;
-    }
-    if ("maxDistance" == propertyName) {
-      maxBondingDistance = ((Float)value).floatValue();
-      return;
-    }
-    if ("targetSet" == propertyName) {
-      BitSet bsTarget = (BitSet)value;
-      addBonds(maxBondingDistance, bsSelected, bsTarget);
-      return;
-    }
+    super.setProperty(propertyName, value, bsSelected);
   }
 
   void setMadBond(short mad, short bondTypeMask, BitSet bs) {
@@ -107,13 +151,19 @@ class Sticks extends Shape {
       iter.next().setTranslucent(isTranslucent);
   }
 
+  // note that the iterator in setBondOrder uses the global bondmodeOr flag
   void setOrderBond(short order, BitSet bs) {
+    if (order == 0) {
+      deleteBonds(bs);
+      return;
+    }
     BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
     while (iter.hasNext())
       iter.next().setOrder(order);
   }
 
-  void deleteSelectedBonds(BitSet bs) {
+  // note that the iterator in deleteBonds uses the global bondmodeOr flag
+  void deleteBonds(BitSet bs) {
     BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
     BitSet bsDelete = new BitSet();
     while (iter.hasNext()) {
@@ -123,9 +173,23 @@ class Sticks extends Shape {
     frame.deleteBonds(bsDelete);
   }
 
-  void addBonds(float maxDistance, BitSet bsA, BitSet bsB) {
+  private final static int DELETE_BONDS    = 0;
+  private final static int FORM_ONLY       = 1;
+  private final static int MODIFY_ONLY     = 2;
+  private final static int FORM_AND_MODIFY = 3;
+
+  void makeConnections(float minDistance, float maxDistance,
+                       short order, int connectOperation,
+                       BitSet bsA, BitSet bsB) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
+    if (connectOperation == DELETE_BONDS) {
+      deleteConnections(minDistance, maxDistance, order, bsA, bsB);
+      return;
+    }
+    if (order <= 0)
+      order = 1; // default 
+    float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
     for (int iA = atomCount; --iA >= 0; ) {
       if (! bsA.get(iA))
@@ -133,16 +197,79 @@ class Sticks extends Shape {
       Atom atomA = atoms[iA];
       Point3f pointA = atomA.point3f;
       for (int iB = atomCount; --iB >= 0; ) {
+        if (iB == iA)
+          continue;
         if (! bsB.get(iB))
           continue;
-        if (iB == iA ||
-            (iB < iA && bsA.get(iB) && bsB.get(iA)))
-          continue;
         Atom atomB = atoms[iB];
+        if (atomA.modelIndex != atomB.modelIndex)
+          continue;
+        Bond bondAB = atomA.getBond(atomB);
+        if (FORM_ONLY == connectOperation && bondAB != null)
+          continue;
+        if (MODIFY_ONLY==connectOperation && bondAB == null)
+          continue;
         float distanceSquared = pointA.distanceSquared(atomB.point3f);
-        if (distanceSquared <= maxDistanceSquared)
-          frame.bondAtoms(atomA, atomB, JmolConstants.BOND_COVALENT_SINGLE);
+        if (distanceSquared < minDistanceSquared ||
+            distanceSquared > maxDistanceSquared)
+          continue;
+        if (bondAB != null)
+          bondAB.setOrder(order);
+        else
+          frame.bondAtoms(atomA, atomB, order);
+        BitSet bsTwoAtoms=new BitSet();
       }
     }
+  }
+
+  void deleteConnections(float minDistance, float maxDistance, short order,
+                         BitSet bsA, BitSet bsB) {
+    int bondCount = frame.bondCount;
+    Bond[] bonds = frame.bonds;
+    BitSet bsDelete = new BitSet();
+    float minDistanceSquared = minDistance * minDistance;
+    float maxDistanceSquared = maxDistance * maxDistance;
+    for (int i = bondCount; --i >= 0; ) {
+      Bond bond = bonds[i];
+      Atom atom1 = bond.atom1;
+      Atom atom2 = bond.atom2;
+      if (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex) ||
+          bsA.get(atom2.atomIndex) && bsB.get(atom1.atomIndex)) {
+        if (bond.atom1.isBonded(bond.atom2)) {
+          float distanceSquared = atom1.point3f.distanceSquared(atom2.point3f);
+          if (distanceSquared >= minDistanceSquared &&
+              distanceSquared <= maxDistanceSquared)
+            if (order <= 0 || // order defaulted to -1
+                order == bond.order ||
+                (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+              bsDelete.set(i);
+        }
+      }
+    }
+    frame.deleteBonds(bsDelete);
+  }
+
+  short bondOrderFromString(String bondOrderString) {
+    if (bondOrderString == null)
+      return 0; // we will interpret null string as none/delete
+    for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
+      if (bondOrderString.equalsIgnoreCase(JmolConstants.bondOrderNames[i]))
+        return JmolConstants.bondOrderValues[i];
+    }
+    return -1;
+  }
+
+  int connectOperationFromString(String connectOperationString) {
+    if ("delete".equalsIgnoreCase(connectOperationString))
+      return DELETE_BONDS;
+    if ("formOnly".equalsIgnoreCase(connectOperationString))
+      return FORM_ONLY;
+    if ("modifyOnly".equalsIgnoreCase(connectOperationString))
+      return MODIFY_ONLY;
+    if ("formAndModify".equalsIgnoreCase(connectOperationString))
+      return FORM_AND_MODIFY;
+    System.out.println("unrecognized connect operation:" +
+                       connectOperationString);
+    return -1;
   }
 }

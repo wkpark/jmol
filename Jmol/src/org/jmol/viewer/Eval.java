@@ -1821,8 +1821,7 @@ class Eval implements Runnable {
     pc = context.pc;
   }
   void script() throws ScriptException {
-    if (statement[1].tok != Token.string)
-      filenameExpected();
+    // token allows for only 1 parameter
     pushContext();
     String filename = (String)statement[1].value;
     if (! loadScriptFileInternal(filename))
@@ -1846,6 +1845,8 @@ class Eval implements Runnable {
   }
 
   void translate() throws ScriptException {
+    if (statementLength <3)
+      badArgumentCount();
     if (statement[2].tok != Token.integer)
       integerExpected();
     int percent = statement[2].intValue;
@@ -1871,6 +1872,7 @@ class Eval implements Runnable {
   }
 
   void zoom() throws ScriptException {
+    // token has ondefault1
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 5 || percent > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
@@ -1893,6 +1895,7 @@ class Eval implements Runnable {
   void delay() throws ScriptException {
     long timeBegin = System.currentTimeMillis();
     long millis = 0;
+    //token has ondefault1
     Token token = statement[1];
     switch (token.tok) {
     case Token.integer:
@@ -1988,6 +1991,7 @@ class Eval implements Runnable {
   }
 
   void slab() throws ScriptException {
+    //token has ondefault1
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 0 || percent > 100)
@@ -2384,6 +2388,7 @@ class Eval implements Runnable {
   */
 
   void dots() throws ScriptException {
+    // token has onDefault1
     short mad = 0;
     switch (statement[1].tok) {
     case Token.on:
@@ -2410,6 +2415,7 @@ class Eval implements Runnable {
 
   void proteinShape(int shapeType) throws ScriptException {
     short mad = 0;
+    //token has ondefault1
     int tok = statement[1].tok;
     switch (tok) {
     case Token.on:
@@ -2576,8 +2582,7 @@ class Eval implements Runnable {
    *==============================================================*/
 
   void set() throws ScriptException {
-    System.out.println("setting:" + statement[1].value);
-    switch(statement[1].tok) {
+    switch (statement[1].tok) {
     case Token.axes:
       setAxes();
       break;

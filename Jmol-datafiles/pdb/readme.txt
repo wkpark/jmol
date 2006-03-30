@@ -2,7 +2,7 @@
 1A00 - hemoglobin ... nothing strange
 1A7C - ? 
 1ALE - multiple conformations ... small
-1ALM - alpha carbons only ... large
+1ALM - alpha carbons only + CONECT records ... large
 1ARJ - multiple conformations ... large
 1B07 - ?
 1CRN - RasMol classic
@@ -12,7 +12,7 @@
 1GFL - green florescent
 1HJE - alternate locations
 1IHA - ?
-1JGQ - alpha carbon only + phosphorus only + dna
+1JGQ - alpha carbon only + phosphorus only + dna + insertion codes
 1LCD - multiple conformations
 1MBO - has strange FORMUL records because the HEM is on two lines
 1NE6 - ?

@@ -831,7 +831,7 @@ final class Atom implements Tuple {
           strT = "" + getPolymerLength();
           break;
         case 'M':
-          strT = "/" + getModelTag();
+          strT = "/" + getModelTagNumber();
           break;
         case 'm':
           strT = getGroup1();

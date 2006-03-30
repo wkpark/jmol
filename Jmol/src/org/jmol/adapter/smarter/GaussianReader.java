@@ -141,9 +141,11 @@ class GaussianReader extends AtomSetCollectionReader {
           readPartialCharges(reader);
         } else if (line.startsWith(" Normal termination of Gaussian")) {
           ++calculationNumber;
-        } else if (lineNum < 20) {
-          if (line.indexOf("This is part of the Gaussian 94(TM) system") >= 0)
+        } else if (lineNum < 25) {
+          if (line.indexOf("This is part of the Gaussian 94(TM) system") >= 0 ||
+              line.startsWith(" Gaussian 94:")) {
             firstCoordinateOffset = 2;
+          }
         }
         lineNum++;
       }

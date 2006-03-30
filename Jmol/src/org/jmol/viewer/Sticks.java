@@ -65,21 +65,11 @@ class Sticks extends Shape {
                           JmolConstants.BOND_COVALENT_MASK, bsSelected);
       return;
     }
-    if ("bondOrder" == propertyName) {
-      short bondorder = bondOrderFromString((String)value);
-      if (bondorder == 0)
-        deleteBonds(bsSelected);
-      else if (bondorder > 0)
-        setOrderBond(bondorder, bsSelected);
-      else
-        System.out.println("unrecognized bond order name:" + value);
-      return;
-    }
     if ("resetConnectParameters" == propertyName) {
       connectDistanceCount = 0;
       connectSetCount = 0;
       connectBondOrder = -1;
-      connectOperation = FORM_AND_MODIFY;
+      connectOperation = MODIFY_OR_CREATE;
       return;
     }
     if ("connectDistance" == propertyName) {
@@ -151,36 +141,19 @@ class Sticks extends Shape {
       iter.next().setTranslucent(isTranslucent);
   }
 
-  // note that the iterator in setBondOrder uses the global bondmodeOr flag
-  void setOrderBond(short order, BitSet bs) {
-    if (order == 0) {
-      deleteBonds(bs);
-      return;
-    }
-    BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
-    while (iter.hasNext())
-      iter.next().setOrder(order);
-  }
-
-  // note that the iterator in deleteBonds uses the global bondmodeOr flag
-  void deleteBonds(BitSet bs) {
-    BondIterator iter = frame.getBondIterator(JmolConstants.BOND_ALL_MASK, bs);
-    BitSet bsDelete = new BitSet();
-    while (iter.hasNext()) {
-      bsDelete.set(iter.nextIndex());
-      iter.next();
-    }
-    frame.deleteBonds(bsDelete);
-  }
-
-  private final static int DELETE_BONDS    = 0;
-  private final static int FORM_ONLY       = 1;
-  private final static int MODIFY_ONLY     = 2;
-  private final static int FORM_AND_MODIFY = 3;
+  private final static int DELETE_BONDS     = 0;
+  private final static int MODIFY_ONLY      = 1;
+  private final static int CREATE_ONLY      = 2;
+  private final static int MODIFY_OR_CREATE = 3;
 
   void makeConnections(float minDistance, float maxDistance,
                        short order, int connectOperation,
                        BitSet bsA, BitSet bsB) {
+    /*
+    System.out.println("makeConnections(" + minDistance + "," +
+                       maxDistance + "," + order + "," + connectOperation +
+                       "," + bsA + "," + bsB + ")";)
+    */
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     if (connectOperation == DELETE_BONDS) {
@@ -205,9 +178,9 @@ class Sticks extends Shape {
         if (atomA.modelIndex != atomB.modelIndex)
           continue;
         Bond bondAB = atomA.getBond(atomB);
-        if (FORM_ONLY == connectOperation && bondAB != null)
+        if (MODIFY_ONLY == connectOperation && bondAB == null)
           continue;
-        if (MODIFY_ONLY==connectOperation && bondAB == null)
+        if (CREATE_ONLY == connectOperation && bondAB != null)
           continue;
         float distanceSquared = pointA.distanceSquared(atomB.point3f);
         if (distanceSquared < minDistanceSquared ||
@@ -250,24 +223,23 @@ class Sticks extends Shape {
   }
 
   short bondOrderFromString(String bondOrderString) {
-    if (bondOrderString == null)
-      return 0; // we will interpret null string as none/delete
-    for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
-      if (bondOrderString.equalsIgnoreCase(JmolConstants.bondOrderNames[i]))
-        return JmolConstants.bondOrderValues[i];
-    }
-    return -1;
+    if (bondOrderString != null) 
+      for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
+        if (bondOrderString.equalsIgnoreCase(JmolConstants.bondOrderNames[i]))
+          return JmolConstants.bondOrderValues[i];
+      }
+    return 0;
   }
 
   int connectOperationFromString(String connectOperationString) {
     if ("delete".equalsIgnoreCase(connectOperationString))
       return DELETE_BONDS;
-    if ("formOnly".equalsIgnoreCase(connectOperationString))
-      return FORM_ONLY;
-    if ("modifyOnly".equalsIgnoreCase(connectOperationString))
+    if ("modify".equalsIgnoreCase(connectOperationString))
       return MODIFY_ONLY;
-    if ("formAndModify".equalsIgnoreCase(connectOperationString))
-      return FORM_AND_MODIFY;
+    if ("create".equalsIgnoreCase(connectOperationString))
+      return CREATE_ONLY;
+    if ("createOrModify".equalsIgnoreCase(connectOperationString))
+      return MODIFY_OR_CREATE;
     System.out.println("unrecognized connect operation:" +
                        connectOperationString);
     return -1;

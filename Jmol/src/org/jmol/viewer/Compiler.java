@@ -766,7 +766,6 @@ class Compiler {
       int embeddedExpressionCount = compileEmbeddedExpressions();
       if (embeddedExpressionCount < 0)
         return false;
-      System.out.println("embeddedExpressionCount=" + embeddedExpressionCount);
     }
     if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;

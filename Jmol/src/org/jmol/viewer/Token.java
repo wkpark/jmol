@@ -170,12 +170,11 @@ class Token {
   final static int rocket       = command | 86;
   final static int sasurface    = command | 87;
   final static int moveto       = command | 88 | negnums;
-  final static int bondorder    = command | 89;
-  final static int console      = command | 90;
-  final static int pmesh        = command | 91;
-  final static int polyhedra    = command | 92 | embeddedExpressions;
-  final static int centerAt     = command | 93;
-  final static int isosurface   = command | 94;
+  final static int console      = command | 89;
+  final static int pmesh        = command | 90;
+  final static int polyhedra    = command | 91 | embeddedExpressions;
+  final static int centerAt     = command | 92;
+  final static int isosurface   = command | 93;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -488,7 +487,6 @@ class Token {
     "rockets",           null,
     "sasurface",         new Token(sasurface,varArgCount, "sasurface"),
     "moveto",            new Token(moveto,   varArgCount, "moveto"),
-    "bondorder",         new Token(bondorder,          1, "bondorder"),
     "console",           new Token(console,   onDefault1, "console"),
     "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
     "polyhedra",         new Token(polyhedra,varArgCount, "polyhedra"),

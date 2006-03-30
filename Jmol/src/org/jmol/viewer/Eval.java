@@ -465,9 +465,6 @@ class Eval implements Runnable {
       case Token.moveto:
         moveto();
         break;
-      case Token.bondorder:
-        bondorder();
-        break;
       case Token.console:
         console();
         break;
@@ -3334,49 +3331,6 @@ class Eval implements Runnable {
     viewer.setRotation(matrixEnd);
   }
 
-  void bondorder() throws ScriptException {
-    Token tokenArg = statement[1];
-    int intOrder = 0;
-    String stringOrder = null;
-    switch_tag:
-    switch (tokenArg.tok) {
-    case Token.integer:
-      intOrder = (int)tokenArg.intValue;
-      if (intOrder < 0 || intOrder > 3)
-        invalidArgument();
-      stringOrder = JmolConstants.bondOrderNames[intOrder];
-      break;
-    case Token.decimal:
-      float f = ((Float)tokenArg.value).floatValue();
-      if (f == (int)f) {
-        intOrder = (int)f;
-        if (intOrder < 0 || intOrder > 3)
-          invalidArgument();
-        stringOrder = JmolConstants.bondOrderNames[intOrder];
-      } else if (f == 0.5f)
-        stringOrder = "hbond";
-      else if (f == 1.5f)
-        stringOrder = "aromatic";
-      else
-        invalidArgument();
-      break;
-    case Token.none:
-    case Token.hbond:
-    case Token.identifier:
-      String str = (String)tokenArg.value;
-      for (int i = JmolConstants.bondOrderNames.length; --i >= 0; )
-        if (str.equalsIgnoreCase(JmolConstants.bondOrderNames[i])) {
-          stringOrder = JmolConstants.bondOrderNames[i];
-          break switch_tag;
-        }
-      // fall into
-    default:
-      invalidArgument();
-    }
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-                            "bondOrder", stringOrder);
-  }
-
   void console() {
     viewer.showConsole(statement[1].tok == Token.on);
   }
@@ -3672,8 +3626,6 @@ class Eval implements Runnable {
       case Token.decimal:
         propertyName = "connectDistance";
         propertyValue = statement[i].value;
-        System.out.println("Token.decimal " +
-                           propertyName + ":" + statement[i].value);
         break;
       case Token.expressionBegin:
         propertyName = "connectSet";
@@ -3691,13 +3643,12 @@ class Eval implements Runnable {
             break switch_tag;
           }
         }
-        // we need to come up with a word better than 'static'
-        if ("formOnly".equalsIgnoreCase(cmd))
-          propertyValue = "formOnly";
-        else if ("modifyOnly".equalsIgnoreCase(cmd))
-          propertyValue = "modifyOnly";
-        else if ("formAndModify".equalsIgnoreCase(cmd))
-          propertyValue = "formAndModify";
+        if ("modify".equalsIgnoreCase(cmd))
+          propertyValue = "modify";
+        else if ("create".equalsIgnoreCase(cmd))
+          propertyValue = "create";
+        else if ("modifyOrCreate".equalsIgnoreCase(cmd))
+          propertyValue = "modifyOrCreate";
         else
           unrecognizedSubcommand();
         propertyName = "connectOperation";

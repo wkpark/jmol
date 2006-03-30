@@ -190,7 +190,7 @@ class Sticks extends Shape {
           bondAB.setOrder(order);
         else
           frame.bondAtoms(atomA, atomB, order);
-        BitSet bsTwoAtoms=new BitSet();
+        //BitSet bsTwoAtoms=new BitSet();
       }
     }
   }

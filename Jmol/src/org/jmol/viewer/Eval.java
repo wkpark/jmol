@@ -1756,14 +1756,15 @@ class Eval implements Runnable {
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0);
-    viewer.setBondSelectionModeOr(bondmode);
-    viewer.setLabel(null);
 
+    // also need to turn off backbones, ribbons, strands, cartoons
     for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT;
          --shapeType >= 0; )
       viewer.setShapeSize(shapeType, 0);
 
-    // also need to turn off backbones, ribbons, strands, cartoons
+    viewer.setLabel(null);
+
+    viewer.setBondSelectionModeOr(bondmode);
     viewer.invertSelection();
   }
 

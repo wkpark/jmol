@@ -68,13 +68,13 @@ class Cylinder3D {
               int xA, int yA, int zA, int xB, int yB, int zB) {
     if (isFullyClipped(diameter, xA, yA, zA, xB, yB, zB))
       return;
+    this.dxB = xB - xA; this.dyB = yB - yA; this.dzB = zB - zA;
     if (diameter <= 1) {
       g3d.plotLineDelta(colixA, colixB, xA, yA, zA, dxB, dyB, dzB);
       return;
     }
     this.diameter = diameter;
     this.xA = xA; this.yA = yA; this.zA = zA;
-    this.dxB = xB - xA; this.dyB = yB - yA; this.dzB = zB - zA;
 
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);

@@ -905,12 +905,11 @@ final public class Viewer extends JmolViewer {
     clear();
     fileManager.openReader(fullPathName, name, reader);
     getOpenFileError();
+    System.gc();
   }
   
   public String getOpenFileError() {
     String errorMsg = getOpenFileError1();
-//    System.gc();
-//   System.runFinalization();
     return errorMsg;
   }
 

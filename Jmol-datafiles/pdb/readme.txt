@@ -33,10 +33,11 @@ insertion coded related:
 1A2C - insertion codes that run in descending order
 1A2C - insertion codes at the beginning of a chain
 1EPL - non-alpha (') insertion codes at the end of a chain
-1TWV - both UPPERCASE and lowercase insertion codes
+1TWV - both UPPERCASE and lowercase insertion codes 270A-Z + 270a
 (according to Rolf it is the only PDB entry with lowercase insertion codes)
 miguel 2006 03 31
-currently not here. Cannot be downloaded from www.pdb.org ?
+
+1GCI - hbonds in the file
 
 modified files for testing Jmol secondary structure predictions:
 1CRN_noSS - 1CRN with secondary structure records removed.

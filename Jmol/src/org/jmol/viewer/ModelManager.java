@@ -253,11 +253,6 @@ class ModelManager {
 
   boolean autoBond = true;
 
-  void rebond() {
-    if (frame != null)
-      frame.rebond();
-  }
-
   void setAutoBond(boolean ab) {
     autoBond = ab;
   }

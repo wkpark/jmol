@@ -208,14 +208,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public short getMadBond();
   abstract public void setMarBond(short marBond);
 
-  abstract public float getBondTolerance();
-  abstract public void setBondTolerance(float bondTolerance);
-
-  abstract public void rebond();
-
-  abstract public float getMinBondDistance();
-  abstract public void setMinBondDistance(float minBondDistance);
-
   abstract public void refresh();
 
   abstract public boolean getBooleanProperty(String propertyName);

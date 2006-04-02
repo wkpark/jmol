@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-28 07:28-0500\n"
+"POT-Creation-Date: 2006-04-02 10:00-0400\n"
 "PO-Revision-Date: 2005-10-08 19:38+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -1017,18 +1017,8 @@ msgid "Default Bond Radius"
 msgstr "Standaard bondstraal"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:371
-#: org/openscience/jmol/app/PreferencesDialog.java:409
-#: org/openscience/jmol/app/PreferencesDialog.java:460
 msgid "(Angstroms)"
 msgstr "(Angstroms)"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:408
-msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Bindingstolerantie - som van de twee covalente stralen + deze waarde"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:459
-msgid "Minimum Bonding Distance"
-msgstr "Minimum bindingsafstand"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60
 msgid "Recent Files"
@@ -1065,6 +1055,13 @@ msgstr "Laden..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Wat is nieuw in Jmol"
+
+#~ msgid "Bond Tolerance - sum of two covalent radii + this value"
+#~ msgstr ""
+#~ "Bindingstolerantie - som van de twee covalente stralen + deze waarde"
+
+#~ msgid "Minimum Bonding Distance"
+#~ msgstr "Minimum bindingsafstand"
 
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "D&raadmodelrotatie"

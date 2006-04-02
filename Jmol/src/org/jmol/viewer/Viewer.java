@@ -1180,11 +1180,6 @@ final public class Viewer extends JmolViewer {
     setCenterBitSet(selectionManager.bsSelection);
   }
 
-  public void rebond() {
-    modelManager.rebond();
-    refresh();
-  }
-
   public void setBondTolerance(float bondTolerance) {
     modelManager.setBondTolerance(bondTolerance);
     refresh();

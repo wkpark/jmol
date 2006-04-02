@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-28 07:28-0500\n"
+"POT-Creation-Date: 2006-04-02 10:00-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1014,17 +1014,7 @@ msgid "Default Bond Radius"
 msgstr ""
 
 #: org/openscience/jmol/app/PreferencesDialog.java:371
-#: org/openscience/jmol/app/PreferencesDialog.java:409
-#: org/openscience/jmol/app/PreferencesDialog.java:460
 msgid "(Angstroms)"
-msgstr ""
-
-#: org/openscience/jmol/app/PreferencesDialog.java:408
-msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
-
-#: org/openscience/jmol/app/PreferencesDialog.java:459
-msgid "Minimum Bonding Distance"
 msgstr ""
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60

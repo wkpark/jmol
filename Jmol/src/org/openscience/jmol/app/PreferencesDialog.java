@@ -69,14 +69,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   boolean showBoundingBox;
   boolean axesOrientationRasmol;
   boolean openFilePreview;
-  float minBondDistance;
-  float bondTolerance;
   short marBond;
   int percentVdwAtom;
   JButton bButton, pButton, tButton, eButton, vButton;
   private JRadioButton /*pYes, pNo, */abYes, abNo;
   private JSlider vdwPercentSlider;
-  private JSlider bdSlider, bwSlider, btSlider;
+  private JSlider bwSlider;
   private JCheckBox cH, cM;
   private JCheckBox cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
@@ -103,8 +101,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "percentVdwAtom",                 "20",
     "autoBond",                       "true",
     "marBond",                        "150",
-    "minBondDistance",                "0.40",
-    "bondTolerance",                  "0.45",
   };
 
   final static String[] rasmolOverrides = {
@@ -401,108 +397,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     gridbag.setConstraints(bwPanel, c);
     bondPanel.add(bwPanel);
 
-    // Bond Tolerance Slider
-    JPanel btPanel = new JPanel();
-    btPanel.setLayout(new BorderLayout());
-    btPanel.setBorder(new TitledBorder(
-      GT._("Bond Tolerance - sum of two covalent radii + this value")));
-    JLabel btLabel = new JLabel(GT._("(Angstroms)"), SwingConstants.CENTER);
-    btPanel.add(btLabel, BorderLayout.NORTH);
-
-    btSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
-        (int) (100 * viewer.getBondTolerance()));
-    btSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    btSlider.setPaintTicks(true);
-    btSlider.setMajorTickSpacing(20);
-    btSlider.setMinorTickSpacing(10);
-    btSlider.setPaintLabels(true);
-    btSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(20),
-        new JLabel("0.2", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(60),
-        new JLabel("0.6", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(100),
-        new JLabel("1.0", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-
-    btSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        bondTolerance = source.getValue() / 100f;
-        viewer.setBondTolerance(bondTolerance);
-        currentProperties.put("bondTolerance", "" + bondTolerance);
-        viewer.rebond();
-      }
-    });
-    btPanel.add(btSlider);
-
-
-    c.weightx = 0.0;
-    gridbag.setConstraints(btPanel, c);
-    bondPanel.add(btPanel);
-
-    // minimum bond distance slider
-    JPanel bdPanel = new JPanel();
-    bdPanel.setLayout(new BorderLayout());
-    bdPanel.setBorder(new TitledBorder(GT._("Minimum Bonding Distance")));
-    JLabel bdLabel = new JLabel(GT._("(Angstroms)"), SwingConstants.CENTER);
-    bdPanel.add(bdLabel, BorderLayout.NORTH);
-
-    bdSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
-        (int) (100 * viewer.getMinBondDistance()));
-    bdSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    bdSlider.setPaintTicks(true);
-    bdSlider.setMajorTickSpacing(20);
-    bdSlider.setMinorTickSpacing(10);
-    bdSlider.setPaintLabels(true);
-    bdSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(20),
-        new JLabel("0.2", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(60),
-        new JLabel("0.6", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(100),
-        new JLabel("1.0", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-
-    bdSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        minBondDistance = source.getValue() / 100f;
-        viewer.setMinBondDistance(minBondDistance);
-        currentProperties.put("minBondDistance", "" + minBondDistance);
-        viewer.rebond();
-      }
-    });
-    bdPanel.add(bdSlider);
-
-    c.weightx = 0.0;
-    gridbag.setConstraints(bdPanel, c);
-    bondPanel.add(bdPanel);
-
     return bondPanel;
   }
 
@@ -548,9 +442,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     // Bond panel controls:
     abYes.setSelected(viewer.getAutoBond());
     bwSlider.setValue(viewer.getMadBond()/2);
-    bdSlider.setValue((int) (100 * viewer.getMinBondDistance()));
-    btSlider.setValue((int) (100 * viewer.getBondTolerance()));
-
   }
 
   private void save() {
@@ -604,10 +495,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     axesOrientationRasmol = Boolean.getBoolean("axesOrientationRasmol");
     openFilePreview = Boolean.valueOf(System.getProperty("openFilePreview", "true")).booleanValue();
 
-    minBondDistance =
-      new Float(currentProperties.getProperty("minBondDistance")).floatValue();
-    bondTolerance =
-      new Float(currentProperties.getProperty("bondTolerance")).floatValue();
     marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));
@@ -619,8 +506,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     viewer.setPercentVdwAtom(percentVdwAtom);
     viewer.setMarBond(marBond);
-    viewer.setMinBondDistance(minBondDistance);
-    viewer.setBondTolerance(bondTolerance);
     viewer.setAutoBond(autoBond);
     viewer.setShowHydrogens(showHydrogens);
     viewer.setShowMeasurements(showMeasurements);

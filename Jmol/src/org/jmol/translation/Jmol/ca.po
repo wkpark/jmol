@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-28 07:28-0500\n"
+"POT-Creation-Date: 2006-04-02 10:00-0400\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -1021,18 +1021,8 @@ msgid "Default Bond Radius"
 msgstr "Radi per defecte de l'enllaç"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:371
-#: org/openscience/jmol/app/PreferencesDialog.java:409
-#: org/openscience/jmol/app/PreferencesDialog.java:460
 msgid "(Angstroms)"
 msgstr "(Àmstrongs)"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:408
-msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerància d'enllaç - suma de dos radis covalents + aquest valor"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:459
-msgid "Minimum Bonding Distance"
-msgstr "Distància mínima d'enllaç"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60
 msgid "Recent Files"
@@ -1069,6 +1059,12 @@ msgstr "S'està carregant..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
+
+#~ msgid "Bond Tolerance - sum of two covalent radii + this value"
+#~ msgstr "Tolerància d'enllaç - suma de dos radis covalents + aquest valor"
+
+#~ msgid "Minimum Bonding Distance"
+#~ msgstr "Distància mínima d'enllaç"
 
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotació en mode filfe&rro"

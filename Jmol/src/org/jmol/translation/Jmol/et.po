@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-03-28 07:28-0500\n"
+"POT-Creation-Date: 2006-04-02 10:00-0400\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -1016,18 +1016,8 @@ msgid "Default Bond Radius"
 msgstr "Sideme raadiuse vaikeväärtus"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:371
-#: org/openscience/jmol/app/PreferencesDialog.java:409
-#: org/openscience/jmol/app/PreferencesDialog.java:460
 msgid "(Angstroms)"
 msgstr "(Angstromid)"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:408
-msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Sideme tolerants - kahe kovalentse radii summa + see väärtus"
-
-#: org/openscience/jmol/app/PreferencesDialog.java:459
-msgid "Minimum Bonding Distance"
-msgstr "Väikseim sideme kaugus"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60
 msgid "Recent Files"
@@ -1064,6 +1054,12 @@ msgstr "Laen..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
+
+#~ msgid "Bond Tolerance - sum of two covalent radii + this value"
+#~ msgstr "Sideme tolerants - kahe kovalentse radii summa + see väärtus"
+
+#~ msgid "Minimum Bonding Distance"
+#~ msgstr "Väikseim sideme kaugus"
 
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Sõrestiku keeramine"

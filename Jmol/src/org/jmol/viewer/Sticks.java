@@ -119,7 +119,8 @@ class Sticks extends Shape {
       // use of 'connect', 'connect on', 'connect off' is deprecated
       // I suggest that support be dropped at some point in the near future
       frame.deleteAllBonds();
-      frame.rebond();
+      // go ahead and test out the autoBond(null, null) code a bit
+      frame.autoBond(null, null);
       return;
     }
     super.setProperty(propertyName, value, bsSelected);
@@ -156,6 +157,9 @@ class Sticks extends Shape {
   private final static int MODIFY_OR_CREATE = 3;
   private final static int AUTO_BOND        = 4;
 
+  private final static String[] connectOperationStrings =
+  { "delete", "modify", "create", "modifyOrCreate", "auto" };
+
   void makeConnections(float minDistance, float maxDistance,
                        short order, int connectOperation,
                        BitSet bsA, BitSet bsB) {
@@ -171,7 +175,7 @@ class Sticks extends Shape {
       return;
     }
     if (connectOperation == AUTO_BOND) {
-      autoBond(minDistance, maxDistance, order, bsA, bsB);
+      autoBond(order, bsA, bsB);
       return;
     }
     if (order <= 0)
@@ -236,41 +240,28 @@ class Sticks extends Shape {
   }
 
   short bondOrderFromString(String bondOrderString) {
-    if (bondOrderString != null) 
-      for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
-        if (bondOrderString.equalsIgnoreCase(JmolConstants.bondOrderNames[i]))
-          return JmolConstants.bondOrderValues[i];
-      }
+    for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
+      if (JmolConstants.bondOrderNames[i].equalsIgnoreCase(bondOrderString))
+        return JmolConstants.bondOrderValues[i];
+    }
     return 0;
   }
 
   int connectOperationFromString(String connectOperationString) {
-    if ("delete".equalsIgnoreCase(connectOperationString))
-      return DELETE_BONDS;
-    if ("modify".equalsIgnoreCase(connectOperationString))
-      return MODIFY_ONLY;
-    if ("create".equalsIgnoreCase(connectOperationString))
-      return CREATE_ONLY;
-    if ("createOrModify".equalsIgnoreCase(connectOperationString))
-      return MODIFY_OR_CREATE;
-    if ("auto".equalsIgnoreCase(connectOperationString))
-      return AUTO_BOND;
-    System.out.println("unrecognized connect operation:" +
-                       connectOperationString);
-    return -1;
+    int i;
+    for (i = connectOperationStrings.length; --i >= 0; )
+      if (connectOperationStrings[i].equalsIgnoreCase(connectOperationString))
+        break;
+    return i;
   }
 
-  void autoBond(float minDistance, float maxDistance, int order,
-                BitSet bsA, BitSet bsB) {
-    System.out.println("Sticks.autobond(" + minDistance + "," +
-                       maxDistance + "," + order + ",...)");
-    if (bsA == null)
-      System.out.println(" bsA: null");
+  void autoBond(short order, BitSet bsA, BitSet bsB) {
+    if (order == NULL_BOND_ORDER)
+      frame.autoBond(bsA, bsB);
+    else if (order == JmolConstants.BOND_H_REGULAR)
+      frame.autoHbond(bsA, bsB);
     else
-      System.out.println(" bsA: " + bsA.cardinality());
-    if (bsB == null)
-      System.out.println(" bsB: null");
-    else
-      System.out.println(" bsB: " + bsB.cardinality());
+      System.out.println("connect auto command does not understand order:" +
+                         connectOperationStrings[order]);
   }
 }

@@ -24,6 +24,8 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * CIF file reader for CIF and mmCIF files.
@@ -43,6 +45,7 @@ class CifReader extends AtomSetCollectionReader {
   String line;
   RidiculousFileFormatTokenizer tokenizer =
     new RidiculousFileFormatTokenizer();
+  Map strandsMap;
 
   void initialize() {
     notionalUnitcell = new float[6];
@@ -53,6 +56,7 @@ class CifReader extends AtomSetCollectionReader {
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("cif");
+    strandsMap = new Hashtable();
     
     // this loop is a little tricky
     // the CIF format seems to generate lots of problems for parsers
@@ -71,6 +75,8 @@ class CifReader extends AtomSetCollectionReader {
         processCellParameter();
       } else if (line.startsWith("_symmetry_space_group_name_H-M")) {
         processSymmetrySpaceGroupNameHM();
+      } else if (line.startsWith("_struct_asym")) {
+        processStructAsymBlock();
       }
       line = reader.readLine();
     }
@@ -142,6 +148,10 @@ class CifReader extends AtomSetCollectionReader {
     //    logger.log("trimmed line:" + line);
     if (line.startsWith("_atom_site")) {
       processAtomSiteLoopBlock();
+      return;
+    }
+    if (line.startsWith("_struct_asym")) {
+      processStructAsymBlock();
       return;
     }
     if (line.startsWith("_geom_bond")) {
@@ -408,6 +418,56 @@ class CifReader extends AtomSetCollectionReader {
     return fieldCount;
   }
 
+  Object[] parseAndProcessStructParameters(
+        String[] fields,
+        byte[] fieldMap,
+        int[] fieldTypes,
+        boolean[] propertyReferenced) throws Exception {
+    int fieldCount = 0;
+    Strand struct = new Strand();
+    outer_loop:
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) == '_';
+         ++fieldCount, line = reader.readLine()) {
+      logger.log("Processing line: ", line);
+      for (int i = fields.length; --i >= 0; ) {
+        tokenizer.setString(line);
+        String key = tokenizer.nextToken();
+        // take this valid mmCIF into account:
+        // _struct_asym.id A 
+        String value = null;
+        if (tokenizer.hasMoreTokens()) {
+          value = tokenizer.nextToken();
+          logger.log("Found a value: " + value);
+          logger.log("Found a value: ", value);
+          switch (fieldTypes[i]) {
+          case STRUCT_ASYM_ID:
+            struct.chainID = value;
+            break;
+          case STRUCT_BLANK_CHAIN_ID:
+            struct.isBlank = "Y".equals(value) ? true : false; 
+            break;
+          }
+        } else {
+          struct = null;
+        }
+        if (isMatch(key, fields[i])) {
+          int iproperty = fieldMap[i];
+          propertyReferenced[iproperty] = true;
+          fieldTypes[fieldCount] = iproperty;
+          continue outer_loop;
+        }
+      }
+    }
+    logger.log("parseLoopParameters sees fieldCount=" + fieldCount);
+    logger.log("struct" + struct);
+    Object[] results = new Object[2];
+    results[0] = new Integer(fieldCount);
+    results[1] = struct;
+    return results;
+  }
+
   ////////////////////////////////////////////////////////////////
   // bond data
   ////////////////////////////////////////////////////////////////
@@ -664,6 +724,97 @@ class CifReader extends AtomSetCollectionReader {
     }
   }
 
+  ////////////////////////////////////////////////////////////////
+  // strand data
+  ////////////////////////////////////////////////////////////////
+
+  final static byte STRUCT_ASYM_ID = 1;
+  final static byte STRUCT_BLANK_CHAIN_ID = 2;
+  final static byte STRUCT_PROPERTY_MAX = 18;
+
+  final static String[] structAsymNames =
+  {"_struct_asym.id", "_struct_asym.pdbx_blank_PDB_chainid_flag"};
+
+  final static byte[] structAsymMap = {
+    STRUCT_ASYM_ID, STRUCT_BLANK_CHAIN_ID
+  };
+
+  static {
+    if (structAsymMap.length != structAsymNames.length)
+      structAsymNames[100] = "explode";
+  }
+
+  private void processStructAsymBlock() throws Exception {
+    //    logger.log("processAtomSiteLoopBlock()-------------------------");
+    int[] fieldTypes = new int[10]; // should be enough
+    boolean[] structPropertyReferenced = new boolean[STRUCT_PROPERTY_MAX];
+    Object[] results = parseAndProcessStructParameters(
+        structAsymNames, structAsymMap,
+        fieldTypes, structPropertyReferenced);
+    int fieldCount = ((Integer)results[0]).intValue(); 
+    Strand struct = ((Strand)results[1]);
+    // now that headers are parsed, check to see if we want
+    // cartesian or fractional coordinates;
+    if (struct != null) {
+      /* Then this syntax was found:
+      * _struct_asym.id                            A 
+      * _struct_asym.pdbx_blank_PDB_chainid_flag   Y 
+      * _struct_asym.pdbx_modified                 N 
+      * _struct_asym.entity_id                     1 
+      * _struct_asym.details                       ? 
+      * #
+      */ 
+      logger.log("Found only one chain: " + struct.chainID.length());
+      logger.log("Found only one chain: ", struct.chainID);
+      strandsMap.put(struct.chainID, struct);
+    } else {
+      /* Then the 'normal' _loop format was found. */
+      logger.log("Found multiple chains... parsing them now");
+      for (; line != null; line = reader.readLine()) {
+        int lineLength = line.length();
+        if (lineLength == 0)
+          break;
+        char chFirst = line.charAt(0);
+        if (chFirst == '#' ||
+            chFirst == '_' ||
+            line.startsWith("loop_") ||
+            line.startsWith("data_"))
+          break;
+        if (chFirst == ' ') {
+          int i;
+          for (i = lineLength; --i >= 0 && line.charAt(i) == ' '; ) {
+          }
+          if (i < 0)
+            break;
+        }
+        //      logger.log("line:" + line);
+        //      logger.log("of length = " + line.length());
+        if (line.length() == 1)
+          System.out.println("char value is " + (chFirst + 0));
+        tokenizer.setString(line);
+        //      logger.log("reading an atom");
+        struct = new Strand();
+        for (int i = 0; i < fieldCount; ++i) {
+          if (! tokenizer.hasMoreTokens())
+            tokenizer.setString(reader.readLine());
+          String field = tokenizer.nextToken();
+          if (field == null)
+            System.out.println("field == null!");
+          switch (fieldTypes[i]) {
+          case STRUCT_ASYM_ID:
+            struct.chainID = field;
+            break;
+          case STRUCT_BLANK_CHAIN_ID:
+            struct.isBlank = "Y".equals(field) ? true : false; 
+            break;
+          }
+        }
+        logger.log("  found chain: ", struct.chainID);
+        strandsMap.put(struct.chainID, struct);
+      }
+    }
+  }  
+  
   ////////////////////////////////////////////////////////////////
   // special tokenizer class
   ////////////////////////////////////////////////////////////////

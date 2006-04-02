@@ -1180,21 +1180,21 @@ final public class Viewer extends JmolViewer {
     setCenterBitSet(selectionManager.bsSelection);
   }
 
-  public void setBondTolerance(float bondTolerance) {
+  void setBondTolerance(float bondTolerance) {
     modelManager.setBondTolerance(bondTolerance);
     refresh();
   }
 
-  public float getBondTolerance() {
+  float getBondTolerance() {
     return modelManager.bondTolerance;
   }
 
-  public void setMinBondDistance(float minBondDistance) {
+  void setMinBondDistance(float minBondDistance) {
     modelManager.setMinBondDistance(minBondDistance);
     refresh();
   }
 
-  public float getMinBondDistance() {
+  float getMinBondDistance() {
     return modelManager.minBondDistance;
   }
 

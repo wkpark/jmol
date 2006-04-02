@@ -1156,64 +1156,16 @@ final class Frame {
         getModelSetProperty("noautobond") == null) {
       if ((bondCount == 0) ||
           (modelSetTypeName == "pdb" && (bondCount < (atomCount / 2))))
-        rebond();
+        autoBond(null, null);
     }
   }
 
   final static boolean showRebondTimes = false;
 
-  private float bondTolerance;
-  private float minBondDistance;
-  private float minBondDistance2;
-
-  void rebond() {
-    if (maxBondingRadius == Float.MIN_VALUE)
-      findMaxRadii();
-    bondTolerance = viewer.getBondTolerance();
-    minBondDistance = viewer.getMinBondDistance();
-    minBondDistance2 = minBondDistance*minBondDistance;
-
-    //char chainLast = '?';
-    //int indexLastCA = -1;
-    //Atom atomLastCA = null;
-
-    initializeBspf();
-
-    long timeBegin = 0;
-    if (showRebondTimes)
-      timeBegin = System.currentTimeMillis();
-    for (int i = atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      // Covalent bonds
-      float myBondingRadius = atom.getBondingRadiusFloat();
-      if (myBondingRadius == 0)
-        continue;
-      float searchRadius =
-        myBondingRadius + maxBondingRadius + bondTolerance;
-      SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
-      iter.initializeHemisphere(atom, searchRadius);
-      while (iter.hasMoreElements()) {
-        Atom atomNear = (Atom)iter.nextElement();
-        if (atomNear != atom) {
-          short order = getBondOrder(atom, myBondingRadius, atomNear,
-                                     atomNear.getBondingRadiusFloat(),
-                                     iter.foundDistance2());
-          if (order > 0)
-            checkValencesAndBond(atom, atomNear, order);
-        }
-      }
-      iter.release();
-    }
-
-    if (showRebondTimes) {
-      long timeEnd = System.currentTimeMillis();
-      System.out.println("Time to autoBond=" + (timeEnd - timeBegin));
-    }
-  }
-
   private short getBondOrder(Atom atomA, float bondingRadiusA,
                              Atom atomB, float bondingRadiusB,
-                             float distance2) {
+                             float distance2,
+                             float minBondDistance2, float bondTolerance) {
     //            System.out.println(" radiusA=" + bondingRadiusA +
     //                               " radiusB=" + bondingRadiusB +
     //                         " distance2=" + distance2 +
@@ -1252,23 +1204,13 @@ final class Frame {
   }
 
   // null values for bitsets means "all"
-  /*
-   * miguel 2006 04 02
-   *
-   * this should be merged with the rebond() code above.
-   * however, it will be safer to leave the separate for
-   * now, given the pending 10.1 release
-   *
-   * leaving them separate will mean that the only uses who
-   * run this code will be those running 'connect' script commands
-   */
   void autoBond(BitSet bsA, BitSet bsB) {
     System.out.println("Frame.autoBond(" + bsA + "," + bsB + ")");
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
-    bondTolerance = viewer.getBondTolerance();
-    minBondDistance = viewer.getMinBondDistance();
-    minBondDistance2 = minBondDistance*minBondDistance;
+    float bondTolerance = viewer.getBondTolerance();
+    float minBondDistance = viewer.getMinBondDistance();
+    float minBondDistance2 = minBondDistance*minBondDistance;
 
     //char chainLast = '?';
     //int indexLastCA = -1;
@@ -1289,7 +1231,7 @@ final class Frame {
      * if we are going to allow arbitrary sets bsA and bsB, then this will
      * not work.
      * so, for now I will do it the ugly way.
-     * maybe enhance/improve in the future
+     * maybe enhance/improve in the future.
      */
     for (int i = atomCount; --i >= 0; ) {
       boolean isAtomInSetA = (bsA == null || bsA.get(i));
@@ -1319,7 +1261,8 @@ final class Frame {
           continue;
         short order = getBondOrder(atom, myBondingRadius, atomNear,
                                    atomNear.getBondingRadiusFloat(),
-                                   iter.foundDistance2());
+                                   iter.foundDistance2(),
+                                   minBondDistance2, bondTolerance);
         if (order > 0)
           checkValencesAndBond(atom, atomNear, order);
       }

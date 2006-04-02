@@ -145,6 +145,7 @@ class Sticks extends Shape {
   private final static int MODIFY_ONLY      = 1;
   private final static int CREATE_ONLY      = 2;
   private final static int MODIFY_OR_CREATE = 3;
+  private final static int AUTO_BOND        = 4;
 
   void makeConnections(float minDistance, float maxDistance,
                        short order, int connectOperation,
@@ -158,6 +159,10 @@ class Sticks extends Shape {
     Atom[] atoms = frame.atoms;
     if (connectOperation == DELETE_BONDS) {
       deleteConnections(minDistance, maxDistance, order, bsA, bsB);
+      return;
+    }
+    if (connectOperation == AUTO_BOND) {
+      autoBond(minDistance, maxDistance, order, bsA, bsB);
       return;
     }
     if (order <= 0)
@@ -239,8 +244,18 @@ class Sticks extends Shape {
       return CREATE_ONLY;
     if ("createOrModify".equalsIgnoreCase(connectOperationString))
       return MODIFY_OR_CREATE;
+    if ("auto".equalsIgnoreCase(connectOperationString))
+      return AUTO_BOND;
     System.out.println("unrecognized connect operation:" +
                        connectOperationString);
     return -1;
+  }
+
+  void autoBond(float minDistance, float maxDistance, int order,
+                BitSet bsA, BitSet bsB) {
+    System.out.println("Sticks.autobond(" + minDistance + "," +
+                       maxDistance + "," + order + "," +
+                       "bitset:" + bsA.cardinality() + "," +
+                       "bitset:" + bsB.cardinality()+ ")");
   }
 }

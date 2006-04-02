@@ -3655,6 +3655,8 @@ class Eval implements Runnable {
           propertyValue = "create";
         else if ("modifyOrCreate".equalsIgnoreCase(cmd))
           propertyValue = "modifyOrCreate";
+        else if ("auto".equalsIgnoreCase(cmd))
+          propertyValue = "auto";
         else
           unrecognizedSubcommand();
         propertyName = "connectOperation";

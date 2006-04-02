@@ -3613,7 +3613,8 @@ class Eval implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "resetConnectParameters", null);
     if (statementLength == 1) {
-      viewer.rebond();
+      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+                              "rasmolCompatibleConnect", null);
       return;
     }
     for (int i = 1; i < statementLength; ++i) {
@@ -3623,7 +3624,8 @@ class Eval implements Runnable {
       switch (statement[i].tok) {
       case Token.on:
       case Token.off:
-        viewer.rebond();
+        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
+                                "rasmolCompatibleConnect", null);
         return;
       case Token.integer:
         propertyName = "connectDistance";
@@ -3675,4 +3677,5 @@ class Eval implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "applyConnectParameters", null);
   }
+
 }

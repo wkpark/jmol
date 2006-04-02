@@ -36,6 +36,7 @@ class Sticks extends Shape {
   int connectDistanceCount;
   final BitSet[] connectSets = new BitSet[2];
   int connectSetCount;
+  final private static short NULL_BOND_ORDER = -1;
   // initialized to -1;
   // for delete this means 'delete all'
   // for connect this gets turned into 'single'
@@ -68,7 +69,7 @@ class Sticks extends Shape {
     if ("resetConnectParameters" == propertyName) {
       connectDistanceCount = 0;
       connectSetCount = 0;
-      connectBondOrder = -1;
+      connectBondOrder = NULL_BOND_ORDER;
       connectOperation = MODIFY_OR_CREATE;
       return;
     }
@@ -111,6 +112,16 @@ class Sticks extends Shape {
         makeConnections(connectDistances[0], connectDistances[1],
                         connectBondOrder, connectOperation,
                         connectSets[0], connectSets[1]);
+      return;
+    }
+    if ("rasmolCompatibleConnect" == propertyName) {
+      // miguel 2006 04 02
+      // use of 'connect', 'connect on', 'connect off' is deprecated
+      // I suggest that support be dropped at some point in the near future
+      frame.deleteAllBonds();
+      makeConnections(DEFAULT_MIN_CONNECT_DISTANCE,
+                      DEFAULT_MAX_CONNECT_DISTANCE,
+                      NULL_BOND_ORDER, AUTO_BOND, null, null);
       return;
     }
     super.setProperty(propertyName, value, bsSelected);
@@ -254,8 +265,14 @@ class Sticks extends Shape {
   void autoBond(float minDistance, float maxDistance, int order,
                 BitSet bsA, BitSet bsB) {
     System.out.println("Sticks.autobond(" + minDistance + "," +
-                       maxDistance + "," + order + "," +
-                       "bitset:" + bsA.cardinality() + "," +
-                       "bitset:" + bsB.cardinality()+ ")");
+                       maxDistance + "," + order + ",...)");
+    if (bsA == null)
+      System.out.println(" bsA: null");
+    else
+      System.out.println(" bsA: " + bsA.cardinality());
+    if (bsB == null)
+      System.out.println(" bsB: null");
+    else
+      System.out.println(" bsB: " + bsB.cardinality());
   }
 }

@@ -243,7 +243,8 @@ abstract class Polymer {
 
   boolean isNucleic() { return monomers[0].isNucleic(); }
 
-  void calcHydrogenBonds() {
+  void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
+    // subclasses should override if they know how to calculate hbonds
   }
 
   Point3f[] getLeadMidpoints() {

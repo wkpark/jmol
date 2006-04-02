@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import java.util.BitSet;
 
 class NucleicPolymer extends Polymer {
 
@@ -36,18 +37,18 @@ class NucleicPolymer extends Polymer {
 
   boolean hasWingPoints() { return true; }
 
-  void calcHydrogenBonds() {
+  void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
     for (int i = model.getPolymerCount(); --i >= 0; ) {
       Polymer otherPolymer = model.getPolymer(i);
       if (otherPolymer == this) // don't look at self
         continue;
       if (otherPolymer == null || !(otherPolymer instanceof NucleicPolymer))
         continue;
-      lookForHbonds((NucleicPolymer)otherPolymer);
+      lookForHbonds((NucleicPolymer)otherPolymer, bsA, bsB);
     }
   }
 
-  void lookForHbonds(NucleicPolymer other) {
+  void lookForHbonds(NucleicPolymer other, BitSet bsA, BitSet bsB) {
     //System.out.println("NucleicPolymer.lookForHbonds()");
     for (int i = monomerCount; --i >= 0; ) {
       NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
@@ -70,26 +71,26 @@ class NucleicPolymer extends Polymer {
         }
       }
       if (bestN3 != null) {
-        createHydrogenBond(myN1, bestN3);
+        createHydrogenBond(myN1, bestN3, bsA, bsB);
         if (myNucleotide.isGuanine()) {
           createHydrogenBond(myNucleotide.getN2(),
-                             bestNucleotide.getO2());
+                             bestNucleotide.getO2(), bsA, bsB);
           createHydrogenBond(myNucleotide.getO6(),
-                             bestNucleotide.getN4());
+                             bestNucleotide.getN4(), bsA, bsB);
         } else {
           createHydrogenBond(myNucleotide.getN6(),
-                             bestNucleotide.getO4());
+                             bestNucleotide.getO4(), bsA, bsB);
         }
       }
     }
   }
 
-  void createHydrogenBond(Atom atom1, Atom atom2) {
+  void createHydrogenBond(Atom atom1, Atom atom2, BitSet bsA, BitSet bsB) {
     //    System.out.println("createHydrogenBond:" +
     // atom1.getAtomNumber() + "<->" + atom2.getAtomNumber());
     if (atom1 != null && atom2 != null) {
       Frame frame = model.mmset.frame;
-      frame.bondAtoms(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE);
+      frame.bondAtoms(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE, bsA, bsB);
     }
   }
 }

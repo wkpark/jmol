@@ -263,7 +263,6 @@ class Sticks extends Shape {
     else if (order == JmolConstants.BOND_H_REGULAR)
       frame.autoHbond(bsA, bsB);
     else
-      System.out.println("connect auto command does not understand order:" +
-                         connectOperationStrings[order]);
+      System.out.println("Sticks.autoBond() unknown order: " + order);
   }
 }

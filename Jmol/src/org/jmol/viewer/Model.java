@@ -126,8 +126,8 @@ final class Model {
     return polymers[polymerIndex];
   }
 
-  void calcHydrogenBonds() {
+  void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
     for (int i = polymerCount; --i >= 0; )
-      polymers[i].calcHydrogenBonds();
+      polymers[i].calcHydrogenBonds(bsA, bsB);
   }
 }

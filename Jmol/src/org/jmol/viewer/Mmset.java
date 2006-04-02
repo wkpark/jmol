@@ -205,9 +205,9 @@ final class Mmset {
       models[i].calcSelectedMonomersCount(bsSelected);
   }
 
-  void calcHydrogenBonds() {
+  void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
     for (int i = modelCount; --i >= 0; )
-      models[i].calcHydrogenBonds();
+      models[i].calcHydrogenBonds(bsA, bsB);
   }
 
   void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {

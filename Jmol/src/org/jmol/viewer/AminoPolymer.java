@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import java.util.BitSet;
 
 class AminoPolymer extends AlphaPolymer {
 
@@ -41,38 +42,38 @@ class AminoPolymer extends AlphaPolymer {
 
   boolean hasWingPoints() { return true; }
 
-  boolean hbondsAlreadyCalculated;
-
   final static boolean debugHbonds = false;
 
-  void calcHydrogenBonds() {
-    if (! hbondsAlreadyCalculated) {
-      allocateHbondDataStructures();
-      //Frame frame = model.mmset.frame;
-      //hbondMax2 = frame.hbondMax * frame.hbondMax;
-      calcProteinMainchainHydrogenBonds();
-      hbondsAlreadyCalculated = true;
-
-      if (debugHbonds) {
-        System.out.println("calcHydrogenBonds");
-        for (int i = 0; i < monomerCount; ++i) {
-          System.out.println("  min1Indexes=" + min1Indexes[i] +
-                             "\nmin1Energies=" + min1Energies[i] +
-                             "\nmin2Indexes=" + min2Indexes[i] +
+  void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
+    System.out.println("AminoPolymer.calcHydrogenBonds()");
+    initializeHbondDataStructures();
+    //Frame frame = model.mmset.frame;
+    //hbondMax2 = frame.hbondMax * frame.hbondMax;
+    calcProteinMainchainHydrogenBonds(bsA, bsB);
+    
+    if (debugHbonds) {
+      System.out.println("calcHydrogenBonds");
+      for (int i = 0; i < monomerCount; ++i) {
+        System.out.println("  min1Indexes=" + min1Indexes[i] +
+                           "\nmin1Energies=" + min1Energies[i] +
+                           "\nmin2Indexes=" + min2Indexes[i] +
                            "\nmin2Energies=" + min2Energies[i]);
-        }
       }
     }
   }
 
-  
-
-  void allocateHbondDataStructures() {
-    mainchainHbondOffsets = new short[monomerCount];
-    min1Indexes = new short[monomerCount];
-    min1Energies = new short[monomerCount];
-    min2Indexes = new short[monomerCount];
-    min2Energies = new short[monomerCount];
+  void initializeHbondDataStructures() {
+    if (mainchainHbondOffsets == null) {
+      mainchainHbondOffsets = new short[monomerCount];
+      min1Indexes = new short[monomerCount];
+      min1Energies = new short[monomerCount];
+      min2Indexes = new short[monomerCount];
+      min2Energies = new short[monomerCount];
+    } else {
+      for (int i = monomerCount; --i >= 0; ) {
+        mainchainHbondOffsets[i] = min1Energies[i] = min2Energies[i] = 0;
+      }
+    }
     for (int i = monomerCount; --i >= 0; )
       min1Indexes[i] = min2Indexes[i] = -1;
   }
@@ -85,7 +86,8 @@ class AminoPolymer extends AlphaPolymer {
   final Vector3f vectorPreviousOC = new Vector3f();
   final Point3f aminoHydrogenPoint = new Point3f();
 
-  void calcProteinMainchainHydrogenBonds() {
+  void calcProteinMainchainHydrogenBonds(BitSet bsA, BitSet bsB) {
+    System.out.println("calcProteinMainchainHydrogenBonds()");
     Point3f carbonPoint;
     Point3f oxygenPoint;
     
@@ -100,7 +102,7 @@ class AminoPolymer extends AlphaPolymer {
       if (i > 0 && residue.getGroupID() != JmolConstants.GROUPID_PROLINE) {
         Point3f nitrogenPoint = residue.getNitrogenAtomPoint();
         aminoHydrogenPoint.add(nitrogenPoint, vectorPreviousOC);
-        bondAminoHydrogen(i, aminoHydrogenPoint);
+        bondAminoHydrogen(i, aminoHydrogenPoint, bsA, bsB);
       }
       carbonPoint = residue.getCarbonylCarbonAtomPoint();
       oxygenPoint = residue.getCarbonylOxygenAtomPoint();
@@ -114,10 +116,12 @@ class AminoPolymer extends AlphaPolymer {
   private final static float maxHbondAlphaDistance = 9;
   private final static float maxHbondAlphaDistance2 =
     maxHbondAlphaDistance * maxHbondAlphaDistance;
-  private final static float minimumHbondDistance2 = 0.5f; // note: RasMol is 1/2 this. RMH
+  // note: RasMol is 1/2 this. RMH
+  private final static float minimumHbondDistance2 = 0.5f;
   private final static double QConst = -332 * 0.42 * 0.2 * 1000;
 
-  void bondAminoHydrogen(int indexDonor, Point3f hydrogenPoint) {
+  void bondAminoHydrogen(int indexDonor, Point3f hydrogenPoint,
+                         BitSet bsA, BitSet bsB) {
     AminoMonomer source = (AminoMonomer)monomers[indexDonor];
     Point3f sourceAlphaPoint = source.getLeadAtomPoint();
     Point3f sourceNitrogenPoint = source.getNitrogenAtomPoint();
@@ -150,9 +154,9 @@ class AminoPolymer extends AlphaPolymer {
       mainchainHbondOffsets[indexDonor] = (short)(indexDonor - indexMin1);
       min1Indexes[indexDonor] = (short)indexMin1;
       min1Energies[indexDonor] = (short)energyMin1;
-      createResidueHydrogenBond(indexDonor, indexMin1);
+      createResidueHydrogenBond(indexDonor, indexMin1, bsA, bsB);
       if (indexMin2 >= 0) {
-        createResidueHydrogenBond(indexDonor, indexMin2);
+        createResidueHydrogenBond(indexDonor, indexMin2, bsA, bsB);
         min2Indexes[indexDonor] = (short)indexMin2;
         min2Energies[indexDonor] = (short)energyMin2;
       }
@@ -209,8 +213,8 @@ class AminoPolymer extends AlphaPolymer {
     return energy;
   }
 
-  void createResidueHydrogenBond(int indexAminoGroup,
-                                 int indexCarbonylGroup) {
+  void createResidueHydrogenBond(int indexAminoGroup, int indexCarbonylGroup,
+                                 BitSet bsA, BitSet bsB) {
     short order;
     int aminoBackboneHbondOffset = indexAminoGroup - indexCarbonylGroup;
     if (debugHbonds) 
@@ -249,7 +253,7 @@ class AminoPolymer extends AlphaPolymer {
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
     Atom oxygen = recipient.getCarbonylOxygenAtom();
-    model.mmset.frame.bondAtoms(nitrogen, oxygen, order);
+    model.mmset.frame.bondAtoms(nitrogen, oxygen, order, bsA, bsB);
   }
 
   /*

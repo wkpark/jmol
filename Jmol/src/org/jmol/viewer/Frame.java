@@ -714,6 +714,15 @@ final class Frame {
     addBond(atom1.bondMutually(atom2, order, this));
   }
 
+  void bondAtoms(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
+    boolean atom1InSetA = bsA == null || bsA.get(atom1.atomIndex);
+    boolean atom1InSetB = bsB == null || bsB.get(atom1.atomIndex);
+    boolean atom2InSetA = bsA == null || bsA.get(atom2.atomIndex);
+    boolean atom2InSetB = bsB == null || bsB.get(atom2.atomIndex);
+    if (atom1InSetA & atom2InSetB || atom1InSetB & atom2InSetA)
+      addBond(atom1.bondMutually(atom2, order, this));
+  }
+
   Shape allocateShape(int shapeID) {
     String classBase = JmolConstants.shapeClassBases[shapeID];
     //    System.out.println("Frame.allocateShape(" + classBase + ")");
@@ -1278,25 +1287,16 @@ final class Frame {
   ////////////////////////////////////////////////////////////////
   // hbond code
 
-  void autoHbond(BitSet bsA, BitSet bsB) {
-    System.out.println("Frame.autoHbond(BitSet,BitSet) not yet implemented");
-  }
-
   float hbondMax = 3.25f;
   float hbondMin = 2.5f;
   float hbondMin2 = hbondMin * hbondMin;
   
-  boolean hbondsCalculated;
-
   boolean useRasMolHbondsCalculation = true;
 
-  void calcHbonds() {
-    if (hbondsCalculated)
-      return;
-    hbondsCalculated = true;
+  void autoHbond(BitSet bsA, BitSet bsB) {
     if (useRasMolHbondsCalculation) {
       if (mmset != null)
-        mmset.calcHydrogenBonds();
+        mmset.calcHydrogenBonds(bsA, bsB);
       return;
     }
     initializeBspf();

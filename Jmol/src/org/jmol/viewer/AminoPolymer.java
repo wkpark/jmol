@@ -270,7 +270,6 @@ class AminoPolymer extends AlphaPolymer {
    */
 
   void calculateStructures() {
-    calcHydrogenBonds();
     char[] structureTags = new char[monomerCount];
 
     float[] phi_psi = new float[2];

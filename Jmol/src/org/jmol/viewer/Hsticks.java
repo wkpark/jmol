@@ -33,7 +33,10 @@ class Hsticks extends Sticks {
 
   void setSize(int size, BitSet bsSelected) {
     //System.out.println("Hsticks.setSize()");
-    frame.calcHbonds();
+    // miguel 2006 04 02
+    // disable 'automatic' calculation of hbonds
+    // now integrated into 'connect'
+    //frame.calcHbonds();
     short mad = (short)size;
     setMadBond(mad, JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
   }

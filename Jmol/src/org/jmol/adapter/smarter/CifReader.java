@@ -24,7 +24,6 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -175,6 +174,10 @@ class CifReader extends AtomSetCollectionReader {
       processPolySeqSchemeLoopBlock();
       return;
     }
+    if (line.startsWith("_pdbx_nonpoly_scheme")) {
+      processNonPolySchemeLoopBlock();
+      return;
+    }
     if (line.startsWith("_struct_sheet_range")) {
       processStructSheetRangeLoopBlock();
       return;
@@ -235,13 +238,13 @@ class CifReader extends AtomSetCollectionReader {
 
   final static String[] atomFields = {
     "_atom_site_type_symbol",
-    "_atom_site_label", "_atom_site_auth_atom_id",
+    "_atom_site_label", "_atom_site_label_atom_id",
     "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
     "_atom_site.Cartn_x", "_atom_site.Cartn_y", "_atom_site.Cartn_z",
     "_atom_site_occupancy",
     "_atom_site.b_iso_or_equiv",
-    "_atom_site.auth_comp_id", "_atom_site.auth_asym_id",
-    "_atom_site.auth_seq_id", "_atom_site.pdbx_PDB_ins_code",
+    "_atom_site.label_comp_id", "_atom_site.label_asym_id",
+    "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
     "_atom_site.label_alt_id",
     "_atom_site.group_PDB",
     "_atom_site.pdbx_PDB_model_num",
@@ -365,8 +368,23 @@ class CifReader extends AtomSetCollectionReader {
             logger.log("Don't know how to deal with chains more than 1 char",
                        field);
           char firstChar = field.charAt(0);
-          if (firstChar != '?' && firstChar != '.')
-            atom.chainID = firstChar;
+          if (firstChar != '?' && firstChar != '.') {
+            String chainID = "" + firstChar;
+            if (strandsMap.containsKey(chainID)) {
+              Strand strand = (Strand)strandsMap.get(chainID);
+              // OK, here is the if/else construct that Wayne send me
+              if (strand.isBlank.booleanValue()) {
+                atom.chainID = '0'; // no author provided ID
+              } else if (strand.authorID != null) {
+                // not pretty, but let's just assume the string only has one char
+                atom.chainID = strand.authorID.charAt(0);
+              } else {
+                atom.chainID = '0';
+              }
+            } else {
+              atom.chainID = firstChar;
+            }
+          }
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseInt(field);
@@ -449,13 +467,8 @@ class CifReader extends AtomSetCollectionReader {
         // _struct_asym.id A 
         String value = null;
         if (isMatch(key, fields[i])) {
-          logger.log("OK, detected field", fields[i]);
-          logger.log("  field type: "+ fieldTypes[i]);
-          logger.log("  STRUCT_ASYM_ID: "+ STRUCT_ASYM_ID);
-          logger.log("  STRUCT_BLANK_CHAIN_ID: "+ STRUCT_BLANK_CHAIN_ID);
           if (tokenizer.hasMoreTokens()) {
             value = tokenizer.nextToken();
-            logger.log("Found a value", value);
             if (fields[i].equals(structAsymNames[STRUCT_ASYM_ID-1])) 
               struct.chainID = value;
             if (fields[i].equals(structAsymNames[STRUCT_BLANK_CHAIN_ID-1]))
@@ -851,8 +864,8 @@ class CifReader extends AtomSetCollectionReader {
   };
 
   static {
-    if (polySeqMap.length != structAsymNames.length)
-      structAsymNames[100] = "explode";
+    if (polySeqMap.length != polySeqFields.length)
+      polySeqFields[100] = "explode";
   }
 
   private void processPolySeqSchemeLoopBlock() throws Exception {
@@ -884,7 +897,11 @@ class CifReader extends AtomSetCollectionReader {
           strand.chainID = field;
           break;
         case POLYSEQ_PDB_STRAND_ID:
-          strand.authorID = field;
+          if (field.charAt(0) == '?') {
+            strand.authorID = null; 
+          } else {
+            strand.authorID = field;
+          }
           break;
         }
       }
@@ -905,6 +922,80 @@ class CifReader extends AtomSetCollectionReader {
     }
   }
 
+  ////////////////////////////////////////////////////////////////
+  // non poly scheme data
+  ////////////////////////////////////////////////////////////////
+  
+  final static byte NONPOLY_ASYM_ID = 1;
+  final static byte NONPOLY_PDB_STRAND_ID = 2;
+  final static byte NONPOLY_PROPERTY_MAX = 3;
+
+  final static String[] nonPolyFields =
+  {"_pdbx_nonpoly_scheme.asym_id", 
+   "_pdbx_nonpoly_scheme.pdb_strand_id"};
+
+  final static byte[] nonPolyMap = {
+    POLYSEQ_ASYM_ID, POLYSEQ_PDB_STRAND_ID
+  };
+
+  static {
+    if (nonPolyMap.length != nonPolyFields.length)
+      nonPolyFields[100] = "explode";
+  }
+
+  private void processNonPolySchemeLoopBlock() throws Exception {
+    int[] fieldTypes = new int[100]; // should be enough
+    boolean[] propertyReferenced =
+      new boolean[NONPOLY_PROPERTY_MAX];
+    int fieldCount = parseLoopParameters(nonPolyFields,
+        polySeqMap, fieldTypes, propertyReferenced);
+    for (int i = NONPOLY_PROPERTY_MAX; --i > 1; )
+      if (! propertyReferenced[i]) {
+        logger.log("?que? missing _pdbx_nonpoly_scheme property:" + i);
+        skipLoopData();
+        return;
+      }
+
+    String lastChainID = "XXXXX";
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) != '#';
+         line = reader.readLine()) {
+      tokenizer.setString(line);
+      Strand strand = new Strand();
+      for (int i = 0; i < fieldCount; ++i) {
+        if (! tokenizer.hasMoreTokens())
+          tokenizer.setString(reader.readLine());
+        String field = tokenizer.nextToken();
+        switch (fieldTypes[i]) {
+        case NONPOLY_ASYM_ID:
+          strand.chainID = field;
+          break;
+        case NONPOLY_PDB_STRAND_ID:
+          if (field.charAt(0) == '?') {
+            strand.authorID = null; 
+          } else {
+            strand.authorID = field;
+          }
+          break;
+        }
+      }
+      // OK, we're only interested in the chain IDs
+      // hence we only parse the first AA in a chain
+      if (lastChainID.equals(strand.chainID)) {
+        // skip
+      } else {
+        addOrUpdateStrandInfo(strand);
+        lastChainID = strand.chainID;
+      }
+    }
+    logger.log("Done reading _loop NonPoly Scheme");
+    Iterator strands = strandsMap.values().iterator();
+    while (strands.hasNext()) {
+      Strand strand = (Strand)strands.next();
+      logger.log(strand.toString());
+    }
+  }
   
   
   ////////////////////////////////////////////////////////////////

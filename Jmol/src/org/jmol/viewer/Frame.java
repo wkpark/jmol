@@ -50,8 +50,8 @@ final class Frame {
   final Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
-  float maxBondingRadius = Integer.MIN_VALUE;
-  float maxVanderwaalsRadius = Integer.MIN_VALUE;
+  float maxBondingRadius = Float.MIN_VALUE;
+  float maxVanderwaalsRadius = Float.MIN_VALUE;
 
   int atomCount;
   Atom[] atoms;
@@ -1173,7 +1173,7 @@ final class Frame {
   void rebond(boolean deleteFirst) {
     if (deleteFirst)
       deleteAllBonds();
-    if (maxBondingRadius == Integer.MIN_VALUE)
+    if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
     bondTolerance = viewer.getBondTolerance();
     minBondDistance = viewer.getMinBondDistance();
@@ -1374,7 +1374,7 @@ final class Frame {
   }
 
   float getMaxVanderwaalsRadius() {
-    if (maxVanderwaalsRadius == Integer.MIN_VALUE)
+    if (maxVanderwaalsRadius == Float.MIN_VALUE)
       findMaxRadii();
     return maxVanderwaalsRadius;
   }

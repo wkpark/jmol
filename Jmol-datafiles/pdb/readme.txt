@@ -38,6 +38,7 @@ insertion coded related:
 miguel 2006 03 31
 
 1GCI - hbonds in the file
+1PPA - no hbonds, no secondary structures
 
 modified files for testing Jmol secondary structure predictions:
 1CRN_noSS - 1CRN with secondary structure records removed.

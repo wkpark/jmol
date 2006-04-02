@@ -119,9 +119,7 @@ class Sticks extends Shape {
       // use of 'connect', 'connect on', 'connect off' is deprecated
       // I suggest that support be dropped at some point in the near future
       frame.deleteAllBonds();
-      makeConnections(DEFAULT_MIN_CONNECT_DISTANCE,
-                      DEFAULT_MAX_CONNECT_DISTANCE,
-                      NULL_BOND_ORDER, AUTO_BOND, null, null);
+      frame.rebond();
       return;
     }
     super.setProperty(propertyName, value, bsSelected);

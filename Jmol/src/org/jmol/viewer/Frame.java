@@ -1156,7 +1156,7 @@ final class Frame {
         getModelSetProperty("noautobond") == null) {
       if ((bondCount == 0) ||
           (modelSetTypeName == "pdb" && (bondCount < (atomCount / 2))))
-        rebond(false);
+        rebond();
     }
   }
 
@@ -1167,12 +1167,6 @@ final class Frame {
   private float minBondDistance2;
 
   void rebond() {
-    rebond(true);
-  }
-
-  void rebond(boolean deleteFirst) {
-    if (deleteFirst)
-      deleteAllBonds();
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
     bondTolerance = viewer.getBondTolerance();

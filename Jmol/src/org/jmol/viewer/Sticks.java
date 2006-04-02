@@ -219,6 +219,8 @@ class Sticks extends Shape {
     BitSet bsDelete = new BitSet();
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
+    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      order = JmolConstants.BOND_HYDROGEN_MASK;
     for (int i = bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
       Atom atom1 = bond.atom1;

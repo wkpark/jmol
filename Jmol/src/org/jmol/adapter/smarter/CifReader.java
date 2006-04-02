@@ -24,7 +24,9 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -81,6 +83,12 @@ class CifReader extends AtomSetCollectionReader {
       line = reader.readLine();
     }
     checkUnitcell();
+    logger.log("Done reading... Found these strands:");
+    Iterator strands = strandsMap.values().iterator();
+    while (strands.hasNext()) {
+      Strand strand = (Strand)strands.next();
+      logger.log(strand.toString());
+    }
     return atomSetCollection;
   }
   
@@ -161,6 +169,10 @@ class CifReader extends AtomSetCollectionReader {
     if (line.startsWith("_struct_conf") &&
         !line.startsWith("_struct_conf_type")) {
       processStructConfLoopBlock();
+      return;
+    }
+    if (line.startsWith("_pdbx_poly_seq_scheme")) {
+      processPolySeqSchemeLoopBlock();
       return;
     }
     if (line.startsWith("_struct_sheet_range")) {
@@ -425,7 +437,6 @@ class CifReader extends AtomSetCollectionReader {
         boolean[] propertyReferenced) throws Exception {
     int fieldCount = 0;
     Strand struct = new Strand();
-    outer_loop:
     for (; line != null &&
            (line = line.trim()).length() > 0 &&
            line.charAt(0) == '_';
@@ -437,31 +448,31 @@ class CifReader extends AtomSetCollectionReader {
         // take this valid mmCIF into account:
         // _struct_asym.id A 
         String value = null;
-        if (tokenizer.hasMoreTokens()) {
-          value = tokenizer.nextToken();
-          logger.log("Found a value: " + value);
-          logger.log("Found a value: ", value);
-          switch (fieldTypes[i]) {
-          case STRUCT_ASYM_ID:
-            struct.chainID = value;
-            break;
-          case STRUCT_BLANK_CHAIN_ID:
-            struct.isBlank = "Y".equals(value) ? true : false; 
-            break;
-          }
-        } else {
-          struct = null;
-        }
         if (isMatch(key, fields[i])) {
+          logger.log("OK, detected field", fields[i]);
+          logger.log("  field type: "+ fieldTypes[i]);
+          logger.log("  STRUCT_ASYM_ID: "+ STRUCT_ASYM_ID);
+          logger.log("  STRUCT_BLANK_CHAIN_ID: "+ STRUCT_BLANK_CHAIN_ID);
+          if (tokenizer.hasMoreTokens()) {
+            value = tokenizer.nextToken();
+            logger.log("Found a value", value);
+            if (fields[i].equals(structAsymNames[STRUCT_ASYM_ID-1])) 
+              struct.chainID = value;
+            if (fields[i].equals(structAsymNames[STRUCT_BLANK_CHAIN_ID-1]))
+              struct.isBlank = "Y".equals(value) ? Boolean.TRUE : Boolean.FALSE; 
+            logger.log("struct", struct);
+          } else {
+            struct = null;
+          }
           int iproperty = fieldMap[i];
           propertyReferenced[iproperty] = true;
           fieldTypes[fieldCount] = iproperty;
-          continue outer_loop;
+          i = -1;
         }
       }
     }
     logger.log("parseLoopParameters sees fieldCount=" + fieldCount);
-    logger.log("struct" + struct);
+    logger.log("parsed struct -> " + struct);
     Object[] results = new Object[2];
     results[0] = new Integer(fieldCount);
     results[1] = struct;
@@ -730,7 +741,7 @@ class CifReader extends AtomSetCollectionReader {
 
   final static byte STRUCT_ASYM_ID = 1;
   final static byte STRUCT_BLANK_CHAIN_ID = 2;
-  final static byte STRUCT_PROPERTY_MAX = 18;
+  final static byte STRUCT_PROPERTY_MAX = 3;
 
   final static String[] structAsymNames =
   {"_struct_asym.id", "_struct_asym.pdbx_blank_PDB_chainid_flag"};
@@ -742,6 +753,17 @@ class CifReader extends AtomSetCollectionReader {
   static {
     if (structAsymMap.length != structAsymNames.length)
       structAsymNames[100] = "explode";
+  }
+  
+  private void addOrUpdateStrandInfo(Strand strand) {
+    logger.log("Found only one chain", strand.chainID);
+    if (strandsMap.containsKey(strand.chainID)) {
+      Strand prevStrand = (Strand)strandsMap.get(strand.chainID);
+      if (strand.authorID != null) prevStrand.authorID = strand.authorID;
+      if (prevStrand.isBlank != null) prevStrand.isBlank = strand.isBlank;
+    } else {
+      strandsMap.put(strand.chainID, strand);
+    }
   }
 
   private void processStructAsymBlock() throws Exception {
@@ -763,10 +785,8 @@ class CifReader extends AtomSetCollectionReader {
       * _struct_asym.entity_id                     1 
       * _struct_asym.details                       ? 
       * #
-      */ 
-      logger.log("Found only one chain: " + struct.chainID.length());
-      logger.log("Found only one chain: ", struct.chainID);
-      strandsMap.put(struct.chainID, struct);
+      */
+      addOrUpdateStrandInfo(struct);
     } else {
       /* Then the 'normal' _loop format was found. */
       logger.log("Found multiple chains... parsing them now");
@@ -805,15 +825,87 @@ class CifReader extends AtomSetCollectionReader {
             struct.chainID = field;
             break;
           case STRUCT_BLANK_CHAIN_ID:
-            struct.isBlank = "Y".equals(field) ? true : false; 
+            struct.isBlank = "Y".equals(field) ? Boolean.TRUE : Boolean.FALSE; 
             break;
           }
         }
-        logger.log("  found chain: ", struct.chainID);
-        strandsMap.put(struct.chainID, struct);
+        addOrUpdateStrandInfo(struct);
       }
     }
   }  
+
+  ////////////////////////////////////////////////////////////////
+  // poly sequence scheme data
+  ////////////////////////////////////////////////////////////////
+  
+  final static byte POLYSEQ_ASYM_ID = 1;
+  final static byte POLYSEQ_PDB_STRAND_ID = 2;
+  final static byte POLYSEQ_PROPERTY_MAX = 3;
+
+  final static String[] polySeqFields =
+  {"_pdbx_poly_seq_scheme.asym_id", 
+   "_pdbx_poly_seq_scheme.pdb_strand_id"};
+
+  final static byte[] polySeqMap = {
+    POLYSEQ_ASYM_ID, POLYSEQ_PDB_STRAND_ID
+  };
+
+  static {
+    if (polySeqMap.length != structAsymNames.length)
+      structAsymNames[100] = "explode";
+  }
+
+  private void processPolySeqSchemeLoopBlock() throws Exception {
+    int[] fieldTypes = new int[100]; // should be enough
+    boolean[] propertyReferenced =
+      new boolean[POLYSEQ_PROPERTY_MAX];
+    int fieldCount = parseLoopParameters(polySeqFields,
+        polySeqMap, fieldTypes, propertyReferenced);
+    for (int i = POLYSEQ_PROPERTY_MAX; --i > 1; )
+      if (! propertyReferenced[i]) {
+        logger.log("?que? missing _pdbx_poly_seq_scheme property:" + i);
+        skipLoopData();
+        return;
+      }
+
+    String lastChainID = "XXXXX";
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) != '#';
+         line = reader.readLine()) {
+      tokenizer.setString(line);
+      Strand strand = new Strand();
+      for (int i = 0; i < fieldCount; ++i) {
+        if (! tokenizer.hasMoreTokens())
+          tokenizer.setString(reader.readLine());
+        String field = tokenizer.nextToken();
+        switch (fieldTypes[i]) {
+        case POLYSEQ_ASYM_ID:
+          strand.chainID = field;
+          break;
+        case POLYSEQ_PDB_STRAND_ID:
+          strand.authorID = field;
+          break;
+        }
+      }
+      // OK, we're only interested in the chain IDs
+      // hence we only parse the first AA in a chain
+      if (lastChainID.equals(strand.chainID)) {
+        // skip
+      } else {
+        addOrUpdateStrandInfo(strand);
+        lastChainID = strand.chainID;
+      }
+    }
+    logger.log("Done reading _loop Poly Seq Scheme");
+    Iterator strands = strandsMap.values().iterator();
+    while (strands.hasNext()) {
+      Strand strand = (Strand)strands.next();
+      logger.log(strand.toString());
+    }
+  }
+
+  
   
   ////////////////////////////////////////////////////////////////
   // special tokenizer class

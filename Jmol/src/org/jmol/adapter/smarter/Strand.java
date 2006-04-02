@@ -25,15 +25,25 @@ package org.jmol.adapter.smarter;
 
 class Strand {
 
-  String chainID;
+  String chainID; // aka asym_id in PDB/mmCIF
   String authorID;
-  boolean isBlank;
+  Boolean isBlank;
 
-  Strand() { }
+  Strand() {
+    chainID = null;
+    authorID = null;
+    isBlank = Boolean.TRUE;
+  }
 
-  Strand(String chainID, String authorID, boolean isBlank) {
+  Strand(String chainID, String authorID, Boolean isBlank) {
     this.chainID = chainID;
     this.authorID = authorID;
     this.isBlank = isBlank;
+  }
+  
+  public String toString() {
+    return "Strand " + chainID + 
+           ", authorID=" + authorID +
+           ", isBlank=" + isBlank.toString();
   }
 }

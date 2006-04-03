@@ -181,7 +181,7 @@ class Hermite3D {
     sRight[0] = 1;
     pRight[0].set(p2);
     sp = 0;
-    //g3d.setColix(colix);
+    g3d.setColix(colix); // set colix here for entire routine
 
      for (int strands = 2; strands > 0; strands--) {
        if (strands == 1) {
@@ -259,7 +259,6 @@ class Hermite3D {
        Point3i b2 = null;
        int top = 1;
 
-       g3d.setColix(colix);
        for (;top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++) {
          t1 = (Point3i) points.elementAt(top - 1);
          b1 = (Point3i) points.elementAt(numTopStrandPoints + (top - 1));

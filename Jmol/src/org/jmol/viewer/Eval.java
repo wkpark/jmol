@@ -3394,6 +3394,7 @@ class Eval implements Runnable {
     }
   }
 
+  /*
   void polyhedra() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     boolean radiusSeen = false, expressionSeen = false;
@@ -3433,6 +3434,83 @@ class Eval implements Runnable {
     if (radiusSeen && !expressionSeen)
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
                               "expression", null);
+  }
+  */
+
+  void polyhedra() throws ScriptException {
+    boolean needsGenerating = false;
+    boolean iHaveVertexExpression = false;
+    boolean iHaveCenterExpression = false;
+    viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
+    viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
+    String setPropertyName = "potentialCenterSet";
+    String decimalPropertyName = "radius";
+    for (int i = 1; i < statementLength; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      Token token = statement[i];
+      switch (token.tok) {
+      case Token.bonds:
+        needsGenerating = true;
+        propertyName = "bonds";
+        break;
+      case Token.identifier:
+        String str = (String)token.value;
+        if ("collapsed".equalsIgnoreCase(str)) {
+          needsGenerating = true;
+          propertyName = "collapsed";
+          break;
+        }
+        if ("radius".equalsIgnoreCase(str)) {
+          decimalPropertyName = "radius";
+          continue;
+        }
+        if ("maxFactor".equalsIgnoreCase(str)) {
+          decimalPropertyName = "maxFactor";
+          continue;
+        }
+        if ("faceCenterOffset".equalsIgnoreCase(str)) {
+          decimalPropertyName = "radius";
+          continue;
+        }
+        if ("to".equalsIgnoreCase(str)) {
+          setPropertyName = "potentialVertexSet";
+          continue;
+        }
+        unrecognizedSubcommand();
+      case Token.integer:
+        propertyName = "vertexCount";
+        propertyValue = new Integer(token.intValue);
+        needsGenerating = true;
+        break;
+      case Token.decimal:
+        propertyName = decimalPropertyName;
+        propertyValue = token.value;
+        needsGenerating = true;
+        break;
+      case Token.on:
+      case Token.off:
+      case Token.delete:
+      case Token.edges:
+      case Token.noedges:
+      case Token.frontedges:
+        propertyName = (String)token.value;
+        break;
+      case Token.expressionBegin:
+        propertyName = setPropertyName;
+        setPropertyName = "potentialVertexSet";
+        propertyValue = expression(statement, ++i);
+        i = pcLastExpressionInstruction; // the for loop will increment i
+        needsGenerating = true;
+        break;
+      default:
+        invalidArgument();
+      }
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
+          propertyValue);
+    }
+    if (needsGenerating)
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
   }
 
   void sasurface() throws ScriptException {

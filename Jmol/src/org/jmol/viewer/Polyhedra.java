@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2004-2005  The Jmol Development Team
+ * Copyright (C) 2004-2006  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -32,34 +32,123 @@ import org.jmol.g3d.Graphics3D;
 
 class Polyhedra extends SelectionIndependentShape {
 
-  int polyhedronCount;
-  Polyhedron[] polyhedrons = new Polyhedron[32];
-  float radius;
-  int drawEdges;
-
+  final static float DEFAULT_MAX_FACTOR = 1.85f;
+  final static float DEFAULT_FACE_CENTER_OFFSET = 0.25f;
   final static int EDGES_NONE = 0;
   final static int EDGES_ALL = 1;
   final static int EDGES_FRONT = 2;
 
+  final static int MINIMUM_ACCEPTABLE_VERTEX_COUNT = 3;
+  final static int MAXIMUM_ACCEPTABLE_VERTEX_COUNT = 100; // Bob, set this
+
+  int polyhedronCount;
+  Polyhedron[] polyhedrons = new Polyhedron[32];
+  float radius;
+  int acceptableVertexCountCount = 0;
+  // assume that 8 is enough ... if you need more just make this array bigger
+  int acceptableVertexCounts[] = new int [8];
+  float faceCenterOffset;
+  float maxFactor;
+  int drawEdges;
+  
+  //  boolean isCollapsed;
+  
+  BitSet bsCenters;
+  BitSet bsVertices;
+  
   void initShape() {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
+    if ("init" == propertyName) {
+      faceCenterOffset = DEFAULT_FACE_CENTER_OFFSET;
+      maxFactor = DEFAULT_MAX_FACTOR;
+      radius = 0.0f;
+      acceptableVertexCountCount = 0;
+      bsCenters = bsVertices = null;
+      //      isCollapsed = false;
+      drawEdges = EDGES_NONE;
+      return;
+    }
+    if ("radius" == propertyName) {
+      if (value instanceof Float)
+        radius = ((Float)value).floatValue();
+      else
+        invalidPropertyType(propertyName, value, "Float");
+      return;
+    }
     if ("bonds" == propertyName) {
-      deletePolyhedra(bs);
-      buildBondsPolyhedra(bs);
+      radius = 0; // radius == 0 is the flag for using bonds
+      return;
+    }
+    if ("vertexCount" == propertyName) {
+      if (value instanceof Integer) {
+        if (acceptableVertexCountCount < acceptableVertexCounts.length) {
+          int vertexCount = ((Integer)value).intValue();
+          if (vertexCount >= MINIMUM_ACCEPTABLE_VERTEX_COUNT &&
+              vertexCount <= MAXIMUM_ACCEPTABLE_VERTEX_COUNT)
+            acceptableVertexCounts[acceptableVertexCountCount++] = vertexCount;
+        }
+      } else {
+        invalidPropertyType(propertyName, value, "Integer");
+      }
+      return;
+    }
+    if ("potentialCenterSet" == propertyName) {
+      if (value instanceof BitSet)
+        bsCenters = (BitSet)value;
+      else
+        invalidPropertyType(propertyName, value, "BitSet");
+      return;
+    }
+    if ("potentialVertexSet" == propertyName) {
+      if (value instanceof BitSet)
+        bsVertices = (BitSet)value;
+      else
+        invalidPropertyType(propertyName, value, "BitSet");
+      return;
+    }
+    if ("faceCenterOffset" == propertyName) {
+      if (value instanceof Float)
+        faceCenterOffset = ((Float)value).floatValue();
+      else
+        invalidPropertyType(propertyName, value, "Float");
+      return ;
+    }
+    if ("maxFactor" == propertyName) {
+      if (value instanceof Float)
+        maxFactor = ((Float)value).floatValue();
+      else
+        invalidPropertyType(propertyName, value, "Float");
+      return;
+    }
+    if ("generate" == propertyName) {
+      if (bsCenters == null)
+        bsCenters = bs;
+      deletePolyhedra(bsCenters);
+      buildPolyhedra();
+      return;
+    }
+    if ("collapsed" == propertyName) {
+      //      isCollapsed = true;
       return;
     }
     if ("delete" == propertyName) {
+      if (bsCenters == null)
+        bsCenters = bs;
       deletePolyhedra(bs);
       return;
     }
     if ("on" == propertyName) {
-      setVisible(true, bs);
+      if (bsCenters == null)
+        bsCenters = bs;
+      setVisible(true, bsCenters);
       return;
     }
     if ("off" == propertyName) {
-      setVisible(false, bs);
+      if (bsCenters == null)
+        bsCenters = bs;
+      setVisible(false, bsCenters);
       return;
     }
     if ("noedges" == propertyName) {
@@ -75,31 +164,25 @@ class Polyhedra extends SelectionIndependentShape {
       return;
     }
     if ("color" == propertyName) {
+      if (bsCenters == null)
+        bsCenters = bs;
       colix = Graphics3D.getColix(value);
-      //      System.out.println("color polyhedra:" + colix);
       setColix(colix,
                (colix != Graphics3D.UNRECOGNIZED) ? null : (String) value,
-               bs);
+               bsCenters);
       return;
     }
-    
     if ("translucency" == propertyName) {
-      colix = Graphics3D.getColix(value);
-      setTranslucent("translucent" == value, bs);
+      // miguel 2006 04 03
+      // I don't think this code for colix was supposed to be here
+      // I suspect that it got cloned from the "color" clause
+      //      colix = Graphics3D.getColix(value);
+      if (bsCenters == null)
+        bsCenters = bs;
+      setTranslucent("translucent" == value, bsCenters);
       return;
     }
-    if ("radius" == propertyName) {
-      radius = ((Float)value).floatValue();
-      //      System.out.println("Polyhedra radius=" + radius);
-      return;
-    }
-    if ("expression" == propertyName) {
-      //      System.out.println("polyhedra expression");
-      BitSet bsVertices = (BitSet)value;
-      deletePolyhedra(bs);
-      buildRadiusPolyhedra(bs, radius, bsVertices);
-      return;
-    }
+    super.setProperty(propertyName, value, bs);
   }
 
   void deletePolyhedra(BitSet bs) {
@@ -155,215 +238,187 @@ class Polyhedra extends SelectionIndependentShape {
     polyhedrons[polyhedronCount++] = p;
   }
 
-  void buildBondsPolyhedra(BitSet bs) {
-    for (int i = frame.atomCount; --i >= 0; ) {
-      if (bs.get(i)) {
-        Polyhedron p = constructBondsPolyhedron(i);
+  void buildPolyhedra() {
+    for (int i = frame.atomCount; --i >= 0;) {
+      if (bsCenters.get(i)) {
+        Polyhedron p = constructPolyhedron(i);
         if (p != null)
           savePolyhedron(p);
       }
     }
   }
 
-  Atom[] otherAtoms = new Atom[6];
+  final static int MAX_VERTICES = 85;
+  final static int MAX_POINTS = 256;
+  final static int FACE_COUNT_MAX = 85;
+  int potentialVertexCount;
+  Atom[] potentialVertexAtoms = new Atom[MAX_VERTICES];
 
-  final static boolean CHECK_ELEMENT = false;
-
-  Polyhedron constructBondsPolyhedron(int atomIndex) {
+  Polyhedron constructPolyhedron(int atomIndex) {
     Atom atom = frame.getAtomAt(atomIndex);
-    Bond[] bonds = atom.bonds;
-    byte bondedElementNumber = -1;
-    if (bonds == null)
-      return null;
-    int bondCount = bonds.length;
-    if (bondCount == 4 || bondCount == 6) {
-      for (int i = bondCount; --i >= 0; ) {
-        Bond bond = bonds[i];
-        Atom otherAtom = bond.atom1 == atom ? bond.atom2 : bond.atom1;
-        if (CHECK_ELEMENT) {
-          if (bondedElementNumber == -1)
-            bondedElementNumber = otherAtom.elementNumber;
-          else if (bondedElementNumber != otherAtom.elementNumber)
-            return null;
+    if (radius > 0)
+      identifyPotentialRadiusVertices(atom);
+    else
+      identifyPotentialBondsVertices(atom);
+    if (acceptableVertexCountCount == 0)
+      return validatePolyhedronNew(atom, potentialVertexCount,
+                                   potentialVertexAtoms);
+    if (potentialVertexCount >= MINIMUM_ACCEPTABLE_VERTEX_COUNT) {
+      for (int i = acceptableVertexCountCount; --i >= 0; ) {
+        if (potentialVertexCount == acceptableVertexCounts[i]) {
+          return validatePolyhedronNew(atom, potentialVertexCount,
+                                       potentialVertexAtoms);
         }
-        otherAtoms[i] = otherAtom;
       }
-      return validatePolyhedron(atom, bondCount, otherAtoms);
     }
     return null;
   }
 
-  void buildRadiusPolyhedra(BitSet bs, float radius, BitSet bsVertices) {
-    for (int i = frame.atomCount; --i >= 0; ) {
-      if (bs.get(i)) {
-        Polyhedron p = constructRadiusPolyhedron(i, radius, bsVertices);
-        if (p != null)
-          savePolyhedron(p);
-      }
+  void identifyPotentialBondsVertices(Atom atom) {
+    potentialVertexCount = 0;
+    Bond[] bonds = atom.bonds;
+    if (bonds == null)
+      return;
+    for (int i = bonds.length; --i >= 0;) {
+      Bond bond = bonds[i];
+      Atom otherAtom = bond.atom1 == atom ? bond.atom2 : bond.atom1;
+      if (bsVertices != null && !bsVertices.get(otherAtom.atomIndex))
+        continue;
+      if (potentialVertexCount == potentialVertexAtoms.length)
+        break;
+      potentialVertexAtoms[potentialVertexCount++] = otherAtom;
     }
   }
 
-  Polyhedron constructRadiusPolyhedron(int atomIndex, float radius,
-                                         BitSet bsVertices) {
-    Atom atom = frame.getAtomAt(atomIndex);
-    int otherAtomCount = 0;
+  void identifyPotentialRadiusVertices(Atom atom) {
+    potentialVertexCount = 0;
     AtomIterator withinIterator = frame.getWithinModelIterator(atom, radius);
     while (withinIterator.hasNext()) {
-      Atom other = withinIterator.next();
-      if (other == atom)
+      Atom otherAtom = withinIterator.next();
+      if (otherAtom == atom ||
+          bsVertices != null && !bsVertices.get(otherAtom.atomIndex))
         continue;
-      if (bsVertices != null && !bsVertices.get(other.atomIndex))
-        continue;
-      if (otherAtomCount < 6)
-        otherAtoms[otherAtomCount++] = other;
-      else {
-        ++otherAtomCount;
+      if (potentialVertexCount == potentialVertexAtoms.length)
         break;
-      }
+      potentialVertexAtoms[potentialVertexCount++] = otherAtom;
     }
-    Polyhedron p = validatePolyhedron(atom, otherAtomCount, otherAtoms);
-    for (int i = 6; --i >= 0; )
-      otherAtoms[i] = null;
-    return p;
   }
 
-  final Vector3f vectorAB = new Vector3f();
-  final Vector3f vectorAC = new Vector3f();
-  final Vector3f vectorAX = new Vector3f();
-  final Vector3f faceNormalABC = new Vector3f();
-  //                                         0      1      2      3
-  final static byte[] tetrahedronFaces = { 0,1,2, 0,2,3, 0,3,1, 1,3,2 };
-  final static byte[] octahedronFaces = {
-    0,1,2, 0,2,3, 0,3,4, 0,4,1, 5,2,1, 5,3,2, 5,4,3, 5,1,4 };
-  //  0      1      2      3      4      5      6      7
+  final short[] normixesT = new short[FACE_COUNT_MAX];
+  final byte[] planesT = new byte[256];
+  final short[] collapsedNormixesT = new short[FACE_COUNT_MAX];
+  final Point3f[] collapsedCentersT = new Point3f[FACE_COUNT_MAX];
+  {
+    for (int i = collapsedCentersT.length; --i >= 0; )
+      collapsedCentersT[i] = new Point3f();
+  };
+  
+  Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
+                                   Atom[] otherAtoms) {
+    Vector3f normal;
+    int planeCount = 0;
+    int ipt = 0;
+    int ptCenter = vertexCount;
+    int nPoints = ptCenter + 1;
+    float distMax = 0;
 
-  final static short[] polyhedronNormixes = new short[8];
+    Point3f[] points = new Point3f[MAX_POINTS];
+    points[ptCenter] = centralAtom.point3f;
+    otherAtoms[ptCenter] = centralAtom;
+    for (int i = 0; i < ptCenter; i++) {
+      points[i] = otherAtoms[i].point3f;
+      distMax += points[ptCenter].distance(points[i]);
+    }
+    distMax = distMax / ptCenter * maxFactor;
+    
+    // simply define a face to be when all three distances 
+    // are < MAX_FACTOR * longest central
+    // collapsed trick is that introduce a "simple" atom
+    // near the center but not quite the center, so that our planes on
+    // either side of the facet don't overlap. We step out maxFactor * normal
 
-  Polyhedron validatePolyhedron(Atom centralAtom, int vertexCount,
-                                Atom[] otherAtoms) {
-    byte[] faces;
-    int faceCount;
-    if (vertexCount == 6) {
-      arrangeOctahedronVertices(centralAtom, otherAtoms);
-      faces = octahedronFaces;
-      faceCount = 8;
-    } else if (vertexCount == 4) {
-      arrangeTetrahedronVertices(centralAtom, otherAtoms);
-      faces = tetrahedronFaces;
-      faceCount = 4;
-    } else
-      return null;
+    // also needed: consideration for faces involving more than three atoms
 
-    Point3f pointCentral = centralAtom.point3f;
-
-    for (int i = 0, j = 0; i < faceCount; ++i) {
-      int indexA = faces[j++];
-      Point3f pointA = otherAtoms[indexA].point3f;
-      int indexB = faces[j++];
-      Point3f pointB = otherAtoms[indexB].point3f;
-      int indexC = faces[j++];
-      Point3f pointC = otherAtoms[indexC].point3f;
-      vectorAB.sub(pointB, pointA);
-      vectorAC.sub(pointC, pointA);
-      faceNormalABC.cross(vectorAB, vectorAC);
-      vectorAX.sub(pointCentral, pointA);
-      if (faceNormalABC.dot(vectorAX) >= 0)
-        return null;
-
-      for (int k = vertexCount; --k >= 0; ) {
-        if (k == indexA || k == indexB || k == indexC)
+    out: 
+    for (int i = 0; i < ptCenter - 2; i++)
+      for (int j = i + 1; j < ptCenter - 1; j++) {
+        if (points[i].distance(points[j]) > distMax)
           continue;
-        vectorAX.sub(otherAtoms[k].point3f, pointA);
-        if (faceNormalABC.dot(vectorAX) >= 0)
-          return null;
-      }
-
-      polyhedronNormixes[i] = g3d.getNormix(faceNormalABC);
-    }
-    return new Polyhedron(centralAtom, vertexCount, faceCount,
-                          otherAtoms, polyhedronNormixes);
-  }
-
-  void arrangeTetrahedronVertices(Atom centralAtom, Atom[] otherAtoms) {
-    Point3f pointCentral = centralAtom.point3f;
-    Point3f point0 = otherAtoms[0].point3f;
-    Point3f point1 = otherAtoms[1].point3f;
-    vectorAB.sub(point1, point0);
-    vectorAC.sub(pointCentral, point0);
-    faceNormalABC.cross(vectorAB, vectorAC);
-    Atom atomT = otherAtoms[2];
-    vectorAX.sub(atomT.point3f, point0);
-    if (faceNormalABC.dot(vectorAX) < 0) {
-      otherAtoms[2] = otherAtoms[3];
-      otherAtoms[3] = atomT;
-    }
-    /*
-
-    for (int i = 0, j = 0; i < 4; ) {
-      int indexA = tetrahedronFaces[j++];
-      Point3f pointA = otherAtoms[indexA].point3f;
-      int indexB = tetrahedronFaces[j++];
-      Point3f pointB = otherAtoms[indexB].point3f;
-      int indexC = tetrahedronFaces[j++];
-      Point3f pointC = otherAtoms[indexC].point3f;
-      vectorAB.sub(pointB, pointA);
-      vectorAC.sub(pointC, pointA);
-      faceNormalABC.cross(vectorAB, vectorAC);
-      vectorAX.sub(pointCentral, pointA);
-      if (faceNormalABC.dot(vectorAX) >= 0)
-        return null;
-      polyhedronNormixes[i] = g3d.getNormix(faceNormalABC);
-    }
-    return new Polyhedron(centralAtom, 4, 4, otherAtoms, polyhedronNormixes);
-    */
-  }
-
-  final Atom[] otherAtomsT = new Atom[6];
-
-  void arrangeOctahedronVertices(Atom centralAtom, Atom[] otherAtoms) {
-    for (int i = 6; --i >= 0; )
-      otherAtomsT[i] = otherAtoms[i];
-    Atom atom0 = otherAtoms[0] = getFarthestAtom(centralAtom, otherAtomsT);
-    Atom atom5 = otherAtoms[5] = getFarthestAtom(atom0, otherAtomsT);
-    Atom atom1 = otherAtoms[1] = getFarthestAtom(centralAtom, otherAtomsT);
-    otherAtoms[3] = getFarthestAtom(atom1, otherAtomsT);
-    // atoms 0, 5, 1 now form a plane.
-    vectorAB.sub(atom5.point3f, atom0.point3f);
-    vectorAC.sub(atom1.point3f, atom0.point3f);
-    faceNormalABC.cross(vectorAB, vectorAC);
-    Atom atomT = getFarthestAtom(centralAtom, otherAtomsT);
-    vectorAX.sub(atomT.point3f, atom0.point3f);
-    Atom atom2;
-    Atom atom4;
-    Atom atomT1 = getFarthestAtom(centralAtom, otherAtomsT);
-    if (faceNormalABC.dot(vectorAX) > 0) {
-      atom4 = atomT;
-      atom2 = atomT1;
-    } else {
-      atom2 = atomT;
-      atom4 = atomT1;
-    }
-    otherAtoms[2] = atom2;
-    otherAtoms[4] = atom4;
-  }
-
-  Atom getFarthestAtom(Atom atomA, Atom[] atoms) {
-    Point3f point3f = atomA.point3f;
-    float dist2Max = 0;
-    int indexFarthest = -1;
-    for (int i = atoms.length; --i >= 0; ) {
-      Atom atom = atoms[i];
-      if (atom != null) {
-        float dist2 = point3f.distance(atom.point3f);
-        if (dist2 > dist2Max) {
-          dist2Max = dist2;
-          indexFarthest = i;
+        for (int k = j + 1; k < ptCenter; k++) {
+          if (points[i].distance(points[k]) > distMax
+              || points[j].distance(points[k]) > distMax)
+            continue;
+          normal = getNormalFromCenter(points[ptCenter], points[i], points[j],
+              points[k], true);
+          /*
+          if (isCollapsed) {
+            normal.scale(faceCenterOffset);
+            points[nPoints] = new Point3f(points[ptCenter]);
+            points[nPoints].add(normal);
+            otherAtoms[nPoints] = new Atom(points[nPoints]);
+            planesT[ipt++] = (byte) nPoints;
+            planesT[ipt++] = (byte) j;
+            planesT[ipt++] = (byte) k;
+            normal = getNormalFromCenter(points[i], points[ptCenter],
+                points[j], points[k], false);
+            normixesT[planeCount++] = g3d.getNormix(normal);
+            planesT[ipt++] = (byte) i;
+            planesT[ipt++] = (byte) nPoints;
+            planesT[ipt++] = (byte) k;
+            normal = getNormalFromCenter(points[j], points[i],
+                points[ptCenter], points[k], false);
+            normixesT[planeCount++] = g3d.getNormix(normal);
+            planesT[ipt++] = (byte) i;
+            planesT[ipt++] = (byte) j;
+            planesT[ipt++] = (byte) nPoints;
+            normal = getNormalFromCenter(points[k], points[i], points[j],
+                points[ptCenter], false);
+            normixesT[planeCount++] = g3d.getNormix(normal);
+            nPoints++;
+          } else {
+          */
+            planesT[ipt++] = (byte) i;
+            planesT[ipt++] = (byte) j;
+            planesT[ipt++] = (byte) k;
+            normixesT[planeCount++] = g3d.getNormix(normal);
+            /*
+              }
+            */
+          if (planeCount == FACE_COUNT_MAX)
+            break out;
         }
       }
-    }
-    Atom atomFarthest = atoms[indexFarthest];
-    atoms[indexFarthest] = null;
-    return atomFarthest;
+    return new Polyhedron(centralAtom, nPoints, planeCount, otherAtoms,
+        normixesT, planesT);
+  }
+  
+  private final Point3f ptT = new Point3f();
+  private final Point3f ptT2 = new Point3f();
+  // note: this shared vector3f is returned and used by callers
+  private final Vector3f vectorNormalFromCenterT = new Vector3f();
+
+  Vector3f getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
+                            Point3f ptC, boolean isSolid) {
+    g3d.calcNormalizedNormal(ptA, ptB, ptC, vectorNormalFromCenterT);
+    //but which way is it? add N to A and see who is closer to Center, A or N. 
+    ptT.add(ptA, ptB);
+    ptT.add(ptC);
+    ptT.scale(1/3f);
+    ptT2.set(vectorNormalFromCenterT);
+    ptT2.scale(0.1f);
+    ptT2.add(ptT);
+    //              A      C
+    //                \   /
+    //                 \ / 
+    //                  x pT is center of ABC; ptT2 is offset a bit from that
+    //                  |    either closer to x (ok if not opaque) or further
+    //                  |    from x (ok if opaque)
+    //                  B
+    // in the case of facet ABx, the "center" is really the OTHER point, C.
+    if (isSolid && ptCenter.distance(ptT2) < ptCenter.distance(ptT)
+        || !isSolid && ptCenter.distance(ptT) < ptCenter.distance(ptT2))
+      vectorNormalFromCenterT.scale(-1f);
+    return vectorNormalFromCenterT;
   }
 
   class Polyhedron {
@@ -372,18 +427,24 @@ class Polyhedra extends SelectionIndependentShape {
     boolean visible;
     final short[] normixes;
     short polyhedronColix;
+    byte[] planes;
+    int planeCount;
 
-    Polyhedron(Atom centralAtom, int vertexCount, int faceCount,
-               Atom[] otherAtoms, short[] normixes) {
+    Polyhedron(Atom centralAtom, int nPoints, int planeCount,
+        Atom[] otherAtoms, short[] normixes, byte[] planes) {
       this.centralAtom = centralAtom;
-      this.vertices = new Atom[vertexCount];
+      this.vertices = new Atom[nPoints];
       this.visible = true;
       this.polyhedronColix = colix;
-      this.normixes = new short[faceCount];
-      for (int i = vertexCount; --i >= 0; )
+      this.normixes = new short[planeCount];
+      this.planeCount = planeCount;
+      this.planes = new byte[planeCount * 3];
+      for (int i = nPoints; --i >= 0;)
         vertices[i] = otherAtoms[i];
-      for (int i = faceCount; --i >= 0; )
+      for (int i = planeCount; --i >= 0;)
         this.normixes[i] = normixes[i];
+      for (int i = planeCount * 3; --i >= 0;)
+        this.planes[i] = planes[i];
     }
   }
 }

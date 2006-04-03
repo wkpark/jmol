@@ -52,6 +52,13 @@ abstract class Shape {
     System.out.println("unassigned property:" + propertyName + ":" + value);
   }
 
+  void invalidPropertyType(String propertyName, Object value,
+                           String expectedMessage) {
+    System.out.println("invalid property type for " + propertyName + "\n" +
+                       " expected:" + expectedMessage +
+                       " received:" + value);
+  }
+
   Object getProperty(String property, int index) {
     return null;
   }

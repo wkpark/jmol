@@ -30,10 +30,10 @@ class PolyhedraRenderer extends ShapeRenderer {
   int drawEdges;
 
   void render() {
-    Polyhedra polyhedra = (Polyhedra)shape;
+    Polyhedra polyhedra = (Polyhedra) shape;
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
-    for (int i = polyhedra.polyhedronCount; --i >= 0; )
+    for (int i = polyhedra.polyhedronCount; --i >= 0;)
       render1(polyhedrons[i]);
   }
 
@@ -43,29 +43,29 @@ class PolyhedraRenderer extends ShapeRenderer {
     short colix = Graphics3D.inheritColix(p.polyhedronColix,
                                           p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
-    byte[] faces;
-    switch(vertices.length) {
-    case 6:
-      faces = Polyhedra.octahedronFaces;
-      break;
-    case 4:
-      faces = Polyhedra.tetrahedronFaces;
-      break;
-    default:
-      System.out.println("?Que? vertices.length=" + vertices.length);
-      return;
-    }
+    byte[] planes;
 
-    for (int i = 0, j = 0; j < faces.length; )
+    planes = p.planes;
+
+    /*
+    for (int i = vertices.length; --i >= 0;) {
+      if (vertices[i].isSimple)
+        vertices[i].transform(viewer);
+    }
+    */
+
+    for (int i = 0, j = 0; j < planes.length; ) {
       drawFace(colix, p.normixes[i++],
-               vertices[faces[j++]],
-               vertices[faces[j++]],
-               vertices[faces[j++]]);
-    for (int i = 0, j = 0; j < faces.length; )
+               vertices[planes[j++]],
+               vertices[planes[j++]],
+               vertices[planes[j++]]);
+    }
+    
+    for (int i = 0, j = 0; j < planes.length; )
       fillFace(colix, p.normixes[i++],
-               vertices[faces[j++]],
-               vertices[faces[j++]],
-               vertices[faces[j++]]);
+               vertices[planes[j++]],
+               vertices[planes[j++]],
+               vertices[planes[j++]]);
   }
 
   void drawFace(short colix, short normix,
@@ -76,12 +76,13 @@ class PolyhedraRenderer extends ShapeRenderer {
       g3d.drawCylinderTriangle(Graphics3D.getOpaqueColix(colix),
                                atomA.screenX, atomA.screenY, atomA.screenZ,
                                atomB.screenX, atomB.screenY, atomB.screenZ,
-                               atomC.screenX, atomC.screenY, atomC.screenZ, 3);
+                               atomC.screenX, atomC.screenY, atomC.screenZ,
+                               3);
     }
   }
-  
+
   void fillFace(short colix, short normix,
-                Atom atomA, Atom atomB, Atom atomC) {
+                  Atom atomA, Atom atomB, Atom atomC) {
     g3d.fillTriangle(colix, normix,
                      atomA.screenX, atomA.screenY, atomA.screenZ,
                      atomB.screenX, atomB.screenY, atomB.screenZ,

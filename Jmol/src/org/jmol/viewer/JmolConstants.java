@@ -2100,7 +2100,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@sheet _structure=2",
     "@helix _structure=3",
 
-    "@bonded _bondedcount>0",
+    "@bonded bondcount>0",
     //    "@hetero", handled specially
 
   };

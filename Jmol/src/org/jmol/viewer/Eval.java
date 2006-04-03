@@ -1314,7 +1314,7 @@ class Eval implements Runnable {
       case Token.radius:
         propertyValue = atom.getRasMolRadius();
         break;
-      case Token._bondedcount:
+      case Token.bondcount:
         propertyValue = atom.getCovalentBondCount();
         break;
       case Token.model:

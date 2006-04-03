@@ -287,7 +287,7 @@ class Token {
   final static int temperature  = atomproperty | 4;
   final static int model        =
     atomproperty | 5 | showparam | expression | command;
-  final static int _bondedcount = atomproperty | 6;
+  final static int bondcount    = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
   final static int _atomID      = atomproperty | 8;
   final static int _structure   = atomproperty | 9;
@@ -387,7 +387,7 @@ class Token {
   final static String[] comparatorNames = {">", ">=", "<=", "<", "=", "!="};
   final static String[] atomPropertyNames = {
     "atomno", "elemno", "resno", "radius", "temperature", "model",
-    "_bondedcount", "_groupID", "_atomID", "_structure"};
+    "bondcount", "_groupID", "_atomID", "_structure"};
 
   /*
     Note that the RasMol scripting language is case-insensitive.
@@ -602,7 +602,7 @@ class Token {
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
     "relativetemperature",  null,
-    "_bondedcount", new Token(_bondedcount, "_bondedcount"),
+    "bondcount",    new Token(bondcount, "bondcount"),
     "_groupID",     new Token(_groupID, "_groupID"),
     "_g",           null,
     "_atomID",      new Token(_atomID, "_atomID"),

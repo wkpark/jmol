@@ -45,7 +45,6 @@ class AminoPolymer extends AlphaPolymer {
   final static boolean debugHbonds = false;
 
   void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    System.out.println("AminoPolymer.calcHydrogenBonds()");
     initializeHbondDataStructures();
     //Frame frame = model.mmset.frame;
     //hbondMax2 = frame.hbondMax * frame.hbondMax;
@@ -87,7 +86,6 @@ class AminoPolymer extends AlphaPolymer {
   final Point3f aminoHydrogenPoint = new Point3f();
 
   void calcProteinMainchainHydrogenBonds(BitSet bsA, BitSet bsB) {
-    System.out.println("calcProteinMainchainHydrogenBonds()");
     Point3f carbonPoint;
     Point3f oxygenPoint;
     

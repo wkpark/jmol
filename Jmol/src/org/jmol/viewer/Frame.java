@@ -1046,7 +1046,6 @@ final class Frame {
               bspf.addTuple(atom.modelIndex, atom);
           }
       } else {
-        System.out.println("sequential bspt order");
         for (int i = atomCount; --i >= 0; ) {
           Atom atom = atoms[i];
           if (! atom.isDeleted())
@@ -1214,7 +1213,6 @@ final class Frame {
 
   // null values for bitsets means "all"
   void autoBond(BitSet bsA, BitSet bsB) {
-    System.out.println("Frame.autoBond(" + bsA + "," + bsB + ")");
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
     float bondTolerance = viewer.getBondTolerance();

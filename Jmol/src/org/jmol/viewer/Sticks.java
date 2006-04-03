@@ -232,7 +232,7 @@ class Sticks extends Shape {
           if (distanceSquared >= minDistanceSquared &&
               distanceSquared <= maxDistanceSquared)
             if (order <= 0 || // order defaulted to -1
-                order == bond.order ||
+                order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK) ||
                 (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
               bsDelete.set(i);
         }

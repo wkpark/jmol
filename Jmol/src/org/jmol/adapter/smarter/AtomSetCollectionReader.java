@@ -191,12 +191,12 @@ abstract class AtomSetCollectionReader {
     String[] tokens = new String[tokenCount];
     ichNextParse = ich;
     for (int i = 0; i < tokenCount; ++i)
-      tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
+            tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
     /*
-    System.out.println("-----------\nline:" + line);
-    for (int i = 0; i < tokenCount; ++i)
-      System.out.println("token[" + i + "]=" + tokens[i]);
-    */
+     System.out.println("-----------\nline:" + line);
+     for (int i = 0; i < tokenCount; ++i) 
+     System.out.println("token[" + i + "]=" + tokens[i]);
+     */
     return tokens;
   }
 
@@ -376,5 +376,49 @@ abstract class AtomSetCollectionReader {
         elementNumber >= JmolConstants.elementSymbols.length)
       elementNumber = 0;
     return JmolConstants.elementSymbols[elementNumber];
+  }
+
+  /*
+   * miguel 2006 04 02
+   * included in r4624+r4625, but not referenced by SpartanSmolReader
+   * and not reviewed yet
+   * 
+  String checkLineForScript(String line) {
+    int pt = line.indexOf("#jmolscript:");
+    if (pt >= 0) {
+      String script = line.substring(pt + 12, line.length());
+      if (script.indexOf("#") >= 0) {
+        script = script.substring(0, script.indexOf("#"));
+      }
+      String previousScript = atomSetCollection
+          .getAtomSetCollectionProperty("jmolscript");
+      if (previousScript == null)
+        previousScript = "";
+      else
+        previousScript += ";";
+      atomSetCollection.setAtomSetCollectionProperty("jmolscript",
+          previousScript + script);
+      line = line.substring(0, pt).trim();
+    }
+    return line;
+  }
+ 
+  String concatTokens(String[] tokens, int iFirst, int iEnd) {
+    String str = "";
+    String sep = "";
+    for (int i = iFirst; i < iEnd; i++) {
+      if (i < tokens.length) {
+        str += sep + tokens[i];
+        sep = " ";
+      }
+    }
+    return str;
+  }
+  */
+  
+  String getString(String line, String strQuote) {
+    int i = line.indexOf(strQuote);
+    int j = line.lastIndexOf(strQuote);
+    return (j == i ? "" : line.substring(i + 1, j));
   }
 }

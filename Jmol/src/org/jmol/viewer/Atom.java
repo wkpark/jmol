@@ -289,6 +289,16 @@ final class Atom implements Tuple {
     return n;
   }
 
+  int getHbondCount() {
+    if (bonds == null)
+      return 0;
+    int n = 0;
+    for (int i = bonds.length; --i >= 0; )
+      if ((bonds[i].order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+        ++n;
+    return n;
+  }
+
   Bond[] getBonds() {
     return bonds;
   }

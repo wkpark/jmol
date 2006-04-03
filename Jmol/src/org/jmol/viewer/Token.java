@@ -293,6 +293,7 @@ class Token {
   final static int _structure   = atomproperty | 9;
   final static int occupancy    = atomproperty | 10;
   final static int polymerLength= atomproperty | 11;
+  final static int hbondcount   = atomproperty | 12;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -603,6 +604,7 @@ class Token {
     "temperature",  new Token(temperature, "temperature"),
     "relativetemperature",  null,
     "bondcount",    new Token(bondcount, "bondcount"),
+    "hbondcount",   new Token(hbondcount, "hbondcount"),
     "_groupID",     new Token(_groupID, "_groupID"),
     "_g",           null,
     "_atomID",      new Token(_atomID, "_atomID"),

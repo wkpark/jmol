@@ -1317,6 +1317,9 @@ class Eval implements Runnable {
       case Token.bondcount:
         propertyValue = atom.getCovalentBondCount();
         break;
+      case Token.hbondcount:
+        propertyValue = atom.getHbondCount();
+        break;
       case Token.model:
         propertyValue = atom.getModelTagNumber();
         break;

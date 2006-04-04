@@ -329,7 +329,7 @@ class CifReader extends AtomSetCollectionReader {
             elementSymbol = field;
           } else {
             char ch0 = field.charAt(0);
-            char ch1 = field.charAt(1);
+            char ch1 = Character.toLowerCase(field.charAt(1));
             if (Atom.isValidElementSymbol(ch0, ch1))
               elementSymbol = "" + ch0 + ch1;
             else

@@ -400,7 +400,8 @@ class Polyhedra extends SelectionIndependentShape {
               System.out.println("yes");
             continue;
           }
-          System.out.println("no -- passes");
+          if (debugging)
+            System.out.println("no -- passes");
 
           planesT[3 * faceCount + 0] = (byte) i;
           planesT[3 * faceCount + 1] = (byte) j;

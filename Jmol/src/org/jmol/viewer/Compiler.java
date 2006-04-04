@@ -680,6 +680,9 @@ class Compiler {
   private boolean commaExpected() {
     return compileError("comma expected");
   }
+  private boolean commaOrCloseExpected() {
+    return compileError("comma or right parenthesis expected");
+  }
   private boolean stringExpected() {
     return compileError("string expected");
   }
@@ -697,6 +700,11 @@ class Compiler {
   private boolean integerExpected() {
     return compileError("integer expected");
   }
+
+  private boolean nonnegativeIntegerExpected() {
+    return compileError("nonnegative integer expected");
+  }
+
   /*
   private boolean numberExpected() {
     return compileError("number expected");
@@ -796,6 +804,7 @@ class Compiler {
 
     clausePrimitive  ::= clauseComparator |
                          clauseWithin |
+                         clauseConnected |  // RMH 3/06
                          clauseResidueSpec |
                          none | all |
                          ( clauseOr )
@@ -806,6 +815,13 @@ class Compiler {
 
     clauseDistance   ::= integer | decimal
 
+    clauseConnected  ::= CONNECTED ( integer , integer , expression ) |
+                         CONNECTED ( integer , expression ) |
+                         CONNECTED ( integer , integer ) |
+                         CONNECTED ( expression ) |
+                         CONNECTED ( integer ) |
+                         CONNECTED ( )
+    
     clauseResidueSpec::= { clauseResNameSpec }
                          { clauseResNumSpec }
                          { clauseChainSpec }
@@ -963,6 +979,8 @@ class Compiler {
     switch (tok) {
     case Token.within:
       return clauseWithin();
+    case Token.connected:
+      return clauseConnected();
     case Token.substructure:
       return clauseSubstructure();
     case Token.hyphen: // selecting a negative residue spec
@@ -1042,6 +1060,57 @@ class Compiler {
     if (! isNextToken(Token.rightparen)) // )T
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.within, distance));
+  }
+
+  boolean clauseConnected() {
+    int min = 1;
+    int max = 100;
+    int tok;
+    boolean iHaveExpression = false;
+    Token token;
+    tokenNext();                    // Connected
+    if (tokPeek() != Token.leftparen)
+      return leftParenthesisExpected();
+    tokenNext();                  // (
+    tok = tokPeek();
+    if (tok == Token.integer) {   // minimum or required # of bonds(optional)
+      token = tokenNext();
+      if (token.intValue < 0)
+        return nonnegativeIntegerExpected();
+      min = max = token.intValue;
+      tok = tokPeek();
+      if (tok != Token.rightparen && tok != Token.opOr)
+        return commaOrCloseExpected();
+      if (tok == Token.opOr) {    // ,
+        tokenNext();
+        tok = tokPeek();
+      }
+    }
+    if (tok == Token.integer) {
+      token = tokenNext();        // maximum # of bonds (optional)
+      if (token.intValue < 0)
+        nonnegativeIntegerExpected();
+      max = token.intValue;
+      tok = tokPeek();
+      if (tok != Token.rightparen && tok != Token.opOr)
+        return commaOrCloseExpected();
+      if (tok == Token.opOr) {    // ,
+        tokenNext();
+        tok = tokPeek();
+      }
+    }
+    if (tok != Token.rightparen) {
+      if (!clauseOr())            // *expression*
+        return false;
+      iHaveExpression = true;
+      tok = tokPeek();
+    }
+    if (! isNextToken(Token.rightparen)) // )T
+      return rightParenthesisExpected();
+    if (! iHaveExpression)
+      addTokenToPostfix(new Token(Token.all));
+    return addTokenToPostfix(new Token(Token.connected, min,
+                                       new Integer(max)));
   }
 
   boolean clauseSubstructure() {

@@ -575,6 +575,9 @@ class Eval implements Runnable {
       case Token.within:
         strbufLog.append("within ");
         break;
+      case Token.connected:
+        strbufLog.append("connected ");
+        break;
       case Token.substructure:
         strbufLog.append("substructure ");
         break;
@@ -869,6 +872,10 @@ class Eval implements Runnable {
         bs = stack[sp - 1];
         stack[sp - 1] = new BitSet();
         withinInstruction(instruction, bs, stack[sp - 1]);
+        break;
+      case Token.connected:
+        bs = stack[sp - 1];
+        stack[sp - 1] = connected(instruction, bs);
         break;
       case Token.substructure:
         stack[sp++] = getSubstructureSet((String)instruction.value);
@@ -1438,6 +1445,14 @@ class Eval implements Runnable {
         }
       }
     }
+  }
+
+  BitSet connected(Token instruction, BitSet bs) {
+    int min = instruction.intValue;
+    int max = ((Integer) instruction.value).intValue();
+    System.out.println("connected(" + min + "," + max + "," + bs + ")");
+    System.out.println("not yet implemented");
+    return bs;
   }
 
   BitSet getSubstructureSet(String smiles) throws ScriptException {

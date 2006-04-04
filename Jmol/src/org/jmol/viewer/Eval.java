@@ -3447,12 +3447,14 @@ class Eval implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "potentialCenterSet";
-    String decimalPropertyName = "radius";
+    String decimalPropertyName = "radius_";
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       Token token = statement[i];
       switch (token.tok) {
+      case Token.opEQ:
+        continue;
       case Token.bonds:
         needsGenerating = true;
         propertyName = "bonds";
@@ -3474,12 +3476,16 @@ class Eval implements Runnable {
           optionalParameterSeen = true;
           break;
         }
-        if ("maxFactor".equalsIgnoreCase(str)) {
-          decimalPropertyName = "maxFactor";
+        if ("centerAngleMax".equalsIgnoreCase(str)) {
+          decimalPropertyName = "centerAngleMax";
+          continue;
+        }
+        if ("faceNormalMax".equalsIgnoreCase(str)) {
+          decimalPropertyName = "faceNormalMax";
           continue;
         }
         if ("faceCenterOffset".equalsIgnoreCase(str)) {
-          decimalPropertyName = "radius";
+          decimalPropertyName = "faceCenterOffset";
           continue;
         }
         if ("to".equalsIgnoreCase(str)) {
@@ -3488,14 +3494,18 @@ class Eval implements Runnable {
         }
         unrecognizedSubcommand();
       case Token.integer:
-        propertyName = "vertexCount";
-        propertyValue = new Integer(token.intValue);
-        needsGenerating = true;
-        break;
+        // no reason not to allow integers when explicit
+        if (decimalPropertyName == "radius_") {
+          propertyName = "vertexCount";
+          propertyValue = new Integer(token.intValue);
+          needsGenerating = true;
+          break;
+        }
       case Token.decimal:
-        propertyName = decimalPropertyName;
-        propertyValue = token.value;
-        decimalPropertyName = "radius";
+        propertyName = (decimalPropertyName == "radius_" ? "radius" :
+          decimalPropertyName);
+        propertyValue = new Float(floatParameter(i));
+        decimalPropertyName = "radius_";
         needsGenerating = true;
         break;
       case Token.delete:

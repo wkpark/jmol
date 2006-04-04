@@ -1241,28 +1241,27 @@ final public class Graphics3D {
       return;
     if (x < 0) {
       count += x; // x is negative, so this is subtracting -x
-      if (count <= 0)
-        return;
       x = 0;
     }
     if (count + x > width)
       count = width - x;
+    if (count <= 0)
+      return;
     int offsetPbuf = y * width + x;
     int offsetMax = offsetPbuf + count;
     int step = 1;
     if (isTranslucent) {
       step = 2;
       if (((x ^ y) & 1) != 0)
-        if (++offsetPbuf == offsetMax)
-          return;
+        ++offsetPbuf;
     }
-    do {
+    while (offsetPbuf < offsetMax) {
       if (z < zbuf[offsetPbuf]) {
         zbuf[offsetPbuf] = z;
         pbuf[offsetPbuf] = argbCurrent;
       }
       offsetPbuf += step;
-    } while (offsetPbuf < offsetMax);
+    }
   }
 
   void plotPixelsClipped(int count, int x, int y,

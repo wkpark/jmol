@@ -53,6 +53,7 @@ class Sticks extends Shape {
   
   void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
+    //System.out.println(propertyName+" "+value+" "+bsSelected);
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
       setColixBond(colix,
@@ -163,11 +164,11 @@ class Sticks extends Shape {
   void makeConnections(float minDistance, float maxDistance,
                        short order, int connectOperation,
                        BitSet bsA, BitSet bsB) {
-    /*
+    
     System.out.println("makeConnections(" + minDistance + "," +
                        maxDistance + "," + order + "," + connectOperation +
-                       "," + bsA + "," + bsB + ")";)
-    */
+                       "," + bsA + "," + bsB + ")");
+    
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     if (connectOperation == DELETE_BONDS) {
@@ -178,8 +179,8 @@ class Sticks extends Shape {
       autoBond(order, bsA, bsB);
       return;
     }
-    if (order <= 0)
-      order = 1; // default 
+    if (order == NULL_BOND_ORDER)
+      order = JmolConstants.BOND_COVALENT_SINGLE; // default 
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
     for (int iA = atomCount; --iA >= 0; ) {
@@ -219,7 +220,8 @@ class Sticks extends Shape {
     BitSet bsDelete = new BitSet();
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+    if (order != NULL_BOND_ORDER 
+        && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
       order = JmolConstants.BOND_HYDROGEN_MASK;
     for (int i = bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
@@ -231,7 +233,7 @@ class Sticks extends Shape {
           float distanceSquared = atom1.point3f.distanceSquared(atom2.point3f);
           if (distanceSquared >= minDistanceSquared &&
               distanceSquared <= maxDistanceSquared)
-            if (order <= 0 || // order defaulted to -1
+            if (order == NULL_BOND_ORDER ||
                 order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK) ||
                 (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
               bsDelete.set(i);
@@ -246,7 +248,7 @@ class Sticks extends Shape {
       if (JmolConstants.bondOrderNames[i].equalsIgnoreCase(bondOrderString))
         return JmolConstants.bondOrderValues[i];
     }
-    return 0;
+    return NULL_BOND_ORDER;
   }
 
   int connectOperationFromString(String connectOperationString) {

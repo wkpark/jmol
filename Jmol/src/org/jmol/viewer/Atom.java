@@ -28,6 +28,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Tuple;
 
 import java.util.Hashtable;
+import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -141,6 +142,30 @@ final class Atom implements Tuple {
 
   boolean isBonded(Atom atomOther) {
     return getBond(atomOther) != null;
+  }
+
+  /**
+   * Returns the count of connections to atoms found in the
+   * specified BitSet. Bond order is not considered. Hydrogen bonds
+   * are considered valid connections and are included in the count.
+   * <p>
+   * If the bs parameter is null then the total count of
+   * connections is returned;
+   *
+   * @param bs the bitset of atom indexes to be considered
+   * @return   the count
+   */
+  int getConnectedCount(BitSet bs) {
+    int connectedCount = 0;
+    if (bonds != null) {
+      for (int i = bonds.length; --i >= 0; ) {
+        Bond bond = bonds[i];
+        Atom otherAtom = (bond.atom1 != this) ? bond.atom1 : bond.atom2;
+        if (bs == null || bs.get(otherAtom.atomIndex))
+          ++connectedCount;
+      }
+    }
+    return connectedCount;
   }
 
   Bond getBond(Atom atomOther) {

@@ -1451,8 +1451,14 @@ class Eval implements Runnable {
     int min = instruction.intValue;
     int max = ((Integer) instruction.value).intValue();
     System.out.println("connected(" + min + "," + max + "," + bs + ")");
-    System.out.println("not yet implemented");
-    return bs;
+    Frame frame = viewer.getFrame();
+    BitSet bsResult = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      int connectedCount = frame.getAtomAt(i).getConnectedCount(bs);
+      if (connectedCount >= min && connectedCount <= max)
+        bsResult.set(i);
+    }
+    return bsResult;
   }
 
   BitSet getSubstructureSet(String smiles) throws ScriptException {

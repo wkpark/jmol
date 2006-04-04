@@ -1064,7 +1064,7 @@ class Compiler {
 
   boolean clauseConnected() {
     int min = 1;
-    int max = 100;
+    int max = Integer.MAX_VALUE;
     int tok;
     boolean iHaveExpression = false;
     Token token;

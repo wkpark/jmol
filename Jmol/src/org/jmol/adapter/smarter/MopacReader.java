@@ -49,7 +49,7 @@ class MopacReader extends AtomSetCollectionReader {
       if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
           // hasSymmetry = true;
       } else if (line.trim().equals("CARTESIAN COORDINATES")) {
-          System.out.println("Found input structure...");
+          logger.log("Found input structure...");
           processCoordinates(input);
           atomSetCollection.setAtomSetName("Input Structure");
       }
@@ -94,7 +94,7 @@ class MopacReader extends AtomSetCollectionReader {
    */
 void processAtomicCharges(BufferedReader input) throws Exception {
     discardLines(input, 2);
-    System.out.println("Reading atomic charges");
+    logger.log("Reading atomic charges");
     atomSetCollection.newAtomSet(); // charges before coords, see JavaDoc
     baseAtomIndex = atomSetCollection.atomCount;
     int expectedAtomNumber = 0;
@@ -110,8 +110,8 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       atom.elementSymbol = parseToken(line, ichNextParse);
       atom.partialCharge = parseFloat(line, ichNextParse);
     }
-    System.out.println("#atoms " + atomSetCollection.atomCount);
-    System.out.println("#models " + atomSetCollection.atomSetCount);
+    logger.log("#atoms " + atomSetCollection.atomCount);
+    logger.log("#models " + atomSetCollection.atomSetCount);
     chargesFound = true;
   }
     
@@ -142,14 +142,14 @@ void processAtomicCharges(BufferedReader input) throws Exception {
    * @throws Exception
    */
   void processCoordinates(BufferedReader input) throws Exception {
-    System.out.println("processCoordinates()");
+    logger.log("processCoordinates()");
     discardLines(input, 3);
     int expectedAtomNumber = 0;
 
-    //System.out.println("chargesFound: " + chargesFound);
+    //logger.log("chargesFound: " + chargesFound);
     
     if (!chargesFound) {
-      //System.out.println("No model created yet, so doing so now...");
+      //logger.log("No model created yet, so doing so now...");
       atomSetCollection.newAtomSet();
       baseAtomIndex = atomSetCollection.atomCount;
     } else {
@@ -158,7 +158,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
 
     String line;
     while ((line = input.readLine()) != null) {
-      //System.out.println("Processing line: " + line);
+      //logger.log("Processing line: " + line);
       int atomNumber = parseInt(line);
       if (atomNumber == Integer.MIN_VALUE) // blank line
         break;
@@ -169,7 +169,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
 
       Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
       if (atom == null) {
-          //System.out.println("No atom defined yet, creating one now...");
+          //logger.log("No atom defined yet, creating one now...");
           atom = atomSetCollection.addNewAtom(); // if no charges were found first
       }
       atom.atomSerial = atomNumber;
@@ -177,12 +177,12 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       atom.x = parseFloat(line, ichNextParse);
       atom.y = parseFloat(line, ichNextParse);
       atom.z = parseFloat(line, ichNextParse);
-      //System.out.println(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
+      //logger.log(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
     }
-    System.out.println("#atoms " + atomSetCollection.atomCount);
-    System.out.println("#models " + atomSetCollection.atomSetCount);
-    System.out.println("chargesFound: " + chargesFound);
-    System.out.println("processCoordinates(END)");
+    logger.log("#atoms " + atomSetCollection.atomCount);
+    logger.log("#models " + atomSetCollection.atomSetCount);
+    logger.log("chargesFound: " + chargesFound);
+    logger.log("processCoordinates(END)");
   }
   
 
@@ -283,7 +283,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
            && Character.isDigit(line.charAt(0))) {
       line = input.readLine();
     }
-    System.out.println("Read line: " + line);
+    logger.log("Read line: " + line);
     return line;
   }
   */

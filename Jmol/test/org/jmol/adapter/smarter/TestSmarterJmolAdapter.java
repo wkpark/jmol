@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
 
+import org.jmol.api.JmolAdapter;
+
 import junit.framework.TestCase;
 
 public class TestSmarterJmolAdapter extends TestCase {
@@ -286,6 +288,7 @@ public class TestSmarterJmolAdapter extends TestCase {
     Object result = null;
     try {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
+      adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);
@@ -319,6 +322,7 @@ public class TestSmarterJmolAdapter extends TestCase {
     Object result = null;
     try {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
+      adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);
@@ -340,5 +344,27 @@ public class TestSmarterJmolAdapter extends TestCase {
     System.gc();
     
     return null;
+  }
+  
+  /**
+   * Logger class to remove readers log from JUnit output
+   */
+  public class TestLogger extends JmolAdapter.Logger {
+
+    public TestLogger(JmolAdapter adapter) {
+      adapter.super();
+    }
+
+    public void log(String str1) {
+      //
+    }
+
+    public void log(String str1, Object obj1) {
+      //
+    }
+
+    public void log(String str1, Object obj1, Object obj2) {
+      //
+    }
   }
 }

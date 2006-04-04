@@ -62,10 +62,10 @@ class SpartanSmolReader extends AtomSetCollectionReader {
     //discardLines(reader, 2);
     String line;
     int atomNum;
-    System.out.println("Reading BEGINARCHIVE GEOMETERY atom records...");
+    logger.log("Reading BEGINARCHIVE GEOMETERY atom records...");
     while ((line = reader.readLine()) != null
         && (atomNum = parseInt(line, 0, 5)) > 0) {
-      //System.out.println("atom: " + line);
+      //logger.log("atom: " + line);
       /*
        was for OUTPUT section  
        String elementSymbol = parseToken(line, 10, 12);
@@ -87,7 +87,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
 
   void readProperties(BufferedReader reader) throws Exception {
     String line;
-    System.out.println("Reading PROPARC properties records...");
+    logger.log("Reading PROPARC properties records...");
     while ((line = reader.readLine()) != null
         && (line.length() < 10 || !line.substring(0, 10).equals("ENDPROPARC"))) {
       if (line.length() >= 4 && line.substring(0, 4).equals("PROP"))
@@ -101,7 +101,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
     String tokens[] = getTokens(line);
     if (tokens.length == 0)
       return;
-    //System.out.println("reading property line:" + line);
+    //logger.log("reading property line:" + line);
     boolean isString = (tokens[1].equals("STRING"));
     String keyName = tokens[2];
     Object value = new Object();
@@ -141,16 +141,16 @@ class SpartanSmolReader extends AtomSetCollectionReader {
       }
       value = null;
     } else {
-      System.out.println(" Skipping property line " + line);
+      logger.log(" Skipping property line " + line);
     }
-    //System.out.println(keyName + " = " + value + " ; " + vector);
+    //logger.log(keyName + " = " + value + " ; " + vector);
     if (value != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo(keyName, value);
     if (vector.size() != 0)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo(keyName, vector);
   }
 
-  //System.out.println("reading property line:" + line);
+  //logger.log("reading property line:" + line);
 
   void readVibFreqs(BufferedReader reader) throws Exception {
     String line = reader.readLine();
@@ -158,7 +158,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
     int frequencyCount = parseInt(line);
     Vector vibrations = new Vector();
     Vector freqs = new Vector();
-    System.out.println("reading VIBFREQ vibration records: frequencyCount = "
+    logger.log("reading VIBFREQ vibration records: frequencyCount = "
         + frequencyCount);
     for (int i = 0; i < frequencyCount; ++i) {
       atomSetCollection.cloneLastAtomSet();
@@ -191,7 +191,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         vibatom.add(new Float(f));
         if ((i + 1) % nValues == 0) {
           if (logging) 
-            System.out.println(ifreq + " atom "+iatom +"/"+atomCount+" vectors: " + atomInfo[0] + " "+atomInfo[1] + " " + atomInfo[2]);
+            logger.log(ifreq + " atom "+iatom +"/"+atomCount+" vectors: " + atomInfo[0] + " "+atomInfo[1] + " " + atomInfo[2]);
           atoms[iatom].addVibrationVector(atomInfo[0],atomInfo[1],atomInfo[2]);
           vib.add(vibatom);
           vibatom = new Vector();

@@ -123,9 +123,9 @@ class JaguarReader extends AtomSetCollectionReader {
       return;
     // determine number of freqs on this line (starting with "frequencies")
     do {
-      System.out.println("Freqs found: " + line);
+      logger.log("Freqs found: " + line);
       int freqCount = new StringTokenizer(line).countTokens() - 1;
-      System.out.println("  #freqs= " + freqCount);
+      logger.log("  #freqs= " + freqCount);
       while ((line = reader.readLine()) != null &&
            ! line.startsWith("  intensities ")) {
       }
@@ -133,7 +133,7 @@ class JaguarReader extends AtomSetCollectionReader {
         // this assumes that the atoms are given in the same order as their
         // atomic coordinates, and disregards the label which is should use
         line = reader.readLine();
-        System.out.println("Read X line for atom: " + line);
+        logger.log("Read X line for atom: " + line);
         StringTokenizer tokenizerX = new StringTokenizer(line);
         tokenizerX.nextToken(); tokenizerX.nextToken(); // disregard label and X/Y/Z
         StringTokenizer tokenizerY = new StringTokenizer(reader.readLine());

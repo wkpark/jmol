@@ -32,14 +32,15 @@ import org.jmol.g3d.Graphics3D;
 
 class Polyhedra extends SelectionIndependentShape {
 
-  final static float DEFAULT_MAX_FACTOR = 1.85f;
+  final static float DEFAULT_MAX_FACTOR = 2f;
   final static float DEFAULT_FACE_CENTER_OFFSET = 0.25f;
   final static int EDGES_NONE = 0;
   final static int EDGES_ALL = 1;
   final static int EDGES_FRONT = 2;
 
+  // Bob, please set these to reasonable values
   final static int MINIMUM_ACCEPTABLE_VERTEX_COUNT = 3;
-  final static int MAXIMUM_ACCEPTABLE_VERTEX_COUNT = 100; // Bob, set this
+  final static int MAXIMUM_ACCEPTABLE_VERTEX_COUNT = 100;
 
   int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
@@ -51,7 +52,7 @@ class Polyhedra extends SelectionIndependentShape {
   float maxFactor;
   int drawEdges;
   
-  //  boolean isCollapsed;
+  boolean isCollapsed;
   
   BitSet bsCenters;
   BitSet bsVertices;
@@ -66,7 +67,7 @@ class Polyhedra extends SelectionIndependentShape {
       radius = 0.0f;
       acceptableVertexCountCount = 0;
       bsCenters = bsVertices = null;
-      //      isCollapsed = false;
+      isCollapsed = false;
       drawEdges = EDGES_NONE;
       return;
     }
@@ -125,18 +126,20 @@ class Polyhedra extends SelectionIndependentShape {
     if ("generate" == propertyName) {
       if (bsCenters == null)
         bsCenters = bs;
-      deletePolyhedra(bsCenters);
       buildPolyhedra();
       return;
     }
     if ("collapsed" == propertyName) {
-      //      isCollapsed = true;
+      if (bsCenters == null)
+        bsCenters = bs;
+      isCollapsed = value == Boolean.TRUE;
+      setCollapsed(isCollapsed, bsCenters);
       return;
     }
     if ("delete" == propertyName) {
       if (bsCenters == null)
         bsCenters = bs;
-      deletePolyhedra(bs);
+      deletePolyhedra(bsCenters);
       return;
     }
     if ("on" == propertyName) {
@@ -153,33 +156,36 @@ class Polyhedra extends SelectionIndependentShape {
     }
     if ("noedges" == propertyName) {
       drawEdges = EDGES_NONE;
+      if (bsCenters == null)
+        bsCenters = bs;
+      setEdges(drawEdges, bsCenters);
       return;
     }
     if ("edges" == propertyName) {
       drawEdges = EDGES_ALL;
+      if (bsCenters == null)
+        bsCenters = bs;
+      setEdges(drawEdges, bsCenters);
       return;
     }
     if ("frontedges" == propertyName) {
       drawEdges = EDGES_FRONT;
+      if (bsCenters == null)
+        bsCenters = bs;
+      setEdges(drawEdges, bsCenters);
       return;
     }
     if ("color" == propertyName) {
-      if (bsCenters == null)
-        bsCenters = bs;
+      // remember that this comes from 'color' command, so bsCenters is not set
       colix = Graphics3D.getColix(value);
       setColix(colix,
                (colix != Graphics3D.UNRECOGNIZED) ? null : (String) value,
-               bsCenters);
+               bs);
       return;
     }
     if ("translucency" == propertyName) {
-      // miguel 2006 04 03
-      // I don't think this code for colix was supposed to be here
-      // I suspect that it got cloned from the "color" clause
-      //      colix = Graphics3D.getColix(value);
-      if (bsCenters == null)
-        bsCenters = bs;
-      setTranslucent("translucent" == value, bsCenters);
+      // remember that this comes from 'color' command, so use bs not bsCenters
+      setTranslucent("translucent" == value, bs);
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -204,6 +210,26 @@ class Polyhedra extends SelectionIndependentShape {
         continue;
       if (bs.get(p.centralAtom.atomIndex))
         p.visible = visible;
+    }
+  }
+
+  void setEdges(int edges, BitSet bs) {
+    for (int i = polyhedronCount; --i >= 0; ) {
+      Polyhedron p = polyhedrons[i];
+      if (p == null)
+        continue;
+      if (bs.get(p.centralAtom.atomIndex))
+        p.edges = edges;
+    }
+  }
+
+  void setCollapsed(boolean isCollapsed, BitSet bs) {
+    for (int i = polyhedronCount; --i >= 0; ) {
+      Polyhedron p = polyhedrons[i];
+      if (p == null)
+        continue;
+      if (bs.get(p.centralAtom.atomIndex))
+        p.collapsed = isCollapsed;
     }
   }
 
@@ -233,6 +259,13 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   void savePolyhedron(Polyhedron p) {
+    // overwrite similar polyhedrons
+    for (int i = polyhedronCount; --i >= 0; ) {
+      if (p.isSimilarEnoughToDelete(polyhedrons[i])) {
+            polyhedrons[i] = p;
+            return;
+          }
+    }
     if (polyhedronCount == polyhedrons.length)
       polyhedrons = (Polyhedron[])Util.doubleLength(polyhedrons);
     polyhedrons[polyhedronCount++] = p;
@@ -306,7 +339,7 @@ class Polyhedra extends SelectionIndependentShape {
 
   final short[] normixesT = new short[FACE_COUNT_MAX];
   final byte[] planesT = new byte[256];
-  final short[] collapsedNormixesT = new short[FACE_COUNT_MAX];
+  final short[] collapsedNormixesT = new short[3 * FACE_COUNT_MAX];
   final Point3f[] collapsedCentersT = new Point3f[FACE_COUNT_MAX];
   {
     for (int i = collapsedCentersT.length; --i >= 0; )
@@ -315,21 +348,12 @@ class Polyhedra extends SelectionIndependentShape {
   
   Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
                                    Atom[] otherAtoms) {
-    Vector3f normal;
-    int planeCount = 0;
-    int ipt = 0;
-    int ptCenter = vertexCount;
-    int nPoints = ptCenter + 1;
+    int faceCount = 0;
     float distMax = 0;
-
-    Point3f[] points = new Point3f[MAX_POINTS];
-    points[ptCenter] = centralAtom.point3f;
-    otherAtoms[ptCenter] = centralAtom;
-    for (int i = 0; i < ptCenter; i++) {
-      points[i] = otherAtoms[i].point3f;
-      distMax += points[ptCenter].distance(points[i]);
-    }
-    distMax = distMax / ptCenter * maxFactor;
+    Point3f centralAtomPoint = centralAtom.point3f;
+    for (int i = vertexCount; --i >= 0; )
+      distMax += centralAtomPoint.distance(otherAtoms[i].point3f);
+    distMax = distMax / vertexCount * maxFactor;
     
     // simply define a face to be when all three distances 
     // are < MAX_FACTOR * longest central
@@ -340,56 +364,49 @@ class Polyhedra extends SelectionIndependentShape {
     // also needed: consideration for faces involving more than three atoms
 
     out: 
-    for (int i = 0; i < ptCenter - 2; i++)
-      for (int j = i + 1; j < ptCenter - 1; j++) {
-        if (points[i].distance(points[j]) > distMax)
+    for (int i = 0; i < vertexCount - 2; i++) {
+      Point3f pointI = otherAtoms[i].point3f;
+      for (int j = i + 1; j < vertexCount - 1; j++) {
+        Point3f pointJ = otherAtoms[j].point3f;
+        if (pointI.distance(pointJ) > distMax)
           continue;
-        for (int k = j + 1; k < ptCenter; k++) {
-          if (points[i].distance(points[k]) > distMax
-              || points[j].distance(points[k]) > distMax)
+        for (int k = j + 1; k < vertexCount; k++) {
+          Point3f pointK = otherAtoms[k].point3f;
+          if (pointI.distance(pointK) > distMax ||
+              pointJ.distance(pointK) > distMax)
             continue;
-          normal = getNormalFromCenter(points[ptCenter], points[i], points[j],
-              points[k], true);
-          /*
-          if (isCollapsed) {
-            normal.scale(faceCenterOffset);
-            points[nPoints] = new Point3f(points[ptCenter]);
-            points[nPoints].add(normal);
-            otherAtoms[nPoints] = new Atom(points[nPoints]);
-            planesT[ipt++] = (byte) nPoints;
-            planesT[ipt++] = (byte) j;
-            planesT[ipt++] = (byte) k;
-            normal = getNormalFromCenter(points[i], points[ptCenter],
-                points[j], points[k], false);
-            normixesT[planeCount++] = g3d.getNormix(normal);
-            planesT[ipt++] = (byte) i;
-            planesT[ipt++] = (byte) nPoints;
-            planesT[ipt++] = (byte) k;
-            normal = getNormalFromCenter(points[j], points[i],
-                points[ptCenter], points[k], false);
-            normixesT[planeCount++] = g3d.getNormix(normal);
-            planesT[ipt++] = (byte) i;
-            planesT[ipt++] = (byte) j;
-            planesT[ipt++] = (byte) nPoints;
-            normal = getNormalFromCenter(points[k], points[i], points[j],
-                points[ptCenter], false);
-            normixesT[planeCount++] = g3d.getNormix(normal);
-            nPoints++;
-          } else {
-          */
-            planesT[ipt++] = (byte) i;
-            planesT[ipt++] = (byte) j;
-            planesT[ipt++] = (byte) k;
-            normixesT[planeCount++] = g3d.getNormix(normal);
-            /*
-              }
-            */
-          if (planeCount == FACE_COUNT_MAX)
+          Vector3f normal = getNormalFromCenter(centralAtomPoint,
+                                                pointI, pointJ, pointK, true);
+          planesT[3*faceCount + 0] = (byte) i;
+          planesT[3*faceCount + 1] = (byte) j;
+          planesT[3*faceCount + 2] = (byte) k;
+          normixesT[faceCount] = g3d.getNormix(normal);
+          // calculate collapsed faces too
+          Point3f collapsedCenter = collapsedCentersT[faceCount];
+          collapsedCenter.scaleAdd(faceCenterOffset, normal, centralAtomPoint);
+
+          normal = getNormalFromCenter(pointI,
+                                       collapsedCenter, pointJ, pointK, false);
+          collapsedNormixesT[3*faceCount + 0] = g3d.getNormix(normal);
+
+          normal = getNormalFromCenter(pointJ,
+                                       pointI, collapsedCenter, pointK, false);
+          collapsedNormixesT[3*faceCount + 1] = g3d.getNormix(normal);
+
+          normal = getNormalFromCenter(pointK,
+                                       pointI, pointJ, collapsedCenter, false);
+          collapsedNormixesT[3*faceCount + 2] = g3d.getNormix(normal);
+
+          if (++faceCount == FACE_COUNT_MAX)
             break out;
         }
       }
-    return new Polyhedron(centralAtom, nPoints, planeCount, otherAtoms,
-        normixesT, planesT);
+    }
+    if (faceCount < 1)
+      return null;
+    return new Polyhedron(centralAtom, vertexCount, otherAtoms,
+                          faceCount, normixesT, planesT,
+                          collapsedCentersT, collapsedNormixesT);
   }
   
   private final Point3f ptT = new Point3f();
@@ -423,28 +440,50 @@ class Polyhedra extends SelectionIndependentShape {
 
   class Polyhedron {
     final Atom centralAtom;
-    final Atom[] vertices;
-    boolean visible;
+    final int vertexCount;
+    final Atom[] vertexAtoms;
+    final int faceCount;
     final short[] normixes;
+    final byte[] planes;
+    final Point3f[] collapsedCenters;
+    final short[] collapsedNormixes;
+    boolean visible;
     short polyhedronColix;
-    byte[] planes;
-    int planeCount;
+    boolean collapsed;
+    int edges;
 
-    Polyhedron(Atom centralAtom, int nPoints, int planeCount,
-        Atom[] otherAtoms, short[] normixes, byte[] planes) {
+    Polyhedron(Atom centralAtom, int vertexCount, Atom[] vertexAtoms,
+               int faceCount,  short[] normixes, byte[] planes,
+               Point3f[] collapsedCenters, short[] collapsedNormixes) {
       this.centralAtom = centralAtom;
-      this.vertices = new Atom[nPoints];
-      this.visible = true;
-      this.polyhedronColix = colix;
-      this.normixes = new short[planeCount];
-      this.planeCount = planeCount;
-      this.planes = new byte[planeCount * 3];
-      for (int i = nPoints; --i >= 0;)
-        vertices[i] = otherAtoms[i];
-      for (int i = planeCount; --i >= 0;)
+      this.vertexCount = vertexCount;
+      this.vertexAtoms = new Atom[vertexCount];
+      for (int i = vertexCount; --i >= 0; )
+        this.vertexAtoms[i] = vertexAtoms[i];
+
+      this.faceCount = faceCount;
+      this.normixes = new short[faceCount];
+      this.collapsedCenters = new Point3f[faceCount];
+      for (int i = faceCount; --i >= 0; ) {
         this.normixes[i] = normixes[i];
-      for (int i = planeCount * 3; --i >= 0;)
+        this.collapsedCenters[i] = new Point3f(collapsedCenters[i]);
+      }
+
+      this.planes = new byte[faceCount * 3];
+      this.collapsedNormixes = new short[faceCount * 3];
+      for (int i = faceCount * 3; --i >= 0; ) {
         this.planes[i] = planes[i];
+        this.collapsedNormixes[i] = collapsedNormixes[i];
+      }
+
+      this.visible = true;
+      this.polyhedronColix = 0; // always create with default of 'inherit'
+      this.collapsed = isCollapsed;
+      this.edges = drawEdges;
+    }
+
+    boolean isSimilarEnoughToDelete(Polyhedron p) {
+      return centralAtom == p.centralAtom && faceCount == p.faceCount;
     }
   }
 }

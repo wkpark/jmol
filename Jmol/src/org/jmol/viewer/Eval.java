@@ -673,6 +673,10 @@ class Eval implements Runnable {
     evalError("unrecognized subcommand");
   }
 
+  void invalidParameterOrder() throws ScriptException {
+    evalError("invalid parameter order");
+  }
+
   void subcommandExpected() throws ScriptException {
     evalError("subcommand expected");
   }
@@ -3439,8 +3443,7 @@ class Eval implements Runnable {
 
   void polyhedra() throws ScriptException {
     boolean needsGenerating = false;
-    boolean iHaveVertexExpression = false;
-    boolean iHaveCenterExpression = false;
+    boolean optionalParameterSeen = false;
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "potentialCenterSet";
@@ -3454,16 +3457,22 @@ class Eval implements Runnable {
         needsGenerating = true;
         propertyName = "bonds";
         break;
+      case Token.radius:
+        decimalPropertyName = "radius";
+        continue;
       case Token.identifier:
         String str = (String)token.value;
         if ("collapsed".equalsIgnoreCase(str)) {
-          needsGenerating = true;
           propertyName = "collapsed";
+          propertyValue = Boolean.TRUE;
+          optionalParameterSeen = true;
           break;
         }
-        if ("radius".equalsIgnoreCase(str)) {
-          decimalPropertyName = "radius";
-          continue;
+        if ("flat".equalsIgnoreCase(str)) {
+          propertyName = "collapsed";
+          propertyValue = Boolean.FALSE;
+          optionalParameterSeen = true;
+          break;
         }
         if ("maxFactor".equalsIgnoreCase(str)) {
           decimalPropertyName = "maxFactor";
@@ -3486,22 +3495,27 @@ class Eval implements Runnable {
       case Token.decimal:
         propertyName = decimalPropertyName;
         propertyValue = token.value;
+        decimalPropertyName = "radius";
         needsGenerating = true;
         break;
+      case Token.delete:
       case Token.on:
       case Token.off:
-      case Token.delete:
       case Token.edges:
       case Token.noedges:
       case Token.frontedges:
+        optionalParameterSeen = true;
         propertyName = (String)token.value;
         break;
       case Token.expressionBegin:
+        if (setPropertyName == "potentialVertexSet")
+          needsGenerating = true;
+        if (optionalParameterSeen)
+          invalidParameterOrder();
         propertyName = setPropertyName;
         setPropertyName = "potentialVertexSet";
         propertyValue = expression(statement, ++i);
         i = pcLastExpressionInstruction; // the for loop will increment i
-        needsGenerating = true;
         break;
       default:
         invalidArgument();
@@ -3509,6 +3523,8 @@ class Eval implements Runnable {
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
           propertyValue);
     }
+    if (! needsGenerating && ! optionalParameterSeen)
+      subcommandExpected();
     if (needsGenerating)
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
   }

@@ -66,6 +66,7 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
+    //System.out.println(propertyName + " "+ value);
     if ("init" == propertyName) {
       faceCenterOffset = DEFAULT_FACE_CENTER_OFFSET;
       centralAngleMax = DEFAULT_CENTRAL_ANGLE_MAX;

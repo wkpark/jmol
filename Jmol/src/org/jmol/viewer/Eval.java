@@ -3475,6 +3475,7 @@ class Eval implements Runnable {
       Token token = statement[i];
       switch (token.tok) {
       case Token.opEQ:
+      case Token.opOr:
         continue;
       case Token.bonds:
         needsGenerating = true;

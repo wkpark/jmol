@@ -44,8 +44,6 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         readAtoms(reader);
       if (discardLinesUntilContains(reader, "BEGINPROPARC") != null)
         readProperties(reader);
-      //      if (discardLinesUntilContains(reader, "VIBRATIONAL FREQUENCIES") != null)
-      //        readFrequencies(reader);
     } catch (Exception ex) {
       ex.printStackTrace();
       atomSetCollection.errorMessage = "Could not read file:" + ex;

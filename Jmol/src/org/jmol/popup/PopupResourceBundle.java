@@ -780,7 +780,7 @@ class PopupResourceBundle {
     { "vectorScale2", GT._("Scale {0}", new Object[]{ "2" }) },
     { "vectorScale5", GT._("Scale {0}", new Object[]{ "5" }) },
 
-    { "stereoMenu", "Stereographic" },
+    { "stereoMenu", GT._("Stereographic") },
     { "stereoNone", GT._("None") },
     { "stereoRedCyan", GT._("Red+Cyan glasses") },
     { "stereoRedBlue", GT._("Red+Blue glasses") },

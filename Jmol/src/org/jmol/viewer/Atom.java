@@ -921,6 +921,8 @@ final class Atom implements Tuple {
 
   static String format(String value, int width, int precision,
                        boolean alignLeft, boolean zeroPad) {
+    if (value == null)
+      return "";
     if (precision > value.length())
       value = value.substring(0, precision);
     int padLength = width - value.length();

@@ -153,9 +153,10 @@ class PopupResourceBundle {
     { "bond250", "wireframe .25" },
     { "bond300", "wireframe .3" },
 
-    { "hbondMenu", "hbondNone hbondWireframe - " +
+    { "hbondMenu", "hbondCalc hbondNone hbondWireframe - " +
                    "hbondSidechain hbondBackbone - " +
                    "hbond100 hbond150 hbond200 hbond250 hbond300" },
+    { "hbondCalc", "connect hbonds auto (*) (*)" },
     { "hbondNone", "hbonds off" },
     { "hbondWireframe", "hbonds on" },
     { "hbondSidechain", "set hbonds sidechain" },
@@ -739,6 +740,7 @@ class PopupResourceBundle {
 
     { "hbondMenu", GT._("Hydrogen Bonds") },
     { "hbondNone", GT._("Off") },
+    { "hbondCalc", GT._("Calculate") },
     { "hbondWireframe", GT._("On") },
     { "hbondSidechain", GT._("Set H-Bonds Side Chain") },
     { "hbondBackbone", GT._("Set H-Bonds Backbone") },

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-04-05 22:50+0200\n"
+"POT-Creation-Date: 2006-04-05 20:05-0400\n"
 "PO-Revision-Date: 2006-03-24 20:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -331,6 +331,10 @@ msgstr "{0} píxeles"
 #, java-format
 msgid "Scale {0}"
 msgstr "Escala {0}"
+
+#: org/jmol/popup/PopupResourceBundle.java:783
+msgid "Stereographic"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:785
 msgid "Red+Cyan glasses"

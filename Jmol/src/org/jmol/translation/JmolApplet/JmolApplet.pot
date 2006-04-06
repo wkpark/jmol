@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-04-05 22:50+0200\n"
+"POT-Creation-Date: 2006-04-05 20:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -333,6 +333,10 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:781
 #, java-format
 msgid "Scale {0}"
+msgstr ""
+
+#: org/jmol/popup/PopupResourceBundle.java:783
+msgid "Stereographic"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:785

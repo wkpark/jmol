@@ -172,6 +172,7 @@ class TransformManager {
   void translateCenterTo(int x, int y) {
     xTranslation = x;
     yTranslation = y;
+    //System.out.println("translateCenterTo: "+x+" "+y);
   }
 
   final AxisAngle4f axisangleT = new AxisAngle4f();
@@ -551,7 +552,7 @@ class TransformManager {
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
     this.perspectiveDepth = perspectiveDepth;
-    scaleFitToScreen();
+    //scaleFitToScreen();
   }
 
   boolean getPerspectiveDepth() {
@@ -686,14 +687,32 @@ class TransformManager {
     this.axesOrientationRasmol = axesOrientationRasmol;
   }
 
+  Point3i defaultRotationCenterTransformed = new Point3i(0, 0, 0);
   void calcTransformMatrices() {
+    //entry point from FrameRenderer, via Viewer
     calcTransformMatrix();
     calcSlabAndDepthValues();
     viewer.setSlabAndDepthValues(slabValue, depthValue);
     increaseRotationRadius = false;
     minimumZ = Integer.MAX_VALUE;
+    setPerspectiveOffset();
   }
+  
+  final Point3f pointT = new Point3f();
+  final Point3f pointT2 = new Point3f();
 
+  Vector3f perspectiveOffset = new Vector3f(0, 0, 0);
+  void setPerspectiveOffset() {
+    // lock in the perspective so that when you change
+    // centers there is no jump
+    matrixTransform.transform(viewer.getDefaultRotationCenter(), pointT);
+    matrixTransform.transform(viewer.getRotationCenter(), pointT2);
+    perspectiveOffset.sub(pointT, pointT2);
+    perspectiveOffset.x = xTranslation; 
+    perspectiveOffset.y = yTranslation; 
+    //System.out.println("\nsetPerspectiveOffset "+perspectiveOffset);
+  }
+ 
   boolean increaseRotationRadius;
   int minimumZ;
 
@@ -749,6 +768,7 @@ class TransformManager {
   }
 
   Matrix4f getUnscaledTransformMatrix() {
+    // for PovRay only, via Viewer
     Matrix4f unscaled = new Matrix4f();
     unscaled.setIdentity();
     vectorTemp.set(viewer.getRotationCenter());
@@ -771,8 +791,13 @@ class TransformManager {
 
   Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
-
+    return adjustedTemporaryScreenPoint(pointAngstroms);
+  }
+  
+  Point3i adjustedTemporaryScreenPoint(Point3f pointAngstroms) {
     int z = (int)point3fScreenTemp.z;
+    z -= perspectiveOffset.z;
+
     if (z < cameraDistance) {
       if (Float.isNaN(point3fScreenTemp.z)) {
         System.out.println("NaN seen in TransformPoint");
@@ -798,15 +823,24 @@ class TransformManager {
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }
-    point3iScreenTemp.x = (int)(point3fScreenTemp.x + xTranslation);
-    point3iScreenTemp.y = (int)(point3fScreenTemp.y + yTranslation);
+    point3fScreenTemp.x += perspectiveOffset.x;
+    point3fScreenTemp.y += perspectiveOffset.y;
+    point3iScreenTemp.x = (int)(point3fScreenTemp.x);
+    point3iScreenTemp.y = (int)(point3fScreenTemp.y);
+    
+    //System.out.println("adjustTempPoint:"+pointAngstroms + " " + point3iScreenTemp);
     return point3iScreenTemp;
   }
 
   void transformPoint(Point3f pointAngstroms, Point3f screen) {
+    
+    //used solely by RocketsRenderer
+    //needs consolidation
+    
     matrixTransform.transform(pointAngstroms, screen);
 
     float z = screen.z;
+    z -= perspectiveOffset.z;
     if (z < cameraDistance) {
       System.out.println("need to back up the camera");
       increaseRotationRadius = true;
@@ -820,16 +854,16 @@ class TransformManager {
     screen.z = z;
     if (perspectiveDepth) {
       float perspectiveFactor = cameraDistanceFloat / z;
-      screen.x = screen.x * perspectiveFactor + xTranslation;
-      screen.y = screen.y * perspectiveFactor + yTranslation;
-    } else {
-      screen.x += xTranslation;
-      screen.y += yTranslation;
+      screen.x = screen.x * perspectiveFactor;
+      screen.y = screen.y * perspectiveFactor;
     }
+    screen.x += perspectiveOffset.x;
+    screen.y += perspectiveOffset.y;
   }
 
   Point3i transformPoint(Point3f pointAngstroms,
                                 Vector3f vibrationVector) {
+    
     if (! vibrationOn || vibrationVector == null)
       matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     else {
@@ -837,27 +871,7 @@ class TransformManager {
                                     pointAngstroms);
       matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
     }
-    
-    int z = (int)point3fScreenTemp.z;
-    if (z < cameraDistance) {
-      System.out.println("need to back up the camera");
-      increaseRotationRadius = true;
-      if (z < minimumZ)
-        minimumZ = z;
-      if (z <= 0) {
-        System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
-        z = 1;
-      }
-    }
-    point3iScreenTemp.z = z;
-    if (perspectiveDepth) {
-      float perspectiveFactor = cameraDistanceFloat / z;
-      point3fScreenTemp.x *= perspectiveFactor;
-      point3fScreenTemp.y *= perspectiveFactor;
-    }
-    point3iScreenTemp.x = (int)(point3fScreenTemp.x + xTranslation);
-    point3iScreenTemp.y = (int)(point3fScreenTemp.y + yTranslation);
-    return point3iScreenTemp;
+    return adjustedTemporaryScreenPoint(pointAngstroms);
   }
 
   void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,

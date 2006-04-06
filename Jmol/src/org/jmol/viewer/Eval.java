@@ -692,6 +692,18 @@ class Eval implements Runnable {
     evalError("number out of range");
   }
 
+  void numberOutOfRange(int min, int max) throws ScriptException {
+    evalError("integer out of range (" + min + " - " + max + ")");
+  }
+
+  void numberOutOfRange(float min, float max) throws ScriptException {
+    evalError("decimal number out of range (" + min + " - " + max + ")");
+  }
+
+  void numberMustBe(int a, int b) throws ScriptException {
+    evalError("number must be (" + a + " or " + b + ")");
+  }
+
   void badAtomNumber() throws ScriptException {
     evalError("bad atom number");
   }
@@ -799,14 +811,14 @@ class Eval implements Runnable {
       break;
     case Token.integer:
       int diameterPixels = statement[2].intValue;
-      if (diameterPixels >= 20)
-        numberOutOfRange();
+      if (diameterPixels < 0 || diameterPixels > 20)
+        numberOutOfRange(0, 20);
       mad = (short)diameterPixels;
       break;
     case Token.decimal:
       float angstroms = floatParameter(2);
-      if (angstroms >= 2)
-        numberOutOfRange();
+      if (angstroms < 0 || angstroms > 2)
+        numberOutOfRange(0f, 2f);
       mad = (short)(angstroms * 1000 * 2);
       break;
     case Token.dotted:
@@ -1879,7 +1891,7 @@ class Eval implements Runnable {
       integerExpected();
     int percent = statement[2].intValue;
     if (percent > 100 || percent < -100)
-      numberOutOfRange();
+      numberOutOfRange(-100, 100);
     switch (statement[1].tok) {
     case Token.x:
       viewer.translateToXPercent(percent);
@@ -1904,7 +1916,7 @@ class Eval implements Runnable {
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 5 || percent > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
-        numberOutOfRange();
+        numberOutOfRange(5, Viewer.MAXIMUM_ZOOM_PERCENTAGE);
       viewer.zoomToPercent(percent);
       return;
     }
@@ -2023,7 +2035,7 @@ class Eval implements Runnable {
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 0 || percent > 100)
-        numberOutOfRange();
+        numberOutOfRange(0, 100);
       viewer.slabToPercent(percent);
       return;
     }
@@ -2064,22 +2076,23 @@ class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
+      //needs fixing; can't get - int, I think
       if (statementLength == 2) {
-        if (radiusRasMol >= 750 || radiusRasMol < -100)
-          numberOutOfRange();
+        if (radiusRasMol > 750 || radiusRasMol < -100)
+          numberOutOfRange(-100, 750);
         mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
           mad *= 4 * 2;
       } else {
         if (radiusRasMol < 0 || radiusRasMol > 100)
-          numberOutOfRange();
+          numberOutOfRange(-100, 750);
         mad = (short)-radiusRasMol; // use a negative number to specify %vdw
       }
       break;
     case Token.decimal:
       float angstroms = floatParameter(1);
-      if (angstroms > 3)
-        numberOutOfRange();
+      if (angstroms < 0 || angstroms > 3)
+        numberOutOfRange(0f, 3f);
       mad = (short)(angstroms * 1000 * 2);
       break;
     case Token.temperature:
@@ -2116,21 +2129,22 @@ class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
-        if (radiusRasMol >= 750 || radiusRasMol < -200)
-          numberOutOfRange();
+        //needs fixing; can't get - int, I think
+        if (radiusRasMol > 750 || radiusRasMol < -200)
+          numberOutOfRange(-200, 750);
         mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
           mad *= 4 * 2;
       } else {
         if (radiusRasMol < 0 || radiusRasMol > 200)
-          numberOutOfRange();
+          numberOutOfRange(-200, 750);
         mad = (short)-radiusRasMol; // use a negative number to specify %vdw
       }
       break;
     case Token.decimal:
       float angstroms = floatParameter(1);
-      if (angstroms > 3)
-        numberOutOfRange();
+      if (angstroms < 0 || angstroms > 3)
+        numberOutOfRange(0f, 3f);
       mad = (short)(angstroms * 1000 * 2);
       break;
     case Token.temperature:
@@ -2146,6 +2160,7 @@ class Eval implements Runnable {
   }
 
   short getMadParameter() throws ScriptException {
+    //for wireframe, ssbond, hbond
     int tok = statement[1].tok;
     short mad = 1;
     switch (tok) {
@@ -2156,14 +2171,14 @@ class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol > 750)
-        numberOutOfRange();
+      if (radiusRasMol < 0 || radiusRasMol > 750)
+        numberOutOfRange(0, 750);
       mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
       float angstroms = floatParameter(1);
-      if (angstroms > 3)
-        numberOutOfRange();
+      if (angstroms < 0 || angstroms > 3)
+        numberOutOfRange(0f, 3f);
       mad = (short)(angstroms * 1000 * 2);
       break;
     default:
@@ -2197,14 +2212,14 @@ class Eval implements Runnable {
         break;
       case Token.integer:
         int diameterPixels = statement[1].intValue;
-        if (diameterPixels >= 20)
-          numberOutOfRange();
+        if (diameterPixels < 0 || diameterPixels > 20)
+          numberOutOfRange(0, 20);
         mad = (short)diameterPixels;
         break;
       case Token.decimal:
         float angstroms = floatParameter(1);
-        if (angstroms > 3)
-          numberOutOfRange();
+        if (angstroms < 0 || angstroms > 3)
+          numberOutOfRange(0f, 3f);
         mad = (short)(angstroms * 1000 * 2);
         break;
       case Token.identifier:
@@ -2225,7 +2240,7 @@ class Eval implements Runnable {
     checkLength3();
     float scale = floatParameter(2);
     if (scale < -10 || scale > 10)
-      numberOutOfRange();
+      numberOutOfRange(-10f, 10f);
     viewer.setVectorScale(scale);
   }
 
@@ -2319,7 +2334,7 @@ class Eval implements Runnable {
     checkLength3();
     float scale = floatParameter(2);
     if (scale < -10 || scale > 10)
-      numberOutOfRange();
+      numberOutOfRange(-10f, 10f);
     viewer.setVibrationScale(scale);
   }
 
@@ -2335,7 +2350,7 @@ class Eval implements Runnable {
       invalidArgument();
     int direction = statement[3].intValue;
     if (direction != 1)
-      numberOutOfRange();
+      numberMustBe(1, -1);
     if (negative)
       direction = -direction;
     viewer.setAnimationDirection(direction);
@@ -2431,7 +2446,7 @@ class Eval implements Runnable {
     case Token.integer:
       int dotsParam = statement[1].intValue;
       if (dotsParam < 0 || dotsParam > 1000)
-        numberOutOfRange();
+        numberOutOfRange(0, 1000);
       // I don't know what to do with this thing yet
       mad = (short)dotsParam;
       break;
@@ -2465,14 +2480,16 @@ class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500)
-        numberOutOfRange();
+      //currently not possible to get here with < 0, but that may change
+      //this redundancy is safer
+      if (radiusRasMol < 0 || radiusRasMol > 500)
+        numberOutOfRange(0, 500);
       mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms > 4)
-        numberOutOfRange();
+      if (angstroms < 0 || angstroms > 4)
+        numberOutOfRange(0f, 4f);
       mad = (short)(angstroms * 1000 * 2);
       break;
     default:
@@ -2828,7 +2845,8 @@ class Eval implements Runnable {
       
       if (rasmolSize < JmolConstants.LABEL_MINIMUM_FONTSIZE ||
           rasmolSize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
-        numberOutOfRange();
+        numberOutOfRange(JmolConstants.LABEL_MINIMUM_FONTSIZE,
+            JmolConstants.LABEL_MINIMUM_FONTSIZE);
     }
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "fontsize",
@@ -2914,7 +2932,7 @@ class Eval implements Runnable {
         integerExpected();
       strandCount = statement[2].intValue;
       if (strandCount < 0 || strandCount > 20)
-        numberOutOfRange();
+        numberOutOfRange(0, 20);
     }
     viewer.setShapeProperty(JmolConstants.SHAPE_STRANDS,
                             "strandCount", new Integer(strandCount));

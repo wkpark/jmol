@@ -968,6 +968,7 @@ final public class Viewer extends JmolViewer {
     modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
     clearMeasurements();
+    setWindowCentered(true);
     notifyFileLoaded(null, null, null, null);
     refresh();
   }
@@ -1165,20 +1166,9 @@ final public class Viewer extends JmolViewer {
 
   void setCenterBitSet(BitSet bsCenter) {
     modelManager.setCenterBitSet(bsCenter);
-    if (! friedaSwitch)
+    if (windowCenteredFlag)
       scaleFitToScreen();
     refresh();
-  }
-
-  boolean friedaSwitch = false;
-
-  boolean getFriedaSwitch() {
-    return friedaSwitch;
-  }
-
-  void setFriedaSwitch(boolean friedaSwitch) {
-    System.out.println("setting Frieda Switch "+friedaSwitch);
-    this.friedaSwitch = friedaSwitch;
   }
 
   public void setCenterPicked(int atomIndex) {
@@ -1189,6 +1179,16 @@ final public class Viewer extends JmolViewer {
 
   public void setCenterSelected() {
     setCenterBitSet(selectionManager.bsSelection);
+  }
+
+  boolean windowCenteredFlag = true;
+
+  boolean isWindowCentered() {
+    return windowCenteredFlag;
+  }
+
+  void setWindowCentered(boolean TF) {
+    windowCenteredFlag = TF;
   }
 
   void setBondTolerance(float bondTolerance) {
@@ -1882,6 +1882,8 @@ final public class Viewer extends JmolViewer {
       return getSelectionHaloEnabled();
     if (key.equalsIgnoreCase("axesOrientationRasmol"))
       return getAxesOrientationRasmol();
+    if (key.equalsIgnoreCase("windowCentered"))
+      return isWindowCentered();
     if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
       return getZeroBasedXyzRasmol();
     if (key.equalsIgnoreCase("testFlag1"))
@@ -1927,10 +1929,12 @@ final public class Viewer extends JmolViewer {
       { setSelectionHaloEnabled(value); return; }
     if (key.equalsIgnoreCase("axesOrientationRasmol"))
       { setAxesOrientationRasmol(value); return; }
+    if (key.equalsIgnoreCase("windowCentered"))
+      { setWindowCentered(value); }
     if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
       { setZeroBasedXyzRasmol(value); return; }
-    if (key.equalsIgnoreCase("frieda"))
-      { setFriedaSwitch(value); return; }
+    if (key.equalsIgnoreCase("frieda")) //deprecated
+      { setWindowCentered(! value); return; }
     if (key.equalsIgnoreCase("testFlag1"))
       { setTestFlag1(value); return; }
     if (key.equalsIgnoreCase("testFlag2"))

@@ -220,7 +220,7 @@ class ModelManager {
       else
         center = null;
     }
-    if (viewer.getFriedaSwitch()) {
+    if (! viewer.isWindowCentered()) {
       if (center == null)
         center = frame.getRotationCenterDefault();
       Point3i newCenterScreen = viewer.transformPoint(center);

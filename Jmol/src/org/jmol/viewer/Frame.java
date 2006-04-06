@@ -828,7 +828,7 @@ final class Frame {
   void setRotationCenter(Point3f newCenterOfRotation) {
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
-      if (! viewer.getFriedaSwitch())
+      if (viewer.isWindowCentered())
         rotationRadius = calcRotationRadius(rotationCenter);
     } else {
       rotationCenter = rotationCenterDefault;

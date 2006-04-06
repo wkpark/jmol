@@ -806,6 +806,11 @@ final class Frame {
     return rotationCenter;
   }
 
+  Point3f getDefaultRotationCenter() {
+    findBounds();
+    return rotationCenterDefault;
+  }
+  
   Point3f getRotationCenterDefault() {
     findBounds();
     return rotationCenterDefault;

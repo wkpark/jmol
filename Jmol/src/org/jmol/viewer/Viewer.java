@@ -1052,6 +1052,10 @@ final public class Viewer extends JmolViewer {
   Point3f getRotationCenter() {
     return modelManager.getRotationCenter();
   }
+  
+  Point3f getDefaultRotationCenter() {
+    return modelManager.getDefaultRotationCenter();
+  }
 
   Point3f getBoundBoxCenter() {
     return modelManager.getBoundBoxCenter();

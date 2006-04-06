@@ -238,6 +238,10 @@ class ModelManager {
     return (frame == null ? null : frame.getRotationCenter());
   }
 
+  Point3f getDefaultRotationCenter() {
+    return (frame == null ? null : frame.getDefaultRotationCenter());
+  }
+
   void setRotationCenter(String relativeTo, float x, float y, float z) {
     if (frame == null)
       return;

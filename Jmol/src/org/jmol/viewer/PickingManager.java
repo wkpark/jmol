@@ -118,7 +118,7 @@ class PickingManager {
       viewer.togglePickingLabel(atomIndex);
       break;
     case JmolConstants.PICKING_CENTER:
-      viewer.setCenter(frame.getAtomPoint3f(atomIndex));
+      viewer.setCenterPicked(atomIndex);
       break;
     case JmolConstants.PICKING_SELECT_ATOM:
       if (shiftKey | chimeStylePicking)

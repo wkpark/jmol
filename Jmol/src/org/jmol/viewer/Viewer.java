@@ -1177,7 +1177,14 @@ final public class Viewer extends JmolViewer {
   }
 
   void setFriedaSwitch(boolean friedaSwitch) {
+    System.out.println("setting Frieda Switch "+friedaSwitch);
     this.friedaSwitch = friedaSwitch;
+  }
+
+  public void setCenterPicked(int atomIndex) {
+    BitSet bsCenter = new BitSet();
+    bsCenter.set(atomIndex);
+    setCenterBitSet(bsCenter);
   }
 
   public void setCenterSelected() {

@@ -305,8 +305,7 @@ final public class Viewer extends JmolViewer {
     return transformManager.zoomPercentSetting;
   }
 
-  public final static int MAXIMUM_ZOOM = 200;
-  public final static int MAXIMUM_ZOOM_PERCENTAGE = MAXIMUM_ZOOM * 100;
+  public final static int MAXIMUM_ZOOM_PERCENTAGE = 500000;
 
   void zoomToPercent(int percent) {
     transformManager.zoomToPercent(percent);
@@ -1930,7 +1929,7 @@ final public class Viewer extends JmolViewer {
     if (key.equalsIgnoreCase("axesOrientationRasmol"))
       { setAxesOrientationRasmol(value); return; }
     if (key.equalsIgnoreCase("windowCentered"))
-      { setWindowCentered(value); }
+      { setWindowCentered(value); return; }
     if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
       { setZeroBasedXyzRasmol(value); return; }
     if (key.equalsIgnoreCase("frieda")) //deprecated

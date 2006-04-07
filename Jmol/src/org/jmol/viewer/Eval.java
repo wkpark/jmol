@@ -2076,7 +2076,6 @@ class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
-      //needs fixing; can't get - int, I think
       if (statementLength == 2) {
         if (radiusRasMol > 750 || radiusRasMol < -100)
           numberOutOfRange(-100, 750);
@@ -2085,7 +2084,7 @@ class Eval implements Runnable {
           mad *= 4 * 2;
       } else {
         if (radiusRasMol < 0 || radiusRasMol > 100)
-          numberOutOfRange(-100, 750);
+          numberOutOfRange(0, 100);
         mad = (short)-radiusRasMol; // use a negative number to specify %vdw
       }
       break;
@@ -2129,7 +2128,6 @@ class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
-        //needs fixing; can't get - int, I think
         if (radiusRasMol > 750 || radiusRasMol < -200)
           numberOutOfRange(-200, 750);
         mad = (short)radiusRasMol;
@@ -2137,7 +2135,7 @@ class Eval implements Runnable {
           mad *= 4 * 2;
       } else {
         if (radiusRasMol < 0 || radiusRasMol > 200)
-          numberOutOfRange(-200, 750);
+          numberOutOfRange(0, 200);
         mad = (short)-radiusRasMol; // use a negative number to specify %vdw
       }
       break;
@@ -3824,5 +3822,4 @@ class Eval implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "applyConnectParameters", null);
   }
-
 }

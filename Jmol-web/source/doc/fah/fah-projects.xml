@@ -3291,6 +3291,12 @@
   <fah_proj number="1486" name="p1486_hafp_fus" public="y" file="y"
     server="171.65.103.68" atoms="33209" preferred="50" deadline="200"
     credit="300" frames="100" code="A0" contact="kasson"/>
+  <fah_proj number="1487" name="p1487_DPPC_DOPC_CHOL" public="n"
+    server="171.65.103.68" atoms="87920" preferred="47" deadline="63"
+    credit="461" frames="100" code="A0" contact="kasson"/>
+  <fah_proj number="1488" name="p1488_Protein in POPC" public="n" file="y"
+    server="171.65.103.68" atoms="77094" preferred="48" deadline="127"
+    credit="459" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="1490" name="p1490_Membrane" public="n" file="y"
     server="171.65.103.68" deadline="4"
     credit="12" frames="100" code="A0" contact="kasson"/>
@@ -3701,12 +3707,21 @@
   <fah_proj number="1809" name="p1809_Collagen_POG10new_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1116" preferred="30" deadline="44"
     credit="153" frames="100" code="A" contact="spark7"/>
+  <fah_proj number="1811" name="p1811_COL1_121_fragments" public="n"
+    server="171.65.103.158" atoms="47143" preferred="38" deadline="56"
+    credit="198" frames="100" code="G" contact="spark"/>
   <fah_proj number="1850" name="p1850_Myosin6_PT_US" public="y" file="y"
     server="171.65.103.158" atoms="1205" preferred="35" deadline="52"
     credit="182" frames="100" code="A" contact="spark7"/>
   <fah_proj number="1851" name="p1851_Myosin6_PT_US_2" public="y" file="y"
     server="171.65.103.158" atoms="1205" preferred="18" deadline="26"
     credit="93" frames="100" code="A" contact="spark7"/>
+  <fah_proj number="1852" name="p1852_Myosin6_PT_US_TIP3P_at13" public="n"
+    server="171.65.103.158" atoms="24767" preferred="34" deadline="50"
+    credit="176" frames="100" code="G" contact="spark"/>
+  <fah_proj number="1860" name="p1860_Myosin6_PT_US_TIP3P_at9" public="n"
+    server="171.65.103.158" atoms="29699" preferred="38" deadline="56"
+    credit="198" frames="100" code="G" contact="spark"/>
 
   <!-- Projects 1900 to 1999 -->
   <fah_proj number="1900" name="p1900_32_water_molecules" public="y" file="y"
@@ -4306,7 +4321,7 @@
     credit="600" frames="100" code="G" contact="ppetrone"/>
 
   <!-- Projects 2500 to 2599 -->
-  <fah_proj number="2500" name="p2500_BBA5_pfold" public="n" file="y"
+  <fah_proj number="2500" name="p2500_BBA5_pfold" public="y" file="y"
     server="171.64.122.139" atoms="385" preferred="40" deadline="59"
     credit="208" frames="100" code="GB" contact="luttmann"/>
 </fah_projects>

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-04-05 20:05-0400\n"
-"PO-Revision-Date: 2006-02-06 22:48+0100\n"
+"PO-Revision-Date: 2006-04-08 09:04+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: org/jmol/applet/Jmol.java:118
 msgid "Jmol Molecular Visualization http://www.jmol.org"
-msgstr ""
+msgstr "Jmol Visualisation Moléculaire http://www.jmol.org"
 
 #: org/jmol/applet/Jmol.java:454
 msgid "Jmol executing script ..."
@@ -276,7 +276,7 @@ msgstr "Liens Hydrogène"
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "Calculate"
-msgstr ""
+msgstr "Calculer"
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Set H-Bonds Side Chain"
@@ -339,7 +339,7 @@ msgstr "Echelle {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:783
 msgid "Stereographic"
-msgstr ""
+msgstr "Stéréographique"
 
 #: org/jmol/popup/PopupResourceBundle.java:785
 msgid "Red+Cyan glasses"
@@ -967,7 +967,6 @@ msgstr "Traductions"
 
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation fil de fer"
-
 #~ msgid ""
 #~ "Jmol Applet version {0} {1}.\n"
 #~ "\n"
@@ -984,3 +983,4 @@ msgstr "Traductions"
 #, fuzzy
 #~ msgid "atoms selected"
 #~ msgstr "Aucun atome chargé"
+

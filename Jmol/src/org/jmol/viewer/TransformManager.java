@@ -705,11 +705,63 @@ class TransformManager {
   void setPerspectiveOffset() {
     // lock in the perspective so that when you change
     // centers there is no jump
-    matrixTransform.transform(viewer.getDefaultRotationCenter(), pointT);
-    matrixTransform.transform(viewer.getRotationCenter(), pointT2);
-    perspectiveOffset.sub(pointT, pointT2);
+    if(!viewer.isWindowCentered()) {
+      matrixTransform.transform(viewer.getDefaultRotationCenter(), pointT);
+      matrixTransform.transform(viewer.getRotationCenter(), pointT2);
+      perspectiveOffset.sub(pointT, pointT2);
+    }
     perspectiveOffset.x = xTranslation; 
-    perspectiveOffset.y = yTranslation; 
+    perspectiveOffset.y = yTranslation;
+    
+    perspectiveOffset.z = 0;
+    /*
+     * The above line disables this method's action. Perhaps a simple idea for
+     * post-10.1 consideration would be to leave it at least as an option. 
+     * I hope we can return to this after 10.1, but for now the consensus 
+     * is to leave it as the 10.00 status quo (no additional z offset).
+     * 
+     * Note that the effect of this modification was restricted to the 
+     * (undocumented) specialized circumstances when both
+     * 
+     * (a) the "Frieda" switch is on (formerly "set frieda on")
+     * 
+     *  AND
+     *
+     * (b) the center has been changed to something other than the default
+     * rotation center, either using "set picking center" followed by a user
+     * click of an atom, or by a scripted "center (atom expression)".
+     * 
+     * My understanding was that this change would only affect one user, 
+     * because only Frieda Reichmann knows of the Frieda switch, presumably. 
+     * It is not otherwise documented.
+     * 
+     * The proposed change here disabled had no effect whatsoever on 
+     * general use.
+     *  
+     * The current "perspectiveOffset.z = 0" line returns us to 10.00 
+     * behavior, with all the issues of molecule distortion and walking into
+     * the camera unresolved. 
+     * 
+     * I've left adjustedTemporaryScreenPoint(Point3f) in, because it is only
+     * a code clarifaction measure -- making it clear that transforming points,
+     * whether there are vibration vectors or not, fundamentally must involve
+     * the exact same action. Previously, these two transformPoint() variants
+     * carried out the exact same action (after adjusting for vibration), but
+     * were delivering insignificantly different System.out messages when the
+     * molecule walked into the camera, which is something only the "frieda"
+     * swich enabled. (Although it was an undiscovered issue as well for pmesh
+     * and sasurfaces, but that is another story.) 
+     * 
+     * In my opinion, the "frieda" switch is currently broken, and the
+     * unequal action of "center (atomset)" and "set picking center" is
+     * a bug.
+     * 
+     * These notes are meant solely as a guide to development and should be
+     * removed when the issues relating to them are resolved.
+     * 
+     * Bob Hanson 4/06
+     *  
+     */
     //System.out.println("\nsetPerspectiveOffset "+perspectiveOffset);
   }
  

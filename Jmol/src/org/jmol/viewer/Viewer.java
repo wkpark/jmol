@@ -1171,9 +1171,64 @@ final public class Viewer extends JmolViewer {
   }
 
   public void setCenterPicked(int atomIndex) {
+    setCenter(modelManager.getAtomPoint3f(atomIndex));
+    
+    /*
+     * This method is called exclusively by PickingManager when the user
+     * clicks on an atom and we have "set picking center"
+     * 
+     * Formerly, PickingManager went directly to Viewer.setCenter; the
+     * inclusion of setCenterPicked() allows for more flexibility in future
+     * development. 
+     * 
+     * In Bob's opinion, the above is a bug. We have two different results for
+     * 
+     * set picking center
+     * [user clicks on an atom]
+     * 
+     * and 
+     * 
+     * center (atom expression)
+     * 
+     * In the clicking case, we are going through setCenter(Point3f) 
+     * and disregarding any setting of the "frieda/windowCentered switch" -- 
+     * whether the clicked atom jumps to the window center 
+     * (set windowCentered ON) or remains in place (set windowCentered OFF).
+     * 
+     * In the scripted case, we are going through setCenterBitset(), which
+     * considers the windowCentered state and possibly rescales.
+     * 
+     * Basically, as it currently stands, "set picking center" and
+     * "set windowCentered OFF" (the Frieda switch) are incompatible. 
+     * This should not be the case. 
+     *  
+     * A further undesirable programming aspect is that windowCenteredFlag
+     * is being checked first in Viewer.setCenterBitSet() and then again in
+     * ModelManager.setCenterBitSet(). This seems inappropriate to Bob. In
+     * Bob's opinion, all checking of the windowCenteredFlag should be in one 
+     * method, namely ModelManager.setCenterBitSet().   
+     * 
+     * The issue is somewhat complicated in that Viewer.setCenterBitSet()
+     * is also called indirectly by DefineCenterAction events in the App.
+     * 
+     * To be correct, Bob thinks, Viewer.setCenter() should ONLY be passed
+     * through by a call to Viewer.homePosition(), which implements the 
+     * equivalent of a scripted "reset" in various contexts.
+     * 
+     * To fix the Frieda/windowCentered incompatibility issue, one would
+     * disable the above line and substitute the three lines below, so that
+     * all user-directed and scripted centering is going through 
+     * Viewer.setCenterBitSet().
+     * 
+     * These notes are meant solely as a guide to development and should be
+     * removed when the issues relating to them are resolved.
+     * 
+     *  Bob Hanson 4/06
+     *  
     BitSet bsCenter = new BitSet();
     bsCenter.set(atomIndex);
     setCenterBitSet(bsCenter);
+     */
   }
 
   public void setCenterSelected() {

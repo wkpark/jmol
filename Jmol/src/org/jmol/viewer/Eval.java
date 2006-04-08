@@ -812,13 +812,13 @@ class Eval implements Runnable {
     case Token.integer:
       int diameterPixels = statement[2].intValue;
       if (diameterPixels < 0 || diameterPixels >= 20)
-        numberOutOfRange(0, 20);
+        numberOutOfRange(0, 19);
       mad = (short)diameterPixels;
       break;
     case Token.decimal:
       float angstroms = floatParameter(2);
       if (angstroms < 0 || angstroms >= 2)
-        numberOutOfRange(0f, 2f);
+        numberOutOfRange(0f, 1.99999f);
       mad = (short)(angstroms * 1000 * 2);
       break;
     case Token.dotted:
@@ -2078,7 +2078,7 @@ class Eval implements Runnable {
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
         if (radiusRasMol >= 750 || radiusRasMol < -100)
-          numberOutOfRange(-100, 750);
+          numberOutOfRange(-100, 749);
         mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
           mad *= 4 * 2;
@@ -2129,7 +2129,7 @@ class Eval implements Runnable {
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
         if (radiusRasMol >= 750 || radiusRasMol < -200)
-          numberOutOfRange(-200, 750);
+          numberOutOfRange(-200, 749);
         mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
           mad *= 4 * 2;
@@ -2211,7 +2211,7 @@ class Eval implements Runnable {
       case Token.integer:
         int diameterPixels = statement[1].intValue;
         if (diameterPixels < 0 || diameterPixels >= 20)
-          numberOutOfRange(0, 20);
+          numberOutOfRange(0, 19);
         mad = (short)diameterPixels;
         break;
       case Token.decimal:
@@ -2481,7 +2481,7 @@ class Eval implements Runnable {
       //currently not possible to get here with < 0, but that may change
       //this redundancy is safer
       if (radiusRasMol < 0 || radiusRasMol >= 500)
-        numberOutOfRange(0, 500);
+        numberOutOfRange(0, 499);
       mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:

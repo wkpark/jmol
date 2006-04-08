@@ -645,8 +645,8 @@ class PopupResourceBundle {
 
     { "aboutMenu", "jmolUrl mouseManualUrl translatingUrl" },
     { "jmolUrl", "http://www.jmol.org" },
-    { "mouseManualUrl", "http://wiki.jmol.org/Mouse_Manual" },
-    { "translatingUrl", "http://wiki.jmol.org/Internationalisation" },
+    { "mouseManualUrl", "http://wiki.jmol.org/index.php/Mouse_Manual" },
+    { "translatingUrl", "http://wiki.jmol.org/index.php/Internationalisation" },
   };
 
   private static final String[][] wordContents = {

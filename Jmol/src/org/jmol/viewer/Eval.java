@@ -811,13 +811,13 @@ class Eval implements Runnable {
       break;
     case Token.integer:
       int diameterPixels = statement[2].intValue;
-      if (diameterPixels < 0 || diameterPixels > 20)
+      if (diameterPixels < 0 || diameterPixels >= 20)
         numberOutOfRange(0, 20);
       mad = (short)diameterPixels;
       break;
     case Token.decimal:
       float angstroms = floatParameter(2);
-      if (angstroms < 0 || angstroms > 2)
+      if (angstroms < 0 || angstroms >= 2)
         numberOutOfRange(0f, 2f);
       mad = (short)(angstroms * 1000 * 2);
       break;
@@ -2077,7 +2077,7 @@ class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
-        if (radiusRasMol > 750 || radiusRasMol < -100)
+        if (radiusRasMol >= 750 || radiusRasMol < -100)
           numberOutOfRange(-100, 750);
         mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
@@ -2128,7 +2128,7 @@ class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
-        if (radiusRasMol > 750 || radiusRasMol < -200)
+        if (radiusRasMol >= 750 || radiusRasMol < -200)
           numberOutOfRange(-200, 750);
         mad = (short)radiusRasMol;
         if (radiusRasMol > 0)
@@ -2210,7 +2210,7 @@ class Eval implements Runnable {
         break;
       case Token.integer:
         int diameterPixels = statement[1].intValue;
-        if (diameterPixels < 0 || diameterPixels > 20)
+        if (diameterPixels < 0 || diameterPixels >= 20)
           numberOutOfRange(0, 20);
         mad = (short)diameterPixels;
         break;
@@ -2480,7 +2480,7 @@ class Eval implements Runnable {
       int radiusRasMol = statement[1].intValue;
       //currently not possible to get here with < 0, but that may change
       //this redundancy is safer
-      if (radiusRasMol < 0 || radiusRasMol > 500)
+      if (radiusRasMol < 0 || radiusRasMol >= 500)
         numberOutOfRange(0, 500);
       mad = (short)(radiusRasMol * 4 * 2);
       break;

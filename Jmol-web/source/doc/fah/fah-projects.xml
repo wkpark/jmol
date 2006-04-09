@@ -2350,7 +2350,7 @@
     credit="23" frames="100" code="DG" contact="guha"/>
   <fah_proj number="992" name="p992_longfkcomp" public="y"
     server="171.65.103.151" atoms="14908" preferred="5" deadline="10"
-    credit="84" frames="100" code="DG" />
+    credit="84" frames="100" code="DG" contact="guha"/>
   <fah_proj number="997" name="pAla7-2" public="y"
     server="171.64.122.115" atoms="11455" deadline="11"
     credit="10" frames="10" code="G"/>
@@ -3290,16 +3290,19 @@
     credit="1942" frames="100" code="G" contact="kasson"/>
   <fah_proj number="1485" name="p1485_rxnsemi300" public="y" file="y"
     server="171.65.103.68" atoms="18429" preferred="25" deadline="47"
-    credit="166" frames="100" code="A0" contact="kasson"/>
+    credit="166" frames="0" code="A0" contact="kasson"/>
   <fah_proj number="1486" name="p1486_hafp_fus" public="y" file="y"
     server="171.65.103.68" atoms="33209" preferred="50" deadline="200"
-    credit="300" frames="100" code="A0" contact="kasson"/>
-  <fah_proj number="1487" name="p1487_DPPC_DOPC_CHOL" public="n"
+    credit="300" frames="0" code="A0" contact="kasson"/>
+  <fah_proj number="1487" name="p1487_DPPC_DOPC_CHOL" public="n" file="y"
     server="171.65.103.68" atoms="87920" preferred="47" deadline="63"
-    credit="461" frames="100" code="A0" contact="kasson"/>
+    credit="461" frames="0" code="A0" contact="kasson"/>
   <fah_proj number="1488" name="p1488_Protein in POPC" public="n" file="y"
     server="171.65.103.68" atoms="77094" preferred="48" deadline="127"
-    credit="459" frames="100" code="A0" contact="kasson"/>
+    credit="459" frames="0" code="A0" contact="kasson"/>
+  <fah_proj number="1489" name="p1489_Protein_POPC" public="n"
+    server="171.65.103.68" atoms="18462" preferred="32" deadline="47"
+    credit="165" frames="0" code="A0" contact="kasson"/>
   <fah_proj number="1490" name="p1490_Membrane" public="n" file="y"
     server="171.65.103.68" deadline="4"
     credit="12" frames="100" code="A0" contact="kasson"/>

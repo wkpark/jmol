@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 # Egon Willighagen <e.willighagen@science.ru.nl>, 2005.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-04-05 20:05-0400\n"
-"PO-Revision-Date: 2005-10-08 19:41+0100\n"
-"Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
+"PO-Revision-Date: 2006-04-09 11:51+0100\n"
+"Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <kde-i18n-nl@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: org/jmol/applet/Jmol.java:118
 msgid "Jmol Molecular Visualization http://www.jmol.org"
-msgstr ""
+msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
 
 #: org/jmol/applet/Jmol.java:454
 msgid "Jmol executing script ..."
@@ -277,7 +277,7 @@ msgstr "Waterstofbruggen"
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "Calculate"
-msgstr ""
+msgstr "Berekenen"
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Set H-Bonds Side Chain"
@@ -340,7 +340,7 @@ msgstr "Schaal {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:783
 msgid "Stereographic"
-msgstr ""
+msgstr "Stereografisch"
 
 #: org/jmol/popup/PopupResourceBundle.java:785
 msgid "Red+Cyan glasses"
@@ -960,11 +960,11 @@ msgstr "Over Jmol"
 
 #: org/jmol/popup/PopupResourceBundle.java:1175
 msgid "Mouse Manual"
-msgstr ""
+msgstr "Handleiding Muiscontrole"
 
 #: org/jmol/popup/PopupResourceBundle.java:1176
 msgid "Translations"
-msgstr ""
+msgstr "Translaties"
 
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
@@ -983,10 +983,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "atoms selected"
 #~ msgstr "Geen atomen geladen"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
+

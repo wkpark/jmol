@@ -153,7 +153,7 @@ class PopupResourceBundle {
     { "bond250", "wireframe .25" },
     { "bond300", "wireframe .3" },
 
-    { "hbondMenu", "hbondCalc hbondNone hbondWireframe - " +
+    { "hbondMenu", "hbondNone hbondWireframe - " +
                    "hbondSidechain hbondBackbone - " +
                    "hbond100 hbond150 hbond200 hbond250 hbond300" },
     { "hbondCalc", "connect hbonds auto (*) (*)" },

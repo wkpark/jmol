@@ -2196,6 +2196,12 @@ class Eval implements Runnable {
 
   void hbond() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_HSTICKS);
+    if (statementLength == 2 && statement[1].tok == Token.identifier && 
+       ((String)statement[1].value).equalsIgnoreCase("calculate")) {
+      BitSet bs = viewer.getSelectionSet();
+      viewer.getFrame().autoHbond(bs, bs);
+      return;
+    }
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
   }
 

@@ -732,7 +732,7 @@ class TransformManager {
      * click of an atom, or by a scripted "center (atom expression)".
      * 
      * My understanding was that this change would only affect one user, 
-     * because only Frieda Reichmann knows of the Frieda switch, presumably. 
+     * because only Frieda Reichsman knows of the Frieda switch, presumably. 
      * It is not otherwise documented.
      * 
      * The proposed change here disabled had no effect whatsoever on 
@@ -740,7 +740,8 @@ class TransformManager {
      *  
      * The current "perspectiveOffset.z = 0" line returns us to 10.00 
      * behavior, with all the issues of molecule distortion and walking into
-     * the camera unresolved. 
+     * the camera unresolved. (The short-->int fix did get rid of much
+     * of the problem.)
      * 
      * I've left adjustedTemporaryScreenPoint(Point3f) in, because it is only
      * a code clarifaction measure -- making it clear that transforming points,

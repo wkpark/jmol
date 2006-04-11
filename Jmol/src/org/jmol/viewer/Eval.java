@@ -3504,7 +3504,7 @@ class Eval implements Runnable {
         propertyName = "bonds";
         break;
       case Token.radius:
-        decimalPropertyName = "radius";
+        decimalPropertyName = "radius_";
         continue;
       case Token.identifier:
         String str = (String)token.value;

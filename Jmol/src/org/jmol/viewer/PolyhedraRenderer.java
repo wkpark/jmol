@@ -37,6 +37,9 @@ class PolyhedraRenderer extends ShapeRenderer {
   }
 
   void render1(Polyhedra.Polyhedron p) {
+    int displayModelIndex = this.displayModelIndex;
+    if (displayModelIndex >= 0 && p.centralAtom.modelIndex != displayModelIndex)
+      return;
     if (! p.visible)
       return;
     short colix = Graphics3D.inheritColix(p.polyhedronColix,

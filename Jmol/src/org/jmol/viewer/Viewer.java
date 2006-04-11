@@ -305,7 +305,21 @@ final public class Viewer extends JmolViewer {
     return transformManager.zoomPercentSetting;
   }
 
-  public final static int MAXIMUM_ZOOM_PERCENTAGE = 500000;
+  public final static int MAXIMUM_ZOOM_PERCENTAGE = 20000;
+  /*
+   * OK, I give. We have a real limitation with perspective depth.
+   * Zoom is back to where it was.  
+   * When it is on and we go very far past this in zoom, we can see some 
+   * nasty rendering issues. I believe this is because we are hitting
+   * a point where z*z > int.MAX_VALUE, but I can't be sure. I believe
+   * that means that the real limit for z is a short.   
+   * 
+   * These notes are meant solely as a guide to development and should be
+   * removed when the issues relating to them are resolved.
+   * 
+   *  Bob Hanson 4/06
+   *  
+   */
 
   void zoomToPercent(int percent) {
     transformManager.zoomToPercent(percent);

@@ -216,6 +216,10 @@ class CmlReader extends AtomSetCollectionReader {
       }
       return parseInt(str);
     }
+    if (str.equals("partial01"))
+      return JmolAdapter.ORDER_PARTIAL01;
+    if (str.equals("partial12"))
+      return JmolAdapter.ORDER_PARTIAL12;
     float floatOrder = parseFloat(str);
     if (floatOrder == 1.5)
       return JmolAdapter.ORDER_AROMATIC;

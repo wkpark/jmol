@@ -651,7 +651,7 @@ class PopupResourceBundle {
 
   private static final String[][] wordContents = {
     { "modelSetInfoMenu", GT._("No atoms loaded") },
-    { "hiddenModelSetName", GT._("Name hidden") },
+    { "hiddenModelSetName", GT._("Model information") },
 
     { "selectMenu", GT._("Select") },
     { "elementsComputedMenu", GT._("Element") },

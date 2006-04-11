@@ -3487,6 +3487,7 @@ class Eval implements Runnable {
   void polyhedra() throws ScriptException {
     boolean needsGenerating = false;
     boolean optionalParameterSeen = false;
+    boolean modifyOnly = false;
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "potentialCenterSet";
@@ -3555,6 +3556,7 @@ class Eval implements Runnable {
       case Token.delete:
       case Token.on:
       case Token.off:
+        modifyOnly = true;
       case Token.edges:
       case Token.noedges:
       case Token.frontedges:
@@ -3574,6 +3576,8 @@ class Eval implements Runnable {
       default:
         invalidArgument();
       }
+      if (modifyOnly && needsGenerating)
+        badArgumentCount();
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
           propertyValue);
     }

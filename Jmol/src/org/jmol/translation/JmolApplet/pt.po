@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-04-05 20:05-0400\n"
+"POT-Creation-Date: 2006-04-12 18:36+0200\n"
 "PO-Revision-Date: 2005-12-20 07:44-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -38,8 +38,8 @@ msgid "No atoms loaded"
 msgstr "Nenhum átomo foi carregado"
 
 #: org/jmol/popup/PopupResourceBundle.java:654
-msgid "Name hidden"
-msgstr "Nome escondido"
+msgid "Model information"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:656
 msgid "Select"
@@ -963,6 +963,9 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:1176
 msgid "Translations"
 msgstr ""
+
+#~ msgid "Name hidden"
+#~ msgstr "Nome escondido"
 
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotação de frameligado"

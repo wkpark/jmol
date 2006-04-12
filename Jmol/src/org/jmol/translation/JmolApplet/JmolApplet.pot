@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-04-05 20:05-0400\n"
+"POT-Creation-Date: 2006-04-12 18:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgid "No atoms loaded"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:654
-msgid "Name hidden"
+msgid "Model information"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:656

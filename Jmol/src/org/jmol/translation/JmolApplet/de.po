@@ -1,6 +1,5 @@
-# German translation of the Jmol applet
 # Copyright (C) 2005 by the Jmol Development Team
-# 
+#
 # This file is distributed under the same license as the Jmol package.
 # Daniel Leidert <daniel.leidert@wgdd.de>, 2005.
 #
@@ -8,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-04-05 20:05-0400\n"
-"PO-Revision-Date: 2005-12-21 19:44+0100\n"
-"Last-Translator: Daniel Leidert <dleidert@users.sourceforge.net>\n"
+"POT-Creation-Date: 2006-04-12 18:36+0200\n"
+"PO-Revision-Date: 2006-04-12 18:38+0100\n"
+"Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,7 +17,7 @@ msgstr ""
 
 #: org/jmol/applet/Jmol.java:118
 msgid "Jmol Molecular Visualization http://www.jmol.org"
-msgstr ""
+msgstr "Jmol Molekül-Visualisierung, http://www.jmol.org"
 
 #: org/jmol/applet/Jmol.java:454
 msgid "Jmol executing script ..."
@@ -34,11 +33,11 @@ msgstr "Jmol-Skript ausgeführt"
 
 #: org/jmol/popup/PopupResourceBundle.java:653
 msgid "No atoms loaded"
-msgstr "Keine Atome geladen."
+msgstr "Keine Atome geladen"
 
 #: org/jmol/popup/PopupResourceBundle.java:654
-msgid "Name hidden"
-msgstr "Name versteckt"
+msgid "Model information"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:656
 msgid "Select"
@@ -118,15 +117,15 @@ msgstr "Basen"
 
 #: org/jmol/popup/PopupResourceBundle.java:678
 msgid "AT pairs"
-msgstr "AT Paare"
+msgstr "AT-Paare"
 
 #: org/jmol/popup/PopupResourceBundle.java:679
 msgid "GC pairs"
-msgstr "GC Paare"
+msgstr "GC-Paare"
 
 #: org/jmol/popup/PopupResourceBundle.java:680
 msgid "AU pairs"
-msgstr "AU Paare"
+msgstr "AU-Paare"
 
 #: org/jmol/popup/PopupResourceBundle.java:687
 msgid "hetero"
@@ -134,7 +133,7 @@ msgstr "Hetero"
 
 #: org/jmol/popup/PopupResourceBundle.java:689
 msgid "Solvent"
-msgstr ""
+msgstr "Lösungsmittel"
 
 #: org/jmol/popup/PopupResourceBundle.java:690
 msgid "Water"
@@ -142,7 +141,7 @@ msgstr "Wasser"
 
 #: org/jmol/popup/PopupResourceBundle.java:691
 msgid "Except Solvent"
-msgstr ""
+msgstr "Außer Lösungsmittel"
 
 #: org/jmol/popup/PopupResourceBundle.java:692
 msgid "Except Water"
@@ -159,7 +158,7 @@ msgstr "Andere"
 
 #: org/jmol/popup/PopupResourceBundle.java:696
 msgid "Carbohydrate"
-msgstr ""
+msgstr "Kohlenhydrate"
 
 #: org/jmol/popup/PopupResourceBundle.java:697
 msgid "Lipid"
@@ -175,15 +174,15 @@ msgstr "Alle Modelle"
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 msgid "Frame"
-msgstr ""
+msgstr "Frame"
 
 #: org/jmol/popup/PopupResourceBundle.java:704
 msgid "All Frames"
-msgstr ""
+msgstr "Alle Frames"
 
 #: org/jmol/popup/PopupResourceBundle.java:706
 msgid "Invert Selection"
-msgstr ""
+msgstr "Auswahl invertieren"
 
 #: org/jmol/popup/PopupResourceBundle.java:708
 msgid "Display Selected Only"
@@ -207,7 +206,7 @@ msgstr "Azswahl einschränken (UND)"
 
 #: org/jmol/popup/PopupResourceBundle.java:715
 msgid "Render"
-msgstr ""
+msgstr "Rendern"
 
 #: org/jmol/popup/PopupResourceBundle.java:716
 msgid "Scheme"
@@ -270,11 +269,11 @@ msgstr "An"
 #: org/jmol/popup/PopupResourceBundle.java:741
 #: org/jmol/popup/PopupResourceBundle.java:868
 msgid "Hydrogen Bonds"
-msgstr ""
+msgstr "Wasserstoffbindungen"
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "Calculate"
-msgstr ""
+msgstr "Berechnen"
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Set H-Bonds Side Chain"
@@ -341,15 +340,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:785
 msgid "Red+Cyan glasses"
-msgstr "Brillengläser Rot+Cyan"
+msgstr "3D-Brille Rot+Cyan"
 
 #: org/jmol/popup/PopupResourceBundle.java:786
 msgid "Red+Blue glasses"
-msgstr "Brillengläser Rot+Blau"
+msgstr "3D-Brille Rot+Blau"
 
 #: org/jmol/popup/PopupResourceBundle.java:787
 msgid "Red+Green glasses"
-msgstr "Brillengläser Rot+Grün"
+msgstr "3D-Brille Rot+Grün"
 
 #: org/jmol/popup/PopupResourceBundle.java:788
 msgid "Cross-eyed viewing"
@@ -366,15 +365,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:794
 msgid "With Element Symbol"
-msgstr ""
+msgstr "Mit Elementsymbol"
 
 #: org/jmol/popup/PopupResourceBundle.java:795
 msgid "With Atom Name"
-msgstr ""
+msgstr "Mit Atomname"
 
 #: org/jmol/popup/PopupResourceBundle.java:796
 msgid "With Atom Number"
-msgstr ""
+msgstr "Mit Atomnummer"
 
 #: org/jmol/popup/PopupResourceBundle.java:798
 msgid "Position Label on Atom"
@@ -386,19 +385,19 @@ msgstr "Zentriert"
 
 #: org/jmol/popup/PopupResourceBundle.java:800
 msgid "Upper Right"
-msgstr ""
+msgstr "Oben rechts"
 
 #: org/jmol/popup/PopupResourceBundle.java:801
 msgid "Lower Right"
-msgstr ""
+msgstr "Unten rechts"
 
 #: org/jmol/popup/PopupResourceBundle.java:802
 msgid "Upper Left"
-msgstr ""
+msgstr "Oben links"
 
 #: org/jmol/popup/PopupResourceBundle.java:803
 msgid "Lower Left"
-msgstr ""
+msgstr "Unten links"
 
 #: org/jmol/popup/PopupResourceBundle.java:805
 #: org/jmol/popup/PopupResourceBundle.java:1106
@@ -634,7 +633,7 @@ msgstr "Kornblumenblau"
 
 #: org/jmol/popup/PopupResourceBundle.java:852
 msgid "Dark Slate Blue"
-msgstr ""
+msgstr "Dunkles Schieferblau"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Light Steel Blue"
@@ -746,27 +745,27 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:1057
 #: org/jmol/popup/PopupResourceBundle.java:1075
 msgid "Set FPS"
-msgstr ""
+msgstr "Framerate einstellen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1064
 msgid "Animate"
-msgstr ""
+msgstr "Animieren"
 
 #: org/jmol/popup/PopupResourceBundle.java:1065
 msgid "Animation Mode"
-msgstr ""
+msgstr "Animationsmodus"
 
 #: org/jmol/popup/PopupResourceBundle.java:1066
 msgid "Play Once"
-msgstr ""
+msgstr "Einmal abspielen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1067
 msgid "Palindrome"
-msgstr ""
+msgstr "Palindrom"
 
 #: org/jmol/popup/PopupResourceBundle.java:1068
 msgid "Loop"
-msgstr ""
+msgstr "Schleife"
 
 #: org/jmol/popup/PopupResourceBundle.java:1069
 msgid "Play"
@@ -778,11 +777,11 @@ msgstr "Stopp"
 
 #: org/jmol/popup/PopupResourceBundle.java:1071
 msgid "Next Frame"
-msgstr "Nächstes Frame"
+msgstr "Nächster Frame"
 
 #: org/jmol/popup/PopupResourceBundle.java:1072
 msgid "Previous Frame"
-msgstr "Vorheriges Frame"
+msgstr "Vorheriger Frame"
 
 #: org/jmol/popup/PopupResourceBundle.java:1073
 msgid "Rewind"
@@ -790,11 +789,11 @@ msgstr "Zurückspulen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1074
 msgid "Reverse Play"
-msgstr ""
+msgstr "Rückwärts abspielen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1082
 msgid "Measurements"
-msgstr ""
+msgstr "Messungen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1083
 msgid "Nanometers"
@@ -802,7 +801,7 @@ msgstr "Nanometer"
 
 #: org/jmol/popup/PopupResourceBundle.java:1084
 msgid "Angstroms"
-msgstr "Angstrom"
+msgstr "Ångström"
 
 #: org/jmol/popup/PopupResourceBundle.java:1085
 msgid "Picometers"
@@ -869,7 +868,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1122
 msgid "Angstrom Width"
-msgstr ""
+msgstr "Ångström-Breite"
 
 #: org/jmol/popup/PopupResourceBundle.java:1131
 msgid "Salmon"
@@ -913,7 +912,7 @@ msgstr "Wasserstoffe anzeigen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1161
 msgid "Show Measurements"
-msgstr "Messwerte anzeigen"
+msgstr "Messungen anzeigen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1162
 msgid "Perspective Depth"
@@ -921,19 +920,19 @@ msgstr "Perspektivische Tiefe"
 
 #: org/jmol/popup/PopupResourceBundle.java:1163
 msgid "RasMol/Chime Compatibility"
-msgstr "RasMol/Chime Kompatibilität"
+msgstr "RasMol/Chime-Kompatibilität"
 
 #: org/jmol/popup/PopupResourceBundle.java:1164
 msgid "RasMol Colors"
-msgstr "RasMol Farben"
+msgstr "RasMol-Farben"
 
 #: org/jmol/popup/PopupResourceBundle.java:1165
 msgid "Jmol Colors"
-msgstr "Jmol Farben"
+msgstr "Jmol-Farben"
 
 #: org/jmol/popup/PopupResourceBundle.java:1166
 msgid "Axes RasMol/Chime"
-msgstr ""
+msgstr "RasMol/Chime-Achsen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1167
 msgid "Zero Based Xyz Rasmol"
@@ -962,6 +961,9 @@ msgstr "Maus-Handbuch"
 #: org/jmol/popup/PopupResourceBundle.java:1176
 msgid "Translations"
 msgstr "Übersetzungen"
+
+#~ msgid "Name hidden"
+#~ msgstr "Name versteckt"
 
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Drahtgitter-Rotation"

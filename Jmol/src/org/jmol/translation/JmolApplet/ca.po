@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-04-05 20:05-0400\n"
+"POT-Creation-Date: 2006-04-12 18:36+0200\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -37,8 +37,8 @@ msgid "No atoms loaded"
 msgstr "No s'ha carregat cap àtom"
 
 #: org/jmol/popup/PopupResourceBundle.java:654
-msgid "Name hidden"
-msgstr "Nom amagat"
+msgid "Model information"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:656
 msgid "Select"
@@ -962,6 +962,9 @@ msgstr "Manual del ratolí"
 #: org/jmol/popup/PopupResourceBundle.java:1176
 msgid "Translations"
 msgstr "Traduccions"
+
+#~ msgid "Name hidden"
+#~ msgstr "Nom amagat"
 
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotació en mode filferro"

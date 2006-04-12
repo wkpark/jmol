@@ -3771,6 +3771,15 @@ class Eval implements Runnable {
   }
 
   void connect() throws ScriptException {
+    boolean haveType = false;
+    int nAtomSets = 0;
+    int nDistances = 0;
+    /*
+     * connect [<=2 distance parameters] [<=2 atom sets] 
+     *             [<=1 bond type] [<=1 operation]
+     * 
+     */
+    
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "resetConnectParameters", null);
     if (statementLength == 1) {
@@ -3785,18 +3794,25 @@ class Eval implements Runnable {
       switch (statement[i].tok) {
       case Token.on:
       case Token.off:
+        if (statementLength != 2) 
+          badArgumentCount();
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                                 "rasmolCompatibleConnect", null);
         return;
       case Token.integer:
-        propertyName = "connectDistance";
-        propertyValue = new Float(statement[i].intValue);
-        break;
       case Token.decimal:
+        if (++nDistances > 2)
+          badArgumentCount();
+        if (nAtomSets > 0 || haveType)
+          invalidParameterOrder();
         propertyName = "connectDistance";
-        propertyValue = statement[i].value;
+        propertyValue = new Float(floatParameter(i));
         break;
       case Token.expressionBegin:
+        if (++nAtomSets > 2)
+          badArgumentCount();
+        if (haveType)
+          invalidParameterOrder();
         propertyName = "connectSet";
         propertyValue = expression(statement, i);
         i = pcLastExpressionInstruction; // the for loop will increment i
@@ -3806,12 +3822,17 @@ class Eval implements Runnable {
         String cmd = (String)statement[i].value;
         for (int j =  JmolConstants.bondOrderNames.length; --j >= 0; ) {
           if (cmd.equalsIgnoreCase(JmolConstants.bondOrderNames[j])) {
+            if (haveType)
+              incompatibleArguments();
             cmd = JmolConstants.bondOrderNames[j];
             propertyName = "connectBondOrder";
             propertyValue = cmd;
+            haveType = true;
             break switch_tag;
           }
         }
+        if (++i != statementLength)
+          invalidParameterOrder();
         if ("modify".equalsIgnoreCase(cmd))
           propertyValue = "modify";
         else if ("create".equalsIgnoreCase(cmd))
@@ -3826,6 +3847,8 @@ class Eval implements Runnable {
         break;
       case Token.none:
       case Token.delete:
+        if (++i != statementLength)
+          invalidParameterOrder();
         propertyName = "connectOperation";
         propertyValue = "delete";
         break;

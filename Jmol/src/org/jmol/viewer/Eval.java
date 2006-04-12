@@ -668,6 +668,14 @@ class Eval implements Runnable {
     evalError("invalid argument");
   }
 
+  void incompatibleArguments() throws ScriptException {
+    evalError("incompatible arguments");
+  }
+
+  void insufficientArguments() throws ScriptException {
+    evalError("insufficient arguments");
+  }
+
   void unrecognizedSetParameter() throws ScriptException {
     evalError("unrecognized SET parameter");
   }
@@ -3485,9 +3493,23 @@ class Eval implements Runnable {
   */
 
   void polyhedra() throws ScriptException {
+    /*
+     * needsGenerating:
+     * 
+     * polyhedra [number of vertices and/or basis] [at most two selection sets] 
+     *   [optional type and/or edge] [optional design parameters]
+     *   
+     * OR else:
+     * 
+     * polyhedra [at most one selection set] [type-and/or-edge or on/off/delete]
+     * 
+     */
     boolean needsGenerating = false;
-    boolean optionalParameterSeen = false;
-    boolean modifyOnly = false;
+    boolean onOffDelete = false;
+    boolean typeSeen = false;
+    boolean edgeParameterSeen = false;
+    boolean isDesignParameter = false;
+    int nAtomSets = 0;
     viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "potentialCenterSet";
@@ -3501,6 +3523,8 @@ class Eval implements Runnable {
       case Token.opOr:
         continue;
       case Token.bonds:
+        if (nAtomSets > 0)
+          invalidParameterOrder();
         needsGenerating = true;
         propertyName = "bonds";
         break;
@@ -3512,33 +3536,46 @@ class Eval implements Runnable {
         if ("collapsed".equalsIgnoreCase(str)) {
           propertyName = "collapsed";
           propertyValue = Boolean.TRUE;
-          optionalParameterSeen = true;
+          if (typeSeen)
+            incompatibleArguments();
+          typeSeen = true;
           break;
         }
         if ("flat".equalsIgnoreCase(str)) {
           propertyName = "collapsed";
           propertyValue = Boolean.FALSE;
-          optionalParameterSeen = true;
+          if (typeSeen)
+            incompatibleArguments();
+          typeSeen = true;
           break;
+        }
+        if (! needsGenerating)
+          insufficientArguments();
+        if ("to".equalsIgnoreCase(str)) {
+          if (nAtomSets > 1)
+            invalidParameterOrder();
+          setPropertyName = "potentialVertexSet";
+          continue;
         }
         if ("centerAngleMax".equalsIgnoreCase(str)) {
           decimalPropertyName = "centerAngleMax";
+          isDesignParameter = true;
           continue;
         }
         if ("faceNormalMax".equalsIgnoreCase(str)) {
           decimalPropertyName = "faceNormalMax";
+          isDesignParameter = true;
           continue;
         }
         if ("faceCenterOffset".equalsIgnoreCase(str)) {
           decimalPropertyName = "faceCenterOffset";
-          continue;
-        }
-        if ("to".equalsIgnoreCase(str)) {
-          setPropertyName = "potentialVertexSet";
+          isDesignParameter = true;
           continue;
         }
         unrecognizedSubcommand();
       case Token.integer:
+        if (nAtomSets > 0 && ! isDesignParameter)
+          invalidParameterOrder();
         // no reason not to allow integers when explicit
         if (decimalPropertyName == "radius_") {
           propertyName = "vertexCount";
@@ -3547,27 +3584,39 @@ class Eval implements Runnable {
           break;
         }
       case Token.decimal:
+        if (nAtomSets > 0 && ! isDesignParameter)
+          invalidParameterOrder();
         propertyName = (decimalPropertyName == "radius_" ? "radius" :
           decimalPropertyName);
         propertyValue = new Float(floatParameter(i));
         decimalPropertyName = "radius_";
+        isDesignParameter = false;
         needsGenerating = true;
         break;
       case Token.delete:
       case Token.on:
       case Token.off:
-        modifyOnly = true;
+        if (++i != statementLength || needsGenerating || nAtomSets > 1
+            || nAtomSets == 0 && setPropertyName == "potentialVertexSet")
+          incompatibleArguments();
+        propertyName = (String)token.value;
+        onOffDelete = true;
+        break;
       case Token.edges:
       case Token.noedges:
       case Token.frontedges:
-        optionalParameterSeen = true;
+        if (edgeParameterSeen)
+          incompatibleArguments();
         propertyName = (String)token.value;
+        edgeParameterSeen = true;
         break;
       case Token.expressionBegin:
+        if (typeSeen)
+          invalidParameterOrder();
+        if (++nAtomSets > 2)
+          badArgumentCount();
         if (setPropertyName == "potentialVertexSet")
           needsGenerating = true;
-        if (optionalParameterSeen)
-          invalidParameterOrder();
         propertyName = setPropertyName;
         setPropertyName = "potentialVertexSet";
         propertyValue = expression(statement, ++i);
@@ -3576,13 +3625,13 @@ class Eval implements Runnable {
       default:
         invalidArgument();
       }
-      if (modifyOnly && needsGenerating)
-        badArgumentCount();
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
           propertyValue);
+      if (onOffDelete)
+        return;
     }
-    if (! needsGenerating && ! optionalParameterSeen)
-      subcommandExpected();
+    if (! needsGenerating && ! typeSeen && ! edgeParameterSeen)
+      insufficientArguments();
     if (needsGenerating)
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
   }

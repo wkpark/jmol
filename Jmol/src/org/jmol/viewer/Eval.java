@@ -1556,6 +1556,8 @@ class Eval implements Runnable {
     case Token.partialCharge:
     case Token.user:
     case Token.monomer:
+    case Token.translucent:
+    case Token.opaque:
       colorObject(Token.atom, 1);
       break;
     case Token.rubberband:

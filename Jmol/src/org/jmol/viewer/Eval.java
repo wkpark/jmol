@@ -3449,49 +3449,6 @@ class Eval implements Runnable {
     }
   }
 
-  /*
-  void polyhedra() throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
-    boolean radiusSeen = false, expressionSeen = false;
-    for (int i = 1; i < statementLength; ++i) {
-      String propertyName = null;
-      Object propertyValue = null;
-      switch (statement[i].tok) {
-      case Token.bonds:
-      case Token.on:
-      case Token.off:
-      case Token.delete:
-      case Token.edges:
-      case Token.noedges:
-      case Token.frontedges:
-        propertyName = (String)statement[i].value;
-        break;
-      case Token.decimal:
-        radiusSeen = true;
-        propertyName = "radius";
-        propertyValue = statement[i].value;
-        break;
-      case Token.expressionBegin:
-        if (! radiusSeen)
-          evalError("radius expected");
-        expressionSeen = true;
-        propertyName = "expression";
-        propertyValue = expression(statement, i);
-        // hack for now;
-        i = statement.length;
-        break;
-      default:
-        invalidArgument();
-      }
-      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
-                              propertyName, propertyValue);
-    }
-    if (radiusSeen && !expressionSeen)
-      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
-                              "expression", null);
-  }
-  */
-
   void polyhedra() throws ScriptException {
     /*
      * needsGenerating:

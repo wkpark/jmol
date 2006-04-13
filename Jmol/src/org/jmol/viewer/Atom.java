@@ -971,7 +971,7 @@ final class Atom implements Tuple {
     }
     if (group.chain.frame.getModelCount() > 1) {
       info.append("/");
-      info.append(getModelTag());
+      info.append(getModelTagNumber());
     }
     info.append(" #");
     info.append(getAtomNumber());

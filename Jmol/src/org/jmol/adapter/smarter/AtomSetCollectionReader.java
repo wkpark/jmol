@@ -270,7 +270,7 @@ abstract class AtomSetCollectionReader {
     if (ichMax > cch)
       ichMax = cch;
     if (ichStart >= ichMax)
-      return null;
+      return "";
     return parseTrimmedChecked(str, ichStart, ichMax);
   }
 
@@ -282,8 +282,8 @@ abstract class AtomSetCollectionReader {
     int ichLast = ichMax - 1;
     while (ichLast >= ich && ((ch = str.charAt(ichLast)) == ' ' || ch == '\t'))
       --ichLast;
-    if (ichLast < ich)
-      return null;
+    if (ichLast < ich) 
+      return "";
     ichNextParse = ichLast + 1;
     return str.substring(ich, ichLast + 1);
   }

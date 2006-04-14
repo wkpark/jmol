@@ -313,7 +313,7 @@ class CifReader extends AtomSetCollectionReader {
       //      logger.log("line:" + line);
       //      logger.log("of length = " + line.length());
       if (line.length() == 1)
-        System.out.println("char value is " + (chFirst + 0));
+        logger.log("char value is " + (chFirst + 0));
       tokenizer.setString(line);
       //      logger.log("reading an atom");
       Atom atom = new Atom();
@@ -322,7 +322,7 @@ class CifReader extends AtomSetCollectionReader {
           tokenizer.setString(reader.readLine());
         String field = tokenizer.nextToken();
         if (field == null)
-          System.out.println("field == null!");
+          logger.log("field == null!");
         switch (fieldTypes[i]) {
         case NONE:
           break;
@@ -392,7 +392,7 @@ class CifReader extends AtomSetCollectionReader {
         case SEQ_ID:
           atom.sequenceNumber = parseInt(field);
           if (atom.sequenceNumber == Integer.MIN_VALUE) {
-            System.out.println("Warning! mmCIF ERROR: Missing SEQ_ID in mmCIF file for #"+atomSerial + " group3=" + atom.group3);
+            logger.log("Warning! mmCIF ERROR: Missing SEQ_ID in mmCIF file for #"+atomSerial + " group3=" + atom.group3);
             atom.sequenceNumber = --missingSequenceNumber;
           }
           /*
@@ -859,7 +859,7 @@ class CifReader extends AtomSetCollectionReader {
         //      logger.log("line:" + line);
         //      logger.log("of length = " + line.length());
         if (line.length() == 1)
-          System.out.println("char value is " + (chFirst + 0));
+          logger.log("char value is " + (chFirst + 0));
         tokenizer.setString(line);
         //      logger.log("reading an atom");
         struct = new Strand();
@@ -868,7 +868,7 @@ class CifReader extends AtomSetCollectionReader {
             tokenizer.setString(reader.readLine());
           String field = tokenizer.nextToken();
           if (field == null)
-            System.out.println("field == null!");
+            logger.log("field == null!");
           switch (fieldTypes[i]) {
           case STRUCT_ASYM_ID:
             struct.chainID = field;
@@ -1143,6 +1143,3 @@ class CifReader extends AtomSetCollectionReader {
     }
   }
 }
-
-
-

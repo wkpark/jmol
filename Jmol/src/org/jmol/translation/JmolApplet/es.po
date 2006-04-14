@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-04-12 18:36+0200\n"
-"PO-Revision-Date: 2006-04-03 16:00+0100\n"
+"PO-Revision-Date: 2006-04-14 17:48+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +35,7 @@ msgstr "Ningún átomo cargado"
 
 #: org/jmol/popup/PopupResourceBundle.java:654
 msgid "Model information"
-msgstr ""
+msgstr "Información del modelo"
 
 #: org/jmol/popup/PopupResourceBundle.java:656
 msgid "Select"
@@ -962,10 +962,8 @@ msgstr "Traducciones"
 
 #~ msgid "Name hidden"
 #~ msgstr "Nombre oculto"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotación como alambres"
-
 #~ msgid ""
 #~ "Jmol Applet version {0} {1}.\n"
 #~ "\n"
@@ -977,19 +975,16 @@ msgstr "Traducciones"
 #~ "\n"
 #~ "Un proyecto OpenScience.\n"
 #~ "Para más información, vea http://www.jmol.org"
-
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid " atoms in order to spin the model around an axis"
 #~ msgstr " átomos para que el modelo gire en torno a un eje"
-
 #~ msgid "atoms selected"
 #~ msgstr "átomos seleccionados"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
+

@@ -973,15 +973,15 @@ support for assertions (which were introduced in 1.4).
   <target name="test" id="test" depends="main,compile-tests">
     <junit printsummary="yes" haltonfailure="yes">
       <classpath>
-	<pathelement location="./Jmol.jar" />
-	<pathelement location="./Tests.jar" />
-	<pathelement location="./jars/junit.jar" />
+        <pathelement location="./Jmol.jar" />
+        <pathelement location="./Tests.jar" />
+        <pathelement location="./jars/junit.jar" />
       </classpath>
       <formatter type="plain" usefile="false" />
-      <batchtest>
-	<fileset dir="test" />
-      </batchtest>
-<!--      <test name="org.jmol.util.TestIntIntHash" /> -->
+      <!-- <batchtest>
+        <fileset dir="test" />
+      </batchtest> -->
+      <test name="org.jmol.AllTests" />
     </junit>
   </target>
 
@@ -991,8 +991,8 @@ support for assertions (which were introduced in 1.4).
 	   debug="on" deprecation="on"
 	   optimize="off" source="1.4">
       <classpath>
-	<pathelement location="./Jmol.jar" />
-	<pathelement location="./jars/junit.jar" />
+        <pathelement location="./Jmol.jar" />
+        <pathelement location="./jars/junit.jar" />
       </classpath>
     </javac>
     <jar destfile="Tests.jar" basedir="${test-classes.dir}" />

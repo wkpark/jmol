@@ -2348,6 +2348,9 @@
   <fah_proj number="990" name="p990_fkligveq_pop" public="y" file="y"
     server="171.64.122.132" atoms="46" preferred="1" deadline="7"
     credit="23" frames="100" code="DG" contact="guha"/>
+  <fah_proj number="991" name="p991_longfkligand" public="y"
+    server="171.65.103.151" atoms="2722" preferred="5" deadline="10"
+    credit="84" frames="100" code="DG" contact="guha"/>
   <fah_proj number="992" name="p992_longfkcomp" public="y"
     server="171.65.103.151" atoms="14908" preferred="5" deadline="10"
     credit="84" frames="100" code="DG" contact="guha"/>
@@ -3282,6 +3285,9 @@
   <fah_proj number="1479" name="p1479_tet_1479_1" public="y" file="y"
     server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
+  <fah_proj number="1480" name="p1480_dppc_chol" public="n"
+    server="171.64.122.134" atoms="11120" preferred="36" deadline="53"
+    credit="376" frames="500" code="A0" contact="kasson"/>
   <fah_proj number="1481" name="p1481_tet_2nm" public="y" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
@@ -3297,10 +3303,10 @@
   <fah_proj number="1487" name="p1487_DPPC_DOPC_CHOL" public="n" file="y"
     server="171.65.103.68" atoms="87920" preferred="47" deadline="63"
     credit="461" frames="0" code="A0" contact="kasson"/>
-  <fah_proj number="1488" name="p1488_Protein in POPC" public="n" file="y"
+  <fah_proj number="1488" name="p1488_Protein in POPC" public="y" file="y"
     server="171.65.103.68" atoms="77094" preferred="48" deadline="127"
     credit="459" frames="0" code="A0" contact="kasson"/>
-  <fah_proj number="1489" name="p1489_Protein_POPC" public="n"
+  <fah_proj number="1489" name="p1489_Protein_POPC" public="y" file="y"
     server="171.65.103.68" atoms="18462" preferred="32" deadline="47"
     credit="165" frames="0" code="A0" contact="kasson"/>
   <fah_proj number="1490" name="p1490_Membrane" public="n" file="y"

@@ -232,12 +232,13 @@ class CifReader extends AtomSetCollectionReader {
   final static byte INS_CODE    = 14;
   final static byte ALT_ID      = 15;
   final static byte GROUP_PDB   = 16;
-  final static byte MODEL_NO    = 17;
-  final static byte ATOM_PROPERTY_MAX = 18;
+  final static byte SITE_ID     = 17;
+  final static byte MODEL_NO    = 18;
+  final static byte ATOM_PROPERTY_MAX = 19;
   
 
   final static String[] atomFields = {
-    "_atom_site_type_symbol",
+    "_atom_site_type_symbol", 
     "_atom_site_label", "_atom_site_label_atom_id",
     "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
     "_atom_site.Cartn_x", "_atom_site.Cartn_y", "_atom_site.Cartn_z",
@@ -246,7 +247,7 @@ class CifReader extends AtomSetCollectionReader {
     "_atom_site.label_comp_id", "_atom_site.label_asym_id",
     "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
     "_atom_site.label_alt_id",
-    "_atom_site.group_PDB",
+    "_atom_site.group_PDB", "_atom_site.id",
     "_atom_site.pdbx_PDB_model_num",
   };
 
@@ -257,7 +258,7 @@ class CifReader extends AtomSetCollectionReader {
     CARTN_X, CARTN_Y, CARTN_Z,
     OCCUPANCY, B_ISO,
     COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
-    ALT_ID, GROUP_PDB, MODEL_NO,
+    ALT_ID, GROUP_PDB, SITE_ID, MODEL_NO,
   };
 
   static {
@@ -268,6 +269,8 @@ class CifReader extends AtomSetCollectionReader {
   void processAtomSiteLoopBlock() throws Exception {
     //    logger.log("processAtomSiteLoopBlock()-------------------------");
     int currentModelNO = -1;
+    int missingSequenceNumber = 0;
+    int atomSerial = 0;
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
     int fieldCount = parseLoopParameters(atomFields,
@@ -388,6 +391,23 @@ class CifReader extends AtomSetCollectionReader {
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseInt(field);
+          if (atom.sequenceNumber == Integer.MIN_VALUE) {
+            System.out.println("Warning! mmCIF ERROR: Missing SEQ_ID in mmCIF file for #"+atomSerial + " group3=" + atom.group3);
+            atom.sequenceNumber = --missingSequenceNumber;
+          }
+          /*
+           * 1d66.cif is missing this information, causing Jmol to 
+           * improperly assign "CD" to HOH as group3 in HETATM records.
+           *  
+           *  interestingly, this fix allows for 
+           *  
+           *  select -3
+           *  
+           *  but I wouldn't publicize that. 
+           *  
+           * -- Bob Hanson  206/04/14
+           * 
+           */ 
           break;
         case INS_CODE:
           char insCode = field.charAt(0);
@@ -402,6 +422,22 @@ class CifReader extends AtomSetCollectionReader {
         case GROUP_PDB:
           if ("HETATM".equals(field))
             atom.isHetero = true;
+          break;
+        case SITE_ID:
+          //atom.atomSerial = parseInt(field);
+          /*
+           * I considered the above, but then decided there might be
+           * a reason we aren't assigning a serial number for atoms in
+           * a CIF file, maybe to do with the fact that in CIF files we
+           * are using mapped atom names, whereas in PDB files we are not
+           * Egon? 
+           * 
+           * So this assignment for now is just for internal purposes.
+           * 
+           * -- Bob Hanson
+           * 
+           */ 
+          atomSerial =  parseInt(field);
           break;
         case MODEL_NO:
           int modelNO = parseInt(field);

@@ -234,7 +234,8 @@ class CifReader extends AtomSetCollectionReader {
   final static byte GROUP_PDB   = 16;
   final static byte SITE_ID     = 17;
   final static byte MODEL_NO    = 18;
-  final static byte ATOM_PROPERTY_MAX = 19;
+  final static byte AUTH_SEQ_ID = 19;
+  final static byte ATOM_PROPERTY_MAX = 20;
   
 
   final static String[] atomFields = {
@@ -248,7 +249,7 @@ class CifReader extends AtomSetCollectionReader {
     "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
     "_atom_site.label_alt_id",
     "_atom_site.group_PDB", "_atom_site.id",
-    "_atom_site.pdbx_PDB_model_num",
+    "_atom_site.pdbx_PDB_model_num","_atom_site.auth_seq_id"
   };
 
   final static byte[] atomFieldMap = {
@@ -258,7 +259,7 @@ class CifReader extends AtomSetCollectionReader {
     CARTN_X, CARTN_Y, CARTN_Z,
     OCCUPANCY, B_ISO,
     COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
-    ALT_ID, GROUP_PDB, SITE_ID, MODEL_NO,
+    ALT_ID, GROUP_PDB, SITE_ID, MODEL_NO, AUTH_SEQ_ID
   };
 
   static {
@@ -371,8 +372,22 @@ class CifReader extends AtomSetCollectionReader {
             logger.log("Don't know how to deal with chains more than 1 char",
                        field);
           atom.chainID = getChainIdFromStrandMap(field.charAt(0));
+          System.out.println(atomSerial + atom.group3+" asym_id "+atom.chainID + " " + field.charAt(0));
           //ok to assign ' ' when blank?
           break;
+        case AUTH_SEQ_ID:
+          if (atom.sequenceNumber >= 0)
+            break;
+          logger.log("assigning #"+atomSerial + " group3=" + atom.group3 + " as " + field);
+          /*
+           * The idea is that it is better to err on the side of consistency
+           * with PDB files than to leave this blank. See 1bkx, where this
+           * now allows the rna monomer (and not all the H2O as well) 
+           * to be identified as RNA.
+           * 
+           * Bob Hanson 2006/04/14
+           * 
+           */
         case SEQ_ID:
           atom.sequenceNumber = parseInt(field);
           if (atom.sequenceNumber == Integer.MIN_VALUE) {
@@ -449,6 +464,9 @@ class CifReader extends AtomSetCollectionReader {
      * 
      * this method is called by helix/turn, by sheet, and by atoms!
      * 
+     * more problems here also with 1bkx.cif. RNA fragment being given
+     * 0 instead of B. Why? In the CIF file we have
+     * 
      * Bob Hanson 2006/04/14
      * 
      */
@@ -466,6 +484,32 @@ class CifReader extends AtomSetCollectionReader {
       // not pretty, but let's just assume the string only has one char
       return strand.authorID.charAt(0);
     return '0';
+    /*
+     * Egon: 
+     * 
+     * Should last return be chainChar?
+     * Is mapping supposed to mean "author's or nothing? Or is there ever
+     * a time when a mapped mmCIF-given chain ID should be used?
+     * 
+     * _struct_asym.id 
+     * _struct_asym.pdbx_blank_PDB_chainid_flag 
+     * _struct_asym.pdbx_modified 
+     * _struct_asym.entity_id 
+     * _struct_asym.details 
+     * A N N 1 ? 
+     * B N N 2 ? 
+     * C N N 3 ? 
+     * 
+     * So they aren't modified and they aren't blank. 
+     * Doesn't that indicate that none should be blank?
+     * Part of the problem may be that the RNA piece here
+     * is being classified in mmCIF as HETATM but in PDB as ATOM 
+     * and I think there is a flaw in the mmCIF generator for HETATM
+     * returning ? when it should not be.
+     * 
+     * Bob 
+     * 
+     */ 
   }
 
   void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {

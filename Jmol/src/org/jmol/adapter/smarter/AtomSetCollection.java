@@ -173,6 +173,25 @@ class AtomSetCollection {
       newCloneAtom(atoms[i]);
   }
 
+  void cloneFirstAtomSetWithBonds(int nBonds) {
+   /*
+    *  see note above; same deal here? This is for CsfReader, where
+    *  there are bonds indicated in the file, but we still need to 
+    *  clone in the case of vibrational vectors. 
+    *
+    *  Bob Hanson 2006/4/14
+    *  
+    */
+    
+    cloneFirstAtomSet();
+    int firstCount = atomSetAtomCounts[0];
+    for (int bondNum = 0; bondNum < nBonds; bondNum++) {
+      Bond bond = bonds[bondCount - nBonds];
+      addNewBond(bond.atomIndex1 + firstCount, bond.atomIndex2 + firstCount,
+          bond.order);
+    }
+  }
+
   void cloneLastAtomSet() {
     //    System.out.println("cloneLastAtomSet");
     //    System.out.println("b4 atomCount=" + atomCount);

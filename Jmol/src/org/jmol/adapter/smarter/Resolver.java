@@ -252,14 +252,17 @@ class Resolver {
   final static String[] spartanSmolRecords =
   {"INPUT="};
 
+  final static String[] csfRecords =
+  {"local_transform"};
+  
   final static String[][] startsWithRecords =
   { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
     jaguarRecords, hinRecords , mdlRecords, nwchemRecords,
-    spartanSmolRecords};
+    spartanSmolRecords, csfRecords};
 
   final static String[] startsWithFormats =
   { "Pdb", "Shelx", "Cif", "GhemicalMM",
-    "Jaguar", "Hin", "Mol", "NWChem", "SpartanSmol" };
+    "Jaguar", "Hin", "Mol", "NWChem", "SpartanSmol", "Csf"};
 
   ////////////////////////////////////////////////////////////////
   // contains formats

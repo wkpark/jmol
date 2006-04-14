@@ -370,24 +370,8 @@ class CifReader extends AtomSetCollectionReader {
           if (field.length() > 1)
             logger.log("Don't know how to deal with chains more than 1 char",
                        field);
-          char firstChar = field.charAt(0);
-          if (firstChar != '?' && firstChar != '.') {
-            String chainID = "" + firstChar;
-            if (strandsMap.containsKey(chainID)) {
-              Strand strand = (Strand)strandsMap.get(chainID);
-              // OK, here is the if/else construct that Wayne send me
-              if (strand.isBlank.booleanValue()) {
-                atom.chainID = '0'; // no author provided ID
-              } else if (strand.authorID != null) {
-                // not pretty, but let's just assume the string only has one char
-                atom.chainID = strand.authorID.charAt(0);
-              } else {
-                atom.chainID = '0';
-              }
-            } else {
-              atom.chainID = firstChar;
-            }
-          }
+          atom.chainID = getChainIdFromStrandMap(field.charAt(0));
+          //ok to assign ' ' when blank?
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseInt(field);
@@ -454,6 +438,34 @@ class CifReader extends AtomSetCollectionReader {
       else
         atomSetCollection.addAtomWithMappedName(atom);
     }
+  }
+
+  char getChainIdFromStrandMap(char chainChar) {
+    /*
+     * the problem (see 1pgb.cif) was that while the atom chainIDs
+     * was being set using this function, the STRUCTURE chainIDs were
+     * not, so then later the structures were taken to be in different
+     * chains than the atoms, and no structures were determined.
+     * 
+     * this method is called by helix/turn, by sheet, and by atoms!
+     * 
+     * Bob Hanson 2006/04/14
+     * 
+     */
+    
+    if (chainChar == '?' || chainChar == '.')
+      return ' ';
+    String chainID = "" + chainChar;
+    if (!strandsMap.containsKey(chainID))
+      return chainChar;
+    Strand strand = (Strand) strandsMap.get(chainID);
+    // OK, here is the if/else construct that Wayne send me
+    if (strand.isBlank.booleanValue())
+      return '0'; // no author provided ID
+    if (strand.authorID != null)
+      // not pretty, but let's just assume the string only has one char
+      return strand.authorID.charAt(0);
+    return '0';
   }
 
   void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
@@ -678,8 +690,7 @@ class CifReader extends AtomSetCollectionReader {
             structure.structureType = "none";
           break;
         case BEG_ASYM_ID:
-          structure.startChainID =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.startChainID = getChainIdFromStrandMap(firstChar);
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = parseInt(field);
@@ -689,8 +700,7 @@ class CifReader extends AtomSetCollectionReader {
             (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
           break;
         case END_ASYM_ID:
-          structure.endChainID =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.endChainID = getChainIdFromStrandMap(firstChar);
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = parseInt(field);
@@ -757,8 +767,7 @@ class CifReader extends AtomSetCollectionReader {
         char firstChar = field.charAt(0);
         switch (fieldTypes[i]) {
         case BEG_ASYM_ID:
-          structure.startChainID =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.startChainID = getChainIdFromStrandMap(firstChar);
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = parseInt(field);
@@ -768,8 +777,7 @@ class CifReader extends AtomSetCollectionReader {
             (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
           break;
         case END_ASYM_ID:
-          structure.endChainID =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.endChainID = getChainIdFromStrandMap(firstChar);
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = parseInt(field);

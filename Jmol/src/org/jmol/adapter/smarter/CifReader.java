@@ -443,7 +443,7 @@ class CifReader extends AtomSetCollectionReader {
   char getChainIdFromStrandMap(char chainChar) {
     /*
      * the problem (see 1pgb.cif) was that while the atom chainIDs
-     * was being set using this function, the STRUCTURE chainIDs were
+     * were being set using this function, the STRUCTURE chainIDs were
      * not, so then later the structures were taken to be in different
      * chains than the atoms, and no structures were determined.
      * 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-04-12 18:36+0200\n"
-"PO-Revision-Date: 2006-04-09 11:51+0100\n"
+"PO-Revision-Date: 2006-04-14 18:17+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <kde-i18n-nl@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,7 +41,7 @@ msgstr "Geen atomen geladen"
 
 #: org/jmol/popup/PopupResourceBundle.java:654
 msgid "Model information"
-msgstr ""
+msgstr "Model details"
 
 #: org/jmol/popup/PopupResourceBundle.java:656
 msgid "Select"
@@ -968,7 +968,6 @@ msgstr "Translaties"
 
 #~ msgid "Name hidden"
 #~ msgstr "Naam verborgen"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
 
@@ -986,10 +985,10 @@ msgstr "Translaties"
 #, fuzzy
 #~ msgid "atoms selected"
 #~ msgstr "Geen atomen geladen"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
+

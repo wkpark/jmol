@@ -3285,7 +3285,7 @@
   <fah_proj number="1479" name="p1479_tet_1479_1" public="y" file="y"
     server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
-  <fah_proj number="1480" name="p1480_dppc_chol" public="n"
+  <fah_proj number="1480" name="p1480_dppc_chol" public="y"
     server="171.64.122.134" atoms="11120" preferred="36" deadline="53"
     credit="376" frames="500" code="A0" contact="kasson"/>
   <fah_proj number="1481" name="p1481_tet_2nm" public="y" file="y"

@@ -42,11 +42,11 @@ function jmolInitialize(codebaseDirectory, useSignedApplet) {
   }
   if (codebaseDirectory.indexOf("http://") == 0 ||
       codebaseDirectory.indexOf("https://") == 0)
-    alert("codebaseDirectory should be directory relative,\n" +
-	  "not be an absolute URL : " + codebaseDirectory);
-  else if (codebaseDirectory.charAt(0) == '/')
-    alert("codebaseDirectory should be directory relative,\n" +
-	  "not relative to the root of the web server : " + codebaseDirectory);
+    alert("An absolute URL is not recommended for codebaseDirectory.\n" +
+	  "A directory or docroot relative reference is recommended.\n\n" +
+          "If you are experienced enough to go 'off piste' then you\n" +
+          "can override this warning by inserting a space before\n" +
+          "http in your URL.");
   _jmolSetCodebase(codebaseDirectory);
   _jmolUseSignedApplet(useSignedApplet);
   _jmolOnloadResetForms();
@@ -437,7 +437,7 @@ var _jmol = {
   
   windowsClassId: "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93",
   windowsCabUrl:
-   "http://java.sun.com/update/1.5.0/jinstall-1_5_0_05-windows-i586.cab",
+   "http://java.sun.com/update/1.5.0/jinstall-1_5_0_07-windows-i586.cab",
 
   isBrowserCompliant: false,
   isJavaCompliant: false,

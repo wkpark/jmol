@@ -372,7 +372,7 @@ class CifReader extends AtomSetCollectionReader {
             logger.log("Don't know how to deal with chains more than 1 char",
                        field);
           atom.chainID = getChainIdFromStrandMap(field.charAt(0));
-          System.out.println(atomSerial + atom.group3+" asym_id "+atom.chainID + " " + field.charAt(0));
+          logger.log(atomSerial + atom.group3+" asym_id "+atom.chainID + " " + field.charAt(0));
           //ok to assign ' ' when blank?
           break;
         case AUTH_SEQ_ID:

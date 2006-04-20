@@ -35,20 +35,27 @@ class SpartanSmolReader extends AtomSetCollectionReader {
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
 
-    
     atomSetCollection = new AtomSetCollection("spartan .smol");
 
     try {
-      discardLinesUntilStartsWith(reader, "BEGINARCHIVE");
-      if (discardLinesUntilContains(reader, "GEOMETRY") != null)
-        readAtoms(reader);
-      if (discardLinesUntilContains(reader, "BEGINPROPARC") != null)
-        readProperties(reader);
+
+      String line = reader.readLine();
+      while (line != null) {
+        if (line.startsWith("BEGININPUT"))
+          readAtoms(reader);
+        if (line.equals("GEOMETRY"))
+          readMoreAtoms(reader);
+        if (line.startsWith("BEGINPROPARC"))
+          readProperties(reader);
+        line = reader.readLine();
+      }
+
     } catch (Exception ex) {
       ex.printStackTrace();
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
+      atomSetCollection.errorMessage = "Could not read Spartan SMOL file:" + ex;
       return atomSetCollection;
     }
+
     if (atomSetCollection.atomCount == 0) {
       atomSetCollection.errorMessage = "No atoms in file";
     }
@@ -56,13 +63,37 @@ class SpartanSmolReader extends AtomSetCollectionReader {
   }
 
   void readAtoms(BufferedReader reader) throws Exception {
-    //no need to discard after GEOMETRY
-    //discardLines(reader, 2);
+    atomSetCollection.newAtomSet();
+    String line;
+    int atomNum;
+    logger.log("Reading BEGININPUT atom records...");
+    line = reader.readLine();
+    line = reader.readLine();
+    logger.log(line);
+    atomSetCollection.setAtomSetName(line + " Input");
+    line = reader.readLine();
+    while ((line = reader.readLine()) != null
+        && (atomNum = parseInt(line, 0, 2)) > 0) {
+      float x = parseFloat(line, 2, 16);
+      float y = parseFloat(line, 16, 30);
+      float z = parseFloat(line, 30, 44);
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.elementSymbol = getElementSymbol(atomNum);
+      atom.x = x;
+      atom.y = y;
+      atom.z = z;
+    }
+  }
+
+  void readMoreAtoms(BufferedReader reader) throws Exception {
+    atomSetCollection.discardPreviousAtoms();
+    atomSetCollection.newAtomSet();
+    atomSetCollection.setAtomSetName("Geometry"); // start with an empty name
     String line;
     int atomNum;
     logger.log("Reading BEGINARCHIVE GEOMETERY atom records...");
     while ((line = reader.readLine()) != null
-        && (atomNum = parseInt(line, 0, 5)) > 0) {
+        && (atomNum = parseInt(line, 0, 3)) > 0) {
       //logger.log("atom: " + line);
       /*
        was for OUTPUT section  
@@ -71,16 +102,15 @@ class SpartanSmolReader extends AtomSetCollectionReader {
        float y = parseFloat(line, 31, 43);
        float z = parseFloat(line, 44, 58);
        */
-      float x = parseFloat(line, 6, 19);
-      float y = parseFloat(line, 20, 33);
-      float z = parseFloat(line, 34, 47);
+      float x = parseFloat(line, 4, 17);
+      float y = parseFloat(line, 18, 31);
+      float z = parseFloat(line, 32, 44);
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = getElementSymbol(atomNum);
       atom.x = x * ANGSTROMS_PER_BOHR;
       atom.y = y * ANGSTROMS_PER_BOHR;
       atom.z = z * ANGSTROMS_PER_BOHR;
     }
-    atomSetCollection.setAtomSetName("Geometry");
   }
 
   void readProperties(BufferedReader reader) throws Exception {

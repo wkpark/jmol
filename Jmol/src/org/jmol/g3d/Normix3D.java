@@ -54,7 +54,7 @@ class Normix3D {
     new short[NORMIX_GEODESIC_LEVEL + 1][];
 
   private final static boolean TIMINGS = false;
-  private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = true;
+  private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = false;
 
 
   private final Matrix3f rotationMatrix = new Matrix3f();

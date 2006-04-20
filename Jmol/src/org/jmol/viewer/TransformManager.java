@@ -188,7 +188,7 @@ class TransformManager {
     StringBuffer sb = new StringBuffer();
     sb.append("moveto 1");
     if (degrees < 0.01f) {
-      sb.append(" 0 0 0 0");
+      sb.append(" 0 0 0 100");
     } else {
       vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
       vectorT.normalize();

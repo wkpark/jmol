@@ -2,14 +2,17 @@
   <contributor id="MTH">
     <name>Miguel Howard</name><email>miguel@jmol.org</email>
   </contributor>
+  <contributor id="NV">
+    <name>Nicolas Vervelle</name><email>nvervell@club-internet.fr</email>
+  </contributor>
+  <contributor id="RH">
+    <name>Bob Hanson</name><email>hansonr@stolaf.edu</email>
+  </contributor>
   <contributor id="EW">
     <name>Egon Willighagen</name><email>egonw@sci.kun.nl</email>
   </contributor>
   <contributor id="TD">
     <name>Tim Driscoll</name><email>driscoll@molvisions.com</email>
-  </contributor>
-  <contributor id="NV">
-    <name>Nicolas Vervelle</name><email>nvervell@club-internet.fr</email>
   </contributor>
   <contributor id="ST">
     <name>Simon Tyrrell</name><email>smt40@cam.ac.uk</email>
@@ -19,9 +22,6 @@
   </contributor>
   <contributor id="RK">
     <name>Rene Kanters</name><email>rkanters@richmond.edu</email>
-  </contributor>
-  <contributor id="RH">
-    <name>Bob Hanson</name><email>hansonr@stolaf.edu</email>
   </contributor>
   <contributor id="JR">
     <name>Jan Reichert</name><email>jr@imb-jena.de</email>

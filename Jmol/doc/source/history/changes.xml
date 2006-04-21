@@ -1,10 +1,12 @@
-<changes version="jmol-10.??">
+<changes version="jmol-10.2">
+  <change contributor="MTH">
+    Stereo Viewing
+  </change>
+  <change contributor="MTH">
+    Mouse gestures to control slab/depth
+  </change>
   <change contributor="TOHW">
     Altered CmlReader.java adapter to allow cml input to applet by reading DOM nodes from the browser.
-  </change>
-  <change contributor="EW">
-    Completed much of the CdkJmolAdapter: PDB properties are now supported, and 
-    ChemSequence/ChemModel is mapped to AtomSetCollection/AtomSet.
   </change>
   <change contributor="EW">
     Added reading of input structures from Mopac files.
@@ -16,7 +18,7 @@
     Added Unicode support in scripts.
   </change>
   <change contrubutor="MTH">
-    Added rendering of mesh surfaces.
+    Added rendering of mesh surfaces (pmesh and cube files).
   </change>
   <change contributor="MTH">
     Added rendering of polyhedrals.
@@ -25,11 +27,10 @@
     Added Drag-and-Drop to the application for JVM 1.5 and better.
   </change>
   <change contributor="EW">
-    Added the DADMLBrowser plugin allowing retrieving chemical information from
-    the internet by queries on indices and URIs like dadml://any/pdbid?1CRN.
+    Improved support for Gaussian and mmCIF files
   </change>
-  <change contributor="EW">
-    Added support for Spartan '04 smol files.
+  <change contributor="EW,MTH">
+    Added support for Fujitsu CAChe Chemical Structure File (CSF), Spartan '04 smol and MDL V3000 files.
   </change>
   <change contributor="NV">
     Added substructure command for SMILES pattern matching.
@@ -38,11 +39,8 @@
     Dutch, Estonian, Hungarian, Portuguese, Romanian
     translations of Folding@Home webpage.
   </change>
-  <change contributor="AH">
-    Spanish translation of Application, Applet and website.
-  </change>
-  <change contributor="IS">
-    Estonian translation of Application and Applet.
+  <change contributor="AH,IS">
+    Catalonian, Estonian, Spanish translation of Application, Applet and website.
   </change>
 </changes>
 

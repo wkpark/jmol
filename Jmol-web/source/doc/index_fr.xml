@@ -57,44 +57,9 @@
       </p>
     </section>
 
-    <section title="Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9;">
+    <section title="Jmol Version 10.2 a &#x00E9;t&#x00E9; livr&#x00E9;">
       <p>
-        Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9; le Vendredi
-        17 D&#x00E9;cembre 2004.
-      </p>
-      <p>
-        Jmol v10 est une refonte et une r&#x00E9;&#x00E9;criture
-        compl&#x00E8;te de Jmol, entreprise au Printemps 2003, avec le
-        but pr&#x00E9;cis de d&#x00E9;velopper Jmol en un remplacement
-        pour le Plug-in Chime.
-      </p>
-      <p>
-        Jmol v10 conserve la plupart des caract&#x00E9;ristiques et des
-        fonctions des versions pr&#x00E9;c&#x00E9;dentes tout en offrant
-        des am&#x00E9;liorations significatives dans les domaines suivants:
-        <ul>
-          <li>
-            v&#x00E9;ritable moteur graphique 3D qui ne n&#x00E9;cessite
-            pas de mat&#x00E9;riel particulier
-          </li>
-          <li>
-            couleurs 24 bits avec &#x00E9;clairage et ombres exactes
-          </li>
-          <li>
-            performances de dessins nettement sup&#x00E9;rieures
-          </li>
-          <li>
-            g&#x00E8;re de grandes macromol&#x00E9;cules avec
-            d'excellentes performances
-          </li>
-          <li>
-            dessin des structures secondaires des
-            prot&#x00E9;ines/acides nucl&#x00E9;iques
-          </li>
-          <li>
-            compatibilit&#x00E9; des scripts RasMol/Chime
-          </li>
-        </ul>
+        Jmol Version 10 a &#x00E9;t&#x00E9; livr&#x00E9; le 15 Avril 2006.
       </p>
     </section>
 
@@ -117,7 +82,7 @@
       </blockquote>
     </section>
     
-    <section title="Caract&#x00E9;ristiques de Jmol v10">
+    <section title="Caract&#x00E9;ristiques de Jmol v10.2">
       <ul>
         <li>
           Logiciel gratuit, open-source sous licence

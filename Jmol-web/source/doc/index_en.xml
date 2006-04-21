@@ -55,27 +55,9 @@
       </p>
     </section>
 
-    <section title="Jmol Version 10 has been released">
+    <section title="Jmol Version 10.2 has been released">
       <p>
-	Jmol Version 10 was released on Fri 17 December 2004.
-      </p>
-      <p>
-	Jmol v10 is a complete rearchitecture and rewrite of Jmol,
-	undertaken in the Spring of 2003, with the specific goal of
-	developing Jmol into a replacement for the Chime Plug-in.
-      </p>
-      <p>
-	Jmol v10 retains most of the features and functionality
-	of the previous Jmol releases while offering significant
-	enhancments in the following areas:
-	<ul>
-	  <li>true 3D graphics engine that requires no special hardware</li>
-	  <li>24 bit color with accurate lighting and shading</li>
-	  <li>substantially higher rendering performance</li>
-	  <li>handles large macromolecules with excellent performance</li>
-	  <li>protein/nucleic acid secondary structure graphics</li>
-	  <li>RasMol/Chime script compatibility</li>
-	</ul>
+	Jmol Version 10.2 was released on 15 April 2006.
       </p>
     </section>
 
@@ -97,7 +79,7 @@
       </blockquote>
     </section>
     
-    <section title="Jmol v10 Features">
+    <section title="Jmol v10.2 Features">
 
       <ul>
 	<li>

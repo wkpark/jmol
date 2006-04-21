@@ -7,7 +7,7 @@
     </classpath>
   </taskdef>
 
-  <property name="version" value="10.00" />
+  <property name="version" value="10.2" />
   <property name="jmol-doc-dir" value="../Jmol" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />

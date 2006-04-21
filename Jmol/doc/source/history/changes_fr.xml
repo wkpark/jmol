@@ -2,11 +2,12 @@
   French translation 
   Translated from default version : changes.xml (v 1.6)
 -->
-<changes version="jmol-10.??">
-  <change contributor="EW">
-    Am&#x00E9;lioration du CdkJmolAdpater: les propri&#x00E9;t&#x00E9;s
-    PDB sont maintenant support&#x00E9;es, ChemSequence/ChemModel est
-    mapp&#x00E9; sur AtomSetCollection/AtomSet.
+<changes version="jmol-10.2">
+  <change contributor="MTH">
+    Visualisation st&#x00E9;r&#x00E9;o
+  </change>
+  <change contributor="MTH">
+    Mouvements de la souris pour contr&#x00F4;ler le slab/profondeur
   </change>
   <change contributor="EW">
     Ajout de la lecture des structures d'entr&#x00E9;e pour les fichiers
@@ -20,7 +21,7 @@
     Support d'Unicode dans les scripts.
   </change>
   <change contrubutor="MTH">
-    Ajout du rendu des surfaces maill&#x00E9;es.
+    Ajout du rendu des surfaces maill&#x00E9;es (fichiers pmesh et cube).
   </change>
   <change contributor="MTH">
     Ajout du rendu des polyh&#x00E8;dres.
@@ -29,12 +30,10 @@
     Ajout du Drag-and-Drop &#x00E0; l'application pour les JVM 1.5 et ult&#x00E9;rieures.
   </change>
   <change contributor="EW">
-    Ajout du plugin DADMLBrowser qui permet de r&#x00E9;cup&#x00E9;rer des informations
-    chimiques sur internet avec des requ&#x00EA;tes sur des indices et des URIs telles
-    que dadml://any/pdbid?1CRN.
+    Support am&#x00E9;lior&#x00E9; des fichiers Gaussian et mmCIF
   </change>
-  <change contributor="EW">
-    Ajout du support pour les fichiers smol Spartan '04.
+  <change contributor="EW,MTH">
+    Support pour les fichiers Fujitsu CAChe Chemical Structure File (CSF), Spartan '04 smol et MDL V3000.
   </change>
   <change contributor="NV">
     Ajout de la commande substructure pour la recherche de structure SMILES.
@@ -43,11 +42,8 @@
     Traductions hollandaise, estonienne, hongroise, portugaise, roumaine
     de la page Folding@Home.
   </change>
-  <change contributor="AH">
-    Traduction espagnole de l'Application, de l'Applet et du site web.
-  </change>
-  <change contributor="IS">
-    Traduction estonienne de l'Application et de l'Applet.
+  <change contributor="AH,IS">
+    Traduction catalane, estonienne et espagnole de l'Application, de l'Applet et du site web.
   </change>
 </changes>
 

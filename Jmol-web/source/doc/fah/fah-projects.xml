@@ -2348,12 +2348,12 @@
   <fah_proj number="990" name="p990_fkligveq_pop" public="y" file="y"
     server="171.64.122.132" atoms="46" preferred="1" deadline="7"
     credit="23" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="991" name="p991_longfkligand" public="y"
-    server="171.65.103.151" atoms="2722" preferred="5" deadline="10"
-    credit="84" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="992" name="p992_longfkcomp" public="y"
-    server="171.65.103.151" atoms="14908" preferred="5" deadline="10"
-    credit="84" frames="100" code="DG" contact="guha"/>
+  <fah_proj number="991" name="p991_longfkligand" public="y" file="y"
+    server="171.65.103.151" atoms="2722" preferred="18" deadline="27"
+    credit="99" frames="100" code="DG" contact="mrshirts"/>
+  <fah_proj number="992" name="p992_longfkcomp" public="y" file="y"
+    server="171.65.103.151" atoms="14908" preferred="24" deadline="35"
+    credit="130" frames="100" code="DG" contact="mrshirts"/>
   <fah_proj number="997" name="pAla7-2" public="y"
     server="171.64.122.115" atoms="11455" deadline="11"
     credit="10" frames="10" code="G"/>
@@ -3133,7 +3133,7 @@
     credit="59" frames="100" code="G" contact="esorin"/>
 
   <!-- Projects 1300 to 1399 -->
-  <fah_proj number="1300" name="p1300_1RYP_AAAA_UM" public="y"
+  <fah_proj number="1300" name="p1300_1RYP_AAAA_UM" public="y" file="y"
     server="171.67.89.154" atoms="119496" preferred="24" deadline="35"
     credit="139" frames="100" code="G" contact="sungjoo"/>
   <fah_proj number="1301" name="p1301_1RYP_AAAA_UM" public="y" file="y"
@@ -3672,7 +3672,7 @@
   <fah_proj number="1726" name="p1726_A21ext_d19_VAC" public="y" file="y"
     server="171.65.103.155" atoms="2996" preferred="22" deadline="32"
     credit="110" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1727" name="p1727_A21nat_d19_VAC" public="y"
+  <fah_proj number="1727" name="p1727_A21nat_d19_VAC" public="y" file="y"
     server="171.65.103.155" atoms="2996" preferred="22" deadline="32"
     credit="110" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1728" name="p1728_A21ext_d22_VAC" public="y" file="y"
@@ -4079,11 +4079,50 @@
   <fah_proj number="2108" name="p2108_dk_villin_ddsa_aybabtu_run0" public="y" file="y"
     server="171.64.122.141" atoms="596" preferred="84" deadline="125"
     credit="449" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2114" name="p2114_ww_domain_mutant1_am96" public="y"
+  <fah_proj number="2109" name="p2109_ww_domain_mutant_1_opls" public="n"
+    server="171.64.122.141" atoms="604" preferred="71" deadline="105"
+    credit="376" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2110" name="p2110_ww_domain_mutant_2_opls" public="n"
+    server="171.64.122.141" atoms="580" preferred="71" deadline="105"
+    credit="376" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2111" name="p2111_ww_domain_mutant_3_opls" public="n" file="y"
+    server="171.64.122.141" atoms="572" preferred="71" deadline="105"
+    credit="376" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2112" name="p2112_ww_domain_mutant_4_opls" public="n"
+    server="171.64.122.141" atoms="572" preferred="71" deadline="105"
+    credit="376" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2113" name="p2113_ww_domain_mutant_5_opls" public="n"
+    server="171.64.122.141" atoms="591" preferred="71" deadline="105"
+    credit="376" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2114" name="p2114_ww_domain_mutant_1_am96" public="n"
     server="171.64.122.141" atoms="604" preferred="77" deadline="114"
     credit="412" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2119" name="p2119_ww_domain_mutant1_am99" public="y"
+  <fah_proj number="2115" name="p2115_ww_domain_mutant_2_am96" public="n"
+    server="171.64.122.141" atoms="580" preferred="77" deadline="114"
+    credit="412" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2116" name="p2116_ww_domain_mutant_3_am96" public="n"
+    server="171.64.122.141" atoms="572" preferred="77" deadline="114"
+    credit="412" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2117" name="p2117_ww_domain_mutant_4_am96" public="n"
+    server="171.64.122.141" atoms="572" preferred="77" deadline="114"
+    credit="412" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2118" name="p2118_ww_domain_mutant_5_am96" public="n"
+    server="171.64.122.141" atoms="591" preferred="77" deadline="114"
+    credit="412" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2119" name="p2119_ww_domain_mutant_1_am99" public="n"
     server="171.64.122.141" atoms="604" preferred="77" deadline="114"
+    credit="408" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2120" name="p2120_ww_domain_mutant_2_am99" public="n"
+    server="171.64.122.141" atoms="580" preferred="77" deadline="114"
+    credit="408" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2121" name="p2121_ww_domain_mutant_3_am99" public="n"
+    server="171.64.122.141" atoms="572" preferred="77" deadline="114"
+    credit="408" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2122" name="p2122_ww_domain_mutant_4_am99" public="n"
+    server="171.64.122.141" atoms="572" preferred="77" deadline="114"
+    credit="408" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2123" name="p2123_ww_domain_mutant_5_am99" public="n"
+    server="171.64.122.141" atoms="591" preferred="77" deadline="114"
     credit="408" frames="100" code="G" contact="densign"/>
 
   <!-- Projects 2200 to 2299 -->
@@ -4336,4 +4375,10 @@
   <fah_proj number="2500" name="p2500_BBA5_pfold" public="y" file="y"
     server="171.64.122.139" atoms="385" preferred="40" deadline="59"
     credit="208" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2504" name="p2504_A21_agbnp_amber99" public="n" file="y"
+    server="171.64.122.136" atoms="222" preferred="38" deadline="55"
+    credit="195" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2505" name="p2505_A21_agbnp_amber99" public="n" file="y"
+    server="171.64.122.136" atoms="222" preferred="38" deadline="56"
+    credit="200" frames="100" code="GB" contact="luttmann"/>
 </fah_projects>

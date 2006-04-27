@@ -137,7 +137,7 @@ function createFahPage(select,
   document.writeln("  <td>");
   document.writeln("   <br/>");
   document.writeln("   <small>");
-  document.writeln("    <i><u>" + missingProjects + " :</u></i>");
+  document.writeln("    <i><u><a href='./missingProjects.txt'>" + missingProjects + "</a> :</u></i>");
   createMissingProjects();
   document.writeln("   </small>");
   document.writeln("  </td>");

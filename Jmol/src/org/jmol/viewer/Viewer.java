@@ -727,6 +727,16 @@ final public class Viewer extends JmolViewer {
   // delegated to SelectionManager
   /////////////////////////////////////////////////////////////////
   
+  void removeSelection(int atomIndex) {
+    selectionManager.removeSelection(atomIndex);
+    refresh();
+  }
+
+void removeSelection(BitSet set) {
+    selectionManager.removeSelection(set);
+    refresh();
+  }
+
   void addSelection(int atomIndex) {
     selectionManager.addSelection(atomIndex);
     refresh();
@@ -813,6 +823,10 @@ final public class Viewer extends JmolViewer {
 
   int getSelectionCount() {
     return selectionManager.getSelectionCount();
+  }
+
+  public void enableSelectionListeners(boolean enable) {
+      selectionManager.enableListeners(enable);
   }
 
   public void addSelectionListener(JmolSelectionListener listener) {
@@ -1889,9 +1903,9 @@ final public class Viewer extends JmolViewer {
       jmolStatusListener.notifyMeasurementsChanged();
   }
 
-  void atomPicked(int atomIndex, boolean shiftKey) {
-    pickingManager.atomPicked(atomIndex, shiftKey);
-  }
+  void atomPicked(int atomIndex, boolean shiftKey, boolean alternateKey) {
+    pickingManager.atomPicked(atomIndex, shiftKey, alternateKey);
+  }  
 
   void clearClickCount() {
     mouseManager.clearClickCount();
@@ -1915,6 +1929,10 @@ final public class Viewer extends JmolViewer {
 
   void setPickingMode(int pickingMode) {
     pickingManager.setPickingMode(pickingMode);
+  }
+  
+  void setPickingStyle(int pickingStyle) {
+    pickingManager.setPickingStyle(pickingStyle);
   }
 
   String getAtomInfo(int atomIndex) {

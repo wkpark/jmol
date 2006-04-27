@@ -78,6 +78,17 @@ final public class JmolConstants {
     "center", "coord", "bond", "atom", "group", "chain" };
 
   /**
+   * picking styles
+   */
+  public final static int PICKINGSTYLE_CHIME = 0;
+  public final static int PICKINGSTYLE_RASMOL = 1;
+  public final static int PICKINGSTYLE_PFAAT = 2;
+  
+  public final static String[] pickingStyleNames = {
+    "chime", "rasmol", "pfaat"
+  };
+
+  /**
    * Extended Bond Definition Types
    *
    */

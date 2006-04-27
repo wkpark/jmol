@@ -27,10 +27,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Image;
+import java.io.Reader;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
-import java.io.Reader;
+
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 
@@ -141,11 +142,12 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void selectAll();
   abstract public void clearSelection();
 
+  abstract public void enableSelectionListeners(boolean enable);
   abstract public void addSelectionListener(JmolSelectionListener listener);
   abstract public void removeSelectionListener(JmolSelectionListener listener);
   abstract public void setSelectionSet(BitSet newSelection);
   abstract public BitSet getSelectionSet();
-
+  
   abstract public void homePosition();
   abstract public void rotateFront();
   abstract public void rotateToX(int degrees);

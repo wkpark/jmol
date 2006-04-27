@@ -23,35 +23,84 @@
  */
 package org.openscience.jmol.app;
 
-import org.jmol.api.*;
-//import org.jmol.adapter.cdk.CdkJmolAdapter;
-import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.popup.JmolPopup;
-import org.jmol.i18n.GT;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.dnd.DropTarget;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-//import org.openscience.cdk.applications.plugin.CDKPluginManager;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolSelectionListener;
+import org.jmol.api.JmolStatusListener;
+import org.jmol.api.JmolViewer;
+import org.jmol.i18n.GT;
+import org.jmol.popup.JmolPopup;
+
 import Acme.JPM.Encoders.PpmEncoder;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import com.obrador.JpegEncoder;
-import java.awt.*;
-import java.awt.dnd.DropTarget;
-import java.awt.event.*;
-import java.awt.print.*;
-import java.beans.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.HelpFormatter;
 
 public class Jmol extends JPanel {
 
@@ -82,10 +131,13 @@ public class Jmol extends JPanel {
   private GuiMap guimap = new GuiMap();
   
   private static int numWindows = 0;
-  private static Dimension screenSize = null;
+  protected static Dimension screenSize = null;
+  
   int startupWidth, startupHeight;
 
   PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+  protected boolean autoShutdown;
 
   // Window names for the history file
   private final static String JMOL_WINDOW_NAME = "Jmol";
@@ -103,7 +155,8 @@ public class Jmol extends JPanel {
    */
   static AbstractButton buttonRotate = null;
   static ButtonGroup toolbarButtonGroup = new ButtonGroup();
-
+  static AbstractButton buttonPick = null;
+  
   static File UserPropsFile;
   static HistoryFile historyFile;
 
@@ -135,12 +188,18 @@ public class Jmol extends JPanel {
         "Jmol's persistent values");
   }
 
-  Jmol(Splash splash, JFrame frame, Jmol parent,
-       int startupWidth, int startupHeight) {
+  protected Jmol(Splash splash, JFrame frame, Jmol parent,
+        int startupWidth, int startupHeight) {
+  	this(splash,frame,parent,startupWidth,startupHeight,true);
+  }
+  
+  protected Jmol(Splash splash, JFrame frame, Jmol parent,
+        int startupWidth, int startupHeight, boolean autoShutdown) {
     super(true);
     this.frame = frame;
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
+    this.autoShutdown = autoShutdown;
     numWindows++;
     
     frame.setTitle("Jmol");
@@ -317,6 +376,27 @@ public class Jmol extends JPanel {
     say(GT._("Launching main frame..."));
   }
 
+  public void setPickModeAsDefault(boolean flag)
+  {
+  	display.setPickModeAsDefault(flag);
+  }
+
+  public void enableSelectionListeners(boolean enable)
+  {
+      viewer.enableSelectionListeners(enable);
+  }
+
+  public void addSelectionListener(JmolSelectionListener listener)
+  {
+  	viewer.addSelectionListener(listener);
+  }
+  
+  public void removeSelectionListener(JmolSelectionListener listener)
+  {
+  	viewer.removeSelectionListener(listener);
+  }  
+  
+  
   public static Jmol getJmol(JFrame frame,
                              int startupWidth, int startupHeight) {
     ImageIcon splash_image = JmolResourceHandler.getIconX("splash");
@@ -548,9 +628,16 @@ public class Jmol extends JPanel {
       // Close Jmol
       numWindows--;
       if (numWindows <= 1) {
-          System.out.println(GT._("Closing Jmol..."));
-          // pluginManager.closePlugins();
-          System.exit(0);
+        if (autoShutdown)
+        {
+            System.out.println(GT._("Closing Jmol..."));
+            // pluginManager.closePlugins();
+            System.exit(0);        	
+        }
+        else
+        {
+        	this.frame.dispose();
+        }
       } else {
           this.frame.dispose();
       }
@@ -689,6 +776,8 @@ public class Jmol extends JPanel {
         b = new JToggleButton(ii);
         if (key.equals("rotate"))
           buttonRotate = b;
+        if (key.equals("pick"))
+            buttonPick = b;
         toolbarButtonGroup.add(b);
         String isSelectedString =
           JmolResourceHandler.getStringX(key + "ToggleSelected");
@@ -732,6 +821,11 @@ public class Jmol extends JPanel {
     if (buttonRotate != null)
       buttonRotate.setSelected(true);
   }
+  
+  public static void setPickButton() {
+    if (buttonPick != null)
+      buttonPick.setSelected(true);
+  }  
 
   /**
    * Take the given string and chop it up into a series
@@ -962,8 +1056,7 @@ public class Jmol extends JPanel {
       }
       
       public void actionPerformed(ActionEvent e) {
-          Jmol.this.frame.hide();
-          Jmol.this.doClose();
+         Jmol.this.doClose();
       }
   }
   

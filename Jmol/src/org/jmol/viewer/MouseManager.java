@@ -233,13 +233,19 @@ abstract class MouseManager {
         viewer.popupMenu(x, y);
         return;
       }
-      viewer.atomPicked(nearestAtomIndex, false);
+      viewer.atomPicked(nearestAtomIndex, false, false);
       if (measurementMode) {
         addToMeasurement(nearestAtomIndex, false);
       }
       break;
     case SHIFT_LEFT:
-      viewer.atomPicked(nearestAtomIndex, true);
+      viewer.atomPicked(nearestAtomIndex, true, false);
+      break;
+    case ALT_LEFT:
+      viewer.atomPicked(nearestAtomIndex, false, true);
+      break;
+    case ALT_SHIFT_LEFT:
+      viewer.atomPicked(nearestAtomIndex, true, true);
       break;
     }
   }

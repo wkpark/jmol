@@ -176,6 +176,11 @@ class Token {
   final static int centerAt     = command | 92;
   final static int isosurface   = command | 93;
 
+  // phdana pfaat ->
+  final static int selectionListeners = command | 94;
+  final static int selectWithinDialog = command | 95;
+  // phdana pfaat <-
+  
   // parameters
   final static int ambient      = setparam |  0;
   final static int axes         = setparam |  1;
@@ -228,6 +233,7 @@ class Token {
   final static int frank        = setparam | 32;
   final static int formalCharge = setparam | 33;
   final static int partialCharge= setparam | 34;
+  final static int pickingStyle = setparam | 35;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -361,7 +367,9 @@ class Token {
   final static int nofill       = misc | 53;
   final static int vanderwaals  = misc | 54;
   final static int ionic        = misc | 55;
-
+  final static int chime       = misc |  56;
+  final static int pfaat       = misc |  57;
+  
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
   final static int hydrogen    = predefinedset |  2 | setparam;
@@ -495,7 +503,10 @@ class Token {
     "centerat",          new Token(centerAt, varArgCount, "centerat"),
     "isosurface",        new Token(isosurface,varArgCount,"isosurface"),
 
-    // setparams
+    "selectionlisteners",  new Token(selectionListeners, onDefault1, "selectionListeners"),
+    "selectwithindialog",  new Token(selectWithinDialog, onDefault1, "selectWithinDialog"),
+
+	// setparams
     "ambient",      new Token(ambient,         "ambient"),
     "axes",         new Token(axes,            "axes"),
     "backfade",     new Token(backfade,        "backfade"),
@@ -541,7 +552,8 @@ class Token {
     "formalcharge", new Token(formalCharge,    "formalcharge"),
     "charge",       null,
     "partialcharge",new Token(partialCharge,   "partialcharge"),
-  
+    "pickingstyle", new Token(pickingStyle,    "pickingStyle"),
+
     // show parameters
     "information",  new Token(information,     "information"),
     "info",         null,
@@ -685,6 +697,8 @@ class Token {
     "nofill",       new Token(nofill,          "nofill"),
     "vanderwaals",  new Token(vanderwaals,     "vanderwaals"),
     "ionic",        new Token(ionic,           "ionic"),
+    "chime",        new Token(chime,  		   "chime"),
+    "pfaat",        new Token(pfaat,           "pfaat"),
   };
 
   static Hashtable map = new Hashtable();

@@ -30,8 +30,7 @@ class PickingManager {
   Viewer viewer;
 
   int pickingMode = JmolConstants.PICKING_IDENT;
-
-  boolean chimeStylePicking = true;
+  int pickingStyle = JmolConstants.PICKINGSTYLE_CHIME;
 
   int queuedAtomCount = 0;
   int[] queuedAtomIndexes = new int[4];
@@ -42,9 +41,13 @@ class PickingManager {
     this.viewer = viewer;
   }
 
-  void atomPicked(int atomIndex, boolean shiftKey) {
-    if (atomIndex == -1)
-      return;
+  void atomPicked(int atomIndex, boolean shiftKey, boolean alternateKey) {
+    if (atomIndex == -1) {
+        if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT && !shiftKey && !alternateKey)
+            viewer.clearSelection();                
+        return;
+    }
+
     Frame frame = viewer.getFrame();
     switch(pickingMode) {
     case JmolConstants.PICKING_OFF:
@@ -120,31 +123,69 @@ class PickingManager {
     case JmolConstants.PICKING_CENTER:
       viewer.setCenterPicked(atomIndex);
       break;
+
     case JmolConstants.PICKING_SELECT_ATOM:
-      if (shiftKey | chimeStylePicking)
-        viewer.toggleSelection(atomIndex);
-      else
-        viewer.setSelection(atomIndex);
-      reportSelection();
-      break;
-    case JmolConstants.PICKING_SELECT_GROUP:
-      BitSet bsGroup = frame.getGroupBitSet(atomIndex);
-      if (shiftKey | chimeStylePicking)
-        viewer.toggleSelectionSet(bsGroup);
-      else
-        viewer.setSelectionSet(bsGroup);
-      viewer.clearClickCount();
-      reportSelection();
-      break;
-    case JmolConstants.PICKING_SELECT_CHAIN:
-      BitSet bsChain = frame.getChainBitSet(atomIndex);
-      if (shiftKey | chimeStylePicking)
-        viewer.toggleSelectionSet(bsChain);
-      else
-        viewer.setSelectionSet(bsChain);
-      viewer.clearClickCount();
-      reportSelection();
-      break;
+        if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT) {
+            if (shiftKey && alternateKey)
+                viewer.removeSelection(atomIndex);
+            else if (shiftKey)
+                viewer.toggleSelection(atomIndex);
+            else if (alternateKey)
+                viewer.addSelection(atomIndex);
+            else
+                viewer.setSelection(atomIndex);                    
+        }
+        else {
+            if (shiftKey | pickingStyle == JmolConstants.PICKINGSTYLE_CHIME)
+                viewer.toggleSelection(atomIndex);
+            else
+                viewer.setSelection(atomIndex);          
+        }
+        reportSelection();
+        break;
+      case JmolConstants.PICKING_SELECT_GROUP:
+        BitSet bsGroup = frame.getGroupBitSet(atomIndex);
+        if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT) {
+            if (shiftKey && alternateKey)
+                viewer.removeSelection(bsGroup);
+            else if (shiftKey)
+                viewer.toggleSelectionSet(bsGroup);
+            else if (alternateKey)
+                viewer.addSelection(bsGroup);
+            else
+                viewer.setSelectionSet(bsGroup);                            
+        }
+        else {
+            if (shiftKey | pickingStyle == JmolConstants.PICKINGSTYLE_CHIME)
+              viewer.toggleSelectionSet(bsGroup);
+            else
+              viewer.setSelectionSet(bsGroup);
+        }
+        viewer.clearClickCount();
+        reportSelection();
+        break;
+      case JmolConstants.PICKING_SELECT_CHAIN:
+        BitSet bsChain = frame.getChainBitSet(atomIndex);
+        if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT) {
+            if (shiftKey && alternateKey)
+                viewer.removeSelection(bsChain);
+            else if (shiftKey)
+                viewer.toggleSelectionSet(bsChain);
+            else if (alternateKey)
+                viewer.addSelection(bsChain);
+            else
+                viewer.setSelectionSet(bsChain);                                  
+        }
+        else
+        {
+          if (shiftKey | pickingStyle == JmolConstants.PICKINGSTYLE_CHIME)
+            viewer.toggleSelectionSet(bsChain);
+          else
+            viewer.setSelectionSet(bsChain);
+        }
+        viewer.clearClickCount();
+        reportSelection();
+        break;
     }
   }
 
@@ -158,6 +199,14 @@ class PickingManager {
     System.out.println("setPickingMode(" +
                        pickingMode + ":" +
                        JmolConstants.pickingModeNames[pickingMode] + ")");
+  }
+
+  void setPickingStyle(int pickingStyle) {
+    this.pickingStyle = pickingStyle;
+    queuedAtomCount = 0;
+    System.out.println("setPickingStyle(" +
+            pickingStyle + ":" +
+            JmolConstants.pickingStyleNames[pickingStyle] + ")");
   }
 
   void queueAtom(int atomIndex) {

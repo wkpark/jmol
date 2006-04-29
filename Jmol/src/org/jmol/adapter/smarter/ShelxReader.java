@@ -36,12 +36,16 @@ import java.io.BufferedReader;
  * <a href="http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html"
  * http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html</a>.
  *
+ * modified by Bob Hanson 2006/04 to allow 
+ * variant CrystalMaker .cmdf file reading.
+ *  
  */
 
 class ShelxReader extends AtomSetCollectionReader {
 
   boolean endReached;
   String[] sfacElementSymbols;
+  boolean isCmdf = false;
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
     throws Exception {
@@ -64,6 +68,15 @@ class ShelxReader extends AtomSetCollectionReader {
       // FIXME -- should we call toUpperCase(Locale.US) ?
       // although I really don't think it is necessary
       String command = line.substring(0, 4).toUpperCase();
+      if (line.equals("NOTE")) {
+        isCmdf = true;
+        atomSetCollection.fileTypeName = "cmdf";
+        continue;
+      }
+      if (isCmdf && line.equals("ATOM")) {
+        processCmdfAtoms(reader);
+        break;
+      }
       for (int i = unsupportedRecordTypes.length; --i >= 0; )
         if (command.equals(unsupportedRecordTypes[i]))
           continue readLine_loop;
@@ -74,7 +87,8 @@ class ShelxReader extends AtomSetCollectionReader {
             break readLine_loop;
           continue readLine_loop;
         }
-      assumeAtomRecord(line);
+      if (!isCmdf)
+        assumeAtomRecord(line);
     }
     return atomSetCollection;
   }
@@ -105,14 +119,25 @@ class ShelxReader extends AtomSetCollectionReader {
   
   void cell(String line) throws Exception {
     /* example:
-     * CELL  1.54184   23.56421  7.13203 18.68928  90.0000 109.3799  90.0000
+     * CELL   wavelngth    a        b         c       alpha   beta   gamma
      * CELL   1.54184   7.11174  21.71704  30.95857  90.000  90.000  90.000
+     * 
+     * or CrystalMaker file:
+     * 
+     * CELL       a        b         c       alpha   beta   gamma
+     * CELL   7.11174  21.71704  30.95857  90.000  90.000  90.000
      */
-    float wavelength = parseFloat(line, 4);
+
     float[] notionalUnitcell = new float[6];
-    for (int i = 0; i < 6; ++i)
-      notionalUnitcell[i] = parseFloat(line, ichNextParse);
-    atomSetCollection.wavelength = wavelength;
+    String[] tokens = getTokens(line, 4);
+    int ioff = 1;
+    if (isCmdf) {
+      ioff = 0;
+    } else {
+      atomSetCollection.wavelength = parseFloat(tokens[0]);
+    }
+    for (int ipt = 0; ipt < 6; ipt++)
+      notionalUnitcell[ipt] = parseFloat(tokens[ipt + ioff]);
     atomSetCollection.notionalUnitcell = notionalUnitcell;
   }
 
@@ -274,4 +299,31 @@ class ShelxReader extends AtomSetCollectionReader {
     // "Disrgarding line assumed to be added by PLATON: " + line);
     "    "
   };
+  
+  void processCmdfAtoms(BufferedReader reader) throws Exception {
+    String line;
+    while ((line = reader.readLine()) != null && line.length() > 10) {
+      Atom atom = atomSetCollection.addNewAtom();      
+      String[] tokens = getTokens(line);
+      atom.elementSymbol = getSymbol(tokens[0]);
+      atom.x = parseFloat(tokens[2]);
+      atom.y = parseFloat(tokens[3]);
+      atom.z = parseFloat(tokens[4]);
+      System.out.println(atomSetCollection.atomCount+"\n"+atom.elementSymbol+" "+atom.x+" "+atom.y+" "+atom.z);
+    }
+  }
+  
+  String getSymbol(String sym) {
+    if (sym == null)
+      return "Xx";
+    int len = sym.length();
+    if (len < 2)
+      return sym;
+    char ch1 = sym.charAt(1);
+    if (ch1 >= 'a' && ch1 <= 'z')
+      return sym.substring(0,2);
+    return "" + sym.charAt(0);
+  }
+
+
 }

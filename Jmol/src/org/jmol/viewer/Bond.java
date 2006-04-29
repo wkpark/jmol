@@ -59,14 +59,18 @@ class Bond {
   }
 
   boolean isCovalent() {
+    //includes partial and sulfur but not hydrogen bonds
+    //never referenced v. 10.2
     return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
   }
 
   boolean isStereo() {
+    //never referenced v. 10.2
     return (order & JmolConstants.BOND_STEREO_MASK) != 0;
   }
 
   boolean isAromatic() {
+    //never referenced v. 10.2
     return (order & JmolConstants.BOND_AROMATIC_MASK) != 0;
   }
 

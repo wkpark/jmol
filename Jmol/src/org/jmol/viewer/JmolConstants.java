@@ -112,8 +112,9 @@ final public class JmolConstants {
   public final static short BOND_H_MINUS_3     = (6 << BOND_HBOND_SHIFT);
   public final static short BOND_H_MINUS_4     = (7 << BOND_HBOND_SHIFT);
   public final static short BOND_H_NUCLEOTIDE  = (8 << BOND_HBOND_SHIFT);
-  public final static short BOND_PARTIAL01     = (1 << 10);
-  public final static short BOND_PARTIAL12     = (1 << 11);
+  public final static short BOND_PARTIAL01     = (1 << 10) | 1;
+  public final static short BOND_PARTIAL12     = (1 << 11) | 2;
+  public final static short BOND_PARTIAL_MASK  = (3 << 10);
 
   public final static short BOND_ALL_MASK      = (short)0xFFFF;
 

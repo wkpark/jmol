@@ -1378,6 +1378,7 @@ final class Frame {
   }
 
   void deleteCovalentBonds() {
+    //never referenced -- delete?
     int indexNoncovalent = 0;
     for (int i = 0; i < bondCount; ++i) {
       Bond bond = bonds[i];

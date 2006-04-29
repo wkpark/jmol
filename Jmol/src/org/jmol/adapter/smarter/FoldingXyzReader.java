@@ -79,13 +79,13 @@ class FoldingXyzReader extends AtomSetCollectionReader {
       if ((line != null) && (line.length() == 0)) {
       	line = reader.readLine();
       }
-      if (line != null) {
-	    //System.out.println("Line: " + line);
-	    Atom atom = atomSetCollection.addNewAtom();
-	    parseInt(line);
-	    atom.atomName = parseToken(line, ichNextParse);
-	    if (atom.atomName != null) {
-	      int carCount = 1;
+      if ((line != null) && (line.length() > 0)) {
+	      //logger.log("Line: " + line);
+        Atom atom = atomSetCollection.addNewAtom();
+        parseInt(line);
+        atom.atomName = parseToken(line, ichNextParse);
+        if (atom.atomName != null) {
+          int carCount = 1;
           if (atom.atomName.length() >= 2) {
           	char c1 = atom.atomName.charAt(0);
           	char c2 = atom.atomName.charAt(1);
@@ -98,24 +98,24 @@ class FoldingXyzReader extends AtomSetCollectionReader {
           	}
           }
           atom.elementSymbol = atom.atomName.substring(0, carCount);
-	    }
-	    atom.x = parseFloat(line, ichNextParse);
-	    atom.y = parseFloat(line, ichNextParse);
-	    atom.z = parseFloat(line, ichNextParse);
-	    
-	    // Memorise bond informations
-	    int bondCount = 0;
-	    bonds[i] = new int[5];
-	    int bondNum = Integer.MIN_VALUE;
-	    while ((bondNum = parseInt(line, ichNextParse)) > 0) {
-	      if (bondCount == bonds[i].length) {
-	      	bonds[i] = setLength(bonds[i], bondCount + 1); 
-	      }
-	      bonds[i][bondCount++] = bondNum - 1;
-	    }
-	    if (bondCount < bonds[i].length) {
-	      bonds[i] = setLength(bonds[i], bondCount);
-	    }
+        }
+        atom.x = parseFloat(line, ichNextParse);
+        atom.y = parseFloat(line, ichNextParse);
+        atom.z = parseFloat(line, ichNextParse);
+
+        // Memorise bond informations
+        int bondCount = 0;
+        bonds[i] = new int[5];
+        int bondNum = Integer.MIN_VALUE;
+        while ((bondNum = parseInt(line, ichNextParse)) > 0) {
+          if (bondCount == bonds[i].length) {
+            bonds[i] = setLength(bonds[i], bondCount + 1); 
+          }
+          bonds[i][bondCount++] = bondNum - 1;
+        }
+        if (bondCount < bonds[i].length) {
+          bonds[i] = setLength(bonds[i], bondCount);
+        }
       }
     }
     

@@ -43,8 +43,11 @@ class PickingManager {
 
   void atomPicked(int atomIndex, boolean shiftKey, boolean alternateKey) {
     if (atomIndex == -1) {
-        if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT && !shiftKey && !alternateKey)
-            viewer.clearSelection();                
+        if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT
+            && !shiftKey && !alternateKey) {
+          viewer.clearSelection();
+          reportSelection();
+        }
         return;
     }
 

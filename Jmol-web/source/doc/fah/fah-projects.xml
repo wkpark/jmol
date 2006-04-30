@@ -2354,10 +2354,10 @@
   <fah_proj number="992" name="p992_longfkcomp" public="y" file="y"
     server="171.65.103.151" atoms="14908" preferred="24" deadline="35"
     credit="130" frames="100" code="DG" contact="mrshirts"/>
-  <fah_proj number="993" name="p993_longfkcomp2" public="n" file="y"
+  <fah_proj number="993" name="p993_longfkcomp2" public="y" file="y"
     server="171.65.103.151" atoms="14908" preferred="22" deadline="33"
     credit="122" frames="100" code="DG" contact="mrshirts"/>
-  <fah_proj number="994" name="p994_sundfkcomp" public="n"
+  <fah_proj number="994" name="p994_sundfkcomp" public="y"
     server="171.65.103.151" atoms="14908" preferred="24" deadline="35"
     credit="130" frames="100" code="DG" contact="mrshirts"/>
   <fah_proj number="997" name="pAla7-2" public="y"
@@ -3729,8 +3729,8 @@
     server="171.65.103.158" atoms="1116" preferred="30" deadline="44"
     credit="153" frames="100" code="A" contact="spark7"/>
   <fah_proj number="1811" name="p1811_COL1_121_fragments" public="n"
-    server="171.65.103.158" atoms="47143" preferred="74" deadline="110"
-    credit="790" frames="100" code="G" contact="spark"/>
+    server="171.65.103.158" atoms="57328" preferred="95" deadline="141"
+    credit="1024" frames="100" code="G" contact="spark"/>
   <fah_proj number="1850" name="p1850_Myosin6_PT_US" public="y" file="y"
     server="171.65.103.158" atoms="1205" preferred="35" deadline="52"
     credit="182" frames="100" code="A" contact="spark7"/>
@@ -4091,7 +4091,7 @@
   <fah_proj number="2109" name="p2109_ww_domain_mutant_1_opls" public="y" file="y"
     server="171.64.122.141" atoms="604" preferred="71" deadline="105"
     credit="376" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2110" name="p2110_ww_domain_mutant_2_opls" public="y"
+  <fah_proj number="2110" name="p2110_ww_domain_mutant_2_opls" public="y" file="y"
     server="171.64.122.141" atoms="580" preferred="71" deadline="105"
     credit="376" frames="100" code="G" contact="densign"/>
   <fah_proj number="2111" name="p2111_ww_domain_mutant_3_opls" public="y" file="y"

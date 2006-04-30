@@ -37,9 +37,11 @@ class LabelsRenderer extends ShapeRenderer {
   int descent;
   int msgHeight;
   int msgWidth;
-
+  boolean labelsFront;
+  
   void render() {
     fidPrevious = 0;
+    labelsFront = viewer.getLabelsFrontFlag();
 
     Labels labels = (Labels)shape;
     String[] labelStrings = labels.strings;
@@ -97,7 +99,7 @@ class LabelsRenderer extends ShapeRenderer {
 
     int xBoxOffset, yBoxOffset, zBox;
     zBox = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
-    if (zBox < 1) zBox = 1;
+    if (labelsFront || zBox < 1) zBox = 1;
 
     if (labelOffsetX > 0) {
       xBoxOffset = labelOffsetX;

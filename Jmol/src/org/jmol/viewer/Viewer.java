@@ -1990,6 +1990,8 @@ void removeSelection(BitSet set) {
       return getGreyscaleRendering();
     if (key.equalsIgnoreCase("disablePopupMenu"))
       return getDisablePopupMenu();
+    if (key.equalsIgnoreCase("labelsFront"))
+      return getLabelsFrontFlag();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -2039,6 +2041,8 @@ void removeSelection(BitSet set) {
       { setAutoBond(value); return; }
     if (key.equalsIgnoreCase("greyscaleRendering"))
       { setGreyscaleRendering(value); return; }
+    if (key.equalsIgnoreCase("labelsFront"))
+      { setLabelsFrontFlag(value); return; }
     if (key.equalsIgnoreCase("disablePopupMenu"))
       { setDisablePopupMenu(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
@@ -2086,6 +2090,15 @@ void removeSelection(BitSet set) {
   }
   boolean getGreyscaleRendering() {
     return greyscaleRendering;
+  }
+
+  boolean labelsFrontFlag = false;
+  void setLabelsFrontFlag(boolean labelsFrontFlag) {
+    this.labelsFrontFlag = labelsFrontFlag;
+  }
+
+  boolean getLabelsFrontFlag() {
+    return labelsFrontFlag;
   }
 
   boolean disablePopupMenu;

@@ -38,12 +38,6 @@ public class DisplayPanel extends JPanel
   GuiMap guimap;
   JmolViewer viewer;
   
-  boolean pickModeAsDefault = false;
-  public void setPickModeAsDefault(boolean flag)
-  {
-  	pickModeAsDefault = flag;  	
-  }
-
   private String displaySpeed;
 
   public DisplayPanel(StatusBar status, GuiMap guimap) {
@@ -79,12 +73,6 @@ public class DisplayPanel extends JPanel
       viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
       viewer.setSelectionHaloEnabled(false);
   }
-  
-  void setPickMode() {
-    Jmol.setPickButton();
-    viewer.setModeMouse(JmolConstants.MOUSE_PICK);
-    viewer.setSelectionHaloEnabled(true);
-  }
     
   public void componentHidden(java.awt.event.ComponentEvent e) {
   }
@@ -102,10 +90,7 @@ public class DisplayPanel extends JPanel
 
   private void updateSize() {
     viewer.setScreenDimension(getSize(dimSize));
-    if (pickModeAsDefault)
-    	setPickMode();
-    else
-    	setRotateMode();
+    setRotateMode();
   }
 
   public void paint(Graphics g) {

@@ -727,16 +727,6 @@ final public class Viewer extends JmolViewer {
   // delegated to SelectionManager
   /////////////////////////////////////////////////////////////////
   
-  void removeSelection(int atomIndex) {
-    selectionManager.removeSelection(atomIndex);
-    refresh();
-  }
-
-void removeSelection(BitSet set) {
-    selectionManager.removeSelection(set);
-    refresh();
-  }
-
   void addSelection(int atomIndex) {
     selectionManager.addSelection(atomIndex);
     refresh();
@@ -823,10 +813,6 @@ void removeSelection(BitSet set) {
 
   int getSelectionCount() {
     return selectionManager.getSelectionCount();
-  }
-
-  public void enableSelectionListeners(boolean enable) {
-      selectionManager.enableListeners(enable);
   }
 
   public void addSelectionListener(JmolSelectionListener listener) {
@@ -1903,8 +1889,8 @@ void removeSelection(BitSet set) {
       jmolStatusListener.notifyMeasurementsChanged();
   }
 
-  void atomPicked(int atomIndex, boolean shiftKey, boolean alternateKey) {
-    pickingManager.atomPicked(atomIndex, shiftKey, alternateKey);
+  void atomPicked(int atomIndex, boolean shiftKey) {
+    pickingManager.atomPicked(atomIndex, shiftKey);
   }  
 
   void clearClickCount() {
@@ -1931,10 +1917,6 @@ void removeSelection(BitSet set) {
     pickingManager.setPickingMode(pickingMode);
   }
   
-  void setPickingStyle(int pickingStyle) {
-    pickingManager.setPickingStyle(pickingStyle);
-  }
-
   String getAtomInfo(int atomIndex) {
     return modelManager.getAtomInfo(atomIndex);
   }

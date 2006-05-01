@@ -25,7 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.smiles.InvalidSmilesException;
-import org.openscience.jmol.app.SelectWithinDialog;
 
 import java.io.*;
 import java.util.BitSet;
@@ -491,17 +490,7 @@ class Eval implements Runnable {
         connect();
         break;
 
-        // phdana pfaat ->
-      case Token.selectionListeners:
-          selectionListeners();
-          break;
-
-      case Token.selectWithinDialog:
-          selectWithinDialog();
-          break;
-      // phdana pfaat <-
-
-      // not implemented
+        // not implemented
       case Token.bond:
       case Token.clipboard:
       case Token.help:
@@ -2740,9 +2729,6 @@ class Eval implements Runnable {
     case Token.picking:
       setPicking();
       break;
-    case Token.pickingStyle:
-        setPickingStyle();
-        break;
       // not implemented
     case Token.backfade:
     case Token.cartoon:
@@ -3129,27 +3115,6 @@ class Eval implements Runnable {
     }
     viewer.setPickingMode(pickingMode);
   }
-
-  void setPickingStyle() throws ScriptException {
-    int pickingStyle = JmolConstants.PICKINGSTYLE_CHIME;
-    if (statementLength >= 3) {
-      switch (statement[2].tok) {
-      case Token.none:
-      case Token.chime:
-          pickingStyle = JmolConstants.PICKINGSTYLE_CHIME;
-          break;
-      case Token.rasmol:
-          pickingStyle = JmolConstants.PICKINGSTYLE_RASMOL;
-          break;
-      case Token.pfaat:
-          pickingStyle = JmolConstants.PICKINGSTYLE_PFAAT;
-          break;
-      default:
-        invalidArgument();
-      }
-    }
-    viewer.setPickingStyle(pickingStyle);
-  }  
 
   /*==============================================================*
    * SHOW implementations
@@ -3898,18 +3863,4 @@ class Eval implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "applyConnectParameters", null);
   }
-
-  void selectionListeners() {
-    viewer.enableSelectionListeners(statement[1].tok == Token.on);
-  }
-
- void selectWithinDialog() {
-   
-   String cmd = SelectWithinDialog.showDialog(viewer.getAwtComponent());
-   if (cmd != null)
-   {
-       viewer.scriptStatus("SelectWithinDialog command: "+cmd);
-       viewer.evalString(cmd);
-   }
-}
 }

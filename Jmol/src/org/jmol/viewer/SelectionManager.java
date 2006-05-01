@@ -31,7 +31,6 @@ class SelectionManager {
   Viewer viewer;
 
   JmolSelectionListener[] listeners = new JmolSelectionListener[4];
-  boolean listenersEnabled = true;
 
   SelectionManager(Viewer viewer) {
     this.viewer = viewer;
@@ -45,19 +44,6 @@ class SelectionManager {
   final static int UNKNOWN = -1;
   int empty = TRUE;
 
-  void removeSelection(int atomIndex) {
-    bsSelection.clear(atomIndex);
-    if (empty != TRUE)
-        empty = UNKNOWN;
-    selectionChanged();
-  }
-
-  void removeSelection(BitSet set) {
-    bsSelection.andNot(set);
-    if (empty != TRUE)
-      empty = UNKNOWN;
-    selectionChanged();
-  }
 
   void addSelection(int atomIndex) {
     if (! bsSelection.get(atomIndex)) {
@@ -194,10 +180,6 @@ class SelectionManager {
     return count;
   }
 
-  void enableListeners(boolean enable) {
-    listenersEnabled = enable;
-  }
-
   void addListener(JmolSelectionListener listener) {
     removeListener(listener);
     int len = listeners.length;
@@ -220,9 +202,6 @@ class SelectionManager {
   }
 
   private void selectionChanged() {
-    if (!listenersEnabled)
-        return;
-    
     for (int i = listeners.length; --i >= 0; ) {
       JmolSelectionListener listener = listeners[i];
       if (listener != null)

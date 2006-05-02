@@ -76,7 +76,9 @@ class BallsRenderer extends ShapeRenderer {
                            atom.screenX, atom.screenY, atom.screenZ);
 
     if (hasHalo) {
-      int halowidth = diameter / 4;
+      if (diameter == 0)
+        diameter = viewer.scaleToScreen(atom.screenZ, 500);  
+      int halowidth = (diameter / 4);
       if (halowidth < 4) halowidth = 4;
       if (halowidth > 10) halowidth = 10;
       int haloDiameter = diameter + 2 * halowidth;

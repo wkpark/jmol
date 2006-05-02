@@ -42,7 +42,7 @@ abstract class Platform3D {
 
   Image imagePixelBuffer;
   int[] pBuffer;
-  int[] zBuffer;
+  short[] zBuffer;
   int argbBackground;
 
   int widthOffscreen, heightOffscreen;
@@ -81,7 +81,7 @@ abstract class Platform3D {
     }
   }
 
-  final static int ZBUFFER_BACKGROUND = Integer.MAX_VALUE;
+  final static short ZBUFFER_BACKGROUND = Short.MAX_VALUE;
 
   abstract Image allocateImage();
 
@@ -97,7 +97,7 @@ abstract class Platform3D {
       bufferHeight = height;
     }
     bufferSize = bufferWidth * bufferHeight;
-    zBuffer = new int[bufferSize];
+    zBuffer = new short[bufferSize];
     pBuffer = new int[bufferSize];
     imagePixelBuffer = allocateImage();
     /*

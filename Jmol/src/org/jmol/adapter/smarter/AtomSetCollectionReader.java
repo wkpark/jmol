@@ -261,7 +261,7 @@ abstract class AtomSetCollectionReader {
   String parseTrimmed(String str, int ich) {
     int cch = str.length();
     if (ich >= cch)
-      return null;
+      return "";
     return parseTrimmedChecked(str, ich, cch);
   }
 

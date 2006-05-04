@@ -479,11 +479,11 @@ class CifReader extends AtomSetCollectionReader {
     Strand strand = (Strand) strandsMap.get(chainID);
     // OK, here is the if/else construct that Wayne send me
     if (strand.isBlank.booleanValue())
-      return '0'; // no author provided ID
+      return ' '; // no author provided ID
     if (strand.authorID != null)
       // not pretty, but let's just assume the string only has one char
       return strand.authorID.charAt(0);
-    return '0';
+    return ' ';
     /*
      * Egon: 
      * 

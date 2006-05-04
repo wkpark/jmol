@@ -102,6 +102,8 @@ class Console implements ActionListener, WindowListener {
   }
 
   void output(String message, AttributeSet att) {
+    if (message.length() == 0)
+      return;
     if (message.charAt(message.length() - 1) != '\n')
       message += "\n";
     try {

@@ -63,7 +63,7 @@ class NucleicPolymer extends Polymer {
         if (! otherNucleotide.isPyrimidine())
           continue;
         Atom otherN3 = otherNucleotide.getN3();
-        float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);
+        float dist2 = myN1.distanceSquared(otherN3);
         if (dist2 < minDist2) {
           bestNucleotide = otherNucleotide;
           bestN3 = otherN3;

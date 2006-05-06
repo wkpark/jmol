@@ -253,7 +253,7 @@ class Dots extends Shape {
   void setAtomI(int indexI) {
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
-    centerI = atomI.point3f;
+    centerI = atomI;
     radiusI = getAppropriateRadius(atomI);
     radiiIP2 = radiusI + radiusP;
     radiiIP2 *= radiiIP2;
@@ -337,7 +337,7 @@ class Dots extends Shape {
       if (! bsSelected.get(neighbor.atomIndex))
         continue;
       float neighborRadius = getAppropriateRadius(neighbor);
-      if (centerI.distance(neighbor.point3f) >
+      if (centerI.distance(neighbor) >
           radiusI + radiusP + radiusP + neighborRadius)
         continue;
       if (neighborCount == neighbors.length) {
@@ -347,7 +347,7 @@ class Dots extends Shape {
         neighborPlusProbeRadii2 = Util.doubleLength(neighborPlusProbeRadii2);
       }
       neighbors[neighborCount] = neighbor;
-      neighborCenters[neighborCount] = neighbor.point3f;
+      neighborCenters[neighborCount] = neighbor;
       neighborIndices[neighborCount] = neighbor.atomIndex;
       float neighborPlusProbeRadii = neighborRadius + radiusP;
       neighborPlusProbeRadii2[neighborCount] =

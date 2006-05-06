@@ -363,9 +363,9 @@ class Polyhedra extends SelectionIndependentShape {
   Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
                                    Atom[] otherAtoms) {
     int faceCount = 0;
-    Point3f centralAtomPoint = centralAtom.point3f;
+    Point3f centralAtomPoint = centralAtom;
     for (int i = vertexCount; --i >= 0;) {
-      centerVectors[i] = new Vector3f(otherAtoms[i].point3f);
+      centerVectors[i] = new Vector3f(otherAtoms[i]);
       centerVectors[i].sub(centralAtomPoint);
     }
 
@@ -384,9 +384,9 @@ class Polyhedra extends SelectionIndependentShape {
           if (centerVectors[i].angle(centerVectors[k]) > centralAngleMax
               || centerVectors[j].angle(centerVectors[k]) > centralAngleMax)
             continue;
-          Point3f pointI = otherAtoms[i].point3f;
-          Point3f pointJ = otherAtoms[j].point3f;
-          Point3f pointK = otherAtoms[k].point3f;
+          Point3f pointI = otherAtoms[i];
+          Point3f pointJ = otherAtoms[j];
+          Point3f pointK = otherAtoms[k];
           getNormalFromCenter(centralAtomPoint, pointI, pointJ, pointK, false,
               normalT);
 

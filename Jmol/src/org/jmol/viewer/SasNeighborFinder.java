@@ -85,7 +85,7 @@ class SasNeighborFinder {
       System.out.println("setAtomI:" + indexI);
     this.indexI = indexI;
     atomI = atoms[indexI];
-    centerI = atomI.point3f;
+    centerI = atomI;
     radiusI = atomI.getVanderwaalsRadiusFloat();
     radiiIP = radiusI + radiusP;
     radiiIP2 = radiiIP * radiiIP;
@@ -136,7 +136,7 @@ class SasNeighborFinder {
       if (! bsSelected.get(neighbor.atomIndex))
         continue;
       float neighborRadius = neighbor.getVanderwaalsRadiusFloat();
-      if (centerI.distance(neighbor.point3f) >
+      if (centerI.distance(neighbor) >
           radiusI + radiusP + radiusP + neighborRadius)
         continue;
       if (neighborCount == neighborAtoms.length) {
@@ -147,7 +147,7 @@ class SasNeighborFinder {
         neighborPlusProbeRadii2 = Util.doubleLength(neighborPlusProbeRadii2);
       }
       neighborAtoms[neighborCount] = neighbor;
-      neighborCenters[neighborCount] = neighbor.point3f;
+      neighborCenters[neighborCount] = neighbor;
       neighborIndexes[neighborCount] = neighbor.atomIndex;
       float radii = neighborRadius + radiusP;
       neighborPlusProbeRadii[neighborCount] = radii;

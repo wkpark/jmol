@@ -518,8 +518,8 @@ class Sasurface1 {
     }
 
     void calcVectors() {
-      Point3f centerA = frame.atoms[ixA].point3f;
-      Point3f centerB = frame.atoms[ixB].point3f;
+      Point3f centerA = frame.atoms[ixA];
+      Point3f centerB = frame.atoms[ixB];
       axisUnitVector.sub(centerB, centerA);
       axisUnitVector.normalize();
 
@@ -891,7 +891,7 @@ class Sasurface1 {
       int ix = isEdgeA ? ixA : ixB;
       Atom atom = frame.atoms[ix];
       calcZeroPoint(isEdgeA, zeroPointT);
-      gem.clipGeodesic(isEdgeA, atom.point3f, atom.getVanderwaalsRadiusFloat(),
+      gem.clipGeodesic(isEdgeA, atom, atom.getVanderwaalsRadiusFloat(),
                        zeroPointT, axisUnitVector, convexVertexMaps[ix]);
     }
 
@@ -919,12 +919,12 @@ class Sasurface1 {
     void calcClippingPlaneCenterPoints(Point3f centerPointA,
                                        Point3f centerPointB) {
       calcZeroPoint(true, zeroPointT);
-      Point3f centerA = frame.atoms[ixA].point3f;
+      Point3f centerA = frame.atoms[ixA];
       calcClippingPlaneCenter(centerA, axisUnitVector, zeroPointT,
                               centerPointA);
 
       calcZeroPoint(false, zeroPointT);
-      Point3f centerB = frame.atoms[ixB].point3f;
+      Point3f centerB = frame.atoms[ixB];
       calcClippingPlaneCenter(centerB, axisUnitVector, zeroPointT,
                               centerPointB);
     }
@@ -950,7 +950,7 @@ class Sasurface1 {
       int ix = isEdgeA ? ixA : ixB;
       Atom atom = frame.atoms[ix];
       float atomRadius = atom.getVanderwaalsRadiusFloat();
-      Point3f atomCenter = atom.point3f;
+      Point3f atomCenter = atom;
       gem.reset();
       calcZeroAndCenterPoints(isEdgeA, atomCenter, zeroPointT, centerPointT);
       boolean dump = false;

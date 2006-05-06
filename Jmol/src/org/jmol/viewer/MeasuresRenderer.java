@@ -179,7 +179,7 @@ class MeasuresRenderer extends ShapeRenderer {
       matrixT.set(aaT);
       pointT.set(measurement.pointArc);
       matrixT.transform(pointT);
-      pointT.add(atomB.point3f);
+      pointT.add(atomB);
       Point3i screenArc = viewer.transformPoint(pointT);
       int zArc = screenArc.z - zOffset;
       if (zArc < 0) zArc = 0;
@@ -188,7 +188,7 @@ class MeasuresRenderer extends ShapeRenderer {
         pointT.set(measurement.pointArc);
         pointT.scale(1.1f);
         matrixT.transform(pointT);
-        pointT.add(atomB.point3f);
+        pointT.add(atomB);
         Point3i screenLabel = viewer.transformPoint(pointT);
         int zLabel = screenLabel.z - zOffset;
         paintMeasurementString(screenLabel.x, screenLabel.y, zLabel,

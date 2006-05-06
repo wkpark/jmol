@@ -157,12 +157,12 @@ class Bond {
     ht.put("order", getOrderName());
     ht.put("radius", new Double(getRadius()));
     ht.put("modelIndex", new Integer(atom1.modelIndex));
-    ht.put("xA", new Double(atom1.point3f.x));
-    ht.put("yA", new Double(atom1.point3f.y));
-    ht.put("zA", new Double(atom1.point3f.z));
-    ht.put("xB", new Double(atom2.point3f.x));
-    ht.put("yB", new Double(atom2.point3f.y));
-    ht.put("zB", new Double(atom2.point3f.z));
+    ht.put("xA", new Double(atom1.x));
+    ht.put("yA", new Double(atom1.y));
+    ht.put("zA", new Double(atom1.z));
+    ht.put("xB", new Double(atom2.x));
+    ht.put("yB", new Double(atom2.y));
+    ht.put("zB", new Double(atom2.z));
     return ht;
   }
 }

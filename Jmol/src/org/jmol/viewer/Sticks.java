@@ -187,7 +187,7 @@ class Sticks extends Shape {
       if (! bsA.get(iA))
         continue;
       Atom atomA = atoms[iA];
-      Point3f pointA = atomA.point3f;
+      Point3f pointA = atomA;
       for (int iB = atomCount; --iB >= 0; ) {
         if (iB == iA)
           continue;
@@ -201,7 +201,7 @@ class Sticks extends Shape {
           continue;
         if (CREATE_ONLY == connectOperation && bondAB != null)
           continue;
-        float distanceSquared = pointA.distanceSquared(atomB.point3f);
+        float distanceSquared = pointA.distanceSquared(atomB);
         if (distanceSquared < minDistanceSquared ||
             distanceSquared > maxDistanceSquared)
           continue;
@@ -230,7 +230,7 @@ class Sticks extends Shape {
       if (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex) ||
           bsA.get(atom2.atomIndex) && bsB.get(atom1.atomIndex)) {
         if (bond.atom1.isBonded(bond.atom2)) {
-          float distanceSquared = atom1.point3f.distanceSquared(atom2.point3f);
+          float distanceSquared = atom1.distanceSquared(atom2);
           if (distanceSquared >= minDistanceSquared &&
               distanceSquared <= maxDistanceSquared)
             if (order == NULL_BOND_ORDER ||

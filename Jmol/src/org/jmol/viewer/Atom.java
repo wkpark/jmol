@@ -26,6 +26,7 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Tuple;
+import org.jmol.vecmath.Point3fi;
 
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -34,7 +35,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-final class Atom implements Tuple {
+final class Atom extends Point3fi implements Tuple {
 
   final static byte VISIBLE_FLAG = 0x01;
   final static byte VIBRATION_VECTOR_FLAG = 0x02;
@@ -42,10 +43,6 @@ final class Atom implements Tuple {
 
   Group group;
   int atomIndex;
-  Point3f point3f;
-  int screenX;
-  int screenY;
-  int screenZ;
   short screenDiameter;
   short modelIndex; // we want this here for the BallsRenderer
   byte elementNumber;
@@ -76,7 +73,7 @@ final class Atom implements Tuple {
     this.colixAtom = viewer.getColixAtom(this);
     this.alternateLocationID = (byte)alternateLocationID;
     setMadAtom(viewer.getMadAtom());
-    this.point3f = new Point3f(x, y, z);
+    this.x = x; this.y = y; this.z = z;
     if (isHetero)
       formalChargeAndFlags |= IS_HETERO_FLAG;
 
@@ -368,9 +365,9 @@ final class Atom implements Tuple {
     Vector3f[] vibrationVectors;
     if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
         (vibrationVectors = group.chain.frame.vibrationVectors) == null)
-      screen = viewer.transformPoint(point3f);
+      screen = viewer.transformPoint(this);
     else 
-      screen = viewer.transformPoint(point3f, vibrationVectors[atomIndex]);
+      screen = viewer.transformPoint(this, vibrationVectors[atomIndex]);
     screenX = screen.x;
     screenY = screen.y;
     screenZ = screen.z;
@@ -483,25 +480,25 @@ final class Atom implements Tuple {
   }
 
   Point3f getPoint3f() {
-    return point3f;
+    return this;
   }
 
   float getAtomX() {
-    return point3f.x;
+    return x;
   }
 
   float getAtomY() {
-    return point3f.y;
+    return y;
   }
 
   float getAtomZ() {
-    return point3f.z;
+    return z;
   }
 
   public float getDimensionValue(int dimension) {
     return (dimension == 0
-		   ? point3f.x
-		   : (dimension == 1 ? point3f.y : point3f.z));
+		   ? x
+		   : (dimension == 1 ? y : z));
   }
 
   short getVanderwaalsMar() {
@@ -536,12 +533,12 @@ final class Atom implements Tuple {
   // established bonds
   // note that this algorithm works when maximum valence == 0
   Bond getLongestBondToDiscard(Atom atomChallenger) {
-    float dist2Longest = point3f.distanceSquared(atomChallenger.point3f);
+    float dist2Longest = distanceSquared(atomChallenger);
     Bond bondLongest = null;
     for (int i = bonds.length; --i >= 0; ) {
       Bond bond = bonds[i];
       Atom atomOther = bond.atom1 != this ? bond.atom1 : bond.atom2;
-      float dist2 = point3f.distanceSquared(atomOther.point3f);
+      float dist2 = distanceSquared(atomOther);
       if (dist2 > dist2Longest) {
         bondLongest = bond;
         dist2Longest = dist2;
@@ -815,15 +812,15 @@ final class Atom implements Tuple {
           strT = JmolConstants.elementSymbols[elementNumber];
           break;
         case 'x':
-          floatT = point3f.x;
+          floatT = x;
           floatIsSet = true;
           break;
         case 'y':
-          floatT = point3f.y;
+          floatT = y;
           floatIsSet = true;
           break;
         case 'z':
-          floatT = point3f.z;
+          floatT = z;
           floatIsSet = true;
           break;
         case 'X':
@@ -1052,9 +1049,9 @@ final class Atom implements Tuple {
   Hashtable getPublicProperties() {
     Hashtable ht = new Hashtable();
     ht.put("element", getElementSymbol());
-    ht.put("x", new Double(point3f.x));
-    ht.put("y", new Double(point3f.y));
-    ht.put("z", new Double(point3f.z));
+    ht.put("x", new Double(x));
+    ht.put("y", new Double(y));
+    ht.put("z", new Double(z));
     ht.put("atomIndex", new Integer(atomIndex));
     ht.put("modelIndex", new Integer(modelIndex));
     ht.put("argb", new Integer(getArgb()));

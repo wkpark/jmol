@@ -197,11 +197,11 @@ abstract class Polymer {
   }
 
   final Point3f getInitiatorPoint() {
-    return monomers[0].getInitiatorAtom().point3f;
+    return monomers[0].getInitiatorAtom();
   }
 
   final Point3f getTerminatorPoint() {
-    return monomers[monomerCount - 1].getTerminatorAtom().point3f;
+    return monomers[monomerCount - 1].getTerminatorAtom();
   }
 
   final Atom getLeadAtom(int monomerIndex) {

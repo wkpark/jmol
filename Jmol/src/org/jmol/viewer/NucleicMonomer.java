@@ -198,7 +198,7 @@ class NucleicMonomer extends PhosphorusMonomer {
     for (int i = 6; --i >= 0; ) {
       Atom atom = getAtomFromOffsetIndex(i + 3);
       atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
-      ring6Points[i] = atom.point3f;
+      ring6Points[i] = atom;
     }
   }
 
@@ -209,7 +209,7 @@ class NucleicMonomer extends PhosphorusMonomer {
       for (int i = 5; --i >= 0; ) {
         Atom atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
         atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
-        ring5Points[i] = atom.point3f;
+        ring5Points[i] = atom;
       }
     return isPurine;
   }

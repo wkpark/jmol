@@ -87,14 +87,14 @@ class VectorsRenderer extends ShapeRenderer {
 
     // to have the vectors move when vibration is turned on
     float vectorScale = viewer.getVectorScale();
-    pointVectorEnd.scaleAdd(vectorScale, vibrationVector, atom.point3f);
+    pointVectorEnd.scaleAdd(vectorScale, vibrationVector, atom);
     viewer.transformPoint(pointVectorEnd, vibrationVector,
                           screenVectorEnd);
     diameter = (mad <= 20)
       ? mad
       : viewer.scaleToScreen(screenVectorEnd.z, mad);
     pointArrowHead.scaleAdd(vectorScale * arrowHeadBase,
-                            vibrationVector, atom.point3f);
+                            vibrationVector, atom);
     viewer.transformPoint(pointArrowHead, vibrationVector,
                           screenArrowHead);
     headWidthPixels = diameter * 3 / 2;

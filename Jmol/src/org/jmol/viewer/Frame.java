@@ -691,7 +691,7 @@ final class Frame {
   }
 
   Point3f getAtomPoint3f(int atomIndex) {
-    return atoms[atomIndex].point3f;
+    return atoms[atomIndex];
   }
 
   int getBondCount() {
@@ -861,7 +861,7 @@ final class Frame {
     Point3f average = this.averageAtomPoint;
     average.set(0,0,0);
     for (int i = atomCount; --i >= 0; )
-      average.add(atoms[i].point3f);
+      average.add(atoms[i]);
     average.scale(1f/atomCount);
   }
 
@@ -922,7 +922,7 @@ final class Frame {
     float maxRadius = 0;
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      float distAtom = center.distance(atom.point3f);
+      float distAtom = center.distance(atom);
       float radiusVdw = atom.getVanderwaalsRadiusFloat();
       float outerVdw = distAtom + radiusVdw;
       if (outerVdw > maxRadius)
@@ -1535,12 +1535,12 @@ final class Frame {
 
   void convertEuclideanToFractional() {
     for (int i = atomCount; --i >= 0; )
-      matrixEuclideanToFractional.transform(atoms[i].point3f);
+      matrixEuclideanToFractional.transform(atoms[i]);
   }
 
   void convertFractionalToEuclidean() {
     for (int i = atomCount; --i >= 0; )
-      matrixFractionalToEuclidean.transform(atoms[i].point3f);
+      matrixFractionalToEuclidean.transform(atoms[i]);
   }
 
   Point3f findFractionalAdjustment() {
@@ -1562,20 +1562,20 @@ final class Frame {
   void applyFractionalAdjustment(Point3f adjustment) {
     System.out.println("applyFractionalAdjustment(" + adjustment + ")");
     for (int i = atomCount; --i >= 0; )
-      atoms[i].point3f.sub(adjustment);
+      atoms[i].sub(adjustment);
   }
 
   void calcAtomsMinMax(Point3f pointMin, Point3f pointMax) {
     float minX, minY, minZ, maxX, maxY, maxZ;
     Point3f pointT;
-    pointT = atoms[0].point3f;
+    pointT = atoms[0];
     minX = maxX = pointT.x;
     minY = maxY = pointT.y;
     minZ = maxZ = pointT.z;
     
     for (int i = atomCount; --i > 0; ) {
       // note that the 0 element was set above
-      pointT = atoms[i].point3f;
+      pointT = atoms[i];
       float t;
       t = pointT.x;
       if (t < minX) { minX = t; }
@@ -1670,7 +1670,7 @@ final class Frame {
   ////////////////////////////////////////////////////////////////
 
   float getDistance(int atomIndexA, int atomIndexB) {
-    return atoms[atomIndexA].point3f.distance(atoms[atomIndexB].point3f);
+    return atoms[atomIndexA].distance(atoms[atomIndexB]);
   }
 
   Vector3f vectorBA;
@@ -1681,9 +1681,9 @@ final class Frame {
       vectorBA = new Vector3f();
       vectorBC = new Vector3f();
     }
-    Point3f pointA = atoms[atomIndexA].point3f;
-    Point3f pointB = atoms[atomIndexB].point3f;
-    Point3f pointC = atoms[atomIndexC].point3f;
+    Point3f pointA = atoms[atomIndexA];
+    Point3f pointB = atoms[atomIndexB];
+    Point3f pointC = atoms[atomIndexC];
     vectorBA.sub(pointA, pointB);
     vectorBC.sub(pointC, pointB);
     float angle = vectorBA.angle(vectorBC);
@@ -1693,10 +1693,10 @@ final class Frame {
 
   float getTorsion(int atomIndexA, int atomIndexB,
                           int atomIndexC, int atomIndexD) {
-    return computeTorsion(atoms[atomIndexA].point3f,
-                          atoms[atomIndexB].point3f,
-                          atoms[atomIndexC].point3f,
-                          atoms[atomIndexD].point3f);
+    return computeTorsion(atoms[atomIndexA],
+                          atoms[atomIndexB],
+                          atoms[atomIndexC],
+                          atoms[atomIndexD]);
   }
 
   static float toDegrees(float angleRadians) {

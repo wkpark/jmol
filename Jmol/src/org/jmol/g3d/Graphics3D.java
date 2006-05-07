@@ -23,6 +23,8 @@
  */
 package org.jmol.g3d;
 
+import org.jmol.vecmath.Point3fi;
+
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.FontMetrics;
@@ -346,12 +348,13 @@ final public class Graphics3D {
    *
    * @param colixFill the color index
    * @param diameter the pixel diameter
-   * @param x center x
-   * @param y center y
-   * @param z center z
+   * @param center Point3fi specifying center
    */
   public void fillScreenedCircleCentered(short colixFill, int diameter, 
-                                         int x, int y, int z) {
+                                         Point3fi center) {
+    int x = center.screenX;
+    int y = center.screenY;
+    int z = center.screenZ;
     if (diameter == 0 || z < slab || z > depth)
       return;
     int r = (diameter + 1) / 2;
@@ -431,6 +434,23 @@ final public class Graphics3D {
   public void fillSphereCentered(short colix, int diameter, Point3f center) {
     fillSphereCentered(colix, diameter,
                        (int)center.x, (int)center.y, (int)center.z);
+  }
+
+  /**
+   * fills a solid sphere
+   *
+   * @param colix the color index
+   * @param diameter pixel count
+   * @param center a javax.vecmath.Point3f ... floats are casted to ints
+   */
+  public void fillSphereCentered(short colix, int diameter, Point3fi center) {
+    if (diameter <= 1) {
+      plotPixelClipped(colix, center.screenX, center.screenY, center.screenZ);
+    } else {
+      sphere3d.render(getShades(colix), ((colix & TRANSLUCENT_MASK) != 0),
+                      diameter,
+                      center.screenX, center.screenY, center.screenZ);
+    }
   }
 
   /**
@@ -847,6 +867,19 @@ final public class Graphics3D {
     t[0] = yScreenA; t[1] = yScreenB; t[2] = yScreenC;
     t = triangle3d.az;
     t[0] = zScreenA; t[1] = zScreenB; t[2] = zScreenC;
+    triangle3d.fillTriangle(false);
+  }
+
+  public void fillTriangle(short colix, short normix,
+                           Point3fi pointA, Point3fi pointB, Point3fi pointC) {
+    setColorNoisy(colix, normix3d.getIntensity(normix));
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = pointA.screenX; t[1] = pointB.screenX; t[2] = pointC.screenX;
+    t = triangle3d.ay;
+    t[0] = pointA.screenY; t[1] = pointB.screenY; t[2] = pointC.screenY;
+    t = triangle3d.az;
+    t[0] = pointA.screenZ; t[1] = pointB.screenZ; t[2] = pointC.screenZ;
     triangle3d.fillTriangle(false);
   }
 

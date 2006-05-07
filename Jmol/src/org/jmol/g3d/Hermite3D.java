@@ -277,11 +277,12 @@ class Hermite3D {
      }
      else {//MESH
        for (int top = 0;
-            top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++) {
-       g3d.drawLine((Point3i) points.elementAt(top),
-                    (Point3i) points.elementAt(top + numTopStrandPoints));
+            top < numTopStrandPoints && (top + numTopStrandPoints) < size;
+            top++) {
+         g3d.drawLine((Point3i) points.elementAt(top),
+                      (Point3i) points.elementAt(top + numTopStrandPoints));
      }}
-
+     
   }
 
   static void set(Point3f p3f, Point3i p3i) {
@@ -350,8 +351,8 @@ class Hermite3D {
             double dyBot2 = dyBot * dyBot;
             if (dyBot2 < 8) {
               if (border) {
-                g3d.fillSphereCentered(colix, 3, a);
-                g3d.fillSphereCentered(colix, 3, c);
+                g3d.fillSphereCentered(colix, 3, (int)a.x, (int)a.y, (int)a.z);
+                g3d.fillSphereCentered(colix, 3, (int)c.x, (int)c.y, (int)c.z);
               }
               
               if (needToFill[sp]) {

@@ -83,10 +83,7 @@ class PolyhedraRenderer extends ShapeRenderer {
 
   void fillFace(short colix, short normix,
                   Atom atomA, Atom atomB, Atom atomC) {
-    g3d.fillTriangle(colix, normix,
-                     atomA.screenX, atomA.screenY, atomA.screenZ,
-                     atomB.screenX, atomB.screenY, atomB.screenZ,
-                     atomC.screenX, atomC.screenY, atomC.screenZ);
+    g3d.fillTriangle(colix, normix, atomA, atomB, atomC);
   }
 
   void renderCollapsed(Polyhedra.Polyhedron p, short colix) {

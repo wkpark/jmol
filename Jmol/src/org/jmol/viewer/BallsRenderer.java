@@ -72,8 +72,7 @@ class BallsRenderer extends ShapeRenderer {
     // mth 2004 04 02 ... hmmm ... I don't like this here ... looks ugly
     atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
 
-    g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
-                           atom.screenX, atom.screenY, atom.screenZ);
+    g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter, atom);
 
     if (hasHalo) {
       if (diameter == 0)
@@ -82,8 +81,7 @@ class BallsRenderer extends ShapeRenderer {
       if (halowidth < 4) halowidth = 4;
       if (halowidth > 10) halowidth = 10;
       int haloDiameter = diameter + 2 * halowidth;
-      g3d.fillScreenedCircleCentered(colixSelection, haloDiameter,
-                                     atom.screenX, atom.screenY, atom.screenZ);
+      g3d.fillScreenedCircleCentered(colixSelection, haloDiameter, atom);
     }
   }
 }

@@ -689,35 +689,25 @@ final public class Graphics3D {
     platform.clearScreenBufferThreaded();
   }
 
-  public void drawDashedLine(short colix, int run, int rise,
-                             int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = getColixArgb(colix);
-    line3d.drawDashedLine(argb, isTranslucent, argb, isTranslucent,
-                          run, rise, x1, y1, z1, x2, y2, z2);
-  }
-
-  public void drawDottedLine(short colix,
-                             int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = getColixArgb(colix);
-    line3d.drawDashedLine(argb, isTranslucent, argb, isTranslucent,
-                          2, 1, x1, y1, z1, x2, y2, z2);
-  }
-
-  public void drawDashedLine(short colix1, short colix2, int run, int rise,
-                             int x1, int y1, int z1, int x2, int y2, int z2) {
-        
-    line3d.drawDashedLine(getColixArgb(colix1), isColixTranslucent(colix1),
-                          getColixArgb(colix2), isColixTranslucent(colix2),
-                          run, rise, x1, y1, z1, x2, y2, z2);
-  }
-  
-
+  /**
+   * draws a line from pointA to pointB in the current color. 
+   *
+   * @param pointA Point3i specifying point A
+   * @param pointB Point3i specifying point B
+   */
   public void drawLine(Point3i pointA, Point3i pointB) {
     line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
                     pointA.x, pointA.y, pointA.z,
                     pointB.x, pointB.y, pointB.z);
   }
 
+  /**
+   * draws a line from pointA to pointB in the specified color. 
+   *
+   * @param colix  short color index
+   * @param pointA Point3i specifying point A
+   * @param pointB Point3i specifying point B
+   */
   public void drawLine(short colix, Point3i pointA, Point3i pointB) {
     setColix(colix);
     line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
@@ -725,10 +715,112 @@ final public class Graphics3D {
                     pointB.x, pointB.y, pointB.z);
   }
 
-  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
-    drawDashedLine(colix, 2, 1, pointA, pointB);
+  /**
+   * draws a line from point A to point B using current color.
+   *
+   * @param xA     x screen coordinate for point A
+   * @param yA     y screen coordinate for point A
+   * @param zA     z screen coordinate for point A
+   * @param xB     x screen coordinate for point B
+   * @param yB     y screen coordinate for point B
+   * @param zB     z screen coordinate for point B
+   */
+  public void drawLine(int xA, int yA, int zA, int xB, int yB, int zB) {
+    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
+                    xA, yA, zA, xB, yB, zB);
   }
 
+  /**
+   * draws a line from point A to point B in the specified color
+   *
+   * @param colix  short color index
+   * @param xA     x screen coordinate for point A
+   * @param yA     y screen coordinate for point A
+   * @param zA     z screen coordinate for point A
+   * @param xB     x screen coordinate for point B
+   * @param yB     y screen coordinate for point B
+   * @param zB     z screen coordinate for point B
+   */
+  public void drawLine(short colix,
+                       int xA, int yA, int zA, int xB, int yB, int zB) {
+    setColix(colix);
+    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
+                    xA, yA, zA, xB, yB, zB);
+  }
+
+  /**
+   * draws a line from point A to point B in the specified 2 colors
+   *
+   * @param colixA  short color index for 1/2 near A
+   * @param colixB  short color index for 1/2 near B
+   * @param xA     x screen coordinate for point A
+   * @param yA     y screen coordinate for point A
+   * @param zA     z screen coordinate for point A
+   * @param xB     x screen coordinate for point B
+   * @param yB     y screen coordinate for point B
+   * @param zB     z screen coordinate for point B
+   */
+  public void drawLine(short colixA, short colixB,
+                       int xA, int yA, int zA, int xB, int yB, int zB) {
+    line3d.drawLine(getColixArgb(colixA), isColixTranslucent(colixA),
+                    getColixArgb(colixB), isColixTranslucent(colixB),
+                    xA, yA, zA, xB, yB, zB);
+  }
+  
+  /**
+   * draws a dashed line from pointA to pointB in the specified color.
+   * run specifies wavelength in pixels. rise specifies how many pixels are on.
+   *
+   * @param colix  short color index
+   * @param run    pixel count of wavelength
+   * @param rise   number of pixels turned on at the beginning of each cycle
+   * @param xA     x screen coordinate for point A
+   * @param yA     y screen coordinate for point A
+   * @param zA     z screen coordinate for point A
+   * @param xB     x screen coordinate for point B
+   * @param yB     y screen coordinate for point B
+   * @param zB     z screen coordinate for point B
+   */
+  public void drawDashedLine(short colix, int run, int rise,
+                             int xA, int yA, int zA, int xB, int yB, int zB) {
+    int argb = getColixArgb(colix);
+    line3d.drawDashedLine(argb, isTranslucent, argb, isTranslucent,
+                          run, rise, xA, yA, zA, xB, yB, zB);
+  }
+
+  /**
+   * draws a dashed line from pointA to pointB in the specified 2 colors.
+   * run specifies wavelength in pixels. rise specifies how many pixels are on.
+   *
+   * @param colixA  short color index
+   * @param colixB  short color index
+   * @param run    pixel count of wavelength
+   * @param rise   number of pixels turned on at the beginning of each cycle
+   * @param xA     x coordinate for point A
+   * @param yA     y coordinate for point A
+   * @param zA     z coordinate for point A
+   * @param xB     x coordinate for point B
+   * @param yB     y coordinate for point B
+   * @param zB     z coordinate for point B
+   */
+  public void drawDashedLine(short colixA, short colixB, int run, int rise,
+                             int xA, int yA, int zA, int xB, int yB, int zB) {
+        
+    line3d.drawDashedLine(getColixArgb(colixA), isColixTranslucent(colixA),
+                          getColixArgb(colixB), isColixTranslucent(colixB),
+                          run, rise, xA, yA, zA, xB, yB, zB);
+  }
+  
+  /**
+   * draws a dashed line from pointA to pointB in the specified color.
+   * run specifies wavelength in pixels. rise specifies how many pixels are on.
+   *
+   * @param colix  short color index
+   * @param run    pixel count of wavelength
+   * @param rise   number of pixels turned on at the beginning of each cycle
+   * @param pointA Point3i screen coordinates of point A
+   * @param pointB Point3i screen coordinates of point B
+   */
   public void drawDashedLine(short colix, int run, int rise,
                              Point3i pointA, Point3i pointB) {
     setColix(colix);
@@ -739,36 +831,36 @@ final public class Graphics3D {
                           pointB.x, pointB.y, pointB.z);
   }
 
+  /**
+   * draws a dashed line from pointA to pointB in the current color.
+   * run specifies wavelength in pixels. rise specifies how many pixels are on.
+   *
+   * @param run    pixel count of wavelength
+   * @param rise   number of pixels turned on at the beginning of each cycle
+   * @param xA     x coordinate for point A
+   * @param yA     y coordinate for point A
+   * @param zA     z coordinate for point A
+   * @param xB     x coordinate for point B
+   * @param yB     y coordinate for point B
+   * @param zB     z coordinate for point B
+   */
   public void drawDashedLine(int run, int rise,
-                             int x1, int y1, int z1, int x2, int y2, int z2) {
+                             int xA, int yA, int zA, int xB, int yB, int zB) {
     line3d.drawDashedLine(argbCurrent, isTranslucent,
                           argbCurrent, isTranslucent,
-                          run, rise, x1, y1, z1, x2, y2, z2);
+                          run, rise, xA, yA, zA, xB, yB, zB);
   }
 
-  public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
-                    x1, y1, z1, x2, y2, z2);
-  }
-
-  public void drawLine(short colix,
-                       int x1, int y1, int z1, int x2, int y2, int z2) {
-    setColix(colix);
-    line3d.drawLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
-                    x1, y1, z1, x2, y2, z2);
-  }
-
-  public void drawLine(short colix1, short colix2,
-                       int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(getColixArgb(colix1), isColixTranslucent(colix1),
-                    getColixArgb(colix2), isColixTranslucent(colix2),
-                    x1, y1, z1, x2, y2, z2);
-  }
-  
-  public void drawPolygon4(int[] ax, int[] ay, int[] az) {
-    drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
-    for (int i = 3; --i >= 0; )
-      drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
+  /**
+   * draws a dotted line from pointA to pointB in the specified color.
+   * every other pixel is turned on. 
+   *
+   * @param colix  short color index
+   * @param pointA Point3i screen coordinates of point A
+   * @param pointB Point3i screen coordinates of point B
+   */
+  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+    drawDashedLine(colix, 2, 1, pointA, pointB);
   }
 
   public void fillQuadrilateral(short colix,

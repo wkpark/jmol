@@ -863,21 +863,86 @@ final public class Graphics3D {
     drawDashedLine(colix, 2, 1, pointA, pointB);
   }
 
-  public void fillQuadrilateral(short colix,
-                                Point3f screenA, Point3f screenB,
-                                Point3f screenC, Point3f screenD) {
-    /*
-    System.out.println("fillQuad----------------");
-    System.out.println("screenA="+ screenA +
-                       "\nscreenB=" + screenB +
-                       "\nscreenC=" + screenC +
-                       "\nscreenD=" + screenD);
-    */
-    setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
-    fillTriangle(screenA, screenB, screenC);
-    fillTriangle(screenA, screenC, screenD);
+  /**
+   * draws a triangle (3 lines) in the specified color.
+   *
+   * @param colix short color index
+   * @param xA    x
+   * @param yA    y
+   * @param zA    z
+   * @param xB    x
+   * @param yB    y
+   * @param zB    z
+   * @param xC    x
+   * @param yC    y
+   * @param zC    z
+   */
+  public void drawTriangle(short colix,
+                           int xA, int yA, int zA,
+                           int xB, int yB, int zB,
+                           int xC, int yC, int zC) {
+    setColix(colix);
+    drawLine(xA, yA, zA, xB, yB, zB);
+    drawLine(xA, yA, zA, xC, yC, zC);
+    drawLine(xB, yB, zB, xC, yC, zC);
   }
 
+  /**
+   * draws a triangle (3 lines) in the specified color.
+   *
+   * @param colix   short color index
+   * @param screenA point A
+   * @param screenB point B
+   * @param screenC point C
+   */
+  public void drawTriangle(short colix, Point3i screenA,
+                           Point3i screenB, Point3i screenC) {
+    drawTriangle(colix,
+                 screenA.x, screenA.y, screenA.z,
+                 screenB.x, screenB.y, screenB.z,
+                 screenC.x, screenC.y, screenC.z);
+  }
+
+  /**
+   * draws a triangle in the specified color using cylinders
+   * of the specified diameter.
+   *
+   * @param colix short color index
+   * @param xA    x
+   * @param yA    y
+   * @param zA    z
+   * @param xB    x
+   * @param yB    y
+   * @param zB    z
+   * @param xC    x
+   * @param yC    y
+   * @param zC    z
+   * @param diameter diameter of the cylinders
+   */
+  public void drawCylinderTriangle(short colix,
+                                   int xA, int yA, int zA,
+                                   int xB, int yB, int zB,
+                                   int xC, int yC, int zC, int diameter) {   
+    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
+        xA, yA, zA, xB, yB, zB);
+    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
+        xA, yA, zA, xC, yC, zC);
+    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
+        xB, yB, zB, xC, yC, zC);
+  }
+
+  /**
+   * fills the triangle with the specified color, using the specified
+   * surface normal at each vertex.
+   *
+   * @param colix   short color index
+   * @param screenA Point3i screen coordinates of point A
+   * @param normixA short surface normal index at point A
+   * @param screenB Point3i screen coordinates of point B
+   * @param normixB short surface normal index at point B
+   * @param screenC Point3i screen coordinates of point C
+   * @param normixC short surface normal index at point C
+   */
   public void fillTriangle(short colix,
                            Point3i screenA, short normixA,
                            Point3i screenB, short normixB,
@@ -902,6 +967,20 @@ final public class Graphics3D {
     }
   }
 
+  /**
+   * fills a triangle where each vertex can specify its own
+   * color and surface normal. RGB values are interpolated.
+   *
+   * @param screenA Point3i screen coordinates of point A
+   * @param colixA  short color index at point A
+   * @param normixA short surface normal index at point A
+   * @param screenB Point3i screen coordinates of point B
+   * @param colixB  short color index at point B
+   * @param normixB short surface normal index at point B
+   * @param screenC Point3i screen coordinates of point C
+   * @param colixC  short color index at point C
+   * @param normixC short surface normal index at point C
+   */
   public void fillTriangle(Point3i screenA, short colixA, short normixA,
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
@@ -933,20 +1012,21 @@ final public class Graphics3D {
     }
   }
 
-  public void fillTriangle(short colix,
-                           Point3i screenA, Point3i screenB, Point3i screenC) {
-    calcSurfaceShade(colix, screenA, screenB, screenC);
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
-    t = triangle3d.ay;
-    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
-    t = triangle3d.az;
-    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
-
-    triangle3d.fillTriangle(false);
-  }
-
+  /**
+   * fills a triangle using the specified color and surface normal.
+   *
+   * @param colix    short color index of triangle
+   * @param normix   short normal index of triangle
+   * @param xScreenA x screen coordinate of point A
+   * @param yScreenA y screen coordinate of point A
+   * @param zScreenA z screen coordinate of point A
+   * @param xScreenB x screen coordinate of point B
+   * @param yScreenB y screen coordinate of point B
+   * @param zScreenB z screen coordinate of point B
+   * @param xScreenC x screen coordinate of point C
+   * @param yScreenC y screen coordinate of point C
+   * @param zScreenC z screen coordinate of point C
+   */
   public void fillTriangle(short colix, short normix,
                            int xScreenA, int yScreenA, int zScreenA,
                            int xScreenB, int yScreenB, int zScreenB,
@@ -962,6 +1042,15 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false);
   }
 
+  /**
+   * fills a triangle using the specified color and surface normal.
+   *
+   * @param colix  short color index of triangle
+   * @param normix short normal index of triangle
+   * @param pointA Point3fi specifying point A
+   * @param pointB Point3fi specifying point B
+   * @param pointC Point3fi specifying point C
+   */
   public void fillTriangle(short colix, short normix,
                            Point3fi pointA, Point3fi pointB, Point3fi pointC) {
     setColorNoisy(colix, normix3d.getIntensity(normix));
@@ -975,17 +1064,113 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false);
   }
 
+  /**
+   * fills a triangle in the specified color using Point3f parameters
+   * for screen coordinates. Surface normal is calculated from screen
+   * coordinates.
+   *
+   * @param colix   short color index
+   * @param screenA Point3f holding screen coordinates for point A
+   * @param screenB Point3f holding screen coordinates for point B
+   * @param screenC Point3f holding screen coordinates for point C
+   * @deprecated
+   */
   public void fillTriangle(short colix, Point3f screenA,
                            Point3f screenB, Point3f screenC) {
     setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
     fillTriangle(screenA, screenB, screenC);
   }
 
+  /**
+   * fills a triangle using current color. 
+   *
+   * @param screenA point A
+   * @param screenB point B
+   * @param screenC point C
+   */
+  public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
+    
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
+    t = triangle3d.ay;
+    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
+    t = triangle3d.az;
+    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
+
+    triangle3d.fillTriangle(false);
+  }
+
+  /**
+   * fills a triangle using current color.
+   *
+   * @param screenA Point3f holding screen coordinates for point A
+   * @param screenB Point3f holding screen coordinates for point B
+   * @param screenC Point3f holding screen coordinates for point C
+   * @deprecated
+   */
+  public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = (int)screenA.x; t[1] = (int)screenB.x; t[2] = (int)screenC.x;
+    t = triangle3d.ay;
+    t[0] = (int)screenA.y; t[1] = (int)screenB.y; t[2] = (int)screenC.y;
+    t = triangle3d.az;
+    t[0] = (int)screenA.z; t[1] = (int)screenB.z; t[2] = (int)screenC.z;
+
+    triangle3d.fillTriangle(false);
+  }
+
+  /**
+   * draws around the edges and then fills a triangle using specified colix.
+   *
+   * @param colix       short color index
+   * @param xA x
+   * @param yA y
+   * @param zA z
+   * @param xB x
+   * @param yB y
+   * @param zB z
+   * @param xC x
+   * @param yC y
+   * @param zC z
+   */
+  public void drawfillTriangle(short colix,
+                               int xA, int yA, int zA,
+                               int xB, int yB, int zB,
+                               int xC, int yC, int zC) {
+    setColix(colix);
+    int argb = argbCurrent;
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xA, yA, zA, xB, yB, zB);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xA, yA, zA, xC, yC, zC);
+    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
+                    xB, yB, zB, xC, yC, zC);
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = xA; t[1] = xB; t[2] = xC;
+    t = triangle3d.ay;
+    t[0] = yA; t[1] = yB; t[2] = yC;
+    t = triangle3d.az;
+    t[0] = zA; t[1] = zB; t[2] = zC;
+
+    triangle3d.fillTriangle(false);
+  }
+
   public void fillQuadrilateral(short colix,
-                                Point3i screenA, Point3i screenB,
-                                Point3i screenC, Point3i screenD) {
-    fillTriangle(colix, screenA, screenB, screenC);
-    fillTriangle(colix, screenA, screenC, screenD);
+                                Point3f screenA, Point3f screenB,
+                                Point3f screenC, Point3f screenD) {
+    /*
+    System.out.println("fillQuad----------------");
+    System.out.println("screenA="+ screenA +
+                       "\nscreenB=" + screenB +
+                       "\nscreenC=" + screenC +
+                       "\nscreenD=" + screenD);
+    */
+    setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
+    fillTriangle(screenA, screenB, screenC);
+    fillTriangle(screenA, screenC, screenD);
   }
 
   public void fillQuadrilateral(short colix,
@@ -1015,31 +1200,6 @@ final public class Graphics3D {
                  screenD, colixD, normixD);
   }
 
-  public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
-    
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
-    t = triangle3d.ay;
-    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
-    t = triangle3d.az;
-    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
-
-    triangle3d.fillTriangle(false);
-  }
-
-  public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = (int)screenA.x; t[1] = (int)screenB.x; t[2] = (int)screenC.x;
-    t = triangle3d.ay;
-    t[0] = (int)screenA.y; t[1] = (int)screenB.y; t[2] = (int)screenC.y;
-    t = triangle3d.az;
-    t[0] = (int)screenA.z; t[1] = (int)screenB.z; t[2] = (int)screenC.z;
-
-    triangle3d.fillTriangle(false);
-  }
-
   int intensity = 0;
   
   void diff(Vector3f v, Point3i s1, Point3i s2) {
@@ -1060,111 +1220,6 @@ final public class Graphics3D {
     if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
     setColorNoisy(colix, intensity);
-  }
-
-  public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
-                               int yB, int zB, int xC, int yC, int zC) {
-    setColix(colix);
-    int argb = argbCurrent;
-    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
-                    xA, yA, zA, xB, yB, zB);
-    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
-                    xA, yA, zA, xC, yC, zC);
-    line3d.drawLine(argb, isTranslucent, argb, isTranslucent,
-                    xB, yB, zB, xC, yC, zC);
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = xA; t[1] = xB; t[2] = xC;
-    t = triangle3d.ay;
-    t[0] = yA; t[1] = yB; t[2] = yC;
-    t = triangle3d.az;
-    t[0] = zA; t[1] = zB; t[2] = zC;
-
-    triangle3d.fillTriangle(false);
-  }
-
-  public void fillTriangle(short colix, boolean translucent,
-                           int xA, int yA, int zA,
-                           int xB, int yB, int zB, int xC, int yC, int zC) {
-    /*
-    System.out.println("fillTriangle:" + xA + "," + yA + "," + zA + "->" +
-                       xB + "," + yB + "," + zB + "->" +
-                       xC + "," + yC + "," + zC);
-    */
-    setColix(colix);
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = xA; t[1] = xB; t[2] = xC;
-    t = triangle3d.ay;
-    t[0] = yA; t[1] = yB; t[2] = yC;
-    t = triangle3d.az;
-    t[0] = zA; t[1] = zB; t[2] = zC;
-
-    triangle3d.fillTriangle(false);
-  }
-
-  /*
-  final Point3i warrenA = new Point3i();
-  final Point3i warrenB = new Point3i();
-  final Point3i warrenC = new Point3i();
-
-  public void fillTriangleWarren(int argb,
-                                 int xA, int yA, int zA,
-                                 int xB, int yB, int zB,
-                                 int xC, int yC, int zC) {
-    warrenA.x = xA; warrenA.y = yA; warrenA.z = zA;
-    warrenB.x = xB; warrenB.y = yB; warrenB.z = zB;
-    warrenC.x = xC; warrenC.y = yC; warrenC.z = zC;
-
-    short colix = getColix(argb);
-
-    calcSurfaceShade(colix, false, warrenA, warrenB, warrenC);
-
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = xA; t[1] = xB; t[2] = xC;
-    t = triangle3d.ay;
-    t[0] = yA; t[1] = yB; t[2] = yC;
-    t = triangle3d.az;
-    t[0] = zA; t[1] = zB; t[2] = zC;
-
-    triangle3d.fillTriangle(false, false);
-  }
-  */
-
-  public void drawTriangle(short colix,
-                           int xA, int yA, int zA,
-                           int xB, int yB, int zB,
-                           int xC, int yC, int zC) {
-    /*
-    System.out.println("drawTriangle:" + xA + "," + yA + "," + zA + "->" +
-                       xB + "," + yB + "," + zB + "->" +
-                       xC + "," + yC + "," + zC);
-    */
-    setColix(colix);
-    drawLine(xA, yA, zA, xB, yB, zB);
-    drawLine(xA, yA, zA, xC, yC, zC);
-    drawLine(xB, yB, zB, xC, yC, zC);
-  }
-
-  public void drawCylinderTriangle(short colix,
-                           int xA, int yA, int zA,
-                           int xB, int yB, int zB,
-                           int xC, int yC, int zC, int diameter) {   
-    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
-        xA, yA, zA, xB, yB, zB);
-    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
-        xA, yA, zA, xC, yC, zC);
-    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter,
-        xB, yB, zB, xC, yC, zC);
-  }
-
-  public void drawTriangle(short colix, Point3i screenA,
-                           Point3i screenB, Point3i screenC) {
-    drawTriangle(colix,
-                 screenA.x, screenA.y, screenA.z,
-                 screenB.x, screenB.y, screenB.z,
-                 screenC.x, screenC.y, screenC.z);
   }
 
   public void drawQuadrilateral(short colix,

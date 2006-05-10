@@ -1415,7 +1415,7 @@ class Eval implements Runnable {
       if (bs.get(i)) {
         Atom atom = frame.getAtomAt(i);
         AtomIterator iterWithin =
-          frame.getWithinAnyModelIterator(atom, distance);
+          frame.getWithinModelIterator(atom, distance);
         while (iterWithin.hasNext())
           bsResult.set(iterWithin.next().getAtomIndex());
       }

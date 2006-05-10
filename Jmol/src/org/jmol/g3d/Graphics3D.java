@@ -1135,6 +1135,20 @@ final public class Graphics3D {
     triangle3d.fillTriangle(false);
   }
 
+  /**
+   * fills a quadrilateral with the specified color where each
+   * vertex can specify a surface normal.
+   *
+   * @param colix   short color index
+   * @param screenA vertex A
+   * @param normixA surface normal at point A
+   * @param screenB vertex B
+   * @param normixB surface normal at point B
+   * @param screenC vertex C
+   * @param normixC surface normal at point C
+   * @param screenD vertex D
+   * @param normixD surface normal at point D
+   */
   public void fillQuadrilateral(short colix,
                                 Point3i screenA, short normixA,
                                 Point3i screenB, short normixB,
@@ -1150,6 +1164,23 @@ final public class Graphics3D {
                  screenD, normixD);
   }
 
+  /**
+   * fills a quadrilateral where each vertex can specify its
+   * own color and surface normal.
+   *
+   * @param screenA vertex A
+   * @param colixA  short color index at A
+   * @param normixA surface normal at A
+   * @param screenB vertex B
+   * @param colixB  short color index at B
+   * @param normixB surface normal at B
+   * @param screenC vertex C
+   * @param colixC  short color index at C
+   * @param normixC surface normal at C
+   * @param screenD vertex D
+   * @param colixD  short color index at D
+   * @param normixD surface normal at D
+   */
   public void fillQuadrilateral(Point3i screenA, short colixA, short normixA,
                                 Point3i screenB, short colixB, short normixB,
                                 Point3i screenC, short colixC, short normixC,
@@ -1160,6 +1191,123 @@ final public class Graphics3D {
     fillTriangle(screenA, colixA, normixA,
                  screenC, colixC, normixC,
                  screenD, colixD, normixD);
+  }
+
+  /**
+   * draws a quadrilateral (4 lines) in the specified color.
+   *
+   * @param colix short color index
+   * @param screenA vertex A
+   * @param screenB vertex B
+   * @param screenC vertex C
+   * @param screenD vertex D
+   */
+  public void drawQuadrilateral(short colix,
+                                Point3i screenA, Point3i screenB,
+                                Point3i screenC, Point3i screenD) {
+    setColix(colix);
+    drawLine(screenA, screenB);
+    drawLine(screenB, screenC);
+    drawLine(screenC, screenD);
+    drawLine(screenD, screenA);
+  }
+
+  public final static byte ENDCAPS_NONE = 0;
+  public final static byte ENDCAPS_OPEN = 1;
+  public final static byte ENDCAPS_FLAT = 2;
+  public final static byte ENDCAPS_SPHERICAL = 3;
+
+  /**
+   * fills a single-colored cylinder
+   *
+   * @param colix   short color index
+   * @param endcaps endcap style
+   * @param diameter diameter in pixels
+   * @param xA x at point A
+   * @param yA y at point A
+   * @param zA z at point A
+   * @param xB x at point B
+   * @param yB y at point B
+   * @param zB z at point B
+   */
+  public void fillCylinder(short colix, byte endcaps,
+                           int diameter,
+                           int xA, int yA, int zA, int xB, int yB, int zB) {
+    cylinder3d.render(colix, colix, endcaps, diameter,
+                      xA, yA, zA, xB, yB, zB);
+  }
+
+  /**
+   * fills a two-colored cylinder
+   *
+   * @param colixA  short color index
+   * @param colixB  short color index
+   * @param endcaps endcap style
+   * @param diameter diameter in pixels
+   * @param xA x at point A
+   * @param yA y at point A
+   * @param zA z at point A
+   * @param xB x at point B
+   * @param yB y at point B
+   * @param zB z at point B
+   */
+  public void fillCylinder(short colixA, short colixB, byte endcaps,
+                           int diameter,
+                           int xA, int yA, int zA, int xB, int yB, int zB) {
+    cylinder3d.render(colixA, colixB, endcaps, diameter,
+                      xA, yA, zA, xB, yB, zB);
+  }
+
+  /**
+   * fills a single-colored cylinder
+   *
+   * @param colix   short color index
+   * @param endcaps endcap style
+   * @param diameter diameter in pixels
+   * @param screenA Point3i
+   * @param screenB Point3i
+   */
+  public void fillCylinder(short colix, byte endcaps, int diameter,
+                           Point3i screenA, Point3i screenB) {
+    cylinder3d.render(colix, colix, endcaps, diameter,
+                      screenA.x, screenA.y, screenA.z,
+                      screenB.x, screenB.y, screenB.z);
+  }
+
+  /**
+   * fills a cone in the specified color. 
+   *
+   * @param colix   short color index
+   * @param endcap  endcap style
+   * @param diameter diameter in pixels
+   * @param xBase x at the base
+   * @param yBase y at the base
+   * @param zBase z at the base
+   * @param xTip x at the tip
+   * @param yTip y at the tip
+   * @param zTip z at the tip
+   */
+  public void fillCone(short colix, byte endcap, int diameter,
+                       int xBase, int yBase, int zBase,
+                       int xTip, int yTip, int zTip) {
+    cylinder3d.renderCone(colix, endcap, diameter,
+                      xBase, yBase, zBase, xTip, yTip, zTip);
+  }
+
+  /**
+   * fills a cone in the specified color. 
+   *
+   * @param colix   short color index
+   * @param endcap  endcap style
+   * @param diameter diameter in pixels
+   * @param screenBase the base
+   * @param screenTip the tip
+   */
+  public void fillCone(short colix, byte endcap, int diameter,
+                       Point3i screenBase, Point3i screenTip) {
+    cylinder3d.renderCone(colix, endcap, diameter,
+                          screenBase.x, screenBase.y, screenBase.z,
+                          screenTip.x, screenTip.y, screenTip.z);
   }
 
   int intensity = 0;
@@ -1182,56 +1330,6 @@ final public class Graphics3D {
     if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
     setColixIntensityNoisy(colix, intensity);
-  }
-
-  public void drawQuadrilateral(short colix,
-                                Point3i screenA, Point3i screenB,
-                                Point3i screenC, Point3i screenD) {
-    setColix(colix);
-    drawLine(screenA, screenB);
-    drawLine(screenB, screenC);
-    drawLine(screenC, screenD);
-    drawLine(screenD, screenA);
-  }
-
-  public final static byte ENDCAPS_NONE = 0;
-  public final static byte ENDCAPS_OPEN = 1;
-  public final static byte ENDCAPS_FLAT = 2;
-  public final static byte ENDCAPS_SPHERICAL = 3;
-
-  public void fillCylinder(short colixA, short colixB, byte endcaps,
-                           int diameter,
-                           int xA, int yA, int zA, int xB, int yB, int zB) {
-    cylinder3d.render(colixA, colixB, endcaps, diameter,
-                      xA, yA, zA, xB, yB, zB);
-  }
-
-  public void fillCylinder(short colix, byte endcaps,
-                           int diameter,
-                           int xA, int yA, int zA, int xB, int yB, int zB) {
-    cylinder3d.render(colix, colix, endcaps, diameter,
-                      xA, yA, zA, xB, yB, zB);
-  }
-
-  public void fillCylinder(short colix, byte endcaps, int diameter,
-                           Point3i screenA, Point3i screenB) {
-    cylinder3d.render(colix, colix, endcaps, diameter,
-                      screenA.x, screenA.y, screenA.z,
-                      screenB.x, screenB.y, screenB.z);
-  }
-
-  public void fillCone(short colix, byte endcap, int diameter,
-                       int xBase, int yBase, int zBase,
-                       int xTip, int yTip, int zTip) {
-    cylinder3d.renderCone(colix, endcap, diameter,
-                      xBase, yBase, zBase, xTip, yTip, zTip);
-  }
-
-  public void fillCone(short colix, byte endcap, int diameter,
-                       Point3i screenBase, Point3i screenTip) {
-    cylinder3d.renderCone(colix, endcap, diameter,
-                          screenBase.x, screenBase.y, screenBase.z,
-                          screenTip.x, screenTip.y, screenTip.z);
   }
 
   public void fillHermite(short colix, int tension, int diameterBeg,

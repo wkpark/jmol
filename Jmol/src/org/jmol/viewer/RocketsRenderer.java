@@ -256,24 +256,24 @@ class RocketsRenderer extends MpsRenderer {
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
-    g3d.fillTriangle(colixPending,
-                     screenCorners[0],
-                     screenCorners[1],
-                     screenCorners[4]);
-    g3d.fillTriangle(colixPending,
-                     screenCorners[2],
-                     screenCorners[3],
-                     screenCorners[5]);
+    fillTriangle(colixPending,
+                 screenCorners[0],
+                 screenCorners[1],
+                 screenCorners[4]);
+    fillTriangle(colixPending,
+                 screenCorners[2],
+                 screenCorners[3],
+                 screenCorners[5]);
     for (int i = 0; i < 12; i += 4) {
       int i0 = arrowHeadFaces[i];
       int i1 = arrowHeadFaces[i + 1];
       int i2 = arrowHeadFaces[i + 2];
       int i3 = arrowHeadFaces[i + 3];
-      g3d.fillQuadrilateral(colixPending,
-                            screenCorners[i0],
-                            screenCorners[i1],
-                            screenCorners[i2],
-                            screenCorners[i3]);
+      fillQuadrilateral(colixPending,
+                        screenCorners[i0],
+                        screenCorners[i1],
+                        screenCorners[i2],
+                        screenCorners[i3]);
     }
     /*
     Sheet sheet = (Sheet)structurePending;
@@ -318,11 +318,11 @@ class RocketsRenderer extends MpsRenderer {
       int i1 = boxFaces[i * 4 + 1];
       int i2 = boxFaces[i * 4 + 2];
       int i3 = boxFaces[i * 4 + 3];
-      g3d.fillQuadrilateral(colixPending,
-                            screenCorners[i0],
-                            screenCorners[i1],
-                            screenCorners[i2],
-                            screenCorners[i3]);
+      fillQuadrilateral(colixPending,
+                        screenCorners[i0],
+                        screenCorners[i1],
+                        screenCorners[i2],
+                        screenCorners[i3]);
     }
   }
 
@@ -374,5 +374,27 @@ class RocketsRenderer extends MpsRenderer {
     viewer.transformPoint(pointTip, screenCorners[4]);
     corners[5].add(pointTip, scaledHeightVector);
     viewer.transformPoint(corners[5], screenCorners[5]);
+  }
+
+  void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
+    g3d.fillTriangle((int)screenA.x, (int)screenA.y, (int)screenA.z,
+                     (int)screenB.x, (int)screenB.y, (int)screenB.z,
+                     (int)screenC.x, (int)screenC.y, (int)screenC.z);
+  }
+
+  void fillTriangle(short colix, Point3f screenA,
+                    Point3f screenB, Point3f screenC) {
+    g3d.setColixIntensityNoisy(colix, g3d.calcIntensityScreen(screenA, screenB,
+                                                              screenC));
+    fillTriangle(screenA, screenB, screenC);
+  }
+
+  void fillQuadrilateral(short colix,
+                         Point3f screenA, Point3f screenB,
+                         Point3f screenC, Point3f screenD) {
+    g3d.setColixIntensityNoisy(colix, g3d.calcIntensityScreen(screenA, screenB,
+                                                              screenC));
+    fillTriangle(screenA, screenB, screenC);
+    fillTriangle(screenA, screenC, screenD);
   }
 }

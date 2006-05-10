@@ -356,7 +356,7 @@ class Hermite3D {
               }
               
               if (needToFill[sp]) {
-                g3d.fillQuadrilateral(colix, a, b, d, c);
+                fillQuadrilateral(colix, a, b, d, c);
                 needToFill[sp] = false;
               }
               if (dxTop2 + dyTop2 < 2 &&
@@ -399,5 +399,20 @@ class Hermite3D {
       sLeft[spNext] = (float) s;
       ++sp;
     } while (sp >= 0);
+  }
+
+  void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
+    g3d.fillTriangle((int)screenA.x, (int)screenA.y, (int)screenA.z,
+                     (int)screenB.x, (int)screenB.y, (int)screenB.z,
+                     (int)screenC.x, (int)screenC.y, (int)screenC.z);
+  }
+
+  void fillQuadrilateral(short colix,
+                         Point3f screenA, Point3f screenB,
+                         Point3f screenC, Point3f screenD) {
+    g3d.setColixIntensityNoisy(colix, g3d.calcIntensityScreen(screenA, screenB,
+                                                              screenC));
+    fillTriangle(screenA, screenB, screenC);
+    fillTriangle(screenA, screenC, screenD);
   }
 }

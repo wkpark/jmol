@@ -350,7 +350,7 @@ class Cylinder3D {
         System.out.println("endcap y="+y+" xMin="+xMin+" xMax="+xMax);
       */
       int count = xMax - xMin + 1;
-      g3d.setColorNoisy(colixEndcap, intensityEndcap);
+      g3d.setColixIntensityNoisy(colixEndcap, intensityEndcap);
       g3d.plotPixelsClipped(count,
                             xT + xMin,  yT + y, zT - zXMin - 1,
                             zT - zXMax - 1, null, null);

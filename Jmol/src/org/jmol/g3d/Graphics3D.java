@@ -283,18 +283,18 @@ final public class Graphics3D {
     isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
   }
 
-  public void setIntensity(int intensity) {
-    // only adjusting intensity, but colix & isTranslucent stay the same
-    argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
-  }
-
-  void setColorNoisy(short colix, int intensity) {
+  public void setColixIntensityNoisy(short colix, int intensity) {
     colixCurrent = colix;
     int[] shades = getShades(colix);
     argbCurrent = shades[intensity];
     argbNoisyUp = shades[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shades[intensity > 0 ? intensity - 1 : 0];
     isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
+  }
+
+  public void setIntensity(int intensity) {
+    // only adjusting intensity, but colix & isTranslucent stay the same
+    argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
   }
 
   int[] imageBuf = new int[0];
@@ -429,19 +429,7 @@ final public class Graphics3D {
    *
    * @param colix the color index
    * @param diameter pixel count
-   * @param center a javax.vecmath.Point3f ... floats are casted to ints
-   */
-  public void fillSphereCentered(short colix, int diameter, Point3f center) {
-    fillSphereCentered(colix, diameter,
-                       (int)center.x, (int)center.y, (int)center.z);
-  }
-
-  /**
-   * fills a solid sphere
-   *
-   * @param colix the color index
-   * @param diameter pixel count
-   * @param center a javax.vecmath.Point3f ... floats are casted to ints
+   * @param center an org.jmol.vecmath.Point3fi
    */
   public void fillSphereCentered(short colix, int diameter, Point3fi center) {
     if (diameter <= 1) {
@@ -956,7 +944,7 @@ final public class Graphics3D {
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
     if (normixA == normixB && normixA == normixC) {
-      setColorNoisy(colix, normix3d.getIntensity(normixA));
+      setColixIntensityNoisy(colix, normix3d.getIntensity(normixA));
       triangle3d.fillTriangle(false);
     } else {
       setColix(colix);
@@ -994,7 +982,7 @@ final public class Graphics3D {
 
     if (normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {
-      setColorNoisy(colixA, normix3d.getIntensity(normixA));
+      setColixIntensityNoisy(colixA, normix3d.getIntensity(normixA));
       triangle3d.fillTriangle(false);
     } else {
       triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
@@ -1031,7 +1019,33 @@ final public class Graphics3D {
                            int xScreenA, int yScreenA, int zScreenA,
                            int xScreenB, int yScreenB, int zScreenB,
                            int xScreenC, int yScreenC, int zScreenC) {
-    setColorNoisy(colix, normix3d.getIntensity(normix));
+    setColixIntensityNoisy(colix, normix3d.getIntensity(normix));
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = xScreenA; t[1] = xScreenB; t[2] = xScreenC;
+    t = triangle3d.ay;
+    t[0] = yScreenA; t[1] = yScreenB; t[2] = yScreenC;
+    t = triangle3d.az;
+    t[0] = zScreenA; t[1] = zScreenB; t[2] = zScreenC;
+    triangle3d.fillTriangle(false);
+  }
+
+  /**
+   * fills a triangle using the current color;
+   *
+   * @param xScreenA x screen coordinate of point A
+   * @param yScreenA y screen coordinate of point A
+   * @param zScreenA z screen coordinate of point A
+   * @param xScreenB x screen coordinate of point B
+   * @param yScreenB y screen coordinate of point B
+   * @param zScreenB z screen coordinate of point B
+   * @param xScreenC x screen coordinate of point C
+   * @param yScreenC y screen coordinate of point C
+   * @param zScreenC z screen coordinate of point C
+   */
+  public void fillTriangle(int xScreenA, int yScreenA, int zScreenA,
+                           int xScreenB, int yScreenB, int zScreenB,
+                           int xScreenC, int yScreenC, int zScreenC) {
     int[] t;
     t = triangle3d.ax;
     t[0] = xScreenA; t[1] = xScreenB; t[2] = xScreenC;
@@ -1053,7 +1067,7 @@ final public class Graphics3D {
    */
   public void fillTriangle(short colix, short normix,
                            Point3fi pointA, Point3fi pointB, Point3fi pointC) {
-    setColorNoisy(colix, normix3d.getIntensity(normix));
+    setColixIntensityNoisy(colix, normix3d.getIntensity(normix));
     int[] t;
     t = triangle3d.ax;
     t[0] = pointA.screenX; t[1] = pointB.screenX; t[2] = pointC.screenX;
@@ -1062,23 +1076,6 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = pointA.screenZ; t[1] = pointB.screenZ; t[2] = pointC.screenZ;
     triangle3d.fillTriangle(false);
-  }
-
-  /**
-   * fills a triangle in the specified color using Point3f parameters
-   * for screen coordinates. Surface normal is calculated from screen
-   * coordinates.
-   *
-   * @param colix   short color index
-   * @param screenA Point3f holding screen coordinates for point A
-   * @param screenB Point3f holding screen coordinates for point B
-   * @param screenC Point3f holding screen coordinates for point C
-   * @deprecated
-   */
-  public void fillTriangle(short colix, Point3f screenA,
-                           Point3f screenB, Point3f screenC) {
-    setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
-    fillTriangle(screenA, screenB, screenC);
   }
 
   /**
@@ -1097,26 +1094,6 @@ final public class Graphics3D {
     t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
-
-    triangle3d.fillTriangle(false);
-  }
-
-  /**
-   * fills a triangle using current color.
-   *
-   * @param screenA Point3f holding screen coordinates for point A
-   * @param screenB Point3f holding screen coordinates for point B
-   * @param screenC Point3f holding screen coordinates for point C
-   * @deprecated
-   */
-  public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = (int)screenA.x; t[1] = (int)screenB.x; t[2] = (int)screenC.x;
-    t = triangle3d.ay;
-    t[0] = (int)screenA.y; t[1] = (int)screenB.y; t[2] = (int)screenC.y;
-    t = triangle3d.az;
-    t[0] = (int)screenA.z; t[1] = (int)screenB.z; t[2] = (int)screenC.z;
 
     triangle3d.fillTriangle(false);
   }
@@ -1156,21 +1133,6 @@ final public class Graphics3D {
     t[0] = zA; t[1] = zB; t[2] = zC;
 
     triangle3d.fillTriangle(false);
-  }
-
-  public void fillQuadrilateral(short colix,
-                                Point3f screenA, Point3f screenB,
-                                Point3f screenC, Point3f screenD) {
-    /*
-    System.out.println("fillQuad----------------");
-    System.out.println("screenA="+ screenA +
-                       "\nscreenB=" + screenB +
-                       "\nscreenC=" + screenC +
-                       "\nscreenD=" + screenD);
-    */
-    setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
-    fillTriangle(screenA, screenB, screenC);
-    fillTriangle(screenA, screenC, screenD);
   }
 
   public void fillQuadrilateral(short colix,
@@ -1219,7 +1181,7 @@ final public class Graphics3D {
       : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
     if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
-    setColorNoisy(colix, intensity);
+    setColixIntensityNoisy(colix, intensity);
   }
 
   public void drawQuadrilateral(short colix,

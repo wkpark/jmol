@@ -474,13 +474,14 @@ support for assertions (which were introduced in 1.4).
         <include name="org/openscience/jmol/**" />
         <include name="org/jmol/bspt/**" />
         <include name="org/jmol/util/**" />
+        <include name="org/jmol/smiles/**" />
+	<include name="org/jmol/vecmath/**" />
       </fileset>
     </jar>
 
     <jar destfile="JmolApplet6.jar" manifest="manifest/applet6.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/viewer/**" />
-        <include name="org/jmol/smiles/**" />
       </fileset>
     </jar>
 

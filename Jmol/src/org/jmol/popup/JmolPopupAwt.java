@@ -172,6 +172,14 @@ public class JmolPopupAwt extends JmolPopup {
     return new Menu("unrecognized ComputedMenu:" + key);
   }
 
+  int getMenuItemCount(Object menu) {
+    return ((Menu)menu).getItemCount();
+  }
+
+  void removeMenuItem(Object menu, int index) {
+    ((Menu)menu).remove(index);
+  }
+
   void removeAll(Object menu) {
     ((Menu)menu).removeAll();
   }

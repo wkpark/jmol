@@ -42,6 +42,7 @@ abstract public class JmolPopup {
   Object elementsComputedMenu;
   Object aaresiduesComputedMenu;
   Object aboutMenu;
+  int aboutMenuBaseCount;
   Object consoleMenu;
   Object modelSetInfoMenu;
   String nullModelSetName;
@@ -131,7 +132,8 @@ abstract public class JmolPopup {
   private void updateAboutSubmenu() {
     if (aboutMenu == null)
       return;
-    removeAll(aboutMenu);
+    for (int i = getMenuItemCount(aboutMenu); --i >= aboutMenuBaseCount; )
+      removeMenuItem(aboutMenu, i);
     addMenuSeparator(aboutMenu);
     addMenuItem(aboutMenu, "Jmol " + JmolConstants.version);
     addMenuItem(aboutMenu, JmolConstants.date);
@@ -196,6 +198,8 @@ abstract public class JmolPopup {
           enableMenu(modelSetInfoMenu, false);
         }
         addMenuSubMenu(menu, subMenu);
+        if (subMenu == aboutMenu)
+          aboutMenuBaseCount = getMenuItemCount(aboutMenu);
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
       } else if (item.endsWith("Checkbox")) {
@@ -257,6 +261,10 @@ abstract public class JmolPopup {
   abstract void renameMenu(Object menu, String menuName);
 
   abstract void removeAll(Object menu);
+
+  abstract int getMenuItemCount(Object menu);
+
+  abstract void removeMenuItem(Object menu, int index);
 
   long maxMemoryForNewerJvm() {
     // this method is overridden in JmolPopupSwing for newer Javas

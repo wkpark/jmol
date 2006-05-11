@@ -129,6 +129,14 @@ public class JmolPopupSwing extends JmolPopup {
     return new JMenu("unrecognized ComputedMenu:" + key);
   }
 
+  int getMenuItemCount(Object menu) {
+    return ((JMenu)menu).getItemCount();
+  }
+
+  void removeMenuItem(Object menu, int index) {
+    ((JMenu)menu).remove(index);
+  }
+
   void removeAll(Object menu) {
     ((JMenu)menu).removeAll();
   }

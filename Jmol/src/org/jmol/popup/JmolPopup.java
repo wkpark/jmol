@@ -62,7 +62,6 @@ abstract public class JmolPopup {
 
   void build(Object popupMenu) {
     addMenuItems("popupMenu", popupMenu, new PopupResourceBundle());
-    addVersionAndDate(popupMenu);
     if (! viewer.isJvm12orGreater() && (consoleMenu != null))
       enableMenu(consoleMenu, false);
   }
@@ -129,15 +128,41 @@ abstract public class JmolPopup {
     }
   }
 
-  private void addVersionAndDate(Object popupMenu) {
-    if (aboutMenu != null) {
-      addMenuSeparator(aboutMenu);
-      addMenuItem(aboutMenu, "Jmol " + JmolConstants.version);
-      addMenuItem(aboutMenu, JmolConstants.date);
-      addMenuItem(aboutMenu, viewer.getOperatingSystemName());
-      addMenuItem(aboutMenu, viewer.getJavaVendor());
-      addMenuItem(aboutMenu, viewer.getJavaVersion());
-    }
+  private void updateAboutSubmenu() {
+    if (aboutMenu == null)
+      return;
+    removeAll(aboutMenu);
+    addMenuSeparator(aboutMenu);
+    addMenuItem(aboutMenu, "Jmol " + JmolConstants.version);
+    addMenuItem(aboutMenu, JmolConstants.date);
+    addMenuItem(aboutMenu, viewer.getOperatingSystemName());
+    addMenuItem(aboutMenu, viewer.getJavaVendor());
+    addMenuItem(aboutMenu, viewer.getJavaVersion());
+    addMenuSeparator(aboutMenu);
+    addMenuItem(aboutMenu, "Java memory usage");
+    Runtime runtime = Runtime.getRuntime();
+    runtime.gc();
+    long mbTotal = convertToMegabytes(runtime.totalMemory());
+    long mbFree = convertToMegabytes(runtime.freeMemory());
+    long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
+    addMenuItem(aboutMenu, "" + mbTotal + " Mb total");
+    addMenuItem(aboutMenu, "" + mbFree + " Mb free");
+    if (mbMax > 0)
+      addMenuItem(aboutMenu, "" + mbMax + " Mb maximum");
+    else
+      addMenuItem(aboutMenu, "unknown maximum");
+    int availableProcessors = availableProcessorsForNewerJvm();
+    if (availableProcessors > 0)
+      addMenuItem(aboutMenu, "" + availableProcessors +
+                  (availableProcessors == 1 ? " processor" : " processors"));
+    else
+      addMenuItem(aboutMenu, "unknown processor count");
+  }
+
+  private long convertToMegabytes(long num) {
+    if (num <= Long.MAX_VALUE - 512*1024)
+      num += 512*1024;
+    return num / (1024*1024);
   }
 
   private void addMenuItems(String key, Object menu,
@@ -206,9 +231,14 @@ abstract public class JmolPopup {
     return addMenuItem(menuItem, entry, null);
   }
 
+  public void show(int x, int y) {
+    updateAboutSubmenu();
+    showPopup(x, y);
+  }
+
   ////////////////////////////////////////////////////////////////
 
-  abstract public void show(int x, int y);
+  abstract void showPopup(int x, int y);
 
   abstract void addMenuSeparator(Object menu);
 
@@ -228,5 +258,16 @@ abstract public class JmolPopup {
 
   abstract void removeAll(Object menu);
 
+  long maxMemoryForNewerJvm() {
+    // this method is overridden in JmolPopupSwing for newer Javas
+    // JmolPopupAwt does not implement this
+    return 0;
+  }
+
+  int availableProcessorsForNewerJvm() {
+    // this method is overridden in JmolPopupSwing for newer Javas
+    // JmolPopupAwt does not implement this
+    return 0;
+  }
 }
 

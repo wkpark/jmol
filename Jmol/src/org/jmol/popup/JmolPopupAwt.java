@@ -52,7 +52,7 @@ public class JmolPopupAwt extends JmolPopup {
     build(awtPopup);
   }
 
-  public void show(int x, int y) {
+  void showPopup(int x, int y) {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       CheckboxMenuItem cbmi = (CheckboxMenuItem)htCheckbox.get(key);

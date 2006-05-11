@@ -47,7 +47,7 @@ public class JmolPopupSwing extends JmolPopup {
     build(swingPopup);
   }
 
-  public void show(int x, int y) {
+  void showPopup(int x, int y) {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       JCheckBoxMenuItem jcbmi = (JCheckBoxMenuItem)htCheckbox.get(key);
@@ -137,5 +137,11 @@ public class JmolPopupSwing extends JmolPopup {
     ((JMenu)menu).setEnabled(enable);
   }
 
+  long maxMemoryForNewerJvm() {
+    return Runtime.getRuntime().maxMemory();
+  }
 
+  int availableProcessorsForNewerJvm() {
+    return Runtime.getRuntime().availableProcessors();
+  }
 }

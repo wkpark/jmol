@@ -29,5 +29,4 @@ public class Point3fi extends Point3f {
   public int screenX;
   public int screenY;
   public int screenZ;
-
 }

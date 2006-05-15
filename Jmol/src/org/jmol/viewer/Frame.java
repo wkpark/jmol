@@ -179,17 +179,34 @@ final class Frame {
                     iterBond.getEncodedOrder());
     }
 
+    // define turns LAST. (pulled by the iterator first)
+    // so that if they overlap with helix or sheet they get overwritten:
+
     JmolAdapter.StructureIterator iterStructure =
       adapter.getStructureIterator(clientFile);
-    if (iterStructure != null) 
+    if (iterStructure != null) {
       while (iterStructure.hasNext())
-        defineStructure(iterStructure.getStructureType(),
+        if (!iterStructure.getStructureType().equals("turn"))
+          defineStructure(iterStructure.getStructureType(),
                               iterStructure.getStartChainID(),
                               iterStructure.getStartSequenceNumber(),
                               iterStructure.getStartInsertionCode(),
                               iterStructure.getEndChainID(),
                               iterStructure.getEndSequenceNumber(),
                               iterStructure.getEndInsertionCode());
+
+      iterStructure = adapter.getStructureIterator(clientFile);
+      while (iterStructure.hasNext())
+        if (iterStructure.getStructureType().equals("turn"))
+          defineStructure(iterStructure.getStructureType(),
+                              iterStructure.getStartChainID(),
+                              iterStructure.getStartSequenceNumber(),
+                              iterStructure.getStartInsertionCode(),
+                              iterStructure.getEndChainID(),
+                              iterStructure.getEndSequenceNumber(),
+                              iterStructure.getEndInsertionCode());
+    }
+    
     doUnitcellStuff();
     doAutobond();
     finalizeGroupBuild();

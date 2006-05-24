@@ -54,25 +54,9 @@
       </p>
     </section>
 
-    <section title="Disponible la versión 10 de Jmol">
+    <section title="Disponible la versión 10.2 de Jmol">
       <p>
-	La versión 10 de Jmol se hizo disponible el viernes 17 de diciembre de 2004. 
-      </p>
-      <p>
-	Jmol v10 es una reimplementación completa de Jmol, emprendida en la primavera de 2003 con el 
-	propósito específico de convertir Jmol en un sustituto del conector (<i>plug-in</i>) Chime. 
-      </p>
-      <p>
-	Jmol v10 conserva la mayoría de las prestaciones y funcionalidad de las versiones anteriores de Jmol, 
-	pero ofrece avances relevantes en las áreas siguientes: 
-	<ul>
-	  <li>un motor gráfico verdaderamente tridimensional que no requiere un hardware especial</li>
-	  <li>color de 24 bits con iluminación y sombreado precisos</li>
-	  <li>un rendimiento de representación gráfica sustancialmente superior</li>
-	  <li>manejo de macromoléculas grandes con un rendimiento excelente</li>
-	  <li>gráficos para la estructura secundaria de proteínas y ácidos nucleicos</li>
-	  <li>compatibilidad con los guiones (<i>scripts</i>) de RasMol/Chime</li>
-	</ul>
+	La versión 10.2 de Jmol se hizo disponible el 15 de abril de 2006. 
       </p>
     </section>
 
@@ -93,7 +77,7 @@
       </blockquote>
     </section>
     
-    <section title="Prestaciones de Jmol v10">
+    <section title="Prestaciones de Jmol v10.2">
 
       <ul>
 	<li>

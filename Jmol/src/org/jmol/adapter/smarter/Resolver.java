@@ -114,13 +114,22 @@ class Resolver {
     if (checkCube(lines))
       return "Cube";
     // run these loops forward ... easier for people to understand
-    for (int i = 0; i < startsWithRecords.length; ++i) {
-      String[] recordTags = startsWithRecords[i];
+    //file starts with added 4/26 to ensure no issue with NWChem files
+    for (int i = 0; i < fileStartsWithRecords.length; ++i) {
+      String[] recordTags = fileStartsWithRecords[i];
+      for (int j = 0; j < recordTags.length; ++j) {
+        String recordTag = recordTags[j];
+        if (lines[0].startsWith(recordTag))
+            return fileStartsWithFormats[i];
+      }
+    }
+    for (int i = 0; i < lineStartsWithRecords.length; ++i) {
+      String[] recordTags = lineStartsWithRecords[i];
       for (int j = 0; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
         for (int k = 0; k < lines.length; ++k) {
           if (lines[k].startsWith(recordTag))
-            return startsWithFormats[i];
+            return lineStartsWithFormats[i];
         }
       }
     }
@@ -212,6 +221,19 @@ class Resolver {
   }
 
   ////////////////////////////////////////////////////////////////
+  // these test files that startWith one of these strings
+  ////////////////////////////////////////////////////////////////
+
+  final static String[] nwchemRecords =
+  {" argument  1 = "};
+
+  final static String[][] fileStartsWithRecords =
+  { nwchemRecords};
+
+  final static String[] fileStartsWithFormats =
+  { "NWChem"};
+
+  ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
@@ -246,21 +268,18 @@ class Resolver {
   final static String[] mdlRecords = 
   {"$MDL "};
 
-  final static String[] nwchemRecords =
-  {" argument  1"};
-
-  final static String[] spartanSmolRecords =
+    final static String[] spartanSmolRecords =
   {"INPUT="};
 
   final static String[] csfRecords =
   {"local_transform"};
   
-  final static String[][] startsWithRecords =
+  final static String[][] lineStartsWithRecords =
   { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
     jaguarRecords, hinRecords , mdlRecords, nwchemRecords,
     spartanSmolRecords, csfRecords};
 
-  final static String[] startsWithFormats =
+  final static String[] lineStartsWithFormats =
   { "Pdb", "Shelx", "Cif", "GhemicalMM",
     "Jaguar", "Hin", "Mol", "NWChem", "SpartanSmol", "Csf"};
 

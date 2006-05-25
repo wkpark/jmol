@@ -24,9 +24,8 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
+
+// attempt to use 10.x in rollback
 
 /**
  * CIF file reader for CIF and mmCIF files.
@@ -40,69 +39,112 @@ import java.util.Map;
  */
 class CifReader extends AtomSetCollectionReader {
 
-  float[] notionalUnitcell;
+  int[] unitCells = new int[3];
 
+  int desiredModelNumber;
+  int modelNumber = 0;
+  boolean normalize = true;
+  boolean iHaveAppliedSymmetry = false;
   BufferedReader reader;
   String line;
-  RidiculousFileFormatTokenizer tokenizer =
-    new RidiculousFileFormatTokenizer();
-  Map strandsMap;
+  RidiculousFileFormatTokenizer tokenizer = new RidiculousFileFormatTokenizer();
 
   void initialize() {
-    notionalUnitcell = new float[6];
-    for (int i = 6; --i >= 0; )
-      notionalUnitcell[i] = Float.NaN;
+    desiredModelNumber = -1;
+    unitCells[0] = unitCells[1] = unitCells[2] = 0;
   }
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  void initialize(int[] params) {
+    initialize();
+    if (params == null)
+      return;
+    int ipt = 0;
+    if (params.length == 1 || params.length == 4)
+      desiredModelNumber = params[ipt++];
+    if (params.length < ipt + 3)
+      return;
+    unitCells[0] = params[ipt++];
+    unitCells[1] = params[ipt++];
+    unitCells[2] = params[ipt++];
+  }
+
+  boolean iHaveUnitCell = false;
+  float[] notionalUnitcell;
+  String spaceGroup;
+  boolean coordinatesAreFractional;
+
+  void initializeUnitcell() {
+    iHaveUnitCell = false;
+    notionalUnitcell = new float[6];
+    for (int i = 6; --i >= 0;)
+      notionalUnitcell[i] = Float.NaN;
+    spaceGroup = "unspecified";
+    coordinatesAreFractional = false;
+  }
+
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)
+      throws Exception {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("cif");
-    strandsMap = new Hashtable();
-    
+
     // this loop is a little tricky
     // the CIF format seems to generate lots of problems for parsers
     // the top of this loop should be ready to process the current line
     // pay careful attention to the 'break' and 'continue' sequence
     // or you will get stuck in an infinite loop
     line = reader.readLine();
+    initializeUnitcell();
+    modelNumber = 0;
+    boolean skipping = false;
+    boolean iHaveDesiredModel = false;
+    boolean inSemicolonString = false;
     while (line != null) {
-      if (line.startsWith("loop_")) {
-        processLoopBlock();
-        // there is already an unprocessed line in the firing chamber
+      if (line.startsWith(";"))
+        inSemicolonString = !inSemicolonString;
+      if (inSemicolonString) {
+        line = reader.readLine();
         continue;
+      }
+      if (line.startsWith("loop_")) {
+        if (!skipping) {
+          processLoopBlock();
+          // there is already an unprocessed line in the firing chamber
+          continue;
+        }
       } else if (line.startsWith("data_")) {
-        processDataParameter();
+        if (iHaveDesiredModel)
+          break;
+        skipping = (++modelNumber != desiredModelNumber && desiredModelNumber > 0);
+        if (!skipping) {
+          processDataParameter();
+          initializeUnitcell();
+          iHaveDesiredModel = (desiredModelNumber > 0);
+        }
+      } else if (line.startsWith("_chemical_name ")) {
+        processChemicalName();
       } else if (line.startsWith("_cell_") || line.startsWith("_cell.")) {
-        processCellParameter();
-      } else if (line.startsWith("_symmetry_space_group_name_H-M")) {
-        processSymmetrySpaceGroupNameHM();
-      } else if (line.startsWith("_struct_asym")) {
-        processStructAsymBlock();
+        if (!skipping)
+          processCellParameter();
+      } else if (line.startsWith("_symmetry_space_group_name_H-M")
+          || line.startsWith("_symmetry.space_group_name_H-M")) {
+        if (!skipping)
+          processSymmetrySpaceGroupNameHM();
       }
       line = reader.readLine();
     }
-    checkUnitcell();
-    logger.log("Done reading... Found these strands:");
-    Iterator strands = strandsMap.values().iterator();
-    while (strands.hasNext()) {
-      Strand strand = (Strand)strands.next();
-      logger.log(strand.toString());
-    }
     return atomSetCollection;
   }
-  
 
   final static boolean isMatch(String str1, String str2) {
     int cch = str1.length();
     if (str2.length() != cch)
       return false;
-    for (int i = cch; --i >= 0; ) {
+    for (int i = cch; --i >= 0;) {
       char ch1 = str1.charAt(i);
       char ch2 = str2.charAt(i);
       if (ch1 == ch2)
         continue;
-      if ((ch1 == '_' || ch1 == '.') &&
-          (ch2 == '_' || ch2 == '.'))
+      if ((ch1 == '_' || ch1 == '.') && (ch2 == '_' || ch2 == '.'))
         continue;
       if (ch1 <= 'Z' && ch1 >= 'A')
         ch1 += 'a' - 'A';
@@ -113,85 +155,115 @@ class CifReader extends AtomSetCollectionReader {
     }
     return true;
   }
-  
+
+  String thisDataSetName = "";
 
   void processDataParameter() {
-    String collectionName = line.substring(5).trim();
-    if (collectionName.length() > 0)
-      atomSetCollection.collectionName = collectionName;
-  }
-  
-  void processSymmetrySpaceGroupNameHM() {
-    atomSetCollection.spaceGroup = line.substring(29).trim();
+    thisDataSetName = (line.length() < 6 ? "" : line.substring(5).trim());
+    if (thisDataSetName.length() > 0) {
+      if (atomSetCollection.currentAtomSetIndex >= 0) {
+        // note that there can be problems with multi-data mmCIF sets each with
+        // multiple models; and we could be loading multiple files!
+        atomSetCollection.newAtomSet();
+        atomSetCollection.setCollectionName("<collection of "
+            + (atomSetCollection.currentAtomSetIndex + 1) + " models>");
+      } else {
+        atomSetCollection.setCollectionName(thisDataSetName);
+      }
+    }
+    logger.log(line);
   }
 
-  final static String[] cellParamNames =
-  {"_cell_length_a", "_cell_length_b", "_cell_length_c",
-   "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"};
-  
+  void processChemicalName() {
+    if (line.length() < 16)
+      return;
+    thisDataSetName += " " + line.substring(15).trim();
+    logger.log(line);
+  }
+
+  void processSymmetrySpaceGroupNameHM() {
+    tokenizer.setString(line.substring(30).trim());
+    spaceGroup = tokenizer.nextToken();
+  }
+
+  final static String[] cellParamNames = { "_cell_length_a", "_cell_length_b",
+      "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta",
+      "_cell_angle_gamma", "_cell.length_a", "_cell.length_b",
+      "_cell.length_c", "_cell.angle_alpha", "_cell.angle_beta",
+      "_cell.angle_gamma" };
+
   void processCellParameter() {
     //    logger.log("processCellParameter() line:" + line);
     String cellParameter = parseToken(line);
-    for (int i = cellParamNames.length; --i >= 0; )
+    for (int i = cellParamNames.length; --i >= 0;)
       if (isMatch(cellParameter, cellParamNames[i])) {
-        notionalUnitcell[i] = parseFloat(line, ichNextParse);
+        notionalUnitcell[i % 6] = parseFloat(line, ichNextParse);
         //        logger.log("value=" + notionalUnitcell[i]);
+        iHaveUnitCell = true;
         return;
       }
     //    logger.log("NOT");
   }
-  
-  void checkUnitcell() {
-    for (int i = 6; --i >= 0; ) {
-      if (Float.isNaN(notionalUnitcell[i]))
-        return;
-    }
-    atomSetCollection.notionalUnitcell = notionalUnitcell;
-  }
-  
+
   private void processLoopBlock() throws Exception {
     //    logger.log("processLoopBlock()-------------------------");
     line = reader.readLine().trim();
     //    logger.log("trimmed line:" + line);
-    if (line.startsWith("_atom_site")) {
+    if (line.startsWith("_atom_site_") || line.startsWith("_atom_site.")) {
       processAtomSiteLoopBlock();
-      return;
-    }
-    if (line.startsWith("_struct_asym")) {
-      processStructAsymBlock();
+      atomSetCollection.setAtomSetName(thisDataSetName);
+      /* 10.x functionality only
+          atomSetCollection.setCoordinatesAreFractional(coordinatesAreFractional);
+      if (iHaveUnitCell
+          && atomSetCollection.setNotionalUnitcell(notionalUnitcell, logger)) {
+        atomSetCollection.setAtomSetSpaceGroup(spaceGroup);
+        if (atomSetCollection.haveSymmetry()) {
+          atomSetCollection.applySymmetry(normalize, unitCells);
+          iHaveAppliedSymmetry = true;
+        } else {
+          //mmCIF -- unit cell and spacegroup, 
+          //but no symmetry info, not fractional coordinates
+        }
+      }
+      */
       return;
     }
     if (line.startsWith("_geom_bond")) {
+      if (iHaveAppliedSymmetry) {
+        line = reader.readLine();
+        return;
+      }
       processGeomBondLoopBlock();
       return;
     }
-    if (line.startsWith("_struct_conf") &&
-        !line.startsWith("_struct_conf_type")) {
+    if (line.startsWith("_struct_conf")
+        && !line.startsWith("_struct_conf_type")) {
       processStructConfLoopBlock();
-      return;
-    }
-    if (line.startsWith("_pdbx_poly_seq_scheme")) {
-      processPolySeqSchemeLoopBlock();
-      return;
-    }
-    if (line.startsWith("_pdbx_nonpoly_scheme")) {
-      processNonPolySchemeLoopBlock();
       return;
     }
     if (line.startsWith("_struct_sheet_range")) {
       processStructSheetRangeLoopBlock();
       return;
     }
+    if (line.startsWith("_struct_sheet_range")) {
+      processStructSheetRangeLoopBlock();
+      return;
+    }
+    if (line.startsWith("_symmetry_equiv_pos")
+        || line.startsWith("space_group_symop")) {
+      processSymmetryOperationsLoopBlock();
+      return;
+    }
+
     //    logger.log("Skipping loop block:" + line);
     skipLoopHeaders();
     skipLoopData();
   }
-  
+
   private void skipLoopHeaders() throws Exception {
     // skip everything that begins with _
-    while (line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) == '_') {
+    while (line != null && (line = line.trim()).length() > 0
+        && line.charAt(0) == '_') {
       line = reader.readLine();
     }
   }
@@ -200,67 +272,62 @@ class CifReader extends AtomSetCollectionReader {
     // skip everything until empty line, or comment line
     // or start of a new loop_ or data_
     char ch;
-    while (line != null &&
-           (line = line.trim()).length() > 0 &&
-           (ch = line.charAt(0)) != '_' &&
-           ch != '#' &&
-           ! line.startsWith("loop_") &&
-           ! line.startsWith("data_")) {
-      //      logger.log("skipLoopData just discarded:" + line);
+    while (line != null) {
+      line = line.trim();
+      if (line.length() != 0
+          && ((ch = line.charAt(0)) == '_' || ch == '#'
+              || line.startsWith("loop_") || line.startsWith("data_")))
+        break;
       line = reader.readLine();
     }
   }
-  
+
   ////////////////////////////////////////////////////////////////
   // atom data
   ////////////////////////////////////////////////////////////////
 
-  final static byte NONE        = 0;
+  final static byte NONE = 0;
   final static byte TYPE_SYMBOL = 1;
-  final static byte LABEL       = 2;
-  final static byte FRACT_X     = 3;
-  final static byte FRACT_Y     = 4;
-  final static byte FRACT_Z     = 5;
-  final static byte CARTN_X     = 6;
-  final static byte CARTN_Y     = 7;
-  final static byte CARTN_Z     = 8;
-  final static byte OCCUPANCY   = 9;
-  final static byte B_ISO       = 10;
-  final static byte COMP_ID     = 11;
-  final static byte ASYM_ID     = 12;
-  final static byte SEQ_ID      = 13;
-  final static byte INS_CODE    = 14;
-  final static byte ALT_ID      = 15;
-  final static byte GROUP_PDB   = 16;
-  final static byte SITE_ID     = 17;
-  final static byte MODEL_NO    = 18;
-  final static byte AUTH_SEQ_ID = 19;
-  final static byte ATOM_PROPERTY_MAX = 20;
-  
+  final static byte LABEL = 2;
+  final static byte FRACT_X = 3;
+  final static byte FRACT_Y = 4;
+  final static byte FRACT_Z = 5;
+  final static byte CARTN_X = 6;
+  final static byte CARTN_Y = 7;
+  final static byte CARTN_Z = 8;
+  final static byte OCCUPANCY = 9;
+  final static byte B_ISO = 10;
+  final static byte COMP_ID = 11;
+  final static byte ASYM_ID = 12;
+  final static byte SEQ_ID = 13;
+  final static byte INS_CODE = 14;
+  final static byte ALT_ID = 15;
+  final static byte GROUP_PDB = 16;
+  final static byte MODEL_NO = 17;
+  final static byte DUMMY_ATOM = 18;
+  final static byte ATOM_PROPERTY_MAX = 19;
 
-  final static String[] atomFields = {
-    "_atom_site_type_symbol", 
-    "_atom_site_label", "_atom_site_label_atom_id",
-    "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
-    "_atom_site.Cartn_x", "_atom_site.Cartn_y", "_atom_site.Cartn_z",
-    "_atom_site_occupancy",
-    "_atom_site.b_iso_or_equiv",
-    "_atom_site.label_comp_id", "_atom_site.label_asym_id",
-    "_atom_site.label_seq_id", "_atom_site.pdbx_PDB_ins_code",
-    "_atom_site.label_alt_id",
-    "_atom_site.group_PDB", "_atom_site.id",
-    "_atom_site.pdbx_PDB_model_num","_atom_site.auth_seq_id"
-  };
+  final static String[] atomFields = { "_atom_site_type_symbol",
+      "_atom_site_label", "_atom_site_auth_atom_id", "_atom_site_fract_x",
+      "_atom_site_fract_y", "_atom_site_fract_z", "_atom_site.Cartn_x",
+      "_atom_site.Cartn_y", "_atom_site.Cartn_z", "_atom_site_occupancy",
+      "_atom_site.b_iso_or_equiv", "_atom_site.auth_comp_id",
+      "_atom_site.auth_asym_id", "_atom_site.auth_seq_id",
+      "_atom_site.pdbx_PDB_ins_code", "_atom_site.label_alt_id",
+      "_atom_site.group_PDB", "_atom_site.pdbx_PDB_model_num",
+      "_atom_site_calc_flag", };
 
-  final static byte[] atomFieldMap = {
-    TYPE_SYMBOL,
-    LABEL, LABEL,
-    FRACT_X, FRACT_Y, FRACT_Z,
-    CARTN_X, CARTN_Y, CARTN_Z,
-    OCCUPANCY, B_ISO,
-    COMP_ID, ASYM_ID, SEQ_ID, INS_CODE,
-    ALT_ID, GROUP_PDB, SITE_ID, MODEL_NO, AUTH_SEQ_ID
-  };
+  /* to: hansonr@stolaf.edu
+   * from: Zukang Feng zfeng@rcsb.rutgers.edu
+   * re: Two mmCIF issues
+   * date: 4/18/2006 10:30 PM
+   * "You should always use _atom_site.auth_asym_id for PDB chain IDs."
+   * 
+   * 
+   */
+  final static byte[] atomFieldMap = { TYPE_SYMBOL, LABEL, LABEL, FRACT_X,
+      FRACT_Y, FRACT_Z, CARTN_X, CARTN_Y, CARTN_Z, OCCUPANCY, B_ISO, COMP_ID,
+      ASYM_ID, SEQ_ID, INS_CODE, ALT_ID, GROUP_PDB, MODEL_NO, DUMMY_ATOM };
 
   static {
     if (atomFieldMap.length != atomFields.length)
@@ -270,21 +337,20 @@ class CifReader extends AtomSetCollectionReader {
   void processAtomSiteLoopBlock() throws Exception {
     //    logger.log("processAtomSiteLoopBlock()-------------------------");
     int currentModelNO = -1;
-    int missingSequenceNumber = 0;
-    int atomSerial = 0;
+    boolean isPDB = false;
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(atomFields,
-                                         atomFieldMap,
-                                         fieldTypes,
-                                         atomPropertyReferenced);
+    int fieldCount = parseLoopParameters(atomFields, atomFieldMap, fieldTypes,
+        atomPropertyReferenced);
     // now that headers are parsed, check to see if we want
     // cartesian or fractional coordinates;
+
     if (atomPropertyReferenced[CARTN_X]) {
+      coordinatesAreFractional = false;
       for (int i = FRACT_X; i < FRACT_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
     } else if (atomPropertyReferenced[FRACT_X]) {
-      atomSetCollection.coordinatesAreFractional = true;
+      coordinatesAreFractional = true;
       for (int i = CARTN_X; i < CARTN_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
     } else {
@@ -294,33 +360,30 @@ class CifReader extends AtomSetCollectionReader {
       return;
     }
 
+    char alternateLocationID = '0';
     for (; line != null; line = reader.readLine()) {
       int lineLength = line.length();
       if (lineLength == 0)
         break;
       char chFirst = line.charAt(0);
-      if (chFirst == '#' ||
-          chFirst == '_' ||
-          line.startsWith("loop_") ||
-          line.startsWith("data_"))
+      if (chFirst == '#' || chFirst == '_' || line.startsWith("loop_")
+          || line.startsWith("data_"))
         break;
       if (chFirst == ' ') {
         int i;
-        for (i = lineLength; --i >= 0 && line.charAt(i) == ' '; ) {
+        for (i = lineLength; --i >= 0 && line.charAt(i) == ' ';) {
         }
         if (i < 0)
           break;
       }
       //      logger.log("line:" + line);
       //      logger.log("of length = " + line.length());
-      if (line.length() == 1)
-        logger.log("char value is " + (chFirst + 0));
       tokenizer.setString(line);
       //      logger.log("reading an atom");
       Atom atom = new Atom();
-      for (int i = 0; i < fieldCount; ++i) {
-        if (! tokenizer.hasMoreTokens())
-          tokenizer.setString(reader.readLine());
+      out: for (int i = 0; i < fieldCount; ++i) {
+        if (!tokenizer.hasMoreTokens())
+          tokenizer.setStringNextLine(reader);
         String field = tokenizer.nextToken();
         if (field == null)
           logger.log("field == null!");
@@ -358,8 +421,8 @@ class CifReader extends AtomSetCollectionReader {
           break;
         case OCCUPANCY:
           float floatOccupancy = parseFloat(field);
-          if (! Float.isNaN(floatOccupancy))
-            atom.occupancy = (int)(floatOccupancy * 100);
+          if (!Float.isNaN(floatOccupancy))
+            atom.occupancy = (int) (floatOccupancy * 100);
           break;
         case B_ISO:
           atom.bfactor = parseFloat(field);
@@ -370,43 +433,13 @@ class CifReader extends AtomSetCollectionReader {
         case ASYM_ID:
           if (field.length() > 1)
             logger.log("Don't know how to deal with chains more than 1 char",
-                       field);
-          atom.chainID = getChainIdFromStrandMap(field.charAt(0));
-          logger.log(atomSerial + atom.group3+" asym_id "+atom.chainID + " " + field.charAt(0));
-          //ok to assign ' ' when blank?
+                field);
+          char firstChar = field.charAt(0);
+          if (firstChar != '?' && firstChar != '.')
+            atom.chainID = firstChar;
           break;
-        case AUTH_SEQ_ID:
-          if (atom.sequenceNumber >= 0)
-            break;
-          logger.log("assigning #"+atomSerial + " group3=" + atom.group3 + " as " + field);
-          /*
-           * The idea is that it is better to err on the side of consistency
-           * with PDB files than to leave this blank. See 1bkx, where this
-           * now allows the rna monomer (and not all the H2O as well) 
-           * to be identified as RNA.
-           * 
-           * Bob Hanson 2006/04/14
-           * 
-           */
         case SEQ_ID:
           atom.sequenceNumber = parseInt(field);
-          if (atom.sequenceNumber == Integer.MIN_VALUE) {
-            logger.log("Warning! mmCIF ERROR: Missing SEQ_ID in mmCIF file for #"+atomSerial + " group3=" + atom.group3);
-            atom.sequenceNumber = --missingSequenceNumber;
-          }
-          /*
-           * 1d66.cif is missing this information, causing Jmol to 
-           * improperly assign "CD" to HOH as group3 in HETATM records.
-           *  
-           *  interestingly, this fix allows for 
-           *  
-           *  select -3
-           *  
-           *  but I wouldn't publicize that. 
-           *  
-           * -- Bob Hanson  206/04/14
-           * 
-           */ 
           break;
         case INS_CODE:
           char insCode = field.charAt(0);
@@ -414,29 +447,15 @@ class CifReader extends AtomSetCollectionReader {
             atom.chainID = insCode;
           break;
         case ALT_ID:
-          char alternateLocationID = field.charAt(0);
-          if (alternateLocationID != '?' && alternateLocationID != '.')
-            atom.alternateLocationID = alternateLocationID;
+          alternateLocationID = field.charAt(0);
+          if (alternateLocationID == '?' || alternateLocationID == '.')
+            break;
+          atom.alternateLocationID = alternateLocationID;
           break;
         case GROUP_PDB:
+          isPDB = true;
           if ("HETATM".equals(field))
             atom.isHetero = true;
-          break;
-        case SITE_ID:
-          //atom.atomSerial = parseInt(field);
-          /*
-           * I considered the above, but then decided there might be
-           * a reason we aren't assigning a serial number for atoms in
-           * a CIF file, maybe to do with the fact that in CIF files we
-           * are using mapped atom names, whereas in PDB files we are not
-           * Egon? 
-           * 
-           * So this assignment for now is just for internal purposes.
-           * 
-           * -- Bob Hanson
-           * 
-           */ 
-          atomSerial =  parseInt(field);
           break;
         case MODEL_NO:
           int modelNO = parseInt(field);
@@ -445,90 +464,39 @@ class CifReader extends AtomSetCollectionReader {
             currentModelNO = modelNO;
           }
           break;
+        case DUMMY_ATOM:
+          //see http://www.iucr.org/iucr-top/cif/cifdic_html/
+          //            1/cif_core.dic/Iatom_site_calc_flag.html
+          if ("dum".equals(field)) {
+            atom.x = Float.NaN;
+            continue out;
+          }
+          break;
         }
       }
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z))
-        logger.log("atom " + atom.atomName +
-                   " has invalid/unknown coordinates");
-      else
+        logger
+            .log("atom " + atom.atomName + " has invalid/unknown coordinates");
+      else {
         atomSetCollection.addAtomWithMappedName(atom);
+      }
     }
-  }
-
-  char getChainIdFromStrandMap(char chainChar) {
-    /*
-     * the problem (see 1pgb.cif) was that while the atom chainIDs
-     * were being set using this function, the STRUCTURE chainIDs were
-     * not, so then later the structures were taken to be in different
-     * chains than the atoms, and no structures were determined.
-     * 
-     * this method is called by helix/turn, by sheet, and by atoms!
-     * 
-     * more problems here also with 1bkx.cif. RNA fragment being given
-     * 0 instead of B. Why? In the CIF file we have
-     * 
-     * Bob Hanson 2006/04/14
-     * 
-     */
-    
-    if (chainChar == '?' || chainChar == '.')
-      return ' ';
-    String chainID = "" + chainChar;
-    if (!strandsMap.containsKey(chainID))
-      return chainChar;
-    Strand strand = (Strand) strandsMap.get(chainID);
-    // OK, here is the if/else construct that Wayne send me
-    if (strand.isBlank.booleanValue())
-      return ' '; // no author provided ID
-    if (strand.authorID != null)
-      // not pretty, but let's just assume the string only has one char
-      return strand.authorID.charAt(0);
-    return ' ';
-    /*
-     * Egon: 
-     * 
-     * Should last return be chainChar?
-     * Is mapping supposed to mean "author's or nothing? Or is there ever
-     * a time when a mapped mmCIF-given chain ID should be used?
-     * 
-     * _struct_asym.id 
-     * _struct_asym.pdbx_blank_PDB_chainid_flag 
-     * _struct_asym.pdbx_modified 
-     * _struct_asym.entity_id 
-     * _struct_asym.details 
-     * A N N 1 ? 
-     * B N N 2 ? 
-     * C N N 3 ? 
-     * 
-     * So they aren't modified and they aren't blank. 
-     * Doesn't that indicate that none should be blank?
-     * Part of the problem may be that the RNA piece here
-     * is being classified in mmCIF as HETATM but in PDB as ATOM 
-     * and I think there is a flaw in the mmCIF generator for HETATM
-     * returning ? when it should not be.
-     * 
-     * Bob 
-     * 
-     */ 
+    if (isPDB)
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", new Boolean(isPDB));
   }
 
   void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
-    for (int i = fieldCount; --i >= 0; )
+    for (int i = fieldCount; --i >= 0;)
       if (fieldTypes[i] == fieldIndex)
         fieldTypes[i] = 0;
   }
 
-  int parseLoopParameters(String[] fields,
-                          byte[] fieldMap,
-                          int[] fieldTypes,
+  int parseLoopParameters(String[] fields, byte[] fieldMap, int[] fieldTypes,
                           boolean[] propertyReferenced) throws Exception {
     int fieldCount = 0;
-    outer_loop:
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) == '_';
-         ++fieldCount, line = reader.readLine()) {
-      for (int i = fields.length; --i >= 0; )
+    outer_loop: for (; line != null && (line = line.trim()).length() > 0
+        && line.charAt(0) == '_'; ++fieldCount, line = reader.readLine()) {
+      for (int i = fields.length; --i >= 0;)
         if (isMatch(line, fields[i])) {
           int iproperty = fieldMap[i];
           propertyReferenced[iproperty] = true;
@@ -540,103 +508,51 @@ class CifReader extends AtomSetCollectionReader {
     return fieldCount;
   }
 
-  Object[] parseAndProcessStructParameters(
-        String[] fields,
-        byte[] fieldMap,
-        int[] fieldTypes,
-        boolean[] propertyReferenced) throws Exception {
-    int fieldCount = 0;
-    Strand struct = new Strand();
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) == '_';
-         ++fieldCount, line = reader.readLine()) {
-      logger.log("Processing line: ", line);
-      for (int i = fields.length; --i >= 0; ) {
-        tokenizer.setString(line);
-        String key = tokenizer.nextToken();
-        // take this valid mmCIF into account:
-        // _struct_asym.id A 
-        String value = null;
-        if (isMatch(key, fields[i])) {
-          if (tokenizer.hasMoreTokens()) {
-            value = tokenizer.nextToken();
-            if (fields[i].equals(structAsymNames[STRUCT_ASYM_ID-1])) 
-              struct.chainID = value;
-            if (fields[i].equals(structAsymNames[STRUCT_BLANK_CHAIN_ID-1]))
-              struct.isBlank = "Y".equals(value) ? Boolean.TRUE : Boolean.FALSE; 
-            logger.log("struct", struct);
-          } else {
-            struct = null;
-          }
-          int iproperty = fieldMap[i];
-          propertyReferenced[iproperty] = true;
-          fieldTypes[fieldCount] = iproperty;
-          i = -1;
-        }
-      }
-    }
-    logger.log("parseLoopParameters sees fieldCount=" + fieldCount);
-    logger.log("parsed struct -> " + struct);
-    Object[] results = new Object[2];
-    results[0] = new Integer(fieldCount);
-    results[1] = struct;
-    return results;
-  }
-
   ////////////////////////////////////////////////////////////////
   // bond data
   ////////////////////////////////////////////////////////////////
 
   final static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 1;
   final static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 2;
-  final static byte GEOM_BOND_SITE_SYMMETRY_2   = 3;
+  final static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
   //  final static byte GEOM_BOND_DISTANCE          = 4;
-  
-  final static byte GEOM_BOND_PROPERTY_MAX      = 4;
 
-  final static String[] geomBondFields = {
-    "_geom_bond_atom_site_label_1",
-    "_geom_bond_atom_site_label_2",
-    "_geom_bond_site_symmetry_2",
-    //    "_geom_bond_distance",
+  final static byte GEOM_BOND_PROPERTY_MAX = 4;
+
+  final static String[] geomBondFields = { "_geom_bond_atom_site_label_1",
+      "_geom_bond_atom_site_label_2", "_geom_bond_site_symmetry_2",
+  //    "_geom_bond_distance",
   };
 
-  final static byte[] geomBondFieldMap = {
-    GEOM_BOND_ATOM_SITE_LABEL_1,
-    GEOM_BOND_ATOM_SITE_LABEL_2,
-    GEOM_BOND_SITE_SYMMETRY_2,
-    //    GEOM_BOND_DISTANCE,
+  final static byte[] geomBondFieldMap = { GEOM_BOND_ATOM_SITE_LABEL_1,
+      GEOM_BOND_ATOM_SITE_LABEL_2, GEOM_BOND_SITE_SYMMETRY_2,
+  //    GEOM_BOND_DISTANCE,
   };
 
   void processGeomBondLoopBlock() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] propertyReferenced = new boolean[GEOM_BOND_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(geomBondFields,
-                                         geomBondFieldMap,
-                                         fieldTypes,
-                                         propertyReferenced);
-    for (int i = GEOM_BOND_PROPERTY_MAX; --i > 0; ) // only > 0, not >= 0
-      if (! propertyReferenced[i]) {
+    int fieldCount = parseLoopParameters(geomBondFields, geomBondFieldMap,
+        fieldTypes, propertyReferenced);
+    for (int i = GEOM_BOND_PROPERTY_MAX; --i > 0;)
+      // only > 0, not >= 0
+      if (!propertyReferenced[i]) {
         logger.log("?que? missing _geom_bond property:" + i);
         skipLoopData();
         return;
       }
 
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#' &&
-           line.charAt(0) != '_' &&
-           !line.startsWith("loop_") &&
-           !line.startsWith("data_");
-         line = reader.readLine()) {
+    for (; line != null && (line = line.trim()).length() > 0
+        && line.charAt(0) != '#' && line.charAt(0) != '_'
+        && !line.startsWith("loop_") && !line.startsWith("data_"); line = reader
+        .readLine()) {
       tokenizer.setString(line);
       int atomIndex1 = -1;
       int atomIndex2 = -1;
       String symmetry = null;
       for (int i = 0; i < fieldCount; ++i) {
-        if (! tokenizer.hasMoreTokens())
-          tokenizer.setString(reader.readLine());
+        if (!tokenizer.hasMoreTokens())
+          tokenizer.setStringNextLine(reader);
         String field = tokenizer.nextToken();
         switch (fieldTypes[i]) {
         case NONE:
@@ -669,57 +585,46 @@ class CifReader extends AtomSetCollectionReader {
   // helix and turn structure data
   ////////////////////////////////////////////////////////////////
 
-  final static byte CONF_TYPE_ID     = 1;
-  final static byte BEG_ASYM_ID      = 2;
-  final static byte BEG_SEQ_ID       = 3;
-  final static byte BEG_INS_CODE     = 4;
-  final static byte END_ASYM_ID      = 5;
-  final static byte END_SEQ_ID       = 6;
-  final static byte END_INS_CODE     = 7;
+  final static byte CONF_TYPE_ID = 1;
+  final static byte BEG_ASYM_ID = 2;
+  final static byte BEG_SEQ_ID = 3;
+  final static byte BEG_INS_CODE = 4;
+  final static byte END_ASYM_ID = 5;
+  final static byte END_SEQ_ID = 6;
+  final static byte END_INS_CODE = 7;
   final static byte STRUCT_CONF_PROPERTY_MAX = 8;
 
-  final static String[] structConfFields = {
-    "_struct_conf.conf_type_id",
+  final static String[] structConfFields = { "_struct_conf.conf_type_id",
 
-    "_struct_conf.beg_auth_asym_id",
-    "_struct_conf.beg_auth_seq_id",
-    "_struct_conf.pdbx_beg_PDB_ins_code",
-    
-    "_struct_conf.end_auth_asym_id",
-    "_struct_conf.end_auth_seq_id",
-    "_struct_conf.pdbx_end_PDB_ins_code",
-  };
+  "_struct_conf.beg_auth_asym_id", "_struct_conf.beg_auth_seq_id",
+      "_struct_conf.pdbx_beg_PDB_ins_code",
 
-  final static byte[] structConfFieldMap = {
-    CONF_TYPE_ID,
-    BEG_ASYM_ID, BEG_SEQ_ID, BEG_INS_CODE,
-    END_ASYM_ID, END_SEQ_ID, END_INS_CODE,
-  };
+      "_struct_conf.end_auth_asym_id", "_struct_conf.end_auth_seq_id",
+      "_struct_conf.pdbx_end_PDB_ins_code", };
+
+  final static byte[] structConfFieldMap = { CONF_TYPE_ID, BEG_ASYM_ID,
+      BEG_SEQ_ID, BEG_INS_CODE, END_ASYM_ID, END_SEQ_ID, END_INS_CODE, };
 
   void processStructConfLoopBlock() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] propertyReferenced = new boolean[STRUCT_CONF_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(structConfFields,
-                                         structConfFieldMap,
-                                         fieldTypes,
-                                         propertyReferenced);
-    for (int i = STRUCT_CONF_PROPERTY_MAX; --i > 0; ) // only > 0, not >= 0
-      if (! propertyReferenced[i]) {
+    int fieldCount = parseLoopParameters(structConfFields, structConfFieldMap,
+        fieldTypes, propertyReferenced);
+    for (int i = STRUCT_CONF_PROPERTY_MAX; --i > 0;)
+      // only > 0, not >= 0
+      if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
         skipLoopData();
         return;
       }
 
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#';
-         line = reader.readLine()) {
+    for (; line != null && (line = line.trim()).length() > 0
+        && line.charAt(0) != '#'; line = reader.readLine()) {
       tokenizer.setString(line);
       Structure structure = new Structure();
-      
       for (int i = 0; i < fieldCount; ++i) {
-        if (! tokenizer.hasMoreTokens())
-          tokenizer.setString(reader.readLine());
+        if (!tokenizer.hasMoreTokens())
+          tokenizer.setStringNextLine(reader);
         String field = tokenizer.nextToken();
         char firstChar = field.charAt(0);
         switch (fieldTypes[i]) {
@@ -734,24 +639,26 @@ class CifReader extends AtomSetCollectionReader {
             structure.structureType = "none";
           break;
         case BEG_ASYM_ID:
-          structure.startChainID = getChainIdFromStrandMap(firstChar);
+          structure.startChainID = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = parseInt(field);
           break;
         case BEG_INS_CODE:
-          structure.startInsertionCode =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.startInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         case END_ASYM_ID:
-          structure.endChainID = getChainIdFromStrandMap(firstChar);
+          structure.endChainID = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = parseInt(field);
           break;
         case END_INS_CODE:
-          structure.endInsertionCode =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.endInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         }
       }
@@ -766,69 +673,65 @@ class CifReader extends AtomSetCollectionReader {
   // note that the conf_id is not used
   final static byte STRUCT_SHEET_RANGE_PROPERTY_MAX = 8;
 
-  final static String[] structSheetRangeFields = {
-    "_struct_sheet_range.beg_label_asym_id",
-    "_struct_sheet_range.beg_label_seq_id",
-    "_struct_sheet_range.pdbx_beg_PDB_ins_code",
-    
-    "_struct_sheet_range.end_label_asym_id",
-    "_struct_sheet_range.end_label_seq_id",
-    "_struct_sheet_range.pdbx_end_PDB_ins_code",
-  };
+  //auth not label!
 
-  final static byte[] structSheetRangeFieldMap = {
-    BEG_ASYM_ID, BEG_SEQ_ID, BEG_INS_CODE,
-    END_ASYM_ID, END_SEQ_ID, END_INS_CODE,
-  };
+  final static String[] structSheetRangeFields = {
+      "_struct_sheet_range.beg_auth_asym_id",
+      "_struct_sheet_range.beg_auth_seq_id",
+      "_struct_sheet_range.pdbx_beg_PDB_ins_code",
+
+      "_struct_sheet_range.end_auth_asym_id",
+      "_struct_sheet_range.end_auth_seq_id",
+      "_struct_sheet_range.pdbx_end_PDB_ins_code", };
+
+  final static byte[] structSheetRangeFieldMap = { BEG_ASYM_ID, BEG_SEQ_ID,
+      BEG_INS_CODE, END_ASYM_ID, END_SEQ_ID, END_INS_CODE, };
 
   void processStructSheetRangeLoopBlock() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced =
-      new boolean[STRUCT_SHEET_RANGE_PROPERTY_MAX];
+    boolean[] propertyReferenced = new boolean[STRUCT_SHEET_RANGE_PROPERTY_MAX];
     int fieldCount = parseLoopParameters(structSheetRangeFields,
-                                         structSheetRangeFieldMap,
-                                         fieldTypes,
-                                         propertyReferenced);
-    for (int i = STRUCT_SHEET_RANGE_PROPERTY_MAX; --i > 1; )
-      if (! propertyReferenced[i]) {
+        structSheetRangeFieldMap, fieldTypes, propertyReferenced);
+    for (int i = STRUCT_SHEET_RANGE_PROPERTY_MAX; --i > 1;)
+      if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
         skipLoopData();
         return;
       }
 
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#';
-         line = reader.readLine()) {
+    for (; line != null && (line = line.trim()).length() > 0
+        && line.charAt(0) != '#'; line = reader.readLine()) {
       tokenizer.setString(line);
       Structure structure = new Structure();
       structure.structureType = "sheet";
-      
+
       for (int i = 0; i < fieldCount; ++i) {
-        if (! tokenizer.hasMoreTokens())
-          tokenizer.setString(reader.readLine());
+        if (!tokenizer.hasMoreTokens())
+          tokenizer.setStringNextLine(reader);
         String field = tokenizer.nextToken();
         char firstChar = field.charAt(0);
         switch (fieldTypes[i]) {
         case BEG_ASYM_ID:
-          structure.startChainID = getChainIdFromStrandMap(firstChar);
+          structure.startChainID = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = parseInt(field);
           break;
         case BEG_INS_CODE:
-          structure.startInsertionCode =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.startInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         case END_ASYM_ID:
-          structure.endChainID = getChainIdFromStrandMap(firstChar);
+          structure.endChainID = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = parseInt(field);
           break;
         case END_INS_CODE:
-          structure.endInsertionCode =
-            (firstChar == '.' || firstChar == '?') ? ' ' : firstChar;
+          structure.endInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
+              : firstChar;
           break;
         }
       }
@@ -837,255 +740,70 @@ class CifReader extends AtomSetCollectionReader {
   }
 
   ////////////////////////////////////////////////////////////////
-  // strand data
+  // symmetry operations
   ////////////////////////////////////////////////////////////////
 
-  final static byte STRUCT_ASYM_ID = 1;
-  final static byte STRUCT_BLANK_CHAIN_ID = 2;
-  final static byte STRUCT_PROPERTY_MAX = 3;
+  final static byte SYMOP_XYZ = 1;
+  final static byte SYM_EQUIV_XYZ = 2;
+  final static byte SYMMETRY_OPERATIONS_PROPERTY_MAX = 3;
 
-  final static String[] structAsymNames =
-  {"_struct_asym.id", "_struct_asym.pdbx_blank_PDB_chainid_flag"};
+  final static String[] symmetryOperationsFields = {
+      "_space_group_symop_operation_xyz", "_symmetry_equiv_pos_as_xyz", };
 
-  final static byte[] structAsymMap = {
-    STRUCT_ASYM_ID, STRUCT_BLANK_CHAIN_ID
-  };
+  final static byte[] symmetryOperationsFieldMap = { SYMOP_XYZ, SYM_EQUIV_XYZ, };
 
-  static {
-    if (structAsymMap.length != structAsymNames.length)
-      structAsymNames[100] = "explode";
-  }
-  
-  private void addOrUpdateStrandInfo(Strand strand) {
-    logger.log("Found only one chain", strand.chainID);
-    if (strandsMap.containsKey(strand.chainID)) {
-      Strand prevStrand = (Strand)strandsMap.get(strand.chainID);
-      if (strand.authorID != null) prevStrand.authorID = strand.authorID;
-      if (prevStrand.isBlank != null) prevStrand.isBlank = strand.isBlank;
-    } else {
-      strandsMap.put(strand.chainID, strand);
-    }
-  }
-
-  private void processStructAsymBlock() throws Exception {
-    //    logger.log("processAtomSiteLoopBlock()-------------------------");
-    int[] fieldTypes = new int[10]; // should be enough
-    boolean[] structPropertyReferenced = new boolean[STRUCT_PROPERTY_MAX];
-    Object[] results = parseAndProcessStructParameters(
-        structAsymNames, structAsymMap,
-        fieldTypes, structPropertyReferenced);
-    int fieldCount = ((Integer)results[0]).intValue(); 
-    Strand struct = ((Strand)results[1]);
-    // now that headers are parsed, check to see if we want
-    // cartesian or fractional coordinates;
-    if (struct != null) {
-      /* Then this syntax was found:
-      * _struct_asym.id                            A 
-      * _struct_asym.pdbx_blank_PDB_chainid_flag   Y 
-      * _struct_asym.pdbx_modified                 N 
-      * _struct_asym.entity_id                     1 
-      * _struct_asym.details                       ? 
-      * #
-      */
-      addOrUpdateStrandInfo(struct);
-    } else {
-      /* Then the 'normal' _loop format was found. */
-      logger.log("Found multiple chains... parsing them now");
-      for (; line != null; line = reader.readLine()) {
-        int lineLength = line.length();
-        if (lineLength == 0)
-          break;
-        char chFirst = line.charAt(0);
-        if (chFirst == '#' ||
-            chFirst == '_' ||
-            line.startsWith("loop_") ||
-            line.startsWith("data_"))
-          break;
-        if (chFirst == ' ') {
-          int i;
-          for (i = lineLength; --i >= 0 && line.charAt(i) == ' '; ) {
-          }
-          if (i < 0)
-            break;
-        }
-        //      logger.log("line:" + line);
-        //      logger.log("of length = " + line.length());
-        if (line.length() == 1)
-          logger.log("char value is " + (chFirst + 0));
-        tokenizer.setString(line);
-        //      logger.log("reading an atom");
-        struct = new Strand();
-        for (int i = 0; i < fieldCount; ++i) {
-          if (! tokenizer.hasMoreTokens())
-            tokenizer.setString(reader.readLine());
-          String field = tokenizer.nextToken();
-          if (field == null)
-            logger.log("field == null!");
-          switch (fieldTypes[i]) {
-          case STRUCT_ASYM_ID:
-            struct.chainID = field;
-            break;
-          case STRUCT_BLANK_CHAIN_ID:
-            struct.isBlank = "Y".equals(field) ? Boolean.TRUE : Boolean.FALSE; 
-            break;
-          }
-        }
-        addOrUpdateStrandInfo(struct);
-      }
-    }
-  }  
-
-  ////////////////////////////////////////////////////////////////
-  // poly sequence scheme data
-  ////////////////////////////////////////////////////////////////
-  
-  final static byte POLYSEQ_ASYM_ID = 1;
-  final static byte POLYSEQ_PDB_STRAND_ID = 2;
-  final static byte POLYSEQ_PROPERTY_MAX = 3;
-
-  final static String[] polySeqFields =
-  {"_pdbx_poly_seq_scheme.asym_id", 
-   "_pdbx_poly_seq_scheme.pdb_strand_id"};
-
-  final static byte[] polySeqMap = {
-    POLYSEQ_ASYM_ID, POLYSEQ_PDB_STRAND_ID
-  };
-
-  static {
-    if (polySeqMap.length != polySeqFields.length)
-      polySeqFields[100] = "explode";
-  }
-
-  private void processPolySeqSchemeLoopBlock() throws Exception {
+  void processSymmetryOperationsLoopBlock() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced =
-      new boolean[POLYSEQ_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(polySeqFields,
-        polySeqMap, fieldTypes, propertyReferenced);
-    for (int i = POLYSEQ_PROPERTY_MAX; --i > 1; )
-      if (! propertyReferenced[i]) {
-        logger.log("?que? missing _pdbx_poly_seq_scheme property:" + i);
-        skipLoopData();
-        return;
-      }
+    boolean[] propertyReferenced = new boolean[SYMMETRY_OPERATIONS_PROPERTY_MAX];
+    int fieldCount = parseLoopParameters(symmetryOperationsFields,
+        symmetryOperationsFieldMap, fieldTypes, propertyReferenced);
+    int nRefs = 0;
+    for (int i = SYMMETRY_OPERATIONS_PROPERTY_MAX; --i > 1;)
+      if (propertyReferenced[i])
+        nRefs++;
+    if (nRefs != 1) {
+      logger
+          .log("?que? _symmetry_equiv or _space_group_symop property not found");
+      skipLoopData();
+      return;
+    }
 
-    String lastChainID = "XXXXX";
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#';
-         line = reader.readLine()) {
+    for (; line != null; line = reader.readLine()) {
+      int lineLength = line.length();
+      if (lineLength == 0)
+        break;
+      char chFirst = line.charAt(0);
+      if (chFirst == '#' || chFirst == '_' || line.startsWith("loop_")
+          || line.startsWith("data_"))
+        break;
+      if (chFirst == ' ') {
+        int i;
+        for (i = lineLength; --i >= 0 && line.charAt(i) == ' ';) {
+        }
+        if (i < 0)
+          break;
+      }
       tokenizer.setString(line);
-      Strand strand = new Strand();
+
       for (int i = 0; i < fieldCount; ++i) {
-        if (! tokenizer.hasMoreTokens())
-          tokenizer.setString(reader.readLine());
+        if (!tokenizer.hasMoreTokens())
+          tokenizer.setStringNextLine(reader);
         String field = tokenizer.nextToken();
+        if (field == null)
+          logger.log("field == null!");
         switch (fieldTypes[i]) {
-        case POLYSEQ_ASYM_ID:
-          strand.chainID = field;
-          break;
-        case POLYSEQ_PDB_STRAND_ID:
-          if (field.charAt(0) == '?') {
-            strand.authorID = null; 
-          } else {
-            strand.authorID = field;
-          }
-          break;
+        case SYMOP_XYZ:
+        case SYM_EQUIV_XYZ:
+/* 10.x only
+ *           if (!atomSetCollection.addSymmetry(field))
+            logger.log("Skipping symmetry operation " + field);
+*/
+break;
         }
       }
-      // OK, we're only interested in the chain IDs
-      // hence we only parse the first AA in a chain
-      if (lastChainID.equals(strand.chainID)) {
-        // skip
-      } else {
-        addOrUpdateStrandInfo(strand);
-        lastChainID = strand.chainID;
-      }
-    }
-    logger.log("Done reading _loop Poly Seq Scheme");
-    Iterator strands = strandsMap.values().iterator();
-    while (strands.hasNext()) {
-      Strand strand = (Strand)strands.next();
-      logger.log(strand.toString());
     }
   }
 
-  ////////////////////////////////////////////////////////////////
-  // non poly scheme data
-  ////////////////////////////////////////////////////////////////
-  
-  final static byte NONPOLY_ASYM_ID = 1;
-  final static byte NONPOLY_PDB_STRAND_ID = 2;
-  final static byte NONPOLY_PROPERTY_MAX = 3;
-
-  final static String[] nonPolyFields =
-  {"_pdbx_nonpoly_scheme.asym_id", 
-   "_pdbx_nonpoly_scheme.pdb_strand_id"};
-
-  final static byte[] nonPolyMap = {
-    POLYSEQ_ASYM_ID, POLYSEQ_PDB_STRAND_ID
-  };
-
-  static {
-    if (nonPolyMap.length != nonPolyFields.length)
-      nonPolyFields[100] = "explode";
-  }
-
-  private void processNonPolySchemeLoopBlock() throws Exception {
-    int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced =
-      new boolean[NONPOLY_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(nonPolyFields,
-        polySeqMap, fieldTypes, propertyReferenced);
-    for (int i = NONPOLY_PROPERTY_MAX; --i > 1; )
-      if (! propertyReferenced[i]) {
-        logger.log("?que? missing _pdbx_nonpoly_scheme property:" + i);
-        skipLoopData();
-        return;
-      }
-
-    String lastChainID = "XXXXX";
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#';
-         line = reader.readLine()) {
-      tokenizer.setString(line);
-      Strand strand = new Strand();
-      for (int i = 0; i < fieldCount; ++i) {
-        if (! tokenizer.hasMoreTokens())
-          tokenizer.setString(reader.readLine());
-        String field = tokenizer.nextToken();
-        switch (fieldTypes[i]) {
-        case NONPOLY_ASYM_ID:
-          strand.chainID = field;
-          break;
-        case NONPOLY_PDB_STRAND_ID:
-          if (field.charAt(0) == '?') {
-            strand.authorID = null; 
-          } else {
-            strand.authorID = field;
-          }
-          break;
-        }
-      }
-      // OK, we're only interested in the chain IDs
-      // hence we only parse the first AA in a chain
-      if (lastChainID.equals(strand.chainID)) {
-        // skip
-      } else {
-        addOrUpdateStrandInfo(strand);
-        lastChainID = strand.chainID;
-      }
-    }
-    logger.log("Done reading _loop NonPoly Scheme");
-    Iterator strands = strandsMap.values().iterator();
-    while (strands.hasNext()) {
-      Strand strand = (Strand)strands.next();
-      logger.log(strand.toString());
-    }
-  }
-  
-  
   ////////////////////////////////////////////////////////////////
   // special tokenizer class
   ////////////////////////////////////////////////////////////////
@@ -1142,7 +860,7 @@ class CifReader extends AtomSetCollectionReader {
    * Specifications," J. Chem. Info. Comp. Sci., 34, 505-508.
    *</p>
    */
-    
+
   static class RidiculousFileFormatTokenizer {
     String str;
     int ich;
@@ -1154,6 +872,27 @@ class CifReader extends AtomSetCollectionReader {
       this.str = str;
       cch = str.length();
       ich = 0;
+    }
+
+    void setStringNextLine(BufferedReader reader) throws Exception {
+      String str = reader.readLine();
+      if (str == null)
+        str = "";
+
+      if (str.length() > 0 && str.charAt(0) == ';') {
+
+        String newline = '\1' + str.substring(1);
+        str = "";
+        while (newline != null) {
+          if (newline.startsWith(";")) {
+            str += newline.substring(1) + '\1';
+            break;
+          }
+          str += newline + "\n";
+          newline = reader.readLine();
+        }
+      }
+      setString(str);
     }
 
     boolean hasMoreTokens() {
@@ -1171,7 +910,7 @@ class CifReader extends AtomSetCollectionReader {
         return null;
       int ichStart = ich;
       char ch = str.charAt(ichStart);
-      if (ch != '\'' && ch != '"') {
+      if (ch != '\'' && ch != '"' && ch != '\1') {
         while (ich < cch && (ch = str.charAt(ich)) != ' ' && ch != '\t')
           ++ich;
         return str.substring(ichStart, ich);

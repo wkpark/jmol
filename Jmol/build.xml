@@ -624,6 +624,7 @@ support for assertions (which were introduced in 1.4).
       <fileset dir=".">
         <include name="applet.classes" />
         <include name="build.xml" />
+        <include name="build-i18n.xml" />
       </fileset>
     </copy>
 

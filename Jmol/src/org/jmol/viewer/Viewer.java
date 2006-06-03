@@ -1358,6 +1358,7 @@ final public class Viewer extends JmolViewer {
   void defineMeasurement(int[] atomCountPlusIndices) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "define",
                      atomCountPlusIndices);
+    notifyMeasurementsChanged();
   }
 
   public void deleteMeasurement(int i) {

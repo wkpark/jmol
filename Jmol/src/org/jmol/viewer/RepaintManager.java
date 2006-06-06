@@ -97,7 +97,7 @@ class RepaintManager {
     int modelIndexNext = displayModelIndex + (direction * currentDirection);
     int modelCount = viewer.getModelCount();
 
-   
+   /*
     System.out.println("setAnimationRelative: " +
                        " displayModelIndex=" + displayModelIndex +
                        " currentDirection=" + currentDirection +
@@ -106,7 +106,7 @@ class RepaintManager {
                        " modelCount=" + modelCount +
                        " animationReplayMode=" + animationReplayMode +
                        " animationDirection=" + animationDirection);
-    
+    */
 
     if (modelIndexNext == modelCount) {
       switch (animationReplayMode) {

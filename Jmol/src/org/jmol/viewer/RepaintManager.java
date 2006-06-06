@@ -91,16 +91,14 @@ class RepaintManager {
     else
       System.out.println("invalid animationReplayMode:" + animationReplayMode);
   }
-
   boolean setAnimationRelative(int direction) {
     if (displayModelIndex < 0)
       return false;
     int modelIndexNext = displayModelIndex + (direction * currentDirection);
     int modelCount = viewer.getModelCount();
 
-    /*
-    System.out.println("setAnimationRelative: displayModelID=" +
-                       displayModelID +
+   
+    System.out.println("setAnimationRelative: " +
                        " displayModelIndex=" + displayModelIndex +
                        " currentDirection=" + currentDirection +
                        " direction=" + direction +
@@ -108,7 +106,7 @@ class RepaintManager {
                        " modelCount=" + modelCount +
                        " animationReplayMode=" + animationReplayMode +
                        " animationDirection=" + animationDirection);
-    */
+    
 
     if (modelIndexNext == modelCount) {
       switch (animationReplayMode) {
@@ -138,11 +136,11 @@ class RepaintManager {
   }
 
   boolean setAnimationNext() {
-    return setAnimationRelative(animationDirection);
+    return setAnimationRelative(1);
   }
 
   boolean setAnimationPrevious() {
-    return setAnimationRelative(-animationDirection);
+    return setAnimationRelative(-1);
   }
 
   boolean inMotion = false;

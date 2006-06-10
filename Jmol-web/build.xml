@@ -112,6 +112,13 @@
   	  out="${build.html}/fah/missingProjects.txt">
   	</style>
 
+  	<!-- Create list of available Jmol-fah projects -->
+  	<style
+  	  style="${doc.dir}/fah/createAvailableProjectList.xsl"
+      in="${doc.dir}/fah/fah-projects.xml"
+  	  out="${build.html}/fah/availableProjects.txt">
+  	</style>
+
   	<!-- Replace paths -->
     <replace dir="${build.html}" includes="*.html">
       <replacefilter token="[images]"   value="images" />

@@ -1817,10 +1817,10 @@
   <fah_proj number="771" name="p771_vln3.8-0.4nopbc" public="y" file="y"
     server="171.64.122.138" atoms="15787" preferred="8"
     credit="33" frames="100" code="G" contact="dlucent"/>
-  <fah_proj number="772" name="p772_vln2.8pbc-com" public="n" file="y"
+  <fah_proj number="772" name="p772_vln2.8pbc-com" public="y" file="y"
     server="171.64.122.130" atoms="19399" preferred="300"
     credit="149" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="773" name="p773_vln2.8nopbc-com" public="n" file="y"
+  <fah_proj number="773" name="p773_vln2.8nopbc-com" public="y" file="y"
     server="171.64.122.130" atoms="6115" preferred="300"
     credit="44" frames="100" code="G" contact="vvishal"/>
   <!-- This is Genome@Home
@@ -2357,7 +2357,7 @@
   <fah_proj number="993" name="p993_longfkcomp2" public="y" file="y"
     server="171.65.103.151" atoms="14908" preferred="22" deadline="33"
     credit="122" frames="100" code="DG" contact="mrshirts"/>
-  <fah_proj number="994" name="p994_sundfkcomp" public="y"
+  <fah_proj number="994" name="p994_sundfkcomp" public="y" file="y"
     server="171.65.103.151" atoms="14908" preferred="24" deadline="35"
     credit="130" frames="100" code="DG" contact="mrshirts"/>
   <fah_proj number="997" name="pAla7-2" public="y"
@@ -2680,13 +2680,13 @@
     server="171.64.122.112" atoms="425" preferred="7"
     credit="28" frames="20" code="T" contact="csnow"/>
   <fah_proj number="1110" name="p1110_L939_K12M_nat_min1" public="y" file="y"
-    server="171.64.122.120" atoms="393" preferred="20"
+    server="171.64.122.120" atoms="393" preferred="10"
     credit="249" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1111" name="p1111_L939_wt_ext_444K" public="y"
     server="171.64.122.121" atoms="397" preferred="25" deadline="37"
     credit="249" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1112" name="p1112_L939_K12M_nat_min1_355K" public="y" file="y"
-    server="171.64.122.120" atoms="393" preferred="20"
+    server="171.64.122.120" atoms="393" preferred="10"
     credit="249" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1113" name="p1113_ribo_solvent1" public="y" file="y"
     server="171.67.89.154" atoms="76754" preferred="38" deadline="57"
@@ -2838,6 +2838,12 @@
   <fah_proj number="1163" name="p1163_L939_K12M_298K_DT_50ns" public="y" file="y"
     server="171.64.122.133" atoms="393" preferred="5" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
+  <fah_proj number="1164" name="p1164_RIBO_H2O_froz" public="y"
+    server="171.65.103.156" atoms="91787" preferred="14" deadline="82"
+    credit="600" frames="100" code="G" contact="dlucent"/>
+  <fah_proj number="1165" name="p1165_RIBO_H2O_froz" public="y"
+    server="171.65.103.156" atoms="91787" preferred="14" deadline="82"
+    credit="600" frames="100" code="G" contact="csnow"/>
 
   <!-- Projects 1200 to 1299 -->
   <fah_proj number="1200" name="p1200_A21nat94_gbsa305K" public="y"
@@ -3291,7 +3297,7 @@
   <fah_proj number="1479" name="p1479_tet_1479_1" public="y" file="y"
     server="171.64.122.134" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
-  <fah_proj number="1480" name="p1480_dppc_chol" public="y"
+  <fah_proj number="1480" name="p1480_dppc_chol" public="y" file="y"
     server="171.64.122.134" atoms="11120" preferred="36" deadline="53"
     credit="376" frames="500" code="A0" contact="kasson"/>
   <fah_proj number="1481" name="p1481_tet_2nm" public="y" file="y"
@@ -3306,7 +3312,7 @@
   <fah_proj number="1486" name="p1486_hafp_fus" public="y" file="y"
     server="171.65.103.68" atoms="33209" preferred="50" deadline="200"
     credit="300" frames="0" code="A0" contact="kasson"/>
-  <fah_proj number="1487" name="p1487_DPPC_DOPC_CHOL" public="n" file="y"
+  <fah_proj number="1487" name="p1487_DPPC_DOPC_CHOL" public="y" file="y"
     server="171.65.103.68" atoms="87920" preferred="47" deadline="150"
     credit="1161" frames="0" code="A0" contact="kasson"/>
   <fah_proj number="1488" name="p1488_Protein in POPC" public="y" file="y"
@@ -3321,9 +3327,12 @@
   <fah_proj number="1491" name="p1491_Membrane" public="n" file="y"
     server="171.65.103.68" deadline="4"
     credit="12" frames="100" code="A0" contact="kasson"/>
-  <fah_proj number="1492" name="p1492_membrane_protein" public="n" file="y"
+  <fah_proj number="1492" name="p1492_membrane_protein" public="y" file="y"
     server="171.65.103.68" atoms="18894" preferred="33" deadline="48"
     credit="170" frames="0" code="A0" contact="kasson"/>
+  <fah_proj number="1493" name="p1493_Protein" public="n" file="y"
+    server="171.65.103.68" atoms="23442" preferred="33" deadline="59"
+    credit="210" frames="0" code="A0" contact="kasson"/>
 
   <!-- Projects 1500 to 1599 -->
   <fah_proj number="1500" name="p1500_FSnat_273_dd19_lowv" public="y" file="y"
@@ -3728,9 +3737,15 @@
   <fah_proj number="1809" name="p1809_Collagen_POG10new_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1116" preferred="30" deadline="44"
     credit="153" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1811" name="p1811_COL1_121_fragments" public="n"
+  <fah_proj number="1811" name="p1811_COL1_121_fragments" public="y" file="y"
     server="171.65.103.158" atoms="57328" preferred="95" deadline="141"
-    credit="1024" frames="100" code="G" contact="spark"/>
+    credit="512" frames="100" code="G" contact="spark"/>
+  <fah_proj number="1812" name="p1812_Collagen_POG10more_restrained_unfolding" public="n" file="y"
+    server="171.65.103.158" atoms="1116" preferred="5" deadline="10"
+    credit="19" frames="100" code="A" contact="spark7"/>
+  <fah_proj number="1813" name="p1813_Collagen_Brodskymore_restrained_unfolding" public="n" file="y"
+    server="171.65.103.158" atoms="1125" preferred="5" deadline="10"
+    credit="19" frames="100" code="A" contact="spark7"/>
   <fah_proj number="1850" name="p1850_Myosin6_PT_US" public="y" file="y"
     server="171.65.103.158" atoms="1205" preferred="35" deadline="52"
     credit="182" frames="100" code="A" contact="spark7"/>
@@ -3743,6 +3758,9 @@
   <fah_proj number="1860" name="p1860_Myosin6_PT_US_TIP3P_at9" public="n"
     server="171.65.103.158" atoms="29699" preferred="38" deadline="56"
     credit="198" frames="100" code="G" contact="spark"/>
+  <fah_proj number="1861" name="p1861_Myosin6_PT_US_TIP3P" public="y" file="y"
+    server="171.65.103.158" atoms="36125" preferred="50" deadline="74"
+    credit="267" frames="100" code="G" contact="spark"/>
 
   <!-- Projects 1900 to 1999 -->
   <fah_proj number="1900" name="p1900_32_water_molecules" public="y" file="y"
@@ -4118,19 +4136,19 @@
   <fah_proj number="2118" name="p2118_ww_domain_mutant_5_am96" public="y" file="y"
     server="171.64.122.141" atoms="591" preferred="77" deadline="114"
     credit="412" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2119" name="p2119_ww_domain_mutant_1_am99" public="y"
+  <fah_proj number="2119" name="p2119_ww_domain_mutant_1_am99" public="y" file="y"
     server="171.64.122.141" atoms="604" preferred="77" deadline="114"
     credit="408" frames="100" code="G" contact="densign"/>
   <fah_proj number="2120" name="p2120_ww_domain_mutant_2_am99" public="y" file="y"
     server="171.64.122.141" atoms="580" preferred="77" deadline="114"
     credit="408" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2121" name="p2121_ww_domain_mutant_3_am99" public="y"
+  <fah_proj number="2121" name="p2121_ww_domain_mutant_3_am99" public="y" file="y"
     server="171.64.122.141" atoms="572" preferred="77" deadline="114"
     credit="408" frames="100" code="G" contact="densign"/>
   <fah_proj number="2122" name="p2122_ww_domain_mutant_4_am99" public="y" file="y"
     server="171.64.122.141" atoms="572" preferred="77" deadline="114"
     credit="408" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2123" name="p2123_ww_domain_mutant_5_am99" public="y"
+  <fah_proj number="2123" name="p2123_ww_domain_mutant_5_am99" public="y" file="y"
     server="171.64.122.141" atoms="591" preferred="77" deadline="114"
     credit="408" frames="100" code="G" contact="densign"/>
 
@@ -4396,4 +4414,13 @@
   <fah_proj number="2507" name="p2507_A21_agbnp_amber99" public="n" file="y"
     server="171.64.122.139" atoms="222" preferred="42" deadline="61"
     credit="215" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2509" name="p2509_BBA5_pfold" public="y" file="y"
+    server="171.64.122.139" atoms="3385" preferred="41" deadline="61"
+    credit="215" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2510" name="p2510_BBA5_pfold" public="y" file="y"
+    server="171.64.122.139" atoms="1885" preferred="46" deadline="68"
+    credit="241" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2511" name="p2511_BBA5_pfold" public="y"
+    server="171.64.122.139" atoms="1285" preferred="27" deadline="39"
+    credit="136" frames="100" code="GB" contact="luttmann"/>
 </fah_projects>

@@ -592,7 +592,8 @@ final class Frame {
   }
 
   int getAtomIndexFromAtomNumber(int atomNumber) {
-    for (int i = atomCount; --i >= 0; ) {
+    //definitely want FIRST choice (first model), not last!
+    for (int i = 0; i < atomCount; i++) {
       if (atoms[i].getAtomNumber() == atomNumber)
         return i;
       }

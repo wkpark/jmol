@@ -1823,6 +1823,15 @@
   <fah_proj number="773" name="p773_vln2.8nopbc-com" public="y" file="y"
     server="171.64.122.130" atoms="6115" preferred="300"
     credit="44" frames="100" code="G" contact="vvishal"/>
+  <fah_proj number="774" name="p774_vln3.3nopbc" public="y" file="y"
+    server="171.64.122.138" atoms="10723" preferred="9"
+    credit="41" frames="100" code="G" contact="dlucent"/>
+  <fah_proj number="775" name="p775_vln3.8pbc" public="y" file="y"
+    server="171.64.122.138" atoms="47413" preferred="24"
+    credit="120" frames="100" code="G" contact="dlucent"/>
+  <fah_proj number="776" name="p776_vln3.8nopbc" public="y" file="y"
+    server="171.64.122.138" atoms="17185" preferred="8"
+    credit="36" frames="100" code="G" contact="dlucent"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -3345,7 +3354,7 @@
   <fah_proj number="1492" name="p1492_membrane_protein" public="y" file="y"
     server="171.65.103.68" atoms="18894" preferred="33" deadline="48"
     credit="170" frames="0" code="A0" contact="kasson"/>
-  <fah_proj number="1493" name="p1493_Protein" public="n" file="y"
+  <fah_proj number="1493" name="p1493_Protein" public="y" file="y"
     server="171.65.103.68" atoms="23442" preferred="33" deadline="59"
     credit="210" frames="0" code="A0" contact="kasson"/>
 
@@ -4172,6 +4181,12 @@
   <fah_proj number="2123" name="p2123_ww_domain_mutant_5_am99" public="y" file="y"
     server="171.64.122.141" atoms="591" preferred="77" deadline="114"
     credit="408" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2124" name="p2124_lambda_5way_melt_4_10011" public="n" file="y"
+    server="171.65.103.160" atoms="1258" preferred="74" deadline="110"
+    credit="396" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2125" name="p2125_lambda_5way_melt_4_10011" public="n" file="y"
+    server="171.65.103.160" atoms="1258" preferred="73" deadline="109"
+    credit="392" frames="100" code="G" contact="densign"/>
 
   <!-- Projects 2200 to 2299 -->
   <fah_proj number="2200" name="p2200_ProteinA" public="y" file="y"
@@ -4423,6 +4438,9 @@
     credit="600" frames="100" code="G" contact="ppetrone"/>
   <fah_proj number="2409" name="p2409_Ribo_lysine_sidechain" public="y" file="y"
     server="171.64.122.142" atoms="88042" preferred="30" deadline="82"
+    credit="600" frames="100" code="G" contact="ppetrone"/>
+  <fah_proj number="2411" name="p2411_Ribo_aspartic" public="n" file="y"
+    server="171.64.122.142" atoms="87998" preferred="30" deadline="82"
     credit="600" frames="100" code="G" contact="ppetrone"/>
 
   <!-- Projects 2500 to 2599 -->

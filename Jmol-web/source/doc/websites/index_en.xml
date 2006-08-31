@@ -29,8 +29,9 @@
 	  </a>
 	</li>
 	<li>
-	  <a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm">
-	    RasMol Version 2.6-beta-2 Reference Manual
+	  <a href="http://www.umass.edu/microbio/chime/manual/chimeman.htm">
+	    RasMol Version 2.6-beta-2 Reference Manual, supplemented with 
+		Chime-specific commands
 	  </a>
 	</li>
       </ul>
@@ -39,16 +40,14 @@
     <section title="MDL Chime">
       <ul>
 	<li>
-	  MDL Information Systems, Inc
+	  Elsevier MDL:
 	  <a href="http://www.mdlchime.com">
 	    www.mdlchime.com
 	  </a>
 	</li>
 	<li>
-	  molviz.org
-	  <a href="http://www.molviz.org/index.html#about">
-	    About MDL Chime
-	  </a>
+	  <a href="http://www.molviz.org/index.html#about">About MDL Chime</a>
+	  in MolViz.org
 	</li>
       </ul>
     </section>
@@ -69,8 +68,8 @@
 	</li>
 	<li>
 	  World Index of Molecular Visualization Resources<br />
-	  <a href="http://molvis.sdsc.edu/visres/">
-	    molvis.sdsc.edu/visres
+	  <a href="http://www.molvisindex.org/">
+	    www.molvisindex.org 
 	  </a>
 	</li>
 	<li>

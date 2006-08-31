@@ -94,15 +94,13 @@
     la verificación.
   </p>
   <p>
-    Por ahora* no hay un JmolApplet 'firmado'. En el futuro, cuando lo haya, 
-    acudiré a una 'autoridad certifcadora' para demostrarles que soy miembro
-    del proyecto Jmol. Entonces, me entregarán una clave digital, que usaré para 
-    generar un JmolAppletSigned.
-  </p>
-  <p>     (*N.T.: la versión preliminar Jmol 10.00.12 ya incluye una miniaplicación firmada.)
+    A partir de la versión preliminar 10.00.12 (incluyendo 10.2), Jmol incluye
+    un JmolApplet 'firmado' (JmolAppletSigned.jar), aunque no está
+    respaldada por ninguna 'autoridad certifcadora'.
   </p>
   <p>
-    Cuando un usuario visite una página web que tiene la miniaplicación firmada JmolAppletSigned, 
+    Cuando un usuario visite una página web que tiene la miniaplicación firmada 
+    JmolAppletSigned, 
     se le preguntará si confía en dicha miniaplicación. Si contesta que sí, 
     la sesión continuará.
   </p>
@@ -127,8 +125,8 @@
     CD-ROM y las almacenadas en un sistema de archivos local.
   </p>
   <p>
-    En el futuro esperamos tener una miniaplicación firmada (JmolAppletSigned). No obstante,
-    querremos mantener la miniaplicación no firmada para quienes deseen
+    La miniaplicación firmada se ofrece para conveniencia de algunos usuarios. No obstante,
+    queremos mantener la miniaplicación no firmada para quienes deseen
     elaborar páginas más sencillas que no soliciten permiso para escribir en el
     disco duro local.
   </p>
@@ -138,7 +136,7 @@
     moléculas a los estudiantes que comienzan y a los visitantes casuales.
   </p>
   <p>
-    La miniaplicación firmada (JmolAppletSigned) será para usuarios más avanzados que
+    La miniaplicación firmada (JmolAppletSigned) es para usuarios más avanzados que
     quieran mayor funcionalidad.
   </p>
 

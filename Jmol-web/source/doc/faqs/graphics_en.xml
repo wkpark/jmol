@@ -30,7 +30,9 @@
   
   <section title="Does Jmol support isosurfaces?">
     <p>
-      Not yet. It is relatively high on our priority list. 
+      Yes. Starting with version 10.2, Jmol has some functionality
+      for rendering isosurfaces,
+      that is being expanded for the incoming version 11.0.
     </p>
   </section>
   
@@ -38,8 +40,8 @@
    title="What shapes does Jmol support for protein secondary structure?">
     <p>
       Using RasMol/Chime terminology, Jmol current supports
-      <b>backbone</b>, <b>trace</b>, <b>strands</b>, <b>meshribbons</b>,
-      <b>ribbons</b>, and <b>cartoons</b>.
+      <b>backbone</b>, <b>trace</b>, <b>strands</b>, <b>ribbons</b>, 
+	  <b>meshribbons</b>, <b>cartoons</b>, and <b>rockets</b>.
     </p>
   </section>
 </section>

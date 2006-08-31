@@ -8,10 +8,6 @@
     <title>Libraire JavaScript Jmol.js</title>
     
     <header>
-      <p><b>
-        Les informations sur cette page se rapportent &#x00E0; la
-        prochain version Jmol v10 qui est actuellement en beta test.
-      </b></p>
       <p>
         Jmol.js est une librairie JavaScript qui peut &#x00EA;tre
         utilis&#x00E9;e pour simplifier le d&#x00E9;veloppement de pages
@@ -309,7 +305,7 @@
           vous devriez passer <code>&lt;br&gt;</code> comme
           param&#x00E8;tre. Si <code>separatorHtml</code> n'est pas
           sp&#x00E9;cifi&#x00E9;, sa valeur par d&#x00E9;faut est
-          <code>"&lt;nbsp; "</code>
+          <code>"&amp;nbsp;"</code>
         </p>
         <p>
           <code>groupName</code> sera utilis&#x00E9; comme le nom commun
@@ -400,7 +396,7 @@
       <section title="jmolBr">
         <code>jmolBr()</code>
         <p>
-          La m&#x00EA;me chose que <code>jmolHtml("<br />")</code> qui
+          La m&#x00EA;me chose que <code>jmolHtml("&lt;br /&gt;")</code> qui
           est identique &#x00E0;
           <code>&lt;/script&gt;&lt;br /&gt;&lt;script&gt;</code>
         </p>

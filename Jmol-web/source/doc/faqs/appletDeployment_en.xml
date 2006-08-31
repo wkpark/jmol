@@ -15,7 +15,11 @@
     <p>
       The JmolApplet runs as an <b>untrusted</b> applet. The applet
       does not any confirmation from the user to load and begin
-      execution. 
+      execution. There is also a <b>trusted</b> version of the applet
+      (JmolAppletSigned)
+	  for authors that prefer to make use of its advantages 
+	  (see <a href="technotes/#Browser Enhancement Technologies">TechNotes, Browser Enhancement Technologies</a> 
+	  for details).
     </p>
   </section>
 

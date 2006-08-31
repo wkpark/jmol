@@ -19,7 +19,11 @@
     <p>
       JmolApplet se ejecuta como una miniaplicación <b>no confiable</b>, por lo que
       no se requiere ninguna confirmación por parte del usuario para cargarla y 
-      comenzar su ejecución. 
+      comenzar su ejecución. Hay también una versión <b>confiable</b> de la
+      miniaplicación (JmolAppletSigned), para los autores que prefieran 
+      aprovechar sus ventajas
+   	  (puedes conocer éstas en la sección
+   	  <a href="technotes/#Browser Enhancement Technologies">Notas técnicas, Tecnologías de mejora del navegador</a>).
     </p>
   </section>
 

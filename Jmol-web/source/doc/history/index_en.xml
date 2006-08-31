@@ -91,14 +91,15 @@
 	and explaining scripting behaviors of RasMol and Chime.
       </p>
       <p>
-	Jmol version 10, an open source replacement for the Chime plugin,
-	was released in December 2004.
+	Jmol version 10.0, an open source replacement for the Chime plugin,
+	was released in December 2004. It was followed by an improved 
+	version 10.2 on April 2006.
       </p>
     </section>
     <section title="Jmol Literature">
       <p>
         An up to date list of literature describing Jmol can be found at
-        <a href="http://wiki.jmol.org/index.php/Literature">http://wiki.jmol.org/index.php/Literature</a>.
+        <a href="http://wiki.jmol.org/index.php/Literature">Jmol's Wiki</a>.
       </p>
     </section>
   </body>

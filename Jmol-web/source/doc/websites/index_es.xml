@@ -29,12 +29,13 @@
       <ul>
 	<li>
 	  <a href="http://www.openrasmol.org/doc/">
-	    Documentación de Open RasMol actualizada
+	    Documentación actualizada de Open RasMol 
 	  </a>
 	</li>
 	<li>
-	  <a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm">
-	    Manual de referencia de RasMol versión 2.6-beta-2
+	  <a href="http://www.umass.edu/microbio/chime/manual/chimeman.htm">
+	    Manual de referencia de RasMol versión 2.6-beta-2, suplementado
+	    con instrucciones específicas de Chime.
 	  </a>
 	</li>
       </ul>
@@ -43,14 +44,14 @@
     <section title="MDL Chime">
       <ul>
 	<li>
-	  MDL Information Systems, Inc.: 
+	  Elsevier MDL: 
 	  <a href="http://www.mdlchime.com">
 	    www.mdlchime.com
 	  </a>
 	</li>
 	<li>
-	  <a href="http://www.molviz.org/index.html#about">
-	    Acerca de MDL Chime</a> en MolViz.org
+	  <a href="http://www.molviz.org/index.html#about">Acerca de MDL Chime</a> 
+	  en MolViz.org
 	</li>
       </ul>
     </section>

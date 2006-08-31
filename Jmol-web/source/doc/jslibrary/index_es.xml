@@ -9,12 +9,6 @@
     
     <header>
       <p>
-	<b>
-	  La información de esta página se refiere a la versión 
-	  Jmol v10, que está actualmente en fase de pruebas beta.
-	</b>
-      </p>
-      <p>
 	Jmol.js es una biblioteca javascript que puede usarse para simplificar
 	el desarrollo de páginas web que incluyan la miniaplicación JmolApplet.
       </p>
@@ -42,10 +36,12 @@
 	usando </i>
 	<a href="http://javaplugin.sourceforge.net">
 	  javaplugin.sourceforge.net
-	</a>
+	</a> (al parecer, las versiones más recientes de estos navegadores 
+	ya incluyen este conector, por lo que funcionarán sin
+	necesidad de esa instalación extra)
       </p>
       <p>
-	Hay uunas pocas situaciones en las que podrías optar por
+	Hay unas pocas situaciones en las que podrías optar por
 	no utilizar la biblioteca Jmol.js. Entre ellas, puedes querer
 	construir una aplicación avanzada en el servidor web, que
 	genere HTML desde el servidor, tal como PHP, JSP, ASP, CGI, etc.
@@ -56,80 +52,11 @@
     </section>
 
     <section title="Página HTML de ejemplo que usa Jmol.js">
-      <p>
-	<a href="." onClick='window.open("../demo/jssample0/", "jssample",
-	   "width=250,height=350,screenX=10,screenY=10,left=10,top=10"); return false;'>
-	  Haz clic aquí</a>
-	para abrir una nueva ventana del navegador que muestra la página de ejemplo
-	generada por el código fuente html siguiente:
-<pre><![CDATA[
-<html>
-  <head>
-    <title>Ejemplo sencillo</title>
-    <script src="../jmol/Jmol.js"></script>
-  </head>
-  <body>
-    <script>
-      jmolInitialize("../jmol"); // REQUIRED
-      jmolApplet(200, "load caffeine.xyz");
-    </script>
-  </body>
-</html>
-]]></pre>
-      </p>
-      <p>
-	<a href="." onClick='window.open("../demo/jssample1/", "jssample",
-	   "width=250,height=350,screenX=10,screenY=10,left=10,top=10"); return false;'>
-	  Haz clic aquí</a>
-	para ver un ejemplo ligeramente más complejo, que demuestra los
-	distintos tipos de controles para la interfaz de usuario que se pueden 
-	generar usando la bilioteca Jmol.js.
-<pre><![CDATA[
-<html>
-  <head>
-    <title>Ejemplo de controles para la interfaz de usuario</title>
-    <script src="../jmol/Jmol.js"></script> <!-- REQUIRED -->
-  </head>
-  <body>
-    <form> <!-- los controles button/checkbox/radio/menu deben estar rodeados por etiquetas form -->
-      <script>
-        jmolInitialize("../jmol"); // REQUIRED
-        jmolSetAppletColor("skyblue"); // si no quieres el negro
-
-	// 200x200 + archivo de otra carpeta
-	jmolApplet(200, "load ../jssample0/caffeine.xyz");
-	jmolBr();
-	// un grupo de opciones "radio"
-	jmolHtml("atoms ");
-	jmolRadioGroup([
-          ["spacefill off",  "off"],
-	  ["spacefill 20%",  "20%", "checked"],
-	  ["spacefill 100%", "100%"]
-	]);
-	jmolBr();
-	// un botón
-	jmolButton("reset", "Reiniciar a la orientación original");
-	jmolBr();
-	// una casilla de selección o "checkbox"
-	jmolCheckbox("spin on", "spin off", "spin");
-	jmolBr();
-	// a link
-	jmolLink("move 360 0 0 0 0 0 0 0 2", "Rotar una vez alrededor del eje X");
-	jmolBr();
-	// a menu
-	jmolMenu([
-	"background white",
-	["background skyblue", null, "selected"],
-	"background yellow",
-	"background salmon",
-	"background palegreen",
-	"background black"
-	]);
-      </script>
-    </form>
-  </body>
-</html>
-]]></pre>
+      <p>Visita las páginas de demostración (hay un enlace en el 
+      menú superior derecho) para ver algunas páginas de ejemplo 
+      que usan la miniaplicación Jmol y los distintos tipos de
+      controles que se pueden incorporar en la interfaz de usuario
+      utilizando la biblioteca Jmol.js.
       </p>
     </section>
 
@@ -137,9 +64,15 @@
       <ul>
 	<li>
 	  Debes crear una carpeta en tu servidor web que contenga
-	  Jmol.js, JmolApplet.jar y cualesquiera otros archivos específicos de Jmol.
+	  Jmol.js, JmolApplet(0 a 6).jar, JmolApplet_i18n.jar, 
+	  y cualesquiera otros archivos específicos de Jmol.
 	  A los efectos de esta discusión, la llamaremos
 	  <code>../tu-carpeta-Jmol</code>.
+	  <br>Si prentende ejecutar tus páginas web desde un
+	  disco local (disco duro, CD-ROM...), se imponen
+	  ciertas restricciones respecto a dónde puedes situar
+	  <code>../tu-carpeta-Jmol</code>; por favor, consulta
+	  <a href="http://wiki.jmol.org/index.php/Jmol_Applet_Deployment_Local">esta página</a>.
 	</li>
 	<li>
 	  Cada página web que forme parte del sitio web debe hacer referencia 
@@ -147,7 +80,7 @@
 	  Debes utilizar <i>siempre</i> rutas relativas que comiencen con . o ..
 	  En circunstancias especiales, <i>pueden</i> ser aceptables rutas relativas al
 	  servidor, que comiencen con / .
-	  <b>Nunca</b> debes usar rutas absolutas, que comiencen con http:// 
+	  <b>Nunca</b> debes usar rutas absolutas, que comiencen con <code>http://</code>. 
 	</li>
 	<li>
 	  Cada página debe contener la siguiente instrucción HTML dentro de la
@@ -156,22 +89,26 @@
 <pre><![CDATA[
   <head>
     ...
-    <script src="../tu-carpeta-Jmol/Jmol.js"></script>
+    <script type="text/javascript" src="../tu-carpeta-Jmol/Jmol.js"></script>
     ...
   </head>
 ]]></pre>
 	</li>
         <li>
 	  La primera llamada a la biblioteca Jmol.js en cada página debe ser
-	  <code>jmolInitialize(codebaseDirectory)</code>.
+	  <code>jmolInitialize("../tu-carpeta-Jmol")</code>.
 	</li>
 
 	<li>
-	  Cada página que contenga controles de tipo botón, casillas de selección, grupos de opciones
+	  Aunque ya no es necesario, puede ser conveniente que
+	  cada página que contenga controles de tipo botón, 
+	  casillas de selección, grupos de opciones
 	  o menús (<i>button, checkbox, radio, select</i>)
-	  debe tener etiquetas <code>&lt;form&gt;</code> y <code>&lt;/form&gt;</code> que los rodeen.
+	  incorpore etiquetas <code>&lt;form&gt;</code> y 
+	  <code>&lt;/form&gt;</code> que los rodeen.
 	  Para ello, generalmente es seguro abrir tal etiqueta inmediatamente tras la etiqueta
-	  <code>&lt;body&gt;</code> y cerrarla inmediatamente antes de la etiqueta <code>&lt;/body&gt;</code>. 
+	  <code>&lt;body&gt;</code> y cerrarla inmediatamente antes de la 
+	  etiqueta <code>&lt;/body&gt;</code>. 
 <pre><![CDATA[
   <body>
     <form>
@@ -278,7 +215,7 @@
 	  insertará tras cada opción o botón radio. Por ejemplo, para poner las 
 	  opciones en líneas separadas, debes poner como parámetro
 	  <code>"&lt;br&gt;"</code>. Si no se indica un <code>separadorHtml</code>, tomará
-	  el valor predeterminado <code>"&amp;nbsp; "</code> (es decir, un espacio).
+	  el valor predeterminado <code>"&amp;nbsp;"</code> (es decir, un espacio).
 	</p>
 	<p>
 	  <code>nombreGrupo</code> se usará como el identificador HTML ("name") 
@@ -360,7 +297,7 @@
       <section title="jmolBr">
 	<code>jmolBr()</code>
 	<p>
-	  Es lo mismo que <code>jmolHtml("&lt;br /&gt;")</code> <br /> que es también 
+	  Es lo mismo que <code>jmolHtml("&lt;br /&gt;")</code> que es también 
 	  lo mismo que <code>&lt;/script&gt;&lt;br /&gt;&lt;script&gt;</code>
 	</p>
       </section>

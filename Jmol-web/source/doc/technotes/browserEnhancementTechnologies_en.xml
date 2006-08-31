@@ -88,28 +88,27 @@
     verification ... kind of like the Better Business Bureau.
   </p>
   <p>
-    Today, there is no 'signed' JmolApplet. In the future, when there is, I
-    will go to a 'certifying authority' and prove to them that I am a member
-    of the Jmol project. They will then give me a digital key set. I will
-    then use that set of keys to produce a SignedJmolApplet.
+    Starting with preliminary release 10.00.12 (this includes 10.2), Jmol includes a 
+	'signed' JmolApplet (JmolAppletSigned.jar), although no official 
+	'certifying authority' is backing it up.
   </p>
   <p>
-    When a user goes to a web page that has the SignedJmolApplet, they will
+    When a user goes to a web page that has the signed JmolApplet, they will
     be prompted and asked if they trust this applet. They will say 'yes' and
     the session will continue.
   </p>
   <p>
-    The SignedJmolApplet that is installed on their hard drive can now
-    read/write files on their hard drive. It can also read/write data
+    The signed JmolApplet that is then downloaded can read/write files 
+	on their hard drive. It can also read/write data
     from/to arbitrary places on the web.
   </p>
   <p>
-    That will give the SignedJmolApplet a lot more leeway to do interesting
+    That will give the signed JmolApplet a lot more leeway to do interesting
     things ... like read local molecular model files ... or pull files
     directly from databases on the web.
   </p>
   <p>
-    Note that this SignedJmolApplet is still an applet that <i>only</i>
+    Note that this signed JmolApplet is still an applet that <i>only</i>
     exists in the context of a specific web page. 
     It is not an arbitrary application
     that can be launched at any time.
@@ -120,8 +119,8 @@
     CD-ROM or is stored in a local file system.
   </p>
   <p>
-    In the future we hope to have a SignedJmolApplet. However, we will want to
-    keep the unsigned JmolApplet for people who want to build simpler web
+    The signed JmolApplet is offered for convenience of some users. However, 
+	we want to keep the unsigned JmolApplet for people who want to build simpler web
     sites that do not request/require explicit permission to write to the
     local hard drive.
   </p>
@@ -131,7 +130,7 @@
     beginning students and casual visitors.
   </p>
   <p>
-    The SignedJmolApplet will be for serious users who want more serious    
+    The signed JmolApplet is for serious users who want more serious    
     functionality.
   </p>
 

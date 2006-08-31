@@ -4,22 +4,31 @@
     <title>Jmol Documentation</title>
     
     <header>
-      <p>
-	<i>
-	  Be advised that some of this documentation applies to Jmol
-	  version 9. It is being rewritten for Jmol version 10.
-	</i>
-      </p>
     </header>
 
-    <section title="Interactive Online Scripting Documentation">
+
+    <section title="The Jmol Guide">
+      <p>
+        The <a href="JmolUserGuide/">Jmol Guide</a>
+	describes the Jmol application.
+      </p>
+    </section>
+
+    <section title="The Jmol Applet Guide">
+      <p>
+        The <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
+	describes the Jmol applet.
+      </p>
+    </section>
+	
+	<section title="Interactive Online Scripting Documentation">
       <p>
 	This interactive online documentation describes the
-	Jmol/RasMol/Chime scripting language. It provides excellent
+	Jmol scripting language. It provides excellent
 	demonstrations and examples.
       </p>
       <p>
-	<a href="http://www.stolaf.edu/people/hansonr/jmol/docs">
+	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">
 	  Jmol Interactive Online Scripting Documentation
 	</a>
       </p>
@@ -32,31 +41,6 @@
       </p>
     </section>
 
-    <section title="The Jmol v9 Guide">
-      <p>
-	<b>
-	  Be advised that this documentation applies to Jmol
-	  version 9. It is being rewritten for Jmol version 10.
-	</b>
-      </p>
-      <p>
-        The <a href="JmolUserGuide/">Jmol Guide</a>
-	describes the Jmol application.
-      </p>
-    </section>
-
-    <section title="The Jmol v9 Applet Guide">
-      <p>
-	<b>
-	  Be advised that this documentation applies to Jmol
-	  version 9. It is being rewritten for Jmol version 10.
-	</b>
-      </p>
-      <p>
-        The <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
-	describes the Jmol applet.
-      </p>
-    </section>
   </body>
 </document>
 

@@ -35,7 +35,9 @@
   
   <section title="¿Admite Jmol isosuperficies?">
     <p>
-      Aún no. Es relativamente importante en nuestra lista de prioridades. 
+      Sí. A partir de la versión 10.2, Jmol tiene algunas prestaciones
+      para representar isosuperficies,
+      que se están ampliando para la próxima versión 11.0.
     </p>
   </section>
   
@@ -43,9 +45,10 @@
    title="¿Qué formas aporta Jmol para la estructura secundaria de proteínas?">
     <p>
       Usando terminología de RasMol/Chime, Jmol actualmente ofrece 
-      <b>esqueleto (<i>backbone</i>)</b>, <b>trazo (<i>trace</i>)</b>, <b>hebras (<i>strands</i>)</b>, 
+      <b>esqueleto (<i>backbone</i>)</b>, <b>trazo (<i>trace</i>)</b>, 
+      <b>hebras (<i>strands</i>)</b>, 
       <b>cintas en malla (<i>meshribbons</i>)</b>,
-      <b>cintas (<i>ribbons</i>)</b> y <b>caricaturas (<i>cartoons</i>)</b>.
+      <b>cintas (<i>ribbons</i>)</b> y <b>esquemático (<i>cartoons</i>)</b>.
     </p>
   </section>
 </section>

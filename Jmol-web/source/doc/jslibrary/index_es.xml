@@ -68,7 +68,7 @@
 	  y cualesquiera otros archivos específicos de Jmol.
 	  A los efectos de esta discusión, la llamaremos
 	  <code>../tu-carpeta-Jmol</code>.
-	  <br>Si prentende ejecutar tus páginas web desde un
+	  <br />Si prentende ejecutar tus páginas web desde un
 	  disco local (disco duro, CD-ROM...), se imponen
 	  ciertas restricciones respecto a dónde puedes situar
 	  <code>../tu-carpeta-Jmol</code>; por favor, consulta

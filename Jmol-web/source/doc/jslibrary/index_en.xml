@@ -64,7 +64,7 @@
 	  and any other Jmol-specific
 	  files. For the purposes of this discussion we will
 	  call this directory <code>../your-Jmol-directory</code>.
-	  <br>If you intend to run your web pages from a local disk 
+	  <br />If you intend to run your web pages from a local disk 
 	  (hard disk, CD-ROM...), certain restrictions 
 	  apply to where <code>your-Jmol-directory</code> can be; please read
 	  <a href="http://wiki.jmol.org/index.php/Jmol_Applet_Deployment_Local">this page</a>.
@@ -136,7 +136,7 @@
 	    be specified as "true" if you want to use the signed
 	    applet, that has less Java security restrictions than the 
 		standard, unsigned applet.
-		<br>
+		<br />
 		With the signed applet, you can put applet files, model 
 		files and page files wherever you want to and run them 
 		from local disk. It also allows to load local files into 

@@ -18,25 +18,20 @@
       Ocasionalmente están disponibles en el mismo lugar algunas versiones provisionales.
       </p>
       <p>
-      N.T.: Hasta que salga la próxima versión oficial, que incluirá la traducción al español, 
-      se puede descargar una versión 10.00 en español (no oficial) desde 
-      <a href="http://www2.uah.es/biomodel/pruebas/jmol/es/">aquí</a>.
-      </p>
-      <p>
         Se puede encontrar información relativa a los paquetes binarios para Linux en
         <a href="http://wiki.jmol.org/index.php/Support/Linux">el Wiki de Jmol</a>.
       </p>
     </section>
 
-    <section title="Acceso por CVS">
+    <section title="Acceso por Subversion">
       <p>
         Puedes echar un vistazo al último código fuente o extraer anónimamente
         el proyecto desde el repositorio
-	<a href="http://www.cvshome.org/">CVS</a>.
+	<a href="http://subversion.tigris.org/">Subversion</a> (SVN).
       </p>
       <p>
-	<a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/jmol/">
-	  Ojear el repositorio CVS de Jmol
+	<a href="http://svn.sourceforge.net/viewcvs.cgi/jmol/">
+	  Ojear el repositorio SVN
 	</a>
       </p>
 
@@ -45,26 +40,18 @@
       </p>
       <p>
 	<tt>
-	  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol login
+	  svn co https://svn.sourceforge.net/svnroot/jmol/trunk/Jmol
 	</tt>
       </p>
       <p>
-	Cuando se te pida una contraseña para el usuario anónimo,
-	simplemente pulsa la tecla <code>Enter</code>.
-      </p>
-      <p>
-	<tt>
-	  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol co Jmol
-        </tt>
-      </p>
-      <p>
-	De este modo se extraerá la carpeta <code>Jmol</code> a tu equipo.
+	De ese modo se extraerá al subdirectorio (carpeta) <code>Jmol</code>
+	en tu equipo.
       </p>
       <p>
 	Puedes actualizar el código fuente desde tu <i>caja de arena</i> Jmol
 	escribiendo:
 	<tt>
-	  cvs up -dP
+	  svn update
 	</tt>
       </p>
     </section>

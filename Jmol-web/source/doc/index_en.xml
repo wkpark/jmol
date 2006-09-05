@@ -129,79 +129,103 @@
 	  High-performance 3D rendering with no hardware requirements
 	</li>
 	<li>
-	  File formats
+	  File formats (updated to Jmol v11)
 	  <ul>
 	    <li>
 	      <a href="http://journals.iucr.org/c/services/cifguide.html">
 		CIF/mmCIF
 	      </a>
-	      - International Union of Crystallography standard
-	    </li>
+	      - Crystallographic Information File and 
+	      Macromolecular Crystallographic Information File, 
+        the standards from the <em>International Union of Crystallography</em> </li>
 	    <li>
 	      <a href="http://www.xml-cml.org">CML</a>
 	      - Chemical Markup Language
 	    </li>
 	    <li>
+	      CSF
+	      - Fujitsu CAChe chemical structure
+	    </li>
+	    <li>
+	      CTFile
+	      - <em>Elsevier MDL</em> chemical table
+	    </li>
+	    <li>
 	      <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">
 		GAMESS
 	      </a>
-	      - Gordon Research Group, Iowa State University
-	    </li>
+	      - General Atomic and Molecular Electronic Structure System output,
+        <em>Gordon Research Group, Iowa State University</em> </li>
 	    <li>
-	      <a href="http://www.gaussian.com/">Gaussian 94/98/03</a>
-	      - Gaussian, Inc.
-	    </li>
+	      <a href="http://www.gaussian.com/">Gaussian 94/98/03</a> output
+	      - <em>Gaussian, Inc.
+        </em></li>
 	    <li>
 	      <a href="http://www.bioinformatics.org/ghemical/">Ghemical</a>
 	    </li>
 	    <li>
 	      <a href="http://www.hyper.com/">HIN</a>
-	      - HyperChem from Hypercube, Inc.
-	    </li>
+	      - HyperChem from <em>Hypercube, Inc.
+        </em> </li>
 	    <li>
-	      <a href="http://www.schrodinger.com/Products/jaguar.html">
+	      <a href="http://www.schrodinger.com/ProductDescription.php?mID=6&sID=9&cID=0">
 		Jaguar
 	      </a>
-	      - Schrodinger, LLC 
+        - <em>Schrodinger, LLC </em> </li>
+	    <li>
+	      <a href="http://www.uku.fi/~thassine/ghemical/">MM1GP</a>
+	      - Ghemical molecular mechanics
 	    </li>
 	    <li>
-	      <a href="http://www.mdli.com/">MOL/SDF</a>
-	      - MDL Information Systems, Inc.
+	      <a href="http://www.mdli.com/">MOL</a>
+	      - <em>Elsevier MDL</em> structure 
 	    </li>
 	    <li>
-	      <a href="http://www.schrodinger.com/Products/mopac.html">
-		MOPAC 93/97/2002
-	      </a>
-	      - Schrodinger, LLC 
+	      MOLPRO</a>
+	      - Molpro output
 	    </li>
 	    <li>
-	      <a href="http://www.rcsb.org/pdb/">PDB</a>
-	      - Protein Data Bank
+		MOPOUT
+	      - MOPAC 93/97/2002 output (public domain)
 	    </li>
 	    <li>
-	      <a href="http://www.q-chem.com/">
-		Q-Chem
-	      </a>
-	      - Q-Chem, Inc.
+		<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a>
+        - NWChem output, <em>Pacific Northwest National Laboratory</em> </li>
+	    <li>
+		<a href="http://www.wavefun.com/products/odyssey/odyssey.html">odedata</a>
+	      - Odyssey data, <em>WaveFunction, Inc.
+        </em></li>
+	    <li>
+	      <a href="http://www.pdb.org/">PDB</a>
+	      - Protein Data Bank, <em>Research Collaboratory for Structural Bioinformatics
+        </em> </li>
+	    <li>
+	      <a href="http://www.q-chem.com/">QOUT</a>
+        - <em>Q-Chem, Inc.</em> </li>
+	    <li>
+	      <a href="http://www.mdli.com/">SDF</a>
+	      - <em>Elsevier MDL</em> structure 
 	    </li>
 	    <li>
 	      <a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a>
-	    </li>
+        - <em>Structural Chemistry Department, University of Göttingen (Germany)</em> </li>
 	    <li>
-	      <a href="http://www.wavefun.com">Spartan</a>
-	      - Wavefunction, Inc.
-	    </li>
+	      <a href="http://www.wavefun.com">SMOL</a>
+        - Spartan data, <em>Wavefunction, Inc.</em> </li>
 	    <li>
-	      <a href="http://www.uku.fi/~thassine/ghemical/">
-		Ghemical
-	      </a>
+		<a href="http://www.wavefun.com/products/odyssey/odyssey.html">xodedata</a>
+	      - Odyssey XML data, <em>WaveFunction, Inc.
+        </em></li>
+	    <li>XYZ
+	    - <em>Minnesota Supercomputer Institute</em> XMol file
 	    </li>
-	    <li>
-	      <a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">
-		NWChem
-	      </a>
+	    <li>XYZ+vib
+	    - XYZ format files with added vibrational vector information
 	    </li>
-	    <li>XYZ</li>
+	    <li>XYZ-FAH
+	    - Folding@home XYZ file
+	    </li>
+
 	  </ul>
 	  <i>
 	    * Files which are compressed with gzip will automatically
@@ -235,7 +259,7 @@
 	  JavaScript support library
 	</li>
 	<li>
-	  Exports to .jpg, .pdf, and PovRay
+	  Exports to .jpg, .png, .ppm, .pdf, and PovRay
 	</li>
       </ul>
     </section>

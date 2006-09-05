@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Spanish translation 
+  Translated from default version index_en.xml
+-->
+<!DOCTYPE history
+[
+<!ENTITY contributors SYSTEM "contributors.xml">
+<!ENTITY changes      SYSTEM "changes.xml">
+]
+>
+<document>
+  <body>
+    <title>Cambios en Jmol</title>
+      <section title="Colaboradores">
+        &contributors;
+      </section>
+      <section title="Cambios recientes">
+	 <p>Cambios en Jmol 10.9 (11beta): <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new.htm">lista y demostración</a></p>
+	 <p>Cambios en Jmol 10.3: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.3/new.htm">lista y demostración</a></p>
+	 <p>Cambios en Jmol 10.2: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.2/new.htm">lista y demostración</a></p>
+    </section>
+      <section title="Cambios">
+        &changes;
+    </section>
+  </body>
+</document>

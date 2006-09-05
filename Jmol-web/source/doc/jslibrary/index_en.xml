@@ -28,7 +28,7 @@
 	supported because it does not provide LiveConnect
 	communications between JavaScript and Java applets.
 	Also note that the Mozilla family of browsers (including
-	FireFox and Camino) must be configured to use Java 1.4.2
+	FireFox and Camino) may need to be configured to use Java 1.4.2
 	using </i>
 	<a href="http://javaplugin.sourceforge.net">
 	  javaplugin.sourceforge.net
@@ -126,16 +126,17 @@
 	Initializes the Jmol.js JavaScript library. The call to
 	<code>jmolInitialize()</code> must be within the
 	<code>&lt;body&gt;</code> of the HTML page. 
-	The required <code>codebaseDirectory</code> parameter specifies
+	The first parameter, <code>codebaseDirectory</code>, is compulsory and specifies
 	the relative path of the directory containing the Jmol applet
 	files (what we called <code>../your-Jmol-directory</code> above).
 	
 	<p>
 	  <i>
-	    Advanced: <code>useSignedApplet</code> must 
+	    Advanced: the second parameter, <code>useSignedApplet</code>, must 
 	    be specified as "true" if you want to use the signed
 	    applet, that has less Java security restrictions than the 
-		standard, unsigned applet.
+		standard, unsigned applet. If this parameter is omitted, it 
+		defaults to "false".
 		<br />
 		With the signed applet, you can put applet files, model 
 		files and page files wherever you want to and run them 

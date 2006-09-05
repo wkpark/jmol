@@ -11,6 +11,12 @@
       <section title="Contributors">
         &contributors;
       </section>
+      <section title="Recent changes">
+	 <p>Changes in Jmol 10.9 (11beta): <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new.htm">list and demo</a></p>
+	 <p>Changes in Jmol 10.3: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.3/new.htm">list and demo</a></p>
+	 <p>Changes in Jmol 10.2: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.2/new.htm">list and demo</a>  </p>
+    </section>
+      
       <section title="Changes">
         &changes;
     </section>

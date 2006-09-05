@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   Spanish translation 
-  Translated from default version (...)_en.xml (v 1.1)
+  Translated from default version index_en.xml (v 1.1)
 -->
 <document>
   <body>
@@ -17,7 +17,7 @@
     <section title="¿Por qué usar Jmol.js?">
       <p>
 	Recomendamos encarecidamente que uses Jmol.js para construir tus 
-	páginas web. Automatiza la generación de muchas etiquetas HTML, 
+	páginas web. Se automatiza la generación de muchas etiquetas HTML, 
 	haciendo así el código más simple, más fácil de entender y
 	menos propenso a errores.
       </p>
@@ -32,8 +32,8 @@
 	compatible porque no proporciona la comunicación LiveConnect
 	entre JavaScript y Java.
 	Por otro lado, la familia de navegadores Mozilla (que incluye
-	Firefox y Camino) debe configurarse para utilizar Java 1.4.2
-	usando </i>
+	Firefox y Camino) puede requerir su configuración para utilizar Java 1.4.2
+	mediante </i>
 	<a href="http://javaplugin.sourceforge.net">
 	  javaplugin.sourceforge.net
 	</a> (al parecer, las versiones más recientes de estos navegadores 
@@ -124,14 +124,33 @@
     <section title="Instrucciones básicas">
       <section title="jmolInitialize">
 	<code>
-	  jmolInitialize(codebaseDirectory)
+	  jmolInitialize(directorioBase, usarSignedApplet)
 	</code>
 	Initializa la biblioteca javascript Jmol.js. La llamada a
 	<code>jmolInitialize()</code> debe estar dentro del cuerpo  
 	(<code>&lt;body&gt;</code>) de la página web. 
-	El parámetro indispensable <code>codebaseDirectory</code> indica la 
-	ruta relativa a la carpeta que contiene los archivos de la miniaplicación Jmol.
-      </section>
+	El primer parámetro, <code>directorioBase</code>, es indispensable e indica la 
+	ruta relativa a la carpeta que contiene los archivos de la miniaplicación Jmol
+	(lo que antes hemos llamado <code>../tu-carpeta-Jmol</code>).
+      
+	<p>
+	  <i>
+	    Avanzado: el segundo parámtero, <code>usarSignedApplet</code>,
+	    debe especificarse como "true" (verdadero) si quieres que se
+	    utilice la miniaplicación firmada (o confiable), que 
+	    aplica menos restricciones de seguridad en Java que la 
+	    miniaplicación normal, no firmada.
+		<br>
+		Con la miniaplicación firmada, puedes poner los archivos de la miniaplicación, 
+		los de los modelos y los de las páginas	donde quieras y ejecutarlos desde un 
+		disco local. También permite a Jmol abrir archivos locales. Los usuarios recibirán 
+		una advertencia de seguridad de Java, pidiéndoles permiso para el uso de 
+		la miniaplicación firmada (considera que esto puede hacer que los usuarios 
+		noveles renuncien a entrar en tus páginas, a no ser que previamente les adviertas 
+		con detalle de que ese aviso aparecerá y que no es peligroso). 
+	  </i>
+	</p>
+	  </section>
 
       <section title="jmolApplet">
 	<code>jmolApplet(tamaño, {guión}, {sufijoNombre})</code>

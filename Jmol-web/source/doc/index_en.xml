@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
   <body>
     <title>Jmol</title>
@@ -168,7 +168,7 @@
 	      - HyperChem from <em>Hypercube, Inc.
         </em> </li>
 	    <li>
-	      <a href="http://www.schrodinger.com/ProductDescription.php?mID=6&sID=9&cID=0">
+	      <a href="http://www.schrodinger.com/ProductDescription.php&amp;mID=6&amp;sID=9&amp;cID=0">
 		Jaguar
 	      </a>
         - <em>Schrodinger, LLC </em> </li>
@@ -181,7 +181,7 @@
 	      - <em>Elsevier MDL</em> structure 
 	    </li>
 	    <li>
-	      MOLPRO</a>
+	      MOLPRO
 	      - Molpro output
 	    </li>
 	    <li>

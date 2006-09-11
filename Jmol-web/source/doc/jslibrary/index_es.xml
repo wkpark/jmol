@@ -140,7 +140,7 @@
 	    utilice la miniaplicación firmada (o confiable), que 
 	    aplica menos restricciones de seguridad en Java que la 
 	    miniaplicación normal, no firmada.
-		<br>
+		<br />
 		Con la miniaplicación firmada, puedes poner los archivos de la miniaplicación, 
 		los de los modelos y los de las páginas	donde quieras y ejecutarlos desde un 
 		disco local. También permite a Jmol abrir archivos locales. Los usuarios recibirán 

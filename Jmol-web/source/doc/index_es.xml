@@ -135,17 +135,17 @@
 	      </a>
 	      - Crystallographic Information File and 
 	      Macromolecular Crystallographic Information File, 
-        formatos est&aacute;ndar de la <em>Uni&oacute;n Internacional de Cristalograf&iacute;a</em> </li>
+        formatos estándar de la <em>Unión Internacional de Cristalografía</em> </li>
 	    <li>
 	      <a href="http://www.xml-cml.org">CML</a>
 	      - Chemical Markup Language
-(lenguage	qu&iacute;mico de marcado)</li>
+		(lenguage químico de marcado)</li>
 	    <li>
 	      CSF
-        - estructura qu&iacute;mica de Fujitsu CAChe</li>
+        - estructura química de Fujitsu CAChe</li>
 	    <li>
 	      CTFile
-        - Tabla qu&iacute;mica de <em>Elsevier MDL</em> </li>
+        - Tabla química de <em>Elsevier MDL</em> </li>
 	    <li>
 	      <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">
 		GAMESS
@@ -164,22 +164,22 @@
 	      - HyperChem de <em>Hypercube, Inc.
         </em> </li>
 	    <li>
-	      <a href="http://www.schrodinger.com/ProductDescription.php?mID=6&sID=9&cID=0">
+	      <a href="http://www.schrodinger.com/ProductDescription.php&amp;mID=6&amp;sID=9&amp;cID=0">
 		Jaguar
 	      </a>
         - <em>Schrodinger, LLC </em> </li>
 	    <li>
 	      <a href="http://www.uku.fi/~thassine/ghemical/">MM1GP</a>
-        - Ghemical, mec&aacute;nica molecular</li>
+        - Ghemical, mecánica molecular</li>
 	    <li>
 	      <a href="http://www.mdli.com/">MOL</a>
         - estructura, de <em>Elsevier MDL</em> </li>
 	    <li>
-	      MOLPRO</a>
+	      MOLPRO
         - formato de salida de Molpro </li>
 	    <li>
 		MOPOUT
-	      - formato de salida de MOPAC 93/97/2002 (dominio p&uacute;blico)
+	      - formato de salida de MOPAC 93/97/2002 (dominio público)
 	    </li>
 	    <li>
 		<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a>
@@ -211,7 +211,7 @@
 	    <li>XYZ
 	    - archivo XMol de <em>Minnesota Supercomputer Institute</em> </li>
 	    <li>XYZ+vib
-	    -formato XYZ con informaci&oacute;n de vectores de vibraci&oacute;n</li>
+	    -formato XYZ con información de vectores de vibración</li>
 	    <li>XYZ-FAH
 	    - archivo XYZ de Folding@home</li>
 

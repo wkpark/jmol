@@ -1,0 +1,6 @@
+
+Name: org/openscience/jmol/ui/
+Sealed: true
+
+Name: org/jmol/bspt/
+Sealed: true

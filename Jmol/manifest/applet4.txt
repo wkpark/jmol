@@ -1,0 +1,3 @@
+
+Name: org/jmol/adapter/smarter/
+Sealed: true

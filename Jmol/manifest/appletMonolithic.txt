@@ -1,0 +1,7 @@
+Main-Class: JmolApplet
+
+Name: org/jmol/
+Sealed: true
+
+Name: org/openscience/jmol/
+Sealed: true

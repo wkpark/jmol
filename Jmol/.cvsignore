@@ -1,0 +1,12 @@
+applet-classes
+classes
+build
+bin
+dist
+javadoc
+Jmol*.zip
+packaging/rpm/dist
+*.bak
+*.deprecated
+*~
+*.jar

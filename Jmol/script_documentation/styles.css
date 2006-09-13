@@ -1,0 +1,14 @@
+.example{color:darkred;font-family:Currier}
+.chimenote{color:darkgreen}
+.xref{color:red}
+.new{color:darkgreen;font-size:11pt}
+body{background-color:#eeeeee;font-size:11pt}
+p,blockquote{margin-top:0px;margin-bottom:0px}
+i{font-family:helvetica;font-style: normal;font-size:10pt}
+pre{font-size:10pt}
+img{clear:right;float:right}
+img.nf{clear:none;float:none}
+.sep{background-color:#0000e0;font-size:3pt}
+h3{font-size:2em}
+.sep1{float:right}
+.found{color:red;background-color:#d0d0d0;font-weight:bold}

@@ -1,0 +1,3 @@
+
+Name: org/jmol/viewer/
+Sealed: true

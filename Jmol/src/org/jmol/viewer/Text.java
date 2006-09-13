@@ -218,7 +218,6 @@ class Text {
     case Short.MAX_VALUE:
       return 0;
     default:
-      System.out.println ((short)(offset)+" "+(offset >> 8)+" "+(offset)+" "+(byte) (offset >> 8)+" "+(byte) (((short)offset) >> 8));
       return (byte) (offset >> 8);
     }
   }
@@ -238,7 +237,6 @@ class Text {
     if (this.text != null && this.text.equals(text))
       return;
     this.text = text;
-    System.out.println("setting text " +text);
     recalc();
   }
 
@@ -281,7 +279,6 @@ class Text {
     textHeight = lines.length * lineHeight;
     boxWidth = textWidth + 8;
     boxHeight = textHeight + 8;
-    System.out.println("textWidth " +textWidth);
   }
 
   void render() {

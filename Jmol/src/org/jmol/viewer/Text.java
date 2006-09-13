@@ -69,7 +69,7 @@ class Text {
   short bgcolix;
 
   int[] widths;
-  int widthMax;
+  int textWidth;
   int textHeight;
 
   // for labels and hover
@@ -175,8 +175,7 @@ class Text {
     
     // set box X from alignments
     
-    if (valign == XY) {
-      boxX = xLeft - 4;
+      boxX = xLeft;
       switch (align) {
       case CENTER:
         boxX = xCenter - boxWidth / 2; 
@@ -184,7 +183,6 @@ class Text {
       case RIGHT:
         boxX = xRight - boxWidth;        
       }
-    }
     
     // set box Y from alignments
     
@@ -196,7 +194,7 @@ class Text {
       boxY = windowHeight / 2;
       break;
     case BOTTOM:
-      boxY = windowHeight - textHeight - 1;
+      boxY = windowHeight;
       break;
     default:
       boxY = movableY + offsetY;
@@ -240,6 +238,7 @@ class Text {
     if (this.text != null && this.text.equals(text))
       return;
     this.text = text;
+    System.out.println("setting text " +text);
     recalc();
   }
 
@@ -272,13 +271,16 @@ class Text {
       return;
     }
     lines = split(text, '|');
-    widthMax = 0;
+    textWidth = 0;
     widths = new int[lines.length];
     for (int i = lines.length; --i >= 0;) {
       widths[i] = fm.stringWidth(lines[i]);
-      widthMax = Math.max(widthMax, widths[i]);
+      textWidth = Math.max(textWidth, widths[i]);
     }
     textHeight = lines.length * lineHeight;
+    boxWidth = textWidth + 8;
+    boxHeight = textHeight + 8;
+    System.out.println("textWidth " +textWidth);
   }
 
   void render() {
@@ -293,6 +295,7 @@ class Text {
       drawBox();
     
     // now set x and y positions for text from (new?) box position
+
     
     int x0 = boxX + 4;
     switch (align) {
@@ -327,26 +330,30 @@ class Text {
   }
 
   void setBoxOffsetsInWindow() {
-    boxWidth = widthMax + 8;
-    boxHeight = textHeight + 8;
-    boxY -= lineHeight;
+    if (!adjustForWindow)
+      boxY -= lineHeight;
     if (atomBased && align == XY) {
       boxX += JmolConstants.LABEL_DEFAULT_X_OFFSET;
       boxY -= JmolConstants.LABEL_DEFAULT_Y_OFFSET + 4;
     }
     if (!adjustForWindow)
-      return;
+      return;  // labels
+    
+    // these coordinates are (0,0) in top left
+    // (user coordinates are (0,0) in bottom left)
     boxY -= textHeight;
     int x = boxX;
-    if (x + boxWidth > windowWidth)
-      x = windowWidth - boxWidth;
-    if (x < 0)
-      x = 0;
+    if (x + boxWidth + 5 > windowWidth)
+      x = windowWidth - boxWidth - 5;
+    if (x < 5)
+      x = 5;
     int y = boxY;
     if (y + boxHeight > windowHeight)
       y = windowHeight - boxHeight;
-    if (y < 0)
-      y = 16 + lineHeight;
+    int y0 = (atomBased ? 16 + lineHeight : 0);
+    if (y < y0)
+      y = y0;
+    // (echo is not atomBased -- positioned right on)
     boxX = x;
     boxY = y;
   }

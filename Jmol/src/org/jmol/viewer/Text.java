@@ -160,7 +160,7 @@ class Text {
   void setXYZs(int x, int y, int z, int zSlab) {
     setMovableX(x);
     setMovableY(y);
-    setZs(x, zSlab);
+    setZs(z, zSlab);
   }
 
   void setPositions() {

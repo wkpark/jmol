@@ -2,7 +2,7 @@
   French translation 
   Translated from default version : hardware.docbook.xml (v 1.2)
 -->
-<chapter>
+<chapter id="HardwareOSRequirements">
   <title>Exigences Mat&eacute;riel et Syst&egrave;me d'exploitation</title>
   <para>
     Nous recommandons une machine avec un processeur &agrave; 600 MHz et

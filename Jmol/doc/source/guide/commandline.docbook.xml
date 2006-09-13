@@ -19,7 +19,7 @@
     <arg><replaceable>FILE</replaceable></arg>
   </cmdsynopsis>
   
-  <section>
+  <section id="OptionHelp">
     <title>-h,--help</title>
     <variablelist>
       <title>Syntax</title>
@@ -37,7 +37,7 @@
     </variablelist>
   </section>
 
-  <section>
+  <section id="OptionScript">
     <title>-s,--script</title>
     <variablelist>
       <title>Syntax</title>
@@ -58,7 +58,7 @@
     </variablelist>
   </section>
 
-  <section>
+  <section id="OptionGeometry">
     <title>-g,--geometry</title>
     <variablelist>
       <title>Syntax</title>
@@ -78,7 +78,7 @@
     </variablelist>
   </section>
 
-  <section>
+  <section id="OptionLanguage">
     <title>-Duser.language</title>
     <variablelist>
       <title>Syntax</title>
@@ -124,7 +124,7 @@
     </variablelist>
   </section>
 
-  <section>
+  <section id="OptionSpeed">
     <title>-Ddisplay.speed</title>
     <variablelist>
       <title>Syntax</title>
@@ -144,7 +144,7 @@
     </variablelist>
   </section>
 
-  <section>
+  <section id="OptionPluginDir">
     <title>-Dplugin.dir</title>
     <variablelist>
       <title>Syntax</title>
@@ -166,7 +166,7 @@
     </variablelist>
   </section>
 
-  <section>
+  <section id="OptionXmx">
     <title>-Xmx</title>
     <variablelist>
       <title>Syntax</title>

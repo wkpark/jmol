@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="SupportedBrowsers">
   <title>Supported Browsers</title>
 
   <para>
@@ -16,7 +16,7 @@
     that is used.
   </para>
 
-  <section>
+  <section id="TestingResults">
     <title>Testing results</title>
 
     <para>
@@ -152,7 +152,7 @@
       </listitem>
     </itemizedlist>
   </section>
-  <section>
+  <section id="XHTMLSupport">
     <title>XHTML support</title>
     <para>
       It is possible to use the JmolApplet within an XML/XHTML environment. This is entirely irrelevant for most people's purposes - if you don't know that you need this capability, then you don't.

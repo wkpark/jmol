@@ -1,10 +1,10 @@
 <chapter id="menudesc">
   <title>Menu description</title>
 
-  <section>
+  <section id="FileMenu">
     <title>The File menu</title>
     
-    <section>
+    <section id="FileMenuOpen">
       <title>Open</title>
       <para>
         Open files in Jmol. Jmol can read a large number of file types,
@@ -52,7 +52,7 @@
       </itemizedlist>
     </section>
 
-    <section>
+    <section id="FileMenuRecentFiles">
       <title>Recent Files...</title>
       <para>
         Brings up a dialog with a list of the
@@ -63,7 +63,7 @@
       </para>
     </section>
 
-    <section>
+    <section id="FileMenuScript">
       <title>Script...</title>
       <para>
         Opens a window where Jmol/RasMol/Chime scripting commands
@@ -72,10 +72,10 @@
       </para>
     </section>
 
-    <section>
+    <section id="FileMenuExport">
       <title>Export</title>
       
-      <section>
+      <section id="FileMenuExportImage">
         <title>Export -&gt; Export Image...</title>
         <para>
           Jmol can export 24 bit color images of the following types:
@@ -93,7 +93,7 @@
         </itemizedlist>
       </section>
     
-      <section>
+      <section id="FileMenuExportPovray">
         <title>Export -&gt; Render in pov-ray...</title>
         <para>
           For high quality images, Jmol interfaces with the POV-Ray ray tracer.
@@ -104,14 +104,14 @@
       </section>
     </section>
     
-    <section>
+    <section id="FileMenuPrint">
       <title>Print</title>
       <para>
         Postscript files can be exported directly to printer and to file.
       </para>
     </section>
     
-    <section>
+    <section id="FileMenuExit">
       <title>Exit</title>
       <para>
         Quits this Jmol session.
@@ -119,23 +119,23 @@
     </section>
   </section>
   
-  <section>
+  <section id="EditMenu">
     <title>The Edit menu</title>
-    <section>
+    <section id="EditMenuSelectAll">
       <title>Select All</title>
       <para>
         Selects all atoms in the view screen.
       </para>
     </section>
     
-    <section>
+    <section id="EditMenuDeselectAll">
       <title>Deselect All</title>
       <para>
         Deselects all atoms in the view screen.
       </para>
     </section>
 
-    <section>
+    <section id="EditMenuPreferences">
       <title>Preferences...</title>
       <para>
         This menu opens a dialog to change settings and make user customized
@@ -144,7 +144,7 @@
     </section>
   </section>
   
-  <section>
+  <section id="DisplayMenu">
     <title>The Display menu</title>
     <para>
       In this menu display settings/styles can be changed.
@@ -162,10 +162,10 @@
     </para>
   </section>
   
-  <section>
+  <section id="ViewMenu">
     <title>The View menu</title>
 
-    <section>
+    <section id="ViewMenuDirection">
       <title>Front/Top/Bottom/Right/Left</title>
       <para>
         Self explanatory. Useful with crystal structures. 
@@ -173,31 +173,31 @@
     </section>
   </section>
   
-  <section>
+  <section id="HelpMenu">
     <title>The Help menu</title>
     
-    <section>
+    <section id="HelpMenuAbout">
       <title>About Jmol</title>
       <para>
         Popups a window with copyright notice for this software.
       </para>
     </section>
     
-    <section>
+    <section id="HelpMenuUserGuide">
       <title>User Guide</title>
       <para>
         Shows this documentation.
       </para>
     </section>
     
-    <section>
+    <section id="HelpMenuNew">
       <title>What's New</title>
       <para>
         Shows the changes from version to version.
       </para>
     </section>
     
-    <section>
+    <section id="HelpMenuConsole">
       <title>Jmol Console</title>
       <para>
         Shows the output to the System.out and System.err output streams.

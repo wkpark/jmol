@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="WebServerConfiguration">
   <title>Web Server configuration for the JmolApplet</title>
   <para>
     The JmolApplet is configured on the web server just like any other

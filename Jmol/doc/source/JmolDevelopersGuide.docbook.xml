@@ -623,7 +623,7 @@
 			</listitem>
 		</orderedlist>
 
-		<sect2>
+		<sect2 id="JavaExeLocation">
 			<title>Identifying the location of the Java executables</title>
 			<para>
 				Ant needs to know where to find <filename>javac(.exe)</filename>
@@ -642,7 +642,7 @@
 			</para>
 		</sect2>
 
-		<sect2>
+		<sect2 id="JavaLibLocation">
 			<title>Identifying the location of the Java library</title>
 			<para>
 				Ant needs to know where to find
@@ -661,7 +661,7 @@
 			</para>
 		</sect2>
 
-		<sect2>
+		<sect2 id="MatchingJavaCompiler">
 			<title>Matching the Java compiler to the Java Runtime Environment</title>
 			<para>
 				From <menuchoice>

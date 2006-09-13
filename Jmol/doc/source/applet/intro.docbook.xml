@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="Introduction">
   <title>Introduction</title>
   <para>
     The Jmol Applet allows the 3D display of molecules within a web page.

@@ -4,9 +4,9 @@
 -->
 <chapter id="menudesc">
   <title>Description des Menus</title>
-  <section>
+  <section id="FileMenu">
     <title>Le menu Fichier</title>
-    <section>
+    <section id="FileMenuOpen">
       <title>Ouvrir</title>
       <para>
         Ouvre des fichiers dans Jmol.
@@ -33,7 +33,7 @@
         </itemizedlist>
       </para>
     </section>
-    <section>
+    <section id="FileMenuRecentFiles">
       <title>Fichiers R&eacute;cents...</title>
       <para>
         Ouvre une bo&icirc;te de dialogue qui contient une des fichiers ouverts
@@ -42,7 +42,7 @@
         bouton Ouvrir.
       </para>
     </section>
-    <section>
+    <section id="FileMenuScript">
       <title>Script...</title>
       <para>
         Ouvre une fen&ecirc;tre o&ugrave; des commandes de script
@@ -52,9 +52,9 @@
       </para>
     </section>
     
-    <section>
+    <section id="FileMenuExport">
       <title>Exporter</title>
-      <section>
+      <section id="FileMenuExportImage">
         <title>Exporter -&gt; Exporter une Image...</title>
         <para>
           Jmol peut exporter des images couleur 24 bits des types suivants:
@@ -65,7 +65,7 @@
           </itemizedlist>
         </para>
       </section>
-      <section>
+      <section id="FileMenuExportPovray">
         <title>Exporter -&gt; Rendu dans pov-ray...</title>
         <para>
           Pour des images de haute qualit&eacute;, Jmol s'interface avec le
@@ -77,35 +77,35 @@
         </para>
       </section>
     </section>
-    <section>
+    <section id="FileMenuPrint">
       <title>Imprimer</title>
       <para>
         Des fichiers Postscript peuvent &ecirc;tre export&eacute;es directement
         vers l'imprimante ou vers un fichier.
       </para>
     </section>
-    <section>
+    <section id="FileMenuExit">
       <title>Quitter</title>
       <para>Quitte cette session Jmol.</para>
     </section>
   </section>
-  <section>
+  <section id="EditMenu">
     <title>Le menu Edition</title>
-    <section>
+    <section id="EditMenuSelectAll">
       <title>Tout s&eacute;lectionner</title>
       <para>
         S&eacute;lectionne tous les atomes dans l'&eacute;cran de
         visualisation.
       </para>
     </section>
-    <section>
+    <section id="EditMenuDeselectAll">
       <title>Tout D&eacute;s&eacute;lectionner</title>
       <para>
         D&eacute;s&eacute;lectionne tous les atomes dans l'&eacute;cran de
         visualisation.
       </para>
     </section>
-    <section>
+    <section id="EditMenuPreferences">
       <title>Options...</title>
       <para>
         Ce menu ouvre une bo&icirc;te de dialogue pour modifier les
@@ -115,7 +115,7 @@
       </para>
     </section>
   </section>
-  <section>
+  <section id="DisplayMenu">
     <title>Le menu Affichage</title>
     <para>
       Dans ce menu les r&eacute;glages/styles d'affichage peuvent &ecirc;tre
@@ -134,9 +134,9 @@
       le curseur de s&eacute;lection ou en utilisant des commandes de script.
     </para>
   </section>
-  <section>
+  <section id="ViewMenu">
     <title>Le menu Vue</title>
-    <section>
+    <section id="ViewMenuDirection">
       <title>Face/Haut/Bas/Droite/Gauche</title>
       <para>
         S'explique de soi-m&ecirc;me. Utile avec les structures
@@ -144,24 +144,24 @@
       </para>
     </section>
   </section>
-  <section>
+  <section id="HelpMenu">
     <title>Le menu Aide</title>
-    <section>
+    <section id="HelpMenuAbout">
       <title>A propos de Jmol</title>
       <para>
         Ouvre une fen&ecirc;tre avec des informations de copyright pour ce
         logiciel.
       </para>
     </section>
-    <section>
+    <section id="HelpMenuUserGuide">
       <title>Guide Utilisateur</title>
       <para>Affiche cette documentation.</para>
     </section>
-    <section>
+    <section id="HelpMenuNew">
       <title>Les Nouveaut&eacute;s</title>
       <para>Montre les modifications entre versions.</para>
     </section>
-    <section>
+    <section id="HelpMenuConsole">
       <title>Console Jmol</title>
       <para>
         Montre la sortie de System.out et System.err.

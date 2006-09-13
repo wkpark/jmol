@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="AppletUsage">
   <title>Jmol Applet Usage</title>
   <para>
     Use the Jmol.js JavaScript library as documented

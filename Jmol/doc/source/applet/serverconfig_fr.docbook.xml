@@ -2,7 +2,7 @@
   French translation 
   Translated from default version : serverconfig.docbook.xml (v 1.4)
 -->
-<chapter>
+<chapter id="WebServerConfiguration">
   <title>Configuration du Serveur Web pour l'Applet Jmol</title>
   <para>
     L'Applet Jmol est configur&eacute;e sur le serveur web comme toute autre

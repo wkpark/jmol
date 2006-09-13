@@ -24,14 +24,14 @@
       <arg choice="req"><replaceable>file</replaceable></arg>
     </cmdsynopsis>
   </para>
-  <section>
+  <section id="OptionGeometry">
     <title>--geometry</title>
     <para>
       Cette option permet de sp&eacute;cifier la taille de la
       fen&ecirc;tre. Par d&eacute;faut, elle est de 500x500.
     </para>
   </section>
-  <section>
+  <section id="OptionLanguage">
     <title>-Duser.language</title>
     <para>
       En plus des options ci-dessus, il y a une option Java importante:
@@ -54,7 +54,7 @@
       utilis&eacute;e.
     </para>
   </section>
-  <section>
+  <section id="OptionSpeed">
     <title>-Ddisplay.speed</title>
     <para>
       L'option <cmdsynopsis><arg>-Ddisplay.speed=fps</arg></cmdsynopsis>
@@ -63,7 +63,7 @@
       millisecondes par image.
     </para>
   </section>
-  <section>
+  <section id="OptionXmx">
     <title>-Xmx</title>
     <para>
       Avec cette option vous pouvez changer la taille maximum du tas que la

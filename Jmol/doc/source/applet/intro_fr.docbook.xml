@@ -2,7 +2,7 @@
   French translation 
   Translated from default version : intro.docbook.xml (v 1.2)
 -->
-<chapter>
+<chapter id="Introduction">
   <title>Introduction</title>
   <para>
     L'Applet Jmol permet un affichage 3D de mol&eacute;cules dans une page web.

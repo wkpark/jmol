@@ -2,7 +2,7 @@
   French translation 
   Translated from default version : usage.docbook.xml (v 1.4)
 -->
-<chapter>
+<chapter id="AppletUsage">
   <title>Utilisation de l'Applet Jmol</title>
   <para>
     L'utilisation de la librairie JavaScript Jmol.js est document&eacute;e

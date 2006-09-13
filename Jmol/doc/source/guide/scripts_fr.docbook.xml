@@ -52,7 +52,7 @@
     Ceci nous aidera &agrave; mettre des priorit&eacute;s dans nos futurs
     d&eacute;veloppements.
   </para>
-  <section>
+  <section id="RasMolChimeCommands">
     <title>Commandes RasMol/Chime</title>
     <para>
       Cette documentation est g&eacute;n&eacute;r&eacute;e automatiquement

@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="HardwareOSRequirements">
   <title>Hardware and OS Requirements</title>
   <para>
     We recommend a machine with a 600 Mhz CPU and 256 Mb of RAM. This

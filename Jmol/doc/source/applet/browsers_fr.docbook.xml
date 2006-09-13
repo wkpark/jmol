@@ -2,7 +2,7 @@
   French translation 
   Translated from default version : browsers.docbook.xml (v 1.5)
 -->
-<chapter>
+<chapter id="SupportedBrowsers">
   <title>Navigateurs Support&eacute;s</title>
   <para>
     L'applet est test&eacute;e et fonctionne avec Internet Explorer, Netscape,
@@ -19,7 +19,7 @@
     du navigateur, du syst&egrave;me d'exploitation et de la machine
     virtuelle java qui sont utilis&eacute;s.
   </para>
-  <section>
+  <section id="TestingResults">
     <title>R&eacute;sultats des Tests</title>
     <para>
       L'Applet Jmol a &eacute;t&eacute; test&eacute;e avec succ&egrave;s sur

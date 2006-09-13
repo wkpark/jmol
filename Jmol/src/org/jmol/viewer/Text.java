@@ -260,6 +260,7 @@ class Text {
 
   boolean setAlignment(int align) {
     this.align = align;
+    recalc();
     return true;
   }
 

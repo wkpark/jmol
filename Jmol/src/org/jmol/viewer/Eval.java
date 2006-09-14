@@ -1625,6 +1625,8 @@ class Eval { //implements Runnable {
         if (!degreesSeen)
           degrees = 3;
         colors[colorpt++] = getArgbParam(i);
+        if (colorpt == 1)
+          colors[colorpt] = ~colors[0];
         break;
       case Token.integer:
       case Token.decimal:
@@ -1653,7 +1655,7 @@ class Eval { //implements Runnable {
       }
     }
     viewer.setStereoDegrees(degrees);
-    if (colorpt == 2)
+    if (colorpt > 0) 
       viewer.setStereoMode(colors);
     else
       viewer.setStereoMode(stereoMode);

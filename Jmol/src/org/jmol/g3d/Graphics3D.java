@@ -583,6 +583,7 @@ final public class Graphics3D {
   }
 
   public void applyCustomAnaglyph(int[] stereoColors) {
+    //best if complementary, but they do not have to be0 
     int color1 = stereoColors[0];
     int color2 = stereoColors[1] & 0x00FFFFFF;
     for (int i = pbuf.length; --i >= 0;) {

@@ -670,7 +670,7 @@ public class ProjectInformation {
   /**
    * HTML Document for PSummaryC
    */
-  private class HTMLDocumentPSummaryC extends HTMLDocument {
+  class HTMLDocumentPSummaryC extends HTMLDocument {
 
     /*
      * (non-Javadoc)
@@ -685,7 +685,7 @@ public class ProjectInformation {
   /**
    * Reader for PSummaryC
    */
-  private class PSummaryReaderC extends HTMLEditorKit.ParserCallback {
+  class PSummaryReaderC extends HTMLEditorKit.ParserCallback {
 
     /*
      * (non-Javadoc)
@@ -870,7 +870,7 @@ public class ProjectInformation {
   /**
    * HTML Document for PSummary
    */
-  private class HTMLDocumentPSummary extends HTMLDocument {
+  class HTMLDocumentPSummary extends HTMLDocument {
 
     /*
      * (non-Javadoc)
@@ -885,7 +885,7 @@ public class ProjectInformation {
   /**
    * Reader for PSummary
    */
-  private class PSummaryReader extends HTMLEditorKit.ParserCallback {
+  class PSummaryReader extends HTMLEditorKit.ParserCallback {
 
     /*
      * (non-Javadoc)

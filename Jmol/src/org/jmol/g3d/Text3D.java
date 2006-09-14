@@ -216,8 +216,8 @@ class Text3D {
   }
 
   static void plotUnclipped(int x, int y, int z, int argb, int argbBackground,
-                            Graphics3D g3d,
-                            int textWidth, int textHeight, int[] bitmap) {
+                            Graphics3D g3d, int textWidth, int textHeight,
+                            int[] bitmap) {
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;
@@ -225,20 +225,24 @@ class Text3D {
     int[] pbuf = g3d.pbuf;
     int screenWidth = g3d.width;
     int pbufOffset = y * screenWidth + x;
+    boolean addBackground = (argbBackground != 0);
     while (i < textHeight) {
       while (j < textWidth) {
         if ((offset & 31) == 0)
           shiftregister = bitmap[offset >> 5];
-        if (shiftregister == 0 && argbBackground == 0) {
+        if (shiftregister == 0 && !addBackground) {
           int skip = 32 - (offset & 31);
           j += skip;
           offset += skip;
           pbufOffset += skip;
         } else {
-          if (shiftregister < 0 || argbBackground != 0) {
-            if (z < zbuf[pbufOffset]) {
+          if (z < zbuf[pbufOffset]) {
+            if (shiftregister < 0) {
               zbuf[pbufOffset] = z;
-              pbuf[pbufOffset] = shiftregister < 0 ? argb : argbBackground;
+              pbuf[pbufOffset] = argb;
+            } else if (addBackground) {
+              zbuf[pbufOffset] = z;
+              pbuf[pbufOffset] = argbBackground;
             }
           }
           shiftregister <<= 1;

@@ -1516,6 +1516,10 @@ final public class Graphics3D {
 
   public String getHexColorFromIndex(short colix) {
     int argb = getColixArgb(colix);
+    return getHexColorFromRGB(argb);
+  }
+  
+  public String getHexColorFromRGB(int argb) {
     if (argb == 0)
       return null;
     String r  = "00" + Integer.toHexString((argb >> 16) & 0xFF);

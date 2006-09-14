@@ -117,7 +117,7 @@ final class Colix {
   private synchronized static void calcArgbsGreyscale() {
     if (argbsGreyscale == null) {
       argbsGreyscale = new int[argbs.length];
-      for (int i = argbsGreyscale.length; --i >= 0; )
+      for (int i = argbsGreyscale.length; --i >= Graphics3D.SPECIAL_COLIX_MAX; )
         argbsGreyscale[i] = Graphics3D.calcGreyscaleRgbFromRgb(argbs[i]);
     }
   }

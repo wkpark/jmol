@@ -1010,7 +1010,7 @@ public final class Frame {
   }
 
   void increaseRotationRadius(float increaseInAngstroms) {
-    if (viewer.isWindowCentered())
+    if (isWindowCentered())
       rotationRadius += increaseInAngstroms;
   }
 
@@ -1023,13 +1023,23 @@ public final class Frame {
                                         boolean andRadius) {
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
-      if (andRadius && viewer.isWindowCentered())
+      if (andRadius && isWindowCentered())
         rotationRadius = calcRotationRadius(rotationCenter);
     } else {
       rotationCenter = rotationCenterDefault;
       rotationRadius = rotationRadiusDefault;
     }
     return rotationCenter;
+  }
+
+  boolean windowCenteredFlag = true;
+  
+  boolean isWindowCentered() {
+    return windowCenteredFlag;
+  }
+
+  void setWindowCentered(boolean TF) {
+    windowCenteredFlag = TF;
   }
 
   Point3f setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
@@ -2862,4 +2872,17 @@ public final class Frame {
       }
     return hAtoms;
   }
+  
+  boolean selectionHaloEnabled = false;
+
+  public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
+    if (this.selectionHaloEnabled != selectionHaloEnabled) {
+      this.selectionHaloEnabled = selectionHaloEnabled;
+    }
+  }
+
+  boolean getSelectionHaloEnabled() {
+    return selectionHaloEnabled;
+  }
+
 }

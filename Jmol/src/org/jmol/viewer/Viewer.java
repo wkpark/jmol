@@ -74,6 +74,7 @@ import java.io.Reader;
 
 public class Viewer extends JmolViewer {
 
+  GlobalSettings global = new GlobalSettings();
   Component awtComponent;
   ColorManager colorManager;
   PropertyManager propertyManager;
@@ -529,8 +530,6 @@ public class Viewer extends JmolViewer {
 
   final Rectangle rectClip = new Rectangle();
 
-  boolean enableFullSceneAntialiasing = false;
-
   public void setScreenDimension(Dimension dim) {
     // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
     // so don't try dim1.equals(dim2)
@@ -544,7 +543,7 @@ public class Viewer extends JmolViewer {
     dimScreen.height = height;
     transformManager.setScreenDimension(width, height);
     transformManager.scaleFitToScreen();
-    g3d.setWindowSize(width, height, enableFullSceneAntialiasing);
+    g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);
   }
 
   public int getScreenWidth() {
@@ -824,13 +823,9 @@ public class Viewer extends JmolViewer {
   }
 
   void reportSelection(String msg) {
-    if (selectionHaloEnabled)
+    if (modelManager.getSelectionHaloEnabled())
       setTainted(true);
     scriptStatus(msg);
-  }
-
-  boolean hasSelectionHalo(int atomIndex) {
-    return selectionHaloEnabled && selectionManager.isSelected(atomIndex);
   }
 
   public void selectAll() {
@@ -1002,18 +997,16 @@ public class Viewer extends JmolViewer {
     return fileManager.inlineData;
   }
 
-  char inlineNewlineChar = '|';
-
   public void setInlineChar(char newLine) {
-    inlineNewlineChar = newLine;
+    global.inlineNewlineChar = newLine;
   }
 
   public char getInlineChar() {
-    return inlineNewlineChar;
+    return global.inlineNewlineChar;
   }
 
   public void loadInline(String strModel) {
-    loadInline(strModel, inlineNewlineChar);
+    loadInline(strModel, global.inlineNewlineChar);
   }
 
   public void loadInline(String strModel, char newLine) {
@@ -1029,10 +1022,7 @@ public class Viewer extends JmolViewer {
         strModel = strModel.substring(i + 1);
       strModel = strModel.replace(newLine, '\n');
     }
-    int[] A = new int[4];
-    A[1] = (int) ptDefaultLattice.x;
-    A[2] = (int) ptDefaultLattice.y;
-    A[3] = (int) ptDefaultLattice.z;
+    int[] A = global.getDefaultLattice();
     openStringInline(strModel, A);
   }
 
@@ -1144,7 +1134,6 @@ public class Viewer extends JmolViewer {
     modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
     clearMeasurements();
-    setWindowCentered(true);
     transformManager.setFixedRotationCenter(new Point3f(0, 0, 0));
     setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");
@@ -1808,13 +1797,12 @@ public class Viewer extends JmolViewer {
     return repaintManager.frameRenderer;
   }
 
+  boolean wasInMotion = false;
   int motionEventNumber;
 
   public int getMotionEventNumber() {
     return motionEventNumber;
   }
-
-  boolean wasInMotion = false;
 
   void setInMotion(boolean inMotion) {
     // Logger.debug("viewer.setInMotion("+inMotion+")");
@@ -2086,14 +2074,12 @@ public class Viewer extends JmolViewer {
     eval.haltExecution();
   }
 
-  String defaultLoadScript = "";
-
   void setDefaultLoadScript(String script) {
-    defaultLoadScript = script;
+    global.defaultLoadScript = script;
   }
 
   String getDefaultLoadScript() {
-    return defaultLoadScript;
+    return global.defaultLoadScript;
   }
 
   String getStandardLabelFormat() {
@@ -2241,34 +2227,28 @@ public class Viewer extends JmolViewer {
     return Graphics3D.getColix(object);
   }
 
-  boolean rasmolHydrogenSetting = true;
-
   void setRasmolHydrogenSetting(boolean b) {
-    rasmolHydrogenSetting = b;
+    global.rasmolHydrogenSetting = b;
   }
 
   boolean getRasmolHydrogenSetting() {
-    return rasmolHydrogenSetting;
+    return global.rasmolHydrogenSetting;
   }
 
-  boolean rasmolHeteroSetting = true;
-
   void setRasmolHeteroSetting(boolean b) {
-    rasmolHeteroSetting = b;
+    global.rasmolHeteroSetting = b;
   }
 
   boolean getRasmolHeteroSetting() {
-    return rasmolHeteroSetting;
+    return global.rasmolHeteroSetting;
   }
 
-  boolean debugScript = false;
-
   boolean getDebugScript() {
-    return debugScript;
+    return global.debugScript;
   }
 
   public void setDebugScript(boolean debugScript) {
-    this.debugScript = debugScript;
+    global.debugScript = debugScript;
     Logger.setActiveLevel(Logger.LEVEL_DEBUG, debugScript);
   }
 
@@ -2344,7 +2324,7 @@ public class Viewer extends JmolViewer {
   }
 
   void popupMenu(int x, int y) {
-    if (disablePopupMenu)
+    if (global.disablePopupMenu)
       return;
     statusManager.popupMenu(x, y);
   }
@@ -2605,132 +2585,108 @@ public class Viewer extends JmolViewer {
 
   ////////  flags and settings ////////
 
-  boolean dotSurfaceFlag = true;
-
   boolean getDotSurfaceFlag() {
-    return dotSurfaceFlag;
+    return global.dotSurfaceFlag;
   }
 
   void setDotSurfaceFlag(boolean TF) {
-    dotSurfaceFlag = TF;
+    global.dotSurfaceFlag = TF;
   }
 
-  boolean dotsSelectedOnlyFlag = false;
-
   boolean getDotsSelectedOnlyFlag() {
-    return dotsSelectedOnlyFlag;
+    return global.dotsSelectedOnlyFlag;
   }
 
   void setDotsSelectedOnlyFlag(boolean TF) {
-    dotsSelectedOnlyFlag = TF;
+    global.dotsSelectedOnlyFlag = TF;
   }
 
-  boolean rangeSelected = false;
-
   boolean isRangeSelected() {
-    return rangeSelected;
+    return global.rangeSelected;
   }
 
   void setRangeSelected(boolean TF) {
-    rangeSelected = TF;
+    global.rangeSelected = TF;
   }
 
-  boolean windowCenteredFlag = true;
-
   boolean isWindowCentered() {
-    return windowCenteredFlag;
+    return modelManager.isWindowCentered();
   }
 
   void setWindowCentered(boolean TF) {
-    windowCenteredFlag = TF;
+    modelManager.setWindowCentered(TF);
   }
 
-  boolean adjustCameraFlag = true;
-
   boolean isCameraAdjustable() {
-    return adjustCameraFlag;
+    return global.adjustCameraFlag;
   }
 
   void setAdjustCamera(boolean TF) {
-    adjustCameraFlag = TF;
+    global.adjustCameraFlag = TF;
   }
 
-  boolean allowCameraMoveFlag = true;
-
   boolean allowCameraMove() {
-    return allowCameraMoveFlag;
+    return global.allowCameraMoveFlag;
   }
 
   void setAllowCameraMove(boolean TF) {
-    allowCameraMoveFlag = TF;
+    global.allowCameraMoveFlag = TF;
   }
 
-  float solventProbeRadius = 1.2f;
-
   void setSolventProbeRadius(float radius) {
-    solventProbeRadius = radius;
+    global.solventProbeRadius = radius;
   }
 
   float getSolventProbeRadius() {
-    return solventProbeRadius;
+    return global.solventProbeRadius;
   }
 
   float getCurrentSolventProbeRadius() {
-    return solventOn ? solventProbeRadius : 0;
+    return global.solventOn ? global.solventProbeRadius : 0;
   }
 
-  boolean solventOn = false;
-
   void setSolventOn(boolean isOn) {
-    solventOn = isOn;
+    global.solventOn = isOn;
   }
 
   boolean getSolventOn() {
-    return solventOn;
+    return global.solventOn;
   }
 
   void setAllowStatusReporting(boolean TF) {
     statusManager.setAllowStatusReporting(TF);
   }
 
-  boolean testFlag1;
-
-  boolean testFlag2;
-
-  boolean testFlag3;
-
-  boolean testFlag4;
-
   void setTestFlag1(boolean value) {
-    testFlag1 = value;
+    global.testFlag1 = value;
   }
 
   boolean getTestFlag1() {
-    return testFlag1;
+    return global.testFlag1;
   }
 
   void setTestFlag2(boolean value) {
-    testFlag2 = value;
+    global.testFlag2 = value;
   }
 
   boolean getTestFlag2() {
-    return testFlag2;
+    return global.testFlag2;
   }
 
   void setTestFlag3(boolean value) {
-    testFlag3 = value;
+    global.testFlag3 = value;
   }
 
   boolean getTestFlag3() {
-    return testFlag3;
+    return global.testFlag3;
   }
 
   void setTestFlag4(boolean value) {
-    testFlag4 = value;
+    global.testFlag4 = value;
   }
 
   boolean getTestFlag4() {
-    return testFlag4;
+    return global.testFlag4;
   }
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -2747,32 +2703,28 @@ public class Viewer extends JmolViewer {
     return transformManager.axesOrientationRasmol;
   }
 
-  private int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
-
   void setAxesModeMolecular(boolean TF) {
-    axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
+    global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
   }
 
   void setAxesModeUnitCell(boolean TF) {
-    axesMode = (TF ? JmolConstants.AXES_MODE_UNITCELL
+    global.axesMode = (TF ? JmolConstants.AXES_MODE_UNITCELL
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
   }
 
   int getAxesMode() {
-    return axesMode;
+    return global.axesMode;
   }
 
-  private boolean displayCellParameters = true;
-
   void setDisplayCellParameters(boolean displayCellParameters) {
-    this.displayCellParameters = displayCellParameters;
+    global.displayCellParameters = displayCellParameters;
   }
 
   boolean getDisplayCellParameters() {
-    return displayCellParameters;
+    return global.displayCellParameters;
   }
 
   public boolean getPerspectiveDepth() {
@@ -2787,68 +2739,53 @@ public class Viewer extends JmolViewer {
     return transformManager.getCameraDepth();
   }
 
-  boolean selectionHaloEnabled = false;
-
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
-    if (this.selectionHaloEnabled != selectionHaloEnabled) {
-      this.selectionHaloEnabled = selectionHaloEnabled;
-      refresh(0, "Viewer:setSelectionHaloEnabled()");
-    }
+    modelManager.setSelectionHaloEnabled(selectionHaloEnabled);
   }
 
   boolean getSelectionHaloEnabled() {
-    return selectionHaloEnabled;
+    return modelManager.getSelectionHaloEnabled();
   }
 
-  private boolean bondSelectionModeOr;
-
   void setBondSelectionModeOr(boolean bondSelectionModeOr) {
-    this.bondSelectionModeOr = bondSelectionModeOr;
+    global.bondSelectionModeOr = bondSelectionModeOr;
     refresh(0, "Viewer:setBondSelectionModeOr()");
   }
 
   boolean getBondSelectionModeOr() {
-    return bondSelectionModeOr;
+    return global.bondSelectionModeOr;
   }
 
-  boolean chainCaseSensitive = false;
-
   boolean getChainCaseSensitive() {
-    return chainCaseSensitive;
+    return global.chainCaseSensitive;
   }
 
   void setChainCaseSensitive(boolean chainCaseSensitive) {
-    this.chainCaseSensitive = chainCaseSensitive;
+    global.chainCaseSensitive = chainCaseSensitive;
   }
 
-  boolean ribbonBorder = false;
-
   boolean getRibbonBorder() {
-    return ribbonBorder;
+    return global.ribbonBorder;
   }
 
   void setRibbonBorder(boolean borderOn) {
-    this.ribbonBorder = borderOn;
+    global.ribbonBorder = borderOn;
   }
 
-  boolean cartoonRocketFlag = false;
-
   boolean getCartoonRocketFlag() {
-    return cartoonRocketFlag;
+    return global.cartoonRocketFlag;
   }
 
   void setCartoonRocketFlag(boolean TF) {
-    this.cartoonRocketFlag = TF;
+    global.cartoonRocketFlag = TF;
   }
 
-  boolean hideNameInPopup = false;
-
   boolean getHideNameInPopup() {
-    return hideNameInPopup;
+    return global.hideNameInPopup;
   }
 
   void setHideNameInPopup(boolean hideNameInPopup) {
-    this.hideNameInPopup = hideNameInPopup;
+    global.hideNameInPopup = hideNameInPopup;
   }
 
   void setSsbondsBackbone(boolean ssbondsBackbone) {
@@ -2868,46 +2805,38 @@ public class Viewer extends JmolViewer {
   // Graphics3D
   // //////////////////////////////////////////////////////////////
 
-  boolean greyscaleRendering;
-
   void setGreyscaleRendering(boolean greyscaleRendering) {
-    this.greyscaleRendering = greyscaleRendering;
+    global.greyscaleRendering = greyscaleRendering;
     g3d.setGreyscaleMode(greyscaleRendering);
     refresh(0, "Viewer:setGreyscaleRendering()");
   }
 
   boolean getGreyscaleRendering() {
-    return greyscaleRendering;
+    return global.greyscaleRendering;
   }
 
-  boolean labelsFrontFlag;
-
   void setLabelsFrontFlag(boolean labelsFrontFlag) {
-    this.labelsFrontFlag = labelsFrontFlag;
+    global.labelsFrontFlag = labelsFrontFlag;
   }
 
   boolean getLabelsFrontFlag() {
-    return labelsFrontFlag;
+    return global.labelsFrontFlag;
   }
 
-  boolean labelsGroupFlag;
-
   void setLabelsGroupFlag(boolean labelsGroupFlag) {
-    this.labelsGroupFlag = labelsGroupFlag;
+    global.labelsGroupFlag = labelsGroupFlag;
   }
 
   boolean getLabelsGroupFlag() {
-    return labelsGroupFlag;
+    return global.labelsGroupFlag;
   }
 
-  boolean disablePopupMenu;
-
   void setDisablePopupMenu(boolean disablePopupMenu) {
-    this.disablePopupMenu = disablePopupMenu;
+    global.disablePopupMenu = disablePopupMenu;
   }
 
   boolean getDisablePopupMenu() {
-    return disablePopupMenu;
+    return global.disablePopupMenu;
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -3033,14 +2962,12 @@ public class Viewer extends JmolViewer {
     refresh(0, "setShowMeasurements()");
   }
 
-  boolean measureAllModels = false;
-
   public void setMeasureAllModels(boolean TF) {
-    measureAllModels = TF;
+    global.measureAllModels = TF;
   }
 
   public boolean getMeasureAllModelsFlag() {
-    return measureAllModels;
+    return global.measureAllModels;
   }
 
   public boolean getShowMeasurements() {
@@ -3245,7 +3172,6 @@ public class Viewer extends JmolViewer {
   void setStereoMode(int[] twoColors) {
     transformManager.setStereoMode(twoColors);
   }
-
   
   int getStereoMode() {
     return transformManager.stereoMode;
@@ -3392,12 +3318,10 @@ public class Viewer extends JmolViewer {
         endDegrees, false, isSpin);
   }
 
-  int pickingSpinRate = 10;
-
   void setPickingSpinRate(int rate) {
     if (rate < 1)
       rate = 1;
-    pickingSpinRate = rate;
+    global.pickingSpinRate = rate;
   }
 
   void startSpinningAxis(int atomIndex1, int atomIndex2, boolean isClockwise) {
@@ -3413,8 +3337,8 @@ public class Viewer extends JmolViewer {
       setSpinOn(false);
       return;
     }
-    transformManager.rotateAboutPointsInternal(pt1, pt2, pickingSpinRate,
-        Float.MAX_VALUE, isClockwise, true);
+    transformManager.rotateAboutPointsInternal(pt1, pt2,
+        global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true);
   }
 
   Point3f getDrawObjectCenter(String axisID) {
@@ -3444,14 +3368,12 @@ public class Viewer extends JmolViewer {
     modelManager.getAtomIdentityInfo(atomIndex, info);
   }
 
-  Point3f ptDefaultLattice = new Point3f();
-
   void setDefaultLattice(Point3f ptLattice) {
-    ptDefaultLattice.set(ptLattice);
+    global.setDefaultLattice(ptLattice);
   }
 
   Point3f getDefaultLattice() {
-    return ptDefaultLattice;
+    return global.ptDefaultLattice;
   }
 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
@@ -3474,15 +3396,98 @@ public class Viewer extends JmolViewer {
     return modelManager.getAdditionalHydrogens(atomSet);
   }
   
-  String helpPath;
   void setHelpPath(String url) {
-    helpPath = url;
+    global.helpPath = url;
   }
   
   void getHelp(String what) {
-    if (helpPath == null)
-      helpPath = styleManager.getDefaultHelpPath();
-    showUrl(helpPath + what);
+    if (global.helpPath == null)
+      global.helpPath = styleManager.getDefaultHelpPath();
+    showUrl(global.helpPath + what);
   }
   
+  private class GlobalSettings {
+
+    /*
+     *  Mostly these are just saved and restored directly from Viewer.
+     *  They are collected here for reference and to ensure that no 
+     *  methods are written that bypass viewer's get/set methods.
+     *  
+     *  Because these are not Frame variables, they should persist past
+     *  a new file loading. There is some question in my mind whether all
+     *  should be in this category.
+     *  
+     */
+    //file loading
+    
+    char inlineNewlineChar = '|';
+    String defaultLoadScript = "";
+    Point3f ptDefaultLattice = new Point3f();
+    
+    void setDefaultLattice(Point3f ptLattice) {
+      ptDefaultLattice.set(ptLattice);
+    }
+    int[] getDefaultLattice() {
+      int[] A = new int[4];
+      A[1] = (int) ptDefaultLattice.x;
+      A[2] = (int) ptDefaultLattice.y;
+      A[3] = (int) ptDefaultLattice.z;
+      return A;
+    }
+    
+    //centering and perspective
+    
+    boolean allowCameraMoveFlag = true;
+    boolean adjustCameraFlag = true;
+
+    //solvent
+   
+    boolean solventOn;
+    float solventProbeRadius = 1.2f;
+    
+    //measurements
+    
+    boolean measureAllModels;
+
+    //rendering
+    
+    boolean enableFullSceneAntialiasing;
+    boolean greyscaleRendering;
+    boolean labelsGroupFlag;
+    boolean labelsFrontFlag;
+    boolean dotsSelectedOnlyFlag;
+    boolean dotSurfaceFlag = true;
+    boolean displayCellParameters = true;
+    int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
+
+    //atoms and bonds
+    
+    boolean bondSelectionModeOr;
+
+    //secondary structure + Rasmol
+    
+    boolean rasmolHydrogenSetting = true;
+    boolean rasmolHeteroSetting = true;
+    boolean cartoonRocketFlag;
+    boolean ribbonBorder;
+    boolean chainCaseSensitive;
+    boolean rangeSelected;
+
+    //misc
+    
+    int pickingSpinRate = 10;
+    boolean hideNameInPopup;
+    boolean disablePopupMenu;
+    String helpPath;
+    
+    //testing
+    
+    boolean debugScript;
+    boolean testFlag1;
+    boolean testFlag2;
+    boolean testFlag3;
+    boolean testFlag4;
+  }
+
+
 }

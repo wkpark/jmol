@@ -173,7 +173,7 @@ class Token {
   final static int vibration    = command | 82;
   final static int vector       = command | 83 | negnums;
   final static int meshRibbon   = command | 84;
-  //final static int prueba       = command | 85; //free
+  final static int halo         = command | 85;
   final static int rocket       = command | 86;
   final static int geosurface   = command | 87;
   final static int moveto       = command | 88 | negnums;
@@ -543,7 +543,8 @@ class Token {
     "vectors",           null,
     "meshribbon",        new Token(meshRibbon,onDefault1, "meshribbon"),
     "meshribbons",       null,
-    //"prueba",            new Token(prueba,    onDefault1, "prueba"),
+    "halo",              new Token(halo,     varArgCount, "halo"),
+    "halos",             null,
     "rocket",            new Token(rocket,    onDefault1, "rocket"),
     "rockets",           null,
     "moveto",            new Token(moveto,   varArgCount, "moveto"),

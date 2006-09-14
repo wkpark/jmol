@@ -66,14 +66,33 @@ class Balls extends Shape {
 
   void setModelClickability() {
     Atom[] atoms = frame.atoms;
-    int haloVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       atom.clickabilityFlags = 0;
       if((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
         atom.clickabilityFlags |= myVisibilityFlag;
-      if((atom.shapeVisibilityFlags & haloVisibilityFlag) != 0)
-        atom.clickabilityFlags |= haloVisibilityFlag;
+    }
+  }
+  
+  void setVisibilityFlags(BitSet bs) {
+    Atom[] atoms = frame.atoms;
+    int displayModelIndex = viewer.getDisplayModelIndex();
+    boolean isOneFrame = (displayModelIndex >= 0); 
+    boolean showHydrogens = viewer.getShowHydrogens();
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      atom.shapeVisibilityFlags &= (
+          ~JmolConstants.ATOM_IN_MODEL
+          & ~myVisibilityFlag);
+      if (atom.madAtom == JmolConstants.MAR_DELETED
+          || ! showHydrogens && atom.elementNumber == 1)
+        continue;
+      if (! isOneFrame && bs.get(atom.modelIndex) 
+          || atom.modelIndex == displayModelIndex) { 
+        atom.shapeVisibilityFlags |= JmolConstants.ATOM_IN_MODEL;
+        if (atom.madAtom != 0)
+          atom.shapeVisibilityFlags |= myVisibilityFlag;
+      }
     }
   }
 }

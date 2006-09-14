@@ -490,6 +490,9 @@ class Eval { //implements Runnable {
       case Token.star:
         star();
         break;
+      case Token.halo:
+        halo();
+        break;
       case Token.cpk:
         spacefill();
         break;
@@ -1858,7 +1861,8 @@ class Eval { //implements Runnable {
             argb);
         return;
       }
-      if (str.equalsIgnoreCase("selectionHalo")) {
+      if (str.equalsIgnoreCase("selectionHalo")
+          || str.equalsIgnoreCase("selectionHalos")) {
         viewer.setSelectionArgb(argb);
         return;
       }
@@ -2656,7 +2660,7 @@ class Eval { //implements Runnable {
   }
 
   void star() throws ScriptException {
-    short mad = 0;
+    short mad = 0; // means back to selection business
     int tok = Token.on;
     if (statementLength > 1) {
       tok = statement[1].tok;
@@ -2702,6 +2706,57 @@ class Eval { //implements Runnable {
       booleanOrNumberExpected();
     }
     viewer.setShapeSize(JmolConstants.SHAPE_STARS, mad);
+  }
+
+  void halo() throws ScriptException {
+    short mad = 0;
+    int tok = Token.on;
+    if (statementLength > 1) {
+      tok = statement[1].tok;
+      if (!((statementLength == 2) || (statementLength == 3
+          && tok == Token.integer && statement[2].tok == Token.percent))) {
+        badArgumentCount();
+      }
+    }
+    switch (tok) {
+    case Token.on:
+      mad = -20; // on goes to 25%
+      break;
+    case Token.vanderwaals:
+      mad = -100; // cpk with no args goes to 100%
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (statementLength == 2) {
+        if (radiusRasMol >= 750 || radiusRasMol < -100)
+          numberOutOfRange(-100, 749);
+        mad = (short) radiusRasMol;
+        if (radiusRasMol > 0)
+          mad *= 4 * 2;
+      } else {
+        if (radiusRasMol < 0 || radiusRasMol > 100)
+          numberOutOfRange(0, 100);
+        mad = (short) -radiusRasMol; // use a negative number to specify %vdw
+      }
+      break;
+    case Token.decimal:
+      float angstroms = floatParameter(1);
+      if (angstroms < 0 || angstroms > 3)
+        numberOutOfRange(0f, 3f);
+      mad = (short) (angstroms * 1000 * 2);
+      break;
+    case Token.temperature:
+      mad = -1000;
+      break;
+    case Token.ionic:
+      mad = -1001;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setShapeSize(JmolConstants.SHAPE_HALOS, mad);
   }
 
   /// aka cpk

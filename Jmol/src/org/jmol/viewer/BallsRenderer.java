@@ -28,13 +28,10 @@ package org.jmol.viewer;
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY, minZ, maxZ;
-  short colixSelection;
   int ballVisibilityFlag;
-  int haloVisibilityFlag;    
 
   void initRenderer() {
     ballVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);
-    haloVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);
   }
   boolean labelsGroup;
   
@@ -49,7 +46,6 @@ class BallsRenderer extends ShapeRenderer {
       maxZ = g3d.getDepth();
     }
     labelsGroup = viewer.getLabelsGroupFlag() && !viewer.getLabelsFrontFlag();
-    colixSelection = viewer.getColixSelection();
     Atom[] atoms = frame.atoms;
     if (labelsGroup)
       for (int i = frame.groupCount; --i >= 0;)
@@ -77,8 +73,6 @@ class BallsRenderer extends ShapeRenderer {
       }
       if ((atom.shapeVisibilityFlags & ballVisibilityFlag) != 0)
         renderBall(atom);
-      if ((atom.shapeVisibilityFlags & haloVisibilityFlag) != 0)
-        renderHalo(atom);
     }
   }
 
@@ -87,18 +81,4 @@ class BallsRenderer extends ShapeRenderer {
                            atom.screenX, atom.screenY, atom.screenZ);
   }
 
-  void renderHalo(Atom atom) {
-    int diameter = atom.screenDiameter;
-    if (diameter == 0)
-      diameter = viewer.scaleToScreen(atom.screenZ, 500);
-    int halowidth = (diameter / 4);
-    if (halowidth < 4)
-      halowidth = 4;
-    if (halowidth > 10)
-      halowidth = 10;
-    int haloDiameter = diameter + 2 * halowidth;
-    if (haloDiameter > 0)
-      g3d.fillScreenedCircleCentered(colixSelection, haloDiameter,
-          atom.screenX, atom.screenY, atom.screenZ);
-  }
 }

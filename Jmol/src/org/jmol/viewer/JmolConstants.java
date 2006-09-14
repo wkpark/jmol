@@ -2200,26 +2200,26 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_RIBBONS    = 13;
   public final static int SHAPE_ROCKETS    = 14;
   public final static int SHAPE_STARS      = 15;
+  public final static int SHAPE_HALOS      = 16;
 
-  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 16;
-  public final static int SHAPE_AXES       = 16;
-  public final static int SHAPE_BBCAGE     = 17;
-  public final static int SHAPE_UCCAGE     = 18;
-  public final static int SHAPE_FRANK      = 19;
-  public final static int SHAPE_ECHO       = 20;
-  public final static int SHAPE_HOVER      = 21;
-  public final static int SHAPE_POLYHEDRA  = 22;
-  public final static int SHAPE_MIN_NAMED_OBJECT = 23;
-  public final static int SHAPE_DIPOLES    = 23;
-  public final static int SHAPE_MIN_MESH_COLLECTION = 24;
-  public final static int SHAPE_PMESH      = 24;
-  public final static int SHAPE_MO         = 25;
-  public final static int SHAPE_ISOSURFACE = 26;
-  public final static int SHAPE_LCAOCARTOON = 27;
-  public final static int SHAPE_DRAW       = 28;
+  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 17;
+  public final static int SHAPE_AXES       = 17;
+  public final static int SHAPE_BBCAGE     = 18;
+  public final static int SHAPE_UCCAGE     = 19;
+  public final static int SHAPE_FRANK      = 20;
+  public final static int SHAPE_ECHO       = 21;
+  public final static int SHAPE_HOVER      = 22;
+  public final static int SHAPE_POLYHEDRA  = 23;
+  public final static int SHAPE_MIN_NAMED_OBJECT = 24;
+  public final static int SHAPE_DIPOLES    = 24;
+  public final static int SHAPE_MIN_MESH_COLLECTION = 25;
+  public final static int SHAPE_PMESH      = 25;
+  public final static int SHAPE_MO         = 26;
+  public final static int SHAPE_ISOSURFACE = 27;
+  public final static int SHAPE_LCAOCARTOON = 28;
+  public final static int SHAPE_DRAW       = 29;
   public final static int SHAPE_MAX        = SHAPE_DRAW + 1;
   //handled in Balls.java: (It's ok that this is SHAPE_MAX)
-  public final static int SHAPE_HALO       = SHAPE_MAX;
   
   //see Jmol 10.2 for programming information --- pruned from 11.0
   //Bob Hanson 7/17/06
@@ -2233,7 +2233,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Balls", "Sticks", "Hsticks", "Sssticks",
     "Labels", "Vectors", "Measures", "Dots",
     "Backbone", "Trace", "Cartoon", "Strands", 
-    "MeshRibbon", "Ribbons", "Rockets", "Stars",
+    "MeshRibbon", "Ribbons", "Rockets", "Stars", "Halos",
     "Axes", "Bbcage", "Uccage", 
     "Frank", "Echo", "Hover", 
     "Polyhedra", "Dipoles", 
@@ -2252,7 +2252,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     Token.atom, Token.bonds, Token.hbond, Token.ssbond, 
     Token.label, Token.vector, Token.monitor, Token.dots, 
     Token.backbone, Token.trace, Token.cartoon, Token.strands,
-    Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, 
+    Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, Token.halo, 
     Token.axes, Token.boundbox, Token.unitcell, 
     Token.frank, Token.echo, Token.hover,
     Token.polyhedra, Token.dipole,

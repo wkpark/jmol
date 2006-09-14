@@ -294,6 +294,8 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   short convertEncodedMad(int size) {
+    if (size == 0)
+      return 0;
     if (size == -1000) { // temperature
       int diameter = getBfactor100() * 10 * 2;
       if (diameter > 4000)

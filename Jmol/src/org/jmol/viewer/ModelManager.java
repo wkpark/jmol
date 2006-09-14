@@ -365,7 +365,9 @@ class ModelManager {
   void setNewRotationCenter(Point3f center, boolean doScale) {
     // once we have the center, we need to optionally move it to 
     // the proper XY position and possibly scale
-    if (viewer.isWindowCentered()) {
+    if (frame == null)
+      return;
+    if (frame.isWindowCentered()) {
       viewer.translateToXPercent(0);
       viewer.translateToYPercent(0);///CenterTo(0, 0);
       frame.setRotationCenterAndRadiusXYZ(center, true);
@@ -374,6 +376,18 @@ class ModelManager {
     } else {
       viewer.moveRotationCenter(center);
     }  
+  }
+  
+  boolean isWindowCentered() {
+    if (frame == null)
+      return false;
+    return frame.isWindowCentered();
+  }
+
+  void setWindowCentered(boolean TF) {
+    if (frame == null)
+      return;
+    frame.setWindowCentered(TF);
   }
   
   Point3f setRotationCenterAndRadiusXYZ(Point3f center, boolean andRadius) {
@@ -1373,12 +1387,6 @@ String getAtomInfoChime(int i) {
   void setModelVisibility() {
     if (frame == null)
       return;
-    Atom[] atoms = frame.atoms;
-    int displayModelIndex = viewer.getDisplayModelIndex();
-    boolean isOneFrame = (displayModelIndex >= 0); 
-    boolean showHydrogens = viewer.getShowHydrogens();
-    int ballVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);
-    int haloVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_HALO);
     
     //named objects must be set individually
     //in the future, we might include here a BITSET of models rather than just a modelIndex
@@ -1390,25 +1398,9 @@ String getAtomInfoChime(int i) {
     Polyhedra p = (Polyhedra) frame.shapes[JmolConstants.SHAPE_POLYHEDRA];
     if (p != null)
       p.setVisibilityFlags(bs);
-
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      atom.shapeVisibilityFlags &= (
-          ~JmolConstants.ATOM_IN_MODEL
-          & ~ballVisibilityFlag
-          & ~haloVisibilityFlag);
-      if (atom.madAtom == JmolConstants.MAR_DELETED
-          || ! showHydrogens && atom.elementNumber == 1)
-        continue;
-      if (! isOneFrame && bs.get(atom.modelIndex) 
-          || atom.modelIndex == displayModelIndex) { 
-        atom.shapeVisibilityFlags |= JmolConstants.ATOM_IN_MODEL;
-        if (atom.madAtom != 0)
-          atom.shapeVisibilityFlags |= ballVisibilityFlag;
-        if(viewer.hasSelectionHalo(atom.atomIndex))
-          atom.shapeVisibilityFlags |= haloVisibilityFlag;
-      }
-    }
+    if (frame.shapes[JmolConstants.SHAPE_HALOS] != null)
+      frame.shapes[JmolConstants.SHAPE_HALOS].setVisibilityFlags(bs);
+    frame.shapes[JmolConstants.SHAPE_BALLS].setVisibilityFlags(bs);
   }
   
   void setModelClickability() {
@@ -1459,13 +1451,6 @@ String getAtomInfoChime(int i) {
           shapeinfo.put("obj", shape.getShapeDetail());
         info.put(shapeType, shapeinfo);
       }
-    }
-    if (viewer.selectionHaloEnabled) {
-      Hashtable shapeinfo = new Hashtable();
-      shapeinfo.put("index", new Integer(JmolConstants.SHAPE_HALO));
-      shapeinfo.put("myVisibilityFlag", new Integer(Viewer
-          .getShapeVisibilityFlag(JmolConstants.SHAPE_HALO)));
-      info.put("halo", shapeinfo);
     }
     return info;
   }
@@ -1626,5 +1611,17 @@ String getAtomInfoChime(int i) {
 
   public int getSpaceGroupIndexFromName(String spaceGroup) {
     return SpaceGroup.determineSpaceGroupIndex(spaceGroup);
+  }
+
+  public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
+    if (frame == null)
+      return;
+    frame.setSelectionHaloEnabled(selectionHaloEnabled);
+  }
+
+  boolean getSelectionHaloEnabled() {
+    if (frame == null)
+      return false;
+    return frame.getSelectionHaloEnabled();
   }
 }

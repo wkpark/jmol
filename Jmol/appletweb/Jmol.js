@@ -44,6 +44,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 //               fixing AJAX loads for MSIE/Opera-Mozilla incompatibility
 //            -- renamed Jmol-11.js from Jmol-new.js; JmolApplet.jar from JmolAppletProto.jar
 //	 	 renamed Jmol.js for Jmol 11 distribution
+//            -- modified jmolRestoreOrientation() to be immediate, no 1-second delay
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -1094,6 +1095,7 @@ function jmolRestoreOrientation(id, targetSuffix) {
  if(!targetSuffix)targetSuffix="0"
  var s=_jmol["savedOrientation"+id]
  if (!s || s == "")return
+ s=s.replace(/1\.0/,"0")
  return jmolScriptWait(s,targetSuffix)
 }
 

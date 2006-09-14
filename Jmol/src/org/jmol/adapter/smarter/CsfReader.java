@@ -332,7 +332,7 @@ class CsfReader extends AtomSetCollectionReader {
     int iatom = atomSetCollection.getFirstAtomSetAtomCount();
     int xyzpt = 0;
     Atom[] atoms = atomSetCollection.atoms;
-    out: for (; (line = reader.readLine()) != null;) {
+    for (; (line = reader.readLine()) != null;) {
       if (line.startsWith("property_flags:"))
         break;
       String tokens[] = getTokens(line);

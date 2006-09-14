@@ -130,7 +130,7 @@ class CompoundDocument {
 
   boolean isBigEndian = true;
 
-  private class CmpDocHeader {
+  class CmpDocHeader {
 
     //512 bytes
     //offset 0:
@@ -204,7 +204,7 @@ class CompoundDocument {
     }
   }
 
-  private class CmpDocDirectoryEntry {
+  class CmpDocDirectoryEntry {
     // 128 bytes
     //offset 0:
     byte[] unicodeName = new byte[64];

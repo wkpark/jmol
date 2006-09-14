@@ -1804,7 +1804,7 @@ class Eval { //implements Runnable {
     if (statementLength > 5 || statementLength < 2)
       badArgumentCount();
     int tok = statement[1].tok;
-    outer: switch (tok) {
+    switch (tok) {
     case Token.dollarsign:
       colorNamedObject(2);
       return;

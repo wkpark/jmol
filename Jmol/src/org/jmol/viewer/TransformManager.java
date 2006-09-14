@@ -1534,8 +1534,15 @@ class TransformManager {
   ////////////////////////////////////////////////////////////////
 
   int stereoMode;
-
+  int[] stereoColors;
+  void setStereoMode(int[] twoColors) {
+    stereoMode = JmolConstants.STEREO_CUSTOM;
+    stereoColors = twoColors;
+    viewer.setGreyscaleRendering(true);
+  }
+  
   void setStereoMode(int stereoMode) {
+    stereoColors = null;
     this.stereoMode = stereoMode;
     viewer.setGreyscaleRendering(stereoMode >= JmolConstants.STEREO_REDCYAN);
   }

@@ -1609,6 +1609,8 @@ class Eval { //implements Runnable {
     // see www.usm.maine.edu/~rhodes/0Help/StereoViewing.html
     float degrees = -5;
     boolean degreesSeen = false;
+    int[] colors = new int[2];
+    int colorpt = 0;
     for (int i = 1; i < statementLength; ++i) {
       switch (statement[i].tok) {
       case Token.on:
@@ -1616,6 +1618,13 @@ class Eval { //implements Runnable {
         break;
       case Token.off:
         stereoMode = JmolConstants.STEREO_NONE;
+        break;
+      case Token.colorRGB:
+        if (colorpt > 1)
+          badArgumentCount();
+        if (!degreesSeen)
+          degrees = 3;
+        colors[colorpt++] = getArgbParam(i);
         break;
       case Token.integer:
       case Token.decimal:
@@ -1644,7 +1653,10 @@ class Eval { //implements Runnable {
       }
     }
     viewer.setStereoDegrees(degrees);
-    viewer.setStereoMode(stereoMode);
+    if (colorpt == 2)
+      viewer.setStereoMode(colors);
+    else
+      viewer.setStereoMode(stereoMode);
   }
 
   void connect() throws ScriptException {

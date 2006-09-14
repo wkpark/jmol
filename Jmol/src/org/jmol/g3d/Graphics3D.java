@@ -582,17 +582,34 @@ final public class Graphics3D {
       anaglyphChannelBytes[i] = (byte)pbuf[i];
   }
 
-  public void applyBlueOrGreenAnaglyph(boolean blueChannel) {
-    int shiftCount = blueChannel ? 0 : 8;
-    for (int i = pbuf.length; --i >= 0; )
-      pbuf[i] = ((pbuf[i] & 0xFFFF0000) |
-		 ((anaglyphChannelBytes[i] & 0x000000FF) << shiftCount));
+  public void applyCustomAnaglyph(int[] stereoColors) {
+    int color1 = stereoColors[0];
+    int color2 = stereoColors[1] & 0x00FFFFFF;
+    for (int i = pbuf.length; --i >= 0;) {
+      int a = anaglyphChannelBytes[i] & 0x000000FF;
+      a = (a | ((a | (a << 8)) << 8)) & color2;
+      pbuf[i] = (pbuf[i] & color1) | a;
+    }
+  }
+
+  public void applyGreenAnaglyph() {
+    for (int i = pbuf.length; --i >= 0; ) {
+      int green = (anaglyphChannelBytes[i] & 0x000000FF) << 8;
+      pbuf[i] = (pbuf[i] & 0xFFFF0000) | green;
+    }
+  }
+
+  public void applyBlueAnaglyph() {
+    for (int i = pbuf.length; --i >= 0; ) {
+      int blue = anaglyphChannelBytes[i] & 0x000000FF;
+      pbuf[i] = (pbuf[i] & 0xFFFF0000) | blue;
+    }
   }
 
   public void applyCyanAnaglyph() {
     for (int i = pbuf.length; --i >= 0; ) {
-      int blueAndGreen = anaglyphChannelBytes[i] & 0x000000FF;
-      int cyan = (blueAndGreen << 8) | blueAndGreen;
+      int blue = anaglyphChannelBytes[i] & 0x000000FF;
+      int cyan = (blue << 8) | blue;
       pbuf[i] = pbuf[i] & 0xFFFF0000 | cyan;
     }
   }

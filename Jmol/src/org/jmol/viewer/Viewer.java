@@ -1882,6 +1882,7 @@ public class Viewer extends JmolViewer {
     case JmolConstants.STEREO_REDCYAN:
     case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDGREEN:
+    case JmolConstants.STEREO_CUSTOM:
       setRectClip(null);
       g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
           rectClip.height, transformManager.getStereoRotationMatrix(true),
@@ -1896,11 +1897,19 @@ public class Viewer extends JmolViewer {
       repaintManager.render(g3d, rectClip, modelManager.getFrame(),
           repaintManager.displayModelIndex);
       g3d.endRendering();
-      if (stereoMode == JmolConstants.STEREO_REDCYAN)
+      switch (stereoMode) {
+      case JmolConstants.STEREO_REDCYAN:
         g3d.applyCyanAnaglyph();
-      else
-        g3d
-            .applyBlueOrGreenAnaglyph(stereoMode == JmolConstants.STEREO_REDBLUE);
+        break;
+      case JmolConstants.STEREO_CUSTOM:
+        g3d.applyCustomAnaglyph(transformManager.stereoColors);
+        break;
+      case JmolConstants.STEREO_REDBLUE:
+        g3d.applyBlueAnaglyph();
+        break;
+      default:
+        g3d.applyGreenAnaglyph();
+      }
       Image img = g3d.getScreenImage();
       try {
         g.drawImage(img, 0, 0, null);
@@ -3233,6 +3242,11 @@ public class Viewer extends JmolViewer {
     transformManager.setStereoMode(stereoMode);
   }
 
+  void setStereoMode(int[] twoColors) {
+    transformManager.setStereoMode(twoColors);
+  }
+
+  
   int getStereoMode() {
     return transformManager.stereoMode;
   }

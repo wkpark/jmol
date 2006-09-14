@@ -85,7 +85,6 @@ class Token {
   // every predefined is also valid in an expression context
   final static int comparator        = (1 << 17) | expression;
   final static int predefinedset     = (1 << 18) | expression;
-  final static int colorparam        = (1 << 19);
   final static int specialstring     = (1 << 20); // echo, label
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the few commands which allow negative integers
@@ -99,7 +98,9 @@ class Token {
   // allows initial quote to indicate some parameters may not be strings 
   // Bob Hanson 2006/04
   final static int specialstring2    = (1 << 24); // echo, label
-  
+
+  final static int colorparam        = (1 << 19);
+
 
   // These are unrelated
   final static int varArgCount       = (1 << 4);
@@ -143,7 +144,7 @@ class Token {
   final static int slab         = command | 33 | bool;
   final static int cpk          = command | 35 | setparam | bool | negnums;
   final static int ssbond       = command | 36 | setparam | bool;
-  final static int stereo       = command | 38 | setspecial | bool | negnums;
+  final static int stereo       = command | 38 | colorparam;// | setspecial | bool | negnums ;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
   final static int trace        = command | 41 | bool;

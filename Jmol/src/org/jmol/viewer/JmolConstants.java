@@ -2283,6 +2283,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int STEREO_REDCYAN  = 2;
   public final static int STEREO_REDBLUE  = 3;
   public final static int STEREO_REDGREEN = 4;
+  public final static int STEREO_CUSTOM   = 5;
 
   // all of these things are compile-time constants
   // if they are false then the compiler should take them away

@@ -3357,7 +3357,7 @@
   <fah_proj number="1493" name="p1493_Protein" public="y" file="y"
     server="171.65.103.68" atoms="23442" preferred="33" deadline="59"
     credit="210" frames="0" code="A0" contact="kasson"/>
-  <fah_proj number="1495" name="p1495_tet_new" public="n" file="y"
+  <fah_proj number="1495" name="p1495_tet_new" public="y" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
   <fah_proj number="1496" name="p1496_Protein in POPC" public="y" file="y"

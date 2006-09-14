@@ -1351,10 +1351,10 @@ final public class Graphics3D {
     0xFFFFFFFF, // white
     0xFF00FFFF, // cyan
     0xFFFF0000, // red
-    0xFF008000, // green
+    0xFF008000, // green -- really!
     0xFF808080, // gray
     0xFFC0C0C0, // silver
-    0xFF00FF00, // lime
+    0xFF00FF00, // lime  -- no kidding!
     0xFF800000, // maroon
     0xFF000080, // navy
     0xFF808000, // olive

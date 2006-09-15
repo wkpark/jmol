@@ -3418,6 +3418,11 @@ public class Viewer extends JmolViewer {
      *  should be in this category.
      *  
      */
+
+    GlobalSettings() {
+      //
+    }
+
     //file loading
     
     char inlineNewlineChar = '|';

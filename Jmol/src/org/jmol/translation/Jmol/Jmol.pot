@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-12 23:00+0200\n"
+"POT-Creation-Date: 2006-09-15 23:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:169
+#: org/openscience/jmol/app/PreferencesDialog.java:171
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr ""
@@ -518,17 +518,17 @@ msgid "Stop animation"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:145
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Rewind to first frame"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:146
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Go to next frame"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:147
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to previous frame"
 msgstr ""
 
@@ -586,39 +586,43 @@ msgid "File Preview (needs restarting Jmol)"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:165
+msgid "Clear console button (needs restarting Jmol)"
+msgstr ""
+
 #: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:167
 msgid "Use Atom Color"
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:168
 msgid "Open a file."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:169
 msgid "Export view to an image file."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:170
 msgid "Render in pov-ray."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:171
 msgid "Print view."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "Rotate molecule."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "Select an atom or region."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "View measurement table."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "Return molecule to home position."
 msgstr ""
 
@@ -726,31 +730,36 @@ msgstr ""
 msgid "Jmol Java Console"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:480
+#: org/openscience/jmol/app/Jmol.java:476
+#: org/openscience/jmol/app/ScriptWindow.java:95
+msgid "Clear"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:489
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:554
+#: org/openscience/jmol/app/Jmol.java:563
 msgid "Closing Jmol..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:790
+#: org/openscience/jmol/app/Jmol.java:799
 msgid "Macros"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1110
+#: org/openscience/jmol/app/Jmol.java:1119
 msgid "Open URL"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1111
+#: org/openscience/jmol/app/Jmol.java:1120
 msgid "Enter URL of molecular model"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1198
+#: org/openscience/jmol/app/Jmol.java:1207
 msgid "IO Exception:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1370
+#: org/openscience/jmol/app/Jmol.java:1379
 msgid "File not loaded"
 msgstr ""
 
@@ -960,7 +969,7 @@ msgid "Save file and possibly launch povray"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:161
+#: org/openscience/jmol/app/PreferencesDialog.java:163
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr ""
@@ -977,73 +986,73 @@ msgstr ""
 msgid "null component string"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:129
+#: org/openscience/jmol/app/PreferencesDialog.java:131
 msgid "Preferences"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:146
+#: org/openscience/jmol/app/PreferencesDialog.java:148
 msgid "Display"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:147
+#: org/openscience/jmol/app/PreferencesDialog.java:149
 msgid "Atoms"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:148
+#: org/openscience/jmol/app/PreferencesDialog.java:150
 msgid "Bonds"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:153
+#: org/openscience/jmol/app/PreferencesDialog.java:155
 msgid "Jmol Defaults"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:157
+#: org/openscience/jmol/app/PreferencesDialog.java:159
 msgid "RasMol Defaults"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/PreferencesDialog.java:167
 msgid "Apply"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:193
+#: org/openscience/jmol/app/PreferencesDialog.java:195
 msgid "Show All"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:287
+#: org/openscience/jmol/app/PreferencesDialog.java:294
 msgid "Default atom size"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:288
+#: org/openscience/jmol/app/PreferencesDialog.java:295
 msgid "(percentage of vanDerWaals radius)"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:340
+#: org/openscience/jmol/app/PreferencesDialog.java:347
 msgid "Compute Bonds"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:342
+#: org/openscience/jmol/app/PreferencesDialog.java:349
 msgid "Automatically"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:343
+#: org/openscience/jmol/app/PreferencesDialog.java:350
 msgid "Don't Compute Bonds"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:370
+#: org/openscience/jmol/app/PreferencesDialog.java:377
 msgid "Default Bond Radius"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:371
-#: org/openscience/jmol/app/PreferencesDialog.java:409
-#: org/openscience/jmol/app/PreferencesDialog.java:460
+#: org/openscience/jmol/app/PreferencesDialog.java:378
+#: org/openscience/jmol/app/PreferencesDialog.java:416
+#: org/openscience/jmol/app/PreferencesDialog.java:467
 msgid "(Angstroms)"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:408
+#: org/openscience/jmol/app/PreferencesDialog.java:415
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr ""
 
-#: org/openscience/jmol/app/PreferencesDialog.java:459
+#: org/openscience/jmol/app/PreferencesDialog.java:466
 msgid "Minimum Bonding Distance"
 msgstr ""
 
@@ -1061,10 +1070,6 @@ msgstr ""
 
 #: org/openscience/jmol/app/ScriptWindow.java:90
 msgid "Halt"
-msgstr ""
-
-#: org/openscience/jmol/app/ScriptWindow.java:95
-msgid "Clear"
 msgstr ""
 
 #: org/openscience/jmol/app/ScriptWindow.java:99

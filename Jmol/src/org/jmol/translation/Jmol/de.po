@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-12 23:00+0200\n"
+"POT-Creation-Date: 2006-09-15 23:16+0200\n"
 "PO-Revision-Date: 2006-04-14 18:00+0100\n"
 "Last-Translator: Sebastian Lisken <sebastianlisken at users.sourceforge."
 "net>\n"
@@ -50,7 +50,7 @@ msgstr "URL \"{0}\" nicht gefunden."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:169
+#: org/openscience/jmol/app/PreferencesDialog.java:171
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr "OK"
@@ -522,17 +522,17 @@ msgid "Stop animation"
 msgstr "Animation stoppen"
 
 #: org/openscience/jmol/app/GuiMap.java:145
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Rewind to first frame"
 msgstr "Zurück zum ersten Frame"
 
 #: org/openscience/jmol/app/GuiMap.java:146
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Go to next frame"
 msgstr "Zum nächsten Frame"
 
 #: org/openscience/jmol/app/GuiMap.java:147
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to previous frame"
 msgstr "Zum vorherigen Frame"
 
@@ -591,39 +591,44 @@ msgid "File Preview (needs restarting Jmol)"
 msgstr "Datei-Vorschau (Neustart erforderlich)"
 
 #: org/openscience/jmol/app/GuiMap.java:165
+#, fuzzy
+msgid "Clear console button (needs restarting Jmol)"
+msgstr "Datei-Vorschau (Neustart erforderlich)"
+
 #: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:167
 msgid "Use Atom Color"
 msgstr "Atomfarbe anwenden"
 
-#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:168
 msgid "Open a file."
 msgstr "Eine Datei öffnen."
 
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:169
 msgid "Export view to an image file."
 msgstr "Ansicht in einer Bilddatei exportieren."
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:170
 msgid "Render in pov-ray."
 msgstr "In POV-Ray rendern."
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:171
 msgid "Print view."
 msgstr "Druckvorschau."
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "Rotate molecule."
 msgstr "Molekül drehen."
 
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "Select an atom or region."
 msgstr "Ein Atom oder einen Bereich markieren."
 
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "View measurement table."
 msgstr "Messungen-Tabelle anzeigen."
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "Return molecule to home position."
 msgstr "Molekül in Ausgangsposition bringen."
 
@@ -734,31 +739,36 @@ msgstr "Skript ausführen..."
 msgid "Jmol Java Console"
 msgstr "Jmol-Konsole"
 
-#: org/openscience/jmol/app/Jmol.java:480
+#: org/openscience/jmol/app/Jmol.java:476
+#: org/openscience/jmol/app/ScriptWindow.java:95
+msgid "Clear"
+msgstr "Leeren"
+
+#: org/openscience/jmol/app/Jmol.java:489
 msgid "Could not create ConsoleTextArea: "
 msgstr "ConsoleTextArea konnte nicht erstellt werden: "
 
-#: org/openscience/jmol/app/Jmol.java:554
+#: org/openscience/jmol/app/Jmol.java:563
 msgid "Closing Jmol..."
 msgstr "Beende Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:790
+#: org/openscience/jmol/app/Jmol.java:799
 msgid "Macros"
 msgstr "Makros"
 
-#: org/openscience/jmol/app/Jmol.java:1110
+#: org/openscience/jmol/app/Jmol.java:1119
 msgid "Open URL"
 msgstr "URL öffnen"
 
-#: org/openscience/jmol/app/Jmol.java:1111
+#: org/openscience/jmol/app/Jmol.java:1120
 msgid "Enter URL of molecular model"
 msgstr "URL eines Molekül-Modells eingeben"
 
-#: org/openscience/jmol/app/Jmol.java:1198
+#: org/openscience/jmol/app/Jmol.java:1207
 msgid "IO Exception:"
 msgstr "IO-Fehler:"
 
-#: org/openscience/jmol/app/Jmol.java:1370
+#: org/openscience/jmol/app/Jmol.java:1379
 msgid "File not loaded"
 msgstr "Datei wurde nicht geladen"
 
@@ -972,7 +982,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Datei speichern und wenn möglich POV-Ray starten"
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:161
+#: org/openscience/jmol/app/PreferencesDialog.java:163
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -989,73 +999,73 @@ msgstr "Speichern"
 msgid "null component string"
 msgstr "String ohne Komponenten"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:129
+#: org/openscience/jmol/app/PreferencesDialog.java:131
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:146
+#: org/openscience/jmol/app/PreferencesDialog.java:148
 msgid "Display"
 msgstr "Anzeige"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:147
+#: org/openscience/jmol/app/PreferencesDialog.java:149
 msgid "Atoms"
 msgstr "Atome"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:148
+#: org/openscience/jmol/app/PreferencesDialog.java:150
 msgid "Bonds"
 msgstr "Bindungen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:153
+#: org/openscience/jmol/app/PreferencesDialog.java:155
 msgid "Jmol Defaults"
 msgstr "Jmol-Standards"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:157
+#: org/openscience/jmol/app/PreferencesDialog.java:159
 msgid "RasMol Defaults"
 msgstr "RasMol-Standards"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/PreferencesDialog.java:167
 msgid "Apply"
 msgstr "Anwenden"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:193
+#: org/openscience/jmol/app/PreferencesDialog.java:195
 msgid "Show All"
 msgstr "Alle zeigen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:287
+#: org/openscience/jmol/app/PreferencesDialog.java:294
 msgid "Default atom size"
 msgstr "Standard Atomgröße"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:288
+#: org/openscience/jmol/app/PreferencesDialog.java:295
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(in Prozent des van-der-Waals-Radius)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:340
+#: org/openscience/jmol/app/PreferencesDialog.java:347
 msgid "Compute Bonds"
 msgstr "Bindungen berechnen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:342
+#: org/openscience/jmol/app/PreferencesDialog.java:349
 msgid "Automatically"
 msgstr "Automatisch"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:343
+#: org/openscience/jmol/app/PreferencesDialog.java:350
 msgid "Don't Compute Bonds"
 msgstr "Bindungen nicht berechnen"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:370
+#: org/openscience/jmol/app/PreferencesDialog.java:377
 msgid "Default Bond Radius"
 msgstr "Standard Bindungsradius"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:371
-#: org/openscience/jmol/app/PreferencesDialog.java:409
-#: org/openscience/jmol/app/PreferencesDialog.java:460
+#: org/openscience/jmol/app/PreferencesDialog.java:378
+#: org/openscience/jmol/app/PreferencesDialog.java:416
+#: org/openscience/jmol/app/PreferencesDialog.java:467
 msgid "(Angstroms)"
 msgstr "(in Ångström)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:408
+#: org/openscience/jmol/app/PreferencesDialog.java:415
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Toleranz der Bindung - Summe zweier kovalenter Radien + dieser Wert"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:459
+#: org/openscience/jmol/app/PreferencesDialog.java:466
 msgid "Minimum Bonding Distance"
 msgstr "Minimaler Bindungsabstand"
 
@@ -1074,10 +1084,6 @@ msgstr "Ausführen"
 #: org/openscience/jmol/app/ScriptWindow.java:90
 msgid "Halt"
 msgstr "Stoppen"
-
-#: org/openscience/jmol/app/ScriptWindow.java:95
-msgid "Clear"
-msgstr "Leeren"
 
 #: org/openscience/jmol/app/ScriptWindow.java:99
 msgid "Help"

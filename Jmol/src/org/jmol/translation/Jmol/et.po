@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-12 23:00+0200\n"
+"POT-Creation-Date: 2006-09-15 23:16+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -49,7 +49,7 @@ msgstr "Ei leia url'i \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:96
 #: org/openscience/jmol/app/HelpDialog.java:105
-#: org/openscience/jmol/app/PreferencesDialog.java:169
+#: org/openscience/jmol/app/PreferencesDialog.java:171
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
 msgstr "Nõus"
@@ -521,17 +521,17 @@ msgid "Stop animation"
 msgstr "Seiska animatsioon"
 
 #: org/openscience/jmol/app/GuiMap.java:145
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Rewind to first frame"
 msgstr "Keri tagasi esimese kaadrini"
 
 #: org/openscience/jmol/app/GuiMap.java:146
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Go to next frame"
 msgstr "Mine järgmise kaadri juurde"
 
 #: org/openscience/jmol/app/GuiMap.java:147
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to previous frame"
 msgstr "Mine eelmise kaadri juurde"
 
@@ -590,39 +590,44 @@ msgid "File Preview (needs restarting Jmol)"
 msgstr "Faili eelvaade (vajab Jmol'i taaskäivitust)"
 
 #: org/openscience/jmol/app/GuiMap.java:165
+#, fuzzy
+msgid "Clear console button (needs restarting Jmol)"
+msgstr "Faili eelvaade (vajab Jmol'i taaskäivitust)"
+
 #: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:167
 msgid "Use Atom Color"
 msgstr "Aatomi värvi kasutamine"
 
-#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:168
 msgid "Open a file."
 msgstr "Faili avamine."
 
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:169
 msgid "Export view to an image file."
 msgstr "Ekspordi vaade pildi faili."
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:170
 msgid "Render in pov-ray."
 msgstr "Renderda pov-ray's."
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:171
 msgid "Print view."
 msgstr "Prindi vaade."
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "Rotate molecule."
 msgstr "Keera molekuli"
 
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "Select an atom or region."
 msgstr "Vali aatom või regioon."
 
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "View measurement table."
 msgstr "Vaata mõõtetabelit."
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "Return molecule to home position."
 msgstr "Taasta molekuli lähtepositsioon."
 
@@ -731,31 +736,36 @@ msgstr "Käivitan skripti..."
 msgid "Jmol Java Console"
 msgstr "Jmol konsool"
 
-#: org/openscience/jmol/app/Jmol.java:480
+#: org/openscience/jmol/app/Jmol.java:476
+#: org/openscience/jmol/app/ScriptWindow.java:95
+msgid "Clear"
+msgstr "Puhasta"
+
+#: org/openscience/jmol/app/Jmol.java:489
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:554
+#: org/openscience/jmol/app/Jmol.java:563
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:790
+#: org/openscience/jmol/app/Jmol.java:799
 msgid "Macros"
 msgstr "Makrod"
 
-#: org/openscience/jmol/app/Jmol.java:1110
+#: org/openscience/jmol/app/Jmol.java:1119
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1111
+#: org/openscience/jmol/app/Jmol.java:1120
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/Jmol.java:1198
+#: org/openscience/jmol/app/Jmol.java:1207
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
-#: org/openscience/jmol/app/Jmol.java:1370
+#: org/openscience/jmol/app/Jmol.java:1379
 msgid "File not loaded"
 msgstr "Fail ei ole loetud"
 
@@ -966,7 +976,7 @@ msgid "Save file and possibly launch povray"
 msgstr "Salvesta see fail ning võimalusel käivita povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:492
-#: org/openscience/jmol/app/PreferencesDialog.java:161
+#: org/openscience/jmol/app/PreferencesDialog.java:163
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Katkesta"
@@ -983,73 +993,73 @@ msgstr "Salvesta"
 msgid "null component string"
 msgstr "tühi komponent string"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:129
+#: org/openscience/jmol/app/PreferencesDialog.java:131
 msgid "Preferences"
 msgstr "Eelistused"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:146
+#: org/openscience/jmol/app/PreferencesDialog.java:148
 msgid "Display"
 msgstr "Kuva"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:147
+#: org/openscience/jmol/app/PreferencesDialog.java:149
 msgid "Atoms"
 msgstr "Aatomid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:148
+#: org/openscience/jmol/app/PreferencesDialog.java:150
 msgid "Bonds"
 msgstr "Sidemed"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:153
+#: org/openscience/jmol/app/PreferencesDialog.java:155
 msgid "Jmol Defaults"
 msgstr "Jmol vaikeväärtused"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:157
+#: org/openscience/jmol/app/PreferencesDialog.java:159
 msgid "RasMol Defaults"
 msgstr "RasMol vaikeväärtused"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/PreferencesDialog.java:167
 msgid "Apply"
 msgstr "Kehtesta"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:193
+#: org/openscience/jmol/app/PreferencesDialog.java:195
 msgid "Show All"
 msgstr "Näita kõike"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:287
+#: org/openscience/jmol/app/PreferencesDialog.java:294
 msgid "Default atom size"
 msgstr "Aatomi suuruse vaikeväärtus"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:288
+#: org/openscience/jmol/app/PreferencesDialog.java:295
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(protsenti vanDerWaals raadiusest)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:340
+#: org/openscience/jmol/app/PreferencesDialog.java:347
 msgid "Compute Bonds"
 msgstr "Arvuta sidemed"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:342
+#: org/openscience/jmol/app/PreferencesDialog.java:349
 msgid "Automatically"
 msgstr "Automaatselt"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:343
+#: org/openscience/jmol/app/PreferencesDialog.java:350
 msgid "Don't Compute Bonds"
 msgstr "Ära arvuta sidemeid"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:370
+#: org/openscience/jmol/app/PreferencesDialog.java:377
 msgid "Default Bond Radius"
 msgstr "Sideme raadiuse vaikeväärtus"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:371
-#: org/openscience/jmol/app/PreferencesDialog.java:409
-#: org/openscience/jmol/app/PreferencesDialog.java:460
+#: org/openscience/jmol/app/PreferencesDialog.java:378
+#: org/openscience/jmol/app/PreferencesDialog.java:416
+#: org/openscience/jmol/app/PreferencesDialog.java:467
 msgid "(Angstroms)"
 msgstr "(Angstromid)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:408
+#: org/openscience/jmol/app/PreferencesDialog.java:415
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Sideme tolerants - kahe kovalentse radii summa + see väärtus"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:459
+#: org/openscience/jmol/app/PreferencesDialog.java:466
 msgid "Minimum Bonding Distance"
 msgstr "Väikseim sideme kaugus"
 
@@ -1068,10 +1078,6 @@ msgstr "Käivita"
 #: org/openscience/jmol/app/ScriptWindow.java:90
 msgid "Halt"
 msgstr "Seiska"
-
-#: org/openscience/jmol/app/ScriptWindow.java:95
-msgid "Clear"
-msgstr "Puhasta"
 
 #: org/openscience/jmol/app/ScriptWindow.java:99
 msgid "Help"

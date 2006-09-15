@@ -468,10 +468,19 @@ public class Jmol extends JPanel {
     consoleframe = new JFrame(GT._("Jmol Java Console"));
     consoleframe.setIconImage(jmol.frame.getIconImage());
     try {
-      ConsoleTextArea consoleTextArea = new ConsoleTextArea();
+      final ConsoleTextArea consoleTextArea = new ConsoleTextArea();
       consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
       consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
                                         java.awt.BorderLayout.CENTER);
+      if (Boolean.getBoolean("clearConsoleButton")) {
+        JButton buttonClear = new JButton(GT._("Clear"));
+        buttonClear.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            consoleTextArea.setText("");
+          }
+        });
+        consoleframe.getContentPane().add(buttonClear, java.awt.BorderLayout.SOUTH);
+      }
     } catch (IOException e) {
       JTextArea errorTextArea = new JTextArea();
       errorTextArea.setFont(java.awt.Font.decode("monospaced"));

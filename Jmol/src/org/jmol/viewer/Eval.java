@@ -1863,6 +1863,7 @@ class Eval { //implements Runnable {
       }
       if (str.equalsIgnoreCase("selectionHalo")
           || str.equalsIgnoreCase("selectionHalos")) {
+        viewer.loadShape(JmolConstants.SHAPE_HALOS);
         viewer.setSelectionArgb(argb);
         return;
       }
@@ -3363,7 +3364,7 @@ class Eval { //implements Runnable {
     case Token.debugscript:
       setDebugScript();
       break;
-    case Token.display:
+    case Token.display: //deprecated  
       setDisplay();
       break;
     case Token.echo:
@@ -3452,6 +3453,10 @@ class Eval { //implements Runnable {
       break;
     case Token.identifier:
       String str = (String) statement[1].value;
+      if (str.equalsIgnoreCase("selectionHalos")) {
+        setDisplay();
+        return;
+      }
       if (str.equalsIgnoreCase("measurementNumbers")) {
         setMonitor(2);
         break;
@@ -3594,11 +3599,15 @@ class Eval { //implements Runnable {
   }
 
   void setDisplay() throws ScriptException {
-    boolean showHalo = false;
     checkLength3();
+    boolean showHalo = false;
     switch (statement[2].tok) {
+    case Token.on:
     case Token.selected:
+      viewer.loadShape(JmolConstants.SHAPE_HALOS);
       showHalo = true;
+    case Token.off:
+    case Token.none:
     case Token.normal:
       viewer.setSelectionHaloEnabled(showHalo);
       break;

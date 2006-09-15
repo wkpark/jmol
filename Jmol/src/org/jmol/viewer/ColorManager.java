@@ -72,12 +72,10 @@ class ColorManager {
       argbsCpk[i] = JmolConstants.argbsCpk[i];
   }
 
-  final static short colixSelectionDefault = Graphics3D.GOLD;
-
-  short colixSelection = colixSelectionDefault;
+  
+  short colixSelection = Graphics3D.UNRECOGNIZED;
   void setSelectionArgb(int argb) {
-    colixSelection =
-      (argb == 0 ? colixSelectionDefault : Graphics3D.getColix(argb));
+    colixSelection = (argb == 0 ? 0 : Graphics3D.getColix(argb));
   }
 
   short getColixSelection() {

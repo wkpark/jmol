@@ -656,6 +656,12 @@ final public class Atom extends Point3fi implements Tuple {
     return bfactor100s[atomIndex];
   }
 
+  float getSurfaceDistance() {
+    if (group == null)
+      return -1;
+    return group.chain.frame.getSurfaceDistance(atomIndex);
+  }
+
   Group getGroup() {
     return group;
   }

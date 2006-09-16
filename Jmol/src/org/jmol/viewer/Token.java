@@ -191,6 +191,7 @@ class Token {
   final static int lcaocartoon  = command | 100| colorparam;
   final static int message      = command | 101 | specialstring;
   final static int translateSelected = command | 102 | negnums;
+  final static int calculate    = command | 103;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -336,6 +337,7 @@ class Token {
   final static int site         = atomproperty | 14 | expression;
   final static int element      = atomproperty | 15 | expression;
   final static int symop        = atomproperty | 16 | expression;
+  final static int surfacedistance = atomproperty | 17;
 
 
   final static int opGT         = comparator |  0;
@@ -564,6 +566,7 @@ class Token {
     "lcaocartoons",      null,
     "message",           new Token(message,     varArgCount, "message"),
     "translateselected", new Token(translateSelected,varArgCount, "translateSelected"),
+    "calculate",         new Token(calculate,varArgCount, "calculate"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),
@@ -739,8 +742,8 @@ class Token {
     "purine",       new Token(purine,          "purine"),
     "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
     "surface",      new Token(surface,         "surface"),
-    "visible",      new Token(visible,        "visible"),
-
+    "surfacedistance", new Token(surfacedistance, "surfacedistance"),
+    "visible",      new Token(visible,         "visible"),
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),
     "jmol",         new Token(jmol,            "jmol"),

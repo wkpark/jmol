@@ -3494,5 +3494,4 @@ public class Viewer extends JmolViewer {
     boolean testFlag4;
   }
 
-
 }

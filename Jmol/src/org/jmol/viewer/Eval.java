@@ -511,8 +511,11 @@ class Eval { //implements Runnable {
       case Token.vibration:
         vibration();
         break;
+      case Token.calculate:
+        calculate();
+        break;
       case Token.dots:
-        dots(false);
+        dots(1, Dots.DOTS_MODE_DOTS);
         break;
       case Token.strands:
         proteinShape(JmolConstants.SHAPE_STRANDS);
@@ -575,7 +578,7 @@ class Eval { //implements Runnable {
         polyhedra();
         break;
       case Token.geosurface:
-        dots(true);
+        dots(1, Dots.DOTS_MODE_SURFACE);
         break;
       case Token.centerAt:
         centerAt();
@@ -1008,6 +1011,11 @@ class Eval { //implements Runnable {
         break;
       case Token.temperature: // 0 - 9999
         propertyValue = atom.getBfactor100();
+        if (propertyValue < 0)
+          continue;
+        break;
+      case Token.surfacedistance:
+        propertyValue = atom.getSurfaceDistance();
         if (propertyValue < 0)
           continue;
         break;
@@ -1819,6 +1827,7 @@ class Eval { //implements Runnable {
     case Token.group:
     case Token.shapely:
     case Token.structure:
+    case Token.surface:
     case Token.temperature:
     case Token.fixedtemp:
     case Token.formalCharge:
@@ -1931,6 +1940,7 @@ class Eval { //implements Runnable {
       case Token.fixedtemp:
       case Token.altloc:
       case Token.insertion:
+      case Token.surfacedistance:
         break;
       case Token.temperature:
         if (viewer.isRangeSelected())
@@ -2829,8 +2839,7 @@ class Eval { //implements Runnable {
   }
 
   void hbond(boolean isCommand) throws ScriptException {
-    if (statementLength == 2 && statement[1].tok == Token.identifier
-        && ((String) statement[1].value).equalsIgnoreCase("calculate")) {
+    if (statementLength == 2 && statement[1].tok == Token.calculate) {
       viewer.autoHbond();
       return;
     }
@@ -2942,6 +2951,8 @@ class Eval { //implements Runnable {
       case Token.bonds:
         propertyName = "bonds";
         break;
+      case Token.calculate:
+        continue;  // ignored
       case Token.identifier:
         String cmd = (String) token.value;
         if (cmd.equalsIgnoreCase("cross")) {
@@ -2953,9 +2964,6 @@ class Eval { //implements Runnable {
           propertyName = "cross";
           propertyValue = Boolean.FALSE;
           break;
-        }
-        if (cmd.equalsIgnoreCase("calculate")) { //ignored
-          continue;
         }
         if (cmd.equalsIgnoreCase("offset")) {
           float v = floatParameter(++i);
@@ -3078,19 +3086,33 @@ class Eval { //implements Runnable {
     viewer.setAnimationDirection(direction);
   }
 
-  void dots(boolean isSurface) throws ScriptException {
-    if (statementLength == 1) {
-      viewer.setShapeSize(JmolConstants.SHAPE_DOTS, 1);
-      if (isSurface)
-        viewer.setShapeSize(JmolConstants.SHAPE_DOTS, -2);
+  void calculate() throws ScriptException {
+    if (statementLength == 1)
+      evalError("Calculate what? surface? hbonds?");
+    switch (statement[1].tok) {
+    case Token.surface:
+      dots(2, Dots.DOTS_MODE_CALCONLY);
+      return;
+    case Token.hbond:
+      viewer.autoHbond();
       return;
     }
-    if (isSurface)
-      viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "isSurface",
-          new Boolean(isSurface));
+  }
+  
+  void dots(int ipt, int dotsMode) throws ScriptException {
+    int modelIndex = viewer.getDisplayModelIndex();
+    if (modelIndex < 0)
+      evalError("surfaces require that only one model be displayed");
+    viewer.loadShape(JmolConstants.SHAPE_DOTS);
+    viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "init",
+        new Integer(dotsMode));
+    if (statementLength == ipt) {
+      viewer.setShapeSize(JmolConstants.SHAPE_DOTS, 1);
+      return;
+    }
     short mad = 0;
     float radius;
-    switch (statement[1].tok) {
+    switch (statement[ipt].tok) {
     case Token.on:
     case Token.vanderwaals:
       mad = 1;
@@ -3101,19 +3123,19 @@ class Eval { //implements Runnable {
     case Token.off:
       break;
     case Token.plus:
-      radius = floatParameter(2);
+      radius = floatParameter(++ipt);
       if (radius < 0f || radius > 10f)
         numberOutOfRange(0f, 2f);
       mad = (short) (radius == 0f ? 0 : radius * 1000f + 11002);
       break;
     case Token.decimal:
-      radius = floatParameter(1);
+      radius = floatParameter(ipt);
       if (radius < 0f || radius > 10f)
         numberOutOfRange(0f, 10f);
       mad = (short) (radius == 0f ? 0 : radius * 1000f + 1002);
       break;
     case Token.integer:
-      int dotsParam = intParameter(1);
+      int dotsParam = intParameter(ipt);
       if (dotsParam < 0 || dotsParam > 1000)
         numberOutOfRange(0, 1000);
       mad = (short) (dotsParam == 0 ? 0 : dotsParam + 1);
@@ -3122,8 +3144,6 @@ class Eval { //implements Runnable {
       booleanOrNumberExpected();
     }
     viewer.setShapeSize(JmolConstants.SHAPE_DOTS, mad);
-    if (isSurface && mad != 0)
-      viewer.setShapeSize(JmolConstants.SHAPE_DOTS, -2);
   }
 
   void proteinShape(int shapeType) throws ScriptException {

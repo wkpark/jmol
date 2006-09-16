@@ -152,6 +152,12 @@ class ColorManager {
           JmolConstants.argbsRwbScale.length);
       index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
+    } else if ("surfacedistance" == palette) {
+      float hi = viewer.getFrame().getSurfaceDistanceMax();
+      index = quantize(atom.getSurfaceDistance(), 0, hi,
+          JmolConstants.argbsRwbScale.length);
+      //index = JmolConstants.argbsRwbScale.length - 1 - index;
+      argb = JmolConstants.argbsRwbScale[index];
     } else if ("structure" == palette) {
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
     } else if ("amino" == palette) {

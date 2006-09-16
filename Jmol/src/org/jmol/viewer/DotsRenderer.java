@@ -88,7 +88,7 @@ class DotsRenderer extends ShapeRenderer {
     short[] colixesConvex = dots.colixesConvex;
     int myVisibilityFlag = dots.myVisibilityFlag;
     boolean isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
-    boolean iShowSolid = dots.showSurface;
+    boolean iShowSolid = dots.isSurface;
     //boolean iShowSolid = (viewer.getTestFlag3()||dots.showSurface) && dots.useBobsAlgorithm;
     for (int i = dots.dotsConvexMax; --i >= 0;) {
       Atom atom = atoms[i];
@@ -722,8 +722,10 @@ class DotsRenderer extends ShapeRenderer {
       int n = 0;
       int iDot = map.length << 5;
       while (--iDot >= 0)
-        if (getBit(map, iDot))
+        if (getBit(map, iDot)) {
+          n++;
           s += " " + iDot;
+        }
       s = n + " points:" + s;
       return s;
     }

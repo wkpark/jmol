@@ -74,6 +74,8 @@ public final class Frame {
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
+  float[] surfaceDistances;
+  int[] surfaceAtoms;
   String[] atomNames;
   int[] atomSerials;
   byte[] specialAtomIDs;
@@ -2104,6 +2106,54 @@ public final class Frame {
     return groupsPresent;
   }
 
+  BitSet bsSurfaceSet;
+  void setSurfaceAtoms(BitSet bsSurface, BitSet bsEnclosed) {
+    bsSurfaceSet = (BitSet) bsEnclosed.clone();
+    surfaceDistances = null;
+    int n = viewer.cardinalityOf(bsSurface);
+    if (n == 0) {
+      surfaceAtoms = null;
+      return;
+    }
+    surfaceAtoms = new int[n];
+    for (int i = atomCount, pt = 0; --i >= 0;) 
+      if (bsSurface.get(i))
+        surfaceAtoms[pt++] = i;
+  }
+  
+  float getSurfaceDistance(int atomIndex) {
+    if (surfaceAtoms == null)
+      return -1;
+    if (surfaceDistances == null)
+      calcSurfaceDistances();
+    return surfaceDistances[atomIndex]; 
+  }
+  
+  float surfaceDistanceMax;
+  float getSurfaceDistanceMax() {
+    if (surfaceDistances == null)
+      calcSurfaceDistances();
+    return surfaceDistanceMax;
+  }
+
+  private void calcSurfaceDistances() {
+    surfaceDistanceMax = 0;
+    surfaceDistances = new float[atomCount];
+    for (int i = 0; i < atomCount; i++) {
+      surfaceDistances[i] = -1;
+      if (bsSurfaceSet.get(i)) {
+        float dMin = Float.MAX_VALUE;
+        Atom atom = atoms[i];
+        for (int j = surfaceAtoms.length; --j >= 0;) {
+          float d = atoms[surfaceAtoms[j]].distance(atom);
+          dMin = Math.min(d, dMin);
+        }
+        surfaceDistances[i] = dMin;
+        surfaceDistanceMax = Math.max(surfaceDistanceMax, dMin);
+      }
+    }
+  }
+  
   void calcBfactorRange() {
     calcBfactorRange(null);
   }

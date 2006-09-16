@@ -1061,6 +1061,9 @@ String getAtomInfoChime(int i) {
       info.put("translucent", new Boolean(isTranslucent));
     info.put("formalCharge", new Integer(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));
+    float d = atom.getSurfaceDistance();
+    if (d >= 0)
+      info.put("surfaceDistance", new Float(d));      
     if (isPDB(atom.modelIndex)) {
       info.put("resname", atom.getGroup3());
       info.put("resno", atom.getSeqcodeString());
@@ -1624,4 +1627,5 @@ String getAtomInfoChime(int i) {
       return false;
     return frame.getSelectionHaloEnabled();
   }
+  
 }

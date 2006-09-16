@@ -58,7 +58,7 @@ class RepaintManager {
     setFrameRangeVisible(); 
   }
 
-  int backgroundModelIndex = 0;
+  int backgroundModelIndex = -1;
   void setBackgroundModelIndex(int modelIndex) {
     // no background unless only a SINGLE model is being displayed (for now)
     Frame frame = viewer.getFrame();

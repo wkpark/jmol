@@ -54,8 +54,9 @@ class GamessReader extends AtomSetCollectionReader {
       while (line != null) {
         if (line.indexOf("COORDINATES (BOHR)") >= 0 || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
           if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-            if (desiredModelNumber > 0 && iHaveAtoms)
+            if (iHaveAtoms)
               break;
+            line = reader.readLine();
             continue;
           }
           if (line.indexOf("COORDINATES (BOHR)") >= 0)
@@ -67,9 +68,13 @@ class GamessReader extends AtomSetCollectionReader {
           readFrequencies(reader);
         } else if (iHaveAtoms && line.indexOf("ATOMIC BASIS SET") >= 0) {
           readGaussianBasis(reader);
+          moData.put("calculationType", calculationType);
+          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
           continue;
         } else if (iHaveAtoms && line.indexOf("EIGENVECTORS") >= 0) {
           readMolecularOrbitals(reader);
+          moData.put("mos", orbitals);
+          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
           continue;
         }
         line = reader.readLine();
@@ -80,16 +85,12 @@ class GamessReader extends AtomSetCollectionReader {
       //TODO: Why this ?
       //new NullPointerException();
     }
-    logger.log(orbitals.size() + " molecular orbitals read");
-    moData.put("calculationType", calculationType);
-    moData.put("mos", orbitals);
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     if (atomSetCollection.atomCount == 0) {
       atomSetCollection.errorMessage = "No atoms in file";
     }
     return atomSetCollection;
   }
-
+  
   void readAtomsInBohrCoordinates(BufferedReader reader) throws Exception {
 /*
  ATOM      ATOMIC                      COORDINATES (BOHR)
@@ -274,6 +275,7 @@ class GamessReader extends AtomSetCollectionReader {
       for (int i = 0; i < nThisLine; i++)
         data[i].add(tokens[i + 4]);
     }
+    logger.log(orbitals.size() + " molecular orbitals read in model " + modelNumber);
   }
 
   void readFrequencies(BufferedReader reader) throws Exception {

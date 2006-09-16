@@ -1015,6 +1015,8 @@ class Eval { //implements Runnable {
           continue;
         break;
       case Token.surfacedistance:
+        if (viewer.getFrame().getSurfaceDistanceMax() == 0)
+          dots(statementLength, Dots.DOTS_MODE_CALCONLY);
         propertyValue = atom.getSurfaceDistance();
         if (propertyValue < 0)
           continue;
@@ -1819,9 +1821,6 @@ class Eval { //implements Runnable {
     case Token.dollarsign:
       colorNamedObject(2);
       return;
-    case Token.surfacedistance:
-      if (viewer.getFrame().getSurfaceDistanceMax() == 0)
-        dots(statementLength, Dots.DOTS_MODE_CALCONLY);
     case Token.colorRGB:
     case Token.none:
     case Token.cpk:
@@ -1834,6 +1833,7 @@ class Eval { //implements Runnable {
     case Token.fixedtemp:
     case Token.formalCharge:
     case Token.partialCharge:
+    case Token.surfacedistance:
     case Token.user:
     case Token.monomer:
     case Token.molecule:
@@ -1942,7 +1942,10 @@ class Eval { //implements Runnable {
       case Token.fixedtemp:
       case Token.altloc:
       case Token.insertion:
+        break;
       case Token.surfacedistance:
+        if (viewer.getFrame().getSurfaceDistanceMax() == 0)
+          dots(statementLength, Dots.DOTS_MODE_CALCONLY);
         break;
       case Token.temperature:
         if (viewer.isRangeSelected())

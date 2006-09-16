@@ -52,14 +52,17 @@ class GamessReader extends AtomSetCollectionReader {
 
     try {
       while (line != null) {
-        if (line.indexOf("COORDINATES (BOHR)") >= 0) {
+        if (line.indexOf("COORDINATES (BOHR)") >= 0 || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
           if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-            if (iHaveAtoms)
+            if (desiredModelNumber > 0 && iHaveAtoms)
               break;
             continue;
           }
+          if (line.indexOf("COORDINATES (BOHR)") >= 0)
             readAtomsInBohrCoordinates(reader);
-            iHaveAtoms = true;
+          else
+            readAtomsInAngstromCoordinates(reader);
+          iHaveAtoms = true;
         } else if (iHaveAtoms && line.indexOf("FREQUENCIES IN CM") >= 0) {
           readFrequencies(reader);
         } else if (iHaveAtoms && line.indexOf("ATOMIC BASIS SET") >= 0) {
@@ -88,8 +91,17 @@ class GamessReader extends AtomSetCollectionReader {
   }
 
   void readAtomsInBohrCoordinates(BufferedReader reader) throws Exception {
+/*
+ ATOM      ATOMIC                      COORDINATES (BOHR)
+           CHARGE         X                   Y                   Z
+ C           6.0     3.9770911639       -2.7036584676       -0.3453920672
+
+0         1         2         3         4         5         6         7    
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+
+*/    
+
     reader.readLine(); // discard one line
-    String line;
     String atomName;
     atomSetCollection.newAtomSet();
     while ((line = reader.readLine()) != null
@@ -107,6 +119,35 @@ class GamessReader extends AtomSetCollectionReader {
     }
   }
 
+  void readAtomsInAngstromCoordinates(BufferedReader reader) throws Exception {
+    reader.readLine(); 
+    reader.readLine(); // discard two lines
+    String atomName;
+    atomSetCollection.newAtomSet();
+/*    
+       COORDINATES OF ALL ATOMS ARE (ANGS)
+   ATOM   CHARGE       X              Y              Z
+ ------------------------------------------------------------
+ C           6.0   2.1045861621  -1.4307145508  -0.1827736240
+
+0         1         2         3         4         5         6    
+0123456789012345678901234567890123456789012345678901234567890
+
+*/
+    while ((line = reader.readLine()) != null
+        && (atomName = parseToken(line, 1, 6)) != null) {
+      float x = parseFloat(line, 16, 31);
+      float y = parseFloat(line, 31, 46);
+      float z = parseFloat(line, 46, 61);
+      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+        break;
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.atomName = atomName;
+      atom.x = x;
+      atom.y = y;
+      atom.z = z;
+    }
+  }
   /*
    * 
    ATOMIC BASIS SET
@@ -203,7 +244,7 @@ class GamessReader extends AtomSetCollectionReader {
     reader.readLine(); // -------
     int nThisLine = 0;
     while ((line = reader.readLine()) != null
-        && line.indexOf("--") < 0) {
+        && line.indexOf("--") < 0 && line.indexOf(".....") < 0) {
       String[] tokens = getTokens(line);
       //Logger.debug(tokens.length + line);
       if (line.length() == 0) {
@@ -242,7 +283,7 @@ class GamessReader extends AtomSetCollectionReader {
     float[] yComponents = new float[5];
     float[] zComponents = new float[5];
 
-    String line = discardLinesUntilContains(reader, "FREQUENCY:");
+    line = discardLinesUntilContains(reader, "FREQUENCY:");
     while (line != null && line.indexOf("FREQUENCY:") >= 0) {
       int lineBaseFreqCount = totalFrequencyCount;
       ichNextParse = 17;

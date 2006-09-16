@@ -1,4 +1,4 @@
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:58 AM 9/14/2006
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:24 AM 9/16/2006
 
     based on:
  *
@@ -45,6 +45,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 //            -- renamed Jmol-11.js from Jmol-new.js; JmolApplet.jar from JmolAppletProto.jar
 //	 	 renamed Jmol.js for Jmol 11 distribution
 //            -- modified jmolRestoreOrientation() to be immediate, no 1-second delay
+// bob hanson -- jmolScriptWait always returns a string -- 11:23 AM 9/16/2006
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -1052,10 +1053,12 @@ function jmolDecodeJSON(s) {
 
 function jmolScriptWait(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
-  var ret=jmolScriptWaitAsArray(script, targetSuffix)
-//  if(typeof ret == "object" && ret.length > 0 
-//	&& ret[0].length > 0 && ret[0][0].length > 3)return ret[0][0][3];
-  return ret
+  var Ret=jmolScriptWaitAsArray(script, targetSuffix)
+  var s = ""
+  for(i=Ret.length;--i>=0;)
+  for(j=0;j< Ret[i].length;j++)
+	s+=Ret[i][j]+"\n"
+  return s
 }
 
 function jmolScriptWaitAsArray(script, targetSuffix) {
@@ -1064,22 +1067,15 @@ function jmolScriptWaitAsArray(script, targetSuffix) {
   jmolGetStatus("scriptEcho,scriptMessage,scriptStatus,scriptError",targetSuffix)
   if (script) {
     _jmolCheckBrowser();
-    if (targetSuffix == "all") {
-      with (_jmol) {
-	for (var i = 0; i < appletSuffixes.length; ++i) {
-	  var applet = _jmolGetApplet(appletSuffixes[i]);
-          if (applet) ret += applet.scriptWait(script);
-        }
-      }
-    } else {
-      var applet=_jmolGetApplet(targetSuffix);
-      if (applet) ret += applet.scriptWait(script);
-    }
+    var applet=_jmolGetApplet(targetSuffix);
+    if (applet) ret += applet.scriptWait(script);
+    ret = _jmolEvalJSON(ret,"jmolStatus")
+    if(typeof ret == "object")
+	return ret
   }
-  return _jmolEvalJSON(ret,"jmolStatus")
  }catch(e){
-  return ""
  }
+  return [[ret]]
 }
 
 

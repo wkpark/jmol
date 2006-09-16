@@ -405,7 +405,7 @@ public class ProjectInformation {
         reader = new FileReader("psummary.html"); //$NON-NLS-1$
       } else {
         StringBuffer urlName = new StringBuffer();
-        urlName.append("http://vspx27.stanford.edu/"); //$NON-NLS-1$
+        urlName.append("http://fah-web.stanford.edu/"); //$NON-NLS-1$
         urlName.append("psummary.html"); //$NON-NLS-1$
         try {
           URL url = new URL(urlName.toString());
@@ -1046,7 +1046,7 @@ public class ProjectInformation {
 
     // Check for file
     StringBuffer filePath = new StringBuffer();
-    filePath.append("../Jmol-web/source/doc/fah/projects/p"); //$NON-NLS-1$
+    filePath.append("./projects/p"); //$NON-NLS-1$
     filePath.append(projectNumber);
     filePath.append(".xyz.gz"); //$NON-NLS-1$
     File file = new File(filePath.toString());

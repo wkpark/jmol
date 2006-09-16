@@ -149,8 +149,12 @@ public class PovraySaver {
       }
       out("#end\n");
     } else {
-      for (int i = 0; i < viewer.getAtomCount(); i++)
-        writeAtom(viewer.getDisplayModelIndex(), i);
+      int modelIndex = viewer.getDisplayModelIndex();
+      if (modelIndex < -1)
+        modelIndex = -2 - modelIndex;
+      int n = viewer.getAtomCount();
+      for (int i = 0; i < n; i++)
+        writeAtom(modelIndex, i);
     }
     out("#end\n");
     
@@ -172,8 +176,12 @@ public class PovraySaver {
       }
       out("#end\n");
     } else {
-      for (int i = 0; i < viewer.getBondCount(); ++i)
-        writeBond(viewer.getDisplayModelIndex(), i);
+      int modelIndex = viewer.getDisplayModelIndex();
+      if (modelIndex < -1)
+        modelIndex = -2 - modelIndex;
+      int n = viewer.getBondCount();
+      for (int i = 0; i < n; ++i)
+        writeBond(modelIndex, i);
     }
     out("#end\n");
     
@@ -195,8 +203,12 @@ public class PovraySaver {
       }
       out("#end\n");
     } else {
-      for (int i = 0; i < viewer.getPolymerCountInModel(viewer.getDisplayModelIndex()); i++) {
-        writePolymer(viewer.getDisplayModelIndex(), i);
+      int modelIndex = viewer.getDisplayModelIndex();
+      if (modelIndex < -1)
+        modelIndex = -2 - modelIndex;
+      int n = viewer.getPolymerCountInModel(modelIndex);
+      for (int i = 0; i < n; i++) {
+        writePolymer(modelIndex, i);
       }
     }
     out("#end\n");

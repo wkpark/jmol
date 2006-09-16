@@ -52,7 +52,7 @@ class RepaintManager {
     else
       displayModelIndex = modelIndex;
     if (displayModelIndex == -1)
-      setBackgroundModelIndex(0);    
+      setBackgroundModelIndex(-1);    
     viewer.setTainted(true);
     viewer.setStatusFrameChanged(modelIndex);
     setFrameRangeVisible(); 
@@ -64,7 +64,7 @@ class RepaintManager {
     Frame frame = viewer.getFrame();
     if (frame == null || modelIndex < 0 || modelIndex >= frame.getModelCount() ||
         displayModelIndex == -1)
-      modelIndex = 0;
+      modelIndex = -1;
     backgroundModelIndex = modelIndex;
     viewer.setTainted(true);
     setFrameRangeVisible(); 
@@ -79,7 +79,7 @@ class RepaintManager {
     bsVisibleFrames.clear();
     if (displayModelIndex >= 0) {
       bsVisibleFrames.set(displayModelIndex);
-      if (backgroundModelIndex > 0)
+      if (backgroundModelIndex >= 0)
         bsVisibleFrames.set(backgroundModelIndex);
       return;
     }

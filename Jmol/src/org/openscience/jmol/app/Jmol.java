@@ -921,7 +921,8 @@ public class Jmol extends JPanel {
   private JMenuBar menubar;
   private JToolBar toolbar;
 
-
+  // these correlate with items in GuiMap.java
+  
   private static final String newwinAction = "newwin";
   private static final String openAction = "open";
   private static final String openurlAction = "openurl";

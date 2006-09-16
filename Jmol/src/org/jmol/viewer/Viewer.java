@@ -1121,7 +1121,7 @@ public class Viewer extends JmolViewer {
     setFrankOn(styleManager.frankOn);
     repaintManager.initializePointers(1);
     setDisplayModelIndex(0);
-    setBackgroundModelIndex(0);
+    setBackgroundModelIndex(-1);
     setTainted(true);
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager
@@ -1797,7 +1797,7 @@ public class Viewer extends JmolViewer {
     // modified to indicate if there is also a background model index
     int modelIndex = repaintManager.displayModelIndex;
     int backgroundIndex = getBackgroundModelIndex();
-    return (backgroundIndex > 0 ? -2 - modelIndex : modelIndex);
+    return (backgroundIndex >= 0 ? -2 - modelIndex : modelIndex);
   }
 
   void setBackgroundModelIndex(int modelIndex) {
@@ -1870,63 +1870,26 @@ public class Viewer extends JmolViewer {
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
+    setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {
-    case JmolConstants.STEREO_NONE:
-      setRectClip(clip);
-      render1(g, transformManager.getStereoRotationMatrix(false), false, 0, 0);
-      break;
     case JmolConstants.STEREO_DOUBLE:
-      setRectClip(null);
-      render1(g, transformManager.getStereoRotationMatrix(false), false, 0, 0);
-      render1(g, transformManager.getStereoRotationMatrix(true), false,
-          dimScreen.width, 0);
+      render1(g, getImage(true, false), dimScreen.width, 0);
+    case JmolConstants.STEREO_NONE:
+      render1(g, getImage(false, false), 0, 0);
       break;
     case JmolConstants.STEREO_REDCYAN:
     case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDGREEN:
     case JmolConstants.STEREO_CUSTOM:
-      setRectClip(null);
-      g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
-          rectClip.height, transformManager.getStereoRotationMatrix(true),
-          false);
-      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-          repaintManager.displayModelIndex);
-      g3d.endRendering();
-      g3d.snapshotAnaglyphChannelBytes();
-      g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
-          rectClip.height, transformManager.getStereoRotationMatrix(false),
-          false);
-      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-          repaintManager.displayModelIndex);
-      g3d.endRendering();
-      switch (stereoMode) {
-      case JmolConstants.STEREO_REDCYAN:
-        g3d.applyCyanAnaglyph();
-        break;
-      case JmolConstants.STEREO_CUSTOM:
-        g3d.applyCustomAnaglyph(transformManager.stereoColors);
-        break;
-      case JmolConstants.STEREO_REDBLUE:
-        g3d.applyBlueAnaglyph();
-        break;
-      default:
-        g3d.applyGreenAnaglyph();
-      }
-      Image img = g3d.getScreenImage();
-      try {
-        g.drawImage(img, 0, 0, null);
-      } catch (NullPointerException npe) {
-        Logger.error("Sun!! ... fix graphics your bugs!");
-      }
-      g3d.releaseScreenImage();
+      render1(g, getStereoImage(stereoMode, false), 0, 0);
       break;
     }
     repaintView();
   }
-
-  void render1(Graphics g, Matrix3f matrixRotate, boolean antialias, int x,
-               int y) {
+  
+  private Image getImage(boolean isDouble, boolean antialias) {
+    Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
@@ -1935,7 +1898,42 @@ public class Viewer extends JmolViewer {
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
     g3d.endRendering();
-    Image img = g3d.getScreenImage();
+    return g3d.getScreenImage();
+  }
+  
+  private Image getStereoImage(int stereoMode, boolean antialias) {
+    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
+        rectClip.height, transformManager.getStereoRotationMatrix(true),
+        antialias);
+    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+        repaintManager.displayModelIndex);
+    g3d.endRendering();
+    g3d.snapshotAnaglyphChannelBytes();
+    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
+        rectClip.height, transformManager.getStereoRotationMatrix(false),
+        antialias);
+    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+        repaintManager.displayModelIndex);
+    g3d.endRendering();
+    switch (stereoMode) {
+    case JmolConstants.STEREO_REDCYAN:
+      g3d.applyCyanAnaglyph();
+      break;
+    case JmolConstants.STEREO_CUSTOM:
+      g3d.applyCustomAnaglyph(transformManager.stereoColors);
+      break;
+    case JmolConstants.STEREO_REDBLUE:
+      g3d.applyBlueAnaglyph();
+      break;
+    default:
+      g3d.applyGreenAnaglyph();
+    }
+    return g3d.getScreenImage();
+  }
+
+  private void render1(Graphics g, Image img, int x, int y) {
+    if (g == null)
+      return;
     try {
       g.drawImage(img, x, y, null);
     } catch (NullPointerException npe) {
@@ -1945,14 +1943,17 @@ public class Viewer extends JmolViewer {
   }
 
   public Image getScreenImage() {
-    boolean antialiasThisFrame = true;
-    setRectClip(null);
-    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        transformManager.getStereoRotationMatrix(false), antialiasThisFrame);
-    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-        repaintManager.displayModelIndex);
-    g3d.endRendering();
-    return g3d.getScreenImage();
+    boolean antialias = true;
+    setRectClip(null);    
+    int stereoMode = getStereoMode();
+    switch (stereoMode) {
+    case JmolConstants.STEREO_REDCYAN:
+    case JmolConstants.STEREO_REDBLUE:
+    case JmolConstants.STEREO_REDGREEN:
+    case JmolConstants.STEREO_CUSTOM:
+      return getStereoImage(stereoMode, false);
+    }
+    return getImage(false, antialias);
   }
 
   public void releaseScreenImage() {

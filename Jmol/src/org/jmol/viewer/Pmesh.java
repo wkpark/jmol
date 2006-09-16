@@ -166,11 +166,13 @@ class Pmesh extends MeshCollection {
     int modelCount = viewer.getModelCount();
     if (modelCount < 2)
       isFixed = true;
-    if (isFixed) {
-      currentMesh.modelIndex = -1;
-    } else {
-      currentMesh.modelIndex = viewer.getDisplayModelIndex();
+    int modelIndex = -1;
+    if (!isFixed) {
+      modelIndex = viewer.getDisplayModelIndex();
+      if (modelIndex < -1)
+        modelIndex = -2 - modelIndex;
     }
+    currentMesh.modelIndex = modelIndex;
   }
 
 

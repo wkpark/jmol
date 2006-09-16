@@ -133,7 +133,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean modelHasVibrationVectors(int atomSetIndex);
 
   abstract public int getModelCount();
-  abstract public int getDisplayModelIndex();
+  abstract public int getDisplayModelIndex(); // can return -2 - modelIndex if a background model is displayed
   abstract public int getAtomCount();
   abstract public int getBondCount();
   abstract public int getGroupCount();

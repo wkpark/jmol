@@ -1121,6 +1121,7 @@ public class Viewer extends JmolViewer {
     setFrankOn(styleManager.frankOn);
     repaintManager.initializePointers(1);
     setDisplayModelIndex(0);
+    setBackgroundModelIndex(0);
     setTainted(true);
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager
@@ -1367,7 +1368,10 @@ public class Viewer extends JmolViewer {
   }
 
   void convertFractionalCoordinates(Point3f pt) {
-    modelManager.convertFractionalCoordinates(getDisplayModelIndex(), pt);
+    int modelIndex = getDisplayModelIndex();
+    if (modelIndex < 0)
+      return;
+    modelManager.convertFractionalCoordinates(modelIndex, pt);
   }
 
   Point3f getCenter() {
@@ -1785,12 +1789,23 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:rewindAnimation()");
   }
 
-  boolean setDisplayModelIndex(int modelIndex) {
-    return repaintManager.setDisplayModelIndex(modelIndex);
+  void setDisplayModelIndex(int modelIndex) {
+    repaintManager.setDisplayModelIndex(modelIndex);
   }
 
   public int getDisplayModelIndex() {
-    return repaintManager.displayModelIndex;
+    // modified to indicate if there is also a background model index
+    int modelIndex = repaintManager.displayModelIndex;
+    int backgroundIndex = getBackgroundModelIndex();
+    return (backgroundIndex > 0 ? -2 - modelIndex : modelIndex);
+  }
+
+  void setBackgroundModelIndex(int modelIndex) {
+    repaintManager.setBackgroundModelIndex(modelIndex);
+  }
+
+  public int getBackgroundModelIndex() {
+    return repaintManager.backgroundModelIndex;
   }
 
   FrameRenderer getFrameRenderer() {

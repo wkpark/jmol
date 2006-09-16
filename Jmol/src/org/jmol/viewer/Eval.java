@@ -2852,6 +2852,8 @@ class Eval { //implements Runnable {
   }
 
   void conformation() throws ScriptException {
+    if (viewer.getDisplayModelIndex() <= -2)
+      evalError("\"conformation\" not allowed with background model displayed");
     BitSet bsConformations;
     if (statementLength == 1) {
       bsConformations = viewer.setConformation();
@@ -3224,7 +3226,8 @@ class Eval { //implements Runnable {
   }
 
   void frame(int offset, boolean useModelNumber) throws ScriptException {
-    useModelNumber = true; // for now -- as before -- remove to implement
+    useModelNumber = true; 
+    // for now -- as before -- remove to implement
     // frame/model difference
     if (statementLength <= offset)
       badArgumentCount();
@@ -3541,6 +3544,11 @@ class Eval { //implements Runnable {
         for (int i = Logger.NB_LEVELS; --i >= 0;)
           Logger.setActiveLevel(i, (Logger.NB_LEVELS - i) <= ilevel);
         Logger.info("logging level set to " + ilevel);
+        break;
+      }
+      if (str.equalsIgnoreCase("backgroundModel")) {
+        int modelIndex = viewer.getModelNumberIndex(intParameter(2));
+        viewer.setBackgroundModelIndex(modelIndex);
         break;
       }
       viewer.setBooleanProperty((String) statement[1].value, getSetBoolean());

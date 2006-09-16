@@ -67,6 +67,8 @@ class Dipole extends Shape {
       short colix, short mad, boolean visible) {
     this.viewer = viewer;
     this.modelIndex = viewer.getDisplayModelIndex();
+    if (this.modelIndex < -1)
+      this.modelIndex = -2 - this.modelIndex;
     this.thisID = thisID;
     this.dipoleInfo = dipoleInfo;
     this.g3d = g3d;

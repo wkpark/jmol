@@ -43,7 +43,7 @@ class RepaintManager {
   }
 
   int displayModelIndex = 0;
-  boolean setDisplayModelIndex(int modelIndex) {
+  void setDisplayModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
     if (frame == null ||
         modelIndex < 0 ||
@@ -51,21 +51,36 @@ class RepaintManager {
       displayModelIndex = -1;
     else
       displayModelIndex = modelIndex;
+    if (displayModelIndex == -1)
+      setBackgroundModelIndex(0);    
     viewer.setTainted(true);
     viewer.setStatusFrameChanged(modelIndex);
-    getAnimationRangeVisible(); 
-    return true;
+    setFrameRangeVisible(); 
   }
 
+  int backgroundModelIndex = 0;
+  void setBackgroundModelIndex(int modelIndex) {
+    // no background unless only a SINGLE model is being displayed (for now)
+    Frame frame = viewer.getFrame();
+    if (frame == null || modelIndex < 0 || modelIndex >= frame.getModelCount() ||
+        displayModelIndex == -1)
+      modelIndex = 0;
+    backgroundModelIndex = modelIndex;
+    viewer.setTainted(true);
+    setFrameRangeVisible(); 
+  }
+  
   private BitSet bsVisibleFrames = new BitSet();
   BitSet getVisibleFramesBitSet() {
     return bsVisibleFrames;
   }
   
-  void getAnimationRangeVisible() {
+  private void setFrameRangeVisible() {
     bsVisibleFrames.clear();
     if (displayModelIndex >= 0) {
       bsVisibleFrames.set(displayModelIndex);
+      if (backgroundModelIndex > 0)
+        bsVisibleFrames.set(backgroundModelIndex);
       return;
     }
     if (frameStep == 0)

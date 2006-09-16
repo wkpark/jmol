@@ -1819,6 +1819,9 @@ class Eval { //implements Runnable {
     case Token.dollarsign:
       colorNamedObject(2);
       return;
+    case Token.surfacedistance:
+      if (viewer.getFrame().getSurfaceDistanceMax() == 0)
+        dots(statementLength, Dots.DOTS_MODE_CALCONLY);
     case Token.colorRGB:
     case Token.none:
     case Token.cpk:
@@ -1827,7 +1830,6 @@ class Eval { //implements Runnable {
     case Token.group:
     case Token.shapely:
     case Token.structure:
-    case Token.surface:
     case Token.temperature:
     case Token.fixedtemp:
     case Token.formalCharge:

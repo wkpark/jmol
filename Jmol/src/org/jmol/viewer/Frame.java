@@ -2138,6 +2138,8 @@ public final class Frame {
 
   private void calcSurfaceDistances() {
     surfaceDistanceMax = 0;
+    if (bsSurfaceSet == null)
+      return;
     surfaceDistances = new float[atomCount];
     for (int i = 0; i < atomCount; i++) {
       surfaceDistances[i] = -1;

@@ -61,7 +61,10 @@ import org.xml.sax.XMLReader;
  * Follow the equivalent in CIF files to see how this is done. 
  * 
  */
-class XmlCmlReader extends XmlReader {
+
+public class XmlCmlReader extends XmlReader {
+
+  private static final String NAMESPACE_URI = "http://www.xml-cml.org/schema";
 
   /*
    * Enter any implemented field names in the 
@@ -84,7 +87,6 @@ class XmlCmlReader extends XmlReader {
   ////////////////////////////////////////////////////////////////
   // Main body of class; variablaes & functiopns shared by DOM & SAX alike.
 
-
   // the same atom array gets reused
   // it will grow to the maximum length;
   // atomCount holds the current number of atoms
@@ -100,15 +102,20 @@ class XmlCmlReader extends XmlReader {
   int tokenCount;
   String[] tokens = new String[16];
 
-  // this param is used to keep track of the parent element type
-  int elementContext;
-  final static int UNSET = 0;
-  final static int CRYSTAL = 1;
-  final static int ATOM = 2;
-
-  int moleculeNesting = 0;
   String desctitle = null;
 
+  /**
+   * state constants
+   */
+  final protected int START = 0, CML = 1, CRYSTAL = 2, CRYSTAL_SCALAR = 3,
+      CRYSTAL_SYMMETRY = 4, CRYSTAL_SYMMETRY_TRANSFORM3 = 5, MOLECULE = 6,
+      MOLECULE_ATOM_ARRAY = 7, MOLECULE_ATOM = 8, MOLECULE_ATOM_SCALAR = 9,
+      MOLECULE_BOND_ARRAY = 10, MOLECULE_BOND = 11, MOLECULE_FORMULA = 12;
+
+  /**
+   * the current state
+   */
+  protected int state = START;
 
   /*
    * this is a crude implementation of CML. See CifReader for
@@ -119,14 +126,16 @@ class XmlCmlReader extends XmlReader {
   XmlCmlReader() {
   }
 
-  XmlCmlReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader, XMLReader xmlReader) {
+  XmlCmlReader(XmlReader parent, AtomSetCollection atomSetCollection,
+      BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     new CmlHandler(xmlReader);
     parseReaderXML(reader, xmlReader);
   }
 
-  XmlCmlReader(XmlReader parent, AtomSetCollection atomSetCollection, JSObject DOMNode) {
+  XmlCmlReader(XmlReader parent, AtomSetCollection atomSetCollection,
+      JSObject DOMNode) {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = cmlImplementedAttributes;
@@ -138,162 +147,320 @@ class XmlCmlReader extends XmlReader {
   String scalarDictValue;
   String scalarTitle;
 
-  void processStartElement(String namespaceURI, String localName, String qName,
-                           HashMap atts) {
+  // counter that is incremented each time a molecule element is started and 
+  // decremented when finished.  Needed so that only 1 atomSet created for each
+  // parent molecule that exists.
+  int moleculeNesting = 0;
+  boolean embeddedCrystal = false;
 
-    if ("molecule".equals(localName)) {
-      if (++moleculeNesting > 1)
-        return;
-      atomSetCollection.newAtomSet();
-      String collectionName = null;
-      if (atts.containsKey("title"))
-        collectionName = (String) atts.get("title");
-      else if (desctitle != null)
-        collectionName = desctitle;
-      else if (atts.containsKey("id"))
-        collectionName = (String) atts.get("id");
-      if (collectionName != null) {
-        atomSetCollection.setAtomSetName(collectionName);
-      }
+  public void processStartElement(String uri, String name, String qName,
+                                  HashMap atts) {
+    if (!uri.equals(NAMESPACE_URI))
       return;
-    }
-    if ("atom".equals(localName)) {
-      elementContext = ATOM;
-      atom = new Atom();
-      boolean coords3D = false;
-      boolean coordsFractional = false;
-      parent.setFractionalCoordinates(false);
-      if (atts.containsKey("label"))
-        atom.atomName = (String) atts.get("label");
-      else
-        atom.atomName = (String) atts.get("id");
-      if (atts.containsKey("xFract") && iHaveUnitCell) {
-        coords3D = coordsFractional = true;
-        setFractionalCoordinates(true);
-        atom.x = parseFloat((String) atts.get("xFract"));
-        atom.y = parseFloat((String) atts.get("yFract"));
-        atom.z = parseFloat((String) atts.get("zFract"));
+
+    switch (state) {
+    case START:
+      if (name.equals("molecule")) {
+        state = MOLECULE;
+        if (moleculeNesting == 0) {
+          createNewAtomSet(atts);
+        }
+        moleculeNesting++;
       }
-      if (atts.containsKey("x3") && !coordsFractional) {
-        coords3D = true;
-        atom.x = parseFloat((String) atts.get("x3"));
-        atom.y = parseFloat((String) atts.get("y3"));
-        atom.z = parseFloat((String) atts.get("z3"));
+      if (name.equals("crystal")) {
+        state = CRYSTAL;
       }
-      if (atts.containsKey("x2") && !coords3D) {
-        atom.x = parseFloat((String) atts.get("x2"));
-        atom.y = parseFloat((String) atts.get("y2"));
-        atom.z = 0;
+      break;
+    case CRYSTAL:
+      if (name.equals("scalar")) {
+        state = CRYSTAL_SCALAR;
+        setKeepChars(true);
+        scalarTitle = (String) atts.get("title");
+        scalarDictRef = (String) atts.get("dictRef");
+        if (scalarDictRef != null) {
+          int iColon = scalarDictRef.indexOf(":");
+          scalarDictValue = scalarDictRef.substring(iColon + 1);
+          scalarDictKey = scalarDictRef
+              .substring(0, (iColon >= 0 ? iColon : 0));
+        }
       }
-      parent.setAtomCoord(atom);
-      if (atts.containsKey("elementType"))
-        atom.elementSymbol = (String) atts.get("elementType");
-      if (atts.containsKey("formalCharge"))
-        atom.formalCharge = parseInt((String) atts.get("formalCharge"));
-      return;
-    }
-    if ("atomArray".equals(localName)) {
-      atomCount = 0;
-      boolean coords3D = false;
-      if (atts.containsKey("atomID")) {
-        breakOutAtomTokens((String) atts.get("atomID"));
-        for (int i = tokenCount; --i >= 0;)
-          atomArray[i].atomName = tokens[i];
+      if (name.equals("symmetry")) {
+        state = CRYSTAL_SYMMETRY;
+        if (atts.containsKey("spaceGroup")) {
+          String spaceGroup = (String) atts.get("spaceGroup");
+          for (int i = 0; i < spaceGroup.length(); i++)
+            if (spaceGroup.charAt(i) == '_')
+              spaceGroup = spaceGroup.substring(0, i)
+                  + spaceGroup.substring((i--) + 1);
+          parent.setSpaceGroupName(spaceGroup);
+        }
       }
-      if (atts.containsKey("x3")) {
-        coords3D = true;
-        breakOutAtomTokens((String) atts.get("x3"));
-        for (int i = tokenCount; --i >= 0;)
-          atomArray[i].x = parseFloat(tokens[i]);
+      break;
+    case CRYSTAL_SCALAR:
+    case CRYSTAL_SYMMETRY:
+      if (name.equals("transform3")) {
+        state = CRYSTAL_SYMMETRY_TRANSFORM3;
       }
-      if (atts.containsKey("y3")) {
-        breakOutAtomTokens((String) atts.get("y3"));
-        for (int i = tokenCount; --i >= 0;)
-          atomArray[i].y = parseFloat(tokens[i]);
+      break;
+    case CRYSTAL_SYMMETRY_TRANSFORM3:
+    case MOLECULE:
+      if (name.equals("crystal")) {
+        state = CRYSTAL;
+        embeddedCrystal = true;
       }
-      if (atts.containsKey("z3")) {
-        breakOutAtomTokens((String) atts.get("z3"));
-        for (int i = tokenCount; --i >= 0;)
-          atomArray[i].z = parseFloat(tokens[i]);
+      if (name.equals("molecule")) {
+        state = MOLECULE;
+        moleculeNesting++;
       }
-      if (atts.containsKey("x2")) {
-        breakOutAtomTokens((String) atts.get("x2"));
-        for (int i = tokenCount; --i >= 0;)
-          atomArray[i].x = parseFloat(tokens[i]);
+      if (name.equals("bondArray")) {
+        state = MOLECULE_BOND_ARRAY;
+        bondCount = 0;
+        if (atts.containsKey("order")) {
+          breakOutBondTokens((String) atts.get("order"));
+          for (int i = tokenCount; --i >= 0;)
+            bondArray[i].order = parseBondToken(tokens[i]);
+        }
+        if (atts.containsKey("atomRef1")) {
+          breakOutBondTokens((String) atts.get("atomRef1"));
+          for (int i = tokenCount; --i >= 0;)
+            bondArray[i].atomIndex1 = atomSetCollection
+                .getAtomNameIndex(tokens[i]);
+        }
+        if (atts.containsKey("atomRef2")) {
+          breakOutBondTokens((String) atts.get("atomRef2"));
+          for (int i = tokenCount; --i >= 0;)
+            bondArray[i].atomIndex2 = atomSetCollection
+                .getAtomNameIndex(tokens[i]);
+        }
       }
-      if (atts.containsKey("y2")) {
-        breakOutAtomTokens((String) atts.get("y2"));
-        for (int i = tokenCount; --i >= 0;)
-          atomArray[i].y = parseFloat(tokens[i]);
+      if (name.equals("atomArray")) {
+        state = MOLECULE_ATOM_ARRAY;
+        atomCount = 0;
+        boolean coords3D = false;
+        if (atts.containsKey("atomID")) {
+          breakOutAtomTokens((String) atts.get("atomID"));
+          for (int i = tokenCount; --i >= 0;)
+            atomArray[i].atomName = tokens[i];
+        }
+        if (atts.containsKey("x3")) {
+          coords3D = true;
+          breakOutAtomTokens((String) atts.get("x3"));
+          for (int i = tokenCount; --i >= 0;)
+            atomArray[i].x = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("y3")) {
+          breakOutAtomTokens((String) atts.get("y3"));
+          for (int i = tokenCount; --i >= 0;)
+            atomArray[i].y = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("z3")) {
+          breakOutAtomTokens((String) atts.get("z3"));
+          for (int i = tokenCount; --i >= 0;)
+            atomArray[i].z = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("x2")) {
+          breakOutAtomTokens((String) atts.get("x2"));
+          for (int i = tokenCount; --i >= 0;)
+            atomArray[i].x = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("y2")) {
+          breakOutAtomTokens((String) atts.get("y2"));
+          for (int i = tokenCount; --i >= 0;)
+            atomArray[i].y = parseFloat(tokens[i]);
+        }
+        if (atts.containsKey("elementType")) {
+          breakOutAtomTokens((String) atts.get("elementType"));
+          for (int i = tokenCount; --i >= 0;)
+            atomArray[i].elementSymbol = tokens[i];
+        }
+        for (int i = atomCount; --i >= 0;) {
+          Atom atom = atomArray[i];
+          if (!coords3D)
+            atom.z = 0;
+          parent.setAtomCoord(atom);
+        }
       }
-      if (atts.containsKey("elementType")) {
-        breakOutAtomTokens((String) atts.get("elementType"));
-        for (int i = tokenCount; --i >= 0;)
-          atomArray[i].elementSymbol = tokens[i];
+      if (name.equals("formula")) {
+        state = MOLECULE_FORMULA;
       }
-      for (int i = atomCount; --i >= 0;) {
-        Atom atom = atomArray[i];
-        if (!coords3D)
+      break;
+    case MOLECULE_BOND_ARRAY:
+      if (name.equals("bond")) {
+        state = MOLECULE_BOND;
+        int order = -1;
+        if (atts.containsKey("atomRefs2"))
+          breakOutTokens((String) atts.get("atomRefs2"));
+        if (atts.containsKey("order"))
+          order = parseBondToken((String) atts.get("order"));
+        if (tokenCount == 2 && order > 0) {
+          atomSetCollection.addNewBond(tokens[0], tokens[1], order);
+        }
+      }
+      break;
+    case MOLECULE_ATOM_ARRAY:
+      if (name.equals("atom")) {
+        state = MOLECULE_ATOM;
+        atom = new Atom();
+        boolean coords3D = false;
+        boolean coordsFractional = false;
+        parent.setFractionalCoordinates(false);
+        if (atts.containsKey("label"))
+          atom.atomName = (String) atts.get("label");
+        else
+          atom.atomName = (String) atts.get("id");
+        if (atts.containsKey("xFract") && parent.iHaveUnitCell) {
+          coords3D = coordsFractional = true;
+          parent.setFractionalCoordinates(true);
+          atom.x = parseFloat((String) atts.get("xFract"));
+          atom.y = parseFloat((String) atts.get("yFract"));
+          atom.z = parseFloat((String) atts.get("zFract"));
+        }
+        if (atts.containsKey("x3") && !coordsFractional) {
+          coords3D = true;
+          atom.x = parseFloat((String) atts.get("x3"));
+          atom.y = parseFloat((String) atts.get("y3"));
+          atom.z = parseFloat((String) atts.get("z3"));
+        }
+        if (atts.containsKey("x2") && !coords3D) {
+          atom.x = parseFloat((String) atts.get("x2"));
+          atom.y = parseFloat((String) atts.get("y2"));
           atom.z = 0;
+        }
         parent.setAtomCoord(atom);
+        if (atts.containsKey("elementType"))
+          atom.elementSymbol = (String) atts.get("elementType");
+        if (atts.containsKey("formalCharge"))
+          atom.formalCharge = parseInt((String) atts.get("formalCharge"));
       }
+
+      break;
+    case MOLECULE_BOND:
+      break;
+    case MOLECULE_ATOM:
+      if (name.equals("scalar")) {
+        state = MOLECULE_ATOM_SCALAR;
+        setKeepChars(true);
+        scalarTitle = (String) atts.get("title");
+        scalarDictRef = (String) atts.get("dictRef");
+        if (scalarDictRef != null) {
+          int iColon = scalarDictRef.indexOf(":");
+          scalarDictValue = scalarDictRef.substring(iColon + 1);
+          scalarDictKey = scalarDictRef
+              .substring(0, (iColon >= 0 ? iColon : 0));
+        }
+      }
+      break;
+    case MOLECULE_ATOM_SCALAR:
+      break;
+    case MOLECULE_FORMULA:
+      break;
+    }
+  }
+
+  public void processEndElement(String uri, String name, String qName) {
+    if (!uri.equals(NAMESPACE_URI))
       return;
-    }
-    if ("bond".equals(localName)) {
-      //  <bond atomRefs2="a20 a21" id="b41" order="2"/>
-      int order = -1;
-      if (atts.containsKey("atomRefs2"))
-        breakOutTokens((String) atts.get("atomRefs2"));
-      if (atts.containsKey("order"))
-        order = parseBondToken((String) atts.get("order"));
-      if (tokenCount == 2 && order > 0) {
-        atomSetCollection.addNewBond(tokens[0], tokens[1], order);
+    switch (state) {
+    case CRYSTAL:
+      if (name.equals("crystal")) {
+        if (embeddedCrystal) {
+          state = MOLECULE;
+          embeddedCrystal = false;
+        } else {
+          state = START;
+        }
       }
-      return;
-    }
-    if ("bondArray".equals(localName)) {
-      bondCount = 0;
-      if (atts.containsKey("order")) {
-        breakOutBondTokens((String) atts.get("order"));
-        for (int i = tokenCount; --i >= 0;)
-          bondArray[i].order = parseBondToken(tokens[i]);
+      break;
+    case CRYSTAL_SCALAR:
+      if (name.equals("scalar")) {
+        state = CRYSTAL;
+        if (scalarTitle != null) {
+          int i = 6;
+          while (--i >= 0
+              && !scalarTitle.equals(AtomSetCollection.notionalUnitcellTags[i])) {
+          }
+          if (i >= 0)
+            parent.setUnitCellItem(i, parseFloat(chars));
+        }
+        if (scalarDictRef != null) {
+          int i = 6;
+          while (--i >= 0
+              && !scalarDictValue.equals(CifReader.cellParamNames[i])) {
+          }
+          if (i >= 0)
+            parent.setUnitCellItem(i, parseFloat(chars));
+        }
       }
-      if (atts.containsKey("atomRef1")) {
-        breakOutBondTokens((String) atts.get("atomRef1"));
-        for (int i = tokenCount; --i >= 0;)
-          bondArray[i].atomIndex1 = atomSetCollection
-              .getAtomNameIndex(tokens[i]);
+      setKeepChars(false);
+      scalarTitle = null;
+      scalarDictRef = null;
+      break;
+    case CRYSTAL_SYMMETRY:
+      if (name.equals("symmetry")) {
+        state = CRYSTAL;
       }
-      if (atts.containsKey("atomRef2")) {
-        breakOutBondTokens((String) atts.get("atomRef2"));
-        for (int i = tokenCount; --i >= 0;)
-          bondArray[i].atomIndex2 = atomSetCollection
-              .getAtomNameIndex(tokens[i]);
+      break;
+    case CRYSTAL_SYMMETRY_TRANSFORM3:
+      if (name.equals("transform3")) {
+        state = CRYSTAL_SYMMETRY;
       }
-      return;
-    }
-    if ("crystal".equals(localName)) {
-      elementContext = CRYSTAL;
-    }
-    if ("symmetry".equals(localName)) {
-      if (atts.containsKey("spaceGroup")) {
-        String name = (String) atts.get("spaceGroup");
-        for (int i = 0; i < name.length(); i++)
-          if (name.charAt(i) == '_')
-            name = name.substring(0, i) + name.substring((i--) + 1);
-        parent.setSpaceGroupName(name);
+      break;
+    case MOLECULE:
+      if (name.equals("molecule")) {
+        if (--moleculeNesting == 0) {
+          parent.applySymmetry();
+          state = START;
+        } else {
+          state = MOLECULE;
+        }
       }
-    }
-    if ("scalar".equals(localName)) {
-      setKeepChars(true);
-      scalarTitle = (String) atts.get("title");
-      scalarDictRef = (String) atts.get("dictRef");
-      if (scalarDictRef != null) {
-        int iColon = scalarDictRef.indexOf(":");
-        scalarDictValue = scalarDictRef.substring(iColon + 1);
-        scalarDictKey = scalarDictRef.substring(0, (iColon >= 0 ? iColon : 0));
+      break;
+    case MOLECULE_BOND_ARRAY:
+      if (name.equals("bondArray")) {
+        state = MOLECULE;
+        for (int i = 0; i < bondCount; ++i) {
+          atomSetCollection.addBond(bondArray[i]);
+        }
       }
-      return;
+      break;
+    case MOLECULE_ATOM_ARRAY:
+      if (name.equals("atomArray")) {
+        state = MOLECULE;
+        for (int i = 0; i < atomCount; ++i) {
+          Atom atom = atomArray[i];
+          if (atom.elementSymbol != null && !Float.isNaN(atom.z))
+            atomSetCollection.addAtomWithMappedName(atom);
+        }
+      }
+      break;
+    case MOLECULE_BOND:
+      if (name.equals("bond")) {
+        state = MOLECULE_BOND_ARRAY;
+      }
+      break;
+    case MOLECULE_ATOM:
+      if (name.equals("atom")) {
+        state = MOLECULE_ATOM_ARRAY;
+        if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
+          atomSetCollection.addAtomWithMappedName(atom);
+        }
+        atom = null;
+      }
+      break;
+    case MOLECULE_ATOM_SCALAR:
+      if (name.equals("scalar")) {
+        state = MOLECULE_ATOM;
+        if ("jmol:charge".equals(scalarDictRef)) {
+          atom.partialCharge = parseFloat(chars);
+        }
+      }
+      setKeepChars(false);
+      scalarTitle = null;
+      scalarDictRef = null;
+      break;
+    case MOLECULE_FORMULA:
+      state = MOLECULE;
+      break;
     }
   }
 
@@ -322,7 +489,7 @@ class XmlCmlReader extends XmlReader {
     return 1;
   }
 
-  // this routine breaks out all the tokens in a string
+  //this routine breaks out all the tokens in a string
   // results are placed into the tokens array
   void breakOutTokens(String str) {
     StringTokenizer st = new StringTokenizer(str);
@@ -372,64 +539,17 @@ class XmlCmlReader extends XmlReader {
     }
   }
 
-  void processEndElement(String uri, String localName, String qName) {
-    if ("molecule".equals(localName)) {
-      --moleculeNesting;
-      parent.applySymmetry();
-      return;
-    }
-    if ("atom".equals(localName)) {
-      if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
-        atomSetCollection.addAtomWithMappedName(atom);
-      }
-      atom = null;
-      elementContext = UNSET;
-      return;
-    }
-    if ("crystal".equals(localName)) {
-      elementContext = UNSET;
-      return;
-    }
-    if ("scalar".equals(localName)) {
-      if (elementContext == CRYSTAL) {
-        if (scalarTitle != null) {
-          int i = 6;
-          while (--i >= 0
-              && !scalarTitle.equals(AtomSetCollection.notionalUnitcellTags[i])) {
-          }
-          if (i >= 0)
-            parent.setUnitCellItem(i, parseFloat(chars));
-        }
-        if (scalarDictRef != null) {
-          int i = 6;
-          while (--i >= 0
-              && !scalarDictValue.equals(CifReader.cellParamNames[i])) {
-          }
-          if (i >= 0)
-            parent.setUnitCellItem(i, parseFloat(chars));
-        }
-      } else if (elementContext == ATOM) {
-        if ("jmol:charge".equals(scalarDictRef)) {
-          atom.partialCharge = parseFloat(chars);
-        }
-      }
-      setKeepChars(false);
-      scalarTitle = null;
-      scalarDictRef = null;
-      return;
-    }
-    if ("atomArray".equals(localName)) {
-      for (int i = 0; i < atomCount; ++i) {
-        Atom atom = atomArray[i];
-        if (atom.elementSymbol != null && !Float.isNaN(atom.z))
-          atomSetCollection.addAtomWithMappedName(atom);
-      }
-      return;
-    }
-    if ("bondArray".equals(localName)) {
-      for (int i = 0; i < bondCount; ++i)
-        atomSetCollection.addBond(bondArray[i]);
-      return;
+  private void createNewAtomSet(HashMap atts) {
+    atomSetCollection.newAtomSet();
+    String collectionName = null;
+    if (atts.containsKey("title"))
+      collectionName = (String) atts.get("title");
+    else if (desctitle != null)
+      collectionName = desctitle;
+    else if (atts.containsKey("id"))
+      collectionName = (String) atts.get("id");
+    if (collectionName != null) {
+      atomSetCollection.setAtomSetName(collectionName);
     }
   }
 
@@ -441,5 +561,7 @@ class XmlCmlReader extends XmlReader {
     CmlHandler(XMLReader xmlReader) {
       setHandler(xmlReader, this);
     }
+
   }
+
 }

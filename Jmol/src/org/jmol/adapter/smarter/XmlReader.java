@@ -101,6 +101,8 @@ class XmlReader extends AtomSetCollectionReader {
 
   String[] implementedAttributes = { "id" };
 
+  static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
+
   /////////////// file reader option //////////////
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
@@ -203,7 +205,7 @@ class XmlReader extends AtomSetCollectionReader {
     if (header.indexOf("arguslab") >= 0) {
       return "arguslab(xml)";
     }
-    if (header.indexOf("http://www.xml-cml.org/") >= 0
+    if (header.indexOf(CML_NAMESPACE_URI) >= 0
         || header.indexOf("cml:") >= 0) {
       return "cml(xml)";
     }
@@ -268,7 +270,7 @@ class XmlReader extends AtomSetCollectionReader {
       return "odyssey(DOM)";
     if (((String) DOMNode.getMember("localName")).equals("arguslab"))
       return "arguslab(DOM)";
-    if (namespaceURI.startsWith("http://www.xml-cml.org/")
+    if (namespaceURI.startsWith(CML_NAMESPACE_URI)
         || "cml" == localName)
       return "cml(DOM)";
     return "unidentified cml(DOM)";

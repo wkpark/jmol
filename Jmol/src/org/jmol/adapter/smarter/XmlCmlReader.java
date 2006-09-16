@@ -64,7 +64,6 @@ import org.xml.sax.XMLReader;
 
 public class XmlCmlReader extends XmlReader {
 
-  private static final String NAMESPACE_URI = "http://www.xml-cml.org/schema";
 
   /*
    * Enter any implemented field names in the 
@@ -155,8 +154,8 @@ public class XmlCmlReader extends XmlReader {
 
   public void processStartElement(String uri, String name, String qName,
                                   HashMap atts) {
-    if (!uri.equals(NAMESPACE_URI))
-      return;
+    //if (!uri.equals(NAMESPACE_URI))
+      //return;
 
     switch (state) {
     case START:
@@ -358,8 +357,8 @@ public class XmlCmlReader extends XmlReader {
   }
 
   public void processEndElement(String uri, String name, String qName) {
-    if (!uri.equals(NAMESPACE_URI))
-      return;
+    //if (!uri.equals(NAMESPACE_URI))
+      //return;
     switch (state) {
     case CRYSTAL:
       if (name.equals("crystal")) {

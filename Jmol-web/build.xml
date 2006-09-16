@@ -9,6 +9,7 @@
 
   <property name="version" value="10.2" />
   <property name="jmol-doc-dir" value="../Jmol" />
+  <property name="fah.projects.dir" value="../Jmol-FAH/projects" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />
   <property name="build.html" value="${build.dir}/html" />
@@ -88,7 +89,12 @@
       <fileset dir="${jmol-doc-dir}/build/doc" includes="**/*"/>
     </copy>
 
-    <!-- Replace content of files with variables -->
+    <!-- Copy files from Folding@Home projects -->
+    <copy todir="${build.html}/fah/projects" overwrite="yes">
+      <fileset dir="${fah.projects.dir}" includes="**/*"/>
+    </copy>
+
+  	<!-- Replace content of files with variables -->
     <replace dir="${build.html}" includes="**/*.html">
       <replacefilter token="$$VERSION$$" value="${version}"/>
     </replace>

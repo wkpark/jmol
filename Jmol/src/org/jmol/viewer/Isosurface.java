@@ -256,6 +256,7 @@ class Isosurface extends MeshCollection {
 
   BufferedReader br;
   BitSet bsSelected;
+  BitSet bsIgnore;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -308,6 +309,11 @@ class Isosurface extends MeshCollection {
 
     if ("select" == propertyName) {
       bsSelected = (BitSet) value;
+      return;
+    }
+
+    if ("ignore" == propertyName) {
+      bsIgnore = (BitSet) value;
       return;
     }
 
@@ -4061,7 +4067,7 @@ class Isosurface extends MeshCollection {
     int firstSet = -1;
     int lastSet = 0;
     for (int i = 0; i < nAtoms; i++)
-      if (nSelected == 0 || bsSelected.get(i)) {
+      if (!bsIgnore.get(i) && (nSelected == 0 || bsSelected.get(i))) {
         if (solvent_modelIndex < 0)
           solvent_modelIndex = atoms[i].modelIndex;
         if (solvent_modelIndex != atoms[i].modelIndex)
@@ -4151,7 +4157,7 @@ class Isosurface extends MeshCollection {
     firstSet = -1;
     lastSet = 0;
     for (int i = 0; i < nAtoms; i++) {
-      if (atomSet.get(i))
+      if (atomSet.get(i) || bsIgnore != null && bsIgnore.get(i))
         continue;
       pt = atoms[i];
       float rA = atoms[i].getVanderwaalsRadiusFloat()

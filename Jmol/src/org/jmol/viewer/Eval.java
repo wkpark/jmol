@@ -4901,6 +4901,13 @@ class Eval { //implements Runnable {
           propertyName = "remappable";
           break;
         }
+        if (str.equalsIgnoreCase("IGNORE")) {
+          propertyName = "ignore";
+          ++i;
+          propertyValue = expression(statement, i + 1);
+          i = pcLastExpressionInstruction;
+          break;
+        }
         if (str.equalsIgnoreCase("CUTOFF")) {
           if (++i < statementLength && statement[i].tok == Token.plus) {
             propertyName = "cutoffPositive";

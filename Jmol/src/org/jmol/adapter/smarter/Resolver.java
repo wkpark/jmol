@@ -62,6 +62,7 @@ class Resolver {
     atomSetCollectionReader.initialize(params);
     AtomSetCollection atomSetCollection =
       atomSetCollectionReader.readAtomSetCollection(bufferedReader);
+    bufferedReader.close();
     return finalize(atomSetCollection, "file " + name);
   }
 

@@ -52,11 +52,7 @@ class Atom extends Point3f implements Cloneable {
   }
 
   Atom cloneAtom() {
-    try {
-      return (Atom)super.clone();
-    } catch (CloneNotSupportedException cnse) {
-      return null;
-    }
+    return (Atom) clone();
   }
 
   String getElementSymbol() {

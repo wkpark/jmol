@@ -30,6 +30,7 @@
   <property name="javadoc.dir" value="javadoc" />
   <property name="docbook-xsl" value="docbook-xsl-1.71.0" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
+  <property name="vecmath.jar" value="vecmath.jar" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
@@ -52,7 +53,7 @@
   
   <path id="apisio-project.class.path">
     <fileset dir="${lib.dir}">
-      <include name="vecmath1.2-1.14.jar" />
+      <include name="${vecmath.jar}" />
       <include name="netscape.jar" />
       <include name="gnujaxp.jar" />
     </fileset>
@@ -288,7 +289,7 @@ support for assertions (which were introduced in 1.4).
     <condition property="libjars.uptodate">
       <and>
         <uptodate targetfile="${appjars.dir}">
-          <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
+          <srcfiles dir="${lib.dir}" includes="${vecmath.jar}"/>
           <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
           <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
           <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
@@ -319,7 +320,7 @@ support for assertions (which were introduced in 1.4).
   <target name="libjars" id="libjars" depends="check.libjars" unless="libjars.uptodate">
     <delete file="build/libjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/commons-cli-1.0.jar"/>
@@ -389,7 +390,7 @@ support for assertions (which were introduced in 1.4).
       <and>
         <uptodate targetfile="${appletjars.dir}">
           <srcfiles dir="${lib.dir}"
-                    includes="jmolappletcdk.jar,vecmath1.2-1.14.jar"/>
+                    includes="jmolappletcdk.jar,${vecmath.jar}"/>
         </uptodate>
         <uptodate targetfile="build/appletjars.timestamp"
                   srcfile="${appletjars.dir}"/>
@@ -402,7 +403,7 @@ support for assertions (which were introduced in 1.4).
     <delete file="build/appletjars.timestamp"/>
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
+    <unjar dest="${appletjars.dir}" src="${lib.dir}/${vecmath.jar}">
       <patternset>
         <include name="**/Point3f.class"/>
         <include name="**/Vector3f.class"/>
@@ -730,7 +731,7 @@ support for assertions (which were introduced in 1.4).
     <copy todir="build/dist/jmolapisio-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
         <exclude name="**/CVS"/>
-        <include name="vecmath1.2-1.14.jar"/>
+        <include name="${vecmath.jar}"/>
         <include name="netscape.jar"/>
       </fileset>
     </copy>

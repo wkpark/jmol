@@ -30,7 +30,9 @@
   <property name="javadoc.dir" value="javadoc" />
   <property name="docbook-xsl" value="docbook-xsl-1.71.0" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
-  <property name="vecmath.jar" value="vecmath.jar" />
+  <property name="vecmath.jar" value="vecmath1.2-1.14.jar" />
+  <property name="itext.jar" value="itext-0.94.jar" />
+  <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
@@ -291,8 +293,8 @@ support for assertions (which were introduced in 1.4).
         <uptodate targetfile="${appjars.dir}">
           <srcfiles dir="${lib.dir}" includes="${vecmath.jar}"/>
           <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
-          <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
-          <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
+          <srcfiles dir="${lib.dir}" includes="${itext.jar}"/>
+          <srcfiles dir="${lib.dir}" includes="${commons-cli.jar}"/>
         </uptodate>
         <uptodate targetfile="build/libjars.timestamp"
                   srcfile="${appjars.dir}"/>
@@ -322,8 +324,8 @@ support for assertions (which were introduced in 1.4).
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/commons-cli-1.0.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
     <touch file="build/libjars.timestamp"/>
   </target>
 

@@ -39,7 +39,6 @@ class Sticks extends Shape {
   int connectDistanceCount;
   final BitSet[] connectSets = new BitSet[2];
   int connectSetCount;
-  final private static short NULL_BOND_ORDER = -1;
   // initialized to -1;
   // for delete this means 'delete all'
   // for connect this gets turned into 'single'
@@ -73,7 +72,7 @@ class Sticks extends Shape {
     if ("resetConnectParameters" == propertyName) {
       connectDistanceCount = 0;
       connectSetCount = 0;
-      connectBondOrder = NULL_BOND_ORDER;
+      connectBondOrder = JmolConstants.BOND_ORDER_NULL;
       connectOperation = MODIFY_OR_CREATE;
       return;
     }
@@ -92,7 +91,7 @@ class Sticks extends Shape {
       return;
     }
     if ("connectBondOrder" == propertyName) {
-      connectBondOrder = bondOrderFromString((String)value);
+      connectBondOrder = JmolConstants.getBondOrderFromString((String)value);
       return;
     }
     if ("connectOperation" == propertyName) {
@@ -181,7 +180,7 @@ class Sticks extends Shape {
       autoBond(order, bsA, bsB);
       return;
     }
-    if (order == NULL_BOND_ORDER)
+    if (order == JmolConstants.BOND_ORDER_NULL)
       order = JmolConstants.BOND_COVALENT_SINGLE; // default 
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
@@ -225,7 +224,7 @@ class Sticks extends Shape {
     BitSet bsDelete = new BitSet();
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
-    if (order != NULL_BOND_ORDER 
+    if (order != JmolConstants.BOND_ORDER_NULL 
         && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
       order = JmolConstants.BOND_HYDROGEN_MASK;
     for (int i = bondCount; --i >= 0; ) {
@@ -238,7 +237,7 @@ class Sticks extends Shape {
           float distanceSquared = atom1.distanceSquared(atom2);
           if (distanceSquared >= minDistanceSquared &&
               distanceSquared <= maxDistanceSquared)
-            if (order == NULL_BOND_ORDER ||
+            if (order == JmolConstants.BOND_ORDER_NULL ||
                 order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK) ||
                 (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
               bsDelete.set(i);
@@ -246,14 +245,6 @@ class Sticks extends Shape {
       }
     }
     frame.deleteBonds(bsDelete);
-  }
-
-  short bondOrderFromString(String bondOrderString) {
-    for (int i = JmolConstants.bondOrderNames.length; --i >= 0; ) {
-      if (JmolConstants.bondOrderNames[i].equalsIgnoreCase(bondOrderString))
-        return JmolConstants.bondOrderValues[i];
-    }
-    return NULL_BOND_ORDER;
   }
 
   int connectOperationFromString(String connectOperationString) {
@@ -266,7 +257,7 @@ class Sticks extends Shape {
 
 
   void autoBond(short order, BitSet bsA, BitSet bsB) {
-    if (order == NULL_BOND_ORDER)
+    if (order == JmolConstants.BOND_ORDER_NULL)
       frame.autoBond(bsA, bsB);
     else if (order == JmolConstants.BOND_H_REGULAR)
       frame.autoHbond(bsA, bsB);

@@ -966,7 +966,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 't': temperature factor
          case 'U': identity
          case 'u': sUrface distance
-         case 'V': Van der Waals
+         case 'V': van der Waals
          case 'x': x coord
          case 'X': fractional X coord
          case 'y': y coord

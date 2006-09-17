@@ -81,7 +81,7 @@ class StyleManager {
 
   void setPercentVdwAtom(int percentVdwAtom) {
     if (percentVdwAtom != this.percentVdwAtom) 
-      Logger.info("default percent Van der Waal radius set to " + percentVdwAtom);
+      Logger.info("default percent van der Waal radius set to " + percentVdwAtom);
     this.percentVdwAtom = percentVdwAtom;
   }
 

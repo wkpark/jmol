@@ -46,6 +46,7 @@ import javax.swing.JScrollPane;
 import java.util.Vector;
 
 import org.jmol.i18n.GT;
+import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 
 public final class ScriptWindow extends JDialog

@@ -33,7 +33,8 @@ class PickingManager {
   Viewer viewer;
 
   int pickingMode = JmolConstants.PICKING_IDENT;
-  int pickingStyle = JmolConstants.PICKINGSTYLE_CHIME;
+  int pickingStyleSelect = JmolConstants.PICKINGSTYLE_SELECT_CHIME;
+  int pickingStyleMeasure = JmolConstants.PICKINGSTYLE_MEASURE_OFF;
 
   int queuedAtomCount = 0;
   int[] queuedAtomIndexes = new int[4];
@@ -48,13 +49,13 @@ class PickingManager {
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
     if (atomIndex == -1) {
-      if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT 
+      if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT 
           && !shiftKey && !alternateKey) {
         viewer.clearSelection();
         reportSelection();
       }
-      if (pickingMode == JmolConstants.PICKING_MONITOR
-          || pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+      if (pickingMode == JmolConstants.PICKING_MEASURE
+          || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         queuedAtomCount = 0;
       return;
     }
@@ -67,8 +68,8 @@ class PickingManager {
     case JmolConstants.PICKING_IDENT:
       viewer.setStatusAtomPicked(atomIndex, viewer.getAtomInfoXYZ(atomIndex));
       break;
-    case JmolConstants.PICKING_MONITOR:
-    case JmolConstants.PICKING_DISTANCE:
+    case JmolConstants.PICKING_MEASURE:
+    case JmolConstants.PICKING_MEASURE_DISTANCE:
       if (queuedAtomCount >= 2)
         queuedAtomCount = 0;
       queueAtom(atomIndex);
@@ -78,11 +79,11 @@ class PickingManager {
       value = "Distance " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " : " + distance;
       viewer.setStatusNewPickingModeMeasurement(2, value);
-      if (pickingMode == JmolConstants.PICKING_MONITOR
-          || pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+      if (pickingMode == JmolConstants.PICKING_MEASURE
+          || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         toggleMeasurement(2);
       break;
-    case JmolConstants.PICKING_ANGLE:
+    case JmolConstants.PICKING_MEASURE_ANGLE:
       if (queuedAtomCount >= 3)
         queuedAtomCount = 0;
       queueAtom(atomIndex);
@@ -94,10 +95,10 @@ class PickingManager {
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[2]) + " : " + angle;
       viewer.setStatusNewPickingModeMeasurement(3, value);
-      if (pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+      if (pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         toggleMeasurement(3);
       break;
-    case JmolConstants.PICKING_TORSION:
+    case JmolConstants.PICKING_MEASURE_TORSION:
       if (queuedAtomCount >= 4)
         queuedAtomCount = 0;
       queueAtom(atomIndex);
@@ -110,7 +111,7 @@ class PickingManager {
           + viewer.getAtomInfo(queuedAtomIndexes[2]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[3]) + " : " + torsion;
       viewer.setStatusNewPickingModeMeasurement(4, value);
-      if (pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+      if (pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         toggleMeasurement(4);
       break;
     case JmolConstants.PICKING_LABEL:
@@ -180,7 +181,7 @@ class PickingManager {
   }
   
   void applyMouseStyle(int atomIndex, boolean shiftKey, boolean alternateKey) {
-    if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT) {
+    if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT) {
       if (shiftKey && alternateKey)
         viewer.removeSelection(atomIndex);
       else if (shiftKey)
@@ -190,7 +191,7 @@ class PickingManager {
       else
         viewer.setSelection(atomIndex);
     } else {
-      if (shiftKey | pickingStyle == JmolConstants.PICKINGSTYLE_CHIME)
+      if (shiftKey | pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_CHIME)
         viewer.toggleSelection(atomIndex);
       else
         viewer.setSelection(atomIndex);
@@ -199,7 +200,7 @@ class PickingManager {
   }
   
   void applyMouseStyle(BitSet bs, boolean shiftKey, boolean alternateKey) {
-    if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT) {
+    if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT) {
       if (shiftKey && alternateKey)
         viewer.removeSelection(bs);
       else if (shiftKey)
@@ -209,7 +210,7 @@ class PickingManager {
       else
         viewer.setSelectionSet(bs);
     } else {
-      if (shiftKey | pickingStyle == JmolConstants.PICKINGSTYLE_CHIME)
+      if (shiftKey | pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_CHIME)
         viewer.toggleSelectionSet(bs);
       else
         viewer.setSelectionSet(bs);
@@ -228,24 +229,16 @@ class PickingManager {
   void setPickingMode(int pickingMode) {
     this.pickingMode = pickingMode;
     queuedAtomCount = 0;
-    Logger.debug("setPickingMode(" +
-                       pickingMode + ":" +
-                       JmolConstants.pickingModeNames[pickingMode] + ")");
   }
 
-  boolean setPickingStyle(String style) {
-    int pickingStyle = -1; 
-    for (int i = JmolConstants.pickingStyleNames.length; --i >=0; )
-      if (style.equalsIgnoreCase(JmolConstants.pickingStyleNames[i]))
-        pickingStyle = i;
-    if (pickingStyle < 0)
-      return false;
-    this.pickingStyle = pickingStyle;
-    queuedAtomCount = 0;
-    Logger.debug("setPickingStyle(" +
-            pickingStyle + ":" +
-            JmolConstants.pickingStyleNames[pickingStyle] + ")");
-    return true;
+  void setPickingStyle(int pickingStyle) {
+    Logger.debug(" setPickingStyle " + pickingStyle+": " + JmolConstants.pickingStyleNames[pickingStyle]);
+    if (pickingStyle >= JmolConstants.PICKINGSTYLE_MEASURE_ON) {
+      pickingStyleMeasure = pickingStyle;
+      queuedAtomCount = 0;
+    } else {
+      pickingStyleSelect = pickingStyle;
+    }
   }
 
   void queueAtom(int atomIndex) {

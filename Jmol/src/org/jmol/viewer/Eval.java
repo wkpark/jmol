@@ -3935,113 +3935,79 @@ class Eval { //implements Runnable {
   }
 
   void setPicking() throws ScriptException {
-    int pickingMode = JmolConstants.PICKING_IDENT;
-    if (statementLength >= 3) {
-      switch (statement[2].tok) {
-      case Token.none:
-      case Token.off:
-        pickingMode = JmolConstants.PICKING_OFF;
-      // fall into
-      case Token.on:
-        break;
-      case Token.ident:
-        pickingMode = JmolConstants.PICKING_IDENT;
-        break;
-      case Token.distance:
-        pickingMode = JmolConstants.PICKING_DISTANCE;
-        break;
-      case Token.monitor:
-        pickingMode = JmolConstants.PICKING_MONITOR;
-        break;
-      case Token.angle:
-        pickingMode = JmolConstants.PICKING_ANGLE;
-        break;
-      case Token.draw:
-        pickingMode = JmolConstants.PICKING_DRAW;
-        break;
-      case Token.torsion:
-        pickingMode = JmolConstants.PICKING_TORSION;
-        break;
-      case Token.label:
-        pickingMode = JmolConstants.PICKING_LABEL;
-        break;
-      case Token.center:
-        pickingMode = JmolConstants.PICKING_CENTER;
-        break;
-      case Token.coord:
-        pickingMode = JmolConstants.PICKING_COORD;
-        break;
-      case Token.bond:
-      case Token.bonds:
-        pickingMode = JmolConstants.PICKING_BOND;
-        break;
-      case Token.atom:
-        pickingMode = JmolConstants.PICKING_SELECT_ATOM;
-        break;
-      case Token.group:
-        pickingMode = JmolConstants.PICKING_SELECT_GROUP;
-        break;
-      case Token.chain:
-        pickingMode = JmolConstants.PICKING_SELECT_CHAIN;
-        break;
-      case Token.molecule:
-        pickingMode = JmolConstants.PICKING_SELECT_MOLECULE;
-        break;
-      case Token.site:
-        pickingMode = JmolConstants.PICKING_SELECT_SITE;
-        break;
-      case Token.element:
-        pickingMode = JmolConstants.PICKING_SELECT_ELEMENT;
-        break;
-      case Token.spin:
-        pickingMode = JmolConstants.PICKING_SPIN;
-        int rate = 10;
-        if (statementLength == 4) {
-          rate = intParameter(3);
-        }
-        viewer.setPickingSpinRate(rate);
-        break;
-      case Token.select:
-        pickingMode = JmolConstants.PICKING_SELECT_ATOM;
-        if (statementLength == 4) {
-          switch (statement[3].tok) {
-          case Token.chain:
-            pickingMode = JmolConstants.PICKING_SELECT_CHAIN;
-          // fall into
-          case Token.atom:
-            break;
-          case Token.group:
-            pickingMode = JmolConstants.PICKING_SELECT_GROUP;
-            break;
-          default:
-            invalidArgument();
-          }
-        }
-        break;
-      default:
-        invalidArgument();
+    if (statementLength == 2) {
+      viewer.setPickingMode(JmolConstants.PICKING_IDENT);
+      return;
+    }
+    checkLength34();
+    switch (statement[2].tok) {
+    case Token.select:
+    case Token.monitor:
+      break;
+    default:
+      checkLength3();
+    }
+    String str = null;
+    Token token = statement[statementLength - 1];
+    int tok = token.tok;
+    switch (tok) {
+    case Token.none:
+      str = "off";
+      break;
+    case Token.select:
+      str = "atom";
+      break;
+    case Token.bonds:
+      str = "bond";
+      break;
+    case Token.spin:
+      int rate = 10;
+      if (statementLength == 4) {
+        rate = intParameter(3);
       }
-    } 
+      viewer.setPickingSpinRate(rate);
+      break;
+    }
+    try {
+      if (str == null)
+      str = (String)token.value;
+    } catch (Exception e) {
+      invalidArgument();
+    }
+    int pickingMode;
+    if ((pickingMode = JmolConstants.GetPickingMode(str)) < 0)
+      invalidArgument();
     viewer.setPickingMode(pickingMode);
   }
 
   void setPickingStyle() throws ScriptException {
-    String style = "";
-    checkLength3();
-    switch (statement[2].tok) {
-    case Token.monitor:
-    case Token.identifier:
-      style = (String) statement[2].value;
+    checkLength34();
+    boolean isMeasure = (statement[2].tok == Token.monitor);
+    String str = null;
+    Token token = statement[statementLength - 1];
+    int tok = token.tok;
+    switch (tok) {
     case Token.none:
+    case Token.off:
+      str = (isMeasure ? "measureoff" : "toggle");
       break;
-    default:
+    case Token.on:
+      if (!isMeasure)
+        invalidArgument();
+      str = "measure";
+      break;
+    }
+    try {
+      if (str == null)
+      str = (String)token.value;
+    } catch (Exception e) {
       invalidArgument();
     }
-    if (!viewer.setPickingStyle(style)) {
+    int pickingStyle;
+    if ((pickingStyle = JmolConstants.GetPickingStyle(str)) < 0)
       invalidArgument();
-    }
+    viewer.setPickingStyle(pickingStyle);
   }
-
   /* ****************************************************************************
    * ==============================================================
    * SHOW 

@@ -82,40 +82,58 @@ final public class JmolConstants {
    */
   public final static int PICKING_OFF =           0;
   public final static int PICKING_IDENT =         1;
-  public final static int PICKING_DISTANCE =      2;
-  public final static int PICKING_MONITOR =       3;
-  public final static int PICKING_ANGLE =         4;
-  public final static int PICKING_TORSION =       5;
-  public final static int PICKING_LABEL =         6;
-  public final static int PICKING_CENTER =        7;
-  public final static int PICKING_COORD =         8;
-  public final static int PICKING_BOND =          9;
-  public final static int PICKING_SELECT_ATOM =  10;
-  public final static int PICKING_SELECT_GROUP = 11;
-  public final static int PICKING_SELECT_CHAIN = 12;
-  public final static int PICKING_SPIN =         13;
-  public final static int PICKING_SELECT_MOLECULE = 14;
-  public final static int PICKING_SELECT_SITE =     15;
-  public final static int PICKING_SELECT_ELEMENT =  16;
-  public final static int PICKING_DRAW =            17;
+  public final static int PICKING_LABEL =         2;
+  public final static int PICKING_CENTER =        3;
+  public final static int PICKING_COORD =         4;
+  public final static int PICKING_BOND =          5;
+  public final static int PICKING_DRAW =          6;
+  public final static int PICKING_SPIN =          7;
+  // keep these next at end, because Eval checks for < atom  
+  public final static int PICKING_SELECT_ATOM =   8;
+  public final static int PICKING_SELECT_GROUP =  9;
+  public final static int PICKING_SELECT_CHAIN = 10;
+  public final static int PICKING_SELECT_MOLECULE = 11;
+  public final static int PICKING_SELECT_SITE =     12;
+  public final static int PICKING_SELECT_ELEMENT =  13;
+  // keep these next at end, because Eval checks for < distance
+  public final static int PICKING_MEASURE =          14;
+  public final static int PICKING_MEASURE_DISTANCE = 15;
+  public final static int PICKING_MEASURE_ANGLE =    16;
+  public final static int PICKING_MEASURE_TORSION =  17;
 
   public final static String[] pickingModeNames = {
-    "off", "ident", "distance", "measure", "angle", "torsion", "label",
-    "center", "coord", "bond", "atom", "group", "chain", "spin", "molecule", 
-    "site", "element","draw"};
+    "off", "ident", "label", "center", "coord", "bond", 
+    "draw", "spin",
+    "atom", "group", "chain", "molecule", "site", "element", 
+    "measure", "distance", "angle", "torsion"
+    };
  
-
+  public final static int GetPickingMode(String str) {
+    for (int i = pickingModeNames.length; --i >= 0; )
+      if (str.equalsIgnoreCase(pickingModeNames[i]))
+        return i;
+    return -1;
+  }
   /**
    * picking styles
    */
-  public final static int PICKINGSTYLE_CHIME = 0;
-  public final static int PICKINGSTYLE_RASMOL = 1;
-  public final static int PICKINGSTYLE_PFAAT = 2;
-  public final static int PICKINGSTYLE_MEASURE = 3;
+  public final static int PICKINGSTYLE_SELECT_JMOL = 0;
+  public final static int PICKINGSTYLE_SELECT_CHIME = 0;
+  public final static int PICKINGSTYLE_SELECT_RASMOL = 1;
+  public final static int PICKINGSTYLE_SELECT_PFAAT = 2;
+  public final static int PICKINGSTYLE_MEASURE_ON = 3;
+  public final static int PICKINGSTYLE_MEASURE_OFF = 4;
   
   public final static String[] pickingStyleNames = {
-    "toggle", "selectOrToggle", "extendedSelect", "measure"
+    "toggle", "selectOrToggle", "extendedSelect", "measure", "measureoff"
   };
+
+  public final static int GetPickingStyle(String str) {
+    for (int i = pickingStyleNames.length; --i >= 0; )
+      if (str.equalsIgnoreCase(pickingStyleNames[i]))
+        return i;
+    return -1;
+  }
 
   /**
    * Extended Bond Definition Types

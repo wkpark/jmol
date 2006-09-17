@@ -186,15 +186,16 @@ class Labels extends Shape {
     if ("pickingLabel" == propertyName) {
       // toggle
       int atomIndex = ((Integer) value).intValue();
+      Atom atom = atoms[atomIndex];
       if (strings != null && strings.length > atomIndex
           && strings[atomIndex] != null) {
         strings[atomIndex] = null;
       } else {
         String strLabel = viewer.getStandardLabelFormat();
-        Atom atom = atoms[atomIndex];
         strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
         strings[atomIndex] = atom.formatLabel(strLabel);
       }
+      atom.setShapeVisibility(myVisibilityFlag, strings[atomIndex] != null);
       return;
     }
   }

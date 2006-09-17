@@ -2284,8 +2284,8 @@ public class Viewer extends JmolViewer {
     return pickingManager.getPickingMode();
   }
 
-  boolean setPickingStyle(String style) {
-    return pickingManager.setPickingStyle(style);
+  void setPickingStyle(int pickingStyle) {
+    pickingManager.setPickingStyle(pickingStyle);
   }
 
   public String getAtomInfo(int atomIndex) {

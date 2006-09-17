@@ -782,6 +782,7 @@ class Isosurface extends MeshCollection {
     mappedDataMin = Float.MAX_VALUE;
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     precalculateVoxelData = false;
+    bsIgnore = null;
     jvxlInitFlags();
     initState();
   }
@@ -4067,7 +4068,8 @@ class Isosurface extends MeshCollection {
     int firstSet = -1;
     int lastSet = 0;
     for (int i = 0; i < nAtoms; i++)
-      if (!bsIgnore.get(i) && (nSelected == 0 || bsSelected.get(i))) {
+      if ((bsIgnore == null || !bsIgnore.get(i)) 
+          && (nSelected == 0 || bsSelected.get(i))) {
         if (solvent_modelIndex < 0)
           solvent_modelIndex = atoms[i].modelIndex;
         if (solvent_modelIndex != atoms[i].modelIndex)

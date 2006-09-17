@@ -961,9 +961,11 @@ final public class Atom extends Point3fi implements Tuple {
          case 'P': Partial charge
          case 'q': occupancy
          case 'r': residue sequence code
-         case 's': chain
+         case 'S': crystllographic Site
+         case 's': strand (chain)
          case 't': temperature factor
          case 'U': identity
+         case 'u': sUrface distance
          case 'V': Van der Waals
          case 'x': x coord
          case 'X': fractional X coord
@@ -1064,6 +1066,10 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'U':
           strT = getIdentity();
+          break;
+        case 'u':
+          floatT = getSurfaceDistance();
+          floatIsSet = true;
           break;
         case 'N':
           strT = "" + getMoleculeNumber();

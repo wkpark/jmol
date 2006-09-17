@@ -4029,6 +4029,7 @@ class Eval { //implements Runnable {
     String style = "";
     checkLength3();
     switch (statement[2].tok) {
+    case Token.monitor:
     case Token.identifier:
       style = (String) statement[2].value;
     case Token.none:

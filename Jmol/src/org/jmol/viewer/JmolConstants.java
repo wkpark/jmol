@@ -100,7 +100,7 @@ final public class JmolConstants {
   public final static int PICKING_DRAW =            17;
 
   public final static String[] pickingModeNames = {
-    "off", "ident", "distance", "monitor", "angle", "torsion", "label",
+    "off", "ident", "distance", "measure", "angle", "torsion", "label",
     "center", "coord", "bond", "atom", "group", "chain", "spin", "molecule", 
     "site", "element","draw"};
  
@@ -111,9 +111,10 @@ final public class JmolConstants {
   public final static int PICKINGSTYLE_CHIME = 0;
   public final static int PICKINGSTYLE_RASMOL = 1;
   public final static int PICKINGSTYLE_PFAAT = 2;
+  public final static int PICKINGSTYLE_MEASURE = 3;
   
   public final static String[] pickingStyleNames = {
-    "toggle", "selectOrToggle", "extendedSelect"
+    "toggle", "selectOrToggle", "extendedSelect", "measure"
   };
 
   /**

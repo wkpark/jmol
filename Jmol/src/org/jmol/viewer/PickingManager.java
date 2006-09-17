@@ -48,11 +48,14 @@ class PickingManager {
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
     if (atomIndex == -1) {
-      if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT && !shiftKey
-          && !alternateKey) {
+      if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT 
+          && !shiftKey && !alternateKey) {
         viewer.clearSelection();
         reportSelection();
       }
+      if (pickingMode == JmolConstants.PICKING_MONITOR
+          || pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+        queuedAtomCount = 0;
       return;
     }
 
@@ -64,6 +67,7 @@ class PickingManager {
     case JmolConstants.PICKING_IDENT:
       viewer.setStatusAtomPicked(atomIndex, viewer.getAtomInfoXYZ(atomIndex));
       break;
+    case JmolConstants.PICKING_MONITOR:
     case JmolConstants.PICKING_DISTANCE:
       if (queuedAtomCount >= 2)
         queuedAtomCount = 0;
@@ -74,6 +78,9 @@ class PickingManager {
       value = "Distance " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " : " + distance;
       viewer.setStatusNewPickingModeMeasurement(2, value);
+      if (pickingMode == JmolConstants.PICKING_MONITOR
+          || pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+        toggleMeasurement(2);
       break;
     case JmolConstants.PICKING_ANGLE:
       if (queuedAtomCount >= 3)
@@ -87,6 +94,8 @@ class PickingManager {
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[2]) + " : " + angle;
       viewer.setStatusNewPickingModeMeasurement(3, value);
+      if (pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+        toggleMeasurement(3);
       break;
     case JmolConstants.PICKING_TORSION:
       if (queuedAtomCount >= 4)
@@ -101,17 +110,8 @@ class PickingManager {
           + viewer.getAtomInfo(queuedAtomIndexes[2]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[3]) + " : " + torsion;
       viewer.setStatusNewPickingModeMeasurement(4, value);
-      break;
-    case JmolConstants.PICKING_MONITOR:
-      if (queuedAtomCount >= 2)
-        queuedAtomCount = 0;
-      queueAtom(atomIndex);
-      if (queuedAtomCount < 2)
-        break;
-      countPlusIndexes[0] = 2;
-      countPlusIndexes[1] = queuedAtomIndexes[0];
-      countPlusIndexes[2] = queuedAtomIndexes[1];
-      viewer.toggleMeasurement(countPlusIndexes);
+      if (pickingStyle == JmolConstants.PICKINGSTYLE_MEASURE)
+        toggleMeasurement(4);
       break;
     case JmolConstants.PICKING_LABEL:
       viewer.togglePickingLabel(atomIndex);
@@ -172,6 +172,13 @@ class PickingManager {
     }
   }
 
+  void toggleMeasurement(int nAtoms) {
+    countPlusIndexes[0] = nAtoms;
+    for (int i = 0; i < nAtoms; i++)
+      countPlusIndexes[i + 1] = queuedAtomIndexes[i];
+    viewer.toggleMeasurement(countPlusIndexes);  
+  }
+  
   void applyMouseStyle(int atomIndex, boolean shiftKey, boolean alternateKey) {
     if (pickingStyle == JmolConstants.PICKINGSTYLE_PFAAT) {
       if (shiftKey && alternateKey)

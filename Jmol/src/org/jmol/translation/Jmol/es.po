@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 22:49+0200\n"
+"POT-Creation-Date: 2006-09-18 23:24+0200\n"
 "PO-Revision-Date: 2006-03-24 20:08+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:167
 #, fuzzy
-msgid "pick one more atoms in order to spin the model around an axis"
+msgid "pick one more atom in order to spin the model around an axis"
 msgstr " átomos para que el modelo gire en torno a un eje"
 
 #: org/jmol/viewer/PickingManager.java:168

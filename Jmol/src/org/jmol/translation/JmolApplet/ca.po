@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 22:49+0200\n"
+"POT-Creation-Date: 2006-09-18 23:25+0200\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -1079,7 +1079,7 @@ msgid "Translations"
 msgstr "Traduccions"
 
 #: org/jmol/viewer/PickingManager.java:167
-msgid "pick one more atoms in order to spin the model around an axis"
+msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:168

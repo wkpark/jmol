@@ -164,7 +164,7 @@ class PickingManager {
       if (queuedAtomCount < 2) {
         viewer.setSpinOn(false);
         viewer.scriptStatus(queuedAtomCount == 1 ?
-            GT._("pick one more atoms in order to spin the model around an axis") :
+            GT._("pick one more atom in order to spin the model around an axis") :
             GT._("pick two atoms in order to spin the model around an axis"));
         break;
       }

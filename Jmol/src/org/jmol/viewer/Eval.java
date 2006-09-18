@@ -1932,6 +1932,7 @@ class Eval { //implements Runnable {
       switch (tok) {
       case Token.cpk:
         colorvalue = "cpk";
+        break;
       case Token.none:
       case Token.formalCharge:
       case Token.partialCharge:

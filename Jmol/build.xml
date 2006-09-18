@@ -448,11 +448,11 @@ support for assertions (which were introduced in 1.4).
     <jar destfile="JmolApplet1.jar" manifest="manifest/applet1.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/api/**" />
-	<!-- note that this class is included in JmolApplet0.jar -->
+        <!-- note that this class is included in JmolApplet0.jar -->
         <exclude name="org/jmol/api/JmolAppletInterface.class" />
         <include name="org/jmol/applet/**" />
-	<include name="org/jmol/i18n/**" />
-	<include name="org/jmol/popup/**" />
+        <include name="org/jmol/i18n/**" />
+        <include name="org/jmol/popup/**" />
       </fileset>
     </jar>
 
@@ -471,7 +471,7 @@ support for assertions (which were introduced in 1.4).
 
     <jar destfile="JmolApplet4.jar" manifest="manifest/applet4.txt" >
       <fileset dir="${applet.classes.dir}">
-	<include name="org/jmol/adapter/smarter/**" />
+        <include name="org/jmol/adapter/smarter/**" />
       </fileset>
     </jar>
 
@@ -809,9 +809,9 @@ support for assertions (which were introduced in 1.4).
     </delete>
   </target>
 
-	  <target name="xclean" id="xclean">
-	 </target>
-	
+  <target name="xclean" id="xclean">
+  </target>
+
   <target name="spotless" id="spotless" depends="clean,spotless-i18n">
     <delete dir="build"/>
     <delete dir="${javadoc.dir}"/>

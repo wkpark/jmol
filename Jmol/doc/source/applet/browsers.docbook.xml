@@ -163,9 +163,8 @@
     <para>
       In addition, the standard Jmol.js Javascript library will not work under properly compliant XML browsers. An alternative, largely similar, but entirely unsupported library is available ... insert address here ...
     </para>
-    <section>
-      <para>That all said, the XHTML features of JmolApplet have been successfully tested on the following OS/browser/JVM combinations.
-      </para>
-    </section>
+    <para>
+      That all said, the XHTML features of JmolApplet have been successfully tested on the following OS/browser/JVM combinations.
+    </para>
   </section>
 </chapter>

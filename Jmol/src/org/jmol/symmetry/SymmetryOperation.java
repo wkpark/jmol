@@ -101,10 +101,11 @@ public class SymmetryOperation extends Matrix4f {
   }
 
   final static String dumpSeitz(Matrix4f s) {
-    return "{\t"+s.m00+"\t"+s.m01+"\t"+s.m02+"\t"+twelfthsOf(s.m03)+"\t}\n"
-    +"{\t"+s.m10+"\t"+s.m11+"\t"+s.m12+"\t"+twelfthsOf(s.m13)+"\t}\n"
-    +"{\t"+s.m20+"\t"+s.m21+"\t"+s.m22+"\t"+twelfthsOf(s.m23)+"\t}\n"
-    +"{\t0\t0\t0\t1\t}\n";
+    return "{\t" + (int) s.m00 + "\t" + (int) s.m01 + "\t" + (int) s.m02 + "\t"
+        + twelfthsOf(s.m03) + "\t}\n" + "{\t" + (int) s.m10 + "\t"
+        + (int) s.m11 + "\t" + (int) s.m12 + "\t" + twelfthsOf(s.m13) + "\t}\n"
+        + "{\t" + (int) s.m20 + "\t" + (int) s.m21 + "\t" + (int) s.m22 + "\t"
+        + twelfthsOf(s.m23) + "\t}\n" + "{\t0\t0\t0\t1\t}\n";
   }
   
   boolean setMatrixFromXYZ(String xyz) {

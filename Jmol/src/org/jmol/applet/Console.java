@@ -24,6 +24,7 @@
 package org.jmol.applet;
 
 import org.jmol.api.*;
+import org.jmol.i18n.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -33,12 +34,13 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 
 class Console implements ActionListener, WindowListener {
-  final JTextArea input = new ShiftEnterTextArea();
+  final JTextArea input = new ControlEnterTextArea();
   final JTextPane output = new JTextPane();
   final Document outputDocument = output.getDocument();
   final JFrame jf = new JFrame("Jmol Script Console");
 
   final JButton runButton = new JButton("Execute");
+  final JButton clearButton = new JButton("Clear");
 
   final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
@@ -57,21 +59,30 @@ class Console implements ActionListener, WindowListener {
     setupOutput();
 
     JScrollPane jscrollInput = new JScrollPane(input);
-    jscrollInput.setMinimumSize(new Dimension(2, 25));
+    jscrollInput.setMinimumSize(new Dimension(2, 100));
 
     JScrollPane jscrollOutput = new JScrollPane(output);
-    jscrollOutput.setMinimumSize(new Dimension(2, 25));
+    jscrollOutput.setMinimumSize(new Dimension(2, 100));
     Container c = jf.getContentPane();
 
     JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                                     jscrollOutput, jscrollInput);
     jsp.setResizeWeight(.9);
+    jsp.setDividerLocation(200);
 
     c.setLayout(new BorderLayout());
     c.add(jsp, BorderLayout.CENTER);
-    c.add(runButton, BorderLayout.SOUTH);
-
+ 
+    JLabel label = new JLabel(GT._("press CTRL-ENTER for new line"), SwingConstants.CENTER);
+    label.setHorizontalAlignment(SwingConstants.CENTER);
+    Container c1 = new Container();
+    c1.setLayout(new BorderLayout());
+    c1.add(runButton, BorderLayout.WEST);
+    c1.add(label, BorderLayout.CENTER);
+    c1.add(clearButton, BorderLayout.EAST);
+    c.add(c1, BorderLayout.SOUTH);
     runButton.addActionListener(this);
+    clearButton.addActionListener(this);
 
     jf.setSize(400, 400);
     jf.addWindowListener(this);
@@ -123,6 +134,9 @@ class Console implements ActionListener, WindowListener {
     if (source == runButton) {
       execute();
     }
+    if (source == clearButton) {
+      output.setText("");
+    }
   }
 
   void execute() {
@@ -160,6 +174,41 @@ class Console implements ActionListener, WindowListener {
       }
       super.processComponentKeyEvent(ke);
     }
+
+
+    private void recallCommand(boolean up) {
+      setText(up ? commandHistory.getCommandUp() : commandHistory.getCommandDown());
+    }
+  }
+
+
+  class ControlEnterTextArea extends JTextArea {
+    public void processComponentKeyEvent(KeyEvent ke) {
+      switch (ke.getID()) {
+      case KeyEvent.KEY_PRESSED:
+        if (ke.getKeyCode() == KeyEvent.VK_ENTER && !ke.isControlDown()) {
+          execute();
+          return;
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_UP) {
+          recallCommand(true);
+          return;
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
+          recallCommand(false);
+          return;
+        }
+        break;
+      case KeyEvent.KEY_RELEASED:
+        if (ke.getKeyCode() == KeyEvent.VK_ENTER && !ke.isControlDown())
+          return;
+        break;
+      }
+      if (ke.getKeyCode() == KeyEvent.VK_ENTER)
+        ke.setModifiers(0);
+      super.processComponentKeyEvent(ke);
+    }
+
 
     private void recallCommand(boolean up) {
       setText(up ? commandHistory.getCommandUp() : commandHistory.getCommandDown());

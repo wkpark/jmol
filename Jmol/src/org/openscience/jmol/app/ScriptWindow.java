@@ -106,6 +106,7 @@ public final class ScriptWindow extends JDialog
     if (strEcho != null && !isError) {
       console.outputEcho(strEcho);
     }
+    setError(false);
   }
 
   boolean isError = false;
@@ -120,6 +121,7 @@ public final class ScriptWindow extends JDialog
       }
       else if (!isError)
         console.outputStatus(strStatus);
+      setError(false);
     }
   }
 

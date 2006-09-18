@@ -87,10 +87,10 @@ public class UnitCell {
     setOffset(cell);
   }
 
-  public final String dumpInfo() {
-    return "UnitCell a=" + a + ", b=" + b + ", c=" + c + ", alpha=" + alpha + ", beta=" + beta + ", gamma=" + gamma
-       + "\nUnitCell fractional to cartesian: " + matrixFractionalToCartesian 
-       + "\nUnitCell cartesian to fractional: " + matrixCartesianToFractional;
+  public final String dumpInfo(boolean isFull) {
+    return "a=" + a + ", b=" + b + ", c=" + c + ", alpha=" + alpha + ", beta=" + beta + ", gamma=" + gamma
+       + (isFull ? "\nfractional to cartesian: " + matrixFractionalToCartesian 
+       + "\ncartesian to fractional: " + matrixCartesianToFractional : "");
   }
 
   public Point3f[] getVertices() {

@@ -2635,7 +2635,12 @@ public final class Frame {
     
     void showInfo() {
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-        Logger.debug("cellInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo());
+        Logger.debug("cellInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));
+    }
+    
+    String getUnitCellInfo() {
+      return (unitCell == null ? "no unit cell information" : 
+        unitCell.dumpInfo(false));
     }
   }
   

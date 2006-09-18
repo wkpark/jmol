@@ -1581,6 +1581,16 @@ String getAtomInfoChime(int i) {
     return frame.getAdditionalHydrogens(atomSet);
   }
 
+  String getUnitCellInfoText() {
+    if (frame == null)
+      return null;
+      if (frame.currentModelIndex < 0)
+        return "no single current model";
+      if (frame.cellInfos == null)
+        return "not applicable";
+      return frame.cellInfos[frame.currentModelIndex].getUnitCellInfo();
+  }
+
   String getSpaceGroupInfoText(String spaceGroup) {
     if (spaceGroup == null && frame == null)
       return null;

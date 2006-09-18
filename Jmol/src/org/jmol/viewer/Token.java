@@ -225,7 +225,7 @@ class Token {
   // stereo
   // strands
   final static int transparent  = setparam | 19;
-  final static int unitcell     = setparam | 20 | command;
+  final static int unitcell     = setparam | 20 | showparam | command;
   final static int vectps       = setparam | 21;
   
   // write

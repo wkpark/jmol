@@ -52,7 +52,7 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
     { "popupMenu", "modelSetInfoMenu - selectMenu renderMenu labelMenu colorMenu - " +
                    "zoomMenu spinMenu animateMenu - " +
-                   "measureMenu pickingMenu crystalMenu optionsMenu - consoleMenu - " +
+                   "measureMenu pickingMenu crystalMenu optionsMenu - showMenu - " +
                    "aboutMenu" },
 
     { "selectMenu", "selectAll selectNone - " +
@@ -577,8 +577,10 @@ class PopupResourceBundle {
     { "pickSite" , "set picking site" },
     { "pickSpin" , "set picking spin" },
     
-    { "showMenu" , "showFile showIsosurface showMeasure showMo showModel " + 
-      "showOrient showPDBHeader showSpacegroup showSymmetry extractMOL" },
+    { "showMenu" , "showConsole showFile showFileHeader showIsosurface "
+      + "showMeasure showMo showModel " + 
+      "showOrient showSpacegroup showSymmetry showUnitcell extractMOL" },
+    { "showConsole", "console" },
     { "showFile", "show file"},
     { "showIsosurface", "show isosurface"},
     { "showMeasure", "show measure"},
@@ -588,6 +590,7 @@ class PopupResourceBundle {
     { "showPDBHeader", "show PDBHeader"},
     { "showSpacegroup", "show spacegroup"},
     { "showSymmetry", "show symmetry"},
+    { "showUnitcell", "show unitcell"},
     { "extractMOL", "getproperty extractModel \"visible\" "},
       
     { "crystalMenu", "axesMenu bbcageMenu uccageMenu" },
@@ -671,10 +674,6 @@ class PopupResourceBundle {
                                   "set axesOrientationRasmol on; select *; cpk off; wireframe on" },
     { "rasmolColors", "set color rasmol" },
     { "jmolColors", "set color jmol" },
-
-    { "consoleMenu", "consoleOn consoleOff showMenu" },
-    { "consoleOn", "console" },
-    { "consoleOff", "console off" },
 
     { "aboutMenu", "jmolUrl mouseManualUrl translatingUrl" },
     { "jmolUrl", "http://www.jmol.org" },
@@ -1137,16 +1136,18 @@ class PopupResourceBundle {
     { "pickSpin" , GT._("Spin") },
     
     { "showMenu" , GT._( "Show") },
-    { "showFile", GT._("file")},
-    { "showIsosurface", GT._( "isosurface")},
-    { "showMeasure",  GT._("measure")},
-    { "showMo",  GT._("molecular orbital")},
-    { "showModel",  GT._("model")},
-    { "showOrient",  GT._("orientation")},
-    { "showPDBHeader",  GT._("PDBHeader")},
-    { "showSpacegroup",  GT._("spacegroup")},
-    { "showSymmetry",  GT._("symmetry")},
-    { "extractMOL",  GT._("extract MOL data")},
+    { "showConsole", GT._("Console") },
+    { "showFile", GT._("File Contents")},
+    { "showFileHeader",  GT._("File Header")},
+    { "showIsosurface", GT._("Isosurface JVXL data")},
+    { "showMeasure",  GT._("Measure")},
+    { "showMo",  GT._("Molecular orbital JVXL data")},
+    { "showModel",  GT._("Model")},
+    { "showOrient",  GT._("Orientation")},
+    { "showSpacegroup",  GT._("Space group")},
+    { "showSymmetry",  GT._("Symmetry")},
+    { "showUnitcell",  GT._("Unit cell")},    
+    { "extractMOL",  GT._("Extract MOL data")},
 
     { "crystalMenu", GT._("Crystal") },
 
@@ -1229,10 +1230,6 @@ class PopupResourceBundle {
     { "jmolColors", GT._("Jmol Colors") },
     { "axesOrientationRasmolCheckbox", GT._("Axes RasMol/Chime") },
     { "zeroBasedXyzRasmolCheckbox", GT._("Zero Based Xyz Rasmol") },
-
-    { "consoleMenu", GT._("Console...") },
-    { "consoleOn", GT._("Open") },
-    { "consoleOff", GT._("Close") },
 
     { "aboutMenu", GT._("About Jmol") },
     { "jmolUrl", "www.jmol.org" },

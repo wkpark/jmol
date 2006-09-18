@@ -4021,6 +4021,9 @@ class Eval { //implements Runnable {
       showString(data == null ? "no data" 
           : "data \"" + data[0] + "\"\n" + data[1]);      
       return;
+    case Token.unitcell:
+      showString(viewer.getUnitCellInfoText());
+      return;
     case Token.spacegroup:
       if (statementLength == 2) {
         showString(viewer.getSpaceGroupInfoText(null));

@@ -1148,6 +1148,10 @@ public class Viewer extends JmolViewer {
     return modelManager.getModelSetFileName();
   }
 
+  public String getUnitCellInfoText() {
+    return modelManager.getUnitCellInfoText();
+  }
+
   public String getSpaceGroupInfoText(String spaceGroup) {
     return modelManager.getSpaceGroupInfoText(spaceGroup);
   }

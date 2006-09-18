@@ -263,10 +263,8 @@ public class SymmetryOperation extends Matrix4f {
     } else if (n12ths > 6f) {
       n12ths -= 12f;
     }
-    if (n12ths == 0)
-      return "";
     String s = twelfthsOf(n12ths);
-    return (n12ths > 0 ? "+" + s : s);
+    return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
   }
 
   Point3f atomTest = new Point3f();

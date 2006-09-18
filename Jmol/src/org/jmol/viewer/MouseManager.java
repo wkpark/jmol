@@ -48,6 +48,7 @@ abstract class MouseManager {
 
   boolean measurementMode = false;
   boolean drawMode = false;
+  boolean measuresEnabled = true;
   boolean hoverActive = false;
 
   boolean rubberbandSelectionMode = false;
@@ -199,14 +200,23 @@ abstract class MouseManager {
   }
 
   void setMouseMode() {
+    drawMode = false;
+    measuresEnabled = true;
     switch (viewer.getPickingMode()) {
     case JmolConstants.PICKING_DRAW:
       drawMode = true;
-      exitMeasurementMode();
+      // fall through...
+    //other cases here?
+    case JmolConstants.PICKING_LABEL:
+    case JmolConstants.PICKING_MEASURE_DISTANCE:
+    case JmolConstants.PICKING_MEASURE_ANGLE:
+    case JmolConstants.PICKING_MEASURE_TORSION:
+      measuresEnabled=false;
       break;
     default:
-      drawMode = false;
+      return;
     }
+    exitMeasurementMode();
   }
   
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
@@ -243,6 +253,7 @@ abstract class MouseManager {
 
   void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
     //viewer.setStatusUserAction("mouseSingleClick: " + modifiers);
+    setMouseMode();
     if (logMouseEvents)
       Logger.debug("mouseSingleClick(" + x + "," + y + "," + modifiers
           + " nearestAtom=" + nearestAtomIndex);
@@ -274,12 +285,13 @@ abstract class MouseManager {
 
   void mouseDoubleClick(int x, int y, int modifiers, int nearestAtomIndex) {
     //viewer.setStatusUserAction("mouseDoubleClick: " + modifiers);
+    setMouseMode();
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       if (measurementMode) {
         addToMeasurement(nearestAtomIndex, true);
         toggleMeasurement();
-      } else if (!drawMode) {
+      } else if (!drawMode && measuresEnabled) {
         enterMeasurementMode();
         addToMeasurement(nearestAtomIndex, true);
       }

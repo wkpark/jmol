@@ -52,7 +52,7 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
     { "popupMenu", "modelSetInfoMenu - selectMenu renderMenu labelMenu colorMenu - " +
                    "zoomMenu spinMenu animateMenu - " +
-                   "measurementsMenu crystalMenu optionsMenu - consoleMenu - " +
+                   "measureMenu pickingMenu crystalMenu optionsMenu - consoleMenu - " +
                    "aboutMenu" },
 
     { "selectMenu", "selectAll selectNone - " +
@@ -552,11 +552,30 @@ class PopupResourceBundle {
     { "animfps30", "anim fps 30" },
     { "animfps50", "anim fps 50" },
 
-    { "measurementsMenu", "distanceNanometers distanceAngstroms distancePicometers" },
-    { "distanceNanometers", "set measure nanometers" },
-    { "distanceAngstroms", "set measure angstroms" },
-    { "distancePicometers", "set measure picometers" },
+    { "measureMenu", "measureOff measureDistance measureAngle measureTorsion measureDelete measureList distanceNanometers distanceAngstroms distancePicometers" },
+    { "measureOff", "set pickingstyle MEASURE OFF; set picking OFF" },
+    { "measureDistance", "set pickingstyle MEASURE; set picking MEASURE DISTANCE" },
+    { "measureAngle", "set pickingstyle MEASURE; set picking MEASURE ANGLE" },
+    { "measureTorsion", "set pickingstyle MEASURE; set picking MEASURE TORSION" },
+    { "measureDelete", "measure delete" },
+    { "measureList", "console;show measurements" },
+    { "distanceNanometers", "select *; set measure nanometers" },
+    { "distanceAngstroms", "select *; set measure angstroms" },
+    { "distancePicometers", "select *; set measure picometers" },
 
+    { "pickingMenu", "pickOff pickCenter pickLabel pickAtom pickChain pickElement pickGroup pickMolecule pickSite pickSpin" },
+    { "pickOff" , "set picking off" },
+    { "pickCenter" , "set picking center" },
+//    { "pickDraw" , "set picking draw" },
+    { "pickLabel" , "set picking label" },
+    { "pickAtom" , "set picking atom" },
+    { "pickChain" , "set picking chain" },
+    { "pickElement" , "set picking element" },
+    { "pickGroup" , "set picking group" },
+    { "pickMolecule" , "set picking molecule" },
+    { "pickSite" , "set picking site" },
+    { "pickSpin" , "set picking spin" },
+    
     { "crystalMenu", "axesMenu bbcageMenu uccageMenu" },
 
     { "axesMenu", "axesOff axesDotted axesByPixelMenu axesByAngstromMenu colorAxesMenu" },
@@ -1079,11 +1098,31 @@ class PopupResourceBundle {
     { "animfps30", "30" },
     { "animfps50", "50" },
 
-    { "measurementsMenu", GT._("Measurements") },
-    { "distanceNanometers", GT._("Nanometers") },
-    { "distanceAngstroms", GT._("Angstroms") },
-    { "distancePicometers", GT._("Picometers") },
+    { "measureMenu", GT._("Measurement") },
+    { "measureOff", GT._("Double-Click starts all measurements") },
+    { "measureDistance", GT._("Click for distance measurement") },
+    { "measureAngle", GT._("Click for angle measurement") },
+    { "measureTorsion", GT._("Click for torsion (dihedral) measurement") },
+    { "measureDelete", GT._("Delete measurements") },
+    { "measureList", GT._("List measurements") },
+    { "distanceNanometers", GT._("Distance units nanometers") },
+    { "distanceAngstroms", GT._("Distance units Angstroms") },
+    { "distancePicometers", GT._("Distance units picometers") },
 
+    { "pickingMenu", GT._("Set picking") },
+    { "pickOff" , GT._("Off") },
+    { "pickCenter" , GT._("Center") },
+//    { "pickDraw" , GT._("moves arrows") },
+    { "pickLabel" , GT._("Label") },
+    { "pickAtom" , GT._("Select atom") },
+    { "pickChain" , GT._("Select chain") },
+    { "pickElement" , GT._("Select element") },
+    { "pickGroup" , GT._("Select group") },
+    { "pickMolecule" , GT._("Select molecule") },
+    { "pickSite" , GT._("Select site") },
+    { "pickSpin" , GT._("Spin") },
+
+    
     { "crystalMenu", GT._("Crystal") },
 
     { "axesMenu", GT._("Axes") },

@@ -175,8 +175,15 @@ class PickingManager {
 
   void toggleMeasurement(int nAtoms) {
     countPlusIndexes[0] = nAtoms;
-    for (int i = 0; i < nAtoms; i++)
-      countPlusIndexes[i + 1] = queuedAtomIndexes[i];
+    int iLast = -1;
+    int iThis;
+    for (int i = 0; i < nAtoms; i++) {
+      if (iLast == (iThis = queuedAtomIndexes[i])) {
+        queuedAtomCount = i;
+        return;
+      }
+      iLast = countPlusIndexes[i + 1] = iThis;
+    }
     viewer.toggleMeasurement(countPlusIndexes);  
   }
   

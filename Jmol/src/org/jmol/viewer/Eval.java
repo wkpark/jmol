@@ -3637,7 +3637,6 @@ class Eval { //implements Runnable {
     switch (statement[2].tok) {
     case Token.on:
     case Token.selected:
-      viewer.loadShape(JmolConstants.SHAPE_HALOS);
       showHalo = true;
     case Token.off:
     case Token.none:

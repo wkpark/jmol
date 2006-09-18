@@ -2756,6 +2756,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
+    loadShape(JmolConstants.SHAPE_HALOS);
     modelManager.setSelectionHaloEnabled(selectionHaloEnabled);
   }
 

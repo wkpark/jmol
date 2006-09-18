@@ -563,7 +563,8 @@ class PopupResourceBundle {
     { "distanceAngstroms", "select *; set measure angstroms" },
     { "distancePicometers", "select *; set measure picometers" },
 
-    { "pickingMenu", "pickOff pickCenter pickLabel pickAtom pickChain pickElement pickGroup pickMolecule pickSite pickSpin" },
+    { "pickingMenu", "pickOff pickCenter pickLabel pickAtom pickChain " + 
+      "pickElement pickGroup pickMolecule pickSite pickSpin" },
     { "pickOff" , "set picking off" },
     { "pickCenter" , "set picking center" },
 //    { "pickDraw" , "set picking draw" },
@@ -576,6 +577,19 @@ class PopupResourceBundle {
     { "pickSite" , "set picking site" },
     { "pickSpin" , "set picking spin" },
     
+    { "showMenu" , "showFile showIsosurface showMeasure showMo showModel " + 
+      "showOrient showPDBHeader showSpacegroup showSymmetry extractMOL" },
+    { "showFile", "show file"},
+    { "showIsosurface", "show isosurface"},
+    { "showMeasure", "show measure"},
+    { "showMo", "show mo"},
+    { "showModel", "show model"},
+    { "showOrient", "show orientation"},
+    { "showPDBHeader", "show PDBHeader"},
+    { "showSpacegroup", "show spacegroup"},
+    { "showSymmetry", "show symmetry"},
+    { "extractMOL", "getproperty extractModel \"visible\" "},
+      
     { "crystalMenu", "axesMenu bbcageMenu uccageMenu" },
 
     { "axesMenu", "axesOff axesDotted axesByPixelMenu axesByAngstromMenu colorAxesMenu" },
@@ -658,7 +672,7 @@ class PopupResourceBundle {
     { "rasmolColors", "set color rasmol" },
     { "jmolColors", "set color jmol" },
 
-    { "consoleMenu", "consoleOn consoleOff" },
+    { "consoleMenu", "consoleOn consoleOff showMenu" },
     { "consoleOn", "console" },
     { "consoleOff", "console off" },
 
@@ -1121,8 +1135,19 @@ class PopupResourceBundle {
     { "pickMolecule" , GT._("Select molecule") },
     { "pickSite" , GT._("Select site") },
     { "pickSpin" , GT._("Spin") },
-
     
+    { "showMenu" , GT._( "Show") },
+    { "showFile", GT._("file")},
+    { "showIsosurface", GT._( "isosurface")},
+    { "showMeasure",  GT._("measure")},
+    { "showMo",  GT._("molecular orbital")},
+    { "showModel",  GT._("model")},
+    { "showOrient",  GT._("orientation")},
+    { "showPDBHeader",  GT._("PDBHeader")},
+    { "showSpacegroup",  GT._("spacegroup")},
+    { "showSymmetry",  GT._("symmetry")},
+    { "extractMOL",  GT._("extract MOL data")},
+
     { "crystalMenu", GT._("Crystal") },
 
     { "axesMenu", GT._("Axes") },
@@ -1195,7 +1220,7 @@ class PopupResourceBundle {
     { "colorUccageHotPink", GT._("Hot Pink") },
 
     { "optionsMenu", GT._("Options") },
-    { "showSelectionsCheckbox", GT._("Show Selection Halos" ) },
+    { "showSelectionsCheckbox", GT._("Show Selected Atoms" ) },
     { "showHydrogensCheckbox", GT._("Show Hydrogens") },
     { "showMeasurementsCheckbox", GT._("Show Measurements") },
     { "perspectiveDepthCheckbox", GT._("Perspective Depth") },

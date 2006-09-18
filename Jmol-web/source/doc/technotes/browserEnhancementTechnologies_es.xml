@@ -94,7 +94,7 @@
     la verificación.
   </p>
   <p>
-    A partir de la versión preliminar 10.00.12 (incluyendo 10.2), Jmol incluye
+    A partir de la versión preliminar 10.00.12 (incluyendo 10.2 y 11), Jmol incluye
     un JmolApplet 'firmado' (JmolAppletSigned.jar), aunque no está
     respaldada por ninguna 'autoridad certifcadora'.
   </p>

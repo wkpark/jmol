@@ -1,271 +1,293 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
-  <body>
-    <title>Jmol</title>
-
-    <header>
-      <table border="1" width="600" bgcolor="#FFFAF0"
-	     cellpadding="10">
-	<tr>
-	  <td><script type="text/javascript">
-	    jmolApplet(300, "script script/promotion1.en.txt");
-	  </script></td>
-	  <td>
-	    <p>
-	      This is the Jmol applet in action.
-	    </p>
-	    <p>
-	      It is running a script written in
-	      the Jmol/RasMol/Chime scripting language.
-	    </p>
-	    <p>
-	      It is <i>not</i> a movie, slide show, or animated image file ...
-	      Jmol is an interactive web browser applet.
-	    </p>
-	  </td>
-	</tr>
-      </table>
-      <p>
-	<i>Check out the </i><a href="./demo/">Demonstration pages</a>
-	<i>to see buttons and menus in action</i>
-      </p>
-      <hr />
-    </header>
-    
-    <section title="Overview">
-      <p>
+	<body>
+		<title>Jmol</title>
+		<header>
+			<script type="text/javascript">
+				function changePromoDisplay()
+				{
+					document.getElementById("promoStillCaption").style.display="none"
+					document.getElementById("promoAnimCaption").style.display="block"
+					popInJmol('Promo','script script/promotion1.en.txt')
+				}
+				
+				function popInJmol(id,scr)
+				{
+					// jmolInitialize("./jmol/")
+					jmolSetDocument(false)
+					document.getElementById("Jmol"+id).innerHTML = jmolApplet(300,scr,id)
+				}
+			</script>
+			<center>
+			<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
+				<tr>
+					<td>
+						<div id="JmolPromo">
+							<img src="images/promo.jpg" />
+						</div>
+					</td>
+					<td>
+						<div id="promoStillCaption" style="display:block;">
+							<p>Jmol is an interactive web browser applet.</p>
+							<p>This is a still image, but you can get an animated display of Jmol abilities by clicking 
+		<a href="javascript:void(changePromoDisplay())">here</a>.</p>
+							<p>(The applet may take some seconds to load. Please, wait and do not reload the page in the meantime.) </p>
+						</div>
+						<div id="promoAnimCaption" style="display:none;">
+							<p>This is the Jmol applet in action.</p>
+							<p>It is running a script written in the Jmol/RasMol/Chime scripting language.</p>
+							<p>It is <i>not</i> a movie, slide show, or animated image file ...
+		  Jmol is an interactive web browser applet.</p>
+						</div>
+					</td>
+				</tr>
+			</table>
+			</center>
+			<p>
+				<i>Check out the </i><a href="./demo/">Demonstration pages</a>
+				<i>to see buttons and menus in action</i>
+			</p>
+			<hr/>
+		</header>
+		<section title="Overview">
+			<p>
 	Jmol is a free, open source molecule viewer for students,
 	educators, and researchers in chemistry and biochemistry.
 	It is cross-platform, running on Windows, Mac OS X, and
 	Linux/Unix systems. 
 	<ul>
-	  <li>
+					<li>
 	    The JmolApplet is a web browser applet that can be
 	    integrated into web pages.
 	  </li>
-	  <li>
+					<li>
 	    The Jmol application is a standalone Java application
 	    that runs on the desktop.
 	  </li>
-	  <li>
+					<li>
 	    The JmolViewer is a development tool kit that can be
 	    integrated into other Java applications.
 	  </li>
-	</ul>
+				</ul>
+			</p>
+		</section>
+		<section title="Jmol version 11 in beta-test">
+			<p>
+	Jmol v10.2 is the latest official, stable version. 
+	<br/>
+	The new Jmol v11 is in beta-testing phase. You can get a prerelease version from the download page.
       </p>
-    </section>
-
-    <section title="Jmol Version 10.2 has been released">
-      <p>
-	Jmol Version 10.2 was released on 15 April 2006.
-      </p>
-    </section>
-
-    <section title="What the critics are saying">
-      <i>
-	Jmol v10: I can't believe it's Java!<br />
+		</section>
+		<section title="What the critics are saying">
+			<i>
+	Jmol v10: I can't believe it's Java!<br/>
 	But it's also open-source, so there's
-	simply no question about it.<br />
+	simply no question about it.<br/>
 	Get your copy now, before they run out of those
-	virtual Java machine thingies.<br />
+	virtual Java machine thingies.<br/>
 	It's just in time (JIT) for Christmas, from what I hear!
       </i>
-      <blockquote>
-	Warren L. DeLano, shell-shocked C/Python developer<br />
+			<blockquote>
+	Warren L. DeLano, shell-shocked C/Python developer<br/>
 	Principal Scientist, <a href="http://www.delanoscientific.com">
 	DeLano Scientific</a>,
-	Author of <a href="http://pymol.sourceforge.net">PyMOL</a><br />
+	Author of <a href="http://pymol.sourceforge.net">PyMOL</a><br/>
 	December 2004.
       </blockquote>
-    </section>
-    
-    <section title="Jmol v10.2 Features">
-
-      <ul>
-	<li>
+		</section>
+		<section title="Jmol v11 features">
+			<ul>
+				<li>
 	  Free, open-source software licensed under the 
 	  <a href="www.gnu.org/licenses/licenses.html#LGPL">
 	    GNU Lesser General Public License
 	  </a>
-	</li>
-	<li>
+				</li>
+				<li>
 	  Applet, Application, and Systems Integration Component
 	  <ul>
-	    <li>
+						<li>
 	      The JmolApplet is a web browser applet that can be
 	      integrated into web pages. It is ideal for development
 	      of web-based courseware and web-accessible
 	      chemical databases. The JmolApplet provides an upgrade path
 	      for users of the <a href="http://www.mdli.com">Chime</a> plug-in. 
 	    </li>
-	    <li>
+						<li>
 	      The Jmol application is a standalone Java application
 	      that runs on the desktop. 
 	    </li>
-	    <li>
+						<li>
 	      The JmolViewer can be integrated as a component
 	      into other Java applications.
 	    </li>
-	  </ul>
-	</li>
-	<li>
+					</ul>
+				</li>
+				<li>
 	  Cross-platform
 	  <ul>
-	    <li>Windows</li>
-	    <li>Mac OS X</li>
-	    <li>Linux/Unix</li>
-	  </ul>
-	</li>
-	<li>
+						<li>Windows</li>
+						<li>Mac OS X</li>
+						<li>Linux/Unix</li>
+					</ul>
+				</li>
+				<li>
 	  Supports all major web browsers
 	  <ul>
-	    <li>Internet Explorer (Win32)</li>
-	    <li>Mozilla/Firefox (Win32, OSX, *nix)</li>
-	    <li>Safari (Mac OS X)</li>
-	    <li>Opera 7.5.4 (Win32 only)</li>
-	  </ul>
-	</li>
-	<li>
+						<li>Internet Explorer (Win32)</li>
+						<li>Mozilla/Firefox (Win32, OSX, *nix)</li>
+						<li>Safari (Mac OS X)</li>
+						<li>Opera 7.5.4 (Win32 only)</li>
+					</ul>
+				</li>
+				<li>
 	  High-performance 3D rendering with no hardware requirements
 	</li>
-	<li>
+				<li>
 	  File formats (updated to Jmol v11)
 	  <ul>
-	    <li>
-	      <a href="http://journals.iucr.org/c/services/cifguide.html">
+						<li>
+							<a href="http://journals.iucr.org/c/services/cifguide.html">
 		CIF/mmCIF
 	      </a>
 	      - Crystallographic Information File and 
 	      Macromolecular Crystallographic Information File, 
-        the standards from the <em>International Union of Crystallography</em> </li>
-	    <li>
-	      <a href="http://www.xml-cml.org">CML</a>
+        the standards from the <em>International Union of Crystallography</em>
+						</li>
+						<li>
+							<a href="http://www.xml-cml.org">CML</a>
 	      - Chemical Markup Language
 	    </li>
-	    <li>
+						<li>
 	      CSF
 	      - Fujitsu CAChe chemical structure
 	    </li>
-	    <li>
+						<li>
 	      CTFile
 	      - <em>Elsevier MDL</em> chemical table
 	    </li>
-	    <li>
-	      <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">
+						<li>
+							<a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">
 		GAMESS
 	      </a>
 	      - General Atomic and Molecular Electronic Structure System output,
-        <em>Gordon Research Group, Iowa State University</em> </li>
-	    <li>
-	      <a href="http://www.gaussian.com/">Gaussian 94/98/03</a> output
+        <em>Gordon Research Group, Iowa State University</em>
+						</li>
+						<li>
+							<a href="http://www.gaussian.com/">Gaussian 94/98/03</a> output
 	      - <em>Gaussian, Inc.
         </em></li>
-	    <li>
-	      <a href="http://www.bioinformatics.org/ghemical/">Ghemical</a>
-	    </li>
-	    <li>
-	      <a href="http://www.hyper.com/">HIN</a>
+						<li>
+							<a href="http://www.bioinformatics.org/ghemical/">Ghemical</a>
+						</li>
+						<li>
+							<a href="http://www.hyper.com/">HIN</a>
 	      - HyperChem from <em>Hypercube, Inc.
-        </em> </li>
-	    <li>
-	      <a href="http://www.schrodinger.com/ProductDescription.php&amp;mID=6&amp;sID=9&amp;cID=0">
+        </em>
+						</li>
+						<li>
+							<a href="http://www.schrodinger.com/ProductDescription.php&amp;mID=6&amp;sID=9&amp;cID=0">
 		Jaguar
 	      </a>
-        - <em>Schrodinger, LLC </em> </li>
-	    <li>
-	      <a href="http://www.uku.fi/~thassine/ghemical/">MM1GP</a>
+        - <em>Schrodinger, LLC </em>
+						</li>
+						<li>
+							<a href="http://www.uku.fi/~thassine/ghemical/">MM1GP</a>
 	      - Ghemical molecular mechanics
 	    </li>
-	    <li>
-	      <a href="http://www.mdli.com/">MOL</a>
+						<li>
+							<a href="http://www.mdli.com/">MOL</a>
 	      - <em>Elsevier MDL</em> structure 
 	    </li>
-	    <li>
+						<li>
 	      MOLPRO
 	      - Molpro output
 	    </li>
-	    <li>
+						<li>
 		MOPOUT
 	      - MOPAC 93/97/2002 output (public domain)
 	    </li>
-	    <li>
-		<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a>
-        - NWChem output, <em>Pacific Northwest National Laboratory</em> </li>
-	    <li>
-		<a href="http://www.wavefun.com/products/odyssey/odyssey.html">odedata</a>
+						<li>
+							<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a>
+        - NWChem output, <em>Pacific Northwest National Laboratory</em>
+						</li>
+						<li>
+							<a href="http://www.wavefun.com/products/odyssey/odyssey.html">odedata</a>
 	      - Odyssey data, <em>WaveFunction, Inc.
         </em></li>
-	    <li>
-	      <a href="http://www.pdb.org/">PDB</a>
+						<li>
+							<a href="http://www.pdb.org/">PDB</a>
 	      - Protein Data Bank, <em>Research Collaboratory for Structural Bioinformatics
-        </em> </li>
-	    <li>
-	      <a href="http://www.q-chem.com/">QOUT</a>
-        - <em>Q-Chem, Inc.</em> </li>
-	    <li>
-	      <a href="http://www.mdli.com/">SDF</a>
+        </em>
+						</li>
+						<li>
+							<a href="http://www.q-chem.com/">QOUT</a>
+        - <em>Q-Chem, Inc.</em>
+						</li>
+						<li>
+							<a href="http://www.mdli.com/">SDF</a>
 	      - <em>Elsevier MDL</em> structure 
 	    </li>
-	    <li>
-	      <a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a>
-        - <em>Structural Chemistry Department, University of Göttingen (Germany)</em> </li>
-	    <li>
-	      <a href="http://www.wavefun.com">SMOL</a>
-        - Spartan data, <em>Wavefunction, Inc.</em> </li>
-	    <li>
-		<a href="http://www.wavefun.com/products/odyssey/odyssey.html">xodedata</a>
+						<li>
+							<a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a>
+        - <em>Structural Chemistry Department, University of Göttingen (Germany)</em>
+						</li>
+						<li>
+							<a href="http://www.wavefun.com">SMOL</a>
+        - Spartan data, <em>Wavefunction, Inc.</em>
+						</li>
+						<li>
+							<a href="http://www.wavefun.com/products/odyssey/odyssey.html">xodedata</a>
 	      - Odyssey XML data, <em>WaveFunction, Inc.
         </em></li>
-	    <li>XYZ
+						<li>XYZ
 	    - <em>Minnesota Supercomputer Institute</em> XMol file
 	    </li>
-	    <li>XYZ+vib
+						<li>XYZ+vib
 	    - XYZ format files with added vibrational vector information
 	    </li>
-	    <li>XYZ-FAH
+						<li>XYZ-FAH
 	    - Folding@home XYZ file
 	    </li>
-
-	  </ul>
-	  <i>
+					</ul>
+					<i>
 	    * Files which are compressed with gzip will automatically
 	    be decompressed
 	  </i>
-	</li>
-	<li>
+				</li>
+				<li>
 	  Animations
 	</li>
-	<li>
+				<li>
 	  Vibrations
 	</li>
-	<li>
+				<li>
 	  basic unit-cell support
 	</li>
-	<li>
+				<li>
 	  schematic shapes for secondary structures
 	</li>
-	<li>
+				<li>
 	  measurements
 	  <ul>
-	    <li>distance</li>
-	    <li>angle</li>
-	    <li>torsion angle</li>
-	  </ul>
-	</li>
-	<li>
+						<li>distance</li>
+						<li>angle</li>
+						<li>torsion angle</li>
+					</ul>
+				</li>
+				<li>
 	  RasMol/Chime scripting language support
 	</li>
-	<li>
+				<li>
 	  JavaScript support library
 	</li>
-	<li>
+				<li>
 	  Exports to .jpg, .png, .ppm, .pdf, and PovRay
 	</li>
-      </ul>
-    </section>
-
-    <section title="Mailing Lists">
-      <p>
+			</ul>
+		</section>
+		<section title="Mailing Lists">
+			<p>
 	Those with interest in molecular visualization, especially
 	the education and research communities, are encouraged
 	to join the 
@@ -280,8 +302,7 @@
 	</a>
 	can be a useful reference.
       </p>
-      
-      <p>
+			<p>
 	Those who are seriously interested in participating should join the
 	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
 	  jmol-developers mailing list
@@ -294,8 +315,6 @@
 	</a>
 	.
       </p>
-      
-    </section>
-    
-  </body>
+		</section>
+	</body>
 </document>

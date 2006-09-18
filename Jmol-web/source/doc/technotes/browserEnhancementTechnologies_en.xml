@@ -88,7 +88,7 @@
     verification ... kind of like the Better Business Bureau.
   </p>
   <p>
-    Starting with preliminary release 10.00.12 (this includes 10.2), Jmol includes a 
+    Starting with preliminary release 10.00.12 (this includes 10.2 and 11), Jmol includes a 
 	'signed' JmolApplet (JmolAppletSigned.jar), although no official 
 	'certifying authority' is backing it up.
   </p>

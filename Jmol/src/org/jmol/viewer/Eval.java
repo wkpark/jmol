@@ -1930,8 +1930,9 @@ class Eval { //implements Runnable {
       colorvalue = statement[itoken].value;
       tok = statement[itoken].tok;
       switch (tok) {
-      case Token.none:
       case Token.cpk:
+        colorvalue = "cpk";
+      case Token.none:
       case Token.formalCharge:
       case Token.partialCharge:
       case Token.structure:

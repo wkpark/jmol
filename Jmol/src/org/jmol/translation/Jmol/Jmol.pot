@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-15 23:16+0200\n"
+"POT-Creation-Date: 2006-09-18 22:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: org/jmol/viewer/PickingManager.java:165
-msgid "pick "
-msgstr ""
-
 #: org/jmol/viewer/PickingManager.java:167
-msgid " atoms in order to spin the model around an axis"
+msgid "pick one more atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:214
+#: org/jmol/viewer/PickingManager.java:168
+msgid "pick two atoms in order to spin the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:229
 msgid "atoms selected"
 msgstr ""
 
@@ -220,7 +220,7 @@ msgid "&Print..."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#: org/openscience/jmol/app/ScriptWindow.java:82
+#: org/openscience/jmol/app/ScriptWindow.java:83
 msgid "Close"
 msgstr ""
 
@@ -565,7 +565,7 @@ msgid "What's New"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/ScriptWindow.java:63
+#: org/openscience/jmol/app/ScriptWindow.java:64
 msgid "Jmol Script Console"
 msgstr ""
 
@@ -731,7 +731,7 @@ msgid "Jmol Java Console"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:476
-#: org/openscience/jmol/app/ScriptWindow.java:95
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr ""
 
@@ -747,19 +747,19 @@ msgstr ""
 msgid "Macros"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1119
+#: org/openscience/jmol/app/Jmol.java:1120
 msgid "Open URL"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1120
+#: org/openscience/jmol/app/Jmol.java:1121
 msgid "Enter URL of molecular model"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1207
+#: org/openscience/jmol/app/Jmol.java:1208
 msgid "IO Exception:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1379
+#: org/openscience/jmol/app/Jmol.java:1380
 msgid "File not loaded"
 msgstr ""
 
@@ -1064,15 +1064,15 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: org/openscience/jmol/app/ScriptWindow.java:86
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Run"
 msgstr ""
 
-#: org/openscience/jmol/app/ScriptWindow.java:90
+#: org/openscience/jmol/app/ScriptWindow.java:91
 msgid "Halt"
 msgstr ""
 
-#: org/openscience/jmol/app/ScriptWindow.java:99
+#: org/openscience/jmol/app/ScriptWindow.java:100
 msgid "Help"
 msgstr ""
 

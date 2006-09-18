@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-15 23:16+0200\n"
+"POT-Creation-Date: 2006-09-18 22:49+0200\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
 
-#: org/jmol/viewer/PickingManager.java:165
-msgid "pick "
-msgstr ""
-
 #: org/jmol/viewer/PickingManager.java:167
-msgid " atoms in order to spin the model around an axis"
+msgid "pick one more atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:214
+#: org/jmol/viewer/PickingManager.java:168
+msgid "pick two atoms in order to spin the model around an axis"
+msgstr ""
+
+#: org/jmol/viewer/PickingManager.java:229
 #, fuzzy
 msgid "atoms selected"
 msgstr "conjunt d'àtoms"
@@ -223,7 +223,7 @@ msgid "&Print..."
 msgstr "Im&primeix..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#: org/openscience/jmol/app/ScriptWindow.java:82
+#: org/openscience/jmol/app/ScriptWindow.java:83
 msgid "Close"
 msgstr "Tanca"
 
@@ -568,7 +568,7 @@ msgid "What's New"
 msgstr "Novetats"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/ScriptWindow.java:63
+#: org/openscience/jmol/app/ScriptWindow.java:64
 #, fuzzy
 msgid "Jmol Script Console"
 msgstr "Consola del Jmol"
@@ -741,7 +741,7 @@ msgid "Jmol Java Console"
 msgstr "Consola del Jmol"
 
 #: org/openscience/jmol/app/Jmol.java:476
-#: org/openscience/jmol/app/ScriptWindow.java:95
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "Neteja"
 
@@ -757,19 +757,19 @@ msgstr "S'està tancant el Jmol..."
 msgid "Macros"
 msgstr "Macroinstruccions"
 
-#: org/openscience/jmol/app/Jmol.java:1119
+#: org/openscience/jmol/app/Jmol.java:1120
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/Jmol.java:1120
+#: org/openscience/jmol/app/Jmol.java:1121
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1207
+#: org/openscience/jmol/app/Jmol.java:1208
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 
-#: org/openscience/jmol/app/Jmol.java:1379
+#: org/openscience/jmol/app/Jmol.java:1380
 msgid "File not loaded"
 msgstr "No s'ha carregat el fitxer"
 
@@ -1076,15 +1076,15 @@ msgstr "Fitxers recents"
 msgid "Open"
 msgstr "Obre"
 
-#: org/openscience/jmol/app/ScriptWindow.java:86
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Run"
 msgstr "Executa"
 
-#: org/openscience/jmol/app/ScriptWindow.java:90
+#: org/openscience/jmol/app/ScriptWindow.java:91
 msgid "Halt"
 msgstr "Para"
 
-#: org/openscience/jmol/app/ScriptWindow.java:99
+#: org/openscience/jmol/app/ScriptWindow.java:100
 msgid "Help"
 msgstr "Ajuda"
 

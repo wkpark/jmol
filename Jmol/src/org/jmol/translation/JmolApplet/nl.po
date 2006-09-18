@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 20:08+0200\n"
+"POT-Creation-Date: 2006-09-18 22:49+0200\n"
 "PO-Revision-Date: 2006-09-18 20:32+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <kde-i18n-nl@kde.org>\n"
@@ -30,7 +30,8 @@ msgid ""
 msgstr ""
 "Jmol Applet versie {0} {1}.\n"
 " \n"
-"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer informatie."
+"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer "
+"informatie."
 
 #: org/jmol/applet/Jmol.java:712
 msgid "File Error:"
@@ -1066,12 +1067,14 @@ msgstr "Handleiding Muiscontrole"
 msgid "Translations"
 msgstr "Translaties"
 
-#: org/jmol/viewer/PickingManager.java:166
-msgid "pick "
-msgstr "selecteer"
+#: org/jmol/viewer/PickingManager.java:167
+#, fuzzy
+msgid "pick one more atoms in order to spin the model around an axis"
+msgstr "atomen in volgorde om het model rond een as te laten spinnen"
 
 #: org/jmol/viewer/PickingManager.java:168
-msgid " atoms in order to spin the model around an axis"
+#, fuzzy
+msgid "pick two atoms in order to spin the model around an axis"
 msgstr "atomen in volgorde om het model rond een as te laten spinnen"
 
 #: org/jmol/viewer/PickingManager.java:229
@@ -1082,28 +1085,39 @@ msgstr "Geen atomen geselecteerd"
 msgid "Jmol executing script ..."
 msgstr "Jmol voert script uit ..."
 
+#~ msgid "pick "
+#~ msgstr "selecteer"
+
 #~ msgid "Nanometers"
 #~ msgstr "Nanometers"
+
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
+
 #~ msgid "Picometers"
 #~ msgstr "Picometers"
+
 #~ msgid "Open"
 #~ msgstr "Openen"
+
 #~ msgid "Close"
 #~ msgstr "Sluiten"
+
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
+
 #~ msgid "Jmol script completed"
 #~ msgstr "Jmol script is klaar"
+
 #~ msgid "Name hidden"
 #~ msgstr "Naam verborgen"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
+
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
-

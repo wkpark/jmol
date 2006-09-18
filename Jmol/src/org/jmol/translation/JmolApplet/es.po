@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 20:08+0200\n"
+"POT-Creation-Date: 2006-09-18 22:49+0200\n"
 "PO-Revision-Date: 2006-04-14 17:48+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -1077,12 +1077,14 @@ msgstr "Manual del ratón"
 msgid "Translations"
 msgstr "Traducciones"
 
-#: org/jmol/viewer/PickingManager.java:166
-msgid "pick "
-msgstr "elige"
+#: org/jmol/viewer/PickingManager.java:167
+#, fuzzy
+msgid "pick one more atoms in order to spin the model around an axis"
+msgstr " átomos para que el modelo gire en torno a un eje"
 
 #: org/jmol/viewer/PickingManager.java:168
-msgid " atoms in order to spin the model around an axis"
+#, fuzzy
+msgid "pick two atoms in order to spin the model around an axis"
 msgstr " átomos para que el modelo gire en torno a un eje"
 
 #: org/jmol/viewer/PickingManager.java:229
@@ -1092,6 +1094,9 @@ msgstr "átomos seleccionados"
 #: org/jmol/viewer/StatusManager.java:177
 msgid "Jmol executing script ..."
 msgstr "Jmol ejecutando un guión..."
+
+#~ msgid "pick "
+#~ msgstr "elige"
 
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"

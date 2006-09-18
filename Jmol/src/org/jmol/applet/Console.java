@@ -28,6 +28,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
+
+import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 
 class Console implements ActionListener, WindowListener {
@@ -42,6 +44,8 @@ class Console implements ActionListener, WindowListener {
 
   final JmolViewer viewer;
   final Jvm12 jvm12;
+
+  protected CommandHistory commandHistory = new CommandHistory(20);
 
   Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
     this.viewer = viewer;
@@ -123,6 +127,7 @@ class Console implements ActionListener, WindowListener {
 
   void execute() {
     String strCommand = input.getText();
+    commandHistory.addCommand(strCommand);
     input.setText(null);
     output(strCommand, attributesCommand);
     String strErrorMessage = viewer.script(strCommand);
@@ -139,6 +144,14 @@ class Console implements ActionListener, WindowListener {
           execute();
           return;
         }
+        if (ke.getKeyCode() == KeyEvent.VK_UP) {
+          recallCommand(true);
+          return;
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
+          recallCommand(false);
+          return;
+        }
         break;
       case KeyEvent.KEY_RELEASED:
         if (ke.getKeyCode() == KeyEvent.VK_ENTER && ke.isShiftDown())
@@ -146,6 +159,10 @@ class Console implements ActionListener, WindowListener {
         break;
       }
       super.processComponentKeyEvent(ke);
+    }
+
+    private void recallCommand(boolean up) {
+      setText(up ? commandHistory.getCommandUp() : commandHistory.getCommandDown());
     }
   }
 

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-18 23:24+0200\n"
-"PO-Revision-Date: 2006-03-24 20:08+0100\n"
+"PO-Revision-Date: 2006-09-19 01:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -20,14 +20,12 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 
 #: org/jmol/viewer/PickingManager.java:167
-#, fuzzy
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr " átomos para que el modelo gire en torno a un eje"
+msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
 
 #: org/jmol/viewer/PickingManager.java:168
-#, fuzzy
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr " átomos para que el modelo gire en torno a un eje"
+msgstr "elige dos átomos para que el modelo gire en torno a un eje"
 
 #: org/jmol/viewer/PickingManager.java:229
 msgid "atoms selected"
@@ -476,15 +474,15 @@ msgstr "Unidades de distancia"
 
 #: org/openscience/jmol/app/GuiMap.java:133
 msgid "Nanometers 1E-9"
-msgstr "Nanómetros 1E-9"
+msgstr "nanómetros 1E-9"
 
 #: org/openscience/jmol/app/GuiMap.java:134
 msgid "Angstroms 1E-10"
-msgstr "Angstroms 1E-10"
+msgstr "ángstroms 1E-10"
 
 #: org/openscience/jmol/app/GuiMap.java:135
 msgid "Picometers 1E-12"
-msgstr "Picómetros 1E-12"
+msgstr "picómetros 1E-12"
 
 #: org/openscience/jmol/app/GuiMap.java:136
 msgid "Animate..."
@@ -571,9 +569,8 @@ msgstr "Novedades"
 
 #: org/openscience/jmol/app/GuiMap.java:157
 #: org/openscience/jmol/app/ScriptWindow.java:64
-#, fuzzy
 msgid "Jmol Script Console"
-msgstr "Consola de Jmol"
+msgstr "Consola de guiones de Jmol"
 
 #: org/openscience/jmol/app/GuiMap.java:158
 msgid "Hydrogens"
@@ -592,9 +589,8 @@ msgid "File Preview (needs restarting Jmol)"
 msgstr "Previsualización de archivos (requiere reiniciar Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:165
-#, fuzzy
 msgid "Clear console button (needs restarting Jmol)"
-msgstr "Previsualización de archivos (requiere reiniciar Jmol)"
+msgstr "Botón para borrar consola  (requiere reiniciar Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:166
 #: org/openscience/jmol/app/GuiMap.java:167
@@ -734,9 +730,8 @@ msgid "Executing script..."
 msgstr "Ejecutando guión..."
 
 #: org/openscience/jmol/app/Jmol.java:468
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Consola de Jmol"
+msgstr "Consola Java de Jmol"
 
 #: org/openscience/jmol/app/Jmol.java:476
 #: org/openscience/jmol/app/ScriptWindow.java:96
@@ -800,12 +795,8 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
-"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -849,9 +840,7 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
-"calidad"
+msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -859,8 +848,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:245
 msgid "Should povray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:254
 #: org/openscience/jmol/app/PovrayDialog.java:256
@@ -1059,7 +1047,7 @@ msgstr "Radio predeterminado de enlaces"
 #: org/openscience/jmol/app/PreferencesDialog.java:416
 #: org/openscience/jmol/app/PreferencesDialog.java:467
 msgid "(Angstroms)"
-msgstr "(Angstroms)"
+msgstr "(ángstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:415
 msgid "Bond Tolerance - sum of two covalent radii + this value"
@@ -1099,66 +1087,46 @@ msgstr "Novedades en Jmol"
 
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Rasmol Scripts"
 #~ msgstr "Guiones de Rasmol"
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotar en modelo de alambres"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotar en modelo de alambres"
-
 #~ msgid "Colors"
 #~ msgstr "Colores"
-
 #~ msgid "Background"
 #~ msgstr "Fondo"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
-
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
-
 #~ msgid "Text"
 #~ msgstr "Texto"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
-
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
-
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
-
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
+

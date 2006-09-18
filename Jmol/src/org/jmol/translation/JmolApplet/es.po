@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-18 23:25+0200\n"
-"PO-Revision-Date: 2006-04-14 17:48+0100\n"
+"PO-Revision-Date: 2006-09-19 01:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -795,143 +795,128 @@ msgid "Reverse Play"
 msgstr "Reproducir hacia atrás"
 
 #: org/jmol/popup/PopupResourceBundle.java:1114
-#, fuzzy
 msgid "Measurement"
-msgstr "Mediciones"
+msgstr "Medición"
 
 #: org/jmol/popup/PopupResourceBundle.java:1115
 msgid "Double-Click starts all measurements"
-msgstr ""
+msgstr "Un doble-clic comienza todas las mediciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1116
 msgid "Click for distance measurement"
-msgstr ""
+msgstr "Haz clic para medida de distancia"
 
 #: org/jmol/popup/PopupResourceBundle.java:1117
 msgid "Click for angle measurement"
-msgstr ""
+msgstr "Haz clic para medida de ángulo"
 
 #: org/jmol/popup/PopupResourceBundle.java:1118
 msgid "Click for torsion (dihedral) measurement"
-msgstr ""
+msgstr "Haz clic para medida de torsión (ángulo diedro)"
 
 #: org/jmol/popup/PopupResourceBundle.java:1119
-#, fuzzy
 msgid "Delete measurements"
-msgstr "Mediciones"
+msgstr "Borrar mediciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1120
-#, fuzzy
 msgid "List measurements"
-msgstr "Mediciones"
+msgstr "Listar mediciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1121
 msgid "Distance units nanometers"
-msgstr ""
+msgstr "Unidades de distancia nanómetros"
 
 #: org/jmol/popup/PopupResourceBundle.java:1122
 msgid "Distance units Angstroms"
-msgstr ""
+msgstr "Unidades de distancia ángstroms"
 
 #: org/jmol/popup/PopupResourceBundle.java:1123
 msgid "Distance units picometers"
-msgstr ""
+msgstr "Unidades de distancia picómetros"
 
 #: org/jmol/popup/PopupResourceBundle.java:1125
 msgid "Set picking"
-msgstr ""
+msgstr "Establecer modalidad de elección"
 
 #: org/jmol/popup/PopupResourceBundle.java:1127
-#, fuzzy
 msgid "Center"
-msgstr "Centrada sobre el átomo"
+msgstr "Centrar"
 
 #: org/jmol/popup/PopupResourceBundle.java:1129
-#, fuzzy
 msgid "Label"
-msgstr "Etiquetas"
+msgstr "Etiqueta"
 
 #: org/jmol/popup/PopupResourceBundle.java:1130
-#, fuzzy
 msgid "Select atom"
-msgstr "Seleccionar"
+msgstr "Seleccionar átomo"
 
 #: org/jmol/popup/PopupResourceBundle.java:1131
-#, fuzzy
 msgid "Select chain"
-msgstr "Seleccionar"
+msgstr "Seleccionar cadena"
 
 #: org/jmol/popup/PopupResourceBundle.java:1132
-#, fuzzy
 msgid "Select element"
-msgstr "Seleccionar"
+msgstr "Seleccionar elemento"
 
 #: org/jmol/popup/PopupResourceBundle.java:1133
-#, fuzzy
 msgid "Select group"
-msgstr "Seleccionar"
+msgstr "Seleccionar grupo"
 
 #: org/jmol/popup/PopupResourceBundle.java:1134
-#, fuzzy
 msgid "Select molecule"
-msgstr "Establecer modo de selección"
+msgstr "Seleccionar molécula"
 
 #: org/jmol/popup/PopupResourceBundle.java:1135
-#, fuzzy
 msgid "Select site"
-msgstr "Seleccionar"
+msgstr "Seleccionar sitio"
 
 #: org/jmol/popup/PopupResourceBundle.java:1138
 msgid "Show"
-msgstr ""
+msgstr "Mostrar"
 
 #: org/jmol/popup/PopupResourceBundle.java:1139
-#, fuzzy
 msgid "Console"
-msgstr "Consola..."
+msgstr "Consola"
 
 #: org/jmol/popup/PopupResourceBundle.java:1140
 msgid "File Contents"
-msgstr ""
+msgstr "Contenido del archivo"
 
 #: org/jmol/popup/PopupResourceBundle.java:1141
 msgid "File Header"
-msgstr ""
+msgstr "Cabecera del archivo"
 
 #: org/jmol/popup/PopupResourceBundle.java:1142
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "Datos JVXL de isosuperficie"
 
 #: org/jmol/popup/PopupResourceBundle.java:1143
-#, fuzzy
 msgid "Measure"
-msgstr "Mediciones"
+msgstr "Medición"
 
 #: org/jmol/popup/PopupResourceBundle.java:1144
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "Datos JVXL de orbital molecular"
 
 #: org/jmol/popup/PopupResourceBundle.java:1146
-#, fuzzy
 msgid "Orientation"
-msgstr "Traducciones"
+msgstr "Orientación"
 
 #: org/jmol/popup/PopupResourceBundle.java:1147
 msgid "Space group"
-msgstr ""
+msgstr "Grupo espacial"
 
 #: org/jmol/popup/PopupResourceBundle.java:1148
 msgid "Symmetry"
-msgstr ""
+msgstr "Simetría"
 
 #: org/jmol/popup/PopupResourceBundle.java:1149
-#, fuzzy
 msgid "Unit cell"
 msgstr "Celda unidad"
 
 #: org/jmol/popup/PopupResourceBundle.java:1150
 msgid "Extract MOL data"
-msgstr ""
+msgstr "Extraer datos MOL"
 
 #: org/jmol/popup/PopupResourceBundle.java:1152
 msgid "Crystal"
@@ -956,7 +941,7 @@ msgstr "Punteados"
 #: org/jmol/popup/PopupResourceBundle.java:1158
 #: org/jmol/popup/PopupResourceBundle.java:1204
 msgid "Pixel Width"
-msgstr "Grosor (píxeles)"
+msgstr "Grosor en píxeles"
 
 #: org/jmol/popup/PopupResourceBundle.java:1159
 #: org/jmol/popup/PopupResourceBundle.java:1160
@@ -994,7 +979,7 @@ msgstr "Caja"
 
 #: org/jmol/popup/PopupResourceBundle.java:1187
 msgid "Angstrom Width"
-msgstr "Grosor (Angstroms)"
+msgstr "Grosor en ángstroms"
 
 #: org/jmol/popup/PopupResourceBundle.java:1196
 msgid "Salmon"
@@ -1029,9 +1014,8 @@ msgid "Options"
 msgstr "Opciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1224
-#, fuzzy
 msgid "Show Selected Atoms"
-msgstr "Mostrar halos de selección"
+msgstr "Mostrar átomos seleccionados"
 
 #: org/jmol/popup/PopupResourceBundle.java:1225
 msgid "Show Hydrogens"
@@ -1078,14 +1062,12 @@ msgid "Translations"
 msgstr "Traducciones"
 
 #: org/jmol/viewer/PickingManager.java:167
-#, fuzzy
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr " átomos para que el modelo gire en torno a un eje"
+msgstr "elige un átomo más para que el modelo gire en torno a un eje"
 
 #: org/jmol/viewer/PickingManager.java:168
-#, fuzzy
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr " átomos para que el modelo gire en torno a un eje"
+msgstr "elige en orden dos átomos para que el modelo gire en torno a un eje"
 
 #: org/jmol/viewer/PickingManager.java:229
 msgid "atoms selected"
@@ -1097,37 +1079,28 @@ msgstr "Jmol ejecutando un guión..."
 
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
-
 #~ msgid "Open"
 #~ msgstr "Abrir"
-
 #~ msgid "Close"
 #~ msgstr "Cerrar"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol, visualización molecular http://www.jmol.org"
-
 #~ msgid "Jmol script completed"
 #~ msgstr "Guión de Jmol completado"
-
 #~ msgid "Name hidden"
 #~ msgstr "Nombre oculto"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotación como alambres"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
+

@@ -199,7 +199,7 @@ public class HallInfo {
         str += "; vector offset:" + vectorCode;
       if (rotation != null)
         str += "\noperator: " + SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, allPositive)
-            + "\nSeitz matrix(12ths): " + seitzMatrix12ths;
+            + "\nSeitz matrix:\n" + SymmetryOperation.dumpSeitz(seitzMatrix12ths);
       return str;
     }
     

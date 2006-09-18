@@ -96,9 +96,17 @@ public class SymmetryOperation extends Matrix4f {
   }
 
   String dumpInfo() {
-    return "\n" + xyz + "\nbase operation:" + ((Matrix4f) this).toString();
+    return "\n" + xyz + "\ninternal matrix representation:\n"
+        + ((Matrix4f) this).toString();
   }
 
+  final static String dumpSeitz(Matrix4f s) {
+    return "{\t"+s.m00+"\t"+s.m01+"\t"+s.m02+"\t"+twelfthsOf(s.m03)+"\t}\n"
+    +"{\t"+s.m10+"\t"+s.m11+"\t"+s.m12+"\t"+twelfthsOf(s.m13)+"\t}\n"
+    +"{\t"+s.m20+"\t"+s.m21+"\t"+s.m22+"\t"+twelfthsOf(s.m23)+"\t}\n"
+    +"{\t0\t0\t0\t1\t}\n";
+  }
+  
   boolean setMatrixFromXYZ(String xyz) {
     /*
      * sets symmetry based on an operator string "x,-y,z+1/2", for example
@@ -235,7 +243,16 @@ public class SymmetryOperation extends Matrix4f {
     return str.substring(1);
   }
 
-  private final static String[] twelths = { "0", "1/12", "1/6", "1/4", "1/3",
+  private final static String twelfthsOf(float n12ths) {
+    String str = "";
+    if (n12ths < 0) {
+      str = "-";
+      n12ths = -n12ths;
+    }
+    return str + twelfths[((int) n12ths) % 12];  
+  }
+  
+  private final static String[] twelfths = { "0", "1/12", "1/6", "1/4", "1/3",
       "5/12", "1/2", "7/12", "2/3", "3/4", "5/6", "11/12" };
 
   private final static String xyzFraction(float n12ths, boolean allPositive) {
@@ -245,18 +262,10 @@ public class SymmetryOperation extends Matrix4f {
     } else if (n12ths > 6f) {
       n12ths -= 12f;
     }
-    String str = "";
-    if (n12ths < 0) {
-      str = "-";
-      n12ths = -n12ths;
-    } else {
-      str = "+";
-    }
-    int n = ((int) n12ths) % 12;
-    if (n == 0)
+    if (n12ths == 0)
       return "";
-    str += twelths[n];
-    return str;
+    String s = twelfthsOf(n12ths);
+    return (n12ths > 0 ? "+" + s : s);
   }
 
   Point3f atomTest = new Point3f();

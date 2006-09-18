@@ -439,7 +439,8 @@ public class SpaceGroup {
       operations = (SymmetryOperation[]) ArrayUtil.setLength(operations,
           operationCount * 2);
     operations[operationCount++] = symmetryOperation;
-    Logger.debug("\naddOperation " + operationCount
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+        Logger.debug("\naddOperation " + operationCount
         + symmetryOperation.dumpInfo());
   }
  

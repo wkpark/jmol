@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-18 20:08+0200\n"
-"PO-Revision-Date: 2006-04-14 18:17+0100\n"
+"PO-Revision-Date: 2006-09-18 20:32+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <kde-i18n-nl@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: KBabel 1.10\n"
 
 #: org/jmol/applet/Jmol.java:597
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
 "\n"
@@ -28,8 +28,9 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
-"Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol.org "
-"voor meer informatie."
+"Jmol Applet versie {0} {1}.\n"
+" \n"
+"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer informatie."
 
 #: org/jmol/applet/Jmol.java:712
 msgid "File Error:"
@@ -799,143 +800,128 @@ msgid "Reverse Play"
 msgstr "Achteruitspelem"
 
 #: org/jmol/popup/PopupResourceBundle.java:1114
-#, fuzzy
 msgid "Measurement"
 msgstr "Metingen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1115
 msgid "Double-Click starts all measurements"
-msgstr ""
+msgstr "Dubbel-klik om een meting te beginnen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1116
 msgid "Click for distance measurement"
-msgstr ""
+msgstr "Klik voor een afstandsmeting"
 
 #: org/jmol/popup/PopupResourceBundle.java:1117
 msgid "Click for angle measurement"
-msgstr ""
+msgstr "Klik voor een hoekmeting"
 
 #: org/jmol/popup/PopupResourceBundle.java:1118
 msgid "Click for torsion (dihedral) measurement"
-msgstr ""
+msgstr "Klik voor een torsiehoekmeting"
 
 #: org/jmol/popup/PopupResourceBundle.java:1119
-#, fuzzy
 msgid "Delete measurements"
-msgstr "Metingen"
+msgstr "Wis metingen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1120
-#, fuzzy
 msgid "List measurements"
-msgstr "Metingen"
+msgstr "Lijst van metingen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1121
 msgid "Distance units nanometers"
-msgstr ""
+msgstr "Nanometer afstandsmaat"
 
 #: org/jmol/popup/PopupResourceBundle.java:1122
 msgid "Distance units Angstroms"
-msgstr ""
+msgstr "Angstrom afstandsmaat"
 
 #: org/jmol/popup/PopupResourceBundle.java:1123
 msgid "Distance units picometers"
-msgstr ""
+msgstr "Picometer afstandsmaat"
 
 #: org/jmol/popup/PopupResourceBundle.java:1125
 msgid "Set picking"
-msgstr ""
+msgstr "Kies klikvolgorde"
 
 #: org/jmol/popup/PopupResourceBundle.java:1127
-#, fuzzy
 msgid "Center"
 msgstr "Gecentreerd"
 
 #: org/jmol/popup/PopupResourceBundle.java:1129
-#, fuzzy
 msgid "Label"
-msgstr "Labels"
+msgstr "Label"
 
 #: org/jmol/popup/PopupResourceBundle.java:1130
-#, fuzzy
 msgid "Select atom"
-msgstr "Selecteren"
+msgstr "Selecteer atoom"
 
 #: org/jmol/popup/PopupResourceBundle.java:1131
-#, fuzzy
 msgid "Select chain"
-msgstr "Selecteren"
+msgstr "Selecteer keten"
 
 #: org/jmol/popup/PopupResourceBundle.java:1132
-#, fuzzy
 msgid "Select element"
-msgstr "Selecteren"
+msgstr "Selecteer element"
 
 #: org/jmol/popup/PopupResourceBundle.java:1133
-#, fuzzy
 msgid "Select group"
-msgstr "Selecteren"
+msgstr "Selecteer groep"
 
 #: org/jmol/popup/PopupResourceBundle.java:1134
-#, fuzzy
 msgid "Select molecule"
-msgstr "Kies Selectiemodus"
+msgstr "Selecteer molecuul"
 
 #: org/jmol/popup/PopupResourceBundle.java:1135
-#, fuzzy
 msgid "Select site"
-msgstr "Selecteren"
+msgstr "Selecteer site"
 
 #: org/jmol/popup/PopupResourceBundle.java:1138
 msgid "Show"
-msgstr ""
+msgstr "Laat zien"
 
 #: org/jmol/popup/PopupResourceBundle.java:1139
-#, fuzzy
 msgid "Console"
 msgstr "Console..."
 
 #: org/jmol/popup/PopupResourceBundle.java:1140
 msgid "File Contents"
-msgstr ""
+msgstr "Inhoud bestand"
 
 #: org/jmol/popup/PopupResourceBundle.java:1141
 msgid "File Header"
-msgstr ""
+msgstr "Kopregels bestand"
 
 #: org/jmol/popup/PopupResourceBundle.java:1142
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "Isosurface JVXL data"
 
 #: org/jmol/popup/PopupResourceBundle.java:1143
-#, fuzzy
 msgid "Measure"
 msgstr "Metingen"
 
 #: org/jmol/popup/PopupResourceBundle.java:1144
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "Moleculaire orbitaal JVXL data"
 
 #: org/jmol/popup/PopupResourceBundle.java:1146
-#, fuzzy
 msgid "Orientation"
-msgstr "Translaties"
+msgstr "Orientatie"
 
 #: org/jmol/popup/PopupResourceBundle.java:1147
 msgid "Space group"
-msgstr ""
+msgstr "Ruimtegroep"
 
 #: org/jmol/popup/PopupResourceBundle.java:1148
 msgid "Symmetry"
-msgstr ""
+msgstr "Symmetrie"
 
 #: org/jmol/popup/PopupResourceBundle.java:1149
-#, fuzzy
 msgid "Unit cell"
 msgstr "Eenheidscel"
 
 #: org/jmol/popup/PopupResourceBundle.java:1150
 msgid "Extract MOL data"
-msgstr ""
+msgstr "Extraheer MOL data"
 
 #: org/jmol/popup/PopupResourceBundle.java:1152
 msgid "Crystal"
@@ -1033,9 +1019,8 @@ msgid "Options"
 msgstr "Opties"
 
 #: org/jmol/popup/PopupResourceBundle.java:1224
-#, fuzzy
 msgid "Show Selected Atoms"
-msgstr "Halos voor Selecties"
+msgstr "Laat geselecteerde atomen zien"
 
 #: org/jmol/popup/PopupResourceBundle.java:1225
 msgid "Show Hydrogens"
@@ -1083,16 +1068,15 @@ msgstr "Translaties"
 
 #: org/jmol/viewer/PickingManager.java:166
 msgid "pick "
-msgstr ""
+msgstr "selecteer"
 
 #: org/jmol/viewer/PickingManager.java:168
 msgid " atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "atomen in volgorde om het model rond een as te laten spinnen"
 
 #: org/jmol/viewer/PickingManager.java:229
-#, fuzzy
 msgid "atoms selected"
-msgstr "Geen atomen geladen"
+msgstr "Geen atomen geselecteerd"
 
 #: org/jmol/viewer/StatusManager.java:177
 msgid "Jmol executing script ..."
@@ -1100,34 +1084,26 @@ msgstr "Jmol voert script uit ..."
 
 #~ msgid "Nanometers"
 #~ msgstr "Nanometers"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picometers"
-
 #~ msgid "Open"
 #~ msgstr "Openen"
-
 #~ msgid "Close"
 #~ msgstr "Sluiten"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
-
 #~ msgid "Jmol script completed"
 #~ msgstr "Jmol script is klaar"
-
 #~ msgid "Name hidden"
 #~ msgstr "Naam verborgen"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
+

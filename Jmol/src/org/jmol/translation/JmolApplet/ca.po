@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 23:25+0200\n"
+"POT-Creation-Date: 2006-09-19 06:27+0200\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -15,6 +15,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
+
+#: org/jmol/applet/Console.java:76
+msgid "press CTRL-ENTER for new line"
+msgstr ""
 
 #: org/jmol/applet/Jmol.java:597
 #, fuzzy, java-format

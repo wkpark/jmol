@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 23:25+0200\n"
+"POT-Creation-Date: 2006-09-19 06:27+0200\n"
 "PO-Revision-Date: 2006-09-19 01:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -12,6 +12,10 @@ msgstr ""
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-SourceCharset: utf-8\n"
+
+#: org/jmol/applet/Console.java:76
+msgid "press CTRL-ENTER for new line"
+msgstr ""
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -1079,28 +1083,37 @@ msgstr "Jmol ejecutando un guión..."
 
 #~ msgid "pick "
 #~ msgstr "elige"
+
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
+
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
+
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
+
 #~ msgid "Open"
 #~ msgstr "Abrir"
+
 #~ msgid "Close"
 #~ msgstr "Cerrar"
+
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol, visualización molecular http://www.jmol.org"
+
 #~ msgid "Jmol script completed"
 #~ msgstr "Guión de Jmol completado"
+
 #~ msgid "Name hidden"
 #~ msgstr "Nombre oculto"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotación como alambres"
+
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
-

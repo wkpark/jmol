@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 23:25+0200\n"
+"POT-Creation-Date: 2006-09-19 06:27+0200\n"
 "PO-Revision-Date: 2005-12-20 07:44-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Basepath: ../../../..\n"
+
+#: org/jmol/applet/Console.java:76
+msgid "press CTRL-ENTER for new line"
+msgstr ""
 
 #: org/jmol/applet/Jmol.java:597
 #, fuzzy, java-format

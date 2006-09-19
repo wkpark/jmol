@@ -136,7 +136,7 @@ class Token {
   final static int restrict     = command | 25 | expressionCommand;
   final static int ribbon       = command | 26 | bool;
   final static int rotate       = command | 27 | bool | coordOrSet;
-  final static int save         = command | 28;
+  final static int save         = command | 28 | showparam;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expressionCommand;
   final static int set          = command | 31 | bool | negnums;
@@ -192,6 +192,7 @@ class Token {
   final static int message      = command | 101 | specialstring;
   final static int translateSelected = command | 102 | negnums;
   final static int calculate    = command | 103;
+  final static int restore      = command | 104;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -367,7 +368,7 @@ class Token {
   final static int torsion      = misc | 14;
   final static int coord        = misc | 15;
   final static int shapely      = misc | 18;
-  final static int restore      = misc | 19; // chime extended
+//  final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
   final static int spec_resid           = misc | 21;
   final static int spec_name_pattern    = misc | 22;
@@ -495,6 +496,7 @@ class Token {
     "refresh",           new Token(refresh,            0, "refresh"),
     "renumber",          new Token(renumber,  onDefault1, "renumber"),
     "reset",             new Token(reset,              0, "reset"),
+    "restore",           new Token(restore,  varArgCount, "restore"),
     "restrict",          new Token(restrict, varArgCount, "restrict"),
     "ribbon",            new Token(ribbon,    onDefault1, "ribbon"),
     "ribbons",           null,
@@ -724,7 +726,7 @@ class Token {
     "coord",        new Token(coord, "coord"),
     "shapely",      new Token(shapely,         "shapely"),
 
-    "restore",           new Token(restore,    "restore"),
+//    "restore",           new Token(restore,    "restore"),
   
     "amino",        new Token(amino,           "amino"),
     "hetero",       new Token(hetero,          "hetero"),

@@ -619,6 +619,12 @@ class Eval { //implements Runnable {
       case Token.help:
         help();
         break;
+      case Token.save:
+        save();
+        break;
+      case Token.restore:
+        restore();
+        break;
       // not implemented
       case Token.structure:
       case Token.bond:
@@ -627,7 +633,6 @@ class Eval { //implements Runnable {
       case Token.pause:
       case Token.print:
       case Token.renumber:
-      case Token.save:
       case Token.unbond:
       case Token.write:
       // chime extended commands
@@ -4011,12 +4016,50 @@ class Eval { //implements Runnable {
   }
   /* ****************************************************************************
    * ==============================================================
+   * SAVE/RESTORE 
+   * ==============================================================
+   */
+  
+  void save() throws ScriptException {
+    if (statementLength == 1)
+      badArgumentCount();
+    switch (statement[1].tok) {
+    case Token.orientation:
+      if (statementLength > 2)
+        viewer.saveOrientation("" + statement[2].value);
+      viewer.saveOrientation("latest");
+      break;
+    default:
+      evalError("save what? orientation?");
+    }
+  }
+  
+  void restore() throws ScriptException {
+    if (statementLength == 1)
+      badArgumentCount();
+    switch (statement[1].tok) {
+    case Token.orientation:
+      String str = (statementLength > 2 ? "" + statement[2].value : "latest");
+      float timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
+      viewer.restoreOrientation(str, timeSeconds);
+      break;
+    default:
+      evalError("restore what? orientation?");
+    }
+  }
+  
+  
+  /* ****************************************************************************
+   * ==============================================================
    * SHOW 
    * ==============================================================
    */
 
   void show() throws ScriptException {
     switch (statement[1].tok) {
+    case Token.save:
+      showString(viewer.listSavedStates());
+      return;
     case Token.data:
       String type = (statementLength == 3 ? stringParameter(2) : null);
       String[] data = (type == null ? dataLabelString : viewer.getData(type));

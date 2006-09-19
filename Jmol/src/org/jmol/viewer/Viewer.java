@@ -74,7 +74,8 @@ import java.io.Reader;
 
 public class Viewer extends JmolViewer {
 
-  GlobalSettings global = new GlobalSettings();
+  StateManager stateManager = new StateManager(this);
+  StateManager.GlobalSettings global = stateManager.globalSettings;
   Component awtComponent;
   ColorManager colorManager;
   PropertyManager propertyManager;
@@ -190,7 +191,24 @@ public class Viewer extends JmolViewer {
   String getJmolVersion() {
     return JmolConstants.version + "  " + JmolConstants.date;
   }
+  
 
+  // ///////////////////////////////////////////////////////////////
+  // delegated to StateManager
+  // ///////////////////////////////////////////////////////////////
+
+  String listSavedStates() {
+    return stateManager.listSavedStates();
+  }
+
+  void saveOrientation(String saveName) {
+    stateManager.saveOrientation(saveName);
+  }
+  
+  boolean restoreOrientation(String saveName, float timeSeconds) {
+    return stateManager.restoreOrientation(saveName, timeSeconds);
+  }
+  
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
@@ -203,6 +221,12 @@ public class Viewer extends JmolViewer {
   public void moveTo(float floatSecondsTotal, Point3f pt, float degrees,
                      int zoom, int xTrans, int yTrans) {
     transformManager.moveTo(floatSecondsTotal, pt, degrees, zoom, xTrans,
+        yTrans);
+  }
+
+  public void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix,
+                     int zoom, int xTrans, int yTrans) {
+    transformManager.moveTo(floatSecondsTotal, rotationMatrix, zoom, xTrans,
         yTrans);
   }
 
@@ -1417,6 +1441,12 @@ public class Viewer extends JmolViewer {
 
   public void setNewRotationCenter(Point3f center) {
     modelManager.setNewRotationCenter(center, true);
+    transformManager.setFixedRotationCenter(center);
+    refresh(0, "Viewer:setCenterBitSet()");
+  }
+
+  public void setRotationCenterNoScale(Point3f center) {
+    modelManager.setNewRotationCenter(center, false);
     transformManager.setFixedRotationCenter(center);
     refresh(0, "Viewer:setCenterBitSet()");
   }
@@ -3425,94 +3455,5 @@ public class Viewer extends JmolViewer {
     if (global.helpPath == null)
       global.helpPath = styleManager.getDefaultHelpPath();
     showUrl(global.helpPath + what);
-  }
-  
-  private class GlobalSettings {
-
-    /*
-     *  Mostly these are just saved and restored directly from Viewer.
-     *  They are collected here for reference and to ensure that no 
-     *  methods are written that bypass viewer's get/set methods.
-     *  
-     *  Because these are not Frame variables, they should persist past
-     *  a new file loading. There is some question in my mind whether all
-     *  should be in this category.
-     *  
-     */
-
-    GlobalSettings() {
-      //
-    }
-
-    //file loading
-    
-    char inlineNewlineChar = '|';
-    String defaultLoadScript = "";
-    Point3f ptDefaultLattice = new Point3f();
-    
-    void setDefaultLattice(Point3f ptLattice) {
-      ptDefaultLattice.set(ptLattice);
-    }
-    int[] getDefaultLattice() {
-      int[] A = new int[4];
-      A[1] = (int) ptDefaultLattice.x;
-      A[2] = (int) ptDefaultLattice.y;
-      A[3] = (int) ptDefaultLattice.z;
-      return A;
-    }
-    
-    //centering and perspective
-    
-    boolean allowCameraMoveFlag = true;
-    boolean adjustCameraFlag = true;
-
-    //solvent
-   
-    boolean solventOn;
-    float solventProbeRadius = 1.2f;
-    
-    //measurements
-    
-    boolean measureAllModels;
-
-    //rendering
-    
-    boolean enableFullSceneAntialiasing;
-    boolean greyscaleRendering;
-    boolean labelsGroupFlag;
-    boolean labelsFrontFlag;
-    boolean dotsSelectedOnlyFlag;
-    boolean dotSurfaceFlag = true;
-    boolean displayCellParameters = true;
-    int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
-
-    //atoms and bonds
-    
-    boolean bondSelectionModeOr;
-
-    //secondary structure + Rasmol
-    
-    boolean rasmolHydrogenSetting = true;
-    boolean rasmolHeteroSetting = true;
-    boolean cartoonRocketFlag;
-    boolean ribbonBorder;
-    boolean chainCaseSensitive;
-    boolean rangeSelected;
-
-    //misc
-    
-    int pickingSpinRate = 10;
-    boolean hideNameInPopup;
-    boolean disablePopupMenu;
-    String helpPath;
-    
-    //testing
-    
-    boolean debugScript;
-    boolean testFlag1;
-    boolean testFlag2;
-    boolean testFlag3;
-    boolean testFlag4;
-  }
-
+  }  
 }

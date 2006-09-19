@@ -1071,20 +1071,24 @@ class TransformManager {
   Matrix3f matrixStep;
   Matrix3f matrixEnd;
 
+  void initializeMoveTo() {
+    if (aaMoveTo != null)
+      return;
+    aaMoveTo = new AxisAngle4f();
+    aaStep = new AxisAngle4f();
+    aaTotal = new AxisAngle4f();
+    matrixStart = new Matrix3f();
+    matrixEnd = new Matrix3f();
+    matrixStep = new Matrix3f();
+    matrixInverse = new Matrix3f();
+  }
+  
   void moveTo(float floatSecondsTotal, Point3f pt, float degrees, int zoom,
               int xTrans, int yTrans) {
 
     Vector3f axis = new Vector3f(pt);
+    initializeMoveTo();
 
-    if (aaMoveTo == null) {
-      aaMoveTo = new AxisAngle4f();
-      aaStep = new AxisAngle4f();
-      aaTotal = new AxisAngle4f();
-      matrixStart = new Matrix3f();
-      matrixEnd = new Matrix3f();
-      matrixStep = new Matrix3f();
-      matrixInverse = new Matrix3f();
-    }
     if (degrees < 0.01f && degrees > -0.01f) {
       matrixEnd.setIdentity();
     } else {
@@ -1102,6 +1106,14 @@ class TransformManager {
       aaMoveTo.set(axis, degrees * (float) Math.PI / 180);
       matrixEnd.set(aaMoveTo);
     }
+    moveTo(floatSecondsTotal, null, zoom, xTrans, yTrans);
+  }
+
+  void moveTo(float floatSecondsTotal, Matrix3f end, int zoom, int xTrans,
+              int yTrans) {
+    initializeMoveTo();
+    if (end != null)
+      matrixEnd.set(end);
     getRotation(matrixStart);
     matrixInverse.invert(matrixStart);
 
@@ -1112,7 +1124,6 @@ class TransformManager {
     int totalSteps = (int) (floatSecondsTotal * fps);
     viewer.setInMotion(true);
     if (totalSteps > 1) {
-      aaStep.angle /= totalSteps;
       int frameTimeMillis = 1000 / fps;
       long targetTime = System.currentTimeMillis();
       int zoomStart = getZoomPercent();
@@ -1136,10 +1147,8 @@ class TransformManager {
           matrixStep.set(aaStep);
         matrixStep.mul(matrixStart);
         zoomToPercent(zoomStart + (zoomDelta * iStep / totalSteps));
-        translateToXPercent(xTransStart
-            + (xTransDelta * iStep / totalSteps));
-        translateToYPercent(yTransStart
-            + (yTransDelta * iStep / totalSteps));
+        translateToXPercent(xTransStart + (xTransDelta * iStep / totalSteps));
+        translateToYPercent(yTransStart + (yTransDelta * iStep / totalSteps));
         setRotation(matrixStep);
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {

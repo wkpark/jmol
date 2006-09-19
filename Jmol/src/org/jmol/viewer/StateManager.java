@@ -103,10 +103,11 @@ class StateManager {
     }
     
     void restore(float timeSeconds) {
-      viewer.moveTo(timeSeconds, rotationMatrix, zoom, xTrans, yTrans);
-      viewer.setRotationCenterNoScale(center);
-      new Orientation();
-      //viewer.setWindowCentered(windowCenteredFlag);
+      viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans);
+      viewer.translateToXPercent(xTrans);
+      viewer.translateToYPercent(yTrans);
+      viewer.setWindowCentered(windowCenteredFlag);
+      //viewer.setRotationCenterNoScale(center);
     }
   }
 

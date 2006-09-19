@@ -401,6 +401,12 @@ class ModelManager {
       return new Point3f(0, 0, 0);
     return frame.setRotationCenterAndRadiusXYZ(relativeTo, pt);
   }
+  
+  void setRotationCenter(Point3f center) {
+    if (frame == null)
+      return;
+    frame.setRotationCenter(center);
+  }
 
   boolean autoBond = true;
 

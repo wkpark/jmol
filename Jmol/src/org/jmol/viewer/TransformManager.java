@@ -1070,6 +1070,8 @@ class TransformManager {
   Matrix3f matrixInverse;
   Matrix3f matrixStep;
   Matrix3f matrixEnd;
+  Vector3f aaStepCenter;
+  Point3f ptCenter;
 
   void initializeMoveTo() {
     if (aaMoveTo != null)
@@ -1081,6 +1083,7 @@ class TransformManager {
     matrixEnd = new Matrix3f();
     matrixStep = new Matrix3f();
     matrixInverse = new Matrix3f();
+    aaStepCenter = new Vector3f();
   }
   
   void moveTo(float floatSecondsTotal, Point3f pt, float degrees, int zoom,
@@ -1106,14 +1109,15 @@ class TransformManager {
       aaMoveTo.set(axis, degrees * (float) Math.PI / 180);
       matrixEnd.set(aaMoveTo);
     }
-    moveTo(floatSecondsTotal, null, zoom, xTrans, yTrans);
+    moveTo(floatSecondsTotal, null, null, zoom, xTrans, yTrans);
   }
 
-  void moveTo(float floatSecondsTotal, Matrix3f end, int zoom, int xTrans,
+  void moveTo(float floatSecondsTotal, Matrix3f end, Point3f center, int zoom, int xTrans,
               int yTrans) {
     initializeMoveTo();
     if (end != null)
       matrixEnd.set(end);
+    ptCenter = (center == null ? fixedRotationCenter : center);
     getRotation(matrixStart);
     matrixInverse.invert(matrixStart);
 
@@ -1132,6 +1136,10 @@ class TransformManager {
       float xTransDelta = xTrans - xTransStart;
       float yTransStart = getTranslationYPercent();
       float yTransDelta = yTrans - yTransStart;
+      aaStepCenter.set(ptCenter);
+      aaStepCenter.sub(fixedRotationCenter);
+      aaStepCenter.scale(1f/totalSteps);
+      
       for (int iStep = 1; iStep < totalSteps; ++iStep) {
 
         getRotation(matrixStart);
@@ -1150,6 +1158,7 @@ class TransformManager {
         translateToXPercent(xTransStart + (xTransDelta * iStep / totalSteps));
         translateToYPercent(yTransStart + (yTransDelta * iStep / totalSteps));
         setRotation(matrixStep);
+        fixedRotationCenter.add(aaStepCenter);
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {
           viewer.requestRepaintAndWait();
@@ -1177,6 +1186,7 @@ class TransformManager {
     translateToXPercent(xTrans);
     translateToYPercent(yTrans);
     setRotation(matrixEnd);
+    setFixedRotationCenter(ptCenter);
     viewer.setInMotion(false);
   }
   

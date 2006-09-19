@@ -225,9 +225,9 @@ public class Viewer extends JmolViewer {
   }
 
   public void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix,
-                     int zoom, int xTrans, int yTrans) {
-    transformManager.moveTo(floatSecondsTotal, rotationMatrix, zoom, xTrans,
-        yTrans);
+                     Point3f center, int zoom, int xTrans, int yTrans) {
+    transformManager.moveTo(floatSecondsTotal, rotationMatrix, center, zoom,
+        xTrans, yTrans);
   }
 
   String getMoveToText(float timespan) {
@@ -1445,10 +1445,8 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setCenterBitSet()");
   }
 
-  public void setRotationCenterNoScale(Point3f center) {
-    modelManager.setNewRotationCenter(center, false);
-    transformManager.setFixedRotationCenter(center);
-    refresh(0, "Viewer:setCenterBitSet()");
+  public void setRotationCenter(Point3f center) {
+    modelManager.setRotationCenter(center);
   }
 
   void moveRotationCenter(Point3f center) {
@@ -2231,6 +2229,8 @@ public class Viewer extends JmolViewer {
      * JmolConstants.shapeClassBases[shapeID]+ "," + propertyName + "," + value +
      * ")");
      */
+    if (shapeID < 0)
+      return;  //not applicable
     modelManager.setShapeProperty(shapeID, propertyName, value,
         selectionManager.bsSelection);
     refresh(0, "Viewer:setShapeProperty()");

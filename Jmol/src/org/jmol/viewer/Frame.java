@@ -1006,6 +1006,10 @@ public final class Frame {
     return rotationCenter;
   }
 
+  void setRotationCenter(Point3f center) {
+    rotationCenter.set(center);  
+  }
+  
   Point3f getRotationCenterDefault() {
     findBounds();
     return rotationCenterDefault;

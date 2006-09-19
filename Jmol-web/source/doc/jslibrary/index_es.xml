@@ -205,7 +205,7 @@
 	    en su lugar se mostrará una área de texto informativa, si pones
 	    "?NOAPPLET" (en mayúsculas) 
 	    al final de la dirección URL en el navegador. 
-	    Esto se puede usar para ensayar la acción de los botones u otros controles.
+	    Esto puede ser útil para ensayar la acción de los botones u otros controles.
 	  </i>
 				</p>
 			</section>
@@ -268,7 +268,8 @@
 			</section>
 			<section title="jmolRadioGroup">
 				<code>
-	  jmolRadioGroup(grupoOpciones, {separadorHtml}, {nombreGrupo})
+	  jmolRadioGroup(grupoOpciones, {separadorHtml}, {nombreGrupo},
+	  {id}, {title})
 	</code>
 				<p>
 	  Sirve para poner un grupo de opciones mutuamente excluyentes 
@@ -293,9 +294,22 @@
 	  común a todo el grupo de opciones. Toma por defecto los valores 
 	  jmolRadioGroup0, jmolRadioGroup1, etc. 
 	</p>
+				<p>
+					<i>
+	  Avanzado:
+	  El grupo completo de opciones se incluirá en 
+	  un elemento <code>&lt;span&gt;</code> 
+	  que tendrá un parámetro HTML id de <code>id</code> o, si no se
+	  proporciona éste, el valor de <code>nombreGrupo</code>
+						<br/>A su vez, cada opción o botón radial tendrá, junto con su
+	etiqueta, un parámetro HTML id de "span_" seguido del identificador del grupo,
+	de un guión bajo y de un número secuencial (comenzando por cero), y como
+	parámetro HTML title, el <code>title</code> del grupo.
+	  </i>
+				</p>
 			</section>
 			<section title="jmolLink">
-				<code>jmolLink(guión, texto, {id})</code>
+				<code>jmolLink(guión, texto, {id}, {title})</code>
 				<p>
 					<code>texto</code> se escribirá en forma de hiperenlace. Cuando el usuario
 	  haga clic en el enlace, se ejecutarán las instrucciones del <code>guión</code>.
@@ -304,9 +318,22 @@
 					<code>id</code> se usará para los valores de los parámetros de HTML "id" y "name".
 	  Toma por defecto los valores jmolLink0, jmolLink1, etc. 
 	</p>
+				<p>
+					<i>
+	  Avanzado: 
+	  Además, el texto de enlace se incluirá en un elemento <code>&lt;span&gt;</code> 
+	  que tendrá
+	  un parámetro HTML id de "span_" seguido del <code>id</code> indicado, 
+	  y un parámetro HTML title del <code>title</code> indicado.
+	  <br/>
+	  Los navegadores mostrarán, pues, <code>title</code> 
+	  en forma de texto flotante o <i>tooltip</i>
+	  al detener el puntero del ratón sobre el hiperenlace. 
+	  </i>
+				</p>
 			</section>
 			<section title="jmolMenu">
-				<code>jmolMenu(grupoElementosMenú, {alturaMenú}, {id})</code>
+				<code>jmolMenu(grupoElementosMenú, {alturaMenú}, {id}, {title})</code>
 				<p>
 	  Sirve para mostrar un menú de elementos asociados a sendos guiones.
 	  <code>grupoElementosMenú</code> se suele indicar mediante la notación de
@@ -330,6 +357,19 @@
 					<code>id</code> se usará para los valores de los parámetros de HTML "id" y "name".
 	  Toma por defecto los valores jmolMenu0, jmolMenu1, etc. 
 	</p>
+				<p>
+					<i>
+	  Avanzado: 
+	  Además, el menú se incluirá en un elemento <code>&lt;span&gt;</code> 
+	  que tendrá
+	  un parámetro HTML id de "span_" seguido del <code>id</code> indicado, 
+	  y un parámetro HTML title del <code>title</code> indicado.
+	  <br/>
+	  Los navegadores mostrarán, pues, <code>title</code> 
+	  en forma de texto flotante o <i>tooltip</i>
+	  al detener el puntero del ratón sobre el menú. 
+	  </i>
+				</p>
 			</section>
 		</section>
 		<section title="Instrucciones intermedias">
@@ -365,25 +405,6 @@
 	  lo mismo que <code>&lt;/script&gt;&lt;br /&gt;&lt;script&gt;</code>
 				</p>
 			</section>
-			<section title="jmolAppletInline">
-				<code>jmolAppletInline(tamaño, modeloEnLinea, {guión}, {sufijoNombre})</code>
-				<p>
-	  Inserta una miniaplicación JmolApplet, pero en lugar de un nombre de
-	  archivo o una dirección URL, le pasa el <i>contenido</i> del modelo
-	  molecular. Probablemente sólo necesites usar esto si estás sacando
-	  de una base de datos los datos del modelo molecular.
-	</p>
-			</section>
-			<section title="jmolLoadInline">
-				<code>jmolLoadInline(modelo, {sufijoDiana})</code>
-				<p>
-	  Se usa en aplicaciones de base de datos en las que el modelo
-	  molecular esté disponible en forma de cadena de texto.
-	  Esta instrucción carga directamente el <code>modelo</code> a la 
-	  miniaplicación. Atención: éste <i>no</i> es el nombre del archivo,
-	  sino el <i>contenido</i> del archivo.
-	</p>
-			</section>
 			<section title="jmolScript">
 				<code>jmolScript(guión, {sufijoDiana})</code>
 				<p>
@@ -391,8 +412,68 @@
 	  o para ejecutar el <code>guión</code> en función de eventos javascript.
 	  Los controles descritos hasta ahora se han implementado en la biblioteca esencialmente 
 	  usando esta función <code>jmolScript</code>.
+	</p>
+				<p>
 	  Cuando se estén mostrando en la página varias miniaplicaciones JmolApplet,
 	  <code>sufijoDiana</code> permite indicar sobre cuál actuará el guión.
+	El valor por defecto de <code>sufijoDiana</code> es "0".
+	</p>
+			</section>
+			<section title="jmolScriptWait">
+				<code>jmolScriptWait(guión, {sufijoDiana})</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+				<p>
+	  Cuando se estén mostrando en la página varias miniaplicaciones JmolApplet,
+	  <code>sufijoDiana</code> permite indicar sobre cuál actuará el guión.
+	El valor por defecto de <code>sufijoDiana</code> es "0".
+	</p>
+			</section>
+			<section title="jmolScriptWaitAsArray">
+				<code>jmolScriptWaitAsArray(guión, sufijoDiana)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+				<p>
+	  Cuando se estén mostrando en la página varias miniaplicaciones JmolApplet,
+	  <code>sufijoDiana</code> permite indicar sobre cuál actuará el guión.
+	El valor por defecto de <code>sufijoDiana</code> es "0".
+	</p>
+			</section>
+			<section title="jmolSaveOrientation">
+				<code>jmolSaveOrientation(id, {sufijoDiana})</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+				<p>
+	  Cuando se estén mostrando en la página varias miniaplicaciones JmolApplet,
+	  <code>sufijoDiana</code> permite indicar sobre cuál actuará el guión.
+	El valor por defecto de <code>sufijoDiana</code> es "0".
+	</p>
+			</section>
+			<section title="jmolRestoreOrientation">
+				<code>jmolRestoreOrientation(id, {sufijoDiana})</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+				<p>
+	  Cuando se estén mostrando en la página varias miniaplicaciones JmolApplet,
+	  <code>sufijoDiana</code> permite indicar sobre cuál actuará el guión.
+	El valor por defecto de <code>sufijoDiana</code> es "0".
+	</p>
+			</section>
+			<section title="jmolRestoreOrientationDelayed">
+				<code>jmolRestoreOrientationDelayed(id, {demora}, {sufijoDiana})</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+				<p>
+	  El valor por defectp de <code>demora</code> es 1 segundo.
+	  <br/>
+	  Cuando se estén mostrando en la página varias miniaplicaciones JmolApplet,
+	  <code>sufijoDiana</code> permite indicar sobre cuál actuará el guión.
+	El valor por defecto de <code>sufijoDiana</code> es "0".
 	</p>
 			</section>
 		</section>
@@ -405,6 +486,19 @@
 	  <i>muchos</i> avisos. Para desactivarlo, escribe literalmente: 
 	  <code>jmolDebugAlert(false)</code>
 				</p>
+			</section>
+			<section title="jmolSetLogLevel">
+				<code>jmolSetLogLevel(n)</code>
+				<p>
+	  Ajusta el nivel de mensajes que se mostrarán en la consola.
+	  n varía entre 0 (mñinimo número de mensajes) y 5 (todos los mensajes). 
+	</p>
+			</section>
+			<section title="jmolGetStatus">
+				<code>jmolGetStatus(strStatus,sufijoDiana)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
 			</section>
 			<section title="jmolSetTarget">
 				<code>jmolSetTarget(sufijoDiana)</code>
@@ -422,23 +516,38 @@
 	  tienen identificadores "name" e "id" que comienzan por
 	  <code>jmolApplet</code>. 
 	  Por defecto, están numeradas secuencialmente a partir de cero.
-	  Si necesitas aportar tu propio sufijo, hazlo a través de las llamadas
-	  a <code>jmolApplet</code>.
+	Por lo tanto, los parámetros name e id de la primera y la segunda
+	miniaplicaciones de la página serán, por defecto,
+	 <code>jmolApplet0</code> y
+	  <code>jmolApplet1</code>, y se hará referencia a ellas mediante
+	  <code>jmolSetTarget(0)</code> y <code>jmolSetTarget(1)</code>.
+	  Puedes proporcionar tus propios sufijos 
+	  al llamar a <code>jmolApplet</code>
+	  y usarlos en <code>jmolSetTarget</code>.
 	</p>
 			</section>
 			<section title="jmolRadio">
 				<code>
 	  jmolRadio(guión,
-	            {etiquetaHtml}, {estáMarcada}, {separadorHtml})
+	            {etiquetaHtml}, {estáMarcada}, {separadorHtml}, {nombreGrupo},
+	  {id}, {title})
 	</code>
 				<p>
 	  En primer lugar, intenta por todos los medios usar <code>jmolRadioGroup</code>
 	  en lugar de esto.
 	  Si tu organización de contenidos no te lo permite, puedes usar
-	  esta instrucción para asignar opciones (botones radio) individualmente.
-	  Esas opciones se asignarán al mismo grupo hasta que llames a 
+	  esta instrucción para asignar opciones (botones radiales) individualmente.
+	  Esas opciones se asignarán a un mismo grupo hasta que llames a 
 	  <code>jmolStartNewRadioGroup</code>.
 	</p>
+				<p>
+					<i>
+	  Avanzado:
+	  El botón radial, junto con su etiqueta, tendrá un parámetro HTML
+	  id de "span_" seguido del <code>id</code> indicado,
+	  y un parámetro HTML title del <code>title</code> indicado.
+	  </i>
+				</p>
 			</section>
 			<section title="jmolStartNewRadioGroup">
 				<code>jmolStartNewRadioGroup()</code>
@@ -452,7 +561,8 @@
 				<code>jmolCheckBrowser(acción, URLoMensaje, ahoraOalClic)</code>
 				<p>
 	  Ejecuta una verificación del navegador web del usuario para comprobar su compatibilidad
-	  con Jmol.
+	  con Jmol. Asimismo, permite redirigir al usuario hacia un mensaje 
+	o página web específicos cuando falle la verificación, explícita o automática, del navegador.
 	</p>
 				<p>
 					<code>acción</code> debe ser "popup", "redirect" o "alert".<br/>
@@ -475,6 +585,96 @@
 	  Si no se hace esta llamada y el usuario utiliza un navegador no compatible, 
 	  aparecerá un mensaje de aviso predeterminado 
 	  la primera vez que el usuario haga clic en un control de Jmol. 
+	</p>
+			</section>
+			<section title="jmolSetDocument">
+				<code>jmolSetDocument(doc)</code>
+				<p>De modo predeterminado, Jmol.js escribe las miniaplicaciones 
+	y los controles en la página. 
+	Usando esta función es posible indicar otras dianas:
+	<ul>
+						<li><code>jmolSetDocument(win2.document)</code> 
+	escribirá la miniaplicación y los controles en otra ventana (llamada "win2" en este ejemplo)
+		</li>
+						<li><code>jmolSetDocument(0)</code> o <code>jmolSetDocument(false)</code> 
+	desactiva la escritura de código en la página cuando ésta se está cargando.
+	En su lugar, el código puede ser devuelto en una variable JavaScript, como por ejemplo:
+	<br/>
+							<code>var miApplet = jmolApplet(...)</code>
+							<br/>
+							<code>var miControl = jmolRadioGroup(...)</code>
+							<br/>variables que más tarde pueden usarse para escribir una página
+	o para escribir en una capa (div), usando JavaScript.
+		</li>
+					</ul>
+				</p>
+			</section>
+			<section title="jmolAppletInline">
+				<code>jmolAppletInline(tamaño, modeloEnLinea, {guión}, {sufijoNombre})</code>
+				<p>
+	  Inserta una miniaplicación JmolApplet, pero en lugar de un nombre de
+	  archivo o una dirección URL, le pasa el <i>contenido</i> del modelo
+	  molecular. Probablemente sólo necesites usar esto si estás sacando
+	los datos del modelo molecular de una base de datos.
+	</p>
+			</section>
+			<section title="jmolLoadInline">
+				<code>jmolLoadInline(modelo, {sufijoDiana})</code>
+				<p>
+	  Se usa en aplicaciones de base de datos en las que el modelo
+	  molecular esté disponible en forma de cadena de texto.
+	  Esta instrucción carga directamente el <code>modelo</code> a la 
+	  miniaplicación. Atención: éste <i>no</i> es el nombre del archivo,
+	  sino el <i>contenido</i> del archivo.
+	</p>
+			</section>
+			<section title="jmolLoadInlineScript">
+				<code>jmolLoadInlineScript(modelo, guión, {sufijoDiana})</code>
+				<p>
+	  Es similar a <code>jmolLoadInline</code>, pero permite además 
+	  ejecutar un guión de instrucciones tras la carga de la molécula.
+	</p>
+			</section>
+			<section title="jmolSetCallback">
+				<code>jmolSetCallback(nombreCallback,nombreFunción)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+			</section>
+			<section title="jmolAppletAddParam">
+				<code>jmolAppletAddParam(códigoApplet,nombre,valor)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+			</section>
+			<section title="jmolGetPropertyAsArray">
+				<code>jmolGetPropertyAsArray(sKey,sValue,sufijoDiana)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+			</section>
+			<section title="jmolGetPropertyAsString">
+				<code>jmolGetPropertyAsString(sKey,sValue,sufijoDiana)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+			</section>
+			<section title="jmolGetPropertyAsJSON">
+				<code>jmolGetPropertyAsJSON(sKey,sValue,sufijoDiana)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+			</section>
+			<section title="jmolGetPropertyAsJavaObject">
+				<code>jmolGetPropertyAsJavaObject(sKey,sValue,sufijoDiana)</code>
+				<p>
+	  (...necesita documentación)
+	</p>
+			</section>
+			<section title="jmolDecodeJSON">
+				<code>jmolDecodeJSON(s</code>
+				<p>
+	  (...necesita documentación)
 	</p>
 			</section>
 		</section>

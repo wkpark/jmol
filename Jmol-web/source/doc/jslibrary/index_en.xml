@@ -413,7 +413,7 @@
 	</p>
 			</section>
 			<section title="jmolScriptWait">
-				<code>jmolScript(script, {targetSuffix})</code>
+				<code>jmolScriptWait(script, {targetSuffix})</code>
 				<p>
 	  (...needs documentation)
 	</p>
@@ -529,14 +529,6 @@
 	  buttons will be assigned to the same group until
 	  you call <code>jmolStartNewRadioGroup</code>.
 	</p>
-			</section>
-			<section title="jmolStartNewRadioGroup">
-				<code>jmolStartNewRadioGroup()</code>
-				<p>
-	  Do not use this unless you are working with multiple
-	  radio groups whose layout is so complicated that you cannot
-	  use <code>jmolRadioGroup</code>.
-	</p>
 				<p>
 					<i>
 	  Advanced:
@@ -545,6 +537,14 @@
 	  and as their HTML title, the given <code>title</code>.
 	  </i>
 				</p>
+			</section>
+			<section title="jmolStartNewRadioGroup">
+				<code>jmolStartNewRadioGroup()</code>
+				<p>
+	  Do not use this unless you are working with multiple
+	  radio groups whose layout is so complicated that you cannot
+	  use <code>jmolRadioGroup</code>.
+	</p>
 			</section>
 			<section title="jmolCheckBrowser">
 				<code>jmolCheckBrowser(action, urlOrMessage, nowOrOnClick)</code>
@@ -556,22 +556,27 @@
 	</p>
 				<p>
 					<code>action</code> is a string which is one of
-	  "popup", "redirect", or "alert". "popup" will bring up
+	  "popup", "redirect", or "alert". <br/>
+	"popup" will bring up
 	  another browser window with the URL specified in
-	  <code>urlOrMessage</code>. "redirect" will redirect the
+	  <code>urlOrMessage</code>. <br/>
+	"redirect" will redirect the
 	  existing page to the URL specified in
-	  <code>urlOrMessage</code>. "alert" will bring up a
+	  <code>urlOrMessage</code>. <br/>
+	"alert" will bring up a
 	  JavaScript alert message box with the 
 	  text message specified in <code>urlOrMessage</code>.
 	</p>
 				<p>
 					<code>nowOrOnClick</code> is a string saying either
 	  "now" or "onClick". It specifies when the browser
-	  check is to take place. "now" specifies that the
-	  check is to take place immediately. "onClick" indicates
+	  check is to take place. <br/>
+	"now" specifies that the
+	  check is to take place immediately. <br/>
+	"onClick" indicates
 	  that the check is to take place the first time a
-	  control such as a <code>jmolButton()</code> is clicked.
-	  <code>nowOrOnClick</code> defaults to "onClick".
+	  control such as a <code>jmolButton()</code> is clicked.<br/>
+					<code>nowOrOnClick</code> defaults to "onClick".
 	</p>
 				<p>
 	  If this call is not made then a default alert

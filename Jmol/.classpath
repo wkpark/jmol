@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="jars/vecmath1.2-1.14.jar"/>
 	<classpathentry kind="lib" path="jars/Acme.jar"/>
 	<classpathentry kind="lib" path="jars/commons-cli-1.0.jar"/>
-	<classpathentry kind="lib" path="jars/itext-0.94.jar"/>
+	<classpathentry kind="lib" path="jars/itext-1.4.5.jar"/>
 	<classpathentry kind="lib" path="screensaver/jars/saverbeans-api.jar"/>
 	<classpathentry kind="lib" path="jars/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>

@@ -1282,7 +1282,7 @@ public class Jmol extends JPanel {
       exportChooser.setAccessory(null);
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
-      if (retval == 0) {
+      if (retval == JFileChooser.APPROVE_OPTION) {
         File file = exportChooser.getSelectedFile();
 
         if (file != null) {

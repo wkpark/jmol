@@ -31,7 +31,7 @@
   <property name="docbook-xsl" value="docbook-xsl-1.71.0" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
   <property name="vecmath.jar" value="vecmath1.2-1.14.jar" />
-  <property name="itext.jar" value="itext-0.94.jar" />
+  <property name="itext.jar" value="itext-1.4.5.jar" />
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->

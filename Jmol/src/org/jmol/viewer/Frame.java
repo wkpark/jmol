@@ -907,16 +907,16 @@ public final class Frame {
     return bonds[bondIndex];
   }
 
-  private void addBond(Bond bond) {
+  private Bond addBond(Bond bond) {
     if (bond == null)
-      return;
+      return null;
     if (bondCount == bonds.length)
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount + growthIncrement);
-    bonds[bondCount++] = bond;
+    return bonds[bondCount++] = bond;
   }
 
-  void bondAtoms(Atom atom1, Atom atom2, short order) {
-    addBond(atom1.bondMutually(atom2, order, this));
+  Bond bondAtoms(Atom atom1, Atom atom2, short order) {
+    return addBond(atom1.bondMutually(atom2, order, this));
   }
 
   void bondAtoms(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {

@@ -4025,33 +4025,36 @@ class Eval { //implements Runnable {
    * SAVE/RESTORE 
    * ==============================================================
    */
-  
+
   void save() throws ScriptException {
-    if (statementLength == 1)
-      badArgumentCount();
-    switch (statement[1].tok) {
-    case Token.orientation:
-      if (statementLength > 2)
-        viewer.saveOrientation("" + statement[2].value);
-      viewer.saveOrientation("latest");
-      break;
-    default:
-      evalError("save what? orientation?");
+    if (statementLength > 1) {
+      String saveName = (statementLength > 2 ? "" + statement[2].value : "");
+      switch (statement[1].tok) {
+      case Token.orientation:
+        viewer.saveOrientation(saveName);
+        return;
+      case Token.bonds:
+        viewer.saveBonds(saveName);
+        return;
+      }
     }
+    evalError("save what? orientation? bonds?");
   }
   
   void restore() throws ScriptException {
-    if (statementLength == 1)
-      badArgumentCount();
-    switch (statement[1].tok) {
-    case Token.orientation:
-      String str = (statementLength > 2 ? "" + statement[2].value : "latest");
-      float timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
-      viewer.restoreOrientation(str, timeSeconds);
-      break;
-    default:
-      evalError("restore what? orientation?");
+    if (statementLength > 1) {
+      String saveName = (statementLength > 2 ? "" + statement[2].value : "");
+      switch (statement[1].tok) {
+      case Token.orientation:
+        float timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
+        viewer.restoreOrientation(saveName, timeSeconds);
+        return;
+      case Token.bonds:
+        viewer.restoreBonds(saveName);
+        return;
+      }
     }
+    evalError("restore what? orientation? bonds?");
   }
   
   

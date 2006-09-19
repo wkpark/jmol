@@ -209,6 +209,14 @@ public class Viewer extends JmolViewer {
     return stateManager.restoreOrientation(saveName, timeSeconds);
   }
   
+  void saveBonds(String saveName) {
+    stateManager.saveBonds(saveName);
+  }
+  
+  boolean restoreBonds(String saveName) {
+    return stateManager.restoreBonds(saveName);
+  }
+  
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////

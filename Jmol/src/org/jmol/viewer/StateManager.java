@@ -29,12 +29,12 @@ import javax.vecmath.Matrix3f;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
-import org.jmol.util.Logger;
-
 class StateManager {
   GlobalSettings globalSettings;
   Viewer viewer;
   Hashtable saved = new Hashtable();
+  String lastOrientation = "";
+  String lastConnections = "";
   
   StateManager(Viewer viewer) {
     globalSettings = new GlobalSettings();
@@ -51,12 +51,13 @@ class StateManager {
   
   void saveOrientation(String saveName) {
     Orientation o = new Orientation();  
-    o.saveName = "Orientation_" + saveName;
+    o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
   
   boolean restoreOrientation(String saveName, float timeSeconds) {
-    Orientation o = (Orientation) saved.get("Orientation_" + saveName);
+    String name = (saveName.length() > 0 ? "Orientation_" + saveName : lastOrientation);
+    Orientation o = (Orientation) saved.get(name);
     if (o == null)
       return false;
     o.restore(timeSeconds);
@@ -65,11 +66,13 @@ class StateManager {
   }
    
   class Orientation {
+
+    String saveName;
+
     Matrix3f rotationMatrix = new Matrix3f();
     int xTrans, yTrans, zoom;
     Point3f center = new Point3f();
     boolean windowCenteredFlag;
-    String saveName;
     
     Orientation () {
       viewer.getRotation(rotationMatrix);
@@ -78,7 +81,6 @@ class StateManager {
       zoom = viewer.getZoomPercent();
       center.set(viewer.getCenter());
       windowCenteredFlag = viewer.isWindowCentered();
-      System.out.println("new orientation " + xTrans + " " + yTrans + " " + center);
     }
     
     void setRotationMatrix(Matrix3f mat) {
@@ -111,6 +113,78 @@ class StateManager {
     }
   }
 
+  void saveBonds(String saveName) {
+    Connections b = new Connections();  
+    b.saveName = lastConnections = "Bonds_" + saveName;
+    saved.put(b.saveName, b);
+  }
+  
+  boolean restoreBonds(String saveName) {
+    String name = (saveName.length() > 0 ? "Bonds_" + saveName : lastConnections);
+    Connections c = (Connections) saved.get(name);
+    if (c == null)
+      return false;
+    c.restore();
+//    Logger.info(listSavedStates());
+    return true;
+  }
+   
+  class Connections {
+
+    String saveName;
+    int bondCount;
+    Connection[] connections;
+    
+    Connections() {
+      Frame frame = viewer.getFrame();
+      if (frame == null)
+        return;
+      bondCount = frame.bondCount;
+      connections = new Connection[bondCount + 1];
+      Bond[] bonds = frame.bonds;
+      for (int i = bondCount; --i >= 0;) {
+        Bond b = bonds[i];
+        connections[i] = new Connection(b.atom1.atomIndex, b.atom2.atomIndex,
+            b.mad, b.colix, b.order, b.shapeVisibilityFlags);
+      }
+    }
+    
+    class Connection {
+      int atomIndex1;
+      int atomIndex2;
+      short mad;
+      short colix;
+      short order;
+      int shapeVisibilityFlags;
+      
+      Connection(int atom1, int atom2, short mad, short colix, short order,
+          int shapeVisibilityFlags) {
+        atomIndex1 = atom1;
+        atomIndex2 = atom2;
+        this.mad = mad;
+        this.colix = colix;
+        this.order = order;
+        this.shapeVisibilityFlags = shapeVisibilityFlags;
+      }
+    }
+
+    void restore() {
+      Frame frame = viewer.getFrame();
+      if (frame == null)
+        return;
+      frame.deleteAllBonds();
+      for (int i = bondCount; --i >= 0;) {
+        Connection c = connections[i];
+        if (c.atomIndex1 > frame.atomCount || c.atomIndex2 > frame.atomCount)
+          continue;        
+        Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1], frame.atoms[c.atomIndex2], c.order);
+        b.mad = c.mad;
+        b.colix = c.colix;
+        b.shapeVisibilityFlags = c.shapeVisibilityFlags;
+      }
+    }
+  }
+  
   class GlobalSettings {
 
     /*

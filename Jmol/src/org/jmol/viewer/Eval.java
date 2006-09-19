@@ -1858,7 +1858,7 @@ class Eval { //implements Runnable {
     case Token.hydrogen:
       String str = (String) statement[1].value;
       if (str.equalsIgnoreCase("unitcell")) {
-        colorShape(JmolConstants.SHAPE_UCCAGE, 2, "");
+        colorShape(JmolConstants.SHAPE_UCCAGE, 2);
         return;
       }
       int argb = getArgbOrNoneParam(2);
@@ -1907,14 +1907,14 @@ class Eval { //implements Runnable {
   void colorNamedObject(int index) throws ScriptException {
     // color $ whatever green
     int shapeType = setShapeByNameParameter(index);
-    colorShape(shapeType, index + 1, "");
+    colorShape(shapeType, index + 1);
   }
 
   void colorObject(int tokObject, int itoken) throws ScriptException {
-    colorShape(getShapeType(tokObject), itoken, "");
+    colorShape(getShapeType(tokObject), itoken);
   }
 
-  void colorShape(int shapeType, int itoken, String modifier)
+  void colorShape(int shapeType, int itoken)
       throws ScriptException {
     if (itoken >= statementLength)
       badArgumentCount();
@@ -1930,6 +1930,12 @@ class Eval { //implements Runnable {
     if (tok == Token.translucent || tok == Token.opaque) {
       translucentOrOpaque = (String) (statement[itoken].value);
       ++itoken;
+    }
+    String modifier = "";
+    if (shapeType < 0) {
+      //geosurface
+      shapeType = -shapeType;
+      modifier = "Surface";
     }
     if (itoken < statementLength) {
       colorvalue = statement[itoken].value;
@@ -3333,7 +3339,7 @@ class Eval { //implements Runnable {
 
   int getShapeType(int tok) throws ScriptException {
     if (tok == Token.geosurface)
-      tok = Token.dots;
+      return -JmolConstants.shapeTokenIndex(Token.dots);
     int iShape = JmolConstants.shapeTokenIndex(tok);
     if (iShape < 0)
       unrecognizedObject();

@@ -203,42 +203,39 @@ class Dots extends Shape {
   
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    Logger.debug("Dots.setProperty: " +propertyName + " " + value + " " + bs);
-    
+    Logger.debug("Dots.setProperty: " + propertyName + " " + value);
+
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
-    
+
     if ("init" == propertyName) {
-      int mode = ((Integer)value).intValue();
+      int mode = ((Integer) value).intValue();
       isSurface = (mode == DOTS_MODE_SURFACE);
       isCalcOnly = (mode == DOTS_MODE_CALCONLY);
       return;
     }
-
     if ("color" == propertyName) {
       setProperty("colorConvex", value, bs);
       return;
     }
     if ("colorSurface" == propertyName) {
-        surfaceColix = Graphics3D.getColix(value);
-        return;
-      }
-    if ("translucency" == propertyName) {
+      surfaceColix = Graphics3D.getColix(value);
+      return;
+    }
+    if ("translucencySurface" == propertyName) {
       boolean isTranslucent = ("translucent" == value);
       surfaceColix = Graphics3D.setTranslucent(surfaceColix, isTranslucent);
       return;
     }
-    
     if ("colorConvex" == propertyName) {
-      if(colixesConvex == null) 
+      if (colixesConvex == null)
         return;
       Logger.debug("Dots.setProperty('colorConvex')");
       short colix = Graphics3D.getColix(value);
-      for (int i = atomCount; --i >= 0; )
+      for (int i = atomCount; --i >= 0;)
         if (bs.get(i))
-          colixesConvex[i] =
-            ((colix != Graphics3D.UNRECOGNIZED)
-             ? colix : viewer.getColixAtomPalette(atoms[i], (String)value));
+          colixesConvex[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix
+              : viewer.getColixAtomPalette(atoms[i], (String) value));
       return;
     }
   }

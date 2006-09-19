@@ -175,7 +175,7 @@ class StateManager {
       frame.deleteAllBonds();
       for (int i = bondCount; --i >= 0;) {
         Connection c = connections[i];
-        if (c.atomIndex1 > frame.atomCount || c.atomIndex2 > frame.atomCount)
+        if (c.atomIndex1 >= frame.atomCount || c.atomIndex2 >= frame.atomCount)
           continue;        
         Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1], frame.atoms[c.atomIndex2], c.order);
         b.mad = c.mad;

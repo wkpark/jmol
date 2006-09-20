@@ -413,6 +413,10 @@ final public class Atom extends Point3fi implements Tuple {
     return (short) (atomicAndIsotopeNumber % 256);
   }
   
+  short getIsotopeNumber() {
+    return (short) (atomicAndIsotopeNumber >> 8);
+  }
+  
   short getAtomicAndIsotopeNumber() {
     return atomicAndIsotopeNumber;
   }

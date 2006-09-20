@@ -145,19 +145,27 @@ class PatternMatcher {
       }
     }
     
-    boolean canMatch = true;
     Atom atom = frame.getAtomAt(i);
 
-    // Check symbol
-    if ((patternAtom.getSymbol() != "*") &&
-        (patternAtom.getSymbol() != atom.getElementSymbol())) {
-      canMatch = false;
+    // Check symbol -- not isotope-sensitive
+    String s = patternAtom.getSymbol();
+    int n = atom.getElementNumber();
+    if (s != "*" && s != JmolConstants.elementSymbolFromNumber(n))
+      return;
+    
+    // Check atomic mass for [2H] [3H] only
+
+    int targetMass = patternAtom.getAtomicMass();
+    if (n == 1 && targetMass > 0) {
+      System.out.println(targetMass + " patternmatcher");
+      int atomMass = atom.getIsotopeNumber();
+      // allow Jmol H to match H or [1H]
+      if (atomMass != targetMass && (atomMass != 0 || targetMass != 1))
+        return;
     }
-    // Check atomic mass : NO because Jmol doesn't know about atomic mass
     // Check charge
-    if (patternAtom.getCharge() != atom.getFormalCharge()) {
-      canMatch = false;
-    }
+    if (patternAtom.getCharge() != atom.getFormalCharge())
+      return;
 
     // Check bonds
     for (int j = 0; j < patternAtom.getBondsCount(); j++) {
@@ -199,14 +207,12 @@ class PatternMatcher {
             }
           }
         }
-        if (!bondFound) {
-          canMatch = false;
-        }
+        if (!bondFound)
+          return;
       }
     }
 
     // Finish matching
-    if (canMatch) {
       patternAtom.setMatchingAtom(i);
       if (atomNum + 1 < pattern.getAtomsCount()) {
         searchMatch(bs, pattern, atomNum + 1);
@@ -217,6 +223,5 @@ class PatternMatcher {
         }
       }
       patternAtom.setMatchingAtom(-1);
-    }
   }
 }

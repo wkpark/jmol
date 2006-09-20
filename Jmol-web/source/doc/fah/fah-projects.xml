@@ -4244,9 +4244,12 @@
   <fah_proj number="2141" name="p2141_ww2141" public="y" file="y"
     server="171.65.103.160" atoms="591" preferred="72" deadline="107"
     credit="385" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2142" name="p2142_halr-wt, CN inhib, NADP+ in water" public="n"
+  <fah_proj number="2142" name="p2142_halr-wt, CN inhib, NADP+ in water" public="y" file="y"
     server="171.64.122.141" atoms="86986" preferred="45" deadline="65"
     credit="476" frames="100" code="G" contact="densign"/>
+  <fah_proj number="2143" name="p2143_halr-wt, CN inhib, NADP+ in water" public="y"
+    server="171.64.122.141" atoms="86986" preferred="45" deadline="65"
+    credit="478" frames="100" code="G" contact="densign"/>
 
   <!-- Projects 2200 to 2299 -->
   <fah_proj number="2200" name="p2200_ProteinA" public="y" file="y"

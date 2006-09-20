@@ -204,6 +204,8 @@ class StateManager {
 
     //file loading
     
+    boolean forceAutoBond;
+    
     char inlineNewlineChar = '|';
     String defaultLoadScript = "";
     Point3f ptDefaultLattice = new Point3f();

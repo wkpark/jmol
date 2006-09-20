@@ -1643,5 +1643,10 @@ String getAtomInfoChime(int i) {
       return false;
     return frame.getSelectionHaloEnabled();
   }
-  
+
+  void calculateStructures() {
+    if (frame == null)
+      return;
+    frame.calculateStructures(true);
+  }
 }

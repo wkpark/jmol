@@ -98,7 +98,6 @@ class AlphaPolymer extends Polymer {
     byte[] tags = calculateRunsFourOrMore(codes);
     extendRuns(tags);
     searchForTurns(codes, angles, tags);
-
     addStructuresFromTags(tags);
   }
 

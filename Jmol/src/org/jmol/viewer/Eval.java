@@ -3117,6 +3117,9 @@ class Eval { //implements Runnable {
     case Token.hbond:
       viewer.autoHbond();
       return;
+    case Token.structure:  // NOT WORKING YET - use set forceAutoBond instead
+      viewer.calculateStructures();
+      return;
     }
   }
   

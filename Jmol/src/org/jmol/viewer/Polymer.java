@@ -124,7 +124,7 @@ abstract class Polymer {
   }
 
   static Monomer[] getCarbohydrateMonomers(Group[] groups, int firstGroupIndex) {
-    CarbohydrateMonomer previous = null;
+    //CarbohydrateMonomer previous = null;
     int count = 0;
     for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
       Group group = groups[i];
@@ -136,7 +136,7 @@ abstract class Polymer {
       //ignoring how these are connected for now
       //if (current.isConnectedAfter(previous))
         //break;
-      previous = current;
+      //previous = current;
     }
     
     if (count == 0)

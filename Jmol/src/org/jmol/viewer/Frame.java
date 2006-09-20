@@ -597,6 +597,16 @@ public final class Frame {
     }
   }
 
+  void clearPolymers() {
+    for (int i = 0; i < groupCount; ++i) {
+      Group group = groups[i];
+      if (group instanceof Monomer) {
+        Monomer monomer = (Monomer) group;
+        if (monomer.polymer != null)
+          monomer.polymer = null;
+      }
+    }
+  }
   ////////////////////////////////////////////////////////////////
   FrameExportJmolAdapter exportJmolAdapter;
 
@@ -645,7 +655,7 @@ public final class Frame {
     hackAtomSerialNumbersForAnimations();
 
     if (!structuresDefined)
-      calculateStructures();
+      calculateStructures(false);
 
     ////////////////////////////////////////////////////////////////
     // find things for the popup menus
@@ -654,7 +664,11 @@ public final class Frame {
     mmset.freeze();
   }
 
-  void calculateStructures() {
+  void calculateStructures(boolean rebuildPolymers) {
+    if (rebuildPolymers) {
+      clearPolymers();
+      buildPolymers();
+    }
     mmset.calculateStructures();
   }
 
@@ -1385,10 +1399,10 @@ public final class Frame {
   ////////////////////////////////////////////////////////////////
   void doAutobond() {
     // perform bonding if necessary
-    if (viewer.getAutoBond() && getModelSetProperty("noautobond") == null) {
-      if ((bondCount == 0) || isMultiFile
-          || (isPDB && (bondCount < (atomCount / 2))))
-        autoBond(null, null);
+    boolean doBond = (bondCount == 0 || isMultiFile || isPDB && bondCount < atomCount / 2);
+    if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
+        && getModelSetProperty("noautobond") == null) {
+      autoBond(null, null);
     }
   }
 

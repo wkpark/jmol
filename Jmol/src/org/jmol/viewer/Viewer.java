@@ -1133,6 +1133,11 @@ public class Viewer extends JmolViewer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
+  
+  public void calculateStructures() {
+    modelManager.calculateStructures();
+  }
+
   public void openClientFile(String fullPathName, String fileName,
                              Object clientFile) {
     // maybe there needs to be a call to clear()
@@ -2632,6 +2637,10 @@ public class Viewer extends JmolViewer {
         setDisablePopupMenu(value);
         return;
       }
+      if (key.equalsIgnoreCase("forceAutoBond")) {
+        setForceAutoBond(value);
+        return;
+      }
       Logger.error("viewer.setBooleanProperty(" + key + "," + value
           + ") - unrecognized SET option");
       scriptStatus("Script ERROR: unrecognized SET option: set " + key);
@@ -2897,6 +2906,15 @@ public class Viewer extends JmolViewer {
   boolean getDisablePopupMenu() {
     return global.disablePopupMenu;
   }
+
+  void setForceAutoBond(boolean forceAutoBond) {
+    global.forceAutoBond = forceAutoBond;
+  }
+
+  boolean getForceAutoBond() {
+    return global.forceAutoBond;
+  }
+
 
   // ///////////////////////////////////////////////////////////////
   // Frame

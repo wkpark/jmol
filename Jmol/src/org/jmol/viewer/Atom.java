@@ -108,7 +108,7 @@ final public class Atom extends Point3fi implements Tuple {
       frame.atomNames[atomIndex] = atomName.intern();
     }
 
-    byte specialAtomID = lookupSpecialAtomID(atomName);
+    byte specialAtomID = (isHetero ? 0 : lookupSpecialAtomID(atomName));
     //Logger.debug("atom - "+atomName+" specialAtomID=" + specialAtomID);
     if (specialAtomID != 0) {
       if (frame.specialAtomIDs == null)

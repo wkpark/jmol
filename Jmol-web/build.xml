@@ -15,6 +15,9 @@
   <property name="build.html" value="${build.dir}/html" />
   <property name="all.languages" value="de,en,es,et,fr,hu,it,nl,pt,pt_BR,ro" />
 
+  <property name="outdated.format.begin" value="&lt;p&gt;" />
+  <property name="outdated.format.end"   value="&lt;/p&gt;" />
+
   <target name="clean">
     <delete dir="${build.dir}"/>
   </target>
@@ -163,6 +166,64 @@
       	</for>
       </sequential>
     </for>
+
+    <!-- Manage outdated pages -->
+    <echo message="Generating warnings for outdated translations..."/>
+    <for list="${all.languages}" delimiter="," param="current.language">
+      <sequential>
+        <if>
+          <available file="${doc.dir}/outdated_@{current.language}.xml"/>
+          <then>
+            <xmlproperty file="${doc.dir}/outdated_@{current.language}.xml"
+                         prefix="outdated_text_@{current.language}"
+                         keepRoot="false"/>
+          </then>
+        </if>
+      </sequential>
+    </for>
+    <copy todir="${build.html}" overwrite="yes"> 
+      <fileset dir="${doc.dir}" includes="**/outdated.xml"/>
+    </copy>
+    <for param="current.dir">
+      <dirset dir="${build.html}"/>
+      <sequential>
+        <if>
+          <available file="@{current.dir}/outdated.xml"/>
+          <then>
+            <xmlproperty file="@{current.dir}/outdated.xml"
+                         prefix="@{current.dir}.outdated"
+                         keepRoot="false"/>
+            <for list="${all.languages}" delimiter="," param="current.language">
+              <sequential>
+                <if>
+                  <and>
+                    <available file="@{current.dir}/index.@{current.language}.html"/>
+                    <isset property="@{current.dir}.outdated.@{current.language}"/>
+                    <not>
+                      <equals arg1="${@{current.dir}.outdated.@{current.language}}" arg2="no"/>
+                    </not>
+                    <isset property="outdated_text_@{current.language}.${@{current.dir}.outdated.@{current.language}}"/>
+                  </and>
+                  <then>
+                    <for list="${@{current.dir}.outdated.@{current.language}}" delimiter="," param="current.outdated">
+                      <sequential>
+                        <replaceregexp file="@{current.dir}/index.@{current.language}.html"
+                                       match='&lt;body&gt;'
+                                       replace='&lt;body&gt;${outdated.format.begin}${outdated_text_@{current.language}.@{current.outdated}}${outdated.format.end}'
+                                       flags='g'/>
+                      </sequential>
+                    </for>
+                  </then>
+                </if>
+              </sequential>
+            </for>
+          </then>
+        </if>
+      </sequential>
+    </for>
+    <delete>
+      <fileset dir="${build.html}" includes="**/outdated.xml"/>
+    </delete>
 
   	<!-- Modify access rights -->
     <chmod perm="ug=rw,o=r" dir="${build.html}" includes="**/*" />

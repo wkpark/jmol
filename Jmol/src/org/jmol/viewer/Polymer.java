@@ -71,6 +71,10 @@ abstract class Polymer {
     if (monomers != null) {
       return new PhosphorusPolymer(monomers);
     }
+    monomers = getCarbohydrateMonomers(groups, firstGroupIndex);
+    if (monomers != null) {
+      return new CarbohydratePolymer(monomers);
+    }
     Logger.error("Polymer.allocatePolymer() ... why am I here?");
     throw new NullPointerException();
   }
@@ -116,6 +120,30 @@ abstract class Polymer {
     Monomer[] monomers = new Monomer[count];
     for (int j = 0; j < count; ++j)
       monomers[j] = (AminoMonomer)groups[firstGroupIndex + j];
+    return monomers;
+  }
+
+  static Monomer[] getCarbohydrateMonomers(Group[] groups, int firstGroupIndex) {
+    CarbohydrateMonomer previous = null;
+    int count = 0;
+    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
+      Group group = groups[i];
+      if (! (group instanceof CarbohydrateMonomer))
+        break;
+      CarbohydrateMonomer current = (CarbohydrateMonomer)group;
+      if (current.polymer != null)
+        break;
+      //ignoring how these are connected for now
+      //if (current.isConnectedAfter(previous))
+        //break;
+      previous = current;
+    }
+    
+    if (count == 0)
+      return null;
+    Monomer[] monomers = new Monomer[count];
+    for (int j = 0; j < count; ++j)
+      monomers[j] = (CarbohydrateMonomer)groups[firstGroupIndex + j];
     return monomers;
   }
 
@@ -231,14 +259,6 @@ abstract class Polymer {
   }
 
   void calculateStructures() { }
-
-  /*
-  boolean isProtein() { return monomers[0].isProtein(); }
-    return false;
-  }
-  */
-
-  boolean isNucleic() { return monomers[0].isNucleic(); }
 
   void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
     // subclasses should override if they know how to calculate hbonds

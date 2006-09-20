@@ -821,6 +821,7 @@ class Eval { //implements Runnable {
       case Token.nucleic:
       case Token.dna:
       case Token.rna:
+      case Token.carbohydrate:
       case Token.purine:
       case Token.pyrimidine:
         stack[sp++] = viewer.getAtomBits((String) instruction.value);

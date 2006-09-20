@@ -428,6 +428,8 @@ class Token {
   final static int pyrimidine  = predefinedset | 11;
   final static int surface     = predefinedset | 12;
   final static int visible     = predefinedset | 13;
+  final static int carbohydrate = predefinedset | 14;
+  
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -738,6 +740,7 @@ class Token {
     "dotted",       new Token(dotted,          "dotted"),
     "sidechain",    new Token(sidechain,       "sidechain"),
     "protein",      new Token(protein,         "protein"),
+    "carbohydrate", new Token(carbohydrate,    "carbohydrate"),
     "nucleic",      new Token(nucleic,         "nucleic"),
     "dna",          new Token(dna,             "dna"),
     "rna",          new Token(rna,             "rna"),

@@ -740,6 +740,8 @@ class TransformManager {
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
+    if (z == 0)
+      System.out.println("scaleToScreen 0 z");
     if (milliAngstroms == 0)
       return 0;
     int pixelSize = (int) (milliAngstroms * scalePixelsPerAngstrom / 1000);

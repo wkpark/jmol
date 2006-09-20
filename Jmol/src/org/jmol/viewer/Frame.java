@@ -569,7 +569,10 @@ public final class Frame {
     } else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
       group = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    }
+    } else if (CarbohydrateMonomer.checkCarbohydrate(group3))
+      group = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
+          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+    
     if (group == null)
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
 
@@ -1735,6 +1738,8 @@ public final class Frame {
       return getHydrogenSet();
     if (setType.equals("protein"))
       return getProteinSet();
+    if (setType.equals("carbohydrate"))
+      return getCarbohydrateSet();
     if (setType.equals("nucleic"))
       return getNucleicSet();
     if (setType.equals("dna"))
@@ -1831,6 +1836,14 @@ public final class Frame {
       if (atoms[i].isProtein())
         bsProtein.set(i);
     return bsProtein;
+  }
+
+  BitSet getCarbohydrateSet() {
+    BitSet bsCHO = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isCarbohydrate())
+        bsCHO.set(i);
+    return bsCHO;
   }
 
   BitSet getNucleicSet() {

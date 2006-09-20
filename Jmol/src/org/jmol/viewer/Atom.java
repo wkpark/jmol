@@ -1272,6 +1272,10 @@ final public class Atom extends Point3fi implements Tuple {
     return group.isProtein();
   }
 
+  boolean isCarbohydrate() {
+    return group.isCarbohydrate();
+  }
+
   boolean isNucleic() {
     return group.isNucleic();
   }

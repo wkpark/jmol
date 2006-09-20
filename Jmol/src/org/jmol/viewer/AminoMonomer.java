@@ -153,6 +153,8 @@ class AminoMonomer extends AlphaMonomer {
     short marBegin = (short)(madBegin / 2);
     if (marBegin < 1200)
       marBegin = 1200;
+    if (nitrogen.getScreenZ() == 0)
+      return;
     int radiusBegin = viewer.scaleToScreen(nitrogen.getScreenZ(), marBegin);
     if (radiusBegin < 4)
       radiusBegin = 4;

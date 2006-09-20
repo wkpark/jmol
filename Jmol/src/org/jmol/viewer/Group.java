@@ -134,6 +134,7 @@ class Group {
   boolean isRna() { return false; }
   boolean isPurine() { return false; }
   boolean isPyrimidine() { return false; }
+  boolean isCarbohydrate() { return false; }
 
   ////////////////////////////////////////////////////////////////
   // static stuff for group ids

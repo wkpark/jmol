@@ -72,10 +72,6 @@ class AlphaPolymer extends Polymer {
       monomers[i].setStructure(proteinstructure);
   }
 
-  boolean isProtein() {
-    return true;
-  }
-
   void calcHydrogenBonds() {
     //deprecated
   }

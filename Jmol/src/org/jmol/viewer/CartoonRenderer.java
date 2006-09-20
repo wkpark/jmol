@@ -71,6 +71,7 @@ class CartoonRenderer extends MpsRenderer {
   }
 
   boolean isNucleicPolymer;
+  boolean isCarbohydratePolymer;
   boolean ribbonBorder = false;
   int monomerCount;
   Monomer[] monomers;
@@ -101,7 +102,8 @@ class CartoonRenderer extends MpsRenderer {
       mads = strandsChain.mads;
       colixes = strandsChain.colixes;
       ribbonBorder = viewer.getRibbonBorder();
-      initializeChain(strandsChain.polymer);
+      if (!initializeChain(strandsChain.polymer))
+        return;
       render1Chain();
     }
   }
@@ -110,8 +112,11 @@ class CartoonRenderer extends MpsRenderer {
   Point3f[] screensf;
   Point3f[] cordMidPoints;
 
-  void initializeChain(Polymer polymer) {
+  boolean initializeChain(Polymer polymer) {
     isNucleicPolymer = polymer instanceof NucleicPolymer;
+    isCarbohydratePolymer = polymer instanceof CarbohydratePolymer;
+    if (isCarbohydratePolymer)
+      return false;
     isSpecials = calcIsSpecials(monomerCount, monomers);
     isHelixes = calcIsHelix(monomerCount, monomers);
     leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
@@ -119,11 +124,12 @@ class CartoonRenderer extends MpsRenderer {
         isNucleicPolymer ? 1f / 1000 : 0.5f / 1000);
     ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
         isNucleicPolymer ? 0f : -0.5f / 1000);
-    if (!renderAsRockets || isNucleicPolymer)
-      return;
+    if (!renderAsRockets || isNucleicPolymer || isCarbohydratePolymer)
+      return true;
     cordMidPoints = calcRopeMidPoints((AminoPolymer) polymer, newRockets);
     getScreens();
     clearPending();
+    return true;
   }
 
   Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer, boolean isNewStyle) {
@@ -219,7 +225,7 @@ class CartoonRenderer extends MpsRenderer {
       }
     }
 
-    if (renderAsRockets && !isNucleicPolymer) {
+    if (renderAsRockets && !isNucleicPolymer && !isCarbohydratePolymer) {
       lastWasHelix = false;
       for (int i = 0; i < monomerCount; ++i) {
         if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)

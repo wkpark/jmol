@@ -190,41 +190,51 @@ class CartoonRenderer extends MpsRenderer {
   }
   
   void render1Chain() {
-    boolean lastWasSpecial = false;
+    boolean lastWasSheet = false;
     boolean lastWasHelix = false;
+    
+    // this code is REALLY BAD, I admit. Key structures that must render properly
+    // include 1crn and 7hvp
+    
     for (int i = monomerCount; --i >= 0;) {
+      // runs backwards, so it can render the heads first
       Monomer group = monomers[i];
       if ((group.shapeVisibilityFlags & myVisibilityFlag) != 0) {
         short colix = Graphics3D.inheritColix(colixes[i],
             group.getLeadAtom().colixAtom);
-        boolean isSpecial = isSpecials[i];
-        boolean isHelix = (renderAsRockets ? isHelixes[i] : false);
-        if (isHelix) {
-          // skip helixes if rockets
-        } else if (isSpecial) {
-          if (lastWasSpecial && !lastWasHelix)
+        boolean isHelix = isHelixes[i];
+        boolean isSheet = isSpecials[i] && !isHelix;
+        boolean isHelixRocket = (renderAsRockets ? isHelix : false);
+        if (isHelixRocket) {
+          // skip helixRockets in this pass
+        } else if (isSheet || isHelix) {
+          if (lastWasSheet && isSheet || lastWasHelix && isHelix) {
             render2StrandSegment(monomerCount, group, colix, mads, i);
-          else
+          } else {
             render2StrandArrowhead(monomerCount, group, colix, mads, i);
-        } else if (true || !renderAsRockets || isNucleicPolymer) {
-          if (lastWasHelix) {
+          }
+        } else {
+          //turn
+          if (lastWasHelix && !isHelix && !isSheet) {
             renderRopeSegment(colix, mads, i, monomerCount, monomers,
                 screens, isSpecials);
           } else if (!renderAsRockets || i == 0 || !isHelixes[i - 1]) {
             renderRopeSegment(colix, mads, i, monomerCount, monomers,
-                leadMidpointScreens, isSpecials);
+               leadMidpointScreens, isSpecials);
           }
           if (isNucleicPolymer)
             renderNucleicBaseStep((NucleicMonomer) group, colix, mads[i],
                 leadMidpointScreens[i + 1]);
         }
-        lastWasSpecial = isSpecial;
+        lastWasSheet = isSheet;
         lastWasHelix = isHelix;
       } else {
-        lastWasSpecial = false;
+        lastWasHelix = lastWasSheet = false;
       }
     }
 
+    //doing the cylinders separately because we want to connect them if we can.
+    
     if (renderAsRockets && !isNucleicPolymer && !isCarbohydratePolymer) {
       lastWasHelix = false;
       for (int i = 0; i < monomerCount; ++i) {
@@ -237,9 +247,10 @@ class CartoonRenderer extends MpsRenderer {
           boolean isHelix = isHelixes[i];
           if (isHelix) {
             renderHelixAsRocket(group, colix, mads[i], i > 0 && isHelixes[i-1]);
-            if (newRockets &&  i > 0 && !isHelixes[i-1])
+            if (newRockets &&  i > 0 && !isSpecials[i-1]) {
               renderRopeSegment2(colix, mads, i, i - 1, monomerCount,
                   monomers, screens, null);
+            }
           } else if (isSpecials[i]) {
             // sheet done above
           } else if (lastWasHelix) {

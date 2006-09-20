@@ -157,7 +157,6 @@ class PatternMatcher {
 
     int targetMass = patternAtom.getAtomicMass();
     if (n == 1 && targetMass > 0) {
-      System.out.println(targetMass + " patternmatcher");
       int atomMass = atom.getIsotopeNumber();
       // allow Jmol H to match H or [1H]
       if (atomMass != targetMass && (atomMass != 0 || targetMass != 1))

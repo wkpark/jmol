@@ -398,7 +398,7 @@ public final class Frame {
 
     Atom atom = new Atom(viewer, this, currentModelIndex, atomCount, atomSymmetry,
         atomSite, atomicNumber, atomName, formalCharge, partialCharge, occupancy,
-        bfactor, x, y, z, isHetero, atomSerial, chainID, vectorX, vectorY,
+        bfactor, x, y, z, isHetero, atomSerial, chainID, group3, vectorX, vectorY,
         vectorZ, alternateLocationID, clientAtomReference);
     atoms[atomCount] = atom;
     ++atomCount;

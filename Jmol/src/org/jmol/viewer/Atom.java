@@ -85,7 +85,7 @@ final public class Atom extends Point3fi implements Tuple {
        int occupancy,
        float bfactor,
        float x, float y, float z,
-       boolean isHetero, int atomSerial, char chainID,
+       boolean isHetero, int atomSerial, char chainID, String group3,
        float vibrationX, float vibrationY, float vibrationZ,
        char alternateLocationID,
        Object clientAtomReference) {
@@ -109,6 +109,9 @@ final public class Atom extends Point3fi implements Tuple {
     }
 
     byte specialAtomID = lookupSpecialAtomID(atomName);
+    if (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON && group3.equalsIgnoreCase("CA")) {
+      specialAtomID = 0;
+    }
     //Logger.debug("atom - "+atomName+" specialAtomID=" + specialAtomID);
     if (specialAtomID != 0) {
       if (frame.specialAtomIDs == null)

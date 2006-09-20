@@ -2091,8 +2091,13 @@ public final class Frame {
 
   void findElementsPresent() {
     elementsPresent = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      elementsPresent.set(atoms[i].getElementNumber());
+    for (int i = atomCount; --i >= 0;) {
+      int n = atoms[i].getAtomicAndIsotopeNumber();
+      if (n >= 256)
+        n = JmolConstants.elementNumberMax
+            + JmolConstants.altElementIndexFromNumber(n);
+      elementsPresent.set(n);
+    }
   }
 
   BitSet getElementsPresentBitSet() {

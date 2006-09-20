@@ -78,10 +78,20 @@ abstract public class JmolPopup {
       return;
     removeAll(elementsComputedMenu);
     for (int i = 0; i < JmolConstants.elementNumberMax; ++i) {
-      //no isotopes here for now
       if (elementsPresentBitSet.get(i)) {
         String elementName = JmolConstants.elementNameFromNumber(i);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
+        String entryName = elementSymbol + " - " + elementName;
+        String script = "select " + elementName;
+        addMenuItem(elementsComputedMenu, entryName, script);
+      }
+    }
+    for (int i = JmolConstants.firstIsotope; i < JmolConstants.altElementMax; ++i) {
+      int n = JmolConstants.elementNumberMax + i;
+      if (elementsPresentBitSet.get(n)) {
+        n = JmolConstants.altElementNumberFromIndex(i);
+        String elementName = JmolConstants.elementNameFromNumber(n);
+        String elementSymbol = JmolConstants.elementSymbolFromNumber(n);
         String entryName = elementSymbol + " - " + elementName;
         String script = "select " + elementName;
         addMenuItem(elementsComputedMenu, entryName, script);

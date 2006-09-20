@@ -993,7 +993,7 @@ final public class Atom extends Point3fi implements Tuple {
           strT = getAtomName();
           break;
         case 'e':
-          strT = JmolConstants.elementSymbolFromNumber(atomicAndIsotopeNumber);
+          strT = getElementSymbol();
           break;
         case 'x':
           floatT = x;
@@ -1299,19 +1299,4 @@ final public class Atom extends Point3fi implements Tuple {
     return group.isPyrimidine();
   }
 
-  ////////////////////////////////////////////////////////////////
-
-  Hashtable getPublicProperties() {
-    Hashtable ht = new Hashtable();
-    ht.put("element", getElementSymbol());
-    ht.put("x", new Double(x));
-    ht.put("y", new Double(y));
-    ht.put("z", new Double(z));
-    ht.put("atomIndex", new Integer(atomIndex));
-    ht.put("modelIndex", new Integer(modelIndex));
-    ht.put("argb", new Integer(getArgb()));
-    ht.put("radius", new Double(getRadius()));
-    ht.put("atomNumber", new Integer(getAtomNumber()));
-    return ht;
-  }
 }

@@ -789,9 +789,9 @@ String getAtomInfoChime(int i) {
     BitSet bsThis = new BitSet();
     for (int i = getAtomCount(); --i >= 0;)
       if (bs.get(i))
-        bsThis.set(frame.getAtomAt(i).getElementNumber());
+        bsThis.set(getElementNumber(i));
     for (int i = getAtomCount(); --i >= 0;)
-      if (bsThis.get(frame.getAtomAt(i).getElementNumber()))
+      if (bsThis.get(getElementNumber(i)))
         bsResult.set(i);
     return bsResult;
   }
@@ -1041,7 +1041,7 @@ String getAtomInfoChime(int i) {
     Hashtable info = new Hashtable();
     getAtomIdentityInfo(i, info);
     info.put("element", getElementName(i));
-    info.put("elemno", new Integer(atom.getElementNumber()));
+    info.put("elemno", new Integer(getElementNumber(i)));
     info.put("x", new Float(getAtomX(i)));
     info.put("y", new Float(getAtomY(i)));
     info.put("z", new Float(getAtomZ(i)));

@@ -338,7 +338,7 @@ final public class JmolConstants {
    * @param elementSymbol First char must be upper case, second char accepts upper or lower case
    * @return elementNumber = atomicNumber + IsotopeNumber*256
    */
-  public static short elementNumberFromSymbol(String elementSymbol) {
+  public final static short elementNumberFromSymbol(String elementSymbol) {
     if (htElementMap == null) {
       Hashtable map = new Hashtable();
       for (int elementNumber = elementNumberMax; --elementNumber >= 0;) {
@@ -539,7 +539,7 @@ final public class JmolConstants {
         return i;
     return 0;
   }
-  
+    
   private final static short[] altElementNumbers = {
     0,
     13,
@@ -549,8 +549,6 @@ final public class JmolConstants {
     1 + (3 << 8), // T = 1 + 3*256
   };
 
-  private final static int firstIsotope = 4;
-  
   private final static String[] altElementSymbols = {
     "Xx",
     "Al",
@@ -569,10 +567,24 @@ final public class JmolConstants {
     "tritium"
   };
   
+  public final static int[] altArgbsCpk = {
+    0xFFFF1493, // Xx 0
+    0xFFBFA6A6, // Al 13
+    0xFFFFFF30, // S  16
+    0xFF57178F, // Cs 55
+    0xFFD9FFFF, // D 2H (He color)
+    0xFFCC80FF, // T 3H (Li color)
+  };
+
+  /**
+   * first entry of an actual isotope int the altElementSymbols, altElementNames, altElementNumbers arrays
+   */
+  public final static int firstIsotope = 4;
+  
   /**
    * length of the altElementSymbols, altElementNames, altElementNumbers arrays
    */
-  final static int altElementMax = altElementNumbers.length;
+  public final static int altElementMax = altElementNumbers.length;
   
   /**
    * Default table of van der Waals Radii.
@@ -1349,15 +1361,6 @@ final public class JmolConstants {
     0xFFE6002E, // Hs 108
     0xFFEB0026, // Mt 109
 };
-
-  public final static int[] altArgbsCpk = {
-    0xFFFF1493, // Xx 0
-    0xFFBFA6A6, // Al 13
-    0xFFFFFF30, // S  16
-    0xFF57178F, // Cs 55
-    0xFFD9FFFF, // D 2H (He color)
-    0xFFCC80FF, // T 3H (Li color)
-  };
 
   public final static int[] argbsCpkRasmol = {
     0x00FF1493 + ( 0 << 24), // Xx 0
@@ -2255,7 +2258,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     "@solvent _g>=70 & _g<=74", // water or ions
     "@hoh water",
-    "@water _g>=70 & _g<=72, oxygen & connected(2, hydrogen), hydrogen & connected(oxygen & connected(2, hydrogen))",
+    "@water _g>=70 & _g<=72, oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium and tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
     "@ions _g=73,_g=74",
 
     //

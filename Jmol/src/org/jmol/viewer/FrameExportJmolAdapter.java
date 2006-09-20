@@ -71,7 +71,7 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
       return true;
     }
     public Object getUniqueID() { return new Integer(iatom); }
-    public int getElementNumber() { return atom.elementNumber; }
+    public int getElementNumber() { return atom.getElementNumber(); }//no isotope here
     public String getElementSymbol() { return atom.getElementSymbol(); }
     public int getFormalCharge() { return atom.getFormalCharge(); }
     public float getPartialCharge() { return atom.getPartialCharge(); }

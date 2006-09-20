@@ -4004,8 +4004,9 @@ class Isosurface extends MeshCollection {
         continue;
       pt.set(atom);
       pt.scale(1 / ANGSTROMS_PER_BOHR);
-      jvxlFileHeader += atom.elementNumber + " " + atom.elementNumber + ".0 "
-          + pt.x + " " + pt.y + " " + pt.z + "\n";
+      jvxlFileHeader += atom.getAtomicAndIsotopeNumber() + " "
+          + atom.getAtomicAndIsotopeNumber() + ".0 " + pt.x + " " + pt.y + " "
+          + pt.z + "\n";
     }
     atomCount = -Integer.MAX_VALUE;
     negativeAtomCount = false;
@@ -4105,7 +4106,7 @@ class Isosurface extends MeshCollection {
       for (int i = firstSet; i <= lastSet; i++) {
         if (!atomSet.get(i))
           continue;
-        atomNo[iAtom] = atoms[i].elementNumber;
+        atomNo[iAtom] = atoms[i].getElementNumber();
         solvent_ptAtom[iAtom] = atoms[i];
         solvent_atomRadius[iAtom++] = atoms[i].getVanderwaalsRadiusFloat()
             + solventExtendedAtomRadius;

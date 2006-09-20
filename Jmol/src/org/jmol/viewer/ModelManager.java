@@ -591,11 +591,8 @@ String getAtomInfoChime(int i) {
   }
 
   String getElementName(int i) {
-    try {
-      return JmolConstants.elementNames[frame.getAtomAt(i).getElementNumber()];
-    } catch (Exception e) {
-      return "";
-    }
+      return JmolConstants.elementNameFromNumber(frame.getAtomAt(i)
+          .getAtomicAndIsotopeNumber());
   }
 
   String getAtomName(int i) {
@@ -792,9 +789,9 @@ String getAtomInfoChime(int i) {
     BitSet bsThis = new BitSet();
     for (int i = getAtomCount(); --i >= 0;)
       if (bs.get(i))
-        bsThis.set(frame.getAtomAt(i).elementNumber);
+        bsThis.set(frame.getAtomAt(i).getElementNumber());
     for (int i = getAtomCount(); --i >= 0;)
-      if (bsThis.get(frame.getAtomAt(i).elementNumber))
+      if (bsThis.get(frame.getAtomAt(i).getElementNumber()))
         bsResult.set(i);
     return bsResult;
   }

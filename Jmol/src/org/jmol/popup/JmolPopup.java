@@ -77,10 +77,11 @@ abstract public class JmolPopup {
     if (elementsComputedMenu == null || elementsPresentBitSet == null)
       return;
     removeAll(elementsComputedMenu);
-    for (int i = 0; i < JmolConstants.elementNames.length; ++i) {
+    for (int i = 0; i < JmolConstants.elementNumberMax; ++i) {
+      //no isotopes here for now
       if (elementsPresentBitSet.get(i)) {
-        String elementName = JmolConstants.elementNames[i];
-        String elementSymbol = JmolConstants.elementSymbols[i];
+        String elementName = JmolConstants.elementNameFromNumber(i);
+        String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
         String entryName = elementSymbol + " - " + elementName;
         String script = "select " + elementName;
         addMenuItem(elementsComputedMenu, entryName, script);

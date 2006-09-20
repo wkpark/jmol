@@ -46,7 +46,7 @@ class Bond {
       throw new NullPointerException();
     this.atom1 = atom1;
     this.atom2 = atom2;
-    if (atom1.elementNumber == 16 && atom2.elementNumber == 16)
+    if (atom1.getElementNumber() == 16 && atom2.getElementNumber() == 16)
       order |= JmolConstants.BOND_SULFUR_MASK;
     if (order == JmolConstants.BOND_AROMATIC_MASK)
       order = JmolConstants.BOND_AROMATIC;

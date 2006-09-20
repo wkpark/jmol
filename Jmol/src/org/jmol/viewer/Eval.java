@@ -315,30 +315,14 @@ class Eval { //implements Runnable {
       predefine(JmolConstants.predefinedSets[iPredef]);
     // Now, define all the elements as predefined sets
     // hydrogen is handled specially, so don't define it
-    for (int i = JmolConstants.elementNames.length; --i > 1;) {
-      String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
+    for (int i = JmolConstants.elementNumberMax; --i > 1;) {
+      String definition = "@" + JmolConstants.elementNameFromNumber(i)+ " _e=" + i;
       predefine(definition);
     }
-    for (int j = JmolConstants.alternateElementNumbers.length; --j >= 0;) {
-      String definition = "@" + JmolConstants.alternateElementNames[j] + " _e="
-          + JmolConstants.alternateElementNumbers[j];
+    for (int i = JmolConstants.altElementMax; --i >= 0;) {
+      String definition = "@" + JmolConstants.altElementNameFromIndex(i) + " _e="
+          + JmolConstants.altElementNumberFromIndex(i);
       predefine(definition);
-    }
-  }
-
-  void predefineElements() {
-    // the name 'hydrogen' handled specially
-    for (int i = JmolConstants.elementNames.length; --i > 1;) {
-      String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
-      if (!compiler.compile("#element", definition, true)) {
-        Logger.error("element definition error:" + definition);
-        continue;
-      }
-      Token[][] aatoken = compiler.getAatokenCompiled();
-      Token[] statement = aatoken[0];
-      // int tok = statement[1].tok;
-      String variable = (String) statement[1].value;
-      variables.put(variable, statement);
     }
   }
 
@@ -1003,8 +987,10 @@ class Eval { //implements Runnable {
         propertyValue = atom.getAtomNumber();
         break;
       case Token.elemno:
-      case Token.element:
         propertyValue = atom.getElementNumber();
+        break;
+      case Token.element:
+        propertyValue = atom.getAtomicAndIsotopeNumber();
         break;
       case Token.site:
         propertyValue = atom.getAtomSite();
@@ -1884,15 +1870,15 @@ class Eval { //implements Runnable {
         viewer.setSelectionArgb(argb);
         return;
       }
-      for (int i = JmolConstants.elementNames.length; --i >= 0;) {
-        if (str.equalsIgnoreCase(JmolConstants.elementNames[i])) {
+      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
+        if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
           viewer.setElementArgb(i, getArgbParam(2));
           return;
         }
       }
-      for (int i = JmolConstants.alternateElementNames.length; --i >= 0;) {
-        if (str.equalsIgnoreCase(JmolConstants.alternateElementNames[i])) {
-          viewer.setElementArgb(JmolConstants.alternateElementNumbers[i],
+      for (int i = JmolConstants.altElementMax; --i >= 0;) {
+        if (str.equalsIgnoreCase(JmolConstants.altElementNameFromIndex(i))) {
+          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
               getArgbParam(2));
           return;
         }

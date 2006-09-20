@@ -687,7 +687,7 @@ class Token {
 
     "atomno",       new Token(atomno, "atomno"),
     "elemno",       tokenElemno,
-    "_e",           tokenElemno,
+    "_e",           new Token(element, "element"),
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
     "relativetemperature",  null,

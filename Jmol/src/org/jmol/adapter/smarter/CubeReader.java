@@ -130,7 +130,7 @@ class CubeReader extends AtomSetCollectionReader {
     for (int i = 0; i < atomCount; ++i) {
       line = reader.readLine();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementNumber = (byte)parseInt(line);
+      atom.elementNumber = (short)parseInt(line); //allowing atomicAndIsotope for JVXL format
       atom.partialCharge = parseFloat(line, ichNextParse);
       atom.x = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
       atom.y = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;

@@ -1535,6 +1535,7 @@ final public class Graphics3D {
    * changable colixes
    * give me a short ID and a color, and I will give you a colix
    * later, you can reassign the color if you want
+   * Used only for colorManager coloring of elements
    ****************************************************************/
 
   short[] changableColixMap = new short[16];

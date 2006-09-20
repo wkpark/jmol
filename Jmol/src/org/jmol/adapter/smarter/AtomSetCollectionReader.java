@@ -319,10 +319,7 @@ abstract class AtomSetCollectionReader extends Parser {
   }
   
   static String getElementSymbol(int elementNumber) {
-    if (elementNumber < 0
-        || elementNumber >= JmolConstants.elementSymbols.length)
-      elementNumber = 0;
-    return JmolConstants.elementSymbols[elementNumber];
+    return JmolConstants.elementSymbolFromNumber(elementNumber);
   }
 
   void fillDataBlock(BufferedReader reader, String[][] data) throws Exception {

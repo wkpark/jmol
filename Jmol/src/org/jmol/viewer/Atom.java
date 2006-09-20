@@ -48,7 +48,7 @@ final public class Atom extends Point3fi implements Tuple {
   int atomSite;
   short screenDiameter;
   short modelIndex; // we want this here for the BallsRenderer
-  byte elementNumber;
+  private short atomicAndIsotopeNumber;
   byte formalChargeAndFlags;
   byte alternateLocationID;
   short madAtom;
@@ -79,7 +79,7 @@ final public class Atom extends Point3fi implements Tuple {
        int atomIndex,
        BitSet atomSymmetry,
        int atomSite,
-       byte elementNumber,
+       short atomicAndIsotopeNumber,
        String atomName,
        int formalCharge, float partialCharge,
        int occupancy,
@@ -93,7 +93,7 @@ final public class Atom extends Point3fi implements Tuple {
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
     this.atomIndex = atomIndex;
-    this.elementNumber = elementNumber;
+    this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     this.formalChargeAndFlags = (byte)(formalCharge << 3);
     this.colixAtom = viewer.getColixAtom(this);
     this.alternateLocationID = (byte)alternateLocationID;
@@ -345,7 +345,7 @@ final public class Atom extends Point3fi implements Tuple {
     int n = 0;
     for (int i = bonds.length; --i >= 0; )
       if ((bonds[i].order & JmolConstants.BOND_COVALENT_MASK) != 0
-          && bonds[i].getOtherAtom(this).elementNumber == 1)
+          && (bonds[i].getOtherAtom(this).getElementNumber()) == 1)
         ++n;
     return n;
   }
@@ -409,12 +409,16 @@ final public class Atom extends Point3fi implements Tuple {
     screenDiameter = viewer.scaleToScreen(screenZ, madAtom);
   }
 
-  byte getElementNumber() {
-    return elementNumber;
+  short getElementNumber() {
+    return (short) (atomicAndIsotopeNumber % 256);
+  }
+  
+  short getAtomicAndIsotopeNumber() {
+    return atomicAndIsotopeNumber;
   }
 
   String getElementSymbol() {
-    return JmolConstants.elementSymbols[elementNumber];
+    return JmolConstants.elementSymbolFromNumber(atomicAndIsotopeNumber);
   }
 
   String getAtomNameOrNull() {
@@ -426,8 +430,7 @@ final public class Atom extends Point3fi implements Tuple {
 
   String getAtomName() {
     String atomName = getAtomNameOrNull();
-    return (atomName != null
-            ? atomName : JmolConstants.elementSymbols[elementNumber]);
+    return (atomName != null ? atomName : getElementSymbol());
   }
   
   String getPdbAtomName4() {
@@ -574,15 +577,15 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   short getVanderwaalsMar() {
-    return JmolConstants.vanderwaalsMars[elementNumber];
+    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 256];
   }
 
   float getVanderwaalsRadiusFloat() {
-    return JmolConstants.vanderwaalsMars[elementNumber] / 1000f;
+    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 256] / 1000f;
   }
 
   short getBondingMar() {
-    return JmolConstants.getBondingMar(elementNumber,
+    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 256,
                                        formalChargeAndFlags >> 3);
   }
 
@@ -990,7 +993,7 @@ final public class Atom extends Point3fi implements Tuple {
           strT = getAtomName();
           break;
         case 'e':
-          strT = JmolConstants.elementSymbols[elementNumber];
+          strT = JmolConstants.elementSymbolFromNumber(atomicAndIsotopeNumber);
           break;
         case 'x':
           floatT = x;

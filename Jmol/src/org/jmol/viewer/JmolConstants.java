@@ -203,7 +203,7 @@ final public class JmolConstants {
    * The default elementSymbols. Presumably the only entry which may cause
    * confusion is element 0, whose symbol we have defined as "Xx". 
    */
-  public final static String[] elementSymbols = {
+  private final static String[] elementSymbols = {
     "Xx", // 0
     "H",  // 1
     "He", // 2
@@ -336,41 +336,72 @@ final public class JmolConstants {
 
   /**
    * @param elementSymbol First char must be upper case, second char accepts upper or lower case
-   * @return elementNumber
+   * @return elementNumber = atomicNumber + IsotopeNumber*256
    */
-  public static byte elementNumberFromSymbol(String elementSymbol) {
+  public static short elementNumberFromSymbol(String elementSymbol) {
     if (htElementMap == null) {
       Hashtable map = new Hashtable();
-      for (int elementNumber = elementNumberMax; --elementNumber >= 0; ) {
+      for (int elementNumber = elementNumberMax; --elementNumber >= 0;) {
         String symbol = elementSymbols[elementNumber];
         Integer boxed = new Integer(elementNumber);
         map.put(symbol, boxed);
-        if (symbol.length() == 2) {
-          symbol =
-            "" + symbol.charAt(0) + Character.toUpperCase(symbol.charAt(1));
-          map.put(symbol, boxed);
-        }
-        if (elementNumber == 1) {
-          // special case for D = deuterium
-          //
-          // We can put in a special table for these in the future
-          // if there are more 'element symbol aliases'
-          map.put("D", boxed);
-        }
+        if (symbol.length() == 2)
+          map.put(symbol.toUpperCase(), boxed);
+      }
+      for (int i = altElementMax; --i >= firstIsotope;) {
+        String symbol = altElementSymbols[i];
+        Integer boxed = new Integer(altElementNumbers[i]);
+        map.put(symbol, boxed);
+        if (symbol.length() == 2)
+          map.put(symbol.toUpperCase(), boxed);
       }
       htElementMap = map;
     }
     if (elementSymbol == null)
       return 0;
-    Integer boxedAtomicNumber = (Integer)htElementMap.get(elementSymbol);
+    Integer boxedAtomicNumber = (Integer) htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
-      return (byte)boxedAtomicNumber.intValue();
+      return (short) boxedAtomicNumber.intValue();
     Logger.error("" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }
+  
+  /**
+   * @param elementNumber may be atomicNumber + isotopeNumber*256
+   * @return elementSymbol
+   */
+  public final static String elementSymbolFromNumber(int elementNumber) {
+    //Isotopes as atomicNumber + IsotopeNumber * 256
+    if (elementNumber >= elementNumberMax) {
+      for (int j = altElementMax; --j >= 0;)
+        if (elementNumber == altElementNumbers[j])
+          return altElementSymbols[j];
+      elementNumber %= 256;
+    }
+    if (elementNumber < 0 || elementNumber >= elementNumberMax)
+      elementNumber = 0;
+    return elementSymbols[elementNumber];
+  }
 
-  public final static String elementNames[] = {
-    "unknown",
+  /**
+   * @param elementNumber may be atomicNumber + isotopeNumber*256
+   * @return elementName
+   */
+  public final static String elementNameFromNumber(int elementNumber) {
+    //Isotopes as atomicNumber + IsotopeNumber * 256
+    if (elementNumber >= elementNumberMax) {
+      for (int j = altElementMax; --j >= 0;)
+        if (elementNumber == altElementNumbers[j])
+          return altElementNames[j];
+      elementNumber %= 256;
+    }
+    if (elementNumber < 0 || elementNumber >= elementNumberMax)
+      elementNumber = 0;
+    return elementNames[elementNumber];
+  }
+
+  private final static String elementNames[] = {
+    "unknown",       //  0
     "hydrogen",      //  1
     "helium",        //  2
     "lithium",       //  3
@@ -482,20 +513,67 @@ final public class JmolConstants {
     "meitnerium"     // 109
   };
 
-  public final static byte[] alternateElementNumbers = {
+  /**
+   * @param i index into altElementNames
+   * @return elementName
+   */
+  public final static String altElementNameFromIndex(int i) {
+    return altElementNames[i];
+  }
+  
+  /**
+   * @param i index into altElementNumbers
+   * @return elementNumber (may be atomicNumber + isotopeNumber*256)
+   */
+  public final static short altElementNumberFromIndex(int i) {
+    return altElementNumbers[i];
+  }
+  
+  /**
+   * @param atomicAndIsotopeNumber (may be atomicNumber + isotopeNumber*256)
+   * @return  index into altElementNumbers
+   */
+  public final static int altElementIndexFromNumber(int atomicAndIsotopeNumber) {
+    for (int i = 0; i < altElementMax; i++)
+      if (altElementNumbers[i] == atomicAndIsotopeNumber)
+        return i;
+    return 0;
+  }
+  
+  private final static short[] altElementNumbers = {
     0,
     13,
     16,
     55,
+    1 + (2 << 8), // D = 1 + 2*256  <-- firstIsotope
+    1 + (3 << 8), // T = 1 + 3*256
   };
 
-  public final static String[] alternateElementNames = {
+  private final static int firstIsotope = 4;
+  
+  private final static String[] altElementSymbols = {
+    "Xx",
+    "Al",
+    "S",
+    "Cs",
+    "D",
+    "T"
+  };
+
+  private final static String[] altElementNames = {
     "dummy",
     "aluminium",
     "sulphur",
     "caesium",
+    "deuterium",
+    "tritium"
   };
-
+  
+  /**
+   * length of the altElementSymbols, altElementNames, altElementNumbers arrays
+   */
+  final static int altElementMax = altElementNumbers.length;
+  
   /**
    * Default table of van der Waals Radii.
    * values are stored as MAR -- Milli Angstrom Radius
@@ -1270,6 +1348,15 @@ final public class JmolConstants {
     0xFFE00038, // Bh 107
     0xFFE6002E, // Hs 108
     0xFFEB0026, // Mt 109
+};
+
+  public final static int[] altArgbsCpk = {
+    0xFFFF1493, // Xx 0
+    0xFFBFA6A6, // Al 13
+    0xFFFFFF30, // S  16
+    0xFF57178F, // Cs 55
+    0xFFD9FFFF, // D 2H (He color)
+    0xFFCC80FF, // T 3H (Li color)
   };
 
   public final static int[] argbsCpkRasmol = {

@@ -116,7 +116,10 @@ public final class Frame {
     int indexInModel;
     int nAtoms;
     int nElements;
-    int[] elementCounts = new int[120];
+    int[] elementCounts = new int[JmolConstants.elementNumberMax];
+    int[] altElementCounts = new int[JmolConstants.altElementMax];
+    int elementNumberMax;
+    int altElementMax;
     String mf;
     BitSet atomList;
 
@@ -137,40 +140,50 @@ public final class Frame {
       this.moleculeIndex = moleculeIndex;
       this.modelIndex = modelIndex;
       this.indexInModel = indexInModel;
-      nAtoms = getElementAndAtomCount(atomList, elementCounts, atomCount);
-      nElements = countElements(elementCounts, JmolConstants.elementNumberMax);
-      mf = getMolecularFormula(elementCounts, JmolConstants.elementNumberMax);
+      getElementAndAtomCount(atomList);
+      mf = getMolecularFormula();
 
       Logger.info("new Molecule (" + mf + ") " + (indexInModel + 1) + "/"
           + (modelIndex + 1));
     }
 
-    int getElementAndAtomCount(BitSet atomList, int[] elementCounts, int atomMax) {
-      int nAtoms = 0;
-      for (int i = 0; i < atomMax; i++)
+    void getElementAndAtomCount(BitSet atomList) {
+      for (int i = 0; i < atomCount; i++)
         if (atomList.get(i)) {
           nAtoms++;
-          elementCounts[atoms[i].elementNumber]++;
+          int n = atoms[i].getAtomicAndIsotopeNumber();
+          if (n < 256) {
+            elementCounts[n]++;
+            if (elementCounts[n] == 1)
+              nElements++;
+            elementNumberMax = Math.max(elementNumberMax, n);
+          } else {
+            n = JmolConstants.altElementIndexFromNumber(n);
+            altElementCounts[n]++;
+            if (altElementCounts[n] == 1)
+              nElements++;            
+            altElementMax = Math.max(altElementMax, n);
+          }
         }
-      return nAtoms;
     }
 
-    int countElements(int[] elementCounts, int eMax) {
-      int count = 0;
-      for (int i = 1; i < eMax; i++)
-        if (elementCounts[i] > 0)
-          count++;
-      return count;
-    }
-
-    String getMolecularFormula(int[] elementCounts, int eMax) {
+    String getMolecularFormula() {
       String mf = "";
       String sep = "";
       int nX;
-      for (int i = 1; i < eMax; i++) {
+      for (int i = 1; i < elementNumberMax; i++) {
         nX = elementCounts[i];
         if (nX != 0) {
-          mf += sep + JmolConstants.elementSymbols[i] + " " + nX;
+          mf += sep + JmolConstants.elementSymbolFromNumber(i) + " " + nX;
+          sep = " ";
+        }
+      }
+      for (int i = 1; i < altElementMax; i++) {
+        nX = altElementCounts[i];
+        if (nX != 0) {
+          mf += sep
+              + JmolConstants.elementSymbolFromNumber(JmolConstants
+                  .altElementNumberFromIndex(i)) + " " + nX;
           sep = " ";
         }
       }
@@ -252,20 +265,21 @@ public final class Frame {
 
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(clientFile); iterAtom.hasNext();) {
-      byte elementNumber = (byte) iterAtom.getElementNumber();
+      short elementNumber = (short) iterAtom.getElementNumber();
       if (elementNumber <= 0)
         elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
             .getElementSymbol());
       char alternateLocation = iterAtom.getAlternateLocationID();
-      addAtom(iterAtom.getAtomSetIndex(), iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(), iterAtom
-          .getUniqueID(), elementNumber, iterAtom.getAtomName(), iterAtom
-          .getFormalCharge(), iterAtom.getPartialCharge(), iterAtom
-          .getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(), iterAtom
-          .getY(), iterAtom.getZ(), iterAtom.getIsHetero(), iterAtom
-          .getAtomSerial(), iterAtom.getChainID(), iterAtom.getGroup3(),
-          iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(), iterAtom
-              .getVectorX(), iterAtom.getVectorY(), iterAtom.getVectorZ(),
-          alternateLocation, iterAtom.getClientAtomReference());
+      addAtom(iterAtom.getAtomSetIndex(), iterAtom.getAtomSymmetry(), iterAtom
+          .getAtomSite(), iterAtom.getUniqueID(), elementNumber, iterAtom
+          .getAtomName(), iterAtom.getFormalCharge(), iterAtom
+          .getPartialCharge(), iterAtom.getOccupancy(), iterAtom.getBfactor(),
+          iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(), iterAtom
+              .getIsHetero(), iterAtom.getAtomSerial(), iterAtom.getChainID(),
+          iterAtom.getGroup3(), iterAtom.getSequenceNumber(), iterAtom
+              .getInsertionCode(), iterAtom.getVectorX(),
+          iterAtom.getVectorY(), iterAtom.getVectorZ(), alternateLocation,
+          iterAtom.getClientAtomReference());
     }
 
     fileHasHbonds = false;
@@ -369,10 +383,11 @@ public final class Frame {
     htAtomMap.clear();
   }
 
-  void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite, Object atomUid, byte atomicNumber,
-               String atomName, int formalCharge, float partialCharge,
-               int occupancy, float bfactor, float x, float y, float z,
-               boolean isHetero, int atomSerial, char chainID, String group3,
+  void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
+               Object atomUid, short atomicAndIsotopeNumber, String atomName,
+               int formalCharge, float partialCharge, int occupancy,
+               float bfactor, float x, float y, float z, boolean isHetero,
+               int atomSerial, char chainID, String group3,
                int groupSequenceNumber, char groupInsertionCode, float vectorX,
                float vectorY, float vectorZ, char alternateLocationID,
                Object clientAtomReference) {
@@ -396,10 +411,11 @@ public final class Frame {
     if (atomCount == atoms.length)
       growAtomArrays();
 
-    Atom atom = new Atom(viewer, this, currentModelIndex, atomCount, atomSymmetry,
-        atomSite, atomicNumber, atomName, formalCharge, partialCharge, occupancy,
-        bfactor, x, y, z, isHetero, atomSerial, chainID, group3, vectorX, vectorY,
-        vectorZ, alternateLocationID, clientAtomReference);
+    Atom atom = new Atom(viewer, this, currentModelIndex, atomCount,
+        atomSymmetry, atomSite, atomicAndIsotopeNumber, atomName, formalCharge,
+        partialCharge, occupancy, bfactor, x, y, z, isHetero, atomSerial,
+        chainID, group3, vectorX, vectorY, vectorZ, alternateLocationID,
+        clientAtomReference);
     atoms[atomCount] = atom;
     ++atomCount;
     htAtomMap.put(atomUid, atom);
@@ -1540,7 +1556,7 @@ public final class Frame {
       timeBegin = System.currentTimeMillis();
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      int elementNumber = atom.elementNumber;
+      int elementNumber = atom.getElementNumber();
       if (elementNumber != 7 && elementNumber != 8)
         continue;
       //float searchRadius = hbondMax;
@@ -1548,7 +1564,7 @@ public final class Frame {
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom) iter.nextElement();
-        int elementNumberNear = atomNear.elementNumber;
+        int elementNumberNear = atomNear.getElementNumber();
         if (elementNumberNear != 7 && elementNumberNear != 8)
           continue;
         if (atomNear == atom)
@@ -2046,9 +2062,10 @@ public final class Frame {
   BitSet getVisibleElementBitSet(int atomIndex) {
     // only from user picking
     BitSet bs = getVisibleSet();
-    int n = atoms[atomIndex].elementNumber;
+    int n = atoms[atomIndex].getElementNumber();
     for (int i = 0; i < atomCount; i++)
-      if (bs.get(i) && (atoms[i].elementNumber != n || atoms[i].madAtom == 0))
+      if (bs.get(i)
+          && (atoms[i].getElementNumber() != n || atoms[i].madAtom == 0))
         bs.clear(i);
     return bs;
   }
@@ -2075,7 +2092,7 @@ public final class Frame {
   void findElementsPresent() {
     elementsPresent = new BitSet();
     for (int i = atomCount; --i >= 0;)
-      elementsPresent.set(atoms[i].elementNumber);
+      elementsPresent.set(atoms[i].getElementNumber());
   }
 
   BitSet getElementsPresentBitSet() {
@@ -2902,7 +2919,7 @@ public final class Frame {
     Point3f pt;
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
     for (int i = 0; i < atomCount; i++)
-      if (atomSet.get(i) && atoms[i].elementNumber == 6) {
+      if (atomSet.get(i) && atoms[i].getElementNumber() == 6) {
         Atom atom = atoms[i];
         int nBonds = (atom.getCovalentHydrogenCount() > 0 ? 0 : atom
             .getCovalentBondCount());
@@ -2917,7 +2934,7 @@ public final class Frame {
     Point3f[] hAtoms = new Point3f[n];
     n = 0;
     for (int i = 0; i < atomCount; i++)
-      if (atomSet.get(i) && atoms[i].elementNumber == 6) {
+      if (atomSet.get(i) && atoms[i].getElementNumber() == 6) {
         Atom atom = atoms[i];
         int nBonds = (atom.getCovalentHydrogenCount() > 0 ? 0 : atom
             .getCovalentBondCount());

@@ -32,11 +32,15 @@ class ColorManager {
   Viewer viewer;
   Graphics3D g3d;
   int[] argbsCpk;
+  int[] altArgbsCpk;
 
   ColorManager(Viewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
     this.g3d = g3d;
     argbsCpk = JmolConstants.argbsCpk;
+    altArgbsCpk = new int[JmolConstants.altArgbsCpk.length];
+    for (int i = JmolConstants.altArgbsCpk.length; --i >= 0; )
+      altArgbsCpk[i] = JmolConstants.altArgbsCpk[i];
   }
 
   void setDefaultColors(String colorScheme) {
@@ -64,12 +68,17 @@ class ColorManager {
     }
     for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
       g3d.changeColixArgb((short)i, argbsCpk[i]);
+    for (int i = JmolConstants.altArgbsCpk.length; --i >= 0; )
+      g3d.changeColixArgb((short)(JmolConstants.elementNumberMax + i), altArgbsCpk[i]);
   }
 
   void copyArgbsCpk() {
     argbsCpk = new int[JmolConstants.argbsCpk.length];
     for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
       argbsCpk[i] = JmolConstants.argbsCpk[i];
+    altArgbsCpk = new int[JmolConstants.altArgbsCpk.length];
+    for (int i = JmolConstants.altArgbsCpk.length; --i >= 0; )
+      altArgbsCpk[i] = JmolConstants.altArgbsCpk[i];
   }
 
   
@@ -123,8 +132,12 @@ class ColorManager {
     if ("cpk" == palette) {
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
-      short id = atom.getElementNumber();
-      return g3d.getChangableColix(id, argbsCpk[id]);
+      short id = atom.getAtomicAndIsotopeNumber();
+      if (id < 256)
+        return g3d.getChangableColix(id, argbsCpk[id]);
+      id = (short) JmolConstants.altElementIndexFromNumber(id);
+      return g3d.getChangableColix(
+          (short) (JmolConstants.elementNumberMax + id), altArgbsCpk[id]);
     }
     if ("partialcharge" == palette) {
       // This code assumes that the range of partial charges is [-1, 1].
@@ -214,8 +227,8 @@ class ColorManager {
     } else if ("insertion" == palette) {
       frame = viewer.getFrame();
       //very inefficient!
-      index = quantize(frame.getInsertionCodeIndexInModel(atom.modelIndex,
-          atom.getInsertionCode()), 0, frame
+      index = quantize(frame.getInsertionCodeIndexInModel(atom.modelIndex, atom
+          .getInsertionCode()), 0, frame
           .getInsertionCountInModel(atom.modelIndex),
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
@@ -354,16 +367,25 @@ class ColorManager {
     flushCaches();
   }
 
-  void setElementArgb(int elementNumber, int argb) {
+  void setElementArgb(int id, int argb) {
     if (argb == 0) {
       if (argbsCpk == JmolConstants.argbsCpk)
         return;
-      argb = JmolConstants.argbsCpk[elementNumber];
+      if (id < 256)
+        argb = JmolConstants.argbsCpk[id];
+      else 
+        argb = JmolConstants.altArgbsCpk[JmolConstants.altElementIndexFromNumber(id)];
     } else
       argb |= 0xFF000000;
     if (argbsCpk == JmolConstants.argbsCpk)
       copyArgbsCpk();
-    argbsCpk[elementNumber] = argb;
-    g3d.changeColixArgb((short)elementNumber, argb);
+    if (id < 256) {
+      argbsCpk[id] = argb;
+      g3d.changeColixArgb((short)id, argb);
+      return;
+    }
+    id = JmolConstants.altElementIndexFromNumber(id);
+    altArgbsCpk[JmolConstants.altElementIndexFromNumber(id)] = argb;
+    g3d.changeColixArgb((short) (JmolConstants.elementNumberMax + id), argb);
   }
 }

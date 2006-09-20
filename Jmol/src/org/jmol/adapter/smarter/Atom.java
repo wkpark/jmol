@@ -32,7 +32,7 @@ class Atom extends Point3f implements Cloneable {
   BitSet bsSymmetry;
   int atomSite;
   String elementSymbol;
-  byte elementNumber = -1;
+  short elementNumber = -1;
   String atomName;
   int formalCharge = Integer.MIN_VALUE;
   {set(Float.NaN, Float.NaN, Float.NaN);}
@@ -131,7 +131,8 @@ class Atom extends Point3f implements Cloneable {
     1 << ('r' - 'a') |
     1 << ('s' - 'a') |
     1 << ('u' - 'a'),
-    //   Db Dy
+    //  D Db Dy
+    1 << 31 |
     1 << ('b' - 'a') |
     1 << ('y' - 'a'),
     //   Er Es Eu
@@ -216,7 +217,8 @@ class Atom extends Point3f implements Cloneable {
     1 << ('m' - 'a') |
     1 << ('n' - 'a') |
     1 << ('r' - 'a'),
-    //   Ta Tb Tc Te Th Ti Tl Tm
+    //  T Ta Tb Tc Te Th Ti Tl Tm
+    1 << 31 |
     1 << ('a' - 'a') |
     1 << ('b' - 'a') |
     1 << ('c' - 'a') |

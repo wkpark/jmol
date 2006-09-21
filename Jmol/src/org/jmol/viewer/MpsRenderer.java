@@ -98,8 +98,13 @@ abstract class MpsRenderer extends ShapeRenderer {
       if (! isSpecials[iNext1])
         madEnd = (mads[iNext1] + madThis) / 2;
     }
-    int diameterBeg =
+    int diameterBeg = 0;
+    try{
+      diameterBeg =
       viewer.scaleToScreen(leadMidpointScreens[i].z, madBeg);
+    }catch (Exception e) {
+      System.out.println(i);
+    }
     int diameterEnd =
       viewer.scaleToScreen(leadMidpointScreens[iNext1].z, madEnd);
     int diameterMid =

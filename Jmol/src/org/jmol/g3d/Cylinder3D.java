@@ -112,6 +112,7 @@ class Cylinder3D {
   void renderBits(short colixA, short colixB, byte endcaps, int diameter,
               float xA, float yA, float zA, float xB, float yB, float zB) {
     
+    // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
     int codeMinA = line3d.clipCode((int)xA - r, (int)yA - r, (int)zA - r);
     int codeMaxA = line3d.clipCode((int)xA + r, (int)yA + r, (int)zA + r);
@@ -129,7 +130,6 @@ class Cylinder3D {
           Graphics3D.isColixTranslucent(colixB), (int)xA, (int)yA, (int)zA, (int)dxB, (int)dyB, (int)dzB, notClipped);
       return;
     }
-    //System.out.println("cyl "+diameter+" "+this.diameter);
     if (diameter > 0) {
       this.diameter = diameter;
       this.xAf = xA; this.yAf = yA; this.zAf = zA;

@@ -124,17 +124,16 @@ class CartoonRenderer extends MpsRenderer {
         isNucleicPolymer ? 1f / 1000 : 0.5f / 1000);
     ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
         isNucleicPolymer ? 0f : -0.5f / 1000);
-    if (!renderAsRockets || isNucleicPolymer || isCarbohydratePolymer)
-      return true;
-    cordMidPoints = calcRopeMidPoints((AminoPolymer) polymer, newRockets);
+    if (!isNucleicPolymer)
+      calcRopeMidPoints((AminoPolymer) polymer, newRockets);
     getScreens();
     clearPending();
     return true;
   }
 
-  Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer, boolean isNewStyle) {
+  void calcRopeMidPoints(AminoPolymer aminopolymer, boolean isNewStyle) {
     int midPointCount = monomerCount + 1;
-    Point3f[] cordMidPoints = viewer.allocTempPoints(midPointCount);
+    cordMidPoints = viewer.allocTempPoints(midPointCount);
     ProteinStructure proteinstructurePrev = null;
     Point3f point;
     for (int i = 0; i < monomerCount; ++i) {
@@ -161,7 +160,6 @@ class CartoonRenderer extends MpsRenderer {
       point.set(proteinstructurePrev.getAxisEndPoint());
     else
       aminopolymer.getLeadMidPoint(monomerCount, point);
-    return cordMidPoints;
   }
 
   void getScreens() {
@@ -263,7 +261,7 @@ class CartoonRenderer extends MpsRenderer {
           lastWasHelix = isHelix;
         }
       }
-      renderPending(true);
+      renderPendingRocketSegment(true);
       viewer.freeTempScreens(screens);
       viewer.freeTempPoints(cordMidPoints);
       viewer.freeTempPoints(screensf);
@@ -289,7 +287,7 @@ class CartoonRenderer extends MpsRenderer {
         ++endIndexPending;
         return;
       }
-      renderPending(isEnd);
+      renderPendingRocketSegment(isEnd);
     }
     proteinstructurePending = proteinstructure;
     startIndexPending = endIndexPending = proteinstructure.getIndex(monomer);
@@ -302,7 +300,7 @@ class CartoonRenderer extends MpsRenderer {
   Point3f screenB = new Point3f();
   Point3f screenC = new Point3f();
 
-  void renderPending(boolean isEnd) {
+  void renderPendingRocketSegment(boolean isEnd) {
     if (!tPending)
       return;
     tPending = false;
@@ -310,14 +308,14 @@ class CartoonRenderer extends MpsRenderer {
       Point3f[] segments = proteinstructurePending.getSegments();
       boolean tEnd = (endIndexPending == proteinstructurePending
           .getMonomerCount() - 1);
-      renderPendingHelix(segments[startIndexPending],
+      renderPendingRocketSegment(segments[startIndexPending],
           segments[endIndexPending], segments[endIndexPending + 1], tEnd, startIndexPending == 0);
       //System.out.println("renderP " + startIndexPending + " " + endIndexPending
         //  + " " + tEnd + " " + isEnd);
     }
   }
 
-  void renderPendingHelix(Point3f pointStart, Point3f pointBeforeEnd,
+  void renderPendingRocketSegment(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd, boolean isEnd) {
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
@@ -332,6 +330,7 @@ class CartoonRenderer extends MpsRenderer {
             screenC, screenB);
         lastDiameter=coneDiameter;
       } else {
+ //       System.out.println(screenB + " " + screenC + " " + diameter + " diam" );
         g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
             screenB, screenC);
         lastDiameter = Integer.MAX_VALUE;        
@@ -342,9 +341,17 @@ class CartoonRenderer extends MpsRenderer {
       screenB = screenC;
       screenC = t;
     }
-    //System.out.println("cartoonrender diameter a b "+diameter+screenA+screenB);
-    g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, (diameter == lastDiameter ? -1 : diameter),
+/*
+ * well this was an idea that appears to be too complicated for now at least --
+ * when drawing a cylinder draw just the beginning and the end rather than each 
+ * segment. So.... back to the original for now.
+ * 
+ *     g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, (diameter == lastDiameter ? -1 : diameter),
         screenA, screenB);
+*/ 
+    g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
+        screenA, screenB);
+
     lastDiameter = diameter;
   }
 

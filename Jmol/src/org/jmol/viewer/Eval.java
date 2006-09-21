@@ -1412,6 +1412,23 @@ class Eval { //implements Runnable {
     return 0;
   }
 
+  int getArgbOrPaletteParam(int itoken) throws ScriptException {
+    if (itoken < statementLength) {
+      switch (statement[itoken].tok) {
+      case Token.colorRGB:
+        return statement[itoken].intValue;
+      case Token.rasmol:
+        return Token.rasmol;
+      case Token.none:
+      case Token.jmol:
+        return Token.jmol;
+      }
+    }
+    evalError("a color or palette name (Jmol, Rasmol) is required");
+    //unattainable
+    return 0;
+  }
+
   boolean coordinatesAreFractional;
 
   Point3f getCoordinate(int i, boolean allowFractional) throws ScriptException {
@@ -1852,12 +1869,35 @@ class Eval { //implements Runnable {
       return;
     case Token.identifier:
     case Token.hydrogen:
+      int argb = getArgbOrPaletteParam(2);
       String str = (String) statement[1].value;
-      if (str.equalsIgnoreCase("unitcell")) {
-        colorShape(JmolConstants.SHAPE_UCCAGE, 2);
-        return;
+      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
+        if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
+          viewer.setElementArgb(i, argb);
+          return;
+        }
       }
-      int argb = getArgbOrNoneParam(2);
+      for (int i = JmolConstants.altElementMax; --i >= 0;) {
+        if (str.equalsIgnoreCase(JmolConstants.altElementNameFromIndex(i))) {
+          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+              argb);
+          return;
+        }
+      }
+      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
+        if (str.equalsIgnoreCase("_"+JmolConstants.elementSymbolFromNumber(i))) {
+          viewer.setElementArgb(i, argb);
+          return;
+        }
+      }
+      for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
+        if (str.equalsIgnoreCase("_"+JmolConstants.altElementSymbolFromIndex(i))) {
+          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+              argb);
+          return;
+        }
+      }
+      argb = getArgbOrNoneParam(2);
       if (str.equalsIgnoreCase("dotsConvex")) {
         viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS, "colorConvex",
             argb);
@@ -1878,32 +1918,6 @@ class Eval { //implements Runnable {
         viewer.loadShape(JmolConstants.SHAPE_HALOS);
         viewer.setSelectionArgb(argb);
         return;
-      }
-      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-        if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
-          viewer.setElementArgb(i, getArgbParam(2));
-          return;
-        }
-      }
-      for (int i = JmolConstants.altElementMax; --i >= 0;) {
-        if (str.equalsIgnoreCase(JmolConstants.altElementNameFromIndex(i))) {
-          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
-              getArgbParam(2));
-          return;
-        }
-      }
-      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-        if (str.equalsIgnoreCase("_"+JmolConstants.elementSymbolFromNumber(i))) {
-          viewer.setElementArgb(i, getArgbParam(2));
-          return;
-        }
-      }
-      for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
-        if (str.equalsIgnoreCase("_"+JmolConstants.altElementSymbolFromIndex(i))) {
-          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
-              getArgbParam(2));
-          return;
-        }
       }
       invalidArgument();
     default:

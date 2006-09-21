@@ -125,6 +125,14 @@ class ColorManager {
     return getColixAtomPalette(atom, "cpk");
   }
 
+  short getColixCpkAtomNumber(short id) {
+  if (id < 256)
+    return g3d.getChangableColix(id, argbsCpk[id]);
+  id = (short) JmolConstants.altElementIndexFromNumber(id);
+  return g3d.getChangableColix(
+      (short) (JmolConstants.elementNumberMax + id), altArgbsCpk[id]);
+  }
+
   short getColixAtomPalette(Atom atom, String palette) {
     int argb = 0;
     int index;
@@ -133,11 +141,7 @@ class ColorManager {
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
       short id = atom.getAtomicAndIsotopeNumber();
-      if (id < 256)
-        return g3d.getChangableColix(id, argbsCpk[id]);
-      id = (short) JmolConstants.altElementIndexFromNumber(id);
-      return g3d.getChangableColix(
-          (short) (JmolConstants.elementNumberMax + id), altArgbsCpk[id]);
+      return getColixCpkAtomNumber(id);
     }
     if ("partialcharge" == palette) {
       // This code assumes that the range of partial charges is [-1, 1].
@@ -368,13 +372,27 @@ class ColorManager {
   }
 
   void setElementArgb(int id, int argb) {
-    if (argb == 0) {
+    if (argb == Token.jmol) {
       if (argbsCpk == JmolConstants.argbsCpk)
         return;
       if (id < 256)
         argb = JmolConstants.argbsCpk[id];
       else 
+        argb = JmolConstants.altArgbsCpk[JmolConstants.altElementIndexFromNumber(id)];      
+    } else if (argb == Token.rasmol) {
+      if (id < 256) {
+        argb = JmolConstants.argbsCpk[id];
+        for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0; ) {
+          int argbRasmol = JmolConstants.argbsCpkRasmol[i];
+          int atomNo = argbRasmol >> 24;
+          if (atomNo == id) {
+            argb = argbRasmol | 0xFF000000;
+            break;
+          }
+        }
+      } else {
         argb = JmolConstants.altArgbsCpk[JmolConstants.altElementIndexFromNumber(id)];
+      }
     } else
       argb |= 0xFF000000;
     if (argbsCpk == JmolConstants.argbsCpk)

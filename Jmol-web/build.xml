@@ -58,7 +58,7 @@
   		  file="${doc.dir}/fah/fah-projects.xml" />
 
     <!-- Deal with _index.html files -->
-    <echo message="Copying _index.html files"/>
+    <echo message="Copying _index.html files" level="info"/>
     <for param="current.dir">
       <dirset dir="${build.html}"/>
       <sequential>
@@ -88,14 +88,30 @@
     </for>
 
     <!-- Copy files from Jmol docs -->
-  	<copy todir="${build.html}/docs" overwrite="yes">
-      <fileset dir="${jmol-doc-dir}/build/doc" includes="**/*"/>
-    </copy>
+    <if>
+      <available file="${jmol-doc-dir}/build/doc" type="dir"/>
+      <then>
+        <copy todir="${build.html}/docs" overwrite="yes">
+          <fileset dir="${jmol-doc-dir}/build/doc" includes="**/*"/>
+        </copy>
+      </then>
+      <else>
+        <echo message="Jmol documentation was not found" level="warning"/>
+      </else>
+    </if>
 
     <!-- Copy files from Folding@Home projects -->
-    <copy todir="${build.html}/fah/projects" overwrite="yes">
-      <fileset dir="${fah.projects.dir}" includes="**/*"/>
-    </copy>
+    <if>
+      <available file="${fah.projects.dir}" type="dir"/>
+      <then>
+        <copy todir="${build.html}/fah/projects" overwrite="yes">
+          <fileset dir="${fah.projects.dir}" includes="**/*"/>
+        </copy>
+      </then>
+      <else>
+        <echo message="Folding@Home projects were not found" level="warning"/>
+      </else>
+    </if>
 
   	<!-- Replace content of files with variables -->
     <replace dir="${build.html}" includes="**/*.html">
@@ -141,7 +157,7 @@
     </replace>
 
     <!-- Manage language flags -->
-    <echo message="Generating flags for available languages..."/>
+    <echo message="Generating flags for available languages..." level="info"/>
     <for param="current.dir">
       <dirset dir="${build.html}"/>
       <sequential>
@@ -168,7 +184,7 @@
     </for>
 
     <!-- Manage outdated pages -->
-    <echo message="Generating warnings for outdated translations..."/>
+    <echo message="Generating warnings for outdated translations..." level="info"/>
     <for list="${all.languages}" delimiter="," param="current.language">
       <sequential>
         <if>
@@ -233,7 +249,7 @@
   <target name="html_lang">
 
     <!-- Generate index.<lang>.html files -->
-    <echo message="Generating ${lang_value} html files..."/>
+    <echo message="Generating ${lang_value} html files..." level="info"/>
 
     <style
       basedir="${doc.dir}"

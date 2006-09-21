@@ -720,9 +720,9 @@ class PopupResourceBundle {
     { "allHetero", GT._("All PDB \"HETATOM\"") },
     { "Solvent", GT._("All Solvent") },
     { "Water", GT._("All Water") },
-    { "nonWaterSolvent", GT._("Nonaqueous Solvent{0}", new Object[]{ " (solvent and not water)" }) },
-    { "exceptWater", GT._("Nonaqueous HETATM{0}", new Object[]{ " (hetero and not water)" }) },
-    { "Ligand", GT._("Ligand{0}", new Object[]{ " (hetero and not solvent)" }) },
+    { "nonWaterSolvent", GT._("Nonaqueous Solvent") + " (solvent and not water)" },
+    { "exceptWater", GT._("Nonaqueous HETATM") + " (hetero and not water)" },
+    { "Ligand", GT._("Ligand") + " (hetero and not solvent)" },
     { "Carbohydrate", GT._("Carbohydrate") },
     { "NoneOfTheAbove", GT._("None of the above") },
 

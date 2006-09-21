@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-19 06:27+0200\n"
-"PO-Revision-Date: 2006-09-19 01:09+0100\n"
+"PO-Revision-Date: 2006-09-21 21:20+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 
 #: org/jmol/applet/Console.java:76
 msgid "press CTRL-ENTER for new line"
-msgstr ""
+msgstr "Ctrl+Enter hace salto de línea"
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -162,7 +162,7 @@ msgstr "Otros"
 
 #: org/jmol/popup/PopupResourceBundle.java:728
 msgid "Carbohydrate"
-msgstr "Glúcidos"
+msgstr "Carbohidratos"
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 msgid "Lipid"
@@ -804,19 +804,19 @@ msgstr "Medición"
 
 #: org/jmol/popup/PopupResourceBundle.java:1115
 msgid "Double-Click starts all measurements"
-msgstr "Un doble-clic comienza todas las mediciones"
+msgstr "Doble clic inicia mediciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1116
 msgid "Click for distance measurement"
-msgstr "Haz clic para medida de distancia"
+msgstr "Clic para medir distancia"
 
 #: org/jmol/popup/PopupResourceBundle.java:1117
 msgid "Click for angle measurement"
-msgstr "Haz clic para medida de ángulo"
+msgstr "Clic para medir ángulo"
 
 #: org/jmol/popup/PopupResourceBundle.java:1118
 msgid "Click for torsion (dihedral) measurement"
-msgstr "Haz clic para medida de torsión (ángulo diedro)"
+msgstr "Clic para medir torsión (ángulo diedro)"
 
 #: org/jmol/popup/PopupResourceBundle.java:1119
 msgid "Delete measurements"
@@ -824,23 +824,23 @@ msgstr "Borrar mediciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1120
 msgid "List measurements"
-msgstr "Listar mediciones"
+msgstr "Lista de mediciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1121
 msgid "Distance units nanometers"
-msgstr "Unidades de distancia nanómetros"
+msgstr "Distancia en nanómetros"
 
 #: org/jmol/popup/PopupResourceBundle.java:1122
 msgid "Distance units Angstroms"
-msgstr "Unidades de distancia ángstroms"
+msgstr "Distancia en ángstroms"
 
 #: org/jmol/popup/PopupResourceBundle.java:1123
 msgid "Distance units picometers"
-msgstr "Unidades de distancia picómetros"
+msgstr "Distancia en picómetros"
 
 #: org/jmol/popup/PopupResourceBundle.java:1125
 msgid "Set picking"
-msgstr "Establecer modalidad de elección"
+msgstr "Modo de selección"
 
 #: org/jmol/popup/PopupResourceBundle.java:1127
 msgid "Center"
@@ -848,7 +848,7 @@ msgstr "Centrar"
 
 #: org/jmol/popup/PopupResourceBundle.java:1129
 msgid "Label"
-msgstr "Etiqueta"
+msgstr "Etiquetar"
 
 #: org/jmol/popup/PopupResourceBundle.java:1130
 msgid "Select atom"
@@ -896,7 +896,7 @@ msgstr "Datos JVXL de isosuperficie"
 
 #: org/jmol/popup/PopupResourceBundle.java:1143
 msgid "Measure"
-msgstr "Medición"
+msgstr "Mediciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1144
 msgid "Molecular orbital JVXL data"
@@ -1083,37 +1083,28 @@ msgstr "Jmol ejecutando un guión..."
 
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
-
 #~ msgid "Open"
 #~ msgstr "Abrir"
-
 #~ msgid "Close"
 #~ msgstr "Cerrar"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol, visualización molecular http://www.jmol.org"
-
 #~ msgid "Jmol script completed"
 #~ msgstr "Guión de Jmol completado"
-
 #~ msgid "Name hidden"
 #~ msgstr "Nombre oculto"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotación como alambres"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
+

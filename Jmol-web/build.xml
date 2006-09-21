@@ -15,8 +15,8 @@
   <property name="build.html" value="${build.dir}/html" />
   <property name="all.languages" value="de,en,es,et,fr,hu,it,nl,pt,pt_BR,ro" />
 
-  <property name="outdated.format.begin" value="&lt;p&gt;" />
-  <property name="outdated.format.end"   value="&lt;/p&gt;" />
+  <property name="outdated.format.begin" value="&lt;div class=&quot;outdatedMessage&quot;&gt;"/>
+  <property name="outdated.format.end" value="&lt;/div&gt;"/>
 
   <target name="clean">
     <delete dir="${build.dir}"/>

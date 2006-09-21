@@ -573,19 +573,19 @@ public final class Frame {
       throw new NullPointerException();
 
     Group group = null;
-    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK) {
+    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK)
       group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    } else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
+    else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK)
       group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK)) {
+    else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK))
       group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    } else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
+    else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK)
       group = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    } else if (JmolConstants.checkCarbohydrate(group3))
+    else if (JmolConstants.checkCarbohydrate(group3))
       group = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
     

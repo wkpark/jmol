@@ -30,11 +30,17 @@ import org.jmol.g3d.*;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 class TextShape extends Shape {
 
+
   Hashtable texts = new Hashtable();
   Text currentText;
+  Font3D currentFont;
+  Object currentColor;
+  Object currentBgColor;
+  boolean isAll;
   
   void initShape() {
   }
@@ -45,52 +51,101 @@ class TextShape extends Shape {
 
     if ("allOff" == propertyName) {
       currentText = null;
+      isAll = true;
       texts = new Hashtable();
       return;
     }
 
     if ("off" == propertyName) {
+      if (isAll) {
+        texts = new Hashtable();
+        isAll = false;
+        currentText = null;
+      }
       if (currentText == null)
         return;
+
       texts.remove(currentText.target);
       currentText = null;
       return;
     }
 
     if ("align" == propertyName) {
-      if (currentText == null)
-        return;
       String align = (String) value;
+      if (currentText == null) {
+        if (isAll) {
+          Enumeration e = texts.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setAlignment(align);
+        }
+        return;
+      }
       if (!currentText.setAlignment(align))
         Logger.error("unrecognized align:" + align);
       return;
     }
 
     if ("bgcolor" == propertyName) {
-      if (currentText != null)
-        currentText.setBgColix(value);
+      currentBgColor = value;
+      if (currentText == null) {
+        if (isAll) {
+          Enumeration e = texts.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setBgColix(value);
+        }
+        return;
+      }
+      currentText.setBgColix(value);
       return;
     }
 
     if ("color" == propertyName) {
-      if (currentText != null)
-        currentText.setColix(value);
+      currentColor = value;
+      if (currentText == null) {
+        if (isAll) {
+          Enumeration e = texts.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setColix(value);
+        }
+        return;
+      }
+      currentText.setColix(value);
       return;
     }
 
-    if ("echo" == propertyName) {
-      if (currentText != null)
-        currentText.setText((String) value);
+    if ("text" == propertyName) {
+      String text = (String) value;
+      if (currentText == null) {
+        if (isAll) {
+          Enumeration e = texts.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setText(text);
+        }
+        return;
+      }
+      currentText.setText(text);
       return;
     }
 
     if ("font" == propertyName) {
-      if (currentText != null)
-        currentText.setFont((Font3D) value);
+      currentFont = (Font3D) value;
+      if (currentText == null) {
+        if (isAll) {
+          Enumeration e = texts.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setFont(currentFont);
+        }
+        return;
+      }
+      currentText.setFont(currentFont);
       return;
     }
 
     if ("target" == propertyName) {
+      String target = (String)value;
+      isAll = ((String)value).equals("all");
+      if (isAll || target.equals("none"))
+        currentText = null;
       //handled by individual types -- echo or hover
       return;
     }
@@ -108,19 +163,22 @@ class TextShape extends Shape {
 
     if ("ypos" == propertyName) {
       if (currentText != null)
-        currentText.setMovableY(currentText.windowHeight - ((Integer) value).intValue());
+        currentText.setMovableY(currentText.windowHeight
+            - ((Integer) value).intValue());
       return;
     }
 
     if ("%xpos" == propertyName) {
       if (currentText != null)
-        currentText.setMovableX(((Integer) value).intValue() * currentText.windowWidth/100);
+        currentText.setMovableX(((Integer) value).intValue()
+            * currentText.windowWidth / 100);
       return;
     }
 
     if ("%ypos" == propertyName) {
       if (currentText != null)
-        currentText.setMovableY(currentText.windowHeight * (100 - ((Integer) value).intValue())/100);
+        currentText.setMovableY(currentText.windowHeight
+            * (100 - ((Integer) value).intValue()) / 100);
       return;
     }
   }

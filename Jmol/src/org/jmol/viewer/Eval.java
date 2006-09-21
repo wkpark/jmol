@@ -2033,7 +2033,7 @@ class Eval { //implements Runnable {
     if (statementLength == 2 && statement[1].tok == Token.string)
       text = (String) statement[1].value;
     if (echoShapeActive)
-      viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "echo", text);
+      viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
     viewer.scriptEcho(text);
   }
 
@@ -3669,6 +3669,8 @@ class Eval { //implements Runnable {
     case Token.none:
       checkLength3();
       echoShapeActive = false;
+    case Token.all:
+      checkLength3();
     case Token.identifier:
       propertyValue = statement[2].value;
       break;

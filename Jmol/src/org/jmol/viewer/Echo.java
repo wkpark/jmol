@@ -39,6 +39,7 @@ class Echo extends TextShape {
    * set echo BOTTOM [Text.LEFT|Text.CENTER|Text.RIGHT]
    * set echo name   [Text.LEFT|Text.CENTER|Text.RIGHT]
    * set echo name  x-position y-position
+   * set echo none  to initiate setting default settings
    * 
    */
   
@@ -46,7 +47,7 @@ class Echo extends TextShape {
   private final static String FONTFACE = "Serif";
   private final static int FONTSIZE = 20;
   private final static short COLOR = Graphics3D.RED;
-
+  
   void initShape() {
     setProperty("target", "top", null);
   }
@@ -57,30 +58,34 @@ class Echo extends TextShape {
 
     if ("target" == propertyName) {
       String target = ((String) value).intern().toLowerCase();
-      Text text = (Text) texts.get(target);
-      if ("none" == target) {
-        currentText = null;
-        return;
-      }
-      if (text == null) {
-        int valign = Text.XY;
-        int halign = Text.LEFT;
-        if ("top" == target) {
-          valign = Text.TOP;
-          halign = Text.CENTER;
-        } else if ("middle" == target) {
-          valign = Text.MIDDLE;
-          halign = Text.CENTER;
-        } else if ("bottom" == target) {
-          valign = Text.BOTTOM;
+      if (target != "none" && target != "all") {
+        Text text = (Text) texts.get(target);
+        if (text == null) {
+          int valign = Text.XY;
+          int halign = Text.LEFT;
+          if ("top" == target) {
+            valign = Text.TOP;
+            halign = Text.CENTER;
+          } else if ("middle" == target) {
+            valign = Text.MIDDLE;
+            halign = Text.CENTER;
+          } else if ("bottom" == target) {
+            valign = Text.BOTTOM;
+          }
+          text = new Text(g3d, g3d.getFont3D(FONTFACE, FONTSIZE), target,
+              COLOR, valign, halign);
+          text.setAdjustForWindow(true); // when a box is around it
+          texts.put(target, text);
+          if (currentFont != null)
+            text.setFont(currentFont);
+          if (currentColor != null)
+            text.setColix(currentColor);
+          if (currentBgColor != null)
+            text.setBgColix(currentBgColor);
         }
-        text = new Text(g3d, g3d.getFont3D(FONTFACE, FONTSIZE), target, COLOR, valign,
-            halign);
-        text.setAdjustForWindow(true); // when a box is around it
-        texts.put(target, text);
+        currentText = text;
+        //process super
       }
-      currentText = text;
-      return;
     }
     super.setProperty(propertyName, value, null);
   }

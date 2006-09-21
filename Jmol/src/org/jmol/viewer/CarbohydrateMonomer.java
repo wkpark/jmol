@@ -50,17 +50,10 @@ class CarbohydrateMonomer extends Monomer {
     return false;
   }
 
-  final static String allCarbohydrates = 
-    "[AFL],[AGC],[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]," +
-    "[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLB],[GLC]," +
-    "[GUP],[LXC],[MAN],[RAA],[RAM],[RIB],[RIP],[XYP],[XYS]," +
-    "[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]," +
-    "[SUC],[TRE],[ASF],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]," +
-    "[XYL]";// from Eric Martz
   final static boolean checkCarbohydrate(String group3) {
     if (group3 == null)
       return false;
     String str = "[" + group3.toUpperCase() + "]";
-    return (allCarbohydrates.indexOf(str) >= 0);
+    return (JmolConstants.allCarbohydrates.indexOf(str) >= 0);
   }
 }

@@ -530,6 +530,14 @@ final public class JmolConstants {
   }
   
   /**
+   * @param i index into altElementSymbols
+   * @return elementSymbol
+   */
+  public final static String altElementSymbolFromIndex(int i) {
+    return altElementSymbols[i];
+  }
+  
+  /**
    * @param atomicAndIsotopeNumber (may be atomicNumber + isotopeNumber*256)
    * @return  index into altElementNumbers
    */
@@ -1865,6 +1873,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // it could be found in phosphorus-only nucleic polymers
 
     // reserved for future expansion ... lipids & carbohydrates
+    // 9/2006 -- carbohydrates are just handled as group3 codes
+    // see below
     null, null, null,       // 13 - 15
     null, null, null, null, // 16 - 19
     null, null, null, null, // 20 - 23
@@ -1959,6 +1969,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   public final static int ATOMID_MAX = specialAtomNames.length;
+
+  final static String allCarbohydrates = 
+    "[AFL],[AGC],[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]," +
+    "[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLB],[GLC]," +
+    "[GUP],[LXC],[MAN],[RAA],[RAM],[RIB],[RIP],[XYP],[XYS]," +
+    "[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]," +
+    "[SUC],[TRE],[ASF],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]," +
+    "[XYL]";// from Eric Martz
 
   ////////////////////////////////////////////////////////////////
   // currently, ATOMIDs must be >= 0 && <= 127

@@ -324,6 +324,15 @@ class Eval { //implements Runnable {
           + JmolConstants.altElementNumberFromIndex(i);
       predefine(definition);
     }
+    for (int i = JmolConstants.elementNumberMax; --i > 1;) {
+      String definition = "@_" + JmolConstants.elementSymbolFromNumber(i)+ " _e=" + i;
+      predefine(definition);
+    }
+    for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
+      String definition = "@_" + JmolConstants.altElementSymbolFromIndex(i) + " _e="
+          + JmolConstants.altElementNumberFromIndex(i);
+      predefine(definition);
+    }
   }
 
   void predefine(String script) {
@@ -1878,6 +1887,19 @@ class Eval { //implements Runnable {
       }
       for (int i = JmolConstants.altElementMax; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.altElementNameFromIndex(i))) {
+          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+              getArgbParam(2));
+          return;
+        }
+      }
+      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
+        if (str.equalsIgnoreCase("_"+JmolConstants.elementSymbolFromNumber(i))) {
+          viewer.setElementArgb(i, getArgbParam(2));
+          return;
+        }
+      }
+      for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
+        if (str.equalsIgnoreCase("_"+JmolConstants.altElementSymbolFromIndex(i))) {
           viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
               getArgbParam(2));
           return;

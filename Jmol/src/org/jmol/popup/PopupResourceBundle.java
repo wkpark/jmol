@@ -56,7 +56,7 @@ class PopupResourceBundle {
                    "aboutMenu" },
 
     { "selectMenu", "selectAll selectNone - " +
-                    "proteinMenu nucleicMenu heteroMenu otherMenu - " +
+                    "proteinMenu nucleicMenu heteroMenu Carbohydrate NoneOfTheAbove - " +
                     "elementsComputedMenu byModelMenu byFrameMenu - " +
                     "invertSelection restrictToSelection" },
     { "selectAll", "select all" },
@@ -94,19 +94,19 @@ class PopupResourceBundle {
     { "U", "select u" },
 
     { "heteroMenu", "allHetero Solvent Water - " +
-                    "exceptSolvent exceptWater - " +
-                    "Ligand" },
+                    "Ligand exceptWater nonWaterSolvent" },
     { "allHetero", "select hetero" },
     { "Solvent", "select solvent" },
     { "Water", "select water" },
-    { "exceptSolvent", "select hetero and not solvent" },
+// same as ligand    { "exceptSolvent", "select hetero and not solvent" },
+    { "nonWaterSolvent", "select solvent and not water" },
     { "exceptWater", "select hetero and not water" },
     { "Ligand", "select ligand" },
 
-    { "otherMenu", "Carbohydrate Lipid Other" },
     { "Carbohydrate", "select carbohydrate" },
-    { "Lipid", "select lipid" },
-    { "Other", "select not(hetero,protein,nucleic,carbohydrate,lipid)" },
+// not implemented    { "Lipid", "select lipid" },
+    { "NoneOfTheAbove", "select not(hetero,protein,nucleic,carbohydrate)" },
+
 
     { "byModelMenu", "allModels" },
     { "allModels", "select all" },
@@ -716,18 +716,15 @@ class PopupResourceBundle {
     { "T", "T" },
     { "U", "U" },
 
-    { "heteroMenu", GT._("hetero") },
-    { "allHetero", GT._("All") },
-    { "Solvent", GT._("Solvent") },
-    { "Water", GT._("Water") },
-    { "exceptSolvent", GT._("Except Solvent") },
-    { "exceptWater", GT._("Except Water") },
-    { "Ligand", GT._("Ligand") },
-
-    { "otherMenu", GT._("Other") },
+    { "heteroMenu", GT._("Hetero") },
+    { "allHetero", GT._("All PDB \"HETATOM\"") },
+    { "Solvent", GT._("All Solvent") },
+    { "Water", GT._("All Water") },
+    { "nonWaterSolvent", GT._("Nonaqueous Solvent{0}", new Object[]{ " (solvent and not water)" }) },
+    { "exceptWater", GT._("Nonaqueous HETATM{0}", new Object[]{ " (hetero and not water)" }) },
+    { "Ligand", GT._("Ligand{0}", new Object[]{ " (hetero and not solvent)" }) },
     { "Carbohydrate", GT._("Carbohydrate") },
-    { "Lipid", GT._("Lipid") },
-    { "Other", GT._("Other") },
+    { "NoneOfTheAbove", GT._("None of the above") },
 
     { "byModelMenu", GT._("Model") },
     { "allModels", GT._("All Models") },

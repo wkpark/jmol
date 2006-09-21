@@ -1831,31 +1831,31 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFFF80B0,
   };
 
-  public final static String[] specialAtomNames = {
-  
-    ////////////////////////////////////////////////////////////////
-    // The ordering of these entries can be changed ... BUT ...
-    // the offsets must be kept consistent with the ATOMID definitions
-    // below.
-    //
-    // null is entry 0
-    // The first 32 entries are reserved for null + 31 'distinguishing atoms'
-    // see definitions below. 32 is magical because bits are used in an
-    // int to distinguish groups. If we need more then we can go to 64
-    // bits by using a long ... but code must change.
-    //
-    // All entries less than 64 are backbone entries
-    // But the number 64 is not magical and could be easily changed
-    ////////////////////////////////////////////////////////////////
-    null, // 0
+    public final static String[] specialAtomNames = {
     
-    // protein backbone
-    //
-    "N",   //  1 - amino nitrogen
-    "CA",  //  2 - alpha carbon
-    "C",   //  3 - carbonyl carbon
-    null, // used to be carbonyl oxygen, now can be O or O1
-
+      ////////////////////////////////////////////////////////////////
+      // The ordering of these entries can be changed ... BUT ...
+      // the offsets must be kept consistent with the ATOMID definitions
+      // below.
+      //
+      // null is entry 0
+      // The first 32 entries are reserved for null + 31 'distinguishing atoms'
+      // see definitions below. 32 is magical because bits are used in an
+      // int to distinguish groups. If we need more then we can go to 64
+      // bits by using a long ... but code must change.
+      //
+      // All entries less than 64 are backbone entries
+      // But the number 64 is not magical and could be easily changed
+      ////////////////////////////////////////////////////////////////
+      null, // 0
+      
+      // protein backbone
+      //
+      "N",   //  1 - amino nitrogen
+      "CA",  //  2 - alpha carbon
+      "C",   //  3 - carbonyl carbon
+      null, // used to be carbonyl oxygen, now can be O or O1
+  
     // nucleic acid backbone sugar
     //
     "O5'", //  5 - sugar 5' oxygen
@@ -1970,13 +1970,25 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int ATOMID_MAX = specialAtomNames.length;
 
-  final static String allCarbohydrates = 
+  // just in this form for readability
+  private final static String allCarbohydrates = 
     "[AFL],[AGC],[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]," +
     "[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLB],[GLC]," +
     "[GUP],[LXC],[MAN],[RAA],[RAM],[RIB],[RIP],[XYP],[XYS]," +
     "[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]," +
     "[SUC],[TRE],[ASF],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]," +
     "[XYL]";// from Eric Martz
+
+  /**
+   * @param group3 a potential group3 name
+   * @return whether this is a carbohydrate from the list
+   */
+  public final static boolean checkCarbohydrate(String group3) {
+    if (group3 == null)
+      return false;
+    String str = "[" + group3.toUpperCase() + "]";
+    return (allCarbohydrates.indexOf(str) >= 0);
+  }
 
   ////////////////////////////////////////////////////////////////
   // currently, ATOMIDs must be >= 0 && <= 127

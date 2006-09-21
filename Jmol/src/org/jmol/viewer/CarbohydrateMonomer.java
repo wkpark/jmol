@@ -50,10 +50,4 @@ class CarbohydrateMonomer extends Monomer {
     return false;
   }
 
-  final static boolean checkCarbohydrate(String group3) {
-    if (group3 == null)
-      return false;
-    String str = "[" + group3.toUpperCase() + "]";
-    return (JmolConstants.allCarbohydrates.indexOf(str) >= 0);
-  }
 }

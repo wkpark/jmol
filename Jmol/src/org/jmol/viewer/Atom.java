@@ -827,6 +827,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   void demoteSpecialAtomImposter() {
+    //not referenced in project
     if (group == null)
       return;
     group.chain.frame.specialAtomIDs[atomIndex] = 0;

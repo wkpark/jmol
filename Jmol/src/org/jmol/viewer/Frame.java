@@ -409,7 +409,7 @@ public final class Frame {
           atomCount);
     }
     if (atomCount == atoms.length)
-      growAtomArrays();
+      growAtomArrays(ATOM_GROWTH_INCREMENT);
 
     Atom atom = new Atom(viewer, this, currentModelIndex, atomCount,
         atomSymmetry, atomSite, atomicAndIsotopeNumber, atomName, formalCharge,
@@ -464,8 +464,8 @@ public final class Frame {
     return true;
   }
 
-  void growAtomArrays() {
-    int newLength = atomCount + ATOM_GROWTH_INCREMENT;
+  void growAtomArrays(int byHowMuch) {
+    int newLength = atomCount + byHowMuch;
     atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
     if (clientAtomReferences != null)
       clientAtomReferences = (Object[]) ArrayUtil.setLength(clientAtomReferences,
@@ -557,7 +557,7 @@ public final class Frame {
       specialAtomIndexes[i] = Integer.MIN_VALUE;
 
     if (specialAtomIDs != null) {
-      // go last to first so that FIRST conformation is default
+      // go last to first so that FIRST confirmation is default
       for (int i = maxAtomIndex; --i >= firstAtomIndex;) {
         int specialAtomID = specialAtomIDs[i];
         if (specialAtomID > 0) {
@@ -585,7 +585,7 @@ public final class Frame {
     } else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
       group = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    } else if (CarbohydrateMonomer.checkCarbohydrate(group3))
+    } else if (JmolConstants.checkCarbohydrate(group3))
       group = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
     
@@ -636,27 +636,8 @@ public final class Frame {
 
     ////////////////////////////////////////////////////////////////
     // resize arrays
-    if (atomCount < atoms.length) {
-      atoms = (Atom[]) ArrayUtil.setLength(atoms, atomCount);
-      if (clientAtomReferences != null)
-        clientAtomReferences = (Object[]) ArrayUtil.setLength(clientAtomReferences,
-            atomCount);
-      if (vibrationVectors != null)
-        vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
-            atomCount);
-      if (occupancies != null)
-        occupancies = ArrayUtil.setLength(occupancies, atomCount);
-      if (bfactor100s != null)
-        bfactor100s = ArrayUtil.setLength(bfactor100s, atomCount);
-      if (partialCharges != null)
-        partialCharges = ArrayUtil.setLength(partialCharges, atomCount);
-      if (atomNames != null)
-        atomNames = ArrayUtil.setLength(atomNames, atomCount);
-      if (atomSerials != null)
-        atomSerials = ArrayUtil.setLength(atomSerials, atomCount);
-      if (specialAtomIDs != null)
-        specialAtomIDs = ArrayUtil.setLength(specialAtomIDs, atomCount);
-    }
+    if (atomCount < atoms.length)
+      growAtomArrays(0);
     if (bondCount < bonds.length)
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount);
 

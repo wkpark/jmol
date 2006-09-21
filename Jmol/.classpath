@@ -5,9 +5,9 @@
 	<classpathentry kind="src" path="examples/externalAppletControls"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="screensaver/src/java"/>
+	<classpathentry kind="lib" path="jars/vecmath1.2-1.14.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jars/netscape.jar"/>
-	<classpathentry kind="lib" path="jars/vecmath1.2-1.14.jar"/>
 	<classpathentry kind="lib" path="jars/Acme.jar"/>
 	<classpathentry kind="lib" path="jars/commons-cli-1.0.jar"/>
 	<classpathentry kind="lib" path="jars/itext-1.4.5.jar"/>

@@ -360,6 +360,7 @@ public final class Frame {
   Chain currentChain;
   int currentGroupSequenceNumber;
   char currentGroupInsertionCode;
+  String currentGroup3;
 
   private final Hashtable htAtomMap = new Hashtable();
 
@@ -368,6 +369,7 @@ public final class Frame {
     currentChainID = '\uFFFF';
     currentChain = null;
     currentGroupInsertionCode = '\uFFFF';
+    currentGroup3 = "xxxxx";
 
     if (atomCountEstimate <= 0)
       atomCountEstimate = ATOM_GROWTH_INCREMENT;
@@ -391,6 +393,7 @@ public final class Frame {
                int groupSequenceNumber, char groupInsertionCode, float vectorX,
                float vectorY, float vectorZ, char alternateLocationID,
                Object clientAtomReference) {
+    String group3i = (group3 == null ? null : group3.intern());
     if (modelIndex != currentModelIndex) {
       currentModel = mmset.getModel(modelIndex);
       currentModelIndex = modelIndex;
@@ -400,11 +403,13 @@ public final class Frame {
       currentChainID = chainID;
       currentChain = currentModel.getOrAllocateChain(chainID);
       currentGroupInsertionCode = '\uFFFF';
+      currentGroup3 = "xxxx";
     }
     if (groupSequenceNumber != currentGroupSequenceNumber
-        || groupInsertionCode != currentGroupInsertionCode) {
+        || groupInsertionCode != currentGroupInsertionCode || group3i != currentGroup3) {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
+      currentGroup3 = group3i;
       startGroup(currentChain, group3, groupSequenceNumber, groupInsertionCode,
           atomCount);
     }
@@ -561,8 +566,23 @@ public final class Frame {
       for (int i = maxAtomIndex; --i >= firstAtomIndex;) {
         int specialAtomID = specialAtomIDs[i];
         if (specialAtomID > 0) {
-          if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
-            distinguishingBits |= 1 << specialAtomID;
+          if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
+            int bit = 1 << specialAtomID;
+/*
+ * save for future option -- turns out the 1jsa bug was in relation to an author using the same group number for two different groups
+ * 
+            System.out.println( i + " " + atoms[i].getIdentity() + " " + specialAtomID);
+            if ((distinguishingBits & bit) != 0) {
+            
+              //bh 9/21/2006:
+              // "if the group has two of the same, that cannot be right."
+              // Thus, for example, two C's doth not make a protein "carbonyl C"
+              distinguishingBits = 0;
+              break;
+            }
+*/
+            distinguishingBits |= bit;
+          }
           specialAtomIndexes[specialAtomID] = i;
         }
       }

@@ -180,7 +180,7 @@ class Token {
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
   final static int pmesh        = command | 91;
-  final static int polyhedra    = command | 92 | embeddedExpression;
+  final static int polyhedra    = command | 92 | embeddedExpression | colorparam;
   final static int centerAt     = command | 93;
   final static int isosurface   = command | 94 | showparam | colorparam | coordOrSet;
   final static int draw         = command | 95 | coordOrSet | showparam | colorparam;

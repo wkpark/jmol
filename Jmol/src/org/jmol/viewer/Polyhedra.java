@@ -77,6 +77,7 @@ class Polyhedra extends SelectionIndependentShape {
       nVertices = 0;
       bsVertices = null;
       centers = null;
+      colix = 0;
       bsVertexCount = new BitSet();
       bondedOnly = isCollapsed = iHaveCenterBitSet = iHaveVertexBitSet = false;
       drawEdges = EDGES_NONE;
@@ -161,8 +162,10 @@ class Polyhedra extends SelectionIndependentShape {
       drawEdges = EDGES_FRONT;
       return;
     }
-    if ("color" == propertyName) {
-      if (!iHaveCenterBitSet)
+    if (propertyName.indexOf("color") == 0) {
+      // from polyhedra command, we may not be using the prior select
+      // but from Color we need to identify the centers.
+      if ("color" == propertyName || !iHaveCenterBitSet)
         centers = bs;
       colix = Graphics3D.getColix(value);
       setColix(colix, (colix != Graphics3D.UNRECOGNIZED) ? null
@@ -170,8 +173,10 @@ class Polyhedra extends SelectionIndependentShape {
       return;
     }
 
-    if ("translucency" == propertyName) {
-      if (!iHaveCenterBitSet)
+    if (propertyName.indexOf("translucency") == 0) {
+      // from polyhedra command, we may not be using the prior select
+      // but from Color we need to identify the centers.
+      if ("translucency" == propertyName || !iHaveCenterBitSet)
         centers = bs;
       colix = Graphics3D.getColix(value);
       setTranslucent("translucent" == value);

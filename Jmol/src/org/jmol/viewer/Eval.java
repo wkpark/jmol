@@ -4470,6 +4470,8 @@ class Eval { //implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
+    String translucency = "";
+    int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -4486,6 +4488,22 @@ class Eval { //implements Runnable {
         break;
       case Token.radius:
         decimalPropertyName = "radius";
+        continue;
+      case Token.color:
+        if (++i == statementLength)
+          colorExpected();
+        if (statement[i].tok == Token.translucent
+            || statement[i].tok == Token.opaque) {
+          translucency = (statement[i].tok == Token.opaque ? "opaque"
+              : "translucent");
+          i++;
+        }
+        if (i == statementLength || statement[i].tok != Token.colorRGB) {
+          if (translucency.length() > 0)
+            continue;
+          colorExpected();
+        }
+        color = getArgbParam(i);
         continue;
       case Token.identifier:
         String str = (String) token.value;
@@ -4533,7 +4551,7 @@ class Eval { //implements Runnable {
         }
         unrecognizedSubcommand(str);
       case Token.integer:
-        if (  nAtomSets > 0 && !isDesignParameter)
+        if (nAtomSets > 0 && !isDesignParameter)
           invalidParameterOrder();
         // no reason not to allow integers when explicit
         if (decimalPropertyName == "radius_") {
@@ -4585,84 +4603,12 @@ class Eval { //implements Runnable {
       insufficientArguments();
     if (needsGenerating)
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
-  }
-
-
-  void xpolyhedra() throws ScriptException {
-    boolean isChange = false;
-    boolean iHaveVertexExpression = false;
-    boolean iHaveCenterExpression = false;
-    viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
-    viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
-    for (int i = 1; i < statementLength; ++i) {
-      String propertyName = null;
-      Object propertyValue = null;
-      Token token = statement[i];
-      switch (token.tok) {
-      case Token.bonds:
-        isChange = true;
-      case Token.identifier: //generic passed on
-        // includes collapsed, edges, noedges, frontedges, 
-        // to, faceNormalMax, faceCenterOffset
-        propertyName = (String) token.value;
-        if (propertyName.equalsIgnoreCase("collapsed")) {
-          isChange = true;
-        } else if (propertyName.equalsIgnoreCase("faceNormalMax")
-            || propertyName.equalsIgnoreCase("faceCenterOffset")) {
-          isChange = true;
-          if (++i == statementLength)
-            numberExpected();
-          if (statement[i].tok == Token.integer)
-            propertyValue = new Float(statement[i].intValue);
-          else if (statement[i].tok == Token.decimal)
-            propertyValue = statement[i].value;
-        } else if (propertyName.equalsIgnoreCase("to")) {
-          isChange = true;
-          iHaveVertexExpression = true;
-          if (++i == statementLength
-              || statement[i].tok != Token.expressionBegin)
-            expressionExpected();
-          propertyValue = expression(statement, ++i);
-          i = pcLastExpressionInstruction;
-        }
-        break;
-      case Token.integer:
-        propertyName = "nBonds";
-        propertyValue = new Integer(token.intValue);
-        isChange = true;
-        break;
-      case Token.decimal:
-        propertyName = "radius";
-        propertyValue = token.value;
-        isChange = true;
-        break;
-      case Token.solid:
-        isChange = true;
-      case Token.on:
-      case Token.off:
-      case Token.delete:
-        propertyName = (String) token.value;
-        break;
-      case Token.expressionBegin:
-        if (iHaveVertexExpression || !iHaveCenterExpression) {
-          propertyName = "centers";
-          iHaveCenterExpression = true;
-        } else {
-          propertyName = "to";
-          iHaveVertexExpression = true;
-        }
-        propertyValue = expression(statement, ++i);
-        i = pcLastExpressionInstruction;
-        isChange = true;
-        break;
-      default:
-        invalidArgument(i, "polyhedra command");
-      }
-      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
-          propertyValue);
-    }
-    if (isChange)
-      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
+    if (color != Integer.MIN_VALUE)
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis",
+          new Integer(color));
+    if (translucency.length() > 0)
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "translucencyThis",
+          translucency);
   }
 
   void lcaoCartoon() throws ScriptException {

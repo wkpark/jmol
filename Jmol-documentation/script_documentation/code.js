@@ -1,4 +1,4 @@
-	//Jmol Documentation JavaScript 11.0
+//Jmol Documentation JavaScript 11.0
 //BH 8:26 PM 9/28/2005 HTML 4.0 STRICT compatibility; fix for popup under Opera--NO! Breaks Mac!
 //BH 2:45 PM 12/2/2005 added ?docbook 3:19 PM 12/09/2005
 //BH 8:14 AM 1/30/2006 minor improvements
@@ -186,7 +186,6 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  // *v-10.2 means removed in 10.2
 
  if (xref.substring(0,2)=="*v" && xref.indexOf("*v-"+specifiedversion)>=0)return
-
  var notimplemented=(xref=="x")
  description=description.replace(/\<ul\>/,"</i></p><ul>").replace(/\<\/ul\>/,"</ul><p><i>")
 	.replace(/\<ol\>/,"</i></p><ol>").replace(/\<\/ol\>/,"</ol><p><i>")

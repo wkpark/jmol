@@ -1,4 +1,5 @@
-/* PROTOTYPE 11.0 Jmol script library 8:45 PM 7/31/2006
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:24 AM 9/16/2006
+
     based on:
  *
  * Copyright (C) 2004-2005  Miguel, Jmol Development, www.jmol.org
@@ -25,6 +26,7 @@
 
 try{if(typeof(_jmol)!="undefined")exit()
 
+// place "?NOAPPLET" on your command line to check applet control action with a textarea
 
 // bob hanson -- jmolScriptWait -- 11:31 AM 5/2/2006
 // bob hanson -- remove trailing separatorHTML in radio groups -- 12:18 PM 5/6/2006
@@ -41,6 +43,9 @@ try{if(typeof(_jmol)!="undefined")exit()
 //               added <span> and id around link, checkbox, radio, menu
 //               fixing AJAX loads for MSIE/Opera-Mozilla incompatibility
 //            -- renamed Jmol-11.js from Jmol-new.js; JmolApplet.jar from JmolAppletProto.jar
+//	 	 renamed Jmol.js for Jmol 11 distribution
+//            -- modified jmolRestoreOrientation() to be immediate, no 1-second delay
+// bob hanson -- jmolScriptWait always returns a string -- 11:23 AM 9/16/2006
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -51,7 +56,7 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 // Basic Scripting infrastruture
 ////////////////////////////////////////////////////////////////
 
-function jmolInitialize(codebaseDirectory, useSignedApplet) {
+function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
   if (_jmol.initialized) {
     //alert("jmolInitialize() should only be called *ONCE* within a page");
     return;
@@ -61,21 +66,23 @@ function jmolInitialize(codebaseDirectory, useSignedApplet) {
     codebaseDirectory = ".";
   }
 
-/* not necessarily true
-
   if (codebaseDirectory.indexOf("http://") == 0 ||
       codebaseDirectory.indexOf("https://") == 0)
-    alert("codebaseDirectory should be directory relative,\n" +
-	  "not be an absolute URL : " + codebaseDirectory);
-  else if (codebaseDirectory.charAt(0) == '/')
-    alert("codebaseDirectory should be directory relative,\n" +
-	  "not relative to the root of the web server : " + codebaseDirectory);
- */
+    alert("In general, an absolute URL is not recommended for codebaseDirectory.\n" +
+	  "A directory- or docroot-relative reference is recommended.\n\n" +
+	  "If you need to use an absolute URL (because, for example, the JAR and data\n" +
+	  "files are on another server), then insert a space before\n" +
+	  "\"http\" in your URL to avoid this warning message.");
 
   _jmolSetCodebase(codebaseDirectory);
-  _jmolUseSignedApplet(useSignedApplet);
+  _jmolGetJarFilename(fileNameOrUseSignedApplet);
   _jmolOnloadResetForms();
   _jmol.initialized = true;
+}
+
+function _jmolGetJarFilename(fileNameOrFlag) {
+  _jmol.archivePath =
+    (typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
 }
 
 function jmolSetDocument(doc) {
@@ -554,11 +561,6 @@ with (_jmol) {
    (os == "mac" && browser == "safari" && browserVersion >= 412.2);
 }
 
-function _jmolUseSignedApplet(useSignedApplet) {
-  _jmol.archivePath =
-    (useSignedApplet ? "JmolAppletSigned" : "JmolApplet") + "0.jar";
-}
-
 function jmolSetCallback(callbackName,funcName) {
   _jmol.callbacks[callbackName] = funcName
 }
@@ -683,8 +685,6 @@ function _jmolInitCheck() {
   if (_jmol.initialized)
     return;
   jmolInitialize(defaultdir, defaultjar)
-  //  alert("jmolInitialize({codebase}, {useSignedApplet})\n" +
-  //      "  must be called before any other Jmol.js functions");
 }
 
 function _jmolCheckBrowser() {
@@ -777,8 +777,8 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
   if (! separatorHtml)
     separatorHtml = "";
   var scriptIndex = _jmolAddScript(script);
-  return "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" + groupName +
-         " id='"+id+"' type='radio' onClick='_jmolClick(" +
+  return "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" 
+	+ groupName + "' id='"+id+"' type='radio' onClick='_jmolClick(" +
          scriptIndex + _jmol.targetText +
          ");return true;' onMouseover='_jmolMouseOver(" +
          scriptIndex +
@@ -972,11 +972,6 @@ function _jmolSortMessages(A){
 /////////additional extensions //////////
 
 
-function _jmolUseSignedApplet(useSignedApplet) {
-  _jmol.archivePath =
-    (typeof(useSignedApplet) == "string"  ? useSignedApplet : (useSignedApplet ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
-}
-
 function _jmolDomScriptLoad(URL){
  //open(URL) //to debug
  _jmol.servercall=URL
@@ -1058,10 +1053,12 @@ function jmolDecodeJSON(s) {
 
 function jmolScriptWait(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
-  var ret=jmolScriptWaitAsArray(script, targetSuffix)
-//  if(typeof ret == "object" && ret.length > 0 
-//	&& ret[0].length > 0 && ret[0][0].length > 3)return ret[0][0][3];
-  return ret
+  var Ret=jmolScriptWaitAsArray(script, targetSuffix)
+  var s = ""
+  for(i=Ret.length;--i>=0;)
+  for(j=0;j< Ret[i].length;j++)
+	s+=Ret[i][j]+"\n"
+  return s
 }
 
 function jmolScriptWaitAsArray(script, targetSuffix) {
@@ -1070,35 +1067,18 @@ function jmolScriptWaitAsArray(script, targetSuffix) {
   jmolGetStatus("scriptEcho,scriptMessage,scriptStatus,scriptError",targetSuffix)
   if (script) {
     _jmolCheckBrowser();
-    if (targetSuffix == "all") {
-      with (_jmol) {
-	for (var i = 0; i < appletSuffixes.length; ++i) {
-	  var applet = _jmolGetApplet(appletSuffixes[i]);
-          if (applet) ret += applet.scriptWait(script);
-        }
-      }
-    } else {
-      var applet=_jmolGetApplet(targetSuffix);
-      if (applet) ret += applet.scriptWait(script);
-    }
+    var applet=_jmolGetApplet(targetSuffix);
+    if (applet) ret += applet.scriptWait(script);
+    ret = _jmolEvalJSON(ret,"jmolStatus")
+    if(typeof ret == "object")
+	return ret
   }
-  return _jmolEvalJSON(ret,"jmolStatus")
  }catch(e){
-  return ""
  }
+  return [[ret]]
 }
 
 
-//////////// jmolInitialize no longer necessary //////
-
-
-/*
- * jmolInitialize() is no longer necessary if you want to use JmolApplet.jar and that
- * file is in the directory of the HTML page. Otherwise, you can use:
- * 
- * jmolInitialize("myDirectory","myJarFile.jar")
- *
- */
 
 ////////////   save/restore orientation   /////////////
 
@@ -1111,6 +1091,7 @@ function jmolRestoreOrientation(id, targetSuffix) {
  if(!targetSuffix)targetSuffix="0"
  var s=_jmol["savedOrientation"+id]
  if (!s || s == "")return
+ s=s.replace(/1\.0/,"0")
  return jmolScriptWait(s,targetSuffix)
 }
 
@@ -1248,7 +1229,6 @@ function jmolSetAtomCoordRelative(i,x,y,z,targetSuffix){
 
 ///////////////applet fake for testing buttons/////////////
 
-// place "?NOAPPLET" on your command line to check applet control action with a textarea
 
 if(document.location.search.indexOf("NOAPPLET")>=0){
 	jmolApplet = function(w){

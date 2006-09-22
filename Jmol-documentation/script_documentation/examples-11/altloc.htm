@@ -76,18 +76,22 @@ function docheck(i){
 Scripts=new Array(" "
  ,' This prototype page illustrates the reading of alternate locations in mmCIF and PDB files. Note also the use of <b>set defaultLoadScript</b>'
  ,'### color altloc ###'
+ ,'# The header for this page has set the default load script to be <b>color altloc;restrict none;conformation 0;cartoon on;select not *%;wireframe 0.15;spacefill 0.15</b>, which says, "Color the atoms based on their alternative location. Display all conformations (full molecular alternatives) as cartoons, then for all atoms that are not invariant (not *%) and display them as wireframe."'
+ ,'set defaultLoadScript "'+defaultloadscript+'"'
  ,'load 5hvp.cif; # two inhibitor alignments'
  ,'load 1hje.cif; # two tail conformations'
  ,'load 3ovo.cif; # just a tiny difference'
  ,'load 1mng.cif; # dimeric iron complex; almost no difference'
- ,'set defaultLoadScript "'+defaultloadscript+'"'
- ,'set defaultLoadScript ""'
  ,'select *;color structure'
  ,'select *;color altloc'
+ ,'# Use the next command to turn off the default load script and see what the file would look like straight from PDB.'
+ ,'set defaultLoadScript "";load 1VWH.cif;'
  ,'load 1VWH.cif;color altloc; # two loop conformations'
+ ,'load 1VWH.cif;'+defaultloadscript
  ,'load 1VIF.cif;color altloc; # two ligand conformations'
+ ,'load 1VIF.cif;'+defaultloadscript
  ,'### conformation n ###'
-
+ ,'# The <b>conformation</b> command does two operations in one. First it selects for a single alternative location option, (*%,*%A), for example, then it runs a recalculation of the secondary structure in order to adjust the shapes of the helixes, turns, and sheets to this particular set of alternative locations. The "n" refers the sequential number of the alternative location in the file. Some files use alternative location characters "1,2,3...", some use "A,B,C...", some use idiocyncratic listing. The <b>conformation</b> command works regardless of the labeling system used by the author. The purpose of <b>restrict none</b> is to clear the display prior to this selection/display process so that only the selected conformation is displayed.'
  ,'restrict none;conformation 0;wireframe 0.15 #shows all, like model 0, with wireframe'
  ,'restrict none;conformation 1;wireframe 0.15'
  ,'restrict none;conformation 2;wireframe 0.15'
@@ -97,6 +101,7 @@ Scripts=new Array(" "
  ,'cartoon off;wireframe 0.15'
  ,'cartoon on;wireframe 0'
  ,'### more precise, using % ###'
+ ,'# You certainly do not have to use <b>conformation</b>. *%A selects for only the "A"-labeled alternative locations; *% selects for all locations that HAVE NO alternative location marking. The combination of these -- <b> select *% or *%A</b> -- then constitutes one full molecular alternative. To select specifically for all atoms involved in any alternative location, <b>select not *%</b>.' 
  ,'load 1hje.pdb;'
  ,'color altloc'
  ,'color amino'

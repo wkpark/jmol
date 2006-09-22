@@ -1,4 +1,4 @@
-copy ..\..\*.jar .
+copy c:\jmol-dev\workspace\jmol\*.jar .
 
 goto OK
 

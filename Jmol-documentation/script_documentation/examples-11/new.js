@@ -18,8 +18,8 @@ function jmolGetLogLevelRadios() {
 	,["set debugscript off;set logLevel 4","4",1,"radio4","information, warnings, and errors to Java Console"]
 	,["set debugscript on ;set logLevel 5","5",0,"radio5","full debug mode"]
 	]
-
-  return jmolRadioGroup(S)
+  var s = jmolRadioGroup(S)
+  return s
 }
 
 

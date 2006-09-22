@@ -3131,7 +3131,7 @@ class Eval { //implements Runnable {
 
   void calculate() throws ScriptException {
     if (statementLength == 1)
-      evalError("Calculate what? surface? hbonds?");
+      evalError("Calculate what? hbonds?  surface? structure?");
     switch (statement[1].tok) {
     case Token.surface:
       dots(2, Dots.DOTS_MODE_CALCONLY);
@@ -3139,7 +3139,7 @@ class Eval { //implements Runnable {
     case Token.hbond:
       viewer.autoHbond();
       return;
-    case Token.structure:  // NOT WORKING YET - use set forceAutoBond instead
+    case Token.structure:
       viewer.calculateStructures();
       return;
     }
@@ -4489,20 +4489,13 @@ class Eval { //implements Runnable {
       case Token.radius:
         decimalPropertyName = "radius";
         continue;
-      case Token.color:
-        if (++i == statementLength)
-          colorExpected();
-        if (statement[i].tok == Token.translucent
-            || statement[i].tok == Token.opaque) {
-          translucency = (statement[i].tok == Token.opaque ? "opaque"
-              : "translucent");
-          i++;
-        }
-        if (i == statementLength || statement[i].tok != Token.colorRGB) {
-          if (translucency.length() > 0)
-            continue;
-          colorExpected();
-        }
+      case Token.translucent:
+        translucency = "translucent";
+        continue;
+      case Token.opaque:
+        translucency = "opaque";
+        continue;
+      case Token.colorRGB:
         color = getArgbParam(i);
         continue;
       case Token.identifier:
@@ -4607,8 +4600,8 @@ class Eval { //implements Runnable {
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis",
           new Integer(color));
     if (translucency.length() > 0)
-      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "translucencyThis",
-          translucency);
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
+          "translucencyThis", translucency);
   }
 
   void lcaoCartoon() throws ScriptException {

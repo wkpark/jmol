@@ -80,10 +80,6 @@ public final class ScriptWindow extends JDialog
     JPanel buttonPanel = new JPanel();
     container.add(buttonPanel, BorderLayout.SOUTH);
 
-    closeButton = new JButton(GT._("Close"));
-    closeButton.addActionListener(this);
-    buttonPanel.add(closeButton);
-
     runButton = new JButton(GT._("Run"));
     runButton.addActionListener(this);
     buttonPanel.add(runButton);
@@ -100,7 +96,12 @@ public final class ScriptWindow extends JDialog
     helpButton = new JButton(GT._("Help"));
     helpButton.addActionListener(this);
     buttonPanel.add(helpButton);
-  }
+
+    closeButton = new JButton(GT._("Close"));
+    closeButton.addActionListener(this);
+    buttonPanel.add(closeButton);
+
+}
 
   public void sendConsoleEcho(String strEcho) {
     if (strEcho != null && !isError) {
@@ -114,15 +115,16 @@ public final class ScriptWindow extends JDialog
     isError = TF;
   }
   public void sendConsoleMessage(String strStatus) {
-    if (strStatus != null) {
-      if (strStatus.indexOf("ERROR:") >= 0) {
-        console.outputError(strStatus);
-        setError(true);
-      }
-      else if (!isError)
-        console.outputStatus(strStatus);
-      setError(false);
+    if (strStatus == null) {
+      console.clearContent();
+      console.outputStatus("");
+    } else if (strStatus.indexOf("ERROR:") >= 0) {
+      console.outputError(strStatus);
+      setError(true);
+    } else if (!isError) {
+      console.outputStatus(strStatus);
     }
+    setError(false);
   }
 
   public void notifyScriptTermination(String strMsg, int msWalltime) {
@@ -349,24 +351,21 @@ class ConsoleTextPane extends JTextPane {
    }
 
    /**
-    * Recall command histoy.
-    * 
-    * @param up - history up or down
-    */
-   private final void recallCommand(boolean up)
-   {
-      String cmd = up?commandHistory.getCommandUp():commandHistory.getCommandDown();
-      
-      try
-       {
-           consoleDoc.replaceCommand(cmd);
-            
-       }
-       catch (BadLocationException e)
-       {
-          e.printStackTrace();
-       }    
-   }
+   * Recall command histoy.
+   * 
+   * @param up - history up or down
+   */
+  private final void recallCommand(boolean up) {
+    String cmd = up ? commandHistory.getCommandUp() : commandHistory
+        .getCommandDown();
+    if (cmd == null)
+      return;
+    try {
+      consoleDoc.replaceCommand(cmd);
+    } catch (BadLocationException e) {
+      e.printStackTrace();
+    }
+  }
   
 }
 

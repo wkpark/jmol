@@ -73,10 +73,8 @@ class Labels extends Shape {
       if (colix == Graphics3D.UNRECOGNIZED)
         palette = (String) value;
       for (int i = frame.atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          n++;
-          setColix(i, colix, palette);
-        }
+        if (bsSelected.get(i))
+          setColix(i, colix, palette, n++);
       if (n == 0 || !defaultsOnlyForNone) {
         defaultColix = colix;
         defaultPalette = palette;
@@ -87,10 +85,8 @@ class Labels extends Shape {
       short bgcolix = Graphics3D.getColix(value);
       int n = 0;
       for (int i = frame.atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          n++;
-          setBgcolix(i, bgcolix);
-        }
+        if (bsSelected.get(i))
+          setBgcolix(i, bgcolix, n++);
       if (n == 0 || !defaultsOnlyForNone)
         defaultBgcolix = bgcolix;
     }
@@ -109,13 +105,13 @@ class Labels extends Shape {
           if (text != null)
             text.setText(label);
           if (defaultOffset != zeroOffset)
-            setOffsets(i, defaultOffset);
+            setOffsets(i, defaultOffset, -1);
           if (defaultColix != 0)
-            setColix(i, defaultColix, defaultPalette);
+            setColix(i, defaultColix, defaultPalette, -1);
           if (defaultBgcolix != 0)
-            setBgcolix(i, defaultBgcolix);
+            setBgcolix(i, defaultBgcolix, -1);
           if (defaultFontId != zeroFontId)
-            setFont(i, defaultFontId);
+            setFont(i, defaultFontId, -1);
         }
       return;
     }
@@ -129,10 +125,8 @@ class Labels extends Shape {
       byte fid = g3d.getFontFid(fontsize);
       int n = 0;
       for (int i = frame.atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          n++;
-          setFont(i, fid);
-        }
+        if (bsSelected.get(i))
+          setFont(i, fid, n++);
       if (n == 0 || !defaultsOnlyForNone)
         defaultFontId = fid;
       return;
@@ -142,10 +136,8 @@ class Labels extends Shape {
       byte fid = ((Font3D) value).fid;
       int n = 0;
       for (int i = frame.atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          n++;
-          setFont(i, fid);
-        }
+        if (bsSelected.get(i))
+          setFont(i, fid, n++);
       if (n == 0 || !defaultsOnlyForNone)
         defaultFontId = fid;
       return;
@@ -162,12 +154,9 @@ class Labels extends Shape {
       else if (offset == zeroOffset)
         offset = 0;
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;) {
-        if (bsSelected.get(i)) {
-          n++;
-          setOffsets(i, offset);
-        }
-      }
+      for (int i = frame.atomCount; --i >= 0;)
+        if (bsSelected.get(i))
+          setOffsets(i, offset, n++);
       if (n == 0 || !defaultsOnlyForNone)
         defaultOffset = offset;
       return;
@@ -182,10 +171,8 @@ class Labels extends Shape {
         alignment = Text.CENTER;
       int n = 0;
       for (int i = frame.atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          n++;
-          setAlignment(i, alignment);
-        }
+        if (bsSelected.get(i))
+          setAlignment(i, alignment, n++);
       if (n == 0 || !defaultsOnlyForNone)
         defaultAlignment = alignment;
     }
@@ -207,7 +194,7 @@ class Labels extends Shape {
     }
   }
 
-  void setColix(int i, short colix, String palette) {
+  void setColix(int i, short colix, String palette, int n) {
     if (colixes == null || i >= colixes.length) {
       if (colix == 0)
         return;
@@ -220,7 +207,7 @@ class Labels extends Shape {
       text.setColix(colixes[i]);
   }
   
-  void setBgcolix(int i, short bgcolix) {
+  void setBgcolix(int i, short bgcolix, int n) {
     if (bgcolixes == null || i >= bgcolixes.length) {
       if (bgcolix == 0)
         return;
@@ -232,8 +219,7 @@ class Labels extends Shape {
       text.setBgColix(bgcolix);
   }
   
-  void setOffsets(int i, int offset) {
-    setOffsets(i, offset);
+  void setOffsets(int i, int offset, int n) {
     if (offsets == null || i >= offsets.length) {
       if (offset == 0)
         return;
@@ -245,7 +231,7 @@ class Labels extends Shape {
       text.setOffset(offset);
   }
 
-  void setAlignment(int i, int alignment) {
+  void setAlignment(int i, int alignment, int n) {
     if (offsets == null || i >= offsets.length) {
       if (alignment == Text.LEFT)
         return;
@@ -257,7 +243,7 @@ class Labels extends Shape {
       text.setAlignment(alignment);
   }
   
-  void setFont(int i, byte fid) {
+  void setFont(int i, byte fid, int n) {
     if (fids == null || i >= fids.length) {
       if (fid == defaultFontId)
         return;

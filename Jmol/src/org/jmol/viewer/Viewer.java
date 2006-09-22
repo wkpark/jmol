@@ -2434,6 +2434,10 @@ public class Viewer extends JmolViewer {
     statusManager.showConsole(showConsole);
   }
 
+  void clearConsole() {
+    statusManager.clearConsole();
+  }
+
   /*****************************************************************************
    * mth 2003 05 31 - needs more work this should be implemented using
    * properties or as a hashtable using boxed/wrapped values so that the values

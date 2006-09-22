@@ -277,6 +277,11 @@ class StatusManager {
       jmolStatusListener.showUrl(urlString);
   }
 
+  synchronized void clearConsole() {
+    if (jmolStatusListener != null)
+      jmolStatusListener.sendConsoleMessage(null);
+  }
+
   synchronized void showConsole(boolean showConsole) {
     if (jmolStatusListener != null)
       jmolStatusListener.showConsole(showConsole);

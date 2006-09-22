@@ -1602,8 +1602,18 @@ class Eval { //implements Runnable {
         order));
   }
 
-  void console() {
-    viewer.showConsole(statement[1].tok == Token.on);
+  void console() throws ScriptException {
+    switch (statement[1].tok) {
+    case Token.off:
+      viewer.showConsole(false);
+      break;
+    case Token.on:
+      viewer.showConsole(true);
+      viewer.clearConsole();
+      break;
+    default:
+      evalError("console ON|OFF");
+    }
   }
 
   void centerAt() throws ScriptException {

@@ -58,13 +58,9 @@ final public class CommandHistory {
    * @return the String value of a command.
    */
   public String getCommandUp() {
+    if (cursorPos <= 0)
+      return null;
     cursorPos--;
-    if (cursorPos < 0) {
-      cursorPos = commandList.length - 1;
-      while ((cursorPos > 0) && (commandList[cursorPos] == null)) {
-        cursorPos--;
-      }
-    }
     return getCommand();
   }
 
@@ -74,13 +70,10 @@ final public class CommandHistory {
    * @return the String value of a command.
    */
   public String getCommandDown() {
+    if (cursorPos >= nextCommand)
+      return null;
     cursorPos++;
-    if (cursorPos >= commandList.length) {
-      cursorPos = 0;
-    }
-    if (commandList[cursorPos] == null) {
-      cursorPos = 0;
-    }
+    
     return getCommand();
   }
 
@@ -99,6 +92,8 @@ final public class CommandHistory {
    * @param command the String value of a command.
    */
   public void addCommand(String command) {
+    if(command == null || command.length() == 0)
+      return;
     if (nextCommand >= commandList.length) {
       nextCommand = 0;
     }

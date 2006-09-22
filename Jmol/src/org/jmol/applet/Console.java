@@ -118,8 +118,10 @@ class Console implements ActionListener, WindowListener {
   }
 
   void output(String message, AttributeSet att) {
-    if (message.length() == 0)
+    if (message == null) {
+      output.setText("");
       return;
+    }
     if (message.charAt(message.length() - 1) != '\n')
       message += "\n";
     try {
@@ -141,7 +143,7 @@ class Console implements ActionListener, WindowListener {
 
   void execute() {
     String strCommand = input.getText();
-    commandHistory.addCommand(strCommand);
+    addCommand(strCommand);
     input.setText(null);
     output(strCommand, attributesCommand);
     String strErrorMessage = viewer.script(strCommand);
@@ -150,6 +152,16 @@ class Console implements ActionListener, WindowListener {
     input.requestFocus();
   }
 
+  void addCommand(String strCommand) {
+    int i;
+    while ((i = strCommand.indexOf("\n")) >= 0) {
+      String str = strCommand.substring(0, i);
+      if (str.length() > 0)
+        commandHistory.addCommand(str);
+      strCommand = strCommand.substring(i + 1);
+    }
+  }
+  
   class ShiftEnterTextArea extends JTextArea {
     public void processComponentKeyEvent(KeyEvent ke) {
       switch (ke.getID()) {
@@ -177,7 +189,11 @@ class Console implements ActionListener, WindowListener {
 
 
     private void recallCommand(boolean up) {
-      setText(up ? commandHistory.getCommandUp() : commandHistory.getCommandDown());
+      String cmd = up ? commandHistory.getCommandUp() : commandHistory
+          .getCommandDown();
+      if (cmd == null)
+        return;
+      setText(cmd);
     }
   }
 
@@ -211,7 +227,10 @@ class Console implements ActionListener, WindowListener {
 
 
     private void recallCommand(boolean up) {
-      setText(up ? commandHistory.getCommandUp() : commandHistory.getCommandDown());
+      String str = up ? commandHistory.getCommandUp() : commandHistory.getCommandDown();
+      if (str == null)
+        return;
+      setText(str);
     }
   }
 

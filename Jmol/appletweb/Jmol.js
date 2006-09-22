@@ -777,8 +777,8 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
   if (! separatorHtml)
     separatorHtml = "";
   var scriptIndex = _jmolAddScript(script);
-  return "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" + groupName +
-         " id='"+id+"' type='radio' onClick='_jmolClick(" +
+  return "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" 
+	+ groupName + "' id='"+id+"' type='radio' onClick='_jmolClick(" +
          scriptIndex + _jmol.targetText +
          ");return true;' onMouseover='_jmolMouseOver(" +
          scriptIndex +

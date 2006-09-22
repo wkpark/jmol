@@ -23,6 +23,7 @@
  */
 package org.jmol.util;
 
+import java.util.Vector;
 /**
  * Implements a queue for a bash-like command history.
  */
@@ -31,7 +32,8 @@ final public class CommandHistory {
   /**
    * Array of commands.
    */
-  private String[] commandList = null;
+  private Vector commandList = null;
+  private int maxSize;
 
   /**
    * Position of the next command.
@@ -83,7 +85,7 @@ final public class CommandHistory {
    * @return the String value of a command.
    */
   private String getCommand() {
-    return commandList[cursorPos];
+    return (String)commandList.get(cursorPos);
   }
 
   /**
@@ -94,16 +96,14 @@ final public class CommandHistory {
   public void addCommand(String command) {
     if(command == null || command.length() == 0)
       return;
-    if (nextCommand >= commandList.length) {
-      nextCommand = 0;
+    if (nextCommand >= maxSize) {
+      commandList.remove(0);
+      nextCommand = maxSize - 1;
     }
-    commandList[nextCommand] = command;
+    commandList.add(nextCommand, command);
     nextCommand++;
-    if (nextCommand >= commandList.length) {
-      nextCommand = 0;
-    }
     cursorPos = nextCommand;
-    commandList[nextCommand] = "";
+    commandList.add(nextCommand, "");
   }
 
   /**
@@ -112,31 +112,14 @@ final public class CommandHistory {
    * @param maxSize maximum size for the command queue.
    */
   void setMaxSize(int maxSize) {
-    if (maxSize + 1 == commandList.length) {
+    if (maxSize == this.maxSize)
       return;
+    while (this.maxSize > maxSize) {
+      commandList.remove(0);
+      this.maxSize--;
+      nextCommand = cursorPos = this.maxSize;
     }
-    String[] tmpCommandList = new String[maxSize + 1];
-    int lastCommand = commandList.length - 1;
-    while ((lastCommand > 0) && (commandList[lastCommand] == null)) {
-      lastCommand--;
-    }
-    if (tmpCommandList.length - 1 > lastCommand) {
-      for (int i = 0; i < lastCommand; i++) {
-        tmpCommandList[i] = commandList[i];
-      }
-      return;
-    }
-    for (int i = 0; i < tmpCommandList.length; i++) {
-      tmpCommandList[tmpCommandList.length - i - 1] = commandList[commandList.length - i - 1];
-    }
-    int delta = 0;
-    if (nextCommand >= tmpCommandList.length) {
-      delta = nextCommand - tmpCommandList.length + 1;
-    }
-    for (int i = 0; i <= nextCommand - delta; i++) {
-      tmpCommandList[nextCommand - delta - i] = commandList[nextCommand - i];
-    }
-    commandList = tmpCommandList;
+    this.maxSize = maxSize;
   }
 
   /**
@@ -145,9 +128,10 @@ final public class CommandHistory {
    * @param maxSize maximum size for the command queue.
    */
   void reset(int maxSize) {
-    commandList = new String[maxSize + 1];
+    this.maxSize = maxSize; 
+    commandList = new Vector();
     nextCommand = 0;
-    commandList[nextCommand] = "";
+    commandList.add("");
     cursorPos = 0;
   }
 }

@@ -58,36 +58,55 @@ public class TestCommandHistory extends TestCase {
     assertEquals("c", h.getCommandUp());
     assertEquals("b", h.getCommandUp());
     assertEquals("a", h.getCommandUp());
-    assertEquals("" , h.getCommandUp());
-    assertEquals("d", h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
 
     // Testing getCommandDown()
-    assertEquals("" , h.getCommandDown());
-    assertEquals("a", h.getCommandDown());
     assertEquals("b", h.getCommandDown());
     assertEquals("c", h.getCommandDown());
     assertEquals("d", h.getCommandDown());
     assertEquals("" , h.getCommandDown());
-    assertEquals("a", h.getCommandDown());
+    assertEquals(null, h.getCommandDown());
 
     // Modifying history size
     h.setMaxSize(2);
 
     // Testing getCommandUp()
-    assertEquals("" , h.getCommandUp());
     assertEquals("d", h.getCommandUp());
     assertEquals("c", h.getCommandUp());
-    assertEquals("" , h.getCommandUp());
-    assertEquals("d", h.getCommandUp());
-    assertEquals("c", h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
 
     // Testing getCommandDown();
     assertEquals("d", h.getCommandDown());
     assertEquals("" , h.getCommandDown());
-    assertEquals("c", h.getCommandDown());
+    assertEquals(null, h.getCommandDown());
+
+    // Modifying history size
+    h.setMaxSize(4);
+
+    // Testing getCommandUp()
+    assertEquals("d", h.getCommandUp());
+    assertEquals("c", h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
+    
+    h.addCommand("e");
+    h.addCommand("f");
+
+    // Testing getCommandUp()
+    assertEquals("f", h.getCommandUp());
+    assertEquals("e", h.getCommandUp());
+    assertEquals("d", h.getCommandUp());
+    assertEquals("c", h.getCommandUp());
+    assertEquals(null, h.getCommandUp());
+
+    // Testing getCommandDown();
     assertEquals("d", h.getCommandDown());
+    assertEquals("e", h.getCommandDown());
+    assertEquals("f", h.getCommandDown());
     assertEquals("" , h.getCommandDown());
-    assertEquals("c", h.getCommandDown());
-    assertEquals("d", h.getCommandDown());
+    assertEquals(null, h.getCommandDown());
   }
 }

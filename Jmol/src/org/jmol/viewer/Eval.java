@@ -1845,6 +1845,7 @@ class Eval { //implements Runnable {
   }
 
   void color() throws ScriptException {
+    int argb;
     if (statementLength > 5 || statementLength < 2)
       badArgumentCount();
     int tok = statement[1].tok;
@@ -1880,9 +1881,14 @@ class Eval { //implements Runnable {
     case Token.background:
       viewer.setBackgroundArgb(getArgbOrNoneParam(2));
       return;
+    case Token.selectionHalo:
+      argb = getArgbOrNoneParam(2);
+      viewer.loadShape(JmolConstants.SHAPE_HALOS);
+      viewer.setSelectionArgb(argb);
+      return;
     case Token.identifier:
     case Token.hydrogen:
-      int argb = getArgbOrPaletteParam(2);
+      argb = getArgbOrPaletteParam(2);
       String str = (String) statement[1].value;
       for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
@@ -1924,12 +1930,6 @@ class Eval { //implements Runnable {
       if (str.equalsIgnoreCase("dotsSaddle")) {
         viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS, "colorSaddle",
             argb);
-        return;
-      }
-      if (str.equalsIgnoreCase("selectionHalo")
-          || str.equalsIgnoreCase("selectionHalos")) {
-        viewer.loadShape(JmolConstants.SHAPE_HALOS);
-        viewer.setSelectionArgb(argb);
         return;
       }
       invalidArgument();

@@ -154,7 +154,7 @@ class GuiMap {
       labels.put("about", GT._("About Jmol"));
       labels.put("uguide", GT._("User Guide"));
       labels.put("whatsnew", GT._("What's New"));
-      labels.put("console", GT._("Jmol Script Console"));
+      labels.put("console", GT._("Jmol Java Console"));
       labels.put("Prefs.showHydrogens", GT._("Hydrogens"));
       labels.put("Prefs.showMeasurements", GT._("Measurements"));
       labels.put("Prefs.perspectiveDepth", GT._("Perspective Depth"));

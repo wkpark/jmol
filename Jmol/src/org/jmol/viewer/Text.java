@@ -398,7 +398,9 @@ class Text {
           boxHeight - 2);
       g3d.drawLine(bgcolix, x0, y0, zSlab, x, y + boxHeight/2, zSlab);
     }
-    g3d.drawString(strLabel, font3d, colix, x + 4, y + 4 + ascent, 
+    //just a little pointer -- only for the simplest of labels
+    if (xOffset > 0)
+      g3d.drawString(strLabel, font3d, colix, x + 4, y + 4 + ascent, 
         z - 1, zSlab);
   }
   

@@ -28,6 +28,44 @@ import org.jmol.util.ArrayUtil;
 
 final class Model {
 
+  /*
+   * In Jmol all atoms and bonds are kept as a pair of arrays in 
+   * the overall Frame object. Thus, "Model" is not atoms and bonds. 
+   * It is a description of all the:
+   * 
+   * chains (as defined in the file)
+   *   and their associated file-associated groups,  
+   * polymers (same, I think, but in terms of secondary structure)
+   *   and their associated monomers
+   * molecules (as defined by connectivity)
+   *  
+   * Note that "monomer" extends group. A group only becomes a 
+   * monomer if it can be identified as one of the following 
+   * PDB/mmCIF types:
+   * 
+   *   amino  -- has an N, a C, and a CA
+   *   alpha  -- has just a CA
+   *   nucleic -- has C1',C2',C3',C4',C5',O3', and O5'
+   *   phosphorus -- has P
+   *   
+   * The term "conformation" is a bit loose. It means "what you get
+   * when you go with one or another set of alternative locations.
+   * 
+   * Also held here is the "modelTag" and information
+   * about how many atoms there were before symmetry was applied
+   * as well as a bit about insertions and alternative locations.
+   * 
+   * 
+   * one model = one animation "frame", but we don't use the "f" word
+   * here because that would confuse the issue with the overall "Frame"
+   * frame of which there is only one ever in Jmol.
+   * 
+   * If multiple files are loaded, then they will appear here in 
+   * at least as many Model objects. Each vibration will be a complete
+   * set of atoms as well. 
+   *  
+   */
+  
   Mmset mmset;
   int modelIndex;
   String modelTag;
@@ -40,7 +78,6 @@ final class Model {
   boolean isPDB = false;
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
-
   private int polymerCount = 0;
   private Polymer[] polymers = new Polymer[8];
 
@@ -72,6 +109,13 @@ final class Model {
     polymers = (Polymer[])ArrayUtil.setLength(polymers, polymerCount);
   }
 
+  void clearStructures() {
+    chainCount = 0;
+    chains = new Chain[8];
+    polymerCount = 0;
+    polymers = new Polymer[8];
+  }
+  
   void addSecondaryStructure(byte type,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {

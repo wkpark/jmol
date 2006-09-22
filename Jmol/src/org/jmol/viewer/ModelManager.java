@@ -443,7 +443,7 @@ class ModelManager {
    ****************************************************************/
 
   int[] shapeSizes = new int[JmolConstants.SHAPE_MAX];
-  Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
+ // Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
 
   void loadShape(int shapeID) {
     if (frame != null)
@@ -460,41 +460,18 @@ class ModelManager {
     return shapeSizes[shapeType];
   }
   
-  private static final Object NULL_SURROGATE = new Object();
-
   void setShapeProperty(int shapeType, String propertyName,
                                Object value, BitSet bsSelected) {
-    Hashtable props = shapeProperties[shapeType];
-    if (props == null)
-      props = shapeProperties[shapeType] = new Hashtable();
-
-    // be sure to intern all propertyNames!
-    propertyName = propertyName.intern();
-    /*
-    Logger.debug("propertyName=" + propertyName + "\n" +
-                       "value=" + value);
-    */
-
-    // Hashtables cannot store null values :-(
-    props.put(propertyName, value != null ? value : NULL_SURROGATE);
-    if (frame != null)
-      frame.setShapeProperty(shapeType, propertyName, value, bsSelected);
+    if (frame == null)
+      return;
+    frame.setShapeProperty(shapeType, propertyName.intern(), value, bsSelected);
   }
 
   Object getShapeProperty(int shapeType, String propertyName,
                                  int index) {
-    Object value = null;
-    if (frame != null)
-      value = frame.getShapeProperty(shapeType, propertyName, index);
-    if (value == null) {
-      Hashtable props = shapeProperties[shapeType];
-      if (props != null) {
-        value = props.get(propertyName);
-        if (value == NULL_SURROGATE)
-          return value = null;
-      }
-    }
-    return value;
+    if (frame == null)
+      return null;
+    return frame.getShapeProperty(shapeType, propertyName, index);
   }
 
   int getShapeIdFromObjectName(String objectName) {
@@ -1587,11 +1564,12 @@ String getAtomInfoChime(int i) {
   String getUnitCellInfoText() {
     if (frame == null)
       return null;
-      if (frame.currentModelIndex < 0)
-        return "no single current model";
-      if (frame.cellInfos == null)
-        return "not applicable";
-      return frame.cellInfos[frame.currentModelIndex].getUnitCellInfo();
+    int modelIndex = viewer.getDisplayModelIndex();
+    if (modelIndex < 0)
+      return "no single current model";
+    if (frame.cellInfos == null)
+      return "not applicable";
+    return frame.cellInfos[modelIndex].getUnitCellInfo();
   }
 
   String getSpaceGroupInfoText(String spaceGroup) {
@@ -1599,20 +1577,22 @@ String getAtomInfoChime(int i) {
       return null;
     SpaceGroup sg;
     String strOperations = "";
+    int modelIndex = viewer.getDisplayModelIndex();
     if (spaceGroup == null) {
-      if (frame.currentModelIndex < 0)
+      if (modelIndex < 0)
         return "no single current model";
       if (frame.cellInfos == null)
         return "not applicable";
-      CellInfo cellInfo = frame.cellInfos[frame.currentModelIndex];
+      CellInfo cellInfo = frame.cellInfos[modelIndex];
       spaceGroup = cellInfo.spaceGroup;
       if (spaceGroup.indexOf("[") >= 0)
         spaceGroup = spaceGroup.substring(0, spaceGroup.indexOf("[")).trim();
       if (spaceGroup == "spacegroup unspecified")
         return "no space group identified in file";
-      sg = SpaceGroup.determineSpaceGroup(spaceGroup, cellInfo.getNotionalUnitCell());
+      sg = SpaceGroup.determineSpaceGroup(spaceGroup, cellInfo
+          .getNotionalUnitCell());
       strOperations = "\nSymmetry operations employed:"
-          + frame.getModelSymmetryList(frame.currentModelIndex);
+          + frame.getModelSymmetryList(modelIndex);
     } else if (spaceGroup.equalsIgnoreCase("ALL")) {
       return SpaceGroup.dumpAll();
     } else {

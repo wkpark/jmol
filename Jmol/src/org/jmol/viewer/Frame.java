@@ -365,12 +365,6 @@ public final class Frame {
   private final Hashtable htAtomMap = new Hashtable();
 
   void initializeBuild(int atomCountEstimate) {
-    currentModel = null;
-    currentChainID = '\uFFFF';
-    currentChain = null;
-    currentGroupInsertionCode = '\uFFFF';
-    currentGroup3 = "xxxxx";
-
     if (atomCountEstimate <= 0)
       atomCountEstimate = ATOM_GROWTH_INCREMENT;
     atoms = new Atom[atomCountEstimate];
@@ -393,26 +387,9 @@ public final class Frame {
                int groupSequenceNumber, char groupInsertionCode, float vectorX,
                float vectorY, float vectorZ, char alternateLocationID,
                Object clientAtomReference) {
-    String group3i = (group3 == null ? null : group3.intern());
-    if (modelIndex != currentModelIndex) {
-      currentModel = mmset.getModel(modelIndex);
-      currentModelIndex = modelIndex;
-      currentChainID = '\uFFFF';
-    }
-    if (chainID != currentChainID) {
-      currentChainID = chainID;
-      currentChain = currentModel.getOrAllocateChain(chainID);
-      currentGroupInsertionCode = '\uFFFF';
-      currentGroup3 = "xxxx";
-    }
-    if (groupSequenceNumber != currentGroupSequenceNumber
-        || groupInsertionCode != currentGroupInsertionCode || group3i != currentGroup3) {
-      currentGroupSequenceNumber = groupSequenceNumber;
-      currentGroupInsertionCode = groupInsertionCode;
-      currentGroup3 = group3i;
-      startGroup(currentChain, group3, groupSequenceNumber, groupInsertionCode,
-          atomCount);
-    }
+    
+    checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber, groupInsertionCode);
+
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
 
@@ -426,6 +403,40 @@ public final class Frame {
     htAtomMap.put(atomUid, atom);
   }
 
+  void checkNewGroup(int atomIndex) {
+    Atom atom = atoms[atomIndex];
+    if (atom.group == null)
+      checkNewGroup(atomIndex, atom.modelIndex, '\0', null, 0, '\0');
+    else
+      checkNewGroup(atomIndex, atom.modelIndex, atom.getChainID(), atom
+          .getGroup3(), atom.getSeqcode(), atom.getInsertionCode());
+  }
+  
+  void checkNewGroup(int atomIndex, int modelIndex, char chainID, String group3,
+                     int groupSequenceNumber, char groupInsertionCode) {
+    String group3i = (group3 == null ? null : group3.intern());
+    if (modelIndex != currentModelIndex) {
+      currentModel = mmset.getModel(modelIndex);
+      currentModelIndex = modelIndex;
+      currentChainID = '\uFFFF';
+    }
+    if (chainID != currentChainID) {
+      currentChainID = chainID;
+      currentChain = currentModel.getOrAllocateChain(chainID);
+      currentGroupInsertionCode = '\uFFFF';
+      currentGroup3 = "xxxx";
+    }
+    if (groupSequenceNumber != currentGroupSequenceNumber
+        || groupInsertionCode != currentGroupInsertionCode
+        || group3i != currentGroup3) {
+      currentGroupSequenceNumber = groupSequenceNumber;
+      currentGroupInsertionCode = groupInsertionCode;
+      currentGroup3 = group3i;
+      startGroup(currentChain, group3, groupSequenceNumber, groupInsertionCode,
+          atomIndex);
+    }
+
+  }
   void bondAtoms(Object atomUid1, Object atomUid2, int order) {
     Atom atom1 = (Atom) htAtomMap.get(atomUid1);
     if (atom1 == null) {
@@ -497,28 +508,25 @@ public final class Frame {
   ////////////////////////////////////////////////////////////////
 
   final static int defaultGroupCount = 32;
-  Chain[] chains = new Chain[defaultGroupCount];
-  String[] group3s = new String[defaultGroupCount];
-  int[] seqcodes = new int[defaultGroupCount];
-  int[] firstAtomIndexes = new int[defaultGroupCount];
+  Chain[] chains;
+  String[] group3s;
+  int[] seqcodes;
+  int[] firstAtomIndexes;
 
   final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
 
   void initializeGroupBuild() {
     groupCount = 0;
-  }
-
-  void finalizeGroupBuild() {
-    // run this loop in increasing order so that the
-    // groups get defined going up
-    groups = new Group[groupCount];
-    for (int i = 0; i < groupCount; ++i) {
-      distinguishAndPropogateGroup(i, chains[i], group3s[i], seqcodes[i],
-          firstAtomIndexes[i], (i == groupCount - 1 ? atomCount
-              : firstAtomIndexes[i + 1]));
-      chains[i] = null;
-      group3s[i] = null;
-    }
+    chains = new Chain[defaultGroupCount];
+    group3s = new String[defaultGroupCount];
+    seqcodes = new int[defaultGroupCount];
+    firstAtomIndexes = new int[defaultGroupCount];
+    currentModelIndex = -1;
+    currentModel = null;
+    currentChainID = '\uFFFF';
+    currentChain = null;
+    currentGroupInsertionCode = '\uFFFF';
+    currentGroup3 = "xxxxx";
   }
 
   void startGroup(Chain chain, String group3, int groupSequenceNumber,
@@ -535,6 +543,21 @@ public final class Frame {
     seqcodes[groupCount] = Group.getSeqcode(groupSequenceNumber,
         groupInsertionCode);
     ++groupCount;
+  }
+
+  void finalizeGroupBuild() {
+    // run this loop in increasing order so that the
+    // groups get defined going up
+    groups = new Group[groupCount];
+    for (int i = 0; i < groupCount; ++i) {
+      distinguishAndPropogateGroup(i, chains[i], group3s[i], seqcodes[i],
+          firstAtomIndexes[i], (i == groupCount - 1 ? atomCount
+              : firstAtomIndexes[i + 1]));
+      chains[i] = null;
+      group3s[i] = null;
+    }
+    chains = null;
+    group3s = null;
   }
 
   void distinguishAndPropogateGroup(int groupIndex, Chain chain, String group3,
@@ -671,22 +694,33 @@ public final class Frame {
     //
     hackAtomSerialNumbersForAnimations();
 
-    if (!structuresDefined)
-      calculateStructures(false);
-
     ////////////////////////////////////////////////////////////////
     // find things for the popup menus
     findElementsPresent();
-    findGroupsPresent();
-    mmset.freeze();
+    
+    ////////////////////////////////////////////////////////////////
+    // finalize all group business
+    calculateStructures(false);
   }
 
-  void calculateStructures(boolean rebuildPolymers) {
-    if (rebuildPolymers) {
+  void calculateStructures(boolean rebuild) {
+    if (rebuild) {
+      for (int i = JmolConstants.SHAPE_MAX_SECONDARY; --i >= JmolConstants.SHAPE_MIN_SECONDARY;)
+        shapes[i] = null;
       clearPolymers();
+      mmset.clearStructures();
+      initializeGroupBuild();
+      for (int i = 0; i < atomCount; i++)
+        checkNewGroup(i);
+      finalizeGroupBuild();
       buildPolymers();
+      structuresDefined = false;
+      moleculeCount = 0;
     }
-    mmset.calculateStructures();
+    findGroupsPresent();
+    if (!structuresDefined)
+      mmset.calculateStructures();
+    mmset.freeze();
   }
 
   void recalculateStructure(BitSet bsSelected) {
@@ -995,9 +1029,6 @@ public final class Frame {
 
   void setShapeProperty(int shapeID, String propertyName, Object value,
                         BitSet bsSelected) {
-    // miguel 2004 11 23
-    // Why was I loading this?
-    // loadShape(shapeID);
     if (shapes[shapeID] != null)
       shapes[shapeID].setProperty(propertyName, value, bsSelected);
   }

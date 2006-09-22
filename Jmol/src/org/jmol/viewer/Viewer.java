@@ -191,7 +191,6 @@ public class Viewer extends JmolViewer {
   String getJmolVersion() {
     return JmolConstants.version + "  " + JmolConstants.date;
   }
-  
 
   // ///////////////////////////////////////////////////////////////
   // delegated to StateManager
@@ -204,19 +203,19 @@ public class Viewer extends JmolViewer {
   void saveOrientation(String saveName) {
     stateManager.saveOrientation(saveName);
   }
-  
+
   boolean restoreOrientation(String saveName, float timeSeconds) {
     return stateManager.restoreOrientation(saveName, timeSeconds);
   }
-  
+
   void saveBonds(String saveName) {
     stateManager.saveBonds(saveName);
   }
-  
+
   boolean restoreBonds(String saveName) {
     return stateManager.restoreBonds(saveName);
   }
-  
+
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
@@ -959,7 +958,7 @@ public class Viewer extends JmolViewer {
   public boolean isApplet() {
     return (htmlName.length() > 0);
   }
-  
+
   void setDefaultDirectory(String defaultDirectory) {
     fileManager.setDefaultDirectory(defaultDirectory);
   }
@@ -1133,7 +1132,6 @@ public class Viewer extends JmolViewer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
-  
   public void calculateStructures() {
     modelManager.calculateStructures();
   }
@@ -1932,7 +1930,7 @@ public class Viewer extends JmolViewer {
     }
     repaintView();
   }
-  
+
   private Image getImage(boolean isDouble, boolean antialias) {
     Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
@@ -1945,18 +1943,16 @@ public class Viewer extends JmolViewer {
     g3d.endRendering();
     return g3d.getScreenImage();
   }
-  
+
   private Image getStereoImage(int stereoMode, boolean antialias) {
-    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
-        rectClip.height, transformManager.getStereoRotationMatrix(true),
-        antialias);
+    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+        transformManager.getStereoRotationMatrix(true), antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
         repaintManager.displayModelIndex);
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
-    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width,
-        rectClip.height, transformManager.getStereoRotationMatrix(false),
-        antialias);
+    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+        transformManager.getStereoRotationMatrix(false), antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
         repaintManager.displayModelIndex);
     g3d.endRendering();
@@ -1989,7 +1985,7 @@ public class Viewer extends JmolViewer {
 
   public Image getScreenImage() {
     boolean antialias = true;
-    setRectClip(null);    
+    setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {
     case JmolConstants.STEREO_REDCYAN:
@@ -2243,7 +2239,7 @@ public class Viewer extends JmolViewer {
      * ")");
      */
     if (shapeID < 0)
-      return;  //not applicable
+      return; //not applicable
     modelManager.setShapeProperty(shapeID, propertyName, value,
         selectionManager.bsSelection);
     refresh(0, "Viewer:setShapeProperty()");
@@ -2915,7 +2911,6 @@ public class Viewer extends JmolViewer {
     return global.forceAutoBond;
   }
 
-
   // ///////////////////////////////////////////////////////////////
   // Frame
   // ///////////////////////////////////////////////////////////////
@@ -3249,7 +3244,7 @@ public class Viewer extends JmolViewer {
   void setStereoMode(int[] twoColors) {
     transformManager.setStereoMode(twoColors);
   }
-  
+
   int getStereoMode() {
     return transformManager.stereoMode;
   }
@@ -3462,9 +3457,9 @@ public class Viewer extends JmolViewer {
   }
 
   public void setAtomCoordRelative(Point3f offset) {
-    modelManager.setAtomCoordRelative(offset, selectionManager.bsSelection);    
+    modelManager.setAtomCoordRelative(offset, selectionManager.bsSelection);
   }
-  
+
   float functionXY(String functionName, int x, int y) {
     return statusManager.functionXY(functionName, x, y);
   }
@@ -3472,14 +3467,14 @@ public class Viewer extends JmolViewer {
   Point3f[] getAdditionalHydrogens(BitSet atomSet) {
     return modelManager.getAdditionalHydrogens(atomSet);
   }
-  
+
   void setHelpPath(String url) {
     global.helpPath = url;
   }
-  
+
   void getHelp(String what) {
     if (global.helpPath == null)
       global.helpPath = styleManager.getDefaultHelpPath();
     showUrl(global.helpPath + what);
-  }  
+  }
 }

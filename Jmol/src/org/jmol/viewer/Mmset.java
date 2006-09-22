@@ -64,6 +64,11 @@ final class Mmset {
         Group.getSeqcode(endSequenceNumber, endInsertionCode));
   }
 
+  void clearStructures() {
+    for (int i = modelCount; --i >= 0;)
+      models[i].clearStructures();
+  }
+
   void calculateStructures() {
     for (int i = modelCount; --i >= 0;)
       models[i].calculateStructures();

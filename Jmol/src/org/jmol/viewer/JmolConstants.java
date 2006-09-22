@@ -2340,6 +2340,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_VECTORS    = 5;
   public final static int SHAPE_MEASURES   = 6;
   public final static int SHAPE_DOTS       = 7;
+  
+  public final static int SHAPE_MIN_SECONDARY  = 8;
   public final static int SHAPE_BACKBONE   = 8;
   public final static int SHAPE_TRACE      = 9;
   public final static int SHAPE_CARTOON    = 10;
@@ -2347,6 +2349,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MESHRIBBON = 12;
   public final static int SHAPE_RIBBONS    = 13;
   public final static int SHAPE_ROCKETS    = 14;
+  public final static int SHAPE_MAX_SECONDARY  = 15;
+  
   public final static int SHAPE_STARS      = 15;
   public final static int SHAPE_HALOS      = 16;
 

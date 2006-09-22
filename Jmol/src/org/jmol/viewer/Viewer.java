@@ -117,11 +117,12 @@ public class Viewer extends JmolViewer {
 
     Logger.info(JmolConstants.copyright + "\nJmol Version " + getJmolVersion()
         + "\njava.vendor:" + strJavaVendor + "\njava.version:" + strJavaVersion
-        + "\nos.name:" + strOSName);
-    Logger.info(htmlName + " jvm11orGreater=" + jvm11orGreater
+        + "\nos.name:" + strOSName + "\n" + htmlName);
+/*
+    Logger.info("jvm11orGreater=" + jvm11orGreater
         + "\njvm12orGreater=" + jvm12orGreater + "\njvm14orGreater="
         + jvm14orGreater);
-
+*/
     g3d = new Graphics3D(awtComponent);
     eval = new Eval(this);
     statusManager = new StatusManager(this);

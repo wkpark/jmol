@@ -823,7 +823,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void showConsole(boolean showConsole) {
-      Logger.info("JmolApplet.showConsole(" + showConsole + ")");
+      //Logger.info("JmolApplet.showConsole(" + showConsole + ")");
       if (jvm12 != null)
         jvm12.showConsole(showConsole);
     }

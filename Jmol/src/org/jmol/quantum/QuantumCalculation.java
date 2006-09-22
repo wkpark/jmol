@@ -246,16 +246,19 @@ public class QuantumCalculation {
           + nGaussians + " atom=" + atomIndex);
     if (atomIndex != lastAtom && atomCoordBohr[atomIndex] != null) {
       //Logger.("processSTO center " + atomCoordBohr[atomIndex]);
+      float x = atomCoordBohr[atomIndex].x;
+      float y = atomCoordBohr[atomIndex].y;
+      float z = atomCoordBohr[atomIndex].z;
       for (int i = countsXYZ[0]; --i >= 0;) {
-        X2[i] = X[i] = xyzBohr[i][0] - atomCoordBohr[atomIndex].x;
+        X2[i] = X[i] = xyzBohr[i][0] - x;
         X2[i] *= X[i];
       }
       for (int i = countsXYZ[1]; --i >= 0;) {
-        Y2[i] = Y[i] = xyzBohr[i][1] - atomCoordBohr[atomIndex].y;
+        Y2[i] = Y[i] = xyzBohr[i][1] - y;
         Y2[i] *= Y[i];
       }
       for (int i = countsXYZ[2]; --i >= 0;) {
-        Z2[i] = Z[i] = xyzBohr[i][2] - atomCoordBohr[atomIndex].z;
+        Z2[i] = Z[i] = xyzBohr[i][2] - z;
         Z2[i] *= Z[i];
       }
     }

@@ -110,6 +110,7 @@ import javax.vecmath.AxisAngle4f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.quantum.QuantumCalculation;
+import org.jmol.quantum.MepCalculation;
 
 class Isosurface extends MeshCollection {
 
@@ -131,6 +132,7 @@ class Isosurface extends MeshCollection {
   final static float defaultMappedDataMin = 0f;
   final static float defaultMappedDataMax = 1.0f;
   final static float defaultCutoff = 0.02f;
+  final static float defaultMepCutoff = 0.05f;
   final static float defaultOrbitalCutoff = 0.14f;
   final static float defaultQMOrbitalCutoff = 0.050f; // WebMO
   final static int defaultContourCount = 11; //odd is better
@@ -158,6 +160,8 @@ class Isosurface extends MeshCollection {
   float resolution;
   boolean insideOut; //no longer does anything now that we are forcing 2-sided triangles
 
+  float[] mepCharges;
+  
   int qmOrbitalType;
   int qmOrbitalCount;
   final static int QM_TYPE_UNKNOWN = 0;
@@ -165,6 +169,7 @@ class Isosurface extends MeshCollection {
   final static int QM_TYPE_SLATER = 2;
   Hashtable moData;
   float[] moCoefficients;
+
   boolean precalculateVoxelData;
   Vector functionXYinfo;
   String lcaoType;
@@ -201,6 +206,7 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_SASURFACE = 12 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_MOLECULARORBITAL = 13;
   final static int SURFACE_ATOMICORBITAL = 14;
+  final static int SURFACE_MEP = 15 | NO_ANISOTROPY;
   final static int SURFACE_FILE = 16;
 
   float solventRadius;
@@ -601,6 +607,24 @@ class Isosurface extends MeshCollection {
         colorPhase = 0;
         if (cutoff == Float.MAX_VALUE)
           cutoff = defaultQMOrbitalCutoff;
+        isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
+        isBicolorMap = true;
+        propertyName = "getSurface";
+      }
+    }
+
+    if ("mep" == propertyName) {
+      mepCharges = (float[]) value; 
+      isEccentric = isAnisotropic = false;
+      dataType = SURFACE_MEP;
+      if (state == STATE_DATA_READ) {
+        propertyName = "mapColor";
+      } else {
+        colorBySign = true;
+        colorByPhase = true;
+        colorPhase = 0;
+        if (cutoff == Float.MAX_VALUE)
+          cutoff = defaultMepCutoff;
         isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
         isBicolorMap = true;
         propertyName = "getSurface";
@@ -1035,6 +1059,9 @@ class Isosurface extends MeshCollection {
       case SURFACE_FUNCTIONXY:
         setupFunctionXY();
         break;
+      case SURFACE_MEP:
+        setupMep();
+        break;
       case SURFACE_FILE:
       default:
         readTitleLines();
@@ -1253,6 +1280,8 @@ class Isosurface extends MeshCollection {
       }
       if (dataType == SURFACE_MOLECULARORBITAL)
         generateQuantumCube();
+      else if (dataType == SURFACE_MEP)
+        generateMepCube();
       else
         Logger.error("code error -- isPrecalculation, but how?");
       if (isMapData || thePlane != null)
@@ -1301,6 +1330,7 @@ class Isosurface extends MeshCollection {
               voxelValue = getPsi(x, y, z);
               break;
             case SURFACE_MOLECULARORBITAL:
+            case SURFACE_MEP:
               voxelValue = strip[z]; //precalculated
               break;
             case SURFACE_FUNCTIONXY:
@@ -4036,6 +4066,106 @@ class Isosurface extends MeshCollection {
       break;
     default:
     }
+  }
+
+  /////// molecular electrostatic potential ///////
+
+  int mep_gridMax = MepCalculation.MAX_GRID;
+  float mep_ptsPerAngstrom = 3f;
+  float mep_marginAngstroms = 1f; // may have to adjust this
+  int mep_nAtoms;
+
+  Atom[] mep_atoms;
+
+  void setupMep() {
+    Atom[] atoms = frame.atoms;
+    Point3f xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE,
+        Float.MAX_VALUE);
+    Point3f xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE,
+        -Float.MAX_VALUE);
+    int modelIndex = viewer.getDisplayModelIndex();
+    int iAtom = 0;
+    int nSelected = 0;
+    int nAtoms = viewer.getAtomCount();
+    for (int i = 0; i < nAtoms; i++)
+      if (atoms[i].modelIndex == modelIndex) {
+        ++iAtom;
+        if (bsSelected != null && bsSelected.get(i))
+          ++nSelected;
+      }
+    mep_nAtoms = iAtom;
+    if (nSelected > 0)
+      Logger.info(nSelected + " of " + mep_nAtoms
+          + " atoms will be used in the orbital calculation");
+    if (mep_nAtoms > 0)
+      mep_atoms = new Atom[mep_nAtoms];
+    iAtom = 0;
+    for (int i = 0; i < nAtoms; i++) {
+      Atom atom = atoms[i];
+      if (atom.modelIndex != modelIndex)
+        continue;
+      Point3f pt = new Point3f(atom);
+      if (nSelected == 0 || bsSelected.get(i)) {
+        float rA = atom.getVanderwaalsRadiusFloat() + mep_marginAngstroms;
+        if (pt.x - rA < xyzMin.x)
+          xyzMin.x = pt.x - rA;
+        if (pt.x + rA > xyzMax.x)
+          xyzMax.x = pt.x + rA;
+        if (pt.y - rA < xyzMin.y)
+          xyzMin.y = pt.y - rA;
+        if (pt.y + rA > xyzMax.y)
+          xyzMax.y = pt.y + rA;
+        if (pt.z - rA < xyzMin.z)
+          xyzMin.z = pt.z - rA;
+        if (pt.z + rA > xyzMax.z)
+          xyzMax.z = pt.z + rA;
+        mep_atoms[iAtom++] = atom;
+      } else {
+        ++iAtom;
+      }
+    }
+    if (!Float.isNaN(scale)) {
+      Vector3f v = new Vector3f(xyzMax);
+      v.sub(xyzMin);
+      v.scale(0.5f);
+      xyzMin.add(v);
+      v.scale(scale);
+      xyzMax.set(xyzMin);
+      xyzMax.add(v);
+      xyzMin.sub(v);
+    }
+
+    Logger.info("MEP range bohr " + xyzMin + " to " + xyzMax);
+    jvxlFileHeader = "MEP range bohr " + xyzMin + " to " + xyzMax + "\n";
+
+    int maxGrid = mep_gridMax;
+
+    setVoxelRange(0, xyzMin.x, xyzMax.x, mep_ptsPerAngstrom, maxGrid);
+    setVoxelRange(1, xyzMin.y, xyzMax.y, mep_ptsPerAngstrom, maxGrid);
+    setVoxelRange(2, xyzMin.z, xyzMax.z, mep_ptsPerAngstrom, maxGrid);
+    jvxlFileHeader += jvxlGetVolumeHeader(iAtom);
+    Point3f pt = new Point3f();
+    for (int i = 0; i < nAtoms; i++) {
+      Atom atom = atoms[i];
+      if (atom.modelIndex != modelIndex)
+        continue;
+      pt.set(atom);
+      pt.scale(1 / ANGSTROMS_PER_BOHR);
+      jvxlFileHeader += atom.getAtomicAndIsotopeNumber() + " "
+          + atom.getAtomicAndIsotopeNumber() + ".0 " + pt.x + " " + pt.y + " "
+          + pt.z + "\n";
+    }
+    atomCount = -Integer.MAX_VALUE;
+    negativeAtomCount = false;
+    precalculateVoxelData = true;
+  }
+
+  void generateMepCube() {
+    float[] origin = { volumetricOrigin.x, volumetricOrigin.y,
+        volumetricOrigin.z };
+    MepCalculation m = new MepCalculation(mep_atoms, mepCharges);
+    m.createMepCube(voxelData, voxelCounts, origin,
+        volumetricVectorLengths);
   }
 
   ///// solvent-accessible, solvent-excluded surface //////

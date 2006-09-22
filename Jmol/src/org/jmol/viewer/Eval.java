@@ -4819,6 +4819,10 @@ class Eval { //implements Runnable {
     boolean surfaceObjectSeen = false;
     float[] nlmZ = new float[5];
     String str;
+    int modelIndex = viewer.getDisplayModelIndex();
+    if (modelIndex < 0)
+      evalError("the isosurface command requires that only one model be displayed");
+
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -5102,6 +5106,18 @@ class Eval { //implements Runnable {
         setMoData(JmolConstants.SHAPE_ISOSURFACE, moNumber, null);
         surfaceObjectSeen = true;
         continue;
+      case Token.mep:
+        float[] partialCharges = null;
+        try {
+          partialCharges = viewer.getFrame().partialCharges;
+        } catch (Exception e) {
+        }
+        if (partialCharges == null)
+          evalError("No partial charges were read from the file; Jmol needs these to render the MEP data.");
+        surfaceObjectSeen = true;
+        propertyName = "mep";
+        propertyValue = partialCharges;
+        break;
       case Token.sasurface:
       case Token.solvent:
         surfaceObjectSeen = true;

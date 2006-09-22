@@ -187,7 +187,7 @@ class Isosurface extends MeshCollection {
   final static int NO_ANISOTROPY = 1 << 5;
   final static int IS_SILENT = 1 << 6;
   final static int IS_SOLVENTTYPE = 1 << 7;
-
+  final static int HAS_MAXGRID = 1 << 8;
   int dataType;
   int surfaceType;
   int mappingType;
@@ -204,9 +204,9 @@ class Isosurface extends MeshCollection {
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_SASURFACE = 12 | IS_SOLVENTTYPE | NO_ANISOTROPY;
-  final static int SURFACE_MOLECULARORBITAL = 13;
+  final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_ATOMICORBITAL = 14;
-  final static int SURFACE_MEP = 15 | NO_ANISOTROPY;
+  final static int SURFACE_MEP = 15 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_FILE = 16;
 
   float solventRadius;
@@ -1727,7 +1727,7 @@ class Isosurface extends MeshCollection {
       Logger.info("coloring by phase: " + colorPhases[colorPhase]);
     else
       Logger.info("coloring red to blue over range: " + valueMappedToRed
-          + " - " + valueMappedToBlue);
+          + " to " + valueMappedToBlue);
     if (colixes == null)
       mesh.vertexColixes = colixes = new short[vertexCount];
     String list = "";
@@ -2340,6 +2340,11 @@ class Isosurface extends MeshCollection {
       contourVertexCount = 0;
       contourType = 2;
     }
+    if (!isSilent || logMessages)
+      Logger.info("cutoff=" + cutoff + " voxel cubes=" + cubeCountX + ","
+          + cubeCountY + "," + cubeCountZ + "," + " total="
+          + (cubeCountX * cubeCountY * cubeCountZ));
+
     int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
     for (int i = cubeCountY * cubeCountZ; --i >= 0;)
       isoPointIndexes[i] = new int[12];
@@ -2391,10 +2396,7 @@ class Isosurface extends MeshCollection {
       fractionData = jvxlEdgeDataRead;
     fractionData += "\n"; //from generateSurfaceData
     if (!isSilent || logMessages)
-      Logger.debug("cutoff=" + cutoff + " voxel cubes=" + cubeCountX + ","
-          + cubeCountY + "," + cubeCountZ + "," + " total="
-          + (cubeCountX * cubeCountY * cubeCountZ) + "\n" + " insideCount="
-          + insideCount + " outsideCount=" + outsideCount + " surfaceCount="
+      Logger.info("insideCount=" + insideCount + " outsideCount=" + outsideCount + " surfaceCount="
           + surfaceCount + " total="
           + (insideCount + outsideCount + surfaceCount));
   }
@@ -3640,7 +3642,7 @@ class Isosurface extends MeshCollection {
     } else {
       nGrid = (int) (range * ptsPerAngstrom);
     }
-    if (dataType == SURFACE_MOLECULARORBITAL && nGrid > gridMax) {
+    if ((dataType & HAS_MAXGRID) > 0 && nGrid > gridMax) {
       if (resolution != Float.MAX_VALUE)
         Logger.info("Maximum number of voxels for index=" + index);
       nGrid = gridMax;

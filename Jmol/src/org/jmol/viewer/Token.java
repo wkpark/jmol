@@ -193,6 +193,7 @@ class Token {
   final static int translateSelected = command | 102 | negnums;
   final static int calculate    = command | 103;
   final static int restore      = command | 104;
+  final static int selectionHalo = command | 105 | setparam;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -571,6 +572,8 @@ class Token {
     "message",           new Token(message,     varArgCount, "message"),
     "translateselected", new Token(translateSelected,varArgCount, "translateSelected"),
     "calculate",         new Token(calculate,varArgCount, "calculate"),
+    "selectionhalo",     new Token(selectionHalo,     onDefault1, "selectionHalos"),
+    "selectionhalos",    null,
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

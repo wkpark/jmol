@@ -471,6 +471,8 @@ class Eval { //implements Runnable {
       case Token.restrict:
         restrict();
         break;
+      case Token.selectionHalo:
+        setSelectionHalo(1);
       case Token.set:
         set();
         break;
@@ -3441,8 +3443,9 @@ class Eval { //implements Runnable {
     case Token.debugscript:
       setDebugScript();
       break;
+    case Token.selectionHalo:
     case Token.display: //deprecated  
-      setDisplay();
+      setSelectionHalo(2);
       break;
     case Token.echo:
       setEcho();
@@ -3530,10 +3533,6 @@ class Eval { //implements Runnable {
       break;
     case Token.identifier:
       String str = (String) statement[1].value;
-      if (str.equalsIgnoreCase("selectionHalos")) {
-        setDisplay();
-        return;
-      }
       if (str.equalsIgnoreCase("measurementNumbers")) {
         setMonitor(2);
         break;
@@ -3680,10 +3679,15 @@ class Eval { //implements Runnable {
     viewer.setShowMultipleBonds(getSetBoolean());
   }
 
-  void setDisplay() throws ScriptException {
-    checkLength3();
+  void setSelectionHalo(int pt) throws ScriptException {
+    if (pt == statementLength) {
+      viewer.setSelectionHaloEnabled(true);
+      return;
+    }
+    if (pt + 1 < statementLength)
+      checkLength3();
     boolean showHalo = false;
-    switch (statement[2].tok) {
+    switch (statement[pt].tok) {
     case Token.on:
     case Token.selected:
       showHalo = true;

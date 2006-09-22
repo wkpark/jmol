@@ -473,6 +473,7 @@ class Eval { //implements Runnable {
         break;
       case Token.selectionHalo:
         setSelectionHalo(1);
+        break;
       case Token.set:
         set();
         break;

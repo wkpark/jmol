@@ -102,6 +102,24 @@ Scripts=new Array(" "
 
 ,'### see also <a href=new.htm>new.htm</a> ###'
 
+,'###molecular electrostatic potentials###'
+,' Jmol 10.9.63 introduces <b>isosurface MEP</b>, with which you can display molecular electrostatic potentials. These potentials are calculated from partial charge data present in a file; Jmol cannot calculate these charges.'
+,'# Just the MEP:'
+,'load CH3F.smol;isosurface delete resolution 6 mep'
+,'load C6H6.smol;isosurface delete resolution 6 mep'
+,'# MEP mapped onto a surface:'
+,'load CH3F.smol;isosurface delete resolution 6 solvent map mep'
+,'load C6H6.smol;isosurface delete solvent map mep'
+,'load C6H6.smol;isosurface delete resolution 3 solvent map mep'
+,'# This one may take some time:'
+,'load C6H6.smol;isosurface delete resolution 6 solvent map mep'
+,'# Though somewhat slow, these can be saved as JVXL files:'
+,'console on;show isosurface'
+,'# and then loaded instantly:'
+,'load C6H6-mep.jvxl;isosurface ""'
+
+
+
 ,'# NOTE -- in testing 10.x.19 and writing up documentation I have changed some of the isosurface parameters. Namely, "fileindex n" is gone. One simply indicates the surface number after the quoted filename similarly to the way you can indicate a model number after a quoted filename in a "load" command. In addition, I have simplified the command syntax by allowing ALL construction/color parameters up front. See also <a target=_blank href=isosurface.txt>isosurface.txt</a>'
 
 ,'### the JVXL file format ###'

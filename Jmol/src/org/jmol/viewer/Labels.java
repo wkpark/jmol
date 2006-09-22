@@ -32,6 +32,7 @@ import java.util.BitSet;
 
 class Labels extends Shape {
 
+  Atom[] atoms;
   String[] strings;
   short[] colixes;
   short[] bgcolixes;
@@ -39,51 +40,59 @@ class Labels extends Shape {
   int[] offsets;
   Hashtable atomLabels = new Hashtable();
   Text text;
-  Font3D defaultFont3D;
+
+  int defaultOffset;
+  byte defaultFontId;
+  short defaultColix;
+  short defaultBgcolix;
+  int defaultAlignment;
+  String defaultPalette;
+
+  byte zeroFontId;
+  int zeroOffset;
+
+  boolean defaultsOnlyForNone = true;
+  
 
   void initShape() {
-    defaultFont3D = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
+    defaultFontId = zeroFontId = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
                                   JmolConstants.DEFAULT_FONTSTYLE,
-                                  JmolConstants.LABEL_DEFAULT_FONTSIZE);
+                                  JmolConstants.LABEL_DEFAULT_FONTSIZE).fid;
+    defaultColix = 0; //"none" -- inherit from atom
+    defaultBgcolix = 0; //"none" -- off
+    defaultOffset = zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
+         | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+    atoms = frame.atoms;
   }
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
-    Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
+      int n = 0;
       String palette = null;
       short colix = Graphics3D.getColix(value);
       if (colix == Graphics3D.UNRECOGNIZED)
         palette = (String) value;
       for (int i = frame.atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
-          if (colixes == null || i >= colixes.length) {
-            if (colix == 0)
-              continue;
-            colixes = ArrayUtil.ensureLength(colixes, i + 1);
-          }
-          colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
-              .getColixAtomPalette(frame.getAtomAt(i), palette));
-          text = (Text) atomLabels.get(atoms[i]);
-          if (text != null)
-            text.setColix(colixes[i]);
+          n++;
+          setColix(i, colix, palette);
         }
+      if (n == 0 || !defaultsOnlyForNone) {
+        defaultColix = colix;
+        defaultPalette = palette;
+      }
     }
     // no translucency
     if ("bgcolor" == propertyName) {
       short bgcolix = Graphics3D.getColix(value);
+      int n = 0;
       for (int i = frame.atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
-          //Atom atom = atoms[i];
-          if (bgcolixes == null || i >= bgcolixes.length) {
-            if (bgcolix == 0)
-              continue;
-            bgcolixes = ArrayUtil.ensureLength(bgcolixes, i + 1);
-          }
-          bgcolixes[i] = bgcolix;
-          text = (Text) atomLabels.get(atoms[i]);
-          if (text != null)
-            text.setBgColix(bgcolix);
+          n++;
+          setBgcolix(i, bgcolix);
         }
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultBgcolix = bgcolix;
     }
 
     if ("label" == propertyName) {
@@ -99,88 +108,86 @@ class Labels extends Shape {
           text = (Text) atomLabels.get(atoms[i]);
           if (text != null)
             text.setText(label);
+          if (defaultOffset != zeroOffset)
+            setOffsets(i, defaultOffset);
+          if (defaultColix != 0)
+            setColix(i, defaultColix, defaultPalette);
+          if (defaultBgcolix != 0)
+            setBgcolix(i, defaultBgcolix);
+          if (defaultFontId != zeroFontId)
+            setFont(i, defaultFontId);
         }
       return;
     }
 
     if ("fontsize" == propertyName) {
       int fontsize = ((Integer) value).intValue();
-      if (fontsize == JmolConstants.LABEL_DEFAULT_FONTSIZE) {
+      if (fontsize < 0) {
         fids = null;
         return;
       }
       byte fid = g3d.getFontFid(fontsize);
-      fids = ArrayUtil.ensureLength(fids, frame.atomCount);
-      for (int i = frame.atomCount; --i >= 0;) {
-        fids[i] = fid;
-        text = (Text) atomLabels.get(atoms[i]);
-        if (text != null)
-          text.setFid(fid);
-      }
+      int n = 0;
+      for (int i = frame.atomCount; --i >= 0;)
+        if (bsSelected.get(i)) {
+          n++;
+          setFont(i, fid);
+        }
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultFontId = fid;
       return;
     }
 
     if ("font" == propertyName) {
       byte fid = ((Font3D) value).fid;
+      int n = 0;
       for (int i = frame.atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
-          if (fids == null || i >= fids.length) {
-            if (fid == defaultFont3D.fid)
-              continue;
-            fids = ArrayUtil.ensureLength(fids, i + 1);
-          }
-          fids[i] = fid;
-          text = (Text) atomLabels.get(atoms[i]);
-          if (text != null)
-            text.setFid(fid);
+          n++;
+          setFont(i, fid);
         }
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultFontId = fid;
       return;
     }
 
     if ("offset" == propertyName) {
       int offset = ((Integer) value).intValue();
       // 0 must be the default, because we initialize the array
-      // in segments
+      // in segments and so there will be extra 0s.
+      // but this "0" only means that "zero" offset; you 
+      // can change the default to anything you want.
       if (offset == 0)
         offset = Short.MAX_VALUE;
-      else if (offset == ((JmolConstants.LABEL_DEFAULT_X_OFFSET << 8) | JmolConstants.LABEL_DEFAULT_Y_OFFSET))
+      else if (offset == zeroOffset)
         offset = 0;
+      int n = 0;
       for (int i = frame.atomCount; --i >= 0;) {
         if (bsSelected.get(i)) {
-          if (offsets == null || i >= offsets.length) {
-            if (offset == 0)
-              continue;
-            offsets = ArrayUtil.ensureLength(offsets, i + 1);
-          }
-          offsets[i] = (offsets[i] & 3) + (offset << 2);
+          n++;
+          setOffsets(i, offset);
         }
-        text = (Text) atomLabels.get(atoms[i]);
-        if (text != null)
-          text.setOffset(offset);
       }
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultOffset = offset;
       return;
     }
 
     if ("align" == propertyName) {
       String type = (String) value;
-      int offset = Text.LEFT;
+      int alignment = Text.LEFT;
       if (type.equalsIgnoreCase("right"))
-        offset = Text.RIGHT;
+        alignment = Text.RIGHT;
       else if (type.equalsIgnoreCase("center"))
-        offset = Text.CENTER;
+        alignment = Text.CENTER;
+      int n = 0;
       for (int i = frame.atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
-          if (offsets == null || i >= offsets.length) {
-            if (offset == Text.LEFT)
-              continue;
-            offsets = ArrayUtil.ensureLength(offsets, i + 1);
-          }
-          offsets[i] = (offsets[i] & ~3) + offset;
-          text = (Text) atomLabels.get(atoms[i]);
-          if (text != null)
-            text.setAlignment(offset);
+          n++;
+          setAlignment(i, alignment);
         }
-      return;
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultAlignment = alignment;
     }
 
     if ("pickingLabel" == propertyName) {
@@ -200,6 +207,68 @@ class Labels extends Shape {
     }
   }
 
+  void setColix(int i, short colix, String palette) {
+    if (colixes == null || i >= colixes.length) {
+      if (colix == 0)
+        return;
+      colixes = ArrayUtil.ensureLength(colixes, i + 1);
+    }
+    colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
+        .getColixAtomPalette(frame.getAtomAt(i), palette));
+    text = (Text) atomLabels.get(atoms[i]);
+    if (text != null)
+      text.setColix(colixes[i]);
+  }
+  
+  void setBgcolix(int i, short bgcolix) {
+    if (bgcolixes == null || i >= bgcolixes.length) {
+      if (bgcolix == 0)
+        return;
+      bgcolixes = ArrayUtil.ensureLength(bgcolixes, i + 1);
+    }
+    bgcolixes[i] = bgcolix;
+    text = (Text) atomLabels.get(atoms[i]);
+    if (text != null)
+      text.setBgColix(bgcolix);
+  }
+  
+  void setOffsets(int i, int offset) {
+    setOffsets(i, offset);
+    if (offsets == null || i >= offsets.length) {
+      if (offset == 0)
+        return;
+      offsets = ArrayUtil.ensureLength(offsets, i + 1);
+    }
+    offsets[i] = (offsets[i] & 3) + (offset << 2);
+    text = (Text) atomLabels.get(atoms[i]);
+    if (text != null)
+      text.setOffset(offset);
+  }
+
+  void setAlignment(int i, int alignment) {
+    if (offsets == null || i >= offsets.length) {
+      if (alignment == Text.LEFT)
+        return;
+      offsets = ArrayUtil.ensureLength(offsets, i + 1);
+    }
+    offsets[i] = (offsets[i] & ~3) + alignment;
+    text = (Text) atomLabels.get(atoms[i]);
+    if (text != null)
+      text.setAlignment(alignment);
+  }
+  
+  void setFont(int i, byte fid) {
+    if (fids == null || i >= fids.length) {
+      if (fid == defaultFontId)
+        return;
+      fids = ArrayUtil.ensureLength(fids, i + 1);
+    }
+    fids[i] = fid;
+    text = (Text) atomLabels.get(atoms[i]);
+    if (text != null)
+      text.setFid(fid);  
+  }
+  
   void setModelClickability() {
     if (strings == null)
       return;

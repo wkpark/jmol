@@ -65,7 +65,7 @@ class LabelsRenderer extends ShapeRenderer {
       colix = Graphics3D.inheritColix(colix, atom.colixAtom);
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
-      byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.defaultFont3D.fid
+      byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
       int offset = offsetFull >> 2;

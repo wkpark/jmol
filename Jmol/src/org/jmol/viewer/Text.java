@@ -206,6 +206,7 @@ class Text {
 
   }
   void setOffset(int offset) {
+    //Labels only
     offsetX = getXOffset(offset);
     offsetY = getYOffset(offset);
     valign = XY;

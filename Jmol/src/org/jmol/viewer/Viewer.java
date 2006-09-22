@@ -2526,7 +2526,11 @@ public class Viewer extends JmolViewer {
         setShapeShow(JmolConstants.SHAPE_UCCAGE, value);
         break;
       }
-      if (key.equalsIgnoreCase("showSelectionHalos")) { //deprecated -- see "set selectionHalos"
+      if (key.equalsIgnoreCase("showSelectionHalos")) { //deprecated -- see "selectionHalos"
+        setSelectionHaloEnabled(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("showSelections")) { //deprecated -- see "selectionHalos"
         setSelectionHaloEnabled(value);
         break;
       }

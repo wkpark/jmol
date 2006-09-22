@@ -2463,7 +2463,7 @@ public class Viewer extends JmolViewer {
       return getShowHydrogens();
     if (key.equalsIgnoreCase("showMeasurements"))
       return getShowMeasurements();
-    if (key.equalsIgnoreCase("showSelectionHalos"))
+    if (key.equalsIgnoreCase("showSelections"))
       return getSelectionHaloEnabled();
     if (key.equalsIgnoreCase("axesOrientationRasmol"))
       return getAxesOrientationRasmol();
@@ -2524,10 +2524,6 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("showUnitcell")) { //deprecated -- see "unitcell"
         setShapeShow(JmolConstants.SHAPE_UCCAGE, value);
-        break;
-      }
-      if (key.equalsIgnoreCase("showSelectionHalos")) { //deprecated -- see "selectionHalos"
-        setSelectionHaloEnabled(value);
         break;
       }
       if (key.equalsIgnoreCase("showSelections")) { //deprecated -- see "selectionHalos"

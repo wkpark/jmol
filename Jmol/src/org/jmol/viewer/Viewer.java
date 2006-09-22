@@ -2465,6 +2465,8 @@ public class Viewer extends JmolViewer {
       return getShowMeasurements();
     if (key.equalsIgnoreCase("showSelectionHalos"))
       return getSelectionHaloEnabled();
+    if (key.equalsIgnoreCase("selectionHalos"))
+      return getSelectionHaloEnabled();
     if (key.equalsIgnoreCase("axesOrientationRasmol"))
       return getAxesOrientationRasmol();
     if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
@@ -2526,7 +2528,11 @@ public class Viewer extends JmolViewer {
         setShapeShow(JmolConstants.SHAPE_UCCAGE, value);
         break;
       }
-      if (key.equalsIgnoreCase("showSelectionHalos")) {
+      if (key.equalsIgnoreCase("showSelectionHalos")) { //deprecated -- see "selectionHalos"
+        setSelectionHaloEnabled(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("selectionHalos")) { // equivalent to "set display SELECTED/NORMAL"
         setSelectionHaloEnabled(value);
         break;
       }

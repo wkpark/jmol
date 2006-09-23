@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-23 11:08+0200\n"
+"POT-Creation-Date: 2006-09-23 21:53+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -16,24 +16,6 @@ msgstr ""
 "X-Poedit-Language: Estonian\n"
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
-
-#: org/jmol/viewer/PickingManager.java:167
-msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:168
-msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:229
-#, fuzzy
-msgid "atoms selected"
-msgstr "atom set"
-
-#: org/jmol/viewer/StatusManager.java:177
-#, fuzzy
-msgid "Jmol executing script ..."
-msgstr "Käivitan skripti ..."
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:154
@@ -1090,6 +1072,14 @@ msgstr "Laen..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
+
+#, fuzzy
+#~ msgid "atoms selected"
+#~ msgstr "atom set"
+
+#, fuzzy
+#~ msgid "Jmol executing script ..."
+#~ msgstr "Käivitan skripti ..."
 
 #~ msgid "Rasmol Scripts"
 #~ msgstr "Rasmol skriptid"

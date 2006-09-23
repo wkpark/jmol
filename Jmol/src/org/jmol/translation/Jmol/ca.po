@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-23 11:08+0200\n"
+"POT-Creation-Date: 2006-09-23 21:53+0200\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -16,24 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: ANDORRA\n"
-
-#: org/jmol/viewer/PickingManager.java:167
-msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:168
-msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
-
-#: org/jmol/viewer/PickingManager.java:229
-#, fuzzy
-msgid "atoms selected"
-msgstr "conjunt d'àtoms"
-
-#: org/jmol/viewer/StatusManager.java:177
-#, fuzzy
-msgid "Jmol executing script ..."
-msgstr "S'està executant la seqüència..."
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:154
@@ -1095,6 +1077,14 @@ msgstr "S'està carregant..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
+
+#, fuzzy
+#~ msgid "atoms selected"
+#~ msgstr "conjunt d'àtoms"
+
+#, fuzzy
+#~ msgid "Jmol executing script ..."
+#~ msgstr "S'està executant la seqüència..."
 
 #~ msgid "Rasmol Scripts"
 #~ msgstr "Seqüències de RasMol"

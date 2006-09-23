@@ -35,14 +35,9 @@
   <!-- Filesets for the rest of the build -->
   <fileset id="Jmol.java.files" dir="${basedir}/${src.dir}">
     <include name="**/*.java"/>
-    <exclude name="**/jmol/applet/*.java"/>
-    <exclude name="org/jmol/popup/*.java"/>
+  	<excludesfile name="applet.classes"/>
   </fileset>
-  <fileset id="JmolApplet.java.files" dir="${basedir}/${src.dir}">
-    <include name="JmolApplet*.java"/>
-    <include name="org/jmol/**/*.java"/>
-    <exclude name="org/jmol/**/cdk/*.java"/>
-    <include name="org/jmol/popup/*.java"/>
+  <fileset id="JmolApplet.java.files" dir="${basedir}/${src.dir}" includesfile="applet.classes">
   </fileset>
 
   <!-- <for list ...> construct needs ant-contrib.jar -->

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-23 11:08+0200\n"
+"POT-Creation-Date: 2006-09-23 21:53+0200\n"
 "PO-Revision-Date: 2006-09-19 01:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -18,22 +18,6 @@ msgstr ""
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-SourceCharset: utf-8\n"
-
-#: org/jmol/viewer/PickingManager.java:167
-msgid "pick one more atom in order to spin the model around an axis"
-msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
-
-#: org/jmol/viewer/PickingManager.java:168
-msgid "pick two atoms in order to spin the model around an axis"
-msgstr "elige dos átomos para que el modelo gire en torno a un eje"
-
-#: org/jmol/viewer/PickingManager.java:229
-msgid "atoms selected"
-msgstr "átomos seleccionados"
-
-#: org/jmol/viewer/StatusManager.java:177
-msgid "Jmol executing script ..."
-msgstr "Jmol ejecutando guión..."
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:154
@@ -1091,6 +1075,18 @@ msgstr "Cargando..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Novedades en Jmol"
+
+#~ msgid "pick one more atom in order to spin the model around an axis"
+#~ msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
+
+#~ msgid "pick two atoms in order to spin the model around an axis"
+#~ msgstr "elige dos átomos para que el modelo gire en torno a un eje"
+
+#~ msgid "atoms selected"
+#~ msgstr "átomos seleccionados"
+
+#~ msgid "Jmol executing script ..."
+#~ msgstr "Jmol ejecutando guión..."
 
 #~ msgid "pick "
 #~ msgstr "elige"

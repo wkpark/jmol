@@ -1,18 +1,20 @@
 JmolApplet.java
 JmolAppletControl.java
-org/jmol/appletwrapper/*.java
-org/jmol/applet/*.java
-org/jmol/viewer/*.java
-org/jmol/g3d/*.java
-org/jmol/quantum/*.java
-org/jmol/util/*.java
-org/jmol/i18n/*.java
-org/jmol/bspt/*.java
 org/jmol/adapter/smarter/*.java
+org/jmol/api/*.java
+org/jmol/applet/*.java
+org/jmol/appletwrapper/*.java
+org/jmol/bspt/*.java
+org/jmol/g3d/*.java
+org/jmol/i18n/*.java
+//org/jmol/jcamp/*.java
+org/jmol/popup/*.java
+org/jmol/quantum/*.java
 org/jmol/smiles/*.java
 org/jmol/symmetry/*.java
+org/jmol/util/*.java
 org/jmol/vecmath/*.java
-//org/jmol/jcamp/*.java
+org/jmol/viewer/*.java
 
 
 

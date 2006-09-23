@@ -4247,7 +4247,7 @@
   <fah_proj number="2142" name="p2142_halr-wt, CN inhib, NADP+ in water" public="y" file="y"
     server="171.64.122.141" atoms="86986" preferred="45" deadline="65"
     credit="476" frames="100" code="G" contact="densign"/>
-  <fah_proj number="2143" name="p2143_halr-wt, CN inhib, NADP+ in water" public="y"
+  <fah_proj number="2143" name="p2143_halr-wt, CN inhib, NADP+ in water" public="y" file="y"
     server="171.64.122.141" atoms="86986" preferred="45" deadline="65"
     credit="478" frames="100" code="G" contact="densign"/>
 
@@ -4546,7 +4546,10 @@
   <!-- Projects 2700 to 2799 -->
 
   <!-- Projects 2800 to 2899 -->
-  <fah_proj number="2800" name="p2800_jrz_apo" public="n"
+  <fah_proj number="2800" name="p2800_jrz_apo" public="n" file="y"
     server="169.230.26.30" atoms="21142" preferred="39" deadline="58"
+    credit="214" frames="0" code="A0" contact="mobley"/>
+  <fah_proj number="2801" name="p2801_jrz_apo" public="n"
+    server="169.230.26.30" atoms="21166" preferred="39" deadline="58"
     credit="214" frames="0" code="A0" contact="mobley"/>
 </fah_projects>

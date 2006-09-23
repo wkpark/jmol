@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-21 21:19+0200\n"
-"PO-Revision-Date: 2006-09-23 13:38+0100\n"
+"PO-Revision-Date: 2006-09-24 01:26+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -307,7 +307,7 @@ msgstr "Estructuras"
 #: org/jmol/popup/PopupResourceBundle.java:796
 #: org/jmol/popup/PopupResourceBundle.java:944
 msgid "Trace"
-msgstr "Trazo"
+msgstr "Cordón"
 
 #: org/jmol/popup/PopupResourceBundle.java:797
 #: org/jmol/popup/PopupResourceBundle.java:965
@@ -838,7 +838,7 @@ msgstr "Distancia en picómetros"
 
 #: org/jmol/popup/PopupResourceBundle.java:1122
 msgid "Set picking"
-msgstr "Modo de selección"
+msgstr "Atomo elegido"
 
 #: org/jmol/popup/PopupResourceBundle.java:1124
 msgid "Center"
@@ -1017,7 +1017,7 @@ msgstr "Opciones"
 
 #: org/jmol/popup/PopupResourceBundle.java:1221
 msgid "Show Selected Atoms"
-msgstr "Mostrar átomos seleccionados"
+msgstr "Resaltar átomos seleccionados"
 
 #: org/jmol/popup/PopupResourceBundle.java:1222
 msgid "Show Hydrogens"

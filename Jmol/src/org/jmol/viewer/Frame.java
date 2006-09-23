@@ -172,14 +172,14 @@ public final class Frame {
       String mf = "";
       String sep = "";
       int nX;
-      for (int i = 1; i < elementNumberMax; i++) {
+      for (int i = 1; i <= elementNumberMax; i++) {
         nX = elementCounts[i];
         if (nX != 0) {
           mf += sep + JmolConstants.elementSymbolFromNumber(i) + " " + nX;
           sep = " ";
         }
       }
-      for (int i = 1; i < altElementMax; i++) {
+      for (int i = 1; i <= altElementMax; i++) {
         nX = altElementCounts[i];
         if (nX != 0) {
           mf += sep

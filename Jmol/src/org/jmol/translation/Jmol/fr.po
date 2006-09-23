@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 23:24+0200\n"
+"POT-Creation-Date: 2006-09-23 11:08+0200\n"
 "PO-Revision-Date: 2006-02-19 17:18+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -223,7 +223,7 @@ msgid "&Print..."
 msgstr "Im&primer..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#: org/openscience/jmol/app/ScriptWindow.java:83
+#: org/openscience/jmol/app/ScriptWindow.java:100
 msgid "Close"
 msgstr "Fermer"
 
@@ -568,9 +568,9 @@ msgid "What's New"
 msgstr "Les Nouveautés"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/ScriptWindow.java:64
+#: org/openscience/jmol/app/Jmol.java:468
 #, fuzzy
-msgid "Jmol Script Console"
+msgid "Jmol Java Console"
 msgstr "Console Jmol"
 
 #: org/openscience/jmol/app/GuiMap.java:158
@@ -733,13 +733,8 @@ msgstr ""
 msgid "Executing script..."
 msgstr "Exécution du script..."
 
-#: org/openscience/jmol/app/Jmol.java:468
-#, fuzzy
-msgid "Jmol Java Console"
-msgstr "Console Jmol"
-
 #: org/openscience/jmol/app/Jmol.java:476
-#: org/openscience/jmol/app/ScriptWindow.java:96
+#: org/openscience/jmol/app/ScriptWindow.java:92
 msgid "Clear"
 msgstr "Effacer"
 
@@ -1077,15 +1072,20 @@ msgstr "Fichiers récents"
 msgid "Open"
 msgstr "Ouvrir"
 
-#: org/openscience/jmol/app/ScriptWindow.java:87
+#: org/openscience/jmol/app/ScriptWindow.java:64
+#, fuzzy
+msgid "Jmol Script Console"
+msgstr "Console Jmol"
+
+#: org/openscience/jmol/app/ScriptWindow.java:83
 msgid "Run"
 msgstr "Exécuter"
 
-#: org/openscience/jmol/app/ScriptWindow.java:91
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Halt"
 msgstr "Arrêter"
 
-#: org/openscience/jmol/app/ScriptWindow.java:100
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Help"
 msgstr "?"
 

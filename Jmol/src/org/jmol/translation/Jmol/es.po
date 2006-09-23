@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 23:24+0200\n"
+"POT-Creation-Date: 2006-09-23 11:08+0200\n"
 "PO-Revision-Date: 2006-09-19 01:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -223,7 +223,7 @@ msgid "&Print..."
 msgstr "&Imprimir..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#: org/openscience/jmol/app/ScriptWindow.java:83
+#: org/openscience/jmol/app/ScriptWindow.java:100
 msgid "Close"
 msgstr "Cerrar"
 
@@ -568,9 +568,9 @@ msgid "What's New"
 msgstr "Novedades"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/ScriptWindow.java:64
-msgid "Jmol Script Console"
-msgstr "Consola de guiones de Jmol"
+#: org/openscience/jmol/app/Jmol.java:468
+msgid "Jmol Java Console"
+msgstr "Consola Java de Jmol"
 
 #: org/openscience/jmol/app/GuiMap.java:158
 msgid "Hydrogens"
@@ -729,12 +729,8 @@ msgstr "Las opciones  -D son (valores predeterminados entre paréntesis):"
 msgid "Executing script..."
 msgstr "Ejecutando guión..."
 
-#: org/openscience/jmol/app/Jmol.java:468
-msgid "Jmol Java Console"
-msgstr "Consola Java de Jmol"
-
 #: org/openscience/jmol/app/Jmol.java:476
-#: org/openscience/jmol/app/ScriptWindow.java:96
+#: org/openscience/jmol/app/ScriptWindow.java:92
 msgid "Clear"
 msgstr "Limpiar"
 
@@ -795,8 +791,12 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
+"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -840,7 +840,9 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
+msgstr ""
+"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
+"calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -848,7 +850,8 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:245
 msgid "Should povray attempt to display while rendering?"
-msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr ""
+"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:254
 #: org/openscience/jmol/app/PovrayDialog.java:256
@@ -1065,15 +1068,19 @@ msgstr "Archivos recientes"
 msgid "Open"
 msgstr "Abrir"
 
-#: org/openscience/jmol/app/ScriptWindow.java:87
+#: org/openscience/jmol/app/ScriptWindow.java:64
+msgid "Jmol Script Console"
+msgstr "Consola de guiones de Jmol"
+
+#: org/openscience/jmol/app/ScriptWindow.java:83
 msgid "Run"
 msgstr "Ejecutar"
 
-#: org/openscience/jmol/app/ScriptWindow.java:91
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Halt"
 msgstr "Detener"
 
-#: org/openscience/jmol/app/ScriptWindow.java:100
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Help"
 msgstr "Ayuda"
 
@@ -1087,46 +1094,66 @@ msgstr "Novedades en Jmol"
 
 #~ msgid "pick "
 #~ msgstr "elige"
+
 #~ msgid "Rasmol Scripts"
 #~ msgstr "Guiones de Rasmol"
+
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotar en modelo de alambres"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotar en modelo de alambres"
+
 #~ msgid "Colors"
 #~ msgstr "Colores"
+
 #~ msgid "Background"
 #~ msgstr "Fondo"
+
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
+
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
+
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
+
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
+
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
+
 #~ msgid "Text"
 #~ msgstr "Texto"
+
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
+
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
+
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
+
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
+
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
+
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
+
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
+
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
+
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
-

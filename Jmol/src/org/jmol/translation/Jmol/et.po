@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-18 23:24+0200\n"
+"POT-Creation-Date: 2006-09-23 11:08+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -223,7 +223,7 @@ msgid "&Print..."
 msgstr "&Prindi..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#: org/openscience/jmol/app/ScriptWindow.java:83
+#: org/openscience/jmol/app/ScriptWindow.java:100
 msgid "Close"
 msgstr "Sulge"
 
@@ -568,9 +568,9 @@ msgid "What's New"
 msgstr "Mida on uut?"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/ScriptWindow.java:64
+#: org/openscience/jmol/app/Jmol.java:468
 #, fuzzy
-msgid "Jmol Script Console"
+msgid "Jmol Java Console"
 msgstr "Jmol konsool"
 
 #: org/openscience/jmol/app/GuiMap.java:158
@@ -731,13 +731,8 @@ msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
-#: org/openscience/jmol/app/Jmol.java:468
-#, fuzzy
-msgid "Jmol Java Console"
-msgstr "Jmol konsool"
-
 #: org/openscience/jmol/app/Jmol.java:476
-#: org/openscience/jmol/app/ScriptWindow.java:96
+#: org/openscience/jmol/app/ScriptWindow.java:92
 msgid "Clear"
 msgstr "Puhasta"
 
@@ -1071,15 +1066,20 @@ msgstr "Hiljutised failid"
 msgid "Open"
 msgstr "Ava"
 
-#: org/openscience/jmol/app/ScriptWindow.java:87
+#: org/openscience/jmol/app/ScriptWindow.java:64
+#, fuzzy
+msgid "Jmol Script Console"
+msgstr "Jmol konsool"
+
+#: org/openscience/jmol/app/ScriptWindow.java:83
 msgid "Run"
 msgstr "Käivita"
 
-#: org/openscience/jmol/app/ScriptWindow.java:91
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Halt"
 msgstr "Seiska"
 
-#: org/openscience/jmol/app/ScriptWindow.java:100
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Help"
 msgstr "Abi"
 

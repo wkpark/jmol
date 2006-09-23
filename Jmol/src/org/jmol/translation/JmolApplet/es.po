@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-21 21:19+0200\n"
-"PO-Revision-Date: 2006-09-21 21:20+0100\n"
+"PO-Revision-Date: 2006-09-23 13:38+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -131,31 +131,28 @@ msgid "AU pairs"
 msgstr "Pares AU"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
-#, fuzzy
 msgid "Hetero"
-msgstr "Hetero"
+msgstr "Grupos \"hetero\""
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "All PDB \"HETATOM\""
-msgstr ""
+msgstr "Todos los \"HETATM\" de PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:721
-#, fuzzy
 msgid "All Solvent"
-msgstr "Disolvente"
+msgstr "Todo el disolvente"
 
 #: org/jmol/popup/PopupResourceBundle.java:722
-#, fuzzy
 msgid "All Water"
-msgstr "Agua"
+msgstr "Todo el agua"
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "Disolvente excepto agua"
 
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Nonaqueous HETATM"
-msgstr ""
+msgstr "HETATM excepto agua"
 
 #: org/jmol/popup/PopupResourceBundle.java:725
 msgid "Ligand"
@@ -167,7 +164,7 @@ msgstr "Carbohidratos"
 
 #: org/jmol/popup/PopupResourceBundle.java:727
 msgid "None of the above"
-msgstr ""
+msgstr "Ninguno de los anteriores"
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 #: org/jmol/popup/PopupResourceBundle.java:1142
@@ -1084,49 +1081,36 @@ msgstr "Jmol ejecutando un guión..."
 
 #~ msgid "Except Solvent"
 #~ msgstr "Excepto disolvente"
-
 #~ msgid "Except Water"
 #~ msgstr "Excepto agua"
-
 #~ msgid "Other"
 #~ msgstr "Otros"
-
 #~ msgid "Lipid"
 #~ msgstr "Lípidos"
-
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
-
 #~ msgid "Open"
 #~ msgstr "Abrir"
-
 #~ msgid "Close"
 #~ msgstr "Cerrar"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol, visualización molecular http://www.jmol.org"
-
 #~ msgid "Jmol script completed"
 #~ msgstr "Guión de Jmol completado"
-
 #~ msgid "Name hidden"
 #~ msgstr "Nombre oculto"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotación como alambres"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
+

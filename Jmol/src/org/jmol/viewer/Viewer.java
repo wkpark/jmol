@@ -217,6 +217,15 @@ public class Viewer extends JmolViewer {
     return stateManager.restoreBonds(saveName);
   }
 
+  void saveSelection(String saveName) {
+    stateManager.saveSelection(saveName, selectionManager.bsSelection);
+    stateManager.restoreSelection(saveName); //just to register the # of selected atoms
+  }
+
+  boolean restoreSelection(String saveName) {
+    return stateManager.restoreSelection(saveName);
+  }
+
   // ///////////////////////////////////////////////////////////////
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////

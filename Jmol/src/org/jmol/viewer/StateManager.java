@@ -1,4 +1,4 @@
-/* $RCSfile$
+  /* $RCSfile$
  * $Author: egonw $
  * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
  * $Revision: 4255 $
@@ -27,6 +27,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 
 import java.util.Hashtable;
+import java.util.BitSet;
 import java.util.Enumeration;
 
 class StateManager {
@@ -35,6 +36,7 @@ class StateManager {
   Hashtable saved = new Hashtable();
   String lastOrientation = "";
   String lastConnections = "";
+  String lastSelected = "";
   
   StateManager(Viewer viewer) {
     globalSettings = new GlobalSettings();
@@ -49,6 +51,24 @@ class StateManager {
     return names;
   }
   
+  void saveSelection(String saveName, BitSet bsSelected) {
+    saveName = lastSelected = "Selected_" + saveName;
+    BitSet bs = (BitSet)bsSelected.clone();
+    saved.put(saveName, bs);
+  }
+  
+  boolean restoreSelection(String saveName) {
+    String name = (saveName.length() > 0 ? "Selected_" + saveName
+        : lastSelected);
+    BitSet bsSelected = (BitSet) saved.get(name);
+    if (bsSelected == null) {
+      viewer.select(new BitSet());
+      return false;
+    }
+    viewer.select(bsSelected);
+    return true;
+  }
+   
   void saveOrientation(String saveName) {
     Orientation o = new Orientation();  
     o.saveName = lastOrientation = "Orientation_" + saveName;

@@ -4079,9 +4079,14 @@ class Eval { //implements Runnable {
       case Token.bonds:
         viewer.saveBonds(saveName);
         return;
+      case Token.identifier:
+        if (((String)statement[1].value).equalsIgnoreCase("selection")) {
+          viewer.saveSelection(saveName);
+          return;
+        }
       }
     }
-    evalError("save what? orientation? bonds?");
+    evalError("save what? bonds? orientation? selection?");
   }
   
   void restore() throws ScriptException {
@@ -4095,9 +4100,14 @@ class Eval { //implements Runnable {
       case Token.bonds:
         viewer.restoreBonds(saveName);
         return;
+      case Token.identifier:
+        if (((String)statement[1].value).equalsIgnoreCase("selection")) {
+          viewer.restoreSelection(saveName);
+          return;
+        }
       }
     }
-    evalError("restore what? orientation? bonds?");
+    evalError("restore what? bonds? orientation? selection?");
   }
   
   

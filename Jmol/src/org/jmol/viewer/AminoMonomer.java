@@ -54,7 +54,7 @@ class AminoMonomer extends AlphaMonomer {
         return null;
       offsets[1] = (byte)(carbonylOxygenIndex - firstAtomIndex);
     }
-    if (! isBondedCorrectly(firstAtomIndex, offsets, atoms))
+    if (atoms[firstAtomIndex].isHetero() && !isBondedCorrectly(firstAtomIndex, offsets, atoms)) 
       return null;
     AminoMonomer aminoMonomer =
       new AminoMonomer(chain, group3, seqcode,

@@ -2003,7 +2003,7 @@ public final class Frame {
     default:
       for (int i = atomCount; --i >= 0;) {
         int atomSeqcode = atoms[i].getSeqcode();
-        if (seqcode == atoms[i].getSeqcode() || seqNum == 0
+        if (seqcode == atomSeqcode || seqNum == 0
             && seqcode == (atomSeqcode & 0xFF) || insCode == '*'
             && seqNum == (atomSeqcode >> 8))
           bsResno.set(i);

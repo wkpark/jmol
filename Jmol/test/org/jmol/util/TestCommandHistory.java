@@ -48,6 +48,9 @@ public class TestCommandHistory extends TestCase {
 
     // Initialisation of command history
     CommandHistory h = new CommandHistory(4);
+    h.addCommand("x");
+    h.addCommand("y");
+    h.addCommand("z");
     h.addCommand("a");
     h.addCommand("b");
     h.addCommand("c");

@@ -143,8 +143,9 @@ public final class Frame {
       getElementAndAtomCount(atomList);
       mf = getMolecularFormula();
 
-      Logger.info("new Molecule (" + mf + ") " + (indexInModel + 1) + "/"
-          + (modelIndex + 1));
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+        Logger.debug("new Molecule (" + mf + ") " + (indexInModel + 1) + "/"
+            + (modelIndex + 1));
     }
 
     void getElementAndAtomCount(BitSet atomList) {

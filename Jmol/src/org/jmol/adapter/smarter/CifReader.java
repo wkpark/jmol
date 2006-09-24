@@ -364,6 +364,8 @@ class CifReader extends AtomSetCollectionReader {
       Atom atom = new Atom();
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
+        if (field.length() == 0)
+          continue;
         char firstChar = field.charAt(0);
         if (firstChar == '\0')
           continue;
@@ -494,6 +496,8 @@ class CifReader extends AtomSetCollectionReader {
       String symmetry = null;
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
+        if (field.length() == 0)
+          continue;
         char firstChar = field.charAt(0);
         if (firstChar == '\0')
           continue;
@@ -541,6 +545,8 @@ class CifReader extends AtomSetCollectionReader {
       String hetName = null;
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
+        if (field.length() == 0)
+          continue;
         char firstChar = field.charAt(0);
         if (firstChar == '\0')
           continue;
@@ -599,6 +605,8 @@ class CifReader extends AtomSetCollectionReader {
       Structure structure = new Structure();
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
+        if (field.length() == 0)
+          continue;
         char firstChar = field.charAt(0);
         if (firstChar == '\0')
           continue;
@@ -664,6 +672,8 @@ class CifReader extends AtomSetCollectionReader {
       structure.structureType = "sheet";
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
+        if (field.length() == 0)
+          continue;
         char firstChar = field.charAt(0);
         if (firstChar == '\0')
           continue;
@@ -719,6 +729,8 @@ class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData(loopData, fieldCount)) {
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
+        if (field.length() == 0)
+          continue;
         char firstChar = field.charAt(0);
         if (firstChar == '\0')
           continue;

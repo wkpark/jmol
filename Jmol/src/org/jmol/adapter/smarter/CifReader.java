@@ -382,7 +382,7 @@ class CifReader extends AtomSetCollectionReader {
       return false;
     }
     String[] loopData = new String[fieldCount];
-    out: while (tokenizer.getData(loopData, fieldCount)) {
+    while (tokenizer.getData(loopData, fieldCount)) {
       Atom atom = new Atom();
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];

@@ -291,9 +291,10 @@ class CifReader extends AtomSetCollectionReader {
   // atom data
   ////////////////////////////////////////////////////////////////
 
-  final static byte NONE = 0;
-  final static byte TYPE_SYMBOL = 1;
-  final static byte LABEL = 2;
+  final static byte NONE = -1;
+  final static byte TYPE_SYMBOL = 0;
+  final static byte LABEL = 1;
+  final static byte AUTH_ATOM = 2;
   final static byte FRACT_X = 3;
   final static byte FRACT_Y = 4;
   final static byte FRACT_Z = 5;
@@ -341,20 +342,11 @@ class CifReader extends AtomSetCollectionReader {
    * 
    * 
    */
-  final static byte[] atomFieldMap = { 
-      TYPE_SYMBOL,   LABEL,     LABEL, 
-      FRACT_X,       FRACT_Y,   FRACT_Z, 
-      CARTN_X,       CARTN_Y,   CARTN_Z, 
-      OCCUPANCY,     B_ISO,     COMP_ID,
-      ASYM_ID,       SEQ_ID,    INS_CODE, 
-      ALT_ID,        GROUP_PDB, MODEL_NO, 
-      DUMMY_ATOM, 
-  };
 
   boolean processAtomSiteLoopBlock() throws Exception {
     int currentModelNO = -1;
     boolean isPDB = false;
-    int fieldCount = parseLoopParameters(atomFields, atomFieldMap);
+    parseLoopParameters(atomFields);
     if (propertyReferenced[CARTN_X]) {
       setFractionalCoordinates(false);
       for (int i = FRACT_X; i < FRACT_Z; ++i)
@@ -393,6 +385,7 @@ class CifReader extends AtomSetCollectionReader {
           atom.elementSymbol = elementSymbol;
           break;
         case LABEL:
+        case AUTH_ATOM:
           atom.atomName = field;
           break;
         case CARTN_X:
@@ -476,9 +469,9 @@ class CifReader extends AtomSetCollectionReader {
   // bond data
   ////////////////////////////////////////////////////////////////
 
-  final static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 1;
-  final static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 2;
-  final static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
+  final static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 0;
+  final static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 1;
+  final static byte GEOM_BOND_SITE_SYMMETRY_2 = 2;
 
   final static String[] geomBondFields = { 
       "_geom_bond_atom_site_label_1",
@@ -486,16 +479,9 @@ class CifReader extends AtomSetCollectionReader {
       "_geom_bond_site_symmetry_2",
   };
 
-  final static byte[] geomBondFieldMap = { 
-      GEOM_BOND_ATOM_SITE_LABEL_1,
-      GEOM_BOND_ATOM_SITE_LABEL_2, 
-      GEOM_BOND_SITE_SYMMETRY_2,
-  };
-
   void processGeomBondLoopBlock() throws Exception {
-    int fieldCount = parseLoopParameters(geomBondFields, geomBondFieldMap);
-    for (int i = propertyCount; --i > 0;)
-      // only > 0, not >= 0
+    parseLoopParameters(geomBondFields);
+    for (int i = propertyCount; --i >= 0;)
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _geom_bond property:" + i);
         skipLoop();
@@ -542,9 +528,9 @@ class CifReader extends AtomSetCollectionReader {
   // helix and turn structure data
   ////////////////////////////////////////////////////////////////
 
-  final static byte NONPOLY_ENTITY_ID = 1;
-  final static byte NONPOLY_NAME = 2;
-  final static byte NONPOLY_COMP_ID = 3;
+  final static byte NONPOLY_ENTITY_ID = 0;
+  final static byte NONPOLY_NAME = 1;
+  final static byte NONPOLY_COMP_ID = 2;
 
   final static String[] nonpolyFields = { 
       "_pdbx_entity_nonpoly.entity_id",
@@ -552,14 +538,8 @@ class CifReader extends AtomSetCollectionReader {
       "_pdbx_entity_nonpoly.comp_id", 
   };
 
-  final static byte[] nonpolyFieldMap = { 
-      NONPOLY_ENTITY_ID, 
-      NONPOLY_NAME, 
-      NONPOLY_COMP_ID, 
-  };
-
   void processNonpolyLoopBlock() throws Exception {
-    int fieldCount = parseLoopParameters(nonpolyFields, nonpolyFieldMap);
+    parseLoopParameters(nonpolyFields);
     while (tokenizer.getData(loopData, fieldCount)) {
       String groupName = null;
       String hetName = null;
@@ -593,13 +573,13 @@ class CifReader extends AtomSetCollectionReader {
   // helix and turn structure data
   ////////////////////////////////////////////////////////////////
 
-  final static byte CONF_TYPE_ID = 1;
-  final static byte BEG_ASYM_ID = 2;
-  final static byte BEG_SEQ_ID = 3;
-  final static byte BEG_INS_CODE = 4;
-  final static byte END_ASYM_ID = 5;
-  final static byte END_SEQ_ID = 6;
-  final static byte END_INS_CODE = 7;
+  final static byte CONF_TYPE_ID = 0;
+  final static byte BEG_ASYM_ID = 1;
+  final static byte BEG_SEQ_ID = 2;
+  final static byte BEG_INS_CODE = 3;
+  final static byte END_ASYM_ID = 4;
+  final static byte END_SEQ_ID = 5;
+  final static byte END_INS_CODE = 6;
 
   final static String[] structConfFields = { 
       "_struct_conf.conf_type_id",
@@ -611,16 +591,9 @@ class CifReader extends AtomSetCollectionReader {
       "_struct_conf.pdbx_end_PDB_ins_code", 
   };
 
-  final static byte[] structConfFieldMap = { 
-      CONF_TYPE_ID, 
-      BEG_ASYM_ID,  BEG_SEQ_ID,  BEG_INS_CODE, 
-      END_ASYM_ID,  END_SEQ_ID,  END_INS_CODE, 
-  };
-
   void processStructConfLoopBlock() throws Exception {
-    int fieldCount = parseLoopParameters(structConfFields, structConfFieldMap);
-    for (int i = propertyCount; --i > 0;)
-      // only > 0, not >= 0
+    parseLoopParameters(structConfFields);
+    for (int i = propertyCount; --i >= 0;)
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
         skipLoop();
@@ -672,9 +645,8 @@ class CifReader extends AtomSetCollectionReader {
   // sheet structure data
   ////////////////////////////////////////////////////////////////
 
-  // note that the conf_id is not used
-
   final static String[] structSheetRangeFields = {
+      "_struct_sheet_range.sheet_id",  //unused placeholder
       "_struct_sheet_range.beg_auth_asym_id",
       "_struct_sheet_range.beg_auth_seq_id",
       "_struct_sheet_range.pdbx_beg_PDB_ins_code",
@@ -683,15 +655,9 @@ class CifReader extends AtomSetCollectionReader {
       "_struct_sheet_range.pdbx_end_PDB_ins_code", 
   };
 
-  final static byte[] structSheetRangeFieldMap = { 
-      BEG_ASYM_ID,  BEG_SEQ_ID,  BEG_INS_CODE, 
-      END_ASYM_ID,  END_SEQ_ID,  END_INS_CODE, 
-  };
-
   void processStructSheetRangeLoopBlock() throws Exception {
-    int fieldCount = parseLoopParameters(structSheetRangeFields,
-        structSheetRangeFieldMap);
-    for (int i = propertyCount; --i > 1;)
+    parseLoopParameters(structSheetRangeFields);
+    for (int i = propertyCount; --i >= 0;)
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
         skipLoop();
@@ -734,24 +700,18 @@ class CifReader extends AtomSetCollectionReader {
   // symmetry operations
   ////////////////////////////////////////////////////////////////
 
-  final static byte SYMOP_XYZ = 1;
-  final static byte SYM_EQUIV_XYZ = 2;
+  final static byte SYMOP_XYZ = 0;
+  final static byte SYM_EQUIV_XYZ = 1;
 
   final static String[] symmetryOperationsFields = {
       "_space_group_symop_operation_xyz", 
       "_symmetry_equiv_pos_as_xyz", 
   };
 
-  final static byte[] symmetryOperationsFieldMap = { 
-      SYMOP_XYZ, 
-      SYM_EQUIV_XYZ, 
-  };
-
   void processSymmetryOperationsLoopBlock() throws Exception {
-    int fieldCount = parseLoopParameters(symmetryOperationsFields,
-        symmetryOperationsFieldMap);
+    parseLoopParameters(symmetryOperationsFields);
     int nRefs = 0;
-    for (int i = propertyCount; --i > 1;)
+    for (int i = propertyCount; --i >= 0;)
       if (propertyReferenced[i])
         nRefs++;
     if (nRefs != 1) {
@@ -776,7 +736,7 @@ class CifReader extends AtomSetCollectionReader {
     }
   }
   
-  ////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////0///////////
   // token-based CIF loop-data reader
   ////////////////////////////////////////////////////////////////
 
@@ -784,39 +744,40 @@ class CifReader extends AtomSetCollectionReader {
   private int[] fieldTypes = new int[100]; // should be enough
   private boolean[] propertyReferenced = new boolean[50];
   private int propertyCount;
+  private int fieldCount;
   
-  int parseLoopParameters(String[] fields, byte[] fieldMap) throws Exception {
-    int fieldCount = 0;
-    for (int i = 0; i <= fields.length; i++) {
-      fieldTypes[i] = 0;
+  void parseLoopParameters(String[] fields) throws Exception {
+    fieldCount = 0;
+    for (int i = 0; i < fields.length; i++)
       propertyReferenced[i] = false;
-    }
-    propertyCount = fields.length + 1;
+
+    propertyCount = fields.length;
     while (true) {
       String str = tokenizer.peekToken();
-      if (str == null)
-        return 0;
+      if (str == null) {
+        fieldCount = 0;
+        break;
+      }
       if (str.charAt(0) != '_')
         break;
       tokenizer.getTokenPeeked();
+      fieldTypes[fieldCount] = NONE;
       for (int i = fields.length; --i >= 0;)
         if (isMatch(str, fields[i])) {
-          int iproperty = fieldMap[i];
-          propertyReferenced[iproperty] = true;
-          fieldTypes[fieldCount] = iproperty;
+          fieldTypes[fieldCount] = i;
+          propertyReferenced[i] = true;
           break;
         }
       fieldCount++;
     }
     if (fieldCount > 0)
       loopData = new String[fieldCount];
-    return fieldCount;
   }
 
   void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
     for (int i = fieldCount; --i >= 0;)
       if (fieldTypes[i] == fieldIndex)
-        fieldTypes[i] = 0;
+        fieldTypes[i] = NONE;
   }
 
   private void skipLoop() throws Exception {

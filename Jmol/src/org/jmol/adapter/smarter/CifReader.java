@@ -24,13 +24,18 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.util.Hashtable;
 
 /**
- * CIF file reader for CIF and mmCIF files.
+ * A true line-free CIF file reader for CIF and mmCIF files.
  *
  *<p>
  * <a href='http://www.iucr.org/iucr-top/cif/'>
  * http://www.iucr.org/iucr-top/cif/
+ * </a>
+ * 
+ * <a href='http://www.iucr.org/iucr-top/cif/ddl_brussels.html'>
+ * http://www.iucr.org/iucr-top/cif/ddl_brussels.html
  * </a>
  *
  * @author Miguel, Egon, and Bob (hansonr@stolaf.edu)
@@ -53,40 +58,34 @@ class CifReader extends AtomSetCollectionReader {
   String chemicalName = "";
   String thisStructuralFormula = "";
   String thisFormula = "";
+  
+  Hashtable htHetero;
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("cif");
 
-    // this loop is a little tricky
-    // the CIF format seems to generate lots of problems for parsers
-    // the top of this loop should be ready to process the current line
-    // pay careful attention to the 'break' and 'continue' sequence
-    // or you will get stuck in an infinite loop
-    line = reader.readLine();
+    /*
+     * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible of line dependence.
+     * a loop could now go:
+     * 
+     * blah blah blah  loop_ _a _b _c 0 1 2 0 3 4 0 5 6 loop_...... 
+     * 
+     */
+    line = "";
+    String str;
     boolean skipping = false;
-    boolean inSemicolonString = false;
-    while (line != null) {
-      if (line.indexOf("#jmolscript:") >= 0)
+    while ((str = tokenizer.peekToken()) != null) {
+      if (str.indexOf("#jmolscript:") >= 0)
         checkLineForScript(line);
-      if (line.startsWith(";"))
-        inSemicolonString = !inSemicolonString;
-      if (inSemicolonString) {
-        line = reader.readLine();
-        continue;
-      }
-      if (line.startsWith("loop_")) {
-        if (!skipping) {
-          processLoopBlock();
-          // there is already an unprocessed line in the firing chamber
-          continue;
-        }
-      } else if (line.startsWith("data_")) {
+      if (str.startsWith("data_")) {
         if (iHaveDesiredModel)
           break;
         skipping = (++modelNumber != desiredModelNumber && desiredModelNumber > 0);
-        if (!skipping) {
+        if (skipping) {
+          tokenizer.getTokenPeeked();
+        } else {
           chemicalName = "";
           thisStructuralFormula = "";
           thisFormula = "";
@@ -94,32 +93,79 @@ class CifReader extends AtomSetCollectionReader {
           processDataParameter();
           iHaveDesiredModel = (desiredModelNumber > 0);
         }
-      } else if (line.startsWith("_chemical_name")) {
-        processChemicalInfo(reader, "name");
-      } else if (line.startsWith("_chemical_formula_structural")) {
-        processChemicalInfo(reader, "structuralFormula");
-      } else if (line.startsWith("_chemical_formula_sum")) {
-        processChemicalInfo(reader, "formula");
-      } else if (line.startsWith("_cell_") || line.startsWith("_cell.")) {
-        if (!skipping)
-          processCellParameter();
-      } else if (line.startsWith("_symmetry_space_group_name_H-M")
-          || line.startsWith("_symmetry.space_group_name_H-M")) {
-        if (!skipping)
-          processSymmetrySpaceGroupName();
-      } else if (line.startsWith("_atom_sites.fract_tran")
-          || line.startsWith("_atom_sites.fract_tran")) {
-        if (!skipping)
-          processUnitCellTransformMatrix();
-      } else if (line.startsWith("_symmetry_space_group_name_Hall")
-          || line.startsWith("_symmetry.space_group_name_Hall")) {
-        if (!skipping)
-          processSymmetrySpaceGroupName();
+        continue;
       }
-      line = reader.readLine();
+      if (str.startsWith("loop_")) {
+        if (skipping) {
+          tokenizer.getTokenPeeked();
+        } else {
+          processLoopBlock();
+        }
+        continue;
+      }
+      if (!skipping) {
+        if (str.startsWith("_chemical_name")) {
+          processChemicalInfo("name");
+          continue;
+        } else if (str.startsWith("_chemical_formula_structural")) {
+          processChemicalInfo("structuralFormula");
+          continue;
+        } else if (str.startsWith("_chemical_formula_sum")) {
+          processChemicalInfo("formula");
+          continue;
+        } else if (str.startsWith("_cell_") || str.startsWith("_cell.")) {
+          processCellParameter();
+          continue;
+        } else if (str.startsWith("_symmetry_space_group_name_H-M")
+            || str.startsWith("_symmetry.space_group_name_H-M")
+            || str.startsWith("_symmetry_space_group_name_Hall")
+            || str.startsWith("_symmetry.space_group_name_Hall")) {
+          processSymmetrySpaceGroupName();
+          continue;
+        } else if (str.startsWith("_atom_sites.fract_tran")
+            || str.startsWith("_atom_sites.fract_tran")) {
+          processUnitCellTransformMatrix();
+          continue;
+        }
+      }
+      skipLoop();
     }
     applySymmetry();
     return atomSetCollection;
+  }
+
+
+  ////////////////////////////////////////////////////////////////
+  // token-based CIF loop-data reader
+  ////////////////////////////////////////////////////////////////
+
+  void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
+    for (int i = fieldCount; --i >= 0;)
+      if (fieldTypes[i] == fieldIndex)
+        fieldTypes[i] = 0;
+  }
+
+  int parseLoopParameters(String[] fields, byte[] fieldMap, int[] fieldTypes,
+                          boolean[] propertyReferenced) throws Exception {
+    int fieldCount = 0;
+    while (true) {
+      String str = tokenizer.peekToken();
+      if (str == null)
+        return 0;
+      if (str.charAt(0) != '_')
+        break;
+      tokenizer.getTokenPeeked();
+      for (int i = fields.length; --i >= 0;)
+        if (isMatch(str, fields[i])) {
+          int iproperty = fieldMap[i];
+          propertyReferenced[iproperty] = true;
+          fieldTypes[fieldCount] = iproperty;
+          break;
+        }
+      fieldCount++;
+    }
+    //    logger.log("parseLoopParameters sees fieldCount="+ fieldCount);
+    return fieldCount;
   }
 
   final static boolean isMatch(String str1, String str2) {
@@ -143,8 +189,21 @@ class CifReader extends AtomSetCollectionReader {
     return true;
   }
 
+  private void skipLoop() throws Exception {
+    String str;
+    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
+      str  = tokenizer.getTokenPeeked();
+    while (tokenizer.getNextDataToken() != null) {
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // processing methods
+  ////////////////////////////////////////////////////////////////
+
   void processDataParameter() {
-    thisDataSetName = (line.length() < 6 ? "" : line.substring(5).trim());
+    String str = tokenizer.getTokenPeeked();
+    thisDataSetName = (str.length() < 6 ? "" : str.substring(5));
     if (thisDataSetName.length() > 0) {
       if (atomSetCollection.currentAtomSetIndex >= 0) {
         // note that there can be problems with multi-data mmCIF sets each with
@@ -156,15 +215,14 @@ class CifReader extends AtomSetCollectionReader {
         atomSetCollection.setCollectionName(thisDataSetName);
       }
     }
-    logger.log(line);
+    logger.log(str);
   }
 
-  void processChemicalInfo(BufferedReader reader, String type) throws Exception {
-    tokenizer.setString(line);
-    tokenizer.nextToken();
-    if (!tokenizer.hasMoreTokens())
-      tokenizer.setStringNextLine(reader);
-    String info = tokenizer.nextToken();
+  void processChemicalInfo(String type) throws Exception {
+    tokenizer.getTokenPeeked();
+    String info = tokenizer.getNextToken();
+    if (info.charAt(0) == '\0')
+      return;
     // someone should generalize this with an array of desired name info
     if (type.equals("name"))
       chemicalName = info;
@@ -175,9 +233,9 @@ class CifReader extends AtomSetCollectionReader {
     logger.log(type + " = " + info);
   }
 
-  void processSymmetrySpaceGroupName() {
-    tokenizer.setString(line.substring(31).trim());
-    setSpaceGroupName(tokenizer.nextToken());
+  void processSymmetrySpaceGroupName() throws Exception {
+    tokenizer.getTokenPeeked();
+    setSpaceGroupName(tokenizer.getNextToken());
   }
 
   final static String[] cellParamNames = { "_cell_length_a", "_cell_length_b",
@@ -186,20 +244,22 @@ class CifReader extends AtomSetCollectionReader {
       "_cell.length_c", "_cell.angle_alpha", "_cell.angle_beta",
       "_cell.angle_gamma" };
 
-  void processCellParameter() {
-    String cellParameter = parseToken(line);
+  void processCellParameter() throws Exception {
+    String cellParameter = tokenizer.getTokenPeeked();
     for (int i = cellParamNames.length; --i >= 0;)
       if (isMatch(cellParameter, cellParamNames[i])) {
-        setUnitCellItem(i % 6, parseFloat(line, ichNextParse));
+        setUnitCellItem(i % 6, parseFloat(tokenizer.getNextToken()));
         return;
       }
   }
 
   private void processLoopBlock() throws Exception {
     //    logger.log("processLoopBlock()-------------------------");
-    line = reader.readLine().trim();
-    if (line.startsWith("_atom_site_") || line.startsWith("_atom_site.")) {
-      //logger.log("trimmed line:" + line);
+    tokenizer.getTokenPeeked(); //loop_
+    String str = tokenizer.peekToken();
+    if (str == null)
+      return;
+    if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.")) {
       if (!processAtomSiteLoopBlock())
         return;
       atomSetCollection.setAtomSetName(thisDataSetName);
@@ -209,63 +269,41 @@ class CifReader extends AtomSetCollectionReader {
       atomSetCollection.setAtomSetAuxiliaryInfo("formula", thisFormula);
       return;
     }
-    if (line.startsWith("_geom_bond")) {
-      if (doApplySymmetry) //not reading bonds when symmetry is enabled yet
-        line = reader.readLine();
-      else
+    if (str.startsWith("_geom_bond")) {
+      if (!doApplySymmetry) //not reading bonds when symmetry is enabled yet
         processGeomBondLoopBlock();
+    }
+    
+    if (str.startsWith("_pdbx_entity_nonpoly")) {
+      processNonpolyLoopBlock();
       return;
     }
-    if (line.startsWith("_struct_conf")
-        && !line.startsWith("_struct_conf_type")) {
+    if (str.startsWith("_struct_conf")
+        && !str.startsWith("_struct_conf_type")) {
       processStructConfLoopBlock();
       return;
     }
-    if (line.startsWith("_struct_sheet_range")) {
+    if (str.startsWith("_struct_sheet_range")) {
       processStructSheetRangeLoopBlock();
       return;
     }
-    if (line.startsWith("_struct_sheet_range")) {
+    if (str.startsWith("_struct_sheet_range")) {
       processStructSheetRangeLoopBlock();
       return;
     }
-    if (line.startsWith("_symmetry_equiv_pos")
-        || line.startsWith("space_group_symop")) {
+    if (str.startsWith("_symmetry_equiv_pos")
+        || str.startsWith("space_group_symop")) {
       if (ignoreFileSymmetryOperators) {
         logger.log("ignoring file-based symmetry operators");
       } else {
         processSymmetryOperationsLoopBlock();
+        return;
       }
-      return;
-    }
-
-    //    logger.log("Skipping loop block:" + line);
-    skipLoopHeaders();
-    skipLoopData();
+    }    
+    skipLoop();
   }
 
-  private void skipLoopHeaders() throws Exception {
-    // skip everything that begins with _
-    while (line != null && (line = line.trim()).length() > 0
-        && line.charAt(0) == '_') {
-      line = reader.readLine();
-    }
-  }
-
-  private void skipLoopData() throws Exception {
-    // skip everything until empty line, or comment line
-    // or start of a new loop_ or data_
-    char ch;
-    while (line != null) {
-      line = line.trim();
-      if (line.length() != 0
-          && ((ch = line.charAt(0)) == '_' || ch == '#'
-              || line.startsWith("loop_") || line.startsWith("data_")))
-        break;
-      line = reader.readLine();
-    }
-  }
-
+  
   ////////////////////////////////////////////////////////////////
   // atom data
   ////////////////////////////////////////////////////////////////
@@ -340,38 +378,17 @@ class CifReader extends AtomSetCollectionReader {
     } else {
       // it is a different kind of _atom_site loop block
       //      logger.log("?que? no atom coordinates found");
-      skipLoopData();
+      skipLoop();
       return false;
     }
-    
-
-    char alternateLocationID = '0';
-    for (; line != null; line = reader.readLine()) {
-      int lineLength = line.length();
-      if (lineLength == 0)
-        continue;
-      char chFirst = line.charAt(0);
-      if (chFirst == '#' || chFirst == '_' || line.startsWith("loop_")
-          || line.startsWith("data_"))
-        break;
-      if (chFirst == ' ') {
-        int i;
-        for (i = lineLength; --i >= 0 && line.charAt(i) == ' ';) {
-        }
-        if (i < 0)
-          break;
-      }
-      //      logger.log("line:" + line);
-      //      logger.log("of length = " + line.length());
-      tokenizer.setString(line);
-      //      logger.log("reading an atom");
+    String[] loopData = new String[fieldCount];
+    out: while (tokenizer.getData(loopData, fieldCount)) {
       Atom atom = new Atom();
-      out: for (int i = 0; i < fieldCount; ++i) {
-        if (!tokenizer.hasMoreTokens())
-          tokenizer.setStringNextLine(reader);
-        String field = tokenizer.nextToken();
-        if (field == null)
-          logger.log("field == null!");
+      for (int i = 0; i < fieldCount; ++i) {
+        String field = loopData[i];
+        char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
         switch (fieldTypes[i]) {
         case NONE:
           break;
@@ -419,23 +436,16 @@ class CifReader extends AtomSetCollectionReader {
           if (field.length() > 1)
             logger.log("Don't know how to deal with chains more than 1 char",
                 field);
-          char firstChar = field.charAt(0);
-          if (firstChar != '?' && firstChar != '.')
-            atom.chainID = firstChar;
+          atom.chainID = firstChar;
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseInt(field);
           break;
         case INS_CODE:
-          char insCode = field.charAt(0);
-          if (insCode != '?' && insCode != '.')
-            atom.chainID = insCode;
+          atom.chainID = firstChar;
           break;
         case ALT_ID:
-          alternateLocationID = field.charAt(0);
-          if (alternateLocationID == '?' || alternateLocationID == '.')
-            break;
-          atom.alternateLocationID = alternateLocationID;
+          atom.alternateLocationID = field.charAt(0);
           break;
         case GROUP_PDB:
           isPDB = true;
@@ -454,7 +464,7 @@ class CifReader extends AtomSetCollectionReader {
           //            1/cif_core.dic/Iatom_site_calc_flag.html
           if ("dum".equals(field)) {
             atom.x = Float.NaN;
-            continue out;
+            continue; //skip 
           }
           break;
         }
@@ -465,34 +475,15 @@ class CifReader extends AtomSetCollectionReader {
       } else {
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
+        if (atom.isHetero && htHetero != null) {
+          atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
+          htHetero = null;
+        }
       }
     }
     if (isPDB)
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", new Boolean(isPDB));
     return true;
-  }
-
-  void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
-    for (int i = fieldCount; --i >= 0;)
-      if (fieldTypes[i] == fieldIndex)
-        fieldTypes[i] = 0;
-  }
-
-  int parseLoopParameters(String[] fields, byte[] fieldMap, int[] fieldTypes,
-                          boolean[] propertyReferenced) throws Exception {
-    int fieldCount = 0;
-    outer_loop: for (; line != null && (line = line.trim()).length() > 0
-        && line.charAt(0) == '_'; ++fieldCount, line = reader.readLine()) {
-      for (int i = fields.length; --i >= 0;)
-        if (isMatch(line, fields[i])) {
-          int iproperty = fieldMap[i];
-          propertyReferenced[iproperty] = true;
-          fieldTypes[fieldCount] = iproperty;
-          continue outer_loop;
-        }
-    }
-    //    logger.log("parseLoopParameters sees fieldCount="+ fieldCount);
-    return fieldCount;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -525,22 +516,20 @@ class CifReader extends AtomSetCollectionReader {
       // only > 0, not >= 0
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _geom_bond property:" + i);
-        skipLoopData();
+        skipLoop();
         return;
       }
 
-    for (; line != null && (line = line.trim()).length() > 0
-        && line.charAt(0) != '#' && line.charAt(0) != '_'
-        && !line.startsWith("loop_") && !line.startsWith("data_"); line = reader
-        .readLine()) {
-      tokenizer.setString(line);
+    String[] loopData = new String[fieldCount];
+    while (tokenizer.getData(loopData, fieldCount)) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
       String symmetry = null;
       for (int i = 0; i < fieldCount; ++i) {
-        if (!tokenizer.hasMoreTokens())
-          tokenizer.setStringNextLine(reader);
-        String field = tokenizer.nextToken();
+        String field = loopData[i];
+        char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
         switch (fieldTypes[i]) {
         case NONE:
           break;
@@ -551,8 +540,8 @@ class CifReader extends AtomSetCollectionReader {
           atomIndex2 = atomSetCollection.getAtomNameIndex(field);
           break;
         case GEOM_BOND_SITE_SYMMETRY_2:
-          if (field.charAt(0) != '.')
-            symmetry = field;
+          symmetry = field;
+          break;
         }
       }
       if (atomIndex1 >= 0 && atomIndex2 >= 0) {
@@ -565,6 +554,57 @@ class CifReader extends AtomSetCollectionReader {
           atomSetCollection.addBond(bond);
         }
       }
+    }
+  }
+  
+  ////////////////////////////////////////////////////////////////
+  // helix and turn structure data
+  ////////////////////////////////////////////////////////////////
+
+  final static byte NONPOLY_ENTITY_ID = 1;
+  final static byte NONPOLY_NAME = 2;
+  final static byte NONPOLY_COMP_ID = 3;
+  final static byte NONPOLY_PROPERTY_MAX = 4;
+
+  final static String[] nonpolyFields = { "_pdbx_entity_nonpoly.entity_id",
+  "_pdbx_entity_nonpoly.name", "_pdbx_entity_nonpoly.comp_id", };
+
+  final static byte[] nonpolyFieldMap = { NONPOLY_ENTITY_ID, 
+    NONPOLY_NAME, NONPOLY_COMP_ID, };
+
+  void processNonpolyLoopBlock() throws Exception {
+    int[] fieldTypes = new int[100]; // should be enough
+    boolean[] propertyReferenced = new boolean[NONPOLY_PROPERTY_MAX];
+    int fieldCount = parseLoopParameters(nonpolyFields, nonpolyFieldMap,
+        fieldTypes, propertyReferenced);
+
+    String[] loopData = new String[fieldCount];
+    while (tokenizer.getData(loopData, fieldCount)) {
+      String groupName = null;
+      String hetName = null;
+      for (int i = 0; i < fieldCount; ++i) {
+        String field = loopData[i];
+        char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
+        switch (fieldTypes[i]) {
+        case NONE:
+        case NONPOLY_ENTITY_ID:
+          break;
+        case NONPOLY_COMP_ID:
+          groupName = field;
+          break;
+        case NONPOLY_NAME:
+          hetName = field;
+          break;
+        }
+      }
+      if (groupName == null || hetName == null)
+        return;
+      if (htHetero == null)
+        htHetero = new Hashtable();
+      htHetero.put(groupName, hetName);
+      logger.log("hetero: "+groupName+" "+hetName);
     }
   }
 
@@ -601,19 +641,18 @@ class CifReader extends AtomSetCollectionReader {
       // only > 0, not >= 0
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
-        skipLoopData();
+        skipLoop();
         return;
       }
 
-    for (; line != null && (line = line.trim()).length() > 0
-        && line.charAt(0) != '#'; line = reader.readLine()) {
-      tokenizer.setString(line);
+    String[] loopData = new String[fieldCount];
+    while (tokenizer.getData(loopData, fieldCount)) {
       Structure structure = new Structure();
       for (int i = 0; i < fieldCount; ++i) {
-        if (!tokenizer.hasMoreTokens())
-          tokenizer.setStringNextLine(reader);
-        String field = tokenizer.nextToken();
+        String field = loopData[i];
         char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
         switch (fieldTypes[i]) {
         case NONE:
           break;
@@ -626,26 +665,22 @@ class CifReader extends AtomSetCollectionReader {
             structure.structureType = "none";
           break;
         case BEG_ASYM_ID:
-          structure.startChainID = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.startChainID = firstChar;
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = parseInt(field);
           break;
         case BEG_INS_CODE:
-          structure.startInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.startInsertionCode = firstChar;
           break;
         case END_ASYM_ID:
-          structure.endChainID = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.endChainID = firstChar;
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = parseInt(field);
           break;
         case END_INS_CODE:
-          structure.endInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.endInsertionCode = firstChar;
           break;
         }
       }
@@ -682,43 +717,37 @@ class CifReader extends AtomSetCollectionReader {
     for (int i = STRUCT_SHEET_RANGE_PROPERTY_MAX; --i > 1;)
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
-        skipLoopData();
+        skipLoop();
         return;
       }
 
-    for (; line != null && (line = line.trim()).length() > 0
-        && line.charAt(0) != '#'; line = reader.readLine()) {
-      tokenizer.setString(line);
+    String[] loopData = new String[fieldCount];
+    while (tokenizer.getData(loopData, fieldCount)) {
       Structure structure = new Structure();
       structure.structureType = "sheet";
-
       for (int i = 0; i < fieldCount; ++i) {
-        if (!tokenizer.hasMoreTokens())
-          tokenizer.setStringNextLine(reader);
-        String field = tokenizer.nextToken();
+        String field = loopData[i];
         char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
         switch (fieldTypes[i]) {
         case BEG_ASYM_ID:
-          structure.startChainID = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.startChainID = firstChar;
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = parseInt(field);
           break;
         case BEG_INS_CODE:
-          structure.startInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.startInsertionCode = firstChar;
           break;
         case END_ASYM_ID:
-          structure.endChainID = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.endChainID = firstChar;
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = parseInt(field);
           break;
         case END_INS_CODE:
-          structure.endInsertionCode = (firstChar == '.' || firstChar == '?') ? ' '
-              : firstChar;
+          structure.endInsertionCode = firstChar;
           break;
         }
       }
@@ -751,33 +780,17 @@ class CifReader extends AtomSetCollectionReader {
     if (nRefs != 1) {
       logger
           .log("?que? _symmetry_equiv or _space_group_symop property not found");
-      skipLoopData();
+      skipLoop();
       return;
     }
 
-    for (; line != null; line = reader.readLine()) {
-      int lineLength = line.length();
-      if (lineLength == 0)
-        continue;
-      char chFirst = line.charAt(0);
-      if (chFirst == '#' || chFirst == '_' || line.startsWith("loop_")
-          || line.startsWith("data_"))
-        break;
-      if (chFirst == ' ') {
-        int i;
-        for (i = lineLength; --i >= 0 && line.charAt(i) == ' ';) {
-        }
-        if (i < 0)
-          break;
-      }
-      tokenizer.setString(line);
-
+    String[] loopData = new String[fieldCount];
+    while (tokenizer.getData(loopData, fieldCount)) {
       for (int i = 0; i < fieldCount; ++i) {
-        if (!tokenizer.hasMoreTokens())
-          tokenizer.setStringNextLine(reader);
-        String field = tokenizer.nextToken();
-        if (field == null)
-          logger.log("field == null!");
+        String field = loopData[i];
+        char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
         switch (fieldTypes[i]) {
         case SYMOP_XYZ:
         case SYM_EQUIV_XYZ:
@@ -787,14 +800,14 @@ class CifReader extends AtomSetCollectionReader {
       }
     }
   }
-
+  
   final static String[] TransformFields = {
     "x[1][1]", "x[1][2]", "x[1][3]", "r[1]",
     "x[2][1]", "x[2][2]", "x[2][3]", "r[2]",
     "x[3][1]", "x[3][2]", "x[3][3]", "r[3]"};
 
 
-  void processUnitCellTransformMatrix() {
+  void processUnitCellTransformMatrix() throws Exception {
     /*
      * PDB:
      
@@ -818,23 +831,18 @@ class CifReader extends AtomSetCollectionReader {
      _atom_sites.fract_transf_vector[3]      0.00000 
 
      */
-    line = line.trim();
-    int pt = line.indexOf(" ");
-    if (pt < 0)
-      return;
-    // data type is FLOAT; not quoted
-    float v = parseFloat(line.substring(pt + 1));
+    String str = tokenizer.getTokenPeeked();
+    float v = parseFloat(tokenizer.getNextToken());
     if (Float.isNaN(v))
       return;
     for (int i = 0; i < TransformFields.length; i++) {
-      if (line.indexOf(TransformFields[i]) >= 0) {
+      if (str.indexOf(TransformFields[i]) >= 0) {
         setUnitCellItem(6 + i, v);
         return;
       }
     }
   }
   
-
   ////////////////////////////////////////////////////////////////
   // special tokenizer class
   ////////////////////////////////////////////////////////////////
@@ -892,26 +900,25 @@ class CifReader extends AtomSetCollectionReader {
    *</p>
    */
 
-  static class RidiculousFileFormatTokenizer {
+  // not static! we are saving global variables here.
+  
+  class RidiculousFileFormatTokenizer {
     String str;
     int ich;
     int cch;
+    boolean wasUnQuoted;
 
     void setString(String str) {
-      if (str == null)
-        str = "";
       this.str = str;
-      cch = str.length();
+      cch = (str == null ? 0 : str.length());
       ich = 0;
     }
 
-    void setStringNextLine(BufferedReader reader) throws Exception {
-      String str = reader.readLine();
+    String setStringNextLine(BufferedReader reader) throws Exception {
+      str = reader.readLine();
       if (str == null)
-        str = "";
-
+        return str;
       if (str.length() > 0 && str.charAt(0) == ';') {
-
         String newline = '\1' + str.substring(1);
         str = "";
         while (newline != null) {
@@ -924,17 +931,23 @@ class CifReader extends AtomSetCollectionReader {
         }
       }
       setString(str);
+      return str;
     }
 
     boolean hasMoreTokens() {
-      char ch;
+      if (str == null)
+        return false;
+      char ch = '#';
       while (ich < cch && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
         ++ich;
-      return ich < cch;
+      return (ich < cch && ch != '#');
     }
 
-    /* assume that hasMoreTokens() has been called and that
+    /**
+     * assume that hasMoreTokens() has been called and that
      * ich is pointing at a non-white character
+     *
+     * @return next token or "\0" if '.' or '?' 
      */
     String nextToken() {
       if (ich == cch)
@@ -942,10 +955,15 @@ class CifReader extends AtomSetCollectionReader {
       int ichStart = ich;
       char ch = str.charAt(ichStart);
       if (ch != '\'' && ch != '"' && ch != '\1') {
+        wasUnQuoted = true;
         while (ich < cch && (ch = str.charAt(ich)) != ' ' && ch != '\t')
           ++ich;
+        if (ich == ichStart + 1)
+          if (str.charAt(ichStart) == '.' || str.charAt(ichStart) == '?')
+            return "\0";
         return str.substring(ichStart, ich);
       }
+      wasUnQuoted = false;
       char chOpeningQuote = ch;
       boolean previousCharacterWasQuote = false;
       while (++ich < cch) {
@@ -963,5 +981,67 @@ class CifReader extends AtomSetCollectionReader {
       ++ich; // throw away the last white character
       return str.substring(ichStart + 1, ich - 2);
     }
+
+    boolean wasUnQuoted() {
+      return wasUnQuoted;
+    }
+
+    /**
+     * general reader for loop data
+     * fills loopData with fieldCount fields
+     * 
+     * @param loopData
+     * @param fieldCount   if < 0, then ignore '_' in first field
+     * @return successful
+     * @throws Exception
+     */
+    boolean getData(String[] loopData, int fieldCount) throws Exception {
+      // line is already present, and we leave with the next line to parse
+      for (int i = 0; i < fieldCount; ++i) {
+        String str = getNextDataToken();
+        if (str == null)
+          return false;
+        loopData[i] = str;
+      }
+      return true;
+    }
+
+    String getNextDataToken() throws Exception { 
+      String str = peekToken();
+      if (str == null)
+        return null;
+      if (wasUnQuoted())
+        if (str.charAt(0) == '_' || str.startsWith("loop_")
+            || str.startsWith("data_"))
+          return null;
+      return tokenizer.getTokenPeeked();
+    }
+    
+    String getNextToken() throws Exception {
+      while (!hasMoreTokens())
+        if ((line = setStringNextLine(reader)) == null)
+          return null;
+      return nextToken();
+    }
+
+    String strPeeked;
+    int ichPeeked;
+    
+    String peekToken() throws Exception {
+      while (!hasMoreTokens())
+        if ((line = setStringNextLine(reader)) == null)
+          return null;
+      int ich = this.ich;
+      strPeeked = nextToken();
+      ichPeeked= this.ich;
+      this.ich = ich;
+      return strPeeked;
+    }
+    
+    String getTokenPeeked() {
+      this.ich = ichPeeked;
+      return strPeeked;
+    }
   }
+
 }

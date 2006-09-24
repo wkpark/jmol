@@ -60,7 +60,8 @@ class PdbReader extends AtomSetCollectionReader {
   int[] serialMap = new int[512];
   boolean isNMRdata;
   final Hashtable htFormul = new Hashtable();
-  
+  Hashtable htHetero = null;
+
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
 
@@ -94,6 +95,10 @@ class PdbReader extends AtomSetCollectionReader {
       if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
           || line.startsWith("TURN  ")) {
         structure();
+        continue;
+      }
+      if (line.startsWith("HETNAM")) {
+        hetnam();
         continue;
       }
       if (line.startsWith("CRYST1")) {
@@ -250,6 +255,12 @@ class PdbReader extends AtomSetCollectionReader {
       atomSetCollection.addAtom(atom);
       // note that values are +1 in this serial map
       serialMap[serial] = atomSetCollection.atomCount;
+      
+      if (isHetero && htHetero != null) {
+        atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
+        htHetero = null;
+      }
+
     } catch (NumberFormatException e) {
       logger.log("bad record", "" + line);
     }
@@ -455,6 +466,18 @@ class PdbReader extends AtomSetCollectionReader {
       else if (Atom.isValidElementSymbol(chFirst))
         htElementsInGroup.put("" + chFirst, Boolean.TRUE);
     }
+  }
+  
+  void hetnam() {
+    if (htHetero == null)
+      htHetero = new Hashtable();
+    String groupName = parseToken(line, 11, 14);
+    String hetName = parseTrimmed(line, 15, 70);
+    String htName = (String) htHetero.get(groupName);
+    if (htName != null)
+      hetName = htName + hetName;
+    htHetero.put(groupName, hetName);
+    logger.log("hetero: "+groupName+" "+hetName);
   }
   
   void applySymmetry() {

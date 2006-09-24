@@ -24,6 +24,7 @@
 package org.jmol.popup;
 
 import org.jmol.api.*;
+import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -125,13 +126,19 @@ abstract public class JmolPopup {
                viewer.getBooleanProperty("hideNameInPopup")
                ? hiddenModelSetName : modelSetName);
     enableMenu(modelSetInfoMenu, true);
-    addMenuItem(modelSetInfoMenu, "atoms:" + viewer.getAtomCount());
-    addMenuItem(modelSetInfoMenu, "bonds:" + viewer.getBondCount());
+    addMenuItem(modelSetInfoMenu,
+                GT._("atoms: {0}", new Object[] { new Integer(viewer.getAtomCount()) }));
+    addMenuItem(modelSetInfoMenu,
+                GT._("bonds: {0}", new Object[] { new Integer(viewer.getBondCount()) }));
     addMenuSeparator(modelSetInfoMenu);
-    addMenuItem(modelSetInfoMenu, "groups:" + viewer.getGroupCount());
-    addMenuItem(modelSetInfoMenu, "chains:" + viewer.getChainCount());
-    addMenuItem(modelSetInfoMenu, "polymers:" + viewer.getPolymerCount());
-    addMenuItem(modelSetInfoMenu, "models:" + viewer.getModelCount());
+    addMenuItem(modelSetInfoMenu,
+                GT._("groups: {0}", new Object[] { new Integer(viewer.getGroupCount()) }));
+    addMenuItem(modelSetInfoMenu,
+                GT._("chains: {0}", new Object[] { new Integer(viewer.getChainCount()) }));
+    addMenuItem(modelSetInfoMenu,
+                GT._("polymers: {0}", new Object[] { new Integer(viewer.getPolymerCount()) }));
+    addMenuItem(modelSetInfoMenu,
+                GT._("models: {0}", new Object[] { new Integer(viewer.getModelCount()) }));
     if (viewer.showModelSetDownload() &&
         !viewer.getBooleanProperty("hideNameInPopup")) {
       addMenuSeparator(modelSetInfoMenu);
@@ -152,24 +159,25 @@ abstract public class JmolPopup {
     addMenuItem(aboutMenu, viewer.getJavaVendor());
     addMenuItem(aboutMenu, viewer.getJavaVersion());
     addMenuSeparator(aboutMenu);
-    addMenuItem(aboutMenu, "Java memory usage");
+    addMenuItem(aboutMenu, GT._("Java memory usage"));
     Runtime runtime = Runtime.getRuntime();
     runtime.gc();
     long mbTotal = convertToMegabytes(runtime.totalMemory());
     long mbFree = convertToMegabytes(runtime.freeMemory());
     long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
-    addMenuItem(aboutMenu, "" + mbTotal + " Mb total");
-    addMenuItem(aboutMenu, "" + mbFree + " Mb free");
+    addMenuItem(aboutMenu, GT._("{0} Mb total", new Object[] { new Long(mbTotal) }));
+    addMenuItem(aboutMenu, GT._("{0} Mb free", new Object[] { new Long(mbFree) }));
     if (mbMax > 0)
-      addMenuItem(aboutMenu, "" + mbMax + " Mb maximum");
+      addMenuItem(aboutMenu, GT._("{0} Mb maximum", new Object[] { new Long(mbMax) }));
     else
-      addMenuItem(aboutMenu, "unknown maximum");
+      addMenuItem(aboutMenu, GT._("unknown maximum"));
     int availableProcessors = availableProcessorsForNewerJvm();
     if (availableProcessors > 0)
-      addMenuItem(aboutMenu, "" + availableProcessors +
-                  (availableProcessors == 1 ? " processor" : " processors"));
+      addMenuItem(aboutMenu, (availableProcessors == 1) ?
+                  GT._("1 processor") :
+                  GT._("{0} processors", new Object[] { new Integer(availableProcessors) } ));
     else
-      addMenuItem(aboutMenu, "unknown processor count");
+      addMenuItem(aboutMenu, GT._("unknown processor count"));
   }
 
   private long convertToMegabytes(long num) {

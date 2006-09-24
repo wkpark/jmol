@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-21 21:19+0200\n"
+"POT-Creation-Date: 2006-09-24 10:22+0200\n"
 "PO-Revision-Date: 2005-12-20 07:44-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -36,6 +36,72 @@ msgstr ""
 #: org/jmol/applet/Jmol.java:712
 msgid "File Error:"
 msgstr "Erro no ficheiro..."
+
+#: org/jmol/popup/JmolPopup.java:130
+#, java-format
+msgid "atoms: {0}"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:132
+#, java-format
+msgid "bonds: {0}"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:135
+#, java-format
+msgid "groups: {0}"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:137
+#, fuzzy, java-format
+msgid "chains: {0}"
+msgstr "Escala 0.2"
+
+#: org/jmol/popup/JmolPopup.java:139
+#, java-format
+msgid "polymers: {0}"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:141
+#, java-format
+msgid "models: {0}"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:162
+msgid "Java memory usage"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:168
+#, java-format
+msgid "{0} Mb total"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:169
+#, java-format
+msgid "{0} Mb free"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:171
+#, java-format
+msgid "{0} Mb maximum"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:173
+msgid "unknown maximum"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:177
+msgid "1 processor"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:178
+#, java-format
+msgid "{0} processors"
+msgstr ""
+
+#: org/jmol/popup/JmolPopup.java:180
+msgid "unknown processor count"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:685
 msgid "No atoms loaded"
@@ -73,6 +139,7 @@ msgstr "Proteína"
 #: org/jmol/popup/PopupResourceBundle.java:708
 #: org/jmol/popup/PopupResourceBundle.java:750
 #: org/jmol/popup/PopupResourceBundle.java:795
+#: org/jmol/popup/PopupResourceBundle.java:923
 msgid "Backbone"
 msgstr "Esqueleto/Cadeia principal/raiz"
 
@@ -274,6 +341,41 @@ msgstr "Ligações"
 #: org/jmol/popup/PopupResourceBundle.java:1056
 msgid "On"
 msgstr "On"
+
+#: org/jmol/popup/PopupResourceBundle.java:764
+#: org/jmol/popup/PopupResourceBundle.java:765
+#: org/jmol/popup/PopupResourceBundle.java:766
+#: org/jmol/popup/PopupResourceBundle.java:767
+#: org/jmol/popup/PopupResourceBundle.java:768
+#: org/jmol/popup/PopupResourceBundle.java:776
+#: org/jmol/popup/PopupResourceBundle.java:777
+#: org/jmol/popup/PopupResourceBundle.java:778
+#: org/jmol/popup/PopupResourceBundle.java:779
+#: org/jmol/popup/PopupResourceBundle.java:780
+#: org/jmol/popup/PopupResourceBundle.java:787
+#: org/jmol/popup/PopupResourceBundle.java:788
+#: org/jmol/popup/PopupResourceBundle.java:789
+#: org/jmol/popup/PopupResourceBundle.java:790
+#: org/jmol/popup/PopupResourceBundle.java:791
+#: org/jmol/popup/PopupResourceBundle.java:804
+#: org/jmol/popup/PopupResourceBundle.java:805
+#: org/jmol/popup/PopupResourceBundle.java:1162
+#: org/jmol/popup/PopupResourceBundle.java:1163
+#: org/jmol/popup/PopupResourceBundle.java:1164
+#: org/jmol/popup/PopupResourceBundle.java:1165
+#: org/jmol/popup/PopupResourceBundle.java:1166
+#: org/jmol/popup/PopupResourceBundle.java:1185
+#: org/jmol/popup/PopupResourceBundle.java:1186
+#: org/jmol/popup/PopupResourceBundle.java:1187
+#: org/jmol/popup/PopupResourceBundle.java:1188
+#: org/jmol/popup/PopupResourceBundle.java:1208
+#: org/jmol/popup/PopupResourceBundle.java:1209
+#: org/jmol/popup/PopupResourceBundle.java:1210
+#: org/jmol/popup/PopupResourceBundle.java:1211
+#: org/jmol/popup/PopupResourceBundle.java:1212
+#, fuzzy, java-format
+msgid "{0} Å"
+msgstr "1opx"
 
 #: org/jmol/popup/PopupResourceBundle.java:770
 #: org/jmol/popup/PopupResourceBundle.java:897
@@ -960,6 +1062,7 @@ msgid "Dotted"
 msgstr "Tracejado"
 
 #: org/jmol/popup/PopupResourceBundle.java:1155
+#: org/jmol/popup/PopupResourceBundle.java:1178
 #: org/jmol/popup/PopupResourceBundle.java:1201
 msgid "Pixel Width"
 msgstr "Tamanho do pixel"
@@ -980,6 +1083,12 @@ msgstr "Tamanho do pixel"
 msgid "{0} px"
 msgstr "1opx"
 
+#: org/jmol/popup/PopupResourceBundle.java:1161
+#: org/jmol/popup/PopupResourceBundle.java:1184
+#: org/jmol/popup/PopupResourceBundle.java:1207
+msgid "Angstrom Width"
+msgstr "Tamanho Angstrom"
+
 #: org/jmol/popup/PopupResourceBundle.java:1169
 #: org/jmol/popup/PopupResourceBundle.java:1192
 #: org/jmol/popup/PopupResourceBundle.java:1215
@@ -998,9 +1107,9 @@ msgstr "Orquídea"
 msgid "Boundbox"
 msgstr "Caixa de ligação"
 
-#: org/jmol/popup/PopupResourceBundle.java:1184
-msgid "Angstrom Width"
-msgstr "Tamanho Angstrom"
+#: org/jmol/popup/PopupResourceBundle.java:1189
+msgid "1.0 Å"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1193
 msgid "Salmon"

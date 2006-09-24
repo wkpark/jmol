@@ -25,12 +25,12 @@
 package org.jmol.adapter.smarter;
 class Structure {
   String structureType;
-  char startChainID;
+  char startChainID = ' ';
   int startSequenceNumber;
-  char startInsertionCode;
-  char endChainID;
+  char startInsertionCode = ' ';
+  char endChainID = ' ';
   int endSequenceNumber;
-  char endInsertionCode;
+  char endInsertionCode = ' ';
   int modelIndex;
 
   Structure() { }

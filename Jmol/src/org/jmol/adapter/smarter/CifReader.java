@@ -511,16 +511,12 @@ class CifReader extends AtomSetCollectionReader {
           break;
         }
       }
-      if (atomIndex1 >= 0 && atomIndex2 >= 0) {
-        // miguel 2004 11 19
-        // for now, do not deal with symmetry
-        if (symmetry == null) {
-          Bond bond = new Bond();
-          bond.atomIndex1 = atomIndex1;
-          bond.atomIndex2 = atomIndex2;
-          atomSetCollection.addBond(bond);
-        }
-      }
+      if (symmetry != null || atomIndex1 < 0 || atomIndex2 < 0)
+        continue;
+      Bond bond = new Bond();
+      bond.atomIndex1 = atomIndex1;
+      bond.atomIndex2 = atomIndex2;
+      atomSetCollection.addBond(bond);
     }
   }
   

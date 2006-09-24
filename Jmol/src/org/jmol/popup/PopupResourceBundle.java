@@ -717,7 +717,7 @@ class PopupResourceBundle {
     { "U", "U" },
 
     { "heteroMenu", GT._("Hetero") },
-    { "allHetero", GT._("All PDB \"HETATOM\"") },
+    { "allHetero", GT._("All PDB \"HETATM\"") },
     { "Solvent", GT._("All Solvent") },
     { "Water", GT._("All Water") },
     { "nonWaterSolvent", GT._("Nonaqueous Solvent") + " (solvent and not water)" },

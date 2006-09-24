@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-24 10:22+0200\n"
+"POT-Creation-Date: 2006-09-24 15:23+0200\n"
 "PO-Revision-Date: 2006-09-24 14:11+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -34,7 +34,8 @@ msgid ""
 msgstr ""
 "Jmol Applet versie {0} {1}.\n"
 " \n"
-"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer informatie."
+"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer "
+"informatie."
 
 #: org/jmol/applet/Jmol.java:712
 msgid "File Error:"
@@ -75,18 +76,18 @@ msgid "Java memory usage"
 msgstr "Geheugengebruik Java"
 
 #: org/jmol/popup/JmolPopup.java:168
-#, java-format
-msgid "{0} Mb total"
+#, fuzzy, java-format
+msgid "{0} MB total"
 msgstr "{0} Mb totaal"
 
 #: org/jmol/popup/JmolPopup.java:169
-#, java-format
-msgid "{0} Mb free"
+#, fuzzy, java-format
+msgid "{0} MB free"
 msgstr "{0} Mb vrij"
 
 #: org/jmol/popup/JmolPopup.java:171
-#, java-format
-msgid "{0} Mb maximum"
+#, fuzzy, java-format
+msgid "{0} MB maximum"
 msgstr "{0} Mb maximaal"
 
 #: org/jmol/popup/JmolPopup.java:173
@@ -207,7 +208,8 @@ msgid "Hetero"
 msgstr "Hetero-groepen"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
-msgid "All PDB \"HETATOM\""
+#, fuzzy
+msgid "All PDB \"HETATM\""
 msgstr "Alle PDB \"HETATOM\""
 
 #: org/jmol/popup/PopupResourceBundle.java:721
@@ -1195,36 +1197,49 @@ msgstr "Jmol voert script uit ..."
 
 #~ msgid "Except Solvent"
 #~ msgstr "Behalve Oplosmiddel"
+
 #~ msgid "Except Water"
 #~ msgstr "Behalve Water"
+
 #~ msgid "Other"
 #~ msgstr "Anders"
+
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
+
 #~ msgid "pick "
 #~ msgstr "selecteer"
+
 #~ msgid "Nanometers"
 #~ msgstr "Nanometers"
+
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
+
 #~ msgid "Picometers"
 #~ msgstr "Picometers"
+
 #~ msgid "Open"
 #~ msgstr "Openen"
+
 #~ msgid "Close"
 #~ msgstr "Sluiten"
+
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
+
 #~ msgid "Jmol script completed"
 #~ msgstr "Jmol script is klaar"
+
 #~ msgid "Name hidden"
 #~ msgstr "Naam verborgen"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
+
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
-

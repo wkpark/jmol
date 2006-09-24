@@ -165,10 +165,10 @@ abstract public class JmolPopup {
     long mbTotal = convertToMegabytes(runtime.totalMemory());
     long mbFree = convertToMegabytes(runtime.freeMemory());
     long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
-    addMenuItem(aboutMenu, GT._("{0} Mb total", new Object[] { new Long(mbTotal) }));
-    addMenuItem(aboutMenu, GT._("{0} Mb free", new Object[] { new Long(mbFree) }));
+    addMenuItem(aboutMenu, GT._("{0} MB total", new Object[] { new Long(mbTotal) }));
+    addMenuItem(aboutMenu, GT._("{0} MB free", new Object[] { new Long(mbFree) }));
     if (mbMax > 0)
-      addMenuItem(aboutMenu, GT._("{0} Mb maximum", new Object[] { new Long(mbMax) }));
+      addMenuItem(aboutMenu, GT._("{0} MB maximum", new Object[] { new Long(mbMax) }));
     else
       addMenuItem(aboutMenu, GT._("unknown maximum"));
     int availableProcessors = availableProcessorsForNewerJvm();

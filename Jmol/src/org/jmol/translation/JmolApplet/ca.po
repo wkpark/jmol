@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-24 10:22+0200\n"
+"POT-Creation-Date: 2006-09-24 15:23+0200\n"
 "PO-Revision-Date: 2006-01-30 03:37+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -72,17 +72,17 @@ msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:168
 #, java-format
-msgid "{0} Mb total"
+msgid "{0} MB total"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:169
 #, java-format
-msgid "{0} Mb free"
+msgid "{0} MB free"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:171
 #, java-format
-msgid "{0} Mb maximum"
+msgid "{0} MB maximum"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:173
@@ -204,7 +204,7 @@ msgid "Hetero"
 msgstr "hetero"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
-msgid "All PDB \"HETATOM\""
+msgid "All PDB \"HETATM\""
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:721

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-24 10:22+0200\n"
-"PO-Revision-Date: 2006-09-18 20:32+0100\n"
+"PO-Revision-Date: 2006-09-24 14:11+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <kde-i18n-nl@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: org/jmol/applet/Console.java:76
 msgid "press CTRL-ENTER for new line"
-msgstr ""
+msgstr "Druk CTRL-ENTER for een nieuwe regel"
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -34,8 +34,7 @@ msgid ""
 msgstr ""
 "Jmol Applet versie {0} {1}.\n"
 " \n"
-"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer "
-"informatie."
+"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer informatie."
 
 #: org/jmol/applet/Jmol.java:712
 msgid "File Error:"
@@ -44,68 +43,68 @@ msgstr "Bestandsfout:"
 #: org/jmol/popup/JmolPopup.java:130
 #, java-format
 msgid "atoms: {0}"
-msgstr ""
+msgstr "atomen: {0}"
 
 #: org/jmol/popup/JmolPopup.java:132
 #, java-format
 msgid "bonds: {0}"
-msgstr ""
+msgstr "bindingen: {0}"
 
 #: org/jmol/popup/JmolPopup.java:135
 #, java-format
 msgid "groups: {0}"
-msgstr ""
+msgstr "groepen: {0}"
 
 #: org/jmol/popup/JmolPopup.java:137
-#, fuzzy, java-format
+#, java-format
 msgid "chains: {0}"
-msgstr "Schaal {0}"
+msgstr "ketens {0}"
 
 #: org/jmol/popup/JmolPopup.java:139
 #, java-format
 msgid "polymers: {0}"
-msgstr ""
+msgstr "polymeren: {0}"
 
 #: org/jmol/popup/JmolPopup.java:141
 #, java-format
 msgid "models: {0}"
-msgstr ""
+msgstr "modellen: {0}"
 
 #: org/jmol/popup/JmolPopup.java:162
 msgid "Java memory usage"
-msgstr ""
+msgstr "Geheugengebruik Java"
 
 #: org/jmol/popup/JmolPopup.java:168
 #, java-format
 msgid "{0} Mb total"
-msgstr ""
+msgstr "{0} Mb totaal"
 
 #: org/jmol/popup/JmolPopup.java:169
 #, java-format
 msgid "{0} Mb free"
-msgstr ""
+msgstr "{0} Mb vrij"
 
 #: org/jmol/popup/JmolPopup.java:171
 #, java-format
 msgid "{0} Mb maximum"
-msgstr ""
+msgstr "{0} Mb maximaal"
 
 #: org/jmol/popup/JmolPopup.java:173
 msgid "unknown maximum"
-msgstr ""
+msgstr "onbekend maximum"
 
 #: org/jmol/popup/JmolPopup.java:177
 msgid "1 processor"
-msgstr ""
+msgstr "1 processor"
 
 #: org/jmol/popup/JmolPopup.java:178
 #, java-format
 msgid "{0} processors"
-msgstr ""
+msgstr "{0} processors"
 
 #: org/jmol/popup/JmolPopup.java:180
 msgid "unknown processor count"
-msgstr ""
+msgstr "onbekend aantal processoren"
 
 #: org/jmol/popup/PopupResourceBundle.java:685
 msgid "No atoms loaded"
@@ -204,31 +203,28 @@ msgid "AU pairs"
 msgstr "AU paren"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
-#, fuzzy
 msgid "Hetero"
 msgstr "Hetero-groepen"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "All PDB \"HETATOM\""
-msgstr ""
+msgstr "Alle PDB \"HETATOM\""
 
 #: org/jmol/popup/PopupResourceBundle.java:721
-#, fuzzy
 msgid "All Solvent"
-msgstr "Oplosmiddel"
+msgstr "Al het oplosmiddel"
 
 #: org/jmol/popup/PopupResourceBundle.java:722
-#, fuzzy
 msgid "All Water"
-msgstr "Water"
+msgstr "Al het water"
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "Oplosmiddel anders dan water"
 
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Nonaqueous HETATM"
-msgstr ""
+msgstr "HETATM anders dan water"
 
 #: org/jmol/popup/PopupResourceBundle.java:725
 msgid "Ligand"
@@ -240,7 +236,7 @@ msgstr "Koolwaterstof"
 
 #: org/jmol/popup/PopupResourceBundle.java:727
 msgid "None of the above"
-msgstr ""
+msgstr "Geen van deze"
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 #: org/jmol/popup/PopupResourceBundle.java:1142
@@ -377,9 +373,9 @@ msgstr "Aan"
 #: org/jmol/popup/PopupResourceBundle.java:1210
 #: org/jmol/popup/PopupResourceBundle.java:1211
 #: org/jmol/popup/PopupResourceBundle.java:1212
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Å"
-msgstr "{0} px"
+msgstr "{0} Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:770
 #: org/jmol/popup/PopupResourceBundle.java:897
@@ -1099,7 +1095,7 @@ msgstr "Boundbox"
 
 #: org/jmol/popup/PopupResourceBundle.java:1189
 msgid "1.0 Å"
-msgstr ""
+msgstr "1.0 Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:1193
 msgid "Salmon"
@@ -1182,14 +1178,12 @@ msgid "Translations"
 msgstr "Translaties"
 
 #: org/jmol/viewer/PickingManager.java:167
-#, fuzzy
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "atomen in volgorde om het model rond een as te laten spinnen"
+msgstr "kies nog een atoom om het model rond een as te laten spinnen"
 
 #: org/jmol/viewer/PickingManager.java:168
-#, fuzzy
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr "atomen in volgorde om het model rond een as te laten spinnen"
+msgstr "kies twee atomen om het model rond een as te laten spinnen"
 
 #: org/jmol/viewer/PickingManager.java:229
 msgid "atoms selected"
@@ -1201,49 +1195,36 @@ msgstr "Jmol voert script uit ..."
 
 #~ msgid "Except Solvent"
 #~ msgstr "Behalve Oplosmiddel"
-
 #~ msgid "Except Water"
 #~ msgstr "Behalve Water"
-
 #~ msgid "Other"
 #~ msgstr "Anders"
-
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
-
 #~ msgid "pick "
 #~ msgstr "selecteer"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanometers"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picometers"
-
 #~ msgid "Open"
 #~ msgstr "Openen"
-
 #~ msgid "Close"
 #~ msgstr "Sluiten"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
-
 #~ msgid "Jmol script completed"
 #~ msgstr "Jmol script is klaar"
-
 #~ msgid "Name hidden"
 #~ msgstr "Naam verborgen"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
+

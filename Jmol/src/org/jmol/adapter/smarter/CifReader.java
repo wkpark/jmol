@@ -34,8 +34,8 @@ import java.util.Hashtable;
  * http://www.iucr.org/iucr-top/cif/
  * </a>
  * 
- * <a href='http://www.iucr.org/iucr-top/cif/ddl_brussels.html'>
- * http://www.iucr.org/iucr-top/cif/ddl_brussels.html
+ * <a href='http://www.iucr.org/iucr-top/cif/standard/cifstd5.html'>
+ * http://www.iucr.org/iucr-top/cif/standard/cifstd5.html
  * </a>
  *
  * @author Miguel, Egon, and Bob (hansonr@stolaf.edu)
@@ -134,69 +134,6 @@ class CifReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-
-  ////////////////////////////////////////////////////////////////
-  // token-based CIF loop-data reader
-  ////////////////////////////////////////////////////////////////
-
-  void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
-    for (int i = fieldCount; --i >= 0;)
-      if (fieldTypes[i] == fieldIndex)
-        fieldTypes[i] = 0;
-  }
-
-  int parseLoopParameters(String[] fields, byte[] fieldMap, int[] fieldTypes,
-                          boolean[] propertyReferenced) throws Exception {
-    int fieldCount = 0;
-    while (true) {
-      String str = tokenizer.peekToken();
-      if (str == null)
-        return 0;
-      if (str.charAt(0) != '_')
-        break;
-      tokenizer.getTokenPeeked();
-      for (int i = fields.length; --i >= 0;)
-        if (isMatch(str, fields[i])) {
-          int iproperty = fieldMap[i];
-          propertyReferenced[iproperty] = true;
-          fieldTypes[fieldCount] = iproperty;
-          break;
-        }
-      fieldCount++;
-    }
-    //    logger.log("parseLoopParameters sees fieldCount="+ fieldCount);
-    return fieldCount;
-  }
-
-  final static boolean isMatch(String str1, String str2) {
-    int cch = str1.length();
-    if (str2.length() != cch)
-      return false;
-    for (int i = cch; --i >= 0;) {
-      char ch1 = str1.charAt(i);
-      char ch2 = str2.charAt(i);
-      if (ch1 == ch2)
-        continue;
-      if ((ch1 == '_' || ch1 == '.') && (ch2 == '_' || ch2 == '.'))
-        continue;
-      if (ch1 <= 'Z' && ch1 >= 'A')
-        ch1 += 'a' - 'A';
-      else if (ch2 <= 'Z' && ch2 >= 'A')
-        ch2 += 'a' - 'A';
-      if (ch1 != ch2)
-        return false;
-    }
-    return true;
-  }
-
-  private void skipLoop() throws Exception {
-    String str;
-    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
-      str  = tokenizer.getTokenPeeked();
-    while (tokenizer.getNextDataToken() != null) {
-    }
-  }
-
   ////////////////////////////////////////////////////////////////
   // processing methods
   ////////////////////////////////////////////////////////////////
@@ -253,8 +190,53 @@ class CifReader extends AtomSetCollectionReader {
       }
   }
 
+  final static String[] TransformFields = {
+      "x[1][1]", "x[1][2]", "x[1][3]", "r[1]",
+      "x[2][1]", "x[2][2]", "x[2][3]", "r[2]",
+      "x[3][1]", "x[3][2]", "x[3][3]", "r[3]",
+  };
+
+  void processUnitCellTransformMatrix() throws Exception {
+    /*
+     * PDB:
+     
+     SCALE1       .024414  0.000000  -.000328        0.00000
+     SCALE2      0.000000   .053619  0.000000        0.00000
+     SCALE3      0.000000  0.000000   .044409        0.00000
+
+     * CIF:
+
+     _atom_sites.fract_transf_matrix[1][1]   .024414 
+     _atom_sites.fract_transf_matrix[1][2]   0.000000 
+     _atom_sites.fract_transf_matrix[1][3]   -.000328 
+     _atom_sites.fract_transf_matrix[2][1]   0.000000 
+     _atom_sites.fract_transf_matrix[2][2]   .053619 
+     _atom_sites.fract_transf_matrix[2][3]   0.000000 
+     _atom_sites.fract_transf_matrix[3][1]   0.000000 
+     _atom_sites.fract_transf_matrix[3][2]   0.000000 
+     _atom_sites.fract_transf_matrix[3][3]   .044409 
+     _atom_sites.fract_transf_vector[1]      0.00000 
+     _atom_sites.fract_transf_vector[2]      0.00000 
+     _atom_sites.fract_transf_vector[3]      0.00000 
+
+     */
+    String str = tokenizer.getTokenPeeked();
+    float v = parseFloat(tokenizer.getNextToken());
+    if (Float.isNaN(v))
+      return;
+    for (int i = 0; i < TransformFields.length; i++) {
+      if (str.indexOf(TransformFields[i]) >= 0) {
+        setUnitCellItem(6 + i, v);
+        return;
+      }
+    }
+  }
+  
+  ////////////////////////////////////////////////////////////////
+  // loop_ processing
+  ////////////////////////////////////////////////////////////////
+
   private void processLoopBlock() throws Exception {
-    //    logger.log("processLoopBlock()-------------------------");
     tokenizer.getTokenPeeked(); //loop_
     String str = tokenizer.peekToken();
     if (str == null)
@@ -303,7 +285,6 @@ class CifReader extends AtomSetCollectionReader {
     skipLoop();
   }
 
-  
   ////////////////////////////////////////////////////////////////
   // atom data
   ////////////////////////////////////////////////////////////////
@@ -327,17 +308,28 @@ class CifReader extends AtomSetCollectionReader {
   final static byte GROUP_PDB = 16;
   final static byte MODEL_NO = 17;
   final static byte DUMMY_ATOM = 18;
-  final static byte ATOM_PROPERTY_MAX = 19;
 
-  final static String[] atomFields = { "_atom_site_type_symbol",
-      "_atom_site_label", "_atom_site_auth_atom_id", "_atom_site_fract_x",
-      "_atom_site_fract_y", "_atom_site_fract_z", "_atom_site.Cartn_x",
-      "_atom_site.Cartn_y", "_atom_site.Cartn_z", "_atom_site_occupancy",
-      "_atom_site.b_iso_or_equiv", "_atom_site.auth_comp_id",
-      "_atom_site.auth_asym_id", "_atom_site.auth_seq_id",
-      "_atom_site.pdbx_PDB_ins_code", "_atom_site.label_alt_id",
-      "_atom_site.group_PDB", "_atom_site.pdbx_PDB_model_num",
-      "_atom_site_calc_flag", };
+  final static String[] atomFields = { 
+      "_atom_site_type_symbol",
+      "_atom_site_label", 
+      "_atom_site_auth_atom_id", 
+      "_atom_site_fract_x",
+      "_atom_site_fract_y", 
+      "_atom_site_fract_z", 
+      "_atom_site.Cartn_x",
+      "_atom_site.Cartn_y", 
+      "_atom_site.Cartn_z", 
+      "_atom_site_occupancy",
+      "_atom_site.b_iso_or_equiv", 
+      "_atom_site.auth_comp_id",
+      "_atom_site.auth_asym_id", 
+      "_atom_site.auth_seq_id",
+      "_atom_site.pdbx_PDB_ins_code", 
+      "_atom_site.label_alt_id",
+      "_atom_site.group_PDB", 
+      "_atom_site.pdbx_PDB_model_num",
+      "_atom_site_calc_flag", 
+  };
 
   /* to: hansonr@stolaf.edu
    * from: Zukang Feng zfeng@rcsb.rutgers.edu
@@ -347,41 +339,33 @@ class CifReader extends AtomSetCollectionReader {
    * 
    * 
    */
-  final static byte[] atomFieldMap = { TYPE_SYMBOL, LABEL, LABEL, FRACT_X,
-      FRACT_Y, FRACT_Z, CARTN_X, CARTN_Y, CARTN_Z, OCCUPANCY, B_ISO, COMP_ID,
-      ASYM_ID, SEQ_ID, INS_CODE, ALT_ID, GROUP_PDB, MODEL_NO, DUMMY_ATOM };
-
-  static {
-    if (atomFieldMap.length != atomFields.length)
-      atomFields[100] = "explode";
-  }
+  final static byte[] atomFieldMap = { 
+      TYPE_SYMBOL,   LABEL,     LABEL, 
+      FRACT_X,       FRACT_Y,   FRACT_Z, 
+      CARTN_X,       CARTN_Y,   CARTN_Z, 
+      OCCUPANCY,     B_ISO,     COMP_ID,
+      ASYM_ID,       SEQ_ID,    INS_CODE, 
+      ALT_ID,        GROUP_PDB, MODEL_NO, 
+      DUMMY_ATOM, 
+  };
 
   boolean processAtomSiteLoopBlock() throws Exception {
-    //    logger.log("processAtomSiteLoopBlock()-------------------------");
     int currentModelNO = -1;
     boolean isPDB = false;
-    int[] fieldTypes = new int[100]; // should be enough
-    boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(atomFields, atomFieldMap, fieldTypes,
-        atomPropertyReferenced);
-    // now that headers are parsed, check to see if we want
-    // cartesian or fractional coordinates;
-
-    if (atomPropertyReferenced[CARTN_X]) {
+    int fieldCount = parseLoopParameters(atomFields, atomFieldMap);
+    if (propertyReferenced[CARTN_X]) {
       setFractionalCoordinates(false);
       for (int i = FRACT_X; i < FRACT_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
-    } else if (atomPropertyReferenced[FRACT_X]) {
+    } else if (propertyReferenced[FRACT_X]) {
       setFractionalCoordinates(true);
       for (int i = CARTN_X; i < CARTN_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
     } else {
       // it is a different kind of _atom_site loop block
-      //      logger.log("?que? no atom coordinates found");
       skipLoop();
       return false;
     }
-    String[] loopData = new String[fieldCount];
     while (tokenizer.getData(loopData, fieldCount)) {
       Atom atom = new Atom();
       for (int i = 0; i < fieldCount; ++i) {
@@ -493,26 +477,22 @@ class CifReader extends AtomSetCollectionReader {
   final static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 1;
   final static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 2;
   final static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
-  //  final static byte GEOM_BOND_DISTANCE          = 4;
 
-  final static byte GEOM_BOND_PROPERTY_MAX = 4;
-
-  final static String[] geomBondFields = { "_geom_bond_atom_site_label_1",
-      "_geom_bond_atom_site_label_2", "_geom_bond_site_symmetry_2",
-  //    "_geom_bond_distance",
+  final static String[] geomBondFields = { 
+      "_geom_bond_atom_site_label_1",
+      "_geom_bond_atom_site_label_2", 
+      "_geom_bond_site_symmetry_2",
   };
 
-  final static byte[] geomBondFieldMap = { GEOM_BOND_ATOM_SITE_LABEL_1,
-      GEOM_BOND_ATOM_SITE_LABEL_2, GEOM_BOND_SITE_SYMMETRY_2,
-  //    GEOM_BOND_DISTANCE,
+  final static byte[] geomBondFieldMap = { 
+      GEOM_BOND_ATOM_SITE_LABEL_1,
+      GEOM_BOND_ATOM_SITE_LABEL_2, 
+      GEOM_BOND_SITE_SYMMETRY_2,
   };
 
   void processGeomBondLoopBlock() throws Exception {
-    int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced = new boolean[GEOM_BOND_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(geomBondFields, geomBondFieldMap,
-        fieldTypes, propertyReferenced);
-    for (int i = GEOM_BOND_PROPERTY_MAX; --i > 0;)
+    int fieldCount = parseLoopParameters(geomBondFields, geomBondFieldMap);
+    for (int i = propertyCount; --i > 0;)
       // only > 0, not >= 0
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _geom_bond property:" + i);
@@ -520,7 +500,6 @@ class CifReader extends AtomSetCollectionReader {
         return;
       }
 
-    String[] loopData = new String[fieldCount];
     while (tokenizer.getData(loopData, fieldCount)) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
@@ -564,21 +543,21 @@ class CifReader extends AtomSetCollectionReader {
   final static byte NONPOLY_ENTITY_ID = 1;
   final static byte NONPOLY_NAME = 2;
   final static byte NONPOLY_COMP_ID = 3;
-  final static byte NONPOLY_PROPERTY_MAX = 4;
 
-  final static String[] nonpolyFields = { "_pdbx_entity_nonpoly.entity_id",
-  "_pdbx_entity_nonpoly.name", "_pdbx_entity_nonpoly.comp_id", };
+  final static String[] nonpolyFields = { 
+      "_pdbx_entity_nonpoly.entity_id",
+      "_pdbx_entity_nonpoly.name", 
+      "_pdbx_entity_nonpoly.comp_id", 
+  };
 
-  final static byte[] nonpolyFieldMap = { NONPOLY_ENTITY_ID, 
-    NONPOLY_NAME, NONPOLY_COMP_ID, };
+  final static byte[] nonpolyFieldMap = { 
+      NONPOLY_ENTITY_ID, 
+      NONPOLY_NAME, 
+      NONPOLY_COMP_ID, 
+  };
 
   void processNonpolyLoopBlock() throws Exception {
-    int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced = new boolean[NONPOLY_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(nonpolyFields, nonpolyFieldMap,
-        fieldTypes, propertyReferenced);
-
-    String[] loopData = new String[fieldCount];
+    int fieldCount = parseLoopParameters(nonpolyFields, nonpolyFieldMap);
     while (tokenizer.getData(loopData, fieldCount)) {
       String groupName = null;
       String hetName = null;
@@ -619,33 +598,32 @@ class CifReader extends AtomSetCollectionReader {
   final static byte END_ASYM_ID = 5;
   final static byte END_SEQ_ID = 6;
   final static byte END_INS_CODE = 7;
-  final static byte STRUCT_CONF_PROPERTY_MAX = 8;
 
-  final static String[] structConfFields = { "_struct_conf.conf_type_id",
-
-  "_struct_conf.beg_auth_asym_id", "_struct_conf.beg_auth_seq_id",
+  final static String[] structConfFields = { 
+      "_struct_conf.conf_type_id",
+      "_struct_conf.beg_auth_asym_id", 
+      "_struct_conf.beg_auth_seq_id",
       "_struct_conf.pdbx_beg_PDB_ins_code",
+      "_struct_conf.end_auth_asym_id", 
+      "_struct_conf.end_auth_seq_id",
+      "_struct_conf.pdbx_end_PDB_ins_code", 
+  };
 
-      "_struct_conf.end_auth_asym_id", "_struct_conf.end_auth_seq_id",
-      "_struct_conf.pdbx_end_PDB_ins_code", };
-
-  final static byte[] structConfFieldMap = { CONF_TYPE_ID, BEG_ASYM_ID,
-      BEG_SEQ_ID, BEG_INS_CODE, END_ASYM_ID, END_SEQ_ID, END_INS_CODE, };
+  final static byte[] structConfFieldMap = { 
+      CONF_TYPE_ID, 
+      BEG_ASYM_ID,  BEG_SEQ_ID,  BEG_INS_CODE, 
+      END_ASYM_ID,  END_SEQ_ID,  END_INS_CODE, 
+  };
 
   void processStructConfLoopBlock() throws Exception {
-    int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced = new boolean[STRUCT_CONF_PROPERTY_MAX];
-    int fieldCount = parseLoopParameters(structConfFields, structConfFieldMap,
-        fieldTypes, propertyReferenced);
-    for (int i = STRUCT_CONF_PROPERTY_MAX; --i > 0;)
+    int fieldCount = parseLoopParameters(structConfFields, structConfFieldMap);
+    for (int i = propertyCount; --i > 0;)
       // only > 0, not >= 0
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
         skipLoop();
         return;
       }
-
-    String[] loopData = new String[fieldCount];
     while (tokenizer.getData(loopData, fieldCount)) {
       Structure structure = new Structure();
       for (int i = 0; i < fieldCount; ++i) {
@@ -693,35 +671,30 @@ class CifReader extends AtomSetCollectionReader {
   ////////////////////////////////////////////////////////////////
 
   // note that the conf_id is not used
-  final static byte STRUCT_SHEET_RANGE_PROPERTY_MAX = 8;
-
-  //auth not label!
 
   final static String[] structSheetRangeFields = {
       "_struct_sheet_range.beg_auth_asym_id",
       "_struct_sheet_range.beg_auth_seq_id",
       "_struct_sheet_range.pdbx_beg_PDB_ins_code",
-
       "_struct_sheet_range.end_auth_asym_id",
       "_struct_sheet_range.end_auth_seq_id",
-      "_struct_sheet_range.pdbx_end_PDB_ins_code", };
+      "_struct_sheet_range.pdbx_end_PDB_ins_code", 
+  };
 
-  final static byte[] structSheetRangeFieldMap = { BEG_ASYM_ID, BEG_SEQ_ID,
-      BEG_INS_CODE, END_ASYM_ID, END_SEQ_ID, END_INS_CODE, };
+  final static byte[] structSheetRangeFieldMap = { 
+      BEG_ASYM_ID,  BEG_SEQ_ID,  BEG_INS_CODE, 
+      END_ASYM_ID,  END_SEQ_ID,  END_INS_CODE, 
+  };
 
   void processStructSheetRangeLoopBlock() throws Exception {
-    int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced = new boolean[STRUCT_SHEET_RANGE_PROPERTY_MAX];
     int fieldCount = parseLoopParameters(structSheetRangeFields,
-        structSheetRangeFieldMap, fieldTypes, propertyReferenced);
-    for (int i = STRUCT_SHEET_RANGE_PROPERTY_MAX; --i > 1;)
+        structSheetRangeFieldMap);
+    for (int i = propertyCount; --i > 1;)
       if (!propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
         skipLoop();
         return;
       }
-
-    String[] loopData = new String[fieldCount];
     while (tokenizer.getData(loopData, fieldCount)) {
       Structure structure = new Structure();
       structure.structureType = "sheet";
@@ -761,20 +734,22 @@ class CifReader extends AtomSetCollectionReader {
 
   final static byte SYMOP_XYZ = 1;
   final static byte SYM_EQUIV_XYZ = 2;
-  final static byte SYMMETRY_OPERATIONS_PROPERTY_MAX = 3;
 
   final static String[] symmetryOperationsFields = {
-      "_space_group_symop_operation_xyz", "_symmetry_equiv_pos_as_xyz", };
+      "_space_group_symop_operation_xyz", 
+      "_symmetry_equiv_pos_as_xyz", 
+  };
 
-  final static byte[] symmetryOperationsFieldMap = { SYMOP_XYZ, SYM_EQUIV_XYZ, };
+  final static byte[] symmetryOperationsFieldMap = { 
+      SYMOP_XYZ, 
+      SYM_EQUIV_XYZ, 
+  };
 
   void processSymmetryOperationsLoopBlock() throws Exception {
-    int[] fieldTypes = new int[100]; // should be enough
-    boolean[] propertyReferenced = new boolean[SYMMETRY_OPERATIONS_PROPERTY_MAX];
     int fieldCount = parseLoopParameters(symmetryOperationsFields,
-        symmetryOperationsFieldMap, fieldTypes, propertyReferenced);
+        symmetryOperationsFieldMap);
     int nRefs = 0;
-    for (int i = SYMMETRY_OPERATIONS_PROPERTY_MAX; --i > 1;)
+    for (int i = propertyCount; --i > 1;)
       if (propertyReferenced[i])
         nRefs++;
     if (nRefs != 1) {
@@ -783,8 +758,6 @@ class CifReader extends AtomSetCollectionReader {
       skipLoop();
       return;
     }
-
-    String[] loopData = new String[fieldCount];
     while (tokenizer.getData(loopData, fieldCount)) {
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
@@ -801,48 +774,78 @@ class CifReader extends AtomSetCollectionReader {
     }
   }
   
-  final static String[] TransformFields = {
-    "x[1][1]", "x[1][2]", "x[1][3]", "r[1]",
-    "x[2][1]", "x[2][2]", "x[2][3]", "r[2]",
-    "x[3][1]", "x[3][2]", "x[3][3]", "r[3]"};
+  ////////////////////////////////////////////////////////////////
+  // token-based CIF loop-data reader
+  ////////////////////////////////////////////////////////////////
 
+  private String[] loopData;
+  private int[] fieldTypes = new int[100]; // should be enough
+  private boolean[] propertyReferenced = new boolean[50];
+  private int propertyCount;
+  
+  int parseLoopParameters(String[] fields, byte[] fieldMap) throws Exception {
+    int fieldCount = 0;
+    for (int i = 0; i <= fields.length; i++) {
+      fieldTypes[i] = 0;
+      propertyReferenced[i] = false;
+    }
+    propertyCount = fields.length + 1;
+    while (true) {
+      String str = tokenizer.peekToken();
+      if (str == null)
+        return 0;
+      if (str.charAt(0) != '_')
+        break;
+      tokenizer.getTokenPeeked();
+      for (int i = fields.length; --i >= 0;)
+        if (isMatch(str, fields[i])) {
+          int iproperty = fieldMap[i];
+          propertyReferenced[iproperty] = true;
+          fieldTypes[fieldCount] = iproperty;
+          break;
+        }
+      fieldCount++;
+    }
+    if (fieldCount > 0)
+      loopData = new String[fieldCount];
+    return fieldCount;
+  }
 
-  void processUnitCellTransformMatrix() throws Exception {
-    /*
-     * PDB:
-     
-     SCALE1       .024414  0.000000  -.000328        0.00000                 1CRN  67
-     SCALE2      0.000000   .053619  0.000000        0.00000                 1CRN  68
-     SCALE3      0.000000  0.000000   .044409        0.00000                 1CRN  69
+  void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
+    for (int i = fieldCount; --i >= 0;)
+      if (fieldTypes[i] == fieldIndex)
+        fieldTypes[i] = 0;
+  }
 
-     * CIF:
-
-     _atom_sites.fract_transf_matrix[1][1]   .024414 
-     _atom_sites.fract_transf_matrix[1][2]   0.000000 
-     _atom_sites.fract_transf_matrix[1][3]   -.000328 
-     _atom_sites.fract_transf_matrix[2][1]   0.000000 
-     _atom_sites.fract_transf_matrix[2][2]   .053619 
-     _atom_sites.fract_transf_matrix[2][3]   0.000000 
-     _atom_sites.fract_transf_matrix[3][1]   0.000000 
-     _atom_sites.fract_transf_matrix[3][2]   0.000000 
-     _atom_sites.fract_transf_matrix[3][3]   .044409 
-     _atom_sites.fract_transf_vector[1]      0.00000 
-     _atom_sites.fract_transf_vector[2]      0.00000 
-     _atom_sites.fract_transf_vector[3]      0.00000 
-
-     */
-    String str = tokenizer.getTokenPeeked();
-    float v = parseFloat(tokenizer.getNextToken());
-    if (Float.isNaN(v))
-      return;
-    for (int i = 0; i < TransformFields.length; i++) {
-      if (str.indexOf(TransformFields[i]) >= 0) {
-        setUnitCellItem(6 + i, v);
-        return;
-      }
+  private void skipLoop() throws Exception {
+    String str;
+    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
+      str  = tokenizer.getTokenPeeked();
+    while (tokenizer.getNextDataToken() != null) {
     }
   }
-  
+
+  final static boolean isMatch(String str1, String str2) {
+    int cch = str1.length();
+    if (str2.length() != cch)
+      return false;
+    for (int i = cch; --i >= 0;) {
+      char ch1 = str1.charAt(i);
+      char ch2 = str2.charAt(i);
+      if (ch1 == ch2)
+        continue;
+      if ((ch1 == '_' || ch1 == '.') && (ch2 == '_' || ch2 == '.'))
+        continue;
+      if (ch1 <= 'Z' && ch1 >= 'A')
+        ch1 += 'a' - 'A';
+      else if (ch2 <= 'Z' && ch2 >= 'A')
+        ch2 += 'a' - 'A';
+      if (ch1 != ch2)
+        return false;
+    }
+    return true;
+  }
+
   ////////////////////////////////////////////////////////////////
   // special tokenizer class
   ////////////////////////////////////////////////////////////////
@@ -915,20 +918,20 @@ class CifReader extends AtomSetCollectionReader {
     }
 
     String setStringNextLine(BufferedReader reader) throws Exception {
-      str = reader.readLine();
-      if (str == null)
+      setString(reader.readLine());
+      if (str == null || str.length() == 0 || str.charAt(0) != ';')
         return str;
-      if (str.length() > 0 && str.charAt(0) == ';') {
-        String newline = '\1' + str.substring(1);
-        str = "";
-        while (newline != null) {
-          if (newline.startsWith(";")) {
-            str += newline.substring(1) + '\1';
-            break;
-          }
-          str += newline + "\n";
-          newline = reader.readLine();
+      String newline;
+      ich = 1;
+      str = '\1' + (hasMoreTokens() ? str.substring(1) + '\n' : "");
+      while ((newline = reader.readLine()) != null) {
+        if (newline.startsWith(";")) {
+          if (str.length() > 1)
+            str = str.substring(0, str.length() - 1);
+          str += '\1' + newline.substring(1) + '\n';
+          break;
         }
+        str += newline + '\n';
       }
       setString(str);
       return str;

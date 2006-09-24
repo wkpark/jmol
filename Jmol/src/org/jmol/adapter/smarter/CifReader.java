@@ -232,7 +232,7 @@ class CifReader extends AtomSetCollectionReader {
   boolean getData() throws Exception {
     key = tokenizer.getTokenPeeked();
     data = tokenizer.getNextToken();
-    return (data.charAt(0) != '\0');
+    return (data.length() == 0 || data.charAt(0) != '\0');
   }
   
   private void processLoopBlock() throws Exception {

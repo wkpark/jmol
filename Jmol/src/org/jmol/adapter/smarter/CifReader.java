@@ -185,12 +185,12 @@ class CifReader extends AtomSetCollectionReader {
 
   void processCellParameter() throws Exception {
     String cellParameter = tokenizer.getTokenPeeked();
+    String value = tokenizer.getNextToken();
     for (int i = cellParamNames.length; --i >= 0;)
       if (isMatch(cellParameter, cellParamNames[i])) {
-        setUnitCellItem(i % 6, parseFloat(tokenizer.getNextToken()));
+        setUnitCellItem(i % 6, parseFloat(value));
         return;
       }
-    tokenizer.getNextToken();
   }
 
   final static String[] TransformFields = {

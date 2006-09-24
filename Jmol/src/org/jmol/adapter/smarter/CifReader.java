@@ -72,6 +72,12 @@ class CifReader extends AtomSetCollectionReader {
      * 
      * blah blah blah  loop_ _a _b _c 0 1 2 0 3 4 0 5 6 loop_...... 
      * 
+     * we don't actually check that any skpped loop has the proper number of 
+     * data points --- some multiple of the number of data keys -- but other
+     * than that, we are checking here for proper CIF syntax, and Jmol will
+     * report if it finds data where a key is supposed to be.
+     * 
+     *
      */
     line = "";
     boolean skipping = false;
@@ -102,6 +108,19 @@ class CifReader extends AtomSetCollectionReader {
         }
         continue;
       }
+      // global_ and stop_ are reserved STAR keywords
+      // see http://www.iucr.org/iucr-top/lists/comcifs-l/msg00252.html
+      // http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
+ 
+      // stop_ is not allowed, because nested loop_ is not allowed
+      // global_ is a reserved STAR word; not allowed in CIF
+      // ah, heck, let's just flag them as CIF ERRORS
+/*      
+      if (key.startsWith("global_") || key.startsWith("stop_")) {
+        tokenizer.getTokenPeeked();
+        continue;
+      }
+*/
       if (key.indexOf("_") != 0) {
         logger.log("CIF ERROR ? should be an underscore: " + key);
         tokenizer.getTokenPeeked();
@@ -136,6 +155,10 @@ class CifReader extends AtomSetCollectionReader {
   // processing methods
   ////////////////////////////////////////////////////////////////
 
+  /**
+   *  initialize a new atom set
+   *  
+   */
   void processDataParameter() {
     tokenizer.getTokenPeeked();
     thisDataSetName = (key.length() < 6 ? "" : key.substring(5));
@@ -152,18 +175,29 @@ class CifReader extends AtomSetCollectionReader {
     }
     logger.log(key);
   }
-
+  
+  /**
+   * reads some of the more interesting info 
+   * into specific atomSetAuxiliaryInfo elements
+   * 
+   * @param type    "name" "formula" etc.
+   * @throws Exception
+   */
   void processChemicalInfo(String type) throws Exception {
-    // someone should generalize this with an array of desired name info
     if (type.equals("name"))
-      chemicalName = data;
+      chemicalName = data = tokenizer.fullTrim(data);
     else if (type.equals("structuralFormula"))
-      thisStructuralFormula = data;
+      thisStructuralFormula = data = tokenizer.fullTrim(data);
     else if (type.equals("formula"))
-      thisFormula = data;
+      thisFormula = data = tokenizer.fullTrim(data);
     logger.log(type + " = " + data);
   }
 
+  /**
+   * done by AtomSetCollectionReader
+   * 
+   * @throws Exception
+   */
   void processSymmetrySpaceGroupName() throws Exception {
     setSpaceGroupName(data);
   }
@@ -174,6 +208,11 @@ class CifReader extends AtomSetCollectionReader {
       "_cell.length_c", "_cell.angle_alpha", "_cell.angle_beta",
       "_cell.angle_gamma" };
 
+  /**
+   * unit cell parameters -- two options, so we use MOD 6
+   * 
+   * @throws Exception
+   */
   void processCellParameter() throws Exception {
     for (int i = cellParamNames.length; --i >= 0;)
       if (isMatch(key, cellParamNames[i])) {
@@ -188,6 +227,12 @@ class CifReader extends AtomSetCollectionReader {
       "x[3][1]", "x[3][2]", "x[3][3]", "r[3]",
   };
 
+  /**
+   * 
+   * the PDB transformation matrix cartesian --> fractional
+   * 
+   * @throws Exception
+   */
   void processUnitCellTransformMatrix() throws Exception {
     /*
      * PDB:
@@ -229,12 +274,24 @@ class CifReader extends AtomSetCollectionReader {
 
   String key;
   String data;
+  
+  /**
+   * 
+   * @return TRUE if data, even if ''; FALSE if '.' or  '?'.
+   * 
+   * @throws Exception
+   */
   boolean getData() throws Exception {
     key = tokenizer.getTokenPeeked();
     data = tokenizer.getNextToken();
     return (data.length() == 0 || data.charAt(0) != '\0');
   }
   
+  /**
+   * processes loop_ blocks of interest or skips the data
+   * 
+   * @throws Exception
+   */
   private void processLoopBlock() throws Exception {
     tokenizer.getTokenPeeked(); //loop_
     String str = tokenizer.peekToken();
@@ -334,6 +391,7 @@ class CifReader extends AtomSetCollectionReader {
       "_atom_site_calc_flag", 
   };
 
+
   /* to: hansonr@stolaf.edu
    * from: Zukang Feng zfeng@rcsb.rutgers.edu
    * re: Two mmCIF issues
@@ -343,6 +401,12 @@ class CifReader extends AtomSetCollectionReader {
    * 
    */
 
+  /**
+   * reads atom data in any order
+   * 
+   * @return TRUE if successful; FALS if EOF encountered
+   * @throws Exception
+   */
   boolean processAtomSiteLoopBlock() throws Exception {
     int currentModelNO = -1;
     boolean isPDB = false;
@@ -350,17 +414,17 @@ class CifReader extends AtomSetCollectionReader {
     if (propertyReferenced[CARTN_X]) {
       setFractionalCoordinates(false);
       for (int i = FRACT_X; i < FRACT_Z; ++i)
-        disableField(fieldCount, fieldTypes, i);
+        disableField(i);
     } else if (propertyReferenced[FRACT_X]) {
       setFractionalCoordinates(true);
       for (int i = CARTN_X; i < CARTN_Z; ++i)
-        disableField(fieldCount, fieldTypes, i);
+        disableField(i);
     } else {
       // it is a different kind of _atom_site loop block
       skipLoop();
       return false;
     }
-    while (tokenizer.getData(loopData, fieldCount)) {
+    while (tokenizer.getData()) {
       Atom atom = new Atom();
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
@@ -481,6 +545,15 @@ class CifReader extends AtomSetCollectionReader {
       "_geom_bond_site_symmetry_2",
   };
 
+  /**
+   * 
+   * reads bond data -- N_ijk symmetry business is ignored,
+   * so we only indicate bonds within the unit cell to just the
+   * original set of atoms. "connect" script or "set forceAutoBond"
+   * will override these values.
+   * 
+   * @throws Exception
+   */
   void processGeomBondLoopBlock() throws Exception {
     parseLoopParameters(geomBondFields);
     for (int i = propertyCount; --i >= 0;)
@@ -490,7 +563,7 @@ class CifReader extends AtomSetCollectionReader {
         return;
       }
 
-    while (tokenizer.getData(loopData, fieldCount)) {
+    while (tokenizer.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
       String symmetry = null;
@@ -538,9 +611,15 @@ class CifReader extends AtomSetCollectionReader {
       "_pdbx_entity_nonpoly.comp_id", 
   };
 
+  /**
+   * 
+   * a HETERO name definition field. Maybe not all hetero?
+   * 
+   * @throws Exception
+   */
   void processNonpolyLoopBlock() throws Exception {
     parseLoopParameters(nonpolyFields);
-    while (tokenizer.getData(loopData, fieldCount)) {
+    while (tokenizer.getData()) {
       String groupName = null;
       String hetName = null;
       for (int i = 0; i < fieldCount; ++i) {
@@ -593,6 +672,11 @@ class CifReader extends AtomSetCollectionReader {
       "_struct_conf.pdbx_end_PDB_ins_code", 
   };
 
+  /**
+   * identifies ranges for HELIX and TURN
+   * 
+   * @throws Exception
+   */
   void processStructConfLoopBlock() throws Exception {
     parseLoopParameters(structConfFields);
     for (int i = propertyCount; --i >= 0;)
@@ -601,7 +685,7 @@ class CifReader extends AtomSetCollectionReader {
         skipLoop();
         return;
       }
-    while (tokenizer.getData(loopData, fieldCount)) {
+    while (tokenizer.getData()) {
       Structure structure = new Structure();
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
@@ -659,6 +743,12 @@ class CifReader extends AtomSetCollectionReader {
       "_struct_sheet_range.pdbx_end_PDB_ins_code", 
   };
 
+  /**
+   * 
+   * identifies sheet ranges
+   * 
+   * @throws Exception
+   */
   void processStructSheetRangeLoopBlock() throws Exception {
     parseLoopParameters(structSheetRangeFields);
     for (int i = propertyCount; --i >= 0;)
@@ -667,7 +757,7 @@ class CifReader extends AtomSetCollectionReader {
         skipLoop();
         return;
       }
-    while (tokenizer.getData(loopData, fieldCount)) {
+    while (tokenizer.getData()) {
       Structure structure = new Structure();
       structure.structureType = "sheet";
       for (int i = 0; i < fieldCount; ++i) {
@@ -714,6 +804,11 @@ class CifReader extends AtomSetCollectionReader {
       "_symmetry_equiv_pos_as_xyz", 
   };
 
+  /**
+   * retrieves symmetry operations
+   * 
+   * @throws Exception
+   */
   void processSymmetryOperationsLoopBlock() throws Exception {
     parseLoopParameters(symmetryOperationsFields);
     int nRefs = 0;
@@ -726,7 +821,7 @@ class CifReader extends AtomSetCollectionReader {
       skipLoop();
       return;
     }
-    while (tokenizer.getData(loopData, fieldCount)) {
+    while (tokenizer.getData()) {
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
         if (field.length() == 0)
@@ -748,12 +843,18 @@ class CifReader extends AtomSetCollectionReader {
   // token-based CIF loop-data reader
   ////////////////////////////////////////////////////////////////
 
-  private String[] loopData;
-  private int[] fieldTypes = new int[100]; // should be enough
-  private boolean[] propertyReferenced = new boolean[50];
-  private int propertyCount;
-  private int fieldCount;
+  String[] loopData;
+  int[] fieldTypes = new int[100]; // should be enough
+  boolean[] propertyReferenced = new boolean[50];
+  int propertyCount;
+  int fieldCount;
   
+  /**
+   * sets up arrays and variables for tokenizer.getData()
+   * 
+   * @param fields
+   * @throws Exception
+   */
   void parseLoopParameters(String[] fields) throws Exception {
     fieldCount = 0;
     for (int i = 0; i < fields.length; i++)
@@ -782,12 +883,24 @@ class CifReader extends AtomSetCollectionReader {
       loopData = new String[fieldCount];
   }
 
-  void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
+  /**
+   * 
+   * used for turning off fractional or nonfractional coord.
+   * 
+   * @param fieldIndex
+   */
+  void disableField(int fieldIndex) {
     for (int i = fieldCount; --i >= 0;)
       if (fieldTypes[i] == fieldIndex)
         fieldTypes[i] = NONE;
   }
 
+  /**
+   * 
+   * skips all associated loop data
+   * 
+   * @throws Exception
+   */
   private void skipLoop() throws Exception {
     String str;
     while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
@@ -796,6 +909,12 @@ class CifReader extends AtomSetCollectionReader {
     }
   }
 
+  /**
+   * 
+   * @param str1
+   * @param str2
+   * @return TRUE if a match
+   */
   final static boolean isMatch(String str1, String str2) {
     int cch = str1.length();
     if (str2.length() != cch)
@@ -874,32 +993,98 @@ class CifReader extends AtomSetCollectionReader {
    *</p>
    */
 
-  // not static! we are saving global variables here.
-  
   class RidiculousFileFormatTokenizer {
     String str;
     int ich;
     int cch;
     boolean wasUnQuoted;
 
+    /**
+     * sets a string to be parsed from the beginning
+     * 
+     * @param str
+     */
     void setString(String str) {
       this.str = str;
       cch = (str == null ? 0 : str.length());
       ich = 0;
     }
 
+    /*
+     * http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
+     * 
+     * 17. The special sequence of end-of-line followed 
+     * immediately by a semicolon in column one (denoted "<eol>;") 
+     * may also be used as a delimiter at the beginning and end 
+     * of a character string comprising a data value. The complete 
+     * bounded string is called a text field, and may be used to 
+     * convey multi-line values. The end-of-line associated with 
+     * the closing semicolon does not form part of the data value. 
+     * Within a multi-line text field, leading white space within 
+     * text lines must be retained as part of the data value; trailing 
+     * white space on a line may however be elided.
+     * 
+     * 18. A text field delimited by the <eol>; digraph may not 
+     * include a semicolon at the start of a line of text as 
+     * part of its value.
+     * 
+     * 20. For example, the data value foo may be expressed 
+     * equivalently as an unquoted string foo, as a quoted 
+     * string 'foo' or as a text field
+     *
+     *;foo
+     *;
+     *
+     * By contrast the value of the text field
+     *
+     *; foo
+     *  bar
+     *;
+     *
+     * is  foo<eol>  bar (where <eol> represents an end-of-line); 
+     * the embedded space characters are significant.
+     * 
+     * 
+     * I (BH) note, however, that we sometimes have:
+     * 
+     * _some_name
+     * ;
+     * the name here
+     * ;
+     * 
+     * so this should actually be
+     * 
+     * ;the name here
+     * ;
+     * 
+     * for this, we use fullTrim();
+     * 
+     */
+    
+    /**
+     * 
+     * sets the string for parsing to be from the next line 
+     * when the token buffer is empty, and if ';' is at the 
+     * beginning of that line, extends the string to include
+     * that full multiline string. Uses \1 to indicate that 
+     * this is a special quotation. 
+     * 
+     * @param reader
+     * @return  the next line or null if EOF
+     * @throws Exception
+     */
     String setStringNextLine(BufferedReader reader) throws Exception {
       setString(reader.readLine());
       if (str == null || str.length() == 0 || str.charAt(0) != ';')
         return str;
       String newline;
       ich = 1;
-      str = '\1' + (hasMoreTokens() ? str.substring(1) + '\n' : "");
+      str = '\1' + str.substring(1) + '\n';
       while ((newline = reader.readLine()) != null) {
         if (newline.startsWith(";")) {
-          if (str.length() > 1)
-            str = str.substring(0, str.length() - 1);
-          str += '\1' + newline.substring(1);
+          // remove trailing <eol> only, and attach rest of next line
+          str = str.substring(0, str.length() - 1)
+            + '\1' + newline.substring(1);
           break;
         }
         str += newline + '\n';
@@ -908,6 +1093,10 @@ class CifReader extends AtomSetCollectionReader {
       return str;
     }
 
+    /**
+     * @return TRUE if there are more tokens in the line buffer
+     * 
+     */
     boolean hasMoreTokens() {
       if (str == null)
         return false;
@@ -919,9 +1108,12 @@ class CifReader extends AtomSetCollectionReader {
 
     /**
      * assume that hasMoreTokens() has been called and that
-     * ich is pointing at a non-white character
+     * ich is pointing at a non-white character. Also sets
+     * boolean wasUnQuoted, because we need to know if we should 
+     * be checking for a control keyword. 'loop_' is different from just 
+     * loop_ without the quotes.
      *
-     * @return next token or "\0" if '.' or '?' 
+     * @return null if no more tokens, "\0" if '.' or '?', or next token 
      */
     String nextToken() {
       if (ich == cch)
@@ -956,6 +1148,10 @@ class CifReader extends AtomSetCollectionReader {
       return str.substring(ichStart + 1, ich - 2);
     }
 
+    /**
+     * 
+     * @return TRUE if the last token read was quoted
+     */
     boolean wasUnQuoted() {
       return wasUnQuoted;
     }
@@ -964,12 +1160,10 @@ class CifReader extends AtomSetCollectionReader {
      * general reader for loop data
      * fills loopData with fieldCount fields
      * 
-     * @param loopData
-     * @param fieldCount   if < 0, then ignore '_' in first field
-     * @return successful
+     * @return false if EOF
      * @throws Exception
      */
-    boolean getData(String[] loopData, int fieldCount) throws Exception {
+    boolean getData() throws Exception {
       // line is already present, and we leave with the next line to parse
       for (int i = 0; i < fieldCount; ++i) {
         String str = getNextDataToken();
@@ -980,17 +1174,32 @@ class CifReader extends AtomSetCollectionReader {
       return true;
     }
 
+    /**
+     * 
+     * first checks to see if the next token is an unquoted
+     * control code, and if so, returns null 
+     * 
+     * @return next data token or null
+     * @throws Exception
+     */
     String getNextDataToken() throws Exception { 
       String str = peekToken();
       if (str == null)
         return null;
       if (wasUnQuoted())
         if (str.charAt(0) == '_' || str.startsWith("loop_")
-            || str.startsWith("data_"))
+            || str.startsWith("data_")
+            || str.startsWith("stop_")
+            || str.startsWith("global_"))
           return null;
       return tokenizer.getTokenPeeked();
     }
     
+    /**
+     * 
+     * @return the next token of any kind, or null
+     * @throws Exception
+     */
     String getNextToken() throws Exception {
       while (!hasMoreTokens())
         if ((line = setStringNextLine(reader)) == null)
@@ -1001,6 +1210,13 @@ class CifReader extends AtomSetCollectionReader {
     String strPeeked;
     int ichPeeked;
     
+    /**
+     * just look at the next token. Saves it for retrieval 
+     * using getTokenPeeked()
+     * 
+     * @return next token or null if EOF
+     * @throws Exception
+     */
     String peekToken() throws Exception {
       while (!hasMoreTokens())
         if ((line = setStringNextLine(reader)) == null)
@@ -1012,10 +1228,31 @@ class CifReader extends AtomSetCollectionReader {
       return strPeeked;
     }
     
+    /**
+     * 
+     * @return the token last acquired; may be null
+     */
     String getTokenPeeked() {
       this.ich = ichPeeked;
       return strPeeked;
     }
+    
+    /**
+     * specially for names that might be multiline
+     * 
+     * @param str
+     * @return str without any leading/trailing white space, and no '\n'
+     */
+    String fullTrim(String str) {
+      int pt0 = 0;
+      int pt1 = str.length();
+      for (;pt0 < pt1; pt0++)
+        if ("\n\t ".indexOf(str.charAt(pt0)) < 0)
+          break;
+      for (;pt0 < pt1; pt1--)
+        if ("\n\t ".indexOf(str.charAt(pt1 - 1)) < 0)
+          break;
+      return str.substring(pt0, pt1);
+    }
   }
-
 }

@@ -74,12 +74,11 @@ class CifReader extends AtomSetCollectionReader {
      * 
      */
     line = "";
-    String str;
     boolean skipping = false;
-    while ((str = tokenizer.peekToken()) != null) {
-      if (str.indexOf("#jmolscript:") >= 0)
+    while ((key = tokenizer.peekToken()) != null) {
+      if (key.indexOf("#jmolscript:") >= 0)
         checkLineForScript(line);
-      if (str.startsWith("data_")) {
+      if (key.startsWith("data_")) {
         if (iHaveDesiredModel)
           break;
         skipping = (++modelNumber != desiredModelNumber && desiredModelNumber > 0);
@@ -95,7 +94,7 @@ class CifReader extends AtomSetCollectionReader {
         }
         continue;
       }
-      if (str.startsWith("loop_")) {
+      if (key.startsWith("loop_")) {
         if (skipping) {
           tokenizer.getTokenPeeked();
         } else {
@@ -103,34 +102,31 @@ class CifReader extends AtomSetCollectionReader {
         }
         continue;
       }
-      if (str.indexOf("_") != 0)
-        logger.log("CIF ERROR ? should be an underscore: " + str);
+      if (key.indexOf("_") != 0) {
+        logger.log("CIF ERROR ? should be an underscore: " + key);
+        tokenizer.getTokenPeeked();
+      } else if (!getData()) {
+        continue;
+      }
       if (!skipping) {
-        if (str.startsWith("_chemical_name")) {
+        if (key.startsWith("_chemical_name")) {
           processChemicalInfo("name");
-          continue;
-        } else if (str.startsWith("_chemical_formula_structural")) {
+        } else if (key.startsWith("_chemical_formula_structural")) {
           processChemicalInfo("structuralFormula");
-          continue;
-        } else if (str.startsWith("_chemical_formula_sum")) {
+        } else if (key.startsWith("_chemical_formula_sum")) {
           processChemicalInfo("formula");
-          continue;
-        } else if (str.startsWith("_cell_") || str.startsWith("_cell.")) {
+        } else if (key.startsWith("_cell_") || key.startsWith("_cell.")) {
           processCellParameter();
-          continue;
-        } else if (str.startsWith("_symmetry_space_group_name_H-M")
-            || str.startsWith("_symmetry.space_group_name_H-M")
-            || str.startsWith("_symmetry_space_group_name_Hall")
-            || str.startsWith("_symmetry.space_group_name_Hall")) {
+        } else if (key.startsWith("_symmetry_space_group_name_H-M")
+            || key.startsWith("_symmetry.space_group_name_H-M")
+            || key.startsWith("_symmetry_space_group_name_Hall")
+            || key.startsWith("_symmetry.space_group_name_Hall")) {
           processSymmetrySpaceGroupName();
-          continue;
-        } else if (str.startsWith("_atom_sites.fract_tran")
-            || str.startsWith("_atom_sites.fract_tran")) {
+        } else if (key.startsWith("_atom_sites.fract_tran")
+            || key.startsWith("_atom_sites.fract_tran")) {
           processUnitCellTransformMatrix();
-          continue;
         }
       }
-      skipLoop();
     }
     applySymmetry();
     return atomSetCollection;
@@ -141,8 +137,8 @@ class CifReader extends AtomSetCollectionReader {
   ////////////////////////////////////////////////////////////////
 
   void processDataParameter() {
-    String str = tokenizer.getTokenPeeked();
-    thisDataSetName = (str.length() < 6 ? "" : str.substring(5));
+    tokenizer.getTokenPeeked();
+    thisDataSetName = (key.length() < 6 ? "" : key.substring(5));
     if (thisDataSetName.length() > 0) {
       if (atomSetCollection.currentAtomSetIndex >= 0) {
         // note that there can be problems with multi-data mmCIF sets each with
@@ -154,27 +150,22 @@ class CifReader extends AtomSetCollectionReader {
         atomSetCollection.setCollectionName(thisDataSetName);
       }
     }
-    logger.log(str);
+    logger.log(key);
   }
 
   void processChemicalInfo(String type) throws Exception {
-    tokenizer.getTokenPeeked();
-    String info = tokenizer.getNextToken();
-    if (info.charAt(0) == '\0')
-      return;
     // someone should generalize this with an array of desired name info
     if (type.equals("name"))
-      chemicalName = info;
+      chemicalName = data;
     else if (type.equals("structuralFormula"))
-      thisStructuralFormula = info;
+      thisStructuralFormula = data;
     else if (type.equals("formula"))
-      thisFormula = info;
-    logger.log(type + " = " + info);
+      thisFormula = data;
+    logger.log(type + " = " + data);
   }
 
   void processSymmetrySpaceGroupName() throws Exception {
-    tokenizer.getTokenPeeked();
-    setSpaceGroupName(tokenizer.getNextToken());
+    setSpaceGroupName(data);
   }
 
   final static String[] cellParamNames = { "_cell_length_a", "_cell_length_b",
@@ -184,11 +175,9 @@ class CifReader extends AtomSetCollectionReader {
       "_cell.angle_gamma" };
 
   void processCellParameter() throws Exception {
-    String cellParameter = tokenizer.getTokenPeeked();
-    String value = tokenizer.getNextToken();
     for (int i = cellParamNames.length; --i >= 0;)
-      if (isMatch(cellParameter, cellParamNames[i])) {
-        setUnitCellItem(i % 6, parseFloat(value));
+      if (isMatch(key, cellParamNames[i])) {
+        setUnitCellItem(i % 6, parseFloat(data));
         return;
       }
   }
@@ -223,12 +212,11 @@ class CifReader extends AtomSetCollectionReader {
      _atom_sites.fract_transf_vector[3]      0.00000 
 
      */
-    String str = tokenizer.getTokenPeeked();
-    float v = parseFloat(tokenizer.getNextToken());
+    float v = parseFloat(data);
     if (Float.isNaN(v))
       return;
     for (int i = 0; i < TransformFields.length; i++) {
-      if (str.indexOf(TransformFields[i]) >= 0) {
+      if (key.indexOf(TransformFields[i]) >= 0) {
         setUnitCellItem(6 + i, v);
         return;
       }
@@ -239,6 +227,14 @@ class CifReader extends AtomSetCollectionReader {
   // loop_ processing
   ////////////////////////////////////////////////////////////////
 
+  String key;
+  String data;
+  boolean getData() throws Exception {
+    key = tokenizer.getTokenPeeked();
+    data = tokenizer.getNextToken();
+    return (data.charAt(0) != '\0');
+  }
+  
   private void processLoopBlock() throws Exception {
     tokenizer.getTokenPeeked(); //loop_
     String str = tokenizer.peekToken();
@@ -255,10 +251,12 @@ class CifReader extends AtomSetCollectionReader {
       return;
     }
     if (str.startsWith("_geom_bond")) {
-      if (!doApplySymmetry) //not reading bonds when symmetry is enabled yet
+      if (doApplySymmetry) //not reading bonds when symmetry is enabled yet
+        skipLoop();
+      else
         processGeomBondLoopBlock();
+      return;
     }
-    
     if (str.startsWith("_pdbx_entity_nonpoly")) {
       processNonpolyLoopBlock();
       return;
@@ -280,10 +278,11 @@ class CifReader extends AtomSetCollectionReader {
         || str.startsWith("space_group_symop")) {
       if (ignoreFileSymmetryOperators) {
         logger.log("ignoring file-based symmetry operators");
+        skipLoop();
       } else {
         processSymmetryOperationsLoopBlock();
-        return;
       }
+      return;
     }    
     skipLoop();
   }

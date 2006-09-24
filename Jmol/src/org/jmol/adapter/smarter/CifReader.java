@@ -144,6 +144,8 @@ class CifReader extends AtomSetCollectionReader {
         } else if (key.startsWith("_atom_sites.fract_tran")
             || key.startsWith("_atom_sites.fract_tran")) {
           processUnitCellTransformMatrix();
+        } else if (key.startsWith("_pdbx_entity_nonpoly")) {
+          processNonpolyData();
         }
       }
     }
@@ -598,7 +600,7 @@ class CifReader extends AtomSetCollectionReader {
   }
   
   ////////////////////////////////////////////////////////////////
-  // helix and turn structure data
+  // HETATM identity
   ////////////////////////////////////////////////////////////////
 
   final static byte NONPOLY_ENTITY_ID = 0;
@@ -610,10 +612,30 @@ class CifReader extends AtomSetCollectionReader {
       "_pdbx_entity_nonpoly.name", 
       "_pdbx_entity_nonpoly.comp_id", 
   };
+  
+  /**
+   * 
+   * optional nonloop format -- see 1jsa.cif
+   * 
+   */
+  String[] hetatmData;
+  void processNonpolyData() {
+    if (hetatmData == null)
+      hetatmData = new String[3];
+    for (int i = nonpolyFields.length; --i >= 0;)
+      if (isMatch(key, nonpolyFields[i])) {
+        hetatmData[i] = data;
+        break;
+      }
+    if (hetatmData[NONPOLY_NAME] == null || hetatmData[NONPOLY_COMP_ID] == null)
+      return;
+    addHetero(hetatmData[NONPOLY_COMP_ID], hetatmData[NONPOLY_NAME]);
+    hetatmData = null;
+  }
 
   /**
    * 
-   * a HETERO name definition field. Maybe not all hetero?
+   * a HETERO name definition field. Maybe not all hetero? nonpoly?
    * 
    * @throws Exception
    */
@@ -643,13 +665,17 @@ class CifReader extends AtomSetCollectionReader {
       }
       if (groupName == null || hetName == null)
         return;
-      if (htHetero == null)
-        htHetero = new Hashtable();
-      htHetero.put(groupName, hetName);
-      logger.log("hetero: "+groupName+" "+hetName);
+      addHetero(groupName, hetName);
     }
   }
 
+  void addHetero(String groupName, String hetName) {
+  if (htHetero == null)
+    htHetero = new Hashtable();
+  htHetero.put(groupName, hetName);
+  logger.log("hetero: "+groupName+" = "+hetName);
+  }
+  
   ////////////////////////////////////////////////////////////////
   // helix and turn structure data
   ////////////////////////////////////////////////////////////////

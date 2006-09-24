@@ -500,6 +500,10 @@ class ModelManager {
     return (frame == null) ? null : frame.getElementsPresentBitSet();
   }
 
+  public Hashtable getHeteroList() {
+    return (frame == null) ? null : frame.mmset.getHeteroList();
+  }
+
   BitSet getGroupsPresentBitSet() {
     return (frame == null) ? null : frame.getGroupsPresentBitSet();
   }

@@ -1183,6 +1183,7 @@ public class Viewer extends JmolViewer {
     transformManager.setFixedRotationCenter(new Point3f(0, 0, 0));
     setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");
+    System.gc();
   }
 
   public String getModelSetName() {
@@ -1541,6 +1542,10 @@ public class Viewer extends JmolViewer {
 
   public BitSet getElementsPresentBitSet() {
     return modelManager.getElementsPresentBitSet();
+  }
+  
+  public Hashtable getHeteroList() {
+    return modelManager.getHeteroList();
   }
 
   BitSet getVisibleSet() {

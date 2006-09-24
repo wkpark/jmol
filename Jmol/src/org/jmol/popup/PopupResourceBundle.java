@@ -93,7 +93,7 @@ class PopupResourceBundle {
     { "T", "select t" },
     { "U", "select u" },
 
-    { "heteroMenu", "allHetero Solvent Water - " +
+    { "heteroMenu", "heteroComputedMenu - allHetero Solvent Water - " +
                     "Ligand exceptWater nonWaterSolvent" },
     { "allHetero", "select hetero" },
     { "Solvent", "select solvent" },
@@ -700,7 +700,7 @@ class PopupResourceBundle {
     { "negativeCharge", GT._("Acidic Residues (-)") },
     { "noCharge", GT._("Uncharged Residues") },
     { "aaresiduesComputedMenu", GT._("By Residue Name") },
-
+    { "heteroComputedMenu", GT._("By HETATM") },
     { "nucleicMenu", GT._("Nucleic") },
     { "allNucleic", GT._("All") },
     { "DNA", GT._("DNA") },

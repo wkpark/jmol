@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
 import java.util.StringTokenizer;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 abstract public class JmolPopup {
   private final static boolean forceAwt = false;
@@ -42,6 +43,7 @@ abstract public class JmolPopup {
 
   Object elementsComputedMenu;
   Object aaresiduesComputedMenu;
+  Object heteroComputedMenu;
   Object aboutMenu;
   int aboutMenuBaseCount;
   Object consoleMenu;
@@ -70,6 +72,7 @@ abstract public class JmolPopup {
 
   public void updateComputedMenus() {
     updateElementsComputedMenu(viewer.getElementsPresentBitSet());
+    updateHeteroComputedMenu(viewer.getHeteroList());
     updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
     updateModelSetInfoMenu();
   }
@@ -99,7 +102,23 @@ abstract public class JmolPopup {
       }
     }
   }
-  
+
+  void updateHeteroComputedMenu(Hashtable htHetero) {
+    if (htHetero == null)
+      return;
+    removeAll(heteroComputedMenu);
+    Enumeration e = htHetero.keys();
+    while (e.hasMoreElements()) {
+        String heteroCode = (String) e.nextElement();
+        String heteroName = (String) htHetero.get(heteroCode);
+        if (heteroName.length() > 20)
+          heteroName = heteroName.substring(0,20) + "...";
+        String entryName = heteroCode + " - " + heteroName;
+        String script = "select " + heteroCode;
+        addMenuItem(heteroComputedMenu, entryName, script);
+    }
+  }
+
   void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
     if (aaresiduesComputedMenu == null || groupsPresentBitSet == null)
       return;
@@ -203,6 +222,8 @@ abstract public class JmolPopup {
           elementsComputedMenu = subMenu;
         else if ("aaresiduesComputedMenu".equals(item))
           aaresiduesComputedMenu = subMenu;
+        else if ("heteroComputedMenu".equals(item))
+          heteroComputedMenu = subMenu;
         else
           addMenuItems(item, subMenu, popupResourceBundle);
         if ("aboutMenu".equals(item))

@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.BitSet;
 import java.util.Vector;
+import java.util.Enumeration;
 
 import org.jmol.util.ArrayUtil;
 
@@ -83,6 +84,21 @@ final class Mmset {
     for (int i = modelCount; --i >= 0;)
       if (i == modelIndex || modelIndex < 0)
       models[i].setConformation(bsConformation);
+  }
+
+  Hashtable getHeteroList() {
+    Hashtable htFull = new Hashtable();
+    for (int i = modelCount; --i >= 0;) {
+      Hashtable ht = (Hashtable) getModelAuxiliaryInfo(i, "hetNames");
+      if (ht == null)
+        continue;
+      Enumeration e = ht.keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        htFull.put(key, ht.get(key));
+      }        
+    }
+    return htFull;
   }
 
   void freeze() {

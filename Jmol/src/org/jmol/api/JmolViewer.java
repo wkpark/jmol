@@ -168,6 +168,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public BitSet getGroupsPresentBitSet();
 
+  abstract public Hashtable getHeteroList();
+
   abstract public void setPerspectiveDepth(boolean perspectiveDepth);
 
   abstract public boolean getPerspectiveDepth();

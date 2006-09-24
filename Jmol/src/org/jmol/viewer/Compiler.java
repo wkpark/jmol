@@ -121,7 +121,7 @@ class Compiler {
       if (endOfLine || lookingAtEndOfStatement()) {
         ptrToken = 0;
         if (tokCommand != Token.nada) {
-          if (! compileCommand(ltoken))
+          if (!compileCommand(ltoken))
             return false;
           lltoken.addElement(atokenCommand);
           int iCommand = lltoken.size();
@@ -152,20 +152,33 @@ class Compiler {
           String str = getUnescapedStringLiteral();
           ltoken.addElement(new Token(Token.string, str));
           iHaveQuotedString = true;
-          if (tokCommand == Token.data) {
+          if (tokCommand == Token.data)
             getData(ltoken, str);
-            
+          continue;
+        }
+        if (tokCommand == Token.load) {
+          if (lookingAtLoadFormat()) {
+            //String strFormat = script.substring(ichToken, ichToken + cchToken);
+            //strFormat = strFormat.toLowerCase();
+            //ltoken.addElement(new Token(Token.identifier, strFormat));
+            continue;
           }
-          continue;
+          if (!iHaveQuotedString && lookingAtSpecialString()) {
+            int pt = script.indexOf(" ", ichToken);
+            int pt1 = script.indexOf("{", ichToken);
+            if (pt < ichToken && pt1 < ichToken)
+              pt = ichToken + cchToken;
+            else if (pt > 0 && (pt1 < 0 || pt < pt1))
+              cchToken = pt - ichToken;
+            else
+              cchToken = pt1 - ichToken;
+            String str = script.substring(ichToken, pt).trim();
+            ltoken.addElement(new Token(Token.string, str));
+            iHaveQuotedString = true;
+            continue;
+          }
         }
-        if (tokCommand == Token.load && lookingAtLoadFormat()) {
-          String strFormat = script.substring(ichToken, ichToken + cchToken);
-          strFormat = strFormat.toLowerCase();
-          ltoken.addElement(new Token(Token.identifier, strFormat));
-          continue;
-        }
-        if (((tokCommand & Token.specialstring) != 0
-            || (tokCommand & Token.specialstring2) != 0 && !iHaveQuotedString)
+        if (((tokCommand & Token.specialstring) != 0)
             && lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
           ltoken.addElement(new Token(Token.string, str));
@@ -175,15 +188,14 @@ class Compiler {
           float value =
           // can't use parseFloat with jvm 1.1
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
-            Float.valueOf(script.substring(ichToken, ichToken + cchToken))
-            .floatValue();
+          Float.valueOf(script.substring(ichToken, ichToken + cchToken))
+              .floatValue();
           ltoken.addElement(new Token(Token.decimal, new Float(value)));
           continue;
         }
         if (lookingAtSeqcode()) {
-          int seqNum =(script.charAt(ichToken) == '*' ? 0 : 
-            Integer.parseInt(script.substring(ichToken,
-                                              ichToken + cchToken - 2)));
+          int seqNum = (script.charAt(ichToken) == '*' ? 0 : Integer
+              .parseInt(script.substring(ichToken, ichToken + cchToken - 2)));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
           int seqcode = Group.getSeqcode(seqNum, insertionCode);
           ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
@@ -233,8 +245,7 @@ class Compiler {
               ltoken.removeAllElements();
               break;
             }
-            if ((tok & Token.setparam) == 0 &&
-                tok != Token.identifier)
+            if ((tok & Token.setparam) == 0 && tok != Token.identifier)
               return cannotSet(ident);
           }
           break;
@@ -245,30 +256,34 @@ class Compiler {
         case Token.define:
           if (ltoken.size() == 1) {
             // we are looking at the variable name
-            
-            if (!preDefining &&  tok != Token.identifier) { 
+
+            if (!preDefining && tok != Token.identifier) {
               if ((tok & Token.predefinedset) != Token.predefinedset) {
                 Logger.warn("WARNING: redefining " + ident + "; was " + token);
                 tok = token.tok = Token.identifier;
                 Token.map.put(ident, token);
-                Logger.warn("WARNING: not all commands may continue to be functional for the life of the applet!");
+                Logger
+                    .warn("WARNING: not all commands may continue to be functional for the life of the applet!");
               } else {
-                Logger.warn("WARNING: predefined term '" + ident + "' has been redefined by the user until the next file load.");
+                Logger
+                    .warn("WARNING: predefined term '"
+                        + ident
+                        + "' has been redefined by the user until the next file load.");
               }
             }
 
-            if (tok != Token.identifier &&
-                (tok & Token.predefinedset) != Token.predefinedset)
+            if (tok != Token.identifier
+                && (tok & Token.predefinedset) != Token.predefinedset)
               return invalidExpressionToken(ident);
           } else {
             // we are looking at the expression
-            if (tok != Token.identifier && tok != Token.set &&
-                (tok & (Token.expression | Token.predefinedset)) == 0)
+            if (tok != Token.identifier && tok != Token.set
+                && (tok & (Token.expression | Token.predefinedset)) == 0)
               return invalidExpressionToken(ident);
           }
           break;
         case Token.center:
-          if (tok != Token.identifier && tok != Token.dollarsign 
+          if (tok != Token.identifier && tok != Token.dollarsign
               && (tok & Token.expression) == 0)
             return invalidExpressionToken(ident);
           break;

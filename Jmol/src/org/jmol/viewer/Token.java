@@ -95,10 +95,6 @@ class Token {
   final static int setspecial        = (1 << 22);
   final static int objectid          = (1 << 23);
   
-  // allows initial quote to indicate some parameters may not be strings 
-  // Bob Hanson 2006/04
-  final static int specialstring2    = (1 << 24); // echo, label
-
   final static int colorparam        = (1 << 19);
 
 
@@ -125,7 +121,7 @@ class Token {
   final static int hbond        = command | 13 | setparam | bool;
   final static int help         = command | 14 | setparam | specialstring;
   final static int label        = command | 15 | specialstring;
-  final static int load         = command | 16 | specialstring2 | negnums;
+  final static int load         = command | 16 | negnums;
   final static int monitor      = command | 18 | setparam | showparam | bool | embeddedExpression;
   final static int pause        = command | 19 | misc;
   final static int print        = command | 20;

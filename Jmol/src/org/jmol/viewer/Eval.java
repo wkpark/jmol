@@ -35,61 +35,39 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
+import org.jmol.i18n.*;
 
 class Context {
   String filename;
-
   String script;
-
   short[] linenumbers;
-
   short[] lineIndices;
-
   Token[][] aatoken;
-
   int pc;
 }
 
 class Eval { //implements Runnable {
-
   Compiler compiler;
-
   final static int scriptLevelMax = 10;
-
   int scriptLevel;
-
   Context[] stack = new Context[scriptLevelMax];
-
   String filename;
-
   String script;
-
   short[] linenumbers;
-
   short[] lineIndices;
-
   Token[][] aatoken;
-
   int pc; // program counter
-
   long timeBeginExecution;
-
   long timeEndExecution;
-
   boolean error;
-
   String errorMessage;
-
   Token[] statement;
-
   int statementLength;
-
   Viewer viewer;
 
   //Thread myThread;
 
   boolean tQuiet;
-
   boolean logMessages = false;
 
   Eval(Viewer viewer) {
@@ -164,7 +142,7 @@ class Eval { //implements Runnable {
 
   void pushContext() throws ScriptException {
     if (scriptLevel == scriptLevelMax)
-      evalError("too many script levels");
+      evalError(GT._("too many script levels"));
     Context context = new Context();
     context.filename = filename;
     context.script = script;
@@ -722,6 +700,9 @@ class Eval { //implements Runnable {
         Point3f pt = (Point3f) token.value;
         strbufLog.append("cell={" + pt.x + " " + pt.y + " " + pt.z + "}");
         continue;
+      case Token.string:
+        strbufLog.append("\"" + token.value + "\"");
+        continue;
       case Token.opEQ:
       case Token.opNE:
       case Token.opGT:
@@ -1140,7 +1121,7 @@ class Eval { //implements Runnable {
         return viewer.getAtomsWithin(withinStr, bs);
       return viewer.getAtomsWithin("sequence", withinStr, bs);
     }
-    evalError("Unrecognized within parameter:" + withinSpec);
+    evalError(GT._("Unrecognized WITHIN parameter")+":" + withinSpec);
     return null; //can't get here
   }
 
@@ -1310,7 +1291,7 @@ class Eval { //implements Runnable {
         return new Point4f(1, 0, 0, 0);
       break;
     }
-    evalError("plane expected -- either {a b c d} or \"xy\" \"xz\" \"yz\"");
+    evalError(GT._("plane expected -- either {a b c d} or \"xy\" \"xz\" \"yz\""));
     //impossible return
     return null;
   }
@@ -1427,7 +1408,7 @@ class Eval { //implements Runnable {
         return Token.jmol;
       }
     }
-    evalError("a color or palette name (Jmol, Rasmol) is required");
+    evalError(GT._("a color or palette name (Jmol, Rasmol) is required"));
     //unattainable
     return 0;
   }
@@ -1459,7 +1440,7 @@ class Eval { //implements Runnable {
       }
     }
     if (coordinatesAreFractional && !allowFractional)
-      evalError("fractional coordinates are not allowed in this context");
+      evalError(GT._("fractional coordinates are not allowed in this context"));
     pt.x = coordinateValue(i);
     pt.y = coordinateValue(++pcLastExpressionInstruction);
     pt.z = coordinateValue(++pcLastExpressionInstruction);
@@ -1484,7 +1465,7 @@ class Eval { //implements Runnable {
       }
     }
     if (coordinatesAreFractional)
-      evalError("fractional coordinates are not allowed in this context");
+      evalError(GT._("fractional coordinates are not allowed in this context"));
     pt.x = coordinateValue(i);
     pt.y = coordinateValue(++pcLastExpressionInstruction);
     pt.z = coordinateValue(++pcLastExpressionInstruction);
@@ -1523,7 +1504,7 @@ class Eval { //implements Runnable {
 
   void help() throws ScriptException {
     if (!viewer.isApplet())
-      evalError("Currently the help command only works for the applet");
+      evalError(GT._("Currently the help command only works for the applet"));
     String what = (statementLength == 1 ? "" : stringParameter(1));
     viewer.getHelp(what);
   }
@@ -1615,7 +1596,7 @@ class Eval { //implements Runnable {
       viewer.clearConsole();
       break;
     default:
-      evalError("console ON|OFF");
+      evalError(GT._("console ON|OFF"));
     }
   }
 
@@ -2077,7 +2058,7 @@ class Eval { //implements Runnable {
 
   void echo() throws ScriptException {
     if(viewer.getFrame() == null)
-      evalError("ECHO must follow, not precede, model loading");
+      evalError(GT._("ECHO must follow, not precede, model loading"));
     String text = "";
     if (statementLength == 2 && statement[1].tok == Token.string)
       text = (String) statement[1].value;
@@ -2122,16 +2103,18 @@ class Eval { //implements Runnable {
     int i = 1;
     // ignore optional file format
     String filename = "fileset";
-    if (statementLength == 1)
-      filenameExpected();
-    if (statement[i].tok == Token.identifier)
-      ++i;
-    if (statement[i].tok != Token.string)
-      filenameExpected();
+    if (statementLength == 1) {
+      i = 0;
+    } else {
+      if (statement[1].tok == Token.identifier)
+        i = 2;
+      if (statement[i].tok != Token.string)
+        filenameExpected();
+    }
     // long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
       filename = (String) statement[i].value;
-      if (filename.length() == 0)
+      if (i == 0 || filename.length() == 0)
         filename = viewer.getFullPathName();
       viewer.openFile(filename, params);
     } else if (statement[i + 1].tok == Token.leftbrace
@@ -2158,7 +2141,7 @@ class Eval { //implements Runnable {
           } else {
             iGroup = viewer.getSpaceGroupIndexFromName(spacegroup);
             if (iGroup == -1)
-              evalError("space group " + spacegroup + " was not found.");
+              evalError(GT._("space group " + spacegroup + " was not found."));
           }
           p = new int[5];
           for (int j = 0; j < 4; j++)
@@ -2902,7 +2885,7 @@ class Eval { //implements Runnable {
 
   void conformation() throws ScriptException {
     if (viewer.getDisplayModelIndex() <= -2)
-      evalError("\"conformation\" not allowed with background model displayed");
+      evalError(GT._("\"conformation\" not allowed with background model displayed"));
     BitSet bsConformations;
     if (statementLength == 1) {
       bsConformations = viewer.setConformation();
@@ -3144,7 +3127,7 @@ class Eval { //implements Runnable {
 
   void calculate() throws ScriptException {
     if (statementLength == 1)
-      evalError("Calculate what? hbonds?  surface? structure?");
+      evalError(GT._("Calculate what? hbonds?  surface? structure?"));
     switch (statement[1].tok) {
     case Token.surface:
       dots(2, Dots.DOTS_MODE_CALCONLY);
@@ -3161,7 +3144,7 @@ class Eval { //implements Runnable {
   void dots(int ipt, int dotsMode) throws ScriptException {
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError("surfaces require that only one model be displayed");
+      evalError(GT._("surfaces require that only one model be displayed"));
     viewer.loadShape(JmolConstants.SHAPE_DOTS);
     viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "init",
         new Integer(dotsMode));
@@ -3372,7 +3355,7 @@ class Eval { //implements Runnable {
       viewer.rewindAnimation();
       return;
     default:
-      evalError("invalid frame control keyword: " + token.toString());
+      evalError(GT._("invalid frame control keyword") + ": " + token.toString());
     }
   }
 
@@ -3704,7 +3687,7 @@ class Eval { //implements Runnable {
 
   void setEcho() throws ScriptException {
     if(viewer.getFrame() == null)
-      evalError("SET ECHO must follow, not precede, model loading");
+      evalError(GT._("SET ECHO must follow, not precede, model loading"));
     String propertyName = "target";
     Object propertyValue = null;
     echoShapeActive = true;
@@ -4086,7 +4069,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError("save what? bonds? orientation? selection?");
+    evalError(GT._("save what? bonds? orientation? selection?"));
   }
   
   void restore() throws ScriptException {
@@ -4107,7 +4090,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError("restore what? bonds? orientation? selection?");
+    evalError(GT._("restore what? bonds? orientation? selection?"));
   }
   
   
@@ -4181,11 +4164,11 @@ class Eval { //implements Runnable {
       viewer.loadShape(JmolConstants.SHAPE_MO);
       int modelIndex = viewer.getDisplayModelIndex();
       if (modelIndex < 0)
-        evalError("MO isosurfaces require that only one model be displayed");
+        evalError(GT._("MO isosurfaces require that only one model be displayed"));
       Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
           "moData");
       if (moData == null)
-        evalError("no MO basis/coefficient data available for this frame");
+        evalError(GT._("no MO basis/coefficient data available for this frame"));
       viewer.setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
       showString((String) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
           "showMO", statementLength > 2 ? intParameter(2) : Integer.MAX_VALUE));
@@ -4228,16 +4211,16 @@ class Eval { //implements Runnable {
     // not implemented
     case Token.translation:
     case Token.rotation:
-      evalError("use \"show ORIENTATION\"");
+      evalError(GT._("use \"show ORIENTATION\""));
     case Token.chain:
     case Token.group:
     case Token.sequence:
     case Token.residue:
-      evalError("unrecognized SHOW parameter --  use \"getProperty CHAININFO \"");
+      evalError(GT._("unrecognized SHOW parameter --  use \"getProperty CHAININFO \""));
     case Token.selected:
-      evalError("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\"");
+      evalError(GT._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""));
     case Token.atom:
-      evalError("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)\"");
+      evalError(GT._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)\""));
     case Token.spin:
     case Token.list:
     case Token.mlp:
@@ -4248,7 +4231,7 @@ class Eval { //implements Runnable {
       notImplemented(1);
       break;
     default:
-      evalError("unrecognized SHOW parameter");
+      evalError(GT._("unrecognized SHOW parameter"));
     }
   }
 
@@ -4804,19 +4787,19 @@ class Eval { //implements Runnable {
   void setMoData(int shape, int moNumber, String title) throws ScriptException {
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError("MO isosurfaces require that only one model be displayed");
+      evalError(GT._("MO isosurfaces require that only one model be displayed"));
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
     if (moData == null)
-      evalError("no MO basis/coefficient data available for this frame");
+      evalError(GT._("no MO basis/coefficient data available for this frame"));
     Vector mos = (Vector) (moData.get("mos"));
     int nOrb = (mos == null ? 0 : mos.size());
     if (nOrb == 0)
-      evalError("no MO coefficient data available");
+      evalError(GT._("no MO coefficient data available"));
     if (nOrb == 1 && moNumber > 1)
-      evalError("Only one molecular orbital is available in this file");
+      evalError(GT._("Only one molecular orbital is available in this file"));
     if (moNumber < 1 || moNumber > nOrb)
-      evalError("An MO index from 1 to " + nOrb + " is required");
+      evalError(GT._("An MO index from 1 to {0} is required",  new Object[]{ new Integer(nOrb) }));
     lastMoNumber = moNumber;
     viewer.setShapeProperty(shape, "moData", moData);
     if (title != null)
@@ -4836,7 +4819,7 @@ class Eval { //implements Runnable {
     String str;
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError("the isosurface command requires that only one model be displayed");
+      evalError(GT._("the isosurface command requires that only one model be displayed"));
 
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -5128,7 +5111,7 @@ class Eval { //implements Runnable {
         } catch (Exception e) {
         }
         if (partialCharges == null)
-          evalError("No partial charges were read from the file; Jmol needs these to render the MEP data.");
+          evalError(GT._("No partial charges were read from the file; Jmol needs these to render the MEP data."));
         surfaceObjectSeen = true;
         propertyName = "mep";
         propertyValue = partialCharges;

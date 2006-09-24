@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-09-23 21:53+0200\n"
-"PO-Revision-Date: 2006-09-19 01:09+0100\n"
+"PO-Revision-Date: 2006-09-24 14:30+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -310,7 +310,7 @@ msgstr "Atomo"
 #: org/openscience/jmol/app/GuiMap.java:85
 #, java-format
 msgid "{0}% vanderWaals"
-msgstr "{0}% Van der Waals"
+msgstr "{0}% van der Waals"
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Bond"
@@ -775,12 +775,8 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
-"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -824,9 +820,7 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
-"calidad"
+msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -834,8 +828,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:245
 msgid "Should povray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:254
 #: org/openscience/jmol/app/PovrayDialog.java:256
@@ -1012,7 +1005,7 @@ msgstr "Tamaño predeterminado de átomos"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:295
 msgid "(percentage of vanDerWaals radius)"
-msgstr "(porcentaje del radio de Van der Waals)"
+msgstr "(porcentaje del radio de van der Waals)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:347
 msgid "Compute Bonds"
@@ -1078,78 +1071,54 @@ msgstr "Novedades en Jmol"
 
 #~ msgid "pick one more atom in order to spin the model around an axis"
 #~ msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
-
 #~ msgid "pick two atoms in order to spin the model around an axis"
 #~ msgstr "elige dos átomos para que el modelo gire en torno a un eje"
-
 #~ msgid "atoms selected"
 #~ msgstr "átomos seleccionados"
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol ejecutando guión..."
-
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Rasmol Scripts"
 #~ msgstr "Guiones de Rasmol"
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotar en modelo de alambres"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotar en modelo de alambres"
-
 #~ msgid "Colors"
 #~ msgstr "Colores"
-
 #~ msgid "Background"
 #~ msgstr "Fondo"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
-
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
-
 #~ msgid "Text"
 #~ msgstr "Texto"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
-
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
-
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
-
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
+

@@ -103,6 +103,8 @@ class CifReader extends AtomSetCollectionReader {
         }
         continue;
       }
+      if (str.indexOf("_") != 0)
+        logger.log("CIF ERROR ? should be an underscore: " + str);
       if (!skipping) {
         if (str.startsWith("_chemical_name")) {
           processChemicalInfo("name");
@@ -188,6 +190,7 @@ class CifReader extends AtomSetCollectionReader {
         setUnitCellItem(i % 6, parseFloat(tokenizer.getNextToken()));
         return;
       }
+    tokenizer.getNextToken();
   }
 
   final static String[] TransformFields = {
@@ -928,7 +931,7 @@ class CifReader extends AtomSetCollectionReader {
         if (newline.startsWith(";")) {
           if (str.length() > 1)
             str = str.substring(0, str.length() - 1);
-          str += '\1' + newline.substring(1) + '\n';
+          str += '\1' + newline.substring(1);
           break;
         }
         str += newline + '\n';

@@ -1186,7 +1186,7 @@ class PopupResourceBundle {
     { "bbcage20a", GT._("{0} \u00C5", new Object[]{ "0.20" })},
     { "bbcage25a", GT._("{0} \u00C5", new Object[]{ "0.25" })},
     { "bbcage50a", GT._("{0} \u00C5", new Object[]{ "0.50" })},
-    { "bbcage100a", GT._("1.0 \u00C5", new Object[]{ "1.0" })},
+    { "bbcage100a", GT._("{0} \u00C5", new Object[]{ "1.0" })},
 
     { "colorBbcageMenu", GT._("Color") },
     { "colorBbcageGray", GT._("Gray") },

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-24 15:23+0200\n"
+"POT-Creation-Date: 2006-09-24 16:41+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -368,6 +368,7 @@ msgstr "Sees"
 #: org/jmol/popup/PopupResourceBundle.java:1186
 #: org/jmol/popup/PopupResourceBundle.java:1187
 #: org/jmol/popup/PopupResourceBundle.java:1188
+#: org/jmol/popup/PopupResourceBundle.java:1189
 #: org/jmol/popup/PopupResourceBundle.java:1208
 #: org/jmol/popup/PopupResourceBundle.java:1209
 #: org/jmol/popup/PopupResourceBundle.java:1210
@@ -1107,10 +1108,6 @@ msgstr "Orchid"
 #: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Boundbox"
 msgstr "Boundbox"
-
-#: org/jmol/popup/PopupResourceBundle.java:1189
-msgid "1.0 Å"
-msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1193
 msgid "Salmon"

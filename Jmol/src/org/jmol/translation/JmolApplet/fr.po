@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-24 15:23+0200\n"
-"PO-Revision-Date: 2006-04-14 18:11+0100\n"
+"POT-Creation-Date: 2006-09-24 16:41+0200\n"
+"PO-Revision-Date: 2006-09-24 16:47+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: org/jmol/applet/Console.java:76
 msgid "press CTRL-ENTER for new line"
-msgstr ""
+msgstr "Appuyer sur Ctrl+Entrée pour une nouvelle ligne"
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -44,68 +44,68 @@ msgstr "Erreur de Fichier:"
 #: org/jmol/popup/JmolPopup.java:130
 #, java-format
 msgid "atoms: {0}"
-msgstr ""
+msgstr "{0} atomes"
 
 #: org/jmol/popup/JmolPopup.java:132
 #, java-format
 msgid "bonds: {0}"
-msgstr ""
+msgstr "{0} liens"
 
 #: org/jmol/popup/JmolPopup.java:135
 #, java-format
 msgid "groups: {0}"
-msgstr ""
+msgstr "{0} groupes"
 
 #: org/jmol/popup/JmolPopup.java:137
-#, fuzzy, java-format
+#, java-format
 msgid "chains: {0}"
-msgstr "Echelle {0}"
+msgstr "{0} chaînes"
 
 #: org/jmol/popup/JmolPopup.java:139
 #, java-format
 msgid "polymers: {0}"
-msgstr ""
+msgstr "{0} polymères"
 
 #: org/jmol/popup/JmolPopup.java:141
 #, java-format
 msgid "models: {0}"
-msgstr ""
+msgstr "{0} modèles"
 
 #: org/jmol/popup/JmolPopup.java:162
 msgid "Java memory usage"
-msgstr ""
+msgstr "Utilisation mémoire de Java"
 
 #: org/jmol/popup/JmolPopup.java:168
 #, java-format
 msgid "{0} MB total"
-msgstr ""
+msgstr "Total de {0} MB"
 
 #: org/jmol/popup/JmolPopup.java:169
 #, java-format
 msgid "{0} MB free"
-msgstr ""
+msgstr "{0} MB libres"
 
 #: org/jmol/popup/JmolPopup.java:171
 #, java-format
 msgid "{0} MB maximum"
-msgstr ""
+msgstr "Maximum de {0} MB"
 
 #: org/jmol/popup/JmolPopup.java:173
 msgid "unknown maximum"
-msgstr ""
+msgstr "Maximum inconnu"
 
 #: org/jmol/popup/JmolPopup.java:177
 msgid "1 processor"
-msgstr ""
+msgstr "1 processeur"
 
 #: org/jmol/popup/JmolPopup.java:178
 #, java-format
 msgid "{0} processors"
-msgstr ""
+msgstr "{0} processeurs"
 
 #: org/jmol/popup/JmolPopup.java:180
 msgid "unknown processor count"
-msgstr ""
+msgstr "Nombre de processeurs inconnu"
 
 #: org/jmol/popup/PopupResourceBundle.java:685
 msgid "No atoms loaded"
@@ -204,31 +204,28 @@ msgid "AU pairs"
 msgstr "Paires AU"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
-#, fuzzy
 msgid "Hetero"
 msgstr "Hétéro"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "All PDB \"HETATM\""
-msgstr ""
+msgstr "Tous les \"HETATM\" PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:721
-#, fuzzy
 msgid "All Solvent"
-msgstr "Solvant"
+msgstr "Tout Solvant"
 
 #: org/jmol/popup/PopupResourceBundle.java:722
-#, fuzzy
 msgid "All Water"
-msgstr "Eau"
+msgstr "Tout Eau"
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "Solvant non-aqueux"
 
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Nonaqueous HETATM"
-msgstr ""
+msgstr "HETATM non-aqueux"
 
 #: org/jmol/popup/PopupResourceBundle.java:725
 msgid "Ligand"
@@ -240,7 +237,7 @@ msgstr "Glucide"
 
 #: org/jmol/popup/PopupResourceBundle.java:727
 msgid "None of the above"
-msgstr ""
+msgstr "Aucun des précédents"
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 #: org/jmol/popup/PopupResourceBundle.java:1142
@@ -372,14 +369,15 @@ msgstr "On"
 #: org/jmol/popup/PopupResourceBundle.java:1186
 #: org/jmol/popup/PopupResourceBundle.java:1187
 #: org/jmol/popup/PopupResourceBundle.java:1188
+#: org/jmol/popup/PopupResourceBundle.java:1189
 #: org/jmol/popup/PopupResourceBundle.java:1208
 #: org/jmol/popup/PopupResourceBundle.java:1209
 #: org/jmol/popup/PopupResourceBundle.java:1210
 #: org/jmol/popup/PopupResourceBundle.java:1211
 #: org/jmol/popup/PopupResourceBundle.java:1212
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Å"
-msgstr "{0} px"
+msgstr "{0} Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:770
 #: org/jmol/popup/PopupResourceBundle.java:897
@@ -908,126 +906,112 @@ msgid "Reverse Play"
 msgstr "En arrière"
 
 #: org/jmol/popup/PopupResourceBundle.java:1111
-#, fuzzy
 msgid "Measurement"
 msgstr "Mesures"
 
 #: org/jmol/popup/PopupResourceBundle.java:1112
 msgid "Double-Click starts all measurements"
-msgstr ""
+msgstr "Double-clic commence toutes les mesures"
 
 #: org/jmol/popup/PopupResourceBundle.java:1113
 msgid "Click for distance measurement"
-msgstr ""
+msgstr "Cliquer pour une mesure de distance"
 
 #: org/jmol/popup/PopupResourceBundle.java:1114
 msgid "Click for angle measurement"
-msgstr ""
+msgstr "Cliquer pour une mesure d'angle"
 
 #: org/jmol/popup/PopupResourceBundle.java:1115
 msgid "Click for torsion (dihedral) measurement"
-msgstr ""
+msgstr "Cliquer pour une mesure de torsion (dihédrale)"
 
 #: org/jmol/popup/PopupResourceBundle.java:1116
-#, fuzzy
 msgid "Delete measurements"
-msgstr "Mesures"
+msgstr "Effacer les mesures"
 
 #: org/jmol/popup/PopupResourceBundle.java:1117
-#, fuzzy
 msgid "List measurements"
-msgstr "Mesures"
+msgstr "Donner la liste des mesures"
 
 #: org/jmol/popup/PopupResourceBundle.java:1118
 msgid "Distance units nanometers"
-msgstr ""
+msgstr "Unité pour les distances en nanomètres"
 
 #: org/jmol/popup/PopupResourceBundle.java:1119
 msgid "Distance units Angstroms"
-msgstr ""
+msgstr "Unité pour les distances en Angstroms"
 
 #: org/jmol/popup/PopupResourceBundle.java:1120
 msgid "Distance units picometers"
-msgstr ""
+msgstr "Unité pour les distances en picomètres"
 
 #: org/jmol/popup/PopupResourceBundle.java:1122
 msgid "Set picking"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1124
-#, fuzzy
 msgid "Center"
-msgstr "Centré"
+msgstr "Centre"
 
 #: org/jmol/popup/PopupResourceBundle.java:1126
-#, fuzzy
 msgid "Label"
-msgstr "Textes"
+msgstr "Texte"
 
 #: org/jmol/popup/PopupResourceBundle.java:1127
-#, fuzzy
 msgid "Select atom"
-msgstr "Sélectionner"
+msgstr "Sélectionner atome"
 
 #: org/jmol/popup/PopupResourceBundle.java:1128
-#, fuzzy
 msgid "Select chain"
-msgstr "Sélectionner"
+msgstr "Sélectionner chaîne"
 
 #: org/jmol/popup/PopupResourceBundle.java:1129
-#, fuzzy
 msgid "Select element"
-msgstr "Sélectionner"
+msgstr "Sélectionner élément"
 
 #: org/jmol/popup/PopupResourceBundle.java:1130
-#, fuzzy
 msgid "Select group"
-msgstr "Sélectionner"
+msgstr "Sélectionner groupe"
 
 #: org/jmol/popup/PopupResourceBundle.java:1131
-#, fuzzy
 msgid "Select molecule"
-msgstr "Choisir le mode de sélection"
+msgstr "Sélectionner molécule"
 
 #: org/jmol/popup/PopupResourceBundle.java:1132
-#, fuzzy
 msgid "Select site"
-msgstr "Sélectionner"
+msgstr "Sélectionner site"
 
 #: org/jmol/popup/PopupResourceBundle.java:1135
 msgid "Show"
-msgstr ""
+msgstr "Afficher"
 
 #: org/jmol/popup/PopupResourceBundle.java:1136
-#, fuzzy
 msgid "Console"
-msgstr "Console..."
+msgstr "Console"
 
 #: org/jmol/popup/PopupResourceBundle.java:1137
 msgid "File Contents"
-msgstr ""
+msgstr "Contenu du fichier"
 
 #: org/jmol/popup/PopupResourceBundle.java:1138
 msgid "File Header"
-msgstr ""
+msgstr "Entête du fichier"
 
 #: org/jmol/popup/PopupResourceBundle.java:1139
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "Données isosurface au format JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:1140
-#, fuzzy
 msgid "Measure"
-msgstr "Mesures"
+msgstr "Mesure"
 
 #: org/jmol/popup/PopupResourceBundle.java:1141
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "Données orbites moléculaires au format JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:1143
-#, fuzzy
 msgid "Orientation"
-msgstr "Traductions"
+msgstr "Orientation"
 
 #: org/jmol/popup/PopupResourceBundle.java:1144
 msgid "Space group"
@@ -1035,10 +1019,9 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1145
 msgid "Symmetry"
-msgstr ""
+msgstr "Symétrie"
 
 #: org/jmol/popup/PopupResourceBundle.java:1146
-#, fuzzy
 msgid "Unit cell"
 msgstr "Cellule unitaire"
 
@@ -1112,10 +1095,6 @@ msgstr "Orchidée"
 msgid "Boundbox"
 msgstr "Boîte englobante"
 
-#: org/jmol/popup/PopupResourceBundle.java:1189
-msgid "1.0 Å"
-msgstr ""
-
 #: org/jmol/popup/PopupResourceBundle.java:1193
 msgid "Salmon"
 msgstr "Saumon"
@@ -1149,9 +1128,8 @@ msgid "Options"
 msgstr "Options"
 
 #: org/jmol/popup/PopupResourceBundle.java:1221
-#, fuzzy
 msgid "Show Selected Atoms"
-msgstr "Afficher les halos de sélection"
+msgstr "Afficher les atomes sélectionnés"
 
 #: org/jmol/popup/PopupResourceBundle.java:1222
 msgid "Show Hydrogens"
@@ -1199,16 +1177,15 @@ msgstr "Traductions"
 
 #: org/jmol/viewer/PickingManager.java:167
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
+msgstr "Choisir un atome supplémentaire pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/PickingManager.java:168
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "Choisir deux atomes pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/PickingManager.java:229
-#, fuzzy
 msgid "atoms selected"
-msgstr "Aucun atome chargé"
+msgstr "atomes sélectionnés"
 
 #: org/jmol/viewer/StatusManager.java:177
 msgid "Jmol executing script ..."
@@ -1216,39 +1193,28 @@ msgstr "Jmol exécute un script ..."
 
 #~ msgid "Except Solvent"
 #~ msgstr "Excepté le solvant"
-
 #~ msgid "Except Water"
 #~ msgstr "Excepté l'eau"
-
 #~ msgid "Other"
 #~ msgstr "Autre"
-
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanomètres"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angströms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picomètres"
-
 #~ msgid "Open"
 #~ msgstr "Ouvrir"
-
 #~ msgid "Close"
 #~ msgstr "Fermer"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Visualisation Moléculaire http://www.jmol.org"
-
 #~ msgid "Jmol script completed"
 #~ msgstr "Script Jmol terminé"
-
 #~ msgid "Name hidden"
 #~ msgstr "Nom caché"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation fil de fer"
+

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-24 15:23+0200\n"
+"POT-Creation-Date: 2006-09-24 16:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -362,6 +362,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:1186
 #: org/jmol/popup/PopupResourceBundle.java:1187
 #: org/jmol/popup/PopupResourceBundle.java:1188
+#: org/jmol/popup/PopupResourceBundle.java:1189
 #: org/jmol/popup/PopupResourceBundle.java:1208
 #: org/jmol/popup/PopupResourceBundle.java:1209
 #: org/jmol/popup/PopupResourceBundle.java:1210
@@ -1085,10 +1086,6 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1174
 msgid "Boundbox"
-msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:1189
-msgid "1.0 Å"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:1193

@@ -538,6 +538,15 @@ final public class JmolConstants {
   }
   
   /**
+   * @param i index into altElementSymbols
+   * @return 2H
+   */
+  public final static String altIsotopeSymbolFromIndex(int i) {
+    int code = altElementNumbers[i]; 
+    return (code >> 8) + elementSymbolFromNumber(code % 256);
+  }
+  
+  /**
    * @param atomicAndIsotopeNumber (may be atomicNumber + isotopeNumber*256)
    * @return  index into altElementNumbers
    */
@@ -2235,6 +2244,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   ////////////////////////////////////////////////////////////////
 
   public static String[] predefinedSets = {
+    //
+    // main isotope
+    //
+    "@_1H _H & !(_2H,_3H)",
     //
     // protein related
     //

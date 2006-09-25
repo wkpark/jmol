@@ -300,7 +300,7 @@ class Eval { //implements Runnable {
           + JmolConstants.altElementNumberFromIndex(i);
       predefine(definition);
     }
-    for (int i = JmolConstants.elementNumberMax; --i > 1;) {
+    for (int i = JmolConstants.elementNumberMax; --i >= 1;) {
       String definition = "@_" + JmolConstants.elementSymbolFromNumber(i)+ " _e=" + i;
       predefine(definition);
     }
@@ -308,10 +308,14 @@ class Eval { //implements Runnable {
       String definition = "@_" + JmolConstants.altElementSymbolFromIndex(i) + " _e="
           + JmolConstants.altElementNumberFromIndex(i);
       predefine(definition);
+      definition = "@_" + JmolConstants.altIsotopeSymbolFromIndex(i) + " _e="
+      + JmolConstants.altElementNumberFromIndex(i);
+      predefine(definition);
     }
   }
 
   void predefine(String script) {
+    System.out.println(script);
     if (compiler.compile("#predefine", script, true)) {
       Token[][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
@@ -909,13 +913,14 @@ class Eval { //implements Runnable {
     try {
       seqNumber = Integer.parseInt(identifier.substring(alphaLen, seqcodeEnd));
     } catch (NumberFormatException nfe) {
-      evalError("identifier parser error #373");
+      undefinedVariable(identifier);
+//      evalError("identifier parser error #373");
     }
     char insertionCode = ' ';
     if (seqcodeEnd < len && identifier.charAt(seqcodeEnd) == '^') {
       ++seqcodeEnd;
       if (seqcodeEnd == len)
-        evalError("invalid insertion code");
+        evalError(GT._("invalid insertion code"));
       insertionCode = identifier.charAt(seqcodeEnd++);
     }
     int seqcode = Group.getSeqcode(seqNumber, insertionCode);
@@ -1883,17 +1888,26 @@ class Eval { //implements Runnable {
           return;
         }
       }
-      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-        if (str.equalsIgnoreCase("_"+JmolConstants.elementSymbolFromNumber(i))) {
-          viewer.setElementArgb(i, argb);
-          return;
+      if (str.charAt(0) == '_') {
+        for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
+          if (str.equalsIgnoreCase("_"
+              + JmolConstants.elementSymbolFromNumber(i))) {
+            viewer.setElementArgb(i, argb);
+            return;
+          }
         }
-      }
-      for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
-        if (str.equalsIgnoreCase("_"+JmolConstants.altElementSymbolFromIndex(i))) {
-          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
-              argb);
-          return;
+        for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
+          if (str.equalsIgnoreCase("_"
+              + JmolConstants.altElementSymbolFromIndex(i))) {
+            viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+                argb);
+            return;
+          }
+          if (str.equalsIgnoreCase("_" + JmolConstants.altIsotopeSymbolFromIndex(i))) {
+            viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+                argb);
+            return;
+          }
         }
       }
       argb = getArgbOrNoneParam(2);

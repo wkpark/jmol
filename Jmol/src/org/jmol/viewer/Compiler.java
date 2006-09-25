@@ -164,15 +164,12 @@ class Compiler {
             continue;
           }
           if (!iHaveQuotedString && lookingAtSpecialString()) {
-            int pt = script.indexOf(" ", ichToken);
-            int pt1 = script.indexOf("{", ichToken);
-            if (pt < ichToken && pt1 < ichToken)
-              pt = ichToken + cchToken;
-            else if (pt > 0 && (pt1 < 0 || pt < pt1))
-              cchToken = pt - ichToken;
-            else
-              cchToken = pt1 - ichToken;
-            String str = script.substring(ichToken, pt).trim();
+            String str = script.substring(ichToken, ichToken + cchToken).trim();
+            int pt = str.indexOf(" ");
+            if (pt > 0) {
+              cchToken = pt;
+              str = str.substring(0, pt);
+            }
             ltoken.addElement(new Token(Token.string, str));
             iHaveQuotedString = true;
             continue;

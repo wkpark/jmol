@@ -387,6 +387,12 @@ public class Jmol extends JPanel {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
     
+    OptionBuilder.withArgName(GT._("property=value"));
+    OptionBuilder.hasArg();
+    OptionBuilder.withValueSeparator();
+    OptionBuilder.withDescription(GT._("supported options are given below"));
+    options.addOption(OptionBuilder.create("D"));
+    
     OptionBuilder.withLongOpt("geometry");
     OptionBuilder.withDescription(GT._("window size 500x500"));
     OptionBuilder.withValueSeparator();
@@ -412,6 +418,17 @@ public class Jmol extends JPanel {
     if (line.hasOption("h")) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("Jmol", options);
+        
+        // now report on the -D options
+        System.out.println();
+        System.out.println(GT._("The -D options are as follows (defaults in parathesis):"));
+        System.out.println("  cdk.debugging=[true|false] (false)");
+        System.out.println("  cdk.debug.stdout=[true|false] (false)");
+        System.out.println("  display.speed=[fps|ms] (ms)");
+        System.out.println("  JmolConsole=[true|false] (true)");
+        System.out.println("  plugin.dir (unset)");
+        System.out.println("  user.language=[DE|EN|ES|FR|NL|PL] (EN)");
+
         System.exit(0);
     }
 

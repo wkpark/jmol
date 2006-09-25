@@ -292,24 +292,26 @@ class Eval { //implements Runnable {
     // Now, define all the elements as predefined sets
     // hydrogen is handled specially, so don't define it
     for (int i = JmolConstants.elementNumberMax; --i > 1;) {
-      String definition = "@" + JmolConstants.elementNameFromNumber(i)+ " _e=" + i;
+      String definition = "@" + JmolConstants.elementNameFromNumber(i) + " _e="
+          + i;
       predefine(definition);
     }
     for (int i = JmolConstants.altElementMax; --i >= 0;) {
-      String definition = "@" + JmolConstants.altElementNameFromIndex(i) + " _e="
-          + JmolConstants.altElementNumberFromIndex(i);
+      String definition = "@" + JmolConstants.altElementNameFromIndex(i)
+          + " _e=" + JmolConstants.altElementNumberFromIndex(i);
       predefine(definition);
     }
     for (int i = JmolConstants.elementNumberMax; --i >= 1;) {
-      String definition = "@_" + JmolConstants.elementSymbolFromNumber(i)+ " _e=" + i;
+      String definition = "@_" + JmolConstants.elementSymbolFromNumber(i) + " "
+          + JmolConstants.elementNameFromNumber(i);
       predefine(definition);
     }
     for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
-      String definition = "@_" + JmolConstants.altElementSymbolFromIndex(i) + " _e="
-          + JmolConstants.altElementNumberFromIndex(i);
+      String definition = "@_" + JmolConstants.altElementSymbolFromIndex(i)
+          + " _e=" + JmolConstants.altElementNumberFromIndex(i);
       predefine(definition);
       definition = "@_" + JmolConstants.altIsotopeSymbolFromIndex(i) + " _e="
-      + JmolConstants.altElementNumberFromIndex(i);
+          + JmolConstants.altElementNumberFromIndex(i);
       predefine(definition);
     }
   }

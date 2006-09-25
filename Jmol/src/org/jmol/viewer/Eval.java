@@ -315,7 +315,6 @@ class Eval { //implements Runnable {
   }
 
   void predefine(String script) {
-    System.out.println(script);
     if (compiler.compile("#predefine", script, true)) {
       Token[][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {

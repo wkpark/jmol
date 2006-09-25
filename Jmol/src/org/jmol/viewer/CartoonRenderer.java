@@ -125,13 +125,13 @@ class CartoonRenderer extends MpsRenderer {
     ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
         isNucleicPolymer ? 0f : -0.5f / 1000);
     if (!isNucleicPolymer)
-      calcRopeMidPoints((AminoPolymer) polymer, newRockets);
+      calcRopeMidPoints(polymer, newRockets);
     getScreens();
     clearPending();
     return true;
   }
 
-  void calcRopeMidPoints(AminoPolymer aminopolymer, boolean isNewStyle) {
+  void calcRopeMidPoints(Polymer polymer, boolean isNewStyle) {
     int midPointCount = monomerCount + 1;
     cordMidPoints = viewer.allocTempPoints(midPointCount);
     ProteinStructure proteinstructurePrev = null;
@@ -140,18 +140,18 @@ class CartoonRenderer extends MpsRenderer {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
       if (isNewStyle) {
-        aminopolymer.getLeadMidPoint(i, point);        
+        polymer.getLeadMidPoint(i, point);        
       } else if (isSpecials[i]) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
-        point
-            .set(i - 1 != proteinstructure.getMonomerIndex() ? proteinstructure
-                .getAxisStartPoint() : proteinstructure.getAxisEndPoint());
+        point.set(i - 1 != proteinstructure.getMonomerIndex() ?
+            proteinstructure.getAxisStartPoint() :
+            proteinstructure.getAxisEndPoint());
         proteinstructurePrev = proteinstructure;
       } else {
         if (proteinstructurePrev != null)
           point.set(proteinstructurePrev.getAxisEndPoint());
         else
-          aminopolymer.getLeadMidPoint(i, point);
+          polymer.getLeadMidPoint(i, point);
         proteinstructurePrev = null;
       }
     }
@@ -159,7 +159,7 @@ class CartoonRenderer extends MpsRenderer {
     if (proteinstructurePrev != null)
       point.set(proteinstructurePrev.getAxisEndPoint());
     else
-      aminopolymer.getLeadMidPoint(monomerCount, point);
+      polymer.getLeadMidPoint(monomerCount, point);
   }
 
   void getScreens() {

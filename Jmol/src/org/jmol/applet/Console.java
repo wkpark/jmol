@@ -37,7 +37,7 @@ class Console implements ActionListener, WindowListener {
   final JTextArea input = new ControlEnterTextArea();
   final JTextPane output = new JTextPane();
   final Document outputDocument = output.getDocument();
-  final JFrame jf = new JFrame("Jmol Script Console");
+  final JFrame jf = new JFrame(GT._("Jmol Script Console"));
 
   final JButton runButton = new JButton("Execute");
   final JButton clearButton = new JButton("Clear");

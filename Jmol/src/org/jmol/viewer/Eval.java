@@ -2140,7 +2140,8 @@ class Eval { //implements Runnable {
           } else {
             iGroup = viewer.getSpaceGroupIndexFromName(spacegroup);
             if (iGroup == -1)
-              evalError(GT._("space group " + spacegroup + " was not found."));
+              evalError(GT._("space group {0} was not found.",
+                             new Object[] { spacegroup }));
           }
           p = new int[5];
           for (int j = 0; j < 4; j++)

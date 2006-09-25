@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-25 06:12+0200\n"
+"POT-Creation-Date: 2006-09-25 06:25+0200\n"
 "PO-Revision-Date: 2005-12-20 07:44-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -1231,89 +1231,86 @@ msgid "ECHO must follow, not precede, model loading"
 msgstr ""
 
 #: org/jmol/viewer/Eval.java:2143
-msgid "space group "
+#, java-format
+msgid "space group {0} was not found."
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:2143
-msgid " was not found."
-msgstr ""
-
-#: org/jmol/viewer/Eval.java:2887
+#: org/jmol/viewer/Eval.java:2888
 msgid "\"conformation\" not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3129
+#: org/jmol/viewer/Eval.java:3130
 msgid "Calculate what? hbonds?  surface? structure?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3146
+#: org/jmol/viewer/Eval.java:3147
 msgid "surfaces require that only one model be displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3357
+#: org/jmol/viewer/Eval.java:3358
 msgid "invalid frame control keyword"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3689
+#: org/jmol/viewer/Eval.java:3690
 msgid "SET ECHO must follow, not precede, model loading"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4071
+#: org/jmol/viewer/Eval.java:4072
 msgid "save what? bonds? orientation? selection?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4092
+#: org/jmol/viewer/Eval.java:4093
 msgid "restore what? bonds? orientation? selection?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4166 org/jmol/viewer/Eval.java:4789
+#: org/jmol/viewer/Eval.java:4167 org/jmol/viewer/Eval.java:4790
 msgid "MO isosurfaces require that only one model be displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4170 org/jmol/viewer/Eval.java:4793
+#: org/jmol/viewer/Eval.java:4171 org/jmol/viewer/Eval.java:4794
 msgid "no MO basis/coefficient data available for this frame"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4213
+#: org/jmol/viewer/Eval.java:4214
 msgid "use \"show ORIENTATION\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4218
+#: org/jmol/viewer/Eval.java:4219
 msgid "unrecognized SHOW parameter --  use \"getProperty CHAININFO \""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4220
+#: org/jmol/viewer/Eval.java:4221
 msgid "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4222
+#: org/jmol/viewer/Eval.java:4223
 msgid ""
 "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)"
 "\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4233
+#: org/jmol/viewer/Eval.java:4234
 msgid "unrecognized SHOW parameter"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4797
+#: org/jmol/viewer/Eval.java:4798
 msgid "no MO coefficient data available"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4799
+#: org/jmol/viewer/Eval.java:4800
 msgid "Only one molecular orbital is available in this file"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4801
+#: org/jmol/viewer/Eval.java:4802
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4821
+#: org/jmol/viewer/Eval.java:4822
 msgid "the isosurface command requires that only one model be displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:5113
+#: org/jmol/viewer/Eval.java:5114
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."

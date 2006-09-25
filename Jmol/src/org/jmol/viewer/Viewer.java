@@ -2027,7 +2027,7 @@ public class Viewer extends JmolViewer {
   public String script(String strScript) {
     return evalString(strScript);
   }
-
+  
   public String evalString(String strScript) {
     if (checkHalt(strScript))
       return "script execution halted";
@@ -2094,6 +2094,7 @@ public class Viewer extends JmolViewer {
       return "script execution halted";
     if (strScript == null)
       return null;
+    
 
     //typically request: "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
     //set up first with applet.jmolGetProperty("jmolStatus",statusList)

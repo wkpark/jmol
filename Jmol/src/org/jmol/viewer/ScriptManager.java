@@ -115,11 +115,11 @@ class ScriptManager {
     boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
     Vector tokenInfo = (Vector) scriptItem.get(5);
     Logger.debug(scriptQueue.size() + " scripts; running: " + script);
+    scriptQueue.remove(0);
     Object returnInfo = runScript(returnType, script, statusList, isScriptFile,
         isQuiet, tokenInfo);
     if (scriptQueue.size() == 0) // might have been cleared with an exit
       return null;
-    scriptQueue.remove(0);
     return returnInfo;
   }
 
@@ -132,19 +132,27 @@ class ScriptManager {
   }
 
   private void startScriptQueue() {
-    if (queueThread != null)
+    if (scriptQueueRunning)
       return;
     queueThread = new Thread(new ScriptQueueRunnable());
     queueThread.start();
   }
   
+  boolean scriptQueueRunning;
   class ScriptQueueRunnable implements Runnable {
     public void run() {
-      Logger.debug("script thread running");
+      scriptQueueRunning = true;
       while (scriptQueue.size() != 0) {
         runNextScript();
       }
+      scriptQueueRunning = false;
       queueThread = null;
-    }    
+    }
+    
+    public void stop() {
+      scriptQueueRunning = false;
+    }
   }
+  
+  
 }

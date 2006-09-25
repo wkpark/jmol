@@ -77,14 +77,14 @@ class Eval { //implements Runnable {
   }
 
   void haltExecution() {
-    interruptExecution = true;
+    interruptExecution = Boolean.TRUE;
   }
 
   boolean isScriptExecuting() {
-    return isExecuting && !interruptExecution;
+    return isExecuting && !interruptExecution.booleanValue();
   }
 
-  boolean interruptExecution = false;
+  static Boolean interruptExecution = Boolean.FALSE;
   boolean isExecuting = false;
 
   Thread currentThread = null;
@@ -92,7 +92,7 @@ class Eval { //implements Runnable {
   public void runEval() { // only one reference now -- in Viewer
     refresh();
     viewer.pushHoldRepaint();
-    interruptExecution = false;
+    interruptExecution = Boolean.FALSE;
     isExecuting = true;
     currentThread = Thread.currentThread();
 
@@ -107,14 +107,12 @@ class Eval { //implements Runnable {
     timeEndExecution = System.currentTimeMillis();
 
     
-    if (errorMessage == null && interruptExecution)
+    if (errorMessage == null && interruptExecution.booleanValue())
       errorMessage = "execution interrupted";
     //    if (errorMessage != null)
     //      viewer.scriptStatus("script ERROR: " + errorMessage);
     else if (!tQuiet)
-      viewer.scriptStatus("Script completed");
-    
-    interruptExecution = false;
+      viewer.scriptStatus("Script completed");    
     isExecuting = false;
     viewer.setTainted(true);
     viewer.popHoldRepaint();
@@ -360,7 +358,7 @@ class Eval { //implements Runnable {
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
       viewer.scriptStatus(toString());
     }
-    while (!interruptExecution && pc < aatoken.length) {
+    while (!interruptExecution.booleanValue() && pc < aatoken.length) {
       statement = aatoken[pc++];
       statementLength = statement.length;
       if (logMessages)
@@ -393,9 +391,10 @@ class Eval { //implements Runnable {
         message();
         break;
       case Token.exit: // flush the queue and...
-        viewer.clearScriptQueue();
+        if (pc > 1)
+          viewer.clearScriptQueue();
       case Token.quit: // quit this only if it isn't the first command
-        interruptExecution = (pc > 1 || ! viewer.scriptManager.useQueue);
+        interruptExecution = ((pc > 1 || ! viewer.scriptManager.useQueue) ? Boolean.TRUE : Boolean.FALSE);
         break;
       case Token.label:
         label();
@@ -2650,7 +2649,7 @@ class Eval { //implements Runnable {
     millis -= seconds * 1000;
     if (millis <= 0)
       millis = 1;
-    while (seconds >= 0 && millis > 0 && !interruptExecution && currentThread == Thread.currentThread()) {
+    while (seconds >= 0 && millis > 0 && !interruptExecution.booleanValue() && currentThread == Thread.currentThread()) {
       viewer.popHoldRepaint();
       try {
         Thread.sleep((seconds--) > 0 ? 1000 : millis);

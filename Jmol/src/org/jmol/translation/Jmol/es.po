@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-23 21:53+0200\n"
+"POT-Creation-Date: 2006-09-25 23:40+0200\n"
 "PO-Revision-Date: 2006-09-24 14:30+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -207,7 +207,7 @@ msgid "&Print..."
 msgstr "&Imprimir..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#: org/openscience/jmol/app/ScriptWindow.java:100
+#: org/openscience/jmol/app/ScriptWindow.java:105
 msgid "Close"
 msgstr "Cerrar"
 
@@ -552,7 +552,7 @@ msgid "What's New"
 msgstr "Novedades"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/Jmol.java:468
+#: org/openscience/jmol/app/Jmol.java:530
 msgid "Jmol Java Console"
 msgstr "Consola Java de Jmol"
 
@@ -629,120 +629,137 @@ msgstr "Calidad de JPEG"
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Error al iniciar Jmol: la propiedad 'user.home' no está definida."
 
-#: org/openscience/jmol/app/Jmol.java:156
+#: org/openscience/jmol/app/Jmol.java:161
 msgid "Initializing 3D display..."
 msgstr "Inicializando representación 3D..."
 
-#: org/openscience/jmol/app/Jmol.java:179
+#: org/openscience/jmol/app/Jmol.java:186
 msgid "Initializing Preferences..."
 msgstr "Inicializando preferencias..."
 
-#: org/openscience/jmol/app/Jmol.java:181
+#: org/openscience/jmol/app/Jmol.java:188
 msgid "Initializing Recent Files..."
 msgstr "Inicializando archivos recientes..."
 
-#: org/openscience/jmol/app/Jmol.java:183
+#: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing Script Window..."
 msgstr "Inicializando ventana de guiones..."
 
-#: org/openscience/jmol/app/Jmol.java:185
+#: org/openscience/jmol/app/Jmol.java:192
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Inicializando ventana selector grupos de átomos..."
 
-#: org/openscience/jmol/app/Jmol.java:192
+#: org/openscience/jmol/app/Jmol.java:201
 msgid "Initializing Measurements..."
 msgstr "Inicializando mediciones..."
 
-#: org/openscience/jmol/app/Jmol.java:213
+#: org/openscience/jmol/app/Jmol.java:222
 msgid "Building Command Hooks..."
 msgstr "Construyendo \"hooks\" de instrucciones..."
 
-#: org/openscience/jmol/app/Jmol.java:222
+#: org/openscience/jmol/app/Jmol.java:231
 msgid "Building Menubar..."
 msgstr "Construyendo la barra de menú..."
 
-#: org/openscience/jmol/app/Jmol.java:238
+#: org/openscience/jmol/app/Jmol.java:247
 msgid "Starting display..."
 msgstr "Iniciando ventana..."
 
-#: org/openscience/jmol/app/Jmol.java:241
+#: org/openscience/jmol/app/Jmol.java:250
 msgid "Setting up File Choosers..."
 msgstr "Construyendo selector de archivos..."
 
-#: org/openscience/jmol/app/Jmol.java:293
+#: org/openscience/jmol/app/Jmol.java:303
 msgid "Setting up Drag-and-Drop..."
 msgstr "Construyendo arrastrar y soltar..."
 
-#: org/openscience/jmol/app/Jmol.java:319
+#: org/openscience/jmol/app/Jmol.java:329
 msgid "Launching main frame..."
 msgstr "Lanzando la ventana principal..."
 
-#: org/openscience/jmol/app/Jmol.java:328
+#: org/openscience/jmol/app/Jmol.java:347
 msgid "Creating main window..."
 msgstr "Creando la ventana principal..."
 
-#: org/openscience/jmol/app/Jmol.java:329
+#: org/openscience/jmol/app/Jmol.java:348
 msgid "Initializing Swing..."
 msgstr "Inicializando Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:339
+#: org/openscience/jmol/app/Jmol.java:360
 msgid "Initializing Jmol..."
 msgstr "Inicializando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:357
+#: org/openscience/jmol/app/Jmol.java:379
 msgid "give this help page"
 msgstr "mostrar esta página de ayuda"
 
-#: org/openscience/jmol/app/Jmol.java:365
+#: org/openscience/jmol/app/Jmol.java:380
+#, fuzzy
+msgid "no display"
+msgstr "Estilo"
+
+#: org/openscience/jmol/app/Jmol.java:381
+msgid "silent startup operation"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:382
+msgid "no console -- all output to sysout"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:390
 msgid "property=value"
 msgstr "propiedad=valor"
 
-#: org/openscience/jmol/app/Jmol.java:368
+#: org/openscience/jmol/app/Jmol.java:393
 msgid "supported options are given below"
 msgstr "las opciones admitidas se muestran a continuación"
 
-#: org/openscience/jmol/app/Jmol.java:372
+#: org/openscience/jmol/app/Jmol.java:397
 msgid "window size 500x500"
 msgstr "tamaño de ventana: 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:391
+#: org/openscience/jmol/app/Jmol.java:403
+msgid "run script and exit"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:424
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "Las opciones  -D son (valores predeterminados entre paréntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:456
+#: org/openscience/jmol/app/Jmol.java:518
 msgid "Executing script..."
 msgstr "Ejecutando guión..."
 
-#: org/openscience/jmol/app/Jmol.java:476
-#: org/openscience/jmol/app/ScriptWindow.java:92
+#: org/openscience/jmol/app/Jmol.java:538
+#: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Limpiar"
 
-#: org/openscience/jmol/app/Jmol.java:489
+#: org/openscience/jmol/app/Jmol.java:551
 msgid "Could not create ConsoleTextArea: "
 msgstr "No se pudo crear el área de texto de la consola"
 
-#: org/openscience/jmol/app/Jmol.java:563
+#: org/openscience/jmol/app/Jmol.java:627
 msgid "Closing Jmol..."
 msgstr "Cerrando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:799
+#: org/openscience/jmol/app/Jmol.java:863
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1120
+#: org/openscience/jmol/app/Jmol.java:1184
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1121
+#: org/openscience/jmol/app/Jmol.java:1185
 msgid "Enter URL of molecular model"
 msgstr "Escribe la URL del modelo molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1208
+#: org/openscience/jmol/app/Jmol.java:1272
 msgid "IO Exception:"
 msgstr "Error de entrada/salida:"
 
-#: org/openscience/jmol/app/Jmol.java:1380
+#: org/openscience/jmol/app/Jmol.java:1449
 msgid "File not loaded"
 msgstr "El archivo no se ha cargado"
 
@@ -775,8 +792,12 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
+"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -820,7 +841,9 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
+msgstr ""
+"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
+"calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -828,7 +851,8 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:245
 msgid "Should povray attempt to display while rendering?"
-msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr ""
+"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:254
 #: org/openscience/jmol/app/PovrayDialog.java:256
@@ -1045,19 +1069,23 @@ msgstr "Archivos recientes"
 msgid "Open"
 msgstr "Abrir"
 
-#: org/openscience/jmol/app/ScriptWindow.java:64
+#: org/openscience/jmol/app/ScriptWindow.java:65
 msgid "Jmol Script Console"
 msgstr "Consola de guiones de Jmol"
 
-#: org/openscience/jmol/app/ScriptWindow.java:83
+#: org/openscience/jmol/app/ScriptWindow.java:84
 msgid "Run"
 msgstr "Ejecutar"
 
-#: org/openscience/jmol/app/ScriptWindow.java:87
+#: org/openscience/jmol/app/ScriptWindow.java:88
 msgid "Halt"
 msgstr "Detener"
 
-#: org/openscience/jmol/app/ScriptWindow.java:96
+#: org/openscience/jmol/app/ScriptWindow.java:97
+msgid "History"
+msgstr ""
+
+#: org/openscience/jmol/app/ScriptWindow.java:101
 msgid "Help"
 msgstr "Ayuda"
 
@@ -1071,54 +1099,78 @@ msgstr "Novedades en Jmol"
 
 #~ msgid "pick one more atom in order to spin the model around an axis"
 #~ msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
+
 #~ msgid "pick two atoms in order to spin the model around an axis"
 #~ msgstr "elige dos átomos para que el modelo gire en torno a un eje"
+
 #~ msgid "atoms selected"
 #~ msgstr "átomos seleccionados"
+
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol ejecutando guión..."
+
 #~ msgid "pick "
 #~ msgstr "elige"
+
 #~ msgid "Rasmol Scripts"
 #~ msgstr "Guiones de Rasmol"
+
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotar en modelo de alambres"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotar en modelo de alambres"
+
 #~ msgid "Colors"
 #~ msgstr "Colores"
+
 #~ msgid "Background"
 #~ msgstr "Fondo"
+
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
+
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
+
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
+
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
+
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
+
 #~ msgid "Text"
 #~ msgstr "Texto"
+
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
+
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
+
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
+
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
+
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
+
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
+
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
+
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
+
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
-

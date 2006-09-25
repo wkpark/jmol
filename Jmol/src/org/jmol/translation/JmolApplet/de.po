@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-24 16:41+0200\n"
+"POT-Creation-Date: 2006-09-25 06:12+0200\n"
 "PO-Revision-Date: 2006-04-14 18:00+0100\n"
 "Last-Translator: Sebastian Lisken <sebastianlisken at users.sourceforge."
 "net>\n"
@@ -17,6 +17,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: org/jmol/applet/Console.java:40
+#, fuzzy
+msgid "Jmol Script Console"
+msgstr "Jmol-Skript ausgeführt"
 
 #: org/jmol/applet/Console.java:76
 msgid "press CTRL-ENTER for new line"
@@ -38,69 +43,69 @@ msgstr ""
 msgid "File Error:"
 msgstr "Datei-Fehler:"
 
-#: org/jmol/popup/JmolPopup.java:130
+#: org/jmol/popup/JmolPopup.java:149
 #, java-format
 msgid "atoms: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:132
+#: org/jmol/popup/JmolPopup.java:151
 #, java-format
 msgid "bonds: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:135
+#: org/jmol/popup/JmolPopup.java:154
 #, java-format
 msgid "groups: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:137
+#: org/jmol/popup/JmolPopup.java:156
 #, fuzzy, java-format
 msgid "chains: {0}"
 msgstr "Skalierung {0}"
 
-#: org/jmol/popup/JmolPopup.java:139
+#: org/jmol/popup/JmolPopup.java:158
 #, java-format
 msgid "polymers: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:141
+#: org/jmol/popup/JmolPopup.java:160
 #, java-format
 msgid "models: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:162
+#: org/jmol/popup/JmolPopup.java:181
 msgid "Java memory usage"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:168
+#: org/jmol/popup/JmolPopup.java:187
 #, java-format
 msgid "{0} MB total"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:169
+#: org/jmol/popup/JmolPopup.java:188
 #, java-format
 msgid "{0} MB free"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:171
+#: org/jmol/popup/JmolPopup.java:190
 #, java-format
 msgid "{0} MB maximum"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:173
+#: org/jmol/popup/JmolPopup.java:192
 msgid "unknown maximum"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:177
+#: org/jmol/popup/JmolPopup.java:196
 msgid "1 processor"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:178
+#: org/jmol/popup/JmolPopup.java:197
 #, java-format
 msgid "{0} processors"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:180
+#: org/jmol/popup/JmolPopup.java:199
 msgid "unknown processor count"
 msgstr ""
 
@@ -170,6 +175,10 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:702
 msgid "By Residue Name"
+msgstr ""
+
+#: org/jmol/popup/PopupResourceBundle.java:703
+msgid "By HETATM"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:704
@@ -1189,6 +1198,127 @@ msgstr "Maus-Handbuch"
 msgid "Translations"
 msgstr "Übersetzungen"
 
+#: org/jmol/viewer/Eval.java:143
+msgid "too many script levels"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:1123
+msgid "Unrecognized WITHIN parameter"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:1293
+msgid "plane expected -- either {a b c d} or \"xy\" \"xz\" \"yz\""
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:1410
+msgid "a color or palette name (Jmol, Rasmol) is required"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:1442 org/jmol/viewer/Eval.java:1467
+msgid "fractional coordinates are not allowed in this context"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:1506
+msgid "Currently the help command only works for the applet"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:1598
+msgid "console ON|OFF"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:2060
+msgid "ECHO must follow, not precede, model loading"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:2143
+msgid "space group "
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:2143
+msgid " was not found."
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:2887
+msgid "\"conformation\" not allowed with background model displayed"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:3129
+msgid "Calculate what? hbonds?  surface? structure?"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:3146
+msgid "surfaces require that only one model be displayed"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:3357
+msgid "invalid frame control keyword"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:3689
+msgid "SET ECHO must follow, not precede, model loading"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4071
+msgid "save what? bonds? orientation? selection?"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4092
+msgid "restore what? bonds? orientation? selection?"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4166 org/jmol/viewer/Eval.java:4789
+msgid "MO isosurfaces require that only one model be displayed"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4170 org/jmol/viewer/Eval.java:4793
+msgid "no MO basis/coefficient data available for this frame"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4213
+msgid "use \"show ORIENTATION\""
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4218
+msgid "unrecognized SHOW parameter --  use \"getProperty CHAININFO \""
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4220
+msgid "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4222
+msgid ""
+"unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)"
+"\""
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4233
+msgid "unrecognized SHOW parameter"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4797
+msgid "no MO coefficient data available"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4799
+msgid "Only one molecular orbital is available in this file"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4801
+#, java-format
+msgid "An MO index from 1 to {0} is required"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4821
+msgid "the isosurface command requires that only one model be displayed"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5113
+msgid ""
+"No partial charges were read from the file; Jmol needs these to render the "
+"MEP data."
+msgstr ""
+
 #: org/jmol/viewer/PickingManager.java:167
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
@@ -1235,9 +1365,6 @@ msgstr "Jmol führt Skript aus ..."
 
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Molekül-Visualisierung, http://www.jmol.org"
-
-#~ msgid "Jmol script completed"
-#~ msgstr "Jmol-Skript ausgeführt"
 
 #~ msgid "Name hidden"
 #~ msgstr "Name versteckt"

@@ -29,6 +29,9 @@ import java.util.Vector;
  */
 final public class CommandHistory {
 
+  
+  final static int DEFAULT_MAX_SIZE = 100;
+  
   /**
    * Array of commands.
    */
@@ -45,12 +48,21 @@ final public class CommandHistory {
    */
   private int cursorPos;
 
+
+  /**
+   * Creates a new instance using the default size (100) 
+   *
+   */
+  public CommandHistory() {
+    reset(DEFAULT_MAX_SIZE);
+  }
+  
   /**
    * Creates a new instance.
    * 
    * @param maxSize maximum size for the command queue
    */
-  public CommandHistory(int maxSize) {
+    public CommandHistory(int maxSize) {
     reset(maxSize);
   }
 
@@ -104,6 +116,12 @@ final public class CommandHistory {
       addCommandLine(strCommand);
   }
   
+  public String getHistoryText() {
+    String str = "";
+    for (int i = 0; i < nextCommand; i++)
+      str += commandList.get(i) + "\n";
+    return str;
+  }
 
   /**
    * Adds a single line to the bottom of the list, resets list position.

@@ -39,15 +39,16 @@ class Console implements ActionListener, WindowListener {
   final Document outputDocument = output.getDocument();
   final JFrame jf = new JFrame(GT._("Jmol Script Console"));
 
-  final JButton runButton = new JButton("Execute");
-  final JButton clearButton = new JButton("Clear");
+  final JButton runButton = new JButton(GT._("Execute"));
+  final JButton clearButton = new JButton(GT._("Clear"));
+  final JButton historyButton = new JButton(GT._("History"));
 
   final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
   final JmolViewer viewer;
   final Jvm12 jvm12;
 
-  protected CommandHistory commandHistory = new CommandHistory(20);
+  protected CommandHistory commandHistory = new CommandHistory();
 
   Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
     this.viewer = viewer;
@@ -80,9 +81,11 @@ class Console implements ActionListener, WindowListener {
     c1.add(runButton, BorderLayout.WEST);
     c1.add(label, BorderLayout.CENTER);
     c1.add(clearButton, BorderLayout.EAST);
+    c1.add(historyButton, BorderLayout.SOUTH);
     c.add(c1, BorderLayout.SOUTH);
     runButton.addActionListener(this);
     clearButton.addActionListener(this);
+    historyButton.addActionListener(this);
 
     jf.setSize(400, 400);
     jf.addWindowListener(this);
@@ -105,8 +108,12 @@ class Console implements ActionListener, WindowListener {
     //    output.setLineWrap(true);
     //    output.setWrapStyleWord(true);
     StyleConstants.setBold(attributesCommand, true);
-}
+  }
 
+  void addCommand(String command) {
+   commandHistory.addCommand(command); 
+  }
+  
   void setVisible(boolean visible) {
     Logger.debug("Console.setVisible(" + visible + ")");
     jf.setVisible(visible);
@@ -139,11 +146,13 @@ class Console implements ActionListener, WindowListener {
     if (source == clearButton) {
       output.setText("");
     }
+    if (source == historyButton) {
+      output.setText(commandHistory.getHistoryText());
+    }
   }
 
   void execute() {
     String strCommand = input.getText();
-    commandHistory.addCommand(strCommand);
     input.setText(null);
     output(strCommand, attributesCommand);
     String strErrorMessage = viewer.script(strCommand);

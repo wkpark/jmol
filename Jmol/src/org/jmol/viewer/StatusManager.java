@@ -341,5 +341,12 @@ class StatusManager {
     return (jmolStatusListener == null ? 0 :
       jmolStatusListener.functionXY(functionName, x, y));
   }
+  
+  void addCommand(String command) {
+    if (jmolStatusListener == null)
+      return;
+    jmolStatusListener.addCommand(command);
+  }
+
 }
 

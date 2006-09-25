@@ -57,6 +57,7 @@ public final class ScriptWindow extends JDialog
   private JButton runButton;
   private JButton haltButton;
   private JButton clearButton;
+  private JButton historyButton;
   private JButton helpButton;
   JmolViewer viewer;
   
@@ -92,6 +93,10 @@ public final class ScriptWindow extends JDialog
     clearButton = new JButton(GT._("Clear"));
     clearButton.addActionListener(this);
     buttonPanel.add(clearButton);
+
+    historyButton = new JButton(GT._("History"));
+    historyButton.addActionListener(this);
+    buttonPanel.add(historyButton);
 
     helpButton = new JButton(GT._("Help"));
     helpButton.addActionListener(this);
@@ -166,6 +171,10 @@ public final class ScriptWindow extends JDialog
     }
   }
   
+  void addCommand(String command) {
+    console.commandHistory.addCommand(command);  
+  }
+  
   void executeCommand(String strCommand) {
     boolean doWait;
     setError(false);
@@ -226,6 +235,8 @@ public final class ScriptWindow extends JDialog
       executeCommandAsThread();
     } else if (source == clearButton) {
       console.clearContent();
+    } else if (source == historyButton) {
+      console.getHistory();
     } else if (source == haltButton) {
       viewer.haltScriptExecution();
     } else if (source == helpButton) {
@@ -240,7 +251,7 @@ public final class ScriptWindow extends JDialog
 
 class ConsoleTextPane extends JTextPane {
 
-  private CommandHistory commandHistory = new CommandHistory(20);
+  CommandHistory commandHistory = new CommandHistory();
 
   ConsoleDocument consoleDoc;
   EnterListener enterListener;
@@ -254,7 +265,6 @@ class ConsoleTextPane extends JTextPane {
 
   public String getCommandString() {
     String cmd = consoleDoc.getCommandString();
-    commandHistory.addCommand(cmd);
     return cmd;
   }
 
@@ -289,9 +299,15 @@ class ConsoleTextPane extends JTextPane {
   
   public void clearContent() {
     consoleDoc.clearContent();
+    setPrompt();
+
   }
 
-  
+  public void getHistory() {
+    consoleDoc.clearContent();
+    consoleDoc.outputEcho(commandHistory.getHistoryText());
+    setPrompt();
+  }
   
    /* (non-Javadoc)
     * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
@@ -417,7 +433,6 @@ class ConsoleDocument extends DefaultStyledDocument {
       } catch (BadLocationException exception) {
           System.out.println("Could not clear script window content: " + exception.getMessage());
       }
-      setPrompt();
   }
   
   void setPrompt() {

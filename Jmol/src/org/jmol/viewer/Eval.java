@@ -364,6 +364,7 @@ class Eval { //implements Runnable {
       viewer.scriptStatus(toString());
     }
     while (!interruptExecution.booleanValue() && pc < aatoken.length) {
+      viewer.addCommand(getLine());
       statement = aatoken[pc++];
       statementLength = statement.length;
       if (logMessages)

@@ -3536,4 +3536,9 @@ public class Viewer extends JmolViewer {
       global.helpPath = styleManager.getDefaultHelpPath();
     showUrl(global.helpPath + what);
   }
+  
+  void addCommand(String command) {
+    statusManager.addCommand(command);
+  }
+  
 }

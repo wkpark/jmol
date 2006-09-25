@@ -1431,6 +1431,11 @@ public class Jmol extends JPanel {
 
   class MyStatusListener implements JmolStatusListener {
     
+    public void addCommand(String command) {
+      if (scriptWindow != null)
+        scriptWindow.addCommand(command);
+    }
+    
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       // applet only?
     }

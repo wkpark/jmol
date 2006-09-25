@@ -67,4 +67,6 @@ public interface JmolStatusListener {
   public float functionXY(String functionName, int x, int y);
   
   public void setCallbackFunction(String callbackType, String callbackFunction);
+  
+  public void addCommand(String command);
 }

@@ -315,7 +315,7 @@ class FileManager {
       // This code is only for the applet
       //isURL = true;
       try {
-        if (defaultDirectory != null)
+        if (defaultDirectory != null && name.indexOf(":/") < 0)
           name = defaultDirectory + "/" + name;
         URL url = new URL(appletDocumentBase, name);
         fullPathName = url.toString();

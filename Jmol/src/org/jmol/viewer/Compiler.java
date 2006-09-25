@@ -149,7 +149,9 @@ class Compiler {
       }
       if (tokCommand != Token.nada) {
         if (lookingAtString()) {
-          String str = getUnescapedStringLiteral();
+          String str = (tokCommand == Token.load && !iHaveQuotedString ? script
+              .substring(ichToken + 1, ichToken + cchToken - 1)
+              : getUnescapedStringLiteral());
           ltoken.addElement(new Token(Token.string, str));
           iHaveQuotedString = true;
           if (tokCommand == Token.data)

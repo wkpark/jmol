@@ -318,7 +318,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         loadInline(loadParam, (scriptParam.length() > 0 ? scriptParam : null));
       else {
         if ((loadParam = getValue("load", null)) != null)
-          scriptParam = "load " + loadParam + ";" + scriptParam;
+          scriptParam = "load \"" + loadParam + "\";" + scriptParam;
         if (scriptParam.length() > 0)
           scriptProcessor(scriptParam, null, SCRIPT_NOWAIT);
       }

@@ -107,7 +107,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    */
   void updatePreview(File file) {
     if (file != null) {
-      display.getViewer().evalStringQuiet("load " + file.getAbsolutePath());
+      display.getViewer().evalStringQuiet("load \"" + file.getAbsolutePath() + "\"");
       display.repaint();
     } else {
       display.getViewer().evalStringQuiet("zap");

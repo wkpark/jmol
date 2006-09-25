@@ -44,7 +44,6 @@ class ColorManager {
   }
 
   void setDefaultColors(String colorScheme) {
-    Logger.info("setting color scheme to:" + colorScheme);
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;
       viewer.setColorBackground("black");

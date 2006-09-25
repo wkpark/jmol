@@ -140,7 +140,7 @@ class RepaintManager {
 
   synchronized void repaintView() {
     repaintPending = false;
-    notify(); // to cancel any wait
+    notify(); // to cancel any wait in requestRepaintAndWait()
   }
 
   final Rectangle rectOversample = new Rectangle();

@@ -1787,7 +1787,7 @@ class Eval { //implements Runnable {
     String property = (statementLength < 2 ? "" : (String) statement[1].value);
     String param = (statementLength < 3 ? "" : (String) statement[2].value);
     retValue = (String) viewer.getProperty("readable", property, param);
-    viewer.scriptEcho(retValue);
+    showString(retValue);
   }
 
   void background() throws ScriptException {
@@ -3588,8 +3588,7 @@ class Eval { //implements Runnable {
         // etc.
 
         int ilevel = intParameter(2);
-        for (int i = Logger.NB_LEVELS; --i >= 0;)
-          Logger.setActiveLevel(i, (Logger.NB_LEVELS - i) <= ilevel);
+        Viewer.setLogLevel(ilevel);
         Logger.info("logging level set to " + ilevel);
         break;
       }
@@ -4251,8 +4250,8 @@ class Eval { //implements Runnable {
   }
 
   void showString(String str) {
-    Logger.info("show:" + str);
-    viewer.scriptStatus("" + str);
+    Logger.warn(str);
+    viewer.scriptEcho(str);
   }
 
   /* ****************************************************************************

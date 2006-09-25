@@ -143,7 +143,7 @@ class Console implements ActionListener, WindowListener {
 
   void execute() {
     String strCommand = input.getText();
-    addCommand(strCommand);
+    commandHistory.addCommand(strCommand);
     input.setText(null);
     output(strCommand, attributesCommand);
     String strErrorMessage = viewer.script(strCommand);
@@ -152,16 +152,6 @@ class Console implements ActionListener, WindowListener {
     input.requestFocus();
   }
 
-  void addCommand(String strCommand) {
-    int i;
-    while ((i = strCommand.indexOf("\n")) >= 0) {
-      String str = strCommand.substring(0, i);
-      if (str.length() > 0)
-        commandHistory.addCommand(str);
-      strCommand = strCommand.substring(i + 1);
-    }
-  }
-  
   class ShiftEnterTextArea extends JTextArea {
     public void processComponentKeyEvent(KeyEvent ke) {
       switch (ke.getID()) {

@@ -89,11 +89,28 @@ final public class CommandHistory {
   }
 
   /**
-   * Adds a new command to the bottom of the list, resets list position.
+   * Adds any number of lines to the command history
+   * @param strCommand
+   */
+  public void addCommand(String strCommand) {
+    int i;
+    while ((i = strCommand.indexOf("\n")) >= 0) {
+      String str = strCommand.substring(0, i);
+      if (str.length() > 0)
+        addCommandLine(str);
+      strCommand = strCommand.substring(i + 1);
+    }
+    if (strCommand.length() > 0)
+      addCommandLine(strCommand);
+  }
+  
+
+  /**
+   * Adds a single line to the bottom of the list, resets list position.
    * 
    * @param command the String value of a command.
    */
-  public void addCommand(String command) {
+  private void addCommandLine(String command) {
     if(command == null || command.length() == 0)
       return;
     if (nextCommand >= maxSize) {

@@ -115,14 +115,6 @@ public class Viewer extends JmolViewer {
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
 
-    Logger.info(JmolConstants.copyright + "\nJmol Version " + getJmolVersion()
-        + "\njava.vendor:" + strJavaVendor + "\njava.version:" + strJavaVersion
-        + "\nos.name:" + strOSName + "\n" + htmlName);
-/*
-    Logger.info("jvm11orGreater=" + jvm11orGreater
-        + "\njvm12orGreater=" + jvm12orGreater + "\njvm14orGreater="
-        + jvm14orGreater);
-*/
     g3d = new Graphics3D(awtComponent);
     eval = new Eval(this);
     statusManager = new StatusManager(this);
@@ -150,6 +142,53 @@ public class Viewer extends JmolViewer {
     return new Viewer(awtComponent, modelAdapter);
   }
 
+  boolean isSilent = false;
+  boolean isApplet = false;
+  boolean autoExit = false;
+  boolean haveDisplay = true;
+  
+  public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
+                               String appletProxyOrCommandOptions) {
+    this.htmlName = htmlName;
+    isApplet = (documentBase != null);
+    if (!isApplet) {
+      // not an applet -- used to pass along command line options
+      if (appletProxyOrCommandOptions.indexOf("-i") >= 0) {
+        setLogLevel(3); //no info, but warnings and errors
+        isSilent = true;
+      }
+      if (appletProxyOrCommandOptions.indexOf("-x") >= 0) {
+        autoExit = true;
+      }
+      if (appletProxyOrCommandOptions.indexOf("-n") >= 0) {
+        haveDisplay = false;
+      }
+    }
+    
+/*
+    Logger.info("jvm11orGreater=" + jvm11orGreater
+        + "\njvm12orGreater=" + jvm12orGreater + "\njvm14orGreater="
+        + jvm14orGreater);
+*/
+    if (!isSilent) {
+      Logger.info(JmolConstants.copyright + "\nJmol Version " + getJmolVersion()
+        + "\njava.vendor:" + strJavaVendor + "\njava.version:" + strJavaVersion
+        + "\nos.name:" + strOSName + "\n" + htmlName);
+    }
+    
+    if (isApplet)
+      fileManager.setAppletContext(documentBase, codeBase, appletProxyOrCommandOptions);
+  }
+
+  boolean getDisplayFlag() {
+    return haveDisplay;
+  }
+  
+  static void setLogLevel(int ilevel) {
+    for (int i = Logger.NB_LEVELS; --i >= 0;)
+      Logger.setActiveLevel(i, (Logger.NB_LEVELS - i) <= ilevel);
+  }
+  
   public Component getAwtComponent() {
     return awtComponent;
   }
@@ -707,6 +746,8 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   void setDefaultColors(String colorScheme) {
+    if (!isSilent)
+      Logger.info("setting color scheme to:" + colorScheme);
     colorManager.setDefaultColors(colorScheme);
   }
 
@@ -954,12 +995,6 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
   // delegated to FileManager
   // ///////////////////////////////////////////////////////////////
-
-  public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
-                               String appletProxy) {
-    this.htmlName = htmlName;
-    fileManager.setAppletContext(documentBase, codeBase, appletProxy);
-  }
 
   void setAppletProxy(String appletProxy) {
     fileManager.setAppletProxy(appletProxy);
@@ -2021,6 +2056,7 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   public String evalFile(String strFilename) {
+    // from app only
     return scriptManager.addScript(strFilename, true, false);
   }
 
@@ -2094,7 +2130,6 @@ public class Viewer extends JmolViewer {
       return "script execution halted";
     if (strScript == null)
       return null;
-    
 
     //typically request: "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
     //set up first with applet.jmolGetProperty("jmolStatus",statusList)
@@ -2111,6 +2146,10 @@ public class Viewer extends JmolViewer {
       String strErrorMessage = eval.getErrorMessage();
       int msWalltime = eval.getExecutionWalltime();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
+      if (isScriptFile && autoExit) {
+        System.out.flush();
+        System.exit(0);
+      }
     }
     if (returnType.equalsIgnoreCase("String"))
       return eval.getErrorMessage();

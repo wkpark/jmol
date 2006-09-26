@@ -404,7 +404,6 @@ public class SmilesParser {
     }
     newAtom.setSymbol(atomSymbol);
     newAtom.setAtomicMass(atomicMass);
-    newAtom.setMatchNatural();
     newAtom.setCharge(charge);
     newAtom.setChiralClass(chiralClass);
     newAtom.setChiralOrder(chiralOrder);

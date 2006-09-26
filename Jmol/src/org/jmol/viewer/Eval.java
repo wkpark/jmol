@@ -377,8 +377,8 @@ class Eval { //implements Runnable {
     }
     while (!interruptExecution.booleanValue() && pc < aatoken.length) {
       Token token = aatoken[pc][0];
-      if (token.tok == Token.load)
-        viewer.getSetHistory(-2); //just clear
+      //if (token.tok == Token.load)
+        //viewer.getSetHistory(-2); //just clear -- no, this is very useful
       statement = aatoken[pc++];
       viewer.addCommand(getLine());
       statementLength = statement.length;
@@ -1228,8 +1228,9 @@ class Eval { //implements Runnable {
    * +1.2     offset    [0 - 10]        x        
    * -1.2     offset       0)           x         
    *  1.2     absolute  (0 - 10]      x + 10    
-   * -30%     percent  (-100 - 0)    -x + 100
-   * +30%     percent     (0          x + 1000
+   * -30%     70%      (-100 - 0)     x + 200
+   * +30%     130%        (0          x + 200
+   *  80%     percent     (0          x + 100
    * 
    *  in each case, numbers can be integer or float
    * 
@@ -1243,18 +1244,17 @@ class Eval { //implements Runnable {
       badArgumentCount();
     float v = Float.NaN;
     boolean isOffset = (statement[index].tok == Token.plus);
-    boolean isPercent = (index + 1 < statementLength 
-        && statement[index + 1].tok == Token.percent);
     if (isOffset)
       index++;
+    boolean isPercent = (index + 1 < statementLength && statement[index + 1].tok == Token.percent);
     int tok = (index < statementLength ? statement[index].tok : 0);
     switch (tok) {
     case Token.integer:
       v = statement[index].intValue;
-      break;
     case Token.decimal:
-      v = ((Float) statement[index].value).floatValue();
-      if (v < 0 && ! isPercent)
+      if (Float.isNaN(v))
+        v = ((Float) statement[index].value).floatValue();
+      if (v < 0)
         isOffset = true;
       break;
     default:
@@ -1269,7 +1269,7 @@ class Eval { //implements Runnable {
     if (isPercent) {
       if (v <= -100)
         invalidArgument();
-      v = (v < 0 ? 100 - v : v + 1000);
+      v += (isOffset ? 200 : 100);
     } else if (isOffset) {
     } else {
       if (v < 0 || v > 10)
@@ -5265,10 +5265,11 @@ class Eval { //implements Runnable {
         propertyName = "mep";
         propertyValue = partialCharges;
         break;
+      case Token.molecule:
       case Token.sasurface:
       case Token.solvent:
         surfaceObjectSeen = true;
-        propertyName = (token.tok == Token.solvent ? "solvent" : "sasurface");
+        propertyName = (token.tok == Token.sasurface ? "sasurface" : "solvent");
         float radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
             .getSolventProbeRadius());
         propertyValue = new Float(radius);

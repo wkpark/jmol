@@ -1219,6 +1219,66 @@ class Eval { //implements Runnable {
     return floatValue;
   }
 
+  /**
+   * Based on the form of the parameters, returns and encoded radius
+   * as follows:
+   * 
+   * script   meaning   range       encoded     
+   * 
+   * +1.2     offset    [0 - 10]        x        
+   * -1.2     offset       0)           x         
+   *  1.2     absolute  (0 - 10]      x + 10    
+   * -30%     percent  (-100 - 0)    -x + 100
+   * +30%     percent     (0          x + 1000
+   * 
+   *  in each case, numbers can be integer or float
+   * 
+   * @param index
+   * @param defaultValue  a default value or Float.NaN
+   * @return one of the above possibilities
+   * @throws ScriptException
+   */
+  float radiusParameter(int index, float defaultValue) throws ScriptException {
+    if (index >= statementLength)
+      badArgumentCount();
+    float v = Float.NaN;
+    boolean isOffset = (statement[index].tok == Token.plus);
+    boolean isPercent = (index + 1 < statementLength 
+        && statement[index + 1].tok == Token.percent);
+    if (isOffset)
+      index++;
+    int tok = (index < statementLength ? statement[index].tok : 0);
+    switch (tok) {
+    case Token.integer:
+      v = statement[index].intValue;
+      break;
+    case Token.decimal:
+      v = ((Float) statement[index].value).floatValue();
+      if (v < 0 && ! isPercent)
+        isOffset = true;
+      break;
+    default:
+      v = defaultValue;
+      index--;
+    }
+    pcLastExpressionInstruction = index + (isPercent ? 1 : 0);
+    if (Float.isNaN(v))
+      numberExpected();
+    if (v == 0)
+      return 0;
+    if (isPercent) {
+      if (v <= -100)
+        invalidArgument();
+      v = (v < 0 ? 100 - v : v + 1000);
+    } else if (isOffset) {
+    } else {
+      if (v < 0 || v > 10)
+        numberOutOfRange(0f, 10f);
+      v += 10;
+    }
+    return v;
+  }
+
   int floatParameterSet(int i, float[] fparams) throws ScriptException {
     if (i < statementLength && statement[i].tok == Token.leftbrace)
       i++;
@@ -4896,7 +4956,8 @@ class Eval { //implements Runnable {
     String str;
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError(GT._("the isosurface command requires that only one model be displayed"));
+      evalError(GT
+          ._("the isosurface command requires that only one model be displayed"));
 
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -4973,6 +5034,16 @@ class Eval { //implements Runnable {
           invalidParameterOrder();
         propertyName = "colorRGB";
         propertyValue = new Integer(getArgbParam(i));
+        break;
+      case Token.ionic:
+        propertyName = "ionicRadius";
+        propertyValue = new Float(radiusParameter(++i, 0));
+        i = pcLastExpressionInstruction;
+        break;
+      case Token.vanderwaals:
+        propertyName = "vdwRadius";
+        propertyValue = new Float(radiusParameter(++i, 0));
+        i = pcLastExpressionInstruction;
         break;
       case Token.identifier:
         str = (String) token.value;
@@ -5188,7 +5259,8 @@ class Eval { //implements Runnable {
         } catch (Exception e) {
         }
         if (partialCharges == null)
-          evalError(GT._("No partial charges were read from the file; Jmol needs these to render the MEP data."));
+          evalError(GT
+              ._("No partial charges were read from the file; Jmol needs these to render the MEP data."));
         surfaceObjectSeen = true;
         propertyName = "mep";
         propertyValue = partialCharges;

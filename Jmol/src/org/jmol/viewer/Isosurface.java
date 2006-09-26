@@ -211,6 +211,10 @@ class Isosurface extends MeshCollection {
 
   float solventRadius;
   float solventExtendedAtomRadius;
+  float solventAtomRadiusFactor;
+  float solventAtomRadiusAbsolute;
+  float solventAtomRadiusOffset;
+  boolean useIonic;
   boolean addHydrogens;
 
   int edgeFractionBase;
@@ -542,6 +546,29 @@ class Isosurface extends MeshCollection {
       drawLcaoCartoon(lcaoType, info[0], info[1]);
     }
 
+    if ("vdwRadius" == propertyName || "ionicRadius" == propertyName) {
+        useIonic = (propertyName.charAt(0) == 'i');
+        float radius = ((Float)value).floatValue();
+  /*
+   * script   meaning   range       encoded     
+   * 
+   * +1.2     offset    [0 - 10]        x        
+   * -1.2     offset       0)           x         
+   *  1.2     absolute  (0 - 10]      x + 10    
+   * -30%     percent  (-100 - 0)    -x + 100
+   * +30%     percent     (0          x + 1000
+   * 
+   */
+        if (radius > 1000)
+          solventAtomRadiusFactor = (radius - 1000) / 100;
+        else if (radius > 100)
+          solventAtomRadiusFactor = 1 -(radius - 100) / 100;
+        else if (radius > 10)
+          solventAtomRadiusAbsolute = radius - 10;
+        else
+          solventAtomRadiusOffset = radius;
+    }
+    
     if ("solvent" == propertyName || "sasurface" == propertyName) {
       isEccentric = isAnisotropic = false;
       //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
@@ -551,9 +578,9 @@ class Isosurface extends MeshCollection {
       dataType = ("sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
           : SURFACE_SOLVENT);
       if (dataType == SURFACE_SASURFACE) {
-        Logger.info("creating solvent-accessible surface with radius "
-            + solventRadius);
         solventExtendedAtomRadius = solventRadius;
+        Logger.info("creating solvent-accessible surface with radius "
+            + solventExtendedAtomRadius);
         solventRadius = 0f;
       } else {
         Logger.info("creating solvent-excluded surface with radius "
@@ -807,6 +834,12 @@ class Isosurface extends MeshCollection {
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     precalculateVoxelData = false;
     bsIgnore = null;
+    solventExtendedAtomRadius = 0;
+    solventAtomRadiusFactor = 1;
+    solventAtomRadiusAbsolute = 0;
+    solventAtomRadiusOffset = 0;
+    useIonic = false;
+
     jvxlInitFlags();
     initState();
   }
@@ -4201,7 +4234,7 @@ class Isosurface extends MeshCollection {
     int firstSet = -1;
     int lastSet = 0;
     for (int i = 0; i < nAtoms; i++)
-      if ((bsIgnore == null || !bsIgnore.get(i)) 
+      if ((bsIgnore == null || !bsIgnore.get(i))
           && (nSelected == 0 || bsSelected.get(i))) {
         if (solvent_modelIndex < 0)
           solvent_modelIndex = atoms[i].modelIndex;
@@ -4224,15 +4257,19 @@ class Isosurface extends MeshCollection {
       solvent_atomRadius = new float[iAtom + nH];
       solvent_ptAtom = new Point3f[iAtom + nH];
       atomNo = new int[iAtom + nH];
-      float r = JmolConstants.vanderwaalsMars[1] / 1000f
-          + solventExtendedAtomRadius;
+
+      float r = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
+          : JmolConstants.vanderwaalsMars[1] / 1000f);
+      r *= solventAtomRadiusFactor;
+      r += solventExtendedAtomRadius + solventAtomRadiusOffset;
+
       for (int i = 0; i < nH; i++) {
         atomNo[i] = 1;
         solvent_atomRadius[i] = r;
         solvent_ptAtom[i] = hAtoms[i];
         if (logMessages)
           Logger.debug("draw {" + hAtoms[i].x + " " + hAtoms[i].y + " "
-            + hAtoms[i].z + "};");
+              + hAtoms[i].z + "};");
       }
       iAtom = nH;
       for (int i = firstSet; i <= lastSet; i++) {
@@ -4240,8 +4277,12 @@ class Isosurface extends MeshCollection {
           continue;
         atomNo[iAtom] = atoms[i].getElementNumber();
         solvent_ptAtom[iAtom] = atoms[i];
-        solvent_atomRadius[iAtom++] = atoms[i].getVanderwaalsRadiusFloat()
-            + solventExtendedAtomRadius;
+        r = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
+            : useIonic ? atoms[i].getBondingRadiusFloat() : atoms[i]
+                .getVanderwaalsRadiusFloat());
+        r *= solventAtomRadiusFactor;
+        solvent_atomRadius[iAtom++] = r + solventExtendedAtomRadius
+            + solventAtomRadiusOffset;
       }
     }
     solvent_nAtoms = solvent_firstNearbyAtom = iAtom;
@@ -4281,8 +4322,8 @@ class Isosurface extends MeshCollection {
     for (int i = 0; i < solvent_nAtoms; i++) {
       pt.set(solvent_ptAtom[i]);
       pt.scale(1 / ANGSTROMS_PER_BOHR);
-      jvxlFileHeader += atomNo[i] + " " + atomNo[i] + ".0 "
-          + pt.x + " " + pt.y + " " + pt.z + "\n";
+      jvxlFileHeader += atomNo[i] + " " + atomNo[i] + ".0 " + pt.x + " " + pt.y
+          + " " + pt.z + "\n";
     }
     atomCount = -Integer.MAX_VALUE;
     negativeAtomCount = false;
@@ -4297,6 +4338,14 @@ class Isosurface extends MeshCollection {
       pt = atoms[i];
       float rA = atoms[i].getVanderwaalsRadiusFloat()
           + solventExtendedAtomRadius;
+      
+      rA = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
+          : useIonic ? atoms[i].getBondingRadiusFloat() : atoms[i]
+              .getVanderwaalsRadiusFloat());
+      rA *= solventAtomRadiusFactor;
+      rA += solventExtendedAtomRadius + solventAtomRadiusOffset;
+
+      
       if (pt.x + rA > xyzMin.x && pt.x - rA < xyzMax.x && pt.y + rA > xyzMin.y
           && pt.y - rA < xyzMax.y && pt.z + rA > xyzMin.z
           && pt.z - rA < xyzMax.z) {
@@ -4313,7 +4362,8 @@ class Isosurface extends MeshCollection {
     solvent_nAtoms += nNearby;
     solvent_atomRadius = (float[]) ArrayUtil.setLength(solvent_atomRadius,
         solvent_nAtoms);
-    solvent_ptAtom = (Point3f[]) ArrayUtil.setLength(solvent_ptAtom, solvent_nAtoms);
+    solvent_ptAtom = (Point3f[]) ArrayUtil.setLength(solvent_ptAtom,
+        solvent_nAtoms);
 
     iAtom = solvent_firstNearbyAtom;
     for (int i = firstSet; i <= lastSet; i++) {

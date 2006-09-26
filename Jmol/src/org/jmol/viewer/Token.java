@@ -773,6 +773,7 @@ class Token {
     "fill",         new Token(fill,            "fill"),
     "nofill",       new Token(nofill,          "nofill"),
     "vanderwaals",  new Token(vanderwaals,     "vanderwaals"),
+    "vdw",          null,
     "ionic",        new Token(ionic,           "ionic"),
     "resume",       new Token(resume,          "resume"),
     "next",         new Token(next,            "next"),

@@ -309,6 +309,10 @@ class CifReader extends AtomSetCollectionReader {
       atomSetCollection.setAtomSetAuxiliaryInfo("formula", thisFormula);
       return;
     }
+    if (str.startsWith("_atom_type")) {
+      processAtomTypeLoopBlock();
+      return;
+    }
     if (str.startsWith("_geom_bond")) {
       if (doApplySymmetry) //not reading bonds when symmetry is enabled yet
         skipLoop();
@@ -347,7 +351,68 @@ class CifReader extends AtomSetCollectionReader {
   }
 
   ////////////////////////////////////////////////////////////////
-  // atom data
+  // atom type data
+  ////////////////////////////////////////////////////////////////
+
+
+  Hashtable atomTypes;
+  
+  final static byte ATOM_TYPE_SYMBOL = 0;
+  final static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
+
+  final static String[] atomTypeFields = { 
+      "_atom_type_symbol",
+      "_atom_type_oxidation_number", 
+  };
+
+  /**
+   * 
+   * reads the oxidation number and associates it with an atom name, which can
+   * then later be associated with the right atom indirectly.
+   * 
+   * @throws Exception
+   */
+  void processAtomTypeLoopBlock() throws Exception {
+    parseLoopParameters(atomTypeFields);
+    for (int i = propertyCount; --i >= 0;)
+      if (!propertyReferenced[i]) {
+        logger.log("?que? missing _atom_type property:" + i);
+        skipLoop();
+        return;
+      }
+
+    while (tokenizer.getData()) {
+      String atomTypeSymbol = null;
+      float oxidationNumber = Float.NaN;
+      
+      for (int i = 0; i < fieldCount; ++i) {
+        String field = loopData[i];
+        if (field.length() == 0)
+          continue;
+        char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
+        switch (fieldTypes[i]) {
+        case NONE:
+          break;
+        case ATOM_TYPE_SYMBOL:
+          atomTypeSymbol = field;
+          break;
+        case ATOM_TYPE_OXIDATION_NUMBER:
+          oxidationNumber = parseFloat(field);
+          break;
+        }
+      }
+      if (atomTypeSymbol == null || Float.isNaN(oxidationNumber))
+        continue;
+      if (atomTypes == null)
+        atomTypes = new Hashtable();
+      atomTypes.put(atomTypeSymbol, new Float(oxidationNumber));
+    }
+  }
+  
+  ////////////////////////////////////////////////////////////////
+  // atom site data
   ////////////////////////////////////////////////////////////////
 
   final static byte NONE = -1;
@@ -451,6 +516,13 @@ class CifReader extends AtomSetCollectionReader {
               elementSymbol = "" + ch0;
           }
           atom.elementSymbol = elementSymbol;
+          if (atomTypes != null && atomTypes.containsKey(field)) {
+            float charge = ((Float) atomTypes.get(field)).floatValue();
+            atom.formalCharge = (int) charge;
+            if (Math.abs(atom.formalCharge - charge) > 0.1)
+              logger.log("CIF charge on " + field + " was " + charge
+                  + "; rounded to " + atom.formalCharge);
+          }
           break;
         case LABEL:
         case AUTH_ATOM:

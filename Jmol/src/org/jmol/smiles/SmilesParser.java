@@ -27,7 +27,9 @@ package org.jmol.smiles;
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
  * The SMILES specification has been found at the
- * <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>. <br>
+ * <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>.
+ * An other explanation can be found in the
+ * <a href="http://www.daylight.com/dayhtml/doc/theory/index.html">Daylight Theory Manual</a>. <br>
  * 
  * Currently this parser supports only parts of the SMILES specification. <br>
  * 

@@ -30,13 +30,14 @@ import java.util.Vector;
 final public class CommandHistory {
 
   
+  public final static String ERROR_FLAG = "#??";
   final static int DEFAULT_MAX_SIZE = 100;
   
   /**
    * Array of commands.
    */
   private Vector commandList = null;
-  private int maxSize;
+  private int maxSize = DEFAULT_MAX_SIZE;
 
   /**
    * Position of the next command.
@@ -62,8 +63,49 @@ final public class CommandHistory {
    * 
    * @param maxSize maximum size for the command queue
    */
-    public CommandHistory(int maxSize) {
+  public CommandHistory(int maxSize) {
     reset(maxSize);
+  }
+
+  /**
+   * clears the history.
+   * 
+   */
+  public void clear() {
+    reset(maxSize);
+  }
+
+  /**
+   * Resets instance.
+   * 
+   * @param maxSize maximum size for the command queue.
+   */
+  public void reset(int maxSize) {
+    this.maxSize = maxSize; 
+    commandList = new Vector();
+    nextCommand = 0;
+    commandList.add("");
+    cursorPos = 0;
+  }
+
+  /**
+   * Resets maximum size of command queue. Cuts off extra commands.
+   * 
+   * @param maxSize maximum size for the command queue.
+   */
+  public void setMaxSize(int maxSize) {
+    if (maxSize == this.maxSize)
+      return;
+    if (maxSize < 2)
+      maxSize = 2;
+    while (nextCommand >= maxSize) {
+      commandList.remove(0);
+      nextCommand--;
+    }
+    if (nextCommand >= maxSize)
+      nextCommand= maxSize - 1;
+    cursorPos = nextCommand;
+    this.maxSize = maxSize;
   }
 
   /**
@@ -75,7 +117,12 @@ final public class CommandHistory {
     if (cursorPos <= 0)
       return null;
     cursorPos--;
-    return getCommand();
+    String str = getCommand();
+    if (str.endsWith(ERROR_FLAG))
+      removeCommand(cursorPos--);
+    if (cursorPos < 0)
+      cursorPos = 0;
+    return str;
   }
 
   /**
@@ -105,7 +152,10 @@ final public class CommandHistory {
    * @param strCommand
    */
   public void addCommand(String strCommand) {
+    if (!isOn && !strCommand.endsWith(ERROR_FLAG))
+      return;
     int i;
+    // I don't think Jmol can deliver a multiline parameter here
     while ((i = strCommand.indexOf("\n")) >= 0) {
       String str = strCommand.substring(0, i);
       if (str.length() > 0)
@@ -115,14 +165,61 @@ final public class CommandHistory {
     if (strCommand.length() > 0)
       addCommandLine(strCommand);
   }
-  
-  public String getHistoryText() {
+
+  boolean isOn = true;
+
+  /**
+   * Options include:
+   *   all                             Integer.MAX_VALUE
+   *   n prev                          n >= 1
+   *   next                           -1
+   *   set max to -2 - n               n <= -3
+   *   just clear                     -2
+   *   clear and turn off; return ""   0
+   *   clear and turn on; return ""    Integer.MIN_VALUE;  
+   * @param n
+   * @return one or more lines of command history
+   */
+  public String getSetHistory(int n) {
+    isOn = (n == -2 ? isOn : true);
+    switch (n) {
+    case 0:
+      isOn = false;
+      //fall through
+    case Integer.MIN_VALUE:
+    case -2:
+      clear();
+      return "";
+    case -1:
+      return getCommandUp();
+    case 1:
+      return getCommandDown();
+    default:
+      if (n < 0) {
+        setMaxSize(-2 - n);
+        return "";
+      }
+      n = Math.max(nextCommand - n, 0);
+    }
     String str = "";
-    for (int i = 0; i < nextCommand; i++)
+    for (int i = n; i < nextCommand; i++)
       str += commandList.get(i) + "\n";
     return str;
   }
 
+  public String removeCommand() {
+    return removeCommand(nextCommand - 1);
+  }
+
+  public String removeCommand(int n) {
+    if (n < 0 || n >= nextCommand)
+      return "";
+    String str = (String) commandList.get(n);
+    commandList.remove(n);
+    nextCommand--;
+    return str; 
+  }
+  
   /**
    * Adds a single line to the bottom of the list, resets list position.
    * 
@@ -139,34 +236,8 @@ final public class CommandHistory {
     nextCommand++;
     cursorPos = nextCommand;
     commandList.add(nextCommand, "");
+    //for (int i = 0; i < nextCommand; i++)
+      //System.out.println("HISTORY:" + i+" "+commandList.get(i));
   }
-
-  /**
-   * Resets maximum size of command queue. Cuts off extra commands.
-   * 
-   * @param maxSize maximum size for the command queue.
-   */
-  void setMaxSize(int maxSize) {
-    if (maxSize == this.maxSize)
-      return;
-    while (this.maxSize > maxSize) {
-      commandList.remove(0);
-      this.maxSize--;
-      nextCommand = cursorPos = this.maxSize;
-    }
-    this.maxSize = maxSize;
-  }
-
-  /**
-   * Resets instance.
-   * 
-   * @param maxSize maximum size for the command queue.
-   */
-  void reset(int maxSize) {
-    this.maxSize = maxSize; 
-    commandList = new Vector();
-    nextCommand = 0;
-    commandList.add("");
-    cursorPos = 0;
-  }
+  
 }

@@ -68,5 +68,4 @@ public interface JmolStatusListener {
   
   public void setCallbackFunction(String callbackType, String callbackFunction);
   
-  public void addCommand(String command);
 }

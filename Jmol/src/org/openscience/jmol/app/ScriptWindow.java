@@ -46,12 +46,12 @@ import javax.swing.JScrollPane;
 import java.util.Vector;
 
 import org.jmol.i18n.GT;
-import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
+import org.jmol.util.CommandHistory;
 
 public final class ScriptWindow extends JDialog
     implements ActionListener, EnterListener{
-
+  
   private ConsoleTextPane console;
   private JButton closeButton;
   private JButton runButton;
@@ -106,7 +106,7 @@ public final class ScriptWindow extends JDialog
     closeButton.addActionListener(this);
     buttonPanel.add(closeButton);
 
-}
+  }
 
   public void sendConsoleEcho(String strEcho) {
     if (strEcho != null && !isError) {
@@ -118,7 +118,10 @@ public final class ScriptWindow extends JDialog
   boolean isError = false;
   void setError(boolean TF) {
     isError = TF;
+    if (isError)
+      console.recallCommand(true);
   }
+  
   public void sendConsoleMessage(String strStatus) {
     if (strStatus == null) {
       console.clearContent();
@@ -169,10 +172,6 @@ public final class ScriptWindow extends JDialog
       execThread = new ExecuteCommandThread(strCommand);
       execThread.start();
     }
-  }
-  
-  void addCommand(String command) {
-    console.commandHistory.addCommand(command);  
   }
   
   void executeCommand(String strCommand) {
@@ -236,7 +235,7 @@ public final class ScriptWindow extends JDialog
     } else if (source == clearButton) {
       console.clearContent();
     } else if (source == historyButton) {
-      console.getHistory();
+      console.clearContent(viewer.getSetHistory(Integer.MAX_VALUE));
     } else if (source == haltButton) {
       viewer.haltScriptExecution();
     } else if (source == helpButton) {
@@ -251,16 +250,16 @@ public final class ScriptWindow extends JDialog
 
 class ConsoleTextPane extends JTextPane {
 
-  CommandHistory commandHistory = new CommandHistory();
-
   ConsoleDocument consoleDoc;
   EnterListener enterListener;
-
-  ConsoleTextPane(EnterListener enterListener) {
+  JmolViewer viewer;
+  
+  ConsoleTextPane(ScriptWindow scriptWindow) {
     super(new ConsoleDocument());
     consoleDoc = (ConsoleDocument)getDocument();
     consoleDoc.setConsoleTextPane(this);
-    this.enterListener = enterListener;
+    this.enterListener = (EnterListener) scriptWindow;
+    this.viewer = scriptWindow.viewer;
   }
 
   public String getCommandString() {
@@ -298,14 +297,12 @@ class ConsoleTextPane extends JTextPane {
   }
   
   public void clearContent() {
-    consoleDoc.clearContent();
-    setPrompt();
-
+    clearContent(null);
   }
-
-  public void getHistory() {
+  public void clearContent(String text) {
     consoleDoc.clearContent();
-    consoleDoc.outputEcho(commandHistory.getHistoryText());
+    if (text != null)
+      consoleDoc.outputEcho(text);  
     setPrompt();
   }
   
@@ -367,22 +364,25 @@ class ConsoleTextPane extends JTextPane {
    }
 
    /**
-   * Recall command histoy.
+   * Recall command history.
    * 
    * @param up - history up or down
    */
-  private final void recallCommand(boolean up) {
-    String cmd = up ? commandHistory.getCommandUp() : commandHistory
-        .getCommandDown();
+   void recallCommand(boolean up) {
+     String cmd = viewer.getSetHistory(up ? -1 : 1);
     if (cmd == null)
       return;
     try {
-      consoleDoc.replaceCommand(cmd);
+      if (cmd.endsWith(CommandHistory.ERROR_FLAG)) {
+        cmd = cmd.substring(0, cmd.indexOf(CommandHistory.ERROR_FLAG));
+        consoleDoc.replaceCommand(cmd, true);
+      } else {
+        consoleDoc.replaceCommand(cmd, false);
+      }
     } catch (BadLocationException e) {
       e.printStackTrace();
     }
-  }
-  
+  }  
 }
 
 class ConsoleDocument extends DefaultStyledDocument {
@@ -516,7 +516,7 @@ class ConsoleDocument extends DefaultStyledDocument {
       if (offs < offsetAfterPrompt) {
         offs = getLength();
       }
-      super.insertString(offs, str, attUserInput);
+      super.insertString(offs, str, a == attError ? a : attUserInput);
       consoleTextPane.setCaretPosition(offs+str.length());
     }
     if (ichNewline >= 0) {
@@ -559,7 +559,7 @@ class ConsoleDocument extends DefaultStyledDocument {
         offs = offsetAfterPrompt;
       }
     }
-    super.replace(offs, length, str, attUserInput);
+    super.replace(offs, length, str, attrs);
 //    consoleTextPane.setCaretPosition(offs + str.length());
   }
 
@@ -567,14 +567,15 @@ class ConsoleDocument extends DefaultStyledDocument {
    * Replaces current command on script.
    * 
    * @param newCommand new command value
+   * @param isError    true to set error color  ends with #??
    * 
    * @throws BadLocationException
    */
-  void replaceCommand(String newCommand) throws BadLocationException {
+  void replaceCommand(String newCommand, boolean isError) throws BadLocationException {
     if (positionAfterPrompt == positionBeforePrompt)
       return;
     replace(offsetAfterPrompt, getLength() - offsetAfterPrompt, newCommand,
-        attUserInput);
+        isError ? attError : attUserInput);
   }
 }
 

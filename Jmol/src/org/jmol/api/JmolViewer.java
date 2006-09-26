@@ -239,6 +239,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public Object getProperty(String returnType, String infoType, String paramInfo);
 
+  abstract public String getSetHistory(int howFarBack);
+  
+  // not really implemented:
+  
   abstract public void setSyncDriver(int syncMode);
   
   abstract public int getSyncMode();

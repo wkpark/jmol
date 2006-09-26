@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
+import org.jmol.util.CommandHistory;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.Vector;
@@ -31,6 +32,7 @@ import javax.vecmath.Point3f;
 
 class Compiler {
 
+  Viewer viewer;
   String filename;
   String script;
 
@@ -48,6 +50,10 @@ class Compiler {
   private void log(String message) {
     if (logMessages)
       Logger.debug(message);
+  }
+  
+  Compiler(Viewer viewer) {
+    this.viewer = viewer;
   }
 
   boolean compile(String filename, String script, boolean isPredefining) {
@@ -86,6 +92,7 @@ class Compiler {
     if (filename != null)
       strError += filename;
     strError += " line#" + lineCurrent;
+    viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
     return strError;
   }
 

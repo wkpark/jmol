@@ -27,6 +27,7 @@ import org.jmol.util.*;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
+import org.jmol.util.CommandHistory;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -101,7 +102,8 @@ public class Viewer extends JmolViewer {
   boolean jvm11orGreater = false;
   boolean jvm12orGreater = false;
   boolean jvm14orGreater = false;
-
+  public CommandHistory commandHistory = new CommandHistory();
+  
   Viewer(Component awtComponent, JmolAdapter modelAdapter) {
     this.awtComponent = awtComponent;
     this.modelAdapter = modelAdapter;
@@ -3537,8 +3539,51 @@ public class Viewer extends JmolViewer {
     showUrl(global.helpPath + what);
   }
   
+  // ///////////////////////////////////////////////////////////////
+  // delegated to StyleManager
+  // ///////////////////////////////////////////////////////////////
+
+  /*
+   * Moved from the consoles to viewer, since this could be of general
+   * interest, it's more a property of Eval/Viewer, and the consoles 
+   * are really just a mechanism for getting user input and sending 
+   * results, not saving a history of it all. Ultimately I hope to integrate
+   * the mouse picking and possibly periodic updates of position 
+   * into this history to get a full history. We'll see!  BH 9/2006
+   * 
+   */
+  
+  
+  /**
+   * Adds one or more commands to the command history
+   * @param command  the command to add
+   */
   void addCommand(String command) {
-    statusManager.addCommand(command);
+    commandHistory.addCommand(command);
   }
   
+  /**
+   * Removes one command from the command history
+   * @return command removed
+   */
+  String removeCommand() {
+    return commandHistory.removeCommand();
+  }
+
+  /**
+   * Options include:
+   * ;  all                             n == Integer.MAX_VALUE
+   * ;  n prev                          n >= 1
+   * ;  next                            n == -1
+   * ;  set max to -2 - n               n <= -3
+   * ;  just clear                      n == -2
+   * ;  clear and turn off; return ""   n == 0
+   * ;  clear and turn on; return ""    n == Integer.MIN_VALUE;
+   *     
+   * @param howFarBack  number of lines (-1 for next line)
+   * @return one or more lines of command history
+   */
+  public String getSetHistory(int howFarBack) {
+    return commandHistory.getSetHistory(howFarBack);
+  }  
 }

@@ -30,7 +30,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
-import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 
 class Console implements ActionListener, WindowListener {
@@ -48,8 +47,6 @@ class Console implements ActionListener, WindowListener {
   final JmolViewer viewer;
   final Jvm12 jvm12;
 
-  protected CommandHistory commandHistory = new CommandHistory();
-
   Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
     this.viewer = viewer;
     this.jvm12 = jvm12;
@@ -66,15 +63,16 @@ class Console implements ActionListener, WindowListener {
     jscrollOutput.setMinimumSize(new Dimension(2, 100));
     Container c = jf.getContentPane();
 
-    JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                                    jscrollOutput, jscrollInput);
+    JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, jscrollOutput,
+        jscrollInput);
     jsp.setResizeWeight(.9);
     jsp.setDividerLocation(200);
 
     c.setLayout(new BorderLayout());
     c.add(jsp, BorderLayout.CENTER);
- 
-    JLabel label = new JLabel(GT._("press CTRL-ENTER for new line"), SwingConstants.CENTER);
+
+    JLabel label = new JLabel(GT._("press CTRL-ENTER for new line"),
+        SwingConstants.CENTER);
     label.setHorizontalAlignment(SwingConstants.CENTER);
     Container c1 = new Container();
     c1.setLayout(new BorderLayout());
@@ -99,7 +97,7 @@ class Console implements ActionListener, WindowListener {
     //    KeyStroke shiftCR = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
     //                                               InputEvent.SHIFT_MASK);
     KeyStroke shiftA = KeyStroke.getKeyStroke(KeyEvent.VK_A,
-                                              InputEvent.SHIFT_MASK);
+        InputEvent.SHIFT_MASK);
     map.removeKeyStrokeBinding(shiftA);
   }
 
@@ -110,10 +108,6 @@ class Console implements ActionListener, WindowListener {
     StyleConstants.setBold(attributesCommand, true);
   }
 
-  void addCommand(String command) {
-   commandHistory.addCommand(command); 
-  }
-  
   void setVisible(boolean visible) {
     Logger.debug("Console.setVisible(" + visible + ")");
     jf.setVisible(visible);
@@ -125,7 +119,7 @@ class Console implements ActionListener, WindowListener {
   }
 
   void output(String message, AttributeSet att) {
-    if (message == null) {
+    if (message == null || message.length() == 0) {
       output.setText("");
       return;
     }
@@ -147,7 +141,7 @@ class Console implements ActionListener, WindowListener {
       output.setText("");
     }
     if (source == historyButton) {
-      output.setText(commandHistory.getHistoryText());
+      output.setText(viewer.getSetHistory(Integer.MAX_VALUE));
     }
   }
 
@@ -160,42 +154,6 @@ class Console implements ActionListener, WindowListener {
       output(strErrorMessage);
     input.requestFocus();
   }
-
-  class ShiftEnterTextArea extends JTextArea {
-    public void processComponentKeyEvent(KeyEvent ke) {
-      switch (ke.getID()) {
-      case KeyEvent.KEY_PRESSED:
-        if (ke.getKeyCode() == KeyEvent.VK_ENTER && ke.isShiftDown()) {
-          execute();
-          return;
-        }
-        if (ke.getKeyCode() == KeyEvent.VK_UP) {
-          recallCommand(true);
-          return;
-        }
-        if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
-          recallCommand(false);
-          return;
-        }
-        break;
-      case KeyEvent.KEY_RELEASED:
-        if (ke.getKeyCode() == KeyEvent.VK_ENTER && ke.isShiftDown())
-          return;
-        break;
-      }
-      super.processComponentKeyEvent(ke);
-    }
-
-
-    private void recallCommand(boolean up) {
-      String cmd = up ? commandHistory.getCommandUp() : commandHistory
-          .getCommandDown();
-      if (cmd == null)
-        return;
-      setText(cmd);
-    }
-  }
-
 
   class ControlEnterTextArea extends JTextArea {
     public void processComponentKeyEvent(KeyEvent ke) {
@@ -224,19 +182,18 @@ class Console implements ActionListener, WindowListener {
       super.processComponentKeyEvent(ke);
     }
 
-
     private void recallCommand(boolean up) {
-      String str = up ? commandHistory.getCommandUp() : commandHistory.getCommandDown();
-      if (str == null)
+      String cmd = viewer.getSetHistory(up ? -1 : 1);
+      if (cmd == null)
         return;
-      setText(str);
+      setText(cmd);
     }
   }
 
   ////////////////////////////////////////////////////////////////
   // window listener stuff to close when the window closes
   ////////////////////////////////////////////////////////////////
-  
+
   public void windowActivated(WindowEvent we) {
   }
 

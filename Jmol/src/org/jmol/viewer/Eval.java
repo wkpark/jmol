@@ -27,6 +27,7 @@ import org.jmol.util.Logger;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.smiles.InvalidSmilesException;
+import org.jmol.util.CommandHistory;
 
 import java.io.*;
 import java.util.BitSet;
@@ -71,7 +72,7 @@ class Eval { //implements Runnable {
   boolean logMessages = false;
 
   Eval(Viewer viewer) {
-    compiler = new Compiler();
+    compiler = new Compiler(viewer);
     this.viewer = viewer;
     clearDefinitionsAndLoadPredefined();
   }
@@ -364,12 +365,14 @@ class Eval { //implements Runnable {
       viewer.scriptStatus(toString());
     }
     while (!interruptExecution.booleanValue() && pc < aatoken.length) {
-      viewer.addCommand(getLine());
+      Token token = aatoken[pc][0];
+      if (token.tok == Token.load)
+        viewer.getSetHistory(-2); //just clear
       statement = aatoken[pc++];
+      viewer.addCommand(getLine());
       statementLength = statement.length;
       if (logMessages)
         logDebugScript();
-      Token token = statement[0];
       Logger.debug(token.toString());
       switch (token.tok) {
       case Token.backbone:
@@ -425,6 +428,9 @@ class Eval { //implements Runnable {
         break;
       case Token.script:
         script();
+        break;
+      case Token.history:
+        history(1);
         break;
       case Token.select:
         select();
@@ -2583,6 +2589,35 @@ class Eval { //implements Runnable {
     popContext();
   }
 
+  void history(int pt) throws ScriptException {
+    if (statementLength == 1) {
+      // history (clear and turn on)
+      viewer.getSetHistory(Integer.MIN_VALUE);
+      return;
+    }
+    if (pt == 2) {
+      // set history n; n' = -2 - n; if n=0, then set history OFF
+      checkLength3();
+      int n = intParameter(2);
+      if(n < 0)
+        invalidArgument();
+      viewer.getSetHistory(n == 0 ? 0 : -2 - n);
+      return;
+    }
+    switch (statement[1].tok) {
+    // pt = 1  history     ON/OFF/CLEAR
+    case Token.on:
+    case Token.clear:
+      viewer.getSetHistory(Integer.MIN_VALUE);
+      return;
+    case Token.off:
+      viewer.getSetHistory(0);
+      break;
+    default:
+      keywordExpected();
+    }
+  }
+
   void select() throws ScriptException {
     // NOTE this is called by restrict()
     viewer.select(statementLength == 1 ? null : expression(statement, 1));
@@ -3459,6 +3494,9 @@ class Eval { //implements Runnable {
     case Token.hetero:
       setHetero();
       break;
+    case Token.history:
+      history(2);
+      break;
     case Token.hydrogen:
       setHydrogen();
       break;
@@ -4123,8 +4161,8 @@ class Eval { //implements Runnable {
     case Token.data:
       String type = (statementLength == 3 ? stringParameter(2) : null);
       String[] data = (type == null ? dataLabelString : viewer.getData(type));
-      showString(data == null ? "no data" 
-          : "data \"" + data[0] + "\"\n" + data[1]);      
+      showString(data == null ? "no data" : "data \"" + data[0] + "\"\n"
+          + data[1]);
       return;
     case Token.unitcell:
       showString(viewer.getUnitCellInfoText());
@@ -4170,6 +4208,13 @@ class Eval { //implements Runnable {
         return;
       }
       invalidArgument();
+    case Token.history:
+      int n = (statementLength == 2 ? Integer.MAX_VALUE : intParameter(2));
+      if (n < 1)
+        invalidArgument();
+      viewer.removeCommand();
+      showString(viewer.getSetHistory(n));
+      return;
     case Token.isosurface:
       showString((String) viewer.getShapeProperty(
           JmolConstants.SHAPE_ISOSURFACE, "jvxlFileData"));
@@ -4179,7 +4224,8 @@ class Eval { //implements Runnable {
       viewer.loadShape(JmolConstants.SHAPE_MO);
       int modelIndex = viewer.getDisplayModelIndex();
       if (modelIndex < 0)
-        evalError(GT._("MO isosurfaces require that only one model be displayed"));
+        evalError(GT
+            ._("MO isosurfaces require that only one model be displayed"));
       Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
           "moData");
       if (moData == null)
@@ -4231,11 +4277,14 @@ class Eval { //implements Runnable {
     case Token.group:
     case Token.sequence:
     case Token.residue:
-      evalError(GT._("unrecognized SHOW parameter --  use \"getProperty CHAININFO \""));
+      evalError(GT
+          ._("unrecognized SHOW parameter --  use \"getProperty CHAININFO \""));
     case Token.selected:
-      evalError(GT._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""));
+      evalError(GT
+          ._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""));
     case Token.atom:
-      evalError(GT._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)\""));
+      evalError(GT
+          ._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)\""));
     case Token.spin:
     case Token.list:
     case Token.mlp:
@@ -5212,6 +5261,8 @@ class Eval { //implements Runnable {
   ////// script exceptions ///////
 
   void evalError(String message) throws ScriptException {
+    String s = viewer.removeCommand();
+    viewer.addCommand(s + CommandHistory.ERROR_FLAG);
     throw new ScriptException(message, getLine(), filename, getLinenumber());
   }
 

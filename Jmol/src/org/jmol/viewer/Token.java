@@ -190,6 +190,7 @@ class Token {
   final static int calculate    = command | 103;
   final static int restore      = command | 104;
   final static int selectionHalo = command | 105 | setparam;
+  final static int history       = command | 106 | setparam | showparam;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -570,6 +571,7 @@ class Token {
     "calculate",         new Token(calculate,varArgCount, "calculate"),
     "selectionhalo",     new Token(selectionHalo,     onDefault1, "selectionHalos"),
     "selectionhalos",    null,
+    "history",           new Token(history,     onDefault1, "history"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

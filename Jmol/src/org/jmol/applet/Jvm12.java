@@ -64,10 +64,5 @@ class Jvm12 {
   void consoleMessage(String message) {
     if (console != null)
       console.output(message);
-  }
-  
-  void addCommand(String command) {
-    if (console != null)
-      console.addCommand(command);
-  }
+  }  
 }

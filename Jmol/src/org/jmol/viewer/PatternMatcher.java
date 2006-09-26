@@ -153,28 +153,13 @@ class PatternMatcher {
     if (targetSym != "*" && targetSym != JmolConstants.elementSymbolFromNumber(n))
       return;
     
-
-    //nothing more needs to be done here
-    //this is fully generalized
-    //to match 
     int targetMass = patternAtom.getAtomicMass();
     if (targetMass > 0) {
       // smiles indicates [13C] or [12C]
+      // must match perfectly -- [12C] matches only explicit C-12, not "unlabeled" C
       int isotopeMass = atom.getIsotopeNumber();
-      if (isotopeMass != targetMass) {
-        if (isotopeMass > 0) {
-          //both are indicating and not the same
-          //no match: 12C != 13C
+      if (isotopeMass != targetMass)
           return;
-        }
-        // we let "C" match only [12C] (naturl)
-        // If it is not listed in JmolConstants as natural,
-        // then we it will consider it unmatched
-        if(!patternAtom.getMatchNatural())
-          return;  
-        // if here, we must have "C"/[12C]; "N"/[14N]; "H"/[1H]
-        // we use the convention that no label is natural
-      }
     }
     // Check charge
     if (patternAtom.getCharge() != atom.getFormalCharge())

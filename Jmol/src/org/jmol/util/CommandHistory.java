@@ -98,11 +98,11 @@ final public class CommandHistory {
       return;
     if (maxSize < 2)
       maxSize = 2;
-    while (nextCommand >= maxSize) {
+    while (nextCommand > maxSize) {
       commandList.remove(0);
       nextCommand--;
     }
-    if (nextCommand >= maxSize)
+    if (nextCommand > maxSize)
       nextCommand= maxSize - 1;
     cursorPos = nextCommand;
     this.maxSize = maxSize;

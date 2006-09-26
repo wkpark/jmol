@@ -24,8 +24,6 @@
 
 package org.jmol.smiles;
 
-import org.jmol.viewer.JmolConstants;
-
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
@@ -34,7 +32,6 @@ public class SmilesAtom {
   private int number;
   private String symbol;
   private int atomicMass;
-  private boolean isNatural = true;
   private int charge;
   private int hydrogenCount;
   private int matchingAtom;
@@ -46,6 +43,7 @@ public class SmilesAtom {
 
   private final static int INITIAL_BONDS = 4;
 
+  
   /**
    * Constant used for default chirality.
    */
@@ -194,21 +192,6 @@ public class SmilesAtom {
     this.atomicMass = mass;
   }
   
-  /**
-   * Sets if this should match the unidentified mass symbol
-   *
-   */
-  public void setMatchNatural() {
-    isNatural = JmolConstants.isNaturalIsotope(atomicMass + symbol);
-  }
-
-  /**
-   * 
-   * @return if it should match a natural element "H" "C"
-   */
-  public boolean getMatchNatural() {
-    return isNatural;
-  }
   /**
    * Returns the charge of the atom.
    * 

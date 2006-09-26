@@ -147,23 +147,31 @@ public class Viewer extends JmolViewer {
   boolean isSilent = false;
   boolean isApplet = false;
   boolean autoExit = false;
+  String writeInfo;
   boolean haveDisplay = true;
   
   public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
                                String appletProxyOrCommandOptions) {
     this.htmlName = htmlName;
     isApplet = (documentBase != null);
+    String str = appletProxyOrCommandOptions; 
     if (!isApplet) {
       // not an applet -- used to pass along command line options
-      if (appletProxyOrCommandOptions.indexOf("-i") >= 0) {
+      if (str.indexOf("-i") >= 0) {
         setLogLevel(3); //no info, but warnings and errors
         isSilent = true;
       }
-      if (appletProxyOrCommandOptions.indexOf("-x") >= 0) {
+      if (str.indexOf("-x") >= 0) {
         autoExit = true;
       }
-      if (appletProxyOrCommandOptions.indexOf("-n") >= 0) {
+      if (str.indexOf("-n") >= 0) {
         haveDisplay = false;
+      }
+      writeInfo = null;
+      if (str.indexOf("-w") >= 0) {
+        int i = str.indexOf("\1");
+        int j = str.lastIndexOf("\1");
+        writeInfo = str.substring(i + 1,j);
       }
     }
     
@@ -2148,9 +2156,13 @@ public class Viewer extends JmolViewer {
       String strErrorMessage = eval.getErrorMessage();
       int msWalltime = eval.getExecutionWalltime();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
-      if (isScriptFile && autoExit) {
-        System.out.flush();
-        System.exit(0);
+      if (isScriptFile) {
+        if (writeInfo != null)
+          createImage(writeInfo);
+        if (autoExit) {
+          System.out.flush();
+          System.exit(0);
+        }
       }
     }
     if (returnType.equalsIgnoreCase("String"))
@@ -3585,5 +3597,24 @@ public class Viewer extends JmolViewer {
    */
   public String getSetHistory(int howFarBack) {
     return commandHistory.getSetHistory(howFarBack);
-  }  
+  }
+  
+  void createImage(String type_name) {
+    if (type_name == null)
+      return;
+    if (type_name.length() == 0)
+      type_name = "JPG:jmol.jpg";
+    int i = type_name.indexOf(":");
+    if (i < 0) {
+      i = type_name.length();
+      type_name += ":jmol.jpg";
+   }
+    String type = type_name.substring(0, i);
+    String file = type_name.substring(i + 1);
+    createImage(file, type, 100);  
+  }
+  
+  public void createImage(String file, String type, int quality) {
+    statusManager.createImage(file, type, quality);
+  }
 }

@@ -399,6 +399,12 @@ public class Jmol extends JPanel {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
 
+    OptionBuilder.withLongOpt("write");
+    OptionBuilder.withDescription(GT._(" JPG|PNG|PPM:filename"));
+    OptionBuilder.withValueSeparator();
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("w"));
+
     OptionBuilder.withLongOpt("exit");
     OptionBuilder.withDescription(GT._("run script and exit"));
     OptionBuilder.withValueSeparator('=');
@@ -468,6 +474,11 @@ public class Jmol extends JPanel {
       scriptFilename = line.getOptionValue("x");
     }
     
+    if (line.hasOption("w")) {
+      String type_name = line.getOptionValue("w");
+      commandOptions += "-w\1" + type_name + "\1";
+    }
+
     try {
       String vers = System.getProperty("java.version");
       if (vers.compareTo("1.1.2") < 0) {
@@ -1118,7 +1129,8 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      ImageSelection.setClipboard(viewer.getScreenImage());
+      ImageCreator c = new ImageCreator(viewer, status);
+      c.clipImage();
     }
   }
 
@@ -1242,44 +1254,15 @@ public class Jmol extends JPanel {
       int retval = exportChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {
         File file = exportChooser.getSelectedFile();
-
-        System.out.println("file chosen=" + file);
         if (file != null) {
-          try {
-            Image eImage = viewer.getScreenImage();
-            FileOutputStream os = new FileOutputStream(file);
-            
-            if (it.getType().equals("JPEG")) {
-              int quality = it.getQuality();
-              JpegEncoder jc = new JpegEncoder(eImage, quality, os);
-              jc.Compress();
-            } else if (it.getType().equals("PPM")) {
-              PpmEncoder pc = new PpmEncoder(eImage, os);
-              pc.encode();
-            } else if (it.getType().equals("PNG")) {
-              PngEncoder png = new PngEncoder(eImage);
-              byte[] pngbytes = png.pngEncode();
-              os.write(pngbytes);
-            } else {
-
-              // Do nothing
-            }
-
-            os.flush();
-            os.close();
-
-          } catch (IOException exc) {
-            status.setStatus(1, GT._("IO Exception:"));
-            status.setStatus(2, exc.toString());
-            System.out.println(exc.toString());
-          }
-          viewer.releaseScreenImage();
-          return;
+          ImageCreator c = new ImageCreator(viewer, status);
+          c.createImage(file.getAbsolutePath(), it.getType(), it.getQuality());
         }
       }
     }
   }
 
+  
   class RecentFilesAction extends AbstractAction {
 
     public RecentFilesAction() {
@@ -1431,6 +1414,12 @@ public class Jmol extends JPanel {
 
   class MyStatusListener implements JmolStatusListener {
     
+ 
+    public void createImage(String file, String type, int quality) {
+      ImageCreator c = new ImageCreator(viewer, status);
+      c.createImage(file, type, quality);
+    }
+    
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       // applet only?
     }
@@ -1537,4 +1526,55 @@ public class Jmol extends JPanel {
     }
   }
   
+}
+
+class ImageCreator {
+  
+  JmolViewer viewer;
+  StatusBar status;
+  
+  ImageCreator(JmolViewer viewer, StatusBar status) {
+    this.viewer = viewer;
+    this.status = status;
+  }
+ 
+  void clipImage() {
+    Image eImage = viewer.getScreenImage();
+    ImageSelection.setClipboard(eImage);
+    viewer.releaseScreenImage();    
+  }
+  
+  void createImage(String fileName, String type, int quality) {
+    try {
+      if (type.equalsIgnoreCase("CLIP")) {
+        clipImage();
+      } else {
+        Image eImage = viewer.getScreenImage();
+        FileOutputStream os = new FileOutputStream(fileName);
+        if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
+          JpegEncoder jc = new JpegEncoder(eImage, quality, os);
+          jc.Compress();
+        } else if (type.equalsIgnoreCase("PPM")) {
+          PpmEncoder pc = new PpmEncoder(eImage, os);
+          pc.encode();
+        } else if (type.equalsIgnoreCase("PNG")) {
+          PngEncoder png = new PngEncoder(eImage);
+          byte[] pngbytes = png.pngEncode();
+          os.write(pngbytes);
+        }
+        os.flush();
+        os.close();
+        viewer.releaseScreenImage();
+      }
+    } catch (IOException exc) {
+      viewer.releaseScreenImage();
+      if (exc != null) {
+        if (status != null) {
+          status.setStatus(1, GT._("IO Exception:"));
+          status.setStatus(2, exc.toString());
+        }
+        System.out.println(exc.toString());
+      }
+    }
+  }
 }

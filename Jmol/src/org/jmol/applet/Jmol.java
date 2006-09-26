@@ -705,6 +705,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   class MyStatusListener implements JmolStatusListener {
 
+    public void createImage(String file, String type, int quality) {
+      // application-only  
+    }
+    
     public void notifyFileLoaded(String fullPathName, String fileName,
                                  String modelName, Object clientFile,
                                  String errorMsg) {

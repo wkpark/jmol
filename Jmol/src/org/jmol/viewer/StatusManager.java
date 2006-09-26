@@ -340,6 +340,13 @@ class StatusManager {
   float functionXY(String functionName, int x, int y) {
     return (jmolStatusListener == null ? 0 :
       jmolStatusListener.functionXY(functionName, x, y));
-  }  
+  }
+  
+  public void createImage(String file, String type, int quality) {
+    if (jmolStatusListener == null)
+      return;
+    jmolStatusListener.createImage(file, type, quality);
+  }
+
 }
 

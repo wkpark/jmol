@@ -621,6 +621,10 @@ class Eval { //implements Runnable {
       case Token.restore:
         restore();
         break;
+      case Token.write:
+        write();
+        break;
+
       // not implemented
       case Token.structure:
       case Token.bond:
@@ -630,7 +634,6 @@ class Eval { //implements Runnable {
       case Token.print:
       case Token.renumber:
       case Token.unbond:
-      case Token.write:
       // chime extended commands
       case Token.view:
       case Token.list:
@@ -4217,6 +4220,23 @@ class Eval { //implements Runnable {
     evalError(GT._("restore what? bonds? orientation? selection?"));
   }
   
+  void write() throws ScriptException {
+    if (viewer.isApplet())
+      evalError("The WRITE command is not available for the applet.");
+    int tok = (statementLength == 1 ? 0 : statement[1].tok);
+    if (statementLength == 1 || tok == Token.clipboard) {
+      viewer.createImage(null, "CLIP", 100);
+      return;
+    }
+    checkLength3();
+    String type = (tok == Token.identifier ? (String) statement[1].value
+        : stringParameter(1));
+    if (";JPEG;JPG;PDF;PNG;".indexOf((";"+type+";").toUpperCase()) < 0)
+      evalError("write what? CLIPBOARD or JPG|PNG|PPM \"filename\"");
+    String fileName = (statement[2].tok == Token.identifier ? (String) statement[2].value
+        : stringParameter(2));
+    viewer.createImage(fileName, type, 100);
+  }
   
   /* ****************************************************************************
    * ==============================================================

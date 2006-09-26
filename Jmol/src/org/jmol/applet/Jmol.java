@@ -705,11 +705,6 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   class MyStatusListener implements JmolStatusListener {
 
-    public void addCommand(String command) {
-      if (jvm12 != null)
-        jvm12.addCommand(command);
-    }
-    
     public void notifyFileLoaded(String fullPathName, String fileName,
                                  String modelName, Object clientFile,
                                  String errorMsg) {

@@ -77,9 +77,9 @@ class CubeReader extends AtomSetCollectionReader {
       readAtomCountAndOrigin();
       readVoxelVectors();
       readAtoms();
+      readExtraLine();
       /*
         volumetric data is no longer read here
-      readExtraLine();
       readVoxelData();
       atomSetCollection.volumetricOrigin = origin;
       atomSetCollection.volumetricSurfaceVectors = voxelVectors;
@@ -109,7 +109,7 @@ class CubeReader extends AtomSetCollectionReader {
       negativeAtomCount = true;
     }
   }
-
+  
   void readVoxelVectors() throws Exception {
     readVoxelVector(0);
     readVoxelVector(1);
@@ -138,12 +138,16 @@ class CubeReader extends AtomSetCollectionReader {
     }
   }
 
-  /*
-
   void readExtraLine() throws Exception {
     if (negativeAtomCount)
       line = reader.readLine();
+    int nSurfaces = parseInt(line);
+    if (nSurfaces != Integer.MIN_VALUE && nSurfaces < 0)
+      atomSetCollection.setFileTypeName("jvxl");
   }
+
+  /*
+
 
   void readVoxelData() throws Exception {
     String line = "";

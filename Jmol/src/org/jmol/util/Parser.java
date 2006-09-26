@@ -109,6 +109,11 @@ public class Parser {
     return value;
   }
 
+  /**
+   * parses a string for an integer
+   * @param str
+   * @return integer or Integer.MIN_VALUE
+   */
   public int parseInt(String str) {
     return parseIntChecked(str, 0, str.length());
   }

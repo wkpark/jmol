@@ -311,6 +311,8 @@ class Token {
   final static int altloc       = expression | 21;
   final static int insertion    = expression | 22;
 
+  
+
   // miguel 2005 01 01
   // these are used to demark the beginning and end of expressions
   // they do not exist in the source code, but are emitted by the
@@ -688,7 +690,8 @@ class Token {
 
     "atomno",       new Token(atomno, "atomno"),
     "elemno",       tokenElemno,
-    "_e",           new Token(element, "element"),
+    "_e",           null,
+    "element",      new Token(element, "element"),
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
     "relativetemperature",  null,
@@ -702,7 +705,6 @@ class Token {
     "polymerlength",new Token(polymerLength, "polymerlength"),
     "site",         new Token(site, "site"),
     "symop",        new Token(symop, "symop"),
-    "element",      new Token(element, "element"),
     "off",          new Token(off, 0, "off"),
     "false",        null,
     "on",           tokenOn,

@@ -26,10 +26,10 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
+import org.jmol.viewer.JmolConstants;
+
 /**
  * Minnesota SuperComputer Center XYZ file format
- * 
- * 
  * 
  * simple symmetry extension via load command:
  * 9/2006 hansonr@stolaf.edu
@@ -37,6 +37,7 @@ import java.io.BufferedReader;
  *  setAtomCoord(atom)
  *  applySymmetry()
  *  
+ *  extended to read XYZI files (Bob's invention -- allows isotope numbers)
  * 
  */
 
@@ -102,7 +103,16 @@ class XyzReader extends AtomSetCollectionReader {
     for (int i = 0; i < modelAtomCount; ++i) {
       String line = reader.readLine();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = parseToken(line);
+      int isotope = parseInt(line);
+      String str = parseToken(line);
+      // xyzI
+      if (isotope == Integer.MIN_VALUE) {
+        atom.elementSymbol = str;
+      } else {
+        str = str.substring((""+isotope).length());
+        atom.elementNumber = (short)((isotope << 8) + JmolConstants.elementNumberFromSymbol(str));
+        atomSetCollection.setFileTypeName("xyzi");
+      }
       atom.x = parseFloat(line, ichNextParse);
       atom.y = parseFloat(line, ichNextParse);
       atom.z = parseFloat(line, ichNextParse);

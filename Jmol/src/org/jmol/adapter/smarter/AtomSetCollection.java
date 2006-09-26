@@ -91,6 +91,7 @@ class AtomSetCollection extends Parser {
                                     SmarterJmolAdapter.PATH_SEPARATOR);
   }
 
+  
   /**
    * Creates an AtomSetCollection based on an array of AtomSetCollection
    * 
@@ -104,6 +105,14 @@ class AtomSetCollection extends Parser {
     }
   }
 
+  /**
+   * Just sets the overall file type after the fact.
+   * @param type
+   */
+  void setFileTypeName(String type) {
+    fileTypeName = type;
+  }
+  
   /**
    * Appends an AtomSetCollection
    * 

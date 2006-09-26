@@ -562,8 +562,11 @@ final public class JmolConstants {
     13,
     16,
     55,
-    1 + (2 << 8), // D = 1 + 2*256  <-- firstIsotope
-    1 + (3 << 8), // T = 1 + 3*256
+    (2 << 8) + 1, // D = 2*256 + 1 <-- firstIsotope
+    (3 << 8) + 1, // T = 3*256 + 1
+    (13 << 8) + 6, // 13C
+    (14 << 8) + 6, // 14C
+    (15 << 8) + 7, // 15N
   };
 
   private final static String[] altElementSymbols = {
@@ -572,7 +575,10 @@ final public class JmolConstants {
     "S",
     "Cs",
     "D",
-    "T"
+    "T",
+    "13C",
+    "14C",
+    "15N",
   };
 
   private final static String[] altElementNames = {
@@ -581,7 +587,10 @@ final public class JmolConstants {
     "sulphur",
     "caesium",
     "deuterium",
-    "tritium"
+    "tritium",
+    "",
+    "",
+    "",
   };
   
   public final static int[] altArgbsCpk = {
@@ -591,6 +600,9 @@ final public class JmolConstants {
     0xFF57178F, // Cs 55
     0xFFFFFFC0, // D 2H
     0xFFFFFFA0, // T 3H
+    0xFF505050, // 13C  6 - darker
+    0xFF404040, // 14C  6 - darker still
+    0xFF105050, // 15N  7 - darker
   };
 
   /**
@@ -2248,6 +2260,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // main isotope
     //
     "@_1H _H & !(_2H,_3H)",
+    "@_12C _C & !(_13C,_14C)",
+    "@_14N _N & !(_15N)",
     //
     // protein related
     //

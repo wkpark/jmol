@@ -69,8 +69,6 @@ class Halos extends Shape {
         .getSelectionSet() : null);
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = frame.atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0)
-        continue;
       boolean isVisible = bsSelected != null && bsSelected.get(i)
           || (mads != null && mads[i] != 0);
       atom.setShapeVisibility(myVisibilityFlag, isVisible);

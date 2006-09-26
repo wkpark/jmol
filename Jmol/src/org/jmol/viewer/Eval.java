@@ -4154,6 +4154,8 @@ class Eval { //implements Runnable {
    */
 
   void show() throws ScriptException {
+    if (statementLength == 1)
+      badArgumentCount();
     switch (statement[1].tok) {
     case Token.save:
       showString(viewer.listSavedStates());

@@ -1387,6 +1387,7 @@ String getAtomInfoChime(int i) {
       p.setVisibilityFlags(bs);
     if (frame.shapes[JmolConstants.SHAPE_HALOS] != null)
       frame.shapes[JmolConstants.SHAPE_HALOS].setVisibilityFlags(bs);
+    // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
     frame.shapes[JmolConstants.SHAPE_BALLS].setVisibilityFlags(bs);
   }
   

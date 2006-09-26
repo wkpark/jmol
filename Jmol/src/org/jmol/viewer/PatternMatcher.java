@@ -148,19 +148,33 @@ class PatternMatcher {
     Atom atom = frame.getAtomAt(i);
 
     // Check symbol -- not isotope-sensitive
-    String s = patternAtom.getSymbol();
+    String targetSym = patternAtom.getSymbol();
     int n = atom.getElementNumber();
-    if (s != "*" && s != JmolConstants.elementSymbolFromNumber(n))
+    if (targetSym != "*" && targetSym != JmolConstants.elementSymbolFromNumber(n))
       return;
     
-    // Check atomic mass for [2H] [3H] only
 
+    //nothing more needs to be done here
+    //this is fully generalized
+    //to match 
     int targetMass = patternAtom.getAtomicMass();
-    if (n == 1 && targetMass > 0) {
-      int atomMass = atom.getIsotopeNumber();
-      // allow Jmol H to match H or [1H]
-      if (atomMass != targetMass && (atomMass != 0 || targetMass != 1))
-        return;
+    if (targetMass > 0) {
+      // smiles indicates [13C] or [12C]
+      int isotopeMass = atom.getIsotopeNumber();
+      if (isotopeMass != targetMass) {
+        if (isotopeMass > 0) {
+          //both are indicating and not the same
+          //no match: 12C != 13C
+          return;
+        }
+        // we let "C" match only [12C] (naturl)
+        // If it is not listed in JmolConstants as natural,
+        // then we it will consider it unmatched
+        if(!patternAtom.getMatchNatural())
+          return;  
+        // if here, we must have "C"/[12C]; "N"/[14N]; "H"/[1H]
+        // we use the convention that no label is natural
+      }
     }
     // Check charge
     if (patternAtom.getCharge() != atom.getFormalCharge())

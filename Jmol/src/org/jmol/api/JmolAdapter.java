@@ -393,7 +393,7 @@ public abstract class JmolAdapter {
     public BitSet getAtomSymmetry() { return null; }
     public int getAtomSite() { return Integer.MIN_VALUE; }
     abstract public Object getUniqueID();
-    public int getElementNumber() { return -1; } // may be atomicNumber + isotopeNumber*256
+    public int getElementNumber() { return -1; } // may be atomicNumber + isotopeNumber*128
     public String getElementSymbol() { return null; }
     public String getAtomName() { return null; }
     public int getFormalCharge() { return 0; }

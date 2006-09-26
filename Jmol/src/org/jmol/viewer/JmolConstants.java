@@ -336,7 +336,7 @@ final public class JmolConstants {
 
   /**
    * @param elementSymbol First char must be upper case, second char accepts upper or lower case
-   * @return elementNumber = atomicNumber + IsotopeNumber*256
+   * @return elementNumber = atomicNumber + IsotopeNumber*128
    */
   public final static short elementNumberFromSymbol(String elementSymbol) {
     if (htElementMap == null) {
@@ -367,16 +367,16 @@ final public class JmolConstants {
   }
   
   /**
-   * @param elementNumber may be atomicNumber + isotopeNumber*256
+   * @param elementNumber may be atomicNumber + isotopeNumber*128
    * @return elementSymbol
    */
   public final static String elementSymbolFromNumber(int elementNumber) {
-    //Isotopes as atomicNumber + IsotopeNumber * 256
+    //Isotopes as atomicNumber + IsotopeNumber * 128
     if (elementNumber >= elementNumberMax) {
       for (int j = altElementMax; --j >= 0;)
         if (elementNumber == altElementNumbers[j])
           return altElementSymbols[j];
-      elementNumber %= 256;
+      elementNumber %= 128;
     }
     if (elementNumber < 0 || elementNumber >= elementNumberMax)
       elementNumber = 0;
@@ -384,16 +384,16 @@ final public class JmolConstants {
   }
 
   /**
-   * @param elementNumber may be atomicNumber + isotopeNumber*256
+   * @param elementNumber may be atomicNumber + isotopeNumber*128
    * @return elementName
    */
   public final static String elementNameFromNumber(int elementNumber) {
-    //Isotopes as atomicNumber + IsotopeNumber * 256
+    //Isotopes as atomicNumber + IsotopeNumber * 128
     if (elementNumber >= elementNumberMax) {
       for (int j = altElementMax; --j >= 0;)
         if (elementNumber == altElementNumbers[j])
           return altElementNames[j];
-      elementNumber %= 256;
+      elementNumber %= 128;
     }
     if (elementNumber < 0 || elementNumber >= elementNumberMax)
       elementNumber = 0;
@@ -523,7 +523,7 @@ final public class JmolConstants {
   
   /**
    * @param i index into altElementNumbers
-   * @return elementNumber (may be atomicNumber + isotopeNumber*256)
+   * @return elementNumber (may be atomicNumber + isotopeNumber*128)
    */
   public final static short altElementNumberFromIndex(int i) {
     return altElementNumbers[i];
@@ -543,11 +543,11 @@ final public class JmolConstants {
    */
   public final static String altIsotopeSymbolFromIndex(int i) {
     int code = altElementNumbers[i]; 
-    return (code >> 8) + elementSymbolFromNumber(code % 256);
+    return (code >> 8) + elementSymbolFromNumber(code );
   }
   
   /**
-   * @param atomicAndIsotopeNumber (may be atomicNumber + isotopeNumber*256)
+   * @param atomicAndIsotopeNumber (may be atomicNumber + isotopeNumber*128)
    * @return  index into altElementNumbers
    */
   public final static int altElementIndexFromNumber(int atomicAndIsotopeNumber) {
@@ -557,18 +557,26 @@ final public class JmolConstants {
     return 0;
   }
     
+  // add as we go
+  private final static String naturalIsotopes = "1H,12C,14N,";
+
+  public final static boolean isNaturalIsotope(String isotopeSymbol) {
+    return (naturalIsotopes.indexOf(isotopeSymbol + ",") >= 0);      
+  }
+
   private final static short[] altElementNumbers = {
     0,
     13,
     16,
     55,
-    (2 << 8) + 1, // D = 2*256 + 1 <-- firstIsotope
-    (3 << 8) + 1, // T = 3*256 + 1
-    (13 << 8) + 6, // 13C
-    (14 << 8) + 6, // 14C
-    (15 << 8) + 7, // 15N
+    (2 << 7) + 1, // D = 2*128 + 1 <-- firstIsotope
+    (3 << 7) + 1, // T = 3*128 + 1
+    (13 << 7) + 6, // 13C
+    (14 << 7) + 6, // 14C
+    (15 << 7) + 7, // 15N
   };
 
+  
   private final static String[] altElementSymbols = {
     "Xx",
     "Al",
@@ -605,6 +613,7 @@ final public class JmolConstants {
     0xFF105050, // 15N  7 - darker
   };
 
+  
   /**
    * first entry of an actual isotope int the altElementSymbols, altElementNames, altElementNumbers arrays
    */

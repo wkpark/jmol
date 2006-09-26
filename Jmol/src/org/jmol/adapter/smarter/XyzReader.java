@@ -110,7 +110,7 @@ class XyzReader extends AtomSetCollectionReader {
         atom.elementSymbol = str;
       } else {
         str = str.substring((""+isotope).length());
-        atom.elementNumber = (short)((isotope << 8) + JmolConstants.elementNumberFromSymbol(str));
+        atom.elementNumber = (short)((isotope << 7) + JmolConstants.elementNumberFromSymbol(str));
         atomSetCollection.setFileTypeName("xyzi");
       }
       atom.x = parseFloat(line, ichNextParse);

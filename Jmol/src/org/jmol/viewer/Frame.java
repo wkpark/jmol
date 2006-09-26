@@ -153,7 +153,7 @@ public final class Frame {
         if (atomList.get(i)) {
           nAtoms++;
           int n = atoms[i].getAtomicAndIsotopeNumber();
-          if (n < 256) {
+          if (n < 128) {
             elementCounts[n]++;
             if (elementCounts[n] == 1)
               nElements++;
@@ -2126,7 +2126,7 @@ public final class Frame {
     elementsPresent = new BitSet();
     for (int i = atomCount; --i >= 0;) {
       int n = atoms[i].getAtomicAndIsotopeNumber();
-      if (n >= 256)
+      if (n >= 128)
         n = JmolConstants.elementNumberMax
             + JmolConstants.altElementIndexFromNumber(n);
       elementsPresent.set(n);

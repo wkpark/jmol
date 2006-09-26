@@ -410,11 +410,11 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   short getElementNumber() {
-    return (short) (atomicAndIsotopeNumber % 256);
+    return (short) (atomicAndIsotopeNumber % 128);
   }
   
   short getIsotopeNumber() {
-    return (short) (atomicAndIsotopeNumber >> 8);
+    return (short) (atomicAndIsotopeNumber >> 7);
   }
   
   short getAtomicAndIsotopeNumber() {
@@ -581,15 +581,15 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   short getVanderwaalsMar() {
-    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 256];
+    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128];
   }
 
   float getVanderwaalsRadiusFloat() {
-    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 256] / 1000f;
+    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] / 1000f;
   }
 
   short getBondingMar() {
-    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 256,
+    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 128,
                                        formalChargeAndFlags >> 3);
   }
 

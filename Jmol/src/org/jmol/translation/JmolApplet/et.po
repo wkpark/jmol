@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-27 19:23+0200\n"
+"POT-Creation-Date: 2006-09-27 21:11+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "X-Poedit-Language: Estonian\n"
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
+
+#: JmolApplet.java:46
+msgid "Loading Jmol applet ..."
+msgstr ""
 
 #: org/jmol/applet/Console.java:39
 #, fuzzy
@@ -27,16 +31,25 @@ msgid "Execute"
 msgstr ""
 
 #: org/jmol/applet/Console.java:42
-#, fuzzy
-msgid "Clear"
-msgstr "Sulge"
+msgid "Clear Output"
+msgstr ""
 
 #: org/jmol/applet/Console.java:43
+#, fuzzy
+msgid "Clear Input"
+msgstr "Sulge"
+
+#: org/jmol/applet/Console.java:44
 msgid "History"
 msgstr ""
 
-#: org/jmol/applet/Console.java:74
-msgid "press CTRL-ENTER for new line"
+#: org/jmol/applet/Console.java:45
+#, fuzzy
+msgid "Load"
+msgstr "Ligand"
+
+#: org/jmol/applet/Console.java:89
+msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 
 #: org/jmol/applet/Jmol.java:597
@@ -54,6 +67,11 @@ msgstr ""
 #: org/jmol/applet/Jmol.java:716
 msgid "File Error:"
 msgstr "Faili viga:"
+
+#: org/jmol/appletwrapper/AppletWrapper.java:143
+#, java-format
+msgid "  {0} seconds"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:149
 #, java-format

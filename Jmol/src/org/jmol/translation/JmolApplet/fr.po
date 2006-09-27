@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-27 19:23+0200\n"
-"PO-Revision-Date: 2006-09-27 19:49+0100\n"
+"POT-Creation-Date: 2006-09-27 21:11+0200\n"
+"PO-Revision-Date: 2006-09-27 21:20+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,10 @@ msgstr ""
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Basepath: ../../../..\n"
+
+#: JmolApplet.java:46
+msgid "Loading Jmol applet ..."
+msgstr "Chargement de l'applet Jmol ..."
 
 #: org/jmol/applet/Console.java:39
 msgid "Jmol Script Console"
@@ -27,16 +31,24 @@ msgid "Execute"
 msgstr "Exécuter"
 
 #: org/jmol/applet/Console.java:42
-msgid "Clear"
-msgstr "Effacer"
+msgid "Clear Output"
+msgstr "Effacer la sortie"
 
 #: org/jmol/applet/Console.java:43
+msgid "Clear Input"
+msgstr "Effacer la saisie"
+
+#: org/jmol/applet/Console.java:44
 msgid "History"
 msgstr "Historique"
 
-#: org/jmol/applet/Console.java:74
-msgid "press CTRL-ENTER for new line"
-msgstr "Appuyer sur Ctrl+Entrée pour une nouvelle ligne"
+#: org/jmol/applet/Console.java:45
+msgid "Load"
+msgstr "Charger"
+
+#: org/jmol/applet/Console.java:89
+msgid "press CTRL-ENTER for new line or paste model data and press Load"
+msgstr "Appuyer sur Ctrl+Entrée pour une nouvelle ligne ou copier les données d'un modèle et appuyer sur Load"
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -56,6 +68,11 @@ msgstr ""
 #: org/jmol/applet/Jmol.java:716
 msgid "File Error:"
 msgstr "Erreur de Fichier:"
+
+#: org/jmol/appletwrapper/AppletWrapper.java:143
+#, java-format
+msgid "  {0} seconds"
+msgstr "  {0} secondes"
 
 #: org/jmol/popup/JmolPopup.java:149
 #, java-format

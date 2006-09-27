@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-27 19:23+0200\n"
+"POT-Creation-Date: 2006-09-27 21:11+0200\n"
 "PO-Revision-Date: 2006-09-24 14:11+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -19,6 +19,10 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 "X-Generator: KBabel 1.10\n"
 
+#: JmolApplet.java:46
+msgid "Loading Jmol applet ..."
+msgstr ""
+
 #: org/jmol/applet/Console.java:39
 #, fuzzy
 msgid "Jmol Script Console"
@@ -29,16 +33,26 @@ msgid "Execute"
 msgstr ""
 
 #: org/jmol/applet/Console.java:42
-#, fuzzy
-msgid "Clear"
-msgstr "Sluiten"
+msgid "Clear Output"
+msgstr ""
 
 #: org/jmol/applet/Console.java:43
+#, fuzzy
+msgid "Clear Input"
+msgstr "Sluiten"
+
+#: org/jmol/applet/Console.java:44
 msgid "History"
 msgstr ""
 
-#: org/jmol/applet/Console.java:74
-msgid "press CTRL-ENTER for new line"
+#: org/jmol/applet/Console.java:45
+#, fuzzy
+msgid "Load"
+msgstr "Ligand"
+
+#: org/jmol/applet/Console.java:89
+#, fuzzy
+msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr "Druk CTRL-ENTER for een nieuwe regel"
 
 #: org/jmol/applet/Jmol.java:597
@@ -58,6 +72,11 @@ msgstr ""
 #: org/jmol/applet/Jmol.java:716
 msgid "File Error:"
 msgstr "Bestandsfout:"
+
+#: org/jmol/appletwrapper/AppletWrapper.java:143
+#, java-format
+msgid "  {0} seconds"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:149
 #, java-format

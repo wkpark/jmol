@@ -40,7 +40,12 @@ public class DisplayPanel extends JPanel
   
   private String displaySpeed;
 
-  public DisplayPanel(StatusBar status, GuiMap guimap) {
+  Dimension startupDimension;
+  boolean haveDisplay;
+  
+  public DisplayPanel(StatusBar status, GuiMap guimap, boolean haveDisplay, int startupWidth, int startupHeight) {
+    startupDimension = new Dimension(startupWidth, startupHeight);
+    this.haveDisplay = haveDisplay;
     this.status = status;
     this.guimap = guimap;
     if (System.getProperty("painttime", "false").equals("true"))
@@ -54,7 +59,7 @@ public class DisplayPanel extends JPanel
 
   public void setViewer(JmolViewer viewer) {
     this.viewer = viewer;
-    viewer.setScreenDimension(getSize(dimSize));
+    viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
   }
 
   // for now, default to true
@@ -89,7 +94,7 @@ public class DisplayPanel extends JPanel
   }
 
   private void updateSize() {
-    viewer.setScreenDimension(getSize(dimSize));
+    viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
     setRotateMode();
   }
 

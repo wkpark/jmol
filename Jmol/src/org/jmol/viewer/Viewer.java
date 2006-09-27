@@ -149,6 +149,7 @@ public class Viewer extends JmolViewer {
   boolean autoExit = false;
   String writeInfo;
   boolean haveDisplay = true;
+  boolean mustRender = true;
   
   public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
                                String appletProxyOrCommandOptions) {
@@ -173,6 +174,7 @@ public class Viewer extends JmolViewer {
         int j = str.lastIndexOf("\1");
         writeInfo = str.substring(i + 1,j);
       }
+      mustRender = (haveDisplay || writeInfo != null);
     }
     
 /*
@@ -190,8 +192,8 @@ public class Viewer extends JmolViewer {
       fileManager.setAppletContext(documentBase, codeBase, appletProxyOrCommandOptions);
   }
 
-  boolean getDisplayFlag() {
-    return haveDisplay;
+  boolean mustRenderFlag() {
+    return mustRender;
   }
   
   static void setLogLevel(int ilevel) {
@@ -1958,11 +1960,20 @@ public class Viewer extends JmolViewer {
   }
 
   void requestRepaintAndWait() {
-    repaintManager.requestRepaintAndWait();
+   if (haveDisplay)
+     repaintManager.requestRepaintAndWait();
   }
 
   public void repaintView() {
     repaintManager.repaintView();
+  }
+  
+  void noDisplayTest() {
+    if (isTainted || getSlabEnabled()) {
+      setModelVisibility();
+      modelManager.setModelClickability();
+    }
+    isTainted = false;
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
@@ -2157,8 +2168,11 @@ public class Viewer extends JmolViewer {
       int msWalltime = eval.getExecutionWalltime();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
       if (isScriptFile) {
-        if (writeInfo != null)
+        if (writeInfo != null) {
+          if (!haveDisplay)
+            noDisplayTest();
           createImage(writeInfo);
+        }
         if (autoExit) {
           System.out.flush();
           System.exit(0);

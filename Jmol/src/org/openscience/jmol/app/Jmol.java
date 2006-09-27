@@ -160,7 +160,7 @@ public class Jmol extends JPanel {
     status = (StatusBar) createStatusBar();
     say(GT._("Initializing 3D display..."));
     //
-    display = new DisplayPanel(status, guimap);
+    display = new DisplayPanel(status, guimap, haveDisplay.booleanValue(), startupWidth, startupHeight);
     JmolAdapter modelAdapter;
     String adapter= System.getProperty("model");
     if (adapter == null || adapter.length() == 0)
@@ -190,7 +190,8 @@ public class Jmol extends JPanel {
     say(GT._("Initializing Script Window..."));
     scriptWindow = new ScriptWindow(viewer, frame);
     say(GT._("Initializing AtomSetChooser Window..."));
-    atomSetChooser = new AtomSetChooser(viewer, frame);
+    if (haveDisplay.booleanValue())
+      atomSetChooser = new AtomSetChooser(viewer, frame);
 
     MyStatusListener myStatusListener;
     myStatusListener = new MyStatusListener();
@@ -247,6 +248,10 @@ public class Jmol extends JPanel {
     say(GT._("Starting display..."));
     display.start();
 
+    
+    if (haveDisplay.booleanValue()) {
+      
+      
     say(GT._("Setting up File Choosers..."));
     openChooser = new FileChooser();
     openChooser.setCurrentDirectory(currentDir);
@@ -272,6 +277,8 @@ public class Jmol extends JPanel {
 
     jmolpopup = JmolPopup.newJmolPopup(viewer);
 
+  }
+  
     // prevent new Jmol from covering old Jmol
     if (parent != null) {
         Point location = parent.frame.getLocationOnScreen();
@@ -364,7 +371,8 @@ public class Jmol extends JPanel {
 
     Jmol window = new Jmol(splash, frame, null, startupWidth, startupHeight,
         commandOptions);
-    frame.show();
+    if (haveDisplay.booleanValue())
+      frame.show();
     return window;
   }
 
@@ -459,10 +467,8 @@ public class Jmol extends JPanel {
     }
 
     if (line.hasOption("n")) {
-      haveDisplay = Boolean.FALSE;
-      startupWidth = 200;
-      startupHeight = 200;
       commandOptions += "-n";
+      haveDisplay = Boolean.FALSE;
     }
 
     //modelFilename = "caffeine.xyz"; //Eclipse TESTING ONLY
@@ -1434,6 +1440,10 @@ public class Jmol extends JPanel {
           JOptionPane.ERROR_MESSAGE);
         return;
       }
+      
+      if (!haveDisplay.booleanValue())
+        return;
+      
       jmolpopup.updateComputedMenus();
       if (fullPathName == null) {
         // a 'clear/zap' operation
@@ -1448,7 +1458,8 @@ public class Jmol extends JPanel {
 	  title = modelName;
       frame.setTitle(title);
       recentFiles.notifyFileOpen(fullPathName);
-      pcs.firePropertyChange(chemFileProperty, null, clientFile);
+      if (haveDisplay.booleanValue())
+        pcs.firePropertyChange(chemFileProperty, null, clientFile);
     }
 
     public void notifyFrameChanged(int frameNo) {

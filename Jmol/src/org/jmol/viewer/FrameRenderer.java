@@ -44,7 +44,7 @@ class FrameRenderer {
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame,
               int displayModelIndex) {
 
-    if (frame == null || frame.atomCount <= 0 || !viewer.getDisplayFlag())
+    if (frame == null || frame.atomCount <= 0 || !viewer.mustRenderFlag())
       return;
     
     logTime = viewer.getTestFlag1();

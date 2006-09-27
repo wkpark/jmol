@@ -62,6 +62,7 @@ class GuiMap {
       labels.put("deselectall", GT._("Deselect All"));
       labels.put("copyImage", GT._("Copy Image"));
       labels.put("prefs", GT._("&Preferences..."));
+      labels.put("pasteClipboard", GT._("&Paste"));
       labels.put("editSelectAllScript", GT._("Select All"));
       labels.put("selectMenu", GT._("Select"));
       labels.put("selectAllScript", GT._("All"));

@@ -77,9 +77,12 @@ class ModelManager {
         modelSetName = reduceFilename(fileName);
       frame = new Frame(viewer, adapter, clientFile);
       haveFile = true;
+      if (frame.atomCount == 0)
+        zap();
     }
   }
 
+ 
   String reduceFilename(String fileName) {
     if (fileName == null)
       return null;
@@ -1627,4 +1630,26 @@ String getAtomInfoChime(int i) {
       return;
     frame.calculateStructures(true);
   }
+  
+  void zap() {
+    setClientFile(null, null, null);
+    fullPathName = fileName = modelSetName = "zapped";
+    frame = new Frame(viewer, "empty");
+    haveFile = false;
+  }
+  
+  boolean getEchoStateActive() {
+    if (frame == null)
+      return false;
+    return frame.getEchoStateActive();
+  }
+  void setEchoStateActive(boolean TF) {
+    if (frame == null)
+      return;
+    frame.setEchoStateActive(TF);
+  }
+
+
+
+
 }

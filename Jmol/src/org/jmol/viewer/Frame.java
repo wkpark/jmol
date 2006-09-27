@@ -47,17 +47,16 @@ import java.awt.Rectangle;
 
 public final class Frame {
 
-  final Viewer viewer;
-  final JmolAdapter adapter;
-  final FrameRenderer frameRenderer;
+  Viewer viewer;
+  FrameRenderer frameRenderer;
   private String modelSetTypeName;
-  final boolean isXYZ;
-  final boolean isPDB;
-  final boolean isMultiFile;
-  final boolean isArrayOfFiles;
+  boolean isXYZ;
+  boolean isPDB;
+  boolean isMultiFile;
+  boolean isArrayOfFiles;
   boolean isZeroBased;
-  final Mmset mmset;
-  final Graphics3D g3d;
+  Mmset mmset;
+  Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
   float maxBondingRadius = Float.MIN_VALUE;
@@ -197,13 +196,16 @@ public final class Frame {
   int bfactor100Lo;
   int bfactor100Hi;
 
-  Frame(Viewer viewer, JmolAdapter adapter, Object clientFile) {
+  Frame(Viewer viewer, String name) {
     this.viewer = viewer;
-    this.adapter = adapter;
+    initializeFrame(name, 1, null, null);    
+    initializeModel(null, null);
+  }
+  
+  void initializeFrame(String name, int nAtoms, Properties properties, Hashtable info) {
 
     //long timeBegin = System.currentTimeMillis();
-    modelSetTypeName = adapter.getFileTypeName(clientFile).toLowerCase()
-        .intern();
+    modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
     isArrayOfFiles = (modelSetTypeName == "array");
     setZeroBased();
@@ -217,16 +219,9 @@ public final class Frame {
     loadShape(JmolConstants.SHAPE_MEASURES);
     loadShape(JmolConstants.SHAPE_UCCAGE);
 
-    initializeBuild(adapter.getEstimatedAtomCount(clientFile));
-
-    setModelSetProperties(adapter.getAtomSetCollectionProperties(clientFile));
-    setModelSetAuxiliaryInfo(adapter
-        .getAtomSetCollectionAuxiliaryInfo(clientFile));
-
-    /****************************************************************
-     * crystal cell must come first, in case atom coordinates
-     * need to be transformed to fit in the crystal cell
-     ****************************************************************/
+    initializeBuild(nAtoms);
+    mmset.setModelSetProperties(properties);
+    mmset.setModelSetAuxiliaryInfo(info);
 
     isMultiFile = mmset.getModelSetAuxiliaryInfoBoolean("isMultiFile");
     isPDB = mmset.getModelSetAuxiliaryInfoBoolean("isPDB");
@@ -236,56 +231,63 @@ public final class Frame {
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
     someModelsHaveFractionalCoordinates = mmset
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
+    fileHasHbonds = false;
+}
 
-    currentModelIndex = -1;
-    int modelCount = adapter.getAtomSetCount(clientFile);
-    setModelCount(modelCount);
+  void initializeModel(JmolAdapter adapter, Object clientFile) {
+    int modelCount = (adapter == null ? 1 : adapter.getAtomSetCount(clientFile));
+    mmset.setModelCount(modelCount);
 
     Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
         + " haveUnitcells:" + someModelsHaveUnitcells + " haveFractionalCoord:"
         + someModelsHaveFractionalCoordinates);
-    if (modelCount > 0)
+    if (modelCount > 0 && adapter != null)
       Logger
           .info(modelCount
               + " model"
               + (modelCount == 1 ? "" : "s")
-              + " in this collection. Use getProperty \"modelInfo\" or getProperty \"auxiliaryInfo\" to inspect them.");
-    for (int i = 0; i < modelCount; ++i) {
-      int modelNumber = adapter.getAtomSetNumber(clientFile, i);
-      String modelName = adapter.getAtomSetName(clientFile, i);
-      if (modelName == null)
-        modelName = "" + modelNumber;
-      Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
-      Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
-          clientFile, i);
-      boolean isPDBModel = (isPDB || mmset.getModelAuxiliaryInfoBoolean(i,
-          "isPDB"));
-      setModelNameNumberProperties(i, modelName, modelNumber, modelProperties,
-          modelAuxiliaryInfo, isPDBModel);
-    }
+              + " in this collection. Use getProperty \"modelInfo\" or"
+              + " getProperty \"auxiliaryInfo\" to inspect them.");
 
-    for (JmolAdapter.AtomIterator iterAtom = adapter
-        .getAtomIterator(clientFile); iterAtom.hasNext();) {
-      short elementNumber = (short) iterAtom.getElementNumber();
-      if (elementNumber <= 0)
-        elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
-            .getElementSymbol());
-      char alternateLocation = iterAtom.getAlternateLocationID();
-      addAtom(iterAtom.getAtomSetIndex(), iterAtom.getAtomSymmetry(), iterAtom
-          .getAtomSite(), iterAtom.getUniqueID(), elementNumber, iterAtom
-          .getAtomName(), iterAtom.getFormalCharge(), iterAtom
-          .getPartialCharge(), iterAtom.getOccupancy(), iterAtom.getBfactor(),
-          iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(), iterAtom
-              .getIsHetero(), iterAtom.getAtomSerial(), iterAtom.getChainID(),
-          iterAtom.getGroup3(), iterAtom.getSequenceNumber(), iterAtom
-              .getInsertionCode(), iterAtom.getVectorX(),
-          iterAtom.getVectorY(), iterAtom.getVectorZ(), alternateLocation,
-          iterAtom.getClientAtomReference());
-    }
+    if (adapter == null) {
+      currentModelIndex = 0;
+      mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
+    } else {
+      currentModelIndex = -1;
+      for (int i = 0; i < modelCount; ++i) {
+        int modelNumber = adapter.getAtomSetNumber(clientFile, i);
+        String modelName = adapter.getAtomSetName(clientFile, i);
+        if (modelName == null)
+          modelName = "" + modelNumber;
+        Properties modelProperties = adapter
+            .getAtomSetProperties(clientFile, i);
+        Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
+            clientFile, i);
+        boolean isPDBModel = (isPDB || mmset.getModelAuxiliaryInfoBoolean(i,
+            "isPDB"));
+        mmset.setModelNameNumberProperties(i, modelName, modelNumber,
+            modelProperties, modelAuxiliaryInfo, isPDBModel);
+      }
 
-    fileHasHbonds = false;
+      for (JmolAdapter.AtomIterator iterAtom = adapter
+          .getAtomIterator(clientFile); iterAtom.hasNext();) {
+        short elementNumber = (short) iterAtom.getElementNumber();
+        if (elementNumber <= 0)
+          elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
+              .getElementSymbol());
+        char alternateLocation = iterAtom.getAlternateLocationID();
+        addAtom(iterAtom.getAtomSetIndex(), iterAtom.getAtomSymmetry(),
+            iterAtom.getAtomSite(), iterAtom.getUniqueID(), elementNumber,
+            iterAtom.getAtomName(), iterAtom.getFormalCharge(), iterAtom
+                .getPartialCharge(), iterAtom.getOccupancy(), iterAtom
+                .getBfactor(), iterAtom.getX(), iterAtom.getY(), iterAtom
+                .getZ(), iterAtom.getIsHetero(), iterAtom.getAtomSerial(),
+            iterAtom.getChainID(), iterAtom.getGroup3(), iterAtom
+                .getSequenceNumber(), iterAtom.getInsertionCode(), iterAtom
+                .getVectorX(), iterAtom.getVectorY(), iterAtom.getVectorZ(),
+            alternateLocation, iterAtom.getClientAtomReference());
+      }
 
-    {
       JmolAdapter.BondIterator iterBond = adapter.getBondIterator(clientFile);
       if (iterBond != null)
         while (iterBond.hasNext()) {
@@ -293,53 +295,61 @@ public final class Frame {
               iterBond.getEncodedOrder());
 
         }
+      JmolAdapter.StructureIterator iterStructure = adapter
+          .getStructureIterator(clientFile);
+      if (iterStructure != null)
+        while (iterStructure.hasNext()) {
+          if (!iterStructure.getStructureType().equals("turn"))
+            defineStructure(iterStructure.getModelIndex(), iterStructure
+                .getStructureType(), iterStructure.getStartChainID(),
+                iterStructure.getStartSequenceNumber(), iterStructure
+                    .getStartInsertionCode(), iterStructure.getEndChainID(),
+                iterStructure.getEndSequenceNumber(), iterStructure
+                    .getEndInsertionCode());
+        }
+
+      // define turns LAST. (pulled by the iterator first)
+      // so that if they overlap they get overwritten:
+
+      iterStructure = adapter.getStructureIterator(clientFile);
+      if (iterStructure != null)
+        while (iterStructure.hasNext()) {
+          if (iterStructure.getStructureType().equals("turn"))
+            defineStructure(iterStructure.getModelIndex(), iterStructure
+                .getStructureType(), iterStructure.getStartChainID(),
+                iterStructure.getStartSequenceNumber(), iterStructure
+                    .getStartInsertionCode(), iterStructure.getEndChainID(),
+                iterStructure.getEndSequenceNumber(), iterStructure
+                    .getEndInsertionCode());
+        }
     }
 
-    // define turns LAST. (pulled by the iterator first)
-    // so that if they overlap they get overwritten:
-
-    JmolAdapter.StructureIterator iterStructure = adapter
-        .getStructureIterator(clientFile);
-    if (iterStructure != null)
-      while (iterStructure.hasNext()) {
-        if (!iterStructure.getStructureType().equals("turn"))
-          defineStructure(iterStructure.getModelIndex(), iterStructure
-              .getStructureType(), iterStructure.getStartChainID(),
-              iterStructure.getStartSequenceNumber(), iterStructure
-                  .getStartInsertionCode(), iterStructure.getEndChainID(),
-              iterStructure.getEndSequenceNumber(), iterStructure
-                  .getEndInsertionCode());
-      }
-
-    iterStructure = adapter.getStructureIterator(clientFile);
-    if (iterStructure != null)
-      while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType().equals("turn"))
-          defineStructure(iterStructure.getModelIndex(), iterStructure
-              .getStructureType(), iterStructure.getStartChainID(),
-              iterStructure.getStartSequenceNumber(), iterStructure
-                  .getStartInsertionCode(), iterStructure.getEndChainID(),
-              iterStructure.getEndSequenceNumber(), iterStructure
-                  .getEndInsertionCode());
-      }
+    /****************************************************************
+     * crystal cell must come first, in case atom coordinates
+     * need to be transformed to fit in the crystal cell
+     ****************************************************************/
 
     doUnitcellStuff();
     doAutobond();
     finalizeGroupBuild(); // set group offsets and build monomers
     buildPolymers();
     freeze();
-    adapter.finish(clientFile);
     finalizeBuild();
-    dumpAtomSetNameDiagnostics(clientFile);
+  }
+  
+  Frame(Viewer viewer, JmolAdapter adapter, Object clientFile) {
+    this.viewer = viewer;
+    initializeFrame(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
+        adapter.getEstimatedAtomCount(clientFile), adapter
+            .getAtomSetCollectionProperties(clientFile), adapter
+            .getAtomSetCollectionAuxiliaryInfo(clientFile));
+    initializeModel(adapter, clientFile);
+    adapter.finish(clientFile);
+    if (false)
+      dumpAtomSetNameDiagnostics(adapter, clientFile);
   }
 
-  void setZeroBased() {
-    isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
-  }
-
-  void dumpAtomSetNameDiagnostics(Object clientFile) {
-    if (true)
-      return;
+  void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
     int frameModelCount = getModelCount();
     int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
     Logger.debug("----------------\n" + "debugging of AtomSetName stuff\n"
@@ -349,7 +359,6 @@ public final class Frame {
       Logger.debug("atomSetName[" + i + "]="
           + adapter.getAtomSetName(clientFile, i) + " atomSetNumber[" + i
           + "]=" + adapter.getAtomSetNumber(clientFile, i));
-
     }
   }
 
@@ -732,6 +741,10 @@ public final class Frame {
     mmset.setConformation(modelIndex, bsConformation);
   }
 
+  void setZeroBased() {
+    isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
+  }
+
   void hackAtomSerialNumbersForAnimations() {
     // first, validate that all atomSerials are NaN
     if (atomSerials != null)
@@ -882,28 +895,6 @@ public final class Frame {
 
   int getModelNumberIndex(int modelNumber) {
     return mmset.getModelNumberIndex(modelNumber);
-  }
-
-  ////////////////////////////////////////////////////////////////
-
-  void setModelCount(int modelCount) {
-    mmset.setModelCount(modelCount);
-  }
-
-  void setModelSetProperties(Properties modelSetProperties) {
-    mmset.setModelSetProperties(modelSetProperties);
-  }
-
-  void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
-    mmset.setModelSetAuxiliaryInfo(modelSetAuxiliaryInfo);
-  }
-
-  void setModelNameNumberProperties(int modelIndex, String modelName,
-                                    int modelNumber,
-                                    Properties modelProperties,
-                                    Hashtable modelAuxiliaryInfo, boolean isPDB) {
-    mmset.setModelNameNumberProperties(modelIndex, modelName, modelNumber,
-        modelProperties, modelAuxiliaryInfo, isPDB);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -3030,4 +3021,13 @@ public final class Frame {
     return selectionHaloEnabled;
   }
 
+  boolean echoShapeActive = false;
+  
+  boolean getEchoStateActive() {
+    return echoShapeActive;
+  }
+  
+  public void setEchoStateActive(boolean TF) {
+    echoShapeActive = TF;
+  }
 }

@@ -31,6 +31,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.awt.datatransfer.Clipboard;
 
 /**
  * This class is used to transfer an {@link Image} into the clipboard.
@@ -45,7 +46,7 @@ public class ImageSelection implements Transferable {
   private Image image;
   
   /**
-   * Transers <code>image</code> into the clipboard.
+   * Transfers <code>image</code> into the clipboard.
    * 
    * @param image Image to transfer into the clipboard.
    */
@@ -88,4 +89,30 @@ public class ImageSelection implements Transferable {
     return image;
   }
 
+  /**
+   * Get the String residing on the clipboard.
+   * from http://www.javapractices.com/Topic82.cjp
+   * @return any text found on the Clipboard; if none found, return an
+   * empty String.
+   */
+  public static String getClipboardText() {
+    String result = null;
+    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    Transferable contents = clipboard.getContents(null);
+    boolean hasTransferableText = (contents != null)
+        && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+    if (hasTransferableText) {
+      try {
+        result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+      } catch (UnsupportedFlavorException ex) {
+        //highly unlikely since we are using a standard DataFlavor
+        System.out.println(ex);
+        ex.printStackTrace();
+      } catch (IOException ex) {
+        System.out.println(ex);
+        ex.printStackTrace();
+      }
+    }
+    return result;
+  }
 }

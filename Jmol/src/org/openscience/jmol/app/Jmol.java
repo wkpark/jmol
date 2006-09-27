@@ -1023,6 +1023,7 @@ public class Jmol extends JPanel {
   private static final String scriptAction = "script";
   private static final String atomsetchooserAction = "atomsetchooser";
   private static final String copyImageActionProperty = "copyImage";
+  private static final String pasteClipboardActionProperty = "pasteClipboard";
 
 
   // --- action implementations -----------------------------------
@@ -1032,6 +1033,7 @@ public class Jmol extends JPanel {
   private PdfAction pdfAction = new PdfAction();
   private PrintAction printAction = new PrintAction();
   private CopyImageAction copyImageAction = new CopyImageAction();
+  private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
   private ViewMeasurementTableAction viewMeasurementTableAction
     = new ViewMeasurementTableAction();
 
@@ -1043,6 +1045,7 @@ public class Jmol extends JPanel {
     new NewAction(), new NewwinAction(), new OpenAction(),
     new OpenUrlAction(), printAction, exportAction,
     new CloseAction(), new ExitAction(), copyImageAction,
+    pasteClipboardAction,
     new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
     new RecentFilesAction(), povrayAction, pdfAction,
@@ -1124,6 +1127,20 @@ public class Jmol extends JPanel {
       hd.show();
     }
   }
+
+  class PasteClipboardAction extends AbstractAction {
+  
+    public PasteClipboardAction() {
+      super(pasteClipboardActionProperty);
+    }
+  
+    public void actionPerformed(ActionEvent e) {
+      String str = ImageSelection.getClipboardText();
+      if (str != null && str.length() > 0)
+        viewer.loadInline(str);
+    }
+  }
+ 
 
   /**
    * An Action to copy the current image into the clipboard. 
@@ -1420,7 +1437,6 @@ public class Jmol extends JPanel {
 
   class MyStatusListener implements JmolStatusListener {
     
- 
     public void createImage(String file, String type, int quality) {
       ImageCreator c = new ImageCreator(viewer, status);
       c.createImage(file, type, quality);

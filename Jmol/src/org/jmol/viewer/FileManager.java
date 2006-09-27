@@ -127,31 +127,26 @@ class FileManager {
   }
 
   void openStringInline(String strModel) {
-    openErrorMessage = null;
-    fullPathName = fileName = "string";
-    inlineData = strModel;
-    isInline = true;
-    isDOM = false;
-    
-    fileOpenThread = new FileOpenThread(fullPathName,
-                                        new StringReader(strModel));
-    fileOpenThread.run();
+    openStringInline(strModel, null);
   }
 
   void openStringInline(String strModel, int[] params) {
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
-        sp+="," + params[i];
+        sp += "," + params[i];
     Logger.info("FileManager.openStringInline(" + sp + ")");
     openErrorMessage = null;
     fullPathName = fileName = "string";
     inlineData = strModel;
     isInline = true;
     isDOM = false;
-    
-    fileOpenThread = new FileOpenThread(fullPathName,
-                                        new StringReader(strModel), params);
+    if (params == null)
+      fileOpenThread = new FileOpenThread(fullPathName, new StringReader(
+          strModel));
+    else
+      fileOpenThread = new FileOpenThread(fullPathName, new StringReader(
+          strModel), params);
     fileOpenThread.run();
   }
 

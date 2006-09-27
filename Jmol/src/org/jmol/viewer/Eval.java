@@ -2150,15 +2150,11 @@ class Eval { //implements Runnable {
     variables.put(variable, statement);
   }
 
-  boolean echoShapeActive = false;
-
-  void echo() throws ScriptException {
-    if(viewer.getFrame() == null)
-      evalError(GT._("ECHO must follow, not precede, model loading"));
+  void echo() {
     String text = "";
     if (statementLength == 2 && statement[1].tok == Token.string)
       text = (String) statement[1].value;
-    if (echoShapeActive)
+    if (viewer.getEchoStateActive())
       viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
     viewer.scriptEcho(text);
   }
@@ -3814,11 +3810,9 @@ class Eval { //implements Runnable {
   }
 
   void setEcho() throws ScriptException {
-    if(viewer.getFrame() == null)
-      evalError(GT._("SET ECHO must follow, not precede, model loading"));
     String propertyName = "target";
     Object propertyValue = null;
-    echoShapeActive = true;
+    boolean echoShapeActive = true;
     if (statementLength < 3)
       badArgumentCount();
     //set echo xxx
@@ -3839,6 +3833,7 @@ class Eval { //implements Runnable {
     default:
       keywordExpected();
     }
+    viewer.setEchoStateActive(echoShapeActive);
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
     viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName,
         propertyValue);

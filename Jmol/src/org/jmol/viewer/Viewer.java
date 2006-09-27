@@ -190,7 +190,7 @@ public class Viewer extends JmolViewer {
     
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase, appletProxyOrCommandOptions);
-    clear(); //zap() here would allow echos
+    zap(); //here to allow echos
   }
 
   boolean mustRenderFlag() {
@@ -1069,17 +1069,16 @@ public class Viewer extends JmolViewer {
   }
 
   public void openStringInline(String strModel) {
-    clear();
-    fileManager.openStringInline(strModel);
-    setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(), null,
-        getOpenFileError());
+    openStringInline(strModel, null);
   }
 
   public void openStringInline(String strModel, int[] params) {
     clear();
     fileManager.openStringInline(strModel, params);
-    setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(), null,
-        getOpenFileError());
+    String errorMsg = getOpenFileError();
+    if (errorMsg == null)
+      setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(), null,
+          null);
   }
 
   public String getInlineData() {
@@ -1190,8 +1189,18 @@ public class Viewer extends JmolViewer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
+  public boolean getEchoStateActive() {
+   return modelManager.getEchoStateActive();
+  }
+
+  public void setEchoStateActive(boolean TF) {
+    modelManager.setEchoStateActive(TF);
+  }
+
   public void zap() {
-    loadInline("2||C 0 100000 0|C 100000 0 0||||||", '|');
+    //loadInline("2||C 0 100000 0|C 100000 0 0||||||", '|');
+    clear();
+    modelManager.zap();
   }
   
   public void calculateStructures() {

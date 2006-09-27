@@ -1968,19 +1968,9 @@ public class Viewer extends JmolViewer {
     repaintManager.repaintView();
   }
   
-  void noDisplayTest() {
-    if (isTainted || getSlabEnabled()) {
-      setModelVisibility();
-      modelManager.setModelClickability();
-    }
-    isTainted = false;
-  }
-
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
-    if (isTainted || getSlabEnabled()) {
+    if (isTainted || getSlabEnabled())
       setModelVisibility();
-      modelManager.setModelClickability();
-    }
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
@@ -2168,11 +2158,8 @@ public class Viewer extends JmolViewer {
       int msWalltime = eval.getExecutionWalltime();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
       if (isScriptFile) {
-        if (writeInfo != null) {
-          if (!haveDisplay)
-            noDisplayTest();
+        if (writeInfo != null)
           createImage(writeInfo);
-        }
         if (autoExit) {
           System.out.flush();
           System.exit(0);
@@ -3629,6 +3616,7 @@ public class Viewer extends JmolViewer {
   }
   
   public void createImage(String file, String type, int quality) {
+    setModelVisibility();
     statusManager.createImage(file, type, quality);
   }
 }

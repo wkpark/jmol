@@ -1389,16 +1389,12 @@ String getAtomInfoChime(int i) {
       frame.shapes[JmolConstants.SHAPE_HALOS].setVisibilityFlags(bs);
     // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
     frame.shapes[JmolConstants.SHAPE_BALLS].setVisibilityFlags(bs);
-  }
-  
-  void setModelClickability() {
-    if (frame == null)
-      return;
+    
+    //set clickability -- this enables measures and such
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
-      if (shape != null) {
+      if (shape != null)
         shape.setModelClickability();
-      }
     }
   }
  

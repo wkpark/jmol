@@ -32,6 +32,8 @@
  */
 
 import org.jmol.api.JmolAppletInterface;
+import org.jmol.i18n.GT;
+
 import netscape.javascript.JSObject;
 
 public class JmolApplet
@@ -41,7 +43,7 @@ public class JmolApplet
   public JmolApplet() {
     super("org.jmol.applet.Jmol",
           "jmol75x29x8.gif",
-          "Loading Jmol applet ...",
+          GT._("Loading Jmol applet ..."),
           3, preloadClasses);
     //BH focus test: this.setFocusable(false);
   }

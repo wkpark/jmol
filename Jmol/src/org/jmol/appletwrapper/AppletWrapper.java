@@ -28,6 +28,7 @@ import java.applet.*;
 import java.awt.*;
 import java.net.URL;
 
+import org.jmol.i18n.GT;
 import org.jmol.util.Logger; 
 
 public class AppletWrapper extends Applet {
@@ -139,7 +140,7 @@ public class AppletWrapper extends Applet {
       g.setFont(font);
       g.drawString(preloadTextMessage, 10, messageBaseline);
       
-      String clockText = "  " + elapsedTime + " seconds";
+      String clockText = GT._("  {0} seconds", new Object[] { new Long(elapsedTime) });
       clockWidth = fontMetrics.stringWidth(clockText);
       clockX = dim.width - clockWidth - 5;
       if (clockX < 0)

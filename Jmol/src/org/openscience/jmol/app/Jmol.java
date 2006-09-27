@@ -402,19 +402,19 @@ public class Jmol extends JPanel {
     options.addOption(OptionBuilder.create("D"));
     
     OptionBuilder.withLongOpt("geometry");
-    OptionBuilder.withDescription(GT._("window size 500x500"));
+    OptionBuilder.withDescription(GT._("window size, e.g. -g500x500"));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
 
     OptionBuilder.withLongOpt("write");
-    OptionBuilder.withDescription(GT._(" JPG|PNG|PPM:filename"));
+    OptionBuilder.withDescription(GT._("CLIP or JPG|PNG|PPM:filename"));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("w"));
 
     OptionBuilder.withLongOpt("exit");
-    OptionBuilder.withDescription(GT._("run script and exit"));
+    OptionBuilder.withDescription(GT._("exit after script (implicit with -n)"));
     OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("x"));
@@ -435,7 +435,12 @@ public class Jmol extends JPanel {
         
         // now report on the -D options
         System.out.println();
+        System.out.println(GT._("For example:"));
+        System.out.println();
+        System.out.println("Jmol -ions myscript.spt -w JPEG:myfile.jpg > output.txt");
+        System.out.println();
         System.out.println(GT._("The -D options are as follows (defaults in parathesis):"));
+        System.out.println();
         System.out.println("  cdk.debugging=[true|false] (false)");
         System.out.println("  cdk.debug.stdout=[true|false] (false)");
         System.out.println("  display.speed=[fps|ms] (ms)");
@@ -467,17 +472,17 @@ public class Jmol extends JPanel {
     }
 
     if (line.hasOption("n")) {
-      commandOptions += "-n";
+      commandOptions += "-n-x";
       haveDisplay = Boolean.FALSE;
     }
 
-    //modelFilename = "caffeine.xyz"; //Eclipse TESTING ONLY
     if (line.hasOption("s")) {
       commandOptions += "-s";
         scriptFilename = line.getOptionValue("s");
-    } else if (line.hasOption("x")) {
+    } 
+    
+    if (line.hasOption("x")) {
       commandOptions += "-x";
-      scriptFilename = line.getOptionValue("x");
     }
     
     if (line.hasOption("w")) {

@@ -70,23 +70,26 @@ class Console implements ActionListener, WindowListener {
     jsp.setResizeWeight(.9);
     jsp.setDividerLocation(200);
 
-    c.setLayout(new BorderLayout());
-    c.add(jsp, BorderLayout.CENTER);
+    c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
+    jsp.setAlignmentX(Component.CENTER_ALIGNMENT);
+    c.add(jsp);
 
-    JLabel label1 = new JLabel(GT._("press CTRL-ENTER for new line or paste model data and press Load"),
-        SwingConstants.CENTER);
     Container c2 = new Container();
-    Container c3 = new Container();
-    c3.setLayout(new BoxLayout(c3, BoxLayout.Y_AXIS));
     c2.setLayout(new BoxLayout(c2, BoxLayout.X_AXIS));
+    c2.add(Box.createGlue());
     c2.add(runButton);
     c2.add(loadButton);
     c2.add(clearInButton);
     c2.add(clearOutButton);
     c2.add(historyButton);
-    c3.add(c2);
-    c3.add(label1);
-    c.add(c3, BorderLayout.SOUTH);
+    c2.add(Box.createGlue());
+    c.add(c2);
+
+    JLabel label1 = new JLabel(
+        GT._("press CTRL-ENTER for new line or paste model data and press Load"),
+        SwingConstants.CENTER);
+    label1.setAlignmentX(Component.CENTER_ALIGNMENT);
+    c.add(label1);
     
     runButton.addActionListener(this);
     clearInButton.addActionListener(this);

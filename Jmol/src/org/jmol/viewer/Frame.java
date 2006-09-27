@@ -2642,6 +2642,8 @@ public final class Frame {
   }
 
   String getSymmetryInfoAsString(int modelIndex) {
+    if (cellInfos == null)
+      return "no symmetry information";
     return cellInfos[modelIndex].symmetryInfoString;
   }
 

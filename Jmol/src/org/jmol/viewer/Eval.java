@@ -2109,6 +2109,7 @@ class Eval { //implements Runnable {
     String dataString = null;
     String dataLabel = null;
     switch(statementLength) {
+    case 4:
     case 3:
       dataString = (String) statement[2].value;
     case 2:
@@ -2117,7 +2118,7 @@ class Eval { //implements Runnable {
         viewer.setData(null, null);
         return;
       }
-      if (statementLength == 3)
+      if (statementLength > 2)
         break;
     default:
       badArgumentCount();        
@@ -2729,7 +2730,7 @@ class Eval { //implements Runnable {
   }
 
   void zap() {
-    viewer.clear();
+    viewer.zap();
   }
 
   void zoom() throws ScriptException {

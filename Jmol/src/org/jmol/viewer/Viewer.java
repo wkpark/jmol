@@ -190,6 +190,7 @@ public class Viewer extends JmolViewer {
     
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase, appletProxyOrCommandOptions);
+    clear(); //zap() here would allow echos
   }
 
   boolean mustRenderFlag() {
@@ -1189,6 +1190,11 @@ public class Viewer extends JmolViewer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
+  public void zap() {
+    loadInline("2||C 0 10000 0|C 0 0 10000||||||", '|');
+    script("restrict none");
+  }
+  
   public void calculateStructures() {
     modelManager.calculateStructures();
   }

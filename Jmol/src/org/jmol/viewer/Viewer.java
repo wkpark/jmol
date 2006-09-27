@@ -2096,6 +2096,8 @@ public class Viewer extends JmolViewer {
   }
   
   public String evalString(String strScript) {
+    if (checkResume(strScript))
+      return "script processing resumed";
     if (checkHalt(strScript))
       return "script execution halted";
     return scriptManager.addScript(strScript, false, false);
@@ -2105,8 +2107,20 @@ public class Viewer extends JmolViewer {
     scriptManager.clearQueue();
   }
 
+  public boolean checkResume(String strScript) {
+    if (strScript.equalsIgnoreCase("resume")) {
+      resumeScriptExecution();
+      return true;
+    }
+    return false;
+  }
+
   public boolean checkHalt(String strScript) {
-    String str = "" + strScript.toLowerCase();
+    String str = strScript.toLowerCase();
+    if (str.equals("pause")) {
+      pauseScriptExecution();
+      return true;
+    }
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
@@ -2120,6 +2134,8 @@ public class Viewer extends JmolViewer {
   }
 
   public String evalStringQuiet(String strScript) {
+    if (checkResume(strScript))
+      return "script processing resumed";
     if (checkHalt(strScript))
       return "script execution halted";
     return scriptManager.addScript(strScript, false, true);
@@ -2157,6 +2173,8 @@ public class Viewer extends JmolViewer {
                                            boolean isScriptFile,
                                            boolean isQuiet, Vector tokenInfo) {
     // from the scriptManager only!
+    if (checkResume(strScript))
+      return "script processing resumed"; //be very odd if this fired
     if (checkHalt(strScript))
       return "script execution halted";
     if (strScript == null)
@@ -2219,6 +2237,15 @@ public class Viewer extends JmolViewer {
 
   public void haltScriptExecution() {
     eval.haltExecution();
+  }
+
+  public void resumeScriptExecution() {
+    eval.resumePausedExecution();
+  }
+
+  public void pauseScriptExecution() {
+    refresh();
+    eval.pauseExecution();
   }
 
   void setDefaultLoadScript(String script) {

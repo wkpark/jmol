@@ -78,6 +78,7 @@ class Eval { //implements Runnable {
   }
 
   void haltExecution() {
+    resumePausedExecution();
     interruptExecution = Boolean.TRUE;
   }
 
@@ -86,6 +87,7 @@ class Eval { //implements Runnable {
   }
 
   static Boolean interruptExecution = Boolean.FALSE;
+  static Boolean executionPaused = Boolean.FALSE;
   boolean isExecuting = false;
 
   Thread currentThread = null;
@@ -94,6 +96,7 @@ class Eval { //implements Runnable {
     refresh();
     viewer.pushHoldRepaint();
     interruptExecution = Boolean.FALSE;
+    executionPaused = Boolean.FALSE;
     isExecuting = true;
     currentThread = Thread.currentThread();
 
@@ -367,6 +370,27 @@ class Eval { //implements Runnable {
    * ==============================================================
    */
 
+  void pauseExecution() {
+    delay(100);
+    executionPaused = Boolean.TRUE;
+  }
+
+  void resumePausedExecution() {
+    executionPaused = Boolean.FALSE;
+  }
+
+  void checkIfPaused() {
+    if (!executionPaused.booleanValue())
+      return;
+    Logger.debug("script execution paused at this command: " + getCommand());
+    try {
+      while (executionPaused.booleanValue())
+        Thread.sleep(100);
+    } catch (Exception e) {
+    }
+    Logger.debug("script execution resumed");
+  }
+  
   void instructionDispatchLoop() throws ScriptException {
     long timeBegin = 0;
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
@@ -375,12 +399,13 @@ class Eval { //implements Runnable {
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
       viewer.scriptStatus(toString());
     }
+    viewer.addCommand(script);
     while (!interruptExecution.booleanValue() && pc < aatoken.length) {
+      checkIfPaused();
       Token token = aatoken[pc][0];
       //if (token.tok == Token.load)
-        //viewer.getSetHistory(-2); //just clear -- no, this is very useful
+      //viewer.getSetHistory(-2); //just clear -- no, this is very useful
       statement = aatoken[pc++];
-      viewer.addCommand(getLine());
       statementLength = statement.length;
       if (logMessages)
         logDebugScript();
@@ -414,7 +439,8 @@ class Eval { //implements Runnable {
         if (pc > 1)
           viewer.clearScriptQueue();
       case Token.quit: // quit this only if it isn't the first command
-        interruptExecution = ((pc > 1 || ! viewer.scriptManager.useQueue) ? Boolean.TRUE : Boolean.FALSE);
+        interruptExecution = ((pc > 1 || !viewer.scriptManager.useQueue) ? Boolean.TRUE
+            : Boolean.FALSE);
         break;
       case Token.label:
         label();
@@ -624,13 +650,15 @@ class Eval { //implements Runnable {
       case Token.write:
         write();
         break;
+      case Token.pause: //resume is done differently
+        pauseExecution();
+        break;
 
       // not implemented
       case Token.structure:
       case Token.bond:
       case Token.clipboard:
       case Token.molecule:
-      case Token.pause:
       case Token.print:
       case Token.renumber:
       case Token.unbond:
@@ -661,6 +689,12 @@ class Eval { //implements Runnable {
     return script.substring(ichBegin, ichEnd);
   }
 
+  String getCommand() {
+    int ichBegin = lineIndices[pc];
+    int ichEnd = (pc + 1 == lineIndices.length ? script.length() : lineIndices[pc + 1]);
+    return script.substring(ichBegin, ichEnd);    
+  }
+  
   final StringBuffer strbufLog = new StringBuffer(80);
 
   void logDebugScript() {
@@ -2751,7 +2785,6 @@ class Eval { //implements Runnable {
   }
 
   void delay() throws ScriptException {
-    long timeBegin = System.currentTimeMillis();
     long millis = 0;
     //token has ondefault1
     Token token = statement[1];
@@ -2766,6 +2799,11 @@ class Eval { //implements Runnable {
     default:
       numberExpected();
     }
+    delay(millis);
+  }
+
+  void delay(long millis) {
+    long timeBegin = System.currentTimeMillis();
     refresh();
     millis -= System.currentTimeMillis() - timeBegin;
     int seconds = (int) millis / 1000;
@@ -2781,7 +2819,7 @@ class Eval { //implements Runnable {
       viewer.pushHoldRepaint();
     }
   }
-
+  
   void move() throws ScriptException {
     if (statementLength < 10 || statementLength > 12)
       badArgumentCount();

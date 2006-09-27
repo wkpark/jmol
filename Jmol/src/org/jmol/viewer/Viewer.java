@@ -1038,6 +1038,8 @@ public class Viewer extends JmolViewer {
   }
 
   public void openFile(String name, int[] params) {
+    if (name == null)
+      return;
     if (name.equalsIgnoreCase("string")) {
       openStringInline(getInlineData(), params);
       return;

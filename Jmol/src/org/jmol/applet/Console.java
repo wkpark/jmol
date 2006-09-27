@@ -39,8 +39,10 @@ class Console implements ActionListener, WindowListener {
   final JFrame jf = new JFrame(GT._("Jmol Script Console"));
 
   final JButton runButton = new JButton(GT._("Execute"));
-  final JButton clearButton = new JButton(GT._("Clear"));
+  final JButton clearOutButton = new JButton(GT._("Clear Output"));
+  final JButton clearInButton = new JButton(GT._("Clear Input"));
   final JButton historyButton = new JButton(GT._("History"));
+  final JButton loadButton = new JButton(GT._("Load"));
 
   final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
@@ -71,21 +73,28 @@ class Console implements ActionListener, WindowListener {
     c.setLayout(new BorderLayout());
     c.add(jsp, BorderLayout.CENTER);
 
-    JLabel label = new JLabel(GT._("press CTRL-ENTER for new line"),
+    JLabel label1 = new JLabel(GT._("press CTRL-ENTER for new line or paste model data and press Load"),
         SwingConstants.CENTER);
-    label.setHorizontalAlignment(SwingConstants.CENTER);
-    Container c1 = new Container();
-    c1.setLayout(new BorderLayout());
-    c1.add(runButton, BorderLayout.WEST);
-    c1.add(label, BorderLayout.CENTER);
-    c1.add(clearButton, BorderLayout.EAST);
-    c1.add(historyButton, BorderLayout.SOUTH);
-    c.add(c1, BorderLayout.SOUTH);
+    Container c2 = new Container();
+    Container c3 = new Container();
+    c3.setLayout(new BoxLayout(c3, BoxLayout.Y_AXIS));
+    c2.setLayout(new BoxLayout(c2, BoxLayout.X_AXIS));
+    c2.add(runButton);
+    c2.add(loadButton);
+    c2.add(clearInButton);
+    c2.add(clearOutButton);
+    c2.add(historyButton);
+    c3.add(c2);
+    c3.add(label1);
+    c.add(c3, BorderLayout.SOUTH);
+    
     runButton.addActionListener(this);
-    clearButton.addActionListener(this);
+    clearInButton.addActionListener(this);
+    clearOutButton.addActionListener(this);
     historyButton.addActionListener(this);
+    loadButton.addActionListener(this);
 
-    jf.setSize(400, 400);
+    jf.setSize(500, 400);
     jf.addWindowListener(this);
   }
 
@@ -137,11 +146,17 @@ class Console implements ActionListener, WindowListener {
     if (source == runButton) {
       execute();
     }
-    if (source == clearButton) {
+    if (source == clearInButton) {
+      input.setText("");
+    }
+    if (source == clearOutButton) {
       output.setText("");
     }
     if (source == historyButton) {
       output.setText(viewer.getSetHistory(Integer.MAX_VALUE));
+    }
+    if (source == loadButton) {
+      viewer.loadInline(input.getText());
     }
   }
 

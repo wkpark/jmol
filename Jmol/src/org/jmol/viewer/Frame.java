@@ -249,11 +249,12 @@ public final class Frame {
               + " in this collection. Use getProperty \"modelInfo\" or"
               + " getProperty \"auxiliaryInfo\" to inspect them.");
 
+    currentModelIndex = -1;
     if (adapter == null) {
-      currentModelIndex = 0;
       mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
+      //addAtom(0,null,0, "XXX", (short)0,"X",0,0,0,0,0,0,0,false,
+        //  0,' ',null,0,' ',0,0,0,' ',null);
     } else {
-      currentModelIndex = -1;
       for (int i = 0; i < modelCount; ++i) {
         int modelNumber = adapter.getAtomSetNumber(clientFile, i);
         String modelName = adapter.getAtomSetName(clientFile, i);
@@ -1125,7 +1126,7 @@ public final class Frame {
 
   private void findBounds() {
     //set ONCE 
-    if ((rotationCenter != null) || (atomCount <= 0))
+    if ((rotationCenter != null))
       return;
     calcAverageAtomPoint();
     calcBoundBoxDimensions();
@@ -1136,6 +1137,8 @@ public final class Frame {
   private void calcAverageAtomPoint() {
     Point3f average = this.averageAtomPoint;
     average.set(0, 0, 0);
+    if (atomCount == 0)
+      return;
     for (int i = atomCount; --i >= 0;)
       average.add(atoms[i]);
     average.scale(1f / atomCount);
@@ -1176,7 +1179,7 @@ public final class Frame {
         maxRadius = outerVdw;
     }
 
-    return maxRadius;
+    return (maxRadius == 0 ? 10 : maxRadius);
   }
 
   final static int measurementGrowthIncrement = 16;
@@ -1721,6 +1724,11 @@ public final class Frame {
   }
 
   void calcAtomsMinMax(Point3f pointMin, Point3f pointMax) {
+    if (atomCount < 2) {
+      pointMin.set(-10,-10, -10);
+      pointMax.set(10,10, 10);
+      return;
+    }
     pointMin.set(atoms[0]);
     pointMax.set(atoms[0]);
     for (int i = atomCount; --i > 0;) {

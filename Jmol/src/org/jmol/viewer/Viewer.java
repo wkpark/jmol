@@ -1198,9 +1198,9 @@ public class Viewer extends JmolViewer {
   }
 
   public void zap() {
-    //loadInline("2||C 0 100000 0|C 100000 0 0||||||", '|');
     clear();
     modelManager.zap();
+    initializeModel();
   }
   
   public void calculateStructures() {
@@ -1216,19 +1216,7 @@ public class Viewer extends JmolViewer {
         .getModelSetName(), clientFile, null);
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
-    homePosition();
-    selectAll();
-    setCenter(getRotationCenter());
-    if (eval != null)
-      eval.clearDefinitionsAndLoadPredefined();
-    // there probably needs to be a better startup mechanism for shapes
-    if (modelManager.hasVibrationVectors())
-      setShapeSize(JmolConstants.SHAPE_VECTORS, styleManager.defaultVectorMad);
-    setFrankOn(styleManager.frankOn);
-    repaintManager.initializePointers(1);
-    setDisplayModelIndex(0);
-    setBackgroundModelIndex(-1);
-    setTainted(true);
+    initializeModel();
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager
         .getModelSetName(), clientFile, null);
@@ -1247,6 +1235,22 @@ public class Viewer extends JmolViewer {
     System.gc();
   }
 
+  void initializeModel() {
+    homePosition();
+    selectAll();
+    setCenter(getRotationCenter());
+    if (eval != null)
+      eval.clearDefinitionsAndLoadPredefined();
+    // there probably needs to be a better startup mechanism for shapes
+    if (modelManager.hasVibrationVectors())
+      setShapeSize(JmolConstants.SHAPE_VECTORS, styleManager.defaultVectorMad);
+    setFrankOn(styleManager.frankOn);
+    repaintManager.initializePointers(1);
+    setDisplayModelIndex(0);
+    setBackgroundModelIndex(-1);
+    setTainted(true);
+  }
+  
   public String getModelSetName() {
     return modelManager.getModelSetName();
   }

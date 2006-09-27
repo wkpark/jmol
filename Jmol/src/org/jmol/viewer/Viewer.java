@@ -1191,8 +1191,7 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   public void zap() {
-    loadInline("2||C 0 10000 0|C 0 0 10000||||||", '|');
-    script("restrict none");
+    loadInline("2||C 0 100000 0|C 100000 0 0||||||", '|');
   }
   
   public void calculateStructures() {

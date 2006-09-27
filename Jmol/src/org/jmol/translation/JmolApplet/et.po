@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-25 23:40+0200\n"
+"POT-Creation-Date: 2006-09-27 19:23+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -17,25 +17,25 @@ msgstr ""
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Console.java:40
+#: org/jmol/applet/Console.java:39
 #, fuzzy
 msgid "Jmol Script Console"
 msgstr "Jmol skript sai täidetud"
 
-#: org/jmol/applet/Console.java:42
+#: org/jmol/applet/Console.java:41
 msgid "Execute"
 msgstr ""
 
-#: org/jmol/applet/Console.java:43
+#: org/jmol/applet/Console.java:42
 #, fuzzy
 msgid "Clear"
 msgstr "Sulge"
 
-#: org/jmol/applet/Console.java:44
+#: org/jmol/applet/Console.java:43
 msgid "History"
 msgstr ""
 
-#: org/jmol/applet/Console.java:77
+#: org/jmol/applet/Console.java:74
 msgid "press CTRL-ENTER for new line"
 msgstr ""
 
@@ -51,7 +51,7 @@ msgstr ""
 "Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www.jmol."
 "org"
 
-#: org/jmol/applet/Jmol.java:717
+#: org/jmol/applet/Jmol.java:716
 msgid "File Error:"
 msgstr "Faili viga:"
 
@@ -1212,123 +1212,115 @@ msgstr "Hiire Õpetus"
 msgid "Translations"
 msgstr "Tõlked"
 
-#: org/jmol/viewer/Eval.java:143
+#: org/jmol/viewer/Eval.java:144
 msgid "too many script levels"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:925
+#: org/jmol/viewer/Eval.java:945
 msgid "invalid insertion code"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:1130
+#: org/jmol/viewer/Eval.java:1150
 msgid "Unrecognized WITHIN parameter"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:1300
+#: org/jmol/viewer/Eval.java:1380
 msgid "plane expected -- either {a b c d} or \"xy\" \"xz\" \"yz\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:1417
+#: org/jmol/viewer/Eval.java:1497
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:1449 org/jmol/viewer/Eval.java:1474
+#: org/jmol/viewer/Eval.java:1529 org/jmol/viewer/Eval.java:1554
 msgid "fractional coordinates are not allowed in this context"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:1513
+#: org/jmol/viewer/Eval.java:1593
 msgid "Currently the help command only works for the applet"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:1605
+#: org/jmol/viewer/Eval.java:1685
 msgid "console ON|OFF"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:2076
-msgid "ECHO must follow, not precede, model loading"
-msgstr ""
-
-#: org/jmol/viewer/Eval.java:2159
+#: org/jmol/viewer/Eval.java:2236
 #, java-format
 msgid "space group {0} was not found."
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:2904
+#: org/jmol/viewer/Eval.java:3010
 msgid "\"conformation\" not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3146
+#: org/jmol/viewer/Eval.java:3252
 msgid "Calculate what? hbonds?  surface? structure?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3163
+#: org/jmol/viewer/Eval.java:3269
 msgid "surfaces require that only one model be displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3374
+#: org/jmol/viewer/Eval.java:3480
 msgid "invalid frame control keyword"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3705
-msgid "SET ECHO must follow, not precede, model loading"
-msgstr ""
-
-#: org/jmol/viewer/Eval.java:4087
+#: org/jmol/viewer/Eval.java:4195
 msgid "save what? bonds? orientation? selection?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4108
+#: org/jmol/viewer/Eval.java:4216
 msgid "restore what? bonds? orientation? selection?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4182 org/jmol/viewer/Eval.java:4805
+#: org/jmol/viewer/Eval.java:4317 org/jmol/viewer/Eval.java:4943
 msgid "MO isosurfaces require that only one model be displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4186 org/jmol/viewer/Eval.java:4809
+#: org/jmol/viewer/Eval.java:4321 org/jmol/viewer/Eval.java:4947
 msgid "no MO basis/coefficient data available for this frame"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4229
+#: org/jmol/viewer/Eval.java:4364
 msgid "use \"show ORIENTATION\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4234
+#: org/jmol/viewer/Eval.java:4370
 msgid "unrecognized SHOW parameter --  use \"getProperty CHAININFO \""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4236
+#: org/jmol/viewer/Eval.java:4373
 msgid "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4238
+#: org/jmol/viewer/Eval.java:4376
 msgid ""
 "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)"
 "\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4249
+#: org/jmol/viewer/Eval.java:4387
 msgid "unrecognized SHOW parameter"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4813
+#: org/jmol/viewer/Eval.java:4951
 msgid "no MO coefficient data available"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4815
+#: org/jmol/viewer/Eval.java:4953
 msgid "Only one molecular orbital is available in this file"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4817
+#: org/jmol/viewer/Eval.java:4955
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4837
+#: org/jmol/viewer/Eval.java:4976
 msgid "the isosurface command requires that only one model be displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:5129
+#: org/jmol/viewer/Eval.java:5279
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."

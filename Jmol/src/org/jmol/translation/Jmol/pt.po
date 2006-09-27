@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-25 23:40+0200\n"
+"POT-Creation-Date: 2006-09-27 06:24+0200\n"
 "PO-Revision-Date: 2005-12-20 07:33-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -144,11 +144,11 @@ msgstr "Saltar para o último {0} na selecção"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Erro de leitura em \"BufferedReader\": {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:224
+#: org/openscience/jmol/app/DisplayPanel.java:229
 msgid "Select Atoms"
 msgstr "Escolha de átomos"
 
-#: org/openscience/jmol/app/DisplayPanel.java:238
+#: org/openscience/jmol/app/DisplayPanel.java:243
 msgid "Delete Atoms"
 msgstr "Eliminar átomos"
 
@@ -550,7 +550,7 @@ msgid "What's New"
 msgstr "O que há de novo"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#: org/openscience/jmol/app/Jmol.java:530
+#: org/openscience/jmol/app/Jmol.java:547
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Consola Jmol"
@@ -649,119 +649,123 @@ msgstr "Inicializando a Janela de script..."
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Inicializando a Janeal 'AtomSetChooser'..."
 
-#: org/openscience/jmol/app/Jmol.java:201
+#: org/openscience/jmol/app/Jmol.java:202
 msgid "Initializing Measurements..."
 msgstr "Inicializando medições..."
 
-#: org/openscience/jmol/app/Jmol.java:222
+#: org/openscience/jmol/app/Jmol.java:223
 msgid "Building Command Hooks..."
 msgstr "Construindo 'Command Hooks'..."
 
-#: org/openscience/jmol/app/Jmol.java:231
+#: org/openscience/jmol/app/Jmol.java:232
 msgid "Building Menubar..."
 msgstr "Construindo barra de menus..."
 
-#: org/openscience/jmol/app/Jmol.java:247
+#: org/openscience/jmol/app/Jmol.java:248
 msgid "Starting display..."
 msgstr "Iniciando a visualização..."
 
-#: org/openscience/jmol/app/Jmol.java:250
+#: org/openscience/jmol/app/Jmol.java:255
 msgid "Setting up File Choosers..."
 msgstr "Definir 'File Choosers'..."
 
-#: org/openscience/jmol/app/Jmol.java:303
+#: org/openscience/jmol/app/Jmol.java:310
 msgid "Setting up Drag-and-Drop..."
 msgstr "Definir Drag-and-Drop..."
 
-#: org/openscience/jmol/app/Jmol.java:329
+#: org/openscience/jmol/app/Jmol.java:336
 msgid "Launching main frame..."
 msgstr "Lançando o frame (quadro) principal..."
 
-#: org/openscience/jmol/app/Jmol.java:347
+#: org/openscience/jmol/app/Jmol.java:354
 msgid "Creating main window..."
 msgstr "Criando janela principal..."
 
-#: org/openscience/jmol/app/Jmol.java:348
+#: org/openscience/jmol/app/Jmol.java:355
 msgid "Initializing Swing..."
 msgstr "Inicializando 'swing' (balanço)..."
 
-#: org/openscience/jmol/app/Jmol.java:360
+#: org/openscience/jmol/app/Jmol.java:367
 msgid "Initializing Jmol..."
 msgstr "Inicializando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:379
+#: org/openscience/jmol/app/Jmol.java:387
 msgid "give this help page"
 msgstr "Dar esta página de ajuda"
 
-#: org/openscience/jmol/app/Jmol.java:380
+#: org/openscience/jmol/app/Jmol.java:388
 #, fuzzy
 msgid "no display"
 msgstr "Mostrar"
 
-#: org/openscience/jmol/app/Jmol.java:381
+#: org/openscience/jmol/app/Jmol.java:389
 msgid "silent startup operation"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:382
+#: org/openscience/jmol/app/Jmol.java:390
 msgid "no console -- all output to sysout"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:390
+#: org/openscience/jmol/app/Jmol.java:398
 msgid "property=value"
 msgstr "propriedade=valor"
 
-#: org/openscience/jmol/app/Jmol.java:393
+#: org/openscience/jmol/app/Jmol.java:401
 msgid "supported options are given below"
 msgstr "opções suportadas são referidas em baixo"
 
-#: org/openscience/jmol/app/Jmol.java:397
+#: org/openscience/jmol/app/Jmol.java:405
 msgid "window size 500x500"
 msgstr "tamanho da janela 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:403
+#: org/openscience/jmol/app/Jmol.java:411
+msgid " JPG|PNG|PPM:filename"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:417
 msgid "run script and exit"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:424
+#: org/openscience/jmol/app/Jmol.java:438
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "As opções -D são as seguintes (pré-definição em parentesis):"
 
-#: org/openscience/jmol/app/Jmol.java:518
+#: org/openscience/jmol/app/Jmol.java:535
 msgid "Executing script..."
 msgstr "Executando um script..."
 
-#: org/openscience/jmol/app/Jmol.java:538
+#: org/openscience/jmol/app/Jmol.java:555
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Limpar"
 
-#: org/openscience/jmol/app/Jmol.java:551
+#: org/openscience/jmol/app/Jmol.java:568
 msgid "Could not create ConsoleTextArea: "
 msgstr "Não foi possível criar 'ConsoleTextArea':"
 
-#: org/openscience/jmol/app/Jmol.java:627
+#: org/openscience/jmol/app/Jmol.java:644
 msgid "Closing Jmol..."
 msgstr "Fechar Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:863
+#: org/openscience/jmol/app/Jmol.java:880
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1184
+#: org/openscience/jmol/app/Jmol.java:1202
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1185
+#: org/openscience/jmol/app/Jmol.java:1203
 msgid "Enter URL of molecular model"
 msgstr "Escrever URL de um modelo molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1272
-msgid "IO Exception:"
-msgstr "Excepção IO:"
-
-#: org/openscience/jmol/app/Jmol.java:1449
+#: org/openscience/jmol/app/Jmol.java:1439
 msgid "File not loaded"
 msgstr "Ficheiro não carregado"
+
+#: org/openscience/jmol/app/Jmol.java:1584
+msgid "IO Exception:"
+msgstr "Excepção IO:"
 
 #: org/openscience/jmol/app/MeasurementTable.java:124
 msgid "Delete"

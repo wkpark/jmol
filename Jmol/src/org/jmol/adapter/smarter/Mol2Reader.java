@@ -103,9 +103,9 @@ class Mol2Reader extends AtomSetCollectionReader {
     line = reader.readLine();//charge_type
     boolean iHaveCharges = (line.indexOf("NO_CHARGES") != 0);
     line = reader.readLine(); //optional SYBYL status
-    if (line != null && line.charAt(0) != '@') {
+    if (line != null && (line.length() == 0 || line.charAt(0) != '@')) {
       line = reader.readLine(); //optional comment
-      if (line != null && line.charAt(0) != '@') {
+      if (line != null && line.length() != 0 && line.charAt(0) != '@') {
         thisDataSetName += ": " + reader.readLine().trim();
         line = reader.readLine();
       }
@@ -153,7 +153,9 @@ class Mol2Reader extends AtomSetCollectionReader {
       if (elementSymbol.length() > 2)
         elementSymbol = elementSymbol.substring(0, 2);
       atom.elementSymbol = elementSymbol;
-      if (iHaveCharges)
+        // apparently "NO_CHARGES" is not strictly enforced
+        //      if (iHaveCharges)
+      if (tokens.length > 8)
         atom.partialCharge = parseFloat(tokens[8]);
     }
   }

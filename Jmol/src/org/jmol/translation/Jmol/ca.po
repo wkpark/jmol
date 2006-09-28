@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-27 19:23+0200\n"
+"POT-Creation-Date: 2006-09-28 06:15+0200\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -554,7 +554,7 @@ msgid "What's New"
 msgstr "Novetats"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:547
+#: org/openscience/jmol/app/Jmol.java:552
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Consola del Jmol"
@@ -700,9 +700,8 @@ msgid "give this help page"
 msgstr "adjunta aquesta pàgina d'ajuda"
 
 #: org/openscience/jmol/app/Jmol.java:388
-#, fuzzy
-msgid "no display"
-msgstr "Visualització"
+msgid "no display (and also exit when done"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "silent startup operation"
@@ -721,57 +720,62 @@ msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
 #: org/openscience/jmol/app/Jmol.java:405
-msgid "window size 500x500"
+#, fuzzy
+msgid "window size, e.g. -g500x500"
 msgstr "mida de la finestra 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:411
-msgid " JPG|PNG|PPM:filename"
+msgid "CLIP or JPG|PNG|PPM:filename"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:417
-msgid "run script and exit"
+msgid "exit after script (implicit with -n)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:438
+msgid "For example:"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:442
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 "Les opcions són -D són com es descriu a continuació (paràmetres per defecte "
 "en parèntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:535
+#: org/openscience/jmol/app/Jmol.java:540
 msgid "Executing script..."
 msgstr "S'està executant la seqüència..."
 
-#: org/openscience/jmol/app/Jmol.java:555
+#: org/openscience/jmol/app/Jmol.java:560
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Neteja"
 
-#: org/openscience/jmol/app/Jmol.java:568
+#: org/openscience/jmol/app/Jmol.java:573
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola:"
 
-#: org/openscience/jmol/app/Jmol.java:644
+#: org/openscience/jmol/app/Jmol.java:649
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:880
+#: org/openscience/jmol/app/Jmol.java:885
 msgid "Macros"
 msgstr "Macroinstruccions"
 
-#: org/openscience/jmol/app/Jmol.java:1219
+#: org/openscience/jmol/app/Jmol.java:1224
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/Jmol.java:1220
+#: org/openscience/jmol/app/Jmol.java:1225
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1455
+#: org/openscience/jmol/app/Jmol.java:1460
 msgid "File not loaded"
 msgstr "No s'ha carregat el fitxer"
 
-#: org/openscience/jmol/app/Jmol.java:1600
+#: org/openscience/jmol/app/Jmol.java:1605
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 
@@ -1106,6 +1110,10 @@ msgstr "S'està carregant..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
+
+#, fuzzy
+#~ msgid "no display"
+#~ msgstr "Visualització"
 
 #, fuzzy
 #~ msgid "atoms selected"

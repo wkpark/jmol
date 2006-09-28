@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-27 19:23+0200\n"
+"POT-Creation-Date: 2006-09-28 06:15+0200\n"
 "PO-Revision-Date: 2006-09-27 21:40+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -556,7 +556,7 @@ msgid "What's New"
 msgstr "Novedades"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:547
+#: org/openscience/jmol/app/Jmol.java:552
 msgid "Jmol Java Console"
 msgstr "Consola Java de Jmol"
 
@@ -698,8 +698,8 @@ msgid "give this help page"
 msgstr "mostrar esta página de ayuda"
 
 #: org/openscience/jmol/app/Jmol.java:388
-msgid "no display"
-msgstr "sin mostrar"
+msgid "no display (and also exit when done"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "silent startup operation"
@@ -718,55 +718,61 @@ msgid "supported options are given below"
 msgstr "las opciones admitidas se muestran a continuación"
 
 #: org/openscience/jmol/app/Jmol.java:405
-msgid "window size 500x500"
+#, fuzzy
+msgid "window size, e.g. -g500x500"
 msgstr "tamaño de ventana: 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:411
-msgid " JPG|PNG|PPM:filename"
+#, fuzzy
+msgid "CLIP or JPG|PNG|PPM:filename"
 msgstr " nombre de archivo JPG|PNG|PPM"
 
 #: org/openscience/jmol/app/Jmol.java:417
-msgid "run script and exit"
-msgstr "ejecutar guión y salir"
+msgid "exit after script (implicit with -n)"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:438
+msgid "For example:"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:442
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "Las opciones  -D son (valores predeterminados entre paréntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:535
+#: org/openscience/jmol/app/Jmol.java:540
 msgid "Executing script..."
 msgstr "Ejecutando guión..."
 
-#: org/openscience/jmol/app/Jmol.java:555
+#: org/openscience/jmol/app/Jmol.java:560
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Limpiar"
 
-#: org/openscience/jmol/app/Jmol.java:568
+#: org/openscience/jmol/app/Jmol.java:573
 msgid "Could not create ConsoleTextArea: "
 msgstr "No se pudo crear el área de texto de la consola"
 
-#: org/openscience/jmol/app/Jmol.java:644
+#: org/openscience/jmol/app/Jmol.java:649
 msgid "Closing Jmol..."
 msgstr "Cerrando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:880
+#: org/openscience/jmol/app/Jmol.java:885
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1219
+#: org/openscience/jmol/app/Jmol.java:1224
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1220
+#: org/openscience/jmol/app/Jmol.java:1225
 msgid "Enter URL of molecular model"
 msgstr "Escribe la URL del modelo molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1455
+#: org/openscience/jmol/app/Jmol.java:1460
 msgid "File not loaded"
 msgstr "El archivo no se ha cargado"
 
-#: org/openscience/jmol/app/Jmol.java:1600
+#: org/openscience/jmol/app/Jmol.java:1605
 msgid "IO Exception:"
 msgstr "Error de entrada/salida:"
 
@@ -799,8 +805,12 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
+"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -844,7 +854,9 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:234
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
+msgstr ""
+"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
+"calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -852,7 +864,8 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:245
 msgid "Should povray attempt to display while rendering?"
-msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr ""
+"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:254
 #: org/openscience/jmol/app/PovrayDialog.java:256
@@ -1097,56 +1110,86 @@ msgstr "Cargando..."
 msgid "What's New in Jmol"
 msgstr "Novedades en Jmol"
 
+#~ msgid "no display"
+#~ msgstr "sin mostrar"
+
+#~ msgid "run script and exit"
+#~ msgstr "ejecutar guión y salir"
+
 #~ msgid "pick one more atom in order to spin the model around an axis"
 #~ msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
+
 #~ msgid "pick two atoms in order to spin the model around an axis"
 #~ msgstr "elige dos átomos para que el modelo gire en torno a un eje"
+
 #~ msgid "atoms selected"
 #~ msgstr "átomos seleccionados"
+
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol ejecutando guión..."
+
 #~ msgid "pick "
 #~ msgstr "elige"
+
 #~ msgid "Rasmol Scripts"
 #~ msgstr "Guiones de Rasmol"
+
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotar en modelo de alambres"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotar en modelo de alambres"
+
 #~ msgid "Colors"
 #~ msgstr "Colores"
+
 #~ msgid "Background"
 #~ msgstr "Fondo"
+
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
+
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
+
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
+
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
+
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
+
 #~ msgid "Text"
 #~ msgstr "Texto"
+
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
+
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
+
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
+
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
+
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
+
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
+
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
+
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
+
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
-

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-27 19:23+0200\n"
+"POT-Creation-Date: 2006-09-28 06:15+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -554,7 +554,7 @@ msgid "What's New"
 msgstr "Mida on uut?"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:547
+#: org/openscience/jmol/app/Jmol.java:552
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Jmol konsool"
@@ -698,9 +698,8 @@ msgid "give this help page"
 msgstr "anna see abileht"
 
 #: org/openscience/jmol/app/Jmol.java:388
-#, fuzzy
-msgid "no display"
-msgstr "Kuva"
+msgid "no display (and also exit when done"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "silent startup operation"
@@ -719,55 +718,60 @@ msgid "supported options are given below"
 msgstr "lubatud valikud on eespool"
 
 #: org/openscience/jmol/app/Jmol.java:405
-msgid "window size 500x500"
+#, fuzzy
+msgid "window size, e.g. -g500x500"
 msgstr "akna suurus 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:411
-msgid " JPG|PNG|PPM:filename"
+msgid "CLIP or JPG|PNG|PPM:filename"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:417
-msgid "run script and exit"
+msgid "exit after script (implicit with -n)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:438
+msgid "For example:"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:442
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 
-#: org/openscience/jmol/app/Jmol.java:535
+#: org/openscience/jmol/app/Jmol.java:540
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
-#: org/openscience/jmol/app/Jmol.java:555
+#: org/openscience/jmol/app/Jmol.java:560
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Puhasta"
 
-#: org/openscience/jmol/app/Jmol.java:568
+#: org/openscience/jmol/app/Jmol.java:573
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:644
+#: org/openscience/jmol/app/Jmol.java:649
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:880
+#: org/openscience/jmol/app/Jmol.java:885
 msgid "Macros"
 msgstr "Makrod"
 
-#: org/openscience/jmol/app/Jmol.java:1219
+#: org/openscience/jmol/app/Jmol.java:1224
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1220
+#: org/openscience/jmol/app/Jmol.java:1225
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/Jmol.java:1455
+#: org/openscience/jmol/app/Jmol.java:1460
 msgid "File not loaded"
 msgstr "Fail ei ole loetud"
 
-#: org/openscience/jmol/app/Jmol.java:1600
+#: org/openscience/jmol/app/Jmol.java:1605
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
@@ -1101,6 +1105,10 @@ msgstr "Laen..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
+
+#, fuzzy
+#~ msgid "no display"
+#~ msgstr "Kuva"
 
 #, fuzzy
 #~ msgid "atoms selected"

@@ -379,7 +379,7 @@ public final class Frame {
     if (atomCountEstimate <= 0)
       atomCountEstimate = ATOM_GROWTH_INCREMENT;
     atoms = new Atom[atomCountEstimate];
-    bonds = new Bond[2 * atomCountEstimate];
+    bonds = new Bond[250 + atomCountEstimate];
     htAtomMap.clear();
     initializeGroupBuild();
   }
@@ -1330,12 +1330,13 @@ public final class Frame {
               bspf.addTuple(atom.modelIndex, atom);
           }
       } else {
-        Logger.debug("sequential bspt order");
+        Logger.debug("sequential bspt order (1)");
         for (int i = atomCount; --i >= 0;) {
           Atom atom = atoms[i];
           if (!atom.isDeleted())
             bspf.addTuple(atom.modelIndex, atom);
         }
+        Logger.debug("sequential bspt order (2)");
       }
       if (showRebondTimes) {
         long timeEnd = System.currentTimeMillis();
@@ -1344,6 +1345,7 @@ public final class Frame {
         //        bspf.dump();
       }
     }
+    Logger.debug("bspf initialization complete");    
   }
 
   private void clearBspf() {
@@ -1491,12 +1493,14 @@ public final class Frame {
     //int indexLastCA = -1;
     //Atom atomLastCA = null;
 
-    initializeBspf();
-
     long timeBegin = 0;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();
-    /*
+
+    try {
+    initializeBspf();
+
+       /*
      * miguel 2006 04 02
      * note that the way that these loops + iterators are constructed,
      * everything assumes that all possible pairs of atoms are going to
@@ -1540,7 +1544,10 @@ public final class Frame {
       }
       iter.release();
     }
-
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+  
     if (showRebondTimes) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to autoBond=" + (timeEnd - timeBegin));

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-27 21:11+0200\n"
+"POT-Creation-Date: 2006-09-28 23:10+0200\n"
 "PO-Revision-Date: 2006-09-27 21:20+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
@@ -48,7 +48,9 @@ msgstr "Charger"
 
 #: org/jmol/applet/Console.java:89
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr "Appuyer sur Ctrl+Entrée pour une nouvelle ligne ou copier les données d'un modèle et appuyer sur Load"
+msgstr ""
+"Appuyer sur Ctrl+Entrée pour une nouvelle ligne ou copier les données d'un "
+"modèle et appuyer sur Load"
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -1212,122 +1214,316 @@ msgstr "Manuel Souris"
 msgid "Translations"
 msgstr "Traductions"
 
-#: org/jmol/viewer/Eval.java:144
+#: org/jmol/viewer/Eval.java:147
 msgid "too many script levels"
 msgstr "trop de niveaux de script"
 
-#: org/jmol/viewer/Eval.java:945
+#: org/jmol/viewer/Eval.java:923
+msgid "atom expression compiler error - stack over/underflow"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:979
 msgid "invalid insertion code"
 msgstr "code d'insertion invalide"
 
-#: org/jmol/viewer/Eval.java:1150
-msgid "Unrecognized WITHIN parameter"
+#: org/jmol/viewer/Eval.java:1184
+#, fuzzy, java-format
+msgid "Unrecognized {0} parameter"
 msgstr "Paramètre WITHIN non reconnu"
 
-#: org/jmol/viewer/Eval.java:1380
-msgid "plane expected -- either {a b c d} or \"xy\" \"xz\" \"yz\""
+#: org/jmol/viewer/Eval.java:1415
+#, fuzzy, java-format
+msgid "plane expected -- either {0} or {1}"
 msgstr "plan attendu -- soit {a b c d}, soit \"xy\" \"xz\" \"yz\""
 
-#: org/jmol/viewer/Eval.java:1497
+#: org/jmol/viewer/Eval.java:1533
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "un nom de couleur ou de palette (Jmol, Rasmol) est requis"
 
-#: org/jmol/viewer/Eval.java:1529
-#: org/jmol/viewer/Eval.java:1554
+#: org/jmol/viewer/Eval.java:1565 org/jmol/viewer/Eval.java:1590
 msgid "fractional coordinates are not allowed in this context"
 msgstr "les coordonnées fractionnelles ne sont pas autorisées dans ce contexte"
 
-#: org/jmol/viewer/Eval.java:1593
-msgid "Currently the help command only works for the applet"
+#: org/jmol/viewer/Eval.java:1629
+#, fuzzy, java-format
+msgid "Currently the {0} command only works for the applet"
 msgstr "Actuellement, la commande help ne marche que pour l'applet"
 
-#: org/jmol/viewer/Eval.java:1685
-msgid "console ON|OFF"
-msgstr ""
-
-#: org/jmol/viewer/Eval.java:2236
+#: org/jmol/viewer/Eval.java:2273
 #, java-format
 msgid "space group {0} was not found."
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3010
-msgid "\"conformation\" not allowed with background model displayed"
+#: org/jmol/viewer/Eval.java:3051
+#, java-format
+msgid "{0} not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3252
-msgid "Calculate what? hbonds?  surface? structure?"
-msgstr ""
+#: org/jmol/viewer/Eval.java:3294
+#, fuzzy
+msgid "Calculate what?"
+msgstr "Calculer"
 
-#: org/jmol/viewer/Eval.java:3269
+#: org/jmol/viewer/Eval.java:3311
 msgid "surfaces require that only one model be displayed"
 msgstr "Les surfaces requièrent qu'un seul modèle soit affiché"
 
-#: org/jmol/viewer/Eval.java:3480
-msgid "invalid frame control keyword"
+#: org/jmol/viewer/Eval.java:3522
+#, java-format
+msgid "invalid {0} control keyword"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4195
-msgid "save what? bonds? orientation? selection?"
+#: org/jmol/viewer/Eval.java:4237
+msgid "save what?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4216
-msgid "restore what? bonds? orientation? selection?"
+#: org/jmol/viewer/Eval.java:4258
+msgid "restore what?"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4317
-#: org/jmol/viewer/Eval.java:4943
+#: org/jmol/viewer/Eval.java:4263
+#, java-format
+msgid "The {0} command is not available for the applet."
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4274
+#, java-format
+msgid "write what? {0} or {1} \"filename\""
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:4361 org/jmol/viewer/Eval.java:4988
 msgid "MO isosurfaces require that only one model be displayed"
 msgstr "Les isosurfaces MO requièrent qu'un seul modèle soit affiché"
 
-#: org/jmol/viewer/Eval.java:4321
-#: org/jmol/viewer/Eval.java:4947
+#: org/jmol/viewer/Eval.java:4365 org/jmol/viewer/Eval.java:4992
 msgid "no MO basis/coefficient data available for this frame"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4364
-msgid "use \"show ORIENTATION\""
-msgstr ""
+#: org/jmol/viewer/Eval.java:4408
+#, fuzzy, java-format
+msgid "use {0}"
+msgstr "{0} groupes"
 
-#: org/jmol/viewer/Eval.java:4370
-msgid "unrecognized SHOW parameter --  use \"getProperty CHAININFO \""
-msgstr ""
+#: org/jmol/viewer/Eval.java:4413 org/jmol/viewer/Eval.java:4416
+#: org/jmol/viewer/Eval.java:4419
+#, fuzzy, java-format
+msgid "unrecognized {0} parameter --  use {1}"
+msgstr "Paramètre WITHIN non reconnu"
 
-#: org/jmol/viewer/Eval.java:4373
-msgid "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""
-msgstr ""
+#: org/jmol/viewer/Eval.java:4431 org/jmol/viewer/Eval.java:5528
+#, fuzzy, java-format
+msgid "unrecognized {0} parameter"
+msgstr "Paramètre WITHIN non reconnu"
 
-#: org/jmol/viewer/Eval.java:4376
-msgid "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)\""
-msgstr ""
-
-#: org/jmol/viewer/Eval.java:4387
-msgid "unrecognized SHOW parameter"
-msgstr ""
-
-#: org/jmol/viewer/Eval.java:4951
+#: org/jmol/viewer/Eval.java:4996
 msgid "no MO coefficient data available"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4953
+#: org/jmol/viewer/Eval.java:4998
 msgid "Only one molecular orbital is available in this file"
 msgstr "Une seule orbite moléculaire est disponible dans ce fichier"
 
-#: org/jmol/viewer/Eval.java:4955
+#: org/jmol/viewer/Eval.java:5000
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4976
-msgid "the isosurface command requires that only one model be displayed"
+#: org/jmol/viewer/Eval.java:5020
+#, fuzzy, java-format
+msgid "the {0} command requires that only one model be displayed"
 msgstr "La commande isosurface requiert qu'un seul modèle soit affiché"
 
-#: org/jmol/viewer/Eval.java:5279
-msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
-msgstr "Aucune charge partielle n'a été lue depuis le fichier; Jmol en a besoin pour générer les données MEP."
+#: org/jmol/viewer/Eval.java:5324
+msgid ""
+"No partial charges were read from the file; Jmol needs these to render the "
+"MEP data."
+msgstr ""
+"Aucune charge partielle n'a été lue depuis le fichier; Jmol en a besoin pour "
+"générer les données MEP."
+
+#: org/jmol/viewer/Eval.java:5417
+msgid "unrecognized command"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5421
+#, fuzzy
+msgid "unrecognized atom property"
+msgstr "Paramètre WITHIN non reconnu"
+
+#: org/jmol/viewer/Eval.java:5425
+msgid "filename expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5429
+msgid "boolean expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5433
+msgid "boolean or percent expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5437
+msgid "boolean or number expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5441
+#, java-format
+msgid "boolean, number, or {0} expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5446
+msgid "(atom expression) or decimal number expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5450
+msgid "(atom expression) or integer expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5454
+msgid "valid (atom expression) expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5458
+msgid "rotation points cannot be identical"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5462
+msgid "integer expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5466
+msgid "number expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5470
+msgid "quoted string expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5474
+msgid "quoted string or identifier expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5478
+msgid "property name expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5482
+msgid "x y z axis expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5486
+msgid "color expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5490 org/jmol/viewer/Eval.java:5595
+msgid "keyword expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5494
+msgid "unrecognized object"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5498
+msgid "runtime unrecognized expression"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5502
+msgid "variable undefined"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5506
+msgid "unexpected end of script command"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5510
+msgid "bad argument count"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5517 org/jmol/viewer/Eval.java:5524
+msgid "invalid argument"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5532
+msgid "unrecognized subcommand"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5536
+msgid "subcommand expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5540
+msgid "interpreter error - setspecial should not be here"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5544
+msgid "number out of range"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5548
+#, java-format
+msgid "integer out of range ({0} - {1})"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5553
+#, java-format
+msgid "decimal number out of range ({0} - {1})"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5558
+#, java-format
+msgid "number must be ({0} or {1})"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5563
+#, fuzzy
+msgid "bad atom number"
+msgstr "Avec le numéro de l'atome"
+
+#: org/jmol/viewer/Eval.java:5567
+msgid "error loading script"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5571
+msgid "file not found"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5575
+msgid "draw object not defined"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5579
+msgid "object name expected after '$'"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5583
+msgid "{ number number number } expected"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5587
+msgid " {x y z} or $name or (atom expression) required"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5591
+msgid "too many rotation points were specified"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5608
+#, fuzzy
+msgid "invalid parameter order"
+msgstr "code d'insertion invalide"
+
+#: org/jmol/viewer/Eval.java:5612
+msgid "incompatible arguments"
+msgstr ""
+
+#: org/jmol/viewer/Eval.java:5616
+msgid "insufficient arguments"
+msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:167
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "Choisir un atome supplémentaire pour faire tourner le modèle autour d'un axe"
+msgstr ""
+"Choisir un atome supplémentaire pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/PickingManager.java:168
 msgid "pick two atoms in order to spin the model around an axis"
@@ -1343,24 +1539,33 @@ msgstr "Jmol exécute un script ..."
 
 #~ msgid "Except Solvent"
 #~ msgstr "Excepté le solvant"
+
 #~ msgid "Except Water"
 #~ msgstr "Excepté l'eau"
+
 #~ msgid "Other"
 #~ msgstr "Autre"
+
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
+
 #~ msgid "Nanometers"
 #~ msgstr "Nanomètres"
+
 #~ msgid "Angstroms"
 #~ msgstr "Angströms"
+
 #~ msgid "Picometers"
 #~ msgstr "Picomètres"
+
 #~ msgid "Open"
 #~ msgstr "Ouvrir"
+
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Visualisation Moléculaire http://www.jmol.org"
+
 #~ msgid "Name hidden"
 #~ msgstr "Nom caché"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation fil de fer"
-

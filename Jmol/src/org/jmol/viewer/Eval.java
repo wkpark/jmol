@@ -920,7 +920,7 @@ class Eval { //implements Runnable {
       }
     }
     if (sp != 1)
-      evalError("atom expression compiler error - stack over/underflow");
+      evalError(GT._("atom expression compiler error - stack over/underflow"));
     return stack[0];
   }
 
@@ -1181,7 +1181,8 @@ class Eval { //implements Runnable {
         return viewer.getAtomsWithin(withinStr, bs);
       return viewer.getAtomsWithin("sequence", withinStr, bs);
     }
-    evalError(GT._("Unrecognized WITHIN parameter")+":" + withinSpec);
+    evalError(GT._("Unrecognized {0} parameter", new Object[] { "WITHIN" } ) + 
+              ":" + withinSpec);
     return null; //can't get here
   }
 
@@ -1411,7 +1412,8 @@ class Eval { //implements Runnable {
         return new Point4f(1, 0, 0, 0);
       break;
     }
-    evalError(GT._("plane expected -- either {a b c d} or \"xy\" \"xz\" \"yz\""));
+    evalError(GT._("plane expected -- either {0} or {1}",
+                   new Object[] { "{a b c d}", "\"xy\" \"xz\" \"yz\"" } ));
     //impossible return
     return null;
   }
@@ -1624,7 +1626,8 @@ class Eval { //implements Runnable {
 
   void help() throws ScriptException {
     if (!viewer.isApplet())
-      evalError(GT._("Currently the help command only works for the applet"));
+      evalError(GT._("Currently the {0} command only works for the applet",
+                     new Object[] { "help" } ));
     String what = (statementLength == 1 ? "" : stringParameter(1));
     viewer.getHelp(what);
   }
@@ -1716,7 +1719,7 @@ class Eval { //implements Runnable {
       viewer.clearConsole();
       break;
     default:
-      evalError(GT._("console ON|OFF"));
+      evalError("console ON|OFF");
     }
   }
 
@@ -3045,7 +3048,8 @@ class Eval { //implements Runnable {
 
   void conformation() throws ScriptException {
     if (viewer.getDisplayModelIndex() <= -2)
-      evalError(GT._("\"conformation\" not allowed with background model displayed"));
+      evalError(GT._("{0} not allowed with background model displayed",
+                     new Object[] { "\"conformation\"" }));
     BitSet bsConformations;
     if (statementLength == 1) {
       bsConformations = viewer.setConformation();
@@ -3287,7 +3291,7 @@ class Eval { //implements Runnable {
 
   void calculate() throws ScriptException {
     if (statementLength == 1)
-      evalError(GT._("Calculate what? hbonds?  surface? structure?"));
+      evalError(GT._("Calculate what?") + "hbonds?  surface? structure?");
     switch (statement[1].tok) {
     case Token.surface:
       dots(2, Dots.DOTS_MODE_CALCONLY);
@@ -3515,7 +3519,7 @@ class Eval { //implements Runnable {
       viewer.rewindAnimation();
       return;
     default:
-      evalError(GT._("invalid frame control keyword") + ": " + token.toString());
+      evalError(GT._("invalid {0} control keyword", new Object[] { "frame" }) + ": " + token.toString());
     }
   }
 
@@ -4230,7 +4234,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError(GT._("save what? bonds? orientation? selection?"));
+    evalError(GT._("save what?") + " bonds? orientation? selection?");
   }
   
   void restore() throws ScriptException {
@@ -4251,12 +4255,13 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError(GT._("restore what? bonds? orientation? selection?"));
+    evalError(GT._("restore what?") + " bonds? orientation? selection?");
   }
   
   void write() throws ScriptException {
     if (viewer.isApplet())
-      evalError("The WRITE command is not available for the applet.");
+      evalError(GT._("The {0} command is not available for the applet.",
+                     new Object[] { "WRITE" } ));
     int tok = (statementLength == 1 ? 0 : statement[1].tok);
     if (statementLength == 1 || tok == Token.clipboard) {
       viewer.createImage(null, "CLIP", 100);
@@ -4266,7 +4271,8 @@ class Eval { //implements Runnable {
     String type = (tok == Token.identifier ? (String) statement[1].value
         : stringParameter(1));
     if (";JPEG;JPG;PDF;PNG;".indexOf((";"+type+";").toUpperCase()) < 0)
-      evalError("write what? CLIPBOARD or JPG|PNG|PPM \"filename\"");
+      evalError(GT._("write what? {0} or {1} \"filename\"",
+                     new Object[] { "CLIPBOARD", "JPG|PNG|PPM" } ));
     String fileName = (statement[2].tok == Token.identifier ? (String) statement[2].value
         : stringParameter(2));
     viewer.createImage(fileName, type, 100);
@@ -4399,19 +4405,19 @@ class Eval { //implements Runnable {
     // not implemented
     case Token.translation:
     case Token.rotation:
-      evalError(GT._("use \"show ORIENTATION\""));
+      evalError(GT._("use {0}") + "\"show ORIENTATION\"");
     case Token.chain:
     case Token.group:
     case Token.sequence:
     case Token.residue:
-      evalError(GT
-          ._("unrecognized SHOW parameter --  use \"getProperty CHAININFO \""));
+      evalError(GT._("unrecognized {0} parameter --  use {1}",
+                     new Object[] { "SHOW", "\"getProperty CHAININFO\"" } ));
     case Token.selected:
-      evalError(GT
-          ._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""));
+      evalError(GT._("unrecognized {0} parameter --  use {1}",
+                     new Object[] { "SHOW", "\"getProperty ATOMINFO (selected)\"" } ));
     case Token.atom:
-      evalError(GT
-          ._("unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom expression)\""));
+      evalError(GT._("unrecognized {0} parameter --  use {1}",
+                     new Object[] { "SHOW", "\"getProperty ATOMINFO (atom expression)\"" } ));
     case Token.spin:
     case Token.list:
     case Token.mlp:
@@ -4422,7 +4428,8 @@ class Eval { //implements Runnable {
       notImplemented(1);
       break;
     default:
-      evalError(GT._("unrecognized SHOW parameter"));
+      evalError(GT._("unrecognized {0} parameter",
+                     new Object[] { "SHOW" } ));
     }
   }
 
@@ -5010,8 +5017,8 @@ class Eval { //implements Runnable {
     String str;
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError(GT
-          ._("the isosurface command requires that only one model be displayed"));
+      evalError(GT._("the {0} command requires that only one model be displayed",
+                     new Object[] { "isosurface" } ));
 
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -5407,181 +5414,185 @@ class Eval { //implements Runnable {
   }
 
   void unrecognizedCommand(Token token) throws ScriptException {
-    evalError("unrecognized command:" + token.value);
+    evalError(GT._("unrecognized command") + ": " + token.value);
   }
 
   void unrecognizedAtomProperty(int propnum) throws ScriptException {
-    evalError("unrecognized atom property:" + propnum);
+    evalError(GT._("unrecognized atom property") + ": " + propnum);
   }
 
   void filenameExpected() throws ScriptException {
-    evalError("filename expected");
+    evalError(GT._("filename expected"));
   }
 
   void booleanExpected() throws ScriptException {
-    evalError("boolean expected");
+    evalError(GT._("boolean expected"));
   }
 
   void booleanOrPercentExpected() throws ScriptException {
-    evalError("boolean or percent expected");
+    evalError(GT._("boolean or percent expected"));
   }
 
   void booleanOrNumberExpected() throws ScriptException {
-    evalError("boolean or number expected");
+    evalError(GT._("boolean or number expected"));
   }
 
   void booleanOrNumberExpected(String orWhat) throws ScriptException {
-    evalError("boolean, number, or \"" + orWhat + "\" expected");
+    evalError(GT._("boolean, number, or {0} expected",
+                   new Object[] { "\"" + orWhat + "\"" } ));
   }
 
   void expressionOrDecimalExpected() throws ScriptException {
-    evalError("(atom expression) or decimal number expected");
+    evalError(GT._("(atom expression) or decimal number expected"));
   }
 
   void expressionOrIntegerExpected() throws ScriptException {
-    evalError("(atom expression) or integer expected");
+    evalError(GT._("(atom expression) or integer expected"));
   }
 
   void expressionExpected() throws ScriptException {
-    evalError("valid (atom expression) expected");
+    evalError(GT._("valid (atom expression) expected"));
   }
 
   void rotationPointsIdentical() throws ScriptException {
-    evalError("rotation points cannot be identical");
+    evalError(GT._("rotation points cannot be identical"));
   }
 
   void integerExpected() throws ScriptException {
-    evalError("integer expected");
+    evalError(GT._("integer expected"));
   }
 
   void numberExpected() throws ScriptException {
-    evalError("number expected");
+    evalError(GT._("number expected"));
   }
 
   void stringExpected() throws ScriptException {
-    evalError("quoted string expected");
+    evalError(GT._("quoted string expected"));
   }
 
   void stringOrIdentifierExpected() throws ScriptException {
-    evalError("quoted string or identifier expected");
+    evalError(GT._("quoted string or identifier expected"));
   }
 
   void propertyNameExpected() throws ScriptException {
-    evalError("property name expected");
+    evalError(GT._("property name expected"));
   }
 
   void axisExpected() throws ScriptException {
-    evalError("x y z axis expected");
+    evalError(GT._("x y z axis expected"));
   }
 
   void colorExpected() throws ScriptException {
-    evalError("color expected");
+    evalError(GT._("color expected"));
   }
 
   void keywordExpected() throws ScriptException {
-    evalError("keyword expected");
+    evalError(GT._("keyword expected"));
   }
 
   void unrecognizedObject() throws ScriptException {
-    evalError("unrecognized object");
+    evalError(GT._("unrecognized object"));
   }
 
   void unrecognizedExpression() throws ScriptException {
-    evalError("runtime unrecognized expression");
+    evalError(GT._("runtime unrecognized expression"));
   }
 
   void undefinedVariable(String varName) throws ScriptException {
-    evalError("variable undefined:" + varName);
+    evalError(GT._("variable undefined") + ": " + varName);
   }
 
   void endOfStatementUnexpected() throws ScriptException {
-    evalError("unexpected end of script command");
+    evalError(GT._("unexpected end of script command"));
   }
 
   void badArgumentCount() throws ScriptException {
-    evalError("bad argument count");
+    evalError(GT._("bad argument count"));
   }
 
   void invalidArgument() throws ScriptException {
-    String str = "invalid argument";
+    String str = "";
     for (int i = 0; i < statementLength; i++)
       str += "\n" + statement[i].toString();
-    evalError(str);
+    evalError(GT._("invalid argument") + str);
   }
 
   void invalidArgument(int ipt, String info) throws ScriptException {
-    String str = "invalid argument - " + info;
+    String str = "";
     for (int i = 0; i <= ipt; i++)
       str += "\n" + statement[i].toString();
-    evalError(str);
+    evalError(GT._("invalid argument") + " - " + info + str);
   }
 
   void unrecognizedSetParameter() throws ScriptException {
-    evalError("unrecognized SET parameter");
+    evalError(GT._("unrecognized {0} parameter", new Object[] { "SET" } ));
   }
 
   void unrecognizedSubcommand(String cmd) throws ScriptException {
-    evalError("unrecognized subcommand: " + cmd);
+    evalError(GT._("unrecognized subcommand") + ": " + cmd);
   }
 
   void subcommandExpected() throws ScriptException {
-    evalError("subcommand expected");
+    evalError(GT._("subcommand expected"));
   }
 
   void setspecialShouldNotBeHere() throws ScriptException {
-    evalError("interpreter error - setspecial should not be here");
+    evalError(GT._("interpreter error - setspecial should not be here"));
   }
 
   void numberOutOfRange() throws ScriptException {
-    evalError("number out of range");
+    evalError(GT._("number out of range"));
   }
 
   void numberOutOfRange(int min, int max) throws ScriptException {
-    evalError("integer out of range (" + min + " - " + max + ")");
+    evalError(GT._("integer out of range ({0} - {1})",
+                   new Object[] { new Integer(min), new Integer(max) } ));
   }
 
   void numberOutOfRange(float min, float max) throws ScriptException {
-    evalError("decimal number out of range (" + min + " - " + max + ")");
+    evalError(GT._("decimal number out of range ({0} - {1})",
+                   new Object[] { new Float(min), new Float(max) } ));
   }
 
   void numberMustBe(int a, int b) throws ScriptException {
-    evalError("number must be (" + a + " or " + b + ")");
+    evalError(GT._("number must be ({0} or {1})",
+                   new Object[] { new Integer(a), new Integer(b) } ));
   }
 
   void badAtomNumber() throws ScriptException {
-    evalError("bad atom number");
+    evalError(GT._("bad atom number"));
   }
 
   void errorLoadingScript(String msg) throws ScriptException {
-    evalError("error loading script -> " + msg);
+    evalError(GT._("error loading script") + " -> " + msg);
   }
 
   void fileNotFoundException(String filename) throws ScriptException {
-    evalError("file not found : " + filename);
+    evalError(GT._("file not found") + ": " + filename);
   }
 
   void drawObjectNotDefined(String drawID) throws ScriptException {
-    evalError("draw object not defined:" + drawID);
+    evalError(GT._("draw object not defined") + ": " + drawID);
   }
 
   void objectNameExpected() throws ScriptException {
-    evalError("object name expected after '$'");
+    evalError(GT._("object name expected after '$'"));
   }
 
   void coordinateExpected() throws ScriptException {
-    evalError("{ number number number } expected");
+    evalError(GT._("{ number number number } expected"));
   }
 
   void coordinateOrNameOrExpressionRequired() throws ScriptException {
-    evalError(" {x y z} or $name or (atom expression) required");
+    evalError(GT._(" {x y z} or $name or (atom expression) required"));
   }
 
   void tooManyRotationPoints() throws ScriptException {
-    evalError("too many rotation points were specified");
+    evalError(GT._("too many rotation points were specified"));
   }
 
   void keywordExpected(String what) throws ScriptException {
-    evalError("keyword expected: " + what);
+    evalError(GT._("keyword expected") + ": " + what);
   }
 
   void notImplemented(int itoken) {
@@ -5594,15 +5605,15 @@ class Eval { //implements Runnable {
   }
 
   void invalidParameterOrder() throws ScriptException {
-    evalError("invalid parameter order");
+    evalError(GT._("invalid parameter order"));
   }
 
   void incompatibleArguments() throws ScriptException {
-    evalError("incompatible arguments");
+    evalError(GT._("incompatible arguments"));
   }
 
   void insufficientArguments() throws ScriptException {
-    evalError("insufficient arguments");
+    evalError(GT._("insufficient arguments"));
   }
 
   class ScriptException extends Exception {

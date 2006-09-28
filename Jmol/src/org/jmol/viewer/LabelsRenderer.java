@@ -59,7 +59,7 @@ class LabelsRenderer extends ShapeRenderer {
       if (!atom.isShapeVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
-      if (label == null)
+      if (label == null || label.length() == 0)
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
       colix = Graphics3D.inheritColix(colix, atom.colixAtom);

@@ -402,13 +402,14 @@ public class Jmol extends JPanel {
     options.addOption(OptionBuilder.create("D"));
     
     OptionBuilder.withLongOpt("geometry");
-    OptionBuilder.withDescription(GT._("window size, e.g. -g500x500"));
+    OptionBuilder.withDescription(GT._("window size, e.g. {0}", new Object[] { "-g500x500" }));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
 
     OptionBuilder.withLongOpt("write");
-    OptionBuilder.withDescription(GT._("CLIP or JPG|PNG|PPM:filename"));
+    OptionBuilder.withDescription(GT._("{0} or {1}:filename",
+                                  new Object[] { "CLIP", "JPG|PNG|PPM" }));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("w"));

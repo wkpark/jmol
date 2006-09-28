@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-28 06:23+0200\n"
+"POT-Creation-Date: 2006-09-28 22:03+0200\n"
 "PO-Revision-Date: 2005-12-20 07:33-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -554,7 +554,7 @@ msgid "What's New"
 msgstr "O que há de novo"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:552
+#: org/openscience/jmol/app/Jmol.java:553
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Consola Jmol"
@@ -718,60 +718,61 @@ msgid "supported options are given below"
 msgstr "opções suportadas são referidas em baixo"
 
 #: org/openscience/jmol/app/Jmol.java:405
-#, fuzzy
-msgid "window size, e.g. -g500x500"
+#, fuzzy, java-format
+msgid "window size, e.g. {0}"
 msgstr "tamanho da janela 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:411
-msgid "CLIP or JPG|PNG|PPM:filename"
+#, java-format
+msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:417
+#: org/openscience/jmol/app/Jmol.java:418
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:438
+#: org/openscience/jmol/app/Jmol.java:439
 msgid "For example:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:442
+#: org/openscience/jmol/app/Jmol.java:443
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "As opções -D são as seguintes (pré-definição em parentesis):"
 
-#: org/openscience/jmol/app/Jmol.java:540
+#: org/openscience/jmol/app/Jmol.java:541
 msgid "Executing script..."
 msgstr "Executando um script..."
 
-#: org/openscience/jmol/app/Jmol.java:560
+#: org/openscience/jmol/app/Jmol.java:561
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Limpar"
 
-#: org/openscience/jmol/app/Jmol.java:573
+#: org/openscience/jmol/app/Jmol.java:574
 msgid "Could not create ConsoleTextArea: "
 msgstr "Não foi possível criar 'ConsoleTextArea':"
 
-#: org/openscience/jmol/app/Jmol.java:649
+#: org/openscience/jmol/app/Jmol.java:650
 msgid "Closing Jmol..."
 msgstr "Fechar Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:885
+#: org/openscience/jmol/app/Jmol.java:886
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1224
+#: org/openscience/jmol/app/Jmol.java:1225
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1225
+#: org/openscience/jmol/app/Jmol.java:1226
 msgid "Enter URL of molecular model"
 msgstr "Escrever URL de um modelo molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1460
+#: org/openscience/jmol/app/Jmol.java:1461
 msgid "File not loaded"
 msgstr "Ficheiro não carregado"
 
-#: org/openscience/jmol/app/Jmol.java:1605
+#: org/openscience/jmol/app/Jmol.java:1606
 msgid "IO Exception:"
 msgstr "Excepção IO:"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-28 06:23+0200\n"
+"POT-Creation-Date: 2006-09-28 22:03+0200\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -554,7 +554,7 @@ msgid "What's New"
 msgstr "Novetats"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:552
+#: org/openscience/jmol/app/Jmol.java:553
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Consola del Jmol"
@@ -720,62 +720,63 @@ msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
 #: org/openscience/jmol/app/Jmol.java:405
-#, fuzzy
-msgid "window size, e.g. -g500x500"
+#, fuzzy, java-format
+msgid "window size, e.g. {0}"
 msgstr "mida de la finestra 500x500"
 
 #: org/openscience/jmol/app/Jmol.java:411
-msgid "CLIP or JPG|PNG|PPM:filename"
+#, java-format
+msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:417
+#: org/openscience/jmol/app/Jmol.java:418
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:438
+#: org/openscience/jmol/app/Jmol.java:439
 msgid "For example:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:442
+#: org/openscience/jmol/app/Jmol.java:443
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 "Les opcions són -D són com es descriu a continuació (paràmetres per defecte "
 "en parèntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:540
+#: org/openscience/jmol/app/Jmol.java:541
 msgid "Executing script..."
 msgstr "S'està executant la seqüència..."
 
-#: org/openscience/jmol/app/Jmol.java:560
+#: org/openscience/jmol/app/Jmol.java:561
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Neteja"
 
-#: org/openscience/jmol/app/Jmol.java:573
+#: org/openscience/jmol/app/Jmol.java:574
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola:"
 
-#: org/openscience/jmol/app/Jmol.java:649
+#: org/openscience/jmol/app/Jmol.java:650
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:885
+#: org/openscience/jmol/app/Jmol.java:886
 msgid "Macros"
 msgstr "Macroinstruccions"
 
-#: org/openscience/jmol/app/Jmol.java:1224
+#: org/openscience/jmol/app/Jmol.java:1225
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/Jmol.java:1225
+#: org/openscience/jmol/app/Jmol.java:1226
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1460
+#: org/openscience/jmol/app/Jmol.java:1461
 msgid "File not loaded"
 msgstr "No s'ha carregat el fitxer"
 
-#: org/openscience/jmol/app/Jmol.java:1605
+#: org/openscience/jmol/app/Jmol.java:1606
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 

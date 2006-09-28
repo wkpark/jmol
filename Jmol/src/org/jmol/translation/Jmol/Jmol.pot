@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-28 06:23+0200\n"
+"POT-Creation-Date: 2006-09-28 22:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -553,7 +553,7 @@ msgid "What's New"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:552
+#: org/openscience/jmol/app/Jmol.java:553
 msgid "Jmol Java Console"
 msgstr ""
 
@@ -715,59 +715,61 @@ msgid "supported options are given below"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:405
-msgid "window size, e.g. -g500x500"
+#, java-format
+msgid "window size, e.g. {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:411
-msgid "CLIP or JPG|PNG|PPM:filename"
+#, java-format
+msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:417
+#: org/openscience/jmol/app/Jmol.java:418
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:438
+#: org/openscience/jmol/app/Jmol.java:439
 msgid "For example:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:442
+#: org/openscience/jmol/app/Jmol.java:443
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:540
+#: org/openscience/jmol/app/Jmol.java:541
 msgid "Executing script..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:560
+#: org/openscience/jmol/app/Jmol.java:561
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:573
+#: org/openscience/jmol/app/Jmol.java:574
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:649
+#: org/openscience/jmol/app/Jmol.java:650
 msgid "Closing Jmol..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:885
+#: org/openscience/jmol/app/Jmol.java:886
 msgid "Macros"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1224
+#: org/openscience/jmol/app/Jmol.java:1225
 msgid "Open URL"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1225
+#: org/openscience/jmol/app/Jmol.java:1226
 msgid "Enter URL of molecular model"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1460
+#: org/openscience/jmol/app/Jmol.java:1461
 msgid "File not loaded"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1605
+#: org/openscience/jmol/app/Jmol.java:1606
 msgid "IO Exception:"
 msgstr ""
 

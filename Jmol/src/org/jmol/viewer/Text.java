@@ -363,7 +363,8 @@ class Text {
                                  int yOffset, int ascent, int descent) {
 
     // old static style -- quick, simple, no line breaks, odd alignment?
-
+    if (strLabel == null || strLabel.length() == 0)
+      return;
     int x0 = x;
     int y0 = y;
     int boxWidth = font3d.fontMetrics.stringWidth(strLabel) + 8;
@@ -397,12 +398,12 @@ class Text {
       g3d.fillRect(bgcolix, x, y, z, zSlab, boxWidth, boxHeight);
       g3d.drawRect(colix, x + 1, y + 1, z - 1, zSlab, boxWidth - 2,
           boxHeight - 2);
-      g3d.drawLine(bgcolix, x0, y0, zSlab, x, y + boxHeight/2, zSlab);
+      //just a little pointer -- only for the simplest of labels
+      if (xOffset > 0)
+        g3d.drawLine(bgcolix, x0, y0, zSlab, x, y + boxHeight/2, zSlab);
     }
-    //just a little pointer -- only for the simplest of labels
-    if (xOffset > 0)
-      g3d.drawString(strLabel, font3d, colix, x + 4, y + 4 + ascent, 
-        z - 1, zSlab);
+    g3d.drawString(strLabel, font3d, colix, x + 4, y + 4 + ascent, 
+      z - 1, zSlab);
   }
   
   String[] split(String text, char ch) {

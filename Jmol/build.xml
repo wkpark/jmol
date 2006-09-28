@@ -366,6 +366,13 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
+    <copy todir="${jmol.build.dir}">
+      <fileset dir=".">
+        <include name="jmol" />
+        <include name="jmol.bat" />
+        <include name="jmol.sh" />
+      </fileset>
+    </copy>
     <delete file="${jmol.build.dir}/JmolUnsigned.jar"/>
   </target>
 

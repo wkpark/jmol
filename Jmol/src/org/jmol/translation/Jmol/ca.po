@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-28 06:15+0200\n"
+"POT-Creation-Date: 2006-09-28 06:23+0200\n"
 "PO-Revision-Date: 2006-01-30 03:35+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -700,7 +700,7 @@ msgid "give this help page"
 msgstr "adjunta aquesta pàgina d'ajuda"
 
 #: org/openscience/jmol/app/Jmol.java:388
-msgid "no display (and also exit when done"
+msgid "no display (and also exit when done)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:389

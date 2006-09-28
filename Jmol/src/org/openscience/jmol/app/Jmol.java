@@ -385,7 +385,7 @@ public class Jmol extends JPanel {
 
     Options options = new Options();
     options.addOption("h", "help", false, GT._("give this help page"));
-    options.addOption("n", "nodisplay", false, GT._("no display (and also exit when done"));
+    options.addOption("n", "nodisplay", false, GT._("no display (and also exit when done)"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
     options.addOption("o", "noconsole", false, GT._("no console -- all output to sysout"));
     

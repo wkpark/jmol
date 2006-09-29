@@ -156,7 +156,7 @@ class LcaoCartoon extends Isosurface {
     super.setProperty("lcaoType",type,null);
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
         new Vector3f(frame.atoms[iAtom])};
-    if (viewer.getPrincipalAxes(iAtom, axes[0], axes[1], type, true))
+    if (type.equalsIgnoreCase("s") || viewer.getPrincipalAxes(iAtom, axes[0], axes[1], type, true))
       super.setProperty("lcaoCartoon",axes,null);
   }
     

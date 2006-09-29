@@ -2775,6 +2775,7 @@ public final class Frame {
     z.set(0, 0, 0);
     x.set(0, 0, 0);
     Atom atom1 = atom;
+    Atom atom2 = atom;
     int nBonds = 0;
     float _180 = (float) Math.PI * 0.95f;
     Vector3f n = new Vector3f();
@@ -2794,6 +2795,7 @@ public final class Frame {
           switch (nBonds) {
           case 1:
             x.set(n);
+            atom2 = atom1;
             break;
           case 2:
             x2.set(n);
@@ -2853,6 +2855,18 @@ public final class Frame {
       if (z.length() < 0.1) {
         // linear A--X--B
         hybridization = "sp";
+        if (!lcaoType.equals("pz")) {
+          if (atom1.getCovalentBondCount() != 3)
+            atom1 = atom2;
+          if (atom1.getCovalentBondCount() == 3) {
+            //special case, for example R2C=C=CR2 central carbon
+            getPrincipalAxes(atom1.atomIndex, x, z, "pz", false);
+            if (lcaoType.equals("px"))
+              x.scale(-1);
+            z.set(x2);
+            break;
+          }
+        }
         z.set(x);
         x.cross(x3, z);
         break;

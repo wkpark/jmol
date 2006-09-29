@@ -30,6 +30,28 @@ import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
 class JmeReader extends AtomSetCollectionReader {
+/*
+ *  see http://www.molinspiration.com/jme/doc/jme_functions.html
+ *
+ * not fully supported
+ * 
+ * the format of the JME String is as follows
+ * natoms nbonds (atomic_symbol x_coord y_coord) for all atoms 
+ * (atom1 atom2 bond_order) for all bonds
+ * (for stereo bonds the bond order is -1 for up and -2 for down 
+ * from the first to the second atom)
+ * Molecules in multipart system are separated by 
+ * the | character. Components of the reaction are 
+ * separated by the > character. The JME string for 
+ * the reaction is thus "reactant1 | reactant 2 ... > 
+ * modulator(s) > product(s)"
+ * 
+ * Which, unfortunately, is not much to go on. 
+ * JME also outputs MDL MOL files; this should be the preferred
+ * option
+ * 
+ * 
+ */
 
   StringTokenizer tokenizer;
   

@@ -473,6 +473,7 @@ public class Jmol extends JPanel {
     }
 
     if (line.hasOption("n")) {
+      // this ensures that noDisplay also exits
       commandOptions += "-n-x";
       haveDisplay = Boolean.FALSE;
     }
@@ -480,6 +481,10 @@ public class Jmol extends JPanel {
     if (line.hasOption("s")) {
       commandOptions += "-s";
         scriptFilename = line.getOptionValue("s");
+    } else if (line.hasOption("n")) {
+      // noDisplay but also no script -- get out of here!
+      System.out.println("?Que? ?-n pero no -s?");
+      System.exit(1);
     } 
     
     if (line.hasOption("x")) {

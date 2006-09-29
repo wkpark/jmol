@@ -288,8 +288,8 @@ abstract class AtomSetCollectionReader extends Parser {
       unitcell.toFractional(atom);
       iHaveFractionalCoordinates = true;
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-      Logger.debug(" atom "+atom.atomName + " " + atom.x + " " + atom.y+" "+atom.z);
+    //if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      //Logger.debug(" atom "+atom.atomName + " " + atom.x + " " + atom.y+" "+atom.z);
     needToApplySymmetry = true;
   }
 

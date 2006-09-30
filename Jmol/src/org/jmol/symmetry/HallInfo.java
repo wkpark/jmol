@@ -198,11 +198,15 @@ public class HallInfo {
       if (vectorCode.length() > 0)
         str += "; vector offset:" + vectorCode;
       if (rotation != null)
-        str += "\noperator: " + SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, allPositive)
+        str += "\noperator: " + getXYZ(allPositive)
             + "\nSeitz matrix:\n" + SymmetryOperation.dumpSeitz(seitzMatrix12ths);
       return str;
     }
     
+   String getXYZ(boolean allPositive) {
+     return SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, allPositive);
+   }
+   
     private void getRotationInfo(String code, int prevOrder, char prevAxisType) {
       this.inputCode = code;
       this.prevOrder = prevOrder;
@@ -370,6 +374,13 @@ class Translation {
     this.vectorShift12ths = new Point3i();        
   }
 
+  final static String getHallLatticeEquivalent(int latticeParameter) {
+   // SHELX LATT --> Hall term
+    char latticeCode = Translation.getLatticeCode(latticeParameter);
+    boolean isCentrosymmetric = (latticeParameter > 0);
+    return (isCentrosymmetric ? "-" : "") + latticeCode + " 1";
+  }
+  
   final static int getLatticeIndex(char latt) {
     /*
      * returns lattice code (1-9, including S and T) for a given lattice type

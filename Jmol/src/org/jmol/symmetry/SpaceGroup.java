@@ -133,7 +133,7 @@ public class SpaceGroup {
   public String dumpInfo() {
     if (hallInfo == null)
       hallInfo = new HallInfo(hallSymbol);
-    generateAllOperators();
+    generateAllOperators(null);
     String str = "\nHermann-Mauguin symbol: " + hmSymbol
         + (hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
         + "\ninternational table number: " + intlTableNumber
@@ -169,6 +169,10 @@ public class SpaceGroup {
   }  
  
   public void setLattice(int latticeParameter) {
+    // implication here is that we do NOT have a Hall symbol.
+    // so we generate one.
+    // The idea here is that we can represent any LATT number
+    // as a simple set of rotation/translation operations
     this.latticeParameter = latticeParameter;
     latticeCode = Translation.getLatticeCode(latticeParameter);
   }
@@ -201,7 +205,7 @@ public class SpaceGroup {
       }
     }
     if (sg != null)
-      sg.generateAllOperators();
+      sg.generateAllOperators(null);
     return sg;
   }
   
@@ -221,7 +225,7 @@ public class SpaceGroup {
         sg = createSpaceGroup(name);
     }
     if (sg != null)
-      sg.generateAllOperators();
+      sg.generateAllOperators(null);
     return sg;
   }
 
@@ -395,6 +399,11 @@ public class SpaceGroup {
   }
    
   public SymmetryOperation[] getFinalOperations(Point3f[] atoms, int atomIndex, int count) {
+    if (hallInfo == null && latticeParameter != 0) {
+      HallInfo h = new HallInfo(Translation.getHallLatticeEquivalent(latticeParameter));
+      generateAllOperators(h);      
+    }
+
     SymmetryOperation[] finalOperations = new SymmetryOperation[operationCount];
     for (int i = 0; i < operationCount; i++) {
       finalOperations[i] = new SymmetryOperation(operations[i], atoms, atomIndex, count);
@@ -453,33 +462,37 @@ public class SpaceGroup {
   }
   
   /// operation based on Hall name and unit cell parameters only
-  
-  private void generateAllOperators() {
-    if (operationCount > 0)
-      return;
-    operations = new SymmetryOperation[4];
-    operationCount = 0;
-    if (hallInfo == null || hallInfo.nRotations == 0) 
-      hallInfo = new HallInfo(hallSymbol);
-    setLattice(hallInfo.latticeCode, hallInfo.isCentrosymmetric);
+
+  private void generateAllOperators(HallInfo h) {
+    if (h == null) {
+      h = hallInfo;
+      if (operationCount > 0)
+        return;
+      operations = new SymmetryOperation[4];
+      operationCount = 0;
+      if (hallInfo == null || hallInfo.nRotations == 0)
+        hallInfo = new HallInfo(hallSymbol);
+      setLattice(hallInfo.latticeCode, hallInfo.isCentrosymmetric);
+      addOperation(null);
+      addSymmetry("x,y,z");
+    }
     Matrix4f mat1 = new Matrix4f();
     Matrix4f operation = new Matrix4f();
     Matrix4f[] newOps = new Matrix4f[7];
     for (int i = 0; i < 7; i++)
       newOps[i] = new Matrix4f();
     newOps[0].setIdentity();
-    addOperation(null);
-    addSymmetry("x,y,z");
-    for (int i = 0; i < hallInfo.nRotations; i++) {
-      mat1.set(hallInfo.rotationTerms[i].seitzMatrix12ths);
-      int nRot = hallInfo.rotationTerms[i].order;
+    for (int i = 0; i < h.nRotations; i++) {
+      mat1.set(h.rotationTerms[i].seitzMatrix12ths);
+      int nRot = h.rotationTerms[i].order;
       int nOps = operationCount;
       for (int j = 1; j <= nRot; j++) {
-        newOps[j].mul(mat1, newOps[0]);        
+        newOps[j].mul(mat1, newOps[0]);
         newOps[0].set(newOps[j]);
         for (int k = 0; k < nOps; k++) {
           operation.mul(newOps[j], operations[k]);
-          addSymmetry(SymmetryOperation.getXYZFromMatrix(operation, true), operation);
+          addSymmetry(SymmetryOperation.getXYZFromMatrix(operation, true),
+              operation);
         }
       }
     }

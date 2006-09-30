@@ -58,6 +58,7 @@ class ShelxReader extends AtomSetCollectionReader {
   String[] sfacElementSymbols;
 
   boolean isCmdf = false;
+  boolean iHaveAtomSet = false;
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
@@ -75,7 +76,7 @@ class ShelxReader extends AtomSetCollectionReader {
         applySymmetry();
         setFractionalCoordinates(true);
         isCmdf = false;
-        atomSetCollection.newAtomSet();
+        iHaveAtomSet = false;
       }
       readLine_loop: while ((line = reader.readLine()) != null) {
         lineLength = line.trim().length();
@@ -104,7 +105,7 @@ class ShelxReader extends AtomSetCollectionReader {
                 processSupportedRecord(i, line);
               continue readLine_loop;
             }
-          if (readThisModel && !isCmdf)
+          if (readThisModel && !isCmdf && iHaveAtomSet)
             assumeAtomRecord(line);
         }
       }
@@ -118,6 +119,9 @@ class ShelxReader extends AtomSetCollectionReader {
 
   void processSupportedRecord(int recordIndex, String line) throws Exception {
     //Logger.debug(recordIndex+" "+line);
+    if (!iHaveAtomSet)
+      atomSetCollection.newAtomSet();
+    iHaveAtomSet = true;
     switch (recordIndex) {
     case 0: // TITL
       atomSetCollection.setAtomSetName(parseTrimmed(line, 4));

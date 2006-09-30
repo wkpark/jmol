@@ -197,8 +197,7 @@ class StateManager {
         Connection c = connections[i];
         if (c.atomIndex1 >= frame.atomCount || c.atomIndex2 >= frame.atomCount)
           continue;        
-        Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1], frame.atoms[c.atomIndex2], c.order);
-        b.mad = c.mad;
+        Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1], frame.atoms[c.atomIndex2], c.order, c.mad);
         b.colix = c.colix;
         b.shapeVisibilityFlags = c.shapeVisibilityFlags;
       }

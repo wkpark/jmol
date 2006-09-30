@@ -55,12 +55,6 @@ class Bond {
     setMad(mad);
   }
 
-  Bond(Atom atom1, Atom atom2, short order, Frame frame) {
-    this(atom1, atom2, order,
-         ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0
-          ? 1 : frame.viewer.getMadBond()), (short)0);
-  }
-
   boolean isCovalent() {
     return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
   }

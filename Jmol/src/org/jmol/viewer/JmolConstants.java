@@ -50,6 +50,23 @@ final public class JmolConstants {
   
   public final static boolean officialRelease = false;
 
+  public final static int DELETE_BONDS     = 0;
+  public final static int MODIFY_ONLY      = 1;
+  public final static int CREATE_ONLY      = 2;
+  public final static int MODIFY_OR_CREATE = 3;
+  public final static int AUTO_BOND        = 4;
+
+  public final static String[] connectOperationStrings =
+  { "delete", "modify", "create", "modifyOrCreate", "auto" };
+
+  public static int connectOperationFromString(String connectOperationString) {
+    int i;
+    for (i = connectOperationStrings.length; --i >= 0; )
+      if (connectOperationStrings[i].equalsIgnoreCase(connectOperationString))
+        break;
+    return i;
+  }
+  
   public final static short MAR_DELETED = Short.MIN_VALUE;
 
   public static final int MOUSE_ROTATE = 0;

@@ -190,24 +190,6 @@ final public class Atom extends Point3fi implements Tuple {
     return null;
   }
 
-  Bond bondMutually(Atom atomOther, short order, Frame frame) {
-    if (isBonded(atomOther))
-      return null;
-    Bond bond = new Bond(this, atomOther, order, frame);
-    addBond(bond, frame);
-    atomOther.addBond(bond, frame);
-    return bond;
-  }
-
-  private void addBond(Bond bond, Frame frame) {
-    if (bonds == null) {
-      bonds = new Bond[1];
-      bonds[0] = bond;
-    } else {
-      bonds = frame.addToBonds(bond, bonds);
-    }
-  }
-
   void addDisplayedBond(int stickVisibilityFlag, boolean isVisible){
     nBondsDisplayed+=(isVisible ? 1 : -1);
     setShapeVisibility(stickVisibilityFlag, isVisible);
@@ -757,6 +739,11 @@ final public class Atom extends Point3fi implements Tuple {
     return modelIndex + 1;
   }
   
+  // THIS is ridiculous! It means that we cannot close the adapter
+  // In fact, this is a call to group.chain.frame.viewer.modelmanager.adapter
+  // which is just the adapter passed to it by viewer anyway. 
+  // which is the same adapter passed to frame -- now I have made that
+  // nonglobal, so 
   String getClientAtomStringProperty(String propertyName) {
     if (group == null)
       return null;

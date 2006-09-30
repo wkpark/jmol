@@ -43,43 +43,42 @@ import java.awt.Rectangle;
 class ModelManager {
 
   final Viewer viewer;
-  final JmolAdapter adapter;
 
-  ModelManager(Viewer viewer, JmolAdapter adapter) {
+  ModelManager(Viewer viewer) {
     this.viewer = viewer;
-    this.adapter = adapter;
   }
 
   String fullPathName;
   String fileName;
   String modelSetName;
-  //  int frameCount = 0;
   boolean haveFile = false;
-  //  int currentFrameNumber;
   Frame frame;
-  //  Frame[] frames;
 
-  void setClientFile(String fullPathName, String fileName, Object clientFile) {
+  /*
+   * This is the method that starts frame.
+   *  
+   */
+  void setClientFile(String fullPathName, String fileName, JmolAdapter adapter, Object clientFile) {
     if (clientFile == null) {
       fullPathName = fileName = modelSetName = null;
       frame = null;
       haveFile = false;
-    } else {
-      this.fullPathName = fullPathName;
-      this.fileName = fileName;
-      modelSetName = adapter.getAtomSetCollectionName(clientFile);
-      if (modelSetName != null) {
-        modelSetName = modelSetName.trim();
-        if (modelSetName.length() == 0)
-          modelSetName = null;
-      }
-      if (modelSetName == null)
-        modelSetName = reduceFilename(fileName);
-      frame = new Frame(viewer, adapter, clientFile);
-      haveFile = true;
-      if (frame.atomCount == 0)
-        zap();
+      return;
     }
+    this.fullPathName = fullPathName;
+    this.fileName = fileName;
+    modelSetName = adapter.getAtomSetCollectionName(clientFile);
+    if (modelSetName != null) {
+      modelSetName = modelSetName.trim();
+      if (modelSetName.length() == 0)
+        modelSetName = null;
+    }
+    if (modelSetName == null)
+      modelSetName = reduceFilename(fileName);
+    frame = new Frame(viewer, adapter, clientFile);
+    haveFile = true;
+    if (frame.atomCount == 0)
+      zap();
   }
 
  
@@ -92,11 +91,6 @@ class ModelManager {
     if (fileName.length() > 24)
       fileName = fileName.substring(0, 20) + " ...";
     return fileName;
-  }
-
-  String getClientAtomStringProperty(Object clientAtom,
-                                            String propertyName) {
-    return adapter.getClientAtomStringProperty(clientAtom, propertyName);
   }
 
   Frame getFrame() {
@@ -1632,7 +1626,7 @@ String getAtomInfoChime(int i) {
   }
   
   void zap() {
-    setClientFile(null, null, null);
+    setClientFile(null, null, null, null);
     fullPathName = fileName = modelSetName = "zapped";
     frame = new Frame(viewer, "empty");
     haveFile = false;

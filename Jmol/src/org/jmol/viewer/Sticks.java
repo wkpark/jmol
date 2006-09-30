@@ -29,8 +29,6 @@ import org.jmol.util.Logger;
 
 
 import java.util.BitSet;
-import javax.vecmath.Point3f;
-
 import org.jmol.g3d.Graphics3D;
 
 class Sticks extends Shape {
@@ -73,7 +71,7 @@ class Sticks extends Shape {
       connectDistanceCount = 0;
       connectSetCount = 0;
       connectBondOrder = JmolConstants.BOND_ORDER_NULL;
-      connectOperation = MODIFY_OR_CREATE;
+      connectOperation = JmolConstants.MODIFY_OR_CREATE;
       return;
     }
     if ("connectDistance" == propertyName) {
@@ -95,7 +93,7 @@ class Sticks extends Shape {
       return;
     }
     if ("connectOperation" == propertyName) {
-      connectOperation = connectOperationFromString((String)value);
+      connectOperation = JmolConstants.connectOperationFromString((String)value);
       return;
     }
     if ("applyConnectParameters" == propertyName) {
@@ -112,7 +110,7 @@ class Sticks extends Shape {
         connectSets[0] = bsSelected;
       }
       if (connectOperation >= 0)
-        makeConnections(connectDistances[0], connectDistances[1],
+        frame.makeConnections(connectDistances[0], connectDistances[1],
                         connectBondOrder, connectOperation,
                         connectSets[0], connectSets[1]);
       return;
@@ -153,118 +151,6 @@ class Sticks extends Shape {
       iter.next().setTranslucent(isTranslucent);
   }
 
-  private final static int DELETE_BONDS     = 0;
-  private final static int MODIFY_ONLY      = 1;
-  private final static int CREATE_ONLY      = 2;
-  private final static int MODIFY_OR_CREATE = 3;
-  private final static int AUTO_BOND        = 4;
-
-  private final static String[] connectOperationStrings =
-  { "delete", "modify", "create", "modifyOrCreate", "auto" };
-
-  void makeConnections(float minDistance, float maxDistance,
-                       short order, int connectOperation,
-                       BitSet bsA, BitSet bsB) {
-    
-    Logger.debug("makeConnections(" + minDistance + "," +
-                       maxDistance + "," + order + "," + connectOperation +
-                       "," + bsA + "," + bsB + ")");
-    
-    int atomCount = frame.atomCount;
-    Atom[] atoms = frame.atoms;
-    if (connectOperation == DELETE_BONDS) {
-      deleteConnections(minDistance, maxDistance, order, bsA, bsB);
-      return;
-    }
-    if (connectOperation == AUTO_BOND) {
-      autoBond(order, bsA, bsB);
-      return;
-    }
-    if (order == JmolConstants.BOND_ORDER_NULL)
-      order = JmolConstants.BOND_COVALENT_SINGLE; // default 
-    float minDistanceSquared = minDistance * minDistance;
-    float maxDistanceSquared = maxDistance * maxDistance;
-    for (int iA = atomCount; --iA >= 0; ) {
-      if (! bsA.get(iA))
-        continue;
-      Atom atomA = atoms[iA];
-      Point3f pointA = atomA;
-      for (int iB = atomCount; --iB >= 0; ) {
-        if (iB == iA)
-          continue;
-        if (! bsB.get(iB))
-          continue;
-        Atom atomB = atoms[iB];
-        if (atomA.modelIndex != atomB.modelIndex)
-          continue;
-        if (atomA.alternateLocationID != atomB.alternateLocationID && 
-            atomA.alternateLocationID != 0 && atomB.alternateLocationID != 0)
-          continue;
-        Bond bondAB = atomA.getBond(atomB);
-        if (MODIFY_ONLY == connectOperation && bondAB == null)
-          continue;
-        if (CREATE_ONLY == connectOperation && bondAB != null)
-          continue;
-        float distanceSquared = pointA.distanceSquared(atomB);
-        if (distanceSquared < minDistanceSquared ||
-            distanceSquared > maxDistanceSquared)
-          continue;
-        if (bondAB != null)
-          bondAB.setOrder(order);
-        else
-          frame.bondAtoms(atomA, atomB, order);
-      }
-    }
-  }
-
-  void deleteConnections(float minDistance, float maxDistance, short order,
-                         BitSet bsA, BitSet bsB) {
-    int bondCount = frame.bondCount;
-    Bond[] bonds = frame.bonds;
-    BitSet bsDelete = new BitSet();
-    float minDistanceSquared = minDistance * minDistance;
-    float maxDistanceSquared = maxDistance * maxDistance;
-    if (order != JmolConstants.BOND_ORDER_NULL 
-        && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      order = JmolConstants.BOND_HYDROGEN_MASK;
-    for (int i = bondCount; --i >= 0; ) {
-      Bond bond = bonds[i];
-      Atom atom1 = bond.atom1;
-      Atom atom2 = bond.atom2;
-      if (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex) ||
-          bsA.get(atom2.atomIndex) && bsB.get(atom1.atomIndex)) {
-        if (bond.atom1.isBonded(bond.atom2)) {
-          float distanceSquared = atom1.distanceSquared(atom2);
-          if (distanceSquared >= minDistanceSquared &&
-              distanceSquared <= maxDistanceSquared)
-            if (order == JmolConstants.BOND_ORDER_NULL ||
-                order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK) ||
-                (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-              bsDelete.set(i);
-        }
-      }
-    }
-    frame.deleteBonds(bsDelete);
-  }
-
-  int connectOperationFromString(String connectOperationString) {
-    int i;
-    for (i = connectOperationStrings.length; --i >= 0; )
-      if (connectOperationStrings[i].equalsIgnoreCase(connectOperationString))
-        break;
-    return i;
-  }
-
-
-  void autoBond(short order, BitSet bsA, BitSet bsB) {
-    if (order == JmolConstants.BOND_ORDER_NULL)
-      frame.autoBond(bsA, bsB);
-    else if (order == JmolConstants.BOND_H_REGULAR)
-      frame.autoHbond(bsA, bsB);
-    else
-      Logger.warn("Sticks.autoBond() unknown order: " + order);
-  }
-  
   void setModelClickability() {
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; ) {

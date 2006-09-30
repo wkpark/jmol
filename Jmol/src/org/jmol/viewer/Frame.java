@@ -45,8 +45,7 @@ import java.util.Properties;
 import java.util.Vector;
 import java.awt.Rectangle;
 
-public final class Frame {
-
+public final class Frame {  
   Viewer viewer;
   FrameRenderer frameRenderer;
   private String modelSetTypeName;
@@ -202,8 +201,19 @@ public final class Frame {
     initializeModel(null, null);
   }
   
-  void initializeFrame(String name, int nAtoms, Properties properties, Hashtable info) {
+  Frame(Viewer viewer, JmolAdapter adapter, Object clientFile) {
+    this.viewer = viewer;
+    initializeFrame(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
+        adapter.getEstimatedAtomCount(clientFile), adapter
+            .getAtomSetCollectionProperties(clientFile), adapter
+            .getAtomSetCollectionAuxiliaryInfo(clientFile));
+    initializeModel(adapter, clientFile);
+    adapter.finish(clientFile);
+    if (false)
+      dumpAtomSetNameDiagnostics(adapter, clientFile);
+  }
 
+  void initializeFrame(String name, int nAtoms, Properties properties, Hashtable info) {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
@@ -293,8 +303,7 @@ public final class Frame {
       if (iterBond != null)
         while (iterBond.hasNext()) {
           bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(),
-              iterBond.getEncodedOrder());
-
+              (short) iterBond.getEncodedOrder());
         }
       JmolAdapter.StructureIterator iterStructure = adapter
           .getStructureIterator(clientFile);
@@ -338,18 +347,6 @@ public final class Frame {
     finalizeBuild();
   }
   
-  Frame(Viewer viewer, JmolAdapter adapter, Object clientFile) {
-    this.viewer = viewer;
-    initializeFrame(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
-        adapter.getEstimatedAtomCount(clientFile), adapter
-            .getAtomSetCollectionProperties(clientFile), adapter
-            .getAtomSetCollectionAuxiliaryInfo(clientFile));
-    initializeModel(adapter, clientFile);
-    adapter.finish(clientFile);
-    if (false)
-      dumpAtomSetNameDiagnostics(adapter, clientFile);
-  }
-
   void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
     int frameModelCount = getModelCount();
     int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
@@ -446,9 +443,12 @@ public final class Frame {
       startGroup(currentChain, group3, groupSequenceNumber, groupInsertionCode,
           atomIndex);
     }
-
   }
-  void bondAtoms(Object atomUid1, Object atomUid2, int order) {
+  
+  short defaultCovalentMad;
+  void bondAtoms(Object atomUid1, Object atomUid2, short order) {
+    if (defaultCovalentMad == 0)
+      defaultCovalentMad = viewer.getMadBond();
     Atom atom1 = (Atom) htAtomMap.get(atomUid1);
     if (atom1 == null) {
       Logger.error("bondAtoms cannot find atomUid1?:" + atomUid1);
@@ -461,7 +461,7 @@ public final class Frame {
     }
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
-    Bond bond = atom1.bondMutually(atom2, (short) order, this);
+    Bond bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order));
     if (bond == null)
       return;
     if (bondCount == bonds.length)
@@ -470,25 +470,6 @@ public final class Frame {
     bonds[bondCount++] = bond;
     if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
       fileHasHbonds = true;
-  }
-
-  boolean bondAtomsByNumber(int iA, int iB, int order, short mad) {
-    Atom atom1 = atoms[iA];
-    Atom atom2 = atoms[iB];
-
-    Bond bond = atom1.bondMutually(atom2, (short) order, this);
-    if (bond == null) {
-      return false;
-    }
-    if (mad >= 0)
-      bond.mad = mad;
-    if (bondCount == bonds.length)
-      bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount + 2
-          * ATOM_GROWTH_INCREMENT);
-    bonds[bondCount++] = bond;
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      fileHasHbonds = true;
-    return true;
   }
 
   void growAtomArrays(int byHowMuch) {
@@ -967,6 +948,24 @@ public final class Frame {
   Bond getBondAt(int bondIndex) {
     return bonds[bondIndex];
   }
+  
+  /**
+   * When creating a new bond, determine bond diameter from order 
+   * @param order
+   * @return if hydrogen bond, default to 1; otherwise 0 (general default) 
+   */
+  short getDefaultMadFromOrder(short order) {
+    return (short)((order & JmolConstants.BOND_HYDROGEN_MASK) > 0 ? 1 : defaultCovalentMad);
+  }
+
+  private Bond bondMutually(Atom atom, Atom atomOther, short order, short mad) {
+    if (atom.isBonded(atomOther))
+      return null;
+    Bond bond = new Bond(atom, atomOther, order, mad, (short) 0);
+    addBondToAtom(atom, bond);
+    addBondToAtom(atomOther, bond);
+    return bond;
+  }
 
   private Bond addBond(Bond bond) {
     if (bond == null)
@@ -976,17 +975,17 @@ public final class Frame {
     return bonds[bondCount++] = bond;
   }
 
-  Bond bondAtoms(Atom atom1, Atom atom2, short order) {
-    return addBond(atom1.bondMutually(atom2, order, this));
+  Bond bondAtoms(Atom atom1, Atom atom2, short order, short mad) {
+    return addBond(bondMutually(atom1, atom2, order, mad));
   }
 
-  void bondAtoms(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
+  void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
     boolean atom1InSetA = bsA == null || bsA.get(atom1.atomIndex);
     boolean atom1InSetB = bsB == null || bsB.get(atom1.atomIndex);
     boolean atom2InSetA = bsA == null || bsA.get(atom2.atomIndex);
     boolean atom2InSetB = bsB == null || bsB.get(atom2.atomIndex);
     if (atom1InSetA & atom2InSetB || atom1InSetB & atom2InSetA)
-      addBond(atom1.bondMutually(atom2, order, this));
+      addBond(bondMutually(atom1, atom2, order, (short) 1));
   }
 
   Shape allocateShape(int shapeID) {
@@ -1438,7 +1437,7 @@ public final class Frame {
   }
 
   ////////////////////////////////////////////////////////////////
-  // autobonding stuff
+  // autobonding/connection stuff
   ////////////////////////////////////////////////////////////////
   void doAutobond() {
     // perform bonding if necessary
@@ -1449,7 +1448,7 @@ public final class Frame {
     }
   }
 
-  final static boolean showRebondTimes = false;
+  final static boolean showRebondTimes = true;
 
   void rebond() {
     // only from app preferences panel
@@ -1457,28 +1456,15 @@ public final class Frame {
     autoBond(null, null);
   }
 
-  boolean haveWarned = false;
-  void checkValencesAndBond(Atom atomA, Atom atomB, short order) {
-    if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT
-        || atomB.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT) {
-      if (!haveWarned)
-        Logger.warn("maximum auto bond count reached");
-      haveWarned = true;
-      return;
-    }
-    int formalChargeA = atomA.getFormalCharge();
-    if (formalChargeA != 0) {
-      int formalChargeB = atomB.getFormalCharge();
-      if ((formalChargeA < 0 && formalChargeB < 0)
-          || (formalChargeA > 0 && formalChargeB > 0))
-        return;
-    }
-    if (atomA.alternateLocationID != atomB.alternateLocationID
-        && atomA.alternateLocationID != 0 && atomB.alternateLocationID != 0)
-      return;
-    addBond(atomA.bondMutually(atomB, order, this));
+  void autoBond(short order, BitSet bsA, BitSet bsB) {
+    if (order == JmolConstants.BOND_ORDER_NULL)
+      autoBond(bsA, bsB);
+    else if (order == JmolConstants.BOND_H_REGULAR)
+      autoHbond(bsA, bsB);
+    else
+      Logger.warn("autoBond() unknown order: " + order);
   }
-
+  
   void autoBond(BitSet bsA, BitSet bsB) {
     // null values for bitsets means "all"
     if (maxBondingRadius == Float.MIN_VALUE)
@@ -1486,7 +1472,7 @@ public final class Frame {
     float bondTolerance = viewer.getBondTolerance();
     float minBondDistance = viewer.getMinBondDistance();
     float minBondDistance2 = minBondDistance * minBondDistance;
-
+    short mad = viewer.getMadBond();
     //char chainLast = '?';
     //int indexLastCA = -1;
     //Atom atomLastCA = null;
@@ -1536,7 +1522,7 @@ public final class Frame {
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
             bondTolerance);
         if (order > 0)
-          checkValencesAndBond(atom, atomNear, order);
+          checkValencesAndBond(atom, atomNear, order, mad);
       }
       iter.release();
     }
@@ -1563,6 +1549,28 @@ public final class Frame {
     return 0;
   }
 
+  boolean haveWarned = false;
+  void checkValencesAndBond(Atom atomA, Atom atomB, short order, short mad) {
+    if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT
+        || atomB.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT) {
+      if (!haveWarned)
+        Logger.warn("maximum auto bond count reached");
+      haveWarned = true;
+      return;
+    }
+    int formalChargeA = atomA.getFormalCharge();
+    if (formalChargeA != 0) {
+      int formalChargeB = atomB.getFormalCharge();
+      if ((formalChargeA < 0 && formalChargeB < 0)
+          || (formalChargeA > 0 && formalChargeB > 0))
+        return;
+    }
+    if (atomA.alternateLocationID != atomB.alternateLocationID
+        && atomA.alternateLocationID != 0 && atomB.alternateLocationID != 0)
+      return;
+    addBond(bondMutually(atomA, atomB, order, mad));
+  }
+
   float hbondMax = 3.25f;
   float hbondMin = 2.5f;
   float hbondMin2 = hbondMin * hbondMin;
@@ -1572,11 +1580,15 @@ public final class Frame {
   boolean useRasMolHbondsCalculation = true;
 
   void autoHbond(BitSet bsA, BitSet bsB) {
-    if (useRasMolHbondsCalculation) {
+    if (useRasMolHbondsCalculation && bondCount > 0) {
       if (mmset != null)
         mmset.calcHydrogenBonds(bsA, bsB);
       return;
     }
+    // this method is not enabled and is probably error-prone.
+    // it does not take into account anything but distance, 
+    // and as such is not really practical. 
+    
     initializeBspf();
     long timeBegin = 0;
     if (showRebondTimes)
@@ -1600,7 +1612,7 @@ public final class Frame {
           continue;
         if (atom.isBonded(atomNear))
           continue;
-        addBond(atom.bondMutually(atomNear, JmolConstants.BOND_H_REGULAR, this));
+        addBond(bondMutually(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1));
       }
       iter.release();
     }
@@ -1666,11 +1678,98 @@ public final class Frame {
     bondCount = indexNoncovalent;
   }
 
+  void makeConnections(float minDistance, float maxDistance,
+                       short order, int connectOperation,
+                       BitSet bsA, BitSet bsB) {
+    
+    Logger.debug("makeConnections(" + minDistance + "," +
+                       maxDistance + "," + order + "," + connectOperation +
+                       "," + bsA + "," + bsB + ")");
+    
+    if (connectOperation == JmolConstants.DELETE_BONDS) {
+      deleteConnections(minDistance, maxDistance, order, bsA, bsB);
+      return;
+    }
+    if (connectOperation == JmolConstants.AUTO_BOND) {
+      autoBond(order, bsA, bsB);
+      return;
+    }
+    if (order == JmolConstants.BOND_ORDER_NULL)
+      order = JmolConstants.BOND_COVALENT_SINGLE; // default 
+    float minDistanceSquared = minDistance * minDistance;
+    float maxDistanceSquared = maxDistance * maxDistance;
+    defaultCovalentMad = viewer.getMadBond();
+    short mad = getDefaultMadFromOrder(order);
+    for (int iA = atomCount; --iA >= 0; ) {
+      if (! bsA.get(iA))
+        continue;
+      Atom atomA = atoms[iA];
+      Point3f pointA = atomA;
+      for (int iB = atomCount; --iB >= 0; ) {
+        if (iB == iA)
+          continue;
+        if (! bsB.get(iB))
+          continue;
+        Atom atomB = atoms[iB];
+        if (atomA.modelIndex != atomB.modelIndex)
+          continue;
+        if (atomA.alternateLocationID != atomB.alternateLocationID && 
+            atomA.alternateLocationID != 0 && atomB.alternateLocationID != 0)
+          continue;
+        Bond bondAB = atomA.getBond(atomB);
+        if (JmolConstants.MODIFY_ONLY == connectOperation && bondAB == null)
+          continue;
+        if (JmolConstants.CREATE_ONLY == connectOperation && bondAB != null)
+          continue;
+        float distanceSquared = pointA.distanceSquared(atomB);
+        if (distanceSquared < minDistanceSquared ||
+            distanceSquared > maxDistanceSquared)
+          continue;
+        if (bondAB != null)
+          bondAB.setOrder(order);
+        else
+          bondAtoms(atomA, atomB, order, mad);
+      }
+    }
+  }
+
+  void deleteConnections(float minDistance, float maxDistance, short order,
+                         BitSet bsA, BitSet bsB) {
+    BitSet bsDelete = new BitSet();
+    float minDistanceSquared = minDistance * minDistance;
+    float maxDistanceSquared = maxDistance * maxDistance;
+    if (order != JmolConstants.BOND_ORDER_NULL 
+        && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      order = JmolConstants.BOND_HYDROGEN_MASK;
+    for (int i = bondCount; --i >= 0; ) {
+      Bond bond = bonds[i];
+      Atom atom1 = bond.atom1;
+      Atom atom2 = bond.atom2;
+      if (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex) ||
+          bsA.get(atom2.atomIndex) && bsB.get(atom1.atomIndex)) {
+        if (bond.atom1.isBonded(bond.atom2)) {
+          float distanceSquared = atom1.distanceSquared(atom2);
+          if (distanceSquared >= minDistanceSquared &&
+              distanceSquared <= maxDistanceSquared)
+            if (order == JmolConstants.BOND_ORDER_NULL ||
+                order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK) ||
+                (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+              bsDelete.set(i);
+        }
+      }
+    }
+    deleteBonds(bsDelete);
+  }
+
   void deleteAtom(int atomIndex) {
     clearBspf();
     atoms[atomIndex].markDeleted();
   }
 
+  /////////////////////////
+
+  // for Dots only
+  
   float getMaxVanderwaalsRadius() {
     if (maxVanderwaalsRadius == Float.MIN_VALUE)
       findMaxRadii();
@@ -2554,6 +2653,15 @@ public final class Frame {
       freeBonds[i] = new Bond[MAX_NUM_TO_CACHE][];
   }
 
+  void addBondToAtom(Atom atom, Bond bond) {
+    if (atom.bonds == null) {
+      atom.bonds = new Bond[1];
+      atom.bonds[0] = bond;
+    } else {
+      atom.bonds = addToBonds(bond, atom.bonds);
+    }
+  }
+  
   Bond[] addToBonds(Bond newBond, Bond[] oldBonds) {
     Bond[] newBonds;
     if (oldBonds == null) {

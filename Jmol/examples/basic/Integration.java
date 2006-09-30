@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolSimpleViewer;
+import org.jmol.util.Logger;
 
 /**
  * A example of integrating the Jmol viewer into a java application.
@@ -67,7 +68,7 @@ public class Integration {
     viewer.evalString(strScript);
     String strError = viewer.getOpenFileError();
     if (strError != null)
-      System.out.println(strError);
+      Logger.error(strError);
   }
 
   final static String strXyzHOH = 

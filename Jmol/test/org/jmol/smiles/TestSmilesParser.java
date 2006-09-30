@@ -4,6 +4,8 @@
 
 package org.jmol.smiles;
 
+import org.jmol.util.Logger;
+
 import junit.framework.TestCase;
 
 public class TestSmilesParser extends TestCase {
@@ -1309,11 +1311,11 @@ public class TestSmilesParser extends TestCase {
           SmilesMolecule molecule1,
           SmilesMolecule molecule2) {
     if ((molecule1 == null) || (molecule2 == null)) {
-      System.out.println("Molecule null");
+      Logger.error("Molecule null");
       return false;
     }
     if (molecule1.getAtomsCount() != molecule2.getAtomsCount()) {
-      System.out.println(
+      Logger.error(
           "Atoms count (" +
           molecule1.getAtomsCount() + "," +
           molecule2.getAtomsCount() + ")");
@@ -1323,18 +1325,18 @@ public class TestSmilesParser extends TestCase {
       SmilesAtom atom1 = molecule1.getAtom(i);
       SmilesAtom atom2 = molecule2.getAtom(i);
       if ((atom1 == null) || (atom2 == null)) {
-        System.out.println("Atom " + i + " null");
+        Logger.error("Atom " + i + " null");
         return false;
       }
       if (atom1.getAtomicMass() != atom2.getAtomicMass()) {
-        System.out.println(
+        Logger.error(
             "Atom " + i + " atomic mass (" +
             atom1.getAtomicMass() + "," +
             atom2.getAtomicMass() + ")");
         return false;
       }
       if (atom1.getBondsCount() != atom2.getBondsCount()) {
-        System.out.println(
+        Logger.error(
             "Atom " + i + " bonds count (" +
             atom1.getBondsCount() + "," +
             atom2.getBondsCount() + ")");
@@ -1344,27 +1346,27 @@ public class TestSmilesParser extends TestCase {
         SmilesBond bond1 = atom1.getBond(j);
         SmilesBond bond2 = atom2.getBond(j);
         if ((bond1 == null) || (bond2 == null)) {
-          System.out.println(
+          Logger.error(
               "Atom " + i + ", bond " + j + " null (" +
               bond1 + "," + bond2 + ")");
           return false;
         }
         if (bond1.getBondType() != bond2.getBondType()) {
-          System.out.println(
+          Logger.error(
               "Atom " + i + ", bond " + j + " bond type (" +
               bond1.getBondType() + "," +
               bond2.getBondType() + ")");
           return false;
         }
         if (bond1.getAtom1().getNumber() != bond2.getAtom1().getNumber()) {
-          System.out.println(
+          Logger.error(
               "Atom " + i + ", bond " + j + " atom1 number (" +
               bond1.getAtom1().getNumber() + "," +
               bond2.getAtom1().getNumber() + ")");
           return false;
         }
         if (bond1.getAtom2().getNumber() != bond2.getAtom2().getNumber()) {
-          System.out.println(
+          Logger.error(
               "Atom " + i + ", bond " + j + " atom2 number (" +
               bond1.getAtom2().getNumber() + "," +
               bond2.getAtom2().getNumber() + ")");
@@ -1372,7 +1374,7 @@ public class TestSmilesParser extends TestCase {
         }
       }
       if (atom1.getCharge() != atom2.getCharge()) {
-        System.out.println(
+        Logger.error(
             "Atom " + i + " charge (" +
             atom1.getCharge() + "," +
             atom2.getCharge() + ")");
@@ -1380,28 +1382,28 @@ public class TestSmilesParser extends TestCase {
       }
       if (atom1.getChiralClass() == null) {
         if (atom2.getChiralClass() != null) {
-          System.out.println(
+          Logger.error(
               "Atom " + i + " chiral class (" +
               atom1.getChiralClass() + "," +
               atom2.getChiralClass() + ")");
           return false;
         }
       } else if (!atom1.getChiralClass().equals(atom2.getChiralClass())) {
-        System.out.println(
+        Logger.error(
             "Atom " + i + " chiral class (" +
             atom1.getChiralClass() + "," +
             atom2.getChiralClass() + ")");
         return false;
       }
       if (atom1.getChiralOrder() != atom2.getChiralOrder()) {
-        System.out.println(
+        Logger.error(
             "Atom " + i + " chiral order (" +
             atom1.getChiralOrder() + "," +
             atom2.getChiralOrder() + ")");
         return false;
       }
       if (!atom1.getSymbol().equals(atom2.getSymbol())) {
-        System.out.println(
+        Logger.error(
             "Atom " + i + " symbol (" +
             atom1.getSymbol() + "," +
             atom2.getSymbol() + ")");

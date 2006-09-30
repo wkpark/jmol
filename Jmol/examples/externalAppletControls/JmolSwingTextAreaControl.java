@@ -13,6 +13,8 @@
  */
 
 import org.jmol.applet.JmolAppletRegistry;
+import org.jmol.util.Logger;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -38,7 +40,7 @@ public class JmolSwingTextAreaControl
     JPanel panel = new JPanel(new BorderLayout());
     panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
     swingTextArea = new JTextArea();
-    System.out.println("here we go with swingTextArea:" + swingTextArea);
+    Logger.info("here we go with swingTextArea:" + swingTextArea);
     panel.add(swingTextArea, BorderLayout.CENTER);
     swingButton = new JButton("Go!");
     swingButton.addActionListener(this);

@@ -45,6 +45,7 @@ import javax.swing.table.TableColumn;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.util.Logger;
 
 /**
  * A example of integrating the Jmol viewer into a JTable.
@@ -73,7 +74,9 @@ public class JmolTable {
             JmolViewer v = (JmolViewer)((JmolPanel)data[i][0]).getViewer();
             v.openFile(args[i]);
             String strError = v.getOpenFileError();
-            if (strError != null) System.out.println(strError);
+            if (strError != null) {
+              Logger.error(strError);
+            }
 
             data[i][1] = new String(args[i]);
         }

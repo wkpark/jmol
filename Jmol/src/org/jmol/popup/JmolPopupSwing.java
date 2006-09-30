@@ -24,6 +24,7 @@
 package org.jmol.popup;
 
 import org.jmol.api.*;
+import org.jmol.util.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -67,12 +68,13 @@ public class JmolPopupSwing extends JmolPopup {
   }
 
   void addToMenu(Object menu, JComponent item) {
-    if (menu instanceof JPopupMenu)
+    if (menu instanceof JPopupMenu) {
       ((JPopupMenu)menu).add(item);
-    else if (menu instanceof JMenu)
+    } else if (menu instanceof JMenu) {
       ((JMenu)menu).add(item);
-    else
-      System.out.println("cannot add object to menu:" + menu);
+    } else {
+      Logger.warn("cannot add object to menu: " + menu);
+    }
   }
 
   ////////////////////////////////////////////////////////////////

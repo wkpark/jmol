@@ -75,15 +75,16 @@ public class TestIntInt2ObjHash extends junit.framework.TestCase {
   }
 
   void dumpHash(IntInt2ObjHash h) {
-    System.out.println("dumping hash:" + h);
-    System.out.println("h.entryCount=" + h.entryCount);
+    Logger.info("dumping hash:" + h);
+    Logger.info("h.entryCount=" + h.entryCount);
     IntInt2ObjHash.Entry[] entries = h.entries;
     for (int i = 0; i < entries.length; ++i) {
-      System.out.print("" + i + ": ");
+      StringBuffer log = new StringBuffer();
+      log.append(i).append(": ");
       for (IntInt2ObjHash.Entry e = entries[i]; e != null; e = e.next) {
-        System.out.print("" + e.key1 + "," + e.key2 + " ");
+        log.append(e.key1).append(",").append(e.key2).append(" ");
       }
-      System.out.println("");
+      Logger.info(log.toString());
     }
   }
 

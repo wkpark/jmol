@@ -40,12 +40,14 @@ public final class Logger {
   public final static int NB_LEVELS = LEVEL_FATAL + 1;
 
   private final static boolean[] _activeLevels = new boolean[NB_LEVELS];
+  private       static boolean   _logLevel = false;
   static {
-    _activeLevels[LEVEL_DEBUG] = getProperty("debug", false);
-    _activeLevels[LEVEL_INFO]  = getProperty("info",  true);
-    _activeLevels[LEVEL_WARN]  = getProperty("warn",  true);
-    _activeLevels[LEVEL_ERROR] = getProperty("error", true);
-    _activeLevels[LEVEL_FATAL] = getProperty("fatal", true);
+    _activeLevels[LEVEL_DEBUG] = getProperty("debug",    false);
+    _activeLevels[LEVEL_INFO]  = getProperty("info",     true);
+    _activeLevels[LEVEL_WARN]  = getProperty("warn",     true);
+    _activeLevels[LEVEL_ERROR] = getProperty("error",    true);
+    _activeLevels[LEVEL_FATAL] = getProperty("fatal",    true);
+    _logLevel                  = getProperty("logLevel", false);
   }
 
   private static boolean getProperty(String level, boolean defaultValue) {
@@ -95,6 +97,46 @@ public final class Logger {
     if ((level >= 0) && (level < _activeLevels.length)) {
       _activeLevels[level] = active;
     }
+  }
+
+  /**
+   * Returns the text corresponding to a level.
+   * 
+   * @param level Level.
+   * @return Corresponding text.
+   */
+  public static String getLevel(int level) {
+    switch (level) {
+    case LEVEL_DEBUG:
+      return "DEBUG";
+    case LEVEL_INFO:
+      return "INFO";
+    case LEVEL_WARN:
+      return "WARN";
+    case LEVEL_ERROR:
+      return "ERROR";
+    case LEVEL_FATAL:
+      return "FATAL";
+    }
+    return "????";
+  }
+
+  /**
+   * Indicates if the level is logged.
+   * 
+   * @return Indicator.
+   */
+  public static boolean logLevel() {
+    return _logLevel;
+  }
+
+  /**
+   * Indicates if the level is logged.
+   * 
+   * @param log Indicator.
+   */
+  public static void logLevel(boolean log) {
+    _logLevel = log;
   }
 
   /**

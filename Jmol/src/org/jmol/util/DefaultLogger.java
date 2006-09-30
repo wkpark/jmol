@@ -36,13 +36,17 @@ public class DefaultLogger implements LoggerInterface {
    * Method to output a log.
    * 
    * @param out Output stream.
+   * @param level Log level.
    * @param txt Text to log.
    * @param e Exception.
    */
-  public static void log(PrintStream out, String txt, Throwable e) {
+  public static void log(PrintStream out, int level, String txt, Throwable e) {
     if ((out != null) && ((txt != null) || (e != null))) {
       txt = (txt != null ? txt : "");
-      out.println(txt + (e != null ? ": " + e.getMessage() : ""));
+      out.println(
+          (Logger.logLevel() ? "[" + Logger.getLevel(level) + "] " : "") +
+          txt +
+          (e != null ? ": " + e.getMessage() : ""));
       if (e != null) {
         StackTraceElement[] elements = e.getStackTrace();
         if (elements != null) {
@@ -61,55 +65,55 @@ public class DefaultLogger implements LoggerInterface {
    * @see org.jmol.util.LoggerInterface#debug(java.lang.String)
    */
   public void debug(String txt) {
-    log(System.out, txt, null);
+    log(System.out, Logger.LEVEL_DEBUG, txt, null);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#info(java.lang.String)
    */
   public void info(String txt) {
-    log(System.out, txt, null);
+    log(System.out, Logger.LEVEL_INFO, txt, null);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#warn(java.lang.String)
    */
   public void warn(String txt) {
-    log(System.out, txt, null);
+    log(System.out, Logger.LEVEL_WARN, txt, null);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#warn(java.lang.String, java.lang.Throwable)
    */
   public void warn(String txt, Throwable e) {
-    log(System.out, txt, e);
+    log(System.out, Logger.LEVEL_WARN, txt, e);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#error(java.lang.String)
    */
   public void error(String txt) {
-    log(System.err, txt, null);
+    log(System.err, Logger.LEVEL_ERROR, txt, null);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#error(java.lang.String, java.lang.Exception)
    */
   public void error(String txt, Throwable e) {
-    log(System.err, txt, e);
+    log(System.err, Logger.LEVEL_ERROR, txt, e);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#fatal(java.lang.String)
    */
   public void fatal(String txt) {
-    log(System.err, txt, null);
+    log(System.err, Logger.LEVEL_FATAL, txt, null);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#fatal(java.lang.String, java.lang.Exception)
    */
   public void fatal(String txt, Throwable e) {
-    log(System.err, txt, e);
+    log(System.err, Logger.LEVEL_FATAL, txt, e);
   }
 }

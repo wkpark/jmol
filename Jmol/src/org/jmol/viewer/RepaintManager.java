@@ -175,6 +175,11 @@ class RepaintManager {
     this.frameStep = frameStep;      
   }
 
+  void clear() {
+    clearAnimation();
+    frameRenderer.clear();
+  }
+  
   void clearAnimation() {
     setAnimationOn(false);
     setDisplayModelIndex(0);

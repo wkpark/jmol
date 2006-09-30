@@ -72,6 +72,11 @@ class FrameRenderer {
       renderers[refShape] = allocateRenderer(refShape, g3d);
     return renderers[refShape];
   }
+  
+  void clear() {
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
+      renderers[i] = null;
+  }
 
   ShapeRenderer allocateRenderer(int refShape, Graphics3D g3d) {
     String classBase =

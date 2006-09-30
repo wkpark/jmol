@@ -132,7 +132,7 @@ public class Viewer extends JmolViewer {
       mouseManager = new MouseManager10(awtComponent, this);
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
-    modelManager = new ModelManager(this, modelAdapter);
+    modelManager = new ModelManager(this);
     styleManager = new StyleManager(this);
     propertyManager = new PropertyManager(this);
     tempManager = new TempManager(this);
@@ -1133,6 +1133,8 @@ public class Viewer extends JmolViewer {
    * to pass a BufferedReader ... ... the FileManager will wrap a buffer around
    * it
    * 
+   * not referenced in this project
+   * 
    * @param fullPathName
    * @param name
    * @param reader
@@ -1217,7 +1219,7 @@ public class Viewer extends JmolViewer {
     setStatusFileLoaded(2, fullPathName, fileName, modelManager
         .getModelSetName(), clientFile, null);
     pushHoldRepaint();
-    modelManager.setClientFile(fullPathName, fileName, clientFile);
+    modelManager.setClientFile(fullPathName, fileName, modelAdapter, clientFile);
     initializeModel();
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager
@@ -1225,11 +1227,11 @@ public class Viewer extends JmolViewer {
   }
 
   void clear() {
-    repaintManager.clearAnimation();
+    repaintManager.clear();
     transformManager.clearVibration();
     transformManager.clearSpin();
-    modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
+    modelManager.setClientFile(null, null, null, null);
     clearMeasurements();
     transformManager.setFixedRotationCenter(new Point3f(0, 0, 0));
     setStatusFileLoaded(0, null, null, null, null, null);
@@ -1316,11 +1318,15 @@ public class Viewer extends JmolViewer {
     return null;
   }
 
-  String getClientAtomStringProperty(Object clientAtomReference,
-                                     String propertyName) {
-    return modelManager.getClientAtomStringProperty(clientAtomReference,
-        propertyName);
+  // this is a problem. SmarterJmolAdapter doesn't implement this;
+  // it can only return null. Do we need it?
+  
+  String getClientAtomStringProperty(Object clientAtom, String propertyName) {
+    if (modelAdapter == null)
+      return null;
+    return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
   }
+
 
   /*****************************************************************************
    * This is the method that should be used to extract the model data from Jmol.

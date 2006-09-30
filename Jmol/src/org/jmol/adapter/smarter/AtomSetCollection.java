@@ -180,6 +180,15 @@ class AtomSetCollection extends Parser {
     bonds = null;
     notionalUnitCell = null;
     spaceGroup = null;
+    structures = new Structure[16];
+    atomSetNumbers = new int[16];
+    atomSetNames = new String[16];
+    atomSetAtomCounts = new int[16];
+    atomSetProperties = new Properties[16];
+    atomSetAuxiliaryInfo = new Hashtable[16];
+    structureCount = 0;
+    atomSetCount = 0;
+    currentAtomSetIndex = -1;
   }
 
   void freeze() {

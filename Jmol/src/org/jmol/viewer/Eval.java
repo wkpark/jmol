@@ -4270,9 +4270,9 @@ class Eval { //implements Runnable {
     checkLength3();
     String type = (tok == Token.identifier ? (String) statement[1].value
         : stringParameter(1));
-    if (";JPEG;JPG;PDF;PNG;".indexOf((";"+type+";").toUpperCase()) < 0)
+    if (";JPEG;JPG64;JPG;PDF;PNG;".indexOf((";"+type+";").toUpperCase()) < 0)
       evalError(GT._("write what? {0} or {1} \"filename\"",
-                     new Object[] { "CLIPBOARD", "JPG|PNG|PPM" } ));
+                     new Object[] { "CLIPBOARD", "JPG|JPG64|PNG|PPM" } ));
     String fileName = (statement[2].tok == Token.identifier ? (String) statement[2].value
         : stringParameter(2));
     viewer.createImage(fileName, type, 100);

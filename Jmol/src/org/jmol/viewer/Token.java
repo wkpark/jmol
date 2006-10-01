@@ -140,7 +140,7 @@ class Token {
   final static int slab         = command | 33 | bool;
   final static int cpk          = command | 35 | setparam | bool | negnums;
   final static int ssbond       = command | 36 | setparam | bool;
-  final static int stereo       = command | 38 | colorparam;// | setspecial | bool | negnums ;
+  final static int stereo       = command | 38 | colorparam | negnums;// | setspecial | bool | negnums ;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
   final static int trace        = command | 41 | bool;

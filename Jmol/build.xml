@@ -383,7 +383,7 @@ support for assertions (which were introduced in 1.4).
       </fileset>
       <fileset dir="." >
         <include name="LICENSE.txt"/>
-      </fileset>
+      </fileset>	
     </jar>
   </target>
 

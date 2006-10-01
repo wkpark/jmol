@@ -4853,6 +4853,11 @@ class Eval { //implements Runnable {
       case Token.string:
         propertyName = "create";
         propertyValue = stringParameter(i);
+        if (i+1 < statementLength 
+            && statement[i + 1].tok == Token.identifier 
+            && ((String)(statement[i + 1].value)).equalsIgnoreCase("molecular")) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "molecular", null);
+        }
         break;
       case Token.select:
         propertyName = "select";

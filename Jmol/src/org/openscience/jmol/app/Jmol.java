@@ -447,11 +447,11 @@ public class Jmol extends JPanel {
         System.out.println("  display.speed=[fps|ms] (ms)");
         System.out.println("  JmolConsole=[true|false] (true)");
         System.out.println("  jmol.logger.debug=[true|false] (false)");
-        System.out.println("  jmol.logger.error=[true|false] (false)");
-        System.out.println("  jmol.logger.fatal=[true|false] (false)");
+        System.out.println("  jmol.logger.error=[true|false] (true)");
+        System.out.println("  jmol.logger.fatal=[true|false] (true)");
         System.out.println("  jmol.logger.info=[true|false] (true)");
         System.out.println("  jmol.logger.logLevel=[true|false] (false)");
-        System.out.println("  jmol.logger.warn=[true|false] (false)");
+        System.out.println("  jmol.logger.warn=[true|false] (true)");
         System.out.println("  plugin.dir (unset)");
         System.out.println("  user.language=[DE|EN|ES|FR|NL|PL] (EN)");
 

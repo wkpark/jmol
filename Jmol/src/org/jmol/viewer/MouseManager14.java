@@ -32,10 +32,10 @@ import java.awt.event.MouseWheelListener;
 class MouseManager14 extends MouseManager11
   implements MouseWheelListener {
 
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
+  MouseManager14(Component display, Viewer viewer) {
+    super(display, viewer);
     //Logger.debug("MouseManager14 implemented");
-    component.addMouseWheelListener(this);
+    display.addMouseWheelListener(this);
   }
   
  public void mouseWheelMoved(MouseWheelEvent e) {

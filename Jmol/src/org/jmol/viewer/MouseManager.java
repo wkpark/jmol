@@ -24,7 +24,6 @@
 package org.jmol.viewer;
 
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.Event;
@@ -34,7 +33,6 @@ abstract class MouseManager {
 
   final static int HOVER_TIME = 1000;
 
-  Component component;
   Viewer viewer;
 
   Thread hoverWatcherThread;
@@ -57,8 +55,7 @@ abstract class MouseManager {
 
   private static final boolean logMouseEvents = false;
 
-  MouseManager(Component component, Viewer viewer) {
-    this.component = component;
+  MouseManager(Viewer viewer) {
     this.viewer = viewer;
     hoverWatcherThread = new Thread(new HoverWatcher());
     hoverWatcherThread.start();
@@ -523,7 +520,10 @@ abstract class MouseManager {
             }
           }
         } catch (InterruptedException ie) {
-          Logger.debug("InterruptedException!");
+          Logger.debug("Hover InterruptedException!");
+          return;
+        } catch (Exception ie) {
+          Logger.debug("Hover Exception!" + ie);
           return;
         }
       }

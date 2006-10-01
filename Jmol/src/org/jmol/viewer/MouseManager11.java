@@ -33,11 +33,11 @@ import java.awt.event.MouseMotionListener;
 class MouseManager11 extends MouseManager
   implements MouseListener, MouseMotionListener {
 
-  MouseManager11(Component component, Viewer viewer) {
-    super(component, viewer);
+  MouseManager11(Component display, Viewer viewer) {
+    super(viewer);
     //Logger.debug("MouseManager11 implemented");
-    component.addMouseListener(this);
-    component.addMouseMotionListener(this);
+    display.addMouseListener(this);
+    display.addMouseMotionListener(this);
   }
 
   boolean handleOldJvm10Event(Event e) {

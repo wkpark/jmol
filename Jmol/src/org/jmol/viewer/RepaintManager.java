@@ -116,7 +116,7 @@ class RepaintManager {
     if (holdRepaint <= 0) {
       holdRepaint = 0;
       repaintPending = true;
-      viewer.awtComponent.repaint();
+      viewer.display.repaint();
     }
   }
 
@@ -125,13 +125,13 @@ class RepaintManager {
       return;
     repaintPending = true;
     if (holdRepaint == 0) {
-      viewer.awtComponent.repaint();
+      viewer.display.repaint();
     }
   }
 
 
   synchronized void requestRepaintAndWait() {
-    viewer.awtComponent.repaint();
+    viewer.display.repaint();
     try {
       wait();
     } catch (InterruptedException e) {

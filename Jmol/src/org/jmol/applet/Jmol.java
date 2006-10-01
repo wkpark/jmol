@@ -157,11 +157,11 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
     viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter(
         null));
+    viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(), appletWrapper
+        .getCodeBase(), getValue("JmolAppletProxy", null));
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
 
-    viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(), appletWrapper
-        .getCodeBase(), getValue("JmolAppletProxy", null));
 
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)

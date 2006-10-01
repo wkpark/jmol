@@ -30,7 +30,7 @@ import java.awt.Event;
 class MouseManager10 extends MouseManager {
 
   MouseManager10(Component component, Viewer viewer) {
-    super(component, viewer);
+    super(viewer);
     //Logger.debug("MouseManager10 implemented");
   }
 

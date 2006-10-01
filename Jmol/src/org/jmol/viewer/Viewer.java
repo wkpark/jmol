@@ -75,9 +75,13 @@ import java.io.Reader;
 
 public class Viewer extends JmolViewer {
 
+  public void finalize() {
+    System.out.println("viewer finalize " + this);
+  }
+  
   StateManager stateManager = new StateManager(this);
   StateManager.GlobalSettings global = stateManager.globalSettings;
-  Component awtComponent;
+  Component display;
   ColorManager colorManager;
   PropertyManager propertyManager;
   StatusManager statusManager;
@@ -104,8 +108,9 @@ public class Viewer extends JmolViewer {
   boolean jvm14orGreater = false;
   public CommandHistory commandHistory = new CommandHistory();
   
-  Viewer(Component awtComponent, JmolAdapter modelAdapter) {
-    this.awtComponent = awtComponent;
+  Viewer(Component display, JmolAdapter modelAdapter) {
+    System.out.println("Viewer constructor " + this);
+    this.display = display;
     this.modelAdapter = modelAdapter;
     strJavaVendor = System.getProperty("java.vendor");
     strOSName = System.getProperty("os.name");
@@ -116,8 +121,7 @@ public class Viewer extends JmolViewer {
         && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
-
-    g3d = new Graphics3D(awtComponent);
+    g3d = new Graphics3D(display);
     eval = new Eval(this);
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
@@ -125,23 +129,23 @@ public class Viewer extends JmolViewer {
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
     if (jvm14orGreater)
-      mouseManager = MouseWrapper14.alloc(awtComponent, this);
+      mouseManager = MouseWrapper14.alloc(display, this);
     else if (jvm11orGreater)
-      mouseManager = MouseWrapper11.alloc(awtComponent, this);
+      mouseManager = MouseWrapper11.alloc(display, this);
     else
-      mouseManager = new MouseManager10(awtComponent, this);
-    fileManager = new FileManager(this, modelAdapter);
-    repaintManager = new RepaintManager(this);
+      mouseManager = new MouseManager10(display, this);
     modelManager = new ModelManager(this);
     styleManager = new StyleManager(this);
     propertyManager = new PropertyManager(this);
     tempManager = new TempManager(this);
     pickingManager = new PickingManager(this);
+    fileManager = new FileManager(this, modelAdapter);
+    repaintManager = new RepaintManager(this);
   }
 
-  public static JmolViewer allocateViewer(Component awtComponent,
+  public static JmolViewer allocateViewer(Component display,
                                           JmolAdapter modelAdapter) {
-    return new Viewer(awtComponent, modelAdapter);
+    return new Viewer(display, modelAdapter);
   }
 
   boolean isSilent = false;
@@ -203,7 +207,7 @@ public class Viewer extends JmolViewer {
   }
   
   public Component getAwtComponent() {
-    return awtComponent;
+    return display;
   }
 
   public boolean handleOldJvm10Event(Event e) {

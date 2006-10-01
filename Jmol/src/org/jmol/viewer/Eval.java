@@ -379,16 +379,20 @@ class Eval { //implements Runnable {
     executionPaused = Boolean.FALSE;
   }
 
-  void checkIfPaused() {
-    if (!executionPaused.booleanValue())
-      return;
-    Logger.debug("script execution paused at this command: " + getCommand());
-    try {
-      while (executionPaused.booleanValue())
-        Thread.sleep(100);
-    } catch (Exception e) {
+  boolean checkContinue() {
+    if (!interruptExecution.booleanValue()) {
+      if (!executionPaused.booleanValue())
+        return true;
+      Logger.debug("script execution paused at this command: " + getCommand());
+      try {
+        while (executionPaused.booleanValue())
+          Thread.sleep(100);
+      } catch (Exception e) {
+      }
+      Logger.debug("script execution resumed");
     }
-    Logger.debug("script execution resumed");
+    //once more to trap quit during pause
+    return !interruptExecution.booleanValue();
   }
   
   void instructionDispatchLoop() throws ScriptException {
@@ -400,8 +404,9 @@ class Eval { //implements Runnable {
       viewer.scriptStatus(toString());
     }
     viewer.addCommand(script);
-    while (!interruptExecution.booleanValue() && pc < aatoken.length) {
-      checkIfPaused();
+    while (pc < aatoken.length) {
+      if (!checkContinue())
+        break;
       Token token = aatoken[pc][0];
       //if (token.tok == Token.load)
       //viewer.getSetHistory(-2); //just clear -- no, this is very useful

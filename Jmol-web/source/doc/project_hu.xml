@@ -7,59 +7,54 @@
 <!ENTITY language SYSTEM "language.xml" >
 ]>
 <project name="Jmol">
-
-  <title>Jmol</title>
-
-  <links>
-    <table width="100%">
-      <tr>
-        <td align="left" valign="middle">
-          <a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
-          &language;
-        </td>
-        <td align="right" valign="middle">
-          <font size="2">
-            <a href="[root]/">F&#x00F5;oldal</a> |
+	<title>Jmol</title>
+	<links>
+		<table width="100%">
+			<tr>
+				<td align="left" valign="middle">
+					<a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
+					&language;
+				</td>
+				<td align="right" valign="middle">
+					<font size="2">
+						<a href="[root]/">Fõoldal</a> |
             <a href="[root]/websites/">Websiteok</a> |
-            <a href="[root]/history/">A Jmol t&#x00F6;rt&#x00E9;nete</a> |
-            <a href="[root]/changes/">V&#x00E1;ltoz&#x00E1;sok</a> |
-            <a href="[root]/technotes/">Technikai Megjegyz&#x00E9;sek</a> |
+            <a href="[root]/history/">A Jmol története</a> |
+            <a href="[root]/changes/">Változások</a> |
+            <a href="[root]/technotes/">Technikai Megjegyzések</a> |
             <a href="[root]/faqs/">G.Y.I.K.</a>
-            <br/>
-            <a href="http://wiki.jmol.org">Wiki</a> |
-            <a href="[root]/docs/">Dokument&#x00E1;ci&#x00F3;</a> |
-            <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs"
-              target="_blank" >
-              Interakt&#x00ED;v Script Dokument&#x00E1;ci&#x00F3;
+						<br/>
+						<a href="http://wiki.jmol.org">Wiki</a> |
+            <a href="[root]/docs/">Dokumentáció</a> |
+            <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs" target="_blank">
+              Interaktív Script Dokumentáció
             </a> |
-            <a href="[root]/browsercheck/">B&#x00F6;ng&#x00E9;sz&#x00F5; Ellen&#x00F5;rz&#x00E9;s</a>
-            <br/>
-            <a href="[root]/demo/">Bemutat&#x00F3; oldalak</a> |
-            <a href="[root]/jslibrary/">JavaScript gy&#x0169;jtem&#x00E9;ny</a> |
-            <a href="[root]/jscolors/">Sz&#x00ED;nek</a>
-            <br/>
-            <a href="[root]/download/">Let&#x00F6;lt&#x00E9;s</a> |
-            <a href="[root]/lists/">Levelez&#x00F5;list&#x00E1;k</a> |
+            <a href="[root]/browsercheck/">Böngészõ Ellenõrzés</a>
+						<br/>
+						<a href="[root]/screenshots/">Screenshots</a>
+	    | <a href="[root]/demo/">Bemutató oldalak</a> |
+            <a href="[root]/jslibrary/">JavaScript gy&#361;jtemény</a> |
+            <a href="[root]/jscolors/">Színek</a>
+						<br/>
+						<a href="[root]/download/">Letöltés</a> |
+            <a href="[root]/lists/">Levelezõlisták</a> |
             <a href="http://sourceforge.net/projects/jmol">
               Sourceforge Project oldal
             </a> |
             <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">
-              Hiba Adatb&#x00E1;zis
+              Hiba Adatbázis
             </a>
-          </font>
-        </td>
-      </tr>
-    </table>
-  </links>
-
-  <notice>
-    <p><small>
+					</font>
+				</td>
+			</tr>
+		</table>
+	</links>
+	<notice>
+		<p><small>
       A honlapot fenntartja
       <a href="http://www.sf.net/projects/jmol/">
-        <img src="http://www.sf.net/sflogo.php?group_id=23629" border="0" 
-          alt="SourceForge Logo" align="middle"/>
-      </a>
-    </small></p>
-  </notice>
-
+					<img src="http://www.sf.net/sflogo.php?group_id=23629" border="0" alt="SourceForge Logo" align="middle"/>
+				</a>
+			</small></p>
+	</notice>
 </project>

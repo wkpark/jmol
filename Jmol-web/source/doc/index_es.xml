@@ -23,35 +23,42 @@
 				}
 			</script>
 			<center>
-			<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
-				<tr>
-					<td>
-						<div id="JmolPromo">
-							<img src="images/promo.jpg" />
-						</div>
-					</td>
-					<td>
-						<div id="promoStillCaption" style="display:block;">
-							<p>Jmol es una miniaplicación (applet) interactiva para el navegador web.</p>
-							<p>Aquí se ve una imagen estática, pero puedes obtener una
+				<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
+					<tr>
+						<td>
+							<div id="JmolPromo">
+								<img src="images/promo.jpg"/>
+							</div>
+						</td>
+						<td>
+							<div id="promoStillCaption" style="display:block;">
+								<p>Jmol es una miniaplicación (applet) interactiva para el navegador web.</p>
+								<p>Aquí se ve una imagen estática, pero puedes obtener una
 			representación animada de las prestaciones de Jmol haciendo clic
 		<a href="javascript:void(changePromoDisplay())">aquí</a>.</p>
-							<p>(La miniaplicación puede tardar algunos segundos en cargarse. 
+								<p>(La miniaplicación puede tardar algunos segundos en cargarse. 
 				Por favor, espera y no recargues la página mientras tanto.) </p>
-						</div>
-						<div id="promoAnimCaption" style="display:none;">
-							<p>Esta es la miniaplicación (applet) Jmol en acción.</p>
-							<p>Está ejecutando un guión (<i>script</i>) escrito en el lenguaje de guiones de Jmol/RasMol/Chime. </p>
-							<p>No es una película, una presentación de diapositivas ni una imagen animada. 
+							</div>
+							<div id="promoAnimCaption" style="display:none;">
+								<p>Esta es la miniaplicación (applet) Jmol en acción.</p>
+								<p>Está ejecutando un guión (<i>script</i>) escrito en el lenguaje de guiones de Jmol/RasMol/Chime. </p>
+								<p>No es una película, una presentación de diapositivas ni una imagen animada. 
 	      Jmol es una miniaplicación interactiva para el navegador de internet. </p>
-						</div>
-					</td>
-				</tr>
-			</table>
+							</div>
+						</td>
+					</tr>
+				</table>
 			</center>
 			<p>
-				<i>Visita las </i><a href="./demo/">páginas de demostración</a>
-				<i>para ver cómo funcionan los botones y los menús</i>
+				<i>Visita la sección</i>
+				<a href="./screenshots/">Pantallas</a>
+				<i>(imágenes estáticas)
+				para ver ejemplos de lo que se puede hacer con Jmol</i>
+				<br/>
+				<i>y las</i>
+				<a href="./demo/">páginas de demostración</a>
+				<i>para ver cómo funcionan los botones y los menús 
+			(miniaplicación interactiva).</i>
 			</p>
 			<hr/>
 		</header>

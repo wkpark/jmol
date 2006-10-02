@@ -19,33 +19,37 @@
 				}
 			</script>
 			<center>
-			<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
-				<tr>
-					<td>
-						<div id="JmolPromo">
-							<img src="images/promo.jpg" />
-						</div>
-					</td>
-					<td>
-						<div id="promoStillCaption" style="display:block;">
-							<p>Jmol is an interactive web browser applet.</p>
-							<p>This is a still image, but you can get an animated display of Jmol abilities by clicking 
+				<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
+					<tr>
+						<td>
+							<div id="JmolPromo">
+								<img src="images/promo.jpg"/>
+							</div>
+						</td>
+						<td>
+							<div id="promoStillCaption" style="display:block;">
+								<p>Jmol is an interactive web browser applet.</p>
+								<p>This is a still image, but you can get an animated display of Jmol abilities by clicking 
 		<a href="javascript:void(changePromoDisplay())">here</a>.</p>
-							<p>(The applet may take some seconds to load. Please, wait and do not reload the page in the meantime.) </p>
-						</div>
-						<div id="promoAnimCaption" style="display:none;">
-							<p>This is the Jmol applet in action.</p>
-							<p>It is running a script written in the Jmol/RasMol/Chime scripting language.</p>
-							<p>It is <i>not</i> a movie, slide show, or animated image file ...
+								<p>(The applet may take some seconds to load. Please, wait and do not reload the page in the meantime.) </p>
+							</div>
+							<div id="promoAnimCaption" style="display:none;">
+								<p>This is the Jmol applet in action.</p>
+								<p>It is running a script written in the Jmol/RasMol/Chime scripting language.</p>
+								<p>It is <i>not</i> a movie, slide show, or animated image file ...
 		  Jmol is an interactive web browser applet.</p>
-						</div>
-					</td>
-				</tr>
-			</table>
+							</div>
+						</td>
+					</tr>
+				</table>
 			</center>
 			<p>
-				<i>Check out the </i><a href="./demo/">Demonstration pages</a>
-				<i>to see buttons and menus in action</i>
+				<i>Check out the </i><a href="./screenshots/">Screenshot Gallery</a>
+				<i>(still images)
+				to see samples of what can be done with Jmol</i>
+				<br/>
+				<i>and check out the </i><a href="./demo/">Demonstration pages</a>
+				<i>to see buttons and menus in action (interactive applet).</i>
 			</p>
 			<hr/>
 		</header>

@@ -4,43 +4,96 @@
   Translated from default version (...)_en.xml (v 1.1)
 -->
 <document>
-  <body>
-    <title>Capturas de pantalla</title>
-
-  <section>
-    <screenshots>
-      <screenshot image="screenshot1.jpg">
+	<body>
+		<title>Capturas de pantalla</title>
+		<header>
+			<p><i>Haz clic en las imágenes para verlas a tamaño completo.</i></p>
+		</header>
+		<section title="Moléculas pequeñas">
+			<screenshots>
+				<screenshot image="aceticacid.jpg">
+        Ácido acético usando colores CPK y átomos como esferas.
+				</screenshot>
+				<screenshot image="screenshot1.jpg">
         Una representación sombreada de la cafeína.
-      </screenshot>
-      <screenshot image="screenshot2.jpg">
-        Un fotograma de una reacción S<sub>N</sub>2 animada, mostrando la 
-        medida de distancia entre los átomos de cloro y carbono.
-      </screenshot>
-      <screenshot image="screenshot3.jpg">
-        Animación de una vibración del metanol, mostrando los vectores.
-      </screenshot>
-      <screenshot image="screenshot4.jpg">
-        Representación de una estructura cristalina.
-      </screenshot>
-      <screenshot image="screenshot5.jpg">
+			      </screenshot>
+				<screenshot image="screenshot5.jpg">
         Representación de la caja limitante y los ejes de las coordenadas espaciales.
         Observa la transparencia del halo amarillo alrededor de los átomos seleccionados.
-      </screenshot>
-      <screenshot image="hemes.jpg">
-        Hemoglobina con trazo de esqueleto coloreado según cadenas y con los hemos en esferas.
-        <i>Esta imagen se tomó con una versión preliminar de Jmol v10.</i>
-      </screenshot>
-      <screenshot image="aceticacid.jpg">
-        Ácido acético usando colores CPK y átomos como esferas.
-        <i>Esta imagen se tomó con una versión preliminar de Jmol v10.</i>
-      </screenshot>
-      <screenshot image="bbdots.jpg">
+			      </screenshot>
+				<screenshot image="Picture 2.png">
+					<i>(enviada por Nick Greeves)</i>
+				</screenshot>
+			</screenshots>
+		</section>
+		<section title="Macromoléculas">
+			<screenshots>
+				<screenshot image="bbdots.jpg">
         Unos pocos residuos con esqueleto en azul y superficie de Van der Waals punteada. 
-        <i>Esta imagen se tomó con una versión preliminar de Jmol v10.</i>
-      </screenshot>
-    </screenshots>
-  </section>
-
-  </body>
+				</screenshot>
+				<screenshot image="hemes.jpg">
+        Hemoglobina con trazo de esqueleto coloreado según cadenas y con los hemos en esferas.
+				</screenshot>
+				<screenshot image="2hvy.jpg">
+        Estructura cristalina de una ribonucleoproteína con caja H/ACA de Pyrococcus furiosus (código PDB: 2HVY)<br/><b>
+						<font color="#afafff">Cbf5p</font>   
+  	      <font color="#aaffbb">Gar1</font>   
+        	<font color="pink">Nop10</font>   
+	        <font color="#e6de67">L7AE</font>   
+        	<font color="#ffaaff">RNA</font></b><br/>
+        Un nucleótido de la hélice de RNA está vuelto hacia fuera, entrando en el centro activo formado por el complejo proteico.<br/>
+					<i>(enviada por Wayne Decatur)</i>
+				</screenshot>
+				<screenshot image="screenshot_streptavidin.png">
+        Biotina (esferas en color cpk) en su bolsillo de unión de una subunidad de 
+        estreptavidina (superficie celeste translúcida) y cubierta por una porción de
+        la subunidad vecina de estreptavidina (superficie amarilla translúcida).<br/>
+					<i>(enviada por Angel Herráez)</i>
+				</screenshot>
+				<screenshot image="screenshot_zincfinger.png">
+        Un fragmento del factor de transcripción TFIIIA formando tres motivos dedo de zinc
+        consecutivos (representación esquemática), unido a un tramo de DNA (en esferas).
+        <i>(enviada por Angel Herráez)</i>
+				</screenshot>
+				<screenshot image="screenshot_hemoglobin.png">
+        Dos puentes salinos resaltados en el tetrámero de hemoglobina (grupo hemo en varillas 
+        abajo a la derecha).
+        <i>(enviada por Angel Herráez)</i>
+				</screenshot>
+			</screenshots>
+		</section>
+		<section title="Cristalografía">
+			<screenshots>
+				<screenshot image="screenshot4.jpg">
+        Representación de una estructura cristalina.
+			      </screenshot>
+			</screenshots>
+		</section>
+		<section title="Orbitales">
+			<screenshots>
+				<screenshot image="Picture 3.png">
+					<i>(enviada por Nick Greeves)</i>
+				</screenshot>
+				<screenshot image="Picture 4.png">
+					<i>(enviada por Nick Greeves)</i>
+				</screenshot>
+			</screenshots>
+		</section>
+		<section title="Reacciones, vibraciones, etc.">
+			<screenshots>
+				<screenshot image="screenshot2.jpg">
+        Un fotograma de una reacción S<sub>N</sub>2 animada, mostrando la 
+        medida de distancia entre los átomos de cloro y carbono.
+			      </screenshot>
+				<screenshot image="screenshot3.jpg">
+        Animación de una vibración del metanol, mostrando los vectores.
+			      </screenshot>
+				<screenshot image="screenshot_pertable.png">
+        Tabla periódica mostrando los radios atómicos, de van der Waals e iónicos para todos
+        los elementos, cada uno con su color propio.
+        <i>(enviada por Angel Herráez)</i>
+				</screenshot>
+			</screenshots>
+		</section>
+	</body>
 </document>
-

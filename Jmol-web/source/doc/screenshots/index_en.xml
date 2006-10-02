@@ -5,6 +5,16 @@
 
   <section>
     <screenshots>
+      <screenshot image="2hvy.jpg">
+        Crystal structure of an H/ACA box RNP from Pyrococcus furiosus (PDB CODE: 2HVY)<br /><b>
+        <font color="#afafff">Cbf5p</font>&#160;&#160;&#160;
+        <font color="#aaffbb">Gar1</font>&#160;&#160;&#160;
+        <font color="pink">Nop10</font>&#160;&#160;&#160;
+        <font color="#e6de67">L7AE</font>&#160;&#160;&#160;
+        <font color="#ffaaff">RNA</font></b><br />
+        A nucleotide of the RNA helix is flipped out into the active site formed by the protein complex.<br />
+        <i>(submitted by Wayne Decatur)</i>
+      </screenshot>
       <screenshot image="screenshot1.jpg">
         A shaded rendering of caffeine.
       </screenshot>

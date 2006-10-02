@@ -266,12 +266,16 @@ function showProjectInfo(value) {
   var code = varArray[8];
   if (code == "A") {
     document.fahForm.infoCode.value = "Amber";
+  } else if (code == "A0") {
+    document.fahForm.infoCode.value = "Gromacs 33";
   } else if (code == "DG") {
     document.fahForm.infoCode.value = "Double Gromacs";
   } else if (code == "G") {
     document.fahForm.infoCode.value = "Gromacs";
   } else if (code == "GB") {
     document.fahForm.infoCode.value = "GB Gromacs";
+  } else if (code == "GG") {
+    document.fahForm.infoCode.value = "Gromacs GPU";
   } else if (code == "Q") {
     document.fahForm.infoCode.value = "QMD";
   } else if (code == "T") {

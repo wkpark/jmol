@@ -91,7 +91,7 @@ class CartoonRenderer extends MpsRenderer {
   void renderMpspolymer( Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
     Cartoon.Cchain strandsChain = (Cartoon.Cchain)mpspolymer;
     this.myVisibilityFlag = myVisibilityFlag;
-    newRockets = !viewer.getTestFlag1();
+    newRockets = true; //!viewer.getTestFlag1();
     renderAsRockets = viewer.getCartoonRocketFlag();
     
     if (strandsChain.wingVectors != null) {
